@@ -10,11 +10,11 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import { SqlMainContext, ExtHostModelViewTreeViewsShape, MainThreadModelViewShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { ITreeComponentItem } from 'sql/workbench/common/views';
 import { CommandsConverter } from 'vs/workbench/api/node/extHostCommands';
-import { asWinJsPromise } from 'vs/base/common/async';
 import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as  vsTreeExt from 'vs/workbench/api/node/extHostTreeViews';
 import { Emitter } from 'vs/base/common/event';
+import { IExtensionDescription } from 'vs/workbench/services/extensions/common/extensions';
 
 export class ExtHostModelViewTreeViews implements ExtHostModelViewTreeViewsShape {
 	private _proxy: MainThreadModelViewShape;
@@ -27,12 +27,12 @@ export class ExtHostModelViewTreeViews implements ExtHostModelViewTreeViewsShape
 		this._proxy = this._mainContext.getProxy(SqlMainContext.MainThreadModelView);
 	}
 
-	$createTreeView<T>(handle: number, componentId: string, options: { treeDataProvider: sqlops.TreeComponentDataProvider<T> }): sqlops.TreeComponentView<T> {
+	$createTreeView<T>(handle: number, componentId: string, options: { treeDataProvider: azdata.TreeComponentDataProvider<T> }, extension: IExtensionDescription): azdata.TreeComponentView<T> {
 		if (!options || !options.treeDataProvider) {
 			throw new Error('Options with treeDataProvider is mandatory');
 		}
 
-		const treeView = this.createExtHostTreeViewer(handle, componentId, options.treeDataProvider);
+		const treeView = this.createExtHostTreeViewer(handle, componentId, options.treeDataProvider, extension);
 		return {
 			dispose: () => {
 				this.treeViews.delete(componentId);
@@ -75,8 +75,8 @@ export class ExtHostModelViewTreeViews implements ExtHostModelViewTreeViewsShape
 	$setVisible(treeViewId: string, visible: boolean): void {
 	}
 
-	private createExtHostTreeViewer<T>(handle: number, id: string, dataProvider: sqlops.TreeComponentDataProvider<T>): ExtHostTreeView<T> {
-		const treeView = new ExtHostTreeView<T>(handle, id, dataProvider, this._proxy, undefined);
+	private createExtHostTreeViewer<T>(handle: number, id: string, dataProvider: azdata.TreeComponentDataProvider<T>, extension: IExtensionDescription): ExtHostTreeView<T> {
+		const treeView = new ExtHostTreeView<T>(handle, id, dataProvider, this._proxy, undefined, extension);
 		this.treeViews.set(`${handle}-${id}`, treeView);
 		return treeView;
 	}
@@ -84,14 +84,14 @@ export class ExtHostModelViewTreeViews implements ExtHostModelViewTreeViewsShape
 
 export class ExtHostTreeView<T> extends vsTreeExt.ExtHostTreeView<T> {
 
-	private _onNodeCheckedChanged = new Emitter<sqlops.NodeCheckedEventParameters<T>>();
+	private _onNodeCheckedChanged = new Emitter<azdata.NodeCheckedEventParameters<T>>();
 	private _onChangeSelection = new Emitter<vscode.TreeViewSelectionChangeEvent<T>>();
-	public readonly NodeCheckedChanged: vscode.Event<sqlops.NodeCheckedEventParameters<T>> = this._onNodeCheckedChanged.event;
+	public readonly NodeCheckedChanged: vscode.Event<azdata.NodeCheckedEventParameters<T>> = this._onNodeCheckedChanged.event;
 	public readonly ChangeSelection: vscode.Event<vscode.TreeViewSelectionChangeEvent<T>> = this._onChangeSelection.event;
 	constructor(
-		private handle: number, private componentId: string, private componentDataProvider: sqlops.TreeComponentDataProvider<T>,
-		private modelViewProxy: MainThreadModelViewShape, commands: CommandsConverter) {
-		super(componentId, componentDataProvider, undefined, commands, undefined);
+		private handle: number, private componentId: string, private componentDataProvider: azdata.TreeComponentDataProvider<T>,
+		private modelViewProxy: MainThreadModelViewShape, commands: CommandsConverter, extension: IExtensionDescription) {
+		super(componentId, { treeDataProvider: componentDataProvider }, undefined, commands, undefined, extension);
 	}
 
 	onNodeCheckedChanged(parentHandle?: vsTreeExt.TreeItemHandle, checked?: boolean): void {
@@ -112,14 +112,14 @@ export class ExtHostTreeView<T> extends vsTreeExt.ExtHostTreeView<T> {
 		}
 	}
 
-	reveal(element: T, options?: { select?: boolean }): TPromise<void> {
+	reveal(element: T, options?: { select?: boolean }): Promise<void> {
 		if (typeof this.componentDataProvider.getParent !== 'function') {
-			return TPromise.wrapError(new Error(`Required registered TreeDataProvider to implement 'getParent' method to access 'reveal' method`));
+			return Promise.reject(new Error(`Required registered TreeDataProvider to implement 'getParent' method to access 'reveal' method`));
 		}
 		let i: void;
-		return this.resolveUnknownParentChain(element)
+		return Promise.resolve(this.resolveUnknownParentChain(element)
 			.then(parentChain => this.resolveTreeNode(element, parentChain[parentChain.length - 1])
-				.then(treeNode => i));
+				.then(treeNode => i)));
 	}
 
 	protected refreshElements(elements: T[]): void {
@@ -135,9 +135,9 @@ export class ExtHostTreeView<T> extends vsTreeExt.ExtHostTreeView<T> {
 		}
 	}
 
-	protected refreshHandles(itemHandles: vsTreeExt.TreeItemHandle[]): TPromise<void> {
+	protected refreshHandles(itemHandles: vsTreeExt.TreeItemHandle[]): Promise<void> {
 		const itemsToRefresh: { [treeItemHandle: string]: ITreeComponentItem } = {};
-		return TPromise.join(itemHandles.map(treeItemHandle =>
+		return Promise.all(itemHandles.map(treeItemHandle =>
 			this.refreshNode(treeItemHandle)
 				.then(node => {
 					if (node) {
@@ -147,11 +147,11 @@ export class ExtHostTreeView<T> extends vsTreeExt.ExtHostTreeView<T> {
 			.then(() => Object.keys(itemsToRefresh).length ? this.modelViewProxy.$refreshDataProvider(this.handle, this.componentId, itemsToRefresh) : null);
 	}
 
-	protected refreshNode(treeItemHandle: vsTreeExt.TreeItemHandle): TPromise<vsTreeExt.TreeNode> {
+	protected refreshNode(treeItemHandle: vsTreeExt.TreeItemHandle): Promise<vsTreeExt.TreeNode> {
 		const extElement = this.getExtensionElement(treeItemHandle);
 		const existing = this.nodes.get(extElement);
 		//this.clearChildren(extElement); // clear children cache
-		return asWinJsPromise(() => this.componentDataProvider.getTreeItem(extElement))
+		return Promise.resolve(this.componentDataProvider.getTreeItem(extElement))
 			.then(extTreeItem => {
 				if (extTreeItem) {
 					const newNode = this.createTreeNode(extElement, extTreeItem, existing.parent);
@@ -162,7 +162,7 @@ export class ExtHostTreeView<T> extends vsTreeExt.ExtHostTreeView<T> {
 			});
 	}
 
-	protected createTreeItem(element: T, extensionTreeItem: sqlops.TreeComponentItem, parent?: vsTreeExt.TreeNode): ITreeComponentItem {
+	protected createTreeItem(element: T, extensionTreeItem: azdata.TreeComponentItem, parent?: vsTreeExt.TreeNode): ITreeComponentItem {
 		let item = super.createTreeItem(element, extensionTreeItem, parent);
 		item = Object.assign({}, item, { checked: extensionTreeItem.checked, enabled: extensionTreeItem.enabled });
 		return item;

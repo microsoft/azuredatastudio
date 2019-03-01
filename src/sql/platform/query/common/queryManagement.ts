@@ -7,11 +7,12 @@ import QueryRunner from 'sql/platform/query/common/queryRunner';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IDisposable } from 'vs/base/common/lifecycle';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { TPromise } from 'vs/base/common/winjs.base';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
 import * as TelemetryUtils from 'sql/common/telemetryUtilities';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
+import { Event, Emitter } from 'vs/base/common/event';
 
 export const SERVICE_ID = 'queryManagementService';
 
@@ -22,25 +23,26 @@ export interface IQueryManagementService {
 
 	addQueryRequestHandler(queryType: string, runner: IQueryRequestHandler): IDisposable;
 	isProviderRegistered(providerId: string): boolean;
+	getRegisteredProviders(): string[];
 	registerRunner(runner: QueryRunner, uri: string): void;
 
-	cancelQuery(ownerUri: string): Thenable<sqlops.QueryCancelResult>;
-	runQuery(ownerUri: string, selection: sqlops.ISelectionData, runOptions?: sqlops.ExecutionPlanOptions): Thenable<void>;
+	cancelQuery(ownerUri: string): Thenable<azdata.QueryCancelResult>;
+	runQuery(ownerUri: string, selection: azdata.ISelectionData, runOptions?: azdata.ExecutionPlanOptions): Thenable<void>;
 	runQueryStatement(ownerUri: string, line: number, column: number): Thenable<void>;
 	runQueryString(ownerUri: string, queryString: string): Thenable<void>;
-	runQueryAndReturn(ownerUri: string, queryString: string): Thenable<sqlops.SimpleExecuteResult>;
-	parseSyntax(ownerUri: string, query: string): Thenable<sqlops.SyntaxParseResult>;
-	getQueryRows(rowData: sqlops.QueryExecuteSubsetParams): Thenable<sqlops.QueryExecuteSubsetResult>;
+	runQueryAndReturn(ownerUri: string, queryString: string): Thenable<azdata.SimpleExecuteResult>;
+	parseSyntax(ownerUri: string, query: string): Thenable<azdata.SyntaxParseResult>;
+	getQueryRows(rowData: azdata.QueryExecuteSubsetParams): Thenable<azdata.QueryExecuteSubsetResult>;
 	disposeQuery(ownerUri: string): Thenable<void>;
-	saveResults(requestParams: sqlops.SaveResultsRequestParams): Thenable<sqlops.SaveResultRequestResult>;
+	saveResults(requestParams: azdata.SaveResultsRequestParams): Thenable<azdata.SaveResultRequestResult>;
 
 	// Callbacks
-	onQueryComplete(result: sqlops.QueryExecuteCompleteNotificationResult): void;
-	onBatchStart(batchInfo: sqlops.QueryExecuteBatchNotificationParams): void;
-	onBatchComplete(batchInfo: sqlops.QueryExecuteBatchNotificationParams): void;
-	onResultSetAvailable(resultSetInfo: sqlops.QueryExecuteResultSetNotificationParams): void;
-	onResultSetUpdated(resultSetInfo: sqlops.QueryExecuteResultSetNotificationParams): void;
-	onMessage(message: sqlops.QueryExecuteMessageParams): void;
+	onQueryComplete(result: azdata.QueryExecuteCompleteNotificationResult): void;
+	onBatchStart(batchInfo: azdata.QueryExecuteBatchNotificationParams): void;
+	onBatchComplete(batchInfo: azdata.QueryExecuteBatchNotificationParams): void;
+	onResultSetAvailable(resultSetInfo: azdata.QueryExecuteResultSetNotificationParams): void;
+	onResultSetUpdated(resultSetInfo: azdata.QueryExecuteResultSetNotificationParams): void;
+	onMessage(message: azdata.QueryExecuteMessageParams): void;
 
 	// Edit Data Callbacks
 	onEditSessionReady(ownerUri: string, success: boolean, message: string): void;
@@ -48,45 +50,46 @@ export interface IQueryManagementService {
 	// Edit Data Functions
 	initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number, queryString: string): Thenable<void>;
 	disposeEdit(ownerUri: string): Thenable<void>;
-	updateCell(ownerUri: string, rowId: number, columnId: number, newValue: string): Thenable<sqlops.EditUpdateCellResult>;
+	updateCell(ownerUri: string, rowId: number, columnId: number, newValue: string): Thenable<azdata.EditUpdateCellResult>;
 	commitEdit(ownerUri): Thenable<void>;
-	createRow(ownerUri: string): Thenable<sqlops.EditCreateRowResult>;
+	createRow(ownerUri: string): Thenable<azdata.EditCreateRowResult>;
 	deleteRow(ownerUri: string, rowId: number): Thenable<void>;
-	revertCell(ownerUri: string, rowId: number, columnId: number): Thenable<sqlops.EditRevertCellResult>;
+	revertCell(ownerUri: string, rowId: number, columnId: number): Thenable<azdata.EditRevertCellResult>;
 	revertRow(ownerUri: string, rowId: number): Thenable<void>;
-	getEditRows(rowData: sqlops.EditSubsetParams): Thenable<sqlops.EditSubsetResult>;
+	getEditRows(rowData: azdata.EditSubsetParams): Thenable<azdata.EditSubsetResult>;
 }
 
 /*
  * An object that can handle basic request-response actions related to queries
  */
 export interface IQueryRequestHandler {
-	cancelQuery(ownerUri: string): Thenable<sqlops.QueryCancelResult>;
-	runQuery(ownerUri: string, selection: sqlops.ISelectionData, runOptions?: sqlops.ExecutionPlanOptions): Thenable<void>;
+	cancelQuery(ownerUri: string): Thenable<azdata.QueryCancelResult>;
+	runQuery(ownerUri: string, selection: azdata.ISelectionData, runOptions?: azdata.ExecutionPlanOptions): Thenable<void>;
 	runQueryStatement(ownerUri: string, line: number, column: number): Thenable<void>;
 	runQueryString(ownerUri: string, queryString: string): Thenable<void>;
-	runQueryAndReturn(ownerUri: string, queryString: string): Thenable<sqlops.SimpleExecuteResult>;
-	parseSyntax(ownerUri: string, query: string): Thenable<sqlops.SyntaxParseResult>;
-	getQueryRows(rowData: sqlops.QueryExecuteSubsetParams): Thenable<sqlops.QueryExecuteSubsetResult>;
+	runQueryAndReturn(ownerUri: string, queryString: string): Thenable<azdata.SimpleExecuteResult>;
+	parseSyntax(ownerUri: string, query: string): Thenable<azdata.SyntaxParseResult>;
+	getQueryRows(rowData: azdata.QueryExecuteSubsetParams): Thenable<azdata.QueryExecuteSubsetResult>;
 	disposeQuery(ownerUri: string): Thenable<void>;
-	saveResults(requestParams: sqlops.SaveResultsRequestParams): Thenable<sqlops.SaveResultRequestResult>;
+	saveResults(requestParams: azdata.SaveResultsRequestParams): Thenable<azdata.SaveResultRequestResult>;
 
 	// Edit Data actions
 	initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number, queryString: string): Thenable<void>;
 	disposeEdit(ownerUri: string): Thenable<void>;
-	updateCell(ownerUri: string, rowId: number, columnId: number, newValue: string): Thenable<sqlops.EditUpdateCellResult>;
+	updateCell(ownerUri: string, rowId: number, columnId: number, newValue: string): Thenable<azdata.EditUpdateCellResult>;
 	commitEdit(ownerUri): Thenable<void>;
-	createRow(ownerUri: string): Thenable<sqlops.EditCreateRowResult>;
+	createRow(ownerUri: string): Thenable<azdata.EditCreateRowResult>;
 	deleteRow(ownerUri: string, rowId: number): Thenable<void>;
-	revertCell(ownerUri: string, rowId: number, columnId: number): Thenable<sqlops.EditRevertCellResult>;
+	revertCell(ownerUri: string, rowId: number, columnId: number): Thenable<azdata.EditRevertCellResult>;
 	revertRow(ownerUri: string, rowId: number): Thenable<void>;
-	getEditRows(rowData: sqlops.EditSubsetParams): Thenable<sqlops.EditSubsetResult>;
+	getEditRows(rowData: azdata.EditSubsetParams): Thenable<azdata.EditSubsetResult>;
 }
 
 export class QueryManagementService implements IQueryManagementService {
 	public _serviceBrand: any;
 
 	private _requestHandlers = new Map<string, IQueryRequestHandler>();
+	private _onHandlerAddedEmitter = new Emitter<string>();
 	// public for testing only
 	public _queryRunners = new Map<string, QueryRunner>();
 
@@ -137,6 +140,7 @@ export class QueryManagementService implements IQueryManagementService {
 
 	public addQueryRequestHandler(queryType: string, handler: IQueryRequestHandler): IDisposable {
 		this._requestHandlers.set(queryType, handler);
+		this._onHandlerAddedEmitter.fire(queryType);
 
 		return {
 			dispose: () => {
@@ -144,12 +148,20 @@ export class QueryManagementService implements IQueryManagementService {
 		};
 	}
 
+	public get onHandlerAdded(): Event<string> {
+		return this._onHandlerAddedEmitter.event;
+	}
+
 	public isProviderRegistered(providerId: string): boolean {
 		let handler = this._requestHandlers.get(providerId);
 		return !!handler;
 	}
 
-	private addTelemetry(eventName: string, ownerUri: string, runOptions?: sqlops.ExecutionPlanOptions): void {
+	public getRegisteredProviders(): string[] {
+		return Array.from(this._requestHandlers.keys());
+	}
+
+	private addTelemetry(eventName: string, ownerUri: string, runOptions?: azdata.ExecutionPlanOptions): void {
 		let providerId: string = this._connectionService.getProviderIdFromUri(ownerUri);
 		let data: TelemetryUtils.IConnectionTelemetryData = {
 			provider: providerId,
@@ -177,13 +189,13 @@ export class QueryManagementService implements IQueryManagementService {
 		}
 	}
 
-	public cancelQuery(ownerUri: string): Thenable<sqlops.QueryCancelResult> {
+	public cancelQuery(ownerUri: string): Thenable<azdata.QueryCancelResult> {
 		this.addTelemetry(TelemetryKeys.CancelQuery, ownerUri);
 		return this._runAction(ownerUri, (runner) => {
 			return runner.cancelQuery(ownerUri);
 		});
 	}
-	public runQuery(ownerUri: string, selection: sqlops.ISelectionData, runOptions?: sqlops.ExecutionPlanOptions): Thenable<void> {
+	public runQuery(ownerUri: string, selection: azdata.ISelectionData, runOptions?: azdata.ExecutionPlanOptions): Thenable<void> {
 		this.addTelemetry(TelemetryKeys.RunQuery, ownerUri, runOptions);
 		return this._runAction(ownerUri, (runner) => {
 			return runner.runQuery(ownerUri, selection, runOptions);
@@ -200,17 +212,17 @@ export class QueryManagementService implements IQueryManagementService {
 			return runner.runQueryString(ownerUri, queryString);
 		});
 	}
-	public runQueryAndReturn(ownerUri: string, queryString: string): Thenable<sqlops.SimpleExecuteResult> {
+	public runQueryAndReturn(ownerUri: string, queryString: string): Thenable<azdata.SimpleExecuteResult> {
 		return this._runAction(ownerUri, (runner) => {
 			return runner.runQueryAndReturn(ownerUri, queryString);
 		});
 	}
-	public parseSyntax(ownerUri: string, query: string): Thenable<sqlops.SyntaxParseResult> {
+	public parseSyntax(ownerUri: string, query: string): Thenable<azdata.SyntaxParseResult> {
 		return this._runAction(ownerUri, (runner) => {
 			return runner.parseSyntax(ownerUri, query);
 		});
 	}
-	public getQueryRows(rowData: sqlops.QueryExecuteSubsetParams): Thenable<sqlops.QueryExecuteSubsetResult> {
+	public getQueryRows(rowData: azdata.QueryExecuteSubsetParams): Thenable<azdata.QueryExecuteSubsetResult> {
 		return this._runAction(rowData.ownerUri, (runner) => {
 			return runner.getQueryRows(rowData);
 		});
@@ -222,42 +234,42 @@ export class QueryManagementService implements IQueryManagementService {
 		});
 	}
 
-	public saveResults(requestParams: sqlops.SaveResultsRequestParams): Thenable<sqlops.SaveResultRequestResult> {
+	public saveResults(requestParams: azdata.SaveResultsRequestParams): Thenable<azdata.SaveResultRequestResult> {
 		return this._runAction(requestParams.ownerUri, (runner) => {
 			return runner.saveResults(requestParams);
 		});
 	}
 
-	public onQueryComplete(result: sqlops.QueryExecuteCompleteNotificationResult): void {
+	public onQueryComplete(result: azdata.QueryExecuteCompleteNotificationResult): void {
 		this._notify(result.ownerUri, (runner: QueryRunner) => {
 			runner.handleQueryComplete(result);
 		});
 	}
-	public onBatchStart(batchInfo: sqlops.QueryExecuteBatchNotificationParams): void {
+	public onBatchStart(batchInfo: azdata.QueryExecuteBatchNotificationParams): void {
 		this._notify(batchInfo.ownerUri, (runner: QueryRunner) => {
 			runner.handleBatchStart(batchInfo);
 		});
 	}
 
-	public onBatchComplete(batchInfo: sqlops.QueryExecuteBatchNotificationParams): void {
+	public onBatchComplete(batchInfo: azdata.QueryExecuteBatchNotificationParams): void {
 		this._notify(batchInfo.ownerUri, (runner: QueryRunner) => {
 			runner.handleBatchComplete(batchInfo);
 		});
 	}
 
-	public onResultSetAvailable(resultSetInfo: sqlops.QueryExecuteResultSetNotificationParams): void {
+	public onResultSetAvailable(resultSetInfo: azdata.QueryExecuteResultSetNotificationParams): void {
 		this._notify(resultSetInfo.ownerUri, (runner: QueryRunner) => {
 			runner.handleResultSetAvailable(resultSetInfo);
 		});
 	}
 
-	public onResultSetUpdated(resultSetInfo: sqlops.QueryExecuteResultSetNotificationParams): void {
+	public onResultSetUpdated(resultSetInfo: azdata.QueryExecuteResultSetNotificationParams): void {
 		this._notify(resultSetInfo.ownerUri, (runner: QueryRunner) => {
 			runner.handleResultSetUpdated(resultSetInfo);
 		});
 	}
 
-	public onMessage(message: sqlops.QueryExecuteMessageParams): void {
+	public onMessage(message: azdata.QueryExecuteMessageParams): void {
 		this._notify(message.ownerUri, (runner: QueryRunner) => {
 			runner.handleMessage(message);
 		});
@@ -276,7 +288,7 @@ export class QueryManagementService implements IQueryManagementService {
 		});
 	}
 
-	public updateCell(ownerUri: string, rowId: number, columnId: number, newValue: string): Thenable<sqlops.EditUpdateCellResult> {
+	public updateCell(ownerUri: string, rowId: number, columnId: number, newValue: string): Thenable<azdata.EditUpdateCellResult> {
 		return this._runAction(ownerUri, (runner) => {
 			return runner.updateCell(ownerUri, rowId, columnId, newValue);
 		});
@@ -288,7 +300,7 @@ export class QueryManagementService implements IQueryManagementService {
 		});
 	}
 
-	public createRow(ownerUri: string): Thenable<sqlops.EditCreateRowResult> {
+	public createRow(ownerUri: string): Thenable<azdata.EditCreateRowResult> {
 		return this._runAction(ownerUri, (runner) => {
 			return runner.createRow(ownerUri);
 		});
@@ -306,7 +318,7 @@ export class QueryManagementService implements IQueryManagementService {
 		});
 	}
 
-	public revertCell(ownerUri: string, rowId: number, columnId: number): Thenable<sqlops.EditRevertCellResult> {
+	public revertCell(ownerUri: string, rowId: number, columnId: number): Thenable<azdata.EditRevertCellResult> {
 		return this._runAction(ownerUri, (runner) => {
 			return runner.revertCell(ownerUri, rowId, columnId);
 		});
@@ -318,7 +330,7 @@ export class QueryManagementService implements IQueryManagementService {
 		});
 	}
 
-	public getEditRows(rowData: sqlops.EditSubsetParams): Thenable<sqlops.EditSubsetResult> {
+	public getEditRows(rowData: azdata.EditSubsetParams): Thenable<azdata.EditSubsetResult> {
 		return this._runAction(rowData.ownerUri, (runner) => {
 			return runner.getEditRows(rowData);
 		});

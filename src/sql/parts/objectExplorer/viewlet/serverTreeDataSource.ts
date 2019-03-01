@@ -8,7 +8,7 @@ import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectio
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ITree, IDataSource } from 'vs/base/parts/tree/browser/tree';
 import { TreeNode, TreeItemCollapsibleState } from 'sql/parts/objectExplorer/common/treeNode';
-import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { TreeUpdateUtils } from 'sql/parts/objectExplorer/viewlet/treeUpdateUtils';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';

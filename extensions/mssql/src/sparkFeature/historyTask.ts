@@ -5,7 +5,7 @@
 
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { AppContext } from '../appContext';
 import { getErrorMessage } from '../utils';
@@ -15,7 +15,7 @@ export class OpenSparkYarnHistoryTask {
 	constructor(private appContext: AppContext) {
 	}
 
-	async execute(sqlConnProfile: sqlops.IConnectionProfile, isSpark: boolean): Promise<void> {
+	async execute(sqlConnProfile: azdata.IConnectionProfile, isSpark: boolean): Promise<void> {
 		try {
 			let sqlClusterConnection = SqlClusterLookUp.findSqlClusterConnection(sqlConnProfile, this.appContext);
 			if (!sqlClusterConnection)
@@ -35,11 +35,11 @@ export class OpenSparkYarnHistoryTask {
 		}
 	}
 
-	private generateSparkHistoryUrl(host: string, port: string): string {
+	private generateSparkHistoryUrl(host: string, port: number): string {
 		return `https://${host}:${port}/gateway/default/sparkhistory/`;
 	}
 
-	private generateYarnHistoryUrl(host: string, port: string): string {
+	private generateYarnHistoryUrl(host: string, port: number): string {
 		return `https://${host}:${port}/gateway/default/yarn/cluster/apps`;
 	}
 }

@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { nb } from 'sqlops';
-import { TreeItem } from 'vs/workbench/api/node/extHostTypes';
+import { nb, IConnectionProfile } from 'azdata';
+import * as vsExtTypes from 'vs/workbench/api/node/extHostTypes';
 
 // SQL added extension host types
 export enum ServiceOptionType {
@@ -315,13 +315,20 @@ export interface ToolbarLayout {
 	orientation: Orientation;
 }
 
-export class TreeComponentItem extends TreeItem {
+export class TreeComponentItem extends vsExtTypes.TreeItem {
+	label?: string;
 	checked?: boolean;
 }
 
 export enum AzureResource {
 	ResourceManagement = 0,
 	Sql = 1
+}
+
+export class TreeItem extends vsExtTypes.TreeItem {
+	label?: string;
+	payload: IConnectionProfile;
+	providerHandle: string;
 }
 
 export interface ServerInfoOption {
@@ -514,4 +521,26 @@ export interface ISingleNotebookEditOperation {
 	range: ICellRange;
 	cell: Partial<nb.ICellContents>;
 	forceMoveMarkers: boolean;
+}
+
+export class ConnectionProfile {
+
+	providerId: string;
+	connectionId: string;
+	connectionName: string;
+	serverName: string;
+	databaseName: string;
+	userName: string;
+	password: string;
+	authenticationType: string;
+	savePassword: boolean;
+	groupFullName: string;
+	groupId: string;
+	saveProfile: boolean;
+	azureTenantId?: string;
+
+	static createFrom(options: any[]): ConnectionProfile {
+		// create from options
+		return undefined;
+	}
 }

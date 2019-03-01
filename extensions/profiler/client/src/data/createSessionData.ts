@@ -4,14 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 export class CreateSessionData {
 	public ownerUri: string;
 	public sessionName: string;
-	public templates: Array<sqlops.ProfilerSessionTemplate> = new Array<sqlops.ProfilerSessionTemplate>();
+	public templates: Array<azdata.ProfilerSessionTemplate> = new Array<azdata.ProfilerSessionTemplate>();
 
-	constructor(ownerUri: string, templates: Array<sqlops.ProfilerSessionTemplate>) {
+	constructor(ownerUri: string, templates: Array<azdata.ProfilerSessionTemplate>) {
 		this.ownerUri = ownerUri;
 		this.templates = templates;
 	}
@@ -20,7 +20,7 @@ export class CreateSessionData {
 		return this.templates.map(e => e.name);
 	}
 
-	public selectTemplate(name: string): sqlops.ProfilerSessionTemplate {
+	public selectTemplate(name: string): azdata.ProfilerSessionTemplate {
 		return this.templates.find((t) => { return t.name === name; });
 	}
 }

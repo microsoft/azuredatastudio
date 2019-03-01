@@ -1,11 +1,11 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
 
-import { nb, IConnectionProfile } from 'sqlops';
+import { nb, IConnectionProfile } from 'azdata';
 
 import { Event, Emitter } from 'vs/base/common/event';
 import { INotebookModel, ICellModel, IClientSession, IDefaultConnection, NotebookContentChange } from 'sql/parts/notebook/models/modelInterfaces';
@@ -17,6 +17,7 @@ export class NotebookModelStub implements INotebookModel {
 	constructor(private _languageInfo?: nb.ILanguageInfo) {
 	}
 	public trustedMode: boolean;
+	language: string;
 
 	public get languageInfo(): nb.ILanguageInfo {
 		return this._languageInfo;

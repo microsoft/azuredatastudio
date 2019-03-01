@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as paths from 'path';
 import * as fs from 'fs';
 import * as os from 'os';
@@ -15,11 +13,10 @@ import { MAX_FILE_SIZE, MAX_HEAP_SIZE } from 'vs/platform/files/node/files';
 import { isEqualOrParent } from 'vs/base/common/paths';
 import { ResourceMap } from 'vs/base/common/map';
 import * as arrays from 'vs/base/common/arrays';
-import { TPromise } from 'vs/base/common/winjs.base';
 import * as objects from 'vs/base/common/objects';
 import * as extfs from 'vs/base/node/extfs';
-import { nfcall, ThrottledDelayer, toWinJsPromise } from 'vs/base/common/async';
-import uri from 'vs/base/common/uri';
+import { nfcall, ThrottledDelayer, timeout } from 'vs/base/common/async';
+import { URI as uri } from 'vs/base/common/uri';
 import * as nls from 'vs/nls';
 import { isWindows, isLinux, isMacintosh } from 'vs/base/common/platform';
 import { IDisposable, toDisposable, Disposable } from 'vs/base/common/lifecycle';
@@ -45,31 +42,6 @@ import { onUnexpectedError } from 'vs/base/common/errors';
 import product from 'vs/platform/node/product';
 import { IEncodingOverride, ResourceEncodings } from 'vs/workbench/services/files/electron-browser/encoding';
 import { createReadableOfSnapshot } from 'vs/workbench/services/files/electron-browser/streams';
-
-class BufferPool {
-
-	static _64K = new BufferPool(64 * 1024, 5);
-
-	constructor(
-		readonly bufferSize: number,
-		private readonly _capacity: number,
-		private readonly _free: Buffer[] = [],
-	) { }
-
-	acquire(): Buffer {
-		if (this._free.length === 0) {
-			return Buffer.allocUnsafe(this.bufferSize);
-		} else {
-			return this._free.shift();
-		}
-	}
-
-	release(buf: Buffer): void {
-		if (this._free.length <= this._capacity) {
-			this._free.push(buf);
-		}
-	}
-}
 
 export interface IFileServiceTestOptions {
 	disableWatcher?: boolean;
@@ -99,7 +71,7 @@ export class FileService extends Disposable implements IFileService {
 	get onDidChangeFileSystemProviderRegistrations(): Event<IFileSystemProviderRegistrationEvent> { return this._onDidChangeFileSystemProviderRegistrations.event; }
 
 	private activeWorkspaceFileChangeWatcher: IDisposable;
-	private activeFileChangesWatchers: ResourceMap<fs.FSWatcher>;
+	private activeFileChangesWatchers: ResourceMap<{ unwatch: Function, count: number }>;
 	private fileChangesWatchDelayer: ThrottledDelayer<void>;
 	private undeliveredRawFileChangesEvents: IRawFileChange[];
 
@@ -117,7 +89,7 @@ export class FileService extends Disposable implements IFileService {
 	) {
 		super();
 
-		this.activeFileChangesWatchers = new ResourceMap<fs.FSWatcher>();
+		this.activeFileChangesWatchers = new ResourceMap<{ unwatch: Function, count: number }>();
 		this.fileChangesWatchDelayer = new ThrottledDelayer<void>(FileService.FS_EVENT_DELAY);
 		this.undeliveredRawFileChangesEvents = [];
 
@@ -133,13 +105,13 @@ export class FileService extends Disposable implements IFileService {
 	private registerListeners(): void {
 
 		// Wait until we are fully running before starting file watchers
-		this.lifecycleService.when(LifecyclePhase.Running).then(() => {
+		this.lifecycleService.when(LifecyclePhase.Restored).then(() => {
 			this.setupFileWatching();
 		});
 
 		// Workbench State Change
 		this._register(this.contextService.onDidChangeWorkbenchState(() => {
-			if (this.lifecycleService.phase >= LifecyclePhase.Running) {
+			if (this.lifecycleService.phase >= LifecyclePhase.Restored) {
 				this.setupFileWatching();
 			}
 		}));
@@ -170,7 +142,8 @@ export class FileService extends Disposable implements IFileService {
 					label: nls.localize('neverShowAgain', "Don't Show Again"),
 					isSecondary: true,
 					run: () => this.storageService.store(FileService.NET_VERSION_ERROR_IGNORE_KEY, true, StorageScope.WORKSPACE)
-				}]
+				}],
+				{ sticky: true }
 			);
 		}
 
@@ -187,7 +160,8 @@ export class FileService extends Disposable implements IFileService {
 					label: nls.localize('neverShowAgain', "Don't Show Again"),
 					isSecondary: true,
 					run: () => this.storageService.store(FileService.ENOSPC_ERROR_IGNORE_KEY, true, StorageScope.WORKSPACE)
-				}]
+				}],
+				{ sticky: true }
 			);
 		}
 	}
@@ -233,26 +207,30 @@ export class FileService extends Disposable implements IFileService {
 		throw new Error('not implemented');
 	}
 
+	activateProvider(scheme: string): Thenable<void> {
+		return Promise.reject(new Error('not implemented'));
+	}
+
 	canHandleResource(resource: uri): boolean {
 		return resource.scheme === Schemas.file;
 	}
 
-	resolveFile(resource: uri, options?: IResolveFileOptions): TPromise<IFileStat> {
+	resolveFile(resource: uri, options?: IResolveFileOptions): Thenable<IFileStat> {
 		return this.resolve(resource, options);
 	}
 
-	resolveFiles(toResolve: { resource: uri, options?: IResolveFileOptions }[]): TPromise<IResolveFileResult[]> {
-		return TPromise.join(toResolve.map(resourceAndOptions => this.resolve(resourceAndOptions.resource, resourceAndOptions.options)
+	resolveFiles(toResolve: { resource: uri, options?: IResolveFileOptions }[]): Thenable<IResolveFileResult[]> {
+		return Promise.all(toResolve.map(resourceAndOptions => this.resolve(resourceAndOptions.resource, resourceAndOptions.options)
 			.then(stat => ({ stat, success: true }), error => ({ stat: void 0, success: false }))));
 	}
 
-	existsFile(resource: uri): TPromise<boolean> {
+	existsFile(resource: uri): Thenable<boolean> {
 		return this.resolveFile(resource).then(() => true, () => false);
 	}
 
-	resolveContent(resource: uri, options?: IResolveContentOptions): TPromise<IContent> {
+	resolveContent(resource: uri, options?: IResolveContentOptions): Thenable<IContent> {
 		return this.resolveStreamContent(resource, options).then(streamContent => {
-			return new TPromise<IContent>((resolve, reject) => {
+			return new Promise<IContent>((resolve, reject) => {
 
 				const result: IContent = {
 					resource: streamContent.resource,
@@ -266,18 +244,18 @@ export class FileService extends Disposable implements IFileService {
 
 				streamContent.value.on('data', chunk => result.value += chunk);
 				streamContent.value.on('error', err => reject(err));
-				streamContent.value.on('end', _ => resolve(result));
+				streamContent.value.on('end', () => resolve(result));
 
 				return result;
 			});
 		});
 	}
 
-	resolveStreamContent(resource: uri, options?: IResolveContentOptions): TPromise<IStreamContent> {
+	resolveStreamContent(resource: uri, options?: IResolveContentOptions): Thenable<IStreamContent> {
 
 		// Guard early against attempts to resolve an invalid file path
 		if (resource.scheme !== Schemas.file || !resource.fsPath) {
-			return TPromise.wrapError<IStreamContent>(new FileOperationError(
+			return Promise.reject(new FileOperationError(
 				nls.localize('fileInvalidPath', "Invalid file resource ({0})", resource.toString(true)),
 				FileOperationResult.FILE_INVALID_PATH,
 				options
@@ -304,7 +282,7 @@ export class FileService extends Disposable implements IFileService {
 			contentResolverTokenSource.cancel();
 
 			// forward error
-			return TPromise.wrapError(error);
+			return Promise.reject(error);
 		};
 
 		const statsPromise = this.resolveFile(resource).then(stat => {
@@ -363,7 +341,7 @@ export class FileService extends Disposable implements IFileService {
 			return onStatError(err);
 		});
 
-		let completePromise: TPromise<void>;
+		let completePromise: Thenable<void>;
 
 		// await the stat iff we already have an etag so that we compare the
 		// etag from the stat before we actually read the file again.
@@ -376,23 +354,29 @@ export class FileService extends Disposable implements IFileService {
 		// a fresh load without a previous etag which means we can resolve the file stat
 		// and the content at the same time, avoiding the waterfall.
 		else {
-			completePromise = TPromise.join([statsPromise, this.fillInContents(result, resource, options, contentResolverTokenSource.token)]).then(() => void 0, error => {
-				// Joining promises via TPromise will execute both and return errors
-				// as array-like object for each. Since each can return a FileOperationError
-				// we want to prefer that one if possible. Otherwise we just return with the
-				// first error we get.
-				const firstError = error[0];
-				const secondError = error[1];
+			let statsError: Error;
+			let contentsError: Error;
 
-				if (FileOperationError.isFileOperationError(firstError)) {
-					return TPromise.wrapError(firstError);
+			completePromise = Promise.all([
+				statsPromise.then(() => void 0, error => statsError = error),
+				this.fillInContents(result, resource, options, contentResolverTokenSource.token).then(() => void 0, error => contentsError = error)
+			]).then(() => {
+				// Since each file operation can return a FileOperationError
+				// we want to prefer that one if possible. Otherwise we just
+				// return with the first error we get.
+				if (FileOperationError.isFileOperationError(statsError)) {
+					return Promise.reject(statsError);
 				}
 
-				if (FileOperationError.isFileOperationError(secondError)) {
-					return TPromise.wrapError(secondError);
+				if (FileOperationError.isFileOperationError(contentsError)) {
+					return Promise.reject(contentsError);
 				}
 
-				return TPromise.wrapError(firstError || secondError);
+				if (statsError || contentsError) {
+					return Promise.reject(statsError || contentsError);
+				}
+
+				return void 0;
 			});
 		}
 
@@ -403,27 +387,26 @@ export class FileService extends Disposable implements IFileService {
 		}, error => {
 			contentResolverTokenSource.dispose();
 
-			return TPromise.wrapError(error);
+			return Promise.reject(error);
 		});
 	}
 
-	private fillInContents(content: IStreamContent, resource: uri, options: IResolveContentOptions, token: CancellationToken): TPromise<void> {
+	private fillInContents(content: IStreamContent, resource: uri, options: IResolveContentOptions, token: CancellationToken): Thenable<void> {
 		return this.resolveFileData(resource, options, token).then(data => {
 			content.encoding = data.encoding;
 			content.value = data.stream;
 		});
 	}
 
-	private resolveFileData(resource: uri, options: IResolveContentOptions, token: CancellationToken): TPromise<IContentData> {
-
-		const chunkBuffer = BufferPool._64K.acquire();
+	private resolveFileData(resource: uri, options: IResolveContentOptions, token: CancellationToken): Thenable<IContentData> {
+		const chunkBuffer = Buffer.allocUnsafe(64 * 1024);
 
 		const result: IContentData = {
 			encoding: void 0,
 			stream: void 0
 		};
 
-		return new TPromise<IContentData>((resolve, reject) => {
+		return new Promise<IContentData>((resolve, reject) => {
 			fs.open(this.toAbsolutePath(resource), 'r', (err, fd) => {
 				if (err) {
 					if (err.code === 'ENOENT') {
@@ -442,9 +425,9 @@ export class FileService extends Disposable implements IFileService {
 				let totalBytesRead = 0;
 
 				const finish = (err?: any) => {
-
 					if (err) {
 						if (err.code === 'EISDIR') {
+
 							// Wrap EISDIR errors (fs.open on a directory works, but you cannot read from it)
 							err = new FileOperationError(
 								nls.localize('fileIsDirectoryError', "File is directory"),
@@ -460,12 +443,10 @@ export class FileService extends Disposable implements IFileService {
 							reject(err);
 						}
 					}
+
 					if (decoder) {
 						decoder.end();
 					}
-
-					// return the shared buffer
-					BufferPool._64K.release(chunkBuffer);
 
 					if (fd) {
 						fs.close(fd, err => {
@@ -529,12 +510,10 @@ export class FileService extends Disposable implements IFileService {
 						} else {
 							// when receiving the first chunk of data we need to create the
 							// decoding stream which is then used to drive the string stream.
-							const autoGuessEncoding = (options && options.autoGuessEncoding) || this.textResourceConfigurationService.getValue(resource, 'files.autoGuessEncoding');
-							TPromise.as(encoding.detectEncodingFromBuffer(
+							Promise.resolve(encoding.detectEncodingFromBuffer(
 								{ buffer: chunkBuffer, bytesRead },
-								autoGuessEncoding
+								(options && options.autoGuessEncoding) || this.textResourceConfigurationService.getValue(resource, 'files.autoGuessEncoding')
 							)).then(detected => {
-
 								if (options && options.acceptTextOnly && detected.seemsBinary) {
 									// Return error early if client only accepts text and this is not text
 									finish(new FileOperationError(
@@ -549,7 +528,6 @@ export class FileService extends Disposable implements IFileService {
 									resolve(result);
 									handleChunk(bytesRead);
 								}
-
 							}).then(void 0, err => {
 								// failed to get encoding
 								finish(err);
@@ -564,7 +542,7 @@ export class FileService extends Disposable implements IFileService {
 		});
 	}
 
-	updateContent(resource: uri, value: string | ITextSnapshot, options: IUpdateContentOptions = Object.create(null)): TPromise<IFileStat> {
+	updateContent(resource: uri, value: string | ITextSnapshot, options: IUpdateContentOptions = Object.create(null)): Thenable<IFileStat> {
 		if (options.writeElevated) {
 			return this.doUpdateContentElevated(resource, value, options);
 		}
@@ -572,14 +550,14 @@ export class FileService extends Disposable implements IFileService {
 		return this.doUpdateContent(resource, value, options);
 	}
 
-	private doUpdateContent(resource: uri, value: string | ITextSnapshot, options: IUpdateContentOptions = Object.create(null)): TPromise<IFileStat> {
+	private doUpdateContent(resource: uri, value: string | ITextSnapshot, options: IUpdateContentOptions = Object.create(null)): Thenable<IFileStat> {
 		const absolutePath = this.toAbsolutePath(resource);
 
 		// 1.) check file for writing
 		return this.checkFileBeforeWriting(absolutePath, options).then(exists => {
-			let createParentsPromise: TPromise<boolean>;
+			let createParentsPromise: Thenable<boolean>;
 			if (exists) {
-				createParentsPromise = TPromise.as(null);
+				createParentsPromise = Promise.resolve();
 			} else {
 				createParentsPromise = pfs.mkdirp(paths.dirname(absolutePath));
 			}
@@ -587,17 +565,17 @@ export class FileService extends Disposable implements IFileService {
 			// 2.) create parents as needed
 			return createParentsPromise.then(() => {
 				const encodingToWrite = this._encoding.getWriteEncoding(resource, options.encoding);
-				let addBomPromise: TPromise<boolean> = TPromise.as(false);
+				let addBomPromise: Thenable<boolean> = Promise.resolve(false);
 
 				// UTF_16 BE and LE as well as UTF_8 with BOM always have a BOM
 				if (encodingToWrite === encoding.UTF16be || encodingToWrite === encoding.UTF16le || encodingToWrite === encoding.UTF8_with_bom) {
-					addBomPromise = TPromise.as(true);
+					addBomPromise = Promise.resolve(true);
 				}
 
 				// Existing UTF-8 file: check for options regarding BOM
 				else if (exists && encodingToWrite === encoding.UTF8) {
 					if (options.overwriteEncoding) {
-						addBomPromise = TPromise.as(false); // if we are to overwrite the encoding, we do not preserve it if found
+						addBomPromise = Promise.resolve(false); // if we are to overwrite the encoding, we do not preserve it if found
 					} else {
 						addBomPromise = encoding.detectEncodingByBOM(absolutePath).then(enc => enc === encoding.UTF8); // otherwise preserve it if found
 					}
@@ -607,40 +585,57 @@ export class FileService extends Disposable implements IFileService {
 				return addBomPromise.then(addBom => {
 
 					// 4.) set contents and resolve
-					return this.doSetContentsAndResolve(resource, absolutePath, value, addBom, encodingToWrite).then(void 0, error => {
-						if (!exists || error.code !== 'EPERM' || !isWindows) {
-							return TPromise.wrapError(error);
-						}
+					if (!exists || !isWindows) {
+						return this.doSetContentsAndResolve(resource, absolutePath, value, addBom, encodingToWrite);
+					}
 
-						// On Windows and if the file exists with an EPERM error, we try a different strategy of saving the file
-						// by first truncating the file and then writing with r+ mode. This helps to save hidden files on Windows
-						// (see https://github.com/Microsoft/vscode/issues/931)
+					// On Windows and if the file exists, we use a different strategy of saving the file
+					// by first truncating the file and then writing with r+ mode. This helps to save hidden files on Windows
+					// (see https://github.com/Microsoft/vscode/issues/931) and prevent removing alternate data streams
+					// (see https://github.com/Microsoft/vscode/issues/6363)
+					else {
 
-						// 5.) truncate
+						// 4.) truncate
 						return pfs.truncate(absolutePath, 0).then(() => {
 
-							// 6.) set contents (this time with r+ mode) and resolve again
-							return this.doSetContentsAndResolve(resource, absolutePath, value, addBom, encodingToWrite, { flag: 'r+' });
+							// 5.) set contents (with r+ mode) and resolve
+							return this.doSetContentsAndResolve(resource, absolutePath, value, addBom, encodingToWrite, { flag: 'r+' }).then(null, error => {
+								if (this.environmentService.verbose) {
+									console.error(`Truncate succeeded, but save failed (${error}), retrying after 100ms`);
+								}
+
+								// We heard from one user that fs.truncate() succeeds, but the save fails (https://github.com/Microsoft/vscode/issues/61310)
+								// In that case, the file is now entirely empty and the contents are gone. This can happen if an external file watcher is
+								// installed that reacts on the truncate and keeps the file busy right after. Our workaround is to retry to save after a
+								// short timeout, assuming that the file is free to write then.
+								return timeout(100).then(() => this.doSetContentsAndResolve(resource, absolutePath, value, addBom, encodingToWrite, { flag: 'r+' }));
+							});
+						}, error => {
+							if (this.environmentService.verbose) {
+								console.error(`Truncate failed (${error}), falling back to normal save`);
+							}
+
+							// we heard from users that fs.truncate() fails (https://github.com/Microsoft/vscode/issues/59561)
+							// in that case we simply save the file without truncating first (same as macOS and Linux)
+							return this.doSetContentsAndResolve(resource, absolutePath, value, addBom, encodingToWrite);
 						});
-					});
+					}
 				});
 			});
 		}).then(null, error => {
 			if (error.code === 'EACCES' || error.code === 'EPERM') {
-				return TPromise.wrapError(new FileOperationError(
+				return Promise.reject(new FileOperationError(
 					nls.localize('filePermission', "Permission denied writing to file ({0})", resource.toString(true)),
 					FileOperationResult.FILE_PERMISSION_DENIED,
 					options
 				));
 			}
 
-			return TPromise.wrapError(error);
+			return Promise.reject(error);
 		});
 	}
 
-	private doSetContentsAndResolve(resource: uri, absolutePath: string, value: string | ITextSnapshot, addBOM: boolean, encodingToWrite: string, options?: { mode?: number; flag?: string; }): TPromise<IFileStat> {
-		let writeFilePromise: TPromise<void>;
-
+	private doSetContentsAndResolve(resource: uri, absolutePath: string, value: string | ITextSnapshot, addBOM: boolean, encodingToWrite: string, options?: { mode?: number; flag?: string; }): Thenable<IFileStat> {
 		// Configure encoding related options as needed
 		const writeFileOptions: extfs.IWriteFileOptions = options ? options : Object.create(null);
 		if (addBOM || encodingToWrite !== encoding.UTF8) {
@@ -650,6 +645,7 @@ export class FileService extends Disposable implements IFileService {
 			};
 		}
 
+		let writeFilePromise: Thenable<void>;
 		if (typeof value === 'string') {
 			writeFilePromise = pfs.writeFile(absolutePath, value, writeFileOptions);
 		} else {
@@ -664,7 +660,7 @@ export class FileService extends Disposable implements IFileService {
 		});
 	}
 
-	private doUpdateContentElevated(resource: uri, value: string | ITextSnapshot, options: IUpdateContentOptions = Object.create(null)): TPromise<IFileStat> {
+	private doUpdateContentElevated(resource: uri, value: string | ITextSnapshot, options: IUpdateContentOptions = Object.create(null)): Thenable<IFileStat> {
 		const absolutePath = this.toAbsolutePath(resource);
 
 		// 1.) check file for writing
@@ -678,8 +674,8 @@ export class FileService extends Disposable implements IFileService {
 			return this.updateContent(uri.file(tmpPath), value, writeOptions).then(() => {
 
 				// 3.) invoke our CLI as super user
-				return toWinJsPromise(import('sudo-prompt')).then(sudoPrompt => {
-					return new TPromise<void>((c, e) => {
+				return import('sudo-prompt').then(sudoPrompt => {
+					return new Promise<void>((resolve, reject) => {
 						const promptOptions = {
 							name: this.environmentService.appNameLong.replace('-', ''),
 							icns: (isMacintosh && this.environmentService.isBuilt) ? paths.join(paths.dirname(this.environmentService.appRoot), `${product.nameShort}.icns`) : void 0
@@ -693,9 +689,9 @@ export class FileService extends Disposable implements IFileService {
 
 						sudoPrompt.exec(sudoCommand.join(' '), promptOptions, (error: string, stdout: string, stderr: string) => {
 							if (error || stderr) {
-								e(error || stderr);
+								reject(error || stderr);
 							} else {
-								c(void 0);
+								resolve(void 0);
 							}
 						});
 					});
@@ -722,16 +718,16 @@ export class FileService extends Disposable implements IFileService {
 				);
 			}
 
-			return TPromise.wrapError(error);
+			return Promise.reject(error);
 		});
 	}
 
-	createFile(resource: uri, content: string = '', options: ICreateFileOptions = Object.create(null)): TPromise<IFileStat> {
+	createFile(resource: uri, content: string = '', options: ICreateFileOptions = Object.create(null)): Thenable<IFileStat> {
 		const absolutePath = this.toAbsolutePath(resource);
 
-		let checkFilePromise: TPromise<boolean>;
+		let checkFilePromise: Thenable<boolean>;
 		if (options.overwrite) {
-			checkFilePromise = TPromise.as(false);
+			checkFilePromise = Promise.resolve(false);
 		} else {
 			checkFilePromise = pfs.exists(absolutePath);
 		}
@@ -739,7 +735,7 @@ export class FileService extends Disposable implements IFileService {
 		// Check file exists
 		return checkFilePromise.then(exists => {
 			if (exists && !options.overwrite) {
-				return TPromise.wrapError<IFileStat>(new FileOperationError(
+				return Promise.reject(new FileOperationError(
 					nls.localize('fileExists', "File to create already exists ({0})", resource.toString(true)),
 					FileOperationResult.FILE_MODIFIED_SINCE,
 					options
@@ -757,7 +753,13 @@ export class FileService extends Disposable implements IFileService {
 		});
 	}
 
-	createFolder(resource: uri): TPromise<IFileStat> {
+	readFolder(resource: uri): Thenable<string[]> {
+		const absolutePath = this.toAbsolutePath(resource);
+
+		return pfs.readdir(absolutePath);
+	}
+
+	createFolder(resource: uri): Thenable<IFileStat> {
 
 		// 1.) Create folder
 		const absolutePath = this.toAbsolutePath(resource);
@@ -774,12 +776,12 @@ export class FileService extends Disposable implements IFileService {
 		});
 	}
 
-	private checkFileBeforeWriting(absolutePath: string, options: IUpdateContentOptions = Object.create(null), ignoreReadonly?: boolean): TPromise<boolean /* exists */> {
+	private checkFileBeforeWriting(absolutePath: string, options: IUpdateContentOptions = Object.create(null), ignoreReadonly?: boolean): Thenable<boolean /* exists */> {
 		return pfs.exists(absolutePath).then(exists => {
 			if (exists) {
 				return pfs.stat(absolutePath).then(stat => {
 					if (stat.isDirectory()) {
-						return TPromise.wrapError<boolean>(new Error('Expected file is actually a directory'));
+						return Promise.reject(new Error('Expected file is actually a directory'));
 					}
 
 					// Dirty write prevention: if the file on disk has been changed and does not match our expected
@@ -795,7 +797,7 @@ export class FileService extends Disposable implements IFileService {
 					// but to the same length. This is a compromise we take to avoid having to produce checksums of
 					// the file content for comparison which would be much slower to compute.
 					if (typeof options.mtime === 'number' && typeof options.etag === 'string' && options.mtime < stat.mtime.getTime() && options.etag !== etag(stat.size, options.mtime)) {
-						return TPromise.wrapError<boolean>(new FileOperationError(nls.localize('fileModifiedError', "File Modified Since"), FileOperationResult.FILE_MODIFIED_SINCE, options));
+						return Promise.reject(new FileOperationError(nls.localize('fileModifiedError', "File Modified Since"), FileOperationResult.FILE_MODIFIED_SINCE, options));
 					}
 
 					// Throw if file is readonly and we are not instructed to overwrite
@@ -820,31 +822,31 @@ export class FileService extends Disposable implements IFileService {
 						});
 					}
 
-					return TPromise.as<boolean>(exists);
+					return exists;
 				});
 			}
 
-			return TPromise.as<boolean>(exists);
+			return exists;
 		});
 	}
 
-	private readOnlyError<T>(options: IUpdateContentOptions): TPromise<T> {
-		return TPromise.wrapError<T>(new FileOperationError(
+	private readOnlyError<T>(options: IUpdateContentOptions): Thenable<T> {
+		return Promise.reject(new FileOperationError(
 			nls.localize('fileReadOnlyError', "File is Read Only"),
 			FileOperationResult.FILE_READ_ONLY,
 			options
 		));
 	}
 
-	moveFile(source: uri, target: uri, overwrite?: boolean): TPromise<IFileStat> {
+	moveFile(source: uri, target: uri, overwrite?: boolean): Thenable<IFileStat> {
 		return this.moveOrCopyFile(source, target, false, overwrite);
 	}
 
-	copyFile(source: uri, target: uri, overwrite?: boolean): TPromise<IFileStat> {
+	copyFile(source: uri, target: uri, overwrite?: boolean): Thenable<IFileStat> {
 		return this.moveOrCopyFile(source, target, true, overwrite);
 	}
 
-	private moveOrCopyFile(source: uri, target: uri, keepCopy: boolean, overwrite: boolean): TPromise<IFileStat> {
+	private moveOrCopyFile(source: uri, target: uri, keepCopy: boolean, overwrite: boolean): Thenable<IFileStat> {
 		const sourcePath = this.toAbsolutePath(source);
 		const targetPath = this.toAbsolutePath(target);
 
@@ -862,11 +864,11 @@ export class FileService extends Disposable implements IFileService {
 		});
 	}
 
-	private doMoveOrCopyFile(sourcePath: string, targetPath: string, keepCopy: boolean, overwrite: boolean): TPromise<boolean /* exists */> {
+	private doMoveOrCopyFile(sourcePath: string, targetPath: string, keepCopy: boolean, overwrite: boolean): Thenable<boolean /* exists */> {
 
 		// 1.) validate operation
 		if (isParent(targetPath, sourcePath, !isLinux)) {
-			return TPromise.wrapError<boolean>(new Error('Unable to move/copy when source path is parent of target path'));
+			return Promise.reject(new Error('Unable to move/copy when source path is parent of target path'));
 		}
 
 		// 2.) check if target exists
@@ -876,14 +878,14 @@ export class FileService extends Disposable implements IFileService {
 
 			// Return early with conflict if target exists and we are not told to overwrite
 			if (exists && !isCaseRename && !overwrite) {
-				return TPromise.wrapError<boolean>(new FileOperationError(nls.localize('fileMoveConflict', "Unable to move/copy. File already exists at destination."), FileOperationResult.FILE_MOVE_CONFLICT));
+				return Promise.reject(new FileOperationError(nls.localize('fileMoveConflict', "Unable to move/copy. File already exists at destination."), FileOperationResult.FILE_MOVE_CONFLICT));
 			}
 
 			// 3.) make sure target is deleted before we move/copy unless this is a case rename of the same file
-			let deleteTargetPromise = TPromise.wrap<void>(void 0);
+			let deleteTargetPromise: Thenable<void> = Promise.resolve();
 			if (exists && !isCaseRename) {
 				if (isEqualOrParent(sourcePath, targetPath, !isLinux /* ignorecase */)) {
-					return TPromise.wrapError<boolean>(new Error(nls.localize('unableToMoveCopyError', "Unable to move/copy. File would replace folder it is contained in."))); // catch this corner case!
+					return Promise.reject(new Error(nls.localize('unableToMoveCopyError', "Unable to move/copy. File would replace folder it is contained in."))); // catch this corner case!
 				}
 
 				deleteTargetPromise = this.del(uri.file(targetPath), { recursive: true });
@@ -896,7 +898,7 @@ export class FileService extends Disposable implements IFileService {
 
 					// 4.) copy/move
 					if (isSameFile) {
-						return TPromise.wrap(null);
+						return null;
 					} else if (keepCopy) {
 						return nfcall(extfs.copy, sourcePath, targetPath);
 					} else {
@@ -907,7 +909,7 @@ export class FileService extends Disposable implements IFileService {
 		});
 	}
 
-	del(resource: uri, options?: { useTrash?: boolean, recursive?: boolean }): TPromise<void> {
+	del(resource: uri, options?: { useTrash?: boolean, recursive?: boolean }): Thenable<void> {
 		if (options && options.useTrash) {
 			return this.doMoveItemToTrash(resource);
 		}
@@ -915,40 +917,40 @@ export class FileService extends Disposable implements IFileService {
 		return this.doDelete(resource, options && options.recursive);
 	}
 
-	private doMoveItemToTrash(resource: uri): TPromise<void> {
+	private doMoveItemToTrash(resource: uri): Thenable<void> {
 		const absolutePath = resource.fsPath;
 
-		const shell = (require('electron') as Electron.RendererInterface).shell; // workaround for being able to run tests out of VSCode debugger
+		const shell = (require('electron') as any as Electron.RendererInterface).shell; // workaround for being able to run tests out of VSCode debugger
 		const result = shell.moveItemToTrash(absolutePath);
 		if (!result) {
-			return TPromise.wrapError(new Error(isWindows ? nls.localize('binFailed', "Failed to move '{0}' to the recycle bin", paths.basename(absolutePath)) : nls.localize('trashFailed', "Failed to move '{0}' to the trash", paths.basename(absolutePath))));
+			return Promise.reject(new Error(isWindows ? nls.localize('binFailed', "Failed to move '{0}' to the recycle bin", paths.basename(absolutePath)) : nls.localize('trashFailed', "Failed to move '{0}' to the trash", paths.basename(absolutePath))));
 		}
 
 		this._onAfterOperation.fire(new FileOperationEvent(resource, FileOperation.DELETE));
 
-		return TPromise.as(void 0);
+		return Promise.resolve();
 	}
 
-	private doDelete(resource: uri, recursive: boolean): TPromise<void> {
+	private doDelete(resource: uri, recursive: boolean): Thenable<void> {
 		const absolutePath = this.toAbsolutePath(resource);
 
-		let assertNonRecursiveDelete: TPromise<void>;
+		let assertNonRecursiveDelete: Thenable<void>;
 		if (!recursive) {
 			assertNonRecursiveDelete = pfs.stat(absolutePath).then(stat => {
 				if (!stat.isDirectory()) {
-					return TPromise.as(void 0);
+					return Promise.resolve();
 				}
 
 				return pfs.readdir(absolutePath).then(children => {
 					if (children.length === 0) {
-						return TPromise.as(void 0);
+						return Promise.resolve();
 					}
 
-					return TPromise.wrapError(new Error(nls.localize('deleteFailed', "Failed to delete non-empty folder '{0}'.", paths.basename(absolutePath))));
+					return Promise.reject(new Error(nls.localize('deleteFailed', "Failed to delete non-empty folder '{0}'.", paths.basename(absolutePath))));
 				});
-			}, error => TPromise.as(void 0) /* ignore errors */);
+			}, error => Promise.resolve() /* ignore errors */);
 		} else {
-			assertNonRecursiveDelete = TPromise.as(void 0);
+			assertNonRecursiveDelete = Promise.resolve();
 		}
 
 		return assertNonRecursiveDelete.then(() => {
@@ -975,11 +977,11 @@ export class FileService extends Disposable implements IFileService {
 		return paths.normalize(resource.fsPath);
 	}
 
-	private resolve(resource: uri, options: IResolveFileOptions = Object.create(null)): TPromise<IFileStat> {
+	private resolve(resource: uri, options: IResolveFileOptions = Object.create(null)): Thenable<IFileStat> {
 		return this.toStatResolver(resource).then(model => model.resolve(options));
 	}
 
-	private toStatResolver(resource: uri): TPromise<StatResolver> {
+	private toStatResolver(resource: uri): Thenable<StatResolver> {
 		const absolutePath = this.toAbsolutePath(resource);
 
 		return pfs.statLink(absolutePath).then(({ isSymbolicLink, stat }) => {
@@ -990,59 +992,67 @@ export class FileService extends Disposable implements IFileService {
 	watchFileChanges(resource: uri): void {
 		assert.ok(resource && resource.scheme === Schemas.file, `Invalid resource for watching: ${resource}`);
 
-		// Create or get watcher for provided path
-		let watcher = this.activeFileChangesWatchers.get(resource);
-		if (!watcher) {
-			const fsPath = resource.fsPath;
-			const fsName = paths.basename(resource.fsPath);
+		// Check for existing watcher first
+		const entry = this.activeFileChangesWatchers.get(resource);
+		if (entry) {
+			entry.count += 1;
 
-			watcher = extfs.watch(fsPath, (eventType: string, filename: string) => {
-				const renamedOrDeleted = ((filename && filename !== fsName) || eventType === 'rename');
-
-				// The file was either deleted or renamed. Many tools apply changes to files in an
-				// atomic way ("Atomic Save") by first renaming the file to a temporary name and then
-				// renaming it back to the original name. Our watcher will detect this as a rename
-				// and then stops to work on Mac and Linux because the watcher is applied to the
-				// inode and not the name. The fix is to detect this case and trying to watch the file
-				// again after a certain delay.
-				// In addition, we send out a delete event if after a timeout we detect that the file
-				// does indeed not exist anymore.
-				if (renamedOrDeleted) {
-
-					// Very important to dispose the watcher which now points to a stale inode
-					this.unwatchFileChanges(resource);
-
-					// Wait a bit and try to install watcher again, assuming that the file was renamed quickly ("Atomic Save")
-					setTimeout(() => {
-						this.existsFile(resource).done(exists => {
-
-							// File still exists, so reapply the watcher
-							if (exists) {
-								this.watchFileChanges(resource);
-							}
-
-							// File seems to be really gone, so emit a deleted event
-							else {
-								this.onRawFileChange({
-									type: FileChangeType.DELETED,
-									path: fsPath
-								});
-							}
-						});
-					}, FileService.FS_REWATCH_DELAY);
-				}
-
-				// Handle raw file change
-				this.onRawFileChange({
-					type: FileChangeType.UPDATED,
-					path: fsPath
-				});
-			}, (error: string) => this.handleError(error));
-
-			if (watcher) {
-				this.activeFileChangesWatchers.set(resource, watcher);
-			}
+			return;
 		}
+
+		// Create or get watcher for provided path
+		const fsPath = resource.fsPath;
+		const fsName = paths.basename(resource.fsPath);
+
+		const watcherDisposable = extfs.watch(fsPath, (eventType: string, filename: string) => {
+			const renamedOrDeleted = ((filename && filename !== fsName) || eventType === 'rename');
+
+			// The file was either deleted or renamed. Many tools apply changes to files in an
+			// atomic way ("Atomic Save") by first renaming the file to a temporary name and then
+			// renaming it back to the original name. Our watcher will detect this as a rename
+			// and then stops to work on Mac and Linux because the watcher is applied to the
+			// inode and not the name. The fix is to detect this case and trying to watch the file
+			// again after a certain delay.
+			// In addition, we send out a delete event if after a timeout we detect that the file
+			// does indeed not exist anymore.
+			if (renamedOrDeleted) {
+
+				// Very important to dispose the watcher which now points to a stale inode
+				watcherDisposable.dispose();
+				this.activeFileChangesWatchers.delete(resource);
+
+				// Wait a bit and try to install watcher again, assuming that the file was renamed quickly ("Atomic Save")
+				setTimeout(() => {
+					this.existsFile(resource).then(exists => {
+
+						// File still exists, so reapply the watcher
+						if (exists) {
+							this.watchFileChanges(resource);
+						}
+
+						// File seems to be really gone, so emit a deleted event
+						else {
+							this.onRawFileChange({
+								type: FileChangeType.DELETED,
+								path: fsPath
+							});
+						}
+					});
+				}, FileService.FS_REWATCH_DELAY);
+			}
+
+			// Handle raw file change
+			this.onRawFileChange({
+				type: FileChangeType.UPDATED,
+				path: fsPath
+			});
+		}, (error: string) => this.handleError(error));
+
+		// Remember in map
+		this.activeFileChangesWatchers.set(resource, {
+			count: 1,
+			unwatch: () => watcherDisposable.dispose()
+		});
 	}
 
 	private onRawFileChange(event: IRawFileChange): void {
@@ -1051,7 +1061,7 @@ export class FileService extends Disposable implements IFileService {
 		this.undeliveredRawFileChangesEvents.push(event);
 
 		if (this.environmentService.verbose) {
-			console.log('%c[node.js Watcher]%c', 'color: green', 'color: black', event.type === FileChangeType.ADDED ? '[ADDED]' : event.type === FileChangeType.DELETED ? '[DELETED]' : '[CHANGED]', event.path);
+			console.log('%c[File Watcher (node.js)]%c', 'color: blue', 'color: black', `${event.type === FileChangeType.ADDED ? '[ADDED]' : event.type === FileChangeType.DELETED ? '[DELETED]' : '[CHANGED]'} ${event.path}`);
 		}
 
 		// handle emit through delayer to accommodate for bulk changes
@@ -1065,21 +1075,21 @@ export class FileService extends Disposable implements IFileService {
 			// Logging
 			if (this.environmentService.verbose) {
 				normalizedEvents.forEach(r => {
-					console.log('%c[node.js Watcher]%c >> normalized', 'color: green', 'color: black', r.type === FileChangeType.ADDED ? '[ADDED]' : r.type === FileChangeType.DELETED ? '[DELETED]' : '[CHANGED]', r.path);
+					console.log('%c[File Watcher (node.js)]%c >> normalized', 'color: blue', 'color: black', `${r.type === FileChangeType.ADDED ? '[ADDED]' : r.type === FileChangeType.DELETED ? '[DELETED]' : '[CHANGED]'} ${r.path}`);
 				});
 			}
 
 			// Emit
 			this._onFileChanges.fire(toFileChangesEvent(normalizedEvents));
 
-			return TPromise.as(null);
+			return Promise.resolve();
 		});
 	}
 
 	unwatchFileChanges(resource: uri): void {
 		const watcher = this.activeFileChangesWatchers.get(resource);
-		if (watcher) {
-			watcher.close();
+		if (watcher && --watcher.count === 0) {
+			watcher.unwatch();
 			this.activeFileChangesWatchers.delete(resource);
 		}
 	}
@@ -1092,7 +1102,7 @@ export class FileService extends Disposable implements IFileService {
 			this.activeWorkspaceFileChangeWatcher = null;
 		}
 
-		this.activeFileChangesWatchers.forEach(watcher => watcher.close());
+		this.activeFileChangesWatchers.forEach(watcher => watcher.unwatch());
 		this.activeFileChangesWatchers.clear();
 	}
 }
@@ -1131,7 +1141,7 @@ export class StatResolver {
 		this.etag = etag(size, mtime);
 	}
 
-	resolve(options: IResolveFileOptions): TPromise<IFileStat> {
+	resolve(options: IResolveFileOptions): Thenable<IFileStat> {
 
 		// General Data
 		const fileStat: IFileStat = {
@@ -1147,14 +1157,14 @@ export class StatResolver {
 
 		// File Specific Data
 		if (!this.isDirectory) {
-			return TPromise.as(fileStat);
+			return Promise.resolve(fileStat);
 		}
 
 		// Directory Specific Data
 		else {
 
 			// Convert the paths from options.resolveTo to absolute paths
-			let absoluteTargetPaths: string[] = null;
+			let absoluteTargetPaths: string[] | null = null;
 			if (options && options.resolveTo) {
 				absoluteTargetPaths = [];
 				options.resolveTo.forEach(resource => {
@@ -1162,14 +1172,14 @@ export class StatResolver {
 				});
 			}
 
-			return new TPromise<IFileStat>((c, e) => {
+			return new Promise<IFileStat>(resolve => {
 
 				// Load children
 				this.resolveChildren(this.resource.fsPath, absoluteTargetPaths, options && options.resolveSingleChildDescendants, children => {
 					children = arrays.coalesce(children); // we don't want those null children (could be permission denied when reading a child)
 					fileStat.children = children || [];
 
-					c(fileStat);
+					resolve(fileStat);
 				});
 			});
 		}

@@ -4,10 +4,27 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
+import { IStorageService, StorageScope, IWorkspaceStorageChangeEvent, IWillSaveStateEvent } from 'vs/platform/storage/common/storage';
+import { Event } from 'vs/base/common/event';
 
 export class StorageTestService implements IStorageService {
 	_serviceBrand: any;
+
+	/**
+	 * Emitted whenever data is updated or deleted.
+	 */
+	readonly onDidChangeStorage: Event<IWorkspaceStorageChangeEvent>;
+
+	/**
+	 * Emitted when the storage is about to persist. This is the right time
+	 * to persist data to ensure it is stored before the application shuts
+	 * down.
+	 *
+	 * The will save state event allows to optionally ask for the reason of
+	 * saving the state, e.g. to find out if the state is saved due to a
+	 * shutdown.
+	 */
+	readonly onWillSaveState: Event<IWillSaveStateEvent>;
 
 	/**
 	 * Store a string value under the given key to local storage.

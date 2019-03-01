@@ -18,7 +18,6 @@
       true,
       "tabs"
     ],
-    "interface-name": true,
     "jsdoc-format": true,
     "label-position": true,
     "label-undefined": true,
@@ -36,7 +35,6 @@
     "no-console": [
       true,
       "debug",
-      "info",
       "time",
       "timeEnd",
       "trace"
@@ -50,7 +48,6 @@
     "no-eval": true,
     "no-inferrable-types": false,
     "no-internal-module": true,
-    "no-null-keyword": true,
     "no-require-imports": false,
     "no-shadowed-variable": true,
     "no-string-literal": false,

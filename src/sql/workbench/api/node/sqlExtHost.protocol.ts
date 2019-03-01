@@ -9,12 +9,12 @@ import {
 	createExtHostContextProxyIdentifier as createExtId,
 	ProxyIdentifier, IRPCProtocol
 } from 'vs/workbench/services/extensions/node/proxyIdentifier';
-import URI, { UriComponents } from 'vs/base/common/uri';
+import { UriComponents } from 'vs/base/common/uri';
 
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IDisposable } from 'vs/base/common/lifecycle';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 
 import { ITreeComponentItem } from 'sql/workbench/common/views';
@@ -25,19 +25,20 @@ import {
 } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { EditorViewColumn } from 'vs/workbench/api/shared/editor';
 import { IUndoStopOptions } from 'vs/workbench/api/node/extHost.protocol';
+import { IExtensionDescription } from 'vs/workbench/services/extensions/common/extensions';
 
 export abstract class ExtHostAccountManagementShape {
 	$autoOAuthCancelled(handle: number): Thenable<void> { throw ni(); }
-	$clear(handle: number, accountKey: sqlops.AccountKey): Thenable<void> { throw ni(); }
-	$getSecurityToken(account: sqlops.Account, resource?: sqlops.AzureResource): Thenable<{}> { throw ni(); }
-	$initialize(handle: number, restoredAccounts: sqlops.Account[]): Thenable<sqlops.Account[]> { throw ni(); }
-	$prompt(handle: number): Thenable<sqlops.Account> { throw ni(); }
-	$refresh(handle: number, account: sqlops.Account): Thenable<sqlops.Account> { throw ni(); }
-	$accountsChanged(handle: number, accounts: sqlops.Account[]): Thenable<void> { throw ni(); }
+	$clear(handle: number, accountKey: azdata.AccountKey): Thenable<void> { throw ni(); }
+	$getSecurityToken(account: azdata.Account, resource?: azdata.AzureResource): Thenable<{}> { throw ni(); }
+	$initialize(handle: number, restoredAccounts: azdata.Account[]): Thenable<azdata.Account[]> { throw ni(); }
+	$prompt(handle: number): Thenable<azdata.Account> { throw ni(); }
+	$refresh(handle: number, account: azdata.Account): Thenable<azdata.Account> { throw ni(); }
+	$accountsChanged(handle: number, accounts: azdata.Account[]): Thenable<void> { throw ni(); }
 }
 
 export abstract class ExtHostConnectionManagementShape {
-	$onConnectionOpened(handleId: string, connection: sqlops.connection.Connection): void { throw ni; }
+	$onConnectionOpened(handleId: string, connection: azdata.connection.Connection): void { throw ni; }
 }
 
 export abstract class ExtHostDataProtocolShape {
@@ -45,7 +46,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Establish a connection to a data source using the provided ConnectionInfo instance.
 	 */
-	$connect(handle: number, connectionUri: string, connection: sqlops.ConnectionInfo): Thenable<boolean> { throw ni(); }
+	$connect(handle: number, connectionUri: string, connection: azdata.ConnectionInfo): Thenable<boolean> { throw ni(); }
 
 	/**
 	 * Disconnect from a data source using the provided connectionUri string.
@@ -67,7 +68,7 @@ export abstract class ExtHostDataProtocolShape {
 	 * @param handle the handle to use when looking up a provider
 	 * @param connectionUri URI identifying a connected resource
 	 */
-	$listDatabases(handle: number, connectionUri: string): Thenable<sqlops.ListDatabasesResult> { throw ni(); }
+	$listDatabases(handle: number, connectionUri: string): Thenable<azdata.ListDatabasesResult> { throw ni(); }
 
 	/**
 	 * Get the connection string for the connection specified by connectionUri
@@ -81,7 +82,7 @@ export abstract class ExtHostDataProtocolShape {
 	 * @param handle the handle to use when looking up a provider
 	 * @param connectionString the connection string to serialize
 	 */
-	$buildConnectionInfo(handle: number, connectionString: string): Thenable<sqlops.ConnectionInfo> { throw ni(); }
+	$buildConnectionInfo(handle: number, connectionString: string): Thenable<azdata.ConnectionInfo> { throw ni(); }
 
 	/**
 	 * Notifies all listeners on the Extension Host side that a language change occurred
@@ -89,69 +90,69 @@ export abstract class ExtHostDataProtocolShape {
 	 * and other events
 	 * @param params information on what URI was changed and the new language
 	 */
-	$languageFlavorChanged(params: sqlops.DidChangeLanguageFlavorParams): void { throw ni(); }
+	$languageFlavorChanged(params: azdata.DidChangeLanguageFlavorParams): void { throw ni(); }
 
 	/**
 	 * Callback when a connection request has completed
 	 */
-	$onConnectComplete(handle: number, connectionInfoSummary: sqlops.ConnectionInfoSummary): void { throw ni(); }
+	$onConnectComplete(handle: number, connectionInfoSummary: azdata.ConnectionInfoSummary): void { throw ni(); }
 
 	/**
 	 * Callback when a IntelliSense cache has been built
 	 */
 	$onIntelliSenseCacheComplete(handle: number, connectionUri: string): void { throw ni(); }
 
-	$getServerCapabilities(handle: number, client: sqlops.DataProtocolClientCapabilities): Thenable<sqlops.DataProtocolServerCapabilities> { throw ni(); }
+	$getServerCapabilities(handle: number, client: azdata.DataProtocolClientCapabilities): Thenable<azdata.DataProtocolServerCapabilities> { throw ni(); }
 
 	/**
 	 * Metadata service methods
 	 *
 	 */
-	$getMetadata(handle: number, connectionUri: string): Thenable<sqlops.ProviderMetadata> { throw ni(); }
+	$getMetadata(handle: number, connectionUri: string): Thenable<azdata.ProviderMetadata> { throw ni(); }
 
 	$getDatabases(handle: number, connectionUri: string): Thenable<string[]> { throw ni(); }
 
-	$getTableInfo(handle: number, connectionUri: string, metadata: sqlops.ObjectMetadata): Thenable<sqlops.ColumnMetadata[]> { throw ni(); }
+	$getTableInfo(handle: number, connectionUri: string, metadata: azdata.ObjectMetadata): Thenable<azdata.ColumnMetadata[]> { throw ni(); }
 
-	$getViewInfo(handle: number, connectionUri: string, metadata: sqlops.ObjectMetadata): Thenable<sqlops.ColumnMetadata[]> { throw ni(); }
+	$getViewInfo(handle: number, connectionUri: string, metadata: azdata.ObjectMetadata): Thenable<azdata.ColumnMetadata[]> { throw ni(); }
 
 	/**
 	 * Object Explorer
 	 */
-	$createObjectExplorerSession(handle: number, connInfo: sqlops.ConnectionInfo): Thenable<sqlops.ObjectExplorerSessionResponse> { throw ni(); }
+	$createObjectExplorerSession(handle: number, connInfo: azdata.ConnectionInfo): Thenable<azdata.ObjectExplorerSessionResponse> { throw ni(); }
 
-	$expandObjectExplorerNode(handle: number, nodeInfo: sqlops.ExpandNodeInfo): Thenable<boolean> { throw ni(); }
+	$expandObjectExplorerNode(handle: number, nodeInfo: azdata.ExpandNodeInfo): Thenable<boolean> { throw ni(); }
 
-	$refreshObjectExplorerNode(handle: number, nodeInfo: sqlops.ExpandNodeInfo): Thenable<boolean> { throw ni(); }
+	$refreshObjectExplorerNode(handle: number, nodeInfo: azdata.ExpandNodeInfo): Thenable<boolean> { throw ni(); }
 
-	$closeObjectExplorerSession(handle: number, closeSessionInfo: sqlops.ObjectExplorerCloseSessionInfo): Thenable<sqlops.ObjectExplorerCloseSessionResponse> { throw ni(); }
+	$closeObjectExplorerSession(handle: number, closeSessionInfo: azdata.ObjectExplorerCloseSessionInfo): Thenable<azdata.ObjectExplorerCloseSessionResponse> { throw ni(); }
 
-	$findNodes(handle: number, findNodesInfo: sqlops.FindNodesInfo): Thenable<sqlops.ObjectExplorerFindNodesResponse> { throw ni(); }
+	$findNodes(handle: number, findNodesInfo: azdata.FindNodesInfo): Thenable<azdata.ObjectExplorerFindNodesResponse> { throw ni(); }
 
-	$createObjectExplorerNodeProviderSession(handle: number, sessionInfo: sqlops.ObjectExplorerSession): Thenable<boolean> { throw ni(); }
+	$createObjectExplorerNodeProviderSession(handle: number, sessionInfo: azdata.ObjectExplorerSession): Thenable<boolean> { throw ni(); }
 
-	$handleSessionClose(handle: number, closeSessionInfo: sqlops.ObjectExplorerCloseSessionInfo): void { throw ni(); }
+	$handleSessionClose(handle: number, closeSessionInfo: azdata.ObjectExplorerCloseSessionInfo): void { throw ni(); }
 
 	/**
 	 * Tasks
 	 */
-	$getAllTasks(handle: number, listTasksParams: sqlops.ListTasksParams): Thenable<sqlops.ListTasksResponse> { throw ni(); }
-	$cancelTask(handle: number, cancelTaskParams: sqlops.CancelTaskParams): Thenable<boolean> { throw ni(); }
+	$getAllTasks(handle: number, listTasksParams: azdata.ListTasksParams): Thenable<azdata.ListTasksResponse> { throw ni(); }
+	$cancelTask(handle: number, cancelTaskParams: azdata.CancelTaskParams): Thenable<boolean> { throw ni(); }
 
 	/**
 	 * Scripting methods
 	 */
-	$scriptAsOperation(handle: number, connectionUri: string, operation: sqlops.ScriptOperation, metadata: sqlops.ObjectMetadata, paramDetails: sqlops.ScriptingParamDetails): Thenable<sqlops.ScriptingResult> { throw ni(); }
+	$scriptAsOperation(handle: number, connectionUri: string, operation: azdata.ScriptOperation, metadata: azdata.ObjectMetadata, paramDetails: azdata.ScriptingParamDetails): Thenable<azdata.ScriptingResult> { throw ni(); }
 
 	/**
 	 * Cancels the currently running query for a URI
 	 */
-	$cancelQuery(handle: number, ownerUri: string): Thenable<sqlops.QueryCancelResult> { throw ni(); }
+	$cancelQuery(handle: number, ownerUri: string): Thenable<azdata.QueryCancelResult> { throw ni(); }
 
 	/**
 	 * Runs a query for a text selection inside a document
 	 */
-	$runQuery(handle: number, ownerUri: string, selection: sqlops.ISelectionData, runOptions?: sqlops.ExecutionPlanOptions): Thenable<void> { throw ni(); }
+	$runQuery(handle: number, ownerUri: string, selection: azdata.ISelectionData, runOptions?: azdata.ExecutionPlanOptions): Thenable<void> { throw ni(); }
 	/**
 	 * Runs the current SQL statement query for a text document
 	 */
@@ -163,15 +164,15 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Runs a query for a provided query and returns result
 	 */
-	$runQueryAndReturn(handle: number, ownerUri: string, queryString: string): Thenable<sqlops.SimpleExecuteResult> { throw ni(); }
+	$runQueryAndReturn(handle: number, ownerUri: string, queryString: string): Thenable<azdata.SimpleExecuteResult> { throw ni(); }
 	/**
 	 * Parses a T-SQL string without actually executing it
 	 */
-	$parseSyntax(handle: number, ownerUri: string, query: string): Thenable<sqlops.SyntaxParseResult> { throw ni(); }
+	$parseSyntax(handle: number, ownerUri: string, query: string): Thenable<azdata.SyntaxParseResult> { throw ni(); }
 	/**
 	 * Gets a subset of rows in a result set in order to display in the UI
 	 */
-	$getQueryRows(handle: number, rowData: sqlops.QueryExecuteSubsetParams): Thenable<sqlops.QueryExecuteSubsetResult> { throw ni(); }
+	$getQueryRows(handle: number, rowData: azdata.QueryExecuteSubsetParams): Thenable<azdata.QueryExecuteSubsetResult> { throw ni(); }
 
 	/**
 	 * Disposes the cached information regarding a query
@@ -186,33 +187,33 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Callback when a query has completed
 	 */
-	$onQueryComplete(handle: number, result: sqlops.QueryExecuteCompleteNotificationResult): void { throw ni(); }
+	$onQueryComplete(handle: number, result: azdata.QueryExecuteCompleteNotificationResult): void { throw ni(); }
 	/**
 	 * Callback when a batch has started. This enables the UI to display when batch execution has started
 	 */
-	$onBatchStart(handle: number, batchInfo: sqlops.QueryExecuteBatchNotificationParams): void { throw ni(); }
+	$onBatchStart(handle: number, batchInfo: azdata.QueryExecuteBatchNotificationParams): void { throw ni(); }
 	/**
 	 * Callback when a batch is complete. This includes updated information on result sets, time to execute, and
 	 * other relevant batch information
 	 */
-	$onBatchComplete(handle: number, batchInfo: sqlops.QueryExecuteBatchNotificationParams): void { throw ni(); }
+	$onBatchComplete(handle: number, batchInfo: azdata.QueryExecuteBatchNotificationParams): void { throw ni(); }
 	/**
 	 * Callback when a result set has been returned from query execution and can be displayed
 	 */
-	$onResultSetAvailable(handle: number, resultSetInfo: sqlops.QueryExecuteResultSetNotificationParams): void { throw ni(); }
+	$onResultSetAvailable(handle: number, resultSetInfo: azdata.QueryExecuteResultSetNotificationParams): void { throw ni(); }
 	/**
 	 * Callback when a result set has been returned from query execution and can be displayed
 	 */
-	$onResultSetUpdate(handle: number, resultSetInfo: sqlops.QueryExecuteResultSetNotificationParams): void { throw ni(); }
+	$onResultSetUpdate(handle: number, resultSetInfo: azdata.QueryExecuteResultSetNotificationParams): void { throw ni(); }
 	/**
 	 * Callback when a message generated during query execution is issued
 	 */
-	$onQueryMessage(handle: number, message: sqlops.QueryExecuteMessageParams): void { throw ni(); }
+	$onQueryMessage(handle: number, message: azdata.QueryExecuteMessageParams): void { throw ni(); }
 
 	/**
 	 * Requests saving of the results from a result set into a specific format (CSV, JSON, Excel)
 	 */
-	$saveResults(handle: number, requestParams: sqlops.SaveResultsRequestParams): Thenable<sqlops.SaveResultRequestResult> { throw ni(); }
+	$saveResults(handle: number, requestParams: azdata.SaveResultsRequestParams): Thenable<azdata.SaveResultRequestResult> { throw ni(); }
 
 	/**
 	 * Commits all pending edits in an edit session
@@ -222,7 +223,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Creates a new row in the edit session
 	 */
-	$createRow(handle: number, ownerUri: string): Thenable<sqlops.EditCreateRowResult> { throw ni(); }
+	$createRow(handle: number, ownerUri: string): Thenable<azdata.EditCreateRowResult> { throw ni(); }
 
 	/**
 	 * Marks the selected row for deletion in the edit session
@@ -237,7 +238,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Reverts any pending changes for the requested cell and returns the original value
 	 */
-	$revertCell(handle: number, ownerUri: string, rowId: number, columnId: number): Thenable<sqlops.EditRevertCellResult> { throw ni(); }
+	$revertCell(handle: number, ownerUri: string, rowId: number, columnId: number): Thenable<azdata.EditRevertCellResult> { throw ni(); }
 
 	/**
 	 * Reverts any pending changes for the requested row
@@ -247,12 +248,12 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Updates a cell value in the requested row. Returns if there are any corrections to the value
 	 */
-	$updateCell(handle: number, ownerUri: string, rowId: number, columId: number, newValue: string): Thenable<sqlops.EditUpdateCellResult> { throw ni(); }
+	$updateCell(handle: number, ownerUri: string, rowId: number, columId: number, newValue: string): Thenable<azdata.EditUpdateCellResult> { throw ni(); }
 
 	/**
 	 * Gets a subset of rows in a result set, merging pending edit changes in order to display in the UI
 	 */
-	$getEditRows(handle: number, rowData: sqlops.EditSubsetParams): Thenable<sqlops.EditSubsetResult> { throw ni(); }
+	$getEditRows(handle: number, rowData: azdata.EditSubsetParams): Thenable<azdata.EditSubsetResult> { throw ni(); }
 
 	/**
 	 * Diposes an initialized edit session and cleans up pending edits
@@ -262,52 +263,52 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Create a new database on the provided connection
 	 */
-	$createDatabase(handle: number, connectionUri: string, database: sqlops.DatabaseInfo): Thenable<sqlops.CreateDatabaseResponse> { throw ni(); }
+	$createDatabase(handle: number, connectionUri: string, database: azdata.DatabaseInfo): Thenable<azdata.CreateDatabaseResponse> { throw ni(); }
 
 	/**
 	 * Get the default database prototype
 	 */
-	$getDefaultDatabaseInfo(handle: number, connectionUri: string): Thenable<sqlops.DatabaseInfo> { throw ni(); }
+	$getDefaultDatabaseInfo(handle: number, connectionUri: string): Thenable<azdata.DatabaseInfo> { throw ni(); }
 
 	/**
 	 * Get the database info
 	 */
-	$getDatabaseInfo(handle: number, connectionUri: string): Thenable<sqlops.DatabaseInfo> { throw ni(); }
+	$getDatabaseInfo(handle: number, connectionUri: string): Thenable<azdata.DatabaseInfo> { throw ni(); }
 
 	/**
 	 * Create a new login on the provided connection
 	 */
-	$createLogin(handle: number, connectionUri: string, login: sqlops.LoginInfo): Thenable<sqlops.CreateLoginResponse> { throw ni(); }
+	$createLogin(handle: number, connectionUri: string, login: azdata.LoginInfo): Thenable<azdata.CreateLoginResponse> { throw ni(); }
 
 	/**
 	 * Backup a database
 	 */
-	$backup(handle: number, connectionUri: string, backupInfo: { [key: string]: any }, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.BackupResponse> { throw ni(); }
+	$backup(handle: number, connectionUri: string, backupInfo: { [key: string]: any }, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.BackupResponse> { throw ni(); }
 
 	/**
 	 * Get the extended database prototype
 	 */
-	$getBackupConfigInfo(handle: number, connectionUri: string): Thenable<sqlops.BackupConfigInfo> { throw ni(); }
+	$getBackupConfigInfo(handle: number, connectionUri: string): Thenable<azdata.BackupConfigInfo> { throw ni(); }
 
 	/**
 	 * Restores a database
 	 */
-	$restore(handle: number, connectionUri: string, restoreInfo: sqlops.RestoreInfo): Thenable<sqlops.RestoreResponse> { throw ni(); }
+	$restore(handle: number, connectionUri: string, restoreInfo: azdata.RestoreInfo): Thenable<azdata.RestoreResponse> { throw ni(); }
 
 	/**
 	 * Gets a plan for restoring a database
 	 */
-	$getRestorePlan(handle: number, connectionUri: string, restoreInfo: sqlops.RestoreInfo): Thenable<sqlops.RestorePlanResponse> { throw ni(); }
+	$getRestorePlan(handle: number, connectionUri: string, restoreInfo: azdata.RestoreInfo): Thenable<azdata.RestorePlanResponse> { throw ni(); }
 
 	/**
 	 * Cancels a plan
 	 */
-	$cancelRestorePlan(handle: number, connectionUri: string, restoreInfo: sqlops.RestoreInfo): Thenable<boolean> { throw ni(); }
+	$cancelRestorePlan(handle: number, connectionUri: string, restoreInfo: azdata.RestoreInfo): Thenable<boolean> { throw ni(); }
 
 	/**
 	 * Gets restore config Info
 	 */
-	$getRestoreConfigInfo(handle: number, connectionUri: string): Thenable<sqlops.RestoreConfigInfo> { throw ni(); }
+	$getRestoreConfigInfo(handle: number, connectionUri: string): Thenable<azdata.RestoreConfigInfo> { throw ni(); }
 
 
 	/**
@@ -329,7 +330,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Close file browser
 	 */
-	$closeFileBrowser(handle: number, ownerUri: string): Thenable<sqlops.FileBrowserCloseResponse> { throw ni(); }
+	$closeFileBrowser(handle: number, ownerUri: string): Thenable<azdata.FileBrowserCloseResponse> { throw ni(); }
 
 	/**
 	 * Profiler Provider methods
@@ -338,7 +339,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Create a profiler session
 	 */
-	$createSession(handle: number, sessionId: string, createStatement: string, template: sqlops.ProfilerSessionTemplate): Thenable<boolean> { throw ni(); }
+	$createSession(handle: number, sessionId: string, createStatement: string, template: azdata.ProfilerSessionTemplate): Thenable<boolean> { throw ni(); }
 
 	/**
 	 * Start a profiler session
@@ -368,92 +369,92 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Get Agent Job list
 	 */
-	$getJobs(handle: number, ownerUri: string): Thenable<sqlops.AgentJobsResult> { throw ni(); }
+	$getJobs(handle: number, ownerUri: string): Thenable<azdata.AgentJobsResult> { throw ni(); }
 
 	/**
 	 * Get a Agent Job's history
 	 */
-	$getJobHistory(handle: number, ownerUri: string, jobID: string, jobName: string): Thenable<sqlops.AgentJobHistoryResult> { throw ni(); }
+	$getJobHistory(handle: number, ownerUri: string, jobID: string, jobName: string): Thenable<azdata.AgentJobHistoryResult> { throw ni(); }
 
 	/**
 	 * Run an action on a Job
 	 */
-	$jobAction(handle: number, ownerUri: string, jobName: string, action: string): Thenable<sqlops.ResultStatus> { throw ni(); }
+	$jobAction(handle: number, ownerUri: string, jobName: string, action: string): Thenable<azdata.ResultStatus> { throw ni(); }
 
 	/**
 	 * Deletes a job
 	 */
-	$deleteJob(handle: number, ownerUri: string, job: sqlops.AgentJobInfo): Thenable<sqlops.ResultStatus> { throw ni(); }
+	$deleteJob(handle: number, ownerUri: string, job: azdata.AgentJobInfo): Thenable<azdata.ResultStatus> { throw ni(); }
 
 	/**
 	 * Deletes a job step
 	 */
-	$deleteJobStep(handle: number, ownerUri: string, step: sqlops.AgentJobStepInfo): Thenable<sqlops.ResultStatus> { throw ni(); }
+	$deleteJobStep(handle: number, ownerUri: string, step: azdata.AgentJobStepInfo): Thenable<azdata.ResultStatus> { throw ni(); }
 
 	/**
 	 * Get Agent Alerts list
 	 */
-	$getAlerts(handle: number, connectionUri: string): Thenable<sqlops.AgentAlertsResult> { throw ni(); }
+	$getAlerts(handle: number, connectionUri: string): Thenable<azdata.AgentAlertsResult> { throw ni(); }
 
 	/**
 	 * Deletes  an alert
 	 */
-	$deleteAlert(handle: number, connectionUri: string, alert: sqlops.AgentAlertInfo): Thenable<sqlops.ResultStatus> { throw ni(); }
+	$deleteAlert(handle: number, connectionUri: string, alert: azdata.AgentAlertInfo): Thenable<azdata.ResultStatus> { throw ni(); }
 
 	/**
 	 * Get Agent Oeprators list
 	 */
-	$getOperators(handle: number, connectionUri: string): Thenable<sqlops.AgentOperatorsResult> { throw ni(); }
+	$getOperators(handle: number, connectionUri: string): Thenable<azdata.AgentOperatorsResult> { throw ni(); }
 
 	/**
 	 * Deletes  an operator
 	 */
-	$deleteOperator(handle: number, connectionUri: string, operator: sqlops.AgentOperatorInfo): Thenable<sqlops.ResultStatus> { throw ni(); }
+	$deleteOperator(handle: number, connectionUri: string, operator: azdata.AgentOperatorInfo): Thenable<azdata.ResultStatus> { throw ni(); }
 
 	/**
 	 * Get Agent Proxies list
 	 */
-	$getProxies(handle: number, connectionUri: string): Thenable<sqlops.AgentProxiesResult> { throw ni(); }
+	$getProxies(handle: number, connectionUri: string): Thenable<azdata.AgentProxiesResult> { throw ni(); }
 
 	/**
 	 * Deletes  a proxy
 	 */
-	$deleteProxy(handle: number, connectionUri: string, proxy: sqlops.AgentProxyInfo): Thenable<sqlops.ResultStatus> { throw ni(); }
+	$deleteProxy(handle: number, connectionUri: string, proxy: azdata.AgentProxyInfo): Thenable<azdata.ResultStatus> { throw ni(); }
 
 	/**
 	 * Get Agent Credentials list
 	 */
-	$getCredentials(handle: number, connectionUri: string): Thenable<sqlops.GetCredentialsResult> { throw ni(); }
+	$getCredentials(handle: number, connectionUri: string): Thenable<azdata.GetCredentialsResult> { throw ni(); }
 
 	/**
 	 * DacFx export bacpac
 	 */
-	$exportBacpac(handle: number, databaseName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> { throw ni(); }
+	$exportBacpac(handle: number, databaseName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> { throw ni(); }
 
 	/**
 	 * DacFx import bacpac
 	 */
-	$importBacpac(handle: number, packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> { throw ni(); }
+	$importBacpac(handle: number, packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> { throw ni(); }
 
 	/**
 	 * DacFx extract dacpac
 	 */
-	$extractDacpac(handle: number, databaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> { throw ni(); }
+	$extractDacpac(handle: number, databaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> { throw ni(); }
 
 	/**
 	 * DacFx deploy dacpac
 	 */
-	$deployDacpac(handle: number, packageFilePath: string, databaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> { throw ni(); }
+	$deployDacpac(handle: number, packageFilePath: string, databaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> { throw ni(); }
 
 	/**
 	 * DacFx generate deploy script
 	 */
-	$generateDeployScript(handle: number, packageFilePath: string, databaseName: string, scriptFilePath: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> { throw ni(); }
+	$generateDeployScript(handle: number, packageFilePath: string, databaseName: string, scriptFilePath: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> { throw ni(); }
 
 	/**
 	 * DacFx generate deploy plan
 	 */
-	$generateDeployPlan(handle: number, packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.GenerateDeployPlanResult> { throw ni(); }
+	$generateDeployPlan(handle: number, packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.GenerateDeployPlanResult> { throw ni(); }
 
 }
 
@@ -464,12 +465,12 @@ export abstract class ExtHostResourceProviderShape {
 	/**
 	 * Create a firewall rule
 	 */
-	$createFirewallRule(handle: number, account: sqlops.Account, firewallRuleInfo: sqlops.FirewallRuleInfo): Thenable<sqlops.CreateFirewallRuleResponse> { throw ni(); }
+	$createFirewallRule(handle: number, account: azdata.Account, firewallRuleInfo: azdata.FirewallRuleInfo): Thenable<azdata.CreateFirewallRuleResponse> { throw ni(); }
 
 	/**
 	 * Handle firewall rule
 	 */
-	$handleFirewallRule(handle: number, errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<sqlops.HandleFirewallRuleResponse> { throw ni(); }
+	$handleFirewallRule(handle: number, errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<azdata.HandleFirewallRuleResponse> { throw ni(); }
 
 }
 
@@ -479,7 +480,7 @@ export abstract class ExtHostResourceProviderShape {
 export abstract class ExtHostCredentialManagementShape {
 	$saveCredential(credentialId: string, password: string): Thenable<boolean> { throw ni(); }
 
-	$readCredential(credentialId: string): Thenable<sqlops.Credential> { throw ni(); }
+	$readCredential(credentialId: string): Thenable<azdata.Credential> { throw ni(); }
 
 	$deleteCredential(credentialId: string): Thenable<boolean> { throw ni(); }
 }
@@ -488,23 +489,23 @@ export abstract class ExtHostCredentialManagementShape {
  * Serialization provider extension host class.
  */
 export abstract class ExtHostSerializationProviderShape {
-	$saveAs(saveFormat: string, savePath: string, results: string, appendToFile: boolean): Thenable<sqlops.SaveResultRequestResult> { throw ni(); }
+	$saveAs(saveFormat: string, savePath: string, results: string, appendToFile: boolean): Thenable<azdata.SaveResultRequestResult> { throw ni(); }
 }
 
 export interface MainThreadAccountManagementShape extends IDisposable {
-	$registerAccountProvider(providerMetadata: sqlops.AccountProviderMetadata, handle: number): Thenable<any>;
+	$registerAccountProvider(providerMetadata: azdata.AccountProviderMetadata, handle: number): Thenable<any>;
 	$unregisterAccountProvider(handle: number): Thenable<any>;
 
 	$beginAutoOAuthDeviceCode(providerId: string, title: string, message: string, userCode: string, uri: string): Thenable<void>;
 	$endAutoOAuthDeviceCode(): void;
 
-	$accountUpdated(updatedAccount: sqlops.Account): void;
+	$accountUpdated(updatedAccount: azdata.Account): void;
 
-	$getAccountsForProvider(providerId: string): Thenable<sqlops.Account[]>;
+	$getAccountsForProvider(providerId: string): Thenable<azdata.Account[]>;
 }
 
 export interface MainThreadResourceProviderShape extends IDisposable {
-	$registerResourceProvider(providerMetadata: sqlops.ResourceProviderMetadata, handle: number): Thenable<any>;
+	$registerResourceProvider(providerMetadata: azdata.ResourceProviderMetadata, handle: number): Thenable<any>;
 	$unregisterResourceProvider(handle: number): Thenable<any>;
 }
 
@@ -525,27 +526,27 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$registerAgentServicesProvider(providerId: string, handle: number): TPromise<any>;
 	$registerDacFxServicesProvider(providerId: string, handle: number): TPromise<any>;
 	$unregisterProvider(handle: number): TPromise<any>;
-	$onConnectionComplete(handle: number, connectionInfoSummary: sqlops.ConnectionInfoSummary): void;
+	$onConnectionComplete(handle: number, connectionInfoSummary: azdata.ConnectionInfoSummary): void;
 	$onIntelliSenseCacheComplete(handle: number, connectionUri: string): void;
-	$onConnectionChangeNotification(handle: number, changedConnInfo: sqlops.ChangedConnectionInfo): void;
-	$onQueryComplete(handle: number, result: sqlops.QueryExecuteCompleteNotificationResult): void;
-	$onBatchStart(handle: number, batchInfo: sqlops.QueryExecuteBatchNotificationParams): void;
-	$onBatchComplete(handle: number, batchInfo: sqlops.QueryExecuteBatchNotificationParams): void;
-	$onResultSetAvailable(handle: number, resultSetInfo: sqlops.QueryExecuteResultSetNotificationParams): void;
-	$onResultSetUpdated(handle: number, resultSetInfo: sqlops.QueryExecuteResultSetNotificationParams): void;
-	$onQueryMessage(handle: number, message: sqlops.QueryExecuteMessageParams): void;
-	$onObjectExplorerSessionCreated(handle: number, message: sqlops.ObjectExplorerSession): void;
-	$onObjectExplorerSessionDisconnected(handle: number, message: sqlops.ObjectExplorerSession): void;
-	$onObjectExplorerNodeExpanded(providerId: string, message: sqlops.ObjectExplorerExpandInfo): void;
-	$onTaskCreated(handle: number, sessionResponse: sqlops.TaskInfo): void;
-	$onTaskStatusChanged(handle: number, sessionResponse: sqlops.TaskProgressInfo): void;
-	$onFileBrowserOpened(handle: number, response: sqlops.FileBrowserOpenedParams): void;
-	$onFolderNodeExpanded(handle: number, response: sqlops.FileBrowserExpandedParams): void;
-	$onFilePathsValidated(handle: number, response: sqlops.FileBrowserValidatedParams): void;
-	$onScriptingComplete(handle: number, message: sqlops.ScriptingCompleteResult): void;
-	$onSessionEventsAvailable(handle: number, response: sqlops.ProfilerSessionEvents): void;
-	$onSessionStopped(handle: number, response: sqlops.ProfilerSessionStoppedParams): void;
-	$onProfilerSessionCreated(handle: number, response: sqlops.ProfilerSessionCreatedParams): void;
+	$onConnectionChangeNotification(handle: number, changedConnInfo: azdata.ChangedConnectionInfo): void;
+	$onQueryComplete(handle: number, result: azdata.QueryExecuteCompleteNotificationResult): void;
+	$onBatchStart(handle: number, batchInfo: azdata.QueryExecuteBatchNotificationParams): void;
+	$onBatchComplete(handle: number, batchInfo: azdata.QueryExecuteBatchNotificationParams): void;
+	$onResultSetAvailable(handle: number, resultSetInfo: azdata.QueryExecuteResultSetNotificationParams): void;
+	$onResultSetUpdated(handle: number, resultSetInfo: azdata.QueryExecuteResultSetNotificationParams): void;
+	$onQueryMessage(handle: number, message: azdata.QueryExecuteMessageParams): void;
+	$onObjectExplorerSessionCreated(handle: number, message: azdata.ObjectExplorerSession): void;
+	$onObjectExplorerSessionDisconnected(handle: number, message: azdata.ObjectExplorerSession): void;
+	$onObjectExplorerNodeExpanded(providerId: string, message: azdata.ObjectExplorerExpandInfo): void;
+	$onTaskCreated(handle: number, sessionResponse: azdata.TaskInfo): void;
+	$onTaskStatusChanged(handle: number, sessionResponse: azdata.TaskProgressInfo): void;
+	$onFileBrowserOpened(handle: number, response: azdata.FileBrowserOpenedParams): void;
+	$onFolderNodeExpanded(handle: number, response: azdata.FileBrowserExpandedParams): void;
+	$onFilePathsValidated(handle: number, response: azdata.FileBrowserValidatedParams): void;
+	$onScriptingComplete(handle: number, message: azdata.ScriptingCompleteResult): void;
+	$onSessionEventsAvailable(handle: number, response: azdata.ProfilerSessionEvents): void;
+	$onSessionStopped(handle: number, response: azdata.ProfilerSessionStoppedParams): void;
+	$onProfilerSessionCreated(handle: number, response: azdata.ProfilerSessionCreatedParams): void;
 	$onJobDataUpdated(handle: Number): void;
 
 	/**
@@ -555,15 +556,15 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 }
 
 export interface MainThreadConnectionManagementShape extends IDisposable {
-	$getActiveConnections(): Thenable<sqlops.connection.Connection[]>;
-	$getCurrentConnection(): Thenable<sqlops.connection.Connection>;
+	$getActiveConnections(): Thenable<azdata.connection.Connection[]>;
+	$getCurrentConnection(): Thenable<azdata.connection.Connection>;
 	$getCredentials(connectionId: string): Thenable<{ [name: string]: string }>;
-	$getServerInfo(connectedId: string): Thenable<sqlops.ServerInfo>;
-	$openConnectionDialog(providers: string[], initialConnectionProfile?: sqlops.IConnectionProfile, connectionCompletionOptions?: sqlops.IConnectionCompletionOptions): Thenable<sqlops.connection.Connection>;
+	$getServerInfo(connectedId: string): Thenable<azdata.ServerInfo>;
+	$openConnectionDialog(providers: string[], initialConnectionProfile?: azdata.IConnectionProfile, connectionCompletionOptions?: azdata.IConnectionCompletionOptions): Thenable<azdata.connection.Connection>;
 	$listDatabases(connectionId: string): Thenable<string[]>;
 	$getConnectionString(connectionId: string, includePassword: boolean): Thenable<string>;
 	$getUriForConnection(connectionId: string): Thenable<string>;
-	$connect(connectionProfile: sqlops.IConnectionProfile): Thenable<sqlops.ConnectionResult>;
+	$connect(connectionProfile: azdata.IConnectionProfile): Thenable<azdata.ConnectionResult>;
 }
 
 export interface MainThreadCredentialManagementShape extends IDisposable {
@@ -629,8 +630,8 @@ export interface MainThreadDashboardShape extends IDisposable {
 }
 
 export interface ExtHostDashboardShape {
-	$onDidOpenDashboard(dashboard: sqlops.DashboardDocument): void;
-	$onDidChangeToDashboard(dashboard: sqlops.DashboardDocument): void;
+	$onDidOpenDashboard(dashboard: azdata.DashboardDocument): void;
+	$onDidChangeToDashboard(dashboard: azdata.DashboardDocument): void;
 }
 
 export interface MainThreadModalDialogShape extends IDisposable {
@@ -658,10 +659,10 @@ export interface MainThreadTasksShape extends IDisposable {
 }
 
 export interface ExtHostDashboardWebviewsShape {
-	$registerProvider(widgetId: string, handler: (webview: sqlops.DashboardWebview) => void): void;
+	$registerProvider(widgetId: string, handler: (webview: azdata.DashboardWebview) => void): void;
 	$onMessage(handle: number, message: any): void;
 	$onClosed(handle: number): void;
-	$registerWidget(handle: number, id: string, connection: sqlops.connection.Connection, serverInfo: sqlops.ServerInfo): void;
+	$registerWidget(handle: number, id: string, connection: azdata.connection.Connection, serverInfo: azdata.ServerInfo): void;
 }
 
 export interface MainThreadDashboardWebviewShape extends IDisposable {
@@ -671,16 +672,16 @@ export interface MainThreadDashboardWebviewShape extends IDisposable {
 }
 
 export interface ExtHostModelViewShape {
-	$registerProvider(widgetId: string, handler: (webview: sqlops.ModelView) => void, extensionLocation: UriComponents): void;
+	$registerProvider(widgetId: string, handler: (webview: azdata.ModelView) => void, extension: IExtensionDescription): void;
 	$onClosed(handle: number): void;
-	$registerWidget(handle: number, id: string, connection: sqlops.connection.Connection, serverInfo: sqlops.ServerInfo): void;
+	$registerWidget(handle: number, id: string, connection: azdata.connection.Connection, serverInfo: azdata.ServerInfo): void;
 	$handleEvent(handle: number, id: string, eventArgs: any);
 	$runCustomValidations(handle: number, id: string): Thenable<boolean>;
 }
 
 export interface ExtHostModelViewTreeViewsShape {
 	$getChildren(treeViewId: string, treeItemHandle?: string): TPromise<ITreeComponentItem[]>;
-	$createTreeView(handle: number, componentId: string, options: { treeDataProvider: vscode.TreeDataProvider<any> }): sqlops.TreeComponentView<any>;
+	$createTreeView(handle: number, componentId: string, options: { treeDataProvider: vscode.TreeDataProvider<any> }, extension: IExtensionDescription): azdata.TreeComponentView<any>;
 	$onNodeCheckedChanged(treeViewId: string, treeItemHandle?: string, checked?: boolean): void;
 	$onNodeSelected(treeViewId: string, nodes: string[]): void;
 
@@ -692,13 +693,13 @@ export interface ExtHostModelViewTreeViewsShape {
 export interface ExtHostBackgroundTaskManagementShape {
 	$onTaskRegistered(operationId: string): void;
 	$onTaskCanceled(operationId: string): void;
-	$registerTask(operationInfo: sqlops.BackgroundOperationInfo): void;
+	$registerTask(operationInfo: azdata.BackgroundOperationInfo): void;
 	$removeTask(operationId: string): void;
 }
 
 export interface MainThreadBackgroundTaskManagementShape extends IDisposable {
-	$registerTask(taskInfo: sqlops.TaskInfo): void;
-	$updateTask(taskProgressInfo: sqlops.TaskProgressInfo): void;
+	$registerTask(taskInfo: azdata.TaskInfo): void;
+	$updateTask(taskProgressInfo: azdata.TaskProgressInfo): void;
 }
 
 export interface MainThreadModelViewShape extends IDisposable {
@@ -719,30 +720,30 @@ export interface ExtHostObjectExplorerShape {
 }
 
 export interface MainThreadObjectExplorerShape extends IDisposable {
-	$getNode(connectionId: string, nodePath?: string): Thenable<sqlops.NodeInfo>;
-	$getActiveConnectionNodes(): Thenable<{ nodeInfo: sqlops.NodeInfo, connectionId: string }[]>;
+	$getNode(connectionId: string, nodePath?: string): Thenable<azdata.NodeInfo>;
+	$getActiveConnectionNodes(): Thenable<{ nodeInfo: azdata.NodeInfo, connectionId: string }[]>;
 	$setExpandedState(connectionId: string, nodePath: string, expandedState: vscode.TreeItemCollapsibleState): Thenable<void>;
 	$setSelected(connectionId: string, nodePath: string, selected: boolean, clearOtherSelections?: boolean): Thenable<void>;
-	$getChildren(connectionId: string, nodePath: string): Thenable<sqlops.NodeInfo[]>;
+	$getChildren(connectionId: string, nodePath: string): Thenable<azdata.NodeInfo[]>;
 	$isExpanded(connectionId: string, nodePath: string): Thenable<boolean>;
-	$findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames: string[]): Thenable<sqlops.NodeInfo[]>;
-	$refresh(connectionId: string, nodePath: string): Thenable<sqlops.NodeInfo>;
+	$findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames: string[]): Thenable<azdata.NodeInfo[]>;
+	$refresh(connectionId: string, nodePath: string): Thenable<azdata.NodeInfo>;
 	$getNodeActions(connectionId: string, nodePath: string): Thenable<string[]>;
-	$getSessionConnectionProfile(sessionId: string): Thenable<sqlops.IConnectionProfile>;
+	$getSessionConnectionProfile(sessionId: string): Thenable<azdata.IConnectionProfile>;
 }
 
 export interface ExtHostModelViewDialogShape {
 	$onButtonClick(handle: number): void;
 	$onPanelValidityChanged(handle: number, valid: boolean): void;
-	$onWizardPageChanged(handle: number, info: sqlops.window.WizardPageChangeInfo): void;
+	$onWizardPageChanged(handle: number, info: azdata.window.WizardPageChangeInfo): void;
 	$updateWizardPageInfo(handle: number, pageHandles: number[], currentPageIndex: number): void;
-	$validateNavigation(handle: number, info: sqlops.window.WizardPageChangeInfo): Thenable<boolean>;
+	$validateNavigation(handle: number, info: azdata.window.WizardPageChangeInfo): Thenable<boolean>;
 	$validateDialogClose(handle: number): Thenable<boolean>;
 	$handleSave(handle: number): Thenable<boolean>;
 }
 
 export interface MainThreadModelViewDialogShape extends IDisposable {
-	$openEditor(handle: number, modelViewId: string, title: string, options?: sqlops.ModelViewEditorOptions, position?: vscode.ViewColumn): Thenable<void>;
+	$openEditor(handle: number, modelViewId: string, title: string, options?: azdata.ModelViewEditorOptions, position?: vscode.ViewColumn): Thenable<void>;
 	$openDialog(handle: number, dialogName?: string): Thenable<void>;
 	$closeDialog(handle: number): Thenable<void>;
 	$setDialogDetails(handle: number, details: IModelViewDialogDetails): Thenable<void>;
@@ -781,35 +782,35 @@ export interface ExtHostNotebookShape {
 	$doStopServer(managerHandle: number): Thenable<void>;
 
 	// Content Manager APIs
-	$getNotebookContents(managerHandle: number, notebookUri: UriComponents): Thenable<sqlops.nb.INotebookContents>;
-	$save(managerHandle: number, notebookUri: UriComponents, notebook: sqlops.nb.INotebookContents): Thenable<sqlops.nb.INotebookContents>;
+	$getNotebookContents(managerHandle: number, notebookUri: UriComponents): Thenable<azdata.nb.INotebookContents>;
+	$save(managerHandle: number, notebookUri: UriComponents, notebook: azdata.nb.INotebookContents): Thenable<azdata.nb.INotebookContents>;
 
 	// Session Manager APIs
-	$refreshSpecs(managerHandle: number): Thenable<sqlops.nb.IAllKernels>;
-	$startNewSession(managerHandle: number, options: sqlops.nb.ISessionOptions): Thenable<INotebookSessionDetails>;
+	$refreshSpecs(managerHandle: number): Thenable<azdata.nb.IAllKernels>;
+	$startNewSession(managerHandle: number, options: azdata.nb.ISessionOptions): Thenable<INotebookSessionDetails>;
 	$shutdownSession(managerHandle: number, sessionId: string): Thenable<void>;
 
 	// Session APIs
-	$changeKernel(sessionId: number, kernelInfo: sqlops.nb.IKernelSpec): Thenable<INotebookKernelDetails>;
-	$configureKernel(sessionId: number, kernelInfo: sqlops.nb.IKernelSpec): Thenable<void>;
-	$configureConnection(sessionId: number, connection: sqlops.IConnectionProfile): Thenable<void>;
+	$changeKernel(sessionId: number, kernelInfo: azdata.nb.IKernelSpec): Thenable<INotebookKernelDetails>;
+	$configureKernel(sessionId: number, kernelInfo: azdata.nb.IKernelSpec): Thenable<void>;
+	$configureConnection(sessionId: number, connection: azdata.IConnectionProfile): Thenable<void>;
 
 	// Kernel APIs
-	$getKernelReadyStatus(kernelId: number): Thenable<sqlops.nb.IInfoReply>;
-	$getKernelSpec(kernelId: number): Thenable<sqlops.nb.IKernelSpec>;
-	$requestComplete(kernelId: number, content: sqlops.nb.ICompleteRequest): Thenable<sqlops.nb.ICompleteReplyMsg>;
-	$requestExecute(kernelId: number, content: sqlops.nb.IExecuteRequest, disposeOnDone?: boolean): Thenable<INotebookFutureDetails>;
+	$getKernelReadyStatus(kernelId: number): Thenable<azdata.nb.IInfoReply>;
+	$getKernelSpec(kernelId: number): Thenable<azdata.nb.IKernelSpec>;
+	$requestComplete(kernelId: number, content: azdata.nb.ICompleteRequest): Thenable<azdata.nb.ICompleteReplyMsg>;
+	$requestExecute(kernelId: number, content: azdata.nb.IExecuteRequest, disposeOnDone?: boolean): Thenable<INotebookFutureDetails>;
 	$interruptKernel(kernelId: number): Thenable<void>;
 
 	// Future APIs
-	$sendInputReply(futureId: number, content: sqlops.nb.IInputReply): void;
+	$sendInputReply(futureId: number, content: azdata.nb.IInputReply): void;
 	$disposeFuture(futureId: number): void;
 }
 
 export interface MainThreadNotebookShape extends IDisposable {
 	$registerNotebookProvider(providerId: string, handle: number): void;
 	$unregisterNotebookProvider(handle: number): void;
-	$onFutureMessage(futureId: number, type: FutureMessageType, payload: sqlops.nb.IMessage): void;
+	$onFutureMessage(futureId: number, type: FutureMessageType, payload: azdata.nb.IMessage): void;
 	$onFutureDone(futureId: number, done: INotebookFutureDone): void;
 }
 
@@ -826,7 +827,7 @@ export interface INotebookModelAddedData {
 	providerId: string;
 	providers: string[];
 	isDirty: boolean;
-	cells: sqlops.nb.NotebookCell[];
+	cells: azdata.nb.NotebookCell[];
 }
 
 export interface INotebookModelChangedData {
@@ -834,8 +835,8 @@ export interface INotebookModelChangedData {
 	providerId: string;
 	providers: string[];
 	isDirty: boolean;
-	cells: sqlops.nb.NotebookCell[];
-	kernelSpec: sqlops.nb.IKernelSpec;
+	cells: azdata.nb.NotebookCell[];
+	kernelSpec: azdata.nb.IKernelSpec;
 }
 
 export interface INotebookEditorAddData {
@@ -850,7 +851,7 @@ export interface INotebookShowOptions {
 	preview?: boolean;
 	providerId?: string;
 	connectionId?: string;
-	defaultKernel?: sqlops.nb.IKernelSpec;
+	defaultKernel?: azdata.nb.IKernelSpec;
 }
 
 export interface ExtHostNotebookDocumentsAndEditorsShape {

@@ -8,10 +8,10 @@
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { IEditorDescriptor } from 'vs/workbench/browser/editor';
 import { TPromise } from 'vs/base/common/winjs.base';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import * as DOM from 'vs/base/browser/dom';
 import { Memento } from 'vs/workbench/common/memento';
-import { Builder } from 'vs/base/browser/builder';
+import { Builder } from 'sql/base/browser/builder';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 
 import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
@@ -21,7 +21,7 @@ import { QueryInput } from 'sql/parts/query/common/queryInput';
 import { INewConnectionParams, ConnectionType, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionManagementService } from 'sql/platform/connection/common/connectionManagementService';
 import { RunQueryAction, ListDatabasesActionItem } from 'sql/parts/query/execution/queryActions';
-import { EditorDescriptorService } from 'sql/parts/query/editor/editorDescriptorService';
+import { EditorDescriptorService } from 'sql/workbench/services/queryEditor/common/editorDescriptorService';
 
 import { TestThemeService } from 'sqltest/stubs/themeTestService';
 
@@ -32,6 +32,7 @@ import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { ConfigurationService } from 'vs/platform/configuration/node/configurationService';
+import { TestStorageService } from 'vs/workbench/test/workbenchTestServices';
 
 suite('SQL QueryEditor Tests', () => {
 	let queryModelService: QueryModelService;
@@ -59,7 +60,8 @@ suite('SQL QueryEditor Tests', () => {
 			editorDescriptorService.object,
 			undefined,
 			undefined,
-			configurationService.object);
+			configurationService.object,
+			new TestStorageService());
 	};
 
 	setup(() => {
@@ -119,14 +121,14 @@ suite('SQL QueryEditor Tests', () => {
 		});
 
 		// Create a QueryInput
-		let filePath = 'someFile.sql';
+		let filePath = 'file://someFile.sql';
 		let uri: URI = URI.parse(filePath);
 		let fileInput = new UntitledEditorInput(uri, false, '', '', '', instantiationService.object, undefined, undefined, undefined);
 		let queryResultsInput: QueryResultsInput = new QueryResultsInput(uri.fsPath, configurationService.object);
 		queryInput = new QueryInput('first', fileInput, queryResultsInput, undefined, undefined, undefined, undefined, undefined);
 
 		// Create a QueryInput to compare to the previous one
-		let filePath2 = 'someFile2.sql';
+		let filePath2 = 'file://someFile2.sql';
 		let uri2: URI = URI.parse(filePath2);
 		let fileInput2 = new UntitledEditorInput(uri2, false, '', '', '', instantiationService.object, undefined, undefined, undefined);
 		let queryResultsInput2: QueryResultsInput = new QueryResultsInput(uri2.fsPath, configurationService.object);
@@ -356,7 +358,7 @@ suite('SQL QueryEditor Tests', () => {
 					return new RunQueryAction(undefined, undefined, undefined);
 				});
 
-			let fileInput = new UntitledEditorInput(URI.parse('testUri'), false, '', '', '', instantiationService.object, undefined, undefined, undefined);
+			let fileInput = new UntitledEditorInput(URI.parse('file://testUri'), false, '', '', '', instantiationService.object, undefined, undefined, undefined);
 			queryModelService = TypeMoq.Mock.ofType(QueryModelService, TypeMoq.MockBehavior.Loose, undefined, undefined);
 			queryModelService.callBase = true;
 			queryModelService.setup(x => x.disposeQuery(TypeMoq.It.isAny())).returns(() => void 0);

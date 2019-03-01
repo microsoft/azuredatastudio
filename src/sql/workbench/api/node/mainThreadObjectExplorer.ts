@@ -5,12 +5,12 @@
 'use strict';
 
 import { SqlExtHostContext, SqlMainContext, ExtHostObjectExplorerShape, MainThreadObjectExplorerShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { IObjectExplorerService, NodeInfoWithConnection } from 'sql/parts/objectExplorer/common/objectExplorerService';
+import { IObjectExplorerService, NodeInfoWithConnection } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
@@ -39,7 +39,7 @@ export class MainThreadObjectExplorer implements MainThreadObjectExplorerShape {
 		this._toDispose = dispose(this._toDispose);
 	}
 
-	public $getNode(connectionId: string, nodePath?: string): Thenable<sqlops.NodeInfo> {
+	public $getNode(connectionId: string, nodePath?: string): Thenable<azdata.NodeInfo> {
 		return this._objectExplorerService.getTreeNode(connectionId, nodePath).then(treeNode => {
 			if (!treeNode) {
 				return undefined;
@@ -63,7 +63,7 @@ export class MainThreadObjectExplorer implements MainThreadObjectExplorerShape {
 		return this._objectExplorerService.getTreeNode(connectionId, nodePath).then(treeNode => treeNode.setSelected(selected, clearOtherSelections));
 	}
 
-	public $getChildren(connectionId: string, nodePath: string): Thenable<sqlops.NodeInfo[]> {
+	public $getChildren(connectionId: string, nodePath: string): Thenable<azdata.NodeInfo[]> {
 		return this._objectExplorerService.getTreeNode(connectionId, nodePath).then(treeNode => treeNode.getChildren().then(children => children.map(node => node.toNodeInfo())));
 	}
 
@@ -71,19 +71,19 @@ export class MainThreadObjectExplorer implements MainThreadObjectExplorerShape {
 		return this._objectExplorerService.getTreeNode(connectionId, nodePath).then(treeNode => treeNode.isExpanded());
 	}
 
-	public $findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames: string[]): Thenable<sqlops.NodeInfo[]> {
+	public $findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames: string[]): Thenable<azdata.NodeInfo[]> {
 		return this._objectExplorerService.findNodes(connectionId, type, schema, name, database, parentObjectNames);
 	}
 
-	public $refresh(connectionId: string, nodePath: string): Thenable<sqlops.NodeInfo> {
+	public $refresh(connectionId: string, nodePath: string): Thenable<azdata.NodeInfo> {
 		return this._objectExplorerService.refreshNodeInView(connectionId, nodePath).then(node => node.toNodeInfo());
 	}
 
 	public $getNodeActions(connectionId: string, nodePath: string): Thenable<string[]> {
 		return this._objectExplorerService.getNodeActions(connectionId, nodePath);
 	}
-	
-	public $getSessionConnectionProfile(sessionId: string): Thenable<sqlops.IConnectionProfile> {
+
+	public $getSessionConnectionProfile(sessionId: string): Thenable<azdata.IConnectionProfile> {
 		return Promise.resolve(this._objectExplorerService.getSessionConnectionProfile(sessionId));
 	}
 }

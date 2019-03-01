@@ -5,7 +5,7 @@
 
 'use strict';
 import * as nls from 'vscode-nls';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { CreateSessionData } from '../data/createSessionData';
 
@@ -18,9 +18,9 @@ export class CreateSessionDialog {
 	private readonly DialogTitleText: string = localize('createSessionDialog.title', 'Start New Profiler Session');
 
 	// UI Components
-	private dialog: sqlops.window.Dialog;
-	private templatesBox: sqlops.DropDownComponent;
-	private sessionNameBox: sqlops.InputBoxComponent;
+	private dialog: azdata.window.Dialog;
+	private templatesBox: azdata.DropDownComponent;
+	private sessionNameBox: azdata.InputBoxComponent;
 
 	private model: CreateSessionData;
 	private readonly _providerType: string;
@@ -29,7 +29,7 @@ export class CreateSessionDialog {
 	public readonly onSuccess: vscode.Event<CreateSessionData> = this._onSuccess.event;
 
 
-	constructor(ownerUri: string, providerType: string, templates: Array<sqlops.ProfilerSessionTemplate>) {
+	constructor(ownerUri: string, providerType: string, templates: Array<azdata.ProfilerSessionTemplate>) {
 		if (typeof (templates) === 'undefined' || templates === null) {
 			throw new Error(localize('createSessionDialog.templatesInvalid', "Invalid templates list, cannot open dialog"));
 		}
@@ -44,14 +44,14 @@ export class CreateSessionDialog {
 	}
 
 	public async showDialog(): Promise<void> {
-		this.dialog = sqlops.window.createModelViewDialog(this.DialogTitleText);
+		this.dialog = azdata.window.createModelViewDialog(this.DialogTitleText);
 		this.initializeContent();
 		this.dialog.okButton.onClick(() => this.execute());
 		this.dialog.cancelButton.onClick(() => { });
 		this.dialog.okButton.label = this.CreateButtonText;
 		this.dialog.cancelButton.label = this.CancelButtonText;
 
-		sqlops.window.openDialog(this.dialog);
+		azdata.window.openDialog(this.dialog);
 	}
 
 	private initializeContent(): void {
@@ -111,7 +111,7 @@ export class CreateSessionDialog {
 	}
 
 	private async execute(): Promise<void> {
-		let profilerService = sqlops.dataprotocol.getProvider<sqlops.ProfilerProvider>(this._providerType, sqlops.DataProviderType.ProfilerProvider);
+		let profilerService = azdata.dataprotocol.getProvider<azdata.ProfilerProvider>(this._providerType, azdata.DataProviderType.ProfilerProvider);
 
 		let name = this.sessionNameBox.value;
 		let selected = this.templatesBox.value.toString();

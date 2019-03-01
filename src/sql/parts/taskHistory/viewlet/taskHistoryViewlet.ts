@@ -20,6 +20,8 @@ import { TaskHistoryView } from 'sql/parts/taskHistory/viewlet/taskHistoryView';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { INotificationService } from 'vs/platform/notification/common/notification';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IStorageService } from 'vs/platform/storage/common/storage';
 
 export const VIEWLET_ID = 'workbench.view.taskHistory';
 
@@ -32,13 +34,13 @@ export class TaskHistoryViewlet extends Viewlet {
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IThemeService themeService: IThemeService,
-		@IConnectionManagementService private connectionManagementService: IConnectionManagementService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IViewletService private viewletService: IViewletService,
 		@INotificationService private _notificationService: INotificationService,
-		@IPartService partService: IPartService
+		@IPartService partService: IPartService,
+		@IConfigurationService configurationService: IConfigurationService,
+		@IStorageService storageService: IStorageService
 	) {
-		super(VIEWLET_ID, partService, telemetryService, themeService);
+		super(VIEWLET_ID, configurationService, partService, telemetryService, themeService, storageService);
 	}
 
 	private onError(err: any): void {
@@ -60,10 +62,9 @@ export class TaskHistoryViewlet extends Viewlet {
 		return TPromise.as(null);
 	}
 
-	public setVisible(visible: boolean): TPromise<void> {
-		return super.setVisible(visible).then(() => {
-			this._taskHistoryView.setVisible(visible);
-		});
+	public setVisible(visible: boolean): void {
+		super.setVisible(visible);
+		this._taskHistoryView.setVisible(visible);
 	}
 
 	public focus(): void {

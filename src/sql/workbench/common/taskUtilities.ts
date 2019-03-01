@@ -12,22 +12,22 @@ import {
 	IConnectionCompletionOptions, ConnectionType,
 	RunQueryOnConnectionMode, IConnectionResult
 } from 'sql/platform/connection/common/connectionManagement';
-import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
+import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { IScriptingService } from 'sql/platform/scripting/common/scriptingService';
 import { EditDataInput } from 'sql/parts/editData/common/editDataInput';
 import { IAdminService } from 'sql/workbench/services/admin/common/adminService';
 import { IRestoreDialogController } from 'sql/platform/restore/common/restoreService';
-import { IBackupUiService } from 'sql/platform/backup/common/backupService';
 import { IInsightsConfig } from 'sql/parts/dashboard/widgets/insights/interfaces';
-import { IInsightsDialogService } from 'sql/parts/insights/common/interfaces';
+import { IInsightsDialogService } from 'sql/workbench/services/insights/common/insightsDialogService';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
-import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
 import { DashboardInput } from 'sql/parts/dashboard/dashboardInput';
 import { ProfilerInput } from 'sql/parts/profiler/editor/profilerInput';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
+import { IBackupUiService } from 'sql/workbench/services/backup/common/backupUiService';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 import Severity from 'vs/base/common/severity';
 import * as nls from 'vs/nls';
@@ -139,10 +139,10 @@ export function connectIfNotAlreadyConnected(connectionProfile: IConnectionProfi
 /**
  * Select the top rows from an object
  */
-export function scriptSelect(connectionProfile: IConnectionProfile, metadata: sqlops.ObjectMetadata, connectionService: IConnectionManagementService, queryEditorService: IQueryEditorService, scriptingService: IScriptingService): Promise<void> {
+export function scriptSelect(connectionProfile: IConnectionProfile, metadata: azdata.ObjectMetadata, connectionService: IConnectionManagementService, queryEditorService: IQueryEditorService, scriptingService: IScriptingService): Promise<void> {
 	return new Promise<void>((resolve, reject) => {
 		connectionService.connectIfNotConnected(connectionProfile).then(connectionResult => {
-			let paramDetails: sqlops.ScriptingParamDetails = getScriptingParamDetails(connectionService, connectionResult, metadata);
+			let paramDetails: azdata.ScriptingParamDetails = getScriptingParamDetails(connectionService, connectionResult, metadata);
 			scriptingService.script(connectionResult, metadata, ScriptOperation.Select, paramDetails).then(result => {
 				if (result.script) {
 					queryEditorService.newSqlEditor(result.script).then((owner: IConnectableInput) => {
@@ -174,10 +174,10 @@ export function scriptSelect(connectionProfile: IConnectionProfile, metadata: sq
 /**
  * Opens a new Edit Data session
  */
-export function scriptEditSelect(connectionProfile: IConnectionProfile, metadata: sqlops.ObjectMetadata, connectionService: IConnectionManagementService, queryEditorService: IQueryEditorService, scriptingService: IScriptingService): Promise<void> {
+export function scriptEditSelect(connectionProfile: IConnectionProfile, metadata: azdata.ObjectMetadata, connectionService: IConnectionManagementService, queryEditorService: IQueryEditorService, scriptingService: IScriptingService): Promise<void> {
 	return new Promise<void>((resolve, reject) => {
 		connectionService.connectIfNotConnected(connectionProfile).then(connectionResult => {
-			let paramDetails: sqlops.ScriptingParamDetails = getScriptingParamDetails(connectionService, connectionResult, metadata);
+			let paramDetails: azdata.ScriptingParamDetails = getScriptingParamDetails(connectionService, connectionResult, metadata);
 			scriptingService.script(connectionResult, metadata, ScriptOperation.Select, paramDetails).then(result => {
 				if (result.script) {
 					queryEditorService.newEditDataEditor(metadata.schema, metadata.name, result.script).then((owner: EditDataInput) => {
@@ -209,7 +209,7 @@ export function scriptEditSelect(connectionProfile: IConnectionProfile, metadata
 /**
  * Script the object as a statement based on the provided action (except Select)
  */
-export function script(connectionProfile: IConnectionProfile, metadata: sqlops.ObjectMetadata,
+export function script(connectionProfile: IConnectionProfile, metadata: azdata.ObjectMetadata,
 	connectionService: IConnectionManagementService,
 	queryEditorService: IQueryEditorService,
 	scriptingService: IScriptingService,
@@ -437,9 +437,9 @@ function getStartPos(script: string, operation: ScriptOperation, typeName: strin
 }
 
 
-function getScriptingParamDetails(connectionService: IConnectionManagementService, ownerUri: string, metadata: sqlops.ObjectMetadata): sqlops.ScriptingParamDetails {
-	let serverInfo: sqlops.ServerInfo = getServerInfo(connectionService, ownerUri);
-	let paramDetails: sqlops.ScriptingParamDetails = {
+function getScriptingParamDetails(connectionService: IConnectionManagementService, ownerUri: string, metadata: azdata.ObjectMetadata): azdata.ScriptingParamDetails {
+	let serverInfo: azdata.ServerInfo = getServerInfo(connectionService, ownerUri);
+	let paramDetails: azdata.ScriptingParamDetails = {
 		filePath: getFilePath(metadata),
 		scriptCompatibilityOption: scriptCompatibilityOptionMap[serverInfo.serverMajorVersion],
 		targetDatabaseEngineEdition: targetDatabaseEngineEditionMap[serverInfo.engineEditionId],
@@ -448,7 +448,7 @@ function getScriptingParamDetails(connectionService: IConnectionManagementServic
 	return paramDetails;
 }
 
-function getFilePath(metadata: sqlops.ObjectMetadata): string {
+function getFilePath(metadata: azdata.ObjectMetadata): string {
 	let schemaName: string = metadata.schema;
 	let objectName: string = metadata.name;
 	let timestamp = Date.now().toString();
@@ -459,7 +459,7 @@ function getFilePath(metadata: sqlops.ObjectMetadata): string {
 	}
 }
 
-function getServerInfo(connectionService: IConnectionManagementService, ownerUri: string): sqlops.ServerInfo {
+function getServerInfo(connectionService: IConnectionManagementService, ownerUri: string): azdata.ServerInfo {
 	let connection: ConnectionManagementInfo = connectionService.getConnectionInfo(ownerUri);
 	return connection.serverInfo;
 }

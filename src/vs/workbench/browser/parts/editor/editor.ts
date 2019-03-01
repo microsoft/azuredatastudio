@@ -3,9 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
-import { TPromise } from 'vs/base/common/winjs.base';
 import { GroupIdentifier, IWorkbenchEditorConfiguration, IWorkbenchEditorPartConfiguration, EditorOptions, TextEditorOptions, IEditorInput, IEditorIdentifier, IEditorCloseEvent } from 'vs/workbench/common/editor';
 import { EditorGroup } from 'vs/workbench/common/editor/editorGroup';
 import { IEditorGroup, GroupDirection, IAddGroupOptions, IMergeGroupOptions, GroupsOrder, IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
@@ -30,6 +27,7 @@ export interface IEditorPartOptions extends IWorkbenchEditorPartConfiguration {
 
 export const DEFAULT_EDITOR_PART_OPTIONS: IEditorPartOptions = {
 	showTabs: true,
+	highlightModifiedTabs: false,
 	tabCloseButton: 'right',
 	tabSizing: 'fit',
 	showIcons: true,
@@ -104,7 +102,7 @@ export interface IEditorGroupsAccessor {
 
 export interface IEditorGroupView extends IDisposable, ISerializableView, IEditorGroup {
 	readonly group: EditorGroup;
-	readonly whenRestored: TPromise<void>;
+	readonly whenRestored: Thenable<void>;
 	readonly disposed: boolean;
 
 	readonly onDidFocus: Event<void>;
@@ -118,8 +116,6 @@ export interface IEditorGroupView extends IDisposable, ISerializableView, IEdito
 	setActive(isActive: boolean): void;
 	setLabel(label: string): void;
 	relayout(): void;
-
-	shutdown(): void;
 }
 
 export function getActiveTextEditorOptions(group: IEditorGroup, expectedActiveEditor?: IEditorInput, presetOptions?: EditorOptions): EditorOptions {
@@ -159,5 +155,5 @@ export interface EditorGroupsServiceImpl extends IEditorGroupsService {
 	/**
 	 * A promise that resolves when groups have been restored.
 	 */
-	readonly whenRestored: TPromise<void>;
+	readonly whenRestored: Thenable<void>;
 }

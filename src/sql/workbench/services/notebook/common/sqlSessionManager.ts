@@ -4,30 +4,48 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { nb, QueryExecuteSubsetResult, IDbColumn, BatchSummary, IResultMessage } from 'sqlops';
+import * as os from 'os';
+import { nb, QueryExecuteSubsetResult, IDbColumn, BatchSummary, IResultMessage, ResultSetSummary } from 'azdata';
 import { localize } from 'vs/nls';
-import { FutureInternal } from 'sql/parts/notebook/models/modelInterfaces';
+import * as strings from 'vs/base/common/strings';
+import { FutureInternal, ILanguageMagic } from 'sql/parts/notebook/models/modelInterfaces';
 import QueryRunner, { EventType } from 'sql/platform/query/common/queryRunner';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import Severity from 'vs/base/common/severity';
 import * as Utils from 'sql/platform/connection/common/utils';
 import { Deferred } from 'sql/base/common/promise';
-import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
+import { Disposable } from 'vs/base/common/lifecycle';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { escape } from 'sql/base/common/strings';
+import { elapsedTimeLabel } from 'sql/parts/query/common/localizedConstants';
+import * as notebookUtils from 'sql/parts/notebook/notebookUtils';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 export const sqlKernel: string = localize('sqlKernel', 'SQL');
 export const sqlKernelError: string = localize("sqlKernelError", "SQL kernel error");
-export const MAX_ROWS = 2000;
+export const MAX_ROWS = 5000;
+export const NotebookConfigSectionName = 'notebook';
+export const MaxTableRowsConfigName = 'maxTableRows';
 
-let sqlKernelSpec: nb.IKernelSpec = ({
+const sqlKernelSpec: nb.IKernelSpec = ({
 	name: sqlKernel,
 	language: 'sql',
 	display_name: sqlKernel
 });
+
+const languageMagics: ILanguageMagic[] = [{
+	language: 'Python',
+	magic: 'lang_python'
+}, {
+	language: 'R',
+	magic: 'lang_r'
+}, {
+	language: 'Java',
+	magic: 'lang_java'
+}];
 
 export interface SQLData {
 	columns: Array<string>;
@@ -132,11 +150,22 @@ class SqlKernel extends Disposable implements nb.IKernel {
 	private _id: string;
 	private _future: SQLFuture;
 	private _executionCount: number = 0;
+	private _magicToExecutorMap = new Map<string, ExternalScriptMagic>();
 
-	constructor( @IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
+	constructor(@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IErrorMessageService private _errorMessageService: IErrorMessageService) {
+		@IErrorMessageService private _errorMessageService: IErrorMessageService,
+		@IConfigurationService private _configurationService: IConfigurationService
+	) {
 		super();
+		this.initMagics();
+	}
+
+	private initMagics(): void {
+		for (let magic of languageMagics) {
+			let scriptMagic = new ExternalScriptMagic(magic.language);
+			this._magicToExecutorMap.set(magic.magic, scriptMagic);
+		}
 	}
 
 	public get id(): string {
@@ -193,6 +222,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 
 	requestExecute(content: nb.IExecuteRequest, disposeOnDone?: boolean): nb.IFuture {
 		let canRun: boolean = true;
+		let code = this.getCodeWithoutCellMagic(content);
 		if (this._queryRunner) {
 			// Cancel any existing query
 			if (this._future && !this._queryRunner.hasCompleted) {
@@ -200,14 +230,13 @@ class SqlKernel extends Disposable implements nb.IKernel {
 				// TODO when we can just show error as an output, should show an "execution canceled" error in output
 				this._future.handleDone();
 			}
-			this._queryRunner.runQuery(content.code);
+			this._queryRunner.runQuery(code);
 		} else if (this._currentConnection) {
 			let connectionUri = Utils.generateUri(this._currentConnection, 'notebook');
 			this._queryRunner = this._instantiationService.createInstance(QueryRunner, connectionUri);
-			this._connectionManagementService.connect(this._currentConnection, connectionUri).then((result) =>
-			{
+			this._connectionManagementService.connect(this._currentConnection, connectionUri).then((result) => {
 				this.addQueryEventListeners(this._queryRunner);
-				this._queryRunner.runQuery(content.code);
+				this._queryRunner.runQuery(code);
 			});
 		} else {
 			canRun = false;
@@ -217,7 +246,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 		// TODO verify this is "canonical" behavior
 		let count = canRun ? ++this._executionCount : undefined;
 
-		this._future = new SQLFuture(this._queryRunner, count);
+		this._future = new SQLFuture(this._queryRunner, count, this._configurationService);
 		if (!canRun) {
 			// Complete early
 			this._future.handleDone(new Error(localize('connectionRequired', 'A connection must be chosen to run notebook cells')));
@@ -225,6 +254,25 @@ class SqlKernel extends Disposable implements nb.IKernel {
 
 		// TODO should we  cleanup old future? I don't think we need to
 		return this._future;
+	}
+
+	private getCodeWithoutCellMagic(content: nb.IExecuteRequest): string {
+		let code = content.code;
+		let firstLineEnd = code.indexOf(os.EOL);
+		let firstLine = code.substring(0, (firstLineEnd >= 0) ? firstLineEnd : 0).trimLeft();
+		if (firstLine.startsWith('%%')) {
+			// Strip out the line
+			code = code.substring(firstLineEnd, code.length);
+			// Try and match to an external script magic. If we add more magics later, should handle transforms better
+			let magic = notebookUtils.tryMatchCellMagic(firstLine);
+			if (magic) {
+				let executor = this._magicToExecutorMap.get(magic.toLowerCase());
+				if (executor) {
+					code = executor.convertToExternalScript(code);
+				}
+			}
+		}
+		return code;
 	}
 
 	requestComplete(content: nb.ICompleteRequest): Thenable<nb.ICompleteReplyMsg> {
@@ -270,9 +318,17 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	private ioHandler: nb.MessageHandler<nb.IIOPubMessage>;
 	private doneHandler: nb.MessageHandler<nb.IShellMessage>;
 	private doneDeferred = new Deferred<nb.IShellMessage>();
+	private configuredMaxRows: number = MAX_ROWS;
 
-	constructor(private _queryRunner: QueryRunner, private _executionCount: number | undefined) {
+	constructor(private _queryRunner: QueryRunner, private _executionCount: number | undefined, private configurationService: IConfigurationService) {
 		super();
+		let config = configurationService.getValue(NotebookConfigSectionName);
+		if (config) {
+			let maxRows = config[MaxTableRowsConfigName] ? config[MaxTableRowsConfigName] : undefined;
+			if (maxRows && maxRows > 0) {
+				this.configuredMaxRows = maxRows;
+			}
+		}
 	}
 
 	get inProgress(): boolean {
@@ -322,13 +378,18 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		// no-op
 	}
 
-	public handleMessage(msg: IResultMessage): void {
+	public handleMessage(msg: IResultMessage | string): void {
 		if (this.ioHandler) {
 			let message;
-			if (msg.isError) {
-				message = this.convertToError(msg);
-			} else {
+			if (typeof msg === 'string') {
 				message = this.convertToDisplayMessage(msg);
+			}
+			else {
+				if (msg.isError) {
+					message = this.convertToError(msg);
+				} else {
+					message = this.convertToDisplayMessage(msg);
+				}
 			}
 			this.ioHandler.handle(message);
 		}
@@ -336,30 +397,50 @@ export class SQLFuture extends Disposable implements FutureInternal {
 
 	public handleBatchEnd(batch: BatchSummary): void {
 		if (this.ioHandler) {
-			for (let resultSet of batch.resultSetSummaries) {
-				let rowCount = resultSet.rowCount > MAX_ROWS ? MAX_ROWS : resultSet.rowCount;
-				this._queryRunner.getQueryRows(0, rowCount, resultSet.batchId, resultSet.id).then(d => {
-
-					let msg: nb.IIOPubMessage = {
-						channel: 'iopub',
-						type: 'iopub',
-						header: <nb.IHeader>{
-							msg_id: undefined,
-							msg_type: 'execute_result'
-						},
-						content: <nb.IExecuteResult>{
-							output_type: 'execute_result',
-							metadata: {},
-							execution_count: this._executionCount,
-							data: { 'application/vnd.dataresource+json': this.convertToDataResource(resultSet.columnInfo, d), 'text/html': this.convertToHtmlTable(resultSet.columnInfo, d) }
-						},
-						metadata: undefined,
-						parent_header: undefined
-					};
-					this.ioHandler.handle(msg);
-				});
-			}
+			this.handleMessage(strings.format(elapsedTimeLabel, batch.executionElapsed));
+			this.processResultSets(batch);
 		}
+	}
+
+	private async processResultSets(batch: BatchSummary): Promise<void> {
+		try {
+			for (let resultSet of batch.resultSetSummaries) {
+				let rowCount = resultSet.rowCount > this.configuredMaxRows ? this.configuredMaxRows : resultSet.rowCount;
+				await this.sendResultSetAsIOPub(rowCount, resultSet);
+			}
+		} catch (err) {
+			// TODO should we output this somewhere else?
+			console.log(`Error outputting result sets from Notebook query: ${err}`);
+		}
+	}
+
+	private async sendResultSetAsIOPub(rowCount: number, resultSet: ResultSetSummary): Promise<void> {
+		let subsetResult: QueryExecuteSubsetResult;
+		if (rowCount > 0) {
+			subsetResult = await this._queryRunner.getQueryRows(0, rowCount, resultSet.batchId, resultSet.id);
+		} else {
+			subsetResult = { message: '', resultSubset: { rowCount: 0, rows: [] }};
+		}
+		let msg: nb.IIOPubMessage = {
+			channel: 'iopub',
+			type: 'iopub',
+			header: <nb.IHeader>{
+				msg_id: undefined,
+				msg_type: 'execute_result'
+			},
+			content: <nb.IExecuteResult>{
+				output_type: 'execute_result',
+				metadata: {},
+				execution_count: this._executionCount,
+				data: {
+					'application/vnd.dataresource+json': this.convertToDataResource(resultSet.columnInfo, subsetResult),
+					'text/html': this.convertToHtmlTable(resultSet.columnInfo, subsetResult)
+				}
+			},
+			metadata: undefined,
+			parent_header: undefined
+		};
+		this.ioHandler.handle(msg);
 	}
 
 	setIOPubHandler(handler: nb.MessageHandler<nb.IIOPubMessage>): void {
@@ -376,7 +457,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	private convertToDataResource(columns: IDbColumn[], subsetResult: QueryExecuteSubsetResult): IDataResource {
 		let columnsResources: IDataResourceSchema[] = [];
 		columns.forEach(column => {
-			columnsResources.push({name: escape(column.columnName)});
+			columnsResources.push({ name: escape(column.columnName) });
 		});
 		let columnsFields: IDataResourceFields = { fields: undefined };
 		columnsFields.fields = columnsResources;
@@ -470,4 +551,17 @@ export interface IDataResourceFields {
 export interface IDataResourceSchema {
 	name: string;
 	type?: string;
+}
+
+class ExternalScriptMagic {
+
+	constructor(private language: string) {
+	}
+
+	public convertToExternalScript(script: string): string {
+		return `execute sp_execute_external_script
+		@language = N'${this.language}',
+		@script = N'${script}'
+		`;
+	}
 }

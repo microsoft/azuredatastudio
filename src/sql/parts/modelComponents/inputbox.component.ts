@@ -8,12 +8,12 @@ import {
 	ViewChild, ElementRef, OnDestroy, AfterViewInit
 } from '@angular/core';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
-import { attachInputBoxStyler } from 'sql/common/theme/styler';
+import { attachInputBoxStyler } from 'sql/platform/theme/common/styler';
 
 import { IInputOptions, MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
@@ -211,82 +211,82 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 	// CSS-bound properties
 
 	public get value(): string {
-		return this.getPropertyOrDefault<sqlops.InputBoxProperties, string>((props) => props.value, '');
+		return this.getPropertyOrDefault<azdata.InputBoxProperties, string>((props) => props.value, '');
 	}
 
 	public set value(newValue: string) {
-		this.setPropertyFromUI<sqlops.InputBoxProperties, string>((props, value) => props.value = value, newValue);
+		this.setPropertyFromUI<azdata.InputBoxProperties, string>((props, value) => props.value = value, newValue);
 	}
 
 	public get ariaLabel(): string {
-		return this.getPropertyOrDefault<sqlops.InputBoxProperties, string>((props) => props.ariaLabel, '');
+		return this.getPropertyOrDefault<azdata.InputBoxProperties, string>((props) => props.ariaLabel, '');
 	}
 
 	public set ariaLabel(newValue: string) {
-		this.setPropertyFromUI<sqlops.InputBoxProperties, string>((props, value) => props.ariaLabel = value, newValue);
+		this.setPropertyFromUI<azdata.InputBoxProperties, string>((props, value) => props.ariaLabel = value, newValue);
 	}
 
 	public get placeHolder(): string {
-		return this.getPropertyOrDefault<sqlops.InputBoxProperties, string>((props) => props.placeHolder, '');
+		return this.getPropertyOrDefault<azdata.InputBoxProperties, string>((props) => props.placeHolder, '');
 	}
 
 	public set placeHolder(newValue: string) {
-		this.setPropertyFromUI<sqlops.InputBoxProperties, string>((props, value) => props.placeHolder = value, newValue);
+		this.setPropertyFromUI<azdata.InputBoxProperties, string>((props, value) => props.placeHolder = value, newValue);
 	}
 
 	public set columns(newValue: number) {
-		this.setPropertyFromUI<sqlops.InputBoxProperties, number>((props, value) => props.columns = value, newValue);
+		this.setPropertyFromUI<azdata.InputBoxProperties, number>((props, value) => props.columns = value, newValue);
 	}
 
 	public get rows(): number {
-		return this.getPropertyOrDefault<sqlops.InputBoxProperties, number>((props) => props.rows, undefined);
+		return this.getPropertyOrDefault<azdata.InputBoxProperties, number>((props) => props.rows, undefined);
 	}
 
 	public get columns(): number {
-		return this.getPropertyOrDefault<sqlops.InputBoxProperties, number>((props) => props.columns, undefined);
+		return this.getPropertyOrDefault<azdata.InputBoxProperties, number>((props) => props.columns, undefined);
 	}
 
 	public set rows(newValue: number) {
-		this.setPropertyFromUI<sqlops.InputBoxProperties, number>((props, value) => props.rows = value, newValue);
+		this.setPropertyFromUI<azdata.InputBoxProperties, number>((props, value) => props.rows = value, newValue);
 	}
 
 	public get min(): number {
-		return this.getPropertyOrDefault<sqlops.InputBoxProperties, number>((props) => props.min, undefined);
+		return this.getPropertyOrDefault<azdata.InputBoxProperties, number>((props) => props.min, undefined);
 	}
 
 	public set min(newValue: number) {
-		this.setPropertyFromUI<sqlops.InputBoxProperties, number>((props, value) => props.min = value, newValue);
+		this.setPropertyFromUI<azdata.InputBoxProperties, number>((props, value) => props.min = value, newValue);
 	}
 
 	public get max(): number {
-		return this.getPropertyOrDefault<sqlops.InputBoxProperties, number>((props) => props.max, undefined);
+		return this.getPropertyOrDefault<azdata.InputBoxProperties, number>((props) => props.max, undefined);
 	}
 
 	public set max(newValue: number) {
-		this.setPropertyFromUI<sqlops.InputBoxProperties, number>((props, value) => props.max = value, newValue);
+		this.setPropertyFromUI<azdata.InputBoxProperties, number>((props, value) => props.max = value, newValue);
 	}
 
 	public get inputType(): string {
-		return this.getPropertyOrDefault<sqlops.InputBoxProperties, string>((props) => props.inputType, 'text');
+		return this.getPropertyOrDefault<azdata.InputBoxProperties, string>((props) => props.inputType, 'text');
 	}
 
 	public set inputType(newValue: string) {
-		this.setPropertyFromUI<sqlops.InputBoxProperties, string>((props, value) => props.inputType = value, newValue);
+		this.setPropertyFromUI<azdata.InputBoxProperties, string>((props, value) => props.inputType = value, newValue);
 	}
 
 	public get multiline(): boolean {
-		return this.getPropertyOrDefault<sqlops.InputBoxProperties, boolean>((props) => props.multiline, false);
+		return this.getPropertyOrDefault<azdata.InputBoxProperties, boolean>((props) => props.multiline, false);
 	}
 
 	public set multiline(newValue: boolean) {
-		this.setPropertyFromUI<sqlops.InputBoxProperties, boolean>((props, value) => props.multiline = value, newValue);
+		this.setPropertyFromUI<azdata.InputBoxProperties, boolean>((props, value) => props.multiline = value, newValue);
 	}
 
 	public get required(): boolean {
-		return this.getPropertyOrDefault<sqlops.InputBoxProperties, boolean>((props) => props.required, false);
+		return this.getPropertyOrDefault<azdata.InputBoxProperties, boolean>((props) => props.required, false);
 	}
 
 	public set required(newValue: boolean) {
-		this.setPropertyFromUI<sqlops.InputBoxProperties, boolean>((props, value) => props.required = value, newValue);
+		this.setPropertyFromUI<azdata.InputBoxProperties, boolean>((props, value) => props.required = value, newValue);
 	}
 }

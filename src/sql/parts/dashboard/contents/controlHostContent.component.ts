@@ -10,7 +10,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { memoize } from 'vs/base/common/decorators';
 import { AgentViewComponent } from '../../jobManagement/agent/agentView.component';
 
@@ -48,9 +48,9 @@ export class ControlHostContent {
 	}
 
 	@memoize
-	public get connection(): sqlops.connection.Connection {
+	public get connection(): azdata.connection.Connection {
 		let currentConnection = this._dashboardService.connectionManagementService.connectionInfo.connectionProfile;
-		let connection: sqlops.connection.Connection = {
+		let connection: azdata.connection.Connection = {
 			providerName: currentConnection.providerName,
 			connectionId: currentConnection.id,
 			options: currentConnection.options
@@ -59,7 +59,7 @@ export class ControlHostContent {
 	}
 
 	@memoize
-	public get serverInfo(): sqlops.ServerInfo {
+	public get serverInfo(): azdata.ServerInfo {
 		return this._dashboardService.connectionManagementService.connectionInfo.serverInfo;
 	}
 

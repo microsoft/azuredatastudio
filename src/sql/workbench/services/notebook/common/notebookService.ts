@@ -5,18 +5,18 @@
 
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 import { Event } from 'vs/base/common/event';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
 import { RenderMimeRegistry } from 'sql/parts/notebook/outputs/registry';
 import { ModelFactory } from 'sql/parts/notebook/models/modelFactory';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { NotebookInput } from 'sql/parts/notebook/notebookInput';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { ICellModel, INotebookModel } from 'sql/parts/notebook/models/modelInterfaces';
+import { ICellModel, INotebookModel, ILanguageMagic } from 'sql/parts/notebook/models/modelInterfaces';
 
 export const SERVICE_ID = 'notebookService';
 export const INotebookService = createDecorator<INotebookService>(SERVICE_ID);
@@ -35,6 +35,7 @@ export interface INotebookService {
 
 	readonly isRegistrationComplete: boolean;
 	readonly registrationComplete: Promise<void>;
+	readonly languageMagics: ILanguageMagic[];
 	/**
 	 * Register a metadata provider
 	 */
@@ -49,7 +50,7 @@ export interface INotebookService {
 
 	getProvidersForFileType(fileType: string): string[];
 
-	getStandardKernelsForProvider(provider: string): sqlops.nb.IStandardKernel[];
+	getStandardKernelsForProvider(provider: string): azdata.nb.IStandardKernel[];
 
 	/**
 	 * Initializes and returns a Notebook manager that can handle all important calls to open, display, and
@@ -81,9 +82,9 @@ export interface INotebookProvider {
 
 export interface INotebookManager {
 	providerId: string;
-	readonly contentManager: sqlops.nb.ContentManager;
-	readonly sessionManager: sqlops.nb.SessionManager;
-	readonly serverManager: sqlops.nb.ServerManager;
+	readonly contentManager: azdata.nb.ContentManager;
+	readonly sessionManager: azdata.nb.SessionManager;
+	readonly serverManager: azdata.nb.ServerManager;
 }
 
 export interface INotebookParams extends IBootstrapParams {

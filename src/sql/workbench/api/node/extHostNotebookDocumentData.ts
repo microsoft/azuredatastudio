@@ -4,10 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 import { IDisposable } from 'vs/base/common/lifecycle';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import { ok } from 'vs/base/common/assert';
 import { Schemas } from 'vs/base/common/network';
 import { TPromise } from 'vs/base/common/winjs.base';
@@ -17,15 +17,15 @@ import { CellRange } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 
 export class ExtHostNotebookDocumentData implements IDisposable {
-	private _document: sqlops.nb.NotebookDocument;
+	private _document: azdata.nb.NotebookDocument;
 	private _isDisposed: boolean = false;
-	private _kernelSpec: sqlops.nb.IKernelSpec;
+	private _kernelSpec: azdata.nb.IKernelSpec;
 
 	constructor(private readonly _proxy: MainThreadNotebookDocumentsAndEditorsShape,
 		private readonly _uri: URI,
 		private _providerId: string,
 		private _isDirty: boolean,
-		private _cells: sqlops.nb.NotebookCell[]
+		private _cells: azdata.nb.NotebookCell[]
 	) {
 	}
 
@@ -39,7 +39,7 @@ export class ExtHostNotebookDocumentData implements IDisposable {
 	}
 
 
-	get document(): sqlops.nb.NotebookDocument {
+	get document(): azdata.nb.NotebookDocument {
 		if (!this._document) {
 			const data = this;
 			this._document = {
@@ -77,7 +77,7 @@ export class ExtHostNotebookDocumentData implements IDisposable {
 
 	// ---- range math
 
-	private _validateRange(range: sqlops.nb.CellRange): sqlops.nb.CellRange {
+	private _validateRange(range: azdata.nb.CellRange): azdata.nb.CellRange {
 		if (!(range instanceof CellRange)) {
 			throw new Error('Invalid argument');
 		}

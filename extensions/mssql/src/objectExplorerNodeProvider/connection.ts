@@ -5,7 +5,7 @@
 
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
@@ -13,14 +13,14 @@ import * as constants from '../constants';
 import { IFileSource, IHdfsOptions, IRequestParams, FileSourceFactory } from './fileSources';
 
 export class SqlClusterConnection {
-	private _connection: sqlops.connection.Connection;
-	private _profile: sqlops.IConnectionProfile;
+	private _connection: azdata.connection.Connection;
+	private _profile: azdata.IConnectionProfile;
 	private _host: string;
 	private _port: string;
 	private _user: string;
 	private _password: string;
 
-	constructor(connectionInfo: sqlops.connection.Connection | sqlops.IConnectionProfile) {
+	constructor(connectionInfo: azdata.connection.Connection | azdata.IConnectionProfile) {
 		this.validate(connectionInfo);
 
 		if ('id' in connectionInfo) {
@@ -36,14 +36,14 @@ export class SqlClusterConnection {
 		this._password = this._connection.options[constants.passwordPropName];
 	}
 
-	public get connection(): sqlops.connection.Connection { return this._connection; }
-	public get profile(): sqlops.IConnectionProfile { return this._profile; }
+	public get connection(): azdata.connection.Connection { return this._connection; }
+	public get profile(): azdata.IConnectionProfile { return this._profile; }
 	public get host(): string { return this._host; }
-	public get port(): string { return this._port || constants.defaultKnoxPort; }
+	public get port(): number { return this._port ? Number.parseInt(this._port) : constants.defaultKnoxPort; }
 	public get user(): string { return this._user; }
 	public get password(): string { return this._password; }
 
-	public isMatch(connection: SqlClusterConnection | sqlops.ConnectionInfo): boolean {
+	public isMatch(connection: SqlClusterConnection | azdata.ConnectionInfo): boolean {
 		if (!connection) { return false; }
 		let options1 = connection instanceof SqlClusterConnection ?
 			connection._connection.options : connection.options;
@@ -69,7 +69,7 @@ export class SqlClusterConnection {
 		return FileSourceFactory.instance.createHdfsFileSource(options);
 	}
 
-	private validate(connectionInfo: sqlops.ConnectionInfo): void {
+	private validate(connectionInfo: azdata.ConnectionInfo): void {
 		if (!connectionInfo) {
 			throw new Error(localize('connectionInfoUndefined', 'ConnectionInfo is undefined.'));
 		}
@@ -84,7 +84,7 @@ export class SqlClusterConnection {
 		}
 	}
 
-	private getMissingProperties(connectionInfo: sqlops.ConnectionInfo): string[] {
+	private getMissingProperties(connectionInfo: azdata.ConnectionInfo): string[] {
 		if (!connectionInfo || !connectionInfo.options) { return undefined; }
 		return [
 			constants.hostPropName, constants.knoxPortPropName,
@@ -92,15 +92,15 @@ export class SqlClusterConnection {
 		].filter(e => connectionInfo.options[e] === undefined);
 	}
 
-	private toConnection(connProfile: sqlops.IConnectionProfile): sqlops.connection.Connection {
-		let connection: sqlops.connection.Connection = Object.assign(connProfile,
+	private toConnection(connProfile: azdata.IConnectionProfile): azdata.connection.Connection {
+		let connection: azdata.connection.Connection = Object.assign(connProfile,
 			{ connectionId: this._profile.id });
 		return connection;
 	}
 
-	private toConnectionProfile(connectionInfo: sqlops.connection.Connection): sqlops.IConnectionProfile {
+	private toConnectionProfile(connectionInfo: azdata.connection.Connection): azdata.IConnectionProfile {
 		let options = connectionInfo.options;
-		let connProfile: sqlops.IConnectionProfile = Object.assign(<sqlops.IConnectionProfile>{},
+		let connProfile: azdata.IConnectionProfile = Object.assign(<azdata.IConnectionProfile>{},
 			connectionInfo,
 			{
 				serverName: `${options[constants.hostPropName]},${options[constants.knoxPortPropName]}`,

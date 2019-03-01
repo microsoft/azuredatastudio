@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 import { Action } from 'vs/base/common/actions';
 import { TPromise } from 'vs/base/common/winjs.base';
@@ -16,10 +16,11 @@ import { INotebookModel, IDefaultConnection } from 'sql/parts/notebook/models/mo
 import { CellType } from 'sql/parts/notebook/models/contracts';
 import { NotebookComponent } from 'sql/parts/notebook/notebook.component';
 import { getErrorMessage, formatServerNameWithDatabaseNameForAttachTo, getServerFromFormattedAttachToName, getDatabaseFromFormattedAttachToName } from 'sql/parts/notebook/notebookUtils';
-import { IConnectionManagementService, IConnectionDialogService } from 'sql/platform/connection/common/connectionManagement';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { noKernel } from 'sql/workbench/services/notebook/common/sessionManager';
+import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 
 const msgLoading = localize('loading', 'Loading kernels...');
 const kernelLabel: string = localize('Kernel', 'Kernel: ');
@@ -115,7 +116,7 @@ export interface IActionStateData {
 
 export class IMultiStateData<T> {
 	private _stateMap = new Map<T, IActionStateData>();
-	constructor(mappings: { key: T, value: IActionStateData}[], private _state: T, private _baseClass?: string) {
+	constructor(mappings: { key: T, value: IActionStateData }[], private _state: T, private _baseClass?: string) {
 		if (mappings) {
 			mappings.forEach(s => this._stateMap.set(s.key, s.value));
 		}
@@ -257,7 +258,7 @@ export class KernelsDropdown extends SelectBox {
 			this.updateKernel(defaultKernel);
 		});
 		if (model.clientSession) {
-			model.clientSession.kernelChanged((changedArgs: sqlops.nb.IKernelChangedArgs) => {
+			model.clientSession.kernelChanged((changedArgs: azdata.nb.IKernelChangedArgs) => {
 				if (changedArgs.newValue) {
 					this.updateKernel(changedArgs.newValue);
 				}
@@ -266,7 +267,7 @@ export class KernelsDropdown extends SelectBox {
 	}
 
 	// Update SelectBox values
-	private updateKernel(defaultKernel: sqlops.nb.IKernelSpec) {
+	private updateKernel(defaultKernel: azdata.nb.IKernelSpec) {
 		let specs = this.model.specs;
 		if (specs && specs.kernels) {
 			let index = specs.kernels.findIndex((kernel => kernel.name === defaultKernel.name));

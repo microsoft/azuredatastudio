@@ -4,10 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
-import URI, { UriComponents } from 'vs/base/common/uri';
+import { URI, UriComponents } from 'vs/base/common/uri';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IExtHostContext, IUndoStopOptions } from 'vs/workbench/api/node/extHost.protocol';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
@@ -326,11 +326,11 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		return TPromise.as(editor.applyEdits(modelVersionId, edits, opts));
 	}
 
-	$runCell(id: string, cellUri: UriComponents): TPromise<boolean, any> {
+	$runCell(id: string, cellUri: UriComponents): Promise<boolean> {
 		// Requires an editor and the matching cell in that editor
 		let editor = this.getEditor(id);
 		if (!editor) {
-			return TPromise.wrapError<boolean>(disposed(`TextEditor(${id})`));
+			return Promise.reject(disposed(`TextEditor(${id})`));
 		}
 		let cell: ICellModel;
 		if (cellUri) {
@@ -345,10 +345,10 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 			}
 		}
 		if (!cell) {
-			return TPromise.wrapError<boolean>(disposed(`Could not find cell for this Notebook`));
+			return Promise.reject(disposed(`Could not find cell for this Notebook`));
 		}
 
-		return TPromise.wrap(editor.runCell(cell));
+		return editor.runCell(cell);
 	}
 
 	//#endregion
@@ -529,13 +529,13 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		return changeData;
 	}
 
-	private getKernelSpec(editor: MainThreadNotebookEditor): sqlops.nb.IKernelSpec {
+	private getKernelSpec(editor: MainThreadNotebookEditor): azdata.nb.IKernelSpec {
 		let spec = editor && editor.model && editor.model.clientSession ? editor.model.clientSession.cachedKernelSpec : undefined;
 		return spec;
 	}
 
-	private convertCellModelToNotebookCell(cells: ICellModel | ICellModel[]): sqlops.nb.NotebookCell[] {
-		let notebookCells: sqlops.nb.NotebookCell[] = [];
+	private convertCellModelToNotebookCell(cells: ICellModel | ICellModel[]): azdata.nb.NotebookCell[] {
+		let notebookCells: azdata.nb.NotebookCell[] = [];
 		if (Array.isArray(cells)) {
 			for (let cell of cells) {
 				notebookCells.push({

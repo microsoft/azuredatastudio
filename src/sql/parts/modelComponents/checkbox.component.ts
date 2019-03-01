@@ -8,13 +8,13 @@ import {
 	ViewChild, ElementRef, OnDestroy, AfterViewInit
 } from '@angular/core';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
 import { Checkbox, ICheckboxOptions } from 'sql/base/browser/ui/checkbox/checkbox';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import { attachCheckboxStyler } from 'sql/common/theme/styler';
+import { attachCheckboxStyler } from 'sql/platform/theme/common/styler';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 
 @Component({
@@ -33,7 +33,7 @@ export default class CheckBoxComponent extends ComponentBase implements ICompone
 		@Inject(forwardRef(() => CommonServiceInterface)) private _commonService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
-		@Inject(forwardRef(() => ElementRef)) el: ElementRef,) {
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef, ) {
 		super(changeRef, el);
 	}
 
@@ -87,18 +87,18 @@ export default class CheckBoxComponent extends ComponentBase implements ICompone
 	// CSS-bound properties
 
 	public get checked(): boolean {
-		return this.getPropertyOrDefault<sqlops.CheckBoxProperties, boolean>((props) => props.checked, false);
+		return this.getPropertyOrDefault<azdata.CheckBoxProperties, boolean>((props) => props.checked, false);
 	}
 
 	public set checked(newValue: boolean) {
-		this.setPropertyFromUI<sqlops.CheckBoxProperties, boolean>((properties, value) => { properties.checked = value; }, newValue);
+		this.setPropertyFromUI<azdata.CheckBoxProperties, boolean>((properties, value) => { properties.checked = value; }, newValue);
 	}
 
 	private get label(): string {
-		return this.getPropertyOrDefault<sqlops.CheckBoxProperties, string>((props) => props.label, '');
+		return this.getPropertyOrDefault<azdata.CheckBoxProperties, string>((props) => props.label, '');
 	}
 
 	private set label(newValue: string) {
-		this.setPropertyFromUI<sqlops.CheckBoxProperties, string>((properties, label) => { properties.label = label; }, newValue);
+		this.setPropertyFromUI<azdata.CheckBoxProperties, string>((properties, label) => { properties.label = label; }, newValue);
 	}
 }

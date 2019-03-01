@@ -13,7 +13,7 @@ import { Promise, TPromise } from 'vs/base/common/winjs.base';
 import { IMouseEvent } from 'vs/base/browser/mouseEvent';
 import { generateUuid } from 'vs/base/common/uuid';
 import * as DOM from 'vs/base/browser/dom';
-import { AgentJobHistoryInfo } from 'sqlops';
+import { AgentJobHistoryInfo } from 'azdata';
 import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 
 export class JobHistoryRow {

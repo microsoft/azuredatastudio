@@ -9,7 +9,7 @@ import { Action } from 'vs/base/common/actions';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
+import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { ServerTreeView } from 'sql/parts/objectExplorer/viewlet/serverTreeView';
 import { ConnectionViewlet } from 'sql/workbench/parts/connection/electron-browser/connectionViewlet';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
@@ -17,7 +17,7 @@ import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectio
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import * as Constants from 'sql/platform/connection/common/constants';
-import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { TreeNode } from 'sql/parts/objectExplorer/common/treeNode';
 import Severity from 'vs/base/common/severity';
 import { ObjectExplorerActionsContext } from 'sql/parts/objectExplorer/viewlet/objectExplorerActions';
@@ -126,7 +126,6 @@ export class DisconnectConnectionAction extends Action {
 		});
 	}
 }
-
 
 /**
  * Actions to add a server to the group

@@ -10,7 +10,7 @@ import { DropdownDataSource, DropdownFilter, DropdownModel, DropdownRenderer, Dr
 
 import { IContextViewProvider, ContextView } from 'vs/base/browser/ui/contextview/contextview';
 import { mixin } from 'vs/base/common/objects';
-import { Builder, $ } from 'vs/base/browser/builder';
+import { Builder, $ } from 'sql/base/browser/builder';
 import { InputBox, IInputBoxStyles } from 'sql/base/browser/ui/inputBox/inputBox';
 import { IMessage, MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import { IListStyles } from 'vs/base/browser/ui/list/listWidget';

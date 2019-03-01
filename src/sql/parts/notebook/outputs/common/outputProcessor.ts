@@ -7,7 +7,7 @@
 import { JSONObject, isPrimitive } from '../../models/jsonext';
 import { MimeModel } from './mimemodel';
 import { nbformat } from '../../models/nbformat';
-import { nb } from 'sqlops';
+import { nb } from 'azdata';
 
 /**
  * A multiline string.

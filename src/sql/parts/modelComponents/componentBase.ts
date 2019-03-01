@@ -12,14 +12,14 @@ import {
 import * as types from 'vs/base/common/types';
 
 import { IComponent, IComponentDescriptor, IModelStore, IComponentEventArgs, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { ComponentHostDirective } from 'sql/parts/dashboard/common/componentHost.directive';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { ModelComponentWrapper } from 'sql/parts/modelComponents/modelComponentWrapper.component';
-import URI from 'vs/base/common/uri';
-import { Builder } from 'vs/base/browser/builder';
+import { URI } from 'vs/base/common/uri';
+import { Builder } from 'sql/base/browser/builder';
 import { IdGenerator } from 'vs/base/common/idGenerator';
 import { createCSSRule, removeCSSRulesContainingSelector } from 'vs/base/browser/dom';
 import * as nls from 'vs/nls';
@@ -137,35 +137,35 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 	}
 
 	public get height(): number | string {
-		return this.getPropertyOrDefault<sqlops.ComponentProperties, number | string>((props) => props.height, undefined);
+		return this.getPropertyOrDefault<azdata.ComponentProperties, number | string>((props) => props.height, undefined);
 	}
 
 	public set height(newValue: number | string) {
-		this.setPropertyFromUI<sqlops.ComponentProperties, number | string>((props, value) => props.height = value, newValue);
+		this.setPropertyFromUI<azdata.ComponentProperties, number | string>((props, value) => props.height = value, newValue);
 	}
 
 	public get width(): number | string {
-		return this.getPropertyOrDefault<sqlops.ComponentProperties, number | string>((props) => props.width, undefined);
+		return this.getPropertyOrDefault<azdata.ComponentProperties, number | string>((props) => props.width, undefined);
 	}
 
 	public set width(newValue: number | string) {
-		this.setPropertyFromUI<sqlops.ComponentProperties, number | string>((props, value) => props.width = value, newValue);
+		this.setPropertyFromUI<azdata.ComponentProperties, number | string>((props, value) => props.width = value, newValue);
 	}
 
 	public get position(): string {
-		return this.getPropertyOrDefault<sqlops.ComponentProperties, string>((props) => props.position, '');
+		return this.getPropertyOrDefault<azdata.ComponentProperties, string>((props) => props.position, '');
 	}
 
 	public set position(newValue: string) {
-		this.setPropertyFromUI<sqlops.ComponentProperties, string>((properties, position) => { properties.position = position; }, newValue);
+		this.setPropertyFromUI<azdata.ComponentProperties, string>((properties, position) => { properties.position = position; }, newValue);
 	}
 
 	public get CSSStyles(): { [key: string]: string } {
-		return this.getPropertyOrDefault<sqlops.ComponentProperties, { [key: string]: string }>((props) => props.CSSStyles, {});
+		return this.getPropertyOrDefault<azdata.ComponentProperties, { [key: string]: string }>((props) => props.CSSStyles, {});
 	}
 
 	public set CSSStyles(newValue: { [key: string]: string }) {
-		this.setPropertyFromUI<sqlops.ComponentProperties, { [key: string]: string }>((properties, CSSStyles) => { properties.CSSStyles = CSSStyles; }, newValue);
+		this.setPropertyFromUI<azdata.ComponentProperties, { [key: string]: string }>((properties, CSSStyles) => { properties.CSSStyles = CSSStyles; }, newValue);
 	}
 
 	public convertSizeToNumber(size: number | string): number {

@@ -9,7 +9,7 @@ import { IConnectionProfileGroup, ConnectionProfileGroup } from 'sql/platform/co
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { Event, Emitter } from 'vs/base/common/event';
 
 // Test stubs for commonly used objects
@@ -31,7 +31,7 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return conEvent.event;
 	}
 
-	registerProvider(providerId: string, provider: sqlops.ConnectionProvider): void {
+	registerProvider(providerId: string, provider: azdata.ConnectionProvider): void {
 
 	}
 
@@ -47,7 +47,7 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return undefined;
 	}
 
-	onConnectionComplete(handle: number, connectionInfoSummary: sqlops.ConnectionInfoSummary): void {
+	onConnectionComplete(handle: number, connectionInfoSummary: azdata.ConnectionInfoSummary): void {
 
 	}
 
@@ -55,11 +55,11 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 
 	}
 
-	public onConnectionChangedNotification(handle: number, changedConnInfo: sqlops.ChangedConnectionInfo): void {
+	public onConnectionChangedNotification(handle: number, changedConnInfo: azdata.ChangedConnectionInfo): void {
 
 	}
 
-	getCurrentConnectionSummary(): sqlops.ConnectionSummary {
+	getCurrentConnectionSummary(): azdata.ConnectionSummary {
 		return undefined;
 	}
 
@@ -111,7 +111,7 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		});
 	}
 
-	getAdvancedProperties(): sqlops.ConnectionOption[] {
+	getAdvancedProperties(): azdata.ConnectionOption[] {
 		return [];
 	}
 
@@ -181,7 +181,7 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return new Promise<IConnectionProfile>(() => connectionProfile);
 	}
 
-	public listDatabases(connectionUri: string): Thenable<sqlops.ListDatabasesResult> {
+	public listDatabases(connectionUri: string): Thenable<azdata.ListDatabasesResult> {
 		return Promise.resolve(undefined);
 	}
 
@@ -215,7 +215,7 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return true;
 	}
 
-	getCapabilities(providerName: string): sqlops.DataProtocolServerCapabilities {
+	getCapabilities(providerName: string): azdata.DataProtocolServerCapabilities {
 		return undefined;
 	}
 
@@ -254,7 +254,7 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return undefined;
 	}
 
-	getServerInfo(profileId: string): sqlops.ServerInfo {
+	getServerInfo(profileId: string): azdata.ServerInfo {
 		return undefined;
 	}
 
@@ -262,7 +262,11 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return undefined;
 	}
 
-	buildConnectionInfo(connectionString: string, provider?: string): Thenable<sqlops.ConnectionInfo> {
+	buildConnectionInfo(connectionString: string, provider?: string): Thenable<azdata.ConnectionInfo> {
+		return undefined;
+	}
+
+	providerRegistered(providerId: string): boolean {
 		return undefined;
 	}
 

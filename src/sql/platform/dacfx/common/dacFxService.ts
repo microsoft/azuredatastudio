@@ -5,7 +5,7 @@
 
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { TPromise } from 'vs/base/common/winjs.base';
@@ -17,65 +17,65 @@ export const IDacFxService = createDecorator<IDacFxService>(SERVICE_ID);
 export interface IDacFxService {
 	_serviceBrand: any;
 
-	registerProvider(providerId: string, provider: sqlops.DacFxServicesProvider): void;
-	exportBacpac(sourceDatabaseName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): void;
-	importBacpac(packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): void;
-	extractDacpac(sourceDatabaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): void;
-	deployDacpac(packageFilePath: string, targetDatabaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): void;
-	generateDeployScript(packageFilePath: string, targetDatabaseName: string, scriptFilePath: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): void;
-	generateDeployPlan(packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): void;
+	registerProvider(providerId: string, provider: azdata.DacFxServicesProvider): void;
+	exportBacpac(sourceDatabaseName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): void;
+	importBacpac(packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): void;
+	extractDacpac(sourceDatabaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): void;
+	deployDacpac(packageFilePath: string, targetDatabaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): void;
+	generateDeployScript(packageFilePath: string, targetDatabaseName: string, scriptFilePath: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): void;
+	generateDeployPlan(packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): void;
 }
 
 export class DacFxService implements IDacFxService {
 	_serviceBrand: any;
-	private _providers: { [handle: string]: sqlops.DacFxServicesProvider; } = Object.create(null);
+	private _providers: { [handle: string]: azdata.DacFxServicesProvider; } = Object.create(null);
 
 	constructor(
 		@IConnectionManagementService private _connectionService: IConnectionManagementService
 	) {
 	}
 
-	registerProvider(providerId: string, provider: sqlops.DacFxServicesProvider): void {
+	registerProvider(providerId: string, provider: azdata.DacFxServicesProvider): void {
 		this._providers[providerId] = provider;
 	}
 
-	exportBacpac(databasesName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> {
+	exportBacpac(databasesName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> {
 		return this._runAction(ownerUri, (runner) => {
 			return runner.exportBacpac(databasesName, packageFilePath, ownerUri, taskExecutionMode);
 		});
 	}
 
-	importBacpac(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> {
+	importBacpac(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> {
 		return this._runAction(ownerUri, (runner) => {
 			return runner.importBacpac(packageFilePath, databaseName, ownerUri, taskExecutionMode);
 		});
 	}
 
-	extractDacpac(databaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> {
+	extractDacpac(databaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> {
 		return this._runAction(ownerUri, (runner) => {
 			return runner.extractDacpac(databaseName, packageFilePath, applicationName, applicationVersion, ownerUri, taskExecutionMode);
 		});
 	}
 
-	deployDacpac(packageFilePath: string, databaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> {
+	deployDacpac(packageFilePath: string, databaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> {
 		return this._runAction(ownerUri, (runner) => {
 			return runner.deployDacpac(packageFilePath, databaseName, upgradeExisting, ownerUri, taskExecutionMode);
 		});
 	}
 
-	generateDeployScript(packageFilePath: string, databaseName: string, generateDeployScript: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> {
+	generateDeployScript(packageFilePath: string, databaseName: string, generateDeployScript: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> {
 		return this._runAction(ownerUri, (runner) => {
 			return runner.generateDeployScript(packageFilePath, databaseName, generateDeployScript, ownerUri, taskExecutionMode);
 		});
 	}
 
-	generateDeployPlan(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.GenerateDeployPlanResult> {
+	generateDeployPlan(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.GenerateDeployPlanResult> {
 		return this._runAction(ownerUri, (runner) => {
 			return runner.generateDeployPlan(packageFilePath, databaseName, ownerUri, taskExecutionMode);
 		});
 	}
 
-	private _runAction<T>(uri: string, action: (handler: sqlops.DacFxServicesProvider) => Thenable<T>): Thenable<T> {
+	private _runAction<T>(uri: string, action: (handler: azdata.DacFxServicesProvider) => Thenable<T>): Thenable<T> {
 		let providerId: string = this._connectionService.getProviderIdFromUri(uri);
 
 		if (!providerId) {

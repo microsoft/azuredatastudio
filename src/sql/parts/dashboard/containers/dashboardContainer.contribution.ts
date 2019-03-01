@@ -7,7 +7,7 @@ import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import { localize } from 'vs/nls';
 import { join } from 'path';
 import { createCSSRule } from 'vs/base/browser/dom';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 
 import { registerContainer, generateContainerTypeSchemaProperties } from 'sql/platform/dashboard/common/dashboardContainerRegistry';
 import { NAV_SECTION, validateNavSectionContributionAndRegisterIcon } from 'sql/parts/dashboard/containers/dashboardNavSection.contribution';
@@ -34,10 +34,10 @@ const containerSchema: IJSONSchema = {
 	properties: {
 		id: {
 			type: 'string',
-			description: localize('sqlops.extension.contributes.dashboard.container.id', "Unique identifier for this container.")
+			description: localize('azdata.extension.contributes.dashboard.container.id', "Unique identifier for this container.")
 		},
 		container: {
-			description: localize('sqlops.extension.contributes.dashboard.container.container', "The container that will be displayed in the tab."),
+			description: localize('azdata.extension.contributes.dashboard.container.container', "The container that will be displayed in the tab."),
 			type: 'object',
 			properties: generateContainerTypeSchemaProperties()
 		}
@@ -45,7 +45,7 @@ const containerSchema: IJSONSchema = {
 };
 
 const containerContributionSchema: IJSONSchema = {
-	description: localize('sqlops.extension.contributes.containers', "Contributes a single or multiple dashboard containers for users to add to their dashboard."),
+	description: localize('azdata.extension.contributes.containers', "Contributes a single or multiple dashboard containers for users to add to their dashboard."),
 	oneOf: [
 		containerSchema,
 		{

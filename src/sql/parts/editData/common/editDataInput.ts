@@ -9,8 +9,8 @@ import { IConnectionManagementService, IConnectableInput, INewConnectionParams }
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { Event, Emitter } from 'vs/base/common/event';
-import { EditSessionReadyParams, ISelectionData } from 'sqlops';
-import URI from 'vs/base/common/uri';
+import { EditSessionReadyParams, ISelectionData } from 'azdata';
+import { URI } from 'vs/base/common/uri';
 import nls = require('vs/nls');
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';

@@ -4,20 +4,19 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
 import { Disposable } from 'vs/workbench/api/node/extHostTypes';
 import { localize } from 'vs/nls';
-import URI, { UriComponents } from 'vs/base/common/uri';
+import { URI, UriComponents } from 'vs/base/common/uri';
 
 import { ExtHostNotebookShape, MainThreadNotebookShape, SqlMainContext } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { INotebookManagerDetails, INotebookSessionDetails, INotebookKernelDetails, INotebookFutureDetails, FutureMessageType } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { Event, Emitter } from 'vs/base/common/event';
 
-type Adapter = sqlops.nb.NotebookProvider | sqlops.nb.NotebookManager | sqlops.nb.ISession | sqlops.nb.IKernel | sqlops.nb.IFuture;
+type Adapter = azdata.nb.NotebookProvider | azdata.nb.NotebookManager | azdata.nb.ISession | azdata.nb.IKernel | azdata.nb.IFuture;
 
 export class ExtHostNotebook implements ExtHostNotebookShape {
 	private static _handlePool: number = 0;
@@ -65,22 +64,22 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		return this._withServerManager(managerHandle, (serverManager) => serverManager.stopServer());
 	}
 
-	$getNotebookContents(managerHandle: number, notebookUri: UriComponents): Thenable<sqlops.nb.INotebookContents> {
+	$getNotebookContents(managerHandle: number, notebookUri: UriComponents): Thenable<azdata.nb.INotebookContents> {
 		return this._withContentManager(managerHandle, (contentManager) => contentManager.getNotebookContents(URI.revive(notebookUri)));
 	}
 
-	$save(managerHandle: number, notebookUri: UriComponents, notebook: sqlops.nb.INotebookContents): Thenable<sqlops.nb.INotebookContents> {
+	$save(managerHandle: number, notebookUri: UriComponents, notebook: azdata.nb.INotebookContents): Thenable<azdata.nb.INotebookContents> {
 		return this._withContentManager(managerHandle, (contentManager) => contentManager.save(URI.revive(notebookUri), notebook));
 	}
 
-	$refreshSpecs(managerHandle: number): Thenable<sqlops.nb.IAllKernels> {
+	$refreshSpecs(managerHandle: number): Thenable<azdata.nb.IAllKernels> {
 		return this._withSessionManager(managerHandle, async (sessionManager) => {
 			await sessionManager.ready;
 			return sessionManager.specs;
 		});
 	}
 
-	$startNewSession(managerHandle: number, options: sqlops.nb.ISessionOptions): Thenable<INotebookSessionDetails> {
+	$startNewSession(managerHandle: number, options: azdata.nb.ISessionOptions): Thenable<INotebookSessionDetails> {
 		return this._withSessionManager(managerHandle, async (sessionManager) => {
 			let session = await sessionManager.startNew(options);
 			let sessionId = this._addNewAdapter(session);
@@ -102,7 +101,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		});
 	}
 
-	private saveKernel(kernel: sqlops.nb.IKernel): INotebookKernelDetails {
+	private saveKernel(kernel: azdata.nb.IKernel): INotebookKernelDetails {
 		let kernelId = this._addNewAdapter(kernel);
 		let kernelDetails: INotebookKernelDetails = {
 			kernelId: kernelId,
@@ -120,38 +119,38 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		});
 	}
 
-	$changeKernel(sessionId: number, kernelInfo: sqlops.nb.IKernelSpec): Thenable<INotebookKernelDetails> {
-		let session = this._getAdapter<sqlops.nb.ISession>(sessionId);
+	$changeKernel(sessionId: number, kernelInfo: azdata.nb.IKernelSpec): Thenable<INotebookKernelDetails> {
+		let session = this._getAdapter<azdata.nb.ISession>(sessionId);
 		return session.changeKernel(kernelInfo).then(kernel => this.saveKernel(kernel));
 	}
 
-	$configureKernel(sessionId: number, kernelInfo: sqlops.nb.IKernelSpec): Thenable<void> {
-		let session = this._getAdapter<sqlops.nb.ISession>(sessionId);
+	$configureKernel(sessionId: number, kernelInfo: azdata.nb.IKernelSpec): Thenable<void> {
+		let session = this._getAdapter<azdata.nb.ISession>(sessionId);
 		return session.configureKernel(kernelInfo).then(() => null);
 	}
 
-	$configureConnection(sessionId: number, connection: sqlops.IConnectionProfile): Thenable<void> {
-		let session = this._getAdapter<sqlops.nb.ISession>(sessionId);
+	$configureConnection(sessionId: number, connection: azdata.IConnectionProfile): Thenable<void> {
+		let session = this._getAdapter<azdata.nb.ISession>(sessionId);
 		return session.configureConnection(connection).then(() => null);
 	}
 
-	$getKernelReadyStatus(kernelId: number): Thenable<sqlops.nb.IInfoReply> {
-		let kernel = this._getAdapter<sqlops.nb.IKernel>(kernelId);
+	$getKernelReadyStatus(kernelId: number): Thenable<azdata.nb.IInfoReply> {
+		let kernel = this._getAdapter<azdata.nb.IKernel>(kernelId);
 		return kernel.ready.then(success => kernel.info);
 	}
 
-	$getKernelSpec(kernelId: number): Thenable<sqlops.nb.IKernelSpec> {
-		let kernel = this._getAdapter<sqlops.nb.IKernel>(kernelId);
+	$getKernelSpec(kernelId: number): Thenable<azdata.nb.IKernelSpec> {
+		let kernel = this._getAdapter<azdata.nb.IKernel>(kernelId);
 		return kernel.getSpec();
 	}
 
-	$requestComplete(kernelId: number, content: sqlops.nb.ICompleteRequest): Thenable<sqlops.nb.ICompleteReplyMsg> {
-		let kernel = this._getAdapter<sqlops.nb.IKernel>(kernelId);
+	$requestComplete(kernelId: number, content: azdata.nb.ICompleteRequest): Thenable<azdata.nb.ICompleteReplyMsg> {
+		let kernel = this._getAdapter<azdata.nb.IKernel>(kernelId);
 		return kernel.requestComplete(content);
 	}
 
-	$requestExecute(kernelId: number, content: sqlops.nb.IExecuteRequest, disposeOnDone?: boolean): Thenable<INotebookFutureDetails> {
-		let kernel = this._getAdapter<sqlops.nb.IKernel>(kernelId);
+	$requestExecute(kernelId: number, content: azdata.nb.IExecuteRequest, disposeOnDone?: boolean): Thenable<INotebookFutureDetails> {
+		let kernel = this._getAdapter<azdata.nb.IKernel>(kernelId);
 		let future = kernel.requestExecute(content, disposeOnDone);
 		let futureId = this._addNewAdapter(future);
 		this.hookFutureDone(futureId, future);
@@ -162,7 +161,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		});
 	}
 
-	private hookFutureDone(futureId: number, future: sqlops.nb.IFuture): void {
+	private hookFutureDone(futureId: number, future: azdata.nb.IFuture): void {
 		future.done.then(success => {
 			return this._proxy.$onFutureDone(futureId, { succeeded: true, message: success, rejectReason: undefined });
 		}, err => {
@@ -180,31 +179,31 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		});
 	}
 
-	private hookFutureMessages(futureId: number, future: sqlops.nb.IFuture): void {
+	private hookFutureMessages(futureId: number, future: azdata.nb.IFuture): void {
 		future.setReplyHandler({ handle: (msg) => this._proxy.$onFutureMessage(futureId, FutureMessageType.Reply, msg) });
 		future.setStdInHandler({ handle: (msg) => this._proxy.$onFutureMessage(futureId, FutureMessageType.StdIn, msg) });
 		future.setIOPubHandler({ handle: (msg) => this._proxy.$onFutureMessage(futureId, FutureMessageType.IOPub, msg) });
 	}
 
 	$interruptKernel(kernelId: number): Thenable<void> {
-		let kernel = this._getAdapter<sqlops.nb.IKernel>(kernelId);
+		let kernel = this._getAdapter<azdata.nb.IKernel>(kernelId);
 		return kernel.interrupt();
 	}
 
-	$sendInputReply(futureId: number, content: sqlops.nb.IInputReply): void {
-		let future = this._getAdapter<sqlops.nb.IFuture>(futureId);
+	$sendInputReply(futureId: number, content: azdata.nb.IInputReply): void {
+		let future = this._getAdapter<azdata.nb.IFuture>(futureId);
 		return future.sendInputReply(content);
 	}
 
 	$disposeFuture(futureId: number): void {
-		let future = this._getAdapter<sqlops.nb.IFuture>(futureId);
+		let future = this._getAdapter<azdata.nb.IFuture>(futureId);
 		future.dispose();
 	}
 
 	//#endregion
 
 	//#region APIs called by extensions
-	registerNotebookProvider(provider: sqlops.nb.NotebookProvider): vscode.Disposable {
+	registerNotebookProvider(provider: azdata.nb.NotebookProvider): vscode.Disposable {
 		if (!provider || !provider.providerId) {
 			throw new Error(localize('providerRequired', 'A NotebookProvider with valid providerId must be passed to this method'));
 		}
@@ -236,7 +235,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		return undefined;
 	}
 
-	private async createManager(provider: sqlops.nb.NotebookProvider, notebookUri: URI): Promise<NotebookManagerAdapter> {
+	private async createManager(provider: azdata.nb.NotebookProvider, notebookUri: URI): Promise<NotebookManagerAdapter> {
 		let manager = await provider.getNotebookManager(notebookUri);
 		let uriString = notebookUri.toString();
 		let adapter = new NotebookManagerAdapter(provider, manager, uriString);
@@ -255,8 +254,8 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		return ExtHostNotebook._handlePool++;
 	}
 
-	private _withProvider<R>(handle: number, callback: (provider: sqlops.nb.NotebookProvider) => R | PromiseLike<R>): TPromise<R> {
-		let provider = this._adapters.get(handle) as sqlops.nb.NotebookProvider;
+	private _withProvider<R>(handle: number, callback: (provider: azdata.nb.NotebookProvider) => R | PromiseLike<R>): TPromise<R> {
+		let provider = this._adapters.get(handle) as azdata.nb.NotebookProvider;
 		if (provider === undefined) {
 			return TPromise.wrapError<R>(new Error(localize('errNoProvider', 'no notebook provider found')));
 		}
@@ -271,7 +270,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		return TPromise.wrap(callback(manager));
 	}
 
-	private _withServerManager<R>(handle: number, callback: (manager: sqlops.nb.ServerManager) => R | PromiseLike<R>): TPromise<R> {
+	private _withServerManager<R>(handle: number, callback: (manager: azdata.nb.ServerManager) => R | PromiseLike<R>): TPromise<R> {
 		return this._withNotebookManager(handle, (notebookManager) => {
 			let serverManager = notebookManager.serverManager;
 			if (!serverManager) {
@@ -281,7 +280,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		});
 	}
 
-	private _withContentManager<R>(handle: number, callback: (manager: sqlops.nb.ContentManager) => R | PromiseLike<R>): TPromise<R> {
+	private _withContentManager<R>(handle: number, callback: (manager: azdata.nb.ContentManager) => R | PromiseLike<R>): TPromise<R> {
 		return this._withNotebookManager(handle, (notebookManager) => {
 			let contentManager = notebookManager.contentManager;
 			if (!contentManager) {
@@ -291,7 +290,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		});
 	}
 
-	private _withSessionManager<R>(handle: number, callback: (manager: sqlops.nb.SessionManager) => R | PromiseLike<R>): TPromise<R> {
+	private _withSessionManager<R>(handle: number, callback: (manager: azdata.nb.SessionManager) => R | PromiseLike<R>): TPromise<R> {
 		return this._withNotebookManager(handle, (notebookManager) => {
 			let sessionManager = notebookManager.sessionManager;
 			if (!sessionManager) {
@@ -319,24 +318,24 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 }
 
 
-class NotebookManagerAdapter implements sqlops.nb.NotebookManager {
+class NotebookManagerAdapter implements azdata.nb.NotebookManager {
 	public handle: number;
 	constructor(
-		public readonly provider: sqlops.nb.NotebookProvider,
-		private manager: sqlops.nb.NotebookManager,
+		public readonly provider: azdata.nb.NotebookProvider,
+		private manager: azdata.nb.NotebookManager,
 		public readonly uriString: string
 	) {
 	}
 
-	public get contentManager(): sqlops.nb.ContentManager {
+	public get contentManager(): azdata.nb.ContentManager {
 		return this.manager.contentManager;
 	}
 
-	public get sessionManager(): sqlops.nb.SessionManager {
+	public get sessionManager(): azdata.nb.SessionManager {
 		return this.manager.sessionManager;
 	}
 
-	public get serverManager(): sqlops.nb.ServerManager {
+	public get serverManager(): azdata.nb.ServerManager {
 		return this.manager.serverManager;
 	}
 }

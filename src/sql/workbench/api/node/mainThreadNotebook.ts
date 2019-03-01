@@ -4,13 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { SqlExtHostContext, SqlMainContext, ExtHostNotebookShape, MainThreadNotebookShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 import { Event, Emitter } from 'vs/base/common/event';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 
 import { INotebookService, INotebookProvider, INotebookManager } from 'sql/workbench/services/notebook/common/notebookService';
 import { INotebookManagerDetails, INotebookSessionDetails, INotebookKernelDetails, FutureMessageType, INotebookFutureDetails, INotebookFutureDone } from 'sql/workbench/api/common/sqlExtHostTypes';
@@ -63,7 +63,7 @@ export class MainThreadNotebook extends Disposable implements MainThreadNotebook
 		}
 	}
 
-	public $onFutureMessage(futureId: number, type: FutureMessageType, payload: sqlops.nb.IMessage): void {
+	public $onFutureMessage(futureId: number, type: FutureMessageType, payload: azdata.nb.IMessage): void {
 		let future = this._futures.get(futureId);
 		if (future) {
 			future.onMessage(type, payload);
@@ -115,9 +115,9 @@ class NotebookProviderWrapper extends Disposable implements INotebookProvider {
 }
 
 class NotebookManagerWrapper implements INotebookManager {
-	private _sessionManager: sqlops.nb.SessionManager;
-	private _contentManager: sqlops.nb.ContentManager;
-	private _serverManager: sqlops.nb.ServerManager;
+	private _sessionManager: azdata.nb.SessionManager;
+	private _contentManager: azdata.nb.ContentManager;
+	private _serverManager: azdata.nb.ServerManager;
 	private managerDetails: INotebookManagerDetails;
 
 	constructor(private _proxy: Proxies,
@@ -134,13 +134,13 @@ class NotebookManagerWrapper implements INotebookManager {
 		return this;
 	}
 
-	public get sessionManager(): sqlops.nb.SessionManager {
+	public get sessionManager(): azdata.nb.SessionManager {
 		return this._sessionManager;
 	}
-	public get contentManager(): sqlops.nb.ContentManager {
+	public get contentManager(): azdata.nb.ContentManager {
 		return this._contentManager;
 	}
-	public get serverManager(): sqlops.nb.ServerManager {
+	public get serverManager(): azdata.nb.ServerManager {
 		return this._serverManager;
 	}
 
@@ -149,20 +149,20 @@ class NotebookManagerWrapper implements INotebookManager {
 	}
 }
 
-class ContentManagerWrapper implements sqlops.nb.ContentManager {
+class ContentManagerWrapper implements azdata.nb.ContentManager {
 
 	constructor(private handle: number, private _proxy: Proxies) {
 	}
-	getNotebookContents(notebookUri: URI): Thenable<sqlops.nb.INotebookContents> {
+	getNotebookContents(notebookUri: URI): Thenable<azdata.nb.INotebookContents> {
 		return this._proxy.ext.$getNotebookContents(this.handle, notebookUri);
 	}
 
-	save(path: URI, notebook: sqlops.nb.INotebookContents): Thenable<sqlops.nb.INotebookContents> {
+	save(path: URI, notebook: azdata.nb.INotebookContents): Thenable<azdata.nb.INotebookContents> {
 		return this._proxy.ext.$save(this.handle, path, notebook);
 	}
 }
 
-class ServerManagerWrapper implements sqlops.nb.ServerManager {
+class ServerManagerWrapper implements azdata.nb.ServerManager {
 	private onServerStartedEmitter = new Emitter<void>();
 	private _isStarted: boolean;
 	constructor(private handle: number, private _proxy: Proxies) {
@@ -201,10 +201,10 @@ class ServerManagerWrapper implements sqlops.nb.ServerManager {
 	}
 }
 
-class SessionManagerWrapper implements sqlops.nb.SessionManager {
+class SessionManagerWrapper implements azdata.nb.SessionManager {
 	private readyPromise: Promise<void>;
 	private _isReady: boolean;
-	private _specs: sqlops.nb.IAllKernels;
+	private _specs: azdata.nb.IAllKernels;
 	constructor(private managerHandle: number, private _proxy: Proxies) {
 		this._isReady = false;
 		this.readyPromise = this.initializeSessionManager();
@@ -218,15 +218,15 @@ class SessionManagerWrapper implements sqlops.nb.SessionManager {
 		return this.readyPromise;
 	}
 
-	get specs(): sqlops.nb.IAllKernels {
+	get specs(): azdata.nb.IAllKernels {
 		return this._specs;
 	}
 
-	startNew(options: sqlops.nb.ISessionOptions): Thenable<sqlops.nb.ISession> {
+	startNew(options: azdata.nb.ISessionOptions): Thenable<azdata.nb.ISession> {
 		return this.doStartNew(options);
 	}
 
-	private async doStartNew(options: sqlops.nb.ISessionOptions): Promise<sqlops.nb.ISession> {
+	private async doStartNew(options: azdata.nb.ISessionOptions): Promise<azdata.nb.ISession> {
 		let sessionDetails = await this._proxy.ext.$startNewSession(this.managerHandle, options);
 		return new SessionWrapper(this._proxy, sessionDetails);
 	}
@@ -248,7 +248,7 @@ class SessionManagerWrapper implements sqlops.nb.SessionManager {
 	}
 }
 
-class SessionWrapper implements sqlops.nb.ISession {
+class SessionWrapper implements azdata.nb.ISession {
 	private _kernel: KernelWrapper;
 	constructor(private _proxy: Proxies, private sessionDetails: INotebookSessionDetails) {
 		if (sessionDetails && sessionDetails.kernelDetails) {
@@ -276,48 +276,48 @@ class SessionWrapper implements sqlops.nb.ISession {
 		return this.sessionDetails.type;
 	}
 
-	get status(): sqlops.nb.KernelStatus {
-		return this.sessionDetails.status as sqlops.nb.KernelStatus;
+	get status(): azdata.nb.KernelStatus {
+		return this.sessionDetails.status as azdata.nb.KernelStatus;
 	}
 
-	get kernel(): sqlops.nb.IKernel {
+	get kernel(): azdata.nb.IKernel {
 		return this._kernel;
 	}
 
-	changeKernel(kernelInfo: sqlops.nb.IKernelSpec): Thenable<sqlops.nb.IKernel> {
+	changeKernel(kernelInfo: azdata.nb.IKernelSpec): Thenable<azdata.nb.IKernel> {
 		return this.doChangeKernel(kernelInfo);
 	}
 
-	configureKernel(kernelInfo: sqlops.nb.IKernelSpec): Thenable<void> {
+	configureKernel(kernelInfo: azdata.nb.IKernelSpec): Thenable<void> {
 		return this.doConfigureKernel(kernelInfo);
 	}
 
-	configureConnection(connection: sqlops.IConnectionProfile): Thenable<void> {
+	configureConnection(connection: azdata.IConnectionProfile): Thenable<void> {
 		if (connection['capabilitiesService'] !== undefined) {
 			connection['capabilitiesService'] = undefined;
 		}
 		return this.doConfigureConnection(connection);
 	}
 
-	private async doChangeKernel(kernelInfo: sqlops.nb.IKernelSpec): Promise<sqlops.nb.IKernel> {
+	private async doChangeKernel(kernelInfo: azdata.nb.IKernelSpec): Promise<azdata.nb.IKernel> {
 		let kernelDetails = await this._proxy.ext.$changeKernel(this.sessionDetails.sessionId, kernelInfo);
 		this._kernel = new KernelWrapper(this._proxy, kernelDetails);
 		return this._kernel;
 	}
 
-	private async doConfigureKernel(kernelInfo: sqlops.nb.IKernelSpec): Promise<void> {
+	private async doConfigureKernel(kernelInfo: azdata.nb.IKernelSpec): Promise<void> {
 		await this._proxy.ext.$configureKernel(this.sessionDetails.sessionId, kernelInfo);
 	}
 
-	private async doConfigureConnection(connection: sqlops.IConnectionProfile): Promise<void> {
+	private async doConfigureConnection(connection: azdata.IConnectionProfile): Promise<void> {
 		await this._proxy.ext.$configureConnection(this.sessionDetails.sessionId, connection);
 	}
 }
 
-class KernelWrapper implements sqlops.nb.IKernel {
+class KernelWrapper implements azdata.nb.IKernel {
 	private _isReady: boolean = false;
 	private _ready = new Deferred<void>();
-	private _info: sqlops.nb.IInfoReply;
+	private _info: azdata.nb.IInfoReply;
 	constructor(private _proxy: Proxies, private kernelDetails: INotebookKernelDetails) {
 		this.initialize(kernelDetails);
 	}
@@ -352,19 +352,19 @@ class KernelWrapper implements sqlops.nb.IKernel {
 		return this.kernelDetails.supportsIntellisense;
 	}
 
-	get info(): sqlops.nb.IInfoReply {
+	get info(): azdata.nb.IInfoReply {
 		return this._info;
 	}
 
-	getSpec(): Thenable<sqlops.nb.IKernelSpec> {
+	getSpec(): Thenable<azdata.nb.IKernelSpec> {
 		return this._proxy.ext.$getKernelSpec(this.kernelDetails.kernelId);
 	}
 
-	requestComplete(content: sqlops.nb.ICompleteRequest): Thenable<sqlops.nb.ICompleteReplyMsg> {
+	requestComplete(content: azdata.nb.ICompleteRequest): Thenable<azdata.nb.ICompleteReplyMsg> {
 		return this._proxy.ext.$requestComplete(this.kernelDetails.kernelId, content);
 	}
 
-	requestExecute(content: sqlops.nb.IExecuteRequest, disposeOnDone?: boolean): sqlops.nb.IFuture {
+	requestExecute(content: azdata.nb.IExecuteRequest, disposeOnDone?: boolean): azdata.nb.IFuture {
 		let future = new FutureWrapper(this._proxy);
 		this._proxy.ext.$requestExecute(this.kernelDetails.kernelId, content, disposeOnDone)
 			.then(details => {
@@ -383,9 +383,9 @@ class KernelWrapper implements sqlops.nb.IKernel {
 
 class FutureWrapper implements FutureInternal {
 	private _futureId: number;
-	private _done = new Deferred<sqlops.nb.IShellMessage>();
-	private _messageHandlers = new Map<FutureMessageType, sqlops.nb.MessageHandler<sqlops.nb.IMessage>>();
-	private _msg: sqlops.nb.IMessage;
+	private _done = new Deferred<azdata.nb.IShellMessage>();
+	private _messageHandlers = new Map<FutureMessageType, azdata.nb.MessageHandler<azdata.nb.IMessage>>();
+	private _msg: azdata.nb.IMessage;
 	private _inProgress: boolean;
 
 	constructor(private _proxy: Proxies) {
@@ -401,7 +401,7 @@ class FutureWrapper implements FutureInternal {
 		this._done.reject(error);
 	}
 
-	public onMessage(type: FutureMessageType, payload: sqlops.nb.IMessage): void {
+	public onMessage(type: FutureMessageType, payload: azdata.nb.IMessage): void {
 		let handler = this._messageHandlers.get(type);
 		if (handler) {
 			try {
@@ -421,7 +421,7 @@ class FutureWrapper implements FutureInternal {
 		}
 	}
 
-	private addMessageHandler(type: FutureMessageType, handler: sqlops.nb.MessageHandler<sqlops.nb.IMessage>): void {
+	private addMessageHandler(type: FutureMessageType, handler: azdata.nb.MessageHandler<azdata.nb.IMessage>): void {
 		// Note: there can only be 1 message handler according to the Jupyter Notebook spec.
 		// You can use a message hook to override this / add additional side-processors
 		this._messageHandlers.set(type, handler);
@@ -436,27 +436,27 @@ class FutureWrapper implements FutureInternal {
 		this._inProgress = value;
 	}
 
-	get msg(): sqlops.nb.IMessage {
+	get msg(): azdata.nb.IMessage {
 		return this._msg;
 	}
 
-	get done(): Thenable<sqlops.nb.IShellMessage> {
+	get done(): Thenable<azdata.nb.IShellMessage> {
 		return this._done.promise;
 	}
 
-	setReplyHandler(handler: sqlops.nb.MessageHandler<sqlops.nb.IShellMessage>): void {
+	setReplyHandler(handler: azdata.nb.MessageHandler<azdata.nb.IShellMessage>): void {
 		this.addMessageHandler(FutureMessageType.Reply, handler);
 	}
 
-	setStdInHandler(handler: sqlops.nb.MessageHandler<sqlops.nb.IStdinMessage>): void {
+	setStdInHandler(handler: azdata.nb.MessageHandler<azdata.nb.IStdinMessage>): void {
 		this.addMessageHandler(FutureMessageType.StdIn, handler);
 	}
 
-	setIOPubHandler(handler: sqlops.nb.MessageHandler<sqlops.nb.IIOPubMessage>): void {
+	setIOPubHandler(handler: azdata.nb.MessageHandler<azdata.nb.IIOPubMessage>): void {
 		this.addMessageHandler(FutureMessageType.IOPub, handler);
 	}
 
-	sendInputReply(content: sqlops.nb.IInputReply): void {
+	sendInputReply(content: azdata.nb.IInputReply): void {
 		this._proxy.ext.$sendInputReply(this._futureId, content);
 	}
 
@@ -465,10 +465,10 @@ class FutureWrapper implements FutureInternal {
 		this._proxy.ext.$disposeFuture(this._futureId);
 	}
 
-	registerMessageHook(hook: (msg: sqlops.nb.IIOPubMessage) => boolean | Thenable<boolean>): void {
+	registerMessageHook(hook: (msg: azdata.nb.IIOPubMessage) => boolean | Thenable<boolean>): void {
 		throw new Error('Method not implemented.');
 	}
-	removeMessageHook(hook: (msg: sqlops.nb.IIOPubMessage) => boolean | Thenable<boolean>): void {
+	removeMessageHook(hook: (msg: azdata.nb.IIOPubMessage) => boolean | Thenable<boolean>): void {
 		throw new Error('Method not implemented.');
 	}
 	//#endregion

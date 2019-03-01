@@ -5,12 +5,11 @@
 
 'use strict';
 
-import * as sqlops from 'sqlops';
-import { OptionsDialog } from 'sql/base/browser/ui/modal/optionsDialog';
+import { OptionsDialog } from 'sql/workbench/browser/modal/optionsDialog';
 import { DialogModal } from 'sql/platform/dialog/dialogModal';
 import { WizardModal } from 'sql/platform/dialog/wizardModal';
 import { Dialog, Wizard, DialogTab } from 'sql/platform/dialog/dialogTypes';
-import { IModalOptions } from 'sql/base/browser/ui/modal/modal';
+import { IModalOptions } from 'sql/workbench/browser/modal/modal';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 const defaultOptions: IModalOptions = { hasBackButton: false, isWide: false, hasErrors: true };

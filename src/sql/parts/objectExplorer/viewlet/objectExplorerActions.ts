@@ -11,7 +11,7 @@ import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { ExecuteCommandAction } from 'vs/platform/actions/common/actions';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { IConnectionManagementService, IConnectionCompletionOptions } from 'sql/platform/connection/common/connectionManagement';
 import { TreeNode } from 'sql/parts/objectExplorer/common/treeNode';
 import {
@@ -23,8 +23,8 @@ import { TreeUpdateUtils } from 'sql/parts/objectExplorer/viewlet/treeUpdateUtil
 import { TreeSelectionHandler } from 'sql/parts/objectExplorer/viewlet/treeSelectionHandler';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IScriptingService } from 'sql/platform/scripting/common/scriptingService';
-import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
-import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
+import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import * as Constants from 'sql/platform/connection/common/constants';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
@@ -32,9 +32,9 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 
 
-export class ObjectExplorerActionsContext implements sqlops.ObjectExplorerContext {
-	public connectionProfile: sqlops.IConnectionProfile;
-	public nodeInfo: sqlops.NodeInfo;
+export class ObjectExplorerActionsContext implements azdata.ObjectExplorerContext {
+	public connectionProfile: azdata.IConnectionProfile;
+	public nodeInfo: azdata.NodeInfo;
 	public isConnectionNode: boolean = false;
 }
 
@@ -59,7 +59,7 @@ export class OEAction extends ExecuteCommandAction {
 		super(id, label, commandService);
 	}
 
-	public async run(actionContext: any): TPromise<boolean> {
+	public async run(actionContext: any): Promise<boolean> {
 		this._treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
 
 
@@ -178,7 +178,7 @@ export class OEScriptSelectAction extends ScriptSelectAction {
 		super(id, label, _queryEditorService, _connectionManagementService, _scriptingService);
 	}
 
-	public async run(actionContext: any): TPromise<boolean> {
+	public async run(actionContext: any): Promise<boolean> {
 		this._treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
 		if (actionContext instanceof ObjectExplorerActionsContext) {
 			//set objectExplorerTreeNode for context menu clicks
@@ -213,7 +213,7 @@ export class OEEditDataAction extends EditDataAction {
 		super(id, label, _queryEditorService, _connectionManagementService, _scriptingService);
 	}
 
-	public async run(actionContext: any): TPromise<boolean> {
+	public async run(actionContext: any): Promise<boolean> {
 		this._treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
 		if (actionContext instanceof ObjectExplorerActionsContext) {
 			//set objectExplorerTreeNode for context menu clicks
@@ -247,7 +247,7 @@ export class OEScriptCreateAction extends ScriptCreateAction {
 		super(id, label, _queryEditorService, _connectionManagementService, _scriptingService, _errorMessageService);
 	}
 
-	public async run(actionContext: any): TPromise<boolean> {
+	public async run(actionContext: any): Promise<boolean> {
 		this._treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
 		if (actionContext instanceof ObjectExplorerActionsContext) {
 			//set objectExplorerTreeNode for context menu clicks
@@ -283,7 +283,7 @@ export class OEScriptExecuteAction extends ScriptExecuteAction {
 		super(id, label, _queryEditorService, _connectionManagementService, _scriptingService, _errorMessageService);
 	}
 
-	public async run(actionContext: any): TPromise<boolean> {
+	public async run(actionContext: any): Promise<boolean> {
 		this._treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
 		if (actionContext instanceof ObjectExplorerActionsContext) {
 			//set objectExplorerTreeNode for context menu clicks
@@ -319,7 +319,7 @@ export class OEScriptAlterAction extends ScriptAlterAction {
 		super(id, label, _queryEditorService, _connectionManagementService, _scriptingService, _errorMessageService);
 	}
 
-	public async run(actionContext: any): TPromise<boolean> {
+	public async run(actionContext: any): Promise<boolean> {
 		this._treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
 		if (actionContext instanceof ObjectExplorerActionsContext) {
 			//set objectExplorerTreeNode for context menu clicks
@@ -355,7 +355,7 @@ export class OEScriptDeleteAction extends ScriptDeleteAction {
 		super(id, label, _queryEditorService, _connectionManagementService, _scriptingService, _errorMessageService);
 	}
 
-	public async run(actionContext: any): TPromise<boolean> {
+	public async run(actionContext: any): Promise<boolean> {
 		this._treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
 		if (actionContext instanceof ObjectExplorerActionsContext) {
 			//set objectExplorerTreeNode for context menu clicks

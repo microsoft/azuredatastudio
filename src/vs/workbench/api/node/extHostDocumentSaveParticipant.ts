@@ -2,10 +2,9 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import { Event } from 'vs/base/common/event';
-import URI, { UriComponents } from 'vs/base/common/uri';
+import { URI, UriComponents } from 'vs/base/common/uri';
 import { sequence, always } from 'vs/base/common/async';
 import { illegalState } from 'vs/base/common/errors';
 import { ExtHostDocumentSaveParticipantShape, MainThreadTextEditorsShape, ResourceTextEditDto } from 'vs/workbench/api/node/extHost.protocol';
@@ -163,11 +162,11 @@ export class ExtHostDocumentSaveParticipant implements ExtHostDocumentSavePartic
 			// apply edits if any and if document
 			// didn't change somehow in the meantime
 			if (resourceEdit.edits.length === 0) {
-				return <any>undefined;
+				return undefined;
 			}
 
 			if (version === document.version) {
-				return <any>this._mainThreadEditors.$tryApplyWorkspaceEdit({ edits: [resourceEdit] });
+				return this._mainThreadEditors.$tryApplyWorkspaceEdit({ edits: [resourceEdit] });
 			}
 
 			// TODO@joh bubble this to listener?

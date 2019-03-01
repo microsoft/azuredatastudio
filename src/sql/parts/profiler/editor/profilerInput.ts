@@ -8,7 +8,7 @@ import { IProfilerSession, IProfilerService, ProfilerSessionID, IProfilerViewTem
 import { ProfilerState } from './profilerState';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as nls from 'vs/nls';
 
 import { TPromise } from 'vs/base/common/winjs.base';
@@ -21,7 +21,7 @@ import { generateUuid } from 'vs/base/common/uuid';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { escape } from 'sql/base/common/strings';
 import * as types from 'vs/base/common/types';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import Severity from 'vs/base/common/severity';
 import { FilterData } from 'sql/parts/profiler/service/profilerFilter';
 
@@ -199,7 +199,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		return this._filter;
 	}
 
-	public onSessionStopped(notification: sqlops.ProfilerSessionStoppedParams) {
+	public onSessionStopped(notification: azdata.ProfilerSessionStoppedParams) {
 		this._notificationService.error(nls.localize("profiler.sessionStopped", "XEvent Profiler Session stopped unexpectedly on the server {0}.", this.connection.serverName));
 
 		this.state.change({
@@ -209,7 +209,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		});
 	}
 
-	public onProfilerSessionCreated(params: sqlops.ProfilerSessionCreatedParams) {
+	public onProfilerSessionCreated(params: azdata.ProfilerSessionCreatedParams) {
 		if (types.isUndefinedOrNull(params.sessionName) || types.isUndefinedOrNull(params.templateName)) {
 			this._notificationService.error(nls.localize("profiler.sessionCreationError", "Error while starting new session"));
 		} else {
@@ -239,14 +239,14 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		this.state.change(state);
 	}
 
-	public onMoreRows(eventMessage: sqlops.ProfilerSessionEvents) {
+	public onMoreRows(eventMessage: azdata.ProfilerSessionEvents) {
 		if (eventMessage.eventsLost) {
 			this._notificationService.warn(nls.localize("profiler.eventsLost", "The XEvent Profiler session for {0} has lost events.", this.connection.serverName));
 		}
 
 		let newEvents = [];
 		for (let i: number = 0; i < eventMessage.events.length && i < 500; ++i) {
-			let e: sqlops.ProfilerEvent = eventMessage.events[i];
+			let e: azdata.ProfilerEvent = eventMessage.events[i];
 			let data = {};
 			data['EventClass'] = e.name;
 			data['StartTime'] = e.timestamp;

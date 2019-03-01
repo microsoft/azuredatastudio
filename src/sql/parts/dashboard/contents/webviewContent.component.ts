@@ -21,7 +21,7 @@ import { IDashboardWebview, IDashboardViewService } from 'sql/platform/dashboard
 import { AngularDisposable } from 'sql/base/node/lifecycle';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { IContextKey } from 'vs/platform/contextkey/common/contextkey';
 
 @Component({
@@ -40,17 +40,12 @@ export class WebviewContent extends AngularDisposable implements OnInit, IDashbo
 	private _webview: WebviewElement;
 	private _html: string;
 
-	protected contextKey: IContextKey<boolean>;
-	protected findInputFocusContextKey: IContextKey<boolean>;
-
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _dashboardService: DashboardServiceInterface,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
-		@Inject(IContextViewService) private contextViewService: IContextViewService,
 		@Inject(IDashboardViewService) private dashboardViewService: IDashboardViewService,
 		@Inject(IPartService) private partService: IPartService,
-		@Inject(IEnvironmentService) private environmentService: IEnvironmentService,
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService
 	) {
 		super();
@@ -73,9 +68,9 @@ export class WebviewContent extends AngularDisposable implements OnInit, IDashbo
 	}
 
 	@memoize
-	public get connection(): sqlops.connection.Connection {
+	public get connection(): azdata.connection.Connection {
 		let currentConnection = this._dashboardService.connectionManagementService.connectionInfo.connectionProfile;
-		let connection: sqlops.connection.Connection = {
+		let connection: azdata.connection.Connection = {
 			providerName: currentConnection.providerName,
 			connectionId: currentConnection.id,
 			options: currentConnection.options
@@ -84,7 +79,7 @@ export class WebviewContent extends AngularDisposable implements OnInit, IDashbo
 	}
 
 	@memoize
-	public get serverInfo(): sqlops.ServerInfo {
+	public get serverInfo(): azdata.ServerInfo {
 		return this._dashboardService.connectionManagementService.connectionInfo.serverInfo;
 	}
 
@@ -113,8 +108,6 @@ export class WebviewContent extends AngularDisposable implements OnInit, IDashbo
 
 		this._webview = this.instantiationService.createInstance(WebviewElement,
 			this.partService.getContainer(Parts.EDITOR_PART),
-			this.contextKey,
-			this.findInputFocusContextKey,
 			{
 				enableWrappedPostMessage: true,
 				allowScripts: true

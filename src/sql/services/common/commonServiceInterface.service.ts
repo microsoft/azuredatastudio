@@ -19,7 +19,7 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { AngularDisposable } from 'sql/base/node/lifecycle';
 import { ConnectionContextKey } from 'sql/parts/connection/common/connectionContextKey';
 
-import { ProviderMetadata, DatabaseInfo, SimpleExecuteResult } from 'sqlops';
+import { ProviderMetadata, DatabaseInfo, SimpleExecuteResult } from 'azdata';
 
 /* VS imports */
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';

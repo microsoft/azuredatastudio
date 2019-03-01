@@ -5,7 +5,7 @@
 
 'use strict';
 import 'vs/css!./media/restoreDialog';
-import { Builder, $ } from 'vs/base/browser/builder';
+import { Builder, $ } from 'sql/base/browser/builder';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { Event, Emitter } from 'vs/base/common/event';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
@@ -18,10 +18,9 @@ import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { localize } from 'vs/nls';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { mixin } from 'vs/base/common/objects';
-import * as DOM from 'vs/base/browser/dom';
 import * as strings from 'vs/base/common/strings';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
@@ -31,18 +30,18 @@ import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectio
 import { CheckboxSelectColumn } from 'sql/base/browser/ui/table/plugins/checkboxSelectColumn.plugin';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
-import * as DialogHelper from 'sql/base/browser/ui/modal/dialogHelper';
-import { Modal } from 'sql/base/browser/ui/modal/modal';
-import { attachButtonStyler, attachModalDialogStyler, attachTableStyler, attachInputBoxStyler, attachSelectBoxStyler, attachEditableDropdownStyler, attachCheckboxStyler } from 'sql/common/theme/styler';
+import * as DialogHelper from 'sql/workbench/browser/modal/dialogHelper';
+import { Modal } from 'sql/workbench/browser/modal/modal';
+import { attachButtonStyler, attachModalDialogStyler, attachTableStyler, attachInputBoxStyler, attachSelectBoxStyler, attachEditableDropdownStyler, attachCheckboxStyler } from 'sql/platform/theme/common/styler';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
 import * as BackupConstants from 'sql/parts/disasterRecovery/backup/constants';
 import { RestoreViewModel, RestoreOptionParam, SouceDatabaseNamesParam } from 'sql/parts/disasterRecovery/restore/restoreViewModel';
-import * as FileValidationConstants from 'sql/parts/fileBrowser/common/fileValidationServiceConstants';
+import * as FileValidationConstants from 'sql/workbench/services/fileBrowser/common/fileValidationServiceConstants';
 import { Dropdown } from 'sql/base/browser/ui/editableDropdown/dropdown';
 import { TabbedPanel, PanelTabIdentifier } from 'sql/base/browser/ui/panel/panel';
 import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { IFileBrowserDialogController } from 'sql/platform/fileBrowser/common/interfaces';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
+import { IFileBrowserDialogController } from 'sql/workbench/services/fileBrowser/common/fileBrowserDialogController';
 
 interface FileListElement {
 	logicalFileName: string;
@@ -128,7 +127,7 @@ export class RestoreDialog extends Modal {
 	public onDatabaseListFocused: Event<void> = this._onDatabaseListFocused.event;
 
 	constructor(
-		optionsMetadata: sqlops.ServiceOption[],
+		optionsMetadata: azdata.ServiceOption[],
 		@IPartService partService: IPartService,
 		@IThemeService themeService: IThemeService,
 		@IContextViewService private _contextViewService: IContextViewService,
@@ -199,7 +198,7 @@ export class RestoreDialog extends Modal {
 				});
 
 				inputContainer.div({ class: 'file-browser' }, (inputCellContainer) => {
-					this._browseFileButton = new Button(inputCellContainer);
+					this._browseFileButton = new Button(inputCellContainer.getHTMLElement());
 					this._browseFileButton.label = '...';
 				});
 			});
@@ -844,7 +843,7 @@ export class RestoreDialog extends Modal {
 		}
 	}
 
-	private updateRestoreDatabaseFiles(dbFiles: sqlops.RestoreDatabaseFileInfo[]) {
+	private updateRestoreDatabaseFiles(dbFiles: azdata.RestoreDatabaseFileInfo[]) {
 		this.clearFileListTable();
 		if (dbFiles && dbFiles.length > 0) {
 			let data = [];
@@ -865,7 +864,7 @@ export class RestoreDialog extends Modal {
 		}
 	}
 
-	private updateBackupSetsToRestore(backupSetsToRestore: sqlops.DatabaseFileInfo[]) {
+	private updateBackupSetsToRestore(backupSetsToRestore: azdata.DatabaseFileInfo[]) {
 		if (this._isBackupFileCheckboxChanged) {
 			let selectedRow = [];
 			for (let i = 0; i < backupSetsToRestore.length; i++) {

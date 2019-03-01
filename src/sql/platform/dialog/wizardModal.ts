@@ -6,8 +6,8 @@
 'use strict';
 
 import 'vs/css!./media/dialogModal';
-import { Modal, IModalOptions } from 'sql/base/browser/ui/modal/modal';
-import { attachModalDialogStyler } from 'sql/common/theme/styler';
+import { Modal, IModalOptions } from 'sql/workbench/browser/modal/modal';
+import { attachModalDialogStyler } from 'sql/platform/theme/common/styler';
 import { Wizard, DialogButton, WizardPage } from 'sql/platform/dialog/dialogTypes';
 import { DialogPane } from 'sql/platform/dialog/dialogPane';
 import { bootstrapAngular } from 'sql/services/bootstrap/bootstrapService';
@@ -15,7 +15,7 @@ import { DialogMessage } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { DialogModule } from 'sql/platform/dialog/dialog.module';
 import { Button } from 'vs/base/browser/ui/button/button';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
-import { Builder } from 'vs/base/browser/builder';
+import { Builder } from 'sql/base/browser/builder';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';

@@ -2,11 +2,10 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import { TPromise } from 'vs/base/common/winjs.base';
 import { EditorInput, ITextEditorModel } from 'vs/workbench/common/editor';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import { IReference } from 'vs/base/common/lifecycle';
 import { telemetryURIDescriptor } from 'vs/platform/telemetry/common/telemetryUtils';
 import { ITextModelService } from 'vs/editor/common/services/resolverService';
@@ -82,7 +81,7 @@ export class ResourceEditorInput extends EditorInput {
 		return descriptor;
 	}
 
-	resolve(): TPromise<ITextEditorModel> {
+	resolve(): Thenable<ITextEditorModel> {
 		if (!this.modelReference) {
 			this.modelReference = this.textModelResolverService.createModelReference(this.resource);
 		}
@@ -94,7 +93,7 @@ export class ResourceEditorInput extends EditorInput {
 				ref.dispose();
 				this.modelReference = null;
 
-				return TPromise.wrapError<ITextEditorModel>(new Error(`Unexpected model for ResourceInput: ${this.resource}`));
+				return Promise.reject(new Error(`Unexpected model for ResourceInput: ${this.resource}`));
 			}
 
 			return model;
@@ -118,7 +117,7 @@ export class ResourceEditorInput extends EditorInput {
 
 	dispose(): void {
 		if (this.modelReference) {
-			this.modelReference.done(ref => ref.dispose());
+			this.modelReference.then(ref => ref.dispose());
 			this.modelReference = null;
 		}
 

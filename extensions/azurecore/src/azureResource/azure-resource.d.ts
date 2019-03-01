@@ -3,8 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { TreeDataProvider, TreeItem } from 'vscode';
-import { DataProvider, Account } from 'sqlops';
+import { TreeDataProvider } from 'vscode';
+import { DataProvider, Account } from 'azdata';
+import { TreeItem } from 'azdata';
 
 export namespace azureResource {
 	export interface IAzureResourceProvider extends DataProvider {

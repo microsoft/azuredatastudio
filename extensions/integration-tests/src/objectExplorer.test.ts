@@ -6,7 +6,7 @@
 'use strict';
 
 import 'mocha';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { context } from './testContext';
 import { getDefaultTestingServer } from './testConfig';
 import { connectToServer } from './utils';
@@ -16,10 +16,10 @@ if (context.RunTest) {
 	suite('Object Explorer integration test suite', () => {
 		test('context menu test', async function () {
 			await connectToServer(await getDefaultTestingServer());
-			let nodes = <sqlops.objectexplorer.ObjectExplorerNode[]>await sqlops.objectexplorer.getActiveConnectionNodes();
+			let nodes = <azdata.objectexplorer.ObjectExplorerNode[]>await azdata.objectexplorer.getActiveConnectionNodes();
 			assert(nodes.length === 1, `expecting 1 active connection, actual: ${nodes.length}`);
-			let actions = await sqlops.objectexplorer.getNodeActions(nodes[0].connectionId, nodes[0].nodePath);
-			const expectedActions = ['Manage', 'New Query', 'Disconnect', 'Delete Connection', 'Refresh', 'Launch Profiler'];
+			let actions = await azdata.objectexplorer.getNodeActions(nodes[0].connectionId, nodes[0].nodePath);
+			const expectedActions = ['Manage', 'New Query', 'Disconnect', 'Delete Connection', 'Refresh', 'New Notebook', 'Launch Profiler'];
 
 			const expectedString = expectedActions.join(',');
 			const actualString = actions.join(',');

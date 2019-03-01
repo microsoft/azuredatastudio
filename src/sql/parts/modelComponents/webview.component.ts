@@ -8,7 +8,7 @@ import {
 	ViewChild, ViewChildren, ElementRef, Injector, OnDestroy, QueryList
 } from '@angular/core';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { addDisposableListener, EventType } from 'vs/base/browser/dom';
 import { Parts, IPartService } from 'vs/workbench/services/part/common/partService';
@@ -17,7 +17,7 @@ import { IEnvironmentService } from 'vs/platform/environment/common/environment'
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { WebviewElement, WebviewOptions } from 'vs/workbench/parts/webview/electron-browser/webviewElement';
-import URI, { UriComponents } from 'vs/base/common/uri';
+import { URI, UriComponents } from 'vs/base/common/uri';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 
@@ -77,8 +77,6 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 	private _createWebview(): void {
 		this._webview = this.instantiationService.createInstance(WebviewElement,
 			this.partService.getContainer(Parts.EDITOR_PART),
-			this.contextKey,
-			this.findInputFocusContextKey,
 			{
 				allowScripts: true,
 				enableWrappedPostMessage: true
@@ -167,27 +165,27 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 	// CSS-bound properties
 
 	public get message(): any {
-		return this.getPropertyOrDefault<sqlops.WebViewProperties, any>((props) => props.message, undefined);
+		return this.getPropertyOrDefault<azdata.WebViewProperties, any>((props) => props.message, undefined);
 	}
 
 	public set message(newValue: any) {
-		this.setPropertyFromUI<sqlops.WebViewProperties, any>((properties, message) => { properties.message = message; }, newValue);
+		this.setPropertyFromUI<azdata.WebViewProperties, any>((properties, message) => { properties.message = message; }, newValue);
 	}
 
 	public get html(): string {
-		return this.getPropertyOrDefault<sqlops.WebViewProperties, string>((props) => props.html, undefined);
+		return this.getPropertyOrDefault<azdata.WebViewProperties, string>((props) => props.html, undefined);
 	}
 
 	public set html(newValue: string) {
-		this.setPropertyFromUI<sqlops.WebViewProperties, string>((properties, html) => { properties.html = html; }, newValue);
+		this.setPropertyFromUI<azdata.WebViewProperties, string>((properties, html) => { properties.html = html; }, newValue);
 	}
 
 	public get options(): vscode.WebviewOptions {
-		return this.getPropertyOrDefault<sqlops.WebViewProperties, vscode.WebviewOptions>((props) => props.options, undefined);
+		return this.getPropertyOrDefault<azdata.WebViewProperties, vscode.WebviewOptions>((props) => props.options, undefined);
 	}
 
 	public get extensionLocation(): UriComponents {
-		return this.getPropertyOrDefault<sqlops.WebViewProperties, UriComponents>((props) => props.extensionLocation, undefined);
+		return this.getPropertyOrDefault<azdata.WebViewProperties, UriComponents>((props) => props.extensionLocation, undefined);
 	}
 
 	private get extensionLocationUri(): URI {

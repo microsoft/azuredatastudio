@@ -2,9 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
-import { TPromise } from 'vs/base/common/winjs.base';
 import { IDiffEditorModel } from 'vs/editor/common/editorCommon';
 import { EditorModel } from 'vs/workbench/common/editor';
 import { BaseTextEditorModel } from 'vs/workbench/common/editor/textEditorModel';
@@ -31,7 +29,7 @@ export class TextDiffEditorModel extends DiffEditorModel {
 		return this._modifiedModel as BaseTextEditorModel;
 	}
 
-	load(): TPromise<EditorModel> {
+	load(): Thenable<EditorModel> {
 		return super.load().then(() => {
 			this.updateTextDiffEditorModel();
 

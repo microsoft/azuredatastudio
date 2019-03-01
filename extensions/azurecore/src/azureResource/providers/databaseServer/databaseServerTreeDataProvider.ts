@@ -5,7 +5,7 @@
 
 'use strict';
 
-import { AzureResource } from 'sqlops';
+import { AzureResource } from 'azdata';
 import { TreeItem, TreeItemCollapsibleState, ExtensionContext } from 'vscode';
 import { TokenCredentials } from 'ms-rest';
 import * as nls from 'vscode-nls';
@@ -16,6 +16,7 @@ import { IAzureResourceDatabaseServerService, IAzureResourceDatabaseServerNode }
 import { AzureResourceDatabaseServer } from './models';
 import { AzureResourceItemType } from '../../../azureResource/constants';
 import { ApiWrapper } from '../../../apiWrapper';
+import { generateGuid } from '../../utils';
 
 export class AzureResourceDatabaseServerTreeDataProvider implements azureResource.IAzureResourceTreeDataProvider {
 	public constructor(
@@ -54,8 +55,24 @@ export class AzureResourceDatabaseServerTreeDataProvider implements azureResourc
 					dark: this._extensionContext.asAbsolutePath('resources/dark/sql_server_inverse.svg'),
 					light: this._extensionContext.asAbsolutePath('resources/light/sql_server.svg')
 				},
-				collapsibleState: TreeItemCollapsibleState.None,
-				contextValue: AzureResourceItemType.databaseServer
+				collapsibleState: process.env.NODE_ENV === 'development' ? TreeItemCollapsibleState.Collapsed : TreeItemCollapsibleState.None,
+				contextValue: AzureResourceItemType.databaseServer,
+				payload: {
+					id: generateGuid(),
+					connectionName: undefined,
+					serverName: databaseServer.fullName,
+					databaseName: databaseServer.defaultDatabaseName,
+					userName: databaseServer.loginName,
+					password: '',
+					authenticationType: 'SqlLogin',
+					savePassword: true,
+					groupFullName: '',
+					groupId: '',
+					providerName: 'MSSQL',
+					saveProfile: false,
+					options: {}
+				},
+				childProvider: 'MSSQL'
 			}
 		});
 	}

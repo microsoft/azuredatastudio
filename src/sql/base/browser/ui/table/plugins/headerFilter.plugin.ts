@@ -1,11 +1,9 @@
 // Adopted and converted to typescript from https://github.com/danny-sg/slickgrid-spreadsheet-plugins/blob/master/ext.headerfilter.js
 // heavily modified
-import 'vs/css!sql/base/browser/ui/table/media/table';
 
 import { mixin } from 'vs/base/common/objects';
-import { SlickGrid } from 'angular2-slickgrid';
 import { Button } from '../../button/button';
-import { attachButtonStyler } from 'sql/common/theme/styler';
+import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { escape } from 'sql/base/common/strings';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 
@@ -22,7 +20,7 @@ export class HeaderFilter {
 		sortDescImage: 'sort-desc.gif'
 	};
 
-	private $menu;
+	private $menu: JQuery<HTMLElement>;
 	private options: any;
 	private okButton: Button;
 	private clearButton: Button;
@@ -36,11 +34,11 @@ export class HeaderFilter {
 
 	public init(grid: Slick.Grid<any>): void {
 		this.grid = grid;
-		this.handler.subscribe(this.grid.onHeaderCellRendered, (e, args) => this.handleHeaderCellRendered(e , args))
-				.subscribe(this.grid.onBeforeHeaderCellDestroy, (e, args) => this.handleBeforeHeaderCellDestroy(e, args))
-				.subscribe(this.grid.onClick, (e) => this.handleBodyMouseDown)
-				.subscribe(this.grid.onColumnsResized, () => this.columnsResized())
-				.subscribe(this.grid.onKeyDown, (e) => this.handleKeyDown);
+		this.handler.subscribe(this.grid.onHeaderCellRendered, (e, args) => this.handleHeaderCellRendered(e, args))
+			.subscribe(this.grid.onBeforeHeaderCellDestroy, (e, args) => this.handleBeforeHeaderCellDestroy(e, args))
+			.subscribe(this.grid.onClick, (e) => this.handleBodyMouseDown)
+			.subscribe(this.grid.onColumnsResized, () => this.columnsResized())
+			.subscribe(this.grid.onKeyDown, (e) => this.handleKeyDown);
 		this.grid.setColumns(this.grid.getColumns());
 
 		$(document.body).bind('mousedown', this.handleBodyMouseDown);
@@ -96,13 +94,13 @@ export class HeaderFilter {
 
 	private addMenuItem(menu, columnDef, title, command, image) {
 		let $item = $('<div class="slick-header-menuitem">')
-						.data('command', command)
-						.data('column', columnDef)
-						.bind('click', (e) => this.handleMenuItemClick(e, command, columnDef))
-						.appendTo(menu);
+			.data('command', command)
+			.data('column', columnDef)
+			.bind('click', (e) => this.handleMenuItemClick(e, command, columnDef))
+			.appendTo(menu);
 
 		let $icon = $('<div class="slick-header-menuicon">')
-						.appendTo($item);
+			.appendTo($item);
 
 		if (title === 'Sort Ascending') {
 			$icon.get(0).className += ' ascending';
@@ -137,8 +135,8 @@ export class HeaderFilter {
 			let filtered = _.contains(this.workingFilters, filterItems[i]);
 
 			filterOptions += '<label><input type="checkbox" value="' + i + '"'
-			+ (filtered ? ' checked="checked"' : '')
-			+ '/>' + filterItems[i] + '</label>';
+				+ (filtered ? ' checked="checked"' : '')
+				+ '/>' + filterItems[i] + '</label>';
 		}
 		let $filter = menu.find('.filter');
 		$filter.empty().append($(filterOptions));
@@ -184,13 +182,13 @@ export class HeaderFilter {
 			let filtered = _.contains(this.workingFilters, filterItems[i]);
 			if (filterItems[i] && filterItems[i].indexOf('Error:') < 0) {
 				filterOptions += '<label><input type="checkbox" value="' + i + '"'
-				+ (filtered ? ' checked="checked"' : '')
-				+ '/>' + escape(filterItems[i]) + '</label>';
+					+ (filtered ? ' checked="checked"' : '')
+					+ '/>' + escape(filterItems[i]) + '</label>';
 			}
 		}
 		let $filter = $('<div class="filter">')
-						.append($(filterOptions))
-						.appendTo(this.$menu);
+			.append($(filterOptions))
+			.appendTo(this.$menu);
 
 		this.okButton = new Button(this.$menu.get(0));
 		this.okButton.label = 'OK';
@@ -237,7 +235,7 @@ export class HeaderFilter {
 			menutop -= (this.$menu.height() + $(e.target).height() + 8);
 		}
 		this.$menu.css('top', menutop)
-				.css('left', (left > 0 ? left : 0));
+			.css('left', (left > 0 ? left : 0));
 	}
 
 	private columnsResized() {
@@ -262,7 +260,7 @@ export class HeaderFilter {
 
 			if ($checkbox.prop('checked') && index < 0) {
 				workingFilters.push(filterItems[value]);
-				let nextRow = filterItems[(parseInt(value)+1).toString()];
+				let nextRow = filterItems[(parseInt(value) + 1).toString()];
 				if (nextRow && nextRow.indexOf('Error:') >= 0) {
 					workingFilters.push(nextRow);
 				}
@@ -299,7 +297,7 @@ export class HeaderFilter {
 
 	private getFilterValues(dataView, column) {
 		let seen = [];
-		for (let i = 0; i < dataView.getLength() ; i++) {
+		for (let i = 0; i < dataView.getLength(); i++) {
 			let value = dataView.getItem(i)[column.field];
 
 			if (!_.contains(seen, value)) {
@@ -315,7 +313,7 @@ export class HeaderFilter {
 			dataView = this.grid.getData(),
 			seen = [];
 
-		for (let i = 0; i < dataView.getLength() ; i++) {
+		for (let i = 0; i < dataView.getLength(); i++) {
 			let value = dataView.getItem(i)[column.field];
 
 			if (filter.length > 0) {

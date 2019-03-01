@@ -2,10 +2,8 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
-import URI from 'vs/base/common/uri';
-import { TPromise } from 'vs/base/common/winjs.base';
+import { URI } from 'vs/base/common/uri';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import * as vscode from 'vscode';
 import * as typeConverters from 'vs/workbench/api/node/extHostTypeConverters';
@@ -19,7 +17,8 @@ import { ExtHostCommands } from 'vs/workbench/api/node/extHostCommands';
 import { CustomCodeAction } from 'vs/workbench/api/node/extHostLanguageFeatures';
 import { ICommandsExecutor, PreviewHTMLAPICommand, OpenFolderAPICommand, DiffAPICommand, OpenAPICommand, RemoveFromRecentlyOpenedAPICommand, SetEditorLayoutAPICommand } from './apiCommands';
 import { EditorGroupLayout } from 'vs/workbench/services/group/common/editorGroupsService';
-import { isFalsyOrEmpty } from 'vs/base/common/arrays';
+import { isFalsyOrEmpty, isNonEmptyArray } from 'vs/base/common/arrays';
+import { IRange } from 'vs/editor/common/core/range';
 
 export class ExtHostApiCommands {
 
@@ -43,6 +42,14 @@ export class ExtHostApiCommands {
 		});
 		this._register('vscode.executeDefinitionProvider', this._executeDefinitionProvider, {
 			description: 'Execute all definition provider.',
+			args: [
+				{ name: 'uri', description: 'Uri of a text document', constraint: URI },
+				{ name: 'position', description: 'Position of a symbol', constraint: types.Position }
+			],
+			returns: 'A promise that resolves to an array of Location-instances.'
+		});
+		this._register('vscode.executeDeclarationProvider', this._executeDeclaraionProvider, {
+			description: 'Execute all declaration provider.',
 			args: [
 				{ name: 'uri', description: 'Uri of a text document', constraint: URI },
 				{ name: 'position', description: 'Position of a symbol', constraint: types.Position }
@@ -112,7 +119,7 @@ export class ExtHostApiCommands {
 			args: [
 				{ name: 'uri', description: 'Uri of a text document', constraint: URI }
 			],
-			returns: 'A promise that resolves to an array of SymbolInformation-instances.'
+			returns: 'A promise that resolves to an array of SymbolInformation and DocumentSymbol instances.'
 		});
 		this._register('vscode.executeCompletionItemProvider', this._executeCompletionItemProvider, {
 			description: 'Execute completion item provider.',
@@ -189,7 +196,14 @@ export class ExtHostApiCommands {
 			],
 			returns: 'A promise that resolves to an array of ColorPresentation objects.'
 		});
-
+		this._register('vscode.executeSelectionRangeProvider', this._executeSelectionRangeProvider, {
+			description: 'Execute selection range provider.',
+			args: [
+				{ name: 'uri', description: 'Uri of a text document', constraint: URI },
+				{ name: 'position', description: 'Position in a text document', constraint: types.Position }
+			],
+			returns: 'A promise that resolves to an array of ranges.'
+		});
 
 		// -----------------------------------------------------------------
 		// The following commands are registered on both sides separately.
@@ -294,6 +308,15 @@ export class ExtHostApiCommands {
 			.then(tryMapWith(typeConverters.location.to));
 	}
 
+	private _executeDeclaraionProvider(resource: URI, position: types.Position): Thenable<types.Location[]> {
+		const args = {
+			resource,
+			position: position && typeConverters.Position.from(position)
+		};
+		return this._commands.executeCommand<modes.Location[]>('_executeDeclarationProvider', args)
+			.then(tryMapWith(typeConverters.location.to));
+	}
+
 	private _executeTypeDefinitionProvider(resource: URI, position: types.Position): Thenable<types.Location[]> {
 		const args = {
 			resource,
@@ -350,7 +373,7 @@ export class ExtHostApiCommands {
 				return undefined;
 			}
 			if (value.rejectReason) {
-				return TPromise.wrapError<types.WorkspaceEdit>(new Error(value.rejectReason));
+				return Promise.reject(new Error(value.rejectReason));
 			}
 			return typeConverters.WorkspaceEdit.to(value);
 		});
@@ -377,11 +400,10 @@ export class ExtHostApiCommands {
 			triggerCharacter,
 			maxItemsToResolve
 		};
-		return this._commands.executeCommand<modes.ISuggestResult>('_executeCompletionItemProvider', args).then(result => {
+		return this._commands.executeCommand<modes.CompletionList>('_executeCompletionItemProvider', args).then(result => {
 			if (result) {
-				const items = result.suggestions.map(suggestion => typeConverters.Suggest.to(position, suggestion));
-				// {{SQL CARBON EDIT}}
-				return new types.CompletionList(<any>items, result.incomplete);
+				const items = result.suggestions.map(suggestion => typeConverters.CompletionItem.to(suggestion));
+				return new types.CompletionList(items, result.incomplete);
 			}
 			return undefined;
 		});
@@ -394,6 +416,19 @@ export class ExtHostApiCommands {
 		return this._commands.executeCommand<IRawColorInfo[]>('_executeDocumentColorProvider', args).then(result => {
 			if (result) {
 				return result.map(ci => ({ range: typeConverters.Range.to(ci.range), color: typeConverters.Color.to(ci.color) }));
+			}
+			return [];
+		});
+	}
+
+	private _executeSelectionRangeProvider(resource: URI, position: types.Position): Thenable<types.Range[]> {
+		const args = {
+			resource,
+			position: position && typeConverters.Position.from(position)
+		};
+		return this._commands.executeCommand<IRange[]>('_executeSelectionRangeProvider', args).then(result => {
+			if (isNonEmptyArray(result)) {
+				return result.map(typeConverters.Range.to);
 			}
 			return [];
 		});
@@ -421,16 +456,27 @@ export class ExtHostApiCommands {
 			if (isFalsyOrEmpty(value)) {
 				return undefined;
 			}
-			let result: vscode.SymbolInformation[] = [];
-			for (const symbol of value) {
-				result.push(new types.SymbolInformation(
-					symbol.name,
-					typeConverters.SymbolKind.to(symbol.kind),
-					symbol.containerName,
-					new types.Location(resource, typeConverters.Range.to(symbol.range))
-				));
+			class MergedInfo extends types.SymbolInformation implements vscode.DocumentSymbol {
+				static to(symbol: modes.DocumentSymbol): MergedInfo {
+					let res = new MergedInfo(
+						symbol.name,
+						typeConverters.SymbolKind.to(symbol.kind),
+						symbol.containerName,
+						new types.Location(resource, typeConverters.Range.to(symbol.range))
+					);
+					res.detail = symbol.detail;
+					res.range = res.location.range;
+					res.selectionRange = typeConverters.Range.to(symbol.selectionRange);
+					res.children = symbol.children && symbol.children.map(MergedInfo.to);
+					return res;
+				}
+
+				detail: string;
+				range: vscode.Range;
+				selectionRange: vscode.Range;
+				children: vscode.DocumentSymbol[];
 			}
-			return result;
+			return value.map(MergedInfo.to);
 		});
 	}
 

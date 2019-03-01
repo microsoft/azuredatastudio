@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import * as Types from 'vs/base/common/types';
 import { IJSONSchemaMap } from 'vs/base/common/jsonSchema';
@@ -32,6 +31,8 @@ export enum ShellQuoting {
 	 */
 	Weak = 3,
 }
+
+export const CUSTOMIZED_TASK_TYPE = '$customized';
 
 export namespace ShellQuoting {
 	export function from(this: void, value: string): ShellQuoting {
@@ -204,6 +205,11 @@ export interface PresentationOptions {
 	 * Controls whether to show the "Terminal will be reused by tasks, press any key to close it" message.
 	 */
 	showReuseMessage: boolean;
+
+	/**
+	 * Controls whether to clear the terminal before executing the task.
+	 */
+	clear: boolean;
 }
 
 export enum RuntimeType {
@@ -297,7 +303,7 @@ export namespace TaskGroup {
 export type TaskGroup = 'clean' | 'build' | 'rebuild' | 'test';
 
 
-export enum TaskScope {
+export const enum TaskScope {
 	Global = 1,
 	Workspace = 2,
 	Folder = 3
@@ -357,7 +363,7 @@ export interface TaskDependency {
 	task: string | KeyedTaskIdentifier;
 }
 
-export enum GroupType {
+export const enum GroupType {
 	default = 'default',
 	user = 'user'
 }
@@ -415,6 +421,15 @@ export interface ConfigurationProperties {
 	problemMatchers?: (string | ProblemMatcher)[];
 }
 
+export enum RunOnOptions {
+	default = 1,
+	folderOpen = 2
+}
+
+export interface RunOptions {
+	reevaluateOnRerun?: boolean;
+	runOn?: RunOnOptions;
+}
 export interface CommonTask {
 
 	/**
@@ -428,11 +443,13 @@ export interface CommonTask {
 	_label: string;
 
 	type: string;
+
+	runOptions: RunOptions;
 }
 
 export interface CustomTask extends CommonTask, ConfigurationProperties {
 
-	type: 'custom';
+	type: '$customized'; // CUSTOMIZED_TASK_TYPE
 
 	/**
 	 * Indicated the source of the task (e.g tasks.json or extension)
@@ -454,7 +471,7 @@ export interface CustomTask extends CommonTask, ConfigurationProperties {
 export namespace CustomTask {
 	export function is(value: any): value is CustomTask {
 		let candidate: CustomTask = value;
-		return candidate && candidate.type === 'custom';
+		return candidate && candidate.type === CUSTOMIZED_TASK_TYPE;
 	}
 	export function getDefinition(task: CustomTask): KeyedTaskIdentifier {
 		let type: string;
@@ -470,7 +487,7 @@ export namespace CustomTask {
 		};
 		return result;
 	}
-	export function customizes(task: CustomTask): KeyedTaskIdentifier {
+	export function customizes(task: CustomTask): KeyedTaskIdentifier | undefined {
 		if (task._source && task._source.customizes) {
 			return task._source.customizes;
 		}
@@ -560,7 +577,7 @@ export namespace Task {
 			if (!workspaceFolder) {
 				return undefined;
 			}
-			let key: CustomKey = { type: 'custom', folder: workspaceFolder.uri.toString(), id: task.identifier };
+			let key: CustomKey = { type: CUSTOMIZED_TASK_TYPE, folder: workspaceFolder.uri.toString(), id: task.identifier };
 			return JSON.stringify(key);
 		}
 		if (ContributedTask.is(task)) {
@@ -637,7 +654,7 @@ export namespace Task {
 		}
 	}
 
-	export function getTaskDefinition(task: Task, useSource: boolean = false): KeyedTaskIdentifier {
+	export function getTaskDefinition(task: Task, useSource: boolean = false): KeyedTaskIdentifier | undefined {
 		if (ContributedTask.is(task)) {
 			return task.defines;
 		} else if (CustomTask.is(task)) {
@@ -674,7 +691,7 @@ export namespace ExecutionEngine {
 	export const _default: ExecutionEngine = ExecutionEngine.Terminal;
 }
 
-export enum JsonSchemaVersion {
+export const enum JsonSchemaVersion {
 	V0_1_0 = 1,
 	V2_0_0 = 2
 }
@@ -724,7 +741,7 @@ export class TaskSorter {
 	}
 }
 
-export enum TaskEventKind {
+export const enum TaskEventKind {
 	Start = 'start',
 	ProcessStarted = 'processStarted',
 	Active = 'active',
@@ -736,7 +753,7 @@ export enum TaskEventKind {
 }
 
 
-export enum TaskRunType {
+export const enum TaskRunType {
 	SingleRun = 'singleRun',
 	Background = 'background'
 }
@@ -752,6 +769,12 @@ export interface TaskEvent {
 	__task?: Task;
 }
 
+export const enum TaskRunSource {
+	User, // Default
+	FolderOpen,
+	ConfigurationChange
+}
+
 export namespace TaskEvent {
 	export function create(kind: TaskEventKind.ProcessStarted, task: Task, processId: number): TaskEvent;
 	export function create(kind: TaskEventKind.ProcessEnded, task: Task, exitCode: number): TaskEvent;
@@ -765,8 +788,8 @@ export namespace TaskEvent {
 				taskName: task.name,
 				runType: task.isBackground ? TaskRunType.Background : TaskRunType.SingleRun,
 				group: task.group,
-				processId: undefined,
-				exitCode: undefined,
+				processId: undefined as number | undefined,
+				exitCode: undefined as number | undefined,
 				__task: task,
 			};
 			if (kind === TaskEventKind.ProcessStarted) {

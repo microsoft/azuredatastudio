@@ -4,9 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { TaskNode, TaskStatus, TaskExecutionMode } from 'sql/parts/taskHistory/common/taskNode';
-import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
+import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { Event, Emitter } from 'vs/base/common/event';
 import { ILifecycleService } from 'vs/platform/lifecycle/common/lifecycle';
@@ -27,20 +27,20 @@ export interface ITaskService {
 	handleTaskComplete(eventArgs: TaskStatusChangeArgs): void;
 	getAllTasks(): TaskNode;
 	getNumberOfInProgressTasks(): number;
-	onNewTaskCreated(handle: number, taskInfo: sqlops.TaskInfo);
-	createNewTask(taskInfo: sqlops.TaskInfo);
-	updateTask(taskProgressInfo: sqlops.TaskProgressInfo);
-	onTaskStatusChanged(handle: number, taskProgressInfo: sqlops.TaskProgressInfo);
+	onNewTaskCreated(handle: number, taskInfo: azdata.TaskInfo);
+	createNewTask(taskInfo: azdata.TaskInfo);
+	updateTask(taskProgressInfo: azdata.TaskProgressInfo);
+	onTaskStatusChanged(handle: number, taskProgressInfo: azdata.TaskProgressInfo);
 	cancelTask(providerId: string, taskId: string): Thenable<boolean>;
 	/**
 	 * Register a ObjectExplorer provider
 	 */
-	registerProvider(providerId: string, provider: sqlops.TaskServicesProvider): void;
+	registerProvider(providerId: string, provider: azdata.TaskServicesProvider): void;
 }
 
 export interface TaskStatusChangeArgs {
 	taskId: string;
-	status: sqlops.TaskStatus;
+	status: azdata.TaskStatus;
 	message?: string;
 	script?: string;
 }
@@ -50,7 +50,7 @@ export class TaskService implements ITaskService {
 	private _taskQueue: TaskNode;
 	private _onTaskComplete = new Emitter<TaskNode>();
 	private _onAddNewTask = new Emitter<TaskNode>();
-	private _providers: { [handle: string]: sqlops.TaskServicesProvider; } = Object.create(null);
+	private _providers: { [handle: string]: azdata.TaskServicesProvider; } = Object.create(null);
 
 	constructor(
 		@ILifecycleService lifecycleService: ILifecycleService,
@@ -62,22 +62,22 @@ export class TaskService implements ITaskService {
 		this._onTaskComplete = new Emitter<TaskNode>();
 		this._onAddNewTask = new Emitter<TaskNode>();
 
-		lifecycleService.onWillShutdown(event => event.veto(this.beforeShutdown()));
+		lifecycleService.onBeforeShutdown(event => event.veto(this.beforeShutdown()));
 
 	}
 
 	/**
 	 * Register a ObjectExplorer provider
 	 */
-	public registerProvider(providerId: string, provider: sqlops.TaskServicesProvider): void {
+	public registerProvider(providerId: string, provider: azdata.TaskServicesProvider): void {
 		this._providers[providerId] = provider;
 	}
 
-	public onNewTaskCreated(handle: number, taskInfo: sqlops.TaskInfo) {
+	public onNewTaskCreated(handle: number, taskInfo: azdata.TaskInfo) {
 		this.createNewTask(taskInfo);
 	}
 
-	public createNewTask(taskInfo: sqlops.TaskInfo) {
+	public createNewTask(taskInfo: azdata.TaskInfo) {
 		let databaseName: string = taskInfo.databaseName;
 		let serverName: string = taskInfo.serverName;
 		if (taskInfo && taskInfo.connection) {
@@ -94,7 +94,7 @@ export class TaskService implements ITaskService {
 		this.handleNewTask(node);
 	}
 
-	public updateTask(taskProgressInfo: sqlops.TaskProgressInfo) {
+	public updateTask(taskProgressInfo: azdata.TaskProgressInfo) {
 		this.handleTaskComplete({
 			taskId: taskProgressInfo.taskId,
 			status: taskProgressInfo.status,
@@ -103,7 +103,7 @@ export class TaskService implements ITaskService {
 		});
 	}
 
-	public onTaskStatusChanged(handle: number, taskProgressInfo: sqlops.TaskProgressInfo) {
+	public onTaskStatusChanged(handle: number, taskProgressInfo: azdata.TaskProgressInfo) {
 		this.updateTask(taskProgressInfo);
 	}
 
@@ -161,23 +161,23 @@ export class TaskService implements ITaskService {
 		return new TPromise<boolean>((resolve, reject) => {
 			let numOfInprogressTasks = this.getNumberOfInProgressTasks();
 			if (numOfInprogressTasks > 0) {
-				this.dialogService.show(Severity.Warning, message, options).done(choice => {
+				this.dialogService.show(Severity.Warning, message, options).then(choice => {
 					switch (choice) {
 						case 0:
-							let timeoutId: number;
+							let timeout: NodeJS.Timer;
 							let isTimeout = false;
 							this.cancelAllTasks().then(() => {
-								clearTimeout(timeoutId);
+								clearTimeout(timeout);
 								if (!isTimeout) {
 									resolve(false);
 								}
 							}, error => {
-								clearTimeout(timeoutId);
+								clearTimeout(timeout);
 								if (!isTimeout) {
 									resolve(false);
 								}
 							});
-							timeoutId = setTimeout(function () {
+							timeout = setTimeout(function () {
 								isTimeout = true;
 								resolve(false);
 							}, 2000);

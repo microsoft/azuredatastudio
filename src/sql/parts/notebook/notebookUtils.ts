@@ -6,7 +6,7 @@
 'use strict';
 
 import * as path from 'path';
-import { nb } from 'sqlops';
+import { nb } from 'azdata';
 import * as os from 'os';
 import * as pfs from 'vs/base/node/pfs';
 import { localize } from 'vs/nls';
@@ -75,11 +75,6 @@ export function getStandardKernelsForProvider(providerId: string, notebookServic
 	return <IStandardKernelWithProvider[]>(standardKernels);
 }
 
-// Feature flag to enable Sql Notebook experience
-export function sqlNotebooksEnabled(contextKeyService: IContextKeyService) {
-	return contextKeyService.contextMatchesRules(ContextKeyExpr.equals('config.notebook.sqlKernelEnabled', true));
-}
-
 // In the Attach To dropdown, show the database name (if it exists) using the current connection
 // Example: myFakeServer (myDatabase)
 export function formatServerNameWithDatabaseNameForAttachTo(connectionProfile: ConnectionProfile): string {
@@ -104,4 +99,15 @@ export interface IStandardKernelWithProvider {
 	readonly name: string;
 	readonly connectionProviderIds: string[];
 	readonly notebookProvider: string;
+}
+
+export function tryMatchCellMagic(input: string): string {
+	if (!input) {
+		return input;
+	}
+	let firstLine = input.trimLeft();
+	let magicRegex = /^%%(\w+)/g;
+	let match = magicRegex.exec(firstLine);
+	let magicName = match && match[1];
+	return magicName;
 }

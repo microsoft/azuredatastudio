@@ -29,6 +29,7 @@
 		// {{SQL CARBON EDIT}}
 		// remove import patterns and layering
 		"duplicate-imports": true,
+		"no-new-buffer": true,
 		"translation-remind": true,
 		"no-standalone-editor": true
 	},

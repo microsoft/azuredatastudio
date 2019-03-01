@@ -5,15 +5,16 @@
 
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as platform from 'vs/platform/registry/common/platform';
 import * as statusbar from 'vs/workbench/browser/parts/statusbar/statusbar';
+import { StatusbarAlignment } from 'vs/platform/statusbar/common/statusbar';
 
 import { Event, Emitter } from 'vs/base/common/event';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IStorageService } from 'vs/platform/storage/common/storage';
-import { Memento, Scope as MementoScope } from 'vs/workbench/common/memento';
+import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
+import { Memento } from 'vs/workbench/common/memento';
 
 import AccountStore from 'sql/platform/accountManagement/common/accountStore';
 import { AccountDialogController } from 'sql/parts/accountManagement/accountDialog/accountDialogController';
@@ -39,8 +40,8 @@ export class AccountManagementService implements IAccountManagementService {
 	private _addAccountProviderEmitter: Emitter<AccountProviderAddedEventParams>;
 	public get addAccountProviderEvent(): Event<AccountProviderAddedEventParams> { return this._addAccountProviderEmitter.event; }
 
-	private _removeAccountProviderEmitter: Emitter<sqlops.AccountProviderMetadata>;
-	public get removeAccountProviderEvent(): Event<sqlops.AccountProviderMetadata> { return this._removeAccountProviderEmitter.event; }
+	private _removeAccountProviderEmitter: Emitter<azdata.AccountProviderMetadata>;
+	public get removeAccountProviderEvent(): Event<azdata.AccountProviderMetadata> { return this._removeAccountProviderEmitter.event; }
 
 	private _updateAccountListEmitter: Emitter<UpdateAccountListEventParams>;
 	public get updateAccountListEvent(): Event<UpdateAccountListEventParams> { return this._updateAccountListEmitter.event; }
@@ -54,20 +55,20 @@ export class AccountManagementService implements IAccountManagementService {
 	) {
 		// Create the account store
 		if (!this._mementoObj) {
-			this._mementoContext = new Memento(AccountManagementService.ACCOUNT_MEMENTO);
-			this._mementoObj = this._mementoContext.getMemento(this._storageService, MementoScope.GLOBAL);
+			this._mementoContext = new Memento(AccountManagementService.ACCOUNT_MEMENTO, this._storageService);
+			this._mementoObj = this._mementoContext.getMemento(StorageScope.GLOBAL);
 		}
 		this._accountStore = this._instantiationService.createInstance(AccountStore, this._mementoObj);
 
 		// Setup the event emitters
 		this._addAccountProviderEmitter = new Emitter<AccountProviderAddedEventParams>();
-		this._removeAccountProviderEmitter = new Emitter<sqlops.AccountProviderMetadata>();
+		this._removeAccountProviderEmitter = new Emitter<azdata.AccountProviderMetadata>();
 		this._updateAccountListEmitter = new Emitter<UpdateAccountListEventParams>();
 
 		// Register status bar item
 		let statusbarDescriptor = new statusbar.StatusbarItemDescriptor(
 			AccountListStatusbarItem,
-			statusbar.StatusbarAlignment.LEFT,
+			StatusbarAlignment.LEFT,
 			15000 /* Highest Priority */
 		);
 		(<statusbar.IStatusbarRegistry>platform.Registry.as(statusbar.Extensions.Statusbar)).registerStatusbarItem(statusbarDescriptor);
@@ -87,7 +88,7 @@ export class AccountManagementService implements IAccountManagementService {
 	 * account's properties have been updated (usually when the account goes stale).
 	 * @param {Account} updatedAccount Account with the updated properties
 	 */
-	public accountUpdated(updatedAccount: sqlops.Account): Thenable<void> {
+	public accountUpdated(updatedAccount: azdata.Account): Thenable<void> {
 		let self = this;
 
 		// 1) Update the account in the store
@@ -155,7 +156,7 @@ export class AccountManagementService implements IAccountManagementService {
 	 * @param {Account} account account to refresh
 	 * @return {Thenable<Account>} Promise to return an account
 	 */
-	public refreshAccount(account: sqlops.Account): Thenable<sqlops.Account> {
+	public refreshAccount(account: azdata.Account): Thenable<azdata.Account> {
 		let self = this;
 
 		return this.doWithProvider(account.key.providerId, (provider) => {
@@ -186,7 +187,7 @@ export class AccountManagementService implements IAccountManagementService {
 	 * Retrieves metadata of all providers that have been registered
 	 * @returns {Thenable<AccountProviderMetadata[]>} Registered account providers
 	 */
-	public getAccountProviderMetadata(): Thenable<sqlops.AccountProviderMetadata[]> {
+	public getAccountProviderMetadata(): Thenable<azdata.AccountProviderMetadata[]> {
 		return Promise.resolve(Object.values(this._providers).map(provider => provider.metadata));
 	}
 
@@ -195,7 +196,7 @@ export class AccountManagementService implements IAccountManagementService {
 	 * @param {string} providerId ID of the provider the returned accounts belong to
 	 * @returns {Thenable<Account[]>} Promise to return a list of accounts
 	 */
-	public getAccountsForProvider(providerId: string): Thenable<sqlops.Account[]> {
+	public getAccountsForProvider(providerId: string): Thenable<azdata.Account[]> {
 		let self = this;
 
 		// 1) Get the accounts from the store
@@ -212,10 +213,10 @@ export class AccountManagementService implements IAccountManagementService {
 	/**
 	 * Generates a security token by asking the account's provider
 	 * @param {Account} account Account to generate security token for
-	 * @param {sqlops.AzureResource} resource The resource to get the security token for
+	 * @param {azdata.AzureResource} resource The resource to get the security token for
 	 * @return {Thenable<{}>} Promise to return the security token
 	 */
-	public getSecurityToken(account: sqlops.Account, resource: sqlops.AzureResource): Thenable<{}> {
+	public getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Thenable<{}> {
 		return this.doWithProvider(account.key.providerId, provider => {
 			return provider.provider.getSecurityToken(account, resource);
 		});
@@ -227,7 +228,7 @@ export class AccountManagementService implements IAccountManagementService {
 	 * @returns {Thenable<void>} Promise with result of account removal, true if account was
 	 *                           removed, false otherwise.
 	 */
-	public removeAccount(accountKey: sqlops.AccountKey): Thenable<boolean> {
+	public removeAccount(accountKey: azdata.AccountKey): Thenable<boolean> {
 		let self = this;
 
 		// Step 1) Remove the account
@@ -322,10 +323,10 @@ export class AccountManagementService implements IAccountManagementService {
 	// SERVICE MANAGEMENT METHODS //////////////////////////////////////////
 	/**
 	 * Called by main thread to register an account provider from extension
-	 * @param {sqlops.AccountProviderMetadata} providerMetadata Metadata of the provider that is being registered
-	 * @param {sqlops.AccountProvider} provider References to the methods of the provider
+	 * @param {azdata.AccountProviderMetadata} providerMetadata Metadata of the provider that is being registered
+	 * @param {azdata.AccountProvider} provider References to the methods of the provider
 	 */
-	public registerProvider(providerMetadata: sqlops.AccountProviderMetadata, provider: sqlops.AccountProvider): Thenable<void> {
+	public registerProvider(providerMetadata: azdata.AccountProviderMetadata, provider: azdata.AccountProvider): Thenable<void> {
 		let self = this;
 
 		// Store the account provider
@@ -342,10 +343,10 @@ export class AccountManagementService implements IAccountManagementService {
 		// 4) Write the accounts back to the store
 		// 5) Fire the event to let folks know we have another account provider now
 		return this._accountStore.getAccountsByProvider(providerMetadata.id)
-			.then((accounts: sqlops.Account[]) => {
+			.then((accounts: azdata.Account[]) => {
 				return provider.initialize(accounts);
 			})
-			.then((accounts: sqlops.Account[]) => {
+			.then((accounts: azdata.Account[]) => {
 				self._providers[providerMetadata.id].accounts = accounts;
 				let writePromises = accounts.map(account => {
 					return self._accountStore.addOrUpdate(account);
@@ -372,7 +373,7 @@ export class AccountManagementService implements IAccountManagementService {
 		}
 	}
 
-	public unregisterProvider(providerMetadata: sqlops.AccountProviderMetadata): void {
+	public unregisterProvider(providerMetadata: azdata.AccountProviderMetadata): void {
 		// Delete this account provider
 		delete this._providers[providerMetadata.id];
 
@@ -403,7 +404,7 @@ export class AccountManagementService implements IAccountManagementService {
 	private fireAccountListUpdate(provider: AccountProviderWithMetadata, sort: boolean) {
 		// Step 1) Get and sort the list
 		if (sort) {
-			provider.accounts.sort((a: sqlops.Account, b: sqlops.Account) => {
+			provider.accounts.sort((a: azdata.Account, b: azdata.Account) => {
 				if (a.displayInfo.displayName < b.displayInfo.displayName) {
 					return -1;
 				}
@@ -422,7 +423,7 @@ export class AccountManagementService implements IAccountManagementService {
 		this._updateAccountListEmitter.fire(eventArg);
 	}
 
-	private spliceModifiedAccount(provider: AccountProviderWithMetadata, modifiedAccount: sqlops.Account) {
+	private spliceModifiedAccount(provider: AccountProviderWithMetadata, modifiedAccount: azdata.Account) {
 		// Find the updated account and splice the updated one in
 		let indexToRemove: number = provider.accounts.findIndex(account => {
 			return account.key.accountId === modifiedAccount.key.accountId;
@@ -437,7 +438,7 @@ export class AccountManagementService implements IAccountManagementService {
  * Joins together an account provider, its metadata, and its accounts, used in the provider list
  */
 export interface AccountProviderWithMetadata {
-	metadata: sqlops.AccountProviderMetadata;
-	provider: sqlops.AccountProvider;
-	accounts: sqlops.Account[];
+	metadata: azdata.AccountProviderMetadata;
+	provider: azdata.AccountProvider;
+	accounts: azdata.Account[];
 }

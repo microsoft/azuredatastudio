@@ -7,8 +7,7 @@
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { ServicesAccessor, IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorService, ACTIVE_GROUP } from 'vs/workbench/services/editor/common/editorService';
-import { IConnectionManagementService, IConnectionDialogService } from 'sql/platform/connection/common/connectionManagement';
-import { IObjectExplorerService } from '../../objectExplorer/common/objectExplorerService';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ProfilerInput } from 'sql/parts/profiler/editor/profilerInput';
 import { TPromise } from 'vs/base/common/winjs.base';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
@@ -20,6 +19,8 @@ import { ObjectExplorerActionsContext } from 'sql/parts/objectExplorer/viewlet/o
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
+import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 
 CommandsRegistry.registerCommand({
 	id: 'profiler.newProfiler',

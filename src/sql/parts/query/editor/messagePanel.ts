@@ -8,8 +8,9 @@ import 'vs/css!./media/messagePanel';
 import { IMessagesActionContext, CopyMessagesAction, CopyAllMessagesAction } from './actions';
 import QueryRunner from 'sql/platform/query/common/queryRunner';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
+import { $ } from 'sql/base/browser/builder';
 
-import { IResultMessage, ISelectionData } from 'sqlops';
+import { IResultMessage, ISelectionData } from 'azdata';
 
 import { ViewletPanel, IViewletPanelOptions } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { IDataSource, ITree, IRenderer, ContextMenuEvent } from 'vs/base/parts/tree/browser/tree';
@@ -25,7 +26,6 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { OpenMode, ClickBehavior, ICancelableEvent, IControllerOptions } from 'vs/base/parts/tree/browser/treeDefaults';
 import { WorkbenchTreeController } from 'vs/platform/list/browser/listService';
 import { IMouseEvent } from 'vs/base/browser/mouseEvent';
-import { $ } from 'vs/base/browser/builder';
 import { isArray, isUndefinedOrNull } from 'vs/base/common/types';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
@@ -153,10 +153,10 @@ export class MessagePanel extends ViewletPanel {
 					return { x: event.posx, y: event.posy };
 				},
 				getActions: () => {
-					return TPromise.as([
+					return [
 						instantiationService.createInstance(CopyMessagesAction, this, this.clipboardService),
 						instantiationService.createInstance(CopyAllMessagesAction, this.tree, this.clipboardService)
-					]);
+					];
 				},
 				getActionsContext: () => {
 					return <IMessagesActionContext>{

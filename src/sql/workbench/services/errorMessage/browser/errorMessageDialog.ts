@@ -7,11 +7,11 @@
 import 'vs/css!sql/media/icons/common-icons';
 import 'vs/css!./media/errorMessageDialog';
 import { Button } from 'sql/base/browser/ui/button/button';
-import { Modal } from 'sql/base/browser/ui/modal/modal';
+import { Modal } from 'sql/workbench/browser/modal/modal';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
-import { attachButtonStyler, attachModalDialogStyler } from 'sql/common/theme/styler';
+import { attachButtonStyler, attachModalDialogStyler } from 'sql/platform/theme/common/styler';
 
-import { Builder } from 'vs/base/browser/builder';
+import { Builder } from 'sql/base/browser/builder';
 import Severity from 'vs/base/common/severity';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { SIDE_BAR_BACKGROUND, SIDE_BAR_FOREGROUND } from 'vs/workbench/common/theme';

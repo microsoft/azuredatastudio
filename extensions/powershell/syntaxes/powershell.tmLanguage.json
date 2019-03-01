@@ -4,7 +4,7 @@
 		"If you want to provide a fix or improvement, please create a pull request against the original repository.",
 		"Once accepted there, we are happy to receive an update request."
 	],
-	"version": "https://github.com/PowerShell/EditorSyntax/commit/6f5438611c54922ea94c81532a2dcfee72190039",
+	"version": "https://github.com/PowerShell/EditorSyntax/commit/12b7d7257eb493e45a9af0af9094ec0c2a996712",
 	"name": "PowerShell",
 	"scopeName": "source.powershell",
 	"patterns": [
@@ -379,7 +379,7 @@
 							"name": "keyword.operator.documentation.powershell"
 						}
 					},
-					"match": "(?i:\\s*(\\.)(COMPONENT|DESCRIPTION|EXAMPLE|EXTERNALHELP|FORWARDHELPCATEGORY|FORWARDHELPTARGETNAME|FUNCTIONALITY|INPUTS|LINK|NOTES|OUTPUTS|REMOTEHELPRUNSPACE|ROLE|SYNOPSIS))",
+					"match": "^(?i:(?:\\s?|#)+(\\.)(COMPONENT|DESCRIPTION|EXAMPLE|EXTERNALHELP|FORWARDHELPCATEGORY|FORWARDHELPTARGETNAME|FUNCTIONALITY|INPUTS|LINK|NOTES|OUTPUTS|REMOTEHELPRUNSPACE|ROLE|SYNOPSIS))",
 					"name": "comment.documentation.embedded.powershell"
 				},
 				{
@@ -394,7 +394,7 @@
 							"name": "keyword.operator.documentation.powershell"
 						}
 					},
-					"match": "(?i:\\s*(\\.)(PARAMETER|FORWARDHELPTARGETNAME|FORWARDHELPCATEGORY|REMOTEHELPRUNSPACE|EXTERNALHELP)\\s+([a-z0-9-_]+))",
+					"match": "(?i:\\s?(\\.)(PARAMETER|FORWARDHELPTARGETNAME|FORWARDHELPCATEGORY|REMOTEHELPRUNSPACE|EXTERNALHELP)\\s+([a-z0-9-_]+))",
 					"name": "comment.documentation.embedded.powershell"
 				}
 			]
