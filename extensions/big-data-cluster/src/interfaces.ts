@@ -67,7 +67,8 @@ export interface ToolInfo {
 export enum ToolInstallationStatus {
 	Installed,
 	NotInstalled,
-	Installing
+	Installing,
+	FailedToInstall
 }
 
 export enum ClusterType {

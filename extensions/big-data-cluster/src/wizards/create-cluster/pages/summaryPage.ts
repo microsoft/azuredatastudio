@@ -21,4 +21,12 @@ export class SummaryPage extends WizardPageBase<CreateClusterWizard> {
 		let form = formBuilder.component();
 		return view.initializeModel(form);
 	}
+
+	public onEnter(): void {
+		this.wizard.wizardObject.generateScriptButton.hidden = false;
+	}
+
+	public onLeave(): void {
+		this.wizard.wizardObject.generateScriptButton.hidden = true;
+	}
 }
