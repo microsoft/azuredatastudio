@@ -7,7 +7,7 @@
 
 import * as should from 'should';
 import * as TypeMoq from 'typemoq';
-import { nb } from 'sqlops';
+import { nb } from 'azdata';
 import { Kernel, KernelMessage } from '@jupyterlab/services';
 import 'mocha';
 

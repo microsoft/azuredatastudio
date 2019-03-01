@@ -2349,7 +2349,7 @@ declare module 'azdata' {
 
 	export namespace window {
 		/**
-		 * @deprecated this method has been deprecated and will be removed in a future release, please use sqlops.window.createWebViewDialog instead.
+		 * @deprecated this method has been deprecated and will be removed in a future release, please use azdata.window.createWebViewDialog instead.
 		 * @param title
 		 */
 		export function createDialog(
@@ -3249,7 +3249,7 @@ declare module 'azdata' {
 
 	export namespace window {
 		/**
-		 * @deprecated this namespace has been deprecated and will be removed in a future release, please use the methods under sqlops.window namespace.
+		 * @deprecated this namespace has been deprecated and will be removed in a future release, please use the methods under azdata.window namespace.
 		 */
 		export namespace modelviewdialog {
 			/**

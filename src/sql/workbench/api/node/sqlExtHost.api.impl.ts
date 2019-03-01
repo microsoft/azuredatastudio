@@ -99,16 +99,16 @@ export function createApiFactory(
 				},
 
 				// "sqlops" back-compat APIs
-				getActiveConnections(): Thenable<sqlops.connection.Connection[]> {
+				getActiveConnections(): Thenable<azdata.connection.Connection[]> {
 					return extHostConnectionManagement.$getActiveConnections();
 				},
 				getCredentials(connectionId: string): Thenable<{ [name: string]: string }> {
 					return extHostConnectionManagement.$getCredentials(connectionId);
 				},
-				getServerInfo(connectionId: string): Thenable<sqlops.ServerInfo> {
+				getServerInfo(connectionId: string): Thenable<azdata.ServerInfo> {
 					return extHostConnectionManagement.$getServerInfo(connectionId);
 				},
-				openConnectionDialog(providers?: string[], initialConnectionProfile?: sqlops.IConnectionProfile, connectionCompletionOptions?: sqlops.IConnectionCompletionOptions): Thenable<sqlops.connection.Connection> {
+				openConnectionDialog(providers?: string[], initialConnectionProfile?: azdata.IConnectionProfile, connectionCompletionOptions?: azdata.IConnectionCompletionOptions): Thenable<azdata.connection.Connection> {
 					return extHostConnectionManagement.$openConnectionDialog(providers, initialConnectionProfile, connectionCompletionOptions);
 				},
 				listDatabases(connectionId: string): Thenable<string[]> {
@@ -120,15 +120,15 @@ export function createApiFactory(
 				getUriForConnection(connectionId: string): Thenable<string> {
 					return extHostConnectionManagement.$getUriForConnection(connectionId);
 				},
-				connect(connectionProfile: sqlops.IConnectionProfile): Thenable<sqlops.ConnectionResult> {
+				connect(connectionProfile: azdata.IConnectionProfile): Thenable<azdata.ConnectionResult> {
 					return extHostConnectionManagement.$connect(connectionProfile);
 				}
 			};
 
 			// Backcompat "sqlops" APIs
 			// namespace: accounts
-			const accounts: typeof sqlops.accounts = {
-				registerAccountProvider(providerMetadata: sqlops.AccountProviderMetadata, provider: sqlops.AccountProvider): vscode.Disposable {
+			const accounts: typeof azdata.accounts = {
+				registerAccountProvider(providerMetadata: azdata.AccountProviderMetadata, provider: azdata.AccountProvider): vscode.Disposable {
 					return extHostAccountManagement.$registerAccountProvider(providerMetadata, provider);
 				},
 				beginAutoOAuthDeviceCode(providerId: string, title: string, message: string, userCode: string, uri: string): Thenable<void> {
@@ -137,66 +137,66 @@ export function createApiFactory(
 				endAutoOAuthDeviceCode(): void {
 					return extHostAccountManagement.$endAutoOAuthDeviceCode();
 				},
-				accountUpdated(updatedAccount: sqlops.Account): void {
+				accountUpdated(updatedAccount: azdata.Account): void {
 					return extHostAccountManagement.$accountUpdated(updatedAccount);
 				},
-				getAllAccounts(): Thenable<sqlops.Account[]> {
+				getAllAccounts(): Thenable<azdata.Account[]> {
 					return extHostAccountManagement.$getAllAccounts();
 				},
-				getSecurityToken(account: sqlops.Account, resource?: sqlops.AzureResource): Thenable<{}> {
+				getSecurityToken(account: azdata.Account, resource?: azdata.AzureResource): Thenable<{}> {
 					return extHostAccountManagement.$getSecurityToken(account, resource);
 				},
-				onDidChangeAccounts(listener: (e: sqlops.DidChangeAccountsParams) => void, thisArgs?: any, disposables?: extHostTypes.Disposable[]) {
+				onDidChangeAccounts(listener: (e: azdata.DidChangeAccountsParams) => void, thisArgs?: any, disposables?: extHostTypes.Disposable[]) {
 					return extHostAccountManagement.onDidChangeAccounts(listener, thisArgs, disposables);
 				}
 			};
 
 			// namespace: credentials
-			const credentials: typeof sqlops.credentials = {
-				registerProvider(provider: sqlops.CredentialProvider): vscode.Disposable {
+			const credentials: typeof azdata.credentials = {
+				registerProvider(provider: azdata.CredentialProvider): vscode.Disposable {
 					return extHostCredentialManagement.$registerCredentialProvider(provider);
 				},
-				getProvider(namespaceId: string): Thenable<sqlops.CredentialProvider> {
+				getProvider(namespaceId: string): Thenable<azdata.CredentialProvider> {
 					return extHostCredentialManagement.$getCredentialProvider(namespaceId);
 				}
 			};
 
 			// namespace: objectexplorer
-			const objectExplorer: typeof sqlops.objectexplorer = {
-				getNode(connectionId: string, nodePath?: string): Thenable<sqlops.objectexplorer.ObjectExplorerNode> {
+			const objectExplorer: typeof azdata.objectexplorer = {
+				getNode(connectionId: string, nodePath?: string): Thenable<azdata.objectexplorer.ObjectExplorerNode> {
 					return extHostObjectExplorer.$getNode(connectionId, nodePath);
 				},
-				getActiveConnectionNodes(): Thenable<sqlops.objectexplorer.ObjectExplorerNode[]> {
+				getActiveConnectionNodes(): Thenable<azdata.objectexplorer.ObjectExplorerNode[]> {
 					return extHostObjectExplorer.$getActiveConnectionNodes();
 				},
-				findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames: string[]): Thenable<sqlops.objectexplorer.ObjectExplorerNode[]> {
+				findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames: string[]): Thenable<azdata.objectexplorer.ObjectExplorerNode[]> {
 					return extHostObjectExplorer.$findNodes(connectionId, type, schema, name, database, parentObjectNames);
 				},
 				getNodeActions(connectionId: string, nodePath: string): Thenable<string[]> {
 					return extHostObjectExplorer.$getNodeActions(connectionId, nodePath);
 				},
-				getSessionConnectionProfile(sessionId: string): Thenable<sqlops.IConnectionProfile> {
+				getSessionConnectionProfile(sessionId: string): Thenable<azdata.IConnectionProfile> {
 					return extHostObjectExplorer.$getSessionConnectionProfile(sessionId);
 				}
 			};
 
 			// namespace: serialization
-			const serialization: typeof sqlops.serialization = {
-				registerProvider(provider: sqlops.SerializationProvider): vscode.Disposable {
+			const serialization: typeof azdata.serialization = {
+				registerProvider(provider: azdata.SerializationProvider): vscode.Disposable {
 					return extHostSerializationProvider.$registerSerializationProvider(provider);
 				},
 			};
 
 			// namespace: serialization
-			const resources: typeof sqlops.resources = {
-				registerResourceProvider(providerMetadata: sqlops.ResourceProviderMetadata, provider: sqlops.ResourceProvider): vscode.Disposable {
+			const resources: typeof azdata.resources = {
+				registerResourceProvider(providerMetadata: azdata.ResourceProviderMetadata, provider: azdata.ResourceProvider): vscode.Disposable {
 					return extHostResourceProvider.$registerResourceProvider(providerMetadata, provider);
 				}
 			};
 
-			let registerConnectionProvider = (provider: sqlops.ConnectionProvider): vscode.Disposable => {
+			let registerConnectionProvider = (provider: azdata.ConnectionProvider): vscode.Disposable => {
 				// Connection callbacks
-				provider.registerOnConnectionComplete((connSummary: sqlops.ConnectionInfoSummary) => {
+				provider.registerOnConnectionComplete((connSummary: azdata.ConnectionInfoSummary) => {
 					extHostDataProvider.$onConnectComplete(provider.handle, connSummary);
 				});
 
@@ -204,35 +204,35 @@ export function createApiFactory(
 					extHostDataProvider.$onIntelliSenseCacheComplete(provider.handle, connectionUri);
 				});
 
-				provider.registerOnConnectionChanged((changedConnInfo: sqlops.ChangedConnectionInfo) => {
+				provider.registerOnConnectionChanged((changedConnInfo: azdata.ChangedConnectionInfo) => {
 					extHostDataProvider.$onConnectionChanged(provider.handle, changedConnInfo);
 				});
 
 				return extHostDataProvider.$registerConnectionProvider(provider);
 			};
 
-			let registerQueryProvider = (provider: sqlops.QueryProvider): vscode.Disposable => {
-				provider.registerOnQueryComplete((result: sqlops.QueryExecuteCompleteNotificationResult) => {
+			let registerQueryProvider = (provider: azdata.QueryProvider): vscode.Disposable => {
+				provider.registerOnQueryComplete((result: azdata.QueryExecuteCompleteNotificationResult) => {
 					extHostDataProvider.$onQueryComplete(provider.handle, result);
 				});
 
-				provider.registerOnBatchStart((batchInfo: sqlops.QueryExecuteBatchNotificationParams) => {
+				provider.registerOnBatchStart((batchInfo: azdata.QueryExecuteBatchNotificationParams) => {
 					extHostDataProvider.$onBatchStart(provider.handle, batchInfo);
 				});
 
-				provider.registerOnBatchComplete((batchInfo: sqlops.QueryExecuteBatchNotificationParams) => {
+				provider.registerOnBatchComplete((batchInfo: azdata.QueryExecuteBatchNotificationParams) => {
 					extHostDataProvider.$onBatchComplete(provider.handle, batchInfo);
 				});
 
-				provider.registerOnResultSetAvailable((resultSetInfo: sqlops.QueryExecuteResultSetNotificationParams) => {
+				provider.registerOnResultSetAvailable((resultSetInfo: azdata.QueryExecuteResultSetNotificationParams) => {
 					extHostDataProvider.$onResultSetAvailable(provider.handle, resultSetInfo);
 				});
 
-				provider.registerOnResultSetUpdated((resultSetInfo: sqlops.QueryExecuteResultSetNotificationParams) => {
+				provider.registerOnResultSetUpdated((resultSetInfo: azdata.QueryExecuteResultSetNotificationParams) => {
 					extHostDataProvider.$onResultSetUpdated(provider.handle, resultSetInfo);
 				});
 
-				provider.registerOnMessage((message: sqlops.QueryExecuteMessageParams) => {
+				provider.registerOnMessage((message: azdata.QueryExecuteMessageParams) => {
 					extHostDataProvider.$onQueryMessage(provider.handle, message);
 				});
 
@@ -243,105 +243,105 @@ export function createApiFactory(
 				return extHostDataProvider.$registerQueryProvider(provider);
 			};
 
-			let registerObjectExplorerProvider = (provider: sqlops.ObjectExplorerProvider): vscode.Disposable => {
-				provider.registerOnSessionCreated((response: sqlops.ObjectExplorerSession) => {
+			let registerObjectExplorerProvider = (provider: azdata.ObjectExplorerProvider): vscode.Disposable => {
+				provider.registerOnSessionCreated((response: azdata.ObjectExplorerSession) => {
 					extHostDataProvider.$onObjectExplorerSessionCreated(provider.handle, response);
 				});
 
 				if (provider.registerOnSessionDisconnected) {
-					provider.registerOnSessionDisconnected((response: sqlops.ObjectExplorerSession) => {
+					provider.registerOnSessionDisconnected((response: azdata.ObjectExplorerSession) => {
 						extHostDataProvider.$onObjectExplorerSessionDisconnected(provider.handle, response);
 					});
 				}
 
-				provider.registerOnExpandCompleted((response: sqlops.ObjectExplorerExpandInfo) => {
+				provider.registerOnExpandCompleted((response: azdata.ObjectExplorerExpandInfo) => {
 					extHostDataProvider.$onObjectExplorerNodeExpanded(provider.providerId, response);
 				});
 
 				return extHostDataProvider.$registerObjectExplorerProvider(provider);
 			};
 
-			let registerObjectExplorerNodeProvider = (provider: sqlops.ObjectExplorerNodeProvider): vscode.Disposable => {
-				provider.registerOnExpandCompleted((response: sqlops.ObjectExplorerExpandInfo) => {
+			let registerObjectExplorerNodeProvider = (provider: azdata.ObjectExplorerNodeProvider): vscode.Disposable => {
+				provider.registerOnExpandCompleted((response: azdata.ObjectExplorerExpandInfo) => {
 					extHostDataProvider.$onObjectExplorerNodeExpanded(provider.providerId, response);
 				});
 
 				return extHostDataProvider.$registerObjectExplorerNodeProvider(provider);
 			};
 
-			let registerTaskServicesProvider = (provider: sqlops.TaskServicesProvider): vscode.Disposable => {
-				provider.registerOnTaskCreated((response: sqlops.TaskInfo) => {
+			let registerTaskServicesProvider = (provider: azdata.TaskServicesProvider): vscode.Disposable => {
+				provider.registerOnTaskCreated((response: azdata.TaskInfo) => {
 					extHostDataProvider.$onTaskCreated(provider.handle, response);
 				});
 
-				provider.registerOnTaskStatusChanged((response: sqlops.TaskProgressInfo) => {
+				provider.registerOnTaskStatusChanged((response: azdata.TaskProgressInfo) => {
 					extHostDataProvider.$onTaskStatusChanged(provider.handle, response);
 				});
 
 				return extHostDataProvider.$registerTaskServicesProvider(provider);
 			};
 
-			let registerFileBrowserProvider = (provider: sqlops.FileBrowserProvider): vscode.Disposable => {
-				provider.registerOnFileBrowserOpened((response: sqlops.FileBrowserOpenedParams) => {
+			let registerFileBrowserProvider = (provider: azdata.FileBrowserProvider): vscode.Disposable => {
+				provider.registerOnFileBrowserOpened((response: azdata.FileBrowserOpenedParams) => {
 					extHostDataProvider.$onFileBrowserOpened(provider.handle, response);
 				});
 
-				provider.registerOnFolderNodeExpanded((response: sqlops.FileBrowserExpandedParams) => {
+				provider.registerOnFolderNodeExpanded((response: azdata.FileBrowserExpandedParams) => {
 					extHostDataProvider.$onFolderNodeExpanded(provider.handle, response);
 				});
 
-				provider.registerOnFilePathsValidated((response: sqlops.FileBrowserValidatedParams) => {
+				provider.registerOnFilePathsValidated((response: azdata.FileBrowserValidatedParams) => {
 					extHostDataProvider.$onFilePathsValidated(provider.handle, response);
 				});
 
 				return extHostDataProvider.$registerFileBrowserProvider(provider);
 			};
 
-			let registerScriptingProvider = (provider: sqlops.ScriptingProvider): vscode.Disposable => {
-				provider.registerOnScriptingComplete((response: sqlops.ScriptingCompleteResult) => {
+			let registerScriptingProvider = (provider: azdata.ScriptingProvider): vscode.Disposable => {
+				provider.registerOnScriptingComplete((response: azdata.ScriptingCompleteResult) => {
 					extHostDataProvider.$onScriptingComplete(provider.handle, response);
 				});
 
 				return extHostDataProvider.$registerScriptingProvider(provider);
 			};
 
-			let registerProfilerProvider = (provider: sqlops.ProfilerProvider): vscode.Disposable => {
-				provider.registerOnSessionEventsAvailable((response: sqlops.ProfilerSessionEvents) => {
+			let registerProfilerProvider = (provider: azdata.ProfilerProvider): vscode.Disposable => {
+				provider.registerOnSessionEventsAvailable((response: azdata.ProfilerSessionEvents) => {
 					extHostDataProvider.$onSessionEventsAvailable(provider.handle, response);
 				});
 
-				provider.registerOnSessionStopped((response: sqlops.ProfilerSessionStoppedParams) => {
+				provider.registerOnSessionStopped((response: azdata.ProfilerSessionStoppedParams) => {
 					extHostDataProvider.$onSessionStopped(provider.handle, response);
 				});
 
-				provider.registerOnProfilerSessionCreated((response: sqlops.ProfilerSessionCreatedParams) => {
+				provider.registerOnProfilerSessionCreated((response: azdata.ProfilerSessionCreatedParams) => {
 					extHostDataProvider.$onProfilerSessionCreated(provider.handle, response);
 				});
 
 				return extHostDataProvider.$registerProfilerProvider(provider);
 			};
 
-			let registerBackupProvider = (provider: sqlops.BackupProvider): vscode.Disposable => {
+			let registerBackupProvider = (provider: azdata.BackupProvider): vscode.Disposable => {
 				return extHostDataProvider.$registerBackupProvider(provider);
 			};
 
-			let registerRestoreProvider = (provider: sqlops.RestoreProvider): vscode.Disposable => {
+			let registerRestoreProvider = (provider: azdata.RestoreProvider): vscode.Disposable => {
 				return extHostDataProvider.$registerRestoreProvider(provider);
 			};
 
-			let registerMetadataProvider = (provider: sqlops.MetadataProvider): vscode.Disposable => {
+			let registerMetadataProvider = (provider: azdata.MetadataProvider): vscode.Disposable => {
 				return extHostDataProvider.$registerMetadataProvider(provider);
 			};
 
-			let registerCapabilitiesServiceProvider = (provider: sqlops.CapabilitiesProvider): vscode.Disposable => {
+			let registerCapabilitiesServiceProvider = (provider: azdata.CapabilitiesProvider): vscode.Disposable => {
 				return extHostDataProvider.$registerCapabilitiesServiceProvider(provider);
 			};
 
-			let registerAdminServicesProvider = (provider: sqlops.AdminServicesProvider): vscode.Disposable => {
+			let registerAdminServicesProvider = (provider: azdata.AdminServicesProvider): vscode.Disposable => {
 				return extHostDataProvider.$registerAdminServicesProvider(provider);
 			};
 
-			let registerAgentServicesProvider = (provider: sqlops.AgentServicesProvider): vscode.Disposable => {
+			let registerAgentServicesProvider = (provider: azdata.AgentServicesProvider): vscode.Disposable => {
 				provider.registerOnUpdated(() => {
 					extHostDataProvider.$onJobDataUpdated(provider.handle);
 				});
@@ -349,12 +349,12 @@ export function createApiFactory(
 				return extHostDataProvider.$registerAgentServiceProvider(provider);
 			};
 
-			let registerDacFxServicesProvider = (provider: sqlops.DacFxServicesProvider): vscode.Disposable => {
+			let registerDacFxServicesProvider = (provider: azdata.DacFxServicesProvider): vscode.Disposable => {
 				return extHostDataProvider.$registerDacFxServiceProvider(provider);
 			};
 
 			// namespace: dataprotocol
-			const dataprotocol: typeof sqlops.dataprotocol = {
+			const dataprotocol: typeof azdata.dataprotocol = {
 				registerBackupProvider,
 				registerConnectionProvider,
 				registerFileBrowserProvider,
@@ -370,113 +370,113 @@ export function createApiFactory(
 				registerAgentServicesProvider,
 				registerCapabilitiesServiceProvider,
 				registerDacFxServicesProvider,
-				onDidChangeLanguageFlavor(listener: (e: sqlops.DidChangeLanguageFlavorParams) => any, thisArgs?: any, disposables?: extHostTypes.Disposable[]) {
+				onDidChangeLanguageFlavor(listener: (e: azdata.DidChangeLanguageFlavorParams) => any, thisArgs?: any, disposables?: extHostTypes.Disposable[]) {
 					return extHostDataProvider.onDidChangeLanguageFlavor(listener, thisArgs, disposables);
 				},
-				getProvider<T extends sqlops.DataProvider>(providerId: string, providerType: sqlops.DataProviderType) {
+				getProvider<T extends azdata.DataProvider>(providerId: string, providerType: azdata.DataProviderType) {
 					return extHostDataProvider.getProvider<T>(providerId, providerType);
 				},
-				getProvidersByType<T extends sqlops.DataProvider>(providerType: sqlops.DataProviderType) {
+				getProvidersByType<T extends azdata.DataProvider>(providerType: azdata.DataProviderType) {
 					return extHostDataProvider.getProvidersByType<T>(providerType);
 				}
 			};
 
-			const modelViewDialog: typeof sqlops.window.modelviewdialog = {
-				createDialog(title: string, dialogName?: string): sqlops.window.modelviewdialog.Dialog {
-					console.warn('the method sqlops.window.modelviewdialog.createDialog has been deprecated, replace it with sqlops.window.createModelViewDialog');
+			const modelViewDialog: typeof azdata.window.modelviewdialog = {
+				createDialog(title: string, dialogName?: string): azdata.window.modelviewdialog.Dialog {
+					console.warn('the method azdata.window.modelviewdialog.createDialog has been deprecated, replace it with azdata.window.createModelViewDialog');
 					return extHostModelViewDialog.createDialog(title, dialogName, extension);
 				},
-				createTab(title: string): sqlops.window.modelviewdialog.DialogTab {
-					console.warn('the method sqlops.window.modelviewdialog.createTab has been deprecated, replace it with sqlops.window.createTab');
+				createTab(title: string): azdata.window.modelviewdialog.DialogTab {
+					console.warn('the method azdata.window.modelviewdialog.createTab has been deprecated, replace it with azdata.window.createTab');
 					return extHostModelViewDialog.createTab(title, extension);
 				},
-				createButton(label: string): sqlops.window.modelviewdialog.Button {
-					console.warn('the method sqlops.window.modelviewdialog.createButton has been deprecated, replace it with sqlops.window.createButton');
+				createButton(label: string): azdata.window.modelviewdialog.Button {
+					console.warn('the method azdata.window.modelviewdialog.createButton has been deprecated, replace it with azdata.window.createButton');
 					return extHostModelViewDialog.createButton(label);
 				},
-				openDialog(dialog: sqlops.window.modelviewdialog.Dialog) {
-					console.warn('the method sqlops.window.modelviewdialog.openDialog has been deprecated, replace it with sqlops.window.openDialog');
+				openDialog(dialog: azdata.window.modelviewdialog.Dialog) {
+					console.warn('the method azdata.window.modelviewdialog.openDialog has been deprecated, replace it with azdata.window.openDialog');
 					return extHostModelViewDialog.openDialog(dialog);
 				},
-				closeDialog(dialog: sqlops.window.modelviewdialog.Dialog) {
-					console.warn('the method sqlops.window.modelviewdialog.closeDialog has been deprecated, replace it with sqlops.window.closeDialog');
+				closeDialog(dialog: azdata.window.modelviewdialog.Dialog) {
+					console.warn('the method azdata.window.modelviewdialog.closeDialog has been deprecated, replace it with azdata.window.closeDialog');
 					return extHostModelViewDialog.closeDialog(dialog);
 				},
-				createWizardPage(title: string): sqlops.window.modelviewdialog.WizardPage {
-					console.warn('the method sqlops.window.modelviewdialog.createWizardPage has been deprecated, replace it with sqlops.window.createWizardPage');
+				createWizardPage(title: string): azdata.window.modelviewdialog.WizardPage {
+					console.warn('the method azdata.window.modelviewdialog.createWizardPage has been deprecated, replace it with azdata.window.createWizardPage');
 					return extHostModelViewDialog.createWizardPage(title);
 				},
-				createWizard(title: string): sqlops.window.modelviewdialog.Wizard {
-					console.warn('the method sqlops.window.modelviewdialog.createWizard has been deprecated, replace it with sqlops.window.createWizard');
+				createWizard(title: string): azdata.window.modelviewdialog.Wizard {
+					console.warn('the method azdata.window.modelviewdialog.createWizard has been deprecated, replace it with azdata.window.createWizard');
 					return extHostModelViewDialog.createWizard(title);
 				},
 				MessageLevel: sqlExtHostTypes.MessageLevel
 			};
 
-			const window: typeof sqlops.window = {
+			const window: typeof azdata.window = {
 				createDialog(name: string) {
-					console.warn('the method sqlops.window.createDialog has been deprecated, replace it with sqlops.window.createWebViewDialog');
+					console.warn('the method azdata.window.createDialog has been deprecated, replace it with azdata.window.createWebViewDialog');
 					return extHostModalDialogs.createDialog(name);
 				},
 				modelviewdialog: modelViewDialog,
 				createWebViewDialog(name: string) {
 					return extHostModalDialogs.createDialog(name);
 				},
-				createModelViewDialog(title: string, dialogName?: string): sqlops.window.Dialog {
+				createModelViewDialog(title: string, dialogName?: string): azdata.window.Dialog {
 					return extHostModelViewDialog.createDialog(title, dialogName, extension);
 				},
-				createTab(title: string): sqlops.window.DialogTab {
+				createTab(title: string): azdata.window.DialogTab {
 					return extHostModelViewDialog.createTab(title, extension);
 				},
-				createButton(label: string): sqlops.window.Button {
+				createButton(label: string): azdata.window.Button {
 					return extHostModelViewDialog.createButton(label);
 				},
-				openDialog(dialog: sqlops.window.Dialog) {
+				openDialog(dialog: azdata.window.Dialog) {
 					return extHostModelViewDialog.openDialog(dialog);
 				},
-				closeDialog(dialog: sqlops.window.Dialog) {
+				closeDialog(dialog: azdata.window.Dialog) {
 					return extHostModelViewDialog.closeDialog(dialog);
 				},
-				createWizardPage(title: string): sqlops.window.WizardPage {
+				createWizardPage(title: string): azdata.window.WizardPage {
 					return extHostModelViewDialog.createWizardPage(title);
 				},
-				createWizard(title: string): sqlops.window.Wizard {
+				createWizard(title: string): azdata.window.Wizard {
 					return extHostModelViewDialog.createWizard(title);
 				},
 				MessageLevel: sqlExtHostTypes.MessageLevel
 			};
 
-			const tasks: typeof sqlops.tasks = {
+			const tasks: typeof azdata.tasks = {
 				registerTask(id: string, task: (...args: any[]) => any, thisArgs?: any): vscode.Disposable {
 					return extHostTasks.registerTask(id, task, thisArgs);
 				},
-				startBackgroundOperation(operationInfo: sqlops.BackgroundOperationInfo): void {
+				startBackgroundOperation(operationInfo: azdata.BackgroundOperationInfo): void {
 					extHostBackgroundTaskManagement.$registerTask(operationInfo);
 				}
 			};
 
-			const workspace: typeof sqlops.workspace = {
+			const workspace: typeof azdata.workspace = {
 				onDidOpenDashboard: extHostDashboard.onDidOpenDashboard,
 				onDidChangeToDashboard: extHostDashboard.onDidChangeToDashboard,
-				createModelViewEditor(title: string, options?: sqlops.ModelViewEditorOptions): sqlops.workspace.ModelViewEditor {
+				createModelViewEditor(title: string, options?: azdata.ModelViewEditorOptions): azdata.workspace.ModelViewEditor {
 					return extHostModelViewDialog.createModelViewEditor(title, extension, options);
 				}
 			};
 
 			const dashboard = {
-				registerWebviewProvider(widgetId: string, handler: (webview: sqlops.DashboardWebview) => void) {
+				registerWebviewProvider(widgetId: string, handler: (webview: azdata.DashboardWebview) => void) {
 					extHostWebviewWidgets.$registerProvider(widgetId, handler);
 				}
 			};
 
 			const ui = {
-				registerModelViewProvider(modelViewId: string, handler: (view: sqlops.ModelView) => void): void {
+				registerModelViewProvider(modelViewId: string, handler: (view: azdata.ModelView) => void): void {
 					extHostModelView.$registerProvider(modelViewId, handler, extension);
 				}
 			};
 
 			// namespace: queryeditor
-			const queryEditor: typeof sqlops.queryeditor = {
+			const queryEditor: typeof azdata.queryeditor = {
 
 				connect(fileUri: string, connectionId: string): Thenable<void> {
 					return extHostQueryEditor.$connect(fileUri, connectionId);
@@ -487,7 +487,7 @@ export function createApiFactory(
 				}
 			};
 
-			const extensions: typeof sqlops.extensions = {
+			const extensions: typeof azdata.extensions = {
 				install(vsixPath: string): Thenable<string> {
 					return extHostExtensionManagement.$install(vsixPath);
 				}
@@ -509,10 +509,10 @@ export function createApiFactory(
 				get onDidChangeNotebookCell() {
 					return extHostNotebookDocumentsAndEditors.onDidChangeNotebookCell;
 				},
-				showNotebookDocument(uri: vscode.Uri, showOptions: sqlops.nb.NotebookShowOptions) {
+				showNotebookDocument(uri: vscode.Uri, showOptions: azdata.nb.NotebookShowOptions) {
 					return extHostNotebookDocumentsAndEditors.showNotebookDocument(uri, showOptions);
 				},
-				registerNotebookProvider(provider: sqlops.nb.NotebookProvider): vscode.Disposable {
+				registerNotebookProvider(provider: azdata.nb.NotebookProvider): vscode.Disposable {
 					return extHostNotebook.registerNotebookProvider(provider);
 				},
 				CellRange: sqlExtHostTypes.CellRange
@@ -557,6 +557,7 @@ export function createApiFactory(
 				nb: nb,
 				AzureResource: sqlExtHostTypes.AzureResource,
 				TreeItem: sqlExtHostTypes.TreeItem,
+				extensions: extensions
 			};
 		},
 

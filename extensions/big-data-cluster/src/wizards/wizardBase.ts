@@ -4,14 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { ExtensionContext } from 'vscode';
 import { WizardPageBase } from './wizardPageBase';
 
 export abstract class WizardBase<T,W> {
 
-	public wizardObject: sqlops.window.Wizard;
-	private customButtons: sqlops.window.Button[];
+	public wizardObject: azdata.window.Wizard;
+	private customButtons: azdata.window.Button[];
 	private pages: WizardPageBase<W>[];
 
 	constructor(public model: T, public context: ExtensionContext, private title: string) {
@@ -19,7 +19,7 @@ export abstract class WizardBase<T,W> {
 	}
 
 	public open(): Thenable<void> {
-		this.wizardObject = sqlops.window.createWizard(this.title);
+		this.wizardObject = azdata.window.createWizard(this.title);
 		this.initialize();
 		this.wizardObject.customButtons = this.customButtons;
 		this.wizardObject.onPageChanged((e) => {
@@ -34,7 +34,7 @@ export abstract class WizardBase<T,W> {
 
 	protected abstract initialize(): void;
 
-	public addButton(button: sqlops.window.Button) {
+	public addButton(button: azdata.window.Button) {
 		this.customButtons.push(button);
 	}
 

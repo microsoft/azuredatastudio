@@ -20,7 +20,7 @@ import nls = require('vs/nls');
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 
-import { DidChangeLanguageFlavorParams } from 'sqlops';
+import { DidChangeLanguageFlavorParams } from 'azdata';
 import Severity from 'vs/base/common/severity';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { EditorServiceImpl } from 'vs/workbench/browser/parts/editor/editor';

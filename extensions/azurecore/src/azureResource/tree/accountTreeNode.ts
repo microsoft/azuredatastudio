@@ -6,7 +6,7 @@
 'use strict';
 
 import { TreeItem, TreeItemCollapsibleState } from 'vscode';
-import { Account, NodeInfo, AzureResource } from 'sqlops';
+import { Account, NodeInfo, AzureResource } from 'azdata';
 import { TokenCredentials } from 'ms-rest';
 import { AppContext } from '../../appContext';
 import * as nls from 'vscode-nls';

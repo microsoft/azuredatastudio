@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { WizardPageBase } from '../../wizardPageBase';
 import * as nls from 'vscode-nls';
 import { ClusterPorts, ContainerRegistryInfo } from '../../../interfaces';
@@ -22,7 +22,7 @@ export class SettingsPage extends WizardPageBase<CreateClusterWizard> {
 			wizard);
 	}
 
-	protected initialize(view: sqlops.ModelView): Thenable<void> {
+	protected initialize(view: azdata.ModelView): Thenable<void> {
 		let clusterPorts: ClusterPorts;
 		let containerRegistryInfo: ContainerRegistryInfo;
 
@@ -41,7 +41,7 @@ export class SettingsPage extends WizardPageBase<CreateClusterWizard> {
 				label: localize('bdc-create.AdminUsernameText', 'Admin username'),
 				isRequiredField: true,
 				inputWidth: UserNameInputWidth
-			}, (inputBox: sqlops.InputBoxComponent) => {
+			}, (inputBox: azdata.InputBoxComponent) => {
 				this.wizard.model.adminUserName = inputBox.value;
 			});
 			let adminPasswordInput = this.createInputWithLabel(view, {
@@ -49,7 +49,7 @@ export class SettingsPage extends WizardPageBase<CreateClusterWizard> {
 				isRequiredField: true,
 				inputType: 'password',
 				inputWidth: UserNameInputWidth
-			}, (inputBox: sqlops.InputBoxComponent) => {
+			}, (inputBox: azdata.InputBoxComponent) => {
 				this.wizard.model.adminPassword = inputBox.value;
 			});
 
@@ -59,7 +59,7 @@ export class SettingsPage extends WizardPageBase<CreateClusterWizard> {
 				isRequiredField: true,
 				inputWidth: PortInputWidth,
 				initialValue: clusterPorts.sql
-			}, (inputBox: sqlops.InputBoxComponent) => {
+			}, (inputBox: azdata.InputBoxComponent) => {
 				this.wizard.model.sqlPort = inputBox.value;
 			});
 			let knoxPortInput = this.createInputWithLabel(view, {
@@ -67,7 +67,7 @@ export class SettingsPage extends WizardPageBase<CreateClusterWizard> {
 				isRequiredField: true,
 				inputWidth: PortInputWidth,
 				initialValue: clusterPorts.knox
-			}, (inputBox: sqlops.InputBoxComponent) => {
+			}, (inputBox: azdata.InputBoxComponent) => {
 				this.wizard.model.knoxPort = inputBox.value;
 			});
 			let controllerPortInput = this.createInputWithLabel(view, {
@@ -75,7 +75,7 @@ export class SettingsPage extends WizardPageBase<CreateClusterWizard> {
 				isRequiredField: true,
 				inputWidth: PortInputWidth,
 				initialValue: clusterPorts.controller
-			}, (inputBox: sqlops.InputBoxComponent) => {
+			}, (inputBox: azdata.InputBoxComponent) => {
 				this.wizard.model.controllerPort = inputBox.value;
 			});
 			let proxyPortInput = this.createInputWithLabel(view, {
@@ -83,7 +83,7 @@ export class SettingsPage extends WizardPageBase<CreateClusterWizard> {
 				isRequiredField: true,
 				inputWidth: PortInputWidth,
 				initialValue: clusterPorts.proxy
-			}, (inputBox: sqlops.InputBoxComponent) => {
+			}, (inputBox: azdata.InputBoxComponent) => {
 				this.wizard.model.proxyPort = inputBox.value;
 			});
 			let grafanaPortInput = this.createInputWithLabel(view, {
@@ -91,7 +91,7 @@ export class SettingsPage extends WizardPageBase<CreateClusterWizard> {
 				isRequiredField: true,
 				inputWidth: PortInputWidth,
 				initialValue: clusterPorts.grafana
-			}, (inputBox: sqlops.InputBoxComponent) => {
+			}, (inputBox: azdata.InputBoxComponent) => {
 				this.wizard.model.grafanaPort = inputBox.value;
 			});
 			let kibanaPortInput = this.createInputWithLabel(view, {
@@ -99,10 +99,10 @@ export class SettingsPage extends WizardPageBase<CreateClusterWizard> {
 				isRequiredField: true,
 				inputWidth: PortInputWidth,
 				initialValue: clusterPorts.kibana
-			}, (inputBox: sqlops.InputBoxComponent) => {
+			}, (inputBox: azdata.InputBoxComponent) => {
 				this.wizard.model.kibanaPort = inputBox.value;
 			});
-			let restorePortSettingsButton = view.modelBuilder.button().withProperties<sqlops.ButtonProperties>({
+			let restorePortSettingsButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 				label: RestoreDefaultValuesText,
 				width: 200
 			}).component();
@@ -122,7 +122,7 @@ export class SettingsPage extends WizardPageBase<CreateClusterWizard> {
 				isRequiredField: true,
 				inputWidth: UserNameInputWidth,
 				initialValue: containerRegistryInfo.registry
-			}, (inputBox: sqlops.InputBoxComponent) => {
+			}, (inputBox: azdata.InputBoxComponent) => {
 				this.wizard.model.containerRegistry = inputBox.value;
 			});
 
@@ -131,7 +131,7 @@ export class SettingsPage extends WizardPageBase<CreateClusterWizard> {
 				isRequiredField: true,
 				inputWidth: UserNameInputWidth,
 				initialValue: containerRegistryInfo.repository
-			}, (inputBox: sqlops.InputBoxComponent) => {
+			}, (inputBox: azdata.InputBoxComponent) => {
 				this.wizard.model.containerRepository = inputBox.value;
 			});
 
@@ -140,7 +140,7 @@ export class SettingsPage extends WizardPageBase<CreateClusterWizard> {
 				isRequiredField: true,
 				inputWidth: UserNameInputWidth,
 				initialValue: containerRegistryInfo.imageTag
-			}, (inputBox: sqlops.InputBoxComponent) => {
+			}, (inputBox: azdata.InputBoxComponent) => {
 				this.wizard.model.containerRegistry = inputBox.value;
 			});
 
@@ -149,7 +149,7 @@ export class SettingsPage extends WizardPageBase<CreateClusterWizard> {
 				isRequiredField: false,
 				inputWidth: UserNameInputWidth,
 				placeHolder: registryUserNamePasswordHintText
-			}, (inputBox: sqlops.InputBoxComponent) => {
+			}, (inputBox: azdata.InputBoxComponent) => {
 				this.wizard.model.containerRegistryUserName = inputBox.value;
 			});
 
@@ -159,10 +159,10 @@ export class SettingsPage extends WizardPageBase<CreateClusterWizard> {
 				inputWidth: UserNameInputWidth,
 				placeHolder: registryUserNamePasswordHintText,
 				inputType: 'password'
-			}, (inputBox: sqlops.InputBoxComponent) => {
+			}, (inputBox: azdata.InputBoxComponent) => {
 				this.wizard.model.containerRegistryPassword = inputBox.value;
 			});
-			let restoreContainerSettingsButton = view.modelBuilder.button().withProperties<sqlops.ButtonProperties>({
+			let restoreContainerSettingsButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 				label: RestoreDefaultValuesText,
 				width: 200
 			}).component();
@@ -179,16 +179,16 @@ export class SettingsPage extends WizardPageBase<CreateClusterWizard> {
 			let acceptEulaCheckbox = view.modelBuilder.checkBox().component();
 			acceptEulaCheckbox.checked = false;
 
-			let eulaLink: sqlops.LinkArea = {
+			let eulaLink: azdata.LinkArea = {
 				text: localize('bdc-create.LicenseAgreementText', 'License Agreement'),
 				url: 'https://docs.microsoft.com/en-us/sql/getting-started/about-the-sql-server-license-terms?view=sql-server-2014'
 			};
-			let privacyPolicyLink: sqlops.LinkArea = {
+			let privacyPolicyLink: azdata.LinkArea = {
 				text: localize('bdc-create.PrivacyPolicyText', 'Privacy Policy'),
 				url: 'https://privacy.microsoft.com/en-us/privacystatement'
 			};
 
-			let checkboxText = view.modelBuilder.text().withProperties<sqlops.TextComponentProperties>({
+			let checkboxText = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 				value: localize({
 					key: 'bdc-create.AcceptTermsText',
 					comment: ['{0} is the place holder for License Agreement, {1} is the place holder for Privacy Policy']
@@ -217,14 +217,14 @@ export class SettingsPage extends WizardPageBase<CreateClusterWizard> {
 		});
 	}
 
-	private createInputWithLabel(view: sqlops.ModelView, options: {
+	private createInputWithLabel(view: azdata.ModelView, options: {
 		label: string,
 		isRequiredField: boolean,
 		inputWidth: string,
 		inputType?: string,
 		initialValue?: string,
 		placeHolder?: string
-	}, textChangedHandler: (inputBox: sqlops.InputBoxComponent) => void): { row: sqlops.FlexContainer, input: sqlops.InputBoxComponent } {
+	}, textChangedHandler: (inputBox: azdata.InputBoxComponent) => void): { row: azdata.FlexContainer, input: azdata.InputBoxComponent } {
 		let inputType = !!options.inputType ? options.inputType : 'text';
 		let input = view.modelBuilder.inputBox().withProperties({
 			required: options.isRequiredField,
@@ -245,7 +245,7 @@ export class SettingsPage extends WizardPageBase<CreateClusterWizard> {
 		};
 	}
 
-	private createRow(view: sqlops.ModelView, items: sqlops.Component[]): sqlops.FlexContainer {
+	private createRow(view: azdata.ModelView, items: azdata.Component[]): azdata.FlexContainer {
 		return view.modelBuilder.flexContainer().withItems(items, { CSSStyles: { 'margin-right': '5px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 	}
 }

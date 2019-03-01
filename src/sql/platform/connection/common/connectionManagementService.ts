@@ -36,7 +36,7 @@ import { ConnectionProviderProperties, IConnectionProviderRegistry, Extensions a
 import { IAccountManagementService, AzureResource } from 'sql/platform/accountManagement/common/interfaces';
 import { IServerGroupController, IServerGroupDialogCallbacks } from 'sql/platform/serverGroup/common/serverGroupController';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 import * as nls from 'vs/nls';
 import * as errors from 'vs/base/common/errors';
@@ -62,7 +62,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 	_serviceBrand: any;
 
-	private _providers = new Map<string, { onReady: Thenable<sqlops.ConnectionProvider>, properties: ConnectionProviderProperties }>();
+	private _providers = new Map<string, { onReady: Thenable<azdata.ConnectionProvider>, properties: ConnectionProviderProperties }>();
 
 	private _uriToProvider: { [uri: string]: string; } = Object.create(null);
 
@@ -74,7 +74,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	private _onDisconnect = new Emitter<IConnectionParams>();
 	private _onConnectRequestSent = new Emitter<void>();
 	private _onConnectionChanged = new Emitter<IConnectionParams>();
-	private _onLanguageFlavorChanged = new Emitter<sqlops.DidChangeLanguageFlavorParams>();
+	private _onLanguageFlavorChanged = new Emitter<azdata.DidChangeLanguageFlavorParams>();
 	private _connectionGlobalStatus = new ConnectionGlobalStatus(this._statusBarService);
 
 	private _configurationEditService: ConfigurationEditingService;
@@ -123,7 +123,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 		let providerRegistration = (p: { id: string, properties: ConnectionProviderProperties }) => {
 			let provider = {
-				onReady: new Deferred<sqlops.ConnectionProvider>(),
+				onReady: new Deferred<azdata.ConnectionProvider>(),
 				properties: p.properties
 			};
 			this._providers.set(p.id, provider);
@@ -172,25 +172,25 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return this._onConnectRequestSent.event;
 	}
 
-	public get onLanguageFlavorChanged(): Event<sqlops.DidChangeLanguageFlavorParams> {
+	public get onLanguageFlavorChanged(): Event<azdata.DidChangeLanguageFlavorParams> {
 		return this._onLanguageFlavorChanged.event;
 	}
 
 	private _providerCount: number = 0;
 
 	// Connection Provider Registration
-	public registerProvider(providerId: string, provider: sqlops.ConnectionProvider): void {
+	public registerProvider(providerId: string, provider: azdata.ConnectionProvider): void {
 		if (!this._providers.has(providerId)) {
 			console.error('Provider', providerId, 'attempted to register but has no metadata');
 			let providerType = {
-				onReady: new Deferred<sqlops.ConnectionProvider>(),
+				onReady: new Deferred<azdata.ConnectionProvider>(),
 				properties: undefined
 			};
 			this._providers.set(providerId, providerType);
 		}
 
 		// we know this is a deferred promise because we made it
-		(this._providers.get(providerId).onReady as Deferred<sqlops.ConnectionProvider>).resolve(provider);
+		(this._providers.get(providerId).onReady as Deferred<azdata.ConnectionProvider>).resolve(provider);
 	}
 
 	/**
@@ -652,7 +652,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		});
 	}
 
-	public getAdvancedProperties(): sqlops.ConnectionOption[] {
+	public getAdvancedProperties(): azdata.ConnectionOption[] {
 
 		let providers = this._capabilitiesService.providers;
 		if (providers) {
@@ -831,7 +831,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		});
 	}
 
-	private sendListDatabasesRequest(uri: string): Thenable<sqlops.ListDatabasesResult> {
+	private sendListDatabasesRequest(uri: string): Thenable<azdata.ListDatabasesResult> {
 		let providerId: string = this.getProviderIdFromUri(uri);
 		if (!providerId) {
 			return Promise.resolve(undefined);
@@ -891,7 +891,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		});
 	}
 
-	public onConnectionComplete(handle: number, info: sqlops.ConnectionInfoSummary): void {
+	public onConnectionComplete(handle: number, info: azdata.ConnectionInfoSummary): void {
 		const self = this;
 		let connection = this._connectionStatusManager.onConnectionComplete(info);
 
@@ -919,7 +919,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		}
 	}
 
-	public onConnectionChangedNotification(handle: number, changedConnInfo: sqlops.ChangedConnectionInfo): void {
+	public onConnectionChangedNotification(handle: number, changedConnInfo: azdata.ChangedConnectionInfo): void {
 		let profile: IConnectionProfile = this._connectionStatusManager.onConnectionChanged(changedConnInfo);
 		this._notifyConnectionChanged(profile, changedConnInfo.connectionUri);
 	}
@@ -1188,7 +1188,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return this._connectionStatusManager.isConnected(fileUri) ? this._connectionStatusManager.findConnection(fileUri) : undefined;
 	}
 
-	public listDatabases(connectionUri: string): Thenable<sqlops.ListDatabasesResult> {
+	public listDatabases(connectionUri: string): Thenable<azdata.ListDatabasesResult> {
 		const self = this;
 		if (self.isConnected(connectionUri)) {
 			return self.sendListDatabasesRequest(connectionUri);
@@ -1366,7 +1366,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return credentials;
 	}
 
-	public getServerInfo(profileId: string): sqlops.ServerInfo {
+	public getServerInfo(profileId: string): azdata.ServerInfo {
 		let profile = this._connectionStatusManager.findConnectionByProfileId(profileId);
 		if (!profile) {
 			return undefined;
@@ -1411,7 +1411,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * Serialize connection with options provider
 	 * TODO this could be a map reduce operation
 	 */
-	public buildConnectionInfo(connectionString: string, provider: string): Thenable<sqlops.ConnectionInfo> {
+	public buildConnectionInfo(connectionString: string, provider: string): Thenable<azdata.ConnectionInfo> {
 		let connectionProvider = this._providers.get(provider);
 		if (connectionProvider) {
 			return connectionProvider.onReady.then(e => {

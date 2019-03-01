@@ -11,7 +11,7 @@ import {
 	MainThreadSerializationProviderShape, SqlMainContext
 } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { ISerializationService } from 'sql/platform/serialization/common/serializationService';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 
@@ -42,7 +42,7 @@ export class MainThreadSerializationProvider implements MainThreadSerializationP
 		let self = this;
 
 		this._registrations[handle] = this.serializationService.addEventListener(handle, {
-			onSaveAs(saveFormat: string, savePath: string, results: string, appendToFile: boolean): Thenable<sqlops.SaveResultRequestResult> {
+			onSaveAs(saveFormat: string, savePath: string, results: string, appendToFile: boolean): Thenable<azdata.SaveResultRequestResult> {
 				return self._proxy.$saveAs(saveFormat, savePath, results, appendToFile);
 			}
 		});

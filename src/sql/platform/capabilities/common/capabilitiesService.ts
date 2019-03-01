@@ -10,7 +10,7 @@ import * as Constants from 'sql/common/constants';
 import { ConnectionProviderProperties, IConnectionProviderRegistry, Extensions as ConnectionExtensions } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
 import { toObject } from 'sql/base/common/map';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 import { Event, Emitter } from 'vs/base/common/event';
 import { IAction } from 'vs/base/common/actions';
@@ -24,7 +24,7 @@ import { IExtensionService } from 'vs/workbench/services/extensions/common/exten
 import { getIdFromLocalExtensionId } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 
 export const SERVICE_ID = 'capabilitiesService';
-export const HOST_NAME = 'sqlops';
+export const HOST_NAME = 'azdata';
 export const HOST_VERSION = '1.0';
 
 const connectionRegistry = Registry.as<IConnectionProviderRegistry>(ConnectionExtensions.ConnectionProviderContributions);
@@ -63,12 +63,12 @@ export interface ICapabilitiesService {
 	/**
 	 * get the old version of provider information
 	 */
-	getLegacyCapabilities(provider: string): sqlops.DataProtocolServerCapabilities;
+	getLegacyCapabilities(provider: string): azdata.DataProtocolServerCapabilities;
 
 	/**
 	 * Register a capabilities provider
 	 */
-	registerProvider(provider: sqlops.CapabilitiesProvider): void;
+	registerProvider(provider: azdata.CapabilitiesProvider): void;
 
 	/**
 	 * Returns true if the feature is available for given connection
@@ -97,7 +97,7 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 	private _momento: Memento;
 	private _providers = new Map<string, ProviderFeatures>();
 	private _featureUpdateEvents = new Map<string, Emitter<ProviderFeatures>>();
-	private _legacyProviders = new Map<string, sqlops.DataProtocolServerCapabilities>();
+	private _legacyProviders = new Map<string, azdata.DataProtocolServerCapabilities>();
 
 	private _onCapabilitiesRegistered = this._register(new Emitter<ProviderFeatures>());
 	public readonly onCapabilitiesRegistered = this._onCapabilitiesRegistered.event;
@@ -184,7 +184,7 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 		return this._providers.get(provider);
 	}
 
-	public getLegacyCapabilities(provider: string): sqlops.DataProtocolServerCapabilities {
+	public getLegacyCapabilities(provider: string): azdata.DataProtocolServerCapabilities {
 		return this._legacyProviders.get(provider);
 	}
 
@@ -200,7 +200,7 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 	 * Register the capabilities provider and query the provider for its capabilities
 	 * @param provider
 	 */
-	public registerProvider(provider: sqlops.CapabilitiesProvider): void {
+	public registerProvider(provider: azdata.CapabilitiesProvider): void {
 		// request the capabilities from server
 		provider.getServerCapabilities(clientCapabilities).then(serverCapabilities => {
 			this._legacyProviders.set(serverCapabilities.providerName, serverCapabilities);

@@ -5,7 +5,7 @@
 
 'use strict';
 
-import { nb, ServerInfo, connection, IConnectionProfile } from 'sqlops';
+import { nb, ServerInfo, connection, IConnectionProfile } from 'azdata';
 import { Session, Kernel } from '@jupyterlab/services';
 import * as fs from 'fs-extra';
 import * as nls from 'vscode-nls';

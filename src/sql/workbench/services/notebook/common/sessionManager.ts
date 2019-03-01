@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { nb } from 'sqlops';
+import { nb } from 'azdata';
 import { localize } from 'vs/nls';
 import { FutureInternal } from 'sql/parts/notebook/models/modelInterfaces';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';

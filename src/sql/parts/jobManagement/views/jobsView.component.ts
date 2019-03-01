@@ -12,7 +12,7 @@ import 'vs/css!../common/media/jobs';
 import 'vs/css!sql/media/icons/common-icons';
 import 'vs/css!sql/base/browser/ui/table/media/table';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as nls from 'vs/nls';
 import * as dom from 'vs/base/browser/dom';
 import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnInit, OnDestroy } from '@angular/core';
@@ -87,11 +87,11 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 	private filterValueMap: { [columnName: string]: string[]; } = {};
 	private sortingStylingMap: { [columnName: string]: any; } = {};
 
-	public jobs: sqlops.AgentJobInfo[];
-	private jobHistories: { [jobId: string]: sqlops.AgentJobHistoryInfo[]; } = Object.create(null);
-	private jobSteps: { [jobId: string]: sqlops.AgentJobStepInfo[]; } = Object.create(null);
-	private jobAlerts: { [jobId: string]: sqlops.AgentAlertInfo[]; } = Object.create(null);
-	private jobSchedules: { [jobId: string]: sqlops.AgentJobScheduleInfo[]; } = Object.create(null);
+	public jobs: azdata.AgentJobInfo[];
+	private jobHistories: { [jobId: string]: azdata.AgentJobHistoryInfo[]; } = Object.create(null);
+	private jobSteps: { [jobId: string]: azdata.AgentJobStepInfo[]; } = Object.create(null);
+	private jobAlerts: { [jobId: string]: azdata.AgentAlertInfo[]; } = Object.create(null);
+	private jobSchedules: { [jobId: string]: azdata.AgentJobScheduleInfo[]; } = Object.create(null);
 	public contextAction = NewJobAction;
 
 	@ViewChild('jobsgrid') _gridEl: ElementRef;
@@ -223,7 +223,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		}
 	}
 
-	private onJobsAvailable(jobs: sqlops.AgentJobInfo[]) {
+	private onJobsAvailable(jobs: azdata.AgentJobInfo[]) {
 		let jobViews: any;
 		let start: boolean = true;
 		if (!jobs) {
@@ -545,7 +545,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		}
 	}
 
-	private separateFailingJobs(): sqlops.AgentJobInfo[][] {
+	private separateFailingJobs(): azdata.AgentJobInfo[][] {
 		let failing = [];
 		let nonFailing = [];
 		for (let i = 0; i < this.jobs.length; i++) {
@@ -573,7 +573,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		return cell.classList.contains('error-row');
 	}
 
-	private getJob(args: Slick.OnClickEventArgs<any>): sqlops.AgentJobInfo {
+	private getJob(args: Slick.OnClickEventArgs<any>): azdata.AgentJobInfo {
 		let row = args.row;
 		let jobName: string;
 		let cell = args.grid.getCellNode(row, 1);
@@ -586,7 +586,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		return job;
 	}
 
-	private async curateJobHistory(jobs: sqlops.AgentJobInfo[], ownerUri: string) {
+	private async curateJobHistory(jobs: azdata.AgentJobInfo[], ownerUri: string) {
 		const self = this;
 		for (let job of jobs) {
 			let result = await this._jobManagementService.getJobHistory(ownerUri, job.jobId, job.name);
@@ -600,7 +600,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 				self._jobCacheObject.setJobAlerts(job.jobId, self.jobAlerts[job.jobId]);
 				self._jobCacheObject.setJobSchedules(job.jobId, self.jobSchedules[job.jobId]);
 				let jobHistories = self._jobCacheObject.getJobHistory(job.jobId);
-				let previousRuns: sqlops.AgentJobHistoryInfo[];
+				let previousRuns: azdata.AgentJobHistoryInfo[];
 				if (jobHistories.length >= 5) {
 					previousRuns = jobHistories.slice(jobHistories.length - 5, jobHistories.length);
 				} else {
@@ -620,7 +620,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		}
 	}
 
-	private createJobChart(jobId: string, jobHistories: sqlops.AgentJobHistoryInfo[]): void {
+	private createJobChart(jobId: string, jobHistories: azdata.AgentJobHistoryInfo[]): void {
 		let chartHeights = this.getChartHeights(jobHistories);
 		let runCharts = [];
 		for (let i = 0; i < chartHeights.length; i++) {
@@ -642,7 +642,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 	}
 
 	// chart height normalization logic
-	private getChartHeights(jobHistories: sqlops.AgentJobHistoryInfo[]): string[] {
+	private getChartHeights(jobHistories: azdata.AgentJobHistoryInfo[]): string[] {
 		if (!jobHistories || jobHistories.length === 0) {
 			return [];
 		}
@@ -866,10 +866,10 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		return actions;
 	}
 
-	protected convertStepsToStepInfos(steps: sqlops.AgentJobStep[], job: sqlops.AgentJobInfo): sqlops.AgentJobStepInfo[] {
+	protected convertStepsToStepInfos(steps: azdata.AgentJobStep[], job: azdata.AgentJobInfo): azdata.AgentJobStepInfo[] {
 		let result = [];
 		steps.forEach(step => {
-			let stepInfo: sqlops.AgentJobStepInfo = {
+			let stepInfo: azdata.AgentJobStepInfo = {
 				jobId: job.jobId,
 				jobName: job.name,
 				script: null,
@@ -916,7 +916,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 			}
 		}
 
-		let job: sqlops.AgentJobInfo[] = this.jobs.filter(job => {
+		let job: azdata.AgentJobInfo[] = this.jobs.filter(job => {
 			return job.jobId === jobId;
 		});
 

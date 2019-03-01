@@ -16,7 +16,7 @@ import { IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails,
 import { ModelViewInput, ModelViewInputModel, ModeViewSaveHandler } from 'sql/parts/modelComponents/modelEditor/modelViewInput';
 
 import * as vscode from 'vscode';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadModelViewDialog)
@@ -45,7 +45,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 		throw new Error('Method not implemented.');
 	}
 
-	public $openEditor(handle: number, modelViewId: string, title: string, options?: sqlops.ModelViewEditorOptions, position?: vscode.ViewColumn): Thenable<void> {
+	public $openEditor(handle: number, modelViewId: string, title: string, options?: azdata.ModelViewEditorOptions, position?: vscode.ViewColumn): Thenable<void> {
 		return new Promise<void>((resolve, reject) => {
 			let saveHandler: ModeViewSaveHandler = options && options.supportsSave ? (h) => this.handleSave(h) : undefined;
 			let model = new ModelViewInputModel(modelViewId, handle, saveHandler);
@@ -286,7 +286,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 		this._proxy.$updateWizardPageInfo(handle, wizard.pages.map(page => this._wizardPageHandles.get(page)), wizard.currentPage);
 	}
 
-	private validateNavigation(handle: number, info: sqlops.window.WizardPageChangeInfo): Thenable<boolean> {
+	private validateNavigation(handle: number, info: azdata.window.WizardPageChangeInfo): Thenable<boolean> {
 		return this._proxy.$validateNavigation(handle, info);
 	}
 

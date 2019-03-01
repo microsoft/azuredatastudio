@@ -7,7 +7,7 @@
 
 import { Registry } from 'vs/platform/registry/common/platform';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { IModelStore, IComponentDescriptor, IComponent } from './interfaces';
 import { Extensions, IComponentRegistry } from 'sql/platform/dashboard/common/modelComponentRegistry';
 import { Deferred } from 'sql/base/common/promise';

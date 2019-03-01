@@ -7,7 +7,7 @@
 
 import * as assert from 'assert';
 import { Mock, It, Times, MockBehavior } from 'typemoq';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { ExtHostModelView } from 'sql/workbench/api/node/extHostModelView';
 import { MainThreadModelViewShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
@@ -24,8 +24,8 @@ interface IWithItemConfig {
 suite('ExtHostModelView Validation Tests', () => {
 	let extHostModelView: ExtHostModelView;
 	let mockProxy: Mock<MainThreadModelViewShape>;
-	let modelView: sqlops.ModelView;
-	let inputBox: sqlops.InputBoxComponent;
+	let modelView: azdata.ModelView;
+	let inputBox: azdata.InputBoxComponent;
 	let validText = 'valid';
 	let widgetId = 'widget_id';
 	let handle = 1;
@@ -146,7 +146,7 @@ suite('ExtHostModelView Validation Tests', () => {
 		inputComponent.required = false;
 
 		// If I build a form that sets the input component as required
-		let inputFormComponent: sqlops.FormComponent = {
+		let inputFormComponent: azdata.FormComponent = {
 			component: inputComponent,
 			title: 'test_input',
 			required: true
@@ -171,17 +171,17 @@ suite('ExtHostModelView Validation Tests', () => {
 		let groupInput = modelView.modelBuilder.inputBox().component();
 		let groupDropdown = modelView.modelBuilder.dropDown().component();
 
-		let topLevelInputFormComponent: sqlops.FormComponent = { component: topLevelList, title: 'top_level_input' };
-		let groupInputFormComponent: sqlops.FormComponent = { component: groupInput, title: 'group_input' };
-		let groupDropdownFormComponent: sqlops.FormComponent = { component: groupDropdown, title: 'group_dropdown' };
+		let topLevelInputFormComponent: azdata.FormComponent = { component: topLevelList, title: 'top_level_input' };
+		let groupInputFormComponent: azdata.FormComponent = { component: groupInput, title: 'group_input' };
+		let groupDropdownFormComponent: azdata.FormComponent = { component: groupDropdown, title: 'group_dropdown' };
 
 		let groupTitle = 'group_title';
 
 		// Give the group a default layout and add one just for the input component too
-		let defaultLayout: sqlops.FormItemLayout = {
+		let defaultLayout: azdata.FormItemLayout = {
 			horizontal: true
 		};
-		let groupInputLayout: sqlops.FormItemLayout = {
+		let groupInputLayout: azdata.FormItemLayout = {
 			horizontal: false
 		};
 
@@ -216,9 +216,9 @@ suite('ExtHostModelView Validation Tests', () => {
 		assert.equal((groupLabelConfig.config as TitledFormItemLayout).isGroupLabel, true);
 
 		// Verify that the components' layouts are correct
-		assert.equal((listBoxConfig.config as sqlops.FormItemLayout).horizontal, defaultLayout.horizontal);
-		assert.equal((inputBoxConfig.config as sqlops.FormItemLayout).horizontal, groupInputLayout.horizontal);
-		assert.equal((dropdownConfig.config as sqlops.FormItemLayout).horizontal, defaultLayout.horizontal);
+		assert.equal((listBoxConfig.config as azdata.FormItemLayout).horizontal, defaultLayout.horizontal);
+		assert.equal((inputBoxConfig.config as azdata.FormItemLayout).horizontal, groupInputLayout.horizontal);
+		assert.equal((dropdownConfig.config as azdata.FormItemLayout).horizontal, defaultLayout.horizontal);
 	});
 
 	test('Inserting and removing components from a container should work correctly', () => {
@@ -342,7 +342,7 @@ suite('ExtHostModelView Validation Tests', () => {
 		let dropDown = modelView.modelBuilder.dropDown().component();
 		let checkBox = modelView.modelBuilder.checkBox().component();
 
-		let groupItems: sqlops.FormComponentGroup = {
+		let groupItems: azdata.FormComponentGroup = {
 			title: 'Group',
 			components: [{
 				title: 'Drop Down',
@@ -352,11 +352,11 @@ suite('ExtHostModelView Validation Tests', () => {
 				component: checkBox
 			}]
 		};
-		let listBoxFormItem: sqlops.FormComponent = {
+		let listBoxFormItem: azdata.FormComponent = {
 			title: 'List Box',
 			component: listBox
 		};
-		let inputBoxFormItem: sqlops.FormComponent = {
+		let inputBoxFormItem: azdata.FormComponent = {
 			title: 'Input Box',
 			component: inputBox
 		};

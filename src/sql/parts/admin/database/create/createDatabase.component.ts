@@ -11,7 +11,7 @@ import { ConnectionManagementInfo } from 'sql/platform/connection/common/connect
 import { IAdminService } from 'sql/workbench/services/admin/common/adminService';
 import { ITaskDialogComponent } from 'sql/parts/tasks/common/tasks';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as nls from 'vs/nls';
 
 export const CREATEDATABASE_SELECTOR: string = 'createdatabase-component';
@@ -51,8 +51,8 @@ export class CreateDatabaseComponent implements ITaskDialogComponent {
 	) {
 	}
 
-	private getDatabaseInfo(form: NgForm): sqlops.DatabaseInfo {
-		return <sqlops.DatabaseInfo>{
+	private getDatabaseInfo(form: NgForm): azdata.DatabaseInfo {
+		return <azdata.DatabaseInfo>{
 			options: {
 				name: form.value.databaseName,
 				owner: form.value.databaseOwner

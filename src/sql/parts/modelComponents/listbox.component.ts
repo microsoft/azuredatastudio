@@ -8,7 +8,7 @@ import {
 	ViewChild, ViewChildren, ElementRef, Injector, OnDestroy, QueryList, AfterViewInit
 } from '@angular/core';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
@@ -91,18 +91,18 @@ export default class ListBoxComponent extends ComponentBase implements IComponen
 	// CSS-bound properties
 
 	private get values(): string[] {
-		return this.getPropertyOrDefault<sqlops.ListBoxProperties, string[]>((props) => props.values, undefined);
+		return this.getPropertyOrDefault<azdata.ListBoxProperties, string[]>((props) => props.values, undefined);
 	}
 
 	private set values(newValue: string[]) {
-		this.setPropertyFromUI<sqlops.ListBoxProperties, string[]>((props, value) => props.values = value, newValue);
+		this.setPropertyFromUI<azdata.ListBoxProperties, string[]>((props, value) => props.values = value, newValue);
 	}
 
 	private get selectedRow(): number {
-		return this.getPropertyOrDefault<sqlops.ListBoxProperties, number>((props) => props.selectedRow, undefined);
+		return this.getPropertyOrDefault<azdata.ListBoxProperties, number>((props) => props.selectedRow, undefined);
 	}
 
 	private set selectedRow(newValue: number) {
-		this.setPropertyFromUI<sqlops.ListBoxProperties, number>((props, value) => props.selectedRow = value, newValue);
+		this.setPropertyFromUI<azdata.ListBoxProperties, number>((props, value) => props.selectedRow = value, newValue);
 	}
 }

@@ -5,7 +5,7 @@
 
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { Event, Emitter } from 'vs/base/common/event';
 import { localize } from 'vs/nls';
 import { TPromise } from 'vs/base/common/winjs.base';
@@ -79,7 +79,7 @@ export class RemoveAccountAction extends Action {
 	public static LABEL = localize('removeAccount', 'Remove account');
 
 	constructor(
-		private _account: sqlops.Account,
+		private _account: azdata.Account,
 		@IDialogService private _dialogService: IDialogService,
 		@INotificationService private _notificationService: INotificationService,
 		@IAccountManagementService private _accountManagementService: IAccountManagementService
@@ -147,7 +147,7 @@ export class ApplyFilterAction extends Action {
 export class RefreshAccountAction extends Action {
 	public static ID = 'account.refresh';
 	public static LABEL = localize('refreshAccount', 'Reenter your credentials');
-	public account: sqlops.Account;
+	public account: azdata.Account;
 
 	constructor(
 		@IAccountManagementService private _accountManagementService: IAccountManagementService

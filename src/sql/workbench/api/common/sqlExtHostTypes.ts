@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { nb, IConnectionProfile } from 'sqlops';
+import { nb, IConnectionProfile } from 'azdata';
 import * as vsExtTypes from 'vs/workbench/api/node/extHostTypes';
 
 // SQL added extension host types

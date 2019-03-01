@@ -5,7 +5,6 @@
 
 'use strict';
 
-import * as sqlops from 'sqlops';
 import { OptionsDialog } from 'sql/workbench/browser/modal/optionsDialog';
 import { DialogModal } from 'sql/platform/dialog/dialogModal';
 import { WizardModal } from 'sql/platform/dialog/wizardModal';
