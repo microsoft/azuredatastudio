@@ -15,6 +15,7 @@ import { CmsResourceItemType } from '../constants';
 import { CmsResourceTreeNodeBase } from './baseTreeNodes';
 import { AppContext } from '../../appContext';
 import { ICmsResourceTreeChangeHandler } from './treeChangeHandler';
+import { RegisteredServerTreeNode } from './registeredServerTreeNode';
 
 export class ServerGroupTreeNode extends CmsResourceTreeNodeBase {
 
@@ -33,12 +34,38 @@ export class ServerGroupTreeNode extends CmsResourceTreeNodeBase {
 		this._id = `cms_serverGroup_${this.name}`;
 		this._relativePath = relativePath;
 	}
-	public getChildren(): TreeNode[] | Promise<TreeNode[]> {
-		return [];
+	public async getChildren(): Promise<TreeNode[]> {
+		try {
+			let nodes = [];
+			return await this.appContext.apiWrapper.getRegisteredServers(this.appContext.apiWrapper.ownerUri, this._relativePath).then((result) => {
+				if (result) {
+					if (result.registeredServersList) {
+						result.registeredServersList.forEach((registeredServer) => {
+							nodes.push(new RegisteredServerTreeNode(registeredServer.name,
+								registeredServer.description, registeredServer.relativePath,
+								this.appContext,
+								this.treeChangeHandler, this));
+						});
+					}
+					if (result.registeredServerGroups) {
+						if (result.registeredServerGroups) {
+							result.registeredServerGroups.forEach((serverGroup) => {
+								nodes.push(new ServerGroupTreeNode(serverGroup.name, serverGroup.description,
+									serverGroup.relativePath, this.appContext, this.treeChangeHandler, this));
+							});
+						}
+					}
+					return nodes;
+				}
+			});
+		} catch {
+			return [];
+		}
+
 	}
 
 	public getTreeItem(): TreeItem | Promise<TreeItem> {
-		let item = new TreeItem(this.name, TreeItemCollapsibleState.None);
+		let item = new TreeItem(this.name, TreeItemCollapsibleState.Collapsed);
 		item.id = this._id;
 		item.tooltip = this.description;
 		return item;

@@ -224,8 +224,8 @@ export class ApiWrapper {
 		return this._cmsProvider;
 	}
 
-	public async getRegisteredServers(ownerUri: string): Promise<sqlops.ListRegisteredServersResult> {
-		return await this.getCmsProvider().getRegisteredServers(ownerUri, '').then((result) => {
+	public async getRegisteredServers(ownerUri: string, relativePath: string): Promise<sqlops.ListRegisteredServersResult> {
+		return await this.getCmsProvider().getRegisteredServers(ownerUri, relativePath).then((result) => {
 			if (result && result.registeredServersList && result.registeredServersList) {
 				return result;
 			}

@@ -15,6 +15,7 @@ import { CmsResourceItemType } from '../constants';
 import { CmsResourceTreeNodeBase } from './baseTreeNodes';
 import { AppContext } from '../../appContext';
 import { ICmsResourceTreeChangeHandler } from './treeChangeHandler';
+import { ServerGroupTreeNode } from './serverGroupTreeNode';
 
 export class RegisteredServerTreeNode extends CmsResourceTreeNodeBase {
 
@@ -33,8 +34,13 @@ export class RegisteredServerTreeNode extends CmsResourceTreeNodeBase {
 		this._id = `cms_registeredServer_${this.name}`;
 		this._relativePath = relativePath;
 	}
-	public getChildren(): TreeNode[] | Promise<TreeNode[]> {
-		return [];
+
+	public async getChildren(): Promise<TreeNode[]> {
+		try {
+			let nodes: TreeNode[] = [];
+		} catch {
+			return [];
+		}
 	}
 
 	public getTreeItem(): TreeItem | Promise<TreeItem> {

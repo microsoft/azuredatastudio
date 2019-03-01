@@ -25,7 +25,7 @@ export class CmsResourceTreeNode extends CmsResourceTreeNodeBase {
 		private name: string,
 		private description: string,
 		private registeredServersList: sqlops.RegisteredServerResult[],
-		private serverGroupList: sqlops.ServerGroupResult[],
+		private registeredGroupsList: sqlops.ServerGroupResult[],
 		appContext: AppContext,
 		treeChangeHandler: ICmsResourceTreeChangeHandler,
 		parent: TreeNode
@@ -45,8 +45,8 @@ export class CmsResourceTreeNode extends CmsResourceTreeNodeBase {
 						this.treeChangeHandler, this));
 				});
 			}
-			if (this.serverGroupList) {
-				this.serverGroupList.forEach((serverGroup) => {
+			if (this.registeredGroupsList) {
+				this.registeredGroupsList.forEach((serverGroup) => {
 					nodes.push(new ServerGroupTreeNode(serverGroup.name, serverGroup.description,
 						serverGroup.relativePath, this.appContext, this.treeChangeHandler, this));
 				});
