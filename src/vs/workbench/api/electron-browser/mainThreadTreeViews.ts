@@ -7,10 +7,16 @@
 import { TPromise } from 'vs/base/common/winjs.base';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { ExtHostContext, MainThreadTreeViewsShape, ExtHostTreeViewsShape, MainContext, IExtHostContext } from '../node/extHost.protocol';
-import { ITreeViewDataProvider, ITreeItem, IViewsService, ITreeViewer, ViewsRegistry, ICustomViewDescriptor } from 'vs/workbench/common/views';
+import { ITreeViewDataProvider, ITreeItem, IViewsService, ITreeViewer, ViewsRegistry, ICustomViewDescriptor, TreeItemCollapsibleState } from 'vs/workbench/common/views';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 import { distinct } from 'vs/base/common/arrays';
 import { INotificationService } from 'vs/platform/notification/common/notification';
+
+// {{SQL CARBON EDIT}}
+import * as sqlops from 'sqlops';
+import { Emitter } from 'vs/base/common/event';
+import { generateUuid } from 'vs/base/common/uuid';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 
 @extHostNamedCustomer(MainContext.MainThreadTreeViews)
 export class MainThreadTreeViews extends Disposable implements MainThreadTreeViewsShape {
@@ -21,7 +27,9 @@ export class MainThreadTreeViews extends Disposable implements MainThreadTreeVie
 	constructor(
 		extHostContext: IExtHostContext,
 		@IViewsService private viewsService: IViewsService,
-		@INotificationService private notificationService: INotificationService
+		@INotificationService private notificationService: INotificationService,
+		// {{SQL CARBON EDIT}}
+		@IObjectExplorerService private objectExplorerService: IObjectExplorerService
 	) {
 		super();
 		this._proxy = extHostContext.getProxy(ExtHostContext.ExtHostTreeViews);
@@ -30,6 +38,10 @@ export class MainThreadTreeViews extends Disposable implements MainThreadTreeVie
 	$registerTreeViewDataProvider(treeViewId: string): void {
 		const dataProvider = new TreeViewDataProvider(treeViewId, this._proxy, this.notificationService);
 		this._dataProviders.set(treeViewId, dataProvider);
+		// {{SQL CARBON EDIT}}
+		if (this.checkForDataExplorer(treeViewId)) {
+			return;
+		}
 		const viewer = this.getTreeViewer(treeViewId);
 		if (viewer) {
 			viewer.dataProvider = dataProvider;
@@ -68,6 +80,25 @@ export class MainThreadTreeViews extends Disposable implements MainThreadTreeVie
 	private getTreeViewer(treeViewId: string): ITreeViewer {
 		const viewDescriptor: ICustomViewDescriptor = <ICustomViewDescriptor>ViewsRegistry.getView(treeViewId);
 		return viewDescriptor ? viewDescriptor.treeViewer : null;
+	}
+
+	// {{SQL CARBON EDIT}}
+	private checkForDataExplorer(treeViewId: string): boolean {
+		const viewDescriptor: ICustomViewDescriptor = <ICustomViewDescriptor>ViewsRegistry.getView(treeViewId);
+		if (viewDescriptor.container.id === 'workbench.view.dataExplorer') {
+			const dataProvider = new OETreeViewDataProvider(treeViewId, this._proxy);
+			this.objectExplorerService.registerProvider(treeViewId, dataProvider);
+			dataProvider.registerOnExpandCompleted(e => this.objectExplorerService.onNodeExpanded({
+				errorMessage: e.errorMessage,
+				nodePath: e.nodePath,
+				nodes: e.nodes,
+				sessionId: e.sessionId,
+				providerId: treeViewId
+			}));
+			dataProvider.registerOnSessionCreated(e => this.objectExplorerService.onSessionCreated(undefined, e));
+			viewDescriptor.treeViewer.refresh();
+		}
+		return false;
 	}
 
 	dispose(): void {
@@ -156,5 +187,102 @@ export class TreeViewDataProvider implements ITreeViewDataProvider {
 				current[property] = treeItem[property];
 			}
 		}
+	}
+}
+
+// {{SQL CARBON EDIT}}
+export class OETreeViewDataProvider implements sqlops.ObjectExplorerProvider {
+
+	protected itemsMap: Map<TreeItemHandle, ITreeItem> = new Map<TreeItemHandle, ITreeItem>();
+	private onExpandComplete = new Emitter<sqlops.ObjectExplorerExpandInfo>();
+	private onSessionCreated = new Emitter<sqlops.ObjectExplorerSession>();
+
+	private sessionId: string;
+
+	handle: number;
+	readonly providerId = this.treeViewId;
+
+	constructor(protected treeViewId: string,
+		protected _proxy: ExtHostTreeViewsShape
+	) {
+	}
+
+	public createNewSession(connInfo: sqlops.ConnectionInfo): Thenable<sqlops.ObjectExplorerSessionResponse> {
+		// no op
+		this.sessionId = generateUuid();
+		setTimeout(() => {
+			this.onSessionCreated.fire({
+				sessionId: this.sessionId,
+				errorMessage: undefined,
+				rootNode: {
+					errorMessage: undefined,
+					iconType: undefined,
+					isLeaf: undefined,
+					label: undefined,
+					metadata: undefined,
+					nodePath: undefined,
+					nodeStatus: undefined,
+					nodeSubType: undefined,
+					nodeType: undefined
+				},
+				success: true
+			});
+		});
+		return TPromise.as({ sessionId: this.sessionId });
+	}
+
+	public expandNode(nodeInfo: sqlops.ExpandNodeInfo): Thenable<boolean> {
+		this._proxy.$getChildren(this.treeViewId, nodeInfo.nodePath).then(e => {
+			this.onExpandComplete.fire({
+				errorMessage: undefined,
+				nodePath: nodeInfo.nodePath,
+				nodes: e.map(e => {
+					return <sqlops.NodeInfo>{
+						nodePath: e.handle,
+						label: e.label,
+						iconType: e.icon,
+						// this is just needed since we don't have this
+						nodeSubType: e.iconDark,
+						isLeaf: e.collapsibleState === TreeItemCollapsibleState.None,
+						childProvider: e.childProvider,
+						payload: e.payload,
+						nodeType: e.contextValue
+					};
+				}),
+				sessionId: this.sessionId
+			});
+		});
+		return TPromise.as(true);
+	}
+
+	public refreshNode(nodeInfo: sqlops.ExpandNodeInfo): Thenable<boolean> {
+		// no op
+		return TPromise.as(true);
+	}
+
+	public closeSession(closeSessionInfo: sqlops.ObjectExplorerCloseSessionInfo): Thenable<sqlops.ObjectExplorerCloseSessionResponse> {
+		// no op
+		return TPromise.as({ sessionId: undefined, success: true });
+	}
+
+	public findNodes(findNodesInfo: sqlops.FindNodesInfo): Thenable<sqlops.ObjectExplorerFindNodesResponse> {
+		// no op
+		return TPromise.as({ nodes: [] });
+	}
+
+	public registerOnSessionCreated(handler: (response: sqlops.ObjectExplorerSession) => any): void {
+		// no op
+		this.onSessionCreated.event(handler);
+		return;
+	}
+
+	public registerOnSessionDisconnected?(handler: (response: sqlops.ObjectExplorerSession) => any): void {
+		// no op
+		return;
+	}
+
+	public registerOnExpandCompleted(handler: (response: sqlops.ObjectExplorerExpandInfo) => any): void {
+		this.onExpandComplete.event(handler);
+		return;
 	}
 }

@@ -34,7 +34,9 @@ export class OutputAreaComponent extends AngularDisposable implements OnInit {
 		this.updateTheme(this.themeService.getColorTheme());
 		if (this.cellModel) {
 			this._register(this.cellModel.onOutputsChanged(() => {
-				this._changeRef.detectChanges();
+				if (!(this._changeRef['destroyed'])) {
+					this._changeRef.detectChanges();
+				}
 			}));
 		}
 	}

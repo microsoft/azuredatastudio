@@ -46,7 +46,7 @@ import { isEqual, basenameOrAuthority } from 'vs/base/common/resources';
 import { ltrim } from 'vs/base/common/strings';
 
 // {{SQL CARBON EDIT}}
-import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
+import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 
 // Commands
 

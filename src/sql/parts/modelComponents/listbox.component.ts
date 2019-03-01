@@ -14,7 +14,7 @@ import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
 
 import { ListBox } from 'sql/base/browser/ui/listBox/listBox';
-import { attachListBoxStyler } from 'sql/common/theme/styler';
+import { attachListBoxStyler } from 'sql/platform/theme/common/styler';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { Emitter } from 'vs/base/common/event';

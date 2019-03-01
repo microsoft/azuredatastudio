@@ -8,6 +8,7 @@ import { NotificationType, RequestType } from 'vscode-languageclient';
 import { ITelemetryEventProperties, ITelemetryEventMeasures } from './telemetry';
 import * as sqlops from 'sqlops';
 import { ConnectParams } from 'dataprotocol-client/lib/protocol';
+import { ListRegisteredServersResult } from './api/mssqlapis';
 
 // ------------------------------- < Telemetry Sent Event > ------------------------------------
 
@@ -381,14 +382,14 @@ export interface CreateCentralManagementServerParams {
     connectParams: ConnectParams;
 }
 
-export interface ListRegisteredServerParams extends RegisteredServerParamsBase {
+export interface ListRegisteredServersParams extends RegisteredServerParamsBase {
         // same as base
 }
 
 export interface AddRegisteredServerParams extends RegisteredServerParamsBase {
     registeredServerName: string;
     registeredServerDescription : string;
-    regServerConnectionDetails: sqlops.ConnectionInfo;
+    registeredServerConnectionDetails: sqlops.ConnectionInfo;
 }
 
 export interface RemoveRegisteredServerParams extends RegisteredServerParamsBase {
@@ -410,26 +411,26 @@ export interface RegisteredServerParamsBase {
 }
 
 export namespace CreateCentralManagementServerRequest {
-	export const type = new RequestType<CreateCentralManagementServerParams, sqlops.ListRegisteredServersResult, void, void>('cms/createCms');
+	export const type = new RequestType<CreateCentralManagementServerParams, ListRegisteredServersResult, void, void>('cms/createCms');
 }
 
-export namespace GetRegisteredServerRequest {
-	export const type = new RequestType<ListRegisteredServerParams, sqlops.ListRegisteredServersResult, void, void>('cms/listRegServers');
+export namespace ListRegisteredServersRequest {
+	export const type = new RequestType<ListRegisteredServersParams, ListRegisteredServersResult, void, void>('cms/listRegisteredServers');
 }
 
 export namespace AddRegisteredServerRequest {
-	export const type = new RequestType<AddRegisteredServerParams, boolean, void, void>('cms/addRegServers');
+	export const type = new RequestType<AddRegisteredServerParams, boolean, void, void>('cms/addRegisteredServer');
 }
 
 export namespace RemoveRegisteredServerRequest {
-	export const type = new RequestType<RemoveRegisteredServerParams, boolean, void, void>('cms/addRegServers');
+	export const type = new RequestType<RemoveRegisteredServerParams, boolean, void, void>('cms/removeRegisteredServer');
 }
 
 export namespace AddServerGroupRequest {
-	export const type = new RequestType<AddServerGroupParams, boolean, void, void>('cms/addRegServers');
+	export const type = new RequestType<AddServerGroupParams, boolean, void, void>('cms/addCmsServerGroup');
 }
 
 export namespace RemoveServerGroupRequest {
-	export const type = new RequestType<RemoveServerGroupParams, boolean, void, void>('cms/addRegServers');
+	export const type = new RequestType<RemoveServerGroupParams, boolean, void, void>('cms/removeCmsServerGroup');
 }
 // ------------------------------- <CMS> ----------------------------------------

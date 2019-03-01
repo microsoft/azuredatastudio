@@ -14,8 +14,8 @@ import { AppContext } from '../../../appContext';
 import { ApiWrapper } from '../../../apiWrapper';
 
 export class SparkAdvancedTab {
-	private _tab: sqlops.window.modelviewdialog.DialogTab;
-	public get tab(): sqlops.window.modelviewdialog.DialogTab { return this._tab; }
+	private _tab: sqlops.window.DialogTab;
+	public get tab(): sqlops.window.DialogTab { return this._tab; }
 
 	private _referenceFilesInputBox: sqlops.InputBoxComponent;
 	private _referenceJARFilesInputBox: sqlops.InputBoxComponent;

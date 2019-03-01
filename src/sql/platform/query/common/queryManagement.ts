@@ -12,6 +12,7 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
 import * as TelemetryUtils from 'sql/common/telemetryUtilities';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
+import { Event, Emitter } from 'vs/base/common/event';
 
 export const SERVICE_ID = 'queryManagementService';
 
@@ -22,6 +23,7 @@ export interface IQueryManagementService {
 
 	addQueryRequestHandler(queryType: string, runner: IQueryRequestHandler): IDisposable;
 	isProviderRegistered(providerId: string): boolean;
+	getRegisteredProviders(): string[];
 	registerRunner(runner: QueryRunner, uri: string): void;
 
 	cancelQuery(ownerUri: string): Thenable<sqlops.QueryCancelResult>;
@@ -87,6 +89,7 @@ export class QueryManagementService implements IQueryManagementService {
 	public _serviceBrand: any;
 
 	private _requestHandlers = new Map<string, IQueryRequestHandler>();
+	private _onHandlerAddedEmitter = new Emitter<string>();
 	// public for testing only
 	public _queryRunners = new Map<string, QueryRunner>();
 
@@ -137,6 +140,7 @@ export class QueryManagementService implements IQueryManagementService {
 
 	public addQueryRequestHandler(queryType: string, handler: IQueryRequestHandler): IDisposable {
 		this._requestHandlers.set(queryType, handler);
+		this._onHandlerAddedEmitter.fire(queryType);
 
 		return {
 			dispose: () => {
@@ -144,9 +148,17 @@ export class QueryManagementService implements IQueryManagementService {
 		};
 	}
 
+	public get onHandlerAdded(): Event<string> {
+		return this._onHandlerAddedEmitter.event;
+	}
+
 	public isProviderRegistered(providerId: string): boolean {
 		let handler = this._requestHandlers.get(providerId);
 		return !!handler;
+	}
+
+	public getRegisteredProviders(): string[] {
+		return Array.from(this._requestHandlers.keys());
 	}
 
 	private addTelemetry(eventName: string, ownerUri: string, runOptions?: sqlops.ExecutionPlanOptions): void {

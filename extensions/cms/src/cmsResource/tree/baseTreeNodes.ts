@@ -5,6 +5,7 @@
 
 'use strict';
 import * as sqlops from 'sqlops';
+import * as mssql from '../../../../mssql/src/api/mssqlapis';
 import { AppContext } from '../../appContext';
 import { TreeNode } from '../treeNode';
 import { ICmsResourceTreeChangeHandler } from './treeChangeHandler';
@@ -24,6 +25,6 @@ export abstract class CmsResourceTreeNodeBase extends TreeNode {
 export interface CmsResourceNodeInfo {
 	name: string;
 	description: string;
-	registeredServers: sqlops.RegisteredServerResult[];
-	serverGroups: sqlops.ServerGroupResult[];
+	registeredServers: mssql.RegisteredServerResult[];
+	serverGroups: mssql.RegisteredServerGroup[];
 }

@@ -6,6 +6,7 @@
 'use strict';
 import * as sqlops from 'sqlops';
 import * as nls from 'vscode-nls';
+import * as mssql from '../../../../mssql/src/api/mssqlapis';
 import { TreeItem, TreeItemCollapsibleState } from 'vscode';
 import { AppContext } from '../../appContext';
 import { TreeNode } from '../treeNode';
@@ -24,8 +25,8 @@ export class CmsResourceTreeNode extends CmsResourceTreeNodeBase {
 	public constructor(
 		private name: string,
 		private description: string,
-		private registeredServersList: sqlops.RegisteredServerResult[],
-		private registeredGroupsList: sqlops.ServerGroupResult[],
+		private registeredServersList: mssql.RegisteredServerResult[],
+		private registeredGroupsList: mssql.RegisteredServerGroup[],
 		appContext: AppContext,
 		treeChangeHandler: ICmsResourceTreeChangeHandler,
 		parent: TreeNode

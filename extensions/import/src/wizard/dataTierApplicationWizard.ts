@@ -20,10 +20,10 @@ import { BasePage } from './api/basePage';
 const localize = nls.loadMessageBundle();
 
 class Page {
-	wizardPage: sqlops.window.modelviewdialog.WizardPage;
+	wizardPage: sqlops.window.WizardPage;
 	dacFxPage: BasePage;
 
-	constructor(wizardPage: sqlops.window.modelviewdialog.WizardPage) {
+	constructor(wizardPage: sqlops.window.WizardPage) {
 		this.wizardPage = wizardPage;
 	}
 }
@@ -69,7 +69,7 @@ export enum ExportOperationPath {
 }
 
 export class DataTierApplicationWizard {
-	public wizard: sqlops.window.modelviewdialog.Wizard;
+	public wizard: sqlops.window.Wizard;
 	private connection: sqlops.connection.Connection;
 	private model: DacFxDataModel;
 	public pages: Map<string, Page> = new Map<string, Page>();
@@ -92,15 +92,15 @@ export class DataTierApplicationWizard {
 			this.connection = await sqlops.connection.openConnectionDialog();
 		}
 
-		this.wizard = sqlops.window.modelviewdialog.createWizard('Data-tier Application Wizard');
-		let selectOperationWizardPage = sqlops.window.modelviewdialog.createWizardPage(localize('dacFx.selectOperationPageName', 'Select an Operation'));
-		let deployConfigWizardPage = sqlops.window.modelviewdialog.createWizardPage(localize('dacFx.deployConfigPageName', 'Select Deploy Dacpac Settings'));
-		let deployPlanWizardPage = sqlops.window.modelviewdialog.createWizardPage(localize('dacFx.deployPlanPage', 'Review the deploy plan'));
-		let deployActionWizardPage = sqlops.window.modelviewdialog.createWizardPage(localize('dacFx.deployActionPageName', 'Select Action'));
-		let summaryWizardPage = sqlops.window.modelviewdialog.createWizardPage(localize('dacFx.summaryPageName', 'Summary'));
-		let extractConfigWizardPage = sqlops.window.modelviewdialog.createWizardPage(localize('dacFx.extractConfigPageName', 'Select Extract Dacpac Settings'));
-		let importConfigWizardPage = sqlops.window.modelviewdialog.createWizardPage(localize('dacFx.importConfigPageName', 'Select Import Bacpac Settings'));
-		let exportConfigWizardPage = sqlops.window.modelviewdialog.createWizardPage(localize('dacFx.exportConfigPageName', 'Select Export Bacpac Settings'));
+		this.wizard = sqlops.window.createWizard('Data-tier Application Wizard');
+		let selectOperationWizardPage = sqlops.window.createWizardPage(localize('dacFx.selectOperationPageName', 'Select an Operation'));
+		let deployConfigWizardPage = sqlops.window.createWizardPage(localize('dacFx.deployConfigPageName', 'Select Deploy Dacpac Settings'));
+		let deployPlanWizardPage = sqlops.window.createWizardPage(localize('dacFx.deployPlanPage', 'Review the deploy plan'));
+		let deployActionWizardPage = sqlops.window.createWizardPage(localize('dacFx.deployActionPageName', 'Select Action'));
+		let summaryWizardPage = sqlops.window.createWizardPage(localize('dacFx.summaryPageName', 'Summary'));
+		let extractConfigWizardPage = sqlops.window.createWizardPage(localize('dacFx.extractConfigPageName', 'Select Extract Dacpac Settings'));
+		let importConfigWizardPage = sqlops.window.createWizardPage(localize('dacFx.importConfigPageName', 'Select Import Bacpac Settings'));
+		let exportConfigWizardPage = sqlops.window.createWizardPage(localize('dacFx.exportConfigPageName', 'Select Export Bacpac Settings'));
 
 		this.pages.set('selectOperation', new Page(selectOperationWizardPage));
 		this.pages.set('deployConfig', new Page(deployConfigWizardPage));
@@ -190,7 +190,7 @@ export class DataTierApplicationWizard {
 		this.wizard.open();
 	}
 
-	public registerNavigationValidator(validator: (pageChangeInfo: sqlops.window.modelviewdialog.WizardPageChangeInfo) => boolean) {
+	public registerNavigationValidator(validator: (pageChangeInfo: sqlops.window.WizardPageChangeInfo) => boolean) {
 		this.wizard.registerNavigationValidator(validator);
 	}
 
@@ -306,7 +306,7 @@ export class DataTierApplicationWizard {
 		let ownerUri = await sqlops.connection.getUriForConnection(this.model.server.connectionId);
 		this.wizard.message = {
 			text: localize('dacfx.scriptGeneratingMessage', 'You can view the status of script generation in the Task History once the wizard is closed'),
-			level: sqlops.window.modelviewdialog.MessageLevel.Information,
+			level: sqlops.window.MessageLevel.Information,
 			description: ''
 		};
 

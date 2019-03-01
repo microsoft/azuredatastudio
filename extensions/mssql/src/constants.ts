@@ -37,6 +37,7 @@ export const isBigDataClusterProperty = 'isBigDataCluster';
 
 // SERVICE NAMES //////////////////////////////////////////////////////////
 export const ObjectExplorerService = 'objectexplorer';
+export const CmsService = 'cmsService';
 export const objectExplorerPrefix: string = 'objectexplorer://';
 export const ViewType = 'view';
 

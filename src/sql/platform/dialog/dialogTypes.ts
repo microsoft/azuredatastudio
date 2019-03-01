@@ -80,7 +80,7 @@ export class Dialog extends ModelViewPane {
 	}
 }
 
-export class DialogButton implements sqlops.window.modelviewdialog.Button {
+export class DialogButton implements sqlops.window.Button {
 	private _label: string;
 	private _enabled: boolean;
 	private _hidden: boolean;
@@ -169,13 +169,13 @@ export class Wizard {
 	public cancelButton: DialogButton;
 	public customButtons: DialogButton[];
 	private _currentPage: number;
-	private _pageChangedEmitter = new Emitter<sqlops.window.modelviewdialog.WizardPageChangeInfo>();
+	private _pageChangedEmitter = new Emitter<sqlops.window.WizardPageChangeInfo>();
 	public readonly onPageChanged = this._pageChangedEmitter.event;
 	private _pageAddedEmitter = new Emitter<WizardPage>();
 	public readonly onPageAdded = this._pageAddedEmitter.event;
 	private _pageRemovedEmitter = new Emitter<WizardPage>();
 	public readonly onPageRemoved = this._pageRemovedEmitter.event;
-	private _navigationValidator: (pageChangeInfo: sqlops.window.modelviewdialog.WizardPageChangeInfo) => boolean | Thenable<boolean>;
+	private _navigationValidator: (pageChangeInfo: sqlops.window.WizardPageChangeInfo) => boolean | Thenable<boolean>;
 	private _onMessageChange = new Emitter<DialogMessage>();
 	public readonly onMessageChange = this._onMessageChange.event;
 	private _message: DialogMessage;
@@ -233,7 +233,7 @@ export class Wizard {
 		this._pageRemovedEmitter.fire(removedPage);
 	}
 
-	public registerNavigationValidator(validator: (pageChangeInfo: sqlops.window.modelviewdialog.WizardPageChangeInfo) => boolean | Thenable<boolean>): void {
+	public registerNavigationValidator(validator: (pageChangeInfo: sqlops.window.WizardPageChangeInfo) => boolean | Thenable<boolean>): void {
 		this._navigationValidator = validator;
 	}
 

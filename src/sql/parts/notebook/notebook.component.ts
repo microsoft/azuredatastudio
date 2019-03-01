@@ -30,8 +30,8 @@ import { VIEWLET_ID, IExtensionsViewlet } from 'vs/workbench/parts/extensions/co
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { AngularDisposable } from 'sql/base/node/lifecycle';
 import { CellTypes, CellType } from 'sql/parts/notebook/models/contracts';
-import { ICellModel, IModelFactory, notebookConstants, INotebookModel, NotebookContentChange } from 'sql/parts/notebook/models/modelInterfaces';
-import { IConnectionManagementService, IConnectionDialogService } from 'sql/platform/connection/common/connectionManagement';
+import { ICellModel, IModelFactory, INotebookModel, NotebookContentChange, notebookConstants } from 'sql/parts/notebook/models/modelInterfaces';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { INotebookService, INotebookParams, INotebookManager, INotebookEditor, DEFAULT_NOTEBOOK_FILETYPE, DEFAULT_NOTEBOOK_PROVIDER, SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/common/notebookService';
 import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
 import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
@@ -41,13 +41,15 @@ import { Deferred } from 'sql/base/common/promise';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { KernelsDropdown, AttachToDropdown, AddCellAction, TrustedAction, SaveNotebookAction } from 'sql/parts/notebook/notebookActions';
-import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IResourceInput } from 'vs/platform/editor/common/editor';
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
+import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { CellMagicMapper } from 'sql/parts/notebook/models/cellMagicMapper';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 
@@ -102,9 +104,15 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	private updateProfile(): void {
 		this.profile = this.notebookParams ? this.notebookParams.profile : undefined;
+		let profile: IConnectionProfile;
 		if (!this.profile) {
-			// use global connection if possible
-			let profile = TaskUtilities.getCurrentGlobalConnection(this.objectExplorerService, this.connectionManagementService, this.editorService);
+			// Use connectionProfile passed in first
+			if (this._notebookParams.connectionProfileId !== undefined && this._notebookParams.connectionProfileId) {
+				profile = this.connectionManagementService.getConnectionProfileById(this._notebookParams.connectionProfileId);
+			} else {
+				// Second use global connection if possible
+				profile = TaskUtilities.getCurrentGlobalConnection(this.objectExplorerService, this.connectionManagementService, this.editorService);
+			}
 			// TODO use generic method to match kernel with valid connection that's compatible. For now, we only have 1
 			if (profile && profile.providerName) {
 				this.profile = profile;
@@ -126,6 +134,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	ngOnDestroy() {
+		this.disconnect();
 		this.dispose();
 		if (this.notebookService) {
 			this.notebookService.removeNotebookEditor(this);
@@ -159,11 +168,20 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		}
 		if (cell !== this.model.activeCell) {
 			if (this.model.activeCell) {
+				this.disconnect();
 				this.model.activeCell.active = false;
 			}
 			this._model.activeCell = cell;
 			this._model.activeCell.active = true;
 			this._changeRef.detectChanges();
+		}
+	}
+
+	private disconnect() {
+		if (this._model.defaultKernel.display_name === notebookConstants.SQL) {
+			if (this._model.activeCell && this._model.activeCell.cellType === CellTypes.Code && this._model.activeCell.cellUri) {
+				this.connectionManagementService.disconnect(this._model.activeCell.cellUri.toString()).catch(e => console.log(e));
+			}
 		}
 	}
 
@@ -232,7 +250,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	private async loadModel(): Promise<void> {
 		await this.awaitNonDefaultProvider();
-		let providerId = notebookUtils.sqlNotebooksEnabled(this.contextKeyService) ? 'sql' : this._notebookParams.providers.find(provider => provider !== DEFAULT_NOTEBOOK_PROVIDER); // this is tricky; really should also depend on the connection profile
+		let providerId = 'sql'; // this is tricky; really should also depend on the connection profile
 		this.setContextKeyServiceWithProviderId(providerId);
 		this.fillInActionsForCurrentContext();
 		for (let providerId of this._notebookParams.providers) {
@@ -246,7 +264,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			notificationService: this.notificationService,
 			notebookManagers: this.notebookManagers,
 			standardKernels: this._notebookParams.input.standardKernels,
-			providerId: notebookUtils.sqlNotebooksEnabled(this.contextKeyService) ? 'sql' : 'jupyter', // this is tricky; really should also depend on the connection profile
+			cellMagicMapper: new CellMagicMapper(this.notebookService.languageMagics),
+			providerId: 'sql', // this is tricky; really should also depend on the connection profile
 			defaultKernel: this._notebookParams.input.defaultKernel,
 			layoutChanged: this._notebookParams.input.layoutChanged,
 			capabilitiesService: this.capabilitiesService
@@ -481,10 +500,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	 */
 	private fillInActionsForCurrentContext(): void {
 		let primary: IAction[] = [];
-		let	secondary: IAction[] = [];
+		let secondary: IAction[] = [];
 		let notebookBarMenu = this.menuService.createMenu(MenuId.NotebookToolbar, this.contextKeyService);
 		let groups = notebookBarMenu.getActions({ arg: null, shouldForwardArgs: true });
-		fillInActions(groups, {primary, secondary}, false, (group: string) => group === undefined);
+		fillInActions(groups, { primary, secondary }, false, (group: string) => group === undefined);
 		this.addPrimaryContributedActions(primary);
 	}
 

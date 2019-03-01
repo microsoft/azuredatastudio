@@ -9,13 +9,13 @@ Azure Data Studio is a data management tool that enables you to work with SQL Se
 
 Platform | Link
 -- | --
-Windows User Installer | https://go.microsoft.com/fwlink/?linkid=2049972
-Windows System Installer | https://go.microsoft.com/fwlink/?linkid=2049975
-Windows ZIP | https://go.microsoft.com/fwlink/?linkid=2050146
-macOS ZIP | https://go.microsoft.com/fwlink/?linkid=2049981
-Linux TAR.GZ | https://go.microsoft.com/fwlink/?linkid=2049986
-Linux RPM | https://go.microsoft.com/fwlink/?linkid=2049989
-Linux DEB | https://go.microsoft.com/fwlink/?linkid=2050157
+Windows User Installer | https://go.microsoft.com/fwlink/?linkid=2072725
+Windows System Installer | https://go.microsoft.com/fwlink/?linkid=2072728
+Windows ZIP | https://go.microsoft.com/fwlink/?linkid=2072354
+macOS ZIP | https://go.microsoft.com/fwlink/?linkid=2072737
+Linux TAR.GZ | https://go.microsoft.com/fwlink/?linkid=2072360
+Linux RPM | https://go.microsoft.com/fwlink/?linkid=2072741
+Linux DEB | https://go.microsoft.com/fwlink/?linkid=2072744
 
 Go to our [download page](https://aka.ms/azuredatastudio) for more specific instructions.
 
@@ -68,6 +68,9 @@ The [Microsoft Enterprise and Developer Privacy Statement](https://privacy.micro
 ## Contributions and "Thank You"
 We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
 
+* AlexFsmn for `Added context menu for DBs in explorer view to backup & restore db. #2277`
+* sadedil for `Missing feature request: Save as XML #3729`
+* gbritton1 for `Removed reference to object explorer #3463`
 * Tarig0  for `Add Routine_Type to CreateStoredProc fixes #3257 (#3286)`
 * oltruong  for `typo fix #3025'`
 * Thomas-S-B for `Removed unnecessary IErrorDetectionStrategy #749`

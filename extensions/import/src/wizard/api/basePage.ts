@@ -9,7 +9,7 @@ import { BaseDataModel } from './models';
 
 export abstract class BasePage {
 
-	protected readonly wizardPage: sqlops.window.modelviewdialog.WizardPage;
+	protected readonly wizardPage: sqlops.window.WizardPage;
 	protected readonly model: BaseDataModel;
 	protected readonly view: sqlops.ModelView;
 

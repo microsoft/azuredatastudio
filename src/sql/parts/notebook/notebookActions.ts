@@ -12,14 +12,15 @@ import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview
 import { INotificationService, Severity, INotificationActions } from 'vs/platform/notification/common/notification';
 
 import { SelectBox, ISelectBoxOptionsWithLabel } from 'sql/base/browser/ui/selectBox/selectBox';
-import { INotebookModel } from 'sql/parts/notebook/models/modelInterfaces';
+import { INotebookModel, IDefaultConnection } from 'sql/parts/notebook/models/modelInterfaces';
 import { CellType } from 'sql/parts/notebook/models/contracts';
 import { NotebookComponent } from 'sql/parts/notebook/notebook.component';
-import { getErrorMessage } from 'sql/parts/notebook/notebookUtils';
-import { IConnectionManagementService, IConnectionDialogService } from 'sql/platform/connection/common/connectionManagement';
+import { getErrorMessage, formatServerNameWithDatabaseNameForAttachTo, getServerFromFormattedAttachToName, getDatabaseFromFormattedAttachToName } from 'sql/parts/notebook/notebookUtils';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { noKernel } from 'sql/workbench/services/notebook/common/sessionManager';
+import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 
 const msgLoading = localize('loading', 'Loading kernels...');
 const kernelLabel: string = localize('Kernel', 'Kernel: ');
@@ -115,7 +116,7 @@ export interface IActionStateData {
 
 export class IMultiStateData<T> {
 	private _stateMap = new Map<T, IActionStateData>();
-	constructor(mappings: { key: T, value: IActionStateData}[], private _state: T, private _baseClass?: string) {
+	constructor(mappings: { key: T, value: IActionStateData }[], private _state: T, private _baseClass?: string) {
 		if (mappings) {
 			mappings.forEach(s => this._stateMap.set(s.key, s.value));
 		}
@@ -299,8 +300,7 @@ export class AttachToDropdown extends SelectBox {
 				});
 		}
 		this.onDidSelect(e => {
-			let connection = this.model.contexts.otherConnections.find((c) => c.serverName === e.selected);
-			this.doChangeContext(new ConnectionProfile(this._capabilitiesService, connection));
+			this.doChangeContext(new ConnectionProfile(this._capabilitiesService, this.getConnectionWithServerAndDatabaseNames(e.selected)));
 		});
 	}
 
@@ -375,15 +375,24 @@ export class AttachToDropdown extends SelectBox {
 	public getConnections(model: INotebookModel): string[] {
 		let otherConnections: ConnectionProfile[] = [];
 		model.contexts.otherConnections.forEach((conn) => { otherConnections.push(conn); });
-		this.selectWithOptionName(model.contexts.defaultConnection.serverName);
+		// If current connection connects to master, select the option in the dropdown that doesn't specify a database
+		if (!model.contexts.defaultConnection.databaseName) {
+			this.selectWithOptionName(model.contexts.defaultConnection.serverName);
+		} else {
+			if (model.contexts.defaultConnection) {
+				this.selectWithOptionName(formatServerNameWithDatabaseNameForAttachTo(model.contexts.defaultConnection));
+			} else {
+				this.select(0);
+			}
+		}
 		otherConnections = this.setConnectionsList(model.contexts.defaultConnection, model.contexts.otherConnections);
-		let connections = otherConnections.map((context) => context.serverName);
+		let connections = otherConnections.map((context) => context.databaseName ? context.serverName + ' (' + context.databaseName + ')' : context.serverName);
 		return connections;
 	}
 
 	private setConnectionsList(defaultConnection: ConnectionProfile, otherConnections: ConnectionProfile[]) {
 		if (defaultConnection.serverName !== msgSelectConnection) {
-			otherConnections = otherConnections.filter(conn => conn.serverName !== defaultConnection.serverName);
+			otherConnections = otherConnections.filter(conn => conn.id !== defaultConnection.id);
 			otherConnections.unshift(defaultConnection);
 			if (otherConnections.length > 1) {
 				otherConnections = otherConnections.filter(val => val.serverName !== msgSelectConnection);
@@ -392,11 +401,25 @@ export class AttachToDropdown extends SelectBox {
 		return otherConnections;
 	}
 
-	public doChangeContext(connection?: ConnectionProfile): void {
+	public getConnectionWithServerAndDatabaseNames(selection: string): ConnectionProfile {
+		// Find all connections with the the same server as the selected option
+		let connections = this.model.contexts.otherConnections.filter((c) => selection === c.serverName);
+		// If only one connection exists with the same server name, use that one
+		if (connections.length === 1) {
+			return connections[0];
+		} else {
+			// Extract server and database name
+			let serverName = getServerFromFormattedAttachToName(selection);
+			let databaseName = getDatabaseFromFormattedAttachToName(selection);
+			return this.model.contexts.otherConnections.find((c) => serverName === c.serverName && databaseName === c.databaseName);
+		}
+	}
+
+	public doChangeContext(connection?: ConnectionProfile, hideErrorMessage?: boolean): void {
 		if (this.value === msgAddNewConnection) {
 			this.openConnectionDialog();
 		} else {
-			this.model.changeContext(this.value, connection).then(ok => undefined, err => this._notificationService.error(getErrorMessage(err)));
+			this.model.changeContext(this.value, connection, hideErrorMessage).then(ok => undefined, err => this._notificationService.error(getErrorMessage(err)));
 		}
 	}
 
@@ -412,10 +435,11 @@ export class AttachToDropdown extends SelectBox {
 				let attachToConnections = this.values;
 				if (!connection) {
 					this.loadAttachToDropdown(this.model, this.getKernelDisplayName());
+					this.doChangeContext(undefined, true);
 					return;
 				}
 				let connectionProfile = new ConnectionProfile(this._capabilitiesService, connection);
-				let connectedServer = connectionProfile.serverName;
+				let connectedServer = formatServerNameWithDatabaseNameForAttachTo(connectionProfile);
 				//Check to see if the same server is already there in dropdown. We only have server names in dropdown
 				if (attachToConnections.some(val => val === connectedServer)) {
 					this.loadAttachToDropdown(this.model, this.getKernelDisplayName());

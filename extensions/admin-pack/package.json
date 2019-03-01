@@ -1,0 +1,23 @@
+{
+    "name": "admin-pack",
+    "displayName": "Admin Pack for SQL Server",
+    "description": "",
+    "version": "0.0.1",
+    "publisher": "Microsoft",
+    "engines": {
+        "vscode": "*",
+        "sqlops": "*"
+    },
+    "extensionPack": [
+        "Microsoft.agent",
+        "Microsoft.profiler",
+        "Microsoft.import"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Microsoft/azuredatastudio.git"
+    },
+    "bugs": {
+        "url": "https://github.com/Microsoft/azuredatastudio/issues"
+    }
+}

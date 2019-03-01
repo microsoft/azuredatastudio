@@ -5,13 +5,15 @@
 
 'use strict';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
+import { ParsedArgs } from 'vs/platform/environment/common/environment';
+
 export interface ICommandLineProcessing {
 	_serviceBrand: any;
 	/**
 	* Interprets the various Azure Data Studio-specific command line switches and
 	* performs the requisite tasks such as connecting to a server
 	*/
-	processCommandLine(): Promise<void>;
+	processCommandLine(args: ParsedArgs): Promise<void>;
 }
 
 export const ICommandLineProcessing = createDecorator<ICommandLineProcessing>('commandLineService');

@@ -14,8 +14,6 @@ import { ApiWrapper } from './apiWrapper';
  */
 export class AppContext {
 
-	private _cmsProvider: sqlops.CmsServiceProvider;
-
 	constructor(public readonly extensionContext: vscode.ExtensionContext, public readonly apiWrapper: ApiWrapper) {
 		this.apiWrapper = apiWrapper || new ApiWrapper();
 	}

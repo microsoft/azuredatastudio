@@ -41,8 +41,6 @@ declare module 'sqlops' {
 
 		export function registerDacFxServicesProvider(provider: DacFxServicesProvider): vscode.Disposable;
 
-		export function registerCmsServiceProvider(provider: CmsServiceProvider): vscode.Disposable;
-
 		/**
 		 * An [event](#Event) which fires when the specific flavor of a language used in DMP
 		 * connections has changed. And example is for a SQL connection, the flavor changes
@@ -236,20 +234,20 @@ declare module 'sqlops' {
 	}
 
 	/**
- 	* Options for the actions that could happen after connecting is complete
- 	*/
+	* Options for the actions that could happen after connecting is complete
+	*/
 	export interface IConnectionCompletionOptions {
 		/**
 		 * Save the connection to MRU and settings (only save to setting if profile.saveProfile is set to true)
 		 * Default is true.
-	 	*/
+		 */
 		saveConnection: boolean;
 
 		/**
 		 * If true, open the dashboard after connection is complete.
 		 * If undefined / false, dashboard won't be opened after connection completes.
 		 * Default is false.
-	 	*/
+		 */
 		showDashboard?: boolean;
 
 		/**
@@ -1034,6 +1032,14 @@ declare module 'sqlops' {
 		 * will be used instead.
 		 */
 		iconType?: string | SqlThemeIcon;
+		/**
+		 * Informs who provides the children to a node, used by data explorer tree view api
+		 */
+		childProvider?: string;
+		/**
+		 * Holds the connection profile for nodes, used by data explorer tree view api
+		 */
+		payload?: any;
 	}
 
 	/**
@@ -1695,20 +1701,6 @@ declare module 'sqlops' {
 		generateDeployPlan(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<GenerateDeployPlanResult>;
 	}
 
-	export interface CmsServiceProvider extends DataProvider {
-		createCmsServer(name: string, description: string, connectiondetails: ConnectionInfo, ownerUri: string): Thenable<ListRegisteredServersResult>;
-
-		getRegisteredServers(ownerUri: string, relativePath: string): Thenable<ListRegisteredServersResult>;
-
-		addRegisteredServer(ownerUri: string, relativePath: string, registeredServerName: string, registeredServerDescription: string, connectionDetails: ConnectionInfo): Thenable<boolean>;
-
-		removeRegisteredServer(ownerUri: string, relativePath: string, registeredServerName: string):Thenable<boolean>;
-
-		addServerGroup(ownerUri: string, relativePath: string, name: string, description:string):Thenable<boolean>;
-
-		removeServerGroup(ownerUri: string, relativePath: string, name: string):Thenable<boolean>;
-	}
-
 	// Security service interfaces ------------------------------------------------------------------------
 	export interface CredentialInfo {
 		id: number;
@@ -2358,7 +2350,7 @@ declare module 'sqlops' {
 
 	export namespace window {
 		/**
-		 * creates a dialog
+		 * @deprecated this method has been deprecated and will be removed in a future release, please use sqlops.window.createWebViewDialog instead.
 		 * @param title
 		 */
 		export function createDialog(
@@ -2383,6 +2375,11 @@ declare module 'sqlops' {
 		serverInfo: ServerInfo;
 	}
 
+	export class TreeItem extends vscode.TreeItem {
+		payload?: IConnectionProfile;
+		childProvider?: string;
+	}
+
 	export namespace tasks {
 
 		export interface ITaskHandler {
@@ -2403,27 +2400,4 @@ declare module 'sqlops' {
 		*/
 		export function registerTask(task: string, callback: ITaskHandler, thisArg?: any): vscode.Disposable;
 	}
-
-	// CMS interfaces -------------------------------------------------------------------------------------------
-
-	export interface RegisteredServerResult {
-		name: string;
-		serverName: string;
-		description: string;
-		connectionDetails: ConnectionInfo;
-		relativePath: string;
-	}
-
-	export interface ServerGroupResult {
-		name: string;
-		description: string;
-		relativePath: string;
-	}
-
-	export interface ListRegisteredServersResult {
-		registeredServersList: Array<RegisteredServerResult>;
-		registeredServerGroups: Array<ServerGroupResult>;
-	}
-
-	//CMS interfaces ---------------------------------------------------------------------------------------
 }

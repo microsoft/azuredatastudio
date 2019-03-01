@@ -265,4 +265,12 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 	buildConnectionInfo(connectionString: string, provider?: string): Thenable<sqlops.ConnectionInfo> {
 		return undefined;
 	}
+
+	providerRegistered(providerId: string): boolean {
+		return undefined;
+	}
+
+	getConnectionProfileById(profileId: string): IConnectionProfile {
+		return undefined;
+	}
 }

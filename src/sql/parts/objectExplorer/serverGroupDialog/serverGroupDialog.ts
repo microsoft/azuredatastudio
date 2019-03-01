@@ -20,10 +20,10 @@ import { localize } from 'vs/nls';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
 import { Button } from 'sql/base/browser/ui/button/button';
-import { Modal } from 'sql/base/browser/ui/modal/modal';
+import { Modal } from 'sql/workbench/browser/modal/modal';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { ServerGroupViewModel } from 'sql/parts/objectExplorer/serverGroupDialog/serverGroupViewModel';
-import { attachButtonStyler, attachModalDialogStyler } from 'sql/common/theme/styler';
+import { attachButtonStyler, attachModalDialogStyler } from 'sql/platform/theme/common/styler';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';

@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { nb } from 'sqlops';
-import { TreeItem } from 'vs/workbench/api/node/extHostTypes';
+import { nb, IConnectionProfile } from 'sqlops';
+import * as vsExtTypes from 'vs/workbench/api/node/extHostTypes';
 
 // SQL added extension host types
 export enum ServiceOptionType {
@@ -164,7 +164,8 @@ export enum ModelComponentTypes {
 	TreeComponent,
 	FileBrowserTree,
 	Editor,
-	Dom
+	Dom,
+	Hyperlink
 }
 
 export interface IComponentShape {
@@ -262,6 +263,7 @@ export interface CardProperties {
 	label: string;
 	value?: string;
 	actions?: ActionDescriptor[];
+	descriptions?: string[];
 	status?: StatusIndicator;
 	selected?: boolean;
 	cardType: CardType;
@@ -288,8 +290,7 @@ export enum DataProviderType {
 	AgentServicesProvider = 'AgentServicesProvider',
 	CapabilitiesProvider = 'CapabilitiesProvider',
 	DacFxServicesProvider = 'DacFxServicesProvider',
-	ObjectExplorerNodeProvider = 'ObjectExplorerNodeProvider',
-	CmsServiceProvider = 'CmsServiceProvider',
+	ObjectExplorerNodeProvider = 'ObjectExplorerNodeProvider'
 }
 
 export enum DeclarativeDataType {
@@ -301,7 +302,8 @@ export enum DeclarativeDataType {
 
 export enum CardType {
 	VerticalButton = 'VerticalButton',
-	Details = 'Details'
+	Details = 'Details',
+	ListItem = 'ListItem'
 }
 
 export enum Orientation {
@@ -313,13 +315,18 @@ export interface ToolbarLayout {
 	orientation: Orientation;
 }
 
-export class TreeComponentItem extends TreeItem {
+export class TreeComponentItem extends vsExtTypes.TreeItem {
 	checked?: boolean;
 }
 
 export enum AzureResource {
 	ResourceManagement = 0,
 	Sql = 1
+}
+
+export class TreeItem extends vsExtTypes.TreeItem {
+	payload: IConnectionProfile;
+	providerHandle: string;
 }
 
 export interface ServerInfoOption {
@@ -493,7 +500,7 @@ export class CellRange {
 	}
 
 	constructor(start: number, end: number) {
-		if (typeof(start) !== 'number' || typeof(start) !== 'number' || start < 0 || end < 0) {
+		if (typeof (start) !== 'number' || typeof (start) !== 'number' || start < 0 || end < 0) {
 			throw new Error('Invalid arguments');
 		}
 

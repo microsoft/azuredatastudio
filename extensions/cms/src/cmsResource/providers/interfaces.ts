@@ -5,11 +5,12 @@
 
 'use strict';
 import * as sqlops from 'sqlops';
+import * as mssql from '../../../../mssql/src/api/mssqlapis';
 import { cmsResource } from '../cms-resource';
 
 export interface ICmsRegisteredServerNode extends cmsResource.ICmsResourceNode {
 	name: string;
 	description: string;
-	registeredServers: sqlops.RegisteredServerResult[];
-	serverGroups: sqlops.ServerGroupResult[];
+	registeredServers: mssql.RegisteredServerResult[];
+	serverGroups: mssql.RegisteredServerGroup[];
 }

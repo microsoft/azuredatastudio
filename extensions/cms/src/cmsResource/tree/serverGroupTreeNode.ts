@@ -34,10 +34,10 @@ export class ServerGroupTreeNode extends CmsResourceTreeNodeBase {
 		this._id = `cms_serverGroup_${this.name}`;
 		this._relativePath = relativePath;
 	}
-	public async getChildren(): Promise<TreeNode[]> {
+	public getChildren(): TreeNode[] | Promise<TreeNode[]> {
 		try {
 			let nodes = [];
-			return await this.appContext.apiWrapper.getRegisteredServers(this.appContext.apiWrapper.ownerUri, this._relativePath).then((result) => {
+			return this.appContext.apiWrapper.getRegisteredServers(this.appContext.apiWrapper.ownerUri, this._relativePath).then((result) => {
 				if (result) {
 					if (result.registeredServersList) {
 						result.registeredServersList.forEach((registeredServer) => {

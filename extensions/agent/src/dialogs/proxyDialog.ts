@@ -40,7 +40,7 @@ export class ProxyDialog extends AgentDialog<ProxyData>  {
 	private readonly EditProxyDialog = 'EditProxyDialogOpened';
 
 	// UI Components
-	private generalTab: sqlops.window.modelviewdialog.DialogTab;
+	private generalTab: sqlops.window.DialogTab;
 
 	// General tab controls
 	private proxyNameTextBox: sqlops.InputBoxComponent;
@@ -71,8 +71,8 @@ export class ProxyDialog extends AgentDialog<ProxyData>  {
 		this.dialogName = this.isEdit ? this.EditProxyDialog : this.NewProxyDialog;
 	}
 
-	protected async initializeDialog(dialog: sqlops.window.modelviewdialog.Dialog) {
-		this.generalTab = sqlops.window.modelviewdialog.createTab(ProxyDialog.GeneralTabText);
+	protected async initializeDialog(dialog: sqlops.window.Dialog) {
+		this.generalTab = sqlops.window.createTab(ProxyDialog.GeneralTabText);
 
 
 		this.initializeGeneralTab();

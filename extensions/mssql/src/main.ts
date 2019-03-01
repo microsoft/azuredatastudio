@@ -13,7 +13,7 @@ const localize = nls.loadMessageBundle();
 
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
 import { IConfig, ServerProvider, Events } from 'service-downloader';
-import { ServerOptions, TransportKind } from 'vscode-languageclient';
+import { ServerOptions, TransportKind, LanguageClient } from 'vscode-languageclient';
 
 import * as Constants from './constants';
 import ContextProvider from './contextProvider';
@@ -21,7 +21,7 @@ import { CredentialStore } from './credentialstore/credentialstore';
 import { AzureResourceProvider } from './resourceProvider/resourceProvider';
 import * as Utils from './utils';
 import { Telemetry, LanguageClientErrorHandler } from './telemetry';
-import { TelemetryFeature, AgentServicesFeature, DacFxServicesFeature, CmsServiceFeature } from './features';
+import { TelemetryFeature, AgentServicesFeature, DacFxServicesFeature } from './features';
 import { AppContext } from './appContext';
 import { ApiWrapper } from './apiWrapper';
 import { UploadFilesCommand, MkDirCommand, SaveFileCommand, PreviewFileCommand, CopyPathCommand, DeleteFilesCommand } from './objectExplorerNodeProvider/hdfsCommands';
@@ -31,6 +31,7 @@ import { MssqlExtensionApi, MssqlObjectExplorerBrowser } from './api/mssqlapis';
 import { OpenSparkJobSubmissionDialogCommand, OpenSparkJobSubmissionDialogFromFileCommand, OpenSparkJobSubmissionDialogTask } from './sparkFeature/dialog/dialogCommands';
 import { OpenSparkYarnHistoryTask } from './sparkFeature/historyTask';
 import { MssqlObjectExplorerNodeProvider, mssqlOutputChannel } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
+import { CmsService } from './cms/cmsService';
 
 const baseConfig = require('./config.json');
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
@@ -57,6 +58,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 	const credentialsStore = new CredentialStore(config);
 	const resourceProvider = new AzureResourceProvider(config);
 	let languageClient: SqlOpsDataClient;
+	let cmsService: CmsService;
 
 	const serverdownloader = new ServerProvider(config);
 
@@ -75,7 +77,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 			TelemetryFeature,
 			AgentServicesFeature,
 			DacFxServicesFeature,
-			CmsServiceFeature
 		],
 		outputChannel: new CustomOutputChannel()
 	};
@@ -84,7 +85,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 	let appContext = new AppContext(context, new ApiWrapper());
 
 	const installationStart = Date.now();
-	serverdownloader.getOrDownloadServer().then(e => {
+	let serverPromise = serverdownloader.getOrDownloadServer().then(e => {
 		const installationComplete = Date.now();
 		let serverOptions = generateServerOptions(e);
 		languageClient = new SqlOpsDataClient(Constants.serviceName, serverOptions, clientOptions);
@@ -110,6 +111,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 
 		let nodeProvider = new MssqlObjectExplorerNodeProvider(appContext);
 		sqlops.dataprotocol.registerObjectExplorerNodeProvider(nodeProvider);
+
+		cmsService = new CmsService(appContext, languageClient);
+
 		activateSparkFeatures(appContext);
 		activateNotebookTask(appContext);
 	}, e => {
@@ -137,6 +141,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 					return <any>oeProvider.findSqlClusterNodeByContext(context);
 				}
 			};
+		},
+		getCmsServiceProvider(): Promise<CmsService> {
+			return serverPromise.then(() => cmsService);
 		}
 	};
 	return api;
@@ -191,8 +198,8 @@ async function handleNewNotebookTask(oeContext?: sqlops.ObjectExplorerContext, p
 		// Get the file path after '/HDFS'
 		let hdfsPath: string = oeContext.nodeInfo.nodePath.substring(oeContext.nodeInfo.nodePath.indexOf('/HDFS') + '/HDFS'.length);
 		if (hdfsPath.length > 0) {
-			let analyzeCommand = "#" + msgSampleCodeDataFrame + os.EOL + "df = (spark.read.option(\"inferSchema\", \"true\")"
-				+ os.EOL + ".option(\"header\", \"true\")" + os.EOL + ".csv('{0}'))" + os.EOL + "df.show(10)";
+			let analyzeCommand = '#' + msgSampleCodeDataFrame + os.EOL + 'df = (spark.read.option("inferSchema", "true")'
+				+ os.EOL + '.option("header", "true")' + os.EOL + '.csv("{0}"))' + os.EOL + 'df.show(10)';
 			editor.edit(editBuilder => {
 				editBuilder.replace(0, {
 					cell_type: 'code',

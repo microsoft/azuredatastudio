@@ -7,9 +7,8 @@
 
 import * as vscode from 'vscode';
 import * as sqlops from 'sqlops';
-
+import * as mssql from '../../mssql/src/api/mssqlapis';
 import * as constants from './constants';
-import { ICmsRegisteredServerNode } from './cmsResource/providers/interfaces';
 import { CmsResourceNodeInfo } from './cmsResource/tree/baseTreeNodes';
 
 /**
@@ -21,7 +20,7 @@ import { CmsResourceNodeInfo } from './cmsResource/tree/baseTreeNodes';
  */
 export class ApiWrapper {
 
-	private _cmsProvider: sqlops.CmsServiceProvider;
+	private _cmsService: mssql.CmsService;
 	private _connection: sqlops.connection.Connection;
 	private _ownerUri: string;
 	private _registeredCmsServers: CmsResourceNodeInfo[];
@@ -217,18 +216,21 @@ export class ApiWrapper {
 	}
 
 	// CMS APIs
-	public getCmsProvider(): sqlops.CmsServiceProvider {
-		if (!this._cmsProvider) {
-			this._cmsProvider = sqlops.dataprotocol.getProvider<sqlops.CmsServiceProvider>('MSSQL', sqlops.DataProviderType.CmsServiceProvider);
+	public async getCmsService(): Promise<mssql.CmsService> {
+		if (!this._cmsService) {
+			let extensionApi: mssql.MssqlExtensionApi = vscode.extensions.getExtension('Microsoft.mssql').exports;
+			this._cmsService = await extensionApi.getCmsServiceProvider();
 		}
-		return this._cmsProvider;
+		return this._cmsService;
 	}
 
-	public async getRegisteredServers(ownerUri: string, relativePath: string): Promise<sqlops.ListRegisteredServersResult> {
-		return await this.getCmsProvider().getRegisteredServers(ownerUri, relativePath).then((result) => {
-			if (result && result.registeredServersList && result.registeredServersList) {
-				return result;
-			}
+	public async getRegisteredServers(ownerUri: string, relativePath: string): Promise<mssql.ListRegisteredServersResult> {
+		return this.getCmsService().then((service) => {
+			return service.getRegisteredServers(ownerUri, relativePath).then((result) => {
+				if (result && result.registeredServersList && result.registeredServersList) {
+					return result;
+				}
+			});
 		});
 	}
 
@@ -237,9 +239,9 @@ export class ApiWrapper {
 		return sqlops.connection.openConnectionDialog(providers, initialConnectionProfile, connectionCompletionOptions, true);
 	}
 
-	public createCmsServer(name: string, description: string) {
-		let provider = this.getCmsProvider();
+	public async createCmsServer(name: string, description: string) {
 		const self = this;
+		let provider = await this.getCmsService();
 		return this.connection.then((connection) => {
 			return provider.createCmsServer(name, description, connection, self.ownerUri).then((result) => {
 				if (result) {
@@ -249,7 +251,7 @@ export class ApiWrapper {
 		});
 	}
 
-	public addRegisteredCmsServers(name: string, description: string, server: sqlops.ListRegisteredServersResult) {
+	public addRegisteredCmsServers(name: string, description: string, server: mssql.ListRegisteredServersResult) {
 		if (!this._registeredCmsServers) {
 			this._registeredCmsServers = [];
 		}

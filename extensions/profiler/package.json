@@ -26,7 +26,8 @@
     "Microsoft.mssql"
   ],
   "contributes": {
-    "commands": [{
+    "commands": [
+      {
         "command": "profiler.newProfiler",
         "title": "Launch Profiler",
         "category": "Profiler"
@@ -48,23 +49,27 @@
       }
     ],
     "menus": {
-      "commandPalette": [{
+      "commandPalette": [
+        {
           "command": "profiler.start",
           "when": "False"
         },
         {
           "command": "profiler.stop",
           "when": "False"
-        }, {
+        },
+        {
           "command": "profiler.openCreateSessionDialog",
           "when": "False"
         }
       ],
-      "objectExplorer/item/context": [{
-        "command": "profiler.newProfiler",
-        "when": "connectionProvider == MSSQL && nodeType && nodeType == Server",
-        "group": "profiler"
-      }]
+      "objectExplorer/item/context": [
+        {
+          "command": "profiler.newProfiler",
+          "when": "connectionProvider == MSSQL && nodeType && nodeType == Server",
+          "group": "profiler"
+        }
+      ]
     },
     "outputChannels": [
       "sqlprofiler"
