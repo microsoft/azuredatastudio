@@ -101,32 +101,20 @@ export class OEShimService implements IOEShimService {
 	}
 
 	public async getChildren(node: ITreeItem, viewId: string): Promise<ITreeItem[]> {
-		let sessionId = await this.getOrCreateSession(viewId, node);
-		let requestHandle = this.nodeHandleMap.get(generateNodeMapKey(viewId, node)) || node.handle;
-		let treeNode = new TreeNode(undefined, undefined, undefined, requestHandle, undefined, undefined, undefined, undefined, undefined, undefined);
-		let profile: IConnectionProfile = node.payload || {
-			providerName: node.childProvider,
-			authenticationType: undefined,
-			azureTenantId: undefined,
-			connectionName: undefined,
-			databaseName: undefined,
-			groupFullName: undefined,
-			groupId: undefined,
-			id: undefined,
-			options: undefined,
-			password: undefined,
-			savePassword: undefined,
-			saveProfile: undefined,
-			serverName: undefined,
-			userName: undefined,
-		};
-		treeNode.connection = new ConnectionProfile(this.capabilities, profile);
-		return this.oe.resolveTreeNodeChildren({
-			success: undefined,
-			sessionId,
-			rootNode: undefined,
-			errorMessage: undefined
-		}, treeNode).then(e => e.map(n => this.treeNodeToITreeItem(viewId, n, node)));
+		if (node.payload) {
+			let sessionId = await this.getOrCreateSession(viewId, node);
+			let requestHandle = this.nodeHandleMap.get(generateNodeMapKey(viewId, node)) || node.handle;
+			let treeNode = new TreeNode(undefined, undefined, undefined, requestHandle, undefined, undefined, undefined, undefined, undefined, undefined);
+			treeNode.connection = new ConnectionProfile(this.capabilities, node.payload);
+			return this.oe.resolveTreeNodeChildren({
+				success: undefined,
+				sessionId,
+				rootNode: undefined,
+				errorMessage: undefined
+			}, treeNode).then(e => e.map(n => this.treeNodeToITreeItem(viewId, n, node)));
+		} else {
+			return Promise.resolve([]);
+		}
 	}
 
 	private treeNodeToITreeItem(viewId: string, node: TreeNode, parentNode: ITreeItem): ITreeItem {
