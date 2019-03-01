@@ -36,8 +36,8 @@ export class ExtHostConnectionManagement extends ExtHostConnectionManagementShap
 		return this._proxy.$getServerInfo(connectionId);
 	}
 
-	public $openConnectionDialog(providers?: string[], initialConnectionProfile?: sqlops.IConnectionProfile, connectionCompletionOptions?: sqlops.IConnectionCompletionOptions): Thenable<sqlops.connection.Connection> {
-		return this._proxy.$openConnectionDialog(providers, initialConnectionProfile, connectionCompletionOptions);
+	public $openConnectionDialog(providers?: string[], initialConnectionProfile?: sqlops.IConnectionProfile, connectionCompletionOptions?: sqlops.IConnectionCompletionOptions, isCMSDialog: boolean = false): Thenable<sqlops.connection.Connection> {
+		return this._proxy.$openConnectionDialog(providers, initialConnectionProfile, connectionCompletionOptions, isCMSDialog);
 	}
 
 	public $listDatabases(connectionId: string): Thenable<string[]> {

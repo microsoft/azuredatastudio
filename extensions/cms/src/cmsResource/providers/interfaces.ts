@@ -4,21 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
+import * as sqlops from 'sqlops';
 import { cmsResource } from '../cms-resource';
 
 export interface ICmsRegisteredServerNode extends cmsResource.ICmsResourceNode {
-	readonly registeredServer: CmsRegisteredServer;
-	readonly serverGroup: CmsServerGroup;
-}
-
-export interface CmsRegisteredServer {
 	name: string;
-	fullName: string;
-	loginName: string;
-	defaultDatabaseName: string;
-}
-
-export interface CmsServerGroup {
-	name: string;
-	fullName: string;
+	description: string;
+	registeredServers: sqlops.RegisteredServerResult[];
+	serverGroups: sqlops.ServerGroupResult[];
 }

@@ -4,43 +4,26 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-
+import * as sqlops from 'sqlops';
 import { AppContext } from '../../appContext';
-
 import { TreeNode } from '../treeNode';
 import { ICmsResourceTreeChangeHandler } from './treeChangeHandler';
 
 export abstract class CmsResourceTreeNodeBase extends TreeNode {
+
 	public constructor(
 		public readonly appContext: AppContext,
 		public readonly treeChangeHandler: ICmsResourceTreeChangeHandler,
 		parent: TreeNode
 	) {
 		super();
-
 		this.parent = parent;
 	}
 }
 
-export abstract class CmsResourceContainerTreeNodeBase extends CmsResourceTreeNodeBase {
-	public constructor(
-		appContext: AppContext,
-		treeChangeHandler: ICmsResourceTreeChangeHandler,
-		parent: TreeNode
-	) {
-		super(appContext, treeChangeHandler, parent);
-
-	}
-
-	public clearCache(): void {
-		this._isClearingCache = true;
-	}
-
-	public get isClearingCache(): boolean {
-		return this._isClearingCache;
-	}
-
-
-	protected _isClearingCache = true;
-	private _cacheKey: string = undefined;
+export interface CmsResourceNodeInfo {
+	name: string;
+	description: string;
+	registeredServers: sqlops.RegisteredServerResult[];
+	serverGroups: sqlops.ServerGroupResult[];
 }

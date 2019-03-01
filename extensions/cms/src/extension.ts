@@ -5,12 +5,10 @@ import * as sqlops from 'sqlops';
 import * as path from 'path';
 import * as os from 'os';
 
-import AzureResourceController from './controllers/cmsResourceController';
+import CmsResourceController from './controllers/cmsResourceController';
 import { AppContext } from './appContext';
 import ControllerBase from './controllers/controllerBase';
 import { ApiWrapper } from './apiWrapper';
-
-import { CmsResourceProvider } from './cmsResource/providers/cmsResourceProvider';
 
 let controllers: ControllerBase[] = [];
 
@@ -39,23 +37,16 @@ export function activate(extensionContext: vscode.ExtensionContext) {
 	let appContext = new AppContext(extensionContext, apiWrapper);
 	let activations: Thenable<boolean>[] = [];
 
-	const azureResourceController = new AzureResourceController(appContext);
-	controllers.push(azureResourceController);
-	extensionContext.subscriptions.push(azureResourceController);
-	activations.push(azureResourceController.activate());
-
-	appContext.apiWrapper.registerCommand('cms.resource.registerServer', () => {
-		appContext.apiWrapper.createCmsServer('test server from ads', 'meme server').then((result) => {
-			let meme = result;
-		});
-	});
-
+	const cmsResourceController = new CmsResourceController(appContext);
+	controllers.push(cmsResourceController);
+	extensionContext.subscriptions.push(cmsResourceController);
+	activations.push(cmsResourceController.activate());
 	return {
-		provideResources() {
-			return [
-				new CmsResourceProvider(appContext.apiWrapper, extensionContext)
-			];
-		}
+		// provideResources() {
+		// 	return [
+		// 		new CmsResourceProvider(apiWrapper, extensionContext)
+		// 	];
+		// }
 	};
 }
 

@@ -11,7 +11,7 @@ import { ApiWrapper } from '../../apiWrapper';
 import { cmsResource } from '../cms-resource';
 import { CmsRegisteredServerTreeDataProvider } from './cmsRegisteredServerTreeDataProvider';
 
-export class CmsResourceProvider implements cmsResource.ICmsResourceProvider {
+export class CmsRegisteredServerProvider implements cmsResource.ICmsResourceProvider {
 	public constructor(
 		apiWrapper: ApiWrapper,
 		extensionContext: ExtensionContext

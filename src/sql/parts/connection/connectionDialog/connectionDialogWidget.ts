@@ -42,6 +42,7 @@ import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 export interface OnShowUIResponse {
 	selectedProviderType: string;
 	container: HTMLElement;
+	isCMSDialog?: boolean;
 }
 
 export class ConnectionDialogWidget extends Modal {
@@ -65,8 +66,8 @@ export class ConnectionDialogWidget extends Modal {
 	private _panel: TabbedPanel;
 	private _recentConnectionTabId: PanelTabIdentifier;
 
-	private _onInitDialog = new Emitter<void>();
-	public onInitDialog: Event<void> = this._onInitDialog.event;
+	private _onInitDialog = new Emitter<boolean>();
+	public onInitDialog: Event<boolean> = this._onInitDialog.event;
 
 	private _onCancel = new Emitter<void>();
 	public onCancel: Event<void> = this._onCancel.event;
@@ -78,8 +79,8 @@ export class ConnectionDialogWidget extends Modal {
 	public onShowUiComponent: Event<OnShowUIResponse> = this._onShowUiComponent.event;
 
 	private _onFillinConnectionInputs = new Emitter<IConnectionProfile>();
-	public onFillinConnectionInputs: Event<IConnectionProfile> = this._onFillinConnectionInputs.event;
 
+	public onFillinConnectionInputs: Event<IConnectionProfile> = this._onFillinConnectionInputs.event;
 	private _onResetConnection = new Emitter<void>();
 	public onResetConnection: Event<void> = this._onResetConnection.event;
 
@@ -89,6 +90,7 @@ export class ConnectionDialogWidget extends Modal {
 		private providerTypeOptions: string[],
 		private selectedProviderType: string,
 		private providerNameToDisplayNameMap: { [providerDisplayName: string]: string },
+		private isCMSDialog: boolean = false,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IWorkbenchThemeService private _workbenchThemeService: IWorkbenchThemeService,
@@ -97,9 +99,10 @@ export class ConnectionDialogWidget extends Modal {
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IContextMenuService private _contextMenuService: IContextMenuService,
 		@IContextViewService private _contextViewService: IContextViewService,
-		@IClipboardService clipboardService: IClipboardService
+		@IClipboardService clipboardService: IClipboardService,
 	) {
-		super(localize('connection', 'Connection'), TelemetryKeys.Connection, _partService, telemetryService, clipboardService, _workbenchThemeService, contextKeyService, { hasSpinner: true, hasErrors: true });
+		super(isCMSDialog ? localize('registerCMS', 'Register Central Management Server') : localize('connection', 'Connection'),
+		TelemetryKeys.Connection, _partService, telemetryService, clipboardService, _workbenchThemeService, contextKeyService, { hasSpinner: true, hasErrors: true });
 	}
 
 	public refresh(): void {
@@ -205,7 +208,7 @@ export class ConnectionDialogWidget extends Modal {
 	/**
 	 * Render the connection flyout
 	 */
-	public render() {
+	public render(isCMSDialog: boolean = false) {
 		super.render();
 		attachModalDialogStyler(this, this._themeService);
 		let connectLabel = localize('connectionDialog.connect', 'Connect');
@@ -214,7 +217,7 @@ export class ConnectionDialogWidget extends Modal {
 		this._connectButton.enabled = false;
 		this._closeButton = this.addFooterButton(cancelLabel, () => this.cancel());
 		this.registerListeners();
-		this.onProviderTypeSelected(this._providerTypeSelectBox.value);
+		this.onProviderTypeSelected(this._providerTypeSelectBox.value, isCMSDialog);
 	}
 
 	// Update theming that is specific to connection flyout body
@@ -241,11 +244,14 @@ export class ConnectionDialogWidget extends Modal {
 		}));
 	}
 
-	private onProviderTypeSelected(selectedProviderType: string) {
+	private onProviderTypeSelected(selectedProviderType: string, isCMSDialog: boolean = false) {
 		// Show connection form based on server type
 		this.$connectionUIContainer.empty();
-		this._onShowUiComponent.fire({ selectedProviderType: selectedProviderType, container: this.$connectionUIContainer.getHTMLElement() });
-		this.initDialog();
+		this._onShowUiComponent.fire({ selectedProviderType: selectedProviderType,
+			container: this.$connectionUIContainer.getHTMLElement(),
+			isCMSDialog: isCMSDialog
+		});
+		this.initDialog(isCMSDialog);
 	}
 
 	private connect(element?: IConnectionProfile): void {
@@ -378,7 +384,7 @@ export class ConnectionDialogWidget extends Modal {
 	 * Open the flyout dialog
 	 * @param recentConnections Are there recent connections that should be shown
 	 */
-	public open(recentConnections: boolean) {
+	public open(recentConnections: boolean, isCMSDialog: boolean = false) {
 		this._panel.showTab(this._recentConnectionTabId);
 
 		this.show();
@@ -396,7 +402,7 @@ export class ConnectionDialogWidget extends Modal {
 
 		// call layout with view height
 		this.layout();
-		this.initDialog();
+		this.initDialog(isCMSDialog);
 	}
 
 	protected layout(height?: number): void {
@@ -419,10 +425,10 @@ export class ConnectionDialogWidget extends Modal {
 		return this._connectButton.enabled;
 	}
 
-	private initDialog(): void {
+	private initDialog(isCMSDialog: boolean = false): void {
 		super.setError('');
 		this.hideSpinner();
-		this._onInitDialog.fire();
+		this._onInitDialog.fire(isCMSDialog);
 	}
 
 	public resetConnection(): void {
@@ -443,10 +449,10 @@ export class ConnectionDialogWidget extends Modal {
 		this.refresh();
 	}
 
-	public updateProvider(displayName: string) {
+	public updateProvider(displayName: string, isCMSDialog: boolean = false) {
 		this._providerTypeSelectBox.selectWithOptionName(displayName);
 
-		this.onProviderTypeSelected(displayName);
+		this.onProviderTypeSelected(displayName, isCMSDialog);
 	}
 
 	public set databaseDropdownExpanded(val: boolean) {

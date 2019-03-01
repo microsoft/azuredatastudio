@@ -7,13 +7,14 @@
 
 import ControllerBase from './controllerBase';
 import { CmsResourceTreeProvider } from '../cmsResource/tree/treeProvider';
+import { registerCmsResourceCommands } from '../cmsResource/commands';
 
 export default class CmsResourceController extends ControllerBase {
 	public activate(): Promise<boolean> {
 
 		const cmsResourceTree = new CmsResourceTreeProvider(this.appContext);
 		this.extensionContext.subscriptions.push(this.apiWrapper.registerTreeDataProvider('cmsResourceExplorer', cmsResourceTree));
-		cmsResourceTree.notifyNodeChanged(undefined);
+		registerCmsResourceCommands(this.appContext, cmsResourceTree);
 
 		return Promise.resolve(true);
 	}

@@ -14,13 +14,15 @@ export class ConnectionDialogTestService implements IConnectionDialogService {
 	_serviceBrand: any;
 
 	public showDialog(connectionManagementService: IConnectionManagementService,
-		params: INewConnectionParams, model: IConnectionProfile, connectionResult?: IConnectionResult): TPromise<void> {
+		params: INewConnectionParams, model: IConnectionProfile, connectionResult?: IConnectionResult,
+		isCMSDialog?: boolean ): TPromise<void> {
 		let none: void;
 		return TPromise.as(none);
 	}
 
 	public openDialogAndWait(connectionManagementService: IConnectionManagementService,
-		params?: INewConnectionParams, model?: IConnectionProfile, connectionResult?: IConnectionResult): TPromise<IConnectionProfile> {
+		params?: INewConnectionParams, model?: IConnectionProfile, connectionResult?: IConnectionResult,
+		isCMSDialog?: boolean): TPromise<IConnectionProfile> {
 		return TPromise.as(undefined);
 	}
 }

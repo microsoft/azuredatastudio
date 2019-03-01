@@ -45,6 +45,7 @@ export class ConnectionWidget {
 	private _serverGroupOptions: IConnectionProfileGroup[];
 	private _connectionNameInputBox: InputBox;
 	private _serverNameInputBox: InputBox;
+	private _serverDescriptionInputBox: InputBox;
 	private _databaseNameInputBox: Dropdown;
 	private _userNameInputBox: InputBox;
 	private _passwordInputBox: InputBox;
@@ -126,7 +127,7 @@ export class ConnectionWidget {
 		this._providerName = providerName;
 	}
 
-	public createConnectionWidget(container: HTMLElement): void {
+	public createConnectionWidget(isCMSDialog: boolean = false, container: HTMLElement): void {
 		this._serverGroupOptions = [this.DefaultServerGroup];
 		this._serverGroupSelectBox = new SelectBox(this._serverGroupOptions.map(g => g.name), this.DefaultServerGroup.name, this._contextViewService, undefined, { ariaLabel: this._serverGroupDisplayString });
 		this._previousGroupOption = this._serverGroupSelectBox.value;
@@ -135,20 +136,20 @@ export class ConnectionWidget {
 				this._tableContainer = tableContainer;
 			});
 		});
-		this.fillInConnectionForm();
-		this.registerListeners();
+		this.fillInConnectionForm(isCMSDialog);
+		this.registerListeners(isCMSDialog);
 		if (this._authTypeSelectBox) {
 			this.onAuthTypeSelected(this._authTypeSelectBox.value);
 		}
 
 		DOM.addDisposableListener(container, 'paste', e => {
-			this._handleClipboard();
+			this._handleClipboard(isCMSDialog);
 		});
 
 		DOM.append(container, this._builder.getHTMLElement());
 	}
 
-	private _handleClipboard(): void {
+	private _handleClipboard(isCMSDialog: boolean = false): void {
 		if (this._configurationService.getValue<boolean>('connection.parseClipboardForConnectionString')) {
 			let paste = this._clipboardService.readText();
 			this._connectionManagementService.buildConnectionInfo(paste, this._providerName).then(e => {
@@ -156,14 +157,14 @@ export class ConnectionWidget {
 					let profile = new ConnectionProfile(this._capabilitiesService, this._providerName);
 					profile.options = e.options;
 					if (profile.serverName) {
-						this.initDialog(profile);
+						this.initDialog(profile, isCMSDialog);
 					}
 				}
 			});
 		}
 	}
 
-	private fillInConnectionForm(): void {
+	private fillInConnectionForm(isCMSDialog = false): void {
 		// Server name
 		let serverNameOption = this._optionsMaps[ConnectionOptionSpecialType.serverName];
 		let serverNameBuilder = DialogHelper.appendRow(this._tableContainer, serverNameOption.displayName, 'connection-label', 'connection-input');
@@ -222,27 +223,40 @@ export class ConnectionWidget {
 		this._azureTenantDropdown = new SelectBox([], undefined, this._contextViewService, tenantDropdownBuilder.getContainer(), { ariaLabel: tenantLabel });
 		DialogHelper.appendInputSelectBox(tenantDropdownBuilder, this._azureTenantDropdown);
 
-		// Database
-		let databaseOption = this._optionsMaps[ConnectionOptionSpecialType.databaseName];
-		let databaseNameBuilder = DialogHelper.appendRow(this._tableContainer, databaseOption.displayName, 'connection-label', 'connection-input');
+		if (!isCMSDialog) {
+			// Database
+			let databaseOption = this._optionsMaps[ConnectionOptionSpecialType.databaseName];
+			let databaseNameBuilder = DialogHelper.appendRow(this._tableContainer, databaseOption.displayName, 'connection-label', 'connection-input');
 
-		this._databaseNameInputBox = new Dropdown(databaseNameBuilder.getHTMLElement(), this._contextViewService, this._themeService, {
-			values: [this._defaultDatabaseName, this._loadingDatabaseName],
-			strictSelection: false,
-			placeholder: this._defaultDatabaseName,
-			maxHeight: 125,
-			ariaLabel: databaseOption.displayName,
-			actionLabel: localize('connectionWidget.toggleDatabaseNameDropdown', 'Select Database Toggle Dropdown')
-		});
+			this._databaseNameInputBox = new Dropdown(databaseNameBuilder.getHTMLElement(), this._contextViewService, this._themeService, {
+				values: [this._defaultDatabaseName, this._loadingDatabaseName],
+				strictSelection: false,
+				placeholder: this._defaultDatabaseName,
+				maxHeight: 125,
+				ariaLabel: databaseOption.displayName,
+				actionLabel: localize('connectionWidget.toggleDatabaseNameDropdown', 'Select Database Toggle Dropdown')
+			});
 
-		// Server group
-		let serverGroupBuilder = DialogHelper.appendRow(this._tableContainer, this._serverGroupDisplayString, 'connection-label', 'connection-input');
-		DialogHelper.appendInputSelectBox(serverGroupBuilder, this._serverGroupSelectBox);
+			// Server group
+			let serverGroupBuilder = DialogHelper.appendRow(this._tableContainer, this._serverGroupDisplayString, 'connection-label', 'connection-input');
+			DialogHelper.appendInputSelectBox(serverGroupBuilder, this._serverGroupSelectBox);
+		}
 
 		// Connection name
 		let connectionNameOption = this._optionsMaps[ConnectionOptionSpecialType.connectionName];
+		if (isCMSDialog) {
+			connectionNameOption.displayName = localize('cmsServerName', 'Name');
+		} else {
+			connectionNameOption.displayName = localize('connectionName', 'Name (optional)');
+		}
 		let connectionNameBuilder = DialogHelper.appendRow(this._tableContainer, connectionNameOption.displayName, 'connection-label', 'connection-input');
 		this._connectionNameInputBox = new InputBox(connectionNameBuilder.getHTMLElement(), this._contextViewService, { ariaLabel: connectionNameOption.displayName });
+
+		if (isCMSDialog) {
+			// registered server description
+			let serverDescriptionBuilder = DialogHelper.appendRow(this._tableContainer, 'Registered server description', 'server-description-label', 'server-description-input');
+			this._serverDescriptionInputBox = new InputBox(serverDescriptionBuilder.getHTMLElement(), this._contextViewService);
+		}
 
 		let AdvancedLabel = localize('advanced', 'Advanced...');
 		this._advancedButton = this.createAdvancedButton(this._tableContainer, AdvancedLabel);
@@ -287,17 +301,50 @@ export class ConnectionWidget {
 		return checkbox;
 	}
 
-	private registerListeners(): void {
+	private registerListeners(isCMSDialog: boolean = false): void {
 		// Theme styler
 		this._toDispose.push(styler.attachInputBoxStyler(this._serverNameInputBox, this._themeService));
-		this._toDispose.push(styler.attachEditableDropdownStyler(this._databaseNameInputBox, this._themeService));
 		this._toDispose.push(styler.attachInputBoxStyler(this._connectionNameInputBox, this._themeService));
 		this._toDispose.push(styler.attachInputBoxStyler(this._userNameInputBox, this._themeService));
 		this._toDispose.push(styler.attachInputBoxStyler(this._passwordInputBox, this._themeService));
-		this._toDispose.push(styler.attachSelectBoxStyler(this._serverGroupSelectBox, this._themeService));
 		this._toDispose.push(styler.attachButtonStyler(this._advancedButton, this._themeService));
 		this._toDispose.push(styler.attachCheckboxStyler(this._rememberPasswordCheckBox, this._themeService));
 		this._toDispose.push(styler.attachSelectBoxStyler(this._azureAccountDropdown, this._themeService));
+
+		if (isCMSDialog) {
+			this._toDispose.push(styler.attachInputBoxStyler(this._serverDescriptionInputBox, this._themeService));
+		} else {
+			this._toDispose.push(styler.attachEditableDropdownStyler(this._databaseNameInputBox, this._themeService));
+			this._toDispose.push(styler.attachSelectBoxStyler(this._serverGroupSelectBox, this._themeService));
+			this._toDispose.push(this._serverGroupSelectBox.onDidSelect(selectedGroup => {
+				this.onGroupSelected(selectedGroup.selected);
+			}));
+			this._toDispose.push(this._databaseNameInputBox.onFocus(() => {
+				this._databaseDropdownExpanded = true;
+				if (this.serverName) {
+					this._databaseNameInputBox.values = [this._loadingDatabaseName];
+					this._callbacks.onFetchDatabases(this.serverName, this.authenticationType, this.userName, this._password).then(databases => {
+						if (databases) {
+							this._databaseNameInputBox.values = databases.sort((a, b) => a.localeCompare(b));
+						} else {
+							this._databaseNameInputBox.values = [this._defaultDatabaseName];
+						}
+					}).catch(() => {
+						this._databaseNameInputBox.values = [this._defaultDatabaseName];
+					});
+				} else {
+					this._databaseNameInputBox.values = [this._defaultDatabaseName];
+				}
+			}));
+
+			this._toDispose.push(this._databaseNameInputBox.onValueChange(s => {
+				if (s === this._defaultDatabaseName || s === this._loadingDatabaseName) {
+					this._databaseNameInputBox.value = '';
+				} else {
+					this._databaseNameInputBox.value = s;
+				}
+			}));
+		}
 
 		if (this._authTypeSelectBox) {
 			// Theme styler
@@ -332,10 +379,6 @@ export class ConnectionWidget {
 			}));
 		}
 
-		this._toDispose.push(this._serverGroupSelectBox.onDidSelect(selectedGroup => {
-			this.onGroupSelected(selectedGroup.selected);
-		}));
-
 		this._toDispose.push(this._serverNameInputBox.onDidChange(serverName => {
 			this.serverNameChanged(serverName);
 		}));
@@ -347,33 +390,6 @@ export class ConnectionWidget {
 		this._toDispose.push(this._passwordInputBox.onDidChange(passwordInput => {
 			this._password = passwordInput;
 		}));
-
-		this._toDispose.push(this._databaseNameInputBox.onFocus(() => {
-			this._databaseDropdownExpanded = true;
-			if (this.serverName) {
-				this._databaseNameInputBox.values = [this._loadingDatabaseName];
-				this._callbacks.onFetchDatabases(this.serverName, this.authenticationType, this.userName, this._password).then(databases => {
-					if (databases) {
-						this._databaseNameInputBox.values = databases.sort((a, b) => a.localeCompare(b));
-					} else {
-						this._databaseNameInputBox.values = [this._defaultDatabaseName];
-					}
-				}).catch(() => {
-					this._databaseNameInputBox.values = [this._defaultDatabaseName];
-				});
-			} else {
-				this._databaseNameInputBox.values = [this._defaultDatabaseName];
-			}
-		}));
-
-		this._toDispose.push(this._databaseNameInputBox.onValueChange(s => {
-			if (s === this._defaultDatabaseName || s === this._loadingDatabaseName) {
-				this._databaseNameInputBox.value = '';
-			} else {
-				this._databaseNameInputBox.value = s;
-			}
-		}));
-
 	}
 
 	private onGroupSelected(selectedGroup: string) {
@@ -530,49 +546,56 @@ export class ConnectionWidget {
 		}
 	}
 
-	public initDialog(connectionInfo: IConnectionProfile): void {
-		this.fillInConnectionInputs(connectionInfo);
+	public initDialog(connectionInfo: IConnectionProfile, isCMSDialog: boolean = false): void {
+		this.fillInConnectionInputs(connectionInfo, isCMSDialog);
 	}
 
-	public focusOnOpen(): void {
+	public focusOnOpen(isCMSDialog: boolean = false): void {
 		this._handleClipboard();
 		this._serverNameInputBox.focus();
 		this.focusPasswordIfNeeded();
-		this.clearValidationMessages();
+		this.clearValidationMessages(isCMSDialog);
 	}
 
-	private clearValidationMessages(): void {
+	private clearValidationMessages(isCMSDialog: boolean = false): void {
 		this._serverNameInputBox.hideMessage();
 		this._userNameInputBox.hideMessage();
 		this._azureAccountDropdown.hideMessage();
+		if (isCMSDialog) {
+			this._serverDescriptionInputBox.hideMessage();
+		}
 	}
 
 	private getModelValue(value: string): string {
 		return value ? value : '';
 	}
 
-	public fillInConnectionInputs(connectionInfo: IConnectionProfile) {
+	public fillInConnectionInputs(connectionInfo: IConnectionProfile, isCMSDialog: boolean = false) {
 		if (connectionInfo) {
 			this._serverNameInputBox.value = this.getModelValue(connectionInfo.serverName);
-			this._databaseNameInputBox.value = this.getModelValue(connectionInfo.databaseName);
 			this._connectionNameInputBox.value = this.getModelValue(connectionInfo.connectionName);
 			this._userNameInputBox.value = this.getModelValue(connectionInfo.userName);
 			this._passwordInputBox.value = connectionInfo.password ? Constants.passwordChars : '';
 			this._password = this.getModelValue(connectionInfo.password);
 			this._saveProfile = connectionInfo.saveProfile;
 			this._azureTenantId = connectionInfo.azureTenantId;
-			let groupName: string;
-			if (this._saveProfile) {
-				if (!connectionInfo.groupFullName) {
-					groupName = this.DefaultServerGroup.name;
+			if (!isCMSDialog) {
+				this._databaseNameInputBox.value = this.getModelValue(connectionInfo.databaseName);
+				let groupName: string;
+				if (this._saveProfile) {
+					if (!connectionInfo.groupFullName) {
+						groupName = this.DefaultServerGroup.name;
+					} else {
+						groupName = connectionInfo.groupFullName.replace('root/', '');
+					}
 				} else {
-					groupName = connectionInfo.groupFullName.replace('root/', '');
+					groupName = this.NoneServerGroup.name;
 				}
+				this._serverGroupSelectBox.selectWithOptionName(groupName);
+				this._previousGroupOption = this._serverGroupSelectBox.value;
 			} else {
-				groupName = this.NoneServerGroup.name;
+				this._connectionNameInputBox.value = this._connectionNameInputBox.value || this._serverNameInputBox.value;
 			}
-			this._serverGroupSelectBox.selectWithOptionName(groupName);
-			this._previousGroupOption = this._serverGroupSelectBox.value;
 
 			// To handle the empty password case
 			if (this.getModelValue(connectionInfo.password) === '') {
@@ -643,29 +666,30 @@ export class ConnectionWidget {
 		return authTypeName;
 	}
 
-	public handleOnConnecting(): void {
+	public handleOnConnecting(isCMSDialog: boolean = false): void {
 		this._focusedBeforeHandleOnConnection = <HTMLElement>document.activeElement;
 		this._advancedButton.enabled = false;
-
-		this._serverGroupSelectBox.disable();
 		this._serverNameInputBox.disable();
-		this._databaseNameInputBox.enabled = false;
 		this._userNameInputBox.disable();
 		this._passwordInputBox.disable();
 		this._connectionNameInputBox.disable();
 		this._rememberPasswordCheckBox.enabled = false;
+		if (isCMSDialog) {
+			this._serverDescriptionInputBox.disable();
+		} else {
+			this._serverGroupSelectBox.disable();
+			this._databaseNameInputBox.enabled = false;
+		 }
 		if (this._authTypeSelectBox) {
 			this._authTypeSelectBox.disable();
 		}
 	}
 
-	public handleResetConnection(): void {
+	public handleResetConnection(isCMSDialog: boolean = false): void {
 		this._advancedButton.enabled = true;
-
-		this._serverGroupSelectBox.enable();
 		this._serverNameInputBox.enable();
 		this._connectionNameInputBox.enable();
-		this._databaseNameInputBox.enabled = true;
+
 		let currentAuthType: AuthenticationType = undefined;
 		if (this._authTypeSelectBox) {
 			this._authTypeSelectBox.enable();
@@ -681,6 +705,12 @@ export class ConnectionWidget {
 		if (this._focusedBeforeHandleOnConnection) {
 			this._focusedBeforeHandleOnConnection.focus();
 		}
+
+		if (isCMSDialog) {
+			this._serverDescriptionInputBox.enable();
+			this._serverGroupSelectBox.enable();
+			this._databaseNameInputBox.enabled = true;
+		}
 	}
 
 	public get connectionName(): string {
@@ -689,6 +719,10 @@ export class ConnectionWidget {
 
 	public get serverName(): string {
 		return this._serverNameInputBox.value;
+	}
+
+	public get registeredCmsServerDescription(): string {
+		return this._serverDescriptionInputBox.value;
 	}
 
 	public get databaseName(): string {
@@ -753,27 +787,33 @@ export class ConnectionWidget {
 		return validateServerName && validateUserName && validatePassword && validateAzureAccount;
 	}
 
-	public connect(model: IConnectionProfile): boolean {
+	public connect(model: IConnectionProfile, isCMSDialog: boolean = false): boolean {
 		let validInputs = this.validateInputs();
 		if (validInputs) {
-			model.connectionName = this.connectionName;
 			model.serverName = this.serverName;
-			model.databaseName = this.databaseName;
 			model.userName = this.userName;
 			model.password = this.password;
 			model.authenticationType = this.authenticationType;
 			model.savePassword = this._rememberPasswordCheckBox.checked;
-			if (this._serverGroupSelectBox.value === this.DefaultServerGroup.name) {
-				model.groupFullName = '';
-				model.saveProfile = true;
-				model.groupId = this.findGroupId(model.groupFullName);
-			} else if (this._serverGroupSelectBox.value === this.NoneServerGroup.name) {
-				model.groupFullName = '';
+			if (isCMSDialog) {
 				model.saveProfile = false;
-			} else if (this._serverGroupSelectBox.value !== this._addNewServerGroup.name) {
-				model.groupFullName = this._serverGroupSelectBox.value;
-				model.saveProfile = true;
-				model.groupId = this.findGroupId(model.groupFullName);
+				model.options['registeredCmsServerName'] = this.connectionName ? this.connectionName : this.serverName;
+				model.options['registeredCmsServerDescription'] = this.registeredCmsServerDescription;
+			} else {
+				model.connectionName = this.connectionName;
+				model.databaseName = this.databaseName;
+				if (this._serverGroupSelectBox.value === this.DefaultServerGroup.name) {
+					model.groupFullName = '';
+					model.saveProfile = true;
+					model.groupId = this.findGroupId(model.groupFullName);
+				} else if (this._serverGroupSelectBox.value === this.NoneServerGroup.name) {
+					model.groupFullName = '';
+					model.saveProfile = false;
+				} else if (this._serverGroupSelectBox.value !== this._addNewServerGroup.name) {
+					model.groupFullName = this._serverGroupSelectBox.value;
+					model.saveProfile = true;
+					model.groupId = this.findGroupId(model.groupFullName);
+				}
 			}
 			if (this.authType === AuthenticationType.AzureMFA) {
 				model.azureTenantId = this._azureTenantId;

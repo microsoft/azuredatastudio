@@ -199,7 +199,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * @param params Include the uri, type of connection
 	 * @param model the existing connection profile to create a new one from
 	 */
-	public showConnectionDialog(params?: INewConnectionParams, model?: IConnectionProfile, connectionResult?: IConnectionResult): Promise<void> {
+	public showConnectionDialog(params?: INewConnectionParams, model?: IConnectionProfile, connectionResult?: IConnectionResult, isCMSDialog: boolean = false): Promise<void> {
 		let self = this;
 		return new Promise<void>((resolve, reject) => {
 			if (!params) {
@@ -208,7 +208,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			if (!model && params.input && params.input.uri) {
 				model = this._connectionStatusManager.getConnectionProfile(params.input.uri);
 			}
-			self._connectionDialogService.showDialog(self, params, model, connectionResult).then(() => {
+			self._connectionDialogService.showDialog(self, params, model, connectionResult, isCMSDialog).then(() => {
 				resolve();
 			}, dialogError => {
 				warn('failed to open the connection dialog. error: ' + dialogError);

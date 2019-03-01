@@ -59,8 +59,9 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 		return Promise.resolve(this._connectionManagementService.getServerInfo(connectionId));
 	}
 
-	public async $openConnectionDialog(providers: string[], initialConnectionProfile?: IConnectionProfile, connectionCompletionOptions?: sqlops.IConnectionCompletionOptions): Promise<sqlops.connection.Connection> {
-		let connectionProfile = await this._connectionDialogService.openDialogAndWait(this._connectionManagementService, { connectionType: 1, providers: providers }, initialConnectionProfile);
+	public async $openConnectionDialog(providers: string[], initialConnectionProfile?: IConnectionProfile, connectionCompletionOptions?: sqlops.IConnectionCompletionOptions, isCMSDialog = false): Promise<sqlops.connection.Connection> {
+		let connectionProfile = await this._connectionDialogService.openDialogAndWait(this._connectionManagementService,
+			{ connectionType: 1, providers: providers }, initialConnectionProfile, undefined, isCMSDialog);
 		const connection = connectionProfile ? {
 			connectionId: connectionProfile.id,
 			options: connectionProfile.options,

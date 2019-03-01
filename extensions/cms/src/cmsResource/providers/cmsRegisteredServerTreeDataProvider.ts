@@ -39,7 +39,7 @@ export class CmsRegisteredServerTreeDataProvider implements cmsResource.ICmsReso
 		//const registeredServers: CmsRegisteredServer[] = (await this._apiWrapper.listRegisteredServers()) || <CmsRegisteredServer[]>[];
 		const registeredServers = [];
 		return registeredServers.map((registeredServer) => <ICmsRegisteredServerNode>{
-			registeredServer: registeredServer,
+			registeredServers: registeredServer,
 			treeItem: {
 				id: `registeredServer_${registeredServer.name}`,
 				label: registeredServer.name,

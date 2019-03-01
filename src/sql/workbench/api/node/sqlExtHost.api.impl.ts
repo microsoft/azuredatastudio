@@ -123,8 +123,8 @@ export function createApiFactory(
 				getServerInfo(connectionId: string): Thenable<sqlops.ServerInfo> {
 					return extHostConnectionManagement.$getServerInfo(connectionId);
 				},
-				openConnectionDialog(providers?: string[], initialConnectionProfile?: sqlops.IConnectionProfile, connectionCompletionOptions?: sqlops.IConnectionCompletionOptions): Thenable<sqlops.connection.Connection> {
-					return extHostConnectionManagement.$openConnectionDialog(providers, initialConnectionProfile, connectionCompletionOptions);
+				openConnectionDialog(providers?: string[], initialConnectionProfile?: sqlops.IConnectionProfile, connectionCompletionOptions?: sqlops.IConnectionCompletionOptions, isCMSDialog = false): Thenable<sqlops.connection.Connection> {
+					return extHostConnectionManagement.$openConnectionDialog(providers, initialConnectionProfile, connectionCompletionOptions, isCMSDialog);
 				},
 				listDatabases(connectionId: string): Thenable<string[]> {
 					return extHostConnectionManagement.$listDatabases(connectionId);

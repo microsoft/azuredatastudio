@@ -2422,7 +2422,7 @@ declare module 'sqlops' {
 
 	export interface ListRegisteredServersResult {
 		registeredServersList: Array<RegisteredServerResult>;
-		servergroupsList: Array<ServerGroupResult>;
+		registeredServerGroups: Array<ServerGroupResult>;
 	}
 
 	//CMS interfaces ---------------------------------------------------------------------------------------

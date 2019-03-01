@@ -93,6 +93,14 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 		this.options['azureTenantId'] = value;
 	}
 
+	public get registeredCmsServerDescription(): string {
+		return this.options['registeredCmsServerDescription'];
+	}
+
+	public set registeredCmsServerDescription(value: string) {
+		this.options['registeredCmsServerDescription'] = value;
+	}
+
 	public get groupFullName(): string {
 		return this._groupName;
 	}

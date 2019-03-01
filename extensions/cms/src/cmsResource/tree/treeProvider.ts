@@ -14,9 +14,9 @@ const localize = nls.loadMessageBundle();
 
 import { TreeNode } from '../treeNode';
 import { CmsResourceEmptyTreeNode } from './cmsResourceEmptyTreeNode';
-import { CmsResourceContainerTreeNodeBase } from './baseTreeNodes';
 import { ICmsResourceTreeChangeHandler } from './treeChangeHandler';
 import { CmsResourceMessageTreeNode } from '../messageTreeNode';
+import { CmsResourceTreeNode } from './cmsResourceTreeNode';
 
 export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICmsResourceTreeChangeHandler {
 
@@ -40,8 +40,8 @@ export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICms
 					// to determine whether the system has been initialized.
 
 
-					// System has been initialized
-					this.isSystemInitialized = true;
+					// System has been initialized (only if there's an ownerUri or locally saved CMS Servers)
+					// this.isSystemInitialized = true;
 
 					if (this._loadingTimer) {
 						clearInterval(this._loadingTimer);
@@ -56,10 +56,15 @@ export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICms
 			return [CmsResourceMessageTreeNode.create(CmsResourceTreeProvider.loadingLabel, undefined)];
 		}
 		try {
-			// let ownerUri = await this.appContext.apiWrapper.ownerUri;
-			// let meme = await this.appContext.apiWrapper.getRegisteredServers(ownerUri);
-			let emptyNode = new CmsResourceEmptyTreeNode();
-			return [emptyNode];
+			let registeredCmsServers = this.appContext.apiWrapper.registeredCmsServers;
+			if (registeredCmsServers && registeredCmsServers.length > 0) {
+				this.isSystemInitialized = true;
+				return registeredCmsServers.map((server) => new CmsResourceTreeNode(server.name, server.description,
+					 server.registeredServers, server.serverGroups, this._appContext, this, null));
+			} else {
+				return [new CmsResourceEmptyTreeNode()];
+
+			}
 		} catch (error) {
 			return [new CmsResourceEmptyTreeNode()];
 		}
@@ -74,12 +79,6 @@ export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICms
 	}
 
 	public async refresh(node: TreeNode, isClearingCache: boolean): Promise<void> {
-		if (isClearingCache) {
-			if ((node instanceof CmsResourceContainerTreeNodeBase)) {
-				node.clearCache();
-			}
-		}
-
 		this._onDidChangeTreeData.fire(node);
 	}
 
@@ -93,5 +92,5 @@ export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICms
 	private _onDidChangeTreeData = new EventEmitter<TreeNode>();
 
 	private static readonly loadingLabel = localize('cms.resource.tree.treeProvider.loadingLabel', 'Loading ...');
-	private static readonly loadingTimerInterval = 5000;
+	private static readonly loadingTimerInterval = 0;
 }

@@ -9,6 +9,8 @@ import * as vscode from 'vscode';
 import * as sqlops from 'sqlops';
 
 import * as constants from './constants';
+import { ICmsRegisteredServerNode } from './cmsResource/providers/interfaces';
+import { CmsResourceNodeInfo } from './cmsResource/tree/baseTreeNodes';
 
 /**
  * Wrapper class to act as a facade over VSCode and Data APIs and allow us to test / mock callbacks into
@@ -22,6 +24,8 @@ export class ApiWrapper {
 	private _cmsProvider: sqlops.CmsServiceProvider;
 	private _connection: sqlops.connection.Connection;
 	private _ownerUri: string;
+	private _registeredCmsServers: CmsResourceNodeInfo[];
+
 
 	// Data APIs
 	public registerConnectionProvider(provider: sqlops.ConnectionProvider): vscode.Disposable {
@@ -230,7 +234,7 @@ export class ApiWrapper {
 
 	// Connection APIs
 	public openConnectionDialog(providers: string[], initialConnectionProfile?: sqlops.IConnectionProfile, connectionCompletionOptions?: sqlops.IConnectionCompletionOptions): Thenable<sqlops.connection.Connection> {
-		return sqlops.connection.openConnectionDialog(providers, initialConnectionProfile, connectionCompletionOptions);
+		return sqlops.connection.openConnectionDialog(providers, initialConnectionProfile, connectionCompletionOptions, true);
 	}
 
 	public createCmsServer(name: string, description: string) {
@@ -243,6 +247,23 @@ export class ApiWrapper {
 				}
 			});
 		});
+	}
+
+	public addRegisteredCmsServers(name: string, description: string, server: sqlops.ListRegisteredServersResult) {
+		if (!this._registeredCmsServers) {
+			this._registeredCmsServers = [];
+		}
+		let cmsServerNode: CmsResourceNodeInfo = {
+			name: name,
+			description: description,
+			registeredServers: server.registeredServersList,
+			serverGroups: server.registeredServerGroups
+		};
+		this._registeredCmsServers.push(cmsServerNode);
+	}
+
+	public get registeredCmsServers(): CmsResourceNodeInfo[] {
+		return this._registeredCmsServers;
 	}
 
 	public get connection(): Thenable<sqlops.connection.Connection> {
