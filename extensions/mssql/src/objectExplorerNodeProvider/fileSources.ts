@@ -13,7 +13,6 @@ import * as readline from 'readline';
 import * as os from 'os';
 
 import * as constants from '../constants';
-import * as utils from '../utils';
 import { WebHDFS, HdfsError } from './webhdfs';
 
 export function joinHdfsPath(parent: string, child: string): string {
@@ -93,59 +92,6 @@ export interface IHdfsFileStatus {
 	pathSuffix: string;
 }
 
-export interface IHdfsClient {
-	/**
-	 * Read directory contents
-	 * @param {string} path
-	 * @param {(err: any, files: any[]) => void} callback
-	 * @returns void
-	 */
-	readdir(path: string, callback: (error: HdfsError, files: any[]) => void): void;
-
-	/**
-	 * Create readable stream for given path
-	 * @param {string} path
-	 * @param {object} [opts]
-	 * @returns {fs.ReadStream}
-	 */
-	createReadStream(path: string, opts?: object): fs.ReadStream;
-
-	/**
-	 * Create writable stream for given path
-	 * @param {string} path
-	 * @param {boolean} [append] If set to true then append data to the file
-	 * @param {object} [opts]
-	 * @returns {fs.WriteStream}
-	 */
-	createWriteStream(path: string, append?: boolean, opts?: object): fs.WriteStream;
-
-	/**
-	 * Make new directory
-	 * @param {string} path
-	 * @param {string} [permission=0755]
-	 * @param {(error: HdfsError) => void} callback
-	 * @returns void
-	 */
-	mkdir(path: string, permission: string, callback: (error: HdfsError) => void): void;
-
-	/**
-	 * Delete directory or file path
-	 * @param {string} path
-	 * @param {boolean} [recursive=false]
-	 * @param {(error: HdfsError) => void} callback
-	 * @returns void
-	 */
-	rmdir(path: string, recursive: boolean, callback: (error: HdfsError) => void): void;
-
-	/**
-	 * Check file existence
-	 * @param {string} path
-	 * @param {(error: HdfsError, exists: boolean) => void} callback
-	 * @returns void
-	 */
-	exists(path: string, callback: (error: HdfsError, exists: boolean) => void): void;
-}
-
 export class FileSourceFactory {
 	private static _instance: FileSourceFactory;
 
@@ -193,12 +139,12 @@ export class FileSourceFactory {
 }
 
 export class HdfsFileSource implements IFileSource {
-	constructor(private client: IHdfsClient) {
+	constructor(private webHDFS: WebHDFS) {
 	}
 
 	public enumerateFiles(path: string): Promise<IFile[]> {
 		return new Promise((resolve, reject) => {
-			this.client.readdir(path, (error, files) => {
+			this.webHDFS.readdir(path, (error, files) => {
 				if (error) {
 					reject(error.message);
 				} else {
@@ -215,7 +161,7 @@ export class HdfsFileSource implements IFileSource {
 	public mkdir(dirName: string, remoteBasePath: string): Promise<void> {
 		return new Promise((resolve, reject) => {
 			let remotePath = joinHdfsPath(remoteBasePath, dirName);
-			this.client.mkdir(remotePath, undefined, (err) => {
+			this.webHDFS.mkdir(remotePath, undefined, (err) => {
 				if (err) {
 					reject(err);
 				} else {
@@ -226,25 +172,26 @@ export class HdfsFileSource implements IFileSource {
 	}
 
 	public createReadStream(path: string): fs.ReadStream {
-		return this.client.createReadStream(path);
+		return this.webHDFS.createReadStream(path);
 	}
 
 	public readFile(path: string, maxBytes?: number): Promise<Buffer> {
 		return new Promise((resolve, reject) => {
-			let remoteFileStream = this.client.createReadStream(path);
-			if (maxBytes) {
-				remoteFileStream = remoteFileStream.pipe(meter(maxBytes));
-			}
-			let data = [];
-			let error = undefined;
+			let error: HdfsError = undefined;
+			let remoteFileStream = this.webHDFS.createReadStream(path);
 			remoteFileStream.on('error', (err) => {
-				error = err.toString();
-				if (error.includes('Stream exceeded specified max')) {
-					error = `File exceeds max size of ${bytes(maxBytes)}`;
+				error = <HdfsError>err;
+				if (error.message.includes('Stream exceeded specified max') && maxBytes) {
+					error.message = `File exceeds max size of ${bytes(maxBytes)}`;
 				}
 				reject(error);
 			});
 
+			if (maxBytes) {
+				remoteFileStream = remoteFileStream.pipe(meter(maxBytes));
+			}
+
+			let data: any[] = [];
 			remoteFileStream.on('data', (chunk) => {
 				data.push(chunk);
 			});
@@ -260,12 +207,12 @@ export class HdfsFileSource implements IFileSource {
 	public readFileLines(path: string, maxLines: number): Promise<Buffer> {
 		return new Promise((resolve, reject) => {
 			let lineReader = readline.createInterface({
-				input: this.client.createReadStream(path)
+				input: this.webHDFS.createReadStream(path)
 			});
 
 			let lineCount = 0;
 			let lineData: string[] = [];
-			let errorMsg = undefined;
+			let error: HdfsError = undefined;
 			lineReader.on('line', (line: string) => {
 				lineCount++;
 				lineData.push(line);
@@ -275,11 +222,11 @@ export class HdfsFileSource implements IFileSource {
 				}
 			})
 			.on('error', (err) => {
-				errorMsg = utils.getErrorMessage(err);
-				reject(errorMsg);
+				error = <HdfsError>err;
+				reject(error);
 			})
 			.on('close', () => {
-				if (!errorMsg) {
+				if (!error) {
 					resolve(Buffer.from(lineData.join(os.EOL)));
 				}
 			});
@@ -291,29 +238,32 @@ export class HdfsFileSource implements IFileSource {
 			let fileName = fspath.basename(localFile.path);
 			let remotePath = joinHdfsPath(remoteDirPath, fileName);
 
-			let writeStream = this.client.createWriteStream(remotePath);
-
-			let readStream = fs.createReadStream(localFile.path);
-			readStream.pipe(writeStream);
-
-			let error: string | Error = undefined;
-
+			let error: HdfsError = undefined;
+			let writeStream = this.webHDFS.createWriteStream(remotePath);
 			// API always calls finish, so catch error then handle exit in the finish event
-			writeStream.on('error', (err => {
-				error = err;
+			writeStream.on('error', (err) => {
+				error = <HdfsError>err;
 				reject(error);
-			}));
+			});
 			writeStream.on('finish', (location) => {
 				if (!error) {
 					resolve(location);
 				}
 			});
+
+			let readStream = fs.createReadStream(localFile.path);
+			readStream.on('error', (err) => {
+				error = err;
+				reject(error);
+			});
+
+			readStream.pipe(writeStream);
 		});
 	}
 
 	public delete(path: string, recursive: boolean = false): Promise<void> {
 		return new Promise((resolve, reject) => {
-			this.client.rmdir(path, recursive, (error) => {
+			this.webHDFS.rmdir(path, recursive, (error) => {
 				if (error) {
 					reject(error);
 				} else {
@@ -325,7 +275,7 @@ export class HdfsFileSource implements IFileSource {
 
 	public exists(path: string): Promise<boolean> {
 		return new Promise((resolve, reject) => {
-			this.client.exists(path, (error, exists) => {
+			this.webHDFS.exists(path, (error, exists) => {
 				if (error) {
 					reject(error);
 				} else {

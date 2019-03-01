@@ -74,7 +74,7 @@ export class WebHDFS {
 	 * Gets localized status message for given status code
 	 *
 	 * @param {number} statusCode Http status code
-	 * @returns {string} Status message
+	 * @returns {string} status message
 	 */
 	private toStatusMessage(statusCode: number): string {
 		let statusMessage: string = undefined;
@@ -91,20 +91,17 @@ export class WebHDFS {
 	}
 
 	/**
-	 * Interprets error message by status code in response object
+	 * Gets status message from response
 	 *
-	 * @param {request.Response} response Response
+	 * @param {request.Response} response response object
 	 * @param {boolean} strict If set true then RemoteException must be present in the body
 	 * @returns {string} Error message interpreted by status code
 	 */
-	private getErrorMessage(response: request.Response): string {
+	private getStatusMessage(response: request.Response): string {
 		if (!response) { return undefined; }
-		let errorMessage: string = this.toStatusMessage(response.statusCode)
+		let statusMessage: string = this.toStatusMessage(response.statusCode)
 			|| (response && response.statusMessage);
-		if (!errorMessage) {
-			errorMessage = localize('webhdfs.unknownError', 'Unknown Error');
-		}
-		return errorMessage;
+		return statusMessage;
 	}
 
 	/**
@@ -129,17 +126,37 @@ export class WebHDFS {
 	}
 
 	/**
+	 * Generates error message descriptive as much as possible
+	 *
+	 * @param {string} statusMessage status message
+	 * @param {string} [remoteExceptionMessage] remote exception message
+	 * @param {any} [error] error
+	 * @returns {string} error message
+	 */
+	private getErrorMessage(statusMessage: string, remoteExceptionMessage?: string, error?: any): string {
+		statusMessage = statusMessage === '' ? undefined : statusMessage;
+		remoteExceptionMessage = remoteExceptionMessage === '' ? undefined : remoteExceptionMessage;
+		return statusMessage && remoteExceptionMessage ?
+			`${statusMessage} (${remoteExceptionMessage})` :
+			statusMessage || remoteExceptionMessage || (error && error.toString()) ||
+				localize('webhdfs.unknownError', 'Unknown Error');
+	}
+
+	/**
 	 * Parse error state from response and return valid Error object
 	 *
-	 * @param {request.Response} response Response
+	 * @param {request.Response} response response object
 	 * @param {any} [responseBody] response body
 	 * @param {any} [error] error
 	 * @returns {HdfsError} HdfsError object
 	 */
 	private parseError(response: request.Response, responseBody?: any, error?: any): HdfsError {
-		if (!response) { return undefined; }
-		let errorMessage: string = this.getErrorMessage(response);
-		let remoteExceptionMessage: string = this.getRemoteExceptionMessage(responseBody || response.body);
+		let statusMessage: string = this.getStatusMessage(response);
+		if (!responseBody && response) {
+			responseBody = response.body;
+		}
+		let remoteExceptionMessage: string = this.getRemoteExceptionMessage(responseBody);
+		let errorMessage: string = this.getErrorMessage(statusMessage, remoteExceptionMessage, error);
 		return new HdfsError(errorMessage, response.statusCode,
 			response.statusMessage, remoteExceptionMessage, error);
 	}
@@ -147,7 +164,7 @@ export class WebHDFS {
 	/**
 	 * Check if response is redirect
 	 *
-	 * @param {request.Response} response response
+	 * @param {request.Response} response response object
 	 * @returns {boolean} if response is redirect
 	 */
 	private isRedirect(response: request.Response): boolean {
@@ -158,7 +175,7 @@ export class WebHDFS {
 	/**
 	 * Check if response is successful
 	 *
-	 * @param {request.Response} response response
+	 * @param {request.Response} response response object
 	 * @returns {boolean} if response is successful
 	 */
 	private isSuccess(response: request.Response): boolean {
@@ -168,7 +185,7 @@ export class WebHDFS {
 	/**
 	 * Check if response is error
 	 *
-	 * @param {request.Response} response response
+	 * @param {request.Response} response response object
 	 * @returns {boolean} if response is error
 	 */
 	private isError(response: request.Response): boolean {
@@ -385,19 +402,18 @@ export class WebHDFS {
 		this.checkArgDefined('path', path);
 		this.checkArgDefined('data', data);
 
-		let hdfsError: HdfsError = null;
+		let error: HdfsError = null;
 		let localStream = new BufferStreamReader(data);
 		let remoteStream: fs.WriteStream = this.createWriteStream(path, !!append, opts || {});
 
 		// Handle events
 		remoteStream.once('error', (err) => {
-			hdfsError = new HdfsError();
-			hdfsError.internalError = err;
+			error = <HdfsError>err;
 		});
 
 		remoteStream.once('finish', () => {
-			if (callback && hdfsError) {
-				callback(hdfsError);
+			if (callback && error) {
+				callback(error);
 			}
 		});
 
@@ -433,23 +449,22 @@ export class WebHDFS {
 
 		let remoteFileStream = this.createReadStream(path);
 		let data: any[] = [];
-		let hdfsError: HdfsError = undefined;
+		let error: HdfsError = undefined;
 
 		remoteFileStream.once('error', (err) => {
-			hdfsError = new HdfsError();
-			hdfsError.internalError = err;
+			error = <HdfsError>err;
 		});
 
 		remoteFileStream.on('data', (dataChunk) => {
 			data.push(dataChunk);
 		});
 
-		remoteFileStream.once('finish', function () {
+		remoteFileStream.once('finish', () => {
 			if (!callback) { return; }
-			if (!hdfsError) {
+			if (!error) {
 				callback(undefined, Buffer.concat(data));
 			} else {
-				callback(hdfsError, undefined);
+				callback(error, undefined);
 			}
 		});
 	}
@@ -471,11 +486,11 @@ export class WebHDFS {
 	 *
 	 * localFileStream.pipe(remoteFileStream);
 	 *
-	 * remoteFileStream.on('error', function onError (err) {
+	 * remoteFileStream.on('error', (err) => {
 	 *	// Do something with the error
 	 * });
 	 *
-	 * remoteFileStream.on('finish', function onFinish () {
+	 * remoteFileStream.on('finish', () => {
 	 *	// Upload is done
 	 * });
 	 */
@@ -580,15 +595,15 @@ export class WebHDFS {
 	 *
 	 * let remoteFileStream = hdfs.createReadStream('/path/to/remote/file');
 	 *
-	 * remoteFileStream.on('error', function onError (err) {
+	 * remoteFileStream.on('error', (err) => {
 	 *  // Do something with the error
 	 * });
 	 *
-	 * remoteFileStream.on('data', function onChunk (chunk) {
+	 * remoteFileStream.on('data', (dataChunk) => {
 	 *  // Do something with the data chunk
 	 * });
 	 *
-	 * remoteFileStream.on('finish', function onFinish () {
+	 * remoteFileStream.on('finish', () => {
 	 *  // Upload is done
 	 * });
 	 */
@@ -723,16 +738,12 @@ export class WebHDFS {
 }
 
 export class HdfsError extends Error {
-	public statusCode: number;
-	public statusMessage: string;
-	public remoteExceptionMessage: string;
-	public internalError: any;
-	constructor(errorMessage?: string, statusCode?: number, statusMessage?: string,
-		remoteExceptionMessage?: string, internalError?: any) {
+	constructor(
+		errorMessage: string,
+		public statusCode?: number,
+		public statusMessage?: string,
+		public remoteExceptionMessage?: string,
+		public internalError?: any) {
 		super(errorMessage);
-		this.statusCode = statusCode;
-		this.statusMessage = statusMessage;
-		this.remoteExceptionMessage = remoteExceptionMessage;
-		this.internalError = internalError;
 	}
 }
