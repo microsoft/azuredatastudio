@@ -5,21 +5,27 @@
 'use strict';
 
 import { TargetClusterType, ClusterPorts, ContainerRegistryInfo, TargetClusterTypeInfo, ToolInfo, ToolInstallationStatus } from '../../interfaces';
-import { getContexts, KubectlContext } from '../../kubectl/kubectlUtils';
+import { getContexts, KubectlContext, setContext, inferCurrentClusterType }  from '../../kubectl/kubectlUtils';
 import { Kubectl } from '../../kubectl/kubectl';
+import { Scriptable, ScriptingDictionary } from '../../scripting/scripting';
+import { ClusterType} from '../../interfaces';
 import * as nls from 'vscode-nls';
 
 const localize = nls.loadMessageBundle();
 
-export class CreateClusterModel {
+export class CreateClusterModel implements Scriptable {
 
 	private _tmp_tools_installed: boolean = false;
-
-	constructor(private _kubectl: Kubectl) {
+	private scriptingProperties : ScriptingDictionary<string> = {};
+	constructor(private _kubectl : Kubectl) {
 	}
 
 	public async loadClusters(): Promise<KubectlContext[]> {
 		return await getContexts(this._kubectl);
+	}
+
+	public async changeKubernetesContext(targetContext: string): Promise<void> {
+		await setContext(this._kubectl, targetContext)
 	}
 
 	public getDefaultPorts(): Thenable<ClusterPorts> {
@@ -136,4 +142,56 @@ export class CreateClusterModel {
 	public containerRegistryUserName: string;
 
 	public containerRegistryPassword: string;
+
+	public async getTargetClusterPlatform(targetContextName : string) : Promise<string> {
+		await setContext(this._kubectl, targetContextName);
+		let clusterType = await inferCurrentClusterType(this._kubectl);
+
+		switch (clusterType) {
+			case ClusterType.AKS:
+				return 'aks';
+			case ClusterType.Minikube:
+				return 'minikube';
+			case ClusterType.Other:
+			default:
+				return 'kubernetes';
+		}
+	}
+
+	public async getScriptProperties() : Promise<ScriptingDictionary<string>> {
+
+		// Cluster settings
+		this.scriptingProperties['CLUSTER_NAME'] = this.selectedCluster.clusterName;
+		this.scriptingProperties['CLUSTER_PLATFORM'] = await this.getTargetClusterPlatform(this.selectedCluster.contextName);
+
+		// Default pool count for now. TODO: Update from user input
+		this.scriptingProperties['CLUSTER_DATA_POOL_REPLICAS'] = '1';
+		this.scriptingProperties['CLUSTER_COMPUTE_POOL_REPLICAS'] = '2';
+		this.scriptingProperties['CLUSTER_STORAGE_POOL_REPLICAS'] = '3';
+
+		// SQL Server settings
+		this.scriptingProperties['CONTROLLER_USERNAME'] = this.adminUserName;
+		this.scriptingProperties['CONTROLLER_PASSWORD'] =  this.adminPassword;
+		this.scriptingProperties['KNOX_PASSWORD'] = this.adminPassword;
+		this.scriptingProperties['MSSQL_SA_PASSWORD'] = this.adminPassword;
+
+		// docker settings
+		this.scriptingProperties['DOCKER_REPOSITORY'] = this.containerRepository;
+		this.scriptingProperties['DOCKER_REGISTRY' ] = this.containerRegistry;
+		this.scriptingProperties['DOCKER_PASSWORD'] = this.containerRegistryPassword;
+		this.scriptingProperties['DOCKER_USERNAME'] = this.containerRegistryUserName;
+		this.scriptingProperties['DOCKER_IMAGE_TAG'] = this.containerImageTag;
+
+		// port settings
+		this.scriptingProperties['MASTER_SQL_PORT'] = this.sqlPort;
+		this.scriptingProperties['KNOX_PORT'] = this.knoxPort;
+		this.scriptingProperties['GRAFANA_PORT'] = this.grafanaPort;
+		this.scriptingProperties['KIBANA_PORT'] = this.kibanaPort;
+
+		return this.scriptingProperties;
+	}
+
+	public getTargetKubectlContext() : KubectlContext {
+		return this.selectedCluster;
+	}
 }

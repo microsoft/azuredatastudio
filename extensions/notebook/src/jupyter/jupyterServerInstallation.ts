@@ -41,7 +41,6 @@ export default class JupyterServerInstallation {
 	public extensionPath: string;
 	public pythonBinPath: string;
 	public outputChannel: OutputChannel;
-	public configRoot: string;
 	public pythonEnvVarPath: string;
 	public execOptions: ExecOptions;
 
@@ -61,7 +60,6 @@ export default class JupyterServerInstallation {
 		this.outputChannel = outputChannel;
 		this.apiWrapper = apiWrapper;
 		this._pythonInstallationPath = pythonInstallationPath || JupyterServerInstallation.getPythonInstallPath(this.apiWrapper);
-		this.configRoot = path.join(this.extensionPath, constants.jupyterConfigRootFolder);
 		this._forceInstall = !!forceInstall;
 
 		this.configurePackagePaths();
@@ -216,7 +214,7 @@ export default class JupyterServerInstallation {
 		this.pythonBinPath = path.join(pythonSourcePath, pythonBinPathSuffix);
 
 		// Store paths to python libraries required to run jupyter.
-		this.pythonEnvVarPath = process.env.Path;
+		this.pythonEnvVarPath = process.env['PATH'];
 
 		let delimiter = path.delimiter;
 		if (process.platform === constants.winPlatform) {
@@ -227,6 +225,7 @@ export default class JupyterServerInstallation {
 
 		// Store the executable options to run child processes with env var without interfering parent env var.
 		let env = Object.assign({}, process.env);
+		delete env['Path']; // Delete extra 'Path' variable for Windows, just in case.
 		env['PATH'] = this.pythonEnvVarPath;
 		this.execOptions = {
 			env: env
