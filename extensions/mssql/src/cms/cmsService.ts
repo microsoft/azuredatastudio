@@ -11,6 +11,7 @@ import * as contracts from '../contracts';
 import { AppContext } from '../appContext';
 import { ConnectParams } from 'dataprotocol-client/lib/protocol';
 import { SqlOpsDataClient } from 'dataprotocol-client';
+import { ListRegisteredServersResult } from '../api/mssqlapis';
 
 export class CmsService {
 
@@ -19,7 +20,7 @@ export class CmsService {
 		this.appContext.registerService<CmsService>(constants.CmsService, this);
 	}
 
-	 createCmsServer(name: string, description:string, connectiondetails: sqlops.ConnectionInfo, ownerUri: string): Thenable<sqlops.ListRegisteredServersResult> {
+	 createCmsServer(name: string, description:string, connectiondetails: sqlops.ConnectionInfo, ownerUri: string): Thenable<ListRegisteredServersResult> {
 		let connectparams: ConnectParams = { ownerUri: ownerUri, connection: connectiondetails };
 		let cmsparams: contracts.CreateCentralManagementServerParams = { registeredServerName: name, registeredServerDescription: description, connectParams: connectparams};
 
@@ -34,21 +35,21 @@ export class CmsService {
 		);
 	}
 
-	 getRegisteredServers(ownerUri: string, relativePath: string): Thenable<sqlops.ListRegisteredServersResult>  {
-		let params: contracts.ListRegisteredServerParams = { parentOwnerUri: ownerUri, relativePath: relativePath };
-		return this.client.sendRequest(contracts.GetRegisteredServerRequest.type, params).then(
+	 getRegisteredServers(ownerUri: string, relativePath: string): Thenable<ListRegisteredServersResult>  {
+		let params: contracts.ListRegisteredServersParams = { parentOwnerUri: ownerUri, relativePath: relativePath };
+		return this.client.sendRequest(contracts.ListRegisteredServersRequest.type, params).then(
 			r => {
 				return r;
 			},
 			e => {
-				this.client.logFailedRequest(contracts.GetRegisteredServerRequest.type, e);
+				this.client.logFailedRequest(contracts.ListRegisteredServersRequest.type, e);
 				return Promise.resolve(undefined);
 			}
 		);
 	}
 
 	 addRegisteredServer (ownerUri: string, relativePath: string, registeredServerName: string, registeredServerDescription:string, connectionDetails:sqlops.ConnectionInfo): Thenable<boolean> {
-		let params: contracts.AddRegisteredServerParams = { parentOwnerUri: ownerUri, relativePath: relativePath, registeredServerName: registeredServerName, registeredServerDescription: registeredServerDescription, regServerConnectionDetails: connectionDetails };
+		let params: contracts.AddRegisteredServerParams = { parentOwnerUri: ownerUri, relativePath: relativePath, registeredServerName: registeredServerName, registeredServerDescription: registeredServerDescription, registeredServerConnectionDetails: connectionDetails };
 		return this.client.sendRequest(contracts.AddRegisteredServerRequest.type, params).then(
 			r => {
 				return r;

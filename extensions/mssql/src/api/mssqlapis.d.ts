@@ -138,7 +138,7 @@ export interface CmsService {
 	 * @param {string} groupName
 	 * @param {string} groupDescription
 	 */
-	removeServerGroup (ownerUri: string, relativePath: string, groupName: string): Thenable<boolean>
+	removeServerGroup (ownerUri: string, relativePath: string, groupName: string): Thenable<boolean>;
 }
 
 /**
@@ -152,7 +152,7 @@ export interface RegisteredServerResult {
 	relativePath: string;
 }
 
-export interface ServerGroupResult {
+export interface RegisteredServerGroup {
 	name: string;
 	description: string;
 	relativePath: string;
@@ -160,6 +160,6 @@ export interface ServerGroupResult {
 
 export interface ListRegisteredServersResult {
 	registeredServersList: Array<RegisteredServerResult>;
-	servergroupsList: Array<ServerGroupResult>;
+	registeredServerGroups: Array<RegisteredServerGroup>;
 }
 
