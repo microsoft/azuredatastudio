@@ -15,7 +15,6 @@ import * as utils from './utils';
 
 const baseConfig = require('./config.json');
 const localize = nls.loadMessageBundle();
-
 let exePath:string;
 
 export function activate(context: vscode.ExtensionContext): Promise<void> {
