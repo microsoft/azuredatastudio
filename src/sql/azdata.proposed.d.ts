@@ -86,11 +86,6 @@ declare module 'azdata' {
 	 */
 	export namespace connection {
 		/**
-		 * Get the current connection based on the active editor or Object Explorer selection
-		*/
-		export function getCurrentConnection(): Thenable<Connection>;
-
-		/**
 		 * Get all active connections
 		*/
 		export function getActiveConnections(): Thenable<Connection[]>;

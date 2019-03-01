@@ -522,3 +522,25 @@ export interface ISingleNotebookEditOperation {
 	cell: Partial<nb.ICellContents>;
 	forceMoveMarkers: boolean;
 }
+
+export class ConnectionProfile {
+
+	providerId: string;
+	connectionId: string;
+	connectionName: string;
+	serverName: string;
+	databaseName: string;
+	userName: string;
+	password: string;
+	authenticationType: string;
+	savePassword: boolean;
+	groupFullName: string;
+	groupId: string;
+	saveProfile: boolean;
+	azureTenantId?: string;
+
+	static createFrom(options: any[]): ConnectionProfile {
+		// create from options
+		return undefined;
+	}
+}
