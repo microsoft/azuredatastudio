@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { WizardPageBase } from '../../wizardPageBase';
 import { TargetClusterTypeInfo, ToolInstallationStatus, ToolInfo } from '../../../interfaces';
 import * as nls from 'vscode-nls';
@@ -16,13 +16,13 @@ const InstallToolsButtonText = localize('bdc-create.InstallToolsText', 'Install 
 const InstallingButtonText = localize('bdc-create.InstallingButtonText', 'Installing...');
 
 export class SelectTargetClusterTypePage extends WizardPageBase<CreateClusterWizard> {
-	private cards: sqlops.CardComponent[];
-	private toolsTable: sqlops.TableComponent;
-	private formBuilder: sqlops.FormBuilder;
-	private form: sqlops.FormContainer;
-	private installToolsButton: sqlops.window.Button;
-	private toolsLoadingWrapper: sqlops.LoadingComponent;
-	private refreshToolsButton: sqlops.window.Button;
+	private cards: azdata.CardComponent[];
+	private toolsTable: azdata.TableComponent;
+	private formBuilder: azdata.FormBuilder;
+	private form: azdata.FormContainer;
+	private installToolsButton: azdata.window.Button;
+	private toolsLoadingWrapper: azdata.LoadingComponent;
+	private refreshToolsButton: azdata.window.Button;
 	private isValid: boolean = false;
 	private isLoading: boolean = false;
 	private requiredTools: ToolInfo[];
@@ -31,7 +31,7 @@ export class SelectTargetClusterTypePage extends WizardPageBase<CreateClusterWiz
 		super(localize('bdc-create.selectTargetClusterTypePageTitle', 'Where do you want to deploy this SQL Server big data cluster?'),
 			localize('bdc-create.selectTargetClusterTypePageDescription', 'Choose the target environment and then install the required tools.'),
 			wizard);
-		this.installToolsButton = sqlops.window.createButton(InstallToolsButtonText);
+		this.installToolsButton = azdata.window.createButton(InstallToolsButtonText);
 		this.installToolsButton.hidden = true;
 		this.installToolsButton.onClick(async () => {
 			this.wizard.wizardObject.message = null;
@@ -54,7 +54,7 @@ export class SelectTargetClusterTypePage extends WizardPageBase<CreateClusterWiz
 		});
 		this.wizard.addButton(this.installToolsButton);
 
-		this.refreshToolsButton = sqlops.window.createButton(localize('bdc-create.RefreshToolsButtonText', 'Refresh Status'));
+		this.refreshToolsButton = azdata.window.createButton(localize('bdc-create.RefreshToolsButtonText', 'Refresh Status'));
 		this.refreshToolsButton.hidden = true;
 		this.refreshToolsButton.onClick(() => {
 			this.updateRequiredToolStatus();
@@ -62,7 +62,7 @@ export class SelectTargetClusterTypePage extends WizardPageBase<CreateClusterWiz
 		this.wizard.addButton(this.refreshToolsButton);
 	}
 
-	protected initialize(view: sqlops.ModelView): Thenable<void> {
+	protected initialize(view: azdata.ModelView): Thenable<void> {
 		let self = this;
 		self.registerNavigationValidator();
 		return self.wizard.model.getAllTargetClusterTypeInfo().then((clusterTypes) => {
@@ -74,20 +74,20 @@ export class SelectTargetClusterTypePage extends WizardPageBase<CreateClusterWiz
 			});
 			let cardsContainer = view.modelBuilder.flexContainer().withItems(self.cards, { flex: '0 0 auto' }).withLayout({ flexFlow: 'row', alignItems: 'left' }).component();
 
-			let toolColumn: sqlops.TableColumn = {
+			let toolColumn: azdata.TableColumn = {
 				value: localize('bdc-create.toolNameColumnHeader', 'Tool'),
 				width: 100
 			};
-			let descriptionColumn: sqlops.TableColumn = {
+			let descriptionColumn: azdata.TableColumn = {
 				value: localize('bdc-create.toolDescriptionColumnHeader', 'Description'),
 				width: 200
 			};
-			let statusColumn: sqlops.TableColumn = {
+			let statusColumn: azdata.TableColumn = {
 				value: localize('bdc-create.toolStatusColumnHeader', 'Status'),
 				width: 100
 			};
 
-			self.toolsTable = view.modelBuilder.table().withProperties<sqlops.TableComponentProperties>({
+			self.toolsTable = view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
 				height: 150,
 				data: [],
 				columns: [toolColumn, descriptionColumn, statusColumn],
@@ -125,7 +125,7 @@ export class SelectTargetClusterTypePage extends WizardPageBase<CreateClusterWiz
 		this.wizard.wizardObject.registerNavigationValidator(() => {
 			if (this.isLoading) {
 				let messageText = localize('bdc-create.ToolsRefreshingText', 'Please wait while the required tools status is being refreshed.');
-				let messageLevel = sqlops.window.MessageLevel.Information;
+				let messageLevel = azdata.window.MessageLevel.Information;
 				this.wizard.wizardObject.message = {
 					level: messageLevel,
 					text: messageText
@@ -137,7 +137,7 @@ export class SelectTargetClusterTypePage extends WizardPageBase<CreateClusterWiz
 					localize('bdc-create.TargetClusterTypeNotSelectedText', 'Please select a target cluster type.') :
 					localize('bdc-create.MissingToolsText', 'Please install the required tools.');
 				this.wizard.wizardObject.message = {
-					level: sqlops.window.MessageLevel.Error,
+					level: azdata.window.MessageLevel.Error,
 					text: messageText
 				};
 			}
@@ -150,10 +150,10 @@ export class SelectTargetClusterTypePage extends WizardPageBase<CreateClusterWiz
 		this.refreshToolsButton.hidden = true;
 	}
 
-	private createCard(view: sqlops.ModelView, targetClusterTypeInfo: TargetClusterTypeInfo): sqlops.CardComponent {
+	private createCard(view: azdata.ModelView, targetClusterTypeInfo: TargetClusterTypeInfo): azdata.CardComponent {
 		let self = this;
-		let card = view.modelBuilder.card().withProperties<sqlops.CardProperties>({
-			cardType: sqlops.CardType.VerticalButton,
+		let card = view.modelBuilder.card().withProperties<azdata.CardProperties>({
+			cardType: azdata.CardType.VerticalButton,
 			iconPath: {
 				dark: self.wizard.context.asAbsolutePath(targetClusterTypeInfo.iconPath.dark),
 				light: self.wizard.context.asAbsolutePath(targetClusterTypeInfo.iconPath.light)

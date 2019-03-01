@@ -6,7 +6,7 @@
 'use strict';
 
 import * as vscode from 'vscode';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 /**
  * Wrapper class to act as a facade over VSCode and Data APIs and allow us to test / mock callbacks into
@@ -24,8 +24,8 @@ export class ApiWrapper {
 		return vscode.window.createTerminal(options);
 	}
 
-	public getCurrentConnection(): Thenable<sqlops.connection.Connection> {
-		return sqlops.connection.getCurrentConnection();
+	public getCurrentConnection(): Thenable<azdata.connection.Connection> {
+		return azdata.connection.getCurrentConnection();
 	}
 
 	public getWorkspacePathFromUri(uri: vscode.Uri): string | undefined {
@@ -41,8 +41,8 @@ export class ApiWrapper {
 		return vscode.languages.registerCompletionItemProvider(selector, provider, ...triggerCharacters);
 	}
 
-	public registerTaskHandler(taskId: string, handler: (profile: sqlops.IConnectionProfile) => void): void {
-		sqlops.tasks.registerTask(taskId, handler);
+	public registerTaskHandler(taskId: string, handler: (profile: azdata.IConnectionProfile) => void): void {
+		azdata.tasks.registerTask(taskId, handler);
 	}
 
 	public showErrorMessage(message: string, ...items: string[]): Thenable<string | undefined> {
@@ -53,8 +53,8 @@ export class ApiWrapper {
 		return vscode.window.showOpenDialog(options);
 	}
 
-	public startBackgroundOperation(operationInfo: sqlops.BackgroundOperationInfo): void {
-		sqlops.tasks.startBackgroundOperation(operationInfo);
+	public startBackgroundOperation(operationInfo: azdata.BackgroundOperationInfo): void {
+		azdata.tasks.startBackgroundOperation(operationInfo);
 	}
 
 	/**

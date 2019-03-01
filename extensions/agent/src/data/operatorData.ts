@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { AgentUtils } from '../agentUtils';
 import { IAgentDialogData, AgentDialogMode } from '../interfaces';
 
@@ -29,7 +29,7 @@ export class OperatorData implements IAgentDialogData {
 	weekdayPagerStartTime: string;
 	weekdayPagerEndTime: string;
 
-	constructor(ownerUri:string, operatorInfo: sqlops.AgentOperatorInfo) {
+	constructor(ownerUri:string, operatorInfo: azdata.AgentOperatorInfo) {
 		this.ownerUri = ownerUri;
 
 		if (operatorInfo) {
@@ -50,7 +50,7 @@ export class OperatorData implements IAgentDialogData {
 		}
 	}
 
-	public toAgentOperatorInfo(): sqlops.AgentOperatorInfo {
+	public toAgentOperatorInfo(): azdata.AgentOperatorInfo {
 		return {
 			name: this.name,
 			id: this.id,
@@ -61,7 +61,7 @@ export class OperatorData implements IAgentDialogData {
 			lastPagerDate: this.lastPagerDate,
 			pagerAddress: this.pagerAddress,
 			categoryName: this.categoryName,
-			pagerDays: sqlops.WeekDays.weekDays, //this.pagerDays,
+			pagerDays: azdata.WeekDays.weekDays, //this.pagerDays,
 			saturdayPagerEndTime: this.saturdayPagerEndTime,
 			saturdayPagerStartTime: this.saturdayPagerStartTime,
 			sundayPagerEndTime: this.sundayPagerEndTime,

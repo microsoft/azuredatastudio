@@ -5,7 +5,7 @@
 'use strict';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { SelectOperationPage } from './pages/selectOperationpage';
 import { DeployConfigPage } from './pages/deployConfigPage';
 import { DeployPlanPage } from './pages/deployPlanPage';
@@ -20,10 +20,10 @@ import { BasePage } from './api/basePage';
 const localize = nls.loadMessageBundle();
 
 class Page {
-	wizardPage: sqlops.window.WizardPage;
+	wizardPage: azdata.window.WizardPage;
 	dacFxPage: BasePage;
 
-	constructor(wizardPage: sqlops.window.WizardPage) {
+	constructor(wizardPage: azdata.window.WizardPage) {
 		this.wizardPage = wizardPage;
 	}
 }
@@ -69,8 +69,8 @@ export enum ExportOperationPath {
 }
 
 export class DataTierApplicationWizard {
-	public wizard: sqlops.window.Wizard;
-	private connection: sqlops.connection.Connection;
+	public wizard: azdata.window.Wizard;
+	private connection: azdata.connection.Connection;
 	private model: DacFxDataModel;
 	public pages: Map<string, Page> = new Map<string, Page>();
 	public selectedOperation: Operation;
@@ -81,26 +81,26 @@ export class DataTierApplicationWizard {
 	public async start(p: any, ...args: any[]) {
 		this.model = <DacFxDataModel>{};
 
-		let profile = p ? <sqlops.IConnectionProfile>p.connectionProfile : undefined;
+		let profile = p ? <azdata.IConnectionProfile>p.connectionProfile : undefined;
 		if (profile) {
 			this.model.serverId = profile.id;
 			this.model.database = profile.databaseName;
 		}
 
-		this.connection = await sqlops.connection.getCurrentConnection();
+		this.connection = await azdata.connection.getCurrentConnection();
 		if (!this.connection) {
-			this.connection = await sqlops.connection.openConnectionDialog();
+			this.connection = await azdata.connection.openConnectionDialog();
 		}
 
-		this.wizard = sqlops.window.createWizard('Data-tier Application Wizard');
-		let selectOperationWizardPage = sqlops.window.createWizardPage(localize('dacFx.selectOperationPageName', 'Select an Operation'));
-		let deployConfigWizardPage = sqlops.window.createWizardPage(localize('dacFx.deployConfigPageName', 'Select Deploy Dacpac Settings'));
-		let deployPlanWizardPage = sqlops.window.createWizardPage(localize('dacFx.deployPlanPage', 'Review the deploy plan'));
-		let deployActionWizardPage = sqlops.window.createWizardPage(localize('dacFx.deployActionPageName', 'Select Action'));
-		let summaryWizardPage = sqlops.window.createWizardPage(localize('dacFx.summaryPageName', 'Summary'));
-		let extractConfigWizardPage = sqlops.window.createWizardPage(localize('dacFx.extractConfigPageName', 'Select Extract Dacpac Settings'));
-		let importConfigWizardPage = sqlops.window.createWizardPage(localize('dacFx.importConfigPageName', 'Select Import Bacpac Settings'));
-		let exportConfigWizardPage = sqlops.window.createWizardPage(localize('dacFx.exportConfigPageName', 'Select Export Bacpac Settings'));
+		this.wizard = azdata.window.createWizard('Data-tier Application Wizard');
+		let selectOperationWizardPage = azdata.window.createWizardPage(localize('dacFx.selectOperationPageName', 'Select an Operation'));
+		let deployConfigWizardPage = azdata.window.createWizardPage(localize('dacFx.deployConfigPageName', 'Select Deploy Dacpac Settings'));
+		let deployPlanWizardPage = azdata.window.createWizardPage(localize('dacFx.deployPlanPage', 'Review the deploy plan'));
+		let deployActionWizardPage = azdata.window.createWizardPage(localize('dacFx.deployActionPageName', 'Select Action'));
+		let summaryWizardPage = azdata.window.createWizardPage(localize('dacFx.summaryPageName', 'Summary'));
+		let extractConfigWizardPage = azdata.window.createWizardPage(localize('dacFx.extractConfigPageName', 'Select Extract Dacpac Settings'));
+		let importConfigWizardPage = azdata.window.createWizardPage(localize('dacFx.importConfigPageName', 'Select Import Bacpac Settings'));
+		let exportConfigWizardPage = azdata.window.createWizardPage(localize('dacFx.exportConfigPageName', 'Select Export Bacpac Settings'));
 
 		this.pages.set('selectOperation', new Page(selectOperationWizardPage));
 		this.pages.set('deployConfig', new Page(deployConfigWizardPage));
@@ -190,7 +190,7 @@ export class DataTierApplicationWizard {
 		this.wizard.open();
 	}
 
-	public registerNavigationValidator(validator: (pageChangeInfo: sqlops.window.WizardPageChangeInfo) => boolean) {
+	public registerNavigationValidator(validator: (pageChangeInfo: azdata.window.WizardPageChangeInfo) => boolean) {
 		this.wizard.registerNavigationValidator(validator);
 	}
 
@@ -255,9 +255,9 @@ export class DataTierApplicationWizard {
 
 	private async deploy() {
 		let service = await DataTierApplicationWizard.getService(this.model.server.providerName);
-		let ownerUri = await sqlops.connection.getUriForConnection(this.model.server.connectionId);
+		let ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 
-		let result = await service.deployDacpac(this.model.filePath, this.model.database, this.model.upgradeExisting, ownerUri, sqlops.TaskExecutionMode.execute);
+		let result = await service.deployDacpac(this.model.filePath, this.model.database, this.model.upgradeExisting, ownerUri, azdata.TaskExecutionMode.execute);
 		if (!result || !result.success) {
 			vscode.window.showErrorMessage(
 				localize('alertData.deployErrorMessage', "Deploy failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
@@ -266,9 +266,9 @@ export class DataTierApplicationWizard {
 
 	private async extract() {
 		let service = await DataTierApplicationWizard.getService(this.model.server.providerName);
-		let ownerUri = await sqlops.connection.getUriForConnection(this.model.server.connectionId);
+		let ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 
-		let result = await service.extractDacpac(this.model.database, this.model.filePath, this.model.database, this.model.version, ownerUri, sqlops.TaskExecutionMode.execute);
+		let result = await service.extractDacpac(this.model.database, this.model.filePath, this.model.database, this.model.version, ownerUri, azdata.TaskExecutionMode.execute);
 		if (!result || !result.success) {
 			vscode.window.showErrorMessage(
 				localize('alertData.extractErrorMessage', "Extract failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
@@ -277,9 +277,9 @@ export class DataTierApplicationWizard {
 
 	private async export() {
 		let service = await DataTierApplicationWizard.getService(this.model.server.providerName);
-		let ownerUri = await sqlops.connection.getUriForConnection(this.model.server.connectionId);
+		let ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 
-		let result = await service.exportBacpac(this.model.database, this.model.filePath, ownerUri, sqlops.TaskExecutionMode.execute);
+		let result = await service.exportBacpac(this.model.database, this.model.filePath, ownerUri, azdata.TaskExecutionMode.execute);
 		if (!result || !result.success) {
 			vscode.window.showErrorMessage(
 				localize('alertData.exportErrorMessage', "Export failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
@@ -288,9 +288,9 @@ export class DataTierApplicationWizard {
 
 	private async import() {
 		let service = await DataTierApplicationWizard.getService(this.model.server.providerName);
-		let ownerUri = await sqlops.connection.getUriForConnection(this.model.server.connectionId);
+		let ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 
-		let result = await service.importBacpac(this.model.filePath, this.model.database, ownerUri, sqlops.TaskExecutionMode.execute);
+		let result = await service.importBacpac(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.execute);
 		if (!result || !result.success) {
 			vscode.window.showErrorMessage(
 				localize('alertData.importErrorMessage', "Import failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
@@ -303,14 +303,14 @@ export class DataTierApplicationWizard {
 		}
 
 		let service = await DataTierApplicationWizard.getService(this.model.server.providerName);
-		let ownerUri = await sqlops.connection.getUriForConnection(this.model.server.connectionId);
+		let ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 		this.wizard.message = {
 			text: localize('dacfx.scriptGeneratingMessage', 'You can view the status of script generation in the Task History once the wizard is closed'),
-			level: sqlops.window.MessageLevel.Information,
+			level: azdata.window.MessageLevel.Information,
 			description: ''
 		};
 
-		let result = await service.generateDeployScript(this.model.filePath, this.model.database, this.model.scriptFilePath, ownerUri, sqlops.TaskExecutionMode.execute);
+		let result = await service.generateDeployScript(this.model.filePath, this.model.database, this.model.scriptFilePath, ownerUri, azdata.TaskExecutionMode.execute);
 		if (!result || !result.success) {
 			vscode.window.showErrorMessage(
 				localize('alertData.deployErrorMessage', "Deploy failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
@@ -360,9 +360,9 @@ export class DataTierApplicationWizard {
 
 	public async generateDeployPlan(): Promise<string> {
 		let service = await DataTierApplicationWizard.getService(this.model.server.providerName);
-		let ownerUri = await sqlops.connection.getUriForConnection(this.model.server.connectionId);
+		let ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 
-		let result = await service.generateDeployPlan(this.model.filePath, this.model.database, ownerUri, sqlops.TaskExecutionMode.execute);
+		let result = await service.generateDeployPlan(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.execute);
 
 		if (!result || !result.success) {
 			vscode.window.showErrorMessage(
@@ -372,8 +372,8 @@ export class DataTierApplicationWizard {
 		return result.report;
 	}
 
-	private static async getService(providerName: string): Promise<sqlops.DacFxServicesProvider> {
-		let service = sqlops.dataprotocol.getProvider<sqlops.DacFxServicesProvider>(providerName, sqlops.DataProviderType.DacFxServicesProvider);
+	private static async getService(providerName: string): Promise<azdata.DacFxServicesProvider> {
+		let service = azdata.dataprotocol.getProvider<azdata.DacFxServicesProvider>(providerName, azdata.DataProviderType.DacFxServicesProvider);
 		return service;
 	}
 }

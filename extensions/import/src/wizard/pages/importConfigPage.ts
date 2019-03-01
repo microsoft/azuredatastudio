@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
 import * as path from 'path';
@@ -17,14 +17,14 @@ const localize = nls.loadMessageBundle();
 
 export class ImportConfigPage extends DacFxConfigPage {
 
-	protected readonly wizardPage: sqlops.window.WizardPage;
+	protected readonly wizardPage: azdata.window.WizardPage;
 	protected readonly instance: DataTierApplicationWizard;
 	protected readonly model: DacFxDataModel;
-	protected readonly view: sqlops.ModelView;
+	protected readonly view: azdata.ModelView;
 
-	private form: sqlops.FormContainer;
+	private form: azdata.FormContainer;
 
-	public constructor(instance: DataTierApplicationWizard, wizardPage: sqlops.window.WizardPage, model: DacFxDataModel, view: sqlops.ModelView) {
+	public constructor(instance: DataTierApplicationWizard, wizardPage: azdata.window.WizardPage, model: DacFxDataModel, view: azdata.ModelView) {
 		super(instance, wizardPage, model, view);
 		this.fileExtension = '.bacpac';
 	}
@@ -53,7 +53,7 @@ export class ImportConfigPage extends DacFxConfigPage {
 		return r1;
 	}
 
-	private async createFileBrowser(): Promise<sqlops.FormComponent> {
+	private async createFileBrowser(): Promise<azdata.FormComponent> {
 		this.createFileBrowserParts();
 
 		this.fileButton.onDidClick(async (click) => {

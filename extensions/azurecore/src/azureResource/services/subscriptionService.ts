@@ -5,7 +5,7 @@
 
 'use strict';
 
-import { Account } from 'sqlops';
+import { Account } from 'azdata';
 import { ServiceClientCredentials } from 'ms-rest';
 import { SubscriptionClient } from 'azure-arm-resource';
 

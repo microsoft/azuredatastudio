@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as os from 'os';
 import { WizardPageBase } from '../../wizardPageBase';
@@ -17,10 +17,10 @@ const localize = nls.loadMessageBundle();
 const ClusterRadioButtonGroupName = 'cluster';
 
 export class SelectExistingClusterPage extends WizardPageBase<CreateClusterWizard> {
-	private existingClusterControl: sqlops.FlexContainer;
-	private clusterContextsLabel: sqlops.TextComponent;
-	private errorLoadingClustersLabel: sqlops.TextComponent;
-	private clusterContextContainer: sqlops.DivContainer;
+	private existingClusterControl: azdata.FlexContainer;
+	private clusterContextsLabel: azdata.TextComponent;
+	private errorLoadingClustersLabel: azdata.TextComponent;
+	private clusterContextContainer: azdata.DivContainer;
 
 	constructor(wizard: CreateClusterWizard) {
 		super(localize('bdc-create.selectTargetClusterPageTitle', 'Where do you want to deploy this SQL Server big data cluster?'),
@@ -28,7 +28,7 @@ export class SelectExistingClusterPage extends WizardPageBase<CreateClusterWizar
 			wizard);
 	}
 
-	protected initialize(view: sqlops.ModelView): Thenable<void> {
+	protected initialize(view: azdata.ModelView): Thenable<void> {
 		this.initExistingClusterControl(view);
 		let formBuilder = view.modelBuilder.formContainer().withFormItems(
 			[
@@ -56,14 +56,14 @@ export class SelectExistingClusterPage extends WizardPageBase<CreateClusterWizar
 			if (!clusterSelected) {
 				this.wizard.wizardObject.message = {
 					text: localize('bdc-create.ClusterContextNotSelectedMessage', 'Please select a cluster context.'),
-					level: sqlops.window.MessageLevel.Error
+					level: azdata.window.MessageLevel.Error
 				};
 			}
 			return clusterSelected;
 		});
 	}
 
-	private initExistingClusterControl(view: sqlops.ModelView): void {
+	private initExistingClusterControl(view: azdata.ModelView): void {
 		let self = this;
 		let configFileLabel = view.modelBuilder.text().withProperties({ value: localize('bdc-create.kubeConfigFileLabelText', 'Kube config file path') }).component();
 		let configFileInput = view.modelBuilder.inputBox().withProperties({ width: '300px' }).component();
@@ -104,7 +104,7 @@ export class SelectExistingClusterPage extends WizardPageBase<CreateClusterWizar
 			let clusters = await self.wizard.model.loadClusters();
 			if (clusters.length !== 0) {
 				let options = clusters.map(cluster => {
-					let option = view.modelBuilder.radioButton().withProperties<sqlops.RadioButtonProperties>({
+					let option = view.modelBuilder.radioButton().withProperties<azdata.RadioButtonProperties>({
 						label: cluster.contextName,
 						checked: cluster.active,
 						name: ClusterRadioButtonGroupName

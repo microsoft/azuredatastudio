@@ -10,7 +10,7 @@ import * as should from 'should';
 import * as TypeMoq from 'typemoq';
 import * as path from 'path';
 import { ContentsManager, Contents } from '@jupyterlab/services';
-import { nb } from 'sqlops';
+import { nb } from 'azdata';
 import 'mocha';
 
 import { INotebook, CellTypes } from '../../contracts/content';
