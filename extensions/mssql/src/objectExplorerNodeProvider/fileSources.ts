@@ -11,9 +11,12 @@ import * as bytes from 'bytes';
 import * as https from 'https';
 import * as readline from 'readline';
 import * as os from 'os';
+import * as nls from 'vscode-nls';
 
 import * as constants from '../constants';
 import { WebHDFS, HdfsError } from './webhdfs';
+
+const localize = nls.loadMessageBundle();
 
 export function joinHdfsPath(parent: string, child: string): string {
 	if (parent === constants.hdfsRootPath) {
@@ -139,12 +142,12 @@ export class FileSourceFactory {
 }
 
 export class HdfsFileSource implements IFileSource {
-	constructor(private webHDFS: WebHDFS) {
+	constructor(private client: WebHDFS) {
 	}
 
 	public enumerateFiles(path: string): Promise<IFile[]> {
 		return new Promise((resolve, reject) => {
-			this.webHDFS.readdir(path, (error, files) => {
+			this.client.readdir(path, (error, files) => {
 				if (error) {
 					reject(error.message);
 				} else {
@@ -161,7 +164,7 @@ export class HdfsFileSource implements IFileSource {
 	public mkdir(dirName: string, remoteBasePath: string): Promise<void> {
 		return new Promise((resolve, reject) => {
 			let remotePath = joinHdfsPath(remoteBasePath, dirName);
-			this.webHDFS.mkdir(remotePath, undefined, (err) => {
+			this.client.mkdir(remotePath, undefined, (err) => {
 				if (err) {
 					reject(err);
 				} else {
@@ -172,23 +175,27 @@ export class HdfsFileSource implements IFileSource {
 	}
 
 	public createReadStream(path: string): fs.ReadStream {
-		return this.webHDFS.createReadStream(path);
+		return this.client.createReadStream(path);
 	}
 
 	public readFile(path: string, maxBytes?: number): Promise<Buffer> {
 		return new Promise((resolve, reject) => {
 			let error: HdfsError = undefined;
-			let remoteFileStream = this.webHDFS.createReadStream(path);
+			let remoteFileStream = this.client.createReadStream(path);
 			remoteFileStream.on('error', (err) => {
 				error = <HdfsError>err;
-				if (error.message.includes('Stream exceeded specified max') && maxBytes) {
-					error.message = `File exceeds max size of ${bytes(maxBytes)}`;
-				}
 				reject(error);
 			});
 
 			if (maxBytes) {
 				remoteFileStream = remoteFileStream.pipe(meter(maxBytes));
+				remoteFileStream.on('error', (err) => {
+					error = <HdfsError>err;
+					if (error.message.includes('Stream exceeded specified max')) {
+						error.message = localize('maxSizeReached', 'File exceeds max size of ${0}', bytes(maxBytes));
+					}
+					reject(error);
+				});
 			}
 
 			let data: any[] = [];
@@ -207,7 +214,7 @@ export class HdfsFileSource implements IFileSource {
 	public readFileLines(path: string, maxLines: number): Promise<Buffer> {
 		return new Promise((resolve, reject) => {
 			let lineReader = readline.createInterface({
-				input: this.webHDFS.createReadStream(path)
+				input: this.client.createReadStream(path)
 			});
 
 			let lineCount = 0;
@@ -239,7 +246,7 @@ export class HdfsFileSource implements IFileSource {
 			let remotePath = joinHdfsPath(remoteDirPath, fileName);
 
 			let error: HdfsError = undefined;
-			let writeStream = this.webHDFS.createWriteStream(remotePath);
+			let writeStream = this.client.createWriteStream(remotePath);
 			// API always calls finish, so catch error then handle exit in the finish event
 			writeStream.on('error', (err) => {
 				error = <HdfsError>err;
@@ -263,7 +270,7 @@ export class HdfsFileSource implements IFileSource {
 
 	public delete(path: string, recursive: boolean = false): Promise<void> {
 		return new Promise((resolve, reject) => {
-			this.webHDFS.rmdir(path, recursive, (error) => {
+			this.client.rmdir(path, recursive, (error) => {
 				if (error) {
 					reject(error);
 				} else {
@@ -275,7 +282,7 @@ export class HdfsFileSource implements IFileSource {
 
 	public exists(path: string): Promise<boolean> {
 		return new Promise((resolve, reject) => {
-			this.webHDFS.exists(path, (error, exists) => {
+			this.client.exists(path, (error, exists) => {
 				if (error) {
 					reject(error);
 				} else {

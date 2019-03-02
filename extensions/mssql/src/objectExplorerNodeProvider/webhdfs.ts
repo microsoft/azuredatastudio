@@ -136,9 +136,10 @@ export class WebHDFS {
 	private getErrorMessage(statusMessage: string, remoteExceptionMessage?: string, error?: any): string {
 		statusMessage = statusMessage === '' ? undefined : statusMessage;
 		remoteExceptionMessage = remoteExceptionMessage === '' ? undefined : remoteExceptionMessage;
+		let messageFromError: string = error ? (error['message'] || error.toString()) : undefined;
 		return statusMessage && remoteExceptionMessage ?
 			`${statusMessage} (${remoteExceptionMessage})` :
-			statusMessage || remoteExceptionMessage || (error && error.toString()) ||
+			statusMessage || remoteExceptionMessage || messageFromError ||
 				localize('webhdfs.unknownError', 'Unknown Error');
 	}
 
@@ -157,8 +158,8 @@ export class WebHDFS {
 		}
 		let remoteExceptionMessage: string = this.getRemoteExceptionMessage(responseBody);
 		let errorMessage: string = this.getErrorMessage(statusMessage, remoteExceptionMessage, error);
-		return new HdfsError(errorMessage, response.statusCode,
-			response.statusMessage, remoteExceptionMessage, error);
+		return new HdfsError(errorMessage, response && response.statusCode,
+			response && response.statusMessage, remoteExceptionMessage, error);
 	}
 
 	/**
@@ -551,6 +552,11 @@ export class WebHDFS {
 				canResume = true; // Enable resume
 				stream.pipe(upload);
 				stream.resume();
+			}
+
+			if (error && !response) {
+				// request failed, and req is not accessible in this case.
+				throw this.parseError(undefined, undefined, error);
 			}
 
 			if (error || this.isError(response)) {

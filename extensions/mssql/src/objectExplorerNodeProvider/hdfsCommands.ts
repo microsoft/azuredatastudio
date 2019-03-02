@@ -158,7 +158,7 @@ export class MkDirCommand extends ProgressCommand {
 			}
 		} catch (err) {
 			this.apiWrapper.showErrorMessage(
-				localize('uploadError', 'Error on uploading files: {0}', utils.getErrorMessage(err, true)));
+				localize('mkDirError', 'Error on making directory: {0}', utils.getErrorMessage(err, true)));
 		}
 	}
 
