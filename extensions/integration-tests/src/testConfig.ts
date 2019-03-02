@@ -66,6 +66,16 @@ var TestingServers: TestServerProfile[] = [
 			database: 'master',
 			provider: ConnectionProvider.SQLServer,
 			version: '2017'
+		}),
+	new TestServerProfile(
+		{
+			serverName: process.env.BACKEND_HOSTNAME + ',' + process.env.BACKEND_PORT,
+			userName:  process.env.BACKEND_USERNAME,
+			password:  process.env.BACKEND_PWD,
+			authenticationType: AuthenticationType.SqlLogin,
+			database: 'master',
+			provider: ConnectionProvider.SQLServer,
+			version: '2019'
 		})
 ];
 
@@ -81,6 +91,11 @@ function getEnumMappingEntry(mapping: any, enumValue: any): INameDisplayNamePair
 export async function getDefaultTestingServer(): Promise<TestServerProfile> {
 	let servers = await getTestingServers();
 	return servers[0];
+}
+
+export async function getBdcServer(): Promise<TestServerProfile> {
+	let servers = await getTestingServers();
+	return servers.filter(s => s.version === '2019')[0];
 }
 
 export async function getTestingServers(): Promise<TestServerProfile[]> {
