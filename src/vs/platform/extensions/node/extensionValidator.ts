@@ -209,7 +209,7 @@ export interface IReducedExtensionDescription {
 	engines: {
 		vscode: string;
 		// {{SQL CARBON EDIT}}
-		sqlops?: string;
+		azdata?: string;
 	};
 	main?: string;
 }
@@ -222,12 +222,13 @@ export function isValidExtensionVersion(version: string, extensionDesc: IReduced
 	}
 
 	// {{SQL CARBON EDIT}}
-	return (extensionDesc.engines.sqlops && extensionDesc.engines.sqlops === '*') || isVersionValid(version, extensionDesc.engines.sqlops, notices);
+	return (extensionDesc.engines.azdata && extensionDesc.engines.azdata === '*') || isVersionValid(version, extensionDesc.engines.azdata, notices);
 }
 
-export function isEngineValid(engine: string): boolean {
+// {{SQL CARBON}}
+export function isEngineValid(engine: string, version: string = pkg.version): boolean {
 	// TODO@joao: discuss with alex '*' doesn't seem to be a valid engine version
-	return engine === '*' || isVersionValid(pkg.version, engine);
+	return engine === '*' || isVersionValid(version, engine);
 }
 
 export function isVersionValid(currentVersion: string, requestedVersion: string, notices: string[] = []): boolean {
