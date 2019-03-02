@@ -155,6 +155,7 @@ export class CustomTreeView extends Disposable implements ITreeView {
 		private id: string,
 		private container: ViewContainer,
 		@IExtensionService private extensionService: IExtensionService,
+		@IContextKeyService private contextKeyService: IContextKeyService,
 		@IWorkbenchThemeService private themeService: IWorkbenchThemeService,
 		@IInstantiationService private instantiationService: IInstantiationService,
 		@ICommandService private commandService: ICommandService,
