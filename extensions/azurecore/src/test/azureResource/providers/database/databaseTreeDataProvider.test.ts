@@ -7,7 +7,7 @@
 
 import * as should from 'should';
 import * as TypeMoq from 'typemoq';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import 'mocha';
 
@@ -24,7 +24,7 @@ let mockApiWrapper: TypeMoq.IMock<ApiWrapper>;
 let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
 
 // Mock test data
-const mockAccount: sqlops.Account = {
+const mockAccount: azdata.Account = {
 	key: {
 		accountId: 'mock_account',
 		providerId: 'mock_provider'
@@ -103,7 +103,7 @@ describe('AzureResourceDatabaseTreeDataProvider.getChildren', function(): void {
 		mockApiWrapper = TypeMoq.Mock.ofType<ApiWrapper>();
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 
-		mockApiWrapper.setup((o) => o.getSecurityToken(mockAccount, sqlops.AzureResource.ResourceManagement)).returns(() => Promise.resolve(mockTokens));
+		mockApiWrapper.setup((o) => o.getSecurityToken(mockAccount, azdata.AzureResource.ResourceManagement)).returns(() => Promise.resolve(mockTokens));
 		mockDatabaseService.setup((o) => o.getDatabases(mockSubscription, TypeMoq.It.isAny())).returns(() => Promise.resolve(mockDatabases));
 		mockExtensionContext.setup((o) => o.asAbsolutePath(TypeMoq.It.isAnyString())).returns(() => TypeMoq.It.isAnyString());
 	});

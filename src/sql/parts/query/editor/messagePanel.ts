@@ -10,7 +10,7 @@ import QueryRunner from 'sql/platform/query/common/queryRunner';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
 import { $ } from 'sql/base/browser/builder';
 
-import { IResultMessage, ISelectionData } from 'sqlops';
+import { IResultMessage, ISelectionData } from 'azdata';
 
 import { ViewletPanel, IViewletPanelOptions } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { IDataSource, ITree, IRenderer, ContextMenuEvent } from 'vs/base/parts/tree/browser/tree';

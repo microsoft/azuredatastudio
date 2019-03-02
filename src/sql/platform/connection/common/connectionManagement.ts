@@ -7,7 +7,7 @@
 
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { Event } from 'vs/base/common/event';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { IConnectionProfileGroup, ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
@@ -76,7 +76,7 @@ export interface IConnectionManagementService {
 	onConnect: Event<IConnectionParams>;
 	onDisconnect: Event<IConnectionParams>;
 	onConnectionChanged: Event<IConnectionParams>;
-	onLanguageFlavorChanged: Event<sqlops.DidChangeLanguageFlavorParams>;
+	onLanguageFlavorChanged: Event<azdata.DidChangeLanguageFlavorParams>;
 
 	/**
 	 * Opens the connection dialog to create new connection
@@ -119,11 +119,11 @@ export interface IConnectionManagementService {
 	/**
 	 * Adds the successful connection to MRU and send the connection error back to the connection handler for failed connections
 	 */
-	onConnectionComplete(handle: number, connectionInfoSummary: sqlops.ConnectionInfoSummary): void;
+	onConnectionComplete(handle: number, connectionInfoSummary: azdata.ConnectionInfoSummary): void;
 
 	onIntelliSenseCacheComplete(handle: number, connectionUri: string): void;
 
-	onConnectionChangedNotification(handle: number, changedConnInfo: sqlops.ChangedConnectionInfo);
+	onConnectionChangedNotification(handle: number, changedConnInfo: azdata.ChangedConnectionInfo);
 
 	getConnectionGroups(providers?: string[]): ConnectionProfileGroup[];
 
@@ -145,7 +145,7 @@ export interface IConnectionManagementService {
 
 	deleteConnectionGroup(group: ConnectionProfileGroup): Promise<boolean>;
 
-	getAdvancedProperties(): sqlops.ConnectionOption[];
+	getAdvancedProperties(): azdata.ConnectionOption[];
 
 	getConnectionUri(connectionProfile: IConnectionProfile): string;
 
@@ -177,12 +177,12 @@ export interface IConnectionManagementService {
 
 	addSavedPassword(connectionProfile: IConnectionProfile): Promise<IConnectionProfile>;
 
-	listDatabases(connectionUri: string): Thenable<sqlops.ListDatabasesResult>;
+	listDatabases(connectionUri: string): Thenable<azdata.ListDatabasesResult>;
 
 	/**
 	 * Register a connection provider
 	 */
-	registerProvider(providerId: string, provider: sqlops.ConnectionProvider): void;
+	registerProvider(providerId: string, provider: azdata.ConnectionProvider): void;
 
 	editGroup(group: ConnectionProfileGroup): Promise<void>;
 
@@ -261,7 +261,7 @@ export interface IConnectionManagementService {
 	 * @param {string} profileId The id of the connection profile to get the password for
 	 * @returns ServerInfo
 	 */
-	getServerInfo(profileId: string): sqlops.ServerInfo;
+	getServerInfo(profileId: string): azdata.ServerInfo;
 
 	/**
 	 * Get the connection string for the provided connection ID
@@ -271,7 +271,7 @@ export interface IConnectionManagementService {
 	/**
 	 * Serialize connection string with optional provider
 	 */
-	buildConnectionInfo(connectionString: string, provider?: string): Thenable<sqlops.ConnectionInfo>;
+	buildConnectionInfo(connectionString: string, provider?: string): Thenable<azdata.ConnectionInfo>;
 
 	providerRegistered(providerId: string): boolean;
 	/**
@@ -292,7 +292,7 @@ export interface INewConnectionParams {
 	connectionType: ConnectionType;
 	input?: IConnectableInput;
 	runQueryOnCompletion?: RunQueryOnConnectionMode;
-	querySelection?: sqlops.ISelectionData;
+	querySelection?: azdata.ISelectionData;
 	showDashboard?: boolean;
 	providers?: string[];
 }

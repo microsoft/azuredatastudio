@@ -39,7 +39,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { EditUpdateCellResult } from 'sqlops';
+import { EditUpdateCellResult } from 'azdata';
 export const EDITDATA_SELECTOR: string = 'editdata-component';
 
 @Component({

@@ -10,7 +10,7 @@ import { MainController } from './mainController';
 import { fs } from './utility/fs';
 
 import { host } from './kubectl/host';
-import { sqlserverbigdataclusterchannel } from './kubectl/kubeChannel';
+import { sqlserverbigdataclusterchannel } from './kubectl/SqlServerBigDataClusterChannel';
 import { shell, Shell } from './utility/shell';
 import { CheckPresentMessageMode, create as kubectlCreate } from './kubectl/kubectl';
 import { installKubectl } from './installer/installer';

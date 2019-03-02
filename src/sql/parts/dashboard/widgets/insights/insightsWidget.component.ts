@@ -18,7 +18,7 @@ import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/common/insi
 import { insertValueRegex } from 'sql/workbench/services/insights/common/insightsDialogService';
 import { RunInsightQueryAction } from './actions';
 
-import { SimpleExecuteResult } from 'sqlops';
+import { SimpleExecuteResult } from 'azdata';
 
 import { Action } from 'vs/base/common/actions';
 import * as types from 'vs/base/common/types';

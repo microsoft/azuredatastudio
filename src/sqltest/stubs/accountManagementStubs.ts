@@ -5,7 +5,7 @@
 
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { Event } from 'vs/base/common/event';
 import { IAccountManagementService } from 'sql/platform/accountManagement/common/interfaces';
 import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/platform/accountManagement/common/eventTypes';
@@ -15,10 +15,10 @@ export class AccountManagementTestService implements IAccountManagementService {
 	_serviceBrand: any;
 
 	public get addAccountProviderEvent(): Event<AccountProviderAddedEventParams> { return () => { return undefined; }; }
-	public get removeAccountProviderEvent(): Event<sqlops.AccountProviderMetadata> { return () => { return undefined; }; }
+	public get removeAccountProviderEvent(): Event<azdata.AccountProviderMetadata> { return () => { return undefined; }; }
 	public get updateAccountListEvent(): Event<UpdateAccountListEventParams> { return () => { return undefined; }; }
 
-	accountUpdated(account: sqlops.Account): Thenable<void> {
+	accountUpdated(account: azdata.Account): Thenable<void> {
 		return undefined;
 	}
 
@@ -42,23 +42,23 @@ export class AccountManagementTestService implements IAccountManagementService {
 		return undefined;
 	}
 
-	getAccountProviderMetadata(): Thenable<sqlops.AccountProviderMetadata[]> {
+	getAccountProviderMetadata(): Thenable<azdata.AccountProviderMetadata[]> {
 		return undefined;
 	}
 
-	getAccountsForProvider(providerId: string): Thenable<sqlops.Account[]> {
+	getAccountsForProvider(providerId: string): Thenable<azdata.Account[]> {
 		return undefined;
 	}
 
-	getSecurityToken(account: sqlops.Account, resource: sqlops.AzureResource): Thenable<{}> {
+	getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Thenable<{}> {
 		return undefined;
 	}
 
-	removeAccount(accountKey: sqlops.AccountKey): Thenable<boolean> {
+	removeAccount(accountKey: azdata.AccountKey): Thenable<boolean> {
 		return undefined;
 	}
 
-	refreshAccount(account: sqlops.Account): Thenable<sqlops.Account> {
+	refreshAccount(account: azdata.Account): Thenable<azdata.Account> {
 		return undefined;
 	}
 
@@ -66,7 +66,7 @@ export class AccountManagementTestService implements IAccountManagementService {
 		return undefined;
 	}
 
-	registerProvider(providerMetadata: sqlops.AccountProviderMetadata, provider: sqlops.AccountProvider): void {
+	registerProvider(providerMetadata: azdata.AccountProviderMetadata, provider: azdata.AccountProvider): void {
 		return undefined;
 	}
 
@@ -74,33 +74,33 @@ export class AccountManagementTestService implements IAccountManagementService {
 		return undefined;
 	}
 
-	unregisterProvider(providerMetadata: sqlops.AccountProviderMetadata): void {
+	unregisterProvider(providerMetadata: azdata.AccountProviderMetadata): void {
 		return undefined;
 	}
 }
 
-export class AccountProviderStub implements sqlops.AccountProvider {
+export class AccountProviderStub implements azdata.AccountProvider {
 	autoOAuthCancelled(): Thenable<void> {
 		return Promise.resolve();
 	}
 
-	clear(account: sqlops.AccountKey): Thenable<void> {
+	clear(account: azdata.AccountKey): Thenable<void> {
 		return Promise.resolve();
 	}
 
-	getSecurityToken(account: sqlops.Account, resource: sqlops.AzureResource): Thenable<{}> {
+	getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Thenable<{}> {
 		return Promise.resolve({});
 	}
 
-	initialize(storedAccounts: sqlops.Account[]): Thenable<sqlops.Account[]> {
+	initialize(storedAccounts: azdata.Account[]): Thenable<azdata.Account[]> {
 		return Promise.resolve(storedAccounts);
 	}
 
-	prompt(): Thenable<sqlops.Account> {
+	prompt(): Thenable<azdata.Account> {
 		return Promise.resolve(undefined);
 	}
 
-	refresh(account: sqlops.Account): Thenable<sqlops.Account> {
+	refresh(account: azdata.Account): Thenable<azdata.Account> {
 		return Promise.resolve(account);
 	}
 }

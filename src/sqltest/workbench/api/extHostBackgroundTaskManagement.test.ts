@@ -5,7 +5,7 @@
 
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as assert from 'assert';
 import { Mock, It, Times } from 'typemoq';
 import { ExtHostBackgroundTaskManagement, TaskStatus } from 'sql/workbench/api/node/extHostBackgroundTaskManagement';
@@ -21,8 +21,8 @@ suite('ExtHostBackgroundTaskManagement Tests', () => {
 	setup(() => {
 		mockProxy = Mock.ofInstance(<MainThreadBackgroundTaskManagementShape>{
 
-			$registerTask: (taskInfo: sqlops.TaskInfo) => nothing,
-			$updateTask: (taskProgressInfo: sqlops.TaskProgressInfo) => nothing
+			$registerTask: (taskInfo: azdata.TaskInfo) => nothing,
+			$updateTask: (taskProgressInfo: azdata.TaskProgressInfo) => nothing
 		});
 		let mainContext = <IMainContext>{
 			getProxy: proxyType => mockProxy.object
@@ -35,12 +35,12 @@ suite('ExtHostBackgroundTaskManagement Tests', () => {
 	});
 
 	test('RegisterTask should successfully create background task and update status', () => {
-		let operationInfo: sqlops.BackgroundOperationInfo = {
+		let operationInfo: azdata.BackgroundOperationInfo = {
 			connection: undefined,
 			description: 'description',
 			displayName: 'displayName',
 			isCancelable: true,
-			operation: (op: sqlops.BackgroundOperation) => { op.updateStatus(TaskStatus.Succeeded); },
+			operation: (op: azdata.BackgroundOperation) => { op.updateStatus(TaskStatus.Succeeded); },
 			operationId: operationId
 		};
 		extHostBackgroundTaskManagement.$registerTask(operationInfo);
@@ -56,12 +56,12 @@ suite('ExtHostBackgroundTaskManagement Tests', () => {
 	});
 
 	test('Canceling the task should notify the extension', () => {
-		let operationInfo: sqlops.BackgroundOperationInfo = {
+		let operationInfo: azdata.BackgroundOperationInfo = {
 			connection: undefined,
 			description: 'description',
 			displayName: 'displayName',
 			isCancelable: true,
-			operation: (op: sqlops.BackgroundOperation) => {
+			operation: (op: azdata.BackgroundOperation) => {
 				op.onCanceled(() => {
 					op.updateStatus(TaskStatus.Canceled);
 				});
@@ -76,12 +76,12 @@ suite('ExtHostBackgroundTaskManagement Tests', () => {
 	});
 
 	test('RegisterTask should assign unique id to the operation is not assigned', () => {
-		let operationInfo: sqlops.BackgroundOperationInfo = {
+		let operationInfo: azdata.BackgroundOperationInfo = {
 			connection: undefined,
 			description: 'description',
 			displayName: 'displayName',
 			isCancelable: true,
-			operation: (op: sqlops.BackgroundOperation) => { op.updateStatus(TaskStatus.Succeeded); },
+			operation: (op: azdata.BackgroundOperation) => { op.updateStatus(TaskStatus.Succeeded); },
 			operationId: undefined
 		};
 		extHostBackgroundTaskManagement.$registerTask(operationInfo);
@@ -91,12 +91,12 @@ suite('ExtHostBackgroundTaskManagement Tests', () => {
 	});
 
 	test('RegisterTask should fail given id of an existing operation', () => {
-		let operationInfo: sqlops.BackgroundOperationInfo = {
+		let operationInfo: azdata.BackgroundOperationInfo = {
 			connection: undefined,
 			description: 'description',
 			displayName: 'displayName',
 			isCancelable: true,
-			operation: (op: sqlops.BackgroundOperation) => { op.updateStatus(TaskStatus.Succeeded); },
+			operation: (op: azdata.BackgroundOperation) => { op.updateStatus(TaskStatus.Succeeded); },
 			operationId: operationId
 		};
 		extHostBackgroundTaskManagement.$registerTask(operationInfo);

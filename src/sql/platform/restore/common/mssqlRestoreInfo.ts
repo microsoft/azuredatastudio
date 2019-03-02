@@ -5,12 +5,12 @@
 
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
-export class MssqlRestoreInfo implements sqlops.RestoreInfo {
+export class MssqlRestoreInfo implements azdata.RestoreInfo {
 
 	options: { [name: string]: any };
-	taskExecutionMode: sqlops.TaskExecutionMode;
+	taskExecutionMode: azdata.TaskExecutionMode;
 
 	public constructor() {
 		this.options = {};

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IResourceProviderService } from 'sql/workbench/services/resourceProvider/common/resourceProviderService';
 import { dispose, IDisposable } from 'vs/base/common/lifecycle';
@@ -20,7 +20,7 @@ import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostC
 
 @extHostNamedCustomer(SqlMainContext.MainThreadResourceProvider)
 export class MainThreadResourceProvider implements MainThreadResourceProviderShape {
-	private _providerMetadata: { [handle: number]: sqlops.AccountProviderMetadata };
+	private _providerMetadata: { [handle: number]: azdata.AccountProviderMetadata };
 	private _proxy: ExtHostResourceProviderShape;
 	private _toDispose: IDisposable[];
 
@@ -35,15 +35,15 @@ export class MainThreadResourceProvider implements MainThreadResourceProviderSha
 		this._toDispose = [];
 	}
 
-	public $registerResourceProvider(providerMetadata: sqlops.ResourceProviderMetadata, handle: number): Thenable<any> {
+	public $registerResourceProvider(providerMetadata: azdata.ResourceProviderMetadata, handle: number): Thenable<any> {
 		let self = this;
 
 		// Create the account provider that interfaces with the extension via the proxy and register it
-		let resourceProvider: sqlops.ResourceProvider = {
-			createFirewallRule(account: sqlops.Account, firewallruleInfo: sqlops.FirewallRuleInfo): Thenable<sqlops.CreateFirewallRuleResponse> {
+		let resourceProvider: azdata.ResourceProvider = {
+			createFirewallRule(account: azdata.Account, firewallruleInfo: azdata.FirewallRuleInfo): Thenable<azdata.CreateFirewallRuleResponse> {
 				return self._proxy.$createFirewallRule(handle, account, firewallruleInfo);
 			},
-			handleFirewallRule(errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<sqlops.HandleFirewallRuleResponse> {
+			handleFirewallRule(errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<azdata.HandleFirewallRuleResponse> {
 				return self._proxy.$handleFirewallRule(handle, errorCode, errorMessage, connectionTypeId);
 			}
 		};
