@@ -6,7 +6,7 @@
 'use strict';
 
 import * as constants from '../constants';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as events from 'events';
 import * as nls from 'vscode-nls';
 import * as path from 'path';
@@ -27,7 +27,7 @@ export class AzureAccountProviderService implements vscode.Disposable {
 	// MEMBER VARIABLES ////////////////////////////////////////////////////////
 	private _accountDisposals: { [accountProviderId: string]: vscode.Disposable };
 	private _accountProviders: { [accountProviderId: string]: AzureAccountProvider };
-	private _credentialProvider: sqlops.CredentialProvider;
+	private _credentialProvider: azdata.CredentialProvider;
 	private _configChangePromiseChain: Thenable<void>;
 	private _currentConfig: vscode.WorkspaceConfiguration;
 	private _event: events.EventEmitter;
@@ -55,7 +55,7 @@ export class AzureAccountProviderService implements vscode.Disposable {
 		// 2a) Store the credential provider for use later
 		// 2b) Register the configuration change handler
 		// 2c) Perform an initial config change handling
-		return sqlops.credentials.getProvider(AzureAccountProviderService.CredentialNamespace)
+		return azdata.credentials.getProvider(AzureAccountProviderService.CredentialNamespace)
 			.then(credProvider => {
 				self._credentialProvider = credProvider;
 
@@ -138,7 +138,7 @@ export class AzureAccountProviderService implements vscode.Disposable {
 				let tokenCache = new CredentialServiceTokenCache(self._credentialProvider, tokenCacheKey, tokenCachePath);
 				let accountProvider = new AzureAccountProvider(<AzureAccountProviderMetadata>provider.metadata, tokenCache);
 				self._accountProviders[provider.metadata.id] = accountProvider;
-				self._accountDisposals[provider.metadata.id] = sqlops.accounts.registerAccountProvider(provider.metadata, accountProvider);
+				self._accountDisposals[provider.metadata.id] = azdata.accounts.registerAccountProvider(provider.metadata, accountProvider);
 				resolve();
 			} catch (e) {
 				console.error(`Failed to register account provider: ${e}`);

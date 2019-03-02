@@ -5,7 +5,7 @@
 'use strict';
 
 import { SqlExtHostContext, SqlMainContext, ExtHostConnectionManagementShape, MainThreadConnectionManagementShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
@@ -44,11 +44,11 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 		this._toDispose = dispose(this._toDispose);
 	}
 
-	public $getActiveConnections(): Thenable<sqlops.connection.Connection[]> {
+	public $getActiveConnections(): Thenable<azdata.connection.Connection[]> {
 		return Promise.resolve(this._connectionManagementService.getActiveConnections().map(profile => this.convertConnection(profile)));
 	}
 
-	public $getCurrentConnection(): Thenable<sqlops.connection.Connection> {
+	public $getCurrentConnection(): Thenable<azdata.connection.Connection> {
 		return Promise.resolve(this.convertConnection(TaskUtilities.getCurrentGlobalConnection(this._objectExplorerService, this._connectionManagementService, this._workbenchEditorService, true)));
 	}
 
@@ -56,11 +56,11 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 		return Promise.resolve(this._connectionManagementService.getActiveConnectionCredentials(connectionId));
 	}
 
-	public $getServerInfo(connectionId: string): Thenable<sqlops.ServerInfo> {
+	public $getServerInfo(connectionId: string): Thenable<azdata.ServerInfo> {
 		return Promise.resolve(this._connectionManagementService.getServerInfo(connectionId));
 	}
 
-	public async $openConnectionDialog(providers: string[], initialConnectionProfile?: IConnectionProfile, connectionCompletionOptions?: sqlops.IConnectionCompletionOptions): Promise<sqlops.connection.Connection> {
+	public async $openConnectionDialog(providers: string[], initialConnectionProfile?: IConnectionProfile, connectionCompletionOptions?: azdata.IConnectionCompletionOptions): Promise<azdata.connection.Connection> {
 		let connectionProfile = await this._connectionDialogService.openDialogAndWait(this._connectionManagementService, { connectionType: 1, providers: providers }, initialConnectionProfile);
 		const connection = connectionProfile ? {
 			connectionId: connectionProfile.id,
@@ -97,12 +97,12 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 		return Promise.resolve(this._connectionManagementService.getConnectionUriFromId(connectionId));
 	}
 
-	private convertConnection(profile: IConnectionProfile): sqlops.connection.Connection {
+	private convertConnection(profile: IConnectionProfile): azdata.connection.Connection {
 		if (!profile) {
 			return undefined;
 		}
 		profile = this._connectionManagementService.removeConnectionProfileCredentials(profile);
-		let connection: sqlops.connection.Connection = {
+		let connection: azdata.connection.Connection = {
 			providerName: profile.providerName,
 			connectionId: profile.id,
 			options: profile.options
@@ -110,7 +110,7 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 		return connection;
 	}
 
-	public $connect(connectionProfile: IConnectionProfile): Thenable<sqlops.ConnectionResult> {
+	public $connect(connectionProfile: IConnectionProfile): Thenable<azdata.ConnectionResult> {
 		let profile = new ConnectionProfile(this._capabilitiesService, connectionProfile);
 		profile.id = generateUuid();
 		return this._connectionManagementService.connectAndSaveProfile(profile, undefined, {
@@ -120,7 +120,7 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 			showConnectionDialogOnError: true,
 			showFirewallRuleOnError: true
 		}).then((result) => {
-			return <sqlops.ConnectionResult>{
+			return <azdata.ConnectionResult>{
 				connected: result.connected,
 				connectionId: result.connected ? profile.id : undefined,
 				errorCode: result.errorCode,

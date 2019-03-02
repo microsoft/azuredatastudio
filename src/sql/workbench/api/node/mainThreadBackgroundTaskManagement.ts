@@ -12,7 +12,7 @@ import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 import { Disposable } from 'vs/base/common/lifecycle';
 
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 export enum TaskStatus {
 	NotStarted = 0,
@@ -41,12 +41,12 @@ export class MainThreadBackgroundTaskManagement extends Disposable implements Ma
 		}));
 	}
 
-	$registerTask(taskInfo: sqlops.TaskInfo): void {
+	$registerTask(taskInfo: azdata.TaskInfo): void {
 		this._taskService.createNewTask(taskInfo);
 		this._proxy.$onTaskRegistered(taskInfo.taskId);
 	}
 
-	$updateTask(taskProgressInfo: sqlops.TaskProgressInfo): void {
+	$updateTask(taskProgressInfo: azdata.TaskProgressInfo): void {
 		this._taskService.updateTask(taskProgressInfo);
 	}
 }

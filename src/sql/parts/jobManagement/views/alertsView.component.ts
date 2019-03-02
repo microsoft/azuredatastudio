@@ -14,7 +14,7 @@ import 'vs/css!sql/base/browser/ui/table/media/table';
 
 import * as dom from 'vs/base/browser/dom';
 import * as nls from 'vs/nls';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnInit, OnDestroy } from '@angular/core';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { Table } from 'sql/base/browser/ui/table/table';
@@ -72,7 +72,7 @@ export class AlertsViewComponent extends JobManagementView implements OnInit, On
 	private _didTabChange: boolean;
 	@ViewChild('jobalertsgrid') _gridEl: ElementRef;
 
-	public alerts: sqlops.AgentAlertInfo[];
+	public alerts: azdata.AgentAlertInfo[];
 	public contextAction = NewAlertAction;
 
 	constructor(
@@ -181,7 +181,7 @@ export class AlertsViewComponent extends JobManagementView implements OnInit, On
 		}
 	}
 
-	private onAlertsAvailable(alerts: sqlops.AgentAlertInfo[]) {
+	private onAlertsAvailable(alerts: azdata.AgentAlertInfo[]) {
 		let items: any = alerts.map((item) => {
 			return {
 				id: item.id,

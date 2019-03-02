@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 
 import { IComponent, IComponentDescriptor, IModelStore } from 'sql/parts/modelComponents/interfaces';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { ContainerBase } from 'sql/parts/modelComponents/componentBase';
@@ -19,7 +19,7 @@ import { ModelComponentWrapper } from 'sql/parts/modelComponents/modelComponentW
 import types = require('vs/base/common/types');
 
 class DivItem {
-	constructor(public descriptor: IComponentDescriptor, public config: sqlops.DivItemLayout) { }
+	constructor(public descriptor: IComponentDescriptor, public config: azdata.DivItemLayout) { }
 }
 
 @Component({
@@ -32,7 +32,7 @@ class DivItem {
 		</div>
 	`
 })
-export default class DivContainer extends ContainerBase<sqlops.DivItemLayout> implements IComponent, OnDestroy {
+export default class DivContainer extends ContainerBase<azdata.DivItemLayout> implements IComponent, OnDestroy {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 	@ViewChild('divContainer', { read: ElementRef }) divContainer;
@@ -59,7 +59,7 @@ export default class DivContainer extends ContainerBase<sqlops.DivItemLayout> im
 
 	/// IComponent implementation
 
-	public setLayout(layout: sqlops.DivLayout): void {
+	public setLayout(layout: azdata.DivLayout): void {
 		this._height = this.convertSize(layout.height);
 		this._width = this.convertSize(layout.width);
 		this.layout();
@@ -98,17 +98,17 @@ export default class DivContainer extends ContainerBase<sqlops.DivItemLayout> im
 
 	// CSS-bound properties
 	public get overflowY(): string {
-		return this.getPropertyOrDefault<sqlops.DivContainerProperties, any>((props) => props.overflowY, '');
+		return this.getPropertyOrDefault<azdata.DivContainerProperties, any>((props) => props.overflowY, '');
 	}
 	public set overflowY(newValue: string) {
-		this.setPropertyFromUI<sqlops.DivContainerProperties, any>((properties, newValue) => { properties.overflowY = newValue; }, newValue);
+		this.setPropertyFromUI<azdata.DivContainerProperties, any>((properties, newValue) => { properties.overflowY = newValue; }, newValue);
 	}
 
 	public get yOffsetChange(): number {
-		return this.getPropertyOrDefault<sqlops.DivContainerProperties, any>((props) => props.yOffsetChange, 0);
+		return this.getPropertyOrDefault<azdata.DivContainerProperties, any>((props) => props.yOffsetChange, 0);
 	}
 	public set yOffsetChange(newValue: number) {
-		this.setPropertyFromUI<sqlops.DivContainerProperties, any>((properties, newValue) => { properties.yOffsetChange = newValue; }, newValue);
+		this.setPropertyFromUI<azdata.DivContainerProperties, any>((properties, newValue) => { properties.yOffsetChange = newValue; }, newValue);
 	}
 
 	private getItemOrder(item: DivItem): number {

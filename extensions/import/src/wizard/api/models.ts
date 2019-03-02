@@ -4,10 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 export interface BaseDataModel {
-	server: sqlops.connection.Connection;
+	server: azdata.connection.Connection;
 	serverId: string;
 	database: string;
 }

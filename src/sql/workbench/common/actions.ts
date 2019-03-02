@@ -19,7 +19,7 @@ import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/co
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { IBackupUiService } from 'sql/workbench/services/backup/common/backupUiService';
 
-import { ObjectMetadata } from 'sqlops';
+import { ObjectMetadata } from 'azdata';
 
 import { Action } from 'vs/base/common/actions';
 import { IWindowsService } from 'vs/platform/windows/common/windows';

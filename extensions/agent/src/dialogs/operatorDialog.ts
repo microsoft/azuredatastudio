@@ -5,7 +5,7 @@
 
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { OperatorData } from '../data/operatorData';
 import * as nls from 'vscode-nls';
@@ -48,33 +48,33 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 	private readonly EditOperatorDialog = 'EditOperatorDialogOpened';
 
 	// UI Components
-	private generalTab: sqlops.window.DialogTab;
-	private notificationsTab: sqlops.window.DialogTab;
+	private generalTab: azdata.window.DialogTab;
+	private notificationsTab: azdata.window.DialogTab;
 
 	// General tab controls
-	private nameTextBox: sqlops.InputBoxComponent;
-	private enabledCheckBox: sqlops.CheckBoxComponent;
-	private emailNameTextBox: sqlops.InputBoxComponent;
-	private pagerEmailNameTextBox: sqlops.InputBoxComponent;
-	private pagerMondayCheckBox: sqlops.CheckBoxComponent;
-	private pagerTuesdayCheckBox: sqlops.CheckBoxComponent;
-	private pagerWednesdayCheckBox: sqlops.CheckBoxComponent;
-	private pagerThursdayCheckBox: sqlops.CheckBoxComponent;
-	private pagerFridayCheckBox: sqlops.CheckBoxComponent;
-	private pagerSaturdayCheckBox: sqlops.CheckBoxComponent;
-	private pagerSundayCheckBox: sqlops.CheckBoxComponent;
-	private weekdayPagerStartTimeInput: sqlops.InputBoxComponent;
-	private weekdayPagerEndTimeInput: sqlops.InputBoxComponent;
-	private saturdayPagerStartTimeInput: sqlops.InputBoxComponent;
-	private saturdayPagerEndTimeInput: sqlops.InputBoxComponent;
-	private sundayPagerStartTimeInput: sqlops.InputBoxComponent;
-	private sundayPagerEndTimeInput: sqlops.InputBoxComponent;
+	private nameTextBox: azdata.InputBoxComponent;
+	private enabledCheckBox: azdata.CheckBoxComponent;
+	private emailNameTextBox: azdata.InputBoxComponent;
+	private pagerEmailNameTextBox: azdata.InputBoxComponent;
+	private pagerMondayCheckBox: azdata.CheckBoxComponent;
+	private pagerTuesdayCheckBox: azdata.CheckBoxComponent;
+	private pagerWednesdayCheckBox: azdata.CheckBoxComponent;
+	private pagerThursdayCheckBox: azdata.CheckBoxComponent;
+	private pagerFridayCheckBox: azdata.CheckBoxComponent;
+	private pagerSaturdayCheckBox: azdata.CheckBoxComponent;
+	private pagerSundayCheckBox: azdata.CheckBoxComponent;
+	private weekdayPagerStartTimeInput: azdata.InputBoxComponent;
+	private weekdayPagerEndTimeInput: azdata.InputBoxComponent;
+	private saturdayPagerStartTimeInput: azdata.InputBoxComponent;
+	private saturdayPagerEndTimeInput: azdata.InputBoxComponent;
+	private sundayPagerStartTimeInput: azdata.InputBoxComponent;
+	private sundayPagerEndTimeInput: azdata.InputBoxComponent;
 
 	// Notification tab controls
-	private alertsTable: sqlops.TableComponent;
+	private alertsTable: azdata.TableComponent;
 	private isEdit: boolean = false;
 
-	constructor(ownerUri: string, operatorInfo: sqlops.AgentOperatorInfo = undefined) {
+	constructor(ownerUri: string, operatorInfo: azdata.AgentOperatorInfo = undefined) {
 		super(
 			ownerUri,
 			new OperatorData(ownerUri, operatorInfo),
@@ -83,9 +83,9 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 		this.dialogName = this.isEdit ? this.EditOperatorDialog : this.NewOperatorDialog;
 	}
 
-	protected async initializeDialog(dialog: sqlops.window.Dialog) {
-		this.generalTab = sqlops.window.createTab(OperatorDialog.GeneralTabText);
-		this.notificationsTab = sqlops.window.createTab(OperatorDialog.NotificationsTabText);
+	protected async initializeDialog(dialog: azdata.window.Dialog) {
+		this.generalTab = azdata.window.createTab(OperatorDialog.GeneralTabText);
+		this.notificationsTab = azdata.window.createTab(OperatorDialog.NotificationsTabText);
 
 		this.initializeGeneralTab();
 		this.initializeNotificationTab();

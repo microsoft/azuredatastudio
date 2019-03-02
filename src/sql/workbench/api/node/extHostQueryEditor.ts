@@ -6,7 +6,7 @@
 
 import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
 import { ExtHostQueryEditorShape, SqlMainContext, MainThreadQueryEditorShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 
 export class ExtHostQueryEditor implements ExtHostQueryEditorShape  {

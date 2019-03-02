@@ -5,7 +5,7 @@
 
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { Event } from 'vs/base/common/event';
 import { AccountAdditionResult, AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/platform/accountManagement/common/eventTypes';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
@@ -18,13 +18,13 @@ export interface IAccountManagementService {
 	_serviceBrand: any;
 
 	// ACCOUNT MANAGEMENT METHODS //////////////////////////////////////////
-	accountUpdated(account: sqlops.Account): Thenable<void>;
+	accountUpdated(account: azdata.Account): Thenable<void>;
 	addAccount(providerId: string): Thenable<void>;
-	getAccountProviderMetadata(): Thenable<sqlops.AccountProviderMetadata[]>;
-	getAccountsForProvider(providerId: string): Thenable<sqlops.Account[]>;
-	getSecurityToken(account: sqlops.Account, resource: sqlops.AzureResource): Thenable<{}>;
-	removeAccount(accountKey: sqlops.AccountKey): Thenable<boolean>;
-	refreshAccount(account: sqlops.Account): Thenable<sqlops.Account>;
+	getAccountProviderMetadata(): Thenable<azdata.AccountProviderMetadata[]>;
+	getAccountsForProvider(providerId: string): Thenable<azdata.Account[]>;
+	getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Thenable<{}>;
+	removeAccount(accountKey: azdata.AccountKey): Thenable<boolean>;
+	refreshAccount(account: azdata.Account): Thenable<azdata.Account>;
 
 	// UI METHODS //////////////////////////////////////////////////////////
 	openAccountListDialog(): Thenable<void>;
@@ -34,17 +34,17 @@ export interface IAccountManagementService {
 	copyUserCodeAndOpenBrowser(userCode: string, uri: string): void;
 
 	// SERVICE MANAGEMENT METHODS /////////////////////////////////////////
-	registerProvider(providerMetadata: sqlops.AccountProviderMetadata, provider: sqlops.AccountProvider): void;
+	registerProvider(providerMetadata: azdata.AccountProviderMetadata, provider: azdata.AccountProvider): void;
 	shutdown(): void;
-	unregisterProvider(providerMetadata: sqlops.AccountProviderMetadata): void;
+	unregisterProvider(providerMetadata: azdata.AccountProviderMetadata): void;
 
 	// EVENTING ////////////////////////////////////////////////////////////
 	readonly addAccountProviderEvent: Event<AccountProviderAddedEventParams>;
-	readonly removeAccountProviderEvent: Event<sqlops.AccountProviderMetadata>;
+	readonly removeAccountProviderEvent: Event<azdata.AccountProviderMetadata>;
 	readonly updateAccountListEvent: Event<UpdateAccountListEventParams>;
 }
 
-// Enum matching the AzureResource enum from sqlops.d.ts
+// Enum matching the AzureResource enum from azdata.d.ts
 export enum AzureResource {
 	ResourceManagement = 0,
 	Sql = 1
@@ -56,20 +56,20 @@ export interface IAccountStore {
 	 * @param {Account} account Account to add/update
 	 * @return {Thenable<AccountAdditionResult>} Results of the add/update operation
 	 */
-	addOrUpdate(account: sqlops.Account): Thenable<AccountAdditionResult>;
+	addOrUpdate(account: azdata.Account): Thenable<AccountAdditionResult>;
 
 	/**
 	 * Retrieves all accounts, filtered by provider ID
 	 * @param {string} providerId ID of the provider to filter by
 	 * @return {Thenable<Account[]>} Promise to return all accounts that belong to the provided provider
 	 */
-	getAccountsByProvider(providerId: string): Thenable<sqlops.Account[]>;
+	getAccountsByProvider(providerId: string): Thenable<azdata.Account[]>;
 
 	/**
 	 * Retrieves all accounts in the store. Returns empty array if store is not initialized
 	 * @return {Thenable<Account[]>} Promise to return all accounts
 	 */
-	getAllAccounts(): Thenable<sqlops.Account[]>;
+	getAllAccounts(): Thenable<azdata.Account[]>;
 
 	/**
 	 * Removes an account.
@@ -78,7 +78,7 @@ export interface IAccountStore {
 	 * @param key - The key of an account.
 	 * @returns	True if the account was removed, false if the account doesn't exist
 	 */
-	remove(key: sqlops.AccountKey): Thenable<boolean>;
+	remove(key: azdata.AccountKey): Thenable<boolean>;
 
 	/**
 	 * Updates the custom properties stored with an account.
@@ -88,5 +88,5 @@ export interface IAccountStore {
 	 * @param updateOperation - Operation to perform on the matching account
 	 * @returns True if the account was modified, false if the account doesn't exist
 	 */
-	update(key: sqlops.AccountKey, updateOperation: (account: sqlops.Account) => void): Thenable<boolean>;
+	update(key: azdata.AccountKey, updateOperation: (account: azdata.Account) => void): Thenable<boolean>;
 }

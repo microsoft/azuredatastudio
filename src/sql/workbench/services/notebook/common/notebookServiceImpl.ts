@@ -5,7 +5,7 @@
 
 'use strict';
 
-import { nb } from 'sqlops';
+import { nb } from 'azdata';
 import { localize } from 'vs/nls';
 import { URI } from 'vs/base/common/uri';
 import { Registry } from 'vs/platform/registry/common/platform';
@@ -158,7 +158,7 @@ export class NotebookService extends Disposable implements INotebookService {
 	}
 
 	private hookNotebookThemesAndConfigListener(): void {
-		if(this._configurationService) {
+		if (this._configurationService) {
 			this.updateNotebookThemes();
 			this._register(this._configurationService.onDidChangeConfiguration(e => {
 				if (e.affectsConfiguration(OVERRIDE_EDITOR_THEMING_SETTING)) {
@@ -458,11 +458,14 @@ export class NotebookService extends Disposable implements INotebookService {
 	}
 
 	private removeContributedProvidersFromCache(identifier: IExtensionIdentifier, extensionService: IExtensionService) {
+		const notebookProvider = 'notebookProvider';
 		let extensionid = getIdFromLocalExtensionId(identifier.id);
 		extensionService.getExtensions().then(i => {
 			let extension = i.find(c => c.id === extensionid);
-			if (extension && extension.contributes['notebookProvider']) {
-				let id = extension.contributes['notebookProvider'].providerId;
+			if (extension && extension.contributes
+				&& extension.contributes[notebookProvider]
+				&& extension.contributes[notebookProvider].providerId) {
+				let id = extension.contributes[notebookProvider].providerId;
 				delete this.providersMemento.notebookProviderCache[id];
 			}
 		});

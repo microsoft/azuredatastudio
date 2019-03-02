@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
 import * as path from 'path';
@@ -17,16 +17,16 @@ const localize = nls.loadMessageBundle();
 
 export class DeployActionPage extends DacFxConfigPage {
 
-	protected readonly wizardPage: sqlops.window.WizardPage;
+	protected readonly wizardPage: azdata.window.WizardPage;
 	protected readonly instance: DataTierApplicationWizard;
 	protected readonly model: DacFxDataModel;
-	protected readonly view: sqlops.ModelView;
-	private deployRadioButton: sqlops.RadioButtonComponent;
-	private deployScriptRadioButton: sqlops.RadioButtonComponent;
-	private scriptRadioButton: sqlops.RadioButtonComponent;
-	private form: sqlops.FormContainer;
+	protected readonly view: azdata.ModelView;
+	private deployRadioButton: azdata.RadioButtonComponent;
+	private deployScriptRadioButton: azdata.RadioButtonComponent;
+	private scriptRadioButton: azdata.RadioButtonComponent;
+	private form: azdata.FormContainer;
 
-	public constructor(instance: DataTierApplicationWizard, wizardPage: sqlops.window.WizardPage, model: DacFxDataModel, view: sqlops.ModelView) {
+	public constructor(instance: DataTierApplicationWizard, wizardPage: azdata.window.WizardPage, model: DacFxDataModel, view: azdata.ModelView) {
 		super(instance, wizardPage, model, view);
 	}
 
@@ -59,7 +59,7 @@ export class DeployActionPage extends DacFxConfigPage {
 		return true;
 	}
 
-	private async createDeployRadioButton(): Promise<sqlops.FormComponent> {
+	private async createDeployRadioButton(): Promise<azdata.FormComponent> {
 		this.deployRadioButton = this.view.modelBuilder.radioButton()
 			.withProperties({
 				name: 'selectedDeployAction',
@@ -78,7 +78,7 @@ export class DeployActionPage extends DacFxConfigPage {
 		};
 	}
 
-	private async createDeployScriptRadioButton(): Promise<sqlops.FormComponent> {
+	private async createDeployScriptRadioButton(): Promise<azdata.FormComponent> {
 		this.deployScriptRadioButton = this.view.modelBuilder.radioButton()
 			.withProperties({
 				name: 'selectedDeployAction',
@@ -97,7 +97,7 @@ export class DeployActionPage extends DacFxConfigPage {
 		};
 	}
 
-	private async createScriptRadioButton(): Promise<sqlops.FormComponent> {
+	private async createScriptRadioButton(): Promise<azdata.FormComponent> {
 		this.scriptRadioButton = this.view.modelBuilder.radioButton()
 			.withProperties({
 				name: 'selectedDeployAction',
@@ -118,7 +118,7 @@ export class DeployActionPage extends DacFxConfigPage {
 		};
 	}
 
-	private async createFileBrowser(): Promise<sqlops.FormComponentGroup> {
+	private async createFileBrowser(): Promise<azdata.FormComponentGroup> {
 		this.createFileBrowserParts();
 
 		//default filepath

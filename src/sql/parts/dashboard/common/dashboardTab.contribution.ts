@@ -30,43 +30,43 @@ const tabSchema: IJSONSchema = {
 	properties: {
 		id: {
 			type: 'string',
-			description: localize('sqlops.extension.contributes.dashboard.tab.id', "Unique identifier for this tab. Will be passed to the extension for any requests.")
+			description: localize('azdata.extension.contributes.dashboard.tab.id', "Unique identifier for this tab. Will be passed to the extension for any requests.")
 		},
 		title: {
 			type: 'string',
-			description: localize('sqlops.extension.contributes.dashboard.tab.title', "Title of the tab to show the user.")
+			description: localize('azdata.extension.contributes.dashboard.tab.title', "Title of the tab to show the user.")
 		},
 		description: {
-			description: localize('sqlops.extension.contributes.dashboard.tab.description', "Description of this tab that will be shown to the user."),
+			description: localize('azdata.extension.contributes.dashboard.tab.description', "Description of this tab that will be shown to the user."),
 			type: 'string'
 		},
 		when: {
-			description: localize('sqlops.extension.contributes.tab.when', 'Condition which must be true to show this item'),
+			description: localize('azdata.extension.contributes.tab.when', 'Condition which must be true to show this item'),
 			type: 'string'
 		},
 		provider: {
-			description: localize('sqlops.extension.contributes.tab.provider', 'Defines the connection types this tab is compatible with. Defaults to "MSSQL" if not set'),
+			description: localize('azdata.extension.contributes.tab.provider', 'Defines the connection types this tab is compatible with. Defaults to "MSSQL" if not set'),
 			type: ['string', 'array']
 
 		},
 		container: {
-			description: localize('sqlops.extension.contributes.dashboard.tab.container', "The container that will be displayed in this tab."),
+			description: localize('azdata.extension.contributes.dashboard.tab.container', "The container that will be displayed in this tab."),
 			type: 'object',
 			properties: generateContainerTypeSchemaProperties()
 		},
 		alwaysShow: {
-			description: localize('sqlops.extension.contributes.dashboard.tab.alwaysShow', "Whether or not this tab should always be shown or only when the user adds it."),
+			description: localize('azdata.extension.contributes.dashboard.tab.alwaysShow', "Whether or not this tab should always be shown or only when the user adds it."),
 			type: 'boolean'
 		},
 		isHomeTab: {
-			description: localize('sqlops.extension.contributes.dashboard.tab.isHomeTab', "Whether or not this tab should be used as the Home tab for a connection type."),
+			description: localize('azdata.extension.contributes.dashboard.tab.isHomeTab', "Whether or not this tab should be used as the Home tab for a connection type."),
 			type: 'boolean'
 		}
 	}
 };
 
 const tabContributionSchema: IJSONSchema = {
-	description: localize('sqlops.extension.contributes.tabs', "Contributes a single or multiple tabs for users to add to their dashboard."),
+	description: localize('azdata.extension.contributes.tabs', "Contributes a single or multiple tabs for users to add to their dashboard."),
 	oneOf: [
 		tabSchema,
 		{

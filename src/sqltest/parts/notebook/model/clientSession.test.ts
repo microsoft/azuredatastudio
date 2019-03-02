@@ -8,7 +8,7 @@
 
 import * as should from 'should';
 import * as TypeMoq from 'typemoq';
-import { nb } from 'sqlops';
+import { nb } from 'azdata';
 
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
