@@ -8,7 +8,7 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { textFormatter } from 'sql/parts/grid/services/sharedServices';
 import { RowNumberColumn } from 'sql/base/browser/ui/table/plugins/rowNumberColumn.plugin';
 import { escape } from 'sql/base/common/strings';
-import { IDataResource } from 'sql/workbench/services/notebook/sqlNotebook/sqlSessionManager';
+import { IDataResource } from 'sql/workbench/services/notebook/sql/sqlSessionManager';
 
 /**
  * Render DataResource as a grid into a host node.

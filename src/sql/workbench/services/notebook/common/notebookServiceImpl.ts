@@ -36,7 +36,7 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { registerNotebookThemes } from 'sql/parts/notebook/notebookStyles';
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
 import { ILanguageMagic, notebookConstants } from 'sql/parts/notebook/models/modelInterfaces';
-import { SqlNotebookProvider } from 'sql/workbench/services/notebook/sqlNotebook/sqlNotebookProvider';
+import { SqlNotebookProvider } from 'sql/workbench/services/notebook/sql/sqlNotebookProvider';
 
 export interface NotebookProviderProperties {
 	provider: string;

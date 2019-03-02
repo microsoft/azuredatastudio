@@ -9,7 +9,7 @@ import { URI } from 'vs/base/common/uri';
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { INotebookManager, INotebookProvider, SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/common/notebookService';
-import { SqlNotebookManager } from 'sql/workbench/services/notebook/sqlNotebook/sqlNotebookManager';
+import { SqlNotebookManager } from 'sql/workbench/services/notebook/sql/sqlNotebookManager';
 
 export class SqlNotebookProvider implements INotebookProvider {
 	private manager: SqlNotebookManager;
