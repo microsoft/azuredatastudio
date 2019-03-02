@@ -18,7 +18,7 @@ import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 
-import { ISelectionData, ExecutionPlanOptions } from 'sqlops';
+import { ISelectionData, ExecutionPlanOptions } from 'azdata';
 
 const MAX_SIZE = 13;
 

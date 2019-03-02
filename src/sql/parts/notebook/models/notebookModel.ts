@@ -5,7 +5,7 @@
 
 'use strict';
 
-import { nb, connection } from 'sqlops';
+import { nb, connection } from 'azdata';
 
 import { localize } from 'vs/nls';
 import { Event, Emitter } from 'vs/base/common/event';

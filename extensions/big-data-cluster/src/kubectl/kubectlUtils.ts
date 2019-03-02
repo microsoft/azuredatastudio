@@ -5,7 +5,7 @@
 
 import * as vscode from "vscode";
 import { Kubectl } from "./kubectl";
-import { failed } from "../interfaces";
+import { failed, ClusterType } from "../interfaces";
 
 export interface KubectlContext {
     readonly clusterName: string;
@@ -83,4 +83,50 @@ export async function getContexts(kubectl: Kubectl): Promise<KubectlContext[]> {
             active: c.name === currentContext
         };
     });
+}
+
+export async function setContext(kubectl: Kubectl, targetContext: string): Promise<void> {
+    const shellResult = await kubectl.invokeAsync(`config use-context ${targetContext}`);
+    if (!shellResult || shellResult.code != 0) {
+        // TODO: Update error handling for now.
+        vscode.window.showErrorMessage(`Failed to set '${targetContext}' as current cluster: ${shellResult ? shellResult.stderr : "Unable to run kubectl"}`);
+    }
+}
+
+export async function inferCurrentClusterType(kubectl: Kubectl): Promise<ClusterType> {
+    let latestContextName = "";
+
+    const ctxsr = await kubectl.invokeAsync('config current-context');
+    if (ctxsr && ctxsr.code === 0) {
+        latestContextName = ctxsr.stdout.trim();
+    } else {
+        return ClusterType.Other;
+    }
+
+    const cisr = await kubectl.invokeAsync('cluster-info');
+    if (!cisr || cisr.code !== 0) {
+        return ClusterType.Unknown;
+    }
+    const masterInfos = cisr.stdout.split('\n')
+                                   .filter((s) => s.indexOf('master is running at') >= 0);
+
+    if (masterInfos.length === 0) {
+        return ClusterType.Other;
+    }
+
+    const masterInfo = masterInfos[0];
+    if (masterInfo.indexOf('azmk8s.io') >= 0 || masterInfo.indexOf('azure.com') >= 0) {
+        return ClusterType.AKS;
+    }
+
+    if (latestContextName) {
+        const gcsr = await kubectl.invokeAsync(`config get-contexts ${latestContextName}`);
+        if (gcsr && gcsr.code === 0) {
+            if (gcsr.stdout.indexOf('minikube') >= 0) {
+                return ClusterType.Minikube;
+            }
+        }
+    }
+
+    return ClusterType.Other;
 }

@@ -9,7 +9,7 @@ import {
 	ViewChild, ViewChildren, ElementRef, Injector, OnDestroy, QueryList,
 } from '@angular/core';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 import { ITheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
 import * as colors from 'vs/platform/theme/common/colorRegistry';
@@ -121,11 +121,11 @@ export default class CardComponent extends ComponentWithIconBase implements ICom
 	}
 
 	public get selected(): boolean {
-		return this.getPropertyOrDefault<sqlops.CardProperties, boolean>((props) => props.selected, false);
+		return this.getPropertyOrDefault<azdata.CardProperties, boolean>((props) => props.selected, false);
 	}
 
 	public set selected(newValue: boolean) {
-		this.setPropertyFromUI<sqlops.CardProperties, boolean>((props, value) => props.selected = value, newValue);
+		this.setPropertyFromUI<azdata.CardProperties, boolean>((props, value) => props.selected = value, newValue);
 	}
 
 	public get isDetailsCard(): boolean {

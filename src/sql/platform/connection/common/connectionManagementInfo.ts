@@ -6,7 +6,7 @@
 'use strict';
 
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { StopWatch } from 'vs/base/common/stopwatch';
 
 /**
@@ -64,7 +64,7 @@ export class ConnectionManagementInfo {
 	/**
 	 * Information about the connected server.
 	 */
-	serverInfo: sqlops.ServerInfo;
+	serverInfo: azdata.ServerInfo;
 
 	/**
 	 * Owner uri assigned to the connection

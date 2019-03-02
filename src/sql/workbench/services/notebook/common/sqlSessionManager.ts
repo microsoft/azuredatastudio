@@ -5,7 +5,7 @@
 'use strict';
 
 import * as os from 'os';
-import { nb, QueryExecuteSubsetResult, IDbColumn, BatchSummary, IResultMessage, ResultSetSummary } from 'sqlops';
+import { nb, QueryExecuteSubsetResult, IDbColumn, BatchSummary, IResultMessage, ResultSetSummary } from 'azdata';
 import { localize } from 'vs/nls';
 import * as strings from 'vs/base/common/strings';
 import { FutureInternal, ILanguageMagic } from 'sql/parts/notebook/models/modelInterfaces';

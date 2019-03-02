@@ -6,7 +6,7 @@
 'use strict';
 
 import * as vscode from 'vscode';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 /**
  * Wrapper class to act as a facade over VSCode and Data APIs and allow us to test / mock callbacks into
@@ -17,44 +17,44 @@ import * as sqlops from 'sqlops';
  */
 export class ApiWrapper {
 	// Data APIs
-	public registerConnectionProvider(provider: sqlops.ConnectionProvider): vscode.Disposable {
-		return sqlops.dataprotocol.registerConnectionProvider(provider);
+	public registerConnectionProvider(provider: azdata.ConnectionProvider): vscode.Disposable {
+		return azdata.dataprotocol.registerConnectionProvider(provider);
 	}
 
-	public registerObjectExplorerNodeProvider(provider: sqlops.ObjectExplorerNodeProvider): vscode.Disposable {
-		return sqlops.dataprotocol.registerObjectExplorerNodeProvider(provider);
+	public registerObjectExplorerNodeProvider(provider: azdata.ObjectExplorerNodeProvider): vscode.Disposable {
+		return azdata.dataprotocol.registerObjectExplorerNodeProvider(provider);
 	}
 
-	public registerTaskServicesProvider(provider: sqlops.TaskServicesProvider): vscode.Disposable {
-		return sqlops.dataprotocol.registerTaskServicesProvider(provider);
+	public registerTaskServicesProvider(provider: azdata.TaskServicesProvider): vscode.Disposable {
+		return azdata.dataprotocol.registerTaskServicesProvider(provider);
 	}
 
-	public registerFileBrowserProvider(provider: sqlops.FileBrowserProvider): vscode.Disposable {
-		return sqlops.dataprotocol.registerFileBrowserProvider(provider);
+	public registerFileBrowserProvider(provider: azdata.FileBrowserProvider): vscode.Disposable {
+		return azdata.dataprotocol.registerFileBrowserProvider(provider);
 	}
 
-	public createDialog(title: string): sqlops.window.Dialog {
-		return sqlops.window.createModelViewDialog(title);
+	public createDialog(title: string): azdata.window.Dialog {
+		return azdata.window.createModelViewDialog(title);
 	}
 
-	public openDialog(dialog: sqlops.window.Dialog): void {
-		return sqlops.window.openDialog(dialog);
+	public openDialog(dialog: azdata.window.Dialog): void {
+		return azdata.window.openDialog(dialog);
 	}
 
-	public closeDialog(dialog: sqlops.window.Dialog): void {
-		return sqlops.window.closeDialog(dialog);
+	public closeDialog(dialog: azdata.window.Dialog): void {
+		return azdata.window.closeDialog(dialog);
 	}
 
-	public registerTaskHandler(taskId: string, handler: (profile: sqlops.IConnectionProfile) => void): void {
-		sqlops.tasks.registerTask(taskId, handler);
+	public registerTaskHandler(taskId: string, handler: (profile: azdata.IConnectionProfile) => void): void {
+		azdata.tasks.registerTask(taskId, handler);
 	}
 
-	public startBackgroundOperation(operationInfo: sqlops.BackgroundOperationInfo): void {
-		sqlops.tasks.startBackgroundOperation(operationInfo);
+	public startBackgroundOperation(operationInfo: azdata.BackgroundOperationInfo): void {
+		azdata.tasks.startBackgroundOperation(operationInfo);
 	}
 
-	public getActiveConnections(): Thenable<sqlops.connection.Connection[]> {
-		return sqlops.connection.getActiveConnections();
+	public getActiveConnections(): Thenable<azdata.connection.Connection[]> {
+		return azdata.connection.getActiveConnections();
 	}
 
 	// VSCode APIs
@@ -113,7 +113,7 @@ export class ApiWrapper {
 		return vscode.window.createOutputChannel(name);
 	}
 
-	public createTab(title: string): sqlops.window.DialogTab {
-		return sqlops.window.createTab(title);
+	public createTab(title: string): azdata.window.DialogTab {
+		return azdata.window.createTab(title);
 	}
 }

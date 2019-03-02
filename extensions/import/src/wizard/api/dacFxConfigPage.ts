@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 import * as os from 'os';
 import * as path from 'path';
@@ -16,19 +16,19 @@ const localize = nls.loadMessageBundle();
 
 export abstract class DacFxConfigPage extends BasePage {
 
-	protected readonly wizardPage: sqlops.window.WizardPage;
+	protected readonly wizardPage: azdata.window.WizardPage;
 	protected readonly instance: DataTierApplicationWizard;
 	protected readonly model: DacFxDataModel;
-	protected readonly view: sqlops.ModelView;
-	protected serverDropdown: sqlops.DropDownComponent;
-	protected databaseTextBox: sqlops.InputBoxComponent;
-	protected databaseDropdown: sqlops.DropDownComponent;
-	protected databaseLoader: sqlops.LoadingComponent;
-	protected fileTextBox: sqlops.InputBoxComponent;
-	protected fileButton: sqlops.ButtonComponent;
+	protected readonly view: azdata.ModelView;
+	protected serverDropdown: azdata.DropDownComponent;
+	protected databaseTextBox: azdata.InputBoxComponent;
+	protected databaseDropdown: azdata.DropDownComponent;
+	protected databaseLoader: azdata.LoadingComponent;
+	protected fileTextBox: azdata.InputBoxComponent;
+	protected fileButton: azdata.ButtonComponent;
 	protected fileExtension: string;
 
-	protected constructor(instance: DataTierApplicationWizard, wizardPage: sqlops.window.WizardPage, model: DacFxDataModel, view: sqlops.ModelView) {
+	protected constructor(instance: DataTierApplicationWizard, wizardPage: azdata.window.WizardPage, model: DacFxDataModel, view: azdata.ModelView) {
 		super();
 		this.instance = instance;
 		this.wizardPage = wizardPage;
@@ -42,7 +42,7 @@ export abstract class DacFxConfigPage extends BasePage {
 		});
 	}
 
-	protected async createServerDropdown(isTargetServer: boolean): Promise<sqlops.FormComponent> {
+	protected async createServerDropdown(isTargetServer: boolean): Promise<azdata.FormComponent> {
 		this.serverDropdown = this.view.modelBuilder.dropDown().withProperties({
 			required: true
 		}).component();
@@ -78,7 +78,7 @@ export abstract class DacFxConfigPage extends BasePage {
 		return true;
 	}
 
-	protected async createDatabaseTextBox(): Promise<sqlops.FormComponent> {
+	protected async createDatabaseTextBox(): Promise<azdata.FormComponent> {
 		this.databaseTextBox = this.view.modelBuilder.inputBox().withProperties({
 			required: true
 		}).component();
@@ -93,14 +93,14 @@ export abstract class DacFxConfigPage extends BasePage {
 		};
 	}
 
-	protected async createDatabaseDropdown(): Promise<sqlops.FormComponent> {
+	protected async createDatabaseDropdown(): Promise<azdata.FormComponent> {
 		this.databaseDropdown = this.view.modelBuilder.dropDown().withProperties({
 			required: true
 		}).component();
 
 		// Handle database changes
 		this.databaseDropdown.onValueChanged(async () => {
-			this.model.database = (<sqlops.CategoryValue>this.databaseDropdown.value).name;
+			this.model.database = (<azdata.CategoryValue>this.databaseDropdown.value).name;
 			this.fileTextBox.value = this.generateFilePath();
 			this.model.filePath = this.fileTextBox.value;
 		});
@@ -152,7 +152,7 @@ export abstract class DacFxConfigPage extends BasePage {
 	}
 }
 
-interface ConnectionDropdownValue extends sqlops.CategoryValue {
-	connection: sqlops.connection.Connection;
+interface ConnectionDropdownValue extends azdata.CategoryValue {
+	connection: azdata.connection.Connection;
 }
 

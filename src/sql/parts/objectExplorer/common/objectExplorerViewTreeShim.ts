@@ -13,7 +13,7 @@ import { Deferred } from 'sql/base/common/promise';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 
-import { IConnectionProfile } from 'sqlops';
+import { IConnectionProfile } from 'azdata';
 
 import { TreeItemCollapsibleState } from 'vs/workbench/common/views';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';

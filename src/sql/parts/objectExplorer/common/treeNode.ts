@@ -7,7 +7,7 @@
 
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { NodeType, SqlThemeIcon } from 'sql/parts/objectExplorer/common/nodeType';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 import * as UUID from 'vs/base/common/uuid';
 
@@ -87,14 +87,14 @@ export class TreeNode {
 
 	public connection: ConnectionProfile;
 
-	public session: sqlops.ObjectExplorerSession;
+	public session: azdata.ObjectExplorerSession;
 
-	public metadata: sqlops.ObjectMetadata;
+	public metadata: azdata.ObjectMetadata;
 
 	public iconType: string | SqlThemeIcon;
 
 	constructor(nodeTypeId: string, label: string, isAlwaysLeaf: boolean, nodePath: string,
-		nodeSubType: string, nodeStatus: string, parent: TreeNode, metadata: sqlops.ObjectMetadata,
+		nodeSubType: string, nodeStatus: string, parent: TreeNode, metadata: azdata.ObjectMetadata,
 		iconType: string | SqlThemeIcon,
 		private _objectExplorerCallbacks: ObjectExplorerCallbacks) {
 		this.nodeTypeId = nodeTypeId;
@@ -131,7 +131,7 @@ export class TreeNode {
 		return undefined;
 	}
 
-	public getSession(): sqlops.ObjectExplorerSession {
+	public getSession(): azdata.ObjectExplorerSession {
 		var currentNode: TreeNode = this;
 		while (!currentNode.session && currentNode.parent) {
 			currentNode = currentNode.parent;
@@ -146,8 +146,8 @@ export class TreeNode {
 		return false;
 	}
 
-	public toNodeInfo(): sqlops.NodeInfo {
-		return <sqlops.NodeInfo>{
+	public toNodeInfo(): azdata.NodeInfo {
+		return <azdata.NodeInfo>{
 			nodePath: this.nodePath,
 			nodeType: this.nodeTypeId,
 			nodeSubType: this.nodeSubType,

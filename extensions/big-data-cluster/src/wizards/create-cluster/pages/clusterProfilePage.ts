@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { WizardPageBase } from '../../wizardPageBase';
 import { CreateClusterWizard } from '../createClusterWizard';
 import * as nls from 'vscode-nls';
@@ -19,7 +19,13 @@ export class ClusterProfilePage extends WizardPageBase<CreateClusterWizard> {
 			wizard);
 	}
 
-	protected initialize(view: sqlops.ModelView): Thenable<void> {
+	public onEnter() {
+		this.wizard.wizardObject.registerNavigationValidator(() => {
+			return true;
+		});
+	}
+
+	protected initialize(view: azdata.ModelView): Thenable<void> {
 		let formBuilder = view.modelBuilder.formContainer();
 		let form = formBuilder.component();
 		return view.initializeModel(form);

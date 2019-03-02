@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ITreeViewDataProvider, ITreeItem as vsITreeItem, IViewDescriptor, ITreeView as vsITreeView } from 'vs/workbench/common/views';
-import { IConnectionProfile } from 'sqlops';
+import { IConnectionProfile } from 'azdata';
 
 export interface ITreeComponentItem extends vsITreeItem {
 	checked?: boolean;

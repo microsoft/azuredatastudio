@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -10,7 +10,7 @@ import * as should from 'should';
 import * as TypeMoq from 'typemoq';
 import * as path from 'path';
 import { ContentsManager, Contents } from '@jupyterlab/services';
-import { nb } from 'sqlops';
+import { nb } from 'azdata';
 import 'mocha';
 
 import { INotebook, CellTypes } from '../../contracts/content';
