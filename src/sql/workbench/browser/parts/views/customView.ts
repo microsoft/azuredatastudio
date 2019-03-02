@@ -423,7 +423,7 @@ export class CustomTreeView extends Disposable implements ITreeView {
 	}
 
 	collapse(itemOrItems: ITreeItem | ITreeItem[]): Thenable<void> {
-		if(this.tree) {
+		if (this.tree) {
 			itemOrItems = Array.isArray(itemOrItems) ? itemOrItems : [itemOrItems];
 			return this.tree.collapseAll(itemOrItems);
 		}
