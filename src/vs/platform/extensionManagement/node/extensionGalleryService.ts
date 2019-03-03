@@ -734,7 +734,8 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 	}
 
 	loadCompatibleVersion(extension: IGalleryExtension, fromVersion: string = extension.version): Promise<IGalleryExtension> {
-		if (extension.version === fromVersion && extension.properties.engine && isEngineValid(extension.properties.engine)) {
+		// {{SQL CARBON EDIT}}
+		if (extension.version === fromVersion) {
 			return Promise.resolve(extension);
 		}
 		const query = new Query()
