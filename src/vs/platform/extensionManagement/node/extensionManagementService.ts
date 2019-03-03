@@ -201,11 +201,9 @@ export class ExtensionManagementService extends Disposable implements IExtension
 						.then(manifest => {
 							const identifier = { id: getLocalExtensionIdFromManifest(manifest) };
 							// {{SQL CARBON EDIT - Check VSCode and ADS version}}
-							if (manifest.engines && !isEngineValid(manifest.engines.vscode, product.vscodeVersion)) {
-								return Promise.reject(new Error(nls.localize('incompatible', "Unable to install extension '{0}' as it is not compatible with VS Code '{1}'.", identifier.id, product.vscodeVersion)));
-							}
-							if (manifest.engines && manifest.engines.azdata && !isEngineValid(manifest.engines.azdata, pkg.version)) {
-								return Promise.reject(new Error(nls.localize('incompatible-ads', "Unable to install extension '{0}' as it is not compatible with Azure Data Studio '{1}'.", identifier.id, pkg.version)));
+							if (manifest.engines && (!isEngineValid(manifest.engines.vscode, product.vscodeVersion)
+								|| (manifest.engines.azdata && !isEngineValid(manifest.engines.azdata, pkg.version)))) {
+								return Promise.reject(new Error(nls.localize('incompatible', "Unable to install version '{2}' of extension '{0}' as it is not compatible with Azure Data Studio '{1}'.", identifier.id, pkg.version, manifest.version)));
 							}
 							return this.removeIfExists(identifier.id)
 								.then(

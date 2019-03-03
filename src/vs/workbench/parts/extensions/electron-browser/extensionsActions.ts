@@ -191,6 +191,11 @@ export class InstallAction extends Action {
 				return this.notificationService.error(err);
 			}
 
+			// {{SQL CARBON EDIT}}
+			if(err && err.code === INSTALL_ERROR_INCOMPATIBLE) {
+				return this.notificationService.error(err);
+			}
+
 			console.error(err);
 
 			return promptDownloadManually(extension.gallery, localize('failedToInstall', "Failed to install \'{0}\'.", extension.id), err, this.instantiationService, this.notificationService, this.openerService);
@@ -415,6 +420,11 @@ export class UpdateAction extends Action {
 			alert(localize('updateExtensionComplete', "Updating extension {0} to version {1} completed.", this.extension.displayName, this.extension.latestVersion));
 		}, err => {
 			if (!extension.gallery) {
+				return this.notificationService.error(err);
+			}
+
+			// {{SQL CARBON EDIT}}
+			if(err && err.code === INSTALL_ERROR_INCOMPATIBLE) {
 				return this.notificationService.error(err);
 			}
 

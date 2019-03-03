@@ -141,6 +141,7 @@ export interface IGalleryExtensionProperties {
 	dependencies?: string[];
 	extensionPack?: string[];
 	engine?: string;
+	azureDataStudio?: string;
 	localizedLanguages?: string[];
 }
 
