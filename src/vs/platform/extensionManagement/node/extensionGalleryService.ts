@@ -123,6 +123,7 @@ const PropertyType = {
 	Dependency: 'Microsoft.VisualStudio.Code.ExtensionDependencies',
 	ExtensionPack: 'Microsoft.VisualStudio.Code.ExtensionPack',
 	Engine: 'Microsoft.VisualStudio.Code.Engine',
+	// {{SQL CARBON EDIT}}
 	AzureDataStudio: 'Microsoft.AzureDataStudio',
 	LocalizedLanguages: 'Microsoft.VisualStudio.Code.LocalizedLanguages'
 };
@@ -299,6 +300,7 @@ function getEngine(version: IRawGalleryExtensionVersion): string {
 	return (values.length > 0 && values[0].value) || '';
 }
 
+// {{SQL CARBON EDIT}}
 function getAzureDataStudio(version: IRawGalleryExtensionVersion): string {
 	const values = version.properties ? version.properties.filter(p => p.key === PropertyType.AzureDataStudio) : [];
 	return (values.length > 0 && values[0].value) || '';
@@ -349,6 +351,7 @@ function toExtension(galleryExtension: IRawGalleryExtension, version: IRawGaller
 			dependencies: getExtensions(version, PropertyType.Dependency),
 			extensionPack: getExtensions(version, PropertyType.ExtensionPack),
 			engine: getEngine(version),
+			// {{SQL CARBON EDIT}}
 			azureDataStudio: getAzureDataStudio(version),
 			localizedLanguages: getLocalizedLanguages(version)
 		},

@@ -225,7 +225,7 @@ export function isValidExtensionVersion(version: string, extensionDesc: IReduced
 	return (extensionDesc.engines.azdata && extensionDesc.engines.azdata === '*') || isVersionValid(version, extensionDesc.engines.azdata, notices);
 }
 
-// {{SQL CARBON}}
+// {{SQL CARBON EDIT}}
 export function isEngineValid(engine: string, version: string = pkg.version): boolean {
 	// TODO@joao: discuss with alex '*' doesn't seem to be a valid engine version
 	return engine === '*' || isVersionValid(version, engine);
