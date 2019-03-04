@@ -8,7 +8,7 @@
 import * as nls from 'vscode-nls';
 import * as path from 'path';
 import * as shelljs from 'shelljs';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { IConfig, ServerProvider } from 'service-downloader';
 import { Telemetry } from './telemetry';
@@ -76,8 +76,8 @@ export function activate(context: vscode.ExtensionContext): Promise<void> {
  * Handler for command to launch SSMS Server Properties dialog
  * @param connectionId The connection context from the command
  */
-function handleLaunchSsmsServerPropertiesDialogCommand(connectionContext?: any) {
-    if(connectionContext.connectionProfile) {
+function handleLaunchSsmsServerPropertiesDialogCommand(connectionContext?: azdata.ObjectExplorerContext) {
+    if(connectionContext && connectionContext.connectionProfile) {
         launchSsmsDialog(
             /*action*/'sqla:Properties@Microsoft.SqlServer.Management.Smo.Server',
             /*connectionProfile*/connectionContext.connectionProfile);
@@ -90,7 +90,7 @@ function handleLaunchSsmsServerPropertiesDialogCommand(connectionContext?: any) 
  * @param params The params used to construct the command
  * @param urn The URN to pass to SsmsMin
  */
-function launchSsmsDialog(action:string, connectionProfile: sqlops.IConnectionProfile, urn?:string) {
+function launchSsmsDialog(action:string, connectionProfile: azdata.IConnectionProfile, urn?:string) {
     if(!exePath) {
         vscode.window.showErrorMessage(localize('adminToolExtWin.noExeError', 'Unable to find SsmsMin.exe.'));
         return;
