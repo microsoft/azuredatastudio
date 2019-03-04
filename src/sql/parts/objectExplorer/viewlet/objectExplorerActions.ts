@@ -11,7 +11,7 @@ import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { ExecuteCommandAction } from 'vs/platform/actions/common/actions';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { IConnectionManagementService, IConnectionCompletionOptions } from 'sql/platform/connection/common/connectionManagement';
 import { TreeNode } from 'sql/parts/objectExplorer/common/treeNode';
 import {
@@ -32,9 +32,9 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 
 
-export class ObjectExplorerActionsContext implements sqlops.ObjectExplorerContext {
-	public connectionProfile: sqlops.IConnectionProfile;
-	public nodeInfo: sqlops.NodeInfo;
+export class ObjectExplorerActionsContext implements azdata.ObjectExplorerContext {
+	public connectionProfile: azdata.IConnectionProfile;
+	public nodeInfo: azdata.NodeInfo;
 	public isConnectionNode: boolean = false;
 }
 

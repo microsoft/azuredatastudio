@@ -5,7 +5,7 @@
 
 'use strict';
 
-import { nb, IConnectionProfile } from 'sqlops';
+import { nb, IConnectionProfile } from 'azdata';
 
 import { Event, Emitter } from 'vs/base/common/event';
 import { INotebookModel, ICellModel, IClientSession, IDefaultConnection, NotebookContentChange } from 'sql/parts/notebook/models/modelInterfaces';

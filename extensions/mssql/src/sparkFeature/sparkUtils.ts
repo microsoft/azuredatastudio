@@ -9,27 +9,27 @@ import * as childProcess from 'child_process';
 import * as fs from 'fs-extra';
 import * as nls from 'vscode-nls';
 import * as path from 'path';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as which from 'which';
 import * as Constants from '../constants';
 
 const localize = nls.loadMessageBundle();
 
-export function getDropdownValue(dropdownValue: string | sqlops.CategoryValue): string {
+export function getDropdownValue(dropdownValue: string | azdata.CategoryValue): string {
 	if (typeof(dropdownValue) === 'string') {
 		return <string>dropdownValue;
 	} else {
-		return dropdownValue ? (<sqlops.CategoryValue>dropdownValue).name : undefined;
+		return dropdownValue ? (<azdata.CategoryValue>dropdownValue).name : undefined;
 	}
 }
 
-export function getServerAddressFromName(connection: sqlops.ConnectionInfo | string): string {
+export function getServerAddressFromName(connection: azdata.ConnectionInfo | string): string {
 	// Strip TDS port number from the server URI
-	if ((<sqlops.ConnectionInfo>connection).options && (<sqlops.ConnectionInfo>connection).options['host']) {
-		return (<sqlops.ConnectionInfo>connection).options['host'].split(',')[0].split(':')[0];
-	} else if ((<sqlops.ConnectionInfo>connection).options && (<sqlops.ConnectionInfo>connection).options['server']) {
-		return (<sqlops.ConnectionInfo>connection).options['server'].split(',')[0].split(':')[0];
+	if ((<azdata.ConnectionInfo>connection).options && (<azdata.ConnectionInfo>connection).options['host']) {
+		return (<azdata.ConnectionInfo>connection).options['host'].split(',')[0].split(':')[0];
+	} else if ((<azdata.ConnectionInfo>connection).options && (<azdata.ConnectionInfo>connection).options['server']) {
+		return (<azdata.ConnectionInfo>connection).options['server'].split(',')[0].split(':')[0];
 	} else {
 		return (<string>connection).split(',')[0].split(':')[0];
 	}
@@ -141,7 +141,7 @@ export function executeStreamedCommand(cmd: string, outputChannel?: vscode.Outpu
 	});
 }
 
-export function isObjectExplorerContext(object: any): object is sqlops.ObjectExplorerContext {
+export function isObjectExplorerContext(object: any): object is azdata.ObjectExplorerContext {
 	return 'connectionProfile' in object && 'isConnectionNode' in object;
 }
 

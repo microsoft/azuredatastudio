@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as crypto from 'crypto';
@@ -174,7 +174,7 @@ export function getErrorMessage(error: Error | string): string {
 	return (error instanceof Error) ? error.message : error;
 }
 
-export function isObjectExplorerContext(object: any): object is sqlops.ObjectExplorerContext {
+export function isObjectExplorerContext(object: any): object is azdata.ObjectExplorerContext {
 	return 'connectionProfile' in object && 'isConnectionNode' in object;
 }
 
@@ -184,7 +184,7 @@ export function getUserHome(): string {
 
 export async function getClusterEndpoint(profileId: string, serviceName: string): Promise<IEndpoint> {
 
-	let serverInfo: sqlops.ServerInfo = await sqlops.connection.getServerInfo(profileId);
+	let serverInfo: azdata.ServerInfo = await azdata.connection.getServerInfo(profileId);
 	if (!serverInfo || !serverInfo.options) {
 		return undefined;
 	}

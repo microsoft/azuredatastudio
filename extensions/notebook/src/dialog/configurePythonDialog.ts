@@ -7,7 +7,7 @@
 
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as fs from 'fs';
 import * as utils from '../common/utils';
 
@@ -17,7 +17,7 @@ import JupyterServerInstallation from '../jupyter/jupyterServerInstallation';
 const localize = nls.loadMessageBundle();
 
 export class ConfigurePythonDialog {
-	private dialog: sqlops.window.modelviewdialog.Dialog;
+	private dialog: azdata.window.modelviewdialog.Dialog;
 
 	private readonly DialogTitle = localize('configurePython.dialogName', 'Configure Python for Notebooks');
 	private readonly OkButtonText = localize('configurePython.okButtonText', 'Install');
@@ -28,14 +28,14 @@ export class ConfigurePythonDialog {
 	private readonly InstallationNote = localize('configurePython.installNote', 'This installation will take some time. It is recommended to not close the application until the installation is complete.');
 	private readonly InvalidLocationMsg = localize('configurePython.invalidLocationMsg', 'The specified install location is invalid.');
 
-	private pythonLocationTextBox: sqlops.InputBoxComponent;
-	private browseButton: sqlops.ButtonComponent;
+	private pythonLocationTextBox: azdata.InputBoxComponent;
+	private browseButton: azdata.ButtonComponent;
 
 	constructor(private appContext: AppContext, private outputChannel: vscode.OutputChannel, private jupyterInstallation: JupyterServerInstallation) {
 	}
 
 	public async showDialog() {
-		this.dialog = sqlops.window.modelviewdialog.createDialog(this.DialogTitle);
+		this.dialog = azdata.window.modelviewdialog.createDialog(this.DialogTitle);
 
 		this.initializeContent();
 
@@ -44,19 +44,19 @@ export class ConfigurePythonDialog {
 
 		this.dialog.registerCloseValidator(() => this.handleInstall());
 
-		sqlops.window.modelviewdialog.openDialog(this.dialog);
+		azdata.window.modelviewdialog.openDialog(this.dialog);
 	}
 
 	private initializeContent() {
 		this.dialog.registerContent(async view => {
 			this.pythonLocationTextBox = view.modelBuilder.inputBox()
-				.withProperties<sqlops.InputBoxProperties>({
+				.withProperties<azdata.InputBoxProperties>({
 					value: JupyterServerInstallation.getPythonInstallPath(this.appContext.apiWrapper),
 					width: '100%'
 				}).component();
 
 			this.browseButton = view.modelBuilder.button()
-				.withProperties<sqlops.ButtonProperties>({
+				.withProperties<azdata.ButtonProperties>({
 					label: this.BrowseButtonText,
 					width: '100px'
 				}).component();
@@ -158,14 +158,14 @@ export class ConfigurePythonDialog {
 	private showInfoMessage(message: string) {
 		this.dialog.message = {
 			text: message,
-			level: sqlops.window.modelviewdialog.MessageLevel.Information
+			level: azdata.window.modelviewdialog.MessageLevel.Information
 		};
 	}
 
 	private showErrorMessage(message: string) {
 		this.dialog.message = {
 			text: message,
-			level: sqlops.window.modelviewdialog.MessageLevel.Error
+			level: azdata.window.modelviewdialog.MessageLevel.Error
 		};
 	}
 }

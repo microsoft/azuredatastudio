@@ -5,7 +5,7 @@
 
 'use strict';
 
-import { nb } from 'sqlops';
+import { nb } from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();

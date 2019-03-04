@@ -5,7 +5,7 @@
 
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { ITreeNode } from './types';
 
@@ -74,5 +74,5 @@ export abstract class TreeNode implements ITreeNode {
 	abstract getChildren(refreshChildren: boolean): TreeNode[] | Promise<TreeNode[]>;
 	abstract getTreeItem(): vscode.TreeItem | Promise<vscode.TreeItem>;
 
-	abstract getNodeInfo(): sqlops.NodeInfo;
+	abstract getNodeInfo(): azdata.NodeInfo;
 }

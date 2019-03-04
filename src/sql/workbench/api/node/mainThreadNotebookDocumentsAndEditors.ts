@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import { URI, UriComponents } from 'vs/base/common/uri';
@@ -529,13 +529,13 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		return changeData;
 	}
 
-	private getKernelSpec(editor: MainThreadNotebookEditor): sqlops.nb.IKernelSpec {
+	private getKernelSpec(editor: MainThreadNotebookEditor): azdata.nb.IKernelSpec {
 		let spec = editor && editor.model && editor.model.clientSession ? editor.model.clientSession.cachedKernelSpec : undefined;
 		return spec;
 	}
 
-	private convertCellModelToNotebookCell(cells: ICellModel | ICellModel[]): sqlops.nb.NotebookCell[] {
-		let notebookCells: sqlops.nb.NotebookCell[] = [];
+	private convertCellModelToNotebookCell(cells: ICellModel | ICellModel[]): azdata.nb.NotebookCell[] {
+		let notebookCells: azdata.nb.NotebookCell[] = [];
 		if (Array.isArray(cells)) {
 			for (let cell of cells) {
 				notebookCells.push({

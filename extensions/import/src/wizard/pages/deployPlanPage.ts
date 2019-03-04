@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 import * as parser from 'htmlparser2';
 import { DacFxDataModel } from '../api/models';
@@ -37,20 +37,20 @@ export class DeployPlanResult {
 }
 
 export class DeployPlanPage extends DacFxConfigPage {
-	protected readonly wizardPage: sqlops.window.WizardPage;
+	protected readonly wizardPage: azdata.window.WizardPage;
 	protected readonly instance: DataTierApplicationWizard;
 	protected readonly model: DacFxDataModel;
-	protected readonly view: sqlops.ModelView;
-	private formBuilder: sqlops.FormBuilder;
-	private form: sqlops.FormContainer;
-	private table: sqlops.TableComponent;
-	private loader: sqlops.LoadingComponent;
-	private dataLossCheckbox: sqlops.CheckBoxComponent;
-	private dataLossText: sqlops.TextComponent;
-	private dataLossComponentGroup: sqlops.FormComponentGroup;
-	private noDataLossTextComponent: sqlops.FormComponent;
+	protected readonly view: azdata.ModelView;
+	private formBuilder: azdata.FormBuilder;
+	private form: azdata.FormContainer;
+	private table: azdata.TableComponent;
+	private loader: azdata.LoadingComponent;
+	private dataLossCheckbox: azdata.CheckBoxComponent;
+	private dataLossText: azdata.TextComponent;
+	private dataLossComponentGroup: azdata.FormComponentGroup;
+	private noDataLossTextComponent: azdata.FormComponent;
 
-	public constructor(instance: DataTierApplicationWizard, wizardPage: sqlops.window.WizardPage, model: DacFxDataModel, view: sqlops.ModelView) {
+	public constructor(instance: DataTierApplicationWizard, wizardPage: azdata.window.WizardPage, model: DacFxDataModel, view: azdata.ModelView) {
 		super(instance, wizardPage, model, view);
 	}
 
@@ -116,7 +116,7 @@ export class DeployPlanPage extends DacFxConfigPage {
 		}
 	}
 
-	private async createDataLossCheckbox(): Promise<sqlops.FormComponent> {
+	private async createDataLossCheckbox(): Promise<azdata.FormComponent> {
 		this.dataLossCheckbox = this.view.modelBuilder.checkBox()
 			.withValidation(component => component.checked === true)
 			.withProperties({
@@ -130,7 +130,7 @@ export class DeployPlanPage extends DacFxConfigPage {
 		};
 	}
 
-	private async createNoDataLossText(): Promise<sqlops.FormComponent> {
+	private async createNoDataLossText(): Promise<azdata.FormComponent> {
 		let noDataLossText = this.view.modelBuilder.text()
 			.withProperties({
 				value: localize('dacfx.noDataLossText', 'No data loss will occur from the listed deploy actions.')
@@ -142,7 +142,7 @@ export class DeployPlanPage extends DacFxConfigPage {
 		};
 	}
 
-	private async createDataLossComponents(): Promise<sqlops.FormComponentGroup> {
+	private async createDataLossComponents(): Promise<azdata.FormComponentGroup> {
 		let dataLossComponent = await this.createDataLossCheckbox();
 		this.dataLossText = this.view.modelBuilder.text()
 			.withProperties({
@@ -176,8 +176,8 @@ export class DeployPlanPage extends DacFxConfigPage {
 		return columnData;
 	}
 
-	private getTableColumns(dataloss: boolean): sqlops.TableColumn[] {
-		let columns: sqlops.TableColumn[] = [
+	private getTableColumns(dataloss: boolean): azdata.TableColumn[] {
+		let columns: azdata.TableColumn[] = [
 			{
 				value: localize('dacfx.operationColumn', 'Operation'),
 				width: 75,

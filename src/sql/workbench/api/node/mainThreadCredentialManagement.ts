@@ -11,7 +11,7 @@ import {
 	MainThreadCredentialManagementShape, SqlMainContext
 } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { ICredentialsService } from 'sql/platform/credentials/common/credentialsService';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 
@@ -44,7 +44,7 @@ export class MainThreadCredentialManagement implements MainThreadCredentialManag
 			onSaveCredential(credentialId: string, password: string): Thenable<boolean> {
 				return self._proxy.$saveCredential(credentialId, password);
 			},
-			onReadCredential(credentialId: string): Thenable<sqlops.Credential> {
+			onReadCredential(credentialId: string): Thenable<azdata.Credential> {
 				return self._proxy.$readCredential(credentialId);
 			},
 			onDeleteCredential(credentialId: string): Thenable<boolean> {

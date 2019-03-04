@@ -9,7 +9,7 @@ import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ScriptOperation } from 'sql/workbench/common/taskUtilities';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { error } from 'sql/base/common/log';
 export const SERVICE_ID = 'scriptingService';
 
@@ -18,12 +18,12 @@ export const IScriptingService = createDecorator<IScriptingService>(SERVICE_ID);
 export interface IScriptingService {
 	_serviceBrand: any;
 
-	script(connectionUri: string, metadata: sqlops.ObjectMetadata, operation: ScriptOperation, paramDetails: sqlops.ScriptingParamDetails): Thenable<sqlops.ScriptingResult>;
+	script(connectionUri: string, metadata: azdata.ObjectMetadata, operation: ScriptOperation, paramDetails: azdata.ScriptingParamDetails): Thenable<azdata.ScriptingResult>;
 
 	/**
 	 * Register a scripting provider
 	 */
-	registerProvider(providerId: string, provider: sqlops.ScriptingProvider): void;
+	registerProvider(providerId: string, provider: azdata.ScriptingProvider): void;
 
 	/**
 	 * Specifies whether a provider with a given ID has been registered or not
@@ -33,12 +33,12 @@ export interface IScriptingService {
 	/**
 	 * Callback method for when scripting is complete
 	 */
-	onScriptingComplete(handle: number, scriptingCompleteResult: sqlops.ScriptingCompleteResult): void;
+	onScriptingComplete(handle: number, scriptingCompleteResult: azdata.ScriptingCompleteResult): void;
 
 	/**
 	 * Returns the result for an operation if the operation failed
 	 */
-	getOperationFailedResult(operationId: string): sqlops.ScriptingCompleteResult;
+	getOperationFailedResult(operationId: string): azdata.ScriptingCompleteResult;
 }
 
 export class ScriptingService implements IScriptingService {
@@ -47,9 +47,9 @@ export class ScriptingService implements IScriptingService {
 
 	private disposables: IDisposable[] = [];
 
-	private _providers: { [handle: string]: sqlops.ScriptingProvider; } = Object.create(null);
+	private _providers: { [handle: string]: azdata.ScriptingProvider; } = Object.create(null);
 
-	private failedScriptingOperations: { [operationId: string]: sqlops.ScriptingCompleteResult } = {};
+	private failedScriptingOperations: { [operationId: string]: azdata.ScriptingCompleteResult } = {};
 	constructor( @IConnectionManagementService private _connectionService: IConnectionManagementService) { }
 
 	/**
@@ -59,7 +59,7 @@ export class ScriptingService implements IScriptingService {
 	 * @param operation
 	 * @param paramDetails
 	 */
-	public script(connectionUri: string, metadata: sqlops.ObjectMetadata, operation: ScriptOperation, paramDetails: sqlops.ScriptingParamDetails): Thenable<sqlops.ScriptingResult> {
+	public script(connectionUri: string, metadata: azdata.ObjectMetadata, operation: ScriptOperation, paramDetails: azdata.ScriptingParamDetails): Thenable<azdata.ScriptingResult> {
 		let providerId: string = this._connectionService.getProviderIdFromUri(connectionUri);
 
 		if (providerId) {
@@ -76,7 +76,7 @@ export class ScriptingService implements IScriptingService {
 	 * @param handle
 	 * @param scriptingCompleteResult
 	 */
-	public onScriptingComplete(handle: number, scriptingCompleteResult: sqlops.ScriptingCompleteResult): void {
+	public onScriptingComplete(handle: number, scriptingCompleteResult: azdata.ScriptingCompleteResult): void {
 		if (scriptingCompleteResult && scriptingCompleteResult.hasError && scriptingCompleteResult.errorMessage) {
 			error(`Scripting failed. error: ${scriptingCompleteResult.errorMessage}`);
 			if (scriptingCompleteResult.operationId) {
@@ -89,7 +89,7 @@ export class ScriptingService implements IScriptingService {
 	 * Returns the result for an operation if the operation failed
 	 * @param operationId Operation Id
 	 */
-	public getOperationFailedResult(operationId: string): sqlops.ScriptingCompleteResult {
+	public getOperationFailedResult(operationId: string): azdata.ScriptingCompleteResult {
 		if (operationId && operationId in this.failedScriptingOperations) {
 			return this.failedScriptingOperations[operationId];
 		} else {
@@ -100,7 +100,7 @@ export class ScriptingService implements IScriptingService {
 	/**
 	 * Register a scripting provider
 	 */
-	public registerProvider(providerId: string, provider: sqlops.ScriptingProvider): void {
+	public registerProvider(providerId: string, provider: azdata.ScriptingProvider): void {
 		this._providers[providerId] = provider;
 	}
 

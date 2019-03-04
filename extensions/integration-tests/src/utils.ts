@@ -4,12 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import assert = require('assert');
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { TestServerProfile } from './testConfig';
 
 export async function connectToServer(server: TestServerProfile) {
-	let connectionProfile: sqlops.IConnectionProfile = {
+	let connectionProfile: azdata.IConnectionProfile = {
 		serverName: server.serverName,
 		databaseName: server.database,
 		authenticationType: server.authenticationTypeName,
@@ -25,7 +25,7 @@ export async function connectToServer(server: TestServerProfile) {
 		options: {}
 	};
 	await ensureConnectionViewOpened();
-	let result = <sqlops.ConnectionResult>await sqlops.connection.connect(connectionProfile);
+	let result = <azdata.ConnectionResult>await azdata.connection.connect(connectionProfile);
 	assert(result.connected, `Failed to connect to "${connectionProfile.serverName}", error code: ${result.errorCode}, error message: ${result.errorMessage}`);
 
 	//workaround

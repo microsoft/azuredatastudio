@@ -8,7 +8,7 @@ import {
 	ViewChild, ElementRef, OnDestroy, AfterViewInit
 } from '@angular/core';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
@@ -128,7 +128,7 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 			if (!this.valuesHaveDisplayName()) {
 				return this.values as string[];
 			} else {
-				return (<sqlops.CategoryValue[]>this.values).map(v => v.displayName);
+				return (<azdata.CategoryValue[]>this.values).map(v => v.displayName);
 			}
 		}
 		return [];
@@ -140,8 +140,8 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 
 	private getSelectedValue(): string {
 		if (this.values && this.values.length > 0 && this.valuesHaveDisplayName()) {
-			let selectedValue = <sqlops.CategoryValue>this.value || <sqlops.CategoryValue>this.values[0];
-			let valueCategory = (<sqlops.CategoryValue[]>this.values).find(v => v.name === selectedValue.name);
+			let selectedValue = <azdata.CategoryValue>this.value || <azdata.CategoryValue>this.values[0];
+			let valueCategory = (<azdata.CategoryValue[]>this.values).find(v => v.name === selectedValue.name);
 			return valueCategory && valueCategory.displayName;
 		} else {
 			if (!this.value && this.values && this.values.length > 0) {
@@ -153,7 +153,7 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 
 	private setSelectedValue(newValue: string): void {
 		if (this.values && this.valuesHaveDisplayName()) {
-			let valueCategory = (<sqlops.CategoryValue[]>this.values).find(v => v.displayName === newValue);
+			let valueCategory = (<azdata.CategoryValue[]>this.values).find(v => v.displayName === newValue);
 			this.value = valueCategory;
 		} else {
 			this.value = newValue;
@@ -162,12 +162,12 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 
 	// CSS-bound properties
 
-	private get value(): string | sqlops.CategoryValue {
-		return this.getPropertyOrDefault<sqlops.DropDownProperties, string | sqlops.CategoryValue>((props) => props.value, '');
+	private get value(): string | azdata.CategoryValue {
+		return this.getPropertyOrDefault<azdata.DropDownProperties, string | azdata.CategoryValue>((props) => props.value, '');
 	}
 
 	private get editable(): boolean {
-		return this.getPropertyOrDefault<sqlops.DropDownProperties, boolean>((props) => props.editable, false);
+		return this.getPropertyOrDefault<azdata.DropDownProperties, boolean>((props) => props.editable, false);
 	}
 
 	public getEditableDisplay(): string {
@@ -178,23 +178,23 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 		return !this.editable ? '' : 'none';
 	}
 
-	private set value(newValue: string | sqlops.CategoryValue) {
-		this.setPropertyFromUI<sqlops.DropDownProperties, string | sqlops.CategoryValue>(this.setValueProperties, newValue);
+	private set value(newValue: string | azdata.CategoryValue) {
+		this.setPropertyFromUI<azdata.DropDownProperties, string | azdata.CategoryValue>(this.setValueProperties, newValue);
 	}
 
-	private get values(): string[] | sqlops.CategoryValue[] {
-		return this.getPropertyOrDefault<sqlops.DropDownProperties, string[] | sqlops.CategoryValue[]>((props) => props.values, []);
+	private get values(): string[] | azdata.CategoryValue[] {
+		return this.getPropertyOrDefault<azdata.DropDownProperties, string[] | azdata.CategoryValue[]>((props) => props.values, []);
 	}
 
-	private set values(newValue: string[] | sqlops.CategoryValue[]) {
-		this.setPropertyFromUI<sqlops.DropDownProperties, string[] | sqlops.CategoryValue[]>(this.setValuesProperties, newValue);
+	private set values(newValue: string[] | azdata.CategoryValue[]) {
+		this.setPropertyFromUI<azdata.DropDownProperties, string[] | azdata.CategoryValue[]>(this.setValuesProperties, newValue);
 	}
 
-	private setValueProperties(properties: sqlops.DropDownProperties, value: string | sqlops.CategoryValue): void {
+	private setValueProperties(properties: azdata.DropDownProperties, value: string | azdata.CategoryValue): void {
 		properties.value = value;
 	}
 
-	private setValuesProperties(properties: sqlops.DropDownProperties, values: string[] | sqlops.CategoryValue[]): void {
+	private setValuesProperties(properties: azdata.DropDownProperties, values: string[] | azdata.CategoryValue[]): void {
 		properties.values = values;
 	}
 }

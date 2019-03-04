@@ -8,7 +8,7 @@ import {
 	ViewChild, ElementRef, OnDestroy, AfterViewInit
 } from '@angular/core';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 import { ComponentWithIconBase } from 'sql/parts/modelComponents/componentWithIconBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
@@ -132,47 +132,47 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 	// CSS-bound properties
 
 	private get label(): string {
-		return this.getPropertyOrDefault<sqlops.ButtonProperties, string>((props) => props.label, '');
+		return this.getPropertyOrDefault<azdata.ButtonProperties, string>((props) => props.label, '');
 	}
 
 	private set label(newValue: string) {
-		this.setPropertyFromUI<sqlops.ButtonProperties, string>(this.setValueProperties, newValue);
+		this.setPropertyFromUI<azdata.ButtonProperties, string>(this.setValueProperties, newValue);
 	}
 
 	private get isFile(): boolean {
-		return this.getPropertyOrDefault<sqlops.ButtonProperties, boolean>((props) => props.isFile, false);
+		return this.getPropertyOrDefault<azdata.ButtonProperties, boolean>((props) => props.isFile, false);
 	}
 
 	private set isFile(newValue: boolean) {
-		this.setPropertyFromUI<sqlops.ButtonProperties, boolean>(this.setFileProperties, newValue);
+		this.setPropertyFromUI<azdata.ButtonProperties, boolean>(this.setFileProperties, newValue);
 	}
 
 	private get fileContent(): string {
-		return this.getPropertyOrDefault<sqlops.ButtonProperties, string>((props) => props.fileContent, '');
+		return this.getPropertyOrDefault<azdata.ButtonProperties, string>((props) => props.fileContent, '');
 	}
 
 	private set fileContent(newValue: string) {
-		this.setPropertyFromUI<sqlops.ButtonProperties, string>(this.setFileContentProperties, newValue);
+		this.setPropertyFromUI<azdata.ButtonProperties, string>(this.setFileContentProperties, newValue);
 	}
 
-	private setFileContentProperties(properties: sqlops.ButtonProperties, fileContent: string): void {
+	private setFileContentProperties(properties: azdata.ButtonProperties, fileContent: string): void {
 		properties.fileContent = fileContent;
 	}
 
-	private setValueProperties(properties: sqlops.ButtonProperties, label: string): void {
+	private setValueProperties(properties: azdata.ButtonProperties, label: string): void {
 		properties.label = label;
 	}
 
-	private setFileProperties(properties: sqlops.ButtonProperties, isFile: boolean): void {
+	private setFileProperties(properties: azdata.ButtonProperties, isFile: boolean): void {
 		properties.isFile = isFile;
 	}
 
 	private get title(): string {
-		return this.getPropertyOrDefault<sqlops.ButtonProperties, string>((props) => props.title, '');
+		return this.getPropertyOrDefault<azdata.ButtonProperties, string>((props) => props.title, '');
 	}
 
 	private set title(newValue: string) {
-		this.setPropertyFromUI<sqlops.ButtonProperties, string>((properties, title) => { properties.title = title; }, newValue);
+		this.setPropertyFromUI<azdata.ButtonProperties, string>((properties, title) => { properties.title = title; }, newValue);
 	}
 
 }
