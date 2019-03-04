@@ -8,29 +8,21 @@
 import 'mocha';
 import * as azdata from 'azdata';
 import { context } from './testContext';
-import { getDefaultTestingServer, getBdcServer } from './testConfig';
+import { getDefaultTestingServer, getBdcServer, TestServerProfile } from './testConfig';
 import { connectToServer } from './utils';
 import assert = require('assert');
 
 if (context.RunTest) {
 	suite('Object Explorer integration suite', () => {
-		test('nodes label test', async function () {
-			let server = await getBdcServer();
-			await connectToServer(server, 6000);
-
-			let nodes = <azdata.objectexplorer.ObjectExplorerNode[]>await azdata.objectexplorer.getActiveConnectionNodes();
-			assert(nodes.length > 0, `Expecting at least one active connection, actual: ${nodes.length}`);
-
-			let index = nodes.findIndex(node => node.nodePath.includes(server.serverName));
-			assert(index !== -1, `Failed to find server: "${server.serverName}" in OE tree`);
-
+		test('BDC instance node label test', async function () {
 			const expectedNodeLable = ['Databases', 'Security', 'Server Objects', 'Data Services'];
-			let actualNodeLable = [];
-			let childeren = await nodes[index].getChildren();
-			assert(childeren.length === expectedNodeLable.length, `Expecting node count: ${expectedNodeLable.length}, Actual: ${childeren.length}`);
-
-			childeren.forEach(c => actualNodeLable.push(c.label));
-			assert(expectedNodeLable.toLocaleString() === actualNodeLable.toLocaleString(), `Expected nodes label: "$'${expectedNodeLable}", Actual: "${actualNodeLable}"`);
+			let server = await getBdcServer();
+			await VerifyOeNode(server, 6000, expectedNodeLable);
+		});
+		test('Standard alone instance node label test', async function () {
+			const expectedNodeLable = ['Databases', 'Security', 'Server Objects'];
+			let server = await getDefaultTestingServer();
+			await VerifyOeNode(server, 3000, expectedNodeLable);
 		});
 		test('context menu test', async function () {
 			let server = await getDefaultTestingServer();
@@ -48,14 +40,21 @@ if (context.RunTest) {
 			const expectedString = expectedActions.join(',');
 			const actualString = actions.join(',');
 			assert(expectedActions.length === actions.length && expectedString === actualString, `Expected actions: "${expectedString}", Actual actions: "${actualString}"`);
-
-			const expectedNodeLable = ['Databases', 'Security', 'Server Objects'];
-			let actualNodeLable = [];
-			let childeren = await node.getChildren();
-			assert(childeren.length === expectedNodeLable.length, `Expecting node count: ${expectedNodeLable.length}, Actual: ${childeren.length}`);
-
-			childeren.forEach(c => actualNodeLable.push(c.label));
-			assert(expectedNodeLable.toLocaleString() === actualNodeLable.toLocaleString(), `Expected nodes label: "$'${expectedNodeLable}", Actual: "${actualNodeLable}"`);
 		});
 	});
 }
+async function VerifyOeNode(server: TestServerProfile, timeout: number,expectedNodeLable: string[]) {
+	await connectToServer(server, timeout);
+	let nodes = <azdata.objectexplorer.ObjectExplorerNode[]>await azdata.objectexplorer.getActiveConnectionNodes();
+	assert(nodes.length > 0, `Expecting at least one active connection, actual: ${nodes.length}`);
+
+	let index = nodes.findIndex(node => node.nodePath.includes(server.serverName));
+	assert(index !== -1, `Failed to find server: "${server.serverName}" in OE tree`);
+	let actualNodeLable = [];
+	let childeren = await nodes[index].getChildren();
+	assert(childeren.length === expectedNodeLable.length, `Expecting node count: ${expectedNodeLable.length}, Actual: ${childeren.length}`);
+	
+	childeren.forEach(c => actualNodeLable.push(c.label));
+	assert(expectedNodeLable.toLocaleString() === actualNodeLable.toLocaleString(), `Expected node label: "$'${expectedNodeLable}", Actual: "${actualNodeLable}"`);
+}
+
