@@ -35,7 +35,6 @@ import * as TypeMoq from 'typemoq';
 import { IConnectionProfileGroup, ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { AccountManagementTestService } from 'sqltest/stubs/accountManagementStubs';
-import { LifecycleService } from 'vs/platform/lifecycle/electron-browser/lifecycleService';
 
 suite('SQL ConnectionManagementService tests', () => {
 

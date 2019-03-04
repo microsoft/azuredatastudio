@@ -16,7 +16,6 @@ import { IAccountStore } from 'sql/platform/accountManagement/common/interfaces'
 import { AccountProviderStub } from 'sqltest/stubs/accountManagementStubs';
 import { EventVerifierSingle } from 'sqltest/utils/eventVerifier';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
-import { LifecycleService } from 'vs/platform/lifecycle/electron-browser/lifecycleService';
 
 // SUITE CONSTANTS /////////////////////////////////////////////////////////
 const hasAccountProvider: azdata.AccountProviderMetadata = {
