@@ -25,5 +25,15 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		id: NEW_QUERY_COMMAND_ID,
 		title: localize('newQuery', 'New Query')
 	},
-	when: NodeContextKey.Connectable
+	when: NodeContextKey.IsConnectable
+});
+
+MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
+	group: 'connection',
+	order: 4,
+	command: {
+		id: MANAGE_COMMAND_ID,
+		title: localize('manage', 'Manage')
+	},
+	when: NodeContextKey.IsConnectable
 });

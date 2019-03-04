@@ -24,13 +24,6 @@ import { ObjectExplorerActionsContext } from 'sql/parts/objectExplorer/viewlet/o
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { ConnectionViewletPanel } from 'sql/parts/dataExplorer/objectExplorer/connectionViewlet/connectionViewletPanel';
-import { ConnectionManagementService } from 'sql/platform/connection/common/connectionManagementService';
-import { CommandsRegistry } from 'vs/platform/commands/common/commands';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { MenuRegistry, MenuId } from 'vs/platform/actions/common/actions';
-import { ViewsRegistry } from 'vs/workbench/common/views';
-import { ICustomViewDescriptor, TreeViewItemHandleArg } from 'sql/workbench/common/views';
-import { IOEShimService } from 'sql/parts/objectExplorer/common/objectExplorerViewTreeShim';
 
 export class RefreshAction extends Action {
 
