@@ -19,7 +19,7 @@ if (context.RunTest) {
 			await connectToServer(server, 6000);
 
 			let nodes = <azdata.objectexplorer.ObjectExplorerNode[]>await azdata.objectexplorer.getActiveConnectionNodes();
-			assert(nodes.length > 0, `expecting at least one active connection, actual: ${nodes.length}`);
+			assert(nodes.length > 0, `Expecting at least one active connection, actual: ${nodes.length}`);
 
 			let index = nodes.findIndex(node => node.nodePath.includes(server.serverName));
 			assert(index !== -1, `Failed to find server: "${server.serverName}" in OE tree`);
@@ -27,16 +27,16 @@ if (context.RunTest) {
 			const expectedNodeLable = ['Databases', 'Security', 'Server Objects', 'Data Services'];
 			let actualNodeLable = [];
 			let childeren = await nodes[index].getChildren();
-			assert(childeren.length === expectedNodeLable.length, `expecting node count: ${expectedNodeLable.length}, actual: ${childeren.length}`);
+			assert(childeren.length === expectedNodeLable.length, `Expecting node count: ${expectedNodeLable.length}, Actual: ${childeren.length}`);
 
 			childeren.forEach(c => actualNodeLable.push(c.label));
-			assert(expectedNodeLable.toLocaleString() === actualNodeLable.toLocaleString(), `Expected nodes label: "$'${expectedNodeLable}", Actual node label: "${actualNodeLable}"`);
+			assert(expectedNodeLable.toLocaleString() === actualNodeLable.toLocaleString(), `Expected nodes label: "$'${expectedNodeLable}", Actual: "${actualNodeLable}"`);
 		});
 		test('context menu test', async function () {
 			let server = await getDefaultTestingServer();
 			await connectToServer(server, 3000);
 			let nodes = <azdata.objectexplorer.ObjectExplorerNode[]>await azdata.objectexplorer.getActiveConnectionNodes();
-			assert(nodes.length > 0, `expecting at least one active connection, actual: ${nodes.length}`);
+			assert(nodes.length > 0, `Expecting at least one active connection, actual: ${nodes.length}`);
 
 			let index = nodes.findIndex(node => node.nodePath.includes(server.serverName));
 			assert(index !== -1, `Failed to find server: "${server.serverName}" in OE tree`);
@@ -52,10 +52,10 @@ if (context.RunTest) {
 			const expectedNodeLable = ['Databases', 'Security', 'Server Objects'];
 			let actualNodeLable = [];
 			let childeren = await node.getChildren();
-			assert(childeren.length === expectedNodeLable.length, `expecting node count: ${expectedNodeLable.length}, actual: ${childeren.length}`);
+			assert(childeren.length === expectedNodeLable.length, `Expecting node count: ${expectedNodeLable.length}, Actual: ${childeren.length}`);
 
 			childeren.forEach(c => actualNodeLable.push(c.label));
-			assert(expectedNodeLable.toLocaleString() === actualNodeLable.toLocaleString(), `Expected nodes label: "$'${expectedNodeLable}", Actual node label: "${actualNodeLable}"`);
+			assert(expectedNodeLable.toLocaleString() === actualNodeLable.toLocaleString(), `Expected nodes label: "$'${expectedNodeLable}", Actual: "${actualNodeLable}"`);
 		});
 	});
 }
