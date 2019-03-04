@@ -109,13 +109,8 @@ export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 		return this._onDidChangeAccounts.event;
 	}
 
-<<<<<<< HEAD
-	public $accountsChanged(handle: number, accounts: sqlops.Account[]): Thenable<void> {
-		return Promise.resolve(this._onDidChangeAccounts.fire({ accounts: accounts }));
-=======
 	public $accountsChanged(handle: number, accounts: azdata.Account[]): Thenable<void> {
-		return this._onDidChangeAccounts.fire({ accounts: accounts });
->>>>>>> 2309b16bd4bd3cd3e7e87a2c1ed4019db0a4c52e
+		return Promise.resolve(this._onDidChangeAccounts.fire({ accounts: accounts }));
 	}
 
 	public $registerAccountProvider(providerMetadata: azdata.AccountProviderMetadata, provider: azdata.AccountProvider): Disposable {
