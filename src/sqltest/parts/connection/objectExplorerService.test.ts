@@ -13,7 +13,7 @@ import { NodeType } from 'sql/parts/objectExplorer/common/nodeType';
 import { TreeNode, TreeItemCollapsibleState } from 'sql/parts/objectExplorer/common/treeNode';
 
 import { TPromise } from 'vs/base/common/winjs.base';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
 import { ServerTreeView } from 'sql/parts/objectExplorer/viewlet/serverTreeView';
@@ -28,9 +28,9 @@ suite('SQL Object Explorer Service tests', () => {
 	let connectionToFail: ConnectionProfile;
 	let conProfGroup: ConnectionProfileGroup;
 	let objectExplorerService: ObjectExplorerService;
-	let objectExplorerSession: sqlops.ObjectExplorerSession;
-	let objectExplorerFailedSession: sqlops.ObjectExplorerSession;
-	let objectExplorerCloseSessionResponse: sqlops.ObjectExplorerCloseSessionResponse;
+	let objectExplorerSession: azdata.ObjectExplorerSession;
+	let objectExplorerFailedSession: azdata.ObjectExplorerSession;
+	let objectExplorerCloseSessionResponse: azdata.ObjectExplorerCloseSessionResponse;
 	let objectExplorerExpandInfo: NodeExpandInfoWithProviderId;
 	let objectExplorerExpandInfoRefresh: NodeExpandInfoWithProviderId;
 	let sessionId = '1234';
@@ -116,11 +116,11 @@ suite('SQL Object Explorer Service tests', () => {
 			nodePath: objectExplorerSession.rootNode.nodePath,
 			providerId: providerId
 		};
-		let response: sqlops.ObjectExplorerSessionResponse = {
+		let response: azdata.ObjectExplorerSessionResponse = {
 			sessionId: objectExplorerSession.sessionId
 		};
 
-		let failedResponse: sqlops.ObjectExplorerSessionResponse = {
+		let failedResponse: azdata.ObjectExplorerSessionResponse = {
 			sessionId: failedSessionId
 		};
 
@@ -273,10 +273,10 @@ suite('SQL Object Explorer Service tests', () => {
 
 		objectExplorerService = new ObjectExplorerService(connectionManagementService.object, undefined, capabilitiesService);
 		objectExplorerService.registerProvider('MSSQL', sqlOEProvider.object);
-		sqlOEProvider.setup(x => x.createNewSession(TypeMoq.It.is<sqlops.ConnectionInfo>(x => x.options['serverName'] === connection.serverName))).returns(() => new Promise<any>((resolve) => {
+		sqlOEProvider.setup(x => x.createNewSession(TypeMoq.It.is<azdata.ConnectionInfo>(x => x.options['serverName'] === connection.serverName))).returns(() => new Promise<any>((resolve) => {
 			resolve(response);
 		}));
-		sqlOEProvider.setup(x => x.createNewSession(TypeMoq.It.is<sqlops.ConnectionInfo>(x => x.options['serverName'] === connectionToFail.serverName))).returns(() => new Promise<any>((resolve) => {
+		sqlOEProvider.setup(x => x.createNewSession(TypeMoq.It.is<azdata.ConnectionInfo>(x => x.options['serverName'] === connectionToFail.serverName))).returns(() => new Promise<any>((resolve) => {
 			resolve(failedResponse);
 		}));
 		sqlOEProvider.setup(x => x.expandNode(TypeMoq.It.isAny())).callback(() => {

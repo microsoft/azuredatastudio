@@ -5,7 +5,7 @@
 
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 
 type TreeNodePredicate = (node: TreeNode) => boolean;
@@ -66,7 +66,7 @@ export abstract class TreeNode {
 	public abstract getChildren(refreshChildren: boolean): TreeNode[] | Promise<TreeNode[]>;
 	public abstract getTreeItem(): vscode.TreeItem | Promise<vscode.TreeItem>;
 
-	public abstract getNodeInfo(): sqlops.NodeInfo;
+	public abstract getNodeInfo(): azdata.NodeInfo;
 
 	/**
 	 * The value to use for this node in the node path

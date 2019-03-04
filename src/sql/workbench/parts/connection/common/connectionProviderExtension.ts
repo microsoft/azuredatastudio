@@ -10,12 +10,12 @@ import { localize } from 'vs/nls';
 import { Event, Emitter } from 'vs/base/common/event';
 import { deepClone } from 'vs/base/common/objects';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 export interface ConnectionProviderProperties {
 	providerId: string;
 	displayName: string;
-	connectionOptions: sqlops.ConnectionOption[];
+	connectionOptions: azdata.ConnectionOption[];
 }
 
 export const Extensions = {

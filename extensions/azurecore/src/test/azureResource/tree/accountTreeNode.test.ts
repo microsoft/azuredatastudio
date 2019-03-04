@@ -7,7 +7,7 @@
 
 import * as should from 'should';
 import * as TypeMoq from 'typemoq';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import 'mocha';
 import { TokenCredentials } from 'ms-rest';
@@ -42,7 +42,7 @@ let mockTreeChangeHandler: TypeMoq.IMock<IAzureResourceTreeChangeHandler>;
 // Mock test data
 const mockTenantId = 'mock_tenant_id';
 
-const mockAccount: sqlops.Account = {
+const mockAccount: azdata.Account = {
 	key: {
 		accountId: 'mock_account',
 		providerId: 'mock_provider'
@@ -105,7 +105,7 @@ describe('AzureResourceAccountTreeNode.info', function(): void {
 		mockAppContext.registerService<IAzureResourceSubscriptionFilterService>(AzureResourceServiceNames.subscriptionFilterService, mockSubscriptionFilterService.object);
 		mockAppContext.registerService<IAzureResourceTenantService>(AzureResourceServiceNames.tenantService, mockTenantService.object);
 
-		mockApiWrapper.setup((o) => o.getSecurityToken(mockAccount, sqlops.AzureResource.ResourceManagement)).returns(() => Promise.resolve(mockTokens));
+		mockApiWrapper.setup((o) => o.getSecurityToken(mockAccount, azdata.AzureResource.ResourceManagement)).returns(() => Promise.resolve(mockTokens));
 		mockCacheService.setup((o) => o.generateKey(TypeMoq.It.isAnyString())).returns(() => generateGuid());
 		mockCacheService.setup((o) => o.get(TypeMoq.It.isAnyString())).returns(() => mockSubscriptionCache);
 		mockCacheService.setup((o) => o.update(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).returns(() => mockSubscriptionCache = mockSubscriptions);
@@ -193,7 +193,7 @@ describe('AzureResourceAccountTreeNode.getChildren', function(): void {
 		mockAppContext.registerService<IAzureResourceSubscriptionFilterService>(AzureResourceServiceNames.subscriptionFilterService, mockSubscriptionFilterService.object);
 		mockAppContext.registerService<IAzureResourceTenantService>(AzureResourceServiceNames.tenantService, mockTenantService.object);
 
-		mockApiWrapper.setup((o) => o.getSecurityToken(mockAccount, sqlops.AzureResource.ResourceManagement)).returns(() => Promise.resolve(mockTokens));
+		mockApiWrapper.setup((o) => o.getSecurityToken(mockAccount, azdata.AzureResource.ResourceManagement)).returns(() => Promise.resolve(mockTokens));
 		mockCacheService.setup((o) => o.generateKey(TypeMoq.It.isAnyString())).returns(() => generateGuid());
 		mockCacheService.setup((o) => o.get(TypeMoq.It.isAnyString())).returns(() => mockSubscriptionCache);
 		mockCacheService.setup((o) => o.update(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).returns(() => mockSubscriptionCache = mockSubscriptions);
@@ -208,7 +208,7 @@ describe('AzureResourceAccountTreeNode.getChildren', function(): void {
 
 		const children = await accountTreeNode.getChildren();
 
-		mockApiWrapper.verify((o) => o.getSecurityToken(mockAccount, sqlops.AzureResource.ResourceManagement), TypeMoq.Times.once());
+		mockApiWrapper.verify((o) => o.getSecurityToken(mockAccount, azdata.AzureResource.ResourceManagement), TypeMoq.Times.once());
 		mockSubscriptionService.verify((o) => o.getSubscriptions(mockAccount, mockCredential), TypeMoq.Times.once());
 		mockCacheService.verify((o) => o.get(TypeMoq.It.isAnyString()), TypeMoq.Times.exactly(0));
 		mockCacheService.verify((o) => o.update(TypeMoq.It.isAnyString(), TypeMoq.It.isAny()), TypeMoq.Times.once());
@@ -243,7 +243,7 @@ describe('AzureResourceAccountTreeNode.getChildren', function(): void {
 		await accountTreeNode.getChildren();
 		const children = await accountTreeNode.getChildren();
 
-		mockApiWrapper.verify((o) => o.getSecurityToken(mockAccount, sqlops.AzureResource.ResourceManagement), TypeMoq.Times.once());
+		mockApiWrapper.verify((o) => o.getSecurityToken(mockAccount, azdata.AzureResource.ResourceManagement), TypeMoq.Times.once());
 		mockSubscriptionService.verify((o) => o.getSubscriptions(mockAccount, mockCredential), TypeMoq.Times.once());
 		mockCacheService.verify((o) => o.get(TypeMoq.It.isAnyString()), TypeMoq.Times.once());
 		mockCacheService.verify((o) => o.update(TypeMoq.It.isAnyString(), TypeMoq.It.isAny()), TypeMoq.Times.once());
@@ -299,7 +299,7 @@ describe('AzureResourceAccountTreeNode.getChildren', function(): void {
 
 		const children = await accountTreeNode.getChildren();
 
-		mockApiWrapper.verify((o) => o.getSecurityToken(mockAccount, sqlops.AzureResource.ResourceManagement), TypeMoq.Times.once());
+		mockApiWrapper.verify((o) => o.getSecurityToken(mockAccount, azdata.AzureResource.ResourceManagement), TypeMoq.Times.once());
 		mockSubscriptionService.verify((o) => o.getSubscriptions(mockAccount, mockCredential), TypeMoq.Times.once());
 		mockSubscriptionFilterService.verify((o) => o.getSelectedSubscriptions(mockAccount), TypeMoq.Times.once());
 		mockCacheService.verify((o) => o.get(TypeMoq.It.isAnyString()), TypeMoq.Times.never());
@@ -332,7 +332,7 @@ describe('AzureResourceAccountTreeNode.clearCache', function() : void {
 		mockAppContext.registerService<IAzureResourceSubscriptionFilterService>(AzureResourceServiceNames.subscriptionFilterService, mockSubscriptionFilterService.object);
 		mockAppContext.registerService<IAzureResourceTenantService>(AzureResourceServiceNames.tenantService, mockTenantService.object);
 
-		mockApiWrapper.setup((o) => o.getSecurityToken(mockAccount, sqlops.AzureResource.ResourceManagement)).returns(() => Promise.resolve(mockTokens));
+		mockApiWrapper.setup((o) => o.getSecurityToken(mockAccount, azdata.AzureResource.ResourceManagement)).returns(() => Promise.resolve(mockTokens));
 		mockCacheService.setup((o) => o.generateKey(TypeMoq.It.isAnyString())).returns(() => generateGuid());
 		mockCacheService.setup((o) => o.get(TypeMoq.It.isAnyString())).returns(() => mockSubscriptionCache);
 		mockCacheService.setup((o) => o.update(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).returns(() => mockSubscriptionCache = mockSubscriptions);

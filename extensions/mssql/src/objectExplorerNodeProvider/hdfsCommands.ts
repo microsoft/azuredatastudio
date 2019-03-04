@@ -6,7 +6,7 @@
 'use strict';
 
 import * as vscode from 'vscode';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as fs from 'fs';
 import * as fspath from 'path';
 import * as clipboardy from 'clipboardy';
@@ -92,7 +92,7 @@ export class UploadFilesCommand extends ProgressCommand {
 						localize('uploading', 'Uploading files to HDFS'), true,
 						() => this.apiWrapper.showInformationMessage(localize('uploadCanceled', 'Upload operation was canceled')));
 					if (context.type === constants.ObjectExplorerService) {
-						let objectExplorerNode = await sqlops.objectexplorer.getNode(context.explorerContext.connectionProfile.id, folderNode.getNodeInfo().nodePath);
+						let objectExplorerNode = await azdata.objectexplorer.getNode(context.explorerContext.connectionProfile.id, folderNode.getNodeInfo().nodePath);
 						await objectExplorerNode.refresh();
 					}
 				}
@@ -150,7 +150,7 @@ export class MkDirCommand extends ProgressCommand {
 						localize('makingDir', 'Creating directory'), true,
 						() => this.apiWrapper.showInformationMessage(localize('mkdirCanceled', 'Operation was canceled')));
 					if (context.type === constants.ObjectExplorerService) {
-						let objectExplorerNode = await sqlops.objectexplorer.getNode(context.explorerContext.connectionProfile.id, folderNode.getNodeInfo().nodePath);
+						let objectExplorerNode = await azdata.objectexplorer.getNode(context.explorerContext.connectionProfile.id, folderNode.getNodeInfo().nodePath);
 						await objectExplorerNode.refresh();
 					}
 				}
@@ -191,9 +191,9 @@ export class DeleteFilesCommand extends Command {
 				// TODO ideally would let node define if it's deletable
 				// TODO also, would like to change this to getNodeInfo as OE is the primary use case now
 				let treeItem = await node.getTreeItem();
-				let oeNodeToRefresh: sqlops.objectexplorer.ObjectExplorerNode = undefined;
+				let oeNodeToRefresh: azdata.objectexplorer.ObjectExplorerNode = undefined;
 				if (context.type === constants.ObjectExplorerService) {
-					let oeNodeToDelete = await sqlops.objectexplorer.getNode(context.explorerContext.connectionProfile.id, node.getNodeInfo().nodePath);
+					let oeNodeToDelete = await azdata.objectexplorer.getNode(context.explorerContext.connectionProfile.id, node.getNodeInfo().nodePath);
 					oeNodeToRefresh = await oeNodeToDelete.getParent();
 				}
 				switch (treeItem.contextValue) {

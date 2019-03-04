@@ -5,7 +5,7 @@
 'use strict';
 
 import * as nls from 'vscode-nls';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { AgentUtils } from '../agentUtils';
 import { IAgentDialogData, AgentDialogMode } from '../interfaces';
@@ -25,8 +25,8 @@ export class JobData implements IAgentDialogData {
 	private _jobCategories: string[];
 	private _operators: string[];
 	private _defaultOwner: string;
-	private _jobCompletionActionConditions: sqlops.CategoryValue[];
-	private _jobCategoryIdsMap: sqlops.AgentJobCategory[];
+	private _jobCompletionActionConditions: azdata.CategoryValue[];
+	private _jobCategoryIdsMap: azdata.AgentJobCategory[];
 
 	public dialogMode: AgentDialogMode = AgentDialogMode.CREATE;
 	public name: string;
@@ -36,23 +36,23 @@ export class JobData implements IAgentDialogData {
 	public category: string;
 	public categoryId: number;
 	public owner: string;
-	public emailLevel: sqlops.JobCompletionActionCondition = sqlops.JobCompletionActionCondition.OnFailure;
-	public pageLevel: sqlops.JobCompletionActionCondition = sqlops.JobCompletionActionCondition.OnFailure;
-	public eventLogLevel: sqlops.JobCompletionActionCondition = sqlops.JobCompletionActionCondition.OnFailure;
-	public deleteLevel: sqlops.JobCompletionActionCondition = sqlops.JobCompletionActionCondition.OnSuccess;
+	public emailLevel: azdata.JobCompletionActionCondition = azdata.JobCompletionActionCondition.OnFailure;
+	public pageLevel: azdata.JobCompletionActionCondition = azdata.JobCompletionActionCondition.OnFailure;
+	public eventLogLevel: azdata.JobCompletionActionCondition = azdata.JobCompletionActionCondition.OnFailure;
+	public deleteLevel: azdata.JobCompletionActionCondition = azdata.JobCompletionActionCondition.OnSuccess;
 	public operatorToEmail: string;
 	public operatorToPage: string;
-	public jobSteps: sqlops.AgentJobStepInfo[];
-	public jobSchedules: sqlops.AgentJobScheduleInfo[];
-	public alerts: sqlops.AgentAlertInfo[];
+	public jobSteps: azdata.AgentJobStepInfo[];
+	public jobSchedules: azdata.AgentJobScheduleInfo[];
+	public alerts: azdata.AgentAlertInfo[];
 	public jobId: string;
 	public startStepId: number;
 	public categoryType: number;
 
 	constructor(
 		ownerUri: string,
-		jobInfo: sqlops.AgentJobInfo = undefined,
-		private _agentService: sqlops.AgentServicesProvider = undefined) {
+		jobInfo: azdata.AgentJobInfo = undefined,
+		private _agentService: azdata.AgentServicesProvider = undefined) {
 
 		this._ownerUri = ownerUri;
 		if (jobInfo) {
@@ -77,7 +77,7 @@ export class JobData implements IAgentDialogData {
 		return this._jobCategories;
 	}
 
-	public get jobCategoryIdsMap(): sqlops.AgentJobCategory[] {
+	public get jobCategoryIdsMap(): azdata.AgentJobCategory[] {
 		return this._jobCategoryIdsMap;
 	}
 
@@ -93,7 +93,7 @@ export class JobData implements IAgentDialogData {
 		return this._defaultOwner;
 	}
 
-	public get JobCompletionActionConditions(): sqlops.CategoryValue[] {
+	public get JobCompletionActionConditions(): azdata.CategoryValue[] {
 		return this._jobCompletionActionConditions;
 	}
 
@@ -112,18 +112,18 @@ export class JobData implements IAgentDialogData {
 
 		this._jobCompletionActionConditions = [{
 			displayName: this.JobCompletionActionCondition_OnSuccess,
-			name: sqlops.JobCompletionActionCondition.OnSuccess.toString()
+			name: azdata.JobCompletionActionCondition.OnSuccess.toString()
 		}, {
 			displayName: this.JobCompletionActionCondition_OnFailure,
-			name: sqlops.JobCompletionActionCondition.OnFailure.toString()
+			name: azdata.JobCompletionActionCondition.OnFailure.toString()
 		}, {
 			displayName: this.JobCompletionActionCondition_Always,
-			name: sqlops.JobCompletionActionCondition.Always.toString()
+			name: azdata.JobCompletionActionCondition.Always.toString()
 		}];
 	}
 
 	public async save() {
-		let jobInfo: sqlops.AgentJobInfo = this.toAgentJobInfo();
+		let jobInfo: azdata.AgentJobInfo = this.toAgentJobInfo();
 		let result = this.dialogMode === AgentDialogMode.CREATE
 			? await this._agentService.createJob(this.ownerUri,  jobInfo)
 			: await this._agentService.updateJob(this.ownerUri, this.originalName, jobInfo);
@@ -146,7 +146,7 @@ export class JobData implements IAgentDialogData {
 		};
 	}
 
-	public toAgentJobInfo(): sqlops.AgentJobInfo {
+	public toAgentJobInfo(): azdata.AgentJobInfo {
 		return {
 			name: this.name,
 			owner: this.owner,

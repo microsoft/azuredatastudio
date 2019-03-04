@@ -6,7 +6,7 @@
 'use strict';
 
 import * as should from 'should';
-import { nb, IConnectionProfile } from 'sqlops';
+import { nb, IConnectionProfile } from 'azdata';
 
 import { CapabilitiesTestService } from 'sqltest/stubs/capabilitiesTestService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';

@@ -8,7 +8,7 @@
 import * as should from 'should';
 import * as assert from 'assert';
 import * as vscode from 'vscode';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as tempWrite from 'temp-write';
 import 'mocha';
 
@@ -42,13 +42,13 @@ describe('Notebook Integration Test', function (): void {
 		let uri = writeNotebookToFile(pythonNotebook);
 		await ensureJupyterInstalled();
 
-		let notebook = await sqlops.nb.showNotebookDocument(uri);
+		let notebook = await azdata.nb.showNotebookDocument(uri);
 		should(notebook.document.cells).have.length(1);
 		let ran = await notebook.runCell(notebook.document.cells[0]);
 		should(ran).be.true('Notebook runCell failed');
 		let cellOutputs = notebook.document.cells[0].contents.outputs;
 		should(cellOutputs).have.length(1);
-		let result = (<sqlops.nb.IExecuteResult>cellOutputs[0]).data['text/plain'];
+		let result = (<azdata.nb.IExecuteResult>cellOutputs[0]).data['text/plain'];
 		should(result).equal('2');
 
 		try {
@@ -68,7 +68,7 @@ describe('Notebook Integration Test', function (): void {
 		let connectionId = await connectToSparkIntegrationServer();
 
 		// When I open a Spark notebook and run the cell
-		let notebook = await sqlops.nb.showNotebookDocument(uri, {
+		let notebook = await azdata.nb.showNotebookDocument(uri, {
 			connectionId: connectionId
 		});
 		should(notebook.document.cells).have.length(1);
@@ -78,7 +78,7 @@ describe('Notebook Integration Test', function (): void {
 		// Then I expect to get the output result of 1+1, executed remotely against the Spark endpoint
 		let cellOutputs = notebook.document.cells[0].contents.outputs;
 		should(cellOutputs).have.length(4);
-		let sparkResult = (<sqlops.nb.IStreamResult>cellOutputs[3]).text;
+		let sparkResult = (<azdata.nb.IStreamResult>cellOutputs[3]).text;
 		should(sparkResult).equal('2');
 
 		try {
@@ -92,7 +92,7 @@ describe('Notebook Integration Test', function (): void {
 
 async function connectToSparkIntegrationServer(): Promise<string> {
 	assert.ok(process.env.BACKEND_HOSTNAME, 'BACKEND_HOSTNAME, BACKEND_USERNAME, BACKEND_PWD must be set using ./tasks/setbackenvariables.sh or .\\tasks\\setbackendvaraibles.bat');
-	let connInfo: sqlops.connection.Connection = {
+	let connInfo: azdata.connection.Connection = {
 		options: {
 			'host': process.env.BACKEND_HOSTNAME,
 			'groupId': 'C777F06B-202E-4480-B475-FA416154D458',
@@ -104,14 +104,14 @@ async function connectToSparkIntegrationServer(): Promise<string> {
 		connectionId: 'abcd1234',
 	};
 	connInfo['savePassword'] = true;
-	let result = await sqlops.connection.connect(<any>connInfo as sqlops.IConnectionProfile);
+	let result = await azdata.connection.connect(<any>connInfo as azdata.IConnectionProfile);
 
 	should(result.connected).be.true();
 	should(result.connectionId).not.be.undefined();
 	should(result.connectionId).not.be.empty();
 	should(result.errorMessage).be.undefined();
 
-	let activeConnections = await sqlops.connection.getActiveConnections();
+	let activeConnections = await azdata.connection.getActiveConnections();
 	should(activeConnections).have.length(1);
 
 	return result.connectionId;

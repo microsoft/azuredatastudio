@@ -6,7 +6,7 @@
 'use strict';
 
 import 'mocha';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { context } from './testContext';
 import { getDefaultTestingServer, getBdcServer } from './testConfig';
 import { connectToServer } from './utils';
@@ -16,9 +16,9 @@ if (context.RunTest) {
 	suite('Object Explorer integration suite', () => {
 		test('nodes label test', async function () {
 			let server = await getBdcServer();
-			await connectToServer(server, 10000);
+			await connectToServer(server, 6000);
 
-			let nodes = <sqlops.objectexplorer.ObjectExplorerNode[]>await sqlops.objectexplorer.getActiveConnectionNodes();
+			let nodes = <azdata.objectexplorer.ObjectExplorerNode[]>await azdata.objectexplorer.getActiveConnectionNodes();
 			assert(nodes.length > 0, `expecting at least one active connection, actual: ${nodes.length}`);
 
 			let index = nodes.findIndex(node => node.nodePath.includes(server.serverName));
@@ -35,14 +35,14 @@ if (context.RunTest) {
 		test('context menu test', async function () {
 			let server = await getDefaultTestingServer();
 			await connectToServer(server, 3000);
-			let nodes = <sqlops.objectexplorer.ObjectExplorerNode[]>await sqlops.objectexplorer.getActiveConnectionNodes();
+			let nodes = <azdata.objectexplorer.ObjectExplorerNode[]>await azdata.objectexplorer.getActiveConnectionNodes();
 			assert(nodes.length > 0, `expecting at least one active connection, actual: ${nodes.length}`);
 
 			let index = nodes.findIndex(node => node.nodePath.includes(server.serverName));
 			assert(index !== -1, `Failed to find server: "${server.serverName}" in OE tree`);
 
 			let node = nodes[index];
-			let actions = await sqlops.objectexplorer.getNodeActions(node.connectionId, node.nodePath);
+			let actions = await azdata.objectexplorer.getNodeActions(node.connectionId, node.nodePath);
 			const expectedActions = ['Manage', 'New Query', 'Disconnect', 'Delete Connection', 'Refresh', 'New Notebook', 'Launch Profiler'];
 
 			const expectedString = expectedActions.join(',');

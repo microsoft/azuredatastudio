@@ -8,7 +8,7 @@
 
 'use strict';
 
-import { nb } from 'sqlops';
+import { nb } from 'azdata';
 import * as nls from 'vs/nls';
 import { URI } from 'vs/base/common/uri';
 import { Event, Emitter } from 'vs/base/common/event';
@@ -225,10 +225,10 @@ export class ClientSession implements IClientSession {
 	/**
 	 * Change the current kernel associated with the document.
 	 */
-	async changeKernel(options: nb.IKernelSpec): Promise<nb.IKernel> {
+	async changeKernel(options: nb.IKernelSpec, oldValue?: nb.IKernel): Promise<nb.IKernel> {
 		this._kernelChangeCompleted = new Deferred<void>();
 		this._isReady = false;
-		let oldKernel = this.kernel;
+		let oldKernel = oldValue? oldValue: this.kernel;
 		let newKernel = this.kernel;
 
 		let kernel = await this.doChangeKernel(options);

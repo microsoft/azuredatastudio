@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 import { DacFxDataModel } from '../api/models';
 import { DataTierApplicationWizard, Operation } from '../dataTierApplicationWizard';
@@ -14,16 +14,16 @@ const localize = nls.loadMessageBundle();
 
 export class DacFxSummaryPage extends BasePage {
 
-	protected readonly wizardPage: sqlops.window.WizardPage;
+	protected readonly wizardPage: azdata.window.WizardPage;
 	protected readonly instance: DataTierApplicationWizard;
 	protected readonly model: DacFxDataModel;
-	protected readonly view: sqlops.ModelView;
+	protected readonly view: azdata.ModelView;
 
-	private form: sqlops.FormContainer;
-	private table: sqlops.TableComponent;
-	private loader: sqlops.LoadingComponent;
+	private form: azdata.FormContainer;
+	private table: azdata.TableComponent;
+	private loader: azdata.LoadingComponent;
 
-	public constructor(instance: DataTierApplicationWizard, wizardPage: sqlops.window.WizardPage, model: DacFxDataModel, view: sqlops.ModelView) {
+	public constructor(instance: DataTierApplicationWizard, wizardPage: azdata.window.WizardPage, model: DacFxDataModel, view: azdata.ModelView) {
 		super();
 		this.instance = instance;
 		this.wizardPage = wizardPage;

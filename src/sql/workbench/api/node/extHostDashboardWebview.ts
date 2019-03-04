@@ -11,9 +11,9 @@ import { Emitter } from 'vs/base/common/event';
 import { deepClone } from 'vs/base/common/objects';
 
 import * as vscode from 'vscode';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
-class ExtHostDashboardWebview implements sqlops.DashboardWebview {
+class ExtHostDashboardWebview implements azdata.DashboardWebview {
 
 	private _html: string;
 	public onMessageEmitter = new Emitter<any>();
@@ -22,8 +22,8 @@ class ExtHostDashboardWebview implements sqlops.DashboardWebview {
 	constructor(
 		private readonly _proxy: MainThreadDashboardWebviewShape,
 		private readonly _handle: number,
-		private readonly _connection: sqlops.connection.Connection,
-		private readonly _serverInfo: sqlops.ServerInfo
+		private readonly _connection: azdata.connection.Connection,
+		private readonly _serverInfo: azdata.ServerInfo
 	) { }
 
 	public postMessage(message: any): Thenable<any> {
@@ -38,11 +38,11 @@ class ExtHostDashboardWebview implements sqlops.DashboardWebview {
 		return this.onClosedEmitter.event;
 	}
 
-	public get connection(): sqlops.connection.Connection {
+	public get connection(): azdata.connection.Connection {
 		return deepClone(this._connection);
 	}
 
-	public get serverInfo(): sqlops.ServerInfo {
+	public get serverInfo(): azdata.ServerInfo {
 		return deepClone(this._serverInfo);
 	}
 
@@ -62,7 +62,7 @@ export class ExtHostDashboardWebviews implements ExtHostDashboardWebviewsShape {
 	private readonly _proxy: MainThreadDashboardWebviewShape;
 
 	private readonly _webviews = new Map<number, ExtHostDashboardWebview>();
-	private readonly _handlers = new Map<string, (webview: sqlops.DashboardWebview) => void>();
+	private readonly _handlers = new Map<string, (webview: azdata.DashboardWebview) => void>();
 
 	constructor(
 		mainContext: IMainContext
@@ -81,12 +81,12 @@ export class ExtHostDashboardWebviews implements ExtHostDashboardWebviewsShape {
 		this._webviews.delete(handle);
 	}
 
-	$registerProvider(widgetId: string, handler: (webview: sqlops.DashboardWebview) => void): void {
+	$registerProvider(widgetId: string, handler: (webview: azdata.DashboardWebview) => void): void {
 		this._handlers.set(widgetId, handler);
 		this._proxy.$registerProvider(widgetId);
 	}
 
-	$registerWidget(handle: number, id: string, connection: sqlops.connection.Connection, serverInfo: sqlops.ServerInfo): void {
+	$registerWidget(handle: number, id: string, connection: azdata.connection.Connection, serverInfo: azdata.ServerInfo): void {
 		let webview = new ExtHostDashboardWebview(this._proxy, handle, connection, serverInfo);
 		this._webviews.set(handle, webview);
 		this._handlers.get(id)(webview);

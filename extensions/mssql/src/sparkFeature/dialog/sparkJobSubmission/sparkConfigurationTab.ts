@@ -5,7 +5,7 @@
 
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 import * as fspath from 'path';
 import * as fs from 'fs';
@@ -22,19 +22,19 @@ import { SparkFileSource } from './sparkJobSubmissionService';
 const localize = nls.loadMessageBundle();
 
 export class SparkConfigurationTab {
-	private _tab: sqlops.window.DialogTab;
-	public get tab(): sqlops.window.DialogTab { return this._tab; }
+	private _tab: azdata.window.DialogTab;
+	public get tab(): azdata.window.DialogTab { return this._tab; }
 
-	private _jobNameInputBox: sqlops.InputBoxComponent;
-	private _sparkContextLabel: sqlops.TextComponent;
-	private _fileSourceDropDown: sqlops.DropDownComponent;
-	private _sparkSourceFileInputBox: sqlops.InputBoxComponent;
-	private _filePickerButton: sqlops.ButtonComponent;
-	private _sourceFlexContainer: sqlops.FlexContainer;
-	private _sourceFlexContainerWithHint: sqlops.FlexContainer;
-	private _localUploadDestinationLabel: sqlops.TextComponent;
-	private _mainClassInputBox: sqlops.InputBoxComponent;
-	private _argumentsInputBox: sqlops.InputBoxComponent;
+	private _jobNameInputBox: azdata.InputBoxComponent;
+	private _sparkContextLabel: azdata.TextComponent;
+	private _fileSourceDropDown: azdata.DropDownComponent;
+	private _sparkSourceFileInputBox: azdata.InputBoxComponent;
+	private _filePickerButton: azdata.ButtonComponent;
+	private _sourceFlexContainer: azdata.FlexContainer;
+	private _sourceFlexContainerWithHint: azdata.FlexContainer;
+	private _localUploadDestinationLabel: azdata.TextComponent;
+	private _mainClassInputBox: azdata.InputBoxComponent;
+	private _argumentsInputBox: azdata.InputBoxComponent;
 
 	private get apiWrapper(): ApiWrapper {
 		return this.appContext.apiWrapper;
@@ -46,7 +46,7 @@ export class SparkConfigurationTab {
 
 		this._tab.registerContent(async (modelView) => {
 			let builder = modelView.modelBuilder;
-			let parentLayout: sqlops.FormItemLayout = {
+			let parentLayout: azdata.FormItemLayout = {
 				horizontal: false,
 				componentWidth: '400px'
 			};
@@ -72,7 +72,7 @@ export class SparkConfigurationTab {
 				title: localize('sparkJobSubmission_SparkCluster', 'Spark Cluster')
 			}, parentLayout);
 
-			this._fileSourceDropDown = builder.dropDown().withProperties<sqlops.DropDownProperties>({
+			this._fileSourceDropDown = builder.dropDown().withProperties<azdata.DropDownProperties>({
 				values: [SparkFileSource.Local.toString(), SparkFileSource.HDFS.toString()],
 				value: (this._path) ? SparkFileSource.HDFS.toString() : SparkFileSource.Local.toString()
 			}).component();

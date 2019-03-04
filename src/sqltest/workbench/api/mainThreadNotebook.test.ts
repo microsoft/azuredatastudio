@@ -6,7 +6,7 @@
 
 import * as assert from 'assert';
 import * as TypeMoq from 'typemoq';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 
 import { URI, UriComponents } from 'vs/base/common/uri';
@@ -132,46 +132,46 @@ class ExtHostNotebookStub implements ExtHostNotebookShape {
 	$doStopServer(managerHandle: number): Thenable<void> {
 		throw new Error('Method not implemented.');
 	}
-	$getNotebookContents(managerHandle: number, notebookUri: UriComponents): Thenable<sqlops.nb.INotebookContents> {
+	$getNotebookContents(managerHandle: number, notebookUri: UriComponents): Thenable<azdata.nb.INotebookContents> {
 		throw new Error('Method not implemented.');
 	}
-	$save(managerHandle: number, notebookUri: UriComponents, notebook: sqlops.nb.INotebookContents): Thenable<sqlops.nb.INotebookContents> {
+	$save(managerHandle: number, notebookUri: UriComponents, notebook: azdata.nb.INotebookContents): Thenable<azdata.nb.INotebookContents> {
 		throw new Error('Method not implemented.');
 	}
-	$refreshSpecs(managerHandle: number): Thenable<sqlops.nb.IAllKernels> {
+	$refreshSpecs(managerHandle: number): Thenable<azdata.nb.IAllKernels> {
 		throw new Error('Method not implemented.');
 	}
-	$startNewSession(managerHandle: number, options: sqlops.nb.ISessionOptions): Thenable<INotebookSessionDetails> {
+	$startNewSession(managerHandle: number, options: azdata.nb.ISessionOptions): Thenable<INotebookSessionDetails> {
 		throw new Error('Method not implemented.');
 	}
 	$shutdownSession(managerHandle: number, sessionId: string): Thenable<void> {
 		throw new Error('Method not implemented.');
 	}
-	$changeKernel(sessionId: number, kernelInfo: sqlops.nb.IKernelSpec): Thenable<INotebookKernelDetails> {
+	$changeKernel(sessionId: number, kernelInfo: azdata.nb.IKernelSpec): Thenable<INotebookKernelDetails> {
 		throw new Error('Method not implemented.');
 	}
-	$configureKernel(sessionId: number, kernelInfo: sqlops.nb.IKernelSpec): Thenable<void> {
+	$configureKernel(sessionId: number, kernelInfo: azdata.nb.IKernelSpec): Thenable<void> {
 		throw new Error('Method not implemented.');
 	}
-	$configureConnection(sessionId: number, conneection: sqlops.IConnectionProfile): Thenable<void> {
+	$configureConnection(sessionId: number, conneection: azdata.IConnectionProfile): Thenable<void> {
 		throw new Error('Method not implemented.');
 	}
-	$getKernelReadyStatus(kernelId: number): Thenable<sqlops.nb.IInfoReply> {
+	$getKernelReadyStatus(kernelId: number): Thenable<azdata.nb.IInfoReply> {
 		throw new Error('Method not implemented.');
 	}
-	$getKernelSpec(kernelId: number): Thenable<sqlops.nb.IKernelSpec> {
+	$getKernelSpec(kernelId: number): Thenable<azdata.nb.IKernelSpec> {
 		throw new Error('Method not implemented.');
 	}
-	$requestComplete(kernelId: number, content: sqlops.nb.ICompleteRequest): Thenable<sqlops.nb.ICompleteReplyMsg> {
+	$requestComplete(kernelId: number, content: azdata.nb.ICompleteRequest): Thenable<azdata.nb.ICompleteReplyMsg> {
 		throw new Error('Method not implemented.');
 	}
-	$requestExecute(kernelId: number, content: sqlops.nb.IExecuteRequest, disposeOnDone?: boolean): Thenable<INotebookFutureDetails> {
+	$requestExecute(kernelId: number, content: azdata.nb.IExecuteRequest, disposeOnDone?: boolean): Thenable<INotebookFutureDetails> {
 		throw new Error('Method not implemented.');
 	}
 	$interruptKernel(kernelId: number): Thenable<void> {
 		throw new Error('Method not implemented.');
 	}
-	$sendInputReply(futureId: number, content: sqlops.nb.IInputReply): void {
+	$sendInputReply(futureId: number, content: azdata.nb.IInputReply): void {
 		throw new Error('Method not implemented.');
 	}
 	$disposeFuture(futureId: number): void {

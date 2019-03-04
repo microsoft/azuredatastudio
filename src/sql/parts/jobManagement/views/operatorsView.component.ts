@@ -14,7 +14,7 @@ import 'vs/css!sql/base/browser/ui/table/media/table';
 
 import * as dom from 'vs/base/browser/dom';
 import * as nls from 'vs/nls';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnInit, OnDestroy } from '@angular/core';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
@@ -71,7 +71,7 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit,
 	private _didTabChange: boolean;
 	@ViewChild('operatorsgrid') _gridEl: ElementRef;
 
-	public operators: sqlops.AgentOperatorInfo[];
+	public operators: azdata.AgentOperatorInfo[];
 	public contextAction = NewOperatorAction;
 
 	constructor(
@@ -183,7 +183,7 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit,
 		}
 	}
 
-	private onOperatorsAvailable(operators: sqlops.AgentOperatorInfo[]) {
+	private onOperatorsAvailable(operators: azdata.AgentOperatorInfo[]) {
 		let items: any = operators.map((item) => {
 			return {
 				id: item.id,
