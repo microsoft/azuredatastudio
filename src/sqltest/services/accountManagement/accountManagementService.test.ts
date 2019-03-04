@@ -566,11 +566,8 @@ function getTestState(): AccountManagementState {
 	// Create mock memento
 	let mockMemento = {};
 
-	let lifecycleService = TypeMoq.Mock.ofType(LifecycleService);
-	lifecycleService.setup(x => x.onShutdown(TypeMoq.It.isAny()));
-
 	// Create the account management service
-	let ams = new AccountManagementService(mockMemento, lifecycleService.object, mockInstantiationService.object, null, null);
+	let ams = new AccountManagementService(mockMemento, mockInstantiationService.object, null, null);
 
 	// Wire up event handlers
 	let evUpdate = new EventVerifierSingle<UpdateAccountListEventParams>();

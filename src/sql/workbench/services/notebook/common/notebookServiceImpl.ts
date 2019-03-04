@@ -129,7 +129,7 @@ export class NotebookService extends Disposable implements INotebookService {
 			this._register(extensionManagementService.onDidUninstallExtension(({ identifier }) => this.removeContributedProvidersFromCache(identifier, extensionService)));
 		}
 
-		lifecycleService.onShutdown(() => this.shutdown());
+		lifecycleService.onWillShutdown(() => this.shutdown());
 		this.hookContextKeyListeners();
 		this.hookNotebookThemesAndConfigListener();
 	}

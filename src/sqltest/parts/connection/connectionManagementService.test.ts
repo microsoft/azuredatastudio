@@ -49,7 +49,6 @@ suite('SQL ConnectionManagementService tests', () => {
 	let workspaceConfigurationServiceMock: TypeMoq.Mock<WorkspaceConfigurationTestService>;
 	let resourceProviderStubMock: TypeMoq.Mock<ResourceProviderStub>;
 	let accountManagementService: TypeMoq.Mock<AccountManagementTestService>;
-	let lifecycleService: TypeMoq.Mock<LifecycleService>;
 
 	let none: void;
 
@@ -143,9 +142,6 @@ suite('SQL ConnectionManagementService tests', () => {
 		workspaceConfigurationServiceMock.setup(x => x.getValue(Constants.sqlConfigSectionName))
 			.returns(() => configResult);
 
-		lifecycleService = TypeMoq.Mock.ofType(LifecycleService);
-		lifecycleService.setup(x => x.onShutdown(TypeMoq.It.isAny()));
-
 		connectionManagementService = createConnectionManagementService();
 
 		connectionManagementService.registerProvider('MSSQL', mssqlConnectionProvider.object);
@@ -156,7 +152,6 @@ suite('SQL ConnectionManagementService tests', () => {
 			undefined,
 			connectionStore.object,
 			undefined,
-			lifecycleService.object,
 			connectionDialogService.object,
 			undefined,
 			undefined,

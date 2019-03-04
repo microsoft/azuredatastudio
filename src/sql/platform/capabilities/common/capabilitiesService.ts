@@ -133,7 +133,7 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 			this.cleanupProviders();
 		});
 
-		lifecycleService.onShutdown(() => this.shutdown());
+		_storageService.onWillSaveState(() => this.shutdown());
 
 		this._register(extentionManagementService.onDidUninstallExtension(({ identifier }) => {
 			const connectionProvider = 'connectionProvider';

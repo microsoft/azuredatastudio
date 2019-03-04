@@ -84,7 +84,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		private _connectionMemento: Memento,
 		private _connectionStore: ConnectionStore,
 		@IStorageService _storageService: IStorageService,
-		@ILifecycleService lifecycleService: ILifecycleService,
 		@IConnectionDialogService private _connectionDialogService: IConnectionDialogService,
 		@IServerGroupController private _serverGroupController: IServerGroupController,
 		@IInstantiationService private _instantiationService: IInstantiationService,
@@ -143,7 +142,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		this.onConnectionChanged(() => this.refreshEditorTitles());
 		this.onConnect(() => this.refreshEditorTitles());
 		this.onDisconnect(() => this.refreshEditorTitles());
-		lifecycleService.onShutdown(() => this.shutdown());
+		_storageService.onWillSaveState(() => this.shutdown());
 	}
 
 	public providerRegistered(providerId: string): boolean {

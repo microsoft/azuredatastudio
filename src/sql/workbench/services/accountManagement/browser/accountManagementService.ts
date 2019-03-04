@@ -50,7 +50,6 @@ export class AccountManagementService implements IAccountManagementService {
 	// CONSTRUCTOR /////////////////////////////////////////////////////////
 	constructor(
 		private _mementoObj: object,
-		@ILifecycleService lifecycleService: ILifecycleService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IStorageService private _storageService: IStorageService,
 		@IClipboardService private _clipboardService: IClipboardService
@@ -67,7 +66,7 @@ export class AccountManagementService implements IAccountManagementService {
 		this._removeAccountProviderEmitter = new Emitter<azdata.AccountProviderMetadata>();
 		this._updateAccountListEmitter = new Emitter<UpdateAccountListEventParams>();
 
-		lifecycleService.onShutdown(() => this.shutdown());
+		_storageService.onWillSaveState(() => this.shutdown());
 
 		// Register status bar item
 		let statusbarDescriptor = new statusbar.StatusbarItemDescriptor(
