@@ -1,7 +1,7 @@
 {
-  "name": "ads-windows-support",
-  "displayName": "ADS Windows Support",
-  "description": "Additional functionality for ADS on Windows Platforms",
+  "name": "admin-tool-ext-win",
+  "displayName": "Database Admin Tool Extensions for Windows",
+  "description": "Adds additional Windows-specific functionality to Azure Data Studio",
   "version": "0.0.1",
   "publisher": "Microsoft",
   "preview": true,
@@ -13,7 +13,7 @@
     "sqlops": "*"
   },
   "activationEvents": [
-    "onCommand:adsWindowsSupport.launchSsmsDialog"
+    "*"
   ],
   "main": "./out/main",
   "repository": {
@@ -26,21 +26,28 @@
   "contributes": {
     "commands": [
       {
-        "command": "adsWindowsSupport.launchSsmsDialog",
-        "title": "Launch SSMS Dialog",
-        "category": "AdsWindowsSupport"
+        "command": "adminToolExtWin.launchSsmsServerPropertiesDialog",
+        "title": "%adminToolExtWin.launchSsmsServerPropertiesDialog%",
+        "category": "AdminToolExtWin"
       }
     ],
     "menus": {
       "commandPalette": [
         {
-          "command": "adsWindowsSupport.launchSsmsDialog",
+          "command": "adminToolExtWin.launchSsmsServerPropertiesDialog",
           "when": "false"
+        }
+      ],
+      "objectExplorer/item/context": [
+        {
+          "command": "adminToolExtWin.launchSsmsServerPropertiesDialog",
+          "when": "isWindows && connectionProvider == MSSQL && nodeType && nodeType == Server",
+          "group": "AdminToolExtWin"
         }
       ]
     },
     "outputChannels": [
-      "ads-windows-support"
+      "admin-tool-ext-win"
     ]
   },
   "dependencies": {

@@ -850,22 +850,6 @@ declare module 'sqlops' {
 		initializeModel<T extends Component>(root: T): Thenable<void>;
 	}
 
-	export namespace adsWindowsSupport {
-		// ADS Windows Support service interfaces -----------------------------------------------------------------
-
-		// Params to pass to SsmsMin.exe, only an action and server are required - the rest are optional based on the
-		// action used.
-		interface LaunchSsmsDialogParams {
-			action: string;
-			server: string;
-			database?: string;
-			user?: string;
-			password?: string;
-			useAad?: boolean;
-			urn?: string;
-		}
-	}
-
 	export namespace ui {
 		/**
 		 * Register a provider for a model-view widget

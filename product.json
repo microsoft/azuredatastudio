@@ -36,7 +36,7 @@
 	"commit": "9ca6200018fc206d67a47229f991901a8a453781",
 	"date": "2017-12-15T12:00:00.000Z",
 	"recommendedExtensions": [
-		"Microsoft.ads-windows-support",
+		"Microsoft.admin-tool-ext-win",
 		"Microsoft.agent",
 		"Microsoft.import",
 		"Microsoft.profiler",
