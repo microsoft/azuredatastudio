@@ -16,15 +16,17 @@ export interface INodeContextValue {
 
 export class NodeContextKey extends Disposable implements IContextKey<INodeContextValue> {
 
-	static Connectable = new RawContextKey<boolean>('isConnectable', false);
-	static Connected = new RawContextKey<boolean>('isConnected', false);
+	static IsConnectable = new RawContextKey<boolean>('isConnectable', false);
+	static IsConnected = new RawContextKey<boolean>('isConnected', false);
 	static ViewId = new RawContextKey<string>('view', undefined);
+	static ViewItem = new RawContextKey<string>('viewItem', undefined);
 	static Node = new RawContextKey<INodeContextValue>('node', undefined);
 
 	private readonly _connectionContextKey: ConnectionContextKey;
 	private readonly _connectableKey: IContextKey<boolean>;
 	private readonly _connectedKey: IContextKey<boolean>;
 	private readonly _viewIdKey: IContextKey<string>;
+	private readonly _viewItemKey: IContextKey<string>;
 	private readonly _nodeContextKey: IContextKey<INodeContextValue>;
 
 	constructor(
@@ -33,9 +35,10 @@ export class NodeContextKey extends Disposable implements IContextKey<INodeConte
 	) {
 		super();
 
-		this._connectableKey = NodeContextKey.Connectable.bindTo(contextKeyService);
-		this._connectedKey = NodeContextKey.Connected.bindTo(contextKeyService);
+		this._connectableKey = NodeContextKey.IsConnectable.bindTo(contextKeyService);
+		this._connectedKey = NodeContextKey.IsConnected.bindTo(contextKeyService);
 		this._viewIdKey = NodeContextKey.ViewId.bindTo(contextKeyService);
+		this._viewItemKey = NodeContextKey.ViewItem.bindTo(contextKeyService);
 		this._nodeContextKey = NodeContextKey.Node.bindTo(contextKeyService);
 		this._connectionContextKey = new ConnectionContextKey(contextKeyService);
 	}
@@ -52,10 +55,12 @@ export class NodeContextKey extends Disposable implements IContextKey<INodeConte
 		}
 		this._nodeContextKey.set(value);
 		this._viewIdKey.set(value.viewId);
+		this._viewItemKey.set(value.node.contextValue);
 	}
 
 	reset(): void {
 		this._viewIdKey.reset();
+		this._viewItemKey.reset();
 		this._connectableKey.reset();
 		this._connectedKey.reset();
 		this._connectionContextKey.reset();

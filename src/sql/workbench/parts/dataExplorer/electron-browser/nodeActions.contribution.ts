@@ -15,7 +15,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		id: DISCONNECT_COMMAND_ID,
 		title: localize('disconnect', 'Disconnect')
 	},
-	when: NodeContextKey.Connected
+	when: NodeContextKey.IsConnected
 });
 
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {

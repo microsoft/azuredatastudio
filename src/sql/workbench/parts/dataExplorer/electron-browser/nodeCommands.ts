@@ -12,9 +12,9 @@ import { IConnectionManagementService, IConnectableInput, IConnectionCompletionO
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 
-export const DISCONNECT_COMMAND_ID = 'dataExplorerDisconnect';
-export const MANAGE_COMMAND_ID = 'dataExplorerManage';
-export const NEW_QUERY_COMMAND_ID = 'dataExplorerNewQuery';
+export const DISCONNECT_COMMAND_ID = 'dataExplorer.disconnect';
+export const MANAGE_COMMAND_ID = 'dataExplorer.manage';
+export const NEW_QUERY_COMMAND_ID = 'dataExplorer.newQuery';
 
 CommandsRegistry.registerCommand({
 	id: DISCONNECT_COMMAND_ID,
