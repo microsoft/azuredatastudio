@@ -1,4 +1,4 @@
-# ADS Windows Support
+# Database Admin Windows
 
 This is an extension for adding Windows-specific functionality into Azure Data Studio.
 
