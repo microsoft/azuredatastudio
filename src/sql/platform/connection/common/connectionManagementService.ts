@@ -57,7 +57,6 @@ import * as statusbar from 'vs/workbench/browser/parts/statusbar/statusbar';
 import { IStatusbarService, StatusbarAlignment } from 'vs/platform/statusbar/common/statusbar';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
-import { ILifecycleService } from 'vs/platform/lifecycle/common/lifecycle';
 
 export class ConnectionManagementService extends Disposable implements IConnectionManagementService {
 

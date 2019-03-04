@@ -22,7 +22,6 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { IExtensionManagementService } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { getIdFromLocalExtensionId } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
-import { ILifecycleService } from 'vs/platform/lifecycle/common/lifecycle';
 
 export const SERVICE_ID = 'capabilitiesService';
 export const HOST_NAME = 'azdata';
@@ -104,7 +103,6 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 	public readonly onCapabilitiesRegistered = this._onCapabilitiesRegistered.event;
 
 	constructor(
-		@ILifecycleService lifecycleService: ILifecycleService,
 		@IStorageService private _storageService: IStorageService,
 		@IExtensionService extensionService: IExtensionService,
 		@IExtensionManagementService extentionManagementService: IExtensionManagementService

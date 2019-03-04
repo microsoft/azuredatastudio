@@ -23,7 +23,6 @@ import { AccountListStatusbarItem } from 'sql/parts/accountManagement/accountLis
 import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/platform/accountManagement/common/eventTypes';
 import { IAccountManagementService } from 'sql/platform/accountManagement/common/interfaces';
 import { Deferred } from 'sql/base/common/promise';
-import { ILifecycleService } from 'vs/platform/lifecycle/common/lifecycle';
 
 export class AccountManagementService implements IAccountManagementService {
 	// CONSTANTS ///////////////////////////////////////////////////////////
