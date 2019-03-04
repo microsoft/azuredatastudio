@@ -5,7 +5,7 @@
 
 'use strict';
 
-import { nb } from 'sqlops';
+import { nb } from 'azdata';
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { INotebookManager, SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/common/notebookService';
