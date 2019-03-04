@@ -4,13 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 /**
  * Data model to communicate between DacFx pages
  */
 export interface DacFxDataModel {
-	server: sqlops.connection.Connection;
+	server: azdata.connection.Connection;
 	database: string;
 	serverName: string;
 	serverId: string;
