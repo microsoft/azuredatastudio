@@ -8,7 +8,7 @@ import { ICustomViewDescriptor, TreeViewItemHandleArg } from 'sql/workbench/comm
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { ViewsRegistry } from 'vs/workbench/common/views';
 
-export const DISCONNECT_COMMAND_ID = 'disconnect';
+export const DISCONNECT_COMMAND_ID = 'dataExplorer.disconnect';
 
 CommandsRegistry.registerCommand({
 	id: DISCONNECT_COMMAND_ID,
