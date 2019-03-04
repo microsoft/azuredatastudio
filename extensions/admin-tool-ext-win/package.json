@@ -9,7 +9,7 @@
   "icon": "images/sqlserver.png",
   "aiKey": "AIF-5574968e-856d-40d2-af67-c89a14e76412",
   "engines": {
-    "vscode": "*",
+    "vscode": "^1.30.1",
     "sqlops": "*"
   },
   "activationEvents": [

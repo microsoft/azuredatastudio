@@ -1,2 +1,5 @@
-client/src/**
-client/tsconfig.json
+out/test/**
+src/**
+ssmsmin/**
+.gitignore
+tsconfig.json

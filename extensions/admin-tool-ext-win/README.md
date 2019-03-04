@@ -1,6 +1,6 @@
 # Database Admin Tool Extensions for Windows
 
-This is an extension for adding Windows-specific functionality into Azure Data Studio.
+This adds Windows-specific functionality into Azure Data Studio.
 
 ## Code of Conduct
 

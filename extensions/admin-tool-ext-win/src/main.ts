@@ -31,8 +31,6 @@ export interface LaunchSsmsDialogParams {
 }
 
 export function activate(context: vscode.ExtensionContext): Promise<void> {
-    context.subscriptions.push(
-        vscode.commands.registerCommand('adminToolExtWin.launchSsmsServerPropertiesDialog', handleLaunchSsmsServerPropertiesDialogCommand));
     // Only supported on Win32 currently, display error message if not that until extensions are able to block install
     // based on conditions
     if(process.platform === 'win32') {
@@ -58,6 +56,9 @@ export function activate(context: vscode.ExtensionContext): Promise<void> {
                         if(path) {
                             exePath = path;
                         }
+                        // Add the command now that we have the exePath to run the tool with
+                        context.subscriptions.push(
+                            vscode.commands.registerCommand('adminToolExtWin.launchSsmsServerPropertiesDialog', handleLaunchSsmsServerPropertiesDialogCommand));
                         resolve();
                     });
             }, e => {
@@ -77,7 +78,9 @@ export function activate(context: vscode.ExtensionContext): Promise<void> {
  */
 function handleLaunchSsmsServerPropertiesDialogCommand(connectionContext?: any) {
     if(connectionContext.connectionProfile) {
-        launchSsmsDialog('sqla:Properties@Microsoft.SqlServer.Management.Smo.Server', connectionContext.connectionProfile, `Server[@Name='${connectionContext.connectionProfile.serverName}']`);
+        launchSsmsDialog(
+            /*action*/'sqla:Properties@Microsoft.SqlServer.Management.Smo.Server',
+            /*connectionProfile*/connectionContext.connectionProfile);
     }
 }
 
@@ -96,7 +99,7 @@ function launchSsmsDialog(action:string, connectionProfile: sqlops.IConnectionPr
     Telemetry.sendTelemetryEvent('LaunchSsmsDialog', { 'action': action});
 
     let params:LaunchSsmsDialogParams = {
-        action:'sqla:Properties@Microsoft.SqlServer.Management.Smo.Server',
+        action:action,
         server:connectionProfile.serverName,
         database:connectionProfile.databaseName,
         password:connectionProfile.password,
@@ -127,10 +130,10 @@ function launchSsmsDialog(action:string, connectionProfile: sqlops.IConnectionPr
  * @param params The params used to build up the command parameter string
  */
 export function buildSsmsMinCommandArgs(params:LaunchSsmsDialogParams): string {
-    return `${params.action ? '-a "' + params.action + '"' : ''}\
-    ${params.server ? '-S "' + params.server + '"' : ''} \
-    ${params.database ? '-D "' + params.database + '"' : ''} \
-    ${params.useAad !== true ? '-U "' + params.user + '"' : ''} \
+    return `${params.action ? '-a "' + params.action.replace('"', '\"') + '"' : ''}\
+    ${params.server ? '-S "' + params.server.replace('"', '\"') + '"' : ''} \
+    ${params.database ? '-D "' + params.database.replace('"', '\"') + '"' : ''} \
+    ${params.useAad !== true ? '-U "' + params.user.replace('"', '\"') + '"' : ''} \
     ${params.useAad === true ? '-G': ''} \
-    ${params.urn ? '-u "' + params.urn + '"' : ''}`;
+    ${params.urn ? '-u "' + params.urn.replace('"', '\"') + '"' : ''}`;
 }
