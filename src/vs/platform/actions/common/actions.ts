@@ -98,7 +98,8 @@ export const enum MenuId {
 	ViewTitle,
 	// {{SQL CARBON EDIT}}
 	ObjectExplorerItemContext,
-	NotebookToolbar
+	NotebookToolbar,
+	DataExplorerContext
 }
 
 export interface IMenuActionOptions {
