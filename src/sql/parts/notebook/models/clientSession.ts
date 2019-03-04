@@ -359,4 +359,3 @@ export class ClientSession implements IClientSession {
 	}
 	//#endregion
 }
-
