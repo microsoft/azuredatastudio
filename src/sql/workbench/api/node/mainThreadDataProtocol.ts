@@ -449,10 +449,10 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			generateDeployPlan(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.GenerateDeployPlanResult> {
 				return self._proxy.$generateDeployPlan(handle, packageFilePath, databaseName, ownerUri, taskExecutionMode);
 			},
-			schemaCompare(sourceEndpointInfo: sqlops.SchemaCompareEndpointInfo, targetEndpointInfo: sqlops.SchemaCompareEndpointInfo, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.SchemaCompareResult> {
+			schemaCompare(sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.SchemaCompareResult> {
 				return self._proxy.$schemaCompare(handle, sourceEndpointInfo, targetEndpointInfo, taskExecutionMode);
 			},
-			schemaCompareGenerateScript(operationId: string, targetDatabaseName: string, scriptFilePath: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> {
+			schemaCompareGenerateScript(operationId: string, targetDatabaseName: string, scriptFilePath: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> {
 				return self._proxy.$schemaCompareGenerateScript(handle, operationId, targetDatabaseName, scriptFilePath, taskExecutionMode);
 			}
 		});
