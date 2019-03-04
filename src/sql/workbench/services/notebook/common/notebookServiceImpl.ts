@@ -39,6 +39,7 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { registerNotebookThemes } from 'sql/parts/notebook/notebookStyles';
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
 import { ILanguageMagic, notebookConstants } from 'sql/parts/notebook/models/modelInterfaces';
+import { ILifecycleService } from 'vs/platform/lifecycle/common/lifecycle';
 
 export interface NotebookProviderProperties {
 	provider: string;
@@ -97,6 +98,7 @@ export class NotebookService extends Disposable implements INotebookService {
 	private _overrideEditorThemeSetting: boolean;
 
 	constructor(
+		@ILifecycleService lifecycleService: ILifecycleService,
 		@IStorageService private _storageService: IStorageService,
 		@IExtensionService extensionService: IExtensionService,
 		@IExtensionManagementService extensionManagementService: IExtensionManagementService,
@@ -105,7 +107,6 @@ export class NotebookService extends Disposable implements INotebookService {
 		@IEditorService private readonly _editorService: IEditorService,
 		@IEditorGroupsService private readonly _editorGroupsService: IEditorGroupsService,
 		@IConfigurationService private readonly _configurationService: IConfigurationService,
-		@IThemeService private readonly _themeService: IThemeService,
 		@IQueryManagementService private readonly _queryManagementService
 	) {
 		super();
@@ -130,6 +131,8 @@ export class NotebookService extends Disposable implements INotebookService {
 		if (extensionManagementService) {
 			this._register(extensionManagementService.onDidUninstallExtension(({ identifier }) => this.removeContributedProvidersFromCache(identifier, extensionService)));
 		}
+
+		lifecycleService.onShutdown(() => this.shutdown());
 		this.hookContextKeyListeners();
 		this.hookNotebookThemesAndConfigListener();
 	}

@@ -16,6 +16,7 @@ import { IAccountStore } from 'sql/platform/accountManagement/common/interfaces'
 import { AccountProviderStub } from 'sqltest/stubs/accountManagementStubs';
 import { EventVerifierSingle } from 'sqltest/utils/eventVerifier';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
+import { LifecycleService } from 'vs/platform/lifecycle/electron-browser/lifecycleService';
 
 // SUITE CONSTANTS /////////////////////////////////////////////////////////
 const hasAccountProvider: azdata.AccountProviderMetadata = {
@@ -565,8 +566,11 @@ function getTestState(): AccountManagementState {
 	// Create mock memento
 	let mockMemento = {};
 
+	let lifecycleService = TypeMoq.Mock.ofType(LifecycleService);
+	lifecycleService.setup(x => x.onShutdown(TypeMoq.It.isAny()));
+
 	// Create the account management service
-	let ams = new AccountManagementService(mockMemento, mockInstantiationService.object, null, null);
+	let ams = new AccountManagementService(mockMemento, lifecycleService.object, mockInstantiationService.object, null, null);
 
 	// Wire up event handlers
 	let evUpdate = new EventVerifierSingle<UpdateAccountListEventParams>();

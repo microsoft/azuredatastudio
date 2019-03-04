@@ -23,6 +23,7 @@ import { AccountListStatusbarItem } from 'sql/parts/accountManagement/accountLis
 import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/platform/accountManagement/common/eventTypes';
 import { IAccountManagementService } from 'sql/platform/accountManagement/common/interfaces';
 import { Deferred } from 'sql/base/common/promise';
+import { ILifecycleService } from 'vs/platform/lifecycle/common/lifecycle';
 
 export class AccountManagementService implements IAccountManagementService {
 	// CONSTANTS ///////////////////////////////////////////////////////////
@@ -49,9 +50,10 @@ export class AccountManagementService implements IAccountManagementService {
 	// CONSTRUCTOR /////////////////////////////////////////////////////////
 	constructor(
 		private _mementoObj: object,
+		@ILifecycleService lifecycleService: ILifecycleService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IStorageService private _storageService: IStorageService,
-		@IClipboardService private _clipboardService: IClipboardService,
+		@IClipboardService private _clipboardService: IClipboardService
 	) {
 		// Create the account store
 		if (!this._mementoObj) {
@@ -64,6 +66,8 @@ export class AccountManagementService implements IAccountManagementService {
 		this._addAccountProviderEmitter = new Emitter<AccountProviderAddedEventParams>();
 		this._removeAccountProviderEmitter = new Emitter<azdata.AccountProviderMetadata>();
 		this._updateAccountListEmitter = new Emitter<UpdateAccountListEventParams>();
+
+		lifecycleService.onShutdown(() => this.shutdown());
 
 		// Register status bar item
 		let statusbarDescriptor = new statusbar.StatusbarItemDescriptor(
