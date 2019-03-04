@@ -67,8 +67,6 @@ export interface INotebookService {
 
 	listNotebookEditors(): INotebookEditor[];
 
-	shutdown(): void;
-
 	getMimeRegistry(): RenderMimeRegistry;
 
 	renameNotebookEditor(oldUri: URI, newUri: URI, currentEditor: INotebookEditor): void;

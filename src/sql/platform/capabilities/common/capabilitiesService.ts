@@ -241,7 +241,7 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 		}
 	}
 
-	public shutdown(): void {
+	private shutdown(): void {
 		this._momento.saveMemento();
 	}
 }

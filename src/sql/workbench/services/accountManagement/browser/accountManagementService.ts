@@ -369,7 +369,7 @@ export class AccountManagementService implements IAccountManagementService {
 	/**
 	 * Handler for when shutdown of the application occurs. Writes out the memento.
 	 */
-	public shutdown(): void {
+	private shutdown(): void {
 		if (this._mementoContext) {
 			this._mementoContext.saveMemento();
 		}
