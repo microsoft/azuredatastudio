@@ -323,7 +323,7 @@ export class CustomTreeView extends Disposable implements ITreeView {
 		const menus = this.instantiationService.createInstance(TreeMenus, this.id);
 		const dataSource = this.instantiationService.createInstance(TreeDataSource, this, this.container, this.id);
 		const renderer = this.instantiationService.createInstance(TreeRenderer, this.id, menus, actionItemProvider);
-		const controller = this.instantiationService.createInstance(TreeController, this.id, menus);
+		const controller = this.instantiationService.createInstance(TreeController, this.id, this.container.id,  menus);
 		this.tree = this.instantiationService.createInstance(FileIconThemableWorkbenchTree, this.treeContainer, { dataSource, renderer, controller }, {});
 		this.tree.contextKeyService.createKey<boolean>(this.id, true);
 		this._register(this.tree);
@@ -738,6 +738,7 @@ class TreeController extends WorkbenchTreeController {
 
 	constructor(
 		private treeViewId: string,
+		private containerId: string,
 		private menus: TreeMenus,
 		@IContextMenuService private contextMenuService: IContextMenuService,
 		@IKeybindingService private readonly _keybindingService: IKeybindingService,
@@ -779,7 +780,7 @@ class TreeController extends WorkbenchTreeController {
 				}
 			},
 
-			getActionsContext: () => (<TreeViewItemHandleArg>{ $treeViewId: this.treeViewId, $treeItemHandle: node.handle, $treeItem: node }),
+			getActionsContext: () => (<TreeViewItemHandleArg>{ $treeViewId: this.treeViewId, $treeItemHandle: node.handle, $treeItem: node, $treeContainerId: this.containerId }),
 
 			actionRunner: new MultipleSelectionActionRunner(() => tree.getSelection())
 		});

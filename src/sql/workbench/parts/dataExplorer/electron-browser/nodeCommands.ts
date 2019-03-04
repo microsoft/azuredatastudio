@@ -12,10 +12,12 @@ import { ICustomViewDescriptor, TreeViewItemHandleArg } from 'sql/workbench/comm
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { ViewsRegistry } from 'vs/workbench/common/views';
+import { IProgressService2 } from 'vs/platform/progress/common/progress';
 
 export const DISCONNECT_COMMAND_ID = 'dataExplorer.disconnect';
 export const MANAGE_COMMAND_ID = 'dataExplorer.manage';
 export const NEW_QUERY_COMMAND_ID = 'dataExplorer.newQuery';
+export const REFRESH_COMMAND_ID = 'dataExplorer.refresh';
 
 CommandsRegistry.registerCommand({
 	id: DISCONNECT_COMMAND_ID,
@@ -71,6 +73,23 @@ CommandsRegistry.registerCommand({
 			let profile = new ConnectionProfile(capabilitiesService, args.$treeItem.payload);
 			let uri = generateUri(profile, 'dashboard');
 			return connectionService.connect(new ConnectionProfile(capabilitiesService, args.$treeItem.payload), uri, options);
+		}
+		return Promise.resolve(true);
+	}
+});
+
+CommandsRegistry.registerCommand({
+	id: REFRESH_COMMAND_ID,
+	handler: (accessor, args: TreeViewItemHandleArg) => {
+		const progressSerivce = accessor.get(IProgressService2);
+		if (args.$treeItem) {
+			const { treeView } = (<ICustomViewDescriptor>ViewsRegistry.getView(args.$treeViewId));
+			if (args.$treeContainerId) {
+				return progressSerivce.withProgress({ location: args.$treeContainerId }, () => treeView.refresh([args.$treeItem]).then(() => true));
+			} else {
+				return treeView.refresh([args.$treeItem]).then(() => true);
+			}
+
 		}
 		return Promise.resolve(true);
 	}
