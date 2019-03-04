@@ -4,14 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { DacFxDataModel } from './models';
 
 export abstract class BasePage {
 
-	protected readonly wizardPage: sqlops.window.modelviewdialog.WizardPage;
+	protected readonly wizardPage: azdata.window.modelviewdialog.WizardPage;
 	protected readonly model: DacFxDataModel;
-	protected readonly view: sqlops.ModelView;
+	protected readonly view: azdata.ModelView;
 
 	/**
 	 * This method constructs all the elements of the page.
@@ -48,7 +48,7 @@ export abstract class BasePage {
 	public abstract setupNavigationValidator();
 
 	protected async getServerValues(): Promise<{ connection, displayName, name }[]> {
-		let cons = await sqlops.connection.getActiveConnections();
+		let cons = await azdata.connection.getActiveConnections();
 		// This user has no active connections ABORT MISSION
 		if (!cons || cons.length === 0) {
 			return undefined;
@@ -103,7 +103,7 @@ export abstract class BasePage {
 	protected async getDatabaseValues(): Promise<{ displayName, name }[]> {
 		let idx = -1;
 		let count = -1;
-		let values = (await sqlops.connection.listDatabases(this.model.server.connectionId)).map(db => {
+		let values = (await azdata.connection.listDatabases(this.model.server.connectionId)).map(db => {
 			count++;
 			if (this.model.database && db === this.model.database) {
 				idx = count;

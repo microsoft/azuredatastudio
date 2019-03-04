@@ -5,7 +5,7 @@
 
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import ControllerBase from './controllerBase';
 import * as vscode from 'vscode';
 import { DataTierApplicationWizard } from '../wizard/dataTierApplicationWizard';
@@ -29,6 +29,6 @@ export default class MainController extends ControllerBase {
 	}
 
 	private initializeDacFxWizard() {
-		sqlops.tasks.registerTask('dacFx.start', (profile: sqlops.IConnectionProfile, ...args: any[]) => new DataTierApplicationWizard().start(profile, args));
+		azdata.tasks.registerTask('dacFx.start', (profile: azdata.IConnectionProfile, ...args: any[]) => new DataTierApplicationWizard().start(profile, args));
 	}
 }
