@@ -6,7 +6,6 @@
 import * as azdata from 'azdata';
 
 import { Action } from 'vs/base/common/actions';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { localize } from 'vs/nls';
 import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
 import { INotificationService, Severity, INotificationActions } from 'vs/platform/notification/common/notification';
@@ -40,8 +39,8 @@ export class AddCellAction extends Action {
 	) {
 		super(id, label, cssClass);
 	}
-	public run(context: NotebookComponent): TPromise<boolean> {
-		return new TPromise<boolean>((resolve, reject) => {
+	public run(context: NotebookComponent): Promise<boolean> {
+		return new Promise<boolean>((resolve, reject) => {
 			try {
 				context.addCell(this.cellType);
 				resolve(true);
@@ -62,7 +61,7 @@ export class SaveNotebookAction extends Action {
 		super(id, label, cssClass);
 	}
 
-	public async run(context: NotebookComponent): TPromise<boolean> {
+	public async run(context: NotebookComponent): Promise<boolean> {
 		const actions: INotificationActions = { primary: [] };
 		let saved = await context.save();
 		if (saved) {
@@ -212,9 +211,9 @@ export class TrustedAction extends ToggleableAction {
 		this.toggle(value);
 	}
 
-	public run(context: NotebookComponent): TPromise<boolean> {
+	public run(context: NotebookComponent): Promise<boolean> {
 		let self = this;
-		return new TPromise<boolean>((resolve, reject) => {
+		return new Promise<boolean>((resolve, reject) => {
 			try {
 				if (self.trusted) {
 					const actions: INotificationActions = { primary: [] };
@@ -271,7 +270,7 @@ export class KernelsDropdown extends SelectBox {
 		let specs = this.model.specs;
 		if (specs && specs.kernels) {
 			let index = specs.kernels.findIndex((kernel => kernel.name === defaultKernel.name));
-			this.setOptions(specs.kernels.map(kernel => kernel.display_name), index);
+			this.setOptions(specs.kernels.map(kernel => { return { text: kernel.display_name }}), index);
 		}
 	}
 

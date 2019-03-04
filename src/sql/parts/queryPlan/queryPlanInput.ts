@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { TPromise } from 'vs/base/common/winjs.base';
 import { EditorInput, EditorModel } from 'vs/workbench/common/editor';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
@@ -49,7 +48,7 @@ export class QueryPlanInput extends EditorInput {
 		return undefined;
 	}
 
-	public resolve(refresh?: boolean): TPromise<EditorModel> {
+	public resolve(refresh?: boolean): Promise<EditorModel> {
 		return undefined;
 	}
 

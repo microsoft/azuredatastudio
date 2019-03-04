@@ -29,12 +29,13 @@ class ExpandAbbreviationAction extends EmmetEditorAction {
 				),
 				weight: KeybindingWeight.EditorContrib
 			},
-			menubarOpts: {
-				menuId: MenuId.MenubarEditMenu,
-				group: '5_insert',
-				title: nls.localize({ key: 'miEmmetExpandAbbreviation', comment: ['&& denotes a mnemonic'] }, "Emmet: E&&xpand Abbreviation"),
-				order: 3
-			}
+			// {{SQL CARBON EDIT}} - Remove from menu
+			// menubarOpts: {
+			// 	menuId: MenuId.MenubarEditMenu,
+			// 	group: '5_insert',
+			// 	title: nls.localize({ key: 'miEmmetExpandAbbreviation', comment: ['&& denotes a mnemonic'] }, "Emmet: E&&xpand Abbreviation"),
+			// 	order: 3
+			// }
 		});
 
 	}

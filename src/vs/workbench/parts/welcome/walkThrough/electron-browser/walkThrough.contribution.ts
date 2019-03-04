@@ -48,11 +48,13 @@ KeybindingsRegistry.registerCommandAndKeybindingRule(WalkThroughPageUp);
 
 KeybindingsRegistry.registerCommandAndKeybindingRule(WalkThroughPageDown);
 
-MenuRegistry.appendMenuItem(MenuId.MenubarHelpMenu, {
-	group: '1_welcome',
-	command: {
-		id: 'workbench.action.showInteractivePlayground',
-		title: localize({ key: 'miInteractivePlayground', comment: ['&& denotes a mnemonic'] }, "&&Interactive Playground")
-	},
-	order: 2
-});
+// {{SQL CARBON EDIT}} - Disable unused menu item
+// MenuRegistry.appendMenuItem(MenuId.MenubarHelpMenu, {
+// 	group: '1_welcome',
+// 	command: {
+// 		id: 'workbench.action.showInteractivePlayground',
+// 		title: localize({ key: 'miInteractivePlayground', comment: ['&& denotes a mnemonic'] }, "I&&nteractive Playground")
+// 	},
+// 	order: 2
+// });
+// {{SQL CARBON EDIT}} - End

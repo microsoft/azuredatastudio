@@ -115,7 +115,7 @@ const ConnectionProviderContrib: IJSONSchema = {
 	required: ['providerId']
 };
 
-ExtensionsRegistry.registerExtensionPoint<ConnectionProviderProperties | ConnectionProviderProperties[]>('connectionProvider', [], ConnectionProviderContrib).setHandler(extensions => {
+ExtensionsRegistry.registerExtensionPoint<ConnectionProviderProperties | ConnectionProviderProperties[]>({ extensionPoint: 'connectionProvider', jsonSchema: ConnectionProviderContrib }).setHandler(extensions => {
 
 	function handleCommand(contrib: ConnectionProviderProperties, extension: IExtensionPointUser<any>) {
 		connectionRegistry.registerConnectionProvider(contrib.providerId, contrib);

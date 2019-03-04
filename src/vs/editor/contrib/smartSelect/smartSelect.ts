@@ -18,9 +18,9 @@ import * as nls from 'vs/nls';
 import { MenuId } from 'vs/platform/actions/common/actions';
 import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
-import { TokenTreeSelectionRangeProvider } from 'vs/editor/contrib/smartSelect/tokenTree';
 import { WordSelectionRangeProvider } from 'vs/editor/contrib/smartSelect/wordSelections';
 import { BracketSelectionRangeProvider } from 'vs/editor/contrib/smartSelect/bracketSelections';
+import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 
 class SelectionRanges {
 
@@ -82,10 +82,10 @@ class SmartSelectController implements IEditorContribution {
 		}
 
 
-		let promise: Promise<void> = Promise.resolve(void 0);
+		let promise: Promise<void> = Promise.resolve(undefined);
 
 		if (!this._state) {
-			promise = provideSelectionRanges(model, selection.getStartPosition(), CancellationToken.None).then(ranges => {
+			promise = provideSelectionRanges(model, selection.getPosition(), CancellationToken.None).then(ranges => {
 				if (!arrays.isNonEmptyArray(ranges)) {
 					// invalid result
 					return;
@@ -154,9 +154,9 @@ abstract class AbstractSmartSelect extends EditorAction {
 class GrowSelectionAction extends AbstractSmartSelect {
 	constructor() {
 		super(true, {
-			id: 'editor.action.smartSelect.grow',
-			label: nls.localize('smartSelect.grow', "Expand Select"),
-			alias: 'Expand Select',
+			id: 'editor.action.smartSelect.expand',
+			label: nls.localize('smartSelect.expand', "Expand Selection"),
+			alias: 'Expand Selection',
 			precondition: null,
 			kbOpts: {
 				kbExpr: EditorContextKeys.editorTextFocus,
@@ -174,12 +174,15 @@ class GrowSelectionAction extends AbstractSmartSelect {
 	}
 }
 
+// renamed command id
+CommandsRegistry.registerCommandAlias('editor.action.smartSelect.grow', 'editor.action.smartSelect.expand');
+
 class ShrinkSelectionAction extends AbstractSmartSelect {
 	constructor() {
 		super(false, {
 			id: 'editor.action.smartSelect.shrink',
-			label: nls.localize('smartSelect.shrink', "Shrink Select"),
-			alias: 'Shrink Select',
+			label: nls.localize('smartSelect.shrink', "Shrink Selection"),
+			alias: 'Shrink Selection',
 			precondition: null,
 			kbOpts: {
 				kbExpr: EditorContextKeys.editorTextFocus,
@@ -201,13 +204,17 @@ registerEditorContribution(SmartSelectController);
 registerEditorAction(GrowSelectionAction);
 registerEditorAction(ShrinkSelectionAction);
 
+// word selection
 modes.SelectionRangeRegistry.register('*', new WordSelectionRangeProvider());
-modes.SelectionRangeRegistry.register('*', new BracketSelectionRangeProvider());
-modes.SelectionRangeRegistry.register('*', new TokenTreeSelectionRangeProvider());
 
 export function provideSelectionRanges(model: ITextModel, position: Position, token: CancellationToken): Promise<Range[] | undefined | null> {
 
 	const provider = modes.SelectionRangeRegistry.orderedGroups(model);
+
+	if (provider.length === 1) {
+		// add word selection and bracket selection when no provider exists
+		provider.unshift([new BracketSelectionRangeProvider()]);
+	}
 
 	interface RankedRange {
 		rank: number;
@@ -221,11 +228,11 @@ export function provideSelectionRanges(model: ITextModel, position: Position, to
 	for (const group of provider) {
 		rank += 1;
 		for (const prov of group) {
-			work.push(Promise.resolve(prov.provideSelectionRanges(model, position, token)).then(res => {
-				if (arrays.isNonEmptyArray(res)) {
-					for (const range of res) {
-						if (Range.isIRange(range) && Range.containsPosition(range, position)) {
-							ranges.push({ range: Range.lift(range), rank });
+			work.push(Promise.resolve(prov.provideSelectionRanges(model, position, token)).then(selectionRanges => {
+				if (arrays.isNonEmptyArray(selectionRanges)) {
+					for (const sel of selectionRanges) {
+						if (Range.isIRange(sel.range) && Range.containsPosition(sel.range, position)) {
+							ranges.push({ range: Range.lift(sel.range), rank });
 						}
 					}
 				}
@@ -234,6 +241,11 @@ export function provideSelectionRanges(model: ITextModel, position: Position, to
 	}
 
 	return Promise.all(work).then(() => {
+
+		if (ranges.length === 0) {
+			return [];
+		}
+
 		ranges.sort((a, b) => {
 			if (Position.isBefore(a.range.getStartPosition(), b.range.getStartPosition())) {
 				return 1;
@@ -248,16 +260,35 @@ export function provideSelectionRanges(model: ITextModel, position: Position, to
 			}
 		});
 
-		// ranges.sort((a, b) => Range.compareRangesUsingStarts(b.range, a.range));
 		let result: Range[] = [];
 		let last: Range | undefined;
 		for (const { range } of ranges) {
-			if (!last || Range.containsRange(range, last)) {
+			if (!last || (Range.containsRange(range, last) && !Range.equalsRange(range, last))) {
 				result.push(range);
 				last = range;
 			}
 		}
-		return result;
+
+		let result2: Range[] = [result[0]];
+		for (let i = 1; i < result.length; i++) {
+			const prev = result[i - 1];
+			const cur = result[i];
+			if (cur.startLineNumber !== prev.startLineNumber || cur.endLineNumber !== prev.endLineNumber) {
+				// add line/block range without leading/failing whitespace
+				const rangeNoWhitespace = new Range(prev.startLineNumber, model.getLineFirstNonWhitespaceColumn(prev.startLineNumber), prev.endLineNumber, model.getLineLastNonWhitespaceColumn(prev.endLineNumber));
+				if (rangeNoWhitespace.containsRange(prev) && !rangeNoWhitespace.equalsRange(prev)) {
+					result2.push(rangeNoWhitespace);
+				}
+				// add line/block range
+				const rangeFull = new Range(prev.startLineNumber, 1, prev.endLineNumber, model.getLineMaxColumn(prev.endLineNumber));
+				if (rangeFull.containsRange(prev) && !rangeFull.equalsRange(rangeNoWhitespace)) {
+					result2.push(rangeFull);
+				}
+			}
+			result2.push(cur);
+		}
+
+		return result2;
 	});
 }
 

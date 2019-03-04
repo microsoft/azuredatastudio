@@ -7,7 +7,7 @@ import * as nls from 'vs/nls';
 import { RunOnceScheduler, ignoreErrors } from 'vs/base/common/async';
 import * as dom from 'vs/base/browser/dom';
 import { IViewletViewOptions } from 'vs/workbench/browser/parts/views/viewsViewlet';
-import { IDebugService, State, IStackFrame, IDebugSession, IThread, CONTEXT_CALLSTACK_ITEM_TYPE } from 'vs/workbench/parts/debug/common/debug';
+import { IDebugService, State, IStackFrame, IDebugSession, IThread, CONTEXT_CALLSTACK_ITEM_TYPE, IDebugModel } from 'vs/workbench/parts/debug/common/debug';
 import { Thread, StackFrame, ThreadAndSessionIds } from 'vs/workbench/parts/debug/common/debugModel';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -25,12 +25,14 @@ import { IViewletPanelOptions, ViewletPanel } from 'vs/workbench/browser/parts/v
 import { ILabelService } from 'vs/platform/label/common/label';
 import { DebugSession } from 'vs/workbench/parts/debug/electron-browser/debugSession';
 import { IAccessibilityProvider } from 'vs/base/browser/ui/list/listWidget';
-import { IDataSource } from 'vs/base/browser/ui/tree/asyncDataTree';
 import { fillInContextMenuActions } from 'vs/platform/actions/browser/menuItemActionItem';
 import { IListVirtualDelegate } from 'vs/base/browser/ui/list/list';
-import { ITreeRenderer, ITreeNode, ITreeContextMenuEvent } from 'vs/base/browser/ui/tree/tree';
+import { ITreeRenderer, ITreeNode, ITreeContextMenuEvent, IAsyncDataSource } from 'vs/base/browser/ui/tree/tree';
 import { TreeResourceNavigator2, WorkbenchAsyncDataTree, IListService } from 'vs/platform/list/browser/listService';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { onUnexpectedError } from 'vs/base/common/errors';
+import { HighlightedLabel } from 'vs/base/browser/ui/highlightedlabel/highlightedLabel';
+import { createMatches, FuzzyScore } from 'vs/base/common/filters';
 
 const $ = dom.$;
 
@@ -46,21 +48,21 @@ export class CallStackView extends ViewletPanel {
 	private ignoreFocusStackFrameEvent: boolean;
 	private callStackItemType: IContextKey<string>;
 	private dataSource: CallStackDataSource;
-	private tree: WorkbenchAsyncDataTree<CallStackItem>;
+	private tree: WorkbenchAsyncDataTree<IDebugModel, CallStackItem, FuzzyScore>;
 	private contributedContextMenu: IMenu;
 
 	constructor(
 		private options: IViewletViewOptions,
 		@IContextMenuService contextMenuService: IContextMenuService,
-		@IDebugService private debugService: IDebugService,
+		@IDebugService private readonly debugService: IDebugService,
 		@IKeybindingService keybindingService: IKeybindingService,
-		@IInstantiationService private instantiationService: IInstantiationService,
-		@IEditorService private editorService: IEditorService,
+		@IInstantiationService private readonly instantiationService: IInstantiationService,
+		@IEditorService private readonly editorService: IEditorService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@IMenuService menuService: IMenuService,
-		@IContextKeyService private contextKeyService: IContextKeyService,
-		@IThemeService private themeService: IThemeService,
-		@IListService private listService: IListService
+		@IContextKeyService private readonly contextKeyService: IContextKeyService,
+		@IThemeService private readonly themeService: IThemeService,
+		@IListService private readonly listService: IListService
 	) {
 		super({ ...(options as IViewletPanelOptions), ariaHeaderLabel: nls.localize('callstackSection', "Call Stack Section") }, keybindingService, contextMenuService, configurationService);
 		this.callStackItemType = CONTEXT_CALLSTACK_ITEM_TYPE.bindTo(contextKeyService);
@@ -85,7 +87,7 @@ export class CallStackView extends ViewletPanel {
 
 			this.needsRefresh = false;
 			this.dataSource.deemphasizedStackFramesToShow = [];
-			this.tree.refresh(null).then(() => this.updateTreeSelection());
+			this.tree.updateChildren().then(() => this.updateTreeSelection());
 		}, 50);
 	}
 
@@ -102,7 +104,7 @@ export class CallStackView extends ViewletPanel {
 		dom.addClass(container, 'debug-call-stack');
 		const treeContainer = renderViewTree(container);
 
-		this.dataSource = new CallStackDataSource(this.debugService);
+		this.dataSource = new CallStackDataSource();
 		this.tree = new WorkbenchAsyncDataTree(treeContainer, new CallStackDelegate(), [
 			new SessionsRenderer(),
 			new ThreadsRenderer(),
@@ -124,12 +126,32 @@ export class CallStackView extends ViewletPanel {
 
 						return element.getId();
 					}
+				},
+				keyboardNavigationLabelProvider: {
+					getKeyboardNavigationLabel: e => {
+						if (e instanceof DebugSession) {
+							return e.getLabel();
+						}
+						if (e instanceof Thread) {
+							return e.name;
+						}
+						if (e instanceof StackFrame || typeof e === 'string') {
+							return e;
+						}
+						if (e instanceof ThreadAndSessionIds) {
+							return LoadMoreRenderer.LABEL;
+						}
+
+						return nls.localize('showMoreStackFrames2', "Show More Stack Frames");
+					}
 				}
-			}, this.contextKeyService, this.listService, this.themeService, this.configurationService);
+			}, this.contextKeyService, this.listService, this.themeService, this.configurationService, this.keybindingService);
+
+		this.tree.setInput(this.debugService.getModel()).then(undefined, onUnexpectedError);
 
 		const callstackNavigator = new TreeResourceNavigator2(this.tree);
 		this.disposables.push(callstackNavigator);
-		this.disposables.push(callstackNavigator.openResource(e => {
+		this.disposables.push(callstackNavigator.onDidOpenResource(e => {
 			if (this.ignoreSelectionChangedEvent) {
 				return;
 			}
@@ -159,17 +181,17 @@ export class CallStackView extends ViewletPanel {
 				const thread = session && session.getThread(element.threadId);
 				if (thread) {
 					(<Thread>thread).fetchCallStack()
-						.then(() => this.tree.refresh(null));
+						.then(() => this.tree.updateChildren());
 				}
 			}
 			if (element instanceof Array) {
 				this.dataSource.deemphasizedStackFramesToShow.push(...element);
-				this.tree.refresh(null);
+				this.tree.updateChildren();
 			}
 		}));
 
 		this.disposables.push(this.debugService.getModel().onDidChangeCallStack(() => {
-			if (!this.isVisible()) {
+			if (!this.isBodyVisible()) {
 				this.needsRefresh = true;
 				return;
 			}
@@ -182,7 +204,7 @@ export class CallStackView extends ViewletPanel {
 			if (this.ignoreFocusStackFrameEvent) {
 				return;
 			}
-			if (!this.isVisible) {
+			if (!this.isBodyVisible()) {
 				this.needsRefresh = true;
 				return;
 			}
@@ -195,10 +217,20 @@ export class CallStackView extends ViewletPanel {
 		if (this.debugService.state === State.Stopped) {
 			this.onCallStackChangeScheduler.schedule(0);
 		}
+
+		this.disposables.push(this.onDidChangeBodyVisibility(visible => {
+			if (visible && this.needsRefresh) {
+				this.onCallStackChangeScheduler.schedule();
+			}
+		}));
 	}
 
-	layoutBody(size: number): void {
-		this.tree.layout(size);
+	layoutBody(height: number, width: number): void {
+		this.tree.layout(height, width);
+	}
+
+	focus(): void {
+		this.tree.domFocus();
 	}
 
 	private updateTreeSelection(): void {
@@ -233,13 +265,6 @@ export class CallStackView extends ViewletPanel {
 			if (stackFrame) {
 				expansionsPromise.then(() => updateSelectionAndReveal(stackFrame));
 			}
-		}
-	}
-
-	setVisible(visible: boolean): void {
-		super.setVisible(visible);
-		if (visible && this.needsRefresh) {
-			this.onCallStackChangeScheduler.schedule();
 		}
 	}
 
@@ -305,6 +330,7 @@ interface IThreadTemplateData {
 	name: HTMLElement;
 	state: HTMLElement;
 	stateLabel: HTMLSpanElement;
+	label: HighlightedLabel;
 }
 
 interface ISessionTemplateData {
@@ -312,6 +338,7 @@ interface ISessionTemplateData {
 	name: HTMLElement;
 	state: HTMLElement;
 	stateLabel: HTMLSpanElement;
+	label: HighlightedLabel;
 }
 
 interface IErrorTemplateData {
@@ -324,13 +351,13 @@ interface ILabelTemplateData {
 
 interface IStackFrameTemplateData {
 	stackFrame: HTMLElement;
-	label: HTMLElement;
 	file: HTMLElement;
 	fileName: HTMLElement;
 	lineNumber: HTMLElement;
+	label: HighlightedLabel;
 }
 
-class SessionsRenderer implements ITreeRenderer<IDebugSession, void, ISessionTemplateData> {
+class SessionsRenderer implements ITreeRenderer<IDebugSession, FuzzyScore, ISessionTemplateData> {
 	static readonly ID = 'session';
 
 	get templateId(): string {
@@ -343,22 +370,19 @@ class SessionsRenderer implements ITreeRenderer<IDebugSession, void, ISessionTem
 		data.name = dom.append(data.session, $('.name'));
 		data.state = dom.append(data.session, $('.state'));
 		data.stateLabel = dom.append(data.state, $('span.label'));
+		data.label = new HighlightedLabel(data.name, false);
 
 		return data;
 	}
 
-	renderElement(element: ITreeNode<IDebugSession, void>, index: number, data: ISessionTemplateData): void {
+	renderElement(element: ITreeNode<IDebugSession, FuzzyScore>, index: number, data: ISessionTemplateData): void {
 		const session = element.element;
 		data.session.title = nls.localize({ key: 'session', comment: ['Session is a noun'] }, "Session");
-		data.name.textContent = session.getLabel();
+		data.label.set(session.getLabel(), createMatches(element.filterData));
 		const stoppedThread = session.getAllThreads().filter(t => t.stopped).pop();
 
 		data.stateLabel.textContent = stoppedThread ? nls.localize('paused', "Paused")
 			: nls.localize({ key: 'running', comment: ['indicates state'] }, "Running");
-	}
-
-	disposeElement(element: ITreeNode<IDebugSession, void>, index: number, templateData: ISessionTemplateData): void {
-		// noop
 	}
 
 	disposeTemplate(templateData: ISessionTemplateData): void {
@@ -366,7 +390,7 @@ class SessionsRenderer implements ITreeRenderer<IDebugSession, void, ISessionTem
 	}
 }
 
-class ThreadsRenderer implements ITreeRenderer<IThread, void, IThreadTemplateData> {
+class ThreadsRenderer implements ITreeRenderer<IThread, FuzzyScore, IThreadTemplateData> {
 	static readonly ID = 'thread';
 
 	get templateId(): string {
@@ -379,14 +403,15 @@ class ThreadsRenderer implements ITreeRenderer<IThread, void, IThreadTemplateDat
 		data.name = dom.append(data.thread, $('.name'));
 		data.state = dom.append(data.thread, $('.state'));
 		data.stateLabel = dom.append(data.state, $('span.label'));
+		data.label = new HighlightedLabel(data.name, false);
 
 		return data;
 	}
 
-	renderElement(element: ITreeNode<IThread, void>, index: number, data: IThreadTemplateData): void {
+	renderElement(element: ITreeNode<IThread, FuzzyScore>, index: number, data: IThreadTemplateData): void {
 		const thread = element.element;
 		data.thread.title = nls.localize('thread', "Thread");
-		data.name.textContent = thread.name;
+		data.label.set(thread.name, createMatches(element.filterData));
 
 		if (thread.stopped) {
 			data.stateLabel.textContent = thread.stoppedDetails.description ||
@@ -396,19 +421,15 @@ class ThreadsRenderer implements ITreeRenderer<IThread, void, IThreadTemplateDat
 		}
 	}
 
-	disposeElement(element: ITreeNode<IThread, void>, index: number, templateData: IThreadTemplateData): void {
-		// noop
-	}
-
 	disposeTemplate(templateData: IThreadTemplateData): void {
 		// noop
 	}
 }
 
-class StackFramesRenderer implements ITreeRenderer<IStackFrame, void, IStackFrameTemplateData> {
+class StackFramesRenderer implements ITreeRenderer<IStackFrame, FuzzyScore, IStackFrameTemplateData> {
 	static readonly ID = 'stackFrame';
 
-	constructor(@ILabelService private labelService: ILabelService) { }
+	constructor(@ILabelService private readonly labelService: ILabelService) { }
 
 	get templateId(): string {
 		return StackFramesRenderer.ID;
@@ -417,16 +438,17 @@ class StackFramesRenderer implements ITreeRenderer<IStackFrame, void, IStackFram
 	renderTemplate(container: HTMLElement): IStackFrameTemplateData {
 		const data: IStackFrameTemplateData = Object.create(null);
 		data.stackFrame = dom.append(container, $('.stack-frame'));
-		data.label = dom.append(data.stackFrame, $('span.label.expression'));
+		const labelDiv = dom.append(data.stackFrame, $('span.label.expression'));
 		data.file = dom.append(data.stackFrame, $('.file'));
 		data.fileName = dom.append(data.file, $('span.file-name'));
 		const wrapper = dom.append(data.file, $('span.line-number-wrapper'));
 		data.lineNumber = dom.append(wrapper, $('span.line-number'));
+		data.label = new HighlightedLabel(labelDiv, false);
 
 		return data;
 	}
 
-	renderElement(element: ITreeNode<IStackFrame, void>, index: number, data: IStackFrameTemplateData): void {
+	renderElement(element: ITreeNode<IStackFrame, FuzzyScore>, index: number, data: IStackFrameTemplateData): void {
 		const stackFrame = element.element;
 		dom.toggleClass(data.stackFrame, 'disabled', !stackFrame.source || !stackFrame.source.available || stackFrame.source.presentationHint === 'deemphasize');
 		dom.toggleClass(data.stackFrame, 'label', stackFrame.presentationHint === 'label');
@@ -436,8 +458,7 @@ class StackFramesRenderer implements ITreeRenderer<IStackFrame, void, IStackFram
 		if (stackFrame.source.raw.origin) {
 			data.file.title += `\n${stackFrame.source.raw.origin}`;
 		}
-		data.label.textContent = stackFrame.name;
-		data.label.title = stackFrame.name;
+		data.label.set(stackFrame.name, createMatches(element.filterData), stackFrame.name);
 		data.fileName.textContent = stackFrame.getSpecificSourceName();
 		if (stackFrame.range.startLineNumber !== undefined) {
 			data.lineNumber.textContent = `${stackFrame.range.startLineNumber}`;
@@ -450,16 +471,12 @@ class StackFramesRenderer implements ITreeRenderer<IStackFrame, void, IStackFram
 		}
 	}
 
-	disposeElement(element: ITreeNode<IStackFrame, void>, index: number, templateData: IStackFrameTemplateData): void {
-		// noop
-	}
-
 	disposeTemplate(templateData: IStackFrameTemplateData): void {
 		// noop
 	}
 }
 
-class ErrorsRenderer implements ITreeRenderer<string, void, IErrorTemplateData> {
+class ErrorsRenderer implements ITreeRenderer<string, FuzzyScore, IErrorTemplateData> {
 	static readonly ID = 'error';
 
 	get templateId(): string {
@@ -473,14 +490,10 @@ class ErrorsRenderer implements ITreeRenderer<string, void, IErrorTemplateData> 
 		return data;
 	}
 
-	renderElement(element: ITreeNode<string, void>, index: number, data: IErrorTemplateData): void {
+	renderElement(element: ITreeNode<string, FuzzyScore>, index: number, data: IErrorTemplateData): void {
 		const error = element.element;
 		data.label.textContent = error;
 		data.label.title = error;
-	}
-
-	disposeElement(element: ITreeNode<string, void>, index: number, templateData: IErrorTemplateData): void {
-		// noop
 	}
 
 	disposeTemplate(templateData: IErrorTemplateData): void {
@@ -488,8 +501,9 @@ class ErrorsRenderer implements ITreeRenderer<string, void, IErrorTemplateData> 
 	}
 }
 
-class LoadMoreRenderer implements ITreeRenderer<ThreadAndSessionIds, void, ILabelTemplateData> {
+class LoadMoreRenderer implements ITreeRenderer<ThreadAndSessionIds, FuzzyScore, ILabelTemplateData> {
 	static readonly ID = 'loadMore';
+	static readonly LABEL = nls.localize('loadMoreStackFrames', "Load More Stack Frames");
 
 	get templateId(): string {
 		return LoadMoreRenderer.ID;
@@ -502,12 +516,8 @@ class LoadMoreRenderer implements ITreeRenderer<ThreadAndSessionIds, void, ILabe
 		return data;
 	}
 
-	renderElement(element: ITreeNode<ThreadAndSessionIds, void>, index: number, data: ILabelTemplateData): void {
-		data.label.textContent = nls.localize('loadMoreStackFrames', "Load More Stack Frames");
-	}
-
-	disposeElement(element: ITreeNode<ThreadAndSessionIds, void>, index: number, templateData: ILabelTemplateData): void {
-		// noop
+	renderElement(element: ITreeNode<ThreadAndSessionIds, FuzzyScore>, index: number, data: ILabelTemplateData): void {
+		data.label.textContent = LoadMoreRenderer.LABEL;
 	}
 
 	disposeTemplate(templateData: ILabelTemplateData): void {
@@ -515,7 +525,7 @@ class LoadMoreRenderer implements ITreeRenderer<ThreadAndSessionIds, void, ILabe
 	}
 }
 
-class ShowMoreRenderer implements ITreeRenderer<IStackFrame[], void, ILabelTemplateData> {
+class ShowMoreRenderer implements ITreeRenderer<IStackFrame[], FuzzyScore, ILabelTemplateData> {
 	static readonly ID = 'showMore';
 
 	get templateId(): string {
@@ -529,17 +539,13 @@ class ShowMoreRenderer implements ITreeRenderer<IStackFrame[], void, ILabelTempl
 		return data;
 	}
 
-	renderElement(element: ITreeNode<IStackFrame[], void>, index: number, data: ILabelTemplateData): void {
+	renderElement(element: ITreeNode<IStackFrame[], FuzzyScore>, index: number, data: ILabelTemplateData): void {
 		const stackFrames = element.element;
 		if (stackFrames.every(sf => sf.source && sf.source.origin && sf.source.origin === stackFrames[0].source.origin)) {
 			data.label.textContent = nls.localize('showMoreAndOrigin', "Show {0} More: {1}", stackFrames.length, stackFrames[0].source.origin);
 		} else {
 			data.label.textContent = nls.localize('showMoreStackFrames', "Show {0} More Stack Frames", stackFrames.length);
 		}
-	}
-
-	disposeElement(element: ITreeNode<IStackFrame[], void>, index: number, templateData: ILabelTemplateData): void {
-		// noop
 	}
 
 	disposeTemplate(templateData: ILabelTemplateData): void {
@@ -577,19 +583,20 @@ class CallStackDelegate implements IListVirtualDelegate<CallStackItem> {
 	}
 }
 
-class CallStackDataSource implements IDataSource<CallStackItem> {
+function isDebugModel(obj: any): obj is IDebugModel {
+	return typeof obj.getSessions === 'function';
+}
+
+class CallStackDataSource implements IAsyncDataSource<IDebugModel, CallStackItem> {
 	deemphasizedStackFramesToShow: IStackFrame[];
 
-	constructor(private debugService: IDebugService) { }
-
-	hasChildren(element: CallStackItem | null): boolean {
-		return element === null || element instanceof DebugSession || (element instanceof Thread && element.stopped);
+	hasChildren(element: IDebugModel | CallStackItem): boolean {
+		return isDebugModel(element) || element instanceof DebugSession || (element instanceof Thread && element.stopped);
 	}
 
-	getChildren(element: CallStackItem | null): Thenable<CallStackItem[]> {
-		if (element === null) {
-			const model = this.debugService.getModel();
-			const sessions = model.getSessions();
+	getChildren(element: IDebugModel | CallStackItem): Promise<CallStackItem[]> {
+		if (isDebugModel(element)) {
+			const sessions = element.getSessions();
 			if (sessions.length === 0) {
 				return Promise.resolve([]);
 			}
@@ -600,15 +607,14 @@ class CallStackDataSource implements IDataSource<CallStackItem> {
 			const threads = sessions[0].getAllThreads();
 			// Only show the threads in the call stack if there is more than 1 thread.
 			return threads.length === 1 ? this.getThreadChildren(<Thread>threads[0]) : Promise.resolve(threads);
-		}
-		if (element instanceof DebugSession) {
+		} else if (element instanceof DebugSession) {
 			return Promise.resolve(element.getAllThreads());
+		} else {
+			return this.getThreadChildren(<Thread>element);
 		}
-
-		return this.getThreadChildren(<Thread>element);
 	}
 
-	private getThreadChildren(thread: Thread): Promise<(IStackFrame | string | ThreadAndSessionIds)[]> {
+	private getThreadChildren(thread: Thread): Promise<Array<IStackFrame | string | ThreadAndSessionIds>> {
 		return this.getThreadCallstack(thread).then(children => {
 			// Check if some stack frames should be hidden under a parent element since they are deemphasized
 			const result = [];
@@ -638,7 +644,7 @@ class CallStackDataSource implements IDataSource<CallStackItem> {
 		});
 	}
 
-	private getThreadCallstack(thread: Thread): Promise<(IStackFrame | string | ThreadAndSessionIds)[]> {
+	private getThreadCallstack(thread: Thread): Promise<Array<IStackFrame | string | ThreadAndSessionIds>> {
 		let callStack: any[] = thread.getCallStack();
 		let callStackPromise: Promise<any> = Promise.resolve(null);
 		if (!callStack || !callStack.length) {

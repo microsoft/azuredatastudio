@@ -24,7 +24,6 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { Emitter, Event } from 'vs/base/common/event';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ResultSerializer } from 'sql/platform/node/resultSerializer';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 import { URI } from 'vs/base/common/uri';
@@ -186,7 +185,7 @@ export default class QueryRunner extends Disposable {
 	private doRunQuery(input: azdata.ISelectionData, runCurrentStatement: boolean, runOptions?: azdata.ExecutionPlanOptions): Thenable<void>;
 	private doRunQuery(input, runCurrentStatement: boolean, runOptions?: azdata.ExecutionPlanOptions): Thenable<void> {
 		if (this.isExecuting) {
-			return TPromise.as(undefined);
+			return Promise.resolve(undefined);
 		}
 		this._planXml = new Deferred<string>();
 		this._batchSets = [];

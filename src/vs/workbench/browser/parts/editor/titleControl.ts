@@ -65,17 +65,17 @@ export abstract class TitleControl extends Themable {
 		parent: HTMLElement,
 		protected accessor: IEditorGroupsAccessor,
 		protected group: IEditorGroupView,
-		@IContextMenuService private contextMenuService: IContextMenuService,
+		@IContextMenuService private readonly contextMenuService: IContextMenuService,
 		@IInstantiationService protected instantiationService: IInstantiationService,
-		@IContextKeyService private contextKeyService: IContextKeyService,
-		@IKeybindingService private keybindingService: IKeybindingService,
-		@ITelemetryService private telemetryService: ITelemetryService,
+		@IContextKeyService private readonly contextKeyService: IContextKeyService,
+		@IKeybindingService private readonly keybindingService: IKeybindingService,
+		@ITelemetryService private readonly telemetryService: ITelemetryService,
 		// {{SQL CARBON EDIT}} -- need to make the notification service protected
-		@INotificationService protected notificationService: INotificationService,
-		@IMenuService private menuService: IMenuService,
+		@INotificationService protected readonly notificationService: INotificationService,
+		@IMenuService private readonly menuService: IMenuService,
 		@IQuickOpenService protected quickOpenService: IQuickOpenService,
 		@IThemeService themeService: IThemeService,
-		@IExtensionService private extensionService: IExtensionService,
+		@IExtensionService private readonly extensionService: IExtensionService,
 		@IConfigurationService protected configurationService: IConfigurationService,
 		@IFileService private readonly fileService: IFileService,
 	) {
@@ -320,10 +320,8 @@ export abstract class TitleControl extends Themable {
 	protected getKeybindingLabel(action: IAction): string {
 		const keybinding = this.getKeybinding(action);
 
-		return keybinding ? keybinding.getLabel() : void 0;
+		return keybinding ? keybinding.getLabel() : undefined;
 	}
-
-	//#region ITitleAreaControl
 
 	abstract openEditor(editor: IEditorInput): void;
 
@@ -348,8 +346,6 @@ export abstract class TitleControl extends Themable {
 	abstract updateStyles(): void;
 
 	layout(dimension: Dimension): void {
-		// Optionally implemented in subclasses
-
 		if (this.breadcrumbsControl) {
 			this.breadcrumbsControl.layout(undefined);
 		}
@@ -365,8 +361,6 @@ export abstract class TitleControl extends Themable {
 
 		super.dispose();
 	}
-
-	//#endregion
 }
 
 registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {

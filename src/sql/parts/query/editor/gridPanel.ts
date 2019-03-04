@@ -38,7 +38,6 @@ import { range } from 'vs/base/common/arrays';
 import { Orientation } from 'vs/base/browser/ui/splitview/splitview';
 import { Disposable, IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { generateUuid } from 'vs/base/common/uuid';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { Separator, ActionBar, ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { isInDOM } from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -468,7 +467,7 @@ class GridTable<T> extends Disposable implements IView {
 			50,
 			index => this.placeholdGenerator(index),
 			0,
-			() => TPromise.as([])
+			() => Promise.resolve([])
 		);
 		this.dataProvider.dataRows = collection;
 		this.table.updateRowCount();
@@ -487,7 +486,7 @@ class GridTable<T> extends Disposable implements IView {
 			50,
 			index => this.placeholdGenerator(index),
 			0,
-			() => TPromise.as([])
+			() => Promise.resolve([])
 		);
 		collection.setCollectionChangedCallback((startIndex, count) => {
 			this.renderGridDataRowsRange(startIndex, count);
@@ -653,7 +652,7 @@ class GridTable<T> extends Disposable implements IView {
 			this.dataProvider.length = resultSet.rowCount;
 			this.table.updateRowCount();
 		}
-		this._onDidChange.fire();
+		this._onDidChange.fire(undefined);
 	}
 
 	private generateContext(cell?: Slick.Cell): IGridActionContext {

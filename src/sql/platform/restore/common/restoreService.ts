@@ -5,7 +5,6 @@
 
 'use strict';
 
-import { TPromise } from 'vs/base/common/winjs.base';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import * as azdata from 'azdata';
 
@@ -47,5 +46,5 @@ export interface IRestoreService {
 export const IRestoreDialogController = createDecorator<IRestoreDialogController>('restoreDialogService');
 export interface IRestoreDialogController {
 	_serviceBrand: any;
-	showDialog(connection: IConnectionProfile): TPromise<void>;
+	showDialog(connection: IConnectionProfile): Promise<void>;
 }

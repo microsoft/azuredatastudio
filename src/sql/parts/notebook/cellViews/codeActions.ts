@@ -6,7 +6,6 @@
 import { nb } from 'azdata';
 
 import { Action } from 'vs/base/common/actions';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { localize } from 'vs/nls';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import * as types from 'vs/base/common/types';
@@ -53,11 +52,11 @@ export abstract class CellActionBase extends Action {
 		return true;
 	}
 
-	public run(context: CellContext): TPromise<boolean> {
+	public run(context: CellContext): Promise<boolean> {
 		if (hasModelAndCell(context, this.notificationService)) {
-			return TPromise.wrap(this.doRun(context).then(() => true));
+			return this.doRun(context).then(() => true);
 		}
-		return TPromise.as(true);
+		return Promise.resolve(true);
 	}
 
 	abstract doRun(context: CellContext): Promise<void>;
@@ -78,8 +77,8 @@ export class RunCellAction extends MultiStateAction<CellExecutionState> {
 		this.ensureContextIsUpdated(context);
 	}
 
-	public run(context?: CellContext): TPromise<boolean> {
-		return TPromise.wrap(this.doRun(context).then(() => true));
+	public run(context?: CellContext): Promise<boolean> {
+		return this.doRun(context).then(() => true);
 	}
 
 	public async doRun(context: CellContext): Promise<void> {

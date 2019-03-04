@@ -10,7 +10,6 @@ import * as vscode from 'vscode';
 import { ok } from 'vs/base/common/assert';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { readonly } from 'vs/base/common/errors';
-import { TPromise } from 'vs/base/common/winjs.base';
 
 import { MainThreadNotebookDocumentsAndEditorsShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { ExtHostNotebookDocumentData } from 'sql/workbench/api/node/extHostNotebookDocumentData';
@@ -159,19 +158,19 @@ export class ExtHostNotebookEditor implements azdata.nb.NotebookEditor, IDisposa
 
 	public edit(callback: (editBuilder: azdata.nb.NotebookEditorEdit) => void, options?: { undoStopBefore: boolean; undoStopAfter: boolean; }): Thenable<boolean> {
 		if (this._disposed) {
-			return TPromise.wrapError<boolean>(new Error('NotebookEditor#edit not possible on closed editors'));
+			return Promise.reject(new Error('NotebookEditor#edit not possible on closed editors'));
 		}
 		let edit = new NotebookEditorEdit(this._documentData.document, options);
 		callback(edit);
 		return this._applyEdit(edit);
 	}
 
-	private _applyEdit(editBuilder: NotebookEditorEdit): TPromise<boolean> {
+	private _applyEdit(editBuilder: NotebookEditorEdit): Promise<boolean> {
 		let editData = editBuilder.finalize();
 
 		// return when there is nothing to do
 		if (editData.edits.length === 0) {
-			return TPromise.wrap(true);
+			return Promise.resolve(true);
 		}
 
 		// check that the edits are not overlapping (i.e. illegal)
@@ -192,9 +191,7 @@ export class ExtHostNotebookEditor implements azdata.nb.NotebookEditor, IDisposa
 
 			if (nextRangeStart < rangeEnd) {
 				// overlapping ranges
-				return TPromise.wrapError<boolean>(
-					new Error('Overlapping ranges are not allowed!')
-				);
+				return Promise.reject(new Error('Overlapping ranges are not allowed!'));
 			}
 		}
 

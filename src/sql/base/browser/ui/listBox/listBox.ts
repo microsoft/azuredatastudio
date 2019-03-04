@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import { SelectBox, ISelectBoxStyles } from 'vs/base/browser/ui/selectBox/selectBox';
+import { SelectBox, ISelectBoxStyles, ISelectOptionItem } from 'vs/base/browser/ui/selectBox/selectBox';
 import { Color } from 'vs/base/common/color';
 import { IMessage, MessageType, defaultOpts } from 'vs/base/browser/ui/inputbox/inputBox';
 import * as dom from 'vs/base/browser/dom';
@@ -52,8 +52,7 @@ export class ListBox extends SelectBox {
 	private isValid: boolean;
 
 	constructor(
-		options: string[],
-		selectedOption: string,
+		options: ISelectOptionItem[],
 		contextViewProvider: IContextViewProvider,
 		private _clipboardService: IClipboardService) {
 

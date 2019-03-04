@@ -7,7 +7,6 @@
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ITree, IDataSource } from 'vs/base/parts/tree/browser/tree';
-import { TPromise } from 'vs/base/common/winjs.base';
 
 /**
  * Implements the DataSource(that returns a parent/children of an element) for the recent connection tree
@@ -43,26 +42,26 @@ export class RecentConnectionDataSource implements IDataSource {
 	/**
 	 * Returns the element's children as an array in a promise.
 	 */
-	public getChildren(tree: ITree, element: any): TPromise<any> {
+	public getChildren(tree: ITree, element: any): Promise<any> {
 		if (element instanceof ConnectionProfile) {
-			return TPromise.as(null);
+			return Promise.resolve(null);
 		} else if (element instanceof ConnectionProfileGroup) {
-			return TPromise.as((<ConnectionProfileGroup>element).getChildren());
+			return Promise.resolve((<ConnectionProfileGroup>element).getChildren());
 		} else {
-			return TPromise.as(null);
+			return Promise.resolve(null);
 		}
 	}
 
 	/**
 	 * Returns the element's parent in a promise.
 	 */
-	public getParent(tree: ITree, element: any): TPromise<any> {
+	public getParent(tree: ITree, element: any): Promise<any> {
 		if (element instanceof ConnectionProfile) {
-			return TPromise.as((<ConnectionProfile>element).getParent());
+			return Promise.resolve((<ConnectionProfile>element).getParent());
 		} else if (element instanceof ConnectionProfileGroup) {
-			return TPromise.as((<ConnectionProfileGroup>element).getParent());
+			return Promise.resolve((<ConnectionProfileGroup>element).getParent());
 		} else {
-			return TPromise.as(null);
+			return Promise.resolve(null);
 		}
 	}
 }

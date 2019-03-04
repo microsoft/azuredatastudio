@@ -166,20 +166,22 @@ MenuRegistry.appendMenuItem(MenuId.MenubarViewMenu, {
 
 // Go to menu
 
-MenuRegistry.appendMenuItem(MenuId.MenubarGoMenu, {
-	group: 'z_go_to',
-	command: {
-		id: 'workbench.action.gotoSymbol',
-		title: nls.localize({ key: 'miGotoSymbolInFile', comment: ['&& denotes a mnemonic'] }, "Go to &&Symbol in File...")
-	},
-	order: 2
-});
+// {{SQL CARBON EDIT}} - Disable unused menu item
+// MenuRegistry.appendMenuItem(MenuId.MenubarGoMenu, {
+// 	group: '4_symbol_nav',
+// 	command: {
+// 		id: 'workbench.action.gotoSymbol',
+// 		title: nls.localize({ key: 'miGotoSymbolInFile', comment: ['&& denotes a mnemonic'] }, "Go to &&Symbol in File...")
+// 	},
+// 	order: 1
+// });
+// {{SQL CARBON EDIT}} - End
 
 MenuRegistry.appendMenuItem(MenuId.MenubarGoMenu, {
-	group: 'z_go_to',
+	group: '5_infile_nav',
 	command: {
 		id: 'workbench.action.gotoLine',
-		title: nls.localize({ key: 'miGotoLine', comment: ['&& denotes a mnemonic'] }, "Go to &&Line...")
+		title: nls.localize({ key: 'miGotoLine', comment: ['&& denotes a mnemonic'] }, "Go to &&Line/Column...")
 	},
-	order: 7
+	order: 1
 });

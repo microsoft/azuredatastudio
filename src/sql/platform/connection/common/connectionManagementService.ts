@@ -644,7 +644,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.AddServerGroup);
 		return new Promise<string>((resolve, reject) => {
 			this._connectionStore.saveProfileGroup(profile).then(groupId => {
-				this._onAddConnectionProfile.fire();
+				this._onAddConnectionProfile.fire(undefined);
 				resolve(groupId);
 			}).catch(err => {
 				reject(err);
@@ -1219,7 +1219,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return new Promise<string>((resolve, reject) => {
 			this._connectionStore.editGroup(group).then(groupId => {
 				this.refreshEditorTitles();
-				this._onAddConnectionProfile.fire();
+				this._onAddConnectionProfile.fire(undefined);
 				resolve(null);
 			}).catch(err => {
 				reject(err);

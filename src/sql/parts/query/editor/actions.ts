@@ -8,7 +8,6 @@
 
 import { Action } from 'vs/base/common/actions';
 import { localize } from 'vs/nls';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
@@ -74,14 +73,14 @@ export class SaveResultAction extends Action {
 		super(id, label, icon);
 	}
 
-	public run(context: IGridActionContext): TPromise<boolean> {
+	public run(context: IGridActionContext): Promise<boolean> {
 		if (this.accountForNumberColumn) {
 			context.runner.serializeResults(context.batchId, context.resultId, this.format,
 				mapForNumberColumn(context.selection));
 		} else {
 			context.runner.serializeResults(context.batchId, context.resultId, this.format, context.selection);
 		}
-		return TPromise.as(true);
+		return Promise.resolve(true);
 	}
 }
 
@@ -101,7 +100,7 @@ export class CopyResultAction extends Action {
 		super(id, label);
 	}
 
-	public run(context: IGridActionContext): TPromise<boolean> {
+	public run(context: IGridActionContext): Promise<boolean> {
 		if (this.accountForNumberColumn) {
 			context.runner.copyResults(
 				mapForNumberColumn(context.selection),
@@ -109,7 +108,7 @@ export class CopyResultAction extends Action {
 		} else {
 			context.runner.copyResults(context.selection, context.batchId, context.resultId, this.copyHeader);
 		}
-		return TPromise.as(true);
+		return Promise.resolve(true);
 	}
 }
 
@@ -121,9 +120,9 @@ export class SelectAllGridAction extends Action {
 		super(SelectAllGridAction.ID, SelectAllGridAction.LABEL);
 	}
 
-	public run(context: IGridActionContext): TPromise<boolean> {
+	public run(context: IGridActionContext): Promise<boolean> {
 		context.selectionModel.setSelectedRanges([new Slick.Range(0, 0, context.table.getData().getLength() - 1, context.table.columns.length - 1)]);
-		return TPromise.as(true);
+		return Promise.resolve(true);
 	}
 }
 
@@ -138,9 +137,9 @@ export class CopyMessagesAction extends Action {
 		super(CopyMessagesAction.ID, CopyMessagesAction.LABEL);
 	}
 
-	public run(context: IMessagesActionContext): TPromise<boolean> {
+	public run(context: IMessagesActionContext): Promise<boolean> {
 		this.clipboardService.writeText(context.selection.toString());
-		return TPromise.as(true);
+		return Promise.resolve(true);
 	}
 }
 
@@ -156,7 +155,7 @@ export class CopyAllMessagesAction extends Action {
 		super(CopyAllMessagesAction.ID, CopyAllMessagesAction.LABEL);
 	}
 
-	public run(): TPromise<any> {
+	public run(): Promise<any> {
 		let text = '';
 		const navigator = this.tree.getNavigator();
 		// skip first navigator element - the root node
@@ -168,7 +167,7 @@ export class CopyAllMessagesAction extends Action {
 		}
 
 		this.clipboardService.writeText(removeAnsiEscapeCodes(text));
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 }
 
@@ -181,9 +180,9 @@ export class MaximizeTableAction extends Action {
 		super(MaximizeTableAction.ID, MaximizeTableAction.LABEL, MaximizeTableAction.ICON);
 	}
 
-	public run(context: IGridActionContext): TPromise<boolean> {
+	public run(context: IGridActionContext): Promise<boolean> {
 		context.tableState.maximized = true;
-		return TPromise.as(true);
+		return Promise.resolve(true);
 	}
 }
 
@@ -196,9 +195,9 @@ export class RestoreTableAction extends Action {
 		super(RestoreTableAction.ID, RestoreTableAction.LABEL, RestoreTableAction.ICON);
 	}
 
-	public run(context: IGridActionContext): TPromise<boolean> {
+	public run(context: IGridActionContext): Promise<boolean> {
 		context.tableState.maximized = false;
-		return TPromise.as(true);
+		return Promise.resolve(true);
 	}
 }
 
@@ -211,13 +210,13 @@ export class ChartDataAction extends Action {
 		super(ChartDataAction.ID, ChartDataAction.LABEL, ChartDataAction.ICON);
 	}
 
-	public run(context: IGridActionContext): TPromise<boolean> {
+	public run(context: IGridActionContext): Promise<boolean> {
 		let activeEditor = this.editorService.activeControl;
 		if (activeEditor instanceof QueryEditor) {
 			activeEditor.resultsEditor.chart({ batchId: context.batchId, resultId: context.resultId });
-			return TPromise.as(true);
+			return Promise.resolve(true);
 		} else {
-			return TPromise.as(false);
+			return Promise.resolve(false);
 		}
 	}
 }
@@ -232,13 +231,13 @@ export class ShowQueryPlanAction extends Action {
 		super(ShowQueryPlanAction.ID, ShowQueryPlanAction.LABEL);
 	}
 
-	public run(xml: string): TPromise<boolean> {
+	public run(xml: string): Promise<boolean> {
 		let activeEditor = this.editorService.activeControl;
 		if (activeEditor instanceof QueryEditor) {
 			activeEditor.resultsEditor.showQueryPlan(xml);
-			return TPromise.as(true);
+			return Promise.resolve(true);
 		} else {
-			return TPromise.as(false);
+			return Promise.resolve(false);
 		}
 	}
 }

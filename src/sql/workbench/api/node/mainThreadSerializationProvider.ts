@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { TPromise } from 'vs/base/common/winjs.base';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import {
 	SqlExtHostContext, ExtHostSerializationProviderShape,
@@ -38,7 +37,7 @@ export class MainThreadSerializationProvider implements MainThreadSerializationP
 		this._toDispose = dispose(this._toDispose);
 	}
 
-	public $registerSerializationProvider(handle: number): TPromise<any> {
+	public $registerSerializationProvider(handle: number): Promise<any> {
 		let self = this;
 
 		this._registrations[handle] = this.serializationService.addEventListener(handle, {
@@ -50,7 +49,7 @@ export class MainThreadSerializationProvider implements MainThreadSerializationP
 		return undefined;
 	}
 
-	public $unregisterSerializationProvider(handle: number): TPromise<any> {
+	public $unregisterSerializationProvider(handle: number): Promise<any> {
 		let registration = this._registrations[handle];
 		if (registration) {
 			registration.dispose();

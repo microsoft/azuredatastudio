@@ -5,7 +5,6 @@
 
 'use strict';
 import { Emitter } from 'vs/base/common/event';
-import { TPromise } from 'vs/base/common/winjs.base';
 
 import { ISelectionData } from 'azdata';
 
@@ -122,7 +121,7 @@ suite('SQL QueryAction Tests', () => {
 				connectionParams = params;
 				countCalledShowDialog++;
 			})
-			.returns(() => TPromise.as(none));
+			.returns(() => Promise.resolve(none));
 
 		// ... Mock "isConnected" in ConnectionManagementService
 		let connectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Loose, {}, {}, undefined, connectionDialogService.object);
@@ -227,7 +226,7 @@ suite('SQL QueryAction Tests', () => {
 				showDialogConnectionParams = params;
 				countCalledShowDialog++;
 			})
-			.returns(() => TPromise.as(none));
+			.returns(() => Promise.resolve(none));
 
 		// ... Mock "getSelection" in QueryEditor
 		let queryInput = TypeMoq.Mock.ofType(QueryInput, TypeMoq.MockBehavior.Loose);
@@ -385,7 +384,7 @@ suite('SQL QueryAction Tests', () => {
 				connectionParams = params;
 				countCalledShowDialog++;
 			})
-			.returns(() => TPromise.as(none));
+			.returns(() => Promise.resolve(none));
 
 		// ... Mock "isConnected" in ConnectionManagementService
 		let connectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Loose, {}, {}, undefined, connectionDialogService.object);
@@ -431,7 +430,7 @@ suite('SQL QueryAction Tests', () => {
 				calledShowDialog++;
 				connectionParams = params;
 			})
-			.returns(() => TPromise.as(none));
+			.returns(() => Promise.resolve(none));
 
 		// ... Mock "isConnected" in ConnectionManagementService
 		let connectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Loose, {}, {}, undefined, connectionDialogService.object);

@@ -32,12 +32,14 @@ export class ToggleMinimapAction extends Action {
 const registry = Registry.as<IWorkbenchActionRegistry>(ActionExtensions.WorkbenchActions);
 registry.registerWorkbenchAction(new SyncActionDescriptor(ToggleMinimapAction, ToggleMinimapAction.ID, ToggleMinimapAction.LABEL), 'View: Toggle Minimap');
 
-MenuRegistry.appendMenuItem(MenuId.MenubarViewMenu, {
-	group: '5_editor',
-	command: {
-		id: ToggleMinimapAction.ID,
-		title: nls.localize({ key: 'miToggleMinimap', comment: ['&& denotes a mnemonic'] }, "Toggle &&Minimap"),
-		toggled: ContextKeyExpr.equals('config.editor.minimap.enabled', true)
-	},
-	order: 2
-});
+// {{SQL CARBON EDIT}} - Disable unused menu item
+// MenuRegistry.appendMenuItem(MenuId.MenubarViewMenu, {
+// 	group: '5_editor',
+// 	command: {
+// 		id: ToggleMinimapAction.ID,
+// 		title: nls.localize({ key: 'miToggleMinimap', comment: ['&& denotes a mnemonic'] }, "Toggle &&Minimap"),
+// 		toggled: ContextKeyExpr.equals('config.editor.minimap.enabled', true)
+// 	},
+// 	order: 2
+// });
+// {{SQL CARBON EDIT}} - End

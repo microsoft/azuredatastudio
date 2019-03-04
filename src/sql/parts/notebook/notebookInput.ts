@@ -6,7 +6,6 @@
 'use strict';
 
 import * as nls from 'vs/nls';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { IEditorModel } from 'vs/platform/editor/common/editor';
 import { EditorInput, EditorModel, ConfirmResult } from 'vs/workbench/common/editor';
 import { Emitter, Event } from 'vs/base/common/event';
@@ -21,7 +20,7 @@ import Severity from 'vs/base/common/severity';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
 
-
+// TODO mairvine: Why is this giving me weird typescript errors?
 export class NotebookInputModel extends EditorModel {
 	private dirty: boolean;
 	private readonly _onDidChangeDirty: Emitter<void> = this._register(new Emitter<void>());
@@ -105,11 +104,11 @@ export class NotebookInputModel extends EditorModel {
 		this._onDidChangeDirty.fire();
 	}
 
-	save(): TPromise<boolean> {
+	save(): Promise<boolean> {
 		if (this.saveHandler) {
-			return TPromise.wrap(this.saveHandler(this.handle));
+			return Promise.resolve(this.saveHandler(this.handle));
 		}
-		return TPromise.wrap(true);
+		return Promise.resolve(true);
 	}
 }
 
@@ -166,7 +165,7 @@ export class NotebookInput extends EditorInput {
 		return NotebookInput.ID;
 	}
 
-	public resolve(refresh?: boolean): TPromise<IEditorModel> {
+	public resolve(refresh?: boolean): Promise<IEditorModel> {
 		return undefined;
 	}
 
@@ -218,7 +217,7 @@ export class NotebookInput extends EditorInput {
 	/**
 	 * Subclasses should bring up a proper dialog for the user if the editor is dirty and return the result.
 	 */
-	confirmSave(): TPromise<ConfirmResult> {
+	confirmSave(): Promise<ConfirmResult> {
 		// TODO #2530 support save on close / confirm save. This is significantly more work
 		// as we need to either integrate with textFileService (seems like this isn't viable)
 		// or register our own complimentary service that handles the lifecycle operations such
@@ -245,7 +244,7 @@ export class NotebookInput extends EditorInput {
 	/**
 	 * Saves the editor if it is dirty. Subclasses return a promise with a boolean indicating the success of the operation.
 	 */
-	save(): TPromise<boolean> {
+	save(): Promise<boolean> {
 		let activeEditor: INotebookEditor;
 		for (const editor of this.notebookService.listNotebookEditors()) {
 			if (editor.isActive()) {
@@ -253,9 +252,9 @@ export class NotebookInput extends EditorInput {
 			}
 		}
 		if (activeEditor) {
-			return TPromise.wrap(activeEditor.save().then((val) => { return val; }));
+			return activeEditor.save().then((val) => { return val; });
 		}
-		return TPromise.wrap(false);
+		return Promise.resolve(false);
 	}
 
 	/**

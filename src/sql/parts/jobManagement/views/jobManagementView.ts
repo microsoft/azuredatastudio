@@ -9,7 +9,6 @@ import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.comp
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { IAction, Action } from 'vs/base/common/actions';
 import { ResolvedKeybinding } from 'vs/base/common/keyCodes';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';

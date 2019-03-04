@@ -12,7 +12,6 @@ import { IProfilerStateChangedEvent } from 'sql/parts/profiler/editor/profilerSt
 import { FindWidget, ITableController, IConfigurationChangedEvent, ACTION_IDS } from './profilerFindWidget';
 import { ProfilerFindNext, ProfilerFindPrevious } from 'sql/parts/profiler/contrib/profilerActions';
 
-import { TPromise } from 'vs/base/common/winjs.base';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
@@ -106,7 +105,7 @@ export class ProfilerTableEditor extends BaseEditor implements IProfilerControll
 		);
 	}
 
-	public setInput(input: ProfilerInput): TPromise<void> {
+	public setInput(input: ProfilerInput): Promise<void> {
 		this._showStatusBarItem = true;
 		this._input = input;
 
@@ -153,7 +152,7 @@ export class ProfilerTableEditor extends BaseEditor implements IProfilerControll
 		this._input.onDispose(() => {
 			this._disposeStatusbarItem();
 		});
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 
 	public toggleSearch(): void {

@@ -22,7 +22,6 @@ import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMess
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 
 import { IPartService } from 'vs/workbench/services/part/common/partService';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as platform from 'vs/base/common/platform';
 import Severity from 'vs/base/common/severity';
@@ -311,8 +310,8 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		return newProfile;
 	}
 
-	private showDialogWithModel(): TPromise<void> {
-		return new TPromise<void>((resolve, reject) => {
+	private showDialogWithModel(): Promise<void> {
+		return new Promise<void>((resolve, reject) => {
 			this.updateModelServerCapabilities(this._inputModel);
 			this.doShowDialog(this._params);
 			resolve(null);
@@ -373,7 +372,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	}
 
 
-	private doShowDialog(params: INewConnectionParams): TPromise<void> {
+	private doShowDialog(params: INewConnectionParams): Promise<void> {
 		if (!this._connectionDialog) {
 			let container = this._partService.getWorkbenchElement().parentElement;
 			this._container = container;
@@ -391,7 +390,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		}
 		this._connectionDialog.newConnectionParams = params;
 
-		return new TPromise<void>(() => {
+		return new Promise<void>(() => {
 			this._connectionDialog.open(this._connectionManagementService.getRecentConnections(params.providers).length > 0);
 			this.uiController.focusOnOpen();
 		});

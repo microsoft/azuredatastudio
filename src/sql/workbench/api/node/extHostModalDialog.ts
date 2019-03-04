@@ -117,6 +117,6 @@ export class ExtHostModalDialogs implements ExtHostModalDialogsShape {
 
 	$onClosed(handle: number): void {
 		const webview = this._webviews.get(handle);
-		webview.onClosedEmitter.fire();
+		webview.onClosedEmitter.fire(undefined);
 	}
 }

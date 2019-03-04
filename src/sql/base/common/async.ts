@@ -6,7 +6,7 @@
 'use strict';
 
 import { ITask, createCancelablePromise, CancelablePromise } from 'vs/base/common/async';
-import { Promise, TPromise, ValueCallback } from 'vs/base/common/winjs.base';
+import { ValueCallback } from 'vs/base/node/processes';
 
 /**
  * Bases on vscode Delayer, however, it works by only running the task if it gets
@@ -18,7 +18,7 @@ export class MultipleRequestDelayer<T> {
 
 	private timeout: NodeJS.Timer;
 	private completionPromise: CancelablePromise<any>;
-	private onSuccess: ValueCallback;
+	private onSuccess: ValueCallback<{}>;
 	private requests: number = 0;
 	private task: ITask<T>;
 
@@ -28,7 +28,7 @@ export class MultipleRequestDelayer<T> {
 		this.onSuccess = null;
 	}
 
-	trigger(task: ITask<T>): TPromise<T> {
+	trigger(task: ITask<T>): Promise<T> {
 		this.cancelTimeout();
 		this.task = task;
 

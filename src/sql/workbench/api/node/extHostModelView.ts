@@ -1357,7 +1357,7 @@ export class ExtHostModelView implements ExtHostModelViewShape {
 
 	$onClosed(handle: number): void {
 		const view = this._modelViews.get(handle);
-		view.onClosedEmitter.fire();
+		view.onClosedEmitter.fire(undefined);
 		this._modelViews.delete(handle);
 	}
 

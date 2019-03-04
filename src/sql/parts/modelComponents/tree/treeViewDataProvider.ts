@@ -9,7 +9,6 @@ import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 import { IModelViewTreeViewDataProvider, ITreeComponentItem } from 'sql/workbench/common/views';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import * as vsTreeView from 'vs/workbench/api/electron-browser/mainThreadTreeViews';
-import { TPromise } from 'vs/base/common/winjs.base';
 
 export class TreeViewDataProvider extends vsTreeView.TreeViewDataProvider implements IModelViewTreeViewDataProvider {
 	constructor(handle: number, treeViewId: string,

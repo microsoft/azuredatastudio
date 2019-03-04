@@ -15,6 +15,9 @@ import * as modes from 'vs/editor/common/modes';
 import * as vscode from 'vscode';
 import { ILogService } from 'vs/platform/log/common/log';
 import { revive } from 'vs/base/common/marshalling';
+import { Range } from 'vs/editor/common/core/range';
+import { Position } from 'vs/editor/common/core/position';
+import { URI } from 'vs/base/common/uri';
 
 interface CommandHandler {
 	callback: Function;
@@ -42,7 +45,33 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 		this._proxy = mainContext.getProxy(MainContext.MainThreadCommands);
 		this._logService = logService;
 		this._converter = new CommandsConverter(this, heapService);
-		this._argumentProcessors = [{ processArgument(a) { return revive(a, 0); } }];
+		this._argumentProcessors = [
+			{
+				processArgument(a) {
+					// URI, Regex
+					return revive(a, 0);
+				}
+			},
+			{
+				processArgument(arg) {
+					return cloneAndChange(arg, function (obj) {
+						// Reverse of https://github.com/Microsoft/vscode/blob/1f28c5fc681f4c01226460b6d1c7e91b8acb4a5b/src/vs/workbench/api/node/extHostCommands.ts#L112-L127
+						if (Range.isIRange(obj)) {
+							return extHostTypeConverter.Range.to(obj);
+						}
+						if (Position.isIPosition(obj)) {
+							return extHostTypeConverter.Position.to(obj);
+						}
+						if (Range.isIRange((obj as modes.Location).range) && URI.isUri((obj as modes.Location).uri)) {
+							return extHostTypeConverter.location.to(obj);
+						}
+						if (!Array.isArray(obj)) {
+							return obj;
+						}
+					});
+				}
+			}
+		];
 	}
 
 	get converter(): CommandsConverter {
@@ -78,7 +107,7 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 		});
 	}
 
-	executeCommand<T>(id: string, ...args: any[]): Thenable<T> {
+	executeCommand<T>(id: string, ...args: any[]): Promise<T> {
 		this._logService.trace('ExtHostCommands#executeCommand', id);
 
 		if (this._commands.has(id)) {
@@ -108,7 +137,7 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 		}
 	}
 
-	private _executeContributedCommand<T>(id: string, args: any[]): Thenable<T> {
+	private _executeContributedCommand<T>(id: string, args: any[]): Promise<T> {
 		let { callback, thisArg, description } = this._commands.get(id);
 		if (description) {
 			for (let i = 0; i < description.args.length; i++) {
@@ -129,7 +158,7 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 		}
 	}
 
-	$executeContributedCommand<T>(id: string, ...args: any[]): Thenable<T> {
+	$executeContributedCommand<T>(id: string, ...args: any[]): Promise<T> {
 		this._logService.trace('ExtHostCommands#$executeContributedCommand', id);
 
 		if (!this._commands.has(id)) {
@@ -140,7 +169,7 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 		}
 	}
 
-	getCommands(filterUnderscoreCommands: boolean = false): Thenable<string[]> {
+	getCommands(filterUnderscoreCommands: boolean = false): Promise<string[]> {
 		this._logService.trace('ExtHostCommands#getCommands', filterUnderscoreCommands);
 
 		return this._proxy.$getCommands().then(result => {
@@ -151,7 +180,7 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 		});
 	}
 
-	$getContributedCommandHandlerDescriptions(): Thenable<{ [id: string]: string | ICommandHandlerDescription }> {
+	$getContributedCommandHandlerDescriptions(): Promise<{ [id: string]: string | ICommandHandlerDescription }> {
 		const result: { [id: string]: string | ICommandHandlerDescription } = Object.create(null);
 		this._commands.forEach((command, id) => {
 			let { description } = command;
@@ -226,7 +255,7 @@ export class CommandsConverter {
 		}
 	}
 
-	private _executeConvertedCommand<R>(...args: any[]): Thenable<R> {
+	private _executeConvertedCommand<R>(...args: any[]): Promise<R> {
 		const actualCmd = this._heap.get<vscode.Command>(args[0]);
 		return this._commands.executeCommand(actualCmd.command, ...actualCmd.arguments);
 	}

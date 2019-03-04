@@ -9,7 +9,7 @@ import 'vs/css!./scrollableSplitview';
 import { HeightMap, IView as HeightIView, IViewItem as HeightIViewItem } from './heightMap';
 
 import { IDisposable, combinedDisposable, toDisposable } from 'vs/base/common/lifecycle';
-import { mapEvent, Emitter, Event, debounceEvent } from 'vs/base/common/event';
+import { Emitter, Event } from 'vs/base/common/event';
 import * as types from 'vs/base/common/types';
 import * as dom from 'vs/base/browser/dom';
 import { clamp } from 'vs/base/common/numbers';
@@ -187,7 +187,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 
 		this.el = document.createElement('div');
 		this.scrollable = new ScrollableElement(this.el, { vertical: options.verticalScrollbarVisibility });
-		debounceEvent(this.scrollable.onScroll, (l, e) => e, types.isNumber(this.options.scrollDebounce) ? this.options.scrollDebounce : 25)(e => {
+		Event.debounce(this.scrollable.onScroll, (l, e) => e, types.isNumber(this.options.scrollDebounce) ? this.options.scrollDebounce : 25)(e => {
 			this.render(e.scrollTop, e.height);
 			this.relayout();
 			this._onScroll.fire(e.scrollTop);
@@ -286,11 +286,11 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 					? (e: IBaseSashEvent) => ({ sash, start: e.startY, current: e.currentY, alt: e.altKey } as ISashEvent)
 					: (e: IBaseSashEvent) => ({ sash, start: e.startX, current: e.currentX, alt: e.altKey } as ISashEvent);
 
-				const onStart = mapEvent(sash.onDidStart, sashEventMapper);
+				const onStart = Event.map(sash.onDidStart, sashEventMapper);
 				const onStartDisposable = onStart(this.onSashStart, this);
-				const onChange = mapEvent(sash.onDidChange, sashEventMapper);
+				const onChange = Event.map(sash.onDidChange, sashEventMapper);
 				const onChangeDisposable = onChange(this.onSashChange, this);
-				const onEnd = mapEvent(sash.onDidEnd, () => firstIndex(this.sashItems, item => item.sash === sash));
+				const onEnd = Event.map(sash.onDidEnd, () => firstIndex(this.sashItems, item => item.sash === sash));
 				const onEndDisposable = onEnd(this.onSashEnd, this);
 				const onDidResetDisposable = sash.onDidReset(() => this._onDidSashReset.fire(firstIndex(this.sashItems, item => item.sash === sash)));
 
@@ -389,11 +389,11 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 				? (e: IBaseSashEvent) => ({ sash, start: e.startY, current: e.currentY, alt: e.altKey } as ISashEvent)
 				: (e: IBaseSashEvent) => ({ sash, start: e.startX, current: e.currentX, alt: e.altKey } as ISashEvent);
 
-			const onStart = mapEvent(sash.onDidStart, sashEventMapper);
+			const onStart = Event.map(sash.onDidStart, sashEventMapper);
 			const onStartDisposable = onStart(this.onSashStart, this);
-			const onChange = mapEvent(sash.onDidChange, sashEventMapper);
+			const onChange = Event.map(sash.onDidChange, sashEventMapper);
 			const onChangeDisposable = onChange(this.onSashChange, this);
-			const onEnd = mapEvent(sash.onDidEnd, () => firstIndex(this.sashItems, item => item.sash === sash));
+			const onEnd = Event.map(sash.onDidEnd, () => firstIndex(this.sashItems, item => item.sash === sash));
 			const onEndDisposable = onEnd(this.onSashEnd, this);
 			const onDidResetDisposable = sash.onDidReset(() => this._onDidSashReset.fire(firstIndex(this.sashItems, item => item.sash === sash)));
 

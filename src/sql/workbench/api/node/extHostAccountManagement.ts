@@ -6,7 +6,6 @@
 'use strict';
 
 import * as azdata from 'azdata';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { Disposable } from 'vs/workbench/api/node/extHostTypes';
 import {
 	ExtHostAccountManagementShape,
@@ -110,8 +109,13 @@ export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 		return this._onDidChangeAccounts.event;
 	}
 
+<<<<<<< HEAD
+	public $accountsChanged(handle: number, accounts: sqlops.Account[]): Thenable<void> {
+		return Promise.resolve(this._onDidChangeAccounts.fire({ accounts: accounts }));
+=======
 	public $accountsChanged(handle: number, accounts: azdata.Account[]): Thenable<void> {
 		return this._onDidChangeAccounts.fire({ accounts: accounts });
+>>>>>>> 2309b16bd4bd3cd3e7e87a2c1ed4019db0a4c52e
 	}
 
 	public $registerAccountProvider(providerMetadata: azdata.AccountProviderMetadata, provider: azdata.AccountProvider): Disposable {
@@ -158,7 +162,7 @@ export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 	private _withProvider<R>(handle: number, callback: (provider: azdata.AccountProvider) => Thenable<R>): Thenable<R> {
 		let provider = this._providers[handle];
 		if (provider === undefined) {
-			return TPromise.wrapError(new Error(`Provider ${handle} not found.`));
+			return Promise.reject(new Error(`Provider ${handle} not found.`));
 		}
 		return callback(provider.provider);
 	}

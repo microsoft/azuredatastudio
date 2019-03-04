@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as nls from 'vs/nls';
-import { IMenubarMenu, IMenubarMenuItemAction, IMenubarMenuItemSubmenu, IMenubarKeybinding, IMenubarService, IMenubarData } from 'vs/platform/menubar/common/menubar';
+import { IMenubarMenu, IMenubarMenuItemAction, IMenubarMenuItemSubmenu, IMenubarKeybinding, IMenubarService, IMenubarData, MenubarMenuItem } from 'vs/platform/menubar/common/menubar';
 import { IMenuService, MenuId, IMenu, SubmenuItemAction } from 'vs/platform/actions/common/actions';
 import { registerThemingParticipant, ITheme, ICssStyleCollector, IThemeService } from 'vs/platform/theme/common/themeService';
 import { IWindowService, MenuBarVisibility, IWindowsService, getTitleBarStyle } from 'vs/platform/windows/common/windows';
@@ -31,6 +31,7 @@ import { IEnvironmentService } from 'vs/platform/environment/common/environment'
 import { MenuBar } from 'vs/base/browser/ui/menu/menubar';
 import { SubmenuAction } from 'vs/base/browser/ui/menu/menu';
 import { attachMenuStyler } from 'vs/platform/theme/common/styler';
+import { assign } from 'vs/base/common/objects';
 
 export class MenubarControl extends Disposable {
 
@@ -45,27 +46,29 @@ export class MenubarControl extends Disposable {
 		'window.nativeTabs'
 	];
 
+	// {{SQL CARBON EDIT}} - Disable unusued menus
 	private topLevelMenus: {
 		'File': IMenu;
 		'Edit': IMenu;
-		'Selection': IMenu;
+		// 'Selection': IMenu;
 		'View': IMenu;
-		'Go': IMenu;
-		'Debug': IMenu;
-		'Terminal': IMenu;
+		// 'Go': IMenu;
+		// 'Debug': IMenu;
+		// 'Terminal': IMenu;
 		'Window'?: IMenu;
 		'Help': IMenu;
-		[index: string]: IMenu;
+		// [index: string]: IMenu;
 	};
 
+	// {{SQL CARBON EDIT}} - Disable unused menus
 	private topLevelTitles = {
 		'File': nls.localize({ key: 'mFile', comment: ['&& denotes a mnemonic'] }, "&&File"),
 		'Edit': nls.localize({ key: 'mEdit', comment: ['&& denotes a mnemonic'] }, "&&Edit"),
-		'Selection': nls.localize({ key: 'mSelection', comment: ['&& denotes a mnemonic'] }, "&&Selection"),
+		// 'Selection': nls.localize({ key: 'mSelection', comment: ['&& denotes a mnemonic'] }, "&&Selection"),
 		'View': nls.localize({ key: 'mView', comment: ['&& denotes a mnemonic'] }, "&&View"),
-		'Go': nls.localize({ key: 'mGoto', comment: ['&& denotes a mnemonic'] }, "&&Go"),
-		'Debug': nls.localize({ key: 'mDebug', comment: ['&& denotes a mnemonic'] }, "&&Debug"),
-		'Terminal': nls.localize({ key: 'mTerminal', comment: ['&& denotes a mnemonic'] }, "&&Terminal"),
+		// 'Go': nls.localize({ key: 'mGoto', comment: ['&& denotes a mnemonic'] }, "&&Go"),
+		// 'Debug': nls.localize({ key: 'mDebug', comment: ['&& denotes a mnemonic'] }, "&&Debug"),
+		// 'Terminal': nls.localize({ key: 'mTerminal', comment: ['&& denotes a mnemonic'] }, "&&Terminal"),
 		'Help': nls.localize({ key: 'mHelp', comment: ['&& denotes a mnemonic'] }, "&&Help")
 	};
 
@@ -80,32 +83,33 @@ export class MenubarControl extends Disposable {
 	private static MAX_MENU_RECENT_ENTRIES = 10;
 
 	constructor(
-		@IThemeService private themeService: IThemeService,
-		@IMenubarService private menubarService: IMenubarService,
-		@IMenuService private menuService: IMenuService,
-		@IWindowService private windowService: IWindowService,
-		@IWindowsService private windowsService: IWindowsService,
-		@IContextKeyService private contextKeyService: IContextKeyService,
-		@IKeybindingService private keybindingService: IKeybindingService,
-		@IConfigurationService private configurationService: IConfigurationService,
-		@ILabelService private labelService: ILabelService,
-		@IUpdateService private updateService: IUpdateService,
-		@IStorageService private storageService: IStorageService,
-		@INotificationService private notificationService: INotificationService,
-		@IPreferencesService private preferencesService: IPreferencesService,
-		@IEnvironmentService private environmentService: IEnvironmentService
+		@IThemeService private readonly themeService: IThemeService,
+		@IMenubarService private readonly menubarService: IMenubarService,
+		@IMenuService private readonly menuService: IMenuService,
+		@IWindowService private readonly windowService: IWindowService,
+		@IWindowsService private readonly windowsService: IWindowsService,
+		@IContextKeyService private readonly contextKeyService: IContextKeyService,
+		@IKeybindingService private readonly keybindingService: IKeybindingService,
+		@IConfigurationService private readonly configurationService: IConfigurationService,
+		@ILabelService private readonly labelService: ILabelService,
+		@IUpdateService private readonly updateService: IUpdateService,
+		@IStorageService private readonly storageService: IStorageService,
+		@INotificationService private readonly notificationService: INotificationService,
+		@IPreferencesService private readonly preferencesService: IPreferencesService,
+		@IEnvironmentService private readonly environmentService: IEnvironmentService
 	) {
 
 		super();
 
+		// {{SQL CARBON EDIT}} - Disable unused menus
 		this.topLevelMenus = {
 			'File': this._register(this.menuService.createMenu(MenuId.MenubarFileMenu, this.contextKeyService)),
 			'Edit': this._register(this.menuService.createMenu(MenuId.MenubarEditMenu, this.contextKeyService)),
-			'Selection': this._register(this.menuService.createMenu(MenuId.MenubarSelectionMenu, this.contextKeyService)),
+			// 'Selection': this._register(this.menuService.createMenu(MenuId.MenubarSelectionMenu, this.contextKeyService)),
 			'View': this._register(this.menuService.createMenu(MenuId.MenubarViewMenu, this.contextKeyService)),
-			'Go': this._register(this.menuService.createMenu(MenuId.MenubarGoMenu, this.contextKeyService)),
-			'Debug': this._register(this.menuService.createMenu(MenuId.MenubarDebugMenu, this.contextKeyService)),
-			'Terminal': this._register(this.menuService.createMenu(MenuId.MenubarTerminalMenu, this.contextKeyService)),
+			// 'Go': this._register(this.menuService.createMenu(MenuId.MenubarGoMenu, this.contextKeyService)),
+			// 'Debug': this._register(this.menuService.createMenu(MenuId.MenubarDebugMenu, this.contextKeyService)),
+			// 'Terminal': this._register(this.menuService.createMenu(MenuId.MenubarTerminalMenu, this.contextKeyService)),
 			'Help': this._register(this.menuService.createMenu(MenuId.MenubarHelpMenu, this.contextKeyService))
 		};
 
@@ -261,6 +265,9 @@ export class MenubarControl extends Disposable {
 				this.menubar.blur();
 			}));
 		}
+
+		// Update recent menu items on formatter registration
+		this._register(this.labelService.onDidChangeFormatters(() => { this.onRecentlyOpenedChange(); }));
 	}
 
 	private doUpdateMenubar(firstTime: boolean): void {
@@ -313,7 +320,7 @@ export class MenubarControl extends Disposable {
 		return label;
 	}
 
-	private createOpenRecentMenuAction(workspace: IWorkspaceIdentifier | ISingleFolderWorkspaceIdentifier | URI, commandId: string, isFile: boolean): IAction {
+	private createOpenRecentMenuAction(workspace: IWorkspaceIdentifier | ISingleFolderWorkspaceIdentifier | URI, commandId: string, isFile: boolean): IAction & { uri: URI } {
 
 		let label: string;
 		let uri: URI;
@@ -329,7 +336,7 @@ export class MenubarControl extends Disposable {
 			label = this.labelService.getUriLabel(uri);
 		}
 
-		return new Action(commandId, label, undefined, undefined, (event) => {
+		const ret: IAction = new Action(commandId, label, undefined, undefined, (event) => {
 			const openInNewWindow = event && ((!isMacintosh && (event.ctrlKey || event.shiftKey)) || (isMacintosh && (event.metaKey || event.altKey)));
 
 			return this.windowService.openWindow([uri], {
@@ -337,8 +344,11 @@ export class MenubarControl extends Disposable {
 				forceOpenWorkspaceAsFile: isFile
 			});
 		});
+
+		return assign(ret, { uri: uri });
 	}
 
+	/* Custom Menu takes actions */
 	private getOpenRecentActions(): IAction[] {
 		if (!this.recentlyOpened) {
 			return [];
@@ -365,6 +375,19 @@ export class MenubarControl extends Disposable {
 		}
 
 		return result;
+	}
+
+	private transformOpenRecentAction(action: Separator | (IAction & { uri: URI })): MenubarMenuItem {
+		if (action instanceof Separator) {
+			return { id: 'vscode.menubar.separator' };
+		}
+
+		return {
+			id: action.id,
+			uri: action.uri,
+			enabled: action.enabled,
+			label: action.label
+		};
 	}
 
 	private getUpdateAction(): IAction | null {
@@ -499,13 +522,13 @@ export class MenubarControl extends Disposable {
 		// first try to resolve a native accelerator
 		const electronAccelerator = binding.getElectronAccelerator();
 		if (electronAccelerator) {
-			return { label: electronAccelerator };
+			return { label: electronAccelerator, userSettingsLabel: binding.getUserSettingsLabel() };
 		}
 
 		// we need this fallback to support keybindings that cannot show in electron menus (e.g. chords)
 		const acceleratorLabel = binding.getLabel();
 		if (acceleratorLabel) {
-			return { label: acceleratorLabel, isNative: false };
+			return { label: acceleratorLabel, isNative: false, userSettingsLabel: binding.getUserSettingsLabel() };
 		}
 
 		return null;
@@ -532,6 +555,11 @@ export class MenubarControl extends Disposable {
 					menuToPopulate.items.push(menubarSubmenuItem);
 					menuToDispose.dispose();
 				} else {
+					if (menuItem.id === 'workbench.action.openRecent') {
+						const actions = this.getOpenRecentActions().map(this.transformOpenRecentAction);
+						menuToPopulate.items.push(...actions);
+					}
+
 					let menubarMenuItem: IMenubarMenuItemAction = {
 						id: menuItem.id,
 						label: menuItem.label

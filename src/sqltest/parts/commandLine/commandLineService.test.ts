@@ -8,7 +8,6 @@ import * as azdata from 'azdata';
 
 'use strict';
 
-import { TPromise } from 'vs/base/common/winjs.base';
 import * as assert from 'assert';
 import * as TypeMoq from 'typemoq';
 
@@ -215,7 +214,7 @@ suite('commandLineService tests', () => {
 		connectionManagementService.setup(c => c.connectIfNotConnected(TypeMoq.It.isAny(), TypeMoq.It.isAny()))
 			.verifiable(TypeMoq.Times.never());
 		commandService.setup(c => c.executeCommand('mycommand'))
-			.returns(() => TPromise.wrap(1))
+			.returns(() => Promise.resolve(1))
 			.verifiable(TypeMoq.Times.once());
 		const configurationService = getConfigurationServiceMock(true);
 		let service = getCommandLineService(connectionManagementService.object, configurationService.object, capabilitiesService, commandService.object);
@@ -243,7 +242,7 @@ suite('commandLineService tests', () => {
 			.returns(() => new Promise<string>((resolve, reject) => { resolve('unused'); }))
 			.verifiable(TypeMoq.Times.once());
 		commandService.setup(c => c.executeCommand('mycommand', TypeMoq.It.isAnyString()))
-			.returns(() => TPromise.wrap(1))
+			.returns(() => Promise.resolve(1))
 			.verifiable(TypeMoq.Times.once());
 		const configurationService = getConfigurationServiceMock(true);
 		let service = getCommandLineService(connectionManagementService.object, configurationService.object, capabilitiesService, commandService.object);
@@ -264,7 +263,7 @@ suite('commandLineService tests', () => {
 		environmentService.setup(e => e.args).returns(() => args);
 		connectionManagementService.setup(c => c.hasRegisteredServers()).returns(() => true);
 		commandService.setup(c => c.executeCommand('mycommand'))
-			.returns(() => TPromise.wrapError(new Error('myerror')))
+			.returns(() => Promise.reject(new Error('myerror')))
 			.verifiable(TypeMoq.Times.once());
 		const configurationService = getConfigurationServiceMock(true);
 		let service = getCommandLineService(connectionManagementService.object, configurationService.object, capabilitiesService, commandService.object);

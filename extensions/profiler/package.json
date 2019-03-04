@@ -1,84 +1,89 @@
 {
-  "name": "profiler",
-  "displayName": "SQL Server Profiler",
-  "description": "SQL Server Profiler for Azure Data Studio",
-  "version": "0.6.0",
-  "publisher": "Microsoft",
-  "preview": true,
-  "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt",
-  "icon": "images/sqlserver.png",
-  "aiKey": "AIF-5574968e-856d-40d2-af67-c89a14e76412",
-  "engines": {
-    "vscode": "0.10.x"
-  },
-  "activationEvents": [
-    "*"
-  ],
-  "main": "./client/out/main",
-  "scripts": {
-    "compile": "gulp compile-extension:profiler-client"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Microsoft/azuredatastudio.git"
-  },
-  "extensionDependencies": [
-    "Microsoft.mssql"
-  ],
-  "contributes": {
-    "commands": [
-      {
-        "command": "profiler.newProfiler",
-        "title": "Launch Profiler",
-        "category": "Profiler"
-      },
-      {
-        "command": "profiler.start",
-        "title": "Start",
-        "category": "Profiler"
-      },
-      {
-        "command": "profiler.stop",
-        "title": "Stop",
-        "category": "Profiler"
-      },
-      {
-        "command": "profiler.openCreateSessionDialog",
-        "title": "Create Profiler Session",
-        "category": "Profiler"
-      }
-    ],
-    "menus": {
-      "commandPalette": [
-        {
-          "command": "profiler.start",
-          "when": "False"
-        },
-        {
-          "command": "profiler.stop",
-          "when": "False"
-        },
-        {
-          "command": "profiler.openCreateSessionDialog",
-          "when": "False"
-        }
-      ],
-      "objectExplorer/item/context": [
-        {
-          "command": "profiler.newProfiler",
-          "when": "connectionProvider == MSSQL && nodeType && nodeType == Server",
-          "group": "profiler"
-        }
-      ]
-    },
-    "outputChannels": [
-      "sqlprofiler"
-    ]
-  },
-  "dependencies": {
-    "vscode-nls": "^3.2.1"
-  },
-  "devDependencies": {
-    "vscode": "1.0.1"
-  }
+	"name": "profiler",
+	"displayName": "SQL Server Profiler",
+	"description": "SQL Server Profiler for Azure Data Studio",
+	"version": "0.6.0",
+	"publisher": "Microsoft",
+	"preview": true,
+	"license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt",
+	"icon": "images/sqlserver.png",
+	"aiKey": "AIF-5574968e-856d-40d2-af67-c89a14e76412",
+	"engines": {
+		"vscode": "0.10.x"
+	},
+	"activationEvents": [
+		"*"
+	],
+	"main": "./client/out/main",
+	"scripts": {
+		"compile": "gulp compile-extension:profiler-client"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Microsoft/azuredatastudio.git"
+	},
+	"extensionDependencies": [
+		"Microsoft.mssql"
+	],
+	"contributes": {
+		"commands": [
+			{
+				"command": "profiler.newProfiler",
+				"title": "Launch Profiler",
+				"category": "Profiler"
+			},
+			{
+				"command": "profiler.start",
+				"title": "Start",
+				"category": "Profiler"
+			},
+			{
+				"command": "profiler.stop",
+				"title": "Stop",
+				"category": "Profiler"
+			},
+			{
+				"command": "profiler.openCreateSessionDialog",
+				"title": "Create Profiler Session",
+				"category": "Profiler"
+			}
+		],
+		"menus": {
+			"commandPalette": [
+				{
+					"command": "profiler.start",
+					"when": "False"
+				},
+				{
+					"command": "profiler.stop",
+					"when": "False"
+				},
+				{
+					"command": "profiler.openCreateSessionDialog",
+					"when": "False"
+				}
+			],
+			"objectExplorer/item/context": [
+				{
+					"command": "profiler.newProfiler",
+					"when": "connectionProvider == MSSQL && nodeType && nodeType == Server",
+					"group": "profiler"
+				}
+			]
+		},
+		"outputChannels": [
+			"sqlprofiler"
+		]
+	},
+	"dependencies": {
+		"vscode-nls": "^3.2.1"
+	},
+	"devDependencies": {
+		"vscode": "1.0.1"
+	},
+	"__metadata": {
+		"id": "18",
+		"publisherDisplayName": "Microsoft",
+		"publisherId": "Microsoft"
+	}
 }

@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Action } from 'vs/base/common/actions';
-import { TPromise } from 'vs/base/common/winjs.base';
 import * as nls from 'vs/nls';
 
 export class ToggleDropdownAction extends Action {
@@ -15,8 +14,8 @@ export class ToggleDropdownAction extends Action {
 		super(ToggleDropdownAction.ID, label, ToggleDropdownAction.ICON);
 	}
 
-	public run(): TPromise<boolean> {
+	public run(): Promise<boolean> {
 		this._fn();
-		return TPromise.as(true);
+		return Promise.resolve(true);
 	}
 }

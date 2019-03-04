@@ -23,7 +23,6 @@ import { URI } from 'vs/base/common/uri';
 import { IHistoryService } from 'vs/workbench/services/history/common/history';
 import * as paths from 'vs/base/common/paths';
 import { IWindowService } from 'vs/platform/windows/common/windows';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { VIEWLET_ID, IExtensionsViewlet } from 'vs/workbench/parts/extensions/common/extensions';
 
@@ -399,7 +398,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		return fileName;
 	}
 
-	promptForPath(defaultPath: string): TPromise<string> {
+	promptForPath(defaultPath: string): Promise<string> {
 		return this.windowService.showSaveDialog({
 			defaultPath: defaultPath,
 			filters: [{ name: localize('notebookFile', 'Notebook'), extensions: ['ipynb'] }]
@@ -443,7 +442,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			}
 		};
 
-		return TPromise.join(this.editorGroupService.groups.map(g =>
+		return Promise.all(this.editorGroupService.groups.map(g =>
 			this.editorService.replaceEditors([{
 				editor: { resource },
 				replacement
