@@ -323,7 +323,7 @@ export class CustomTreeView extends Disposable implements ITreeView {
 		const menus = this.instantiationService.createInstance(TreeMenus, this.id);
 		const dataSource = this.instantiationService.createInstance(TreeDataSource, this, this.container, this.id);
 		const renderer = this.instantiationService.createInstance(TreeRenderer, this.id, menus, actionItemProvider);
-		const controller = this.instantiationService.createInstance(TreeController, this.id, this.container.id,  menus);
+		const controller = this.instantiationService.createInstance(TreeController, this.id, this.container.id, menus);
 		this.tree = this.instantiationService.createInstance(FileIconThemableWorkbenchTree, this.treeContainer, { dataSource, renderer, controller }, {});
 		this.tree.contextKeyService.createKey<boolean>(this.id, true);
 		this._register(this.tree);
