@@ -4,21 +4,19 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import 'vs/css!./media/dropdownList';
-import * as DOM from 'vs/base/browser/dom';
-import { Dropdown, IDropdownOptions } from 'vs/base/browser/ui/dropdown/dropdown';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { IDisposable } from 'vs/base/common/lifecycle';
-import { Color } from 'vs/base/common/color';
-import { IAction } from 'vs/base/common/actions';
-import { EventType as GestureEventType } from 'vs/base/browser/touch';
-import { List } from 'vs/base/browser/ui/list/listWidget';
-import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { KeyCode } from 'vs/base/common/keyCodes';
 import { Builder } from 'sql/base/browser/builder';
+import { Button, IButtonStyles } from 'sql/base/browser/ui/button/button';
+import * as DOM from 'vs/base/browser/dom';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { EventType as GestureEventType } from 'vs/base/browser/touch';
+import { Dropdown, IDropdownOptions } from 'vs/base/browser/ui/dropdown/dropdown';
+import { List } from 'vs/base/browser/ui/list/listWidget';
+import { IAction } from 'vs/base/common/actions';
+import { Color } from 'vs/base/common/color';
+import { KeyCode } from 'vs/base/common/keyCodes';
+import { IDisposable } from 'vs/base/common/lifecycle';
+import 'vs/css!./media/dropdownList';
 
-import { Button } from 'sql/base/browser/ui/button/button';
-import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 
 export interface IDropdownStyles {
 	backgroundColor?: Color;
@@ -37,7 +35,6 @@ export class DropdownList extends Dropdown {
 		private _options: IDropdownOptions,
 		private _contentContainer: HTMLElement,
 		private _list: List<any>,
-		private _themeService: IThemeService,
 		private _action?: IAction,
 	) {
 		super(container, _options);
@@ -56,7 +53,6 @@ export class DropdownList extends Dropdown {
 					this.hide();
 				}
 			}));
-			attachButtonStyler(button, this._themeService);
 		}
 
 		DOM.append(this.element, DOM.$('div.dropdown-icon'));
@@ -126,7 +122,7 @@ export class DropdownList extends Dropdown {
 		}
 	}
 
-	public style(styles: IDropdownStyles): void {
+	public style(styles: IDropdownStyles & IButtonStyles): void {
 		this.backgroundColor = styles.backgroundColor;
 		this.foregroundColor = styles.foregroundColor;
 		this.borderColor = styles.borderColor;

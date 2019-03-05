@@ -12,7 +12,7 @@ export class EmitterEvent {
 	public readonly type: string;
 	public readonly data: any;
 
-	constructor(eventType: string = null, data: any = null) {
+	constructor(eventType: string, data: any) {
 		this.type = eventType;
 		this.data = data;
 	}
@@ -46,9 +46,9 @@ export class EventEmitter implements IEventEmitter {
 	protected _bulkListeners: ListenerCallback[];
 	private _collectedEvents: EmitterEvent[];
 	private _deferredCnt: number;
-	private _allowedEventTypes: { [eventType: string]: boolean; };
+	private _allowedEventTypes: { [eventType: string]: boolean; } | null;
 
-	constructor(allowedEventTypes: string[] = null) {
+	constructor(allowedEventTypes?: string[]) {
 		this._listeners = {};
 		this._bulkListeners = [];
 		this._collectedEvents = [];
@@ -86,7 +86,8 @@ export class EventEmitter implements IEventEmitter {
 			this._listeners[eventType] = [listener];
 		}
 
-		let bound = this;
+		let bound: this | null = this;
+		let _listener: ListenerCallback | null = listener;
 		return {
 			dispose: () => {
 				if (!bound) {
@@ -94,11 +95,11 @@ export class EventEmitter implements IEventEmitter {
 					return;
 				}
 
-				bound._removeListener(eventType, listener);
+				bound._removeListener(eventType, _listener!);
 
 				// Prevent leakers from holding on to the event emitter
 				bound = null;
-				listener = null;
+				_listener = null;
 			}
 		};
 	}
@@ -212,10 +213,10 @@ export class EventEmitter implements IEventEmitter {
 		}
 	}
 
-	public deferredEmit<T>(callback: () => T): T {
+	public deferredEmit<T>(callback: () => T): T | undefined {
 		this.beginDeferredEmit();
 
-		let result: T = safeInvokeNoArg<T>(callback);
+		let result: T | undefined = safeInvokeNoArg<T>(callback);
 
 		this.endDeferredEmit();
 
@@ -251,7 +252,7 @@ export class OrderGuaranteeEventEmitter extends EventEmitter {
 	private _emitQueue: EmitQueueElement[];
 
 	constructor() {
-		super(null);
+		super();
 		this._emitQueue = [];
 	}
 
@@ -276,12 +277,14 @@ export class OrderGuaranteeEventEmitter extends EventEmitter {
 
 		while (this._emitQueue.length > 0) {
 			let queueElement = this._emitQueue.shift();
-			safeInvoke1Arg(queueElement.target, queueElement.arg);
+			if (queueElement) {
+				safeInvoke1Arg(queueElement.target, queueElement.arg);
+			}
 		}
 	}
 }
 
-function safeInvokeNoArg<T>(func: Function): T {
+function safeInvokeNoArg<T>(func: Function): T | undefined {
 	try {
 		return func();
 	} catch (e) {
