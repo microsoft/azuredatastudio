@@ -22,57 +22,32 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	});
 
-	azdata.queryeditor.registerQueryInfoListener({
-		providerId: 'MSSQL',
-		onExecutionStart: (fileUri: string): void => {
-			if (toggleOn) {
-			}
-		},
-		onExecutionComplete: (fileUri: string): void => {
-			if (toggleOn) {
-			}
-		},
-		onExecutionPlanAvailable: (fileUri: string, executionPlan: string): void => {
-			if (toggleOn) {
-				let tab = azdata.window.modelviewdialog.createTab('Query Watcher');
-				tab.registerContent(async view => {
-					let fileNameTextBox = view.modelBuilder.inputBox().component();
-					let xmlTextBox = view.modelBuilder.inputBox().component();
+	azdata.queryeditor.registerQueryEventListener({
+		onQueryEvent(type: azdata.queryeditor.QueryEvent, document: azdata.queryeditor.QueryDocument, args: any) {
+			if (type === 'executionPlan') {
+				if (toggleOn) {
+					let tab = azdata.window.modelviewdialog.createTab('Query Watcher');
+					tab.registerContent(async view => {
+						let fileNameTextBox = view.modelBuilder.inputBox().component();
+						let xmlTextBox = view.modelBuilder.inputBox().component();
 
-					let formModel = view.modelBuilder.formContainer()
-						.withFormItems([{
-							component: fileNameTextBox,
-							title: 'File name'
-						}, {
-							component: xmlTextBox,
-							title: 'Plan XML'
-						}]).withLayout({ width: '100%' }).component();
+						let formModel = view.modelBuilder.formContainer()
+							.withFormItems([{
+								component: fileNameTextBox,
+								title: 'File name'
+							}, {
+								component: xmlTextBox,
+								title: 'Plan XML'
+							}]).withLayout({ width: '100%' }).component();
 
-					await view.initializeModel(formModel);
+						await view.initializeModel(formModel);
 
-					fileNameTextBox.value = fileUri;
-					xmlTextBox.value = executionPlan;
-				});
+						fileNameTextBox.value = document.uri;
+						xmlTextBox.value = <string>args;
+					});
 
-				azdata.queryeditor.createQueryTab(fileUri, tab);
-
-				// add a second tab to make sure that scenario works
-				let tab2 = azdata.window.modelviewdialog.createTab('Query Watcher 2');
-				tab2.registerContent(async view => {
-					let xmlTextBox = view.modelBuilder.inputBox().component();
-
-					let formModel = view.modelBuilder.formContainer()
-						.withFormItems([{
-							component: xmlTextBox,
-							title: 'Plan XML'
-						}]).withLayout({ width: '100%' }).component();
-
-					await view.initializeModel(formModel);
-
-					xmlTextBox.value = executionPlan;
-				});
-
-				azdata.queryeditor.createQueryTab(fileUri, tab2);
+					document.createQueryTab(tab);
+				}
 			}
 		}
 	});
