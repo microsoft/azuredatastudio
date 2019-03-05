@@ -176,7 +176,7 @@ suite('SQL QueryAction Tests', () => {
 			countCalledRunQuery++;
 		});
 		let queryEditor: TypeMoq.Mock<QueryEditor> = TypeMoq.Mock.ofType(QueryEditor, TypeMoq.MockBehavior.Strict, undefined, new TestThemeService(), undefined,
-		undefined, undefined, undefined, undefined, undefined, undefined, undefined, new TestStorageService());
+			undefined, undefined, undefined, undefined, undefined, undefined, undefined, new TestStorageService());
 		queryEditor.setup(x => x.currentQueryInput).returns(() => queryInput.object);
 		queryEditor.setup(x => x.getSelection()).returns(() => undefined);
 		queryEditor.setup(x => x.getSelection(false)).returns(() => undefined);
@@ -243,7 +243,7 @@ suite('SQL QueryAction Tests', () => {
 
 		// ... Mock "getSelection" in QueryEditor
 		let queryEditor: TypeMoq.Mock<QueryEditor> = TypeMoq.Mock.ofType(QueryEditor, TypeMoq.MockBehavior.Loose, undefined, new TestThemeService(), undefined,
-		undefined, undefined, undefined, undefined, undefined, undefined, undefined, new TestStorageService());
+			undefined, undefined, undefined, undefined, undefined, undefined, undefined, new TestStorageService());
 		queryEditor.setup(x => x.currentQueryInput).returns(() => queryInput.object);
 		queryEditor.setup(x => x.getSelection()).returns(() => {
 			return selectionToReturnInGetSelection;
