@@ -12,6 +12,9 @@ fi
 
 cd $ROOT
 
+# Integration tests in AMD
+./scripts/test.sh --runGlob **/*.integrationTest.js "$@"
+
 # Tests in the extension host
 # TODO port over an re-enable API tests
 # ./scripts/code.sh $ROOT/extensions/vscode-api-tests/testWorkspace --extensionDevelopmentPath=$ROOT/extensions/vscode-api-tests --extensionTestsPath=$ROOT/extensions/vscode-api-tests/out --disableExtensions --user-data-dir=$VSCODEUSERDATADIR --skip-getting-started
@@ -22,9 +25,6 @@ cd $ROOT
 mkdir $ROOT/extensions/emmet/test-fixtures
 ./scripts/code.sh $ROOT/extensions/emmet/test-fixtures --extensionDevelopmentPath=$ROOT/extensions/emmet --extensionTestsPath=$ROOT/extensions/emmet/out/test --disableExtensions --user-data-dir=$VSCODEUSERDATADIR --skip-getting-started .
 rm -r $ROOT/extensions/emmet/test-fixtures
-
-# Integration tests in AMD
-./scripts/test.sh --runGlob **/*.integrationTest.js "$@"
 
 # Tests in commonJS
 cd $ROOT/extensions/css-language-features/server && $ROOT/scripts/node-electron.sh test/index.js

@@ -21,7 +21,6 @@ import { IBackupUiService } from 'sql/workbench/services/backup/common/backupUiS
 
 import { ObjectMetadata } from 'sqlops';
 
-import { TPromise } from 'vs/base/common/winjs.base';
 import { Action } from 'vs/base/common/actions';
 import { IWindowsService } from 'vs/platform/windows/common/windows';
 import * as nls from 'vs/nls';
@@ -53,13 +52,13 @@ export class NewQueryAction extends Task {
 		super({
 			id: NewQueryAction.ID,
 			title: NewQueryAction.LABEL,
-			iconPath: { dark: NewQueryAction.ICON, light: NewQueryAction.ICON },
+			iconPath: undefined,
 			iconClass: NewQueryAction.ICON
 		});
 	}
 
-	public runTask(accessor: ServicesAccessor, profile: IConnectionProfile): TPromise<void> {
-		return new TPromise<void>((resolve, reject) => {
+	public runTask(accessor: ServicesAccessor, profile: IConnectionProfile): Promise<void> {
+		return new Promise<void>((resolve, reject) => {
 			TaskUtilities.newQuery(
 				profile,
 				accessor.get<IConnectionManagementService>(IConnectionManagementService),
@@ -91,8 +90,8 @@ export class ScriptSelectAction extends Action {
 		super(id, label);
 	}
 
-	public run(actionContext: BaseActionContext): TPromise<boolean> {
-		return new TPromise<boolean>((resolve, reject) => {
+	public run(actionContext: BaseActionContext): Promise<boolean> {
+		return new Promise<boolean>((resolve, reject) => {
 			TaskUtilities.scriptSelect(
 				actionContext.profile,
 				actionContext.object,
@@ -124,8 +123,8 @@ export class ScriptExecuteAction extends Action {
 		super(id, label);
 	}
 
-	public run(actionContext: BaseActionContext): TPromise<boolean> {
-		return new TPromise<boolean>((resolve, reject) => {
+	public run(actionContext: BaseActionContext): Promise<boolean> {
+		return new Promise<boolean>((resolve, reject) => {
 			TaskUtilities.script(
 				actionContext.profile,
 				actionContext.object,
@@ -160,8 +159,8 @@ export class ScriptAlterAction extends Action {
 		super(id, label);
 	}
 
-	public run(actionContext: BaseActionContext): TPromise<boolean> {
-		return new TPromise<boolean>((resolve, reject) => {
+	public run(actionContext: BaseActionContext): Promise<boolean> {
+		return new Promise<boolean>((resolve, reject) => {
 			TaskUtilities.script(
 				actionContext.profile,
 				actionContext.object,
@@ -195,8 +194,8 @@ export class EditDataAction extends Action {
 		super(id, label);
 	}
 
-	public run(actionContext: BaseActionContext): TPromise<boolean> {
-		return new TPromise<boolean>((resolve, reject) => {
+	public run(actionContext: BaseActionContext): Promise<boolean> {
+		return new Promise<boolean>((resolve, reject) => {
 			TaskUtilities.scriptEditSelect(
 				actionContext.profile,
 				actionContext.object,
@@ -229,8 +228,8 @@ export class ScriptCreateAction extends Action {
 		super(id, label);
 	}
 
-	public run(actionContext: BaseActionContext): TPromise<boolean> {
-		return new TPromise<boolean>((resolve, reject) => {
+	public run(actionContext: BaseActionContext): Promise<boolean> {
+		return new Promise<boolean>((resolve, reject) => {
 			TaskUtilities.script(
 				actionContext.profile,
 				actionContext.object,
@@ -265,8 +264,8 @@ export class ScriptDeleteAction extends Action {
 		super(id, label);
 	}
 
-	public run(actionContext: BaseActionContext): TPromise<boolean> {
-		return new TPromise<boolean>((resolve, reject) => {
+	public run(actionContext: BaseActionContext): Promise<boolean> {
+		return new Promise<boolean>((resolve, reject) => {
 			TaskUtilities.script(
 				actionContext.profile,
 				actionContext.object,
@@ -296,12 +295,12 @@ export class BackupAction extends Task {
 		super({
 			id: BackupAction.ID,
 			title: BackupAction.LABEL,
-			iconPath: { dark: BackupAction.ICON, light: BackupAction.ICON },
+			iconPath: undefined,
 			iconClass: BackupAction.ICON
 		});
 	}
 
-	runTask(accessor: ServicesAccessor, profile: IConnectionProfile): TPromise<void> {
+	runTask(accessor: ServicesAccessor, profile: IConnectionProfile): Promise<void> {
 		if (!profile) {
 			let objectExplorerService = accessor.get<IObjectExplorerService>(IObjectExplorerService);
 			let connectionManagementService = accessor.get<IConnectionManagementService>(IConnectionManagementService);
@@ -311,12 +310,12 @@ export class BackupAction extends Task {
 		let configurationService = accessor.get<IWorkspaceConfigurationService>(IWorkspaceConfigurationService);
 		let previewFeaturesEnabled: boolean = configurationService.getValue('workbench')['enablePreviewFeatures'];
 		if (!previewFeaturesEnabled) {
-			return new TPromise<void>((resolve, reject) => {
+			return new Promise<void>((resolve, reject) => {
 				accessor.get<INotificationService>(INotificationService).info(nls.localize('backup.isPreviewFeature', 'You must enable preview features in order to use backup'));
 			});
 		}
 
-		return new TPromise<void>((resolve, reject) => {
+		return new Promise<void>((resolve, reject) => {
 			TaskUtilities.showBackup(
 				profile,
 				accessor.get<IBackupUiService>(IBackupUiService)
@@ -341,21 +340,21 @@ export class RestoreAction extends Task {
 		super({
 			id: RestoreAction.ID,
 			title: RestoreAction.LABEL,
-			iconPath: { dark: RestoreAction.ICON, light: RestoreAction.ICON },
+			iconPath: undefined,
 			iconClass: RestoreAction.ICON
 		});
 	}
 
-	runTask(accessor: ServicesAccessor, profile: IConnectionProfile): TPromise<void> {
+	runTask(accessor: ServicesAccessor, profile: IConnectionProfile): Promise<void> {
 		let configurationService = accessor.get<IWorkspaceConfigurationService>(IWorkspaceConfigurationService);
 		let previewFeaturesEnabled: boolean = configurationService.getValue('workbench')['enablePreviewFeatures'];
 		if (!previewFeaturesEnabled) {
-			return new TPromise<void>((resolve, reject) => {
+			return new Promise<void>((resolve, reject) => {
 				accessor.get<INotificationService>(INotificationService).info(nls.localize('restore.isPreviewFeature', 'You must enable preview features in order to use restore'));
 			});
 		}
 
-		return new TPromise<void>((resolve, reject) => {
+		return new Promise<void>((resolve, reject) => {
 			TaskUtilities.showRestore(
 				profile,
 				accessor.get<IRestoreDialogController>(IRestoreDialogController)
@@ -383,9 +382,9 @@ export class ManageAction extends Action {
 		super(id, label);
 	}
 
-	run(actionContext: ManageActionContext): TPromise<boolean> {
+	run(actionContext: ManageActionContext): Promise<boolean> {
 		let self = this;
-		return new TPromise<boolean>((resolve, reject) => {
+		return new Promise<boolean>((resolve, reject) => {
 			self._connectionManagementService.connect(actionContext.profile, actionContext.uri, { showDashboard: true, saveTheConnection: false, params: undefined, showConnectionDialogOnError: false, showFirewallRuleOnError: true }).then(
 				() => {
 					self._angularEventingService.sendAngularEvent(actionContext.uri, AngularEventType.NAV_DATABASE);
@@ -410,9 +409,9 @@ export class InsightAction extends Action {
 		super(id, label);
 	}
 
-	run(actionContext: InsightActionContext): TPromise<boolean> {
+	run(actionContext: InsightActionContext): Promise<boolean> {
 		let self = this;
-		return new TPromise<boolean>((resolve, reject) => {
+		return new Promise<boolean>((resolve, reject) => {
 			self._insightsDialogService.show(actionContext.insight, actionContext.profile);
 			resolve(true);
 		});
@@ -432,8 +431,8 @@ export class NewDatabaseAction extends Action {
 		super(id, label, icon);
 	}
 
-	run(actionContext: BaseActionContext): TPromise<boolean> {
-		return new TPromise<boolean>((resolve, reject) => {
+	run(actionContext: BaseActionContext): Promise<boolean> {
+		return new Promise<boolean>((resolve, reject) => {
 			TaskUtilities.showCreateDatabase(actionContext.profile, this._adminService, this._errorMessageService);
 		});
 	}
@@ -449,13 +448,13 @@ export class ConfigureDashboardAction extends Task {
 		super({
 			id: ConfigureDashboardAction.ID,
 			title: ConfigureDashboardAction.LABEL,
-			iconPath: { dark: ConfigureDashboardAction.ICON, light: ConfigureDashboardAction.ICON },
+			iconPath: undefined,
 			iconClass: ConfigureDashboardAction.ICON
 		});
 	}
 
-	runTask(accessor: ServicesAccessor): TPromise<void> {
-		return new TPromise<void>((resolve, reject) => {
+	runTask(accessor: ServicesAccessor): Promise<void> {
+		return new Promise<void>((resolve, reject) => {
 			accessor.get<IWindowsService>(IWindowsService).openExternal(ConfigureDashboardAction.configHelpUri).then((result) => {
 				resolve(void 0);
 			}, err => {

@@ -3,17 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
 import * as assert from 'assert';
-
-import { TPromise } from 'vs/base/common/winjs.base';
 import { FileService } from 'vs/workbench/services/files/electron-browser/fileService';
 import { FileOperation, FileOperationEvent, FileChangesEvent, FileOperationResult, FileOperationError } from 'vs/platform/files/common/files';
-import uri from 'vs/base/common/uri';
+import { URI as uri } from 'vs/base/common/uri';
 import * as uuid from 'vs/base/common/uuid';
 import * as pfs from 'vs/base/node/pfs';
 import * as encodingLib from 'vs/base/node/encoding';
@@ -24,6 +20,7 @@ import { Workspace, toWorkspaceFolders } from 'vs/platform/workspace/common/work
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 import { TextModel } from 'vs/editor/common/model/textModel';
 import { IEncodingOverride } from 'vs/workbench/services/files/electron-browser/encoding';
+import { getPathFromAmdModule } from 'vs/base/common/amd';
 
 suite('FileService', () => {
 	let service: FileService;
@@ -33,10 +30,10 @@ suite('FileService', () => {
 	setup(function () {
 		const id = uuid.generateUuid();
 		testDir = path.join(parentDir, id);
-		const sourceDir = require.toUrl('./fixtures/service');
+		const sourceDir = getPathFromAmdModule(require, './fixtures/service');
 
 		return pfs.copy(sourceDir, testDir).then(() => {
-			service = new FileService(new TestContextService(new Workspace(testDir, testDir, toWorkspaceFolders([{ path: testDir }]))), TestEnvironmentService, new TestTextResourceConfigurationService(), new TestConfigurationService(), new TestLifecycleService(), new TestStorageService(), new TestNotificationService(), { disableWatcher: true });
+			service = new FileService(new TestContextService(new Workspace(testDir, toWorkspaceFolders([{ path: testDir }]))), TestEnvironmentService, new TestTextResourceConfigurationService(), new TestConfigurationService(), new TestLifecycleService(), new TestStorageService(), new TestNotificationService(), { disableWatcher: true });
 		});
 	});
 
@@ -45,7 +42,7 @@ suite('FileService', () => {
 		return pfs.del(parentDir, os.tmpdir());
 	});
 
-	test('createFile', function () {
+	test('createFile', () => {
 		let event: FileOperationEvent;
 		const toDispose = service.onAfterOperation(e => {
 			event = e;
@@ -101,7 +98,7 @@ suite('FileService', () => {
 		});
 	});
 
-	test('createFolder', function () {
+	test('createFolder', () => {
 		let event: FileOperationEvent;
 		const toDispose = service.onAfterOperation(e => {
 			event = e;
@@ -149,7 +146,7 @@ suite('FileService', () => {
 		});
 	});
 
-	test('renameFile', function () {
+	test('renameFile', () => {
 		let event: FileOperationEvent;
 		const toDispose = service.onAfterOperation(e => {
 			event = e;
@@ -194,7 +191,7 @@ suite('FileService', () => {
 		});
 	});
 
-	test('renameFolder', function () {
+	test('renameFolder', () => {
 		let event: FileOperationEvent;
 		const toDispose = service.onAfterOperation(e => {
 			event = e;
@@ -259,7 +256,7 @@ suite('FileService', () => {
 		});
 	});
 
-	test('moveFile', function () {
+	test('moveFile', () => {
 		let event: FileOperationEvent;
 		const toDispose = service.onAfterOperation(e => {
 			event = e;
@@ -370,7 +367,7 @@ suite('FileService', () => {
 		});
 	});
 
-	test('copyFile', function () {
+	test('copyFile', () => {
 		let event: FileOperationEvent;
 		const toDispose = service.onAfterOperation(e => {
 			event = e;
@@ -457,7 +454,7 @@ suite('FileService', () => {
 		});
 	});
 
-	test('deleteFile', function () {
+	test('deleteFile', () => {
 		let event: FileOperationEvent;
 		const toDispose = service.onAfterOperation(e => {
 			event = e;
@@ -499,14 +496,14 @@ suite('FileService', () => {
 		const resource = uri.file(path.join(testDir, 'deep'));
 		return service.resolveFile(resource).then(source => {
 			return service.del(source.resource).then(() => {
-				return TPromise.wrapError(new Error('Unexpected'));
+				return Promise.reject(new Error('Unexpected'));
 			}, error => {
-				return TPromise.as(true);
+				return Promise.resolve(true);
 			});
 		});
 	});
 
-	test('resolveFile', function () {
+	test('resolveFile', () => {
 		return service.resolveFile(uri.file(testDir), { resolveTo: [uri.file(path.join(testDir, 'deep'))] }).then(r => {
 			assert.equal(r.children.length, 8);
 
@@ -515,7 +512,7 @@ suite('FileService', () => {
 		});
 	});
 
-	test('resolveFiles', function () {
+	test('resolveFiles', () => {
 		return service.resolveFiles([
 			{ resource: uri.file(testDir), options: { resolveTo: [uri.file(path.join(testDir, 'deep'))] } },
 			{ resource: uri.file(path.join(testDir, 'deep')) }
@@ -533,7 +530,7 @@ suite('FileService', () => {
 		});
 	});
 
-	test('existsFile', function () {
+	test('existsFile', () => {
 		return service.existsFile(uri.file(testDir)).then((exists) => {
 			assert.equal(exists, true);
 
@@ -543,7 +540,7 @@ suite('FileService', () => {
 		});
 	});
 
-	test('updateContent', function () {
+	test('updateContent', () => {
 		const resource = uri.file(path.join(testDir, 'small.txt'));
 
 		return service.resolveContent(resource).then(c => {
@@ -703,7 +700,7 @@ suite('FileService', () => {
 			return service.resolveContent(resource2).then(c => value2 = c.value);
 		}).then(() => {
 			// load in parallel in expect the same result
-			return TPromise.join([
+			return Promise.all([
 				service.resolveContent(resource1).then(c => assert.equal(c.value, value1)),
 				service.resolveContent(resource2).then(c => assert.equal(c.value, value2))
 			]);
@@ -837,7 +834,7 @@ suite('FileService', () => {
 		// setup
 		const _id = uuid.generateUuid();
 		const _testDir = path.join(parentDir, _id);
-		const _sourceDir = require.toUrl('./fixtures/service');
+		const _sourceDir = getPathFromAmdModule(require, './fixtures/service');
 
 		return pfs.copy(_sourceDir, _testDir).then(() => {
 			const encodingOverride: IEncodingOverride[] = [];
@@ -852,7 +849,7 @@ suite('FileService', () => {
 			const textResourceConfigurationService = new TestTextResourceConfigurationService(configurationService);
 
 			const _service = new FileService(
-				new TestContextService(new Workspace(_testDir, _testDir, toWorkspaceFolders([{ path: _testDir }]))),
+				new TestContextService(new Workspace(_testDir, toWorkspaceFolders([{ path: _testDir }]))),
 				TestEnvironmentService,
 				textResourceConfigurationService,
 				configurationService,
@@ -882,7 +879,7 @@ suite('FileService', () => {
 		// setup
 		const _id = uuid.generateUuid();
 		const _testDir = path.join(parentDir, _id);
-		const _sourceDir = require.toUrl('./fixtures/service');
+		const _sourceDir = getPathFromAmdModule(require, './fixtures/service');
 
 		return pfs.copy(_sourceDir, _testDir).then(() => {
 			const encodingOverride: IEncodingOverride[] = [];
@@ -897,7 +894,7 @@ suite('FileService', () => {
 			const textResourceConfigurationService = new TestTextResourceConfigurationService(configurationService);
 
 			const _service = new FileService(
-				new TestContextService(new Workspace(_testDir, _testDir, toWorkspaceFolders([{ path: _testDir }]))),
+				new TestContextService(new Workspace(_testDir, toWorkspaceFolders([{ path: _testDir }]))),
 				TestEnvironmentService,
 				textResourceConfigurationService,
 				configurationService,
@@ -927,11 +924,11 @@ suite('FileService', () => {
 		// setup
 		const _id = uuid.generateUuid();
 		const _testDir = path.join(parentDir, _id);
-		const _sourceDir = require.toUrl('./fixtures/service');
+		const _sourceDir = getPathFromAmdModule(require, './fixtures/service');
 		const resource = uri.file(path.join(testDir, 'index.html'));
 
 		const _service = new FileService(
-			new TestContextService(new Workspace(_testDir, _testDir, toWorkspaceFolders([{ path: _testDir }]))),
+			new TestContextService(new Workspace(_testDir, toWorkspaceFolders([{ path: _testDir }]))),
 			TestEnvironmentService,
 			new TestTextResourceConfigurationService(),
 			new TestConfigurationService(),

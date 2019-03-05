@@ -2,12 +2,10 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import { IModelService } from 'vs/editor/common/services/modelService';
 import { IModeService } from 'vs/editor/common/services/modeService';
-import URI from 'vs/base/common/uri';
-import { TPromise } from 'vs/base/common/winjs.base';
+import { URI } from 'vs/base/common/uri';
 import { ITextModel } from 'vs/editor/common/model';
 import * as JSONContributionRegistry from 'vs/platform/jsonschemas/common/jsonContributionRegistry';
 import { Registry } from 'vs/platform/registry/common/platform';
@@ -24,7 +22,7 @@ import { IEditorInput } from 'vs/workbench/common/editor';
 import { IWorkspaceContextService, WorkbenchState } from 'vs/platform/workspace/common/workspace';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { isLinux } from 'vs/base/common/platform';
-import { isEqual, hasToIgnoreCase } from 'vs/base/common/resources';
+import { isEqual } from 'vs/base/common/resources';
 
 const schemaRegistry = Registry.as<JSONContributionRegistry.IJSONContributionRegistry>(JSONContributionRegistry.Extensions.JSONContribution);
 
@@ -82,15 +80,15 @@ export class PreferencesContribution implements IWorkbenchContribution {
 
 		// Global User Settings File
 		if (isEqual(resource, URI.file(this.environmentService.appSettingsPath), !isLinux)) {
-			return { override: this.preferencesService.openGlobalSettings(options, group) };
+			return { override: this.preferencesService.openGlobalSettings(true, options, group) };
 		}
 
 		// Single Folder Workspace Settings File
 		const state = this.workspaceService.getWorkbenchState();
 		if (state === WorkbenchState.FOLDER) {
 			const folders = this.workspaceService.getWorkspace().folders;
-			if (isEqual(resource, folders[0].toResource(FOLDER_SETTINGS_PATH), hasToIgnoreCase(resource))) {
-				return { override: this.preferencesService.openWorkspaceSettings(options, group) };
+			if (isEqual(resource, folders[0].toResource(FOLDER_SETTINGS_PATH))) {
+				return { override: this.preferencesService.openWorkspaceSettings(true, options, group) };
 			}
 		}
 
@@ -98,8 +96,8 @@ export class PreferencesContribution implements IWorkbenchContribution {
 		else if (state === WorkbenchState.WORKSPACE) {
 			const folders = this.workspaceService.getWorkspace().folders;
 			for (let i = 0; i < folders.length; i++) {
-				if (isEqual(resource, folders[i].toResource(FOLDER_SETTINGS_PATH), hasToIgnoreCase(resource))) {
-					return { override: this.preferencesService.openFolderSettings(folders[i].uri, options, group) };
+				if (isEqual(resource, folders[i].toResource(FOLDER_SETTINGS_PATH))) {
+					return { override: this.preferencesService.openFolderSettings(folders[i].uri, true, options, group) };
 				}
 			}
 		}
@@ -110,14 +108,14 @@ export class PreferencesContribution implements IWorkbenchContribution {
 	private start(): void {
 
 		this.textModelResolverService.registerTextModelContentProvider('vscode', {
-			provideTextContent: (uri: URI): TPromise<ITextModel> => {
+			provideTextContent: (uri: URI): Thenable<ITextModel> => {
 				if (uri.scheme !== 'vscode') {
 					return null;
 				}
 				if (uri.authority === 'schemas') {
 					const schemaModel = this.getSchemaModel(uri);
 					if (schemaModel) {
-						return TPromise.as(schemaModel);
+						return Promise.resolve(schemaModel);
 					}
 				}
 				return this.preferencesService.resolveModel(uri);
@@ -129,10 +127,10 @@ export class PreferencesContribution implements IWorkbenchContribution {
 		let schema = schemaRegistry.getSchemaContributions().schemas[uri.toString()];
 		if (schema) {
 			const modelContent = JSON.stringify(schema);
-			const mode = this.modeService.getOrCreateMode('jsonc');
-			const model = this.modelService.createModel(modelContent, mode, uri);
+			const languageSelection = this.modeService.create('jsonc');
+			const model = this.modelService.createModel(modelContent, languageSelection, uri);
 
-			let disposables = [];
+			let disposables: IDisposable[] = [];
 			disposables.push(schemaRegistry.onDidChangeSchema(schemaUri => {
 				if (schemaUri === uri.toString()) {
 					schema = schemaRegistry.getSchemaContributions().schemas[uri.toString()];

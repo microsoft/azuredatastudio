@@ -3,6 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+/* Title Label */
+
 .monaco-workbench > .part.editor > .content .editor-group-container > .title > .label-container {
 	display: flex;
 	justify-content: flex-start;
@@ -10,8 +12,6 @@
 	overflow: hidden;
 	flex: auto;
 }
-
-/* Title Label */
 
 .monaco-workbench > .part.editor > .content .editor-group-container > .title .title-label {
 	line-height: 35px;
@@ -34,7 +34,7 @@
 .monaco-workbench > .part.editor > .content .editor-group-container > .title.breadcrumbs .breadcrumbs-control {
 	flex: 1 50%;
 	overflow: hidden;
-	padding: 0 6px;
+	margin-left: .45em;
 }
 
 .monaco-workbench > .part.editor > .content .editor-group-container > .title.breadcrumbs .breadcrumbs-control .monaco-breadcrumb-item {
@@ -67,8 +67,8 @@
 
 .monaco-workbench > .part.editor > .content .editor-group-container > .title.breadcrumbs .breadcrumbs-control .monaco-breadcrumb-item.root_folder::after {
 	/* use dot separator for workspace folder */
-	content: '•';
-	padding: 0 4px;
+	content: '\00a0•\00a0';
+	padding: 0px;
 }
 
 .monaco-workbench > .part.editor > .content .editor-group-container > .title.breadcrumbs .breadcrumbs-control .monaco-breadcrumb-item:last-child {

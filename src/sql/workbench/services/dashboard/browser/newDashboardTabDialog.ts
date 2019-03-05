@@ -17,7 +17,7 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { IVirtualDelegate, IRenderer } from 'vs/base/browser/ui/list/list';
+import { IListVirtualDelegate, IListRenderer } from 'vs/base/browser/ui/list/list';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 
@@ -28,8 +28,9 @@ import * as TelemetryKeys from 'sql/common/telemetryKeys';
 import { NewDashboardTabViewModel, IDashboardUITab } from 'sql/workbench/services/dashboard/common/newDashboardTabViewModel';
 import { IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
+import { Orientation } from 'vs/base/browser/ui/sash/sash';
 
-class ExtensionListDelegate implements IVirtualDelegate<IDashboardUITab> {
+class ExtensionListDelegate implements IListVirtualDelegate<IDashboardUITab> {
 
 	constructor(
 		private _height: number
@@ -53,7 +54,7 @@ interface ExtensionListTemplate {
 	publisher: HTMLElement;
 }
 
-class ExtensionListRenderer implements IRenderer<IDashboardUITab, ExtensionListTemplate> {
+class ExtensionListRenderer implements IListRenderer<IDashboardUITab, ExtensionListTemplate> {
 	public static TEMPLATE_ID = 'extensionListRenderer';
 	private static readonly OPENED_TAB_CLASS = 'success';
 	private static readonly ICON_CLASS = 'extension-status-icon icon';

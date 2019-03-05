@@ -238,9 +238,9 @@ export class ProfilerFindNext implements IEditorAction {
 
 	constructor(private profiler: IProfilerController) { }
 
-	run(): TPromise<void> {
+	run(): Promise<void> {
 		this.profiler.findNext();
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 
 	isSupported(): boolean {
@@ -255,9 +255,9 @@ export class ProfilerFindPrevious implements IEditorAction {
 
 	constructor(private profiler: IProfilerController) { }
 
-	run(): TPromise<void> {
+	run(): Promise<void> {
 		this.profiler.findPrevious();
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 
 	isSupported(): boolean {

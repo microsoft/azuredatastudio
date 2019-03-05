@@ -383,7 +383,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			this._connectionDialog = null;
 		}
 		if (!this._connectionDialog) {
-			let container = document.getElementById(this._partService.getWorkbenchElementId()).parentElement;
+			let container = this._partService.getWorkbenchElement().parentElement;
 			this._container = container;
 			this._connectionDialog = this._instantiationService.createInstance(ConnectionDialogWidget, this._providerTypes, this._providerNameToDisplayNameMap[this._model.providerName], this._providerNameToDisplayNameMap, isCMSDialog);
 			this._connectionDialog.onCancel(() => {

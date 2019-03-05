@@ -26,9 +26,9 @@ import * as pfs from 'vs/base/node/pfs';
 import * as nls from 'vs/nls';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { WorkbenchState, IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
-import { IntervalTimer } from 'vs/base/common/async';
+import { IntervalTimer, createCancelablePromise } from 'vs/base/common/async';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IStorageService } from 'vs/platform/storage/common/storage';
+import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { toDisposable } from 'vs/base/common/lifecycle';
 import { isPromiseCanceledError } from 'vs/base/common/errors';
@@ -83,27 +83,29 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 			if (!this._checkStorage()) {
 				let promise = this._runQuery();
 				this.queryObv = Observable.fromPromise(promise);
-				let tpromise = promise.then(
-					result => {
-						if (this._init) {
-							this._updateChild(result);
-							this.setupInterval();
-						} else {
-							this.queryObv = Observable.fromPromise(TPromise.as<SimpleExecuteResult>(result));
+				let cancelablePromise = createCancelablePromise(() => {
+					return promise.then(
+						result => {
+							if (this._init) {
+								this._updateChild(result);
+								this.setupInterval();
+							} else {
+								this.queryObv = Observable.fromPromise(TPromise.as<SimpleExecuteResult>(result));
+							}
+						},
+						error => {
+							if (isPromiseCanceledError(error)) {
+								return;
+							}
+							if (this._init) {
+								this.showError(error);
+							} else {
+								this.queryObv = Observable.fromPromise(TPromise.as<SimpleExecuteResult>(error));
+							}
 						}
-					},
-					error => {
-						if (isPromiseCanceledError(error)) {
-							return;
-						}
-						if (this._init) {
-							this.showError(error);
-						} else {
-							this.queryObv = Observable.fromPromise(TPromise.as<SimpleExecuteResult>(error));
-						}
-					}
-				);
-				this._register(toDisposable(() => tpromise.cancel()));
+					);
+				});
+				this._register(toDisposable(() => cancelablePromise.cancel()));
 			}
 		}, error => {
 			this.showError(error);
@@ -163,14 +165,14 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 			};
 			this.lastUpdated = nls.localize('insights.lastUpdated', "Last Updated: {0} {1}", currentTime.toLocaleTimeString(), currentTime.toLocaleDateString());
 			this._cd.detectChanges();
-			this.storageService.store(this._getStorageKey(), JSON.stringify(store));
+			this.storageService.store(this._getStorageKey(), JSON.stringify(store), StorageScope.GLOBAL);
 		}
 		return result;
 	}
 
 	private _checkStorage(): boolean {
 		if (this.insightConfig.cacheId) {
-			let storage = this.storageService.get(this._getStorageKey());
+			let storage = this.storageService.get(this._getStorageKey(), StorageScope.GLOBAL);
 			if (storage) {
 				let storedResult: IStorageResult = JSON.parse(storage);
 				let date = new Date(storedResult.date);
@@ -303,7 +305,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 						filePathArray = filePathArray.filter(i => !!i);
 						let folder = this.workspaceContextService.getWorkspace().folders.find(i => i.name === filePathArray[0]);
 						if (!folder) {
-							return Promise.reject<void[]>(new Error(`Could not find workspace folder ${filePathArray[0]}`));
+							return Promise.reject(new Error(`Could not find workspace folder ${filePathArray[0]}`));
 						}
 						// remove the folder name from the filepath
 						filePathArray.shift();

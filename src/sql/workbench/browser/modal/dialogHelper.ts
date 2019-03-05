@@ -7,7 +7,7 @@
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { Button } from 'sql/base/browser/ui/button/button';
 
-import { Builder } from 'vs/base/browser/builder';
+import { Builder } from 'sql/base/browser/builder';
 import * as types from 'vs/base/common/types';
 
 import * as sqlops from 'sqlops';
@@ -39,7 +39,7 @@ export function appendRowLink(container: Builder, label: string, labelClass: str
 		});
 		rowContainer.element('td', { class: cellContainerClass }, (inputCellContainer) => {
 			inputCellContainer.element('div', {}, (rowContainer) => {
-				rowButton = new Button(rowContainer);
+				rowButton = new Button(rowContainer.getHTMLElement());
 
 			});
 		});

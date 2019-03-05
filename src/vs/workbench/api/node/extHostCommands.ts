@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import { validateConstraint } from 'vs/base/common/types';
 import { ICommandHandlerDescription } from 'vs/platform/commands/common/commands';
@@ -11,7 +10,7 @@ import * as extHostTypeConverter from 'vs/workbench/api/node/extHostTypeConverte
 import { cloneAndChange } from 'vs/base/common/objects';
 import { MainContext, MainThreadCommandsShape, ExtHostCommandsShape, ObjectIdentifier, IMainContext } from './extHost.protocol';
 import { ExtHostHeapService } from 'vs/workbench/api/node/extHostHeapService';
-import { isFalsyOrEmpty } from 'vs/base/common/arrays';
+import { isNonEmptyArray } from 'vs/base/common/arrays';
 import * as modes from 'vs/editor/common/modes';
 import * as vscode from 'vscode';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -116,8 +115,7 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 				try {
 					validateConstraint(args[i], description.args[i].constraint);
 				} catch (err) {
-					// {{ SQL CARBON EDIT }} - Add type assertion to fix build break
-					return <any>Promise.reject(new Error(`Running the contributed command:'${id}' failed. Illegal argument '${description.args[i].name}' - ${description.args[i].description}`));
+					return Promise.reject(new Error(`Running the contributed command:'${id}' failed. Illegal argument '${description.args[i].name}' - ${description.args[i].description}`));
 				}
 			}
 		}
@@ -127,8 +125,7 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 			return Promise.resolve(result);
 		} catch (err) {
 			this._logService.error(err, id);
-			// {{ SQL CARBON EDIT }} - Add type assertion to fix build break
-			return <any>Promise.reject(new Error(`Running the contributed command:'${id}' failed.`));
+			return Promise.reject(new Error(`Running the contributed command:'${id}' failed.`));
 		}
 	}
 
@@ -136,8 +133,7 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 		this._logService.trace('ExtHostCommands#$executeContributedCommand', id);
 
 		if (!this._commands.has(id)) {
-			// {{ SQL CARBON EDIT }} - Add type assertion to fix build break
-			return <any>Promise.reject(new Error(`Contributed command '${id}' does not exist.`));
+			return Promise.reject(new Error(`Contributed command '${id}' does not exist.`));
 		} else {
 			args = args.map(arg => this._argumentProcessors.reduce((r, p) => p.processArgument(r), arg));
 			return this._executeContributedCommand(id, args);
@@ -193,7 +189,7 @@ export class CommandsConverter {
 			title: command.title
 		};
 
-		if (command.command && !isFalsyOrEmpty(command.arguments)) {
+		if (command.command && isNonEmptyArray(command.arguments)) {
 			// we have a contributed command with arguments. that
 			// means we don't want to send the arguments around
 

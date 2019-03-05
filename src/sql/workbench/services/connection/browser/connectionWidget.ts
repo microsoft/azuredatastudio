@@ -32,7 +32,7 @@ import { localize } from 'vs/nls';
 import * as DOM from 'vs/base/browser/dom';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { OS, OperatingSystem } from 'vs/base/common/platform';
-import { Builder, $ } from 'vs/base/browser/builder';
+import { Builder, $ } from 'sql/base/browser/builder';
 import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import { endsWith, startsWith } from 'vs/base/common/strings';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
@@ -279,7 +279,7 @@ export class ConnectionWidget {
 			rowContainer.element('td');
 			rowContainer.element('td', { align: 'right' }, (cellContainer) => {
 				cellContainer.div({ class: 'advanced-button' }, (divContainer) => {
-					button = new Button(divContainer);
+					button = new Button(divContainer.getHTMLElement());
 					button.label = title;
 					button.onDidClick(() => {
 						//open advanced page

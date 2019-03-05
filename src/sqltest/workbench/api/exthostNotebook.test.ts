@@ -9,7 +9,7 @@ import * as vscode from 'vscode';
 import * as assert from 'assert';
 import * as TypeMoq from 'typemoq';
 
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
 
 import { ExtHostNotebook } from 'sql/workbench/api/node/extHostNotebook';

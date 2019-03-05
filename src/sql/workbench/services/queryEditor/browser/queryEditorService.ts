@@ -21,7 +21,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { FileEditorInput } from 'vs/workbench/parts/files/common/editors/fileEditorInput';
 import Severity from 'vs/base/common/severity';
 import nls = require('vs/nls');
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import paths = require('vs/base/common/paths');
 import { isLinux } from 'vs/base/common/platform';
 import { Schemas } from 'vs/base/common/network';
@@ -29,6 +29,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { EditDataResultsInput } from 'sql/parts/editData/common/editDataResultsInput';
 import { IEditorInput, IEditor } from 'vs/workbench/common/editor';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
+import { ILanguageSelection } from 'vs/editor/common/services/modeService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 const fs = require('fs');
@@ -74,7 +75,7 @@ export class QueryEditorService implements IQueryEditorService {
 	 * Creates new untitled document for SQL query and opens in new editor tab
 	 */
 	public newSqlEditor(sqlContent?: string, connectionProviderName?: string, isDirty?: boolean): Promise<IConnectableInput> {
-		return new Promise<IConnectableInput>((resolve, reject) => {
+		return new Promise<IConnectableInput>(async (resolve, reject) => {
 			try {
 				// Create file path and file URI
 				let filePath = this.createUntitledSqlFilePath();
@@ -82,14 +83,13 @@ export class QueryEditorService implements IQueryEditorService {
 
 				// Create a sql document pane with accoutrements
 				const fileInput = this._untitledEditorService.createOrGet(docUri, 'sql');
-				fileInput.resolve().then(m => {
-					if (sqlContent) {
-						m.textEditorModel.setValue(sqlContent);
-						if (isDirty === false || (isDirty === undefined && !this._configurationService.getValue<boolean>('sql.promptToSaveGeneratedFiles'))) {
-							m.setDirty(false);
-						}
+				let untitledEditorModel = await fileInput.resolve();
+				if (sqlContent) {
+					untitledEditorModel.textEditorModel.setValue(sqlContent);
+					if (isDirty === false || (isDirty === undefined && !this._configurationService.getValue<boolean>('sql.promptToSaveGeneratedFiles'))) {
+						untitledEditorModel.setDirty(false);
 					}
-				});
+				}
 
 				const queryResultsInput: QueryResultsInput = this._instantiationService.createInstance(QueryResultsInput, docUri.toString());
 				let queryInput: QueryInput = this._instantiationService.createInstance(QueryInput, '', fileInput, queryResultsInput, connectionProviderName);
@@ -195,12 +195,12 @@ export class QueryEditorService implements IQueryEditorService {
 	 * In all other cases (when SQL is involved in the language change and the editor is not dirty),
 	 * returns a promise that will resolve when the old editor has been replaced by a new editor.
 	 */
-	public static sqlLanguageModeCheck(model: ITextModel, mode: IMode, editor: IEditor): Promise<ITextModel> {
-		if (!model || !mode || !editor) {
+	public static sqlLanguageModeCheck(model: ITextModel, languageSelection: ILanguageSelection, editor: IEditor): Promise<ITextModel> {
+		if (!model || !languageSelection || !editor) {
 			return Promise.resolve(undefined);
 		}
 
-		let newLanguage: string = mode.getLanguageIdentifier().language;
+		let newLanguage: string = languageSelection.languageIdentifier.language;
 		let oldLanguage: string = model.getLanguageIdentifier().language;
 		let changingToSql = sqlModeId === newLanguage;
 		let changingFromSql = sqlModeId === oldLanguage;

@@ -540,7 +540,7 @@
 	},
 	{
 		"c": "*",
-		"t": "text.html.markdown markup.list.unnumbered.markdown beginning.punctuation.definition.list.markdown",
+		"t": "text.html.markdown markup.list.unnumbered.markdown punctuation.definition.list.begin.markdown",
 		"r": {
 			"dark_plus": null,
 			"light_plus": null,
@@ -573,7 +573,7 @@
 	},
 	{
 		"c": "-",
-		"t": "text.html.markdown markup.list.unnumbered.markdown beginning.punctuation.definition.list.markdown",
+		"t": "text.html.markdown markup.list.unnumbered.markdown punctuation.definition.list.begin.markdown",
 		"r": {
 			"dark_plus": null,
 			"light_plus": null,
@@ -606,7 +606,7 @@
 	},
 	{
 		"c": "+",
-		"t": "text.html.markdown markup.list.unnumbered.markdown beginning.punctuation.definition.list.markdown",
+		"t": "text.html.markdown markup.list.unnumbered.markdown punctuation.definition.list.begin.markdown",
 		"r": {
 			"dark_plus": null,
 			"light_plus": null,
@@ -650,7 +650,7 @@
 	},
 	{
 		"c": "+",
-		"t": "text.html.markdown markup.list.unnumbered.markdown markup.list.unnumbered.markdown beginning.punctuation.definition.list.markdown",
+		"t": "text.html.markdown markup.list.unnumbered.markdown markup.list.unnumbered.markdown punctuation.definition.list.begin.markdown",
 		"r": {
 			"dark_plus": null,
 			"light_plus": null,
@@ -925,7 +925,7 @@
 	},
 	{
 		"c": ">",
-		"t": "text.html.markdown markup.quote.markdown beginning.punctuation.definition.quote.markdown",
+		"t": "text.html.markdown markup.quote.markdown punctuation.definition.quote.begin.markdown",
 		"r": {
 			"dark_plus": null,
 			"light_plus": null,
@@ -958,7 +958,7 @@
 	},
 	{
 		"c": ">",
-		"t": "text.html.markdown markup.quote.markdown beginning.punctuation.definition.quote.markdown",
+		"t": "text.html.markdown markup.quote.markdown punctuation.definition.quote.begin.markdown",
 		"r": {
 			"dark_plus": null,
 			"light_plus": null,
@@ -969,7 +969,7 @@
 	},
 	{
 		"c": ">",
-		"t": "text.html.markdown markup.quote.markdown markup.quote.markdown beginning.punctuation.definition.quote.markdown",
+		"t": "text.html.markdown markup.quote.markdown markup.quote.markdown punctuation.definition.quote.begin.markdown",
 		"r": {
 			"dark_plus": null,
 			"light_plus": null,
@@ -1002,7 +1002,7 @@
 	},
 	{
 		"c": "1.",
-		"t": "text.html.markdown markup.list.numbered.markdown beginning.punctuation.definition.list.markdown",
+		"t": "text.html.markdown markup.list.numbered.markdown punctuation.definition.list.begin.markdown",
 		"r": {
 			"dark_plus": null,
 			"light_plus": null,
@@ -1046,7 +1046,7 @@
 	},
 	{
 		"c": ">",
-		"t": "text.html.markdown markup.list.numbered.markdown markup.quote.markdown beginning.punctuation.definition.quote.markdown",
+		"t": "text.html.markdown markup.list.numbered.markdown markup.quote.markdown punctuation.definition.quote.begin.markdown",
 		"r": {
 			"dark_plus": null,
 			"light_plus": null,
@@ -1079,7 +1079,7 @@
 	},
 	{
 		"c": "2.",
-		"t": "text.html.markdown markup.list.numbered.markdown beginning.punctuation.definition.list.markdown",
+		"t": "text.html.markdown markup.list.numbered.markdown punctuation.definition.list.begin.markdown",
 		"r": {
 			"dark_plus": null,
 			"light_plus": null,
@@ -1112,7 +1112,7 @@
 	},
 	{
 		"c": "3.",
-		"t": "text.html.markdown markup.list.numbered.markdown beginning.punctuation.definition.list.markdown",
+		"t": "text.html.markdown markup.list.numbered.markdown punctuation.definition.list.begin.markdown",
 		"r": {
 			"dark_plus": null,
 			"light_plus": null,
@@ -1574,7 +1574,7 @@
 	},
 	{
 		"c": "*",
-		"t": "text.html.markdown markup.list.unnumbered.markdown beginning.punctuation.definition.list.markdown",
+		"t": "text.html.markdown markup.list.unnumbered.markdown punctuation.definition.list.begin.markdown",
 		"r": {
 			"dark_plus": null,
 			"light_plus": null,
@@ -1607,7 +1607,7 @@
 	},
 	{
 		"c": "*",
-		"t": "text.html.markdown markup.list.unnumbered.markdown beginning.punctuation.definition.list.markdown",
+		"t": "text.html.markdown markup.list.unnumbered.markdown punctuation.definition.list.begin.markdown",
 		"r": {
 			"dark_plus": null,
 			"light_plus": null,
@@ -1750,7 +1750,7 @@
 	},
 	{
 		"c": "*",
-		"t": "text.html.markdown markup.list.unnumbered.markdown beginning.punctuation.definition.list.markdown",
+		"t": "text.html.markdown markup.list.unnumbered.markdown punctuation.definition.list.begin.markdown",
 		"r": {
 			"dark_plus": null,
 			"light_plus": null,
@@ -1783,7 +1783,7 @@
 	},
 	{
 		"c": "*",
-		"t": "text.html.markdown markup.list.unnumbered.markdown beginning.punctuation.definition.list.markdown",
+		"t": "text.html.markdown markup.list.unnumbered.markdown punctuation.definition.list.begin.markdown",
 		"r": {
 			"dark_plus": null,
 			"light_plus": null,

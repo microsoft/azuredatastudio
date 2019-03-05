@@ -7,7 +7,7 @@
 import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
 import { Emitter } from 'vs/base/common/event';
 import { deepClone } from 'vs/base/common/objects';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import * as nls from 'vs/nls';
 
 import * as vscode from 'vscode';
@@ -15,6 +15,7 @@ import * as sqlops from 'sqlops';
 
 import { SqlMainContext, ExtHostModelViewShape, MainThreadModelViewShape, ExtHostModelViewTreeViewsShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { IItemConfig, ModelComponentTypes, IComponentShape, IComponentEventArgs, ComponentEventType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IExtensionDescription } from 'vs/workbench/services/extensions/common/extensions';
 
 class ModelBuilderImpl implements sqlops.ModelBuilder {
 	private nextComponentId: number;
@@ -25,7 +26,7 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 		private readonly _handle: number,
 		private readonly _mainContext: IMainContext,
 		private readonly _extHostModelViewTree: ExtHostModelViewTreeViewsShape,
-		private readonly _extensionLocation: URI
+		private readonly _extension: IExtensionDescription
 	) {
 		this.nextComponentId = 0;
 	}
@@ -81,7 +82,7 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 
 	tree<T>(): sqlops.ComponentBuilder<sqlops.TreeComponent<T>> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<sqlops.TreeComponent<T>> = this.getComponentBuilder(new TreeComponentWrapper(this._extHostModelViewTree, this._proxy, this._handle, id), id);
+		let builder: ComponentBuilderImpl<sqlops.TreeComponent<T>> = this.getComponentBuilder(new TreeComponentWrapper(this._extHostModelViewTree, this._proxy, this._handle, id, this._extension), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
@@ -116,7 +117,7 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 
 	webView(): sqlops.ComponentBuilder<sqlops.WebViewComponent> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<sqlops.WebViewComponent> = this.getComponentBuilder(new WebViewWrapper(this._proxy, this._handle, id, this._extensionLocation), id);
+		let builder: ComponentBuilderImpl<sqlops.WebViewComponent> = this.getComponentBuilder(new WebViewWrapper(this._proxy, this._handle, id, this._extension.extensionLocation), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
@@ -1237,14 +1238,14 @@ class TreeComponentWrapper<T> extends ComponentWrapper implements sqlops.TreeCom
 
 	constructor(
 		private _extHostModelViewTree: ExtHostModelViewTreeViewsShape,
-		proxy: MainThreadModelViewShape, handle: number, id: string) {
+		proxy: MainThreadModelViewShape, handle: number, id: string, private _extension: IExtensionDescription) {
 		super(proxy, handle, ModelComponentTypes.TreeComponent, id);
 		this.properties = {};
 	}
 
 	public registerDataProvider<T>(dataProvider: sqlops.TreeComponentDataProvider<T>): sqlops.TreeComponentView<T> {
 		this.setDataProvider();
-		return this._extHostModelViewTree.$createTreeView(this._handle, this.id, { treeDataProvider: dataProvider });
+		return this._extHostModelViewTree.$createTreeView(this._handle, this.id, { treeDataProvider: dataProvider }, this._extension);
 	}
 
 	public get withCheckbox(): boolean {
@@ -1293,9 +1294,9 @@ class ModelViewImpl implements sqlops.ModelView {
 		private readonly _serverInfo: sqlops.ServerInfo,
 		private readonly mainContext: IMainContext,
 		private readonly _extHostModelViewTree: ExtHostModelViewTreeViewsShape,
-		private readonly _extensionLocation: URI
+		_extension: IExtensionDescription
 	) {
-		this._modelBuilder = new ModelBuilderImpl(this._proxy, this._handle, this.mainContext, this._extHostModelViewTree, _extensionLocation);
+		this._modelBuilder = new ModelBuilderImpl(this._proxy, this._handle, this.mainContext, this._extHostModelViewTree, _extension);
 	}
 
 	public get onClosed(): vscode.Event<any> {
@@ -1346,7 +1347,7 @@ export class ExtHostModelView implements ExtHostModelViewShape {
 
 	private readonly _modelViews = new Map<number, ModelViewImpl>();
 	private readonly _handlers = new Map<string, (view: sqlops.ModelView) => void>();
-	private readonly _handlerToExtensionPath = new Map<string, URI>();
+	private readonly _handlerToExtension = new Map<string, IExtensionDescription>();
 	constructor(
 		private _mainContext: IMainContext,
 		private _extHostModelViewTree: ExtHostModelViewTreeViewsShape
@@ -1360,15 +1361,15 @@ export class ExtHostModelView implements ExtHostModelViewShape {
 		this._modelViews.delete(handle);
 	}
 
-	$registerProvider(widgetId: string, handler: (webview: sqlops.ModelView) => void, extensionLocation: URI): void {
+	$registerProvider(widgetId: string, handler: (webview: sqlops.ModelView) => void, extension: IExtensionDescription): void {
 		this._handlers.set(widgetId, handler);
-		this._handlerToExtensionPath.set(widgetId, extensionLocation);
+		this._handlerToExtension.set(widgetId, extension);
 		this._proxy.$registerProvider(widgetId);
 	}
 
 	$registerWidget(handle: number, id: string, connection: sqlops.connection.Connection, serverInfo: sqlops.ServerInfo): void {
-		let extensionLocation = this._handlerToExtensionPath.get(id);
-		let view = new ModelViewImpl(this._proxy, handle, connection, serverInfo, this._mainContext, this._extHostModelViewTree, extensionLocation);
+		let extension = this._handlerToExtension.get(id);
+		let view = new ModelViewImpl(this._proxy, handle, connection, serverInfo, this._mainContext, this._extHostModelViewTree, extension);
 		this._modelViews.set(handle, view);
 		this._handlers.get(id)(view);
 	}
