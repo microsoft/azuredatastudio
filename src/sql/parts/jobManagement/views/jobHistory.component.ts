@@ -6,7 +6,7 @@
 import 'vs/css!./jobHistory';
 import 'vs/css!sql/media/icons/common-icons';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as nls from 'vs/nls';
 import * as dom from 'vs/base/browser/dom';
 import { OnInit, Component, Inject, Input, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, ChangeDetectionStrategy, Injectable } from '@angular/core';
@@ -53,9 +53,9 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 	@ViewChild('table') private _tableContainer: ElementRef;
 	@ViewChild('jobsteps') private _jobStepsView: ElementRef;
 
-	@Input() public agentJobInfo: sqlops.AgentJobInfo = undefined;
-	@Input() public agentJobHistories: sqlops.AgentJobHistoryInfo[] = undefined;
-	public agentJobHistoryInfo: sqlops.AgentJobHistoryInfo = undefined;
+	@Input() public agentJobInfo: azdata.AgentJobInfo = undefined;
+	@Input() public agentJobHistories: azdata.AgentJobHistoryInfo[] = undefined;
+	public agentJobHistoryInfo: azdata.AgentJobHistoryInfo = undefined;
 
 	private _isVisible: boolean = false;
 	private _stepRows: JobStepsViewRow[] = [];
@@ -63,7 +63,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 	private _showPreviousRuns: boolean = undefined;
 	private _runStatus: string = undefined;
 	private _jobCacheObject: JobCacheObject;
-	private _agentJobInfo: sqlops.AgentJobInfo;
+	private _agentJobInfo: azdata.AgentJobInfo;
 	private _noJobsAvailable: boolean = false;
 
 	private static readonly HEADING_HEIGHT: number = 24;
@@ -217,7 +217,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		}
 	}
 
-	private didJobFail(job: sqlops.AgentJobHistoryInfo): boolean {
+	private didJobFail(job: azdata.AgentJobHistoryInfo): boolean {
 		for (let i = 0; i < job.steps.length; i++) {
 			if (job.steps[i].runStatus === 0) {
 				return true;
@@ -226,7 +226,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		return false;
 	}
 
-	private buildHistoryTree(self: any, jobHistories: sqlops.AgentJobHistoryInfo[]) {
+	private buildHistoryTree(self: any, jobHistories: azdata.AgentJobHistoryInfo[]) {
 		self._treeController.jobHistories = jobHistories;
 		let jobHistoryRows = this._treeController.jobHistories.map(job => self.convertToJobHistoryRow(job));
 		self._treeDataSource.data = jobHistoryRows;
@@ -259,7 +259,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		this._agentViewComponent.showHistory = false;
 	}
 
-	private convertToJobHistoryRow(historyInfo: sqlops.AgentJobHistoryInfo): JobHistoryRow {
+	private convertToJobHistoryRow(historyInfo: azdata.AgentJobHistoryInfo): JobHistoryRow {
 		let jobHistoryRow = new JobHistoryRow();
 		jobHistoryRow.runDate = this.formatTime(historyInfo.runDate);
 		jobHistoryRow.runStatus = JobManagementUtilities.convertToStatusString(historyInfo.runStatus);

@@ -6,7 +6,7 @@
     "publisher": "Microsoft",
     "preview": true,
     "engines": {
-        "vscode": "^1.17.0",
+        "vscode": "^1.26.0",
         "sqlops": "*"
     },
     "icon": "images/sqlserver.png",
@@ -247,11 +247,9 @@
         "fs-extra": "^5.0.0",
         "handlebars": "^4.0.11",
         "openurl": "^1.1.1",
-        "vscode-nls": "2.0.2",
         "sqlops": "github:anthonydresser/sqlops-extension-sqlops"
     },
     "devDependencies": {
-        "@types/handlebars": "^4.0.11",
         "@types/mocha": "^2.2.42",
         "@types/node": "^7.0.43",
         "child-process-promise": "^2.2.1",
@@ -266,7 +264,7 @@
         "tslint": "^3.14.0",
         "typemoq": "^2.1.0",
         "typescript": "^2.6.1",
-        "vscode": "^1.1.6",
-        "vsce": "1.36.2"
+        "vsce": "1.36.2",
+        "vscode": "^1.1.6"
     }
 }

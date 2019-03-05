@@ -6,7 +6,7 @@
 'use strict';
 
 import { extensions, TreeItem } from 'vscode';
-import { Account } from 'sqlops';
+import { Account } from 'azdata';
 
 import { azureResource } from './azure-resource';
 import { IAzureResourceNodeWithProviderId } from './interfaces';

@@ -275,7 +275,9 @@ export function getTitleBarStyle(configurationService: IConfigurationService, en
 		}
 	}
 
-	return 'custom'; // default to custom on all OS
+	// {{SQL CARBON EDIT}} - Always use native toolbar
+	return 'native';
+	// return 'custom'; // default to custom on all OS
 }
 
 export const enum OpenContext {

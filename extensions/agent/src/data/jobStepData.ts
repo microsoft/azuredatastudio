@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
 import { AgentUtils } from '../agentUtils';
@@ -95,7 +95,7 @@ export class JobStepData implements IAgentDialogData {
 		};
 	}
 
-	public static convertToJobStepData(jobStepInfo: sqlops.AgentJobStepInfo, jobData: JobData) {
+	public static convertToJobStepData(jobStepInfo: azdata.AgentJobStepInfo, jobData: JobData) {
 		let stepData = new JobStepData(jobData.ownerUri, jobData);
 		stepData.ownerUri = jobData.ownerUri;
 		stepData.jobId = jobStepInfo.jobId;
@@ -127,8 +127,8 @@ export class JobStepData implements IAgentDialogData {
 		return stepData;
 	}
 
-	public static convertToAgentJobStepInfo(jobStepData: JobStepData): sqlops.AgentJobStepInfo {
-		let result: sqlops.AgentJobStepInfo = {
+	public static convertToAgentJobStepInfo(jobStepData: JobStepData): azdata.AgentJobStepInfo {
+		let result: azdata.AgentJobStepInfo = {
 			jobId: jobStepData.jobId,
 			jobName: jobStepData.jobName,
 			script: jobStepData.script,

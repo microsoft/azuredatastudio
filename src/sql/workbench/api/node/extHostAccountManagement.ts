@@ -5,7 +5,7 @@
 
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { Disposable } from 'vs/workbench/api/node/extHostTypes';
 import {
@@ -21,8 +21,8 @@ export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 	private _handlePool: number = 0;
 	private _proxy: MainThreadAccountManagementShape;
 	private _providers: { [handle: number]: AccountProviderWithMetadata } = {};
-	private _accounts: { [handle: number]: sqlops.Account[] } = {};
-	private readonly _onDidChangeAccounts = new Emitter<sqlops.DidChangeAccountsParams>();
+	private _accounts: { [handle: number]: azdata.Account[] } = {};
+	private readonly _onDidChangeAccounts = new Emitter<azdata.DidChangeAccountsParams>();
 
 	constructor(mainContext: IMainContext) {
 		super();
@@ -31,24 +31,24 @@ export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 
 	// PUBLIC METHODS //////////////////////////////////////////////////////
 	// - MAIN THREAD AVAILABLE METHODS /////////////////////////////////////
-	public $clear(handle: number, accountKey: sqlops.AccountKey): Thenable<void> {
-		return this._withProvider(handle, (provider: sqlops.AccountProvider) => provider.clear(accountKey));
+	public $clear(handle: number, accountKey: azdata.AccountKey): Thenable<void> {
+		return this._withProvider(handle, (provider: azdata.AccountProvider) => provider.clear(accountKey));
 	}
 
-	public $initialize(handle: number, restoredAccounts: sqlops.Account[]): Thenable<sqlops.Account[]> {
-		return this._withProvider(handle, (provider: sqlops.AccountProvider) => provider.initialize(restoredAccounts));
+	public $initialize(handle: number, restoredAccounts: azdata.Account[]): Thenable<azdata.Account[]> {
+		return this._withProvider(handle, (provider: azdata.AccountProvider) => provider.initialize(restoredAccounts));
 	}
 
-	public $prompt(handle: number): Thenable<sqlops.Account> {
-		return this._withProvider(handle, (provider: sqlops.AccountProvider) => provider.prompt());
+	public $prompt(handle: number): Thenable<azdata.Account> {
+		return this._withProvider(handle, (provider: azdata.AccountProvider) => provider.prompt());
 	}
 
-	public $refresh(handle: number, account: sqlops.Account): Thenable<sqlops.Account> {
-		return this._withProvider(handle, (provider: sqlops.AccountProvider) => provider.refresh(account));
+	public $refresh(handle: number, account: azdata.Account): Thenable<azdata.Account> {
+		return this._withProvider(handle, (provider: azdata.AccountProvider) => provider.refresh(account));
 	}
 
 	public $autoOAuthCancelled(handle: number): Thenable<void> {
-		return this._withProvider(handle, (provider: sqlops.AccountProvider) => provider.autoOAuthCancelled());
+		return this._withProvider(handle, (provider: azdata.AccountProvider) => provider.autoOAuthCancelled());
 	}
 
 	// - EXTENSION HOST AVAILABLE METHODS //////////////////////////////////
@@ -60,18 +60,18 @@ export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 		this._proxy.$endAutoOAuthDeviceCode();
 	}
 
-	public $accountUpdated(updatedAccount: sqlops.Account): void {
+	public $accountUpdated(updatedAccount: azdata.Account): void {
 		this._proxy.$accountUpdated(updatedAccount);
 	}
 
-	public $getAllAccounts(): Thenable<sqlops.Account[]> {
+	public $getAllAccounts(): Thenable<azdata.Account[]> {
 		if (Object.keys(this._providers).length === 0) {
 			throw new Error('No account providers registered.');
 		}
 
 		this._accounts = {};
 
-		const resultAccounts: sqlops.Account[] = [];
+		const resultAccounts: azdata.Account[] = [];
 
 		const promises: Thenable<void>[] = [];
 
@@ -90,7 +90,7 @@ export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 		return Promise.all(promises).then(() => resultAccounts);
 	}
 
-	public $getSecurityToken(account: sqlops.Account, resource?: sqlops.AzureResource): Thenable<{}> {
+	public $getSecurityToken(account: azdata.Account, resource?: azdata.AzureResource): Thenable<{}> {
 		if (resource === undefined) {
 			resource = AzureResource.ResourceManagement;
 		}
@@ -98,7 +98,7 @@ export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 			for (const handle in this._accounts) {
 				const providerHandle = parseInt(handle);
 				if (this._accounts[handle].findIndex((acct) => acct.key.accountId === account.key.accountId) !== -1) {
-					return this._withProvider(providerHandle, (provider: sqlops.AccountProvider) => provider.getSecurityToken(account, resource));
+					return this._withProvider(providerHandle, (provider: azdata.AccountProvider) => provider.getSecurityToken(account, resource));
 				}
 			}
 
@@ -106,15 +106,15 @@ export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 		});
 	}
 
-	public get onDidChangeAccounts(): Event<sqlops.DidChangeAccountsParams> {
+	public get onDidChangeAccounts(): Event<azdata.DidChangeAccountsParams> {
 		return this._onDidChangeAccounts.event;
 	}
 
-	public $accountsChanged(handle: number, accounts: sqlops.Account[]): Thenable<void> {
+	public $accountsChanged(handle: number, accounts: azdata.Account[]): Thenable<void> {
 		return this._onDidChangeAccounts.fire({ accounts: accounts });
 	}
 
-	public $registerAccountProvider(providerMetadata: sqlops.AccountProviderMetadata, provider: sqlops.AccountProvider): Disposable {
+	public $registerAccountProvider(providerMetadata: azdata.AccountProviderMetadata, provider: azdata.AccountProvider): Disposable {
 		let self = this;
 
 		// Look for any account providers that have the same provider ID
@@ -155,7 +155,7 @@ export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 		return this._handlePool++;
 	}
 
-	private _withProvider<R>(handle: number, callback: (provider: sqlops.AccountProvider) => Thenable<R>): Thenable<R> {
+	private _withProvider<R>(handle: number, callback: (provider: azdata.AccountProvider) => Thenable<R>): Thenable<R> {
 		let provider = this._providers[handle];
 		if (provider === undefined) {
 			return TPromise.wrapError(new Error(`Provider ${handle} not found.`));
@@ -165,8 +165,8 @@ export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 }
 
 interface AccountProviderWithMetadata {
-	metadata: sqlops.AccountProviderMetadata;
-	provider: sqlops.AccountProvider;
+	metadata: azdata.AccountProviderMetadata;
+	provider: azdata.AccountProvider;
 }
 
 

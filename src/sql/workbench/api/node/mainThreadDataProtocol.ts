@@ -13,7 +13,7 @@ import {
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { IMetadataService } from 'sql/platform/metadata/common/metadataService';
 import { IObjectExplorerService, NodeExpandInfoWithProviderId } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { IScriptingService } from 'sql/platform/scripting/common/scriptingService';
@@ -73,8 +73,8 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 
 	public $registerConnectionProvider(providerId: string, handle: number): TPromise<any> {
 		const self = this;
-		this._connectionManagementService.registerProvider(providerId, <sqlops.ConnectionProvider>{
-			connect(connectionUri: string, connectionInfo: sqlops.ConnectionInfo): Thenable<boolean> {
+		this._connectionManagementService.registerProvider(providerId, <azdata.ConnectionProvider>{
+			connect(connectionUri: string, connectionInfo: azdata.ConnectionInfo): Thenable<boolean> {
 				return self._proxy.$connect(handle, connectionUri, connectionInfo);
 			},
 			disconnect(connectionUri: string): Thenable<boolean> {
@@ -86,13 +86,13 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			cancelConnect(connectionUri: string): Thenable<boolean> {
 				return self._proxy.$cancelConnect(handle, connectionUri);
 			},
-			listDatabases(connectionUri: string): Thenable<sqlops.ListDatabasesResult> {
+			listDatabases(connectionUri: string): Thenable<azdata.ListDatabasesResult> {
 				return self._proxy.$listDatabases(handle, connectionUri);
 			},
 			getConnectionString(connectionUri: string, includePassword: boolean): Thenable<string> {
 				return self._proxy.$getConnectionString(handle, connectionUri, includePassword);
 			},
-			buildConnectionInfo(connectionString: string): Thenable<sqlops.ConnectionInfo> {
+			buildConnectionInfo(connectionString: string): Thenable<azdata.ConnectionInfo> {
 				return self._proxy.$buildConnectionInfo(handle, connectionString);
 			},
 			rebuildIntelliSenseCache(connectionUri: string): Thenable<void> {
@@ -106,10 +106,10 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 	public $registerQueryProvider(providerId: string, handle: number): TPromise<any> {
 		const self = this;
 		this._queryManagementService.addQueryRequestHandler(providerId, {
-			cancelQuery(ownerUri: string): Thenable<sqlops.QueryCancelResult> {
+			cancelQuery(ownerUri: string): Thenable<azdata.QueryCancelResult> {
 				return self._proxy.$cancelQuery(handle, ownerUri);
 			},
-			runQuery(ownerUri: string, selection: sqlops.ISelectionData, runOptions?: sqlops.ExecutionPlanOptions): Thenable<void> {
+			runQuery(ownerUri: string, selection: azdata.ISelectionData, runOptions?: azdata.ExecutionPlanOptions): Thenable<void> {
 				return self._proxy.$runQuery(handle, ownerUri, selection, runOptions);
 			},
 			runQueryStatement(ownerUri: string, line: number, column: number): Thenable<void> {
@@ -118,19 +118,19 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			runQueryString(ownerUri: string, queryString: string): Thenable<void> {
 				return self._proxy.$runQueryString(handle, ownerUri, queryString);
 			},
-			runQueryAndReturn(ownerUri: string, queryString: string): Thenable<sqlops.SimpleExecuteResult> {
+			runQueryAndReturn(ownerUri: string, queryString: string): Thenable<azdata.SimpleExecuteResult> {
 				return self._proxy.$runQueryAndReturn(handle, ownerUri, queryString);
 			},
-			parseSyntax(ownerUri: string, query: string): Thenable<sqlops.SyntaxParseResult> {
+			parseSyntax(ownerUri: string, query: string): Thenable<azdata.SyntaxParseResult> {
 				return self._proxy.$parseSyntax(handle, ownerUri, query);
 			},
-			getQueryRows(rowData: sqlops.QueryExecuteSubsetParams): Thenable<sqlops.QueryExecuteSubsetResult> {
+			getQueryRows(rowData: azdata.QueryExecuteSubsetParams): Thenable<azdata.QueryExecuteSubsetResult> {
 				return self._proxy.$getQueryRows(handle, rowData);
 			},
 			disposeQuery(ownerUri: string): Thenable<void> {
 				return self._proxy.$disposeQuery(handle, ownerUri);
 			},
-			saveResults(requestParams: sqlops.SaveResultsRequestParams): Thenable<sqlops.SaveResultRequestResult> {
+			saveResults(requestParams: azdata.SaveResultsRequestParams): Thenable<azdata.SaveResultRequestResult> {
 				let serializationProvider = self._serializationService.getSerializationFeatureMetadataProvider(requestParams.ownerUri);
 				if (serializationProvider && serializationProvider.enabled) {
 					return self._proxy.$saveResults(handle, requestParams);
@@ -145,13 +145,13 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number, queryString: string): Thenable<void> {
 				return self._proxy.$initializeEdit(handle, ownerUri, schemaName, objectName, objectType, rowLimit, queryString);
 			},
-			updateCell(ownerUri: string, rowId: number, columnId: number, newValue: string): Thenable<sqlops.EditUpdateCellResult> {
+			updateCell(ownerUri: string, rowId: number, columnId: number, newValue: string): Thenable<azdata.EditUpdateCellResult> {
 				return self._proxy.$updateCell(handle, ownerUri, rowId, columnId, newValue);
 			},
 			commitEdit(ownerUri): Thenable<void> {
 				return self._proxy.$commitEdit(handle, ownerUri);
 			},
-			createRow(ownerUri: string): Thenable<sqlops.EditCreateRowResult> {
+			createRow(ownerUri: string): Thenable<azdata.EditCreateRowResult> {
 				return self._proxy.$createRow(handle, ownerUri);
 			},
 			deleteRow(ownerUri: string, rowId: number): Thenable<void> {
@@ -160,13 +160,13 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			disposeEdit(ownerUri: string): Thenable<void> {
 				return self._proxy.$disposeEdit(handle, ownerUri);
 			},
-			revertCell(ownerUri: string, rowId: number, columnId: number): Thenable<sqlops.EditRevertCellResult> {
+			revertCell(ownerUri: string, rowId: number, columnId: number): Thenable<azdata.EditRevertCellResult> {
 				return self._proxy.$revertCell(handle, ownerUri, rowId, columnId);
 			},
 			revertRow(ownerUri: string, rowId: number): Thenable<void> {
 				return self._proxy.$revertRow(handle, ownerUri, rowId);
 			},
-			getEditRows(rowData: sqlops.EditSubsetParams): Thenable<sqlops.EditSubsetResult> {
+			getEditRows(rowData: azdata.EditSubsetParams): Thenable<azdata.EditSubsetResult> {
 				return self._proxy.$getEditRows(handle, rowData);
 			}
 		});
@@ -176,11 +176,11 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 
 	public $registerBackupProvider(providerId: string, handle: number): TPromise<any> {
 		const self = this;
-		this._backupService.registerProvider(providerId, <sqlops.BackupProvider>{
-			backup(connectionUri: string, backupInfo: { [key: string]: any }, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.BackupResponse> {
+		this._backupService.registerProvider(providerId, <azdata.BackupProvider>{
+			backup(connectionUri: string, backupInfo: { [key: string]: any }, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.BackupResponse> {
 				return self._proxy.$backup(handle, connectionUri, backupInfo, taskExecutionMode);
 			},
-			getBackupConfigInfo(connectionUri: string): Thenable<sqlops.BackupConfigInfo> {
+			getBackupConfigInfo(connectionUri: string): Thenable<azdata.BackupConfigInfo> {
 				return self._proxy.$getBackupConfigInfo(handle, connectionUri);
 			}
 		});
@@ -190,17 +190,17 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 
 	public $registerRestoreProvider(providerId: string, handle: number): TPromise<any> {
 		const self = this;
-		this._restoreService.registerProvider(providerId, <sqlops.RestoreProvider>{
-			getRestorePlan(connectionUri: string, restoreInfo: sqlops.RestoreInfo): Thenable<sqlops.RestorePlanResponse> {
+		this._restoreService.registerProvider(providerId, <azdata.RestoreProvider>{
+			getRestorePlan(connectionUri: string, restoreInfo: azdata.RestoreInfo): Thenable<azdata.RestorePlanResponse> {
 				return self._proxy.$getRestorePlan(handle, connectionUri, restoreInfo);
 			},
-			cancelRestorePlan(connectionUri: string, restoreInfo: sqlops.RestoreInfo): Thenable<boolean> {
+			cancelRestorePlan(connectionUri: string, restoreInfo: azdata.RestoreInfo): Thenable<boolean> {
 				return self._proxy.$cancelRestorePlan(handle, connectionUri, restoreInfo);
 			},
-			restore(connectionUri: string, restoreInfo: sqlops.RestoreInfo): Thenable<sqlops.RestoreResponse> {
+			restore(connectionUri: string, restoreInfo: azdata.RestoreInfo): Thenable<azdata.RestoreResponse> {
 				return self._proxy.$restore(handle, connectionUri, restoreInfo);
 			},
-			getRestoreConfigInfo(connectionUri: string): Thenable<sqlops.RestoreConfigInfo> {
+			getRestoreConfigInfo(connectionUri: string): Thenable<azdata.RestoreConfigInfo> {
 				return self._proxy.$getRestoreConfigInfo(handle, connectionUri);
 			}
 		});
@@ -210,17 +210,17 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 
 	public $registerMetadataProvider(providerId: string, handle: number): TPromise<any> {
 		const self = this;
-		this._metadataService.registerProvider(providerId, <sqlops.MetadataProvider>{
-			getMetadata(connectionUri: string): Thenable<sqlops.ProviderMetadata> {
+		this._metadataService.registerProvider(providerId, <azdata.MetadataProvider>{
+			getMetadata(connectionUri: string): Thenable<azdata.ProviderMetadata> {
 				return self._proxy.$getMetadata(handle, connectionUri);
 			},
 			getDatabases(connectionUri: string): Thenable<string[]> {
 				return self._proxy.$getDatabases(handle, connectionUri);
 			},
-			getTableInfo(connectionUri: string, metadata: sqlops.ObjectMetadata): Thenable<sqlops.ColumnMetadata[]> {
+			getTableInfo(connectionUri: string, metadata: azdata.ObjectMetadata): Thenable<azdata.ColumnMetadata[]> {
 				return self._proxy.$getTableInfo(handle, connectionUri, metadata);
 			},
-			getViewInfo(connectionUri: string, metadata: sqlops.ObjectMetadata): Thenable<sqlops.ColumnMetadata[]> {
+			getViewInfo(connectionUri: string, metadata: azdata.ObjectMetadata): Thenable<azdata.ColumnMetadata[]> {
 				return self._proxy.$getViewInfo(handle, connectionUri, metadata);
 			}
 		});
@@ -230,21 +230,21 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 
 	public $registerObjectExplorerProvider(providerId: string, handle: number): TPromise<any> {
 		const self = this;
-		this._objectExplorerService.registerProvider(providerId, <sqlops.ObjectExplorerProvider>{
+		this._objectExplorerService.registerProvider(providerId, <azdata.ObjectExplorerProvider>{
 			providerId: providerId,
-			createNewSession(connection: sqlops.ConnectionInfo): Thenable<sqlops.ObjectExplorerSessionResponse> {
+			createNewSession(connection: azdata.ConnectionInfo): Thenable<azdata.ObjectExplorerSessionResponse> {
 				return self._proxy.$createObjectExplorerSession(handle, connection);
 			},
-			expandNode(nodeInfo: sqlops.ExpandNodeInfo): Thenable<boolean> {
+			expandNode(nodeInfo: azdata.ExpandNodeInfo): Thenable<boolean> {
 				return self._proxy.$expandObjectExplorerNode(handle, nodeInfo);
 			},
-			refreshNode(nodeInfo: sqlops.ExpandNodeInfo): Thenable<boolean> {
+			refreshNode(nodeInfo: azdata.ExpandNodeInfo): Thenable<boolean> {
 				return self._proxy.$refreshObjectExplorerNode(handle, nodeInfo);
 			},
-			closeSession(closeSessionInfo: sqlops.ObjectExplorerCloseSessionInfo): Thenable<sqlops.ObjectExplorerCloseSessionResponse> {
+			closeSession(closeSessionInfo: azdata.ObjectExplorerCloseSessionInfo): Thenable<azdata.ObjectExplorerCloseSessionResponse> {
 				return self._proxy.$closeObjectExplorerSession(handle, closeSessionInfo);
 			},
-			findNodes(findNodesInfo: sqlops.FindNodesInfo): Thenable<sqlops.ObjectExplorerFindNodesResponse> {
+			findNodes(findNodesInfo: azdata.FindNodesInfo): Thenable<azdata.ObjectExplorerFindNodesResponse> {
 				return self._proxy.$findNodes(handle, findNodesInfo);
 			}
 		});
@@ -254,23 +254,23 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 
 	public $registerObjectExplorerNodeProvider(providerId: string, supportedProviderId: string, group: string, handle: number): TPromise<any> {
 		const self = this;
-		this._objectExplorerService.registerNodeProvider(<sqlops.ObjectExplorerNodeProvider> {
+		this._objectExplorerService.registerNodeProvider(<azdata.ObjectExplorerNodeProvider> {
 			supportedProviderId: supportedProviderId,
 			providerId: providerId,
 			group: group,
-			expandNode(nodeInfo: sqlops.ExpandNodeInfo): Thenable<boolean> {
+			expandNode(nodeInfo: azdata.ExpandNodeInfo): Thenable<boolean> {
 				return self._proxy.$expandObjectExplorerNode(handle, nodeInfo);
 			},
-			refreshNode(nodeInfo: sqlops.ExpandNodeInfo): Thenable<boolean> {
+			refreshNode(nodeInfo: azdata.ExpandNodeInfo): Thenable<boolean> {
 				return self._proxy.$refreshObjectExplorerNode(handle, nodeInfo);
 			},
-			findNodes(findNodesInfo: sqlops.FindNodesInfo): Thenable<sqlops.ObjectExplorerFindNodesResponse> {
+			findNodes(findNodesInfo: azdata.FindNodesInfo): Thenable<azdata.ObjectExplorerFindNodesResponse> {
 				return self._proxy.$findNodes(handle, findNodesInfo);
 			},
-			handleSessionOpen(session: sqlops.ObjectExplorerSession): Thenable<boolean> {
+			handleSessionOpen(session: azdata.ObjectExplorerSession): Thenable<boolean> {
 				return self._proxy.$createObjectExplorerNodeProviderSession(handle, session);
 			},
-			handleSessionClose(closeSessionInfo: sqlops.ObjectExplorerCloseSessionInfo): void {
+			handleSessionClose(closeSessionInfo: azdata.ObjectExplorerCloseSessionInfo): void {
 				return self._proxy.$handleSessionClose(handle, closeSessionInfo);
 			}
 		});
@@ -280,11 +280,11 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 
 	public $registerTaskServicesProvider(providerId: string, handle: number): TPromise<any> {
 		const self = this;
-		this._taskService.registerProvider(providerId, <sqlops.TaskServicesProvider>{
-			getAllTasks(listTasksParams: sqlops.ListTasksParams): Thenable<sqlops.ListTasksResponse> {
+		this._taskService.registerProvider(providerId, <azdata.TaskServicesProvider>{
+			getAllTasks(listTasksParams: azdata.ListTasksParams): Thenable<azdata.ListTasksResponse> {
 				return self._proxy.$getAllTasks(handle, listTasksParams);
 			},
-			cancelTask(cancelTaskParams: sqlops.CancelTaskParams): Thenable<boolean> {
+			cancelTask(cancelTaskParams: azdata.CancelTaskParams): Thenable<boolean> {
 				return self._proxy.$cancelTask(handle, cancelTaskParams);
 			}
 		});
@@ -294,8 +294,8 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 
 	public $registerScriptingProvider(providerId: string, handle: number): TPromise<any> {
 		const self = this;
-		this._scriptingService.registerProvider(providerId, <sqlops.ScriptingProvider>{
-			scriptAsOperation(connectionUri: string, operation: sqlops.ScriptOperation, metadata: sqlops.ObjectMetadata, paramDetails: sqlops.ScriptingParamDetails): Thenable<sqlops.ScriptingResult> {
+		this._scriptingService.registerProvider(providerId, <azdata.ScriptingProvider>{
+			scriptAsOperation(connectionUri: string, operation: azdata.ScriptOperation, metadata: azdata.ObjectMetadata, paramDetails: azdata.ScriptingParamDetails): Thenable<azdata.ScriptingResult> {
 				return self._proxy.$scriptAsOperation(handle, connectionUri, operation, metadata, paramDetails);
 			}
 		});
@@ -305,7 +305,7 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 
 	public $registerFileBrowserProvider(providerId: string, handle: number): TPromise<any> {
 		const self = this;
-		this._fileBrowserService.registerProvider(providerId, <sqlops.FileBrowserProvider>{
+		this._fileBrowserService.registerProvider(providerId, <azdata.FileBrowserProvider>{
 			openFileBrowser(ownerUri: string, expandPath: string, fileFilters: string[], changeFilter: boolean): Thenable<boolean> {
 				return self._proxy.$openFileBrowser(handle, ownerUri, expandPath, fileFilters, changeFilter);
 			},
@@ -315,7 +315,7 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			validateFilePaths(ownerUri: string, serviceType: string, selectedFiles: string[]): Thenable<boolean> {
 				return self._proxy.$validateFilePaths(handle, ownerUri, serviceType, selectedFiles);
 			},
-			closeFileBrowser(ownerUri: string): Thenable<sqlops.FileBrowserCloseResponse> {
+			closeFileBrowser(ownerUri: string): Thenable<azdata.FileBrowserCloseResponse> {
 				return self._proxy.$closeFileBrowser(handle, ownerUri);
 			}
 		});
@@ -325,8 +325,8 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 
 	public $registerProfilerProvider(providerId: string, handle: number): TPromise<any> {
 		const self = this;
-		this._profilerService.registerProvider(providerId, <sqlops.ProfilerProvider>{
-			createSession(sessionId: string, createStatement: string, template: sqlops.ProfilerSessionTemplate): Thenable<boolean> {
+		this._profilerService.registerProvider(providerId, <azdata.ProfilerProvider>{
+			createSession(sessionId: string, createStatement: string, template: azdata.ProfilerSessionTemplate): Thenable<boolean> {
 				return self._proxy.$createSession(handle, sessionId, createStatement, template);
 			},
 			startSession(sessionId: string, sessionName: string): Thenable<boolean> {
@@ -354,17 +354,17 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 
 	public $registerAdminServicesProvider(providerId: string, handle: number): TPromise<any> {
 		const self = this;
-		this._adminService.registerProvider(providerId, <sqlops.AdminServicesProvider>{
-			createDatabase(connectionUri: string, database: sqlops.DatabaseInfo): Thenable<sqlops.CreateDatabaseResponse> {
+		this._adminService.registerProvider(providerId, <azdata.AdminServicesProvider>{
+			createDatabase(connectionUri: string, database: azdata.DatabaseInfo): Thenable<azdata.CreateDatabaseResponse> {
 				return self._proxy.$createDatabase(handle, connectionUri, database);
 			},
-			getDefaultDatabaseInfo(connectionUri: string): Thenable<sqlops.DatabaseInfo> {
+			getDefaultDatabaseInfo(connectionUri: string): Thenable<azdata.DatabaseInfo> {
 				return self._proxy.$getDefaultDatabaseInfo(handle, connectionUri);
 			},
-			getDatabaseInfo(connectionUri: string): Thenable<sqlops.DatabaseInfo> {
+			getDatabaseInfo(connectionUri: string): Thenable<azdata.DatabaseInfo> {
 				return self._proxy.$getDatabaseInfo(handle, connectionUri);
 			},
-			createLogin(connectionUri: string, login: sqlops.LoginInfo): Thenable<sqlops.CreateLoginResponse> {
+			createLogin(connectionUri: string, login: azdata.LoginInfo): Thenable<azdata.CreateLoginResponse> {
 				return self._proxy.$createLogin(handle, connectionUri, login);
 			}
 		});
@@ -374,42 +374,42 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 
 	public $registerAgentServicesProvider(providerId: string, handle: number): TPromise<any> {
 		const self = this;
-		this._jobManagementService.registerProvider(providerId, <sqlops.AgentServicesProvider>{
+		this._jobManagementService.registerProvider(providerId, <azdata.AgentServicesProvider>{
 			providerId: providerId,
-			getJobs(connectionUri: string): Thenable<sqlops.AgentJobsResult> {
+			getJobs(connectionUri: string): Thenable<azdata.AgentJobsResult> {
 				return self._proxy.$getJobs(handle, connectionUri);
 			},
-			getJobHistory(connectionUri: string, jobID: string, jobName: string): Thenable<sqlops.AgentJobHistoryResult> {
+			getJobHistory(connectionUri: string, jobID: string, jobName: string): Thenable<azdata.AgentJobHistoryResult> {
 				return self._proxy.$getJobHistory(handle, connectionUri, jobID, jobName);
 			},
-			jobAction(connectionUri: string, jobName: string, action: string): Thenable<sqlops.ResultStatus> {
+			jobAction(connectionUri: string, jobName: string, action: string): Thenable<azdata.ResultStatus> {
 				return self._proxy.$jobAction(handle, connectionUri, jobName, action);
 			},
-			deleteJob(connectionUri: string, jobInfo: sqlops.AgentJobInfo): Thenable<sqlops.ResultStatus> {
+			deleteJob(connectionUri: string, jobInfo: azdata.AgentJobInfo): Thenable<azdata.ResultStatus> {
 				return self._proxy.$deleteJob(handle, connectionUri, jobInfo);
 			},
-			deleteJobStep(connectionUri: string, stepInfo: sqlops.AgentJobStepInfo): Thenable<sqlops.ResultStatus> {
+			deleteJobStep(connectionUri: string, stepInfo: azdata.AgentJobStepInfo): Thenable<azdata.ResultStatus> {
 				return self._proxy.$deleteJobStep(handle, connectionUri, stepInfo);
 			},
-			getAlerts(connectionUri: string): Thenable<sqlops.AgentAlertsResult> {
+			getAlerts(connectionUri: string): Thenable<azdata.AgentAlertsResult> {
 				return self._proxy.$getAlerts(handle, connectionUri);
 			},
-			deleteAlert(connectionUri: string, alertInfo: sqlops.AgentAlertInfo): Thenable<sqlops.ResultStatus> {
+			deleteAlert(connectionUri: string, alertInfo: azdata.AgentAlertInfo): Thenable<azdata.ResultStatus> {
 				return self._proxy.$deleteAlert(handle, connectionUri, alertInfo);
 			},
-			getOperators(connectionUri: string): Thenable<sqlops.AgentOperatorsResult> {
+			getOperators(connectionUri: string): Thenable<azdata.AgentOperatorsResult> {
 				return self._proxy.$getOperators(handle, connectionUri);
 			},
-			deleteOperator(connectionUri: string, operatorInfo: sqlops.AgentOperatorInfo): Thenable<sqlops.ResultStatus> {
+			deleteOperator(connectionUri: string, operatorInfo: azdata.AgentOperatorInfo): Thenable<azdata.ResultStatus> {
 				return self._proxy.$deleteOperator(handle, connectionUri, operatorInfo);
 			},
-			getProxies(connectionUri: string): Thenable<sqlops.AgentProxiesResult> {
+			getProxies(connectionUri: string): Thenable<azdata.AgentProxiesResult> {
 				return self._proxy.$getProxies(handle, connectionUri);
 			},
-			deleteProxy(connectionUri: string, proxyInfo: sqlops.AgentProxyInfo): Thenable<sqlops.ResultStatus> {
+			deleteProxy(connectionUri: string, proxyInfo: azdata.AgentProxyInfo): Thenable<azdata.ResultStatus> {
 				return self._proxy.$deleteProxy(handle, connectionUri, proxyInfo);
 			},
-			getCredentials(connectionUri: string): Thenable<sqlops.GetCredentialsResult> {
+			getCredentials(connectionUri: string): Thenable<azdata.GetCredentialsResult> {
 				return self._proxy.$getCredentials(handle, connectionUri);
 			}
 		});
@@ -419,8 +419,8 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 
 	public $registerCapabilitiesServiceProvider(providerId: string, handle: number): TPromise<any> {
 		const self = this;
-		this._capabilitiesService.registerProvider(<sqlops.CapabilitiesProvider>{
-			getServerCapabilities(client: sqlops.DataProtocolClientCapabilities): Thenable<sqlops.DataProtocolServerCapabilities> {
+		this._capabilitiesService.registerProvider(<azdata.CapabilitiesProvider>{
+			getServerCapabilities(client: azdata.DataProtocolClientCapabilities): Thenable<azdata.DataProtocolServerCapabilities> {
 				return self._proxy.$getServerCapabilities(handle, client);
 			}
 		});
@@ -430,23 +430,23 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 
 	public $registerDacFxServicesProvider(providerId: string, handle: number): TPromise<any> {
 		const self = this;
-		this._dacFxService.registerProvider(providerId, <sqlops.DacFxServicesProvider>{
-			exportBacpac(databaseName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> {
+		this._dacFxService.registerProvider(providerId, <azdata.DacFxServicesProvider>{
+			exportBacpac(databaseName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> {
 				return self._proxy.$exportBacpac(handle, databaseName, packageFilePath, ownerUri, taskExecutionMode);
 			},
-			importBacpac(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> {
+			importBacpac(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> {
 				return self._proxy.$importBacpac(handle, packageFilePath, databaseName, ownerUri, taskExecutionMode);
 			},
-			extractDacpac(databaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> {
+			extractDacpac(databaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> {
 				return self._proxy.$extractDacpac(handle, databaseName, packageFilePath, applicationName, applicationVersion, ownerUri, taskExecutionMode);
 			},
-			deployDacpac(packageFilePath: string, databaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> {
+			deployDacpac(packageFilePath: string, databaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> {
 				return self._proxy.$deployDacpac(handle, packageFilePath, databaseName, upgradeExisting, ownerUri, taskExecutionMode);
 			},
-			generateDeployScript(packageFilePath: string, databaseName: string, scriptFilePath: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> {
+			generateDeployScript(packageFilePath: string, databaseName: string, scriptFilePath: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> {
 				return self._proxy.$generateDeployScript(handle, packageFilePath, databaseName, scriptFilePath, ownerUri, taskExecutionMode);
 			},
-			generateDeployPlan(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.GenerateDeployPlanResult> {
+			generateDeployPlan(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.GenerateDeployPlanResult> {
 				return self._proxy.$generateDeployPlan(handle, packageFilePath, databaseName, ownerUri, taskExecutionMode);
 			}
 		});
@@ -455,7 +455,7 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 	}
 
 	// Connection Management handlers
-	public $onConnectionComplete(handle: number, connectionInfoSummary: sqlops.ConnectionInfoSummary): void {
+	public $onConnectionComplete(handle: number, connectionInfoSummary: azdata.ConnectionInfoSummary): void {
 		this._connectionManagementService.onConnectionComplete(handle, connectionInfoSummary);
 	}
 
@@ -463,27 +463,27 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 		this._connectionManagementService.onIntelliSenseCacheComplete(handle, connectionUri);
 	}
 
-	public $onConnectionChangeNotification(handle: number, changedConnInfo: sqlops.ChangedConnectionInfo): void {
+	public $onConnectionChangeNotification(handle: number, changedConnInfo: azdata.ChangedConnectionInfo): void {
 		this._connectionManagementService.onConnectionChangedNotification(handle, changedConnInfo);
 	}
 
 	// Query Management handlers
-	public $onQueryComplete(handle: number, result: sqlops.QueryExecuteCompleteNotificationResult): void {
+	public $onQueryComplete(handle: number, result: azdata.QueryExecuteCompleteNotificationResult): void {
 		this._queryManagementService.onQueryComplete(result);
 	}
-	public $onBatchStart(handle: number, batchInfo: sqlops.QueryExecuteBatchNotificationParams): void {
+	public $onBatchStart(handle: number, batchInfo: azdata.QueryExecuteBatchNotificationParams): void {
 		this._queryManagementService.onBatchStart(batchInfo);
 	}
-	public $onBatchComplete(handle: number, batchInfo: sqlops.QueryExecuteBatchNotificationParams): void {
+	public $onBatchComplete(handle: number, batchInfo: azdata.QueryExecuteBatchNotificationParams): void {
 		this._queryManagementService.onBatchComplete(batchInfo);
 	}
-	public $onResultSetAvailable(handle: number, resultSetInfo: sqlops.QueryExecuteResultSetNotificationParams): void {
+	public $onResultSetAvailable(handle: number, resultSetInfo: azdata.QueryExecuteResultSetNotificationParams): void {
 		this._queryManagementService.onResultSetAvailable(resultSetInfo);
 	}
-	public $onResultSetUpdated(handle: number, resultSetInfo: sqlops.QueryExecuteResultSetNotificationParams): void {
+	public $onResultSetUpdated(handle: number, resultSetInfo: azdata.QueryExecuteResultSetNotificationParams): void {
 		this._queryManagementService.onResultSetUpdated(resultSetInfo);
 	}
-	public $onQueryMessage(handle: number, message: sqlops.QueryExecuteMessageParams): void {
+	public $onQueryMessage(handle: number, message: azdata.QueryExecuteMessageParams): void {
 		this._queryManagementService.onMessage(message);
 	}
 	public $onEditSessionReady(handle: number, ownerUri: string, success: boolean, message: string): void {
@@ -491,56 +491,56 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 	}
 
 	// Script Handlers
-	public $onScriptingComplete(handle: number, scriptingCompleteResult: sqlops.ScriptingCompleteResult): void {
+	public $onScriptingComplete(handle: number, scriptingCompleteResult: azdata.ScriptingCompleteResult): void {
 		this._scriptingService.onScriptingComplete(handle, scriptingCompleteResult);
 	}
 
 	//OE handlers
-	public $onObjectExplorerSessionCreated(handle: number, sessionResponse: sqlops.ObjectExplorerSession): void {
+	public $onObjectExplorerSessionCreated(handle: number, sessionResponse: azdata.ObjectExplorerSession): void {
 		this._objectExplorerService.onSessionCreated(handle, sessionResponse);
 	}
 
-	public $onObjectExplorerSessionDisconnected(handle: number, sessionResponse: sqlops.ObjectExplorerSession): void {
+	public $onObjectExplorerSessionDisconnected(handle: number, sessionResponse: azdata.ObjectExplorerSession): void {
 		this._objectExplorerService.onSessionDisconnected(handle, sessionResponse);
 	}
 
-	public $onObjectExplorerNodeExpanded(providerId: string, expandResponse: sqlops.ObjectExplorerExpandInfo): void {
+	public $onObjectExplorerNodeExpanded(providerId: string, expandResponse: azdata.ObjectExplorerExpandInfo): void {
 		let expandInfo: NodeExpandInfoWithProviderId = Object.assign({ providerId: providerId }, expandResponse);
 		this._objectExplorerService.onNodeExpanded(expandInfo);
 	}
 
 	//Tasks handlers
-	public $onTaskCreated(handle: number, taskInfo: sqlops.TaskInfo): void {
+	public $onTaskCreated(handle: number, taskInfo: azdata.TaskInfo): void {
 		this._taskService.onNewTaskCreated(handle, taskInfo);
 	}
 
-	public $onTaskStatusChanged(handle: number, taskProgressInfo: sqlops.TaskProgressInfo): void {
+	public $onTaskStatusChanged(handle: number, taskProgressInfo: azdata.TaskProgressInfo): void {
 		this._taskService.onTaskStatusChanged(handle, taskProgressInfo);
 	}
 
 	//File browser handlers
-	public $onFileBrowserOpened(handle: number, response: sqlops.FileBrowserOpenedParams): void {
+	public $onFileBrowserOpened(handle: number, response: azdata.FileBrowserOpenedParams): void {
 		this._fileBrowserService.onFileBrowserOpened(handle, response);
 	}
 
-	public $onFolderNodeExpanded(handle: number, response: sqlops.FileBrowserExpandedParams): void {
+	public $onFolderNodeExpanded(handle: number, response: azdata.FileBrowserExpandedParams): void {
 		this._fileBrowserService.onFolderNodeExpanded(handle, response);
 	}
 
-	public $onFilePathsValidated(handle: number, response: sqlops.FileBrowserValidatedParams): void {
+	public $onFilePathsValidated(handle: number, response: azdata.FileBrowserValidatedParams): void {
 		this._fileBrowserService.onFilePathsValidated(handle, response);
 	}
 
 	// Profiler handlers
-	public $onSessionEventsAvailable(handle: number, response: sqlops.ProfilerSessionEvents): void {
+	public $onSessionEventsAvailable(handle: number, response: azdata.ProfilerSessionEvents): void {
 		this._profilerService.onMoreRows(response);
 	}
 
-	public $onSessionStopped(handle: number, response: sqlops.ProfilerSessionStoppedParams): void {
+	public $onSessionStopped(handle: number, response: azdata.ProfilerSessionStoppedParams): void {
 		this._profilerService.onSessionStopped(response);
 	}
 
-	public $onProfilerSessionCreated(handle: number, response: sqlops.ProfilerSessionCreatedParams): void {
+	public $onProfilerSessionCreated(handle: number, response: azdata.ProfilerSessionCreatedParams): void {
 		this._profilerService.onProfilerSessionCreated(response);
 	}
 

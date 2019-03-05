@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 import * as nls from 'vscode-nls';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { JobStepData } from '../data/jobStepData';
 import { AgentUtils } from '../agentUtils';
@@ -74,42 +74,42 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 	// UI Components
 
 	// Dialogs
-	private fileBrowserDialog: sqlops.window.Dialog;
+	private fileBrowserDialog: azdata.window.Dialog;
 
 	// Dialog tabs
-	private generalTab: sqlops.window.DialogTab;
-	private advancedTab: sqlops.window.DialogTab;
+	private generalTab: azdata.window.DialogTab;
+	private advancedTab: azdata.window.DialogTab;
 
 	//Input boxes
-	private nameTextBox: sqlops.InputBoxComponent;
-	private commandTextBox: sqlops.InputBoxComponent;
-	private selectedPathTextBox: sqlops.InputBoxComponent;
-	private retryAttemptsBox: sqlops.InputBoxComponent;
-	private retryIntervalBox: sqlops.InputBoxComponent;
-	private outputFileNameBox: sqlops.InputBoxComponent;
-	private fileBrowserNameBox: sqlops.InputBoxComponent;
-	private userInputBox: sqlops.InputBoxComponent;
-	private processExitCodeBox: sqlops.InputBoxComponent;
+	private nameTextBox: azdata.InputBoxComponent;
+	private commandTextBox: azdata.InputBoxComponent;
+	private selectedPathTextBox: azdata.InputBoxComponent;
+	private retryAttemptsBox: azdata.InputBoxComponent;
+	private retryIntervalBox: azdata.InputBoxComponent;
+	private outputFileNameBox: azdata.InputBoxComponent;
+	private fileBrowserNameBox: azdata.InputBoxComponent;
+	private userInputBox: azdata.InputBoxComponent;
+	private processExitCodeBox: azdata.InputBoxComponent;
 
 	// Dropdowns
-	private typeDropdown: sqlops.DropDownComponent;
-	private runAsDropdown: sqlops.DropDownComponent;
-	private databaseDropdown: sqlops.DropDownComponent;
-	private successActionDropdown: sqlops.DropDownComponent;
-	private failureActionDropdown: sqlops.DropDownComponent;
-	private fileTypeDropdown: sqlops.DropDownComponent;
+	private typeDropdown: azdata.DropDownComponent;
+	private runAsDropdown: azdata.DropDownComponent;
+	private databaseDropdown: azdata.DropDownComponent;
+	private successActionDropdown: azdata.DropDownComponent;
+	private failureActionDropdown: azdata.DropDownComponent;
+	private fileTypeDropdown: azdata.DropDownComponent;
 
 	// Buttons
-	private openButton: sqlops.ButtonComponent;
-	private parseButton: sqlops.ButtonComponent;
-	private outputFileBrowserButton: sqlops.ButtonComponent;
+	private openButton: azdata.ButtonComponent;
+	private parseButton: azdata.ButtonComponent;
+	private outputFileBrowserButton: azdata.ButtonComponent;
 
 	// Checkbox
-	private appendToExistingFileCheckbox: sqlops.CheckBoxComponent;
-	private logToTableCheckbox: sqlops.CheckBoxComponent;
-	private logStepOutputHistoryCheckbox: sqlops.CheckBoxComponent;
+	private appendToExistingFileCheckbox: azdata.CheckBoxComponent;
+	private logToTableCheckbox: azdata.CheckBoxComponent;
+	private logStepOutputHistoryCheckbox: azdata.CheckBoxComponent;
 
-	private fileBrowserTree: sqlops.FileBrowserTreeComponent;
+	private fileBrowserTree: azdata.FileBrowserTreeComponent;
 	private jobModel: JobData;
 	public jobName: string;
 	private server: string;
@@ -120,7 +120,7 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 		ownerUri: string,
 		server: string,
 		jobModel: JobData,
-		jobStepInfo?: sqlops.AgentJobStepInfo,
+		jobStepInfo?: azdata.AgentJobStepInfo,
 		viaJobDialog: boolean = false
 	) {
 		super(ownerUri,
@@ -138,12 +138,12 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 	}
 
 	private initializeUIComponents() {
-		this.generalTab = sqlops.window.createTab(this.GeneralTabText);
-		this.advancedTab = sqlops.window.createTab(this.AdvancedTabText);
+		this.generalTab = azdata.window.createTab(this.GeneralTabText);
+		this.advancedTab = azdata.window.createTab(this.AdvancedTabText);
 		this.dialog.content = [this.generalTab, this.advancedTab];
 	}
 
-	private createCommands(view, queryProvider: sqlops.QueryProvider) {
+	private createCommands(view, queryProvider: azdata.QueryProvider) {
 		this.openButton = view.modelBuilder.button()
 			.withProperties({
 				label: this.OpenCommandText,
@@ -181,7 +181,7 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 			.component();
 	}
 
-	private createGeneralTab(databases: string[], queryProvider: sqlops.QueryProvider) {
+	private createGeneralTab(databases: string[], queryProvider: azdata.QueryProvider) {
 		this.generalTab.registerContent(async (view) => {
 			this.nameTextBox = view.modelBuilder.inputBox()
 				.withProperties({
@@ -425,8 +425,8 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 
 	private openFileBrowserDialog() {
 		let fileBrowserTitle = this.FileBrowserDialogTitle + `${this.server}`;
-		this.fileBrowserDialog = sqlops.window.createModelViewDialog(fileBrowserTitle);
-		let fileBrowserTab = sqlops.window.createTab('File Browser');
+		this.fileBrowserDialog = azdata.window.createModelViewDialog(fileBrowserTitle);
+		let fileBrowserTab = azdata.window.createTab('File Browser');
 		this.fileBrowserDialog.content =  [fileBrowserTab];
 		fileBrowserTab.registerContent(async (view) => {
 			this.fileBrowserTree = view.modelBuilder.fileBrowserTree()
@@ -470,7 +470,7 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 		});
 		this.fileBrowserDialog.okButton.label = this.OkButtonText;
 		this.fileBrowserDialog.cancelButton.label = this.CancelButtonText;
-		sqlops.window.openDialog(this.fileBrowserDialog);
+		azdata.window.openDialog(this.fileBrowserDialog);
 	}
 
 	private createTSQLOptions(view) {

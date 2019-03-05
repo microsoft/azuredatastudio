@@ -255,7 +255,7 @@ export class TreeNode implements sqlops.TreeComponentItem {
 export class TreeDataProvider implements sqlops.TreeComponentDataProvider<TreeNode> {
 		private _onDidChangeTreeData = new vscode.EventEmitter<TreeNode>();
 		constructor(private _root: TreeNode) {
-			if(this._root) {
+			if (this._root) {
 				this._root.onTreeChange(node => {
 					this._onDidChangeTreeData.fire(node);
 				});

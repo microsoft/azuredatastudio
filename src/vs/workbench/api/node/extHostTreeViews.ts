@@ -21,7 +21,7 @@ import { IExtensionDescription, checkProposedApiEnabled } from 'vs/workbench/ser
 import * as typeConvert from 'vs/workbench/api/node/extHostTypeConverters';
 
 // {{SQL CARBON EDIT}}
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { ITreeItem as sqlITreeItem } from 'sql/workbench/common/views';
 export type TreeItemHandle = string;
 
@@ -436,7 +436,7 @@ export class ExtHostTreeView<T> extends Disposable {
 	}
 
 	// {{SQL CARBON EDIT}}
-	protected createTreeItem(element: T, extensionTreeItem: sqlops.TreeItem, parent?: TreeNode): sqlITreeItem {
+	protected createTreeItem(element: T, extensionTreeItem: azdata.TreeItem, parent?: TreeNode): sqlITreeItem {
 
 		const handle = this.createHandle(element, extensionTreeItem, parent);
 		const icon = this.getLightIconPath(extensionTreeItem);

@@ -5,7 +5,7 @@
 
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as assert from 'assert';
 import { Mock, It, Times } from 'typemoq';
 import { ExtHostModelViewDialog } from 'sql/workbench/api/node/extHostModelViewDialog';
@@ -276,7 +276,7 @@ suite('ExtHostModelViewDialog Tests', () => {
 		// Create the wizard and add a validation that records that it has been called
 		let wizard = extHostModelViewDialog.createWizard('wizard_1');
 		extHostModelViewDialog.updateWizard(wizard);
-		let validationInfo: sqlops.window.WizardPageChangeInfo;
+		let validationInfo: azdata.window.WizardPageChangeInfo;
 		wizard.registerNavigationValidator(info => {
 			validationInfo = info;
 			return true;

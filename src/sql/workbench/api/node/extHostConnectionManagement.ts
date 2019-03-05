@@ -7,7 +7,7 @@
 import { ExtHostConnectionManagementShape, SqlMainContext, MainThreadConnectionManagementShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
 import { generateUuid } from 'vs/base/common/uuid';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 export class ExtHostConnectionManagement extends ExtHostConnectionManagementShape {
 
@@ -20,11 +20,20 @@ export class ExtHostConnectionManagement extends ExtHostConnectionManagementShap
 		this._proxy = mainContext.getProxy(SqlMainContext.MainThreadConnectionManagement);
 	}
 
-	public $getActiveConnections(): Thenable<sqlops.connection.Connection[]> {
+	public $getCurrentConnection(): Thenable<azdata.connection.ConnectionProfile> {
+		let connection: any = this._proxy.$getCurrentConnection();
+		connection.then((conn) => {
+			conn.providerId = conn.providerName;
+		});
+		return connection;
+	}
+
+	// "sqlops" back-compat connection APIs
+	public $getActiveConnections(): Thenable<azdata.connection.Connection[]> {
 		return this._proxy.$getActiveConnections();
 	}
 
-	public $getCurrentConnection(): Thenable<sqlops.connection.Connection> {
+	public $getSqlOpsCurrentConnection(): Thenable<azdata.connection.Connection> {
 		return this._proxy.$getCurrentConnection();
 	}
 
@@ -32,11 +41,11 @@ export class ExtHostConnectionManagement extends ExtHostConnectionManagementShap
 		return this._proxy.$getCredentials(connectionId);
 	}
 
-	public $getServerInfo(connectionId: string): Thenable<sqlops.ServerInfo> {
+	public $getServerInfo(connectionId: string): Thenable<azdata.ServerInfo> {
 		return this._proxy.$getServerInfo(connectionId);
 	}
 
-	public $openConnectionDialog(providers?: string[], initialConnectionProfile?: sqlops.IConnectionProfile, connectionCompletionOptions?: sqlops.IConnectionCompletionOptions): Thenable<sqlops.connection.Connection> {
+	public $openConnectionDialog(providers?: string[], initialConnectionProfile?: azdata.IConnectionProfile, connectionCompletionOptions?: azdata.IConnectionCompletionOptions): Thenable<azdata.connection.Connection> {
 		return this._proxy.$openConnectionDialog(providers, initialConnectionProfile, connectionCompletionOptions);
 	}
 
@@ -52,7 +61,7 @@ export class ExtHostConnectionManagement extends ExtHostConnectionManagementShap
 		return this._proxy.$getUriForConnection(connectionId);
 	}
 
-	public $connect(connectionProfile: sqlops.IConnectionProfile): Thenable<sqlops.ConnectionResult> {
+	public $connect(connectionProfile: azdata.IConnectionProfile): Thenable<azdata.ConnectionResult> {
 		return this._proxy.$connect(connectionProfile);
 	}
 }

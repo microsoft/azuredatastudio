@@ -12,17 +12,17 @@ import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import * as types from 'vs/base/common/types';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { localize } from 'vs/nls';
 import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export interface IOptionElement {
 	optionWidget: any;
-	option: sqlops.ServiceOption;
+	option: azdata.ServiceOption;
 	optionValue: any;
 }
 
-export function createOptionElement(option: sqlops.ServiceOption, rowContainer: Builder, options: { [name: string]: any },
+export function createOptionElement(option: azdata.ServiceOption, rowContainer: Builder, options: { [name: string]: any },
 	optionsMap: { [optionName: string]: IOptionElement }, contextViewService: IContextViewService, onFocus: (name) => void): void {
 	let possibleInputs: string[] = [];
 	let optionValue = getOptionValueAndCategoryValues(option, options, possibleInputs);
@@ -69,7 +69,7 @@ export function createOptionElement(option: sqlops.ServiceOption, rowContainer: 
 	inputElement.onfocus = () => onFocus(option.name);
 }
 
-export function getOptionValueAndCategoryValues(option: sqlops.ServiceOption, options: { [optionName: string]: any }, possibleInputs: string[]): any {
+export function getOptionValueAndCategoryValues(option: azdata.ServiceOption, options: { [optionName: string]: any }, possibleInputs: string[]): any {
 	var optionValue = option.defaultValue;
 	if (options[option.name]) {
 		// if the value type is boolean, the option value can be either boolean or string
@@ -161,8 +161,8 @@ export function findElement(container: Builder, className: string): HTMLElement 
 	return elementBuilder.getHTMLElement();
 }
 
-export function groupOptionsByCategory(options: sqlops.ServiceOption[]): { [category: string]: sqlops.ServiceOption[] } {
-	var connectionOptionsMap: { [category: string]: sqlops.ServiceOption[] } = {};
+export function groupOptionsByCategory(options: azdata.ServiceOption[]): { [category: string]: azdata.ServiceOption[] } {
+	var connectionOptionsMap: { [category: string]: azdata.ServiceOption[] } = {};
 	options.forEach(option => {
 		var groupName = option.groupName;
 		if (groupName === null || groupName === undefined) {

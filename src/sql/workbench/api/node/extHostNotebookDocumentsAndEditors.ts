@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 
 import { Event, Emitter } from 'vs/base/common/event';
@@ -35,13 +35,13 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 
 	private readonly _onDidChangeVisibleNotebookEditors = new Emitter<ExtHostNotebookEditor[]>();
 	private readonly _onDidChangeActiveNotebookEditor = new Emitter<ExtHostNotebookEditor>();
-	private _onDidOpenNotebook = new Emitter<sqlops.nb.NotebookDocument>();
-	private _onDidChangeNotebookCell = new Emitter<sqlops.nb.NotebookCellChangeEvent>();
+	private _onDidOpenNotebook = new Emitter<azdata.nb.NotebookDocument>();
+	private _onDidChangeNotebookCell = new Emitter<azdata.nb.NotebookCellChangeEvent>();
 
 	readonly onDidChangeVisibleNotebookEditors: Event<ExtHostNotebookEditor[]> = this._onDidChangeVisibleNotebookEditors.event;
 	readonly onDidChangeActiveNotebookEditor: Event<ExtHostNotebookEditor> = this._onDidChangeActiveNotebookEditor.event;
-	readonly onDidOpenNotebookDocument: Event<sqlops.nb.NotebookDocument> = this._onDidOpenNotebook.event;
-	readonly onDidChangeNotebookCell: Event<sqlops.nb.NotebookCellChangeEvent> = this._onDidChangeNotebookCell.event;
+	readonly onDidOpenNotebookDocument: Event<azdata.nb.NotebookDocument> = this._onDidOpenNotebook.event;
+	readonly onDidChangeNotebookCell: Event<azdata.nb.NotebookCellChangeEvent> = this._onDidChangeNotebookCell.event;
 
 
 	constructor(
@@ -156,11 +156,11 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 	//#endregion
 
 	//#region Extension accessible methods
-	showNotebookDocument(uri: vscode.Uri, showOptions: sqlops.nb.NotebookShowOptions): Thenable<sqlops.nb.NotebookEditor> {
+	showNotebookDocument(uri: vscode.Uri, showOptions: azdata.nb.NotebookShowOptions): Thenable<azdata.nb.NotebookEditor> {
 		return this.doShowNotebookDocument(uri, showOptions);
 	}
 
-	private async doShowNotebookDocument(uri: vscode.Uri, showOptions: sqlops.nb.NotebookShowOptions): Promise<sqlops.nb.NotebookEditor> {
+	private async doShowNotebookDocument(uri: vscode.Uri, showOptions: azdata.nb.NotebookShowOptions): Promise<azdata.nb.NotebookEditor> {
 		let options: INotebookShowOptions = {};
 		if (showOptions) {
 			options.preserveFocus = showOptions.preserveFocus;

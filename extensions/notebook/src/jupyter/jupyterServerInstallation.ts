@@ -8,7 +8,7 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as nls from 'vscode-nls';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { ExecOptions } from 'child_process';
 import * as decompress from 'decompress';
 import * as request from 'request';
@@ -41,7 +41,6 @@ export default class JupyterServerInstallation {
 	public extensionPath: string;
 	public pythonBinPath: string;
 	public outputChannel: OutputChannel;
-	public configRoot: string;
 	public pythonEnvVarPath: string;
 	public execOptions: ExecOptions;
 
@@ -61,7 +60,6 @@ export default class JupyterServerInstallation {
 		this.outputChannel = outputChannel;
 		this.apiWrapper = apiWrapper;
 		this._pythonInstallationPath = pythonInstallationPath || JupyterServerInstallation.getPythonInstallPath(this.apiWrapper);
-		this.configRoot = path.join(this.extensionPath, constants.jupyterConfigRootFolder);
 		this._forceInstall = !!forceInstall;
 
 		this.configurePackagePaths();
@@ -84,25 +82,25 @@ export default class JupyterServerInstallation {
 		return installation;
 	}
 
-	private async installDependencies(backgroundOperation: sqlops.BackgroundOperation): Promise<void> {
+	private async installDependencies(backgroundOperation: azdata.BackgroundOperation): Promise<void> {
 		if (!fs.existsSync(this._pythonExecutable) || this._forceInstall) {
 			window.showInformationMessage(msgInstallPkgStart);
 			this.outputChannel.show(true);
 			this.outputChannel.appendLine(msgPythonInstallationProgress);
-			backgroundOperation.updateStatus(sqlops.TaskStatus.InProgress, msgPythonInstallationProgress);
+			backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonInstallationProgress);
 			await this.installPythonPackage(backgroundOperation);
-			backgroundOperation.updateStatus(sqlops.TaskStatus.InProgress, msgPythonInstallationComplete);
+			backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonInstallationComplete);
 			this.outputChannel.appendLine(msgPythonInstallationComplete);
 
 			// Install jupyter on Windows because local python is not bundled with jupyter unlike linux and MacOS.
 			await this.installJupyterProsePackage();
 			await this.installSparkMagic();
-			backgroundOperation.updateStatus(sqlops.TaskStatus.Succeeded, msgInstallPkgFinish);
+			backgroundOperation.updateStatus(azdata.TaskStatus.Succeeded, msgInstallPkgFinish);
 			window.showInformationMessage(msgInstallPkgFinish);
 		}
 	}
 
-	private installPythonPackage(backgroundOperation: sqlops.BackgroundOperation): Promise<void> {
+	private installPythonPackage(backgroundOperation: azdata.BackgroundOperation): Promise<void> {
 		let bundleVersion = constants.pythonBundleVersion;
 		let pythonVersion = constants.pythonVersion;
 		let packageName = 'python-#pythonversion-#platform-#bundleversion.#extension';
@@ -131,10 +129,10 @@ export default class JupyterServerInstallation {
 		let self = undefined;
 		return new Promise((resolve, reject) => {
 			self = this;
-			backgroundOperation.updateStatus(sqlops.TaskStatus.InProgress, msgDownloadPython(platformId, pythonDownloadUrl));
+			backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgDownloadPython(platformId, pythonDownloadUrl));
 			fs.mkdirs(this._pythonInstallationPath, (err) => {
 				if (err) {
-					backgroundOperation.updateStatus(sqlops.TaskStatus.InProgress, msgPythonDirectoryError);
+					backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonDirectoryError);
 					reject(err);
 				}
 
@@ -143,12 +141,12 @@ export default class JupyterServerInstallation {
 				let printThreshold = 0.1;
 				request.get(pythonDownloadUrl, { timeout: 20000 })
 					.on('error', (downloadError) => {
-						backgroundOperation.updateStatus(sqlops.TaskStatus.InProgress, msgPythonDownloadError);
+						backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonDownloadError);
 						reject(downloadError);
 					})
 					.on('response', (response) => {
 						if (response.statusCode !== 200) {
-							backgroundOperation.updateStatus(sqlops.TaskStatus.InProgress, msgPythonDownloadError);
+							backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonDownloadError);
 							reject(response.statusMessage);
 						}
 
@@ -176,7 +174,7 @@ export default class JupyterServerInstallation {
 							try {
 								fs.removeSync(pythonSourcePath);
 							} catch (err) {
-								backgroundOperation.updateStatus(sqlops.TaskStatus.InProgress, msgPythonUnpackError);
+								backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonUnpackError);
 								reject(err);
 							}
 						}
@@ -184,19 +182,19 @@ export default class JupyterServerInstallation {
 							//Delete zip/tar file
 							fs.unlink(pythonPackagePathLocal, (err) => {
 								if (err) {
-									backgroundOperation.updateStatus(sqlops.TaskStatus.InProgress, msgPythonUnpackError);
+									backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonUnpackError);
 									reject(err);
 								}
 							});
 
 							resolve();
 						}).catch(err => {
-							backgroundOperation.updateStatus(sqlops.TaskStatus.InProgress, msgPythonUnpackError);
+							backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonUnpackError);
 							reject(err);
 						});
 					})
 					.on('error', (downloadError) => {
-						backgroundOperation.updateStatus(sqlops.TaskStatus.InProgress, msgPythonDownloadError);
+						backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonDownloadError);
 						reject(downloadError);
 					});
 			});
@@ -216,7 +214,7 @@ export default class JupyterServerInstallation {
 		this.pythonBinPath = path.join(pythonSourcePath, pythonBinPathSuffix);
 
 		// Store paths to python libraries required to run jupyter.
-		this.pythonEnvVarPath = process.env.Path;
+		this.pythonEnvVarPath = process.env['PATH'];
 
 		let delimiter = path.delimiter;
 		if (process.platform === constants.winPlatform) {
@@ -227,6 +225,7 @@ export default class JupyterServerInstallation {
 
 		// Store the executable options to run child processes with env var without interfering parent env var.
 		let env = Object.assign({}, process.env);
+		delete env['Path']; // Delete extra 'Path' variable for Windows, just in case.
 		env['PATH'] = this.pythonEnvVarPath;
 		this.execOptions = {
 			env: env
@@ -255,7 +254,7 @@ export default class JupyterServerInstallation {
 						})
 						.catch(err => {
 							let errorMsg = msgDependenciesInstallationFailed(err);
-							op.updateStatus(sqlops.TaskStatus.Failed, errorMsg);
+							op.updateStatus(azdata.TaskStatus.Failed, errorMsg);
 							this.apiWrapper.showErrorMessage(errorMsg);
 							this._installCompleteEmitter.fire(errorMsg);
 						});

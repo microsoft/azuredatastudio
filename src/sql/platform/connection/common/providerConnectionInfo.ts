@@ -8,7 +8,7 @@
 import { Disposable } from 'vs/base/common/lifecycle';
 import { isString } from 'vs/base/common/types';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import * as Constants from 'sql/platform/connection/common/constants';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
@@ -16,7 +16,7 @@ import { ConnectionProviderProperties } from 'sql/workbench/parts/connection/com
 
 type SettableProperty = 'serverName' | 'authenticationType' | 'databaseName' | 'password' | 'connectionName' | 'userName';
 
-export class ProviderConnectionInfo extends Disposable implements sqlops.ConnectionInfo {
+export class ProviderConnectionInfo extends Disposable implements azdata.ConnectionInfo {
 
 	options: { [name: string]: any } = {};
 
@@ -27,7 +27,7 @@ export class ProviderConnectionInfo extends Disposable implements sqlops.Connect
 
 	public constructor(
 		protected capabilitiesService: ICapabilitiesService,
-		model: string | sqlops.IConnectionProfile
+		model: string | azdata.IConnectionProfile
 	) {
 		super();
 		// we can't really do a whole lot if we don't have a provider
@@ -59,7 +59,7 @@ export class ProviderConnectionInfo extends Disposable implements sqlops.Connect
 	 *
 	 * This handles the case where someone hasn't passed in a valid property bag, but doesn't cause errors when
 	 */
-	private updateSpecialValueType(typeName: SettableProperty, model: sqlops.IConnectionProfile): void {
+	private updateSpecialValueType(typeName: SettableProperty, model: azdata.IConnectionProfile): void {
 		if (!this[typeName]) {
 			this[typeName] = model[typeName];
 		}
@@ -283,7 +283,7 @@ export class ProviderConnectionInfo extends Disposable implements sqlops.Connect
 		return displayName;
 	}
 
-	public getProviderOptions(): sqlops.ConnectionOption[] {
+	public getProviderOptions(): azdata.ConnectionOption[] {
 		return this._serverCapabilities.connectionOptions;
 	}
 

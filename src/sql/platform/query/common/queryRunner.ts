@@ -5,7 +5,7 @@
 
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 import * as Constants from 'sql/parts/query/common/constants';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
@@ -26,6 +26,8 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { ResultSerializer } from 'sql/platform/node/resultSerializer';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
+import { URI } from 'vs/base/common/uri';
 
 export interface IEditSessionReadyEvent {
 	ownerUri: string;
@@ -46,15 +48,15 @@ export const enum EventType {
 export interface IEventType {
 	start: void;
 	complete: string;
-	message: sqlops.IResultMessage;
-	batchStart: sqlops.BatchSummary;
-	batchComplete: sqlops.BatchSummary;
-	resultSet: sqlops.ResultSetSummary;
+	message: azdata.IResultMessage;
+	batchStart: azdata.BatchSummary;
+	batchComplete: azdata.BatchSummary;
+	resultSet: azdata.ResultSetSummary;
 	editSessionReady: IEditSessionReadyEvent;
 }
 
-export interface IGridMessage extends sqlops.IResultMessage {
-	selection: sqlops.ISelectionData;
+export interface IGridMessage extends azdata.IResultMessage {
+	selection: azdata.ISelectionData;
 }
 
 /*
@@ -67,8 +69,8 @@ export default class QueryRunner extends Disposable {
 	private _totalElapsedMilliseconds: number = 0;
 	private _isExecuting: boolean = false;
 	private _hasCompleted: boolean = false;
-	private _batchSets: sqlops.BatchSummary[] = [];
-	private _messages: sqlops.IResultMessage[] = [];
+	private _batchSets: azdata.BatchSummary[] = [];
+	private _messages: azdata.IResultMessage[] = [];
 	private _eventEmitter = new EventEmitter();
 
 	private _isQueryPlan: boolean;
@@ -76,13 +78,13 @@ export default class QueryRunner extends Disposable {
 	private _planXml = new Deferred<string>();
 	public get planXml(): Thenable<string> { return this._planXml.promise; }
 
-	private _onMessage = this._register(new Emitter<sqlops.IResultMessage>());
+	private _onMessage = this._register(new Emitter<azdata.IResultMessage>());
 	public readonly onMessage = this._onMessage.event;
 
-	private _onResultSet = this._register(new Emitter<sqlops.ResultSetSummary>());
+	private _onResultSet = this._register(new Emitter<azdata.ResultSetSummary>());
 	public readonly onResultSet = this._onResultSet.event;
 
-	private _onResultSetUpdate = this._register(new Emitter<sqlops.ResultSetSummary>());
+	private _onResultSetUpdate = this._register(new Emitter<azdata.ResultSetSummary>());
 	public readonly onResultSetUpdate = this._onResultSetUpdate.event;
 
 	private _onQueryStart = this._register(new Emitter<void>());
@@ -91,11 +93,11 @@ export default class QueryRunner extends Disposable {
 	private _onQueryEnd = this._register(new Emitter<string>());
 	public readonly onQueryEnd: Event<string> = this._onQueryEnd.event;
 
-	private _onBatchStart = this._register(new Emitter<sqlops.BatchSummary>());
-	public readonly onBatchStart: Event<sqlops.BatchSummary> = this._onBatchStart.event;
+	private _onBatchStart = this._register(new Emitter<azdata.BatchSummary>());
+	public readonly onBatchStart: Event<azdata.BatchSummary> = this._onBatchStart.event;
 
-	private _onBatchEnd = this._register(new Emitter<sqlops.BatchSummary>());
-	public readonly onBatchEnd: Event<sqlops.BatchSummary> = this._onBatchEnd.event;
+	private _onBatchEnd = this._register(new Emitter<azdata.BatchSummary>());
+	public readonly onBatchEnd: Event<azdata.BatchSummary> = this._onBatchEnd.event;
 
 	private _queryStartTime: Date;
 	public get queryStartTime(): Date {
@@ -113,7 +115,8 @@ export default class QueryRunner extends Disposable {
 		@INotificationService private _notificationService: INotificationService,
 		@IConfigurationService private _configurationService: IConfigurationService,
 		@IClipboardService private _clipboardService: IClipboardService,
-		@IInstantiationService private instantiationService: IInstantiationService
+		@IInstantiationService private instantiationService: IInstantiationService,
+		@ITextResourcePropertiesService private _textResourcePropertiesService: ITextResourcePropertiesService
 	) {
 		super();
 	}
@@ -129,14 +132,14 @@ export default class QueryRunner extends Disposable {
 	/**
 	 * For public use only, for private use, directly access the member
 	 */
-	public get batchSets(): sqlops.BatchSummary[] {
+	public get batchSets(): azdata.BatchSummary[] {
 		return this._batchSets.slice(0);
 	}
 
 	/**
 	 * For public use only, for private use, directly access the member
 	 */
-	public get messages(): sqlops.IResultMessage[] {
+	public get messages(): azdata.IResultMessage[] {
 		return this._messages.slice(0);
 	}
 
@@ -149,7 +152,7 @@ export default class QueryRunner extends Disposable {
 	/**
 	 * Cancels the running query, if there is one
 	 */
-	public cancelQuery(): Thenable<sqlops.QueryCancelResult> {
+	public cancelQuery(): Thenable<azdata.QueryCancelResult> {
 		return this._queryManagementService.cancelQuery(this.uri);
 	}
 
@@ -157,13 +160,13 @@ export default class QueryRunner extends Disposable {
 	 * Runs the query with the provided query
 	 * @param input Query string to execute
 	 */
-	public runQuery(input: string, runOptions?: sqlops.ExecutionPlanOptions): Thenable<void>;
+	public runQuery(input: string, runOptions?: azdata.ExecutionPlanOptions): Thenable<void>;
 	/**
 	 * Runs the query by pulling the query from the document using the provided selection data
 	 * @param input selection data
 	 */
-	public runQuery(input: sqlops.ISelectionData, runOptions?: sqlops.ExecutionPlanOptions): Thenable<void>;
-	public runQuery(input, runOptions?: sqlops.ExecutionPlanOptions): Thenable<void> {
+	public runQuery(input: azdata.ISelectionData, runOptions?: azdata.ExecutionPlanOptions): Thenable<void>;
+	public runQuery(input, runOptions?: azdata.ExecutionPlanOptions): Thenable<void> {
 		return this.doRunQuery(input, false, runOptions);
 	}
 
@@ -171,7 +174,7 @@ export default class QueryRunner extends Disposable {
 	 * Runs the current SQL statement by pulling the query from the document using the provided selection data
 	 * @param input selection data
 	 */
-	public runQueryStatement(input: sqlops.ISelectionData): Thenable<void> {
+	public runQueryStatement(input: azdata.ISelectionData): Thenable<void> {
 		return this.doRunQuery(input, true);
 	}
 
@@ -179,9 +182,9 @@ export default class QueryRunner extends Disposable {
 	 * Implementation that runs the query with the provided query
 	 * @param input Query string to execute
 	 */
-	private doRunQuery(input: string, runCurrentStatement: boolean, runOptions?: sqlops.ExecutionPlanOptions): Thenable<void>;
-	private doRunQuery(input: sqlops.ISelectionData, runCurrentStatement: boolean, runOptions?: sqlops.ExecutionPlanOptions): Thenable<void>;
-	private doRunQuery(input, runCurrentStatement: boolean, runOptions?: sqlops.ExecutionPlanOptions): Thenable<void> {
+	private doRunQuery(input: string, runCurrentStatement: boolean, runOptions?: azdata.ExecutionPlanOptions): Thenable<void>;
+	private doRunQuery(input: azdata.ISelectionData, runCurrentStatement: boolean, runOptions?: azdata.ExecutionPlanOptions): Thenable<void>;
+	private doRunQuery(input, runCurrentStatement: boolean, runOptions?: azdata.ExecutionPlanOptions): Thenable<void> {
 		if (this.isExecuting) {
 			return TPromise.as(undefined);
 		}
@@ -232,20 +235,20 @@ export default class QueryRunner extends Disposable {
 		// Attempting to launch the query failed, show the error message
 		const eol = this.getEolString();
 		let message = nls.localize('query.ExecutionFailedError', 'Execution failed due to an unexpected error: {0}\t{1}', eol, error);
-		this.handleMessage(<sqlops.QueryExecuteMessageParams>{
+		this.handleMessage(<azdata.QueryExecuteMessageParams>{
 			ownerUri: this.uri,
 			message: {
 				isError: true,
 				message: message
 			}
 		});
-		this.handleQueryComplete(<sqlops.QueryExecuteCompleteNotificationResult>{ ownerUri: this.uri });
+		this.handleQueryComplete(<azdata.QueryExecuteCompleteNotificationResult>{ ownerUri: this.uri });
 	}
 
 	/**
 	 * Handle a QueryComplete from the service layer
 	 */
-	public handleQueryComplete(result: sqlops.QueryExecuteCompleteNotificationResult): void {
+	public handleQueryComplete(result: azdata.QueryExecuteCompleteNotificationResult): void {
 		// this also isn't exact but its the best we can do
 		this._queryEndTime = new Date();
 
@@ -280,7 +283,7 @@ export default class QueryRunner extends Disposable {
 	/**
 	 * Handle a BatchStart from the service layer
 	 */
-	public handleBatchStart(result: sqlops.QueryExecuteBatchNotificationParams): void {
+	public handleBatchStart(result: azdata.QueryExecuteBatchNotificationParams): void {
 		let batch = result.batchSummary;
 
 		// Recalculate the start and end lines, relative to the result line offset
@@ -311,8 +314,8 @@ export default class QueryRunner extends Disposable {
 	/**
 	 * Handle a BatchComplete from the service layer
 	 */
-	public handleBatchComplete(result: sqlops.QueryExecuteBatchNotificationParams): void {
-		let batch: sqlops.BatchSummary = result.batchSummary;
+	public handleBatchComplete(result: azdata.QueryExecuteBatchNotificationParams): void {
+		let batch: azdata.BatchSummary = result.batchSummary;
 
 		// Store the batch again to get the rest of the data
 		this._batchSets[batch.id] = batch;
@@ -330,17 +333,17 @@ export default class QueryRunner extends Disposable {
 	/**
 	 * Handle a ResultSetComplete from the service layer
 	 */
-	public handleResultSetAvailable(result: sqlops.QueryExecuteResultSetNotificationParams): void {
+	public handleResultSetAvailable(result: azdata.QueryExecuteResultSetNotificationParams): void {
 		if (result && result.resultSetSummary) {
 			let resultSet = result.resultSetSummary;
-			let batchSet: sqlops.BatchSummary;
+			let batchSet: azdata.BatchSummary;
 			if (!resultSet.batchId) {
 				// Missing the batchId. In this case, default to always using the first batch in the list
 				// or create one in the case the DMP extension didn't obey the contract perfectly
 				if (this._batchSets.length > 0) {
 					batchSet = this._batchSets[0];
 				} else {
-					batchSet = <sqlops.BatchSummary>{
+					batchSet = <azdata.BatchSummary>{
 						id: 0,
 						selection: undefined,
 						hasError: false,
@@ -370,10 +373,10 @@ export default class QueryRunner extends Disposable {
 		}
 	}
 
-	public handleResultSetUpdated(result: sqlops.QueryExecuteResultSetNotificationParams): void {
+	public handleResultSetUpdated(result: azdata.QueryExecuteResultSetNotificationParams): void {
 		if (result && result.resultSetSummary) {
 			let resultSet = result.resultSetSummary;
-			let batchSet: sqlops.BatchSummary;
+			let batchSet: azdata.BatchSummary;
 			batchSet = this._batchSets[resultSet.batchId];
 			// handle getting queryPlanxml if we need too
 			if (this.isQueryPlan) {
@@ -394,7 +397,7 @@ export default class QueryRunner extends Disposable {
 	/**
 	 * Handle a Mssage from the service layer
 	 */
-	public handleMessage(obj: sqlops.QueryExecuteMessageParams): void {
+	public handleMessage(obj: azdata.QueryExecuteMessageParams): void {
 		let message = obj.message;
 		message.time = new Date(message.time).toLocaleTimeString();
 		this._messages.push(message);
@@ -407,8 +410,8 @@ export default class QueryRunner extends Disposable {
 	/**
 	 * Get more data rows from the current resultSets from the service layer
 	 */
-	public getQueryRows(rowStart: number, numberOfRows: number, batchIndex: number, resultSetIndex: number): Thenable<sqlops.QueryExecuteSubsetResult> {
-		let rowData: sqlops.QueryExecuteSubsetParams = <sqlops.QueryExecuteSubsetParams>{
+	public getQueryRows(rowStart: number, numberOfRows: number, batchIndex: number, resultSetIndex: number): Thenable<azdata.QueryExecuteSubsetResult> {
+		let rowData: azdata.QueryExecuteSubsetParams = <azdata.QueryExecuteSubsetParams>{
 			ownerUri: this.uri,
 			resultSetIndex: resultSetIndex,
 			rowsCount: numberOfRows,
@@ -455,15 +458,15 @@ export default class QueryRunner extends Disposable {
 	 * @param rowStart     The index of the row to start returning (inclusive)
 	 * @param numberOfRows The number of rows to return
 	 */
-	public getEditRows(rowStart: number, numberOfRows: number): Thenable<sqlops.EditSubsetResult> {
+	public getEditRows(rowStart: number, numberOfRows: number): Thenable<azdata.EditSubsetResult> {
 		const self = this;
-		let rowData: sqlops.EditSubsetParams = {
+		let rowData: azdata.EditSubsetParams = {
 			ownerUri: this.uri,
 			rowCount: numberOfRows,
 			rowStartIndex: rowStart
 		};
 
-		return new Promise<sqlops.EditSubsetResult>((resolve, reject) => {
+		return new Promise<azdata.EditSubsetResult>((resolve, reject) => {
 			self._queryManagementService.getEditRows(rowData).then(result => {
 				if (!result.hasOwnProperty('rowCount')) {
 					let error = `Nothing returned from subset query`;
@@ -489,7 +492,7 @@ export default class QueryRunner extends Disposable {
 		this._eventEmitter.emit(EventType.EDIT_SESSION_READY, { ownerUri, success, message });
 	}
 
-	public updateCell(ownerUri: string, rowId: number, columnId: number, newValue: string): Thenable<sqlops.EditUpdateCellResult> {
+	public updateCell(ownerUri: string, rowId: number, columnId: number, newValue: string): Thenable<azdata.EditUpdateCellResult> {
 		return this._queryManagementService.updateCell(ownerUri, rowId, columnId, newValue);
 	}
 
@@ -497,7 +500,7 @@ export default class QueryRunner extends Disposable {
 		return this._queryManagementService.commitEdit(ownerUri);
 	}
 
-	public createRow(ownerUri: string): Thenable<sqlops.EditCreateRowResult> {
+	public createRow(ownerUri: string): Thenable<azdata.EditCreateRowResult> {
 		return this._queryManagementService.createRow(ownerUri).then(result => {
 			return result;
 		});
@@ -507,7 +510,7 @@ export default class QueryRunner extends Disposable {
 		return this._queryManagementService.deleteRow(ownerUri, rowId);
 	}
 
-	public revertCell(ownerUri: string, rowId: number, columnId: number): Thenable<sqlops.EditRevertCellResult> {
+	public revertCell(ownerUri: string, rowId: number, columnId: number): Thenable<azdata.EditRevertCellResult> {
 		return this._queryManagementService.revertCell(ownerUri, rowId, columnId).then(result => {
 			return result;
 		});
@@ -597,8 +600,7 @@ export default class QueryRunner extends Disposable {
 	}
 
 	private getEolString(): string {
-		const { eol } = this._configurationService.getValue<{ eol: string }>('files');
-		return eol;
+		return this._textResourcePropertiesService.getEOL(URI.parse(this.uri), 'sql');
 	}
 
 	private shouldIncludeHeaders(includeHeaders: boolean): boolean {
@@ -619,7 +621,7 @@ export default class QueryRunner extends Disposable {
 
 	private getColumnHeaders(batchId: number, resultId: number, range: Slick.Range): string[] {
 		let headers: string[] = undefined;
-		let batchSummary: sqlops.BatchSummary = this._batchSets[batchId];
+		let batchSummary: azdata.BatchSummary = this._batchSets[batchId];
 		if (batchSummary !== undefined) {
 			let resultSetSummary = batchSummary.resultSetSummaries[resultId];
 			headers = resultSetSummary.columnInfo.slice(range.fromCell, range.toCell + 1).map((info, i) => {
@@ -646,7 +648,7 @@ export default class QueryRunner extends Disposable {
 		// get config copyRemoveNewLine option from vscode config
 		let showBatchTime: boolean = WorkbenchUtils.getSqlConfigValue<boolean>(this._configurationService, Constants.configShowBatchTime);
 		if (showBatchTime) {
-			let message: sqlops.IResultMessage = {
+			let message: azdata.IResultMessage = {
 				batchId: batchId,
 				message: nls.localize('elapsedBatchTime', 'Batch execution time: {0}', executionTime),
 				time: undefined,

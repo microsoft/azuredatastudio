@@ -5,7 +5,7 @@
 
 'use strict';
 
-import { nb, ServerInfo, connection, IConnectionProfile } from 'sqlops';
+import { nb, ServerInfo, connection, IConnectionProfile } from 'azdata';
 import { Session, Kernel } from '@jupyterlab/services';
 import * as fs from 'fs-extra';
 import * as nls from 'vscode-nls';
@@ -150,11 +150,16 @@ export class JupyterSessionManager implements nb.SessionManager {
 	}
 
 	public shutdownAll(): Promise<void> {
-		return this._sessionManager.shutdownAll();
+		if (this._isReady) {
+			return this._sessionManager.shutdownAll();
+		}
+		return Promise.resolve();
 	}
 
 	public dispose(): void {
-		this._sessionManager.dispose();
+		if (this._isReady) {
+			this._sessionManager.dispose();
+		}
 	}
 }
 

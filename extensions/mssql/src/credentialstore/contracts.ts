@@ -5,7 +5,7 @@
 'use strict';
 
 import { RequestType } from 'vscode-languageclient';
-import { Credential } from 'sqlops';
+import { Credential } from 'azdata';
 
 // --------------------------------- < Read Credential Request > -------------------------------------------------
 

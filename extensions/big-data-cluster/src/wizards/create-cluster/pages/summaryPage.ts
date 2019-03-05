@@ -4,22 +4,29 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { WizardPageBase } from '../../wizardPageBase';
-import { CreateClusterModel } from '../createClusterModel';
-import { WizardBase } from '../../wizardBase';
+import { CreateClusterWizard } from '../createClusterWizard';
 import * as nls from 'vscode-nls';
 
 const localize = nls.loadMessageBundle();
 
-export class SummaryPage extends WizardPageBase<CreateClusterModel> {
-	constructor(model: CreateClusterModel, wizard: WizardBase<CreateClusterModel>) {
-		super(localize('bdc-create.summaryPageTitle', 'Summary'), '', model, wizard);
+export class SummaryPage extends WizardPageBase<CreateClusterWizard> {
+	constructor(wizard: CreateClusterWizard) {
+		super(localize('bdc-create.summaryPageTitle', 'Summary'), '', wizard);
 	}
 
-	protected initialize(view: sqlops.ModelView): Thenable<void> {
+	protected initialize(view: azdata.ModelView): Thenable<void> {
 		let formBuilder = view.modelBuilder.formContainer();
 		let form = formBuilder.component();
 		return view.initializeModel(form);
+	}
+
+	public onEnter(): void {
+		this.wizard.wizardObject.generateScriptButton.hidden = false;
+	}
+
+	public onLeave(): void {
+		this.wizard.wizardObject.generateScriptButton.hidden = true;
 	}
 }

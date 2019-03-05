@@ -5,7 +5,7 @@
 
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
@@ -23,10 +23,10 @@ import { ICommandObjectExplorerContext } from './command';
 
 export const mssqlOutputChannel = vscode.window.createOutputChannel(constants.providerId);
 
-export class MssqlObjectExplorerNodeProvider extends ProviderBase implements sqlops.ObjectExplorerNodeProvider, ITreeChangeHandler {
+export class MssqlObjectExplorerNodeProvider extends ProviderBase implements azdata.ObjectExplorerNodeProvider, ITreeChangeHandler {
 	public readonly supportedProviderId: string = constants.providerId;
 	private sessionMap: Map<string, SqlClusterSession>;
-	private expandCompleteEmitter = new vscode.EventEmitter<sqlops.ObjectExplorerExpandInfo>();
+	private expandCompleteEmitter = new vscode.EventEmitter<azdata.ObjectExplorerExpandInfo>();
 
 	constructor(private appContext: AppContext) {
 		super();
@@ -34,7 +34,7 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements sql
 		this.appContext.registerService<MssqlObjectExplorerNodeProvider>(constants.ObjectExplorerService, this);
 	}
 
-	handleSessionOpen(session: sqlops.ObjectExplorerSession): Thenable<boolean> {
+	handleSessionOpen(session: azdata.ObjectExplorerSession): Thenable<boolean> {
 		return new Promise((resolve, reject) => {
 			if (!session) {
 				reject('handleSessionOpen requires a session object to be passed');
@@ -44,10 +44,10 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements sql
 		});
 	}
 
-	private async doSessionOpen(session: sqlops.ObjectExplorerSession): Promise<boolean> {
+	private async doSessionOpen(session: azdata.ObjectExplorerSession): Promise<boolean> {
 		if (!session || !session.sessionId) { return false; }
 
-		let sqlConnProfile = await sqlops.objectexplorer.getSessionConnectionProfile(session.sessionId);
+		let sqlConnProfile = await azdata.objectexplorer.getSessionConnectionProfile(session.sessionId);
 		if (!sqlConnProfile) { return false; }
 
 		let clusterConnInfo = await SqlClusterLookUp.getSqlClusterConnection(sqlConnProfile);
@@ -59,7 +59,7 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements sql
 		return true;
 	}
 
-	expandNode(nodeInfo: sqlops.ExpandNodeInfo, isRefresh: boolean = false): Thenable<boolean> {
+	expandNode(nodeInfo: azdata.ExpandNodeInfo, isRefresh: boolean = false): Thenable<boolean> {
 		return new Promise((resolve, reject) => {
 			if (!nodeInfo) {
 				reject('expandNode requires a nodeInfo object to be passed');
@@ -69,7 +69,7 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements sql
 		});
 	}
 
-	private async doExpandNode(nodeInfo: sqlops.ExpandNodeInfo, isRefresh: boolean = false): Promise<boolean> {
+	private async doExpandNode(nodeInfo: azdata.ExpandNodeInfo, isRefresh: boolean = false): Promise<boolean> {
 		let session = this.sessionMap.get(nodeInfo.sessionId);
 		let response = {
 			sessionId: nodeInfo.sessionId,
@@ -95,8 +95,8 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements sql
 		return true;
 	}
 
-	private async startExpansion(session: SqlClusterSession, nodeInfo: sqlops.ExpandNodeInfo, isRefresh: boolean = false): Promise<void> {
-		let expandResult: sqlops.ObjectExplorerExpandInfo = {
+	private async startExpansion(session: SqlClusterSession, nodeInfo: azdata.ExpandNodeInfo, isRefresh: boolean = false): Promise<void> {
+		let expandResult: azdata.ObjectExplorerExpandInfo = {
 			sessionId: session.sessionId,
 			nodePath: nodeInfo.nodePath,
 			errorMessage: undefined,
@@ -125,24 +125,24 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements sql
 		this.expandCompleteEmitter.fire(expandResult);
 	}
 
-	refreshNode(nodeInfo: sqlops.ExpandNodeInfo): Thenable<boolean> {
+	refreshNode(nodeInfo: azdata.ExpandNodeInfo): Thenable<boolean> {
 		// TODO #3815 implement properly
 		return this.expandNode(nodeInfo, true);
 	}
 
-	handleSessionClose(closeSessionInfo: sqlops.ObjectExplorerCloseSessionInfo): void {
+	handleSessionClose(closeSessionInfo: azdata.ObjectExplorerCloseSessionInfo): void {
 		this.sessionMap.delete(closeSessionInfo.sessionId);
 	}
 
-	findNodes(findNodesInfo: sqlops.FindNodesInfo): Thenable<sqlops.ObjectExplorerFindNodesResponse> {
+	findNodes(findNodesInfo: azdata.FindNodesInfo): Thenable<azdata.ObjectExplorerFindNodesResponse> {
 		// TODO #3814 implement
-		let response: sqlops.ObjectExplorerFindNodesResponse = {
+		let response: azdata.ObjectExplorerFindNodesResponse = {
 			nodes: []
 		};
 		return Promise.resolve(response);
 	}
 
-	registerOnExpandCompleted(handler: (response: sqlops.ObjectExplorerExpandInfo) => any): void {
+	registerOnExpandCompleted(handler: (response: azdata.ObjectExplorerExpandInfo) => any): void {
 		this.expandCompleteEmitter.event(handler);
 	}
 
@@ -157,7 +157,7 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements sql
 				this.appContext.apiWrapper.showErrorMessage(localize('sessionNotFound', 'Session for node {0} does not exist', node.nodePathValue));
 			} else {
 				let nodeInfo = node.getNodeInfo();
-				let expandInfo: sqlops.ExpandNodeInfo = {
+				let expandInfo: azdata.ExpandNodeInfo = {
 					nodePath: nodeInfo.nodePath,
 					sessionId: session.sessionId
 				};
@@ -181,7 +181,7 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements sql
 		return sqlClusterSession;
 	}
 
-	async findSqlClusterNodeByContext<T extends TreeNode>(context: ICommandObjectExplorerContext | sqlops.ObjectExplorerContext): Promise<T> {
+	async findSqlClusterNodeByContext<T extends TreeNode>(context: ICommandObjectExplorerContext | azdata.ObjectExplorerContext): Promise<T> {
 		let node: T = undefined;
 		let explorerContext = 'explorerContext' in context ? context.explorerContext : context;
 		let sqlConnProfile = explorerContext.connectionProfile;
@@ -198,7 +198,7 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements sql
 		return node;
 	}
 
-	public findSqlClusterSessionBySqlConnProfile(connectionProfile: sqlops.IConnectionProfile): SqlClusterSession {
+	public findSqlClusterSessionBySqlConnProfile(connectionProfile: azdata.IConnectionProfile): SqlClusterSession {
 		for (let session of this.sessionMap.values()) {
 			if (session.isMatchedSqlConnection(connectionProfile)) {
 				return session;
@@ -213,8 +213,8 @@ export class SqlClusterSession {
 
 	constructor(
 		private _sqlClusterConnection: SqlClusterConnection,
-		private _sqlSession: sqlops.ObjectExplorerSession,
-		private _sqlConnectionProfile: sqlops.IConnectionProfile,
+		private _sqlSession: azdata.ObjectExplorerSession,
+		private _sqlConnectionProfile: azdata.IConnectionProfile,
 		private _appContext: AppContext,
 		private _changeHandler: ITreeChangeHandler
 	) {
@@ -224,12 +224,12 @@ export class SqlClusterSession {
 	}
 
 	public get sqlClusterConnection(): SqlClusterConnection { return this._sqlClusterConnection; }
-	public get sqlSession(): sqlops.ObjectExplorerSession { return this._sqlSession; }
-	public get sqlConnectionProfile(): sqlops.IConnectionProfile { return this._sqlConnectionProfile; }
+	public get sqlSession(): azdata.ObjectExplorerSession { return this._sqlSession; }
+	public get sqlConnectionProfile(): azdata.IConnectionProfile { return this._sqlConnectionProfile; }
 	public get sessionId(): string { return this._sqlSession.sessionId; }
 	public get rootNode(): SqlClusterRootNode { return this._rootNode; }
 
-	public isMatchedSqlConnection(sqlConnProfile: sqlops.IConnectionProfile): boolean {
+	public isMatchedSqlConnection(sqlConnProfile: azdata.IConnectionProfile): boolean {
 		return this._sqlConnectionProfile.id === sqlConnProfile.id;
 	}
 }
@@ -266,8 +266,8 @@ class SqlClusterRootNode extends TreeNode {
 		throw new Error('Not intended for use in a file explorer view.');
 	}
 
-	getNodeInfo(): sqlops.NodeInfo {
-		let nodeInfo: sqlops.NodeInfo = {
+	getNodeInfo(): azdata.NodeInfo {
+		let nodeInfo: azdata.NodeInfo = {
 			label: localize('rootLabel', 'Root'),
 			isLeaf: false,
 			errorMessage: undefined,
@@ -311,8 +311,8 @@ class DataServicesNode extends TreeNode {
 		throw new Error('Not intended for use in a file explorer view.');
 	}
 
-	getNodeInfo(): sqlops.NodeInfo {
-		let nodeInfo: sqlops.NodeInfo = {
+	getNodeInfo(): azdata.NodeInfo {
+		let nodeInfo: azdata.NodeInfo = {
 			label: localize('dataServicesLabel', 'Data Services'),
 			isLeaf: false,
 			errorMessage: undefined,

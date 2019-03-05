@@ -5,7 +5,7 @@
 
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { Mock, It, Times } from 'typemoq';
 import { MainThreadBackgroundTaskManagement, TaskStatus } from 'sql/workbench/api/node/mainThreadBackgroundTaskManagement';
 import { ExtHostBackgroundTaskManagementShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
@@ -26,7 +26,7 @@ suite('MainThreadBackgroundTaskManagement Tests', () => {
 		mockProxy = Mock.ofInstance(<ExtHostBackgroundTaskManagementShape>{
 			$onTaskRegistered: (operationId: string) => nothing,
 			$onTaskCanceled: (operationId: string) => nothing,
-			$registerTask: (operationInfo: sqlops.BackgroundOperationInfo) => nothing,
+			$registerTask: (operationInfo: azdata.BackgroundOperationInfo) => nothing,
 			$removeTask: (operationId: string) => nothing,
 		});
 		taskService = Mock.ofInstance(<ITaskService>{
@@ -38,8 +38,8 @@ suite('MainThreadBackgroundTaskManagement Tests', () => {
 			getAllTasks: undefined,
 			getNumberOfInProgressTasks: undefined,
 			onNewTaskCreated: undefined,
-			createNewTask: (taskInfo: sqlops.TaskInfo) => nothing,
-			updateTask: (taskProgressInfo: sqlops.TaskProgressInfo) => nothing,
+			createNewTask: (taskInfo: azdata.TaskInfo) => nothing,
+			updateTask: (taskProgressInfo: azdata.TaskProgressInfo) => nothing,
 			onTaskStatusChanged: undefined,
 			cancelTask: undefined,
 			registerProvider: undefined
@@ -54,7 +54,7 @@ suite('MainThreadBackgroundTaskManagement Tests', () => {
 	});
 
 	test('RegisterTask should successfully create background task', () => {
-		let taskInfo: sqlops.TaskInfo = {
+		let taskInfo: azdata.TaskInfo = {
 			taskId: operationId,
 			databaseName: undefined,
 			description: undefined,
@@ -71,7 +71,7 @@ suite('MainThreadBackgroundTaskManagement Tests', () => {
 	});
 
 	test('UpdateTask should successfully update the background task status', () => {
-		let taskInfo: sqlops.TaskProgressInfo = {
+		let taskInfo: azdata.TaskProgressInfo = {
 			taskId: operationId,
 			status: TaskStatus.InProgress,
 			message: undefined,
@@ -81,7 +81,7 @@ suite('MainThreadBackgroundTaskManagement Tests', () => {
 	});
 
 	test('Canceling the task should notify the proxy', () => {
-		let taskInfo: sqlops.TaskProgressInfo = {
+		let taskInfo: azdata.TaskProgressInfo = {
 			taskId: operationId,
 			status: TaskStatus.InProgress,
 			message: undefined,

@@ -32,8 +32,7 @@ const defaultOptions: IButtonStyles = {
 
 export class Button extends Disposable {
 
-	// {{SQL CARBON EDIT}} -- changed access modifier to protected
-	protected _element: HTMLElement;
+	private _element: HTMLElement;
 	private options: IButtonOptions;
 
 	private buttonBackground: Color | undefined;

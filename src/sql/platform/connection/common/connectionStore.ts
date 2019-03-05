@@ -209,7 +209,7 @@ export class ConnectionStore {
 	 * Gets the list of recently used connections. These will not include the password - a separate call to
 	 * {addSavedPassword} is needed to fill that before connecting
 	 *
-	 * @returns {sqlops.ConnectionInfo} the array of connections, empty if none are found
+	 * @returns {azdata.ConnectionInfo} the array of connections, empty if none are found
 	 */
 	public getRecentlyUsedConnections(providers?: string[]): ConnectionProfile[] {
 		let configValues: IConnectionProfile[] = this._memento[Constants.recentConnections];
@@ -249,7 +249,7 @@ export class ConnectionStore {
 	 * Gets the list of active connections. These will not include the password - a separate call to
 	 * {addSavedPassword} is needed to fill that before connecting
 	 *
-	 * @returns {sqlops.ConnectionInfo} the array of connections, empty if none are found
+	 * @returns {azdata.ConnectionInfo} the array of connections, empty if none are found
 	 */
 	public getActiveConnections(): ConnectionProfile[] {
 		let configValues: IConnectionProfile[] = this._memento[Constants.activeConnections];

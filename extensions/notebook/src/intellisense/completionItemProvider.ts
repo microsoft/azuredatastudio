@@ -5,7 +5,7 @@
 
 'use strict';
 
-import { nb } from 'sqlops';
+import { nb } from 'azdata';
 
 import * as vscode from 'vscode';
 import { charCountToJsCountDiff, jsIndexToCharIndex } from './text';

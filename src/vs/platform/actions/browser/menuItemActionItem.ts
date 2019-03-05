@@ -283,8 +283,9 @@ export class LabeledMenuItemActionItem extends MenuItemActionItem {
 	) {
 		super(_action, _labeledkeybindingService, _notificationService, _labeledcontextMenuService);
 	}
-	_updateLabel(): void {
-		this.element.innerText = this._commandAction.label;
+
+	updateLabel(): void {
+		this.label.innerText = this._commandAction.label;
 	}
 
 	// Overwrite item class to ensure that we can pass in a CSS class that other items use
@@ -307,14 +308,8 @@ export class LabeledMenuItemActionItem extends MenuItemActionItem {
 				MenuItemActionItem.ICON_PATH_TO_CSS_RULES.set(iconPathMapKey, iconClass);
 			}
 
-			this.element.classList.add('icon', iconClass);
-			this.element.classList.add(this._defaultCSSClassToAdd);
-			this._labeledItemClassDispose = {
-				dispose: () => {
-					this.element.classList.remove('icon', iconClass);
-					this.element.classList.remove(this._defaultCSSClassToAdd);
-				}
-			};
+			addClasses(this.label, 'icon', iconClass, this._defaultCSSClassToAdd);
+			this._labeledItemClassDispose = toDisposable(() => removeClasses(this.label, 'icon', iconClass, this._defaultCSSClassToAdd));
 		}
 	}
 

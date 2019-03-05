@@ -5,7 +5,7 @@
 
 // This is the place for extensions to expose APIs.
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 
 /**
@@ -35,10 +35,10 @@ export interface MssqlObjectExplorerBrowser {
 	/**
 	 * Gets the matching node given a context object, e.g. one from a right-click on a node in Object Explorer
 	 *
-	 * @param {sqlops.ObjectExplorerContext} objectExplorerContext
+	 * @param {azdata.ObjectExplorerContext} objectExplorerContext
 	 * @returns {Promise<T>}
 	 */
-	getNode<T extends ITreeNode>(objectExplorerContext: sqlops.ObjectExplorerContext): Promise<T>;
+	getNode<T extends ITreeNode>(objectExplorerContext: azdata.ObjectExplorerContext): Promise<T>;
 }
 
 /**
@@ -48,7 +48,7 @@ export interface MssqlObjectExplorerBrowser {
  * @interface ITreeNode
  */
 export interface ITreeNode {
-	getNodeInfo(): sqlops.NodeInfo;
+	getNodeInfo(): azdata.NodeInfo;
 	getChildren(refreshChildren: boolean): ITreeNode[] | Promise<ITreeNode[]>;
 }
 

@@ -601,9 +601,6 @@ export interface MainThreadSCMShape extends IDisposable {
 	$setValidationProviderIsEnabled(sourceControlHandle: number, enabled: boolean): void;
 }
 
-
-// {{SQL CARBON EDIT}}
-/*
 export type DebugSessionUUID = string;
 
 export interface MainThreadDebugServiceShape extends IDisposable {
@@ -624,8 +621,6 @@ export interface MainThreadDebugServiceShape extends IDisposable {
 	$registerBreakpoints(breakpoints: (ISourceMultiBreakpointDto | IFunctionBreakpointDto)[]): Thenable<void>;
 	$unregisterBreakpoints(breakpointIds: string[], functionBreakpointIds: string[]): Thenable<void>;
 }
-// {{SQL CARBON EDIT}}
-*/
 
 export interface MainThreadWindowShape extends IDisposable {
 	$getWindowVisibility(): Thenable<boolean>;

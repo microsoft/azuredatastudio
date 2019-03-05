@@ -6,7 +6,7 @@
 'use strict';
 
 import * as nls from 'vscode-nls';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { AgentDialog } from './agentDialog';
 import { AgentUtils } from '../agentUtils';
 import { AlertData } from '../data/alertData';
@@ -121,37 +121,37 @@ export class AlertDialog extends AgentDialog<AlertData> {
 	private readonly EditAlertDialog = 'EditAlertDialogOpened';
 
 	// UI Components
-	private generalTab: sqlops.window.DialogTab;
-	private responseTab: sqlops.window.DialogTab;
-	private optionsTab: sqlops.window.DialogTab;
+	private generalTab: azdata.window.DialogTab;
+	private responseTab: azdata.window.DialogTab;
+	private optionsTab: azdata.window.DialogTab;
 
 	// General tab controls
-	private nameTextBox: sqlops.InputBoxComponent;
-	private typeDropDown: sqlops.DropDownComponent;
-	private severityDropDown: sqlops.DropDownComponent;
-	private databaseDropDown: sqlops.DropDownComponent;
-	private enabledCheckBox: sqlops.CheckBoxComponent;
-	private errorNumberRadioButton: sqlops.RadioButtonComponent;
-	private severityRadioButton: sqlops.RadioButtonComponent;
-	private errorNumberTextBox: sqlops.InputBoxComponent;
+	private nameTextBox: azdata.InputBoxComponent;
+	private typeDropDown: azdata.DropDownComponent;
+	private severityDropDown: azdata.DropDownComponent;
+	private databaseDropDown: azdata.DropDownComponent;
+	private enabledCheckBox: azdata.CheckBoxComponent;
+	private errorNumberRadioButton: azdata.RadioButtonComponent;
+	private severityRadioButton: azdata.RadioButtonComponent;
+	private errorNumberTextBox: azdata.InputBoxComponent;
 
-	private raiseAlertMessageCheckBox: sqlops.CheckBoxComponent;
-	private raiseAlertMessageTextBox: sqlops.InputBoxComponent;
+	private raiseAlertMessageCheckBox: azdata.CheckBoxComponent;
+	private raiseAlertMessageTextBox: azdata.InputBoxComponent;
 
 	// Response tab controls
-	private executeJobTextBox: sqlops.InputBoxComponent;
-	private executeJobCheckBox: sqlops.CheckBoxComponent;
-	private newJobButton: sqlops.ButtonComponent;
-	private notifyOperatorsCheckBox: sqlops.CheckBoxComponent;
-	private operatorsTable: sqlops.TableComponent;
-	private newOperatorButton: sqlops.ButtonComponent;
+	private executeJobTextBox: azdata.InputBoxComponent;
+	private executeJobCheckBox: azdata.CheckBoxComponent;
+	private newJobButton: azdata.ButtonComponent;
+	private notifyOperatorsCheckBox: azdata.CheckBoxComponent;
+	private operatorsTable: azdata.TableComponent;
+	private newOperatorButton: azdata.ButtonComponent;
 
 	// Options tab controls
-	private additionalMessageTextBox: sqlops.InputBoxComponent;
-	private includeErrorInEmailTextBox: sqlops.CheckBoxComponent;
-	private includeErrorInPagerTextBox: sqlops.CheckBoxComponent;
-	private delayMinutesTextBox: sqlops.InputBoxComponent;
-	private delaySecondsTextBox: sqlops.InputBoxComponent;
+	private additionalMessageTextBox: azdata.InputBoxComponent;
+	private includeErrorInEmailTextBox: azdata.CheckBoxComponent;
+	private includeErrorInPagerTextBox: azdata.CheckBoxComponent;
+	private delayMinutesTextBox: azdata.InputBoxComponent;
+	private delaySecondsTextBox: azdata.InputBoxComponent;
 
 	private isEdit: boolean = false;
 	private databases: string[];
@@ -162,7 +162,7 @@ export class AlertDialog extends AgentDialog<AlertData> {
 	constructor(
 		ownerUri: string,
 		jobModel: JobData,
-		alertInfo: sqlops.AgentAlertInfo = undefined,
+		alertInfo: azdata.AgentAlertInfo = undefined,
 		viaJobDialog: boolean = false
 	) {
 		super(ownerUri,
@@ -175,13 +175,13 @@ export class AlertDialog extends AgentDialog<AlertData> {
 		this.dialogName = this.isEdit ? this.EditAlertDialog : this.NewAlertDialog;
 	}
 
-	protected async initializeDialog(dialog: sqlops.window.Dialog) {
+	protected async initializeDialog(dialog: azdata.window.Dialog) {
 		this.databases = await AgentUtils.getDatabases(this.ownerUri);
 		this.databases.unshift(AlertDialog.AllDatabases);
 
-		this.generalTab = sqlops.window.createTab(AlertDialog.GeneralTabText);
-		this.responseTab = sqlops.window.createTab(AlertDialog.ResponseTabText);
-		this.optionsTab = sqlops.window.createTab(AlertDialog.OptionsTabText);
+		this.generalTab = azdata.window.createTab(AlertDialog.GeneralTabText);
+		this.responseTab = azdata.window.createTab(AlertDialog.ResponseTabText);
+		this.optionsTab = azdata.window.createTab(AlertDialog.OptionsTabText);
 
 		this.initializeGeneralTab(this.databases, dialog);
 		this.initializeResponseTab();
@@ -190,7 +190,7 @@ export class AlertDialog extends AgentDialog<AlertData> {
 		dialog.content = [this.generalTab, this.responseTab, this.optionsTab];
 	}
 
-	private initializeGeneralTab(databases: string[], dialog: sqlops.window.Dialog) {
+	private initializeGeneralTab(databases: string[], dialog: azdata.window.Dialog) {
 		this.generalTab.registerContent(async view => {
 			// create controls
 			this.nameTextBox = view.modelBuilder.inputBox().component();

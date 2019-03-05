@@ -7,7 +7,7 @@
 
 'use strict';
 
-import { nb } from 'sqlops';
+import { nb } from 'azdata';
 
 import * as json from 'vs/base/common/json';
 import * as pfs from 'vs/base/node/pfs';

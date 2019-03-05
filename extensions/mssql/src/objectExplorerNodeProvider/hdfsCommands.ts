@@ -6,7 +6,7 @@
 'use strict';
 
 import * as vscode from 'vscode';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as fs from 'fs';
 import * as fspath from 'path';
 import * as clipboardy from 'clipboardy';
@@ -92,13 +92,14 @@ export class UploadFilesCommand extends ProgressCommand {
 						localize('uploading', 'Uploading files to HDFS'), true,
 						() => this.apiWrapper.showInformationMessage(localize('uploadCanceled', 'Upload operation was canceled')));
 					if (context.type === constants.ObjectExplorerService) {
-						let objectExplorerNode = await sqlops.objectexplorer.getNode(context.explorerContext.connectionProfile.id, folderNode.getNodeInfo().nodePath);
+						let objectExplorerNode = await azdata.objectexplorer.getNode(context.explorerContext.connectionProfile.id, folderNode.getNodeInfo().nodePath);
 						await objectExplorerNode.refresh();
 					}
 				}
 			}
 		} catch (err) {
-			this.apiWrapper.showErrorMessage(localize('uploadError', 'Error uploading files: {0}', utils.getErrorMessage(err)));
+			this.apiWrapper.showErrorMessage(
+				localize('uploadError', 'Error uploading files: {0}', utils.getErrorMessage(err, true)));
 		}
 	}
 
@@ -150,13 +151,14 @@ export class MkDirCommand extends ProgressCommand {
 						localize('makingDir', 'Creating directory'), true,
 						() => this.apiWrapper.showInformationMessage(localize('mkdirCanceled', 'Operation was canceled')));
 					if (context.type === constants.ObjectExplorerService) {
-						let objectExplorerNode = await sqlops.objectexplorer.getNode(context.explorerContext.connectionProfile.id, folderNode.getNodeInfo().nodePath);
+						let objectExplorerNode = await azdata.objectexplorer.getNode(context.explorerContext.connectionProfile.id, folderNode.getNodeInfo().nodePath);
 						await objectExplorerNode.refresh();
 					}
 				}
 			}
 		} catch (err) {
-			this.apiWrapper.showErrorMessage(localize('uploadError', 'Error uploading files: {0}', utils.getErrorMessage(err)));
+			this.apiWrapper.showErrorMessage(
+				localize('mkDirError', 'Error on making directory: {0}', utils.getErrorMessage(err, true)));
 		}
 	}
 
@@ -191,9 +193,9 @@ export class DeleteFilesCommand extends Command {
 				// TODO ideally would let node define if it's deletable
 				// TODO also, would like to change this to getNodeInfo as OE is the primary use case now
 				let treeItem = await node.getTreeItem();
-				let oeNodeToRefresh: sqlops.objectexplorer.ObjectExplorerNode = undefined;
+				let oeNodeToRefresh: azdata.objectexplorer.ObjectExplorerNode = undefined;
 				if (context.type === constants.ObjectExplorerService) {
-					let oeNodeToDelete = await sqlops.objectexplorer.getNode(context.explorerContext.connectionProfile.id, node.getNodeInfo().nodePath);
+					let oeNodeToDelete = await azdata.objectexplorer.getNode(context.explorerContext.connectionProfile.id, node.getNodeInfo().nodePath);
 					oeNodeToRefresh = await oeNodeToDelete.getParent();
 				}
 				switch (treeItem.contextValue) {
@@ -213,7 +215,8 @@ export class DeleteFilesCommand extends Command {
 				this.apiWrapper.showErrorMessage(LocalizedConstants.msgMissingNodeContext);
 			}
 		} catch (err) {
-			this.apiWrapper.showErrorMessage(localize('deleteError', 'Error deleting files {0}', utils.getErrorMessage(err)));
+			this.apiWrapper.showErrorMessage(
+				localize('deleteError', 'Error on deleting files: {0}', utils.getErrorMessage(err, true)));
 		}
 	}
 
@@ -273,7 +276,8 @@ export class SaveFileCommand extends ProgressCommand {
 				this.apiWrapper.showErrorMessage(LocalizedConstants.msgMissingNodeContext);
 			}
 		} catch (err) {
-			this.apiWrapper.showErrorMessage(localize('saveError', 'Error saving file: {0}', utils.getErrorMessage(err)));
+			this.apiWrapper.showErrorMessage(
+				localize('saveError', 'Error on saving file: {0}', utils.getErrorMessage(err, true)));
 		}
 	}
 
@@ -313,7 +317,8 @@ export class PreviewFileCommand extends ProgressCommand {
 				this.apiWrapper.showErrorMessage(LocalizedConstants.msgMissingNodeContext);
 			}
 		} catch (err) {
-			this.apiWrapper.showErrorMessage(localize('previewError', 'Error previewing file: {0}', utils.getErrorMessage(err)));
+			this.apiWrapper.showErrorMessage(
+				localize('previewError', 'Error on previewing file: {0}', utils.getErrorMessage(err, true)));
 		}
 	}
 
@@ -357,7 +362,8 @@ export class CopyPathCommand extends Command {
 				this.apiWrapper.showErrorMessage(LocalizedConstants.msgMissingNodeContext);
 			}
 		} catch (err) {
-			this.apiWrapper.showErrorMessage(localize('copyPathError', 'Error copying path: {0}', utils.getErrorMessage(err)));
+			this.apiWrapper.showErrorMessage(
+				localize('copyPathError', 'Error on copying path: {0}', utils.getErrorMessage(err, true)));
 		}
 	}
 }

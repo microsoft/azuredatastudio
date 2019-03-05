@@ -20,7 +20,7 @@ import { IScriptingService } from 'sql/platform/scripting/common/scriptingServic
 import { IAngularEventingService } from 'sql/platform/angularEventing/common/angularEventingService';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 
-import { ObjectMetadata } from 'sqlops';
+import { ObjectMetadata } from 'azdata';
 
 import * as tree from 'vs/base/parts/tree/browser/tree';
 import * as TreeDefaults from 'vs/base/parts/tree/browser/treeDefaults';

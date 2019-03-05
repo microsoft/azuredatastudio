@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { AgentUtils } from '../agentUtils';
 import { IAgentDialogData, AgentDialogMode } from '../interfaces';
 
@@ -19,7 +19,7 @@ export class ProxyData implements IAgentDialogData {
 	credentialId: number;
 	isEnabled: boolean;
 
-	constructor(ownerUri:string, proxyInfo: sqlops.AgentProxyInfo) {
+	constructor(ownerUri:string, proxyInfo: azdata.AgentProxyInfo) {
 		this.ownerUri = ownerUri;
 
 		if (proxyInfo) {
@@ -40,7 +40,7 @@ export class ProxyData implements IAgentDialogData {
 		}
 	}
 
-	public toAgentProxyInfo(): sqlops.AgentProxyInfo {
+	public toAgentProxyInfo(): azdata.AgentProxyInfo {
 		return {
 			id: this.id,
 			accountName: this.accountName,

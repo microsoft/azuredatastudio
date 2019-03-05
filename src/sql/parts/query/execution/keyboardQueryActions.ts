@@ -10,7 +10,7 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
@@ -341,7 +341,7 @@ export class RunQueryShortcutAction extends Action {
 		return TPromise.as('');
 	}
 
-	private isProcWithSingleArgument(result: sqlops.SimpleExecuteResult): number {
+	private isProcWithSingleArgument(result: azdata.SimpleExecuteResult): number {
 		let columnTypeOrdinal = this.getColumnIndex(result.columnInfo, 'COLUMN_TYPE');
 		let dataTypeOrdinal = this.getColumnIndex(result.columnInfo, 'DATA_TYPE');
 		if (columnTypeOrdinal && dataTypeOrdinal) {
@@ -375,7 +375,7 @@ export class RunQueryShortcutAction extends Action {
 		return -1; // Couldn't process so return default value
 	}
 
-	private getColumnIndex(columnInfo: sqlops.IDbColumn[], columnName: string): number {
+	private getColumnIndex(columnInfo: azdata.IDbColumn[], columnName: string): number {
 		return columnInfo ? columnInfo.findIndex(c => c.columnName === columnName) : undefined;
 	}
 

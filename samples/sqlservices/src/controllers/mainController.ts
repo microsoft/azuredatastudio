@@ -148,7 +148,8 @@ export default class MainController implements vscode.Disposable {
 
 		await view.initializeModel(formWrapper);
 	}
-	private async getTabContent(view: sqlops.ModelView, customButton1: sqlops.window.Button, customButton2: sqlops.window.Button, componentWidth: number | string): Promise<void> {
+	private async getTabContent(view: sqlops.ModelView, customButton1: sqlops.window.Button, customButton2: sqlops.window.Button, componentWidth: number | string
+	): Promise<void> {
 		let inputBox = view.modelBuilder.inputBox()
 			.withProperties({
 				multiline: true,
@@ -181,8 +182,6 @@ export default class MainController implements vscode.Disposable {
 				label: '-'
 
 			}).component();
-		let button2 = view.modelBuilder.button()
-			.component();
 		button.onDidClick(e => {
 			backupFilesInputBox.value = 'Button clicked';
 		});
@@ -209,7 +208,7 @@ export default class MainController implements vscode.Disposable {
 				name: 'radioButtonOptions',
 				label: 'Option 1',
 				checked: true
-				//width: 300
+				// width: 300
 			}).component();
 		let radioButton2 = view.modelBuilder.radioButton()
 			.withProperties({
