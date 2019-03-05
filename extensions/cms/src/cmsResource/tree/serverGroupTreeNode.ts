@@ -20,24 +20,23 @@ import { RegisteredServerTreeNode } from './registeredServerTreeNode';
 export class ServerGroupTreeNode extends CmsResourceTreeNodeBase {
 
 	private _id: string = undefined;
-	private _relativePath: string = undefined;
 
 	constructor(
 		private name: string,
 		private description: string,
 		private relativePath: string,
+		private ownerUri: string,
 		appContext: AppContext,
 		treeChangeHandler: ICmsResourceTreeChangeHandler,
 		parent: TreeNode
 	) {
 		super(appContext, treeChangeHandler, parent);
 		this._id = `cms_serverGroup_${this.name}`;
-		this._relativePath = relativePath;
 	}
 	public getChildren(): TreeNode[] | Promise<TreeNode[]> {
 		try {
 			let nodes = [];
-			return this.appContext.apiWrapper.getRegisteredServers(this.appContext.apiWrapper.ownerUri, this._relativePath).then((result) => {
+			return this.appContext.apiWrapper.getRegisteredServers(this.ownerUri, this.relativePath).then((result) => {
 				if (result) {
 					if (result.registeredServersList) {
 						result.registeredServersList.forEach((registeredServer) => {
@@ -50,8 +49,12 @@ export class ServerGroupTreeNode extends CmsResourceTreeNodeBase {
 					if (result.registeredServerGroups) {
 						if (result.registeredServerGroups) {
 							result.registeredServerGroups.forEach((serverGroup) => {
-								nodes.push(new ServerGroupTreeNode(serverGroup.name, serverGroup.description,
-									serverGroup.relativePath, this.appContext, this.treeChangeHandler, this));
+								nodes.push(new ServerGroupTreeNode(
+									serverGroup.name,
+									serverGroup.description,
+									serverGroup.relativePath,
+									this.ownerUri,
+									this.appContext, this.treeChangeHandler, this));
 							});
 						}
 					}

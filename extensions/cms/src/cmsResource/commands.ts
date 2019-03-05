@@ -4,9 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-
-import { AppContext } from '../appContext';
 import * as nls from 'vscode-nls';
+import * as sqlops from 'sqlops';
+import { AppContext } from '../appContext';
 import { TreeNode } from './treeNode';
 import { CmsResourceTreeProvider } from './tree/treeProvider';
 import { CmsResourceEmptyTreeNode } from './tree/cmsResourceEmptyTreeNode';
@@ -18,13 +18,12 @@ export function registerCmsResourceCommands(appContext: AppContext, tree: CmsRes
 		if (!(node instanceof CmsResourceEmptyTreeNode)) {
 			return;
 		}
-		appContext.apiWrapper.connection.then((connection) => {
+		appContext.apiWrapper.connection.then(async (connection) => {
 			let registeredCmsServerName = connection.options.registeredCmsServerName;
 			let registeredCmsServerDescription = connection.options.registeredCmsServerDescription;
-			appContext.apiWrapper.createCmsServer(registeredCmsServerName, registeredCmsServerDescription).then((result) => {
-				appContext.apiWrapper.addRegisteredCmsServers(registeredCmsServerName, registeredCmsServerDescription, result);
-				tree.notifyNodeChanged(undefined);
-			});
+			let ownerUri = await sqlops.connection.getUriForConnection(connection.connectionId);
+			appContext.apiWrapper.addRegisteredCmsServers(registeredCmsServerName, registeredCmsServerDescription, ownerUri, connection);
+			tree.notifyNodeChanged(undefined);
 		});
 	});
 }

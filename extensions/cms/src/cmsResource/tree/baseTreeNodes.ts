@@ -5,10 +5,10 @@
 
 'use strict';
 import * as sqlops from 'sqlops';
-import * as mssql from '../../../../mssql/src/api/mssqlapis';
 import { AppContext } from '../../appContext';
 import { TreeNode } from '../treeNode';
 import { ICmsResourceTreeChangeHandler } from './treeChangeHandler';
+import { ShellQuotingOptions } from 'vscode';
 
 export abstract class CmsResourceTreeNodeBase extends TreeNode {
 
@@ -25,6 +25,6 @@ export abstract class CmsResourceTreeNodeBase extends TreeNode {
 export interface CmsResourceNodeInfo {
 	name: string;
 	description: string;
-	registeredServers: mssql.RegisteredServerResult[];
-	serverGroups: mssql.RegisteredServerGroup[];
+	ownerUri: string;
+	connection: sqlops.connection.Connection;
 }

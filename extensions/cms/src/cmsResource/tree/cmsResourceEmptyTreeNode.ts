@@ -36,7 +36,7 @@ export class CmsResourceEmptyTreeNode extends TreeNode {
 			metadata: undefined,
 			nodePath: this.generateNodePath(),
 			nodeStatus: undefined,
-			nodeType: CmsResourceItemType.serverGroup,
+			nodeType: CmsResourceItemType.cmsNodeContainer,
 			nodeSubType: undefined
 		};
 	}

@@ -4,12 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-
+import * as sqlops from 'sqlops';
 import { TreeDataProvider, EventEmitter, Event, TreeItem } from 'vscode';
-import { setInterval, clearInterval } from 'timers';
 import { AppContext } from '../../appContext';
 import * as nls from 'vscode-nls';
-import * as sqlops from 'sqlops';
 const localize = nls.loadMessageBundle();
 
 import { TreeNode } from '../treeNode';
@@ -33,34 +31,47 @@ export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICms
 			return element.getChildren(true);
 		}
 
-		if (!this.isSystemInitialized && !this._loadingTimer) {
-			this._loadingTimer = setInterval(async () => {
-				try {
-					// Call to collect all locally saved CMS servers
-					// to determine whether the system has been initialized.
-
-
-					// System has been initialized (only if there's an ownerUri or locally saved CMS Servers)
-					// this.isSystemInitialized = true;
-
-					if (this._loadingTimer) {
-						clearInterval(this._loadingTimer);
-					}
-
-					this._onDidChangeTreeData.fire(undefined);
-				} catch (error) {
-					// System not initialized yet
-					this.isSystemInitialized = false;
+		if (!this.isSystemInitialized && !this._hasCachedServers) {
+			try {
+				// Call to collect all locally saved CMS servers
+				// to determine whether the system has been initialized.
+				let cachedServers = this._appContext.apiWrapper.getConfiguration().cmsServers;
+				if (cachedServers && cachedServers.length > 0) {
+					cachedServers.forEach((server) => {
+						this._servers.push(new CmsResourceTreeNode(
+							server.name,
+							server.description,
+							server.ownerUri,
+							server.connection,
+							this._appContext, this, null));
+					});
 				}
-			}, CmsResourceTreeProvider.loadingTimerInterval);
+				this.isSystemInitialized = true; // change this
+				this._onDidChangeTreeData.fire(undefined);
+			} catch (error) {
+				// System not initialized yet
+				this.isSystemInitialized = false;
+			}
 			return [CmsResourceMessageTreeNode.create(CmsResourceTreeProvider.loadingLabel, undefined)];
+
+		}
+		if (this._servers && this._servers.length > 0) {
+			return this._servers;
 		}
 		try {
 			let registeredCmsServers = this.appContext.apiWrapper.registeredCmsServers;
 			if (registeredCmsServers && registeredCmsServers.length > 0) {
 				this.isSystemInitialized = true;
-				return registeredCmsServers.map((server) => new CmsResourceTreeNode(server.name, server.description,
-					 server.registeredServers, server.serverGroups, this._appContext, this, null));
+				// save the CMS Servers for future use
+				this._appContext.apiWrapper.setConfiguration(registeredCmsServers);
+				return registeredCmsServers.map((server) => {
+					return new CmsResourceTreeNode(
+						server.name,
+						server.description,
+						server.ownerUri,
+						server.connection,
+						this._appContext, this, null);
+				});
 			} else {
 				return [new CmsResourceEmptyTreeNode()];
 
@@ -78,7 +89,7 @@ export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICms
 		this._onDidChangeTreeData.fire(node);
 	}
 
-	public async refresh(node: TreeNode, isClearingCache: boolean): Promise<void> {
+	public async refresh(node: TreeNode): Promise<void> {
 		this._onDidChangeTreeData.fire(node);
 	}
 
@@ -87,7 +98,8 @@ export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICms
 	}
 
 	public isSystemInitialized: boolean = false;
-
+	private _hasCachedServers: boolean = false;
+	private _servers = [];
 	private _loadingTimer: NodeJS.Timer = undefined;
 	private _onDidChangeTreeData = new EventEmitter<TreeNode>();
 

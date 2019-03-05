@@ -43,6 +43,8 @@ if (process.env.NODE_ENV === 'development') {
 	);
 
 	let configurationRegistry = <IConfigurationRegistry>Registry.as(Extensions.Configuration);
+
+	// Server explorer connections
 	configurationRegistry.registerConfiguration({
 		'id': 'databaseConnections',
 		'order': 0,
@@ -68,6 +70,20 @@ if (process.env.NODE_ENV === 'development') {
 				'type': 'boolean',
 				'description': localize('startup.alwaysShowServersView', 'True for the Servers view to be shown on launch of Azure Data Studio default; false if the last opened view should be shown'),
 				'default': true
+			}
+		}
+	});
+
+	// CMS connections
+	configurationRegistry.registerConfiguration({
+		'id': 'cmsServers',
+		'order': 1,
+		'title': localize('cmsServers', 'cms servers'),
+		'type': 'object',
+		'properties': {
+			'cms.cmsServers': {
+				'description': localize('cms.cmsServers', 'Central Management Servers'),
+				'type': 'object'
 			}
 		}
 	});

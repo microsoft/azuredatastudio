@@ -5,6 +5,7 @@
 
 'use strict';
 
+import * as sqlops from 'sqlops';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
@@ -93,4 +94,18 @@ export function equals(one: any, other: any): boolean {
         }
     }
     return true;
+}
+
+export function toConnectionProfile(connectionInfo: sqlops.connection.Connection): sqlops.IConnectionProfile {
+    let options = connectionInfo.options;
+    let connProfile: sqlops.IConnectionProfile = Object.assign(<sqlops.IConnectionProfile>{},
+        connectionInfo,
+        {
+            serverName: `${options['server']}`,
+            userName: options['user'],
+            password: options['password'],
+            id: connectionInfo.connectionId,
+        }
+    );
+    return connProfile;
 }

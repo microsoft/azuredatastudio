@@ -1,7 +1,6 @@
 'use strict';
 
 import * as vscode from 'vscode';
-import * as sqlops from 'sqlops';
 import * as path from 'path';
 import * as os from 'os';
 
@@ -11,7 +10,6 @@ import ControllerBase from './controllers/controllerBase';
 import { ApiWrapper } from './apiWrapper';
 
 let controllers: ControllerBase[] = [];
-
 
 // The function is a duplicate of \src\paths.js. IT would be better to import path.js but it doesn't
 // work for now because the extension is running in different process.
@@ -41,13 +39,6 @@ export function activate(extensionContext: vscode.ExtensionContext) {
 	controllers.push(cmsResourceController);
 	extensionContext.subscriptions.push(cmsResourceController);
 	activations.push(cmsResourceController.activate());
-	return {
-		// provideResources() {
-		// 	return [
-		// 		new CmsResourceProvider(apiWrapper, extensionContext)
-		// 	];
-		// }
-	};
 }
 
 // this method is called when your extension is deactivated

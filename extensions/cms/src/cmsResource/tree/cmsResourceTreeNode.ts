@@ -25,8 +25,8 @@ export class CmsResourceTreeNode extends CmsResourceTreeNodeBase {
 	public constructor(
 		private name: string,
 		private description: string,
-		private registeredServersList: mssql.RegisteredServerResult[],
-		private registeredGroupsList: mssql.RegisteredServerGroup[],
+		private ownerUri: string,
+		private connection: sqlops.connection.Connection,
 		appContext: AppContext,
 		treeChangeHandler: ICmsResourceTreeChangeHandler,
 		parent: TreeNode
@@ -38,21 +38,31 @@ export class CmsResourceTreeNode extends CmsResourceTreeNodeBase {
 	public async getChildren(): Promise<TreeNode[]> {
 		try {
 			let nodes: TreeNode[] = [];
-			if (this.registeredServersList) {
-				this.registeredServersList.forEach((registeredServer) => {
-					nodes.push(new RegisteredServerTreeNode(registeredServer.name,
-						registeredServer.description, registeredServer.relativePath,
-						this.appContext,
-						this.treeChangeHandler, this));
-				});
-			}
-			if (this.registeredGroupsList) {
-				this.registeredGroupsList.forEach((serverGroup) => {
-					nodes.push(new ServerGroupTreeNode(serverGroup.name, serverGroup.description,
-						serverGroup.relativePath, this.appContext, this.treeChangeHandler, this));
-				});
-			}
-			return nodes;
+			return this.appContext.apiWrapper.createCmsServer(this.connection, this.name, this.description).then(async (result) => {
+				if (result) {
+					if (result.registeredServersList) {
+						result.registeredServersList.forEach((registeredServer) => {
+							nodes.push(new RegisteredServerTreeNode(registeredServer.name,
+								registeredServer.description, registeredServer.relativePath,
+								this.appContext,
+								this.treeChangeHandler, this));
+						});
+					}
+					if (result.registeredServerGroups) {
+						if (result.registeredServerGroups) {
+							result.registeredServerGroups.forEach((serverGroup) => {
+								nodes.push(new ServerGroupTreeNode(
+									serverGroup.name,
+									serverGroup.description,
+									serverGroup.relativePath,
+									this.ownerUri,
+									this.appContext, this.treeChangeHandler, this));
+							});
+						}
+					}
+					return nodes;
+				}
+			});
 		} catch {
 			return [];
 		}

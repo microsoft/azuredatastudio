@@ -9,6 +9,7 @@ import * as vscode from 'vscode';
 import * as sqlops from 'sqlops';
 import * as mssql from '../../mssql/src/api/mssqlapis';
 import * as constants from './constants';
+import * as Utils from './cmsResource/utils';
 import { CmsResourceNodeInfo } from './cmsResource/tree/baseTreeNodes';
 
 /**
@@ -21,10 +22,7 @@ import { CmsResourceNodeInfo } from './cmsResource/tree/baseTreeNodes';
 export class ApiWrapper {
 
 	private _cmsService: mssql.CmsService;
-	private _connection: sqlops.connection.Connection;
-	private _ownerUri: string;
 	private _registeredCmsServers: CmsResourceNodeInfo[];
-
 
 	// Data APIs
 	public registerConnectionProvider(provider: sqlops.ConnectionProvider): vscode.Disposable {
@@ -39,32 +37,12 @@ export class ApiWrapper {
 		return sqlops.dataprotocol.registerTaskServicesProvider(provider);
 	}
 
-	public registerFileBrowserProvider(provider: sqlops.FileBrowserProvider): vscode.Disposable {
-		return sqlops.dataprotocol.registerFileBrowserProvider(provider);
-	}
-
 	public registerCapabilitiesServiceProvider(provider: sqlops.CapabilitiesProvider): vscode.Disposable {
 		return sqlops.dataprotocol.registerCapabilitiesServiceProvider(provider);
 	}
 
 	public registerModelViewProvider(widgetId: string, handler: (modelView: sqlops.ModelView) => void): void {
 		return sqlops.ui.registerModelViewProvider(widgetId, handler);
-	}
-
-	public registerWebviewProvider(widgetId: string, handler: (webview: sqlops.DashboardWebview) => void): void {
-		return sqlops.dashboard.registerWebviewProvider(widgetId, handler);
-	}
-
-	public createDialog(title: string): sqlops.window.modelviewdialog.Dialog {
-		return sqlops.window.modelviewdialog.createDialog(title);
-	}
-
-	public openDialog(dialog: sqlops.window.modelviewdialog.Dialog): void {
-		return sqlops.window.modelviewdialog.openDialog(dialog);
-	}
-
-	public closeDialog(dialog: sqlops.window.modelviewdialog.Dialog): void {
-		return sqlops.window.modelviewdialog.closeDialog(dialog);
 	}
 
 	public registerTaskHandler(taskId: string, handler: (profile: sqlops.IConnectionProfile) => void): void {
@@ -81,10 +59,6 @@ export class ApiWrapper {
 
 	public getCurrentConnection(): Thenable<sqlops.connection.Connection> {
 		return sqlops.connection.getCurrentConnection();
-	}
-
-	public createModelViewEditor(title: string, options?: sqlops.ModelViewEditorOptions): sqlops.workspace.ModelViewEditor {
-		return sqlops.workspace.createModelViewEditor(title, options);
 	}
 
 	// VSCode APIs
@@ -134,19 +108,12 @@ export class ApiWrapper {
 	 * @param extensionName The string name of the extension to get the configuration for
 	 * @param resource The optional URI, as a URI object or a string, to use to get resource-scoped configurations
 	 */
-	public getConfiguration(extensionName?: string, resource?: vscode.Uri | string): vscode.WorkspaceConfiguration {
-		if (typeof resource === 'string') {
-			try {
-				resource = this.parseUri(resource);
-			} catch (e) {
-				resource = undefined;
-			}
-		}
-		return vscode.workspace.getConfiguration(extensionName, resource as vscode.Uri);
+	public getConfiguration(): vscode.WorkspaceConfiguration {
+		return vscode.workspace.getConfiguration().get('cms');
 	}
 
-	public getExtensionConfiguration(): vscode.WorkspaceConfiguration {
-		return this.getConfiguration(constants.extensionConfigSectionName);
+	public async setConfiguration(value: any) {
+		await vscode.workspace.getConfiguration().update('cms.cmsServers', value, true);
 	}
 
 	/**
@@ -239,27 +206,31 @@ export class ApiWrapper {
 		return sqlops.connection.openConnectionDialog(providers, initialConnectionProfile, connectionCompletionOptions, true);
 	}
 
-	public async createCmsServer(name: string, description: string) {
-		const self = this;
+	public async createCmsServer(connection: sqlops.connection.Connection, name: string, description: string) {
 		let provider = await this.getCmsService();
-		return this.connection.then((connection) => {
-			return provider.createCmsServer(name, description, connection, self.ownerUri).then((result) => {
-				if (result) {
-					return result;
-				}
+		let ownerUri = await sqlops.connection.getUriForConnection(connection.connectionId);
+		if (!ownerUri) {
+			// Make a connection if it's not already connected
+			await sqlops.connection.connect(Utils.toConnectionProfile(connection)).then( async (result) => {
+				ownerUri = await sqlops.connection.getUriForConnection(result.connectionId);
 			});
+		}
+		return provider.createCmsServer(name, description, connection, ownerUri).then((result) => {
+			if (result) {
+				return result;
+			}
 		});
 	}
 
-	public addRegisteredCmsServers(name: string, description: string, server: mssql.ListRegisteredServersResult) {
+	public addRegisteredCmsServers(name: string, description: string, ownerUri: string, connection: sqlops.connection.Connection) {
 		if (!this._registeredCmsServers) {
 			this._registeredCmsServers = [];
 		}
 		let cmsServerNode: CmsResourceNodeInfo = {
 			name: name,
 			description: description,
-			registeredServers: server.registeredServersList,
-			serverGroups: server.registeredServerGroups
+			ownerUri: ownerUri,
+			connection: connection
 		};
 		this._registeredCmsServers.push(cmsServerNode);
 	}
@@ -269,22 +240,10 @@ export class ApiWrapper {
 	}
 
 	public get connection(): Thenable<sqlops.connection.Connection> {
-		if (!this._connection) {
-			return this.openConnectionDialog(['MSSQL']).then((connection) => {
-				if (connection) {
-					this._connection = connection;
-					return sqlops.connection.getUriForConnection(connection.connectionId).then((uri) => {
-						this._ownerUri = uri;
-						return this._connection;
-					});
-				}
-			});
-		} else {
-			return Promise.resolve(this._connection);
-		}
-	}
-
-	public get ownerUri(): string {
-		return this._ownerUri;
+		return this.openConnectionDialog(['MSSQL']).then((connection) => {
+			if (connection) {
+				return connection;
+			}
+		});
 	}
 }
