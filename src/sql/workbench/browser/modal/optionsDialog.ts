@@ -107,7 +107,7 @@ export class OptionsDialog extends Modal {
 			attachButtonStyler(this.backButton, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND });
 		}
 		let okButton = this.addFooterButton(localize('optionsDialog.ok', 'OK'), () => this.ok());
-		let closeButton = this.addFooterButton(this.options.cancelLabel ||  localize('optionsDialog.cancel', 'Cancel'), () => this.cancel());
+		let closeButton = this.addFooterButton(this.options.cancelLabel || localize('optionsDialog.cancel', 'Cancel'), () => this.cancel());
 		// Theme styler
 		attachButtonStyler(okButton, this._themeService);
 		attachButtonStyler(closeButton, this._themeService);
