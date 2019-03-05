@@ -730,7 +730,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			for (let i = 0; i < this.notebookManagers.length; i++) {
 				if (this.notebookManagers[i].sessionManager && this.notebookManagers[i].sessionManager.specs && this.notebookManagers[i].sessionManager.specs.kernels) {
 					let index = this.notebookManagers[i].sessionManager.specs.kernels.findIndex(kernel => kernel.name === kernelSpec.name);
-					if (index >= 0) {
+					if (index >= 0 && this._clientSessions && this._clientSessions.length > 0) {
 						if (this._activeClientSession) {
 							this._oldClientSession = this._activeClientSession;
 						}
