@@ -558,9 +558,9 @@ export function createApiFactory(
 				AzureResource: sqlExtHostTypes.AzureResource,
 				TreeItem: sqlExtHostTypes.TreeItem,
 				extensions: extensions,
-				SchemaUpdateAction: azdata.SchemaUpdateAction,
-				SchemaDifferenceType: azdata.SchemaDifferenceType,
-				SchemaCompareEndpointType: azdata.SchemaCompareEndpointType
+				SchemaUpdateAction: sqlExtHostTypes.SchemaUpdateAction,
+				SchemaDifferenceType: sqlExtHostTypes.SchemaDifferenceType,
+				SchemaCompareEndpointType: sqlExtHostTypes.SchemaCompareEndpointType
 			};
 		},
 

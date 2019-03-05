@@ -42,14 +42,6 @@
           "light": "./images/light_icon.svg",
           "dark": "./images/dark_icon.svg"
         }
-      },
-      {
-        "command": "schemaCompare.start",
-        "title": "Schema Compare",
-        "icon": {
-          "light": "./images/light_icon.svg",
-          "dark": "./images/dark_icon.svg"
-        }
       }
     ],
     "keybindings": [
@@ -68,11 +60,6 @@
         },
         {
           "command": "dacFx.start",
-          "when": "connectionProvider == MSSQL && nodeType && nodeType == Database",
-          "group": "export"
-        },
-        {
-          "command": "schemaCompare.start",
           "when": "connectionProvider == MSSQL && nodeType && nodeType == Database",
           "group": "export"
         }
