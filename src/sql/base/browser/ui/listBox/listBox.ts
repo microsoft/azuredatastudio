@@ -108,8 +108,8 @@ export class ListBox extends SelectBox {
 
 		if (this.isValid) {
 			this.selectElement.style.border = `1px solid ${this.selectBorder}`;
-		} else if (message) {
-			const styles = this.stylesForType(message.type);
+		} else if (this.message) {
+			const styles = this.stylesForType(this.message.type);
 			this.selectElement.style.border = styles.border ? `1px solid ${styles.border}` : null;
 		}
 	}
@@ -215,14 +215,13 @@ export class ListBox extends SelectBox {
 					className: 'monaco-inputbox-message'
 				};
 
-				let message = this.message;
-				if (message) {
-					let spanElement: HTMLElement = (message.formatContent
-						? renderFormattedText(message.content, renderOptions)
-						: renderText(message.content, renderOptions)) as any;
-					dom.addClass(spanElement, this.classForType(message.type));
+				if (this.message) {
+					let spanElement: HTMLElement = (this.message.formatContent
+						? renderFormattedText(this.message.content, renderOptions)
+						: renderText(this.message.content, renderOptions)) as any;
+					dom.addClass(spanElement, this.classForType(this.message.type));
 
-					const styles = this.stylesForType(message.type);
+					const styles = this.stylesForType(this.message.type);
 					spanElement.style.backgroundColor = styles.background ? styles.background.toString() : null;
 					spanElement.style.border = styles.border ? `1px solid ${styles.border}` : null;
 
