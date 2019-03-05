@@ -5,7 +5,7 @@
 'use strict';
 
 import * as nls from 'vscode-nls';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as os from 'os';
 import { SchemaCompareResult } from './schemaCompareResult';
@@ -25,25 +25,25 @@ export class SchemaCompareDialog {
 	private static readonly TargetRadioButtonsLabel: string = localize('schemaCompare.targetButtonsLabel', 'Target Type');
 	private static readonly NoActiveConnectionsLabel: string = localize('schemaCompare.NoActiveConnectionsText', 'No active connections');
 
-	public dialog: sqlops.window.modelviewdialog.Dialog;
-	private generalTab: sqlops.window.modelviewdialog.DialogTab;
-	private sourceDacpacComponent: sqlops.FormComponent;
-	private sourceTextBox: sqlops.InputBoxComponent;
-	private sourceFileButton: sqlops.ButtonComponent;
-	private sourceServerComponent: sqlops.FormComponent;
-	private sourceServerDropdown: sqlops.DropDownComponent;
-	private sourceDatabaseComponent: sqlops.FormComponent;
-	private sourceDatabaseDropdown: sqlops.DropDownComponent;
-	private sourceNoActiveConnectionsText: sqlops.FormComponent;
-	private targetDacpacComponent: sqlops.FormComponent;
-	private targetTextBox: sqlops.InputBoxComponent;
-	private targetFileButton: sqlops.ButtonComponent;
-	private targetServerComponent: sqlops.FormComponent;
-	private targetServerDropdown: sqlops.DropDownComponent;
-	private targetDatabaseComponent: sqlops.FormComponent;
-	private targetDatabaseDropdown: sqlops.DropDownComponent;
-	private targetNoActiveConnectionsText: sqlops.FormComponent;
-	private formBuilder: sqlops.FormBuilder;
+	public dialog: azdata.window.modelviewdialog.Dialog;
+	private generalTab: azdata.window.modelviewdialog.DialogTab;
+	private sourceDacpacComponent: azdata.FormComponent;
+	private sourceTextBox: azdata.InputBoxComponent;
+	private sourceFileButton: azdata.ButtonComponent;
+	private sourceServerComponent: azdata.FormComponent;
+	private sourceServerDropdown: azdata.DropDownComponent;
+	private sourceDatabaseComponent: azdata.FormComponent;
+	private sourceDatabaseDropdown: azdata.DropDownComponent;
+	private sourceNoActiveConnectionsText: azdata.FormComponent;
+	private targetDacpacComponent: azdata.FormComponent;
+	private targetTextBox: azdata.InputBoxComponent;
+	private targetFileButton: azdata.ButtonComponent;
+	private targetServerComponent: azdata.FormComponent;
+	private targetServerDropdown: azdata.DropDownComponent;
+	private targetDatabaseComponent: azdata.FormComponent;
+	private targetDatabaseDropdown: azdata.DropDownComponent;
+	private targetNoActiveConnectionsText: azdata.FormComponent;
+	private formBuilder: azdata.FormBuilder;
 	private sourceIsDacpac: boolean;
 	private targetIsDacpac: boolean;
 	private database: string;
@@ -53,19 +53,19 @@ export class SchemaCompareDialog {
 	}
 
 	protected async initializeDialog() {
-		this.generalTab = sqlops.window.modelviewdialog.createTab(SchemaCompareDialog.GeneralTabText);
+		this.generalTab = azdata.window.modelviewdialog.createTab(SchemaCompareDialog.GeneralTabText);
 		this.initializeGeneralTab();
 		this.dialog.content = [this.generalTab];
 	}
 
 	public async openDialog(p: any, dialogName?: string) {
-		let profile = p ? <sqlops.IConnectionProfile>p.connectionProfile : undefined;
+		let profile = p ? <azdata.IConnectionProfile>p.connectionProfile : undefined;
 		if (profile) {
 			this.database = profile.databaseName;
 		}
 
 		let event = dialogName ? dialogName : null;
-		this.dialog = sqlops.window.modelviewdialog.createDialog('Schema Compare', event);
+		this.dialog = azdata.window.modelviewdialog.createDialog('Schema Compare', event);
 
 		await this.initializeDialog();
 
@@ -75,50 +75,50 @@ export class SchemaCompareDialog {
 		this.dialog.cancelButton.label = SchemaCompareDialog.CancelButtonText;
 		this.dialog.cancelButton.onClick(async () => await this.cancel());
 
-		sqlops.window.modelviewdialog.openDialog(this.dialog);
+		azdata.window.modelviewdialog.openDialog(this.dialog);
 	}
 
 	protected async execute() {
 		let sourceName: string;
 		let targetName: string;
 
-		let sourceEndpointInfo: sqlops.SchemaCompareEndpointInfo;
+		let sourceEndpointInfo: azdata.SchemaCompareEndpointInfo;
 		if (this.sourceIsDacpac) {
 			sourceName = this.sourceTextBox.value;
 			sourceEndpointInfo = {
-				endpointType: sqlops.SchemaCompareEndpointType.dacpac,
+				endpointType: azdata.SchemaCompareEndpointType.dacpac,
 				databaseName: '',
 				ownerUri: '',
 				packageFilePath: this.sourceTextBox.value
 			};
 		} else {
-			sourceName = (this.sourceServerDropdown.value as ConnectionDropdownValue).name + '.' + (<sqlops.CategoryValue>this.sourceDatabaseDropdown.value).name;
-			let ownerUri = await sqlops.connection.getUriForConnection((this.sourceServerDropdown.value as ConnectionDropdownValue).connection.connectionId);
+			sourceName = (this.sourceServerDropdown.value as ConnectionDropdownValue).name + '.' + (<azdata.CategoryValue>this.sourceDatabaseDropdown.value).name;
+			let ownerUri = await azdata.connection.getUriForConnection((this.sourceServerDropdown.value as ConnectionDropdownValue).connection.connectionId);
 
 			sourceEndpointInfo = {
-				endpointType: sqlops.SchemaCompareEndpointType.database,
-				databaseName: (<sqlops.CategoryValue>this.sourceDatabaseDropdown.value).name,
+				endpointType: azdata.SchemaCompareEndpointType.database,
+				databaseName: (<azdata.CategoryValue>this.sourceDatabaseDropdown.value).name,
 				ownerUri: ownerUri,
 				packageFilePath: ''
 			};
 		}
 
-		let targetEndpointInfo: sqlops.SchemaCompareEndpointInfo;
+		let targetEndpointInfo: azdata.SchemaCompareEndpointInfo;
 		if (this.targetIsDacpac) {
 			targetName = this.targetTextBox.value;
 			targetEndpointInfo = {
-				endpointType: sqlops.SchemaCompareEndpointType.dacpac,
+				endpointType: azdata.SchemaCompareEndpointType.dacpac,
 				databaseName: '',
 				ownerUri: '',
 				packageFilePath: this.targetTextBox.value
 			};
 		} else {
-			targetName = (this.targetServerDropdown.value as ConnectionDropdownValue).name + '.' + (<sqlops.CategoryValue>this.targetDatabaseDropdown.value).name;
-			let ownerUri = await sqlops.connection.getUriForConnection((this.targetServerDropdown.value as ConnectionDropdownValue).connection.connectionId);
+			targetName = (this.targetServerDropdown.value as ConnectionDropdownValue).name + '.' + (<azdata.CategoryValue>this.targetDatabaseDropdown.value).name;
+			let ownerUri = await azdata.connection.getUriForConnection((this.targetServerDropdown.value as ConnectionDropdownValue).connection.connectionId);
 
 			targetEndpointInfo = {
-				endpointType: sqlops.SchemaCompareEndpointType.database,
-				databaseName: (<sqlops.CategoryValue>this.targetDatabaseDropdown.value).name,
+				endpointType: azdata.SchemaCompareEndpointType.database,
+				databaseName: (<azdata.CategoryValue>this.targetDatabaseDropdown.value).name,
 				ownerUri: ownerUri,
 				packageFilePath: ''
 			};
@@ -193,7 +193,7 @@ export class SchemaCompareDialog {
 		});
 	}
 
-	private async createFileBrowser(view: sqlops.ModelView, isTarget: boolean): Promise<sqlops.FormComponent> {
+	private async createFileBrowser(view: azdata.ModelView, isTarget: boolean): Promise<azdata.FormComponent> {
 		let currentTextbox = isTarget ? this.targetTextBox : this.sourceTextBox;
 		if (isTarget) {
 			this.targetFileButton = view.modelBuilder.button().withProperties({
@@ -236,7 +236,7 @@ export class SchemaCompareDialog {
 		};
 	}
 
-	private async createSourceRadiobuttons(view: sqlops.ModelView): Promise<sqlops.FormComponent> {
+	private async createSourceRadiobuttons(view: azdata.ModelView): Promise<azdata.FormComponent> {
 		let dacpacRadioButton = view.modelBuilder.radioButton()
 			.withProperties({
 				name: 'source',
@@ -286,7 +286,7 @@ export class SchemaCompareDialog {
 		};
 	}
 
-	private async createTargetRadiobuttons(view: sqlops.ModelView): Promise<sqlops.FormComponent> {
+	private async createTargetRadiobuttons(view: azdata.ModelView): Promise<azdata.FormComponent> {
 		let dacpacRadioButton = view.modelBuilder.radioButton()
 			.withProperties({
 				name: 'target',
@@ -331,7 +331,7 @@ export class SchemaCompareDialog {
 		};
 	}
 
-	protected async createSourceServerDropdown(view: sqlops.ModelView): Promise<sqlops.FormComponent> {
+	protected async createSourceServerDropdown(view: azdata.ModelView): Promise<azdata.FormComponent> {
 		this.sourceServerDropdown = view.modelBuilder.dropDown().component();
 		this.sourceServerDropdown.onValueChanged(async () => {
 			await this.populateDatabaseDropdown((this.sourceServerDropdown.value as ConnectionDropdownValue).connection.connectionId, false);
@@ -343,7 +343,7 @@ export class SchemaCompareDialog {
 		};
 	}
 
-	protected async createTargetServerDropdown(view: sqlops.ModelView): Promise<sqlops.FormComponent> {
+	protected async createTargetServerDropdown(view: azdata.ModelView): Promise<azdata.FormComponent> {
 		this.targetServerDropdown = view.modelBuilder.dropDown().component();
 		this.targetServerDropdown.onValueChanged(async () => {
 			await this.populateDatabaseDropdown((this.targetServerDropdown.value as ConnectionDropdownValue).connection.connectionId, true);
@@ -370,7 +370,7 @@ export class SchemaCompareDialog {
 	}
 
 	protected async getServerValues(): Promise<{ connection, displayName, name }[]> {
-		let cons = await sqlops.connection.getActiveConnections();
+		let cons = await azdata.connection.getActiveConnections();
 		// This user has no active connections
 		if (!cons || cons.length === 0) {
 			return undefined;
@@ -400,7 +400,7 @@ export class SchemaCompareDialog {
 		return values;
 	}
 
-	protected async createSourceDatabaseDropdown(view: sqlops.ModelView): Promise<sqlops.FormComponent> {
+	protected async createSourceDatabaseDropdown(view: azdata.ModelView): Promise<azdata.FormComponent> {
 		this.sourceDatabaseDropdown = view.modelBuilder.dropDown().component();
 
 		return {
@@ -409,7 +409,7 @@ export class SchemaCompareDialog {
 		};
 	}
 
-	protected async createTargetDatabaseDropdown(view: sqlops.ModelView): Promise<sqlops.FormComponent> {
+	protected async createTargetDatabaseDropdown(view: azdata.ModelView): Promise<azdata.FormComponent> {
 		this.targetDatabaseDropdown = view.modelBuilder.dropDown().component();
 
 		return {
@@ -433,7 +433,7 @@ export class SchemaCompareDialog {
 	protected async getDatabaseValues(connectionId: string): Promise<{ displayName, name }[]> {
 		let idx = -1;
 		let count = -1;
-		let values = (await sqlops.connection.listDatabases(connectionId)).map(db => {
+		let values = (await azdata.connection.listDatabases(connectionId)).map(db => {
 			count++;
 			if (this.database && db === this.database) {
 				idx = count;
@@ -453,7 +453,7 @@ export class SchemaCompareDialog {
 		return values;
 	}
 
-	protected async createNoActiveConnectionsText(view: sqlops.ModelView): Promise<sqlops.FormComponent> {
+	protected async createNoActiveConnectionsText(view: azdata.ModelView): Promise<azdata.FormComponent> {
 		let noActiveConnectionsText = view.modelBuilder.text().withProperties({ value: SchemaCompareDialog.NoActiveConnectionsLabel }).component();
 
 		return {
@@ -463,6 +463,6 @@ export class SchemaCompareDialog {
 	}
 }
 
-interface ConnectionDropdownValue extends sqlops.CategoryValue {
-	connection: sqlops.connection.Connection;
+interface ConnectionDropdownValue extends azdata.CategoryValue {
+	connection: azdata.connection.Connection;
 }

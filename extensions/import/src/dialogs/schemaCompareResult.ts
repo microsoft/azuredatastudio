@@ -5,7 +5,7 @@
 'use strict';
 
 import * as nls from 'vscode-nls';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as os from 'os';
 import * as path from 'path';
@@ -13,29 +13,29 @@ import * as fs from 'fs';
 const localize = nls.loadMessageBundle();
 
 export class SchemaCompareResult {
-	private differencesTable: sqlops.TableComponent;
-	private loader: sqlops.LoadingComponent;
-	private editor: sqlops.workspace.ModelViewEditor;
-	private diffEditor: sqlops.DiffEditorComponent;
-	private flexModel: sqlops.FlexContainer;
-	private noDifferencesLabel: sqlops.TextComponent;
-	private webViewComponent: sqlops.WebViewComponent;
-	private sourceDropdown: sqlops.DropDownComponent;
-	private targetDropdown: sqlops.DropDownComponent;
-	private sourceTargetFlexLayout: sqlops.FlexContainer;
-	private switchButton: sqlops.ButtonComponent;
-	private compareButton: sqlops.ButtonComponent;
-	private generateScriptButton: sqlops.ButtonComponent;
+	private differencesTable: azdata.TableComponent;
+	private loader: azdata.LoadingComponent;
+	private editor: azdata.workspace.ModelViewEditor;
+	private diffEditor: azdata.DiffEditorComponent;
+	private flexModel: azdata.FlexContainer;
+	private noDifferencesLabel: azdata.TextComponent;
+	private webViewComponent: azdata.WebViewComponent;
+	private sourceDropdown: azdata.DropDownComponent;
+	private targetDropdown: azdata.DropDownComponent;
+	private sourceTargetFlexLayout: azdata.FlexContainer;
+	private switchButton: azdata.ButtonComponent;
+	private compareButton: azdata.ButtonComponent;
+	private generateScriptButton: azdata.ButtonComponent;
 	private SchemaCompareActionMap: Map<Number, string>;
-	private comparisonResult: sqlops.SchemaCompareResult;
+	private comparisonResult: azdata.SchemaCompareResult;
 
-	constructor(private sourceName: string, private targetName: string, private sourceEndpointInfo: sqlops.SchemaCompareEndpointInfo, private targetEndpointInfo: sqlops.SchemaCompareEndpointInfo) {
+	constructor(private sourceName: string, private targetName: string, private sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, private targetEndpointInfo: azdata.SchemaCompareEndpointInfo) {
 		this.SchemaCompareActionMap = new Map<Number, string>();
-		this.SchemaCompareActionMap[sqlops.SchemaUpdateAction.Delete] = localize('schemaCompare.deleteAction', 'Delete');
-		this.SchemaCompareActionMap[sqlops.SchemaUpdateAction.Change] = localize('schemaCompare.changeAction', 'Change');
-		this.SchemaCompareActionMap[sqlops.SchemaUpdateAction.Add] = localize('schemaCompare.addAction', 'Add');
+		this.SchemaCompareActionMap[azdata.SchemaUpdateAction.Delete] = localize('schemaCompare.deleteAction', 'Delete');
+		this.SchemaCompareActionMap[azdata.SchemaUpdateAction.Change] = localize('schemaCompare.changeAction', 'Change');
+		this.SchemaCompareActionMap[azdata.SchemaUpdateAction.Add] = localize('schemaCompare.addAction', 'Add');
 
-		this.editor = sqlops.workspace.createModelViewEditor(localize('schemaCompare.Title', 'Schema Compare'), { retainContextWhenHidden: true, supportsSave: true });
+		this.editor = azdata.workspace.createModelViewEditor(localize('schemaCompare.Title', 'Schema Compare'), { retainContextWhenHidden: true, supportsSave: true });
 
 		this.editor.registerContent(async view => {
 			this.diffEditor = view.modelBuilder.diffeditor().withProperties({
@@ -126,7 +126,7 @@ export class SchemaCompareResult {
 
 	private async execute() {
 		let service = await SchemaCompareResult.getService('MSSQL');
-		this.comparisonResult = await service.schemaCompare(this.sourceEndpointInfo, this.targetEndpointInfo, sqlops.TaskExecutionMode.execute);
+		this.comparisonResult = await service.schemaCompare(this.sourceEndpointInfo, this.targetEndpointInfo, azdata.TaskExecutionMode.execute);
 		if (!this.comparisonResult || !this.comparisonResult.success) {
 			vscode.window.showErrorMessage(
 				localize('schemaCompare.compareErrorMessage', "Schema Compare failed '{0}'", this.comparisonResult.errorMessage ? this.comparisonResult.errorMessage : 'Unknown'));
@@ -162,7 +162,7 @@ export class SchemaCompareResult {
 		this.compareButton.enabled = true;
 
 		// only enable generate script button if the target is a db
-		if (this.targetEndpointInfo.endpointType === sqlops.SchemaCompareEndpointType.database) {
+		if (this.targetEndpointInfo.endpointType === azdata.SchemaCompareEndpointType.database) {
 			this.generateScriptButton.enabled = true;
 		}
 
@@ -203,10 +203,10 @@ export class SchemaCompareResult {
 		});
 	}
 
-	private getAllDifferences(differences: sqlops.DiffEntry[]): string[][] {
+	private getAllDifferences(differences: azdata.DiffEntry[]): string[][] {
 		let data = [];
 		differences.forEach(difference => {
-			if (difference.differenceType === sqlops.SchemaDifferenceType.Object) {
+			if (difference.differenceType === azdata.SchemaDifferenceType.Object) {
 				if (difference.sourceValue !== null || difference.targetValue !== null) {
 					data.push([difference.name, difference.sourceValue, this.SchemaCompareActionMap[difference.updateAction], difference.targetValue]);
 				}
@@ -216,7 +216,7 @@ export class SchemaCompareResult {
 		return data;
 	}
 
-	private createSwitchButton(view: sqlops.ModelView) {
+	private createSwitchButton(view: azdata.ModelView) {
 		this.switchButton = view.modelBuilder.button().withProperties({
 			label: '⇄',
 			enabled: false
@@ -231,7 +231,7 @@ export class SchemaCompareResult {
 		});
 	}
 
-	private createCompareButton(view: sqlops.ModelView) {
+	private createCompareButton(view: azdata.ModelView) {
 		this.compareButton = view.modelBuilder.button().withProperties({
 			label: localize('schemaCompare.compareButton', 'Compare'),
 			enabled: false
@@ -252,7 +252,7 @@ export class SchemaCompareResult {
 		this.execute();
 	}
 
-	private createGenerateScriptButton(view: sqlops.ModelView) {
+	private createGenerateScriptButton(view: azdata.ModelView) {
 		this.generateScriptButton = view.modelBuilder.button().withProperties({
 			label: localize('schemaCompare.generateScriptButton', 'Generate Script'),
 			title: 'Script can only be generated when the target is a database',
@@ -279,7 +279,7 @@ export class SchemaCompareResult {
 			}
 
 			let service = await SchemaCompareResult.getService('MSSQL');
-			let result = await service.schemaCompareGenerateScript(this.comparisonResult.operationId, this.targetEndpointInfo.databaseName, fileUri.fsPath, sqlops.TaskExecutionMode.execute);
+			let result = await service.schemaCompareGenerateScript(this.comparisonResult.operationId, this.targetEndpointInfo.databaseName, fileUri.fsPath, azdata.TaskExecutionMode.execute);
 			if (!result || !result.success) {
 				vscode.window.showErrorMessage(
 					localize('schemaCompare.generateScriptErrorMessage', "Generate Script failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
@@ -287,8 +287,8 @@ export class SchemaCompareResult {
 		});
 	}
 
-	private static async getService(providerName: string): Promise<sqlops.DacFxServicesProvider> {
-		let service = sqlops.dataprotocol.getProvider<sqlops.DacFxServicesProvider>(providerName, sqlops.DataProviderType.DacFxServicesProvider);
+	private static async getService(providerName: string): Promise<azdata.DacFxServicesProvider> {
+		let service = azdata.dataprotocol.getProvider<azdata.DacFxServicesProvider>(providerName, azdata.DataProviderType.DacFxServicesProvider);
 		return service;
 	}
 }
