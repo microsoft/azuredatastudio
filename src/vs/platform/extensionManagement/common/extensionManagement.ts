@@ -142,7 +142,7 @@ export interface IGalleryExtensionProperties {
 	extensionPack?: string[];
 	engine?: string;
 	// {{SQL CARBON EDIT}}
-	azureDataStudio?: string;
+	azDataEngine?: string;
 	localizedLanguages?: string[];
 }
 

@@ -711,6 +711,8 @@ export class ExtensionsWorkbenchService implements IExtensionsWorkbenchService, 
 				}
 			}
 			// {{SQL CARBON EDIT}}
+			// This is the error handler when installing local VSIX file.
+			// Prompt the user about the error detail.
 			, (error) => {
 				this.notificationService.error(error);
 				return Promise.reject(error);
@@ -733,8 +735,11 @@ export class ExtensionsWorkbenchService implements IExtensionsWorkbenchService, 
 		}
 
 		// {{SQL CARBON EDIT}}
+		// This is the execution path for install/update extension from marketplace.
+		// Check both the vscode version and azure data studio version
+		// The check is added here because we want to fail fast instead of downloading the VSIX and then fail.
 		if (gallery.properties.engine && (!isEngineValid(gallery.properties.engine, product.vscodeVersion)
-			|| (gallery.properties.azureDataStudio && !isEngineValid(gallery.properties.azureDataStudio, pkg.version)))) {
+			|| (gallery.properties.azDataEngine && !isEngineValid(gallery.properties.azDataEngine, pkg.version)))) {
 			return Promise.reject(new ExtensionManagementError(nls.localize('incompatible', "Unable to install version '{2}' of extension '{0}' as it is not compatible with Azure Data Studio '{1}'.", extension.id, pkg.version, gallery.version), INSTALL_ERROR_INCOMPATIBLE));
 		}
 

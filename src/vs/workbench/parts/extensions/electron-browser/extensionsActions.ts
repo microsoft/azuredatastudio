@@ -192,6 +192,8 @@ export class InstallAction extends Action {
 			}
 
 			// {{SQL CARBON EDIT}}
+			// Prompt the user that the current ADS version is not compatible with the extension,
+			// return here as in this scenario it doesn't make sense for the user to download manually.
 			if(err && err.code === INSTALL_ERROR_INCOMPATIBLE) {
 				return this.notificationService.error(err);
 			}
@@ -424,6 +426,8 @@ export class UpdateAction extends Action {
 			}
 
 			// {{SQL CARBON EDIT}}
+			// Prompt the user that the current ADS version is not compatible with the extension,
+			// return here as in this scenario it doesn't make sense for the user to download manually.
 			if(err && err.code === INSTALL_ERROR_INCOMPATIBLE) {
 				return this.notificationService.error(err);
 			}
