@@ -26,15 +26,15 @@ export class DropdownModel {
 }
 
 export class DropdownRenderer implements tree.IRenderer {
-	public getHeight(tree: tree.ITree, element: Resource): number {
+	public getHeight(): number {
 		return 22;
 	}
 
-	public getTemplateId(tree: tree.ITree, element: Resource): string {
+	public getTemplateId(): string {
 		return '';
 	}
 
-	public renderTemplate(tree: tree.ITree, templateId: string, container: HTMLElement): Template {
+	public renderTemplate(tree: any, templateId: string, container: HTMLElement): Template {
 		const row = $('div.list-row').style('height', '22px').style('padding-left', '5px').getHTMLElement();
 		DOM.append(container, row);
 		const label = $('span.label').style('margin', 'auto').style('vertical-align', 'middle').getHTMLElement();
@@ -43,12 +43,12 @@ export class DropdownRenderer implements tree.IRenderer {
 		return { label, row };
 	}
 
-	public renderElement(tree: tree.ITree, element: Resource, templateId: string, templateData: Template): void {
+	public renderElement(tree: any, element: Resource, templateId: string, templateData: Template): void {
 		templateData.label.innerText = element.value;
 		templateData.row.title = element.value;
 	}
 
-	public disposeTemplate(tree: tree.ITree, templateId: string, templateData: Template): void {
+	public disposeTemplate(tree: any, templateId: string, templateData: Template): void {
 		// no op
 	}
 }
@@ -56,7 +56,7 @@ export class DropdownRenderer implements tree.IRenderer {
 export class DropdownDataSource implements tree.IDataSource {
 	public options: Array<Resource>;
 
-	public getId(tree: tree.ITree, element: Resource | DropdownModel): string {
+	public getId(tree: any, element: Resource | DropdownModel): string {
 		if (element instanceof DropdownModel) {
 			return DropdownModel.ID;
 		} else {
@@ -64,7 +64,7 @@ export class DropdownDataSource implements tree.IDataSource {
 		}
 	}
 
-	public hasChildren(tree: tree.ITree, element: Resource | DropdownModel): boolean {
+	public hasChildren(tree: any, element: Resource | DropdownModel): boolean {
 		if (element instanceof DropdownModel) {
 			return true;
 		} else {
@@ -72,7 +72,7 @@ export class DropdownDataSource implements tree.IDataSource {
 		}
 	}
 
-	public getChildren(tree: tree.ITree, element: Resource | DropdownModel): Promise<any> {
+	public getChildren(tree: any, element: Resource | DropdownModel): Promise<any> {
 		if (element instanceof DropdownModel) {
 			return TPromise.as(this.options);
 		} else {
@@ -80,7 +80,7 @@ export class DropdownDataSource implements tree.IDataSource {
 		}
 	}
 
-	public getParent(tree: tree.ITree, element: Resource | DropdownModel): Promise<any> {
+	public getParent(tree: any, element: Resource | DropdownModel): Promise<any> {
 		if (element instanceof DropdownModel) {
 			return TPromise.as(undefined);
 		} else {
@@ -92,7 +92,7 @@ export class DropdownDataSource implements tree.IDataSource {
 export class DropdownFilter extends TreeDefaults.DefaultFilter {
 	public filterString: string;
 
-	public isVisible(tree: tree.ITree, element: Resource): boolean {
+	public isVisible(tree: any, element: Resource): boolean {
 		return element.value.toLowerCase().includes(this.filterString.toLowerCase());
 	}
 }

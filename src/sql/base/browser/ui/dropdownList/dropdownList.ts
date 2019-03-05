@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import { Builder } from 'sql/base/browser/builder';
 import { Button, IButtonStyles } from 'sql/base/browser/ui/button/button';
 import * as DOM from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
@@ -17,7 +16,6 @@ import { KeyCode } from 'vs/base/common/keyCodes';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import 'vs/css!./media/dropdownList';
 
-
 export interface IDropdownStyles {
 	backgroundColor?: Color;
 	foregroundColor?: Color;
@@ -26,30 +24,30 @@ export interface IDropdownStyles {
 
 export class DropdownList extends Dropdown {
 
-	protected backgroundColor: Color;
-	protected foregroundColor: Color;
-	protected borderColor: Color;
+	protected backgroundColor: Color | undefined;
+	protected foregroundColor: Color | undefined;
+	protected borderColor: Color | undefined;
 
 	constructor(
 		container: HTMLElement,
 		private _options: IDropdownOptions,
 		private _contentContainer: HTMLElement,
 		private _list: List<any>,
-		private _action?: IAction,
+		action?: IAction,
 	) {
 		super(container, _options);
-		if (_action) {
+		if (action) {
 			let button = new Button(_contentContainer);
-			button.label = _action.label;
+			button.label = action.label;
 			this.toDispose.push(DOM.addDisposableListener(button.element, DOM.EventType.CLICK, () => {
-				this._action.run();
+				action.run();
 				this.hide();
 			}));
 			this.toDispose.push(DOM.addDisposableListener(button.element, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
 				let event = new StandardKeyboardEvent(e);
 				if (event.equals(KeyCode.Enter)) {
 					e.stopPropagation();
-					this._action.run();
+					action.run();
 					this.hide();
 				}
 			}));
@@ -57,18 +55,16 @@ export class DropdownList extends Dropdown {
 
 		DOM.append(this.element, DOM.$('div.dropdown-icon'));
 
-		this.toDispose.push(new Builder(this.element).on([DOM.EventType.CLICK, DOM.EventType.MOUSE_DOWN, GestureEventType.Tap], (e: Event) => {
-			DOM.EventHelper.stop(e, true); // prevent default click behaviour to trigger
-		}).on([DOM.EventType.MOUSE_DOWN, GestureEventType.Tap], (e: Event) => {
-			// We want to show the context menu on dropdown so that as a user you can press and hold the
-			// mouse button, make a choice of action in the menu and release the mouse to trigger that
-			// action.
-			// Due to some weird bugs though, we delay showing the menu to unwind event stack
-			// (see https://github.com/Microsoft/vscode/issues/27648)
-			setTimeout(() => this.show(), 100);
-		}).on([DOM.EventType.KEY_DOWN], (e: KeyboardEvent) => {
-			let event = new StandardKeyboardEvent(e);
-			if (event.equals(KeyCode.Enter)) {
+		[DOM.EventType.CLICK, DOM.EventType.MOUSE_DOWN, GestureEventType.Tap].forEach(event => {
+			this._register(DOM.addDisposableListener(this.element, event, e => DOM.EventHelper.stop(e, true))); // prevent default click behaviour to trigger
+		});
+
+		[DOM.EventType.MOUSE_DOWN, GestureEventType.Tap].forEach(event => {
+			this._register(DOM.addDisposableListener(this.element, event, e => setTimeout(() => this.show(), 100)));
+		});
+
+		this._register(DOM.addStandardDisposableListener(this.element, DOM.EventType.KEY_DOWN, (e: StandardKeyboardEvent) => {
+			if (e.equals(KeyCode.Enter)) {
 				e.stopPropagation();
 				setTimeout(() => {
 					this.show();
@@ -92,7 +88,7 @@ export class DropdownList extends Dropdown {
 	protected renderContents(container: HTMLElement): IDisposable {
 		let div = DOM.append(container, this._contentContainer);
 		div.style.width = DOM.getTotalWidth(this.element) + 'px';
-		return null;
+		return { dispose: () => { } };
 	}
 
 	/**
@@ -139,7 +135,7 @@ export class DropdownList extends Dropdown {
 		}
 	}
 
-	private applyStylesOnElement(element: HTMLElement, background: string, foreground: string, border: string): void {
+	private applyStylesOnElement(element: HTMLElement, background: string | null, foreground: string | null, border: string | null): void {
 		if (element) {
 			element.style.backgroundColor = background;
 			element.style.color = foreground;

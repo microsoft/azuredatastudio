@@ -8,16 +8,21 @@
 		"./typings",
 		"./sql/base/common/**/*ts",
 		"./vs/base/common/**/*.ts",
-		"./vs/base/node/**/*.ts",
-		"./vs/editor/contrib/smartSelect/**/*.ts",
 	],
 	"files": [
-		"./sql/base/browser/ui/breadcrumb/breadcrumb.component.ts",
-		"./sql/base/browser/ui/breadcrumb/interfaces.ts",
+		// "./sql/base/browser/ui/breadcrumb/breadcrumb.component.ts", // pulls in angular which gives extrenous errors
+		// "./sql/base/browser/ui/breadcrumb/interfaces.ts", // pulls in angular which gives extrenous errors
 		"./sql/base/browser/ui/button/button.ts",
 		"./sql/base/browser/ui/checkbox/checkbox.ts",
-		"./sql/base/browser/ui/checkbox/checkbox.component.ts",
-		"./sql/base/browser/ui/dropdownList/dropdownList.ts",
+		// "./sql/base/browser/ui/checkbox/checkbox.component.ts",  // pulls in angular which gives extrenous errors
+		// "./sql/base/browser/ui/dropdownList/dropdownList.ts", // skipping since vscode hasn't checked their dropdown yet
+		// "./sql/base/browser/ui/editableDropdown/actions.ts", // skipping since vscode hasn't checked their dropdown yet and it isn't in the right place anyways
+		// "./sql/base/browser/ui/editableDropdown/dropdown.ts", // skipping since vscode hasn't checked their dropdown yet and it isn't in the right place anyways
+		// "./sql/base/browser/ui/editableDropdown/dropdownTree.ts", // skipping since vscode hasn't checked their dropdown yet and it isn't in the right place anyways
+		// "./sql/base/browser/ui/editableDropdown/editableDropdown.component.ts", // skipping since vscode hasn't checked their dropdown yet and it isn't in the right place anyways
+		// "./sql/base/browser/ui/inputBox/inputBox.component.ts", // pulls in angular which gives extrenous errors
+		// "./sql/base/browser/ui/inputBox/inputBox.ts", // skipping since vscode hasn't checked their inputbox yet
+		// "./sql/base/browser/ui/listBox/listBox.ts",
 		// "./vs/base/browser/browser.ts",
 		// "./vs/base/browser/dnd.ts",
 		// "./vs/base/browser/dom.ts",
