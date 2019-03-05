@@ -18,7 +18,7 @@ import {
 	MainThreadTasksShape
 } from 'sql/workbench/api/node/sqlExtHost.protocol';
 
-import { IConnectionProfile } from 'sqlops';
+import { IConnectionProfile } from 'azdata';
 
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 

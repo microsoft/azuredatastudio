@@ -5,7 +5,7 @@
 
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as fspath from 'path';
 import * as fs from 'fs';
@@ -153,10 +153,10 @@ export class FolderNode extends HdfsFileSourceNode {
 		return item;
 	}
 
-	getNodeInfo(): sqlops.NodeInfo {
+	getNodeInfo(): azdata.NodeInfo {
 		// TODO handle error message case by returning it in the OE API
 		// TODO support better mapping of node type
-		let nodeInfo: sqlops.NodeInfo = {
+		let nodeInfo: azdata.NodeInfo = {
 			label: this.getDisplayName(),
 			isLeaf: false,
 			errorMessage: undefined,
@@ -252,9 +252,9 @@ export class FileNode extends HdfsFileSourceNode implements IFileNode {
 	}
 
 
-	getNodeInfo(): sqlops.NodeInfo {
+	getNodeInfo(): azdata.NodeInfo {
 		// TODO improve node type handling so it's not tied to SQL Server types
-		let nodeInfo: sqlops.NodeInfo = {
+		let nodeInfo: azdata.NodeInfo = {
 			label: this.getDisplayName(),
 			isLeaf: true,
 			errorMessage: undefined,
@@ -281,17 +281,14 @@ export class FileNode extends HdfsFileSourceNode implements IFileNode {
 	public writeFileContentsToDisk(localPath: string, cancelToken?: vscode.CancellationTokenSource): Promise<vscode.Uri> {
 		return new Promise((resolve, reject) => {
 			let readStream: fs.ReadStream = this.fileSource.createReadStream(this.hdfsPath);
+			readStream.on('error', (err) => {
+				reject(err);
+			});
+
+			let error: string | Error = undefined;
 			let writeStream = fs.createWriteStream(localPath, {
 				encoding: 'utf8'
 			});
-			let cancelable = new CancelableStream(cancelToken);
-			cancelable.on('error', (err) => {
-				reject(err);
-			});
-			readStream.pipe(cancelable).pipe(writeStream);
-
-			let error: string | Error = undefined;
-
 			writeStream.on('error', (err) => {
 				error = err;
 				reject(error);
@@ -301,6 +298,13 @@ export class FileNode extends HdfsFileSourceNode implements IFileNode {
 					resolve(vscode.Uri.file(localPath));
 				}
 			});
+
+			let cancelable = new CancelableStream(cancelToken);
+			cancelable.on('error', (err) => {
+				reject(err);
+			});
+
+			readStream.pipe(cancelable).pipe(writeStream);
 		});
 	}
 
@@ -349,8 +353,8 @@ export class ErrorNode extends TreeNode {
 	}
 
 
-	getNodeInfo(): sqlops.NodeInfo {
-		let nodeInfo: sqlops.NodeInfo = {
+	getNodeInfo(): azdata.NodeInfo {
+		let nodeInfo: azdata.NodeInfo = {
 			label: this.message,
 			isLeaf: false,
 			errorMessage: undefined,

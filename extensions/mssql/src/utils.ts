@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as crypto from 'crypto';
@@ -170,11 +170,25 @@ export function verifyPlatform(): Thenable<boolean> {
 	}
 }
 
-export function getErrorMessage(error: Error | string): string {
-	return (error instanceof Error) ? error.message : error;
+export function getErrorMessage(error: Error | any, removeHeader: boolean = false): string {
+	let errorMessage: string = (error instanceof Error) ? error.message : error.toString();
+	if (removeHeader) {
+		errorMessage = removeErrorHeader(errorMessage);
+	}
+	return errorMessage;
 }
 
-export function isObjectExplorerContext(object: any): object is sqlops.ObjectExplorerContext {
+export function removeErrorHeader(errorMessage: string): string {
+	if (errorMessage && errorMessage !== '') {
+		let header: string = 'Error:';
+		if (errorMessage.startsWith(header)) {
+			errorMessage = errorMessage.substring(header.length);
+		}
+	}
+	return errorMessage;
+}
+
+export function isObjectExplorerContext(object: any): object is azdata.ObjectExplorerContext {
 	return 'connectionProfile' in object && 'isConnectionNode' in object;
 }
 
@@ -184,7 +198,7 @@ export function getUserHome(): string {
 
 export async function getClusterEndpoint(profileId: string, serviceName: string): Promise<IEndpoint> {
 
-	let serverInfo: sqlops.ServerInfo = await sqlops.connection.getServerInfo(profileId);
+	let serverInfo: azdata.ServerInfo = await azdata.connection.getServerInfo(profileId);
 	if (!serverInfo || !serverInfo.options) {
 		return undefined;
 	}

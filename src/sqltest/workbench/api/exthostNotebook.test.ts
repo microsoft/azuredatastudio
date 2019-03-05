@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as assert from 'assert';
 import * as TypeMoq from 'typemoq';
@@ -120,11 +120,11 @@ suite('ExtHostNotebook Tests', () => {
 	});
 });
 
-class NotebookProviderStub implements sqlops.nb.NotebookProvider {
+class NotebookProviderStub implements azdata.nb.NotebookProvider {
 	providerId: string = 'TestProvider';
-	standardKernels: sqlops.nb.IStandardKernel[] = [{name: 'fakeKernel', connectionProviderIds: ['MSSQL']}];
+	standardKernels: azdata.nb.IStandardKernel[] = [{name: 'fakeKernel', connectionProviderIds: ['MSSQL']}];
 
-	getNotebookManager(notebookUri: vscode.Uri): Thenable<sqlops.nb.NotebookManager> {
+	getNotebookManager(notebookUri: vscode.Uri): Thenable<azdata.nb.NotebookManager> {
 		throw new Error('Method not implemented.');
 	}
 	handleNotebookClosed(notebookUri: vscode.Uri): void {
@@ -132,16 +132,16 @@ class NotebookProviderStub implements sqlops.nb.NotebookProvider {
 	}
 }
 
-class NotebookManagerStub implements sqlops.nb.NotebookManager {
-	get contentManager(): sqlops.nb.ContentManager {
+class NotebookManagerStub implements azdata.nb.NotebookManager {
+	get contentManager(): azdata.nb.ContentManager {
 		return undefined;
 	}
 
-	get sessionManager(): sqlops.nb.SessionManager {
+	get sessionManager(): azdata.nb.SessionManager {
 		return undefined;
 	}
 
-	get serverManager(): sqlops.nb.ServerManager {
+	get serverManager(): azdata.nb.ServerManager {
 		return undefined;
 	}
 }

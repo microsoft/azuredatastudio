@@ -8,7 +8,7 @@ import {
 	Component, Input, Inject, ChangeDetectorRef, forwardRef, OnDestroy, AfterViewInit, ElementRef
 } from '@angular/core';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore } from 'sql/parts/modelComponents/interfaces';
@@ -67,11 +67,11 @@ export default class LoadingComponent extends ComponentBase implements IComponen
 	}
 
 	public get loading(): boolean {
-		return this.getPropertyOrDefault<sqlops.LoadingComponentProperties, boolean>((props) => props.loading, false);
+		return this.getPropertyOrDefault<azdata.LoadingComponentProperties, boolean>((props) => props.loading, false);
 	}
 
 	public set loading(newValue: boolean) {
-		this.setPropertyFromUI<sqlops.LoadingComponentProperties, boolean>((properties, value) => { properties.loading = value; }, newValue);
+		this.setPropertyFromUI<azdata.LoadingComponentProperties, boolean>((properties, value) => { properties.loading = value; }, newValue);
 		this.layout();
 	}
 

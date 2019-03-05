@@ -6,17 +6,17 @@
 
 import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
 import { ExtHostQueryEditorShape, SqlMainContext, MainThreadQueryEditorShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 
 export class ExtHostQueryEditor implements ExtHostQueryEditorShape  {
 
 	private _proxy: MainThreadQueryEditorShape;
 	private _nextListenerHandle: number = 0;
-	private _queryListeners = new Map<number, sqlops.QueryInfoListener>();
+	private _queryListeners = new Map<number, azdata.QueryInfoListener>();
 
 	private _nextTabHandle: number = 0;
-	private _queryTabs = new Map<number, sqlops.QueryInfoListener>();
+	private _queryTabs = new Map<number, azdata.QueryInfoListener>();
 
 	constructor(
 		mainContext: IMainContext
@@ -32,34 +32,34 @@ export class ExtHostQueryEditor implements ExtHostQueryEditorShape  {
 		return this._proxy.$runQuery(fileUri);
 	}
 
-	public $createQueryTab(fileUri: string, tab: sqlops.window.modelviewdialog.DialogTab): void {
+	public $createQueryTab(fileUri: string, tab: azdata.window.modelviewdialog.DialogTab): void {
 		// this._queryTabs[this._nextTabHandle] = tab;
 		this._proxy.$createQueryTab(fileUri, tab.title, tab.content);
 		// this._nextListenerHandle++;
 	}
 
-	public $registerQueryInfoListener(providerId: string, listener: sqlops.QueryInfoListener): void {
+	public $registerQueryInfoListener(providerId: string, listener: azdata.QueryInfoListener): void {
 		this._queryListeners[this._nextListenerHandle] = listener;
 		this._proxy.$registerQueryInfoListener(this._nextListenerHandle, providerId);
 		this._nextListenerHandle++;
 	}
 
 	public $onExecutionPlanAvailable(handle: number, fileUri: string, planXml: string) : void {
-		let listener: sqlops.QueryInfoListener = this._queryListeners[handle];
+		let listener: azdata.QueryInfoListener = this._queryListeners[handle];
 		if (listener) {
 			listener.onExecutionPlanAvailable(fileUri, planXml);
 		}
 	}
 
 	public $onExecutionStart(handle: number, fileUri:string): void {
-		let listener: sqlops.QueryInfoListener = this._queryListeners[handle];
+		let listener: azdata.QueryInfoListener = this._queryListeners[handle];
 		if (listener) {
 			listener.onExecutionStart(fileUri);
 		}
 	}
 
 	public $onExecutionComplete(handle: number, fileUri:string): void {
-		let listener: sqlops.QueryInfoListener = this._queryListeners[handle];
+		let listener: azdata.QueryInfoListener = this._queryListeners[handle];
 		if (listener) {
 			listener.onExecutionComplete(fileUri);
 		}

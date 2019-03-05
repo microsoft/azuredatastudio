@@ -15,7 +15,7 @@ import { IContextViewService } from 'vs/platform/contextview/browser/contextView
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachEditableDropdownStyler, attachSelectBoxStyler } from 'sql/platform/theme/common/styler';
 
-import { ISelectionData } from 'sqlops';
+import { ISelectionData } from 'azdata';
 import {
 	IConnectionManagementService,
 	IConnectionParams,

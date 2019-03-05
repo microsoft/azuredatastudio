@@ -5,7 +5,7 @@
 
 'use strict';
 
-import { IConnectionProfile } from 'sqlops';
+import { IConnectionProfile } from 'azdata';
 import { AppContext } from '../../../appContext';
 
 import { TreeNode } from '../../treeNode';

@@ -5,7 +5,7 @@
 'use strict';
 
 import * as vscode from 'vscode';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as path from 'path';
 import * as os from 'os';
 import * as nls from 'vscode-nls';
@@ -108,7 +108,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 		resourceProvider.start();
 
 		let nodeProvider = new MssqlObjectExplorerNodeProvider(appContext);
-		sqlops.dataprotocol.registerObjectExplorerNodeProvider(nodeProvider);
+		azdata.dataprotocol.registerObjectExplorerNodeProvider(nodeProvider);
 		activateSparkFeatures(appContext);
 		activateNotebookTask(appContext);
 	}, e => {
@@ -131,7 +131,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 	let api: MssqlExtensionApi = {
 		getMssqlObjectExplorerBrowser(): MssqlObjectExplorerBrowser {
 			return {
-				getNode: (context: sqlops.ObjectExplorerContext) => {
+				getNode: (context: azdata.ObjectExplorerContext) => {
 					let oeProvider = appContext.getService<MssqlObjectExplorerNodeProvider>(Constants.ObjectExplorerService);
 					return <any>oeProvider.findSqlClusterNodeByContext(context);
 				}
@@ -147,36 +147,36 @@ function activateSparkFeatures(appContext: AppContext): void {
 	let outputChannel: vscode.OutputChannel = mssqlOutputChannel;
 	extensionContext.subscriptions.push(new OpenSparkJobSubmissionDialogCommand(appContext, outputChannel));
 	extensionContext.subscriptions.push(new OpenSparkJobSubmissionDialogFromFileCommand(appContext, outputChannel));
-	apiWrapper.registerTaskHandler(Constants.mssqlClusterLivySubmitSparkJobTask, (profile: sqlops.IConnectionProfile) => {
+	apiWrapper.registerTaskHandler(Constants.mssqlClusterLivySubmitSparkJobTask, (profile: azdata.IConnectionProfile) => {
 		new OpenSparkJobSubmissionDialogTask(appContext, outputChannel).execute(profile);
 	});
-	apiWrapper.registerTaskHandler(Constants.mssqlClusterLivyOpenSparkHistory, (profile: sqlops.IConnectionProfile) => {
+	apiWrapper.registerTaskHandler(Constants.mssqlClusterLivyOpenSparkHistory, (profile: azdata.IConnectionProfile) => {
 		new OpenSparkYarnHistoryTask(appContext).execute(profile, true);
 	});
-	apiWrapper.registerTaskHandler(Constants.mssqlClusterLivyOpenYarnHistory, (profile: sqlops.IConnectionProfile) => {
+	apiWrapper.registerTaskHandler(Constants.mssqlClusterLivyOpenYarnHistory, (profile: azdata.IConnectionProfile) => {
 		new OpenSparkYarnHistoryTask(appContext).execute(profile, false);
 	});
 }
 
 function activateNotebookTask(appContext: AppContext): void {
 	let apiWrapper = appContext.apiWrapper;
-	apiWrapper.registerTaskHandler(Constants.mssqlClusterNewNotebookTask, (profile: sqlops.IConnectionProfile) => {
+	apiWrapper.registerTaskHandler(Constants.mssqlClusterNewNotebookTask, (profile: azdata.IConnectionProfile) => {
 		return saveProfileAndCreateNotebook(profile);
 	});
-	apiWrapper.registerTaskHandler(Constants.mssqlClusterOpenNotebookTask, (profile: sqlops.IConnectionProfile) => {
+	apiWrapper.registerTaskHandler(Constants.mssqlClusterOpenNotebookTask, (profile: azdata.IConnectionProfile) => {
 		return handleOpenNotebookTask(profile);
 	});
 }
 
-function saveProfileAndCreateNotebook(profile: sqlops.IConnectionProfile): Promise<void> {
+function saveProfileAndCreateNotebook(profile: azdata.IConnectionProfile): Promise<void> {
 	return handleNewNotebookTask(undefined, profile);
 }
 
-async function handleNewNotebookTask(oeContext?: sqlops.ObjectExplorerContext, profile?: sqlops.IConnectionProfile): Promise<void> {
+async function handleNewNotebookTask(oeContext?: azdata.ObjectExplorerContext, profile?: azdata.IConnectionProfile): Promise<void> {
 	// Ensure we get a unique ID for the notebook. For now we're using a different prefix to the built-in untitled files
 	// to handle this. We should look into improving this in the future
 	let untitledUri = vscode.Uri.parse(`untitled:Notebook-${untitledCounter++}`);
-	let editor = await sqlops.nb.showNotebookDocument(untitledUri, {
+	let editor = await azdata.nb.showNotebookDocument(untitledUri, {
 		connectionId: profile.id,
 		providerId: jupyterNotebookProviderId,
 		preview: false,
@@ -203,7 +203,7 @@ async function handleNewNotebookTask(oeContext?: sqlops.ObjectExplorerContext, p
 	}
 }
 
-async function handleOpenNotebookTask(profile: sqlops.IConnectionProfile): Promise<void> {
+async function handleOpenNotebookTask(profile: azdata.IConnectionProfile): Promise<void> {
 	let notebookFileTypeName = localize('notebookFileType', 'Notebooks');
 	let filter = {};
 	filter[notebookFileTypeName] = 'ipynb';
@@ -219,7 +219,7 @@ async function handleOpenNotebookTask(profile: sqlops.IConnectionProfile): Promi
 			// in the future might want additional supported types
 			vscode.window.showErrorMessage(localize('unsupportedFileType', 'Only .ipynb Notebooks are supported'));
 		} else {
-			await sqlops.nb.showNotebookDocument(fileUri, {
+			await azdata.nb.showNotebookDocument(fileUri, {
 				connectionId: profile.id,
 				providerId: jupyterNotebookProviderId,
 				preview: false

@@ -15,7 +15,7 @@ import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboar
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { IDashboardWebview, IDashboardViewService } from 'sql/platform/dashboard/common/dashboardViewService';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
@@ -74,9 +74,9 @@ export class WebviewWidget extends DashboardWidget implements IDashboardWidget, 
 	}
 
 	@memoize
-	public get connection(): sqlops.connection.Connection {
+	public get connection(): azdata.connection.Connection {
 		let currentConnection = this._dashboardService.connectionManagementService.connectionInfo.connectionProfile;
-		let connection: sqlops.connection.Connection = {
+		let connection: azdata.connection.Connection = {
 			providerName: currentConnection.providerName,
 			connectionId: currentConnection.id,
 			options: currentConnection.options
@@ -85,7 +85,7 @@ export class WebviewWidget extends DashboardWidget implements IDashboardWidget, 
 	}
 
 	@memoize
-	public get serverInfo(): sqlops.ServerInfo {
+	public get serverInfo(): azdata.ServerInfo {
 		return this._dashboardService.connectionManagementService.connectionInfo.serverInfo;
 	}
 

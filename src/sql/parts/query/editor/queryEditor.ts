@@ -27,7 +27,7 @@ import { IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/c
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IActionItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { Action } from 'vs/base/common/actions';
-import { ISelectionData } from 'sqlops';
+import { ISelectionData } from 'azdata';
 import { IEditorGroup } from 'vs/workbench/services/group/common/editorGroupsService';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { IRange } from 'vs/editor/common/core/range';

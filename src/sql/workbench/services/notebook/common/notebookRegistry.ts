@@ -9,7 +9,7 @@ import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import { ExtensionsRegistry, IExtensionPointUser } from 'vs/workbench/services/extensions/common/extensionsRegistry';
 import { localize } from 'vs/nls';
 import * as platform from 'vs/platform/registry/common/platform';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { Event, Emitter } from 'vs/base/common/event';
 
 export const Extensions = {
@@ -20,7 +20,7 @@ export const Extensions = {
 export interface NotebookProviderRegistration {
 	provider: string;
 	fileExtensions: string | string[];
-	standardKernels: sqlops.nb.IStandardKernel | sqlops.nb.IStandardKernel[];
+	standardKernels: azdata.nb.IStandardKernel | azdata.nb.IStandardKernel[];
 }
 
 let notebookProviderType: IJSONSchema = {

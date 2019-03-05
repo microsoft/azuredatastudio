@@ -25,7 +25,7 @@ import { CapabilitiesTestService } from 'sqltest/stubs/capabilitiesTestService';
 import { ConnectionProviderStub } from 'sqltest/stubs/connectionProviderStub';
 import { ResourceProviderStub } from 'sqltest/stubs/resourceProviderServiceStub';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 import { TPromise } from 'vs/base/common/winjs.base';
 import { WorkspaceConfigurationTestService } from 'sqltest/stubs/workspaceConfigurationTestService';
@@ -219,7 +219,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			let id = connectionToUse.getOptionsKey();
 			let defaultUri = 'connection://' + (id ? id : connectionToUse.serverName + ':' + connectionToUse.databaseName);
 			connectionManagementService.onConnectionRequestSent(() => {
-				let info: sqlops.ConnectionInfoSummary = {
+				let info: azdata.ConnectionInfoSummary = {
 					connectionId: error ? undefined : 'id',
 					connectionSummary: {
 						databaseName: connectionToUse.databaseName,
@@ -712,7 +712,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		// when I call doChangeLanguageFlavor
 		try {
 			let called = false;
-			connectionManagementService.onLanguageFlavorChanged((changeParams: sqlops.DidChangeLanguageFlavorParams) => {
+			connectionManagementService.onLanguageFlavorChanged((changeParams: azdata.DidChangeLanguageFlavorParams) => {
 				called = true;
 				assert.equal(changeParams.uri, uri);
 				assert.equal(changeParams.language, language);
@@ -737,7 +737,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		};
 		let connectionManagementService = createConnectionManagementService();
 		let called = false;
-		connectionManagementService.onLanguageFlavorChanged((changeParams: sqlops.DidChangeLanguageFlavorParams) => {
+		connectionManagementService.onLanguageFlavorChanged((changeParams: azdata.DidChangeLanguageFlavorParams) => {
 			called = true;
 		});
 		connect(uri, options).then(() => {
@@ -850,7 +850,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		azureConnectionProfile.serverName = servername;
 
 		// Set up the account management service to return a token for the given user
-		accountManagementService.setup(x => x.getAccountsForProvider(TypeMoq.It.isAny())).returns(providerId => Promise.resolve<sqlops.Account[]>([
+		accountManagementService.setup(x => x.getAccountsForProvider(TypeMoq.It.isAny())).returns(providerId => Promise.resolve<azdata.Account[]>([
 			{
 				key: {
 					accountId: username,
@@ -892,7 +892,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		azureConnectionProfile.azureTenantId = azureTenantId;
 
 		// Set up the account management service to return a token for the given user
-		accountManagementService.setup(x => x.getAccountsForProvider(TypeMoq.It.isAny())).returns(providerId => Promise.resolve<sqlops.Account[]>([
+		accountManagementService.setup(x => x.getAccountsForProvider(TypeMoq.It.isAny())).returns(providerId => Promise.resolve<azdata.Account[]>([
 			{
 				key: {
 					accountId: username,

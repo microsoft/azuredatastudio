@@ -6,7 +6,7 @@
 
 'use strict';
 
-import { nb } from 'sqlops';
+import { nb } from 'azdata';
 
 import { Event, Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';

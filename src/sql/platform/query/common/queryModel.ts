@@ -17,7 +17,7 @@ import {
 	EditCreateRowResult,
 	EditRevertCellResult,
 	ExecutionPlanOptions
-} from 'sqlops';
+} from 'azdata';
 import { QueryInfo } from 'sql/platform/query/common/queryModelService';
 
 export const SERVICE_ID = 'queryModelService';

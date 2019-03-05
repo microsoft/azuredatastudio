@@ -2341,16 +2341,6 @@ declare module 'sqlops' {
 		html: string;
 	}
 
-	export interface QueryInfoListener {
-		providerId: string;
-
-		onExecutionStart(fileUri: string): void;
-
-		onExecutionComplete(fileUri: string): void;
-
-		onExecutionPlanAvailable(fileUri: string, executionPlan: string): void;
-	}
-
 	export namespace dashboard {
 		/**
 		 * Register a provider for a webview widget

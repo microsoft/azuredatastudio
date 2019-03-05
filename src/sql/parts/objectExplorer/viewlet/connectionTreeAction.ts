@@ -24,6 +24,13 @@ import { ObjectExplorerActionsContext } from 'sql/parts/objectExplorer/viewlet/o
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { ConnectionViewletPanel } from 'sql/parts/dataExplorer/objectExplorer/connectionViewlet/connectionViewletPanel';
+import { ConnectionManagementService } from 'sql/platform/connection/common/connectionManagementService';
+import { CommandsRegistry } from 'vs/platform/commands/common/commands';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { MenuRegistry, MenuId } from 'vs/platform/actions/common/actions';
+import { ViewsRegistry } from 'vs/workbench/common/views';
+import { ICustomViewDescriptor, TreeViewItemHandleArg } from 'sql/workbench/common/views';
+import { IOEShimService } from 'sql/parts/objectExplorer/common/objectExplorerViewTreeShim';
 
 export class RefreshAction extends Action {
 
@@ -126,7 +133,6 @@ export class DisconnectConnectionAction extends Action {
 		});
 	}
 }
-
 
 /**
  * Actions to add a server to the group
@@ -379,6 +385,41 @@ export class DeleteConnectionAction extends Action {
 		return TPromise.as(true);
 	}
 }
+
+class DisconnectProfileAction extends Action {
+
+	constructor(
+		@IOEShimService private objectExplorerService: IOEShimService
+	) {
+		super(DisconnectConnectionAction.ID);
+	}
+	run(args: TreeViewItemHandleArg): Promise<boolean> {
+		if (args.$treeItem) {
+			return this.objectExplorerService.disconnectNode(args.$treeViewId, args.$treeItem).then(() => {
+				const { treeView } = (<ICustomViewDescriptor>ViewsRegistry.getView(args.$treeViewId));
+				// we need to collapse it then refresh it so that the tree doesn't try and use it's cache next time the user expands the node
+				return treeView.collapse(args.$treeItem).then(() => treeView.refresh([args.$treeItem]).then(() => true));
+			});
+		}
+		return Promise.resolve(true);
+	}
+}
+
+CommandsRegistry.registerCommand({
+	id: DisconnectConnectionAction.ID,
+	handler: (accessor, args: TreeViewItemHandleArg) => {
+		return accessor.get(IInstantiationService).createInstance(DisconnectProfileAction).run(args);
+	}
+});
+
+MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
+	group: 'connection',
+	order: 4,
+	command: {
+		id: DisconnectConnectionAction.ID,
+		title: DisconnectConnectionAction.LABEL
+	}
+});
 
 /**
  * Action to clear search results

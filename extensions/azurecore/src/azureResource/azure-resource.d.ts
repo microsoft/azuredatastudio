@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { TreeDataProvider } from 'vscode';
-import { DataProvider, Account } from 'sqlops';
-import { TreeItem } from 'sqlops';
+import { DataProvider, Account } from 'azdata';
+import { TreeItem } from 'azdata';
 
 export namespace azureResource {
 	export interface IAzureResourceProvider extends DataProvider {

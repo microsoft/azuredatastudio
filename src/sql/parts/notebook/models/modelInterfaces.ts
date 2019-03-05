@@ -8,7 +8,7 @@
 
 'use strict';
 
-import { nb } from 'sqlops';
+import { nb } from 'azdata';
 import { Event } from 'vs/base/common/event';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { URI } from 'vs/base/common/uri';
@@ -141,7 +141,8 @@ export interface IClientSession extends IDisposable {
 	 * Change the current kernel associated with the document.
 	 */
 	changeKernel(
-		options: nb.IKernelSpec
+		options: nb.IKernelSpec,
+		oldKernel?: nb.IKernel
 	): Promise<nb.IKernel>;
 
 	/**

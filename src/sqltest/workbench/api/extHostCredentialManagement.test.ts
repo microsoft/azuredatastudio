@@ -14,7 +14,7 @@ import { IRPCProtocol } from 'vs/workbench/services/extensions/node/proxyIdentif
 import { MainThreadCredentialManagement } from 'sql/workbench/api/node/mainThreadCredentialManagement';
 import { CredentialsTestProvider, CredentialsTestService } from 'sqltest/stubs/credentialsTestStubs';
 import { ICredentialsService } from 'sql/platform/credentials/common/credentialsService';
-import { Credential, CredentialProvider } from 'sqlops';
+import { Credential, CredentialProvider } from 'azdata';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 
 const IRPCProtocol = createDecorator<IRPCProtocol>('rpcProtocol');

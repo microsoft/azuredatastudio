@@ -22,7 +22,7 @@ import { IWindowsService } from 'vs/platform/windows/common/windows';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/workbench/browser/modal/modal';
 import { FirewallRuleViewModel } from 'sql/parts/accountManagement/firewallRuleDialog/firewallRuleViewModel';
@@ -304,7 +304,7 @@ export class FirewallRuleDialog extends Modal {
 		}
 	}
 
-	public onAccountSelectionChange(account: sqlops.Account): void {
+	public onAccountSelectionChange(account: azdata.Account): void {
 		this.viewModel.selectedAccount = account;
 		if (account && !account.isStale) {
 			this._createButton.enabled = true;
