@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 
 let toggleOn: boolean = false;
@@ -22,7 +22,7 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	});
 
-	sqlops.queryeditor.registerQueryInfoListener({
+	azdata.queryeditor.registerQueryInfoListener({
 		providerId: 'MSSQL',
 		onExecutionStart: (fileUri: string): void => {
 			if (toggleOn) {
@@ -34,7 +34,7 @@ export function activate(context: vscode.ExtensionContext) {
 		},
 		onExecutionPlanAvailable: (fileUri: string, executionPlan: string): void => {
 			if (toggleOn) {
-				let tab = sqlops.window.modelviewdialog.createTab('Query Watcher');
+				let tab = azdata.window.modelviewdialog.createTab('Query Watcher');
 				tab.registerContent(async view => {
 					let fileNameTextBox = view.modelBuilder.inputBox().component();
 					let xmlTextBox = view.modelBuilder.inputBox().component();
@@ -54,10 +54,10 @@ export function activate(context: vscode.ExtensionContext) {
 					xmlTextBox.value = executionPlan;
 				});
 
-				sqlops.queryeditor.createQueryTab(fileUri, tab);
+				azdata.queryeditor.createQueryTab(fileUri, tab);
 
 				// add a second tab to make sure that scenario works
-				let tab2 = sqlops.window.modelviewdialog.createTab('Query Watcher 2');
+				let tab2 = azdata.window.modelviewdialog.createTab('Query Watcher 2');
 				tab2.registerContent(async view => {
 					let xmlTextBox = view.modelBuilder.inputBox().component();
 
@@ -72,7 +72,7 @@ export function activate(context: vscode.ExtensionContext) {
 					xmlTextBox.value = executionPlan;
 				});
 
-				sqlops.queryeditor.createQueryTab(fileUri, tab2);
+				azdata.queryeditor.createQueryTab(fileUri, tab2);
 			}
 		}
 	});
