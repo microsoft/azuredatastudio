@@ -176,8 +176,8 @@ export class SchemaCompareResult {
 		this.differencesTable.onRowSelected(e => {
 			let difference = this.comparisonResult.differences[this.differencesTable.selectedRows[0]];
 			if (difference !== undefined) {
-				sourceText = difference.sourceScript === null ? '\n' : difference.sourceScript;
-				targetText = difference.targetScript === null ? '\n' : difference.targetScript;
+				sourceText = difference.sourceScript === null ? '\n' : this.getAggregatedScript(difference, true);
+				targetText = difference.targetScript === null ? '\n' : this.getAggregatedScript(difference, false);
 
 				// this.diffEditor.contentLeft = sourceText;
 				// this.diffEditor.contentRight = targetText;
@@ -214,6 +214,20 @@ export class SchemaCompareResult {
 		});
 
 		return data;
+	}
+
+	private getAggregatedScript(diffEntry: azdata.DiffEntry, getSourceScript: boolean): string {
+		let script = '';
+		if(diffEntry !== null) {
+			script += getSourceScript ? diffEntry.sourceScript : diffEntry.targetScript;
+			diffEntry.children.forEach(child => {
+				let childScript = this.getAggregatedScript(child, getSourceScript);
+				if(childScript !== 'null') {
+					script += childScript;
+				}
+			});
+		}
+		return script;
 	}
 
 	private createSwitchButton(view: azdata.ModelView) {
