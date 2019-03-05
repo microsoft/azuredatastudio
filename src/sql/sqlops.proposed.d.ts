@@ -1738,7 +1738,7 @@ declare module 'sqlops' {
 		 * Opens the connection and add it to object explorer and opens the dashboard and returns the ConnectionResult
 		 * @param connectionProfile connection profile
 		 */
-		export function connect(connectionProfile: IConnectionProfile): Thenable<ConnectionResult>;
+		export function connect(connectionProfile: IConnectionProfile, saveConnection?: boolean, showDashboard?: boolean): Thenable<ConnectionResult>;
 	}
 
 	export namespace nb {

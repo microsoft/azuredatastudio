@@ -52,7 +52,7 @@ export class ExtHostConnectionManagement extends ExtHostConnectionManagementShap
 		return this._proxy.$getUriForConnection(connectionId);
 	}
 
-	public $connect(connectionProfile: sqlops.IConnectionProfile): Thenable<sqlops.ConnectionResult> {
-		return this._proxy.$connect(connectionProfile);
+	public $connect(connectionProfile: sqlops.IConnectionProfile, saveConnection: boolean = false, showDashboard: boolean = false): Thenable<sqlops.ConnectionResult> {
+		return this._proxy.$connect(connectionProfile, saveConnection, showDashboard);
 	}
 }

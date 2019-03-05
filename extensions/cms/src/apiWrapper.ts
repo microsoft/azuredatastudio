@@ -211,7 +211,7 @@ export class ApiWrapper {
 		let ownerUri = await sqlops.connection.getUriForConnection(connection.connectionId);
 		if (!ownerUri) {
 			// Make a connection if it's not already connected
-			await sqlops.connection.connect(Utils.toConnectionProfile(connection)).then( async (result) => {
+			await sqlops.connection.connect(Utils.toConnectionProfile(connection), false, false).then( async (result) => {
 				ownerUri = await sqlops.connection.getUriForConnection(result.connectionId);
 			});
 		}

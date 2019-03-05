@@ -111,12 +111,12 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 		return connection;
 	}
 
-	public $connect(connectionProfile: IConnectionProfile): Thenable<sqlops.ConnectionResult> {
+	public $connect(connectionProfile: IConnectionProfile, saveConnection: boolean = false, showDashboard: boolean = false): Thenable<sqlops.ConnectionResult> {
 		let profile = new ConnectionProfile(this._capabilitiesService, connectionProfile);
 		profile.id = generateUuid();
 		return this._connectionManagementService.connectAndSaveProfile(profile, undefined, {
-			saveTheConnection: true,
-			showDashboard: true,
+			saveTheConnection: saveConnection,
+			showDashboard: showDashboard,
 			params: undefined,
 			showConnectionDialogOnError: true,
 			showFirewallRuleOnError: true

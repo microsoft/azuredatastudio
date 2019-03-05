@@ -245,7 +245,7 @@ export class ConnectionWidget {
 		// Connection name
 		let connectionNameOption = this._optionsMaps[ConnectionOptionSpecialType.connectionName];
 		if (isCMSDialog) {
-			connectionNameOption.displayName = localize('cmsServerName', 'Name');
+			connectionNameOption.displayName = localize('cmsServerName', 'ServerName');
 		} else {
 			connectionNameOption.displayName = localize('connectionName', 'Name (optional)');
 		}
@@ -254,8 +254,9 @@ export class ConnectionWidget {
 
 		if (isCMSDialog) {
 			// registered server description
-			let serverDescriptionBuilder = DialogHelper.appendRow(this._tableContainer, 'Registered server description', 'server-description-label', 'server-description-input');
-			this._serverDescriptionInputBox = new InputBox(serverDescriptionBuilder.getHTMLElement(), this._contextViewService);
+			let serverDescriptionBuilder = DialogHelper.appendRow(this._tableContainer, 'Registered server description', 'connection-label', 'connection-input', 'server-description-input');
+			this._serverDescriptionInputBox = new InputBox(serverDescriptionBuilder.getHTMLElement(), this._contextViewService, {type: 'textarea', flexibleHeight: true});
+			this._serverDescriptionInputBox.setHeight('150px');
 		}
 
 		let AdvancedLabel = localize('advanced', 'Advanced...');
