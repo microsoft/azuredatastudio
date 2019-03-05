@@ -87,7 +87,7 @@ export class OptionsDialog extends Modal {
 	constructor(
 		title: string,
 		name: string,
-		private options: IOptionsDialogOptions,
+		options: IOptionsDialogOptions,
 		@IPartService partService: IPartService,
 		@IWorkbenchThemeService private _workbenchThemeService: IWorkbenchThemeService,
 		@IContextViewService private _contextViewService: IContextViewService,
@@ -107,8 +107,7 @@ export class OptionsDialog extends Modal {
 			attachButtonStyler(this.backButton, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND });
 		}
 		let okButton = this.addFooterButton(localize('optionsDialog.ok', 'OK'), () => this.ok());
-		let cancelLabel = this.options && this.options.cancelLabel ? this.options.cancelLabel :  localize('optionsDialog.cancel', 'Cancel');
-		let closeButton = this.addFooterButton(cancelLabel, () => this.cancel());
+		let closeButton = this.addFooterButton(this.options.cancelLabel ||  localize('optionsDialog.cancel', 'Cancel'), () => this.cancel());
 		// Theme styler
 		attachButtonStyler(okButton, this._themeService);
 		attachButtonStyler(closeButton, this._themeService);
@@ -177,6 +176,10 @@ export class OptionsDialog extends Modal {
 					this._register(styler.attachInputBoxStyler(<InputBox>widget, this._themeService));
 			}
 		}
+	}
+
+	public get options(): IOptionsDialogOptions {
+		return this._modalOptions as IOptionsDialogOptions;
 	}
 
 	public get optionValues(): { [name: string]: any } {
