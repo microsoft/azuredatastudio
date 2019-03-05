@@ -50,7 +50,7 @@ export class SelectBox extends vsSelectBox {
 	private element: HTMLElement;
 
 	constructor(options: string[], selectedOption: string, contextViewProvider: IContextViewProvider, container?: HTMLElement, selectBoxOptions?: ISelectBoxOptions) {
-		super(options.map(option => { return { text: option } }), 0, contextViewProvider, undefined, selectBoxOptions);
+		super(options.map(option => { return { text: option }; }), 0, contextViewProvider, undefined, selectBoxOptions);
 		this._optionsDictionary = new Array();
 		for (var i = 0; i < options.length; i++) {
 			this._optionsDictionary[options[i]] = i;
@@ -126,7 +126,7 @@ export class SelectBox extends vsSelectBox {
 			this._optionsDictionary[stringOptions[i]] = i;
 		}
 		this._dialogOptions = stringOptions;
-		super.setOptions(stringOptions.map(option => { return { text: option } }), selected);
+		super.setOptions(stringOptions.map(option => { return { text: option }; }), selected);
 	}
 
 	public get value(): string {

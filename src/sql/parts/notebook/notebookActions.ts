@@ -270,7 +270,7 @@ export class KernelsDropdown extends SelectBox {
 		let specs = this.model.specs;
 		if (specs && specs.kernels) {
 			let index = specs.kernels.findIndex((kernel => kernel.name === defaultKernel.name));
-			this.setOptions(specs.kernels.map(kernel => { return { text: kernel.display_name }}), index);
+			this.setOptions(specs.kernels.map(kernel => { return { text: kernel.display_name }; }), index);
 		}
 	}
 
