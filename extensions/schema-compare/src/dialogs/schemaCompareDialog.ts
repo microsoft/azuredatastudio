@@ -8,7 +8,7 @@ import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as os from 'os';
-import { SchemaCompareResult } from './schemaCompareResult';
+import { SchemaCompareResult } from '../schemaCompareResult';
 
 const localize = nls.loadMessageBundle();
 

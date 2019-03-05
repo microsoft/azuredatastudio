@@ -9,7 +9,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as os from 'os';
 import * as path from 'path';
-import * as fs from 'fs';
+
 const localize = nls.loadMessageBundle();
 
 export class SchemaCompareResult {
