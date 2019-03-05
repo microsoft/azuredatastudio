@@ -15,6 +15,9 @@ import assert = require('assert');
 if (context.RunTest) {
 	suite('Object Explorer integration suite', () => {
 		test('BDC instance node label test', async function () {
+			assert(process.env.BDC_BACKEND_HOSTNAME !== undefined &&
+				process.env.BDC_BACKEND_USERNAME !== undefined &&
+				process.env.BDC_BACKEND_PWD !== undefined, 'BDC_BACKEND_HOSTNAME, BDC_BACKEND_USERNAME, BDC_BACKEND_PWD must be set using ./scripts/setbackenvariables.sh or .\\scripts\\setbackendvaraibles.bat');
 			const expectedNodeLabel = ['Databases', 'Security', 'Server Objects', 'Data Services'];
 			let server = await getBdcServer();
 			await VerifyOeNode(server, 6000, expectedNodeLabel);
