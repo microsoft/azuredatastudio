@@ -69,9 +69,9 @@ var TestingServers: TestServerProfile[] = [
 		}),
 	new TestServerProfile(
 		{
-			serverName: process.env.BACKEND_HOSTNAME + ',' + process.env.BACKEND_PORT,
-			userName:  process.env.BACKEND_USERNAME,
-			password:  process.env.BACKEND_PWD,
+			serverName: process.env.BDC_BACKEND_HOSTNAME + ',' + process.env.BACKEND_PORT,
+			userName:  process.env.BDC_BACKEND_USERNAME,
+			password:  process.env.BDC_BACKEND_PWD,
 			authenticationType: AuthenticationType.SqlLogin,
 			database: 'master',
 			provider: ConnectionProvider.SQLServer,

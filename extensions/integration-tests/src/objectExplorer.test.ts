@@ -15,14 +15,14 @@ import assert = require('assert');
 if (context.RunTest) {
 	suite('Object Explorer integration suite', () => {
 		test('BDC instance node label test', async function () {
-			const expectedNodeLable = ['Databases', 'Security', 'Server Objects', 'Data Services'];
+			const expectedNodeLabel = ['Databases', 'Security', 'Server Objects', 'Data Services'];
 			let server = await getBdcServer();
-			await VerifyOeNode(server, 6000, expectedNodeLable);
+			await VerifyOeNode(server, 6000, expectedNodeLabel);
 		});
 		test('Standard alone instance node label test', async function () {
-			const expectedNodeLable = ['Databases', 'Security', 'Server Objects'];
+			const expectedNodeLabel = ['Databases', 'Security', 'Server Objects'];
 			let server = await getDefaultTestingServer();
-			await VerifyOeNode(server, 3000, expectedNodeLable);
+			await VerifyOeNode(server, 3000, expectedNodeLabel);
 		});
 		test('context menu test', async function () {
 			let server = await getDefaultTestingServer();
@@ -53,7 +53,7 @@ async function VerifyOeNode(server: TestServerProfile, timeout: number,expectedN
 	let actualNodeLable = [];
 	let childeren = await nodes[index].getChildren();
 	assert(childeren.length === expectedNodeLable.length, `Expecting node count: ${expectedNodeLable.length}, Actual: ${childeren.length}`);
-	
+
 	childeren.forEach(c => actualNodeLable.push(c.label));
 	assert(expectedNodeLable.toLocaleString() === actualNodeLable.toLocaleString(), `Expected node label: "$'${expectedNodeLable}", Actual: "${actualNodeLable}"`);
 }
