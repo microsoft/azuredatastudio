@@ -16,7 +16,7 @@ import { IClientSession, INotebookModel, IDefaultConnection, INotebookModelOptio
 import { NotebookChangeType, CellType, CellTypes } from 'sql/parts/notebook/models/contracts';
 import { nbversion } from '../notebookConstants';
 import * as notebookUtils from '../notebookUtils';
-import { INotebookManager, SQL_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/common/notebookService';
+import { INotebookManager, SQL_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_PROVIDER, INotebookParams } from 'sql/workbench/services/notebook/common/notebookService';
 import { NotebookContexts } from 'sql/parts/notebook/models/notebookContexts';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { INotification, Severity } from 'vs/platform/notification/common/notification';
@@ -24,6 +24,7 @@ import { Schemas } from 'vs/base/common/network';
 import { URI } from 'vs/base/common/uri';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { LocalContentManager } from 'sql/workbench/services/notebook/node/localContentManager';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -71,7 +72,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _kernelDisplayNameToNotebookProviderIds: Map<string, string> = new Map<string, string>();
 	private _onValidConnectionSelected = new Emitter<boolean>();
 
-	constructor(private _notebookOptions: INotebookModelOptions, startSessionImmediately?: boolean, private connectionProfile?: IConnectionProfile) {
+	constructor(private _notebookOptions: INotebookModelOptions, private _notebookParams?: INotebookParams, startSessionImmediately?: boolean, private connectionProfile?: IConnectionProfile) {
 		super();
 		if (!_notebookOptions || !_notebookOptions.notebookUri || !_notebookOptions.notebookManagers) {
 			throw new Error('path or notebook service not defined');
@@ -253,10 +254,11 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		try {
 			this._trustedMode = isTrusted;
 			let contents = null;
-			if (this._notebookOptions.notebookUri.scheme !== Schemas.untitled) {
-				// TODO: separate ContentManager from NotebookManager
-				contents = await this.notebookManagers[0].contentManager.getNotebookContents(this._notebookOptions.notebookUri);
-			}
+
+			let notebookEditorModel = await this._notebookParams.input.resolve();
+			let localContentManager = new LocalContentManager();
+			contents = await localContentManager.loadFromContentString(notebookEditorModel.contentString);
+
 			let factory = this._notebookOptions.factory;
 			// if cells already exist, create them with language info (if it is saved)
 			this._cells = [];
@@ -728,7 +730,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			for (let i = 0; i < this.notebookManagers.length; i++) {
 				if (this.notebookManagers[i].sessionManager && this.notebookManagers[i].sessionManager.specs && this.notebookManagers[i].sessionManager.specs.kernels) {
 					let index = this.notebookManagers[i].sessionManager.specs.kernels.findIndex(kernel => kernel.name === kernelSpec.name);
-					if (index >= 0 && this._clientSessions && this._clientSessions.length > 0) {
+					if (index >= 0) {
 						if (this._activeClientSession) {
 							this._oldClientSession = this._activeClientSession;
 						}

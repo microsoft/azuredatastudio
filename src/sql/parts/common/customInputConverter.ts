@@ -13,7 +13,7 @@ import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
 import { IQueryEditorOptions } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { QueryPlanInput } from 'sql/parts/queryPlan/queryPlanInput';
-import { NotebookInput, NotebookInputModel } from 'sql/parts/notebook/notebookInput';
+import { NotebookInput, NotebookEditorModel } from 'sql/parts/notebook/notebookInput';
 import { DEFAULT_NOTEBOOK_PROVIDER, INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
 import { getProvidersForFileName, getStandardKernelsForProvider } from 'sql/parts/notebook/notebookUtils';
 import { ResourceEditorInput } from 'vs/workbench/common/editor/resourceEditorInput';
@@ -65,14 +65,14 @@ export function convertEditorInput(input: EditorInput, options: IQueryEditorOpti
 					fileName = input.getName();
 					providerIds = getProvidersForFileName(fileName, notebookService);
 				}
-				let notebookInputModel = new NotebookInputModel(uri, undefined, false, undefined);
-				notebookInputModel.providerId = providerIds.filter(provider => provider !== DEFAULT_NOTEBOOK_PROVIDER)[0];
-				notebookInputModel.providers = providerIds;
-				notebookInputModel.providers.forEach(provider => {
+				let notebookEditorModel = new NotebookEditorModel(uri, false, undefined, notebookService);
+				notebookEditorModel.providerId = providerIds.filter(provider => provider !== DEFAULT_NOTEBOOK_PROVIDER)[0];
+				notebookEditorModel.providers = providerIds;
+				notebookEditorModel.providers.forEach(provider => {
 					let standardKernels = getStandardKernelsForProvider(provider, notebookService);
-					notebookInputModel.standardKernels = standardKernels;
+					notebookEditorModel.standardKernels = standardKernels;
 				});
-				let notebookInput: NotebookInput = instantiationService.createInstance(NotebookInput, fileName, notebookInputModel);
+				let notebookInput: NotebookInput = instantiationService.createInstance(NotebookInput, fileName, uri, notebookEditorModel);
 				return notebookInput;
 			});
 		}

@@ -99,7 +99,7 @@ suite('notebook model', function(): void {
             cellMagicMapper: undefined,
             defaultKernel: undefined,
             layoutChanged: undefined,
-            capabilitiesService: capabilitiesService.object
+			capabilitiesService: capabilitiesService.object
         };
         mockClientSession = TypeMoq.Mock.ofType(ClientSession, undefined, defaultModelOptions);
         mockClientSession.setup(c => c.initialize()).returns(() => {
@@ -219,7 +219,7 @@ suite('notebook model', function(): void {
         let options: INotebookModelOptions = Object.assign({}, defaultModelOptions, <Partial<INotebookModelOptions>> {
             factory: mockModelFactory.object
         });
-        let model = new NotebookModel(options, false);
+        let model = new NotebookModel(options, undefined, false);
         model.onClientSessionReady((session) => actualSession = session);
         await model.requestModelLoad();
         model.backgroundStartSession();

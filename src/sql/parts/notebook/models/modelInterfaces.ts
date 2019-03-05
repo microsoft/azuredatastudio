@@ -370,6 +370,11 @@ export interface INotebookModel {
 	saveModel(): Promise<boolean>;
 
 	/**
+	 * Serialize notebook cell content to JSON
+	 */
+	toJSON(): nb.INotebookContents;
+
+	/**
 	 * Notifies the notebook of a change in the cell
 	 */
 	onCellChange(cell: ICellModel, change: NotebookChangeType): void;

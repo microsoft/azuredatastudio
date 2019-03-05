@@ -8,7 +8,7 @@
 import * as nls from 'vs/nls';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IEditorModel } from 'vs/platform/editor/common/editor';
-import { EditorInput, EditorModel, ConfirmResult } from 'vs/workbench/common/editor';
+import { EditorInput, EditorModel, ConfirmResult, ITextEditorModel } from 'vs/workbench/common/editor';
 import { Emitter, Event } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 import * as resources from 'vs/base/common/resources';
@@ -18,28 +18,88 @@ import { IStandardKernelWithProvider } from 'sql/parts/notebook/notebookUtils';
 import { INotebookService, INotebookEditor } from 'sql/workbench/services/notebook/common/notebookService';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import Severity from 'vs/base/common/severity';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { ISaveOptions } from 'vs/workbench/services/textfile/common/textfiles';
+import { ITextModelService } from 'vs/editor/common/services/resolverService';
+import { INotebookModel } from 'sql/parts/notebook/models/modelInterfaces';
+import { TextFileEditorModel } from 'vs/workbench/services/textfile/common/textFileEditorModel';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
 
 
-export class NotebookInputModel extends EditorModel {
+export class NotebookEditorModel extends EditorModel {
 	private dirty: boolean;
 	private readonly _onDidChangeDirty: Emitter<void> = this._register(new Emitter<void>());
 	private _providerId: string;
+	private _providers: string[];
+	private _connectionProfileId: string;
 	private _standardKernels: IStandardKernelWithProvider[];
 	private _defaultKernel: azdata.nb.IKernelSpec;
 	constructor(public readonly notebookUri: URI,
-		private readonly handle: number,
 		private _isTrusted: boolean = false,
-		private saveHandler?: ModeViewSaveHandler,
-		provider?: string,
-		private _providers?: string[],
-		private _connectionProfileId?: string) {
-
+		private textEditorModel: TextFileEditorModel,
+		@INotebookService private notebookService: INotebookService
+	) {
 		super();
-		this.dirty = false;
-		this._providerId = provider;
 		this._standardKernels = [];
+		this._register(this.notebookService.onNotebookEditorAdd(notebook => {
+			if (notebook.id === this.notebookUri.toString()) {
+				// Hook to content change events
+				this._register(notebook.model.contentChanged(e => this.updateModel()));
+				this._register(notebook.model.kernelChanged(e => this.updateModel()));
+			}
+		}));
+	}
+
+	public get contentString(): string {
+		//TODO: Handle Save As
+		// if(!this.textEditorModel || !this.textEditorModel.textEditorModel){
+		// 	return '';
+		// }
+		let model = this.textEditorModel.textEditorModel;
+		return model.getValue();
+	}
+
+	save(options: ISaveOptions): TPromise<void> {
+		options.force = false;
+		this.updateModel();
+		return this.textEditorModel.save(options);
+	}
+
+	isDirty(): boolean {
+		//TODO: Need to handle dirty with file save
+		// if(!this.textEditorModel){
+		// 	return true;
+		// }
+		return this.textEditorModel.isDirty();
+	}
+
+	public setDirty(dirty: boolean): void {
+		if (this.dirty === dirty) {
+			return;
+		}
+		this.dirty = dirty;
+		this._onDidChangeDirty.fire();
+	}
+
+	private updateModel(): void {
+		let notebookModel = this.getNotebookModel();
+		if (notebookModel && this.textEditorModel && this.textEditorModel.textEditorModel) {
+			let content = JSON.stringify(notebookModel.toJSON(), undefined, '    ');
+			this.textEditorModel.textEditorModel.setValue(content);
+		}
+	}
+
+	isModelCreated(): boolean {
+		return this.getNotebookModel() !== undefined;
+	}
+
+	private getNotebookModel(): INotebookModel {
+		let editor = this.notebookService.listNotebookEditors().find(n => n.id === this.notebookUri.toString());
+		if (editor) {
+			return editor.model;
+		}
+		return undefined;
 	}
 
 	public get providerId(): string {
@@ -92,27 +152,8 @@ export class NotebookInputModel extends EditorModel {
 		return this._onDidChangeDirty.event;
 	}
 
-	get isDirty(): boolean {
-		return this.dirty;
-	}
 
-	public setDirty(dirty: boolean): void {
-		if (this.dirty === dirty) {
-			return;
-		}
-
-		this.dirty = dirty;
-		this._onDidChangeDirty.fire();
-	}
-
-	save(): TPromise<boolean> {
-		if (this.saveHandler) {
-			return TPromise.wrap(this.saveHandler(this.handle));
-		}
-		return TPromise.wrap(true);
-	}
 }
-
 
 export class NotebookInput extends EditorInput {
 	public static ID: string = 'workbench.editorinputs.notebookInput';
@@ -121,17 +162,28 @@ export class NotebookInput extends EditorInput {
 	// Holds the HTML content for the editor when the editor discards this input and loads another
 	private _parentContainer: HTMLElement;
 	private readonly _layoutChanged: Emitter<void> = this._register(new Emitter<void>());
+
 	constructor(private _title: string,
-		private _model: NotebookInputModel,
-		@INotebookService private notebookService: INotebookService,
+		private resource: URI,
+		private _model: NotebookEditorModel,
+		@ITextModelService private textModelService: ITextModelService,
+		@IInstantiationService private instantiationService: IInstantiationService,
 		@IDialogService private dialogService: IDialogService
 	) {
 		super();
+		this.resource = resource;
 		this._model.onDidChangeDirty(() => this._onDidChangeDirty.fire());
 	}
 
 	public get notebookUri(): URI {
 		return this._model.notebookUri;
+	}
+
+	public getName(): string {
+		if (!this._title) {
+			this._title = resources.basenameOrAuthority(this._model.notebookUri);
+		}
+		return this._title;
 	}
 
 	public get providerId(): string {
@@ -166,16 +218,19 @@ export class NotebookInput extends EditorInput {
 		return NotebookInput.ID;
 	}
 
-	public resolve(refresh?: boolean): TPromise<IEditorModel> {
-		return undefined;
+	getResource(): URI {
+		return this.resource;
 	}
 
-	public getName(): string {
-		if (!this._title) {
-			this._title = resources.basenameOrAuthority(this._model.notebookUri);
+	async resolve(): TPromise<NotebookEditorModel> {
+		if(this._model && this._model.isModelCreated()){
+			return TPromise.as(this._model);
+		}else{
+		const textEditorModelReference = await this.textModelService.createModelReference(this.resource);
+		const textEditorModel = await textEditorModelReference.object.load();
+		this._model = this.instantiationService.createInstance(NotebookEditorModel, this.resource, false, textEditorModel);
+		return this._model;
 		}
-
-		return this._title;
 	}
 
 	public get isTrusted(): boolean {
@@ -208,12 +263,13 @@ export class NotebookInput extends EditorInput {
 		return this._parentContainer;
 	}
 
-	/**
-	 * An editor that is dirty will be asked to be saved once it closes.
-	 */
-	isDirty(): boolean {
-		return this._model.isDirty;
-	}
+	// /**
+	//  * An editor that is dirty will be asked to be saved once it closes.
+	//  */
+	// isDirty(): boolean {
+		//TODO: Check dirty implementation
+	// 	return this._model.isDirty();
+	// }
 
 	/**
 	 * Subclasses should bring up a proper dialog for the user if the editor is dirty and return the result.
@@ -240,22 +296,6 @@ export class NotebookInput extends EditorInput {
 				default: return ConfirmResult.CANCEL;
 			}
 		});
-	}
-
-	/**
-	 * Saves the editor if it is dirty. Subclasses return a promise with a boolean indicating the success of the operation.
-	 */
-	save(): TPromise<boolean> {
-		let activeEditor: INotebookEditor;
-		for (const editor of this.notebookService.listNotebookEditors()) {
-			if (editor.isActive()) {
-				activeEditor = editor;
-			}
-		}
-		if (activeEditor) {
-			return TPromise.wrap(activeEditor.save().then((val) => { return val; }));
-		}
-		return TPromise.wrap(false);
 	}
 
 	/**
