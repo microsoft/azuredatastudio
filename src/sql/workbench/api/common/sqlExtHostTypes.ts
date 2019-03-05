@@ -6,6 +6,7 @@
 
 import { nb, IConnectionProfile } from 'azdata';
 import * as vsExtTypes from 'vs/workbench/api/node/extHostTypes';
+import { ShellQuotingOptions } from 'vscode';
 
 // SQL added extension host types
 export enum ServiceOptionType {
@@ -144,6 +145,7 @@ export enum ModelComponentTypes {
 	NavContainer,
 	DivContainer,
 	FlexContainer,
+	SplitViewContainer,
 	Card,
 	InputBox,
 	DropDown,
@@ -164,8 +166,9 @@ export enum ModelComponentTypes {
 	TreeComponent,
 	FileBrowserTree,
 	Editor,
+	DiffEditor,
 	Dom,
-	Hyperlink
+	Hyperlink,
 }
 
 export interface IComponentShape {

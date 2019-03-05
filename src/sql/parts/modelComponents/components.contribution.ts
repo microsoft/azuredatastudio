@@ -22,16 +22,21 @@ import TextComponent from './text.component';
 import LoadingComponent from './loadingComponent.component';
 import FileBrowserTreeComponent from './fileBrowserTree.component';
 import EditorComponent from './editor.component';
+import DiffEditorComponent from './diffeditor.component';
 import DomComponent from './dom.component';
 import { registerComponentType } from 'sql/platform/dashboard/common/modelComponentRegistry';
 import { ModelComponentTypes } from 'sql/workbench/api/common/sqlExtHostTypes';
 import HyperlinkComponent from 'sql/parts/modelComponents/hyperlink.component';
+import SplitViewContainer from 'sql/parts/modelComponents/splitviewContainer.component';
 
 export const DIV_CONTAINER = 'div-container';
 registerComponentType(DIV_CONTAINER, ModelComponentTypes.DivContainer, DivContainer);
 
 export const FLEX_CONTAINER = 'flex-container';
 registerComponentType(FLEX_CONTAINER, ModelComponentTypes.FlexContainer, FlexContainer);
+
+export const SPLITVIEW_CONTAINER = 'splitView-container';
+registerComponentType(SPLITVIEW_CONTAINER, ModelComponentTypes.SplitViewContainer, SplitViewContainer);
 
 export const FORM_CONTAINER = 'form-container';
 registerComponentType(FORM_CONTAINER, ModelComponentTypes.Form, FormContainer);
@@ -87,6 +92,9 @@ registerComponentType(FILEBROWSERTREE_COMPONENT, ModelComponentTypes.FileBrowser
 
 export const EDITOR_COMPONENT = 'editor-component';
 registerComponentType(EDITOR_COMPONENT, ModelComponentTypes.Editor, EditorComponent);
+
+export const DIFF_EDITOR_COMPONENT = 'diff-editor-component';
+registerComponentType(DIFF_EDITOR_COMPONENT, ModelComponentTypes.DiffEditor, DiffEditorComponent);
 
 export const DOM_COMPONENT = 'dom-component';
 registerComponentType(DOM_COMPONENT, ModelComponentTypes.Dom, DomComponent);
