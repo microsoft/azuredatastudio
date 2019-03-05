@@ -23,7 +23,7 @@ export interface ICheckboxStyles {
 export class Checkbox extends Widget {
 	private _el: HTMLInputElement;
 	private _label: HTMLSpanElement;
-	private disabledCheckboxForeground: Color | undefined;
+	private disabledCheckboxForeground?: Color;
 
 	private _onChange = new Emitter<boolean>();
 	public readonly onChange: Event<boolean> = this._onChange.event;

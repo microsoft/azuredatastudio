@@ -4,17 +4,18 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import { Button, IButtonStyles } from 'sql/base/browser/ui/button/button';
-import * as DOM from 'vs/base/browser/dom';
-import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { EventType as GestureEventType } from 'vs/base/browser/touch';
-import { Dropdown, IDropdownOptions } from 'vs/base/browser/ui/dropdown/dropdown';
-import { List } from 'vs/base/browser/ui/list/listWidget';
-import { IAction } from 'vs/base/common/actions';
-import { Color } from 'vs/base/common/color';
-import { KeyCode } from 'vs/base/common/keyCodes';
-import { IDisposable } from 'vs/base/common/lifecycle';
 import 'vs/css!./media/dropdownList';
+import * as DOM from 'vs/base/browser/dom';
+import { Dropdown, IDropdownOptions } from 'vs/base/browser/ui/dropdown/dropdown';
+import { IDisposable } from 'vs/base/common/lifecycle';
+import { Color } from 'vs/base/common/color';
+import { IAction } from 'vs/base/common/actions';
+import { EventType as GestureEventType } from 'vs/base/browser/touch';
+import { List } from 'vs/base/browser/ui/list/listWidget';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { KeyCode } from 'vs/base/common/keyCodes';
+
+import { Button, IButtonStyles } from 'sql/base/browser/ui/button/button';
 
 export interface IDropdownStyles {
 	backgroundColor?: Color;
@@ -24,9 +25,11 @@ export interface IDropdownStyles {
 
 export class DropdownList extends Dropdown {
 
-	protected backgroundColor: Color | undefined;
-	protected foregroundColor: Color | undefined;
-	protected borderColor: Color | undefined;
+	protected backgroundColor?: Color;
+	protected foregroundColor?: Color;
+	protected borderColor?: Color;
+
+	private button?: Button;
 
 	constructor(
 		container: HTMLElement,
@@ -37,13 +40,13 @@ export class DropdownList extends Dropdown {
 	) {
 		super(container, _options);
 		if (action) {
-			let button = new Button(_contentContainer);
-			button.label = action.label;
-			this.toDispose.push(DOM.addDisposableListener(button.element, DOM.EventType.CLICK, () => {
+			this.button = new Button(_contentContainer);
+			this.button.label = action.label;
+			this.toDispose.push(DOM.addDisposableListener(this.button.element, DOM.EventType.CLICK, () => {
 				action.run();
 				this.hide();
 			}));
-			this.toDispose.push(DOM.addDisposableListener(button.element, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
+			this.toDispose.push(DOM.addDisposableListener(this.button.element, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
 				let event = new StandardKeyboardEvent(e);
 				if (event.equals(KeyCode.Enter)) {
 					e.stopPropagation();
@@ -123,6 +126,9 @@ export class DropdownList extends Dropdown {
 		this.foregroundColor = styles.foregroundColor;
 		this.borderColor = styles.borderColor;
 		this.applyStyles();
+		if (this.button) {
+			this.button.style(styles);
+		}
 	}
 
 	protected applyStyles(): void {

@@ -33,11 +33,20 @@ export function attachDropdownStyler(widget: IThemable, themeService: IThemeServ
 		backgroundColor?: cr.ColorIdentifier,
 		foregroundColor?: cr.ColorIdentifier,
 		borderColor?: cr.ColorIdentifier,
+		buttonForeground?: cr.ColorIdentifier,
+		buttonBackground?: cr.ColorIdentifier,
+		buttonHoverBackground?: cr.ColorIdentifier,
+		buttonFocusOutline?: cr.ColorIdentifier
 	}): IDisposable {
 	return attachStyler(themeService, {
 		foregroundColor: (style && style.foregroundColor) || cr.inputForeground,
 		borderColor: (style && style.borderColor) || cr.inputBorder,
-		backgroundColor: (style && style.backgroundColor) || cr.editorBackground
+		backgroundColor: (style && style.backgroundColor) || cr.editorBackground,
+		buttonForeground: (style && style.buttonForeground) || cr.buttonForeground,
+		buttonBackground: (style && style.buttonBackground) || cr.buttonBackground,
+		buttonHoverBackground: (style && style.buttonHoverBackground) || cr.buttonHoverBackground,
+		buttonBorder: cr.contrastBorder,
+		buttonFocusOutline: (style && style.buttonFocusOutline) || sqlcolors.buttonFocusOutline
 	}, widget);
 }
 
