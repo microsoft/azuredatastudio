@@ -16,7 +16,7 @@ export class SchemaCompareResult {
 	private differencesTable: azdata.TableComponent;
 	private loader: azdata.LoadingComponent;
 	private editor: azdata.workspace.ModelViewEditor;
-	private diffEditor: azdata.DiffEditorComponent;
+	// private diffEditor: azdata.DiffEditorComponent;
 	private flexModel: azdata.FlexContainer;
 	private noDifferencesLabel: azdata.TextComponent;
 	private webViewComponent: azdata.WebViewComponent;
@@ -38,10 +38,10 @@ export class SchemaCompareResult {
 		this.editor = azdata.workspace.createModelViewEditor(localize('schemaCompare.Title', 'Schema Compare'), { retainContextWhenHidden: true, supportsSave: true });
 
 		this.editor.registerContent(async view => {
-			this.diffEditor = view.modelBuilder.diffeditor().withProperties({
-				contentLeft: '\n',
-				contentRight: '\n',
-			}).component();
+			// this.diffEditor = view.modelBuilder.diffeditor().withProperties({
+			// 	contentLeft: '\n',
+			// 	contentRight: '\n',
+			// }).component();
 
 			this.differencesTable = view.modelBuilder.table().withProperties({
 				data: [],
@@ -179,8 +179,8 @@ export class SchemaCompareResult {
 				sourceText = difference.sourceScript === null ? '\n' : difference.sourceScript;
 				targetText = difference.targetScript === null ? '\n' : difference.targetScript;
 
-				this.diffEditor.contentLeft = sourceText;
-				this.diffEditor.contentRight = targetText;
+				// this.diffEditor.contentLeft = sourceText;
+				// this.diffEditor.contentRight = targetText;
 
 				let objectName = difference.sourceValue === null ? difference.targetValue : difference.sourceValue;
 				const title = localize('schemaCompare.objectDefinitionsTitle', '{0} (Source ⟷ Target)', objectName);
