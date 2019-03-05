@@ -164,7 +164,6 @@ export enum ModelComponentTypes {
 	TreeComponent,
 	FileBrowserTree,
 	Editor,
-	DiffEditor,
 	Dom,
 	Hyperlink
 }
