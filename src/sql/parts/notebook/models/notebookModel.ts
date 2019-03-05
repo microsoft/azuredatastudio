@@ -8,7 +8,7 @@
 import { nb, connection } from 'azdata';
 
 import { localize } from 'vs/nls';
-import { Event, Emitter, forEach } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import { Disposable } from 'vs/base/common/lifecycle';
 
 import { CellModel } from './cell';

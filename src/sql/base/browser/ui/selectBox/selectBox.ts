@@ -49,7 +49,6 @@ export class SelectBox extends vsSelectBox {
 	private inputValidationErrorBackground: Color;
 	private element: HTMLElement;
 
-	// TODO mairvine: investigate updating to take ISelectOptionItem instead of string. At least file an issue to track this
 	constructor(options: string[], selectedOption: string, contextViewProvider: IContextViewProvider, container?: HTMLElement, selectBoxOptions?: ISelectBoxOptions) {
 		super(options.map(option => { return { text: option } }), 0, contextViewProvider, undefined, selectBoxOptions);
 		this._optionsDictionary = new Array();
