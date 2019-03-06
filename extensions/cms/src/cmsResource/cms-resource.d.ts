@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { TreeDataProvider, TreeItem } from 'vscode';
-import { DataProvider, Account } from 'sqlops';
+import { DataProvider, Account } from 'azdata';
 
 export namespace cmsResource {
 	export interface ICmsResourceProvider extends DataProvider {

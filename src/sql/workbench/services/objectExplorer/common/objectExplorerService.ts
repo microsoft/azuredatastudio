@@ -12,7 +12,7 @@ import { createDecorator } from 'vs/platform/instantiation/common/instantiation'
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Event, Emitter } from 'vs/base/common/event';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as nls from 'vs/nls';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
 import * as TelemetryUtils from 'sql/common/telemetryUtilities';
@@ -26,37 +26,37 @@ export const SERVICE_ID = 'ObjectExplorerService';
 
 export const IObjectExplorerService = createDecorator<IObjectExplorerService>(SERVICE_ID);
 
-export interface NodeExpandInfoWithProviderId extends sqlops.ObjectExplorerExpandInfo {
+export interface NodeExpandInfoWithProviderId extends azdata.ObjectExplorerExpandInfo {
 	providerId: string;
 }
 
 export interface IObjectExplorerService {
 	_serviceBrand: any;
 
-	createNewSession(providerId: string, connection: ConnectionProfile): Thenable<sqlops.ObjectExplorerSessionResponse>;
+	createNewSession(providerId: string, connection: ConnectionProfile): Thenable<azdata.ObjectExplorerSessionResponse>;
 
-	closeSession(providerId: string, session: sqlops.ObjectExplorerSession): Thenable<sqlops.ObjectExplorerCloseSessionResponse>;
+	closeSession(providerId: string, session: azdata.ObjectExplorerSession): Thenable<azdata.ObjectExplorerCloseSessionResponse>;
 
-	expandNode(providerId: string, session: sqlops.ObjectExplorerSession, nodePath: string): Thenable<sqlops.ObjectExplorerExpandInfo>;
+	expandNode(providerId: string, session: azdata.ObjectExplorerSession, nodePath: string): Thenable<azdata.ObjectExplorerExpandInfo>;
 
-	refreshNode(providerId: string, session: sqlops.ObjectExplorerSession, nodePath: string): Thenable<sqlops.ObjectExplorerExpandInfo>;
+	refreshNode(providerId: string, session: azdata.ObjectExplorerSession, nodePath: string): Thenable<azdata.ObjectExplorerExpandInfo>;
 
-	resolveTreeNodeChildren(session: sqlops.ObjectExplorerSession, parentTree: TreeNode): Thenable<TreeNode[]>;
+	resolveTreeNodeChildren(session: azdata.ObjectExplorerSession, parentTree: TreeNode): Thenable<TreeNode[]>;
 
-	refreshTreeNode(session: sqlops.ObjectExplorerSession, parentTree: TreeNode): Thenable<TreeNode[]>;
+	refreshTreeNode(session: azdata.ObjectExplorerSession, parentTree: TreeNode): Thenable<TreeNode[]>;
 
-	onSessionCreated(handle: number, sessionResponse: sqlops.ObjectExplorerSession);
+	onSessionCreated(handle: number, sessionResponse: azdata.ObjectExplorerSession);
 
-	onSessionDisconnected(handle: number, sessionResponse: sqlops.ObjectExplorerSession);
+	onSessionDisconnected(handle: number, sessionResponse: azdata.ObjectExplorerSession);
 
 	onNodeExpanded(sessionResponse: NodeExpandInfoWithProviderId);
 
 	/**
 	 * Register a ObjectExplorer provider
 	 */
-	registerProvider(providerId: string, provider: sqlops.ObjectExplorerProvider): void;
+	registerProvider(providerId: string, provider: azdata.ObjectExplorerProvider): void;
 
-	registerNodeProvider(expander: sqlops.ObjectExplorerNodeProvider): void;
+	registerNodeProvider(expander: azdata.ObjectExplorerNodeProvider): void;
 
 	getObjectExplorerNode(connection: IConnectionProfile): TreeNode;
 
@@ -76,7 +76,7 @@ export interface IObjectExplorerService {
 
 	getServerTreeView(): ServerTreeView;
 
-	findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames?: string[]): Thenable<sqlops.NodeInfo[]>;
+	findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames?: string[]): Thenable<azdata.NodeInfo[]>;
 
 	getActiveConnectionNodes(): TreeNode[];
 
@@ -89,9 +89,9 @@ export interface IObjectExplorerService {
 	*/
 	getNodeActions(connectionId: string, nodePath: string): Thenable<string[]>;
 
-	getSessionConnectionProfile(sessionId: string): sqlops.IConnectionProfile;
+	getSessionConnectionProfile(sessionId: string): azdata.IConnectionProfile;
 
-	getSession(sessionId: string): sqlops.ObjectExplorerSession;
+	getSession(sessionId: string): azdata.ObjectExplorerSession;
 
 	providerRegistered(providerId: string): boolean;
 }
@@ -113,7 +113,7 @@ export interface ObjectExplorerNodeEventArgs {
 
 export interface NodeInfoWithConnection {
 	connectionId: string;
-	nodeInfo: sqlops.NodeInfo;
+	nodeInfo: azdata.NodeInfo;
 }
 
 export interface TopLevelChildrenPath {
@@ -121,7 +121,7 @@ export interface TopLevelChildrenPath {
 	supportedProviderId: string;
 	groupingId: number;
 	path: string[];
-	providerObject: sqlops.ObjectExplorerNodeProvider | sqlops.ObjectExplorerProvider;
+	providerObject: azdata.ObjectExplorerNodeProvider | azdata.ObjectExplorerProvider;
 }
 
 export class ObjectExplorerService implements IObjectExplorerService {
@@ -130,9 +130,9 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 	private _disposables: IDisposable[] = [];
 
-	private _providers: { [handle: string]: sqlops.ObjectExplorerProvider; } = Object.create(null);
+	private _providers: { [handle: string]: azdata.ObjectExplorerProvider; } = Object.create(null);
 
-	private _nodeProviders: { [handle: string]: sqlops.ObjectExplorerNodeProvider[]; } = Object.create(null);
+	private _nodeProviders: { [handle: string]: azdata.ObjectExplorerNodeProvider[]; } = Object.create(null);
 
 	private _activeObjectExplorerNodes: { [id: string]: TreeNode };
 	private _sessions: { [sessionId: string]: SessionStatus };
@@ -156,7 +156,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		this._onSelectionOrFocusChange = new Emitter<void>();
 	}
 
-	public getSession(sessionId: string): sqlops.ObjectExplorerSession {
+	public getSession(sessionId: string): azdata.ObjectExplorerSession {
 		let session = this._sessions[sessionId];
 		if (!session) {
 			return undefined;
@@ -226,11 +226,11 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	/**
 	 * Gets called when session is created
 	 */
-	public onSessionCreated(handle: number, session: sqlops.ObjectExplorerSession): void {
+	public onSessionCreated(handle: number, session: azdata.ObjectExplorerSession): void {
 		this.handleSessionCreated(session);
 	}
 
-	private async handleSessionCreated(session: sqlops.ObjectExplorerSession): Promise<void> {
+	private async handleSessionCreated(session: azdata.ObjectExplorerSession): Promise<void> {
 		try {
 			let connection: ConnectionProfile = undefined;
 			let errorMessage: string = undefined;
@@ -268,7 +268,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	/**
 	 * Gets called when session is disconnected
 	 */
-	public onSessionDisconnected(handle: number, session: sqlops.ObjectExplorerSession) {
+	public onSessionDisconnected(handle: number, session: azdata.ObjectExplorerSession) {
 		if (this._sessions[session.sessionId]) {
 			let connection: ConnectionProfile = this._sessions[session.sessionId].connection;
 			if (connection && this._connectionManagementService.isProfileConnected(connection)) {
@@ -318,9 +318,9 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		return this._activeObjectExplorerNodes[connection.id];
 	}
 
-	public async createNewSession(providerId: string, connection: ConnectionProfile): Promise<sqlops.ObjectExplorerSessionResponse> {
+	public async createNewSession(providerId: string, connection: ConnectionProfile): Promise<azdata.ObjectExplorerSessionResponse> {
 		let self = this;
-		return new Promise<sqlops.ObjectExplorerSessionResponse>((resolve, reject) => {
+		return new Promise<azdata.ObjectExplorerSessionResponse>((resolve, reject) => {
 			let provider = this._providers[providerId];
 			if (provider) {
 				provider.createNewSession(connection.toConnectionInfo()).then(result => {
@@ -338,8 +338,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		});
 	}
 
-	public expandNode(providerId: string, session: sqlops.ObjectExplorerSession, nodePath: string): Thenable<sqlops.ObjectExplorerExpandInfo> {
-		return new Promise<sqlops.ObjectExplorerExpandInfo>((resolve, reject) => {
+	public expandNode(providerId: string, session: azdata.ObjectExplorerSession, nodePath: string): Thenable<azdata.ObjectExplorerExpandInfo> {
+		return new Promise<azdata.ObjectExplorerExpandInfo>((resolve, reject) => {
 			let provider = this._providers[providerId];
 			if (provider) {
 				TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.ObjectExplorerExpand, { refresh: 0, provider: providerId });
@@ -354,7 +354,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		});
 	}
 
-	private callExpandOrRefreshFromProvider(provider: sqlops.ObjectExplorerProviderBase, nodeInfo: sqlops.ExpandNodeInfo, refresh: boolean = false) {
+	private callExpandOrRefreshFromProvider(provider: azdata.ObjectExplorerProviderBase, nodeInfo: azdata.ExpandNodeInfo, refresh: boolean = false) {
 		if (refresh) {
 			return provider.refreshNode(nodeInfo);
 		} else {
@@ -364,11 +364,11 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 	private expandOrRefreshNode(
 		providerId: string,
-		session: sqlops.ObjectExplorerSession,
+		session: azdata.ObjectExplorerSession,
 		nodePath: string,
-		refresh: boolean = false): Thenable<sqlops.ObjectExplorerExpandInfo> {
+		refresh: boolean = false): Thenable<azdata.ObjectExplorerExpandInfo> {
 		let self = this;
-		return new Promise<sqlops.ObjectExplorerExpandInfo>((resolve, reject) => {
+		return new Promise<azdata.ObjectExplorerExpandInfo>((resolve, reject) => {
 			if (session.sessionId in self._sessions && self._sessions[session.sessionId]) {
 				let newRequest = false;
 				if (!self._sessions[session.sessionId].nodes[nodePath]) {
@@ -379,8 +379,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 				}
 				let provider = this._providers[providerId];
 				if (provider) {
-					let resultMap: Map<string, sqlops.ObjectExplorerExpandInfo> = new Map<string, sqlops.ObjectExplorerExpandInfo>();
-					let allProviders: sqlops.ObjectExplorerProviderBase[] = [provider];
+					let resultMap: Map<string, azdata.ObjectExplorerExpandInfo> = new Map<string, azdata.ObjectExplorerExpandInfo>();
+					let allProviders: azdata.ObjectExplorerProviderBase[] = [provider];
 
 					let nodeProviders = this._nodeProviders[providerId];
 					if (nodeProviders) {
@@ -413,7 +413,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 							}, refresh).then(isExpanding => {
 								if (!isExpanding) {
 									// The provider stated it's not going to expand the node, therefore do not need to track when merging results
-									let emptyResult: sqlops.ObjectExplorerExpandInfo = {
+									let emptyResult: azdata.ObjectExplorerExpandInfo = {
 										errorMessage: undefined,
 										nodePath: nodePath,
 										nodes: [],
@@ -433,10 +433,10 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		});
 	}
 
-	private mergeResults(allProviders: sqlops.ObjectExplorerProviderBase[], resultMap: Map<string, sqlops.ObjectExplorerExpandInfo>, nodePath: string): sqlops.ObjectExplorerExpandInfo {
-		let finalResult: sqlops.ObjectExplorerExpandInfo;
-		let allNodes: sqlops.NodeInfo[] = [];
-		let errorNode: sqlops.NodeInfo = {
+	private mergeResults(allProviders: azdata.ObjectExplorerProviderBase[], resultMap: Map<string, azdata.ObjectExplorerExpandInfo>, nodePath: string): azdata.ObjectExplorerExpandInfo {
+		let finalResult: azdata.ObjectExplorerExpandInfo;
+		let allNodes: azdata.NodeInfo[] = [];
+		let errorNode: azdata.NodeInfo = {
 			nodePath: nodePath,
 			label: 'Error',
 			errorMessage: '',
@@ -477,7 +477,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		return finalResult;
 	}
 
-	public refreshNode(providerId: string, session: sqlops.ObjectExplorerSession, nodePath: string): Thenable<sqlops.ObjectExplorerExpandInfo> {
+	public refreshNode(providerId: string, session: azdata.ObjectExplorerSession, nodePath: string): Thenable<azdata.ObjectExplorerExpandInfo> {
 		let provider = this._providers[providerId];
 		if (provider) {
 			TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.ObjectExplorerExpand, { refresh: 1, provider: providerId });
@@ -486,7 +486,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		return Promise.resolve(undefined);
 	}
 
-	public closeSession(providerId: string, session: sqlops.ObjectExplorerSession): Thenable<sqlops.ObjectExplorerCloseSessionResponse> {
+	public closeSession(providerId: string, session: azdata.ObjectExplorerSession): Thenable<azdata.ObjectExplorerCloseSessionResponse> {
 		// Complete any requests that are still open for the session
 		let sessionStatus = this._sessions[session.sessionId];
 		if (sessionStatus && sessionStatus.nodes) {
@@ -524,11 +524,11 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	/**
 	 * Register a ObjectExplorer provider
 	 */
-	public registerProvider(providerId: string, provider: sqlops.ObjectExplorerProvider): void {
+	public registerProvider(providerId: string, provider: azdata.ObjectExplorerProvider): void {
 		this._providers[providerId] = provider;
 	}
 
-	public registerNodeProvider(nodeProvider: sqlops.ObjectExplorerNodeProvider): void {
+	public registerNodeProvider(nodeProvider: azdata.ObjectExplorerNodeProvider): void {
 		let nodeProviders = this._nodeProviders[nodeProvider.supportedProviderId] || [];
 		nodeProviders.push(nodeProvider);
 		this._nodeProviders[nodeProvider.supportedProviderId] = nodeProviders;
@@ -538,17 +538,17 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		this._disposables = dispose(this._disposables);
 	}
 
-	public resolveTreeNodeChildren(session: sqlops.ObjectExplorerSession, parentTree: TreeNode): Thenable<TreeNode[]> {
+	public resolveTreeNodeChildren(session: azdata.ObjectExplorerSession, parentTree: TreeNode): Thenable<TreeNode[]> {
 		// Always refresh the node if it has an error, otherwise expand it normally
 		let needsRefresh = !!parentTree.errorStateMessage;
 		return this.expandOrRefreshTreeNode(session, parentTree, needsRefresh);
 	}
 
-	public refreshTreeNode(session: sqlops.ObjectExplorerSession, parentTree: TreeNode): Thenable<TreeNode[]> {
+	public refreshTreeNode(session: azdata.ObjectExplorerSession, parentTree: TreeNode): Thenable<TreeNode[]> {
 		return this.expandOrRefreshTreeNode(session, parentTree, true);
 	}
 
-	private callExpandOrRefreshFromService(providerId: string, session: sqlops.ObjectExplorerSession, nodePath: string, refresh: boolean = false): Thenable<sqlops.ObjectExplorerExpandInfo> {
+	private callExpandOrRefreshFromService(providerId: string, session: azdata.ObjectExplorerSession, nodePath: string, refresh: boolean = false): Thenable<azdata.ObjectExplorerExpandInfo> {
 		if (refresh) {
 			return this.refreshNode(providerId, session, nodePath);
 		} else {
@@ -557,7 +557,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	}
 
 	private expandOrRefreshTreeNode(
-		session: sqlops.ObjectExplorerSession,
+		session: azdata.ObjectExplorerSession,
 		parentTree: TreeNode,
 		refresh: boolean = false): Thenable<TreeNode[]> {
 		return new Promise<TreeNode[]>((resolve, reject) => {
@@ -578,7 +578,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		});
 	}
 
-	private toTreeNode(nodeInfo: sqlops.NodeInfo, parent: TreeNode): TreeNode {
+	private toTreeNode(nodeInfo: azdata.NodeInfo, parent: TreeNode): TreeNode {
 		// Show the status for database nodes with a status field
 		let isLeaf: boolean = nodeInfo.isLeaf;
 		if (nodeInfo.nodeType === NodeType.Database) {
@@ -650,7 +650,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		return this._serverTreeView;
 	}
 
-	public findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames?: string[]): Thenable<sqlops.NodeInfo[]> {
+	public findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames?: string[]): Thenable<azdata.NodeInfo[]> {
 		let rootNode = this._activeObjectExplorerNodes[connectionId];
 		if (!rootNode) {
 			return Promise.resolve([]);
@@ -696,7 +696,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		return treeNode;
 	}
 
-	public getSessionConnectionProfile(sessionId: string): sqlops.IConnectionProfile {
+	public getSessionConnectionProfile(sessionId: string): azdata.IConnectionProfile {
 		return this._sessions[sessionId].connection.toIConnectionProfile();
 	}
 

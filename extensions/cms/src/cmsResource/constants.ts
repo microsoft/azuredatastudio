@@ -6,6 +6,7 @@
 'use strict';
 
 export enum CmsResourceItemType {
+	cmsEmptyNodeContainer = 'cms.resource.itemType.cmsEmptyNodeContainer',
 	cmsNodeContainer = 'cms.resource.itemType.cmsNodeContainer',
 	registeredServer = 'cms.resource.itemType.registeredServer',
 	serverGroup = 'cms.resource.itemType.serverGroup'

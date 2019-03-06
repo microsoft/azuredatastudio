@@ -4,12 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import assert = require('assert');
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { TestServerProfile } from './testConfig';
 
-export async function connectToServer(server: TestServerProfile) {
-	let connectionProfile: sqlops.IConnectionProfile = {
+export async function connectToServer(server: TestServerProfile, timeout: number = 3000) {
+	let connectionProfile: azdata.IConnectionProfile = {
 		serverName: server.serverName,
 		databaseName: server.database,
 		authenticationType: server.authenticationTypeName,
@@ -25,14 +25,14 @@ export async function connectToServer(server: TestServerProfile) {
 		options: {}
 	};
 	await ensureConnectionViewOpened();
-	let result = <sqlops.ConnectionResult>await sqlops.connection.connect(connectionProfile);
+	let result = <azdata.ConnectionResult>await azdata.connection.connect(connectionProfile);
 	assert(result.connected, `Failed to connect to "${connectionProfile.serverName}", error code: ${result.errorCode}, error message: ${result.errorMessage}`);
 
 	//workaround
 	//wait for OE to load
-	await new Promise(c => setTimeout(c, 3000));
+	await new Promise(c => setTimeout(c, timeout));
 }
 
 export async function ensureConnectionViewOpened() {
-	await vscode.commands.executeCommand('workbench.view.connections');
+	await vscode.commands.executeCommand('dataExplorer.servers.focus');
 }

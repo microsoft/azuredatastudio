@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 import { ICapabilitiesService, ProviderFeatures } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
@@ -20,7 +20,7 @@ export class CapabilitiesTestService implements ICapabilitiesService {
 
 	constructor() {
 
-		let connectionProvider: sqlops.ConnectionOption[] = [
+		let connectionProvider: azdata.ConnectionOption[] = [
 			{
 				name: 'connectionName',
 				displayName: undefined,
@@ -110,7 +110,7 @@ export class CapabilitiesTestService implements ICapabilitiesService {
 		return this.capabilities[provider];
 	}
 
-	public getLegacyCapabilities(provider: string): sqlops.DataProtocolServerCapabilities {
+	public getLegacyCapabilities(provider: string): azdata.DataProtocolServerCapabilities {
 		throw new Error('Method not implemented.');
 	}
 
@@ -122,11 +122,11 @@ export class CapabilitiesTestService implements ICapabilitiesService {
 	 * Register the capabilities provider and query the provider for its capabilities
 	 * @param provider
 	 */
-	public registerProvider(provider: sqlops.CapabilitiesProvider): void {
+	public registerProvider(provider: azdata.CapabilitiesProvider): void {
 	}
 
 	// Event Emitters
-	public get onProviderRegisteredEvent(): Event<sqlops.DataProtocolServerCapabilities> {
+	public get onProviderRegisteredEvent(): Event<azdata.DataProtocolServerCapabilities> {
 		return undefined;
 	}
 

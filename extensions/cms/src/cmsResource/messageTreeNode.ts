@@ -6,7 +6,7 @@
 'use strict';
 
 import { TreeItem, TreeItemCollapsibleState } from 'vscode';
-import { NodeInfo } from 'sqlops';
+import { NodeInfo } from 'azdata';
 
 import { TreeNode } from './treeNode';
 import { CmsResourceItemType } from './constants';

@@ -1964,7 +1964,6 @@ export class FunctionBreakpoint extends Breakpoint {
 }
 
 // {{SQL CARBON EDIT}}
-/*
 export class DebugAdapterExecutable implements vscode.DebugAdapterExecutable {
 	readonly command: string;
 	readonly args: string[];
@@ -1987,6 +1986,7 @@ export class DebugAdapterServer implements vscode.DebugAdapterServer {
 	}
 }
 
+// {{SQL CARBON EDIT}}
 /*
 export class DebugAdapterImplementation implements vscode.DebugAdapterImplementation {
 	readonly implementation: any;

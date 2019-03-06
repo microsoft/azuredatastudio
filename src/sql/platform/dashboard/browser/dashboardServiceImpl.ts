@@ -7,24 +7,24 @@
 import { IDashboardService } from './dashboardService';
 import { Event, Emitter } from 'vs/base/common/event';
 import * as DOM from 'vs/base/browser/dom';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 export class DashboardService implements IDashboardService {
 	public _serviceBrand: any;
-	private _onDidOpenDashboard = new Emitter<sqlops.DashboardDocument>();
-	public readonly onDidOpenDashboard: Event<sqlops.DashboardDocument> = this._onDidOpenDashboard.event;
+	private _onDidOpenDashboard = new Emitter<azdata.DashboardDocument>();
+	public readonly onDidOpenDashboard: Event<azdata.DashboardDocument> = this._onDidOpenDashboard.event;
 
-	private _onDidChangeToDashboard = new Emitter<sqlops.DashboardDocument>();
-	public readonly onDidChangeToDashboard: Event<sqlops.DashboardDocument> = this._onDidChangeToDashboard.event;
+	private _onDidChangeToDashboard = new Emitter<azdata.DashboardDocument>();
+	public readonly onDidChangeToDashboard: Event<azdata.DashboardDocument> = this._onDidChangeToDashboard.event;
 
 	private _onLayout = new Emitter<DOM.Dimension>();
 	public readonly onLayout: Event<DOM.Dimension> = this._onLayout.event;
 
-	public openDashboard(document: sqlops.DashboardDocument): void {
+	public openDashboard(document: azdata.DashboardDocument): void {
 		this._onDidOpenDashboard.fire(document);
 	}
 
-	public changeToDashboard(document: sqlops.DashboardDocument): void {
+	public changeToDashboard(document: azdata.DashboardDocument): void {
 		this._onDidChangeToDashboard.fire(document);
 	}
 

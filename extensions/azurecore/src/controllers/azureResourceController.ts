@@ -6,7 +6,7 @@
 'use strict';
 
 import ControllerBase from './controllerBase';
-import { DidChangeAccountsParams } from 'sqlops';
+import { DidChangeAccountsParams } from 'azdata';
 
 import {
 	IAzureResourceCacheService,

@@ -6,11 +6,12 @@
 'use strict';
 
 import * as vscode from 'vscode';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as mssql from '../../mssql/src/api/mssqlapis';
 import * as constants from './constants';
 import * as Utils from './cmsResource/utils';
 import { CmsResourceNodeInfo } from './cmsResource/tree/baseTreeNodes';
+import { stringify } from 'querystring';
 
 /**
  * Wrapper class to act as a facade over VSCode and Data APIs and allow us to test / mock callbacks into
@@ -25,40 +26,36 @@ export class ApiWrapper {
 	private _registeredCmsServers: CmsResourceNodeInfo[];
 
 	// Data APIs
-	public registerConnectionProvider(provider: sqlops.ConnectionProvider): vscode.Disposable {
-		return sqlops.dataprotocol.registerConnectionProvider(provider);
+	public registerConnectionProvider(provider: azdata.ConnectionProvider): vscode.Disposable {
+		return azdata.dataprotocol.registerConnectionProvider(provider);
 	}
 
-	public registerObjectExplorerProvider(provider: sqlops.ObjectExplorerProvider): vscode.Disposable {
-		return sqlops.dataprotocol.registerObjectExplorerProvider(provider);
+	public registerObjectExplorerProvider(provider: azdata.ObjectExplorerProvider): vscode.Disposable {
+		return azdata.dataprotocol.registerObjectExplorerProvider(provider);
 	}
 
-	public registerTaskServicesProvider(provider: sqlops.TaskServicesProvider): vscode.Disposable {
-		return sqlops.dataprotocol.registerTaskServicesProvider(provider);
+	public registerTaskServicesProvider(provider: azdata.TaskServicesProvider): vscode.Disposable {
+		return azdata.dataprotocol.registerTaskServicesProvider(provider);
 	}
 
-	public registerCapabilitiesServiceProvider(provider: sqlops.CapabilitiesProvider): vscode.Disposable {
-		return sqlops.dataprotocol.registerCapabilitiesServiceProvider(provider);
+	public registerCapabilitiesServiceProvider(provider: azdata.CapabilitiesProvider): vscode.Disposable {
+		return azdata.dataprotocol.registerCapabilitiesServiceProvider(provider);
 	}
 
-	public registerModelViewProvider(widgetId: string, handler: (modelView: sqlops.ModelView) => void): void {
-		return sqlops.ui.registerModelViewProvider(widgetId, handler);
+	public registerTaskHandler(taskId: string, handler: (profile: azdata.IConnectionProfile) => void): void {
+		azdata.tasks.registerTask(taskId, handler);
 	}
 
-	public registerTaskHandler(taskId: string, handler: (profile: sqlops.IConnectionProfile) => void): void {
-		sqlops.tasks.registerTask(taskId, handler);
+	public startBackgroundOperation(operationInfo: azdata.BackgroundOperationInfo): void {
+		azdata.tasks.startBackgroundOperation(operationInfo);
 	}
 
-	public startBackgroundOperation(operationInfo: sqlops.BackgroundOperationInfo): void {
-		sqlops.tasks.startBackgroundOperation(operationInfo);
+	public getActiveConnections(): Thenable<azdata.connection.Connection[]> {
+		return azdata.connection.getActiveConnections();
 	}
 
-	public getActiveConnections(): Thenable<sqlops.connection.Connection[]> {
-		return sqlops.connection.getActiveConnections();
-	}
-
-	public getCurrentConnection(): Thenable<sqlops.connection.Connection> {
-		return sqlops.connection.getCurrentConnection();
+	public getCurrentConnection(): Thenable<azdata.connection.ConnectionProfile> {
+		return azdata.connection.getCurrentConnection();
 	}
 
 	// VSCode APIs
@@ -131,6 +128,18 @@ export class ApiWrapper {
 		return vscode.window.showSaveDialog(options);
 	}
 
+	public createDialog(title: string): azdata.window.Dialog {
+		return azdata.window.createModelViewDialog(title);
+	}
+
+	public openDialog(dialog: azdata.window.Dialog): void {
+		return azdata.window.openDialog(dialog);
+	}
+
+	public closeDialog(dialog: azdata.window.Dialog): void {
+		return azdata.window.closeDialog(dialog);
+	}
+
 	public openTextDocument(uri: vscode.Uri): Thenable<vscode.TextDocument>;
 	public openTextDocument(options: { language?: string; content?: string; }): Thenable<vscode.TextDocument>;
 	public openTextDocument(uriOrOptions): Thenable<vscode.TextDocument> {
@@ -170,16 +179,13 @@ export class ApiWrapper {
 		return vscode.window.createOutputChannel(name);
 	}
 
-	public createWizardPage(title: string): sqlops.window.modelviewdialog.WizardPage {
-		return sqlops.window.modelviewdialog.createWizardPage(title);
-	}
-
 	public registerCompletionItemProvider(selector: vscode.DocumentSelector, provider: vscode.CompletionItemProvider, ...triggerCharacters: string[]): vscode.Disposable {
 		return vscode.languages.registerCompletionItemProvider(selector, provider, ...triggerCharacters);
 	}
 
-	public createTab(title: string): sqlops.window.modelviewdialog.DialogTab {
-		return sqlops.window.modelviewdialog.createTab(title);
+	// Connection APIs
+	public openConnectionDialog(providers: string[], initialConnectionProfile?: azdata.IConnectionProfile, connectionCompletionOptions?: azdata.IConnectionCompletionOptions): Thenable<azdata.connection.Connection> {
+		return azdata.connection.openConnectionDialog(providers, initialConnectionProfile, connectionCompletionOptions, true);
 	}
 
 	// CMS APIs
@@ -201,18 +207,13 @@ export class ApiWrapper {
 		});
 	}
 
-	// Connection APIs
-	public openConnectionDialog(providers: string[], initialConnectionProfile?: sqlops.IConnectionProfile, connectionCompletionOptions?: sqlops.IConnectionCompletionOptions): Thenable<sqlops.connection.Connection> {
-		return sqlops.connection.openConnectionDialog(providers, initialConnectionProfile, connectionCompletionOptions, true);
-	}
-
-	public async createCmsServer(connection: sqlops.connection.Connection, name: string, description: string) {
+	public async createCmsServer(connection: azdata.connection.Connection, name: string, description: string) {
 		let provider = await this.getCmsService();
-		let ownerUri = await sqlops.connection.getUriForConnection(connection.connectionId);
+		let ownerUri = await azdata.connection.getUriForConnection(connection.connectionId);
 		if (!ownerUri) {
 			// Make a connection if it's not already connected
-			await sqlops.connection.connect(Utils.toConnectionProfile(connection), false, false).then( async (result) => {
-				ownerUri = await sqlops.connection.getUriForConnection(result.connectionId);
+			await azdata.connection.connect(Utils.toConnectionProfile(connection), false, false).then( async (result) => {
+				ownerUri = await azdata.connection.getUriForConnection(result.connectionId);
 			});
 		}
 		return provider.createCmsServer(name, description, connection, ownerUri).then((result) => {
@@ -222,7 +223,7 @@ export class ApiWrapper {
 		});
 	}
 
-	public addRegisteredCmsServers(name: string, description: string, ownerUri: string, connection: sqlops.connection.Connection) {
+	public cacheRegisteredCmsServer(name: string, description: string, ownerUri: string, connection: azdata.connection.Connection) {
 		if (!this._registeredCmsServers) {
 			this._registeredCmsServers = [];
 		}
@@ -235,11 +236,42 @@ export class ApiWrapper {
 		this._registeredCmsServers.push(cmsServerNode);
 	}
 
+	public async addRegisteredServer(registeredServerName: string, registeredServerDescription: string, relativePath: string, ownerUri: string, connection: azdata.ConnectionInfo) {
+		let provider = await this.getCmsService();
+		return this.openConnectionDialog(['MSSQL']).then((connection) => {
+			let meme = connection;
+			return provider.addRegisteredServer(ownerUri, relativePath, registeredServerName, registeredServerDescription, connection);
+		});
+	}
+
+	public async removeRegisteredServer(registeredServerName: string, relativePath: string, ownerUri: string) {
+		let provider = await this.getCmsService();
+		return provider.removeRegisteredServer(ownerUri, relativePath, registeredServerName).then((result) => {
+			return result;
+		});
+	}
+
+	public async addServerGroup(groupName: string, groupDescription: string, relativePath: string, ownerUri: string) {
+		let provider = await this.getCmsService();
+		return provider.addServerGroup(ownerUri, relativePath, groupName, groupDescription).then((result) => {
+			return result;
+		});
+	}
+
+	public async removeServerGroup(groupName: string, relativePath: string, ownerUri: string) {
+		let provider = await this.getCmsService();
+		return provider.removeServerGroup(ownerUri, relativePath, groupName).then((result) => {
+			return result;
+		});
+	}
+
+	// Getters
+
 	public get registeredCmsServers(): CmsResourceNodeInfo[] {
 		return this._registeredCmsServers;
 	}
 
-	public get connection(): Thenable<sqlops.connection.Connection> {
+	public get connection(): Thenable<azdata.connection.Connection> {
 		return this.openConnectionDialog(['MSSQL']).then((connection) => {
 			if (connection) {
 				return connection;

@@ -6,7 +6,7 @@
 'use strict';
 
 import * as should from 'should';
-import { nb } from 'sqlops';
+import { nb } from 'azdata';
 
 import { URI } from 'vs/base/common/uri';
 import * as tempWrite from 'temp-write';

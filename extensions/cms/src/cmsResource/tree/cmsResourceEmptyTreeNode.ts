@@ -6,7 +6,7 @@
 'use strict';
 
 import { TreeItem, TreeItemCollapsibleState } from 'vscode';
-import { NodeInfo } from 'sqlops';
+import { NodeInfo } from 'azdata';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
@@ -36,7 +36,7 @@ export class CmsResourceEmptyTreeNode extends TreeNode {
 			metadata: undefined,
 			nodePath: this.generateNodePath(),
 			nodeStatus: undefined,
-			nodeType: CmsResourceItemType.cmsNodeContainer,
+			nodeType: CmsResourceItemType.cmsEmptyNodeContainer,
 			nodeSubType: undefined
 		};
 	}

@@ -5,7 +5,7 @@
 
 // This is the place for extensions to expose APIs.
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 
 /**
@@ -43,10 +43,10 @@ export interface MssqlObjectExplorerBrowser {
 	/**
 	 * Gets the matching node given a context object, e.g. one from a right-click on a node in Object Explorer
 	 *
-	 * @param {sqlops.ObjectExplorerContext} objectExplorerContext
+	 * @param {azdata.ObjectExplorerContext} objectExplorerContext
 	 * @returns {Promise<T>}
 	 */
-	getNode<T extends ITreeNode>(objectExplorerContext: sqlops.ObjectExplorerContext): Promise<T>;
+	getNode<T extends ITreeNode>(objectExplorerContext: azdata.ObjectExplorerContext): Promise<T>;
 }
 
 /**
@@ -56,7 +56,7 @@ export interface MssqlObjectExplorerBrowser {
  * @interface ITreeNode
  */
 export interface ITreeNode {
-	getNodeInfo(): sqlops.NodeInfo;
+	getNodeInfo(): azdata.NodeInfo;
 	getChildren(refreshChildren: boolean): ITreeNode[] | Promise<ITreeNode[]>;
 }
 
@@ -86,7 +86,7 @@ export interface CmsService {
 	 * @param {string} ownerUri
 	 * @returns {Thenable<sqlops.ListRegisteredServersResult>}
 	 */
-	createCmsServer(name: string, description:string, connectiondetails: sqlops.ConnectionInfo, ownerUri: string): Thenable<ListRegisteredServersResult>;
+	createCmsServer(name: string, description:string, connectiondetails: azdata.ConnectionInfo, ownerUri: string): Thenable<ListRegisteredServersResult>;
 
 	/**
 	 * gets all Registered Servers inside a CMS on a particular level
@@ -107,7 +107,7 @@ export interface CmsService {
 	 * @param {sqlops.ConnectionInfo} connectiondetails
 	 * @returns {Thenable<boolean>>}
 	 */
-	addRegisteredServer (ownerUri: string, relativePath: string, registeredServerName: string, registeredServerDescription:string, connectionDetails:sqlops.ConnectionInfo): Thenable<boolean>;
+	addRegisteredServer (ownerUri: string, relativePath: string, registeredServerName: string, registeredServerDescription:string, connectionDetails:azdata.ConnectionInfo): Thenable<boolean>;
 
 	/**
 	 * Removes a Registered Server inside a CMS on a particular level
@@ -148,7 +148,7 @@ export interface RegisteredServerResult {
 	name: string;
 	serverName: string;
 	description: string;
-	connectionDetails: sqlops.ConnectionInfo;
+	connectionDetails: azdata.ConnectionInfo;
 	relativePath: string;
 }
 

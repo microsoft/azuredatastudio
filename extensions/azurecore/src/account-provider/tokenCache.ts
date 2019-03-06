@@ -6,7 +6,7 @@
 'use strict';
 
 import * as adal from 'adal-node';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as crypto from 'crypto';
 import * as fs from 'fs';
 
@@ -19,7 +19,7 @@ export default class TokenCache implements adal.TokenCache {
 	private _activeOperation: Thenable<any>;
 
 	constructor(
-		private _credentialProvider: sqlops.CredentialProvider,
+		private _credentialProvider: azdata.CredentialProvider,
 		private _credentialServiceKey: string,
 		private _cacheSerializationPath: string
 	) {

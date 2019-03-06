@@ -6,7 +6,7 @@
 'use strict';
 
 import { window, QuickPickItem } from 'vscode';
-import { AzureResource } from 'sqlops';
+import { AzureResource } from 'azdata';
 import { TokenCredentials } from 'ms-rest';
 import { AppContext } from '../appContext';
 import * as nls from 'vscode-nls';

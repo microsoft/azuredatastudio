@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 import * as mssql from '../../../../mssql/src/api/mssqlapis';
 import { TreeItem, TreeItemCollapsibleState } from 'vscode';
@@ -23,15 +23,15 @@ export class CmsResourceTreeNode extends CmsResourceTreeNodeBase {
 	private _id: string = undefined;
 
 	public constructor(
-		private name: string,
-		private description: string,
-		private ownerUri: string,
-		private connection: sqlops.connection.Connection,
+		name: string,
+		description: string,
+		ownerUri: string,
+		private _connection: azdata.connection.Connection,
 		appContext: AppContext,
 		treeChangeHandler: ICmsResourceTreeChangeHandler,
 		parent: TreeNode
 	) {
-		super(appContext, treeChangeHandler, parent);
+		super(name, description, ownerUri, appContext, treeChangeHandler, parent);
 		this._id = `cms_cmsServer_${this.name}`;
 	}
 
@@ -42,8 +42,11 @@ export class CmsResourceTreeNode extends CmsResourceTreeNodeBase {
 				if (result) {
 					if (result.registeredServersList) {
 						result.registeredServersList.forEach((registeredServer) => {
-							nodes.push(new RegisteredServerTreeNode(registeredServer.name,
-								registeredServer.description, registeredServer.relativePath,
+							nodes.push(new RegisteredServerTreeNode(
+								registeredServer.name,
+								registeredServer.description,
+								registeredServer.relativePath,
+								this.ownerUri,
 								this.appContext,
 								this.treeChangeHandler, this));
 						});
@@ -56,7 +59,8 @@ export class CmsResourceTreeNode extends CmsResourceTreeNodeBase {
 									serverGroup.description,
 									serverGroup.relativePath,
 									this.ownerUri,
-									this.appContext, this.treeChangeHandler, this));
+									this.appContext,
+									this.treeChangeHandler, this));
 							});
 						}
 					}
@@ -80,7 +84,7 @@ export class CmsResourceTreeNode extends CmsResourceTreeNodeBase {
 		return item;
 	}
 
-	public getNodeInfo(): sqlops.NodeInfo {
+	public getNodeInfo(): azdata.NodeInfo {
 		return {
 			label: this.name,
 			isLeaf: false,
@@ -96,5 +100,9 @@ export class CmsResourceTreeNode extends CmsResourceTreeNodeBase {
 
 	public get nodePathValue(): string {
         return this._id;
+	}
+
+	public get connection(): azdata.connection.Connection {
+		return this._connection;
 	}
 }

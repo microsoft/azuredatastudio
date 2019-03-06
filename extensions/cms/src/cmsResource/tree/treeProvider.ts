@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import * as sqlops from 'sqlops';
 import { TreeDataProvider, EventEmitter, Event, TreeItem } from 'vscode';
 import { AppContext } from '../../appContext';
 import * as nls from 'vscode-nls';
@@ -100,9 +99,7 @@ export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICms
 	public isSystemInitialized: boolean = false;
 	private _hasCachedServers: boolean = false;
 	private _servers = [];
-	private _loadingTimer: NodeJS.Timer = undefined;
 	private _onDidChangeTreeData = new EventEmitter<TreeNode>();
 
 	private static readonly loadingLabel = localize('cms.resource.tree.treeProvider.loadingLabel', 'Loading ...');
-	private static readonly loadingTimerInterval = 0;
 }

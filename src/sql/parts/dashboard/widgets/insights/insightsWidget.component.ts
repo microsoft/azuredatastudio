@@ -18,7 +18,7 @@ import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/common/insi
 import { insertValueRegex } from 'sql/workbench/services/insights/common/insightsDialogService';
 import { RunInsightQueryAction } from './actions';
 
-import { SimpleExecuteResult } from 'sqlops';
+import { SimpleExecuteResult } from 'azdata';
 
 import { Action } from 'vs/base/common/actions';
 import * as types from 'vs/base/common/types';
@@ -48,6 +48,7 @@ interface IStorageResult {
 				<div *ngIf="lastUpdated" style="font-style: italic; font-size: 80%; margin-left: 5px">{{lastUpdated}}</div>
 				<div style="margin: 10px; width: calc(100% - 20px); height: calc(100% - 20px)">
 					<ng-template component-host></ng-template>
+					<loading-spinner [loading]="_loading"></loading-spinner>
 				</div>`,
 	styles: [':host { width: 100%; height: 100% }']
 })
@@ -58,6 +59,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 
 	private _typeKey: string;
 	private _init: boolean = false;
+	private _loading: boolean = true;
 	private _intervalTimer: IntervalTimer;
 
 	public error: string;
@@ -86,6 +88,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 				let cancelablePromise = createCancelablePromise(() => {
 					return promise.then(
 						result => {
+							this._loading = false;
 							if (this._init) {
 								this._updateChild(result);
 								this.setupInterval();
@@ -94,6 +97,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 							}
 						},
 						error => {
+							this._loading = false;
 							if (isPromiseCanceledError(error)) {
 								return;
 							}
@@ -103,7 +107,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 								this.queryObv = Observable.fromPromise(TPromise.as<SimpleExecuteResult>(error));
 							}
 						}
-					);
+					).then(() => this._cd.detectChanges());
 				});
 				this._register(toDisposable(() => cancelablePromise.cancel()));
 			}
@@ -117,10 +121,12 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 		if (this.queryObv) {
 			this._register(toDisposableSubscription(this.queryObv.subscribe(
 				result => {
+					this._loading = false;
 					this._updateChild(result);
 					this.setupInterval();
 				},
 				error => {
+					this._loading = false;
 					this.showError(error);
 				}
 			)));
@@ -177,6 +183,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 				let storedResult: IStorageResult = JSON.parse(storage);
 				let date = new Date(storedResult.date);
 				this.lastUpdated = nls.localize('insights.lastUpdated', "Last Updated: {0} {1}", date.toLocaleTimeString(), date.toLocaleDateString());
+				this._loading = false;
 				if (this._init) {
 					this._updateChild(storedResult.results);
 					this.setupInterval();

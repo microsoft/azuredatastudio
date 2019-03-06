@@ -6,7 +6,7 @@
 'use strict';
 
 import { TreeItem, TreeItemCollapsibleState } from 'vscode';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
@@ -22,15 +22,15 @@ export class ServerGroupTreeNode extends CmsResourceTreeNodeBase {
 	private _id: string = undefined;
 
 	constructor(
-		private name: string,
-		private description: string,
-		private relativePath: string,
-		private ownerUri: string,
+		name: string,
+		description: string,
+		private _relativePath: string,
+		ownerUri: string,
 		appContext: AppContext,
 		treeChangeHandler: ICmsResourceTreeChangeHandler,
 		parent: TreeNode
 	) {
-		super(appContext, treeChangeHandler, parent);
+		super(name, description, ownerUri, appContext, treeChangeHandler, parent);
 		this._id = `cms_serverGroup_${this.name}`;
 	}
 	public getChildren(): TreeNode[] | Promise<TreeNode[]> {
@@ -40,8 +40,11 @@ export class ServerGroupTreeNode extends CmsResourceTreeNodeBase {
 				if (result) {
 					if (result.registeredServersList) {
 						result.registeredServersList.forEach((registeredServer) => {
-							nodes.push(new RegisteredServerTreeNode(registeredServer.name,
-								registeredServer.description, registeredServer.relativePath,
+							nodes.push(new RegisteredServerTreeNode(
+								registeredServer.name,
+								registeredServer.description,
+								registeredServer.relativePath,
+								this.ownerUri,
 								this.appContext,
 								this.treeChangeHandler, this));
 						});
@@ -69,12 +72,13 @@ export class ServerGroupTreeNode extends CmsResourceTreeNodeBase {
 
 	public getTreeItem(): TreeItem | Promise<TreeItem> {
 		let item = new TreeItem(this.name, TreeItemCollapsibleState.Collapsed);
+		item.contextValue = CmsResourceItemType.serverGroup;
 		item.id = this._id;
 		item.tooltip = this.description;
 		return item;
 	}
 
-	public getNodeInfo(): sqlops.NodeInfo {
+	public getNodeInfo(): azdata.NodeInfo {
 		return {
 			label: this.name,
 			isLeaf: false,
@@ -82,12 +86,16 @@ export class ServerGroupTreeNode extends CmsResourceTreeNodeBase {
 			metadata: undefined,
 			nodePath: this.generateNodePath(),
 			nodeStatus: undefined,
-			nodeType: CmsResourceItemType.registeredServer,
+			nodeType: CmsResourceItemType.serverGroup,
 			nodeSubType: undefined
 		};
 	}
 
 	public get nodePathValue(): string {
 		return this._id;
+	}
+
+	public get relativePath(): string {
+		return this._relativePath;
 	}
 }

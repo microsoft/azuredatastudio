@@ -6,7 +6,7 @@
 
 import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
 import { ExtHostBackgroundTaskManagementShape, SqlMainContext, MainThreadBackgroundTaskManagementShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { Emitter } from 'vs/base/common/event';
 import { generateUuid } from 'vs/base/common/uuid';
@@ -21,7 +21,7 @@ export enum TaskStatus {
 	Canceling = 6
 }
 
-export class ExtBackgroundOperation implements sqlops.BackgroundOperation {
+export class ExtBackgroundOperation implements azdata.BackgroundOperation {
 	private readonly _proxy: MainThreadBackgroundTaskManagementShape;
 	private _onCanceled = new Emitter<void>();
 
@@ -55,7 +55,7 @@ export class ExtBackgroundOperation implements sqlops.BackgroundOperation {
 
 export class ExtHostBackgroundTaskManagement implements ExtHostBackgroundTaskManagementShape {
 	private readonly _proxy: MainThreadBackgroundTaskManagementShape;
-	private readonly _handlers = new Map<string, sqlops.BackgroundOperationInfo>();
+	private readonly _handlers = new Map<string, azdata.BackgroundOperationInfo>();
 	private readonly _operations = new Map<string, ExtBackgroundOperation>();
 	private readonly _mainContext: IMainContext;
 
@@ -82,14 +82,14 @@ export class ExtHostBackgroundTaskManagement implements ExtHostBackgroundTaskMan
 		}
 	}
 
-	$registerTask(operationInfo: sqlops.BackgroundOperationInfo): void {
+	$registerTask(operationInfo: azdata.BackgroundOperationInfo): void {
 		let operationId = operationInfo.operationId || `OperationId${generateUuid()}`;
 		if (this._handlers.has(operationId)) {
 			throw new Error(`operation '${operationId}' already exists`);
 		}
 
 		this._handlers.set(operationId, operationInfo);
-		let taskInfo: sqlops.TaskInfo = {
+		let taskInfo: azdata.TaskInfo = {
 			databaseName: undefined,
 			serverName: undefined,
 			description: operationInfo.description,

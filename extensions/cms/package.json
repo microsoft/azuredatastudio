@@ -22,6 +22,26 @@
 					"dark": "resources/dark/connect_to_inverse.svg",
 					"light": "resources/light/connect_to.svg"
 				}
+			},
+			{
+				"command": "cms.resource.deleteRegisteredServer",
+				"title": "%cms.resource.deleteRegisteredServer.title%",
+				"when": "viewItem == cms.resource.itemType.registeredServer"
+			},
+			{
+				"command": "cms.resource.addRegisteredServer",
+				"title": "%cms.resource.addRegisteredServer.title%",
+				"when": "viewItem == cms.resource.itemType.serverGroup"
+			},
+			{
+				"command": "cms.resource.addServerGroup",
+				"title": "%cms.resource.addServerGroup.title%",
+				"when": "viewItem == cms.resource.itemType.serverGroup"
+			},
+			{
+				"command": "cms.resource.deleteServerGroup",
+				"title": "%cms.resource.deleteServerGroup.title%",
+				"when": "viewItem == cms.resource.itemType.serverGroup"
 			}
 		],
 		"views": {
@@ -43,13 +63,23 @@
 		"menus": {
 			"view/item/context": [
 				{
-					"command": "cms.resource.connectsqlserver",
-					"when": "viewItem == cms.resource.itemType.databaseServer",
-					"group": "inline"
+					"command": "cms.resource.deleteRegisteredServer",
+					"when": "viewItem == cms.resource.itemType.registeredServer"
+				},
+				{
+					"command": "cms.resource.deleteServerGroup",
+					"when": "viewItem == cms.resource.itemType.serverGroup"
+				},
+				{
+					"command": "cms.resource.addRegisteredServer",
+					"when": "viewItem == cms.resource.itemType.serverGroup"
+				},
+				{
+					"command": "cms.resource.addServerGroup",
+					"when": "viewItem == cms.resource.itemType.serverGroup"
 				}
 			]
-		},
-		"hasAzureResourceProviders": true
+		}
 	},
 	"dependencies": {
 		"azure-arm-resource": "^7.0.0",

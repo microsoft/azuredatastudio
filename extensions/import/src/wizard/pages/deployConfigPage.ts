@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
 import * as path from 'path';
@@ -17,16 +17,16 @@ const localize = nls.loadMessageBundle();
 
 export class DeployConfigPage extends DacFxConfigPage {
 
-	protected readonly wizardPage: sqlops.window.WizardPage;
+	protected readonly wizardPage: azdata.window.WizardPage;
 	protected readonly instance: DataTierApplicationWizard;
 	protected readonly model: DacFxDataModel;
-	protected readonly view: sqlops.ModelView;
-	private databaseDropdownComponent: sqlops.FormComponent;
-	private databaseComponent: sqlops.FormComponent;
-	private formBuilder: sqlops.FormBuilder;
-	private form: sqlops.FormContainer;
+	protected readonly view: azdata.ModelView;
+	private databaseDropdownComponent: azdata.FormComponent;
+	private databaseComponent: azdata.FormComponent;
+	private formBuilder: azdata.FormBuilder;
+	private form: azdata.FormContainer;
 
-	public constructor(instance: DataTierApplicationWizard, wizardPage: sqlops.window.WizardPage, model: DacFxDataModel, view: sqlops.ModelView) {
+	public constructor(instance: DataTierApplicationWizard, wizardPage: azdata.window.WizardPage, model: DacFxDataModel, view: azdata.ModelView) {
 		super(instance, wizardPage, model, view);
 		this.fileExtension = '.bacpac';
 	}
@@ -63,7 +63,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 		return r1 && r2;
 	}
 
-	private async createFileBrowser(): Promise<sqlops.FormComponent> {
+	private async createFileBrowser(): Promise<azdata.FormComponent> {
 		this.createFileBrowserParts();
 
 		this.fileButton.onDidClick(async (click) => {
@@ -104,7 +104,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 		};
 	}
 
-	private async createRadiobuttons(): Promise<sqlops.FormComponent> {
+	private async createRadiobuttons(): Promise<azdata.FormComponent> {
 		let upgradeRadioButton = this.view.modelBuilder.radioButton()
 			.withProperties({
 				name: 'updateExisting',
@@ -121,7 +121,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 			this.model.upgradeExisting = true;
 			this.formBuilder.removeFormItem(this.databaseComponent);
 			this.formBuilder.addFormItem(this.databaseDropdownComponent, { horizontal: true, componentWidth: 400 });
-			this.model.database = (<sqlops.CategoryValue>this.databaseDropdown.value).name;
+			this.model.database = (<azdata.CategoryValue>this.databaseDropdown.value).name;
 
 			// add deploy plan and generate script pages
 			let deployPlanPage = this.instance.pages.get('deployPlan');
@@ -159,13 +159,13 @@ export class DeployConfigPage extends DacFxConfigPage {
 		};
 	}
 
-	protected async createDeployDatabaseDropdown(): Promise<sqlops.FormComponent> {
+	protected async createDeployDatabaseDropdown(): Promise<azdata.FormComponent> {
 		this.databaseDropdown = this.view.modelBuilder.dropDown().withProperties({
 			required: true
 		}).component();
 		//Handle database changes
 		this.databaseDropdown.onValueChanged(async () => {
-			this.model.database = (<sqlops.CategoryValue>this.databaseDropdown.value).name;
+			this.model.database = (<azdata.CategoryValue>this.databaseDropdown.value).name;
 		});
 		this.databaseLoader = this.view.modelBuilder.loadingComponent().withItem(this.databaseDropdown).component();
 		return {

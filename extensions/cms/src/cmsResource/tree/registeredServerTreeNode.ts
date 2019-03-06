@@ -6,7 +6,7 @@
 'use strict';
 
 import { TreeItem, TreeItemCollapsibleState } from 'vscode';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
@@ -15,29 +15,28 @@ import { CmsResourceItemType } from '../constants';
 import { CmsResourceTreeNodeBase } from './baseTreeNodes';
 import { AppContext } from '../../appContext';
 import { ICmsResourceTreeChangeHandler } from './treeChangeHandler';
-import { ServerGroupTreeNode } from './serverGroupTreeNode';
 
 export class RegisteredServerTreeNode extends CmsResourceTreeNodeBase {
 
 	private _id: string = undefined;
-	private _relativePath: string = undefined;
 
 	constructor(
-		private name: string,
-		private description: string,
-		private relativePath: string,
+		name: string,
+		description: string,
+		private _relativePath: string,
+		ownerUri: string,
 		appContext: AppContext,
 		treeChangeHandler: ICmsResourceTreeChangeHandler,
 		parent: TreeNode
 	) {
-		super(appContext, treeChangeHandler, parent);
+		super(name, description, ownerUri, appContext, treeChangeHandler, parent);
 		this._id = `cms_registeredServer_${this.name}`;
-		this._relativePath = relativePath;
 	}
 
 	public async getChildren(): Promise<TreeNode[]> {
 		try {
 			let nodes: TreeNode[] = [];
+			return nodes;
 		} catch {
 			return [];
 		}
@@ -45,12 +44,13 @@ export class RegisteredServerTreeNode extends CmsResourceTreeNodeBase {
 
 	public getTreeItem(): TreeItem | Promise<TreeItem> {
 		let item = new TreeItem(this.name, TreeItemCollapsibleState.None);
+		item.contextValue = CmsResourceItemType.registeredServer;
 		item.id = this._id;
 		item.tooltip = this.description;
 		return item;
 	}
 
-	public getNodeInfo(): sqlops.NodeInfo {
+	public getNodeInfo(): azdata.NodeInfo {
 		return {
 			label: this.name,
 			isLeaf: true,
@@ -65,5 +65,9 @@ export class RegisteredServerTreeNode extends CmsResourceTreeNodeBase {
 
 	public get nodePathValue(): string {
 		return this._id;
+	}
+
+	public get relativePath(): string {
+		return this._relativePath;
 	}
 }
