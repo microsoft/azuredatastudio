@@ -224,7 +224,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			this.setLoading(false);
 			this._modelReadyDeferred.resolve(this._model);
 		} catch (error) {
-			this.setViewInErrorState(localize('displayFailed', 'Could not display contents: {0}', error));
+			this.setViewInErrorState(localize('displayFailed', 'Could not display contents: {0}', notebookUtils.getErrorMessage(error)));
 			this.setLoading(false);
 			this._modelReadyDeferred.reject(error);
 		} finally {
@@ -493,7 +493,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		let secondary: IAction[] = [];
 		let notebookBarMenu = this.menuService.createMenu(MenuId.NotebookToolbar, this.contextKeyService);
 		let groups = notebookBarMenu.getActions({ arg: null, shouldForwardArgs: true });
-		fillInActions(groups, { primary, secondary }, false, (group: string) => group === undefined);
+		fillInActions(groups, { primary, secondary }, false, (group: string) => group === undefined || group === '');
 		this.addPrimaryContributedActions(primary);
 	}
 

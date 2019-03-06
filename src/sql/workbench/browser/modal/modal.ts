@@ -74,6 +74,7 @@ const defaultOptions: IModalOptions = {
 export abstract class Modal extends Disposable implements IThemable {
 	protected _useDefaultMessageBoxLocation: boolean = true;
 	protected _messageElement: HTMLElement;
+	protected _modalOptions: IModalOptions;
 	private _messageIcon: HTMLElement;
 	private _messageSeverity: Builder;
 	private _messageSummary: Builder;
@@ -114,7 +115,6 @@ export abstract class Modal extends Disposable implements IThemable {
 	private _keydownListener: IDisposable;
 	private _resizeListener: IDisposable;
 
-	private _modalOptions: IModalOptions;
 	private _backButton: Button;
 
 	private _modalShowingContext: IContextKey<Array<string>>;
