@@ -172,7 +172,7 @@ export class ServerTreeView {
 		return uri && uri.startsWith(ConnectionUtils.uriPrefixes.default) && !isBackupRestoreUri;
 	}
 
-	private handleAddConnectionProfile(newProfile: IConnectionProfile) {
+	private async handleAddConnectionProfile(newProfile: IConnectionProfile): Promise<void> {
 		if (newProfile) {
 			let groups = this._connectionManagementService.getConnectionGroups();
 			let profile = ConnectionUtils.findProfileInGroup(newProfile, groups);
@@ -191,7 +191,7 @@ export class ServerTreeView {
 		if (newProfile && currentSelectedElement && !newProfileIsSelected) {
 			this._tree.clearSelection();
 		}
-		this.refreshTree();
+		await this.refreshTree();
 		if (newProfile && !newProfileIsSelected) {
 			this._tree.reveal(newProfile);
 			this._tree.select(newProfile);
@@ -256,10 +256,10 @@ export class ServerTreeView {
 		return Promise.resolve();
 	}
 
-	public refreshTree(): void {
+	public refreshTree(): Promise<void> {
 		this.messages.hide();
 		this.clearOtherActions();
-		TreeUpdateUtils.registeredServerUpdate(this._tree, this._connectionManagementService);
+		return TreeUpdateUtils.registeredServerUpdate(this._tree, this._connectionManagementService);
 	}
 
 	public refreshElement(element: any): Thenable<void> {

@@ -58,7 +58,7 @@ export class TreeUpdateUtils {
 	/**
 	 * Set input for the registered servers tree.
 	 */
-	public static registeredServerUpdate(tree: ITree, connectionManagementService: IConnectionManagementService, elementToSelect?: any): void {
+	public static registeredServerUpdate(tree: ITree, connectionManagementService: IConnectionManagementService, elementToSelect?: any): Promise<void> {
 		let selectedElement: any = elementToSelect;
 		let targetsToExpand: any[];
 
@@ -81,7 +81,7 @@ export class TreeUpdateUtils {
 		let treeInput = TreeUpdateUtils.getTreeInput(connectionManagementService);
 		if (treeInput) {
 			if (treeInput !== tree.getInput()) {
-				tree.setInput(treeInput).then(() => {
+				return tree.setInput(treeInput).then(() => {
 					// Make sure to expand all folders that where expanded in the previous session
 					if (targetsToExpand) {
 						tree.expandAll(targetsToExpand);
@@ -93,6 +93,7 @@ export class TreeUpdateUtils {
 				}, errors.onUnexpectedError);
 			}
 		}
+		return Promise.resolve();
 	}
 
 	public static getTreeInput(connectionManagementService: IConnectionManagementService, providers?: string[]): ConnectionProfileGroup {
