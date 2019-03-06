@@ -557,6 +557,17 @@ MenuRegistry.appendMenuItem(MenuId.MenubarFileMenu, {
 	order: 1
 });
 
+// {{SQL CARBON EDIT}} - Add "New Notebook" item
+MenuRegistry.appendMenuItem(MenuId.MenubarFileMenu, {
+	group: '1_new',
+	command: {
+		id: 'notebook.command.new',
+		title: nls.localize({key: 'miNewNotebook', comment: ['&& denotes a mnemonic'] }, "&&New Notebook")
+	},
+	order: 1.1
+});
+// {{SQL CARBON EDIT}} - End
+
 MenuRegistry.appendMenuItem(MenuId.MenubarFileMenu, {
 	group: '4_save',
 	command: {

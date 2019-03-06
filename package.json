@@ -68,6 +68,7 @@
     "nsfw": "1.1.0",
     "pretty-data": "^0.40.0",
     "reflect-metadata": "^0.1.8",
+    "request": "^2.88.0",
     "rxjs": "5.4.0",
     "sanitize-html": "^1.19.1",
     "semver": "^5.5.0",
