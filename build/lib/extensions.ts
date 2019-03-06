@@ -298,7 +298,6 @@ const sqlBuiltInExtensions = [
 	'admin-pack',
 	'big-data-cluster'
 ];
-// var azureExtensions = ['azurecore', 'mssql'];
 // {{SQL CARBON EDIT}} - End
 
 interface IBuiltInExtension {
