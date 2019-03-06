@@ -20,7 +20,6 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	group: 'connection',
-	order: 4,
 	command: {
 		id: NEW_QUERY_COMMAND_ID,
 		title: localize('newQuery', 'New Query')
