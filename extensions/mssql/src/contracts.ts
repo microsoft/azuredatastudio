@@ -389,7 +389,7 @@ export interface ListRegisteredServersParams extends RegisteredServerParamsBase 
 export interface AddRegisteredServerParams extends RegisteredServerParamsBase {
     registeredServerName: string;
     registeredServerDescription : string;
-    registeredServerConnectionDetails: sqlops.ConnectionInfo;
+    registeredServerConnectionDetails: azdata.ConnectionInfo;
 }
 
 export interface RemoveRegisteredServerParams extends RegisteredServerParamsBase {
