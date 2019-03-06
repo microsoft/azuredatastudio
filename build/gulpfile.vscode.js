@@ -32,12 +32,10 @@ const i18n = require('./lib/i18n');
 // {{SQL CARBON EDIT}}
 const serviceDownloader = require('service-downloader').ServiceDownloadProvider;
 const platformInfo = require('service-downloader/out/platform').PlatformInformation;
-const glob = require('glob');
 // {{SQL CARBON EDIT}} - End
 const deps = require('./dependencies');
 const getElectronVersion = require('./lib/electron').getElectronVersion;
 const createAsar = require('./lib/asar').createAsar;
-const minimist = require('minimist');
 
 const productionDependencies = deps.getProductionDependencies(path.dirname(__dirname));
 // @ts-ignore
