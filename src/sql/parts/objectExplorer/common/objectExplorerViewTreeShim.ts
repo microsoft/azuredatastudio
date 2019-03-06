@@ -4,22 +4,19 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { ITreeItem } from 'sql/workbench/common/views';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { TreeNode } from 'sql/parts/objectExplorer/common/treeNode';
-import { IConnectionManagementService, ConnectionType } from 'sql/platform/connection/common/connectionManagement';
 import { Deferred } from 'sql/base/common/promise';
-import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
+import { TreeNode } from 'sql/parts/objectExplorer/common/treeNode';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { ConnectionType, IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ITreeItem } from 'sql/workbench/common/views';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
-
-import { IConnectionProfile } from 'azdata';
-
-import { TreeItemCollapsibleState } from 'vs/workbench/common/views';
-import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
-import { TPromise } from 'vs/base/common/winjs.base';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { hash } from 'vs/base/common/hash';
+import { Disposable } from 'vs/base/common/lifecycle';
 import { generateUuid } from 'vs/base/common/uuid';
+import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
+import { TreeItemCollapsibleState } from 'vs/workbench/common/views';
 
 export const SERVICE_ID = 'oeShimService';
 export const IOEShimService = createDecorator<IOEShimService>(SERVICE_ID);
@@ -29,9 +26,10 @@ export interface IOEShimService {
 	getChildren(node: ITreeItem, viewId: string): Promise<ITreeItem[]>;
 	disconnectNode(viewId: string, node: ITreeItem): Promise<boolean>;
 	providerExists(providerId: string): boolean;
+	isNodeConnected(viewId: string, node: ITreeItem): boolean;
 }
 
-export class OEShimService implements IOEShimService {
+export class OEShimService extends Disposable implements IOEShimService {
 	_serviceBrand: any;
 
 	private sessionMap = new Map<number, string>();
@@ -43,6 +41,7 @@ export class OEShimService implements IOEShimService {
 		@IConnectionDialogService private cd: IConnectionDialogService,
 		@ICapabilitiesService private capabilities: ICapabilitiesService
 	) {
+		super();
 	}
 
 	private async createSession(viewId: string, providerId: string, node: ITreeItem): Promise<string> {
@@ -138,6 +137,10 @@ export class OEShimService implements IOEShimService {
 
 	public providerExists(providerId: string): boolean {
 		return this.oe.providerRegistered(providerId);
+	}
+
+	public isNodeConnected(viewId: string, node: ITreeItem): boolean {
+		return this.sessionMap.has(generateSessionMapKey(viewId, node));
 	}
 }
 
