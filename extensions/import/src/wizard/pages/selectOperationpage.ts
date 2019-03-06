@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 import { DacFxDataModel } from '../api/models';
 import { DataTierApplicationWizard, Operation, DeployOperationPath, ExtractOperationPath, ImportOperationPath, ExportOperationPath } from '../dataTierApplicationWizard';
@@ -14,18 +14,18 @@ const localize = nls.loadMessageBundle();
 
 export class SelectOperationPage extends BasePage {
 
-	protected readonly wizardPage: sqlops.window.WizardPage;
+	protected readonly wizardPage: azdata.window.WizardPage;
 	protected readonly instance: DataTierApplicationWizard;
 	protected readonly model: DacFxDataModel;
-	protected readonly view: sqlops.ModelView;
+	protected readonly view: azdata.ModelView;
 
-	private deployRadioButton: sqlops.RadioButtonComponent;
-	private extractRadioButton: sqlops.RadioButtonComponent;
-	private importRadioButton: sqlops.RadioButtonComponent;
-	private exportRadioButton: sqlops.RadioButtonComponent;
-	private form: sqlops.FormContainer;
+	private deployRadioButton: azdata.RadioButtonComponent;
+	private extractRadioButton: azdata.RadioButtonComponent;
+	private importRadioButton: azdata.RadioButtonComponent;
+	private exportRadioButton: azdata.RadioButtonComponent;
+	private form: azdata.FormContainer;
 
-	public constructor(instance: DataTierApplicationWizard, wizardPage: sqlops.window.WizardPage, model: DacFxDataModel, view: sqlops.ModelView) {
+	public constructor(instance: DataTierApplicationWizard, wizardPage: azdata.window.WizardPage, model: DacFxDataModel, view: azdata.ModelView) {
 		super();
 		this.instance = instance;
 		this.wizardPage = wizardPage;
@@ -61,7 +61,7 @@ export class SelectOperationPage extends BasePage {
 		return true;
 	}
 
-	private async createDeployRadioButton(): Promise<sqlops.FormComponent> {
+	private async createDeployRadioButton(): Promise<azdata.FormComponent> {
 		this.deployRadioButton = this.view.modelBuilder.radioButton()
 			.withProperties({
 				name: 'selectedOperation',
@@ -90,7 +90,7 @@ export class SelectOperationPage extends BasePage {
 		};
 	}
 
-	private async createExtractRadioButton(): Promise<sqlops.FormComponent> {
+	private async createExtractRadioButton(): Promise<azdata.FormComponent> {
 		this.extractRadioButton = this.view.modelBuilder.radioButton()
 			.withProperties({
 				name: 'selectedOperation',
@@ -115,7 +115,7 @@ export class SelectOperationPage extends BasePage {
 		};
 	}
 
-	private async createImportRadioButton(): Promise<sqlops.FormComponent> {
+	private async createImportRadioButton(): Promise<azdata.FormComponent> {
 		this.importRadioButton = this.view.modelBuilder.radioButton()
 			.withProperties({
 				name: 'selectedOperation',
@@ -140,7 +140,7 @@ export class SelectOperationPage extends BasePage {
 		};
 	}
 
-	private async createExportRadioButton(): Promise<sqlops.FormComponent> {
+	private async createExportRadioButton(): Promise<azdata.FormComponent> {
 		this.exportRadioButton = this.view.modelBuilder.radioButton()
 			.withProperties({
 				name: 'selectedOperation',

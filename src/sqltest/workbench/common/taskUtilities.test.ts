@@ -13,7 +13,7 @@ import { TestConnectionManagementService } from 'sqltest/stubs/connectionManagem
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { WorkbenchEditorTestService } from 'sqltest/stubs/workbenchEditorTestService';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
 
@@ -76,7 +76,7 @@ suite('TaskUtilities', function () {
 		mockConnectionManagementService.setup(x => x.isProfileConnected(TypeMoq.It.is(profile => profile === oeProfile || profile === tabProfile))).returns(() => true);
 
 		// Mock the workbench service to return the active tab connection
-		let tabConnectionUri = 'test_uri';
+		let tabConnectionUri = 'file://test_uri';
 		let editorInput = new UntitledEditorInput(URI.parse(tabConnectionUri), false, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
 		let queryInput = new QueryInput(undefined, editorInput, undefined, undefined, undefined, undefined, undefined, undefined);
 		mockConnectionManagementService.setup(x => x.getConnectionProfile(tabConnectionUri)).returns(() => tabProfile);

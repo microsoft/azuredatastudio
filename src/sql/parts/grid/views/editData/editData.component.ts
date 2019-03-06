@@ -39,7 +39,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { EditUpdateCellResult } from 'sqlops';
+import { EditUpdateCellResult } from 'azdata';
 export const EDITDATA_SELECTOR: string = 'editdata-component';
 
 @Component({
@@ -54,7 +54,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	private refreshGridTimeoutInMs = 200;
 
 	// The timeout handle for the refresh grid task
-	private refreshGridTimeoutHandle: number;
+	private refreshGridTimeoutHandle: NodeJS.Timer;
 
 	// Optimized for the edit top 200 rows scenario, only need to retrieve the data once
 	// to make the scroll experience smoother

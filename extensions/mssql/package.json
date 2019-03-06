@@ -30,7 +30,7 @@
     "uri-js": "^4.2.2",
     "vscode-extension-telemetry": "^0.0.15",
     "vscode-nls": "^4.0.0",
-    "webhdfs": "^1.1.1"
+    "buffer-stream-reader": "^0.1.1"
   },
   "devDependencies": {},
   "contributes": {

@@ -13,7 +13,7 @@ import 'vs/css!sql/media/icons/common-icons';
 import 'vs/css!sql/base/browser/ui/table/media/table';
 
 import * as dom from 'vs/base/browser/dom';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as nls from 'vs/nls';
 import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnInit, OnDestroy } from '@angular/core';
 import { Table } from 'sql/base/browser/ui/table/table';
@@ -72,7 +72,7 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit, O
 	private _isCloud: boolean;
 	private _proxiesCacheObject: ProxiesCacheObject;
 
-	public proxies: sqlops.AgentProxyInfo[];
+	public proxies: azdata.AgentProxyInfo[];
 	public readonly contextAction = NewProxyAction;
 
 	private _didTabChange: boolean;
@@ -186,7 +186,7 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit, O
 		}
 	}
 
-	private onProxiesAvailable(proxies: sqlops.AgentProxyInfo[]) {
+	private onProxiesAvailable(proxies: azdata.AgentProxyInfo[]) {
 		let items: any = proxies.map((item) => {
 			return {
 				id: item.accountName,
@@ -205,11 +205,11 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit, O
 		this._table.resizeCanvas();
 	}
 
-	protected getTableActions(): TPromise<IAction[]> {
+	protected getTableActions(): IAction[] {
 		let actions: IAction[] = [];
 		actions.push(this._instantiationService.createInstance(EditProxyAction));
 		actions.push(this._instantiationService.createInstance(DeleteProxyAction));
-		return TPromise.as(actions);
+		return actions;
 	}
 
 	protected getCurrentTableObject(rowIndex: number): any {

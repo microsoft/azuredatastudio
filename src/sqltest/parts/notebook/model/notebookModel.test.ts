@@ -1,17 +1,17 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
 
 import * as should from 'should';
 import * as TypeMoq from 'typemoq';
-import { nb } from 'sqlops';
+import { nb } from 'azdata';
 
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 
 import { LocalContentManager } from 'sql/workbench/services/notebook/node/localContentManager';
 import * as testUtils from '../../../utils/testUtils';
@@ -75,12 +75,12 @@ let mockModelFactory: TypeMoq.Mock<ModelFactory>;
 let notificationService: TypeMoq.Mock<INotificationService>;
 let capabilitiesService: TypeMoq.Mock<ICapabilitiesService>;
 
-describe('notebook model', function(): void {
+suite('notebook model', function(): void {
     let notebookManagers = [new NotebookManagerStub()];
     let memento: TypeMoq.Mock<Memento>;
     let queryConnectionService: TypeMoq.Mock<ConnectionManagementService>;
     let defaultModelOptions: INotebookModelOptions;
-    beforeEach(() => {
+    setup(() => {
         sessionReady = new Deferred<void>();
         notificationService = TypeMoq.Mock.ofType(TestNotificationService, TypeMoq.MockBehavior.Loose);
         capabilitiesService = TypeMoq.Mock.ofType(CapabilitiesTestService);
@@ -113,7 +113,7 @@ describe('notebook model', function(): void {
         });
     });
 
-    it('Should create no cells if model has no contents', async function(): Promise<void> {
+    test('Should create no cells if model has no contents', async function(): Promise<void> {
         // Given an empty notebook
         let emptyNotebook: nb.INotebookContents = {
             cells: [],
@@ -139,7 +139,7 @@ describe('notebook model', function(): void {
         should(model.cells).have.length(0);
     });
 
-    it('Should throw if model load fails', async function(): Promise<void> {
+    test('Should throw if model load fails', async function(): Promise<void> {
         // Given a call to get Contents fails
         let error = new Error('File not found');
         let mockContentManager = TypeMoq.Mock.ofType(LocalContentManager);
@@ -154,7 +154,7 @@ describe('notebook model', function(): void {
         should(model.inErrorState).be.true();
     });
 
-    it('Should convert cell info to CellModels', async function(): Promise<void> {
+    test('Should convert cell info to CellModels', async function(): Promise<void> {
         // Given a notebook with 2 cells
         let mockContentManager = TypeMoq.Mock.ofType(LocalContentManager);
         mockContentManager.setup(c => c.getNotebookContents(TypeMoq.It.isAny())).returns(() => Promise.resolve(expectedNotebookContent));
@@ -170,7 +170,7 @@ describe('notebook model', function(): void {
         should(model.cells[1].source).be.equal(expectedNotebookContent.cells[1].source);
     });
 
-    it('Should load contents but then go to error state if client session startup fails', async function(): Promise<void> {
+    test('Should load contents but then go to error state if client session startup fails', async function(): Promise<void> {
         let mockContentManager = TypeMoq.Mock.ofType(LocalContentManager);
         mockContentManager.setup(c => c.getNotebookContents(TypeMoq.It.isAny())).returns(() => Promise.resolve(expectedNotebookContentOneCell));
         notebookManagers[0].contentManager = mockContentManager.object;
@@ -199,7 +199,7 @@ describe('notebook model', function(): void {
         should(sessionFired).be.false();
     });
 
-    it('Should not be in error state if client session initialization succeeds', async function(): Promise<void> {
+    test('Should not be in error state if client session initialization succeeds', async function(): Promise<void> {
         let mockContentManager = TypeMoq.Mock.ofType(LocalContentManager);
         mockContentManager.setup(c => c.getNotebookContents(TypeMoq.It.isAny())).returns(() => Promise.resolve(expectedNotebookContentOneCell));
         notebookManagers[0].contentManager = mockContentManager.object;
@@ -236,14 +236,14 @@ describe('notebook model', function(): void {
         should(model.clientSession).equal(mockClientSession.object);
     });
 
-    it('Should sanitize kernel display name when IP is included', async function(): Promise<void> {
+    test('Should sanitize kernel display name when IP is included', async function(): Promise<void> {
         let model = new NotebookModel(defaultModelOptions);
         let displayName = 'PySpark (1.1.1.1)';
         let sanitizedDisplayName = model.sanitizeDisplayName(displayName);
         should(sanitizedDisplayName).equal('PySpark');
     });
 
-    it('Should sanitize kernel display name properly when IP is not included', async function(): Promise<void> {
+    test('Should sanitize kernel display name properly when IP is not included', async function(): Promise<void> {
         let model = new NotebookModel(defaultModelOptions);
         let displayName = 'PySpark';
         let sanitizedDisplayName = model.sanitizeDisplayName(displayName);

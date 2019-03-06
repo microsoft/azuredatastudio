@@ -5,28 +5,36 @@
 
 'use strict';
 
-import { nb } from 'sqlops';
+import { nb } from 'azdata';
 
 import * as vscode from 'vscode';
 import { charCountToJsCountDiff, jsIndexToCharIndex } from './text';
 import { JupyterNotebookProvider } from '../jupyter/jupyterNotebookProvider';
 import { JupyterSessionManager } from '../jupyter/jupyterSessionManager';
-import { Deferred } from '../common/promise';
 
-const timeoutMilliseconds = 4000;
+const timeoutMilliseconds = 3000;
 
 export class NotebookCompletionItemProvider implements vscode.CompletionItemProvider {
-	private _allDocuments: nb.NotebookDocument[];
-	private kernelDeferred = new Deferred<nb.IKernel>();
 
 	constructor(private _notebookProvider: JupyterNotebookProvider) {
 	}
 
 	public provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext)
 		: vscode.ProviderResult<vscode.CompletionItem[] | vscode.CompletionList> {
-		this._allDocuments = nb.notebookDocuments;
-		let info = this.findMatchingCell(document);
-		this.isNotConnected(document, info);
+		let info = this.findMatchingCell(document, nb.notebookDocuments);
+		if (!info || !this._notebookProvider) {
+			// No matching document found
+			return Promise.resolve([]);
+		}
+		return this.getCompletionItemsForNotebookCell(document, position, token, info);
+	}
+
+	private async getCompletionItemsForNotebookCell(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, info: INewIntellisenseInfo
+	): Promise<vscode.CompletionItem[] | vscode.CompletionList> {
+		info.kernel = await this.tryFindKernelForDocument(document, info);
+		if (!info.kernel) {
+			return [];
+		}
 		// Get completions, with cancellation on timeout or if cancel is requested.
 		// Note that it's important we always return some value, or intellisense will never complete
 		let promises = [this.requestCompletions(info, position, document), this.onCanceled(token), this.onTimeout(timeoutMilliseconds)];
@@ -37,38 +45,29 @@ export class NotebookCompletionItemProvider implements vscode.CompletionItemProv
 		return item;
 	}
 
-	private isNotConnected(document: vscode.TextDocument, info: INewIntellisenseInfo): void {
-		if (!info || !this._notebookProvider) {
-			return;
-		}
-		let notebookManager: nb.NotebookManager = undefined;
-
-		let kernel: nb.IKernel = undefined;
+	private async tryFindKernelForDocument(document: vscode.TextDocument, info: INewIntellisenseInfo): Promise<nb.IKernel> {
 		try {
-			this._notebookProvider.getNotebookManager(document.uri).then(manager => {
-				notebookManager = manager;
-				if (notebookManager) {
-					let sessionManager: JupyterSessionManager = <JupyterSessionManager>(notebookManager.sessionManager);
-					let sessions = sessionManager.listRunning();
-					if (sessions && sessions.length > 0) {
-						let session = sessions.find(session => session.path === info.notebook.uri.path);
-						if (!session) {
-							return;
-						}
-						kernel = session.kernel;
+			let notebookManager = await this._notebookProvider.getNotebookManager(document.uri);
+			if (notebookManager) {
+				let sessionManager: JupyterSessionManager = <JupyterSessionManager>(notebookManager.sessionManager);
+				let sessions = sessionManager.listRunning();
+				if (sessions && sessions.length > 0) {
+					let session = sessions.find(session => session.path === info.notebook.uri.path);
+					if (!session) {
+						return;
 					}
+					return session.kernel;
 				}
-				this.kernelDeferred.resolve(kernel);
-			});
+			}
 		} catch {
 			// If an exception occurs, swallow it currently
-			return;
+			return undefined;
 		}
 	}
 
-	private findMatchingCell(document: vscode.TextDocument): INewIntellisenseInfo {
-		if (this._allDocuments && document) {
-			for (let doc of this._allDocuments) {
+	private findMatchingCell(document: vscode.TextDocument, allDocuments: nb.NotebookDocument[]): INewIntellisenseInfo {
+		if (allDocuments && document) {
+			for (let doc of allDocuments) {
 				for (let cell of doc.cells) {
 					if (cell && cell.uri && cell.uri.path === document.uri.path) {
 						return {
@@ -84,9 +83,7 @@ export class NotebookCompletionItemProvider implements vscode.CompletionItemProv
 	}
 
 	private async requestCompletions(info: INewIntellisenseInfo, position: vscode.Position, cellTextDocument: vscode.TextDocument): Promise<vscode.CompletionItem[]> {
-		let kernel = await this.kernelDeferred.promise;
-		this.kernelDeferred = new Deferred<nb.IKernel>();
-		if (!info || kernel === undefined || !kernel.supportsIntellisense || !kernel.isReady) {
+		if (!info || !info.kernel || !info.kernel.supportsIntellisense || !info.kernel.isReady) {
 			return [];
 		}
 		let source = cellTextDocument.getText();
@@ -94,7 +91,7 @@ export class NotebookCompletionItemProvider implements vscode.CompletionItemProv
 			return [];
 		}
 		let cursorPosition = this.toCursorPosition(position, source);
-		let result = await kernel.requestComplete({
+		let result = await info.kernel.requestComplete({
 			code: source,
 			cursor_pos: cursorPosition.adjustedPosition
 		});
@@ -197,4 +194,5 @@ export interface INewIntellisenseInfo {
 	editorUri: string;
 	cell: nb.NotebookCell;
 	notebook: nb.NotebookDocument;
+	kernel?: nb.IKernel;
 }

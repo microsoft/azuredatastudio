@@ -12,7 +12,7 @@ import { IInsightsDialogModel, insertValueRegex } from 'sql/workbench/services/i
 import { error } from 'sql/base/common/log';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 
-import { DbCellValue, IDbColumn, QueryExecuteSubsetResult } from 'sqlops';
+import { DbCellValue, IDbColumn, QueryExecuteSubsetResult } from 'azdata';
 
 import Severity from 'vs/base/common/severity';
 import * as types from 'vs/base/common/types';
@@ -73,7 +73,7 @@ export class InsightsDialogController {
 							filePathArray = filePathArray.filter(i => !!i);
 							let folder = this._workspaceContextService.getWorkspace().folders.find(i => i.name === filePathArray[0]);
 							if (!folder) {
-								return Promise.reject<void>(new Error(`Could not find workspace folder ${filePathArray[0]}`));
+								return Promise.reject(new Error(`Could not find workspace folder ${filePathArray[0]}`));
 							}
 							// remove the folder name from the filepath
 							filePathArray.shift();

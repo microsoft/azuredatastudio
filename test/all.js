@@ -54,11 +54,12 @@ function main() {
 		nodeMain: __filename,
 		baseUrl: path.join(path.dirname(__dirname), 'src'),
 		paths: {
+			'vs/css': '../test/css.mock',
 			'vs': `../${ out }/vs`,
 			'sqltest': `../${ out }/sqltest`,
 			'sql': `../${ out }/sql`,
 			'lib': `../${ out }/lib`,
-			'bootstrap': `../${ out }/bootstrap`
+			'bootstrap-fork': `../${ out }/bootstrap-fork`
 		},
 		catchError: true,
 		// {{SQL CARBON EDIT}}
@@ -231,7 +232,9 @@ function main() {
 	} else if (argv.run) {
 		var tests = (typeof argv.run === 'string') ? [argv.run] : argv.run;
 		var modulesToLoad = tests.map(function(test) {
-			return path.relative(src, path.resolve(test)).replace(/(\.js)|(\.d\.ts)|(\.js\.map)$/, '');
+			test = test.replace(/^src/, 'out');
+			test = test.replace(/\.ts$/, '.js');
+			return path.relative(src, path.resolve(test)).replace(/(\.js)|(\.js\.map)$/, '').replace(/\\/g, '/');
 		});
 		loadFunc = cb => {
 			define(modulesToLoad, () => cb(null), cb);

@@ -8,7 +8,7 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as nls from 'vscode-nls';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { ExecOptions } from 'child_process';
 import * as decompress from 'decompress';
 import * as request from 'request';
@@ -41,12 +41,12 @@ export default class JupyterServerInstallation {
 	public extensionPath: string;
 	public pythonBinPath: string;
 	public outputChannel: OutputChannel;
-	public configRoot: string;
 	public pythonEnvVarPath: string;
 	public execOptions: ExecOptions;
 
 	private _pythonInstallationPath: string;
 	private _pythonExecutable: string;
+	private _pythonPackageDir: string;
 
 	// Allows dependencies to be installed even if an existing installation is already present
 	private _forceInstall: boolean;
@@ -60,7 +60,6 @@ export default class JupyterServerInstallation {
 		this.outputChannel = outputChannel;
 		this.apiWrapper = apiWrapper;
 		this._pythonInstallationPath = pythonInstallationPath || JupyterServerInstallation.getPythonInstallPath(this.apiWrapper);
-		this.configRoot = path.join(this.extensionPath, constants.jupyterConfigRootFolder);
 		this._forceInstall = !!forceInstall;
 
 		this.configurePackagePaths();
@@ -83,25 +82,25 @@ export default class JupyterServerInstallation {
 		return installation;
 	}
 
-	private async installDependencies(backgroundOperation: sqlops.BackgroundOperation): Promise<void> {
+	private async installDependencies(backgroundOperation: azdata.BackgroundOperation): Promise<void> {
 		if (!fs.existsSync(this._pythonExecutable) || this._forceInstall) {
 			window.showInformationMessage(msgInstallPkgStart);
 			this.outputChannel.show(true);
 			this.outputChannel.appendLine(msgPythonInstallationProgress);
-			backgroundOperation.updateStatus(sqlops.TaskStatus.InProgress, msgPythonInstallationProgress);
+			backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonInstallationProgress);
 			await this.installPythonPackage(backgroundOperation);
-			backgroundOperation.updateStatus(sqlops.TaskStatus.InProgress, msgPythonInstallationComplete);
+			backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonInstallationComplete);
 			this.outputChannel.appendLine(msgPythonInstallationComplete);
 
 			// Install jupyter on Windows because local python is not bundled with jupyter unlike linux and MacOS.
 			await this.installJupyterProsePackage();
 			await this.installSparkMagic();
-			backgroundOperation.updateStatus(sqlops.TaskStatus.Succeeded, msgInstallPkgFinish);
+			backgroundOperation.updateStatus(azdata.TaskStatus.Succeeded, msgInstallPkgFinish);
 			window.showInformationMessage(msgInstallPkgFinish);
 		}
 	}
 
-	private installPythonPackage(backgroundOperation: sqlops.BackgroundOperation): Promise<void> {
+	private installPythonPackage(backgroundOperation: azdata.BackgroundOperation): Promise<void> {
 		let bundleVersion = constants.pythonBundleVersion;
 		let pythonVersion = constants.pythonVersion;
 		let packageName = 'python-#pythonversion-#platform-#bundleversion.#extension';
@@ -115,7 +114,7 @@ export default class JupyterServerInstallation {
 		let pythonDownloadUrl = undefined;
 		switch (utils.getOSPlatform()) {
 			case utils.Platform.Windows:
-				pythonDownloadUrl = 'https://go.microsoft.com/fwlink/?linkid=2065977';
+				pythonDownloadUrl = 'https://go.microsoft.com/fwlink/?linkid=2074021';
 				break;
 			case utils.Platform.Mac:
 				pythonDownloadUrl = 'https://go.microsoft.com/fwlink/?linkid=2065976';
@@ -130,10 +129,10 @@ export default class JupyterServerInstallation {
 		let self = undefined;
 		return new Promise((resolve, reject) => {
 			self = this;
-			backgroundOperation.updateStatus(sqlops.TaskStatus.InProgress, msgDownloadPython(platformId, pythonDownloadUrl));
+			backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgDownloadPython(platformId, pythonDownloadUrl));
 			fs.mkdirs(this._pythonInstallationPath, (err) => {
 				if (err) {
-					backgroundOperation.updateStatus(sqlops.TaskStatus.InProgress, msgPythonDirectoryError);
+					backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonDirectoryError);
 					reject(err);
 				}
 
@@ -142,12 +141,12 @@ export default class JupyterServerInstallation {
 				let printThreshold = 0.1;
 				request.get(pythonDownloadUrl, { timeout: 20000 })
 					.on('error', (downloadError) => {
-						backgroundOperation.updateStatus(sqlops.TaskStatus.InProgress, msgPythonDownloadError);
+						backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonDownloadError);
 						reject(downloadError);
 					})
 					.on('response', (response) => {
 						if (response.statusCode !== 200) {
-							backgroundOperation.updateStatus(sqlops.TaskStatus.InProgress, msgPythonDownloadError);
+							backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonDownloadError);
 							reject(response.statusMessage);
 						}
 
@@ -175,7 +174,7 @@ export default class JupyterServerInstallation {
 							try {
 								fs.removeSync(pythonSourcePath);
 							} catch (err) {
-								backgroundOperation.updateStatus(sqlops.TaskStatus.InProgress, msgPythonUnpackError);
+								backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonUnpackError);
 								reject(err);
 							}
 						}
@@ -183,19 +182,19 @@ export default class JupyterServerInstallation {
 							//Delete zip/tar file
 							fs.unlink(pythonPackagePathLocal, (err) => {
 								if (err) {
-									backgroundOperation.updateStatus(sqlops.TaskStatus.InProgress, msgPythonUnpackError);
+									backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonUnpackError);
 									reject(err);
 								}
 							});
 
 							resolve();
 						}).catch(err => {
-							backgroundOperation.updateStatus(sqlops.TaskStatus.InProgress, msgPythonUnpackError);
+							backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonUnpackError);
 							reject(err);
 						});
 					})
 					.on('error', (downloadError) => {
-						backgroundOperation.updateStatus(sqlops.TaskStatus.InProgress, msgPythonDownloadError);
+						backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonDownloadError);
 						reject(downloadError);
 					});
 			});
@@ -206,6 +205,8 @@ export default class JupyterServerInstallation {
 		//Python source path up to bundle version
 		let pythonSourcePath = path.join(this._pythonInstallationPath, constants.pythonBundleVersion);
 
+		this._pythonPackageDir = path.join(pythonSourcePath, 'offlinePackages');
+
 		// Update python paths and properties to reference user's local python.
 		let pythonBinPathSuffix = process.platform === constants.winPlatform ? '' : 'bin';
 
@@ -213,7 +214,7 @@ export default class JupyterServerInstallation {
 		this.pythonBinPath = path.join(pythonSourcePath, pythonBinPathSuffix);
 
 		// Store paths to python libraries required to run jupyter.
-		this.pythonEnvVarPath = process.env.Path;
+		this.pythonEnvVarPath = process.env['PATH'];
 
 		let delimiter = path.delimiter;
 		if (process.platform === constants.winPlatform) {
@@ -224,6 +225,7 @@ export default class JupyterServerInstallation {
 
 		// Store the executable options to run child processes with env var without interfering parent env var.
 		let env = Object.assign({}, process.env);
+		delete env['Path']; // Delete extra 'Path' variable for Windows, just in case.
 		env['PATH'] = this.pythonEnvVarPath;
 		this.execOptions = {
 			env: env
@@ -252,7 +254,7 @@ export default class JupyterServerInstallation {
 						})
 						.catch(err => {
 							let errorMsg = msgDependenciesInstallationFailed(err);
-							op.updateStatus(sqlops.TaskStatus.Failed, errorMsg);
+							op.updateStatus(azdata.TaskStatus.Failed, errorMsg);
 							this.apiWrapper.showErrorMessage(errorMsg);
 							this._installCompleteEmitter.fire(errorMsg);
 						});
@@ -268,7 +270,8 @@ export default class JupyterServerInstallation {
 
 	private async installJupyterProsePackage(): Promise<void> {
 		if (process.platform === constants.winPlatform) {
-			let installJupyterCommand = `${this._pythonExecutable} -m pip install pandas==0.22.0 jupyter prose-codeaccelerator==1.3.0 --extra-index-url https://prose-python-packages.azurewebsites.net --no-warn-script-location`;
+			let requirements = path.join(this._pythonPackageDir, 'requirements.txt');
+			let installJupyterCommand = `${this._pythonExecutable} -m pip install --no-index -r ${requirements} --find-links ${this._pythonPackageDir} --no-warn-script-location`;
 			this.outputChannel.show(true);
 			this.outputChannel.appendLine(localize('msgInstallStart', 'Installing required packages to run Notebooks...'));
 			await utils.executeStreamedCommand(installJupyterCommand, this.outputChannel);
@@ -280,8 +283,8 @@ export default class JupyterServerInstallation {
 
 	private async installSparkMagic(): Promise<void> {
 		if (process.platform === constants.winPlatform) {
-			let sparkMagicPath = path.join(this.extensionPath, 'wheels/sparkmagic-#sparkMagicVersion-py3-none-any.whl'.replace('#sparkMagicVersion', constants.sparkMagicVersion));
-			let installSparkMagic = `${this._pythonExecutable} -m pip install ${sparkMagicPath} --no-warn-script-location`;
+			let sparkWheel = path.join(this._pythonPackageDir, `sparkmagic-${constants.sparkMagicVersion}-py3-none-any.whl`);
+			let installSparkMagic = `${this._pythonExecutable} -m pip install --no-index ${sparkWheel} --find-links ${this._pythonPackageDir} --no-warn-script-location`;
 			this.outputChannel.show(true);
 			this.outputChannel.appendLine(localize('msgInstallingSpark', 'Installing SparkMagic...'));
 			await utils.executeStreamedCommand(installSparkMagic, this.outputChannel);

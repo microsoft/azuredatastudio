@@ -23,6 +23,56 @@
     "Microsoft.mssql"
   ],
   "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "Kubernetes configuration",
+      "properties": {
+          "mssql-bdc": {
+              "type": "object",
+              "description": "Kubernetes configuration",
+              "properties": {
+                  "mssql-bdc.kubectl-path": {
+                      "type": "string",
+                      "description": "File path to a kubectl binary."
+                  },
+                  "mssql-bdc.kubectl-path.windows": {
+                      "type": "string",
+                      "description": "File path to a kubectl binary."
+                  },
+                  "mssql-bdc.kubectl-path.mac": {
+                      "type": "string",
+                      "description": "File path to a kubectl binary."
+                  },
+                  "mssql-bdc.kubectl-path.linux": {
+                      "type": "string",
+                      "description": "File path to a kubectl binary."
+                  },
+                  "mssql-bdc.kubeconfig": {
+                      "type": "string",
+                      "description": "File path to the kubeconfig file."
+                  },
+                  "mssql-bdc.knownKubeconfigs": {
+                      "type": "array",
+                      "description": "File paths to kubeconfig files from which you can select."
+                  },
+                  "mssql-bdc.outputFormat": {
+                      "enum": [
+                          "json",
+                          "yaml"
+                      ],
+                      "type": "string",
+                      "description": "Output format for Kubernetes specs. One of 'json' or 'yaml' (default)."
+                  }
+              },
+              "default": {
+                  "mssql-bdc.namespace": "",
+                  "mssql-bdc.kubectl-path": "",
+                  "mssql-bdc.kubeconfig": "",
+                  "mssql-bdc.knownKubeconfigs": []
+              }
+            }
+        }
+    },
     "commands": [
       {
         "command": "mssql.cluster.create",
@@ -32,7 +82,8 @@
     ]
   },
   "dependencies": {
-    "vscode-nls": "^3.2.1"
+    "vscode-nls": "^3.2.1",
+    "download": "^6.2.5"
   },
   "devDependencies": {
     "mocha-junit-reporter": "^1.17.0",

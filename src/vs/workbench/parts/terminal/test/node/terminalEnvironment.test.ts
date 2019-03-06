@@ -7,9 +7,8 @@ import * as assert from 'assert';
 import * as os from 'os';
 import * as platform from 'vs/base/common/platform';
 import * as terminalEnvironment from 'vs/workbench/parts/terminal/node/terminalEnvironment';
-import Uri from 'vs/base/common/uri';
+import { URI as Uri } from 'vs/base/common/uri';
 import { IStringDictionary } from 'vs/base/common/collections';
-import { ITerminalConfigHelper } from 'vs/workbench/parts/terminal/common/terminal';
 
 suite('Workbench - TerminalEnvironment', () => {
 	test('addTerminalEnvironmentKeys', () => {
@@ -45,7 +44,7 @@ suite('Workbench - TerminalEnvironment', () => {
 			VSCODE_NLS_CONFIG: 'x',
 			VSCODE_PORTABLE: 'x',
 			VSCODE_PID: 'x',
-			VSCODE_NODE_CACHED_DATA_DIR_12345: 'x'
+			VSCODE_NODE_CACHED_DATA_DIR: 'x'
 		};
 		terminalEnvironment.sanitizeEnvironment(env);
 		assert.equal(env['FOO'], 'bar');
@@ -116,59 +115,41 @@ suite('Workbench - TerminalEnvironment', () => {
 	});
 
 	suite('getCwd', () => {
-		let configHelper: ITerminalConfigHelper;
-
-		setup(() => {
-			configHelper = <ITerminalConfigHelper>{
-				config: {
-					cwd: null
-				}
-			};
-		});
-
 		// This helper checks the paths in a cross-platform friendly manner
 		function assertPathsMatch(a: string, b: string): void {
 			assert.equal(Uri.file(a).fsPath, Uri.file(b).fsPath);
 		}
 
 		test('should default to os.homedir() for an empty workspace', () => {
-			assertPathsMatch(terminalEnvironment.getCwd({ executable: null, args: [] }, null, configHelper), os.homedir());
+			assertPathsMatch(terminalEnvironment.getCwd({ executable: null, args: [] }, null, undefined), os.homedir());
 		});
 
 		test('should use to the workspace if it exists', () => {
-			assertPathsMatch(terminalEnvironment.getCwd({ executable: null, args: [] }, Uri.file('/foo'), configHelper), '/foo');
+			assertPathsMatch(terminalEnvironment.getCwd({ executable: null, args: [] }, Uri.file('/foo'), undefined), '/foo');
 		});
 
 		test('should use an absolute custom cwd as is', () => {
-			configHelper.config.cwd = '/foo';
-			assertPathsMatch(terminalEnvironment.getCwd({ executable: null, args: [] }, null, configHelper), '/foo');
+			assertPathsMatch(terminalEnvironment.getCwd({ executable: null, args: [] }, null, '/foo'), '/foo');
 		});
 
 		test('should normalize a relative custom cwd against the workspace path', () => {
-			configHelper.config.cwd = 'foo';
-			assertPathsMatch(terminalEnvironment.getCwd({ executable: null, args: [] }, Uri.file('/bar'), configHelper), '/bar/foo');
-			configHelper.config.cwd = './foo';
-			assertPathsMatch(terminalEnvironment.getCwd({ executable: null, args: [] }, Uri.file('/bar'), configHelper), '/bar/foo');
-			configHelper.config.cwd = '../foo';
-			assertPathsMatch(terminalEnvironment.getCwd({ executable: null, args: [] }, Uri.file('/bar'), configHelper), '/foo');
+			assertPathsMatch(terminalEnvironment.getCwd({ executable: null, args: [] }, Uri.file('/bar'), 'foo'), '/bar/foo');
+			assertPathsMatch(terminalEnvironment.getCwd({ executable: null, args: [] }, Uri.file('/bar'), './foo'), '/bar/foo');
+			assertPathsMatch(terminalEnvironment.getCwd({ executable: null, args: [] }, Uri.file('/bar'), '../foo'), '/foo');
 		});
 
 		test('should fall back for relative a custom cwd that doesn\'t have a workspace', () => {
-			configHelper.config.cwd = 'foo';
-			assertPathsMatch(terminalEnvironment.getCwd({ executable: null, args: [] }, null, configHelper), os.homedir());
-			configHelper.config.cwd = './foo';
-			assertPathsMatch(terminalEnvironment.getCwd({ executable: null, args: [] }, null, configHelper), os.homedir());
-			configHelper.config.cwd = '../foo';
-			assertPathsMatch(terminalEnvironment.getCwd({ executable: null, args: [] }, null, configHelper), os.homedir());
+			assertPathsMatch(terminalEnvironment.getCwd({ executable: null, args: [] }, null, 'foo'), os.homedir());
+			assertPathsMatch(terminalEnvironment.getCwd({ executable: null, args: [] }, null, './foo'), os.homedir());
+			assertPathsMatch(terminalEnvironment.getCwd({ executable: null, args: [] }, null, '../foo'), os.homedir());
 		});
 
 		test('should ignore custom cwd when told to ignore', () => {
-			configHelper.config.cwd = '/foo';
-			assertPathsMatch(terminalEnvironment.getCwd({ executable: null, args: [], ignoreConfigurationCwd: true }, Uri.file('/bar'), configHelper), '/bar');
+			assertPathsMatch(terminalEnvironment.getCwd({ executable: null, args: [], ignoreConfigurationCwd: true }, Uri.file('/bar'), '/foo'), '/bar');
 		});
 	});
 
-	test('preparePathForTerminal', function () {
+	test('preparePathForTerminal', () => {
 		if (platform.isWindows) {
 			assert.equal(terminalEnvironment.preparePathForTerminal('C:\\foo'), 'C:\\foo');
 			assert.equal(terminalEnvironment.preparePathForTerminal('C:\\foo bar'), '"C:\\foo bar"');

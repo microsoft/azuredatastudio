@@ -5,7 +5,7 @@
 
 import * as DOM from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { Builder } from 'vs/base/browser/builder';
+import { Builder } from 'sql/base/browser/builder';
 import { EditorOptions } from 'vs/workbench/common/editor';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { getZoomLevel } from 'vs/base/browser/browser';
@@ -23,8 +23,8 @@ import { IEditDataComponentParams } from 'sql/services/bootstrap/bootstrapParams
 import { EditDataModule } from 'sql/parts/grid/views/editData/editData.module';
 import { EDITDATA_SELECTOR } from 'sql/parts/grid/views/editData/editData.component';
 import { EditDataResultsInput } from 'sql/parts/editData/common/editDataResultsInput';
-import { Event } from 'vs/base/common/event';
 import { CancellationToken } from 'vs/base/common/cancellation';
+import { IStorageService } from 'vs/platform/storage/common/storage';
 
 export class EditDataResultsEditor extends BaseEditor {
 
@@ -38,9 +38,10 @@ export class EditDataResultsEditor extends BaseEditor {
 		@IThemeService themeService: IThemeService,
 		@IQueryModelService private _queryModelService: IQueryModelService,
 		@IConfigurationService private _configurationService: IConfigurationService,
-		@IInstantiationService private _instantiationService: IInstantiationService
+		@IInstantiationService private _instantiationService: IInstantiationService,
+		@IStorageService storageService: IStorageService
 	) {
-		super(EditDataResultsEditor.ID, telemetryService, themeService);
+		super(EditDataResultsEditor.ID, telemetryService, themeService, storageService);
 		this._rawOptions = BareResultsGridInfo.createFromRawSettings(this._configurationService.getValue('resultsGrid'), getZoomLevel());
 		this._configurationService.onDidChangeConfiguration(e => {
 			if (e.affectsConfiguration('resultsGrid')) {

@@ -6,7 +6,7 @@
 'use strict';
 
 import * as path from 'path';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as os from 'os';
 import * as nls from 'vscode-nls';
@@ -75,22 +75,22 @@ export class JupyterController implements vscode.Disposable {
 		let notebookProvider = undefined;
 
 		notebookProvider = this.registerNotebookProvider();
-		sqlops.nb.onDidOpenNotebookDocument(notebook => {
+		azdata.nb.onDidOpenNotebookDocument(notebook => {
 			if (!JupyterServerInstallation.isPythonInstalled(this.apiWrapper)) {
 				this.doConfigurePython(jupyterInstaller);
 			}
 		});
 		// Add command/task handlers
-		this.apiWrapper.registerTaskHandler(constants.jupyterOpenNotebookTask, (profile: sqlops.IConnectionProfile) => {
+		this.apiWrapper.registerTaskHandler(constants.jupyterOpenNotebookTask, (profile: azdata.IConnectionProfile) => {
 			return this.handleOpenNotebookTask(profile);
 		});
-		this.apiWrapper.registerTaskHandler(constants.jupyterNewNotebookTask, (profile: sqlops.IConnectionProfile) => {
+		this.apiWrapper.registerTaskHandler(constants.jupyterNewNotebookTask, (profile: azdata.IConnectionProfile) => {
 			return this.saveProfileAndCreateNotebook(profile);
 		});
-		this.apiWrapper.registerCommand(constants.jupyterNewNotebookCommand, (explorerContext: sqlops.ObjectExplorerContext) => {
+		this.apiWrapper.registerCommand(constants.jupyterNewNotebookCommand, (explorerContext: azdata.ObjectExplorerContext) => {
 			return this.saveProfileAndCreateNotebook(explorerContext ? explorerContext.connectionProfile : undefined);
 		});
-		this.apiWrapper.registerCommand(constants.jupyterAnalyzeCommand, (explorerContext: sqlops.ObjectExplorerContext) => {
+		this.apiWrapper.registerCommand(constants.jupyterAnalyzeCommand, (explorerContext: azdata.ObjectExplorerContext) => {
 			return this.saveProfileAndAnalyzeNotebook(explorerContext);
 		});
 
@@ -99,7 +99,6 @@ export class JupyterController implements vscode.Disposable {
 		this.apiWrapper.registerCommand(constants.jupyterConfigurePython, () => { return this.doConfigurePython(jupyterInstaller); });
 
 		let supportedFileFilter: vscode.DocumentFilter[] = [
-			{ scheme: 'file', language: '*' },
 			{ scheme: 'untitled', language: '*' }
 		];
 		this.extensionContext.subscriptions.push(this.apiWrapper.registerCompletionItemProvider(supportedFileFilter, new NotebookCompletionItemProvider(notebookProvider)));
@@ -114,15 +113,15 @@ export class JupyterController implements vscode.Disposable {
 			extensionContext: this.extensionContext,
 			apiWrapper: this.apiWrapper
 		}));
-		sqlops.nb.registerNotebookProvider(notebookProvider);
+		azdata.nb.registerNotebookProvider(notebookProvider);
 		return notebookProvider;
 	}
 
-	private saveProfileAndCreateNotebook(profile: sqlops.IConnectionProfile): Promise<void> {
+	private saveProfileAndCreateNotebook(profile: azdata.IConnectionProfile): Promise<void> {
 		return this.handleNewNotebookTask(undefined, profile);
 	}
 
-	private saveProfileAndAnalyzeNotebook(oeContext: sqlops.ObjectExplorerContext): Promise<void> {
+	private saveProfileAndAnalyzeNotebook(oeContext: azdata.ObjectExplorerContext): Promise<void> {
 		return this.handleNewNotebookTask(oeContext, oeContext.connectionProfile);
 	}
 
@@ -132,11 +131,11 @@ export class JupyterController implements vscode.Disposable {
 	}
 
 	// EVENT HANDLERS //////////////////////////////////////////////////////
-	public async getDefaultConnection(): Promise<sqlops.ConnectionInfo> {
+	public async getDefaultConnection(): Promise<azdata.connection.ConnectionProfile> {
 		return await this.apiWrapper.getCurrentConnection();
 	}
 
-	private async handleOpenNotebookTask(profile: sqlops.IConnectionProfile): Promise<void> {
+	private async handleOpenNotebookTask(profile: azdata.IConnectionProfile): Promise<void> {
 		let notebookFileTypeName = localize('notebookFileType', 'Notebooks');
 		let filter = {};
 		filter[notebookFileTypeName] = 'ipynb';
@@ -152,7 +151,7 @@ export class JupyterController implements vscode.Disposable {
 				// in the future might want additional supported types
 				this.apiWrapper.showErrorMessage(localize('unsupportedFileType', 'Only .ipynb Notebooks are supported'));
 			} else {
-				await sqlops.nb.showNotebookDocument(fileUri, {
+				await azdata.nb.showNotebookDocument(fileUri, {
 					connectionId: profile.id,
 					providerId: constants.jupyterNotebookProviderId,
 					preview: false
@@ -161,11 +160,11 @@ export class JupyterController implements vscode.Disposable {
 		}
 	}
 
-	private async handleNewNotebookTask(oeContext?: sqlops.ObjectExplorerContext, profile?: sqlops.IConnectionProfile): Promise<void> {
+	private async handleNewNotebookTask(oeContext?: azdata.ObjectExplorerContext, profile?: azdata.IConnectionProfile): Promise<void> {
 		// Ensure we get a unique ID for the notebook. For now we're using a different prefix to the built-in untitled files
 		// to handle this. We should look into improving this in the future
 		let untitledUri = vscode.Uri.parse(`untitled:Notebook-${untitledCounter++}`);
-		let editor = await sqlops.nb.showNotebookDocument(untitledUri, {
+		let editor = await azdata.nb.showNotebookDocument(untitledUri, {
 			connectionId: profile.id,
 			providerId: constants.jupyterNotebookProviderId,
 			preview: false,

@@ -17,7 +17,7 @@ import { coalesce } from 'vs/base/common/arrays';
 import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
 import { viewsContainersExtensionPoint } from 'vs/workbench/api/browser/viewsContainersExtensionPoint';
 
-import { CustomTreeViewer } from 'sql/workbench/browser/parts/views/customView';
+import { CustomTreeView } from 'sql/workbench/browser/parts/views/customView';
 
 export const DataExplorerViewlet = {
 	DataExplorer: 'dataExplorer'
@@ -123,7 +123,7 @@ class DataExplorerContainerExtensionHandler implements IWorkbenchContribution {
 							when: ContextKeyExpr.deserialize(item.when),
 							canToggleVisibility: true,
 							collapsed: this.showCollapsed(container),
-							treeViewer: this.instantiationService.createInstance(CustomTreeViewer, item.id, container)
+							treeView: this.instantiationService.createInstance(CustomTreeView, item.id, container)
 						};
 
 						viewIds.push(viewDescriptor.id);

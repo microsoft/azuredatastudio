@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 import * as nls from 'vscode-nls';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { JobData } from '../data/jobData';
 import { JobStepDialog } from './jobStepDialog';
 import { PickScheduleDialog } from './pickScheduleDialog';
@@ -73,60 +73,60 @@ export class JobDialog extends AgentDialog<JobData>  {
 	private readonly EditJobDialogEvent: string  = 'EditJobDialogOpened';
 
 	// UI Components
-	private generalTab: sqlops.window.DialogTab;
-	private stepsTab: sqlops.window.DialogTab;
-	private alertsTab: sqlops.window.DialogTab;
-	private schedulesTab: sqlops.window.DialogTab;
-	private notificationsTab: sqlops.window.DialogTab;
+	private generalTab: azdata.window.DialogTab;
+	private stepsTab: azdata.window.DialogTab;
+	private alertsTab: azdata.window.DialogTab;
+	private schedulesTab: azdata.window.DialogTab;
+	private notificationsTab: azdata.window.DialogTab;
 
 	// General tab controls
-	private nameTextBox: sqlops.InputBoxComponent;
-	private ownerTextBox: sqlops.InputBoxComponent;
-	private categoryDropdown: sqlops.DropDownComponent;
-	private descriptionTextBox: sqlops.InputBoxComponent;
-	private enabledCheckBox: sqlops.CheckBoxComponent;
+	private nameTextBox: azdata.InputBoxComponent;
+	private ownerTextBox: azdata.InputBoxComponent;
+	private categoryDropdown: azdata.DropDownComponent;
+	private descriptionTextBox: azdata.InputBoxComponent;
+	private enabledCheckBox: azdata.CheckBoxComponent;
 
 	// Steps tab controls
-	private stepsTable: sqlops.TableComponent;
-	private newStepButton: sqlops.ButtonComponent;
-	private moveStepUpButton: sqlops.ButtonComponent;
-	private moveStepDownButton: sqlops.ButtonComponent;
-	private editStepButton: sqlops.ButtonComponent;
-	private deleteStepButton: sqlops.ButtonComponent;
+	private stepsTable: azdata.TableComponent;
+	private newStepButton: azdata.ButtonComponent;
+	private moveStepUpButton: azdata.ButtonComponent;
+	private moveStepDownButton: azdata.ButtonComponent;
+	private editStepButton: azdata.ButtonComponent;
+	private deleteStepButton: azdata.ButtonComponent;
 
 	// Schedule tab controls
-	private removeScheduleButton: sqlops.ButtonComponent;
+	private removeScheduleButton: azdata.ButtonComponent;
 
 	// Notifications tab controls
-	private notificationsTabTopLabel: sqlops.TextComponent;
-	private emailCheckBox: sqlops.CheckBoxComponent;
-	private emailOperatorDropdown: sqlops.DropDownComponent;
-	private emailConditionDropdown: sqlops.DropDownComponent;
-	private pagerCheckBox: sqlops.CheckBoxComponent;
-	private pagerOperatorDropdown: sqlops.DropDownComponent;
-	private pagerConditionDropdown: sqlops.DropDownComponent;
-	private eventLogCheckBox: sqlops.CheckBoxComponent;
-	private eventLogConditionDropdown: sqlops.DropDownComponent;
-	private deleteJobCheckBox: sqlops.CheckBoxComponent;
-	private deleteJobConditionDropdown: sqlops.DropDownComponent;
-	private startStepDropdown: sqlops.DropDownComponent;
+	private notificationsTabTopLabel: azdata.TextComponent;
+	private emailCheckBox: azdata.CheckBoxComponent;
+	private emailOperatorDropdown: azdata.DropDownComponent;
+	private emailConditionDropdown: azdata.DropDownComponent;
+	private pagerCheckBox: azdata.CheckBoxComponent;
+	private pagerOperatorDropdown: azdata.DropDownComponent;
+	private pagerConditionDropdown: azdata.DropDownComponent;
+	private eventLogCheckBox: azdata.CheckBoxComponent;
+	private eventLogConditionDropdown: azdata.DropDownComponent;
+	private deleteJobCheckBox: azdata.CheckBoxComponent;
+	private deleteJobConditionDropdown: azdata.DropDownComponent;
+	private startStepDropdown: azdata.DropDownComponent;
 
 	// Schedule tab controls
-	private schedulesTable: sqlops.TableComponent;
-	private pickScheduleButton: sqlops.ButtonComponent;
+	private schedulesTable: azdata.TableComponent;
+	private pickScheduleButton: azdata.ButtonComponent;
 
 	// Alert tab controls
-	private alertsTable: sqlops.TableComponent;
-	private newAlertButton: sqlops.ButtonComponent;
+	private alertsTable: azdata.TableComponent;
+	private newAlertButton: azdata.ButtonComponent;
 	private isEdit: boolean = false;
 
 	// Job objects
-	private steps: sqlops.AgentJobStepInfo[];
-	private schedules: sqlops.AgentJobScheduleInfo[];
-	private alerts: sqlops.AgentAlertInfo[] = [];
-	private startStepDropdownValues: sqlops.CategoryValue[] = [];
+	private steps: azdata.AgentJobStepInfo[];
+	private schedules: azdata.AgentJobScheduleInfo[];
+	private alerts: azdata.AgentAlertInfo[] = [];
+	private startStepDropdownValues: azdata.CategoryValue[] = [];
 
-	constructor(ownerUri: string, jobInfo: sqlops.AgentJobInfo = undefined) {
+	constructor(ownerUri: string, jobInfo: azdata.AgentJobInfo = undefined) {
 		super(
 			ownerUri,
 			new JobData(ownerUri, jobInfo),
@@ -139,11 +139,11 @@ export class JobDialog extends AgentDialog<JobData>  {
 	}
 
 	protected async initializeDialog() {
-		this.generalTab = sqlops.window.createTab(this.GeneralTabText);
-		this.stepsTab = sqlops.window.createTab(this.StepsTabText);
-		this.alertsTab = sqlops.window.createTab(this.AlertsTabText);
-		this.schedulesTab = sqlops.window.createTab(this.SchedulesTabText);
-		this.notificationsTab = sqlops.window.createTab(this.NotificationsTabText);
+		this.generalTab = azdata.window.createTab(this.GeneralTabText);
+		this.stepsTab = azdata.window.createTab(this.StepsTabText);
+		this.alertsTab = azdata.window.createTab(this.AlertsTabText);
+		this.schedulesTab = azdata.window.createTab(this.SchedulesTabText);
+		this.notificationsTab = azdata.window.createTab(this.NotificationsTabText);
 		this.initializeGeneralTab();
 		this.initializeStepsTab();
 		this.initializeAlertsTab();
@@ -636,7 +636,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 		});
 	}
 
-	private createRowContainer(view: sqlops.ModelView): sqlops.FlexBuilder {
+	private createRowContainer(view: azdata.ModelView): azdata.FlexBuilder {
 		return view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'row',
 			alignItems: 'left',
@@ -644,7 +644,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 		});
 	}
 
-	private convertStepsToData(jobSteps: sqlops.AgentJobStepInfo[]): any[][] {
+	private convertStepsToData(jobSteps: azdata.AgentJobStepInfo[]): any[][] {
 		let result = [];
 		jobSteps.forEach(jobStep => {
 			let cols = [];
@@ -658,7 +658,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 		return result;
 	}
 
-	private convertSchedulesToData(jobSchedules: sqlops.AgentJobScheduleInfo[]): any[][] {
+	private convertSchedulesToData(jobSchedules: azdata.AgentJobScheduleInfo[]): any[][] {
 		let result = [];
 		jobSchedules.forEach(schedule => {
 			let cols = [];
@@ -670,7 +670,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 		return result;
 	}
 
-	private convertAlertsToData(alerts: sqlops.AgentAlertInfo[]): any[][] {
+	private convertAlertsToData(alerts: azdata.AgentAlertInfo[]): any[][] {
 		let result = [];
 		alerts.forEach(alert => {
 			let cols = [];

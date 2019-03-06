@@ -3,39 +3,41 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as nls from 'vs/nls';
-import * as strings from 'vs/base/common/strings';
+import * as browser from 'vs/base/browser/browser';
 import * as dom from 'vs/base/browser/dom';
-import { TPromise } from 'vs/base/common/winjs.base';
+import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
+import { Button, IButtonOptions } from 'vs/base/browser/ui/button/button';
+import { FindInput, IFindInputOptions } from 'vs/base/browser/ui/findinput/findInput';
+import { HistoryInputBox, IMessage } from 'vs/base/browser/ui/inputbox/inputBox';
 import { Widget } from 'vs/base/browser/ui/widget';
 import { Action } from 'vs/base/common/actions';
-import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
-import { FindInput, IFindInputOptions } from 'vs/base/browser/ui/findinput/findInput';
-import { IMessage, HistoryInputBox } from 'vs/base/browser/ui/inputbox/inputBox';
-import { Button, IButtonOptions } from 'vs/base/browser/ui/button/button';
-import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { KeybindingsRegistry, KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
-import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
-import { ContextKeyExpr, IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
-import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
+import { Delayer } from 'vs/base/common/async';
+import { Emitter, Event } from 'vs/base/common/event';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
-import { Event, Emitter } from 'vs/base/common/event';
-import { Builder } from 'vs/base/browser/builder';
-import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
-import { isSearchViewFocused, appendKeyBindingLabel } from 'vs/workbench/parts/search/browser/searchActions';
-import * as Constants from 'vs/workbench/parts/search/common/constants';
-import { attachInputBoxStyler, attachFindInputBoxStyler } from 'vs/platform/theme/common/styler';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
+import * as env from 'vs/base/common/platform';
+import * as strings from 'vs/base/common/strings';
 import { CONTEXT_FIND_WIDGET_NOT_VISIBLE } from 'vs/editor/contrib/find/findModel';
+import * as nls from 'vs/nls';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IPanelService } from 'vs/workbench/services/panel/common/panelService';
+import { ContextKeyExpr, IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
+import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
+import { KeybindingsRegistry, KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { ISearchConfigurationProperties } from 'vs/platform/search/common/search';
+import { attachFindInputBoxStyler, attachInputBoxStyler } from 'vs/platform/theme/common/styler';
+import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { ContextScopedFindInput, ContextScopedHistoryInputBox } from 'vs/platform/widget/browser/contextScopedHistoryWidget';
-import { Delayer } from 'vs/base/common/async';
+import { appendKeyBindingLabel, isSearchViewFocused } from 'vs/workbench/parts/search/browser/searchActions';
+import * as Constants from 'vs/workbench/parts/search/common/constants';
+import { IPanelService } from 'vs/workbench/services/panel/common/panelService';
+import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
+import { IEditorOptions } from 'vs/editor/common/config/editorOptions';
 
 export interface ISearchWidgetOptions {
 	value?: string;
+	replaceValue?: string;
 	isRegex?: boolean;
 	isCaseSensitive?: boolean;
 	isWholeWords?: boolean;
@@ -45,7 +47,7 @@ export interface ISearchWidgetOptions {
 
 class ReplaceAllAction extends Action {
 
-	private static fgInstance: ReplaceAllAction = null;
+	private static fgInstance: ReplaceAllAction | null = null;
 	public static readonly ID: string = 'search.action.replaceAll';
 
 	static get INSTANCE(): ReplaceAllAction {
@@ -55,7 +57,7 @@ class ReplaceAllAction extends Action {
 		return ReplaceAllAction.fgInstance;
 	}
 
-	private _searchWidget: SearchWidget = null;
+	private _searchWidget: SearchWidget | null = null;
 
 	constructor() {
 		super(ReplaceAllAction.ID, '', 'action-replace-all', false);
@@ -65,11 +67,11 @@ class ReplaceAllAction extends Action {
 		this._searchWidget = searchWidget;
 	}
 
-	run(): TPromise<any> {
+	run(): Promise<any> {
 		if (this._searchWidget) {
 			return this._searchWidget.triggerReplaceAll();
 		}
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 }
 
@@ -100,8 +102,8 @@ export class SearchWidget extends Widget {
 	private ignoreGlobalFindBufferOnNextFocus = false;
 	private previousGlobalFindBufferValue: string;
 
-	private _onSearchSubmit = this._register(new Emitter<boolean>());
-	public readonly onSearchSubmit: Event<boolean> = this._onSearchSubmit.event;
+	private _onSearchSubmit = this._register(new Emitter<void>());
+	public readonly onSearchSubmit: Event<void> = this._onSearchSubmit.event;
 
 	private _onSearchCancel = this._register(new Emitter<void>());
 	public readonly onSearchCancel: Event<void> = this._onSearchCancel.event;
@@ -121,8 +123,11 @@ export class SearchWidget extends Widget {
 	private _onBlur = this._register(new Emitter<void>());
 	public readonly onBlur: Event<void> = this._onBlur.event;
 
+	private _onDidHeightChange = this._register(new Emitter<void>());
+	public readonly onDidHeightChange: Event<void> = this._onDidHeightChange.event;
+
 	constructor(
-		container: Builder,
+		container: HTMLElement,
 		options: ISearchWidgetOptions,
 		@IContextViewService private contextViewService: IContextViewService,
 		@IThemeService private themeService: IThemeService,
@@ -137,6 +142,14 @@ export class SearchWidget extends Widget {
 		this.replaceInputBoxFocused = Constants.ReplaceInputBoxFocusedKey.bindTo(this.contextKeyService);
 		this._replaceHistoryDelayer = new Delayer<void>(500);
 		this.render(container, options);
+
+		this.configurationService.onDidChangeConfiguration(e => {
+			if (e.affectsConfiguration('editor.accessibilitySupport')) {
+				this.updateAccessibilitySupport();
+			}
+		});
+		browser.onDidChangeAccessibilitySupport(() => this.updateAccessibilitySupport());
+		this.updateAccessibilitySupport();
 	}
 
 	public focus(select: boolean = true, focusReplace: boolean = false, suppressGlobalSearchBuffer = false): void {
@@ -158,6 +171,7 @@ export class SearchWidget extends Widget {
 	public setWidth(width: number) {
 		this.searchInput.setWidth(width);
 		this.replaceInput.width = width - 28;
+		this.replaceInput.layout();
 	}
 
 	public clear() {
@@ -228,12 +242,24 @@ export class SearchWidget extends Widget {
 		this.searchInput.focusOnRegex();
 	}
 
-	private render(container: Builder, options: ISearchWidgetOptions): void {
-		this.domNode = container.div({ 'class': 'search-widget' }).style({ position: 'relative' }).getHTMLElement();
+	private render(container: HTMLElement, options: ISearchWidgetOptions): void {
+		this.domNode = dom.append(container, dom.$('.search-widget'));
+		this.domNode.style.position = 'relative';
+
 		this.renderToggleReplaceButton(this.domNode);
 
 		this.renderSearchInput(this.domNode, options);
 		this.renderReplaceInput(this.domNode, options);
+	}
+
+	private isScreenReaderOptimized() {
+		const detected = browser.getAccessibilitySupport() === env.AccessibilitySupport.Enabled;
+		const config = this.configurationService.getValue<IEditorOptions>('editor').accessibilitySupport;
+		return config === 'on' || (config === 'auto' && detected);
+	}
+
+	private updateAccessibilitySupport(): void {
+		this.searchInput.setFocusInputOnOptionClick(!this.isScreenReaderOptimized());
 	}
 
 	private renderToggleReplaceButton(parent: HTMLElement): void {
@@ -245,7 +271,8 @@ export class SearchWidget extends Widget {
 		};
 		this.toggleReplaceButton = this._register(new Button(parent, opts));
 		this.toggleReplaceButton.element.setAttribute('aria-expanded', 'false');
-		this.toggleReplaceButton.icon = 'toggle-replace-button collapse';
+		this.toggleReplaceButton.element.classList.add('collapse');
+		this.toggleReplaceButton.icon = 'toggle-replace-button';
 		// TODO@joh need to dispose this listener eventually
 		this.toggleReplaceButton.onDidClick(() => this.onToggleReplaceButton());
 		this.toggleReplaceButton.element.title = nls.localize('search.replace.toggle.button.title', "Toggle Replace");
@@ -259,11 +286,12 @@ export class SearchWidget extends Widget {
 			appendCaseSensitiveLabel: appendKeyBindingLabel('', this.keyBindingService.lookupKeybinding(Constants.ToggleCaseSensitiveCommandId), this.keyBindingService),
 			appendWholeWordsLabel: appendKeyBindingLabel('', this.keyBindingService.lookupKeybinding(Constants.ToggleWholeWordCommandId), this.keyBindingService),
 			appendRegexLabel: appendKeyBindingLabel('', this.keyBindingService.lookupKeybinding(Constants.ToggleRegexCommandId), this.keyBindingService),
-			history: options.searchHistory
+			history: options.searchHistory,
+			flexibleHeight: true
 		};
 
 		let searchInputContainer = dom.append(parent, dom.$('.search-container.input-box'));
-		this.searchInput = this._register(new ContextScopedFindInput(searchInputContainer, this.contextViewService, inputOptions, this.contextKeyService));
+		this.searchInput = this._register(new ContextScopedFindInput(searchInputContainer, this.contextViewService, inputOptions, this.contextKeyService, true));
 		this._register(attachFindInputBoxStyler(this.searchInput, this.themeService));
 		this.searchInput.onKeyDown((keyboardEvent: IKeyboardEvent) => this.onSearchInputKeyDown(keyboardEvent));
 		this.searchInput.setValue(options.value || '');
@@ -273,8 +301,10 @@ export class SearchWidget extends Widget {
 		this._register(this.onSearchSubmit(() => {
 			this.searchInput.inputBox.addToHistory();
 		}));
-		this.searchInput.onCaseSensitiveKeyDown((keyboardEvent: IKeyboardEvent) => this.onCaseSensitiveKeyDown(keyboardEvent));
-		this.searchInput.onRegexKeyDown((keyboardEvent: IKeyboardEvent) => this.onRegexKeyDown(keyboardEvent));
+		this._register(this.searchInput.onCaseSensitiveKeyDown((keyboardEvent: IKeyboardEvent) => this.onCaseSensitiveKeyDown(keyboardEvent)));
+		this._register(this.searchInput.onRegexKeyDown((keyboardEvent: IKeyboardEvent) => this.onRegexKeyDown(keyboardEvent)));
+		this._register(this.searchInput.inputBox.onDidChange(() => this.onSearchInputChanged()));
+		this._register(this.searchInput.inputBox.onDidHeightChange(() => this._onDidHeightChange.fire()));
 
 		this._register(this.onReplaceValueChanged(() => {
 			this._replaceHistoryDelayer.trigger(() => this.replaceInput.addToHistory());
@@ -284,7 +314,7 @@ export class SearchWidget extends Widget {
 		this._register(this.searchInputFocusTracker.onDidFocus(() => {
 			this.searchInputBoxFocused.set(true);
 
-			const useGlobalFindBuffer = this.configurationService.getValue<ISearchConfigurationProperties>('search').globalFindClipboard;
+			const useGlobalFindBuffer = this.searchConfiguration.globalFindClipboard;
 			if (!this.ignoreGlobalFindBufferOnNextFocus && useGlobalFindBuffer) {
 				const globalBufferText = this.clipboardServce.readFindText();
 				if (this.previousGlobalFindBufferValue !== globalBufferText) {
@@ -307,12 +337,14 @@ export class SearchWidget extends Widget {
 		this.replaceInput = this._register(new ContextScopedHistoryInputBox(replaceBox, this.contextViewService, {
 			ariaLabel: nls.localize('label.Replace', 'Replace: Type replace term and press Enter to preview or Escape to cancel'),
 			placeholder: nls.localize('search.replace.placeHolder', "Replace"),
-			history: options.replaceHistory || []
+			history: options.replaceHistory || [],
+			flexibleHeight: true
 		}, this.contextKeyService));
 		this._register(attachInputBoxStyler(this.replaceInput, this.themeService));
 		this.onkeydown(this.replaceInput.inputElement, (keyboardEvent) => this.onReplaceInputKeyDown(keyboardEvent));
-		this.replaceInput.onDidChange(() => this._onReplaceValueChanged.fire());
-		this.searchInput.inputBox.onDidChange(() => this.onSearchInputChanged());
+		this.replaceInput.value = options.replaceValue || '';
+		this._register(this.replaceInput.onDidChange(() => this._onReplaceValueChanged.fire()));
+		this._register(this.replaceInput.onDidHeightChange(() => this._onDidHeightChange.fire()));
 
 		this.replaceAllAction = ReplaceAllAction.INSTANCE;
 		this.replaceAllAction.searchWidget = this;
@@ -326,9 +358,9 @@ export class SearchWidget extends Widget {
 		this._register(this.replaceInputFocusTracker.onDidBlur(() => this.replaceInputBoxFocused.set(false)));
 	}
 
-	triggerReplaceAll(): TPromise<any> {
+	triggerReplaceAll(): Promise<any> {
 		this._onReplaceAll.fire();
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 
 	private onToggleReplaceButton(): void {
@@ -354,6 +386,7 @@ export class SearchWidget extends Widget {
 		if (currentState !== newState) {
 			this.replaceActive.set(newState);
 			this._onReplaceStateChange.fire(newState);
+			this.replaceInput.layout();
 		}
 	}
 
@@ -375,13 +408,16 @@ export class SearchWidget extends Widget {
 		}
 
 		if (strings.regExpContainsBackreference(value)) {
-			return { content: nls.localize('regexp.backreferenceValidationFailure', "Backreferences are not supported") };
+			if (!this.searchConfiguration.usePCRE2) {
+				return { content: nls.localize('regexp.backreferenceValidationFailure', "Backreferences are not supported") };
+			}
 		}
 
 		return null;
 	}
 
 	private onSearchInputChanged(): void {
+		this.searchInput.clearMessage();
 		this.setReplaceAllActionState(false);
 	}
 
@@ -403,6 +439,20 @@ export class SearchWidget extends Widget {
 				this.searchInput.focusOnCaseSensitive();
 			}
 			keyboardEvent.preventDefault();
+		}
+
+		else if (keyboardEvent.equals(KeyCode.UpArrow)) {
+			const ta = this.searchInput.domNode.querySelector('textarea');
+			if (ta && ta.selectionStart > 0) {
+				keyboardEvent.stopPropagation();
+			}
+		}
+
+		else if (keyboardEvent.equals(KeyCode.DownArrow)) {
+			const ta = this.searchInput.domNode.querySelector('textarea');
+			if (ta && ta.selectionEnd < ta.value.length) {
+				keyboardEvent.stopPropagation();
+			}
 		}
 	}
 
@@ -441,6 +491,20 @@ export class SearchWidget extends Widget {
 			this.searchInput.focus();
 			keyboardEvent.preventDefault();
 		}
+
+		else if (keyboardEvent.equals(KeyCode.UpArrow)) {
+			const ta = this.searchInput.domNode.querySelector('textarea');
+			if (ta && ta.selectionStart > 0) {
+				keyboardEvent.stopPropagation();
+			}
+		}
+
+		else if (keyboardEvent.equals(KeyCode.DownArrow)) {
+			const ta = this.searchInput.domNode.querySelector('textarea');
+			if (ta && ta.selectionEnd < ta.value.length) {
+				keyboardEvent.stopPropagation();
+			}
+		}
 	}
 
 	private onReplaceActionbarKeyDown(keyboardEvent: IKeyboardEvent) {
@@ -450,15 +514,20 @@ export class SearchWidget extends Widget {
 		}
 	}
 
-	private submitSearch(refresh: boolean = true): void {
+	private submitSearch(): void {
+		this.searchInput.validate();
+		if (!this.searchInput.inputBox.isInputValid()) {
+			return;
+		}
+
 		const value = this.searchInput.getValue();
-		const useGlobalFindBuffer = this.configurationService.getValue<ISearchConfigurationProperties>('search').globalFindClipboard;
+		const useGlobalFindBuffer = this.searchConfiguration.globalFindClipboard;
 		if (value) {
 			if (useGlobalFindBuffer) {
 				this.clipboardServce.writeFindText(value);
 			}
 
-			this._onSearchSubmit.fire(refresh);
+			this._onSearchSubmit.fire();
 		}
 	}
 
@@ -467,6 +536,10 @@ export class SearchWidget extends Widget {
 		this.replaceAllAction.searchWidget = null;
 		this.replaceActionBar = null;
 		super.dispose();
+	}
+
+	private get searchConfiguration(): ISearchConfigurationProperties {
+		return this.configurationService.getValue<ISearchConfigurationProperties>('search');
 	}
 }
 

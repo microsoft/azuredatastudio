@@ -6,7 +6,7 @@ import 'vs/css!./code';
 
 import { OnInit, Component, Input, Inject, ElementRef, ViewChild } from '@angular/core';
 import { AngularDisposable } from 'sql/base/node/lifecycle';
-import { nb } from 'sqlops';
+import { nb } from 'azdata';
 import { INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
 import { MimeModel } from 'sql/parts/notebook/outputs/common/mimemodel';
 import * as outputProcessor from 'sql/parts/notebook/outputs/common/outputProcessor';

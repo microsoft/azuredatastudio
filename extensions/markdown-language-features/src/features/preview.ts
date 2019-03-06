@@ -15,7 +15,50 @@ import { getVisibleLine, MarkdownFileTopmostLineMonitor } from '../util/topmostL
 import { MarkdownPreviewConfigurationManager } from './previewConfig';
 import { MarkdownContributions } from '../markdownExtensions';
 import { isMarkdownFile } from '../util/file';
+import { resolveLinkToMarkdownFile } from '../commands/openDocumentLink';
 const localize = nls.loadMessageBundle();
+
+interface WebviewMessage {
+	readonly source: string;
+}
+
+interface CacheImageSizesMessage extends WebviewMessage {
+	readonly type: 'cacheImageSizes';
+	readonly body: { id: string, width: number, height: number }[];
+}
+
+interface RevealLineMessage extends WebviewMessage {
+	readonly type: 'revealLine';
+	readonly body: {
+		readonly line: number;
+	};
+}
+
+interface DidClickMessage extends WebviewMessage {
+	readonly type: 'didClick';
+	readonly body: {
+		readonly line: number;
+	};
+}
+
+interface ClickLinkMessage extends WebviewMessage {
+	readonly type: 'clickLink';
+	readonly body: {
+		readonly path: string;
+		readonly fragment?: string;
+	};
+}
+
+interface ShowPreviewSecuritySelectorMessage extends WebviewMessage {
+	readonly type: 'showPreviewSecuritySelector';
+}
+
+interface PreviewStyleLoadErrorMessage extends WebviewMessage {
+	readonly type: 'previewStyleLoadError';
+	readonly body: {
+		readonly unloadedStyles: string[];
+	};
+}
 
 export class MarkdownPreview {
 
@@ -33,6 +76,7 @@ export class MarkdownPreview {
 	private forceUpdate = false;
 	private isScrolling = false;
 	private _disposed: boolean = false;
+	private imageInfo: { id: string, width: number, height: number }[] = [];
 
 	public static async revive(
 		webview: vscode.WebviewPanel,
@@ -117,14 +161,14 @@ export class MarkdownPreview {
 			this._onDidChangeViewStateEmitter.fire(e);
 		}, null, this.disposables);
 
-		this.editor.webview.onDidReceiveMessage(e => {
+		this.editor.webview.onDidReceiveMessage((e: CacheImageSizesMessage | RevealLineMessage | DidClickMessage | ClickLinkMessage | ShowPreviewSecuritySelectorMessage | PreviewStyleLoadErrorMessage) => {
 			if (e.source !== this._resource.toString()) {
 				return;
 			}
 
 			switch (e.type) {
-				case 'command':
-					vscode.commands.executeCommand(e.body.command, ...e.body.args);
+				case 'cacheImageSizes':
+					this.onCacheImageSizes(e.body);
 					break;
 
 				case 'revealLine':
@@ -135,6 +179,17 @@ export class MarkdownPreview {
 					this.onDidClickPreview(e.body.line);
 					break;
 
+				case 'clickLink':
+					this.onDidClickPreviewLink(e.body.path, e.body.fragment);
+					break;
+
+				case 'showPreviewSecuritySelector':
+					vscode.commands.executeCommand('markdown.showPreviewSecuritySelector', e.source);
+					break;
+
+				case 'previewStyleLoadError':
+					vscode.window.showWarningMessage(localize('onPreviewStyleLoadError', "Could not load 'markdown.styles': {0}", e.body.unloadedStyles.join(', ')));
+					break;
 			}
 		}, null, this.disposables);
 
@@ -181,7 +236,8 @@ export class MarkdownPreview {
 		return {
 			resource: this.resource.toString(),
 			locked: this._locked,
-			line: this.line
+			line: this.line,
+			imageInfo: this.imageInfo
 		};
 	}
 
@@ -347,7 +403,6 @@ export class MarkdownPreview {
 	): vscode.WebviewOptions {
 		return {
 			enableScripts: true,
-			enableCommandUris: true,
 			localResourceRoots: MarkdownPreview.getLocalResourceRoots(resource, contributions)
 		};
 	}
@@ -399,6 +454,24 @@ export class MarkdownPreview {
 		}
 
 		vscode.workspace.openTextDocument(this._resource).then(vscode.window.showTextDocument);
+	}
+
+	private async onDidClickPreviewLink(path: string, fragment: string | undefined) {
+		const config = vscode.workspace.getConfiguration('markdown', this.resource);
+		const openLinks = config.get<string>('preview.openMarkdownLinks', 'inPreview');
+		if (openLinks === 'inPreview') {
+			const markdownLink = await resolveLinkToMarkdownFile(path);
+			if (markdownLink) {
+				this.update(markdownLink);
+				return;
+			}
+		}
+
+		vscode.commands.executeCommand('_markdown.openDocumentLink', { path, fragment });
+	}
+
+	private async onCacheImageSizes(imageInfo: { id: string, width: number, height: number }[]) {
+		this.imageInfo = imageInfo;
 	}
 }
 

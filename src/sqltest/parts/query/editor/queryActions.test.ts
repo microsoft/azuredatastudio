@@ -7,7 +7,7 @@
 import { Emitter } from 'vs/base/common/event';
 import { TPromise } from 'vs/base/common/winjs.base';
 
-import { ISelectionData } from 'sqlops';
+import { ISelectionData } from 'azdata';
 
 import {
 	IConnectionManagementService,
@@ -32,6 +32,7 @@ import { ConfigurationService } from 'vs/platform/configuration/node/configurati
 
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
+import { TestStorageService } from 'vs/workbench/test/workbenchTestServices';
 
 let none: void;
 
@@ -50,7 +51,8 @@ suite('SQL QueryAction Tests', () => {
 		testQueryInput.setup(x => x.runQuery(undefined)).callback(() => { calledRunQueryOnInput = true; });
 
 		// Setup a reusable mock QueryEditor
-		editor = TypeMoq.Mock.ofType(QueryEditor, TypeMoq.MockBehavior.Strict, undefined, new TestThemeService());
+		editor = TypeMoq.Mock.ofType(QueryEditor, TypeMoq.MockBehavior.Strict, undefined, new TestThemeService(), undefined, undefined, undefined, undefined,
+			undefined, undefined, undefined, undefined, new TestStorageService());
 		editor.setup(x => x.connectedUri).returns(() => testUri);
 		editor.setup(x => x.currentQueryInput).returns(() => testQueryInput.object);
 		editor.setup(x => x.uri).returns(() => testUri);
@@ -86,7 +88,8 @@ suite('SQL QueryAction Tests', () => {
 		connectionManagementService.setup(x => x.isConnected(TypeMoq.It.isAnyString())).returns(() => isConnectedReturnValue);
 
 		// ... Create an editor
-		let editor = TypeMoq.Mock.ofType(QueryEditor, TypeMoq.MockBehavior.Loose, undefined, new TestThemeService());
+		let editor = TypeMoq.Mock.ofType(QueryEditor, TypeMoq.MockBehavior.Loose, undefined, new TestThemeService(), undefined, undefined, undefined, undefined,
+			undefined, undefined, undefined, undefined, new TestStorageService());
 		editor.setup(x => x.currentQueryInput).returns(() => testQueryInput.object);
 
 		// If I create a QueryTaskbarAction and I pass a non-connected editor to _getConnectedQueryEditorUri
@@ -172,7 +175,8 @@ suite('SQL QueryAction Tests', () => {
 		queryInput.setup(x => x.runQuery(undefined)).callback(() => {
 			countCalledRunQuery++;
 		});
-		let queryEditor: TypeMoq.Mock<QueryEditor> = TypeMoq.Mock.ofType(QueryEditor, TypeMoq.MockBehavior.Strict, undefined, new TestThemeService());
+		let queryEditor: TypeMoq.Mock<QueryEditor> = TypeMoq.Mock.ofType(QueryEditor, TypeMoq.MockBehavior.Strict, undefined, new TestThemeService(), undefined,
+		undefined, undefined, undefined, undefined, undefined, undefined, undefined, new TestStorageService());
 		queryEditor.setup(x => x.currentQueryInput).returns(() => queryInput.object);
 		queryEditor.setup(x => x.getSelection()).returns(() => undefined);
 		queryEditor.setup(x => x.getSelection(false)).returns(() => undefined);
@@ -238,7 +242,8 @@ suite('SQL QueryAction Tests', () => {
 		});
 
 		// ... Mock "getSelection" in QueryEditor
-		let queryEditor: TypeMoq.Mock<QueryEditor> = TypeMoq.Mock.ofType(QueryEditor, TypeMoq.MockBehavior.Loose, undefined, new TestThemeService());
+		let queryEditor: TypeMoq.Mock<QueryEditor> = TypeMoq.Mock.ofType(QueryEditor, TypeMoq.MockBehavior.Loose, undefined, new TestThemeService(), undefined,
+		undefined, undefined, undefined, undefined, undefined, undefined, undefined, new TestStorageService());
 		queryEditor.setup(x => x.currentQueryInput).returns(() => queryInput.object);
 		queryEditor.setup(x => x.getSelection()).returns(() => {
 			return selectionToReturnInGetSelection;

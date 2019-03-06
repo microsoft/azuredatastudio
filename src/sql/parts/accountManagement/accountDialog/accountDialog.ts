@@ -25,7 +25,7 @@ import { ViewletPanel, IViewletPanelOptions } from 'vs/workbench/browser/parts/v
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { values } from 'vs/base/common/map';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/workbench/browser/modal/modal';
@@ -39,7 +39,7 @@ import * as TelemetryKeys from 'sql/common/telemetryKeys';
 
 class AccountPanel extends ViewletPanel {
 	public index: number;
-	private accountList: List<sqlops.Account>;
+	private accountList: List<azdata.Account>;
 
 	constructor(
 		private options: IViewletPanelOptions,
@@ -53,7 +53,7 @@ class AccountPanel extends ViewletPanel {
 	}
 
 	protected renderBody(container: HTMLElement): void {
-		this.accountList = new List<sqlops.Account>(container, new AccountListDelegate(AccountDialog.ACCOUNTLIST_HEIGHT), [this.instantiationService.createInstance(AccountListRenderer)]);
+		this.accountList = new List<azdata.Account>(container, new AccountListDelegate(AccountDialog.ACCOUNTLIST_HEIGHT), [this.instantiationService.createInstance(AccountListRenderer)]);
 		this.disposables.push(attachListStyler(this.accountList, this.themeService));
 	}
 
@@ -71,7 +71,7 @@ class AccountPanel extends ViewletPanel {
 		this.accountList.domFocus();
 	}
 
-	public updateAccounts(accounts: sqlops.Account[]) {
+	public updateAccounts(accounts: azdata.Account[]) {
 		this.accountList.splice(0, this.accountList.length, accounts);
 	}
 
@@ -315,7 +315,7 @@ export class AccountDialog extends Modal {
 		this._providerViewsMap.set(newProvider.addedProvider.id, { view: providerView, addAccountAction: addAccountAction });
 	}
 
-	private removeProvider(removedProvider: sqlops.AccountProviderMetadata) {
+	private removeProvider(removedProvider: azdata.AccountProviderMetadata) {
 		// Skip removing the provider if it doesn't exist
 		let providerView = this._providerViewsMap.get(removedProvider.id);
 		if (!providerView || !providerView.view) {

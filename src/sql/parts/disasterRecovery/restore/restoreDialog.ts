@@ -5,7 +5,7 @@
 
 'use strict';
 import 'vs/css!./media/restoreDialog';
-import { Builder, $ } from 'vs/base/browser/builder';
+import { Builder, $ } from 'sql/base/browser/builder';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { Event, Emitter } from 'vs/base/common/event';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
@@ -20,7 +20,7 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { mixin } from 'vs/base/common/objects';
 import * as strings from 'vs/base/common/strings';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
@@ -127,7 +127,7 @@ export class RestoreDialog extends Modal {
 	public onDatabaseListFocused: Event<void> = this._onDatabaseListFocused.event;
 
 	constructor(
-		optionsMetadata: sqlops.ServiceOption[],
+		optionsMetadata: azdata.ServiceOption[],
 		@IPartService partService: IPartService,
 		@IThemeService themeService: IThemeService,
 		@IContextViewService private _contextViewService: IContextViewService,
@@ -198,7 +198,7 @@ export class RestoreDialog extends Modal {
 				});
 
 				inputContainer.div({ class: 'file-browser' }, (inputCellContainer) => {
-					this._browseFileButton = new Button(inputCellContainer);
+					this._browseFileButton = new Button(inputCellContainer.getHTMLElement());
 					this._browseFileButton.label = '...';
 				});
 			});
@@ -843,7 +843,7 @@ export class RestoreDialog extends Modal {
 		}
 	}
 
-	private updateRestoreDatabaseFiles(dbFiles: sqlops.RestoreDatabaseFileInfo[]) {
+	private updateRestoreDatabaseFiles(dbFiles: azdata.RestoreDatabaseFileInfo[]) {
 		this.clearFileListTable();
 		if (dbFiles && dbFiles.length > 0) {
 			let data = [];
@@ -864,7 +864,7 @@ export class RestoreDialog extends Modal {
 		}
 	}
 
-	private updateBackupSetsToRestore(backupSetsToRestore: sqlops.DatabaseFileInfo[]) {
+	private updateBackupSetsToRestore(backupSetsToRestore: azdata.DatabaseFileInfo[]) {
 		if (this._isBackupFileCheckboxChanged) {
 			let selectedRow = [];
 			for (let i = 0; i < backupSetsToRestore.length; i++) {

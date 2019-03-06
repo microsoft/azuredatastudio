@@ -10,9 +10,9 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import { IEditorModel } from 'vs/platform/editor/common/editor';
 import { EditorInput, EditorModel, ConfirmResult } from 'vs/workbench/common/editor';
 import { Emitter, Event } from 'vs/base/common/event';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import * as resources from 'vs/base/common/resources';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 import { IStandardKernelWithProvider } from 'sql/parts/notebook/notebookUtils';
 import { INotebookService, INotebookEditor } from 'sql/workbench/services/notebook/common/notebookService';
@@ -27,7 +27,7 @@ export class NotebookInputModel extends EditorModel {
 	private readonly _onDidChangeDirty: Emitter<void> = this._register(new Emitter<void>());
 	private _providerId: string;
 	private _standardKernels: IStandardKernelWithProvider[];
-	private _defaultKernel: sqlops.nb.IKernelSpec;
+	private _defaultKernel: azdata.nb.IKernelSpec;
 	constructor(public readonly notebookUri: URI,
 		private readonly handle: number,
 		private _isTrusted: boolean = false,
@@ -76,11 +76,11 @@ export class NotebookInputModel extends EditorModel {
 		});
 	}
 
-	public get defaultKernel(): sqlops.nb.IKernelSpec {
+	public get defaultKernel(): azdata.nb.IKernelSpec {
 		return this._defaultKernel;
 	}
 
-	public set defaultKernel(kernel: sqlops.nb.IKernelSpec) {
+	public set defaultKernel(kernel: azdata.nb.IKernelSpec) {
 		this._defaultKernel = kernel;
 	}
 
@@ -150,7 +150,7 @@ export class NotebookInput extends EditorInput {
 		return this._model.standardKernels;
 	}
 
-	public get defaultKernel(): sqlops.nb.IKernelSpec {
+	public get defaultKernel(): azdata.nb.IKernelSpec {
 		return this._model.defaultKernel;
 	}
 

@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { TPromise } from 'vs/base/common/winjs.base';
 import * as nls from 'vs/nls';
 import { Action } from 'vs/base/common/actions';
 import { Registry } from 'vs/platform/registry/common/platform';
@@ -25,10 +24,10 @@ class ToggleCenteredLayout extends Action {
 		this.enabled = !!this.partService;
 	}
 
-	run(): TPromise<any> {
+	run(): Promise<any> {
 		this.partService.centerEditorLayout(!this.partService.isEditorLayoutCentered());
 
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 }
 
@@ -42,13 +41,4 @@ MenuRegistry.appendMenuItem(MenuId.MenubarAppearanceMenu, {
 		title: nls.localize('miToggleCenteredLayout', "Toggle Centered Layout")
 	},
 	order: 3
-});
-
-MenuRegistry.appendMenuItem(MenuId.MenubarLayoutMenu, {
-	group: '2_layouts',
-	command: {
-		id: 'workbench.action.editorLayoutCentered',
-		title: nls.localize({ key: 'miCenteredEditorLayout', comment: ['&& denotes a mnemonic'] }, "&&Centered")
-	},
-	order: 2
 });

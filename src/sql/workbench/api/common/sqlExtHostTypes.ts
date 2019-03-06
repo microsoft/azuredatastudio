@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { nb, IConnectionProfile } from 'sqlops';
+import { nb, IConnectionProfile } from 'azdata';
 import * as vsExtTypes from 'vs/workbench/api/node/extHostTypes';
 
 // SQL added extension host types
@@ -316,6 +316,7 @@ export interface ToolbarLayout {
 }
 
 export class TreeComponentItem extends vsExtTypes.TreeItem {
+	label?: string;
 	checked?: boolean;
 }
 
@@ -325,6 +326,7 @@ export enum AzureResource {
 }
 
 export class TreeItem extends vsExtTypes.TreeItem {
+	label?: string;
 	payload: IConnectionProfile;
 	providerHandle: string;
 }
@@ -519,4 +521,26 @@ export interface ISingleNotebookEditOperation {
 	range: ICellRange;
 	cell: Partial<nb.ICellContents>;
 	forceMoveMarkers: boolean;
+}
+
+export class ConnectionProfile {
+
+	providerId: string;
+	connectionId: string;
+	connectionName: string;
+	serverName: string;
+	databaseName: string;
+	userName: string;
+	password: string;
+	authenticationType: string;
+	savePassword: boolean;
+	groupFullName: string;
+	groupId: string;
+	saveProfile: boolean;
+	azureTenantId?: string;
+
+	static createFrom(options: any[]): ConnectionProfile {
+		// create from options
+		return undefined;
+	}
 }

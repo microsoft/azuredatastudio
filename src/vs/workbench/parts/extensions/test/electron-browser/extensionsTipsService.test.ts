@@ -3,8 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
+import * as sinon from 'sinon';
+import * as assert from 'assert';
+import * as path from 'path';
+import * as fs from 'fs';
+import * as os from 'os';
 import * as uuid from 'vs/base/common/uuid';
 import {
 	IExtensionGalleryService, IGalleryExtensionAssets, IGalleryExtension, IExtensionManagementService, LocalExtensionType,
@@ -20,7 +23,7 @@ import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace
 import { TestTextResourceConfigurationService, TestContextService, TestLifecycleService, TestEnvironmentService, TestStorageService } from 'vs/workbench/test/workbenchTestServices';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import { testWorkspace } from 'vs/platform/workspace/test/common/testWorkspace';
 import { IFileService } from 'vs/platform/files/common/files';
 import { FileService } from 'vs/workbench/services/files/electron-browser/fileService';
@@ -30,20 +33,19 @@ import { IPager } from 'vs/base/common/paging';
 import { assign } from 'vs/base/common/objects';
 import { getGalleryExtensionId } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
-import { IStorageService, StorageScope  } from 'vs/platform/storage/common/storage';
-import { IExtensionsWorkbenchService, ConfigurationKey } from 'vs/workbench/parts/extensions/common/extensions';
+import { ConfigurationKey } from 'vs/workbench/parts/extensions/common/extensions';
 import { ExtensionManagementService } from 'vs/platform/extensionManagement/node/extensionManagementService';
-import { ExtensionsWorkbenchService } from 'vs/workbench/parts/extensions/node/extensionsWorkbenchService';
-import { TestExtensionEnablementService } from 'vs/platform/extensionManagement/test/common/extensionEnablementService.test';
+import { TestExtensionEnablementService } from 'vs/platform/extensionManagement/test/electron-browser/extensionEnablementService.test';
 import { IURLService } from 'vs/platform/url/common/url';
 import product from 'vs/platform/node/product';
 import { ITextModel } from 'vs/editor/common/model';
 import { IModelService } from 'vs/editor/common/services/modelService';
 import { ILifecycleService } from 'vs/platform/lifecycle/common/lifecycle';
-import { INotificationService, Severity, IPromptChoice } from 'vs/platform/notification/common/notification';
+import { INotificationService, Severity, IPromptChoice, IPromptOptions } from 'vs/platform/notification/common/notification';
 import { URLService } from 'vs/platform/url/common/urlService';
 import { IExperimentService } from 'vs/workbench/parts/experiments/node/experimentService';
-import { TestExperimentService } from 'vs/workbench/parts/experiments/test/node/experimentService.test';
+import { TestExperimentService } from 'vs/workbench/parts/experiments/test/electron-browser/experimentService.test';
+import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 
 const mockExtensionGallery: IGalleryExtension[] = [
 	aGalleryExtension('MockExtension1', {

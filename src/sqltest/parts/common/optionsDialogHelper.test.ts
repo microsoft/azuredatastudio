@@ -6,8 +6,8 @@
 'use strict';
 import * as OptionsDialogHelper from 'sql/workbench/browser/modal/optionsDialogHelper';
 import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
-import * as sqlops from 'sqlops';
-import { Builder, $ } from 'vs/base/browser/builder';
+import * as azdata from 'azdata';
+import { Builder, $ } from 'sql/base/browser/builder';
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
 import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
@@ -15,11 +15,11 @@ import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 suite('Advanced options helper tests', () => {
 	var possibleInputs: string[];
 	let options: { [name: string]: any };
-	var categoryOption: sqlops.ServiceOption;
-	var booleanOption: sqlops.ServiceOption;
-	var numberOption: sqlops.ServiceOption;
-	var stringOption: sqlops.ServiceOption;
-	var defaultGroupOption: sqlops.ServiceOption;
+	var categoryOption: azdata.ServiceOption;
+	var booleanOption: azdata.ServiceOption;
+	var numberOption: azdata.ServiceOption;
+	var stringOption: azdata.ServiceOption;
+	var defaultGroupOption: azdata.ServiceOption;
 	var isValid: boolean;
 	var inputValue: string;
 	var inputBox: TypeMoq.Mock<InputBox>;

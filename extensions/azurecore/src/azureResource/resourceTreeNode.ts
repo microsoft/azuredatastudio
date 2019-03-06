@@ -5,7 +5,7 @@
 
 'use strict';
 
-import { NodeInfo } from 'sqlops';
+import { NodeInfo } from 'azdata';
 import { TreeItem, TreeItemCollapsibleState } from 'vscode';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();

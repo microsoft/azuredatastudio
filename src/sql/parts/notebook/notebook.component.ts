@@ -19,7 +19,7 @@ import { IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { fillInActions, LabeledMenuItemActionItem } from 'vs/platform/actions/browser/menuItemActionItem';
 import { Schemas } from 'vs/base/common/network';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import { IHistoryService } from 'vs/workbench/services/history/common/history';
 import * as paths from 'vs/base/common/paths';
 import { IWindowService } from 'vs/platform/windows/common/windows';
@@ -134,7 +134,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	ngOnDestroy() {
-		this.disconnect();
 		this.dispose();
 		if (this.notebookService) {
 			this.notebookService.removeNotebookEditor(this);
@@ -168,20 +167,11 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		}
 		if (cell !== this.model.activeCell) {
 			if (this.model.activeCell) {
-				this.disconnect();
 				this.model.activeCell.active = false;
 			}
 			this._model.activeCell = cell;
 			this._model.activeCell.active = true;
 			this._changeRef.detectChanges();
-		}
-	}
-
-	private disconnect() {
-		if (this._model.defaultKernel.display_name === notebookConstants.SQL) {
-			if (this._model.activeCell && this._model.activeCell.cellType === CellTypes.Code && this._model.activeCell.cellUri) {
-				this.connectionManagementService.disconnect(this._model.activeCell.cellUri.toString()).catch(e => console.log(e));
-			}
 		}
 	}
 
@@ -234,7 +224,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			this.setLoading(false);
 			this._modelReadyDeferred.resolve(this._model);
 		} catch (error) {
-			this.setViewInErrorState(localize('displayFailed', 'Could not display contents: {0}', error));
+			this.setViewInErrorState(localize('displayFailed', 'Could not display contents: {0}', notebookUtils.getErrorMessage(error)));
 			this.setLoading(false);
 			this._modelReadyDeferred.reject(error);
 		} finally {
@@ -397,7 +387,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private getLastActiveFilePath(untitledResource: URI): string {
 		let fileName = untitledResource.path + '.' + DEFAULT_NOTEBOOK_FILETYPE.toLocaleLowerCase();
 
-		let lastActiveFile = this.historyService.getLastActiveFile();
+		let lastActiveFile = this.historyService.getLastActiveFile(Schemas.file);
 		if (lastActiveFile) {
 			return URI.file(paths.join(paths.dirname(lastActiveFile.fsPath), fileName)).fsPath;
 		}
@@ -503,7 +493,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		let secondary: IAction[] = [];
 		let notebookBarMenu = this.menuService.createMenu(MenuId.NotebookToolbar, this.contextKeyService);
 		let groups = notebookBarMenu.getActions({ arg: null, shouldForwardArgs: true });
-		fillInActions(groups, { primary, secondary }, false, (group: string) => group === undefined);
+		fillInActions(groups, { primary, secondary }, false, (group: string) => group === undefined || group === '');
 		this.addPrimaryContributedActions(primary);
 	}
 
@@ -564,7 +554,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		if (this._model.cells.findIndex(c => c.cellUri.toString() === uriString) > -1) {
 			return cell.runCell(this.notificationService);
 		} else {
-			return Promise.reject<boolean>(new Error(localize('cellNotFound', 'cell with URI {0} was not found in this model', uriString)));
+			return Promise.reject(new Error(localize('cellNotFound', 'cell with URI {0} was not found in this model', uriString)));
 		}
 	}
 

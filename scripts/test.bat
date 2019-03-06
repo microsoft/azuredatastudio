@@ -1,7 +1,7 @@
 @echo off
 setlocal
 
-set ELECTRON_RUN_AS_NODE=1
+set ELECTRON_RUN_AS_NODE=
 
 pushd %~dp0\..
 
@@ -10,20 +10,26 @@ set NAMESHORT=%NAMESHORT: "=%
 set NAMESHORT=%NAMESHORT:"=%.exe
 set CODE=".build\electron\%NAMESHORT%"
 
+:: Download Electron if needed
+node build\lib\electron.js
+if %errorlevel% neq 0 node .\node_modules\gulp\bin\gulp.js electron
+
+:: Run tests
 rem TFS Builds
 if not "%BUILD_BUILDID%" == "" (
 	if not "%ADD_REPORTER%" == "" (
-		%CODE% .\node_modules\mocha\bin\_mocha --reporter mocha-junit-reporter %*
+		%CODE% .\test\electron\index.js --reporter mocha-junit-reporter %*
 	)
 
 	if "%ADD_REPORTER%" == "" (
-		%CODE% .\node_modules\mocha\bin\_mocha %*
+		:: Run tests
+		%CODE% .\test\electron\index.js %*
 	)
 )
 
 rem Otherwise
 if "%BUILD_BUILDID%" == "" (
-	%CODE% .\node_modules\mocha\bin\_mocha --reporter mocha-junit-reporter %*
+	%CODE% .\test\electron\index.js %*
 )
 popd
 

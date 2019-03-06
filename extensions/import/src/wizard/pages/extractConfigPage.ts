@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
 import { DacFxDataModel } from '../api/models';
@@ -15,15 +15,15 @@ const localize = nls.loadMessageBundle();
 
 export class ExtractConfigPage extends DacFxConfigPage {
 
-	protected readonly wizardPage: sqlops.window.WizardPage;
+	protected readonly wizardPage: azdata.window.WizardPage;
 	protected readonly instance: DataTierApplicationWizard;
 	protected readonly model: DacFxDataModel;
-	protected readonly view: sqlops.ModelView;
+	protected readonly view: azdata.ModelView;
 
-	private form: sqlops.FormContainer;
-	private versionTextBox: sqlops.InputBoxComponent;
+	private form: azdata.FormContainer;
+	private versionTextBox: azdata.InputBoxComponent;
 
-	public constructor(instance: DataTierApplicationWizard, wizardPage: sqlops.window.WizardPage, model: DacFxDataModel, view: sqlops.ModelView) {
+	public constructor(instance: DataTierApplicationWizard, wizardPage: azdata.window.WizardPage, model: DacFxDataModel, view: azdata.ModelView) {
 		super(instance, wizardPage, model, view);
 		this.fileExtension = '.dacpac';
 	}
@@ -64,7 +64,7 @@ export class ExtractConfigPage extends DacFxConfigPage {
 		});
 	}
 
-	private async createFileBrowser(): Promise<sqlops.FormComponent> {
+	private async createFileBrowser(): Promise<azdata.FormComponent> {
 		this.createFileBrowserParts();
 
 		// default filepath
@@ -101,7 +101,7 @@ export class ExtractConfigPage extends DacFxConfigPage {
 		};
 	}
 
-	private async createVersionTextBox(): Promise<sqlops.FormComponent> {
+	private async createVersionTextBox(): Promise<azdata.FormComponent> {
 		this.versionTextBox = this.view.modelBuilder.inputBox().withProperties({
 			required: true
 		}).component();

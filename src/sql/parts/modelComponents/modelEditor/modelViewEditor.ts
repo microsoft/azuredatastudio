@@ -13,6 +13,7 @@ import * as DOM from 'vs/base/browser/dom';
 
 import { ModelViewInput } from 'sql/parts/modelComponents/modelEditor/modelViewInput';
 import { CancellationToken } from 'vs/base/common/cancellation';
+import { IStorageService } from 'vs/platform/storage/common/storage';
 
 export class ModelViewEditor extends BaseEditor {
 
@@ -23,9 +24,10 @@ export class ModelViewEditor extends BaseEditor {
 
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
-		@IThemeService themeService: IThemeService
+		@IThemeService themeService: IThemeService,
+		@IStorageService storageService: IStorageService
 	) {
-		super(ModelViewEditor.ID, telemetryService, themeService);
+		super(ModelViewEditor.ID, telemetryService, themeService, storageService);
 	}
 
 	/**
@@ -61,9 +63,9 @@ export class ModelViewEditor extends BaseEditor {
 		}
 	}
 
-	async setInput(input: ModelViewInput, options?: EditorOptions): TPromise<void, any> {
+	async setInput(input: ModelViewInput, options?: EditorOptions): Promise<void> {
 		if (this.input && this.input.matches(input)) {
-			return TPromise.as(undefined);
+			return Promise.resolve(undefined);
 		}
 
 		this.hideOrRemoveModelViewContainer();

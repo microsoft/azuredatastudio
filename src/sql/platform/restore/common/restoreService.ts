@@ -7,7 +7,7 @@
 
 import { TPromise } from 'vs/base/common/winjs.base';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 export { TaskExecutionMode } from 'sql/platform/backup/common/backupService';
@@ -21,27 +21,27 @@ export interface IRestoreService {
 	/**
 	 * Register a disaster recovery provider
 	 */
-	registerProvider(providerId: string, provider: sqlops.RestoreProvider): void;
+	registerProvider(providerId: string, provider: azdata.RestoreProvider): void;
 
 	/**
 	 * Restore a data source using a backup file or database
 	 */
-	restore(connectionUri: string, restoreInfo: sqlops.RestoreInfo): Thenable<sqlops.RestoreResponse>;
+	restore(connectionUri: string, restoreInfo: azdata.RestoreInfo): Thenable<azdata.RestoreResponse>;
 
 	/**
 	 * Gets restore plan to do the restore operation on a database
 	 */
-	getRestorePlan(connectionUri: string, restoreInfo: sqlops.RestoreInfo): Thenable<sqlops.RestorePlanResponse>;
+	getRestorePlan(connectionUri: string, restoreInfo: azdata.RestoreInfo): Thenable<azdata.RestorePlanResponse>;
 
 	/**
 	 * Gets restore config Info
 	 */
-	getRestoreConfigInfo(connectionUri: string): Thenable<sqlops.RestoreConfigInfo>;
+	getRestoreConfigInfo(connectionUri: string): Thenable<azdata.RestoreConfigInfo>;
 
 	/**
 	 * Cancel restore plan
 	 */
-	cancelRestorePlan(connectionUri: string, restoreInfo: sqlops.RestoreInfo): Thenable<boolean>;
+	cancelRestorePlan(connectionUri: string, restoreInfo: azdata.RestoreInfo): Thenable<boolean>;
 }
 
 export const IRestoreDialogController = createDecorator<IRestoreDialogController>('restoreDialogService');

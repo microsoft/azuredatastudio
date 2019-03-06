@@ -2,7 +2,9 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-/* Disabled pending next vscode merge which allows electron module to be imported during test runs
+import * as azdata from 'azdata';
+ /* Disabled pending next vscode merge which allows electron module to be imported during test runs
+ NOTE: Import added above to prevent tests from failing due to the file being empty. Remove when reenabling the tests
 
 'use strict';
 

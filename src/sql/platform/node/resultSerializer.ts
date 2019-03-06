@@ -7,7 +7,7 @@ import * as ConnectionConstants from 'sql/platform/connection/common/constants';
 import * as Constants from 'sql/parts/query/common/constants';
 import * as LocalizedConstants from 'sql/parts/query/common/localizedConstants';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
-import { SaveResultsRequestParams } from 'sqlops';
+import { SaveResultsRequestParams } from 'azdata';
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
 import { ISaveRequest, SaveFormat } from 'sql/parts/grid/common/interfaces';
 
@@ -17,7 +17,7 @@ import { IWorkspaceConfigurationService } from 'vs/workbench/services/configurat
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { IWindowsService, IWindowService, FileFilter } from 'vs/platform/windows/common/windows';
 import { Registry } from 'vs/platform/registry/common/platform';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { Schemas } from 'vs/base/common/network';
 import * as paths from 'vs/base/common/paths';
@@ -127,7 +127,11 @@ export class ResultSerializer {
 
 	private ensureOutputChannelExists(): void {
 		Registry.as<IOutputChannelRegistry>(OutputExtensions.OutputChannels)
-			.registerChannel(ConnectionConstants.outputChannelName, ConnectionConstants.outputChannelName);
+			.registerChannel({
+				id: ConnectionConstants.outputChannelName,
+				label: ConnectionConstants.outputChannelName,
+				log: true
+			});
 	}
 
 	private get outputChannel(): IOutputChannel {

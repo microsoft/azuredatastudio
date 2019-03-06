@@ -9,8 +9,8 @@ import {
 } from '@angular/core';
 
 import { IComponent, IComponentDescriptor, IModelStore, IComponentEventArgs, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
-import * as sqlops from 'sqlops';
-import URI from 'vs/base/common/uri';
+import * as azdata from 'azdata';
+import { URI } from 'vs/base/common/uri';
 import { IdGenerator } from 'vs/base/common/idGenerator';
 import { createCSSRule, removeCSSRulesContainingSelector } from 'vs/base/browser/dom';
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
@@ -89,15 +89,15 @@ export abstract class ComponentWithIconBase extends ComponentBase {
 	}
 
 	public get iconPath(): string | URI | { light: string | URI; dark: string | URI } {
-		return this.getPropertyOrDefault<sqlops.ComponentWithIcon, IUserFriendlyIcon>((props) => props.iconPath, undefined);
+		return this.getPropertyOrDefault<azdata.ComponentWithIcon, IUserFriendlyIcon>((props) => props.iconPath, undefined);
 	}
 
 	public get iconHeight(): number | string {
-		return this.getPropertyOrDefault<sqlops.ComponentWithIcon, number | string>((props) => props.iconHeight, '50px');
+		return this.getPropertyOrDefault<azdata.ComponentWithIcon, number | string>((props) => props.iconHeight, '50px');
 	}
 
 	public get iconWidth(): number | string {
-		return this.getPropertyOrDefault<sqlops.ComponentWithIcon, number | string>((props) => props.iconWidth, '50px');
+		return this.getPropertyOrDefault<azdata.ComponentWithIcon, number | string>((props) => props.iconWidth, '50px');
 	}
 
 	ngOnDestroy(): void {

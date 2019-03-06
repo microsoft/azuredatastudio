@@ -27,7 +27,7 @@ import { IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/c
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IActionItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { Action } from 'vs/base/common/actions';
-import { ISelectionData } from 'sqlops';
+import { ISelectionData } from 'azdata';
 import { IEditorGroup } from 'vs/workbench/services/group/common/editorGroupsService';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { IRange } from 'vs/editor/common/core/range';
@@ -48,6 +48,7 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
+import { IStorageService } from 'vs/platform/storage/common/storage';
 
 /**
  * Editor that hosts 2 sub-editors: A TextResourceEditor for SQL file editing, and a QueryResultsEditor
@@ -99,9 +100,10 @@ export class QueryEditor extends BaseEditor {
 		@IEditorDescriptorService private _editorDescriptorService: IEditorDescriptorService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@IConfigurationService private _configurationService: IConfigurationService
+		@IConfigurationService private _configurationService: IConfigurationService,
+		@IStorageService storageService: IStorageService
 	) {
-		super(QueryEditor.ID, _telemetryService, themeService);
+		super(QueryEditor.ID, _telemetryService, themeService, storageService);
 
 		this._orientation = Orientation.HORIZONTAL;
 

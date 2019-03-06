@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import { IStoredWorkspaceFolder, isRawFileWorkspaceFolder } from 'vs/platform/workspaces/common/workspaces';
 import { isWindows, isLinux } from 'vs/base/common/platform';
 import { isAbsolute, relative } from 'path';

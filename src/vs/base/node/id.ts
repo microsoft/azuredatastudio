@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { TPromise } from 'vs/base/common/winjs.base';
 import * as errors from 'vs/base/common/errors';
 import * as uuid from 'vs/base/common/uuid';
 import { networkInterfaces } from 'os';
@@ -46,7 +45,7 @@ export const virtualMachineHint: { value(): number } = new class {
 			this._virtualMachineOUIs.set('00:16:3E', true);
 			this._virtualMachineOUIs.set('08:00:27', true);
 		}
-		return this._virtualMachineOUIs.findSubstr(mac);
+		return !!this._virtualMachineOUIs.findSubstr(mac);
 	}
 
 	value(): number {
@@ -76,15 +75,15 @@ export const virtualMachineHint: { value(): number } = new class {
 	}
 };
 
-let machineId: TPromise<string>;
-export function getMachineId(): TPromise<string> {
+let machineId: Promise<string>;
+export function getMachineId(): Promise<string> {
 	return machineId || (machineId = getMacMachineId()
 		.then(id => id || uuid.generateUuid())); // fallback, generate a UUID
 }
 
-function getMacMachineId(): TPromise<string> {
-	return new TPromise<string>(resolve => {
-		TPromise.join([import('crypto'), import('getmac')]).then(([crypto, getmac]) => {
+function getMacMachineId(): Promise<string> {
+	return new Promise<string>(resolve => {
+		Promise.all([import('crypto'), import('getmac')]).then(([crypto, getmac]) => {
 			try {
 				getmac.getMac((error, macAddress) => {
 					if (!error) {
@@ -93,6 +92,12 @@ function getMacMachineId(): TPromise<string> {
 						resolve(undefined);
 					}
 				});
+
+				// Timeout due to hang with reduced privileges #58392
+				// TODO@sbatten: Remove this when getmac is patched
+				setTimeout(() => {
+					resolve(undefined);
+				}, 1000);
 			} catch (err) {
 				errors.onUnexpectedError(err);
 				resolve(undefined);

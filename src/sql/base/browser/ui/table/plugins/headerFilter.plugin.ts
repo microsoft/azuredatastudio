@@ -20,7 +20,7 @@ export class HeaderFilter {
 		sortDescImage: 'sort-desc.gif'
 	};
 
-	private $menu;
+	private $menu: JQuery<HTMLElement>;
 	private options: any;
 	private okButton: Button;
 	private clearButton: Button;

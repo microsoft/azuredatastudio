@@ -7,10 +7,10 @@
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { Button } from 'sql/base/browser/ui/button/button';
 
-import { Builder } from 'vs/base/browser/builder';
+import { Builder } from 'sql/base/browser/builder';
 import * as types from 'vs/base/common/types';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 export function appendRow(container: Builder, label: string, labelClass: string, cellContainerClass: string, rowContainerClass?: string): Builder {
 	let cellContainer: Builder;
@@ -39,7 +39,7 @@ export function appendRowLink(container: Builder, label: string, labelClass: str
 		});
 		rowContainer.element('td', { class: cellContainerClass }, (inputCellContainer) => {
 			inputCellContainer.element('div', {}, (rowContainer) => {
-				rowButton = new Button(rowContainer);
+				rowButton = new Button(rowContainer.getHTMLElement());
 
 			});
 		});
@@ -62,7 +62,7 @@ export function getBooleanValueFromStringOrBoolean(value: any): boolean {
 	return false;
 }
 
-export function getCategoryDisplayName(categories: sqlops.CategoryValue[], categoryName: string) {
+export function getCategoryDisplayName(categories: azdata.CategoryValue[], categoryName: string) {
 	var displayName: string;
 	categories.forEach(c => {
 		if (c.name === categoryName) {
@@ -72,7 +72,7 @@ export function getCategoryDisplayName(categories: sqlops.CategoryValue[], categ
 	return displayName;
 }
 
-export function getCategoryName(categories: sqlops.CategoryValue[], categoryDisplayName: string) {
+export function getCategoryName(categories: azdata.CategoryValue[], categoryDisplayName: string) {
 	var categoryName: string;
 	categories.forEach(c => {
 		if (c.displayName === categoryDisplayName) {

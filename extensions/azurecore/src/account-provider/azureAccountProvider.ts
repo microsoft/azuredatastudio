@@ -6,7 +6,7 @@
 'use strict';
 
 import * as adal from 'adal-node';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as request from 'request';
 import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
@@ -22,7 +22,7 @@ import TokenCache from './tokenCache';
 
 const localize = nls.loadMessageBundle();
 
-export class AzureAccountProvider implements sqlops.AccountProvider {
+export class AzureAccountProvider implements azdata.AccountProvider {
 	// CONSTANTS ///////////////////////////////////////////////////////////
 	private static WorkSchoolAccountType: string = 'work_school';
 	private static MicrosoftAccountType: string = 'microsoft';
@@ -57,7 +57,7 @@ export class AzureAccountProvider implements sqlops.AccountProvider {
 	 * @param {"data".AccountKey} accountKey Key identifying the account to delete tokens for
 	 * @returns {Thenable<void>} Promise to clear requested tokens from the token cache
 	 */
-	public clear(accountKey: sqlops.AccountKey): Thenable<void> {
+	public clear(accountKey: azdata.AccountKey): Thenable<void> {
 		return this.doIfInitialized(() => this.clearAccountTokens(accountKey));
 	}
 
@@ -69,14 +69,14 @@ export class AzureAccountProvider implements sqlops.AccountProvider {
 		return this._tokenCache.clear();
 	}
 
-	public getSecurityToken(account: AzureAccount, resource: sqlops.AzureResource): Thenable<AzureAccountSecurityTokenCollection> {
+	public getSecurityToken(account: AzureAccount, resource: azdata.AzureResource): Thenable<AzureAccountSecurityTokenCollection> {
 		return this.doIfInitialized(() => this.getAccessTokens(account, resource));
 	}
 
-	public initialize(restoredAccounts: sqlops.Account[]): Thenable<sqlops.Account[]> {
+	public initialize(restoredAccounts: azdata.Account[]): Thenable<azdata.Account[]> {
 		let self = this;
 
-		let rehydrationTasks: Thenable<sqlops.Account>[] = [];
+		let rehydrationTasks: Thenable<azdata.Account>[] = [];
 		for (let account of restoredAccounts) {
 			// Purge any invalid accounts
 			if (!account) {
@@ -90,7 +90,7 @@ export class AzureAccountProvider implements sqlops.AccountProvider {
 
 			// Attempt to get fresh tokens. If this fails then the account is stale.
 			// NOTE: Based on ADAL implementation, getting tokens should use the refresh token if necessary
-			let task = this.getAccessTokens(account, sqlops.AzureResource.ResourceManagement)
+			let task = this.getAccessTokens(account, azdata.AzureResource.ResourceManagement)
 				.then(
 				() => {
 					return account;
@@ -145,7 +145,7 @@ export class AzureAccountProvider implements sqlops.AccountProvider {
 		return Promise.resolve();
 	}
 
-	private clearAccountTokens(accountKey: sqlops.AccountKey): Thenable<void> {
+	private clearAccountTokens(accountKey: azdata.AccountKey): Thenable<void> {
 		// Put together a query to look up any tokens associated with the account key
 		let query = <adal.TokenResponse>{ userId: accountKey.accountId };
 
@@ -161,12 +161,12 @@ export class AzureAccountProvider implements sqlops.AccountProvider {
 			: Promise.reject(localize('accountProviderNotInitialized', 'Account provider not initialized, cannot perform action'));
 	}
 
-	private getAccessTokens(account: AzureAccount, resource: sqlops.AzureResource): Thenable<AzureAccountSecurityTokenCollection> {
+	private getAccessTokens(account: AzureAccount, resource: azdata.AzureResource): Thenable<AzureAccountSecurityTokenCollection> {
 		let self = this;
 
-		const resourceIdMap = new Map<sqlops.AzureResource, string>([
-			[sqlops.AzureResource.ResourceManagement, self._metadata.settings.armResource.id],
-			[sqlops.AzureResource.Sql, self._metadata.settings.sqlResource.id]
+		const resourceIdMap = new Map<azdata.AzureResource, string>([
+			[azdata.AzureResource.ResourceManagement, self._metadata.settings.armResource.id],
+			[azdata.AzureResource.Sql, self._metadata.settings.sqlResource.id]
 		]);
 
 		let accessTokenPromises: Thenable<void>[] = [];
@@ -185,7 +185,7 @@ export class AzureAccountProvider implements sqlops.AccountProvider {
 						if (error) {
 							// TODO: We'll assume for now that the account is stale, though that might not be accurate
 							account.isStale = true;
-							sqlops.accounts.accountUpdated(account);
+							azdata.accounts.accountUpdated(account);
 
 							reject(error);
 							return;
@@ -245,7 +245,7 @@ export class AzureAccountProvider implements sqlops.AccountProvider {
 		let title = isAddAccount ?
 			localize('addAccount', 'Add {0} account', self._metadata.displayName) :
 			localize('refreshAccount', 'Refresh {0} account', self._metadata.displayName);
-		return sqlops.accounts.beginAutoOAuthDeviceCode(self._metadata.id, title, oAuth.userCodeInfo.message, oAuth.userCodeInfo.userCode, oAuth.userCodeInfo.verificationUrl)
+		return azdata.accounts.beginAutoOAuthDeviceCode(self._metadata.id, title, oAuth.userCodeInfo.message, oAuth.userCodeInfo.userCode, oAuth.userCodeInfo.verificationUrl)
 			.then(() => {
 				return new Promise<adal.TokenResponse>((resolve, reject) => {
 					let context = oAuth.context;
@@ -254,14 +254,14 @@ export class AzureAccountProvider implements sqlops.AccountProvider {
 							if (err) {
 								if (self._autoOAuthCancelled) {
 									// Auto OAuth was cancelled by the user, indicate this with the error we return
-									reject(<sqlops.UserCancelledSignInError>{ userCancelledSignIn: true });
+									reject(<azdata.UserCancelledSignInError>{ userCancelledSignIn: true });
 								} else {
 									// Auto OAuth failed for some other reason
-									sqlops.accounts.endAutoOAuthDeviceCode();
+									azdata.accounts.endAutoOAuthDeviceCode();
 									reject(err);
 								}
 							} else {
-								sqlops.accounts.endAutoOAuthDeviceCode();
+								azdata.accounts.endAutoOAuthDeviceCode();
 								resolve(<adal.TokenResponse>response);
 							}
 

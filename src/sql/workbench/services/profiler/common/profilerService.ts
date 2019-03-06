@@ -12,15 +12,15 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ProfilerInput } from 'sql/parts/profiler/editor/profilerInput';
 import { ProfilerColumnEditorDialog } from 'sql/parts/profiler/dialog/profilerColumnEditorDialog';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { ICommandService } from 'vs/platform/commands/common/commands';
-import { IStorageService } from 'vs/platform/storage/common/storage';
-import { Scope as MementoScope, Memento } from 'vs/workbench/common/memento';
+import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
+import { Memento } from 'vs/workbench/common/memento';
 import { ProfilerFilterDialog } from 'sql/parts/profiler/dialog/profilerFilterDialog';
 
 class TwoWayMap<T, K> {
@@ -50,7 +50,7 @@ class TwoWayMap<T, K> {
 export class ProfilerService implements IProfilerService {
 	private static readonly PROFILER_SERVICE_UI_STATE_STORAGE_KEY = 'profileservice.uiState';
 	public _serviceBrand: any;
-	private _providers = new Map<string, sqlops.ProfilerProvider>();
+	private _providers = new Map<string, azdata.ProfilerProvider>();
 	private _idMap = new TwoWayMap<ProfilerSessionID, string>();
 	private _sessionMap = new Map<ProfilerSessionID, IProfilerSession>();
 	private _connectionMap = new Map<ProfilerSessionID, IConnectionProfile>();
@@ -66,11 +66,11 @@ export class ProfilerService implements IProfilerService {
 		@ICommandService private _commandService: ICommandService,
 		@IStorageService private _storageService: IStorageService
 	) {
-		this._context = new Memento('ProfilerEditor');
-		this._memento = this._context.getMemento(this._storageService, MementoScope.GLOBAL);
+		this._context = new Memento('ProfilerEditor', this._storageService);
+		this._memento = this._context.getMemento(StorageScope.GLOBAL);
 	}
 
-	public registerProvider(providerId: string, provider: sqlops.ProfilerProvider): void {
+	public registerProvider(providerId: string, provider: azdata.ProfilerProvider): void {
 		this._providers.set(providerId, provider);
 	}
 
@@ -93,15 +93,15 @@ export class ProfilerService implements IProfilerService {
 		return TPromise.wrap(uri);
 	}
 
-	public onMoreRows(params: sqlops.ProfilerSessionEvents): void {
+	public onMoreRows(params: azdata.ProfilerSessionEvents): void {
 		this._sessionMap.get(this._idMap.reverseGet(params.sessionId)).onMoreRows(params);
 	}
 
-	public onSessionStopped(params: sqlops.ProfilerSessionStoppedParams): void {
+	public onSessionStopped(params: azdata.ProfilerSessionStoppedParams): void {
 		this._sessionMap.get(this._idMap.reverseGet(params.ownerUri)).onSessionStopped(params);
 	}
 
-	public onProfilerSessionCreated(params: sqlops.ProfilerSessionCreatedParams): void {
+	public onProfilerSessionCreated(params: azdata.ProfilerSessionCreatedParams): void {
 		this._sessionMap.get(this._idMap.reverseGet(params.ownerUri)).onProfilerSessionCreated(params);
 		this.updateMemento(params.ownerUri, { previousSessionName: params.sessionName });
 	}
@@ -114,7 +114,7 @@ export class ProfilerService implements IProfilerService {
 		return this._runAction(id, provider => provider.disconnectSession(this._idMap.get(id)));
 	}
 
-	public createSession(id: string, createStatement: string, template: sqlops.ProfilerSessionTemplate): Thenable<boolean> {
+	public createSession(id: string, createStatement: string, template: azdata.ProfilerSessionTemplate): Thenable<boolean> {
 		return this._runAction(id, provider => provider.createSession(this._idMap.get(id), createStatement, template)).then(() => {
 			this._sessionMap.get(this._idMap.reverseGet(id)).onSessionStateChanged({ isRunning: true, isStopped: false, isPaused: false });
 			return true;
@@ -157,7 +157,7 @@ export class ProfilerService implements IProfilerService {
 		});
 	}
 
-	private _runAction<T>(id: ProfilerSessionID, action: (handler: sqlops.ProfilerProvider) => Thenable<T>): Thenable<T> {
+	private _runAction<T>(id: ProfilerSessionID, action: (handler: azdata.ProfilerProvider) => Thenable<T>): Thenable<T> {
 		// let providerId = this._connectionService.getProviderIdFromUri(this._idMap.get(id));
 		let providerId = 'MSSQL';
 

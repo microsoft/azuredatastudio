@@ -13,7 +13,7 @@ import { TableInsight } from './tableInsight';
 import { IInsightOptions, IInsight, InsightType, IInsightCtor } from './interfaces';
 import { CountInsight } from './countInsight';
 
-import { Builder } from 'vs/base/browser/builder';
+import { Builder } from 'sql/base/browser/builder';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Dimension } from 'vs/base/browser/dom';
 import { deepClone } from 'vs/base/common/objects';

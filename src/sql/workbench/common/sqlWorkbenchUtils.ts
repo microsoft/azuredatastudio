@@ -8,7 +8,7 @@ import ConnectionConstants = require('sql/platform/connection/common/constants')
 import { QueryInput } from 'sql/parts/query/common/queryInput';
 
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import { IEditorInput } from 'vs/workbench/common/editor';
 
 /**

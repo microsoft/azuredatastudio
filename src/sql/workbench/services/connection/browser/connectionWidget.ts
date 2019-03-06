@@ -24,7 +24,7 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import * as styler from 'sql/platform/theme/common/styler';
 import { IAccountManagementService } from 'sql/platform/accountManagement/common/interfaces';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 import * as lifecycle from 'vs/base/common/lifecycle';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
@@ -32,7 +32,7 @@ import { localize } from 'vs/nls';
 import * as DOM from 'vs/base/browser/dom';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { OS, OperatingSystem } from 'vs/base/common/platform';
-import { Builder, $ } from 'vs/base/browser/builder';
+import { Builder, $ } from 'sql/base/browser/builder';
 import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import { endsWith, startsWith } from 'vs/base/common/strings';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
@@ -56,12 +56,12 @@ export class ConnectionWidget {
 	private _addAzureAccountMessage: string = localize('connectionWidget.AddAzureAccount', 'Add an account...');
 	private readonly _azureProviderId = 'azurePublicCloud';
 	private _azureTenantId: string;
-	private _azureAccountList: sqlops.Account[];
+	private _azureAccountList: azdata.Account[];
 	private _advancedButton: Button;
 	private _callbacks: IConnectionComponentCallbacks;
 	private _authTypeSelectBox: SelectBox;
 	private _toDispose: lifecycle.IDisposable[];
-	private _optionsMaps: { [optionType: number]: sqlops.ConnectionOption };
+	private _optionsMaps: { [optionType: number]: azdata.ConnectionOption };
 	private _tableContainer: Builder;
 	private _focusedBeforeHandleOnConnection: HTMLElement;
 	private _providerName: string;
@@ -95,7 +95,7 @@ export class ConnectionWidget {
 		color: undefined,
 		description: undefined,
 	};
-	constructor(options: sqlops.ConnectionOption[],
+	constructor(options: azdata.ConnectionOption[],
 		callbacks: IConnectionComponentCallbacks,
 		providerName: string,
 		@IThemeService private _themeService: IThemeService,
@@ -264,7 +264,7 @@ export class ConnectionWidget {
 			rowContainer.element('td');
 			rowContainer.element('td', { align: 'right' }, (cellContainer) => {
 				cellContainer.div({ class: 'advanced-button' }, (divContainer) => {
-					button = new Button(divContainer);
+					button = new Button(divContainer.getHTMLElement());
 					button.label = title;
 					button.onDidClick(() => {
 						//open advanced page

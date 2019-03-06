@@ -7,7 +7,7 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ProfilerInput } from 'sql/parts/profiler/editor/profilerInput';
 
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { INewProfilerState } from 'sql/parts/profiler/editor/profilerState';
 
 const PROFILER_SERVICE_ID = 'profilerService';
@@ -26,15 +26,15 @@ export interface IProfilerSession {
 	/**
 	 * Called by the service when more rows are available to render
 	 */
-	onMoreRows(events: sqlops.ProfilerSessionEvents);
+	onMoreRows(events: azdata.ProfilerSessionEvents);
 	/**
 	 * Called by the service when the session is closed unexpectedly
 	 */
-	onSessionStopped(events: sqlops.ProfilerSessionStoppedParams);
+	onSessionStopped(events: azdata.ProfilerSessionStoppedParams);
 	/**
 	 * Called by the service when a new profiler session is created by the dialog
 	 */
-	onProfilerSessionCreated(events: sqlops.ProfilerSessionCreatedParams);
+	onProfilerSessionCreated(events: azdata.ProfilerSessionCreatedParams);
 	/**
 	 * Called by the service when the session state is changed
 	 */
@@ -49,7 +49,7 @@ export interface IProfilerService {
 	/**
 	 * Registers a backend provider for profiler session. ex: mssql
 	 */
-	registerProvider(providerId: string, provider: sqlops.ProfilerProvider): void;
+	registerProvider(providerId: string, provider: azdata.ProfilerProvider): void;
 	/**
 	 * Registers a session with the service that acts as the UI for a profiler session
 	 * @returns An unique id that should be used to make subsequent calls to this service
@@ -66,7 +66,7 @@ export interface IProfilerService {
 	/**
 	 * Creates a new session using the given create statement and session name
 	 */
-	createSession(id: string, createStatement: string, template: sqlops.ProfilerSessionTemplate): Thenable<boolean>;
+	createSession(id: string, createStatement: string, template: azdata.ProfilerSessionTemplate): Thenable<boolean>;
 	/**
 	 * Starts the session specified by the id
 	 */
@@ -86,15 +86,15 @@ export interface IProfilerService {
 	/**
 	 * The method called by the service provider for when more rows are available to render
 	 */
-	onMoreRows(params: sqlops.ProfilerSessionEvents): void;
+	onMoreRows(params: azdata.ProfilerSessionEvents): void;
 	/**
 	 * The method called by the service provider for when more rows are available to render
 	 */
-	onSessionStopped(params: sqlops.ProfilerSessionStoppedParams): void;
+	onSessionStopped(params: azdata.ProfilerSessionStoppedParams): void;
 	/**
 	 * Called by the service when a new profiler session is created by the dialog
 	 */
-	onProfilerSessionCreated(events: sqlops.ProfilerSessionCreatedParams);
+	onProfilerSessionCreated(events: azdata.ProfilerSessionCreatedParams);
 	/**
 	 * Gets a list of the view templates that are specified in the settings
 	 * @param provider An optional string to limit the view templates to a specific provider

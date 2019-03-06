@@ -2,9 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
-import { TPromise } from 'vs/base/common/winjs.base';
 import * as nls from 'vs/nls';
 import * as types from 'vs/base/common/types';
 import { IEntryRunContext, Mode, IAutoFocus } from 'vs/base/parts/quickopen/common/quickOpen';
@@ -23,6 +21,7 @@ import { IEditorService, SIDE_GROUP } from 'vs/workbench/services/editor/common/
 import { isCodeEditor, isDiffEditor } from 'vs/editor/browser/editorBrowser';
 import { IEditorGroup } from 'vs/workbench/services/group/common/editorGroupsService';
 import { once } from 'vs/base/common/event';
+import { CancellationToken } from 'vs/base/common/cancellation';
 
 export const GOTO_LINE_PREFIX = ':';
 
@@ -38,13 +37,13 @@ export class GotoLineAction extends QuickOpenAction {
 		super(actionId, actionLabel, GOTO_LINE_PREFIX, _quickOpenService);
 	}
 
-	run(): TPromise<void> {
+	run(): Promise<void> {
 
 		let activeTextEditorWidget = this.editorService.activeTextEditorWidget;
 		if (isDiffEditor(activeTextEditorWidget)) {
 			activeTextEditorWidget = activeTextEditorWidget.getModifiedEditor();
 		}
-		let restoreOptions: IEditorOptions = null;
+		let restoreOptions: IEditorOptions | null = null;
 
 		if (isCodeEditor(activeTextEditorWidget)) {
 			const config = activeTextEditorWidget.getConfiguration();
@@ -217,7 +216,7 @@ export class GotoLineHandler extends QuickOpenHandler {
 		return nls.localize('gotoLineHandlerAriaLabel', "Type a line number to navigate to.");
 	}
 
-	getResults(searchValue: string): TPromise<QuickOpenModel> {
+	getResults(searchValue: string, token: CancellationToken): Thenable<QuickOpenModel> {
 		searchValue = searchValue.trim();
 
 		// Remember view state to be able to restore on cancel
@@ -226,7 +225,7 @@ export class GotoLineHandler extends QuickOpenHandler {
 			this.lastKnownEditorViewState = activeTextEditorWidget.saveViewState();
 		}
 
-		return TPromise.as(new QuickOpenModel([new GotoLineEntry(searchValue, this.editorService, this)]));
+		return Promise.resolve(new QuickOpenModel([new GotoLineEntry(searchValue, this.editorService, this)]));
 	}
 
 	canRun(): boolean | string {
@@ -261,7 +260,6 @@ export class GotoLineHandler extends QuickOpenHandler {
 					options: {
 						overviewRuler: {
 							color: themeColorFromId(overviewRulerRangeHighlight),
-							darkColor: themeColorFromId(overviewRulerRangeHighlight),
 							position: OverviewRulerLane.Full
 						}
 					}

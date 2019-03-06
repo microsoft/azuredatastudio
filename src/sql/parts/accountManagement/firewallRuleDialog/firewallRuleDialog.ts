@@ -6,7 +6,7 @@
 'use strict';
 
 import 'vs/css!./media/firewallRuleDialog';
-import { Builder, $ } from 'vs/base/browser/builder';
+import { Builder, $ } from 'sql/base/browser/builder';
 import * as DOM from 'vs/base/browser/dom';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { Event, Emitter } from 'vs/base/common/event';
@@ -22,7 +22,7 @@ import { IWindowsService } from 'vs/platform/windows/common/windows';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/workbench/browser/modal/modal';
 import { FirewallRuleViewModel } from 'sql/parts/accountManagement/firewallRuleDialog/firewallRuleViewModel';
@@ -304,7 +304,7 @@ export class FirewallRuleDialog extends Modal {
 		}
 	}
 
-	public onAccountSelectionChange(account: sqlops.Account): void {
+	public onAccountSelectionChange(account: azdata.Account): void {
 		this.viewModel.selectedAccount = account;
 		if (account && !account.isStale) {
 			this._createButton.enabled = true;
