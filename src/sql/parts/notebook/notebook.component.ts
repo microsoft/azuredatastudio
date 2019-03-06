@@ -223,7 +223,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			this.setLoading(false);
 			this._modelReadyDeferred.resolve(this._model);
 		} catch (error) {
-			this.setViewInErrorState(localize('displayFailed', 'Could not display contents: {0}', error));
+			this.setViewInErrorState(localize('displayFailed', 'Could not display contents: {0}', notebookUtils.getErrorMessage(error)));
 			this.setLoading(false);
 			this._modelReadyDeferred.reject(error);
 		} finally {

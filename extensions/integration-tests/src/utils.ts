@@ -8,7 +8,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { TestServerProfile } from './testConfig';
 
-export async function connectToServer(server: TestServerProfile) {
+export async function connectToServer(server: TestServerProfile, timeout: number = 3000) {
 	let connectionProfile: azdata.IConnectionProfile = {
 		serverName: server.serverName,
 		databaseName: server.database,
@@ -30,9 +30,9 @@ export async function connectToServer(server: TestServerProfile) {
 
 	//workaround
 	//wait for OE to load
-	await new Promise(c => setTimeout(c, 3000));
+	await new Promise(c => setTimeout(c, timeout));
 }
 
 export async function ensureConnectionViewOpened() {
-	await vscode.commands.executeCommand('workbench.view.dataExplorer');
+	await vscode.commands.executeCommand('dataExplorer.servers.focus');
 }
