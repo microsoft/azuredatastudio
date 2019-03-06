@@ -296,8 +296,7 @@ const sqlBuiltInExtensions = [
 	'import',
 	'profiler',
 	'admin-pack',
-	'big-data-cluster',
-	'queryplan'
+	'big-data-cluster'
 ];
 var azureExtensions = ['azurecore', 'mssql'];
 // {{SQL CARBON EDIT}} - End
