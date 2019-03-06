@@ -45,6 +45,7 @@ import { dirname } from 'vs/base/common/resources';
 import { ITreeItem, ITreeView } from 'sql/workbench/common/views';
 import { IOEShimService } from 'sql/parts/objectExplorer/common/objectExplorerViewTreeShim';
 import { equalsIgnoreCase } from 'vs/base/common/strings';
+import { NodeContextKey } from 'sql/workbench/parts/dataExplorer/common/nodeContext';
 
 class TitleMenus implements IDisposable {
 
@@ -148,11 +149,12 @@ export class CustomTreeView extends Disposable implements ITreeView {
 	private _onDidChangeActions: Emitter<void> = this._register(new Emitter<void>());
 	readonly onDidChangeActions: Event<void> = this._onDidChangeActions.event;
 
+	private nodeContext: NodeContextKey;
+
 	constructor(
 		private id: string,
 		private container: ViewContainer,
 		@IExtensionService private extensionService: IExtensionService,
-		@IContextKeyService private contextKeyService: IContextKeyService,
 		@IWorkbenchThemeService private themeService: IWorkbenchThemeService,
 		@IInstantiationService private instantiationService: IInstantiationService,
 		@ICommandService private commandService: ICommandService,
@@ -176,6 +178,9 @@ export class CustomTreeView extends Disposable implements ITreeView {
 				this.markdownResult.dispose();
 			}
 		}));
+
+		this.nodeContext = this._register(instantiationService.createInstance(NodeContextKey));
+
 		this.create();
 	}
 
@@ -326,6 +331,10 @@ export class CustomTreeView extends Disposable implements ITreeView {
 		this._register(this.tree.onDidExpandItem(e => this._onDidExpandItem.fire(e.item.getElement())));
 		this._register(this.tree.onDidCollapseItem(e => this._onDidCollapseItem.fire(e.item.getElement())));
 		this._register(this.tree.onDidChangeSelection(e => this._onDidChangeSelection.fire(e.selection)));
+		// Update resource context based on focused element
+		this._register(this.tree.onDidChangeFocus((e: { focus: ITreeItem }) => {
+			this.nodeContext.set({ node: e.focus, viewId: this.id });
+		}));
 		this.tree.setInput(this.root).then(() => this.updateContentAreas());
 	}
 
@@ -414,7 +423,7 @@ export class CustomTreeView extends Disposable implements ITreeView {
 	}
 
 	collapse(itemOrItems: ITreeItem | ITreeItem[]): Thenable<void> {
-		if(this.tree) {
+		if (this.tree) {
 			itemOrItems = Array.isArray(itemOrItems) ? itemOrItems : [itemOrItems];
 			return this.tree.collapseAll(itemOrItems);
 		}
@@ -815,14 +824,14 @@ class TreeMenus extends Disposable implements IDisposable {
 	getResourceActions(element: ITreeItem): IAction[] {
 		return this.mergeActions([
 			this.getActions(MenuId.ViewItemContext, { key: 'viewItem', value: element.contextValue }).primary,
-			this.getActions(MenuId.DataExplorerContext).primary
+			this.getActions(MenuId.DataExplorerContext, { key: 'viewItem', value: element.contextValue }).primary
 		]);
 	}
 
 	getResourceContextActions(element: ITreeItem): IAction[] {
 		return this.mergeActions([
 			this.getActions(MenuId.ViewItemContext, { key: 'viewItem', value: element.contextValue }).secondary,
-			this.getActions(MenuId.DataExplorerContext).secondary
+			this.getActions(MenuId.DataExplorerContext, { key: 'viewItem', value: element.contextValue }).secondary
 		]);
 	}
 
@@ -830,13 +839,10 @@ class TreeMenus extends Disposable implements IDisposable {
 		return actions.reduce((p, c) => p.concat(...c.filter(a => p.findIndex(x => x.id === a.id) === -1)), [] as IAction[]);
 	}
 
-	private getActions(menuId: MenuId, context?: { key: string, value: string }): { primary: IAction[]; secondary: IAction[]; } {
+	private getActions(menuId: MenuId, context: { key: string, value: string }): { primary: IAction[]; secondary: IAction[]; } {
 		const contextKeyService = this.contextKeyService.createScoped();
 		contextKeyService.createKey('view', this.id);
-
-		if (context) {
-			contextKeyService.createKey(context.key, context.value);
-		}
+		contextKeyService.createKey(context.key, context.value);
 
 		const menu = this.menuService.createMenu(menuId, contextKeyService);
 		const primary: IAction[] = [];
