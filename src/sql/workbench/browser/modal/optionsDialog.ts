@@ -178,7 +178,7 @@ export class OptionsDialog extends Modal {
 		}
 	}
 
-	public get options(): IOptionsDialogOptions {
+	private get options(): IOptionsDialogOptions {
 		return this._modalOptions as IOptionsDialogOptions;
 	}
 
