@@ -1,4 +1,5 @@
-client/src/**
-client/tsconfig.json
-npm-shrinkwrap.json
-test/**
+src/**
+out/**
+tsconfig.json
+extension.webpack.config.js
+yarn.lock

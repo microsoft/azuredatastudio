@@ -465,7 +465,7 @@ ms-rest-azure@^2.5.5:
     request "^2.88.0"
     uuid "^3.2.1"
 
-ms-rest@^2.3.2, ms-rest@^2.3.3:
+ms-rest@^2.3.2, ms-rest@^2.3.3, ms-rest@^2.5.0:
   version "2.5.0"
   resolved "https://registry.yarnpkg.com/ms-rest/-/ms-rest-2.5.0.tgz#d483c003f7de7703ade6bc19c3b4319affac2687"
   integrity sha512-QUTg9CsmWpofDO0MR37z8B28/T9ObpQ+FM23GGDMKXw8KYDJ3cEBdK6dJTDDrtSoZG3U+S/vdmSEwJ7FNj6Kog==

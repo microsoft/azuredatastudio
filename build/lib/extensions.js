@@ -251,7 +251,6 @@ const sqlBuiltInExtensions = [
     'admin-pack',
     'big-data-cluster'
 ];
-var azureExtensions = ['azurecore', 'mssql'];
 const builtInExtensions = require('../builtInExtensions.json');
 /**
  * We're doing way too much stuff at once, with webpack et al. So much stuff
@@ -287,8 +286,7 @@ function packageExtensionsStream(optsIn) {
         .filter(({ name }) => opts.desiredExtensions ? opts.desiredExtensions.indexOf(name) >= 0 : true)
         .filter(({ name }) => builtInExtensions.every(b => b.name !== name))
         // {{SQL CARBON EDIT}}
-        .filter(({ name }) => sqlBuiltInExtensions.indexOf(name) === -1)
-        .filter(({ name }) => azureExtensions.indexOf(name) === -1);
+        .filter(({ name }) => sqlBuiltInExtensions.indexOf(name) === -1);
     const localExtensions = () => sequence([...localExtensionDescriptions.map(extension => () => {
             return fromLocal(extension.path, opts.sourceMappingURLBase)
                 .pipe(rename(p => p.dirname = `extensions/${extension.name}/${p.dirname}`));

@@ -9,10 +9,10 @@ agent-base@4, agent-base@^4.1.0:
   dependencies:
     es6-promisify "^5.0.0"
 
-applicationinsights@1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/applicationinsights/-/applicationinsights-1.0.1.tgz#53446b830fe8d5d619eee2a278b31d3d25030927"
-  integrity sha1-U0Rrgw/o1dYZ7uKieLMdPSUDCSc=
+applicationinsights@1.0.6:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/applicationinsights/-/applicationinsights-1.0.6.tgz#bc201810de91cea910dab34e8ad35ecde488edeb"
+  integrity sha512-VQT3kBpJVPw5fCO5n+WUeSx0VHjxFtD7znYbILBlVgOS9/cMDuGFmV2Br3ObzFyZUDGNbEfW36fD1y2/vAiCKw==
   dependencies:
     diagnostic-channel "0.2.0"
     diagnostic-channel-publishers "0.2.1"
@@ -651,19 +651,19 @@ util-deprecate@~1.0.1:
   resolved "https://registry.yarnpkg.com/util-deprecate/-/util-deprecate-1.0.2.tgz#450d4dc9fa70de732762fbd2d4a28981419a0ccf"
   integrity sha1-RQ1Nyfpw3nMnYvvS1KKJgUGaDM8=
 
-vscode-extension-telemetry@^0.0.15:
-  version "0.0.15"
-  resolved "https://registry.yarnpkg.com/vscode-extension-telemetry/-/vscode-extension-telemetry-0.0.15.tgz#685c32f3b67e8fb85ba689c1d7f88ff90ff87856"
-  integrity sha512-Yf6dL9r2x2GISI1xh22XsAaydSTQG/4aBitu8sGBwGr42n2TyOsIXGtXSDgqQBNZgYD6+P1EHqrrzetn9ekWTQ==
+vscode-extension-telemetry@0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/vscode-extension-telemetry/-/vscode-extension-telemetry-0.1.0.tgz#3cdcb61d03829966bd04b5f11471a1e40d6abaad"
+  integrity sha512-WVCnP+uLxlqB6UD98yQNV47mR5Rf79LFxpuZhSPhEf0Sb4tPZed3a63n003/dchhOwyCTCBuNN4n8XKJkLEI1Q==
   dependencies:
-    applicationinsights "1.0.1"
+    applicationinsights "1.0.6"
 
 vscode-jsonrpc@3.5.0:
   version "3.5.0"
   resolved "https://registry.yarnpkg.com/vscode-jsonrpc/-/vscode-jsonrpc-3.5.0.tgz#87239d9e166b2d7352245b8a813597804c1d63aa"
   integrity sha1-hyOdnhZrLXNSJFuKgTWXgEwdY6o=
 
-vscode-languageclient@3.5.1:
+vscode-languageclient@3.5.1, vscode-languageclient@^3.5.1:
   version "3.5.1"
   resolved "https://registry.yarnpkg.com/vscode-languageclient/-/vscode-languageclient-3.5.1.tgz#c78e582459c24e58f88020dfa34065e976186a98"
   integrity sha512-GTQ+hSq/o4c/y6GYmyP9XNrVoIu0NFZ67KltSkqN+tO0eUNDIlrVNX+3DJzzyLhSsrctuGzuYWm3t87mNAcBmQ==

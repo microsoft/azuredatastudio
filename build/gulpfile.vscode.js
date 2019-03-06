@@ -477,10 +477,10 @@ gulp.task('clean-vscode-linux-arm', util.rimraf(path.join(buildRoot, 'azuredatas
 gulp.task('clean-vscode-linux-arm64', util.rimraf(path.join(buildRoot, 'azuredatastudio-linux-arm64')));
 
 gulp.task('vscode-win32-ia32', ['optimize-vscode', 'clean-vscode-win32-ia32'], packageTask('win32', 'ia32'));
-gulp.task('vscode-win32-x64', ['vscode-win32-x64-azurecore', 'vscode-win32-x64-mssql', 'optimize-vscode', 'clean-vscode-win32-x64'], packageTask('win32', 'x64'));
-gulp.task('vscode-darwin', ['vscode-darwin-azurecore', 'vscode-darwin-mssql', 'optimize-vscode', 'clean-vscode-darwin'], packageTask('darwin', null, { stats: true }));
+gulp.task('vscode-win32-x64', ['optimize-vscode', 'clean-vscode-win32-x64'], packageTask('win32', 'x64'));
+gulp.task('vscode-darwin', ['optimize-vscode', 'clean-vscode-darwin'], packageTask('darwin', null, { stats: true }));
 gulp.task('vscode-linux-ia32', ['optimize-vscode', 'clean-vscode-linux-ia32'], packageTask('linux', 'ia32'));
-gulp.task('vscode-linux-x64', ['vscode-linux-x64-azurecore', 'vscode-linux-x64-mssql', 'optimize-vscode', 'clean-vscode-linux-x64'], packageTask('linux', 'x64'));
+gulp.task('vscode-linux-x64', ['optimize-vscode', 'clean-vscode-linux-x64'], packageTask('linux', 'x64'));
 gulp.task('vscode-linux-arm', ['optimize-vscode', 'clean-vscode-linux-arm'], packageTask('linux', 'arm'));
 gulp.task('vscode-linux-arm64', ['optimize-vscode', 'clean-vscode-linux-arm64'], packageTask('linux', 'arm64'));
 
