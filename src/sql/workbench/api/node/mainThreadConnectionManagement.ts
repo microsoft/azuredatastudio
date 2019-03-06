@@ -52,8 +52,8 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 		return Promise.resolve(this.convertConnection(TaskUtilities.getCurrentGlobalConnection(this._objectExplorerService, this._connectionManagementService, this._workbenchEditorService, true)));
 	}
 
-	public $getCredentials(connectionId: string): Thenable<{ [name: string]: string }> {
-		return Promise.resolve(this._connectionManagementService.getActiveConnectionCredentials(connectionId));
+	public async $getCredentials(connectionId: string, promptForMissingPassword: boolean = false): Promise<{ [name: string]: string }> {
+		return await this._connectionManagementService.getConnectionCredentials(connectionId, promptForMissingPassword);
 	}
 
 	public $getServerInfo(connectionId: string): Thenable<azdata.ServerInfo> {

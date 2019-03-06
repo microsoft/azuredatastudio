@@ -249,12 +249,15 @@ export interface IConnectionManagementService {
 	removeConnectionProfileCredentials(profile: IConnectionProfile): IConnectionProfile;
 
 	/**
-	 * Get the credentials for a connected connection profile, as they would appear in the options dictionary
+	 * Get the credentials for a connection profile, as they would appear in the options dictionary. This will attempt to load
+	 * the credentials from current saved profiles and if that fails will display the connection dialog if the caller chooses
+	 * so the user can enter the password at that point.
 	 * @param {string} profileId The id of the connection profile to get the password for
+	 * @param {boolean?} promptForMissingPassword Whether to show the connection dialog if a password is required but not found
 	 * @returns {{ [name: string]: string }} A dictionary containing the credentials as they would be included
-	 * in the connection profile's options dictionary, or undefined if the profile is not connected
+	 * in the connection profile's options dictionary, or undefined if the credentials could not be loaded.
 	 */
-	getActiveConnectionCredentials(profileId: string): { [name: string]: string };
+	getConnectionCredentials(profileId: string, promptForMissingPassword?: boolean): Promise<{ [name: string]: string }>;
 
 	/**
 	 * Get the ServerInfo for a connected connection profile

@@ -260,6 +260,10 @@ export class ConnectionStore {
 		return this.convertConfigValuesToConnectionProfiles(configValues);
 	}
 
+	public getConnectionFromConfiguration(connectionId: string): ConnectionProfile {
+		return this._connectionConfig.getConnections(true).find(conn => conn.id === connectionId);
+	}
+
 	public getProfileWithoutPassword(conn: IConnectionProfile): ConnectionProfile {
 		if (conn) {
 			let savedConn: ConnectionProfile = ConnectionProfile.fromIConnectionProfile(this._capabilitiesService, conn);

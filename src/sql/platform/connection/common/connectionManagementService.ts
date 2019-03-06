@@ -1348,21 +1348,46 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return this._connectionStore.getProfileWithoutPassword(originalProfile);
 	}
 
-	public getActiveConnectionCredentials(profileId: string): { [name: string]: string } {
-		let profile = this.getActiveConnections().find(connectionProfile => connectionProfile.id === profileId);
+	public async getConnectionCredentials(profileId: string, promptForMissingPassword: boolean = false): Promise< { [name: string]: string } > {
+		// First check our active connections to see if this is already connected
+		let connInfo = this._connectionStatusManager.findConnectionByProfileId(profileId);
+		let profile = connInfo ? connInfo.connectionProfile : undefined;
+
+		// If not try to load the profile from the configuration store
+		if(!profile) {
+			profile = this._connectionStore.getConnectionFromConfiguration(profileId);
+		}
+
+		// Still don't have a profile so nothing we can do at this point
 		if (!profile) {
 			return undefined;
 		}
 
+		// We may not have the password at this point if loaded from the configuration store so load it now
+		let profileWithPassword = await this.addSavedPassword(profile);
+
 		// Find the password option for the connection provider
-		let passwordOption = this._capabilitiesService.getCapabilities(profile.providerName).connection.connectionOptions.find(
+		let passwordOption = this._capabilitiesService.getCapabilities(profileWithPassword.providerName).connection.connectionOptions.find(
 			option => option.specialValueType === ConnectionOptionSpecialType.password);
 		if (!passwordOption) {
 			return undefined;
 		}
 
 		let credentials = {};
-		credentials[passwordOption.name] = profile.options[passwordOption.name];
+		credentials[passwordOption.name] = profileWithPassword.password ? profileWithPassword.password : profileWithPassword.options[passwordOption.name];
+
+		// We weren't able to load the password (for example if the user chose not to save the password) so prompt now if caller
+		// wanted to. Note this will make a new connection.
+		if(promptForMissingPassword &&
+			(credentials[passwordOption.name] === undefined || credentials[passwordOption.name] === "") &&
+			this._connectionStore.isPasswordRequired(profileWithPassword)) {
+				let connProfile = await this._connectionDialogService.openDialogAndWait(this, { connectionType: 0, showDashboard: false, providers: ['MSSQL'] }, profile);
+
+				// We may not get a profile back if the user closed the dialog
+				if(connProfile) {
+					credentials[passwordOption.name] = connProfile.password;
+				}
+		}
 		return credentials;
 	}
 

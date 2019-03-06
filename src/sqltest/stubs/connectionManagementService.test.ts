@@ -250,7 +250,7 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return undefined;
 	}
 
-	getActiveConnectionCredentials(profileId: string): { [name: string]: string } {
+	getConnectionCredentials(profileId: string, promptForMissingPassword?: boolean): Promise<{ [name: string]: string }> {
 		return undefined;
 	}
 

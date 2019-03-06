@@ -100,7 +100,7 @@ declare module 'azdata' {
 		 * @param {string} connectionId The id of the connection
 		 * @returns {{ [name: string]: string}} A dictionary containing the credentials as they would be included in the connection's options dictionary
 		 */
-		export function getCredentials(connectionId: string): Thenable<{ [name: string]: string }>;
+		export function getCredentials(connectionId: string, promptForMissingPassword?: boolean): Thenable<{ [name: string]: string }>;
 
 		/**
 		 * Get ServerInfo for a connectionId

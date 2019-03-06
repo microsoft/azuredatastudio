@@ -102,8 +102,8 @@ export function createApiFactory(
 				getActiveConnections(): Thenable<azdata.connection.Connection[]> {
 					return extHostConnectionManagement.$getActiveConnections();
 				},
-				getCredentials(connectionId: string): Thenable<{ [name: string]: string }> {
-					return extHostConnectionManagement.$getCredentials(connectionId);
+				getCredentials(connectionId: string, promptForMissingPassword: boolean = false): Thenable<{ [name: string]: string }> {
+					return extHostConnectionManagement.$getCredentials(connectionId, promptForMissingPassword);
 				},
 				getServerInfo(connectionId: string): Thenable<azdata.ServerInfo> {
 					return extHostConnectionManagement.$getServerInfo(connectionId);
@@ -596,8 +596,8 @@ export function createApiFactory(
 				getCurrentConnection(): Thenable<sqlops.connection.Connection> {
 					return extHostConnectionManagement.$getSqlOpsCurrentConnection();
 				},
-				getCredentials(connectionId: string): Thenable<{ [name: string]: string }> {
-					return extHostConnectionManagement.$getCredentials(connectionId);
+				getCredentials(connectionId: string, promptForMissingPassword: boolean = false): Thenable<{ [name: string]: string }> {
+					return extHostConnectionManagement.$getCredentials(connectionId, promptForMissingPassword);
 				},
 				getServerInfo(connectionId: string): Thenable<sqlops.ServerInfo> {
 					return extHostConnectionManagement.$getServerInfo(connectionId);
