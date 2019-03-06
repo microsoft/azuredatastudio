@@ -21,6 +21,7 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { noKernel } from 'sql/workbench/services/notebook/common/sessionManager';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
+import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
 
 const msgLoading = localize('loading', 'Loading kernels...');
 const kernelLabel: string = localize('Kernel', 'Kernel: ');
@@ -233,45 +234,28 @@ export class TrustedAction extends ToggleableAction {
 }
 
 export class KernelsDropdown extends SelectBox {
-	private model: INotebookModel;
-	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, modelRegistered: Promise<INotebookModel>
-	) {
-		let selectBoxOptionsWithLabel: ISelectBoxOptionsWithLabel = {
-			labelText: kernelLabel,
-			labelOnTop: false
-		};
-		super([msgLoading], msgLoading, contextViewProvider, container, selectBoxOptionsWithLabel);
-		if (modelRegistered) {
-			modelRegistered
-				.then((model) => this.updateModel(model))
-				.catch((err) => {
-					// No-op for now
-				});
+	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, private model: NotebookModel) {
+		super([msgLoading], msgLoading, contextViewProvider, container, { labelText: kernelLabel, labelOnTop: false} as ISelectBoxOptionsWithLabel);
+
+		if (model.clientSession) {
+			model.clientSession.kernelChanged((changedArgs: azdata.nb.IKernelChangedArgs) => {
+				if (changedArgs.newValue) {
+					this.updateKernel(changedArgs.newValue.name); // not display_name
+				}
+			});
 		}
+
+		this.updateKernel(this.model.defaultKernel.display_name);
 
 		this.onDidSelect(e => this.doChangeKernel(e.selected));
 	}
 
-	updateModel(model: INotebookModel): void {
-		this.model = model;
-		model.kernelsChanged((defaultKernel) => {
-			this.updateKernel(defaultKernel);
-		});
-		if (model.clientSession) {
-			model.clientSession.kernelChanged((changedArgs: azdata.nb.IKernelChangedArgs) => {
-				if (changedArgs.newValue) {
-					this.updateKernel(changedArgs.newValue);
-				}
-			});
-		}
-	}
-
 	// Update SelectBox values
-	private updateKernel(defaultKernel: azdata.nb.IKernelSpec) {
-		let specs = this.model.specs;
-		if (specs && specs.kernels) {
-			let index = specs.kernels.findIndex((kernel => kernel.name === defaultKernel.name));
-			this.setOptions(specs.kernels.map(kernel => kernel.display_name), index);
+	private updateKernel(defaultKernel: string) {
+		let kernels: string[] = this.model.standardKernelsDisplayName();
+		if (kernels) {
+			let index = kernels.findIndex((kernel => kernel === defaultKernel));
+			this.setOptions(kernels, index);
 		}
 	}
 
