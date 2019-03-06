@@ -3,7 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-/// <reference path='../../../../src/vs/vscode.d.ts'/>
-/// <reference path='../../../../src/sql/azdata.d.ts'/>
-/// <reference path='../../../../src/sql/azdata.proposed.d.ts'/>
-/// <reference types='@types/node'/>
+//@ts-check
+
+'use strict';
+
+const withDefaults = require('../shared.webpack.config');
+
+module.exports = withDefaults({
+	context: __dirname,
+	entry: {
+		extension: './src/extension.ts'
+	}
+});
