@@ -165,7 +165,7 @@ export class FolderNode extends HdfsFileSourceNode {
 			nodeStatus: undefined,
 			nodeType: this._nodeType,
 			nodeSubType: undefined,
-			iconType: 'Folder'
+			iconType: this._nodeType === Constants.MssqlClusterItems.Connection ? 'HDFSFolder' : 'Folder'
 		};
 		return nodeInfo;
 	}
