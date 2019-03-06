@@ -10,7 +10,6 @@ import * as vscode from 'vscode';
 let toggleOn: boolean = false;
 let statusView = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right);
 statusView.text = 'Query Plan watcher on';
-let windowCount = 0;
 
 export function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand('queryplan.ToggleProcessPlan', () => {
@@ -26,7 +25,7 @@ export function activate(context: vscode.ExtensionContext) {
 		onQueryEvent(type: azdata.queryeditor.QueryEvent, document: azdata.queryeditor.QueryDocument, args: any) {
 			if (type === 'executionPlan') {
 				if (toggleOn) {
-					let tab = azdata.window.modelviewdialog.createTab('Query Watcher');
+					let tab = azdata.window.createTab('Query Watcher');
 					tab.registerContent(async view => {
 						let fileNameTextBox = view.modelBuilder.inputBox().component();
 						let xmlTextBox = view.modelBuilder.inputBox().component();

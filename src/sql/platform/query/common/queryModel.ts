@@ -16,7 +16,8 @@ import {
 	EditSubsetResult,
 	EditCreateRowResult,
 	EditRevertCellResult,
-	ExecutionPlanOptions
+	ExecutionPlanOptions,
+	queryeditor
 } from 'azdata';
 import { QueryInfo } from 'sql/platform/query/common/queryModelService';
 
@@ -28,6 +29,12 @@ export interface IQueryPlanInfo {
 	providerId: string;
 	fileUri: string;
 	planXml: string;
+}
+
+export interface IQueryEvent {
+	type: queryeditor.QueryEvent;
+	uri: string;
+	params?: any;
 }
 
 /**
@@ -62,7 +69,7 @@ export interface IQueryModelService {
 
 	onRunQueryStart: Event<string>;
 	onRunQueryComplete: Event<string>;
-	onExecutionPlanAvailable: Event<IQueryPlanInfo>;
+	onQueryEvent: Event<IQueryEvent>;
 
 	// Edit Data Functions
 	initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number, queryString: string): void;

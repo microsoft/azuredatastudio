@@ -7,6 +7,7 @@
 import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
 import { ExtHostQueryEditorShape, SqlMainContext, MainThreadQueryEditorShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import * as azdata from 'azdata';
+import { IQueryEvent } from 'sql/platform/query/common/queryModel';
 
 class ExtHostQueryDocument implements azdata.queryeditor.QueryDocument {
 	constructor(
@@ -56,24 +57,10 @@ export class ExtHostQueryEditor implements ExtHostQueryEditorShape  {
 		this._nextListenerHandle++;
 	}
 
-	public $onExecutionPlanAvailable(handle: number, fileUri: string, planXml: string) : void {
+	public $onQueryEvent(handle: number, fileUri:string, event: IQueryEvent): void {
 		let listener: azdata.queryeditor.QueryEventListener = this._queryListeners[handle];
 		if (listener) {
-			listener.onQueryEvent('executionPlan', new ExtHostQueryDocument('MSSQL', fileUri, this._proxy), planXml);
-		}
-	}
-
-	public $onExecutionStart(handle: number, fileUri:string): void {
-		let listener: azdata.queryeditor.QueryEventListener = this._queryListeners[handle];
-		if (listener) {
-			listener.onQueryEvent('queryStart', new ExtHostQueryDocument('MSSQL', fileUri, this._proxy), undefined);
-		}
-	}
-
-	public $onExecutionComplete(handle: number, fileUri:string): void {
-		let listener: azdata.queryeditor.QueryEventListener = this._queryListeners[handle];
-		if (listener) {
-			listener.onQueryEvent('queryStop', new ExtHostQueryDocument('MSSQL', fileUri, this._proxy), undefined);
+			listener.onQueryEvent(event.type, new ExtHostQueryDocument('MSSQL', fileUri, this._proxy), event.params.planXml);
 		}
 	}
 }

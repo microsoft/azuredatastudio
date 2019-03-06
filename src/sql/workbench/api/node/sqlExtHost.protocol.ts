@@ -26,6 +26,7 @@ import {
 import { EditorViewColumn } from 'vs/workbench/api/shared/editor';
 import { IUndoStopOptions } from 'vs/workbench/api/node/extHost.protocol';
 import { IExtensionDescription } from 'vs/workbench/services/extensions/common/extensions';
+import { IQueryEvent } from 'sql/platform/query/common/queryModel';
 
 export abstract class ExtHostAccountManagementShape {
 	$autoOAuthCancelled(handle: number): Thenable<void> { throw ni(); }
@@ -759,11 +760,7 @@ export interface MainThreadModelViewDialogShape extends IDisposable {
 	$setDirty(handle: number, isDirty: boolean): void;
 }
 export interface ExtHostQueryEditorShape {
-	$onExecutionPlanAvailable(handle: number, fileUri:string, planXml: string): void;
-
-	$onExecutionStart(handle: number, fileUri:string): void;
-
-	$onExecutionComplete(handle: number, fileUri:string): void;
+	$onQueryEvent(handle: number, fileUri:string, event: IQueryEvent): void;
 }
 
 export interface MainThreadQueryEditorShape extends IDisposable {

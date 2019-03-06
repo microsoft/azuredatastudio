@@ -12,7 +12,7 @@ import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/q
 import { QueryEditor } from 'sql/parts/query/editor/queryEditor';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { dispose, IDisposable } from 'vs/base/common/lifecycle';
-import { IQueryModelService } from 'sql/platform/query/common/queryModel';
+import { IQueryModelService, IQueryEvent } from 'sql/platform/query/common/queryModel';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadQueryEditor)
 export class MainThreadQueryEditor implements MainThreadQueryEditorShape {
@@ -79,18 +79,8 @@ export class MainThreadQueryEditor implements MainThreadQueryEditorShape {
 	}
 
 	public $registerQueryInfoListener(handle: number, providerId: string): void {
-		this._toDispose.push(this._queryModelService.onExecutionPlanAvailable(planInfo => {
-			if (planInfo.providerId === providerId) {
-				this._proxy.$onExecutionPlanAvailable(handle, planInfo.fileUri, planInfo.planXml);
-			}
-		}));
-
-		this._toDispose.push(this._queryModelService.onRunQueryStart(uri => {
-			this._proxy.$onExecutionStart(handle, uri);
-		}));
-
-		this._toDispose.push(this._queryModelService.onRunQueryComplete(uri => {
-			this._proxy.$onExecutionComplete(handle, uri);
+		this._toDispose.push(this._queryModelService.onQueryEvent(event => {
+			this._proxy.$onQueryEvent(handle, event.uri, event);
 		}));
 	}
 
