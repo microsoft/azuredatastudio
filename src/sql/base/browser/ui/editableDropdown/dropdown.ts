@@ -211,6 +211,7 @@ export class Dropdown extends Disposable {
 				this._filter.filterString = e;
 				this._layoutTree();
 			}
+			this._onValueChange.fire(e);
 		});
 
 		this._register(this._contextView);
