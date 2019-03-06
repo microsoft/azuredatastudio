@@ -164,14 +164,16 @@
 		"hasAzureResourceProviders": true
 	},
 	"dependencies": {
+		"adal-node": "^0.1.28",
 		"azure-arm-resource": "^7.0.0",
 		"azure-arm-sql": "^5.0.1",
+		"ms-rest": "^2.5.0",
 		"request": "2.88.0",
 		"vscode-nls": "^4.0.0"
 	},
 	"devDependencies": {
 		"@types/mocha": "^5.2.5",
-		"@types/node": "^8.0.24",
+		"@types/node": "^8.10.25",
 		"mocha": "^5.2.0",
 		"should": "^13.2.1",
 		"typemoq": "^2.1.0"
