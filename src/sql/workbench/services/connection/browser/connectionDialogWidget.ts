@@ -166,10 +166,10 @@ export class ConnectionDialogWidget extends Modal {
 			}
 		});
 
-		this._panel.onTabChange(c => {
+		this._panel.onTabChange(async c => {
 			if (c === savedConnectionTabId && this._savedConnectionTree.getContentHeight() === 0) {
 				// Update saved connection tree
-				TreeUpdateUtils.structuralTreeUpdate(this._savedConnectionTree, 'saved', this._connectionManagementService, this._providers);
+				await TreeUpdateUtils.structuralTreeUpdate(this._savedConnectionTree, 'saved', this._connectionManagementService, this._providers);
 
 				if (this._savedConnectionTree.getContentHeight() > 0) {
 					this._noSavedConnectionBuilder.hide();
@@ -378,7 +378,7 @@ export class ConnectionDialogWidget extends Modal {
 	 * Open the flyout dialog
 	 * @param recentConnections Are there recent connections that should be shown
 	 */
-	public open(recentConnections: boolean) {
+	public async open(recentConnections: boolean): Promise<void> {
 		this._panel.showTab(this._recentConnectionTabId);
 
 		this.show();
@@ -389,7 +389,7 @@ export class ConnectionDialogWidget extends Modal {
 			this._recentConnectionBuilder.hide();
 			this._noRecentConnectionBuilder.show();
 		}
-		TreeUpdateUtils.structuralTreeUpdate(this._recentConnectionTree, 'recent', this._connectionManagementService, this._providers);
+		await TreeUpdateUtils.structuralTreeUpdate(this._recentConnectionTree, 'recent', this._connectionManagementService, this._providers);
 
 		// reset saved connection tree
 		this._savedConnectionTree.setInput([]);

@@ -21,7 +21,7 @@ export class TreeUpdateUtils {
 	/**
 	 * Set input for the tree.
 	 */
-	public static structuralTreeUpdate(tree: ITree, viewKey: string, connectionManagementService: IConnectionManagementService, providers?: string[]): void {
+	public static structuralTreeUpdate(tree: ITree, viewKey: string, connectionManagementService: IConnectionManagementService, providers?: string[]): Promise<void> {
 		let selectedElement: any;
 		let targetsToExpand: any[];
 		if (tree) {
@@ -43,7 +43,7 @@ export class TreeUpdateUtils {
 			treeInput = TreeUpdateUtils.getTreeInput(connectionManagementService, providers);
 		}
 
-		tree.setInput(treeInput).then(() => {
+		return tree.setInput(treeInput).then(() => {
 			// Make sure to expand all folders that where expanded in the previous session
 			if (targetsToExpand) {
 				tree.expandAll(targetsToExpand);
