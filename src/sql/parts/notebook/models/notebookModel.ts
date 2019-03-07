@@ -25,6 +25,7 @@ import { URI } from 'vs/base/common/uri';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { LocalContentManager } from 'sql/workbench/services/notebook/node/localContentManager';
+import { NotebookEditorModel } from 'sql/parts/notebook/notebookInput';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -44,6 +45,7 @@ export class ErrorInfo {
 export class NotebookModel extends Disposable implements INotebookModel {
 	private _contextsChangedEmitter = new Emitter<void>();
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
+	private _modelLoadedEmitter = new Emitter<boolean>();
 	private _kernelsChangedEmitter = new Emitter<nb.IKernelSpec>();
 	private _layoutChanged = new Emitter<void>();
 	private _inErrorState: boolean = false;
@@ -129,6 +131,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public get contentChanged(): Event<NotebookContentChange> {
 		return this._contentChangedEmitter.event;
+	}
+
+	public get modelLoaded(): Event<boolean> {
+		return this._modelLoadedEmitter.event;
 	}
 
 	public get isSessionReady(): boolean {
@@ -254,10 +260,13 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		try {
 			this._trustedMode = isTrusted;
 			let contents = null;
+			let notebookEditorModel: NotebookEditorModel;
 
-			let notebookEditorModel = await this._notebookParams.input.resolve();
-			let localContentManager = new LocalContentManager();
-			contents = await localContentManager.loadFromContentString(notebookEditorModel.contentString);
+			if (this._notebookParams && this._notebookParams.input) {
+				notebookEditorModel = await this._notebookParams.input.resolve();
+				let localContentManager = new LocalContentManager();
+				contents = await localContentManager.loadFromContentString(notebookEditorModel.contentString);
+			}
 
 			let factory = this._notebookOptions.factory;
 			// if cells already exist, create them with language info (if it is saved)

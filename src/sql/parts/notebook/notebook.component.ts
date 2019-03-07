@@ -194,7 +194,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._model.cells.forEach(cell => {
 			cell.trustedMode = isTrusted;
 		});
-		this.setDirty(true);
+		//TODO: Handle dirty for trust?
 		this._changeRef.detectChanges();
 	}
 
@@ -321,7 +321,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	private handleContentChanged(change: NotebookContentChange) {
 		// Note: for now we just need to set dirty state and refresh the UI.
-		this.setDirty(true);
 		this._changeRef.detectChanges();
 	}
 
@@ -468,7 +467,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	private setDirty(isDirty: boolean): void {
 		if (this._notebookParams.input) {
-			this._notebookParams.input.setDirty(isDirty);
+	 		this._notebookParams.input.setDirty(isDirty);
 		}
 	}
 

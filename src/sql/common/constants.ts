@@ -14,4 +14,5 @@ export const RestoreFeatureName = 'restore';
 export const BackupFeatureName = 'backup';
 
 export const MssqlProviderId = 'MSSQL';
+export const notebookModeId = 'jupyter-notebook';
 

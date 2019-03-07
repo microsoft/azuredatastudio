@@ -55,6 +55,9 @@ export class NotebookModelStub implements INotebookModel {
 	get contentChanged(): Event<NotebookContentChange> {
 		throw new Error('method not implemented.');
 	}
+	get modelLoaded(): Event<boolean>{
+		throw new Error('method not implemented.');
+	}
     get specs(): nb.IAllKernels {
         throw new Error('method not implemented.');
     }

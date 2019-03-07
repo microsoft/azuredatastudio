@@ -361,29 +361,9 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 			pinned: !options.preview
 		};
 		let trusted = uri.scheme === Schemas.untitled;
-		// TODO fix to not instantiate the model. The Notebook input should only do that now?
-		// This implies we should pass id and other info to the input, and that should use it when
-		// setting up the model so it's consistent between here, the CustomInputConverter, and the de-serialization code
-		let model = new NotebookEditorModel(uri, trusted, undefined, this._notebookService);
-		let providerId = options.providerId;
-		let providers: string[] = undefined;
-		// Ensure there is always a sensible provider ID for this file type
-		providers = getProvidersForFileName(uri.fsPath, this._notebookService);
-		// Try to use a non-builtin provider first
-		if (providers) {
-			providerId = providers.find(p => p !== DEFAULT_NOTEBOOK_PROVIDER);
-			if (!providerId) {
-				providerId = model.providerId;
-			}
-		}
-		model.providers = providers;
-		model.providerId = providerId;
-		model.defaultKernel = options && options.defaultKernel;
-		model.providers.forEach(provider => {
-			let standardKernels = getStandardKernelsForProvider(provider, this._notebookService);
-			model.standardKernels = standardKernels;
-		});
-		let input = this._instantiationService.createInstance(NotebookInput, undefined, model.notebookUri, model);
+		let input = this._instantiationService.createInstance(NotebookInput, uri.fsPath, uri);
+		input.isTrusted = trusted;
+		input.defaultKernel = options && options.defaultKernel;
 
 		let editor = await this._editorService.openEditor(input, editorOptions, viewColumnToEditorGroup(this._editorGroupService, options.position));
 		if (!editor) {

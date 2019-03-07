@@ -37,6 +37,26 @@ import { ICodeActionsOnSaveOptions } from 'vs/editor/common/config/editorOptions
 import { IBulkEditService } from 'vs/editor/browser/services/bulkEditService';
 import { CancellationTokenSource } from 'vs/base/common/cancellation';
 
+// {{SQL CARBON EDIT}}
+import { INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
+
+class NotebookUpdateParticipant implements ISaveParticipantParticipant {
+
+	constructor(
+		@INotebookService private notebookService: INotebookService
+	) {
+		// Nothing
+	}
+
+	public participate(model: ITextFileEditorModel, env: { reason: SaveReason }): void {
+		let uriString = model.getResource().toString();
+		let notebookEditor = this.notebookService.listNotebookEditors().find((editor) => editor.id === uriString);
+		if (notebookEditor) {
+			notebookEditor.notebookParams.input.updateModel();
+		}
+	}
+}
+
 export interface ISaveParticipantParticipant extends ISaveParticipant {
 	// progressMessage: string;
 }
@@ -388,6 +408,8 @@ export class SaveParticipant implements ISaveParticipant {
 			instantiationService.createInstance(FormatOnSaveParticipant),
 			instantiationService.createInstance(FinalNewLineParticipant),
 			instantiationService.createInstance(TrimFinalNewLinesParticipant),
+			// {{SQL CARBON EDIT}}
+			instantiationService.createInstance(NotebookUpdateParticipant),
 			instantiationService.createInstance(ExtHostSaveParticipant, extHostContext),
 		]);
 		// Hook into model

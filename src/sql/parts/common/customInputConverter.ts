@@ -17,6 +17,7 @@ import { NotebookInput, NotebookEditorModel } from 'sql/parts/notebook/notebookI
 import { DEFAULT_NOTEBOOK_PROVIDER, INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
 import { getProvidersForFileName, getStandardKernelsForProvider } from 'sql/parts/notebook/notebookUtils';
 import { ResourceEditorInput } from 'vs/workbench/common/editor/resourceEditorInput';
+import { notebookModeId } from 'sql/common/constants';
 
 const fs = require('fs');
 
@@ -27,7 +28,6 @@ export const untitledFilePrefix = 'SQLQuery';
 
 // mode identifier for SQL mode
 export const sqlModeId = 'sql';
-export const notebookModeId = 'notebook';
 
 /**
  * Checks if the specified input is supported by one our custom input types, and if so convert it
@@ -63,16 +63,8 @@ export function convertEditorInput(input: EditorInput, options: IQueryEditorOpti
 				let providerIds: string[] = [DEFAULT_NOTEBOOK_PROVIDER];
 				if (input) {
 					fileName = input.getName();
-					providerIds = getProvidersForFileName(fileName, notebookService);
 				}
-				let notebookEditorModel = new NotebookEditorModel(uri, false, undefined, notebookService);
-				notebookEditorModel.providerId = providerIds.filter(provider => provider !== DEFAULT_NOTEBOOK_PROVIDER)[0];
-				notebookEditorModel.providers = providerIds;
-				notebookEditorModel.providers.forEach(provider => {
-					let standardKernels = getStandardKernelsForProvider(provider, notebookService);
-					notebookEditorModel.standardKernels = standardKernels;
-				});
-				let notebookInput: NotebookInput = instantiationService.createInstance(NotebookInput, fileName, uri, notebookEditorModel);
+				let notebookInput: NotebookInput = instantiationService.createInstance(NotebookInput, fileName, uri);
 				return notebookInput;
 			});
 		}
