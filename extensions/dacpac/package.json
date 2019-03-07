@@ -1,7 +1,7 @@
 {
-  "name": "dacfx",
-  "displayName": "SQL Server DacFx",
-  "description": "SQL Server DacFx for Azure Data Studio.",
+  "name": "dacpac",
+  "displayName": "SQL Server Dacpac",
+  "description": "SQL Server Dacpac for Azure Data Studio.",
   "version": "0.1.0",
   "publisher": "Microsoft",
   "preview": true,
@@ -27,7 +27,7 @@
     "commands": [
       {
         "command": "dacFx.start",
-        "title": "Data-tier Application Wizard",
+        "title": "Data-tier Application wizard",
         "category": "Data-tier Application"
       }
     ],
@@ -42,6 +42,7 @@
     }
   },
   "dependencies": {
+    "htmlparser2": "^3.10.1",
     "vscode-nls": "^3.2.1"
   },
   "devDependencies": {}

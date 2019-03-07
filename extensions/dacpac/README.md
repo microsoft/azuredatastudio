@@ -1,6 +1,6 @@
-# Microsoft SQL Server DacFx for Azure Data Studio
+# Microsoft SQL Server Dacpac for Azure Data Studio
 
-Microsoft SQL Server DacFx for Azure Data Studio includes the wizard:
+Microsoft SQL Server Dacpac for Azure Data Studio includes the wizard:
 - [Data-tier Application Wizard.](#data-tier-application-wizard-preview)
 
 ## Data-tier Application Wizard *(preview)*
@@ -21,10 +21,6 @@ This experience is currently in its initial preview. Please report issues and fe
  This wizard was created to add the ability to extract and deploy .dacpac files and import and export .bacpac files in Azure Data Studio.
 
 To learn more about Data-Tier Applications and working with dacpac and bacpac files, [you can read more here.](https://docs.microsoft.com/en-us/sql/relational-databases/data-tier-applications/data-tier-applications?view=sql-server-2017)
-
-## License
-
-Copyright (c) Microsoft Corporation. All rights reserved.
 
 ## Code of Conduct
 

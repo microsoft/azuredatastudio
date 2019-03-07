@@ -250,7 +250,7 @@ const sqlBuiltInExtensions = [
     'profiler',
     'admin-pack',
     'big-data-cluster',
-    'dacfx'
+    'dacpac'
 ];
 var azureExtensions = ['azurecore', 'mssql'];
 const builtInExtensions = require('../builtInExtensions.json');
