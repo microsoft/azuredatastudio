@@ -6,7 +6,7 @@
 	"publisher": "Microsoft",
 	"engines": {
 		"vscode": "*",
-		"sqlops": "*"
+		"azdata": "*"
 	},
 	"main": "./out/extension",
 	"activationEvents": [

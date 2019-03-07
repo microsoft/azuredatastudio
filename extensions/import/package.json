@@ -7,7 +7,7 @@
   "preview": true,
   "engines": {
     "vscode": "^1.25.0",
-    "sqlops": "*"
+    "azdata": "*"
   },
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/import/Microsoft_SQL_Server_Import_Extension_and_Tools_Import_Flat_File_Preview.docx",
   "icon": "images/sqlserver.png",
