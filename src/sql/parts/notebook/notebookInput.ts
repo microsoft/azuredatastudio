@@ -8,7 +8,7 @@
 import * as nls from 'vs/nls';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IEditorModel } from 'vs/platform/editor/common/editor';
-import { EditorInput, EditorModel, ConfirmResult, ITextEditorModel } from 'vs/workbench/common/editor';
+import { EditorInput, EditorModel } from 'vs/workbench/common/editor';
 import { Emitter, Event } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 import * as resources from 'vs/base/common/resources';
@@ -59,7 +59,7 @@ export class NotebookEditorModel extends EditorModel {
 		let model = this.textEditorModel.textEditorModel;
 		return model.getValue();
 	}
-	5
+
 	get isDirty(): boolean {
 		return this.textEditorModel.isDirty();
 	}
@@ -112,7 +112,6 @@ export class NotebookInput extends EditorInput {
 	private _defaultKernel: azdata.nb.IKernelSpec;
 	private _isTrusted: boolean = false;
 	public hasBootstrapped = false;
-	private dirty: boolean;
 	// Holds the HTML content for the editor when the editor discards this input and loads another
 	private _parentContainer: HTMLElement;
 	private readonly _layoutChanged: Emitter<void> = this._register(new Emitter<void>());
@@ -163,6 +162,7 @@ export class NotebookInput extends EditorInput {
 	public get connectionProfileId(): string {
 		return this._connectionProfileId;
 	}
+
 	public get standardKernels(): IStandardKernelWithProvider[] {
 		return this._standardKernels;
 	}
