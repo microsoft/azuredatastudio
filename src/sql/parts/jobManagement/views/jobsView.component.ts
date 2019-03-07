@@ -923,29 +923,30 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 			return job.jobId === jobId;
 		});
 
-		// add steps
-		if (this.jobSteps && this.jobSteps[jobId]) {
-			let steps = this.jobSteps[jobId];
-			job[0].jobSteps = steps;
-		}
-
-		// add schedules
-		if (this.jobSchedules && this.jobSchedules[jobId]) {
-			let schedules = this.jobSchedules[jobId];
-			job[0].jobSchedules = schedules;
-		}
-
-		// add alerts
-		if (this.jobAlerts && this.jobAlerts[jobId]) {
-			let alerts = this.jobAlerts[jobId];
-			job[0].alerts = alerts;
-		}
 		if (job && job.length > 0) {
+			// add steps
+			if (this.jobSteps && this.jobSteps[jobId]) {
+				let steps = this.jobSteps[jobId];
+				job[0].jobSteps = steps;
+			}
+
+			// add schedules
+			if (this.jobSchedules && this.jobSchedules[jobId]) {
+				let schedules = this.jobSchedules[jobId];
+				job[0].jobSchedules = schedules;
+			}
+			// add alerts
+			if (this.jobAlerts && this.jobAlerts[jobId]) {
+				let alerts = this.jobAlerts[jobId];
+				job[0].alerts = alerts;
+			}
+
 			if (job[0].jobSteps && job[0].jobSchedules && job[0].alerts) {
 				return { job: job[0], canEdit: true };
 			}
+			return { job: job[0], canEdit: false };
 		}
-		return { job: job[0], canEdit: false };
+		return undefined;
 	}
 
 	public openCreateJobDialog() {
