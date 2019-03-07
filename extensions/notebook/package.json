@@ -128,7 +128,8 @@
 		"menus": {
 			"commandPalette": [
 				{
-					"command": "notebook.command.analyzeNotebook"
+					"command": "notebook.command.analyzeNotebook",
+					"when": "false"
 				},
 				{
 					"command": "notebook.command.new"
