@@ -25,7 +25,7 @@ import { EditJobAction, DeleteJobAction, NewJobAction } from 'sql/platform/jobMa
 import { JobManagementUtilities } from 'sql/platform/jobManagement/common/jobManagementUtilities';
 import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
-import { JobManagementView } from 'sql/parts/jobManagement/views/jobManagementView';
+import { JobManagementView, JobActionContext } from 'sql/parts/jobManagement/views/jobManagementView';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
@@ -193,7 +193,6 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 			self._agentViewComponent.agentJobInfo = job;
 			self._agentViewComponent.showHistory = true;
 		});
-
 		this._register(this._table.onContextMenu(e => {
 			self.openContextMenu(e);
 		}));
@@ -859,9 +858,13 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		});
 	}
 
-	protected getTableActions(): IAction[] {
+	protected getTableActions(targetObject: JobActionContext): IAction[] {
 		let actions: IAction[] = [];
-		actions.push(this._instantiationService.createInstance(EditJobAction));
+		let editAction = this._instantiationService.createInstance(EditJobAction);
+		if (!targetObject.canEdit) {
+			editAction.enabled = false;
+		}
+		actions.push(editAction);
 		actions.push(this._instantiationService.createInstance(DeleteJobAction));
 		return actions;
 	}
@@ -900,7 +903,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		return result;
 	}
 
-	protected getCurrentTableObject(rowIndex: number): any {
+	protected getCurrentTableObject(rowIndex: number): JobActionContext {
 		let data = this._table.grid.getData();
 		if (!data || rowIndex >= data.getLength()) {
 			return undefined;
@@ -937,7 +940,12 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 			let alerts = this.jobAlerts[jobId];
 			job[0].alerts = alerts;
 		}
-		return job && job.length > 0 ? job[0] : undefined;
+		if (job && job.length > 0) {
+			if (job[0].jobSteps && job[0].jobSchedules && job[0].alerts) {
+				return { job: job[0], canEdit: true };
+			}
+		}
+		return { job: job[0], canEdit: false };
 	}
 
 	public openCreateJobDialog() {
