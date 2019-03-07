@@ -7,27 +7,16 @@
 import * as azdata from 'azdata';
 
 /**
- * The main data model that communicates between the pages.
+ * Data model to communicate between DacFx pages
  */
-export interface ImportDataModel {
+export interface DacFxDataModel {
 	server: azdata.connection.Connection;
-	serverId: string;
-	ownerUri: string;
-	proseColumns: ColumnMetadata[];
-	proseDataPreview: string[][];
 	database: string;
-	table: string;
-	schema: string;
+	serverName: string;
+	serverId: string;
 	filePath: string;
-	fileType: string;
-}
-
-/**
- * Metadata of a column
- */
-export interface ColumnMetadata {
-	columnName: string;
-	dataType: string;
-	primaryKey: boolean;
-	nullable: boolean;
+	version: string;
+	upgradeExisting: boolean;
+	scriptFilePath: string;
+	generateScriptAndDeploy: boolean;
 }
