@@ -18,13 +18,14 @@ import { IStandardKernelWithProvider, getProvidersForFileName, getStandardKernel
 import { INotebookService, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/common/notebookService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITextModelService } from 'vs/editor/common/services/resolverService';
-import { INotebookModel } from 'sql/parts/notebook/models/modelInterfaces';
+import { INotebookModel, IContentManager } from 'sql/parts/notebook/models/modelInterfaces';
 import { TextFileEditorModel } from 'vs/workbench/services/textfile/common/textFileEditorModel';
 import { Range } from 'vs/editor/common/core/range';
 import { UntitledEditorModel } from 'vs/workbench/common/editor/untitledEditorModel';
 import { Schemas } from 'vs/base/common/network';
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { notebookModeId } from 'sql/common/constants';
+import { LocalContentManager } from 'sql/workbench/services/notebook/node/localContentManager';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
 
@@ -117,13 +118,14 @@ export class NotebookInput extends EditorInput {
 	private readonly _layoutChanged: Emitter<void> = this._register(new Emitter<void>());
 	private _model: NotebookEditorModel;
 	private _untitledEditorService: IUntitledEditorService;
+	private _contentManager: IContentManager;
 
 	constructor(private _title: string,
 		private resource: URI,
 		@ITextModelService private textModelService: ITextModelService,
 		@IUntitledEditorService untitledEditorService: IUntitledEditorService,
 		@IInstantiationService private instantiationService: IInstantiationService,
-		@INotebookService private notebookService: INotebookService,
+		@INotebookService private notebookService: INotebookService
 	) {
 		super();
 		this._untitledEditorService = untitledEditorService;
@@ -134,6 +136,13 @@ export class NotebookInput extends EditorInput {
 
 	public get notebookUri(): URI {
 		return this.resource;
+	}
+
+	public get contentManager(): IContentManager {
+		if (!this._contentManager) {
+			this._contentManager = new NotebookEditorContentManager(this);
+		}
+		return this._contentManager;
 	}
 
 	public getName(): string {
@@ -157,6 +166,10 @@ export class NotebookInput extends EditorInput {
 
 	public set isTrusted(value: boolean) {
 		this._isTrusted = value;
+	}
+
+	public set connectionProfileId(value: string) {
+		this._connectionProfileId = value;
 	}
 
 	public get connectionProfileId(): string {
@@ -301,5 +314,17 @@ export class NotebookInput extends EditorInput {
 			return otherNotebookEditorInput.notebookUri.toString() === this.notebookUri.toString();
 		}
 		return false;
+	}
+}
+
+class NotebookEditorContentManager implements IContentManager {
+	constructor(private notebookInput: NotebookInput) {
+	}
+
+	async loadContent(): Promise<azdata.nb.INotebookContents> {
+		let notebookEditorModel = await this.notebookInput.resolve();
+		let contentManager = new LocalContentManager();
+		let contents = await contentManager.loadFromContentString(notebookEditorModel.contentString);
+		return contents;
 	}
 }

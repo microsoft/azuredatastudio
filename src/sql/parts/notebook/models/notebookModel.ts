@@ -8,24 +8,21 @@
 import { nb, connection } from 'azdata';
 
 import { localize } from 'vs/nls';
-import { Event, Emitter, forEach } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import { Disposable } from 'vs/base/common/lifecycle';
 
 import { CellModel } from './cell';
-import { IClientSession, INotebookModel, IDefaultConnection, INotebookModelOptions, ICellModel, notebookConstants, NotebookContentChange } from './modelInterfaces';
-import { NotebookChangeType, CellType, CellTypes } from 'sql/parts/notebook/models/contracts';
+import { IClientSession, INotebookModel, IDefaultConnection, INotebookModelOptions, ICellModel, NotebookContentChange } from './modelInterfaces';
+import { NotebookChangeType, CellType } from 'sql/parts/notebook/models/contracts';
 import { nbversion } from '../notebookConstants';
 import * as notebookUtils from '../notebookUtils';
-import { INotebookManager, SQL_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_PROVIDER, INotebookParams } from 'sql/workbench/services/notebook/common/notebookService';
+import { INotebookManager, SQL_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/common/notebookService';
 import { NotebookContexts } from 'sql/parts/notebook/models/notebookContexts';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { INotification, Severity } from 'vs/platform/notification/common/notification';
-import { Schemas } from 'vs/base/common/network';
 import { URI } from 'vs/base/common/uri';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { LocalContentManager } from 'sql/workbench/services/notebook/node/localContentManager';
-import { NotebookEditorModel } from 'sql/parts/notebook/notebookInput';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -74,7 +71,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _kernelDisplayNameToNotebookProviderIds: Map<string, string> = new Map<string, string>();
 	private _onValidConnectionSelected = new Emitter<boolean>();
 
-	constructor(private _notebookOptions: INotebookModelOptions, private _notebookParams?: INotebookParams, startSessionImmediately?: boolean, private connectionProfile?: IConnectionProfile) {
+	constructor(private _notebookOptions: INotebookModelOptions, startSessionImmediately?: boolean, private connectionProfile?: IConnectionProfile) {
 		super();
 		if (!_notebookOptions || !_notebookOptions.notebookUri || !_notebookOptions.notebookManagers) {
 			throw new Error('path or notebook service not defined');
@@ -260,12 +257,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		try {
 			this._trustedMode = isTrusted;
 			let contents = null;
-			let notebookEditorModel: NotebookEditorModel;
 
-			if (this._notebookParams && this._notebookParams.input) {
-				notebookEditorModel = await this._notebookParams.input.resolve();
-				let localContentManager = new LocalContentManager();
-				contents = await localContentManager.loadFromContentString(notebookEditorModel.contentString);
+			if (this._notebookOptions && this._notebookOptions.contentManager) {
+				contents = await this._notebookOptions.contentManager.loadContent();
 			}
 
 			let factory = this._notebookOptions.factory;

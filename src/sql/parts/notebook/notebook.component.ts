@@ -253,13 +253,14 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			connectionService: this.connectionManagementService,
 			notificationService: this.notificationService,
 			notebookManagers: this.notebookManagers,
+			contentManager: this._notebookParams.input.contentManager,
 			standardKernels: this._notebookParams.input.standardKernels,
 			cellMagicMapper: new CellMagicMapper(this.notebookService.languageMagics),
 			providerId: 'sql', // this is tricky; really should also depend on the connection profile
 			defaultKernel: this._notebookParams.input.defaultKernel,
 			layoutChanged: this._notebookParams.input.layoutChanged,
 			capabilitiesService: this.capabilitiesService
-		}, this.notebookParams, false, this.profile);
+		}, false, this.profile);
 		model.onError((errInfo: INotification) => this.handleModelError(errInfo));
 		await model.requestModelLoad(this._notebookParams.isTrusted);
 		model.contentChanged((change) => this.handleContentChanged(change));
@@ -467,7 +468,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	private setDirty(isDirty: boolean): void {
 		if (this._notebookParams.input) {
-	 		this._notebookParams.input.setDirty(isDirty);
+			this._notebookParams.input.setDirty(isDirty);
 		}
 	}
 

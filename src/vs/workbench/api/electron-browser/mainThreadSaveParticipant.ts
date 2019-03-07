@@ -40,6 +40,13 @@ import { CancellationTokenSource } from 'vs/base/common/cancellation';
 // {{SQL CARBON EDIT}}
 import { INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
 
+
+/*
+ * An update participant that ensures any un-tracked changes are synced to the JSON file contents for a
+ * Notebook before save occurs. While every effort is made to ensure model changes are notified and a listener
+ * updates the backing model in-place, this is a backup mechanism to hard-update the file before save in case
+ * some are missed.
+ */
 class NotebookUpdateParticipant implements ISaveParticipantParticipant {
 
 	constructor(
