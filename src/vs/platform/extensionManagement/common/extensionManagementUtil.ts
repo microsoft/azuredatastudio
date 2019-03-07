@@ -73,7 +73,7 @@ export function getLocalExtensionTelemetryData(extension: ILocalExtension): any 
 		publisherDisplayName: extension.metadata ? extension.metadata.publisherDisplayName : null,
 		dependencies: extension.manifest.extensionDependencies && extension.manifest.extensionDependencies.length > 0,
 		// {{SQL CARBON EDIT}}
-		version: extension.manifest.version
+		extensionVersion: extension.manifest.version
 	};
 }
 
@@ -102,7 +102,7 @@ export function getGalleryExtensionTelemetryData(extension: IGalleryExtension): 
 		publisherDisplayName: extension.publisherDisplayName,
 		dependencies: !!(extension.properties.dependencies && extension.properties.dependencies.length > 0),
 		// {{SQL CARBON EDIT}}
-		version: extension.version,
+		extensionVersion: extension.version,
 		...extension.telemetryData
 	};
 }
