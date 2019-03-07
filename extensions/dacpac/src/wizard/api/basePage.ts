@@ -5,12 +5,12 @@
 'use strict';
 
 import * as azdata from 'azdata';
-import { ImportDataModel } from './models';
+import { DacFxDataModel } from './models';
 
 export abstract class BasePage {
 
 	protected readonly wizardPage: azdata.window.WizardPage;
-	protected readonly model: ImportDataModel;
+	protected readonly model: DacFxDataModel;
 	protected readonly view: azdata.ModelView;
 
 	/**
