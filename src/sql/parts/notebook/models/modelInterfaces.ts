@@ -328,11 +328,6 @@ export interface INotebookModel {
 	readonly contentChanged: Event<NotebookContentChange>;
 
 	/**
-	 * Event fired once model load is complete
-	 */
-	readonly modelLoaded: Event<boolean>;
-
-	/**
 	 * The trusted mode of the Notebook
 	 */
 	trustedMode: boolean;

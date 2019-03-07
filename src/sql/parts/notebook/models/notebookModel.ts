@@ -42,7 +42,6 @@ export class ErrorInfo {
 export class NotebookModel extends Disposable implements INotebookModel {
 	private _contextsChangedEmitter = new Emitter<void>();
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
-	private _modelLoadedEmitter = new Emitter<boolean>();
 	private _kernelsChangedEmitter = new Emitter<nb.IKernelSpec>();
 	private _layoutChanged = new Emitter<void>();
 	private _inErrorState: boolean = false;
@@ -130,9 +129,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this._contentChangedEmitter.event;
 	}
 
-	public get modelLoaded(): Event<boolean> {
-		return this._modelLoadedEmitter.event;
-	}
 
 	public get isSessionReady(): boolean {
 		return !!this._activeClientSession;
