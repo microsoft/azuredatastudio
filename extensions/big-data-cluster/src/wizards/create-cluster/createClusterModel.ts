@@ -58,8 +58,8 @@ export class CreateClusterModel implements Scriptable {
 				type: TargetClusterType.NewAksCluster,
 				name: localize('bdc-create.AKSClusterCardText', 'New AKS Cluster'),
 				fullName: localize('bdc-create.AKSClusterFullName', 'New Azure Kubernetes Service cluster'),
-				description: localize('bdc-create.AKSClusterDescription', 'This option configures new Azure Kubernetes Service (AKS) for SQL Server big data cluster deployments. '
-					+ 'AKS makes it simple to create, configure and manage a cluster of virutal machines that are preconfigured with a Kubernetes cluster to run containerized applications.'),
+				description: localize('bdc-create.AKSClusterDescription',
+					'This option configures new Azure Kubernetes Service (AKS) for SQL Server big data cluster deployments. AKS makes it simple to create, configure and manage a cluster of virutal machines that are preconfigured with a Kubernetes cluster to run containerized applications.'),
 				iconPath: {
 					dark: 'images/cluster_inverse.svg',
 					light: 'images/cluster.svg'
