@@ -381,44 +381,7 @@ export function createApiFactory(
 				}
 			};
 
-			const modelViewDialog: typeof azdata.window.modelviewdialog = {
-				createDialog(title: string, dialogName?: string): azdata.window.modelviewdialog.Dialog {
-					console.warn('the method azdata.window.modelviewdialog.createDialog has been deprecated, replace it with azdata.window.createModelViewDialog');
-					return extHostModelViewDialog.createDialog(title, dialogName, extension);
-				},
-				createTab(title: string): azdata.window.modelviewdialog.DialogTab {
-					console.warn('the method azdata.window.modelviewdialog.createTab has been deprecated, replace it with azdata.window.createTab');
-					return extHostModelViewDialog.createTab(title, extension);
-				},
-				createButton(label: string): azdata.window.modelviewdialog.Button {
-					console.warn('the method azdata.window.modelviewdialog.createButton has been deprecated, replace it with azdata.window.createButton');
-					return extHostModelViewDialog.createButton(label);
-				},
-				openDialog(dialog: azdata.window.modelviewdialog.Dialog) {
-					console.warn('the method azdata.window.modelviewdialog.openDialog has been deprecated, replace it with azdata.window.openDialog');
-					return extHostModelViewDialog.openDialog(dialog);
-				},
-				closeDialog(dialog: azdata.window.modelviewdialog.Dialog) {
-					console.warn('the method azdata.window.modelviewdialog.closeDialog has been deprecated, replace it with azdata.window.closeDialog');
-					return extHostModelViewDialog.closeDialog(dialog);
-				},
-				createWizardPage(title: string): azdata.window.modelviewdialog.WizardPage {
-					console.warn('the method azdata.window.modelviewdialog.createWizardPage has been deprecated, replace it with azdata.window.createWizardPage');
-					return extHostModelViewDialog.createWizardPage(title);
-				},
-				createWizard(title: string): azdata.window.modelviewdialog.Wizard {
-					console.warn('the method azdata.window.modelviewdialog.createWizard has been deprecated, replace it with azdata.window.createWizard');
-					return extHostModelViewDialog.createWizard(title);
-				},
-				MessageLevel: sqlExtHostTypes.MessageLevel
-			};
-
 			const window: typeof azdata.window = {
-				createDialog(name: string) {
-					console.warn('the method azdata.window.createDialog has been deprecated, replace it with azdata.window.createWebViewDialog');
-					return extHostModalDialogs.createDialog(name);
-				},
-				modelviewdialog: modelViewDialog,
 				createWebViewDialog(name: string) {
 					return extHostModalDialogs.createDialog(name);
 				},
@@ -851,31 +814,31 @@ export function createApiFactory(
 
 			const modelViewDialog: typeof sqlops.window.modelviewdialog = {
 				createDialog(title: string, dialogName?: string): sqlops.window.modelviewdialog.Dialog {
-					console.warn('the method sqlops.window.modelviewdialog.createDialog has been deprecated, replace it with sqlops.window.createModelViewDialog');
+					console.warn('the method sqlops.window.modelviewdialog.createDialog has been deprecated, replace it with azdata.window.createModelViewDialog');
 					return extHostModelViewDialog.createDialog(title, dialogName, extension);
 				},
 				createTab(title: string): sqlops.window.modelviewdialog.DialogTab {
-					console.warn('the method sqlops.window.modelviewdialog.createTab has been deprecated, replace it with sqlops.window.createTab');
+					console.warn('the method sqlops.window.modelviewdialog.createTab has been deprecated, replace it with azdata.window.createTab');
 					return extHostModelViewDialog.createTab(title, extension);
 				},
 				createButton(label: string): sqlops.window.modelviewdialog.Button {
-					console.warn('the method sqlops.window.modelviewdialog.createButton has been deprecated, replace it with sqlops.window.createButton');
+					console.warn('the method sqlops.window.modelviewdialog.createButton has been deprecated, replace it with azdata.window.createButton');
 					return extHostModelViewDialog.createButton(label);
 				},
 				openDialog(dialog: sqlops.window.modelviewdialog.Dialog) {
-					console.warn('the method sqlops.window.modelviewdialog.openDialog has been deprecated, replace it with sqlops.window.openDialog');
+					console.warn('the method sqlops.window.modelviewdialog.openDialog has been deprecated, replace it with azdata.window.openDialog');
 					return extHostModelViewDialog.openDialog(dialog);
 				},
 				closeDialog(dialog: sqlops.window.modelviewdialog.Dialog) {
-					console.warn('the method sqlops.window.modelviewdialog.closeDialog has been deprecated, replace it with sqlops.window.closeDialog');
+					console.warn('the method sqlops.window.modelviewdialog.closeDialog has been deprecated, replace it with azdata.window.closeDialog');
 					return extHostModelViewDialog.closeDialog(dialog);
 				},
 				createWizardPage(title: string): sqlops.window.modelviewdialog.WizardPage {
-					console.warn('the method sqlops.window.modelviewdialog.createWizardPage has been deprecated, replace it with sqlops.window.createWizardPage');
+					console.warn('the method sqlops.window.modelviewdialog.createWizardPage has been deprecated, replace it with azdata.window.createWizardPage');
 					return extHostModelViewDialog.createWizardPage(title);
 				},
 				createWizard(title: string): sqlops.window.modelviewdialog.Wizard {
-					console.warn('the method sqlops.window.modelviewdialog.createWizard has been deprecated, replace it with sqlops.window.createWizard');
+					console.warn('the method sqlops.window.modelviewdialog.createWizard has been deprecated, replace it with azdata.window.createWizard');
 					return extHostModelViewDialog.createWizard(title);
 				},
 				MessageLevel: sqlExtHostTypes.MessageLevel
@@ -883,7 +846,7 @@ export function createApiFactory(
 
 			const window: typeof sqlops.window = {
 				createDialog(name: string) {
-					console.warn('the method sqlops.window.createDialog has been deprecated, replace it with sqlops.window.createWebViewDialog');
+					console.warn('the method sqlops.window.createDialog has been deprecated, replace it with azdata.window.createWebViewDialog');
 					return extHostModalDialogs.createDialog(name);
 				},
 				modelviewdialog: modelViewDialog,
