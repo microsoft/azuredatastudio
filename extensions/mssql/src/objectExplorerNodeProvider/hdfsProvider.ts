@@ -165,7 +165,7 @@ export class FolderNode extends HdfsFileSourceNode {
 			nodeStatus: undefined,
 			nodeType: this._nodeType,
 			nodeSubType: undefined,
-			iconType: this._nodeType === Constants.MssqlClusterItems.Connection ? 'HDFSFolder' : 'Folder'
+			iconType: 'Folder'
 		};
 		return nodeInfo;
 	}
@@ -224,6 +224,23 @@ export class ConnectionNode extends FolderNode {
 		let item = await super.getTreeItem();
 		item.contextValue = this._nodeType;
 		return item;
+	}
+
+	getNodeInfo(): azdata.NodeInfo {
+		// TODO handle error message case by returning it in the OE API
+		// TODO support better mapping of node type
+		let nodeInfo: azdata.NodeInfo = {
+			label: this.getDisplayName(),
+			isLeaf: false,
+			errorMessage: undefined,
+			metadata: undefined,
+			nodePath: this.generateNodePath(),
+			nodeStatus: undefined,
+			nodeType: this._nodeType,
+			nodeSubType: undefined,
+			iconType: 'HDFSFolder'
+		};
+		return nodeInfo;
 	}
 }
 
