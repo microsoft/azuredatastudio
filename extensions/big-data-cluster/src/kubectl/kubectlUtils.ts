@@ -93,7 +93,7 @@ export async function setContext(kubectl: Kubectl, targetContext: string): Promi
     if (!shellResult || shellResult.code !== 0) {
         // TODO: Update error handling for now.
         let errMsg = shellResult ? shellResult.stderr : localize('runKubectlFailed', 'Unable to run kubectl');
-        vscode.window.showErrorMessage(localize('setClusterFailed', 'Failed to set \'${0}\' as current cluster: ${1}', targetContext, errMsg));
+        vscode.window.showErrorMessage(localize('setClusterFailed', 'Failed to set \'{0}\' as current cluster: {1}', targetContext, errMsg));
     }
 }
 

@@ -49,12 +49,12 @@ export async function installDependencies() {
 
 async function installDependency(name: string, alreadyGot: boolean, installFunc: (shell: Shell) => Promise<Errorable<null>>): Promise<void> {
     if (alreadyGot) {
-        sqlserverbigdataclusterchannel.showOutput(localize('dependencyInstalled', '${0} already installed...', name));
+        sqlserverbigdataclusterchannel.showOutput(localize('dependencyInstalled', '{0} already installed...', name));
     } else {
-        sqlserverbigdataclusterchannel.showOutput(localize('installingDependency', 'Installing ${0}...', name));
+        sqlserverbigdataclusterchannel.showOutput(localize('installingDependency', 'Installing {0}...', name));
         const result = await installFunc(shell);
         if (failed(result)) {
-            sqlserverbigdataclusterchannel.showOutput(localize('installingDependencyFailed', 'Unable to install ${0}: ${1}', name, result.error[0]));
+            sqlserverbigdataclusterchannel.showOutput(localize('installingDependencyFailed', 'Unable to install {0}: {1}', name, result.error[0]));
         }
     }
 }

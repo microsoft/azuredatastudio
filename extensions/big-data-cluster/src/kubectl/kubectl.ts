@@ -76,7 +76,7 @@ async function checkForKubectlInternal(context: Context, errorMessageMode: Check
 
     const contextMessage = getCheckKubectlContextMessage(errorMessageMode);
     const inferFailedMessage = localize('binaryNotFound', 'Could not find {0} binary. {1}', binName, contextMessage);
-    const configuredFileMissingMessage = localize('binaryNotInstalled', '${0} is not installed. ${1}', bin, contextMessage);
+    const configuredFileMissingMessage = localize('binaryNotInstalled', '{0} is not installed. {1}', bin, contextMessage);
 
     return await binutil.checkForBinary(context, bin, binName, inferFailedMessage, configuredFileMissingMessage, errorMessageMode !== CheckPresentMessageMode.Silent);
 }
@@ -114,7 +114,7 @@ async function checkPossibleIncompatibility(context: Context): Promise<void> {
     checkedCompatibility = true;
     const compat = await compatibility.check((cmd) => asJson<compatibility.Version>(context, cmd));
     if (!compatibility.isGuaranteedCompatible(compat) && compat.didCheck) {
-        const versionAlert = localize('kubectlVersionIncompatible', 'kubectl version ${0} may be incompatible with cluster Kubernetes version ${1}', compat.clientVersion, compat.serverVersion);
+        const versionAlert = localize('kubectlVersionIncompatible', 'kubectl version ${0} may be incompatible with cluster Kubernetes version {1}', compat.clientVersion, compat.serverVersion);
         context.host.showWarningMessage(versionAlert);
     }
 }
@@ -131,7 +131,7 @@ export function baseKubectlPath(context: Context): string {
 async function asJson<T>(context: Context, command: string): Promise<Errorable<T>> {
     const shellResult = await invokeAsync(context, command);
     if (!shellResult) {
-        return { succeeded: false, error: [localize('cannotRunCommand', 'Unable to run command (${0})', command)] };
+        return { succeeded: false, error: [localize('cannotRunCommand', 'Unable to run command ({0})', command)] };
     }
 
     if (shellResult.code === 0) {

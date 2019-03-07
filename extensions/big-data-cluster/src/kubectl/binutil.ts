@@ -65,7 +65,7 @@ function alertNoBin(host: Host, binName: string, failureReason: CheckPresentFail
                 (str) => {
                     switch (str) {
                         case learnMoreAction:
-                            host.showInformationMessage(localize('moreInfoMsg', 'Add ${0} directory to path, or set "mssql-bdc.${0}-path" config to ${0} binary.', binName));
+                            host.showInformationMessage(localize('moreInfoMsg', 'Add {0} directory to path, or set "mssql-bdc.{0}-path" config to {0} binary.', binName));
                             break;
                         case installDependenciesAction:
                             installDependencies();

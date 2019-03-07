@@ -32,7 +32,7 @@ export async function installKubectl(shell: Shell): Promise<Errorable<null>> {
     const downloadFile = path.join(installFolder, binFile);
     const downloadResult = await download.to(kubectlUrl, downloadFile);
     if (failed(downloadResult)) {
-        return { succeeded: false, error: [localize('downloadKubectlFailed', 'Failed to download kubectl: ${0}', downloadResult.error[0])] };
+        return { succeeded: false, error: [localize('downloadKubectlFailed', 'Failed to download kubectl: {0}', downloadResult.error[0])] };
     }
 
     if (shell.isUnix()) {
@@ -46,7 +46,7 @@ export async function installKubectl(shell: Shell): Promise<Errorable<null>> {
 async function getStableKubectlVersion(): Promise<Errorable<string>> {
     const downloadResult = await download.toTempFile('https://storage.googleapis.com/kubernetes-release/release/stable.txt');
     if (failed(downloadResult)) {
-        return { succeeded: false, error: [localize('kubectlVersionCheckFailed', 'Failed to establish kubectl stable version: ${0}', downloadResult.error[0])] };
+        return { succeeded: false, error: [localize('kubectlVersionCheckFailed', 'Failed to establish kubectl stable version: {0}', downloadResult.error[0])] };
     }
     const version = fs.readFileSync(downloadResult.result, 'utf-8');
     fs.unlinkSync(downloadResult.result);
