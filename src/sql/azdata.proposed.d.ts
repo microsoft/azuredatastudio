@@ -4439,6 +4439,7 @@ declare module 'azdata' {
 
 		export interface IStandardKernel {
 			readonly name: string;
+			readonly displayName: string;
 			readonly connectionProviderIds: string[];
 		}
 

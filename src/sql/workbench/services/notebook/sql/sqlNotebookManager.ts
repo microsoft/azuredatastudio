@@ -47,11 +47,6 @@ export class SqlNotebookManager implements nb.NotebookProvider {
 	}
 
 	public get standardKernels(): nb.IStandardKernel[] {
-		return [
-			{
-				"name": "SQL",
-				"connectionProviderIds": ["MSSQL"]
-			},
-		];
+		return [];
 	}
 }

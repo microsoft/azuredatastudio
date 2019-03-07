@@ -68,6 +68,7 @@ export function getStandardKernelsForProvider(providerId: string, notebookServic
 	standardKernels.forEach(kernel => {
 		Object.assign(<IStandardKernelWithProvider>kernel, {
 			name: kernel.name,
+			displayName: kernel.displayName,
 			connectionProviderIds: kernel.connectionProviderIds,
 			notebookProvider: providerId
 		});
@@ -97,6 +98,7 @@ export function getDatabaseFromFormattedAttachToName(name: string): string {
 
 export interface IStandardKernelWithProvider {
 	readonly name: string;
+	readonly displayName: string;
 	readonly connectionProviderIds: string[];
 	readonly notebookProvider: string;
 }

@@ -71,6 +71,7 @@ export class NotebookInputModel extends EditorModel {
 			this._standardKernels.push({
 				connectionProviderIds: kernel.connectionProviderIds,
 				name: kernel.name,
+				displayName: kernel.displayName,
 				notebookProvider: kernel.notebookProvider
 			});
 		});
