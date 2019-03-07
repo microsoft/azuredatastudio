@@ -112,6 +112,7 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 				this._editableDropdown.value = this.getSelectedValue();
 			}
 			this._editableDropdown.enabled = this.enabled;
+			this._editableDropdown.fireOnTextChange = properties['fireOnTextChange'];
 		} else {
 			this._selectBox.setOptions(this.getValues());
 			this._selectBox.selectWithOptionName(this.getSelectedValue());
