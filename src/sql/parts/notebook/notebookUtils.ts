@@ -101,6 +101,12 @@ export interface IStandardKernelWithProvider {
 	readonly notebookProvider: string;
 }
 
+export interface IEndpoint {
+	serviceName: string;
+	ipAddress: string;
+	port: number;
+}
+
 export function tryMatchCellMagic(input: string): string {
 	if (!input) {
 		return input;
