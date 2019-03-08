@@ -47,9 +47,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _kernelsChangedEmitter = new Emitter<nb.IKernelSpec>();
 	private _layoutChanged = new Emitter<void>();
 	private _inErrorState: boolean = false;
-	private _clientSessions: IClientSession[] = [];
 	private _activeClientSession: IClientSession;
-	private _oldClientSession: IClientSession;
 	private _sessionLoadFinished: Promise<void>;
 	private _onClientSessionReady = new Emitter<IClientSession>();
 	private _onProviderIdChanged = new Emitter<string>();
@@ -511,12 +509,14 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public changeKernel(displayName: string): void {
-		this.doChangeKernel(displayName);
+		this.doChangeKernel(displayName, true);
 	}
 
-	public doChangeKernel(displayName: string): Promise<void> {
+	public async doChangeKernel(displayName: string, needSetProvider: boolean = true): Promise<void> {
 		console.log(`Model: doChangeKernel: ${++this._kernelChangeCount}; kenrel: ${displayName}`);
-		this.setProviderIdAndStartSession(displayName);
+		if (needSetProvider) {
+			await this.setProviderIdAndStartSession(displayName);
+		}
 		let spec = this.getKernelSpecFromDisplayName(displayName);
 		// Ensure that the kernel we try to switch to is a valid kernel; if not, use the default
 		let kernelSpecs = this.getKernelSpecs();
@@ -592,9 +592,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		clientSession.onKernelChanging(async (e) => {
 			await this.loadActiveContexts(e);
 		});
-		// clientSession.statusChanged(async (session) => {
-		// 	this._kernelsChangedEmitter.fire(session.kernel);
-		// });
+		clientSession.statusChanged(async (session) => {
+			this._kernelsChangedEmitter.fire(session.kernel);
+		});
 		if (!this.notebookManager) {
 			return;
 		}
@@ -609,7 +609,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 					this._defaultKernel = spec;
 				}
 				console.log('loadKernelInfo calling model:doChangeKernel');
-				this.doChangeKernel(this._defaultKernel.display_name);
+				this.doChangeKernel(this._defaultKernel.display_name, false);
 			}
 		} catch (err) {
 			let msg = notebookUtils.getErrorMessage(err);
@@ -682,19 +682,22 @@ export class NotebookModel extends Disposable implements INotebookModel {
 					this._activeConnection = undefined;
 				}
 			}
-			if (this._activeClientSession) {
-				try {
-					await this._activeClientSession.ready;
-				} catch (err) {
-					this.notifyError(localize('shutdownClientSessionError', 'A client session error occurred when closing the notebook: {0}', err));
-				}
-				await this._activeClientSession.shutdown();
-				this._clientSessions = undefined;
-				this._activeClientSession = undefined;
-
-			}
+			await this.shutdownActiveSession();
 		} catch (err) {
 			this.notifyError(localize('shutdownError', 'An error occurred when closing the notebook: {0}', err));
+		}
+	}
+
+	private async shutdownActiveSession() {
+		if (this._activeClientSession) {
+			try {
+				await this._activeClientSession.ready;
+			}
+			catch (err) {
+				this.notifyError(localize('shutdownClientSessionError', 'A client session error occurred when closing the notebook: {0}', err));
+			}
+			await this._activeClientSession.shutdown();
+			this._activeClientSession = undefined;
 		}
 	}
 
@@ -776,8 +779,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 								this._providerId = providerId;
 								this._onProviderIdChanged.fire(this._providerId);
 
-								this._activeClientSession.dispose();
-								this._activeClientSession = undefined;
+								await this.shutdownActiveSession();
 
 								try {
 									let manager = await this.getNotebookManager(providerId);

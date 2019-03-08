@@ -240,6 +240,7 @@ export class KernelsDropdown extends SelectBox {
 		if (this.model) {
 			// This is for switching kernel in the same provider
 			this.model.kernelChanged((changedArgs: azdata.nb.IKernelChangedArgs) => {
+				console.log('--In kernelDropdown model.kernelChanged');
 				this.updateKernel(changedArgs.newValue);
 			});
 
@@ -250,6 +251,7 @@ export class KernelsDropdown extends SelectBox {
 					this.updateKernel(session.kernel);
 				}
 				session.kernelChanged((changedArgs: azdata.nb.IKernelChangedArgs) => {
+					console.log('--In kernelDropdown session.kernelChanged');
 					this.updateKernel(changedArgs.newValue);
 				});
 			});

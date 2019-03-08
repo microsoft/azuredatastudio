@@ -73,9 +73,9 @@ export class ClientSession implements IClientSession {
 			this._errorMessage = notebookUtils.getErrorMessage(err);
 		}
 		// Always resolving for now. It's up to callers to check for error case
-		this._isReady = true;
 		this._ready.resolve();
 		this._kernelChangeCompleted.resolve();
+		this._isReady = true;
 	}
 
 	private async startServer(): Promise<void> {
