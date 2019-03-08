@@ -114,14 +114,12 @@
 		],
 		"languages": [
 			{
-				"id": "jupyter-notebook",
+				"id": "notebook",
 				"extensions": [
 					".ipynb"
 				],
 				"aliases": [
-					"Jupyter Notebook",
-					"IPython Notebook",
-					"ipy"
+					"Notebook"
 				]
 			}
 		],
