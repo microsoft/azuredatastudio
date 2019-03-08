@@ -5,14 +5,12 @@
 
 'use strict';
 
-
 import * as TypeMoq from 'typemoq';
 import { ConnectionConfig, ISaveGroupResult } from 'sql/platform/connection/common/connectionConfig';
 import { IConnectionProfile, IConnectionProfileStore } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 import { WorkspaceConfigurationTestService } from 'sqltest/stubs/workspaceConfigurationTestService';
-import { IConfigurationValue, ConfigurationEditingService } from 'vs/workbench/services/configuration/node/configurationEditingService';
 import * as Constants from 'sql/platform/connection/common/constants';
 import { IConnectionProfileGroup, ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import * as assert from 'assert';
@@ -21,8 +19,9 @@ import * as azdata from 'azdata';
 import { Emitter } from 'vs/base/common/event';
 import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { CapabilitiesTestService } from 'sqltest/stubs/capabilitiesTestService';
+import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
 
-suite('SQL ConnectionConfig tests', () => {
+suite('ConnectionConfig', () => {
 	let capabilitiesService: TypeMoq.Mock<ICapabilitiesService>;
 	let msSQLCapabilities: ProviderFeatures;
 	let capabilities: ProviderFeatures[];
@@ -293,16 +292,13 @@ suite('SQL ConnectionConfig tests', () => {
 	}
 
 	test('allGroups should return groups from user and workspace settings', () => {
-		let workspaceConfigurationServiceMock = TypeMoq.Mock.ofType(WorkspaceConfigurationTestService);
-		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileGroup[]>(
-			Constants.connectionGroupsArrayName))
-			.returns(() => configValueToConcat);
+		let configurationService = new TestConfigurationService();
+		configurationService.updateValue(Constants.connectionGroupsArrayName, configValueToConcat.user, ConfigurationTarget.USER);
+		configurationService.updateValue(Constants.connectionGroupsArrayName, configValueToConcat.workspace, ConfigurationTarget.WORKSPACE);
 
-		let config = new ConnectionConfig(workspaceConfigurationServiceMock.object, capabilitiesService.object);
+		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 		let allGroups = config.getAllGroups();
 
-
-		assert.notEqual(allGroups, undefined);
 		assert.equal(allGroups.length, configValueToConcat.workspace.length + configValueToConcat.user.length);
 	});
 
@@ -344,20 +340,17 @@ suite('SQL ConnectionConfig tests', () => {
 				description: 'g1-2'
 			}];
 
-		let workspaceConfigurationServiceMock = TypeMoq.Mock.ofType(WorkspaceConfigurationTestService);
-		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileGroup[]>(
-			Constants.connectionGroupsArrayName))
-			.returns(() => configValueToMerge);
+		let configurationService = new TestConfigurationService();
+		configurationService.updateValue(Constants.connectionGroupsArrayName, configValueToMerge, ConfigurationTarget.USER);
 
-		let config = new ConnectionConfig(workspaceConfigurationServiceMock.object, capabilitiesService.object);
+		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 		let allGroups = config.getAllGroups();
-
 
 		assert.notEqual(allGroups, undefined);
 		assert.equal(groupsAreEqual(allGroups, expectedAllGroups), true);
 	});
 
-	test('addConnection should add the new profile to user settings if does not exist', () => {
+	test('addConnection should add the new profile to user settings if does not exist', async () => {
 		let newProfile: IConnectionProfile = {
 			serverName: 'new server',
 			databaseName: 'database',
@@ -378,24 +371,17 @@ suite('SQL ConnectionConfig tests', () => {
 
 		let expectedNumberOfConnections = connections.user.length + 1;
 
-		let workspaceConfigurationServiceMock = TypeMoq.Mock.ofType(WorkspaceConfigurationTestService);
-		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileStore[]>(Constants.connectionsArrayName))
-			.returns(() => connections);
-		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileGroup[]>(Constants.connectionGroupsArrayName))
-			.returns(() => configValueToConcat);
-		workspaceConfigurationServiceMock.setup(x => x.updateValue(Constants.connectionsArrayName, TypeMoq.It.isAny(), ConfigurationTarget.USER))
-			.returns(() => Promise.resolve());
-		workspaceConfigurationServiceMock.setup(x => x.updateValue(Constants.connectionGroupsArrayName, TypeMoq.It.isAny(), ConfigurationTarget.USER))
-			.returns(() => Promise.resolve());
+		let configurationService = new TestConfigurationService();
+		configurationService.updateValue(Constants.connectionGroupsArrayName, configValueToConcat, ConfigurationTarget.USER);
+		configurationService.updateValue(Constants.connectionsArrayName, connections, ConfigurationTarget.USER);
 
 		let connectionProfile = new ConnectionProfile(capabilitiesService.object, newProfile);
 		connectionProfile.options['databaseDisplayName'] = 'database';
-		let config = new ConnectionConfig(workspaceConfigurationServiceMock.object, capabilitiesService.object);
-		return config.addConnection(connectionProfile).then(savedConnectionProfile => {
-			workspaceConfigurationServiceMock.verify(y => y.updateValue(Constants.connectionsArrayName,
-				TypeMoq.It.is<IConnectionProfileStore[]>(c => c.length === expectedNumberOfConnections), ConfigurationTarget.USER), TypeMoq.Times.once());
-			assert.notEqual(savedConnectionProfile.id, undefined);
-		});
+		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
+		let savedConnectionProfile = await config.addConnection(connectionProfile);
+
+		assert.notEqual(savedConnectionProfile.id, undefined);
+		assert.equal(configurationService.inspect<IConnectionProfileStore[]>(Constants.connectionsArrayName).user.length, expectedNumberOfConnections);
 	});
 
 	test('addConnection should not add the new profile to user settings if already exists', () => {

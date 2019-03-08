@@ -102,7 +102,7 @@ function main() {
 
 			if (argv.forceLoad) {
         // {{SQL CARBON EDIT}}
-				var allFiles = glob.sync(out + '/sqltest/**/*.js');
+				var allFiles = glob.sync(out + '/(sqltest|sql)/**/*.js');
 				allFiles = allFiles.map(function(source) {
 					return path.join(__dirname, '..', source);
 				});
