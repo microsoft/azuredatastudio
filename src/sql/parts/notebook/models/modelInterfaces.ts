@@ -27,6 +27,7 @@ export interface IClientSessionOptions {
 	notebookUri: URI;
 	notebookManager: INotebookManager;
 	notificationService: INotificationService;
+	kernelSpec: nb.IKernelSpec;
 }
 
 /**
@@ -175,7 +176,7 @@ export interface IClientSession extends IDisposable {
 	 * kernel name and resolves with `true`. If no kernel has been started,
 	 * this is a no-op, and resolves with `false`.
 	 */
-	restart(): Promise<boolean>;
+	 restart(): Promise<boolean>;
 
 	/**
 	 * Change the session path.
@@ -478,7 +479,6 @@ export interface INotebookModelOptions {
 	 */
 	factory: IModelFactory;
 
-	contentManager: IContentManager;
 	notebookManagers: INotebookManager[];
 	providerId: string;
 	standardKernels: IStandardKernelWithProvider[];
@@ -510,4 +510,5 @@ export interface ICellMagicMapper {
 
 export namespace notebookConstants {
 	export const SQL = 'SQL';
+	export const SQL_PROVIDER = 'MSSQL';
 }

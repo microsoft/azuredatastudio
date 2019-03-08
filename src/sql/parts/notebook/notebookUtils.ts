@@ -97,6 +97,7 @@ export function getDatabaseFromFormattedAttachToName(name: string): string {
 
 export interface IStandardKernelWithProvider {
 	readonly name: string;
+	readonly displayName: string;
 	readonly connectionProviderIds: string[];
 	readonly notebookProvider: string;
 }

@@ -12,7 +12,7 @@ import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview
 import { INotificationService, Severity, INotificationActions } from 'vs/platform/notification/common/notification';
 
 import { SelectBox, ISelectBoxOptionsWithLabel } from 'sql/base/browser/ui/selectBox/selectBox';
-import { INotebookModel, IDefaultConnection } from 'sql/parts/notebook/models/modelInterfaces';
+import { INotebookModel } from 'sql/parts/notebook/models/modelInterfaces';
 import { CellType } from 'sql/parts/notebook/models/contracts';
 import { NotebookComponent } from 'sql/parts/notebook/notebook.component';
 import { getErrorMessage, formatServerNameWithDatabaseNameForAttachTo, getServerFromFormattedAttachToName, getDatabaseFromFormattedAttachToName } from 'sql/parts/notebook/notebookUtils';
@@ -21,6 +21,7 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { noKernel } from 'sql/workbench/services/notebook/common/sessionManager';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
+import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
 
 const msgLoading = localize('loading', 'Loading kernels...');
 const kernelLabel: string = localize('Kernel', 'Kernel: ');
@@ -233,49 +234,52 @@ export class TrustedAction extends ToggleableAction {
 }
 
 export class KernelsDropdown extends SelectBox {
-	private model: INotebookModel;
-	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, modelRegistered: Promise<INotebookModel>
-	) {
-		let selectBoxOptionsWithLabel: ISelectBoxOptionsWithLabel = {
-			labelText: kernelLabel,
-			labelOnTop: false
-		};
-		super([msgLoading], msgLoading, contextViewProvider, container, selectBoxOptionsWithLabel);
-		if (modelRegistered) {
-			modelRegistered
-				.then((model) => this.updateModel(model))
-				.catch((err) => {
-					// No-op for now
+	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, private model: NotebookModel) {
+		super([msgLoading], msgLoading, contextViewProvider, container, { labelText: kernelLabel, labelOnTop: false } as ISelectBoxOptionsWithLabel);
+
+		if (this.model) {
+			// This is for switching kernel in the same provider
+			this.model.kernelChanged((changedArgs: azdata.nb.IKernelChangedArgs) => {
+				console.log('--In kernelDropdown model.kernelChanged');
+				this.updateKernel(changedArgs.newValue);
+			});
+
+			// This is for swtiching kernel to different provider
+			this.model.onClientSessionReady((session) => {
+				if (session.kernel) {
+					console.log('--In kernelDropdown onClientSessionReady');
+					this.updateKernel(session.kernel);
+				}
+				session.kernelChanged((changedArgs: azdata.nb.IKernelChangedArgs) => {
+					console.log('--In kernelDropdown session.kernelChanged');
+					this.updateKernel(changedArgs.newValue);
 				});
+			});
 		}
 
+		this.updateKenerlFromDisplayName(this.model.defaultKernel.display_name);
 		this.onDidSelect(e => this.doChangeKernel(e.selected));
 	}
 
-	updateModel(model: INotebookModel): void {
-		this.model = model;
-		this._register(model.kernelsChanged((defaultKernel) => {
-			this.updateKernel(defaultKernel);
-		}));
-		if (model.clientSession) {
-			this._register(model.clientSession.kernelChanged((changedArgs: azdata.nb.IKernelChangedArgs) => {
-				if (changedArgs.newValue) {
-					this.updateKernel(changedArgs.newValue);
-				}
-			}));
+	// Update SelectBox values
+	public updateKernel(kenerl: azdata.nb.IKernel) {
+		if (kenerl) {
+			let standardKernel = this.model.getStandardKernelFromName(kenerl.name);
+			let displayName = standardKernel.displayName;
+			this.updateKenerlFromDisplayName(displayName);
 		}
 	}
 
-	// Update SelectBox values
-	private updateKernel(defaultKernel: azdata.nb.IKernelSpec) {
-		let specs = this.model.specs;
-		if (specs && specs.kernels) {
-			let index = specs.kernels.findIndex((kernel => kernel.name === defaultKernel.name));
-			this.setOptions(specs.kernels.map(kernel => kernel.display_name), index);
+	private updateKenerlFromDisplayName(displayName: string) {
+		let kernels: string[] = this.model.standardKernelsDisplayName();
+		if (kernels) {
+			let index = kernels.findIndex((kernel => kernel === displayName));
+			this.setOptions(kernels, index);
 		}
 	}
 
 	public doChangeKernel(displayName: string): void {
+		this.setOptions([msgLoading], 0);
 		this.model.changeKernel(displayName);
 	}
 }

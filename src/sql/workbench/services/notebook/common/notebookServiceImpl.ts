@@ -175,6 +175,7 @@ export class NotebookService extends Disposable implements INotebookService {
 			if (provider) {
 				this._providerToStandardKernels.set(notebookConstants.SQL, [{
 					name: notebookConstants.SQL,
+					displayName: notebookConstants.SQL,
 					connectionProviderIds: sqlConnectionTypes
 				}]);
 			}
@@ -451,7 +452,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		notebookRegistry.registerNotebookProvider({
 			provider: sqlProvider.providerId,
 			fileExtensions: DEFAULT_NOTEBOOK_FILETYPE,
-			standardKernels: { name: 'SQL', connectionProviderIds: ['MSSQL'] }
+			standardKernels: { name: notebookConstants.SQL, displayName: notebookConstants.SQL, connectionProviderIds: [notebookConstants.SQL_PROVIDER] }
 		});
 	}
 

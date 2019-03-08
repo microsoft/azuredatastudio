@@ -30,7 +30,7 @@ export const MAX_ROWS = 5000;
 export const NotebookConfigSectionName = 'notebook';
 export const MaxTableRowsConfigName = 'maxTableRows';
 
-const sqlKernelSpec: nb.IKernelSpec = ({
+export const sqlKernelSpec: nb.IKernelSpec = ({
 	name: sqlKernel,
 	language: 'sql',
 	display_name: sqlKernel

@@ -38,7 +38,8 @@ suite('Client Session', function (): void {
 		session = new ClientSession({
 			notebookManager: notebookManager,
 			notebookUri: path,
-			notificationService: notificationService.object
+			notificationService: notificationService.object,
+			kernelSpec: undefined
 		});
 
 		let serverlessNotebookManager = new NotebookManagerStub();
@@ -46,7 +47,8 @@ suite('Client Session', function (): void {
 		remoteSession = new ClientSession({
 			notebookManager: serverlessNotebookManager,
 			notebookUri: path,
-			notificationService: notificationService.object
+			notificationService: notificationService.object,
+			kernelSpec: undefined
 		});
 	});
 
