@@ -338,15 +338,6 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 	protected initActionBar() {
 		let runJobAction = this.instantiationService.createInstance(RunJobAction);
 		let stopJobAction = this.instantiationService.createInstance(StopJobAction);
-		switch(this._agentJobInfo.currentExecutionStatus) {
-			case(1):
-			case(2):
-			case(3):
-				stopJobAction.enabled = true;
-				break;
-			default:
-				stopJobAction.enabled = false;
-		}
 		let editJobAction = this.instantiationService.createInstance(EditJobAction);
 		let refreshAction = this.instantiationService.createInstance(JobsRefreshAction);
 		let taskbar = <HTMLElement>this.actionBarContainer.nativeElement;
