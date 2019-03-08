@@ -44,6 +44,7 @@ export class ClientSession implements IClientSession {
 	private _errorMessage: string;
 	private _cachedKernelSpec: nb.IKernelSpec;
 	private _kernelChangeHandlers: KernelChangeHandler[] = [];
+	private _defaultKernel: nb.IKernelSpec;
 
 	//#endregion
 
@@ -59,6 +60,7 @@ export class ClientSession implements IClientSession {
 		this._isReady = false;
 		this._ready = new Deferred<void>();
 		this._kernelChangeCompleted = new Deferred<void>();
+		this._defaultKernel = options.kernelSpec;
 	}
 
 	public async initialize(): Promise<void> {
@@ -95,9 +97,7 @@ export class ClientSession implements IClientSession {
 			if (!this.notebookManager.sessionManager.isReady) {
 				await this.notebookManager.sessionManager.ready;
 			}
-			if (this._kernelPreference && this._kernelPreference.shouldStart) {
-				await this.startSessionInstance(this._kernelPreference.name);
-			}
+			await this.startSessionInstance(this._defaultKernel.name);
 		}
 	}
 
@@ -228,7 +228,7 @@ export class ClientSession implements IClientSession {
 	async changeKernel(options: nb.IKernelSpec, oldValue?: nb.IKernel): Promise<nb.IKernel> {
 		this._kernelChangeCompleted = new Deferred<void>();
 		this._isReady = false;
-		let oldKernel = oldValue? oldValue: this.kernel;
+		let oldKernel = oldValue ? oldValue : this.kernel;
 		let newKernel = this.kernel;
 
 		let kernel = await this.doChangeKernel(options);
@@ -253,6 +253,14 @@ export class ClientSession implements IClientSession {
 		// Wait on connection configuration to complete before resolving full kernel change
 		this._kernelChangeCompleted.resolve();
 		this._kernelChangedEmitter.fire(changeArgs);
+		console.log('	_kernelChangedEmitter fired');
+		if (changeArgs) {
+			if (changeArgs.oldValue) {
+				console.log(`	_kernelChangedEmitter:'${changeArgs.oldValue.name}'`);
+			}
+			console.log(`	_kernelChangedEmitter: '${changeArgs.newValue.name}'`);
+		}
+		console.log('	clientSession: changeKernel done');
 		return kernel;
 	}
 

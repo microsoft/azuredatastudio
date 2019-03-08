@@ -8,10 +8,11 @@
 import { nb } from 'azdata';
 
 import { localize } from 'vs/nls';
-import { IDefaultConnection, notebookConstants } from 'sql/parts/notebook/models/modelInterfaces';
+import { IDefaultConnection } from 'sql/parts/notebook/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { sqlKernelSpec } from 'sql/workbench/services/notebook/sql/sqlSessionManager';
 
 export class NotebookContexts {
 	private static MSSQL_PROVIDER = 'MSSQL';
@@ -123,15 +124,14 @@ export class NotebookContexts {
 	/**
 	 *
 	 * @param specs kernel specs (comes from session manager)
-	 * @param connectionInfo connection profile
-	 * @param savedKernelInfo kernel info loaded from
+	 * @param displayName kernel info loaded from
 	 */
-	public static getDefaultKernel(specs: nb.IAllKernels, connectionInfo: IConnectionProfile, savedKernelInfo: nb.IKernelInfo): nb.IKernelSpec {
+	public static getDefaultKernel(specs: nb.IAllKernels, displayName: string): nb.IKernelSpec {
 		let defaultKernel: nb.IKernelSpec;
 		if (specs) {
 			// find the saved kernel (if it exists)
-			if (savedKernelInfo) {
-				defaultKernel = specs.kernels.find((kernel) => kernel.name === savedKernelInfo.name);
+			if (displayName) {
+				defaultKernel = specs.kernels.find((kernel) => kernel.display_name === displayName);
 			}
 			// if no saved kernel exists, use the default KernelSpec
 			if (!defaultKernel) {
@@ -144,10 +144,7 @@ export class NotebookContexts {
 
 		// If no default kernel specified (should never happen), default to SQL
 		if (!defaultKernel) {
-			defaultKernel = {
-				name: notebookConstants.SQL,
-				display_name: notebookConstants.SQL
-			};
+			defaultKernel = sqlKernelSpec;
 		}
 		return defaultKernel;
 	}
