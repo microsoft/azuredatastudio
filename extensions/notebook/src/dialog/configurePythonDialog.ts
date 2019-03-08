@@ -17,7 +17,7 @@ import JupyterServerInstallation from '../jupyter/jupyterServerInstallation';
 const localize = nls.loadMessageBundle();
 
 export class ConfigurePythonDialog {
-	private dialog: azdata.window.modelviewdialog.Dialog;
+	private dialog: azdata.window.Dialog;
 
 	private readonly DialogTitle = localize('configurePython.dialogName', 'Configure Python for Notebooks');
 	private readonly OkButtonText = localize('configurePython.okButtonText', 'Install');
@@ -35,7 +35,7 @@ export class ConfigurePythonDialog {
 	}
 
 	public async showDialog() {
-		this.dialog = azdata.window.modelviewdialog.createDialog(this.DialogTitle);
+		this.dialog = azdata.window.createModelViewDialog(this.DialogTitle);
 
 		this.initializeContent();
 
@@ -44,7 +44,7 @@ export class ConfigurePythonDialog {
 
 		this.dialog.registerCloseValidator(() => this.handleInstall());
 
-		azdata.window.modelviewdialog.openDialog(this.dialog);
+		azdata.window.openDialog(this.dialog);
 	}
 
 	private initializeContent() {
@@ -158,14 +158,14 @@ export class ConfigurePythonDialog {
 	private showInfoMessage(message: string) {
 		this.dialog.message = {
 			text: message,
-			level: azdata.window.modelviewdialog.MessageLevel.Information
+			level: azdata.window.MessageLevel.Information
 		};
 	}
 
 	private showErrorMessage(message: string) {
 		this.dialog.message = {
 			text: message,
-			level: azdata.window.modelviewdialog.MessageLevel.Error
+			level: azdata.window.MessageLevel.Error
 		};
 	}
 }

@@ -6,6 +6,7 @@ import { fs } from '../utility/fs';
 import { Shell } from '../utility/shell';
 import * as vscode from 'vscode';
 import * as path from 'path';
+import * as os from 'os';
 import mkdirp = require('mkdirp');
 import { Kubectl, baseKubectlPath } from '../kubectl/kubectl';
 import { KubectlContext } from '../kubectl/kubectlUtils';
@@ -42,13 +43,13 @@ export class ScriptGenerator {
 		let deployFileName = `${deployFilePrefix}-${targetClusterName}-${timestamp}${deployFileSuffix}`;
 		let deployFilePath = path.join(deployFolder, deployFileName);
 
-		let envVars = "";
+		let envVars = '';
 		let propertiesDict = await scriptable.getScriptProperties();
 		for (let key in propertiesDict) {
 			let value = propertiesDict[key];
 			envVars += this._shell.isWindows() ? `Set ${key} = ${value}\n` : `export ${key} = ${value}\n`;
 		}
-		envVars += '\n';
+		envVars += os.EOL;
 
 		let kubeContextcommand = `${this._kubectlPath} config use-context ${targetContextName}\n`;
 		// Todo: The API for mssqlctl may change per version, so need a version check to use proper syntax.

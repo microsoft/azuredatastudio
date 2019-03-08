@@ -6,7 +6,7 @@
 	"publisher": "Microsoft",
 	"engines": {
 		"vscode": "*",
-		"sqlops": "*"
+		"azdata": "*"
 	},
 	"main": "./out/extension",
 	"activationEvents": [
@@ -114,21 +114,20 @@
 		],
 		"languages": [
 			{
-				"id": "jupyter-notebook",
+				"id": "notebook",
 				"extensions": [
 					".ipynb"
 				],
 				"aliases": [
-					"Jupyter Notebook",
-					"IPython Notebook",
-					"ipy"
+					"Notebook"
 				]
 			}
 		],
 		"menus": {
 			"commandPalette": [
 				{
-					"command": "notebook.command.analyzeNotebook"
+					"command": "notebook.command.analyzeNotebook",
+					"when": "false"
 				},
 				{
 					"command": "notebook.command.new"

@@ -13,10 +13,11 @@ import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
 import { IQueryEditorOptions } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { QueryPlanInput } from 'sql/parts/queryPlan/queryPlanInput';
-import { NotebookInput, NotebookInputModel } from 'sql/parts/notebook/notebookInput';
+import { NotebookInput, NotebookEditorModel } from 'sql/parts/notebook/notebookInput';
 import { DEFAULT_NOTEBOOK_PROVIDER, INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
 import { getProvidersForFileName, getStandardKernelsForProvider } from 'sql/parts/notebook/notebookUtils';
 import { ResourceEditorInput } from 'vs/workbench/common/editor/resourceEditorInput';
+import { notebookModeId } from 'sql/common/constants';
 
 const fs = require('fs');
 
@@ -27,7 +28,6 @@ export const untitledFilePrefix = 'SQLQuery';
 
 // mode identifier for SQL mode
 export const sqlModeId = 'sql';
-export const notebookModeId = 'notebook';
 
 /**
  * Checks if the specified input is supported by one our custom input types, and if so convert it
@@ -63,16 +63,8 @@ export function convertEditorInput(input: EditorInput, options: IQueryEditorOpti
 				let providerIds: string[] = [DEFAULT_NOTEBOOK_PROVIDER];
 				if (input) {
 					fileName = input.getName();
-					providerIds = getProvidersForFileName(fileName, notebookService);
 				}
-				let notebookInputModel = new NotebookInputModel(uri, undefined, false, undefined);
-				notebookInputModel.providerId = providerIds.filter(provider => provider !== DEFAULT_NOTEBOOK_PROVIDER)[0];
-				notebookInputModel.providers = providerIds;
-				notebookInputModel.providers.forEach(provider => {
-					let standardKernels = getStandardKernelsForProvider(provider, notebookService);
-					notebookInputModel.standardKernels = standardKernels;
-				});
-				let notebookInput: NotebookInput = instantiationService.createInstance(NotebookInput, fileName, notebookInputModel);
+				let notebookInput: NotebookInput = instantiationService.createInstance(NotebookInput, fileName, uri);
 				return notebookInput;
 			});
 		}

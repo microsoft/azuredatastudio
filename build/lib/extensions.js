@@ -249,7 +249,8 @@ const sqlBuiltInExtensions = [
     'import',
     'profiler',
     'admin-pack',
-    'big-data-cluster'
+    'big-data-cluster',
+    'dacpac'
 ];
 const builtInExtensions = require('../builtInExtensions.json');
 /**

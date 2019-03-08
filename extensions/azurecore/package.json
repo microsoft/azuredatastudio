@@ -7,7 +7,7 @@
 	"preview": true,
 	"engines": {
 		"vscode": "^1.25.0",
-		"sqlops": "*"
+		"azdata": "*"
 	},
 	"activationEvents": [
 		"*"
