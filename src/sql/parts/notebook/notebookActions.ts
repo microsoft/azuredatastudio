@@ -12,7 +12,7 @@ import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview
 import { INotificationService, Severity, INotificationActions } from 'vs/platform/notification/common/notification';
 
 import { SelectBox, ISelectBoxOptionsWithLabel } from 'sql/base/browser/ui/selectBox/selectBox';
-import { INotebookModel, IDefaultConnection } from 'sql/parts/notebook/models/modelInterfaces';
+import { INotebookModel } from 'sql/parts/notebook/models/modelInterfaces';
 import { CellType } from 'sql/parts/notebook/models/contracts';
 import { NotebookComponent } from 'sql/parts/notebook/notebook.component';
 import { getErrorMessage, formatServerNameWithDatabaseNameForAttachTo, getServerFromFormattedAttachToName, getDatabaseFromFormattedAttachToName } from 'sql/parts/notebook/notebookUtils';
@@ -238,18 +238,17 @@ export class KernelsDropdown extends SelectBox {
 		super([msgLoading], msgLoading, contextViewProvider, container, { labelText: kernelLabel, labelOnTop: false } as ISelectBoxOptionsWithLabel);
 
 		if (this.model) {
+			// This is for switching kernel in the same provider
+			this.model.kernelChanged((changedArgs: azdata.nb.IKernelChangedArgs) => {
+				this.updateKernel(changedArgs.newValue);
+			});
+
+			// This is for swtiching kernel to different provider
 			this.model.onClientSessionReady((session) => {
-				//model.kernelChanged(undefined).dispose();
 				if (session.kernel) {
 					console.log('--In kernelDropdown onClientSessionReady');
 					this.updateKernel(session.kernel);
 				}
-				// session.onKernelChanging(async (changedArgs: azdata.nb.IKernelChangedArgs) => {
-				// 	if (changedArgs.newValue) {
-				// 		this.updateKernel(changedArgs.newValue.name);
-				// 	}
-				// });
-
 				session.kernelChanged((changedArgs: azdata.nb.IKernelChangedArgs) => {
 					this.updateKernel(changedArgs.newValue);
 				});
@@ -257,7 +256,6 @@ export class KernelsDropdown extends SelectBox {
 		}
 
 		this.updateKenerlFromDisplayName(this.model.defaultKernel.display_name);
-
 		this.onDidSelect(e => this.doChangeKernel(e.selected));
 	}
 
