@@ -254,15 +254,15 @@ export class KernelsDropdown extends SelectBox {
 
 	updateModel(model: INotebookModel): void {
 		this.model = model;
-		model.kernelsChanged((defaultKernel) => {
+		this._register(model.kernelsChanged((defaultKernel) => {
 			this.updateKernel(defaultKernel);
-		});
+		}));
 		if (model.clientSession) {
-			model.clientSession.kernelChanged((changedArgs: azdata.nb.IKernelChangedArgs) => {
+			this._register(model.clientSession.kernelChanged((changedArgs: azdata.nb.IKernelChangedArgs) => {
 				if (changedArgs.newValue) {
 					this.updateKernel(changedArgs.newValue);
 				}
-			});
+			}));
 		}
 	}
 
@@ -306,12 +306,12 @@ export class AttachToDropdown extends SelectBox {
 
 	public updateModel(model: INotebookModel): void {
 		this.model = model;
-		model.contextsChanged(() => {
+		this._register(model.contextsChanged(() => {
 			let kernelDisplayName: string = this.getKernelDisplayName();
 			if (kernelDisplayName) {
 				this.loadAttachToDropdown(this.model, kernelDisplayName);
 			}
-		});
+		}));
 	}
 
 	private updateAttachToDropdown(model: INotebookModel): void {
