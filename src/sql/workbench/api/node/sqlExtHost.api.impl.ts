@@ -97,6 +97,12 @@ export function createApiFactory(
 				getCurrentConnection(): Thenable<azdata.connection.ConnectionProfile> {
 					return extHostConnectionManagement.$getCurrentConnection();
 				},
+				getConnections(isConnected?: boolean): Thenable<azdata.connection.ConnectionProfile[]> {
+					return undefined;
+				},
+				getConnectionProfile(connectionId: string): Thenable<azdata.connection.ConnectionProfile> {
+					return undefined;
+				},
 
 				// "sqlops" back-compat APIs
 				getActiveConnections(): Thenable<azdata.connection.Connection[]> {

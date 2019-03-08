@@ -524,23 +524,49 @@ export interface ISingleNotebookEditOperation {
 }
 
 export class ConnectionProfile {
-
 	providerId: string;
 	connectionId: string;
-	connectionName: string;
 	serverName: string;
-	databaseName: string;
-	userName: string;
-	password: string;
-	authenticationType: string;
-	savePassword: boolean;
-	groupFullName: string;
-	groupId: string;
-	saveProfile: boolean;
+	friendlyName?: string;
+	databaseName?: string;
+	username?: string;
+	password?: string;
+	authenticationType?: string;
+	savePassword?: boolean;
+	groupFullName?: string;
+	groupId?: string;
+	saveProfile?: boolean;
 	azureTenantId?: string;
 
-	static createFrom(options: any[]): ConnectionProfile {
+	// any additional options
+	[name: string]: any;
+
+	static from(options: Map<string, any>): ConnectionProfile {
 		// create from options
+		return undefined;
+	}
+
+	/**
+	* Convert to a connection string
+	*/
+	toConnectionString(includePassword: boolean): Thenable<string> {
+		return undefined;
+	}
+
+	/**
+	* Get the credentials for an active connection
+	* @param {string} connectionId The id of the connection
+	* @returns {{ [name: string]: string}} A dictionary containing the credentials as they would be included in the connection's options dictionary
+	*/
+	getCredentials(): Thenable<{ [name: string]: string }> {
+		return undefined;
+	}
+
+	/**
+	* Indicates whether the connection profile is in a connected state
+	* @returns {boolean} true if the profile is connected
+	*/
+	isConnected(): Thenable<boolean> {
 		return undefined;
 	}
 }

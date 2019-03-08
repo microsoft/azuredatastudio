@@ -15,22 +15,22 @@ declare module 'azdata' {
 		export class ConnectionProfile {
 			providerId: string;
 			connectionId: string;
-			connectionName: string;
 			serverName: string;
-			databaseName: string;
-			userName: string;
-			password: string;
-			authenticationType: string;
-			savePassword: boolean;
-			groupFullName: string;
-			groupId: string;
-			saveProfile: boolean;
+			friendlyName?: string;
+			databaseName?: string;
+			username?: string;
+			password?: string;
+			authenticationType?: string;
+			savePassword?: boolean;
+			groupFullName?: string;
+			groupId?: string;
+			saveProfile?: boolean;
 			azureTenantId?: string;
 
 			/**
 			 * Get connection string
 			 */
-			getConnectionString(includePassword: boolean): Thenable<string>;
+			toConnectionString(includePassword: boolean): Thenable<string>
 
 			/**
 			 * Get the credentials for an active connection
@@ -40,9 +40,15 @@ declare module 'azdata' {
 			getCredentials(): Thenable<{ [name: string]: string }>;
 
 			/**
+			* Indicates whether the connection profile is in a connected state
+			* @returns {boolean} true if the profile is connected
+			*/
+			isConnected(): Thenable<boolean>;
+
+			/**
 			 * create a connection profile from an options map
 			 */
-			static from(options: any[]): ConnectionProfile;
+			static from(options: Map<string, any>): ConnectionProfile;
 		}
 
 		/**
@@ -53,12 +59,7 @@ declare module 'azdata' {
 		/**
 		 * Get all connections
 		*/
-		export function getConnections(): Thenable<ConnectionProfile[]>;
-
-		/**
-		 * Get all active connections
-		*/
-		export function getActiveConnections(): Thenable<ConnectionProfile[]>;
+		export function getConnections(isConnected?: boolean): Thenable<ConnectionProfile[]>;
 
 		/**
 		 * Get connection profile from connectionId
