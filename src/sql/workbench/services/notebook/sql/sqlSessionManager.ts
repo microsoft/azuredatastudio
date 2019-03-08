@@ -25,7 +25,7 @@ import * as notebookUtils from 'sql/parts/notebook/notebookUtils';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 export const sqlKernel: string = localize('sqlKernel', 'SQL');
-export const sqlKernelError: string = localize("sqlKernelError", "SQL kernel error");
+export const sqlKernelError: string = localize('sqlKernelError', 'SQL kernel error');
 export const MAX_ROWS = 5000;
 export const NotebookConfigSectionName = 'notebook';
 export const MaxTableRowsConfigName = 'maxTableRows';
@@ -406,6 +406,9 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		try {
 			for (let resultSet of batch.resultSetSummaries) {
 				let rowCount = resultSet.rowCount > this.configuredMaxRows ? this.configuredMaxRows : resultSet.rowCount;
+				if (rowCount === this.configuredMaxRows) {
+					this.handleMessage(localize('sqlMaxRowsDisplayed', 'Displaying Top {0} rows.', rowCount));
+				}
 				await this.sendResultSetAsIOPub(rowCount, resultSet);
 			}
 		} catch (err) {
