@@ -549,7 +549,7 @@ class ResourceRenderer implements IListRenderer<ISCMResource, ResourceTemplate> 
 
 		if (icon) {
 			template.decorationIcon.style.display = '';
-			template.decorationIcon.style.backgroundImage = `url('${icon}')`;
+			template.decorationIcon.style.backgroundImage = `url('${icon.toString(true)}')`;
 			template.decorationIcon.title = resource.decorations.tooltip;
 		} else {
 			template.decorationIcon.style.display = 'none';

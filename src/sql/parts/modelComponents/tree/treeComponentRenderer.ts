@@ -144,7 +144,7 @@ export class TreeComponentRenderer extends Disposable implements IRenderer {
 	 */
 	public renderElement(tree: ITree, element: ITreeComponentItem, templateId: string, templateData: TreeDataTemplate): void {
 		const icon = this.themeService.getTheme().type === LIGHT ? element.icon : element.iconDark;
-		templateData.icon.style.backgroundImage = icon ? `url('${icon}')` : '';
+		templateData.icon.style.backgroundImage = icon ? `url('${icon.path}')` : '';
 		dom.toggleClass(templateData.icon, 'model-view-tree-node-item-icon', !!icon);
 		if (element) {
 			element.onCheckedChanged = (checked: boolean) => {
