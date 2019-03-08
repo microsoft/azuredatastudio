@@ -245,9 +245,10 @@ export class NotebookInput extends EditorInput {
 		if (providerIds && providerIds.length > 0) {
 			this._providerId = providerIds.filter(provider => provider !== DEFAULT_NOTEBOOK_PROVIDER)[0];
 			this._providers = providerIds;
+			this._standardKernels = [];
 			this._providers.forEach(provider => {
 				let standardKernels = getStandardKernelsForProvider(provider, this.notebookService);
-				this._standardKernels = standardKernels;
+				this._standardKernels.push(...standardKernels);
 			});
 		}
 	}
