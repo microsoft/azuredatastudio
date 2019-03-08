@@ -8,7 +8,6 @@
 import { IConnectionProfile } from './interfaces';
 import { IConnectionProfileGroup, ConnectionProfileGroup } from './connectionProfileGroup';
 import { ConnectionProfile } from './connectionProfile';
-import * as azdata from 'azdata';
 
 /**
  * Interface for a configuration file that stores connection profiles.

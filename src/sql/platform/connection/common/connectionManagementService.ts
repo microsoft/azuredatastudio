@@ -48,7 +48,6 @@ import { Memento } from 'vs/workbench/common/memento';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
-import { ConfigurationEditingService } from 'vs/workbench/services/configuration/node/configurationEditingService';
 import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
@@ -77,8 +76,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	private _onLanguageFlavorChanged = new Emitter<azdata.DidChangeLanguageFlavorParams>();
 	private _connectionGlobalStatus = new ConnectionGlobalStatus(this._statusBarService);
 
-	private _configurationEditService: ConfigurationEditingService;
-
 	constructor(
 		private _connectionMemento: Memento,
 		private _connectionStore: ConnectionStore,
@@ -99,17 +96,14 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		@IAccountManagementService private _accountManagementService: IAccountManagementService
 	) {
 		super();
-		if (this._instantiationService) {
-			this._configurationEditService = this._instantiationService.createInstance(ConfigurationEditingService);
-		}
 
 		// _connectionMemento and _connectionStore are in constructor to enable this class to be more testable
 		if (!this._connectionMemento) {
 			this._connectionMemento = new Memento('ConnectionManagement', _storageService);
 		}
 		if (!this._connectionStore) {
-			this._connectionStore = new ConnectionStore(_storageService, this._connectionMemento,
-				this._configurationEditService, this._workspaceConfigurationService, this._credentialsService, this._capabilitiesService);
+			this._connectionStore = new ConnectionStore(this._connectionMemento,
+				this._workspaceConfigurationService, this._credentialsService, this._capabilitiesService);
 		}
 
 		// Register Statusbar item

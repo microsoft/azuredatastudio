@@ -15,7 +15,6 @@ import { WorkspaceConfigurationTestService } from 'sqltest/stubs/workspaceConfig
 import { IConfigurationValue, ConfigurationEditingService } from 'vs/workbench/services/configuration/node/configurationEditingService';
 import * as Constants from 'sql/platform/connection/common/constants';
 import { IConnectionProfileGroup, ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
-import { TPromise } from 'vs/base/common/winjs.base';
 import * as assert from 'assert';
 import { ProviderFeatures, ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import * as azdata from 'azdata';
@@ -25,8 +24,6 @@ import { CapabilitiesTestService } from 'sqltest/stubs/capabilitiesTestService';
 
 suite('SQL ConnectionConfig tests', () => {
 	let capabilitiesService: TypeMoq.Mock<ICapabilitiesService>;
-	let workspaceConfigurationServiceMock: TypeMoq.Mock<WorkspaceConfigurationTestService>;
-	let configEditingServiceMock: TypeMoq.Mock<ConfigurationEditingService>;
 	let msSQLCapabilities: ProviderFeatures;
 	let capabilities: ProviderFeatures[];
 	let onCapabilitiesRegistered = new Emitter<ProviderFeatures>();
@@ -263,14 +260,6 @@ suite('SQL ConnectionConfig tests', () => {
 
 		capabilitiesService.setup(x => x.getCapabilities('MSSQL')).returns(() => msSQLCapabilities);
 		(capabilitiesService.object as any).onCapabilitiesRegistered = onCapabilitiesRegistered.event;
-
-		workspaceConfigurationServiceMock = TypeMoq.Mock.ofType(WorkspaceConfigurationTestService);
-		workspaceConfigurationServiceMock.setup(x => x.reloadConfiguration())
-			.returns(() => Promise.resolve(undefined));
-
-		configEditingServiceMock = TypeMoq.Mock.ofType(ConfigurationEditingService);
-		configEditingServiceMock.setup(x => x.writeConfiguration(ConfigurationTarget.USER, TypeMoq.It.isAny())).returns(() => Promise.resolve(undefined));
-		configEditingServiceMock.setup(x => x.writeConfiguration(ConfigurationTarget.WORKSPACE, TypeMoq.It.isAny())).returns(() => Promise.resolve(undefined));
 	});
 
 	function groupsAreEqual(groups1: IConnectionProfileGroup[], groups2: IConnectionProfileGroup[]): Boolean {
@@ -304,11 +293,12 @@ suite('SQL ConnectionConfig tests', () => {
 	}
 
 	test('allGroups should return groups from user and workspace settings', () => {
-		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileStore[] | IConnectionProfileGroup[] | azdata.DataProtocolServerCapabilities[]>(
+		let workspaceConfigurationServiceMock = TypeMoq.Mock.ofType(WorkspaceConfigurationTestService);
+		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileGroup[]>(
 			Constants.connectionGroupsArrayName))
 			.returns(() => configValueToConcat);
 
-		let config = new ConnectionConfig(configEditingServiceMock.object, workspaceConfigurationServiceMock.object, capabilitiesService.object);
+		let config = new ConnectionConfig(workspaceConfigurationServiceMock.object, capabilitiesService.object);
 		let allGroups = config.getAllGroups();
 
 
@@ -354,11 +344,12 @@ suite('SQL ConnectionConfig tests', () => {
 				description: 'g1-2'
 			}];
 
-		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileStore[] | IConnectionProfileGroup[] | azdata.DataProtocolServerCapabilities[]>(
+		let workspaceConfigurationServiceMock = TypeMoq.Mock.ofType(WorkspaceConfigurationTestService);
+		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileGroup[]>(
 			Constants.connectionGroupsArrayName))
 			.returns(() => configValueToMerge);
 
-		let config = new ConnectionConfig(configEditingServiceMock.object, workspaceConfigurationServiceMock.object, capabilitiesService.object);
+		let config = new ConnectionConfig(workspaceConfigurationServiceMock.object, capabilitiesService.object);
 		let allGroups = config.getAllGroups();
 
 
@@ -366,7 +357,7 @@ suite('SQL ConnectionConfig tests', () => {
 		assert.equal(groupsAreEqual(allGroups, expectedAllGroups), true);
 	});
 
-	test('addConnection should add the new profile to user settings if does not exist', done => {
+	test('addConnection should add the new profile to user settings if does not exist', () => {
 		let newProfile: IConnectionProfile = {
 			serverName: 'new server',
 			databaseName: 'database',
@@ -387,27 +378,27 @@ suite('SQL ConnectionConfig tests', () => {
 
 		let expectedNumberOfConnections = connections.user.length + 1;
 
-		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileStore[] | IConnectionProfileGroup[] | azdata.DataProtocolServerCapabilities[]>(
-			Constants.connectionsArrayName))
+		let workspaceConfigurationServiceMock = TypeMoq.Mock.ofType(WorkspaceConfigurationTestService);
+		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileStore[]>(Constants.connectionsArrayName))
 			.returns(() => connections);
-		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileStore[] | IConnectionProfileGroup[] | azdata.DataProtocolServerCapabilities[]>(
-			Constants.connectionGroupsArrayName))
+		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileGroup[]>(Constants.connectionGroupsArrayName))
 			.returns(() => configValueToConcat);
+		workspaceConfigurationServiceMock.setup(x => x.updateValue(Constants.connectionsArrayName, TypeMoq.It.isAny(), ConfigurationTarget.USER))
+			.returns(() => Promise.resolve());
+		workspaceConfigurationServiceMock.setup(x => x.updateValue(Constants.connectionGroupsArrayName, TypeMoq.It.isAny(), ConfigurationTarget.USER))
+			.returns(() => Promise.resolve());
 
 		let connectionProfile = new ConnectionProfile(capabilitiesService.object, newProfile);
 		connectionProfile.options['databaseDisplayName'] = 'database';
-		let config = new ConnectionConfig(configEditingServiceMock.object, workspaceConfigurationServiceMock.object, capabilitiesService.object);
-		config.addConnection(connectionProfile).then(savedConnectionProfile => {
-			configEditingServiceMock.verify(y => y.writeConfiguration(ConfigurationTarget.USER,
-				TypeMoq.It.is<IConfigurationValue>(c => (c.value as IConnectionProfileStore[]).length === expectedNumberOfConnections)), TypeMoq.Times.once());
+		let config = new ConnectionConfig(workspaceConfigurationServiceMock.object, capabilitiesService.object);
+		return config.addConnection(connectionProfile).then(savedConnectionProfile => {
+			workspaceConfigurationServiceMock.verify(y => y.updateValue(Constants.connectionsArrayName,
+				TypeMoq.It.is<IConnectionProfileStore[]>(c => c.length === expectedNumberOfConnections), ConfigurationTarget.USER), TypeMoq.Times.once());
 			assert.notEqual(savedConnectionProfile.id, undefined);
-			done();
-		}).catch(error => {
-			done(error);
 		});
 	});
 
-	test('addConnection should not add the new profile to user settings if already exists', done => {
+	test('addConnection should not add the new profile to user settings if already exists', () => {
 		let profileFromConfig = connections.user[0];
 		let newProfile: IConnectionProfile = {
 			serverName: profileFromConfig.options['serverName'],
@@ -429,28 +420,30 @@ suite('SQL ConnectionConfig tests', () => {
 
 		let expectedNumberOfConnections = connections.user.length;
 
-		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileStore[] | IConnectionProfileGroup[] | azdata.DataProtocolServerCapabilities[]>(
+		let workspaceConfigurationServiceMock = TypeMoq.Mock.ofType(WorkspaceConfigurationTestService);
+		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileStore[]>(
 			Constants.connectionsArrayName))
 			.returns(() => connections);
-		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileStore[] | IConnectionProfileGroup[] | azdata.DataProtocolServerCapabilities[]>(
+		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileGroup[]>(
 			Constants.connectionGroupsArrayName))
 			.returns(() => configValueToConcat);
+		workspaceConfigurationServiceMock.setup(x => x.updateValue(Constants.connectionsArrayName, TypeMoq.It.isAny(), ConfigurationTarget.USER))
+			.returns(() => Promise.resolve());
+		workspaceConfigurationServiceMock.setup(x => x.updateValue(Constants.connectionGroupsArrayName, TypeMoq.It.isAny(), ConfigurationTarget.USER))
+			.returns(() => Promise.resolve());
 
 		let connectionProfile = new ConnectionProfile(capabilitiesService.object, newProfile);
 		connectionProfile.options['databaseDisplayName'] = profileFromConfig.options['databaseName'];
 
-		let config = new ConnectionConfig(configEditingServiceMock.object, workspaceConfigurationServiceMock.object, capabilitiesService.object);
-		config.addConnection(connectionProfile).then(savedConnectionProfile => {
-			configEditingServiceMock.verify(y => y.writeConfiguration(ConfigurationTarget.USER,
-				TypeMoq.It.is<IConfigurationValue>(c => (c.value as IConnectionProfileStore[]).length === expectedNumberOfConnections)), TypeMoq.Times.once());
+		let config = new ConnectionConfig(workspaceConfigurationServiceMock.object, capabilitiesService.object);
+		return config.addConnection(connectionProfile).then(savedConnectionProfile => {
+			workspaceConfigurationServiceMock.verify(y => y.updateValue(Constants.connectionsArrayName,
+				TypeMoq.It.is<IConnectionProfileStore[]>(c => c.length === expectedNumberOfConnections), ConfigurationTarget.USER), TypeMoq.Times.once());
 			assert.equal(savedConnectionProfile.id, profileFromConfig.id);
-			done();
-		}).catch(error => {
-			done(error);
 		});
 	});
 
-	test('addConnection should add the new group to user settings if does not exist', done => {
+	test('addConnection should add the new group to user settings if does not exist', () => {
 		let newProfile: IConnectionProfile = {
 			serverName: 'new server',
 			databaseName: 'database',
@@ -472,35 +465,39 @@ suite('SQL ConnectionConfig tests', () => {
 		let expectedNumberOfConnections = connections.user.length + 1;
 		let expectedNumberOfGroups = configValueToConcat.user.length + 1;
 
-		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileStore[] | IConnectionProfileGroup[] | azdata.DataProtocolServerCapabilities[]>(
+		let workspaceConfigurationServiceMock = TypeMoq.Mock.ofType(WorkspaceConfigurationTestService);
+		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileStore[]>(
 			Constants.connectionsArrayName))
 			.returns(() => connections);
 
-		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileStore[] | IConnectionProfileGroup[] | azdata.DataProtocolServerCapabilities[]>(
+		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileGroup[]>(
 			Constants.connectionGroupsArrayName))
 			.returns(() => configValueToConcat);
 
+		workspaceConfigurationServiceMock.setup(x => x.updateValue(Constants.connectionsArrayName, TypeMoq.It.isAny(), ConfigurationTarget.USER))
+			.returns(() => Promise.resolve());
+		workspaceConfigurationServiceMock.setup(x => x.updateValue(Constants.connectionGroupsArrayName, TypeMoq.It.isAny(), ConfigurationTarget.USER))
+			.returns(() => Promise.resolve());
+
 		let connectionProfile = new ConnectionProfile(capabilitiesService.object, newProfile);
-		let config = new ConnectionConfig(configEditingServiceMock.object, workspaceConfigurationServiceMock.object, capabilitiesService.object);
-		config.addConnection(connectionProfile).then(success => {
-			configEditingServiceMock.verify(y => y.writeConfiguration(ConfigurationTarget.USER,
-				TypeMoq.It.is<IConfigurationValue>(c => (c.value as IConnectionProfileStore[]).length === expectedNumberOfConnections)), TypeMoq.Times.once());
-			configEditingServiceMock.verify(y => y.writeConfiguration(ConfigurationTarget.USER,
-				TypeMoq.It.is<IConfigurationValue>(c => (c.value as IConnectionProfileGroup[]).length === expectedNumberOfGroups)), TypeMoq.Times.once());
-			done();
-		}).catch(error => {
-			done(error);
+		let config = new ConnectionConfig(workspaceConfigurationServiceMock.object, capabilitiesService.object);
+		return config.addConnection(connectionProfile).then(success => {
+			workspaceConfigurationServiceMock.verify(y => y.updateValue(Constants.connectionsArrayName,
+				TypeMoq.It.is<IConnectionProfileStore[]>(c => c.length === expectedNumberOfConnections), ConfigurationTarget.USER), TypeMoq.Times.once());
+			workspaceConfigurationServiceMock.verify(y => y.updateValue(Constants.connectionGroupsArrayName,
+				TypeMoq.It.is<IConnectionProfileGroup[]>(c => c.length === expectedNumberOfGroups), ConfigurationTarget.USER), TypeMoq.Times.once());
 		});
 	});
 
 	test('getConnections should return connections from user and workspace settings given getWorkspaceConnections set to true', () => {
 		let getWorkspaceConnections: boolean = true;
 
-		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileStore[] | IConnectionProfileGroup[] | azdata.DataProtocolServerCapabilities[]>(
+		let workspaceConfigurationServiceMock = TypeMoq.Mock.ofType(WorkspaceConfigurationTestService);
+		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileStore[]>(
 			Constants.connectionsArrayName))
 			.returns(() => connections);
 
-		let config = new ConnectionConfig(configEditingServiceMock.object, workspaceConfigurationServiceMock.object, capabilitiesService.object);
+		let config = new ConnectionConfig(workspaceConfigurationServiceMock.object, capabilitiesService.object);
 		let allConnections = config.getConnections(getWorkspaceConnections);
 		assert.equal(allConnections.length, connections.user.length + connections.workspace.length);
 	});
@@ -508,11 +505,12 @@ suite('SQL ConnectionConfig tests', () => {
 	test('getConnections should return connections from user settings given getWorkspaceConnections set to false', () => {
 		let getWorkspaceConnections: boolean = false;
 
-		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileStore[] | IConnectionProfileGroup[] | azdata.DataProtocolServerCapabilities[]>(
+		let workspaceConfigurationServiceMock = TypeMoq.Mock.ofType(WorkspaceConfigurationTestService);
+		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileStore[]>(
 			Constants.connectionsArrayName))
 			.returns(() => connections);
 
-		let config = new ConnectionConfig(configEditingServiceMock.object, workspaceConfigurationServiceMock.object, capabilitiesService.object);
+		let config = new ConnectionConfig(workspaceConfigurationServiceMock.object, capabilitiesService.object);
 		let allConnections = config.getConnections(getWorkspaceConnections);
 		assert.equal(allConnections.length, connections.user.length);
 	});
@@ -532,11 +530,12 @@ suite('SQL ConnectionConfig tests', () => {
 			value: connections.value,
 			workspaceFolder: []
 		};
-		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileStore[] | IConnectionProfileGroup[] | azdata.DataProtocolServerCapabilities[]>(
+		let workspaceConfigurationServiceMock = TypeMoq.Mock.ofType(WorkspaceConfigurationTestService);
+		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileStore[]>(
 			Constants.connectionsArrayName))
 			.returns(() => connectionsWithNoId);
 
-		let config = new ConnectionConfig(configEditingServiceMock.object, workspaceConfigurationServiceMock.object, capabilitiesService.object);
+		let config = new ConnectionConfig(workspaceConfigurationServiceMock.object, capabilitiesService.object);
 		let allConnections = config.getConnections(getWorkspaceConnections);
 		assert.equal(allConnections.length, connections.user.length);
 		allConnections.forEach(connection => {
@@ -584,11 +583,12 @@ suite('SQL ConnectionConfig tests', () => {
 		let capabilitiesService2: TypeMoq.Mock<ICapabilitiesService> = TypeMoq.Mock.ofType(CapabilitiesTestService);
 		capabilitiesService2.setup(x => x.getCapabilities('MSSQL')).returns(() => msSQLCapabilities2);
 		(capabilitiesService2.object as any).onCapabilitiesRegistered = onCapabilitiesRegistered.event;
-		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileStore[] | IConnectionProfileGroup[] | azdata.DataProtocolServerCapabilities[]>(
+		let workspaceConfigurationServiceMock = TypeMoq.Mock.ofType(WorkspaceConfigurationTestService);
+		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileStore[]>(
 			Constants.connectionsArrayName))
 			.returns(() => configValue);
 
-		let config = new ConnectionConfig(configEditingServiceMock.object, workspaceConfigurationServiceMock.object, capabilitiesService2.object);
+		let config = new ConnectionConfig(workspaceConfigurationServiceMock.object, capabilitiesService2.object);
 		let allConnections = config.getConnections(false);
 		allConnections.forEach(element => {
 			assert.notEqual(element.serverName, undefined);
@@ -603,7 +603,7 @@ suite('SQL ConnectionConfig tests', () => {
 	});
 
 	test('saveGroup should save the new groups to tree and return the id of the last group name', () => {
-		let config = new ConnectionConfig(undefined, undefined, undefined);
+		let config = new ConnectionConfig(undefined, undefined);
 		let groups: IConnectionProfileGroup[] = configValueToConcat.user;
 		let expectedLength = configValueToConcat.user.length + 2;
 		let newGroups: string = 'ROOT/g1/g1-1';
@@ -617,7 +617,7 @@ suite('SQL ConnectionConfig tests', () => {
 	});
 
 	test('saveGroup should only add the groups that are not in the tree', () => {
-		let config = new ConnectionConfig(undefined, undefined, undefined);
+		let config = new ConnectionConfig(undefined, undefined);
 		let groups: IConnectionProfileGroup[] = configValueToConcat.user;
 		let expectedLength = configValueToConcat.user.length + 1;
 		let newGroups: string = 'ROOT/g2/g2-5';
@@ -631,7 +631,7 @@ suite('SQL ConnectionConfig tests', () => {
 	});
 
 	test('saveGroup should not add any new group if tree already has all the groups in the full path', () => {
-		let config = new ConnectionConfig(undefined, undefined, undefined);
+		let config = new ConnectionConfig(undefined, undefined);
 		let groups: IConnectionProfileGroup[] = configValueToConcat.user;
 		let expectedLength = configValueToConcat.user.length;
 		let newGroups: string = 'ROOT/g2/g2-1';
@@ -644,7 +644,7 @@ suite('SQL ConnectionConfig tests', () => {
 		assert.equal(result.newGroupId, newGroup.id, 'The groups id is invalid');
 	});
 
-	test('deleteConnection should remove the connection from config', done => {
+	test('deleteConnection should remove the connection from config', () => {
 		let newProfile: IConnectionProfile = {
 			serverName: 'server3',
 			databaseName: 'database',
@@ -664,24 +664,25 @@ suite('SQL ConnectionConfig tests', () => {
 		};
 
 		let expectedNumberOfConnections = connections.user.length - 1;
-		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileStore[] | IConnectionProfileGroup[] | azdata.DataProtocolServerCapabilities[]>(
+		let workspaceConfigurationServiceMock = TypeMoq.Mock.ofType(WorkspaceConfigurationTestService);
+		workspaceConfigurationServiceMock.setup(x => x.updateValue(Constants.connectionsArrayName, TypeMoq.It.isAny(), ConfigurationTarget.USER))
+			.returns(() => Promise.resolve());
+
+		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileStore[]>(
 			Constants.connectionsArrayName))
 			.returns(() => connections);
 
 		let connectionProfile = new ConnectionProfile(capabilitiesService.object, newProfile);
 		connectionProfile.options['databaseDisplayName'] = 'database';
 
-		let config = new ConnectionConfig(configEditingServiceMock.object, workspaceConfigurationServiceMock.object, capabilitiesService.object);
-		config.deleteConnection(connectionProfile).then(() => {
-			configEditingServiceMock.verify(y => y.writeConfiguration(ConfigurationTarget.USER,
-				TypeMoq.It.is<IConfigurationValue>(c => (c.value as IConnectionProfileStore[]).length === expectedNumberOfConnections)), TypeMoq.Times.once());
-			done();
-		}).catch(error => {
-			done(error);
+		let config = new ConnectionConfig(workspaceConfigurationServiceMock.object, capabilitiesService.object);
+		return config.deleteConnection(connectionProfile).then(() => {
+			workspaceConfigurationServiceMock.verify(y => y.updateValue(Constants.connectionsArrayName,
+				TypeMoq.It.is<IConnectionProfileStore[]>(c => c.length === expectedNumberOfConnections), ConfigurationTarget.USER), TypeMoq.Times.once());
 		});
 	});
 
-	test('deleteConnectionGroup should remove the children connections and subgroups from config', done => {
+	test('deleteConnectionGroup should remove the children connections and subgroups from config', () => {
 		let newProfile: IConnectionProfile = {
 			serverName: 'server3',
 			databaseName: 'database',
@@ -709,28 +710,25 @@ suite('SQL ConnectionConfig tests', () => {
 
 		let expectedNumberOfConnections = connections.user.length - 1;
 		let expectedNumberOfGroups = configValueToConcat.user.length - 2;
-		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileStore[] | IConnectionProfileGroup[] | azdata.DataProtocolServerCapabilities[]>(
+		let workspaceConfigurationServiceMock = TypeMoq.Mock.ofType(WorkspaceConfigurationTestService);
+		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileStore[]>(
 			Constants.connectionsArrayName))
 			.returns(() => connections);
 
-		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileStore[] | IConnectionProfileGroup[] | azdata.DataProtocolServerCapabilities[]>(
+		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileGroup[]>(
 			Constants.connectionGroupsArrayName))
 			.returns(() => configValueToConcat);
 
-
-		let config = new ConnectionConfig(configEditingServiceMock.object, workspaceConfigurationServiceMock.object, capabilitiesService.object);
-		config.deleteGroup(connectionProfileGroup).then(() => {
-			configEditingServiceMock.verify(y => y.writeConfiguration(ConfigurationTarget.USER,
-				TypeMoq.It.is<IConfigurationValue>(c => (c.value as IConnectionProfileStore[]).length === expectedNumberOfConnections)), TypeMoq.Times.once());
-			configEditingServiceMock.verify(y => y.writeConfiguration(ConfigurationTarget.USER,
-				TypeMoq.It.is<IConfigurationValue>(c => (c.value as IConnectionProfileGroup[]).length === expectedNumberOfGroups)), TypeMoq.Times.once());
-			done();
-		}).catch(error => {
-			done(error);
+		let config = new ConnectionConfig(workspaceConfigurationServiceMock.object, capabilitiesService.object);
+		return config.deleteGroup(connectionProfileGroup).then(() => {
+			workspaceConfigurationServiceMock.verify(y => y.updateValue(Constants.connectionsArrayName,
+				TypeMoq.It.is<IConnectionProfileStore[]>(c => c.length === expectedNumberOfConnections), ConfigurationTarget.USER), TypeMoq.Times.once());
+			workspaceConfigurationServiceMock.verify(y => y.updateValue(Constants.connectionGroupsArrayName,
+				TypeMoq.It.is<IConnectionProfileGroup[]>(c => c.length === expectedNumberOfGroups), ConfigurationTarget.USER), TypeMoq.Times.once());
 		});
 	});
 
-	test('deleteConnection should not throw error for connection not in config', done => {
+	test('deleteConnection should not throw error for connection not in config', () => {
 		let newProfile: IConnectionProfile = {
 			serverName: 'server3',
 			databaseName: 'database',
@@ -750,40 +748,41 @@ suite('SQL ConnectionConfig tests', () => {
 		};
 
 		let expectedNumberOfConnections = connections.user.length;
-		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileStore[] | IConnectionProfileGroup[] | azdata.DataProtocolServerCapabilities[]>(
+		let workspaceConfigurationServiceMock = TypeMoq.Mock.ofType(WorkspaceConfigurationTestService);
+		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileStore[]>(
 			Constants.connectionsArrayName))
 			.returns(() => connections);
+		workspaceConfigurationServiceMock.setup(x => x.updateValue(Constants.connectionsArrayName, TypeMoq.It.isAny(), ConfigurationTarget.USER))
+			.returns(() => Promise.resolve());
 
 		let connectionProfile = new ConnectionProfile(capabilitiesService.object, newProfile);
-		let config = new ConnectionConfig(configEditingServiceMock.object, workspaceConfigurationServiceMock.object, capabilitiesService.object);
-		config.deleteConnection(connectionProfile).then(() => {
-			configEditingServiceMock.verify(y => y.writeConfiguration(ConfigurationTarget.USER,
-				TypeMoq.It.is<IConfigurationValue>(c => (c.value as IConnectionProfileStore[]).length === expectedNumberOfConnections)), TypeMoq.Times.once());
-			done();
-		}).catch(error => {
-			done(error);
+		let config = new ConnectionConfig(workspaceConfigurationServiceMock.object, capabilitiesService.object);
+		return config.deleteConnection(connectionProfile).then(() => {
+			workspaceConfigurationServiceMock.verify(y => y.updateValue(Constants.connectionsArrayName,
+				TypeMoq.It.is<IConnectionProfileStore[]>(c => c.length === expectedNumberOfConnections), ConfigurationTarget.USER), TypeMoq.Times.once());
 		});
 	});
 
-	test('renameGroup should change group name', done => {
+	test('renameGroup should change group name', () => {
 
 		let expectedNumberOfConnections = configValueToConcat.user.length;
 		let calledValue: any;
 		let called: boolean = false;
-		let nothing: void;
-		let configEditingServiceMock: TypeMoq.Mock<ConfigurationEditingService> = TypeMoq.Mock.ofType(ConfigurationEditingService);
-		configEditingServiceMock.setup(x => x.writeConfiguration(ConfigurationTarget.USER, TypeMoq.It.isAny())).callback((x: any, val: any) => {
-			calledValue = val.value as IConnectionProfileStore[];
-		}).returns(() => Promise.resolve(undefined));
-		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileStore[] | IConnectionProfileGroup[] | azdata.DataProtocolServerCapabilities[]>(
+		let workspaceConfigurationServiceMock = TypeMoq.Mock.ofType(WorkspaceConfigurationTestService);
+		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileGroup[]>(
 			Constants.connectionGroupsArrayName))
 			.returns(() => configValueToConcat);
+		workspaceConfigurationServiceMock.setup(x => x.updateValue(Constants.connectionGroupsArrayName, TypeMoq.It.isAny(), ConfigurationTarget.USER))
+			.callback((x: any, val: any) => {
+				calledValue = val;
+			})
+			.returns(() => Promise.resolve());
 
 		let connectionProfileGroup = new ConnectionProfileGroup('g-renamed', undefined, 'g2', undefined, undefined);
-		let config = new ConnectionConfig(configEditingServiceMock.object, workspaceConfigurationServiceMock.object, capabilitiesService.object);
-		config.editGroup(connectionProfileGroup).then(() => {
-			configEditingServiceMock.verify(y => y.writeConfiguration(ConfigurationTarget.USER,
-				TypeMoq.It.is<IConfigurationValue>(c => (c.value as IConnectionProfileStore[]).length === expectedNumberOfConnections)), TypeMoq.Times.once());
+		let config = new ConnectionConfig(workspaceConfigurationServiceMock.object, capabilitiesService.object);
+		return config.editGroup(connectionProfileGroup).then(() => {
+			workspaceConfigurationServiceMock.verify(y => y.updateValue(Constants.connectionGroupsArrayName,
+				TypeMoq.It.is<IConnectionProfileStore[]>(c => c.length === expectedNumberOfConnections), ConfigurationTarget.USER), TypeMoq.Times.once());
 			calledValue.forEach(con => {
 				if (con.id === 'g2') {
 					assert.equal(con.name, 'g-renamed', 'Group was not renamed');
@@ -791,38 +790,39 @@ suite('SQL ConnectionConfig tests', () => {
 				}
 			});
 			assert.equal(called, true, 'group was not renamed');
-		}).then(() => done(), (err) => done(err));
+		});
 	});
 
 
-	test('change group(parent) for connection group', done => {
+	test('change group(parent) for connection group', () => {
 		let expectedNumberOfConnections = configValueToConcat.user.length;
 		let calledValue: any;
-		let nothing: void;
-		let configEditingServiceMock: TypeMoq.Mock<ConfigurationEditingService> = TypeMoq.Mock.ofType(ConfigurationEditingService);
-		configEditingServiceMock.setup(x => x.writeConfiguration(ConfigurationTarget.USER, TypeMoq.It.isAny())).callback((x: any, val: any) => {
-			calledValue = val.value as IConnectionProfileStore[];
-		}).returns(() => Promise.resolve(undefined));
-		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileStore[] | IConnectionProfileGroup[] | azdata.DataProtocolServerCapabilities[]>(
+		let workspaceConfigurationServiceMock = TypeMoq.Mock.ofType(WorkspaceConfigurationTestService);
+		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileGroup[]>(
 			Constants.connectionGroupsArrayName))
 			.returns(() => configValueToConcat);
+		workspaceConfigurationServiceMock.setup(x => x.updateValue(Constants.connectionGroupsArrayName, TypeMoq.It.isAny(), ConfigurationTarget.USER))
+			.callback((x: any, val: any) => {
+				calledValue = val;
+			})
+			.returns(() => Promise.resolve());
 
 		let sourceProfileGroup = new ConnectionProfileGroup('g2', undefined, 'g2', undefined, undefined);
 		let targetProfileGroup = new ConnectionProfileGroup('g3', undefined, 'g3', undefined, undefined);
-		let config = new ConnectionConfig(configEditingServiceMock.object, workspaceConfigurationServiceMock.object, capabilitiesService.object);
-		config.changeGroupIdForConnectionGroup(sourceProfileGroup, targetProfileGroup).then(() => {
-			configEditingServiceMock.verify(y => y.writeConfiguration(ConfigurationTarget.USER,
-				TypeMoq.It.is<IConfigurationValue>(c => (c.value as IConnectionProfileStore[]).length === expectedNumberOfConnections)), TypeMoq.Times.once());
+		let config = new ConnectionConfig(workspaceConfigurationServiceMock.object, capabilitiesService.object);
+		return config.changeGroupIdForConnectionGroup(sourceProfileGroup, targetProfileGroup).then(() => {
+			workspaceConfigurationServiceMock.verify(y => y.updateValue(Constants.connectionGroupsArrayName,
+				TypeMoq.It.is<IConnectionProfileStore[]>(c => c.length === expectedNumberOfConnections), ConfigurationTarget.USER), TypeMoq.Times.once());
 			calledValue.forEach(con => {
 				if (con.id === 'g2') {
 					assert.equal(con.parentId, 'g3', 'Group parent was not changed');
 				}
 			});
-		}).then(() => done(), (err) => done(err));
+		})
 	});
 
 
-	test('change group(parent) for connection', done => {
+	test('change group(parent) for connection', () => {
 		let newProfile: IConnectionProfile = {
 			serverName: 'server3',
 			databaseName: 'database',
@@ -842,32 +842,26 @@ suite('SQL ConnectionConfig tests', () => {
 		};
 
 		let expectedNumberOfConnections = connections.user.length;
-		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileStore[] | IConnectionProfileGroup[] | azdata.DataProtocolServerCapabilities[]>(
+		let workspaceConfigurationServiceMock = TypeMoq.Mock.ofType(WorkspaceConfigurationTestService);
+		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileStore[]>(
 			Constants.connectionsArrayName))
 			.returns(() => connections);
+		workspaceConfigurationServiceMock.setup(x => x.updateValue(Constants.connectionsArrayName, TypeMoq.It.isAny(), ConfigurationTarget.USER))
+			.returns(() => Promise.resolve());
+		workspaceConfigurationServiceMock.setup(x => x.updateValue(Constants.connectionsArrayName, TypeMoq.It.isAny(), ConfigurationTarget.WORKSPACE))
+			.returns(() => Promise.resolve());
 
 		let connectionProfile = new ConnectionProfile(capabilitiesService.object, newProfile);
 		let newId = 'newid';
-		let calledValue: any;
-		let nothing: void;
-		let configEditingServiceMock: TypeMoq.Mock<ConfigurationEditingService> = TypeMoq.Mock.ofType(ConfigurationEditingService);
-		configEditingServiceMock.setup(x => x.writeConfiguration(ConfigurationTarget.USER, TypeMoq.It.isAny())).callback((x: any, val: any) => {
-			calledValue = val.value as IConnectionProfileStore[];
-		}).returns(() => Promise.resolve(undefined));
-		configEditingServiceMock.setup(x => x.writeConfiguration(ConfigurationTarget.WORKSPACE, TypeMoq.It.isAny())).callback((x: any, val: any) => {
 
-		}).returns(() => Promise.resolve(undefined));
-
-		let config = new ConnectionConfig(configEditingServiceMock.object, workspaceConfigurationServiceMock.object, capabilitiesService.object);
-		config.changeGroupIdForConnection(connectionProfile, newId).then(() => {
-			configEditingServiceMock.verify(y => y.writeConfiguration(ConfigurationTarget.USER,
-				TypeMoq.It.is<IConfigurationValue>(c => (c.value as IConnectionProfileStore[]).length === expectedNumberOfConnections)), TypeMoq.Times.atLeastOnce());
-			calledValue.forEach(con => {
-			});
-		}).then(() => done(), (err) => done(err));
+		let config = new ConnectionConfig(workspaceConfigurationServiceMock.object, capabilitiesService.object);
+		return config.changeGroupIdForConnection(connectionProfile, newId).then(() => {
+			workspaceConfigurationServiceMock.verify(y => y.updateValue(Constants.connectionsArrayName,
+				TypeMoq.It.is<IConnectionProfileStore[]>(c => c.length === expectedNumberOfConnections), ConfigurationTarget.USER), TypeMoq.Times.atLeastOnce());
+		});
 	});
 
-	test('fixConnectionIds should replace duplicate ids with new ones', (done) => {
+	test('fixConnectionIds should replace duplicate ids with new ones', () => {
 		let profiles: IConnectionProfileStore[] = [
 			{
 				options: {},
@@ -914,25 +908,28 @@ suite('SQL ConnectionConfig tests', () => {
 			}
 		];
 
-		let config = new ConnectionConfig(configEditingServiceMock.object, workspaceConfigurationServiceMock.object, capabilitiesService.object);
+		let workspaceConfigurationServiceMock = TypeMoq.Mock.ofType(WorkspaceConfigurationTestService);
+		let config = new ConnectionConfig(workspaceConfigurationServiceMock.object, capabilitiesService.object);
 		config.fixConnectionIds(profiles);
 		let ids = profiles.map(x => x.id);
 		for (var index = 0; index < ids.length; index++) {
 			var id = ids[index];
 			assert.equal(ids.lastIndexOf(id), index);
 		}
-		done();
 	});
 
 	test('addConnection should not move the connection when editing', async () => {
 		// Set up the connection config
+		let workspaceConfigurationServiceMock = TypeMoq.Mock.ofType(WorkspaceConfigurationTestService);
+		workspaceConfigurationServiceMock.setup(x => x.updateValue(Constants.connectionsArrayName, TypeMoq.It.isAny(), ConfigurationTarget.USER))
+			.returns(() => Promise.resolve());
 		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileStore[] | IConnectionProfileGroup[] | azdata.DataProtocolServerCapabilities[]>(
 			Constants.connectionsArrayName))
 			.returns(() => connections);
 		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileStore[] | IConnectionProfileGroup[] | azdata.DataProtocolServerCapabilities[]>(
 			Constants.connectionGroupsArrayName))
 			.returns(() => configValueToConcat);
-		let config = new ConnectionConfig(configEditingServiceMock.object, workspaceConfigurationServiceMock.object, capabilitiesService.object);
+		let config = new ConnectionConfig(workspaceConfigurationServiceMock.object, capabilitiesService.object);
 
 		// Clone a connection and modify an option
 		const connectionIndex = 1;
@@ -953,4 +950,3 @@ suite('SQL ConnectionConfig tests', () => {
 	});
 
 });
-

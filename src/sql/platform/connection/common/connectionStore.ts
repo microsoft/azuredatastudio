@@ -13,9 +13,8 @@ import { ICredentialsService } from 'sql/platform/credentials/common/credentials
 import { IConnectionConfig } from './iconnectionConfig';
 import { ConnectionConfig } from './connectionConfig';
 import { Memento } from 'vs/workbench/common/memento';
-import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
+import { StorageScope } from 'vs/platform/storage/common/storage';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from './connectionProfileGroup';
-import { ConfigurationEditingService } from 'vs/workbench/services/configuration/node/configurationEditingService';
 import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 
@@ -33,9 +32,7 @@ export class ConnectionStore {
 	private _groupFullNameToIdMap: { [groupId: string]: string };
 
 	constructor(
-		private _storageService: IStorageService,
 		private _context: Memento,
-		private _configurationEditService: ConfigurationEditingService,
 		private _workspaceConfigurationService: IWorkspaceConfigurationService,
 		private _credentialService: ICredentialsService,
 		private _capabilitiesService: ICapabilitiesService,
@@ -47,8 +44,7 @@ export class ConnectionStore {
 		this._groupIdToFullNameMap = {};
 		this._groupFullNameToIdMap = {};
 		if (!this._connectionConfig) {
-			this._connectionConfig = new ConnectionConfig(this._configurationEditService,
-				this._workspaceConfigurationService, this._capabilitiesService);
+			this._connectionConfig = new ConnectionConfig(this._workspaceConfigurationService, this._capabilitiesService);
 		}
 	}
 

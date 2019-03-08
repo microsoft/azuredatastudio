@@ -26,6 +26,27 @@
 				"messageIndex": 1
 			}
 		],
+		"layering": [
+			true,
+			{
+				"common": [],
+				"node": [
+					"common"
+				],
+				"browser": [
+					"common"
+				],
+				"electron-main": [
+					"common",
+					"node"
+				],
+				"electron-browser": [
+					"common",
+					"browser",
+					"node"
+				]
+			}
+		],
 		// {{SQL CARBON EDIT}}
 		// remove import patterns and layering
 		"duplicate-imports": true,
