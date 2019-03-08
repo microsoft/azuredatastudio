@@ -310,15 +310,15 @@ export class ConnectionConfig implements IConnectionConfig {
 	 * Moves the connection under the target group with the new ID.
 	 */
 	public changeGroupIdForConnection(profile: ConnectionProfile, newGroupID: string): Promise<void> {
-			if (!this.canChangeConnectionConfig(profile, newGroupID)) {
-				// Same connection already exists in this group
-				return Promise.reject('Same connection already exists in the group');
-			} else {
-				return Promise.all([
-					this.changeGroupIdForConnectionInSettings(profile, newGroupID, ConfigurationTarget.USER),
-					this.changeGroupIdForConnectionInSettings(profile, newGroupID, ConfigurationTarget.WORKSPACE)
-				]).then(() => Promise.resolve());
-			}
+		if (!this.canChangeConnectionConfig(profile, newGroupID)) {
+			// Same connection already exists in this group
+			return Promise.reject('Same connection already exists in the group');
+		} else {
+			return Promise.all([
+				this.changeGroupIdForConnectionInSettings(profile, newGroupID, ConfigurationTarget.USER),
+				this.changeGroupIdForConnectionInSettings(profile, newGroupID, ConfigurationTarget.WORKSPACE)
+			]).then(() => Promise.resolve());
+		}
 	}
 
 	public saveGroup(groups: IConnectionProfileGroup[], groupFullName: string, color: string, description: string): ISaveGroupResult {
