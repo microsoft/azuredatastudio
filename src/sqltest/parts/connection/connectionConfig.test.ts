@@ -818,7 +818,7 @@ suite('SQL ConnectionConfig tests', () => {
 					assert.equal(con.parentId, 'g3', 'Group parent was not changed');
 				}
 			});
-		})
+		});
 	});
 
 
