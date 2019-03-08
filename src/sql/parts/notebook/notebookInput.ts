@@ -8,7 +8,7 @@
 import * as nls from 'vs/nls';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IEditorModel } from 'vs/platform/editor/common/editor';
-import { EditorInput, EditorModel } from 'vs/workbench/common/editor';
+import { EditorInput, EditorModel, ConfirmResult } from 'vs/workbench/common/editor';
 import { Emitter, Event } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 import * as resources from 'vs/base/common/resources';
@@ -25,6 +25,7 @@ import { UntitledEditorModel } from 'vs/workbench/common/editor/untitledEditorMo
 import { Schemas } from 'vs/base/common/network';
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { notebookModeId } from 'sql/common/constants';
+import { ITextFileService, ISaveOptions } from 'vs/workbench/services/textfile/common/textfiles';
 import { LocalContentManager } from 'sql/workbench/services/notebook/node/localContentManager';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
@@ -35,7 +36,8 @@ export class NotebookEditorModel extends EditorModel {
 	private readonly _onDidChangeDirty: Emitter<void> = this._register(new Emitter<void>());
 	constructor(public readonly notebookUri: URI,
 		private textEditorModel: TextFileEditorModel | UntitledEditorModel,
-		@INotebookService private notebookService: INotebookService
+		@INotebookService private notebookService: INotebookService,
+		@ITextFileService private textFileService: ITextFileService
 	) {
 		super();
 		this._register(this.notebookService.onNotebookEditorAdd(notebook => {
@@ -71,6 +73,24 @@ export class NotebookEditorModel extends EditorModel {
 		}
 		this.dirty = dirty;
 		this._onDidChangeDirty.fire();
+	}
+
+	public confirmSave(): TPromise<ConfirmResult> {
+		return this.textFileService.confirmSave([this.notebookUri]);
+	}
+
+	/**
+	 * UntitledEditor uses TextFileService to save data from UntitledEditorInput
+	 * Titled editor uses TextFileEditorModel to save existing notebook
+	*/
+	save(options: ISaveOptions): TPromise<boolean> {
+		if (this.textEditorModel instanceof TextFileEditorModel) {
+			this.textEditorModel.save(options);
+			return TPromise.as(true);
+		}
+		else {
+			return this.textFileService.save(this.notebookUri, options);
+		}
 	}
 
 	public updateModel(): void {
@@ -134,6 +154,10 @@ export class NotebookInput extends EditorInput {
 		this.assignProviders();
 	}
 
+	public confirmSave(): TPromise<ConfirmResult> {
+		return this._model.confirmSave();
+	}
+
 	public get notebookUri(): URI {
 		return this.resource;
 	}
@@ -186,6 +210,11 @@ export class NotebookInput extends EditorInput {
 
 	public set providers(value: string[]) {
 		this._providers = value;
+	}
+
+	public save(): TPromise<boolean> {
+		let options: ISaveOptions = { force: false };
+		return this._model.save(options);
 	}
 
 	public set standardKernels(value: IStandardKernelWithProvider[]) {
@@ -328,4 +357,5 @@ class NotebookEditorContentManager implements IContentManager {
 		let contents = await contentManager.loadFromContentString(notebookEditorModel.contentString);
 		return contents;
 	}
+
 }
