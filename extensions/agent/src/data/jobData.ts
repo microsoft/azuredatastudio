@@ -23,6 +23,7 @@ export class JobData implements IAgentDialogData {
 
 	private _ownerUri: string;
 	private _jobCategories: string[];
+	private _jobLogins: string[];
 	private _operators: string[];
 	private _defaultOwner: string;
 	private _jobCompletionActionConditions: azdata.CategoryValue[];
@@ -81,6 +82,10 @@ export class JobData implements IAgentDialogData {
 		return this._jobCategoryIdsMap;
 	}
 
+	public get jobLogins(): string[] {
+		return this._jobLogins;
+	}
+
 	public get operators(): string[] {
 		return this._operators;
 	}
@@ -103,6 +108,9 @@ export class JobData implements IAgentDialogData {
 		if (jobDefaults && jobDefaults.success) {
 			this._jobCategories = jobDefaults.categories.map((cat) => {
 				return cat.name;
+			});
+			this._jobLogins = jobDefaults.logins.map((login) => {
+				return login.name;
 			});
 			this._jobCategoryIdsMap = jobDefaults.categories;
 			this._defaultOwner = jobDefaults.owner;
@@ -130,6 +138,9 @@ export class JobData implements IAgentDialogData {
 		if (!result || !result.success) {
 			vscode.window.showErrorMessage(
 				localize('jobData.saveErrorMessage', "Job update failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
+		} else {
+			vscode.window.showInformationMessage(
+				localize('jobData.saveSucessMessage', "Job '{0}' updated successfully", jobInfo.name));
 		}
 	}
 

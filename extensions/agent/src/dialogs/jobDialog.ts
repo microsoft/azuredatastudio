@@ -30,7 +30,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 
 	// General tab strings
 	private readonly NameTextBoxLabel: string = localize('jobDialog.name', 'Name');
-	private readonly OwnerTextBoxLabel: string = localize('jobDialog.owner', 'Owner');
+	private readonly OwnerDropdownLabel: string = localize('jobDialog.owner', 'Owner');
 	private readonly CategoryDropdownLabel: string = localize('jobDialog.category', 'Category');
 	private readonly DescriptionTextBoxLabel: string = localize('jobDialog.description', 'Description');
 	private readonly EnabledCheckboxLabel: string = localize('jobDialog.enabled', 'Enabled');
@@ -81,7 +81,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 
 	// General tab controls
 	private nameTextBox: azdata.InputBoxComponent;
-	private ownerTextBox: azdata.InputBoxComponent;
+	private ownerDropdown: azdata.DropDownComponent;
 	private categoryDropdown: azdata.DropDownComponent;
 	private descriptionTextBox: azdata.InputBoxComponent;
 	private enabledCheckBox: azdata.CheckBoxComponent;
@@ -171,7 +171,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 					this.dialog.message = null;
 				}
 			});
-			this.ownerTextBox = view.modelBuilder.inputBox().component();
+			this.ownerDropdown = view.modelBuilder.dropDown().component();
 			this.categoryDropdown = view.modelBuilder.dropDown().component();
 			this.descriptionTextBox = view.modelBuilder.inputBox().withProperties({
 				multiline: true,
@@ -186,8 +186,8 @@ export class JobDialog extends AgentDialog<JobData>  {
 					component: this.nameTextBox,
 					title: this.NameTextBoxLabel
 				}, {
-					component: this.ownerTextBox,
-					title: this.OwnerTextBoxLabel
+					component: this.ownerDropdown,
+					title: this.OwnerDropdownLabel
 				}, {
 					component: this.categoryDropdown,
 					title: this.CategoryDropdownLabel
@@ -202,14 +202,14 @@ export class JobDialog extends AgentDialog<JobData>  {
 			await view.initializeModel(formModel);
 
 			this.nameTextBox.value = this.model.name;
-			this.ownerTextBox.value = this.model.defaultOwner;
 			this.categoryDropdown.values = this.model.jobCategories;
-
+			this.ownerDropdown.values = this.model.jobLogins;
 			let idx: number = undefined;
 			if (this.model.category && this.model.category !== '') {
 				idx = this.model.jobCategories.indexOf(this.model.category);
 			}
 			this.categoryDropdown.value = this.model.jobCategories[idx > 0 ? idx : 0];
+			this.ownerDropdown.value = this.model.owner ? this.model.owner : this.model.defaultOwner;
 
 			this.enabledCheckBox.checked = this.model.enabled;
 			this.descriptionTextBox.value = this.model.description;
@@ -684,7 +684,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 
 	protected updateModel() {
 		this.model.name = this.nameTextBox.value;
-		this.model.owner = this.ownerTextBox.value;
+		this.model.owner = this.getDropdownValue(this.ownerDropdown);
 		this.model.enabled = this.enabledCheckBox.checked;
 		this.model.description = this.descriptionTextBox.value;
 		this.model.category = this.getDropdownValue(this.categoryDropdown);

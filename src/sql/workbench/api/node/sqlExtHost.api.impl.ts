@@ -772,7 +772,7 @@ export function createApiFactory(
 				return extHostDataProvider.$registerAdminServicesProvider(provider);
 			};
 
-			let registerAgentServicesProvider = (provider: sqlops.AgentServicesProvider): vscode.Disposable => {
+			let registerAgentServicesProvider = (provider: azdata.AgentServicesProvider): vscode.Disposable => {
 				provider.registerOnUpdated(() => {
 					extHostDataProvider.$onJobDataUpdated(provider.handle);
 				});

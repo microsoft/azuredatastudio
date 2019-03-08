@@ -1522,9 +1522,15 @@ declare module 'azdata' {
 		name: string;
 	}
 
+	export interface AgentJobLogin {
+		id: string;
+		name: string;
+	}
+
 	export interface AgentJobDefaultsResult extends ResultStatus {
 		owner: string;
 		categories: AgentJobCategory[];
+		logins: AgentJobLogin[];
 	}
 
 	export interface CreateAgentJobStepResult extends ResultStatus {
