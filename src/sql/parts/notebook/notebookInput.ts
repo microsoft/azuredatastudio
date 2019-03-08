@@ -81,7 +81,7 @@ export class NotebookEditorModel extends EditorModel {
 
 	/**
 	 * UntitledEditor uses TextFileService to save data from UntitledEditorInput
-	 * Titled editor uses TextFileEditorModel to save
+	 * Titled editor uses TextFileEditorModel to save existing notebook
 	*/
 	save(options: ISaveOptions): TPromise<boolean> {
 		if (this.textEditorModel instanceof TextFileEditorModel) {
