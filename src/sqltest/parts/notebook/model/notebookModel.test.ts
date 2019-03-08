@@ -92,6 +92,7 @@ suite('notebook model', function (): void {
 			notebookUri: defaultUri,
 			factory: new ModelFactory(),
 			notebookManagers,
+			contentManager: undefined,
 			notificationService: notificationService.object,
 			connectionService: queryConnectionService.object,
 			providerId: 'SQL',

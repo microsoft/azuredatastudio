@@ -176,7 +176,7 @@ export interface IClientSession extends IDisposable {
 	 * kernel name and resolves with `true`. If no kernel has been started,
 	 * this is a no-op, and resolves with `false`.
 	 */
-	 restart(): Promise<boolean>;
+	restart(): Promise<boolean>;
 
 	/**
 	 * Change the session path.
@@ -479,6 +479,7 @@ export interface INotebookModelOptions {
 	 */
 	factory: IModelFactory;
 
+	contentManager: IContentManager;
 	notebookManagers: INotebookManager[];
 	providerId: string;
 	standardKernels: IStandardKernelWithProvider[];

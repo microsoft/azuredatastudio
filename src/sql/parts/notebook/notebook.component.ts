@@ -251,6 +251,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			connectionService: this.connectionManagementService,
 			notificationService: this.notificationService,
 			notebookManagers: this.notebookManagers,
+			contentManager: this._notebookParams.input.contentManager,
 			standardKernels: this._notebookParams.input.standardKernels,
 			cellMagicMapper: new CellMagicMapper(this.notebookService.languageMagics),
 			providerId: 'sql', // this is tricky; really should also depend on the connection profile
