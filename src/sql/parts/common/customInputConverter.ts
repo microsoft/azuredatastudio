@@ -13,9 +13,8 @@ import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
 import { IQueryEditorOptions } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { QueryPlanInput } from 'sql/parts/queryPlan/queryPlanInput';
-import { NotebookInput, NotebookEditorModel } from 'sql/parts/notebook/notebookInput';
+import { NotebookInput } from 'sql/parts/notebook/notebookInput';
 import { DEFAULT_NOTEBOOK_PROVIDER, INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
-import { getProvidersForFileName, getStandardKernelsForProvider } from 'sql/parts/notebook/notebookUtils';
 import { ResourceEditorInput } from 'vs/workbench/common/editor/resourceEditorInput';
 import { notebookModeId } from 'sql/common/constants';
 
