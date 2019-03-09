@@ -19,7 +19,7 @@ import { INotebookProvider } from 'sql/workbench/services/notebook/common/notebo
 import { INotebookManagerDetails, INotebookSessionDetails, INotebookKernelDetails, INotebookFutureDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { LocalContentManager } from 'sql/workbench/services/notebook/node/localContentManager';
 import { ContextKeyServiceStub } from 'sqltest/stubs/contextKeyServiceStub';
-import { LifecycleService } from 'vs/platform/lifecycle/electron-browser/lifecycleService';
+import { TestLifecycleService } from 'vs/workbench/test/workbenchTestServices';
 
 suite('MainThreadNotebook Tests', () => {
 
@@ -28,16 +28,13 @@ suite('MainThreadNotebook Tests', () => {
 	let notebookUri: URI;
 	let mockNotebookService: TypeMoq.Mock<NotebookService>;
 	let providerId = 'TestProvider';
-	let lifecycleService: TypeMoq.Mock<LifecycleService>;
 
 	setup(() => {
 		mockProxy = TypeMoq.Mock.ofType(ExtHostNotebookStub);
 		let extContext = <IExtHostContext>{
 			getProxy: proxyType => mockProxy.object
 		};
-		lifecycleService = TypeMoq.Mock.ofType(LifecycleService);
-		lifecycleService.setup(x => x.onWillShutdown(TypeMoq.It.isAny()));
-		mockNotebookService = TypeMoq.Mock.ofType(NotebookService, undefined, lifecycleService.object, undefined, undefined, undefined, undefined, new ContextKeyServiceStub());
+		mockNotebookService = TypeMoq.Mock.ofType(NotebookService, undefined, new TestLifecycleService(), undefined, undefined, undefined, undefined, new ContextKeyServiceStub());
 		notebookUri = URI.parse('file:/user/default/my.ipynb');
 		mainThreadNotebook = new MainThreadNotebook(extContext, mockNotebookService.object);
 	});
