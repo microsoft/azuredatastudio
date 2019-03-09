@@ -266,7 +266,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._model = this._register(model);
 		this.updateToolbarComponents(this._model.trustedMode);
 		this._modelRegisteredDeferred.resolve(this._model);
-		this.model.setDefaultKernel();
+		this.model.setDefaultKernelAndProviderId();
 		await model.startSession(this.model.notebookManager);
 		this._changeRef.detectChanges();
 	}

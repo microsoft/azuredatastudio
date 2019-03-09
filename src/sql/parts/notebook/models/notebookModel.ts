@@ -418,7 +418,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			}
 
 			await clientSession.initialize();
-			if (clientSession.isReady) {
+			this._sessionLoadFinished = clientSession.ready.then(async () => {
 				if (clientSession.isInErrorState) {
 					this.setErrorState(clientSession.errorMessage);
 				} else {
@@ -426,7 +426,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 					// Once session is loaded, can use the session manager to retrieve useful info
 					this.loadKernelInfo(clientSession, this.defaultKernel.display_name);
 				}
-			}
+			});
 		}
 	}
 
@@ -441,7 +441,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		this._clientSessionListeners = [];
 	}
 
-	public setDefaultKernel() {
+	public setDefaultKernelAndProviderId() {
 		if (this._savedKernelInfo) {
 			this.sanitizeSavedKernelInfo();
 			let provider = this._kernelDisplayNameToNotebookProviderIds.get(this._savedKernelInfo.display_name);
@@ -450,14 +450,19 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			}
 			this._defaultKernel = this._savedKernelInfo;
 		}
-		else if (!this._defaultKernel) {
-			this._defaultKernel = sqlKernelSpec;
-		}
-		if (this._defaultKernel) {
+		else if (this._defaultKernel) {
 			let providerId = this._kernelDisplayNameToNotebookProviderIds.get(this._defaultKernel.display_name);
-			if (this._providerId !== providerId) {
-				this._providerId = providerId;
+			if (providerId) {
+				if (this._providerId !== providerId) {
+					this._providerId = providerId;
+				} else {
+					this._defaultKernel = sqlKernelSpec;
+					this._providerId = SQL_NOTEBOOK_PROVIDER;
+				}
 			}
+		} else if (!this._defaultKernel) {
+			this._defaultKernel = sqlKernelSpec;
+			this._providerId = SQL_NOTEBOOK_PROVIDER;
 		}
 	}
 

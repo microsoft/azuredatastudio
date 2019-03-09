@@ -73,9 +73,9 @@ export class ClientSession implements IClientSession {
 			this._errorMessage = notebookUtils.getErrorMessage(err);
 		}
 		// Always resolving for now. It's up to callers to check for error case
+		this._isReady = true;
 		this._ready.resolve();
 		this._kernelChangeCompleted.resolve();
-		this._isReady = true;
 	}
 
 	private async startServer(): Promise<void> {
@@ -253,7 +253,6 @@ export class ClientSession implements IClientSession {
 		// Wait on connection configuration to complete before resolving full kernel change
 		this._kernelChangeCompleted.resolve();
 		this._kernelChangedEmitter.fire(changeArgs);
-		console.log('kernelChangedEmitter is fired');
 		return kernel;
 	}
 
