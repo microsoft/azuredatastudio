@@ -20,6 +20,7 @@ import { ICellModelOptions, IModelFactory, FutureInternal, CellExecutionState } 
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
+import { MssqlProviderId } from 'sql/common/constants';
 import { Schemas } from 'vs/base/common/network';
 let modelId = 0;
 
@@ -470,10 +471,14 @@ export class CellModel implements ICellModel {
 	// TODO: this will be refactored out into the notebooks extension as a contribution point
 	private getKnoxEndpoint(activeConnection: IConnectionProfile): notebookUtils.IEndpoint {
 		let endpoint;
-		if (this._connectionManagementService) {
+		if (this._connectionManagementService && activeConnection && activeConnection.providerName === MssqlProviderId) {
 			let serverInfo: ServerInfo = this._connectionManagementService.getServerInfo(activeConnection.id);
-			let endpoints: notebookUtils.IEndpoint[] = serverInfo.options['clusterEndpoints'];
-			endpoint = endpoints.find(ep => ep.serviceName.toLowerCase() === 'knox');
+			if (serverInfo && serverInfo.options && serverInfo.options['clusterEndpoints']) {
+				let endpoints: notebookUtils.IEndpoint[] = serverInfo.options['clusterEndpoints'];
+				if (endpoints && endpoints.length > 0) {
+					endpoint = endpoints.find(ep => ep.serviceName.toLowerCase() === 'knox');
+				}
+			}
 		}
 		return endpoint;
 	}
