@@ -59,7 +59,6 @@ export function convertEditorInput(input: EditorInput, options: IQueryEditorOpti
 		if (uri) {
 			return withService<INotebookService, NotebookInput>(instantiationService, INotebookService, notebookService => {
 				let fileName: string = 'untitled';
-				let providerIds: string[] = [DEFAULT_NOTEBOOK_PROVIDER];
 				if (input) {
 					fileName = input.getName();
 				}

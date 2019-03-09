@@ -25,8 +25,12 @@ let counter = 0;
 export let controller: JupyterController;
 
 export function activate(extensionContext: vscode.ExtensionContext) {
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.new', (connectionId?: string) => {
-		newNotebook(connectionId);
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.new', (context?: azdata.ObjectExplorerContext) => {
+		let connectionProfile: azdata.IConnectionProfile = undefined;
+		if (context && context.connectionProfile) {
+			connectionProfile = context.connectionProfile;
+		}
+		newNotebook(connectionProfile);
 	}));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.open', () => {
 		openNotebook();
@@ -49,15 +53,15 @@ export function activate(extensionContext: vscode.ExtensionContext) {
 	controller.activate();
 }
 
-function newNotebook(connectionId: string) {
+function newNotebook(connectionProfile: azdata.IConnectionProfile) {
 	let title = `Untitled-${counter++}`;
 	let untitledUri = vscode.Uri.parse(`untitled:${title}`);
-	let options: azdata.nb.NotebookShowOptions = connectionId ? {
+	let options: azdata.nb.NotebookShowOptions = connectionProfile ? {
 		viewColumn: null,
 		preserveFocus: true,
 		preview: null,
 		providerId: null,
-		connectionId: connectionId,
+		connectionProfile: connectionProfile,
 		defaultKernel: null
 	} : null;
 	azdata.nb.showNotebookDocument(untitledUri, options).then(success => {
@@ -122,7 +126,7 @@ async function analyzeNotebook(oeContext?: azdata.ObjectExplorerContext): Promis
 	let untitledUri = vscode.Uri.parse(`untitled:Notebook-${counter++}`);
 
 	let editor = await azdata.nb.showNotebookDocument(untitledUri, {
-		connectionId: oeContext ? oeContext.connectionProfile.id : '',
+		connectionProfile: oeContext ? oeContext.connectionProfile : undefined,
 		providerId: JUPYTER_NOTEBOOK_PROVIDER,
 		preview: false,
 		defaultKernel: {

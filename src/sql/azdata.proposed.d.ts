@@ -4016,9 +4016,9 @@ declare module 'azdata' {
 			providerId?: string;
 
 			/**
-			 * Optional ID indicating the initial connection to use for this editor
+			 * Optional profile indicating the initial connection to use for this editor
 			 */
-			connectionId?: string;
+			connectionProfile?: IConnectionProfile;
 
 			/**
 			 * Default kernel for notebook
