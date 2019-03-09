@@ -3904,15 +3904,6 @@ declare module 'azdata' {
 			readonly kernelSpec: IKernelSpec;
 
 			/**
-			 * Save the underlying file.
-			 *
-			 * @return A promise that will resolve to true when the file
-			 * has been saved. If the file was not dirty or the save failed,
-			 * will return false.
-			 */
-			save(): Thenable<boolean>;
-
-			/**
 			 * Ensure a cell range is completely contained in this document.
 			 *
 			 * @param range A cell range.

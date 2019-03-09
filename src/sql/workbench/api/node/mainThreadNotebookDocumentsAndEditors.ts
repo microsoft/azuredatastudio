@@ -74,10 +74,6 @@ class MainThreadNotebookEditor extends Disposable {
 		return this.editor.model;
 	}
 
-	public save(): Thenable<boolean> {
-		return this.editor.save();
-	}
-
 	public matches(input: NotebookInput): boolean {
 		if (!input) {
 			return false;
@@ -300,17 +296,6 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 
 		// Create a state computer that actually tracks all required changes. This is hooked to onDelta which notifies extension host
 		this._register(this._instantiationService.createInstance(MainThreadNotebookDocumentAndEditorStateComputer, delta => this._onDelta(delta)));
-	}
-
-	//#region extension host callable APIs
-	$trySaveDocument(uri: UriComponents): Thenable<boolean> {
-		let uriString = URI.revive(uri).toString();
-		let editor = this._notebookEditors.get(uriString);
-		if (editor) {
-			return editor.save();
-		} else {
-			return Promise.resolve(false);
-		}
 	}
 
 	$tryShowNotebookDocument(resource: UriComponents, options: INotebookShowOptions): TPromise<string> {

@@ -51,19 +51,10 @@ export class ExtHostNotebookDocumentData implements IDisposable {
 				get isDirty() { return data._isDirty; },
 				get cells() { return data._cells; },
 				get kernelSpec() { return data._kernelSpec; },
-				save() { return data._save(); },
 				validateCellRange(range) { return data._validateRange(range); },
 			};
 		}
 		return Object.freeze(this._document);
-	}
-
-	private _save(): Thenable<boolean> {
-		if (this._isDisposed) {
-			return TPromise.wrapError<boolean>(new Error('Document has been closed'));
-		}
-		return this._proxy.$trySaveDocument(this._uri);
-
 	}
 
 	public onModelChanged(data: INotebookModelChangedData) {

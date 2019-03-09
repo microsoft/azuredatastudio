@@ -364,12 +364,6 @@ export interface INotebookModel {
 	deleteCell(cellModel: ICellModel): void;
 
 	/**
-	 * Save the model to its backing content manager.
-	 * Serializes the model and then calls through to save it
-	 */
-	saveModel(): Promise<boolean>;
-
-	/**
 	 * Serialize notebook cell content to JSON
 	 */
 	toJSON(): nb.INotebookContents;
