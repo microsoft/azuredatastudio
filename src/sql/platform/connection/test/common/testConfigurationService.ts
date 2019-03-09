@@ -30,7 +30,7 @@ export class TestConfigurationService implements IConfigurationService {
 		let _target = (target as ConfigurationTarget) === ConfigurationTarget.USER ? 'user' : 'workspace';
 		let keyArray = key.split('.');
 		let targetObject = this.configuration[_target];
-		for(let i = 0; i < keyArray.length; i++) {
+		for (let i = 0; i < keyArray.length; i++) {
 			if (i === keyArray.length - 1) {
 				targetObject[keyArray[i]] = value;
 			} else {

@@ -420,7 +420,7 @@ suite('ConnectionConfig', () => {
 		});
 		let configurationService = new TestConfigurationService();
 		configurationService.updateValue(Constants.connectionsArrayName, userConnections, ConfigurationTarget.USER);
-		configurationService.updateValue(Constants.connectionsArrayName,  workspaceConnections, ConfigurationTarget.WORKSPACE);
+		configurationService.updateValue(Constants.connectionsArrayName, workspaceConnections, ConfigurationTarget.WORKSPACE);
 
 		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 		let allConnections = config.getConnections(false);
