@@ -432,11 +432,12 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public setDefaultKernel() {
 		if (this._savedKernelInfo) {
-			this._defaultKernel = this._savedKernelInfo;
+			this.sanitizeSavedKernelInfo();
 			let provider = this._kernelDisplayNameToNotebookProviderIds.get(this._savedKernelInfo.display_name);
 			if (provider && provider !== this._providerId) {
 				this._providerId = provider;
 			}
+			this._defaultKernel = this._savedKernelInfo;
 		}
 		else if (!this._defaultKernel) {
 			this._defaultKernel = sqlKernelSpec;
@@ -644,6 +645,21 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			kernel.name = this.specs.defaultKernel;
 		}
 		return kernel;
+	}
+
+	private sanitizeSavedKernelInfo() {
+		if (this._savedKernelInfo) {
+			let displayName = this.sanitizeDisplayName(this._savedKernelInfo.display_name);
+
+			if (this._savedKernelInfo.display_name !== displayName) {
+				this._savedKernelInfo.display_name = displayName;
+			}
+
+			let standardKernel = this._notebookOptions.standardKernels.find(kernel => kernel.displayName === displayName);
+			if (this._savedKernelInfo.name && this._savedKernelInfo.name !== standardKernel.name) {
+				this._savedKernelInfo.name = standardKernel.name;
+			}
+		}
 	}
 
 	public getDisplayNameFromSpecName(kernel: nb.IKernel): string {
