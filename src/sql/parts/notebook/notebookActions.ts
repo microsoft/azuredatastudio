@@ -234,31 +234,34 @@ export class TrustedAction extends ToggleableAction {
 }
 
 export class KernelsDropdown extends SelectBox {
-	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, private model: NotebookModel) {
+	private model: NotebookModel;
+	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, modelReady: Promise<INotebookModel>) {
 		super([msgLoading], msgLoading, contextViewProvider, container, { labelText: kernelLabel, labelOnTop: false } as ISelectBoxOptionsWithLabel);
 
-		if (this.model) {
-			// This is for switching kernel in the same provider
-			this._register(this.model.kernelChanged((changedArgs: azdata.nb.IKernelChangedArgs) => {
-				console.log('--In kernelDropdown model.kernelChanged');
-				this.updateKernel(changedArgs.newValue);
-			}));
-
-			// This is for swtiching kernel to different provider
-			this._register(this.model.onClientSessionReady((session) => {
-				if (session.kernel) {
-					console.log('--In kernelDropdown onClientSessionReady');
-					this.updateKernel(session.kernel);
-				}
-				session.kernelChanged((changedArgs: azdata.nb.IKernelChangedArgs) => {
-					console.log('--In kernelDropdown session.kernelChanged');
-					this.updateKernel(changedArgs.newValue);
+		if (modelReady) {
+			modelReady
+				.then((model) => this.updateModel(model))
+				.catch((err) => {
+					// No-op for now
 				});
-			}));
 		}
 
-		this.updateKenerlFromDisplayName(this.model.defaultKernel.display_name);
 		this.onDidSelect(e => this.doChangeKernel(e.selected));
+	}
+
+	updateModel(model: INotebookModel): void {
+		this.model = model as NotebookModel;
+		this._register(this.model.kernelChanged((changedArgs: azdata.nb.IKernelChangedArgs) => {
+			console.log('--In kernelDropdown model.kernelChanged');
+			this.updateKernel(changedArgs.newValue);
+		}));
+		if (model.clientSession) {
+			this._register(model.clientSession.kernelChanged((changedArgs: azdata.nb.IKernelChangedArgs) => {
+				if (changedArgs.newValue) {
+					this.updateKernel(changedArgs.newValue);
+				}
+			}));
+		}
 	}
 
 	// Update SelectBox values

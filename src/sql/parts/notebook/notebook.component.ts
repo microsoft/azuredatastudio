@@ -129,6 +129,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	ngOnInit() {
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
+		this.initActionBar();
 		this.doLoad();
 	}
 
@@ -223,7 +224,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			await this.loadModel();
 			this.setLoading(false);
 			this._modelReadyDeferred.resolve(this._model);
-			this.initActionBar();
 		} catch (error) {
 			this.setViewInErrorState(localize('displayFailed', 'Could not display contents: {0}', notebookUtils.getErrorMessage(error)));
 			this.setLoading(false);
@@ -354,7 +354,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	protected initActionBar() {
 		let kernelContainer = document.createElement('div');
-		let kernelDropdown = new KernelsDropdown(kernelContainer, this.contextViewService, this.model);
+		let kernelDropdown = new KernelsDropdown(kernelContainer, this.contextViewService, this.modelReady);
 		kernelDropdown.render(kernelContainer);
 		attachSelectBoxStyler(kernelDropdown, this.themeService);
 

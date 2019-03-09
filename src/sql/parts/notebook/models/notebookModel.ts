@@ -9,7 +9,7 @@ import { nb, connection } from 'azdata';
 
 import { localize } from 'vs/nls';
 import { Event, Emitter } from 'vs/base/common/event';
-import { Disposable } from 'vs/base/common/lifecycle';
+import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 
 import { CellModel } from './cell';
 import { IClientSession, INotebookModel, IDefaultConnection, INotebookModelOptions, ICellModel, NotebookContentChange } from './modelInterfaces';
@@ -45,6 +45,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _contextsChangedEmitter = new Emitter<void>();
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
 	private _kernelsChangedEmitter = new Emitter<nb.IKernelSpec>();
+	private _kernelChangedEmitter = new Emitter<nb.IKernelChangedArgs>();
 	private _layoutChanged = new Emitter<void>();
 	private _inErrorState: boolean = false;
 	private _activeClientSession: IClientSession;
@@ -71,6 +72,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _onValidConnectionSelected = new Emitter<boolean>();
 	private _oldKernel: nb.IKernel;
 	private _kernelChangeCount = 0;
+	private _clientSessionListeners: IDisposable[] = [];
 
 	constructor(private _notebookOptions: INotebookModelOptions, startSessionImmediately?: boolean, private connectionProfile?: IConnectionProfile) {
 		super();
@@ -151,7 +153,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public get kernelChanged(): Event<nb.IKernelChangedArgs> {
-		return this._activeClientSession.kernelChanged;
+		return this._kernelChangedEmitter.event;
 	}
 
 	public get kernelsChanged(): Event<nb.IKernelSpec> {
@@ -407,7 +409,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				kernelSpec: this._defaultKernel
 			});
 			if (!this._activeClientSession) {
-				this._activeClientSession = clientSession;
+				this.updateActiveClientSession(clientSession);
+
 			}
 			let profile = new ConnectionProfile(this._notebookOptions.capabilitiesService, this.connectionProfile);
 
@@ -430,6 +433,17 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
+	private updateActiveClientSession(clientSession: IClientSession) {
+		this.clearClientSessionListeners();
+		this._activeClientSession = clientSession;
+		this._clientSessionListeners.push(this._activeClientSession.kernelChanged(e => this._kernelChangedEmitter.fire(e)));
+	}
+
+	private clearClientSessionListeners() {
+		this._clientSessionListeners.forEach(listener => listener.dispose());
+		this._clientSessionListeners = [];
+	}
+
 	public setDefaultKernel() {
 		if (this._savedKernelInfo) {
 			this.sanitizeSavedKernelInfo();
@@ -441,6 +455,12 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 		else if (!this._defaultKernel) {
 			this._defaultKernel = sqlKernelSpec;
+		}
+		if (this._defaultKernel) {
+			let providerId = this._kernelDisplayNameToNotebookProviderIds.get(this._defaultKernel.display_name);
+			if (this._providerId !== providerId) {
+				this._providerId = providerId;
+			}
 		}
 	}
 
@@ -715,6 +735,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				this.notifyError(localize('shutdownClientSessionError', 'A client session error occurred when closing the notebook: {0}', err));
 			}
 			await this._activeClientSession.shutdown();
+			this.clearClientSessionListeners();
 			this._activeClientSession = undefined;
 		}
 	}
