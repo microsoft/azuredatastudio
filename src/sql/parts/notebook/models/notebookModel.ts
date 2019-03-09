@@ -674,9 +674,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				this._savedKernelInfo.display_name = displayName;
 			}
 
-			let standardKernel = this._notebookOptions.standardKernels.find(kernel => kernel.displayName === displayName);
-			if (this._savedKernelInfo.name && this._savedKernelInfo.name !== standardKernel.name) {
+			let standardKernel = this._notebookOptions.standardKernels.find(kernel => kernel.displayName === displayName || displayName.startsWith(kernel.displayName));
+			if (standardKernel && this._savedKernelInfo.name && this._savedKernelInfo.name !== standardKernel.name) {
 				this._savedKernelInfo.name = standardKernel.name;
+				this._savedKernelInfo.display_name = standardKernel.displayName;
 			}
 		}
 	}
