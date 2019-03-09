@@ -277,20 +277,26 @@ export class ConnectionStore {
 	 * Password values are stored to a separate credential store if the "savePassword" option is true
 	 *
 	 * @param {IConnectionCredentials} conn the connection to add
+	 * @param {boolean} addToMru Whether to add this connection to the MRU
 	 * @returns {Promise<void>} a Promise that returns when the connection was saved
 	 */
-	public addActiveConnection(conn: IConnectionProfile, isConnectionToDefaultDb: boolean = false): Promise<void> {
-		if (this.getActiveConnections().some(existingConn => existingConn.id === conn.id)) {
-			return Promise.resolve(undefined);
-		} else {
-			return this.addConnectionToMemento(conn, Constants.activeConnections, undefined, conn.savePassword).then(() => {
-				let maxConnections = this.getMaxRecentConnectionsCount();
-				if (isConnectionToDefaultDb) {
-					conn.databaseName = '';
-				}
-				return this.addConnectionToMemento(conn, Constants.recentConnections, maxConnections);
-			});
+	public async addActiveConnection(conn: IConnectionProfile, addToMru: boolean): Promise<void> {
+		await this.addConnectionToMemento(conn, Constants.activeConnections, undefined, conn.savePassword);
+		if(addToMru) {
+			await this.addConnectionToMru(conn);
 		}
+	}
+
+	/**
+	 * Adds the specified connection to the MRU list
+	 * @param conn The connection to add
+	 */
+	private async addConnectionToMru(conn: IConnectionProfile): Promise<void> {
+		let maxConnections = this.getMaxRecentConnectionsCount();
+		if (ConnectionProfile.isConnectionToDefaultDb(conn)) {
+			conn.databaseName = '';
+		}
+		await this.addConnectionToMemento(conn, Constants.recentConnections, maxConnections);
 	}
 
 	public addConnectionToMemento(conn: IConnectionProfile, mementoKey: string, maxConnections?: number, savePassword?: boolean): Promise<void> {
