@@ -194,7 +194,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._model.cells.forEach(cell => {
 			cell.trustedMode = isTrusted;
 		});
-		this.setDirty(true);
+		//TODO: Handle dirty for trust?
 		this._changeRef.detectChanges();
 	}
 
@@ -224,7 +224,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			this.setLoading(false);
 			this._modelReadyDeferred.resolve(this._model);
 		} catch (error) {
-			this.setViewInErrorState(localize('displayFailed', 'Could not display contents: {0}', error));
+			this.setViewInErrorState(localize('displayFailed', 'Could not display contents: {0}', notebookUtils.getErrorMessage(error)));
 			this.setLoading(false);
 			this._modelReadyDeferred.reject(error);
 		} finally {
@@ -253,6 +253,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			connectionService: this.connectionManagementService,
 			notificationService: this.notificationService,
 			notebookManagers: this.notebookManagers,
+			contentManager: this._notebookParams.input.contentManager,
 			standardKernels: this._notebookParams.input.standardKernels,
 			cellMagicMapper: new CellMagicMapper(this.notebookService.languageMagics),
 			providerId: 'sql', // this is tricky; really should also depend on the connection profile
@@ -321,7 +322,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	private handleContentChanged(change: NotebookContentChange) {
 		// Note: for now we just need to set dirty state and refresh the UI.
-		this.setDirty(true);
 		this._changeRef.detectChanges();
 	}
 

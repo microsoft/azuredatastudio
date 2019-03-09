@@ -354,6 +354,14 @@ export class CodeMenu {
 			newFile = this.createMenuItem(nls.localize({ key: 'miNewFile', comment: ['&& denotes a mnemonic'] }, "&&New Query"), 'workbench.action.files.newUntitledFile');
 		}
 
+		// {{SQL CARBON EDIT}}
+		let newNotebook: Electron.MenuItem;
+		if (hasNoWindows) {
+			newNotebook = new MenuItem(this.likeAction('notebook.command.new', { label: this.mnemonicLabel(nls.localize({ key: 'miNewNotebook', comment: ['&& denotes a mnemonic'] }, "&&New Notebook")), click: () => this.windowsMainService.openNewWindow(OpenContext.MENU) }));
+		} else {
+			newNotebook = this.createMenuItem(nls.localize({ key: 'miNewNotebook', comment: ['&& denotes a mnemonic'] }, "&&New Notebook"), 'notebook.command.new');
+		}
+
 		let open: Electron.MenuItem;
 		if (hasNoWindows) {
 			open = new MenuItem(this.likeAction('workbench.action.files.openFileFolder', { label: this.mnemonicLabel(nls.localize({ key: 'miOpen', comment: ['&& denotes a mnemonic'] }, "&&Open...")), click: (menuItem, win, event) => this.windowsMainService.pickFileFolderAndOpen({ forceNewWindow: this.isOptionClick(event), telemetryExtraData: { from: telemetryFrom } }) }));
@@ -417,6 +425,8 @@ export class CodeMenu {
 
 		arrays.coalesce([
 			newFile,
+			// {{SQL CARBON EDIT}}
+			newNotebook,
 			newWindow,
 			__separator__(),
 			isMacintosh ? open : null,

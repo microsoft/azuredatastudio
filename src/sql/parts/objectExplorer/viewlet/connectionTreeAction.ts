@@ -386,41 +386,6 @@ export class DeleteConnectionAction extends Action {
 	}
 }
 
-class DisconnectProfileAction extends Action {
-
-	constructor(
-		@IOEShimService private objectExplorerService: IOEShimService
-	) {
-		super(DisconnectConnectionAction.ID);
-	}
-	run(args: TreeViewItemHandleArg): Promise<boolean> {
-		if (args.$treeItem) {
-			return this.objectExplorerService.disconnectNode(args.$treeViewId, args.$treeItem).then(() => {
-				const { treeView } = (<ICustomViewDescriptor>ViewsRegistry.getView(args.$treeViewId));
-				// we need to collapse it then refresh it so that the tree doesn't try and use it's cache next time the user expands the node
-				return treeView.collapse(args.$treeItem).then(() => treeView.refresh([args.$treeItem]).then(() => true));
-			});
-		}
-		return Promise.resolve(true);
-	}
-}
-
-CommandsRegistry.registerCommand({
-	id: DisconnectConnectionAction.ID,
-	handler: (accessor, args: TreeViewItemHandleArg) => {
-		return accessor.get(IInstantiationService).createInstance(DisconnectProfileAction).run(args);
-	}
-});
-
-MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
-	group: 'connection',
-	order: 4,
-	command: {
-		id: DisconnectConnectionAction.ID,
-		title: DisconnectConnectionAction.LABEL
-	}
-});
-
 /**
  * Action to clear search results
  */

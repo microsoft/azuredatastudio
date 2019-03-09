@@ -112,6 +112,7 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 				this._editableDropdown.value = this.getSelectedValue();
 			}
 			this._editableDropdown.enabled = this.enabled;
+			this._editableDropdown.fireOnTextChange = this.fireOnTextChange;
 		} else {
 			this._selectBox.setOptions(this.getValues());
 			this._selectBox.selectWithOptionName(this.getSelectedValue());
@@ -168,6 +169,10 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 
 	private get editable(): boolean {
 		return this.getPropertyOrDefault<azdata.DropDownProperties, boolean>((props) => props.editable, false);
+	}
+
+	private get fireOnTextChange(): boolean {
+		return this.getPropertyOrDefault<azdata.DropDownProperties, boolean>((props) => props.fireOnTextChange, false);
 	}
 
 	public getEditableDisplay(): string {
