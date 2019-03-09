@@ -4,17 +4,16 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import * as Constants from './constants';
-import * as Utils from './utils';
-import { IConnectionProfile, IConnectionProfileStore } from './interfaces';
-import { IConnectionConfig } from './iconnectionConfig';
-import { ConnectionProfileGroup, IConnectionProfileGroup } from './connectionProfileGroup';
-import { ConfigurationTarget, IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { ConnectionProfile } from './connectionProfile';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import * as nls from 'vs/nls';
-
+import { ConnectionProfile } from './connectionProfile';
+import { ConnectionProfileGroup, IConnectionProfileGroup } from './connectionProfileGroup';
+import * as Constants from './constants';
+import { IConnectionConfig } from './iconnectionConfig';
+import { IConnectionProfile, IConnectionProfileStore } from './interfaces';
+import * as Utils from './utils';
 import { generateUuid } from 'vs/base/common/uuid';
+import * as nls from 'vs/nls';
+import { ConfigurationTarget, IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 export interface ISaveGroupResult {
 	groups: IConnectionProfileGroup[];
@@ -162,7 +161,7 @@ export class ConnectionConfig implements IConnectionConfig {
 	 * Replace duplicate ids with new ones. Sets id for the profiles without id
 	 * @param profiles
 	 */
-	public fixConnectionIds(profiles: IConnectionProfileStore[]): boolean {
+	private fixConnectionIds(profiles: IConnectionProfileStore[]): boolean {
 		let idsCache: { [label: string]: boolean } = {};
 		let changed: boolean = false;
 		for (var index = 0; index < profiles.length; index++) {

@@ -10,7 +10,6 @@ import { ConnectionConfig, ISaveGroupResult } from 'sql/platform/connection/comm
 import { IConnectionProfile, IConnectionProfileStore } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
-import { WorkspaceConfigurationTestService } from 'sqltest/stubs/workspaceConfigurationTestService';
 import * as Constants from 'sql/platform/connection/common/constants';
 import { IConnectionProfileGroup, ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import * as assert from 'assert';
@@ -20,6 +19,7 @@ import { Emitter } from 'vs/base/common/event';
 import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { CapabilitiesTestService } from 'sqltest/stubs/capabilitiesTestService';
 import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
+import { deepFreeze, deepClone } from 'vs/base/common/objects';
 
 suite('ConnectionConfig', () => {
 	let capabilitiesService: TypeMoq.Mock<ICapabilitiesService>;
@@ -27,8 +27,8 @@ suite('ConnectionConfig', () => {
 	let capabilities: ProviderFeatures[];
 	let onCapabilitiesRegistered = new Emitter<ProviderFeatures>();
 
-	let configValueToConcat = {
-		workspace: [{
+	const testGroups = deepFreeze([
+		{
 			name: 'g1',
 			id: 'g1',
 			parentId: 'ROOT',
@@ -41,15 +41,15 @@ suite('ConnectionConfig', () => {
 			parentId: 'g1',
 			color: 'blue',
 			description: 'g1-1'
-		}
-		],
-		user: [{
+		},
+		{
 			name: 'ROOT',
 			id: 'ROOT',
 			parentId: '',
 			color: 'white',
 			description: 'ROOT'
-		}, {
+		},
+		{
 			name: 'g2',
 			id: 'g2',
 			parentId: 'ROOT',
@@ -77,11 +77,7 @@ suite('ConnectionConfig', () => {
 			color: 'purple',
 			description: 'g3-1'
 		}
-		],
-		value: [],
-		default: [],
-		workspaceFolder: []
-	};
+	]);
 
 	let configValueToMerge = {
 		workspace: [
@@ -134,8 +130,8 @@ suite('ConnectionConfig', () => {
 		workspaceFolder: []
 	};
 
-	let connections = {
-		workspace: [{
+	const testConnections = deepFreeze([
+		{
 			options: {
 				serverName: 'server1',
 				databaseName: 'database',
@@ -147,11 +143,8 @@ suite('ConnectionConfig', () => {
 			groupId: 'test',
 			savePassword: true,
 			id: 'server1'
-		}
-
-
-		],
-		user: [{
+		},
+		{
 			options: {
 				serverName: 'server2',
 				databaseName: 'database',
@@ -163,7 +156,8 @@ suite('ConnectionConfig', () => {
 			groupId: 'test',
 			savePassword: true,
 			id: 'server2'
-		}, {
+		},
+		{
 			options: {
 				serverName: 'server3',
 				databaseName: 'database',
@@ -176,11 +170,7 @@ suite('ConnectionConfig', () => {
 			savePassword: true,
 			id: 'server3'
 		}
-		],
-		value: [],
-		default: [],
-		workspaceFolder: []
-	};
+	]);
 	setup(() => {
 		capabilitiesService = TypeMoq.Mock.ofType(CapabilitiesTestService);
 		capabilities = [];
@@ -261,7 +251,7 @@ suite('ConnectionConfig', () => {
 		(capabilitiesService.object as any).onCapabilitiesRegistered = onCapabilitiesRegistered.event;
 	});
 
-	function groupsAreEqual(groups1: IConnectionProfileGroup[], groups2: IConnectionProfileGroup[]): Boolean {
+	function groupsAreEqual(groups1: IConnectionProfileGroup[], groups2: IConnectionProfileGroup[]): boolean {
 		if (!groups1 && !groups2) {
 			return true;
 		} else if ((!groups1 && groups2 && groups2.length === 0) || (!groups2 && groups1 && groups1.length === 0)) {
@@ -272,82 +262,35 @@ suite('ConnectionConfig', () => {
 			return false;
 		}
 
-		let areEqual = true;
-
-		groups1.map(g1 => {
-			if (areEqual) {
-				let g2 = groups2.find(g => g.name === g1.name);
-				if (!g2) {
-					areEqual = false;
-				} else {
-					let result = groupsAreEqual(groups1.filter(a => a.parentId === g1.id), groups2.filter(b => b.parentId === g2.id));
-					if (result === false) {
-						areEqual = false;
-					}
-				}
+		for (let group of groups1) {
+			let g2 = groups2.find(g => g.name === group.name);
+			// if we couldn't find the group it means they must not be equal
+			if (!g2) {
+				return false;
 			}
-		});
 
-		return areEqual;
+			// weird way to verify that each group appears the same number of times in each array
+			let result = groupsAreEqual(groups1.filter(a => a.parentId === group.id), groups2.filter(b => b.parentId === g2.id));
+			if (!result) {
+				return false;
+			}
+
+		}
+
+		return true;
 	}
 
-	test('allGroups should return groups from user and workspace settings', () => {
+	test('getAllGroups should merge user and workspace settings correctly', () => {
 		let configurationService = new TestConfigurationService();
-		configurationService.updateValue(Constants.connectionGroupsArrayName, configValueToConcat.user, ConfigurationTarget.USER);
-		configurationService.updateValue(Constants.connectionGroupsArrayName, configValueToConcat.workspace, ConfigurationTarget.WORKSPACE);
+		configurationService.updateValue(Constants.connectionGroupsArrayName, deepClone(testGroups).slice(0, 3), ConfigurationTarget.USER);
+		// we intentionally overlap these values with the expectation that the function to should return each group once
+		configurationService.updateValue(Constants.connectionGroupsArrayName, deepClone(testGroups).slice(2, testGroups.length), ConfigurationTarget.WORKSPACE);
 
 		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 		let allGroups = config.getAllGroups();
 
-		assert.equal(allGroups.length, configValueToConcat.workspace.length + configValueToConcat.user.length);
-	});
-
-	test('allGroups should merge groups from user and workspace settings', () => {
-		let expectedAllGroups: IConnectionProfileGroup[] = [
-			{
-				name: 'g1',
-				id: 'g1',
-				parentId: '',
-				color: 'pink',
-				description: 'g1'
-			},
-			{
-				name: 'g1-1',
-				id: 'g1-1',
-				parentId: 'g1',
-				color: 'blue',
-				description: 'g1-1'
-			},
-			{
-				name: 'g2',
-				id: 'g2',
-				parentId: '',
-				color: 'yellow',
-				description: 'g2'
-			},
-			{
-				name: 'g2-1',
-				id: 'g2-1',
-				parentId: 'g2',
-				color: 'red',
-				description: 'g2'
-			},
-			{
-				name: 'g1-2',
-				id: 'g1-2',
-				parentId: 'g1',
-				color: 'green',
-				description: 'g1-2'
-			}];
-
-		let configurationService = new TestConfigurationService();
-		configurationService.updateValue(Constants.connectionGroupsArrayName, configValueToMerge, ConfigurationTarget.USER);
-
-		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
-		let allGroups = config.getAllGroups();
-
-		assert.notEqual(allGroups, undefined);
-		assert.equal(groupsAreEqual(allGroups, expectedAllGroups), true);
+		assert.equal(allGroups.length, testGroups.length, 'did not meet the expected length');
+		assert.equal(groupsAreEqual(allGroups, testGroups), true, 'the groups returned did not match expectation');
 	});
 
 	test('addConnection should add the new profile to user settings if does not exist', async () => {
@@ -369,30 +312,27 @@ suite('ConnectionConfig', () => {
 			connectionName: undefined
 		};
 
-		let expectedNumberOfConnections = connections.user.length + 1;
-
 		let configurationService = new TestConfigurationService();
-		configurationService.updateValue(Constants.connectionGroupsArrayName, configValueToConcat, ConfigurationTarget.USER);
-		configurationService.updateValue(Constants.connectionsArrayName, connections, ConfigurationTarget.USER);
-
+		configurationService.updateValue(Constants.connectionGroupsArrayName, deepClone(testGroups), ConfigurationTarget.USER);
+		configurationService.updateValue(Constants.connectionsArrayName, deepClone(testConnections), ConfigurationTarget.USER);
 		let connectionProfile = new ConnectionProfile(capabilitiesService.object, newProfile);
 		connectionProfile.options['databaseDisplayName'] = 'database';
 		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 		let savedConnectionProfile = await config.addConnection(connectionProfile);
 
 		assert.notEqual(savedConnectionProfile.id, undefined);
-		assert.equal(configurationService.inspect<IConnectionProfileStore[]>(Constants.connectionsArrayName).user.length, expectedNumberOfConnections);
+		assert.equal(configurationService.inspect<IConnectionProfileStore[]>(Constants.connectionsArrayName).user.length, testConnections.length + 1);
 	});
 
-	test('addConnection should not add the new profile to user settings if already exists', () => {
-		let profileFromConfig = connections.user[0];
+	test('addConnection should not add the new profile to user settings if already exists', async () => {
+		let existingConnection = testConnections[0];
 		let newProfile: IConnectionProfile = {
-			serverName: profileFromConfig.options['serverName'],
-			databaseName: profileFromConfig.options['databaseName'],
-			userName: profileFromConfig.options['userName'],
-			password: profileFromConfig.options['password'],
-			authenticationType: profileFromConfig.options['authenticationType'],
-			groupId: profileFromConfig.groupId,
+			serverName: existingConnection.options['serverName'],
+			databaseName: existingConnection.options['databaseName'],
+			userName: existingConnection.options['userName'],
+			password: existingConnection.options['password'],
+			authenticationType: existingConnection.options['authenticationType'],
+			groupId: existingConnection.groupId,
 			savePassword: true,
 			groupFullName: undefined,
 			getOptionsKey: undefined,
@@ -404,32 +344,21 @@ suite('ConnectionConfig', () => {
 			connectionName: undefined
 		};
 
-		let expectedNumberOfConnections = connections.user.length;
-
-		let workspaceConfigurationServiceMock = TypeMoq.Mock.ofType(WorkspaceConfigurationTestService);
-		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileStore[]>(
-			Constants.connectionsArrayName))
-			.returns(() => connections);
-		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileGroup[]>(
-			Constants.connectionGroupsArrayName))
-			.returns(() => configValueToConcat);
-		workspaceConfigurationServiceMock.setup(x => x.updateValue(Constants.connectionsArrayName, TypeMoq.It.isAny(), ConfigurationTarget.USER))
-			.returns(() => Promise.resolve());
-		workspaceConfigurationServiceMock.setup(x => x.updateValue(Constants.connectionGroupsArrayName, TypeMoq.It.isAny(), ConfigurationTarget.USER))
-			.returns(() => Promise.resolve());
+		let configurationService = new TestConfigurationService();
+		configurationService.updateValue(Constants.connectionGroupsArrayName, deepClone(testGroups), ConfigurationTarget.USER);
+		configurationService.updateValue(Constants.connectionsArrayName, deepClone(testConnections), ConfigurationTarget.USER);
 
 		let connectionProfile = new ConnectionProfile(capabilitiesService.object, newProfile);
-		connectionProfile.options['databaseDisplayName'] = profileFromConfig.options['databaseName'];
+		connectionProfile.options['databaseDisplayName'] = existingConnection.options['databaseName'];
 
-		let config = new ConnectionConfig(workspaceConfigurationServiceMock.object, capabilitiesService.object);
-		return config.addConnection(connectionProfile).then(savedConnectionProfile => {
-			workspaceConfigurationServiceMock.verify(y => y.updateValue(Constants.connectionsArrayName,
-				TypeMoq.It.is<IConnectionProfileStore[]>(c => c.length === expectedNumberOfConnections), ConfigurationTarget.USER), TypeMoq.Times.once());
-			assert.equal(savedConnectionProfile.id, profileFromConfig.id);
-		});
+		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
+		let savedConnectionProfile = await config.addConnection(connectionProfile);
+
+		assert.equal(savedConnectionProfile.id, existingConnection.id);
+		assert.equal(configurationService.inspect<IConnectionProfileStore[]>(Constants.connectionsArrayName).user.length, testConnections.length);
 	});
 
-	test('addConnection should add the new group to user settings if does not exist', () => {
+	test('addConnection should add the new group to user settings if does not exist', async () => {
 		let newProfile: IConnectionProfile = {
 			serverName: 'new server',
 			databaseName: 'database',
@@ -448,189 +377,107 @@ suite('ConnectionConfig', () => {
 			connectionName: undefined
 		};
 
-		let expectedNumberOfConnections = connections.user.length + 1;
-		let expectedNumberOfGroups = configValueToConcat.user.length + 1;
-
-		let workspaceConfigurationServiceMock = TypeMoq.Mock.ofType(WorkspaceConfigurationTestService);
-		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileStore[]>(
-			Constants.connectionsArrayName))
-			.returns(() => connections);
-
-		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileGroup[]>(
-			Constants.connectionGroupsArrayName))
-			.returns(() => configValueToConcat);
-
-		workspaceConfigurationServiceMock.setup(x => x.updateValue(Constants.connectionsArrayName, TypeMoq.It.isAny(), ConfigurationTarget.USER))
-			.returns(() => Promise.resolve());
-		workspaceConfigurationServiceMock.setup(x => x.updateValue(Constants.connectionGroupsArrayName, TypeMoq.It.isAny(), ConfigurationTarget.USER))
-			.returns(() => Promise.resolve());
+		let configurationService = new TestConfigurationService();
+		configurationService.updateValue(Constants.connectionGroupsArrayName, deepClone(testGroups), ConfigurationTarget.USER);
+		configurationService.updateValue(Constants.connectionsArrayName, deepClone(testConnections), ConfigurationTarget.USER);
 
 		let connectionProfile = new ConnectionProfile(capabilitiesService.object, newProfile);
-		let config = new ConnectionConfig(workspaceConfigurationServiceMock.object, capabilitiesService.object);
-		return config.addConnection(connectionProfile).then(success => {
-			workspaceConfigurationServiceMock.verify(y => y.updateValue(Constants.connectionsArrayName,
-				TypeMoq.It.is<IConnectionProfileStore[]>(c => c.length === expectedNumberOfConnections), ConfigurationTarget.USER), TypeMoq.Times.once());
-			workspaceConfigurationServiceMock.verify(y => y.updateValue(Constants.connectionGroupsArrayName,
-				TypeMoq.It.is<IConnectionProfileGroup[]>(c => c.length === expectedNumberOfGroups), ConfigurationTarget.USER), TypeMoq.Times.once());
-		});
+		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
+		await config.addConnection(connectionProfile);
+
+		assert.equal(configurationService.inspect<IConnectionProfileStore[]>(Constants.connectionsArrayName).user.length, testConnections.length + 1);
+		assert.equal(configurationService.inspect<IConnectionProfileStore[]>(Constants.connectionGroupsArrayName).user.length, testGroups.length + 1);
 	});
 
 	test('getConnections should return connections from user and workspace settings given getWorkspaceConnections set to true', () => {
-		let getWorkspaceConnections: boolean = true;
+		let configurationService = new TestConfigurationService();
+		configurationService.updateValue(Constants.connectionsArrayName, deepClone(testConnections).slice(0, 1), ConfigurationTarget.USER);
+		configurationService.updateValue(Constants.connectionsArrayName, deepClone(testConnections).slice(1, testConnections.length), ConfigurationTarget.WORKSPACE);
 
-		let workspaceConfigurationServiceMock = TypeMoq.Mock.ofType(WorkspaceConfigurationTestService);
-		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileStore[]>(
-			Constants.connectionsArrayName))
-			.returns(() => connections);
-
-		let config = new ConnectionConfig(workspaceConfigurationServiceMock.object, capabilitiesService.object);
-		let allConnections = config.getConnections(getWorkspaceConnections);
-		assert.equal(allConnections.length, connections.user.length + connections.workspace.length);
+		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
+		let allConnections = config.getConnections(true);
+		assert.equal(allConnections.length, testConnections.length);
 	});
 
 	test('getConnections should return connections from user settings given getWorkspaceConnections set to false', () => {
-		let getWorkspaceConnections: boolean = false;
+		let configurationService = new TestConfigurationService();
+		configurationService.updateValue(Constants.connectionsArrayName, deepClone(testConnections).slice(0, 2), ConfigurationTarget.USER);
+		configurationService.updateValue(Constants.connectionsArrayName, deepClone(testConnections).slice(2, testConnections.length), ConfigurationTarget.WORKSPACE);
 
-		let workspaceConfigurationServiceMock = TypeMoq.Mock.ofType(WorkspaceConfigurationTestService);
-		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileStore[]>(
-			Constants.connectionsArrayName))
-			.returns(() => connections);
-
-		let config = new ConnectionConfig(workspaceConfigurationServiceMock.object, capabilitiesService.object);
-		let allConnections = config.getConnections(getWorkspaceConnections);
-		assert.equal(allConnections.length, connections.user.length);
+		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
+		let allConnections = config.getConnections(false);
+		assert.equal(allConnections.length, 2);
 	});
 
 	test('getConnections should return connections with a valid id', () => {
-		let getWorkspaceConnections: boolean = false;
-		let connectionsWithNoId = {
-			user: connections.user.map(c => {
-				c.id = undefined;
-				return c;
-			}),
-			default: connections.default,
-			workspace: connections.workspace.map(c => {
-				c.id = c.options['serverName'];
-				return c;
-			}),
-			value: connections.value,
-			workspaceFolder: []
-		};
-		let workspaceConfigurationServiceMock = TypeMoq.Mock.ofType(WorkspaceConfigurationTestService);
-		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileStore[]>(
-			Constants.connectionsArrayName))
-			.returns(() => connectionsWithNoId);
+		let workspaceConnections = deepClone(testConnections).map(c => {
+			c.id = c.options['serverName'];
+			return c;
+		});
+		let userConnections = deepClone(testConnections).map(c => {
+			c.id = undefined;
+			return c;
+		});
+		let configurationService = new TestConfigurationService();
+		configurationService.updateValue(Constants.connectionsArrayName, userConnections, ConfigurationTarget.USER);
+		configurationService.updateValue(Constants.connectionsArrayName,  workspaceConnections, ConfigurationTarget.WORKSPACE);
 
-		let config = new ConnectionConfig(workspaceConfigurationServiceMock.object, capabilitiesService.object);
-		let allConnections = config.getConnections(getWorkspaceConnections);
-		assert.equal(allConnections.length, connections.user.length);
+		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
+		let allConnections = config.getConnections(false);
+		assert.equal(allConnections.length, testConnections.length);
 		allConnections.forEach(connection => {
-			let userConnection = connectionsWithNoId.user.find(u => u.options['serverName'] === connection.serverName);
+			let userConnection = testConnections.find(u => u.options['serverName'] === connection.serverName);
 			if (userConnection !== undefined) {
 				assert.notEqual(connection.id, connection.getOptionsKey());
 				assert.notEqual(connection.id, undefined);
 			} else {
-				let workspaceConnection = connectionsWithNoId.workspace.find(u => u.options['serverName'] === connection.serverName);
+				let workspaceConnection = workspaceConnections.find(u => u.options['serverName'] === connection.serverName);
 				assert.notEqual(connection.id, connection.getOptionsKey());
 				assert.equal(workspaceConnection.id, connection.id);
 			}
 		});
 	});
 
-	test('getConnections update the capabilities in each profile when the provider capabilities is registered', () => {
-		let oldOptionName: string = 'oldOptionName';
-		let optionsMetadataFromConfig = capabilities[0].connection.connectionOptions.concat({
-			name: oldOptionName,
-			displayName: undefined,
-			description: undefined,
-			groupName: undefined,
-			categoryValues: undefined,
-			defaultValue: undefined,
-			isIdentity: true,
-			isRequired: true,
-			specialValueType: undefined,
-			valueType: ServiceOptionType.string
-		});
-
-		let capabilitiesFromConfig: ProviderFeatures[] = [];
-		let msSQLCapabilities2: ProviderFeatures = {
-			connection: {
-				providerId: 'MSSQL',
-				displayName: 'MSSQL',
-				connectionOptions: optionsMetadataFromConfig
-			}
-		};
-		capabilitiesFromConfig.push(msSQLCapabilities2);
-		let connectionUsingOldMetadata = connections.user.map(c => {
-			c.options[oldOptionName] = 'oldOptionValue';
-			return c;
-		});
-		let configValue = Object.assign({}, connections, { user: connectionUsingOldMetadata });
-		let capabilitiesService2: TypeMoq.Mock<ICapabilitiesService> = TypeMoq.Mock.ofType(CapabilitiesTestService);
-		capabilitiesService2.setup(x => x.getCapabilities('MSSQL')).returns(() => msSQLCapabilities2);
-		(capabilitiesService2.object as any).onCapabilitiesRegistered = onCapabilitiesRegistered.event;
-		let workspaceConfigurationServiceMock = TypeMoq.Mock.ofType(WorkspaceConfigurationTestService);
-		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileStore[]>(
-			Constants.connectionsArrayName))
-			.returns(() => configValue);
-
-		let config = new ConnectionConfig(workspaceConfigurationServiceMock.object, capabilitiesService2.object);
-		let allConnections = config.getConnections(false);
-		allConnections.forEach(element => {
-			assert.notEqual(element.serverName, undefined);
-			assert.notEqual(element.getOptionsKey().indexOf('oldOptionValue|'), -1);
-		});
-
-		onCapabilitiesRegistered.fire(msSQLCapabilities);
-		allConnections.forEach(element => {
-			assert.notEqual(element.serverName, undefined);
-			assert.equal(element.getOptionsKey().indexOf('oldOptionValue|'), -1);
-		});
-	});
-
 	test('saveGroup should save the new groups to tree and return the id of the last group name', () => {
 		let config = new ConnectionConfig(undefined, undefined);
-		let groups: IConnectionProfileGroup[] = configValueToConcat.user;
-		let expectedLength = configValueToConcat.user.length + 2;
-		let newGroups: string = 'ROOT/g1/g1-1';
+		let groups: IConnectionProfileGroup[] = deepClone(testGroups);
+		let newGroups: string = 'ROOT/g1/g1-1/new-group/new-group2';
 		let color: string = 'red';
 
 		let result: ISaveGroupResult = config.saveGroup(groups, newGroups, color, newGroups);
 		assert.notEqual(result, undefined);
-		assert.equal(result.groups.length, expectedLength, 'The result groups length is invalid');
-		let newGroup = result.groups.find(g => g.name === 'g1-1');
+		assert.equal(result.groups.length, testGroups.length + 2, 'The result groups length is invalid');
+		let newGroup = result.groups.find(g => g.name === 'new-group2');
 		assert.equal(result.newGroupId, newGroup.id, 'The groups id is invalid');
 	});
 
 	test('saveGroup should only add the groups that are not in the tree', () => {
 		let config = new ConnectionConfig(undefined, undefined);
-		let groups: IConnectionProfileGroup[] = configValueToConcat.user;
-		let expectedLength = configValueToConcat.user.length + 1;
+		let groups: IConnectionProfileGroup[] = deepClone(testGroups);
 		let newGroups: string = 'ROOT/g2/g2-5';
 		let color: string = 'red';
 
 		let result: ISaveGroupResult = config.saveGroup(groups, newGroups, color, newGroups);
 		assert.notEqual(result, undefined);
-		assert.equal(result.groups.length, expectedLength, 'The result groups length is invalid');
+		assert.equal(result.groups.length, testGroups.length + 1, 'The result groups length is invalid');
 		let newGroup = result.groups.find(g => g.name === 'g2-5');
 		assert.equal(result.newGroupId, newGroup.id, 'The groups id is invalid');
 	});
 
 	test('saveGroup should not add any new group if tree already has all the groups in the full path', () => {
 		let config = new ConnectionConfig(undefined, undefined);
-		let groups: IConnectionProfileGroup[] = configValueToConcat.user;
-		let expectedLength = configValueToConcat.user.length;
+		let groups: IConnectionProfileGroup[] = deepClone(testGroups);
 		let newGroups: string = 'ROOT/g2/g2-1';
 		let color: string = 'red';
 
 		let result: ISaveGroupResult = config.saveGroup(groups, newGroups, color, newGroups);
 		assert.notEqual(result, undefined);
-		assert.equal(result.groups.length, expectedLength, 'The result groups length is invalid');
+		assert.equal(result.groups.length, testGroups.length, 'The result groups length is invalid');
 		let newGroup = result.groups.find(g => g.name === 'g2-1');
 		assert.equal(result.newGroupId, newGroup.id, 'The groups id is invalid');
 	});
 
-	test('deleteConnection should remove the connection from config', () => {
+	test('deleteConnection should remove the connection from config', async () => {
 		let newProfile: IConnectionProfile = {
 			serverName: 'server3',
 			databaseName: 'database',
@@ -648,27 +495,19 @@ suite('ConnectionConfig', () => {
 			id: undefined,
 			connectionName: undefined
 		};
-
-		let expectedNumberOfConnections = connections.user.length - 1;
-		let workspaceConfigurationServiceMock = TypeMoq.Mock.ofType(WorkspaceConfigurationTestService);
-		workspaceConfigurationServiceMock.setup(x => x.updateValue(Constants.connectionsArrayName, TypeMoq.It.isAny(), ConfigurationTarget.USER))
-			.returns(() => Promise.resolve());
-
-		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileStore[]>(
-			Constants.connectionsArrayName))
-			.returns(() => connections);
+		let configurationService = new TestConfigurationService();
+		configurationService.updateValue(Constants.connectionsArrayName, deepClone(testConnections), ConfigurationTarget.USER);
 
 		let connectionProfile = new ConnectionProfile(capabilitiesService.object, newProfile);
 		connectionProfile.options['databaseDisplayName'] = 'database';
 
-		let config = new ConnectionConfig(workspaceConfigurationServiceMock.object, capabilitiesService.object);
-		return config.deleteConnection(connectionProfile).then(() => {
-			workspaceConfigurationServiceMock.verify(y => y.updateValue(Constants.connectionsArrayName,
-				TypeMoq.It.is<IConnectionProfileStore[]>(c => c.length === expectedNumberOfConnections), ConfigurationTarget.USER), TypeMoq.Times.once());
-		});
+		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
+		await config.deleteConnection(connectionProfile);
+
+		assert.equal(configurationService.inspect<IConnectionProfileStore[]>(Constants.connectionsArrayName).user.length, testConnections.length - 1);
 	});
 
-	test('deleteConnectionGroup should remove the children connections and subgroups from config', () => {
+	test('deleteConnectionGroup should remove the children connections and subgroups from config', async () => {
 		let newProfile: IConnectionProfile = {
 			serverName: 'server3',
 			databaseName: 'database',
@@ -686,6 +525,10 @@ suite('ConnectionConfig', () => {
 			id: undefined,
 			connectionName: undefined
 		};
+		let configurationService = new TestConfigurationService();
+		configurationService.updateValue(Constants.connectionsArrayName, deepClone(testConnections), ConfigurationTarget.USER);
+		configurationService.updateValue(Constants.connectionGroupsArrayName, deepClone(testGroups), ConfigurationTarget.USER);
+
 		let connectionProfile = new ConnectionProfile(capabilitiesService.object, newProfile);
 		connectionProfile.options['databaseDisplayName'] = 'database';
 
@@ -694,29 +537,16 @@ suite('ConnectionConfig', () => {
 		connectionProfileGroup.addGroups([childGroup]);
 		connectionProfileGroup.addConnections([connectionProfile]);
 
-		let expectedNumberOfConnections = connections.user.length - 1;
-		let expectedNumberOfGroups = configValueToConcat.user.length - 2;
-		let workspaceConfigurationServiceMock = TypeMoq.Mock.ofType(WorkspaceConfigurationTestService);
-		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileStore[]>(
-			Constants.connectionsArrayName))
-			.returns(() => connections);
+		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
+		await config.deleteGroup(connectionProfileGroup);
 
-		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileGroup[]>(
-			Constants.connectionGroupsArrayName))
-			.returns(() => configValueToConcat);
-
-		let config = new ConnectionConfig(workspaceConfigurationServiceMock.object, capabilitiesService.object);
-		return config.deleteGroup(connectionProfileGroup).then(() => {
-			workspaceConfigurationServiceMock.verify(y => y.updateValue(Constants.connectionsArrayName,
-				TypeMoq.It.is<IConnectionProfileStore[]>(c => c.length === expectedNumberOfConnections), ConfigurationTarget.USER), TypeMoq.Times.once());
-			workspaceConfigurationServiceMock.verify(y => y.updateValue(Constants.connectionGroupsArrayName,
-				TypeMoq.It.is<IConnectionProfileGroup[]>(c => c.length === expectedNumberOfGroups), ConfigurationTarget.USER), TypeMoq.Times.once());
-		});
+		assert.equal(configurationService.inspect<IConnectionProfileStore[]>(Constants.connectionsArrayName).user.length, testConnections.length - 1);
+		assert.equal(configurationService.inspect<IConnectionProfileGroup[]>(Constants.connectionGroupsArrayName).user.length, testGroups.length - 2);
 	});
 
-	test('deleteConnection should not throw error for connection not in config', () => {
+	test('deleteConnection should not throw error for connection not in config', async () => {
 		let newProfile: IConnectionProfile = {
-			serverName: 'server3',
+			serverName: 'connectionNotThere',
 			databaseName: 'database',
 			userName: 'user',
 			password: 'password',
@@ -732,83 +562,50 @@ suite('ConnectionConfig', () => {
 			id: undefined,
 			connectionName: undefined
 		};
-
-		let expectedNumberOfConnections = connections.user.length;
-		let workspaceConfigurationServiceMock = TypeMoq.Mock.ofType(WorkspaceConfigurationTestService);
-		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileStore[]>(
-			Constants.connectionsArrayName))
-			.returns(() => connections);
-		workspaceConfigurationServiceMock.setup(x => x.updateValue(Constants.connectionsArrayName, TypeMoq.It.isAny(), ConfigurationTarget.USER))
-			.returns(() => Promise.resolve());
+		let configurationService = new TestConfigurationService();
+		configurationService.updateValue(Constants.connectionsArrayName, deepClone(testConnections), ConfigurationTarget.USER);
 
 		let connectionProfile = new ConnectionProfile(capabilitiesService.object, newProfile);
-		let config = new ConnectionConfig(workspaceConfigurationServiceMock.object, capabilitiesService.object);
-		return config.deleteConnection(connectionProfile).then(() => {
-			workspaceConfigurationServiceMock.verify(y => y.updateValue(Constants.connectionsArrayName,
-				TypeMoq.It.is<IConnectionProfileStore[]>(c => c.length === expectedNumberOfConnections), ConfigurationTarget.USER), TypeMoq.Times.once());
-		});
+		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
+		await config.deleteConnection(connectionProfile);
+
+		assert.equal(configurationService.inspect<IConnectionProfileStore[]>(Constants.connectionsArrayName).user.length, testConnections.length);
 	});
 
-	test('renameGroup should change group name', () => {
-
-		let expectedNumberOfConnections = configValueToConcat.user.length;
-		let calledValue: any;
-		let called: boolean = false;
-		let workspaceConfigurationServiceMock = TypeMoq.Mock.ofType(WorkspaceConfigurationTestService);
-		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileGroup[]>(
-			Constants.connectionGroupsArrayName))
-			.returns(() => configValueToConcat);
-		workspaceConfigurationServiceMock.setup(x => x.updateValue(Constants.connectionGroupsArrayName, TypeMoq.It.isAny(), ConfigurationTarget.USER))
-			.callback((x: any, val: any) => {
-				calledValue = val;
-			})
-			.returns(() => Promise.resolve());
+	test('renameGroup should change group name', async () => {
+		let configurationService = new TestConfigurationService();
+		configurationService.updateValue(Constants.connectionGroupsArrayName, deepClone(testGroups), ConfigurationTarget.USER);
 
 		let connectionProfileGroup = new ConnectionProfileGroup('g-renamed', undefined, 'g2', undefined, undefined);
-		let config = new ConnectionConfig(workspaceConfigurationServiceMock.object, capabilitiesService.object);
-		return config.editGroup(connectionProfileGroup).then(() => {
-			workspaceConfigurationServiceMock.verify(y => y.updateValue(Constants.connectionGroupsArrayName,
-				TypeMoq.It.is<IConnectionProfileStore[]>(c => c.length === expectedNumberOfConnections), ConfigurationTarget.USER), TypeMoq.Times.once());
-			calledValue.forEach(con => {
-				if (con.id === 'g2') {
-					assert.equal(con.name, 'g-renamed', 'Group was not renamed');
-					called = true;
-				}
-			});
-			assert.equal(called, true, 'group was not renamed');
-		});
+		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
+		await config.editGroup(connectionProfileGroup);
+
+		let editedGroups = configurationService.inspect<IConnectionProfileGroup[]>(Constants.connectionGroupsArrayName).user;
+
+		assert.equal(editedGroups.length, testGroups.length);
+		let editedGroup = editedGroups.find(group => group.id === 'g2');
+		assert.notEqual(editedGroup, undefined);
+		assert.equal(editedGroup.name, 'g-renamed');
 	});
 
-
-	test('change group(parent) for connection group', () => {
-		let expectedNumberOfConnections = configValueToConcat.user.length;
-		let calledValue: any;
-		let workspaceConfigurationServiceMock = TypeMoq.Mock.ofType(WorkspaceConfigurationTestService);
-		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileGroup[]>(
-			Constants.connectionGroupsArrayName))
-			.returns(() => configValueToConcat);
-		workspaceConfigurationServiceMock.setup(x => x.updateValue(Constants.connectionGroupsArrayName, TypeMoq.It.isAny(), ConfigurationTarget.USER))
-			.callback((x: any, val: any) => {
-				calledValue = val;
-			})
-			.returns(() => Promise.resolve());
+	test('change group(parent) for connection group', async () => {
+		let configurationService = new TestConfigurationService();
+		configurationService.updateValue(Constants.connectionGroupsArrayName, deepClone(testGroups), ConfigurationTarget.USER);
 
 		let sourceProfileGroup = new ConnectionProfileGroup('g2', undefined, 'g2', undefined, undefined);
 		let targetProfileGroup = new ConnectionProfileGroup('g3', undefined, 'g3', undefined, undefined);
-		let config = new ConnectionConfig(workspaceConfigurationServiceMock.object, capabilitiesService.object);
-		return config.changeGroupIdForConnectionGroup(sourceProfileGroup, targetProfileGroup).then(() => {
-			workspaceConfigurationServiceMock.verify(y => y.updateValue(Constants.connectionGroupsArrayName,
-				TypeMoq.It.is<IConnectionProfileStore[]>(c => c.length === expectedNumberOfConnections), ConfigurationTarget.USER), TypeMoq.Times.once());
-			calledValue.forEach(con => {
-				if (con.id === 'g2') {
-					assert.equal(con.parentId, 'g3', 'Group parent was not changed');
-				}
-			});
-		});
+		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
+		await config.changeGroupIdForConnectionGroup(sourceProfileGroup, targetProfileGroup);
+
+		let editedGroups = configurationService.inspect<IConnectionProfileGroup[]>(Constants.connectionGroupsArrayName).user;
+
+		assert.equal(editedGroups.length, testGroups.length);
+		let editedGroup = editedGroups.find(group => group.id === 'g2');
+		assert.notEqual(editedGroup, undefined);
+		assert.equal(editedGroup.parentId, 'g3');
 	});
 
-
-	test('change group(parent) for connection', () => {
+	test('change group(parent) for connection', async () => {
 		let newProfile: IConnectionProfile = {
 			serverName: 'server3',
 			databaseName: 'database',
@@ -823,99 +620,32 @@ suite('ConnectionConfig', () => {
 			providerName: 'MSSQL',
 			options: {},
 			saveProfile: true,
-			id: 'test',
+			id: 'server3',
 			connectionName: undefined
 		};
 
-		let expectedNumberOfConnections = connections.user.length;
-		let workspaceConfigurationServiceMock = TypeMoq.Mock.ofType(WorkspaceConfigurationTestService);
-		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileStore[]>(
-			Constants.connectionsArrayName))
-			.returns(() => connections);
-		workspaceConfigurationServiceMock.setup(x => x.updateValue(Constants.connectionsArrayName, TypeMoq.It.isAny(), ConfigurationTarget.USER))
-			.returns(() => Promise.resolve());
-		workspaceConfigurationServiceMock.setup(x => x.updateValue(Constants.connectionsArrayName, TypeMoq.It.isAny(), ConfigurationTarget.WORKSPACE))
-			.returns(() => Promise.resolve());
+		let configurationService = new TestConfigurationService();
+		configurationService.updateValue(Constants.connectionsArrayName, deepClone(testConnections), ConfigurationTarget.USER);
 
 		let connectionProfile = new ConnectionProfile(capabilitiesService.object, newProfile);
 		let newId = 'newid';
 
-		let config = new ConnectionConfig(workspaceConfigurationServiceMock.object, capabilitiesService.object);
-		return config.changeGroupIdForConnection(connectionProfile, newId).then(() => {
-			workspaceConfigurationServiceMock.verify(y => y.updateValue(Constants.connectionsArrayName,
-				TypeMoq.It.is<IConnectionProfileStore[]>(c => c.length === expectedNumberOfConnections), ConfigurationTarget.USER), TypeMoq.Times.atLeastOnce());
-		});
-	});
+		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
+		await config.changeGroupIdForConnection(connectionProfile, newId);
 
-	test('fixConnectionIds should replace duplicate ids with new ones', () => {
-		let profiles: IConnectionProfileStore[] = [
-			{
-				options: {},
-				groupId: '1',
-				id: '1',
-				providerName: undefined,
-				savePassword: true,
-			}, {
-				options: {},
-				groupId: '1',
-				id: '2',
-				providerName: undefined,
-				savePassword: true,
-			}, {
-				options: {},
-				groupId: '1',
-				id: '3',
-				providerName: undefined,
-				savePassword: true,
-			}, {
-				options: {},
-				groupId: '1',
-				id: '2',
-				providerName: undefined,
-				savePassword: true,
-			}, {
-				options: {},
-				groupId: '1',
-				id: '4',
-				providerName: undefined,
-				savePassword: true,
-			}, {
-				options: {},
-				groupId: '1',
-				id: '3',
-				providerName: undefined,
-				savePassword: true,
-			}, {
-				options: {},
-				groupId: '1',
-				id: '2',
-				providerName: undefined,
-				savePassword: true,
-			}
-		];
-
-		let workspaceConfigurationServiceMock = TypeMoq.Mock.ofType(WorkspaceConfigurationTestService);
-		let config = new ConnectionConfig(workspaceConfigurationServiceMock.object, capabilitiesService.object);
-		config.fixConnectionIds(profiles);
-		let ids = profiles.map(x => x.id);
-		for (var index = 0; index < ids.length; index++) {
-			var id = ids[index];
-			assert.equal(ids.lastIndexOf(id), index);
-		}
+		let editedConnections = configurationService.inspect<IConnectionProfileStore[]>(Constants.connectionsArrayName).user;
+		assert.equal(editedConnections.length, testConnections.length);
+		let editedConnection = editedConnections.find(con => con.id === 'server3');
+		assert.notEqual(editedConnection, undefined);
+		assert.equal(editedConnection.groupId, 'newid');
 	});
 
 	test('addConnection should not move the connection when editing', async () => {
 		// Set up the connection config
-		let workspaceConfigurationServiceMock = TypeMoq.Mock.ofType(WorkspaceConfigurationTestService);
-		workspaceConfigurationServiceMock.setup(x => x.updateValue(Constants.connectionsArrayName, TypeMoq.It.isAny(), ConfigurationTarget.USER))
-			.returns(() => Promise.resolve());
-		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileStore[] | IConnectionProfileGroup[] | azdata.DataProtocolServerCapabilities[]>(
-			Constants.connectionsArrayName))
-			.returns(() => connections);
-		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileStore[] | IConnectionProfileGroup[] | azdata.DataProtocolServerCapabilities[]>(
-			Constants.connectionGroupsArrayName))
-			.returns(() => configValueToConcat);
-		let config = new ConnectionConfig(workspaceConfigurationServiceMock.object, capabilitiesService.object);
+		let configurationService = new TestConfigurationService();
+		configurationService.updateValue(Constants.connectionsArrayName, deepClone(testConnections), ConfigurationTarget.USER);
+		configurationService.updateValue(Constants.connectionGroupsArrayName, deepClone(testGroups), ConfigurationTarget.USER);
+		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 
 		// Clone a connection and modify an option
 		const connectionIndex = 1;
@@ -934,5 +664,4 @@ suite('ConnectionConfig', () => {
 		assert.equal(editedConnection.getOptionsKey(), connectionToEdit.getOptionsKey());
 		assert.equal(editedConnection.options[optionKey], optionValue);
 	});
-
 });
