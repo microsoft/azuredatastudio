@@ -536,7 +536,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public async doChangeKernel(displayName: string, needSetProvider: boolean = true): Promise<void> {
-		console.log(`Model: doChangeKernel: ${++this._kernelChangeCount}; kenrel: ${displayName}`);
 		if (needSetProvider) {
 			await this.setProviderIdAndStartSession(displayName);
 		}
@@ -631,14 +630,12 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				if (spec) {
 					this._defaultKernel = spec;
 				}
-				console.log('loadKernelInfo calling model:doChangeKernel');
 				this.doChangeKernel(this._defaultKernel.display_name, false);
 			}
 		} catch (err) {
 			let msg = notebookUtils.getErrorMessage(err);
 			this.notifyError(localize('loadKernelFailed', 'Loading kernel info failed: {0}', msg));
 		}
-		console.log(`loadKernelInfo done`);
 	}
 
 	// Get default language if saved in notebook file
@@ -802,19 +799,15 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	 */
 	private async setProviderIdAndStartSession(displayName: string): Promise<void> {
 		if (displayName) {
-			console.log(`setProviderIdAndStartSession`);
 			if (this._activeClientSession && this._activeClientSession.isReady) {
-				console.log(`setProviderIdAndStartSession actionSession: ''${this._activeClientSession.kernel.name}`);
 				this._oldKernel = this._activeClientSession.kernel;
 				if (this._oldKernel.name !== displayName) {
 					let oldProviderId = this.getProviderIdFromName(this._oldKernel.name);
 
 					if (this._kernelDisplayNameToNotebookProviderIds.has(displayName)) {
 						let providerId = this._kernelDisplayNameToNotebookProviderIds.get(displayName);
-						console.log(`setProviderIdAndStartSession _providerId: ''${this._providerId}'; new providerId: ''${providerId}' ; old providerId: ''${oldProviderId}'`);
 						if (providerId) {
 							if (providerId !== this._providerId) {
-								console.log('setProviderIdAndStartSession: provider changed and startSession');
 								this._providerId = providerId;
 								this._onProviderIdChanged.fire(this._providerId);
 
@@ -831,12 +824,11 @@ export class NotebookModel extends Disposable implements INotebookModel {
 						}
 
 					} else {
-						console.log(`No provider for kernel: ${displayName}`);
+						console.log(`No provider found support kernel: ${displayName}`);
 					}
 				}
 			}
 		}
-		console.log(`setProviderIdAndStartSession done`);
 	}
 
 	// Get kernel specs from current sessionManager

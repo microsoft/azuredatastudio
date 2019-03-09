@@ -252,32 +252,20 @@ export class KernelsDropdown extends SelectBox {
 	updateModel(model: INotebookModel): void {
 		this.model = model as NotebookModel;
 		this._register(this.model.kernelChanged((changedArgs: azdata.nb.IKernelChangedArgs) => {
-			console.log('--In kernelDropdown model.kernelChanged');
 			this.updateKernel(changedArgs.newValue);
 		}));
-		if (model.clientSession) {
-			this._register(model.clientSession.kernelChanged((changedArgs: azdata.nb.IKernelChangedArgs) => {
-				if (changedArgs.newValue) {
-					this.updateKernel(changedArgs.newValue);
-				}
-			}));
-		}
 	}
 
 	// Update SelectBox values
 	public updateKernel(kenerl: azdata.nb.IKernel) {
 		if (kenerl) {
 			let standardKernel = this.model.getStandardKernelFromName(kenerl.name);
-			let displayName = standardKernel.displayName;
-			this.updateKenerlFromDisplayName(displayName);
-		}
-	}
 
-	private updateKenerlFromDisplayName(displayName: string) {
-		let kernels: string[] = this.model.standardKernelsDisplayName();
-		if (kernels) {
-			let index = kernels.findIndex((kernel => kernel === displayName));
-			this.setOptions(kernels, index);
+			let kernels: string[] = this.model.standardKernelsDisplayName();
+			if (kernels) {
+				let index = kernels.findIndex((kernel => kernel === standardKernel.displayName));
+				this.setOptions(kernels, index);
+			}
 		}
 	}
 

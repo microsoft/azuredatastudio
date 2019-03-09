@@ -253,14 +253,7 @@ export class ClientSession implements IClientSession {
 		// Wait on connection configuration to complete before resolving full kernel change
 		this._kernelChangeCompleted.resolve();
 		this._kernelChangedEmitter.fire(changeArgs);
-		console.log('	_kernelChangedEmitter fired');
-		if (changeArgs) {
-			if (changeArgs.oldValue) {
-				console.log(`	_kernelChangedEmitter:'${changeArgs.oldValue.name}'`);
-			}
-			console.log(`	_kernelChangedEmitter: '${changeArgs.newValue.name}'`);
-		}
-		console.log('	clientSession: changeKernel done');
+		console.log('kernelChangedEmitter is fired');
 		return kernel;
 	}
 
