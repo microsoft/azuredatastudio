@@ -72,12 +72,6 @@ suite('SQL ConnectionStore tests', () => {
 		workspaceConfigurationServiceMock.setup(x => x.getValue(Constants.sqlConfigSectionName))
 			.returns(() => configResult);
 
-		let extensionManagementServiceMock = {
-			getInstalled: () => {
-				return Promise.resolve([]);
-			}
-		};
-
 		capabilitiesService = new CapabilitiesTestService();
 		let connectionProvider: azdata.ConnectionOption[] = [
 			{

@@ -5,16 +5,16 @@
 
 'use strict';
 
-import * as Constants from './constants';
-import * as ConnInfo from './connectionInfo';
-import { ConnectionProfile } from '../common/connectionProfile';
+import * as Constants from 'sql/platform/connection/common/constants';
+import * as ConnInfo from 'sql/platform/connection/common/connectionInfo';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ICredentialsService } from 'sql/platform/credentials/common/credentialsService';
-import { IConnectionConfig } from './iconnectionConfig';
-import { ConnectionConfig } from './connectionConfig';
+import { IConnectionConfig } from 'sql/platform/connection/common/iconnectionConfig';
+import { ConnectionConfig } from 'sql/platform/connection/common/connectionConfig';
 import { Memento } from 'vs/workbench/common/memento';
 import { StorageScope } from 'vs/platform/storage/common/storage';
-import { ConnectionProfileGroup, IConnectionProfileGroup } from './connectionProfileGroup';
+import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 

@@ -5,12 +5,12 @@
 
 'use strict';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { ConnectionProfile } from './connectionProfile';
-import { ConnectionProfileGroup, IConnectionProfileGroup } from './connectionProfileGroup';
-import * as Constants from './constants';
-import { IConnectionConfig } from './iconnectionConfig';
-import { IConnectionProfile, IConnectionProfileStore } from './interfaces';
-import * as Utils from './utils';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
+import * as Constants from 'sql/platform/connection/common/constants';
+import { IConnectionConfig } from 'sql/platform/connection/common/iconnectionConfig';
+import { IConnectionProfile, IConnectionProfileStore } from 'sql/platform/connection/common/interfaces';
+import * as Utils from 'sql/platform/connection/common/utils';
 import { generateUuid } from 'vs/base/common/uuid';
 import * as nls from 'vs/nls';
 import { ConfigurationTarget, IConfigurationService } from 'vs/platform/configuration/common/configuration';
