@@ -79,57 +79,6 @@ suite('ConnectionConfig', () => {
 		}
 	]);
 
-	let configValueToMerge = {
-		workspace: [
-			{
-				name: 'g1',
-				id: 'g1',
-				parentId: '',
-				color: 'pink',
-				description: 'g1'
-			},
-			{
-				name: 'g1-1',
-				id: 'g1-1',
-				parentId: 'g1',
-				color: 'blue',
-				description: 'g1-1'
-			}
-		],
-		user: [
-			{
-				name: 'g2',
-				id: 'g2',
-				parentId: '',
-				color: 'green',
-				description: 'g2'
-			},
-			{
-				name: 'g2-1',
-				id: 'g2-1',
-				parentId: 'g2',
-				color: 'yellow',
-				description: 'g2'
-			},
-			{
-				name: 'g1',
-				id: 'g1',
-				parentId: '',
-				color: 'pink',
-				description: 'g1'
-			},
-			{
-				name: 'g1-2',
-				id: 'g1-2',
-				parentId: 'g1',
-				color: 'silver',
-				description: 'g1-2'
-			}],
-		value: [],
-		default: [],
-		workspaceFolder: []
-	};
-
 	const testConnections = deepFreeze([
 		{
 			options: {
@@ -171,6 +120,7 @@ suite('ConnectionConfig', () => {
 			id: 'server3'
 		}
 	]);
+
 	setup(() => {
 		capabilitiesService = TypeMoq.Mock.ofType(CapabilitiesTestService);
 		capabilities = [];
