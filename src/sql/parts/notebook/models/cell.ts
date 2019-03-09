@@ -244,6 +244,16 @@ export class CellModel implements ICellModel {
 			this.sendNotification(notificationService, Severity.Info, localize('sessionNotReady', 'The session for this notebook will start momentarily'));
 			await clientSession.kernelChangeCompleted;
 		}
+		if (!clientSession.kernel) {
+			let defaultKernel = model && model.defaultKernel && model.defaultKernel.name;
+			if (!defaultKernel) {
+				this.sendNotification(notificationService, Severity.Error, localize('noDefaultKernel', 'No kernel is available for this notebook'));
+				return undefined;
+			}
+			await clientSession.changeKernel({
+				name: defaultKernel
+			});
+		}
 		return clientSession.kernel;
 	}
 

@@ -278,14 +278,14 @@ export class KernelsDropdown extends SelectBox {
 export class AttachToDropdown extends SelectBox {
 	private model: INotebookModel;
 
-	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, modelRegistered: Promise<INotebookModel>,
+	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, modelReady: Promise<INotebookModel>,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IConnectionDialogService private _connectionDialogService: IConnectionDialogService,
 		@INotificationService private _notificationService: INotificationService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService) {
 		super([msgLoadingContexts], msgLoadingContexts, contextViewProvider, container, { labelText: attachToLabel, labelOnTop: false } as ISelectBoxOptionsWithLabel);
-		if (modelRegistered) {
-			modelRegistered
+		if (modelReady) {
+			modelReady
 				.then(model => {
 					this.updateModel(model);
 					this.updateAttachToDropdown(model);
