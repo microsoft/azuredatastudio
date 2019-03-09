@@ -220,7 +220,7 @@ suite('notebook model', function (): void {
 		let options: INotebookModelOptions = Object.assign({}, defaultModelOptions, <Partial<INotebookModelOptions>> {
 			factory: mockModelFactory.object
 		});
-		let model = new NotebookModel(options, false);
+		let model = new NotebookModel(options, undefined);
 		model.onClientSessionReady((session) => actualSession = session);
 		await model.requestModelLoad();
 		model.startSession(notebookManagers[0]);

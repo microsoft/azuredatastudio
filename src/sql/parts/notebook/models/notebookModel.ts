@@ -71,7 +71,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _kernelDisplayNameToNotebookProviderIds: Map<string, string> = new Map<string, string>();
 	private _onValidConnectionSelected = new Emitter<boolean>();
 	private _oldKernel: nb.IKernel;
-	private _kernelChangeCount = 0;
 	private _clientSessionListeners: IDisposable[] = [];
 
 	constructor(private _notebookOptions: INotebookModelOptions, startSessionImmediately?: boolean, private connectionProfile?: IConnectionProfile) {
@@ -267,9 +266,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			this._trustedMode = isTrusted;
 			let contents = null;
 
-			if (this._notebookOptions.notebookUri.scheme !== Schemas.untitled) {
-				// TODO: separate ContentManager from NotebookManager
-				contents = await this.notebookManagers[0].contentManager.getNotebookContents(this._notebookOptions.notebookUri);
+			if (this._notebookOptions && this._notebookOptions.contentManager) {
+				contents = await this._notebookOptions.contentManager.loadContent();
 			}
 			let factory = this._notebookOptions.factory;
 			// if cells already exist, create them with language info (if it is saved)
