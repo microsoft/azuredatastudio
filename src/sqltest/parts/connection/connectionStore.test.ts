@@ -314,7 +314,6 @@ suite('SQL ConnectionStore tests', () => {
 	});
 
 	test('addActiveConnection should save password to credential store', async () => {
-
 		// Setup credential store to capture credentials sent to it
 		let capturedCreds: any;
 		credentialStore.setup(x => x.saveCredential(TypeMoq.It.isAny(), TypeMoq.It.isAny()))
@@ -330,7 +329,6 @@ suite('SQL ConnectionStore tests', () => {
 			credentialStore.object, capabilitiesService, connectionConfig.object);
 		connectionStore.clearActiveConnections();
 		connectionStore.clearRecentlyUsed();
-
 
 		let integratedCred = Object.assign({}, defaultNamedProfile, {
 			serverName: defaultNamedProfile.serverName + 'Integrated',

@@ -282,7 +282,7 @@ export class ConnectionStore {
 	 */
 	public async addActiveConnection(conn: IConnectionProfile, addToMru: boolean): Promise<void> {
 		await this.addConnectionToMemento(conn, Constants.activeConnections, undefined, conn.savePassword);
-		if(addToMru) {
+		if (addToMru) {
 			await this.addConnectionToMru(conn);
 		}
 	}
