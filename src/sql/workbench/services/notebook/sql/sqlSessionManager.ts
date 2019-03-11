@@ -242,7 +242,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 		this._future = new SQLFuture(this._queryRunner, count, this._configurationService);
 		if (!canRun) {
 			// Complete early
-			this._future.handleDone(new Error(localize('connectionRequired', 'A connection must be chosen to run notebook cells')));
+			this._future.handleDone(new Error(localize('connectionRequired', "A connection must be chosen to run notebook cells")));
 		}
 
 		// TODO should we  cleanup old future? I don't think we need to
@@ -399,6 +399,9 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		try {
 			for (let resultSet of batch.resultSetSummaries) {
 				let rowCount = resultSet.rowCount > this.configuredMaxRows ? this.configuredMaxRows : resultSet.rowCount;
+				if (rowCount === this.configuredMaxRows) {
+					this.handleMessage(localize('sqlMaxRowsDisplayed', "Displaying Top {0} rows.", rowCount));
+				}
 				await this.sendResultSetAsIOPub(rowCount, resultSet);
 			}
 		} catch (err) {

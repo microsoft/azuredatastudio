@@ -457,7 +457,7 @@ export interface ICellModel {
 	readonly onExecutionStateChange: Event<CellExecutionState>;
 	setFuture(future: FutureInternal): void;
 	readonly executionState: CellExecutionState;
-	runCell(notificationService?: INotificationService): Promise<boolean>;
+	runCell(notificationService?: INotificationService, connectionManagementService?: IConnectionManagementService): Promise<boolean>;
 	setOverrideLanguage(language: string);
 	equals(cellModel: ICellModel): boolean;
 	toJSON(): nb.ICellContents;
