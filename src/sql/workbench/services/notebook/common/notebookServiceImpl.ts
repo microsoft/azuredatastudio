@@ -452,7 +452,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		notebookRegistry.registerNotebookProvider({
 			provider: sqlProvider.providerId,
 			fileExtensions: DEFAULT_NOTEBOOK_FILETYPE,
-			standardKernels: { name: notebookConstants.SQL, displayName: notebookConstants.SQL, connectionProviderIds: [notebookConstants.SQL_PROVIDER] }
+			standardKernels: { name: notebookConstants.SQL, displayName: notebookConstants.SQL, connectionProviderIds: [notebookConstants.SQL_CONNECTION_PROVIDER] }
 		});
 	}
 

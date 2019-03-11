@@ -283,7 +283,7 @@
 					]
 				},
 				{
-					"name": "Python3",
+					"name": "python3",
 					"displayName": "Python 3",
 					"connectionProviderIds": []
 				}

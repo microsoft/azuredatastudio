@@ -311,6 +311,11 @@ export interface INotebookModel {
 	readonly contextsChanged: Event<void>;
 
 	/**
+	 * Event fired on when switching kernel and should show loading context
+	 */
+	readonly contextsLoading: Event<void>;
+
+	/**
 	 * The specs for available kernels, or undefined if these have
 	 * not been loaded yet
 	 */
@@ -389,6 +394,12 @@ export interface INotebookModel {
 	pushEditOperations(edits: ISingleNotebookEditOperation[]): void;
 
 	getApplicableConnectionProviderIds(kernelName: string): string[];
+
+	/**
+	 * Get the standardKernelWithProvider by name
+	 * @param name The kernel name
+	 */
+	getStandardKernelFromName(name: string): IStandardKernelWithProvider;
 
 	/** Event fired once we get call back from ConfigureConnection method in sqlops extension */
 	readonly onValidConnectionSelected: Event<boolean>;
@@ -511,5 +522,5 @@ export interface ICellMagicMapper {
 
 export namespace notebookConstants {
 	export const SQL = 'SQL';
-	export const SQL_PROVIDER = 'MSSQL';
+	export const SQL_CONNECTION_PROVIDER = 'MSSQL';
 }

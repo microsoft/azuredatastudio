@@ -257,12 +257,12 @@ export class KernelsDropdown extends SelectBox {
 	}
 
 	// Update SelectBox values
-	public updateKernel(kenerl: azdata.nb.IKernel) {
-		if (kenerl) {
-			let standardKernel = this.model.getStandardKernelFromName(kenerl.name);
+	public updateKernel(kernel: azdata.nb.IKernel) {
+		if (kernel) {
+			let standardKernel = this.model.getStandardKernelFromName(kernel.name);
 
 			let kernels: string[] = this.model.standardKernelsDisplayName();
-			if (kernels) {
+			if (kernels && standardKernel) {
 				let index = kernels.findIndex((kernel => kernel === standardKernel.displayName));
 				this.setOptions(kernels, index);
 			}
@@ -307,7 +307,7 @@ export class AttachToDropdown extends SelectBox {
 				this.loadAttachToDropdown(this.model, kernelDisplayName);
 			}
 		}));
-		this._register(this.model.contextsChanging(() => {
+		this._register(this.model.contextsLoading(() => {
 			this.setOptions([msgLoadingContexts], 0);
 		}));
 	}

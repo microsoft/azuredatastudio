@@ -4207,7 +4207,7 @@ declare module 'azdata' {
 
 		export interface ILanguageInfo {
 			name: string;
-			version: string;
+			version?: string;
 			mimetype?: string;
 			codemirror_mode?: string | ICodeMirrorMode;
 		}
