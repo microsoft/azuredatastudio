@@ -271,29 +271,20 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			let factory = this._notebookOptions.factory;
 			// if cells already exist, create them with language info (if it is saved)
 			this._cells = [];
-			this._defaultLanguageInfo = {
-				name: this._providerId === SQL_NOTEBOOK_PROVIDER ? 'sql' : 'python',
-				version: ''
-			};
 			if (contents) {
 				this._defaultLanguageInfo = this.getDefaultLanguageInfo(contents);
 				this._savedKernelInfo = this.getSavedKernelInfo(contents);
-				if (this._savedKernelInfo) {
-					this._defaultKernel = this._savedKernelInfo;
-					let provider = this._kernelDisplayNameToNotebookProviderIds.get(this._savedKernelInfo.display_name);
-					if (provider && provider !== this._providerId) {
-						this._providerId = provider;
-					}
-				}
 				if (contents.cells && contents.cells.length > 0) {
 					this._cells = contents.cells.map(c => factory.createCell(c, { notebook: this, isTrusted: isTrusted }));
 				}
 			}
+			this.setDefaultKernelAndProviderId();
 			this.trySetLanguageFromLangInfo();
 		} catch (error) {
 			this._inErrorState = true;
 			throw error;
 		}
+		//this.setDefaultKernelAndProviderId();
 	}
 
 	public findCellIndex(cellModel: ICellModel): number {
