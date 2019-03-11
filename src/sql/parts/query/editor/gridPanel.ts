@@ -397,13 +397,15 @@ class GridTable<T> extends Disposable implements IView {
 	private scrolled = false;
 	private visible = false;
 
+	private rowHeight: number;
+
 	public get resultSet(): azdata.ResultSetSummary {
 		return this._resultSet;
 	}
 
 	// this handles if the row count is small, like 4-5 rows
 	private get maxSize(): number {
-		return ((this.resultSet.rowCount) * ROW_HEIGHT) + HEADER_HEIGHT + ESTIMATED_SCROLL_BAR_HEIGHT;
+		return ((this.resultSet.rowCount) * this.rowHeight) + HEADER_HEIGHT + ESTIMATED_SCROLL_BAR_HEIGHT;
 	}
 
 	constructor(
@@ -417,6 +419,8 @@ class GridTable<T> extends Disposable implements IView {
 		@IConfigurationService private configurationService: IConfigurationService
 	) {
 		super();
+		let config = this.configurationService.getValue<{ rowHeight: number }>('resultsGrid');
+		this.rowHeight = config && config.rowHeight ? config.rowHeight : ROW_HEIGHT;
 		this.state = state;
 		this.container.style.width = '100%';
 		this.container.style.height = '100%';
@@ -490,7 +494,7 @@ class GridTable<T> extends Disposable implements IView {
 		});
 		this.columns.unshift(this.rowNumberColumn.getColumnDefinition());
 		let tableOptions: Slick.GridOptions<T> = {
-			rowHeight: ROW_HEIGHT,
+			rowHeight: this.rowHeight,
 			showRowNumber: true,
 			forceFitColumns: false,
 			defaultColumnWidth: 120
