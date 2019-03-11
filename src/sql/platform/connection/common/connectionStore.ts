@@ -5,18 +5,17 @@
 
 'use strict';
 
-import * as Constants from 'sql/platform/connection/common/constants';
-import * as ConnInfo from 'sql/platform/connection/common/connectionInfo';
+import { ReverseLookUpMap } from 'sql/base/common/map';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { ConnectionConfig } from 'sql/platform/connection/common/connectionConfig';
+import { fixupConnectionCredentials } from 'sql/platform/connection/common/connectionInfo';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
+import * as Constants from 'sql/platform/connection/common/constants';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ICredentialsService } from 'sql/platform/credentials/common/credentialsService';
-import { IConnectionConfig } from 'sql/platform/connection/common/iconnectionConfig';
-import { ConnectionConfig } from 'sql/platform/connection/common/connectionConfig';
-import { Memento } from 'vs/workbench/common/memento';
-import { StorageScope } from 'vs/platform/storage/common/storage';
-import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
-import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
-import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IStateService } from 'vs/platform/state/common/state';
 
 const MAX_CONNECTIONS_DEFAULT = 25;
 
@@ -27,25 +26,15 @@ const MAX_CONNECTIONS_DEFAULT = 25;
  * @class ConnectionStore
  */
 export class ConnectionStore {
-	private _memento: any;
-	private _groupIdToFullNameMap: { [groupId: string]: string };
-	private _groupFullNameToIdMap: { [groupId: string]: string };
+	private groupIdMap = new ReverseLookUpMap<string, string>();
+	private connectionConfig = new ConnectionConfig(this.configurationService, this.capabilitiesService);
 
 	constructor(
-		private _context: Memento,
-		private _workspaceConfigurationService: IWorkspaceConfigurationService,
-		private _credentialService: ICredentialsService,
-		private _capabilitiesService: ICapabilitiesService,
-		private _connectionConfig?: IConnectionConfig
+		private stateService: IStateService,
+		private configurationService: IConfigurationService,
+		private credentialService: ICredentialsService,
+		private capabilitiesService: ICapabilitiesService
 	) {
-		if (_context) {
-			this._memento = this._context.getMemento(StorageScope.GLOBAL);
-		}
-		this._groupIdToFullNameMap = {};
-		this._groupFullNameToIdMap = {};
-		if (!this._connectionConfig) {
-			this._connectionConfig = new ConnectionConfig(this._workspaceConfigurationService, this._capabilitiesService);
-		}
 	}
 
 	public static get CRED_PREFIX(): string { return 'Microsoft.SqlTools'; }
@@ -72,7 +61,7 @@ export class ConnectionStore {
 	 */
 	public formatCredentialId(connectionProfile: IConnectionProfile, itemType?: string): string {
 		let connectionProfileInstance: ConnectionProfile = ConnectionProfile.fromIConnectionProfile(
-			this._capabilitiesService, connectionProfile);
+			this.capabilitiesService, connectionProfile);
 		if (!connectionProfileInstance.getConnectionInfoId()) {
 			throw new Error('Missing Id, which is required');
 		}
@@ -98,7 +87,7 @@ export class ConnectionStore {
 	 */
 	public isPasswordRequired(connection: IConnectionProfile): boolean {
 		if (connection) {
-			let connectionProfile = ConnectionProfile.fromIConnectionProfile(this._capabilitiesService, connection);
+			let connectionProfile = ConnectionProfile.fromIConnectionProfile(this.capabilitiesService, connection);
 			return connectionProfile.isPasswordRequired();
 		} else {
 			return false;
@@ -106,28 +95,20 @@ export class ConnectionStore {
 	}
 
 	public addSavedPassword(credentialsItem: IConnectionProfile): Promise<{ profile: IConnectionProfile, savedCred: boolean }> {
-		let self = this;
-		return new Promise<{ profile: IConnectionProfile, savedCred: boolean }>((resolve, reject) => {
-			if (credentialsItem.savePassword && this.isPasswordRequired(credentialsItem)
-				&& !credentialsItem.password) {
-
-				let credentialId = this.formatCredentialIdForCred(credentialsItem);
-				self._credentialService.readCredential(credentialId)
-					.then(savedCred => {
-						if (savedCred) {
-							credentialsItem.password = savedCred.password;
-							credentialsItem.options['password'] = savedCred.password;
-						}
-						resolve({ profile: credentialsItem, savedCred: !!savedCred });
-					},
-					reason => {
-						reject(reason);
-					});
-			} else {
-				// No need to look up the password
-				resolve({ profile: credentialsItem, savedCred: credentialsItem.savePassword });
-			}
-		});
+		if (credentialsItem.savePassword && this.isPasswordRequired(credentialsItem) && !credentialsItem.password) {
+			let credentialId = this.formatCredentialIdForCred(credentialsItem);
+			return this.credentialService.readCredential(credentialId)
+				.then(savedCred => {
+					if (savedCred) {
+						credentialsItem.password = savedCred.password;
+						credentialsItem.options['password'] = savedCred.password;
+					}
+					return { profile: credentialsItem, savedCred: !!savedCred };
+				});
+		} else {
+			// No need to look up the password
+			return Promise.resolve({ profile: credentialsItem, savedCred: credentialsItem.savePassword });
+		}
 	}
 
 	/**
@@ -139,34 +120,20 @@ export class ConnectionStore {
 	 * @returns {Promise<IConnectionProfile>} a Promise that returns the original profile, for help in chaining calls
 	 */
 	public saveProfile(profile: IConnectionProfile, forceWritePlaintextPassword?: boolean): Promise<IConnectionProfile> {
-		const self = this;
-		return new Promise<IConnectionProfile>((resolve, reject) => {
-			// Add the profile to the saved list, taking care to clear out the password field if necessary
-			let savedProfile: IConnectionProfile;
-			if (forceWritePlaintextPassword) {
-				savedProfile = profile;
-			} else {
-
-				savedProfile = this.getProfileWithoutPassword(profile);
-			}
-			self.saveProfileToConfig(savedProfile)
-				.then(savedConnectionProfile => {
-					profile.groupId = savedConnectionProfile.groupId;
-					profile.id = savedConnectionProfile.id;
-					// Only save if we successfully added the profile
-					return self.saveProfilePasswordIfNeeded(profile);
-					// And resolve / reject at the end of the process
-				}, err => {
-					reject(err);
-				}).then(resolved => {
-					// Add necessary default properties before returning
-					// this is needed to support immediate connections
-					ConnInfo.fixupConnectionCredentials(profile);
-					resolve(profile);
-				}, err => {
-					reject(err);
-				});
-		});
+		// Add the profile to the saved list, taking care to clear out the password field if necessary
+		let savedProfile = forceWritePlaintextPassword ? profile : this.getProfileWithoutPassword(profile);
+		return this.saveProfileToConfig(savedProfile)
+			.then(savedConnectionProfile => {
+				profile.groupId = savedConnectionProfile.groupId;
+				profile.id = savedConnectionProfile.id;
+				// Only save if we successfully added the profile
+				return this.saveProfilePasswordIfNeeded(profile);
+			}).then(() => {
+				// Add necessary default properties before returning
+				// this is needed to support immediate connections
+				fixupConnectionCredentials(profile);
+				return profile;
+			});
 	}
 
 	/**
@@ -176,29 +143,15 @@ export class ConnectionStore {
 	 * @returns {Promise<string>} a Promise that returns the id of connection group
 	 */
 	public saveProfileGroup(profile: IConnectionProfileGroup): Promise<string> {
-		const self = this;
-		return new Promise<string>((resolve, reject) => {
-			self._connectionConfig.addGroup(profile).then(groupId => {
-				resolve(groupId);
-			}).catch(error => {
-				reject(error);
-			});
-		});
+		return this.connectionConfig.addGroup(profile);
 	}
 
 	private saveProfileToConfig(profile: IConnectionProfile): Promise<IConnectionProfile> {
-		const self = this;
-		return new Promise<IConnectionProfile>((resolve, reject) => {
-			if (profile.saveProfile) {
-				self._connectionConfig.addConnection(profile).then(savedProfile => {
-					resolve(savedProfile);
-				}).catch(error => {
-					reject(error);
-				});
-			} else {
-				resolve(profile);
-			}
-		});
+		if (profile.saveProfile) {
+			return this.connectionConfig.addConnection(profile);
+		} else {
+			return Promise.resolve(profile);
+		}
 	}
 
 	/**
@@ -208,12 +161,8 @@ export class ConnectionStore {
 	 * @returns {azdata.ConnectionInfo} the array of connections, empty if none are found
 	 */
 	public getRecentlyUsedConnections(providers?: string[]): ConnectionProfile[] {
-		let configValues: IConnectionProfile[] = this._memento[Constants.recentConnections];
-		if (!configValues) {
-			configValues = [];
-		}
+		let configValues = this.stateService.getItem<IConnectionProfile[]>(Constants.recentConnections, []).filter(c => !!c);
 
-		configValues = configValues.filter(c => !!(c));
 		if (providers && providers.length > 0) {
 			configValues = configValues.filter(c => providers.includes(c.providerName));
 		}
@@ -223,7 +172,7 @@ export class ConnectionStore {
 	private convertConfigValuesToConnectionProfiles(configValues: IConnectionProfile[]): ConnectionProfile[] {
 		return configValues.map(c => {
 			if (c) {
-				let connectionProfile = new ConnectionProfile(this._capabilitiesService, c);
+				let connectionProfile = new ConnectionProfile(this.capabilitiesService, c);
 				if (connectionProfile.saveProfile) {
 					if (!connectionProfile.groupFullName && connectionProfile.groupId) {
 						connectionProfile.groupFullName = this.getGroupFullName(connectionProfile.groupId);
@@ -248,17 +197,14 @@ export class ConnectionStore {
 	 * @returns {azdata.ConnectionInfo} the array of connections, empty if none are found
 	 */
 	public getActiveConnections(): ConnectionProfile[] {
-		let configValues: IConnectionProfile[] = this._memento[Constants.activeConnections];
-		if (!configValues) {
-			configValues = [];
-		}
+		let configValues: IConnectionProfile[] = this.stateService.getItem<IConnectionProfile[]>(Constants.activeConnections, []);
 
 		return this.convertConfigValuesToConnectionProfiles(configValues);
 	}
 
 	public getProfileWithoutPassword(conn: IConnectionProfile): ConnectionProfile {
 		if (conn) {
-			let savedConn: ConnectionProfile = ConnectionProfile.fromIConnectionProfile(this._capabilitiesService, conn);
+			let savedConn: ConnectionProfile = ConnectionProfile.fromIConnectionProfile(this.capabilitiesService, conn);
 			savedConn = savedConn.withoutPassword();
 
 			return savedConn;
@@ -277,60 +223,38 @@ export class ConnectionStore {
 	 */
 	public addActiveConnection(conn: IConnectionProfile, isConnectionToDefaultDb: boolean = false): Promise<void> {
 		if (this.getActiveConnections().some(existingConn => existingConn.id === conn.id)) {
-			return Promise.resolve(undefined);
+			return Promise.resolve();
 		} else {
-			return this.addConnectionToMemento(conn, Constants.activeConnections, undefined, conn.savePassword).then(() => {
+			return this.addConnectionToState(conn, Constants.activeConnections, undefined, conn.savePassword).then(() => {
 				let maxConnections = this.getMaxRecentConnectionsCount();
 				if (isConnectionToDefaultDb) {
 					conn.databaseName = '';
 				}
-				return this.addConnectionToMemento(conn, Constants.recentConnections, maxConnections);
+				return this.addConnectionToState(conn, Constants.recentConnections, maxConnections);
 			});
 		}
 	}
 
-	public addConnectionToMemento(conn: IConnectionProfile, mementoKey: string, maxConnections?: number, savePassword?: boolean): Promise<void> {
-		const self = this;
-		return new Promise<void>((resolve, reject) => {
-			// Get all profiles
-			let configValues = self.getConnectionsFromMemento(mementoKey);
-			let configToSave = this.addToConnectionList(conn, configValues);
-			if (maxConnections) {
-				// Remove last element if needed
-				if (configToSave.length > maxConnections) {
-					configToSave = configToSave.slice(0, maxConnections);
-				}
+	public addConnectionToState(conn: IConnectionProfile, key: string, maxConnections?: number, savePassword?: boolean): Promise<void> {
+		// Get all profiles
+		let configValues = this.getConnectionsFromState(key);
+		let configToSave = this.addToConnectionList(conn, configValues);
+		if (maxConnections) {
+			// Remove last element if needed
+			if (configToSave.length > maxConnections) {
+				configToSave = configToSave.slice(0, maxConnections);
 			}
-			self._memento[mementoKey] = configToSave;
-			if (savePassword) {
-				self.doSavePassword(conn).then(result => {
-					resolve(undefined);
-				});
-			} else {
-				resolve(undefined);
-			}
-		});
-	}
-
-	public removeConnectionToMemento(conn: IConnectionProfile, mementoKey: string): Promise<void> {
-		const self = this;
-		return new Promise<void>((resolve, reject) => {
-			// Get all profiles
-			let configValues = self.getConnectionsFromMemento(mementoKey);
-			let configToSave = this.removeFromConnectionList(conn, configValues);
-
-			self._memento[mementoKey] = configToSave;
-			resolve(undefined);
-		});
-	}
-
-	public getConnectionsFromMemento(mementoKey: string): ConnectionProfile[] {
-		let configValues: IConnectionProfile[] = this._memento[mementoKey];
-		if (!configValues) {
-			configValues = [];
 		}
+		this.stateService.setItem(key, configToSave);
+		return savePassword ? this.doSavePassword(conn).then() : Promise.resolve();
+	}
 
-		return this.convertConfigValuesToConnectionProfiles(configValues);
+	public removeConnectionFromState(conn: IConnectionProfile, key: string): void {
+		// Get all profiles
+		let configValues = this.getConnectionsFromState(key);
+		let configToSave = this.removeFromConnectionList(conn, configValues);
+
+		this.stateService.setItem(key, configToSave);
 	}
 
 	private addToConnectionList(conn: IConnectionProfile, list: ConnectionProfile[]): IConnectionProfile[] {
@@ -348,11 +272,7 @@ export class ConnectionStore {
 
 		list.unshift(savedProfile);
 
-		let newList = list.map(c => {
-			let connectionProfile = c ? c.toIConnectionProfile() : undefined;
-			return connectionProfile;
-		});
-		return newList.filter(n => n !== undefined);
+		return list.filter(n => n !== undefined).map(c => c.toIConnectionProfile());
 	}
 
 	private removeFromConnectionList(conn: IConnectionProfile, list: ConnectionProfile[]): IConnectionProfile[] {
@@ -368,37 +288,21 @@ export class ConnectionStore {
 			return !equal;
 		});
 
-		let newList = list.map(c => {
-			let connectionProfile = c ? c.toIConnectionProfile() : undefined;
-			return connectionProfile;
-		});
-		return newList.filter(n => n !== undefined);
+		return list.filter(n => n !== undefined).map(c => c.toIConnectionProfile());
 	}
 
 	/**
 	 * Clear all recently used connections from the MRU list.
 	 */
 	public clearRecentlyUsed(): void {
-		this._memento[Constants.recentConnections] = [];
-	}
-
-	public clearFromMemento(name: string): void {
-		this._memento[name] = [];
-	}
-
-
-	/**
-	 * Clear all active connections from the MRU list.
-	 */
-	public clearActiveConnections(): void {
-		this._memento[Constants.activeConnections] = [];
+		this.stateService.setItem(Constants.recentConnections, []);
 	}
 
 	/**
 	 * Remove a connection profile from the active connections list.
 	 */
-	public removeActiveConnection(conn: IConnectionProfile): Promise<void> {
-		return this.removeConnectionToMemento(conn, Constants.activeConnections);
+	public removeActiveConnection(conn: IConnectionProfile): void {
+		return this.removeConnectionFromState(conn, Constants.activeConnections);
 	}
 
 	private saveProfilePasswordIfNeeded(profile: IConnectionProfile): Promise<boolean> {
@@ -409,32 +313,23 @@ export class ConnectionStore {
 	}
 
 	private doSavePassword(conn: IConnectionProfile): Promise<boolean> {
-		let self = this;
-		return new Promise<boolean>((resolve, reject) => {
-			if (conn.password) {
-				let credentialId = this.formatCredentialId(conn);
-				self._credentialService.saveCredential(credentialId, conn.password)
-					.then((result) => {
-						resolve(result);
-					}, reason => {
-						// Bubble up error if there was a problem executing the set command
-						reject(reason);
-					});
-			} else {
-				resolve(true);
-			}
-		});
+		if (conn.password) {
+			let credentialId = this.formatCredentialId(conn);
+			return this.credentialService.saveCredential(credentialId, conn.password);
+		} else {
+			return Promise.resolve(true);
+		}
 	}
 
 	public getConnectionProfileGroups(withoutConnections?: boolean, providers?: string[]): ConnectionProfileGroup[] {
 		let profilesInConfiguration: ConnectionProfile[];
 		if (!withoutConnections) {
-			profilesInConfiguration = this._connectionConfig.getConnections(true);
+			profilesInConfiguration = this.connectionConfig.getConnections(true);
 			if (providers && providers.length > 0) {
 				profilesInConfiguration = profilesInConfiguration.filter(x => providers.includes(x.providerName));
 			}
 		}
-		let groups = this._connectionConfig.getAllGroups();
+		let groups = this.connectionConfig.getAllGroups();
 
 		let connectionProfileGroups = this.convertToConnectionGroup(groups, profilesInConfiguration, undefined);
 		return connectionProfileGroups;
@@ -469,74 +364,55 @@ export class ConnectionStore {
 	}
 
 	public getGroupFromId(groupId: string): IConnectionProfileGroup {
-		let groups = this._connectionConfig.getAllGroups();
+		let groups = this.connectionConfig.getAllGroups();
 		return groups.find(group => group.id === groupId);
 	}
 
 	private getMaxRecentConnectionsCount(): number {
-		let config = this._workspaceConfigurationService.getValue(Constants.sqlConfigSectionName);
-
-		let maxConnections: number = config[Constants.configMaxRecentConnections];
-		if (typeof (maxConnections) !== 'number' || maxConnections <= 0) {
-			maxConnections = MAX_CONNECTIONS_DEFAULT;
-		}
-		return maxConnections;
+		return this.configurationService.getValue('sql.maxRecentConnections') || MAX_CONNECTIONS_DEFAULT;
 	}
 
-	public editGroup(group: ConnectionProfileGroup): Promise<any> {
-		const self = this;
-		return new Promise<string>((resolve, reject) => {
-			self._connectionConfig.editGroup(group).then(() => {
-				resolve(null);
-			}).catch(error => {
-				reject(error);
-			});
-		});
+	public editGroup(group: ConnectionProfileGroup): Promise<void> {
+		return this.connectionConfig.editGroup(group).then();
 	}
 
 	public deleteConnectionFromConfiguration(connection: ConnectionProfile): Promise<void> {
-		return this._connectionConfig.deleteConnection(connection);
+		return this.connectionConfig.deleteConnection(connection);
 	}
 
 	public deleteGroupFromConfiguration(group: ConnectionProfileGroup): Promise<void> {
-		return this._connectionConfig.deleteGroup(group);
+		return this.connectionConfig.deleteGroup(group);
 	}
 
 	public changeGroupIdForConnectionGroup(source: ConnectionProfileGroup, target: ConnectionProfileGroup): Promise<void> {
-		return this._connectionConfig.changeGroupIdForConnectionGroup(source, target);
+		return this.connectionConfig.changeGroupIdForConnectionGroup(source, target);
 	}
 
 	public canChangeConnectionConfig(profile: ConnectionProfile, newGroupID: string): boolean {
-		return this._connectionConfig.canChangeConnectionConfig(profile, newGroupID);
+		return this.connectionConfig.canChangeConnectionConfig(profile, newGroupID);
 	}
 
 	public changeGroupIdForConnection(source: ConnectionProfile, targetGroupId: string): Promise<void> {
-		return new Promise<void>((resolve, reject) => {
-			this._connectionConfig.changeGroupIdForConnection(source, targetGroupId).then(() => {
-				resolve();
-			}, (error => {
-				reject(error);
-			}));
-		});
+		return this.connectionConfig.changeGroupIdForConnection(source, targetGroupId).then();
 	}
 
 	private addGroupFullNameToMap(groupId: string, groupFullName: string): void {
 		if (groupId) {
-			this._groupIdToFullNameMap[groupId] = groupFullName;
+			this.groupIdMap.set(groupId, groupFullName);
 		}
 		if (groupFullName !== undefined) {
-			this._groupFullNameToIdMap[groupFullName.toUpperCase()] = groupId;
+			this.groupIdMap.set(groupFullName.toUpperCase(), groupId);
 		}
 	}
 
 	private getGroupFullName(groupId: string): string {
-		if (groupId in this._groupIdToFullNameMap) {
-			return this._groupIdToFullNameMap[groupId];
+		if (this.groupIdMap.has(groupId)) {
+			return this.groupIdMap.get(groupId);
 		} else {
 			// Load the cache
 			this.getConnectionProfileGroups(true);
 		}
-		return this._groupIdToFullNameMap[groupId];
+		return this.groupIdMap.get(groupId);
 	}
 
 	private getGroupId(groupFullName: string): string {
@@ -545,12 +421,12 @@ export class ConnectionStore {
 		}
 		let key = groupFullName.toUpperCase();
 		let result: string = '';
-		if (key in this._groupFullNameToIdMap) {
-			result = this._groupFullNameToIdMap[key];
+		if (this.groupIdMap.reverseHas(key)) {
+			result = this.groupIdMap.reverseGet(key);
 		} else {
 			// Load the cache
 			this.getConnectionProfileGroups(true);
-			result = this._groupFullNameToIdMap[key];
+			result = this.groupIdMap.reverseGet(key);
 		}
 		return result;
 	}

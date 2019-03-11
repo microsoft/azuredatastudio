@@ -585,7 +585,6 @@ export class Workbench extends Disposable implements IPartService {
 		serviceCollection.set(ICommandLineProcessing, this.instantiationService.createInstance(CommandLineService));
 		serviceCollection.set(IDacFxService, this.instantiationService.createInstance(DacFxService));
 
-		this._register(toDisposable(() => connectionManagementService.shutdown()));
 		this._register(toDisposable(() => accountManagementService.shutdown()));
 		this._register(toDisposable(() => notebookService.shutdown()));
 		this._register(toDisposable(() => capabilitiesService.shutdown()));

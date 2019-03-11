@@ -5,23 +5,21 @@
 
 'use strict';
 
-import * as TypeMoq from 'typemoq';
-import { ConnectionConfig, ISaveGroupResult } from 'sql/platform/connection/common/connectionConfig';
-import { IConnectionProfile, IConnectionProfileStore } from 'sql/platform/connection/common/interfaces';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
-import * as Constants from 'sql/platform/connection/common/constants';
-import { IConnectionProfileGroup, ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import * as assert from 'assert';
-import { ProviderFeatures, ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import * as azdata from 'azdata';
-import { Emitter } from 'vs/base/common/event';
+import { ICapabilitiesService, ProviderFeatures } from 'sql/platform/capabilities/common/capabilitiesService';
+import { ConnectionConfig, ISaveGroupResult } from 'sql/platform/connection/common/connectionConfig';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
+import * as Constants from 'sql/platform/connection/common/constants';
+import { IConnectionProfile, IConnectionProfileStore } from 'sql/platform/connection/common/interfaces';
+import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
 import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { CapabilitiesTestService } from 'sqltest/stubs/capabilitiesTestService';
-import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
-import { deepFreeze, deepClone } from 'vs/base/common/objects';
-import { isUndefinedOrNull } from 'vs/base/common/types';
-import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
+import * as TypeMoq from 'typemoq';
+import { Emitter } from 'vs/base/common/event';
+import { deepClone, deepFreeze } from 'vs/base/common/objects';
+import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 
 suite('ConnectionConfig', () => {
 	let capabilitiesService: TypeMoq.Mock<ICapabilitiesService>;
@@ -245,7 +243,7 @@ suite('ConnectionConfig', () => {
 		assert.ok(groupsAreEqual(allGroups, testGroups), 'the groups returned did not match expectation');
 	});
 
-	test('addConnection should add the new profile to user settings if does not exist', async () => {
+	test('addConnection should add the new profile to user settings', async () => {
 		let newProfile: IConnectionProfile = {
 			serverName: 'new server',
 			databaseName: 'database',
@@ -272,7 +270,7 @@ suite('ConnectionConfig', () => {
 		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 		let savedConnectionProfile = await config.addConnection(connectionProfile);
 
-		assert.ok(!isUndefinedOrNull(savedConnectionProfile.id));
+		assert.ok(!!savedConnectionProfile.id);
 		assert.equal(configurationService.inspect<IConnectionProfileStore[]>(Constants.connectionsArrayName).user.length, testConnections.length + 1);
 	});
 
@@ -381,7 +379,7 @@ suite('ConnectionConfig', () => {
 			let userConnection = testConnections.find(u => u.options['serverName'] === connection.serverName);
 			if (userConnection !== undefined) {
 				assert.notEqual(connection.id, connection.getOptionsKey());
-				assert.ok(!isUndefinedOrNull(connection.id));
+				assert.ok(!!connection.id);
 			} else {
 				let workspaceConnection = workspaceConnections.find(u => u.options['serverName'] === connection.serverName);
 				assert.notEqual(connection.id, connection.getOptionsKey());
@@ -397,7 +395,7 @@ suite('ConnectionConfig', () => {
 		let color: string = 'red';
 
 		let result: ISaveGroupResult = config.saveGroup(groups, newGroups, color, newGroups);
-		assert.ok(!isUndefinedOrNull(result));
+		assert.ok(!!result);
 		assert.equal(result.groups.length, testGroups.length + 2, 'The result groups length is invalid');
 		let newGroup = result.groups.find(g => g.name === 'new-group2');
 		assert.equal(result.newGroupId, newGroup.id, 'The groups id is invalid');
@@ -410,7 +408,7 @@ suite('ConnectionConfig', () => {
 		let color: string = 'red';
 
 		let result: ISaveGroupResult = config.saveGroup(groups, newGroups, color, newGroups);
-		assert.ok(!isUndefinedOrNull(result));
+		assert.ok(!!result);
 		assert.equal(result.groups.length, testGroups.length + 1, 'The result groups length is invalid');
 		let newGroup = result.groups.find(g => g.name === 'g2-5');
 		assert.equal(result.newGroupId, newGroup.id, 'The groups id is invalid');
@@ -423,7 +421,7 @@ suite('ConnectionConfig', () => {
 		let color: string = 'red';
 
 		let result: ISaveGroupResult = config.saveGroup(groups, newGroups, color, newGroups);
-		assert.ok(!isUndefinedOrNull(result));
+		assert.ok(!!result);
 		assert.equal(result.groups.length, testGroups.length, 'The result groups length is invalid');
 		let newGroup = result.groups.find(g => g.name === 'g2-1');
 		assert.equal(result.newGroupId, newGroup.id, 'The groups id is invalid');
@@ -536,7 +534,7 @@ suite('ConnectionConfig', () => {
 
 		assert.equal(editedGroups.length, testGroups.length);
 		let editedGroup = editedGroups.find(group => group.id === 'g2');
-		assert.ok(!isUndefinedOrNull(editedGroup));
+		assert.ok(!!editedGroup);
 		assert.equal(editedGroup.name, 'g-renamed');
 	});
 
@@ -553,7 +551,7 @@ suite('ConnectionConfig', () => {
 		} catch (e) {
 			let groups = configurationService.inspect<IConnectionProfileGroup[]>(Constants.connectionGroupsArrayName).user;
 			let originalGroup = groups.find(g => g.id === 'g2');
-			assert.ok(!isUndefinedOrNull(originalGroup));
+			assert.ok(!!originalGroup);
 			assert.equal(originalGroup.name, 'g2');
 		}
 	});
@@ -571,7 +569,7 @@ suite('ConnectionConfig', () => {
 
 		assert.equal(editedGroups.length, testGroups.length);
 		let editedGroup = editedGroups.find(group => group.id === 'g2');
-		assert.ok(!isUndefinedOrNull(editedGroup));
+		assert.ok(!!editedGroup);
 		assert.equal(editedGroup.parentId, 'g3');
 	});
 
@@ -628,7 +626,7 @@ suite('ConnectionConfig', () => {
 			// two
 			assert.equal(editedConnections.length, _testConnections.length);
 			let editedConnection = editedConnections.find(con => con.id === 'server3-2');
-			assert.ok(!isUndefinedOrNull(editedConnection));
+			assert.ok(!!editedConnection);
 			assert.equal(editedConnection.groupId, 'g3');
 		}
 	});
@@ -664,7 +662,7 @@ suite('ConnectionConfig', () => {
 		let editedConnections = configurationService.inspect<IConnectionProfileStore[]>(Constants.connectionsArrayName).user;
 		assert.equal(editedConnections.length, testConnections.length);
 		let editedConnection = editedConnections.find(con => con.id === 'server3');
-		assert.ok(!isUndefinedOrNull(editedConnection));
+		assert.ok(!!editedConnection);
 		assert.equal(editedConnection.groupId, 'newid');
 	});
 

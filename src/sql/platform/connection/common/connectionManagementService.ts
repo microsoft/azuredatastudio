@@ -17,7 +17,6 @@ import { ConnectionManagementInfo } from 'sql/platform/connection/common/connect
 import * as Utils from 'sql/platform/connection/common/utils';
 import * as Constants from 'sql/platform/connection/common/constants';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { ICredentialsService } from 'sql/platform/credentials/common/credentialsService';
 import * as ConnectionContracts from 'sql/parts/connection/common/connection';
 import { ConnectionStatusManager } from 'sql/platform/connection/common/connectionStatusManager';
 import { DashboardInput } from 'sql/parts/dashboard/dashboardInput';
@@ -44,9 +43,7 @@ import { Disposable } from 'vs/base/common/lifecycle';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorService, ACTIVE_GROUP } from 'vs/workbench/services/editor/common/editorService';
 import * as platform from 'vs/platform/registry/common/platform';
-import { Memento } from 'vs/workbench/common/memento';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 import { Event, Emitter } from 'vs/base/common/event';
@@ -77,16 +74,13 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	private _connectionGlobalStatus = new ConnectionGlobalStatus(this._statusBarService);
 
 	constructor(
-		private _connectionMemento: Memento,
 		private _connectionStore: ConnectionStore,
-		@IStorageService _storageService: IStorageService,
 		@IConnectionDialogService private _connectionDialogService: IConnectionDialogService,
 		@IServerGroupController private _serverGroupController: IServerGroupController,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IEditorService private _editorService: IEditorService,
 		@ITelemetryService private _telemetryService: ITelemetryService,
 		@IWorkspaceConfigurationService private _workspaceConfigurationService: IWorkspaceConfigurationService,
-		@ICredentialsService private _credentialsService: ICredentialsService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@IQuickInputService private _quickInputService: IQuickInputService,
 		@IEditorGroupsService private _editorGroupService: IEditorGroupsService,
@@ -97,13 +91,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	) {
 		super();
 
-		// _connectionMemento and _connectionStore are in constructor to enable this class to be more testable
-		if (!this._connectionMemento) {
-			this._connectionMemento = new Memento('ConnectionManagement', _storageService);
-		}
 		if (!this._connectionStore) {
-			this._connectionStore = new ConnectionStore(this._connectionMemento,
-				this._workspaceConfigurationService, this._credentialsService, this._capabilitiesService);
+			this._connectionStore = _instantiationService.createInstance(ConnectionStore);
 		}
 
 		// Register Statusbar item
@@ -618,7 +607,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	public clearRecentConnection(connectionProfile: IConnectionProfile): void {
-		this._connectionStore.removeConnectionToMemento(connectionProfile, Constants.recentConnections);
+		this._connectionStore.removeConnectionFromState(connectionProfile, Constants.recentConnections);
 	}
 
 	public getActiveConnections(providers?: string[]): ConnectionProfile[] {
@@ -928,11 +917,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	public onIntelliSenseCacheComplete(handle: number, connectionUri: string): void {
-	}
-
-	public shutdown(): void {
-		this._connectionStore.clearActiveConnections();
-		this._connectionMemento.saveMemento();
 	}
 
 	public changeGroupIdForConnectionGroup(source: ConnectionProfileGroup, target: ConnectionProfileGroup): Promise<void> {

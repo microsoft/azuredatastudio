@@ -69,7 +69,7 @@ export class ConnectionConfig implements IConnectionConfig {
 				let newProfile = ConnectionProfile.convertToProfileStore(this._capabilitiesService, connectionProfile);
 
 				// Remove the profile if already set
-				var sameProfileInList = profiles.find(value => {
+				let sameProfileInList = profiles.find(value => {
 					let providerConnectionProfile = ConnectionProfile.createFromStoredProfile(value, this._capabilitiesService);
 					return providerConnectionProfile.matches(connectionProfile);
 				});
@@ -320,10 +320,8 @@ export class ConnectionConfig implements IConnectionConfig {
 	}
 
 	public saveGroup(groups: IConnectionProfileGroup[], groupFullName: string, color: string, description: string): ISaveGroupResult {
-		let result: ISaveGroupResult;
 		let groupNames = ConnectionProfileGroup.getGroupFullNameParts(groupFullName);
-		result = this.saveGroupInTree(groups, undefined, groupNames, color, description, 0);
-		return result;
+		return this.saveGroupInTree(groups, undefined, groupNames, color, description, 0);
 	}
 
 	public editGroup(source: ConnectionProfileGroup): Promise<void> {
