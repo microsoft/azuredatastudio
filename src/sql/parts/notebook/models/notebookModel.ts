@@ -284,7 +284,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			this._inErrorState = true;
 			throw error;
 		}
-		//this.setDefaultKernelAndProviderId();
 	}
 
 	public findCellIndex(cellModel: ICellModel): number {
