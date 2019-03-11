@@ -12,7 +12,7 @@ export class TestStateService implements IStateService {
 
 	private storage = {};
 
-	constructor() {}
+	constructor() { }
 
 	getItem<T>(key: string, defaultValue: T): T;
 	getItem<T>(key: string, defaultValue: T | undefined): T | undefined;

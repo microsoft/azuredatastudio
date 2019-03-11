@@ -168,7 +168,7 @@ suite('ConnectionStore', () => {
 		}
 		assert.equal(credentialsService.credentials.size, numCreds);
 		let recentConnections = connectionStore.getActiveConnections();
-		assert.equal(recentConnections.length, numCreds , `expect number of active connection ${numCreds}|${recentConnections.length} `);
+		assert.equal(recentConnections.length, numCreds, `expect number of active connection ${numCreds}|${recentConnections.length} `);
 	});
 
 	test('getRecentlyUsedConnections should return connection for given provider', () => {
