@@ -283,12 +283,12 @@ export class ConnectionStore {
 	public async addActiveConnection(conn: IConnectionProfile, addToMru: boolean): Promise<void> {
 		if (addToMru) {
 			await this.addConnectionToMru(conn);
-        }
+		}
 
-        // Only add connections we don't already know about
-        if (!this.getActiveConnections().some(existingConn => existingConn.id === conn.id)) {
-            await this.addConnectionToMemento(conn, Constants.activeConnections, undefined, conn.savePassword);
-        }
+		// Only add connections we don't already know about
+		if (!this.getActiveConnections().some(existingConn => existingConn.id === conn.id)) {
+			await this.addConnectionToMemento(conn, Constants.activeConnections, undefined, conn.savePassword);
+		}
 	}
 
 	/**
