@@ -36,7 +36,9 @@ export class CommandLineService implements ICommandLineProcessing {
 		    ipc.on('ads:processCommandLine', (event: any, args: ParsedArgs) => this.onLaunched(args));
 		}
 		// we only get the ipc from main during window reuse
-		this.onLaunched(_environmentService.args);
+		if (_environmentService) {
+		    this.onLaunched(_environmentService.args);
+		}
 	}
 
 	private onLaunched(args: ParsedArgs)
