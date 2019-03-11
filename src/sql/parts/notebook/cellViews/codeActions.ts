@@ -15,6 +15,7 @@ import { INotificationService, Severity } from 'vs/platform/notification/common/
 import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
 import { getErrorMessage } from 'sql/parts/notebook/notebookUtils';
 import { ICellModel, CellExecutionState } from 'sql/parts/notebook/models/modelInterfaces';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { MultiStateAction, IMultiStateData, IActionStateData } from 'sql/parts/notebook/notebookActions';
 
 let notebookMoreActionMsg = localize('notebook.failed', "Please select active cell and try again");
@@ -68,7 +69,8 @@ export class RunCellAction extends MultiStateAction<CellExecutionState> {
 	public static LABEL = 'Run cell';
 	private _executionChangedDisposable: IDisposable;
 	private _context: CellContext;
-	constructor(context: CellContext, @INotificationService private notificationService: INotificationService) {
+	constructor(context: CellContext, @INotificationService private notificationService: INotificationService,
+		@IConnectionManagementService private connectionManagementService: IConnectionManagementService) {
 		super(RunCellAction.ID, new IMultiStateData<CellExecutionState>([
 			{ key: CellExecutionState.Hidden, value: { label: emptyExecutionCountLabel, className: '', tooltip: '', hideIcon: true }},
 			{ key: CellExecutionState.Stopped, value: { label: '', className: 'toolbarIconRun', tooltip: localize('runCell', 'Run cell') }},
@@ -89,7 +91,7 @@ export class RunCellAction extends MultiStateAction<CellExecutionState> {
 			return;
 		}
 		try {
-			await this._context.cell.runCell(this.notificationService);
+			await this._context.cell.runCell(this.notificationService, this.connectionManagementService);
 		} catch (error) {
 			let message = getErrorMessage(error);
 			this.notificationService.error(message);

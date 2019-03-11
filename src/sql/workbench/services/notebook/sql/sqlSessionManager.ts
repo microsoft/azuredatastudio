@@ -24,8 +24,8 @@ import { elapsedTimeLabel } from 'sql/parts/query/common/localizedConstants';
 import * as notebookUtils from 'sql/parts/notebook/notebookUtils';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
-export const sqlKernel: string = localize('sqlKernel', 'SQL');
-export const sqlKernelError: string = localize("sqlKernelError", "SQL kernel error");
+export const sqlKernel: string = localize('sqlKernel', "SQL");
+export const sqlKernelError: string = localize('sqlKernelError', "SQL kernel error");
 export const MAX_ROWS = 5000;
 export const NotebookConfigSectionName = 'notebook';
 export const MaxTableRowsConfigName = 'maxTableRows';
@@ -249,7 +249,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 		this._future = new SQLFuture(this._queryRunner, count, this._configurationService);
 		if (!canRun) {
 			// Complete early
-			this._future.handleDone(new Error(localize('connectionRequired', 'A connection must be chosen to run notebook cells')));
+			this._future.handleDone(new Error(localize('connectionRequired', "A connection must be chosen to run notebook cells")));
 		}
 
 		// TODO should we  cleanup old future? I don't think we need to
@@ -406,6 +406,9 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		try {
 			for (let resultSet of batch.resultSetSummaries) {
 				let rowCount = resultSet.rowCount > this.configuredMaxRows ? this.configuredMaxRows : resultSet.rowCount;
+				if (rowCount === this.configuredMaxRows) {
+					this.handleMessage(localize('sqlMaxRowsDisplayed', "Displaying Top {0} rows.", rowCount));
+				}
 				await this.sendResultSetAsIOPub(rowCount, resultSet);
 			}
 		} catch (err) {
