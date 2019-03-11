@@ -223,7 +223,7 @@ suite('notebook model', function (): void {
 		let model = new NotebookModel(options, undefined);
 		model.onClientSessionReady((session) => actualSession = session);
 		await model.requestModelLoad();
-		model.startSession(notebookManagers[0]);
+		await model.startSession(notebookManagers[0]);
 
 		// Then I expect load to succeed
 		should(model.clientSession).not.be.undefined();
