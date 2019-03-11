@@ -380,7 +380,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 				};
 			}))
 		};
-		self.plugins.push([rowNumberColumn, new AutoColumnSize(), new AdditionalKeyBindings()]);
+		self.plugins.push([rowNumberColumn, new AutoColumnSize(undefined, this.configurationService), new AdditionalKeyBindings()]);
 		self.dataSet = dataSet;
 
 		// Create a dataSet to render without rows to reduce DOM size

@@ -2,6 +2,7 @@
 
 import { mixin, clone } from 'sql/base/common/objects';
 import { isInDOM } from 'vs/base/browser/dom';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 export interface IAutoColumnSizeOptions extends Slick.PluginOptions {
 	maxWidth?: number;
@@ -9,7 +10,7 @@ export interface IAutoColumnSizeOptions extends Slick.PluginOptions {
 }
 
 const defaultOptions: IAutoColumnSizeOptions = {
-	maxWidth: 200,
+	maxWidth: 300,
 	autoSizeOnRender: false
 };
 
@@ -20,7 +21,11 @@ export class AutoColumnSize<T> implements Slick.Plugin<T> {
 	private _options: IAutoColumnSizeOptions;
 	private onPostEventHandler = new Slick.EventHandler();
 
-	constructor(options: IAutoColumnSizeOptions = defaultOptions) {
+	constructor(options: IAutoColumnSizeOptions = defaultOptions, configurationService: IConfigurationService) {
+		let configuredMaxWidth = configurationService.getValue<number>('resultsGrid.maxColumnWidth');
+		if (configuredMaxWidth) {
+			defaultOptions.maxWidth = configuredMaxWidth;
+		}
 		this._options = mixin(options, defaultOptions, false);
 	}
 
@@ -146,7 +151,7 @@ export class AutoColumnSize<T> implements Slick.Plugin<T> {
 		let template = this.getMaxTextTemplate(texts, columnDef, colIndex, data, rowEl);
 		let width = this.getTemplateWidth(rowEl, template);
 		this.deleteRow(rowEl);
-		return width;
+		return width > this._options.maxWidth ? this._options.maxWidth : width;
 	}
 
 	private getTemplateWidth(rowEl: JQuery, template: JQuery | HTMLElement): number {
