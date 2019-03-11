@@ -12,7 +12,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 
 import { CellModel } from './cell';
-import { IClientSession, INotebookModel, IDefaultConnection, INotebookModelOptions, ICellModel, NotebookContentChange } from './modelInterfaces';
+import { IClientSession, INotebookModel, IDefaultConnection, INotebookModelOptions, ICellModel, NotebookContentChange, notebookConstants } from './modelInterfaces';
 import { NotebookChangeType, CellType } from 'sql/parts/notebook/models/contracts';
 import { nbversion } from '../notebookConstants';
 import * as notebookUtils from '../notebookUtils';
@@ -23,7 +23,6 @@ import { INotification, Severity } from 'vs/platform/notification/common/notific
 import { URI } from 'vs/base/common/uri';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { sqlKernelSpec } from 'sql/workbench/services/notebook/sql/sqlSessionManager';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -82,8 +81,12 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		this._providerId = _notebookOptions.providerId;
 		this._onProviderIdChanged.fire(this._providerId);
 		this._notebookOptions.standardKernels.forEach(kernel => {
-			this._kernelDisplayNameToConnectionProviderIds.set(kernel.displayName, kernel.connectionProviderIds);
-			this._kernelDisplayNameToNotebookProviderIds.set(kernel.displayName, kernel.notebookProvider);
+			let displayName = kernel.displayName;
+			if (!displayName) {
+				displayName = kernel.name;
+			}
+			this._kernelDisplayNameToConnectionProviderIds.set(displayName, kernel.connectionProviderIds);
+			this._kernelDisplayNameToNotebookProviderIds.set(displayName, kernel.notebookProvider);
 		});
 		if (this._notebookOptions.layoutChanged) {
 			this._notebookOptions.layoutChanged(() => this._layoutChanged.fire());
@@ -412,15 +415,15 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			}
 
 			await clientSession.initialize();
-			this._sessionLoadFinished = clientSession.ready.then(async () => {
-				if (clientSession.isInErrorState) {
-					this.setErrorState(clientSession.errorMessage);
-				} else {
-					this._onClientSessionReady.fire(clientSession);
-					// Once session is loaded, can use the session manager to retrieve useful info
-					this.loadKernelInfo(clientSession, this.defaultKernel.display_name);
-				}
-			});
+			// By somehow we have to wait for ready, otherwise may not be called for some cases.
+			await clientSession.ready;
+			if (clientSession.isInErrorState) {
+				this.setErrorState(clientSession.errorMessage);
+			} else {
+				this._onClientSessionReady.fire(clientSession);
+				// Once session is loaded, can use the session manager to retrieve useful info
+				this.loadKernelInfo(clientSession, this.defaultKernel.display_name);
+			}
 		}
 	}
 
@@ -452,11 +455,11 @@ export class NotebookModel extends Disposable implements INotebookModel {
 					this._providerId = providerId;
 				}
 			} else {
-				this._defaultKernel = sqlKernelSpec;
+				this._defaultKernel = notebookConstants.sqlKernelSpec;
 				this._providerId = SQL_NOTEBOOK_PROVIDER;
 			}
 		} else {
-			this._defaultKernel = sqlKernelSpec;
+			this._defaultKernel = notebookConstants.sqlKernelSpec;
 			this._providerId = SQL_NOTEBOOK_PROVIDER;
 		}
 		// update default language
@@ -543,8 +546,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		this.doChangeKernel(displayName, true);
 	}
 
-	public async doChangeKernel(displayName: string, needSetProvider: boolean = true): Promise<void> {
-		if (needSetProvider) {
+	public async doChangeKernel(displayName: string, mustSetProvider: boolean = true): Promise<void> {
+		if (mustSetProvider) {
 			await this.setProviderIdAndStartSession(displayName);
 		}
 		let spec = this.getKernelSpecFromDisplayName(displayName);
@@ -555,7 +558,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				spec = kernelSpecs.find(spec => spec.name === this.notebookManager.sessionManager.specs.defaultKernel);
 			}
 		} else {
-			spec = sqlKernelSpec;
+			spec = notebookConstants.sqlKernelSpec;
 		}
 		if (this._activeClientSession && this._activeClientSession.isReady) {
 			return this._activeClientSession.changeKernel(spec, this._oldKernel)
@@ -797,37 +800,45 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		if (displayName) {
 			if (this._activeClientSession && this._activeClientSession.isReady) {
 				this._oldKernel = this._activeClientSession.kernel;
-				let standardKernel = this.getStandardKernelFromDisplayName(displayName);
-				if (standardKernel && this._oldKernel && this._oldKernel.name !== standardKernel.name) {
-					if (this._kernelDisplayNameToNotebookProviderIds.has(displayName)) {
-						let providerId = this._kernelDisplayNameToNotebookProviderIds.get(displayName);
-						if (providerId) {
-							if (providerId !== this._providerId) {
-								this._providerId = providerId;
-								this._onProviderIdChanged.fire(this._providerId);
+				let providerId = this.tryFindProviderForKernel(displayName);
 
-								await this.shutdownActiveSession();
+				if (providerId) {
+					if (providerId !== this._providerId) {
+						this._providerId = providerId;
+						this._onProviderIdChanged.fire(this._providerId);
 
-								try {
-									let manager = this.getNotebookManager(providerId);
-									if (manager) {
-										await this.startSession(manager, displayName);
-									} else {
-										throw new Error(localize('ProviderNoManager', 'Can\'t find notebook manager for provider {0}', providerId));
-									}
-								}
-								catch (err) {
-									console.log(err);
-								}
+						await this.shutdownActiveSession();
+
+						try {
+							let manager = this.getNotebookManager(providerId);
+							if (manager) {
+								await this.startSession(manager, displayName);
+							} else {
+								throw new Error(localize('ProviderNoManager', "Can't find notebook manager for provider {0}", providerId));
 							}
 						}
-
+						catch (err) {
+							console.log(err);
+						}
 					} else {
-						console.log(`No provider found support kernel: ${displayName}`);
+						console.log(`No provider found supporting the kernel: ${displayName}`);
 					}
 				}
 			}
 		}
+	}
+
+	private tryFindProviderForKernel(displayName: string) {
+		if (!displayName) {
+			return undefined;
+		}
+		let standardKernel = this.getStandardKernelFromDisplayName(displayName);
+		if (standardKernel && this._oldKernel && this._oldKernel.name !== standardKernel.name) {
+			if (this._kernelDisplayNameToNotebookProviderIds.has(displayName)) {
+				return this._kernelDisplayNameToNotebookProviderIds.get(displayName);
+			}
+		}
+		return undefined;
 	}
 
 	// Get kernel specs from current sessionManager

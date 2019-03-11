@@ -8,11 +8,10 @@
 import { nb } from 'azdata';
 
 import { localize } from 'vs/nls';
-import { IDefaultConnection } from 'sql/parts/notebook/models/modelInterfaces';
+import { IDefaultConnection, notebookConstants } from 'sql/parts/notebook/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { sqlKernelSpec } from 'sql/workbench/services/notebook/sql/sqlSessionManager';
 
 export class NotebookContexts {
 	private static MSSQL_PROVIDER = 'MSSQL';
@@ -144,7 +143,7 @@ export class NotebookContexts {
 
 		// If no default kernel specified (should never happen), default to SQL
 		if (!defaultKernel) {
-			defaultKernel = sqlKernelSpec;
+			defaultKernel = notebookConstants.sqlKernelSpec;
 		}
 		return defaultKernel;
 	}

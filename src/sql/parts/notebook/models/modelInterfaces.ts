@@ -22,6 +22,7 @@ import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHos
 import { IStandardKernelWithProvider } from 'sql/parts/notebook/notebookUtils';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { localize } from 'vs/nls';
 
 export interface IClientSessionOptions {
 	notebookUri: URI;
@@ -523,4 +524,10 @@ export interface ICellMagicMapper {
 export namespace notebookConstants {
 	export const SQL = 'SQL';
 	export const SQL_CONNECTION_PROVIDER = 'MSSQL';
+	export const sqlKernel: string = localize('sqlKernel', 'SQL');
+	export const sqlKernelSpec: nb.IKernelSpec = ({
+		name: sqlKernel,
+		language: 'sql',
+		display_name: sqlKernel
+	});
 }

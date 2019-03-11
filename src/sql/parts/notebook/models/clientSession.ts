@@ -97,13 +97,8 @@ export class ClientSession implements IClientSession {
 			if (!this.notebookManager.sessionManager.isReady) {
 				await this.notebookManager.sessionManager.ready;
 			}
-			if (this._kernelPreference && this._kernelPreference.shouldStart) {
-				await this.startSessionInstance(this._kernelPreference.name);
-				return Promise.resolve();
-			}
 			if (this._defaultKernel) {
 				await this.startSessionInstance(this._defaultKernel.name);
-				return Promise.resolve();
 			}
 		}
 	}
