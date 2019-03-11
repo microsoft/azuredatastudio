@@ -624,25 +624,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		clientSession.statusChanged(async (session) => {
 			this._kernelsChangedEmitter.fire(session.kernel);
 		});
-		if (!this.notebookManager) {
-			return;
-		}
-		try {
-			let sessionManager = this.notebookManager.sessionManager;
-			if (sessionManager) {
-				if (!this._defaultKernel || this._defaultKernel.display_name !== displayName) {
-					this._defaultKernel = NotebookContexts.getDefaultKernel(sessionManager.specs, displayName);
-				}
-				let spec = this.getKernelSpecFromDisplayName(this._defaultKernel.display_name);
-				if (spec) {
-					this._defaultKernel = spec;
-				}
-				this.doChangeKernel(this._defaultKernel.display_name, false);
-			}
-		} catch (err) {
-			let msg = notebookUtils.getErrorMessage(err);
-			this.notifyError(localize('loadKernelFailed', 'Loading kernel info failed: {0}', msg));
-		}
+
+		this.doChangeKernel(displayName, false);
 	}
 
 	// Get default language if saved in notebook file
@@ -809,7 +792,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		if (displayName) {
 			if (this._activeClientSession && this._activeClientSession.isReady) {
 				this._oldKernel = this._activeClientSession.kernel;
-				if (this._oldKernel.name !== displayName) {
+				if (this._oldKernel && this._oldKernel.name !== displayName) {
 					if (this._kernelDisplayNameToNotebookProviderIds.has(displayName)) {
 						let providerId = this._kernelDisplayNameToNotebookProviderIds.get(displayName);
 						if (providerId) {
