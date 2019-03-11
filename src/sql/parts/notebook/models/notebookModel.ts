@@ -42,6 +42,7 @@ export class ErrorInfo {
 
 export class NotebookModel extends Disposable implements INotebookModel {
 	private _contextsChangedEmitter = new Emitter<void>();
+	private _contextsChangingEmitter = new Emitter<void>();
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
 	private _kernelsChangedEmitter = new Emitter<nb.IKernelSpec>();
 	private _kernelChangedEmitter = new Emitter<nb.IKernelChangedArgs>();
@@ -168,6 +169,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public get contextsChanged(): Event<void> {
 		return this._contextsChangedEmitter.event;
+	}
+
+	public get contextsChanging(): Event<void> {
+		return this._contextsChangingEmitter.event;
 	}
 
 	public get cells(): ICellModel[] {
@@ -454,6 +459,11 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			this._defaultKernel = sqlKernelSpec;
 			this._providerId = SQL_NOTEBOOK_PROVIDER;
 		}
+		// update default language
+		this._defaultLanguageInfo = {
+			name: this._providerId === SQL_NOTEBOOK_PROVIDER ? 'sql' : 'python',
+			version: ''
+		};
 	}
 
 	private isValidConnection(profile: IConnectionProfile | connection.Connection) {
@@ -524,6 +534,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public changeKernel(displayName: string): void {
+		this._contextsChangingEmitter.fire();
 		this.doChangeKernel(displayName, true);
 	}
 
@@ -532,10 +543,14 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			await this.setProviderIdAndStartSession(displayName);
 		}
 		let spec = this.getKernelSpecFromDisplayName(displayName);
-		// Ensure that the kernel we try to switch to is a valid kernel; if not, use the default
-		let kernelSpecs = this.getKernelSpecs();
-		if (kernelSpecs && kernelSpecs.length > 0 && kernelSpecs.findIndex(k => k.display_name === spec.display_name) < 0) {
-			spec = kernelSpecs.find(spec => spec.name === this.notebookManager.sessionManager.specs.defaultKernel);
+		if (spec) {
+			// Ensure that the kernel we try to switch to is a valid kernel; if not, use the default
+			let kernelSpecs = this.getKernelSpecs();
+			if (kernelSpecs && kernelSpecs.length > 0 && kernelSpecs.findIndex(k => k.display_name === spec.display_name) < 0) {
+				spec = kernelSpecs.find(spec => spec.name === this.notebookManager.sessionManager.specs.defaultKernel);
+			}
+		} else {
+			spec = sqlKernelSpec;
 		}
 		if (this._activeClientSession && this._activeClientSession.isReady) {
 			return this._activeClientSession.changeKernel(spec, this._oldKernel)

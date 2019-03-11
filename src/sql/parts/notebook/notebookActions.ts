@@ -276,7 +276,7 @@ export class KernelsDropdown extends SelectBox {
 }
 
 export class AttachToDropdown extends SelectBox {
-	private model: INotebookModel;
+	private model: NotebookModel;
 
 	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, modelReady: Promise<INotebookModel>,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
@@ -300,17 +300,19 @@ export class AttachToDropdown extends SelectBox {
 	}
 
 	public updateModel(model: INotebookModel): void {
-		this.model = model;
+		this.model = model as NotebookModel;
 		this._register(model.contextsChanged(() => {
 			let kernelDisplayName: string = this.getKernelDisplayName();
 			if (kernelDisplayName) {
 				this.loadAttachToDropdown(this.model, kernelDisplayName);
 			}
 		}));
+		this._register(this.model.contextsChanging(() => {
+			this.setOptions([msgLoadingContexts], 0);
+		}));
 	}
 
 	private updateAttachToDropdown(model: INotebookModel): void {
-		this.model = model;
 		model.onValidConnectionSelected(validConnection => {
 			let kernelDisplayName: string = this.getKernelDisplayName();
 			if (kernelDisplayName) {
