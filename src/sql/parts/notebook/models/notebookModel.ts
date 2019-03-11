@@ -630,11 +630,11 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			if (this.notebookOptions && this.notebookOptions.connectionService) {
 				let connectionService = this.notebookOptions.connectionService;
 				if (this._otherConnections) {
-					this._otherConnections.forEach(conn => connectionService.disconnect(conn).catch(e => console.log(e)));
+					notebookUtils.asyncForEach(this._otherConnections, async (conn) => await connectionService.disconnect(conn).catch(e => console.log(e)));
 					this._otherConnections = [];
 				}
 				if (this._activeConnection) {
-					this.notebookOptions.connectionService.disconnect(this._activeConnection).catch(e => console.log(e));
+					await this.notebookOptions.connectionService.disconnect(this._activeConnection).catch(e => console.log(e));
 					this._activeConnection = undefined;
 				}
 			}

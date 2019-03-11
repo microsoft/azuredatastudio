@@ -60,7 +60,7 @@ export function getProvidersForFileName(fileName: string, notebookService: INote
 	return providers;
 }
 
-export function getStandardKernelsForProvider(providerId: string, notebookService: INotebookService) : IStandardKernelWithProvider[] {
+export function getStandardKernelsForProvider(providerId: string, notebookService: INotebookService): IStandardKernelWithProvider[] {
 	if (!providerId || !notebookService) {
 		return [];
 	}
@@ -92,7 +92,7 @@ export function getServerFromFormattedAttachToName(name: string): string {
 // Extract database name from format used in Attach To: serverName (databaseName)
 export function getDatabaseFromFormattedAttachToName(name: string): string {
 	return name.substring(name.lastIndexOf('(') + 1, name.lastIndexOf(')')) ?
-	name.substring(name.lastIndexOf('(') + 1, name.lastIndexOf(')')) : '';
+		name.substring(name.lastIndexOf('(') + 1, name.lastIndexOf(')')) : '';
 }
 
 export interface IStandardKernelWithProvider {
@@ -116,4 +116,10 @@ export function tryMatchCellMagic(input: string): string {
 	let match = magicRegex.exec(firstLine);
 	let magicName = match && match[1];
 	return magicName;
+}
+
+export async function asyncForEach(array, callback) {
+	for (let index = 0; index < array.length; index++) {
+		await callback(array[index], index, array);
+	}
 }
