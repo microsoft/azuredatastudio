@@ -38,7 +38,7 @@ export class SelectExistingClusterPage extends WizardPageBase<CreateClusterWizar
 				}
 			],
 			{
-				horizontal: true
+				horizontal: false
 			}
 		).withLayout({ width: '100%', height: '100%' });
 

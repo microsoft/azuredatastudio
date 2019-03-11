@@ -370,6 +370,11 @@ export interface INotebookModel {
 	saveModel(): Promise<boolean>;
 
 	/**
+	 * Serialize notebook cell content to JSON
+	 */
+	toJSON(): nb.INotebookContents;
+
+	/**
 	 * Notifies the notebook of a change in the cell
 	 */
 	onCellChange(cell: ICellModel, change: NotebookChangeType): void;
@@ -439,7 +444,7 @@ export interface ICellModel {
 	readonly onExecutionStateChange: Event<CellExecutionState>;
 	setFuture(future: FutureInternal): void;
 	readonly executionState: CellExecutionState;
-	runCell(notificationService?: INotificationService): Promise<boolean>;
+	runCell(notificationService?: INotificationService, connectionManagementService?: IConnectionManagementService): Promise<boolean>;
 	setOverrideLanguage(language: string);
 	equals(cellModel: ICellModel): boolean;
 	toJSON(): nb.ICellContents;
@@ -455,6 +460,12 @@ export interface IModelFactory {
 	createClientSession(options: IClientSessionOptions): IClientSession;
 }
 
+export interface IContentManager {
+	/**
+	 * This is a specialized method intended to load for a default context - just the current Notebook's URI
+	 */
+	loadContent(): Promise<nb.INotebookContents>;
+}
 
 export interface INotebookModelOptions {
 	/**
@@ -467,6 +478,7 @@ export interface INotebookModelOptions {
 	 */
 	factory: IModelFactory;
 
+	contentManager: IContentManager;
 	notebookManagers: INotebookManager[];
 	providerId: string;
 	standardKernels: IStandardKernelWithProvider[];

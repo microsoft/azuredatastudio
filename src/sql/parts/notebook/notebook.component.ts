@@ -171,7 +171,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			}
 			this._model.activeCell = cell;
 			this._model.activeCell.active = true;
-			this._changeRef.detectChanges();
+			this.detectChanges();
 		}
 	}
 
@@ -180,7 +180,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			this.model.activeCell.active = false;
 			this.model.activeCell = undefined;
 		}
-		this._changeRef.detectChanges();
+		this.detectChanges();
 	}
 
 	// Add cell based on cell type
@@ -194,8 +194,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._model.cells.forEach(cell => {
 			cell.trustedMode = isTrusted;
 		});
-		this.setDirty(true);
-		this._changeRef.detectChanges();
+		//TODO: Handle dirty for trust?
+		this.detectChanges();
 	}
 
 	public onKeyDown(event) {
@@ -235,7 +235,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	private setLoading(isLoading: boolean): void {
 		this.isLoading = isLoading;
-		this._changeRef.detectChanges();
+		this.detectChanges();
 	}
 
 	private async loadModel(): Promise<void> {
@@ -253,6 +253,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			connectionService: this.connectionManagementService,
 			notificationService: this.notificationService,
 			notebookManagers: this.notebookManagers,
+			contentManager: this._notebookParams.input.contentManager,
 			standardKernels: this._notebookParams.input.standardKernels,
 			cellMagicMapper: new CellMagicMapper(this.notebookService.languageMagics),
 			providerId: 'sql', // this is tricky; really should also depend on the connection profile
@@ -268,7 +269,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this.updateToolbarComponents(this._model.trustedMode);
 		this._modelRegisteredDeferred.resolve(this._model);
 		model.backgroundStartSession();
-		this._changeRef.detectChanges();
+		this.detectChanges();
 	}
 
 	private async awaitNonDefaultProvider(): Promise<void> {
@@ -321,8 +322,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	private handleContentChanged(change: NotebookContentChange) {
 		// Note: for now we just need to set dirty state and refresh the UI.
-		this.setDirty(true);
-		this._changeRef.detectChanges();
+		this.detectChanges();
 	}
 
 	private handleProviderIdChanged(providerId: string) {
@@ -497,6 +497,12 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this.addPrimaryContributedActions(primary);
 	}
 
+	private detectChanges(): void {
+		if (!(this._changeRef['destroyed'])) {
+			this._changeRef.detectChanges();
+		}
+	}
+
 	private addPrimaryContributedActions(primary: IAction[]) {
 		for (let action of primary) {
 			// Need to ensure that we don't add the same action multiple times
@@ -552,7 +558,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		await this.modelReady;
 		let uriString = cell.cellUri.toString();
 		if (this._model.cells.findIndex(c => c.cellUri.toString() === uriString) > -1) {
-			return cell.runCell(this.notificationService);
+			return cell.runCell(this.notificationService, this.connectionManagementService);
 		} else {
 			return Promise.reject(new Error(localize('cellNotFound', 'cell with URI {0} was not found in this model', uriString)));
 		}
