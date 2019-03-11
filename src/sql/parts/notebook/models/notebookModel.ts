@@ -802,16 +802,14 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	/**
-	 * Set _providerId and _activeClientSession based on a kernelSpec representing new kernel
-	 * @param kernelSpec KernelSpec for new kernel
+	 * Set _providerId and start session if it is new provider
+	 * @param displayName Kernel dispay name
 	 */
 	private async setProviderIdAndStartSession(displayName: string): Promise<void> {
 		if (displayName) {
 			if (this._activeClientSession && this._activeClientSession.isReady) {
 				this._oldKernel = this._activeClientSession.kernel;
 				if (this._oldKernel.name !== displayName) {
-					let oldProviderId = this.getProviderIdFromName(this._oldKernel.name);
-
 					if (this._kernelDisplayNameToNotebookProviderIds.has(displayName)) {
 						let providerId = this._kernelDisplayNameToNotebookProviderIds.get(displayName);
 						if (providerId) {
