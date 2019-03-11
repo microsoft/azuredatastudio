@@ -171,7 +171,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			}
 			this._model.activeCell = cell;
 			this._model.activeCell.active = true;
-			this._changeRef.detectChanges();
+			this.detectChanges();
 		}
 	}
 
@@ -180,7 +180,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			this.model.activeCell.active = false;
 			this.model.activeCell = undefined;
 		}
-		this._changeRef.detectChanges();
+		this.detectChanges();
 	}
 
 	// Add cell based on cell type
@@ -195,7 +195,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			cell.trustedMode = isTrusted;
 		});
 		//TODO: Handle dirty for trust?
-		this._changeRef.detectChanges();
+		this.detectChanges();
 	}
 
 	public onKeyDown(event) {
@@ -235,7 +235,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	private setLoading(isLoading: boolean): void {
 		this.isLoading = isLoading;
-		this._changeRef.detectChanges();
+		this.detectChanges();
 	}
 
 	private async loadModel(): Promise<void> {
@@ -269,7 +269,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this.updateToolbarComponents(this._model.trustedMode);
 		this._modelRegisteredDeferred.resolve(this._model);
 		model.backgroundStartSession();
-		this._changeRef.detectChanges();
+		this.detectChanges();
 	}
 
 	private async awaitNonDefaultProvider(): Promise<void> {
@@ -322,7 +322,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	private handleContentChanged(change: NotebookContentChange) {
 		// Note: for now we just need to set dirty state and refresh the UI.
-		this._changeRef.detectChanges();
+		this.detectChanges();
 	}
 
 	private handleProviderIdChanged(providerId: string) {
@@ -495,6 +495,12 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		let groups = notebookBarMenu.getActions({ arg: null, shouldForwardArgs: true });
 		fillInActions(groups, { primary, secondary }, false, (group: string) => group === undefined || group === '');
 		this.addPrimaryContributedActions(primary);
+	}
+
+	private detectChanges(): void {
+		if (!(this._changeRef['destroyed'])) {
+			this._changeRef.detectChanges();
+		}
 	}
 
 	private addPrimaryContributedActions(primary: IAction[]) {
