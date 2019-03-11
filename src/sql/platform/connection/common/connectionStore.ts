@@ -281,10 +281,14 @@ export class ConnectionStore {
 	 * @returns {Promise<void>} a Promise that returns when the connection was saved
 	 */
 	public async addActiveConnection(conn: IConnectionProfile, addToMru: boolean): Promise<void> {
-		await this.addConnectionToMemento(conn, Constants.activeConnections, undefined, conn.savePassword);
 		if (addToMru) {
 			await this.addConnectionToMru(conn);
-		}
+        }
+
+        // Only add connections we don't already know about
+        if (!this.getActiveConnections().some(existingConn => existingConn.id === conn.id)) {
+            await this.addConnectionToMemento(conn, Constants.activeConnections, undefined, conn.savePassword);
+        }
 	}
 
 	/**
