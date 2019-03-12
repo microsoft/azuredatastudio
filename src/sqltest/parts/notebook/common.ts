@@ -12,6 +12,7 @@ import { INotebookModel, ICellModel, IClientSession, IDefaultConnection, Noteboo
 import { NotebookChangeType, CellType } from 'sql/parts/notebook/models/contracts';
 import { INotebookManager } from 'sql/workbench/services/notebook/common/notebookService';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IStandardKernelWithProvider } from 'sql/parts/notebook/notebookUtils';
 
 export class NotebookModelStub implements INotebookModel {
 	constructor(private _languageInfo?: nb.ILanguageInfo) {
@@ -52,6 +53,9 @@ export class NotebookModelStub implements INotebookModel {
 	get contextsChanged(): Event<void> {
 		throw new Error('method not implemented.');
 	}
+	get contextsLoading(): Event<void> {
+		throw new Error('method not implemented.');
+	}
 	get contentChanged(): Event<NotebookContentChange> {
 		throw new Error('method not implemented.');
 	}
@@ -66,6 +70,9 @@ export class NotebookModelStub implements INotebookModel {
 	}
 	get applicableConnectionProviderIds(): string[] {
 		throw new Error('method not implemented.');
+	}
+	getStandardKernelFromName(name: string): IStandardKernelWithProvider {
+		throw new Error('Method not implemented.');
 	}
 	changeKernel(displayName: string): void {
 		throw new Error('Method not implemented.');

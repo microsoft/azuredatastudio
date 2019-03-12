@@ -22,11 +22,13 @@ import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHos
 import { IStandardKernelWithProvider } from 'sql/parts/notebook/notebookUtils';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { localize } from 'vs/nls';
 
 export interface IClientSessionOptions {
 	notebookUri: URI;
 	notebookManager: INotebookManager;
 	notificationService: INotificationService;
+	kernelSpec: nb.IKernelSpec;
 }
 
 /**
@@ -310,6 +312,11 @@ export interface INotebookModel {
 	readonly contextsChanged: Event<void>;
 
 	/**
+	 * Event fired on when switching kernel and should show loading context
+	 */
+	readonly contextsLoading: Event<void>;
+
+	/**
 	 * The specs for available kernels, or undefined if these have
 	 * not been loaded yet
 	 */
@@ -388,6 +395,12 @@ export interface INotebookModel {
 	pushEditOperations(edits: ISingleNotebookEditOperation[]): void;
 
 	getApplicableConnectionProviderIds(kernelName: string): string[];
+
+	/**
+	 * Get the standardKernelWithProvider by name
+	 * @param name The kernel name
+	 */
+	getStandardKernelFromName(name: string): IStandardKernelWithProvider;
 
 	/** Event fired once we get call back from ConfigureConnection method in sqlops extension */
 	readonly onValidConnectionSelected: Event<boolean>;
@@ -510,4 +523,11 @@ export interface ICellMagicMapper {
 
 export namespace notebookConstants {
 	export const SQL = 'SQL';
+	export const SQL_CONNECTION_PROVIDER = 'MSSQL';
+	export const sqlKernel: string = localize('sqlKernel', 'SQL');
+	export const sqlKernelSpec: nb.IKernelSpec = ({
+		name: sqlKernel,
+		language: 'sql',
+		display_name: sqlKernel
+	});
 }
