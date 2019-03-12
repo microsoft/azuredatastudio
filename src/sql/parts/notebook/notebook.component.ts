@@ -424,10 +424,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		provider.bindTo(this.contextKeyService);
 	}
 
-	public async save(): Promise<boolean> {
-		return this._notebookParams.input.save();
-	}
-
 	public get notebookParams(): INotebookParams {
 		return this._notebookParams;
 	}
