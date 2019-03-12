@@ -220,6 +220,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	private async doLoad(): Promise<void> {
 		try {
+			await this.setNotebookManager();
 			await this.loadModel();
 			this.setLoading(false);
 			this._modelReadyDeferred.resolve(this._model);
@@ -243,10 +244,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		let providerId = 'sql'; // this is tricky; really should also depend on the connection profile
 		this.setContextKeyServiceWithProviderId(providerId);
 		this.fillInActionsForCurrentContext();
-		for (let providerId of this._notebookParams.providers) {
-			let notebookManager = await this.notebookService.getOrCreateNotebookManager(providerId, this._notebookParams.notebookUri);
-			this.notebookManagers.push(notebookManager);
-		}
+
 		let model = new NotebookModel({
 			factory: this.modelFactory,
 			notebookUri: this._notebookParams.notebookUri,
@@ -268,8 +266,15 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._model = this._register(model);
 		this.updateToolbarComponents(this._model.trustedMode);
 		this._modelRegisteredDeferred.resolve(this._model);
-		model.backgroundStartSession();
+		await model.startSession(this.model.notebookManager);
 		this.detectChanges();
+	}
+
+	private async setNotebookManager() {
+		for (let providerId of this._notebookParams.providers) {
+			let notebookManager = await this.notebookService.getOrCreateNotebookManager(providerId, this._notebookParams.notebookUri);
+			this.notebookManagers.push(notebookManager);
+		}
 	}
 
 	private async awaitNonDefaultProvider(): Promise<void> {
@@ -348,12 +353,12 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	protected initActionBar() {
 		let kernelContainer = document.createElement('div');
-		let kernelDropdown = new KernelsDropdown(kernelContainer, this.contextViewService, this.modelRegistered);
+		let kernelDropdown = new KernelsDropdown(kernelContainer, this.contextViewService, this.modelReady);
 		kernelDropdown.render(kernelContainer);
 		attachSelectBoxStyler(kernelDropdown, this.themeService);
 
 		let attachToContainer = document.createElement('div');
-		let attachToDropdown = new AttachToDropdown(attachToContainer, this.contextViewService, this.modelRegistered,
+		let attachToDropdown = new AttachToDropdown(attachToContainer, this.contextViewService, this.modelReady,
 			this.connectionManagementService, this.connectionDialogService, this.notificationService, this.capabilitiesService);
 		attachToDropdown.render(attachToContainer);
 		attachSelectBoxStyler(attachToDropdown, this.themeService);
