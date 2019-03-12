@@ -55,28 +55,7 @@ export class JupyterNotebookProvider implements nb.NotebookProvider {
 	}
 
 	public get standardKernels(): nb.IStandardKernel[] {
-		return [
-			{
-				"name": "Python 3",
-				"connectionProviderIds": []
-			},
-			{
-				"name": "PySpark",
-				"connectionProviderIds": ["HADOOP_KNOX"]
-			},
-			{
-				"name": "PySpark3",
-				"connectionProviderIds": ["HADOOP_KNOX"]
-			},
-			{
-				"name": "Spark | R",
-				"connectionProviderIds": ["HADOOP_KNOX"]
-			},
-			{
-				"name": "Spark | Scala",
-				"connectionProviderIds": ["HADOOP_KNOX"]
-			}
-		];
+		return [];
 	}
 }
 

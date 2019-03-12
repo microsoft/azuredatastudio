@@ -4089,6 +4089,7 @@ declare module 'azdata' {
 
 		export interface IStandardKernel {
 			readonly name: string;
+			readonly displayName: string;
 			readonly connectionProviderIds: string[];
 		}
 
@@ -4197,7 +4198,7 @@ declare module 'azdata' {
 
 		export interface ILanguageInfo {
 			name: string;
-			version: string;
+			version?: string;
 			mimetype?: string;
 			codemirror_mode?: string | ICodeMirrorMode;
 		}

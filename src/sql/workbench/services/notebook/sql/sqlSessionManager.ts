@@ -8,7 +8,7 @@ import * as os from 'os';
 import { nb, QueryExecuteSubsetResult, IDbColumn, BatchSummary, IResultMessage, ResultSetSummary } from 'azdata';
 import { localize } from 'vs/nls';
 import * as strings from 'vs/base/common/strings';
-import { FutureInternal, ILanguageMagic } from 'sql/parts/notebook/models/modelInterfaces';
+import { FutureInternal, ILanguageMagic, notebookConstants } from 'sql/parts/notebook/models/modelInterfaces';
 import QueryRunner, { EventType } from 'sql/platform/query/common/queryRunner';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -24,17 +24,10 @@ import { elapsedTimeLabel } from 'sql/parts/query/common/localizedConstants';
 import * as notebookUtils from 'sql/parts/notebook/notebookUtils';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
-export const sqlKernel: string = localize('sqlKernel', "SQL");
-export const sqlKernelError: string = localize('sqlKernelError', "SQL kernel error");
+export const sqlKernelError: string = localize("sqlKernelError", "SQL kernel error");
 export const MAX_ROWS = 5000;
 export const NotebookConfigSectionName = 'notebook';
 export const MaxTableRowsConfigName = 'maxTableRows';
-
-const sqlKernelSpec: nb.IKernelSpec = ({
-	name: sqlKernel,
-	language: 'sql',
-	display_name: sqlKernel
-});
 
 const languageMagics: ILanguageMagic[] = [{
 	language: 'Python',
@@ -65,8 +58,8 @@ export class SqlSessionManager implements nb.SessionManager {
 
 	public get specs(): nb.IAllKernels {
 		let allKernels: nb.IAllKernels = {
-			defaultKernel: sqlKernel,
-			kernels: [sqlKernelSpec]
+			defaultKernel: notebookConstants.sqlKernel,
+			kernels: [notebookConstants.sqlKernelSpec]
 		};
 		return allKernels;
 	}
@@ -176,7 +169,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 	}
 
 	public get name(): string {
-		return sqlKernel;
+		return notebookConstants.sqlKernel;
 	}
 
 	public get supportsIntellisense(): boolean {
@@ -217,7 +210,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 	}
 
 	getSpec(): Thenable<nb.IKernelSpec> {
-		return Promise.resolve(sqlKernelSpec);
+		return Promise.resolve(notebookConstants.sqlKernelSpec);
 	}
 
 	requestExecute(content: nb.IExecuteRequest, disposeOnDone?: boolean): nb.IFuture {
