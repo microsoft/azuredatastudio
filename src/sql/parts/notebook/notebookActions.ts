@@ -53,26 +53,6 @@ export class AddCellAction extends Action {
 	}
 }
 
-export class SaveNotebookAction extends Action {
-	private static readonly notebookSavedMsg = localize('notebookSavedMsg', 'Notebook saved successfully.');
-	private static readonly notebookFailedSaveMsg = localize('notebookFailedSaveMsg', 'Failed to save Notebook.');
-	constructor(
-		id: string, label: string, cssClass: string,
-		@INotificationService private _notificationService: INotificationService
-	) {
-		super(id, label, cssClass);
-	}
-
-	public async run(context: NotebookComponent): TPromise<boolean> {
-		const actions: INotificationActions = { primary: [] };
-		let saved = await context.save();
-		if (saved) {
-			this._notificationService.notify({ severity: Severity.Info, message: SaveNotebookAction.notebookSavedMsg, actions });
-		}
-		return saved;
-	}
-}
-
 export interface IToggleableState {
 	baseClass?: string;
 	shouldToggleTooltip?: boolean;

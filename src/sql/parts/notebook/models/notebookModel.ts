@@ -766,20 +766,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return name;
 	}
 
-	public async saveModel(): Promise<boolean> {
-		let notebook = this.toJSON();
-		if (!notebook) {
-			return false;
-		}
-		// TODO: refactor ContentManager out from NotebookManager
-		await this.notebookManagers[0].contentManager.save(this._notebookOptions.notebookUri, notebook);
-		this._contentChangedEmitter.fire({
-			changeType: NotebookChangeType.DirtyStateChanged,
-			isDirty: false
-		});
-		return true;
-	}
-
 	private async updateKernelInfo(kernel: nb.IKernel): Promise<void> {
 		if (kernel) {
 			try {

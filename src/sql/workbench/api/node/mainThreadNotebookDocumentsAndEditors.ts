@@ -77,7 +77,7 @@ class MainThreadNotebookEditor extends Disposable {
 	}
 
 	public save(): Thenable<boolean> {
-		return this.editor.save();
+		return this.editor.notebookParams.input.save();
 	}
 
 	public matches(input: NotebookInput): boolean {

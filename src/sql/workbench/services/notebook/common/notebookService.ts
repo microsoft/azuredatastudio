@@ -106,7 +106,6 @@ export interface INotebookEditor {
 	isDirty(): boolean;
 	isActive(): boolean;
 	isVisible(): boolean;
-	save(): Promise<boolean>;
 	executeEdits(edits: ISingleNotebookEditOperation[]): boolean;
 	runCell(cell: ICellModel): Promise<boolean>;
 }
