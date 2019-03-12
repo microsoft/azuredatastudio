@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
+import * as vscode from 'vscode';
 import * as fspath from 'path';
 import * as fs from 'fs';
 import * as meter from 'stream-meter';
@@ -187,18 +188,25 @@ export class HdfsFileSource implements IFileSource {
 				reject(error);
 			});
 
+			let data: any[] = [];
 			if (maxBytes) {
 				remoteFileStream = remoteFileStream.pipe(meter(maxBytes));
 				remoteFileStream.on('error', (err) => {
 					error = <HdfsError>err;
 					if (error.message.includes('Stream exceeded specified max')) {
-						error.message = localize('maxSizeReached', 'File exceeds max size of ${0}', bytes(maxBytes));
+						// We have data > maxbytes, show we're truncating
+						let previewNote: string = '#################################################################################################################### \r\n'+
+						'########################### NOTICE: This file has been truncated at '+ bytes(maxBytes) +' for preview ################################ \r\n' +
+						'#################################################################################################################### \r\n';
+						data.splice(0, 0, Buffer.from(previewNote, 'utf-8'));
+						vscode.window.showWarningMessage(localize('maxSizeReached', "The file has been truncated at {0} for preview.", bytes(maxBytes)));
+						resolve(Buffer.concat(data));
+					} else {
+						reject(error);
 					}
-					reject(error);
 				});
 			}
 
-			let data: any[] = [];
 			remoteFileStream.on('data', (chunk) => {
 				data.push(chunk);
 			});
