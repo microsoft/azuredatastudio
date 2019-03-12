@@ -195,9 +195,11 @@ export class HdfsFileSource implements IFileSource {
 					error = <HdfsError>err;
 					if (error.message.includes('Stream exceeded specified max')) {
 						// We have data > maxbytes, show we're truncating
-						let previewNote: string = '########################### NOTICE: This file has been truncated at '+ bytes(maxBytes) +' for preview ########################### \r\n';
+						let previewNote: string = '#################################################################################################################### \r\n'+
+						'########################### NOTICE: This file has been truncated at '+ bytes(maxBytes) +' for preview ################################ \r\n' +
+						'#################################################################################################################### \r\n';
 						data.splice(0, 0, Buffer.from(previewNote, 'utf-8'));
-						vscode.window.showWarningMessage(localize('maxSizeReached', "Preview only loads {0} data of the file and truncates the rest.", bytes(maxBytes)));
+						vscode.window.showWarningMessage(localize('maxSizeReached', "The file has been truncated at {0} for preview.", bytes(maxBytes)));
 						resolve(Buffer.concat(data));
 					} else {
 						reject(error);
