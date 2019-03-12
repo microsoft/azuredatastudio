@@ -708,7 +708,7 @@ class GridTable<T> extends Disposable implements IView {
 	}
 
 	public get maximumSize(): number {
-		return Math.max(this.maxSize, ACTIONBAR_HEIGHT + BOTTOM_PADDING);
+		return Number.POSITIVE_INFINITY; // Math.max(this.maxSize, ACTIONBAR_HEIGHT + BOTTOM_PADDING);
 	}
 
 	private loadData(offset: number, count: number): Thenable<T[]> {
