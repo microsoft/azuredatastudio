@@ -109,7 +109,7 @@ class ResultsView extends Disposable implements IPanelView {
 		if (this.needsGridResize) {
 			this.panelViewlet.resizePanel(this.gridPanel, this.state.gridPanelSize || Math.round(this.currentDimension.height * .7));
 			// we have the right scroll position saved as part of gridPanel state, use this to re-position scrollbar
-			this.gridPanel.ResetScrollPosition();
+			this.gridPanel.resetScrollPosition();
 		}
 	}
 
