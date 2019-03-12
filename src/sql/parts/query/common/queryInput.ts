@@ -169,7 +169,7 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 	public getEncoding(): string { return this._sql.getEncoding(); }
 	public suggestFileName(): string { return this._sql.suggestFileName(); }
 
-	public getName(longForm?:boolean): string {
+	public getName(longForm?: boolean): string {
 		if (this._configurationService.getValue('sql.showConnectionInfoInTitle')) {
 			let profile = this._connectionManagementService.getConnectionProfile(this.uri);
 			let title = '';
