@@ -163,7 +163,7 @@
 			"\tFROM INFORMATION_SCHEMA.ROUTINES",
 			"WHERE SPECIFIC_SCHEMA = N'${2:dbo}'",
 			"\tAND SPECIFIC_NAME = N'${1:StoredProcedureName}'",
-			"\tAND ROUTINE_TYPE = N'PROCEDURE'"
+			"\tAND ROUTINE_TYPE = N'PROCEDURE'",
 			")",
 			"DROP PROCEDURE ${2:dbo}.${1:StoredProcedureName}",
 			"GO",
