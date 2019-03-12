@@ -11,13 +11,19 @@ import { ConnectionConfig } from 'sql/platform/connection/common/connectionConfi
 import { fixupConnectionCredentials } from 'sql/platform/connection/common/connectionInfo';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
-import * as Constants from 'sql/platform/connection/common/constants';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ICredentialsService } from 'sql/platform/credentials/common/credentialsService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IStateService } from 'vs/platform/state/common/state';
 
 const MAX_CONNECTIONS_DEFAULT = 25;
+
+const RECENT_CONNECTIONS_STATE_KEY = 'recentConnections';
+const CRED_PREFIX = 'Microsoft.SqlTools';
+const CRED_SEPARATOR = '|';
+const CRED_ID_PREFIX = 'id:';
+const CRED_ITEMTYPE_PREFIX = 'itemtype:';
+const CRED_PROFILE_USER = 'Profile';
 
 /**
  * Manages the connections list including saved profiles and the most recently used connections
@@ -30,25 +36,11 @@ export class ConnectionStore {
 	private connectionConfig = new ConnectionConfig(this.configurationService, this.capabilitiesService);
 
 	constructor(
-		private stateService: IStateService,
-		private configurationService: IConfigurationService,
-		private credentialService: ICredentialsService,
-		private capabilitiesService: ICapabilitiesService
+		@IStateService private stateService: IStateService,
+		@IConfigurationService private configurationService: IConfigurationService,
+		@ICredentialsService private credentialService: ICredentialsService,
+		@ICapabilitiesService private capabilitiesService: ICapabilitiesService
 	) {
-	}
-
-	public static get CRED_PREFIX(): string { return 'Microsoft.SqlTools'; }
-	public static get CRED_SEPARATOR(): string { return '|'; }
-	public static get CRED_ID_PREFIX(): string { return 'id:'; }
-	public static get CRED_ITEMTYPE_PREFIX(): string { return 'itemtype:'; }
-	public static get CRED_PROFILE_USER(): string { return 'Profile'; }
-
-	public formatCredentialIdForCred(connectionProfile: IConnectionProfile): string {
-		if (!connectionProfile) {
-			throw new Error('Missing Connection which is required');
-		}
-		let itemTypeString: string = ConnectionStore.CRED_PROFILE_USER;
-		return this.formatCredentialId(connectionProfile, itemTypeString);
 	}
 
 	/**
@@ -59,26 +51,17 @@ export class ConnectionStore {
 	 * @param {string} itemType type of the item (MRU or Profile) - optional
 	 * @returns {string} formatted string with server, DB and username
 	 */
-	public formatCredentialId(connectionProfile: IConnectionProfile, itemType?: string): string {
+	private formatCredentialId(connectionProfile: IConnectionProfile, itemType?: string): string {
 		let connectionProfileInstance: ConnectionProfile = ConnectionProfile.fromIConnectionProfile(
 			this.capabilitiesService, connectionProfile);
-		if (!connectionProfileInstance.getConnectionInfoId()) {
-			throw new Error('Missing Id, which is required');
-		}
-		let cred: string[] = [ConnectionStore.CRED_PREFIX];
+		let cred: string[] = [CRED_PREFIX];
 		if (!itemType) {
-			itemType = ConnectionStore.CRED_PROFILE_USER;
+			itemType = CRED_PROFILE_USER;
 		}
 
-		ConnectionStore.pushIfNonEmpty(itemType, ConnectionStore.CRED_ITEMTYPE_PREFIX, cred);
-		ConnectionStore.pushIfNonEmpty(connectionProfileInstance.getConnectionInfoId(), ConnectionStore.CRED_ID_PREFIX, cred);
-		return cred.join(ConnectionStore.CRED_SEPARATOR);
-	}
-
-	private static pushIfNonEmpty(value: string, prefix: string, arr: string[]): void {
-		if (value) {
-			arr.push(prefix.concat(value));
-		}
+		cred.push(CRED_ITEMTYPE_PREFIX.concat(itemType));
+		cred.push(CRED_ID_PREFIX.concat(connectionProfileInstance.getConnectionInfoId()));
+		return cred.join(CRED_SEPARATOR);
 	}
 
 	/**
@@ -96,7 +79,7 @@ export class ConnectionStore {
 
 	public addSavedPassword(credentialsItem: IConnectionProfile): Promise<{ profile: IConnectionProfile, savedCred: boolean }> {
 		if (credentialsItem.savePassword && this.isPasswordRequired(credentialsItem) && !credentialsItem.password) {
-			let credentialId = this.formatCredentialIdForCred(credentialsItem);
+			let credentialId = this.formatCredentialId(credentialsItem, CRED_PROFILE_USER);
 			return this.credentialService.readCredential(credentialId)
 				.then(savedCred => {
 					if (savedCred) {
@@ -161,7 +144,7 @@ export class ConnectionStore {
 	 * @returns {azdata.ConnectionInfo} the array of connections, empty if none are found
 	 */
 	public getRecentlyUsedConnections(providers?: string[]): ConnectionProfile[] {
-		let configValues = this.stateService.getItem<IConnectionProfile[]>(Constants.recentConnections, []).filter(c => !!c);
+		let configValues = this.stateService.getItem<IConnectionProfile[]>(RECENT_CONNECTIONS_STATE_KEY, []).filter(c => !!c);
 
 		if (providers && providers.length > 0) {
 			configValues = configValues.filter(c => providers.includes(c.providerName));
@@ -190,18 +173,6 @@ export class ConnectionStore {
 		});
 	}
 
-	/**
-	 * Gets the list of active connections. These will not include the password - a separate call to
-	 * {addSavedPassword} is needed to fill that before connecting
-	 *
-	 * @returns {azdata.ConnectionInfo} the array of connections, empty if none are found
-	 */
-	public getActiveConnections(): ConnectionProfile[] {
-		let configValues: IConnectionProfile[] = this.stateService.getItem<IConnectionProfile[]>(Constants.activeConnections, []);
-
-		return this.convertConfigValuesToConnectionProfiles(configValues);
-	}
-
 	public getProfileWithoutPassword(conn: IConnectionProfile): ConnectionProfile {
 		if (conn) {
 			let savedConn: ConnectionProfile = ConnectionProfile.fromIConnectionProfile(this.capabilitiesService, conn);
@@ -221,21 +192,15 @@ export class ConnectionStore {
 	 * @param {IConnectionCredentials} conn the connection to add
 	 * @returns {Promise<void>} a Promise that returns when the connection was saved
 	 */
-	public addActiveConnection(conn: IConnectionProfile, isConnectionToDefaultDb: boolean = false): Promise<void> {
-		if (this.getActiveConnections().some(existingConn => existingConn.id === conn.id)) {
-			return Promise.resolve();
-		} else {
-			return this.addConnectionToState(conn, Constants.activeConnections, undefined, conn.savePassword).then(() => {
-				let maxConnections = this.getMaxRecentConnectionsCount();
-				if (isConnectionToDefaultDb) {
-					conn.databaseName = '';
-				}
-				return this.addConnectionToState(conn, Constants.recentConnections, maxConnections);
-			});
+	public addRecentConnection(conn: IConnectionProfile, isConnectionToDefaultDb: boolean = false): Promise<void> {
+		let maxConnections = this.getMaxRecentConnectionsCount();
+		if (isConnectionToDefaultDb) {
+			conn.databaseName = '';
 		}
+		return this.addConnectionToState(conn, RECENT_CONNECTIONS_STATE_KEY, maxConnections, conn.savePassword);
 	}
 
-	public addConnectionToState(conn: IConnectionProfile, key: string, maxConnections?: number, savePassword?: boolean): Promise<void> {
+	private addConnectionToState(conn: IConnectionProfile, key: string, maxConnections?: number, savePassword?: boolean): Promise<void> {
 		// Get all profiles
 		let configValues = this.getConnectionsFromState(key);
 		let configToSave = this.addToConnectionList(conn, configValues);
@@ -249,12 +214,16 @@ export class ConnectionStore {
 		return savePassword ? this.doSavePassword(conn).then() : Promise.resolve();
 	}
 
-	public removeConnectionFromState(conn: IConnectionProfile, key: string): void {
+	private removeConnectionFromState(conn: IConnectionProfile, key: string): void {
 		// Get all profiles
 		let configValues = this.getConnectionsFromState(key);
 		let configToSave = this.removeFromConnectionList(conn, configValues);
 
 		this.stateService.setItem(key, configToSave);
+	}
+
+	private getConnectionsFromState(mementoKey: string): ConnectionProfile[] {
+		return this.convertConfigValuesToConnectionProfiles(this.stateService.getItem<IConnectionProfile[]>(mementoKey, []));
 	}
 
 	private addToConnectionList(conn: IConnectionProfile, list: ConnectionProfile[]): IConnectionProfile[] {
@@ -295,14 +264,11 @@ export class ConnectionStore {
 	 * Clear all recently used connections from the MRU list.
 	 */
 	public clearRecentlyUsed(): void {
-		this.stateService.setItem(Constants.recentConnections, []);
+		this.stateService.setItem(RECENT_CONNECTIONS_STATE_KEY, []);
 	}
 
-	/**
-	 * Remove a connection profile from the active connections list.
-	 */
-	public removeActiveConnection(conn: IConnectionProfile): void {
-		return this.removeConnectionFromState(conn, Constants.activeConnections);
+	public removeRecentConnection(conn: IConnectionProfile): void {
+		this.removeConnectionFromState(conn, RECENT_CONNECTIONS_STATE_KEY);
 	}
 
 	private saveProfilePasswordIfNeeded(profile: IConnectionProfile): Promise<boolean> {
@@ -406,9 +372,7 @@ export class ConnectionStore {
 	}
 
 	private getGroupFullName(groupId: string): string {
-		if (this.groupIdMap.has(groupId)) {
-			return this.groupIdMap.get(groupId);
-		} else {
+		if (!this.groupIdMap.has(groupId)) {
 			// Load the cache
 			this.getConnectionProfileGroups(true);
 		}
@@ -420,14 +384,10 @@ export class ConnectionStore {
 			groupFullName = '';
 		}
 		let key = groupFullName.toUpperCase();
-		let result: string = '';
-		if (this.groupIdMap.reverseHas(key)) {
-			result = this.groupIdMap.reverseGet(key);
-		} else {
+		if (!this.groupIdMap.reverseHas(key)) {
 			// Load the cache
 			this.getConnectionProfileGroups(true);
-			result = this.groupIdMap.reverseGet(key);
 		}
-		return result;
+		return this.groupIdMap.reverseGet(key);
 	}
 }

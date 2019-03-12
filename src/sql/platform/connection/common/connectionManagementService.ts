@@ -607,11 +607,11 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	public clearRecentConnection(connectionProfile: IConnectionProfile): void {
-		this._connectionStore.removeConnectionFromState(connectionProfile, Constants.recentConnections);
+		this._connectionStore.removeRecentConnection(connectionProfile);
 	}
 
 	public getActiveConnections(providers?: string[]): ConnectionProfile[] {
-		return this._connectionStatusManager.getActiveConnectionProfiles();
+		return this._connectionStatusManager.getActiveConnectionProfiles(providers);
 	}
 
 	public getConnectionUriFromId(connectionId: string): string {
@@ -845,7 +845,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 */
 	private tryAddActiveConnection(connectionManagementInfo: ConnectionManagementInfo, newConnection: IConnectionProfile, isConnectionToDefaultDb: boolean): void {
 		if (newConnection) {
-			this._connectionStore.addActiveConnection(newConnection, isConnectionToDefaultDb)
+			this._connectionStore.addRecentConnection(newConnection, isConnectionToDefaultDb)
 				.then(() => {
 					connectionManagementInfo.connectHandler(true);
 				}, err => {
@@ -1080,7 +1080,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			this.doDisconnect(uri, profile).then(result => {
 				if (result) {
 					this.addTelemetryForConnectionDisconnected(input);
-					this._connectionStore.removeActiveConnection(input);
 					this._connectionStatusManager.removeConnection(uri);
 					resolve();
 				} else {

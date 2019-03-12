@@ -7,17 +7,16 @@
 import * as assert from 'assert';
 import * as azdata from 'azdata';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { ConnectionStore } from 'sql/platform/connection/common/connectionStore';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
 import { TestStateService } from 'sql/platform/connection/test/common/testStateService';
 import { TestCredentialsService } from 'sql/platform/credentials/test/common/testCredentialsService';
 import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ConnectionProviderProperties } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
 import { CapabilitiesTestService } from 'sqltest/stubs/capabilitiesTestService';
-import { deepFreeze } from 'vs/base/common/objects';
-import { IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
-import { connectionGroupsArrayName } from 'sql/platform/connection/common/constants';
-import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
+import { deepClone, deepFreeze } from 'vs/base/common/objects';
 import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 
 suite('ConnectionStore', () => {
@@ -156,7 +155,7 @@ suite('ConnectionStore', () => {
 		for (let i = 0; i < numCreds; i++) {
 			let cred = Object.assign({}, defaultNamedProfile, { serverName: defaultNamedProfile.serverName + i });
 			let connectionProfile = new ConnectionProfile(capabilitiesService, cred);
-			await connectionStore.addActiveConnection(connectionProfile);
+			await connectionStore.addRecentConnection(connectionProfile);
 			let current = connectionStore.getRecentlyUsedConnections();
 			if (i >= maxRecent) {
 				assert.equal(current.length, maxRecent, `expect only top ${maxRecent} creds to be saved`);
@@ -167,8 +166,6 @@ suite('ConnectionStore', () => {
 			assert.ok(!current[0].password);
 		}
 		assert.equal(credentialsService.credentials.size, numCreds);
-		let recentConnections = connectionStore.getActiveConnections();
-		assert.equal(recentConnections.length, numCreds, `expect number of active connection ${numCreds}|${recentConnections.length} `);
 	});
 
 	test('getRecentlyUsedConnections should return connection for given provider', () => {
@@ -194,9 +191,9 @@ suite('ConnectionStore', () => {
 			credentialsService, capabilitiesService);
 		let cred = Object.assign({}, defaultNamedProfile, { serverName: defaultNamedProfile.serverName + 1 });
 		let connectionProfile = new ConnectionProfile(capabilitiesService, cred);
-		await connectionStore.addActiveConnection(defaultNamedConnectionProfile);
-		await connectionStore.addActiveConnection(connectionProfile);
-		await connectionStore.addActiveConnection(connectionProfile);
+		await connectionStore.addRecentConnection(defaultNamedConnectionProfile);
+		await connectionStore.addRecentConnection(connectionProfile);
+		await connectionStore.addRecentConnection(connectionProfile);
 		let current = connectionStore.getRecentlyUsedConnections();
 		assert.equal(current.length, 2, 'expect 2 unique credentials to have been added');
 		assert.equal(current[0].serverName, cred.serverName, 'Expect most recently saved item to be first in list');
@@ -229,24 +226,24 @@ suite('ConnectionStore', () => {
 		let recentCredential: azdata.Credential;
 		credentialsService.onCredential(e => recentCredential = e);
 
-		await connectionStore.addActiveConnection(connectionProfile);
+		await connectionStore.addRecentConnection(connectionProfile);
 
 		let current = connectionStore.getRecentlyUsedConnections();
 		// Then verify that since its password based we save the password
 		assert.equal(credentialsService.credentials.size, 1);
 		assert.strictEqual(recentCredential.password, defaultNamedProfile.password);
-		assert.ok(recentCredential.credentialId.includes(ConnectionStore.CRED_PROFILE_USER), 'Expect credential to be marked as an Profile cred');
+		assert.ok(recentCredential.credentialId.includes('Profile'), 'Expect credential to be marked as an Profile cred');
 		assert.ok(!current[0].password);
 		// When add integrated auth connection
 		let integratedCredConnectionProfile = new ConnectionProfile(capabilitiesService, integratedCred);
-		await connectionStore.addActiveConnection(integratedCredConnectionProfile);
+		await connectionStore.addRecentConnection(integratedCredConnectionProfile);
 		current = connectionStore.getRecentlyUsedConnections();
 		// then expect not to have credential store called, but MRU count upped to 2
 		assert.equal(credentialsService.credentials.size, 1);
 		assert.equal(current.length, 2);
 		// When add connection without password
 		let noPwdCredConnectionProfile = new ConnectionProfile(capabilitiesService, noPwdCred);
-		await connectionStore.addActiveConnection(noPwdCredConnectionProfile);
+		await connectionStore.addRecentConnection(noPwdCredConnectionProfile);
 		current = connectionStore.getRecentlyUsedConnections();
 		// then expect not to have credential store called, but MRU count upped to 3
 		assert.equal(current.length, 3);
@@ -261,10 +258,8 @@ suite('ConnectionStore', () => {
 		let connectionStore = new ConnectionStore(stateService, configurationService,
 			credentialsService, capabilitiesService);
 
-		await connectionStore.addActiveConnection(defaultNamedProfile);
+		await connectionStore.addRecentConnection(defaultNamedProfile);
 		let result = connectionStore.getRecentlyUsedConnections();
-		assert.equal(result.length, 1);
-		result = connectionStore.getActiveConnections();
 		assert.equal(result.length, 1);
 		connectionStore.clearRecentlyUsed();
 		result = connectionStore.getRecentlyUsedConnections();
@@ -339,71 +334,45 @@ suite('ConnectionStore', () => {
 		assert.ok(!!profile.groupId, 'Group id should be set in the profile');
 	});
 
-	test('addConnectionToMemento should not add duplicate items', () => {
+	test('getGroupFromId returns undefined when there is no group with the given ID', () => {
 		let stateService = new TestStateService();
 		let configurationService = new TestConfigurationService();
 		let credentialsService = new TestCredentialsService();
 
 		let connectionStore = new ConnectionStore(stateService, configurationService,
 			credentialsService, capabilitiesService);
-		let mementoKey = 'RECENT_CONNECTIONS2';
-		let connectionProfile: IConnectionProfile = Object.assign({}, defaultNamedProfile);
-		connectionStore.addConnectionToState(connectionProfile, mementoKey);
-
-		connectionProfile = Object.assign({}, defaultNamedProfile, { authenticationType: 'Integrated', userName: '' });
-		connectionStore.addConnectionToState(connectionProfile, mementoKey);
-
-		let currentList = connectionStore.getConnectionsFromState(mementoKey);
-		assert.equal(currentList.length, 2, 'Adding same connection with different auth');
-
-		connectionProfile = Object.assign({}, defaultNamedProfile, { groupFullName: 'new group' });
-		connectionStore.addConnectionToMemento(connectionProfile, mementoKey);
-
-		currentList = connectionStore.getConnectionsFromMemento(mementoKey);
-		assert.equal(currentList.length, 3, 'Adding same connection with different group name');
-
-		connectionProfile = Object.assign({}, defaultNamedProfile,
-			{ groupFullName: defaultNamedProfile.groupFullName.toUpperCase() });
-		connectionStore.addConnectionToMemento(connectionProfile, mementoKey);
-
-		currentList = connectionStore.getConnectionsFromMemento(mementoKey);
-		assert.equal(currentList.length, 3, 'Adding same connection with same group name but uppercase');
-
-		connectionProfile = Object.assign({}, defaultNamedProfile,
-			{ groupFullName: '' });
-		connectionStore.addConnectionToMemento(connectionProfile, mementoKey);
-
-		currentList = connectionStore.getConnectionsFromMemento(mementoKey);
-		assert.equal(currentList.length, 3, 'Adding same connection with group empty string');
-
-		connectionProfile = Object.assign({}, defaultNamedProfile,
-			{ groupFullName: '/' });
-		connectionStore.addConnectionToMemento(connectionProfile, mementoKey);
-
-		currentList = connectionStore.getConnectionsFromMemento(mementoKey);
-		assert.equal(currentList.length, 3, 'Adding same connection with group /');
-	});
-
-	/*
-	test('getGroupFromId returns undefined when there is no group with the given ID', () => {
-		let connectionStore = new ConnectionStore(context.object, workspaceConfigurationServiceMock.object,
-			credentialStore.object, capabilitiesService, connectionConfig.object);
 		let group = connectionStore.getGroupFromId('invalidId');
 		assert.equal(group, undefined, 'Returned group was not undefined when there was no group with the given ID');
 	});
 
 	test('getGroupFromId returns the group that has the given ID', () => {
-		// Set up the server groups with an additional group that contains a child group
-		let groups: IConnectionProfileGroup[] = connectionConfig.object.getAllGroups();
+		let stateService = new TestStateService();
+		let configurationService = new TestConfigurationService();
+		let credentialsService = new TestCredentialsService();
+
 		let parentGroupId = 'parentGroup';
 		let childGroupId = 'childGroup';
-		let parentGroup = new ConnectionProfileGroup(parentGroupId, undefined, parentGroupId, '', '');
-		let childGroup = new ConnectionProfileGroup(childGroupId, parentGroup, childGroupId, '', '');
-		groups.push(parentGroup, childGroup);
-		let newConnectionConfig = TypeMoq.Mock.ofType(ConnectionConfig);
-		newConnectionConfig.setup(x => x.getAllGroups()).returns(() => groups);
-		let connectionStore = new ConnectionStore(context.object, workspaceConfigurationServiceMock.object,
-			credentialStore.object, capabilitiesService, newConnectionConfig.object);
+
+		let groups: IConnectionProfileGroup[] = [
+			{
+				id: parentGroupId,
+				name: parentGroupId,
+				color: undefined,
+				description: '',
+				parentId: ''
+			},
+			{
+				id: childGroupId,
+				name: childGroupId,
+				color: undefined,
+				description: '',
+				parentId: parentGroupId
+			}
+		];
+
+		configurationService.updateValue('datasource.connectionGroups', groups, ConfigurationTarget.USER);
+		let connectionStore = new ConnectionStore(stateService, configurationService,
+			credentialsService, capabilitiesService);
 
 		// If I look up the parent group using its ID, then I get back the correct group
 		let actualGroup = connectionStore.getGroupFromId(parentGroupId);
@@ -415,9 +384,13 @@ suite('ConnectionStore', () => {
 	});
 
 	test('getProfileWithoutPassword can return the profile without credentials in the password property or options dictionary', () => {
-		let connectionStore = new ConnectionStore(context.object, workspaceConfigurationServiceMock.object,
-			credentialStore.object, capabilitiesService, connectionConfig.object);
-		let profile = Object.assign({}, defaultNamedProfile);
+		let stateService = new TestStateService();
+		let configurationService = new TestConfigurationService();
+		let credentialsService = new TestCredentialsService();
+
+		let connectionStore = new ConnectionStore(stateService, configurationService,
+			credentialsService, capabilitiesService);
+		let profile = deepClone(defaultNamedProfile);
 		profile.options['password'] = profile.password;
 		profile.id = 'testId';
 		let expectedProfile = Object.assign({}, profile);
@@ -427,5 +400,129 @@ suite('ConnectionStore', () => {
 		let profileWithoutCredentials = connectionStore.getProfileWithoutPassword(profile);
 		assert.deepEqual(profileWithoutCredentials.toIConnectionProfile(), expectedProfile);
 	});
-	*/
+
+	test('addPassword gets the password from the credentials service', async () => {
+		let stateService = new TestStateService();
+		let configurationService = new TestConfigurationService();
+		let credentialsService = new TestCredentialsService();
+
+		let profile = ConnectionProfile.fromIConnectionProfile(capabilitiesService, Object.assign({}, defaultNamedProfile, { password: undefined }));
+
+		let credId = `Microsoft.SqlTools|itemtype:Profile|id:${profile.getConnectionInfoId()}`;
+		let password: string = 'asdf!@#$';
+
+		await credentialsService.saveCredential(credId, password);
+
+		let connectionStore = new ConnectionStore(stateService, configurationService,
+			credentialsService, capabilitiesService);
+
+		let passwordProfile = (await connectionStore.addSavedPassword(profile)).profile;
+
+		assert.equal(passwordProfile.password, password);
+	});
+
+	test('getConnectionProfileGroups', async () => {
+		let stateService = new TestStateService();
+		let configurationService = new TestConfigurationService();
+		let credentialsService = new TestCredentialsService();
+
+		let parentGroupId = 'parentGroup';
+		let childGroupId = 'childGroup';
+		let groups: IConnectionProfileGroup[] = [
+			{
+				id: parentGroupId,
+				name: parentGroupId,
+				color: undefined,
+				description: '',
+				parentId: ''
+			},
+			{
+				id: childGroupId,
+				name: childGroupId,
+				color: undefined,
+				description: '',
+				parentId: parentGroupId
+			}
+		];
+
+		configurationService.updateValue('datasource.connectionGroups', groups, ConfigurationTarget.USER);
+
+		let connectionStore = new ConnectionStore(stateService, configurationService,
+			credentialsService, capabilitiesService);
+
+		let connectionGroups = connectionStore.getConnectionProfileGroups();
+
+		for(let group of connectionGroups) {
+			let foundGroup = groups.find(g => g.id === group.id);
+			assert.ok(foundGroup);
+		}
+	});
+
+	test('removing connection correctly removes', async () => {
+		let stateService = new TestStateService();
+		let configurationService = new TestConfigurationService();
+		let credentialsService = new TestCredentialsService();
+
+		let connectionStore = new ConnectionStore(stateService, configurationService,
+			credentialsService, capabilitiesService);
+
+		for (let i = 0; i < 5; i++) {
+			let cred = Object.assign({}, defaultNamedProfile, { serverName: defaultNamedProfile.serverName + i });
+			let connectionProfile = new ConnectionProfile(capabilitiesService, cred);
+			await connectionStore.addRecentConnection(connectionProfile);
+			let current = connectionStore.getRecentlyUsedConnections();
+			assert.equal(current.length, i + 1);
+		}
+
+		for (let i = 0; i < 5; i++) {
+			let cred = Object.assign({}, defaultNamedProfile, { serverName: defaultNamedProfile.serverName + i });
+			let connectionProfile = new ConnectionProfile(capabilitiesService, cred);
+			await connectionStore.removeRecentConnection(connectionProfile);
+			let current = connectionStore.getRecentlyUsedConnections();
+			assert.equal(current.length, 4 - i);
+		}
+	});
+
+	test('getRecentlyUsedConnections correctly fills in group names', async () => {
+		let stateService = new TestStateService();
+		let configurationService = new TestConfigurationService();
+		let credentialsService = new TestCredentialsService();
+
+		let connectionStore = new ConnectionStore(stateService, configurationService,
+			credentialsService, capabilitiesService);
+
+		let parentGroupId = 'parentGroup';
+		let parentGroupName = 'parentGroupName';
+		let group: IConnectionProfileGroup = {
+			id: parentGroupId,
+			name: parentGroupName,
+			color: undefined,
+			description: '',
+			parentId: ''
+		};
+		let connection: azdata.IConnectionProfile = {
+			options: [],
+			connectionName: '',
+			serverName: 'server1',
+			databaseName: 'database',
+			userName: 'user',
+			password: 'password',
+			authenticationType: '',
+			providerName: 'MSSQL',
+			groupId: parentGroupId,
+			groupFullName: '',
+			savePassword: true,
+			saveProfile: true,
+			id: 'server1'
+		};
+
+		configurationService.updateValue('datasource.connectionGroups', [group], ConfigurationTarget.USER);
+		configurationService.updateValue('datasource.connections', [connection], ConfigurationTarget.USER);
+
+		connectionStore.addRecentConnection(ConnectionProfile.fromIConnectionProfile(capabilitiesService, connection));
+
+		let connections = connectionStore.getRecentlyUsedConnections();
+
+		assert.equal(connections[0].groupFullName, parentGroupName);
+	});
 });
