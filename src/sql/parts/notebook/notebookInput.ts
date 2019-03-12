@@ -27,6 +27,7 @@ import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/un
 import { notebookModeId } from 'sql/common/constants';
 import { ITextFileService, ISaveOptions } from 'vs/workbench/services/textfile/common/textfiles';
 import { LocalContentManager } from 'sql/workbench/services/notebook/node/localContentManager';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
 
@@ -128,7 +129,7 @@ export class NotebookInput extends EditorInput {
 	private _providerId: string;
 	private _providers: string[];
 	private _standardKernels: IStandardKernelWithProvider[];
-	private _connectionProfileId: string;
+	private _connectionProfile: IConnectionProfile;
 	private _defaultKernel: azdata.nb.IKernelSpec;
 	private _isTrusted: boolean = false;
 	public hasBootstrapped = false;
@@ -191,12 +192,12 @@ export class NotebookInput extends EditorInput {
 		this._isTrusted = value;
 	}
 
-	public set connectionProfileId(value: string) {
-		this._connectionProfileId = value;
+	public set connectionProfile(value: IConnectionProfile) {
+		this._connectionProfile = value;
 	}
 
-	public get connectionProfileId(): string {
-		return this._connectionProfileId;
+	public get connectionProfile(): IConnectionProfile {
+		return this._connectionProfile;
 	}
 
 	public get standardKernels(): IStandardKernelWithProvider[] {

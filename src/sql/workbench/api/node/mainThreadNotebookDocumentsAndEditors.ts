@@ -16,6 +16,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { ITextEditorOptions } from 'vs/platform/editor/common/editor';
 import { viewColumnToEditorGroup } from 'vs/workbench/api/shared/editor';
 import { Schemas } from 'vs/base/common/network';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 import {
 	SqlMainContext, MainThreadNotebookDocumentsAndEditorsShape, SqlExtHostContext, ExtHostNotebookDocumentsAndEditorsShape,
@@ -28,6 +29,7 @@ import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHos
 import { disposed } from 'vs/base/common/errors';
 import { ICellModel, NotebookContentChange, INotebookModel } from 'sql/parts/notebook/models/modelInterfaces';
 import { NotebookChangeType, CellTypes } from 'sql/parts/notebook/models/contracts';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 
 class MainThreadNotebookEditor extends Disposable {
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
@@ -291,7 +293,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IEditorService private _editorService: IEditorService,
 		@IEditorGroupsService private _editorGroupService: IEditorGroupsService,
-		@INotebookService private readonly _notebookService: INotebookService
+		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService
 	) {
 		super();
 		if (extHostContext) {
@@ -363,7 +365,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		let input = this._instantiationService.createInstance(NotebookInput, uri.fsPath, uri);
 		input.isTrusted = trusted;
 		input.defaultKernel = options.defaultKernel;
-		input.connectionProfileId = options.connectionId;
+		input.connectionProfile = new ConnectionProfile(this._capabilitiesService, options.connectionProfile);
 
 		let editor = await this._editorService.openEditor(input, editorOptions, viewColumnToEditorGroup(this._editorGroupService, options.position));
 		if (!editor) {

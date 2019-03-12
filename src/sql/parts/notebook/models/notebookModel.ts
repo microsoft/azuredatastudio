@@ -408,6 +408,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			}
 			let profile = new ConnectionProfile(this._notebookOptions.capabilitiesService, this.connectionProfile);
 
+			// TODO: this code needs to be fixed since it is called before the this._savedKernelInfo is set.
+			// This means it always fails, and we end up using the default connection instead. If you right-click
+			// and run "New Notebook" on a disconnected server this means you get the wrong connection (global active)
+			// instead of the one you chose, or it'll fail to connect in general
 			if (this.isValidConnection(profile)) {
 				this._activeConnection = profile;
 			} else {

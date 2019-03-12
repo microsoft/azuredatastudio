@@ -104,23 +104,18 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	private updateProfile(): void {
 		this.profile = this.notebookParams ? this.notebookParams.profile : undefined;
-		let profile: IConnectionProfile;
 		if (!this.profile) {
-			// Use connectionProfile passed in first
-			if (this._notebookParams.connectionProfileId !== undefined && this._notebookParams.connectionProfileId) {
-				profile = this.connectionManagementService.getConnectionProfileById(this._notebookParams.connectionProfileId);
-			} else {
-				// Second use global connection if possible
-				profile = TaskUtilities.getCurrentGlobalConnection(this.objectExplorerService, this.connectionManagementService, this.editorService);
-			}
+			// Second use global connection if possible
+			let profile: IConnectionProfile = TaskUtilities.getCurrentGlobalConnection(this.objectExplorerService, this.connectionManagementService, this.editorService);
+
 			// TODO use generic method to match kernel with valid connection that's compatible. For now, we only have 1
 			if (profile && profile.providerName) {
 				this.profile = profile;
 			} else {
 				// if not, try 1st active connection that matches our filter
-				let profiles = this.connectionManagementService.getActiveConnections();
-				if (profiles && profiles.length > 0) {
-					this.profile = profiles[0];
+				let activeProfiles = this.connectionManagementService.getActiveConnections();
+				if (activeProfiles && activeProfiles.length > 0) {
+					this.profile = activeProfiles[0];
 				}
 			}
 		}
