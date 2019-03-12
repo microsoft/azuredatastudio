@@ -6,10 +6,9 @@
 
 import { NotificationType, RequestType } from 'vscode-languageclient';
 import { ITelemetryEventProperties, ITelemetryEventMeasures } from './telemetry';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { ConnectParams } from 'dataprotocol-client/lib/protocol';
 import { ListRegisteredServersResult } from './api/mssqlapis';
-import * as azdata from 'azdata';
 
 // ------------------------------- < Telemetry Sent Event > ------------------------------------
 
@@ -390,7 +389,7 @@ export interface ListRegisteredServersParams extends RegisteredServerParamsBase 
 export interface AddRegisteredServerParams extends RegisteredServerParamsBase {
     registeredServerName: string;
     registeredServerDescription : string;
-    registeredServerConnectionDetails: sqlops.ConnectionInfo;
+    registeredServerConnectionDetails: azdata.ConnectionInfo;
 }
 
 export interface RemoveRegisteredServerParams extends RegisteredServerParamsBase {

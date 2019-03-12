@@ -5,7 +5,7 @@
 
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as constants from '../constants';
 import * as contracts from '../contracts';
 import { AppContext } from '../appContext';
@@ -20,7 +20,7 @@ export class CmsService {
 		this.appContext.registerService<CmsService>(constants.CmsService, this);
 	}
 
-	 createCmsServer(name: string, description:string, connectiondetails: sqlops.ConnectionInfo, ownerUri: string): Thenable<ListRegisteredServersResult> {
+	 createCmsServer(name: string, description:string, connectiondetails: azdata.ConnectionInfo, ownerUri: string): Thenable<ListRegisteredServersResult> {
 		let connectparams: ConnectParams = { ownerUri: ownerUri, connection: connectiondetails };
 		let cmsparams: contracts.CreateCentralManagementServerParams = { registeredServerName: name, registeredServerDescription: description, connectParams: connectparams};
 
@@ -48,7 +48,7 @@ export class CmsService {
 		);
 	}
 
-	 addRegisteredServer (ownerUri: string, relativePath: string, registeredServerName: string, registeredServerDescription:string, connectionDetails:sqlops.ConnectionInfo): Thenable<boolean> {
+	 addRegisteredServer (ownerUri: string, relativePath: string, registeredServerName: string, registeredServerDescription:string, connectionDetails:azdata.ConnectionInfo): Thenable<boolean> {
 		let params: contracts.AddRegisteredServerParams = { parentOwnerUri: ownerUri, relativePath: relativePath, registeredServerName: registeredServerName, registeredServerDescription: registeredServerDescription, registeredServerConnectionDetails: connectionDetails };
 		return this.client.sendRequest(contracts.AddRegisteredServerRequest.type, params).then(
 			r => {

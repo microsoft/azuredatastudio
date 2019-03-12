@@ -110,8 +110,10 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 		resourceProvider.start();
 
 		let nodeProvider = new MssqlObjectExplorerNodeProvider(appContext);
-		cmsService = new CmsService(appContext, languageClient);
 		azdata.dataprotocol.registerObjectExplorerNodeProvider(nodeProvider);
+
+		cmsService = new CmsService(appContext, languageClient);
+
 		activateSparkFeatures(appContext);
 		activateNotebookTask(appContext);
 	}, e => {

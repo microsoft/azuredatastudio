@@ -82,9 +82,9 @@ export interface CmsService {
 	 *
 	 * @param {string} name
 	 * @param {string} description
-	 * @param {sqlops.ConnectionInfo} connectiondetails
+	 * @param {azdata.ConnectionInfo} connectiondetails
 	 * @param {string} ownerUri
-	 * @returns {Thenable<sqlops.ListRegisteredServersResult>}
+	 * @returns {Thenable<azdata.ListRegisteredServersResult>}
 	 */
 	createCmsServer(name: string, description:string, connectiondetails: azdata.ConnectionInfo, ownerUri: string): Thenable<ListRegisteredServersResult>;
 
@@ -93,7 +93,7 @@ export interface CmsService {
 	 *
 	 * @param {string} ownerUri
 	 * @param {string} relativePath
-	 * @returns {Thenable<sqlops.ListRegisteredServersResult>}
+	 * @returns {Thenable<azdata.ListRegisteredServersResult>}
 	 */
 	getRegisteredServers(ownerUri: string, relativePath: string): Thenable<ListRegisteredServersResult>;
 
@@ -104,7 +104,7 @@ export interface CmsService {
 	 * @param {string} relativePath
 	 * @param {string} registeredServerName
 	 * @param {string} registeredServerDescription
-	 * @param {sqlops.ConnectionInfo} connectiondetails
+	 * @param {azdata.ConnectionInfo} connectiondetails
 	 * @returns {Thenable<boolean>>}
 	 */
 	addRegisteredServer (ownerUri: string, relativePath: string, registeredServerName: string, registeredServerDescription:string, connectionDetails:azdata.ConnectionInfo): Thenable<boolean>;
@@ -126,7 +126,7 @@ export interface CmsService {
 	 * @param {string} relativePath
 	 * @param {string} groupName
 	 * @param {string} groupDescription
-	 * @param {sqlops.ConnectionInfo} connectiondetails
+	 * @param {azdata.ConnectionInfo} connectiondetails
 	 */
 	addServerGroup (ownerUri: string, relativePath: string, groupName: string, groupDescription:string): Thenable<boolean>;
 
