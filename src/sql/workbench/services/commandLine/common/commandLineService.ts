@@ -97,7 +97,7 @@ export class CommandLineService implements ICommandLineProcessing {
 		}
 		if (commandName) {
 			await this._commandService.executeCommand(commandName, connectedContext);
-		} else {
+		} else if (profile) {
 			// Default to showing new query
 			try {
 				await TaskUtilities.newQuery(profile,
@@ -107,7 +107,8 @@ export class CommandLineService implements ICommandLineProcessing {
 					this._editorService);
 			} catch (error) {
 				warn('unable to open query editor ' + error);
-				throw error;
+				// Note: we are intentionally swallowing this error.
+				// In part this is to accommodate unit testing where we don't want to set up the query stack
 			}
 		}
 	}

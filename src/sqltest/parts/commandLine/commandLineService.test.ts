@@ -7,7 +7,7 @@
 
 import * as assert from 'assert';
 import * as TypeMoq from 'typemoq';
-
+import * as azdata from 'azdata';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { CommandLineService } from 'sql/workbench/services/commandLine/common/commandLineService';
 import { ParsedArgs } from 'vs/platform/environment/common/environment';
@@ -23,6 +23,8 @@ import { ICommandService } from 'vs/platform/commands/common/commands';
 import { TestCommandService } from 'vs/editor/test/browser/editorTestServices';
 import { WorkspaceConfigurationTestService } from 'sqltest/stubs/workspaceConfigurationTestService';
 import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { assertThrowsAsync } from 'sqltest/utils/testUtils';
 
 class TestParsedArgs implements ParsedArgs {
 	[arg: string]: any;
@@ -144,7 +146,7 @@ suite('commandLineService tests', () => {
 		}, error => { assert.fail(error, null, 'processCommandLine rejected ' + error); done(); });
 	});
 
-	test('processCommandLine does nothing if no server name and command name is provided and the configuration \'workbench.showConnectDialogOnStartup\' is set to false, even if registered servers exist', done => {
+	test('processCommandLine does nothing if no server name and command name is provided and the configuration \'workbench.showConnectDialogOnStartup\' is set to false, even if registered servers exist', async () => {
 		const connectionManagementService: TypeMoq.Mock<IConnectionManagementService>
 			= TypeMoq.Mock.ofType<IConnectionManagementService>(TestConnectionManagementService, TypeMoq.MockBehavior.Strict);
 
@@ -155,12 +157,11 @@ suite('commandLineService tests', () => {
 		const configurationService = getConfigurationServiceMock(false);
 		let service = getCommandLineService(connectionManagementService.object, configurationService.object);
 
-		service.processCommandLine(new TestParsedArgs());
+		await service.processCommandLine(new TestParsedArgs());
 		connectionManagementService.verifyAll();
-		done();
 	});
 
-	test('processCommandLine does nothing if registered servers exist and no server name is provided', done => {
+	test('processCommandLine does nothing if registered servers exist and no server name is provided', async () => {
 		const connectionManagementService: TypeMoq.Mock<IConnectionManagementService>
 			= TypeMoq.Mock.ofType<IConnectionManagementService>(TestConnectionManagementService, TypeMoq.MockBehavior.Strict);
 
@@ -171,13 +172,15 @@ suite('commandLineService tests', () => {
 			.verifiable(TypeMoq.Times.never());
 		const configurationService = getConfigurationServiceMock(true);
 		let service = getCommandLineService(connectionManagementService.object, configurationService.object);
-		service.processCommandLine(new TestParsedArgs()).then(() => {
+		try {
+			await service.processCommandLine(new TestParsedArgs());
 			connectionManagementService.verifyAll();
-			done();
-		}, error => { assert.fail(error, null, 'processCommandLine rejected ' + error); done(); });
+		} catch (error){
+			assert.fail(error, null, 'processCommandLine rejected ' + error);
+		}
 	});
 
-	test('processCommandLine opens a new connection if a server name is passed', done => {
+	test('processCommandLine opens a new connection if a server name is passed', async () => {
 		const connectionManagementService: TypeMoq.Mock<IConnectionManagementService>
 			= TypeMoq.Mock.ofType<IConnectionManagementService>(TestConnectionManagementService, TypeMoq.MockBehavior.Strict);
 
@@ -186,20 +189,23 @@ suite('commandLineService tests', () => {
 		args.database = 'mydatabase';
 		connectionManagementService.setup((c) => c.showConnectionDialog()).verifiable(TypeMoq.Times.never());
 		connectionManagementService.setup(c => c.hasRegisteredServers()).returns(() => true).verifiable(TypeMoq.Times.atMostOnce());
-		connectionManagementService.setup(c => c.connectIfNotConnected(TypeMoq.It.isAny(), 'connection', true))
-			.returns(() => new Promise<string>((resolve, reject) => { resolve('unused'); }))
+		let originalProfile: IConnectionProfile = undefined;
+		connectionManagementService.setup(c => c.connectIfNotConnected(TypeMoq.It.is<ConnectionProfile>(p => p.serverName === 'myserver'), 'connection', true))
+			.returns((conn) => {
+				originalProfile = conn;
+				return Promise.resolve('unused');
+			})
 			.verifiable(TypeMoq.Times.once());
+		connectionManagementService.setup(c => c.getConnectionProfileById(TypeMoq.It.isAnyString())).returns(() => originalProfile);
 		const configurationService = getConfigurationServiceMock(true);
 		let service = getCommandLineService(connectionManagementService.object, configurationService.object, capabilitiesService);
-		service.processCommandLine(args).then(() => {
-			connectionManagementService.verifyAll();
-			done();
-		}, error => { assert.fail(error, null, 'processCommandLine rejected ' + error); done(); });
+		await service.processCommandLine(args);
+		connectionManagementService.verifyAll();
 	});
 
-	test('processCommandLine invokes a command without a profile parameter when no server is passed', done => {
+	test('processCommandLine invokes a command without a profile parameter when no server is passed', async () => {
 		const connectionManagementService: TypeMoq.Mock<IConnectionManagementService>
-			= TypeMoq.Mock.ofType<IConnectionManagementService>(TestConnectionManagementService, TypeMoq.MockBehavior.Strict);
+			= TypeMoq.Mock.ofType<IConnectionManagementService>(TestConnectionManagementService, TypeMoq.MockBehavior.Loose);
 		const commandService: TypeMoq.Mock<ICommandService> = TypeMoq.Mock.ofType<ICommandService>(TestCommandService);
 		const args: TestParsedArgs = new TestParsedArgs();
 
@@ -208,20 +214,23 @@ suite('commandLineService tests', () => {
 		connectionManagementService.setup(c => c.hasRegisteredServers()).returns(() => true).verifiable(TypeMoq.Times.atMostOnce());
 		connectionManagementService.setup(c => c.connectIfNotConnected(TypeMoq.It.isAny(), TypeMoq.It.isAny()))
 			.verifiable(TypeMoq.Times.never());
-		commandService.setup(c => c.executeCommand('mycommand'))
-			.returns(() => Promise.resolve())
+		let capturedArgs: any;
+		commandService.setup(c => c.executeCommand(TypeMoq.It.isAnyString(), undefined))
+			.returns((command, args) => {
+				capturedArgs = args;
+				return Promise.resolve();
+			})
 			.verifiable(TypeMoq.Times.once());
 		const configurationService = getConfigurationServiceMock(true);
 		let service = getCommandLineService(connectionManagementService.object, configurationService.object, capabilitiesService, commandService.object);
-		service.processCommandLine(args).then(() => {
-			connectionManagementService.verifyAll();
-			commandService.verifyAll();
-			done();
-		}, error => { assert.fail(error, null, 'processCommandLine rejected ' + error); done(); });
+		await service.processCommandLine(args);
+		connectionManagementService.verifyAll();
+		commandService.verifyAll();
+		should(capturedArgs).be.undefined();
 	});
 
 
-	test('processCommandLine invokes a command with a profile parameter when a server is passed', done => {
+	test('processCommandLine invokes a command with a profile parameter when a server is passed', async () => {
 
 		const connectionManagementService: TypeMoq.Mock<IConnectionManagementService>
 			= TypeMoq.Mock.ofType<IConnectionManagementService>(TestConnectionManagementService, TypeMoq.MockBehavior.Strict);
@@ -232,22 +241,33 @@ suite('commandLineService tests', () => {
 		args.server = 'myserver';
 		connectionManagementService.setup((c) => c.showConnectionDialog()).verifiable(TypeMoq.Times.never());
 		connectionManagementService.setup(c => c.hasRegisteredServers()).returns(() => true).verifiable(TypeMoq.Times.atMostOnce());
+		let originalProfile: IConnectionProfile = undefined;
 		connectionManagementService.setup(c => c.connectIfNotConnected(TypeMoq.It.is<ConnectionProfile>(p => p.serverName === 'myserver'), 'connection', true))
-			.returns(() => new Promise<string>((resolve, reject) => { resolve('unused'); }))
+			.returns((conn) => {
+				originalProfile = conn;
+				return Promise.resolve('unused');
+			})
 			.verifiable(TypeMoq.Times.once());
-		commandService.setup(c => c.executeCommand('mycommand', TypeMoq.It.isAnyString()))
-			.returns(() => Promise.resolve())
+		connectionManagementService.setup(c => c.getConnectionProfileById(TypeMoq.It.isAnyString())).returns(() => originalProfile);
+
+		let actualProfile: azdata.ConnectedContext = undefined;
+		commandService.setup(c => c.executeCommand('mycommand', TypeMoq.It.isAny()))
+			.returns((cmdName, profile) => {
+				actualProfile = profile;
+				return Promise.resolve();
+			})
 			.verifiable(TypeMoq.Times.once());
 		const configurationService = getConfigurationServiceMock(true);
 		let service = getCommandLineService(connectionManagementService.object, configurationService.object, capabilitiesService, commandService.object);
-		service.processCommandLine(args).then(() => {
-			connectionManagementService.verifyAll();
-			commandService.verifyAll();
-			done();
-		}, error => { assert.fail(error, null, 'processCommandLine rejected ' + error); done(); });
+		await service.processCommandLine(args);
+		connectionManagementService.verifyAll();
+		commandService.verifyAll();
+		should(actualProfile).not.be.undefined();
+		should(actualProfile.connectionProfile.serverName).equal(args.server);
+
 	});
 
-	test('processCommandLine rejects unknown commands', done => {
+	test('processCommandLine rejects unknown commands', async () => {
 		const connectionManagementService: TypeMoq.Mock<IConnectionManagementService>
 			= TypeMoq.Mock.ofType<IConnectionManagementService>(TestConnectionManagementService, TypeMoq.MockBehavior.Strict);
 		const commandService: TypeMoq.Mock<ICommandService> = TypeMoq.Mock.ofType<ICommandService>(TestCommandService);
@@ -260,13 +280,7 @@ suite('commandLineService tests', () => {
 			.verifiable(TypeMoq.Times.once());
 		const configurationService = getConfigurationServiceMock(true);
 		let service = getCommandLineService(connectionManagementService.object, configurationService.object, capabilitiesService, commandService.object);
-		service.processCommandLine(args).then(() => {
-			assert.fail(1, null, 'processCommandLine should reject when executeCommand errors out');
-			done();
-		}, error => {
-			assert.equal(error.message, 'myerror', 'unexpected error from processCommandLine ' + error);
-			done();
-		});
+		assertThrowsAsync(async () => await service.processCommandLine(args));
 	});
 });
 
