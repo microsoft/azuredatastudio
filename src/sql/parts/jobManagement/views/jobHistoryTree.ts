@@ -21,6 +21,7 @@ export class JobHistoryRow {
 	runStatus: string;
 	instanceID: number;
 	rowID: string = generateUuid();
+	jobID: string;
 }
 
 // Empty class just for tree input

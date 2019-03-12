@@ -184,10 +184,16 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		});
 	}
 
-	private setStepsTree(element: any) {
+	private setStepsTree(element: JobHistoryRow) {
 		const self = this;
-		self.agentJobHistoryInfo = self._treeController.jobHistories.find(
+		let cachedHistory = self._jobCacheObject.getJobHistory(element.jobID);
+		if (cachedHistory) {
+			self.agentJobHistoryInfo = cachedHistory.find(
 			history => self.formatTime(history.runDate) === self.formatTime(element.runDate));
+		} else {
+			self.agentJobHistoryInfo = self._treeController.jobHistories.find(
+				history => self.formatTime(history.runDate) === self.formatTime(element.runDate));
+		}
 		if (self.agentJobHistoryInfo) {
 			self.agentJobHistoryInfo.runDate = self.formatTime(self.agentJobHistoryInfo.runDate);
 			if (self.agentJobHistoryInfo.steps) {
@@ -264,6 +270,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		jobHistoryRow.runDate = this.formatTime(historyInfo.runDate);
 		jobHistoryRow.runStatus = JobManagementUtilities.convertToStatusString(historyInfo.runStatus);
 		jobHistoryRow.instanceID = historyInfo.instanceId;
+		jobHistoryRow.jobID = historyInfo.jobId;
 		return jobHistoryRow;
 	}
 

@@ -623,7 +623,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		let chartHeights = this.getChartHeights(jobHistories);
 		let runCharts = [];
 		for (let i = 0; i < chartHeights.length; i++) {
-			let runGraph = $(`table#${jobId}.jobprevruns > tbody > tr > td > div.bar${i}`);
+			let runGraph = $(`table.jobprevruns#${jobId} > tbody > tr > td > div.bar${i}`);
 			if (runGraph.length > 0) {
 				runGraph.css('height', chartHeights[i]);
 				let bgColor = jobHistories[i].runStatus === 0 ? 'red' : 'green';
@@ -667,7 +667,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		// if the durations are all 0 secs, show minimal chart
 		// instead of nothing
 		if (zeroDurationJobCount === jobHistories.length) {
-			return ['5px', '5px', '5px', '5px', '5px'];
+			return Array(jobHistories.length).fill('5px');
 		} else {
 			return chartHeights;
 		}

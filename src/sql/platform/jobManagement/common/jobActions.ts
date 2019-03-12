@@ -164,7 +164,7 @@ export class EditJobAction extends Action {
 		this._commandService.executeCommand(
 			'agent.openJobDialog',
 			actionInfo.ownerUri,
-			actionInfo.targetObject);
+			actionInfo.targetObject.job);
 		return TPromise.as(true);
 	}
 }
