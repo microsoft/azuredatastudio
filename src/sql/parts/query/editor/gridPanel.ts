@@ -202,6 +202,10 @@ export class GridPanel extends ViewletPanel {
 		}
 	}
 
+	public ResetScrollPosition() : void{
+		this.splitView.setScrollPosition(this.state.scrollPosition);
+	}
+
 	private onResultSet(resultSet: azdata.ResultSetSummary | azdata.ResultSetSummary[]) {
 		let resultsToAdd: azdata.ResultSetSummary[];
 		if (!Array.isArray(resultSet)) {
