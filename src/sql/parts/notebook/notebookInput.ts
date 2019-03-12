@@ -45,7 +45,6 @@ export class NotebookEditorModel extends EditorModel {
 				// Hook to content change events
 				notebook.modelReady.then(() => {
 					this._register(notebook.model.contentChanged(e => this.updateModel()));
-					this._register(notebook.model.kernelChanged(e => this.updateModel()));
 				}, err => undefined);
 			}
 		}));
