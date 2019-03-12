@@ -166,7 +166,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			}
 			this._model.activeCell = cell;
 			this._model.activeCell.active = true;
-			this._changeRef.detectChanges();
+			this.detectChanges();
 		}
 	}
 
@@ -175,7 +175,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			this.model.activeCell.active = false;
 			this.model.activeCell = undefined;
 		}
-		this._changeRef.detectChanges();
+		this.detectChanges();
 	}
 
 	// Add cell based on cell type
@@ -190,7 +190,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			cell.trustedMode = isTrusted;
 		});
 		//TODO: Handle dirty for trust?
-		this._changeRef.detectChanges();
+		this.detectChanges();
 	}
 
 	public onKeyDown(event) {
@@ -215,6 +215,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	private async doLoad(): Promise<void> {
 		try {
+			await this.setNotebookManager();
 			await this.loadModel();
 			this.setLoading(false);
 			this._modelReadyDeferred.resolve(this._model);
@@ -230,7 +231,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	private setLoading(isLoading: boolean): void {
 		this.isLoading = isLoading;
-		this._changeRef.detectChanges();
+		this.detectChanges();
 	}
 
 	private async loadModel(): Promise<void> {
@@ -238,10 +239,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		let providerId = 'sql'; // this is tricky; really should also depend on the connection profile
 		this.setContextKeyServiceWithProviderId(providerId);
 		this.fillInActionsForCurrentContext();
-		for (let providerId of this._notebookParams.providers) {
-			let notebookManager = await this.notebookService.getOrCreateNotebookManager(providerId, this._notebookParams.notebookUri);
-			this.notebookManagers.push(notebookManager);
-		}
+
 		let model = new NotebookModel({
 			factory: this.modelFactory,
 			notebookUri: this._notebookParams.notebookUri,
@@ -263,8 +261,15 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._model = this._register(model);
 		this.updateToolbarComponents(this._model.trustedMode);
 		this._modelRegisteredDeferred.resolve(this._model);
-		model.backgroundStartSession();
-		this._changeRef.detectChanges();
+		await model.startSession(this.model.notebookManager);
+		this.detectChanges();
+	}
+
+	private async setNotebookManager() {
+		for (let providerId of this._notebookParams.providers) {
+			let notebookManager = await this.notebookService.getOrCreateNotebookManager(providerId, this._notebookParams.notebookUri);
+			this.notebookManagers.push(notebookManager);
+		}
 	}
 
 	private async awaitNonDefaultProvider(): Promise<void> {
@@ -317,7 +322,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	private handleContentChanged(change: NotebookContentChange) {
 		// Note: for now we just need to set dirty state and refresh the UI.
-		this._changeRef.detectChanges();
+		this.detectChanges();
 	}
 
 	private handleProviderIdChanged(providerId: string) {
@@ -343,12 +348,12 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	protected initActionBar() {
 		let kernelContainer = document.createElement('div');
-		let kernelDropdown = new KernelsDropdown(kernelContainer, this.contextViewService, this.modelRegistered);
+		let kernelDropdown = new KernelsDropdown(kernelContainer, this.contextViewService, this.modelReady);
 		kernelDropdown.render(kernelContainer);
 		attachSelectBoxStyler(kernelDropdown, this.themeService);
 
 		let attachToContainer = document.createElement('div');
-		let attachToDropdown = new AttachToDropdown(attachToContainer, this.contextViewService, this.modelRegistered,
+		let attachToDropdown = new AttachToDropdown(attachToContainer, this.contextViewService, this.modelReady,
 			this.connectionManagementService, this.connectionDialogService, this.notificationService, this.capabilitiesService);
 		attachToDropdown.render(attachToContainer);
 		attachSelectBoxStyler(attachToDropdown, this.themeService);
@@ -492,6 +497,12 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this.addPrimaryContributedActions(primary);
 	}
 
+	private detectChanges(): void {
+		if (!(this._changeRef['destroyed'])) {
+			this._changeRef.detectChanges();
+		}
+	}
+
 	private addPrimaryContributedActions(primary: IAction[]) {
 		for (let action of primary) {
 			// Need to ensure that we don't add the same action multiple times
@@ -547,7 +558,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		await this.modelReady;
 		let uriString = cell.cellUri.toString();
 		if (this._model.cells.findIndex(c => c.cellUri.toString() === uriString) > -1) {
-			return cell.runCell(this.notificationService);
+			return cell.runCell(this.notificationService, this.connectionManagementService);
 		} else {
 			return Promise.reject(new Error(localize('cellNotFound', 'cell with URI {0} was not found in this model', uriString)));
 		}
