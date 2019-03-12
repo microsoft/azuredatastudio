@@ -452,7 +452,7 @@ suite('ConnectionStore', () => {
 
 		let connectionGroups = connectionStore.getConnectionProfileGroups();
 
-		for(let group of connectionGroups) {
+		for (let group of connectionGroups) {
 			let foundGroup = groups.find(g => g.id === group.id);
 			assert.ok(foundGroup);
 		}
