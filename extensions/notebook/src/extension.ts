@@ -25,7 +25,7 @@ let counter = 0;
 export let controller: JupyterController;
 
 export function activate(extensionContext: vscode.ExtensionContext) {
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.new', (context?: azdata.ObjectExplorerContext) => {
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.new', (context?: azdata.ConnectedContext) => {
 		let connectionProfile: azdata.IConnectionProfile = undefined;
 		if (context && context.connectionProfile) {
 			connectionProfile = context.connectionProfile;
