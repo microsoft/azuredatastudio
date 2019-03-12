@@ -2,20 +2,15 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import * as azdata from 'azdata';
- /* Disabled pending next vscode merge which allows electron module to be imported during test runs
- NOTE: Import added above to prevent tests from failing due to the file being empty. Remove when reenabling the tests
 
 'use strict';
 
-import { TPromise } from 'vs/base/common/winjs.base';
 import * as assert from 'assert';
 import * as TypeMoq from 'typemoq';
 
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { CommandLineService } from 'sql/workbench/services/commandLine/common/commandLineService';
-import { EnvironmentService } from 'vs/platform/environment/node/environmentService';
-import { IEnvironmentService, ParsedArgs } from 'vs/platform/environment/common/environment';
+import { ParsedArgs } from 'vs/platform/environment/common/environment';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { CapabilitiesTestService } from 'sqltest/stubs/capabilitiesTestService';
 import { QueryEditorService } from 'sql/workbench/services/queryEditor/browser/queryEditorService';
@@ -96,7 +91,6 @@ suite('commandLineService tests', () => {
 
 	let capabilitiesService: CapabilitiesTestService;
 	let commandLineService: CommandLineService;
-	let environmentService: TypeMoq.Mock<EnvironmentService>;
 	let queryEditorService: TypeMoq.Mock<QueryEditorService>;
 	let editorService: TypeMoq.Mock<IEditorService>;
 	let objectExplorerService: TypeMoq.Mock<ObjectExplorerService>;
@@ -215,7 +209,7 @@ suite('commandLineService tests', () => {
 		connectionManagementService.setup(c => c.connectIfNotConnected(TypeMoq.It.isAny(), TypeMoq.It.isAny()))
 			.verifiable(TypeMoq.Times.never());
 		commandService.setup(c => c.executeCommand('mycommand'))
-			.returns(() => TPromise.wrap(1))
+			.returns(() => Promise.resolve())
 			.verifiable(TypeMoq.Times.once());
 		const configurationService = getConfigurationServiceMock(true);
 		let service = getCommandLineService(connectionManagementService.object, configurationService.object, capabilitiesService, commandService.object);
@@ -236,14 +230,13 @@ suite('commandLineService tests', () => {
 		const args: TestParsedArgs = new TestParsedArgs();
 		args.command = 'mycommand';
 		args.server = 'myserver';
-		environmentService.setup(e => e.args).returns(() => args);
 		connectionManagementService.setup((c) => c.showConnectionDialog()).verifiable(TypeMoq.Times.never());
 		connectionManagementService.setup(c => c.hasRegisteredServers()).returns(() => true).verifiable(TypeMoq.Times.atMostOnce());
 		connectionManagementService.setup(c => c.connectIfNotConnected(TypeMoq.It.is<ConnectionProfile>(p => p.serverName === 'myserver'), 'connection', true))
 			.returns(() => new Promise<string>((resolve, reject) => { resolve('unused'); }))
 			.verifiable(TypeMoq.Times.once());
 		commandService.setup(c => c.executeCommand('mycommand', TypeMoq.It.isAnyString()))
-			.returns(() => TPromise.wrap(1))
+			.returns(() => Promise.resolve())
 			.verifiable(TypeMoq.Times.once());
 		const configurationService = getConfigurationServiceMock(true);
 		let service = getCommandLineService(connectionManagementService.object, configurationService.object, capabilitiesService, commandService.object);
@@ -261,10 +254,9 @@ suite('commandLineService tests', () => {
 		const args: TestParsedArgs = new TestParsedArgs();
 
 		args.command = 'mycommand';
-		environmentService.setup(e => e.args).returns(() => args);
 		connectionManagementService.setup(c => c.hasRegisteredServers()).returns(() => true);
 		commandService.setup(c => c.executeCommand('mycommand'))
-			.returns(() => TPromise.wrapError(new Error('myerror')))
+			.returns(() => Promise.reject(new Error('myerror')))
 			.verifiable(TypeMoq.Times.once());
 		const configurationService = getConfigurationServiceMock(true);
 		let service = getCommandLineService(connectionManagementService.object, configurationService.object, capabilitiesService, commandService.object);
@@ -278,4 +270,3 @@ suite('commandLineService tests', () => {
 	});
 });
 
-*/
