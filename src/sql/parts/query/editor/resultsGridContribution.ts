@@ -69,7 +69,7 @@ const resultsGridConfiguration: IConfigurationNode = {
 		},
 		'resultsGrid.maxColumnWidth': {
 			type: 'number',
-			default: 300,
+			default: 212,
 			description: nls.localize('maxColumnWidth', "The maximum width in pixels for auto-sized columns")
 		}
 	}

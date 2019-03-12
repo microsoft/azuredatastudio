@@ -2,7 +2,6 @@
 
 import { mixin, clone } from 'sql/base/common/objects';
 import { isInDOM } from 'vs/base/browser/dom';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 export interface IAutoColumnSizeOptions extends Slick.PluginOptions {
 	maxWidth?: number;
@@ -10,7 +9,7 @@ export interface IAutoColumnSizeOptions extends Slick.PluginOptions {
 }
 
 const defaultOptions: IAutoColumnSizeOptions = {
-	maxWidth: 300,
+	maxWidth: 212,
 	autoSizeOnRender: false
 };
 
@@ -21,11 +20,7 @@ export class AutoColumnSize<T> implements Slick.Plugin<T> {
 	private _options: IAutoColumnSizeOptions;
 	private onPostEventHandler = new Slick.EventHandler();
 
-	constructor(options: IAutoColumnSizeOptions = defaultOptions, configurationService: IConfigurationService) {
-		let configuredMaxWidth = configurationService.getValue<number>('resultsGrid.maxColumnWidth');
-		if (configuredMaxWidth) {
-			defaultOptions.maxWidth = configuredMaxWidth;
-		}
+	constructor(options: IAutoColumnSizeOptions = defaultOptions) {
 		this._options = mixin(options, defaultOptions, false);
 	}
 
