@@ -425,12 +425,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	public async save(): Promise<boolean> {
-		try {
-			return this._notebookParams.input.save();
-		} catch (err) {
-			this.notificationService.error(localize('saveFailed', 'Failed to save notebook: {0}', notebookUtils.getErrorMessage(err)));
-			return false;
-		}
+		return this._notebookParams.input.save();
 	}
 
 	public get notebookParams(): INotebookParams {

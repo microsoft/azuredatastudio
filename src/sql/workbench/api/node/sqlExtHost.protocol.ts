@@ -860,6 +860,7 @@ export interface ExtHostNotebookDocumentsAndEditorsShape {
 }
 
 export interface MainThreadNotebookDocumentsAndEditorsShape extends IDisposable {
+	$trySaveDocument(uri: UriComponents): Thenable<boolean>;
 	$tryShowNotebookDocument(resource: UriComponents, options: INotebookShowOptions): TPromise<string>;
 	$tryApplyEdits(id: string, modelVersionId: number, edits: ISingleNotebookEditOperation[], opts: IUndoStopOptions): TPromise<boolean>;
 	$runCell(id: string, cellUri: UriComponents): TPromise<boolean>;
