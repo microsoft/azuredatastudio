@@ -188,7 +188,6 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 		this.scrollable = new ScrollableElement(this.el, { vertical: options.verticalScrollbarVisibility });
 		debounceEvent(this.scrollable.onScroll, (l, e) => e, types.isNumber(this.options.scrollDebounce) ? this.options.scrollDebounce : 25)(e => {
 			this.render(e.scrollTop, e.height);
-			this.relayout();
 			this._onScroll.fire(e.scrollTop);
 		});
 		let domNode = this.scrollable.getDomNode();
@@ -803,6 +802,8 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 			deltaUp -= viewDelta;
 			this.updateSize(item.view.id, size);
 			this.dirtyState = true;
+			this.lastRenderTop = 0;
+			this.lastRenderHeight = 0;
 		}
 
 		for (let i = 0, deltaDown = delta; i < downItems.length; i++) {
@@ -813,6 +814,8 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 			deltaDown += viewDelta;
 			this.updateSize(item.view.id, size);
 			this.dirtyState = true;
+			this.lastRenderTop = 0;
+			this.lastRenderHeight = 0;
 		}
 
 		return delta;
