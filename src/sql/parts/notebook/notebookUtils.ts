@@ -12,7 +12,6 @@ import * as pfs from 'vs/base/node/pfs';
 import { localize } from 'vs/nls';
 import { IOutputChannel } from 'vs/workbench/parts/output/common/output';
 import { DEFAULT_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_FILETYPE, INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
-import { ContextKeyExpr, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 
@@ -97,8 +96,15 @@ export function getDatabaseFromFormattedAttachToName(name: string): string {
 
 export interface IStandardKernelWithProvider {
 	readonly name: string;
+	readonly displayName: string;
 	readonly connectionProviderIds: string[];
 	readonly notebookProvider: string;
+}
+
+export interface IEndpoint {
+	serviceName: string;
+	ipAddress: string;
+	port: number;
 }
 
 export function tryMatchCellMagic(input: string): string {
