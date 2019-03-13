@@ -33,11 +33,13 @@ describe('Local Jupyter Server Manager', function (): void {
 		mockApiWrapper.setup(a => a.showErrorMessage(TypeMoq.It.isAny()));
 		mockApiWrapper.setup(a => a.getWorkspacePathFromUri(TypeMoq.It.isAny())).returns(() => undefined);
 		mockFactory = TypeMoq.Mock.ofType(ServerInstanceFactory);
-		let installation = new JupyterServerInstallation(undefined, undefined, undefined);
-		deferredInstall = installation.installReady;
+
+		let mockInstall = TypeMoq.Mock.ofType(JupyterServerInstallation, undefined, undefined, '/root');
+		mockInstall.setup(i => i.installReady).returns(() => new Deferred<void>());
+		deferredInstall = mockInstall.object.installReady;
 		serverManager = new LocalJupyterServerManager({
 			documentPath: expectedPath,
-			jupyterInstallation: installation,
+			jupyterInstallation: mockInstall.object,
 			extensionContext: mockExtensionContext,
 			apiWrapper: mockApiWrapper.object,
 			factory: mockFactory.object
@@ -59,7 +61,7 @@ describe('Local Jupyter Server Manager', function (): void {
 	it('Should configure and start install', async function (): Promise<void> {
 		// Given an install and instance that start with no issues
 		let expectedUri = vscode.Uri.parse('http://localhost:1234?token=abcdefghijk');
-		let [mockInstall, mockServerInstance] = initInstallAndInstance(expectedUri);
+		let mockServerInstance = initInstallAndInstance(expectedUri);
 		deferredInstall.resolve();
 
 		// When I start the server
@@ -84,7 +86,7 @@ describe('Local Jupyter Server Manager', function (): void {
 	it('Should call stop on server instance', async function (): Promise<void> {
 		// Given an install and instance that start with no issues
 		let expectedUri = vscode.Uri.parse('http://localhost:1234?token=abcdefghijk');
-		let [mockInstall, mockServerInstance] = initInstallAndInstance(expectedUri);
+		let mockServerInstance = initInstallAndInstance(expectedUri);
 		mockServerInstance.setup(s => s.stop()).returns(() => Promise.resolve());
 		deferredInstall.resolve();
 
@@ -99,7 +101,7 @@ describe('Local Jupyter Server Manager', function (): void {
 	it('Should call stop when extension is disposed', async function (): Promise<void> {
 		// Given an install and instance that start with no issues
 		let expectedUri = vscode.Uri.parse('http://localhost:1234?token=abcdefghijk');
-		let [mockInstall, mockServerInstance] = initInstallAndInstance(expectedUri);
+		let mockServerInstance = initInstallAndInstance(expectedUri);
 		mockServerInstance.setup(s => s.stop()).returns(() => Promise.resolve());
 		deferredInstall.resolve();
 
@@ -112,13 +114,12 @@ describe('Local Jupyter Server Manager', function (): void {
 		mockServerInstance.verify(s => s.stop(), TypeMoq.Times.once());
 	});
 
-	function initInstallAndInstance(uri: vscode.Uri): [TypeMoq.IMock<JupyterServerInstallation>, TypeMoq.IMock<IServerInstance>] {
-		let mockInstall = TypeMoq.Mock.ofType(JupyterServerInstallation, undefined, undefined, '/root');
+	function initInstallAndInstance(uri: vscode.Uri): TypeMoq.IMock<IServerInstance> {
 		let mockServerInstance = TypeMoq.Mock.ofType(JupyterServerInstanceStub);
 		mockFactory.setup(f => f.createInstance(TypeMoq.It.isAny())).returns(() => mockServerInstance.object);
 		mockServerInstance.setup(s => s.configure()).returns(() => Promise.resolve());
 		mockServerInstance.setup(s => s.start()).returns(() => Promise.resolve());
 		mockServerInstance.setup(s => s.uri).returns(() => uri);
-		return [mockInstall, mockServerInstance];
+		return mockServerInstance;
 	}
 });
