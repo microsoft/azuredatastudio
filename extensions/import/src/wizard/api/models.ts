@@ -6,16 +6,12 @@
 
 import * as azdata from 'azdata';
 
-export interface BaseDataModel {
-	server: azdata.connection.Connection;
-	serverId: string;
-	database: string;
-}
-
 /**
  * The main data model that communicates between the pages.
  */
-export interface ImportDataModel extends BaseDataModel {
+export interface ImportDataModel {
+	server: azdata.connection.Connection;
+	serverId: string;
 	ownerUri: string;
 	proseColumns: ColumnMetadata[];
 	proseDataPreview: string[][];
@@ -34,17 +30,4 @@ export interface ColumnMetadata {
 	dataType: string;
 	primaryKey: boolean;
 	nullable: boolean;
-}
-
-/**
- * Data model to communicate between DacFx pages
- */
-export interface DacFxDataModel extends BaseDataModel {
-	serverName: string;
-	serverId: string;
-	filePath: string;
-	version: string;
-	upgradeExisting: boolean;
-	scriptFilePath: string;
-	generateScriptAndDeploy: boolean;
 }

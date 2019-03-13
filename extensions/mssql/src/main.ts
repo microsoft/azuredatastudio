@@ -177,7 +177,7 @@ async function handleNewNotebookTask(oeContext?: azdata.ObjectExplorerContext, p
 	// to handle this. We should look into improving this in the future
 	let untitledUri = vscode.Uri.parse(`untitled:Notebook-${untitledCounter++}`);
 	let editor = await azdata.nb.showNotebookDocument(untitledUri, {
-		connectionId: profile.id,
+		connectionProfile: profile,
 		providerId: jupyterNotebookProviderId,
 		preview: false,
 		defaultKernel: {
@@ -220,7 +220,7 @@ async function handleOpenNotebookTask(profile: azdata.IConnectionProfile): Promi
 			vscode.window.showErrorMessage(localize('unsupportedFileType', 'Only .ipynb Notebooks are supported'));
 		} else {
 			await azdata.nb.showNotebookDocument(fileUri, {
-				connectionId: profile.id,
+				connectionProfile: profile,
 				providerId: jupyterNotebookProviderId,
 				preview: false
 			});

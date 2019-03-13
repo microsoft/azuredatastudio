@@ -52,6 +52,9 @@ let notebookProviderType: IJSONSchema = {
 						name: {
 							type: 'string',
 						},
+						displayName: {
+							type: 'string',
+						},
 						connectionProviderIds: {
 							type: 'array',
 							items: {

@@ -218,7 +218,7 @@ export async function getClusterEndpoint(profileId: string, serviceName: string)
 	return clusterEndpoint;
 }
 
-interface IEndpoint {
+export interface IEndpoint {
 	serviceName: string;
 	ipAddress: string;
 	port: number;

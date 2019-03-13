@@ -87,7 +87,7 @@ export class OptionsDialog extends Modal {
 	constructor(
 		title: string,
 		name: string,
-		private options: IOptionsDialogOptions,
+		options: IOptionsDialogOptions,
 		@IPartService partService: IPartService,
 		@IWorkbenchThemeService private _workbenchThemeService: IWorkbenchThemeService,
 		@IContextViewService private _contextViewService: IContextViewService,
@@ -176,6 +176,10 @@ export class OptionsDialog extends Modal {
 					this._register(styler.attachInputBoxStyler(<InputBox>widget, this._themeService));
 			}
 		}
+	}
+
+	private get options(): IOptionsDialogOptions {
+		return this._modalOptions as IOptionsDialogOptions;
 	}
 
 	public get optionValues(): { [name: string]: any } {
