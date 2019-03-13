@@ -24,7 +24,7 @@ import { IConnectionDialogService } from 'sql/workbench/services/connection/comm
 import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
 
 const msgLoading = localize('loading', "Loading kernels...");
-const msgSwitching = localize('switching', "Switching kernels...");
+const msgChanging = localize('changing', "Changing kernel...");
 const kernelLabel: string = localize('Kernel', "Kernel: ");
 const attachToLabel: string = localize('AttachTo', "Attach to: ");
 const msgLoadingContexts = localize('loadingContexts', "Loading contexts...");
@@ -251,7 +251,7 @@ export class KernelsDropdown extends SelectBox {
 	}
 
 	public doChangeKernel(displayName: string): void {
-		this.setOptions([msgSwitching], 0);
+		this.setOptions([msgChanging], 0);
 		this.model.changeKernel(displayName);
 	}
 }
