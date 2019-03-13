@@ -72,6 +72,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _onValidConnectionSelected = new Emitter<boolean>();
 	private _oldKernel: nb.IKernel;
 	private _clientSessionListeners: IDisposable[] = [];
+	private _connectionsToDispose: ConnectionProfile[] = [];
 
 	constructor(private _notebookOptions: INotebookModelOptions, startSessionImmediately?: boolean, private connectionProfile?: IConnectionProfile) {
 		super();
@@ -696,6 +697,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return newKernelDisplayName;
 	}
 
+	public addAttachToConnectionsToBeDisposed(conn: ConnectionProfile) {
+		this._connectionsToDispose.push(conn);
+	}
+
 	private setErrorState(errMsg: string): void {
 		this._inErrorState = true;
 		let msg = localize('startSessionFailed', 'Could not start session: {0}', errMsg);
@@ -705,6 +710,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public dispose(): void {
 		super.dispose();
+		this.disconnectAttachToConnections();
 		this.handleClosed();
 	}
 
@@ -850,6 +856,14 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		if (this.notebookOptions.connectionService.getConnectionUri(conn).includes(uriPrefixes.notebook)) {
 			await this.notebookOptions.connectionService.disconnect(conn).catch(e => console.log(e));
 		}
+	}
+
+	// Disconnect any connections that were added through the "Add new connection" functionality in the Attach To dropdown
+	private async disconnectAttachToConnections(): Promise<void> {
+		this._connectionsToDispose.forEach(async conn => {
+			await this.notebookOptions.connectionService.disconnect(conn).catch(e => console.log(e));
+		});
+		this._connectionsToDispose = [];
 	}
 
 	/**
