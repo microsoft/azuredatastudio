@@ -103,10 +103,7 @@ export class LocalJupyterServerManager implements nb.ServerManager, vscode.Dispo
 
 	private async doStartServer(): Promise<IServerInstance> {        // We can't find or create servers until the installation is complete
 		let installation = this.options.jupyterInstallation;
-
 		await installation.promptForPythonInstall();
-
-		await installation.installReady;
 
 		// Calculate the path to use as the notebook-dir for Jupyter based on the path of the uri of the
 		// notebook to open. This will be the workspace folder if the notebook uri is inside a workspace

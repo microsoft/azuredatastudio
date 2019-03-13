@@ -288,6 +288,7 @@ export default class JupyterServerInstallation {
 			if (doInstall) {
 				let pythonDialog = new ConfigurePythonDialog(this.apiWrapper, this.outputChannel, this);
 				pythonDialog.showDialog();
+				return this._installReady.promise;
 			} else {
 				return Promise.reject(localize('pythonInstallDeclined', 'Python installation was declined.'));
 			}

@@ -36,8 +36,7 @@ describe('Local Jupyter Server Manager', function (): void {
 
 		deferredInstall = new Deferred<void>();
 		let mockInstall = TypeMoq.Mock.ofType(JupyterServerInstallation, undefined, undefined, '/root');
-		mockInstall.setup(j => j.installReady).returns(() => deferredInstall.promise);
-		mockInstall.setup(j => j.promptForPythonInstall()).returns(() => Promise.resolve());
+		mockInstall.setup(j => j.promptForPythonInstall()).returns(() => deferredInstall.promise);
 
 		serverManager = new LocalJupyterServerManager({
 			documentPath: expectedPath,
