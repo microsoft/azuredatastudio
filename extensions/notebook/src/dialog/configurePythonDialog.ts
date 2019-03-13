@@ -34,7 +34,7 @@ export class ConfigurePythonDialog {
 	constructor(private apiWrapper: ApiWrapper, private outputChannel: vscode.OutputChannel, private jupyterInstallation: JupyterServerInstallation) {
 	}
 
-	public async showDialog() {
+	public showDialog() {
 		this.dialog = azdata.window.createModelViewDialog(this.DialogTitle);
 
 		this.initializeContent();
