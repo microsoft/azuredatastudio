@@ -123,6 +123,8 @@ const PropertyType = {
 	Dependency: 'Microsoft.VisualStudio.Code.ExtensionDependencies',
 	ExtensionPack: 'Microsoft.VisualStudio.Code.ExtensionPack',
 	Engine: 'Microsoft.VisualStudio.Code.Engine',
+	// {{SQL CARBON EDIT}}
+	AzDataEngine: 'Microsoft.AzDataEngine',
 	LocalizedLanguages: 'Microsoft.VisualStudio.Code.LocalizedLanguages'
 };
 
@@ -298,6 +300,12 @@ function getEngine(version: IRawGalleryExtensionVersion): string {
 	return (values.length > 0 && values[0].value) || '';
 }
 
+// {{SQL CARBON EDIT}}
+function getAzureDataStudioEngine(version: IRawGalleryExtensionVersion): string {
+	const values = version.properties ? version.properties.filter(p => p.key === PropertyType.AzDataEngine) : [];
+	return (values.length > 0 && values[0].value) || '';
+}
+
 function getLocalizedLanguages(version: IRawGalleryExtensionVersion): string[] {
 	const values = version.properties ? version.properties.filter(p => p.key === PropertyType.LocalizedLanguages) : [];
 	const value = (values.length > 0 && values[0].value) || '';
@@ -343,6 +351,8 @@ function toExtension(galleryExtension: IRawGalleryExtension, version: IRawGaller
 			dependencies: getExtensions(version, PropertyType.Dependency),
 			extensionPack: getExtensions(version, PropertyType.ExtensionPack),
 			engine: getEngine(version),
+			// {{SQL CARBON EDIT}}
+			azDataEngine: getAzureDataStudioEngine(version),
 			localizedLanguages: getLocalizedLanguages(version)
 		},
 		/* __GDPR__FRAGMENT__
@@ -724,7 +734,12 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 	}
 
 	loadCompatibleVersion(extension: IGalleryExtension, fromVersion: string = extension.version): Promise<IGalleryExtension> {
-		if (extension.version === fromVersion && extension.properties.engine && isEngineValid(extension.properties.engine)) {
+		// {{SQL CARBON EDIT}}
+		// Change to original version: removed the extension version validation
+		// Reason: This method is used to find the matching gallery extension for the locally installed extension,
+		//         since we only have one entry for each extension (not in-scope to enable mutiple version support for now),
+		//         if the new version of extension is not compatible, the extension won't be displayed properly.
+		if (extension.version === fromVersion) {
 			return Promise.resolve(extension);
 		}
 		const query = new Query()

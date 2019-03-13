@@ -96,6 +96,7 @@ export class Dropdown extends Disposable {
 	private _filter = new DropdownFilter();
 	private _renderer = new DropdownRenderer();
 	private _controller = new DropdownController();
+	public fireOnTextChange: boolean;
 
 	private _onBlur = this._register(new Emitter<void>());
 	public onBlur: Event<void> = this._onBlur.event;
@@ -210,6 +211,10 @@ export class Dropdown extends Disposable {
 			if (this._dataSource.options) {
 				this._filter.filterString = e;
 				this._layoutTree();
+			}
+			if (this.fireOnTextChange) {
+				this.value = e;
+				this._onValueChange.fire(e);
 			}
 		});
 

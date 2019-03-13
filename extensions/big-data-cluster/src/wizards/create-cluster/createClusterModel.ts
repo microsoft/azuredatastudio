@@ -4,11 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { TargetClusterType, ClusterPorts, ContainerRegistryInfo, TargetClusterTypeInfo, ToolInfo, ToolInstallationStatus } from '../../interfaces';
-import { getContexts, KubectlContext, setContext, inferCurrentClusterType }  from '../../kubectl/kubectlUtils';
+import { TargetClusterType, ClusterPorts, ClusterType, ContainerRegistryInfo, TargetClusterTypeInfo, ToolInfo, ToolInstallationStatus } from '../../interfaces';
+import { getContexts, KubectlContext, setContext, inferCurrentClusterType } from '../../kubectl/kubectlUtils';
 import { Kubectl } from '../../kubectl/kubectl';
 import { Scriptable, ScriptingDictionary } from '../../scripting/scripting';
-import { ClusterType} from '../../interfaces';
 import * as nls from 'vscode-nls';
 
 const localize = nls.loadMessageBundle();
@@ -16,8 +15,8 @@ const localize = nls.loadMessageBundle();
 export class CreateClusterModel implements Scriptable {
 
 	private _tmp_tools_installed: boolean = false;
-	private scriptingProperties : ScriptingDictionary<string> = {};
-	constructor(private _kubectl : Kubectl) {
+	private scriptingProperties: ScriptingDictionary<string> = {};
+	constructor(private _kubectl: Kubectl) {
 	}
 
 	public async loadClusters(): Promise<KubectlContext[]> {
@@ -58,6 +57,9 @@ export class CreateClusterModel implements Scriptable {
 			let aksCluster: TargetClusterTypeInfo = {
 				type: TargetClusterType.NewAksCluster,
 				name: localize('bdc-create.AKSClusterCardText', 'New AKS Cluster'),
+				fullName: localize('bdc-create.AKSClusterFullName', 'New Azure Kubernetes Service cluster'),
+				description: localize('bdc-create.AKSClusterDescription',
+					'This option configures new Azure Kubernetes Service (AKS) for SQL Server big data cluster deployments. AKS makes it simple to create, configure and manage a cluster of virutal machines that are preconfigured with a Kubernetes cluster to run containerized applications.'),
 				iconPath: {
 					dark: 'images/cluster_inverse.svg',
 					light: 'images/cluster.svg'
@@ -66,7 +68,9 @@ export class CreateClusterModel implements Scriptable {
 
 			let existingCluster: TargetClusterTypeInfo = {
 				type: TargetClusterType.ExistingKubernetesCluster,
-				name: localize('bdc-create.ExistingCardText', 'Existing Cluster'),
+				name: localize('bdc-create.ExistingClusterCardText', 'Existing Cluster'),
+				fullName: localize('bdc-create.ExistingClusterFullName', 'Existing Kubernetes Cluster'),
+				description: localize('bdc-create.ExistingClusterDescription', 'This option assumes you already have a Kubernetes cluster installed, Once a prerequisite check is done, ensure the correct cluster context is selected.'),
 				iconPath: {
 					dark: 'images/cluster_inverse.svg',
 					light: 'images/cluster.svg'
@@ -81,16 +85,19 @@ export class CreateClusterModel implements Scriptable {
 		let kubeCtl = {
 			name: 'kubectl',
 			description: 'Tool used for managing the Kubernetes cluster',
+			version: '',
 			status: ToolInstallationStatus.Installed
 		};
 		let mssqlCtl = {
 			name: 'mssqlctl',
 			description: 'Command-line tool for installing and managing the SQL Server big data cluster',
+			version: '',
 			status: ToolInstallationStatus.Installed
 		};
 		let azureCli = {
 			name: 'Azure CLI',
 			description: 'Tool used for managing Azure services',
+			version: '',
 			status: this._tmp_tools_installed ? ToolInstallationStatus.Installed : ToolInstallationStatus.NotInstalled
 		};
 		let promise = new Promise<ToolInfo[]>(resolve => {
@@ -143,7 +150,7 @@ export class CreateClusterModel implements Scriptable {
 
 	public containerRegistryPassword: string;
 
-	public async getTargetClusterPlatform(targetContextName : string) : Promise<string> {
+	public async getTargetClusterPlatform(targetContextName: string): Promise<string> {
 		await setContext(this._kubectl, targetContextName);
 		let clusterType = await inferCurrentClusterType(this._kubectl);
 
@@ -158,7 +165,7 @@ export class CreateClusterModel implements Scriptable {
 		}
 	}
 
-	public async getScriptProperties() : Promise<ScriptingDictionary<string>> {
+	public async getScriptProperties(): Promise<ScriptingDictionary<string>> {
 
 		// Cluster settings
 		this.scriptingProperties['CLUSTER_NAME'] = this.selectedCluster.clusterName;
@@ -171,13 +178,13 @@ export class CreateClusterModel implements Scriptable {
 
 		// SQL Server settings
 		this.scriptingProperties['CONTROLLER_USERNAME'] = this.adminUserName;
-		this.scriptingProperties['CONTROLLER_PASSWORD'] =  this.adminPassword;
+		this.scriptingProperties['CONTROLLER_PASSWORD'] = this.adminPassword;
 		this.scriptingProperties['KNOX_PASSWORD'] = this.adminPassword;
 		this.scriptingProperties['MSSQL_SA_PASSWORD'] = this.adminPassword;
 
 		// docker settings
 		this.scriptingProperties['DOCKER_REPOSITORY'] = this.containerRepository;
-		this.scriptingProperties['DOCKER_REGISTRY' ] = this.containerRegistry;
+		this.scriptingProperties['DOCKER_REGISTRY'] = this.containerRegistry;
 		this.scriptingProperties['DOCKER_PASSWORD'] = this.containerRegistryPassword;
 		this.scriptingProperties['DOCKER_USERNAME'] = this.containerRegistryUserName;
 		this.scriptingProperties['DOCKER_IMAGE_TAG'] = this.containerImageTag;
@@ -191,7 +198,7 @@ export class CreateClusterModel implements Scriptable {
 		return this.scriptingProperties;
 	}
 
-	public getTargetKubectlContext() : KubectlContext {
+	public getTargetKubectlContext(): KubectlContext {
 		return this.selectedCluster;
 	}
 }

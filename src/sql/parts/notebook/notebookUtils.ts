@@ -12,7 +12,6 @@ import * as pfs from 'vs/base/node/pfs';
 import { localize } from 'vs/nls';
 import { IOutputChannel } from 'vs/workbench/parts/output/common/output';
 import { DEFAULT_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_FILETYPE, INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
-import { ContextKeyExpr, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 
@@ -60,7 +59,7 @@ export function getProvidersForFileName(fileName: string, notebookService: INote
 	return providers;
 }
 
-export function getStandardKernelsForProvider(providerId: string, notebookService: INotebookService) : IStandardKernelWithProvider[] {
+export function getStandardKernelsForProvider(providerId: string, notebookService: INotebookService): IStandardKernelWithProvider[] {
 	if (!providerId || !notebookService) {
 		return [];
 	}
@@ -92,13 +91,20 @@ export function getServerFromFormattedAttachToName(name: string): string {
 // Extract database name from format used in Attach To: serverName (databaseName)
 export function getDatabaseFromFormattedAttachToName(name: string): string {
 	return name.substring(name.lastIndexOf('(') + 1, name.lastIndexOf(')')) ?
-	name.substring(name.lastIndexOf('(') + 1, name.lastIndexOf(')')) : '';
+		name.substring(name.lastIndexOf('(') + 1, name.lastIndexOf(')')) : '';
 }
 
 export interface IStandardKernelWithProvider {
 	readonly name: string;
+	readonly displayName: string;
 	readonly connectionProviderIds: string[];
 	readonly notebookProvider: string;
+}
+
+export interface IEndpoint {
+	serviceName: string;
+	ipAddress: string;
+	port: number;
 }
 
 export function tryMatchCellMagic(input: string): string {
@@ -110,4 +116,10 @@ export function tryMatchCellMagic(input: string): string {
 	let match = magicRegex.exec(firstLine);
 	let magicName = match && match[1];
 	return magicName;
+}
+
+export async function asyncForEach(array: any, callback: any): Promise<any> {
+	for (let index = 0; index < array.length; index++) {
+		await callback(array[index], index, array);
+	}
 }

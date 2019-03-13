@@ -225,6 +225,23 @@ export class ConnectionNode extends FolderNode {
 		item.contextValue = this._nodeType;
 		return item;
 	}
+
+	getNodeInfo(): azdata.NodeInfo {
+		// TODO handle error message case by returning it in the OE API
+		// TODO support better mapping of node type
+		let nodeInfo: azdata.NodeInfo = {
+			label: this.getDisplayName(),
+			isLeaf: false,
+			errorMessage: undefined,
+			metadata: undefined,
+			nodePath: this.generateNodePath(),
+			nodeStatus: undefined,
+			nodeType: this._nodeType,
+			nodeSubType: undefined,
+			iconType: 'HDFSFolder'
+		};
+		return nodeInfo;
+	}
 }
 
 export class FileNode extends HdfsFileSourceNode implements IFileNode {
@@ -281,17 +298,14 @@ export class FileNode extends HdfsFileSourceNode implements IFileNode {
 	public writeFileContentsToDisk(localPath: string, cancelToken?: vscode.CancellationTokenSource): Promise<vscode.Uri> {
 		return new Promise((resolve, reject) => {
 			let readStream: fs.ReadStream = this.fileSource.createReadStream(this.hdfsPath);
+			readStream.on('error', (err) => {
+				reject(err);
+			});
+
+			let error: string | Error = undefined;
 			let writeStream = fs.createWriteStream(localPath, {
 				encoding: 'utf8'
 			});
-			let cancelable = new CancelableStream(cancelToken);
-			cancelable.on('error', (err) => {
-				reject(err);
-			});
-			readStream.pipe(cancelable).pipe(writeStream);
-
-			let error: string | Error = undefined;
-
 			writeStream.on('error', (err) => {
 				error = err;
 				reject(error);
@@ -301,6 +315,13 @@ export class FileNode extends HdfsFileSourceNode implements IFileNode {
 					resolve(vscode.Uri.file(localPath));
 				}
 			});
+
+			let cancelable = new CancelableStream(cancelToken);
+			cancelable.on('error', (err) => {
+				reject(err);
+			});
+
+			readStream.pipe(cancelable).pipe(writeStream);
 		});
 	}
 

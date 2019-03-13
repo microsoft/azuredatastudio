@@ -380,7 +380,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * otherwise tries to make a connection and returns the owner uri when connection is complete
 	 * The purpose is connection by default
 	 */
-	public connectIfNotConnected(connection: IConnectionProfile, purpose?: 'dashboard' | 'insights' | 'connection', saveConnection: boolean = false): Promise<string> {
+	public connectIfNotConnected(connection: IConnectionProfile, purpose?: 'dashboard' | 'insights' | 'connection' | 'notebook', saveConnection: boolean = false): Promise<string> {
 		return new Promise<string>((resolve, reject) => {
 			let ownerUri: string = Utils.generateUri(connection, purpose);
 			if (this._connectionStatusManager.isConnected(ownerUri)) {
@@ -465,6 +465,12 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			}
 			this.createNewConnection(uri, connection).then(connectionResult => {
 				if (connectionResult && connectionResult.connected) {
+					// The connected succeeded so add it to our active connections now, optionally adding it to the MRU based on
+					// the options.saveTheConnection setting
+					let connectionMgmtInfo = this._connectionStatusManager.findConnection(uri);
+					let activeConnection = connectionMgmtInfo.connectionProfile;
+					this.tryAddActiveConnection(connectionMgmtInfo, activeConnection, options.saveTheConnection);
+
 					if (callbacks.onConnectSuccess) {
 						callbacks.onConnectSuccess(options.params);
 					}
@@ -861,9 +867,9 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	/**
 	 * Add a connection to the active connections list.
 	 */
-	private tryAddActiveConnection(connectionManagementInfo: ConnectionManagementInfo, newConnection: IConnectionProfile, isConnectionToDefaultDb: boolean): void {
+	private tryAddActiveConnection(connectionManagementInfo: ConnectionManagementInfo, newConnection: IConnectionProfile, addToMru: boolean): void {
 		if (newConnection) {
-			this._connectionStore.addActiveConnection(newConnection, isConnectionToDefaultDb)
+			this._connectionStore.addActiveConnection(newConnection, addToMru)
 				.then(() => {
 					connectionManagementInfo.connectHandler(true);
 				}, err => {
@@ -897,10 +903,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		let connection = this._connectionStatusManager.onConnectionComplete(info);
 
 		if (info.connectionId) {
-			let isConnectionToDefaultDb = false;
-			if (connection.connectionProfile && (!connection.connectionProfile.databaseName || connection.connectionProfile.databaseName.trim() === '')) {
-				isConnectionToDefaultDb = true;
-			}
 			if (info.connectionSummary && info.connectionSummary.databaseName) {
 				this._connectionStatusManager.updateDatabaseName(info);
 			}
@@ -908,8 +910,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			connection.extensionTimer.stop();
 
 			connection.connectHandler(true);
-			let activeConnection = connection.connectionProfile;
-			self.tryAddActiveConnection(connection, activeConnection, isConnectionToDefaultDb);
 			self.addTelemetryForConnection(connection);
 
 			if (self._connectionStatusManager.isDefaultTypeUri(info.ownerUri)) {
@@ -1157,7 +1157,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * Finds existing connection for given profile and purpose is any exists.
 	 * The purpose is connection by default
 	 */
-	public findExistingConnection(connection: IConnectionProfile, purpose?: 'dashboard' | 'insights' | 'connection'): ConnectionProfile {
+	public findExistingConnection(connection: IConnectionProfile, purpose?: 'dashboard' | 'insights' | 'connection' | 'notebook'): ConnectionProfile {
 		let connectionUri = Utils.generateUri(connection, purpose);
 		let existingConnection = this._connectionStatusManager.findConnection(connectionUri);
 		if (existingConnection && this._connectionStatusManager.isConnected(connectionUri)) {

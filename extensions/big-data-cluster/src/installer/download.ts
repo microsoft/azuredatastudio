@@ -26,7 +26,7 @@ function ensureDownloadFunc() {
 }
 
 export async function toTempFile(sourceUrl: string): Promise<Errorable<string>> {
-    const tempFileObj = tmp.fileSync({ prefix: "mssql-bdc-autoinstall-" });
+    const tempFileObj = tmp.fileSync({ prefix: 'mssql-bdc-autoinstall-' });
     const downloadResult = await to(sourceUrl, tempFileObj.name);
     if (succeeded(downloadResult)) {
         return { succeeded: true, result: tempFileObj.name };
