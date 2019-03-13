@@ -2940,6 +2940,7 @@ declare module 'azdata' {
 		value?: string | CategoryValue;
 		values?: string[] | CategoryValue[];
 		editable?: boolean;
+		fireOnTextChange?: boolean;
 	}
 
 	export interface DeclarativeTableColumn {
@@ -3666,19 +3667,30 @@ declare module 'azdata' {
 		export function getProvidersByType<T extends DataProvider>(providerType: DataProviderType): T[];
 	}
 
+
 	/**
 	 * Context object passed as an argument to command callbacks.
-	 * Defines the key properties required to identify a node in the object
-	 * explorer tree and take action against it.
+	 * Defines properties that can be sent for any connected context,
+	 * whether that is the Object Explorer context menu or a command line
+	 * startup argument.
 	 */
-	export interface ObjectExplorerContext {
 
+	export interface ConnectedContext {
 		/**
 		 * The connection information for the selected object.
 		 * Note that the connection is not guaranteed to be in a connected
 		 * state on click.
 		 */
 		connectionProfile: IConnectionProfile;
+	}
+
+	/**
+	 * Context object passed as an argument to command callbacks.
+	 * Defines the key properties required to identify a node in the object
+	 * explorer tree and take action against it.
+	 */
+	export interface ObjectExplorerContext extends ConnectedContext {
+
 		/**
 		 * Defines whether this is a Connection-level object.
 		 * If not, the object is expected to be a child object underneath
@@ -4015,9 +4027,9 @@ declare module 'azdata' {
 			providerId?: string;
 
 			/**
-			 * Optional ID indicating the initial connection to use for this editor
+			 * Optional profile indicating the initial connection to use for this editor
 			 */
-			connectionId?: string;
+			connectionProfile?: IConnectionProfile;
 
 			/**
 			 * Default kernel for notebook
@@ -4097,6 +4109,7 @@ declare module 'azdata' {
 
 		export interface IStandardKernel {
 			readonly name: string;
+			readonly displayName: string;
 			readonly connectionProviderIds: string[];
 		}
 
@@ -4205,7 +4218,7 @@ declare module 'azdata' {
 
 		export interface ILanguageInfo {
 			name: string;
-			version: string;
+			version?: string;
 			mimetype?: string;
 			codemirror_mode?: string | ICodeMirrorMode;
 		}

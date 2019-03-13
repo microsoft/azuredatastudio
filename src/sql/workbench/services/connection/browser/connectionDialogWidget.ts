@@ -169,16 +169,16 @@ export class ConnectionDialogWidget extends Modal {
 		this._panel.onTabChange(c => {
 			if (c === savedConnectionTabId && this._savedConnectionTree.getContentHeight() === 0) {
 				// Update saved connection tree
-				TreeUpdateUtils.structuralTreeUpdate(this._savedConnectionTree, 'saved', this._connectionManagementService, this._providers);
-
-				if (this._savedConnectionTree.getContentHeight() > 0) {
-					this._noSavedConnectionBuilder.hide();
-					this._savedConnectionBuilder.show();
-				} else {
-					this._noSavedConnectionBuilder.show();
-					this._savedConnectionBuilder.hide();
-				}
-				this._savedConnectionTree.layout(DOM.getTotalHeight(this._savedConnectionTree.getHTMLElement()));
+				TreeUpdateUtils.structuralTreeUpdate(this._savedConnectionTree, 'saved', this._connectionManagementService, this._providers).then(() => {
+					if (this._savedConnectionTree.getContentHeight() > 0) {
+						this._noSavedConnectionBuilder.hide();
+						this._savedConnectionBuilder.show();
+					} else {
+						this._noSavedConnectionBuilder.show();
+						this._savedConnectionBuilder.hide();
+					}
+					this._savedConnectionTree.layout(DOM.getTotalHeight(this._savedConnectionTree.getHTMLElement()));
+				});
 			}
 		});
 

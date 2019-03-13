@@ -35,7 +35,7 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { ViewletPanel, IViewletPanelOptions } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { range } from 'vs/base/common/arrays';
-import { Orientation } from 'vs/base/browser/ui/splitview/splitview';
+import { Orientation, Sizing } from 'vs/base/browser/ui/splitview/splitview';
 import { Disposable, IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { generateUuid } from 'vs/base/common/uuid';
 import { TPromise } from 'vs/base/common/winjs.base';
@@ -202,6 +202,10 @@ export class GridPanel extends ViewletPanel {
 		}
 	}
 
+	public resetScrollPosition() : void {
+		this.splitView.setScrollPosition(this.state.scrollPosition);
+	}
+
 	private onResultSet(resultSet: azdata.ResultSetSummary | azdata.ResultSetSummary[]) {
 		let resultsToAdd: azdata.ResultSetSummary[];
 		if (!Array.isArray(resultSet)) {
@@ -298,7 +302,7 @@ export class GridPanel extends ViewletPanel {
 		// possible to need a sort?
 
 		if (isUndefinedOrNull(this.maximizedGrid)) {
-			this.splitView.addViews(tables, tables.map(i => i.minimumSize), this.splitView.length);
+			this.splitView.addViews(tables, Sizing.Distribute, this.splitView.length);
 		}
 
 		this.tables = this.tables.concat(tables);
@@ -341,7 +345,7 @@ export class GridPanel extends ViewletPanel {
 			this.maximizedGrid.state.maximized = false;
 			this.maximizedGrid = undefined;
 			this.splitView.removeView(0);
-			this.splitView.addViews(this.tables, this.tables.map(i => i.minimumSize));
+			this.splitView.addViews(this.tables, Sizing.Distribute);
 		}
 	}
 
@@ -397,13 +401,15 @@ class GridTable<T> extends Disposable implements IView {
 	private scrolled = false;
 	private visible = false;
 
+	private rowHeight: number;
+
 	public get resultSet(): azdata.ResultSetSummary {
 		return this._resultSet;
 	}
 
 	// this handles if the row count is small, like 4-5 rows
 	private get maxSize(): number {
-		return ((this.resultSet.rowCount) * ROW_HEIGHT) + HEADER_HEIGHT + ESTIMATED_SCROLL_BAR_HEIGHT;
+		return ((this.resultSet.rowCount) * this.rowHeight) + HEADER_HEIGHT + ESTIMATED_SCROLL_BAR_HEIGHT;
 	}
 
 	constructor(
@@ -417,6 +423,8 @@ class GridTable<T> extends Disposable implements IView {
 		@IConfigurationService private configurationService: IConfigurationService
 	) {
 		super();
+		let config = this.configurationService.getValue<{ rowHeight: number }>('resultsGrid');
+		this.rowHeight = config && config.rowHeight ? config.rowHeight : ROW_HEIGHT;
 		this.state = state;
 		this.container.style.width = '100%';
 		this.container.style.height = '100%';
@@ -490,7 +498,7 @@ class GridTable<T> extends Disposable implements IView {
 		});
 		this.columns.unshift(this.rowNumberColumn.getColumnDefinition());
 		let tableOptions: Slick.GridOptions<T> = {
-			rowHeight: ROW_HEIGHT,
+			rowHeight: this.rowHeight,
 			showRowNumber: true,
 			forceFitColumns: false,
 			defaultColumnWidth: 120
@@ -499,7 +507,7 @@ class GridTable<T> extends Disposable implements IView {
 		this.table = this._register(new Table(tableContainer, { dataProvider: this.dataProvider, columns: this.columns }, tableOptions));
 		this.table.setSelectionModel(this.selectionModel);
 		this.table.registerPlugin(new MouseWheelSupport());
-		this.table.registerPlugin(new AutoColumnSize({ autoSizeOnRender: !this.state.columnSizes && this.configurationService.getValue('resultsGrid.autoSizeColumns') }));
+		this.table.registerPlugin(new AutoColumnSize({ autoSizeOnRender: !this.state.columnSizes && this.configurationService.getValue('resultsGrid.autoSizeColumns'), maxWidth: this.configurationService.getValue<number>('resultsGrid.maxColumnWidth') }));
 		this.table.registerPlugin(copyHandler);
 		this.table.registerPlugin(this.rowNumberColumn);
 		this.table.registerPlugin(new AdditionalKeyBindings());
@@ -708,7 +716,7 @@ class GridTable<T> extends Disposable implements IView {
 	}
 
 	public get maximumSize(): number {
-		return Math.max(this.maxSize, ACTIONBAR_HEIGHT + BOTTOM_PADDING);
+		return Number.POSITIVE_INFINITY;
 	}
 
 	private loadData(offset: number, count: number): Thenable<T[]> {

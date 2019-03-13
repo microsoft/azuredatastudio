@@ -53,9 +53,13 @@ export class NodeContextKey extends Disposable implements IContextKey<INodeConte
 			this._connectedKey.set(false);
 			this._connectionContextKey.reset();
 		}
+		if (value.node) {
+			this._viewItemKey.set(value.node.contextValue);
+		} else {
+			this._viewItemKey.reset();
+		}
 		this._nodeContextKey.set(value);
 		this._viewIdKey.set(value.viewId);
-		this._viewItemKey.set(value.node.contextValue);
 	}
 
 	reset(): void {

@@ -242,7 +242,7 @@ export class JupyterSession implements nb.ISession {
 
 			//Update server info with bigdata endpoint - Unified Connection
 			if (connection.providerName === SQL_PROVIDER) {
-				let clusterEndpoint: IEndpoint = await this.getClusterEndpoint(connection.id, KNOX_ENDPOINT);
+				let clusterEndpoint: utils.IEndpoint = await this.getClusterEndpoint(connection.id, KNOX_ENDPOINT);
 				if (!clusterEndpoint) {
 					let kernelDisplayName: string = await this.getKernelDisplayName();
 					return Promise.reject(new Error(localize('connectionNotValid', 'Spark kernels require a connection to a SQL Server big data cluster master instance.')));
@@ -303,12 +303,12 @@ export class JupyterSession implements nb.ISession {
 		return port;
 	}
 
-	private async getClusterEndpoint(profileId: string, serviceName: string): Promise<IEndpoint> {
+	private async getClusterEndpoint(profileId: string, serviceName: string): Promise<utils.IEndpoint> {
 		let serverInfo: ServerInfo = await connection.getServerInfo(profileId);
 		if (!serverInfo || !serverInfo.options) {
 			return undefined;
 		}
-		let endpoints: IEndpoint[] = serverInfo.options['clusterEndpoints'];
+		let endpoints: utils.IEndpoint[] = serverInfo.options['clusterEndpoints'];
 		if (!endpoints || endpoints.length === 0) {
 			return undefined;
 		}
@@ -318,12 +318,6 @@ export class JupyterSession implements nb.ISession {
 
 interface ICredentials {
 	'url': string;
-}
-
-interface IEndpoint {
-	serviceName: string;
-	ipAddress: string;
-	port: number;
 }
 
 interface ISparkMagicConfig {

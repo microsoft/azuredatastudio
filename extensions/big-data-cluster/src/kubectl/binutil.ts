@@ -3,6 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+ import * as nls from 'vscode-nls';
+const localize = nls.loadMessageBundle();
+
 import { Shell } from '../utility/shell';
 import { Host } from './host';
 import { FS } from '../utility/fs';
@@ -53,17 +56,18 @@ export function execPath(shell: Shell, basePath: string): string {
 }
 
 type CheckPresentFailureReason = 'inferFailed' | 'configuredFileMissing';
-
+const installDependenciesAction = localize('installDependenciesAction','Install dependencies');
+const learnMoreAction = localize('learnMoreAction','Learn more');
 function alertNoBin(host: Host, binName: string, failureReason: CheckPresentFailureReason, message: string, installDependencies: () => void): void {
     switch (failureReason) {
         case 'inferFailed':
-            host.showErrorMessage(message, 'Install dependencies', 'Learn more').then(
+            host.showErrorMessage(message, installDependenciesAction, learnMoreAction).then(
                 (str) => {
                     switch (str) {
-                        case 'Learn more':
-                            host.showInformationMessage(`Add ${binName} directory to path, or set "mssql-bdc.${binName}-path" config to ${binName} binary.`);
+                        case learnMoreAction:
+                            host.showInformationMessage(localize('moreInfoMsg', 'Add {0} directory to path, or set "mssql-bdc.{0}-path" config to {0} binary.', binName));
                             break;
-                        case 'Install dependencies':
+                        case installDependenciesAction:
                             installDependencies();
                             break;
                     }
@@ -72,9 +76,9 @@ function alertNoBin(host: Host, binName: string, failureReason: CheckPresentFail
             );
             break;
         case 'configuredFileMissing':
-            host.showErrorMessage(message, 'Install dependencies').then(
+            host.showErrorMessage(message, installDependenciesAction).then(
                 (str) => {
-                    if (str === 'Install dependencies') {
+                    if (str === installDependenciesAction) {
                         installDependencies();
                     }
                 }
