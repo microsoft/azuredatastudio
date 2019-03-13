@@ -164,6 +164,10 @@ export class NotebookInput extends EditorInput {
 		return this._model.confirmSave();
 	}
 
+	public revert(): TPromise<boolean> {
+		return this._textInput.revert();
+	}
+
 	public get notebookUri(): URI {
 		return this.resource;
 	}
