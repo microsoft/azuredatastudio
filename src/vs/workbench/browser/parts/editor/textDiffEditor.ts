@@ -39,7 +39,7 @@ import { IWindowService } from 'vs/platform/windows/common/windows';
 export class TextDiffEditor extends BaseTextEditor implements ITextDiffEditor {
 
 	static readonly ID = TEXT_DIFF_EDITOR_ID;
-
+	private reverseColor: boolean;
 	private diffNavigator: DiffNavigator;
 	private diffNavigatorDisposables: IDisposable[] = [];
 
@@ -69,7 +69,15 @@ export class TextDiffEditor extends BaseTextEditor implements ITextDiffEditor {
 		return nls.localize('textDiffEditor', "Text Diff Editor");
 	}
 
+	reverseColoring() : void	{
+		this.reverseColor = true;
+	}
+
 	createEditorControl(parent: HTMLElement, configuration: ICodeEditorOptions): IDiffEditor {
+		if(this.reverseColor === true)
+		{
+			(configuration as IDiffEditorOptions).reverse = true;
+		}
 		return this.instantiationService.createInstance(DiffEditorWidget, parent, configuration);
 	}
 

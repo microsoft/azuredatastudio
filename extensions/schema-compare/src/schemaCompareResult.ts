@@ -16,7 +16,10 @@ export class SchemaCompareResult {
 	private differencesTable: azdata.TableComponent;
 	private loader: azdata.LoadingComponent;
 	private editor: azdata.workspace.ModelViewEditor;
-	// private diffEditor: azdata.DiffEditorComponent;
+	private diffContainer: azdata.FlexContainer;
+	private diffEditor: azdata.DiffEditorComponent;
+	private diffTitle: azdata.TableComponent;
+	private splitView: azdata.SplitViewContainer;
 	private flexModel: azdata.FlexContainer;
 	private noDifferencesLabel: azdata.TextComponent;
 	private webViewComponent: azdata.WebViewComponent;
@@ -45,8 +48,23 @@ export class SchemaCompareResult {
 
 			this.differencesTable = view.modelBuilder.table().withProperties({
 				data: [],
-				height: 700
+				height: 200,
 			}).component();
+
+			this.diffEditor = view.modelBuilder.diffeditor().withProperties({
+				contentLeft: '',
+				contentRight: '',
+				height: 300
+			}).component();
+
+			this.diffTitle = view.modelBuilder.table().withProperties({
+				data: [],
+				height: 30
+			}).component();
+
+			this.diffContainer = view.modelBuilder.flexContainer().component();
+
+			this.splitView = view.modelBuilder.splitViewContainer().component();
 
 			// let html = fs.readFileSync('../../extensions/import/out/dialogs/table.html');
 
@@ -157,6 +175,31 @@ export class SchemaCompareResult {
 				}]
 		});
 
+		this.diffTitle.updateProperties({
+			data: [],
+			columns:[
+				{
+					value: localize('schemaCompare.ScriptDifference', 'Object Definitions'),
+					cssClass: 'align-with-header',
+					width: '100%'
+				}
+			]
+		});
+
+		this.diffContainer.addItem(this.diffTitle);
+		this.diffContainer.addItem(this.diffEditor);
+		this.diffContainer.setLayout({
+			flexFlow: 'column',
+
+		});
+
+		this.splitView.addItem(this.differencesTable);
+		this.splitView.addItem(this.diffContainer);
+		this.splitView.setLayout({
+			orientation: 'vertical',
+			splitViewHeight: 500
+		});
+
 		this.flexModel.removeItem(this.loader);
 		this.switchButton.enabled = true;
 		this.compareButton.enabled = true;
@@ -167,7 +210,8 @@ export class SchemaCompareResult {
 		}
 
 		if (this.comparisonResult.differences.length > 0) {
-			this.flexModel.addItem(this.differencesTable, { flex: '1 1' });
+			this.flexModel.addItem(this.splitView, {flex: '1, 1'});
+			//this.flexModel.addItem(this.differencesTable, { flex: '1 1' });
 			// this.flexModel.addItem(this.diffEditor, { flex: '1 1' });
 		} else {
 			this.flexModel.addItem(this.noDifferencesLabel, { CSSStyles: { 'margin': 'auto' } });
@@ -184,7 +228,12 @@ export class SchemaCompareResult {
 
 				let objectName = difference.sourceValue === null ? difference.targetValue : difference.sourceValue;
 				const title = localize('schemaCompare.objectDefinitionsTitle', '{0} (Source ⟷ Target)', objectName);
-				vscode.commands.executeCommand('vscode.diff', vscode.Uri.parse('source:'), vscode.Uri.parse('target:'), title);
+				//vscode.commands.executeCommand('vscode.diff', vscode.Uri.parse('source:'), vscode.Uri.parse('target:'), title);
+				this.diffEditor.updateProperties({
+					contentLeft: sourceText,
+					contentRight: targetText
+				});
+
 			}
 		});
 

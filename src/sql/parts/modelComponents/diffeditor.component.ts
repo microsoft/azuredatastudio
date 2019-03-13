@@ -73,6 +73,8 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 	private _createEditor(): void {
 		this._instantiationService = this._instantiationService.createChild(new ServiceCollection([IProgressService, new SimpleProgressService()]));
 		this._editor = this._instantiationService.createInstance(TextDiffEditor);
+
+		this._editor.reverseColoring();
 		this._editor.create(this._el.nativeElement);
 		this._editor.setVisible(true);
 		let uri1 = this.createUri('1');
@@ -83,7 +85,6 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 		let editorinput2 =	this._instantiationService.createInstance(UntitledEditorInput, uri2, false, 'plaintext', '', '');
 		this._editorInput = this._instantiationService.createInstance(DiffEditorInput, 'MyEditor', 'My description', editorinput1, editorinput2, true);
 		this._editor.setInput(this._editorInput, undefined, cancell.token);
-
 
 		this._editorInput.resolve().then(model => {
 			this._editorModel = model as TextDiffEditorModel;

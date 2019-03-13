@@ -21,6 +21,8 @@ import { SplitView, Orientation, Sizing, IView } from 'vs/base/browser/ui/splitv
 import { ScrollableSplitView } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
 import * as DOM from 'vs/base/browser/dom';
 import types = require('vs/base/common/types');
+import { elementAt } from 'rxjs/operator/elementAt';
+import { componentFactoryName } from '@angular/compiler';
 
 
 class SplitPane implements IView {
@@ -29,6 +31,7 @@ class SplitPane implements IView {
 	maximumSize: number;
 	onDidChange: Event<number> = Event.None;
 	size: number;
+	component: ComponentBase;
 	layout(size: number): void {
 		this.size = size;
 	}
@@ -90,9 +93,10 @@ export default class SplitViewContainer extends ContainerBase<FlexItemLayout> im
 		let c = component as ComponentBase;
 		// TODO : Find what variables (not static values) to use here
 		let basicView: SplitPane = new SplitPane();
+		basicView.component = c;
 		basicView.element = c.getHtml(),
-		basicView.minimumSize = orientation === Orientation.VERTICAL ? c.convertSizeToNumber(c.height) : c.convertSizeToNumber(c.width);
-		//basicView.minimumSize = 20;
+		//basicView.minimumSize = orientation === Orientation.VERTICAL ? c.convertSizeToNumber(c.height) : c.convertSizeToNumber(c.width);
+		basicView.minimumSize = 50;
 		basicView.maximumSize = Number.MAX_VALUE;
 		return basicView;
 	}
@@ -113,19 +117,17 @@ export default class SplitViewContainer extends ContainerBase<FlexItemLayout> im
 		this._splitViewHeight = this.convertSizeToNumber(layout.splitViewHeight);
 
 		if (this._componentWrappers) {
-			let i : number = 0;
 			this._componentWrappers.forEach(item => {
 				var component = item.modelStore.getComponent(item.descriptor.id);
 				item.modelStore.validate(component).then(value => {
 					if(value === true){
 						let view = this.GetCorrespondingView(component, this._orientation);
-						this._splitView.addView(view, Sizing.Split(i));
+						this._splitView.addView(view, Sizing.Distribute);
 					}
 					else{
 						console.log('something went wrong again');
 					}
 				});
-				i++;
 			});
 		}
 		//let size = this._orientation === Orientation.VERTICAL ? this.convertSizeToNumber(this._height) : this.convertSizeToNumber(this._width);

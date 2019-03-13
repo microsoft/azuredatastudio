@@ -54,7 +54,7 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 
 	splitViewContainer(): azdata.SplitViewBuilder {
 		let id = this.getNextComponentId();
-		let container: GenericContainerBuilder<sqlops.SplitViewContainer, any, any> = new GenericContainerBuilder<sqlops.SplitViewContainer, sqlops.SplitViewLayout, sqlops.FlexItemLayout>(this._proxy, this._handle, ModelComponentTypes.SplitViewContainer, id);
+		let container: GenericContainerBuilder<azdata.SplitViewContainer, any, any> = new GenericContainerBuilder<azdata.SplitViewContainer, azdata.SplitViewLayout, azdata.FlexItemLayout>(this._proxy, this._handle, ModelComponentTypes.SplitViewContainer, id);
 		this._componentBuilders.set(id, container);
 		return container;
 	}
@@ -138,7 +138,7 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 
 	diffeditor(): azdata.ComponentBuilder<azdata.DiffEditorComponent> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<sqlops.DiffEditorComponent> = this.getComponentBuilder(new DiffEditorWrapper(this._proxy, this._handle, id), id);
+		let builder: ComponentBuilderImpl<azdata.DiffEditorComponent> = this.getComponentBuilder(new DiffEditorWrapper(this._proxy, this._handle, id), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
