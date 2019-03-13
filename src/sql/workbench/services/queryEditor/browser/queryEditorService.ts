@@ -74,7 +74,7 @@ export class QueryEditorService implements IQueryEditorService {
 	/**
 	 * Creates new untitled document for SQL query and opens in new editor tab
 	 */
-	public newSqlEditor(sqlContent?: string, connectionProviderName?: string, isDirty?: boolean): Promise<IConnectableInput> {
+	public newSqlEditor(sqlContent?: string, connectionProviderName?: string, isDirty?: boolean, objectName?: string): Promise<IConnectableInput> {
 		return new Promise<IConnectableInput>(async (resolve, reject) => {
 			try {
 				// Create file path and file URI
@@ -92,7 +92,7 @@ export class QueryEditorService implements IQueryEditorService {
 				}
 
 				const queryResultsInput: QueryResultsInput = this._instantiationService.createInstance(QueryResultsInput, docUri.toString());
-				let queryInput: QueryInput = this._instantiationService.createInstance(QueryInput, '', fileInput, queryResultsInput, connectionProviderName);
+				let queryInput: QueryInput = this._instantiationService.createInstance(QueryInput, objectName, fileInput, queryResultsInput, connectionProviderName);
 
 				this._editorService.openEditor(queryInput, { pinned: true })
 					.then((editor) => {
