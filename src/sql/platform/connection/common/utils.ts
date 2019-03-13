@@ -17,7 +17,8 @@ export const uriPrefixes = {
 	default: 'connection://',
 	connection: 'connection://',
 	dashboard: 'dashboard://',
-	insights: 'insights://'
+	insights: 'insights://',
+	notebook: 'notebook://'
 };
 
 

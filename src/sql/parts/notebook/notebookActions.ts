@@ -438,6 +438,7 @@ export class AttachToDropdown extends SelectBox {
 				}
 				this.select(index);
 
+				this.model.addAttachToConnectionsToBeDisposed(connectionProfile);
 				// Call doChangeContext to set the newly chosen connection in the model
 				this.doChangeContext(connectionProfile);
 			});
