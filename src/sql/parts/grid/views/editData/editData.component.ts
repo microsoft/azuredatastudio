@@ -395,7 +395,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		self.refreshGrid();
 
 		// Setup the state of the selected cell
-		this.currentCell = { row: undefined, column: undefined, isEditable: undefined, isDirty: false };
+		this.resetCurrentCell();
 		this.currentEditCellValue = undefined;
 		this.removingNewRow = false;
 		this.newRowVisible = false;
@@ -715,7 +715,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 			column: undefined,
 			isEditable: false,
 			isDirty: false
-		}
+		};
 	}
 
 	private setCurrentCell(row: number, column: number) {
