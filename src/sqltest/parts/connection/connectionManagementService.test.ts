@@ -35,6 +35,7 @@ import * as TypeMoq from 'typemoq';
 import { IConnectionProfileGroup, ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { AccountManagementTestService } from 'sqltest/stubs/accountManagementStubs';
+import { TestStorageService } from 'vs/workbench/test/workbenchTestServices';
 
 suite('SQL ConnectionManagementService tests', () => {
 
@@ -149,7 +150,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		let connectionManagementService = new ConnectionManagementService(
 			undefined,
 			connectionStore.object,
-			undefined,
+			new TestStorageService(),
 			connectionDialogService.object,
 			undefined,
 			undefined,
