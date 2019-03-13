@@ -251,7 +251,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 			}
 			else if (self.isNullRow(index)) {
 				// Don't try to delete NULL (new) row since it doesn't actually exist and will throw an error
-				// TODO : We should really just stop the context menu from showing up for this row, but that's a bit more involved
+				// TODO #478 : We should really just stop the context menu from showing up for this row, but that's a bit more involved
 				//	  so until then at least make it not display an error
 				return;
 			}
