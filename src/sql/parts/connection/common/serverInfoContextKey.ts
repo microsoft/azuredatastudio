@@ -10,21 +10,21 @@ import { ServerInfo } from 'azdata';
 
 export class ServerInfoContextKey implements IContextKey<ServerInfo> {
 
-	static ServerInfoObj = new RawContextKey<ServerInfo>('serverInfoObj', undefined);
+	static ServerInfo = new RawContextKey<ServerInfo>('serverInfo', undefined);
 	static ServerMajorVersion = new RawContextKey<string>('serverMajorVersion', undefined);
 
-	private _serverInfoObj: IContextKey<ServerInfo>;
+	private _serverInfo: IContextKey<ServerInfo>;
 	private _serverMajorVersion: IContextKey<string>;
 
 	constructor(
 		@IContextKeyService contextKeyService: IContextKeyService
 	) {
-		this._serverInfoObj = ServerInfoContextKey.ServerInfoObj.bindTo(contextKeyService);
+		this._serverInfo = ServerInfoContextKey.ServerInfo.bindTo(contextKeyService);
 		this._serverMajorVersion = ServerInfoContextKey.ServerMajorVersion.bindTo(contextKeyService);
 	}
 
 	set(value: ServerInfo) {
-		this._serverInfoObj.set(value);
+		this._serverInfo.set(value);
 		let majorVersion = value && value.serverMajorVersion;
 		this._serverMajorVersion.set(majorVersion && `${majorVersion}`);
 	}
@@ -34,6 +34,6 @@ export class ServerInfoContextKey implements IContextKey<ServerInfo> {
 	}
 
 	public get(): ServerInfo {
-		return this._serverInfoObj.get();
+		return this._serverInfo.get();
 	}
 }
