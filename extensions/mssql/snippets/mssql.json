@@ -92,7 +92,7 @@
 			"\tDROP COLUMN [${1:ColumnName}]",
 			"GO"
 		],
-		"description": "Add a new column to a Table"
+		"description": "Drop a column from a Table"
 	},
 
 	"Select rows from a Table or a View": {
