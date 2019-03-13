@@ -72,14 +72,8 @@ export class JupyterController implements vscode.Disposable {
 			});
 		}
 
-		let notebookProvider = undefined;
+		let notebookProvider = this.registerNotebookProvider();
 
-		notebookProvider = this.registerNotebookProvider();
-		azdata.nb.onDidOpenNotebookDocument(notebook => {
-			if (!JupyterServerInstallation.isPythonInstalled(this.apiWrapper)) {
-				this.doConfigurePython(jupyterInstaller);
-			}
-		});
 		// Add command/task handlers
 		this.apiWrapper.registerTaskHandler(constants.jupyterOpenNotebookTask, (profile: azdata.IConnectionProfile) => {
 			return this.handleOpenNotebookTask(profile);
