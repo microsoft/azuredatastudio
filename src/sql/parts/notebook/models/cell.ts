@@ -129,6 +129,10 @@ export class CellModel implements ICellModel {
 		return this._cellUri;
 	}
 
+	public get notebookModel(): NotebookModel {
+		return <NotebookModel>this.options.notebook;
+	}
+
 	public set cellUri(value: URI) {
 		this._cellUri = value;
 	}

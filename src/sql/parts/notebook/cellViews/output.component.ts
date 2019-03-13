@@ -7,6 +7,7 @@ import 'vs/css!./code';
 import { OnInit, Component, Input, Inject, ElementRef, ViewChild } from '@angular/core';
 import { AngularDisposable } from 'sql/base/node/lifecycle';
 import { nb } from 'azdata';
+import { ICellModel } from 'sql/parts/notebook/models/modelInterfaces';
 import { INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
 import { MimeModel } from 'sql/parts/notebook/outputs/common/mimemodel';
 import * as outputProcessor from 'sql/parts/notebook/outputs/common/outputProcessor';
@@ -22,6 +23,7 @@ export const OUTPUT_SELECTOR: string = 'output-component';
 export class OutputComponent extends AngularDisposable implements OnInit {
 	@ViewChild('output', { read: ElementRef }) private outputElement: ElementRef;
 	@Input() cellOutput: nb.ICellOutput;
+	@Input() cellModel: ICellModel;
 	private _trusted: boolean;
 	private _initialized: boolean = false;
 	private readonly _minimumHeight = 30;
@@ -38,6 +40,9 @@ export class OutputComponent extends AngularDisposable implements OnInit {
 	ngOnInit() {
 		this.renderOutput();
 		this._initialized = true;
+		this.cellModel.notebookModel.layoutChanged(() => {
+			this.renderOutput();
+		});
 	}
 
 	private renderOutput() {
