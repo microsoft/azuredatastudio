@@ -17,9 +17,6 @@ import JupyterServerInstallation from './jupyterServerInstallation';
 import * as utils from '../common/utils';
 import { IServerInstance } from './common';
 import { PerNotebookServerInstance, IInstanceOptions } from './serverInstance';
-import { ConfigurePythonDialog } from '../dialog/configurePythonDialog';
-import CodeAdapter from '../prompts/adapter';
-import { IQuestion, QuestionTypes } from '../prompts/question';
 
 export interface IServerManagerOptions {
 	documentPath: string;
@@ -107,18 +104,7 @@ export class LocalJupyterServerManager implements nb.ServerManager, vscode.Dispo
 	private async doStartServer(): Promise<IServerInstance> {        // We can't find or create servers until the installation is complete
 		let installation = this.options.jupyterInstallation;
 
-		if (!JupyterServerInstallation.isPythonInstalled(installation.apiWrapper)) {
-			let doInstall = await (new CodeAdapter()).promptSingle<boolean>(<IQuestion>{
-				type: QuestionTypes.confirm,
-				message: localize('confirmPythonInstall', 'Python is required for Jupyter Notebooks. Would you like to install it?'),
-				default: true
-			});
-
-			if (doInstall) {
-				let pythonDialog = new ConfigurePythonDialog(this.apiWrapper, installation.outputChannel, installation);
-				pythonDialog.showDialog();
-			}
-		}
+		await installation.promptForPythonInstall();
 
 		await installation.installReady;
 

@@ -18,6 +18,9 @@ import * as constants from '../common/constants';
 import * as utils from '../common/utils';
 import { OutputChannel, ConfigurationTarget, Event, EventEmitter, window } from 'vscode';
 import { Deferred } from '../common/promise';
+import CodeAdapter from '../prompts/adapter';
+import { IQuestion, QuestionTypes } from '../prompts/question';
+import { ConfigurePythonDialog } from '../dialog/configurePythonDialog';
 
 const localize = nls.loadMessageBundle();
 const msgPythonInstallationProgress = localize('msgPythonInstallationProgress', 'Python installation is in progress');
@@ -266,6 +269,21 @@ export default class JupyterServerInstallation {
 			// so update it here
 			this._installReady.resolve();
 			updateConfig();
+		}
+	}
+
+	public async promptForPythonInstall(): Promise<void> {
+		if (!JupyterServerInstallation.isPythonInstalled(this.apiWrapper)) {
+			let doInstall = await (new CodeAdapter()).promptSingle<boolean>(<IQuestion>{
+				type: QuestionTypes.confirm,
+				message: localize('confirmPythonInstall', 'Python is required for Jupyter Notebooks. Would you like to install it?'),
+				default: true
+			});
+
+			if (doInstall) {
+				let pythonDialog = new ConfigurePythonDialog(this.apiWrapper, this.outputChannel, this);
+				pythonDialog.showDialog();
+			}
 		}
 	}
 
