@@ -12,13 +12,11 @@ export class ConnectionContextKey implements IContextKey<IConnectionProfile> {
 
 	static Provider = new RawContextKey<string>('connectionProvider', undefined);
 	static Server = new RawContextKey<string>('serverName', undefined);
-	static ServerMajorVersion = new RawContextKey<string>('serverMajorVersion', undefined);
 	static Database = new RawContextKey<string>('databaseName', undefined);
 	static Connection = new RawContextKey<IConnectionProfile>('connection', undefined);
 
 	private _providerKey: IContextKey<string>;
 	private _serverKey: IContextKey<string>;
-	private _serverMajorVersion: IContextKey<string>;
 	private _databaseKey: IContextKey<string>;
 	private _connectionKey: IContextKey<IConnectionProfile>;
 
@@ -27,7 +25,6 @@ export class ConnectionContextKey implements IContextKey<IConnectionProfile> {
 	) {
 		this._providerKey = ConnectionContextKey.Provider.bindTo(contextKeyService);
 		this._serverKey = ConnectionContextKey.Server.bindTo(contextKeyService);
-		this._serverMajorVersion = ConnectionContextKey.ServerMajorVersion.bindTo(contextKeyService);
 		this._databaseKey = ConnectionContextKey.Database.bindTo(contextKeyService);
 		this._connectionKey = ConnectionContextKey.Connection.bindTo(contextKeyService);
 	}
@@ -36,15 +33,12 @@ export class ConnectionContextKey implements IContextKey<IConnectionProfile> {
 		this._connectionKey.set(value);
 		this._providerKey.set(value && value.providerName);
 		this._serverKey.set(value && value.serverName);
-		let majorVersion = value && value.options && value.options['serverMajorVersion'];
-		this._serverMajorVersion.set(majorVersion && `${majorVersion}`);
 		this._databaseKey.set(value && value.databaseName);
 	}
 
 	reset(): void {
 		this._providerKey.reset();
 		this._serverKey.reset();
-		this._serverMajorVersion.reset();
 		this._databaseKey.reset();
 		this._connectionKey.reset();
 	}
