@@ -60,8 +60,6 @@ export class JupyterController implements vscode.Disposable {
 			this.outputChannel,
 			this.apiWrapper);
 
-		let notebookProvider = this.registerNotebookProvider();
-
 		// Add command/task handlers
 		this.apiWrapper.registerTaskHandler(constants.jupyterOpenNotebookTask, (profile: azdata.IConnectionProfile) => {
 			return this.handleOpenNotebookTask(profile);
@@ -83,6 +81,7 @@ export class JupyterController implements vscode.Disposable {
 		let supportedFileFilter: vscode.DocumentFilter[] = [
 			{ scheme: 'untitled', language: '*' }
 		];
+		let notebookProvider = this.registerNotebookProvider();
 		this.extensionContext.subscriptions.push(this.apiWrapper.registerCompletionItemProvider(supportedFileFilter, new NotebookCompletionItemProvider(notebookProvider)));
 
 		return true;
