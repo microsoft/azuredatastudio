@@ -34,7 +34,7 @@ export class ConfigurePythonDialog {
 	constructor(private apiWrapper: ApiWrapper, private outputChannel: vscode.OutputChannel, private jupyterInstallation: JupyterServerInstallation) {
 	}
 
-	public showDialog() {
+	public showDialog(): void {
 		this.dialog = azdata.window.createModelViewDialog(this.DialogTitle);
 
 		this.initializeContent();
@@ -47,7 +47,7 @@ export class ConfigurePythonDialog {
 		azdata.window.openDialog(this.dialog);
 	}
 
-	private initializeContent() {
+	private initializeContent(): void {
 		this.dialog.registerContent(async view => {
 			this.pythonLocationTextBox = view.modelBuilder.inputBox()
 				.withProperties<azdata.InputBoxProperties>({
@@ -155,14 +155,7 @@ export class ConfigurePythonDialog {
 		}
 	}
 
-	private showInfoMessage(message: string) {
-		this.dialog.message = {
-			text: message,
-			level: azdata.window.MessageLevel.Information
-		};
-	}
-
-	private showErrorMessage(message: string) {
+	private showErrorMessage(message: string): void {
 		this.dialog.message = {
 			text: message,
 			level: azdata.window.MessageLevel.Error
