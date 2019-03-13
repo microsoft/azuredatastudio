@@ -716,12 +716,10 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 			isEditable: false,
 			isDirty: false
 		}
-		this.currentCell.row = undefined;
-		this.currentCell.column = undefined;
-		this.currentCell.isEditable = false;
 	}
 
 	private setCurrentCell(row: number, column: number) {
+		// Only update if we're actually changing cells
 		if(this.currentCell && (row !== this.currentCell.row || column !== this.currentCell.column)) {
 			this.currentCell = {
 				row: row,
