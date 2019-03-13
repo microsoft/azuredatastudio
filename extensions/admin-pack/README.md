@@ -12,7 +12,7 @@ Admin Pack for SQL Server is a collection of popular database administration ext
   - Filter search of events
 - [SQL Server Import](https://docs.microsoft.com/sql/azure-data-studio/sql-server-import-extension?view=sql-server-2017)
   - Use the Import Flat File Wizard to import .csv and .txt files to a SQL table using AI-based framework to simplify experience
-- [SQL Server dacpac](https://docs.microsoft.com/sql/azure-data-studio/sql-server-import-extension?view=sql-server-2017)
+- [SQL Server dacpac](https://docs.microsoft.com/sql/azure-data-studio/sql-server-dacpac-extension?view=sql-server-2017)
   - Use the Data-Tier Application Wizard to deploy and extract .dacpac files and import and export .bacpac files
 
 If there are extensions you feel should be added to this pack, submit a feature request on our [Github Issues](https://github.com/microsoft/azuredatastudio/issues).
