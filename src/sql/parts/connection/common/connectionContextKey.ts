@@ -38,7 +38,6 @@ export class ConnectionContextKey implements IContextKey<IConnectionProfile> {
 		this._serverKey.set(value && value.serverName);
 		let majorVersion = value && value.options && value.options['serverMajorVersion'];
 		this._serverMajorVersion.set(majorVersion && `${majorVersion}`);
-		this._serverKey.set(value && value.serverName);
 		this._databaseKey.set(value && value.databaseName);
 	}
 
