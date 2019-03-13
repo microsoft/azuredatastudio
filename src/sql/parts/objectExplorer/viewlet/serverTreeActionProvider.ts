@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
+import * as azdata from 'azdata';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { ContributableActionProvider } from 'vs/workbench/browser/actions';
@@ -15,8 +16,7 @@ import { fillInActions } from 'vs/platform/actions/browser/menuItemActionItem';
 import {
 	DisconnectConnectionAction, AddServerAction,
 	DeleteConnectionAction, RefreshAction, EditServerGroupAction
-}
-	from 'sql/parts/objectExplorer/viewlet/connectionTreeAction';
+} from 'sql/parts/objectExplorer/viewlet/connectionTreeAction';
 import {
 	ObjectExplorerActionUtilities, ManageConnectionAction, OEAction
 } from 'sql/parts/objectExplorer/viewlet/objectExplorerActions';
@@ -132,7 +132,13 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 	private getContextKeyService(context: ObjectExplorerContext): IContextKeyService {
 		let scopedContextService = this._contextKeyService.createScoped();
 		let connectionContextKey = new ConnectionContextKey(scopedContextService);
-		connectionContextKey.set(context.profile);
+		let connectionProfile = context.profile;
+		let serverInfo = this._connectionManagementService.getServerInfo(connectionProfile.id);
+		if (serverInfo && serverInfo.serverMajorVersion) {
+			connectionProfile.options  = Object.assign(connectionProfile.options || {},
+				{ serverMajorVersion: serverInfo.serverMajorVersion });
+		}
+		connectionContextKey.set(connectionProfile);
 		let treeNodeContextKey = new TreeNodeContextKey(scopedContextService);
 		if (context.treeNode) {
 			treeNodeContextKey.set(context.treeNode);
