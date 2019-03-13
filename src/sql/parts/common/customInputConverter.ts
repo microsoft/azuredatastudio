@@ -14,7 +14,7 @@ import { QueryInput } from 'sql/parts/query/common/queryInput';
 import { IQueryEditorOptions } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { QueryPlanInput } from 'sql/parts/queryPlan/queryPlanInput';
 import { NotebookInput } from 'sql/parts/notebook/notebookInput';
-import { DEFAULT_NOTEBOOK_PROVIDER, INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
+import { INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
 import { ResourceEditorInput } from 'vs/workbench/common/editor/resourceEditorInput';
 import { notebookModeId } from 'sql/common/constants';
 
@@ -57,14 +57,12 @@ export function convertEditorInput(input: EditorInput, options: IQueryEditorOpti
 		//Notebook
 		uri = getNotebookEditorUri(input, instantiationService);
 		if (uri) {
-			return withService<INotebookService, NotebookInput>(instantiationService, INotebookService, notebookService => {
-				let fileName: string = 'untitled';
-				if (input) {
-					fileName = input.getName();
-				}
-				let notebookInput: NotebookInput = instantiationService.createInstance(NotebookInput, fileName, uri);
-				return notebookInput;
-			});
+			let fileName: string = 'untitled';
+			if (input) {
+				fileName = input.getName();
+			}
+			let notebookInput: NotebookInput = instantiationService.createInstance(NotebookInput, fileName, uri, input);
+			return notebookInput;
 		}
 	}
 	return input;

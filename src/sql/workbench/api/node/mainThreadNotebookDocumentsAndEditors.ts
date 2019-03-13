@@ -30,6 +30,9 @@ import { disposed } from 'vs/base/common/errors';
 import { ICellModel, NotebookContentChange, INotebookModel } from 'sql/parts/notebook/models/modelInterfaces';
 import { NotebookChangeType, CellTypes } from 'sql/parts/notebook/models/contracts';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
+import { notebookModeId } from 'sql/common/constants';
+import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 
 class MainThreadNotebookEditor extends Disposable {
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
@@ -290,6 +293,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 	private _modelToDisposeMap = new Map<string, IDisposable>();
 	constructor(
 		extHostContext: IExtHostContext,
+		@IUntitledEditorService private _untitledEditorService: IUntitledEditorService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IEditorService private _editorService: IEditorService,
 		@IEditorGroupsService private _editorGroupService: IEditorGroupsService,
@@ -361,9 +365,11 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 			preserveFocus: options.preserveFocus,
 			pinned: !options.preview
 		};
-		let trusted = uri.scheme === Schemas.untitled;
-		let input = this._instantiationService.createInstance(NotebookInput, uri.fsPath, uri);
-		input.isTrusted = trusted;
+		let isUntitled: boolean = uri.scheme === Schemas.untitled;
+
+		const fileInput: UntitledEditorInput = isUntitled ? this._untitledEditorService.createOrGet( uri, notebookModeId) : undefined;
+		let input = this._instantiationService.createInstance(NotebookInput, uri.fsPath, uri, fileInput);
+		input.isTrusted = isUntitled;
 		input.defaultKernel = options.defaultKernel;
 		input.connectionProfile = new ConnectionProfile(this._capabilitiesService, options.connectionProfile);
 

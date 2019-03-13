@@ -28,6 +28,7 @@ import { notebookModeId } from 'sql/common/constants';
 import { ITextFileService, ISaveOptions } from 'vs/workbench/services/textfile/common/textfiles';
 import { LocalContentManager } from 'sql/workbench/services/notebook/node/localContentManager';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
 
@@ -142,6 +143,7 @@ export class NotebookInput extends EditorInput {
 
 	constructor(private _title: string,
 		private resource: URI,
+		private _notebookEditorInput: UntitledEditorInput,
 		@ITextModelService private textModelService: ITextModelService,
 		@IUntitledEditorService untitledEditorService: IUntitledEditorService,
 		@IInstantiationService private instantiationService: IInstantiationService,
@@ -152,6 +154,10 @@ export class NotebookInput extends EditorInput {
 		this.resource = resource;
 		this._standardKernels = [];
 		this.assignProviders();
+	}
+
+	public get notebookEditorInput(): UntitledEditorInput {
+		return this._notebookEditorInput;
 	}
 
 	public confirmSave(): TPromise<ConfirmResult> {
@@ -258,7 +264,7 @@ export class NotebookInput extends EditorInput {
 		} else {
 			let textOrUntitledEditorModel: UntitledEditorModel | IEditorModel;
 			if (this.resource.scheme === Schemas.untitled) {
-				textOrUntitledEditorModel = await this._untitledEditorService.loadOrCreate({ resource: this.resource, modeId: notebookModeId });
+				textOrUntitledEditorModel = await this._notebookEditorInput.resolve();
 			}
 			else {
 				const textEditorModelReference = await this.textModelService.createModelReference(this.resource);
