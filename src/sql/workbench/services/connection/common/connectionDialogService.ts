@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
-
+import * as azdata from 'azdata';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { INewConnectionParams, IConnectionResult, IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
@@ -18,7 +18,7 @@ export interface IConnectionDialogService {
 	 * @param model
 	 * @param connectionResult
 	 */
-	showDialog(connectionManagementService: IConnectionManagementService, params: INewConnectionParams, model: IConnectionProfile, connectionResult?: IConnectionResult, isCMSDialog?: boolean): Thenable<void>;
+	showDialog(connectionManagementService: IConnectionManagementService, params: INewConnectionParams, model: IConnectionProfile, connectionResult?: IConnectionResult, cmsDialog?: azdata.CmsDialog): Thenable<void>;
 
 	/**
 	 * Opens the connection dialog and returns the promise when connection is made
@@ -28,6 +28,6 @@ export interface IConnectionDialogService {
 	 * @param model
 	 * @param connectionResult
 	 */
-	openDialogAndWait(connectionManagementService: IConnectionManagementService, params?: INewConnectionParams, model?: IConnectionProfile, connectionResult?: IConnectionResult, isCMSDialog?:boolean, doConnect?: boolean): Thenable<IConnectionProfile>;
+	openDialogAndWait(connectionManagementService: IConnectionManagementService, params?: INewConnectionParams, model?: IConnectionProfile, connectionResult?: IConnectionResult, cmsDialog?: azdata.CmsDialog, doConnect?: boolean): Thenable<IConnectionProfile>;
 }
 

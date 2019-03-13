@@ -116,9 +116,9 @@ export class ConnectionController implements IConnectionComponentController {
 		this._advancedController.showDialog(advancedOption, this._container, this._model.options);
 	}
 
-	public showUiComponent(isCMSDialog = false, container: HTMLElement): void {
+	public showUiComponent(cmsDialog: azdata.CmsDialog = undefined, container: HTMLElement): void {
 		this._databaseCache = new Map<string, string[]>();
-		this._connectionWidget.createConnectionWidget(isCMSDialog, container);
+		this._connectionWidget.createConnectionWidget(cmsDialog, container);
 	}
 
 	private getServerGroupHelper(group: ConnectionProfileGroup, groupNames: IConnectionProfileGroup[]): void {
@@ -149,7 +149,7 @@ export class ConnectionController implements IConnectionComponentController {
 		return connectionGroupNames;
 	}
 
-	public initDialog(providers: string[], connectionInfo: IConnectionProfile, isCMSDialog: boolean = false): void {
+	public initDialog(providers: string[], connectionInfo: IConnectionProfile, cmsDialog: azdata.CmsDialog = undefined): void {
 		this._connectionWidget.updateServerGroup(this.getAllServerGroups(providers));
 		this._model = connectionInfo;
 		this._model.providerName = this._providerName;
@@ -158,31 +158,31 @@ export class ConnectionController implements IConnectionComponentController {
 			let appNameKey = appNameOption.name;
 			this._model.options[appNameKey] = Constants.applicationName;
 		}
-		if (isCMSDialog) {
+		if (cmsDialog) {
 			this._model.options['registeredCmsServerDescription'] = '';
 		}
-		this._connectionWidget.initDialog(this._model, isCMSDialog);
+		this._connectionWidget.initDialog(this._model, cmsDialog);
 	}
 
-	public focusOnOpen(isCMSDialog: boolean = false): void {
-		this._connectionWidget.focusOnOpen(isCMSDialog);
+	public focusOnOpen(cmsDialog: azdata.CmsDialog = undefined): void {
+		this._connectionWidget.focusOnOpen(cmsDialog);
 	}
 
-	public validateConnection(isCMSDialog: boolean = false): IConnectionValidateResult {
-		return { isValid: this._connectionWidget.connect(this._model, isCMSDialog), connection: this._model };
+	public validateConnection(cmsDialog: azdata.CmsDialog = undefined): IConnectionValidateResult {
+		return { isValid: this._connectionWidget.connect(this._model, cmsDialog), connection: this._model };
 	}
 
-	public fillInConnectionInputs(connectionInfo: IConnectionProfile, isCMSDialog: boolean = false): void {
+	public fillInConnectionInputs(connectionInfo: IConnectionProfile, cmsDialog: azdata.CmsDialog = undefined): void {
 		this._model = connectionInfo;
-		this._connectionWidget.fillInConnectionInputs(connectionInfo, isCMSDialog);
+		this._connectionWidget.fillInConnectionInputs(connectionInfo, cmsDialog);
 	}
 
-	public handleOnConnecting(isCMSDialog: boolean = false): void {
-		this._connectionWidget.handleOnConnecting(isCMSDialog);
+	public handleOnConnecting(cmsDialog: azdata.CmsDialog = undefined): void {
+		this._connectionWidget.handleOnConnecting(cmsDialog);
 	}
 
-	public handleResetConnection(isCMSDialog: boolean = false): void {
-		this._connectionWidget.handleResetConnection(isCMSDialog);
+	public handleResetConnection(cmsDialog: azdata.CmsDialog = undefined): void {
+		this._connectionWidget.handleResetConnection(cmsDialog);
 	}
 
 	public closeDatabaseDropdown(): void {

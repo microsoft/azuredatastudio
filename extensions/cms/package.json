@@ -44,14 +44,6 @@
 				"when": "viewItem == cms.resource.itemType.serverGroup"
 			}
 		],
-		"views": {
-			"cmsResource": [
-				{
-					"id": "cmsResourceExplorer",
-					"name": "%cms.resource.explorer.title%"
-				}
-			]
-		},
 		"dataExplorer": {
 			"cmsResource": [
 				{

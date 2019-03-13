@@ -4107,6 +4107,11 @@ declare module 'azdata' {
 		errorCode: number;
 	}
 
+	export enum CmsDialog {
+		cmsRegistrationDialog = 1,
+		serverRegistrationDialog = 2
+	}
+
 	export namespace connection {
 		/**
 		 * List the databases that can be accessed from the given connection
@@ -4128,7 +4133,7 @@ declare module 'azdata' {
 		 * returns the connection otherwise returns undefined
 		 * @param callback
 		 */
-		export function openConnectionDialog(providers?: string[], initialConnectionProfile?: IConnectionProfile, connectionCompletionOptions?: IConnectionCompletionOptions, isCmsDialog?: boolean): Thenable<connection.Connection>;
+		export function openConnectionDialog(providers?: string[], initialConnectionProfile?: IConnectionProfile, connectionCompletionOptions?: IConnectionCompletionOptions, cmsDialog?: CmsDialog): Thenable<connection.Connection>;
 
 		/**
 		 * Opens the connection and add it to object explorer and opens the dashboard and returns the ConnectionResult

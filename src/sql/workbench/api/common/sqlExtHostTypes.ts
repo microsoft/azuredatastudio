@@ -544,3 +544,9 @@ export class ConnectionProfile {
 		return undefined;
 	}
 }
+
+
+export enum CmsDialog {
+	cmsRegistrationDialog = 1,
+	serverRegistrationDialog = 2
+}

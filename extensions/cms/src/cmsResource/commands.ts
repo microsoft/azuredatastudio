@@ -13,7 +13,6 @@ import { CmsResourceEmptyTreeNode } from './tree/cmsResourceEmptyTreeNode';
 import { RegisteredServerTreeNode } from './tree/registeredServerTreeNode';
 import { ServerGroupTreeNode } from './tree/serverGroupTreeNode';
 import { CmsResourceTreeNode } from './tree/cmsResourceTreeNode';
-import { ApiWrapper } from '../apiWrapper';
 
 const localize = nls.loadMessageBundle();
 
@@ -25,21 +24,26 @@ export function registerCmsResourceCommands(appContext: AppContext, tree: CmsRes
 			return;
 		}
 		appContext.apiWrapper.connection.then(async (connection) => {
-			let registeredCmsServerName = connection.options.registeredCmsServerName;
-			let registeredCmsServerDescription = connection.options.registeredCmsServerDescription;
-			let ownerUri = await azdata.connection.getUriForConnection(connection.connectionId);
-			appContext.apiWrapper.cacheRegisteredCmsServer(registeredCmsServerName, registeredCmsServerDescription, ownerUri, connection);
-			tree.notifyNodeChanged(undefined);
+			if (connection && connection.options) {
+				let registeredCmsServerName = connection.options.registeredCmsServerName;
+				let registeredCmsServerDescription = connection.options.registeredCmsServerDescription;
+				let ownerUri = await azdata.connection.getUriForConnection(connection.connectionId);
+				appContext.apiWrapper.cacheRegisteredCmsServer(registeredCmsServerName, registeredCmsServerDescription, ownerUri, connection);
+				tree.notifyNodeChanged(undefined);
+			}
 		});
 	});
 
 	// Add a registered server
 	appContext.apiWrapper.registerCommand('cms.resource.addRegisteredServer', async (node?: TreeNode) => {
-		if (!(node instanceof CmsResourceEmptyTreeNode || node instanceof ServerGroupTreeNode)) {
+		if (!(node instanceof CmsResourceTreeNode || node instanceof ServerGroupTreeNode)) {
 			return;
 		}
-		appContext.apiWrapper.connection.then(async (connection) => {
-			appContext.apiWrapper.addRegisteredServer(connection.options.registeredCmsServerName, connection.options.registeredCmsServerDescription, null, null, null);
+		let relativePath = node instanceof CmsResourceTreeNode ? '' : node.relativePath;
+		await appContext.apiWrapper.addRegisteredServer(relativePath, node.ownerUri).then((result) => {
+			if (result) {
+				tree.notifyNodeChanged(undefined);
+			}
 		});
 
 	});
@@ -57,14 +61,53 @@ export function registerCmsResourceCommands(appContext: AppContext, tree: CmsRes
 	});
 
 	// Add a registered server group
-	appContext.apiWrapper.registerCommand('cms.resource.addRegisteredServerGroup', async (node?: TreeNode) => {
+	appContext.apiWrapper.registerCommand('cms.resource.addServerGroup', async (node?: TreeNode) => {
 		if (!(node instanceof ServerGroupTreeNode || node instanceof CmsResourceTreeNode)) {
 			return;
 		}
 		// add a dialog for adding a group
-		let dialog = azdata.window.createModelViewDialog('Add Server Group', 'cms.addServerGroup');
+		let title = localize('cms.AddServerGroup', 'Add Server Group');
+		let dialog = azdata.window.createModelViewDialog(title, 'cms.addServerGroup');
+		dialog.okButton.label = localize('cms.OK', 'OK');
+		dialog.cancelButton.label = localize('cms.Cancel', 'Cancel');
+		let mainTab = azdata.window.createTab(title);
+		let serverGroupName: string = null;
+		let serverDescription: string = null;
+		mainTab.registerContent(async view => {
+			let nameTextBox = view.modelBuilder.inputBox().component();
+			nameTextBox.required = true;
+			nameTextBox.onTextChanged((e) => {
+				serverGroupName = e;
+			});
+			if (nameTextBox.value && nameTextBox.value.length > 0) {
+				dialog.message = null;
+			}
+			let descriptionTextBox = view.modelBuilder.inputBox().component();
+			descriptionTextBox.required = false;
+			descriptionTextBox.onTextChanged((e) => {
+				serverDescription = e;
+			});
+			let formModel = view.modelBuilder.formContainer()
+			.withFormItems([{
+				component: nameTextBox,
+				title: localize('cms.ServerGroupName', 'Server Group Name')
+			}, {
+				component: descriptionTextBox,
+				title: localize('cms.ServerGroupDescription', 'Server Group Description')
+			}]).withLayout({ width: '100%'}).component();
+			await view.initializeModel(formModel);
+		});
+		dialog.content = [mainTab];
 		azdata.window.openDialog(dialog);
-		//appContext.apiWrapper.addServerGroup(groupName, groupDescription, relativePath, ownerUri);
+		dialog.modelView;
+		dialog.okButton.onClick(() => {
+			let path = node instanceof ServerGroupTreeNode ? node.relativePath : '';
+			appContext.apiWrapper.addServerGroup(serverGroupName, serverDescription, path, node.ownerUri).then((result) => {
+				if (result) {
+					tree.notifyNodeChanged(undefined);
+				}
+			});
+		});
 	});
 
 	// Remove a registered server group

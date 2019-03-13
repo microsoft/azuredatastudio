@@ -108,8 +108,8 @@ export function createApiFactory(
 				getServerInfo(connectionId: string): Thenable<azdata.ServerInfo> {
 					return extHostConnectionManagement.$getServerInfo(connectionId);
 				},
-				openConnectionDialog(providers?: string[], initialConnectionProfile?: azdata.IConnectionProfile, connectionCompletionOptions?: azdata.IConnectionCompletionOptions): Thenable<azdata.connection.Connection> {
-					return extHostConnectionManagement.$openConnectionDialog(providers, initialConnectionProfile, connectionCompletionOptions);
+				openConnectionDialog(providers?: string[], initialConnectionProfile?: azdata.IConnectionProfile, connectionCompletionOptions?: azdata.IConnectionCompletionOptions, cmsDialog: azdata.CmsDialog = undefined): Thenable<azdata.connection.Connection> {
+					return extHostConnectionManagement.$openConnectionDialog(providers, initialConnectionProfile, connectionCompletionOptions, cmsDialog);
 				},
 				listDatabases(connectionId: string): Thenable<string[]> {
 					return extHostConnectionManagement.$listDatabases(connectionId);
@@ -557,7 +557,8 @@ export function createApiFactory(
 				nb: nb,
 				AzureResource: sqlExtHostTypes.AzureResource,
 				TreeItem: sqlExtHostTypes.TreeItem,
-				extensions: extensions
+				extensions: extensions,
+				CmsDialog: sqlExtHostTypes.CmsDialog
 			};
 		},
 
@@ -602,8 +603,8 @@ export function createApiFactory(
 				getServerInfo(connectionId: string): Thenable<sqlops.ServerInfo> {
 					return extHostConnectionManagement.$getServerInfo(connectionId);
 				},
-				openConnectionDialog(providers?: string[], initialConnectionProfile?: sqlops.IConnectionProfile, connectionCompletionOptions?: sqlops.IConnectionCompletionOptions, isCMSDialog = false): Thenable<sqlops.connection.Connection> {
-					return extHostConnectionManagement.$openConnectionDialog(providers, initialConnectionProfile, connectionCompletionOptions, isCMSDialog);
+				openConnectionDialog(providers?: string[], initialConnectionProfile?: sqlops.IConnectionProfile, connectionCompletionOptions?: sqlops.IConnectionCompletionOptions, cmsDialog: sqlops.CmsDialog = undefined): Thenable<sqlops.connection.Connection> {
+					return extHostConnectionManagement.$openConnectionDialog(providers, initialConnectionProfile, connectionCompletionOptions, cmsDialog);
 				},
 				listDatabases(connectionId: string): Thenable<string[]> {
 					return extHostConnectionManagement.$listDatabases(connectionId);
@@ -1026,6 +1027,7 @@ export function createApiFactory(
 				AzureResource: sqlExtHostTypes.AzureResource,
 				extensions: extensions,
 				TreeItem: sqlExtHostTypes.TreeItem,
+				CmsDialog: sqlExtHostTypes.CmsDialog
 			};
 		}
 	};

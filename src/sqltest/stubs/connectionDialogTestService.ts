@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
-
+import *  as azdata from 'azdata';
 import { INewConnectionParams, IConnectionResult, IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
@@ -14,14 +14,14 @@ export class ConnectionDialogTestService implements IConnectionDialogService {
 
 	public showDialog(connectionManagementService: IConnectionManagementService,
 		params: INewConnectionParams, model: IConnectionProfile, connectionResult?: IConnectionResult,
-		isCMSDialog?: boolean ): TPromise<void> {
+		cmsDialog?: azdata.CmsDialog ): TPromise<void> {
 		let none: void;
 		return TPromise.as(none);
 	}
 
 	public openDialogAndWait(connectionManagementService: IConnectionManagementService,
 		params?: INewConnectionParams, model?: IConnectionProfile, connectionResult?: IConnectionResult,
-		isCMSDialog?: boolean): TPromise<IConnectionProfile> {
+		cmsDialog?: azdata.CmsDialog): TPromise<IConnectionProfile> {
 		return TPromise.as(undefined);
 	}
 

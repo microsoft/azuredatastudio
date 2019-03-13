@@ -14,7 +14,7 @@ import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import * as DialogHelper from 'sql/workbench/browser/modal/dialogHelper';
 import { IConnectionComponentCallbacks } from 'sql/workbench/services/connection/browser/connectionDialogService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { ConnectionOptionSpecialType, CmsDialog } from 'sql/workbench/api/common/sqlExtHostTypes';
 import * as Constants from 'sql/platform/connection/common/constants';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { Dropdown } from 'sql/base/browser/ui/editableDropdown/dropdown';
@@ -127,7 +127,7 @@ export class ConnectionWidget {
 		this._providerName = providerName;
 	}
 
-	public createConnectionWidget(isCMSDialog: boolean = false, container: HTMLElement): void {
+	public createConnectionWidget(cmsDialog: azdata.CmsDialog = undefined, container: HTMLElement): void {
 		this._serverGroupOptions = [this.DefaultServerGroup];
 		this._serverGroupSelectBox = new SelectBox(this._serverGroupOptions.map(g => g.name), this.DefaultServerGroup.name, this._contextViewService, undefined, { ariaLabel: this._serverGroupDisplayString });
 		this._previousGroupOption = this._serverGroupSelectBox.value;
@@ -136,20 +136,20 @@ export class ConnectionWidget {
 				this._tableContainer = tableContainer;
 			});
 		});
-		this.fillInConnectionForm(isCMSDialog);
-		this.registerListeners(isCMSDialog);
+		this.fillInConnectionForm(cmsDialog);
+		this.registerListeners(cmsDialog);
 		if (this._authTypeSelectBox) {
 			this.onAuthTypeSelected(this._authTypeSelectBox.value);
 		}
 
 		DOM.addDisposableListener(container, 'paste', e => {
-			this._handleClipboard(isCMSDialog);
+			this._handleClipboard(cmsDialog);
 		});
 
 		DOM.append(container, this._builder.getHTMLElement());
 	}
 
-	private _handleClipboard(isCMSDialog: boolean = false): void {
+	private _handleClipboard(cmsDialog: azdata.CmsDialog = undefined): void {
 		if (this._configurationService.getValue<boolean>('connection.parseClipboardForConnectionString')) {
 			let paste = this._clipboardService.readText();
 			this._connectionManagementService.buildConnectionInfo(paste, this._providerName).then(e => {
@@ -157,14 +157,14 @@ export class ConnectionWidget {
 					let profile = new ConnectionProfile(this._capabilitiesService, this._providerName);
 					profile.options = e.options;
 					if (profile.serverName) {
-						this.initDialog(profile, isCMSDialog);
+						this.initDialog(profile, cmsDialog);
 					}
 				}
 			});
 		}
 	}
 
-	private fillInConnectionForm(isCMSDialog = false): void {
+	private fillInConnectionForm(cmsDialog: azdata.CmsDialog = undefined): void {
 		// Server name
 		let serverNameOption = this._optionsMaps[ConnectionOptionSpecialType.serverName];
 		let serverNameBuilder = DialogHelper.appendRow(this._tableContainer, serverNameOption.displayName, 'connection-label', 'connection-input');
@@ -223,7 +223,7 @@ export class ConnectionWidget {
 		this._azureTenantDropdown = new SelectBox([], undefined, this._contextViewService, tenantDropdownBuilder.getContainer(), { ariaLabel: tenantLabel });
 		DialogHelper.appendInputSelectBox(tenantDropdownBuilder, this._azureTenantDropdown);
 
-		if (!isCMSDialog) {
+		if (!cmsDialog) {
 			// Database
 			let databaseOption = this._optionsMaps[ConnectionOptionSpecialType.databaseName];
 			let databaseNameBuilder = DialogHelper.appendRow(this._tableContainer, databaseOption.displayName, 'connection-label', 'connection-input');
@@ -240,19 +240,23 @@ export class ConnectionWidget {
 			// Server group
 			let serverGroupBuilder = DialogHelper.appendRow(this._tableContainer, this._serverGroupDisplayString, 'connection-label', 'connection-input');
 			DialogHelper.appendInputSelectBox(serverGroupBuilder, this._serverGroupSelectBox);
-		}
 
+			// Change Auth options for CMS call for registering a server
+			if (cmsDialog === CmsDialog.serverRegistrationDialog) {
+				this._authTypeSelectBox.values.filter((auth) => auth !== AuthenticationType.SqlLogin);
+			}
+		}
 		// Connection name
 		let connectionNameOption = this._optionsMaps[ConnectionOptionSpecialType.connectionName];
-		if (isCMSDialog) {
-			connectionNameOption.displayName = localize('cmsServerName', 'ServerName');
+		if (cmsDialog) {
+			connectionNameOption.displayName = localize('cmsServerName', 'Server Name');
 		} else {
 			connectionNameOption.displayName = localize('connectionName', 'Name (optional)');
 		}
 		let connectionNameBuilder = DialogHelper.appendRow(this._tableContainer, connectionNameOption.displayName, 'connection-label', 'connection-input');
 		this._connectionNameInputBox = new InputBox(connectionNameBuilder.getHTMLElement(), this._contextViewService, { ariaLabel: connectionNameOption.displayName });
 
-		if (isCMSDialog) {
+		if (cmsDialog) {
 			// registered server description
 			let serverDescriptionBuilder = DialogHelper.appendRow(this._tableContainer, 'Registered server description', 'connection-label', 'connection-input', 'server-description-input');
 			this._serverDescriptionInputBox = new InputBox(serverDescriptionBuilder.getHTMLElement(), this._contextViewService, {type: 'textarea', flexibleHeight: true});
@@ -302,7 +306,7 @@ export class ConnectionWidget {
 		return checkbox;
 	}
 
-	private registerListeners(isCMSDialog: boolean = false): void {
+	private registerListeners(cmsDialog: azdata.CmsDialog = undefined): void {
 		// Theme styler
 		this._toDispose.push(styler.attachInputBoxStyler(this._serverNameInputBox, this._themeService));
 		this._toDispose.push(styler.attachInputBoxStyler(this._connectionNameInputBox, this._themeService));
@@ -312,7 +316,7 @@ export class ConnectionWidget {
 		this._toDispose.push(styler.attachCheckboxStyler(this._rememberPasswordCheckBox, this._themeService));
 		this._toDispose.push(styler.attachSelectBoxStyler(this._azureAccountDropdown, this._themeService));
 
-		if (isCMSDialog) {
+		if (cmsDialog) {
 			this._toDispose.push(styler.attachInputBoxStyler(this._serverDescriptionInputBox, this._themeService));
 		} else {
 			this._toDispose.push(styler.attachEditableDropdownStyler(this._databaseNameInputBox, this._themeService));
@@ -547,22 +551,22 @@ export class ConnectionWidget {
 		}
 	}
 
-	public initDialog(connectionInfo: IConnectionProfile, isCMSDialog: boolean = false): void {
-		this.fillInConnectionInputs(connectionInfo, isCMSDialog);
+	public initDialog(connectionInfo: IConnectionProfile, cmsDialog: azdata.CmsDialog = undefined): void {
+		this.fillInConnectionInputs(connectionInfo, cmsDialog);
 	}
 
-	public focusOnOpen(isCMSDialog: boolean = false): void {
+	public focusOnOpen(cmsDialog: azdata.CmsDialog = undefined): void {
 		this._handleClipboard();
 		this._serverNameInputBox.focus();
 		this.focusPasswordIfNeeded();
-		this.clearValidationMessages(isCMSDialog);
+		this.clearValidationMessages(cmsDialog);
 	}
 
-	private clearValidationMessages(isCMSDialog: boolean = false): void {
+	private clearValidationMessages(cmsDialog: azdata.CmsDialog = undefined): void {
 		this._serverNameInputBox.hideMessage();
 		this._userNameInputBox.hideMessage();
 		this._azureAccountDropdown.hideMessage();
-		if (isCMSDialog) {
+		if (cmsDialog) {
 			this._serverDescriptionInputBox.hideMessage();
 		}
 	}
@@ -571,7 +575,7 @@ export class ConnectionWidget {
 		return value ? value : '';
 	}
 
-	public fillInConnectionInputs(connectionInfo: IConnectionProfile, isCMSDialog: boolean = false) {
+	public fillInConnectionInputs(connectionInfo: IConnectionProfile, cmsDialog: azdata.CmsDialog = undefined) {
 		if (connectionInfo) {
 			this._serverNameInputBox.value = this.getModelValue(connectionInfo.serverName);
 			this._connectionNameInputBox.value = this.getModelValue(connectionInfo.connectionName);
@@ -580,7 +584,7 @@ export class ConnectionWidget {
 			this._password = this.getModelValue(connectionInfo.password);
 			this._saveProfile = connectionInfo.saveProfile;
 			this._azureTenantId = connectionInfo.azureTenantId;
-			if (!isCMSDialog) {
+			if (!cmsDialog) {
 				this._databaseNameInputBox.value = this.getModelValue(connectionInfo.databaseName);
 				let groupName: string;
 				if (this._saveProfile) {
@@ -667,7 +671,7 @@ export class ConnectionWidget {
 		return authTypeName;
 	}
 
-	public handleOnConnecting(isCMSDialog: boolean = false): void {
+	public handleOnConnecting(cmsDialog: azdata.CmsDialog = undefined): void {
 		this._focusedBeforeHandleOnConnection = <HTMLElement>document.activeElement;
 		this._advancedButton.enabled = false;
 		this._serverNameInputBox.disable();
@@ -675,7 +679,7 @@ export class ConnectionWidget {
 		this._passwordInputBox.disable();
 		this._connectionNameInputBox.disable();
 		this._rememberPasswordCheckBox.enabled = false;
-		if (isCMSDialog) {
+		if (cmsDialog) {
 			this._serverDescriptionInputBox.disable();
 		} else {
 			this._serverGroupSelectBox.disable();
@@ -686,7 +690,7 @@ export class ConnectionWidget {
 		}
 	}
 
-	public handleResetConnection(isCMSDialog: boolean = false): void {
+	public handleResetConnection(cmsDialog: azdata.CmsDialog = undefined): void {
 		this._advancedButton.enabled = true;
 		this._serverNameInputBox.enable();
 		this._connectionNameInputBox.enable();
@@ -707,8 +711,9 @@ export class ConnectionWidget {
 			this._focusedBeforeHandleOnConnection.focus();
 		}
 
-		if (isCMSDialog) {
+		if (cmsDialog) {
 			this._serverDescriptionInputBox.enable();
+		} else {
 			this._serverGroupSelectBox.enable();
 			this._databaseNameInputBox.enabled = true;
 		}
@@ -722,7 +727,7 @@ export class ConnectionWidget {
 		return this._serverNameInputBox.value;
 	}
 
-	public get registeredCmsServerDescription(): string {
+	public get registeredServerDescription(): string {
 		return this._serverDescriptionInputBox.value;
 	}
 
@@ -788,7 +793,7 @@ export class ConnectionWidget {
 		return validateServerName && validateUserName && validatePassword && validateAzureAccount;
 	}
 
-	public connect(model: IConnectionProfile, isCMSDialog: boolean = false): boolean {
+	public connect(model: IConnectionProfile, cmsDialog: azdata.CmsDialog = undefined): boolean {
 		let validInputs = this.validateInputs();
 		if (validInputs) {
 			model.serverName = this.serverName;
@@ -796,10 +801,10 @@ export class ConnectionWidget {
 			model.password = this.password;
 			model.authenticationType = this.authenticationType;
 			model.savePassword = this._rememberPasswordCheckBox.checked;
-			if (isCMSDialog) {
+			if (cmsDialog) {
 				model.saveProfile = false;
-				model.options['registeredCmsServerName'] = this.connectionName ? this.connectionName : this.serverName;
-				model.options['registeredCmsServerDescription'] = this.registeredCmsServerDescription;
+				model.options['registeredServerName'] = this.connectionName ? this.connectionName : this.serverName;
+				model.options['registeredServerDescription'] = this.registeredServerDescription;
 			} else {
 				model.connectionName = this.connectionName;
 				model.databaseName = this.databaseName;

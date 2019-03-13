@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./media/connectionDialog';
-
+import * as azdata from 'azdata';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { attachModalDialogStyler, attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
@@ -38,11 +38,12 @@ import * as DOM from 'vs/base/browser/dom';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
+import { CmsDialog } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export interface OnShowUIResponse {
 	selectedProviderType: string;
 	container: HTMLElement;
-	isCMSDialog?: boolean;
+	cmsDialog: azdata.CmsDialog;
 }
 
 export class ConnectionDialogWidget extends Modal {
@@ -66,8 +67,8 @@ export class ConnectionDialogWidget extends Modal {
 	private _panel: TabbedPanel;
 	private _recentConnectionTabId: PanelTabIdentifier;
 
-	private _onInitDialog = new Emitter<boolean>();
-	public onInitDialog: Event<boolean> = this._onInitDialog.event;
+	private _onInitDialog = new Emitter<azdata.CmsDialog>();
+	public onInitDialog: Event<azdata.CmsDialog> = this._onInitDialog.event;
 
 	private _onCancel = new Emitter<void>();
 	public onCancel: Event<void> = this._onCancel.event;
@@ -90,7 +91,7 @@ export class ConnectionDialogWidget extends Modal {
 		private providerTypeOptions: string[],
 		private selectedProviderType: string,
 		private providerNameToDisplayNameMap: { [providerDisplayName: string]: string },
-		private isCMSDialog: boolean = false,
+		private cmsDialog: azdata.CmsDialog = undefined,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IWorkbenchThemeService private _workbenchThemeService: IWorkbenchThemeService,
@@ -101,8 +102,10 @@ export class ConnectionDialogWidget extends Modal {
 		@IContextViewService private _contextViewService: IContextViewService,
 		@IClipboardService clipboardService: IClipboardService,
 	) {
-		super(isCMSDialog ? localize('registerCMS', 'Register Central Management Server') : localize('connection', 'Connection'),
-		TelemetryKeys.Connection, _partService, telemetryService, clipboardService, _workbenchThemeService, contextKeyService, { hasSpinner: true, hasErrors: true });
+		super(!cmsDialog ? localize('connection', 'Connection')
+			: cmsDialog === CmsDialog.cmsRegistrationDialog ? localize('registerCMS', 'Register Central Management Server')
+			: localize('registerServer', 'New Server Registration'),
+			TelemetryKeys.Connection, _partService, telemetryService, clipboardService, _workbenchThemeService, contextKeyService, { hasSpinner: true, hasErrors: true });
 	}
 
 	public refresh(): void {
@@ -208,7 +211,7 @@ export class ConnectionDialogWidget extends Modal {
 	/**
 	 * Render the connection flyout
 	 */
-	public render(isCMSDialog: boolean = false) {
+	public render(cmsDialog: azdata.CmsDialog = undefined) {
 		super.render();
 		attachModalDialogStyler(this, this._themeService);
 		let connectLabel = localize('connectionDialog.connect', 'Connect');
@@ -217,7 +220,7 @@ export class ConnectionDialogWidget extends Modal {
 		this._connectButton.enabled = false;
 		this._closeButton = this.addFooterButton(cancelLabel, () => this.cancel());
 		this.registerListeners();
-		this.onProviderTypeSelected(this._providerTypeSelectBox.value, isCMSDialog);
+		this.onProviderTypeSelected(this._providerTypeSelectBox.value, cmsDialog);
 	}
 
 	// Update theming that is specific to connection flyout body
@@ -244,14 +247,14 @@ export class ConnectionDialogWidget extends Modal {
 		}));
 	}
 
-	private onProviderTypeSelected(selectedProviderType: string, isCMSDialog: boolean = false) {
+	private onProviderTypeSelected(selectedProviderType: string, cmsDialog: azdata.CmsDialog = undefined) {
 		// Show connection form based on server type
 		this.$connectionUIContainer.empty();
 		this._onShowUiComponent.fire({ selectedProviderType: selectedProviderType,
 			container: this.$connectionUIContainer.getHTMLElement(),
-			isCMSDialog: isCMSDialog
+			cmsDialog: cmsDialog
 		});
-		this.initDialog(isCMSDialog);
+		this.initDialog(cmsDialog);
 	}
 
 	private connect(element?: IConnectionProfile): void {
@@ -384,7 +387,7 @@ export class ConnectionDialogWidget extends Modal {
 	 * Open the flyout dialog
 	 * @param recentConnections Are there recent connections that should be shown
 	 */
-	public open(recentConnections: boolean, isCMSDialog: boolean = false) {
+	public open(recentConnections: boolean, cmsDialog: azdata.CmsDialog = undefined) {
 		this._panel.showTab(this._recentConnectionTabId);
 
 		this.show();
@@ -402,7 +405,7 @@ export class ConnectionDialogWidget extends Modal {
 
 		// call layout with view height
 		this.layout();
-		this.initDialog(isCMSDialog);
+		this.initDialog(cmsDialog);
 	}
 
 	protected layout(height?: number): void {
@@ -425,10 +428,10 @@ export class ConnectionDialogWidget extends Modal {
 		return this._connectButton.enabled;
 	}
 
-	private initDialog(isCMSDialog: boolean = false): void {
+	private initDialog(cmsDialog: azdata.CmsDialog = undefined): void {
 		super.setError('');
 		this.hideSpinner();
-		this._onInitDialog.fire(isCMSDialog);
+		this._onInitDialog.fire(cmsDialog);
 	}
 
 	public resetConnection(): void {
@@ -449,10 +452,10 @@ export class ConnectionDialogWidget extends Modal {
 		this.refresh();
 	}
 
-	public updateProvider(displayName: string, isCMSDialog: boolean = false) {
+	public updateProvider(displayName: string, cmsDialog: azdata.CmsDialog = undefined) {
 		this._providerTypeSelectBox.selectWithOptionName(displayName);
 
-		this.onProviderTypeSelected(displayName, isCMSDialog);
+		this.onProviderTypeSelected(displayName, cmsDialog);
 	}
 
 	public set databaseDropdownExpanded(val: boolean) {

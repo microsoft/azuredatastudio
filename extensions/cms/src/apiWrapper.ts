@@ -184,8 +184,8 @@ export class ApiWrapper {
 	}
 
 	// Connection APIs
-	public openConnectionDialog(providers: string[], initialConnectionProfile?: azdata.IConnectionProfile, connectionCompletionOptions?: azdata.IConnectionCompletionOptions): Thenable<azdata.connection.Connection> {
-		return azdata.connection.openConnectionDialog(providers, initialConnectionProfile, connectionCompletionOptions, true);
+	public openConnectionDialog(providers: string[], initialConnectionProfile?: azdata.IConnectionProfile, connectionCompletionOptions?: azdata.IConnectionCompletionOptions, cmsDialog?: azdata.CmsDialog): Thenable<azdata.connection.Connection> {
+		return azdata.connection.openConnectionDialog(providers, initialConnectionProfile, connectionCompletionOptions, cmsDialog);
 	}
 
 	// CMS APIs
@@ -236,11 +236,13 @@ export class ApiWrapper {
 		this._registeredCmsServers.push(cmsServerNode);
 	}
 
-	public async addRegisteredServer(registeredServerName: string, registeredServerDescription: string, relativePath: string, ownerUri: string, connection: azdata.ConnectionInfo) {
+	public async addRegisteredServer(relativePath: string, ownerUri: string) {
 		let provider = await this.getCmsService();
-		return this.openConnectionDialog(['MSSQL']).then((connection) => {
-			let meme = connection;
-			return provider.addRegisteredServer(ownerUri, relativePath, registeredServerName, registeredServerDescription, connection);
+		let cmsDialog: azdata.CmsDialog = azdata.CmsDialog.serverRegistrationDialog;
+		return this.openConnectionDialog(['MSSQL'], undefined, undefined, cmsDialog).then((connection) => {
+			if (connection && connection.options) {
+				return provider.addRegisteredServer(ownerUri, relativePath, connection.options.registeredServerName, connection.options.registeredServerDescription, connection);
+			}
 		});
 	}
 
@@ -272,7 +274,8 @@ export class ApiWrapper {
 	}
 
 	public get connection(): Thenable<azdata.connection.Connection> {
-		return this.openConnectionDialog(['MSSQL']).then((connection) => {
+		let cmsDialog: azdata.CmsDialog = azdata.CmsDialog.cmsRegistrationDialog;
+		return this.openConnectionDialog(['MSSQL'], undefined, undefined, cmsDialog).then((connection) => {
 			if (connection) {
 				return connection;
 			}

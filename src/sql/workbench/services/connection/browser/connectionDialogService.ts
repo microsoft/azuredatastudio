@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-
+import * as azdata from 'azdata';
 import {
 	IConnectionManagementService,
 	ConnectionType, INewConnectionParams, IConnectionCompletionOptions, IConnectionResult
@@ -48,13 +48,13 @@ export interface IConnectionComponentCallbacks {
 }
 
 export interface IConnectionComponentController {
-	showUiComponent(isCMSDialog: boolean, container: HTMLElement): void;
-	initDialog(providers: string[], model: IConnectionProfile, isCMSDialog?: boolean): void;
-	validateConnection(isCMSDialog: boolean): IConnectionValidateResult;
-	fillInConnectionInputs(connectionInfo: IConnectionProfile, isCMSDialog?: boolean): void;
-	handleOnConnecting(isCMSDialog: boolean): void;
-	handleResetConnection(isCMSDialog?: boolean): void;
-	focusOnOpen(isCMSDialog?: boolean): void;
+	showUiComponent(cmsDialog: azdata.CmsDialog, container: HTMLElement): void;
+	initDialog(providers: string[], model: IConnectionProfile, cmsDialog: azdata.CmsDialog): void;
+	validateConnection(cmsDialog: azdata.CmsDialog): IConnectionValidateResult;
+	fillInConnectionInputs(connectionInfo: IConnectionProfile, cmsDialog: azdata.CmsDialog): void;
+	handleOnConnecting(cmsDialog: azdata.CmsDialog): void;
+	handleResetConnection(cmsDialog: azdata.CmsDialog): void;
+	focusOnOpen(cmsDialog: azdata.CmsDialog): void;
 	closeDatabaseDropdown(): void;
 	databaseDropdownExpanded: boolean;
 }
@@ -75,7 +75,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	private _connecting: boolean = false;
 	private _connectionErrorTitle = localize('connectionError', 'Connection error');
 	private _dialogDeferredPromise: Deferred<IConnectionProfile>;
-	private _previousCMSDialog: boolean = undefined;
+	private _previousCMSDialog: azdata.CmsDialog = undefined;
 	private _toDispose = [];
 
 	/**
@@ -127,12 +127,12 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		return defaultProvider || Constants.mssqlProviderName;
 	}
 
-	private handleOnConnect(params: INewConnectionParams, profile?: IConnectionProfile, isCMSDialog: boolean = false): void {
+	private handleOnConnect(params: INewConnectionParams, profile?: IConnectionProfile, cmsDialog: azdata.CmsDialog = undefined): void {
 		if (!this._connecting) {
 			this._connecting = true;
-			this.handleProviderOnConnecting(isCMSDialog);
+			this.handleProviderOnConnecting(cmsDialog);
 			if (!profile) {
-				let result = this.uiController.validateConnection(isCMSDialog);
+				let result = this.uiController.validateConnection(cmsDialog);
 				if (!result.isValid) {
 					this._connecting = false;
 					this._connectionDialog.resetConnection();
@@ -157,11 +157,11 @@ export class ConnectionDialogService implements IConnectionDialogService {
 					profile.savePassword = true;
 				}
 
-				this.handleDefaultOnConnect(params, profile, isCMSDialog);
+				this.handleDefaultOnConnect(params, profile, cmsDialog);
 			} else {
 				profile.serverName = trim(profile.serverName);
 				this._connectionManagementService.addSavedPassword(profile).then(connectionWithPassword => {
-					this.handleDefaultOnConnect(params, connectionWithPassword, isCMSDialog);
+					this.handleDefaultOnConnect(params, connectionWithPassword, cmsDialog);
 				});
 			}
 		}
@@ -195,7 +195,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		}
 	}
 
-	private handleDefaultOnConnect(params: INewConnectionParams, connection: IConnectionProfile, isCMSDialog: boolean = false): Thenable<void> {
+	private handleDefaultOnConnect(params: INewConnectionParams, connection: IConnectionProfile, cmsDialog: azdata.CmsDialog = undefined): Thenable<void> {
 		if (this.ignoreNextConnect) {
 			this._connectionDialog.resetConnection();
 			this._connectionDialog.close();
@@ -211,7 +211,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		}
 		let options: IConnectionCompletionOptions = {
 			params: params,
-			saveTheConnection: !fromEditor && !isCMSDialog,
+			saveTheConnection: !fromEditor && !cmsDialog,
 			showDashboard: params && params.showDashboard !== undefined ? params.showDashboard : !fromEditor,
 			showConnectionDialogOnError: false,
 			showFirewallRuleOnError: true
@@ -258,53 +258,53 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		this._connectionDialog.connectButtonState = enable;
 	}
 
-	private handleShowUiComponent(isCMSDialog = false, input: OnShowUIResponse) {
+	private handleShowUiComponent(cmsDialog: azdata.CmsDialog = undefined, input: OnShowUIResponse) {
 		if (input.selectedProviderType) {
 			this._currentProviderType = input.selectedProviderType;
 		}
 		this._model.providerName = this.getCurrentProviderName();
 
 		this._model = new ConnectionProfile(this._capabilitiesService, this._model);
-		this.uiController.showUiComponent(isCMSDialog, input.container);
+		this.uiController.showUiComponent(cmsDialog, input.container);
 	}
 
-	private handleInitDialog(isCMSDialog: boolean = false) {
-		this.uiController.initDialog(this._params && this._params.providers, this._model, isCMSDialog);
+	private handleInitDialog(cmsDialog: azdata.CmsDialog = undefined) {
+		this.uiController.initDialog(this._params && this._params.providers, this._model, cmsDialog);
 	}
 
-	private handleFillInConnectionInputs(connectionInfo: IConnectionProfile, isCMSDialog: boolean = false): void {
+	private handleFillInConnectionInputs(connectionInfo: IConnectionProfile, cmsDialog: azdata.CmsDialog = undefined): void {
 		this._connectionManagementService.addSavedPassword(connectionInfo).then(connectionWithPassword => {
 			var model = this.createModel(connectionWithPassword);
 			this._model = model;
-			this.uiController.fillInConnectionInputs(model, isCMSDialog);
+			this.uiController.fillInConnectionInputs(model, cmsDialog);
 		});
-		this._connectionDialog.updateProvider(this._providerNameToDisplayNameMap[connectionInfo.providerName], isCMSDialog);
+		this._connectionDialog.updateProvider(this._providerNameToDisplayNameMap[connectionInfo.providerName], cmsDialog);
 	}
 
-	private handleProviderOnResetConnection(isCMSDialog: boolean = false): void {
-		this.uiController.handleResetConnection(isCMSDialog);
+	private handleProviderOnResetConnection(cmsDialog: azdata.CmsDialog = undefined): void {
+		this.uiController.handleResetConnection(cmsDialog);
 	}
 
-	private handleProviderOnConnecting(isCMSDialog: boolean = false): void {
-		this.uiController.handleOnConnecting(isCMSDialog);
+	private handleProviderOnConnecting(cmsDialog: azdata.CmsDialog = undefined): void {
+		this.uiController.handleOnConnecting(cmsDialog);
 	}
 
-	private updateModelServerCapabilities(model: IConnectionProfile, isCMSDialog: boolean = false) {
-		this._model = this.createModel(model, isCMSDialog);
+	private updateModelServerCapabilities(model: IConnectionProfile, cmsDialog: azdata.CmsDialog = undefined) {
+		this._model = this.createModel(model, cmsDialog);
 		if (this._model.providerName) {
 			this._currentProviderType = this._providerNameToDisplayNameMap[this._model.providerName];
-			if (this._connectionDialog && this._previousCMSDialog !== isCMSDialog) {
-				this._connectionDialog.updateProvider(this._currentProviderType, isCMSDialog);
+			if (this._connectionDialog && this._previousCMSDialog !== cmsDialog) {
+				this._connectionDialog.updateProvider(this._currentProviderType, cmsDialog);
 			}
 		}
 	}
 
-	private createModel(model: IConnectionProfile, isCMSDialog: boolean = false): ConnectionProfile {
+	private createModel(model: IConnectionProfile, cmsDialog: azdata.CmsDialog = undefined): ConnectionProfile {
 		let defaultProvider = this.getDefaultProviderName();
 		let providerName = model ? model.providerName : defaultProvider;
 		providerName = providerName ? providerName : defaultProvider;
 		let newProfile = new ConnectionProfile(this._capabilitiesService, model || providerName);
-		newProfile.saveProfile = !isCMSDialog;
+		newProfile.saveProfile = !cmsDialog;
 		newProfile.generateNewId();
 		// If connecting from a query editor set "save connection" to false
 		if (this._params && this._params.input && this._params.connectionType === ConnectionType.editor) {
@@ -313,10 +313,10 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		return newProfile;
 	}
 
-	private showDialogWithModel(isCMSDialog = false): TPromise<void> {
+	private showDialogWithModel(cmsDialog: azdata.CmsDialog = undefined): TPromise<void> {
 		return new TPromise<void>((resolve, reject) => {
-			this.updateModelServerCapabilities(this._inputModel, isCMSDialog);
-			this.doShowDialog(isCMSDialog, this._params);
+			this.updateModelServerCapabilities(this._inputModel, cmsDialog);
+			this.doShowDialog(cmsDialog, this._params);
 			resolve(null);
 		});
 	}
@@ -326,7 +326,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		params?: INewConnectionParams,
 		model?: IConnectionProfile,
 		connectionResult?: IConnectionResult,
-		isCMSDialog = false,
+		cmsDialog: azdata.CmsDialog = undefined,
 		doConnect: boolean = true): Thenable<IConnectionProfile> {
 
 		if (!doConnect) {
@@ -337,7 +337,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		this.showDialog(connectionManagementService, params,
 			model,
 			connectionResult,
-			isCMSDialog).then(() => {
+			cmsDialog).then(() => {
 			}, error => {
 				this._dialogDeferredPromise.reject(error);
 			});
@@ -349,7 +349,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		params?: INewConnectionParams,
 		model?: IConnectionProfile,
 		connectionResult?: IConnectionResult,
-		isCMSDialog = false): Thenable<void> {
+		cmsDialog: azdata.CmsDialog = undefined): Thenable<void> {
 
 		this._connectionManagementService = connectionManagementService;
 
@@ -363,13 +363,13 @@ export class ConnectionDialogService implements IConnectionDialogService {
 					this._providerNameToDisplayNameMap[p[0]] = p[1].connection.displayName;
 				});
 			}
-			this.updateModelServerCapabilities(model, isCMSDialog);
+			this.updateModelServerCapabilities(model, cmsDialog);
 			// If connecting from a query editor set "save connection" to false
 			if (params && params.input && params.connectionType === ConnectionType.editor) {
 				this._model.saveProfile = false;
 			}
 
-			resolve(this.showDialogWithModel(isCMSDialog).then(() => {
+			resolve(this.showDialogWithModel(cmsDialog).then(() => {
 				if (connectionResult && connectionResult.errorMessage) {
 					this.showErrorDialog(Severity.Error, this._connectionErrorTitle, connectionResult.errorMessage, connectionResult.callStack);
 				}
@@ -378,36 +378,36 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	}
 
 
-	private doShowDialog(isCMSDialog = false, params: INewConnectionParams): TPromise<void> {
-		if (this._previousCMSDialog !== isCMSDialog) {
+	private doShowDialog(cmsDialog: azdata.CmsDialog = undefined, params: INewConnectionParams): TPromise<void> {
+		if (this._previousCMSDialog !== cmsDialog) {
 			this._connectionDialog = null;
 		}
 		if (!this._connectionDialog) {
 			let container = this._partService.getWorkbenchElement().parentElement;
 			this._container = container;
-			this._connectionDialog = this._instantiationService.createInstance(ConnectionDialogWidget, this._providerTypes, this._providerNameToDisplayNameMap[this._model.providerName], this._providerNameToDisplayNameMap, isCMSDialog);
+			this._connectionDialog = this._instantiationService.createInstance(ConnectionDialogWidget, this._providerTypes, this._providerNameToDisplayNameMap[this._model.providerName], this._providerNameToDisplayNameMap, cmsDialog);
 			this._connectionDialog.onCancel(() => {
 				this._connectionDialog.databaseDropdownExpanded = this.uiController.databaseDropdownExpanded;
 				this.handleOnCancel(this._connectionDialog.newConnectionParams);
 			});
 			this._connectionDialog.onConnect((profile) => {
-				this.handleOnConnect(this._connectionDialog.newConnectionParams, profile, isCMSDialog);
+				this.handleOnConnect(this._connectionDialog.newConnectionParams, profile, cmsDialog);
 			});
-			this._connectionDialog.onShowUiComponent((input) => this.handleShowUiComponent(input.isCMSDialog, input));
-			this._connectionDialog.onInitDialog((isCMSDialog) => this.handleInitDialog(isCMSDialog));
-			this._connectionDialog.onFillinConnectionInputs((input) => this.handleFillInConnectionInputs(input, isCMSDialog));
+			this._connectionDialog.onShowUiComponent((input) => this.handleShowUiComponent(input.cmsDialog, input));
+			this._connectionDialog.onInitDialog((cmsDialog) => this.handleInitDialog(cmsDialog));
+			this._connectionDialog.onFillinConnectionInputs((input) => this.handleFillInConnectionInputs(input, cmsDialog));
 			this._connectionDialog.onResetConnection(() => this.handleProviderOnResetConnection());
-			this._connectionDialog.render(isCMSDialog);
+			this._connectionDialog.render(cmsDialog);
 		}
 		this._connectionDialog.newConnectionParams = params;
 
 		return new TPromise<void>(() => {
-			this._connectionDialog.open(this._connectionManagementService.getRecentConnections(params.providers).length > 0, isCMSDialog);
-			this.uiController.focusOnOpen(isCMSDialog);
-			if (this._previousCMSDialog !== isCMSDialog) {
+			this._connectionDialog.open(this._connectionManagementService.getRecentConnections(params.providers).length > 0, cmsDialog);
+			this.uiController.focusOnOpen(cmsDialog);
+			if (this._previousCMSDialog !== cmsDialog) {
 				this._toDispose.map(meme => meme.dispose());
 			}
-			this._previousCMSDialog = isCMSDialog;
+			this._previousCMSDialog = cmsDialog;
 		});
 	}
 
