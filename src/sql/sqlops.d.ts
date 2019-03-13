@@ -35,6 +35,8 @@ declare module 'sqlops' {
 
 		export function registerAdminServicesProvider(provider: AdminServicesProvider): vscode.Disposable;
 
+		export function registerAgentServicesProvider(provider: AgentServicesProvider): vscode.Disposable;
+
 		export function registerCapabilitiesServiceProvider(provider: CapabilitiesProvider): vscode.Disposable;
 
 		export function registerDacFxServicesProvider(provider: DacFxServicesProvider): vscode.Disposable;

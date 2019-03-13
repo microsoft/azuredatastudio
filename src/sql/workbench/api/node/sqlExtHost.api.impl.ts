@@ -772,6 +772,14 @@ export function createApiFactory(
 				return extHostDataProvider.$registerAdminServicesProvider(provider);
 			};
 
+			let registerAgentServicesProvider = (provider: sqlops.AgentServicesProvider): vscode.Disposable => {
+				provider.registerOnUpdated(() => {
+					extHostDataProvider.$onJobDataUpdated(provider.handle);
+				});
+
+				return extHostDataProvider.$registerAgentServiceProvider(provider);
+			};
+
 			let registerDacFxServicesProvider = (provider: sqlops.DacFxServicesProvider): vscode.Disposable => {
 				return extHostDataProvider.$registerDacFxServiceProvider(provider);
 			};
@@ -790,6 +798,7 @@ export function createApiFactory(
 				registerTaskServicesProvider,
 				registerQueryProvider,
 				registerAdminServicesProvider,
+				registerAgentServicesProvider,
 				registerCapabilitiesServiceProvider,
 				registerDacFxServicesProvider,
 				onDidChangeLanguageFlavor(listener: (e: sqlops.DidChangeLanguageFlavorParams) => any, thisArgs?: any, disposables?: extHostTypes.Disposable[]) {
