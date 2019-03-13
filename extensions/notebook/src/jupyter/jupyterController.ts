@@ -30,7 +30,7 @@ import CodeAdapter from '../prompts/adapter';
 let untitledCounter = 0;
 
 export class JupyterController implements vscode.Disposable {
-	private _jupyterInstallation: Promise<JupyterServerInstallation>;
+	private _jupyterInstallation: JupyterServerInstallation;
 	private _notebookInstances: IServerInstance[] = [];
 
 	private outputChannel: vscode.OutputChannel;
@@ -55,21 +55,13 @@ export class JupyterController implements vscode.Disposable {
 
 	// PUBLIC METHODS //////////////////////////////////////////////////////
 	public async activate(): Promise<boolean> {
-		// Prompt for install if the python installation path is not defined
-		let jupyterInstaller = new JupyterServerInstallation(
+		this._jupyterInstallation = new JupyterServerInstallation(
 			this.extensionContext.extensionPath,
 			this.outputChannel,
 			this.apiWrapper);
+
 		if (JupyterServerInstallation.isPythonInstalled(this.apiWrapper)) {
-			this._jupyterInstallation = Promise.resolve(jupyterInstaller);
-		} else {
-			this._jupyterInstallation = new Promise(resolve => {
-				jupyterInstaller.onInstallComplete(err => {
-					if (!err) {
-						resolve(jupyterInstaller);
-					}
-				});
-			});
+			this._jupyterInstallation.installReady.resolve();
 		}
 
 		let notebookProvider = this.registerNotebookProvider();
@@ -90,7 +82,7 @@ export class JupyterController implements vscode.Disposable {
 
 		this.apiWrapper.registerCommand(constants.jupyterReinstallDependenciesCommand, () => { return this.handleDependenciesReinstallation(); });
 		this.apiWrapper.registerCommand(constants.jupyterInstallPackages, () => { return this.doManagePackages(); });
-		this.apiWrapper.registerCommand(constants.jupyterConfigurePython, () => { return this.doConfigurePython(jupyterInstaller); });
+		this.apiWrapper.registerCommand(constants.jupyterConfigurePython, () => { return this.doConfigurePython(this._jupyterInstallation); });
 
 		let supportedFileFilter: vscode.DocumentFilter[] = [
 			{ scheme: 'untitled', language: '*' }
@@ -189,7 +181,7 @@ export class JupyterController implements vscode.Disposable {
 
 	private async handleDependenciesReinstallation(): Promise<void> {
 		if (await this.confirmReinstall()) {
-			this._jupyterInstallation = JupyterServerInstallation.getInstallation(
+			this._jupyterInstallation = await JupyterServerInstallation.getInstallation(
 				this.extensionContext.extensionPath,
 				this.outputChannel,
 				this.apiWrapper,
