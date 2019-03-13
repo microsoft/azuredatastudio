@@ -46,6 +46,9 @@ import { CancellationToken } from 'vs/base/common/cancellation';
 import { getPathFromAmdModule } from 'vs/base/common/amd';
 import { getManifest } from 'vs/platform/extensionManagement/node/extensionManagementUtil';
 
+// {{SQL CARBON EDIT}
+import product from 'vs/platform/node/product';
+
 const ERROR_SCANNING_SYS_EXTENSIONS = 'scanningSystem';
 const ERROR_SCANNING_USER_EXTENSIONS = 'scanningUser';
 const INSTALL_ERROR_UNSET_UNINSTALLED = 'unsetUninstalled';
@@ -188,6 +191,9 @@ export class ExtensionManagementService extends Disposable implements IExtension
 	}
 
 	install(vsix: URI, type: LocalExtensionType = LocalExtensionType.User): Promise<IExtensionIdentifier> {
+		// {{SQL CARBON EDIT}}
+		let startTime = new Date().getTime();
+
 		this.logService.trace('ExtensionManagementService#install', vsix.toString());
 		return createCancelablePromise(token => {
 			return this.downloadVsix(vsix)
@@ -197,10 +203,11 @@ export class ExtensionManagementService extends Disposable implements IExtension
 					return getManifest(zipPath)
 						.then(manifest => {
 							const identifier = { id: getLocalExtensionIdFromManifest(manifest) };
-							// {{SQL CARBON EDIT - Remove VS Code version check}}
-							// if (manifest.engines && manifest.engines.vscode && !isEngineValid(manifest.engines.vscode)) {
-							// 	return Promise.reject(new Error(nls.localize('incompatible', "Unable to install extension '{0}' as it is not compatible with VS Code '{1}'.", identifier.id, pkg.version)));
-							// }
+							// {{SQL CARBON EDIT - Check VSCode and ADS version}}
+							if (manifest.engines && (!isEngineValid(manifest.engines.vscode, product.vscodeVersion)
+								|| (manifest.engines.azdata && !isEngineValid(manifest.engines.azdata, pkg.version)))) {
+								return Promise.reject(new Error(nls.localize('incompatible', "Unable to install version '{2}' of extension '{0}' as it is not compatible with Azure Data Studio '{1}'.", identifier.id, pkg.version, manifest.version)));
+							}
 							return this.removeIfExists(identifier.id)
 								.then(
 									() => {
@@ -216,10 +223,13 @@ export class ExtensionManagementService extends Disposable implements IExtension
 												// {{SQL CARBON EDIT}}
 												// Until there's a gallery for SQL Ops Studio, skip retrieving the metadata from the gallery
 												return this.installExtension({ zipPath, id: identifier.id, metadata: null }, type, token)
-												.then(
-													local => this._onDidInstallExtension.fire({ identifier, zipPath, local, operation: InstallOperation.Install }),
-													error => { this._onDidInstallExtension.fire({ identifier, zipPath, error, operation: InstallOperation.Install }); return Promise.reject(error); }
-												);
+													.then(
+														local => {
+															this.reportTelemetry(this.getTelemetryEvent(InstallOperation.Install), getLocalExtensionTelemetryData(local), new Date().getTime() - startTime, void 0);
+															this._onDidInstallExtension.fire({ identifier, zipPath, local, operation: InstallOperation.Install });
+														},
+														error => { this._onDidInstallExtension.fire({ identifier, zipPath, error, operation: InstallOperation.Install }); return Promise.reject(error); }
+													);
 												// return this.getMetadata(getGalleryExtensionId(manifest.publisher, manifest.name))
 												// 	.then(
 												// 		metadata => this.installFromZipPath(identifier, zipPath, metadata, type, token),

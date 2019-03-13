@@ -145,6 +145,7 @@ export class GridPanel extends ViewletPanel {
 		@IInstantiationService private instantiationService: IInstantiationService
 	) {
 		super(options, keybindingService, contextMenuService, configurationService);
+		this.maximumBodySize = 0;
 		this.splitView = new ScrollableSplitView(this.container, { enableResizing: false, verticalScrollbarVisibility: ScrollbarVisibility.Visible });
 		this.splitView.onScroll(e => {
 			if (this.state && this.splitView.length !== 0) {
@@ -195,9 +196,6 @@ export class GridPanel extends ViewletPanel {
 			}
 			return p;
 		}, []));
-		this.maximumBodySize = this.tables.reduce((p, c) => {
-			return p + c.maximumSize;
-		}, 0);
 
 		if (this.state && this.state.scrollPosition) {
 			this.splitView.setScrollPosition(this.state.scrollPosition);
@@ -215,10 +213,6 @@ export class GridPanel extends ViewletPanel {
 			this.tables.map(t => {
 				t.state.canBeMaximized = this.tables.length > 1;
 			});
-
-			this.maximumBodySize = this.tables.reduce((p, c) => {
-				return p + c.maximumSize;
-			}, 0);
 
 			if (this.state && this.state.scrollPosition) {
 				this.splitView.setScrollPosition(this.state.scrollPosition);
@@ -246,9 +240,6 @@ export class GridPanel extends ViewletPanel {
 		}
 
 		const sizeChanges = () => {
-			this.maximumBodySize = this.tables.reduce((p, c) => {
-				return p + c.maximumSize;
-			}, 0);
 
 			if (this.state && this.state.scrollPosition) {
 				this.splitView.setScrollPosition(this.state.scrollPosition);
@@ -275,6 +266,9 @@ export class GridPanel extends ViewletPanel {
 	}
 
 	private addResultSet(resultSet: azdata.ResultSetSummary[]) {
+		if (resultSet.length > 0) {
+			this.maximumBodySize = Number.POSITIVE_INFINITY;
+		}
 		let tables: GridTable<any>[] = [];
 
 		for (let set of resultSet) {
@@ -318,15 +312,12 @@ export class GridPanel extends ViewletPanel {
 		for (let i = this.splitView.length - 1; i >= 0; i--) {
 			this.splitView.removeView(i);
 		}
+		this.maximumBodySize = 0;
 		dispose(this.tables);
 		dispose(this.tableDisposable);
 		this.tableDisposable = [];
 		this.tables = [];
 		this.maximizedGrid = undefined;
-
-		this.maximumBodySize = this.tables.reduce((p, c) => {
-			return p + c.maximumSize;
-		}, 0);
 	}
 
 	private maximizeTable(tableid: string): void {
@@ -406,13 +397,15 @@ class GridTable<T> extends Disposable implements IView {
 	private scrolled = false;
 	private visible = false;
 
+	private rowHeight: number;
+
 	public get resultSet(): azdata.ResultSetSummary {
 		return this._resultSet;
 	}
 
 	// this handles if the row count is small, like 4-5 rows
 	private get maxSize(): number {
-		return ((this.resultSet.rowCount) * ROW_HEIGHT) + HEADER_HEIGHT + ESTIMATED_SCROLL_BAR_HEIGHT;
+		return ((this.resultSet.rowCount) * this.rowHeight) + HEADER_HEIGHT + ESTIMATED_SCROLL_BAR_HEIGHT;
 	}
 
 	constructor(
@@ -426,6 +419,8 @@ class GridTable<T> extends Disposable implements IView {
 		@IConfigurationService private configurationService: IConfigurationService
 	) {
 		super();
+		let config = this.configurationService.getValue<{ rowHeight: number }>('resultsGrid');
+		this.rowHeight = config && config.rowHeight ? config.rowHeight : ROW_HEIGHT;
 		this.state = state;
 		this.container.style.width = '100%';
 		this.container.style.height = '100%';
@@ -499,7 +494,7 @@ class GridTable<T> extends Disposable implements IView {
 		});
 		this.columns.unshift(this.rowNumberColumn.getColumnDefinition());
 		let tableOptions: Slick.GridOptions<T> = {
-			rowHeight: ROW_HEIGHT,
+			rowHeight: this.rowHeight,
 			showRowNumber: true,
 			forceFitColumns: false,
 			defaultColumnWidth: 120
@@ -508,7 +503,7 @@ class GridTable<T> extends Disposable implements IView {
 		this.table = this._register(new Table(tableContainer, { dataProvider: this.dataProvider, columns: this.columns }, tableOptions));
 		this.table.setSelectionModel(this.selectionModel);
 		this.table.registerPlugin(new MouseWheelSupport());
-		this.table.registerPlugin(new AutoColumnSize({ autoSizeOnRender: !this.state.columnSizes && this.configurationService.getValue('resultsGrid.autoSizeColumns') }));
+		this.table.registerPlugin(new AutoColumnSize({ autoSizeOnRender: !this.state.columnSizes && this.configurationService.getValue('resultsGrid.autoSizeColumns'), maxWidth: this.configurationService.getValue<number>('resultsGrid.maxColumnWidth') }));
 		this.table.registerPlugin(copyHandler);
 		this.table.registerPlugin(this.rowNumberColumn);
 		this.table.registerPlugin(new AdditionalKeyBindings());

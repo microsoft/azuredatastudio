@@ -225,6 +225,23 @@ export class ConnectionNode extends FolderNode {
 		item.contextValue = this._nodeType;
 		return item;
 	}
+
+	getNodeInfo(): azdata.NodeInfo {
+		// TODO handle error message case by returning it in the OE API
+		// TODO support better mapping of node type
+		let nodeInfo: azdata.NodeInfo = {
+			label: this.getDisplayName(),
+			isLeaf: false,
+			errorMessage: undefined,
+			metadata: undefined,
+			nodePath: this.generateNodePath(),
+			nodeStatus: undefined,
+			nodeType: this._nodeType,
+			nodeSubType: undefined,
+			iconType: 'HDFSFolder'
+		};
+		return nodeInfo;
+	}
 }
 
 export class FileNode extends HdfsFileSourceNode implements IFileNode {

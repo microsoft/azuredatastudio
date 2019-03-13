@@ -183,15 +183,15 @@ export class QueryTextEditor extends BaseTextEditor {
 
 	public toggleEditorSelected(selected: boolean): void {
 		this._selected = selected;
-		this.refreshEditorConfguration();
+		this.refreshEditorConfiguration();
 	}
 
 	public set hideLineNumbers(value: boolean) {
 		this._hideLineNumbers = value;
-		this.refreshEditorConfguration();
+		this.refreshEditorConfiguration();
 	}
 
-	private refreshEditorConfguration(configuration = this.configurationService.getValue<IEditorConfiguration>(this.getResource())): void {
+	private refreshEditorConfiguration(configuration = this.configurationService.getValue<IEditorConfiguration>(this.getResource())): void {
 		if (!this.getControl()) {
 			return;
 		}

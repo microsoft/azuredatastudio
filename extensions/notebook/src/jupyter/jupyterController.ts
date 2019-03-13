@@ -152,7 +152,7 @@ export class JupyterController implements vscode.Disposable {
 				this.apiWrapper.showErrorMessage(localize('unsupportedFileType', 'Only .ipynb Notebooks are supported'));
 			} else {
 				await azdata.nb.showNotebookDocument(fileUri, {
-					connectionId: profile.id,
+					connectionProfile: profile,
 					providerId: constants.jupyterNotebookProviderId,
 					preview: false
 				});
@@ -165,7 +165,7 @@ export class JupyterController implements vscode.Disposable {
 		// to handle this. We should look into improving this in the future
 		let untitledUri = vscode.Uri.parse(`untitled:Notebook-${untitledCounter++}`);
 		let editor = await azdata.nb.showNotebookDocument(untitledUri, {
-			connectionId: profile.id,
+			connectionProfile: profile,
 			providerId: constants.jupyterNotebookProviderId,
 			preview: false,
 			defaultKernel: {
