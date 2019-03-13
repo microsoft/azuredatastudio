@@ -60,10 +60,6 @@ export class JupyterController implements vscode.Disposable {
 			this.outputChannel,
 			this.apiWrapper);
 
-		if (JupyterServerInstallation.isPythonInstalled(this.apiWrapper)) {
-			this._jupyterInstallation.installReady.resolve();
-		}
-
 		let notebookProvider = this.registerNotebookProvider();
 
 		// Add command/task handlers

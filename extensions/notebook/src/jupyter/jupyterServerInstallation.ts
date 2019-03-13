@@ -57,7 +57,7 @@ export default class JupyterServerInstallation {
 
 	private static readonly DefaultPythonLocation = path.join(utils.getUserHome(), 'azuredatastudio-python');
 
-	private _installReady = new Deferred<void>();
+	private _installReady: Deferred<void>;
 
 	constructor(extensionPath: string, outputChannel: OutputChannel, apiWrapper: ApiWrapper, pythonInstallationPath?: string, forceInstall?: boolean) {
 		this.extensionPath = extensionPath;
@@ -67,10 +67,15 @@ export default class JupyterServerInstallation {
 		this._forceInstall = !!forceInstall;
 
 		this.configurePackagePaths();
+
+		this._installReady = new Deferred<void>();
+		if (JupyterServerInstallation.isPythonInstalled(this.apiWrapper)) {
+			this._installReady.resolve();
+		}
 	}
 
-	public get installReady(): Deferred<void> {
-		return this._installReady;
+	public get installReady(): Promise<void> {
+		return this._installReady.promise;
 	}
 
 	public static async getInstallation(

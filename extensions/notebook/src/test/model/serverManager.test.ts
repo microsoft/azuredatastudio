@@ -34,10 +34,10 @@ describe('Local Jupyter Server Manager', function (): void {
 		mockApiWrapper.setup(a => a.getWorkspacePathFromUri(TypeMoq.It.isAny())).returns(() => undefined);
 		mockFactory = TypeMoq.Mock.ofType(ServerInstanceFactory);
 
+		deferredInstall = new Deferred<void>();
 		let mockInstall = TypeMoq.Mock.ofType(JupyterServerInstallation, undefined, undefined, '/root');
-		mockInstall.setup(j => j.installReady).returns(() => new Deferred<void>());
+		mockInstall.setup(j => j.installReady).returns(() => deferredInstall.promise);
 		mockInstall.setup(j => j.promptForPythonInstall()).returns(() => Promise.resolve());
-		deferredInstall = mockInstall.object.installReady;
 
 		serverManager = new LocalJupyterServerManager({
 			documentPath: expectedPath,
