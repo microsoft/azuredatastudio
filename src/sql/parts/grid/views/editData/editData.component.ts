@@ -576,27 +576,28 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 
 	// Adds an extra row to the end of slickgrid (just for rendering purposes)
 	// Then sets the focused call afterwards
-	private async addRow(row: number): Promise<void> {
+	private addRow(row: number): Thenable<void> {
+		let self = this;
+
 		// Add a new row to the edit session in the tools service
-		let result = await this.dataService.createRow();
+		return this.dataService.createRow()
+			.then(result => {
+				// Map the new row ID to the row ID we have
+				self.rowIdMappings[row] = result.newRowId;
+				self.newRowVisible = true;
 
-		// Map the new row ID to the row ID we have
-		this.rowIdMappings[row] = result.newRowId;
-		this.newRowVisible = true;
-
-		// Add a new "new row" to the end of the results
-		// Adding an extra row for 'new row' functionality
-		this.dataSet.totalRows++;
-		this.dataSet.maxHeight = this.getMaxHeight(this.dataSet.totalRows);
-		this.dataSet.minHeight = this.getMinHeight(this.dataSet.totalRows);
-		this.dataSet.dataRows = new VirtualizedCollection(
-			this.windowSize,
-			this.dataSet.totalRows,
-			this.loadDataFunction,
-			index => { return {}; }
-		);
-
-		this.focusCell(this.dataSet.totalRows - 1, 1);
+				// Add a new "new row" to the end of the results
+				// Adding an extra row for 'new row' functionality
+				self.dataSet.totalRows++;
+				self.dataSet.maxHeight = self.getMaxHeight(self.dataSet.totalRows);
+				self.dataSet.minHeight = self.getMinHeight(self.dataSet.totalRows);
+				self.dataSet.dataRows = new VirtualizedCollection(
+					self.windowSize,
+					self.dataSet.totalRows,
+					self.loadDataFunction,
+					index => { return {}; }
+				);
+			});
 	}
 
 
