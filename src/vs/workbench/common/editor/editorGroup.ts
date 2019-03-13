@@ -626,7 +626,7 @@ export class EditorGroup extends Disposable {
 			if (e instanceof QueryInput) {
 				return e.sql;
 			} else if (e instanceof NotebookInput) {
-				return e.notebookEditorInput;
+				return e.textInput;
 			}
 			return e;
 		});
@@ -658,7 +658,7 @@ export class EditorGroup extends Disposable {
 			if (e instanceof QueryInput) {
 				return e.sql;
 			} else if (e instanceof NotebookInput) {
-				return e.notebookEditorInput;
+				return e.textInput;
 			}
 			return e;
 		});

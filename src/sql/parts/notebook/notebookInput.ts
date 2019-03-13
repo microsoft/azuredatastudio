@@ -143,7 +143,7 @@ export class NotebookInput extends EditorInput {
 
 	constructor(private _title: string,
 		private resource: URI,
-		private _notebookEditorInput: UntitledEditorInput,
+		private _textInput: UntitledEditorInput,
 		@ITextModelService private textModelService: ITextModelService,
 		@IUntitledEditorService untitledEditorService: IUntitledEditorService,
 		@IInstantiationService private instantiationService: IInstantiationService,
@@ -156,8 +156,8 @@ export class NotebookInput extends EditorInput {
 		this.assignProviders();
 	}
 
-	public get notebookEditorInput(): UntitledEditorInput {
-		return this._notebookEditorInput;
+	public get textInput(): UntitledEditorInput {
+		return this._textInput;
 	}
 
 	public confirmSave(): TPromise<ConfirmResult> {
@@ -264,7 +264,7 @@ export class NotebookInput extends EditorInput {
 		} else {
 			let textOrUntitledEditorModel: UntitledEditorModel | IEditorModel;
 			if (this.resource.scheme === Schemas.untitled) {
-				textOrUntitledEditorModel = await this._notebookEditorInput.resolve();
+				textOrUntitledEditorModel = await this._textInput.resolve();
 			}
 			else {
 				const textEditorModelReference = await this.textModelService.createModelReference(this.resource);

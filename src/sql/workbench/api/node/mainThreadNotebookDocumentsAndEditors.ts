@@ -367,7 +367,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		};
 		let isUntitled: boolean = uri.scheme === Schemas.untitled;
 
-		const fileInput: UntitledEditorInput = isUntitled ? this._untitledEditorService.createOrGet( uri, notebookModeId) : undefined;
+		const fileInput: UntitledEditorInput = isUntitled ? this._untitledEditorService.createOrGet(uri, notebookModeId) : undefined;
 		let input = this._instantiationService.createInstance(NotebookInput, uri.fsPath, uri, fileInput);
 		input.isTrusted = isUntitled;
 		input.defaultKernel = options.defaultKernel;
