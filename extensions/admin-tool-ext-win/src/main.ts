@@ -30,7 +30,9 @@ export interface LaunchSsmsDialogParams {
     urn?: string;
 }
 
-export function activate(context: vscode.ExtensionContext): Promise<void> {
+export async function activate(context: vscode.ExtensionContext): Promise<void> {
+    Telemetry.sendTelemetryEvent('startup/ExtensionActivated');
+
     // Only supported on Win32 currently, display error message if not that until extensions are able to block install
     // based on conditions
     if(process.platform === 'win32') {
@@ -42,31 +44,30 @@ export function activate(context: vscode.ExtensionContext): Promise<void> {
         const serverdownloader = new ServerProvider(config);
         const installationStart = Date.now();
 
-        return new Promise((resolve, reject) => {
-            serverdownloader.getOrDownloadServer().then(e => {
-                const installationComplete = Date.now();
+        try {
+            let downloadedExePath = await serverdownloader.getOrDownloadServer();
+            const installationComplete = Date.now();
 
-                Telemetry.sendTelemetryEvent('startup/ExtensionStarted', {
-                    installationTime: String(installationComplete - installationStart),
-                    beginningTimestamp: String(installationStart)
-                });
-                serverdownloader.getServerPath().then(path =>
-                    {
-                        // Don't register the command if we couldn't find the EXE since it won't be able to do anything
-                        if(path) {
-                            exePath = path;
-                        }
-                        // Add the command now that we have the exePath to run the tool with
-                        context.subscriptions.push(
-                            vscode.commands.registerCommand('adminToolExtWin.launchSsmsServerPropertiesDialog', handleLaunchSsmsServerPropertiesDialogCommand));
-                        resolve();
-                    });
-            }, e => {
-                Telemetry.sendTelemetryEvent('startup/ExtensionInitializationFailed');
-                // Just resolve to avoid unhandled promise. We show the error to the user.
-                resolve();
+            // Don't register the command if we couldn't find the EXE since it won't be able to do anything
+            if(downloadedExePath) {
+                exePath = downloadedExePath;
+            } else {
+                throw new Error('Could not find SsmsMin.exe after downloading');
+            }
+            // Add the command now that we have the exePath to run the tool with
+            context.subscriptions.push(
+                vscode.commands.registerCommand('adminToolExtWin.launchSsmsServerPropertiesDialog', handleLaunchSsmsServerPropertiesDialogCommand));
+
+            Telemetry.sendTelemetryEvent('startup/ExtensionStarted', {
+                installationTime: String(installationComplete - installationStart),
+                beginningTimestamp: String(installationStart)
             });
-        });
+        }
+        catch(err) {
+            Telemetry.sendTelemetryEvent('startup/ExtensionInitializationFailed', {
+                error: err
+            });
+        }
     } else {
         vscode.window.showErrorMessage(localize('adminToolExtWin.onlySupportedOnWindows', 'The Admin Tool Extension is only supported on Windows platforms.'));
     }
@@ -108,6 +109,7 @@ function launchSsmsDialog(action:string, connectionProfile: azdata.IConnectionPr
         urn: urn};
     let args = buildSsmsMinCommandArgs(params);
 
+    // This will be an async call since we pass in the callback
     var proc = shelljs.exec(
        /*command*/`"${exePath}" ${args}`,
        /*options*/'',
@@ -117,12 +119,13 @@ function launchSsmsDialog(action:string, connectionProfile: azdata.IConnectionPr
                'returnCode': code,
                'error': stderr
            });
+
+            // If we're not using AAD the tool prompts for a password on stdin
+            if(params.useAad !== true) {
+                proc.stdin.end(params.password ? params.password : '');
+            }
        });
 
-    // If we're not using AAD the tool prompts for a password on stdin
-    if(params.useAad !== true) {
-        proc.stdin.end(params.password ? params.password : '');
-    }
 }
 
 /**
