@@ -141,6 +141,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		this.onConnectionChanged(() => this.refreshEditorTitles());
 		this.onConnect(() => this.refreshEditorTitles());
 		this.onDisconnect(() => this.refreshEditorTitles());
+		_storageService.onWillSaveState(() => this.shutdown());
 	}
 
 	public providerRegistered(providerId: string): boolean {
@@ -936,7 +937,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	public onIntelliSenseCacheComplete(handle: number, connectionUri: string): void {
 	}
 
-	public shutdown(): void {
+	private shutdown(): void {
 		this._connectionStore.clearActiveConnections();
 		this._connectionMemento.saveMemento();
 	}
