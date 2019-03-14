@@ -206,14 +206,11 @@ export class JupyterController implements vscode.Disposable {
 		}
 	}
 
-	public async doConfigurePython(jupyterInstaller: JupyterServerInstallation): Promise<void> {
-		try {
-			let pythonDialog = new ConfigurePythonDialog(this.apiWrapper, this.outputChannel, jupyterInstaller);
-			pythonDialog.showDialog();
-		} catch (error) {
-			let message = utils.getErrorMessage(error);
-			this.apiWrapper.showErrorMessage(message);
-		}
+	public doConfigurePython(jupyterInstaller: JupyterServerInstallation): void {
+		let pythonDialog = new ConfigurePythonDialog(this.apiWrapper, this.outputChannel, jupyterInstaller);
+		pythonDialog.showDialog().catch(err => {
+			this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
+		});
 	}
 
 	public getTextToSendToTerminal(shellType: any): string {

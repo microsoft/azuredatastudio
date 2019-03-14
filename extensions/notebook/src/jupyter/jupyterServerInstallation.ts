@@ -241,7 +241,7 @@ export default class JupyterServerInstallation {
 		};
 	}
 
-	public async startInstallProcess(pythonInstallationPath?: string): Promise<void> {
+	public startInstallProcess(pythonInstallationPath?: string): Promise<void> {
 		if (pythonInstallationPath) {
 			this._pythonInstallationPath = pythonInstallationPath;
 			this.configurePackagePaths();
@@ -275,23 +275,13 @@ export default class JupyterServerInstallation {
 			this._installReady.resolve();
 			updateConfig();
 		}
+		return this._installReady.promise;
 	}
 
 	public async promptForPythonInstall(): Promise<void> {
 		if (!JupyterServerInstallation.isPythonInstalled(this.apiWrapper)) {
-			let doInstall = await (new CodeAdapter()).promptSingle<boolean>(<IQuestion>{
-				type: QuestionTypes.confirm,
-				message: localize('confirmPythonInstall', 'Python is required for Jupyter Notebooks. Would you like to install it?'),
-				default: true
-			});
-
-			if (doInstall) {
-				let pythonDialog = new ConfigurePythonDialog(this.apiWrapper, this.outputChannel, this);
-				pythonDialog.showDialog();
-				return this._installReady.promise;
-			} else {
-				return Promise.reject(localize('pythonInstallDeclined', 'Python installation was declined.'));
-			}
+			let pythonDialog = new ConfigurePythonDialog(this.apiWrapper, this.outputChannel, this);
+			return pythonDialog.showDialog(true);
 		}
 	}
 
