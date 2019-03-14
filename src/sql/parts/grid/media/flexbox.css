@@ -39,11 +39,6 @@
     max-height: fit-content;
 }
 
-.messages {
-    flex: 1 100 0;
-    min-height: 25%;
-}
-
 .minHeight {
     min-height: fit-content;
 }

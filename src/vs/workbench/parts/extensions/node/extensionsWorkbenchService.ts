@@ -13,9 +13,10 @@ import { isPromiseCanceledError } from 'vs/base/common/errors';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { IPager, mapPager, singlePagePager } from 'vs/base/common/paging';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
+// {{SQL CARBON EDIT}}
 import {
 	IExtensionManagementService, IExtensionGalleryService, ILocalExtension, IGalleryExtension, IQueryOptions, IExtensionManifest,
-	InstallExtensionEvent, DidInstallExtensionEvent, LocalExtensionType, DidUninstallExtensionEvent, IExtensionEnablementService, IExtensionIdentifier, EnablementState, IExtensionManagementServerService
+	InstallExtensionEvent, DidInstallExtensionEvent, LocalExtensionType, DidUninstallExtensionEvent, IExtensionEnablementService, IExtensionIdentifier, EnablementState, IExtensionManagementServerService, INSTALL_ERROR_INCOMPATIBLE
 } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { getGalleryExtensionIdFromLocal, getGalleryExtensionTelemetryData, getLocalExtensionTelemetryData, areSameExtensions, getMaliciousExtensionsSet, getLocalExtensionId } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -38,6 +39,11 @@ import { Schemas } from 'vs/base/common/network';
 import * as resources from 'vs/base/common/resources';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
+
+// {{SQL CARBON EDIT}}
+import pkg from 'vs/platform/node/package';
+import { isEngineValid } from 'vs/platform/extensions/node/extensionValidator';
+import { ExtensionManagementError } from 'vs/platform/extensionManagement/node/extensionManagementService';
 
 interface IExtensionStateProvider<T> {
 	(extension: Extension): T;
@@ -703,6 +709,13 @@ export class ExtensionsWorkbenchService implements IExtensionsWorkbenchService, 
 				if (extensionIdentifier) {
 					this.checkAndEnableDisabledDependencies(extensionIdentifier);
 				}
+			}
+			// {{SQL CARBON EDIT}}
+			// This is the error handler when installing local VSIX file.
+			// Prompt the user about the error detail.
+			, (error) => {
+				this.notificationService.error(error);
+				return Promise.reject(error);
 			}));
 		}
 
@@ -719,6 +732,15 @@ export class ExtensionsWorkbenchService implements IExtensionsWorkbenchService, 
 
 		if (!gallery) {
 			return Promise.reject(new Error('Missing gallery'));
+		}
+
+		// {{SQL CARBON EDIT}}
+		// This is the execution path for install/update extension from marketplace.
+		// Check both the vscode version and azure data studio version
+		// The check is added here because we want to fail fast instead of downloading the VSIX and then fail.
+		if (gallery.properties.engine && (!isEngineValid(gallery.properties.engine, product.vscodeVersion)
+			|| (gallery.properties.azDataEngine && !isEngineValid(gallery.properties.azDataEngine, pkg.version)))) {
+			return Promise.reject(new ExtensionManagementError(nls.localize('incompatible', "Unable to install version '{2}' of extension '{0}' as it is not compatible with Azure Data Studio '{1}'.", extension.id, pkg.version, gallery.version), INSTALL_ERROR_INCOMPATIBLE));
 		}
 
 		return this.installWithProgress(

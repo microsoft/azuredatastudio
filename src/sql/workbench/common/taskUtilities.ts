@@ -223,7 +223,8 @@ export function script(connectionProfile: IConnectionProfile, metadata: azdata.O
 					let script: string = result.script;
 
 					if (script) {
-						queryEditorService.newSqlEditor(script, connectionProfile.providerName).then((owner) => {
+						let description = (metadata.schema && metadata.schema !== '') ? `${metadata.schema}.${metadata.name}`  : metadata.name;
+						queryEditorService.newSqlEditor(script, connectionProfile.providerName, undefined, description).then((owner) => {
 							// Connect our editor to the input connection
 							let options: IConnectionCompletionOptions = {
 								params: { connectionType: ConnectionType.editor, runQueryOnCompletion: RunQueryOnConnectionMode.none, input: owner },

@@ -91,7 +91,15 @@ export class DataTierApplicationWizard {
 		if (!this.connection) {
 			// @TODO: remove cast once azdata update complete - karlb 3/1/2019
 			this.connection = <azdata.connection.ConnectionProfile><any>await azdata.connection.openConnectionDialog();
+
+			// don't open the wizard if connection dialog is cancelled
+			if (!this.connection) {
+				vscode.window.showErrorMessage(localize('dacfx.needConnection', 'Please connect to a server before using this wizard.'));
+				return;
+			}
 		}
+
+		this.model.serverId = this.connection.connectionId;
 
 		this.wizard = azdata.window.createWizard('Data-tier Application Wizard');
 		let selectOperationWizardPage = azdata.window.createWizardPage(localize('dacFx.selectOperationPageName', 'Select an Operation'));

@@ -189,6 +189,13 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 		};
 	}
 
+	/**
+	 * Returns whether this profile is connected to the default database (it doesn't specify a database to connect to)
+	 */
+	public static isConnectionToDefaultDb(profile: azdata.IConnectionProfile): boolean {
+		return !profile.databaseName || profile.databaseName.trim() === '';
+	}
+
 	public static fromIConnectionProfile(capabilitiesService: ICapabilitiesService, profile: azdata.IConnectionProfile) {
 		if (profile) {
 			if (profile instanceof ConnectionProfile) {
