@@ -129,14 +129,16 @@ function launchSsmsDialog(action:string, connectionProfile: azdata.IConnectionPr
 }
 
 /**
- * Builds the command arguments to pass to SsmsMin.exe
+ * Builds the command arguments to pass to SsmsMin.exe. Values are expected to be escaped correctly
+ * already per their - they will be further escaped * for command-line usage but no additional
+ * escaping will occur.
  * @param params The params used to build up the command parameter string
  */
 export function buildSsmsMinCommandArgs(params:LaunchSsmsDialogParams): string {
-    return `${params.action ? '-a "' + params.action.replace('"', '\"') + '"' : ''}\
-    ${params.server ? '-S "' + params.server.replace('"', '\"') + '"' : ''} \
-    ${params.database ? '-D "' + params.database.replace('"', '\"') + '"' : ''} \
-    ${params.useAad !== true ? '-U "' + params.user.replace('"', '\"') + '"' : ''} \
-    ${params.useAad === true ? '-G': ''} \
-    ${params.urn ? '-u "' + params.urn.replace('"', '\"') + '"' : ''}`;
+    return `${params.action ? '-a "' + params.action.replace(/"/g, '\\"') + '"' : ''}\
+${params.server ? ' -S "' + params.server.replace(/"/g, '\\"') + '"' : ''}\
+${params.database ? ' -D "' + params.database.replace(/"/g, '\\"') + '"' : ''}\
+${params.useAad !== true && params.user ? ' -U "' + params.user.replace(/"/g, '\\"') + '"' : ''}\
+${params.useAad === true ? ' -G': ''}\
+${params.urn ? ' -u "' + params.urn.replace(/"/g, '\\"') + '"' : ''}`;
 }
