@@ -37,7 +37,7 @@ import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorIn
 class MainThreadNotebookEditor extends Disposable {
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
 	public readonly contentChanged: Event<NotebookContentChange> = this._contentChangedEmitter.event;
-	private _info: IProviderInfo;
+	private _providerInfo: IProviderInfo;
 
 	constructor(public readonly editor: INotebookEditor) {
 		super();
@@ -51,7 +51,7 @@ class MainThreadNotebookEditor extends Disposable {
 			}));
 		});
 		editor.notebookParams.providerInfo.then(info => {
-			this._info = info;
+			this._providerInfo = info;
 		});
 	}
 
@@ -68,11 +68,11 @@ class MainThreadNotebookEditor extends Disposable {
 	}
 
 	public get providerId(): string {
-		return this._info ? this._info.providerId : undefined;
+		return this._providerInfo ? this._providerInfo.providerId : undefined;
 	}
 
 	public get providers(): string[] {
-		return this._info ? this._info.providers : [];
+		return this._providerInfo ? this._providerInfo.providers : [];
 	}
 
 	public get cells(): ICellModel[] {
