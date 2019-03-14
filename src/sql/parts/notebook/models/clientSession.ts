@@ -75,7 +75,9 @@ export class ClientSession implements IClientSession {
 		// Always resolving for now. It's up to callers to check for error case
 		this._isReady = true;
 		this._ready.resolve();
-		this._kernelChangeCompleted.resolve();
+		if (!this.isInErrorState && this._session && this._session.kernel) {
+			await this.notifyKernelChanged(undefined, this._session.kernel);
+		}
 	}
 
 	private async startServer(): Promise<void> {
@@ -246,6 +248,11 @@ export class ClientSession implements IClientSession {
 		this._isReady = kernel.isReady;
 		await this.updateCachedKernelSpec();
 		// Send resolution events to listeners
+		await this.notifyKernelChanged(oldKernel, newKernel);
+		return kernel;
+	}
+
+	private async notifyKernelChanged(oldKernel: nb.IKernel, newKernel: nb.IKernel): Promise<void> {
 		let changeArgs: nb.IKernelChangedArgs = {
 			oldValue: oldKernel,
 			newValue: newKernel
@@ -255,7 +262,6 @@ export class ClientSession implements IClientSession {
 		// Wait on connection configuration to complete before resolving full kernel change
 		this._kernelChangeCompleted.resolve();
 		this._kernelChangedEmitter.fire(changeArgs);
-		return kernel;
 	}
 
 	private async updateCachedKernelSpec(): Promise<void> {

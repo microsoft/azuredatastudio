@@ -81,23 +81,27 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 
 	$startNewSession(managerHandle: number, options: azdata.nb.ISessionOptions): Thenable<INotebookSessionDetails> {
 		return this._withSessionManager(managerHandle, async (sessionManager) => {
-			let session = await sessionManager.startNew(options);
-			let sessionId = this._addNewAdapter(session);
-			let kernelDetails: INotebookKernelDetails = undefined;
-			if (session.kernel) {
-				kernelDetails = this.saveKernel(session.kernel);
+			try {
+				let session = await sessionManager.startNew(options);
+				let sessionId = this._addNewAdapter(session);
+				let kernelDetails: INotebookKernelDetails = undefined;
+				if (session.kernel) {
+					kernelDetails = this.saveKernel(session.kernel);
+				}
+				let details: INotebookSessionDetails = {
+					sessionId: sessionId,
+					id: session.id,
+					path: session.path,
+					name: session.name,
+					type: session.type,
+					status: session.status,
+					canChangeKernels: session.canChangeKernels,
+					kernelDetails: kernelDetails
+				};
+				return details;
+			} catch (error) {
+				throw typeof(error) === 'string' ? new Error(error) : error;
 			}
-			let details: INotebookSessionDetails = {
-				sessionId: sessionId,
-				id: session.id,
-				path: session.path,
-				name: session.name,
-				type: session.type,
-				status: session.status,
-				canChangeKernels: session.canChangeKernels,
-				kernelDetails: kernelDetails
-			};
-			return details;
 		});
 	}
 
