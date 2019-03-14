@@ -1,3 +1,5 @@
+:: Runs unit tests for Extensions
+
 setlocal
 
 pushd %~dp0\..

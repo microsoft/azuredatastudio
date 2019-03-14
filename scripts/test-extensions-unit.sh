@@ -1,4 +1,6 @@
 #!/bin/bash
+
+# Runs unit tests for Extensions
 set -e
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
