@@ -15,6 +15,7 @@ import { CmsResourceItemType } from '../constants';
 import { CmsResourceTreeNodeBase } from './baseTreeNodes';
 import { AppContext } from '../../appContext';
 import { ICmsResourceTreeChangeHandler } from './treeChangeHandler';
+import { generateGuid } from '../utils';
 
 export class RegisteredServerTreeNode extends CmsResourceTreeNodeBase {
 
@@ -42,12 +43,35 @@ export class RegisteredServerTreeNode extends CmsResourceTreeNodeBase {
 		}
 	}
 
-	public getTreeItem(): TreeItem | Promise<TreeItem> {
-		let item = new TreeItem(this.name, TreeItemCollapsibleState.None);
-		item.contextValue = CmsResourceItemType.registeredServer;
-		item.id = this._id;
-		item.tooltip = this.description;
-		return item;
+	public getTreeItem(): azdata.TreeItem | Promise<azdata.TreeItem> {
+		// let item = new TreeItem(this.name, TreeItemCollapsibleState.None);
+		// item.contextValue = CmsResourceItemType.registeredServer;
+		// item.id = this._id;
+		// item.tooltip = this.description;
+		let payload = {
+			id: this._id,
+			connectionName: undefined,
+			serverName: undefined,
+			databaseName: undefined,
+			userName: undefined,
+			password: undefined,
+			authenticationType: 'Integrated',
+			savePassword: false,
+			groupFullName: undefined,
+			groupId: undefined,
+			providerName: 'MSSQL',
+			saveProfile: false,
+			options: { }
+		};
+		let treeItem = {
+			payload: payload,
+			id: generateGuid(),
+			tooltip: this.description,
+			contextValue: CmsResourceItemType.registeredServer,
+			collapsibleState: TreeItemCollapsibleState.None,
+			label: this.name
+		};
+		return treeItem;
 	}
 
 	public getNodeInfo(): azdata.NodeInfo {

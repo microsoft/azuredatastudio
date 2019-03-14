@@ -46,7 +46,11 @@
 			{
 				"command": "cms.resource.refresh",
 				"title": "%cms.resource.refresh.title%",
-				"when": "viewItem != cms.resource.itemType.registeredServer"
+				"when": "viewItem == cms.resource.itemType.serverGroup || viewItem == cms.resource.itemType.cmsNodeContainer",
+				"icon": {
+					"light": "resources/light/refresh.svg",
+					"dark": "resources/dark/refresh_inverse.svg"
+				}
 			}
 		],
 		"dataExplorer": {
@@ -77,7 +81,8 @@
 				},
 				{
 					"command": "cms.resource.refresh",
-					"when": "viewItem != cms.resource.itemType.registeredServer"
+					"when": "viewItem == cms.resource.itemType.serverGroup || viewItem == cms.resource.itemType.cmsNodeContainer",
+					"group": "inline"
 				}
 			]
 		}

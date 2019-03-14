@@ -72,8 +72,8 @@ export class CmsResourceTreeNode extends CmsResourceTreeNodeBase {
 		}
 	}
 
-	public getTreeItem(): TreeItem | Promise<TreeItem> {
-		const item = new TreeItem(this.name, TreeItemCollapsibleState.Collapsed);
+	public getTreeItem(): azdata.TreeItem | Promise<azdata.TreeItem> {
+		const item = new azdata.TreeItem(this.name, TreeItemCollapsibleState.Collapsed);
 		item.contextValue = CmsResourceItemType.serverGroup;
 		item.id = this._id;
 		item.tooltip = this.description;
