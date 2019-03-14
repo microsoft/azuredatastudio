@@ -61,7 +61,11 @@ export class NotebookContexts {
 			}
 		}
 		if (kernelChangedArgs && kernelChangedArgs.newValue && kernelChangedArgs.newValue.name && connProviderIds.length < 1) {
-			return connections;
+			if (kernelChangedArgs.newValue.name === 'python3') {
+				return this.LocalContext;
+			} else {
+				return connections;
+			}
 		} else {
 			connections = await this.getActiveContexts(connectionService, connProviderIds, profile);
 		}

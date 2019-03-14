@@ -340,6 +340,13 @@ export interface INotebookModel {
 	 */
 	trustedMode: boolean;
 
+
+	/**
+	 * A promise that is fulfilled when the model is ready to run the cell.
+	 */
+	readonly readyToRunCell: Promise<void>;
+
+
 	/**
 	 * Current notebook provider id
 	 */
@@ -526,4 +533,7 @@ export namespace notebookConstants {
 		language: 'sql',
 		display_name: sqlKernel
 	});
+	export const python3 = 'python3';
+	export const localhost = 'localhost';
+	export const selectConnection = 'Select connection';
 }

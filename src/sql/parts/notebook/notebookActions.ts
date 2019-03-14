@@ -252,6 +252,7 @@ export class KernelsDropdown extends SelectBox {
 
 	public doChangeKernel(displayName: string): void {
 		this.setOptions([msgChanging], 0);
+		this.model.resetReadyToRunCellDeferred();
 		this.model.changeKernel(displayName);
 	}
 }
@@ -298,6 +299,7 @@ export class AttachToDropdown extends SelectBox {
 			let kernelDisplayName: string = this.getKernelDisplayName();
 			if (kernelDisplayName) {
 				this.loadAttachToDropdown(this.model, kernelDisplayName, !validConnection);
+				this.model.readyToRunCellDeferred.resolve();
 			}
 		});
 	}
@@ -316,27 +318,21 @@ export class AttachToDropdown extends SelectBox {
 
 	// Load "Attach To" dropdown with the values corresponding to Kernel dropdown
 	public async loadAttachToDropdown(model: INotebookModel, currentKernel: string, showSelectConnection?: boolean): Promise<void> {
-		let connProviderIds = this.model.getApplicableConnectionProviderIds(currentKernel);
-		if ((connProviderIds && connProviderIds.length === 0) || currentKernel === noKernel) {
-			this.setOptions([msgLocalHost]);
+		let connections = this.getConnections(model);
+		this.enable();
+		if (showSelectConnection) {
+			connections = this.loadWithSelectConnection(connections);
 		}
 		else {
-			let connections = this.getConnections(model);
-			this.enable();
-			if (showSelectConnection) {
-				connections = this.loadWithSelectConnection(connections);
+			if (connections.length === 1 && connections[0] === msgAddNewConnection) {
+				connections.unshift(msgSelectConnection);
+				this.selectWithOptionName(msgSelectConnection);
 			}
 			else {
-				if (connections.length === 1 && connections[0] === msgAddNewConnection) {
-					connections.unshift(msgSelectConnection);
-					this.selectWithOptionName(msgSelectConnection);
-				}
-				else {
-					connections.push(msgAddNewConnection);
-				}
+				connections.push(msgAddNewConnection);
 			}
-			this.setOptions(connections);
 		}
+		this.setOptions(connections);
 	}
 
 	private loadWithSelectConnection(connections: string[]): string[] {

@@ -15,7 +15,7 @@ import { localize } from 'vs/nls';
 import * as notebookUtils from '../notebookUtils';
 import { CellTypes, CellType, NotebookChangeType } from 'sql/parts/notebook/models/contracts';
 import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
-import { ICellModel } from 'sql/parts/notebook/models/modelInterfaces';
+import { ICellModel, notebookConstants } from 'sql/parts/notebook/models/modelInterfaces';
 import { ICellModelOptions, IModelFactory, FutureInternal, CellExecutionState } from './modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
@@ -203,6 +203,16 @@ export class CellModel implements ICellModel {
 			if (!kernel) {
 				return false;
 			}
+
+			let model = this.options.notebook;
+
+			if (model) {
+				let validConnection = (model as NotebookModel).isValidConnectionForKernel(model.contexts.defaultConnection, kernel);
+				if (validConnection === undefined || !validConnection) {
+					throw new Error(localize('needValidConnection', "Please 'Select connection' in Attach to"));
+				}
+			}
+
 			// If cell is currently running and user clicks the stop/cancel button, call kernel.interrupt()
 			// This matches the same behavior as JupyterLab
 			if (this.future && this.future.inProgress) {
@@ -253,7 +263,7 @@ export class CellModel implements ICellModel {
 		} else if (!clientSession.isReady || clientSession.status === 'dead') {
 
 			this.sendNotification(notificationService, Severity.Info, localize('sessionNotReady', 'The session for this notebook will start momentarily'));
-			await clientSession.kernelChangeCompleted;
+			await model.readyToRunCell;
 		}
 		if (!clientSession.kernel) {
 			let defaultKernel = model && model.defaultKernel && model.defaultKernel.name;

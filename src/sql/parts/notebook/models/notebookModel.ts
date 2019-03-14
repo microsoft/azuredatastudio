@@ -24,6 +24,7 @@ import { URI } from 'vs/base/common/uri';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { uriPrefixes } from 'sql/platform/connection/common/utils';
+import { Deferred } from 'sql/base/common/promise';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -73,6 +74,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _oldKernel: nb.IKernel;
 	private _clientSessionListeners: IDisposable[] = [];
 	private _connectionsToDispose: ConnectionProfile[] = [];
+	private _readyToRunCellDeferred: Deferred<void> = new Deferred<void>();
 
 	constructor(private _notebookOptions: INotebookModelOptions, startSessionImmediately?: boolean, private connectionProfile?: IConnectionProfile) {
 		super();
@@ -94,6 +96,18 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			this._notebookOptions.layoutChanged(() => this._layoutChanged.fire());
 		}
 		this._defaultKernel = _notebookOptions.defaultKernel;
+	}
+
+	public get readyToRunCell(): Promise<void> {
+		return this._readyToRunCellDeferred.promise;
+	}
+
+	public get readyToRunCellDeferred(): Deferred<void> {
+		return this._readyToRunCellDeferred;
+	}
+
+	public resetReadyToRunCellDeferred() {
+		this._readyToRunCellDeferred = new Deferred<void>();
 	}
 
 	public get notebookManagers(): INotebookManager[] {
@@ -475,10 +489,22 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		};
 	}
 
-	private isValidConnection(profile: IConnectionProfile | connection.Connection) {
+	public isValidConnection(profile: IConnectionProfile | connection.Connection) {
 		let standardKernels = this._notebookOptions.standardKernels.find(kernel => this._savedKernelInfo && kernel.displayName === this._savedKernelInfo.display_name);
 		let connectionProviderIds = standardKernels ? standardKernels.connectionProviderIds : undefined;
 		return profile && connectionProviderIds && connectionProviderIds.find(provider => provider === profile.providerName) !== undefined;
+	}
+
+	public isValidConnectionForKernel(profile: IConnectionProfile | connection.Connection, kernel: nb.IKernel) {
+		let standardKernels = this._notebookOptions.standardKernels.find(k => kernel && kernel.name === k.name);
+		let connectionProviderIds = standardKernels ? standardKernels.connectionProviderIds : undefined;
+		if (standardKernels && standardKernels.name === notebookConstants.python3) {
+			let connecitonProfile = (profile as ConnectionProfile);
+			if (connecitonProfile) {
+				return connecitonProfile.serverName === notebookConstants.localhost;
+			}
+		}
+	return profile && profile.options && profile.options.serverName !== notebookConstants.selectConnection && profile.options.id !== '-1' && connectionProviderIds && connectionProviderIds.find(provider => provider === profile.providerName) !== undefined;
 	}
 
 	public getStandardKernelFromName(name: string): notebookUtils.IStandardKernelWithProvider {
