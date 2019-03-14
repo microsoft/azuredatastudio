@@ -203,38 +203,40 @@ export class MenubarControl extends Disposable {
 	}
 
 	private detectAndRecommendCustomTitlebar(): void {
-		if (!isLinux) {
-			return;
-		}
+		// {{SQL CARBON EDIT}} - Disable the custom titlebar recommendation
+		// if (!isLinux) {
+		// 	return;
+		// }
 
-		if (!this.storageService.getBoolean('menubar/electronFixRecommended', StorageScope.GLOBAL, false)) {
-			if (this.currentMenubarVisibility === 'hidden' || this.currentTitlebarStyleSetting === 'custom') {
-				// Issue will not arise for user, abort notification
-				return;
-			}
+		// if (!this.storageService.getBoolean('menubar/electronFixRecommended', StorageScope.GLOBAL, false)) {
+		// 	if (this.currentMenubarVisibility === 'hidden' || this.currentTitlebarStyleSetting === 'custom') {
+		// 		// Issue will not arise for user, abort notification
+		// 		return;
+		// 	}
 
-			const message = nls.localize('menubar.electronFixRecommendation', "If you experience hard to read text in the menu bar, we recommend trying out the custom title bar.");
-			this.notificationService.prompt(Severity.Info, message, [
-				{
-					label: nls.localize('goToSetting', "Open Settings"),
-					run: () => {
-						return this.preferencesService.openGlobalSettings(undefined, { query: 'window.titleBarStyle' });
-					}
-				},
-				{
-					label: nls.localize('moreInfo', "More Info"),
-					run: () => {
-						window.open('https://go.microsoft.com/fwlink/?linkid=2038566');
-					}
-				},
-				{
-					label: nls.localize('neverShowAgain', "Don't Show Again"),
-					run: () => {
-						this.storageService.store('menubar/electronFixRecommended', true, StorageScope.GLOBAL);
-					}
-				}
-			]);
-		}
+		// 	const message = nls.localize('menubar.electronFixRecommendation', "If you experience hard to read text in the menu bar, we recommend trying out the custom title bar.");
+		// 	this.notificationService.prompt(Severity.Info, message, [
+		// 		{
+		// 			label: nls.localize('goToSetting', "Open Settings"),
+		// 			run: () => {
+		// 				return this.preferencesService.openGlobalSettings(undefined, { query: 'window.titleBarStyle' });
+		// 			}
+		// 		},
+		// 		{
+		// 			label: nls.localize('moreInfo', "More Info"),
+		// 			run: () => {
+		// 				window.open('https://go.microsoft.com/fwlink/?linkid=2038566');
+		// 			}
+		// 		},
+		// 		{
+		// 			label: nls.localize('neverShowAgain', "Don't Show Again"),
+		// 			run: () => {
+		// 				this.storageService.store('menubar/electronFixRecommended', true, StorageScope.GLOBAL);
+		// 			}
+		// 		}
+		// 	]);
+		// }
+		// {{SQL CARBON EDIT}} - End
 	}
 
 	private registerListeners(): void {
