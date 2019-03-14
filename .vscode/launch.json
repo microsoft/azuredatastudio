@@ -147,7 +147,23 @@
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
 			]
-		}
+        },
+        {
+			"type": "chrome",
+			"request": "launch",
+            "name": "Run Extension Unit Tests",
+			"windows": {
+				"runtimeExecutable": "${workspaceFolder}/scripts/test-extensions-unit.bat"
+			},
+			"osx": {
+				"runtimeExecutable": "${workspaceFolder}/scripts/test-extensions-unit.sh"
+			},
+			"linux": {
+				"runtimeExecutable": "${workspaceFolder}/scripts/test-extensions.sh"
+            },
+			"webRoot": "${workspaceFolder}",
+			"timeout": 45000
+		},
 	],
 	"compounds": [
 		{
@@ -156,7 +172,14 @@
 				"Attach to azuredatastudio",
 				"Run Unit Tests"
 			]
-		},
+        },
+        {
+            "name": "Debug Extension Unit Tests",
+            "configurations": [
+                "Attach to Extension Host",
+                "Run Extension Unit Tests"
+            ]
+        },
 		{
 			"name": "Debug azuredatastudio Main and Renderer",
 			"configurations": [

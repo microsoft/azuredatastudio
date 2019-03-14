@@ -35,7 +35,7 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { ViewletPanel, IViewletPanelOptions } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { range } from 'vs/base/common/arrays';
-import { Orientation } from 'vs/base/browser/ui/splitview/splitview';
+import { Orientation, Sizing } from 'vs/base/browser/ui/splitview/splitview';
 import { Disposable, IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { generateUuid } from 'vs/base/common/uuid';
 import { TPromise } from 'vs/base/common/winjs.base';
@@ -202,6 +202,10 @@ export class GridPanel extends ViewletPanel {
 		}
 	}
 
+	public resetScrollPosition() : void {
+		this.splitView.setScrollPosition(this.state.scrollPosition);
+	}
+
 	private onResultSet(resultSet: azdata.ResultSetSummary | azdata.ResultSetSummary[]) {
 		let resultsToAdd: azdata.ResultSetSummary[];
 		if (!Array.isArray(resultSet)) {
@@ -298,7 +302,7 @@ export class GridPanel extends ViewletPanel {
 		// possible to need a sort?
 
 		if (isUndefinedOrNull(this.maximizedGrid)) {
-			this.splitView.addViews(tables, tables.map(i => i.minimumSize), this.splitView.length);
+			this.splitView.addViews(tables, Sizing.Distribute, this.splitView.length);
 		}
 
 		this.tables = this.tables.concat(tables);
@@ -341,7 +345,7 @@ export class GridPanel extends ViewletPanel {
 			this.maximizedGrid.state.maximized = false;
 			this.maximizedGrid = undefined;
 			this.splitView.removeView(0);
-			this.splitView.addViews(this.tables, this.tables.map(i => i.minimumSize));
+			this.splitView.addViews(this.tables, Sizing.Distribute);
 		}
 	}
 
@@ -712,7 +716,7 @@ class GridTable<T> extends Disposable implements IView {
 	}
 
 	public get maximumSize(): number {
-		return Math.max(this.maxSize, ACTIONBAR_HEIGHT + BOTTOM_PADDING);
+		return Number.POSITIVE_INFINITY;
 	}
 
 	private loadData(offset: number, count: number): Thenable<T[]> {

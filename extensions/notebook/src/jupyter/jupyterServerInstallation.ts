@@ -16,7 +16,9 @@ import * as request from 'request';
 import { ApiWrapper } from '../common/apiWrapper';
 import * as constants from '../common/constants';
 import * as utils from '../common/utils';
-import { OutputChannel, ConfigurationTarget, Event, EventEmitter, window } from 'vscode';
+import { OutputChannel, ConfigurationTarget, window } from 'vscode';
+import { Deferred } from '../common/promise';
+import { ConfigurePythonDialog } from '../dialog/configurePythonDialog';
 
 const localize = nls.loadMessageBundle();
 const msgPythonInstallationProgress = localize('msgPythonInstallationProgress', 'Python installation is in progress');
@@ -53,7 +55,7 @@ export default class JupyterServerInstallation {
 
 	private static readonly DefaultPythonLocation = path.join(utils.getUserHome(), 'azuredatastudio-python');
 
-	private _installCompleteEmitter = new EventEmitter<string>();
+	private _installReady: Deferred<void>;
 
 	constructor(extensionPath: string, outputChannel: OutputChannel, apiWrapper: ApiWrapper, pythonInstallationPath?: string, forceInstall?: boolean) {
 		this.extensionPath = extensionPath;
@@ -63,10 +65,15 @@ export default class JupyterServerInstallation {
 		this._forceInstall = !!forceInstall;
 
 		this.configurePackagePaths();
+
+		this._installReady = new Deferred<void>();
+		if (JupyterServerInstallation.isPythonInstalled(this.apiWrapper)) {
+			this._installReady.resolve();
+		}
 	}
 
-	public get onInstallComplete(): Event<string> {
-		return this._installCompleteEmitter.event;
+	public get installReady(): Promise<void> {
+		return this._installReady.promise;
 	}
 
 	public static async getInstallation(
@@ -232,7 +239,7 @@ export default class JupyterServerInstallation {
 		};
 	}
 
-	public async startInstallProcess(pythonInstallationPath?: string): Promise<void> {
+	public startInstallProcess(pythonInstallationPath?: string): Promise<void> {
 		if (pythonInstallationPath) {
 			this._pythonInstallationPath = pythonInstallationPath;
 			this.configurePackagePaths();
@@ -249,22 +256,30 @@ export default class JupyterServerInstallation {
 				operation: op => {
 					this.installDependencies(op)
 						.then(() => {
-							this._installCompleteEmitter.fire();
+							this._installReady.resolve();
 							updateConfig();
 						})
 						.catch(err => {
 							let errorMsg = msgDependenciesInstallationFailed(err);
 							op.updateStatus(azdata.TaskStatus.Failed, errorMsg);
 							this.apiWrapper.showErrorMessage(errorMsg);
-							this._installCompleteEmitter.fire(errorMsg);
+							this._installReady.reject(errorMsg);
 						});
 				}
 			});
 		} else {
 			// Python executable already exists, but the path setting wasn't defined,
 			// so update it here
-			this._installCompleteEmitter.fire();
+			this._installReady.resolve();
 			updateConfig();
+		}
+		return this._installReady.promise;
+	}
+
+	public async promptForPythonInstall(): Promise<void> {
+		if (!JupyterServerInstallation.isPythonInstalled(this.apiWrapper)) {
+			let pythonDialog = new ConfigurePythonDialog(this.apiWrapper, this.outputChannel, this);
+			return pythonDialog.showDialog(true);
 		}
 	}
 

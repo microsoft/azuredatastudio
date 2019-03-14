@@ -23,6 +23,7 @@ import { INotification, Severity } from 'vs/platform/notification/common/notific
 import { URI } from 'vs/base/common/uri';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { uriPrefixes } from 'sql/platform/connection/common/utils';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -71,6 +72,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _onValidConnectionSelected = new Emitter<boolean>();
 	private _oldKernel: nb.IKernel;
 	private _clientSessionListeners: IDisposable[] = [];
+	private _connectionsToDispose: ConnectionProfile[] = [];
 
 	constructor(private _notebookOptions: INotebookModelOptions, startSessionImmediately?: boolean, private connectionProfile?: IConnectionProfile) {
 		super();
@@ -695,6 +697,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return newKernelDisplayName;
 	}
 
+	public addAttachToConnectionsToBeDisposed(conn: ConnectionProfile) {
+		this._connectionsToDispose.push(conn);
+	}
+
 	private setErrorState(errMsg: string): void {
 		this._inErrorState = true;
 		let msg = localize('startSessionFailed', 'Could not start session: {0}', errMsg);
@@ -704,19 +710,21 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public dispose(): void {
 		super.dispose();
+		this.disconnectAttachToConnections();
 		this.handleClosed();
 	}
 
 	public async handleClosed(): Promise<void> {
 		try {
 			if (this.notebookOptions && this.notebookOptions.connectionService) {
-				let connectionService = this.notebookOptions.connectionService;
 				if (this._otherConnections) {
-					notebookUtils.asyncForEach(this._otherConnections, async (conn) => await connectionService.disconnect(conn).catch(e => console.log(e)));
+					notebookUtils.asyncForEach(this._otherConnections, async (conn) => {
+						await this.disconnectNotebookConnection(conn);
+					});
 					this._otherConnections = [];
 				}
 				if (this._activeConnection) {
-					await this.notebookOptions.connectionService.disconnect(this._activeConnection).catch(e => console.log(e));
+					await this.disconnectNotebookConnection(this._activeConnection);
 					this._activeConnection = undefined;
 				}
 			}
@@ -838,6 +846,24 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			return this.notebookManager.sessionManager.specs.kernels;
 		}
 		return [];
+	}
+
+	// Check for and disconnect from any new connections opened while in the notebook
+	// Note: notebooks should always connect with the connection URI in the following format,
+	// so that connections can be tracked accordingly throughout ADS:
+	// let connectionUri = Utils.generateUri(connection, 'notebook');
+	private async disconnectNotebookConnection(conn: ConnectionProfile): Promise<void> {
+		if (this.notebookOptions.connectionService.getConnectionUri(conn).includes(uriPrefixes.notebook)) {
+			await this.notebookOptions.connectionService.disconnect(conn).catch(e => console.log(e));
+		}
+	}
+
+	// Disconnect any connections that were added through the "Add new connection" functionality in the Attach To dropdown
+	private async disconnectAttachToConnections(): Promise<void> {
+		this._connectionsToDispose.forEach(async conn => {
+			await this.notebookOptions.connectionService.disconnect(conn).catch(e => console.log(e));
+		});
+		this._connectionsToDispose = [];
 	}
 
 	/**
