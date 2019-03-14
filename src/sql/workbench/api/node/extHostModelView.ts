@@ -1072,6 +1072,13 @@ class DropDownWrapper extends ComponentWrapper implements azdata.DropDownCompone
 		this.setProperty('editable', v);
 	}
 
+	public get fireOnTextChange(): boolean {
+		return this.properties['fireOnTextChange'];
+	}
+	public set fireOnTextChange(v: boolean) {
+		this.setProperty('fireOnTextChange', v);
+	}
+
 	public get onValueChanged(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
 		return emitter && emitter.event;

@@ -117,7 +117,7 @@ export interface IExtensionManifest {
 	publisher: string;
 	version: string;
 	// {{SQL CARBON EDIT}}
-	engines: { vscode: string; sqlops?: string };
+	engines: { vscode: string; azdata?: string };
 	displayName?: string;
 	description?: string;
 	main?: string;
@@ -141,6 +141,8 @@ export interface IGalleryExtensionProperties {
 	dependencies?: string[];
 	extensionPack?: string[];
 	engine?: string;
+	// {{SQL CARBON EDIT}}
+	azDataEngine?: string;
 	localizedLanguages?: string[];
 }
 

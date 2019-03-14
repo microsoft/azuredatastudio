@@ -24,7 +24,7 @@ export interface IExtensionDescription {
 	readonly engines: {
 		vscode: string;
 		// {{SQL CARBON EDIT}}
-		sqlops?: string;
+		azdata?: string;
 	};
 	readonly main?: string;
 	readonly contributes?: { [point: string]: any; };

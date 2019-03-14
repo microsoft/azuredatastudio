@@ -11,6 +11,7 @@ import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import { AppContext } from './appContext';
 import { SqlClusterConnection } from './objectExplorerNodeProvider/connection';
 import { ICommandObjectExplorerContext } from './objectExplorerNodeProvider/command';
+import { IEndpoint } from './utils';
 import { MssqlObjectExplorerNodeProvider } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
 
 
@@ -116,12 +117,6 @@ function connToConnectionParam(connection: azdata.connection.Connection): Connec
 		}
 	);
 	return <ConnectionParam>result;
-}
-
-interface IEndpoint {
-	serviceName: string;
-	ipAddress: string;
-	port: number;
 }
 
 class ConnectionParam implements azdata.connection.Connection, azdata.IConnectionProfile, azdata.ConnectionInfo

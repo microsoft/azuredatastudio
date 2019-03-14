@@ -1,13 +1,13 @@
 {
 	"name": "azurecore",
 	"displayName": "%azure.displayName%",
-	"description": "%azure.description",
+	"description": "%azure.description%",
 	"version": "0.1.0",
 	"publisher": "Microsoft",
 	"preview": true,
 	"engines": {
 		"vscode": "^1.25.0",
-		"sqlops": "*"
+		"azdata": "*"
 	},
 	"activationEvents": [
 		"*"
