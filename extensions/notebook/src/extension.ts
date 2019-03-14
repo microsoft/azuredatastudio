@@ -73,7 +73,7 @@ function newNotebook(connectionProfile: azdata.IConnectionProfile) {
 
 function findNextUntitledEditorName(): string {
 	let nextVal = untitledCounter;
-	// Note: this will go forever if it's coded wrong, or you have inifinite Untitled notebooks!
+	// Note: this will go forever if it's coded wrong, or you have infinite Untitled notebooks!
 	while (true) {
 		let title = `Notebook-${nextVal++}`;
 		let hasTextDoc = vscode.workspace.textDocuments.findIndex(doc => doc.isUntitled && doc.fileName === title) > -1;
