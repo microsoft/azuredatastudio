@@ -576,7 +576,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			let changeKernelNeeded = true;
 			if (mustSetProvider) {
 				let providerChanged = await this.tryStartSessionByChangingProviders(displayName);
-				// If provider was changed, no need to update kernels since a brand new session was created.
+				// If provider was changed, a new session with new kernel is already created. We can skip calling changeKernel.
 				changeKernelNeeded = !providerChanged;
 			}
 			if (changeKernelNeeded) {
