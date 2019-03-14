@@ -54,7 +54,7 @@ export function activate(extensionContext: vscode.ExtensionContext) {
 }
 
 function newNotebook(connectionProfile: azdata.IConnectionProfile) {
-	let title = `Untitled-${counter++}`;
+	let title = findNextUntitledEditorName();
 	let untitledUri = vscode.Uri.parse(`untitled:${title}`);
 	let options: azdata.nb.NotebookShowOptions = connectionProfile ? {
 		viewColumn: null,
@@ -69,6 +69,20 @@ function newNotebook(connectionProfile: azdata.IConnectionProfile) {
 	}, (err: Error) => {
 		vscode.window.showErrorMessage(err.message);
 	});
+}
+
+function findNextUntitledEditorName(): string {
+	let nextVal = counter;
+	// Note: this will go forever if it's coded wrong, or you have inifinite Untitled notebooks!
+	while (true) {
+		let title = `Untitled-${nextVal++}`;
+		let hasTextDoc = vscode.workspace.textDocuments.findIndex(doc => doc.isUntitled && doc.fileName === title) > -1;
+		let hasNotebookDoc = azdata.nb.notebookDocuments.findIndex(doc => doc.isUntitled && doc.fileName === title) > -1;
+		if (!hasTextDoc && !hasNotebookDoc) {
+			counter = nextVal;
+			return title;
+		}
+	}
 }
 
 async function openNotebook(): Promise<void> {
