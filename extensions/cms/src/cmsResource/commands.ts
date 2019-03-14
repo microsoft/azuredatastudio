@@ -121,4 +121,12 @@ export function registerCmsResourceCommands(appContext: AppContext, tree: CmsRes
 			}
 		});
 	});
+
+	// Refresh the cms resource
+	appContext.apiWrapper.registerCommand('cms.resource.refresh', async (node? : TreeNode) => {
+		if (!node) {
+			return;
+		}
+		tree.notifyNodeChanged(undefined);
+	});
 }

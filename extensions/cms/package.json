@@ -42,6 +42,11 @@
 				"command": "cms.resource.deleteServerGroup",
 				"title": "%cms.resource.deleteServerGroup.title%",
 				"when": "viewItem == cms.resource.itemType.serverGroup"
+			},
+			{
+				"command": "cms.resource.refresh",
+				"title": "%cms.resource.refresh.title%",
+				"when": "viewItem != cms.resource.itemType.registeredServer"
 			}
 		],
 		"dataExplorer": {
@@ -69,6 +74,10 @@
 				{
 					"command": "cms.resource.addServerGroup",
 					"when": "viewItem == cms.resource.itemType.serverGroup"
+				},
+				{
+					"command": "cms.resource.refresh",
+					"when": "viewItem != cms.resource.itemType.registeredServer"
 				}
 			]
 		}

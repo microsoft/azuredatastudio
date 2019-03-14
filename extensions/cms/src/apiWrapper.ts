@@ -241,7 +241,14 @@ export class ApiWrapper {
 		let cmsDialog: azdata.CmsDialog = azdata.CmsDialog.serverRegistrationDialog;
 		return this.openConnectionDialog(['MSSQL'], undefined, undefined, cmsDialog).then((connection) => {
 			if (connection && connection.options) {
-				return provider.addRegisteredServer(ownerUri, relativePath, connection.options.registeredServerName, connection.options.registeredServerDescription, connection);
+				return provider.addRegisteredServer(ownerUri, relativePath,
+					connection.options.registeredServerName, connection.options.registeredServerDescription, connection).then((result) => {
+						if (result) {
+							let name = connection.options.registeredServerName;
+							let description = connection.options.registeredServerDescription;
+							return { name, description, connection };
+						}
+					})
 			}
 		});
 	}
