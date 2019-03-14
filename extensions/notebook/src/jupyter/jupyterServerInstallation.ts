@@ -16,10 +16,8 @@ import * as request from 'request';
 import { ApiWrapper } from '../common/apiWrapper';
 import * as constants from '../common/constants';
 import * as utils from '../common/utils';
-import { OutputChannel, ConfigurationTarget, Event, EventEmitter, window } from 'vscode';
+import { OutputChannel, ConfigurationTarget, window } from 'vscode';
 import { Deferred } from '../common/promise';
-import CodeAdapter from '../prompts/adapter';
-import { IQuestion, QuestionTypes } from '../prompts/question';
 import { ConfigurePythonDialog } from '../dialog/configurePythonDialog';
 
 const localize = nls.loadMessageBundle();
