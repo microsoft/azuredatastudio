@@ -81,23 +81,27 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 
 	$startNewSession(managerHandle: number, options: azdata.nb.ISessionOptions): Thenable<INotebookSessionDetails> {
 		return this._withSessionManager(managerHandle, async (sessionManager) => {
-			let session = await sessionManager.startNew(options);
-			let sessionId = this._addNewAdapter(session);
-			let kernelDetails: INotebookKernelDetails = undefined;
-			if (session.kernel) {
-				kernelDetails = this.saveKernel(session.kernel);
+			try {
+				let session = await sessionManager.startNew(options);
+				let sessionId = this._addNewAdapter(session);
+				let kernelDetails: INotebookKernelDetails = undefined;
+				if (session.kernel) {
+					kernelDetails = this.saveKernel(session.kernel);
+				}
+				let details: INotebookSessionDetails = {
+					sessionId: sessionId,
+					id: session.id,
+					path: session.path,
+					name: session.name,
+					type: session.type,
+					status: session.status,
+					canChangeKernels: session.canChangeKernels,
+					kernelDetails: kernelDetails
+				};
+				return details;
+			} catch (error) {
+				throw typeof(error) === 'string' ? new Error(error) : error;
 			}
-			let details: INotebookSessionDetails = {
-				sessionId: sessionId,
-				id: session.id,
-				path: session.path,
-				name: session.name,
-				type: session.type,
-				status: session.status,
-				canChangeKernels: session.canChangeKernels,
-				kernelDetails: kernelDetails
-			};
-			return details;
 		});
 	}
 
@@ -267,7 +271,16 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		if (manager === undefined) {
 			return TPromise.wrapError<R>(new Error(localize('errNoManager', 'No Manager found')));
 		}
-		return TPromise.wrap(callback(manager));
+		return TPromise.wrap(this.callbackWithErrorWrap<R>(callback, manager));
+	}
+
+	private async callbackWithErrorWrap<R>(callback: (manager: NotebookManagerAdapter) => R | PromiseLike<R>, manager: NotebookManagerAdapter): Promise<R> {
+		try {
+			let value = await callback(manager);
+			return value;
+		} catch (error) {
+			throw typeof(error) === 'string' ? new Error(error) : error;
+		}
 	}
 
 	private _withServerManager<R>(handle: number, callback: (manager: azdata.nb.ServerManager) => R | PromiseLike<R>): TPromise<R> {
