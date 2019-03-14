@@ -271,7 +271,16 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		if (manager === undefined) {
 			return TPromise.wrapError<R>(new Error(localize('errNoManager', 'No Manager found')));
 		}
-		return TPromise.wrap(callback(manager));
+		return TPromise.wrap(this.callbackWithErrorWrap<R>(callback, manager));
+	}
+
+	private async callbackWithErrorWrap<R>(callback: (manager: NotebookManagerAdapter) => R | PromiseLike<R>, manager: NotebookManagerAdapter): Promise<R> {
+		try {
+			let value = await callback(manager);
+			return value;
+		} catch (error) {
+			throw typeof(error) === 'string' ? new Error(error) : error;
+		}
 	}
 
 	private _withServerManager<R>(handle: number, callback: (manager: azdata.nb.ServerManager) => R | PromiseLike<R>): TPromise<R> {

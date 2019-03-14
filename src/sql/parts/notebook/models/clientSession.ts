@@ -9,9 +9,9 @@
 'use strict';
 
 import { nb } from 'azdata';
-import * as nls from 'vs/nls';
 import { URI } from 'vs/base/common/uri';
 import { Event, Emitter } from 'vs/base/common/event';
+import { localize } from 'vs/nls';
 
 import { IClientSession, IKernelPreference, IClientSessionOptions } from './modelInterfaces';
 import { Deferred } from 'sql/base/common/promise';
@@ -70,7 +70,7 @@ export class ClientSession implements IClientSession {
 			await this.initializeSession();
 			await this.updateCachedKernelSpec();
 		} catch (err) {
-			this._errorMessage = notebookUtils.getErrorMessage(err);
+			this._errorMessage = notebookUtils.getErrorMessage(err) || localize('clientSession.unknownError', 'An error occurred while starting the notebook session');
 		}
 		// Always resolving for now. It's up to callers to check for error case
 		this._isReady = true;
@@ -85,7 +85,7 @@ export class ClientSession implements IClientSession {
 		if (serverManager && !serverManager.isStarted) {
 			await serverManager.startServer();
 			if (!serverManager.isStarted) {
-				throw new Error(nls.localize('ServerNotStarted', 'Server did not start for unknown reason'));
+				throw new Error(localize('ServerNotStarted', 'Server did not start for unknown reason'));
 			}
 			this.isServerStarted = serverManager.isStarted;
 		} else {
@@ -118,7 +118,7 @@ export class ClientSession implements IClientSession {
 		} catch (err) {
 			// TODO move registration
 			if (err && err.response && err.response.status === 501) {
-				this.options.notificationService.warn(nls.localize('kernelRequiresConnection', 'Kernel {0} was not found. The default kernel will be used instead.', kernelName));
+				this.options.notificationService.warn(localize('kernelRequiresConnection', 'Kernel {0} was not found. The default kernel will be used instead.', kernelName));
 				session = await this.notebookManager.sessionManager.startNew({
 					path: this.notebookUri.fsPath,
 					kernelName: undefined

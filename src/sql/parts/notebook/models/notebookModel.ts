@@ -438,13 +438,12 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				} else {
 					throw new Error(clientSession.errorMessage);
 				}
-			} else {
-				this._onClientSessionReady.fire(clientSession);
-				this._kernelChangedEmitter.fire({
-					oldValue: undefined,
-					newValue: clientSession.kernel
-				});
 			}
+			this._onClientSessionReady.fire(clientSession);
+			this._kernelChangedEmitter.fire({
+				oldValue: undefined,
+				newValue: clientSession.kernel
+			});
 		}
 	}
 
@@ -589,6 +588,14 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		} catch (err) {
 			if (oldDisplayName && restoreOnFail) {
 				this.notifyError(localize('changeKernelFailedRetry', 'Failed to change kernel. Kernel {0} will be used. Error was: {1}', oldDisplayName, notebookUtils.getErrorMessage(err)));
+				// Clear out previous kernel
+				let failedProviderId = this.tryFindProviderForKernel(displayName, true);
+				let oldProviderId = this.tryFindProviderForKernel(oldDisplayName, true);
+				if (failedProviderId !== oldProviderId) {
+					// We need to clear out the old kernel information so we switch providers. Otherwise in the SQL -> Jupyter -> SQL failure case,
+					// we would never reset the providers
+					this._oldKernel = undefined;
+				}
 				return this.doChangeKernel(oldDisplayName, mustSetProvider, false);
 			} else {
 				this.notifyError(localize('changeKernelFailed', 'Failed to change kernel due to error: {0}', notebookUtils.getErrorMessage(err)));
@@ -847,14 +854,15 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return false;
 	}
 
-	private tryFindProviderForKernel(displayName: string,) {
+	private tryFindProviderForKernel(displayName: string, alwaysReturnId: boolean = false) {
 		if (!displayName) {
 			return undefined;
 		}
 		let standardKernel = this.getStandardKernelFromDisplayName(displayName);
-		if (standardKernel && (!this._oldKernel || this._oldKernel.name !== standardKernel.name)) {
-			if (this._kernelDisplayNameToNotebookProviderIds.has(displayName)) {
-				return this._kernelDisplayNameToNotebookProviderIds.get(displayName);
+		if (standardKernel) {
+			let providerId = this._kernelDisplayNameToNotebookProviderIds.get(displayName);
+			if (alwaysReturnId || (!this._oldKernel || this._oldKernel.name !== standardKernel.name)) {
+				return providerId;
 			}
 		}
 		return undefined;
@@ -904,7 +912,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		};
 	}
 
-	onCellChange(cell: CellModel, change: NotebookChangeType): void {
+	onCellChange(cell: ICellModel, change: NotebookChangeType): void {
 		let changeInfo: NotebookContentChange = {
 			changeType: change,
 			cells: [cell]
