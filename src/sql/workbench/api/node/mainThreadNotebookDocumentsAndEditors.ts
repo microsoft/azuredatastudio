@@ -68,7 +68,7 @@ class MainThreadNotebookEditor extends Disposable {
 	}
 
 	public get providerId(): string {
-		return this._info ? this._info.providerId : undefined;;
+		return this._info ? this._info.providerId : undefined;
 	}
 
 	public get providers(): string[] {
