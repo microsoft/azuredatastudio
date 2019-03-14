@@ -2,16 +2,17 @@
     "name": "admin-pack",
     "displayName": "Admin Pack for SQL Server",
     "description": "",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "publisher": "Microsoft",
     "engines": {
         "vscode": "*",
-        "sqlops": "*"
+        "azdata": "*"
     },
     "extensionPack": [
         "Microsoft.agent",
         "Microsoft.profiler",
-        "Microsoft.import"
+        "Microsoft.import",
+        "Microsoft.dacpac"
     ],
     "repository": {
         "type": "git",

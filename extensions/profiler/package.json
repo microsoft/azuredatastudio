@@ -2,7 +2,7 @@
   "name": "profiler",
   "displayName": "SQL Server Profiler",
   "description": "SQL Server Profiler for Azure Data Studio",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt",

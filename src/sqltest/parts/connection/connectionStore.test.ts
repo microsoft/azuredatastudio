@@ -227,7 +227,7 @@ suite('SQL ConnectionStore tests', () => {
 		defaultNamedConnectionProfile = new ConnectionProfile(capabilitiesService, defaultNamedProfile);
 	});
 
-	test('addActiveConnection should limit recent connection saves to the MaxRecentConnections amount', (done) => {
+	test('addActiveConnection should limit recent connection saves to the MaxRecentConnections amount', async () => {
 		// Given 5 is the max # creds
 		let numCreds = 6;
 
@@ -239,32 +239,47 @@ suite('SQL ConnectionStore tests', () => {
 		// Expect all of them to be saved even if size is limited to 3
 		let connectionStore = new ConnectionStore(storageServiceMock.object, context.object, undefined, workspaceConfigurationServiceMock.object,
 			credentialStore.object, capabilitiesService, connectionConfig.object);
-		let promise = Promise.resolve<void>();
 		for (let i = 0; i < numCreds; i++) {
 			let cred = Object.assign({}, defaultNamedProfile, { serverName: defaultNamedProfile.serverName + i });
 			let connectionProfile = new ConnectionProfile(capabilitiesService, cred);
-			promise = promise.then(() => {
-				return connectionStore.addActiveConnection(connectionProfile);
-			}).then(() => {
-				let current = connectionStore.getRecentlyUsedConnections();
-				if (i >= maxRecent) {
-					assert.equal(current.length, maxRecent, `expect only top ${maxRecent} creds to be saved`);
-				} else {
-					assert.equal(current.length, i + 1, `expect all credentials to be saved ${current.length}|${i + 1} `);
-				}
-				assert.equal(current[0].serverName, cred.serverName, 'Expect most recently saved item to be first in list');
-				assert.ok(!current[0].password);
-			});
+			await connectionStore.addActiveConnection(connectionProfile, true);
+
+			let current = connectionStore.getRecentlyUsedConnections();
+			if (i >= maxRecent) {
+				assert.equal(current.length, maxRecent, `expect only top ${maxRecent} creds to be saved to MRU`);
+			} else {
+				assert.equal(current.length, i + 1, `expect all credentials to be saved to MRU ${current.length}|${i + 1} `);
+			}
+			assert.equal(current[0].serverName, cred.serverName, 'Expect most recently saved item to be first in list');
+			assert.ok(!current[0].password);
 		}
-		promise.then(() => {
-			credentialStore.verify(x => x.saveCredential(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.exactly(numCreds));
-			let recentConnections = connectionStore.getActiveConnections();
-			assert.equal(numCreds, recentConnections.length, `expect number of active connection ${numCreds}|${recentConnections.length} `);
-			done();
-		}, err => {
-			// Must call done here so test indicates it's finished if errors occur
-			done(err);
-		});
+		credentialStore.verify(x => x.saveCredential(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.exactly(numCreds));
+		let recentConnections = connectionStore.getActiveConnections();
+		assert.equal(numCreds, recentConnections.length, `expect number of active connection ${numCreds}|${recentConnections.length} `);
+	});
+
+	test('addActiveConnection with addToMru as false should not add any recent connections', async () => {
+		// setup memento for MRU to return a list we have access to
+		credentialStore.setup(x => x.saveCredential(TypeMoq.It.isAny(), TypeMoq.It.isAny()))
+			.returns(() => Promise.resolve(true));
+
+		const numCreds = 3;
+		let connectionStore = new ConnectionStore(storageServiceMock.object, context.object, undefined, workspaceConfigurationServiceMock.object,
+			credentialStore.object, capabilitiesService, connectionConfig.object);
+		connectionStore.clearActiveConnections();
+		connectionStore.clearRecentlyUsed();
+
+		for (let i = 0; i < 3; i++) {
+			let cred = Object.assign({}, defaultNamedProfile, { serverName: defaultNamedProfile.serverName + i });
+			let connectionProfile = new ConnectionProfile(capabilitiesService, cred);
+			await connectionStore.addActiveConnection(connectionProfile, false);
+
+			let recentConnections = connectionStore.getRecentlyUsedConnections();
+			let activeConnections = connectionStore.getActiveConnections();
+			assert.equal(recentConnections.length, 0, `expect no entries to be saved to MRU`);
+			assert.equal(activeConnections.length, i + 1, `expect all credentials to be saved to activeConnections ${activeConnections.length}|${i + 1} `);
+		}
+		credentialStore.verify(x => x.saveCredential(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.exactly(numCreds));
 	});
 
 	test('getRecentlyUsedConnections should return connection for given provider', () => {
@@ -275,7 +290,7 @@ suite('SQL ConnectionStore tests', () => {
 		assert.equal(connections.every(c => c.providerName === 'Provider2'), true);
 	});
 
-	test('addActiveConnection should add same connection exactly once', (done) => {
+	test('addActiveConnection should add same connection exactly once', async () => {
 		// setup memento for MRU to return a list we have access to
 		credentialStore.setup(x => x.saveCredential(TypeMoq.It.isAny(), TypeMoq.It.isAny()))
 			.returns(() => Promise.resolve(true));
@@ -286,25 +301,19 @@ suite('SQL ConnectionStore tests', () => {
 			credentialStore.object, capabilitiesService, connectionConfig.object);
 		connectionStore.clearActiveConnections();
 		connectionStore.clearRecentlyUsed();
-		let promise = Promise.resolve();
 		let cred = Object.assign({}, defaultNamedProfile, { serverName: defaultNamedProfile.serverName + 1 });
 		let connectionProfile = new ConnectionProfile(capabilitiesService, cred);
-		promise = promise.then(() => {
-			return connectionStore.addActiveConnection(defaultNamedConnectionProfile);
-		}).then(() => {
-			return connectionStore.addActiveConnection(connectionProfile);
-		}).then(() => {
-			return connectionStore.addActiveConnection(connectionProfile);
-		}).then(() => {
-			let current = connectionStore.getRecentlyUsedConnections();
-			assert.equal(current.length, 2, 'expect 2 unique credentials to have been added');
-			assert.equal(current[0].serverName, cred.serverName, 'Expect most recently saved item to be first in list');
-			assert.ok(!current[0].password);
-		}).then(() => done(), err => done(err));
+		await connectionStore.addActiveConnection(defaultNamedConnectionProfile, true);
+		await connectionStore.addActiveConnection(connectionProfile, true);
+		await connectionStore.addActiveConnection(connectionProfile, true);
+
+		let recentConnections = connectionStore.getRecentlyUsedConnections();
+		assert.equal(recentConnections.length, 2, 'expect 2 unique credentials to have been added');
+		assert.equal(recentConnections[0].serverName, cred.serverName, 'Expect most recently saved item to be first in list');
+		assert.ok(!recentConnections[0].password);
 	});
 
-	test('addActiveConnection should save password to credential store', (done) => {
-
+	test('addActiveConnection should save password to credential store', async () => {
 		// Setup credential store to capture credentials sent to it
 		let capturedCreds: any;
 		credentialStore.setup(x => x.saveCredential(TypeMoq.It.isAny(), TypeMoq.It.isAny()))
@@ -316,11 +325,11 @@ suite('SQL ConnectionStore tests', () => {
 			})
 			.returns(() => Promise.resolve(true));
 
-		// Given we save 1 connection with password and multiple other connections without
 		let connectionStore = new ConnectionStore(storageServiceMock.object, context.object, undefined, workspaceConfigurationServiceMock.object,
 			credentialStore.object, capabilitiesService, connectionConfig.object);
 		connectionStore.clearActiveConnections();
 		connectionStore.clearRecentlyUsed();
+
 		let integratedCred = Object.assign({}, defaultNamedProfile, {
 			serverName: defaultNamedProfile.serverName + 'Integrated',
 			authenticationType: 'Integrated',
@@ -334,39 +343,38 @@ suite('SQL ConnectionStore tests', () => {
 		let connectionProfile = new ConnectionProfile(capabilitiesService, defaultNamedProfile);
 
 		let expectedCredCount = 0;
-		let promise = Promise.resolve();
-		promise = promise.then(() => {
-			expectedCredCount++;
-			return connectionStore.addActiveConnection(connectionProfile);
-		}).then(() => {
-			let current = connectionStore.getRecentlyUsedConnections();
-			// Then verify that since its password based we save the password
-			credentialStore.verify(x => x.saveCredential(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
-			assert.strictEqual(capturedCreds.password, defaultNamedProfile.password);
-			let credId: string = capturedCreds.credentialId;
-			assert.ok(credId.includes(ConnectionStore.CRED_PROFILE_USER), 'Expect credential to be marked as an Profile cred');
-			assert.ok(!current[0].password);
-		}).then(() => {
-			// When add integrated auth connection
-			expectedCredCount++;
-			let integratedCredConnectionProfile = new ConnectionProfile(capabilitiesService, integratedCred);
-			return connectionStore.addActiveConnection(integratedCredConnectionProfile);
-		}).then(() => {
-			let current = connectionStore.getRecentlyUsedConnections();
-			// then expect no to have credential store called, but MRU count upped to 2
-			credentialStore.verify(x => x.saveCredential(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
-			assert.equal(current.length, expectedCredCount, `expect ${expectedCredCount} unique credentials to have been added`);
-		}).then(() => {
-			// When add connection without password
-			expectedCredCount++;
-			let noPwdCredConnectionProfile = new ConnectionProfile(capabilitiesService, noPwdCred);
-			return connectionStore.addActiveConnection(noPwdCredConnectionProfile);
-		}).then(() => {
-			let current = connectionStore.getRecentlyUsedConnections();
-			// then expect no to have credential store called, but MRU count upped to 3
-			credentialStore.verify(x => x.saveCredential(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
-			assert.equal(current.length, expectedCredCount, `expect ${expectedCredCount} unique credentials to have been added`);
-		}).then(() => done(), err => done(err));
+		expectedCredCount++;
+		// Connection with stored password
+		await connectionStore.addActiveConnection(connectionProfile, true);
+		let recentConnections = connectionStore.getActiveConnections();
+
+		// Then verify that saveCredential was called and correctly stored the password
+		credentialStore.verify(x => x.saveCredential(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
+		assert.strictEqual(capturedCreds.password, defaultNamedProfile.password);
+		let credId: string = capturedCreds.credentialId;
+		assert.ok(credId.includes(ConnectionStore.CRED_PROFILE_USER), 'Expect credential to be marked as an Profile cred');
+		assert.ok(!recentConnections[0].password);
+
+		// Integrated auth
+		expectedCredCount++;
+		let integratedCredConnectionProfile = new ConnectionProfile(capabilitiesService, integratedCred);
+		await connectionStore.addActiveConnection(integratedCredConnectionProfile, true);
+
+		recentConnections = connectionStore.getActiveConnections();
+		// We shouldn't see an increase in the calls to saveCredential, but the MRU should be increased
+		credentialStore.verify(x => x.saveCredential(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
+		assert.equal(recentConnections.length, expectedCredCount, `expect ${expectedCredCount} unique credentials to have been added`);
+
+		// Connection with blank (no) password
+		expectedCredCount++;
+		let noPwdCredConnectionProfile = new ConnectionProfile(capabilitiesService, noPwdCred);
+		await connectionStore.addActiveConnection(noPwdCredConnectionProfile, true);
+
+		recentConnections = connectionStore.getActiveConnections();
+		// We shouldn't see an increase in the calls to saveCredential, but the MRU should be increased
+		credentialStore.verify(x => x.saveCredential(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
+		assert.equal(recentConnections.length, expectedCredCount, `expect ${expectedCredCount} unique credentials to have been added`);
+
 	});
 
 	test('can clear connections list', (done) => {

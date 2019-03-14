@@ -67,7 +67,7 @@ export class WebHDFS {
 			params || {}
 		);
 		endpoint.search = querystring.stringify(searchOpts);
-		return url.format(endpoint);
+		return encodeURI(url.format(endpoint));
 	}
 
 	/**
