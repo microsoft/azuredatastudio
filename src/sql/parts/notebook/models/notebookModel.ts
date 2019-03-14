@@ -354,7 +354,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				cellIndex: index
 			});
 		} else {
-			this.notifyError(localize('deleteCellFailed', 'Failed to delete cell.'));
+			this.notifyError(localize('deleteCellFailed', "Failed to delete cell."));
 		}
 	}
 
@@ -582,12 +582,13 @@ export class NotebookModel extends Disposable implements INotebookModel {
 						await this.updateKernelInfoOnKernelChange(kernel);
 					} catch (err2) {
 						// TODO should we handle this in any way?
+						console.log(`doChangeKernel: ignoring error ${notebookUtils.getErrorMessage(err2)}`);
 					}
 				}
 			}
 		} catch (err) {
 			if (oldDisplayName && restoreOnFail) {
-				this.notifyError(localize('changeKernelFailedRetry', 'Failed to change kernel. Kernel {0} will be used. Error was: {1}', oldDisplayName, notebookUtils.getErrorMessage(err)));
+				this.notifyError(localize('changeKernelFailedRetry', "Failed to change kernel. Kernel {0} will be used. Error was: {1}", oldDisplayName, notebookUtils.getErrorMessage(err)));
 				// Clear out previous kernel
 				let failedProviderId = this.tryFindProviderForKernel(displayName, true);
 				let oldProviderId = this.tryFindProviderForKernel(oldDisplayName, true);
@@ -598,7 +599,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				}
 				return this.doChangeKernel(oldDisplayName, mustSetProvider, false);
 			} else {
-				this.notifyError(localize('changeKernelFailed', 'Failed to change kernel due to error: {0}', notebookUtils.getErrorMessage(err)));
+				this.notifyError(localize('changeKernelFailed', "Failed to change kernel due to error: {0}", notebookUtils.getErrorMessage(err)));
 				this._kernelChangedEmitter.fire({
 					newValue: undefined,
 					oldValue: undefined
@@ -660,7 +661,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				});
 		} catch (err) {
 			let msg = notebookUtils.getErrorMessage(err);
-			this.notifyError(localize('changeContextFailed', 'Changing context failed: {0}', msg));
+			this.notifyError(localize('changeContextFailed', "Changing context failed: {0}", msg));
 		}
 	}
 
@@ -739,7 +740,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	private setErrorState(errMsg: string): void {
 		this._inErrorState = true;
-		let msg = localize('startSessionFailed', 'Could not start session: {0}', errMsg);
+		let msg = localize('startSessionFailed', "Could not start session: {0}", errMsg);
 		this.notifyError(msg);
 
 	}
@@ -766,7 +767,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			}
 			await this.shutdownActiveSession();
 		} catch (err) {
-			this.notifyError(localize('shutdownError', 'An error occurred when closing the notebook: {0}', err));
+			this.notifyError(localize('shutdownError', "An error occurred when closing the notebook: {0}", err));
 		}
 	}
 
@@ -776,7 +777,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				await this._activeClientSession.ready;
 			}
 			catch (err) {
-				this.notifyError(localize('shutdownClientSessionError', 'A client session error occurred when closing the notebook: {0}', err));
+				this.notifyError(localize('shutdownClientSessionError', "A client session error occurred when closing the notebook: {0}", err));
 			}
 			await this._activeClientSession.shutdown();
 			this.clearClientSessionListeners();
