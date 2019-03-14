@@ -22,8 +22,8 @@ import {
 	SqlMainContext, MainThreadNotebookDocumentsAndEditorsShape, SqlExtHostContext, ExtHostNotebookDocumentsAndEditorsShape,
 	INotebookDocumentsAndEditorsDelta, INotebookEditorAddData, INotebookShowOptions, INotebookModelAddedData, INotebookModelChangedData
 } from 'sql/workbench/api/node/sqlExtHost.protocol';
-import { NotebookInput, NotebookEditorModel } from 'sql/parts/notebook/notebookInput';
-import { INotebookService, INotebookEditor, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/common/notebookService';
+import { NotebookInput } from 'sql/parts/notebook/notebookInput';
+import { INotebookService, INotebookEditor, IProviderInfo } from 'sql/workbench/services/notebook/common/notebookService';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { disposed } from 'vs/base/common/errors';
@@ -37,6 +37,7 @@ import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorIn
 class MainThreadNotebookEditor extends Disposable {
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
 	public readonly contentChanged: Event<NotebookContentChange> = this._contentChangedEmitter.event;
+	private _info: IProviderInfo;
 
 	constructor(public readonly editor: INotebookEditor) {
 		super();
@@ -48,6 +49,9 @@ class MainThreadNotebookEditor extends Disposable {
 				};
 				this._contentChangedEmitter.fire(changeEvent);
 			}));
+		});
+		editor.notebookParams.providerInfo.then(info => {
+			this._info = info;
 		});
 	}
 
@@ -64,11 +68,11 @@ class MainThreadNotebookEditor extends Disposable {
 	}
 
 	public get providerId(): string {
-		return this.editor.notebookParams.providerId;
+		return this._info ? this._info.providerId : undefined;;
 	}
 
 	public get providers(): string[] {
-		return this.editor.notebookParams.providers;
+		return this._info ? this._info.providers : [];
 	}
 
 	public get cells(): ICellModel[] {
