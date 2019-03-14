@@ -182,7 +182,7 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 		this.addScriptingActions(context, actions);
 
 		let serverInfo = this._connectionManagementService.getServerInfo(context.profile.id);
-		let isCloud = (serverInfo === undefined || serverInfo === null)? false : serverInfo.isCloud;
+		let isCloud = serverInfo && serverInfo.isCloud;
 
 		if (isAvailableDatabaseNode && !isCloud) {
 			this.addBackupAction(context, actions);
