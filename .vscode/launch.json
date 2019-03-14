@@ -151,12 +151,12 @@
         {
 			"type": "chrome",
 			"request": "launch",
-            "name": "Run Extension Tests",
+            "name": "Run Extension Unit Tests",
 			"windows": {
-				"runtimeExecutable": "${workspaceFolder}/scripts/test-extensions.bat"
+				"runtimeExecutable": "${workspaceFolder}/scripts/test-extensions-unit.bat"
 			},
 			"osx": {
-				"runtimeExecutable": "${workspaceFolder}/scripts/test-extensions.sh"
+				"runtimeExecutable": "${workspaceFolder}/scripts/test-extensions-unit.sh"
 			},
 			"linux": {
 				"runtimeExecutable": "${workspaceFolder}/scripts/test-extensions.sh"
@@ -174,10 +174,10 @@
 			]
         },
         {
-            "name": "Debug Extension Tests",
+            "name": "Debug Extension Unit Tests",
             "configurations": [
                 "Attach to Extension Host",
-                "Run Extension Tests"
+                "Run Extension Unit Tests"
             ]
         },
 		{
