@@ -67,7 +67,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	private totalElapsedTimeSpan: number;
 	private complete = false;
 	// Current selected cell state
-	private currentCell: { row: number, column: number, isEditable: boolean };
+	private currentCell: { row: number, column: number, isEditable: boolean, isDirty: boolean };
 	private currentEditCellValue: string;
 	private newRowVisible: boolean;
 	private removingNewRow: boolean;
@@ -173,6 +173,9 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		this.onActiveCellChanged = this.onCellSelect;
 
 		this.onCellEditEnd = (event: Slick.OnCellChangeEventArgs<any>): void => {
+			if(self.currentEditCellValue !== event.item[event.cell]) {
+				self.currentCell.isDirty = true;
+			}
 			// Store the value that was set
 			self.currentEditCellValue = event.item[event.cell];
 		};
@@ -245,7 +248,14 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 			// If the user is deleting a new row that hasn't been committed yet then use the revert code
 			if (self.newRowVisible && index === self.dataSet.dataRows.getLength() - 2) {
 				self.revertCurrentRow();
-			} else {
+			}
+			else if (self.isNullRow(index)) {
+				// Don't try to delete NULL (new) row since it doesn't actually exist and will throw an error
+				// TODO #478 : We should really just stop the context menu from showing up for this row, but that's a bit more involved
+				//	  so until then at least make it not display an error
+				return;
+			}
+			else {
 				self.dataService.deleteRow(index)
 					.then(() => self.dataService.commitEdit())
 					.then(() => self.removeRow(index));
@@ -272,7 +282,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		}
 
 		// Skip processing if the cell hasn't moved (eg, we reset focus to the previous cell after a failed update)
-		if (this.currentCell.row === row && this.currentCell.column === column) {
+		if (this.currentCell.row === row && this.currentCell.column === column && this.currentCell.isDirty === false) {
 			return;
 		}
 
@@ -290,27 +300,20 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 			});
 
 		if (this.currentCell.row !== row) {
-			// If we're currently adding a new row, only commit it if it has changes or the user is trying to add another new row
-			if (this.newRowVisible && this.currentCell.row === this.dataSet.dataRows.getLength() - 2 && !this.isNullRow(row) && this.currentEditCellValue === undefined) {
-				cellSelectTasks = cellSelectTasks.then(() => {
-					return this.revertCurrentRow().then(() => this.focusCell(row, column));
+			// We're changing row, commit the changes
+			cellSelectTasks = cellSelectTasks.then(() => {
+				return self.dataService.commitEdit().then(result => {
+					// Committing was successful, clean the grid
+					self.setGridClean();
+					self.rowIdMappings = {};
+					self.newRowVisible = false;
+					return Promise.resolve();
+				}, error => {
+					// Committing failed, jump back to the last selected cell
+					self.focusCell(self.currentCell.row, self.currentCell.column);
+					return Promise.reject(null);
 				});
-			} else {
-				// We're changing row, commit the changes
-				cellSelectTasks = cellSelectTasks.then(() => {
-					return self.dataService.commitEdit().then(result => {
-						// Committing was successful, clean the grid
-						self.setGridClean();
-						self.rowIdMappings = {};
-						self.newRowVisible = false;
-						return Promise.resolve();
-					}, error => {
-						// Committing failed, jump back to the last selected cell
-						self.focusCell(self.currentCell.row, self.currentCell.column);
-						return Promise.reject(null);
-					});
-				});
-			}
+			});
 		}
 
 		// At the end of a successful cell select, update the currently selected cell
@@ -380,7 +383,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 				};
 			}))
 		};
-		self.plugins.push([rowNumberColumn, new AutoColumnSize(), new AdditionalKeyBindings()]);
+		self.plugins.push([rowNumberColumn, new AutoColumnSize({ maxWidth: this.configurationService.getValue<number>('resultsGrid.maxColumnWidth') }), new AdditionalKeyBindings()]);
 		self.dataSet = dataSet;
 
 		// Create a dataSet to render without rows to reduce DOM size
@@ -392,7 +395,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		self.refreshGrid();
 
 		// Setup the state of the selected cell
-		this.currentCell = { row: 0, column: 1, isEditable: undefined };
+		this.resetCurrentCell();
 		this.currentEditCellValue = undefined;
 		this.removingNewRow = false;
 		this.newRowVisible = false;
@@ -707,18 +710,26 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	}
 
 	private resetCurrentCell() {
-		this.currentCell.row = undefined;
-		this.currentCell.column = undefined;
-		this.currentCell.isEditable = false;
+		this.currentCell = {
+			row: undefined,
+			column: undefined,
+			isEditable: false,
+			isDirty: false
+		};
 	}
 
 	private setCurrentCell(row: number, column: number) {
-		this.currentCell = {
-			row: row,
-			column: column,
-			isEditable: this.dataSet.columnDefinitions[column]
-				? this.dataSet.columnDefinitions[column].isEditable
-				: false
-		};
+		// Only update if we're actually changing cells
+		if(this.currentCell && (row !== this.currentCell.row || column !== this.currentCell.column)) {
+			this.currentCell = {
+				row: row,
+				column: column,
+				isEditable: this.dataSet.columnDefinitions[column]
+					? this.dataSet.columnDefinitions[column].isEditable
+					: false,
+				isDirty: false
+			};
+		}
+
 	}
 }

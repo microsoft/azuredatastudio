@@ -27,6 +27,8 @@ import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/un
 import { notebookModeId } from 'sql/common/constants';
 import { ITextFileService, ISaveOptions } from 'vs/workbench/services/textfile/common/textfiles';
 import { LocalContentManager } from 'sql/workbench/services/notebook/node/localContentManager';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
 
@@ -45,7 +47,6 @@ export class NotebookEditorModel extends EditorModel {
 				// Hook to content change events
 				notebook.modelReady.then(() => {
 					this._register(notebook.model.contentChanged(e => this.updateModel()));
-					this._register(notebook.model.kernelChanged(e => this.updateModel()));
 				}, err => undefined);
 			}
 		}));
@@ -129,7 +130,7 @@ export class NotebookInput extends EditorInput {
 	private _providerId: string;
 	private _providers: string[];
 	private _standardKernels: IStandardKernelWithProvider[];
-	private _connectionProfileId: string;
+	private _connectionProfile: IConnectionProfile;
 	private _defaultKernel: azdata.nb.IKernelSpec;
 	private _isTrusted: boolean = false;
 	public hasBootstrapped = false;
@@ -142,6 +143,7 @@ export class NotebookInput extends EditorInput {
 
 	constructor(private _title: string,
 		private resource: URI,
+		private _textInput: UntitledEditorInput,
 		@ITextModelService private textModelService: ITextModelService,
 		@IUntitledEditorService untitledEditorService: IUntitledEditorService,
 		@IInstantiationService private instantiationService: IInstantiationService,
@@ -154,8 +156,16 @@ export class NotebookInput extends EditorInput {
 		this.assignProviders();
 	}
 
+	public get textInput(): UntitledEditorInput {
+		return this._textInput;
+	}
+
 	public confirmSave(): TPromise<ConfirmResult> {
 		return this._model.confirmSave();
+	}
+
+	public revert(): TPromise<boolean> {
+		return this._textInput.revert();
 	}
 
 	public get notebookUri(): URI {
@@ -192,12 +202,12 @@ export class NotebookInput extends EditorInput {
 		this._isTrusted = value;
 	}
 
-	public set connectionProfileId(value: string) {
-		this._connectionProfileId = value;
+	public set connectionProfile(value: IConnectionProfile) {
+		this._connectionProfile = value;
 	}
 
-	public get connectionProfileId(): string {
-		return this._connectionProfileId;
+	public get connectionProfile(): IConnectionProfile {
+		return this._connectionProfile;
 	}
 
 	public get standardKernels(): IStandardKernelWithProvider[] {
@@ -222,6 +232,7 @@ export class NotebookInput extends EditorInput {
 			this._standardKernels.push({
 				connectionProviderIds: kernel.connectionProviderIds,
 				name: kernel.name,
+				displayName: kernel.displayName,
 				notebookProvider: kernel.notebookProvider
 			});
 		});
@@ -257,7 +268,7 @@ export class NotebookInput extends EditorInput {
 		} else {
 			let textOrUntitledEditorModel: UntitledEditorModel | IEditorModel;
 			if (this.resource.scheme === Schemas.untitled) {
-				textOrUntitledEditorModel = await this._untitledEditorService.loadOrCreate({ resource: this.resource, modeId: notebookModeId });
+				textOrUntitledEditorModel = await this._textInput.resolve();
 			}
 			else {
 				const textEditorModelReference = await this.textModelService.createModelReference(this.resource);

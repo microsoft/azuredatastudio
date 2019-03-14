@@ -123,15 +123,14 @@ export class NotebookContexts {
 	/**
 	 *
 	 * @param specs kernel specs (comes from session manager)
-	 * @param connectionInfo connection profile
-	 * @param savedKernelInfo kernel info loaded from
+	 * @param displayName kernel info loaded from
 	 */
-	public static getDefaultKernel(specs: nb.IAllKernels, connectionInfo: IConnectionProfile, savedKernelInfo: nb.IKernelInfo): nb.IKernelSpec {
+	public static getDefaultKernel(specs: nb.IAllKernels, displayName: string): nb.IKernelSpec {
 		let defaultKernel: nb.IKernelSpec;
 		if (specs) {
 			// find the saved kernel (if it exists)
-			if (savedKernelInfo) {
-				defaultKernel = specs.kernels.find((kernel) => kernel.name === savedKernelInfo.name);
+			if (displayName) {
+				defaultKernel = specs.kernels.find((kernel) => kernel.display_name === displayName);
 			}
 			// if no saved kernel exists, use the default KernelSpec
 			if (!defaultKernel) {
@@ -144,10 +143,7 @@ export class NotebookContexts {
 
 		// If no default kernel specified (should never happen), default to SQL
 		if (!defaultKernel) {
-			defaultKernel = {
-				name: notebookConstants.SQL,
-				display_name: notebookConstants.SQL
-			};
+			defaultKernel = notebookConstants.sqlKernelSpec;
 		}
 		return defaultKernel;
 	}

@@ -11,6 +11,7 @@ import { ConnectionManagementService } from 'sql/platform/connection/common/conn
 
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
+import { TestStorageService } from 'vs/workbench/test/workbenchTestServices';
 
 import * as TypeMoq from 'typemoq';
 
@@ -22,7 +23,7 @@ suite('ServerTreeView onAddConnectionProfile handler tests', () => {
 
 	setup(() => {
 		let instantiationService = new TestInstantiationService();
-		let mockConnectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Strict, {}, {});
+		let mockConnectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Strict, {}, {}, new TestStorageService());
 		mockConnectionManagementService.setup(x => x.getConnectionGroups()).returns(x => []);
 		serverTreeView = new ServerTreeView(mockConnectionManagementService.object, instantiationService, undefined, undefined, undefined, undefined);
 		let tree = <Tree>{
