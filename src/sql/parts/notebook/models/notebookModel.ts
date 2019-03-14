@@ -567,11 +567,17 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	private async doChangeKernel(displayName: string, mustSetProvider: boolean = true, restoreOnFail: boolean = true): Promise<void> {
+		if (!displayName) {
+			// Can't change to an undefined kernel
+			return;
+		}
 		let oldDisplayName = this._activeClientSession && this._activeClientSession.kernel ? this._activeClientSession.kernel.name : undefined;
 		try {
 			let changeKernelNeeded = true;
 			if (mustSetProvider) {
-				changeKernelNeeded = await this.setProviderIdAndStartSession(displayName);
+				let providerChanged = await this.tryStartSessionByChangingProviders(displayName);
+				// If provider was changed, a new session with new kernel is already created. We can skip calling changeKernel.
+				changeKernelNeeded = !providerChanged;
 			}
 			if (changeKernelNeeded) {
 				let spec = this.findSpec(displayName);
@@ -831,7 +837,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	 * Set _providerId and start session if it is new provider
 	 * @param displayName Kernel dispay name
 	 */
-	private async setProviderIdAndStartSession(displayName: string): Promise<boolean> {
+	private async tryStartSessionByChangingProviders(displayName: string): Promise<boolean> {
 		if (displayName) {
 			if (this._activeClientSession && this._activeClientSession.isReady) {
 				this._oldKernel = this._activeClientSession.kernel;
@@ -855,7 +861,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return false;
 	}
 
-	private tryFindProviderForKernel(displayName: string, alwaysReturnId: boolean = false) {
+	private tryFindProviderForKernel(displayName: string, alwaysReturnId: boolean = false): string {
 		if (!displayName) {
 			return undefined;
 		}
