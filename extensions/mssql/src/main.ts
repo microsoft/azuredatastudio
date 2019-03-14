@@ -107,7 +107,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 		credentialsStore.start();
 		resourceProvider.start();
 
-		let nodeProvider = new MssqlObjectExplorerNodeProvider(appContext);
+		let nodeProvider = new MssqlObjectExplorerNodeProvider(prompter, appContext);
 		azdata.dataprotocol.registerObjectExplorerNodeProvider(nodeProvider);
 		activateSparkFeatures(appContext);
 		activateNotebookTask(appContext);

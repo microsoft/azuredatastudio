@@ -8,11 +8,14 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { ITreeNode } from './types';
+import { IFileSource } from './fileSources';
+import { SqlClusterConnection } from './connection';
 
 type TreeNodePredicate = (node: TreeNode) => boolean;
 
 export abstract class TreeNode implements ITreeNode {
 	private _parent: TreeNode = undefined;
+	protected fileSource: IFileSource;
 
 	public get parent(): TreeNode {
 		return this._parent;
@@ -66,6 +69,9 @@ export abstract class TreeNode implements ITreeNode {
 		return undefined;
 	}
 
+	public updateFileSource(connection: SqlClusterConnection): void{
+		this.fileSource = connection.createHdfsFileSource();
+	}
 	/**
 	 * The value to use for this node in the node path
 	 */

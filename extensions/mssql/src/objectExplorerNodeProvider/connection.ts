@@ -33,7 +33,7 @@ export class SqlClusterConnection {
 		this._host = this._connection.options[constants.hostPropName];
 		this._port = this._connection.options[constants.knoxPortPropName];
 		this._user = this._connection.options[constants.userPropName];
-		this._password = this._connection.options[constants.passwordPropName];
+		this._password = 'BadPassword'; //this._connection.options[constants.passwordPropName];
 	}
 
 	public get connection(): azdata.connection.Connection { return this._connection; }
@@ -67,6 +67,12 @@ export class SqlClusterConnection {
 			}
 		};
 		return FileSourceFactory.instance.createHdfsFileSource(options);
+	}
+
+	public updatePassword(password : string): void{
+		if(password){
+			this._password = password;
+		}
 	}
 
 	private validate(connectionInfo: azdata.ConnectionInfo): void {
