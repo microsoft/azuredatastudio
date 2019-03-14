@@ -850,7 +850,7 @@ export interface INotebookShowOptions {
 	preserveFocus?: boolean;
 	preview?: boolean;
 	providerId?: string;
-	connectionId?: string;
+	connectionProfile?: azdata.IConnectionProfile;
 	defaultKernel?: azdata.nb.IKernelSpec;
 }
 

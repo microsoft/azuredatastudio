@@ -67,8 +67,6 @@ export interface INotebookService {
 
 	listNotebookEditors(): INotebookEditor[];
 
-	shutdown(): void;
-
 	getMimeRegistry(): RenderMimeRegistry;
 
 	renameNotebookEditor(oldUri: URI, newUri: URI, currentEditor: INotebookEditor): void;
@@ -95,7 +93,6 @@ export interface INotebookParams extends IBootstrapParams {
 	isTrusted: boolean;
 	profile?: IConnectionProfile;
 	modelFactory?: ModelFactory;
-	connectionProfileId?: string;
 }
 
 export interface INotebookEditor {
@@ -107,7 +104,6 @@ export interface INotebookEditor {
 	isDirty(): boolean;
 	isActive(): boolean;
 	isVisible(): boolean;
-	save(): Promise<boolean>;
 	executeEdits(edits: ISingleNotebookEditOperation[]): boolean;
 	runCell(cell: ICellModel): Promise<boolean>;
 }

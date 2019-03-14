@@ -23,13 +23,14 @@ import { noKernel } from 'sql/workbench/services/notebook/common/sessionManager'
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
 
-const msgLoading = localize('loading', 'Loading kernels...');
-const kernelLabel: string = localize('Kernel', 'Kernel: ');
-const attachToLabel: string = localize('AttachTo', 'Attach to: ');
-const msgLoadingContexts = localize('loadingContexts', 'Loading contexts...');
-const msgAddNewConnection = localize('addNewConnection', 'Add new connection');
-const msgSelectConnection = localize('selectConnection', 'Select connection');
-const msgLocalHost = localize('localhost', 'localhost');
+const msgLoading = localize('loading', "Loading kernels...");
+const msgChanging = localize('changing', "Changing kernel...");
+const kernelLabel: string = localize('Kernel', "Kernel: ");
+const attachToLabel: string = localize('AttachTo', "Attach to: ");
+const msgLoadingContexts = localize('loadingContexts', "Loading contexts...");
+const msgAddNewConnection = localize('addNewConnection', "Add new connection");
+const msgSelectConnection = localize('selectConnection', "Select connection");
+const msgLocalHost = localize('localhost', "localhost");
 const HIDE_ICON_CLASS = ' hideIcon';
 
 // Action to add a cell to notebook based on cell type(code/markdown).
@@ -50,26 +51,6 @@ export class AddCellAction extends Action {
 				reject(e);
 			}
 		});
-	}
-}
-
-export class SaveNotebookAction extends Action {
-	private static readonly notebookSavedMsg = localize('notebookSavedMsg', 'Notebook saved successfully.');
-	private static readonly notebookFailedSaveMsg = localize('notebookFailedSaveMsg', 'Failed to save Notebook.');
-	constructor(
-		id: string, label: string, cssClass: string,
-		@INotificationService private _notificationService: INotificationService
-	) {
-		super(id, label, cssClass);
-	}
-
-	public async run(context: NotebookComponent): TPromise<boolean> {
-		const actions: INotificationActions = { primary: [] };
-		let saved = await context.save();
-		if (saved) {
-			this._notificationService.notify({ severity: Severity.Info, message: SaveNotebookAction.notebookSavedMsg, actions });
-		}
-		return saved;
 	}
 }
 
@@ -270,7 +251,7 @@ export class KernelsDropdown extends SelectBox {
 	}
 
 	public doChangeKernel(displayName: string): void {
-		this.setOptions([msgLoading], 0);
+		this.setOptions([msgChanging], 0);
 		this.model.changeKernel(displayName);
 	}
 }
@@ -457,6 +438,7 @@ export class AttachToDropdown extends SelectBox {
 				}
 				this.select(index);
 
+				this.model.addAttachToConnectionsToBeDisposed(connectionProfile);
 				// Call doChangeContext to set the newly chosen connection in the model
 				this.doChangeContext(connectionProfile);
 			});

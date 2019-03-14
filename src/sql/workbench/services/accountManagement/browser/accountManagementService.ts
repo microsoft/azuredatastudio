@@ -51,7 +51,7 @@ export class AccountManagementService implements IAccountManagementService {
 		private _mementoObj: object,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IStorageService private _storageService: IStorageService,
-		@IClipboardService private _clipboardService: IClipboardService,
+		@IClipboardService private _clipboardService: IClipboardService
 	) {
 		// Create the account store
 		if (!this._mementoObj) {
@@ -64,6 +64,8 @@ export class AccountManagementService implements IAccountManagementService {
 		this._addAccountProviderEmitter = new Emitter<AccountProviderAddedEventParams>();
 		this._removeAccountProviderEmitter = new Emitter<azdata.AccountProviderMetadata>();
 		this._updateAccountListEmitter = new Emitter<UpdateAccountListEventParams>();
+
+		_storageService.onWillSaveState(() => this.shutdown());
 
 		// Register status bar item
 		let statusbarDescriptor = new statusbar.StatusbarItemDescriptor(
@@ -367,7 +369,7 @@ export class AccountManagementService implements IAccountManagementService {
 	/**
 	 * Handler for when shutdown of the application occurs. Writes out the memento.
 	 */
-	public shutdown(): void {
+	private shutdown(): void {
 		if (this._mementoContext) {
 			this._mementoContext.saveMemento();
 		}
