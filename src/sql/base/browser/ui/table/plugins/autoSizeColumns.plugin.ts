@@ -9,7 +9,7 @@ export interface IAutoColumnSizeOptions extends Slick.PluginOptions {
 }
 
 const defaultOptions: IAutoColumnSizeOptions = {
-	maxWidth: 200,
+	maxWidth: 212,
 	autoSizeOnRender: false
 };
 
@@ -146,7 +146,7 @@ export class AutoColumnSize<T> implements Slick.Plugin<T> {
 		let template = this.getMaxTextTemplate(texts, columnDef, colIndex, data, rowEl);
 		let width = this.getTemplateWidth(rowEl, template);
 		this.deleteRow(rowEl);
-		return width;
+		return width > this._options.maxWidth ? this._options.maxWidth : width;
 	}
 
 	private getTemplateWidth(rowEl: JQuery, template: JQuery | HTMLElement): number {

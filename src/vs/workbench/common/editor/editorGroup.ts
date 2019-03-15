@@ -17,6 +17,7 @@ import { coalesce } from 'vs/base/common/arrays';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import * as CustomInputConverter from 'sql/parts/common/customInputConverter';
+import { NotebookInput } from 'sql/parts/notebook/notebookInput';
 
 const EditorOpenPositioning = {
 	LEFT: 'left',
@@ -648,6 +649,8 @@ export class EditorGroup extends Disposable {
 		let editors = this.editors.map(e => {
 			if (e instanceof QueryInput) {
 				return e.sql;
+			} else if (e instanceof NotebookInput) {
+				return e.textInput;
 			}
 			return e;
 		});
@@ -678,6 +681,8 @@ export class EditorGroup extends Disposable {
 		let mru = this.mru.map(e => {
 			if (e instanceof QueryInput) {
 				return e.sql;
+			} else if (e instanceof NotebookInput) {
+				return e.textInput;
 			}
 			return e;
 		});

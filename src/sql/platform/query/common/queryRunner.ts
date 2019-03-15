@@ -71,6 +71,7 @@ export default class QueryRunner extends Disposable {
 	private _batchSets: azdata.BatchSummary[] = [];
 	private _messages: azdata.IResultMessage[] = [];
 	private _eventEmitter = new EventEmitter();
+	private registered = false;
 
 	private _isQueryPlan: boolean;
 	public get isQueryPlan(): boolean { return this._isQueryPlan; }
@@ -206,6 +207,8 @@ export default class QueryRunner extends Disposable {
 				this._isQueryPlan = false;
 			}
 
+			this._onQueryStart.fire();
+
 			// Send the request to execute the query
 			return runCurrentStatement
 				? this._queryManagementService.runQueryStatement(this.uri, input.startLine, input.startColumn).then(() => this.handleSuccessRunQueryResult(), e => this.handleFailureRunQueryResult(e))
@@ -225,9 +228,11 @@ export default class QueryRunner extends Disposable {
 		// this isn't exact, but its the best we can do
 		this._queryStartTime = new Date();
 		// The query has started, so lets fire up the result pane
-		this._onQueryStart.fire();
 		this._eventEmitter.emit(EventType.START);
-		this._queryManagementService.registerRunner(this, this.uri);
+		if (!this.registered) {
+			this.registered = true;
+			this._queryManagementService.registerRunner(this, this.uri);
+		}
 	}
 
 	private handleFailureRunQueryResult(error: any) {

@@ -13,20 +13,24 @@ import { CapabilitiesTestService } from 'sqltest/stubs/capabilitiesTestService';
 
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
+import { TestStorageService } from 'vs/workbench/test/workbenchTestServices';
 
 import * as TypeMoq from 'typemoq';
+import { CapabilitiesTestService } from 'sqltest/stubs/capabilitiesTestService';
 
 suite('ServerTreeView onAddConnectionProfile handler tests', () => {
 
 	let serverTreeView: ServerTreeView;
 	let mockTree: TypeMoq.Mock<Tree>;
 	let mockRefreshTreeMethod: TypeMoq.Mock<Function>;
+	let capabilitiesService = new CapabilitiesTestService();
 
 	setup(() => {
 		let instantiationService = new TestInstantiationService();
-		let mockConnectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Strict, {}, {});
+		let mockConnectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Strict, {}, {}, new TestStorageService());
 		mockConnectionManagementService.setup(x => x.getConnectionGroups()).returns(x => []);
-		serverTreeView = new ServerTreeView(mockConnectionManagementService.object, instantiationService, undefined, undefined, undefined, undefined, new CapabilitiesTestService());
+		mockConnectionManagementService.setup(x => x.hasRegisteredServers()).returns(() => true);
+		serverTreeView = new ServerTreeView(mockConnectionManagementService.object, instantiationService, undefined, undefined, undefined, undefined, capabilitiesService);
 		let tree = <Tree>{
 			clearSelection() { },
 			getSelection() { },
@@ -92,5 +96,10 @@ suite('ServerTreeView onAddConnectionProfile handler tests', () => {
 		mockRefreshTreeMethod.verify(x => x(), TypeMoq.Times.once());
 		mockTree.verify(x => x.clearSelection(), TypeMoq.Times.never());
 		mockTree.verify(x => x.select(TypeMoq.It.isAny()), TypeMoq.Times.never());
+	});
+
+	test('The tree refreshes when new capabilities are registered', () => {
+		capabilitiesService.fireCapabilitiesRegistered(undefined);
+		mockRefreshTreeMethod.verify(x => x(), TypeMoq.Times.once());
 	});
 });

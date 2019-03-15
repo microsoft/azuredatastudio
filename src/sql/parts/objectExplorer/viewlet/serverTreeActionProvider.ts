@@ -14,8 +14,7 @@ import { fillInActions } from 'vs/platform/actions/browser/menuItemActionItem';
 import {
 	DisconnectConnectionAction, AddServerAction,
 	DeleteConnectionAction, RefreshAction, EditServerGroupAction
-}
-	from 'sql/parts/objectExplorer/viewlet/connectionTreeAction';
+} from 'sql/parts/objectExplorer/viewlet/connectionTreeAction';
 import {
 	ObjectExplorerActionUtilities, ManageConnectionAction, OEAction
 } from 'sql/parts/objectExplorer/viewlet/objectExplorerActions';
@@ -33,6 +32,7 @@ import { TreeNodeContextKey } from 'sql/parts/objectExplorer/viewlet/treeNodeCon
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
 import { IScriptingService } from 'sql/platform/scripting/common/scriptingService';
 import * as constants from 'sql/common/constants';
+import { ServerInfoContextKey } from 'sql/parts/connection/common/serverInfoContextKey';
 
 /**
  *  Provides actions for the server tree elements
@@ -131,7 +131,13 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 	private getContextKeyService(context: ObjectExplorerContext): IContextKeyService {
 		let scopedContextService = this._contextKeyService.createScoped();
 		let connectionContextKey = new ConnectionContextKey(scopedContextService);
-		connectionContextKey.set(context.profile);
+		let connectionProfile = context && context.profile;
+		connectionContextKey.set(connectionProfile);
+		let serverInfoContextKey = new ServerInfoContextKey(scopedContextService);
+		if (connectionProfile.id) {
+			let serverInfo = this._connectionManagementService.getServerInfo(connectionProfile.id);
+			serverInfoContextKey.set(serverInfo);
+		}
 		let treeNodeContextKey = new TreeNodeContextKey(scopedContextService);
 		if (context.treeNode) {
 			treeNodeContextKey.set(context.treeNode);
@@ -173,7 +179,10 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 
 		this.addScriptingActions(context, actions);
 
-		if (isAvailableDatabaseNode) {
+		let serverInfo = this._connectionManagementService.getServerInfo(context.profile.id);
+		let isCloud = serverInfo && serverInfo.isCloud;
+
+		if (isAvailableDatabaseNode && !isCloud) {
 			this.addBackupAction(context, actions);
 			this.addRestoreAction(context, actions);
 		}

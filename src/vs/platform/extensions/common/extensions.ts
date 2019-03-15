@@ -145,7 +145,7 @@ export interface IExtensionManifest {
 	readonly publisher: string;
 	readonly version: string;
 	// {{SQL CARBON EDIT}}
-	engines: { vscode: string; sqlops?: string };
+	engines: { vscode: string; azdata?: string };
 	readonly description?: string;
 	readonly main?: string;
 	readonly icon?: string;

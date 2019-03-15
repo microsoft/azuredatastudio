@@ -12,9 +12,10 @@ import { isPromiseCanceledError } from 'vs/base/common/errors';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { IPager, mapPager, singlePagePager } from 'vs/base/common/paging';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
+// {{SQL CARBON EDIT}}
 import {
 	IExtensionManagementService, IExtensionGalleryService, ILocalExtension, IGalleryExtension, IQueryOptions,
-	InstallExtensionEvent, DidInstallExtensionEvent, DidUninstallExtensionEvent, IExtensionEnablementService, IExtensionIdentifier, EnablementState, IExtensionManagementServerService
+	InstallExtensionEvent, DidInstallExtensionEvent, DidUninstallExtensionEvent, IExtensionEnablementService, IExtensionIdentifier, EnablementState, IExtensionManagementServerService, INSTALL_ERROR_INCOMPATIBLE
 } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { getGalleryExtensionTelemetryData, getLocalExtensionTelemetryData, areSameExtensions, getMaliciousExtensionsSet } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -37,6 +38,11 @@ import { IStorageService, StorageScope } from 'vs/platform/storage/common/storag
 import { IFileService } from 'vs/platform/files/common/files';
 import { IExtensionManifest, ExtensionType, ExtensionIdentifierWithVersion, IExtension as IPlatformExtension } from 'vs/platform/extensions/common/extensions';
 import { isUIExtension } from 'vs/platform/extensions/node/extensionsUtil';
+
+// {{SQL CARBON EDIT}}
+import pkg from 'vs/platform/node/package';
+import { isEngineValid } from 'vs/platform/extensions/node/extensionValidator';
+import { ExtensionManagementError } from 'vs/platform/extensionManagement/node/extensionManagementService';
 
 interface IExtensionStateProvider<T> {
 	(extension: Extension): T;
@@ -646,9 +652,18 @@ export class ExtensionsWorkbenchService implements IExtensionsWorkbenchService, 
 
 		if (typeof extension === 'string') {
 			return this.installWithProgress(async () => {
-				const extensionIdentifier = await this.extensionService.install(URI.file(extension));
-				this.checkAndEnableDisabledDependencies(extensionIdentifier);
-				return this.local.filter(local => areSameExtensions(local.identifier, extensionIdentifier))[0];
+				// {{SQL CARBON EDIT}} - Wrap async call in try/catch.
+				// This is the error handler when installing local VSIX file.
+				// Prompt the user about the error detail.
+				try {
+					const extensionIdentifier = await this.extensionService.install(URI.file(extension));
+					this.checkAndEnableDisabledDependencies(extensionIdentifier);
+					return this.local.filter(local => areSameExtensions(local.identifier, extensionIdentifier))[0];
+				} catch (error) {
+					this.notificationService.error(error);
+					return Promise.reject(error);
+				}
+				// {{SQL CARBON EDIT}} - End
 			});
 		}
 
@@ -660,6 +675,15 @@ export class ExtensionsWorkbenchService implements IExtensionsWorkbenchService, 
 
 		if (!gallery) {
 			return Promise.reject(new Error('Missing gallery'));
+		}
+
+		// {{SQL CARBON EDIT}}
+		// This is the execution path for install/update extension from marketplace.
+		// Check both the vscode version and azure data studio version
+		// The check is added here because we want to fail fast instead of downloading the VSIX and then fail.
+		if (gallery.properties.engine && (!isEngineValid(gallery.properties.engine, product.vscodeVersion)
+			|| (gallery.properties.azDataEngine && !isEngineValid(gallery.properties.azDataEngine, pkg.version)))) {
+			return Promise.reject(new ExtensionManagementError(nls.localize('incompatible', "Unable to install version '{2}' of extension '{0}' as it is not compatible with Azure Data Studio '{1}'.", extension.gallery!.identifier.id, pkg.version, gallery.version), INSTALL_ERROR_INCOMPATIBLE));
 		}
 
 		return this.installWithProgress(async () => {
@@ -720,7 +744,8 @@ export class ExtensionsWorkbenchService implements IExtensionsWorkbenchService, 
 		return this.galleryService.getCompatibleExtension(extension.gallery.identifier, version)
 			.then(gallery => {
 				if (!gallery) {
-					return Promise.reject(new Error(nls.localize('incompatible', "Unable to install extension '{0}' with version '{1}' as it is not compatible with VS Code.", extension.gallery!.identifier.id, version)));
+					// {{SQL CARBON EDIT}} - use Azure Data Studio in the text instead of VS Code
+					return Promise.reject(new Error(nls.localize('incompatible', "Unable to install extension '{0}' with version '{1}' as it is not compatible with Azure Data Studio.", extension.gallery!.identifier.id, version)));
 				}
 				return this.installWithProgress(async () => {
 					await this.extensionService.installFromGallery(gallery);

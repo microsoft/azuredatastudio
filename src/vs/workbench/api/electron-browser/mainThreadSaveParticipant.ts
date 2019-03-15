@@ -37,6 +37,34 @@ import { TextFileEditorModel } from 'vs/workbench/services/textfile/common/textF
 import { ISaveParticipant, ITextFileEditorModel, SaveReason } from 'vs/workbench/services/textfile/common/textfiles';
 import { ExtHostContext, ExtHostDocumentSaveParticipantShape, IExtHostContext } from '../node/extHost.protocol';
 
+// {{SQL CARBON EDIT}}
+import { INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
+
+
+/*
+ * An update participant that ensures any un-tracked changes are synced to the JSON file contents for a
+ * Notebook before save occurs. While every effort is made to ensure model changes are notified and a listener
+ * updates the backing model in-place, this is a backup mechanism to hard-update the file before save in case
+ * some are missed.
+ */
+class NotebookUpdateParticipant implements ISaveParticipantParticipant {
+
+	constructor(
+		@INotebookService private notebookService: INotebookService
+	) {
+		// Nothing
+	}
+
+	public participate(model: ITextFileEditorModel, env: { reason: SaveReason }): Promise<void> {
+		let uriString = model.getResource().toString();
+		let notebookEditor = this.notebookService.listNotebookEditors().find((editor) => editor.id === uriString);
+		if (notebookEditor) {
+			notebookEditor.notebookParams.input.updateModel();
+		}
+		return Promise.resolve();
+	}
+}
+
 export interface ISaveParticipantParticipant extends ISaveParticipant {
 	// progressMessage: string;
 }
@@ -418,6 +446,8 @@ export class SaveParticipant implements ISaveParticipant {
 			instantiationService.createInstance(FormatOnSaveParticipant),
 			instantiationService.createInstance(FinalNewLineParticipant),
 			instantiationService.createInstance(TrimFinalNewLinesParticipant),
+			// {{SQL CARBON EDIT}}
+			instantiationService.createInstance(NotebookUpdateParticipant),
 			instantiationService.createInstance(ExtHostSaveParticipant, extHostContext),
 		]);
 		// Hook into model

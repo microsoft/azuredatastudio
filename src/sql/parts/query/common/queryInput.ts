@@ -143,6 +143,7 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 	public showQueryResultsEditor(): void { this._showQueryResultsEditor.fire(); }
 	public updateSelection(selection: ISelectionData): void { this._updateSelection.fire(selection); }
 	public getTypeId(): string { return QueryInput.ID; }
+	// Description is shown beside the tab name in the combobox of open editors
 	public getDescription(): string { return this._description; }
 	public supportsSplitEditor(): boolean { return false; }
 	public getModeId(): string { return QueryInput.SCHEMA; }
@@ -167,24 +168,31 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 	public getEncoding(): string { return this._sql.getEncoding(); }
 	public suggestFileName(): string { return this._sql.suggestFileName(); }
 
-	public getName(): string {
+	public getName(longForm?: boolean): string {
 		if (this._configurationService.getValue('sql.showConnectionInfoInTitle')) {
 			let profile = this._connectionManagementService.getConnectionProfile(this.uri);
 			let title = '';
+			if (this._description && this._description !== '') {
+			    title = this._description + ' ';
+			}
 			if (profile) {
 				if (profile.userName) {
-					title = `${profile.serverName}.${profile.databaseName} (${profile.userName})`;
+					title += `${profile.serverName}.${profile.databaseName} (${profile.userName})`;
 				} else {
-					title = `${profile.serverName}.${profile.databaseName} (${profile.authenticationType})`;
+					title += `${profile.serverName}.${profile.databaseName} (${profile.authenticationType})`;
 				}
 			} else {
-				title = localize('disconnected', 'disconnected');
+				title += localize('disconnected', 'disconnected');
 			}
-
-			return this._sql.getName() + ` - ${trimTitle(title)}`;
+			return this._sql.getName() + (longForm ?  (' - ' + title) : ` - ${trimTitle(title)}`);
 		} else {
 			return this._sql.getName();
 		}
+	}
+
+	// Called to get the tooltip of the tab
+	public getTitle() {
+		return this.getName(true);
 	}
 
 	public get hasAssociatedFilePath(): boolean { return this._sql.hasAssociatedFilePath; }
