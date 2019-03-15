@@ -40,7 +40,7 @@ export class EnablePreviewFeatures implements IWorkbenchContribution {
 			}
 			configurationService.updateValue('workbench.enablePreviewFeatures', false);
 
-			const enablePreviewFeaturesNotice = localize('enablePreviewFeatures.notice', "Would you like to enable preview features?");
+			const enablePreviewFeaturesNotice = localize('enablePreviewFeatures.notice', "Preview features are required in order for extensions to be fully supported and for some actions to be available.  Would you like to enable preview features?");
 			notificationService.prompt(
 				Severity.Info,
 				enablePreviewFeaturesNotice,

@@ -235,18 +235,24 @@ export class KernelsDropdown extends SelectBox {
 		this._register(this.model.kernelChanged((changedArgs: azdata.nb.IKernelChangedArgs) => {
 			this.updateKernel(changedArgs.newValue);
 		}));
+		let kernel = this.model.clientSession && this.model.clientSession.kernel;
+		this.updateKernel(kernel);
 	}
 
 	// Update SelectBox values
 	public updateKernel(kernel: azdata.nb.IKernel) {
-		if (kernel) {
+		let kernels: string[] = this.model.standardKernelsDisplayName();
+		if (kernel && kernel.isReady) {
 			let standardKernel = this.model.getStandardKernelFromName(kernel.name);
 
-			let kernels: string[] = this.model.standardKernelsDisplayName();
 			if (kernels && standardKernel) {
 				let index = kernels.findIndex((kernel => kernel === standardKernel.displayName));
 				this.setOptions(kernels, index);
 			}
+		} else if (this.model.clientSession.isInErrorState) {
+			let noKernelName = localize('noKernel', "No Kernel");
+			kernels.unshift(noKernelName);
+			this.setOptions(kernels, 0);
 		}
 	}
 
@@ -283,22 +289,26 @@ export class AttachToDropdown extends SelectBox {
 	public updateModel(model: INotebookModel): void {
 		this.model = model as NotebookModel;
 		this._register(model.contextsChanged(() => {
-			let kernelDisplayName: string = this.getKernelDisplayName();
-			if (kernelDisplayName) {
-				this.loadAttachToDropdown(this.model, kernelDisplayName);
-			}
+			this.handleContextsChanged();
 		}));
 		this._register(this.model.contextsLoading(() => {
 			this.setOptions([msgLoadingContexts], 0);
 		}));
+		this.handleContextsChanged();
+	}
+
+	private handleContextsChanged(showSelectConnection?: boolean) {
+		let kernelDisplayName: string = this.getKernelDisplayName();
+		if (kernelDisplayName) {
+			this.loadAttachToDropdown(this.model, kernelDisplayName, showSelectConnection);
+		} else if (this.model.clientSession.isInErrorState) {
+			this.setOptions([localize('noContextAvailable', "None")], 0);
+		}
 	}
 
 	private updateAttachToDropdown(model: INotebookModel): void {
 		model.onValidConnectionSelected(validConnection => {
-			let kernelDisplayName: string = this.getKernelDisplayName();
-			if (kernelDisplayName) {
-				this.loadAttachToDropdown(this.model, kernelDisplayName, !validConnection);
-			}
+			this.handleContextsChanged(!validConnection);
 		});
 	}
 
@@ -438,6 +448,7 @@ export class AttachToDropdown extends SelectBox {
 				}
 				this.select(index);
 
+				this.model.addAttachToConnectionsToBeDisposed(connectionProfile);
 				// Call doChangeContext to set the newly chosen connection in the model
 				this.doChangeContext(connectionProfile);
 			});

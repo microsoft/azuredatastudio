@@ -15,7 +15,7 @@ import * as resources from 'vs/base/common/resources';
 import * as azdata from 'azdata';
 
 import { IStandardKernelWithProvider, getProvidersForFileName, getStandardKernelsForProvider } from 'sql/parts/notebook/notebookUtils';
-import { INotebookService, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/common/notebookService';
+import { INotebookService, DEFAULT_NOTEBOOK_PROVIDER, IProviderInfo } from 'sql/workbench/services/notebook/common/notebookService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITextModelService } from 'vs/editor/common/services/resolverService';
 import { INotebookModel, IContentManager } from 'sql/parts/notebook/models/modelInterfaces';
@@ -29,6 +29,7 @@ import { ITextFileService, ISaveOptions } from 'vs/workbench/services/textfile/c
 import { LocalContentManager } from 'sql/workbench/services/notebook/node/localContentManager';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
+import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
 
@@ -140,6 +141,7 @@ export class NotebookInput extends EditorInput {
 	private _model: NotebookEditorModel;
 	private _untitledEditorService: IUntitledEditorService;
 	private _contentManager: IContentManager;
+	private _providersLoaded: Promise<void>;
 
 	constructor(private _title: string,
 		private resource: URI,
@@ -147,13 +149,14 @@ export class NotebookInput extends EditorInput {
 		@ITextModelService private textModelService: ITextModelService,
 		@IUntitledEditorService untitledEditorService: IUntitledEditorService,
 		@IInstantiationService private instantiationService: IInstantiationService,
-		@INotebookService private notebookService: INotebookService
+		@INotebookService private notebookService: INotebookService,
+		@IExtensionService private extensionService: IExtensionService
 	) {
 		super();
 		this._untitledEditorService = untitledEditorService;
 		this.resource = resource;
 		this._standardKernels = [];
-		this.assignProviders();
+		this._providersLoaded = this.assignProviders();
 	}
 
 	public get textInput(): UntitledEditorInput {
@@ -162,6 +165,10 @@ export class NotebookInput extends EditorInput {
 
 	public confirmSave(): TPromise<ConfirmResult> {
 		return this._model.confirmSave();
+	}
+
+	public revert(): TPromise<boolean> {
+		return this._textInput.revert();
 	}
 
 	public get notebookUri(): URI {
@@ -182,14 +189,13 @@ export class NotebookInput extends EditorInput {
 		return this._title;
 	}
 
-	public get providerId(): string {
-		return this._providerId;
+	public async getProviderInfo(): Promise<IProviderInfo> {
+		await this._providersLoaded;
+		return {
+			providerId: this._providerId ? this._providerId : DEFAULT_NOTEBOOK_PROVIDER,
+			providers: this._providers ? this._providers : [DEFAULT_NOTEBOOK_PROVIDER]
+		};
 	}
-
-	public set providerId(value: string) {
-		this._providerId = value;
-	}
-
 	public get isTrusted(): boolean {
 		return this._isTrusted;
 	}
@@ -208,14 +214,6 @@ export class NotebookInput extends EditorInput {
 
 	public get standardKernels(): IStandardKernelWithProvider[] {
 		return this._standardKernels;
-	}
-
-	public get providers(): string[] {
-		return this._providers;
-	}
-
-	public set providers(value: string[]) {
-		this._providers = value;
 	}
 
 	public save(): TPromise<boolean> {
@@ -276,7 +274,8 @@ export class NotebookInput extends EditorInput {
 		}
 	}
 
-	private assignProviders(): void {
+	private async assignProviders(): Promise<void> {
+		await this.extensionService.whenInstalledExtensionsRegistered();
 		let providerIds: string[] = getProvidersForFileName(this._title, this.notebookService);
 		if (providerIds && providerIds.length > 0) {
 			this._providerId = providerIds.filter(provider => provider !== DEFAULT_NOTEBOOK_PROVIDER)[0];

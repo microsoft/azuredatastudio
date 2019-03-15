@@ -127,6 +127,6 @@ function writeNotebookToFile(pythonNotebook: INotebook): vscode.Uri {
 async function ensureJupyterInstalled(): Promise<void> {
 	let jupterControllerExports = vscode.extensions.getExtension('Microsoft.sql-vnext').exports;
 	let jupyterController = jupterControllerExports.getJupterController() as JupyterController;
-	await jupyterController.jupyterInstallation;
+	await jupyterController.jupyterInstallation.installReady;
 }
 

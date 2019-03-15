@@ -129,6 +129,10 @@ export class CellModel implements ICellModel {
 		return this._cellUri;
 	}
 
+	public get notebookModel(): NotebookModel {
+		return <NotebookModel>this.options.notebook;
+	}
+
 	public set cellUri(value: URI) {
 		this._cellUri = value;
 	}
@@ -208,12 +212,12 @@ export class CellModel implements ICellModel {
 				// TODO update source based on editor component contents
 				let content = this.source;
 				if (content) {
-					this.fireExecutionStateChanged();
 					let future = await kernel.requestExecute({
 						code: content,
 						stop_on_error: true
 					}, false);
 					this.setFuture(future as FutureInternal);
+					this.fireExecutionStateChanged();
 					// For now, await future completion. Later we should just track and handle cancellation based on model notifications
 					let result: nb.IExecuteReplyMsg = <nb.IExecuteReplyMsg><any>await future.done;
 					if (result && result.content) {
