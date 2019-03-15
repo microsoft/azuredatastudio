@@ -81,8 +81,8 @@ export class PanelComponent extends Disposable {
 	private _actionbar: ActionBar;
 	private _mru: TabComponent[];
 
-	protected ScrollbarVisibility = ScrollbarVisibility;
-	protected NavigationBarLayout = NavigationBarLayout;
+	protected ScrollbarVisibility = ScrollbarVisibility; // used by angular template
+	protected NavigationBarLayout = NavigationBarLayout; // used by angular template
 
 	@ViewChild('panelActionbar', { read: ElementRef }) private _actionbarRef: ElementRef;
 	constructor( @Inject(forwardRef(() => NgZone)) private _zone: NgZone) {

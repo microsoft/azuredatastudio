@@ -30,7 +30,7 @@ import { IDisposable } from 'vs/base/common/lifecycle';
 				`
 })
 export class BreadcrumbComponent implements OnInit, OnDestroy {
-	protected menuItems: MenuItem[] = [];
+	protected menuItems: MenuItem[] = []; // used by angular template
 	private disposables: Array<IDisposable> = new Array();
 
 	constructor(
