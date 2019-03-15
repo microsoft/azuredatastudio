@@ -51,6 +51,7 @@
 
 .account-view .list-row {
 	padding: 12px;
+	line-height: 18px !important;
 }
 
 .account-view .list-row .icon {
