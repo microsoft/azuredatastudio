@@ -105,6 +105,10 @@ export class ProcessTaskSystem implements ITaskSystem {
 		return true;
 	}
 
+	public extensionCallbackTaskComplete(task: Task): Promise<void> {
+		throw new TaskError(Severity.Error, 'Extension callback task completion is never expected in the process task system.', TaskErrors.UnknownError);
+	}
+
 	public hasErrors(value: boolean): void {
 		this.errorsShown = !value;
 	}

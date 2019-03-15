@@ -731,12 +731,31 @@ export class TerminalInstance implements ITerminalInstance {
 		}
 		if (this._processManager) {
 			this._processManager.dispose(immediate);
+		} else {
+			// In cases where there is no associated process (for example executing an exetnsion callback task)
+			// consumers still expect on onExit event to be fired. An example of this is terminating the extnesion callback
+			// task.
+			this._onExit.fire(this._id);
 		}
+
 		if (!this._isDisposed) {
 			this._isDisposed = true;
 			this._onDisposed.fire(this);
 		}
 		this._disposables = lifecycle.dispose(this._disposables);
+	}
+
+	public finishedWithRenderer(): void {
+		// The use of this API is for cases where there is no backing process
+		// behind a terminal instance (such as when executing an extension callback task).
+		// There is no associated string, error text, etc, as the consumer of the renderer
+		// can simply output  the text to the renderer themselves.
+		// All this code does is handle the "wait on exit" condition.
+		if (!this.shellLaunchConfig.isRendererOnly) {
+			return;
+		}
+
+		return this._onProcessOrExtensionCallbackExit();
 	}
 
 	public forceRedraw(): void {
@@ -923,7 +942,7 @@ export class TerminalInstance implements ITerminalInstance {
 	protected _createProcess(): void {
 		this._processManager = this._instantiationService.createInstance(TerminalProcessManager, this._id, this._configHelper);
 		this._processManager.onProcessReady(() => this._onProcessIdReady.fire(this));
-		this._processManager.onProcessExit(exitCode => this._onProcessExit(exitCode));
+		this._processManager.onProcessExit(exitCode => this._onProcessOrExtensionCallbackExit(exitCode));
 		this._processManager.onProcessData(data => this._onData.fire(data));
 
 		if (this._shellLaunchConfig.name) {
@@ -960,8 +979,12 @@ export class TerminalInstance implements ITerminalInstance {
 		}
 	}
 
-	private _onProcessExit(exitCode: number): void {
-		this._logService.debug(`Terminal process exit (id: ${this.id}) with code ${exitCode}`);
+	private _onProcessOrExtensionCallbackExit(exitCode?: number): void {
+		// Use 'typeof exitCode' because simply doing if (exitCode) would return false for both "not undefined" and a value of 0
+		// which is not the intention.
+		if (typeof exitCode === `number`) {
+			this._logService.debug(`Terminal process exit (id: ${this.id}) with code ${exitCode}`);
+		}
 
 		// Prevent dispose functions being triggered multiple times
 		if (this._isExiting) {
@@ -971,16 +994,18 @@ export class TerminalInstance implements ITerminalInstance {
 		this._isExiting = true;
 		let exitCodeMessage: string;
 
-		if (exitCode) {
+		if (typeof exitCode === `number`) {
 			exitCodeMessage = nls.localize('terminal.integrated.exitedWithCode', 'The terminal process terminated with exit code: {0}', exitCode);
 		}
 
-		this._logService.debug(`Terminal process exit (id: ${this.id}) state ${this._processManager!.processState}`);
+		if (this._processManager) {
+			this._logService.debug(`Terminal process exit (id: ${this.id}) state ${this._processManager!.processState}`);
+		}
 
 		// Only trigger wait on exit when the exit was *not* triggered by the
 		// user (via the `workbench.action.terminal.kill` command).
-		if (this._shellLaunchConfig.waitOnExit && this._processManager!.processState !== ProcessState.KILLED_BY_USER) {
-			if (exitCode) {
+		if (this._shellLaunchConfig.waitOnExit && (!this._processManager || this._processManager.processState !== ProcessState.KILLED_BY_USER)) {
+			if (typeof exitCode === `number`) {
 				this._xterm.writeln(exitCodeMessage!);
 			}
 			if (typeof this._shellLaunchConfig.waitOnExit === 'string') {
@@ -996,8 +1021,8 @@ export class TerminalInstance implements ITerminalInstance {
 			}
 		} else {
 			this.dispose();
-			if (exitCode) {
-				if (this._processManager!.processState === ProcessState.KILLED_DURING_LAUNCH) {
+			if (typeof exitCode === `number`) {
+				if (this._processManager && this._processManager!.processState === ProcessState.KILLED_DURING_LAUNCH) {
 					let args = '';
 					if (typeof this._shellLaunchConfig.args === 'string') {
 						args = this._shellLaunchConfig.args;
@@ -1024,19 +1049,23 @@ export class TerminalInstance implements ITerminalInstance {
 			}
 		}
 
-		this._onExit.fire(exitCode);
+		this._onExit.fire((typeof exitCode === `number`) ? exitCode : 0);
 	}
 
 	private _attachPressAnyKeyToCloseListener() {
-		this._processManager!.addDisposable(dom.addDisposableListener(this._xterm.textarea, 'keypress', (event: KeyboardEvent) => {
+		const keyPressListener = dom.addDisposableListener(this._xterm.textarea, 'keypress', (event: KeyboardEvent) => {
+			keyPressListener.dispose();
 			this.dispose();
 			event.preventDefault();
-		}));
+		});
 	}
 
 	public reuseTerminal(shell: IShellLaunchConfig): void {
 		// Kill and clear up the process, making the process manager ready for a new process
-		this._processManager!.dispose();
+		if (this._processManager) {
+			this._processManager.dispose();
+			this._processManager = undefined;
+		}
 
 		// Ensure new processes' output starts at start of new line
 		this._xterm.write('\n\x1b[G');
@@ -1055,12 +1084,24 @@ export class TerminalInstance implements ITerminalInstance {
 
 		// Set the new shell launch config
 		this._shellLaunchConfig = shell; // Must be done before calling _createProcess()
-		// Initialize new process
-		this._createProcess();
+
+		// Initialize new process if we have one.
+		if (this._shellLaunchConfig.executable) {
+			this._createProcess();
+		}
+
 		if (oldTitle !== this._title) {
 			this.setTitle(this._title, true);
 		}
-		this._processManager!.onProcessData(data => this._onProcessData(data));
+
+		if (this._processManager) {
+			// TODO: Why is this a string-null check failure without the "!"?
+			// The process manager can indeed be undefined when using an extension callback
+			// as a task, and the if check is correct.
+			// The "force assume to be not-null !" operator was there before the addition
+			// of extension callback as task functionality.
+			this._processManager!.onProcessData(data => this._onProcessData(data));
+		}
 	}
 
 	private _sendRendererInput(input: string): void {
