@@ -102,6 +102,10 @@ export class ConnectionDialogWidget extends Modal {
 		super(localize('connection', 'Connection'), TelemetryKeys.Connection, _partService, telemetryService, clipboardService, _workbenchThemeService, contextKeyService, { hasSpinner: true, hasErrors: true });
 	}
 
+	/**
+	 * Update the available connection providers, this is called when new providers are registered
+	 * So that the connection type dropdown always has up to date values
+	 */
 	public updateConnectionProviders(providerTypeOptions: string[],
 		providerNameToDisplayNameMap: { [providerDisplayName: string]: string }) {
 		this.providerTypeOptions = providerTypeOptions;

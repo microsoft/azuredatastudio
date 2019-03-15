@@ -94,6 +94,9 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		this.initializeConnectionProviders();
 	}
 
+	/**
+	 * Set the initial value for the connection provider and listen to the provider change event
+	 */
 	private initializeConnectionProviders() {
 		this.setConnectionProviders();
 		if (this._capabilitiesService) {
@@ -106,6 +109,9 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		}
 	}
 
+	/**
+	 * Update the available provider types using the values from capabilities service
+	 */
 	private setConnectionProviders() {
 		if (this._capabilitiesService) {
 			this._providerTypes = [];
