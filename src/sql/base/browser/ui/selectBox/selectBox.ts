@@ -154,11 +154,13 @@ export class SelectBox extends vsSelectBox {
 	public showMessage(message: IMessage): void {
 		this.message = message;
 
-		dom.removeClass(this.element, 'idle');
-		dom.removeClass(this.element, 'info');
-		dom.removeClass(this.element, 'warning');
-		dom.removeClass(this.element, 'error');
-		dom.addClass(this.element, this.classForType(message.type));
+		if (this.element) {
+			dom.removeClass(this.element, 'idle');
+			dom.removeClass(this.element, 'info');
+			dom.removeClass(this.element, 'warning');
+			dom.removeClass(this.element, 'error');
+			dom.addClass(this.element, this.classForType(message.type));
+		}
 
 		// ARIA Support
 		let alertText: string;
@@ -213,8 +215,6 @@ export class SelectBox extends vsSelectBox {
 	}
 
 	public hideMessage(): void {
-		this.message = null;
-
 		dom.removeClass(this.element, 'info');
 		dom.removeClass(this.element, 'warning');
 		dom.removeClass(this.element, 'error');
@@ -222,10 +222,12 @@ export class SelectBox extends vsSelectBox {
 
 		this._hideMessage();
 		this.applyStyles();
+
+		this.message = null;
 	}
 
 	private _hideMessage(): void {
-		if (this.contextViewProvider) {
+		if (this.message && this.contextViewProvider) {
 			this.contextViewProvider.hideContextView();
 		}
 	}
