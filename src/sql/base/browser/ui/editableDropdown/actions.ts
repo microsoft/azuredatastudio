@@ -5,7 +5,6 @@
 
 import { Action } from 'vs/base/common/actions';
 import { TPromise } from 'vs/base/common/winjs.base';
-import * as nls from 'vs/nls';
 
 export class ToggleDropdownAction extends Action {
 	private static readonly ID = 'dropdownAction.toggle';

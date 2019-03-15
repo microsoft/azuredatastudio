@@ -13,11 +13,10 @@ export interface IButtonStyles extends vsIButtonStyles {
 }
 
 export class Button extends vsButton {
-	private buttonFocusOutline: Color;
+	private buttonFocusOutline?: Color;
 
 	constructor(container: HTMLElement, options?: IButtonOptions) {
 		super(container, options);
-		this.buttonFocusOutline = null;
 
 		this._register(DOM.addDisposableListener(this.element, DOM.EventType.FOCUS, () => {
 			this.element.style.outlineColor = this.buttonFocusOutline ? this.buttonFocusOutline.toString() : null;

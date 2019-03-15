@@ -26,11 +26,11 @@ export class DropdownModel {
 }
 
 export class DropdownRenderer implements tree.IRenderer {
-	public getHeight(tree: tree.ITree, element: Resource): number {
+	public getHeight(): number {
 		return 22;
 	}
 
-	public getTemplateId(tree: tree.ITree, element: Resource): string {
+	public getTemplateId(): string {
 		return '';
 	}
 

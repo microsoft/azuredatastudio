@@ -446,11 +446,9 @@ export class ListDatabasesActionItem extends EventEmitter implements IActionItem
 	// CONSTRUCTOR /////////////////////////////////////////////////////////
 	constructor(
 		private _editor: QueryEditor,
-		private _action: ListDatabasesAction,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@INotificationService private _notificationService: INotificationService,
 		@IContextViewService contextViewProvider: IContextViewService,
-		@IThemeService themeService: IThemeService,
 		@IConfigurationService private readonly _configurationService: IConfigurationService
 	) {
 		super();
@@ -465,7 +463,7 @@ export class ListDatabasesActionItem extends EventEmitter implements IActionItem
 			this._databaseSelectBox.disable();
 
 		} else {
-			this._dropdown = new Dropdown(this.$databaseListDropdown.getHTMLElement(), contextViewProvider, themeService, {
+			this._dropdown = new Dropdown(this.$databaseListDropdown.getHTMLElement(), contextViewProvider, {
 				strictSelection: true,
 				placeholder: this._selectDatabaseString,
 				ariaLabel: this._selectDatabaseString,
