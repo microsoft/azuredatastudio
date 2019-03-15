@@ -6,7 +6,6 @@
 'use strict';
 
 import * as nls from 'vs/nls';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { IEditorModel } from 'vs/platform/editor/common/editor';
 import { EditorInput, EditorModel, ConfirmResult } from 'vs/workbench/common/editor';
 import { Emitter, Event } from 'vs/base/common/event';
@@ -32,7 +31,6 @@ import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorIn
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
-
 
 export class NotebookEditorModel extends EditorModel {
 	private dirty: boolean;
@@ -77,7 +75,7 @@ export class NotebookEditorModel extends EditorModel {
 		this._onDidChangeDirty.fire();
 	}
 
-	public confirmSave(): TPromise<ConfirmResult> {
+	public confirmSave(): Promise<ConfirmResult> {
 		return this.textFileService.confirmSave([this.notebookUri]);
 	}
 
@@ -85,10 +83,10 @@ export class NotebookEditorModel extends EditorModel {
 	 * UntitledEditor uses TextFileService to save data from UntitledEditorInput
 	 * Titled editor uses TextFileEditorModel to save existing notebook
 	*/
-	save(options: ISaveOptions): TPromise<boolean> {
+	save(options: ISaveOptions): Promise<boolean> {
 		if (this.textEditorModel instanceof TextFileEditorModel) {
 			this.textEditorModel.save(options);
-			return TPromise.as(true);
+			return Promise.resolve(true);
 		}
 		else {
 			return this.textFileService.save(this.notebookUri, options);
@@ -163,11 +161,11 @@ export class NotebookInput extends EditorInput {
 		return this._textInput;
 	}
 
-	public confirmSave(): TPromise<ConfirmResult> {
+	public confirmSave(): Promise<ConfirmResult> {
 		return this._model.confirmSave();
 	}
 
-	public revert(): TPromise<boolean> {
+	public revert(): Promise<boolean> {
 		return this._textInput.revert();
 	}
 
@@ -216,7 +214,7 @@ export class NotebookInput extends EditorInput {
 		return this._standardKernels;
 	}
 
-	public save(): TPromise<boolean> {
+	public save(): Promise<boolean> {
 		let options: ISaveOptions = { force: false };
 		return this._model.save(options);
 	}
@@ -256,9 +254,9 @@ export class NotebookInput extends EditorInput {
 		return this.resource;
 	}
 
-	async resolve(): TPromise<NotebookEditorModel> {
+	async resolve(): Promise<NotebookEditorModel> {
 		if (this._model && this._model.isModelCreated()) {
-			return TPromise.as(this._model);
+			return Promise.resolve(this._model);
 		} else {
 			let textOrUntitledEditorModel: UntitledEditorModel | IEditorModel;
 			if (this.resource.scheme === Schemas.untitled) {

@@ -29,7 +29,7 @@ import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegis
 const CORE_WEIGHT = KeybindingWeight.EditorCore;
 
 export abstract class CoreEditorCommand extends EditorCommand {
-	public runEditorCommand(accessor: ServicesAccessor, editor: ICodeEditor, args: any): void {
+	public runEditorCommand(accessor: ServicesAccessor | null, editor: ICodeEditor, args: any): void {
 		const cursors = editor._getCursors();
 		if (!cursors) {
 			// the editor has no view => has no cursors
@@ -1720,8 +1720,10 @@ registerCommand(new EditorOrNativeTextInputCommand({
 		primary: KeyMod.CtrlCmd | KeyCode.KEY_A
 	},
 	menubarOpts: {
-		menuId: MenuId.MenubarSelectionMenu,
-		group: '1_basic',
+		// {{SQL CARBON EDIT}} - Put this in the edit menu since we disabled the selection menu
+		menuId: MenuId.MenubarEditMenu,
+		group: '4_find_global',
+		// {{SQL CARBON EDIT}} - End
 		title: nls.localize({ key: 'miSelectAll', comment: ['&& denotes a mnemonic'] }, "&&Select All"),
 		order: 1
 	}

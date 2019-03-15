@@ -81,7 +81,7 @@ export default class ListBoxComponent extends ComponentBase implements IComponen
 
 	public setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
-		this._input.setOptions(this.values, this.selectedRow);
+		this._input.setOptions(this.values.map(value => { return { text: value }; }), this.selectedRow);
 
 		this.validate();
 	}

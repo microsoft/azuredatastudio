@@ -187,7 +187,7 @@ async function createLanguageSnippetFile(pick: ISnippetPick, fileService: IFileS
 	await fileService.updateContent(URI.file(pick.filepath), contents);
 }
 
-CommandsRegistry.registerCommand(id, async accessor => {
+CommandsRegistry.registerCommand(id, async (accessor): Promise<any> => {
 
 	const snippetService = accessor.get(ISnippetsService);
 	const quickInputService = accessor.get(IQuickInputService);
@@ -244,11 +244,13 @@ MenuRegistry.appendMenuItem(MenuId.CommandPalette, {
 	}
 });
 
-MenuRegistry.appendMenuItem(MenuId.MenubarPreferencesMenu, {
-	group: '3_snippets',
-	command: {
-		id,
-		title: nls.localize({ key: 'miOpenSnippets', comment: ['&& denotes a mnemonic'] }, "User &&Snippets")
-	},
-	order: 1
-});
+// {{SQL CARBON EDIT}} - Disable unused menu item
+// MenuRegistry.appendMenuItem(MenuId.MenubarPreferencesMenu, {
+// 	group: '3_snippets',
+// 	command: {
+// 		id,
+// 		title: nls.localize({ key: 'miOpenSnippets', comment: ['&& denotes a mnemonic'] }, "User &&Snippets")
+// 	},
+// 	order: 1
+// });
+// {{SQL CARBON EDIT}} - End

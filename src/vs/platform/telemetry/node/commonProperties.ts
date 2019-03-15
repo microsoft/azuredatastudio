@@ -11,8 +11,8 @@ import { readFile } from 'vs/base/node/pfs';
 // {{SQL CARBON EDIT}}
 import product from 'vs/platform/node/product';
 
-export function resolveCommonProperties(commit: string, version: string, machineId: string, installSourcePath: string): Promise<{ [name: string]: string; }> {
-	const result: { [name: string]: string; } = Object.create(null);
+export function resolveCommonProperties(commit: string | undefined, version: string, machineId: string | undefined, installSourcePath: string): Promise<{ [name: string]: string | undefined; }> {
+	const result: { [name: string]: string | undefined; } = Object.create(null);
 
 	// {{SQL CARBON EDIT}}
 	// __GDPR__COMMON__ "common.machineId" : { "endPoint": "MacAddressHash", "classification": "EndUserPseudonymizedInformation", "purpose": "FeatureInsight" }

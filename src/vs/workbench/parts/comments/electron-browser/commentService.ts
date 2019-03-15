@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { CommentThread, DocumentCommentProvider, CommentThreadChangedEvent, CommentInfo, Comment } from 'vs/editor/common/modes';
+import { CommentThread, DocumentCommentProvider, CommentThreadChangedEvent, CommentInfo, Comment, CommentReaction } from 'vs/editor/common/modes';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Disposable } from 'vs/base/common/lifecycle';
@@ -49,12 +49,15 @@ export interface ICommentService {
 	editComment(owner: string, resource: URI, comment: Comment, text: string): Promise<void>;
 	deleteComment(owner: string, resource: URI, comment: Comment): Promise<boolean>;
 	getComments(resource: URI): Promise<ICommentInfo[]>;
-	startDraft(owner: string): void;
-	deleteDraft(owner: string): void;
-	finishDraft(owner: string): void;
+	startDraft(owner: string, resource: URI): void;
+	deleteDraft(owner: string, resource: URI): void;
+	finishDraft(owner: string, resource: URI): void;
 	getStartDraftLabel(owner: string): string;
 	getDeleteDraftLabel(owner: string): string;
 	getFinishDraftLabel(owner: string): string;
+	addReaction(owner: string, resource: URI, comment: Comment, reaction: CommentReaction): Promise<void>;
+	deleteReaction(owner: string, resource: URI, comment: Comment, reaction: CommentReaction): Promise<void>;
+	getReactionGroup(owner: string): CommentReaction[];
 }
 
 export class CommentService extends Disposable implements ICommentService {
@@ -135,7 +138,7 @@ export class CommentService extends Disposable implements ICommentService {
 			return commentProvider.editComment(resource, comment, text, CancellationToken.None);
 		}
 
-		return Promise.resolve(void 0);
+		return Promise.resolve(undefined);
 	}
 
 	deleteComment(owner: string, resource: URI, comment: Comment): Promise<boolean> {
@@ -148,34 +151,64 @@ export class CommentService extends Disposable implements ICommentService {
 		return Promise.resolve(false);
 	}
 
-	async startDraft(owner: string): Promise<void> {
+	async startDraft(owner: string, resource: URI): Promise<void> {
 		const commentProvider = this._commentProviders.get(owner);
 
 		if (commentProvider && commentProvider.startDraft) {
-			return commentProvider.startDraft(CancellationToken.None);
+			return commentProvider.startDraft(resource, CancellationToken.None);
 		} else {
 			throw new Error('Not supported');
 		}
 	}
 
-	async deleteDraft(owner: string): Promise<void> {
+	async deleteDraft(owner: string, resource: URI): Promise<void> {
 		const commentProvider = this._commentProviders.get(owner);
 
 		if (commentProvider && commentProvider.deleteDraft) {
-			return commentProvider.deleteDraft(CancellationToken.None);
+			return commentProvider.deleteDraft(resource, CancellationToken.None);
 		} else {
 			throw new Error('Not supported');
 		}
 	}
 
-	async finishDraft(owner: string): Promise<void> {
+	async finishDraft(owner: string, resource: URI): Promise<void> {
 		const commentProvider = this._commentProviders.get(owner);
 
 		if (commentProvider && commentProvider.finishDraft) {
-			return commentProvider.finishDraft(CancellationToken.None);
+			return commentProvider.finishDraft(resource, CancellationToken.None);
 		} else {
 			throw new Error('Not supported');
 		}
+	}
+
+	async addReaction(owner: string, resource: URI, comment: Comment, reaction: CommentReaction): Promise<void> {
+		const commentProvider = this._commentProviders.get(owner);
+
+		if (commentProvider && commentProvider.addReaction) {
+			return commentProvider.addReaction(resource, comment, reaction, CancellationToken.None);
+		} else {
+			throw new Error('Not supported');
+		}
+	}
+
+	async deleteReaction(owner: string, resource: URI, comment: Comment, reaction: CommentReaction): Promise<void> {
+		const commentProvider = this._commentProviders.get(owner);
+
+		if (commentProvider && commentProvider.deleteReaction) {
+			return commentProvider.deleteReaction(resource, comment, reaction, CancellationToken.None);
+		} else {
+			throw new Error('Not supported');
+		}
+	}
+
+	getReactionGroup(owner: string): CommentReaction[] {
+		const commentProvider = this._commentProviders.get(owner);
+
+		if (commentProvider) {
+			return commentProvider.reactionGroup;
+		}
+
+		return null;
 	}
 
 	getStartDraftLabel(owner: string): string | null {

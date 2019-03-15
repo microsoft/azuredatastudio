@@ -5,7 +5,6 @@
 
 import * as tree from 'vs/base/parts/tree/browser/tree';
 import * as TreeDefaults from 'vs/base/parts/tree/browser/treeDefaults';
-import { Promise, TPromise } from 'vs/base/common/winjs.base';
 import { generateUuid } from 'vs/base/common/uuid';
 import * as DOM from 'vs/base/browser/dom';
 import { Event, Emitter } from 'vs/base/common/event';
@@ -74,17 +73,17 @@ export class DropdownDataSource implements tree.IDataSource {
 
 	public getChildren(tree: tree.ITree, element: Resource | DropdownModel): Promise<any> {
 		if (element instanceof DropdownModel) {
-			return TPromise.as(this.options);
+			return Promise.resolve(this.options);
 		} else {
-			return TPromise.as(undefined);
+			return Promise.resolve(undefined);
 		}
 	}
 
 	public getParent(tree: tree.ITree, element: Resource | DropdownModel): Promise<any> {
 		if (element instanceof DropdownModel) {
-			return TPromise.as(undefined);
+			return Promise.resolve(undefined);
 		} else {
-			return TPromise.as(new DropdownModel());
+			return Promise.resolve(new DropdownModel());
 		}
 	}
 }

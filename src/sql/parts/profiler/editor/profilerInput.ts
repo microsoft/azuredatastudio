@@ -11,7 +11,6 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import * as azdata from 'azdata';
 import * as nls from 'vs/nls';
 
-import { TPromise } from 'vs/base/common/winjs.base';
 import { EditorInput, ConfirmResult } from 'vs/workbench/common/editor';
 import { IEditorModel } from 'vs/platform/editor/common/editor';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -124,7 +123,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		return ProfilerInput.ID;
 	}
 
-	public resolve(refresh?: boolean): TPromise<IEditorModel> {
+	public resolve(refresh?: boolean): Promise<IEditorModel> {
 		return undefined;
 	}
 
@@ -284,7 +283,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		this.data.clearFilter();
 	}
 
-	confirmSave(): TPromise<ConfirmResult> {
+	confirmSave(): Promise<ConfirmResult> {
 		if (this.state.isRunning || this.state.isPaused) {
 			return this._dialogService.show(Severity.Warning,
 				nls.localize('confirmStopProfilerSession', "Would you like to stop the running XEvent session?"),
@@ -303,7 +302,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 					}
 				});
 		} else {
-			return TPromise.wrap(ConfirmResult.DONT_SAVE);
+			return Promise.resolve(ConfirmResult.DONT_SAVE);
 		}
 	}
 

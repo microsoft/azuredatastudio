@@ -7,7 +7,6 @@
 
 import { ITree, IDataSource } from 'vs/base/parts/tree/browser/tree';
 import { TaskNode } from 'sql/parts/taskHistory/common/taskNode';
-import { TPromise } from 'vs/base/common/winjs.base';
 
 /**
  * Implements the DataSource(that returns a parent/children of an element) for the task history
@@ -39,17 +38,17 @@ export class TaskHistoryDataSource implements IDataSource {
 	/**
 	 * Returns the element's children as an array in a promise.
 	 */
-	public getChildren(tree: ITree, element: any): TPromise<any> {
+	public getChildren(tree: ITree, element: any): Promise<any> {
 		if (element instanceof TaskNode) {
-			return TPromise.as((<TaskNode>element).children);
+			return Promise.resolve((<TaskNode>element).children);
 		}
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 
 	/**
 	 * Returns the element's parent in a promise.
 	 */
-	public getParent(tree: ITree, element: any): TPromise<any> {
-		return TPromise.as(null);
+	public getParent(tree: ITree, element: any): Promise<any> {
+		return Promise.resolve(null);
 	}
 }

@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { TPromise } from 'vs/base/common/winjs.base';
 import { ITelemetryService, ITelemetryInfo, ITelemetryData } from 'vs/platform/telemetry/common/telemetry';
 const fs = require('fs');
 
@@ -30,11 +29,11 @@ export class FileTelemetryService implements ITelemetryService {
 				fs.appendFileSync(this._outputFile, telemetryData + '\n');
 			}
 		}
-		return TPromise.wrap<void>(null);
+		return Promise.resolve<void>(null);
 	}
 	isOptedIn: true;
-	getTelemetryInfo(): TPromise<ITelemetryInfo> {
-		return TPromise.wrap({
+	getTelemetryInfo(): Promise<ITelemetryInfo> {
+		return Promise.resolve({
 			instanceId: 'someValue.instanceId',
 			sessionId: 'someValue.sessionId',
 			machineId: 'someValue.machineId'

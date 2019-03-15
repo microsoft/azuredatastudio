@@ -414,7 +414,7 @@ export class CustomTreeView extends Disposable implements ITreeView {
 		return Promise.resolve(null);
 	}
 
-	expand(itemOrItems: ITreeItem | ITreeItem[]): Thenable<void> {
+	expand(itemOrItems: ITreeItem | ITreeItem[]): Promise<void> {
 		if (this.tree) {
 			itemOrItems = Array.isArray(itemOrItems) ? itemOrItems : [itemOrItems];
 			return this.tree.expandAll(itemOrItems);
@@ -443,7 +443,7 @@ export class CustomTreeView extends Disposable implements ITreeView {
 		}
 	}
 
-	reveal(item: ITreeItem): Thenable<void> {
+	reveal(item: ITreeItem): Promise<void> {
 		if (this.tree) {
 			return this.tree.reveal(item);
 		}
@@ -620,8 +620,8 @@ class TreeRenderer implements IRenderer {
 
 		const icon = DOM.append(container, DOM.$('.custom-view-tree-node-item-icon'));
 		const resourceLabel = this.instantiationService.createInstance(ResourceLabel, container, { supportHighlights: true, donotSupportOcticons: true });
-		DOM.addClass(resourceLabel.element, 'custom-view-tree-node-item-resourceLabel');
-		const actionsContainer = DOM.append(resourceLabel.element, DOM.$('.actions'));
+		DOM.addClass(resourceLabel.element.element, 'custom-view-tree-node-item-resourceLabel');
+		const actionsContainer = DOM.append(resourceLabel.element.element, DOM.$('.actions'));
 		const actionBar = new ActionBar(actionsContainer, {
 			actionItemProvider: this.actionItemProvider,
 			actionRunner: new MultipleSelectionActionRunner(() => tree.getSelection())
@@ -646,9 +646,9 @@ class TreeRenderer implements IRenderer {
 
 		if (resource || node.themeIcon) {
 			const fileDecorations = this.configurationService.getValue<{ colors: boolean, badges: boolean }>('explorer.decorations');
-			templateData.resourceLabel.setLabel({ name: label, description, resource: resource ? resource : URI.parse('missing:_icon_resource') }, { fileKind: this.getFileKind(node), title, hideIcon: !!iconUrl, fileDecorations, extraClasses: ['custom-view-tree-node-item-resourceLabel'], matches });
+			templateData.resourceLabel.element.setResource({ name: label, resource: resource ? resource : URI.parse('missing:_icon_resource') }, { fileKind: this.getFileKind(node), title, fileDecorations: fileDecorations, extraClasses: ['custom-view-tree-node-item-resourceLabel'], matches });
 		} else {
-			templateData.resourceLabel.setLabel({ name: label, description }, { title, hideIcon: true, extraClasses: ['custom-view-tree-node-item-resourceLabel'], matches });
+			templateData.resourceLabel.element.setResource({ name: label, description }, { title, hideIcon: true, extraClasses: ['custom-view-tree-node-item-resourceLabel'], matches });
 		}
 
 		templateData.icon.style.backgroundImage = iconUrl ? `url('${iconUrl.toString(true)}')` : '';
@@ -795,7 +795,7 @@ class MultipleSelectionActionRunner extends ActionRunner {
 		super();
 	}
 
-	runAction(action: IAction, context: any): Thenable<any> {
+	runAction(action: IAction, context: any): Promise<any> {
 		if (action instanceof MenuItemAction) {
 			const selection = this.getSelectedResources();
 			const filteredSelection = selection.filter(s => s !== context);

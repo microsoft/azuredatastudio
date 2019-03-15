@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { TPromise } from 'vs/base/common/winjs.base';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import {
 	SqlExtHostContext, ExtHostCredentialManagementShape,
@@ -37,7 +36,7 @@ export class MainThreadCredentialManagement implements MainThreadCredentialManag
 		this._toDispose = dispose(this._toDispose);
 	}
 
-	public $registerCredentialProvider(handle: number): TPromise<any> {
+	public $registerCredentialProvider(handle: number): Promise<any> {
 		let self = this;
 
 		this._registrations[handle] = this.credentialService.addEventListener(handle, {
@@ -55,7 +54,7 @@ export class MainThreadCredentialManagement implements MainThreadCredentialManag
 		return undefined;
 	}
 
-	public $unregisterCredentialProvider(handle: number): TPromise<any> {
+	public $unregisterCredentialProvider(handle: number): Promise<any> {
 		let registration = this._registrations[handle];
 		if (registration) {
 			registration.dispose();

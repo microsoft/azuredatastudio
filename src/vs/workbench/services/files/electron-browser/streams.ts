@@ -43,14 +43,14 @@ function createSimpleWritable(provider: IFileSystemProvider, resource: URI, opts
 function createWritable(provider: IFileSystemProvider, resource: URI, opts: FileWriteOptions): Writable {
 	return new class extends Writable {
 		_fd: number;
-		_pos: number;
+		_pos: number = 0;
 		constructor(opts?) {
 			super(opts);
 		}
 		async _write(chunk: Buffer, encoding, callback: Function) {
 			try {
 				if (typeof this._fd !== 'number') {
-					this._fd = await provider.open(resource);
+					this._fd = await provider.open(resource, { create: true });
 				}
 				let bytesWritten = await provider.write(this._fd, this._pos, chunk, 0, chunk.length);
 				this._pos += bytesWritten;
@@ -59,12 +59,12 @@ function createWritable(provider: IFileSystemProvider, resource: URI, opts: File
 				callback(err);
 			}
 		}
-		end() {
-			provider.close(this._fd).then(_ => {
-				super.end();
-			}, err => {
-				this.emit('error', err);
-			});
+		_final(callback: (err?: any) => any) {
+			if (typeof this._fd !== 'number') {
+				provider.open(resource, { create: true }).then(fd => provider.close(fd)).finally(callback);
+			} else {
+				provider.close(this._fd).finally(callback);
+			}
 		}
 	};
 }
@@ -84,10 +84,7 @@ function createReadable(provider: IFileSystemProvider, resource: URI, position: 
 		_fd: number;
 		_pos: number = position;
 		_reading: boolean = false;
-		constructor(opts?) {
-			super(opts);
-			this.once('close', _ => this._final());
-		}
+
 		async _read(size?: number) {
 			if (this._reading) {
 				return;
@@ -95,29 +92,28 @@ function createReadable(provider: IFileSystemProvider, resource: URI, position: 
 			this._reading = true;
 			try {
 				if (typeof this._fd !== 'number') {
-					this._fd = await provider.open(resource);
+					this._fd = await provider.open(resource, { create: false });
 				}
-				let buffer = Buffer.allocUnsafe(64 * 1024);
 				while (this._reading) {
+					let buffer = Buffer.allocUnsafe(size);
 					let bytesRead = await provider.read(this._fd, this._pos, buffer, 0, buffer.length);
 					if (bytesRead === 0) {
+						await provider.close(this._fd);
 						this._reading = false;
 						this.push(null);
-					}
-					else {
+					} else {
 						this._reading = this.push(buffer.slice(0, bytesRead));
 						this._pos += bytesRead;
 					}
 				}
-			}
-			catch (err) {
+			} catch (err) {
 				//
 				this.emit('error', err);
 			}
 		}
-		async _final() {
+		_destroy(_err: any, callback: (err?: any) => any) {
 			if (typeof this._fd === 'number') {
-				await provider.close(this._fd);
+				provider.close(this._fd).then(callback, callback);
 			}
 		}
 	};
@@ -125,7 +121,7 @@ function createReadable(provider: IFileSystemProvider, resource: URI, position: 
 
 function createSimpleReadable(provider: IFileSystemProvider, resource: URI, position: number): Readable {
 	return new class extends Readable {
-		_readOperation: Thenable<any>;
+		_readOperation: Promise<any>;
 		_read(size?: number): void {
 			if (this._readOperation) {
 				return;

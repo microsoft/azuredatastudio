@@ -6,7 +6,7 @@
 'use strict';
 import 'vs/css!./media/selectBox';
 
-import { SelectBox as vsSelectBox, ISelectBoxStyles as vsISelectBoxStyles, ISelectBoxOptions } from 'vs/base/browser/ui/selectBox/selectBox';
+import { SelectBox as vsSelectBox, ISelectBoxStyles as vsISelectBoxStyles, ISelectBoxOptions, ISelectOptionItem } from 'vs/base/browser/ui/selectBox/selectBox';
 import { Color } from 'vs/base/common/color';
 import { IContextViewProvider, AnchorAlignment } from 'vs/base/browser/ui/contextview/contextview';
 import * as dom from 'vs/base/browser/dom';
@@ -50,7 +50,7 @@ export class SelectBox extends vsSelectBox {
 	private element: HTMLElement;
 
 	constructor(options: string[], selectedOption: string, contextViewProvider: IContextViewProvider, container?: HTMLElement, selectBoxOptions?: ISelectBoxOptions) {
-		super(options, 0, contextViewProvider, undefined, selectBoxOptions);
+		super(options.map(option => { return { text: option }; }), 0, contextViewProvider, undefined, selectBoxOptions);
 		this._optionsDictionary = new Array();
 		for (var i = 0; i < options.length; i++) {
 			this._optionsDictionary[options[i]] = i;
@@ -114,13 +114,19 @@ export class SelectBox extends vsSelectBox {
 		}
 	}
 
-	public setOptions(options: string[], selected?: number, disabled?: number): void {
-		this._optionsDictionary = [];
-		for (var i = 0; i < options.length; i++) {
-			this._optionsDictionary[options[i]] = i;
+	public setOptions(options: string[] | ISelectOptionItem[], selected?: number): void {
+		let stringOptions: string[];
+		if (options.length > 0 && typeof options[0] !== 'string') {
+			stringOptions = (options as ISelectOptionItem[]).map(option => option.text);
+		} else {
+			stringOptions = options as string[];
 		}
-		this._dialogOptions = options;
-		super.setOptions(options, selected, disabled);
+		this._optionsDictionary = [];
+		for (var i = 0; i < stringOptions.length; i++) {
+			this._optionsDictionary[stringOptions[i]] = i;
+		}
+		this._dialogOptions = stringOptions;
+		super.setOptions(stringOptions.map(option => { return { text: option }; }), selected);
 	}
 
 	public get value(): string {
