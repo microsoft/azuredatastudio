@@ -102,6 +102,13 @@ export class ConnectionDialogWidget extends Modal {
 		super(localize('connection', 'Connection'), TelemetryKeys.Connection, _partService, telemetryService, clipboardService, _workbenchThemeService, contextKeyService, { hasSpinner: true, hasErrors: true });
 	}
 
+	public updateConnectionProviders(providerTypeOptions: string[],
+		providerNameToDisplayNameMap: { [providerDisplayName: string]: string }) {
+		this.providerTypeOptions = providerTypeOptions;
+		this.providerNameToDisplayNameMap = providerNameToDisplayNameMap;
+		this.refresh();
+	}
+
 	public refresh(): void {
 		let filteredProviderTypes = this.providerTypeOptions;
 
