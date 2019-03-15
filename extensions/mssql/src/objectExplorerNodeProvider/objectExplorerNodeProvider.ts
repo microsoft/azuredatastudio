@@ -111,7 +111,7 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements azd
 				if(children && children.length > 0)
 				{
 					let child = children[0].getNodeInfo();
-					// Only child returend when failure happens : Handle the error node
+					// Only child returned when failure happens : When failed with 'Unauthorized' error, prompt for password.
 					if(children.length === 1 && child && child.nodeType === constants.MssqlClusterItems.Error)
 					{
 						if (children[0].errorStatusCode === 401)
