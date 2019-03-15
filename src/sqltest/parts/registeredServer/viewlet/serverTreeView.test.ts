@@ -9,8 +9,6 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ServerTreeView } from 'sql/parts/objectExplorer/viewlet/serverTreeView';
 import { ConnectionManagementService } from 'sql/platform/connection/common/connectionManagementService';
 
-import { CapabilitiesTestService } from 'sqltest/stubs/capabilitiesTestService';
-
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { TestStorageService } from 'vs/workbench/test/workbenchTestServices';
