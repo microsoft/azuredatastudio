@@ -528,7 +528,7 @@ export class QueryEditor extends BaseEditor {
 	 */
 	public get listDatabasesActionItem(): ListDatabasesActionItem {
 		if (!this._listDatabasesActionItem) {
-			this._listDatabasesActionItem = this._instantiationService.createInstance(ListDatabasesActionItem, this, this._listDatabasesAction);
+			this._listDatabasesActionItem = this._instantiationService.createInstance(ListDatabasesActionItem, this);
 			this._register(this._listDatabasesActionItem.attachStyler(this.themeService));
 		}
 		return this._listDatabasesActionItem;

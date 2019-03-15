@@ -35,7 +35,6 @@ export interface IAccountManagementService {
 
 	// SERVICE MANAGEMENT METHODS /////////////////////////////////////////
 	registerProvider(providerMetadata: azdata.AccountProviderMetadata, provider: azdata.AccountProvider): void;
-	shutdown(): void;
 	unregisterProvider(providerMetadata: azdata.AccountProviderMetadata): void;
 
 	// EVENTING ////////////////////////////////////////////////////////////

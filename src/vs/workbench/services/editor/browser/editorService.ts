@@ -522,10 +522,10 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 		if (!untitledInput.resource || typeof untitledInput.filePath === 'string' || (untitledInput.resource instanceof URI && untitledInput.resource.scheme === Schemas.untitled)) {
 			// {{SQL CARBON EDIT}}
 
-			let mode: string = getFileMode( this.instantiationService, untitledInput.resource);
+			let modeId: string = untitledInput.language ? untitledInput.language : getFileMode( this.instantiationService, untitledInput.resource);
 			return convertEditorInput(this.untitledEditorService.createOrGet(
 				untitledInput.filePath ? URI.file(untitledInput.filePath) : untitledInput.resource,
-				mode,
+				modeId,
 				untitledInput.contents,
 				untitledInput.encoding
 			), undefined, this.instantiationService);

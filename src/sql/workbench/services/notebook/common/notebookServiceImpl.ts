@@ -31,10 +31,10 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { NotebookEditor } from 'sql/parts/notebook/notebookEditor';
 import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { registerNotebookThemes } from 'sql/parts/notebook/notebookStyles';
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
 import { ILanguageMagic, notebookConstants } from 'sql/parts/notebook/models/modelInterfaces';
+import { ILifecycleService } from 'vs/platform/lifecycle/common/lifecycle';
 import { SqlNotebookProvider } from 'sql/workbench/services/notebook/sql/sqlNotebookProvider';
 
 export interface NotebookProviderProperties {
@@ -94,6 +94,7 @@ export class NotebookService extends Disposable implements INotebookService {
 	private _overrideEditorThemeSetting: boolean;
 
 	constructor(
+		@ILifecycleService lifecycleService: ILifecycleService,
 		@IStorageService private _storageService: IStorageService,
 		@IExtensionService extensionService: IExtensionService,
 		@IExtensionManagementService extensionManagementService: IExtensionManagementService,
@@ -102,7 +103,6 @@ export class NotebookService extends Disposable implements INotebookService {
 		@IEditorService private readonly _editorService: IEditorService,
 		@IEditorGroupsService private readonly _editorGroupsService: IEditorGroupsService,
 		@IConfigurationService private readonly _configurationService: IConfigurationService,
-		@IThemeService private readonly _themeService: IThemeService,
 		@IQueryManagementService private readonly _queryManagementService
 	) {
 		super();
@@ -127,6 +127,8 @@ export class NotebookService extends Disposable implements INotebookService {
 		if (extensionManagementService) {
 			this._register(extensionManagementService.onDidUninstallExtension(({ identifier }) => this.removeContributedProvidersFromCache(identifier, extensionService)));
 		}
+
+		lifecycleService.onWillShutdown(() => this.shutdown());
 		this.hookContextKeyListeners();
 		this.hookNotebookThemesAndConfigListener();
 	}
@@ -174,6 +176,7 @@ export class NotebookService extends Disposable implements INotebookService {
 			if (provider) {
 				this._providerToStandardKernels.set(notebookConstants.SQL, [{
 					name: notebookConstants.SQL,
+					displayName: notebookConstants.SQL,
 					connectionProviderIds: sqlConnectionTypes
 				}]);
 			}
@@ -282,7 +285,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		return this._providerToStandardKernels.get(provider.toUpperCase());
 	}
 
-	public shutdown(): void {
+	private shutdown(): void {
 		this._managersMap.forEach(manager => {
 			manager.forEach(m => {
 				if (m.serverManager) {
@@ -450,7 +453,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		notebookRegistry.registerNotebookProvider({
 			provider: sqlProvider.providerId,
 			fileExtensions: DEFAULT_NOTEBOOK_FILETYPE,
-			standardKernels: { name: 'SQL', connectionProviderIds: ['MSSQL'] }
+			standardKernels: { name: notebookConstants.SQL, displayName: notebookConstants.SQL, connectionProviderIds: [notebookConstants.SQL_CONNECTION_PROVIDER] }
 		});
 	}
 

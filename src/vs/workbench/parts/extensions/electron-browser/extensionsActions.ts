@@ -189,6 +189,13 @@ export class InstallAction extends ExtensionAction {
 				return this.notificationService.error(err);
 			}
 
+			// {{SQL CARBON EDIT}}
+			// Prompt the user that the current ADS version is not compatible with the extension,
+			// return here as in this scenario it doesn't make sense for the user to download manually.
+			if(err && err.code === INSTALL_ERROR_INCOMPATIBLE) {
+				return this.notificationService.error(err);
+			}
+
 			console.error(err);
 
 			return promptDownloadManually(extension.gallery, localize('failedToInstall', "Failed to install \'{0}\'.", extension.identifier.id), err, this.instantiationService, this.notificationService, this.openerService);
@@ -378,6 +385,13 @@ export class UpdateAction extends ExtensionAction {
 			alert(localize('updateExtensionComplete', "Updating extension {0} to version {1} completed.", this.extension.displayName, this.extension.latestVersion));
 		}, err => {
 			if (!extension.gallery) {
+				return this.notificationService.error(err);
+			}
+
+			// {{SQL CARBON EDIT}}
+			// Prompt the user that the current ADS version is not compatible with the extension,
+			// return here as in this scenario it doesn't make sense for the user to download manually.
+			if(err && err.code === INSTALL_ERROR_INCOMPATIBLE) {
 				return this.notificationService.error(err);
 			}
 

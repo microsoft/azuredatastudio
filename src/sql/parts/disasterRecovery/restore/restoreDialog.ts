@@ -233,7 +233,7 @@ export class RestoreDialog extends Modal {
 				inputContainer.div({ class: 'dialog-input' }, (inputCellContainer) => {
 					// Get the bootstrap params and perform the bootstrap
 					inputCellContainer.style('width', '100%');
-					this._databaseDropdown = new Dropdown(inputCellContainer.getHTMLElement(), this._contextViewService, this._themeService,
+					this._databaseDropdown = new Dropdown(inputCellContainer.getHTMLElement(), this._contextViewService,
 						{
 							strictSelection: false,
 							ariaLabel: LocalizedStrings.TARGETDATABASE,

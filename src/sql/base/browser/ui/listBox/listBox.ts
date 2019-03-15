@@ -13,7 +13,6 @@ import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { IContextViewProvider, AnchorAlignment } from 'vs/base/browser/ui/contextview/contextview';
 import { RenderOptions, renderFormattedText, renderText } from 'vs/base/browser/htmlContentRenderer';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
-import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 
 const $ = dom.$;
 
@@ -33,21 +32,21 @@ export interface IListBoxStyles {
 *  Extends SelectBox to allow multiple selection and adding/remove items dynamically
 */
 export class ListBox extends SelectBox {
-	private enabledSelectBackground: Color;
-	private enabledSelectForeground: Color;
-	private enabledSelectBorder: Color;
-	private disabledSelectBackground: Color;
-	private disabledSelectForeground: Color;
-	private disabledSelectBorder: Color;
+	private enabledSelectBackground?: Color;
+	private enabledSelectForeground?: Color;
+	private enabledSelectBorder?: Color;
+	private disabledSelectBackground?: Color;
+	private disabledSelectForeground?: Color;
+	private disabledSelectBorder?: Color;
 
-	private inputValidationInfoBorder: Color;
-	private inputValidationInfoBackground: Color;
-	private inputValidationWarningBorder: Color;
-	private inputValidationWarningBackground: Color;
-	private inputValidationErrorBorder: Color;
-	private inputValidationErrorBackground: Color;
+	private inputValidationInfoBorder?: Color;
+	private inputValidationInfoBackground?: Color;
+	private inputValidationWarningBorder?: Color;
+	private inputValidationWarningBackground?: Color;
+	private inputValidationErrorBorder?: Color;
+	private inputValidationErrorBackground?: Color;
 
-	private message: IMessage;
+	private message?: IMessage;
 	private contextViewProvider: IContextViewProvider;
 	private isValid: boolean;
 
@@ -72,8 +71,6 @@ export class ListBox extends SelectBox {
 		this.enabledSelectForeground = this.selectForeground;
 		this.enabledSelectBorder = this.selectBorder;
 		this.disabledSelectBackground = Color.transparent;
-		this.disabledSelectForeground = null;
-		this.disabledSelectBorder = null;
 
 		this.inputValidationInfoBorder = defaultOpts.inputValidationInfoBorder;
 		this.inputValidationInfoBackground = defaultOpts.inputValidationInfoBackground;
@@ -111,7 +108,7 @@ export class ListBox extends SelectBox {
 
 		if (this.isValid) {
 			this.selectElement.style.border = `1px solid ${this.selectBorder}`;
-		} else {
+		} else if (this.message) {
 			const styles = this.stylesForType(this.message.type);
 			this.selectElement.style.border = styles.border ? `1px solid ${styles.border}` : null;
 		}
@@ -122,7 +119,7 @@ export class ListBox extends SelectBox {
 	}
 
 	public get selectedOptions(): string[] {
-		let selected = [];
+		let selected: string[] = [];
 		for (let i = 0; i < this.selectElement.selectedOptions.length; i++) {
 			selected.push(this.selectElement.selectedOptions[i].innerHTML);
 		}
@@ -135,7 +132,7 @@ export class ListBox extends SelectBox {
 
 	// Remove selected options
 	public remove(): void {
-		let indexes = [];
+		let indexes: number[] = [];
 		for (let i = 0; i < this.selectElement.selectedOptions.length; i++) {
 			indexes.push(this.selectElement.selectedOptions[i].index);
 		}
@@ -218,24 +215,26 @@ export class ListBox extends SelectBox {
 					className: 'monaco-inputbox-message'
 				};
 
-				let spanElement: HTMLElement = (this.message.formatContent
-					? renderFormattedText(this.message.content, renderOptions)
-					: renderText(this.message.content, renderOptions)) as any;
-				dom.addClass(spanElement, this.classForType(this.message.type));
+				if (this.message) {
+					let spanElement: HTMLElement = (this.message.formatContent
+						? renderFormattedText(this.message.content, renderOptions)
+						: renderText(this.message.content, renderOptions)) as any;
+					dom.addClass(spanElement, this.classForType(this.message.type));
 
-				const styles = this.stylesForType(this.message.type);
-				spanElement.style.backgroundColor = styles.background ? styles.background.toString() : null;
-				spanElement.style.border = styles.border ? `1px solid ${styles.border}` : null;
+					const styles = this.stylesForType(this.message.type);
+					spanElement.style.backgroundColor = styles.background ? styles.background.toString() : null;
+					spanElement.style.border = styles.border ? `1px solid ${styles.border}` : null;
 
-				dom.append(div, spanElement);
+					dom.append(div, spanElement);
+				}
 
-				return null;
+				return { dispose: () => { } };
 			},
 			layout: layout
 		});
 	}
 
-	private classForType(type: MessageType): string {
+	private classForType(type?: MessageType): string {
 		switch (type) {
 			case MessageType.INFO: return 'info';
 			case MessageType.WARNING: return 'warning';
@@ -243,7 +242,7 @@ export class ListBox extends SelectBox {
 		}
 	}
 
-	private stylesForType(type: MessageType): { border: Color; background: Color } {
+	private stylesForType(type?: MessageType): { border?: Color; background?: Color } {
 		switch (type) {
 			case MessageType.INFO: return { border: this.inputValidationInfoBorder, background: this.inputValidationInfoBackground };
 			case MessageType.WARNING: return { border: this.inputValidationWarningBorder, background: this.inputValidationWarningBackground };

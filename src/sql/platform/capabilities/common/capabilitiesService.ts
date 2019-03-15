@@ -130,6 +130,8 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 			this.cleanupProviders();
 		});
 
+		_storageService.onWillSaveState(() => this.shutdown());
+
 		this._register(extentionManagementService.onDidUninstallExtension(({ identifier }) => {
 			const connectionProvider = 'connectionProvider';
 			extensionService.getExtensions().then(i => {
@@ -237,7 +239,7 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 		}
 	}
 
-	public shutdown(): void {
+	private shutdown(): void {
 		this._momento.saveMemento();
 	}
 }

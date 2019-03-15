@@ -19,6 +19,8 @@ export interface IGalleryExtensionProperties {
 	dependencies?: string[];
 	extensionPack?: string[];
 	engine?: string;
+	// {{SQL CARBON EDIT}}
+	azDataEngine?: string;
 	localizedLanguages?: string[];
 }
 

@@ -48,6 +48,9 @@ import { IExtensionManifest, ExtensionType, ExtensionIdentifierWithVersion } fro
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { isUIExtension } from 'vs/platform/extensions/node/extensionsUtil';
 
+// {{SQL CARBON EDIT}
+import product from 'vs/platform/node/product';
+
 const ERROR_SCANNING_SYS_EXTENSIONS = 'scanningSystem';
 const ERROR_SCANNING_USER_EXTENSIONS = 'scanningUser';
 const INSTALL_ERROR_UNSET_UNINSTALLED = 'unsetUninstalled';
@@ -201,10 +204,10 @@ export class ExtensionManagementService extends Disposable implements IExtension
 					.then(manifest => {
 						const identifier = { id: getGalleryExtensionId(manifest.publisher, manifest.name) };
 						let operation: InstallOperation = InstallOperation.Install;
-						// {{SQL CARBON EDIT - Remove VS Code version check}}
-						// if (manifest.engines && manifest.engines.vscode && !isEngineValid(manifest.engines.vscode)) {
-						// 	return Promise.reject(new Error(nls.localize('incompatible', "Unable to install extension '{0}' as it is not compatible with VS Code '{1}'.", identifier.id, pkg.version)));
-						// }
+						// {{SQL CARBON EDIT - Check VSCode and ADS version}}
+						if (manifest.engines && manifest.engines.vscode && (!isEngineValid(manifest.engines.vscode, product.vscodeVersion) || (manifest.engines.azdata && !isEngineValid(manifest.engines.azdata, pkg.version)))) {
+							return Promise.reject(new Error(nls.localize('incompatible', "Unable to install version '{2}' of extension '{0}' as it is not compatible with Azure Data Studio '{1}'.", identifier.id, pkg.version, manifest.version)));
+						}
 						const identifierWithVersion = new ExtensionIdentifierWithVersion(identifier, manifest.version);
 						return this.getInstalled(ExtensionType.User)
 							.then(installedExtensions => {

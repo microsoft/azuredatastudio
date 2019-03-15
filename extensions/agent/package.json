@@ -2,7 +2,7 @@
 	"name": "agent",
 	"displayName": "SQL Server Agent",
 	"description": "Manage and troubleshoot SQL Server Agent jobs",
-	"version": "0.36.1",
+	"version": "0.37.0",
 	"publisher": "Microsoft",
 	"preview": true,
 	"license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt",

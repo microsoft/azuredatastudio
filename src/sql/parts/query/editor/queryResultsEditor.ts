@@ -125,7 +125,7 @@ export class QueryResultsEditor extends BaseEditor {
 			cssRuleText = this._rawOptions.cellPadding.join('px ') + 'px;';
 		}
 		let content = `.grid-panel .monaco-table .slick-cell { padding: ${cssRuleText} }`;
-		content += `.grid-panel .monaco-table { ${getBareResultsGridInfoStyles(this._rawOptions)} }`;
+		content += `.grid-panel .monaco-table, .message-tree { ${getBareResultsGridInfoStyles(this._rawOptions)} }`;
 		this.styleSheet.innerHTML = content;
 	}
 

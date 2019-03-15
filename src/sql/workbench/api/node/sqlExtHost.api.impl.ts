@@ -5,11 +5,9 @@
 'use strict';
 
 import * as extHostApi from 'vs/workbench/api/node/extHost.api.impl';
-import { TrieMap } from 'sql/base/common/map';
-import { IInitData, IExtHostContext, IMainContext } from 'vs/workbench/api/node/extHost.protocol';
+import { IInitData, IMainContext } from 'vs/workbench/api/node/extHost.protocol';
 import { ExtHostExtensionService } from 'vs/workbench/api/node/extHostExtensionService';
 import { IExtensionDescription } from 'vs/workbench/services/extensions/common/extensions';
-import { realpath } from 'fs';
 import * as extHostTypes from 'vs/workbench/api/node/extHostTypes';
 import { URI } from 'vs/base/common/uri';
 
@@ -43,6 +41,7 @@ import { ExtHostStorage } from 'vs/workbench/api/node/extHostStorage';
 import { ExtensionDescriptionRegistry } from 'vs/workbench/services/extensions/node/extensionDescriptionRegistry';
 import { ExtHostExtensionManagement } from 'sql/workbench/api/node/extHostExtensionManagement';
 import { ExtensionIdentifier } from 'vs/platform/extensions/common/extensions';
+import { TernarySearchTree } from 'vs/base/common/map';
 
 export interface ISqlExtensionApiFactory {
 	vsCodeFactory(extension: IExtensionDescription, registry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): typeof vscode;
@@ -381,44 +380,7 @@ export function createApiFactory(
 				}
 			};
 
-			const modelViewDialog: typeof azdata.window.modelviewdialog = {
-				createDialog(title: string, dialogName?: string): azdata.window.modelviewdialog.Dialog {
-					console.warn('the method azdata.window.modelviewdialog.createDialog has been deprecated, replace it with azdata.window.createModelViewDialog');
-					return extHostModelViewDialog.createDialog(title, dialogName, extension);
-				},
-				createTab(title: string): azdata.window.modelviewdialog.DialogTab {
-					console.warn('the method azdata.window.modelviewdialog.createTab has been deprecated, replace it with azdata.window.createTab');
-					return extHostModelViewDialog.createTab(title, extension);
-				},
-				createButton(label: string): azdata.window.modelviewdialog.Button {
-					console.warn('the method azdata.window.modelviewdialog.createButton has been deprecated, replace it with azdata.window.createButton');
-					return extHostModelViewDialog.createButton(label);
-				},
-				openDialog(dialog: azdata.window.modelviewdialog.Dialog) {
-					console.warn('the method azdata.window.modelviewdialog.openDialog has been deprecated, replace it with azdata.window.openDialog');
-					return extHostModelViewDialog.openDialog(dialog);
-				},
-				closeDialog(dialog: azdata.window.modelviewdialog.Dialog) {
-					console.warn('the method azdata.window.modelviewdialog.closeDialog has been deprecated, replace it with azdata.window.closeDialog');
-					return extHostModelViewDialog.closeDialog(dialog);
-				},
-				createWizardPage(title: string): azdata.window.modelviewdialog.WizardPage {
-					console.warn('the method azdata.window.modelviewdialog.createWizardPage has been deprecated, replace it with azdata.window.createWizardPage');
-					return extHostModelViewDialog.createWizardPage(title);
-				},
-				createWizard(title: string): azdata.window.modelviewdialog.Wizard {
-					console.warn('the method azdata.window.modelviewdialog.createWizard has been deprecated, replace it with azdata.window.createWizard');
-					return extHostModelViewDialog.createWizard(title);
-				},
-				MessageLevel: sqlExtHostTypes.MessageLevel
-			};
-
 			const window: typeof azdata.window = {
-				createDialog(name: string) {
-					console.warn('the method azdata.window.createDialog has been deprecated, replace it with azdata.window.createWebViewDialog');
-					return extHostModalDialogs.createDialog(name);
-				},
-				modelviewdialog: modelViewDialog,
 				createWebViewDialog(name: string) {
 					return extHostModalDialogs.createDialog(name);
 				},
@@ -851,31 +813,31 @@ export function createApiFactory(
 
 			const modelViewDialog: typeof sqlops.window.modelviewdialog = {
 				createDialog(title: string, dialogName?: string): sqlops.window.modelviewdialog.Dialog {
-					console.warn('the method sqlops.window.modelviewdialog.createDialog has been deprecated, replace it with sqlops.window.createModelViewDialog');
+					console.warn('the method sqlops.window.modelviewdialog.createDialog has been deprecated, replace it with azdata.window.createModelViewDialog');
 					return extHostModelViewDialog.createDialog(title, dialogName, extension);
 				},
 				createTab(title: string): sqlops.window.modelviewdialog.DialogTab {
-					console.warn('the method sqlops.window.modelviewdialog.createTab has been deprecated, replace it with sqlops.window.createTab');
+					console.warn('the method sqlops.window.modelviewdialog.createTab has been deprecated, replace it with azdata.window.createTab');
 					return extHostModelViewDialog.createTab(title, extension);
 				},
 				createButton(label: string): sqlops.window.modelviewdialog.Button {
-					console.warn('the method sqlops.window.modelviewdialog.createButton has been deprecated, replace it with sqlops.window.createButton');
+					console.warn('the method sqlops.window.modelviewdialog.createButton has been deprecated, replace it with azdata.window.createButton');
 					return extHostModelViewDialog.createButton(label);
 				},
 				openDialog(dialog: sqlops.window.modelviewdialog.Dialog) {
-					console.warn('the method sqlops.window.modelviewdialog.openDialog has been deprecated, replace it with sqlops.window.openDialog');
+					console.warn('the method sqlops.window.modelviewdialog.openDialog has been deprecated, replace it with azdata.window.openDialog');
 					return extHostModelViewDialog.openDialog(dialog);
 				},
 				closeDialog(dialog: sqlops.window.modelviewdialog.Dialog) {
-					console.warn('the method sqlops.window.modelviewdialog.closeDialog has been deprecated, replace it with sqlops.window.closeDialog');
+					console.warn('the method sqlops.window.modelviewdialog.closeDialog has been deprecated, replace it with azdata.window.closeDialog');
 					return extHostModelViewDialog.closeDialog(dialog);
 				},
 				createWizardPage(title: string): sqlops.window.modelviewdialog.WizardPage {
-					console.warn('the method sqlops.window.modelviewdialog.createWizardPage has been deprecated, replace it with sqlops.window.createWizardPage');
+					console.warn('the method sqlops.window.modelviewdialog.createWizardPage has been deprecated, replace it with azdata.window.createWizardPage');
 					return extHostModelViewDialog.createWizardPage(title);
 				},
 				createWizard(title: string): sqlops.window.modelviewdialog.Wizard {
-					console.warn('the method sqlops.window.modelviewdialog.createWizard has been deprecated, replace it with sqlops.window.createWizard');
+					console.warn('the method sqlops.window.modelviewdialog.createWizard has been deprecated, replace it with azdata.window.createWizard');
 					return extHostModelViewDialog.createWizard(title);
 				},
 				MessageLevel: sqlExtHostTypes.MessageLevel
@@ -883,7 +845,7 @@ export function createApiFactory(
 
 			const window: typeof sqlops.window = {
 				createDialog(name: string) {
-					console.warn('the method sqlops.window.createDialog has been deprecated, replace it with sqlops.window.createWebViewDialog');
+					console.warn('the method sqlops.window.createDialog has been deprecated, replace it with azdata.window.createWebViewDialog');
 					return extHostModalDialogs.createDialog(name);
 				},
 				modelviewdialog: modelViewDialog,
@@ -1032,33 +994,10 @@ export function createApiFactory(
 }
 
 export function initializeExtensionApi(extensionService: ExtHostExtensionService, apiFactory: ISqlExtensionApiFactory, extensionRegistry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): Promise<void> {
-	return createExtensionPathIndex(extensionService, extensionRegistry).then(trie => defineAPI(apiFactory, trie, extensionRegistry, configProvider));
+	return extensionService.getExtensionPathIndex().then(trie => defineAPI(apiFactory, trie, extensionRegistry, configProvider));
 }
 
-function createExtensionPathIndex(extensionService: ExtHostExtensionService, extensionRegistry: ExtensionDescriptionRegistry): Promise<TrieMap<IExtensionDescription>> {
-
-	// create trie to enable fast 'filename -> extension id' look up
-	const trie = new TrieMap<IExtensionDescription>(TrieMap.PathSplitter);
-	const extensions = extensionRegistry.getAllExtensionDescriptions().map(ext => {
-		if (!ext.main) {
-			return undefined;
-		}
-		return new Promise((resolve, reject) => {
-			realpath(ext.extensionLocation.fsPath, (err, path) => {
-				if (err) {
-					reject(err);
-				} else {
-					trie.insert(path, ext);
-					resolve(void 0);
-				}
-			});
-		});
-	});
-
-	return Promise.all(extensions).then(() => trie);
-}
-
-function defineAPI(factory: ISqlExtensionApiFactory, extensionPaths: TrieMap<IExtensionDescription>, extensionRegistry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): void {
+function defineAPI(factory: ISqlExtensionApiFactory, extensionPaths: TernarySearchTree<IExtensionDescription>, extensionRegistry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): void {
 	type ApiImpl = typeof vscode | typeof azdata | typeof sqlops;
 
 	// each extension is meant to get its own api implementation

@@ -124,6 +124,8 @@ const PropertyType = {
 	Dependency: 'Microsoft.VisualStudio.Code.ExtensionDependencies',
 	ExtensionPack: 'Microsoft.VisualStudio.Code.ExtensionPack',
 	Engine: 'Microsoft.VisualStudio.Code.Engine',
+	// {{SQL CARBON EDIT}}
+	AzDataEngine: 'Microsoft.AzDataEngine',
 	LocalizedLanguages: 'Microsoft.VisualStudio.Code.LocalizedLanguages'
 };
 
@@ -292,6 +294,12 @@ function getEngine(version: IRawGalleryExtensionVersion): string {
 	return (values.length > 0 && values[0].value) || '';
 }
 
+// {{SQL CARBON EDIT}}
+function getAzureDataStudioEngine(version: IRawGalleryExtensionVersion): string {
+	const values = version.properties ? version.properties.filter(p => p.key === PropertyType.AzDataEngine) : [];
+	return (values.length > 0 && values[0].value) || '';
+}
+
 function getLocalizedLanguages(version: IRawGalleryExtensionVersion): string[] {
 	const values = version.properties ? version.properties.filter(p => p.key === PropertyType.LocalizedLanguages) : [];
 	const value = (values.length > 0 && values[0].value) || '';
@@ -337,6 +345,8 @@ function toExtension(galleryExtension: IRawGalleryExtension, version: IRawGaller
 			dependencies: getExtensions(version, PropertyType.Dependency),
 			extensionPack: getExtensions(version, PropertyType.ExtensionPack),
 			engine: getEngine(version),
+			// {{SQL CARBON EDIT}}
+			azDataEngine: getAzureDataStudioEngine(version),
 			localizedLanguages: getLocalizedLanguages(version)
 		},
 		/* __GDPR__FRAGMENT__
@@ -754,7 +764,6 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			return [];
 		});
 	}
-
 
 	private loadDependencies(extensionNames: string[], token: CancellationToken): Promise<IGalleryExtension[]> {
 		if (!extensionNames || extensionNames.length === 0) {

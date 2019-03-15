@@ -172,32 +172,30 @@ async function checkGitVersion(_info: IGit): Promise<void> {
 
 	return;
 
-	/*
-	const config = workspace.getConfiguration('git');
-	const shouldIgnore = config.get<boolean>('ignoreLegacyWarning') === true;
+	// const config = workspace.getConfiguration('git');
+	// const shouldIgnore = config.get<boolean>('ignoreLegacyWarning') === true;
 
-	if (shouldIgnore) {
-		return;
-	}
+	// if (shouldIgnore) {
+	// 	return;
+	// }
 
-	if (!/^[01]/.test(info.version)) {
-		return;
-	}
+	// if (!/^[01]/.test(info.version)) {
+	// 	return;
+	// }
 
-	const update = localize('updateGit', "Update Git");
-	const neverShowAgain = localize('neverShowAgain', "Don't Show Again");
+	// const update = localize('updateGit', "Update Git");
+	// const neverShowAgain = localize('neverShowAgain', "Don't Show Again");
 
-	const choice = await window.showWarningMessage(
-		localize('git20', "You seem to have git {0} installed. Code works best with git >= 2", info.version),
-		update,
-		neverShowAgain
-	);
+	// const choice = await window.showWarningMessage(
+	// 	localize('git20', "You seem to have git {0} installed. Code works best with git >= 2", info.version),
+	// 	update,
+	// 	neverShowAgain
+	// );
 
-	if (choice === update) {
-		commands.executeCommand('vscode.open', Uri.parse('https://git-scm.com/'));
-	} else if (choice === neverShowAgain) {
-		await config.update('ignoreLegacyWarning', true, true);
-	}
-	// {{SQL CARBON EDIT}}
-	*/
+	// if (choice === update) {
+	// 	commands.executeCommand('vscode.open', Uri.parse('https://git-scm.com/'));
+	// } else if (choice === neverShowAgain) {
+	// 	await config.update('ignoreLegacyWarning', true, true);
+	// }
+	// {{SQL CARBON EDIT}} - End
 }
