@@ -165,14 +165,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._scrollTop = event.srcElement.scrollTop;
 	}
 
-	public get scrollTop(): number {
-		return this._scrollTop;
-	}
-
-	public set scrollTop(value: number){
-		this._scrollTop = value;
-	}
-
 	public unselectActiveCell() {
 		if (this.model && this.model.activeCell) {
 			this.model.activeCell.active = false;
