@@ -85,7 +85,7 @@ export class PanelComponent extends Disposable {
 	protected NavigationBarLayout = NavigationBarLayout; // used by angular template
 
 	@ViewChild('panelActionbar', { read: ElementRef }) private _actionbarRef: ElementRef;
-	constructor( @Inject(forwardRef(() => NgZone)) private _zone: NgZone) {
+	constructor(@Inject(forwardRef(() => NgZone)) private _zone: NgZone) {
 		super();
 	}
 
