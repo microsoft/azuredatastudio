@@ -92,7 +92,7 @@ export class DropdownDataSource implements tree.IDataSource {
 export class DropdownFilter extends TreeDefaults.DefaultFilter {
 	public filterString: string;
 
-	public isVisible(tree: any, element: Resource): boolean {
+	public isVisible(tree: tree.ITree, element: Resource): boolean {
 		return element.value.toLowerCase().includes(this.filterString.toLowerCase());
 	}
 }
