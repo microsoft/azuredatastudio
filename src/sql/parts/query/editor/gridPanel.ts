@@ -145,7 +145,6 @@ export class GridPanel extends ViewletPanel {
 		@IInstantiationService private instantiationService: IInstantiationService
 	) {
 		super(options, keybindingService, contextMenuService, configurationService);
-		this.maximumBodySize = 0;
 		this.splitView = new ScrollableSplitView(this.container, { enableResizing: false, verticalScrollbarVisibility: ScrollbarVisibility.Visible });
 		this.splitView.onScroll(e => {
 			if (this.state && this.splitView.length !== 0) {
@@ -196,6 +195,9 @@ export class GridPanel extends ViewletPanel {
 			}
 			return p;
 		}, []));
+		this.maximumBodySize = this.tables.reduce((p, c) => {
+			return p + c.maximumSize;
+		}, 0);
 
 		if (this.state && this.state.scrollPosition) {
 			this.splitView.setScrollPosition(this.state.scrollPosition);
@@ -217,6 +219,10 @@ export class GridPanel extends ViewletPanel {
 			this.tables.map(t => {
 				t.state.canBeMaximized = this.tables.length > 1;
 			});
+
+			this.maximumBodySize = this.tables.reduce((p, c) => {
+				return p + c.maximumSize;
+			}, 0);
 
 			if (this.state && this.state.scrollPosition) {
 				this.splitView.setScrollPosition(this.state.scrollPosition);
@@ -244,6 +250,9 @@ export class GridPanel extends ViewletPanel {
 		}
 
 		const sizeChanges = () => {
+			this.maximumBodySize = this.tables.reduce((p, c) => {
+				return p + c.maximumSize;
+			}, 0);
 
 			if (this.state && this.state.scrollPosition) {
 				this.splitView.setScrollPosition(this.state.scrollPosition);
@@ -270,9 +279,6 @@ export class GridPanel extends ViewletPanel {
 	}
 
 	private addResultSet(resultSet: azdata.ResultSetSummary[]) {
-		if (resultSet.length > 0) {
-			this.maximumBodySize = Number.POSITIVE_INFINITY;
-		}
 		let tables: GridTable<any>[] = [];
 
 		for (let set of resultSet) {
@@ -316,12 +322,15 @@ export class GridPanel extends ViewletPanel {
 		for (let i = this.splitView.length - 1; i >= 0; i--) {
 			this.splitView.removeView(i);
 		}
-		this.maximumBodySize = 0;
 		dispose(this.tables);
 		dispose(this.tableDisposable);
 		this.tableDisposable = [];
 		this.tables = [];
 		this.maximizedGrid = undefined;
+
+		this.maximumBodySize = this.tables.reduce((p, c) => {
+			return p + c.maximumSize;
+		}, 0);
 	}
 
 	private maximizeTable(tableid: string): void {
