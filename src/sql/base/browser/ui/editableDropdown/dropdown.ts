@@ -274,6 +274,9 @@ export class Dropdown extends Disposable {
 
 	public set value(val: string) {
 		this._input.value = val;
+		if(val && val !== '') {
+			this._input.setPlaceHolder(val);
+		}
 	}
 
 	public focus() {
