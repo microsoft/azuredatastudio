@@ -96,20 +96,25 @@ export class ConnectionDialogService implements IConnectionDialogService {
 
 	private initializeConnectionProviders() {
 		this.setConnectionProviders();
-		this._capabilitiesService.onCapabilitiesRegistered(() => {
-			this.setConnectionProviders();
-			if (this._connectionDialog) {
-				this._connectionDialog.updateConnectionProviders(this._providerTypes, this._providerNameToDisplayNameMap);
-			}
-		});
+		if (this._capabilitiesService) {
+			this._capabilitiesService.onCapabilitiesRegistered(() => {
+				this.setConnectionProviders();
+				if (this._connectionDialog) {
+					this._connectionDialog.updateConnectionProviders(this._providerTypes, this._providerNameToDisplayNameMap);
+				}
+			});
+		}
 	}
+
 	private setConnectionProviders() {
-		this._providerTypes = [];
-		this._providerNameToDisplayNameMap = {};
-		entries(this._capabilitiesService.providers).forEach(p => {
-			this._providerTypes.push(p[1].connection.displayName);
-			this._providerNameToDisplayNameMap[p[0]] = p[1].connection.displayName;
-		});
+		if (this._capabilitiesService) {
+			this._providerTypes = [];
+			this._providerNameToDisplayNameMap = {};
+			entries(this._capabilitiesService.providers).forEach(p => {
+				this._providerTypes.push(p[1].connection.displayName);
+				this._providerNameToDisplayNameMap[p[0]] = p[1].connection.displayName;
+			});
+		}
 	}
 
 	/**
