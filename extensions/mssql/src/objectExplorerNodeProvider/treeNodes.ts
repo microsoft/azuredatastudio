@@ -16,6 +16,7 @@ type TreeNodePredicate = (node: TreeNode) => boolean;
 export abstract class TreeNode implements ITreeNode {
 	private _parent: TreeNode = undefined;
 	protected fileSource: IFileSource;
+	private _errorStatusCode: number;
 
 	public get parent(): TreeNode {
 		return this._parent;
@@ -23,6 +24,14 @@ export abstract class TreeNode implements ITreeNode {
 
 	public set parent(node: TreeNode) {
 		this._parent = node;
+	}
+
+	public get errorStatusCode(): number {
+		return this._errorStatusCode;
+	}
+
+	public set errorStatusCode(error: number) {
+		this._errorStatusCode = error;
 	}
 
 	public generateNodePath(): string {

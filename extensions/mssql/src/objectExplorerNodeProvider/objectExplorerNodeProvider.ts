@@ -114,7 +114,7 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements azd
 					// Only child returend when failure happens : Handle the error node
 					if(children.length === 1 && child && child.nodeType === constants.MssqlClusterItems.Error)
 					{
-						if (child.label.indexOf('Unauthorized') > 0)
+						if (children[0].errorStatusCode === 401)
 						{
 							//Prompt for password
 							let password: string = await this.promptPassword(localize('prmptPwd', 'Please provide the password to connect to HDFS:'));
