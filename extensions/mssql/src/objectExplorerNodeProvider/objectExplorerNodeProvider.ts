@@ -127,14 +127,11 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements azd
 						}
 					}
 
+					expandResult.nodes = children.map(c => c.getNodeInfo());
 					if(children.length === 1 && child.nodeType === constants.MssqlClusterItems.Error)
 					{
 						expandResult.errorMessage = child ? child.label : 'Unknown Error';
 						expandResult.nodes = [];
-					}
-					else
-					{
-						expandResult.nodes = children.map(c => c.getNodeInfo());
 					}
 				}
 			}
@@ -270,7 +267,6 @@ class SqlClusterRootNode extends TreeNode {
 		private _nodePathValue: string
 	) {
 		super();
-		this.fileSource = _session.sqlClusterConnection.createHdfsFileSource();
 	}
 
 	public get session(): SqlClusterSession {
