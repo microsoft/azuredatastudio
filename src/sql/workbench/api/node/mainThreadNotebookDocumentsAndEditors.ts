@@ -5,6 +5,7 @@
 'use strict';
 
 import * as azdata from 'azdata';
+import * as path from 'path';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import { URI, UriComponents } from 'vs/base/common/uri';
@@ -371,7 +372,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		let isUntitled: boolean = uri.scheme === Schemas.untitled;
 
 		const fileInput: UntitledEditorInput = isUntitled ? this._untitledEditorService.createOrGet(uri, notebookModeId) : undefined;
-		let input = this._instantiationService.createInstance(NotebookInput, uri.fsPath, uri, fileInput);
+		let input = this._instantiationService.createInstance(NotebookInput, path.basename(uri.fsPath), uri, fileInput);
 		input.isTrusted = isUntitled;
 		input.defaultKernel = options.defaultKernel;
 		input.connectionProfile = new ConnectionProfile(this._capabilitiesService, options.connectionProfile);
