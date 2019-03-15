@@ -63,6 +63,7 @@ interface ISashEvent {
 
 interface IViewItem extends HeightIViewItem {
 	view: IView;
+	size: number;
 	container: HTMLElement;
 	disposable: IDisposable;
 	layout(): void;
@@ -188,6 +189,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 		this.scrollable = new ScrollableElement(this.el, { vertical: options.verticalScrollbarVisibility });
 		debounceEvent(this.scrollable.onScroll, (l, e) => e, types.isNumber(this.options.scrollDebounce) ? this.options.scrollDebounce : 25)(e => {
 			this.render(e.scrollTop, e.height);
+			this.relayout();
 			this._onScroll.fire(e.scrollTop);
 		});
 		let domNode = this.scrollable.getDomNode();
@@ -247,12 +249,12 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 			const onRemove = view.onRemove ? () => view.onRemove() : () => { };
 
 			const layoutContainer = this.orientation === Orientation.VERTICAL
-				? () => item.container.style.height = `${item.height}px`
-				: () => item.container.style.width = `${item.height}px`;
+				? () => item.container.style.height = `${item.size}px`
+				: () => item.container.style.width = `${item.size}px`;
 
 			const layout = () => {
 				layoutContainer();
-				item.view.layout(item.height, this.orientation);
+				item.view.layout(item.size, this.orientation);
 			};
 
 			let viewSize: number;
@@ -265,7 +267,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 				viewSize = view.minimumSize;
 			}
 
-			const item: IViewItem = { onAdd, onRemove, view, container, layout, disposable, height: viewSize, top: 0, width: 0 };
+			const item: IViewItem = { onAdd, onRemove, view, container, size: viewSize, layout, disposable, height: viewSize, top: 0, width: 0 };
 			this.viewItems.splice(currentIndex, 0, item);
 
 			this.onInsertItems(new ArrayIterator([item]), currentIndex > 0 ? this.viewItems[currentIndex - 1].view.id : undefined);
@@ -314,6 +316,14 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 		if (!types.isArray(sizes) && sizes.type === 'distribute') {
 			this.distributeViewSizes();
 		}
+
+		// Re-render the views. Set lastRenderTop and lastRenderHeight to undefined since
+		// this isn't actually scrolling up or down
+		let scrollTop = this.lastRenderTop;
+		let viewHeight = this.lastRenderHeight;
+		this.lastRenderTop = undefined;
+		this.lastRenderHeight = undefined;
+		this.render(scrollTop, viewHeight);
 	}
 
 	addView(view: IView, size: number | Sizing, index = this.viewItems.length): void {
@@ -342,12 +352,12 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 		const onRemove = view.onRemove ? () => view.onRemove() : () => { };
 
 		const layoutContainer = this.orientation === Orientation.VERTICAL
-			? () => item.container.style.height = `${item.height}px`
-			: () => item.container.style.width = `${item.height}px`;
+			? () => item.container.style.height = `${item.size}px`
+			: () => item.container.style.width = `${item.size}px`;
 
 		const layout = () => {
 			layoutContainer();
-			item.view.layout(item.height, this.orientation);
+			item.view.layout(item.size, this.orientation);
 		};
 
 		let viewSize: number;
@@ -360,7 +370,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 			viewSize = view.minimumSize;
 		}
 
-		const item: IViewItem = { onAdd, onRemove, view, container, layout, disposable, height: viewSize, top: 0, width: 0 };
+		const item: IViewItem = { onAdd, onRemove, view, container, size: viewSize, layout, disposable, height: viewSize, top: 0, width: 0 };
 		this.viewItems.splice(index, 0, item);
 
 		this.onInsertItems(new ArrayIterator([item]), index > 0 ? this.viewItems[index - 1].view.id : undefined);
@@ -470,7 +480,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 	}
 
 	private relayout(lowPriorityIndex?: number, highPriorityIndex?: number): void {
-		const contentSize = this.viewItems.reduce((r, i) => r + i.height, 0);
+		const contentSize = this.viewItems.reduce((r, i) => r + i.size, 0);
 
 		this.resize(this.viewItems.length - 1, this.size - contentSize, undefined, lowPriorityIndex, highPriorityIndex);
 		this.distributeEmptySpace();
@@ -494,7 +504,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 		} else {
 			for (let i = 0; i < this.viewItems.length; i++) {
 				const item = this.viewItems[i];
-				this.updateSize(item.view.id, clamp(Math.round(this.proportions[i] * size), item.view.minimumSize, item.view.maximumSize));
+				item.size = clamp(Math.round(this.proportions[i] * size), item.view.minimumSize, item.view.maximumSize);
 			}
 		}
 
@@ -504,7 +514,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 
 	private saveProportions(): void {
 		if (this.contentSize > 0) {
-			this.proportions = this.viewItems.map(i => i.height / this.contentSize);
+			this.proportions = this.viewItems.map(i => i.size / this.contentSize);
 		}
 	}
 
@@ -518,7 +528,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 		]);
 
 		const resetSashDragState = (start: number, alt: boolean) => {
-			const sizes = this.viewItems.map(i => i.height);
+			const sizes = this.viewItems.map(i => i.size);
 			let minDelta = Number.NEGATIVE_INFINITY;
 			let maxDelta = Number.POSITIVE_INFINITY;
 
@@ -534,12 +544,12 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 
 				if (isLastSash) {
 					const viewItem = this.viewItems[index];
-					minDelta = (viewItem.view.minimumSize - viewItem.height) / 2;
-					maxDelta = (viewItem.view.maximumSize - viewItem.height) / 2;
+					minDelta = (viewItem.view.minimumSize - viewItem.size) / 2;
+					maxDelta = (viewItem.view.maximumSize - viewItem.size) / 2;
 				} else {
 					const viewItem = this.viewItems[index + 1];
-					minDelta = (viewItem.height - viewItem.view.maximumSize) / 2;
-					maxDelta = (viewItem.height - viewItem.view.minimumSize) / 2;
+					minDelta = (viewItem.size - viewItem.view.maximumSize) / 2;
+					maxDelta = (viewItem.size - viewItem.view.minimumSize) / 2;
 				}
 			}
 
@@ -558,11 +568,11 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 
 		if (alt) {
 			const isLastSash = index === this.sashItems.length - 1;
-			const newSizes = this.viewItems.map(i => i.height);
+			const newSizes = this.viewItems.map(i => i.size);
 			const viewItemIndex = isLastSash ? index : index + 1;
 			const viewItem = this.viewItems[viewItemIndex];
-			const newMinDelta = viewItem.height - viewItem.view.maximumSize;
-			const newMaxDelta = viewItem.height - viewItem.view.minimumSize;
+			const newMinDelta = viewItem.size - viewItem.view.maximumSize;
+			const newMaxDelta = viewItem.size - viewItem.view.minimumSize;
 			const resizeIndex = isLastSash ? index - 1 : index + 1;
 
 			this.resize(resizeIndex, -newDelta, newSizes, undefined, undefined, newMinDelta, newMaxDelta);
@@ -585,23 +595,23 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 			return;
 		}
 
-		size = typeof size === 'number' ? size : item.height;
+		size = typeof size === 'number' ? size : item.size;
 		size = clamp(size, item.view.minimumSize, item.view.maximumSize);
 
 		if (this.inverseAltBehavior && index > 0) {
 			// In this case, we want the view to grow or shrink both sides equally
 			// so we just resize the "left" side by half and let `resize` do the clamping magic
-			this.resize(index - 1, Math.floor((item.height - size) / 2));
+			this.resize(index - 1, Math.floor((item.size - size) / 2));
 			this.distributeEmptySpace();
 			this.layoutViews();
 		} else {
+			item.size = size;
 			this.updateSize(item.view.id, size);
-			this.updateSize(item.view.id, size);
-			let top = item.top + item.height;
+			let top = item.top + item.size;
 			for (let i = index + 1; i < this.viewItems.length; i++) {
 				let currentItem = this.viewItems[i];
 				this.updateTop(currentItem.view.id, top);
-				top += currentItem.height;
+				top += currentItem.size;
 			}
 			this.relayout(index);
 		}
@@ -621,12 +631,12 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 		const item = this.viewItems[index];
 		size = Math.round(size);
 		size = clamp(size, item.view.minimumSize, item.view.maximumSize);
-		let delta = size - item.height;
+		let delta = size - item.size;
 
 		if (delta !== 0 && index < this.viewItems.length - 1) {
 			const downIndexes = range(index + 1, this.viewItems.length);
-			const collapseDown = downIndexes.reduce((r, i) => r + (this.viewItems[i].height - this.viewItems[i].view.minimumSize), 0);
-			const expandDown = downIndexes.reduce((r, i) => r + (this.viewItems[i].view.maximumSize - this.viewItems[i].height), 0);
+			const collapseDown = downIndexes.reduce((r, i) => r + (this.viewItems[i].size - this.viewItems[i].view.minimumSize), 0);
+			const expandDown = downIndexes.reduce((r, i) => r + (this.viewItems[i].view.maximumSize - this.viewItems[i].size), 0);
 			const deltaDown = clamp(delta, -expandDown, collapseDown);
 
 			this.resize(index, deltaDown);
@@ -635,8 +645,8 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 
 		if (delta !== 0 && index > 0) {
 			const upIndexes = range(index - 1, -1);
-			const collapseUp = upIndexes.reduce((r, i) => r + (this.viewItems[i].height - this.viewItems[i].view.minimumSize), 0);
-			const expandUp = upIndexes.reduce((r, i) => r + (this.viewItems[i].view.maximumSize - this.viewItems[i].height), 0);
+			const collapseUp = upIndexes.reduce((r, i) => r + (this.viewItems[i].size - this.viewItems[i].view.minimumSize), 0);
+			const expandUp = upIndexes.reduce((r, i) => r + (this.viewItems[i].view.maximumSize - this.viewItems[i].size), 0);
 			const deltaUp = clamp(-delta, -collapseUp, expandUp);
 
 			this.resize(index - 1, deltaUp);
@@ -661,7 +671,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 			return -1;
 		}
 
-		return this.viewItems[index].height;
+		return this.viewItems[index].size;
 	}
 
 
@@ -756,7 +766,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 	private resize(
 		index: number,
 		delta: number,
-		sizes = this.viewItems.map(i => i.height),
+		sizes = this.viewItems.map(i => i.size),
 		lowPriorityIndex?: number,
 		highPriorityIndex?: number,
 		overloadMinDelta: number = Number.NEGATIVE_INFINITY,
@@ -800,10 +810,8 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 			const viewDelta = size - upSizes[i];
 
 			deltaUp -= viewDelta;
-			this.updateSize(item.view.id, size);
+			item.size = size;
 			this.dirtyState = true;
-			this.lastRenderTop = 0;
-			this.lastRenderHeight = 0;
 		}
 
 		for (let i = 0, deltaDown = delta; i < downItems.length; i++) {
@@ -812,32 +820,30 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 			const viewDelta = size - downSizes[i];
 
 			deltaDown += viewDelta;
-			this.updateSize(item.view.id, size);
+			item.size = size;
 			this.dirtyState = true;
-			this.lastRenderTop = 0;
-			this.lastRenderHeight = 0;
 		}
 
 		return delta;
 	}
 
 	private distributeEmptySpace(): void {
-		let contentSize = this.viewItems.reduce((r, i) => r + i.height, 0);
+		let contentSize = this.viewItems.reduce((r, i) => r + i.size, 0);
 		let emptyDelta = this.size - contentSize;
 
 		for (let i = this.viewItems.length - 1; emptyDelta !== 0 && i >= 0; i--) {
 			const item = this.viewItems[i];
-			const size = clamp(item.height + emptyDelta, item.view.minimumSize, item.view.maximumSize);
-			const viewDelta = size - item.height;
+			const size = clamp(item.size + emptyDelta, item.view.minimumSize, item.view.maximumSize);
+			const viewDelta = size - item.size;
 
 			emptyDelta -= viewDelta;
-			this.updateSize(item.view.id, size);
+			item.size = size;
 		}
 	}
 
 	private layoutViews(): void {
 		// Save new content size
-		this.contentSize = this.viewItems.reduce((r, i) => r + i.height, 0);
+		this.contentSize = this.viewItems.reduce((r, i) => r + i.size, 0);
 
 		if (this.dirtyState) {
 			for (let i = this.indexAt(this.lastRenderTop); i <= this.indexAfter(this.lastRenderTop + this.lastRenderHeight) - 1; i++) {
@@ -859,7 +865,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 		let position = 0;
 
 		for (let i = 0; i < this.sashItems.length; i++) {
-			position += this.viewItems[i].height;
+			position += this.viewItems[i].size;
 
 			if (this.sashItems[i].sash === sash) {
 				return position;
