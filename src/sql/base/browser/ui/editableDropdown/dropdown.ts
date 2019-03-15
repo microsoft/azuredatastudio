@@ -275,7 +275,7 @@ export class Dropdown extends Disposable {
 	public set value(val: string) {
 		this._input.value = val;
 		if(this._input.inputElement) {
-			this._input.inputElement.title = val === '' ? this._input.inputElement.placeholder : val;;
+			this._input.inputElement.title = val === '' ? this._input.inputElement.placeholder : val;
 		}
 	}
 
