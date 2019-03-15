@@ -1,0 +1,35 @@
+{
+	"extends": "./tsconfig.strictNullChecks.json",
+	"include": [
+		"./typings",
+		"./vs/base/browser/**/*.ts",
+		"./vs/base/common/**/*.ts",
+		"./vs/base/node/**/*.ts",
+		"./vs/editor/browser/**/*.ts",
+		"./vs/editor/common/**/*.ts",
+		"./vs/editor/contrib/codeAction/**/*.ts",
+		"./vs/editor/contrib/format/**/*.ts",
+		"./vs/editor/contrib/gotoError/**/*.ts",
+		"./vs/editor/contrib/inPlaceReplace/**/*.ts",
+		"./vs/editor/contrib/smartSelect/**/*.ts",
+		"./vs/editor/contrib/snippet/**/*.ts",
+		"./vs/editor/contrib/suggest/**/*.ts",
+		"./vs/editor/test/**/*.ts",
+		"./sql/base/common/**/*ts",
+	],
+	"files": [
+		// "./sql/base/browser/ui/breadcrumb/breadcrumb.component.ts", // pulls in angular which gives extrenous errors
+		// "./sql/base/browser/ui/breadcrumb/interfaces.ts", // pulls in angular which gives extrenous errors
+		"./sql/base/browser/ui/button/button.ts",
+		"./sql/base/browser/ui/checkbox/checkbox.ts",
+		// "./sql/base/browser/ui/checkbox/checkbox.component.ts",  // pulls in angular which gives extrenous errors
+		// "./sql/base/browser/ui/dropdownList/dropdownList.ts", // skipping since vscode hasn't checked their dropdown yet
+		// "./sql/base/browser/ui/editableDropdown/actions.ts", // skipping since vscode hasn't checked their dropdown yet and it isn't in the right place anyways
+		// "./sql/base/browser/ui/editableDropdown/dropdown.ts", // skipping since vscode hasn't checked their dropdown yet and it isn't in the right place anyways
+		// "./sql/base/browser/ui/editableDropdown/dropdownTree.ts", // skipping since vscode hasn't checked their dropdown yet and it isn't in the right place anyways
+		// "./sql/base/browser/ui/editableDropdown/editableDropdown.component.ts", // skipping since vscode hasn't checked their dropdown yet and it isn't in the right place anyways
+		// "./sql/base/browser/ui/inputBox/inputBox.component.ts", // pulls in angular which gives extrenous errors
+		// "./sql/base/browser/ui/inputBox/inputBox.ts", // skipping since vscode hasn't checked their inputbox yet
+		// "./sql/base/browser/ui/listBox/listBox.ts",
+	]
+}
