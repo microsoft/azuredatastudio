@@ -108,7 +108,7 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements azd
 			if (node) {
 				expandResult.errorMessage = node.getNodeInfo().errorMessage;
 				let children = await node.getChildren(true);
-				if(children)
+				if(children && children.length > 0)
 				{
 					let child = children[0].getNodeInfo();
 					// Only child returend when failure happens : Handle the error node
