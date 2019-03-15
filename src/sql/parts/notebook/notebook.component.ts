@@ -51,6 +51,7 @@ export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 })
 export class NotebookComponent extends AngularDisposable implements OnInit, OnDestroy, INotebookEditor {
 	@ViewChild('toolbar', { read: ElementRef }) private toolbar: ElementRef;
+	@ViewChild('container', { read: ElementRef }) private container: ElementRef;
 	private _model: NotebookModel;
 	private _isInErrorState: boolean = false;
 	private _errorMessage: string;
@@ -62,6 +63,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private profile: IConnectionProfile;
 	private _trustedAction: TrustedAction;
 	private _providerRelatedActions: IAction[] = [];
+	private _scrollTop: number;
 
 
 	constructor(
@@ -112,6 +114,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
 		this.initActionBar();
+		this.setScrollPosition();
 		this.doLoad();
 	}
 
@@ -157,6 +160,19 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		}
 	}
 
+	//Saves scrollTop value on scroll change
+	public scrollHandler(event: Event){
+		this._scrollTop = event.srcElement.scrollTop;
+	}
+
+	public get scrollTop(): number {
+		return this._scrollTop;
+	}
+
+	public set scrollTop(value: number){
+		this._scrollTop = value;
+	}
+
 	public unselectActiveCell() {
 		if (this.model && this.model.activeCell) {
 			this.model.activeCell.active = false;
@@ -197,6 +213,15 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				break;
 			default:
 				break;
+		}
+	}
+
+	private setScrollPosition(): void {
+		if (this._notebookParams && this._notebookParams.input) {
+			this._notebookParams.input.layoutChanged(() => {
+				let containerElement = <HTMLElement>this.container.nativeElement;
+				containerElement.scrollTop = this._scrollTop;
+			});
 		}
 	}
 

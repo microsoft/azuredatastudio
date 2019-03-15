@@ -7,7 +7,7 @@
 <div style="overflow: hidden; width: 100%; height: 100%; display: flex; flex-flow: column">
 	<div #toolbar class="editor-toolbar actionbar-container" style="flex: 0 0 auto; display: flex; flex-flow: row; width: 100%; align-items: center;">
 	</div>
-	<div class="scrollable" style="flex: 1 1 auto; position: relative" (click)="unselectActiveCell()">
+	<div #container class="scrollable" style="flex: 1 1 auto; position: relative" (click)="unselectActiveCell()" (scroll)="scrollHandler($event)">
 		<loading-spinner [loading]="isLoading"></loading-spinner>
 		<div class="notebook-cell" *ngFor="let cell of cells" (click)="selectCell(cell, $event)" [class.active]="cell.active">
 			<code-cell-component *ngIf="cell.cellType === 'code'" [cellModel]="cell" [model]="model" [activeCellId]="activeCellId">
