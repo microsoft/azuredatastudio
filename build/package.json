@@ -42,7 +42,7 @@
     "request": "^2.85.0",
     "tslint": "^5.9.1",
     "service-downloader": "github:anthonydresser/service-downloader#0.1.5",
-    "typescript": "3.2.2",
+    "typescript": "3.3.1",
     "vsce": "1.48.0",
     "xml2js": "^0.4.17"
   },
