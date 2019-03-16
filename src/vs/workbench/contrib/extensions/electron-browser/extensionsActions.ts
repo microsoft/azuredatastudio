@@ -303,7 +303,8 @@ export class UninstallAction extends ExtensionAction {
 		alert(localize('uninstallExtensionStart', "Uninstalling extension {0} started.", this.extension.displayName));
 
 		return this.extensionsWorkbenchService.uninstall(this.extension).then(() => {
-			alert(localize('uninstallExtensionComplete', "Please reload Visual Studio Code to complete the uninstallation of the extension {0}.", this.extension.displayName));
+			// {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
+			alert(localize('uninstallExtensionComplete', "Please reload Azure Data Studio to complete the uninstallation of the extension {0}.", this.extension.displayName));
 		});
 	}
 }
@@ -1094,7 +1095,8 @@ export class ReloadAction extends ExtensionAction {
 						// Requires reload to run the updated extension
 						this.enabled = true;
 						this.label = localize('reloadRequired', "Reload Required");
-						this.tooltip = localize('postUpdateTooltip', "Please reload Visual Studio Code to complete the updating of this extension.");
+						// {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
+						this.tooltip = localize('postUpdateTooltip', "Please reload Azure Data Studio to complete the updating of this extension.");
 					}
 					return;
 				}
@@ -1102,7 +1104,8 @@ export class ReloadAction extends ExtensionAction {
 					// Requires reload to disable the extension
 					this.enabled = true;
 					this.label = localize('reloadRequired', "Reload Required");
-					this.tooltip = localize('postDisableTooltip', "Please reload Visual Studio Code to complete the disabling of this extension.");
+					// {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
+					this.tooltip = localize('postDisableTooltip', "Please reload Azure Data Studio to complete the disabling of this extension.");
 					return;
 				}
 			} else {
@@ -1110,11 +1113,13 @@ export class ReloadAction extends ExtensionAction {
 					this.enabled = true;
 					if (isEnabled) {
 						this.label = localize('reloadRequired', "Reload Required");
-						this.tooltip = localize('postEnableTooltip', "Please reload Visual Studio Code to complete the enabling of this extension.");
+						// {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
+						this.tooltip = localize('postEnableTooltip', "Please reload Azure Data Studio to complete the enabling of this extension.");
 					} else {
 						this.label = localize('reloadRequired', "Reload Required");
-						this.tooltip = localize('postInstallTooltip', "Please reload Visual Studio Code to complete the installation of this extension.");
-						alert(localize('installExtensionComplete', "Installing extension {0} is completed. Please reload Visual Studio Code to enable it.", this.extension.displayName));
+						// {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
+						this.tooltip = localize('postInstallTooltip', "Please reload Azure Data Studio to complete the installation of this extension.");
+						alert(localize('installExtensionComplete', "Installing extension {0} is completed. Please reload Azure Data Studio to enable it.", this.extension.displayName));
 					}
 				}
 			}
@@ -1125,8 +1130,9 @@ export class ReloadAction extends ExtensionAction {
 			// Requires reload to deactivate the extension
 			this.enabled = true;
 			this.label = localize('reloadRequired', "Reload Required");
-			this.tooltip = localize('postUninstallTooltip', "Please reload Visual Studio Code to complete the uninstallation of this extension.");
-			alert(localize('uninstallExtensionComplete', "Please reload Visual Studio Code to complete the uninstallation of the extension {0}.", this.extension.displayName));
+			// {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
+			this.tooltip = localize('postUninstallTooltip', "Please reload Azure Data Studio to complete the uninstallation of this extension.");
+			alert(localize('uninstallExtensionComplete', "Please reload Azure Data Studio to complete the uninstallation of the extension {0}.", this.extension.displayName));
 			return;
 		}
 	}
@@ -2703,7 +2709,8 @@ export class ReinstallAction extends Action {
 				return this.extensionsWorkbenchService.reinstall(extension)
 					.then(extension => {
 						const requireReload = !(extension.local && this.extensionService.canAddExtension(toExtensionDescription(extension.local)));
-						const message = requireReload ? localize('ReinstallAction.successReload', "Please reload Visual Studio Code to complete reinstalling the extension {0}.", extension.identifier.id)
+						// {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
+						const message = requireReload ? localize('ReinstallAction.successReload', "Please reload Azure Data Studio to complete reinstalling the extension {0}.", extension.identifier.id)
 							: localize('ReinstallAction.success', "Reinstalling the extension {0} is completed.", extension.identifier.id);
 						const actions = requireReload ? [{
 							label: localize('InstallVSIXAction.reloadNow', "Reload Now"),
@@ -2788,7 +2795,7 @@ export class InstallSpecificVersionOfExtensionAction extends Action {
 				return this.extensionsWorkbenchService.installVersion(extension, version)
 					.then(extension => {
 						const requireReload = !(extension.local && this.extensionService.canAddExtension(toExtensionDescription(extension.local)));
-						const message = requireReload ? localize('InstallAnotherVersionExtensionAction.successReload', "Please reload Visual Studio Code to complete installing the extension {0}.", extension.identifier.id)
+						const message = requireReload ? localize('InstallAnotherVersionExtensionAction.successReload', "Please reload Azure Data Studio to complete installing the extension {0}.", extension.identifier.id)
 							: localize('InstallAnotherVersionExtensionAction.success', "Installing the extension {0} is completed.", extension.identifier.id);
 						const actions = requireReload ? [{
 							label: localize('InstallAnotherVersionExtensionAction.reloadNow', "Reload Now"),
