@@ -69,6 +69,7 @@ export interface ParsedArgs {
 	'driver'?: string;
 	'driver-verbose'?: boolean;
 	remote?: string;
+	'nodeless'?: boolean; // TODO@ben revisit electron5 nodeless support
 	// {{SQL CARBON EDIT}}
 	aad?: boolean;
 	database?: string;
