@@ -12,7 +12,6 @@ import * as TelemetryKeys from 'sql/common/telemetryKeys';
 import { attachButtonStyler, attachModalDialogStyler } from 'sql/platform/theme/common/styler';
 import { Builder } from 'sql/base/browser/builder';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { IPartService, Parts } from 'vs/workbench/services/part/common/partService';
 import { Event, Emitter } from 'vs/base/common/event';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
@@ -21,6 +20,7 @@ import { localize } from 'vs/nls';
 import { IDisposable, toDisposable } from 'vs/base/common/lifecycle';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { WebviewElement } from 'vs/workbench/contrib/webview/electron-browser/webviewElement';
+import { IWorkbenchLayoutService, Parts } from 'vs/workbench/services/layout/browser/layoutService';
 
 export class WebViewDialog extends Modal {
 
@@ -42,12 +42,12 @@ export class WebViewDialog extends Modal {
 	constructor(
 		@IThemeService themeService: IThemeService,
 		@IClipboardService clipboardService: IClipboardService,
-		@IPartService private _webViewPartService: IPartService,
+		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IInstantiationService private _instantiationService: IInstantiationService
 	) {
-		super('', TelemetryKeys.WebView, _webViewPartService, telemetryService, clipboardService, themeService, contextKeyService, { isFlyout: false, hasTitleIcon: true });
+		super('', TelemetryKeys.WebView, telemetryService, layoutService, clipboardService, themeService, contextKeyService, { isFlyout: false, hasTitleIcon: true });
 		this._okLabel = localize('webViewDialog.ok', 'OK');
 		this._closeLabel = localize('webViewDialog.close', 'Close');
 	}
@@ -89,7 +89,7 @@ export class WebViewDialog extends Modal {
 			this._body = bodyBuilder.getHTMLElement();
 
 			this._webview = this._instantiationService.createInstance(WebviewElement,
-				this._webViewPartService.getContainer(Parts.EDITOR_PART),
+				this.layoutService.getContainer(Parts.EDITOR_PART),
 				{},
 				{
 					allowScripts: true

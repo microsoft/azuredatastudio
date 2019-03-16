@@ -172,7 +172,7 @@ function save(
 					encoding: encodingOfSource,
 					options: {
 						pinned: true,
-						viewState: viewStateOfSource
+						viewState: viewStateOfSource || undefined
 					}
 				};
 

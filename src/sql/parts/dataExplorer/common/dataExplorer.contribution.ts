@@ -17,7 +17,7 @@ import { SyncActionDescriptor } from 'vs/platform/actions/common/actions';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { ToggleViewletAction } from 'vs/workbench/browser/parts/activitybar/activitybarActions';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
-import { IPartService } from 'vs/workbench/services/part/common/partService';
+import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 
 // Viewlet Action
 export class OpenDataExplorerViewletAction extends ToggleViewletAction {
@@ -28,9 +28,9 @@ export class OpenDataExplorerViewletAction extends ToggleViewletAction {
 		id: string,
 		label: string,
 		@IViewletService viewletService: IViewletService,
-		@IPartService partService: IPartService
+		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService
 	) {
-		super(viewletDescriptor, partService, viewletService);
+		super(viewletDescriptor, layoutService, viewletService);
 	}
 }
 

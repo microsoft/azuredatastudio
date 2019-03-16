@@ -7,7 +7,6 @@ import 'vs/css!./webviewContent';
 import { Component, forwardRef, Input, OnInit, Inject, ElementRef } from '@angular/core';
 
 import { Event, Emitter } from 'vs/base/common/event';
-import { Parts, IPartService } from 'vs/workbench/services/part/common/partService';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { addDisposableListener, EventType } from 'vs/base/browser/dom';
 import { memoize } from 'vs/base/common/decorators';
@@ -23,6 +22,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import * as azdata from 'azdata';
 import { IContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { WebviewElement } from 'vs/workbench/contrib/webview/electron-browser/webviewElement';
+import { IWorkbenchLayoutService, Parts } from 'vs/workbench/services/layout/browser/layoutService';
 
 @Component({
 	template: '',
@@ -45,7 +45,7 @@ export class WebviewContent extends AngularDisposable implements OnInit, IDashbo
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IDashboardViewService) private dashboardViewService: IDashboardViewService,
-		@Inject(IPartService) private partService: IPartService,
+		@Inject(IWorkbenchLayoutService) private layoutService: IWorkbenchLayoutService,
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService
 	) {
 		super();
@@ -107,7 +107,7 @@ export class WebviewContent extends AngularDisposable implements OnInit, IDashbo
 		}
 
 		this._webview = this.instantiationService.createInstance(WebviewElement,
-			this.partService.getContainer(Parts.EDITOR_PART),
+			this.layoutService.getContainer(Parts.EDITOR_PART),
 			{},
 			{
 				allowScripts: true

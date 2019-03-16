@@ -8,12 +8,24 @@
 import { ServiceIdentifier, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { Event } from 'vs/base/common/event';
 import { IEditorOpeningEvent } from 'vs/workbench/browser/parts/editor/editor';
-import { IEditorInput, EditorInput, GroupIdentifier } from 'vs/workbench/common/editor';
+import { IEditorInput, EditorInput, GroupIdentifier, IEditorPartOptions } from 'vs/workbench/common/editor';
 import { EditorGroup } from 'vs/workbench/common/editor/editorGroup';
 import { IEditorGroupsService, IFindGroupScope, IEditorGroup, GroupDirection, IAddGroupOptions, IMergeGroupOptions, GroupOrientation, GroupsOrder, GroupsArrangement, IMoveEditorOptions, EditorGroupLayout } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { IDimension } from 'vs/editor/common/editorCommon';
+import { IDisposable } from 'vs/base/common/lifecycle';
 
 export class EditorGroupTestService implements IEditorGroupsService {
+	whenRestored: Promise<void>;
+	centerLayout(active: boolean): void {
+		throw new Error('Method not implemented.');
+	}
+	isLayoutCentered(): boolean {
+		throw new Error('Method not implemented.');
+	}
+	partOptions: IEditorPartOptions;
+	enforcePartOptions(options: IEditorPartOptions): IDisposable {
+		throw new Error('Method not implemented.');
+	}
 	_serviceBrand: ServiceIdentifier<any>;
 
 	findGroup(scope: IFindGroupScope, source?: IEditorGroup | GroupIdentifier, wrap?: boolean): IEditorGroup {

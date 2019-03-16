@@ -5,7 +5,6 @@
 
 import { Component, Inject, forwardRef, ChangeDetectorRef, OnInit, ViewChild, ElementRef } from '@angular/core';
 
-import { Parts, IPartService } from 'vs/workbench/services/part/common/partService';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { memoize } from 'vs/base/common/decorators';
@@ -19,6 +18,7 @@ import * as azdata from 'azdata';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { WebviewElement } from 'vs/workbench/contrib/webview/electron-browser/webviewElement';
+import { IWorkbenchLayoutService, Parts } from 'vs/workbench/services/layout/browser/layoutService';
 
 interface IWebviewWidgetConfig {
 	id: string;
@@ -43,9 +43,9 @@ export class WebviewWidget extends DashboardWidget implements IDashboardWidget, 
 		@Inject(forwardRef(() => CommonServiceInterface)) private _dashboardService: DashboardServiceInterface,
 		@Inject(WIDGET_CONFIG) protected _config: WidgetConfig,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
+		@Inject(IWorkbenchLayoutService) private layoutService: IWorkbenchLayoutService,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IDashboardViewService) private dashboardViewService: IDashboardViewService,
-		@Inject(IPartService) private partService: IPartService,
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
 	) {
 		super();
@@ -104,7 +104,7 @@ export class WebviewWidget extends DashboardWidget implements IDashboardWidget, 
 		}
 
 		this._webview = this.instantiationService.createInstance(WebviewElement,
-			this.partService.getContainer(Parts.EDITOR_PART),
+			this.layoutService.getContainer(Parts.EDITOR_PART),
 			{},
 			{
 				allowScripts: true,

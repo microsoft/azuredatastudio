@@ -17,7 +17,7 @@ import { Extensions, IConfigurationRegistry } from 'vs/platform/configuration/co
 import { VIEWLET_ID } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionViewlet } from 'sql/workbench/parts/connection/electron-browser/connectionViewlet';
 import { ToggleViewletAction } from 'vs/workbench/browser/parts/activitybar/activitybarActions';
-import { IPartService } from 'vs/workbench/services/part/common/partService';
+import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 
 // Viewlet Action
 export class OpenConnectionsViewletAction extends ToggleViewletAction {
@@ -28,9 +28,9 @@ export class OpenConnectionsViewletAction extends ToggleViewletAction {
 		id: string,
 		label: string,
 		@IViewletService viewletService: IViewletService,
-		@IPartService partService: IPartService
+		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService
 	) {
-		super(viewletDescriptor, partService, viewletService);
+		super(viewletDescriptor, layoutService, viewletService);
 	}
 }
 

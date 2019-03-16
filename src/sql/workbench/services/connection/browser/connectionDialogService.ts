@@ -21,7 +21,6 @@ import { Deferred } from 'sql/base/common/promise';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 
-import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as platform from 'vs/base/common/platform';
 import Severity from 'vs/base/common/severity';
@@ -32,6 +31,7 @@ import * as types from 'vs/base/common/types';
 import { trim } from 'vs/base/common/strings';
 import { localize } from 'vs/nls';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 
 export interface IConnectionValidateResult {
 	isValid: boolean;
@@ -82,7 +82,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	private _connectionManagementService: IConnectionManagementService;
 
 	constructor(
-		@IPartService private _partService: IPartService,
+		@IWorkbenchLayoutService private layoutService: IWorkbenchLayoutService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
@@ -398,7 +398,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 
 	private doShowDialog(params: INewConnectionParams): Promise<void> {
 		if (!this._connectionDialog) {
-			let container = this._partService.getWorkbenchElement().parentElement;
+			let container = this.layoutService.getWorkbenchElement().parentElement;
 			this._container = container;
 			this._connectionDialog = this._instantiationService.createInstance(ConnectionDialogWidget, this._providerTypes, this._providerNameToDisplayNameMap[this._model.providerName], this._providerNameToDisplayNameMap);
 			this._connectionDialog.onCancel(() => {
