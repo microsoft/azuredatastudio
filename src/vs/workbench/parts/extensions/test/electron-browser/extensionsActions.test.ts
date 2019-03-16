@@ -1091,7 +1091,8 @@ suite('ExtensionsActions Test', () => {
 
 		return new Promise(c => {
 			testObject.onDidChange(() => {
-				if (testObject.enabled && testObject.tooltip === 'Please reload Visual Studio Code to complete the installation of this extension.') {
+				// {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
+				if (testObject.enabled && testObject.tooltip === 'Please reload Azure Data Studio to complete the installation of this extension.') {
 					c();
 				}
 			});
@@ -1130,7 +1131,8 @@ suite('ExtensionsActions Test', () => {
 
 		return new Promise(c => {
 			testObject.onDidChange(() => {
-				if (testObject.enabled && testObject.tooltip === 'Please reload Visual Studio Code to complete the uninstallation of this extension.') {
+				// {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
+				if (testObject.enabled && testObject.tooltip === 'Please reload Azure Data Studio to complete the uninstallation of this extension.') {
 					c();
 				}
 			});
@@ -1172,7 +1174,8 @@ suite('ExtensionsActions Test', () => {
 
 		return new Promise(c => {
 			testObject.onDidChange(() => {
-				if (testObject.enabled && testObject.tooltip === 'Please reload Visual Studio Code to complete the updating of this extension.') {
+				// {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
+				if (testObject.enabled && testObject.tooltip === 'Please reload Azure Data Studio to complete the updating of this extension.') {
 					c();
 				}
 			});
@@ -1217,7 +1220,8 @@ suite('ExtensionsActions Test', () => {
 				.then(() => testObject.update())
 				.then(() => {
 					assert.ok(testObject.enabled);
-					assert.equal('Please reload Visual Studio Code to complete the disabling of this extension.', testObject.tooltip);
+					// {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
+					assert.equal('Please reload Azure Data Studio to complete the disabling of this extension.', testObject.tooltip);
 				});
 		});
 	});
@@ -1254,7 +1258,8 @@ suite('ExtensionsActions Test', () => {
 							.then(() => testObject.update())
 							.then(() => {
 								assert.ok(testObject.enabled);
-								assert.equal('Please reload Visual Studio Code to complete the enabling of this extension.', testObject.tooltip);
+								// {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
+								assert.equal('Please reload Azure Data Studio to complete the enabling of this extension.', testObject.tooltip);
 							});
 					});
 			});
@@ -1299,7 +1304,8 @@ suite('ExtensionsActions Test', () => {
 							.then(() => testObject.update())
 							.then(() => {
 								assert.ok(testObject.enabled);
-								assert.equal('Please reload Visual Studio Code to complete the enabling of this extension.', testObject.tooltip);
+								// {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
+								assert.equal('Please reload Azure Data Studio to complete the enabling of this extension.', testObject.tooltip);
 							});
 
 					});
