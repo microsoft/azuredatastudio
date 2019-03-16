@@ -482,6 +482,7 @@ export class MenubarControl extends Disposable {
 				if (!isMacintosh) {
 					const updateAction = this.getUpdateAction();
 					if (updateAction) {
+						updateAction.label = mnemonicMenuLabel(updateAction.label);
 						target.push(updateAction);
 						target.push(new Separator());
 					}
