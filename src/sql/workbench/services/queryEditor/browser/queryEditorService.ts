@@ -7,7 +7,6 @@ import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
 import { EditDataInput } from 'sql/parts/editData/common/editDataInput';
 import { IConnectableInput, IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { IEditorGroupsService, IEditorGroup } from 'vs/workbench/services/group/common/editorGroupsService';
 import { IQueryEditorService, IQueryEditorOptions } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { QueryPlanInput } from 'sql/parts/queryPlan/queryPlanInput';
 import { sqlModeId, untitledFilePrefix, getSupportedInputResource } from 'sql/parts/common/customInputConverter';
@@ -18,7 +17,6 @@ import { ITextModel } from 'vs/editor/common/model';
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { IEditorService, ACTIVE_GROUP } from 'vs/workbench/services/editor/common/editorService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { FileEditorInput } from 'vs/workbench/parts/files/common/editors/fileEditorInput';
 import Severity from 'vs/base/common/severity';
 import nls = require('vs/nls');
 import { URI } from 'vs/base/common/uri';
@@ -31,6 +29,8 @@ import { IEditorInput, IEditor } from 'vs/workbench/common/editor';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { ILanguageSelection } from 'vs/editor/common/services/modeService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IEditorGroup } from 'vs/workbench/services/editor/common/editorGroupsService';
+import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 
 const fs = require('fs');
 

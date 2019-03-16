@@ -14,7 +14,6 @@ import { memoize } from 'vs/base/common/decorators';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
-import { WebviewElement } from 'vs/workbench/parts/webview/electron-browser/webviewElement';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { IDashboardWebview, IDashboardViewService } from 'sql/platform/dashboard/common/dashboardViewService';
@@ -23,6 +22,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 
 import * as azdata from 'azdata';
 import { IContextKey } from 'vs/platform/contextkey/common/contextkey';
+import { WebviewElement } from 'vs/workbench/contrib/webview/electron-browser/webviewElement';
 
 @Component({
 	template: '',
@@ -109,7 +109,6 @@ export class WebviewContent extends AngularDisposable implements OnInit, IDashbo
 		this._webview = this.instantiationService.createInstance(WebviewElement,
 			this.partService.getContainer(Parts.EDITOR_PART),
 			{
-				enableWrappedPostMessage: true,
 				allowScripts: true
 			});
 

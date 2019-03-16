@@ -16,7 +16,6 @@ import { CommonServiceInterface } from 'sql/services/common/commonServiceInterfa
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { WebviewElement, WebviewOptions } from 'vs/workbench/parts/webview/electron-browser/webviewElement';
 import { URI, UriComponents } from 'vs/base/common/uri';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
@@ -25,6 +24,7 @@ import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
+import { WebviewElement, WebviewOptions } from 'vs/workbench/contrib/webview/electron-browser/webviewElement';
 
 function reviveWebviewOptions(options: vscode.WebviewOptions): vscode.WebviewOptions {
 	return {
@@ -78,8 +78,7 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 		this._webview = this.instantiationService.createInstance(WebviewElement,
 			this.partService.getContainer(Parts.EDITOR_PART),
 			{
-				allowScripts: true,
-				enableWrappedPostMessage: true
+				allowScripts: true
 			});
 
 		this._webview.mountTo(this._el.nativeElement);
@@ -201,7 +200,6 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 		return {
 			allowScripts: options.enableScripts,
 			allowSvgs: true,
-			enableWrappedPostMessage: true,
 			useSameOriginForRoot: false,
 			localResourceRoots: options!.localResourceRoots || this.getDefaultLocalResourceRoots()
 		};

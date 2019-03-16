@@ -26,7 +26,7 @@ import { IsMacContext } from 'vs/platform/workbench/common/contextkeys';
 import { NoEditorsVisibleContext, SingleEditorGroupsContext } from 'vs/workbench/common/editor';
 import { IWindowService, IWindowsService } from 'vs/platform/windows/common/windows';
 // {{SQL CARBON EDIT}}
-import { InstallVSIXAction } from 'vs/workbench/parts/extensions/electron-browser/extensionsActions';
+import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/electron-browser/extensionsActions';
 // {{SQL CARBON EDIT}} - End
 
 // Contribute Commands
@@ -647,4 +647,3 @@ configurationRegistry.registerConfiguration({
 		}
 	}
 });
-

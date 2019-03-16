@@ -19,8 +19,8 @@ import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/c
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { localize } from 'vs/nls';
 import { IDisposable, toDisposable } from 'vs/base/common/lifecycle';
-import { WebviewElement } from 'vs/workbench/parts/webview/electron-browser/webviewElement';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { WebviewElement } from 'vs/workbench/contrib/webview/electron-browser/webviewElement';
 
 export class WebViewDialog extends Modal {
 
@@ -91,7 +91,6 @@ export class WebViewDialog extends Modal {
 			this._webview = this._instantiationService.createInstance(WebviewElement,
 				this._webViewPartService.getContainer(Parts.EDITOR_PART),
 				{
-					enableWrappedPostMessage: true,
 					allowScripts: true
 				});
 

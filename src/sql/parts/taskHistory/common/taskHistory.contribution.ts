@@ -21,7 +21,6 @@ import ext = require('vs/workbench/common/contributions');
 import { ITaskService } from 'sql/platform/taskHistory/common/taskService';
 import { IActivityService, NumberBadge } from 'vs/workbench/services/activity/common/activity';
 import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
-import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
 import { ToggleViewletAction } from 'vs/workbench/browser/parts/activitybar/activitybarActions';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
 

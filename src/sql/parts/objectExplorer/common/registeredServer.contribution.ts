@@ -16,7 +16,6 @@ import { Extensions, IConfigurationRegistry } from 'vs/platform/configuration/co
 
 import { VIEWLET_ID } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionViewlet } from 'sql/workbench/parts/connection/electron-browser/connectionViewlet';
-import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
 import { ToggleViewletAction } from 'vs/workbench/browser/parts/activitybar/activitybarActions';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
 

@@ -35,6 +35,10 @@ import { IWorkspaceConfigurationService } from 'vs/workbench/services/configurat
 import { Uri } from 'vscode';
 import { createHash } from 'crypto';
 import { Emitter, Event } from 'vs/base/common/event';
+import { Schemas } from 'vs/base/common/network';
+import { fsPath } from 'vs/base/common/resources';
+import { isLinux } from 'vs/base/common/platform';
+import { IWorkspaceIdentifier } from 'vs/workbench/services/configuration/node/configuration';
 
 class SettingsTestEnvironmentService extends EnvironmentService {
 
@@ -65,7 +69,7 @@ function convertToWorkspacePayload(folder: Uri): ISingleFolderWorkspaceInitializ
 	} as ISingleFolderWorkspaceInitializationPayload;
 }
 
-function setUpWorkspace(folders: string[]): Promise<{ parentDir: string, configPath: string }> {
+function setUpWorkspace(folders: string[]): Promise<{ parentDir: string, configPath: URI }> {
 
 	const id = uuid.generateUuid();
 	const parentDir = path.join(os.tmpdir(), 'vsctests', id);
@@ -77,7 +81,7 @@ function setUpWorkspace(folders: string[]): Promise<{ parentDir: string, configP
 			fs.writeFileSync(configPath, JSON.stringify(workspace, null, '\t'));
 
 			return Promise.all(folders.map(folder => setUpFolder(folder, parentDir)))
-				.then(() => ({ parentDir, configPath }));
+				.then(() => ({ parentDir, configPath: URI.file(configPath) }));
 		}));
 
 }
@@ -89,3 +93,19 @@ suite('WorkspaceContextService - Folder', () => {
 		assert.equal(0, 0);
 	});
 });
+
+function getWorkspaceId(configPath: URI): string {
+	let workspaceConfigPath = configPath.scheme === Schemas.file ? fsPath(configPath) : configPath.toString();
+	if (!isLinux) {
+		workspaceConfigPath = workspaceConfigPath.toLowerCase(); // sanitize for platform file system
+	}
+
+	return createHash('md5').update(workspaceConfigPath).digest('hex');
+}
+
+export function getWorkspaceIdentifier(configPath: URI): IWorkspaceIdentifier {
+	return {
+		configPath,
+		id: getWorkspaceId(configPath)
+	};
+}

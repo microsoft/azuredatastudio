@@ -7,10 +7,10 @@
 
 import { ServiceIdentifier, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { Event } from 'vs/base/common/event';
-import { IEditorGroupsService, GroupOrientation, IEditorGroup, GroupDirection, GroupsArrangement, IMoveEditorOptions, GroupsOrder, EditorGroupLayout, IFindGroupScope, IAddGroupOptions, IMergeGroupOptions } from 'vs/workbench/services/group/common/editorGroupsService';
 import { IEditorOpeningEvent } from 'vs/workbench/browser/parts/editor/editor';
 import { IEditorInput, EditorInput, GroupIdentifier } from 'vs/workbench/common/editor';
 import { EditorGroup } from 'vs/workbench/common/editor/editorGroup';
+import { IEditorGroupsService, IFindGroupScope, IEditorGroup, GroupDirection, IAddGroupOptions, IMergeGroupOptions, GroupOrientation, GroupsOrder, GroupsArrangement, IMoveEditorOptions, EditorGroupLayout } from 'vs/workbench/services/editor/common/editorGroupsService';
 
 export class EditorGroupTestService implements IEditorGroupsService {
 	_serviceBrand: ServiceIdentifier<any>;
