@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { TPromise } from 'vs/base/common/winjs.base';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import {
 	SqlExtHostContext, ExtHostDataProtocolShape,
@@ -71,7 +70,7 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 		this._toDispose = dispose(this._toDispose);
 	}
 
-	public $registerConnectionProvider(providerId: string, handle: number): TPromise<any> {
+	public $registerConnectionProvider(providerId: string, handle: number): Promise<any> {
 		const self = this;
 		this._connectionManagementService.registerProvider(providerId, <azdata.ConnectionProvider>{
 			connect(connectionUri: string, connectionInfo: azdata.ConnectionInfo): Thenable<boolean> {
@@ -103,7 +102,7 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 		return undefined;
 	}
 
-	public $registerQueryProvider(providerId: string, handle: number): TPromise<any> {
+	public $registerQueryProvider(providerId: string, handle: number): Promise<any> {
 		const self = this;
 		this._queryManagementService.addQueryRequestHandler(providerId, {
 			cancelQuery(ownerUri: string): Thenable<azdata.QueryCancelResult> {
@@ -174,7 +173,7 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 		return undefined;
 	}
 
-	public $registerBackupProvider(providerId: string, handle: number): TPromise<any> {
+	public $registerBackupProvider(providerId: string, handle: number): Promise<any> {
 		const self = this;
 		this._backupService.registerProvider(providerId, <azdata.BackupProvider>{
 			backup(connectionUri: string, backupInfo: { [key: string]: any }, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.BackupResponse> {
@@ -188,7 +187,7 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 		return undefined;
 	}
 
-	public $registerRestoreProvider(providerId: string, handle: number): TPromise<any> {
+	public $registerRestoreProvider(providerId: string, handle: number): Promise<any> {
 		const self = this;
 		this._restoreService.registerProvider(providerId, <azdata.RestoreProvider>{
 			getRestorePlan(connectionUri: string, restoreInfo: azdata.RestoreInfo): Thenable<azdata.RestorePlanResponse> {
@@ -208,7 +207,7 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 		return undefined;
 	}
 
-	public $registerMetadataProvider(providerId: string, handle: number): TPromise<any> {
+	public $registerMetadataProvider(providerId: string, handle: number): Promise<any> {
 		const self = this;
 		this._metadataService.registerProvider(providerId, <azdata.MetadataProvider>{
 			getMetadata(connectionUri: string): Thenable<azdata.ProviderMetadata> {
@@ -228,7 +227,7 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 		return undefined;
 	}
 
-	public $registerObjectExplorerProvider(providerId: string, handle: number): TPromise<any> {
+	public $registerObjectExplorerProvider(providerId: string, handle: number): Promise<any> {
 		const self = this;
 		this._objectExplorerService.registerProvider(providerId, <azdata.ObjectExplorerProvider>{
 			providerId: providerId,
@@ -252,7 +251,7 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 		return undefined;
 	}
 
-	public $registerObjectExplorerNodeProvider(providerId: string, supportedProviderId: string, group: string, handle: number): TPromise<any> {
+	public $registerObjectExplorerNodeProvider(providerId: string, supportedProviderId: string, group: string, handle: number): Promise<any> {
 		const self = this;
 		this._objectExplorerService.registerNodeProvider(<azdata.ObjectExplorerNodeProvider> {
 			supportedProviderId: supportedProviderId,
@@ -278,7 +277,7 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 		return undefined;
 	}
 
-	public $registerTaskServicesProvider(providerId: string, handle: number): TPromise<any> {
+	public $registerTaskServicesProvider(providerId: string, handle: number): Promise<any> {
 		const self = this;
 		this._taskService.registerProvider(providerId, <azdata.TaskServicesProvider>{
 			getAllTasks(listTasksParams: azdata.ListTasksParams): Thenable<azdata.ListTasksResponse> {
@@ -292,7 +291,7 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 		return undefined;
 	}
 
-	public $registerScriptingProvider(providerId: string, handle: number): TPromise<any> {
+	public $registerScriptingProvider(providerId: string, handle: number): Promise<any> {
 		const self = this;
 		this._scriptingService.registerProvider(providerId, <azdata.ScriptingProvider>{
 			scriptAsOperation(connectionUri: string, operation: azdata.ScriptOperation, metadata: azdata.ObjectMetadata, paramDetails: azdata.ScriptingParamDetails): Thenable<azdata.ScriptingResult> {
@@ -303,7 +302,7 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 		return undefined;
 	}
 
-	public $registerFileBrowserProvider(providerId: string, handle: number): TPromise<any> {
+	public $registerFileBrowserProvider(providerId: string, handle: number): Promise<any> {
 		const self = this;
 		this._fileBrowserService.registerProvider(providerId, <azdata.FileBrowserProvider>{
 			openFileBrowser(ownerUri: string, expandPath: string, fileFilters: string[], changeFilter: boolean): Thenable<boolean> {
@@ -323,7 +322,7 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 		return undefined;
 	}
 
-	public $registerProfilerProvider(providerId: string, handle: number): TPromise<any> {
+	public $registerProfilerProvider(providerId: string, handle: number): Promise<any> {
 		const self = this;
 		this._profilerService.registerProvider(providerId, <azdata.ProfilerProvider>{
 			createSession(sessionId: string, createStatement: string, template: azdata.ProfilerSessionTemplate): Thenable<boolean> {
@@ -342,7 +341,7 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 				return self._proxy.$getXEventSessions(handle, sessionId);
 			},
 			connectSession(sessionId: string): Thenable<boolean> {
-				return TPromise.as(true);
+				return Promise.resolve(true);
 			},
 			disconnectSession(sessionId: string): Thenable<boolean> {
 				return self._proxy.$disconnectSession(handle, sessionId);
@@ -352,7 +351,7 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 		return undefined;
 	}
 
-	public $registerAdminServicesProvider(providerId: string, handle: number): TPromise<any> {
+	public $registerAdminServicesProvider(providerId: string, handle: number): Promise<any> {
 		const self = this;
 		this._adminService.registerProvider(providerId, <azdata.AdminServicesProvider>{
 			createDatabase(connectionUri: string, database: azdata.DatabaseInfo): Thenable<azdata.CreateDatabaseResponse> {
@@ -372,7 +371,7 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 		return undefined;
 	}
 
-	public $registerAgentServicesProvider(providerId: string, handle: number): TPromise<any> {
+	public $registerAgentServicesProvider(providerId: string, handle: number): Promise<any> {
 		const self = this;
 		this._jobManagementService.registerProvider(providerId, <azdata.AgentServicesProvider>{
 			providerId: providerId,
@@ -417,7 +416,7 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 		return undefined;
 	}
 
-	public $registerCapabilitiesServiceProvider(providerId: string, handle: number): TPromise<any> {
+	public $registerCapabilitiesServiceProvider(providerId: string, handle: number): Promise<any> {
 		const self = this;
 		this._capabilitiesService.registerProvider(<azdata.CapabilitiesProvider>{
 			getServerCapabilities(client: azdata.DataProtocolClientCapabilities): Thenable<azdata.DataProtocolServerCapabilities> {
@@ -428,7 +427,7 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 		return undefined;
 	}
 
-	public $registerDacFxServicesProvider(providerId: string, handle: number): TPromise<any> {
+	public $registerDacFxServicesProvider(providerId: string, handle: number): Promise<any> {
 		const self = this;
 		this._dacFxService.registerProvider(providerId, <azdata.DacFxServicesProvider>{
 			exportBacpac(databaseName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> {
@@ -549,7 +548,7 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 		this._jobManagementService.fireOnDidChange();
 	}
 
-	public $unregisterProvider(handle: number): TPromise<any> {
+	public $unregisterProvider(handle: number): Promise<any> {
 		let capabilitiesRegistration = this._capabilitiesRegistrations[handle];
 		if (capabilitiesRegistration) {
 			capabilitiesRegistration.dispose();

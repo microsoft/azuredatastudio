@@ -14,7 +14,6 @@ import { resolveCurrentDirectory, getRootPath } from 'sql/platform/node/pathUtil
 
 import { localize } from 'vs/nls';
 import { Action } from 'vs/base/common/actions';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { join, normalize } from 'vs/base/common/paths';
 import { writeFile } from 'vs/base/node/pfs';
 import { IWindowsService, IWindowService } from 'vs/platform/windows/common/windows';
@@ -42,11 +41,11 @@ export class CreateInsightAction extends Action {
 		super(CreateInsightAction.ID, CreateInsightAction.LABEL, CreateInsightAction.ICON);
 	}
 
-	public run(context: IChartActionContext): TPromise<boolean> {
+	public run(context: IChartActionContext): Promise<boolean> {
 		let uriString: string = this.getActiveUriString();
 		if (!uriString) {
 			this.showError(localize('createInsightNoEditor', 'Cannot create insight as the active editor is not a SQL Editor'));
-			return TPromise.as(false);
+			return Promise.resolve(false);
 		}
 
 		let uri: URI = URI.parse(uriString);
@@ -118,18 +117,18 @@ export class CopyAction extends Action {
 		super(CopyAction.ID, CopyAction.LABEL, CopyAction.ICON);
 	}
 
-	public run(context: IChartActionContext): TPromise<boolean> {
+	public run(context: IChartActionContext): Promise<boolean> {
 		if (context.insight instanceof Graph) {
 			let data = context.insight.getCanvasData();
 			if (!data) {
 				this.showError(localize('chartNotFound', 'Could not find chart to save'));
-				return TPromise.as(false);
+				return Promise.resolve(false);
 			}
 
 			this.clipboardService.writeImageDataUrl(data);
-			return TPromise.as(true);
+			return Promise.resolve(true);
 		}
-		return TPromise.as(false);
+		return Promise.resolve(false);
 	}
 
 	private showError(errorMsg: string) {
@@ -155,7 +154,7 @@ export class SaveImageAction extends Action {
 		super(SaveImageAction.ID, SaveImageAction.LABEL, SaveImageAction.ICON);
 	}
 
-	public run(context: IChartActionContext): TPromise<boolean> {
+	public run(context: IChartActionContext): Promise<boolean> {
 		if (context.insight instanceof Graph) {
 			return this.promptForFilepath().then(filePath => {
 				let data = (<Graph>context.insight).getCanvasData();
@@ -181,7 +180,7 @@ export class SaveImageAction extends Action {
 				return true;
 			});
 		}
-		return TPromise.as(false);
+		return Promise.resolve(false);
 	}
 
 	private decodeBase64Image(data: string): Buffer {
@@ -189,7 +188,7 @@ export class SaveImageAction extends Action {
 		return Buffer.from(matches[2], 'base64');
 	}
 
-	private promptForFilepath(): TPromise<string> {
+	private promptForFilepath(): Promise<string> {
 		let filepathPlaceHolder = resolveCurrentDirectory(this.getActiveUriString(), getRootPath(this.workspaceContextService));
 		filepathPlaceHolder = join(filepathPlaceHolder, 'chart.png');
 		return this.windowService.showSaveDialog({

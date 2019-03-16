@@ -8,7 +8,6 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import * as azdata from 'azdata';
-import { TPromise } from 'vs/base/common/winjs.base';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
 import * as TelemetryUtils from 'sql/common/telemetryUtilities';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -179,13 +178,13 @@ export class QueryManagementService implements IQueryManagementService {
 		let providerId: string = this._connectionService.getProviderIdFromUri(uri);
 
 		if (!providerId) {
-			return TPromise.wrapError(new Error('Connection is required in order to interact with queries'));
+			return Promise.reject(new Error('Connection is required in order to interact with queries'));
 		}
 		let handler = this._requestHandlers.get(providerId);
 		if (handler) {
 			return action(handler);
 		} else {
-			return TPromise.wrapError(new Error('No Handler Registered'));
+			return Promise.reject(new Error('No Handler Registered'));
 		}
 	}
 

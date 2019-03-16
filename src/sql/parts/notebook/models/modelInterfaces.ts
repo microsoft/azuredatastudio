@@ -23,6 +23,7 @@ import { IStandardKernelWithProvider } from 'sql/parts/notebook/notebookUtils';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { localize } from 'vs/nls';
+import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
 
 export interface IClientSessionOptions {
 	notebookUri: URI;
@@ -449,8 +450,9 @@ export interface ICellModel {
 	readonly outputs: ReadonlyArray<nb.ICellOutput>;
 	readonly onOutputsChanged: Event<ReadonlyArray<nb.ICellOutput>>;
 	readonly onExecutionStateChange: Event<CellExecutionState>;
-	setFuture(future: FutureInternal): void;
 	readonly executionState: CellExecutionState;
+	readonly notebookModel: NotebookModel;
+	setFuture(future: FutureInternal): void;
 	runCell(notificationService?: INotificationService, connectionManagementService?: IConnectionManagementService): Promise<boolean>;
 	setOverrideLanguage(language: string);
 	equals(cellModel: ICellModel): boolean;

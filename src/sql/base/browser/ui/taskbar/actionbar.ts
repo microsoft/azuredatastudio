@@ -7,7 +7,6 @@
 
 import 'vs/css!vs/base/browser/ui/actionbar/actionbar';
 
-import { Promise } from 'vs/base/common/winjs.base';
 import { Builder, $ } from 'sql/base/browser/builder';
 import { IAction, IActionRunner, ActionRunner } from 'vs/base/common/actions';
 import { EventEmitter } from 'sql/base/common/eventEmitter';
@@ -363,7 +362,7 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 		//this.emit('cancel');
 	}
 
-	public run(action: IAction, context?: any): Promise {
+	public run(action: IAction, context?: any): Promise<any> {
 		return this._actionRunner.run(action, context);
 	}
 

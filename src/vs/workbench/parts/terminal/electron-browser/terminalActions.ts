@@ -29,15 +29,20 @@ import { TERMINAL_COMMAND_ID } from 'vs/workbench/parts/terminal/common/terminal
 import { Command } from 'vs/editor/browser/editorExtensions';
 import { timeout } from 'vs/base/common/async';
 import { FindReplaceState } from 'vs/editor/contrib/find/findState';
+import { ISelectOptionItem } from 'vs/base/browser/ui/selectBox/selectBox';
+import { URI } from 'vs/base/common/uri';
 
 export const TERMINAL_PICKER_PREFIX = 'term ';
 
-function getCwdForSplit(configHelper: ITerminalConfigHelper, instance: ITerminalInstance, folders?: IWorkspaceFolder[], commandService?: ICommandService): Promise<string | undefined> {
+function getCwdForSplit(configHelper: ITerminalConfigHelper, instance: ITerminalInstance, folders?: IWorkspaceFolder[], commandService?: ICommandService): Promise<string | URI> {
 	switch (configHelper.config.splitCwd) {
-		case 'workspaceRoot': {
-			// allow original behavior
-			let pathPromise: Promise<string> = Promise.resolve('');
-			if (folders.length > 1) {
+		case 'workspaceRoot':
+			let pathPromise: Promise<string | URI>;
+			if (folders.length === 0) {
+				pathPromise = Promise.resolve('');
+			} else if (folders.length === 1) {
+				pathPromise = Promise.resolve(folders[0].uri);
+			} else if (folders.length > 1) {
 				// Only choose a path when there's more than 1 folder
 				const options: IPickOptions<IQuickPickItem> = {
 					placeHolder: nls.localize('workbench.action.terminal.newWorkspacePlaceholder', "Select current working directory for new terminal")
@@ -47,20 +52,14 @@ function getCwdForSplit(configHelper: ITerminalConfigHelper, instance: ITerminal
 						// Don't split the instance if the workspace picker was canceled
 						return undefined;
 					}
-					return Promise.resolve(workspace.uri.fsPath);
+					return Promise.resolve(workspace.uri);
 				});
 			}
-
 			return pathPromise;
-		}
-		case 'initial': {
-			return new Promise<string>(resolve => {
-				resolve(instance.initialCwd);
-			});
-		}
-		case 'inherited': {
+		case 'initial':
+			return instance.getInitialCwd();
+		case 'inherited':
 			return instance.getCwd();
-		}
 	}
 }
 
@@ -73,12 +72,12 @@ export class ToggleTerminalAction extends TogglePanelAction {
 		id: string, label: string,
 		@IPanelService panelService: IPanelService,
 		@IPartService partService: IPartService,
-		@ITerminalService private terminalService: ITerminalService
+		@ITerminalService private readonly terminalService: ITerminalService
 	) {
 		super(id, label, TERMINAL_PANEL_ID, panelService, partService);
 	}
 
-	public run(event?: any): PromiseLike<any> {
+	public run(event?: any): Promise<any> {
 		if (this.terminalService.terminalInstances.length === 0) {
 			// If there is not yet an instance attempt to create it here so that we can suggest a
 			// new shell on Windows (and not do so when the panel is restored on reload).
@@ -100,12 +99,12 @@ export class KillTerminalAction extends Action {
 
 	constructor(
 		id: string, label: string,
-		@ITerminalService private terminalService: ITerminalService
+		@ITerminalService private readonly terminalService: ITerminalService
 	) {
 		super(id, label, 'terminal-action kill');
 	}
 
-	public run(event?: any): PromiseLike<any> {
+	public run(event?: any): Promise<any> {
 		const instance = this.terminalService.getActiveInstance();
 		if (instance) {
 			instance.dispose(true);
@@ -113,7 +112,7 @@ export class KillTerminalAction extends Action {
 				this.terminalService.showPanel(true);
 			}
 		}
-		return Promise.resolve(void 0);
+		return Promise.resolve(undefined);
 	}
 }
 
@@ -125,7 +124,7 @@ export class QuickKillTerminalAction extends Action {
 	constructor(
 		id: string, label: string,
 		private terminalEntry: TerminalEntry,
-		@IQuickOpenService private quickOpenService: IQuickOpenService
+		@IQuickOpenService private readonly quickOpenService: IQuickOpenService
 	) {
 		super(id, label, 'terminal-action kill');
 	}
@@ -151,7 +150,7 @@ export class CopyTerminalSelectionAction extends Action {
 
 	constructor(
 		id: string, label: string,
-		@ITerminalService private terminalService: ITerminalService
+		@ITerminalService private readonly terminalService: ITerminalService
 	) {
 		super(id, label);
 	}
@@ -161,7 +160,7 @@ export class CopyTerminalSelectionAction extends Action {
 		if (terminalInstance) {
 			terminalInstance.copySelection();
 		}
-		return Promise.resolve(void 0);
+		return Promise.resolve(undefined);
 	}
 }
 
@@ -172,7 +171,7 @@ export class SelectAllTerminalAction extends Action {
 
 	constructor(
 		id: string, label: string,
-		@ITerminalService private terminalService: ITerminalService
+		@ITerminalService private readonly terminalService: ITerminalService
 	) {
 		super(id, label);
 	}
@@ -182,7 +181,7 @@ export class SelectAllTerminalAction extends Action {
 		if (terminalInstance) {
 			terminalInstance.selectAll();
 		}
-		return Promise.resolve(void 0);
+		return Promise.resolve(undefined);
 	}
 }
 
@@ -201,7 +200,7 @@ export abstract class BaseSendTextTerminalAction extends Action {
 		if (terminalInstance) {
 			terminalInstance.sendText(this._text, false);
 		}
-		return Promise.resolve(void 0);
+		return Promise.resolve(undefined);
 	}
 }
 
@@ -296,14 +295,14 @@ export class CreateNewTerminalAction extends Action {
 
 	constructor(
 		id: string, label: string,
-		@ITerminalService private terminalService: ITerminalService,
-		@ICommandService private commandService: ICommandService,
-		@IWorkspaceContextService private workspaceContextService: IWorkspaceContextService
+		@ITerminalService private readonly terminalService: ITerminalService,
+		@ICommandService private readonly commandService: ICommandService,
+		@IWorkspaceContextService private readonly workspaceContextService: IWorkspaceContextService
 	) {
 		super(id, label, 'terminal-action new');
 	}
 
-	public run(event?: any): PromiseLike<any> {
+	public run(event?: any): Promise<any> {
 		const folders = this.workspaceContextService.getWorkspace().folders;
 		if (event instanceof MouseEvent && (event.altKey || event.ctrlKey)) {
 			const activeInstance = this.terminalService.getActiveInstance();
@@ -315,7 +314,7 @@ export class CreateNewTerminalAction extends Action {
 			}
 		}
 
-		let instancePromise: PromiseLike<ITerminalInstance>;
+		let instancePromise: Promise<ITerminalInstance>;
 		if (folders.length <= 1) {
 			// Allow terminal service to handle the path when there is only a
 			// single root
@@ -335,7 +334,7 @@ export class CreateNewTerminalAction extends Action {
 
 		return instancePromise.then(instance => {
 			if (!instance) {
-				return Promise.resolve(void 0);
+				return Promise.resolve(undefined);
 			}
 			this.terminalService.setActiveInstance(instance);
 			return this.terminalService.showPanel(true);
@@ -350,7 +349,7 @@ export class CreateNewInActiveWorkspaceTerminalAction extends Action {
 
 	constructor(
 		id: string, label: string,
-		@ITerminalService private terminalService: ITerminalService
+		@ITerminalService private readonly terminalService: ITerminalService
 	) {
 		super(id, label);
 	}
@@ -358,7 +357,7 @@ export class CreateNewInActiveWorkspaceTerminalAction extends Action {
 	public run(event?: any): Promise<any> {
 		const instance = this.terminalService.createTerminal(undefined, true);
 		if (!instance) {
-			return Promise.resolve(void 0);
+			return Promise.resolve(undefined);
 		}
 		this.terminalService.setActiveInstance(instance);
 		return this.terminalService.showPanel(true);
@@ -373,18 +372,17 @@ export class SplitTerminalAction extends Action {
 	constructor(
 		id: string, label: string,
 		@ITerminalService private readonly _terminalService: ITerminalService,
-		@ICommandService private commandService: ICommandService,
-		@IWorkspaceContextService private workspaceContextService: IWorkspaceContextService
+		@ICommandService private readonly commandService: ICommandService,
+		@IWorkspaceContextService private readonly workspaceContextService: IWorkspaceContextService
 	) {
 		super(id, label, 'terminal-action split');
 	}
 
-	public run(event?: any): PromiseLike<any> {
+	public run(event?: any): Promise<any> {
 		const instance = this._terminalService.getActiveInstance();
 		if (!instance) {
-			return Promise.resolve(void 0);
+			return Promise.resolve(undefined);
 		}
-
 		return getCwdForSplit(this._terminalService.configHelper, instance, this.workspaceContextService.getWorkspace().folders, this.commandService).then(cwd => {
 			if (cwd || (cwd === '')) {
 				this._terminalService.splitInstance(instance, { cwd });
@@ -410,7 +408,7 @@ export class SplitInActiveWorkspaceTerminalAction extends Action {
 	public run(event?: any): Promise<any> {
 		const instance = this._terminalService.getActiveInstance();
 		if (!instance) {
-			return Promise.resolve(void 0);
+			return Promise.resolve(undefined);
 		}
 		return getCwdForSplit(this._terminalService.configHelper, instance).then(cwd => {
 			this._terminalService.splitInstance(instance, { cwd });
@@ -433,7 +431,7 @@ export class FocusPreviousPaneTerminalAction extends Action {
 	public run(event?: any): Promise<any> {
 		const tab = this._terminalService.getActiveTab();
 		if (!tab) {
-			return Promise.resolve(void 0);
+			return Promise.resolve(undefined);
 		}
 		tab.focusPreviousPane();
 		return this._terminalService.showPanel(true);
@@ -454,7 +452,7 @@ export class FocusNextPaneTerminalAction extends Action {
 	public run(event?: any): Promise<any> {
 		const tab = this._terminalService.getActiveTab();
 		if (!tab) {
-			return Promise.resolve(void 0);
+			return Promise.resolve(undefined);
 		}
 		tab.focusNextPane();
 		return this._terminalService.showPanel(true);
@@ -475,7 +473,7 @@ export abstract class BaseFocusDirectionTerminalAction extends Action {
 		if (tab) {
 			tab.resizePane(this._direction);
 		}
-		return Promise.resolve(void 0);
+		return Promise.resolve(undefined);
 	}
 }
 
@@ -534,7 +532,7 @@ export class FocusActiveTerminalAction extends Action {
 
 	constructor(
 		id: string, label: string,
-		@ITerminalService private terminalService: ITerminalService
+		@ITerminalService private readonly terminalService: ITerminalService
 	) {
 		super(id, label);
 	}
@@ -542,7 +540,7 @@ export class FocusActiveTerminalAction extends Action {
 	public run(event?: any): Promise<any> {
 		const instance = this.terminalService.getActiveOrCreateInstance(true);
 		if (!instance) {
-			return Promise.resolve(void 0);
+			return Promise.resolve(undefined);
 		}
 		this.terminalService.setActiveInstance(instance);
 		return this.terminalService.showPanel(true);
@@ -556,7 +554,7 @@ export class FocusNextTerminalAction extends Action {
 
 	constructor(
 		id: string, label: string,
-		@ITerminalService private terminalService: ITerminalService
+		@ITerminalService private readonly terminalService: ITerminalService
 	) {
 		super(id, label);
 	}
@@ -574,7 +572,7 @@ export class FocusPreviousTerminalAction extends Action {
 
 	constructor(
 		id: string, label: string,
-		@ITerminalService private terminalService: ITerminalService
+		@ITerminalService private readonly terminalService: ITerminalService
 	) {
 		super(id, label);
 	}
@@ -593,7 +591,7 @@ export class TerminalPasteAction extends Action {
 
 	constructor(
 		id: string, label: string,
-		@ITerminalService private terminalService: ITerminalService
+		@ITerminalService private readonly terminalService: ITerminalService
 	) {
 		super(id, label);
 	}
@@ -603,7 +601,7 @@ export class TerminalPasteAction extends Action {
 		if (instance) {
 			instance.paste();
 		}
-		return Promise.resolve(void 0);
+		return Promise.resolve(undefined);
 	}
 }
 
@@ -614,7 +612,7 @@ export class SelectDefaultShellWindowsTerminalAction extends Action {
 
 	constructor(
 		id: string, label: string,
-		@ITerminalService private terminalService: ITerminalService
+		@ITerminalService private readonly terminalService: ITerminalService
 	) {
 		super(id, label);
 	}
@@ -631,8 +629,8 @@ export class RunSelectedTextInTerminalAction extends Action {
 
 	constructor(
 		id: string, label: string,
-		@ICodeEditorService private codeEditorService: ICodeEditorService,
-		@ITerminalService private terminalService: ITerminalService
+		@ICodeEditorService private readonly codeEditorService: ICodeEditorService,
+		@ITerminalService private readonly terminalService: ITerminalService
 	) {
 		super(id, label);
 	}
@@ -640,11 +638,11 @@ export class RunSelectedTextInTerminalAction extends Action {
 	public run(event?: any): Promise<any> {
 		const instance = this.terminalService.getActiveOrCreateInstance();
 		if (!instance) {
-			return Promise.resolve(void 0);
+			return Promise.resolve(undefined);
 		}
 		let editor = this.codeEditorService.getFocusedCodeEditor();
 		if (!editor) {
-			return Promise.resolve(void 0);
+			return Promise.resolve(undefined);
 		}
 		let selection = editor.getSelection();
 		let text: string;
@@ -666,9 +664,9 @@ export class RunActiveFileInTerminalAction extends Action {
 
 	constructor(
 		id: string, label: string,
-		@ICodeEditorService private codeEditorService: ICodeEditorService,
-		@ITerminalService private terminalService: ITerminalService,
-		@INotificationService private notificationService: INotificationService
+		@ICodeEditorService private readonly codeEditorService: ICodeEditorService,
+		@ITerminalService private readonly terminalService: ITerminalService,
+		@INotificationService private readonly notificationService: INotificationService
 	) {
 		super(id, label);
 	}
@@ -676,16 +674,16 @@ export class RunActiveFileInTerminalAction extends Action {
 	public run(event?: any): Promise<any> {
 		const instance = this.terminalService.getActiveOrCreateInstance();
 		if (!instance) {
-			return Promise.resolve(void 0);
+			return Promise.resolve(undefined);
 		}
 		const editor = this.codeEditorService.getActiveCodeEditor();
 		if (!editor) {
-			return Promise.resolve(void 0);
+			return Promise.resolve(undefined);
 		}
 		const uri = editor.getModel().uri;
 		if (uri.scheme !== 'file') {
 			this.notificationService.warn(nls.localize('workbench.action.terminal.runActiveFile.noFile', 'Only files on disk can be run in the terminal'));
-			return Promise.resolve(void 0);
+			return Promise.resolve(undefined);
 		}
 
 		return instance.preparePathForTerminalAsync(uri.fsPath).then(path => {
@@ -702,7 +700,7 @@ export class SwitchTerminalAction extends Action {
 
 	constructor(
 		id: string, label: string,
-		@ITerminalService private terminalService: ITerminalService
+		@ITerminalService private readonly terminalService: ITerminalService
 	) {
 		super(id, label, 'terminal-action switch-terminal');
 	}
@@ -721,11 +719,11 @@ export class SwitchTerminalActionItem extends SelectActionItem {
 
 	constructor(
 		action: IAction,
-		@ITerminalService private terminalService: ITerminalService,
+		@ITerminalService private readonly terminalService: ITerminalService,
 		@IThemeService themeService: IThemeService,
 		@IContextViewService contextViewService: IContextViewService
 	) {
-		super(null, action, terminalService.getTabLabels(), terminalService.activeTabIndex, contextViewService, { ariaLabel: nls.localize('terminals', 'Open Terminals.') });
+		super(null, action, terminalService.getTabLabels().map(label => <ISelectOptionItem>{ text: label }), terminalService.activeTabIndex, contextViewService, { ariaLabel: nls.localize('terminals', 'Open Terminals.') });
 
 		this.toDispose.push(terminalService.onInstancesChanged(this._updateItems, this));
 		this.toDispose.push(terminalService.onActiveTabChanged(this._updateItems, this));
@@ -734,7 +732,7 @@ export class SwitchTerminalActionItem extends SelectActionItem {
 	}
 
 	private _updateItems(): void {
-		this.setOptions(this.terminalService.getTabLabels(), this.terminalService.activeTabIndex);
+		this.setOptions(this.terminalService.getTabLabels().map(label => <ISelectOptionItem>{ text: label }), this.terminalService.activeTabIndex);
 	}
 }
 
@@ -745,7 +743,7 @@ export class ScrollDownTerminalAction extends Action {
 
 	constructor(
 		id: string, label: string,
-		@ITerminalService private terminalService: ITerminalService
+		@ITerminalService private readonly terminalService: ITerminalService
 	) {
 		super(id, label);
 	}
@@ -755,7 +753,7 @@ export class ScrollDownTerminalAction extends Action {
 		if (terminalInstance) {
 			terminalInstance.scrollDownLine();
 		}
-		return Promise.resolve(void 0);
+		return Promise.resolve(undefined);
 	}
 }
 
@@ -766,7 +764,7 @@ export class ScrollDownPageTerminalAction extends Action {
 
 	constructor(
 		id: string, label: string,
-		@ITerminalService private terminalService: ITerminalService
+		@ITerminalService private readonly terminalService: ITerminalService
 	) {
 		super(id, label);
 	}
@@ -776,7 +774,7 @@ export class ScrollDownPageTerminalAction extends Action {
 		if (terminalInstance) {
 			terminalInstance.scrollDownPage();
 		}
-		return Promise.resolve(void 0);
+		return Promise.resolve(undefined);
 	}
 }
 
@@ -787,7 +785,7 @@ export class ScrollToBottomTerminalAction extends Action {
 
 	constructor(
 		id: string, label: string,
-		@ITerminalService private terminalService: ITerminalService
+		@ITerminalService private readonly terminalService: ITerminalService
 	) {
 		super(id, label);
 	}
@@ -797,7 +795,7 @@ export class ScrollToBottomTerminalAction extends Action {
 		if (terminalInstance) {
 			terminalInstance.scrollToBottom();
 		}
-		return Promise.resolve(void 0);
+		return Promise.resolve(undefined);
 	}
 }
 
@@ -808,7 +806,7 @@ export class ScrollUpTerminalAction extends Action {
 
 	constructor(
 		id: string, label: string,
-		@ITerminalService private terminalService: ITerminalService
+		@ITerminalService private readonly terminalService: ITerminalService
 	) {
 		super(id, label);
 	}
@@ -818,7 +816,7 @@ export class ScrollUpTerminalAction extends Action {
 		if (terminalInstance) {
 			terminalInstance.scrollUpLine();
 		}
-		return Promise.resolve(void 0);
+		return Promise.resolve(undefined);
 	}
 }
 
@@ -829,7 +827,7 @@ export class ScrollUpPageTerminalAction extends Action {
 
 	constructor(
 		id: string, label: string,
-		@ITerminalService private terminalService: ITerminalService
+		@ITerminalService private readonly terminalService: ITerminalService
 	) {
 		super(id, label);
 	}
@@ -839,7 +837,7 @@ export class ScrollUpPageTerminalAction extends Action {
 		if (terminalInstance) {
 			terminalInstance.scrollUpPage();
 		}
-		return Promise.resolve(void 0);
+		return Promise.resolve(undefined);
 	}
 }
 
@@ -850,7 +848,7 @@ export class ScrollToTopTerminalAction extends Action {
 
 	constructor(
 		id: string, label: string,
-		@ITerminalService private terminalService: ITerminalService
+		@ITerminalService private readonly terminalService: ITerminalService
 	) {
 		super(id, label);
 	}
@@ -860,7 +858,7 @@ export class ScrollToTopTerminalAction extends Action {
 		if (terminalInstance) {
 			terminalInstance.scrollToTop();
 		}
-		return Promise.resolve(void 0);
+		return Promise.resolve(undefined);
 	}
 }
 
@@ -871,7 +869,7 @@ export class ClearTerminalAction extends Action {
 
 	constructor(
 		id: string, label: string,
-		@ITerminalService private terminalService: ITerminalService
+		@ITerminalService private readonly terminalService: ITerminalService
 	) {
 		super(id, label);
 	}
@@ -881,7 +879,7 @@ export class ClearTerminalAction extends Action {
 		if (terminalInstance) {
 			terminalInstance.clear();
 		}
-		return Promise.resolve(void 0);
+		return Promise.resolve(undefined);
 	}
 }
 
@@ -892,7 +890,7 @@ export class ClearSelectionTerminalAction extends Action {
 
 	constructor(
 		id: string, label: string,
-		@ITerminalService private terminalService: ITerminalService
+		@ITerminalService private readonly terminalService: ITerminalService
 	) {
 		super(id, label);
 	}
@@ -902,7 +900,7 @@ export class ClearSelectionTerminalAction extends Action {
 		if (terminalInstance && terminalInstance.hasSelection()) {
 			terminalInstance.clearSelection();
 		}
-		return Promise.resolve(void 0);
+		return Promise.resolve(undefined);
 	}
 }
 
@@ -913,14 +911,14 @@ export class AllowWorkspaceShellTerminalCommand extends Action {
 
 	constructor(
 		id: string, label: string,
-		@ITerminalService private terminalService: ITerminalService
+		@ITerminalService private readonly terminalService: ITerminalService
 	) {
 		super(id, label);
 	}
 
 	public run(event?: any): Promise<any> {
 		this.terminalService.setWorkspaceShellAllowed(true);
-		return Promise.resolve(void 0);
+		return Promise.resolve(undefined);
 	}
 }
 
@@ -931,14 +929,14 @@ export class DisallowWorkspaceShellTerminalCommand extends Action {
 
 	constructor(
 		id: string, label: string,
-		@ITerminalService private terminalService: ITerminalService
+		@ITerminalService private readonly terminalService: ITerminalService
 	) {
 		super(id, label);
 	}
 
 	public run(event?: any): Promise<any> {
 		this.terminalService.setWorkspaceShellAllowed(false);
-		return Promise.resolve(void 0);
+		return Promise.resolve(undefined);
 	}
 }
 
@@ -956,10 +954,10 @@ export class RenameTerminalAction extends Action {
 		super(id, label);
 	}
 
-	public run(entry?: TerminalEntry): PromiseLike<any> {
+	public run(entry?: TerminalEntry): Promise<any> {
 		const terminalInstance = entry ? entry.instance : this.terminalService.getActiveInstance();
 		if (!terminalInstance) {
-			return Promise.resolve(void 0);
+			return Promise.resolve(undefined);
 		}
 		return this.quickInputService.input({
 			value: terminalInstance.title,
@@ -979,7 +977,7 @@ export class FocusTerminalFindWidgetAction extends Action {
 
 	constructor(
 		id: string, label: string,
-		@ITerminalService private terminalService: ITerminalService
+		@ITerminalService private readonly terminalService: ITerminalService
 	) {
 		super(id, label);
 	}
@@ -996,7 +994,7 @@ export class HideTerminalFindWidgetAction extends Action {
 
 	constructor(
 		id: string, label: string,
-		@ITerminalService private terminalService: ITerminalService
+		@ITerminalService private readonly terminalService: ITerminalService
 	) {
 		super(id, label);
 	}
@@ -1009,7 +1007,7 @@ export class HideTerminalFindWidgetAction extends Action {
 export class QuickOpenActionTermContributor extends ActionBarContributor {
 
 	constructor(
-		@IInstantiationService private instantiationService: IInstantiationService
+		@IInstantiationService private readonly instantiationService: IInstantiationService
 	) {
 		super();
 	}
@@ -1036,12 +1034,12 @@ export class QuickOpenTermAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		@IQuickOpenService private quickOpenService: IQuickOpenService
+		@IQuickOpenService private readonly quickOpenService: IQuickOpenService
 	) {
 		super(id, label);
 	}
 
-	public run(): PromiseLike<void> {
+	public run(): Promise<void> {
 		return this.quickOpenService.show(TERMINAL_PICKER_PREFIX, null);
 	}
 }
@@ -1074,7 +1072,7 @@ export class ScrollToPreviousCommandAction extends Action {
 
 	constructor(
 		id: string, label: string,
-		@ITerminalService private terminalService: ITerminalService
+		@ITerminalService private readonly terminalService: ITerminalService
 	) {
 		super(id, label);
 	}
@@ -1085,7 +1083,7 @@ export class ScrollToPreviousCommandAction extends Action {
 			instance.commandTracker.scrollToPreviousCommand();
 			instance.focus();
 		}
-		return Promise.resolve(void 0);
+		return Promise.resolve(undefined);
 	}
 }
 
@@ -1095,7 +1093,7 @@ export class ScrollToNextCommandAction extends Action {
 
 	constructor(
 		id: string, label: string,
-		@ITerminalService private terminalService: ITerminalService
+		@ITerminalService private readonly terminalService: ITerminalService
 	) {
 		super(id, label);
 	}
@@ -1106,7 +1104,7 @@ export class ScrollToNextCommandAction extends Action {
 			instance.commandTracker.scrollToNextCommand();
 			instance.focus();
 		}
-		return Promise.resolve(void 0);
+		return Promise.resolve(undefined);
 	}
 }
 
@@ -1116,7 +1114,7 @@ export class SelectToPreviousCommandAction extends Action {
 
 	constructor(
 		id: string, label: string,
-		@ITerminalService private terminalService: ITerminalService
+		@ITerminalService private readonly terminalService: ITerminalService
 	) {
 		super(id, label);
 	}
@@ -1127,7 +1125,7 @@ export class SelectToPreviousCommandAction extends Action {
 			instance.commandTracker.selectToPreviousCommand();
 			instance.focus();
 		}
-		return Promise.resolve(void 0);
+		return Promise.resolve(undefined);
 	}
 }
 
@@ -1137,7 +1135,7 @@ export class SelectToNextCommandAction extends Action {
 
 	constructor(
 		id: string, label: string,
-		@ITerminalService private terminalService: ITerminalService
+		@ITerminalService private readonly terminalService: ITerminalService
 	) {
 		super(id, label);
 	}
@@ -1148,7 +1146,7 @@ export class SelectToNextCommandAction extends Action {
 			instance.commandTracker.selectToNextCommand();
 			instance.focus();
 		}
-		return Promise.resolve(void 0);
+		return Promise.resolve(undefined);
 	}
 }
 
@@ -1158,7 +1156,7 @@ export class SelectToPreviousLineAction extends Action {
 
 	constructor(
 		id: string, label: string,
-		@ITerminalService private terminalService: ITerminalService
+		@ITerminalService private readonly terminalService: ITerminalService
 	) {
 		super(id, label);
 	}
@@ -1169,7 +1167,7 @@ export class SelectToPreviousLineAction extends Action {
 			instance.commandTracker.selectToPreviousLine();
 			instance.focus();
 		}
-		return Promise.resolve(void 0);
+		return Promise.resolve(undefined);
 	}
 }
 
@@ -1179,7 +1177,7 @@ export class SelectToNextLineAction extends Action {
 
 	constructor(
 		id: string, label: string,
-		@ITerminalService private terminalService: ITerminalService
+		@ITerminalService private readonly terminalService: ITerminalService
 	) {
 		super(id, label);
 	}
@@ -1190,7 +1188,7 @@ export class SelectToNextLineAction extends Action {
 			instance.commandTracker.selectToNextLine();
 			instance.focus();
 		}
-		return Promise.resolve(void 0);
+		return Promise.resolve(undefined);
 	}
 }
 
@@ -1201,7 +1199,7 @@ export class ToggleEscapeSequenceLoggingAction extends Action {
 
 	constructor(
 		id: string, label: string,
-		@ITerminalService private terminalService: ITerminalService
+		@ITerminalService private readonly terminalService: ITerminalService
 	) {
 		super(id, label);
 	}
@@ -1211,14 +1209,14 @@ export class ToggleEscapeSequenceLoggingAction extends Action {
 		if (instance) {
 			instance.toggleEscapeSequenceLogging();
 		}
-		return Promise.resolve(void 0);
+		return Promise.resolve(undefined);
 	}
 }
 
 abstract class ToggleFindOptionCommand extends Action {
 	constructor(
 		id: string, label: string,
-		@ITerminalService private terminalService: ITerminalService
+		@ITerminalService private readonly terminalService: ITerminalService
 	) {
 		super(id, label);
 	}
@@ -1228,7 +1226,7 @@ abstract class ToggleFindOptionCommand extends Action {
 	public run(): Promise<any> {
 		const state = this.terminalService.getFindState();
 		this.runInner(state);
-		return Promise.resolve(void 0);
+		return Promise.resolve(undefined);
 	}
 }
 
@@ -1269,14 +1267,14 @@ export class FindNext extends Action {
 
 	constructor(
 		id: string, label: string,
-		@ITerminalService private terminalService: ITerminalService
+		@ITerminalService private readonly terminalService: ITerminalService
 	) {
 		super(id, label);
 	}
 
 	public run(): Promise<any> {
 		this.terminalService.findNext();
-		return Promise.resolve(void 0);
+		return Promise.resolve(undefined);
 	}
 }
 
@@ -1287,13 +1285,13 @@ export class FindPrevious extends Action {
 
 	constructor(
 		id: string, label: string,
-		@ITerminalService private terminalService: ITerminalService
+		@ITerminalService private readonly terminalService: ITerminalService
 	) {
 		super(id, label);
 	}
 
 	public run(): Promise<any> {
 		this.terminalService.findPrevious();
-		return Promise.resolve(void 0);
+		return Promise.resolve(undefined);
 	}
 }

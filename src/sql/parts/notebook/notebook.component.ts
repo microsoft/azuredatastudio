@@ -24,7 +24,7 @@ import { VIEWLET_ID, IExtensionsViewlet } from 'vs/workbench/parts/extensions/co
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { AngularDisposable } from 'sql/base/node/lifecycle';
 import { CellTypes, CellType } from 'sql/parts/notebook/models/contracts';
-import { ICellModel, IModelFactory, INotebookModel, NotebookContentChange, notebookConstants } from 'sql/parts/notebook/models/modelInterfaces';
+import { ICellModel, IModelFactory, INotebookModel, NotebookContentChange } from 'sql/parts/notebook/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { INotebookService, INotebookParams, INotebookManager, INotebookEditor, DEFAULT_NOTEBOOK_PROVIDER, SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/common/notebookService';
 import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
@@ -38,8 +38,6 @@ import { KernelsDropdown, AttachToDropdown, AddCellAction, TrustedAction } from 
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
-import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { CellMagicMapper } from 'sql/parts/notebook/models/cellMagicMapper';
@@ -250,12 +248,13 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._model = this._register(model);
 		this.updateToolbarComponents(this._model.trustedMode);
 		this._modelRegisteredDeferred.resolve(this._model);
-		await model.startSession(this.model.notebookManager);
+		await model.startSession(this.model.notebookManager, undefined, true);
 		this.detectChanges();
 	}
 
-	private async setNotebookManager() {
-		for (let providerId of this._notebookParams.providers) {
+	private async setNotebookManager(): Promise<void> {
+		let providerInfo = await this._notebookParams.providerInfo;
+		for (let providerId of providerInfo.providers) {
 			let notebookManager = await this.notebookService.getOrCreateNotebookManager(providerId, this._notebookParams.notebookUri);
 			this.notebookManagers.push(notebookManager);
 		}
@@ -265,12 +264,14 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		// Wait on registration for now. Long-term would be good to cache and refresh
 		await this.notebookService.registrationComplete;
 		// Refresh the provider if we had been using default
-		if (DEFAULT_NOTEBOOK_PROVIDER === this._notebookParams.providerId) {
+		let providerInfo = await this._notebookParams.providerInfo;
+
+		if (DEFAULT_NOTEBOOK_PROVIDER === providerInfo.providerId) {
 			let providers = notebookUtils.getProvidersForFileName(this._notebookParams.notebookUri.fsPath, this.notebookService);
 			let tsqlProvider = providers.find(provider => provider === SQL_NOTEBOOK_PROVIDER);
-			this._notebookParams.providerId = tsqlProvider ? SQL_NOTEBOOK_PROVIDER : providers[0];
+			providerInfo.providerId = tsqlProvider ? SQL_NOTEBOOK_PROVIDER : providers[0];
 		}
-		if (DEFAULT_NOTEBOOK_PROVIDER === this._notebookParams.providerId) {
+		if (DEFAULT_NOTEBOOK_PROVIDER === providerInfo.providerId) {
 			// If it's still the default, warn them they should install an extension
 			this.notificationService.prompt(Severity.Warning,
 				localize('noKernelInstalled', 'Please install the SQL Server 2019 extension to run cells'),

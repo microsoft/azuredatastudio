@@ -6,7 +6,6 @@
 import * as azdata from 'azdata';
 
 import { Action } from 'vs/base/common/actions';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { localize } from 'vs/nls';
 import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
 import { INotificationService, Severity, INotificationActions } from 'vs/platform/notification/common/notification';
@@ -42,8 +41,8 @@ export class AddCellAction extends Action {
 	) {
 		super(id, label, cssClass);
 	}
-	public run(context: NotebookComponent): TPromise<boolean> {
-		return new TPromise<boolean>((resolve, reject) => {
+	public run(context: NotebookComponent): Promise<boolean> {
+		return new Promise<boolean>((resolve, reject) => {
 			try {
 				context.addCell(this.cellType);
 				resolve(true);
@@ -194,9 +193,9 @@ export class TrustedAction extends ToggleableAction {
 		this.toggle(value);
 	}
 
-	public run(context: NotebookComponent): TPromise<boolean> {
+	public run(context: NotebookComponent): Promise<boolean> {
 		let self = this;
-		return new TPromise<boolean>((resolve, reject) => {
+		return new Promise<boolean>((resolve, reject) => {
 			try {
 				if (self.trusted) {
 					const actions: INotificationActions = { primary: [] };
@@ -235,18 +234,24 @@ export class KernelsDropdown extends SelectBox {
 		this._register(this.model.kernelChanged((changedArgs: azdata.nb.IKernelChangedArgs) => {
 			this.updateKernel(changedArgs.newValue);
 		}));
+		let kernel = this.model.clientSession && this.model.clientSession.kernel;
+		this.updateKernel(kernel);
 	}
 
 	// Update SelectBox values
 	public updateKernel(kernel: azdata.nb.IKernel) {
-		if (kernel) {
+		let kernels: string[] = this.model.standardKernelsDisplayName();
+		if (kernel && kernel.isReady) {
 			let standardKernel = this.model.getStandardKernelFromName(kernel.name);
 
-			let kernels: string[] = this.model.standardKernelsDisplayName();
 			if (kernels && standardKernel) {
 				let index = kernels.findIndex((kernel => kernel === standardKernel.displayName));
 				this.setOptions(kernels, index);
 			}
+		} else if (this.model.clientSession.isInErrorState) {
+			let noKernelName = localize('noKernel', "No Kernel");
+			kernels.unshift(noKernelName);
+			this.setOptions(kernels, 0);
 		}
 	}
 
@@ -283,22 +288,26 @@ export class AttachToDropdown extends SelectBox {
 	public updateModel(model: INotebookModel): void {
 		this.model = model as NotebookModel;
 		this._register(model.contextsChanged(() => {
-			let kernelDisplayName: string = this.getKernelDisplayName();
-			if (kernelDisplayName) {
-				this.loadAttachToDropdown(this.model, kernelDisplayName);
-			}
+			this.handleContextsChanged();
 		}));
 		this._register(this.model.contextsLoading(() => {
 			this.setOptions([msgLoadingContexts], 0);
 		}));
+		this.handleContextsChanged();
+	}
+
+	private handleContextsChanged(showSelectConnection?: boolean) {
+		let kernelDisplayName: string = this.getKernelDisplayName();
+		if (kernelDisplayName) {
+			this.loadAttachToDropdown(this.model, kernelDisplayName, showSelectConnection);
+		} else if (this.model.clientSession.isInErrorState) {
+			this.setOptions([localize('noContextAvailable', "None")], 0);
+		}
 	}
 
 	private updateAttachToDropdown(model: INotebookModel): void {
 		model.onValidConnectionSelected(validConnection => {
-			let kernelDisplayName: string = this.getKernelDisplayName();
-			if (kernelDisplayName) {
-				this.loadAttachToDropdown(this.model, kernelDisplayName, !validConnection);
-			}
+			this.handleContextsChanged(!validConnection);
 		});
 	}
 

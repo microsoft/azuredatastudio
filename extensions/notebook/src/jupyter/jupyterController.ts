@@ -30,7 +30,7 @@ import CodeAdapter from '../prompts/adapter';
 let untitledCounter = 0;
 
 export class JupyterController implements vscode.Disposable {
-	private _jupyterInstallation: Promise<JupyterServerInstallation>;
+	private _jupyterInstallation: JupyterServerInstallation;
 	private _notebookInstances: IServerInstance[] = [];
 
 	private outputChannel: vscode.OutputChannel;
@@ -55,31 +55,11 @@ export class JupyterController implements vscode.Disposable {
 
 	// PUBLIC METHODS //////////////////////////////////////////////////////
 	public async activate(): Promise<boolean> {
-		// Prompt for install if the python installation path is not defined
-		let jupyterInstaller = new JupyterServerInstallation(
+		this._jupyterInstallation = new JupyterServerInstallation(
 			this.extensionContext.extensionPath,
 			this.outputChannel,
 			this.apiWrapper);
-		if (JupyterServerInstallation.isPythonInstalled(this.apiWrapper)) {
-			this._jupyterInstallation = Promise.resolve(jupyterInstaller);
-		} else {
-			this._jupyterInstallation = new Promise(resolve => {
-				jupyterInstaller.onInstallComplete(err => {
-					if (!err) {
-						resolve(jupyterInstaller);
-					}
-				});
-			});
-		}
 
-		let notebookProvider = undefined;
-
-		notebookProvider = this.registerNotebookProvider();
-		azdata.nb.onDidOpenNotebookDocument(notebook => {
-			if (!JupyterServerInstallation.isPythonInstalled(this.apiWrapper)) {
-				this.doConfigurePython(jupyterInstaller);
-			}
-		});
 		// Add command/task handlers
 		this.apiWrapper.registerTaskHandler(constants.jupyterOpenNotebookTask, (profile: azdata.IConnectionProfile) => {
 			return this.handleOpenNotebookTask(profile);
@@ -96,11 +76,12 @@ export class JupyterController implements vscode.Disposable {
 
 		this.apiWrapper.registerCommand(constants.jupyterReinstallDependenciesCommand, () => { return this.handleDependenciesReinstallation(); });
 		this.apiWrapper.registerCommand(constants.jupyterInstallPackages, () => { return this.doManagePackages(); });
-		this.apiWrapper.registerCommand(constants.jupyterConfigurePython, () => { return this.doConfigurePython(jupyterInstaller); });
+		this.apiWrapper.registerCommand(constants.jupyterConfigurePython, () => { return this.doConfigurePython(this._jupyterInstallation); });
 
 		let supportedFileFilter: vscode.DocumentFilter[] = [
 			{ scheme: 'untitled', language: '*' }
 		];
+		let notebookProvider = this.registerNotebookProvider();
 		this.extensionContext.subscriptions.push(this.apiWrapper.registerCompletionItemProvider(supportedFileFilter, new NotebookCompletionItemProvider(notebookProvider)));
 
 		return true;
@@ -195,7 +176,7 @@ export class JupyterController implements vscode.Disposable {
 
 	private async handleDependenciesReinstallation(): Promise<void> {
 		if (await this.confirmReinstall()) {
-			this._jupyterInstallation = JupyterServerInstallation.getInstallation(
+			this._jupyterInstallation = await JupyterServerInstallation.getInstallation(
 				this.extensionContext.extensionPath,
 				this.outputChannel,
 				this.apiWrapper,
@@ -225,14 +206,11 @@ export class JupyterController implements vscode.Disposable {
 		}
 	}
 
-	public async doConfigurePython(jupyterInstaller: JupyterServerInstallation): Promise<void> {
-		try {
-			let pythonDialog = new ConfigurePythonDialog(this.appContext, this.outputChannel, jupyterInstaller);
-			await pythonDialog.showDialog();
-		} catch (error) {
-			let message = utils.getErrorMessage(error);
-			this.apiWrapper.showErrorMessage(message);
-		}
+	public doConfigurePython(jupyterInstaller: JupyterServerInstallation): void {
+		let pythonDialog = new ConfigurePythonDialog(this.apiWrapper, this.outputChannel, jupyterInstaller);
+		pythonDialog.showDialog().catch(err => {
+			this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
+		});
 	}
 
 	public getTextToSendToTerminal(shellType: any): string {

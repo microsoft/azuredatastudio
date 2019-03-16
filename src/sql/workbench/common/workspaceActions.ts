@@ -1,4 +1,3 @@
-import { TPromise } from 'vs/base/common/winjs.base';
 import { Action } from 'vs/base/common/actions';
 import { IWindowsService } from 'vs/platform/windows/common/windows';
 
@@ -8,7 +7,7 @@ export class ShowFileInFolderAction extends Action {
 		super('showItemInFolder.action.id', label);
 	}
 
-	run(): TPromise<void> {
+	run(): Promise<void> {
 		return this.windowsService.showItemInFolder(this.path);
 	}
 }

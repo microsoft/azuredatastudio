@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { TPromise } from 'vs/base/common/winjs.base';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
@@ -15,7 +14,7 @@ import { CancellationToken } from 'vs/base/common/cancellation';
 import { NotebookInput } from 'sql/parts/notebook/notebookInput';
 import { NotebookModule } from 'sql/parts/notebook/notebook.module';
 import { NOTEBOOK_SELECTOR } from 'sql/parts/notebook/notebook.component';
-import { INotebookParams, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/common/notebookService';
+import { INotebookParams } from 'sql/workbench/services/notebook/common/notebookService';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { $ } from 'sql/base/browser/builder';
 
@@ -59,9 +58,9 @@ export class NotebookEditor extends BaseEditor {
 		}
 	}
 
-	public setInput(input: NotebookInput, options: EditorOptions): TPromise<void> {
+	public setInput(input: NotebookInput, options: EditorOptions): Promise<void> {
 		if (this.input && this.input.matches(input)) {
-			return TPromise.as(undefined);
+			return Promise.resolve(undefined);
 		}
 
 		const parentElement = this.getContainer();
@@ -75,11 +74,11 @@ export class NotebookEditor extends BaseEditor {
 			container.style.height = '100%';
 			this._notebookContainer = DOM.append(parentElement, container);
 			input.container = this._notebookContainer;
-			return TPromise.wrap<void>(this.bootstrapAngular(input));
+			return Promise.resolve(this.bootstrapAngular(input));
 		} else {
 			this._notebookContainer = DOM.append(parentElement, input.container);
 			input.doChangeLayout();
-			return TPromise.wrap<void>(null);
+			return Promise.resolve(null);
 		}
 	}
 
@@ -92,8 +91,7 @@ export class NotebookEditor extends BaseEditor {
 		let params: INotebookParams = {
 			notebookUri: input.notebookUri,
 			input: input,
-			providerId: input.providerId ? input.providerId : DEFAULT_NOTEBOOK_PROVIDER,
-			providers: input.providers ? input.providers : [DEFAULT_NOTEBOOK_PROVIDER],
+			providerInfo: input.getProviderInfo(),
 			isTrusted: input.isTrusted,
 			profile: input.connectionProfile
 		};

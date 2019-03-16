@@ -11,6 +11,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { ITerminalChildProcess } from 'vs/workbench/parts/terminal/node/terminal';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { IShellLaunchConfig } from 'vs/workbench/parts/terminal/common/terminal';
+import { exec } from 'child_process';
 
 export class TerminalProcess implements ITerminalChildProcess, IDisposable {
 	private _exitCode: number;
@@ -18,14 +19,17 @@ export class TerminalProcess implements ITerminalChildProcess, IDisposable {
 	private _ptyProcess: pty.IPty;
 	private _currentTitle: string = '';
 	private _processStartupComplete: Promise<void>;
+	private _isDisposed: boolean = false;
+	private _titleInterval: NodeJS.Timer | null = null;
+	private _initialCwd: string;
 
-	private readonly _onProcessData: Emitter<string> = new Emitter<string>();
+	private readonly _onProcessData = new Emitter<string>();
 	public get onProcessData(): Event<string> { return this._onProcessData.event; }
-	private readonly _onProcessExit: Emitter<number> = new Emitter<number>();
+	private readonly _onProcessExit = new Emitter<number>();
 	public get onProcessExit(): Event<number> { return this._onProcessExit.event; }
-	private readonly _onProcessIdReady: Emitter<number> = new Emitter<number>();
+	private readonly _onProcessIdReady = new Emitter<number>();
 	public get onProcessIdReady(): Event<number> { return this._onProcessIdReady.event; }
-	private readonly _onProcessTitleChanged: Emitter<string> = new Emitter<string>();
+	private readonly _onProcessTitleChanged = new Emitter<string>();
 	public get onProcessTitleChanged(): Event<string> { return this._onProcessTitleChanged.event; }
 
 	constructor(
@@ -33,7 +37,8 @@ export class TerminalProcess implements ITerminalChildProcess, IDisposable {
 		cwd: string,
 		cols: number,
 		rows: number,
-		env: platform.IProcessEnvironment
+		env: platform.IProcessEnvironment,
+		windowsEnableConpty: boolean
 	) {
 		let shellName: string;
 		if (os.platform() === 'win32') {
@@ -44,12 +49,15 @@ export class TerminalProcess implements ITerminalChildProcess, IDisposable {
 			shellName = 'xterm-256color';
 		}
 
+		this._initialCwd = cwd;
+		const useConpty = windowsEnableConpty && process.platform === 'win32' && this._getWindowsBuildNumber() >= 18309;
 		const options: pty.IPtyForkOptions = {
 			name: shellName,
 			cwd,
 			env,
 			cols,
-			rows
+			rows,
+			experimentalUseConpty: useConpty
 		};
 
 		try {
@@ -63,7 +71,7 @@ export class TerminalProcess implements ITerminalChildProcess, IDisposable {
 			// The only time this is expected to happen is when the file specified to launch with does not exist.
 			this._exitCode = 2;
 			this._queueProcessExit();
-			this._processStartupComplete = Promise.resolve(void 0);
+			this._processStartupComplete = Promise.resolve(undefined);
 			return;
 		}
 		this._ptyProcess.on('data', (data) => {
@@ -86,10 +94,24 @@ export class TerminalProcess implements ITerminalChildProcess, IDisposable {
 	}
 
 	public dispose(): void {
+		this._isDisposed = true;
+		if (this._titleInterval) {
+			clearInterval(this._titleInterval);
+		}
+		this._titleInterval = null;
 		this._onProcessData.dispose();
 		this._onProcessExit.dispose();
 		this._onProcessIdReady.dispose();
 		this._onProcessTitleChanged.dispose();
+	}
+
+	private _getWindowsBuildNumber(): number {
+		const osVersion = (/(\d+)\.(\d+)\.(\d+)/g).exec(os.release());
+		let buildNumber: number = 0;
+		if (osVersion && osVersion.length === 4) {
+			buildNumber = parseInt(osVersion[3]);
+		}
+		return buildNumber;
 	}
 
 	private _setupTitlePolling() {
@@ -98,7 +120,7 @@ export class TerminalProcess implements ITerminalChildProcess, IDisposable {
 			this._sendProcessTitle();
 		}, 0);
 		// Setup polling
-		setInterval(() => {
+		this._titleInterval = setInterval(() => {
 			if (this._currentTitle !== this._ptyProcess.process) {
 				this._sendProcessTitle();
 			}
@@ -118,6 +140,9 @@ export class TerminalProcess implements ITerminalChildProcess, IDisposable {
 		// Wait to kill to process until the start up code has run. This prevents us from firing a process exit before a
 		// process start.
 		this._processStartupComplete.then(() => {
+			if (this._isDisposed) {
+				return;
+			}
 			// Attempt to kill the pty, it may have already been killed at this
 			// point but we want to make sure
 			try {
@@ -135,6 +160,9 @@ export class TerminalProcess implements ITerminalChildProcess, IDisposable {
 	}
 
 	private _sendProcessTitle(): void {
+		if (this._isDisposed) {
+			return;
+		}
 		this._currentTitle = this._ptyProcess.process;
 		this._onProcessTitleChanged.fire(this._currentTitle);
 	}
@@ -148,12 +176,38 @@ export class TerminalProcess implements ITerminalChildProcess, IDisposable {
 	}
 
 	public input(data: string): void {
+		if (this._isDisposed) {
+			return;
+		}
 		this._ptyProcess.write(data);
 	}
 
 	public resize(cols: number, rows: number): void {
+		if (this._isDisposed) {
+			return;
+		}
 		// Ensure that cols and rows are always >= 1, this prevents a native
 		// exception in winpty.
 		this._ptyProcess.resize(Math.max(cols, 1), Math.max(rows, 1));
+	}
+
+	public getInitialCwd(): Promise<string> {
+		return Promise.resolve(this._initialCwd);
+	}
+
+	public getCwd(): Promise<string> {
+		if (platform.isWindows) {
+			return new Promise<string>(resolve => {
+				resolve(this._initialCwd);
+			});
+		}
+
+		return new Promise<string>(resolve => {
+			exec('lsof -p ' + this._ptyProcess.pid + ' | grep cwd', (error, stdout, stderr) => {
+				if (stdout !== '') {
+					resolve(stdout.substring(stdout.indexOf('/'), stdout.length - 1));
+				}
+			});
+		});
 	}
 }

@@ -14,7 +14,7 @@ import { AzureResourceAccountNotSignedInTreeNode } from '../../../azureResource/
 
 describe('AzureResourceAccountNotSignedInTreeNode.info', function(): void {
 	it('Should be correct.', async function(): Promise<void> {
-		const label = 'Sign in to Azure ...';
+		const label = 'Sign in to Azure...';
 
 		const treeNode = new AzureResourceAccountNotSignedInTreeNode();
 

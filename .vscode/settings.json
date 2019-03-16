@@ -50,5 +50,7 @@
 	}, {
 		"fileMatch": [ "cglicenses.json" ],
 		"url": "./.vscode/cglicenses.schema.json"
-	}]
+	}
+],
+"git.ignoreLimitWarning": true
 }

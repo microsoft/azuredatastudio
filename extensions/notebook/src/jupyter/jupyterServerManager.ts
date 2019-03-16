@@ -20,7 +20,7 @@ import { PerNotebookServerInstance, IInstanceOptions } from './serverInstance';
 
 export interface IServerManagerOptions {
 	documentPath: string;
-	jupyterInstallation: Promise<JupyterServerInstallation>;
+	jupyterInstallation: JupyterServerInstallation;
 	extensionContext: vscode.ExtensionContext;
 	apiWrapper?: ApiWrapper;
 	factory?: ServerInstanceFactory;
@@ -62,7 +62,7 @@ export class LocalJupyterServerManager implements nb.ServerManager, vscode.Dispo
 			this._onServerStarted.fire();
 
 		} catch (error) {
-			this.apiWrapper.showErrorMessage(localize('startServerFailed', 'Starting local Notebook server failed with error {0}', utils.getErrorMessage(error)));
+			// this is caught and notified up the stack, no longer showing a message here
 			throw error;
 		}
 	}
@@ -102,7 +102,8 @@ export class LocalJupyterServerManager implements nb.ServerManager, vscode.Dispo
 	}
 
 	private async doStartServer(): Promise<IServerInstance> {        // We can't find or create servers until the installation is complete
-		let installation = await this.options.jupyterInstallation;
+		let installation = this.options.jupyterInstallation;
+		await installation.promptForPythonInstall();
 
 		// Calculate the path to use as the notebook-dir for Jupyter based on the path of the uri of the
 		// notebook to open. This will be the workspace folder if the notebook uri is inside a workspace

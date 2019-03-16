@@ -7,7 +7,6 @@
 
 import 'vs/css!./media/connectionViewlet';
 import * as DOM from 'vs/base/browser/dom';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { Builder } from 'sql/base/browser/builder';
 import { Viewlet } from 'vs/workbench/browser/viewlet';
 import { IAction } from 'vs/base/common/actions';
@@ -77,8 +76,8 @@ export class ConnectionViewlet extends Viewlet implements IConnectionsViewlet {
 		});
 	}
 
-	public create(parent: HTMLElement): TPromise<void> {
-		return new TPromise<void>((resolve) => {
+	public create(parent: HTMLElement): Promise<void> {
+		return new Promise<void>((resolve) => {
 			super.create(parent);
 			this._root = parent;
 			let parentBuilder = new Builder(parent);

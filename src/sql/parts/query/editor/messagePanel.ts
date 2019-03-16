@@ -14,7 +14,6 @@ import { IResultMessage, ISelectionData } from 'azdata';
 
 import { ViewletPanel, IViewletPanelOptions } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { IDataSource, ITree, IRenderer, ContextMenuEvent } from 'vs/base/parts/tree/browser/tree';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { generateUuid } from 'vs/base/common/uuid';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
@@ -281,20 +280,20 @@ class MessageDataSource implements IDataSource {
 		return element instanceof Model;
 	}
 
-	getChildren(tree: ITree, element: any): TPromise {
+	getChildren(tree: ITree, element: any): Promise<(IMessagePanelMessage | IMessagePanelBatchMessage)[]> {
 		if (element instanceof Model) {
 			let messages = element.messages;
 			if (element.totalExecuteMessage) {
 				messages = messages.concat(element.totalExecuteMessage);
 			}
-			return TPromise.as(messages);
+			return Promise.resolve(messages);
 		} else {
-			return TPromise.as(undefined);
+			return Promise.resolve(undefined);
 		}
 	}
 
-	getParent(tree: ITree, element: any): TPromise {
-		return TPromise.as(null);
+	getParent(tree: ITree, element: any): Promise<void> {
+		return Promise.resolve(null);
 	}
 }
 

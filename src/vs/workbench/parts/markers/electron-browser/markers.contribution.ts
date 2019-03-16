@@ -5,7 +5,7 @@
 
 import { clipboard } from 'electron';
 import { CommandsRegistry, ICommandHandler } from 'vs/platform/commands/common/commands';
-import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
+import { ContextKeyExpr, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { Extensions, IConfigurationRegistry } from 'vs/platform/configuration/common/configurationRegistry';
 import { IPanelService } from 'vs/workbench/services/panel/common/panelService';
 import { IWorkbenchActionRegistry, Extensions as ActionExtensions } from 'vs/workbench/common/actions';
@@ -50,6 +50,20 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	primary: undefined,
 	handler: (accessor, args: any) => {
 		accessor.get(IPanelService).openPanel(Constants.MARKERS_PANEL_ID);
+	}
+});
+
+KeybindingsRegistry.registerCommandAndKeybindingRule({
+	id: Constants.MARKER_SHOW_QUICK_FIX,
+	weight: KeybindingWeight.WorkbenchContrib,
+	when: Constants.MarkerFocusContextKey,
+	primary: KeyMod.CtrlCmd | KeyCode.US_DOT,
+	handler: (accessor, args: any) => {
+		const markersPanel = (<MarkersPanel>accessor.get(IPanelService).getActivePanel());
+		const focusedElement = markersPanel.getFocusElement();
+		if (focusedElement instanceof Marker) {
+			markersPanel.showQuickFixes(focusedElement);
+		}
 	}
 });
 
@@ -155,7 +169,38 @@ registerAction({
 		},
 	}
 });
-
+registerAction({
+	id: Constants.MARKERS_PANEL_SHOW_MULTILINE_MESSAGE,
+	handler(accessor) {
+		const panelService = accessor.get(IPanelService);
+		const panel = panelService.getActivePanel();
+		if (panel instanceof MarkersPanel) {
+			panel.markersViewModel.multiline = true;
+		}
+	},
+	title: localize('show multiline', "Show message in multiple lines"),
+	category: localize('problems', "Problems"),
+	menu: {
+		menuId: MenuId.CommandPalette,
+		when: new RawContextKey<string>('activePanel', Constants.MARKERS_PANEL_ID)
+	}
+});
+registerAction({
+	id: Constants.MARKERS_PANEL_SHOW_SINGLELINE_MESSAGE,
+	handler(accessor) {
+		const panelService = accessor.get(IPanelService);
+		const panel = panelService.getActivePanel();
+		if (panel instanceof MarkersPanel) {
+			panel.markersViewModel.multiline = false;
+		}
+	},
+	title: localize('show singleline', "Show message in single line"),
+	category: localize('problems', "Problems"),
+	menu: {
+		menuId: MenuId.CommandPalette,
+		when: new RawContextKey<string>('activePanel', Constants.MARKERS_PANEL_ID)
+	}
+});
 
 function copyMarker(panelService: IPanelService) {
 	const activePanel = panelService.getActivePanel();

@@ -191,7 +191,7 @@ const notebookProviderRegistry = new NotebookProviderRegistry();
 platform.Registry.add(Extensions.NotebookProviderContribution, notebookProviderRegistry);
 
 
-ExtensionsRegistry.registerExtensionPoint<NotebookProviderRegistration | NotebookProviderRegistration[]>(Extensions.NotebookProviderContribution, [], notebookContrib).setHandler(extensions => {
+ExtensionsRegistry.registerExtensionPoint<NotebookProviderRegistration | NotebookProviderRegistration[]>({ extensionPoint: Extensions.NotebookProviderContribution, jsonSchema: notebookContrib }).setHandler(extensions => {
 
 	function handleExtension(contrib: NotebookProviderRegistration, extension: IExtensionPointUser<any>) {
 		notebookProviderRegistry.registerNotebookProvider(contrib);
@@ -209,7 +209,7 @@ ExtensionsRegistry.registerExtensionPoint<NotebookProviderRegistration | Noteboo
 	}
 });
 
-ExtensionsRegistry.registerExtensionPoint<NotebookLanguageMagicRegistration | NotebookLanguageMagicRegistration[]>(Extensions.NotebookLanguageMagicContribution, [], languageMagicContrib).setHandler(extensions => {
+ExtensionsRegistry.registerExtensionPoint<NotebookLanguageMagicRegistration | NotebookLanguageMagicRegistration[]>({ extensionPoint: Extensions.NotebookLanguageMagicContribution, jsonSchema: languageMagicContrib }).setHandler(extensions => {
 
 	function handleExtension(contrib: NotebookLanguageMagicRegistration, extension: IExtensionPointUser<any>) {
 		notebookProviderRegistry.registerNotebookLanguageMagic(contrib);

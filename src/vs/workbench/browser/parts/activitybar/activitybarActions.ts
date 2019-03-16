@@ -36,14 +36,14 @@ export class ViewletActivityAction extends ActivityAction {
 
 	constructor(
 		activity: IActivity,
-		@IViewletService private viewletService: IViewletService,
-		@IPartService private partService: IPartService,
-		@ITelemetryService private telemetryService: ITelemetryService
+		@IViewletService private readonly viewletService: IViewletService,
+		@IPartService private readonly partService: IPartService,
+		@ITelemetryService private readonly telemetryService: ITelemetryService
 	) {
 		super(activity);
 	}
 
-	run(event: any): Thenable<any> {
+	run(event: any): Promise<any> {
 		if (event instanceof MouseEvent && event.button === 2) {
 			return Promise.resolve(false); // do not run on right click
 		}
@@ -84,13 +84,13 @@ export class ToggleViewletAction extends Action {
 
 	constructor(
 		private _viewlet: ViewletDescriptor,
-		@IPartService private partService: IPartService,
-		@IViewletService private viewletService: IViewletService
+		@IPartService private readonly partService: IPartService,
+		@IViewletService private readonly viewletService: IViewletService
 	) {
 		super(_viewlet.id, _viewlet.name);
 	}
 
-	run(): Thenable<any> {
+	run(): Promise<any> {
 		const sideBarVisible = this.partService.isVisible(Parts.SIDEBAR_PART);
 		const activeViewlet = this.viewletService.getActiveViewlet();
 
@@ -175,7 +175,7 @@ export class PlaceHolderViewletActivityAction extends ViewletActivityAction {
 	) {
 		super({ id, name: id, cssClass: `extensionViewlet-placeholder-${id.replace(/\./g, '-')}` }, viewletService, partService, telemetryService);
 
-		const iconClass = `.monaco-workbench > .activitybar .monaco-action-bar .action-label.${this.class}`; // Generate Placeholder CSS to show the icon in the activity bar
+		const iconClass = `.monaco-workbench .activitybar .monaco-action-bar .action-label.${this.class}`; // Generate Placeholder CSS to show the icon in the activity bar
 		DOM.createCSSRule(iconClass, `-webkit-mask: url('${iconUrl || ''}') no-repeat 50% 50%`);
 	}
 
@@ -187,7 +187,7 @@ export class PlaceHolderViewletActivityAction extends ViewletActivityAction {
 export class PlaceHolderToggleCompositePinnedAction extends ToggleCompositePinnedAction {
 
 	constructor(id: string, compositeBar: ICompositeBar) {
-		super({ id, name: id, cssClass: void 0 }, compositeBar);
+		super({ id, name: id, cssClass: undefined }, compositeBar);
 	}
 
 	setActivity(activity: IActivity): void {
@@ -200,13 +200,13 @@ class SwitchSideBarViewAction extends Action {
 	constructor(
 		id: string,
 		name: string,
-		@IViewletService private viewletService: IViewletService,
-		@IActivityService private activityService: IActivityService
+		@IViewletService private readonly viewletService: IViewletService,
+		@IActivityService private readonly activityService: IActivityService
 	) {
 		super(id, name);
 	}
 
-	run(offset: number): Thenable<any> {
+	run(offset: number): Promise<any> {
 		const pinnedViewletIds = this.activityService.getPinnedViewletIds();
 
 		const activeViewlet = this.viewletService.getActiveViewlet();
@@ -238,7 +238,7 @@ export class PreviousSideBarViewAction extends SwitchSideBarViewAction {
 		super(id, name, viewletService, activityService);
 	}
 
-	run(): Thenable<any> {
+	run(): Promise<any> {
 		return super.run(-1);
 	}
 }
@@ -257,7 +257,7 @@ export class NextSideBarViewAction extends SwitchSideBarViewAction {
 		super(id, name, viewletService, activityService);
 	}
 
-	run(): Thenable<any> {
+	run(): Promise<any> {
 		return super.run(1);
 	}
 }
@@ -271,9 +271,9 @@ registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 	const activeForegroundColor = theme.getColor(ACTIVITY_BAR_FOREGROUND);
 	if (activeForegroundColor) {
 		collector.addRule(`
-			.monaco-workbench > .activitybar > .content .monaco-action-bar .action-item.active .action-label,
-			.monaco-workbench > .activitybar > .content .monaco-action-bar .action-item:focus .action-label,
-			.monaco-workbench > .activitybar > .content .monaco-action-bar .action-item:hover .action-label {
+			.monaco-workbench .activitybar > .content .monaco-action-bar .action-item.active .action-label,
+			.monaco-workbench .activitybar > .content .monaco-action-bar .action-item:focus .action-label,
+			.monaco-workbench .activitybar > .content .monaco-action-bar .action-item:hover .action-label {
 				background-color: ${activeForegroundColor} !important;
 			}
 		`);
@@ -283,7 +283,7 @@ registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 	const outline = theme.getColor(activeContrastBorder);
 	if (outline) {
 		collector.addRule(`
-			.monaco-workbench > .activitybar > .content .monaco-action-bar .action-item:before {
+			.monaco-workbench .activitybar > .content .monaco-action-bar .action-item:before {
 				content: "";
 				position: absolute;
 				top: 9px;
@@ -292,26 +292,26 @@ registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 				width: 32px;
 			}
 
-			.monaco-workbench > .activitybar > .content .monaco-action-bar .action-item.active:before,
-			.monaco-workbench > .activitybar > .content .monaco-action-bar .action-item.active:hover:before,
-			.monaco-workbench > .activitybar > .content .monaco-action-bar .action-item.checked:before,
-			.monaco-workbench > .activitybar > .content .monaco-action-bar .action-item.checked:hover:before {
+			.monaco-workbench .activitybar > .content .monaco-action-bar .action-item.active:before,
+			.monaco-workbench .activitybar > .content .monaco-action-bar .action-item.active:hover:before,
+			.monaco-workbench .activitybar > .content .monaco-action-bar .action-item.checked:before,
+			.monaco-workbench .activitybar > .content .monaco-action-bar .action-item.checked:hover:before {
 				outline: 1px solid;
 			}
 
-			.monaco-workbench > .activitybar > .content .monaco-action-bar .action-item:hover:before {
+			.monaco-workbench .activitybar > .content .monaco-action-bar .action-item:hover:before {
 				outline: 1px dashed;
 			}
 
-			.monaco-workbench > .activitybar > .content .monaco-action-bar .action-item:focus:before {
+			.monaco-workbench .activitybar > .content .monaco-action-bar .action-item:focus:before {
 				border-left-color: ${outline};
 			}
 
-			.monaco-workbench > .activitybar > .content .monaco-action-bar .action-item.active:before,
-			.monaco-workbench > .activitybar > .content .monaco-action-bar .action-item.active:hover:before,
-			.monaco-workbench > .activitybar > .content .monaco-action-bar .action-item.checked:before,
-			.monaco-workbench > .activitybar > .content .monaco-action-bar .action-item.checked:hover:before,
-			.monaco-workbench > .activitybar > .content .monaco-action-bar .action-item:hover:before {
+			.monaco-workbench .activitybar > .content .monaco-action-bar .action-item.active:before,
+			.monaco-workbench .activitybar > .content .monaco-action-bar .action-item.active:hover:before,
+			.monaco-workbench .activitybar > .content .monaco-action-bar .action-item.checked:before,
+			.monaco-workbench .activitybar > .content .monaco-action-bar .action-item.checked:hover:before,
+			.monaco-workbench .activitybar > .content .monaco-action-bar .action-item:hover:before {
 				outline-color: ${outline};
 			}
 		`);
@@ -322,7 +322,7 @@ registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 		const focusBorderColor = theme.getColor(focusBorder);
 		if (focusBorderColor) {
 			collector.addRule(`
-					.monaco-workbench > .activitybar > .content .monaco-action-bar .action-item:focus:before {
+					.monaco-workbench .activitybar > .content .monaco-action-bar .action-item:focus:before {
 						border-left-color: ${focusBorderColor};
 					}
 				`);

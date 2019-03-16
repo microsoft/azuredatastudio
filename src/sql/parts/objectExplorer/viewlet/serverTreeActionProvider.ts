@@ -4,8 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import * as azdata from 'azdata';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { ContributableActionProvider } from 'vs/workbench/browser/actions';
 import { IAction } from 'vs/base/common/actions';
@@ -181,7 +179,10 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 
 		this.addScriptingActions(context, actions);
 
-		if (isAvailableDatabaseNode) {
+		let serverInfo = this._connectionManagementService.getServerInfo(context.profile.id);
+		let isCloud = serverInfo && serverInfo.isCloud;
+
+		if (isAvailableDatabaseNode && !isCloud) {
 			this.addBackupAction(context, actions);
 			this.addRestoreAction(context, actions);
 		}

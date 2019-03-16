@@ -462,8 +462,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 					// The connected succeeded so add it to our active connections now, optionally adding it to the MRU based on
 					// the options.saveTheConnection setting
 					let connectionMgmtInfo = this._connectionStatusManager.findConnection(uri);
-					let activeConnection = connectionMgmtInfo.connectionProfile;
-					this.tryAddActiveConnection(connectionMgmtInfo, activeConnection, options.saveTheConnection);
+					this.tryAddActiveConnection(connectionMgmtInfo, connection, options.saveTheConnection);
 
 					if (callbacks.onConnectSuccess) {
 						callbacks.onConnectSuccess(options.params);
@@ -645,7 +644,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.AddServerGroup);
 		return new Promise<string>((resolve, reject) => {
 			this._connectionStore.saveProfileGroup(profile).then(groupId => {
-				this._onAddConnectionProfile.fire();
+				this._onAddConnectionProfile.fire(undefined);
 				resolve(groupId);
 			}).catch(err => {
 				reject(err);
@@ -1214,7 +1213,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return new Promise<string>((resolve, reject) => {
 			this._connectionStore.editGroup(group).then(groupId => {
 				this.refreshEditorTitles();
-				this._onAddConnectionProfile.fire();
+				this._onAddConnectionProfile.fire(undefined);
 				resolve(null);
 			}).catch(err => {
 				reject(err);

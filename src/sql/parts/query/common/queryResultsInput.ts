@@ -6,7 +6,6 @@
 'use strict';
 
 import { localize } from 'vs/nls';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { EditorInput } from 'vs/workbench/common/editor';
 import { Emitter } from 'vs/base/common/event';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -95,8 +94,8 @@ export class QueryResultsInput extends EditorInput {
 		return false;
 	}
 
-	resolve(refresh?: boolean): TPromise<any> {
-		return TPromise.as(null);
+	resolve(refresh?: boolean): Promise<any> {
+		return Promise.resolve(null);
 	}
 
 	supportsSplitEditor(): boolean {
