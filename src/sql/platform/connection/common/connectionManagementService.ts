@@ -468,8 +468,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 					// The connected succeeded so add it to our active connections now, optionally adding it to the MRU based on
 					// the options.saveTheConnection setting
 					let connectionMgmtInfo = this._connectionStatusManager.findConnection(uri);
-					let activeConnection = connectionMgmtInfo.connectionProfile;
-					this.tryAddActiveConnection(connectionMgmtInfo, activeConnection, options.saveTheConnection);
+					this.tryAddActiveConnection(connectionMgmtInfo, connection, options.saveTheConnection);
 
 					if (callbacks.onConnectSuccess) {
 						callbacks.onConnectSuccess(options.params);
