@@ -36,19 +36,23 @@ Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration)
 		}
 	});
 
-Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench)
-	.registerWorkbenchContribution(WelcomePageContribution, LifecyclePhase.Restored);
+// {{SQL CARBON EDIT}} - Disable welcome page
+// Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench)
+// 	.registerWorkbenchContribution(WelcomePageContribution, LifecyclePhase.Restored);
 
-Registry.as<IWorkbenchActionRegistry>(ActionExtensions.WorkbenchActions)
-	.registerWorkbenchAction(new SyncActionDescriptor(WelcomePageAction, WelcomePageAction.ID, WelcomePageAction.LABEL), 'Help: Welcome', localize('help', "Help"));
+// Registry.as<IWorkbenchActionRegistry>(ActionExtensions.WorkbenchActions)
+// 	.registerWorkbenchAction(new SyncActionDescriptor(WelcomePageAction, WelcomePageAction.ID, WelcomePageAction.LABEL), 'Help: Welcome', localize('help', "Help"));
 
-Registry.as<IEditorInputFactoryRegistry>(EditorExtensions.EditorInputFactories).registerEditorInputFactory(WelcomeInputFactory.ID, WelcomeInputFactory);
+// Registry.as<IEditorInputFactoryRegistry>(EditorExtensions.EditorInputFactories).registerEditorInputFactory(WelcomeInputFactory.ID, WelcomeInputFactory);
+// {{SQL CARBON EDIT}} - End
 
-MenuRegistry.appendMenuItem(MenuId.MenubarHelpMenu, {
-	group: '1_welcome',
-	command: {
-		id: 'workbench.action.showWelcomePage',
-		title: localize({ key: 'miWelcome', comment: ['&& denotes a mnemonic'] }, "&&Welcome")
-	},
-	order: 1
-});
+// {{SQL CARBON EDIT}} - Disable unused menu item
+// MenuRegistry.appendMenuItem(MenuId.MenubarHelpMenu, {
+// 	group: '1_welcome',
+// 	command: {
+// 		id: 'workbench.action.showWelcomePage',
+// 		title: localize({ key: 'miWelcome', comment: ['&& denotes a mnemonic'] }, "&&Welcome")
+// 	},
+// 	order: 1
+// });
+// {{SQL CARBON EDIT}} - End

@@ -17,7 +17,7 @@ const insightRegistry = Registry.as<IInsightRegistry>(InsightExtensions.InsightC
 
 registerDashboardWidget('insights-widget', '', insightsSchema);
 
-ExtensionsRegistry.registerExtensionPoint<IInsightTypeContrib | IInsightTypeContrib[]>('dashboard.insights', [], insightsContribution).setHandler(extensions => {
+ExtensionsRegistry.registerExtensionPoint<IInsightTypeContrib | IInsightTypeContrib[]>({ extensionPoint: 'dashboard.insights', jsonSchema: insightsContribution }).setHandler(extensions => {
 
 	function handleCommand(insight: IInsightTypeContrib, extension: IExtensionPointUser<any>) {
 

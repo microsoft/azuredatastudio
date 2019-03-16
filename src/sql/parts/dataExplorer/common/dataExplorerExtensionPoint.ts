@@ -7,7 +7,7 @@ import { localize } from 'vs/nls';
 import { forEach } from 'vs/base/common/collections';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { IViewContainersRegistry, ViewContainer, Extensions as ViewContainerExtensions, ICustomViewDescriptor, ViewsRegistry } from 'vs/workbench/common/views';
+import { IViewContainersRegistry, ViewContainer, Extensions as ViewContainerExtensions, ViewsRegistry, ITreeViewDescriptor } from 'vs/workbench/common/views';
 import { IExtensionPoint, ExtensionsRegistry, ExtensionMessageCollector } from 'vs/workbench/services/extensions/common/extensionsRegistry';
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions, IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -15,7 +15,7 @@ import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { CustomTreeViewPanel } from 'vs/workbench/browser/parts/views/customView';
 import { coalesce } from 'vs/base/common/arrays';
 import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
-import { viewsContainersExtensionPoint } from 'vs/workbench/api/browser/viewsContainersExtensionPoint';
+import { viewsContainersExtensionPoint } from 'vs/workbench/api/browser/viewsExtensionPoint';
 
 import { CustomTreeView } from 'sql/workbench/browser/parts/views/customView';
 
@@ -71,7 +71,7 @@ const dataExplorerContribution: IJSONSchema = {
 };
 
 
-const dataExplorerExtensionPoint: IExtensionPoint<{ [loc: string]: IUserFriendlyViewDescriptor[] }> = ExtensionsRegistry.registerExtensionPoint<{ [loc: string]: IUserFriendlyViewDescriptor[] }>('dataExplorer', [viewsContainersExtensionPoint], dataExplorerContribution);
+const dataExplorerExtensionPoint: IExtensionPoint<{ [loc: string]: IUserFriendlyViewDescriptor[] }> = ExtensionsRegistry.registerExtensionPoint<{ [loc: string]: IUserFriendlyViewDescriptor[] }>({ extensionPoint: 'dataExplorer', deps: [viewsContainersExtensionPoint], jsonSchema: dataExplorerContribution });
 
 class DataExplorerContainerExtensionHandler implements IWorkbenchContribution {
 
@@ -115,11 +115,10 @@ class DataExplorerContainerExtensionHandler implements IWorkbenchContribution {
 							return null;
 						}
 
-						const viewDescriptor = <ICustomViewDescriptor>{
+						const viewDescriptor = <ITreeViewDescriptor>{
 							id: item.id,
 							name: item.name,
 							ctor: CustomTreeViewPanel,
-							container,
 							when: ContextKeyExpr.deserialize(item.when),
 							canToggleVisibility: true,
 							collapsed: this.showCollapsed(container),
@@ -129,7 +128,7 @@ class DataExplorerContainerExtensionHandler implements IWorkbenchContribution {
 						viewIds.push(viewDescriptor.id);
 						return viewDescriptor;
 					}));
-					ViewsRegistry.registerViews(viewDescriptors);
+					ViewsRegistry.registerViews(viewDescriptors, container);
 				});
 			}
 		});

@@ -77,7 +77,7 @@ export class ExtHostDashboardWebviews implements ExtHostDashboardWebviewsShape {
 
 	$onClosed(handle: number): void {
 		const webview = this._webviews.get(handle);
-		webview.onClosedEmitter.fire();
+		webview.onClosedEmitter.fire(undefined);
 		this._webviews.delete(handle);
 	}
 

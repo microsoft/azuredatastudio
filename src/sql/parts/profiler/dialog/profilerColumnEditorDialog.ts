@@ -20,7 +20,6 @@ import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import * as DOM from 'vs/base/browser/dom';
 import { IDataSource, ITree, IRenderer } from 'vs/base/parts/tree/browser/tree';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { Event, Emitter } from 'vs/base/common/event';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -272,25 +271,25 @@ class TreeDataSource implements IDataSource {
 		}
 	}
 
-	getChildren(tree: ITree, element: any): TPromise<Array<any>> {
+	getChildren(tree: ITree, element: any): Promise<Array<any>> {
 		if (element instanceof EventItem) {
-			return TPromise.as(element.getChildren());
+			return Promise.resolve(element.getChildren());
 		} else if (element instanceof SessionItem) {
-			return TPromise.as(element.getChildren());
+			return Promise.resolve(element.getChildren());
 		} else {
-			return TPromise.as(null);
+			return Promise.resolve(null);
 		}
 	}
 
-	getParent(tree: ITree, element: any): TPromise<any> {
+	getParent(tree: ITree, element: any): Promise<any> {
 		if (element instanceof ColumnItem) {
-			return TPromise.as(element.parent);
+			return Promise.resolve(element.parent);
 		} else if (element instanceof EventItem) {
-			return TPromise.as(element.parent);
+			return Promise.resolve(element.parent);
 		} else if (element instanceof ColumnSortedColumnItem) {
-			return TPromise.as(element.parent);
+			return Promise.resolve(element.parent);
 		} else {
-			return TPromise.as(null);
+			return Promise.resolve(null);
 		}
 	}
 
@@ -304,8 +303,8 @@ export class ProfilerColumnEditorDialog extends Modal {
 	private _selectBox: SelectBox;
 	private _selectedValue: number = 0;
 	private readonly _options = [
-		nls.localize('eventSort', "Sort by event"),
-		nls.localize('nameColumn', "Sort by column")
+		{ text: nls.localize('eventSort', "Sort by event") },
+		{ text: nls.localize('nameColumn', "Sort by column") }
 	];
 	private _tree: Tree;
 	private _input: ProfilerInput;

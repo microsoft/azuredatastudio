@@ -122,7 +122,7 @@ suite('ExtHostNotebook Tests', () => {
 
 class NotebookProviderStub implements azdata.nb.NotebookProvider {
 	providerId: string = 'TestProvider';
-	standardKernels: azdata.nb.IStandardKernel[] = [{name: 'fakeKernel', connectionProviderIds: ['MSSQL']}];
+	standardKernels: azdata.nb.IStandardKernel[] = [{name: 'fakeKernel', displayName: 'fakeKernel', connectionProviderIds: ['MSSQL']}];
 
 	getNotebookManager(notebookUri: vscode.Uri): Thenable<azdata.nb.NotebookManager> {
 		throw new Error('Method not implemented.');

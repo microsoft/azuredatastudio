@@ -66,7 +66,8 @@
 			"request": "launch",
 			"name": "Launch azuredatastudio",
 			"windows": {
-				"runtimeExecutable": "${workspaceFolder}/scripts/sql.bat"
+				"runtimeExecutable": "${workspaceFolder}/scripts/sql.bat",
+				"timeout": 20000
 			},
 			"osx": {
 				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh"
@@ -74,15 +75,25 @@
 			"linux": {
 				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh"
 			},
+			"breakOnLoad": false,
 			"urlFilter": "*workbench.html*",
 			"runtimeArgs": [
-				"--inspect=5875", "--no-cached-data"
+				"--inspect=5875",
+				"--no-cached-data"
 			],
-			"skipFiles": [
-				"**/winjs*.js"
+			"webRoot": "${workspaceFolder}"
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "Launch ADS (Main Process)",
+			"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh",
+			"runtimeArgs": [
+				"--no-cached-data"
 			],
-			"webRoot": "${workspaceFolder}",
-			"timeout": 45000
+			"outFiles": [
+				"${workspaceFolder}/out/**/*.js"
+			]
 		},
 		{
 			"type": "chrome",
@@ -147,7 +158,23 @@
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
 			]
-		}
+		},
+		{
+			"type": "chrome",
+			"request": "launch",
+			"name": "Run Extension Unit Tests",
+			"windows": {
+				"runtimeExecutable": "${workspaceFolder}/scripts/test-extensions-unit.bat"
+			},
+			"osx": {
+				"runtimeExecutable": "${workspaceFolder}/scripts/test-extensions-unit.sh"
+			},
+			"linux": {
+				"runtimeExecutable": "${workspaceFolder}/scripts/test-extensions-unit.sh"
+			},
+			"webRoot": "${workspaceFolder}",
+			"timeout": 45000
+		},
 	],
 	"compounds": [
 		{
@@ -155,6 +182,13 @@
 			"configurations": [
 				"Attach to azuredatastudio",
 				"Run Unit Tests"
+			]
+		},
+		{
+			"name": "Debug Extension Unit Tests",
+			"configurations": [
+				"Attach to Extension Host",
+				"Run Extension Unit Tests"
 			]
 		},
 		{

@@ -6,7 +6,6 @@
 'use strict';
 
 import { localize } from 'vs/nls';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { IAction } from 'vs/base/common/actions';
@@ -40,14 +39,13 @@ export class DataExplorerViewletViewsContribution implements IWorkbenchContribut
 	private registerViews(): void {
 		let viewDescriptors = [];
 		viewDescriptors.push(this.createObjectExplorerViewDescriptor());
-		ViewsRegistry.registerViews(viewDescriptors);
+		ViewsRegistry.registerViews(viewDescriptors, VIEW_CONTAINER);
 	}
 
 	private createObjectExplorerViewDescriptor(): IViewDescriptor {
 		return {
 			id: 'dataExplorer.servers',
 			name: localize('dataExplorer.servers', "Servers"),
-			container: VIEW_CONTAINER,
 			ctor: ConnectionViewletPanel,
 			weight: 100,
 			canToggleVisibility: true,
@@ -117,7 +115,7 @@ export class DataExplorerViewlet extends ViewContainerViewlet  {
 
 	protected onDidAddViews(added: IAddedViewDescriptorRef[]): ViewletPanel[] {
 		const addedViews = super.onDidAddViews(added);
-		TPromise.join(addedViews);
+		Promise.all(addedViews);
 		return addedViews;
 	}
 

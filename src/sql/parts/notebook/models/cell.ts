@@ -6,18 +6,21 @@
 
 'use strict';
 
-import { nb } from 'azdata';
+import { nb, ServerInfo } from 'azdata';
 
 import { Event, Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 import { localize } from 'vs/nls';
 
-import { ICellModelOptions, IModelFactory, FutureInternal, CellExecutionState } from './modelInterfaces';
 import * as notebookUtils from '../notebookUtils';
 import { CellTypes, CellType, NotebookChangeType } from 'sql/parts/notebook/models/contracts';
-import { ICellModel } from 'sql/parts/notebook/models/modelInterfaces';
 import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
+import { ICellModel } from 'sql/parts/notebook/models/modelInterfaces';
+import { ICellModelOptions, IModelFactory, FutureInternal, CellExecutionState } from './modelInterfaces';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
+import { MssqlProviderId } from 'sql/common/constants';
 import { Schemas } from 'vs/base/common/network';
 let modelId = 0;
 
@@ -38,6 +41,7 @@ export class CellModel implements ICellModel {
 	private _executionCount: number | undefined;
 	private _cellUri: URI;
 	public id: string;
+	private _connectionManagementService: IConnectionManagementService;
 
 	constructor(private factory: IModelFactory, cellData?: nb.ICellContents, private _options?: ICellModelOptions) {
 		this.id = `${modelId++}`;
@@ -125,6 +129,10 @@ export class CellModel implements ICellModel {
 		return this._cellUri;
 	}
 
+	public get notebookModel(): NotebookModel {
+		return <NotebookModel>this.options.notebook;
+	}
+
 	public set cellUri(value: URI) {
 		this._cellUri = value;
 	}
@@ -181,8 +189,11 @@ export class CellModel implements ICellModel {
 		return CellExecutionState.Hidden;
 	}
 
-	public async runCell(notificationService?: INotificationService): Promise<boolean> {
+	public async runCell(notificationService?: INotificationService, connectionManagementService?: IConnectionManagementService): Promise<boolean> {
 		try {
+			if (connectionManagementService) {
+				this._connectionManagementService = connectionManagementService;
+			}
 			if (this.cellType !== CellTypes.Code) {
 				// TODO should change hidden state to false if we add support
 				// for this property
@@ -201,12 +212,12 @@ export class CellModel implements ICellModel {
 				// TODO update source based on editor component contents
 				let content = this.source;
 				if (content) {
-					this.fireExecutionStateChanged();
 					let future = await kernel.requestExecute({
 						code: content,
 						stop_on_error: true
 					}, false);
 					this.setFuture(future as FutureInternal);
+					this.fireExecutionStateChanged();
 					// For now, await future completion. Later we should just track and handle cancellation based on model notifications
 					let result: nb.IExecuteReplyMsg = <nb.IExecuteReplyMsg><any>await future.done;
 					if (result && result.content) {
@@ -371,7 +382,8 @@ export class CellModel implements ICellModel {
 				if (result && result.data && result.data['text/html']) {
 					let model = (this as CellModel).options.notebook as NotebookModel;
 					if (model.activeConnection) {
-						let host = model.activeConnection.serverName;
+						let endpoint = this.getKnoxEndpoint(model.activeConnection);
+						let host = endpoint && endpoint.ipAddress ? endpoint.ipAddress : model.activeConnection.serverName;
 						let html = result.data['text/html'];
 						html = html.replace(/(https?:\/\/mssql-master.*\/proxy)(.*)/g, function (a, b, c) {
 							let ret = '';
@@ -457,5 +469,21 @@ export class CellModel implements ICellModel {
 		let uri = URI.from({ scheme: Schemas.untitled, path: `notebook-editor-${this.id}` });
 		// Use this to set the internal (immutable) and public (shared with extension) uri properties
 		this.cellUri = uri;
+	}
+
+	// Get Knox endpoint from IConnectionProfile
+	// TODO: this will be refactored out into the notebooks extension as a contribution point
+	private getKnoxEndpoint(activeConnection: IConnectionProfile): notebookUtils.IEndpoint {
+		let endpoint;
+		if (this._connectionManagementService && activeConnection && activeConnection.providerName === MssqlProviderId) {
+			let serverInfo: ServerInfo = this._connectionManagementService.getServerInfo(activeConnection.id);
+			if (serverInfo && serverInfo.options && serverInfo.options['clusterEndpoints']) {
+				let endpoints: notebookUtils.IEndpoint[] = serverInfo.options['clusterEndpoints'];
+				if (endpoints && endpoints.length > 0) {
+					endpoint = endpoints.find(ep => ep.serviceName.toLowerCase() === 'knox');
+				}
+			}
+		}
+		return endpoint;
 	}
 }

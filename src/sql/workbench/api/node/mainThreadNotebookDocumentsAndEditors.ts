@@ -5,6 +5,7 @@
 'use strict';
 
 import * as azdata from 'azdata';
+import * as path from 'path';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import { URI, UriComponents } from 'vs/base/common/uri';
@@ -16,22 +17,27 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { ITextEditorOptions } from 'vs/platform/editor/common/editor';
 import { viewColumnToEditorGroup } from 'vs/workbench/api/shared/editor';
 import { Schemas } from 'vs/base/common/network';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 import {
 	SqlMainContext, MainThreadNotebookDocumentsAndEditorsShape, SqlExtHostContext, ExtHostNotebookDocumentsAndEditorsShape,
 	INotebookDocumentsAndEditorsDelta, INotebookEditorAddData, INotebookShowOptions, INotebookModelAddedData, INotebookModelChangedData
 } from 'sql/workbench/api/node/sqlExtHost.protocol';
-import { NotebookInput, NotebookEditorModel } from 'sql/parts/notebook/notebookInput';
-import { INotebookService, INotebookEditor, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/common/notebookService';
-import { TPromise } from 'vs/base/common/winjs.base';
+import { NotebookInput } from 'sql/parts/notebook/notebookInput';
+import { INotebookService, INotebookEditor, IProviderInfo } from 'sql/workbench/services/notebook/common/notebookService';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { disposed } from 'vs/base/common/errors';
 import { ICellModel, NotebookContentChange, INotebookModel } from 'sql/parts/notebook/models/modelInterfaces';
 import { NotebookChangeType, CellTypes } from 'sql/parts/notebook/models/contracts';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
+import { notebookModeId } from 'sql/common/constants';
+import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 
 class MainThreadNotebookEditor extends Disposable {
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
 	public readonly contentChanged: Event<NotebookContentChange> = this._contentChangedEmitter.event;
+	private _providerInfo: IProviderInfo;
 
 	constructor(public readonly editor: INotebookEditor) {
 		super();
@@ -43,6 +49,9 @@ class MainThreadNotebookEditor extends Disposable {
 				};
 				this._contentChangedEmitter.fire(changeEvent);
 			}));
+		});
+		editor.notebookParams.providerInfo.then(info => {
+			this._providerInfo = info;
 		});
 	}
 
@@ -59,11 +68,11 @@ class MainThreadNotebookEditor extends Disposable {
 	}
 
 	public get providerId(): string {
-		return this.editor.notebookParams.providerId;
+		return this._providerInfo ? this._providerInfo.providerId : undefined;
 	}
 
 	public get providers(): string[] {
-		return this.editor.notebookParams.providers;
+		return this._providerInfo ? this._providerInfo.providers : [];
 	}
 
 	public get cells(): ICellModel[] {
@@ -75,7 +84,7 @@ class MainThreadNotebookEditor extends Disposable {
 	}
 
 	public save(): Thenable<boolean> {
-		return this.editor.save();
+		return this.editor.notebookParams.input.save();
 	}
 
 	public matches(input: NotebookInput): boolean {
@@ -288,10 +297,11 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 	private _modelToDisposeMap = new Map<string, IDisposable>();
 	constructor(
 		extHostContext: IExtHostContext,
+		@IUntitledEditorService private _untitledEditorService: IUntitledEditorService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IEditorService private _editorService: IEditorService,
 		@IEditorGroupsService private _editorGroupService: IEditorGroupsService,
-		@INotebookService private readonly _notebookService: INotebookService
+		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService
 	) {
 		super();
 		if (extHostContext) {
@@ -313,16 +323,16 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		}
 	}
 
-	$tryShowNotebookDocument(resource: UriComponents, options: INotebookShowOptions): TPromise<string> {
-		return TPromise.wrap(this.doOpenEditor(resource, options));
+	$tryShowNotebookDocument(resource: UriComponents, options: INotebookShowOptions): Promise<string> {
+		return Promise.resolve(this.doOpenEditor(resource, options));
 	}
 
-	$tryApplyEdits(id: string, modelVersionId: number, edits: ISingleNotebookEditOperation[], opts: IUndoStopOptions): TPromise<boolean> {
+	$tryApplyEdits(id: string, modelVersionId: number, edits: ISingleNotebookEditOperation[], opts: IUndoStopOptions): Promise<boolean> {
 		let editor = this.getEditor(id);
 		if (!editor) {
-			return TPromise.wrapError<boolean>(disposed(`TextEditor(${id})`));
+			return Promise.reject(disposed(`TextEditor(${id})`));
 		}
-		return TPromise.as(editor.applyEdits(modelVersionId, edits, opts));
+		return Promise.resolve(editor.applyEdits(modelVersionId, edits, opts));
 	}
 
 	$runCell(id: string, cellUri: UriComponents): Promise<boolean> {
@@ -359,11 +369,13 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 			preserveFocus: options.preserveFocus,
 			pinned: !options.preview
 		};
-		let trusted = uri.scheme === Schemas.untitled;
-		let input = this._instantiationService.createInstance(NotebookInput, uri.fsPath, uri);
-		input.isTrusted = trusted;
+		let isUntitled: boolean = uri.scheme === Schemas.untitled;
+
+		const fileInput: UntitledEditorInput = isUntitled ? this._untitledEditorService.createOrGet(uri, notebookModeId) : undefined;
+		let input = this._instantiationService.createInstance(NotebookInput, path.basename(uri.fsPath), uri, fileInput);
+		input.isTrusted = isUntitled;
 		input.defaultKernel = options.defaultKernel;
-		input.connectionProfileId = options.connectionId;
+		input.connectionProfile = new ConnectionProfile(this._capabilitiesService, options.connectionProfile);
 
 		let editor = await this._editorService.openEditor(input, editorOptions, viewColumnToEditorGroup(this._editorGroupService, options.position));
 		if (!editor) {

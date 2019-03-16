@@ -16,7 +16,6 @@ import { KeyCode } from 'vs/base/common/keyCodes';
 import { combinedDisposable, Disposable, dispose, IDisposable, toDisposable } from 'vs/base/common/lifecycle';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { isUndefinedOrNull } from 'vs/base/common/types';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { IFilter, ITree, ITreeConfiguration, ITreeOptions } from 'vs/base/parts/tree/browser/tree';
 import { ClickBehavior, DefaultController, DefaultTreestyler, IControllerOptions, OpenMode } from 'vs/base/parts/tree/browser/treeDefaults';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
@@ -33,10 +32,12 @@ import { attachInputBoxStyler, attachListStyler, computeStyles, defaultListStyle
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { InputFocusedContextKey } from 'vs/platform/workbench/common/contextkeys';
 import { ObjectTree, IObjectTreeOptions } from 'vs/base/browser/ui/tree/objectTree';
-import { ITreeEvent, ITreeRenderer } from 'vs/base/browser/ui/tree/tree';
-import { AsyncDataTree, IDataSource, IAsyncDataTreeOptions } from 'vs/base/browser/ui/tree/asyncDataTree';
+import { ITreeEvent, ITreeRenderer, IAsyncDataSource, IDataSource } from 'vs/base/browser/ui/tree/tree';
+import { AsyncDataTree, IAsyncDataTreeOptions } from 'vs/base/browser/ui/tree/asyncDataTree';
+import { DataTree, IDataTreeOptions } from 'vs/base/browser/ui/tree/dataTree';
+import { IKeyboardNavigationEventFilter } from 'vs/base/browser/ui/tree/abstractTree';
 
-export type ListWidget = List<any> | PagedList<any> | ITree | ObjectTree<any, any> | AsyncDataTree<any, any>;
+export type ListWidget = List<any> | PagedList<any> | ITree | ObjectTree<any, any> | DataTree<any, any, any> | AsyncDataTree<any, any, any>;
 
 export const IListService = createDecorator<IListService>('listService');
 
@@ -103,6 +104,9 @@ export const WorkbenchListFocusContextKey = ContextKeyExpr.and(RawWorkbenchListF
 export const WorkbenchListHasSelectionOrFocus = new RawContextKey<boolean>('listHasSelectionOrFocus', false);
 export const WorkbenchListDoubleSelection = new RawContextKey<boolean>('listDoubleSelection', false);
 export const WorkbenchListMultiSelection = new RawContextKey<boolean>('listMultiSelection', false);
+export const WorkbenchListSupportsKeyboardNavigation = new RawContextKey<boolean>('listSupportsKeyboardNavigation', true);
+export const WorkbenchListAutomaticKeyboardNavigationKey = 'listAutomaticKeyboardNavigation';
+export const WorkbenchListAutomaticKeyboardNavigation = new RawContextKey<boolean>(WorkbenchListAutomaticKeyboardNavigationKey, true);
 
 function createScopedContextKeyService(contextKeyService: IContextKeyService, widget: ListWidget): IContextKeyService {
 	const result = contextKeyService.createScoped(widget.getHTMLElement());
@@ -113,6 +117,8 @@ function createScopedContextKeyService(contextKeyService: IContextKeyService, wi
 export const multiSelectModifierSettingKey = 'workbench.list.multiSelectModifier';
 export const openModeSettingKey = 'workbench.list.openMode';
 export const horizontalScrollingKey = 'workbench.tree.horizontalScrolling';
+export const keyboardNavigationSettingKey = 'workbench.list.keyboardNavigation';
+const treeIndentKey = 'workbench.tree.indent';
 
 function useAltAsMultipleSelectionModifier(configurationService: IConfigurationService): boolean {
 	return configurationService.getValue(multiSelectModifierSettingKey) === 'alt';
@@ -145,12 +151,13 @@ class WorkbenchOpenController implements IOpenController {
 
 	shouldOpen(event: UIEvent): boolean {
 		if (event instanceof MouseEvent) {
+			const isLeftButton = event.button === 0;
 			const isDoubleClick = event.detail === 2;
-			if (!useSingleClickToOpen(this.configurationService) && !isDoubleClick) {
+			if (isLeftButton && !useSingleClickToOpen(this.configurationService) && !isDoubleClick) {
 				return false;
 			}
 
-			if (event.button === 0 /* left mouse button */ || event.button === 1 /* middle mouse button */) {
+			if (isLeftButton /* left mouse button */ || event.button === 1 /* middle mouse button */) {
 				return this.existingOpenController ? this.existingOpenController.shouldOpen(event) : true;
 			}
 
@@ -161,14 +168,25 @@ class WorkbenchOpenController implements IOpenController {
 	}
 }
 
-function handleListControllers<T>(options: IListOptions<T>, configurationService: IConfigurationService): IListOptions<T> {
+function toWorkbenchListOptions<T>(options: IListOptions<T>, configurationService: IConfigurationService, keybindingService: IKeybindingService): IListOptions<T> {
+	const result = { ...options };
+
 	if (options.multipleSelectionSupport !== false && !options.multipleSelectionController) {
-		options.multipleSelectionController = new MultipleSelectionController(configurationService);
+		result.multipleSelectionController = new MultipleSelectionController(configurationService);
 	}
 
-	options.openController = new WorkbenchOpenController(configurationService, options.openController);
+	result.openController = new WorkbenchOpenController(configurationService, options.openController);
 
-	return options;
+	if (options.keyboardNavigationLabelProvider) {
+		const tlp = options.keyboardNavigationLabelProvider;
+
+		result.keyboardNavigationLabelProvider = {
+			getKeyboardNavigationLabel(e) { return tlp.getKeyboardNavigationLabel(e); },
+			mightProducePrintableCharacter(e) { return keybindingService.mightProducePrintableCharacter(e); }
+		};
+	}
+
+	return result;
 }
 
 let sharedListStyleSheet: HTMLStyleElement;
@@ -204,6 +222,7 @@ function handleTreeController(configuration: ITreeConfiguration, instantiationSe
 export class WorkbenchList<T> extends List<T> {
 
 	readonly contextKeyService: IContextKeyService;
+	private readonly configurationService: IConfigurationService;
 
 	private listHasSelectionOrFocus: IContextKey<boolean>;
 	private listDoubleSelection: IContextKey<boolean>;
@@ -219,19 +238,23 @@ export class WorkbenchList<T> extends List<T> {
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IListService listService: IListService,
 		@IThemeService themeService: IThemeService,
-		@IConfigurationService private configurationService: IConfigurationService
+		@IConfigurationService configurationService: IConfigurationService,
+		@IKeybindingService keybindingService: IKeybindingService
 	) {
+		const horizontalScrolling = typeof options.horizontalScrolling !== 'undefined' ? options.horizontalScrolling : configurationService.getValue<boolean>(horizontalScrollingKey);
+
 		super(container, delegate, renderers,
 			{
 				keyboardSupport: false,
-				selectOnMouseDown: true,
 				styleController: new DefaultStyleController(getSharedListStyleSheet()),
 				...computeStyles(themeService.getTheme(), defaultListStyles),
-				...handleListControllers(options, configurationService)
+				...toWorkbenchListOptions(options, configurationService, keybindingService),
+				horizontalScrolling
 			} as IListOptions<T>
 		);
 
 		this.contextKeyService = createScopedContextKeyService(contextKeyService, this);
+		this.configurationService = configurationService;
 
 		const listSupportsMultiSelect = WorkbenchListSupportsMultiSelectContextKey.bindTo(this.contextKeyService);
 		listSupportsMultiSelect.set(!(options.multipleSelectionSupport === false));
@@ -281,8 +304,9 @@ export class WorkbenchList<T> extends List<T> {
 export class WorkbenchPagedList<T> extends PagedList<T> {
 
 	readonly contextKeyService: IContextKeyService;
+	private readonly configurationService: IConfigurationService;
 
-	private disposables: IDisposable[] = [];
+	private disposables: IDisposable[];
 
 	private _useAltAsMultipleSelectionModifier: boolean;
 
@@ -294,19 +318,24 @@ export class WorkbenchPagedList<T> extends PagedList<T> {
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IListService listService: IListService,
 		@IThemeService themeService: IThemeService,
-		@IConfigurationService private configurationService: IConfigurationService
+		@IConfigurationService configurationService: IConfigurationService,
+		@IKeybindingService keybindingService: IKeybindingService
 	) {
+		const horizontalScrolling = typeof options.horizontalScrolling !== 'undefined' ? options.horizontalScrolling : configurationService.getValue<boolean>(horizontalScrollingKey);
 		super(container, delegate, renderers,
 			{
 				keyboardSupport: false,
-				selectOnMouseDown: true,
 				styleController: new DefaultStyleController(getSharedListStyleSheet()),
 				...computeStyles(themeService.getTheme(), defaultListStyles),
-				...handleListControllers(options, configurationService)
+				...toWorkbenchListOptions(options, configurationService, keybindingService),
+				horizontalScrolling
 			} as IListOptions<T>
 		);
 
+		this.disposables = [];
+
 		this.contextKeyService = createScopedContextKeyService(contextKeyService, this);
+		this.configurationService = configurationService;
 
 		const listSupportsMultiSelect = WorkbenchListSupportsMultiSelectContextKey.bindTo(this.contextKeyService);
 		listSupportsMultiSelect.set(!(options.multipleSelectionSupport === false));
@@ -453,7 +482,7 @@ export class WorkbenchTreeController extends DefaultController {
 
 	constructor(
 		options: IControllerOptions,
-		@IConfigurationService private configurationService: IConfigurationService
+		@IConfigurationService private readonly configurationService: IConfigurationService
 	) {
 		super(massageControllerOptions(options));
 
@@ -494,7 +523,7 @@ export interface IResourceResultsNavigationOptions {
 
 export class TreeResourceNavigator extends Disposable {
 
-	private readonly _openResource: Emitter<IOpenResourceOptions> = new Emitter<IOpenResourceOptions>();
+	private readonly _openResource = new Emitter<IOpenResourceOptions>();
 	readonly openResource: Event<IOpenResourceOptions> = this._openResource.event;
 
 	constructor(private tree: WorkbenchTree, private options?: IResourceResultsNavigationOptions) {
@@ -575,14 +604,27 @@ export interface IResourceResultsNavigationOptions {
 	openOnFocus: boolean;
 }
 
+export interface SelectionKeyboardEvent extends KeyboardEvent {
+	preserveFocus?: boolean;
+}
+
+export function getSelectionKeyboardEvent(typeArg: string, preserveFocus?: boolean): SelectionKeyboardEvent {
+	const e = new KeyboardEvent(typeArg);
+	(<SelectionKeyboardEvent>e).preserveFocus = preserveFocus;
+
+	return e;
+}
+
 export class TreeResourceNavigator2<T, TFilterData> extends Disposable {
 
-	private readonly _openResource: Emitter<IOpenEvent<T>> = new Emitter<IOpenEvent<T>>();
-	readonly openResource: Event<IOpenEvent<T>> = this._openResource.event;
+	private readonly _onDidOpenResource = new Emitter<IOpenEvent<T | null>>();
+	readonly onDidOpenResource: Event<IOpenEvent<T | null>> = this._onDidOpenResource.event;
 
-	constructor(private tree: WorkbenchObjectTree<T, TFilterData> | WorkbenchAsyncDataTree<T, TFilterData>, private options?: IResourceResultsNavigationOptions) {
+	constructor(
+		private tree: WorkbenchObjectTree<T, TFilterData> | WorkbenchDataTree<any, T, TFilterData> | WorkbenchAsyncDataTree<any, T, TFilterData>,
+		private options?: IResourceResultsNavigationOptions
+	) {
 		super();
-
 		this.registerListeners();
 	}
 
@@ -594,9 +636,9 @@ export class TreeResourceNavigator2<T, TFilterData> extends Disposable {
 		this._register(this.tree.onDidChangeSelection(e => this.onSelection(e)));
 	}
 
-	private onFocus(e: ITreeEvent<T>): void {
+	private onFocus(e: ITreeEvent<T | null>): void {
 		const focus = this.tree.getFocus();
-		this.tree.setSelection(focus, e.browserEvent);
+		this.tree.setSelection(focus as T[], e.browserEvent);
 
 		if (!e.browserEvent) {
 			return;
@@ -609,18 +651,24 @@ export class TreeResourceNavigator2<T, TFilterData> extends Disposable {
 		}
 	}
 
-	private onSelection(e: ITreeEvent<T>): void {
-		if (!e.browserEvent) {
+	private onSelection(e: ITreeEvent<T | null>): void {
+		if (!e.browserEvent || e.browserEvent.type === 'contextmenu') {
 			return;
 		}
 
 		const isDoubleClick = e.browserEvent.detail === 2;
-		const sideBySide = e.browserEvent instanceof MouseEvent && (e.browserEvent.ctrlKey || e.browserEvent.metaKey || e.browserEvent.altKey);
-		this.open(!isDoubleClick, isDoubleClick, sideBySide);
+		const preserveFocus = (e.browserEvent instanceof KeyboardEvent && typeof (<SelectionKeyboardEvent>e.browserEvent).preserveFocus === 'boolean') ?
+			!!(<SelectionKeyboardEvent>e.browserEvent).preserveFocus :
+			!isDoubleClick;
+
+		if (this.tree.openOnSingleClick || isDoubleClick) {
+			const sideBySide = e.browserEvent instanceof MouseEvent && (e.browserEvent.ctrlKey || e.browserEvent.metaKey || e.browserEvent.altKey);
+			this.open(preserveFocus, isDoubleClick, sideBySide);
+		}
 	}
 
 	private open(preserveFocus: boolean, pinned: boolean, sideBySide: boolean): void {
-		this._openResource.fire({
+		this._onDidOpenResource.fire({
 			editorOptions: {
 				preserveFocus,
 				pinned,
@@ -675,8 +723,8 @@ export class HighlightingTreeController extends WorkbenchTreeController {
 class HightlightsFilter implements IFilter {
 
 	static add(config: ITreeConfiguration, options: IHighlightingTreeOptions): ITreeConfiguration {
-		let myFilter = new HightlightsFilter();
-		myFilter.enabled = options.filterOnType;
+		const myFilter = new HightlightsFilter();
+		myFilter.enabled = !!options.filterOnType;
 		if (!config.filter) {
 			config.filter = myFilter;
 		} else {
@@ -784,7 +832,7 @@ export class HighlightingWorkbenchTree extends WorkbenchTree {
 		this.disposables.push(this._onDidStartFilter);
 	}
 
-	setInput(element: any): TPromise<any> {
+	setInput(element: any): Promise<any> {
 		this.input.setEnabled(false);
 		return super.setInput(element).then(value => {
 			if (!this.input.inputElement) {
@@ -798,7 +846,7 @@ export class HighlightingWorkbenchTree extends WorkbenchTree {
 
 	layout(height?: number, width?: number): void {
 		this.input.layout();
-		super.layout(isNaN(height) ? height : height - getTotalHeight(this.inputContainer), width);
+		super.layout(typeof height !== 'number' || isNaN(height) ? height : height - getTotalHeight(this.inputContainer), width);
 	}
 
 	private onTypeInTree(): void {
@@ -824,7 +872,7 @@ export class HighlightingWorkbenchTree extends WorkbenchTree {
 		let topElement: any;
 		if (pattern) {
 			let nav = this.getNavigator(undefined, false);
-			let topScore: FuzzyScore;
+			let topScore: FuzzyScore | undefined;
 			while (nav.next()) {
 				let element = nav.current();
 				let score = this.highlighter.getHighlights(this, element, pattern);
@@ -842,7 +890,7 @@ export class HighlightingWorkbenchTree extends WorkbenchTree {
 
 		this.refresh().then(() => {
 			if (topElement) {
-				this.reveal(topElement, .5).then(_ => {
+				this.reveal(topElement, 0.5).then(_ => {
 					this.setSelection([topElement], this);
 					this.setFocus(topElement, this);
 				});
@@ -856,7 +904,7 @@ export class HighlightingWorkbenchTree extends WorkbenchTree {
 		return this.highlights.size > 0;
 	}
 
-	getHighlighterScore(element: any): FuzzyScore {
+	getHighlighterScore(element: any): FuzzyScore | undefined {
 		return this.highlights.get(this._getHighlightsStorageKey(element));
 	}
 
@@ -865,6 +913,27 @@ export class HighlightingWorkbenchTree extends WorkbenchTree {
 			? this.highlighter.getHighlightsStorageKey(element)
 			: element;
 	}
+}
+
+function createKeyboardNavigationEventFilter(container: HTMLElement, keybindingService: IKeybindingService): IKeyboardNavigationEventFilter {
+	let inChord = false;
+
+	return event => {
+		if (inChord) {
+			inChord = false;
+			return false;
+		}
+
+		const result = keybindingService.softDispatch(event, container);
+
+		if (result && result.enterChord) {
+			inChord = true;
+			return false;
+		}
+
+		inChord = false;
+		return true;
+	};
 }
 
 export class WorkbenchObjectTree<T extends NonNullable<any>, TFilterData = void> extends ObjectTree<T, TFilterData> {
@@ -877,6 +946,8 @@ export class WorkbenchObjectTree<T extends NonNullable<any>, TFilterData = void>
 	private hasDoubleSelection: IContextKey<boolean>;
 	private hasMultiSelection: IContextKey<boolean>;
 
+	private _useAltAsMultipleSelectionModifier: boolean;
+
 	constructor(
 		container: HTMLElement,
 		delegate: IListVirtualDelegate<T>,
@@ -885,14 +956,29 @@ export class WorkbenchObjectTree<T extends NonNullable<any>, TFilterData = void>
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IListService listService: IListService,
 		@IThemeService themeService: IThemeService,
-		@IConfigurationService configurationService: IConfigurationService
+		@IConfigurationService configurationService: IConfigurationService,
+		@IKeybindingService keybindingService: IKeybindingService
 	) {
+		WorkbenchListSupportsKeyboardNavigation.bindTo(contextKeyService);
+		WorkbenchListAutomaticKeyboardNavigation.bindTo(contextKeyService);
+
+		const automaticKeyboardNavigation = contextKeyService.getContextKeyValue<boolean>(WorkbenchListAutomaticKeyboardNavigationKey);
+		const keyboardNavigation = configurationService.getValue<string>(keyboardNavigationSettingKey);
+		const horizontalScrolling = typeof options.horizontalScrolling !== 'undefined' ? options.horizontalScrolling : configurationService.getValue<boolean>(horizontalScrollingKey);
+		const openOnSingleClick = useSingleClickToOpen(configurationService);
+
 		super(container, delegate, renderers, {
 			keyboardSupport: false,
-			selectOnMouseDown: true,
 			styleController: new DefaultStyleController(getSharedListStyleSheet()),
 			...computeStyles(themeService.getTheme(), defaultListStyles),
-			...handleListControllers(options, configurationService)
+			...toWorkbenchListOptions(options, configurationService, keybindingService),
+			indent: configurationService.getValue(treeIndentKey),
+			automaticKeyboardNavigation,
+			simpleKeyboardNavigation: keyboardNavigation === 'simple',
+			filterOnType: keyboardNavigation === 'filter',
+			horizontalScrolling,
+			openOnSingleClick,
+			keyboardNavigationEventFilter: createKeyboardNavigationEventFilter(container, keybindingService)
 		});
 
 		this.contextKeyService = createScopedContextKeyService(contextKeyService, this);
@@ -903,6 +989,11 @@ export class WorkbenchObjectTree<T extends NonNullable<any>, TFilterData = void>
 		this.hasSelectionOrFocus = WorkbenchListHasSelectionOrFocus.bindTo(this.contextKeyService);
 		this.hasDoubleSelection = WorkbenchListDoubleSelection.bindTo(this.contextKeyService);
 		this.hasMultiSelection = WorkbenchListMultiSelection.bindTo(this.contextKeyService);
+
+		this._useAltAsMultipleSelectionModifier = useAltAsMultipleSelectionModifier(configurationService);
+
+		const interestingContextKeys = new Set();
+		interestingContextKeys.add(WorkbenchListAutomaticKeyboardNavigationKey);
 
 		this.disposables.push(
 			this.contextKeyService,
@@ -921,8 +1012,39 @@ export class WorkbenchObjectTree<T extends NonNullable<any>, TFilterData = void>
 				const focus = this.getFocus();
 
 				this.hasSelectionOrFocus.set(selection.length > 0 || focus.length > 0);
+			}),
+			configurationService.onDidChangeConfiguration(e => {
+				if (e.affectsConfiguration(openModeSettingKey)) {
+					this.updateOptions({ openOnSingleClick: useSingleClickToOpen(configurationService) });
+				}
+				if (e.affectsConfiguration(multiSelectModifierSettingKey)) {
+					this._useAltAsMultipleSelectionModifier = useAltAsMultipleSelectionModifier(configurationService);
+				}
+				if (e.affectsConfiguration(treeIndentKey)) {
+					const indent = configurationService.getValue<number>(treeIndentKey);
+					this.updateOptions({ indent });
+				}
+				if (e.affectsConfiguration(keyboardNavigationSettingKey)) {
+					const keyboardNavigation = configurationService.getValue<string>(keyboardNavigationSettingKey);
+					this.updateOptions({
+						simpleKeyboardNavigation: keyboardNavigation === 'simple',
+						filterOnType: keyboardNavigation === 'filter'
+					});
+				}
+			}),
+			this.contextKeyService.onDidChangeContext(e => {
+				if (e.affectsSome(interestingContextKeys)) {
+					const automaticKeyboardNavigation = this.contextKeyService.getContextKeyValue<boolean>(WorkbenchListAutomaticKeyboardNavigationKey);
+					this.updateOptions({
+						automaticKeyboardNavigation
+					});
+				}
 			})
 		);
+	}
+
+	get useAltAsMultipleSelectionModifier(): boolean {
+		return this._useAltAsMultipleSelectionModifier;
 	}
 
 	dispose(): void {
@@ -931,7 +1053,7 @@ export class WorkbenchObjectTree<T extends NonNullable<any>, TFilterData = void>
 	}
 }
 
-export class WorkbenchAsyncDataTree<T extends NonNullable<any>, TFilterData = void> extends AsyncDataTree<T, TFilterData> {
+export class WorkbenchDataTree<TInput, T, TFilterData = void> extends DataTree<TInput, T, TFilterData> {
 
 	readonly contextKeyService: IContextKeyService;
 
@@ -939,23 +1061,40 @@ export class WorkbenchAsyncDataTree<T extends NonNullable<any>, TFilterData = vo
 	private hasDoubleSelection: IContextKey<boolean>;
 	private hasMultiSelection: IContextKey<boolean>;
 
+	private _useAltAsMultipleSelectionModifier: boolean;
+
 	constructor(
 		container: HTMLElement,
 		delegate: IListVirtualDelegate<T>,
 		renderers: ITreeRenderer<any /* TODO@joao */, TFilterData, any>[],
-		dataSource: IDataSource<T>,
-		options: IAsyncDataTreeOptions<T, TFilterData>,
+		dataSource: IDataSource<TInput, T>,
+		options: IDataTreeOptions<T, TFilterData>,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IListService listService: IListService,
 		@IThemeService themeService: IThemeService,
-		@IConfigurationService configurationService: IConfigurationService
+		@IConfigurationService configurationService: IConfigurationService,
+		@IKeybindingService keybindingService: IKeybindingService
 	) {
+		WorkbenchListSupportsKeyboardNavigation.bindTo(contextKeyService);
+		WorkbenchListAutomaticKeyboardNavigation.bindTo(contextKeyService);
+
+		const automaticKeyboardNavigation = contextKeyService.getContextKeyValue<boolean>(WorkbenchListAutomaticKeyboardNavigationKey);
+		const keyboardNavigation = configurationService.getValue<string>(keyboardNavigationSettingKey);
+		const horizontalScrolling = typeof options.horizontalScrolling !== 'undefined' ? options.horizontalScrolling : configurationService.getValue<boolean>(horizontalScrollingKey);
+		const openOnSingleClick = useSingleClickToOpen(configurationService);
+
 		super(container, delegate, renderers, dataSource, {
 			keyboardSupport: false,
-			selectOnMouseDown: true,
 			styleController: new DefaultStyleController(getSharedListStyleSheet()),
 			...computeStyles(themeService.getTheme(), defaultListStyles),
-			...handleListControllers(options, configurationService)
+			...toWorkbenchListOptions(options, configurationService, keybindingService),
+			indent: configurationService.getValue(treeIndentKey),
+			automaticKeyboardNavigation,
+			simpleKeyboardNavigation: keyboardNavigation === 'simple',
+			filterOnType: keyboardNavigation === 'filter',
+			horizontalScrolling,
+			openOnSingleClick,
+			keyboardNavigationEventFilter: createKeyboardNavigationEventFilter(container, keybindingService)
 		});
 
 		this.contextKeyService = createScopedContextKeyService(contextKeyService, this);
@@ -966,6 +1105,11 @@ export class WorkbenchAsyncDataTree<T extends NonNullable<any>, TFilterData = vo
 		this.hasSelectionOrFocus = WorkbenchListHasSelectionOrFocus.bindTo(this.contextKeyService);
 		this.hasDoubleSelection = WorkbenchListDoubleSelection.bindTo(this.contextKeyService);
 		this.hasMultiSelection = WorkbenchListMultiSelection.bindTo(this.contextKeyService);
+
+		this._useAltAsMultipleSelectionModifier = useAltAsMultipleSelectionModifier(configurationService);
+
+		const interestingContextKeys = new Set();
+		interestingContextKeys.add(WorkbenchListAutomaticKeyboardNavigationKey);
 
 		this.disposables.push(
 			this.contextKeyService,
@@ -984,8 +1128,150 @@ export class WorkbenchAsyncDataTree<T extends NonNullable<any>, TFilterData = vo
 				const focus = this.getFocus();
 
 				this.hasSelectionOrFocus.set(selection.length > 0 || focus.length > 0);
+			}),
+			configurationService.onDidChangeConfiguration(e => {
+				if (e.affectsConfiguration(openModeSettingKey)) {
+					this.updateOptions({ openOnSingleClick: useSingleClickToOpen(configurationService) });
+				}
+				if (e.affectsConfiguration(multiSelectModifierSettingKey)) {
+					this._useAltAsMultipleSelectionModifier = useAltAsMultipleSelectionModifier(configurationService);
+				}
+				if (e.affectsConfiguration(treeIndentKey)) {
+					const indent = configurationService.getValue<number>(treeIndentKey);
+					this.updateOptions({ indent });
+				}
+				if (e.affectsConfiguration(keyboardNavigationSettingKey)) {
+					const keyboardNavigation = configurationService.getValue<string>(keyboardNavigationSettingKey);
+					this.updateOptions({
+						simpleKeyboardNavigation: keyboardNavigation === 'simple',
+						filterOnType: keyboardNavigation === 'filter'
+					});
+				}
+			}),
+			this.contextKeyService.onDidChangeContext(e => {
+				if (e.affectsSome(interestingContextKeys)) {
+					const automaticKeyboardNavigation = this.contextKeyService.getContextKeyValue<boolean>(WorkbenchListAutomaticKeyboardNavigationKey);
+					this.updateOptions({
+						automaticKeyboardNavigation
+					});
+				}
 			})
 		);
+	}
+
+	get useAltAsMultipleSelectionModifier(): boolean {
+		return this._useAltAsMultipleSelectionModifier;
+	}
+}
+
+export class WorkbenchAsyncDataTree<TInput, T, TFilterData = void> extends AsyncDataTree<TInput, T, TFilterData> {
+
+	readonly contextKeyService: IContextKeyService;
+
+	private hasSelectionOrFocus: IContextKey<boolean>;
+	private hasDoubleSelection: IContextKey<boolean>;
+	private hasMultiSelection: IContextKey<boolean>;
+
+	private _useAltAsMultipleSelectionModifier: boolean;
+
+	constructor(
+		container: HTMLElement,
+		delegate: IListVirtualDelegate<T>,
+		renderers: ITreeRenderer<any /* TODO@joao */, TFilterData, any>[],
+		dataSource: IAsyncDataSource<TInput, T>,
+		options: IAsyncDataTreeOptions<T, TFilterData>,
+		@IContextKeyService contextKeyService: IContextKeyService,
+		@IListService listService: IListService,
+		@IThemeService themeService: IThemeService,
+		@IConfigurationService configurationService: IConfigurationService,
+		@IKeybindingService keybindingService: IKeybindingService
+	) {
+		WorkbenchListSupportsKeyboardNavigation.bindTo(contextKeyService);
+		WorkbenchListAutomaticKeyboardNavigation.bindTo(contextKeyService);
+
+		const automaticKeyboardNavigation = contextKeyService.getContextKeyValue<boolean>(WorkbenchListAutomaticKeyboardNavigationKey);
+		const keyboardNavigation = configurationService.getValue<string>(keyboardNavigationSettingKey);
+		const horizontalScrolling = typeof options.horizontalScrolling !== 'undefined' ? options.horizontalScrolling : configurationService.getValue<boolean>(horizontalScrollingKey);
+		const openOnSingleClick = useSingleClickToOpen(configurationService);
+
+		super(container, delegate, renderers, dataSource, {
+			keyboardSupport: false,
+			styleController: new DefaultStyleController(getSharedListStyleSheet()),
+			...computeStyles(themeService.getTheme(), defaultListStyles),
+			...toWorkbenchListOptions(options, configurationService, keybindingService),
+			indent: configurationService.getValue<number>(treeIndentKey),
+			automaticKeyboardNavigation,
+			simpleKeyboardNavigation: keyboardNavigation === 'simple',
+			filterOnType: keyboardNavigation === 'filter',
+			horizontalScrolling,
+			openOnSingleClick,
+			keyboardNavigationEventFilter: createKeyboardNavigationEventFilter(container, keybindingService)
+		});
+
+		this.contextKeyService = createScopedContextKeyService(contextKeyService, this);
+
+		const listSupportsMultiSelect = WorkbenchListSupportsMultiSelectContextKey.bindTo(this.contextKeyService);
+		listSupportsMultiSelect.set(!(options.multipleSelectionSupport === false));
+
+		this.hasSelectionOrFocus = WorkbenchListHasSelectionOrFocus.bindTo(this.contextKeyService);
+		this.hasDoubleSelection = WorkbenchListDoubleSelection.bindTo(this.contextKeyService);
+		this.hasMultiSelection = WorkbenchListMultiSelection.bindTo(this.contextKeyService);
+
+		this._useAltAsMultipleSelectionModifier = useAltAsMultipleSelectionModifier(configurationService);
+
+		const interestingContextKeys = new Set();
+		interestingContextKeys.add(WorkbenchListAutomaticKeyboardNavigationKey);
+
+		this.disposables.push(
+			this.contextKeyService,
+			(listService as ListService).register(this),
+			attachListStyler(this, themeService),
+			this.onDidChangeSelection(() => {
+				const selection = this.getSelection();
+				const focus = this.getFocus();
+
+				this.hasSelectionOrFocus.set(selection.length > 0 || focus.length > 0);
+				this.hasMultiSelection.set(selection.length > 1);
+				this.hasDoubleSelection.set(selection.length === 2);
+			}),
+			this.onDidChangeFocus(() => {
+				const selection = this.getSelection();
+				const focus = this.getFocus();
+
+				this.hasSelectionOrFocus.set(selection.length > 0 || focus.length > 0);
+			}),
+			configurationService.onDidChangeConfiguration(e => {
+				if (e.affectsConfiguration(openModeSettingKey)) {
+					this.updateOptions({ openOnSingleClick: useSingleClickToOpen(configurationService) });
+				}
+				if (e.affectsConfiguration(multiSelectModifierSettingKey)) {
+					this._useAltAsMultipleSelectionModifier = useAltAsMultipleSelectionModifier(configurationService);
+				}
+				if (e.affectsConfiguration(treeIndentKey)) {
+					const indent = configurationService.getValue<number>(treeIndentKey);
+					this.updateOptions({ indent });
+				}
+				if (e.affectsConfiguration(keyboardNavigationSettingKey)) {
+					const keyboardNavigation = configurationService.getValue<string>(keyboardNavigationSettingKey);
+					this.updateOptions({
+						simpleKeyboardNavigation: keyboardNavigation === 'simple',
+						filterOnType: keyboardNavigation === 'filter'
+					});
+				}
+			}),
+			this.contextKeyService.onDidChangeContext(e => {
+				if (e.affectsSome(interestingContextKeys)) {
+					const automaticKeyboardNavigation = this.contextKeyService.getContextKeyValue<boolean>(WorkbenchListAutomaticKeyboardNavigationKey);
+					this.updateOptions({
+						automaticKeyboardNavigation
+					});
+				}
+			})
+		);
+	}
+
+	get useAltAsMultipleSelectionModifier(): boolean {
+		return this._useAltAsMultipleSelectionModifier;
 	}
 }
 
@@ -1025,7 +1311,25 @@ configurationRegistry.registerConfiguration({
 		[horizontalScrollingKey]: {
 			'type': 'boolean',
 			'default': false,
-			'description': localize('horizontalScrolling setting', "Controls whether trees support horizontal scrolling in the workbench.")
-		}
+			'description': localize('horizontalScrolling setting', "Controls whether lists and trees support horizontal scrolling in the workbench.")
+		},
+		[treeIndentKey]: {
+			'type': 'number',
+			'default': 8,
+			minimum: 0,
+			maximum: 20,
+			'description': localize('tree indent setting', "Controls tree indentation in pixels.")
+		},
+		[keyboardNavigationSettingKey]: {
+			'type': 'string',
+			'enum': ['simple', 'highlight', 'filter'],
+			'enumDescriptions': [
+				localize('keyboardNavigationSettingKey.simple', "Simple keyboard navigation focuses elements which match the keyboard input. Matching is done only on prefixes."),
+				localize('keyboardNavigationSettingKey.highlight', "Highlight keyboard navigation highlights elements which match the keyboard input. Further up and down navigation will traverse only the highlighted elements."),
+				localize('keyboardNavigationSettingKey.filter', "Filter keyboard navigation will filter out and hide all the elements which do not match the keyboard input.")
+			],
+			'default': 'highlight',
+			'description': localize('keyboardNavigationSettingKey', "Controls the keyboard navigation style for lists and trees in the workbench. Can be simple, highlight and filter.")
+		},
 	}
 });

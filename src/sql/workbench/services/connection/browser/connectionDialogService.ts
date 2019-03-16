@@ -22,7 +22,6 @@ import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMess
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 
 import { IPartService } from 'vs/workbench/services/part/common/partService';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as platform from 'vs/base/common/platform';
 import Severity from 'vs/base/common/severity';
@@ -90,7 +89,38 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		@IWorkspaceConfigurationService private _workspaceConfigurationService: IWorkspaceConfigurationService,
 		@IClipboardService private _clipboardService: IClipboardService,
 		@ICommandService private _commandService: ICommandService
-	) { }
+	) {
+		this.initializeConnectionProviders();
+	}
+
+	/**
+	 * Set the initial value for the connection provider and listen to the provider change event
+	 */
+	private initializeConnectionProviders() {
+		this.setConnectionProviders();
+		if (this._capabilitiesService) {
+			this._capabilitiesService.onCapabilitiesRegistered(() => {
+				this.setConnectionProviders();
+				if (this._connectionDialog) {
+					this._connectionDialog.updateConnectionProviders(this._providerTypes, this._providerNameToDisplayNameMap);
+				}
+			});
+		}
+	}
+
+	/**
+	 * Update the available provider types using the values from capabilities service
+	 */
+	private setConnectionProviders() {
+		if (this._capabilitiesService) {
+			this._providerTypes = [];
+			this._providerNameToDisplayNameMap = {};
+			entries(this._capabilitiesService.providers).forEach(p => {
+				this._providerTypes.push(p[1].connection.displayName);
+				this._providerNameToDisplayNameMap[p[0]] = p[1].connection.displayName;
+			});
+		}
+	}
 
 	/**
 	 * Gets the default provider with the following actions
@@ -311,8 +341,8 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		return newProfile;
 	}
 
-	private showDialogWithModel(): TPromise<void> {
-		return new TPromise<void>((resolve, reject) => {
+	private showDialogWithModel(): Promise<void> {
+		return new Promise<void>((resolve, reject) => {
 			this.updateModelServerCapabilities(this._inputModel);
 			this.doShowDialog(this._params);
 			resolve(null);
@@ -351,13 +381,6 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		this._inputModel = model;
 
 		return new Promise<void>((resolve, reject) => {
-			// only create the provider maps first time the dialog gets called
-			if (this._providerTypes.length === 0) {
-				entries(this._capabilitiesService.providers).forEach(p => {
-					this._providerTypes.push(p[1].connection.displayName);
-					this._providerNameToDisplayNameMap[p[0]] = p[1].connection.displayName;
-				});
-			}
 			this.updateModelServerCapabilities(model);
 			// If connecting from a query editor set "save connection" to false
 			if (params && params.input && params.connectionType === ConnectionType.editor) {
@@ -373,7 +396,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	}
 
 
-	private doShowDialog(params: INewConnectionParams): TPromise<void> {
+	private doShowDialog(params: INewConnectionParams): Promise<void> {
 		if (!this._connectionDialog) {
 			let container = this._partService.getWorkbenchElement().parentElement;
 			this._container = container;
@@ -391,7 +414,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		}
 		this._connectionDialog.newConnectionParams = params;
 
-		return new TPromise<void>(() => {
+		return new Promise<void>(() => {
 			this._connectionDialog.open(this._connectionManagementService.getRecentConnections(params.providers).length > 0);
 			this.uiController.focusOnOpen();
 		});

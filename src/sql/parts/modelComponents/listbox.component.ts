@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import {
-	Component, Input, Inject, ChangeDetectorRef, forwardRef, ComponentFactoryResolver,
-	ViewChild, ViewChildren, ElementRef, Injector, OnDestroy, QueryList, AfterViewInit
+	Component, Input, Inject, ChangeDetectorRef, forwardRef,
+	ViewChild, ElementRef, OnDestroy, AfterViewInit
 } from '@angular/core';
 
 import * as azdata from 'azdata';
@@ -17,8 +17,6 @@ import { ListBox } from 'sql/base/browser/ui/listBox/listBox';
 import { attachListBoxStyler } from 'sql/platform/theme/common/styler';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { Emitter } from 'vs/base/common/event';
-import * as nls from 'vs/nls';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 
 @Component({
@@ -50,7 +48,7 @@ export default class ListBoxComponent extends ComponentBase implements IComponen
 
 	ngAfterViewInit(): void {
 		if (this._inputContainer) {
-			this._input = new ListBox([], undefined, this.contextViewService, this.clipboardService);
+			this._input = new ListBox([], this.contextViewService, this.clipboardService);
 			this._input.render(this._inputContainer.nativeElement);
 
 			this._register(this._input);
@@ -83,7 +81,7 @@ export default class ListBoxComponent extends ComponentBase implements IComponen
 
 	public setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
-		this._input.setOptions(this.values, this.selectedRow);
+		this._input.setOptions(this.values.map(value => { return { text: value }; }), this.selectedRow);
 
 		this.validate();
 	}

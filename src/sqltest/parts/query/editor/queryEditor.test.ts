@@ -7,7 +7,6 @@
 
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { IEditorDescriptor } from 'vs/workbench/browser/editor';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { URI } from 'vs/base/common/uri';
 import * as DOM from 'vs/base/browser/dom';
 import { Memento } from 'vs/workbench/common/memento';
@@ -86,16 +85,16 @@ suite('SQL QueryEditor Tests', () => {
 		// Mock InstantiationService to give us our mockEditor
 		instantiationService = TypeMoq.Mock.ofType(InstantiationService, TypeMoq.MockBehavior.Loose);
 		instantiationService.setup(x => x.createInstance(TypeMoq.It.isAny())).returns((input) => {
-			return new TPromise((resolve) => resolve(mockEditor));
+			return new Promise((resolve) => resolve(mockEditor));
 		});
 		instantiationService.setup(x => x.createInstance(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((input) => {
-			return new TPromise((resolve) => resolve(new RunQueryAction(undefined, undefined, undefined)));
+			return new Promise((resolve) => resolve(new RunQueryAction(undefined, undefined, undefined)));
 		});
 		// Setup hook to capture calls to create the listDatabase action
 		instantiationService.setup(x => x.createInstance(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((classDef, editor, action) => {
 			if (classDef.ID) {
 				if (classDef.ID === 'listDatabaseQueryActionItem') {
-					return new ListDatabasesActionItem(editor, action, connectionManagementService.object, undefined, undefined, undefined, configurationService.object);
+					return new ListDatabasesActionItem(editor, connectionManagementService.object, undefined, undefined, configurationService.object);
 				}
 			}
 			// Default
@@ -140,7 +139,7 @@ suite('SQL QueryEditor Tests', () => {
 		// Mock ConnectionManagementService
 		memento = TypeMoq.Mock.ofType(Memento, TypeMoq.MockBehavior.Loose, '');
 		memento.setup(x => x.getMemento(TypeMoq.It.isAny())).returns(() => void 0);
-		connectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Loose, memento.object, undefined);
+		connectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Loose, memento.object, undefined, new TestStorageService());
 		connectionManagementService.callBase = true;
 		connectionManagementService.setup(x => x.isConnected(TypeMoq.It.isAny())).returns(() => false);
 		connectionManagementService.setup(x => x.disconnectEditor(TypeMoq.It.isAny())).returns(() => void 0);
@@ -329,7 +328,7 @@ suite('SQL QueryEditor Tests', () => {
 			// Mock ConnectionManagementService but don't set connected state
 			memento = TypeMoq.Mock.ofType(Memento, TypeMoq.MockBehavior.Loose, '');
 			memento.setup(x => x.getMemento(TypeMoq.It.isAny())).returns(() => void 0);
-			queryConnectionService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Loose, memento.object, undefined);
+			queryConnectionService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Loose, memento.object, undefined, new TestStorageService());
 			queryConnectionService.callBase = true;
 
 			queryConnectionService.setup(x => x.disconnectEditor(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => void 0);
@@ -339,7 +338,7 @@ suite('SQL QueryEditor Tests', () => {
 			queryActionInstantiationService = TypeMoq.Mock.ofType(InstantiationService, TypeMoq.MockBehavior.Loose);
 
 			queryActionInstantiationService.setup(x => x.createInstance(TypeMoq.It.isAny())).returns((input) => {
-				return new TPromise((resolve) => resolve(mockEditor));
+				return new Promise((resolve) => resolve(mockEditor));
 			});
 
 			queryActionInstantiationService.setup(x => x.createInstance(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((input) => {
@@ -351,7 +350,7 @@ suite('SQL QueryEditor Tests', () => {
 			queryActionInstantiationService.setup(x => x.createInstance(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()))
 				.returns((definition, editor, action, selectBox) => {
 					if (definition.ID === 'listDatabaseQueryActionItem') {
-						let item = new ListDatabasesActionItem(editor, action, queryConnectionService.object, undefined, undefined, undefined, configurationService.object);
+						let item = new ListDatabasesActionItem(editor, queryConnectionService.object, undefined, undefined, configurationService.object);
 						return item;
 					}
 					// Default

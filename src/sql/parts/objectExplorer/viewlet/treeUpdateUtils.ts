@@ -10,7 +10,6 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { NodeType } from 'sql/parts/objectExplorer/common/nodeType';
 
-import { TPromise } from 'vs/base/common/winjs.base';
 import { TreeNode } from 'sql/parts/objectExplorer/common/treeNode';
 import errors = require('vs/base/common/errors');
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
@@ -22,7 +21,7 @@ export class TreeUpdateUtils {
 	/**
 	 * Set input for the tree.
 	 */
-	public static structuralTreeUpdate(tree: ITree, viewKey: string, connectionManagementService: IConnectionManagementService, providers?: string[]): void {
+	public static structuralTreeUpdate(tree: ITree, viewKey: string, connectionManagementService: IConnectionManagementService, providers?: string[]): Promise<void> {
 		let selectedElement: any;
 		let targetsToExpand: any[];
 		if (tree) {
@@ -44,7 +43,7 @@ export class TreeUpdateUtils {
 			treeInput = TreeUpdateUtils.getTreeInput(connectionManagementService, providers);
 		}
 
-		tree.setInput(treeInput).then(() => {
+		return tree.setInput(treeInput).then(() => {
 			// Make sure to expand all folders that where expanded in the previous session
 			if (targetsToExpand) {
 				tree.expandAll(targetsToExpand);
@@ -59,7 +58,7 @@ export class TreeUpdateUtils {
 	/**
 	 * Set input for the registered servers tree.
 	 */
-	public static registeredServerUpdate(tree: ITree, connectionManagementService: IConnectionManagementService, elementToSelect?: any): void {
+	public static registeredServerUpdate(tree: ITree, connectionManagementService: IConnectionManagementService, elementToSelect?: any): Promise<void> {
 		let selectedElement: any = elementToSelect;
 		let targetsToExpand: any[];
 
@@ -82,7 +81,7 @@ export class TreeUpdateUtils {
 		let treeInput = TreeUpdateUtils.getTreeInput(connectionManagementService);
 		if (treeInput) {
 			if (treeInput !== tree.getInput()) {
-				tree.setInput(treeInput).then(() => {
+				return tree.setInput(treeInput).then(() => {
 					// Make sure to expand all folders that where expanded in the previous session
 					if (targetsToExpand) {
 						tree.expandAll(targetsToExpand);
@@ -94,6 +93,7 @@ export class TreeUpdateUtils {
 				}, errors.onUnexpectedError);
 			}
 		}
+		return Promise.resolve();
 	}
 
 	public static getTreeInput(connectionManagementService: IConnectionManagementService, providers?: string[]): ConnectionProfileGroup {
@@ -117,8 +117,8 @@ export class TreeUpdateUtils {
 		connection: IConnectionProfile,
 		options: IConnectionCompletionOptions,
 		connectionManagementService: IConnectionManagementService,
-		tree: ITree): TPromise<ConnectionProfile> {
-		return new TPromise<ConnectionProfile>((resolve, reject) => {
+		tree: ITree): Promise<ConnectionProfile> {
+		return new Promise<ConnectionProfile>((resolve, reject) => {
 			if (!connectionManagementService.isProfileConnected(connection)) {
 				// don't try to reconnect if currently connecting
 				if (connectionManagementService.isProfileConnecting(connection)) {
@@ -176,8 +176,8 @@ export class TreeUpdateUtils {
 	 * @param objectExplorerService Object explorer service instance
 	 */
 	public static connectAndCreateOeSession(connection: IConnectionProfile, options: IConnectionCompletionOptions,
-		connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, tree: ITree): TPromise<boolean> {
-		return new TPromise<boolean>((resolve, reject) => {
+		connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, tree: ITree): Promise<boolean> {
+		return new Promise<boolean>((resolve, reject) => {
 			TreeUpdateUtils.connectIfNotConnected(connection, options, connectionManagementService, tree).then(connectedConnection => {
 				if (connectedConnection) {
 					// append group ID and original display name to build unique OE session ID
@@ -205,8 +205,8 @@ export class TreeUpdateUtils {
 		});
 	}
 
-	public static getObjectExplorerNode(connection: ConnectionProfile, connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService): TPromise<TreeNode[]> {
-		return new TPromise<TreeNode[]>((resolve, reject) => {
+	public static getObjectExplorerNode(connection: ConnectionProfile, connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService): Promise<TreeNode[]> {
+		return new Promise<TreeNode[]>((resolve, reject) => {
 			if (connection.isDisconnecting) {
 				resolve([]);
 			} else {

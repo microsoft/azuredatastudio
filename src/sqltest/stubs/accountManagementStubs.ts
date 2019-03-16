@@ -9,7 +9,6 @@ import * as azdata from 'azdata';
 import { Event } from 'vs/base/common/event';
 import { IAccountManagementService } from 'sql/platform/accountManagement/common/interfaces';
 import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/platform/accountManagement/common/eventTypes';
-import { TPromise } from 'vs/base/common/winjs.base';
 
 export class AccountManagementTestService implements IAccountManagementService {
 	_serviceBrand: any;
@@ -62,7 +61,7 @@ export class AccountManagementTestService implements IAccountManagementService {
 		return undefined;
 	}
 
-	openAccountListDialog(): TPromise<any> {
+	openAccountListDialog(): Promise<any> {
 		return undefined;
 	}
 

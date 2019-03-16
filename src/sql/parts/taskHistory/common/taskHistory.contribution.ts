@@ -7,7 +7,7 @@ import nls = require('vs/nls');
 import 'vs/css!sql/media/actionBarLabel';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { localize } from 'vs/nls';
-import { SyncActionDescriptor } from 'vs/platform/actions/common/actions';
+import { SyncActionDescriptor, MenuRegistry, MenuId } from 'vs/platform/actions/common/actions';
 import { ViewletRegistry, Extensions as ViewletExtensions, ViewletDescriptor } from 'vs/workbench/browser/viewlet';
 import { IWorkbenchActionRegistry, Extensions as ActionExtensions } from 'vs/workbench/common/actions';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
@@ -125,4 +125,13 @@ configurationRegistry.registerConfiguration({
 			'type': 'array'
 		}
 	}
+});
+
+MenuRegistry.appendMenuItem(MenuId.MenubarViewMenu, {
+	group: '3_views',
+	command: {
+		id: VIEWLET_ID,
+		title: localize({ key: 'miViewTasks', comment: ['&& denotes a mnemonic'] }, "&&Tasks")
+	},
+	order: 2
 });

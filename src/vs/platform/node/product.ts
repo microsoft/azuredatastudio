@@ -86,6 +86,7 @@ export interface IProductConfiguration {
 	};
 	logUploaderUrl: string;
 	portable?: string;
+	uiExtensions?: string[];
 }
 
 export interface ISurveyData {

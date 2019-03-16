@@ -21,7 +21,6 @@ import { IStorageService, StorageScope } from 'vs/platform/storage/common/storag
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IExtensionManagementService } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
-import { getIdFromLocalExtensionId } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 
 export const SERVICE_ID = 'capabilitiesService';
 export const HOST_NAME = 'azdata';
@@ -131,11 +130,12 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 			this.cleanupProviders();
 		});
 
+		_storageService.onWillSaveState(() => this.shutdown());
+
 		this._register(extentionManagementService.onDidUninstallExtension(({ identifier }) => {
 			const connectionProvider = 'connectionProvider';
-			let extensionid = getIdFromLocalExtensionId(identifier.id);
 			extensionService.getExtensions().then(i => {
-				let extension = i.find(c => c.id === extensionid);
+				let extension = i.find(c => c.identifier.value.toLowerCase() === identifier.id.toLowerCase());
 				if (extension && extension.contributes
 					&& extension.contributes[connectionProvider]
 					&& extension.contributes[connectionProvider].providerId) {
@@ -239,7 +239,7 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 		}
 	}
 
-	public shutdown(): void {
+	private shutdown(): void {
 		this._momento.saveMemento();
 	}
 }
