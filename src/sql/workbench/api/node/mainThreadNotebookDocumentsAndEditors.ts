@@ -32,7 +32,6 @@ import { NotebookChangeType, CellTypes } from 'sql/parts/notebook/models/contrac
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { notebookModeId } from 'sql/common/constants';
-import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 
 class MainThreadNotebookEditor extends Disposable {
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
