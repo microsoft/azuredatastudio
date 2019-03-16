@@ -45,6 +45,7 @@ export class NotebookEditorModel extends EditorModel {
 			if (notebook.id === this.notebookUri.toString()) {
 				// Hook to content change events
 				notebook.modelReady.then(() => {
+					this._register(notebook.model.kernelChanged(e => this.updateModel()));
 					this._register(notebook.model.contentChanged(e => this.updateModel()));
 				}, err => undefined);
 			}
