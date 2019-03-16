@@ -11,7 +11,7 @@ import { readFile } from 'vs/base/node/pfs';
 // {{SQL CARBON EDIT}}
 import product from 'vs/platform/product/node/product';
 
-export function resolveCommonProperties(commit: string | undefined, version: string, machineId: string | undefined, installSourcePath: string): Promise<{ [name: string]: string | undefined; }> {
+export function resolveCommonProperties(commit: string | undefined, version: string | undefined, machineId: string | undefined, installSourcePath: string): Promise<{ [name: string]: string | undefined; }> {
 	const result: { [name: string]: string | undefined; } = Object.create(null);
 
 	// {{SQL CARBON EDIT}}
