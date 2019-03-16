@@ -4,10 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
-import { TerminalConfigHelper } from 'vs/workbench/contrib/terminal/electron-browser/terminalConfigHelper';
+import { TerminalConfigHelper } from 'vs/workbench/contrib/terminal/browser/terminalConfigHelper';
 import { EDITOR_FONT_DEFAULTS } from 'vs/editor/common/config/editorOptions';
-import { isFedora, isUbuntu } from 'vs/workbench/contrib/terminal/node/terminal';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
+import { LinuxDistro } from 'vs/workbench/contrib/terminal/common/terminal';
 
 suite('Workbench - TerminalConfigHelper', () => {
 	test('TerminalConfigHelper - getFont fontFamily', function () {
