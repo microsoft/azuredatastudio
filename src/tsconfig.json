@@ -15,7 +15,8 @@
 	"include": [
 		"./typings",
 		"./vs",
-		"./sql"
+		"./sql",
+		"./sqltest"
 	],
 	"exclude": [
 		"./typings/require-monaco.d.ts"

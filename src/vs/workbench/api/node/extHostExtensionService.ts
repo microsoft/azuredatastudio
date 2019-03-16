@@ -4,11 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as nls from 'vs/nls';
-import * as path from 'path';
+import * as path from 'vs/base/common/path';
 // {{SQL CARBON EDIT}}
 import { createApiFactory, initializeExtensionApi, ISqlExtensionApiFactory } from 'sql/workbench/api/node/sqlExtHost.api.impl';
 import { Barrier } from 'vs/base/common/async';
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { IDisposable, dispose, toDisposable } from 'vs/base/common/lifecycle';
 import { TernarySearchTree } from 'vs/base/common/map';
 import Severity from 'vs/base/common/severity';
 import { URI } from 'vs/base/common/uri';
@@ -27,6 +27,7 @@ import { connectProxyResolver } from 'vs/workbench/services/extensions/node/prox
 import { CancellationTokenSource } from 'vs/base/common/cancellation';
 import * as errors from 'vs/base/common/errors';
 import { ResolvedAuthority } from 'vs/platform/remote/common/remoteAuthorityResolver';
+import * as vscode from 'vscode';
 import { ExtensionIdentifier } from 'vs/platform/extensions/common/extensions';
 import { IWorkspace } from 'vs/platform/workspace/common/workspace';
 
@@ -171,6 +172,8 @@ export class ExtHostExtensionService implements ExtHostExtensionServiceShape {
 	// {{SQL CARBON EDIT}}
 	private readonly _extensionApiFactory: ISqlExtensionApiFactory;
 
+	private readonly _resolvers: { [authorityPrefix: string]: vscode.RemoteAuthorityResolver; };
+
 	private _started: boolean;
 
 	constructor(
@@ -230,6 +233,8 @@ export class ExtHostExtensionService implements ExtHostExtensionServiceShape {
 
 		// initialize API first (i.e. do not release barrier until the API is initialized)
 		this._extensionApiFactory = createApiFactory(this._initData, this._extHostContext, this._extHostWorkspace, this._extHostConfiguration, this, this._extHostLogService, this._storage);
+
+		this._resolvers = Object.create(null);
 
 		this._started = false;
 
@@ -664,10 +669,40 @@ export class ExtHostExtensionService implements ExtHostExtensionServiceShape {
 			});
 	}
 
+	// -- called by extensions
+
+	public registerRemoteAuthorityResolver(authorityPrefix: string, resolver: vscode.RemoteAuthorityResolver): vscode.Disposable {
+		this._resolvers[authorityPrefix] = resolver;
+		return toDisposable(() => {
+			this._resolvers[authorityPrefix] = null;
+		});
+	}
+
 	// -- called by main thread
 
 	public async $resolveAuthority(remoteAuthority: string): Promise<ResolvedAuthority> {
-		throw new Error(`Not implemented`);
+		const authorityPlusIndex = remoteAuthority.indexOf('+');
+		if (authorityPlusIndex === -1) {
+			throw new Error(`Not an authority that can be resolved!`);
+		}
+		const authorityPrefix = remoteAuthority.substr(0, authorityPlusIndex);
+
+		await this._barrier.wait();
+		await this._activateByEvent(`onResolveRemoteAuthority:${authorityPrefix}`, false);
+
+		const resolver = this._resolvers[authorityPrefix];
+		if (!resolver) {
+			throw new Error(`No resolver available for ${authorityPrefix}`);
+		}
+
+		const result = await resolver.resolve(remoteAuthority);
+		return {
+			authority: remoteAuthority,
+			host: result.host,
+			port: result.port,
+			debugListenPort: result.debugListenPort,
+			debugConnectPort: result.debugConnectPort,
+		};
 	}
 
 	public $startExtensionHost(enabledExtensionIds: ExtensionIdentifier[]): Promise<void> {

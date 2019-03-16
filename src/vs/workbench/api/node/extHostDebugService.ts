@@ -5,7 +5,7 @@
 
 // {{SQL CARBON EDIT}}
 /*
-import * as paths from 'vs/base/common/paths';
+import * as path from 'vs/base/common/path';
 import { Schemas } from 'vs/base/common/network';
 import { URI, UriComponents } from 'vs/base/common/uri';
 import { Event, Emitter } from 'vs/base/common/event';
@@ -883,7 +883,7 @@ export class ExtHostVariableResolverService extends AbstractVariableResolverServ
 				if (activeEditor) {
 					const resource = activeEditor.document.uri;
 					if (resource.scheme === Schemas.file) {
-						return paths.normalize(resource.fsPath, true);
+						return path.normalize(resource.fsPath);
 					}
 				}
 				return undefined;

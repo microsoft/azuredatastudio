@@ -504,8 +504,7 @@ export class EditorStatus implements IStatusbarItem {
 		if (!this.screenReaderNotification) {
 			this.screenReaderNotification = this.notificationService.prompt(
 				Severity.Info,
-				// {{SQL CARBON EDIT}}
-				nls.localize('screenReaderDetectedExplanation.question', "Are you using a screen reader to operate Azure Data Studio?"),
+				nls.localize('screenReaderDetectedExplanation.question', "Are you using a screen reader to operate Azure Data Studio? (Certain features like folding, minimap or word wrap are disabled when using a screen reader)"),
 				[{
 					label: nls.localize('screenReaderDetectedExplanation.answerYes', "Yes"),
 					run: () => {
@@ -589,10 +588,12 @@ export class EditorStatus implements IStatusbarItem {
 				this.onEOLChange(activeCodeEditor);
 
 				const selections = activeCodeEditor.getSelections();
-				for (const change of e.changes) {
-					if (selections.some(selection => Range.areIntersecting(selection, change.range))) {
-						this.onSelectionChange(activeCodeEditor);
-						break;
+				if (selections) {
+					for (const change of e.changes) {
+						if (selections.some(selection => Range.areIntersecting(selection, change.range))) {
+							this.onSelectionChange(activeCodeEditor);
+							break;
+						}
 					}
 				}
 			}));
@@ -666,7 +667,7 @@ export class EditorStatus implements IStatusbarItem {
 		this.updateState(update);
 	}
 
-	private onMetadataChange(editor: IBaseEditor): void {
+	private onMetadataChange(editor: IBaseEditor | undefined): void {
 		const update: StateDelta = { metadata: undefined };
 
 		if (editor instanceof BaseBinaryResourceEditor || editor instanceof BinaryResourceDiffEditor) {
@@ -766,7 +767,7 @@ export class EditorStatus implements IStatusbarItem {
 
 		// We only support text based editors
 		if (e && (isCodeEditor(e.getControl()) || isDiffEditor(e.getControl()))) {
-			const encodingSupport: IEncodingSupport = toEditorWithEncodingSupport(e.input);
+			const encodingSupport: IEncodingSupport | null = e.input ? toEditorWithEncodingSupport(e.input) : null;
 			if (encodingSupport) {
 				const rawEncoding = encodingSupport.getEncoding();
 				const encodingInfo = SUPPORTED_ENCODINGS[rawEncoding];
@@ -800,7 +801,7 @@ export class EditorStatus implements IStatusbarItem {
 	private isActiveEditor(control: IBaseEditor): boolean {
 		const activeControl = this.editorService.activeControl;
 
-		return activeControl && activeControl === control;
+		return !!activeControl && activeControl === control;
 	}
 }
 
@@ -862,19 +863,19 @@ export class ChangeModeAction extends Action {
 		}
 
 		const textModel = activeTextEditorWidget.getModel();
-		const resource = toResource(this.editorService.activeEditor, { supportSideBySide: true });
+		const resource = this.editorService.activeEditor ? toResource(this.editorService.activeEditor, { supportSideBySide: true }) : null;
 
 		let hasLanguageSupport = !!resource;
-		if (resource.scheme === Schemas.untitled && !this.untitledEditorService.hasAssociatedFilePath(resource)) {
+		if (resource && resource.scheme === Schemas.untitled && !this.untitledEditorService.hasAssociatedFilePath(resource)) {
 			hasLanguageSupport = false; // no configuration for untitled resources (e.g. "Untitled-1")
 		}
 
 		// Compute mode
-		let currentModeId: string;
+		let currentModeId: string | undefined;
 		let modeId: string;
 		if (textModel) {
 			modeId = textModel.getLanguageIdentifier().language;
-			currentModeId = this.modeService.getLanguageName(modeId);
+			currentModeId = this.modeService.getLanguageName(modeId) || undefined;
 		}
 
 		// All languages are valid picks
@@ -914,7 +915,7 @@ export class ChangeModeAction extends Action {
 		let configureModeAssociations: IQuickPickItem;
 		let configureModeSettings: IQuickPickItem;
 		let galleryAction: Action;
-		if (hasLanguageSupport) {
+		if (hasLanguageSupport && resource) {
 			const ext = extname(resource) || basename(resource);
 
 			galleryAction = this.instantiationService.createInstance(ShowLanguageExtensionsAction, ext);
@@ -1038,11 +1039,7 @@ export class ChangeModeAction extends Action {
 					}
 
 					// Make sure to write into the value of the target and not the merged value from USER and WORKSPACE config
-					let currentAssociations = deepClone((target === ConfigurationTarget.WORKSPACE) ? fileAssociationsConfig.workspace : fileAssociationsConfig.user);
-					if (!currentAssociations) {
-						currentAssociations = Object.create(null);
-					}
-
+					const currentAssociations = deepClone((target === ConfigurationTarget.WORKSPACE) ? fileAssociationsConfig.workspace : fileAssociationsConfig.user) || Object.create(null);
 					currentAssociations[associationKey] = language.id;
 
 					this.configurationService.updateValue(FILES_ASSOCIATIONS_CONFIG, currentAssociations, target);
@@ -1173,7 +1170,10 @@ export class ChangeEncodingAction extends Action {
 		}
 
 		let activeControl = this.editorService.activeControl;
-		let encodingSupport: IEncodingSupport = toEditorWithEncodingSupport(activeControl.input);
+		if (!activeControl) {
+			return this.quickInputService.pick([{ label: nls.localize('noEditor', "No text editor active at this time") }]);
+		}
+		let encodingSupport: IEncodingSupport | null = toEditorWithEncodingSupport(activeControl.input);
 		if (!encodingSupport) {
 			return this.quickInputService.pick([{ label: nls.localize('noFileEditor', "No file active at this time") }]);
 		}
@@ -1218,7 +1218,7 @@ export class ChangeEncodingAction extends Action {
 					const configuredEncoding = this.textResourceConfigurationService.getValue(resource, 'files.encoding');
 
 					let directMatchIndex: number | undefined;
-					let aliasMatchIndex: number;
+					let aliasMatchIndex: number | undefined;
 
 					// All encodings are valid picks
 					const picks: QuickPickInput[] = Object.keys(SUPPORTED_ENCODINGS)

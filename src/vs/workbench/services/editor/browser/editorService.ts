@@ -15,11 +15,11 @@ import { IFileService } from 'vs/platform/files/common/files';
 import { Schemas } from 'vs/base/common/network';
 import { Event, Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
-import { basename } from 'vs/base/common/paths';
+import { basename } from 'vs/base/common/resources';
 import { DiffEditorInput } from 'vs/workbench/common/editor/diffEditorInput';
 import { localize } from 'vs/nls';
 import { IEditorGroupsService, IEditorGroup, GroupsOrder, IEditorReplacement, GroupChangeKind, preferredSideBySideGroupDirection } from 'vs/workbench/services/editor/common/editorGroupsService';
-import { IResourceEditor, ACTIVE_GROUP_TYPE, SIDE_GROUP_TYPE, SIDE_GROUP, IResourceEditorReplacement, IOpenEditorOverrideHandler } from 'vs/workbench/services/editor/common/editorService';
+import { IResourceEditor, ACTIVE_GROUP_TYPE, SIDE_GROUP_TYPE, SIDE_GROUP, IResourceEditorReplacement, IOpenEditorOverrideHandler, IActiveEditor } from 'vs/workbench/services/editor/common/editorService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { Disposable, IDisposable, dispose, toDisposable } from 'vs/base/common/lifecycle';
 import { coalesce } from 'vs/base/common/arrays';
@@ -155,13 +155,13 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 		}
 	}
 
-	get activeControl(): IEditor {
+	get activeControl(): IActiveEditor | undefined {
 		const activeGroup = this.editorGroupService.activeGroup;
 
 		return activeGroup ? activeGroup.activeControl : undefined;
 	}
 
-	get activeTextEditorWidget(): ICodeEditor | IDiffEditor {
+	get activeTextEditorWidget(): ICodeEditor | IDiffEditor | undefined {
 		const activeControl = this.activeControl;
 		if (activeControl) {
 			const activeControlWidget = activeControl.getControl();
@@ -182,10 +182,10 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 		return editors;
 	}
 
-	get activeEditor(): IEditorInput {
+	get activeEditor(): IEditorInput | undefined {
 		const activeGroup = this.editorGroupService.activeGroup;
 
-		return activeGroup ? activeGroup.activeEditor : undefined;
+		return activeGroup ? activeGroup.activeEditor || undefined : undefined;
 	}
 
 	get visibleControls(): IEditor[] {
@@ -248,7 +248,7 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 	}
 
 	private findTargetGroup(input: IEditorInput, options?: IEditorOptions, group?: IEditorGroup | GroupIdentifier | SIDE_GROUP_TYPE | ACTIVE_GROUP_TYPE): IEditorGroup {
-		let targetGroup: IEditorGroup;
+		let targetGroup: IEditorGroup | undefined;
 
 		// Group: Instance of Group
 		if (group && typeof group !== 'number') {
@@ -383,7 +383,7 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 		return this.doGetOpened(editor);
 	}
 
-	private doGetOpened(editor: IEditorInput | IResourceInput | IUntitledResourceInput, group?: IEditorGroup | GroupIdentifier): IEditorInput {
+	private doGetOpened(editor: IEditorInput | IResourceInput | IUntitledResourceInput, group?: IEditorGroup | GroupIdentifier): IEditorInput | undefined {
 		if (!(editor instanceof EditorInput)) {
 			const resourceInput = editor as IResourceInput | IUntitledResourceInput;
 			if (!resourceInput.resource) {
@@ -419,7 +419,7 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 					}
 
 					const resourceInput = editor as IResourceInput | IUntitledResourceInput;
-					if (resource.toString() === resourceInput.resource.toString()) {
+					if (resourceInput.resource && resource.toString() === resourceInput.resource.toString()) {
 						return editorInGroup;
 					}
 				}
@@ -480,7 +480,7 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 
 	//#region createInput()
 
-	createInput(input: IEditorInputWithOptions | IEditorInput | IResourceEditor): EditorInput {
+	createInput(input: IEditorInputWithOptions | IEditorInput | IResourceEditor): EditorInput | null {
 
 		// Typed Editor Input Support (EditorInput)
 		if (input instanceof EditorInput) {
@@ -536,7 +536,7 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 		if (resourceInput.resource instanceof URI) {
 			let label = resourceInput.label;
 			if (!label && resourceInput.resource.scheme !== Schemas.data) {
-				label = basename(resourceInput.resource.fsPath); // derive the label from the path (but not for data URIs)
+				label = basename(resourceInput.resource); // derive the label from the path (but not for data URIs)
 			}
 
 			// {{SQL CARBON EDIT}}
@@ -585,11 +585,11 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 		return input;
 	}
 
-	private toDiffLabel(input: EditorInput): string {
+	private toDiffLabel(input: EditorInput): string | null {
 		const res = input.getResource();
 
 		// Do not try to extract any paths from simple untitled editors
-		if (res.scheme === Schemas.untitled && !this.untitledEditorService.hasAssociatedFilePath(res)) {
+		if (res && res.scheme === Schemas.untitled && !this.untitledEditorService.hasAssociatedFilePath(res)) {
 			return input.getName();
 		}
 

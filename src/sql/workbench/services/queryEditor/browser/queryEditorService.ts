@@ -20,7 +20,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import Severity from 'vs/base/common/severity';
 import nls = require('vs/nls');
 import { URI } from 'vs/base/common/uri';
-import paths = require('vs/base/common/paths');
+import paths = require('vs/base/common/extpath');
 import { isLinux } from 'vs/base/common/platform';
 import { Schemas } from 'vs/base/common/network';
 import { INotificationService } from 'vs/platform/notification/common/notification';

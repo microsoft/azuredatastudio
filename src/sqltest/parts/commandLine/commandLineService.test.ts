@@ -63,7 +63,7 @@ class TestParsedArgs implements ParsedArgs {
 	locale?: string;
 	log?: string;
 	logExtensionHostCommunication?: boolean;
-	'max-memory'?: number;
+	'max-memory'?: string;
 	'new-window'?: boolean;
 	'open-url'?: boolean;
 	performance?: boolean;
@@ -283,4 +283,3 @@ suite('commandLineService tests', () => {
 		assertThrowsAsync(async () => await service.processCommandLine(args));
 	});
 });
-

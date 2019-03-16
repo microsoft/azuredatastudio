@@ -3,8 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { normalize, join } from 'vs/base/common/paths';
-import { dirname } from 'vs/base/common/paths.node';
+import { normalize, join, dirname } from 'vs/base/common/path';
 import * as os from 'os';
 
 import { URI } from 'vs/base/common/uri';
