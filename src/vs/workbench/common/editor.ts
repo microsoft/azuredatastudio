@@ -1055,7 +1055,7 @@ class EditorInputFactoryRegistry implements IEditorInputFactoryRegistry {
 	private instantiationService: IInstantiationService;
 	private fileInputFactory: IFileInputFactory;
 	private editorInputFactoryConstructors: { [editorInputId: string]: IConstructorSignature0<IEditorInputFactory> } = Object.create(null);
-	private editorInputFactoryInstances: { [editorInputId: string]: IEditorInputFactory } = Object.create(null);
+	private readonly editorInputFactoryInstances: { [editorInputId: string]: IEditorInputFactory } = Object.create(null);
 
 	start(accessor: ServicesAccessor): void {
 		this.instantiationService = accessor.get(IInstantiationService);
@@ -1065,7 +1065,7 @@ class EditorInputFactoryRegistry implements IEditorInputFactoryRegistry {
 			this.createEditorInputFactory(key, element);
 		}
 
-		this.editorInputFactoryConstructors = {};
+		this.editorInputFactoryConstructors = Object.create(null);
 	}
 
 	private createEditorInputFactory(editorInputId: string, ctor: IConstructorSignature0<IEditorInputFactory>): void {
