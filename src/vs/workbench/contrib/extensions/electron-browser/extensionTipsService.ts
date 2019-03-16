@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
-import * as extpath from 'vs/base/common/extpath';
+import { join } from 'vs/base/common/path';
 import { forEach } from 'vs/base/common/collections';
 import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
 import { match } from 'vs/base/common/glob';
@@ -23,7 +23,7 @@ import Severity from 'vs/base/common/severity';
 import { IWorkspaceContextService, IWorkspaceFolder, IWorkspace, IWorkspaceFoldersChangeEvent, WorkbenchState } from 'vs/platform/workspace/common/workspace';
 import { IFileService } from 'vs/platform/files/common/files';
 // {{SQL CARBON EDIT}}
-import { IExtensionsConfiguration, ConfigurationKey, ShowRecommendationsOnlyOnDemandKey, IExtensionsViewlet, IExtensionsWorkbenchService, ExtensionsPolicyKey, ExtensionsPolicy } from 'vs/workbench/contrib/extensions/common/extensions';
+import { IExtensionsConfiguration, ConfigurationKey, ShowRecommendationsOnlyOnDemandKey, IExtensionsViewlet, IExtensionsWorkbenchService, EXTENSIONS_CONFIG, ExtensionsPolicyKey, ExtensionsPolicy } from 'vs/workbench/contrib/extensions/common/extensions';
 import { IConfigurationService, ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import * as pfs from 'vs/base/node/pfs';
@@ -348,7 +348,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 	 * Parse the extensions.json files for given workspace folder and return the recommendations
 	 */
 	private resolveWorkspaceFolderExtensionConfig(workspaceFolder: IWorkspaceFolder): Promise<IExtensionsConfigContent | null> {
-		const extensionsJsonUri = workspaceFolder.toResource(extpath.join('.azuredatastudio', 'extensions.json'));
+		const extensionsJsonUri = workspaceFolder.toResource(EXTENSIONS_CONFIG);
 
 		return Promise.resolve(this.fileService.resolveFile(extensionsJsonUri)
 			.then(() => this.fileService.resolveContent(extensionsJsonUri))
@@ -916,8 +916,8 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 					.replace('%APPDATA%', process.env['APPDATA']!);
 				promises.push(findExecutable(exeName, windowsPath));
 			} else {
-				promises.push(findExecutable(exeName, extpath.join('/usr/local/bin', exeName)));
-				promises.push(findExecutable(exeName, extpath.join(homeDir, exeName)));
+				promises.push(findExecutable(exeName, join('/usr/local/bin', exeName)));
+				promises.push(findExecutable(exeName, join(homeDir, exeName)));
 			}
 		});
 
