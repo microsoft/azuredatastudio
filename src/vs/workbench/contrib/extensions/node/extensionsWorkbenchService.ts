@@ -40,9 +40,9 @@ import { IExtensionManifest, ExtensionType, ExtensionIdentifierWithVersion, IExt
 import { isUIExtension } from 'vs/platform/extensions/node/extensionsUtil';
 
 // {{SQL CARBON EDIT}}
-import pkg from 'vs/platform/node/package';
 import { isEngineValid } from 'vs/platform/extensions/node/extensionValidator';
 import { ExtensionManagementError } from 'vs/platform/extensionManagement/node/extensionManagementService';
+import pkg from 'vs/platform/product/node/package';
 
 interface IExtensionStateProvider<T> {
 	(extension: Extension): T;

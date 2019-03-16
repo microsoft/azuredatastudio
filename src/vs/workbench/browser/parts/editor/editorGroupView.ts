@@ -45,7 +45,7 @@ import { fillInContextMenuActions } from 'vs/platform/actions/browser/menuItemAc
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 // {{SQL CARBON EDIT}}
 import { ICommandService } from 'vs/platform/commands/common/commands';
-import { GlobalNewUntitledFileAction } from 'vs/workbench/contrib/files/electron-browser/fileActions';
+import { GlobalNewUntitledFileAction } from 'vs/workbench/contrib/files/browser/fileActions';
 // {{SQL CARBON EDIT}} - End
 import { isErrorWithActions, IErrorWithActions } from 'vs/base/common/errorsWithActions';
 import { URI } from 'vs/base/common/uri';

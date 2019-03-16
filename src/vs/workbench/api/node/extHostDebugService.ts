@@ -911,7 +911,7 @@ export class ExtHostVariableResolverService extends AbstractVariableResolverServ
 				}
 				return undefined;
 			}
-		});
+		}, process.env);
 	}
 }
 

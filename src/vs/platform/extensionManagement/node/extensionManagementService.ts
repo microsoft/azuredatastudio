@@ -49,7 +49,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { isUIExtension } from 'vs/platform/extensions/node/extensionsUtil';
 
 // {{SQL CARBON EDIT}
-import product from 'vs/platform/node/product';
+import product from 'vs/platform/product/node/product';
 
 const ERROR_SCANNING_SYS_EXTENSIONS = 'scanningSystem';
 const ERROR_SCANNING_USER_EXTENSIONS = 'scanningUser';

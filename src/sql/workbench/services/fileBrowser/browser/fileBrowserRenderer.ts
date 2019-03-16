@@ -11,7 +11,7 @@ import { URI } from 'vs/base/common/uri';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { toDisposable } from 'vs/base/common/lifecycle';
 import { ResourceLabels, DEFAULT_LABELS_CONTAINER } from 'vs/workbench/browser/labels';
-import { IFileTemplateData } from 'vs/workbench/contrib/files/electron-browser/views/explorerViewer';
+import { IFileTemplateData } from 'vs/workbench/contrib/files/browser/views/explorerViewer';
 
 const EmptyDisposable = toDisposable(() => null);
 

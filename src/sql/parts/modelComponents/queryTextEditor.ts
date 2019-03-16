@@ -26,6 +26,7 @@ import { Configuration } from 'vs/editor/browser/config/configuration';
 import { IWindowService } from 'vs/platform/windows/common/windows';
 import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
+import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 
 /**
  * Extension of TextResourceEditor that is always readonly rather than only with non UntitledInputs
@@ -52,7 +53,8 @@ export class QueryTextEditor extends BaseTextEditor {
 		@IEditorGroupsService editorGroupService: IEditorGroupsService,
 		@IEditorService protected editorService: IEditorService,
 		@IWindowService windowService: IWindowService,
-		@IWorkspaceConfigurationService private workspaceConfigurationService: IWorkspaceConfigurationService
+		@IWorkspaceConfigurationService private workspaceConfigurationService: IWorkspaceConfigurationService,
+		@IAccessibilityService private accessibilityService: IAccessibilityService
 
 	) {
 		super(
@@ -131,7 +133,7 @@ export class QueryTextEditor extends BaseTextEditor {
 	public setHeightToScrollHeight(configChanged?: boolean): void {
 		let editorWidget = this.getControl() as ICodeEditor;
 		if (!this._config) {
-			this._config = new Configuration(undefined, editorWidget.getDomNode());
+			this._config = new Configuration(undefined, editorWidget.getDomNode(), this.accessibilityService);
 			this._scrollbarHeight = this._config.editor.viewInfo.scrollbar.horizontalScrollbarSize;
 		}
 		let editorWidgetModel = editorWidget.getModel();

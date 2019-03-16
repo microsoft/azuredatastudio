@@ -11,6 +11,7 @@ import { IEditorOpeningEvent } from 'vs/workbench/browser/parts/editor/editor';
 import { IEditorInput, EditorInput, GroupIdentifier } from 'vs/workbench/common/editor';
 import { EditorGroup } from 'vs/workbench/common/editor/editorGroup';
 import { IEditorGroupsService, IFindGroupScope, IEditorGroup, GroupDirection, IAddGroupOptions, IMergeGroupOptions, GroupOrientation, GroupsOrder, GroupsArrangement, IMoveEditorOptions, EditorGroupLayout } from 'vs/workbench/services/editor/common/editorGroupsService';
+import { IDimension } from 'vs/editor/common/editorCommon';
 
 export class EditorGroupTestService implements IEditorGroupsService {
 	_serviceBrand: ServiceIdentifier<any>;
@@ -42,6 +43,8 @@ export class EditorGroupTestService implements IEditorGroupsService {
 	onEditorOpening: Event<IEditorOpeningEvent>;
 
 	onEditorGroupMoved: Event<void>;
+
+	onDidLayout: Event<IDimension>;
 
 	/**
 	 * An event for when the active editor group changes. The active editor

@@ -122,6 +122,7 @@ export class ActivitybarPart extends Part implements ISerializableView {
 
 	private registerListeners(): void {
 
+		// Viewlet registration
 		this._register(this.viewletService.onDidViewletRegister(viewlet => this.onDidRegisterViewlets([viewlet])));
 		this._register(this.viewletService.onDidViewletDeregister(({ id }) => this.removeComposite(id, true)));
 
@@ -131,6 +132,7 @@ export class ActivitybarPart extends Part implements ISerializableView {
 		// Deactivate viewlet action on close
 		this._register(this.viewletService.onDidViewletClose(viewlet => this.compositeBar.deactivateComposite(viewlet.getId())));
 
+		// Extension registration
 		let disposables: IDisposable[] = [];
 		this._register(this.extensionService.onDidRegisterExtensions(() => {
 			disposables = dispose(disposables);
@@ -138,11 +140,13 @@ export class ActivitybarPart extends Part implements ISerializableView {
 			this.compositeBar.onDidChange(() => this.saveCachedViewlets(), this, disposables);
 			this.storageService.onDidChangeStorage(e => this.onDidStorageChange(e), this, disposables);
 		}));
+
 		this._register(toDisposable(() => dispose(disposables)));
 	}
 
 	private onDidRegisterExtensions(): void {
 		this.removeNotExistingComposites();
+
 		for (const viewlet of this.viewletService.getViewlets()) {
 			this.enableCompositeActions(viewlet);
 			const viewContainer = this.getViewContainer(viewlet.id);
@@ -154,6 +158,7 @@ export class ActivitybarPart extends Part implements ISerializableView {
 				}
 			}
 		}
+
 		this.saveCachedViewlets();
 	}
 
@@ -166,6 +171,7 @@ export class ActivitybarPart extends Part implements ISerializableView {
 	}
 
 	private onDidViewletOpen(viewlet: IViewlet): void {
+
 		// Update the composite bar by adding
 		this.compositeBar.addComposite(this.viewletService.getViewlet(viewlet.getId()));
 		this.compositeBar.activateComposite(viewlet.getId());
@@ -174,8 +180,7 @@ export class ActivitybarPart extends Part implements ISerializableView {
 		if (viewContainer) {
 			const viewDescriptors = this.viewsService.getViewDescriptors(viewContainer);
 			if (viewDescriptors && viewDescriptors.activeViewDescriptors.length === 0) {
-				// Update the composite bar by hiding
-				this.removeComposite(viewletDescriptor.id, true);
+				this.removeComposite(viewletDescriptor.id, true); // Update the composite bar by hiding
 			}
 		}
 	}
@@ -337,6 +342,7 @@ export class ActivitybarPart extends Part implements ISerializableView {
 		} else {
 			this.compositeBar.removeComposite(compositeId);
 		}
+
 		const compositeActions = this.compositeActions[compositeId];
 		if (compositeActions) {
 			compositeActions.activityAction.dispose();
@@ -350,6 +356,7 @@ export class ActivitybarPart extends Part implements ISerializableView {
 		if (activityAction instanceof PlaceHolderViewletActivityAction) {
 			activityAction.setActivity(viewlet);
 		}
+
 		if (pinnedAction instanceof PlaceHolderToggleCompositePinnedAction) {
 			pinnedAction.setActivity(viewlet);
 		}
@@ -357,6 +364,7 @@ export class ActivitybarPart extends Part implements ISerializableView {
 
 	getPinnedViewletIds(): string[] {
 		const pinnedCompositeIds = this.compositeBar.getPinnedComposites().map(v => v.id);
+
 		return this.viewletService.getViewlets()
 			.filter(v => this.compositeBar.isPinned(v.id))
 			.sort((v1, v2) => pinnedCompositeIds.indexOf(v1.id) - pinnedCompositeIds.indexOf(v2.id))
@@ -381,8 +389,7 @@ export class ActivitybarPart extends Part implements ISerializableView {
 
 		let availableHeight = this.dimension.height;
 		if (this.globalActionBar) {
-			// adjust height for global actions showing
-			availableHeight -= (this.globalActionBar.items.length * ActivitybarPart.ACTION_HEIGHT);
+			availableHeight -= (this.globalActionBar.items.length * ActivitybarPart.ACTION_HEIGHT); // adjust height for global actions showing
 		}
 		this.compositeBar.layout(new Dimension(dim1 instanceof Dimension ? dim1.width : dim1, availableHeight));
 
@@ -426,8 +433,9 @@ export class ActivitybarPart extends Part implements ISerializableView {
 
 	private saveCachedViewlets(): void {
 		const state: ICachedViewlet[] = [];
-		const compositeItems = this.compositeBar.getCompositeBarItems();
 		const allViewlets = this.viewletService.getViewlets();
+
+		const compositeItems = this.compositeBar.getCompositeBarItems();
 		for (const compositeItem of compositeItems) {
 			const viewContainer = this.getViewContainer(compositeItem.id);
 			const viewlet = allViewlets.filter(({ id }) => id === compositeItem.id)[0];
@@ -444,6 +452,7 @@ export class ActivitybarPart extends Part implements ISerializableView {
 				state.push({ id: compositeItem.id, iconUrl: viewlet.iconUrl, views, pinned: compositeItem && compositeItem.pinned, order: compositeItem ? compositeItem.order : undefined, visible: compositeItem && compositeItem.visible });
 			}
 		}
+
 		this.cachedViewletsValue = JSON.stringify(state);
 	}
 
@@ -454,6 +463,7 @@ export class ActivitybarPart extends Part implements ISerializableView {
 			serialized.visible = isUndefinedOrNull(serialized.visible) ? true : serialized.visible;
 			return serialized;
 		});
+
 		for (const old of this.loadOldCachedViewlets()) {
 			const cachedViewlet = cachedViewlets.filter(cached => cached.id === old.id)[0];
 			if (cachedViewlet) {
@@ -461,6 +471,7 @@ export class ActivitybarPart extends Part implements ISerializableView {
 				cachedViewlet.views = old.views;
 			}
 		}
+
 		return cachedViewlets;
 	}
 
@@ -468,6 +479,7 @@ export class ActivitybarPart extends Part implements ISerializableView {
 		const previousState = this.storageService.get('workbench.activity.placeholderViewlets', StorageScope.GLOBAL, '[]');
 		const result = (<ICachedViewlet[]>JSON.parse(previousState));
 		this.storageService.remove('workbench.activity.placeholderViewlets', StorageScope.GLOBAL);
+
 		return result;
 	}
 
@@ -476,6 +488,7 @@ export class ActivitybarPart extends Part implements ISerializableView {
 		if (!this._cachedViewletsValue) {
 			this._cachedViewletsValue = this.getStoredCachedViewletsValue();
 		}
+
 		return this._cachedViewletsValue;
 	}
 
@@ -499,6 +512,7 @@ export class ActivitybarPart extends Part implements ISerializableView {
 		if (viewletId === SCM_VIEWLET_ID) {
 			return null;
 		}
+
 		const viewContainerRegistry = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry);
 		return viewContainerRegistry.get(viewletId);
 	}

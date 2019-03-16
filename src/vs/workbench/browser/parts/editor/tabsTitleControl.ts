@@ -50,7 +50,7 @@ import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 import * as QueryConstants from 'sql/parts/query/common/constants';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
-import { GlobalNewUntitledFileAction } from 'vs/workbench/contrib/files/electron-browser/fileActions';
+import { GlobalNewUntitledFileAction } from 'vs/workbench/contrib/files/browser/fileActions';
 // {{SQL CARBON EDIT}} -- End
 
 interface IEditorInputLabel {
