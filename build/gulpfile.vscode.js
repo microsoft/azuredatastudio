@@ -20,6 +20,7 @@ const filter = require('gulp-filter');
 const json = require('gulp-json-editor');
 const _ = require('underscore');
 const util = require('./lib/util');
+const task = require('./lib/task');
 const ext = require('./lib/extensions');
 const buildfile = require('../src/buildfile');
 const common = require('./lib/optimize');
@@ -122,8 +123,8 @@ const BUNDLED_FILE_HEADER = [
 	' *--------------------------------------------------------*/'
 ].join('\n');
 
-const optimizeVSCodeTask = util.task.series(
-	util.task.parallel(
+const optimizeVSCodeTask = task.series(
+	task.parallel(
 		util.rimraf('out-vscode'),
 		compileBuildTask
 	),
@@ -140,7 +141,7 @@ const optimizeVSCodeTask = util.task.series(
 optimizeVSCodeTask.displayName = 'optimize-vscode';
 
 
-const optimizeIndexJSTask = util.task.series(
+const optimizeIndexJSTask = task.series(
 	optimizeVSCodeTask,
 	() => {
 		const fullpath = path.join(process.cwd(), 'out-vscode/bootstrap-window.js');
@@ -152,8 +153,8 @@ const optimizeIndexJSTask = util.task.series(
 optimizeIndexJSTask.displayName = 'optimize-index-js';
 
 const sourceMappingURLBase = `https://ticino.blob.core.windows.net/sourcemaps/${commit}`;
-const minifyVSCodeTask = util.task.series(
-	util.task.parallel(
+const minifyVSCodeTask = task.series(
+	task.parallel(
 		util.rimraf('out-vscode-min'),
 		optimizeIndexJSTask
 	),
@@ -222,11 +223,11 @@ function getElectron(arch) {
 	};
 }
 
-gulp.task('electron', util.task.series(util.rimraf('.build/electron'), getElectron(process.arch)));
-gulp.task('electron-ia32', util.task.series(util.rimraf('.build/electron'), getElectron('ia32')));
-gulp.task('electron-x64', util.task.series(util.rimraf('.build/electron'), getElectron('x64')));
-gulp.task('electron-arm', util.task.series(util.rimraf('.build/electron'), getElectron('arm')));
-gulp.task('electron-arm64', util.task.series(util.rimraf('.build/electron'), getElectron('arm64')));
+gulp.task('electron', task.series(util.rimraf('.build/electron'), getElectron(process.arch)));
+gulp.task('electron-ia32', task.series(util.rimraf('.build/electron'), getElectron('ia32')));
+gulp.task('electron-x64', task.series(util.rimraf('.build/electron'), getElectron('x64')));
+gulp.task('electron-arm', task.series(util.rimraf('.build/electron'), getElectron('arm')));
+gulp.task('electron-arm64', task.series(util.rimraf('.build/electron'), getElectron('arm64')));
 
 
 /**
@@ -494,8 +495,8 @@ BUILD_TARGETS.forEach(buildTarget => {
 		const sourceFolderName = `out-vscode${dashed(minified)}`;
 		const destinationFolderName = `azuredatastudio${dashed(platform)}${dashed(arch)}`;
 
-		const vscodeTask = util.task.series(
-			util.task.parallel(
+		const vscodeTask = task.series(
+			task.parallel(
 				minified ? minifyVSCodeTask : optimizeVSCodeTask,
 				util.rimraf(path.join(buildRoot, destinationFolderName))
 			),
@@ -528,7 +529,7 @@ const apiName = process.env.TRANSIFEX_API_NAME;
 const apiToken = process.env.TRANSIFEX_API_TOKEN;
 
 gulp.task('vscode-translations-push',
-	util.task.series(
+	task.series(
 		optimizeVSCodeTask,
 		function () {
 			const pathToMetadata = './out-vscode/nls.metadata.json';
@@ -546,7 +547,7 @@ gulp.task('vscode-translations-push',
 );
 
 gulp.task('vscode-translations-export',
-	util.task.series(
+	task.series(
 		optimizeVSCodeTask,
 		function () {
 			const pathToMetadata = './out-vscode/nls.metadata.json';
@@ -646,7 +647,7 @@ generateVSCodeConfigurationTask.displayName = 'generate-vscode-configuration';
 
 const allConfigDetailsPath = path.join(os.tmpdir(), 'configuration.json');
 gulp.task('upload-vscode-configuration',
-	util.task.series(
+	task.series(
 		generateVSCodeConfigurationTask,
 		() => {
 			if (!shouldSetupSettingsSearch()) {

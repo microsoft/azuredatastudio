@@ -3,7 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as path from 'vs/base/common/paths';
+import { normalize, join } from 'vs/base/common/paths';
+import { dirname } from 'vs/base/common/paths.node';
 import * as os from 'os';
 
 import { URI } from 'vs/base/common/uri';
@@ -18,7 +19,7 @@ export function resolveCurrentDirectory(uri: string, rootPath: string): string {
 
 	// use current directory of the sql file if sql file is saved
 	if (sqlUri.scheme === FILE_SCHEMA) {
-		currentDirectory = path.dirname(sqlUri.fsPath);
+		currentDirectory = dirname(sqlUri.fsPath);
 	} else if (sqlUri.scheme === Schemas.untitled) {
 		// if sql file is unsaved/untitled but a workspace is open use workspace root
 		let root = rootPath;
@@ -29,14 +30,14 @@ export function resolveCurrentDirectory(uri: string, rootPath: string): string {
 			currentDirectory = os.tmpdir();
 		}
 	} else {
-		currentDirectory = path.dirname(sqlUri.path);
+		currentDirectory = dirname(sqlUri.path);
 	}
 	return currentDirectory;
 }
 
 export function resolveFilePath(uri: string, filePath: string, rootPath: string): string {
 	let currentDirectory = resolveCurrentDirectory(uri, rootPath);
-	return path.normalize(path.join(currentDirectory, filePath));
+	return normalize(join(currentDirectory, filePath));
 }
 
 export function getRootPath(contextService: IWorkspaceContextService): string {

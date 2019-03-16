@@ -55,42 +55,42 @@ export abstract class ContextKeyExpr {
 	}
 	//
 
-	public static deserialize(serialized: string | null | undefined): ContextKeyExpr | null {
+	public static deserialize(serialized: string | null | undefined, strict: boolean = false): ContextKeyExpr | null {
 		if (!serialized) {
 			return null;
 		}
 
 		let pieces = serialized.split('&&');
-		let result = new ContextKeyAndExpr(pieces.map(p => this._deserializeOne(p)));
+		let result = new ContextKeyAndExpr(pieces.map(p => this._deserializeOne(p, strict)));
 		return result.normalize();
 	}
 
-	private static _deserializeOne(serializedOne: string): ContextKeyExpr {
+	private static _deserializeOne(serializedOne: string, strict: boolean): ContextKeyExpr {
 		serializedOne = serializedOne.trim();
 
 		if (serializedOne.indexOf('!=') >= 0) {
 			let pieces = serializedOne.split('!=');
-			return new ContextKeyNotEqualsExpr(pieces[0].trim(), this._deserializeValue(pieces[1]));
+			return new ContextKeyNotEqualsExpr(pieces[0].trim(), this._deserializeValue(pieces[1], strict));
 		}
 
 		if (serializedOne.indexOf('==') >= 0) {
 			let pieces = serializedOne.split('==');
-			return new ContextKeyEqualsExpr(pieces[0].trim(), this._deserializeValue(pieces[1]));
+			return new ContextKeyEqualsExpr(pieces[0].trim(), this._deserializeValue(pieces[1], strict));
 		}
 
 		if (serializedOne.indexOf('=~') >= 0) {
 			let pieces = serializedOne.split('=~');
-			return new ContextKeyRegexExpr(pieces[0].trim(), this._deserializeRegexValue(pieces[1]));
+			return new ContextKeyRegexExpr(pieces[0].trim(), this._deserializeRegexValue(pieces[1], strict));
 		}
 
 		// {{SQL CARBON EDIT}}
 		if (serializedOne.indexOf('>=') >= 0) {
 			let pieces = serializedOne.split('>=');
-			return new ContextKeyGreaterThanEqualsExpr(pieces[0].trim(), this._deserializeValue(pieces[1]));
+			return new ContextKeyGreaterThanEqualsExpr(pieces[0].trim(), this._deserializeValue(pieces[1], strict));
 		}
 		if (serializedOne.indexOf('<=') >= 0) {
 			let pieces = serializedOne.split('<=');
-			return new ContextKeyLessThanEqualsExpr(pieces[0].trim(), this._deserializeValue(pieces[1]));
+			return new ContextKeyLessThanEqualsExpr(pieces[0].trim(), this._deserializeValue(pieces[1], strict));
 		}
 		//
 
@@ -101,7 +101,7 @@ export abstract class ContextKeyExpr {
 		return new ContextKeyDefinedExpr(serializedOne);
 	}
 
-	private static _deserializeValue(serializedValue: string): any {
+	private static _deserializeValue(serializedValue: string, strict: boolean): any {
 		serializedValue = serializedValue.trim();
 
 		if (serializedValue === 'true') {
@@ -120,17 +120,25 @@ export abstract class ContextKeyExpr {
 		return serializedValue;
 	}
 
-	private static _deserializeRegexValue(serializedValue: string): RegExp | null {
+	private static _deserializeRegexValue(serializedValue: string, strict: boolean): RegExp | null {
 
 		if (isFalsyOrWhitespace(serializedValue)) {
-			console.warn('missing regexp-value for =~-expression');
+			if (strict) {
+				throw new Error('missing regexp-value for =~-expression');
+			} else {
+				console.warn('missing regexp-value for =~-expression');
+			}
 			return null;
 		}
 
 		let start = serializedValue.indexOf('/');
 		let end = serializedValue.lastIndexOf('/');
 		if (start === end || start < 0 /* || to < 0 */) {
-			console.warn(`bad regexp-value '${serializedValue}', missing /-enclosure`);
+			if (strict) {
+				throw new Error(`bad regexp-value '${serializedValue}', missing /-enclosure`);
+			} else {
+				console.warn(`bad regexp-value '${serializedValue}', missing /-enclosure`);
+			}
 			return null;
 		}
 
@@ -139,7 +147,11 @@ export abstract class ContextKeyExpr {
 		try {
 			return new RegExp(value, caseIgnoreFlag);
 		} catch (e) {
-			console.warn(`bad regexp-value '${serializedValue}', parse error: ${e}`);
+			if (strict) {
+				throw new Error(`bad regexp-value '${serializedValue}', parse error: ${e}`);
+			} else {
+				console.warn(`bad regexp-value '${serializedValue}', parse error: ${e}`);
+			}
 			return null;
 		}
 	}

@@ -74,7 +74,7 @@ export class TabsTitleControl extends TitleControl {
 	private tabDisposeables: IDisposable[] = [];
 
 	private dimension: Dimension;
-	private layoutScheduled: IDisposable;
+	private layoutScheduled?: IDisposable;
 	private blockRevealActiveTab: boolean;
 
 	constructor(
@@ -222,7 +222,7 @@ export class TabsTitleControl extends TitleControl {
 
 				// Return if transfer is unsupported
 				if (!this.isSupportedDropTransfer(e)) {
-					e.dataTransfer.dropEffect = 'none';
+					e.dataTransfer!.dropEffect = 'none';
 					return;
 				}
 
@@ -233,7 +233,7 @@ export class TabsTitleControl extends TitleControl {
 
 					const localDraggedEditor = this.editorTransfer.getData(DraggedEditorIdentifier.prototype)[0].identifier;
 					if (this.group.id === localDraggedEditor.groupId && this.group.getIndexOfEditor(localDraggedEditor.editor) === this.group.count - 1) {
-						e.dataTransfer.dropEffect = 'none';
+						e.dataTransfer!.dropEffect = 'none';
 						return;
 					}
 				}
@@ -241,7 +241,7 @@ export class TabsTitleControl extends TitleControl {
 				// Update the dropEffect to "copy" if there is no local data to be dragged because
 				// in that case we can only copy the data into and not move it from its source
 				if (!isLocalDragAndDrop) {
-					e.dataTransfer.dropEffect = 'copy';
+					e.dataTransfer!.dropEffect = 'copy';
 				}
 
 				this.updateDropFeedback(this.tabsContainer, true);
@@ -317,7 +317,7 @@ export class TabsTitleControl extends TitleControl {
 				(this.tabsContainer.lastChild as HTMLElement).remove();
 
 				// Remove associated tab label and widget
-				this.tabDisposeables.pop().dispose();
+				this.tabDisposeables.pop()!.dispose();
 			}
 
 			// A removal of a label requires to recompute all labels
@@ -596,7 +596,7 @@ export class TabsTitleControl extends TitleControl {
 			const editor = this.group.getEditor(index);
 			this.editorTransfer.setData([new DraggedEditorIdentifier({ editor, groupId: this.group.id })], DraggedEditorIdentifier.prototype);
 
-			e.dataTransfer.effectAllowed = 'copyMove';
+			e.dataTransfer!.effectAllowed = 'copyMove';
 
 			// Apply some datatransfer types to allow for dragging the element outside of the application
 			const resource = toResource(editor, { supportSideBySide: true });
@@ -618,7 +618,7 @@ export class TabsTitleControl extends TitleControl {
 
 				// Return if transfer is unsupported
 				if (!this.isSupportedDropTransfer(e)) {
-					e.dataTransfer.dropEffect = 'none';
+					e.dataTransfer!.dropEffect = 'none';
 					return;
 				}
 
@@ -629,7 +629,7 @@ export class TabsTitleControl extends TitleControl {
 
 					const localDraggedEditor = this.editorTransfer.getData(DraggedEditorIdentifier.prototype)[0].identifier;
 					if (localDraggedEditor.editor === this.group.getEditor(index) && localDraggedEditor.groupId === this.group.id) {
-						e.dataTransfer.dropEffect = 'none';
+						e.dataTransfer!.dropEffect = 'none';
 						return;
 					}
 				}
@@ -637,7 +637,7 @@ export class TabsTitleControl extends TitleControl {
 				// Update the dropEffect to "copy" if there is no local data to be dragged because
 				// in that case we can only copy the data into and not move it from its source
 				if (!isLocalDragAndDrop) {
-					e.dataTransfer.dropEffect = 'copy';
+					e.dataTransfer!.dropEffect = 'copy';
 				}
 
 				this.updateDropFeedback(tab, true, index);
@@ -680,7 +680,7 @@ export class TabsTitleControl extends TitleControl {
 			return true; // (local) editors can always be dropped
 		}
 
-		if (e.dataTransfer.types.length > 0) {
+		if (e.dataTransfer && e.dataTransfer.types.length > 0) {
 			return true; // optimistically allow external data (// see https://github.com/Microsoft/vscode/issues/25789)
 		}
 
@@ -728,9 +728,9 @@ export class TabsTitleControl extends TitleControl {
 		// Build labels and descriptions for each editor
 		const labels = this.group.editors.map(editor => ({
 			editor,
-			name: editor.getName(),
-			description: editor.getDescription(verbosity),
-			title: editor.getTitle(Verbosity.LONG)
+			name: editor.getName()!,
+			description: editor.getDescription(verbosity) || undefined,
+			title: editor.getTitle(Verbosity.LONG) || undefined
 		}));
 
 		// Shorten labels as needed
@@ -782,7 +782,7 @@ export class TabsTitleControl extends TitleControl {
 			if (useLongDescriptions) {
 				mapDescriptionToDuplicates.clear();
 				duplicateTitles.forEach(label => {
-					label.description = label.editor.getDescription(Verbosity.LONG);
+					label.description = label.editor.getDescription(Verbosity.LONG) || undefined;
 					getOrSet(mapDescriptionToDuplicates, label.description, []).push(label);
 				});
 			}
@@ -810,7 +810,7 @@ export class TabsTitleControl extends TitleControl {
 		});
 	}
 
-	private getLabelConfigFlags(value: string) {
+	private getLabelConfigFlags(value: string | undefined) {
 		switch (value) {
 			case 'short':
 				return { verbosity: Verbosity.SHORT, shortenDuplicates: false };
@@ -961,7 +961,7 @@ export class TabsTitleControl extends TitleControl {
 
 			// Highlight modified tabs with a border if configured
 			if (this.accessor.partOptions.highlightModifiedTabs) {
-				let modifiedBorderColor: string;
+				let modifiedBorderColor: string | null;
 				if (isGroupActive && isTabActive) {
 					modifiedBorderColor = this.getColor(TAB_ACTIVE_MODIFIED_BORDER);
 				} else if (isGroupActive && !isTabActive) {

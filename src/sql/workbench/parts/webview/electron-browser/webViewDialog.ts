@@ -90,6 +90,7 @@ export class WebViewDialog extends Modal {
 
 			this._webview = this._instantiationService.createInstance(WebviewElement,
 				this._webViewPartService.getContainer(Parts.EDITOR_PART),
+				{},
 				{
 					allowScripts: true
 				});

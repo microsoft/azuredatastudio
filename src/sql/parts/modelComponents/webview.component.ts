@@ -24,7 +24,7 @@ import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
-import { WebviewElement, WebviewOptions } from 'vs/workbench/contrib/webview/electron-browser/webviewElement';
+import { WebviewElement, WebviewOptions, WebviewContentOptions } from 'vs/workbench/contrib/webview/electron-browser/webviewElement';
 
 function reviveWebviewOptions(options: vscode.WebviewOptions): vscode.WebviewOptions {
 	return {
@@ -77,6 +77,10 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 	private _createWebview(): void {
 		this._webview = this.instantiationService.createInstance(WebviewElement,
 			this.partService.getContainer(Parts.EDITOR_PART),
+			{
+				allowSvgs: true,
+				useSameOriginForRoot: false
+			},
 			{
 				allowScripts: true
 			});
@@ -194,13 +198,11 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 		return this._extensionLocationUri;
 	}
 
-	private getExtendedOptions(): WebviewOptions {
+	private getExtendedOptions(): WebviewContentOptions {
 		let options = this.options || { enableScripts: true };
 		options = reviveWebviewOptions(options);
 		return {
 			allowScripts: options.enableScripts,
-			allowSvgs: true,
-			useSameOriginForRoot: false,
 			localResourceRoots: options!.localResourceRoots || this.getDefaultLocalResourceRoots()
 		};
 	}

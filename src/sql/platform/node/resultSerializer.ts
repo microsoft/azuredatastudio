@@ -19,7 +19,8 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { URI } from 'vs/base/common/uri';
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { Schemas } from 'vs/base/common/network';
-import * as paths from 'vs/base/common/paths';
+import { dirname, isAbsolute, sep } from 'vs/base/common/paths.node';
+import { join, normalize } from 'vs/base/common/paths';
 import * as nls from 'vs/nls';
 import * as pretty from 'pretty-data';
 
@@ -148,11 +149,11 @@ export class ResultSerializer {
 	}
 
 	private promptForFilepath(saveRequest: ISaveRequest): Thenable<string> {
-		let filepathPlaceHolder = (prevSavePath) ? paths.dirname(prevSavePath) : resolveCurrentDirectory(this._uri, this.rootPath);
-		filepathPlaceHolder = paths.join(filepathPlaceHolder, this.getResultsDefaultFilename(saveRequest));
+		let filepathPlaceHolder = (prevSavePath) ? dirname(prevSavePath) : resolveCurrentDirectory(this._uri, this.rootPath);
+		filepathPlaceHolder = join(filepathPlaceHolder, this.getResultsDefaultFilename(saveRequest));
 		return this._windowService.showSaveDialog({
 			title: nls.localize('resultsSerializer.saveAsFileTitle', 'Choose Results File'),
-			defaultPath: paths.normalize(filepathPlaceHolder, true),
+			defaultPath: normalize(filepathPlaceHolder, true),
 			filters: this.getResultsFileExtension(saveRequest)
 		}).then(filePath => {
 			prevSavePath = filePath;
@@ -277,7 +278,7 @@ export class ResultSerializer {
 
 	private getParameters(filePath: string, batchIndex: number, resultSetNo: number, format: string, selection: Slick.Range): SaveResultsRequestParams {
 		let saveResultsParams: SaveResultsRequestParams;
-		if (!paths.isAbsolute(filePath)) {
+		if (!isAbsolute(filePath)) {
 			this._filePath = resolveFilePath(this._uri, filePath, this.rootPath);
 		} else {
 			this._filePath = filePath;
@@ -315,7 +316,7 @@ export class ResultSerializer {
 
 
 	private promptFileSavedNotification(savedFilePath: string) {
-		let label = getBaseLabel(paths.dirname(savedFilePath));
+		let label = getBaseLabel(dirname(savedFilePath));
 
 		this._notificationService.prompt(
 			Severity.Info,
@@ -323,14 +324,14 @@ export class ResultSerializer {
 			[{
 				label: nls.localize('openLocation', "Open file location"),
 				run: () => {
-					let action = new ShowFileInFolderAction(savedFilePath, label || paths.sep, this._windowsService);
+					let action = new ShowFileInFolderAction(savedFilePath, label || sep, this._windowsService);
 					action.run();
 					action.dispose();
 				}
 			}, {
 				label: nls.localize('openFile', "Open file"),
 				run: () => {
-					let action = new OpenFileInFolderAction(savedFilePath, label || paths.sep, this._windowsService);
+					let action = new OpenFileInFolderAction(savedFilePath, label || sep, this._windowsService);
 					action.run();
 					action.dispose();
 				}

@@ -17,11 +17,7 @@ import { IDashboardWebview, IDashboardViewService } from 'sql/platform/dashboard
 
 import * as azdata from 'azdata';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { truncate } from 'fs';
-import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { WebviewElement } from 'vs/workbench/contrib/webview/electron-browser/webviewElement';
 
 interface IWebviewWidgetConfig {
@@ -109,6 +105,7 @@ export class WebviewWidget extends DashboardWidget implements IDashboardWidget, 
 
 		this._webview = this.instantiationService.createInstance(WebviewElement,
 			this.partService.getContainer(Parts.EDITOR_PART),
+			{},
 			{
 				allowScripts: true,
 			});
