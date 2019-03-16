@@ -43,11 +43,7 @@ import { BreadcrumbsControl } from 'vs/workbench/browser/parts/editor/breadcrumb
 import { IFileService } from 'vs/platform/files/common/files';
 
 // {{SQL CARBON EDIT}} -- Display the editor's tab color
-import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
-import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { ICommandService } from 'vs/platform/commands/common/commands';
-import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 import * as QueryConstants from 'sql/parts/query/common/constants';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import { GlobalNewUntitledFileAction } from 'vs/workbench/contrib/files/browser/fileActions';
@@ -95,11 +91,7 @@ export class TabsTitleControl extends TitleControl {
 		@IConfigurationService configurationService: IConfigurationService,
 		@IFileService fileService: IFileService,
 		// {{SQL CARBON EDIT}} -- Display the editor's tab color
-		@IWorkspaceConfigurationService private workspaceConfigurationService: IWorkspaceConfigurationService,
 		@ICommandService private commandService: ICommandService,
-		@IConnectionManagementService private connectionService: IConnectionManagementService,
-		@IQueryEditorService private queryEditorService: IQueryEditorService,
-		@IObjectExplorerService private objectExplorerService: IObjectExplorerService,
 		// {{SQL CARBON EDIT}} -- End
 	) {
 		super(parent, accessor, group, contextMenuService, instantiationService, contextKeyService, keybindingService, telemetryService, notificationService, menuService, quickOpenService, themeService, extensionService, configurationService, fileService);
@@ -231,7 +223,7 @@ export class TabsTitleControl extends TitleControl {
 				if (this.editorTransfer.hasData(DraggedEditorIdentifier.prototype)) {
 					isLocalDragAndDrop = true;
 
-					const localDraggedEditor = this.editorTransfer.getData(DraggedEditorIdentifier.prototype)[0].identifier;
+					const localDraggedEditor = this.editorTransfer.getData(DraggedEditorIdentifier.prototype)![0].identifier;
 					if (this.group.id === localDraggedEditor.groupId && this.group.getIndexOfEditor(localDraggedEditor.editor) === this.group.count - 1) {
 						e.dataTransfer!.dropEffect = 'none';
 						return;
@@ -488,7 +480,10 @@ export class TabsTitleControl extends TitleControl {
 			}
 
 			// Open tabs editor
-			this.group.openEditor(this.group.getEditor(index));
+			const input = this.group.getEditor(index);
+			if (input) {
+				this.group.openEditor(input);
+			}
 
 			return undefined;
 		};
@@ -496,7 +491,10 @@ export class TabsTitleControl extends TitleControl {
 		const showContextMenu = (e: Event) => {
 			EventHelper.stop(e);
 
-			this.onContextMenu(this.group.getEditor(index), e, tab);
+			const input = this.group.getEditor(index);
+			if (input) {
+				this.onContextMenu(input, e, tab);
+			}
 		};
 
 		// Open on Click / Touch
@@ -543,7 +541,10 @@ export class TabsTitleControl extends TitleControl {
 			// Run action on Enter/Space
 			if (event.equals(KeyCode.Enter) || event.equals(KeyCode.Space)) {
 				handled = true;
-				this.group.openEditor(this.group.getEditor(index));
+				const input = this.group.getEditor(index);
+				if (input) {
+					this.group.openEditor(input);
+				}
 			}
 
 			// Navigate in editors
@@ -588,12 +589,19 @@ export class TabsTitleControl extends TitleControl {
 		disposables.push(addDisposableListener(tab, EventType.CONTEXT_MENU, (e: Event) => {
 			EventHelper.stop(e, true);
 
-			this.onContextMenu(this.group.getEditor(index), e, tab);
+			const input = this.group.getEditor(index);
+			if (input) {
+				this.onContextMenu(input, e, tab);
+			}
 		}, true /* use capture to fix https://github.com/Microsoft/vscode/issues/19145 */));
 
 		// Drag support
 		disposables.push(addDisposableListener(tab, EventType.DRAG_START, (e: DragEvent) => {
 			const editor = this.group.getEditor(index);
+			if (!editor) {
+				return;
+			}
+
 			this.editorTransfer.setData([new DraggedEditorIdentifier({ editor, groupId: this.group.id })], DraggedEditorIdentifier.prototype);
 
 			e.dataTransfer!.effectAllowed = 'copyMove';
@@ -627,7 +635,7 @@ export class TabsTitleControl extends TitleControl {
 				if (this.editorTransfer.hasData(DraggedEditorIdentifier.prototype)) {
 					isLocalDragAndDrop = true;
 
-					const localDraggedEditor = this.editorTransfer.getData(DraggedEditorIdentifier.prototype)[0].identifier;
+					const localDraggedEditor = this.editorTransfer.getData(DraggedEditorIdentifier.prototype)![0].identifier;
 					if (localDraggedEditor.editor === this.group.getEditor(index) && localDraggedEditor.groupId === this.group.id) {
 						e.dataTransfer!.dropEffect = 'none';
 						return;
@@ -668,7 +676,7 @@ export class TabsTitleControl extends TitleControl {
 
 	private isSupportedDropTransfer(e: DragEvent): boolean {
 		if (this.groupTransfer.hasData(DraggedEditorGroupIdentifier.prototype)) {
-			const group = this.groupTransfer.getData(DraggedEditorGroupIdentifier.prototype)[0];
+			const group = this.groupTransfer.getData(DraggedEditorGroupIdentifier.prototype)![0];
 			if (group.identifier === this.group.id) {
 				return false; // groups cannot be dropped on title area it originates from
 			}
@@ -794,7 +802,7 @@ export class TabsTitleControl extends TitleControl {
 
 			// Remove description if all descriptions are identical
 			if (descriptions.length === 1) {
-				for (const label of mapDescriptionToDuplicates.get(descriptions[0])) {
+				for (const label of mapDescriptionToDuplicates.get(descriptions[0]) || []) {
 					label.description = '';
 				}
 
@@ -804,7 +812,7 @@ export class TabsTitleControl extends TitleControl {
 			// Shorten descriptions
 			const shortenedDescriptions = shorten(descriptions);
 			descriptions.forEach((description, i) => {
-				for (const label of mapDescriptionToDuplicates.get(description)) {
+				for (const label of mapDescriptionToDuplicates.get(description) || []) {
 					label.description = shortenedDescriptions[i];
 				}
 			});
@@ -892,7 +900,7 @@ export class TabsTitleControl extends TitleControl {
 		tabContainer.title = title;
 
 		// Label
-		tabLabelWidget.setResource({ name, description, resource: toResource(editor, { supportSideBySide: true }) }, { title, extraClasses: ['tab-label'], italic: !this.group.isPinned(editor) });
+		tabLabelWidget.setResource({ name, description, resource: toResource(editor, { supportSideBySide: true }) || undefined }, { title, extraClasses: ['tab-label'], italic: !this.group.isPinned(editor) });
 
 		// {{SQL CARBON EDIT}} -- Display the editor's tab color
 		const isTabActive = this.group.isActive(editor);
@@ -999,7 +1007,7 @@ export class TabsTitleControl extends TitleControl {
 	layout(dimension: Dimension): void {
 		this.dimension = dimension;
 
-		const activeTab = this.getTab(this.group.activeEditor);
+		const activeTab = this.group.activeEditor ? this.getTab(this.group.activeEditor) : undefined;
 		if (!activeTab || !this.dimension) {
 			return;
 		}
@@ -1016,7 +1024,7 @@ export class TabsTitleControl extends TitleControl {
 	}
 
 	private doLayout(dimension: Dimension): void {
-		const activeTab = this.getTab(this.group.activeEditor);
+		const activeTab = this.group.activeEditor ? this.getTab(this.group.activeEditor) : undefined;
 		if (!activeTab) {
 			return;
 		}
@@ -1029,8 +1037,8 @@ export class TabsTitleControl extends TitleControl {
 		const visibleContainerWidth = this.tabsContainer.offsetWidth;
 		const totalContainerWidth = this.tabsContainer.scrollWidth;
 
-		let activeTabPosX: number | undefined;
-		let activeTabWidth: number | undefined;
+		let activeTabPosX: number;
+		let activeTabWidth: number;
 
 		if (!this.blockRevealActiveTab) {
 			activeTabPosX = activeTab.offsetLeft;
@@ -1051,20 +1059,20 @@ export class TabsTitleControl extends TitleControl {
 
 		// Reveal the active one
 		const containerScrollPosX = this.tabsScrollbar.getScrollPosition().scrollLeft;
-		const activeTabFits = activeTabWidth <= visibleContainerWidth;
+		const activeTabFits = activeTabWidth! <= visibleContainerWidth;
 
 		// Tab is overflowing to the right: Scroll minimally until the element is fully visible to the right
 		// Note: only try to do this if we actually have enough width to give to show the tab fully!
-		if (activeTabFits && containerScrollPosX + visibleContainerWidth < activeTabPosX + activeTabWidth) {
+		if (activeTabFits && containerScrollPosX + visibleContainerWidth < activeTabPosX! + activeTabWidth!) {
 			this.tabsScrollbar.setScrollPosition({
-				scrollLeft: containerScrollPosX + ((activeTabPosX + activeTabWidth) /* right corner of tab */ - (containerScrollPosX + visibleContainerWidth) /* right corner of view port */)
+				scrollLeft: containerScrollPosX + ((activeTabPosX! + activeTabWidth!) /* right corner of tab */ - (containerScrollPosX + visibleContainerWidth) /* right corner of view port */)
 			});
 		}
 
 		// Tab is overlflowng to the left or does not fit: Scroll it into view to the left
-		else if (containerScrollPosX > activeTabPosX || !activeTabFits) {
+		else if (containerScrollPosX > activeTabPosX! || !activeTabFits) {
 			this.tabsScrollbar.setScrollPosition({
-				scrollLeft: activeTabPosX
+				scrollLeft: activeTabPosX!
 			});
 		}
 	}
@@ -1107,7 +1115,7 @@ export class TabsTitleControl extends TitleControl {
 
 		// Local Editor DND
 		if (this.editorTransfer.hasData(DraggedEditorIdentifier.prototype)) {
-			const draggedEditor = this.editorTransfer.getData(DraggedEditorIdentifier.prototype)[0].identifier;
+			const draggedEditor = this.editorTransfer.getData(DraggedEditorIdentifier.prototype)![0].identifier;
 			const sourceGroup = this.accessor.getGroup(draggedEditor.groupId);
 
 			// Move editor to target position and index
@@ -1126,7 +1134,7 @@ export class TabsTitleControl extends TitleControl {
 
 		// Local Editor Group DND
 		else if (this.groupTransfer.hasData(DraggedEditorGroupIdentifier.prototype)) {
-			const sourceGroup = this.accessor.getGroup(this.groupTransfer.getData(DraggedEditorGroupIdentifier.prototype)[0].identifier);
+			const sourceGroup = this.accessor.getGroup(this.groupTransfer.getData(DraggedEditorGroupIdentifier.prototype)![0].identifier);
 
 			const mergeGroupOptions: IMergeGroupOptions = { index: targetIndex };
 			if (!this.isMoveOperation(e, sourceGroup.id)) {
@@ -1155,7 +1163,7 @@ export class TabsTitleControl extends TitleControl {
 	// {{SQL CARBON EDIT}} -- Display the editor's tab color
 	private setEditorTabColor(editor: IEditorInput, tabContainer: HTMLElement, isTabActive: boolean) {
 		let sqlEditor = editor as any;
-		let tabColorMode = WorkbenchUtils.getSqlConfigValue<string>(this.workspaceConfigurationService, 'tabColorMode');
+		let tabColorMode = WorkbenchUtils.getSqlConfigValue<string>(this.configurationService, 'tabColorMode');
 		if (tabColorMode === QueryConstants.tabColorModeOff || (tabColorMode !== QueryConstants.tabColorModeBorder && tabColorMode !== QueryConstants.tabColorModeFill)
 			|| this.themeService.getTheme().type === HIGH_CONTRAST || !sqlEditor.tabColor) {
 			tabContainer.style.borderTopColor = '';
@@ -1177,7 +1185,8 @@ export class TabsTitleControl extends TitleControl {
 	dispose(): void {
 		super.dispose();
 
-		this.layoutScheduled = dispose(this.layoutScheduled);
+		dispose(this.layoutScheduled);
+		this.layoutScheduled = undefined;
 	}
 }
 

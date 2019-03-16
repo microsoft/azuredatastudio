@@ -46,7 +46,7 @@ export class DataExplorerViewletViewsContribution implements IWorkbenchContribut
 		return {
 			id: 'dataExplorer.servers',
 			name: localize('dataExplorer.servers', "Servers"),
-			ctor: ConnectionViewletPanel,
+			ctorDescriptor: { ctor: DataExplorerViewlet },
 			weight: 100,
 			canToggleVisibility: true,
 			order: 0
@@ -120,7 +120,7 @@ export class DataExplorerViewlet extends ViewContainerViewlet  {
 	}
 
 	protected createView(viewDescriptor: IViewDescriptor, options: IViewletViewOptions): ViewletPanel {
-		return this.instantiationService.createInstance(viewDescriptor.ctor, options) as ViewletPanel;
+		return this.instantiationService.createInstance(viewDescriptor.ctorDescriptor.ctor, options) as ViewletPanel;
 	}
 
 	private onViewletOpen(viewlet: IViewlet): void {

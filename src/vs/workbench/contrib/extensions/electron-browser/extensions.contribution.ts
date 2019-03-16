@@ -71,7 +71,7 @@ Registry.as<IQuickOpenRegistry>(Extensions.Quickopen).registerQuickOpenHandler(
 		ExtensionsHandler,
 		ExtensionsHandler.ID,
 		'ext ',
-		null,
+		undefined,
 		localize('extensionsCommands', "Manage Extensions"),
 		true
 	)
@@ -82,7 +82,7 @@ Registry.as<IQuickOpenRegistry>(Extensions.Quickopen).registerQuickOpenHandler(
 		GalleryExtensionsHandler,
 		GalleryExtensionsHandler.ID,
 		'ext install ',
-		null,
+		undefined,
 		localize('galleryExtensionsCommands', "Install Gallery Extensions"),
 		true
 	)

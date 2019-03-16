@@ -52,6 +52,8 @@ export class EditorGroupTestService implements IEditorGroupsService {
 	 */
 	readonly onDidActiveGroupChange: Event<IEditorGroup>;
 
+	onDidActivateGroup: Event<IEditorGroup>;
+
 	/**
 	 * An event for when a new group was added.
 	 */

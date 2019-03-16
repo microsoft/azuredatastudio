@@ -24,9 +24,9 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { Configuration } from 'vs/editor/browser/config/configuration';
 import { IWindowService } from 'vs/platform/windows/common/windows';
-import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 /**
  * Extension of TextResourceEditor that is always readonly rather than only with non UntitledInputs
@@ -53,7 +53,7 @@ export class QueryTextEditor extends BaseTextEditor {
 		@IEditorGroupsService editorGroupService: IEditorGroupsService,
 		@IEditorService protected editorService: IEditorService,
 		@IWindowService windowService: IWindowService,
-		@IWorkspaceConfigurationService private workspaceConfigurationService: IWorkspaceConfigurationService,
+		@IConfigurationService private workspaceConfigurationService: IConfigurationService,
 		@IAccessibilityService private accessibilityService: IAccessibilityService
 
 	) {

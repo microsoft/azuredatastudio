@@ -12,7 +12,6 @@ import { IQueryManagementService } from 'sql/platform/query/common/queryManageme
 import { ISaveRequest, SaveFormat } from 'sql/parts/grid/common/interfaces';
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { IWindowsService, IWindowService, FileFilter } from 'vs/platform/windows/common/windows';
 import { Registry } from 'vs/platform/registry/common/platform';
@@ -30,6 +29,7 @@ import { ShowFileInFolderAction, OpenFileInFolderAction } from 'sql/workbench/co
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { getRootPath, resolveCurrentDirectory, resolveFilePath } from 'sql/platform/node/pathUtilities';
 import { IOutputService, IOutputChannelRegistry, IOutputChannel, Extensions as OutputExtensions } from 'vs/workbench/contrib/output/common/output';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 let prevSavePath: string;
 
@@ -47,7 +47,7 @@ export class ResultSerializer {
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IOutputService private _outputService: IOutputService,
 		@IQueryManagementService private _queryManagementService: IQueryManagementService,
-		@IWorkspaceConfigurationService private _workspaceConfigurationService: IWorkspaceConfigurationService,
+		@IConfigurationService private _workspaceConfigurationService: IConfigurationService,
 		@IEditorService private _editorService: IEditorService,
 		@IWorkspaceContextService private _contextService: IWorkspaceContextService,
 		@IWindowsService private _windowsService: IWindowsService,

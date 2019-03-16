@@ -59,7 +59,7 @@ export class MenubarControl extends Disposable {
 		// 'Terminal': IMenu;
 		'Window'?: IMenu;
 		'Help': IMenu;
-		// [index: string]: IMenu;
+		// [index: string]: IMenu | undefined;
 	};
 
 	// {{SQL CARBON EDIT}} - Disable unused menus
@@ -124,8 +124,11 @@ export class MenubarControl extends Disposable {
 		this.menuUpdater = this._register(new RunOnceScheduler(() => this.doUpdateMenubar(false), 200));
 
 		if (isMacintosh || this.currentTitlebarStyleSetting !== 'custom') {
-			for (let topLevelMenuName of Object.keys(this.topLevelMenus)) {
-				this._register(this.topLevelMenus[topLevelMenuName].onDidChange(() => this.updateMenubar()));
+			for (const topLevelMenuName of Object.keys(this.topLevelMenus)) {
+				const menu = this.topLevelMenus[topLevelMenuName];
+				if (menu) {
+					this._register(menu.onDidChange(() => this.updateMenubar()));
+				}
 			}
 
 			this.doUpdateMenubar(true);
@@ -446,7 +449,7 @@ export class MenubarControl extends Disposable {
 				return new Action('update.checking', nls.localize('checkingForUpdates', "Checking For Updates..."), undefined, false);
 
 			case StateType.AvailableForDownload:
-				return new Action('update.downloadNow', nls.localize({ key: 'download now', comment: ['&& denotes a mnemonic'] }, "D&&ownload Now"), null, true, () =>
+				return new Action('update.downloadNow', nls.localize({ key: 'download now', comment: ['&& denotes a mnemonic'] }, "D&&ownload Now"), undefined, true, () =>
 					this.updateService.downloadUpdate());
 
 			case StateType.Downloading:
@@ -538,9 +541,9 @@ export class MenubarControl extends Disposable {
 			target.pop();
 		};
 
-		for (let title of Object.keys(this.topLevelMenus)) {
+		for (const title of Object.keys(this.topLevelMenus)) {
 			const menu = this.topLevelMenus[title];
-			if (firstTime) {
+			if (firstTime && menu) {
 				this._register(menu.onDidChange(() => {
 					const actions = [];
 					updateActions(menu, actions);
@@ -549,7 +552,9 @@ export class MenubarControl extends Disposable {
 			}
 
 			const actions = [];
-			updateActions(menu, actions);
+			if (menu) {
+				updateActions(menu, actions);
+			}
 
 			if (!firstTime) {
 				this.menubar.updateMenu({ actions: actions, label: mnemonicMenuLabel(this.topLevelTitles[title]) });
@@ -559,7 +564,7 @@ export class MenubarControl extends Disposable {
 		}
 	}
 
-	private getMenubarKeybinding(id: string): IMenubarKeybinding {
+	private getMenubarKeybinding(id: string): IMenubarKeybinding | undefined {
 		const binding = this.keybindingService.lookupKeybinding(id);
 		if (!binding) {
 			return undefined;
@@ -568,19 +573,19 @@ export class MenubarControl extends Disposable {
 		// first try to resolve a native accelerator
 		const electronAccelerator = binding.getElectronAccelerator();
 		if (electronAccelerator) {
-			return { label: electronAccelerator, userSettingsLabel: binding.getUserSettingsLabel() };
+			return { label: electronAccelerator, userSettingsLabel: binding.getUserSettingsLabel() || undefined };
 		}
 
 		// we need this fallback to support keybindings that cannot show in electron menus (e.g. chords)
 		const acceleratorLabel = binding.getLabel();
 		if (acceleratorLabel) {
-			return { label: acceleratorLabel, isNative: false, userSettingsLabel: binding.getUserSettingsLabel() };
+			return { label: acceleratorLabel, isNative: false, userSettingsLabel: binding.getUserSettingsLabel() || undefined };
 		}
 
-		return null;
+		return undefined;
 	}
 
-	private populateMenuItems(menu: IMenu, menuToPopulate: IMenubarMenu, keybindings: { [id: string]: IMenubarKeybinding }) {
+	private populateMenuItems(menu: IMenu, menuToPopulate: IMenubarMenu, keybindings: { [id: string]: IMenubarKeybinding | undefined }) {
 		let groups = menu.getActions();
 		for (let group of groups) {
 			const [, actions] = group;
@@ -648,15 +653,17 @@ export class MenubarControl extends Disposable {
 		}
 
 		menubarData.keybindings = this.getAdditionalKeybindings();
-		for (let topLevelMenuName of Object.keys(this.topLevelMenus)) {
+		for (const topLevelMenuName of Object.keys(this.topLevelMenus)) {
 			const menu = this.topLevelMenus[topLevelMenuName];
-			let menubarMenu: IMenubarMenu = { items: [] };
-			this.populateMenuItems(menu, menubarMenu, menubarData.keybindings);
-			if (menubarMenu.items.length === 0) {
-				// Menus are incomplete
-				return false;
+			if (menu) {
+				const menubarMenu: IMenubarMenu = { items: [] };
+				this.populateMenuItems(menu, menubarMenu, menubarData.keybindings);
+				if (menubarMenu.items.length === 0) {
+					// Menus are incomplete
+					return false;
+				}
+				menubarData.menus[topLevelMenuName] = menubarMenu;
 			}
-			menubarData.menus[topLevelMenuName] = menubarMenu;
 		}
 
 		return true;

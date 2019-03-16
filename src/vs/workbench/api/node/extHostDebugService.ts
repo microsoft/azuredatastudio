@@ -257,7 +257,7 @@ export class ExtHostDebugService implements ExtHostDebugServiceShape {
 			console.error('DebugConfigurationProvider.debugAdapterExecutable is deprecated and will be removed soon; please use DebugAdapterDescriptorFactory.createDebugAdapterDescriptor instead.');
 		}
 
-		let handle = this._configProviderHandleCounter++;
+		const handle = this._configProviderHandleCounter++;
 		this._configProviders.push({ type, handle, provider });
 
 		this._debugServiceProxy.$registerDebugConfigurationProvider(type,
@@ -288,7 +288,7 @@ export class ExtHostDebugService implements ExtHostDebugServiceShape {
 			throw new Error(`a DebugAdapterDescriptorFactory can only be registered once per a type.`);
 		}
 
-		let handle = this._adapterFactoryHandleCounter++;
+		const handle = this._adapterFactoryHandleCounter++;
 		this._adapterFactories.push({ type, handle, factory });
 
 		this._debugServiceProxy.$registerDebugAdapterDescriptorFactory(type, handle);
@@ -305,7 +305,7 @@ export class ExtHostDebugService implements ExtHostDebugServiceShape {
 			return new Disposable(() => { });
 		}
 
-		let handle = this._trackerFactoryHandleCounter++;
+		const handle = this._trackerFactoryHandleCounter++;
 		this._trackerFactories.push({ type, handle, factory });
 
 		this._debugServiceProxy.$registerDebugAdapterTrackerFactory(type, handle);
@@ -496,9 +496,9 @@ export class ExtHostDebugService implements ExtHostDebugServiceShape {
 
 	public $acceptBreakpointsDelta(delta: IBreakpointsDeltaDto): void {
 
-		let a: vscode.Breakpoint[] = [];
-		let r: vscode.Breakpoint[] = [];
-		let c: vscode.Breakpoint[] = [];
+		const a: vscode.Breakpoint[] = [];
+		const r: vscode.Breakpoint[] = [];
+		const c: vscode.Breakpoint[] = [];
 
 		if (delta.added) {
 			for (const bpd of delta.added) {
@@ -530,7 +530,7 @@ export class ExtHostDebugService implements ExtHostDebugServiceShape {
 
 		if (delta.changed) {
 			for (const bpd of delta.changed) {
-				let bp = this._breakpoints.get(bpd.id);
+				const bp = this._breakpoints.get(bpd.id);
 				if (bp) {
 					if (bp instanceof FunctionBreakpoint && bpd.type === 'function') {
 						const fbp = <any>bp;
@@ -556,7 +556,7 @@ export class ExtHostDebugService implements ExtHostDebugServiceShape {
 	}
 
 	public async $provideDebugConfigurations(configProviderHandle: number, folderUri: UriComponents | undefined): Promise<vscode.DebugConfiguration[]> {
-		let provider = this.getConfigProviderByHandle(configProviderHandle);
+		const provider = this.getConfigProviderByHandle(configProviderHandle);
 		if (!provider) {
 			return Promise.reject(new Error('no handler found'));
 		}
@@ -568,7 +568,7 @@ export class ExtHostDebugService implements ExtHostDebugServiceShape {
 	}
 
 	public async $resolveDebugConfiguration(configProviderHandle: number, folderUri: UriComponents | undefined, debugConfiguration: vscode.DebugConfiguration): Promise<vscode.DebugConfiguration> {
-		let provider = this.getConfigProviderByHandle(configProviderHandle);
+		const provider = this.getConfigProviderByHandle(configProviderHandle);
 		if (!provider) {
 			return Promise.reject(new Error('no handler found'));
 		}
@@ -581,7 +581,7 @@ export class ExtHostDebugService implements ExtHostDebugServiceShape {
 
 	// TODO@AW legacy
 	public async $legacyDebugAdapterExecutable(configProviderHandle: number, folderUri: UriComponents | undefined): Promise<IAdapterDescriptor> {
-		let provider = this.getConfigProviderByHandle(configProviderHandle);
+		const provider = this.getConfigProviderByHandle(configProviderHandle);
 		if (!provider) {
 			return Promise.reject(new Error('no handler found'));
 		}
@@ -593,7 +593,7 @@ export class ExtHostDebugService implements ExtHostDebugServiceShape {
 	}
 
 	public async $provideDebugAdapter(adapterProviderHandle: number, sessionDto: IDebugSessionDto): Promise<IAdapterDescriptor> {
-		let adapterProvider = this.getAdapterProviderByHandle(adapterProviderHandle);
+		const adapterProvider = this.getAdapterProviderByHandle(adapterProviderHandle);
 		if (!adapterProvider) {
 			return Promise.reject(new Error('no handler found'));
 		}
