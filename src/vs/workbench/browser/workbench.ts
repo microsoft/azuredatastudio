@@ -203,7 +203,7 @@ export class Workbench extends Disposable implements IWorkbenchLayoutService {
 		});
 	}
 
-	private previousUnexpectedError: { message: string, time: number } = { message: undefined, time: 0 };
+	private previousUnexpectedError: { message: string | undefined, time: number } = { message: undefined, time: 0 };
 	private handleUnexpectedError(error: any, logService: ILogService): void {
 		const message = toErrorMessage(error, true);
 		if (!message) {
@@ -660,7 +660,7 @@ export class Workbench extends Disposable implements IWorkbenchLayoutService {
 		fullscreen: false,
 
 		menuBar: {
-			visibility: undefined as MenuBarVisibility,
+			visibility: 'default' as MenuBarVisibility,
 			toggled: false
 		},
 
@@ -670,9 +670,9 @@ export class Workbench extends Disposable implements IWorkbenchLayoutService {
 
 		sideBar: {
 			hidden: false,
-			position: undefined as Position,
+			position: Position.LEFT,
 			width: 300,
-			viewletToRestore: undefined as string
+			viewletToRestore: undefined as string | undefined
 		},
 
 		editor: {
@@ -680,15 +680,15 @@ export class Workbench extends Disposable implements IWorkbenchLayoutService {
 			centered: false,
 			restoreCentered: false,
 			restoreEditors: false,
-			editorsToOpen: undefined as Promise<IResourceEditor[]> | IResourceEditor[]
+			editorsToOpen: [] as Promise<IResourceEditor[]> | IResourceEditor[]
 		},
 
 		panel: {
 			hidden: false,
-			position: undefined as Position,
+			position: Position.BOTTOM,
 			height: 350,
 			width: 350,
-			panelToRestore: undefined as string
+			panelToRestore: undefined as string | undefined
 		},
 
 		statusBar: {
@@ -997,8 +997,12 @@ export class Workbench extends Disposable implements IWorkbenchLayoutService {
 			return [];
 		}
 
-		return paths.map(p => {
+		return coalesce(paths.map(p => {
 			const resource = p.fileUri;
+			if (!resource) {
+				return undefined;
+			}
+
 			let input: IResourceInput | IUntitledResourceInput;
 			if (isNew) {
 				input = { filePath: resource.fsPath, options: { pinned: true } } as IUntitledResourceInput;
@@ -1006,15 +1010,15 @@ export class Workbench extends Disposable implements IWorkbenchLayoutService {
 				input = { resource, options: { pinned: true }, forceFile: true } as IResourceInput;
 			}
 
-			if (!isNew && p.lineNumber) {
-				input.options.selection = {
+			if (!isNew && typeof p.lineNumber === 'number') {
+				input.options!.selection = {
 					startLineNumber: p.lineNumber,
-					startColumn: p.columnNumber
+					startColumn: p.columnNumber || 1
 				};
 			}
 
 			return input;
-		});
+		}));
 	}
 
 	private updatePanelPosition() {
@@ -1371,7 +1375,7 @@ export class Workbench extends Disposable implements IWorkbenchLayoutService {
 		}
 	}
 
-	private getPanelDimension(position: Position): number | undefined {
+	private getPanelDimension(position: Position): number {
 		return position === Position.BOTTOM ? this.state.panel.height : this.state.panel.width;
 	}
 

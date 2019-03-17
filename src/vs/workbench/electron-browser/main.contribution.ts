@@ -108,8 +108,8 @@ import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/electron-brow
 				windowsService.quit();
 			},
 			when: undefined,
-			primary: KeyMod.CtrlCmd | KeyCode.KEY_Q,
-			win: { primary: undefined }
+			mac: { primary: KeyMod.CtrlCmd | KeyCode.KEY_Q },
+			linux: { primary: KeyMod.CtrlCmd | KeyCode.KEY_Q }
 		});
 	})();
 
