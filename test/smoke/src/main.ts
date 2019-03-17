@@ -35,6 +35,11 @@ import { setup as setupLaunchTests } from './areas/workbench/launch.test';
 //{{END}}
 import { MultiLogger, Logger, ConsoleLogger, FileLogger } from './logger';
 
+if (!/^v10/.test(process.version)) {
+	console.error('Error: Smoketest must be run using Node 10. Currently running', process.version);
+	process.exit(1);
+}
+
 const tmpDir = tmp.dirSync({ prefix: 't' }) as { name: string; removeCallback: Function; };
 const testDataPath = tmpDir.name;
 process.once('exit', () => rimraf.sync(testDataPath));
