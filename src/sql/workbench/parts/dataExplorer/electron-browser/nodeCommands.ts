@@ -11,8 +11,9 @@ import { generateUri } from 'sql/platform/connection/common/utils';
 import { ICustomViewDescriptor, TreeViewItemHandleArg } from 'sql/workbench/common/views';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
-import { ViewsRegistry } from 'vs/workbench/common/views';
+import { IViewsRegistry, Extensions } from 'vs/workbench/common/views';
 import { IProgressService2 } from 'vs/platform/progress/common/progress';
+import { Registry } from 'vs/platform/registry/common/platform';
 
 export const DISCONNECT_COMMAND_ID = 'dataExplorer.disconnect';
 export const MANAGE_COMMAND_ID = 'dataExplorer.manage';
@@ -25,7 +26,7 @@ CommandsRegistry.registerCommand({
 		if (args.$treeItem) {
 			const oeService = accessor.get(IOEShimService);
 			return oeService.disconnectNode(args.$treeViewId, args.$treeItem).then(() => {
-				const { treeView } = (<ICustomViewDescriptor>ViewsRegistry.getView(args.$treeViewId));
+				const { treeView } = (<ICustomViewDescriptor>Registry.as<IViewsRegistry>(Extensions.ViewsRegistry).getView(args.$treeViewId));
 				// we need to collapse it then refresh it so that the tree doesn't try and use it's cache next time the user expands the node
 				return treeView.collapse(args.$treeItem).then(() => treeView.refresh([args.$treeItem]).then(() => true));
 			});
@@ -83,7 +84,7 @@ CommandsRegistry.registerCommand({
 	handler: (accessor, args: TreeViewItemHandleArg) => {
 		const progressSerivce = accessor.get(IProgressService2);
 		if (args.$treeItem) {
-			const { treeView } = (<ICustomViewDescriptor>ViewsRegistry.getView(args.$treeViewId));
+			const { treeView } = (<ICustomViewDescriptor>Registry.as<IViewsRegistry>(Extensions.ViewsRegistry).getView(args.$treeViewId));
 			if (args.$treeContainerId) {
 				return progressSerivce.withProgress({ location: args.$treeContainerId }, () => treeView.refresh([args.$treeItem]).then(() => true));
 			} else {

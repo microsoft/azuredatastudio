@@ -24,9 +24,10 @@ import { IAddedViewDescriptorRef } from 'vs/workbench/browser/parts/views/views'
 import { ViewletPanel } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { VIEWLET_ID, VIEW_CONTAINER } from 'sql/parts/dataExplorer/common/dataExplorerExtensionPoint';
 import { ConnectionViewletPanel } from 'sql/parts/dataExplorer/objectExplorer/connectionViewlet/connectionViewletPanel';
-import { Extensions as ViewContainerExtensions, ViewsRegistry, IViewDescriptor } from 'vs/workbench/common/views';
+import { Extensions as ViewContainerExtensions, IViewDescriptor, IViewsRegistry } from 'vs/workbench/common/views';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
+import { Registry } from 'vs/platform/registry/common/platform';
 
 export class DataExplorerViewletViewsContribution implements IWorkbenchContribution {
 
@@ -39,7 +40,7 @@ export class DataExplorerViewletViewsContribution implements IWorkbenchContribut
 	private registerViews(): void {
 		let viewDescriptors = [];
 		viewDescriptors.push(this.createObjectExplorerViewDescriptor());
-		ViewsRegistry.registerViews(viewDescriptors, VIEW_CONTAINER);
+		Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).registerViews(viewDescriptors, VIEW_CONTAINER);
 	}
 
 	private createObjectExplorerViewDescriptor(): IViewDescriptor {
