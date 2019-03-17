@@ -359,6 +359,24 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		return editor.runCell(cell);
 	}
 
+	$runAllCells(id: string): Promise<boolean> {
+		let editor = this.getEditor(id);
+		if (!editor) {
+			return Promise.reject(disposed(`TextEditor(${id})`));
+		}
+		let codeCells = editor.cells.filter(cell => cell.cellType === CellTypes.Code);
+		try {
+			if (codeCells && codeCells.length > 0) {
+				codeCells.forEach(cell => {
+					editor.runCell(cell);
+				});
+			}
+		} catch {
+			return Promise.resolve(false);
+		}
+		return Promise.resolve(true);
+	}
+
 	//#endregion
 
 	private async doOpenEditor(resource: UriComponents, options: INotebookShowOptions): Promise<string> {

@@ -156,6 +156,10 @@ export class ExtHostNotebookEditor implements azdata.nb.NotebookEditor, IDisposa
 		return this._proxy.$runCell(this._id, uri);
 	}
 
+	public runAllCells(): Thenable<boolean> {
+		return this._proxy.$runAllCells(this._id);
+	}
+
 	public edit(callback: (editBuilder: azdata.nb.NotebookEditorEdit) => void, options?: { undoStopBefore: boolean; undoStopAfter: boolean; }): Thenable<boolean> {
 		if (this._disposed) {
 			return Promise.reject(new Error('NotebookEditor#edit not possible on closed editors'));
