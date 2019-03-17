@@ -240,7 +240,7 @@ function saveAll(saveAllArguments: any, editorService: IEditorService, untitledE
 			let replacementPairs: IResourceEditorReplacement[] = [];
 			inputs.forEach(i => {
 				const targetResult = result.results.filter(r => r.success && r.source.toString() === i.resource.toString()).pop();
-				if (targetResult) {
+				if (targetResult && targetResult.target) {
 					//i.resource = targetResult.target;
 					let editor = i;
 					const replacement: IResourceInput = {
@@ -296,8 +296,8 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 		// Set side input
 		if (resources.length) {
 			return fileService.resolveFiles(resources.map(resource => ({ resource }))).then(resolved => {
-				const editors = resolved.filter(r => r.success && !r.stat.isDirectory).map(r => ({
-					resource: r.stat.resource
+				const editors = resolved.filter(r => r.stat && r.success && !r.stat.isDirectory).map(r => ({
+					resource: r.stat!.resource
 				}));
 
 				return editorService.openEditors(editors, SIDE_GROUP);
@@ -375,10 +375,13 @@ CommandsRegistry.registerCommand({
 		const editorService = accessor.get(IEditorService);
 		const listService = accessor.get(IListService);
 
-		return editorService.openEditor({
-			leftResource: globalResourceToCompare,
-			rightResource: getResourceForCommand(resource, listService, editorService)
-		}).then(() => undefined);
+		const rightResource = getResourceForCommand(resource, listService, editorService);
+		if (globalResourceToCompare && rightResource) {
+			editorService.openEditor({
+				leftResource: globalResourceToCompare,
+				rightResource
+			}).then(undefined, onUnexpectedError);
+		}
 	}
 });
 
@@ -576,12 +579,14 @@ CommandsRegistry.registerCommand({
 			saveAllArg = [];
 			contexts.forEach(context => {
 				const editorGroup = editorGroupService.getGroup(context.groupId);
-				editorGroup.editors.forEach(editor => {
-					const resource = toResource(editor, { supportSideBySide: true });
-					if (resource && (resource.scheme === Schemas.untitled || fileService.canHandleResource(resource))) {
-						saveAllArg.push(resource);
-					}
-				});
+				if (editorGroup) {
+					editorGroup.editors.forEach(editor => {
+						const resource = toResource(editor, { supportSideBySide: true });
+						if (resource && (resource.scheme === Schemas.untitled || fileService.canHandleResource(resource))) {
+							saveAllArg.push(resource);
+						}
+					});
+				}
 			});
 		}
 
