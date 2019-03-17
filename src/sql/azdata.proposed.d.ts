@@ -3994,6 +3994,9 @@ declare module 'azdata' {
 			 */
 			runCell(cell?: NotebookCell): Thenable<boolean>;
 
+			/**
+			 * Kicks off execution of all code cells. Thenable will resolve only when full execution of all cells is completed.
+			 */
 			runAllCells(): Thenable<boolean>;
 		}
 
