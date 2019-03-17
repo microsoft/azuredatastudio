@@ -604,7 +604,7 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 }
 
 export interface IEditorOpenHandler {
-	(group: IEditorGroup, editor: IEditorInput, options?: IEditorOptions | ITextEditorOptions): Promise<IEditor>;
+	(group: IEditorGroup, editor: IEditorInput, options?: IEditorOptions | ITextEditorOptions): Promise<IEditor | null>;
 }
 
 /**
