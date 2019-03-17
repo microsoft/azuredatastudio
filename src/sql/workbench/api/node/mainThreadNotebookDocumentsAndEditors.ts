@@ -32,7 +32,6 @@ import { NotebookChangeType, CellTypes } from 'sql/parts/notebook/models/contrac
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { notebookModeId } from 'sql/common/constants';
-import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 
 class MainThreadNotebookEditor extends Disposable {
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
@@ -371,7 +370,8 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		};
 		let isUntitled: boolean = uri.scheme === Schemas.untitled;
 
-		const fileInput: UntitledEditorInput = isUntitled ? this._untitledEditorService.createOrGet(uri, notebookModeId) : undefined;
+		const fileInput = isUntitled ? this._untitledEditorService.createOrGet(uri, notebookModeId) :
+										this._editorService.createInput({resource: uri, language: notebookModeId});
 		let input = this._instantiationService.createInstance(NotebookInput, path.basename(uri.fsPath), uri, fileInput);
 		input.isTrusted = isUntitled;
 		input.defaultKernel = options.defaultKernel;
