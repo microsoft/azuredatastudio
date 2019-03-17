@@ -15,6 +15,7 @@ import { IDimension } from 'vs/editor/common/editorCommon';
 import { IDisposable } from 'vs/base/common/lifecycle';
 
 export class EditorGroupTestService implements IEditorGroupsService {
+	dimension: IDimension;
 	whenRestored: Promise<void>;
 	centerLayout(active: boolean): void {
 		throw new Error('Method not implemented.');
