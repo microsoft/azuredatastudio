@@ -143,7 +143,7 @@ interface StateDelta {
 	indentation?: string;
 	tabFocusMode?: boolean;
 	screenReaderMode?: boolean;
-	metadata?: string;
+	metadata?: string | null;
 }
 
 class State {
@@ -671,7 +671,7 @@ export class EditorStatus implements IStatusbarItem {
 		const update: StateDelta = { metadata: undefined };
 
 		if (editor instanceof BaseBinaryResourceEditor || editor instanceof BinaryResourceDiffEditor) {
-			update.metadata = editor.getMetadata() || undefined;
+			update.metadata = editor.getMetadata();
 		}
 
 		this.updateState(update);
