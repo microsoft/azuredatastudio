@@ -48,6 +48,7 @@ import { GlobalNewUntitledFileAction } from 'vs/workbench/contrib/files/browser/
 // {{SQL CARBON EDIT}} - End
 import { isErrorWithActions, IErrorWithActions } from 'vs/base/common/errorsWithActions';
 import { IActiveEditor } from 'vs/workbench/services/editor/common/editorService';
+import { withNullAsUndefined } from 'vs/base/common/types';
 
 export class EditorGroupView extends Themable implements IEditorGroupView {
 
@@ -663,7 +664,7 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 	}
 
 	get activeControl(): IActiveEditor | undefined {
-		return this.editorControl ? this.editorControl.activeControl || undefined : undefined;
+		return this.editorControl ? withNullAsUndefined(this.editorControl.activeControl) : undefined;
 	}
 
 	get activeEditor(): EditorInput | null {

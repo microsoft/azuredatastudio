@@ -41,7 +41,7 @@ import { CloseOneEditorAction } from 'vs/workbench/browser/parts/editor/editorAc
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { BreadcrumbsControl } from 'vs/workbench/browser/parts/editor/breadcrumbsControl';
 import { IFileService } from 'vs/platform/files/common/files';
-import { nullToUndefined } from 'vs/base/common/types';
+import { withNullAsUndefined } from 'vs/base/common/types';
 
 // {{SQL CARBON EDIT}} -- Display the editor's tab color
 import { ICommandService } from 'vs/platform/commands/common/commands';
@@ -739,8 +739,8 @@ export class TabsTitleControl extends TitleControl {
 		const labels = this.group.editors.map(editor => ({
 			editor,
 			name: editor.getName()!,
-			description: nullToUndefined(editor.getDescription(verbosity)),
-			title: nullToUndefined(editor.getTitle(Verbosity.LONG))
+			description: withNullAsUndefined(editor.getDescription(verbosity)),
+			title: withNullAsUndefined(editor.getTitle(Verbosity.LONG))
 		}));
 
 		// Shorten labels as needed
@@ -792,7 +792,7 @@ export class TabsTitleControl extends TitleControl {
 			if (useLongDescriptions) {
 				mapDescriptionToDuplicates.clear();
 				duplicateTitles.forEach(label => {
-					label.description = nullToUndefined(label.editor.getDescription(Verbosity.LONG));
+					label.description = withNullAsUndefined(label.editor.getDescription(Verbosity.LONG));
 					getOrSet(mapDescriptionToDuplicates, label.description, []).push(label);
 				});
 			}
