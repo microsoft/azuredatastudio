@@ -35,17 +35,6 @@
   },
   "devDependencies": {},
   "contributes": {
-    "languages": [
-      {
-        "id": "sql",
-        "extensions": [
-          ".sql"
-        ],
-        "aliases": [
-          "SQL"
-        ]
-      }
-    ],
     "commands": [
       {
         "command": "mssqlCluster.uploadFiles",

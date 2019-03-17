@@ -10,7 +10,6 @@ export const lastSessionDateStorageKey = 'telemetry.lastSessionDate';
 
 // {{ SQL CARBON EDIT }}
 import product from 'vs/platform/node/product';
-import * as Utils from 'sql/common/telemetryUtilities';
 
 export function resolveWorkbenchCommonProperties(storageService: IStorageService, commit: string, version: string, machineId: string, installSourcePath: string): Promise<{ [name: string]: string | undefined }> {
 	return resolveCommonProperties(commit, version, machineId, installSourcePath).then(result => {
