@@ -6,8 +6,8 @@ steps:
 
 - script: |
     git submodule update --init --recursive
-    nvm install 8.9.1
-    nvm use 8.9.1
+    nvm install 10.15.1
+    nvm use 10.15.1
     npm i -g yarn
   displayName: 'preinstall'
 
