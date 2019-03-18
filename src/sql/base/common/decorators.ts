@@ -9,12 +9,16 @@
  * Alterable version of the vs memorize function; to unmemoize use unmemoize
 */
 export function memoize(target: any, key: string, descriptor: any) {
-	let fnKey: string = null;
-	let fn: Function = null;
+	let fnKey: string | null = null;
+	let fn: Function | null = null;
 
 	if (typeof descriptor.value === 'function') {
 		fnKey = 'value';
 		fn = descriptor.value;
+
+		if (fn!.length !== 0) {
+			console.warn('Memoize should only be used in functions with zero parameters');
+		}
 	} else if (typeof descriptor.get === 'function') {
 		fnKey = 'get';
 		fn = descriptor.get;
@@ -26,13 +30,13 @@ export function memoize(target: any, key: string, descriptor: any) {
 
 	const memoizeKey = `$memoize$${key}`;
 
-	descriptor[fnKey] = function (...args: any[]) {
+	descriptor[fnKey!] = function (...args: any[]) {
 		if (!this.hasOwnProperty(memoizeKey)) {
 			Object.defineProperty(this, memoizeKey, {
 				configurable: true,
 				enumerable: false,
 				writable: false,
-				value: fn.apply(this, args)
+				value: fn!.apply(this, args)
 			});
 		}
 

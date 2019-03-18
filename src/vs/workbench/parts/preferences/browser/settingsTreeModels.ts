@@ -71,6 +71,8 @@ export class SettingsTreeNewExtensionsElement extends SettingsTreeElement {
 }
 
 export class SettingsTreeSettingElement extends SettingsTreeElement {
+	private static MAX_DESC_LINES = 20;
+
 	setting: ISetting;
 
 	private _displayCategory: string;
@@ -164,7 +166,13 @@ export class SettingsTreeSettingElement extends SettingsTreeElement {
 		}
 
 		this.overriddenScopeList = overriddenScopeList;
-		this.description = this.setting.description.join('\n');
+		if (this.setting.description.length > SettingsTreeSettingElement.MAX_DESC_LINES) {
+			const truncatedDescLines = this.setting.description.slice(0, SettingsTreeSettingElement.MAX_DESC_LINES);
+			truncatedDescLines.push('[...]');
+			this.description = truncatedDescLines.join('\n');
+		} else {
+			this.description = this.setting.description.join('\n');
+		}
 
 		if (this.setting.enum && (!this.setting.type || settingTypeEnumRenderable(this.setting.type))) {
 			this.valueType = SettingValueType.Enum;
@@ -230,7 +238,7 @@ export class SettingsTreeModel {
 
 	constructor(
 		protected _viewState: ISettingsEditorViewState,
-		@IConfigurationService private _configurationService: IConfigurationService
+		@IConfigurationService private readonly _configurationService: IConfigurationService
 	) { }
 
 	get root(): SettingsTreeGroupElement {
@@ -408,7 +416,7 @@ export function isExcludeSetting(setting: ISetting): boolean {
 
 function settingTypeEnumRenderable(_type: string | string[]) {
 	const enumRenderableSettingTypes = ['string', 'boolean', 'null', 'integer', 'number'];
-	let type = isArray(_type) ? _type : [_type];
+	const type = isArray(_type) ? _type : [_type];
 	return type.every(type => enumRenderableSettingTypes.indexOf(type) > -1);
 }
 
@@ -506,8 +514,7 @@ export class SearchResultModel extends SettingsTreeModel {
 
 	private getFlatSettings(): ISetting[] {
 		const flatSettings: ISetting[] = [];
-		this.getUniqueResults()
-			.filter(r => !!r)
+		arrays.coalesce(this.getUniqueResults())
 			.forEach(r => {
 				flatSettings.push(
 					...r.filterMatches.map(m => m.setting));

@@ -20,7 +20,7 @@ const JUPYTER_NOTEBOOK_PROVIDER = 'jupyter';
 const msgSampleCodeDataFrame = localize('msgSampleCodeDataFrame', 'This sample code loads the file into a data frame and shows the first 10 results.');
 const noNotebookVisible = localize('noNotebookVisible', 'No notebook editor is active');
 
-let counter = 0;
+let untitledCounter = 0;
 
 export let controller: JupyterController;
 
@@ -54,7 +54,7 @@ export function activate(extensionContext: vscode.ExtensionContext) {
 }
 
 function newNotebook(connectionProfile: azdata.IConnectionProfile) {
-	let title = `Untitled-${counter++}`;
+	let title = findNextUntitledEditorName();
 	let untitledUri = vscode.Uri.parse(`untitled:${title}`);
 	let options: azdata.nb.NotebookShowOptions = connectionProfile ? {
 		viewColumn: null,
@@ -69,6 +69,20 @@ function newNotebook(connectionProfile: azdata.IConnectionProfile) {
 	}, (err: Error) => {
 		vscode.window.showErrorMessage(err.message);
 	});
+}
+
+function findNextUntitledEditorName(): string {
+	let nextVal = untitledCounter;
+	// Note: this will go forever if it's coded wrong, or you have infinite Untitled notebooks!
+	while (true) {
+		let title = `Notebook-${nextVal++}`;
+		let hasTextDoc = vscode.workspace.textDocuments.findIndex(doc => doc.isUntitled && doc.fileName === title) > -1;
+		let hasNotebookDoc = azdata.nb.notebookDocuments.findIndex(doc => doc.isUntitled && doc.fileName === title) > -1;
+		if (!hasTextDoc && !hasNotebookDoc) {
+			untitledCounter = nextVal;
+			return title;
+		}
+	}
 }
 
 async function openNotebook(): Promise<void> {
@@ -123,7 +137,7 @@ async function addCell(cellType: azdata.nb.CellType): Promise<void> {
 async function analyzeNotebook(oeContext?: azdata.ObjectExplorerContext): Promise<void> {
 	// Ensure we get a unique ID for the notebook. For now we're using a different prefix to the built-in untitled files
 	// to handle this. We should look into improving this in the future
-	let untitledUri = vscode.Uri.parse(`untitled:Notebook-${counter++}`);
+	let untitledUri = vscode.Uri.parse(`untitled:Notebook-${untitledCounter++}`);
 
 	let editor = await azdata.nb.showNotebookDocument(untitledUri, {
 		connectionProfile: oeContext ? oeContext.connectionProfile : undefined,

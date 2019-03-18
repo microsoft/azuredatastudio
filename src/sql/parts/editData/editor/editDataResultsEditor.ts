@@ -7,7 +7,6 @@ import * as DOM from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Builder } from 'sql/base/browser/builder';
 import { EditorOptions } from 'vs/workbench/common/editor';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { getZoomLevel } from 'vs/base/browser/browser';
 import { Configuration } from 'vs/editor/browser/config/configuration';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -65,13 +64,13 @@ export class EditDataResultsEditor extends BaseEditor {
 	public layout(dimension: DOM.Dimension): void {
 	}
 
-	public setInput(input: EditDataResultsInput, options: EditorOptions): TPromise<void> {
+	public setInput(input: EditDataResultsInput, options: EditorOptions): Promise<void> {
 		super.setInput(input, options, CancellationToken.None);
 		this._applySettings();
 		if (!input.hasBootstrapped) {
 			this._bootstrapAngular();
 		}
-		return TPromise.wrap<void>(null);
+		return Promise.resolve<void>(null);
 	}
 
 	private _applySettings() {

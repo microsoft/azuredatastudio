@@ -5,7 +5,6 @@
 
 import 'vs/css!sql/parts/query/editor/media/queryEditor';
 
-import { TPromise } from 'vs/base/common/winjs.base';
 import { Dimension } from 'vs/base/browser/dom';
 import { EditorOptions } from 'vs/workbench/common/editor';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
@@ -53,9 +52,9 @@ export class TaskDialogEditor extends BaseEditor {
 	public layout(dimension: Dimension): void {
 	}
 
-	public setInput(input: TaskDialogInput, options: EditorOptions): Thenable<void> {
+	public setInput(input: TaskDialogInput, options: EditorOptions): Promise<void> {
 		if (this.input instanceof TaskDialogInput && this.input.matches(input)) {
-			return TPromise.as(undefined);
+			return Promise.resolve(undefined);
 		}
 
 		if (!input.hasInitialized) {

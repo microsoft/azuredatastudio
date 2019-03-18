@@ -13,21 +13,28 @@ import { IExtensionService } from 'vs/workbench/services/extensions/common/exten
 export class TerminalProcessExtHostProxy implements ITerminalChildProcess, ITerminalProcessExtHostProxy {
 	private _disposables: IDisposable[] = [];
 
-	private readonly _onProcessData: Emitter<string> = new Emitter<string>();
+	private readonly _onProcessData = new Emitter<string>();
 	public get onProcessData(): Event<string> { return this._onProcessData.event; }
-	private readonly _onProcessExit: Emitter<number> = new Emitter<number>();
+	private readonly _onProcessExit = new Emitter<number>();
 	public get onProcessExit(): Event<number> { return this._onProcessExit.event; }
-	private readonly _onProcessIdReady: Emitter<number> = new Emitter<number>();
+	private readonly _onProcessIdReady = new Emitter<number>();
 	public get onProcessIdReady(): Event<number> { return this._onProcessIdReady.event; }
-	private readonly _onProcessTitleChanged: Emitter<string> = new Emitter<string>();
+	private readonly _onProcessTitleChanged = new Emitter<string>();
 	public get onProcessTitleChanged(): Event<string> { return this._onProcessTitleChanged.event; }
 
-	private readonly _onInput: Emitter<string> = new Emitter<string>();
+	private readonly _onInput = new Emitter<string>();
 	public get onInput(): Event<string> { return this._onInput.event; }
 	private readonly _onResize: Emitter<{ cols: number, rows: number }> = new Emitter<{ cols: number, rows: number }>();
 	public get onResize(): Event<{ cols: number, rows: number }> { return this._onResize.event; }
-	private readonly _onShutdown: Emitter<boolean> = new Emitter<boolean>();
+	private readonly _onShutdown = new Emitter<boolean>();
 	public get onShutdown(): Event<boolean> { return this._onShutdown.event; }
+	private readonly _onRequestInitialCwd = new Emitter<void>();
+	public get onRequestInitialCwd(): Event<void> { return this._onRequestInitialCwd.event; }
+	private readonly _onRequestCwd = new Emitter<void>();
+	public get onRequestCwd(): Event<void> { return this._onRequestCwd.event; }
+
+	private _pendingInitialCwdRequests: ((value?: string | Thenable<string>) => void)[] = [];
+	private _pendingCwdRequests: ((value?: string | Thenable<string>) => void)[] = [];
 
 	constructor(
 		public terminalId: number,
@@ -35,7 +42,7 @@ export class TerminalProcessExtHostProxy implements ITerminalChildProcess, ITerm
 		activeWorkspaceRootUri: URI,
 		cols: number,
 		rows: number,
-		@ITerminalService private _terminalService: ITerminalService,
+		@ITerminalService private readonly _terminalService: ITerminalService,
 		@IExtensionService private readonly _extensionService: IExtensionService
 	) {
 		this._extensionService.whenInstalledExtensionsRegistered().then(() => {
@@ -68,6 +75,18 @@ export class TerminalProcessExtHostProxy implements ITerminalChildProcess, ITerm
 		this.dispose();
 	}
 
+	public emitInitialCwd(initialCwd: string): void {
+		while (this._pendingInitialCwdRequests.length > 0) {
+			this._pendingInitialCwdRequests.pop()!(initialCwd);
+		}
+	}
+
+	public emitCwd(cwd: string): void {
+		while (this._pendingCwdRequests.length > 0) {
+			this._pendingCwdRequests.pop()!(cwd);
+		}
+	}
+
 	public shutdown(immediate: boolean): void {
 		this._onShutdown.fire(immediate);
 	}
@@ -78,5 +97,19 @@ export class TerminalProcessExtHostProxy implements ITerminalChildProcess, ITerm
 
 	public resize(cols: number, rows: number): void {
 		this._onResize.fire({ cols, rows });
+	}
+
+	public getInitialCwd(): Promise<string> {
+		return new Promise<string>(resolve => {
+			this._onRequestInitialCwd.fire();
+			this._pendingInitialCwdRequests.push(resolve);
+		});
+	}
+
+	public getCwd(): Promise<string> {
+		return new Promise<string>(resolve => {
+			this._onRequestCwd.fire();
+			this._pendingCwdRequests.push(resolve);
+		});
 	}
 }

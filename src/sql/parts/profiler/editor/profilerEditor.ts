@@ -41,7 +41,6 @@ import { IStorageService } from 'vs/platform/storage/common/storage';
 import { IView, SplitView, Sizing } from 'vs/base/browser/ui/splitview/splitview';
 import * as DOM from 'vs/base/browser/dom';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { EditorOptions } from 'vs/workbench/common/editor';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IWorkbenchThemeService, VS_DARK_THEME, VS_HC_THEME } from 'vs/workbench/services/themes/common/workbenchThemeService';
@@ -92,7 +91,7 @@ class BasicView implements IView {
 				this.previousSize = this.size;
 				this._minimumSize = this.options.headersize;
 				this._maximumSize = this.options.headersize;
-				this._onDidChange.fire();
+				this._onDidChange.fire(undefined);
 			} else {
 				this._maximumSize = this._defaultMaximumSize;
 				this._minimumSize = this._defaultMinimumSize;
@@ -407,7 +406,7 @@ export class ProfilerEditor extends BaseEditor {
 		return this._input as ProfilerInput;
 	}
 
-	public setInput(input: ProfilerInput, options?: EditorOptions): Thenable<void> {
+	public setInput(input: ProfilerInput, options?: EditorOptions): Promise<void> {
 		let savedViewState = this._savedTableViewStates.get(input);
 
 		this._profilerEditorContextKey.set(true);
@@ -415,7 +414,7 @@ export class ProfilerEditor extends BaseEditor {
 			if (savedViewState) {
 				this._profilerTableEditor.restoreViewState(savedViewState);
 			}
-			return TPromise.as(null);
+			return Promise.resolve(null);
 		}
 
 		return super.setInput(input, options, CancellationToken.None).then(() => {

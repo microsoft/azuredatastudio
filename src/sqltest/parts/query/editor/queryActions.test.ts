@@ -5,7 +5,6 @@
 
 'use strict';
 import { Emitter } from 'vs/base/common/event';
-import { TPromise } from 'vs/base/common/winjs.base';
 
 import { ISelectionData } from 'azdata';
 
@@ -122,7 +121,7 @@ suite('SQL QueryAction Tests', () => {
 				connectionParams = params;
 				countCalledShowDialog++;
 			})
-			.returns(() => TPromise.as(none));
+			.returns(() => Promise.resolve(none));
 
 		// ... Mock "isConnected" in ConnectionManagementService
 		let connectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Loose, {}, {}, new TestStorageService(), connectionDialogService.object);
@@ -227,7 +226,7 @@ suite('SQL QueryAction Tests', () => {
 				showDialogConnectionParams = params;
 				countCalledShowDialog++;
 			})
-			.returns(() => TPromise.as(none));
+			.returns(() => Promise.resolve(none));
 
 		// ... Mock "getSelection" in QueryEditor
 		let queryInput = TypeMoq.Mock.ofType(QueryInput, TypeMoq.MockBehavior.Loose);
@@ -385,7 +384,7 @@ suite('SQL QueryAction Tests', () => {
 				connectionParams = params;
 				countCalledShowDialog++;
 			})
-			.returns(() => TPromise.as(none));
+			.returns(() => Promise.resolve(none));
 
 		// ... Mock "isConnected" in ConnectionManagementService
 		let connectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Loose, {}, {}, new TestStorageService(), connectionDialogService.object);
@@ -431,7 +430,7 @@ suite('SQL QueryAction Tests', () => {
 				calledShowDialog++;
 				connectionParams = params;
 			})
-			.returns(() => TPromise.as(none));
+			.returns(() => Promise.resolve(none));
 
 		// ... Mock "isConnected" in ConnectionManagementService
 		let connectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Loose, {}, {}, new TestStorageService(), connectionDialogService.object);
@@ -477,7 +476,7 @@ suite('SQL QueryAction Tests', () => {
 		});
 
 		// If I query without having initialized anything, state should be clear
-		listItem = new ListDatabasesActionItem(editor.object, undefined, connectionManagementService.object, undefined, undefined, undefined, configurationService.object);
+		listItem = new ListDatabasesActionItem(editor.object, connectionManagementService.object, undefined, undefined, configurationService.object);
 
 		assert.equal(listItem.isEnabled(), false, 'do not expect dropdown enabled unless connected');
 		assert.equal(listItem.currentDatabaseName, undefined, 'do not expect dropdown to have entries unless connected');
@@ -512,7 +511,7 @@ suite('SQL QueryAction Tests', () => {
 		cms.setup(x => x.getConnectionProfile(TypeMoq.It.isAny())).returns(() => <IConnectionProfile>{ databaseName: databaseName });
 
 		// ... Create a database dropdown that has been connected
-		let listItem = new ListDatabasesActionItem(editor.object, undefined, cms.object, null, null, null, configurationService.object);
+		let listItem = new ListDatabasesActionItem(editor.object, cms.object, null, null, configurationService.object);
 		listItem.onConnected();
 
 		// If: I raise a connection changed event
@@ -536,7 +535,7 @@ suite('SQL QueryAction Tests', () => {
 		cms.setup(x => x.getConnectionProfile(TypeMoq.It.isAny())).returns(() => <IConnectionProfile>{ databaseName: databaseName });
 
 		// ... Create a database dropdown that has been connected
-		let listItem = new ListDatabasesActionItem(editor.object, undefined, cms.object, null, null, null, configurationService.object);
+		let listItem = new ListDatabasesActionItem(editor.object, cms.object, null, null, configurationService.object);
 		listItem.onConnected();
 
 		// If: I raise a connection changed event for the 'wrong' URI
@@ -563,7 +562,7 @@ suite('SQL QueryAction Tests', () => {
 		cms.setup(x => x.onConnectionChanged).returns(() => dbChangedEmitter.event);
 
 		// ... Create a database dropdown
-		let listItem = new ListDatabasesActionItem(editor.object, undefined, cms.object, null, null, null, configurationService.object);
+		let listItem = new ListDatabasesActionItem(editor.object, cms.object, null, null, configurationService.object);
 
 		// If: I raise a connection changed event
 		let eventParams = <IConnectionParams>{

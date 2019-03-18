@@ -21,19 +21,20 @@ class ShowEmmetCommandsAction extends EditorAction {
 			label: nls.localize('showEmmetCommands', "Show Emmet Commands"),
 			alias: 'Show Emmet Commands',
 			precondition: EditorContextKeys.writable,
-			menubarOpts: {
-				menuId: MenuId.MenubarEditMenu,
-				group: '5_insert',
-				title: nls.localize({ key: 'miShowEmmetCommands', comment: ['&& denotes a mnemonic'] }, "E&&mmet..."),
-				order: 4
-			}
+			// {{SQL CARBON EDIT}} - Remove from menu
+			// menubarOpts: {
+			// 	menuId: MenuId.MenubarEditMenu,
+			// 	group: '5_insert',
+			// 	title: nls.localize({ key: 'miShowEmmetCommands', comment: ['&& denotes a mnemonic'] }, "E&&mmet..."),
+			// 	order: 4
+			// }
 		});
 	}
 
 	public run(accessor: ServicesAccessor, editor: ICodeEditor): Promise<void> {
 		const quickOpenService = accessor.get(IQuickOpenService);
 		quickOpenService.show(EMMET_COMMANDS_PREFIX);
-		return Promise.resolve(void 0);
+		return Promise.resolve(undefined);
 	}
 }
 

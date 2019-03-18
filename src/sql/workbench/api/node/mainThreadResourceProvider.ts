@@ -5,7 +5,6 @@
 'use strict';
 
 import * as azdata from 'azdata';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { IResourceProviderService } from 'sql/workbench/services/resourceProvider/common/resourceProviderService';
 import { dispose, IDisposable } from 'vs/base/common/lifecycle';
 import {
@@ -50,12 +49,12 @@ export class MainThreadResourceProvider implements MainThreadResourceProviderSha
 		this._resourceProviderService.registerProvider(providerMetadata.id, resourceProvider);
 		this._providerMetadata[handle] = providerMetadata;
 
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 
 	public $unregisterResourceProvider(handle: number): Thenable<any> {
 		this._resourceProviderService.unregisterProvider(this._providerMetadata[handle].id);
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 
 	public dispose(): void {

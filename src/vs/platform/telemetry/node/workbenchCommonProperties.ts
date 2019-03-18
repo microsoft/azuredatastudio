@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as uuid from 'vs/base/common/uuid';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import { resolveCommonProperties } from 'vs/platform/telemetry/node/commonProperties';
 
@@ -13,8 +12,12 @@ export const lastSessionDateStorageKey = 'telemetry.lastSessionDate';
 import product from 'vs/platform/node/product';
 import * as Utils from 'sql/common/telemetryUtilities';
 
-export function resolveWorkbenchCommonProperties(storageService: IStorageService, commit: string, version: string, machineId: string, installSourcePath: string): Promise<{ [name: string]: string }> {
+export function resolveWorkbenchCommonProperties(storageService: IStorageService, commit: string, version: string, machineId: string, installSourcePath: string): Promise<{ [name: string]: string | undefined }> {
 	return resolveCommonProperties(commit, version, machineId, installSourcePath).then(result => {
+		const instanceId = storageService.get('telemetry.instanceId', StorageScope.GLOBAL)!;
+		const firstSessionDate = storageService.get('telemetry.firstSessionDate', StorageScope.GLOBAL)!;
+		const lastSessionDate = storageService.get(lastSessionDateStorageKey, StorageScope.GLOBAL)!;
+
 		// __GDPR__COMMON__ "common.version.shell" : { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" }
 		result['common.version.shell'] = process.versions && process.versions['electron'];
 		// __GDPR__COMMON__ "common.version.renderer" : { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" }
@@ -25,20 +28,14 @@ export function resolveWorkbenchCommonProperties(storageService: IStorageService
 		result['common.userId'] = '';
 
 		// {{SQL CARBON EDIT}}
-		// const lastSessionDate = storageService.get(lastSessionDateStorageKey, StorageScope.GLOBAL);
-		// if (!process.env['VSCODE_TEST_STORAGE_MIGRATION']) {
-		// 	storageService.store(lastSessionDateStorageKey, new Date().toUTCString(), StorageScope.GLOBAL);
-		// }
-
-		// {{SQL CARBON EDIT}}
 		// // __GDPR__COMMON__ "common.firstSessionDate" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
-		// result['common.firstSessionDate'] = getOrCreateFirstSessionDate(storageService);
+		// result['common.firstSessionDate'] = firstSessionDate;
 		// // __GDPR__COMMON__ "common.lastSessionDate" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 		// result['common.lastSessionDate'] = lastSessionDate || '';
 		// // __GDPR__COMMON__ "common.isNewSession" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 		// result['common.isNewSession'] = !lastSessionDate ? '1' : '0';
 		// // __GDPR__COMMON__ "common.instanceId" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
-		// result['common.instanceId'] = getOrCreateInstanceId(storageService);
+		// result['common.instanceId'] = instanceId;
 
 		// {{SQL CARBON EDIT}}
 		setUsageDates(storageService);
@@ -47,47 +44,18 @@ export function resolveWorkbenchCommonProperties(storageService: IStorageService
 }
 
 // {{SQL CARBON EDIT}}
-// function getOrCreateInstanceId(storageService: IStorageService): string {
-// 	const key = 'telemetry.instanceId';
-
-// 	let instanceId = storageService.get(key, StorageScope.GLOBAL, void 0);
-// 	if (instanceId) {
-// 		return instanceId;
-// 	}
-
-// 	instanceId = uuid.generateUuid();
-// 	storageService.store(key, instanceId, StorageScope.GLOBAL);
-
-// 	return instanceId;
-// }
-
-function getOrCreateFirstSessionDate(storageService: IStorageService): string {
-	const key = 'telemetry.firstSessionDate';
-
-	let firstSessionDate = storageService.get(key, StorageScope.GLOBAL, void 0);
-	if (firstSessionDate) {
-		return firstSessionDate;
-	}
-
-	firstSessionDate = new Date().toUTCString();
-	storageService.store(key, firstSessionDate, StorageScope.GLOBAL);
-
-	return firstSessionDate;
-}
-
-// {{SQL CARBON EDIT}}
 function setUsageDates(storageService: IStorageService): void {
 	// daily last usage date
 	const appStartDate = new Date('January 1, 2000');
-	const dailyLastUseDate = storageService.get('telemetry.dailyLastUseDate', StorageScope.GLOBAL) || appStartDate;
+	const dailyLastUseDate = storageService.get('telemetry.dailyLastUseDate', StorageScope.GLOBAL, appStartDate.toUTCString());
 	storageService.store('telemetry.dailyLastUseDate', dailyLastUseDate, StorageScope.GLOBAL);
 
 	// weekly last usage date
-	const weeklyLastUseDate = storageService.get('telemetry.weeklyLastUseDate', StorageScope.GLOBAL) || appStartDate;
+	const weeklyLastUseDate = storageService.get('telemetry.weeklyLastUseDate', StorageScope.GLOBAL, appStartDate.toUTCString());
 	storageService.store('telemetry.weeklyLastUseDate', weeklyLastUseDate, StorageScope.GLOBAL);
 
 	// monthly last usage date
-	const monthlyLastUseDate = storageService.get('telemetry.monthlyLastUseDate', StorageScope.GLOBAL) || appStartDate;
+	const monthlyLastUseDate = storageService.get('telemetry.monthlyLastUseDate', StorageScope.GLOBAL, appStartDate.toUTCString());
 	storageService.store('telemetry.monthlyLastUseDate', monthlyLastUseDate, StorageScope.GLOBAL);
 
 }

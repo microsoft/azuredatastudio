@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 import { Action } from 'vs/base/common/actions';
 import * as nls from 'vs/nls';
-import { TPromise } from 'vs/base/common/winjs.base';
 
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { RunQueryOnConnectionMode, IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
@@ -27,8 +26,8 @@ export class RunInsightQueryAction extends Action {
 		super(id, label);
 	}
 
-	public run(context: InsightActionContext): TPromise<boolean> {
-		return new TPromise<boolean>((resolve, reject) => {
+	public run(context: InsightActionContext): Promise<boolean> {
+		return new Promise<boolean>((resolve, reject) => {
 			TaskUtilities.newQuery(
 				context.profile,
 				this._connectionManagementService,

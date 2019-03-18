@@ -42,7 +42,7 @@ export abstract class ContextKeyExpr {
 		return new ContextKeyNotExpr(key);
 	}
 
-	public static and(...expr: (ContextKeyExpr | undefined | null)[]): ContextKeyExpr {
+	public static and(...expr: Array<ContextKeyExpr | undefined | null>): ContextKeyExpr {
 		return new ContextKeyAndExpr(expr);
 	}
 
@@ -447,7 +447,7 @@ export class ContextKeyRegexExpr implements ContextKeyExpr {
 export class ContextKeyAndExpr implements ContextKeyExpr {
 	public readonly expr: ContextKeyExpr[];
 
-	constructor(expr: (ContextKeyExpr | null | undefined)[]) {
+	constructor(expr: Array<ContextKeyExpr | null | undefined>) {
 		this.expr = ContextKeyAndExpr._normalizeArr(expr);
 	}
 
@@ -479,7 +479,7 @@ export class ContextKeyAndExpr implements ContextKeyExpr {
 		return true;
 	}
 
-	private static _normalizeArr(arr: (ContextKeyExpr | null | undefined)[]): ContextKeyExpr[] {
+	private static _normalizeArr(arr: Array<ContextKeyExpr | null | undefined>): ContextKeyExpr[] {
 		let expr: ContextKeyExpr[] = [];
 
 		if (arr) {

@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { Action } from 'vs/base/common/actions';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
@@ -24,13 +23,6 @@ import { ObjectExplorerActionsContext } from 'sql/parts/objectExplorer/viewlet/o
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { ConnectionViewletPanel } from 'sql/parts/dataExplorer/objectExplorer/connectionViewlet/connectionViewletPanel';
-import { ConnectionManagementService } from 'sql/platform/connection/common/connectionManagementService';
-import { CommandsRegistry } from 'vs/platform/commands/common/commands';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { MenuRegistry, MenuId } from 'vs/platform/actions/common/actions';
-import { ViewsRegistry } from 'vs/workbench/common/views';
-import { ICustomViewDescriptor, TreeViewItemHandleArg } from 'sql/workbench/common/views';
-import { IOEShimService } from 'sql/parts/objectExplorer/common/objectExplorerViewTreeShim';
 
 export class RefreshAction extends Action {
 
@@ -50,7 +42,7 @@ export class RefreshAction extends Action {
 		super(id, label);
 		this._tree = tree;
 	}
-	public run(): TPromise<boolean> {
+	public run(): Promise<boolean> {
 		var treeNode: TreeNode;
 		if (this.element instanceof ConnectionProfile) {
 			let connection: ConnectionProfile = this.element;
@@ -67,23 +59,23 @@ export class RefreshAction extends Action {
 		}
 
 		if (treeNode) {
-			this._tree.collapse(this.element).then(() => {
-				this._objectExplorerService.refreshTreeNode(treeNode.getSession(), treeNode).then(() => {
+			return this._tree.collapse(this.element).then(() => {
+				return this._objectExplorerService.refreshTreeNode(treeNode.getSession(), treeNode).then(() => {
 
-					this._tree.refresh(this.element).then(() => {
-						this._tree.expand(this.element);
+					return this._tree.refresh(this.element).then(() => {
+						return this._tree.expand(this.element);
 					}, refreshError => {
-						return TPromise.as(true);
+						return Promise.resolve(true);
 					});
 				}, error => {
 					this.showError(error);
-					return TPromise.as(true);
+					return Promise.resolve(true);
 				});
 			}, collapseError => {
-				return TPromise.as(true);
+				return Promise.resolve(true);
 			});
 		}
-		return TPromise.as(true);
+		return Promise.resolve(true);
 	}
 
 	private showError(errorMessage: string) {
@@ -108,8 +100,8 @@ export class DisconnectConnectionAction extends Action {
 		super(id, label);
 	}
 
-	run(actionContext: ObjectExplorerActionsContext): TPromise<any> {
-		return new TPromise<boolean>((resolve, reject) => {
+	run(actionContext: ObjectExplorerActionsContext): Promise<any> {
+		return new Promise<boolean>((resolve, reject) => {
 			if (!this._connectionProfile) {
 				resolve(true);
 			}
@@ -150,7 +142,7 @@ export class AddServerAction extends Action {
 		this.class = 'add-server-action';
 	}
 
-	public run(element: ConnectionProfileGroup): TPromise<boolean> {
+	public run(element: ConnectionProfileGroup): Promise<boolean> {
 		let connection: IConnectionProfile = element === undefined ? undefined : {
 			connectionName: undefined,
 			serverName: undefined,
@@ -169,7 +161,7 @@ export class AddServerAction extends Action {
 			id: element.id
 		};
 		this._connectionManagementService.showConnectionDialog(undefined, connection);
-		return TPromise.as(true);
+		return Promise.resolve(true);
 	}
 }
 
@@ -189,9 +181,9 @@ export class AddServerGroupAction extends Action {
 		this.class = 'add-server-group-action';
 	}
 
-	public run(): TPromise<boolean> {
+	public run(): Promise<boolean> {
 		this._connectionManagementService.showCreateServerGroupDialog();
-		return TPromise.as(true);
+		return Promise.resolve(true);
 	}
 }
 
@@ -212,9 +204,9 @@ export class EditServerGroupAction extends Action {
 		this.class = 'edit-server-group-action';
 	}
 
-	public run(): TPromise<boolean> {
+	public run(): Promise<boolean> {
 		this._connectionManagementService.showEditServerGroupDialog(this._group);
-		return TPromise.as(true);
+		return Promise.resolve(true);
 	}
 }
 
@@ -248,10 +240,10 @@ export class ActiveConnectionsFilterAction extends Action {
 		this.class = ActiveConnectionsFilterAction.enabledClass;
 	}
 
-	public run(): TPromise<boolean> {
+	public run(): Promise<boolean> {
 		if (!this.view) {
 			// return without doing anything
-			return TPromise.as(true);
+			return Promise.resolve(true);
 		}
 		if (this.class === ActiveConnectionsFilterAction.enabledClass) {
 			// show active connections in the tree
@@ -264,7 +256,7 @@ export class ActiveConnectionsFilterAction extends Action {
 			this.isSet = false;
 			this.label = ActiveConnectionsFilterAction.LABEL;
 		}
-		return TPromise.as(true);
+		return Promise.resolve(true);
 	}
 }
 
@@ -296,10 +288,10 @@ export class RecentConnectionsFilterAction extends Action {
 		this._isSet = false;
 	}
 
-	public run(): TPromise<boolean> {
+	public run(): Promise<boolean> {
 		if (!this.view) {
 			// return without doing anything
-			return TPromise.as(true);
+			return Promise.resolve(true);
 		}
 		if (this.class === RecentConnectionsFilterAction.enabledClass) {
 			// show recent connections in the tree
@@ -310,7 +302,7 @@ export class RecentConnectionsFilterAction extends Action {
 			this.view.refreshTree();
 			this.isSet = false;
 		}
-		return TPromise.as(true);
+		return Promise.resolve(true);
 	}
 }
 
@@ -338,13 +330,13 @@ export class NewQueryAction extends Action {
 		this.class = 'extension-action update';
 	}
 
-	public run(actionContext: ObjectExplorerActionsContext): TPromise<boolean> {
+	public run(actionContext: ObjectExplorerActionsContext): Promise<boolean> {
 		if (actionContext instanceof ObjectExplorerActionsContext) {
 			this._connectionProfile = new ConnectionProfile(this._capabilitiesService, actionContext.connectionProfile);
 		}
 
 		TaskUtilities.newQuery(this._connectionProfile, this.connectionManagementService, this.queryEditorService, this._objectExplorerService, this._workbenchEditorService);
-		return TPromise.as(true);
+		return Promise.resolve(true);
 	}
 }
 
@@ -376,13 +368,13 @@ export class DeleteConnectionAction extends Action {
 		}
 	}
 
-	public run(): TPromise<boolean> {
+	public run(): Promise<boolean> {
 		if (this.element instanceof ConnectionProfile) {
 			this._connectionManagementService.deleteConnection(this.element);
 		} else if (this.element instanceof ConnectionProfileGroup) {
 			this._connectionManagementService.deleteConnectionGroup(this.element);
 		}
-		return TPromise.as(true);
+		return Promise.resolve(true);
 	}
 }
 
@@ -404,8 +396,8 @@ export class ClearSearchAction extends Action {
 		this.enabled = false;
 	}
 
-	public run(): TPromise<boolean> {
+	public run(): Promise<boolean> {
 		this._viewlet.clearSearch();
-		return TPromise.as(true);
+		return Promise.resolve(true);
 	}
 }

@@ -176,7 +176,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._model.cells.forEach(cell => {
 			cell.trustedMode = isTrusted;
 		});
-		//TODO: Handle dirty for trust?
+		//Updates dirty state
+		this._notebookParams.input && this._notebookParams.input.updateModel();
 		this.detectChanges();
 	}
 
@@ -223,10 +224,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	private async loadModel(): Promise<void> {
 		await this.awaitNonDefaultProvider();
-		let providerId = 'sql'; // this is tricky; really should also depend on the connection profile
-		this.setContextKeyServiceWithProviderId(providerId);
-		this.fillInActionsForCurrentContext();
-
 		let model = new NotebookModel({
 			factory: this.modelFactory,
 			notebookUri: this._notebookParams.notebookUri,
@@ -248,7 +245,9 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._model = this._register(model);
 		this.updateToolbarComponents(this._model.trustedMode);
 		this._modelRegisteredDeferred.resolve(this._model);
-		await model.startSession(this.model.notebookManager);
+		await model.startSession(this.model.notebookManager, undefined, true);
+		this.setContextKeyServiceWithProviderId(model.providerId);
+		this.fillInActionsForCurrentContext();
 		this.detectChanges();
 	}
 

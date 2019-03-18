@@ -2440,7 +2440,6 @@ General Public License.
 
 -------------------------------START OF THIRD-PARTY NOTICES-------------------------------------------
 
-===================================ExcelDataReader (BEGIN)
 The MIT License (MIT)
 
 Copyright (c) 2014 ExcelDataReader

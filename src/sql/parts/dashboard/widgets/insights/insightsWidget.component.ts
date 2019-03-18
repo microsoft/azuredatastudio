@@ -29,7 +29,6 @@ import { WorkbenchState, IWorkspaceContextService } from 'vs/platform/workspace/
 import { IntervalTimer, createCancelablePromise } from 'vs/base/common/async';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { toDisposable } from 'vs/base/common/lifecycle';
 import { isPromiseCanceledError } from 'vs/base/common/errors';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -93,7 +92,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 								this._updateChild(result);
 								this.setupInterval();
 							} else {
-								this.queryObv = Observable.fromPromise(TPromise.as<SimpleExecuteResult>(result));
+								this.queryObv = Observable.fromPromise(Promise.resolve<SimpleExecuteResult>(result));
 							}
 						},
 						error => {
@@ -104,7 +103,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 							if (this._init) {
 								this.showError(error);
 							} else {
-								this.queryObv = Observable.fromPromise(TPromise.as<SimpleExecuteResult>(error));
+								this.queryObv = Observable.fromPromise(Promise.resolve<SimpleExecuteResult>(error));
 							}
 						}
 					).then(() => this._cd.detectChanges());
@@ -211,8 +210,8 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 		return `insights.${this.insightConfig.cacheId}.${this.dashboardService.connectionManagementService.connectionInfo.connectionProfile.getOptionsKey()}`;
 	}
 
-	private _runQuery(): TPromise<SimpleExecuteResult> {
-		return TPromise.wrap(this.dashboardService.queryManagementService.runQueryAndReturn(this.insightConfig.query as string).then(
+	private _runQuery(): Promise<SimpleExecuteResult> {
+		return Promise.resolve(this.dashboardService.queryManagementService.runQueryAndReturn(this.insightConfig.query as string).then(
 			result => {
 				return this._storeResult(result);
 			},

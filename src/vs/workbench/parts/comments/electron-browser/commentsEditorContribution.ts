@@ -35,6 +35,8 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { CancelablePromise, createCancelablePromise } from 'vs/base/common/async';
 import { overviewRulerCommentingRangeForeground } from 'vs/workbench/parts/comments/electron-browser/commentGlyphWidget';
+import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { STATUS_BAR_ITEM_HOVER_BACKGROUND, STATUS_BAR_ITEM_ACTIVE_BACKGROUND } from 'vs/workbench/common/theme';
 
 export const ctxReviewPanelVisible = new RawContextKey<boolean>('reviewPanelVisible', false);
 
@@ -64,7 +66,7 @@ class CommentingRangeDecoration {
 		return this._decorationId;
 	}
 
-	constructor(private _editor: ICodeEditor, private _ownerId: string, private _range: IRange, private _reply: modes.Command, commentingOptions: ModelDecorationOptions) {
+	constructor(private _editor: ICodeEditor, private _ownerId: string, private _extensionId: string, private _range: IRange, private _reply: modes.Command, commentingOptions: ModelDecorationOptions) {
 		const startLineNumber = _range.startLineNumber;
 		const endLineNumber = _range.endLineNumber;
 		let commentingRangeDecorations = [{
@@ -81,8 +83,9 @@ class CommentingRangeDecoration {
 		}
 	}
 
-	public getCommentAction(): { replyCommand: modes.Command, ownerId: string } {
+	public getCommentAction(): { replyCommand: modes.Command, ownerId: string, extensionId: string } {
 		return {
+			extensionId: this._extensionId,
 			replyCommand: this._reply,
 			ownerId: this._ownerId
 		};
@@ -118,10 +121,9 @@ class CommentingRangeDecorator {
 		}
 
 		let commentingRangeDecorations: CommentingRangeDecoration[] = [];
-		for (let i = 0; i < commentInfos.length; i++) {
-			let info = commentInfos[i];
+		for (const info of commentInfos) {
 			info.commentingRanges.forEach(range => {
-				commentingRangeDecorations.push(new CommentingRangeDecoration(editor, info.owner, range, info.reply, this.decorationOptions));
+				commentingRangeDecorations.push(new CommentingRangeDecoration(editor, info.owner, info.extensionId, range, info.reply, this.decorationOptions));
 			});
 		}
 
@@ -132,11 +134,10 @@ class CommentingRangeDecorator {
 	}
 
 	public getMatchedCommentAction(line: number) {
-		for (let i = 0; i < this.commentingRangeDecorations.length; i++) {
-			let range = this.commentingRangeDecorations[i].getActiveRange();
-
+		for (const decoration of this.commentingRangeDecorations) {
+			const range = decoration.getActiveRange();
 			if (range.startLineNumber <= line && line <= range.endLineNumber) {
-				return this.commentingRangeDecorations[i].getCommentAction();
+				return decoration.getCommentAction();
 			}
 		}
 
@@ -163,20 +164,21 @@ export class ReviewController implements IEditorContribution {
 	private _computePromise: CancelablePromise<ICommentInfo[]> | null;
 
 	private _pendingCommentCache: { [key: number]: { [key: string]: string } };
-	private _pendingNewCommentCache: { [key: string]: { lineNumber: number, replyCommand: modes.Command, ownerId: string, pendingComment: string, draftMode: modes.DraftMode } };
+	private _pendingNewCommentCache: { [key: string]: { lineNumber: number, replyCommand: modes.Command, ownerId: string, extensionId: string, pendingComment: string, draftMode: modes.DraftMode } };
 
 	constructor(
 		editor: ICodeEditor,
 		@IContextKeyService contextKeyService: IContextKeyService,
-		@IThemeService private themeService: IThemeService,
-		@ICommentService private commentService: ICommentService,
-		@INotificationService private notificationService: INotificationService,
-		@IInstantiationService private instantiationService: IInstantiationService,
-		@IModeService private modeService: IModeService,
-		@IModelService private modelService: IModelService,
-		@ICodeEditorService private codeEditorService: ICodeEditorService,
-		@IOpenerService private openerService: IOpenerService,
-		@IDialogService private dialogService: IDialogService
+		@IThemeService private readonly themeService: IThemeService,
+		@ICommentService private readonly commentService: ICommentService,
+		@INotificationService private readonly notificationService: INotificationService,
+		@IInstantiationService private readonly instantiationService: IInstantiationService,
+		@IModeService private readonly modeService: IModeService,
+		@IModelService private readonly modelService: IModelService,
+		@ICodeEditorService private readonly codeEditorService: ICodeEditorService,
+		@IOpenerService private readonly openerService: IOpenerService,
+		@IDialogService private readonly dialogService: IDialogService,
+		@IContextMenuService private readonly contextMenuService: IContextMenuService,
 	) {
 		this.editor = editor;
 		this.globalToDispose = [];
@@ -327,6 +329,7 @@ export class ReviewController implements IEditorContribution {
 						this._pendingNewCommentCache[e.oldModelUrl.toString()] = {
 							lineNumber: position.lineNumber,
 							ownerId: this._newCommentWidget.owner,
+							extensionId: this._newCommentWidget.extensionId,
 							replyCommand: this._newCommentWidget.commentThread.reply,
 							pendingComment: pendingNewComment,
 							draftMode: this._newCommentWidget.draftMode
@@ -346,7 +349,7 @@ export class ReviewController implements IEditorContribution {
 
 		if (e.newModelUrl && this._pendingNewCommentCache[e.newModelUrl.toString()]) {
 			let newCommentCache = this._pendingNewCommentCache[e.newModelUrl.toString()];
-			this.addComment(newCommentCache.lineNumber, newCommentCache.replyCommand, newCommentCache.ownerId, newCommentCache.draftMode, newCommentCache.pendingComment);
+			this.addComment(newCommentCache.lineNumber, newCommentCache.replyCommand, newCommentCache.ownerId, newCommentCache.extensionId, newCommentCache.draftMode, newCommentCache.pendingComment);
 		}
 
 		this.localToDispose.push(this.editor.onMouseDown(e => this.onEditorMouseDown(e)));
@@ -371,6 +374,9 @@ export class ReviewController implements IEditorContribution {
 
 			commentInfo.forEach(info => info.draftMode = draftMode);
 			this._commentWidgets.filter(ZoneWidget => ZoneWidget.owner === e.owner).forEach(widget => widget.updateDraftMode(draftMode));
+			if (this._newCommentWidget && this._newCommentWidget.owner === e.owner) {
+				this._newCommentWidget.updateDraftMode(draftMode);
+			}
 
 			removed.forEach(thread => {
 				let matchedZones = this._commentWidgets.filter(zoneWidget => zoneWidget.owner === e.owner && zoneWidget.commentThread.threadId === thread.threadId);
@@ -378,6 +384,7 @@ export class ReviewController implements IEditorContribution {
 					let matchedZone = matchedZones[0];
 					let index = this._commentWidgets.indexOf(matchedZone);
 					this._commentWidgets.splice(index, 1);
+					matchedZone.dispose();
 				}
 			});
 
@@ -389,7 +396,7 @@ export class ReviewController implements IEditorContribution {
 				}
 			});
 			added.forEach(thread => {
-				let zoneWidget = new ReviewZoneWidget(this.instantiationService, this.modeService, this.modelService, this.themeService, this.commentService, this.openerService, this.dialogService, this.notificationService, this.editor, e.owner, thread, null, draftMode, {});
+				let zoneWidget = new ReviewZoneWidget(this.instantiationService, this.modeService, this.modelService, this.themeService, this.commentService, this.openerService, this.dialogService, this.notificationService, this.contextMenuService, this.editor, e.owner, thread, null, draftMode);
 				zoneWidget.display(thread.range.startLineNumber);
 				this._commentWidgets.push(zoneWidget);
 				this._commentInfos.filter(info => info.owner === e.owner)[0].threads.push(thread);
@@ -400,7 +407,7 @@ export class ReviewController implements IEditorContribution {
 		this.beginCompute();
 	}
 
-	private addComment(lineNumber: number, replyCommand: modes.Command, ownerId: string, draftMode: modes.DraftMode, pendingComment: string) {
+	private addComment(lineNumber: number, replyCommand: modes.Command, ownerId: string, extensionId: string, draftMode: modes.DraftMode, pendingComment: string) {
 		if (this._newCommentWidget !== null) {
 			this.notificationService.warn(`Please submit the comment at line ${this._newCommentWidget.position.lineNumber} before creating a new one.`);
 			return;
@@ -408,7 +415,8 @@ export class ReviewController implements IEditorContribution {
 
 		// add new comment
 		this._reviewPanelVisible.set(true);
-		this._newCommentWidget = new ReviewZoneWidget(this.instantiationService, this.modeService, this.modelService, this.themeService, this.commentService, this.openerService, this.dialogService, this.notificationService, this.editor, ownerId, {
+		this._newCommentWidget = new ReviewZoneWidget(this.instantiationService, this.modeService, this.modelService, this.themeService, this.commentService, this.openerService, this.dialogService, this.notificationService, this.contextMenuService, this.editor, ownerId, {
+			extensionId: extensionId,
 			threadId: null,
 			resource: null,
 			comments: [],
@@ -420,7 +428,7 @@ export class ReviewController implements IEditorContribution {
 			},
 			reply: replyCommand,
 			collapsibleState: CommentThreadCollapsibleState.Expanded,
-		}, pendingComment, draftMode, {});
+		}, pendingComment, draftMode);
 
 		this.localToDispose.push(this._newCommentWidget.onDidClose(e => {
 			this.clearNewCommentWidget();
@@ -500,7 +508,7 @@ export class ReviewController implements IEditorContribution {
 			if (!newCommentInfo) {
 				return;
 			}
-			const { replyCommand, ownerId } = newCommentInfo;
+			const { replyCommand, ownerId, extensionId } = newCommentInfo;
 
 			let commentInfo = this._commentInfos.filter(info => info.owner === ownerId);
 			if (!commentInfo || !commentInfo.length) {
@@ -509,7 +517,7 @@ export class ReviewController implements IEditorContribution {
 
 			let draftMode = commentInfo[0].draftMode;
 
-			this.addComment(lineNumber, replyCommand, ownerId, draftMode, null);
+			this.addComment(lineNumber, replyCommand, ownerId, extensionId, draftMode, null);
 		}
 	}
 
@@ -565,7 +573,7 @@ export class ReviewController implements IEditorContribution {
 					thread.collapsibleState = modes.CommentThreadCollapsibleState.Expanded;
 				}
 
-				let zoneWidget = new ReviewZoneWidget(this.instantiationService, this.modeService, this.modelService, this.themeService, this.commentService, this.openerService, this.dialogService, this.notificationService, this.editor, info.owner, thread, pendingComment, info.draftMode, {});
+				let zoneWidget = new ReviewZoneWidget(this.instantiationService, this.modeService, this.modelService, this.themeService, this.commentService, this.openerService, this.dialogService, this.notificationService, this.contextMenuService, this.editor, info.owner, thread, pendingComment, info.draftMode);
 				zoneWidget.display(thread.range.startLineNumber);
 				this._commentWidgets.push(zoneWidget);
 			});
@@ -652,7 +660,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 });
 
 export function getOuterEditor(accessor: ServicesAccessor): ICodeEditor {
-	let editor = accessor.get(ICodeEditorService).getFocusedCodeEditor();
+	const editor = accessor.get(ICodeEditorService).getFocusedCodeEditor();
 	if (editor instanceof EmbeddedCodeEditorWidget) {
 		return editor.getParentEditor();
 	}
@@ -660,13 +668,12 @@ export function getOuterEditor(accessor: ServicesAccessor): ICodeEditor {
 }
 
 function closeReviewPanel(accessor: ServicesAccessor, args: any) {
-	var outerEditor = getOuterEditor(accessor);
+	const outerEditor = getOuterEditor(accessor);
 	if (!outerEditor) {
 		return;
 	}
 
-	let controller = ReviewController.get(outerEditor);
-
+	const controller = ReviewController.get(outerEditor);
 	if (!controller) {
 		return;
 	}
@@ -701,7 +708,8 @@ registerThemingParticipant((theme, collector) => {
 			`	color: ${monacoEditorForeground}` +
 			`}` +
 			`.monaco-editor .review-widget .body .comment-form .review-thread-reply-button {` +
-			`	color: ${monacoEditorForeground}` +
+			`	color: ${monacoEditorForeground};` +
+			`	font-size: inherit` +
 			`}`
 		);
 	}
@@ -736,5 +744,17 @@ registerThemingParticipant((theme, collector) => {
 				background: ${commentingRangeForeground};
 			}
 		`);
+	}
+
+	const statusBarItemHoverBackground = theme.getColor(STATUS_BAR_ITEM_HOVER_BACKGROUND);
+	if (statusBarItemHoverBackground) {
+		collector.addRule(`.monaco-editor .review-widget .body .review-comment .review-comment-contents .comment-reactions .action-item a.action-label:hover { background-color: ${statusBarItemHoverBackground}; border: 1px solid grey;
+		border-radius: 3px; }`);
+	}
+
+	const statusBarItemActiveBackground = theme.getColor(STATUS_BAR_ITEM_ACTIVE_BACKGROUND);
+	if (statusBarItemActiveBackground) {
+		collector.addRule(`.monaco-editor .review-widget .body .review-comment .review-comment-contents .comment-reactions .action-item a.action-label:active { background-color: ${statusBarItemActiveBackground}; border: 1px solid grey;
+		border-radius: 3px;}`);
 	}
 });
