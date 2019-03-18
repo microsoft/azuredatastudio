@@ -147,29 +147,29 @@ interface StateDelta {
 }
 
 class State {
-	private _selectionStatus: string | null;
-	get selectionStatus(): string | null { return this._selectionStatus; }
+	private _selectionStatus: string | null | undefined;
+	get selectionStatus(): string | null | undefined { return this._selectionStatus; }
 
-	private _mode: string | null;
-	get mode(): string | null { return this._mode; }
+	private _mode: string | null | undefined;
+	get mode(): string | null | undefined { return this._mode; }
 
-	private _encoding: string | null;
-	get encoding(): string | null { return this._encoding; }
+	private _encoding: string | null | undefined;
+	get encoding(): string | null | undefined { return this._encoding; }
 
-	private _EOL: string | null;
-	get EOL(): string | null { return this._EOL; }
+	private _EOL: string | null | undefined;
+	get EOL(): string | null | undefined { return this._EOL; }
 
-	private _indentation: string | null;
-	get indentation(): string | null { return this._indentation; }
+	private _indentation: string | null | undefined;
+	get indentation(): string | null | undefined { return this._indentation; }
 
-	private _tabFocusMode: boolean | null;
-	get tabFocusMode(): boolean | null { return this._tabFocusMode; }
+	private _tabFocusMode: boolean | null | undefined;
+	get tabFocusMode(): boolean | null | undefined { return this._tabFocusMode; }
 
-	private _screenReaderMode: boolean | null;
-	get screenReaderMode(): boolean | null { return this._screenReaderMode; }
+	private _screenReaderMode: boolean | null | undefined;
+	get screenReaderMode(): boolean | null | undefined { return this._screenReaderMode; }
 
-	private _metadata: string | null;
-	get metadata(): string | null { return this._metadata; }
+	private _metadata: string | null | undefined;
+	get metadata(): string | null | undefined { return this._metadata; }
 
 	constructor() {
 		this._selectionStatus = null;
@@ -185,56 +185,56 @@ class State {
 		const e = new StateChange();
 		let somethingChanged = false;
 
-		if (typeof update.selectionStatus !== 'undefined') {
+		if ('selectionStatus' in update) {
 			if (this._selectionStatus !== update.selectionStatus) {
 				this._selectionStatus = update.selectionStatus;
 				somethingChanged = true;
 				e.selectionStatus = true;
 			}
 		}
-		if (typeof update.indentation !== 'undefined') {
+		if ('indentation' in update) {
 			if (this._indentation !== update.indentation) {
 				this._indentation = update.indentation;
 				somethingChanged = true;
 				e.indentation = true;
 			}
 		}
-		if (typeof update.mode !== 'undefined') {
+		if ('mode' in update) {
 			if (this._mode !== update.mode) {
 				this._mode = update.mode;
 				somethingChanged = true;
 				e.mode = true;
 			}
 		}
-		if (typeof update.encoding !== 'undefined') {
+		if ('encoding' in update) {
 			if (this._encoding !== update.encoding) {
 				this._encoding = update.encoding;
 				somethingChanged = true;
 				e.encoding = true;
 			}
 		}
-		if (typeof update.EOL !== 'undefined') {
+		if ('EOL' in update) {
 			if (this._EOL !== update.EOL) {
 				this._EOL = update.EOL;
 				somethingChanged = true;
 				e.EOL = true;
 			}
 		}
-		if (typeof update.tabFocusMode !== 'undefined') {
+		if ('tabFocusMode' in update) {
 			if (this._tabFocusMode !== update.tabFocusMode) {
 				this._tabFocusMode = update.tabFocusMode;
 				somethingChanged = true;
 				e.tabFocusMode = true;
 			}
 		}
-		if (typeof update.screenReaderMode !== 'undefined') {
+		if ('screenReaderMode' in update) {
 			if (this._screenReaderMode !== update.screenReaderMode) {
 				this._screenReaderMode = update.screenReaderMode;
 				somethingChanged = true;
 				e.screenReaderMode = true;
 			}
 		}
-		if (typeof update.metadata !== 'undefined') {
+		if ('metadata' in update) {
 			if (this._metadata !== update.metadata) {
 				this._metadata = update.metadata;
 				somethingChanged = true;
