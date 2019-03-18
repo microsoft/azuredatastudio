@@ -698,7 +698,7 @@ export function createApiFactory(
 			registerDebugAdapterTrackerFactory(debugType: string, factory: vscode.DebugAdapterTrackerFactory) {
 				return undefined;
 			},
-			startDebugging(folder: vscode.WorkspaceFolder | undefined, nameOrConfig: string | vscode.DebugConfiguration) {
+			startDebugging(folder: vscode.WorkspaceFolder | undefined, nameOrConfig: string | vscode.DebugConfiguration, parentSession?: vscode.DebugSession) {
 				return undefined;
 			},
 			addBreakpoints(breakpoints: vscode.Breakpoint[]) {
