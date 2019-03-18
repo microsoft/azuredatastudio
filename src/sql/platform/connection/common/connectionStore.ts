@@ -15,9 +15,9 @@ import { ConnectionConfig } from './connectionConfig';
 import { Memento } from 'vs/workbench/common/memento';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from './connectionProfileGroup';
-import { ConfigurationEditingService } from 'vs/workbench/services/configuration/node/configurationEditingService';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { ConfigurationEditingService } from 'vs/workbench/services/configuration/common/configurationEditingService';
 
 const MAX_CONNECTIONS_DEFAULT = 25;
 

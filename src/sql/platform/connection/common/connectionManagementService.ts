@@ -48,7 +48,6 @@ import { Memento } from 'vs/workbench/common/memento';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
-import { ConfigurationEditingService } from 'vs/workbench/services/configuration/node/configurationEditingService';
 import { Event, Emitter } from 'vs/base/common/event';
 import { EditorPart } from 'vs/workbench/browser/parts/editor/editorPart';
 import * as statusbar from 'vs/workbench/browser/parts/statusbar/statusbar';
@@ -57,6 +56,7 @@ import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { ConfigurationEditingService } from 'vs/workbench/services/configuration/common/configurationEditingService';
 
 export class ConnectionManagementService extends Disposable implements IConnectionManagementService {
 

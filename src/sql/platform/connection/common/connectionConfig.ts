@@ -9,7 +9,6 @@ import * as Utils from './utils';
 import { IConnectionProfile, IConnectionProfileStore } from './interfaces';
 import { IConnectionConfig } from './iconnectionConfig';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from './connectionProfileGroup';
-import { ConfigurationEditingService, IConfigurationValue } from 'vs/workbench/services/configuration/node/configurationEditingService';
 import { ConfigurationTarget, IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ConnectionProfile } from './connectionProfile';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
@@ -17,6 +16,7 @@ import * as azdata from 'azdata';
 import * as nls from 'vs/nls';
 
 import { generateUuid } from 'vs/base/common/uuid';
+import { ConfigurationEditingService, IConfigurationValue } from 'vs/workbench/services/configuration/common/configurationEditingService';
 
 export interface ISaveGroupResult {
 	groups: IConnectionProfileGroup[];
