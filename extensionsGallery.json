@@ -1365,6 +1365,63 @@
 					],
 					"statistics": [],
 					"flags": "preview"
+				},
+				{
+					"extensionId": "35",
+					"extensionName": "PowerShell",
+					"displayName": "PowerShell",
+					"shortDescription": "Develop PowerShell scripts in Azure Data Studio",
+					"publisher": {
+						"displayName": "Microsoft",
+						"publisherId": "Microsoft",
+						"publisherName": "Microsoft"
+					},
+					"versions": [
+						{
+							"version": "1.11.0",
+							"lastUpdated": "3/18/2019",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/powershell/PowerShell-1.11.0.vsix"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/PowerShell/vscode-powershell/master/images/PowerShell_icon.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/PowerShell/vscode-powershell/master/docs/azure_data_studio/README_FOR_MARKETPLACE.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/PowerShell/vscode-powershell/master/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/PowerShell/vscode-powershell/master/LICENSE.txt"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": ">=0.32.1"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/PowerShell/vscode-powershell/"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": "preview"
 				}
 			],
 			"resultMetadata": [
@@ -1373,7 +1430,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 24
+							"count": 25
 						}
 					]
 				}
