@@ -11,7 +11,6 @@ import { localize } from 'vs/nls';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 
-import { CellModel } from './cell';
 import { IClientSession, INotebookModel, IDefaultConnection, INotebookModelOptions, ICellModel, NotebookContentChange, notebookConstants } from './modelInterfaces';
 import { NotebookChangeType, CellType } from 'sql/parts/notebook/models/contracts';
 import { nbversion } from '../notebookConstants';

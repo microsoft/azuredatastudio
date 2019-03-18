@@ -176,7 +176,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._model.cells.forEach(cell => {
 			cell.trustedMode = isTrusted;
 		});
-		//TODO: Handle dirty for trust?
+		//Updates dirty state
+		this._notebookParams.input && this._notebookParams.input.updateModel();
 		this.detectChanges();
 	}
 
