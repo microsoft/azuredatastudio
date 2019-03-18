@@ -326,7 +326,8 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 		// TODO the API should be copied to `out` during compile, not here
 		const api = gulp.src('src/vs/vscode.d.ts').pipe(rename('out/vs/vscode.d.ts'));
 		// {{SQL CARBON EDIT}}
-		const dataApi = gulp.src('src/vs/data.d.ts').pipe(rename('out/sql/data.d.ts'));
+		const dataApi = gulp.src('src/vs/azdata.d.ts').pipe(rename('out/sql/azdata.d.ts'));
+		const sqlopsAPI = gulp.src('src/vs/sqlops.d.ts').pipe(rename('out/sql/sqlops.d.ts'));
 
 		const depsSrc = [
 			..._.flatten(productionDependencies.map(d => path.relative(root, d.path)).map(d => [`${d}/**`, `!${d}/**/{test,tests}/**`])),
@@ -383,6 +384,7 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 			// {{SQL CARBON EDIT}}
 			copiedModules,
 			dataApi,
+			sqlopsAPI,
 			sources,
 			deps
 		);

@@ -607,7 +607,7 @@ interface Map<K, V> {
     get(key: K): V;
     has(key: K): boolean;
     set(key: K, value?: V): Map<K, V>;
-    size: number;
+    readonly size: number;
 }
 
 interface MapConstructor {
@@ -624,7 +624,7 @@ interface Set<T> {
     delete(value: T): boolean;
     forEach(callbackfn: (value: T, index: T, set: Set<T>) => void, thisArg?: any): void;
     has(value: T): boolean;
-    size: number;
+    readonly size: number;
 }
 
 interface SetConstructor {
@@ -645,7 +645,7 @@ interface WeakMap<K, V> {
 interface WeakMapConstructor {
     new <K extends object, V>(): WeakMap<K, V>;
     new <K extends object, V>(iterable: Iterable<[K, V]>): WeakMap<K, V>;
-    prototype: WeakMap<any, any>;
+    readonly prototype: WeakMap<object, any>;
 }
 
 declare var WeakMap: WeakMapConstructor;
@@ -659,7 +659,7 @@ interface WeakSet<T> {
 interface WeakSetConstructor {
     new <T extends object>(): WeakSet<T>;
     new <T extends object>(iterable: Iterable<T>): WeakSet<T>;
-    prototype: WeakSet<any>;
+    readonly prototype: WeakSet<any>;
 }
 
 declare var WeakSet: WeakSetConstructor;
