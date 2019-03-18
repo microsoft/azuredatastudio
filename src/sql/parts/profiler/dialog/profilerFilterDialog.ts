@@ -13,7 +13,6 @@ import { attachButtonStyler, attachModalDialogStyler, attachInputBoxStyler } fro
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { Builder } from 'sql/base/browser/builder';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
@@ -27,6 +26,7 @@ import { generateUuid } from 'vs/base/common/uuid';
 import * as DOM from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { ProfilerFilter, ProfilerFilterClause, ProfilerFilterClauseOperator } from 'sql/workbench/services/profiler/common/interfaces';
+import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 
 
 const ClearText: string = localize('profilerFilterDialog.clear', 'Clear All');
@@ -73,12 +73,12 @@ export class ProfilerFilterDialog extends Modal {
 	constructor(
 		@IThemeService themeService: IThemeService,
 		@IClipboardService clipboardService: IClipboardService,
-		@IPartService partService: IPartService,
+		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IContextViewService private contextViewService: IContextViewService
 	) {
-		super('', TelemetryKeys.ProfilerFilter, partService, telemetryService, clipboardService, themeService, contextKeyService, { isFlyout: false, hasTitleIcon: true });
+		super('', TelemetryKeys.ProfilerFilter, telemetryService, layoutService, clipboardService, themeService, contextKeyService, { isFlyout: false, hasTitleIcon: true });
 	}
 
 	public open(input: ProfilerInput) {

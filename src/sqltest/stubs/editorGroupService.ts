@@ -7,12 +7,26 @@
 
 import { ServiceIdentifier, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { Event } from 'vs/base/common/event';
-import { IEditorGroupsService, GroupOrientation, IEditorGroup, GroupDirection, GroupsArrangement, IMoveEditorOptions, GroupsOrder, EditorGroupLayout, IFindGroupScope, IAddGroupOptions, IMergeGroupOptions } from 'vs/workbench/services/group/common/editorGroupsService';
 import { IEditorOpeningEvent } from 'vs/workbench/browser/parts/editor/editor';
-import { IEditorInput, EditorInput, GroupIdentifier } from 'vs/workbench/common/editor';
+import { IEditorInput, EditorInput, GroupIdentifier, IEditorPartOptions } from 'vs/workbench/common/editor';
 import { EditorGroup } from 'vs/workbench/common/editor/editorGroup';
+import { IEditorGroupsService, IFindGroupScope, IEditorGroup, GroupDirection, IAddGroupOptions, IMergeGroupOptions, GroupOrientation, GroupsOrder, GroupsArrangement, IMoveEditorOptions, EditorGroupLayout } from 'vs/workbench/services/editor/common/editorGroupsService';
+import { IDimension } from 'vs/editor/common/editorCommon';
+import { IDisposable } from 'vs/base/common/lifecycle';
 
 export class EditorGroupTestService implements IEditorGroupsService {
+	dimension: IDimension;
+	whenRestored: Promise<void>;
+	centerLayout(active: boolean): void {
+		throw new Error('Method not implemented.');
+	}
+	isLayoutCentered(): boolean {
+		throw new Error('Method not implemented.');
+	}
+	partOptions: IEditorPartOptions;
+	enforcePartOptions(options: IEditorPartOptions): IDisposable {
+		throw new Error('Method not implemented.');
+	}
 	_serviceBrand: ServiceIdentifier<any>;
 
 	findGroup(scope: IFindGroupScope, source?: IEditorGroup | GroupIdentifier, wrap?: boolean): IEditorGroup {
@@ -43,11 +57,15 @@ export class EditorGroupTestService implements IEditorGroupsService {
 
 	onEditorGroupMoved: Event<void>;
 
+	onDidLayout: Event<IDimension>;
+
 	/**
 	 * An event for when the active editor group changes. The active editor
 	 * group is the default location for new editors to open.
 	 */
 	readonly onDidActiveGroupChange: Event<IEditorGroup>;
+
+	onDidActivateGroup: Event<IEditorGroup>;
 
 	/**
 	 * An event for when a new group was added.

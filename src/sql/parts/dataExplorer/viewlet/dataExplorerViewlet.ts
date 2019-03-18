@@ -20,13 +20,14 @@ import { ViewContainerViewlet, IViewletViewOptions } from 'vs/workbench/browser/
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
-import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { IAddedViewDescriptorRef } from 'vs/workbench/browser/parts/views/views';
 import { ViewletPanel } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { VIEWLET_ID, VIEW_CONTAINER } from 'sql/parts/dataExplorer/common/dataExplorerExtensionPoint';
 import { ConnectionViewletPanel } from 'sql/parts/dataExplorer/objectExplorer/connectionViewlet/connectionViewletPanel';
-import { Extensions as ViewContainerExtensions, ViewsRegistry, IViewDescriptor } from 'vs/workbench/common/views';
+import { Extensions as ViewContainerExtensions, IViewDescriptor, IViewsRegistry } from 'vs/workbench/common/views';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
+import { Registry } from 'vs/platform/registry/common/platform';
 
 export class DataExplorerViewletViewsContribution implements IWorkbenchContribution {
 
@@ -39,14 +40,14 @@ export class DataExplorerViewletViewsContribution implements IWorkbenchContribut
 	private registerViews(): void {
 		let viewDescriptors = [];
 		viewDescriptors.push(this.createObjectExplorerViewDescriptor());
-		ViewsRegistry.registerViews(viewDescriptors, VIEW_CONTAINER);
+		Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).registerViews(viewDescriptors, VIEW_CONTAINER);
 	}
 
 	private createObjectExplorerViewDescriptor(): IViewDescriptor {
 		return {
 			id: 'dataExplorer.servers',
 			name: localize('dataExplorer.servers', "Servers"),
-			ctor: ConnectionViewletPanel,
+			ctorDescriptor: { ctor: DataExplorerViewlet },
 			weight: 100,
 			canToggleVisibility: true,
 			order: 0
@@ -62,7 +63,7 @@ export class DataExplorerViewlet extends ViewContainerViewlet  {
 	private disposables: IDisposable[] = [];
 
 	constructor(
-		@IPartService partService: IPartService,
+		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IInstantiationService instantiationService: IInstantiationService,
 		@IViewletService private viewletService: IViewletService,
@@ -73,7 +74,7 @@ export class DataExplorerViewlet extends ViewContainerViewlet  {
 		@IExtensionService extensionService: IExtensionService,
 		@IConfigurationService configurationService: IConfigurationService
 	) {
-		super(VIEWLET_ID, `${VIEWLET_ID}.state`, true, configurationService, partService, telemetryService, storageService, instantiationService, themeService, contextMenuService, extensionService, contextService);
+		super(VIEWLET_ID, `${VIEWLET_ID}.state`, true, configurationService, layoutService, telemetryService, storageService, instantiationService, themeService, contextMenuService, extensionService, contextService);
 		this.disposables.push(this.viewletService.onDidViewletOpen(this.onViewletOpen, this, this.disposables));
 	}
 
@@ -120,7 +121,7 @@ export class DataExplorerViewlet extends ViewContainerViewlet  {
 	}
 
 	protected createView(viewDescriptor: IViewDescriptor, options: IViewletViewOptions): ViewletPanel {
-		return this.instantiationService.createInstance(viewDescriptor.ctor, options) as ViewletPanel;
+		return this.instantiationService.createInstance(viewDescriptor.ctorDescriptor.ctor, options) as ViewletPanel;
 	}
 
 	private onViewletOpen(viewlet: IViewlet): void {

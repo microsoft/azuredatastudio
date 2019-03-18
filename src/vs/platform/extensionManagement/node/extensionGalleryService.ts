@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { tmpdir } from 'os';
-import * as path from 'path';
+import * as path from 'vs/base/common/path';
 import { distinct } from 'vs/base/common/arrays';
 import { getErrorMessage, isPromiseCanceledError, canceled } from 'vs/base/common/errors';
 import { StatisticType, IGalleryExtension, IExtensionGalleryService, IGalleryExtensionAsset, IQueryOptions, SortBy, SortOrder, IExtensionIdentifier, IReportedExtension, InstallOperation, ITranslation, IGalleryExtensionVersion, IGalleryExtensionAssets, isIExtensionIdentifier } from 'vs/platform/extensionManagement/common/extensionManagement';
@@ -14,8 +14,8 @@ import { IRequestService } from 'vs/platform/request/node/request';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IPager } from 'vs/base/common/paging';
 import { IRequestOptions, IRequestContext, download, asJson, asText } from 'vs/base/node/request';
-import pkg from 'vs/platform/node/package';
-import product from 'vs/platform/node/product';
+import pkg from 'vs/platform/product/node/package';
+import product from 'vs/platform/product/node/product';
 import { isEngineValid } from 'vs/platform/extensions/node/extensionValidator';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { readFile } from 'vs/base/node/pfs';
@@ -24,7 +24,7 @@ import { generateUuid, isUUID } from 'vs/base/common/uuid';
 import { values } from 'vs/base/common/map';
 // {{SQL CARBON EDIT}}
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { ExtensionsPolicy, ExtensionsPolicyKey } from 'vs/workbench/parts/extensions/common/extensions';
+import { ExtensionsPolicy, ExtensionsPolicyKey } from 'vs/workbench/contrib/extensions/common/extensions';
 // {{SQL CARBON EDIT}} - End
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -412,8 +412,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			.withFlags(Flags.IncludeAssetUri, Flags.IncludeStatistics, Flags.IncludeFiles, Flags.IncludeVersionProperties, Flags.ExcludeNonValidated)
 			.withPage(1, 1)
 			.withFilter(FilterType.Target, 'Microsoft.VisualStudio.Code')
-			.withFilter(FilterType.ExcludeWithFlags, flagsToString(Flags.Unpublished))
-			.withAssetTypes(AssetType.Manifest, AssetType.VSIX);
+			.withFilter(FilterType.ExcludeWithFlags, flagsToString(Flags.Unpublished));
 
 		if (uuid) {
 			query = query.withFilter(FilterType.ExtensionId, uuid);
@@ -914,7 +913,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		const headers = { 'Accept-Encoding': 'gzip' };
 		return this.getAsset(manifest, { headers })
 			.then(context => asJson<IExtensionManifest>(context))
-			.then(manifest => manifest ? manifest.engines.vscode : Promise.reject('Error while reading manifest'));
+			.then(manifest => manifest ? manifest.engines.vscode : Promise.reject<string>('Error while reading manifest'));
 	}
 
 	private getLastValidExtensionVersionReccursively(extension: IRawGalleryExtension, versions: IRawGalleryExtensionVersion[]): Promise<IRawGalleryExtensionVersion | null> {
@@ -979,7 +978,7 @@ export function resolveMarketplaceHeaders(environmentService: IEnvironmentServic
 	const marketplaceMachineIdFile = path.join(environmentService.userDataPath, 'machineid');
 
 	return readFile(marketplaceMachineIdFile, 'utf8')
-		.then<string | null>(contents => isUUID(contents) ? contents : Promise.resolve(null), () => Promise.resolve(null) /* error reading ID file */)
+		.then<string | null>(contents => isUUID(contents) ? contents : null, () => null /* error reading ID file */)
 		.then(uuid => {
 			if (!uuid) {
 				uuid = generateUuid();

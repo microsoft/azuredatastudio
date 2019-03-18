@@ -19,7 +19,6 @@ import { IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { fillInActions, LabeledMenuItemActionItem } from 'vs/platform/actions/browser/menuItemActionItem';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
-import { VIEWLET_ID, IExtensionsViewlet } from 'vs/workbench/parts/extensions/common/extensions';
 
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { AngularDisposable } from 'sql/base/node/lifecycle';
@@ -41,6 +40,7 @@ import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHos
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { CellMagicMapper } from 'sql/parts/notebook/models/cellMagicMapper';
+import { IExtensionsViewlet, VIEWLET_ID } from 'vs/workbench/contrib/extensions/common/extensions';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 

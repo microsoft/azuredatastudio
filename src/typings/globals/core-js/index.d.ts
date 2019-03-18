@@ -443,7 +443,7 @@ interface SymbolConstructor {
     /**
       * A reference to the prototype.
       */
-    prototype: Symbol;
+    readonly prototype: Symbol;
 
     /**
       * Returns a new unique Symbol value.
@@ -643,8 +643,8 @@ interface WeakMap<K, V> {
 }
 
 interface WeakMapConstructor {
-    new <K, V>(): WeakMap<K, V>;
-    new <K, V>(iterable: Iterable<[K, V]>): WeakMap<K, V>;
+    new <K extends object, V>(): WeakMap<K, V>;
+    new <K extends object, V>(iterable: Iterable<[K, V]>): WeakMap<K, V>;
     prototype: WeakMap<any, any>;
 }
 
@@ -657,8 +657,8 @@ interface WeakSet<T> {
 }
 
 interface WeakSetConstructor {
-    new <T>(): WeakSet<T>;
-    new <T>(iterable: Iterable<T>): WeakSet<T>;
+    new <T extends object>(): WeakSet<T>;
+    new <T extends object>(iterable: Iterable<T>): WeakSet<T>;
     prototype: WeakSet<any>;
 }
 
@@ -671,7 +671,7 @@ declare var WeakSet: WeakSetConstructor;
 
 interface IteratorResult<T> {
     done: boolean;
-    value?: T;
+    value: T;
 }
 
 interface Iterator<T> {

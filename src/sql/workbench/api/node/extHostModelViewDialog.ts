@@ -18,7 +18,7 @@ import { SqlMainContext, ExtHostModelViewDialogShape, MainThreadModelViewDialogS
 import { IItemConfig, ModelComponentTypes, IComponentShape } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { Inject } from '@angular/core';
-import { IExtensionDescription } from 'vs/workbench/services/extensions/common/extensions';
+import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 
 const DONE_LABEL = nls.localize('dialogDoneLabel', 'Done');
 const CANCEL_LABEL = nls.localize('dialogCancelLabel', 'Cancel');

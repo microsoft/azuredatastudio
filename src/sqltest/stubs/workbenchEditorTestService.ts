@@ -9,9 +9,9 @@ import { IEditorOptions, IResourceInput, ITextEditorOptions  } from 'vs/platform
 import { IEditor, IEditorInput, IResourceDiffInput, IResourceSideBySideInput, GroupIdentifier, ITextEditor, IUntitledResourceInput, ITextDiffEditor, ITextSideBySideEditor, IEditorInputWithOptions } from 'vs/workbench/common/editor';
 import { Event } from 'vs/base/common/event';
 import { Position } from 'vs/editor/common/core/position';
-import { IEditorGroup, IEditorReplacement } from 'vs/workbench/services/group/common/editorGroupsService';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { IDisposable } from 'vs/base/common/lifecycle';
+import { IEditorGroup, IEditorReplacement } from 'vs/workbench/services/editor/common/editorGroupsService';
 
 export class WorkbenchEditorTestService implements IEditorService {
 	_serviceBrand: ServiceIdentifier<any>;

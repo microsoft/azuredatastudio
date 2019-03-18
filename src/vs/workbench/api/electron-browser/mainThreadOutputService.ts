@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Registry } from 'vs/platform/registry/common/platform';
-import { IOutputService, IOutputChannel, OUTPUT_PANEL_ID, Extensions, IOutputChannelRegistry } from 'vs/workbench/parts/output/common/output';
-import { IPartService } from 'vs/workbench/services/part/common/partService';
+import { IOutputService, IOutputChannel, OUTPUT_PANEL_ID, Extensions, IOutputChannelRegistry } from 'vs/workbench/contrib/output/common/output';
+import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { IPanelService } from 'vs/workbench/services/panel/common/panelService';
 import { MainThreadOutputServiceShape, MainContext, IExtHostContext, ExtHostOutputServiceShape, ExtHostContext } from '../node/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
@@ -18,27 +18,27 @@ export class MainThreadOutputService extends Disposable implements MainThreadOut
 
 	private static _idPool = 1;
 
-	private _proxy: ExtHostOutputServiceShape;
+	private readonly _proxy: ExtHostOutputServiceShape;
 	private readonly _outputService: IOutputService;
-	private readonly _partService: IPartService;
+	private readonly _layoutService: IWorkbenchLayoutService;
 	private readonly _panelService: IPanelService;
 
 	constructor(
 		extHostContext: IExtHostContext,
 		@IOutputService outputService: IOutputService,
-		@IPartService partService: IPartService,
+		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
 		@IPanelService panelService: IPanelService
 	) {
 		super();
 		this._outputService = outputService;
-		this._partService = partService;
+		this._layoutService = layoutService;
 		this._panelService = panelService;
 
 		this._proxy = extHostContext.getProxy(ExtHostContext.ExtHostOutputService);
 
 		const setVisibleChannel = () => {
 			const panel = this._panelService.getActivePanel();
-			const visibleChannel: IOutputChannel = panel && panel.getId() === OUTPUT_PANEL_ID ? this._outputService.getActiveChannel() : null;
+			const visibleChannel: IOutputChannel | null = panel && panel.getId() === OUTPUT_PANEL_ID ? this._outputService.getActiveChannel() : null;
 			this._proxy.$setVisibleChannel(visibleChannel ? visibleChannel.id : null);
 		};
 		this._register(Event.any<any>(this._outputService.onActiveOutputChannel, this._panelService.onDidPanelOpen, this._panelService.onDidPanelClose)(() => setVisibleChannel()));
@@ -47,12 +47,12 @@ export class MainThreadOutputService extends Disposable implements MainThreadOut
 
 	public $register(label: string, log: boolean, file?: UriComponents): Promise<string> {
 		const id = 'extension-output-#' + (MainThreadOutputService._idPool++);
-		Registry.as<IOutputChannelRegistry>(Extensions.OutputChannels).registerChannel({ id, label, file: file ? URI.revive(file) : null, log });
+		Registry.as<IOutputChannelRegistry>(Extensions.OutputChannels).registerChannel({ id, label, file: file ? URI.revive(file) : undefined, log });
 		this._register(toDisposable(() => this.$dispose(id)));
 		return Promise.resolve(id);
 	}
 
-	public $append(channelId: string, value: string): Promise<void> {
+	public $append(channelId: string, value: string): Promise<void> | undefined {
 		const channel = this._getChannel(channelId);
 		if (channel) {
 			channel.append(value);
@@ -60,7 +60,7 @@ export class MainThreadOutputService extends Disposable implements MainThreadOut
 		return undefined;
 	}
 
-	public $update(channelId: string): Promise<void> {
+	public $update(channelId: string): Promise<void> | undefined {
 		const channel = this._getChannel(channelId);
 		if (channel) {
 			channel.update();
@@ -68,7 +68,7 @@ export class MainThreadOutputService extends Disposable implements MainThreadOut
 		return undefined;
 	}
 
-	public $clear(channelId: string, till: number): Promise<void> {
+	public $clear(channelId: string, till: number): Promise<void> | undefined {
 		const channel = this._getChannel(channelId);
 		if (channel) {
 			channel.clear(till);
@@ -76,7 +76,7 @@ export class MainThreadOutputService extends Disposable implements MainThreadOut
 		return undefined;
 	}
 
-	public $reveal(channelId: string, preserveFocus: boolean): Promise<void> {
+	public $reveal(channelId: string, preserveFocus: boolean): Promise<void> | undefined {
 		const channel = this._getChannel(channelId);
 		if (channel) {
 			this._outputService.showChannel(channel.id, preserveFocus);
@@ -84,16 +84,19 @@ export class MainThreadOutputService extends Disposable implements MainThreadOut
 		return undefined;
 	}
 
-	public $close(channelId: string): Promise<void> {
+	public $close(channelId: string): Promise<void> | undefined {
 		const panel = this._panelService.getActivePanel();
-		if (panel && panel.getId() === OUTPUT_PANEL_ID && channelId === this._outputService.getActiveChannel().id) {
-			this._partService.setPanelHidden(true);
+		if (panel && panel.getId() === OUTPUT_PANEL_ID) {
+			const activeChannel = this._outputService.getActiveChannel();
+			if (activeChannel && channelId === activeChannel.id) {
+				this._layoutService.setPanelHidden(true);
+			}
 		}
 
 		return undefined;
 	}
 
-	public $dispose(channelId: string): Promise<void> {
+	public $dispose(channelId: string): Promise<void> | undefined {
 		const channel = this._getChannel(channelId);
 		if (channel) {
 			channel.dispose();
@@ -101,7 +104,7 @@ export class MainThreadOutputService extends Disposable implements MainThreadOut
 		return undefined;
 	}
 
-	private _getChannel(channelId: string): IOutputChannel {
+	private _getChannel(channelId: string): IOutputChannel | null {
 		return this._outputService.getChannel(channelId);
 	}
 }

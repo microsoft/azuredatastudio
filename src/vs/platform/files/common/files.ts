@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as paths from 'vs/base/common/paths';
+import { sep } from 'vs/base/common/path';
 import { URI } from 'vs/base/common/uri';
 import * as glob from 'vs/base/common/glob';
 import { isLinux } from 'vs/base/common/platform';
@@ -17,7 +17,12 @@ import { isUndefinedOrNull } from 'vs/base/common/types';
 export const IFileService = createDecorator<IFileService>('fileService');
 
 export interface IResourceEncodings {
-	getWriteEncoding(resource: URI, preferredEncoding?: string): string;
+	getWriteEncoding(resource: URI, preferredEncoding?: string): IResourceEncoding;
+}
+
+export interface IResourceEncoding {
+	encoding: string;
+	hasBOM: boolean;
 }
 
 export interface IFileService {
@@ -385,8 +390,8 @@ export function isParent(path: string, candidate: string, ignoreCase?: boolean):
 		return false;
 	}
 
-	if (candidate.charAt(candidate.length - 1) !== paths.nativeSep) {
-		candidate += paths.nativeSep;
+	if (candidate.charAt(candidate.length - 1) !== sep) {
+		candidate += sep;
 	}
 
 	if (ignoreCase) {
@@ -419,7 +424,7 @@ export interface IBaseStat {
 	 * A unique identifier thet represents the
 	 * current state of the file or directory.
 	 */
-	etag: string;
+	etag?: string;
 
 	/**
 	 * The resource is readonly.
@@ -455,7 +460,7 @@ export interface IFileStat extends IBaseStat {
 }
 
 export interface IResolveFileResult {
-	stat: IFileStat;
+	stat?: IFileStat;
 	success: boolean;
 }
 

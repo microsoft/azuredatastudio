@@ -8,13 +8,12 @@ import Severity from 'vs/base/common/severity';
 import { Action, IAction } from 'vs/base/common/actions';
 import { MainThreadMessageServiceShape, MainContext, IExtHostContext, MainThreadMessageOptions } from '../node/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
-import { IExtensionDescription } from 'vs/workbench/services/extensions/common/extensions';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { Event } from 'vs/base/common/event';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { dispose } from 'vs/base/common/lifecycle';
-import { ExtensionIdentifier } from 'vs/platform/extensions/common/extensions';
+import { ExtensionIdentifier, IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 
 @extHostNamedCustomer(MainContext.MainThreadMessageService)
 export class MainThreadMessageService implements MainThreadMessageServiceShape {
@@ -32,7 +31,7 @@ export class MainThreadMessageService implements MainThreadMessageServiceShape {
 		//
 	}
 
-	$showMessage(severity: Severity, message: string, options: MainThreadMessageOptions, commands: { title: string; isCloseAffordance: boolean; handle: number; }[]): Promise<number> {
+	$showMessage(severity: Severity, message: string, options: MainThreadMessageOptions, commands: { title: string; isCloseAffordance: boolean; handle: number; }[]): Promise<number | undefined> {
 		if (options.modal) {
 			return this._showModalMessage(severity, message, commands);
 		} else {
@@ -40,17 +39,17 @@ export class MainThreadMessageService implements MainThreadMessageServiceShape {
 		}
 	}
 
-	private _showMessage(severity: Severity, message: string, commands: { title: string; isCloseAffordance: boolean; handle: number; }[], extension: IExtensionDescription): Promise<number> {
+	private _showMessage(severity: Severity, message: string, commands: { title: string; isCloseAffordance: boolean; handle: number; }[], extension: IExtensionDescription | undefined): Promise<number> {
 
 		return new Promise<number>(resolve => {
 
-			let primaryActions: MessageItemAction[] = [];
+			const primaryActions: MessageItemAction[] = [];
 
 			class MessageItemAction extends Action {
 				constructor(id: string, label: string, handle: number) {
 					super(id, label, undefined, true, () => {
 						resolve(handle);
-						return undefined;
+						return Promise.resolve();
 					});
 				}
 			}
@@ -67,7 +66,7 @@ export class MainThreadMessageService implements MainThreadMessageServiceShape {
 				primaryActions.push(new MessageItemAction('_extension_message_handle_' + command.handle, command.title, command.handle));
 			});
 
-			let source: string;
+			let source: string | undefined;
 			if (extension) {
 				source = nls.localize('extensionSource', "{0} (Extension)", extension.displayName || extension.name);
 			}
@@ -97,7 +96,7 @@ export class MainThreadMessageService implements MainThreadMessageServiceShape {
 		});
 	}
 
-	private _showModalMessage(severity: Severity, message: string, commands: { title: string; isCloseAffordance: boolean; handle: number; }[]): Promise<number> {
+	private _showModalMessage(severity: Severity, message: string, commands: { title: string; isCloseAffordance: boolean; handle: number; }[]): Promise<number | undefined> {
 		let cancelId: number | undefined = undefined;
 
 		const buttons = commands.map((command, index) => {

@@ -6,7 +6,7 @@
 		"target": "es5",
 		"experimentalDecorators": true,
 		"noImplicitReturns": true,
-		"noUnusedLocals": true,
+		"noUnusedLocals": false,
 		"noImplicitThis": true,
 		"alwaysStrict": true,
 		"strictBindCallApply": true,
@@ -14,6 +14,12 @@
 		"paths": {
 			"vs/*": [
 				"./vs/*"
+			],
+			"sql/*": [
+				"./sql"
+			],
+			"./sqltest": [
+				"./sqltest"
 			]
 		},
 		"types": [

@@ -21,17 +21,17 @@ import { Deferred } from 'sql/base/common/promise';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 
-import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as platform from 'vs/base/common/platform';
 import Severity from 'vs/base/common/severity';
-import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 import { Action, IAction } from 'vs/base/common/actions';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import * as types from 'vs/base/common/types';
 import { trim } from 'vs/base/common/strings';
 import { localize } from 'vs/nls';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 
 export interface IConnectionValidateResult {
 	isValid: boolean;
@@ -82,11 +82,11 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	private _connectionManagementService: IConnectionManagementService;
 
 	constructor(
-		@IPartService private _partService: IPartService,
+		@IWorkbenchLayoutService private layoutService: IWorkbenchLayoutService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
-		@IWorkspaceConfigurationService private _workspaceConfigurationService: IWorkspaceConfigurationService,
+		@IConfigurationService private _configurationService: IConfigurationService,
 		@IClipboardService private _clipboardService: IClipboardService,
 		@ICommandService private _commandService: ICommandService
 	) {
@@ -148,8 +148,8 @@ export class ConnectionDialogService implements IConnectionDialogService {
 				}
 			}
 		}
-		if (!defaultProvider && this._workspaceConfigurationService) {
-			defaultProvider = WorkbenchUtils.getSqlConfigValue<string>(this._workspaceConfigurationService, Constants.defaultEngine);
+		if (!defaultProvider && this._configurationService) {
+			defaultProvider = WorkbenchUtils.getSqlConfigValue<string>(this._configurationService, Constants.defaultEngine);
 		}
 		// as a fallback, default to MSSQL if the value from settings is not available
 		return defaultProvider || Constants.mssqlProviderName;
@@ -398,7 +398,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 
 	private doShowDialog(params: INewConnectionParams): Promise<void> {
 		if (!this._connectionDialog) {
-			let container = this._partService.getWorkbenchElement().parentElement;
+			let container = this.layoutService.getWorkbenchElement().parentElement;
 			this._container = container;
 			this._connectionDialog = this._instantiationService.createInstance(ConnectionDialogWidget, this._providerTypes, this._providerNameToDisplayNameMap[this._model.providerName], this._providerNameToDisplayNameMap);
 			this._connectionDialog.onCancel(() => {

@@ -52,12 +52,12 @@ export class MainThreadFileSystemEventService {
 		// file operation events - (changes the editor makes)
 		fileService.onAfterOperation(e => {
 			if (e.operation === FileOperation.MOVE) {
-				proxy.$onFileRename(e.resource, e.target.resource);
+				proxy.$onFileRename(e.resource, e.target!.resource);
 			}
 		}, undefined, this._listener);
 
 		textfileService.onWillMove(e => {
-			let promise = proxy.$onWillRename(e.oldResource, e.newResource);
+			const promise = proxy.$onWillRename(e.oldResource, e.newResource);
 			e.waitUntil(promise);
 		}, undefined, this._listener);
 	}
