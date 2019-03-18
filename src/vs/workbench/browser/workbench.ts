@@ -37,7 +37,6 @@ import { registerNotificationCommands } from 'vs/workbench/browser/parts/notific
 import { NotificationsToasts } from 'vs/workbench/browser/parts/notifications/notificationsToasts';
 import { IEditorService, IResourceEditor } from 'vs/workbench/services/editor/common/editorService';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
-import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { setARIAContainer } from 'vs/base/browser/ui/aria/aria';
 import { restoreFontInfo, readFontInfo, saveFontInfo } from 'vs/editor/browser/config/configuration';
 import { BareFontInfo } from 'vs/editor/common/config/fontInfo';
@@ -149,7 +148,7 @@ export class Workbench extends Layout {
 		setUnexpectedErrorHandler(error => this.handleUnexpectedError(error, logService));
 
 		// Inform user about loading issues from the loader
-		(<any>self).require.config({
+		(<any>window).require.config({
 			onError: err => {
 				if (err.errorCode === 'load') {
 					onUnexpectedError(new Error(localize('loaderErrorNative', "Failed to load a required file. Please restart the application to try again. Details: {0}", JSON.stringify(err))));
@@ -207,7 +206,7 @@ export class Workbench extends Layout {
 				this.initLayout(accessor);
 
 				// Registries
-				this.initRegistries(accessor);
+				this.startRegistries(accessor);
 
 				// Context Keys
 				this._register(instantiationService.createInstance(WorkbenchContextKeysHandler));
@@ -288,61 +287,59 @@ export class Workbench extends Layout {
 			serviceCollection.set(contributedService.id, contributedService.descriptor);
 		}
 
-		const instantationServie = new InstantiationService(serviceCollection, true);
+		const instantiationService = new InstantiationService(serviceCollection, true);
 
 		// {{SQL CARBON EDIT}}
 		// SQL Tools services
-		serviceCollection.set(IDashboardService, instantationServie.createInstance(DashboardService));
-		serviceCollection.set(IDashboardViewService, instantationServie.createInstance(DashboardViewService));
-		serviceCollection.set(IModelViewService, instantationServie.createInstance(ModelViewService));
-		serviceCollection.set(IAngularEventingService, instantationServie.createInstance(AngularEventingService));
-		serviceCollection.set(INewDashboardTabDialogService, instantationServie.createInstance(NewDashboardTabDialogService));
-		serviceCollection.set(ISqlOAuthService, instantationServie.createInstance(SqlOAuthService));
-		serviceCollection.set(sqlIClipboardService, instantationServie.createInstance(sqlClipboardService));
-		serviceCollection.set(ICapabilitiesService, instantationServie.createInstance(CapabilitiesService));
-		serviceCollection.set(IErrorMessageService, instantationServie.createInstance(ErrorMessageService));
-		serviceCollection.set(IConnectionDialogService, instantationServie.createInstance(ConnectionDialogService));
-		serviceCollection.set(IServerGroupController, instantationServie.createInstance(ServerGroupController));
-		serviceCollection.set(ICredentialsService, instantationServie.createInstance(CredentialsService));
-		serviceCollection.set(IResourceProviderService, instantationServie.createInstance(ResourceProviderService));
-		serviceCollection.set(IAccountManagementService, instantationServie.createInstance(AccountManagementService, undefined));
-		serviceCollection.set(IConnectionManagementService, instantationServie.createInstance(ConnectionManagementService, undefined, undefined));
-		serviceCollection.set(ISerializationService, instantationServie.createInstance(SerializationService));
-		serviceCollection.set(IQueryManagementService, instantationServie.createInstance(QueryManagementService));
-		serviceCollection.set(IQueryModelService, instantationServie.createInstance(QueryModelService));
-		serviceCollection.set(IQueryEditorService, instantationServie.createInstance(QueryEditorService));
-		serviceCollection.set(IEditorDescriptorService, instantationServie.createInstance(EditorDescriptorService));
-		serviceCollection.set(ITaskService, instantationServie.createInstance(TaskService));
-		serviceCollection.set(IMetadataService, instantationServie.createInstance(MetadataService));
-		serviceCollection.set(IObjectExplorerService, instantationServie.createInstance(ObjectExplorerService));
-		serviceCollection.set(IOEShimService, instantationServie.createInstance(OEShimService));
-		serviceCollection.set(IScriptingService, instantationServie.createInstance(ScriptingService));
-		serviceCollection.set(IAdminService, instantationServie.createInstance(AdminService));
-		serviceCollection.set(IJobManagementService, instantationServie.createInstance(JobManagementService));
-		serviceCollection.set(IBackupService, instantationServie.createInstance(BackupService));
-		serviceCollection.set(IBackupUiService, instantationServie.createInstance(BackupUiService));
-		serviceCollection.set(IRestoreService, instantationServie.createInstance(RestoreService));
-		serviceCollection.set(IRestoreDialogController, instantationServie.createInstance(RestoreDialogController));
-		serviceCollection.set(IFileBrowserService, instantationServie.createInstance(FileBrowserService));
-		serviceCollection.set(IFileBrowserDialogController, instantationServie.createInstance(FileBrowserDialogController));
-		serviceCollection.set(IInsightsDialogService, instantationServie.createInstance(InsightsDialogService));
-		serviceCollection.set(INotebookService, instantationServie.createInstance(NotebookService));
-		serviceCollection.set(IAccountPickerService, instantationServie.createInstance(AccountPickerService));
-		serviceCollection.set(IProfilerService, instantationServie.createInstance(ProfilerService));
-		serviceCollection.set(ICommandLineProcessing, instantationServie.createInstance(CommandLineService));
-		serviceCollection.set(IDacFxService, instantationServie.createInstance(DacFxService));
+		serviceCollection.set(IDashboardService, instantiationService.createInstance(DashboardService));
+		serviceCollection.set(IDashboardViewService, instantiationService.createInstance(DashboardViewService));
+		serviceCollection.set(IModelViewService, instantiationService.createInstance(ModelViewService));
+		serviceCollection.set(IAngularEventingService, instantiationService.createInstance(AngularEventingService));
+		serviceCollection.set(INewDashboardTabDialogService, instantiationService.createInstance(NewDashboardTabDialogService));
+		serviceCollection.set(ISqlOAuthService, instantiationService.createInstance(SqlOAuthService));
+		serviceCollection.set(sqlIClipboardService, instantiationService.createInstance(sqlClipboardService));
+		serviceCollection.set(ICapabilitiesService, instantiationService.createInstance(CapabilitiesService));
+		serviceCollection.set(IErrorMessageService, instantiationService.createInstance(ErrorMessageService));
+		serviceCollection.set(IConnectionDialogService, instantiationService.createInstance(ConnectionDialogService));
+		serviceCollection.set(IServerGroupController, instantiationService.createInstance(ServerGroupController));
+		serviceCollection.set(ICredentialsService, instantiationService.createInstance(CredentialsService));
+		serviceCollection.set(IResourceProviderService, instantiationService.createInstance(ResourceProviderService));
+		serviceCollection.set(IAccountManagementService, instantiationService.createInstance(AccountManagementService, undefined));
+		serviceCollection.set(IConnectionManagementService, instantiationService.createInstance(ConnectionManagementService, undefined, undefined));
+		serviceCollection.set(ISerializationService, instantiationService.createInstance(SerializationService));
+		serviceCollection.set(IQueryManagementService, instantiationService.createInstance(QueryManagementService));
+		serviceCollection.set(IQueryModelService, instantiationService.createInstance(QueryModelService));
+		serviceCollection.set(IQueryEditorService, instantiationService.createInstance(QueryEditorService));
+		serviceCollection.set(IEditorDescriptorService, instantiationService.createInstance(EditorDescriptorService));
+		serviceCollection.set(ITaskService, instantiationService.createInstance(TaskService));
+		serviceCollection.set(IMetadataService, instantiationService.createInstance(MetadataService));
+		serviceCollection.set(IObjectExplorerService, instantiationService.createInstance(ObjectExplorerService));
+		serviceCollection.set(IOEShimService, instantiationService.createInstance(OEShimService));
+		serviceCollection.set(IScriptingService, instantiationService.createInstance(ScriptingService));
+		serviceCollection.set(IAdminService, instantiationService.createInstance(AdminService));
+		serviceCollection.set(IJobManagementService, instantiationService.createInstance(JobManagementService));
+		serviceCollection.set(IBackupService, instantiationService.createInstance(BackupService));
+		serviceCollection.set(IBackupUiService, instantiationService.createInstance(BackupUiService));
+		serviceCollection.set(IRestoreService, instantiationService.createInstance(RestoreService));
+		serviceCollection.set(IRestoreDialogController, instantiationService.createInstance(RestoreDialogController));
+		serviceCollection.set(IFileBrowserService, instantiationService.createInstance(FileBrowserService));
+		serviceCollection.set(IFileBrowserDialogController, instantiationService.createInstance(FileBrowserDialogController));
+		serviceCollection.set(IInsightsDialogService, instantiationService.createInstance(InsightsDialogService));
+		serviceCollection.set(INotebookService, instantiationService.createInstance(NotebookService));
+		serviceCollection.set(IAccountPickerService, instantiationService.createInstance(AccountPickerService));
+		serviceCollection.set(IProfilerService, instantiationService.createInstance(ProfilerService));
+		serviceCollection.set(ICommandLineProcessing, instantiationService.createInstance(CommandLineService));
+		serviceCollection.set(IDacFxService, instantiationService.createInstance(DacFxService));
 
 		// {{SQL CARBON EDIT}} - End
 
 		// Wrap up
-		instantationServie.invokeFunction(accessor => {
+		instantiationService.invokeFunction(accessor => {
 			const lifecycleService = accessor.get(ILifecycleService);
 
-			// TODO@Ben TODO@Sandeep TODO@Martin debt around cyclic dependencies
+			// TODO@Ben TODO@Sandeep debt around cyclic dependencies
 			const fileService = accessor.get(IFileService);
-			const instantiationService = accessor.get(IInstantiationService);
 			const configurationService = accessor.get(IConfigurationService) as any;
-			const themeService = accessor.get(IWorkbenchThemeService) as any;
 
 			if (typeof configurationService.acquireFileService === 'function') {
 				configurationService.acquireFileService(fileService);
@@ -352,18 +349,14 @@ export class Workbench extends Layout {
 				configurationService.acquireInstantiationService(instantiationService);
 			}
 
-			if (typeof themeService.acquireFileService === 'function') {
-				themeService.acquireFileService(fileService);
-			}
-
 			// Signal to lifecycle that services are set
 			lifecycleService.phase = LifecyclePhase.Ready;
 		});
 
-		return instantationServie;
+		return instantiationService;
 	}
 
-	private initRegistries(accessor: ServicesAccessor): void {
+	private startRegistries(accessor: ServicesAccessor): void {
 		Registry.as<IActionBarRegistry>(ActionBarExtensions.Actionbar).start(accessor);
 		Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench).start(accessor);
 		Registry.as<IEditorInputFactoryRegistry>(EditorExtensions.EditorInputFactories).start(accessor);
@@ -494,7 +487,7 @@ export class Workbench extends Layout {
 		logService: ILogService,
 		lifecycleService: ILifecycleService
 	): Promise<void> {
-		const restorePromises: Promise<any>[] = [];
+		const restorePromises: Promise<void>[] = [];
 
 		// Restore editors
 		mark('willRestoreEditors');

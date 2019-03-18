@@ -72,8 +72,6 @@ export interface IColorCustomizations {
 export class WorkbenchThemeService implements IWorkbenchThemeService {
 	_serviceBrand: any;
 
-	private fileService: IFileService;
-
 	private colorThemeStore: ColorThemeStore;
 	private currentColorTheme: ColorThemeData;
 	private container: HTMLElement;
@@ -101,7 +99,8 @@ export class WorkbenchThemeService implements IWorkbenchThemeService {
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@ITelemetryService private readonly telemetryService: ITelemetryService,
 		@IWindowService private readonly windowService: IWindowService,
-		@IEnvironmentService private readonly environmentService: IEnvironmentService
+		@IEnvironmentService private readonly environmentService: IEnvironmentService,
+		@IFileService private readonly fileService: IFileService
 	) {
 
 		this.container = document.body;
@@ -206,10 +205,6 @@ export class WorkbenchThemeService implements IWorkbenchThemeService {
 				}
 			}
 		});
-	}
-
-	acquireFileService(fileService: IFileService): void {
-		this.fileService = fileService;
 
 		this.fileService.onFileChanges(async e => {
 			if (this.watchedColorThemeLocation && this.currentColorTheme && e.contains(this.watchedColorThemeLocation, FileChangeType.UPDATED)) {
