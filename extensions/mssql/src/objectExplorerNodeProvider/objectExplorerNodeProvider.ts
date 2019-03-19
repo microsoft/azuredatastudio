@@ -96,6 +96,13 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements azd
 		return true;
 	}
 
+	private hasExpansionError(children: TreeNode[]): boolean {
+		if(children.find(c => c.errorStatusCode > 0)){
+			return true;
+		}
+		return false;
+	}
+
 	private async startExpansion(session: SqlClusterSession, nodeInfo: azdata.ExpandNodeInfo, isRefresh: boolean = false): Promise<void> {
 		let expandResult: azdata.ObjectExplorerExpandInfo = {
 			sessionId: session.sessionId,
@@ -108,28 +115,23 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements azd
 			if (node) {
 				expandResult.errorMessage = node.getNodeInfo().errorMessage;
 				let children = await node.getChildren(true);
-				if(children && children.length > 0)
-				{
-					let child = children[0].getNodeInfo();
+				if (children && children.length > 0) {
 					// Only child returned when failure happens : When failed with 'Unauthorized' error, prompt for password.
-					if(children.length === 1 && child && child.nodeType === constants.MssqlClusterItems.Error)
-					{
-						if (children[0].errorStatusCode === 401)
-						{
+					if (children.length === 1 && this.hasExpansionError(children)) {
+						if (children[0].errorStatusCode === 401) {
 							//Prompt for password
 							let password: string = await this.promptPassword(localize('prmptPwd', 'Please provide the password to connect to HDFS:'));
-							if(password && password.length > 0){
+							if (password && password.length > 0) {
 								session.sqlClusterConnection.updatePassword(password);
 								node.updateFileSource(session.sqlClusterConnection);
 								children = await node.getChildren(true);
-								child = children[0].getNodeInfo();
 							}
 						}
 					}
 
 					expandResult.nodes = children.map(c => c.getNodeInfo());
-					if(children.length === 1 && child.nodeType === constants.MssqlClusterItems.Error)
-					{
+					if (children.length === 1 && this.hasExpansionError(children)) {
+						let child = children[0].getNodeInfo();
 						expandResult.errorMessage = child ? child.label : 'Unknown Error';
 						expandResult.nodes = [];
 					}
