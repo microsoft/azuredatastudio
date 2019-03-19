@@ -9,7 +9,6 @@ steps:
     nvm install 10.15.1
     nvm use 10.15.1
     npm i -g yarn
-    ulimit -n unlimited
   displayName: 'preinstall'
 
 - script: |
@@ -18,6 +17,7 @@ steps:
     sudo chmod +x /etc/init.d/xvfb
     sudo update-rc.d xvfb defaults
     sudo service xvfb start
+    sudo ulimit -n unlimited
     # sh -e /etc/init.d/xvfb start
     # sleep 3
   displayName: 'Linux preinstall'
