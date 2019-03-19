@@ -29,7 +29,6 @@ steps:
 - script: |
     node_modules/.bin/gulp electron
     node_modules/.bin/gulp compile --max_old_space_size=4096
-    node_modules/.bin/gulp optimize-vscode --max_old_space_size=4096
   displayName: 'Scripts'
 
 - script: |
