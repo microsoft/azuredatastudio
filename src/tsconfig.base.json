@@ -16,10 +16,10 @@
 				"./vs/*"
 			],
 			"sql/*": [
-				"./sql"
+				"./sql/*"
 			],
-			"./sqltest": [
-				"./sqltest"
+			"sqltest/*": [
+				"./sqltest/*"
 			]
 		},
 		"types": [
