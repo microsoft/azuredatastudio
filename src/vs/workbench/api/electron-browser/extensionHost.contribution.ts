@@ -20,8 +20,7 @@ import './mainThreadCommands';
 import './mainThreadConfiguration';
 import './mainThreadConsole';
 // {{SQL CARBON EDIT}}
-// disable the debug service
-// import './mainThreadDebugService';
+// import '../browser/mainThreadDebugService';
 import './mainThreadDecorations';
 import './mainThreadDiagnostics';
 import './mainThreadDialogs';
