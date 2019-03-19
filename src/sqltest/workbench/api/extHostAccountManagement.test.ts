@@ -12,7 +12,7 @@ import { AccountProviderStub, AccountManagementTestService } from 'sqltest/stubs
 import { ExtHostAccountManagement } from 'sql/workbench/api/node/extHostAccountManagement';
 import { TestRPCProtocol } from 'vs/workbench/test/electron-browser/api/testRPCProtocol';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
-import { IRPCProtocol } from 'vs/workbench/services/extensions/node/proxyIdentifier';
+import { IRPCProtocol } from 'vs/workbench/services/extensions/common/proxyIdentifier';
 import { SqlMainContext } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { MainThreadAccountManagement } from 'sql/workbench/api/node/mainThreadAccountManagement';
 import { IAccountManagementService, AzureResource } from 'sql/platform/accountManagement/common/interfaces';

@@ -6,9 +6,8 @@
 
 import {
 	createMainContextProxyIdentifier as createMainId,
-	createExtHostContextProxyIdentifier as createExtId,
-	ProxyIdentifier, IRPCProtocol
-} from 'vs/workbench/services/extensions/node/proxyIdentifier';
+	createExtHostContextProxyIdentifier as createExtId
+} from 'vs/workbench/services/extensions/common/proxyIdentifier';
 import { UriComponents } from 'vs/base/common/uri';
 
 import { IDisposable } from 'vs/base/common/lifecycle';
