@@ -14,7 +14,7 @@ import {
 	SqlMainContext
 } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
-import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
+import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { UpdateAccountListEventParams } from 'sql/platform/accountManagement/common/eventTypes';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadAccountManagement)

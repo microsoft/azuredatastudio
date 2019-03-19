@@ -9,7 +9,7 @@ import { WebViewDialog } from 'sql/workbench/parts/webview/electron-browser/webV
 import { MainThreadModalDialogShape, SqlMainContext, SqlExtHostContext, ExtHostModalDialogsShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
-import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
+import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadModalDialog)

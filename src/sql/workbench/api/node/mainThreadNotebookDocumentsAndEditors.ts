@@ -6,7 +6,7 @@
 
 import * as azdata from 'azdata';
 import * as path from 'path';
-import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
+import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import { URI, UriComponents } from 'vs/base/common/uri';
 import { Event, Emitter } from 'vs/base/common/event';

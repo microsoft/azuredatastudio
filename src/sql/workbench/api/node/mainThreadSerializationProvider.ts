@@ -12,7 +12,7 @@ import {
 import { ISerializationService } from 'sql/platform/serialization/common/serializationService';
 import * as azdata from 'azdata';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
-import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
+import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadSerializationProvider)
 export class MainThreadSerializationProvider implements MainThreadSerializationProviderShape {

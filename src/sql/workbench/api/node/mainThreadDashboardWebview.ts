@@ -5,7 +5,7 @@
 'use strict';
 
 import { MainThreadDashboardWebviewShape, SqlMainContext, ExtHostDashboardWebviewsShape, SqlExtHostContext } from 'sql/workbench/api/node/sqlExtHost.protocol';
-import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
+import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { IDashboardViewService, IDashboardWebview } from 'sql/platform/dashboard/common/dashboardViewService';
 

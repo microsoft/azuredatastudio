@@ -5,7 +5,7 @@
 'use strict';
 
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
+import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 

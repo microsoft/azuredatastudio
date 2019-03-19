@@ -26,7 +26,7 @@ import { ISerializationService } from 'sql/platform/serialization/common/seriali
 import { IFileBrowserService } from 'sql/platform/fileBrowser/common/interfaces';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { IDacFxService } from 'sql/platform/dacfx/common/dacFxService';
-import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
+import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 
 /**
  * Main thread class for handling data protocol management registration.
