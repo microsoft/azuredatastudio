@@ -129,6 +129,10 @@ export class Dropdown extends Disposable {
 			ariaLabel: this._options.ariaLabel
 		});
 
+		// Clear title from input box element (defaults to placeholder value) since we don't want a tooltip for the selected value
+		// in the text box - we already have tooltips for each item in the dropdown itself.
+		this._input.inputElement.title = '';
+
 		this._register(DOM.addDisposableListener(this._input.inputElement, DOM.EventType.CLICK, () => {
 			this._showList();
 		}));
@@ -274,9 +278,6 @@ export class Dropdown extends Disposable {
 
 	public set value(val: string) {
 		this._input.value = val;
-		if(this._input.inputElement) {
-			this._input.inputElement.title = val === '' ? this._input.inputElement.placeholder : val;
-		}
 	}
 
 	public focus() {
