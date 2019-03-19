@@ -70,7 +70,7 @@ const defaults: IDropdownOptions = {
 	maxHeight: 300,
 	errorMessage: errorMessage,
 	contextBorder: Color.fromHex('#696969'),
-	actionLabel: nls.localize('dropdownAction.toggle', "Toggle dropdown")
+	actionLabel: ''
 };
 
 export class Dropdown extends Disposable {

@@ -232,7 +232,7 @@ export class ConnectionWidget {
 			placeholder: this._defaultDatabaseName,
 			maxHeight: 125,
 			ariaLabel: databaseOption.displayName,
-			actionLabel: localize('connectionWidget.toggleDatabaseNameDropdown', 'Select Database Toggle Dropdown')
+			actionLabel: ''
 		});
 
 		// Server group

@@ -237,7 +237,7 @@ export class RestoreDialog extends Modal {
 						{
 							strictSelection: false,
 							ariaLabel: LocalizedStrings.TARGETDATABASE,
-							actionLabel: localize('restoreDialog.toggleDatabaseNameDropdown', 'Select Database Toggle Dropdown')
+							actionLabel: ''
 						}
 					);
 					this._databaseDropdown.onValueChange(s => {
