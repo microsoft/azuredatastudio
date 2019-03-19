@@ -5,7 +5,7 @@
 
 /* Node Modules */
 import { Injectable, Inject } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 
 /* SQL imports */
 import { IDefaultComponentParams } from 'sql/services/bootstrap/bootstrapParams';

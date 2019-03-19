@@ -47,14 +47,8 @@ const productionDependencies = deps.getProductionDependencies(path.dirname(__dir
 var del = require('del');
 
 const baseModules = Object.keys(process.binding('natives')).filter(n => !/^_|\//.test(n));
-// {{SQL CARBON EDIT}}
-const nodeModules = [
-	'electron',
-	'original-fs',
-	'rxjs/Observable',
-	'rxjs/Subject',
-	'rxjs/Observer',
-	'ng2-charts/ng2-charts']
+const nodeModules = ['electron', 'original-fs']
+	// @ts-ignore JSON checking: dependencies property is optional
 	.concat(Object.keys(product.dependencies || {}))
 	.concat(_.uniq(productionDependencies.map(d => d.name)))
 	.concat(baseModules);
@@ -366,23 +360,12 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 			.pipe(util.cleanNodeModule('node-addon-api', ['**/*']))
 			.pipe(createAsar(path.join(process.cwd(), 'node_modules'), ['**/*.node', '**/vscode-ripgrep/bin/*', '**/node-pty/build/Release/*'], 'app/node_modules.asar'));
 
-		// {{SQL CARBON EDIT}}
-		let copiedModules = gulp.src([
-			'node_modules/jquery/**/*.*',
-			'node_modules/reflect-metadata/**/*.*',
-			'node_modules/slickgrid/**/*.*',
-			'node_modules/underscore/**/*.*',
-			'node_modules/zone.js/**/*.*',
-			'node_modules/chart.js/**/*.*',
-		], { base: '.', dot: true });
-
 		let all = es.merge(
 			packageJsonStream,
 			productJsonStream,
 			license,
 			api,
 			// {{SQL CARBON EDIT}}
-			copiedModules,
 			dataApi,
 			sqlopsAPI,
 			sources,
