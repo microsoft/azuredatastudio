@@ -1,7 +1,7 @@
 {
 	"compilerOptions": {
 		"module": "amd",
-		"moduleResolution": "classic",
+		"moduleResolution": "node",
 		"noImplicitAny": false,
 		"target": "es5",
 		"experimentalDecorators": true,
