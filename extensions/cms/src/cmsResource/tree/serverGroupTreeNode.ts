@@ -43,6 +43,7 @@ export class ServerGroupTreeNode extends CmsResourceTreeNodeBase {
 							nodes.push(new RegisteredServerTreeNode(
 								registeredServer.name,
 								registeredServer.description,
+								registeredServer.serverName,
 								registeredServer.relativePath,
 								this.ownerUri,
 								this.appContext,

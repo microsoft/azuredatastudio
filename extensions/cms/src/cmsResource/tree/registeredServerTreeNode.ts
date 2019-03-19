@@ -4,12 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-
-import { TreeItem, TreeItemCollapsibleState } from 'vscode';
 import * as azdata from 'azdata';
-import * as nls from 'vscode-nls';
-const localize = nls.loadMessageBundle();
-
+import { TreeItemCollapsibleState } from 'vscode';
 import { TreeNode } from '../treeNode';
 import { CmsResourceItemType } from '../constants';
 import { CmsResourceTreeNodeBase } from './baseTreeNodes';
@@ -24,6 +20,7 @@ export class RegisteredServerTreeNode extends CmsResourceTreeNodeBase {
 	constructor(
 		name: string,
 		description: string,
+		private serverName: string,
 		private _relativePath: string,
 		ownerUri: string,
 		appContext: AppContext,
@@ -31,7 +28,7 @@ export class RegisteredServerTreeNode extends CmsResourceTreeNodeBase {
 		parent: TreeNode
 	) {
 		super(name, description, ownerUri, appContext, treeChangeHandler, parent);
-		this._id = `cms_registeredServer_${this.name}`;
+		this._id = `cms_registeredServer_${this.name ? this.name : this.serverName}`;
 	}
 
 	public async getChildren(): Promise<TreeNode[]> {
@@ -44,40 +41,37 @@ export class RegisteredServerTreeNode extends CmsResourceTreeNodeBase {
 	}
 
 	public getTreeItem(): azdata.TreeItem | Promise<azdata.TreeItem> {
-		// let item = new TreeItem(this.name, TreeItemCollapsibleState.None);
-		// item.contextValue = CmsResourceItemType.registeredServer;
-		// item.id = this._id;
-		// item.tooltip = this.description;
 		let payload = {
-			id: this._id,
-			connectionName: undefined,
-			serverName: undefined,
-			databaseName: undefined,
+			id: generateGuid(),
+			connectionName: this.name ? this.name : this.serverName,
+			serverName: this.serverName,
+			databaseName: '',
 			userName: undefined,
 			password: undefined,
 			authenticationType: 'Integrated',
 			savePassword: false,
-			groupFullName: undefined,
-			groupId: undefined,
+			groupFullName: '',
+			groupId: '',
 			providerName: 'MSSQL',
 			saveProfile: false,
 			options: { }
 		};
 		let treeItem = {
 			payload: payload,
-			id: generateGuid(),
+			id: this._id,
 			tooltip: this.description,
 			contextValue: CmsResourceItemType.registeredServer,
-			collapsibleState: TreeItemCollapsibleState.None,
-			label: this.name
+			collapsibleState: TreeItemCollapsibleState.Collapsed,
+			label: this.name ? this.name : this.serverName,
+			childProvider: 'MSSQL'
 		};
 		return treeItem;
 	}
 
 	public getNodeInfo(): azdata.NodeInfo {
 		return {
-			label: this.name,
-			isLeaf: true,
+			label: this.name ? this.name : this.serverName,
+			isLeaf: false,
 			errorMessage: undefined,
 			metadata: undefined,
 			nodePath: this.generateNodePath(),

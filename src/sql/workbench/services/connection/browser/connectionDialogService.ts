@@ -396,7 +396,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			this._connectionDialog.onShowUiComponent((input) => this.handleShowUiComponent(input.cmsDialog, input));
 			this._connectionDialog.onInitDialog((cmsDialog) => this.handleInitDialog(cmsDialog));
 			this._connectionDialog.onFillinConnectionInputs((input) => this.handleFillInConnectionInputs(input, cmsDialog));
-			this._connectionDialog.onResetConnection(() => this.handleProviderOnResetConnection());
+			this._connectionDialog.onResetConnection(() => this.handleProviderOnResetConnection(cmsDialog));
 			this._connectionDialog.render(cmsDialog);
 		}
 		this._connectionDialog.newConnectionParams = params;

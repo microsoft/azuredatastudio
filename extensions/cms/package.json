@@ -76,12 +76,25 @@
 					"when": "viewItem == cms.resource.itemType.serverGroup"
 				},
 				{
+					"command": "cms.resource.addRegisteredServer",
+					"when": "viewItem == cms.resource.itemType.cmsNodeContainer"
+				},
+				{
 					"command": "cms.resource.addServerGroup",
 					"when": "viewItem == cms.resource.itemType.serverGroup"
 				},
 				{
+					"command": "cms.resource.addServerGroup",
+					"when": "viewItem == cms.resource.itemType.cmsNodeContainer"
+				},
+				{
 					"command": "cms.resource.refresh",
-					"when": "viewItem == cms.resource.itemType.serverGroup || viewItem == cms.resource.itemType.cmsNodeContainer",
+					"when": "viewItem == cms.resource.itemType.serverGroup",
+					"group": "inline"
+				},
+				{
+					"command": "cms.resource.refresh",
+					"when": "viewItem == cms.resource.itemType.cmsNodeContainer",
 					"group": "inline"
 				}
 			]

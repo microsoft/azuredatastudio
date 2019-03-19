@@ -45,6 +45,7 @@ export class CmsResourceTreeNode extends CmsResourceTreeNodeBase {
 							nodes.push(new RegisteredServerTreeNode(
 								registeredServer.name,
 								registeredServer.description,
+								registeredServer.serverName,
 								registeredServer.relativePath,
 								this.ownerUri,
 								this.appContext,
@@ -74,13 +75,9 @@ export class CmsResourceTreeNode extends CmsResourceTreeNodeBase {
 
 	public getTreeItem(): azdata.TreeItem | Promise<azdata.TreeItem> {
 		const item = new azdata.TreeItem(this.name, TreeItemCollapsibleState.Collapsed);
-		item.contextValue = CmsResourceItemType.serverGroup;
+		item.contextValue = CmsResourceItemType.cmsNodeContainer;
 		item.id = this._id;
 		item.tooltip = this.description;
-		// item.iconPath = {
-		// 	dark: this.appContext.extensionContext.asAbsolutePath('resources/dark/subscription_inverse.svg'),
-		// 	light: this.appContext.extensionContext.asAbsolutePath('resources/light/subscription.svg')
-		// };
 		return item;
 	}
 

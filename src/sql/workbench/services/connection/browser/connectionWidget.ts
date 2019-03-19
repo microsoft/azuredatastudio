@@ -243,7 +243,13 @@ export class ConnectionWidget {
 
 			// Change Auth options for CMS call for registering a server
 			if (cmsDialog === CmsDialog.serverRegistrationDialog) {
-				this._authTypeSelectBox.values.filter((auth) => auth !== AuthenticationType.SqlLogin);
+				let newOptions = [];
+				this._authTypeSelectBox.values.forEach((auth) => {
+					if (auth !== this.getAuthTypeDisplayName(AuthenticationType.SqlLogin)) {
+						newOptions.push(auth);
+					}
+				});
+				this._authTypeSelectBox.setOptions(newOptions);
 			}
 		}
 		// Connection name
@@ -600,6 +606,17 @@ export class ConnectionWidget {
 				this._previousGroupOption = this._serverGroupSelectBox.value;
 			} else {
 				this._connectionNameInputBox.value = this._connectionNameInputBox.value || this._serverNameInputBox.value;
+				// Change Auth options for CMS call for registering a server
+				if (cmsDialog === CmsDialog.serverRegistrationDialog) {
+					let newOptions = [];
+					this._authTypeSelectBox.values.forEach((auth) => {
+						if (auth !== this.getAuthTypeDisplayName(AuthenticationType.SqlLogin)) {
+							newOptions.push(auth);
+						}
+					});
+					this._authTypeSelectBox.setOptions(newOptions);
+				}
+				this._serverDescriptionInputBox.value = this.getModelValue(connectionInfo.options.registeredServerDescription);
 			}
 
 			// To handle the empty password case

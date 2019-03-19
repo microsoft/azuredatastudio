@@ -244,11 +244,9 @@ export class ApiWrapper {
 				return provider.addRegisteredServer(ownerUri, relativePath,
 					connection.options.registeredServerName, connection.options.registeredServerDescription, connection).then((result) => {
 						if (result) {
-							let name = connection.options.registeredServerName;
-							let description = connection.options.registeredServerDescription;
-							return { name, description, connection };
+							return connection.options.server;
 						}
-					})
+					});
 			}
 		});
 	}
