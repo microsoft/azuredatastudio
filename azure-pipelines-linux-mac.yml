@@ -9,6 +9,7 @@ steps:
     nvm install 10.15.1
     nvm use 10.15.1
     npm i -g yarn
+    ulimit -n unlimited
   displayName: 'preinstall'
 
 - script: |
