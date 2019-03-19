@@ -14,10 +14,12 @@ const selectorCounter = new Map<string, number>();
 
 export function providerIterator(service: IInstantiationService): Provider[] {
 	return Array.from(values(_util.serviceIds)).map(v => {
+		let factory = () => {
+			return (<any>service)._getOrCreateServiceInstance(v, Trace.traceCreation(v));
+		};
+		factory.prototype = factory;
 		return {
-			provide: v, useFactory: () => {
-				return (<any>service)._getOrCreateServiceInstance(v, Trace.traceCreation(v));
-			}
+			provide: v, useFactory: factory
 		};
 	});
 }
