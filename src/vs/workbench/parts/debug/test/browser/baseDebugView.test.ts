@@ -8,6 +8,7 @@ import { replaceWhitespace, renderExpressionValue, renderVariable } from 'vs/wor
 import * as dom from 'vs/base/browser/dom';
 import { Expression, Variable, Scope, StackFrame, Thread } from 'vs/workbench/parts/debug/common/debugModel';
 import { MockSession } from 'vs/workbench/parts/debug/test/common/mockDebug';
+import { HighlightedLabel } from 'vs/base/browser/ui/highlightedlabel/highlightedLabel';
 const $ = dom.$;
 
 suite('Debug - Base Debug View', () => {

@@ -56,8 +56,8 @@ Registry.as<IConfigurationRegistry>(Extensions.Configuration)
 					localize('proxySupportOn', "Enable proxy support for extensions."),
 					localize('proxySupportOverride', "Enable proxy support for extensions, override request options."),
 				],
-				default: 'off',
-				description: localize('proxySupport', "Experimental setting: Use the proxy support for extensions.")
+				default: 'override',
+				description: localize('proxySupport', "Use the proxy support for extensions.")
 			}
 		}
 	});

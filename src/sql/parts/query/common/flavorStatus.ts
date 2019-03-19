@@ -13,7 +13,6 @@ import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorG
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Action } from 'vs/base/common/actions';
 import errors = require('vs/base/common/errors');
-import { TPromise } from 'vs/base/common/winjs.base';
 import { getCodeEditor } from 'vs/editor/browser/editorBrowser';
 import nls = require('vs/nls');
 
@@ -180,7 +179,7 @@ export class ChangeFlavorAction extends Action {
 		super(actionId, actionLabel);
 	}
 
-	public run(): TPromise<any> {
+	public run(): Promise<any> {
 		let activeEditor = this._editorService.activeControl;
 		let currentUri = WorkbenchUtils.getEditorUri(activeEditor.input);
 		if (this._connectionManagementService.isConnected(currentUri)) {
@@ -213,12 +212,12 @@ export class ChangeFlavorAction extends Action {
 		});
 	}
 
-	private _showMessage(sev: Severity, message: string): TPromise<any> {
+	private _showMessage(sev: Severity, message: string): Promise<any> {
 		this._notificationService.notify({
 			severity: sev,
 			message: message
 		});
 
-		return TPromise.as(undefined);
+		return Promise.resolve(undefined);
 	}
 }

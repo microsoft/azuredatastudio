@@ -23,46 +23,46 @@ import { IHistoryNavigationWidget } from 'vs/base/browser/history';
 const $ = dom.$;
 
 export interface IInputOptions extends IInputBoxStyles {
-	placeholder?: string;
-	ariaLabel?: string;
-	type?: string;
-	validationOptions?: IInputValidationOptions;
-	flexibleHeight?: boolean;
-	actions?: IAction[];
+	readonly placeholder?: string;
+	readonly ariaLabel?: string;
+	readonly type?: string;
+	readonly validationOptions?: IInputValidationOptions;
+	readonly flexibleHeight?: boolean;
+	readonly actions?: IAction[];
 
 	// {{SQL CARBON EDIT}} Candidate for addition to vscode
-	min?: string;
-	max?: string;
-	useDefaultValidation?: boolean;
+	readonly min?: string;
+	readonly max?: string;
+	readonly useDefaultValidation?: boolean;
 }
 
 export interface IInputBoxStyles {
-	inputBackground?: Color;
-	inputForeground?: Color;
-	inputBorder?: Color;
-	inputValidationInfoBorder?: Color;
-	inputValidationInfoBackground?: Color;
-	inputValidationInfoForeground?: Color;
-	inputValidationWarningBorder?: Color;
-	inputValidationWarningBackground?: Color;
-	inputValidationWarningForeground?: Color;
-	inputValidationErrorBorder?: Color;
-	inputValidationErrorBackground?: Color;
-	inputValidationErrorForeground?: Color;
+	readonly inputBackground?: Color | null;
+	readonly inputForeground?: Color | null;
+	readonly inputBorder?: Color | null;
+	readonly inputValidationInfoBorder?: Color | null;
+	readonly inputValidationInfoBackground?: Color | null;
+	readonly inputValidationInfoForeground?: Color | null;
+	readonly inputValidationWarningBorder?: Color | null;
+	readonly inputValidationWarningBackground?: Color | null;
+	readonly inputValidationWarningForeground?: Color | null;
+	readonly inputValidationErrorBorder?: Color | null;
+	readonly inputValidationErrorBackground?: Color | null;
+	readonly inputValidationErrorForeground?: Color | null;
 }
 
 export interface IInputValidator {
-	(value: string): IMessage;
+	(value: string): IMessage | null;
 }
 
 export interface IMessage {
-	content: string;
-	formatContent?: boolean; // defaults to false
-	type?: MessageType;
+	readonly content: string;
+	readonly formatContent?: boolean; // defaults to false
+	readonly type?: MessageType;
 }
 
 export interface IInputValidationOptions {
-	validation: IInputValidator;
+	validation?: IInputValidator;
 }
 
 export const enum MessageType {
@@ -89,34 +89,35 @@ export const defaultOpts = {
 };
 
 export class InputBox extends Widget {
-	private contextViewProvider: IContextViewProvider;
+	private contextViewProvider?: IContextViewProvider;
 	element: HTMLElement;
 	private input: HTMLInputElement;
 	private mirror: HTMLElement;
-	private actionbar: ActionBar;
+	private actionbar?: ActionBar;
 	private options: IInputOptions;
-	private message: IMessage;
+	private message: IMessage | null;
 	private placeholder: string;
 	private ariaLabel: string;
-	private validation: IInputValidator;
-	private state = 'idle';
-	private cachedHeight: number;
+	private validation?: IInputValidator;
+	private state: string | null = 'idle';
+	private cachedHeight: number | null;
 
-	// {{SQL CARBON EDIT}}
+	// {{SQL CARBON EDIT}} - Add showValidationMessage and set inputBackground, inputForeground, and inputBorder as protected
 	protected showValidationMessage: boolean;
-	protected inputBackground: Color;
-	protected inputForeground: Color;
-	protected inputBorder: Color;
+	protected inputBackground?: Color | null;
+	protected inputForeground?: Color | null;
+	protected inputBorder?: Color | null;
+	// {{SQL CARBON EDIT}} - End
 
-	private inputValidationInfoBorder: Color;
-	private inputValidationInfoBackground: Color;
-	private inputValidationInfoForeground: Color;
-	private inputValidationWarningBorder: Color;
-	private inputValidationWarningBackground: Color;
-	private inputValidationWarningForeground: Color;
-	private inputValidationErrorBorder: Color;
-	private inputValidationErrorBackground: Color;
-	private inputValidationErrorForeground: Color;
+	private inputValidationInfoBorder?: Color | null;
+	private inputValidationInfoBackground?: Color | null;
+	private inputValidationInfoForeground?: Color | null;
+	private inputValidationWarningBorder?: Color | null;
+	private inputValidationWarningBackground?: Color | null;
+	private inputValidationWarningForeground?: Color | null;
+	private inputValidationErrorBorder?: Color | null;
+	private inputValidationErrorBackground?: Color | null;
+	private inputValidationErrorForeground?: Color | null;
 
 	private _onDidChange = this._register(new Emitter<string>());
 	public readonly onDidChange: Event<string> = this._onDidChange.event;
@@ -124,7 +125,7 @@ export class InputBox extends Widget {
 	private _onDidHeightChange = this._register(new Emitter<number>());
 	public readonly onDidHeightChange: Event<number> = this._onDidHeightChange.event;
 
-	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, options?: IInputOptions) {
+	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider | undefined, options?: IInputOptions) {
 		super();
 
 		this.contextViewProvider = contextViewProvider;
@@ -392,7 +393,7 @@ export class InputBox extends Widget {
 		return errorMsg ? errorMsg.type !== MessageType.ERROR : true;
 	}
 
-	private stylesForType(type: MessageType): { border: Color; background: Color; foreground: Color } {
+	private stylesForType(type: MessageType | undefined): { border: Color | undefined | null; background: Color | undefined | null; foreground: Color | undefined | null } {
 		switch (type) {
 			case MessageType.INFO: return { border: this.inputValidationInfoBorder, background: this.inputValidationInfoBackground, foreground: this.inputValidationInfoForeground };
 			case MessageType.WARNING: return { border: this.inputValidationWarningBorder, background: this.inputValidationWarningBackground, foreground: this.inputValidationWarningForeground };
@@ -400,7 +401,7 @@ export class InputBox extends Widget {
 		}
 	}
 
-	private classForType(type: MessageType): string {
+	private classForType(type: MessageType | undefined): string {
 		switch (type) {
 			case MessageType.INFO: return 'info';
 			case MessageType.WARNING: return 'warning';
@@ -423,6 +424,10 @@ export class InputBox extends Widget {
 			getAnchor: () => this.element,
 			anchorAlignment: AnchorAlignment.RIGHT,
 			render: (container: HTMLElement) => {
+				if (!this.message) {
+					return null;
+				}
+
 				div = dom.append(container, $('.monaco-inputbox-container'));
 				layout();
 
@@ -465,7 +470,7 @@ export class InputBox extends Widget {
 		this.validate();
 		this.updateMirror();
 
-		if (this.state === 'open') {
+		if (this.state === 'open' && this.contextViewProvider) {
 			this.contextViewProvider.layout();
 		}
 	}
@@ -541,15 +546,13 @@ export class InputBox extends Widget {
 	public dispose(): void {
 		this._hideMessage();
 
-		this.element = null;
-		this.input = null;
-		this.contextViewProvider = null;
+		this.element = null!; // StrictNullOverride: nulling out ok in dispose
+		this.input = null!; // StrictNullOverride: nulling out ok in dispose
+		this.contextViewProvider = undefined;
 		this.message = null;
-		this.placeholder = null;
-		this.ariaLabel = null;
-		this.validation = null;
+		this.validation = undefined;
 		this.state = null;
-		this.actionbar = null;
+		this.actionbar = undefined;
 
 		super.dispose();
 	}
@@ -563,7 +566,7 @@ export class HistoryInputBox extends InputBox implements IHistoryNavigationWidge
 
 	private readonly history: HistoryNavigator<string>;
 
-	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, options: IHistoryInputOptions) {
+	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider | undefined, options: IHistoryInputOptions) {
 		super(container, contextViewProvider, options);
 		this.history = new HistoryNavigator<string>(options.history, 100);
 	}
@@ -614,7 +617,7 @@ export class HistoryInputBox extends InputBox implements IHistoryNavigationWidge
 		this.history.clear();
 	}
 
-	private getCurrentValue(): string {
+	private getCurrentValue(): string | null {
 		let currentValue = this.history.current();
 		if (!currentValue) {
 			currentValue = this.history.last();
@@ -623,11 +626,11 @@ export class HistoryInputBox extends InputBox implements IHistoryNavigationWidge
 		return currentValue;
 	}
 
-	private getPreviousValue(): string {
+	private getPreviousValue(): string | null {
 		return this.history.previous() || this.history.first();
 	}
 
-	private getNextValue(): string {
+	private getNextValue(): string | null {
 		return this.history.next() || this.history.last();
 	}
 }

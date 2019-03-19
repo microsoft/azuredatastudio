@@ -6,7 +6,6 @@
 
 import { localize } from 'vs/nls';
 import * as vscode from 'vscode';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { SqlMainContext, ExtHostModelViewTreeViewsShape, MainThreadModelViewShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { ITreeComponentItem } from 'sql/workbench/common/views';
 import { CommandsConverter } from 'vs/workbench/api/node/extHostCommands';
@@ -43,11 +42,11 @@ export class ExtHostModelViewTreeViews implements ExtHostModelViewTreeViewsShape
 		};
 	}
 
-	$getChildren(treeViewId: string, treeItemHandle?: string): TPromise<ITreeComponentItem[]> {
+	$getChildren(treeViewId: string, treeItemHandle?: string): Promise<ITreeComponentItem[]> {
 		const treeView = this.treeViews.get(treeViewId);
 		if (!treeView) {
 
-			return TPromise.wrapError<ITreeComponentItem[]>(new Error(localize('treeView.notRegistered', 'No tree view with id \'{0}\' registered.', treeViewId)));
+			return Promise.reject(new Error(localize('treeView.notRegistered', 'No tree view with id \'{0}\' registered.', treeViewId)));
 		}
 		return treeView.getChildren(treeItemHandle);
 	}

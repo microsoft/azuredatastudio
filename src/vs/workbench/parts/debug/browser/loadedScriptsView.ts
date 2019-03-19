@@ -23,16 +23,17 @@ import { isWindows } from 'vs/base/common/platform';
 import { URI } from 'vs/base/common/uri';
 import { ltrim } from 'vs/base/common/strings';
 import { RunOnceScheduler } from 'vs/base/common/async';
-import { ResourceLabel, IResourceLabel, IResourceLabelOptions } from 'vs/workbench/browser/labels';
+import { ResourceLabels, IResourceLabelProps, IResourceLabelOptions, IResourceLabel, IResourceLabelsContainer } from 'vs/workbench/browser/labels';
 import { FileKind } from 'vs/platform/files/common/files';
-import { IDataSource } from 'vs/base/browser/ui/tree/asyncDataTree';
 import { IListVirtualDelegate } from 'vs/base/browser/ui/list/list';
-import { ITreeRenderer, ITreeNode, ITreeFilter, TreeVisibility, TreeFilterResult } from 'vs/base/browser/ui/tree/tree';
+import { ITreeRenderer, ITreeNode, ITreeFilter, TreeVisibility, TreeFilterResult, IAsyncDataSource } from 'vs/base/browser/ui/tree/tree';
 import { IAccessibilityProvider } from 'vs/base/browser/ui/list/listWidget';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { WorkbenchAsyncDataTree, IListService, TreeResourceNavigator2 } from 'vs/platform/list/browser/listService';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { DebugContentProvider } from 'vs/workbench/parts/debug/browser/debugContentProvider';
+import { dispose } from 'vs/base/common/lifecycle';
+import { createMatches, FuzzyScore } from 'vs/base/common/filters';
 
 const SMART = true;
 
@@ -363,7 +364,8 @@ export class LoadedScriptsView extends ViewletPanel {
 
 	private treeContainer: HTMLElement;
 	private loadedScriptsItemType: IContextKey<string>;
-	private tree: WorkbenchAsyncDataTree<any>;
+	private tree: WorkbenchAsyncDataTree<LoadedScriptsItem, LoadedScriptsItem, FuzzyScore>;
+	private treeLabels: ResourceLabels;
 	private changeScheduler: RunOnceScheduler;
 	private treeNeedsRefreshOnVisible: boolean;
 	private filter: LoadedScriptsFilter;
@@ -372,15 +374,15 @@ export class LoadedScriptsView extends ViewletPanel {
 		options: IViewletViewOptions,
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IKeybindingService keybindingService: IKeybindingService,
-		@IInstantiationService private instantiationService: IInstantiationService,
+		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@IConfigurationService configurationService: IConfigurationService,
-		@IEditorService private editorService: IEditorService,
-		@IContextKeyService private contextKeyService: IContextKeyService,
-		@IWorkspaceContextService private contextService: IWorkspaceContextService,
-		@IEnvironmentService private environmentService: IEnvironmentService,
-		@IDebugService private debugService: IDebugService,
-		@IListService private listService: IListService,
-		@IThemeService private themeService: IThemeService
+		@IEditorService private readonly editorService: IEditorService,
+		@IContextKeyService private readonly contextKeyService: IContextKeyService,
+		@IWorkspaceContextService private readonly contextService: IWorkspaceContextService,
+		@IEnvironmentService private readonly environmentService: IEnvironmentService,
+		@IDebugService private readonly debugService: IDebugService,
+		@IListService private readonly listService: IListService,
+		@IThemeService private readonly themeService: IThemeService
 	) {
 		super({ ...(options as IViewletPanelOptions), ariaHeaderLabel: nls.localize('loadedScriptsSection', "Loaded Scripts Section") }, keybindingService, contextMenuService, configurationService);
 		this.loadedScriptsItemType = CONTEXT_LOADED_SCRIPTS_ITEM_TYPE.bindTo(contextKeyService);
@@ -396,33 +398,39 @@ export class LoadedScriptsView extends ViewletPanel {
 
 		const root = new RootTreeItem(this.debugService.getModel(), this.environmentService, this.contextService);
 
+		this.treeLabels = this.instantiationService.createInstance(ResourceLabels, { onDidChangeVisibility: this.onDidChangeBodyVisibility } as IResourceLabelsContainer);
+		this.disposables.push(this.treeLabels);
+
 		this.tree = new WorkbenchAsyncDataTree(this.treeContainer, new LoadedScriptsDelegate(),
-			[
-				this.instantiationService.createInstance(LoadedScriptsRenderer)
-			],
-			new LoadedScriptsDataSource(root),
+			[new LoadedScriptsRenderer(this.treeLabels)],
+			new LoadedScriptsDataSource(),
 			{
 				identityProvider: {
 					getId: element => element.getId()
+				},
+				keyboardNavigationLabelProvider: {
+					getKeyboardNavigationLabel: element => element.getLabel()
 				},
 				filter: this.filter,
 				accessibilityProvider: new LoadedSciptsAccessibilityProvider(),
 				ariaLabel: nls.localize({ comment: ['Debug is a noun in this context, not a verb.'], key: 'loadedScriptsAriaLabel' }, "Debug Loaded Scripts"),
 			},
-			this.contextKeyService, this.listService, this.themeService, this.configurationService
+			this.contextKeyService, this.listService, this.themeService, this.configurationService, this.keybindingService
 		);
+
+		this.tree.setInput(root);
 
 		this.changeScheduler = new RunOnceScheduler(() => {
 			this.treeNeedsRefreshOnVisible = false;
 			if (this.tree) {
-				this.tree.refresh(null);
+				this.tree.updateChildren();
 			}
 		}, 300);
 		this.disposables.push(this.changeScheduler);
 
 		const loadedScriptsNavigator = new TreeResourceNavigator2(this.tree);
 		this.disposables.push(loadedScriptsNavigator);
-		this.disposables.push(loadedScriptsNavigator.openResource(e => {
+		this.disposables.push(loadedScriptsNavigator.onDidOpenResource(e => {
 			if (e.element instanceof BaseTreeItem) {
 				const source = e.element.getSource();
 				if (source && source.available) {
@@ -449,7 +457,7 @@ export class LoadedScriptsView extends ViewletPanel {
 					case 'changed':
 						sessionRoot = root.add(session);
 						sessionRoot.addPath(event.source);
-						if (this.isVisible) {
+						if (this.isBodyVisible()) {
 							this.changeScheduler.schedule();
 						} else {
 							this.treeNeedsRefreshOnVisible = true;
@@ -461,7 +469,7 @@ export class LoadedScriptsView extends ViewletPanel {
 					case 'removed':
 						sessionRoot = root.find(session);
 						if (sessionRoot && sessionRoot.removePath(event.source)) {
-							if (this.isVisible) {
+							if (this.isBodyVisible()) {
 								this.changeScheduler.schedule();
 							} else {
 								this.treeNeedsRefreshOnVisible = true;
@@ -485,36 +493,21 @@ export class LoadedScriptsView extends ViewletPanel {
 		}));
 
 		this.changeScheduler.schedule(0);
+
+		this.disposables.push(this.onDidChangeBodyVisibility(visible => {
+			if (visible && this.treeNeedsRefreshOnVisible) {
+				this.changeScheduler.schedule();
+			}
+		}));
 	}
 
-	layoutBody(size: number): void {
-		this.tree.layout(size);
+	layoutBody(height: number, width: number): void {
+		this.tree.layout(height, width);
 	}
-
-	setExpanded(expanded: boolean): void {
-		super.setExpanded(expanded);
-		if (expanded && this.treeNeedsRefreshOnVisible) {
-			this.changeScheduler.schedule();
-		}
-	}
-
-	setVisible(visible: boolean): void {
-		super.setVisible(visible);
-		if (visible && this.treeNeedsRefreshOnVisible) {
-			this.changeScheduler.schedule();
-		}
-	}
-
-	/*
-	private tryToExpand(element: LoadedScriptsItem): void {
-		try {
-			this.tree.expand(element);
-		} catch (e) { }
-	}
-	*/
 
 	dispose(): void {
-		this.tree = undefined;
+		this.tree = dispose(this.tree);
+		this.treeLabels = dispose(this.treeLabels);
 		super.dispose();
 	}
 }
@@ -533,33 +526,27 @@ class LoadedScriptsDelegate implements IListVirtualDelegate<LoadedScriptsItem> {
 	}
 }
 
-class LoadedScriptsDataSource implements IDataSource<LoadedScriptsItem> {
+class LoadedScriptsDataSource implements IAsyncDataSource<LoadedScriptsItem, LoadedScriptsItem> {
 
-	constructor(private root: LoadedScriptsItem) {
+	hasChildren(element: LoadedScriptsItem): boolean {
+		return element.hasChildren();
 	}
 
-	hasChildren(element: LoadedScriptsItem | null): boolean {
-		return element === null || element.hasChildren();
-	}
-
-	getChildren(element: LoadedScriptsItem | null): Thenable<LoadedScriptsItem[]> {
-		if (element === null) {
-			element = this.root;
-		}
+	getChildren(element: LoadedScriptsItem): Promise<LoadedScriptsItem[]> {
 		return element.getChildren();
 	}
 }
 
 interface ILoadedScriptsItemTemplateData {
-	label: ResourceLabel;
+	label: IResourceLabel;
 }
 
-class LoadedScriptsRenderer implements ITreeRenderer<BaseTreeItem, void, ILoadedScriptsItemTemplateData> {
+class LoadedScriptsRenderer implements ITreeRenderer<BaseTreeItem, FuzzyScore, ILoadedScriptsItemTemplateData> {
 
 	static readonly ID = 'lsrenderer';
 
 	constructor(
-		@IInstantiationService private instantiationService: IInstantiationService
+		private labels: ResourceLabels
 	) {
 	}
 
@@ -569,15 +556,15 @@ class LoadedScriptsRenderer implements ITreeRenderer<BaseTreeItem, void, ILoaded
 
 	renderTemplate(container: HTMLElement): ILoadedScriptsItemTemplateData {
 		let data: ILoadedScriptsItemTemplateData = Object.create(null);
-		data.label = this.instantiationService.createInstance(ResourceLabel, container, void 0);
+		data.label = this.labels.create(container, { supportHighlights: true });
 		return data;
 	}
 
-	renderElement(node: ITreeNode<BaseTreeItem, void>, index: number, data: ILoadedScriptsItemTemplateData): void {
+	renderElement(node: ITreeNode<BaseTreeItem, FuzzyScore>, index: number, data: ILoadedScriptsItemTemplateData): void {
 
 		const element = node.element;
 
-		const label: IResourceLabel = {
+		const label: IResourceLabelProps = {
 			name: element.getLabel()
 		};
 		const options: IResourceLabelOptions = {
@@ -603,12 +590,9 @@ class LoadedScriptsRenderer implements ITreeRenderer<BaseTreeItem, void, ILoaded
 				options.fileKind = FileKind.FOLDER;
 			}
 		}
+		options.matches = createMatches(node.filterData);
 
-		data.label.setLabel(label, options);
-	}
-
-	disposeElement(element: ITreeNode<BaseTreeItem, void>, index: number, templateData: ILoadedScriptsItemTemplateData): void {
-		// noop
+		data.label.setResource(label, options);
 	}
 
 	disposeTemplate(templateData: ILoadedScriptsItemTemplateData): void {
@@ -640,7 +624,7 @@ class LoadedSciptsAccessibilityProvider implements IAccessibilityProvider<Loaded
 	}
 }
 
-class LoadedScriptsFilter implements ITreeFilter<BaseTreeItem> {
+class LoadedScriptsFilter implements ITreeFilter<BaseTreeItem, FuzzyScore> {
 
 	private filterText: string;
 
@@ -648,7 +632,7 @@ class LoadedScriptsFilter implements ITreeFilter<BaseTreeItem> {
 		this.filterText = filterText;
 	}
 
-	filter(element: BaseTreeItem, parentVisibility: TreeVisibility): TreeFilterResult<void> {
+	filter(element: BaseTreeItem, parentVisibility: TreeVisibility): TreeFilterResult<FuzzyScore> {
 
 		if (!this.filterText) {
 			return TreeVisibility.Visible;

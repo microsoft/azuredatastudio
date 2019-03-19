@@ -8,15 +8,15 @@
 
 import * as assert from 'assert';
 
-export async function assertThrowsAsync(fn, regExp?: any): Promise<void> {
-    let f = () => {
-        // Empty
-    };
+export async function assertThrowsAsync(fn, expectedMessage?: string): Promise<void> {
+    var threw = false;
     try {
       await fn();
     } catch (e) {
-      f = () => { throw e; };
-    } finally {
-      assert.throws(f, regExp);
+      threw = true;
+      if (expectedMessage) {
+        assert.strictEqual(e.message, expectedMessage);
+      }
     }
+    assert.equal(threw, true, 'Expected function to throw but it did not');
 }

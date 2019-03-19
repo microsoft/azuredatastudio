@@ -10,7 +10,6 @@ import { IDisposable } from 'vs/base/common/lifecycle';
 import { URI } from 'vs/base/common/uri';
 import { ok } from 'vs/base/common/assert';
 import { Schemas } from 'vs/base/common/network';
-import { TPromise } from 'vs/base/common/winjs.base';
 
 import { MainThreadNotebookDocumentsAndEditorsShape, INotebookModelChangedData } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { CellRange } from 'sql/workbench/api/common/sqlExtHostTypes';
@@ -60,7 +59,7 @@ export class ExtHostNotebookDocumentData implements IDisposable {
 
 	private _save(): Thenable<boolean> {
 		if (this._isDisposed) {
-			return TPromise.wrapError<boolean>(new Error('Document has been closed'));
+			return Promise.reject(new Error('Document has been closed'));
 		}
 		return this._proxy.$trySaveDocument(this._uri);
 

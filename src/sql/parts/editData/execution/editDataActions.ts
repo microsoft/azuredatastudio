@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Action, IActionItem, IActionRunner } from 'vs/base/common/actions';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
@@ -37,7 +36,7 @@ export abstract class EditDataAction extends Action {
 	/**
 	 * This method is executed when the button is clicked.
 	 */
-	public abstract run(): TPromise<void>;
+	public abstract run(): Promise<void>;
 
 	protected setClass(enabledClass: string): void {
 		this._classes = [];
@@ -75,7 +74,7 @@ export class RefreshTableAction extends EditDataAction {
 		this.label = nls.localize('editData.run', 'Run');
 	}
 
-	public run(): TPromise<void> {
+	public run(): Promise<void> {
 		if (this.isConnected(this.editor)) {
 			let input = this.editor.editDataInput;
 
@@ -97,7 +96,7 @@ export class RefreshTableAction extends EditDataAction {
 				});
 			});
 		}
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 }
 
@@ -118,10 +117,10 @@ export class StopRefreshTableAction extends EditDataAction {
 		this.label = nls.localize('editData.stop', 'Stop');
 	}
 
-	public run(): TPromise<void> {
+	public run(): Promise<void> {
 		let input = this.editor.editDataInput;
 		this._queryModelService.disposeEdit(input.uri);
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 }
 
@@ -142,9 +141,9 @@ export class ChangeMaxRowsAction extends EditDataAction {
 		this.class = ChangeMaxRowsAction.EnabledClass;
 	}
 
-	public run(): TPromise<void> {
+	public run(): Promise<void> {
 
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 }
 
@@ -261,9 +260,9 @@ export class ShowQueryPaneAction extends EditDataAction {
 		}
 	}
 
-	public run(): TPromise<void> {
+	public run(): Promise<void> {
 		this.editor.toggleQueryPane();
 		this.updateLabel(this.editor.queryPaneEnabled());
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 }

@@ -6,7 +6,6 @@
 import * as azdata from 'azdata';
 
 import { Action } from 'vs/base/common/actions';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { localize } from 'vs/nls';
 import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
 import { INotificationService, Severity, INotificationActions } from 'vs/platform/notification/common/notification';
@@ -42,8 +41,8 @@ export class AddCellAction extends Action {
 	) {
 		super(id, label, cssClass);
 	}
-	public run(context: NotebookComponent): TPromise<boolean> {
-		return new TPromise<boolean>((resolve, reject) => {
+	public run(context: NotebookComponent): Promise<boolean> {
+		return new Promise<boolean>((resolve, reject) => {
 			try {
 				context.addCell(this.cellType);
 				resolve(true);
@@ -194,9 +193,9 @@ export class TrustedAction extends ToggleableAction {
 		this.toggle(value);
 	}
 
-	public run(context: NotebookComponent): TPromise<boolean> {
+	public run(context: NotebookComponent): Promise<boolean> {
 		let self = this;
-		return new TPromise<boolean>((resolve, reject) => {
+		return new Promise<boolean>((resolve, reject) => {
 			try {
 				if (self.trusted) {
 					const actions: INotificationActions = { primary: [] };

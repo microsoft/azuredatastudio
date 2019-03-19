@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { TPromise } from 'vs/base/common/winjs.base';
 import { localize } from 'vs/nls';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { Event, Emitter } from 'vs/base/common/event';
@@ -148,7 +147,7 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 	public getDescription(): string { return this._description; }
 	public supportsSplitEditor(): boolean { return false; }
 	public getModeId(): string { return QueryInput.SCHEMA; }
-	public revert(): TPromise<boolean> { return this._sql.revert(); }
+	public revert(): Promise<boolean> { return this._sql.revert(); }
 
 	public matches(otherInput: any): boolean {
 		if (otherInput instanceof QueryInput) {
@@ -161,10 +160,10 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 	// Forwarding resource functions to the inline sql file editor
 	public get onDidModelChangeContent(): Event<void> { return this._sql.onDidModelChangeContent; }
 	public get onDidModelChangeEncoding(): Event<void> { return this._sql.onDidModelChangeEncoding; }
-	public resolve(refresh?: boolean): TPromise<EditorModel> { return this._sql.resolve(); }
-	public save(): TPromise<boolean> { return this._sql.save(); }
+	public resolve(refresh?: boolean): Promise<EditorModel> { return this._sql.resolve(); }
+	public save(): Promise<boolean> { return this._sql.save(); }
 	public isDirty(): boolean { return this._sql.isDirty(); }
-	public confirmSave(): TPromise<ConfirmResult> { return this._sql.confirmSave(); }
+	public confirmSave(): Promise<ConfirmResult> { return this._sql.confirmSave(); }
 	public getResource(): URI { return this._sql.getResource(); }
 	public getEncoding(): string { return this._sql.getEncoding(); }
 	public suggestFileName(): string { return this._sql.suggestFileName(); }

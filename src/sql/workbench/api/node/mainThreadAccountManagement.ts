@@ -5,7 +5,6 @@
 'use strict';
 
 import * as azdata from 'azdata';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { IAccountManagementService } from 'sql/platform/accountManagement/common/interfaces';
 import { dispose, IDisposable } from 'vs/base/common/lifecycle';
 import {
@@ -92,12 +91,12 @@ export class MainThreadAccountManagement implements MainThreadAccountManagementS
 		this._accountManagementService.registerProvider(providerMetadata, accountProvider);
 		this._providerMetadata[handle] = providerMetadata;
 
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 
 	public $unregisterAccountProvider(handle: number): Thenable<any> {
 		this._accountManagementService.unregisterProvider(this._providerMetadata[handle]);
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 
 	public dispose(): void {

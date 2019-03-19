@@ -6,7 +6,6 @@
 'use strict';
 import 'vs/css!sql/media/icons/common-icons';
 import 'vs/css!./media/taskHistoryViewlet';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { Viewlet } from 'vs/workbench/browser/viewlet';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { toggleClass, Dimension } from 'vs/base/browser/dom';
@@ -53,13 +52,13 @@ export class TaskHistoryViewlet extends Viewlet {
 		});
 	}
 
-	public create(parent: HTMLElement): TPromise<void> {
+	public create(parent: HTMLElement): Promise<void> {
 		super.create(parent);
 		this._root = parent;
 		this._taskHistoryView = this._instantiationService.createInstance(TaskHistoryView);
 		this._taskHistoryView.renderBody(parent);
 
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 
 	public setVisible(visible: boolean): void {

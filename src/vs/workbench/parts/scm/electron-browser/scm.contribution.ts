@@ -106,7 +106,8 @@ MenuRegistry.appendMenuItem(MenuId.MenubarViewMenu, {
 		id: VIEWLET_ID,
 		title: localize({ key: 'miViewSCM', comment: ['&& denotes a mnemonic'] }, "S&&CM")
 	},
-	order: 3
+	// {{SQL CARBON EDIT}} - Change the order
+	order: 5
 });
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({

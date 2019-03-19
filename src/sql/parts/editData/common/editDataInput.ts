@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { TPromise } from 'vs/base/common/winjs.base';
 import { EditorInput, EditorModel, ConfirmResult, EncodingMode } from 'vs/workbench/common/editor';
 import { IConnectionManagementService, IConnectableInput, INewConnectionParams } from 'sql/platform/connection/common/connectionManagement';
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
@@ -112,10 +111,10 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 	public get setup(): boolean { return this._setup; }
 	public get rowLimit(): number { return this._rowLimit; }
 	public get objectType(): string { return this._objectType; }
-	public showResultsEditor(): void { this._showResultsEditor.fire(); }
+	public showResultsEditor(): void { this._showResultsEditor.fire(undefined); }
 	public isDirty(): boolean { return false; }
-	public save(): TPromise<boolean> { return TPromise.as(false); }
-	public confirmSave(): TPromise<ConfirmResult> { return TPromise.wrap(ConfirmResult.DONT_SAVE); }
+	public save(): Promise<boolean> { return Promise.resolve(false); }
+	public confirmSave(): Promise<ConfirmResult> { return Promise.resolve(ConfirmResult.DONT_SAVE); }
 	public getTypeId(): string { return EditDataInput.ID; }
 	public setBootstrappedTrue(): void { this._hasBootstrapped = true; }
 	public getResource(): URI { return this._uri; }
@@ -233,7 +232,7 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 
 	public get onDidModelChangeContent(): Event<void> { return this._sql.onDidModelChangeContent; }
 	public get onDidModelChangeEncoding(): Event<void> { return this._sql.onDidModelChangeEncoding; }
-	public resolve(refresh?: boolean): TPromise<EditorModel> { return this._sql.resolve(); }
+	public resolve(refresh?: boolean): Promise<EditorModel> { return this._sql.resolve(); }
 	public getEncoding(): string { return this._sql.getEncoding(); }
 	public suggestFileName(): string { return this._sql.suggestFileName(); }
 	public getName(): string { return this._sql.getName(); }

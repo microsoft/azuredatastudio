@@ -15,7 +15,6 @@ import { WorkspaceConfigurationTestService } from 'sqltest/stubs/workspaceConfig
 import { IConfigurationValue, ConfigurationEditingService } from 'vs/workbench/services/configuration/node/configurationEditingService';
 import * as Constants from 'sql/platform/connection/common/constants';
 import { IConnectionProfileGroup, ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
-import { TPromise } from 'vs/base/common/winjs.base';
 import * as assert from 'assert';
 import { ProviderFeatures, ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import * as azdata from 'azdata';
