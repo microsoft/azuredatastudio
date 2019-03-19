@@ -1311,7 +1311,7 @@
 				},
 				{
 					"extensionId": "34",
-					"extensionName": "postgresql",
+					"extensionName": "azuredatastudio-postgresql",
 					"displayName": "PostgreSQL",
 					"shortDescription": "PostgreSQL extension for Azure Data Studio",
 					"publisher": {
