@@ -200,9 +200,9 @@ export class CodeWindow extends Disposable implements ICodeWindow {
 			}
 		}
 
-		// if (this.nodeless) {
+		if (this.nodeless) {
 			this._win.webContents.toggleDevTools();
-		// }
+		}
 
 		this._lastFocusTime = Date.now(); // since we show directly, we need to set the last focus time too
 	}
