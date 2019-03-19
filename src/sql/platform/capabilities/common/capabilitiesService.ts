@@ -10,7 +10,7 @@ import * as Constants from 'sql/common/constants';
 import { ConnectionProviderProperties, IConnectionProviderRegistry, Extensions as ConnectionExtensions } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
 import { toObject } from 'sql/base/common/map';
 
-import * as azdata from 'azdata';
+import * as azdata from 'sqlops';
 
 import { Event, Emitter } from 'vs/base/common/event';
 import { IAction } from 'vs/base/common/actions';
