@@ -9,6 +9,8 @@ import { getContexts, KubectlContext, setContext, inferCurrentClusterType } from
 import { Kubectl } from '../../kubectl/kubectl';
 import { Scriptable, ScriptingDictionary } from '../../scripting/scripting';
 import * as nls from 'vscode-nls';
+import * as os from 'os';
+import * as path from 'path';
 
 const localize = nls.loadMessageBundle();
 
@@ -118,6 +120,10 @@ export class CreateClusterModel implements Scriptable {
 			}, 2000);
 		});
 		return promise;
+	}
+
+	public getDefaultKubeConfigPath(): string {
+		return path.join(os.homedir(), '.kube', 'config');
 	}
 
 	public targetClusterType: TargetClusterType;
