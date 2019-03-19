@@ -47,8 +47,14 @@ const productionDependencies = deps.getProductionDependencies(path.dirname(__dir
 var del = require('del');
 
 const baseModules = Object.keys(process.binding('natives')).filter(n => !/^_|\//.test(n));
-const nodeModules = ['electron', 'original-fs']
-	// @ts-ignore JSON checking: dependencies property is optional
+// {{SQL CARBON EDIT}}
+const nodeModules = [
+	'electron',
+	'original-fs',
+	'rxjs/Observable',
+	'rxjs/Subject',
+	'rxjs/Observer',
+	'ng2-charts/ng2-charts']
 	.concat(Object.keys(product.dependencies || {}))
 	.concat(_.uniq(productionDependencies.map(d => d.name)))
 	.concat(baseModules);
