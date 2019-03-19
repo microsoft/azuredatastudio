@@ -36,7 +36,7 @@ import { extHostCustomer } from 'vs/workbench/api/electron-browser/extHostCustom
 import { TextFileEditorModel } from 'vs/workbench/services/textfile/common/textFileEditorModel';
 // {{SQL CARBON EDIT}}
 import { ISaveParticipant, SaveReason, IResolvedTextFileEditorModel, ITextFileEditorModel } from 'vs/workbench/services/textfile/common/textfiles';
-import { ExtHostContext, ExtHostDocumentSaveParticipantShape, IExtHostContext } from '../node/extHost.protocol';
+import { ExtHostContext, ExtHostDocumentSaveParticipantShape, IExtHostContext } from '../common/extHost.protocol';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 
 // {{SQL CARBON EDIT}}

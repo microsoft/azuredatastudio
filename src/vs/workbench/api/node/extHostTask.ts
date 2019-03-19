@@ -12,7 +12,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { win32 } from 'vs/base/node/processes';
 
 
-import { MainContext, MainThreadTaskShape, ExtHostTaskShape, IMainContext } from 'vs/workbench/api/node/extHost.protocol';
+import { MainContext, MainThreadTaskShape, ExtHostTaskShape, IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
 import * as types from 'vs/workbench/api/node/extHostTypes';
 import { ExtHostWorkspace, IExtHostWorkspaceProvider } from 'vs/workbench/api/node/extHostWorkspace';
@@ -23,11 +23,9 @@ import {
 	ShellExecutionOptionsDTO, ShellExecutionDTO,
 	CustomExecutionDTO,
 	TaskDTO, TaskHandleDTO, TaskFilterDTO, TaskProcessStartedDTO, TaskProcessEndedDTO, TaskSystemInfoDTO, TaskSetDTO
-} from '../shared/tasks';
-
+} from '../common/shared/tasks';
 // {{SQL CARBON EDIT}}
 // import { ExtHostVariableResolverService } from 'vs/workbench/api/node/extHostDebugService';
-
 import { ExtHostDocumentsAndEditors } from 'vs/workbench/api/node/extHostDocumentsAndEditors';
 import { ExtHostConfiguration } from 'vs/workbench/api/node/extHostConfiguration';
 import { ExtHostTerminalService, ExtHostTerminal } from 'vs/workbench/api/node/extHostTerminalService';
