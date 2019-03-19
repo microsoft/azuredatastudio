@@ -57,6 +57,7 @@ import { IConnectionDialogService } from 'sql/workbench/services/connection/comm
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ConfigurationEditingService } from 'vs/workbench/services/configuration/common/configurationEditingService';
+import { entries } from 'sql/base/common/objects';
 
 export class ConnectionManagementService extends Disposable implements IConnectionManagementService {
 
@@ -130,7 +131,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		};
 
 		registry.onNewProvider(providerRegistration, this);
-		Object.entries(registry.providers).map(v => {
+		entries(registry.providers).map(v => {
 			providerRegistration({ id: v[0], properties: v[1] });
 		});
 

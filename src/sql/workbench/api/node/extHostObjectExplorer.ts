@@ -8,6 +8,7 @@ import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
 import { ExtHostObjectExplorerShape, SqlMainContext, MainThreadObjectExplorerShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
+import { entries } from 'sql/base/common/objects';
 
 export class ExtHostObjectExplorer implements ExtHostObjectExplorerShape {
 
@@ -85,6 +86,13 @@ class ExtHostObjectExplorerNode implements azdata.objectexplorer.ObjectExplorerN
 	}
 
 	private getDetailsFromInfo(nodeInfo: azdata.NodeInfo): void {
-		Object.entries(nodeInfo).forEach(([key, value]) => this[key] = value);
+		this.nodePath = nodeInfo.nodePath;
+		this.nodeType = nodeInfo.nodeType;
+		this.nodeSubType = nodeInfo.nodeSubType;
+		this.nodeStatus = nodeInfo.nodeStatus;
+		this.label = nodeInfo.label;
+		this.isLeaf = nodeInfo.isLeaf;
+		this.metadata = nodeInfo.metadata;
+		this.errorMessage = nodeInfo.errorMessage;
 	}
 }
