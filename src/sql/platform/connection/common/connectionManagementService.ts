@@ -31,7 +31,7 @@ import { IAngularEventingService, AngularEventType } from 'sql/platform/angularE
 import * as QueryConstants from 'sql/parts/query/common/constants';
 import { Deferred } from 'sql/base/common/promise';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { values } from 'sql/base/common/objects';
+import { values, entries } from 'sql/base/common/objects';
 import { ConnectionProviderProperties, IConnectionProviderRegistry, Extensions as ConnectionProviderExtensions } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
 import { IAccountManagementService, AzureResource } from 'sql/platform/accountManagement/common/interfaces';
 import { IServerGroupController, IServerGroupDialogCallbacks } from 'sql/platform/serverGroup/common/serverGroupController';
@@ -57,7 +57,6 @@ import { IConnectionDialogService } from 'sql/workbench/services/connection/comm
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ConfigurationEditingService } from 'vs/workbench/services/configuration/common/configurationEditingService';
-import { entries } from 'sql/base/common/objects';
 
 export class ConnectionManagementService extends Disposable implements IConnectionManagementService {
 
