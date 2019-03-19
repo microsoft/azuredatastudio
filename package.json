@@ -44,8 +44,6 @@
     "ansi_up": "^3.0.0",
     "applicationinsights": "1.0.8",
     "chart.js": "^2.6.0",
-    "chartjs-color": "^2.1.0",
-    "chartjs-color-string": "^0.5.0",
     "color-convert": "^0.5.3",
     "gc-signals": "^0.0.2",
     "getmac": "1.4.1",
