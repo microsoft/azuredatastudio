@@ -477,6 +477,8 @@ BUILD_TARGETS.forEach(buildTarget => {
 				minified ? minifyVSCodeTask : optimizeVSCodeTask,
 				util.rimraf(path.join(buildRoot, destinationFolderName))
 			),
+			ext.packageExtensionTask('mssql', platform, arch),
+			ext.packageExtensionTask('azurecore', platform, arch),
 			packageTask(platform, arch, sourceFolderName, destinationFolderName, opts)
 		));
 		gulp.task(vscodeTask);
