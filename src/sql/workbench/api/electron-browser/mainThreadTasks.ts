@@ -6,7 +6,7 @@
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 import { TaskRegistry, ITaskHandlerDescription } from 'sql/platform/tasks/common/tasks';
 import { IDisposable } from 'vs/base/common/lifecycle';
-import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
+import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 
 import {
 	ExtHostAccountManagementShape,

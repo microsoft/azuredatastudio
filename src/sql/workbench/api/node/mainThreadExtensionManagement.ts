@@ -5,7 +5,7 @@
 'use strict';
 
 import { SqlMainContext, MainThreadExtensionManagementShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
-import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
+import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 import { dispose, IDisposable } from 'vs/base/common/lifecycle';
 import { IExtensionManagementService, IExtensionIdentifier } from 'vs/platform/extensionManagement/common/extensionManagement';

@@ -8,7 +8,7 @@ import 'vs/css!sql/media/icons/common-icons';
 import { WebViewDialog } from 'sql/workbench/parts/webview/electron-browser/webViewDialog';
 import { MainThreadModalDialogShape, SqlMainContext, SqlExtHostContext, ExtHostModalDialogsShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 
-import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
+import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 

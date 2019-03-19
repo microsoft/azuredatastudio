@@ -24,7 +24,7 @@ import { ITaskService } from 'sql/platform/taskHistory/common/taskService';
 import { IProfilerService } from 'sql/workbench/services/profiler/common/interfaces';
 import { ISerializationService } from 'sql/platform/serialization/common/serializationService';
 import { IFileBrowserService } from 'sql/platform/fileBrowser/common/interfaces';
-import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
+import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { IDacFxService } from 'sql/platform/dacfx/common/dacFxService';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 
