@@ -303,11 +303,7 @@ function main(): void {
 		boolean: ['upload-only']
 	});
 
-	// {{SQL CARBON EDIT}}
-	const [quality, platform, type, name, version, _isUpdate, file, commit] = opts._;
-	if (!commit) {
-		commit = execSync('git rev-parse HEAD', { encoding: 'utf8' }).trim();
-	}
+	const [quality, platform, type, name, version, _isUpdate, file] = opts._;
 
 	publish(commit, quality, platform, type, name, version, _isUpdate, file, opts).catch(err => {
 		console.error(err);
