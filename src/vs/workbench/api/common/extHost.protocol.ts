@@ -259,7 +259,11 @@ export interface MainThreadErrorsShape extends IDisposable {
 }
 
 export interface MainThreadConsoleShape extends IDisposable {
-	$logExtensionHostMessage(msg: IRemoteConsoleLog): void;
+	$logExtensionHostMessage(msg: {
+		type: string;
+		severity: string;
+		arguments: string;
+	}): void;
 }
 
 export interface ISerializedRegExp {

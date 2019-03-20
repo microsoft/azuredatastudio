@@ -74,7 +74,6 @@ export class CallRenderer implements ITreeRenderer<Call, FuzzyScore, CallRenderi
 		const iconLabel = new IconLabel(container, { supportHighlights: true });
 		return { iconLabel };
 	}
-
 	renderElement(node: ITreeNode<Call, FuzzyScore>, _index: number, template: CallRenderingTemplate): void {
 		const { element, filterData } = node;
 		const detail = element.item.detail || this._labelService.getUriLabel(element.item.uri, { relative: true });
