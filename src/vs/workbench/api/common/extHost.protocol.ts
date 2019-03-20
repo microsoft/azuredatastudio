@@ -44,6 +44,7 @@ import { ResolvedAuthority } from 'vs/platform/remote/common/remoteAuthorityReso
 import { ExtensionIdentifier, IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import * as codeInset from 'vs/workbench/contrib/codeinset/common/codeInset';
 import * as callHierarchy from 'vs/workbench/contrib/callHierarchy/common/callHierarchy';
+import { IRelativePattern } from 'vs/base/common/glob';
 
 // {{SQL CARBON EDIT}}
 import { ITreeItem as sqlITreeItem } from 'sql/workbench/common/views';
@@ -310,7 +311,7 @@ export interface ISerializedDocumentFilter {
 	$serialized: true;
 	language?: string;
 	scheme?: string;
-	pattern?: GlobPattern;
+	pattern?: string | IRelativePattern;
 	exclusive?: boolean;
 }
 
