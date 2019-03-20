@@ -9,10 +9,10 @@ import { IEditorModel } from 'vs/platform/editor/common/editor';
 import { EditorInput, EditorModel, ConfirmResult } from 'vs/workbench/common/editor';
 import * as DOM from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IPartService, Parts } from 'vs/workbench/services/part/common/partService';
 
 import { DialogPane } from 'sql/platform/dialog/dialogPane';
 import { Emitter, Event } from 'vs/base/common/event';
+import { IWorkbenchLayoutService, Parts } from 'vs/workbench/services/layout/browser/layoutService';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
 
@@ -56,13 +56,13 @@ export class ModelViewInput extends EditorInput {
 	constructor(private _title: string, private _model: ModelViewInputModel,
 		private _options: azdata.ModelViewEditorOptions,
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IPartService private readonly _partService: IPartService
+		@IWorkbenchLayoutService private readonly layoutService: IWorkbenchLayoutService
 	) {
 		super();
 		this._model.onDidChangeDirty(() => this._onDidChangeDirty.fire());
 		this._container = document.createElement('div');
 		this._container.id = `modelView-${_model.modelViewId}`;
-		this._partService.getContainer(Parts.EDITOR_PART).appendChild(this._container);
+		this.layoutService.getContainer(Parts.EDITOR_PART).appendChild(this._container);
 
 	}
 

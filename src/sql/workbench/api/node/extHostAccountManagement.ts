@@ -13,7 +13,7 @@ import {
 	SqlMainContext,
 } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { AzureResource } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
+import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { Event, Emitter } from 'vs/base/common/event';
 
 export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
@@ -167,5 +167,3 @@ interface AccountProviderWithMetadata {
 	metadata: azdata.AccountProviderMetadata;
 	provider: azdata.AccountProvider;
 }
-
-

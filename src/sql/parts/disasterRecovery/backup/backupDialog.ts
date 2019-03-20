@@ -13,12 +13,12 @@ import * as TelemetryKeys from 'sql/common/telemetryKeys';
 
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { Builder } from 'sql/base/browser/builder';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { bootstrapAngular } from 'sql/services/bootstrap/bootstrapService';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 
 export class BackupDialog extends Modal {
 	private _bodyBuilder: Builder;
@@ -28,14 +28,14 @@ export class BackupDialog extends Modal {
 
 	constructor(
 		@IThemeService themeService: IThemeService,
-		@IPartService partService: IPartService,
+		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IClipboardService clipboardService: IClipboardService
 	) {
-		super('', TelemetryKeys.Backup, partService, telemetryService, clipboardService, themeService, contextKeyService, { isAngular: true, hasErrors: true });
+		super('', TelemetryKeys.Backup, telemetryService, layoutService, clipboardService, themeService, contextKeyService, { isAngular: true, hasErrors: true });
 	}
 
 	protected renderBody(container: HTMLElement) {

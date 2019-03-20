@@ -45,6 +45,7 @@ export class NotebookEditorModel extends EditorModel {
 			if (notebook.id === this.notebookUri.toString()) {
 				// Hook to content change events
 				notebook.modelReady.then(() => {
+					this._register(notebook.model.kernelChanged(e => this.updateModel()));
 					this._register(notebook.model.contentChanged(e => this.updateModel()));
 				}, err => undefined);
 			}
@@ -137,7 +138,6 @@ export class NotebookInput extends EditorInput {
 	private _parentContainer: HTMLElement;
 	private readonly _layoutChanged: Emitter<void> = this._register(new Emitter<void>());
 	private _model: NotebookEditorModel;
-	private _untitledEditorService: IUntitledEditorService;
 	private _contentManager: IContentManager;
 	private _providersLoaded: Promise<void>;
 
@@ -145,13 +145,11 @@ export class NotebookInput extends EditorInput {
 		private resource: URI,
 		private _textInput: UntitledEditorInput,
 		@ITextModelService private textModelService: ITextModelService,
-		@IUntitledEditorService untitledEditorService: IUntitledEditorService,
 		@IInstantiationService private instantiationService: IInstantiationService,
 		@INotebookService private notebookService: INotebookService,
 		@IExtensionService private extensionService: IExtensionService
 	) {
 		super();
-		this._untitledEditorService = untitledEditorService;
 		this.resource = resource;
 		this._standardKernels = [];
 		this._providersLoaded = this.assignProviders();

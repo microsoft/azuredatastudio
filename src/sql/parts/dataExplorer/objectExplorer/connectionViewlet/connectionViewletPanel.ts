@@ -11,7 +11,6 @@ import { IExtensionTipsService, IExtensionManagementServerService } from 'vs/pla
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IExtensionsWorkbenchService } from 'vs/workbench/parts/extensions/common/extensions';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachInputBoxStyler } from 'vs/platform/theme/common/styler';
 import { IViewletViewOptions } from 'vs/workbench/browser/parts/views/viewsViewlet';
@@ -26,6 +25,7 @@ import { ServerTreeView } from 'sql/parts/objectExplorer/viewlet/serverTreeView'
 import { ClearSearchAction, ActiveConnectionsFilterAction,
 	AddServerAction, AddServerGroupAction } from 'sql/parts/objectExplorer/viewlet/connectionTreeAction';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
+import { IExtensionsWorkbenchService } from 'vs/workbench/contrib/extensions/common/extensions';
 
 export class ConnectionViewletPanel extends ViewletPanel {
 

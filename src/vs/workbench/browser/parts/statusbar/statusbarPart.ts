@@ -6,60 +6,57 @@
 import 'vs/css!./media/statusbarpart';
 import * as nls from 'vs/nls';
 import { toErrorMessage } from 'vs/base/common/errorMessage';
-import { dispose, IDisposable, toDisposable } from 'vs/base/common/lifecycle';
+import { dispose, IDisposable, toDisposable, combinedDisposable } from 'vs/base/common/lifecycle';
 import { OcticonLabel } from 'vs/base/browser/ui/octiconLabel/octiconLabel';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { Part } from 'vs/workbench/browser/part';
 import { IStatusbarRegistry, Extensions, IStatusbarItem } from 'vs/workbench/browser/parts/statusbar/statusbar';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IInstantiationService, ServiceIdentifier } from 'vs/platform/instantiation/common/instantiation';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { StatusbarAlignment, IStatusbarService, IStatusbarEntry } from 'vs/platform/statusbar/common/statusbar';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { Action } from 'vs/base/common/actions';
-import { IThemeService, registerThemingParticipant, ITheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
+import { IThemeService, registerThemingParticipant, ITheme, ICssStyleCollector, ThemeColor } from 'vs/platform/theme/common/themeService';
 import { STATUS_BAR_BACKGROUND, STATUS_BAR_FOREGROUND, STATUS_BAR_NO_FOLDER_BACKGROUND, STATUS_BAR_ITEM_HOVER_BACKGROUND, STATUS_BAR_ITEM_ACTIVE_BACKGROUND, STATUS_BAR_PROMINENT_ITEM_BACKGROUND, STATUS_BAR_PROMINENT_ITEM_HOVER_BACKGROUND, STATUS_BAR_BORDER, STATUS_BAR_NO_FOLDER_FOREGROUND, STATUS_BAR_NO_FOLDER_BORDER } from 'vs/workbench/common/theme';
 import { IWorkspaceContextService, WorkbenchState } from 'vs/platform/workspace/common/workspace';
 import { contrastBorder } from 'vs/platform/theme/common/colorRegistry';
 import { isThemeColor } from 'vs/editor/common/editorCommon';
 import { Color } from 'vs/base/common/color';
-import { addClass, EventHelper, createStyleSheet, addDisposableListener, Dimension } from 'vs/base/browser/dom';
+import { addClass, EventHelper, createStyleSheet, addDisposableListener } from 'vs/base/browser/dom';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IStorageService } from 'vs/platform/storage/common/storage';
-import { Emitter } from 'vs/base/common/event';
-import { ISerializableView } from 'vs/base/browser/ui/grid/grid';
-import { Parts } from 'vs/workbench/services/part/common/partService';
+import { Parts, IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
+import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 
+export class StatusbarPart extends Part implements IStatusbarService {
 
-export class StatusbarPart extends Part implements IStatusbarService, ISerializableView {
-	_serviceBrand: any;
+	_serviceBrand: ServiceIdentifier<any>;
 
 	private static readonly PRIORITY_PROP = 'statusbar-entry-priority';
 	private static readonly ALIGNMENT_PROP = 'statusbar-entry-alignment';
 
-	element: HTMLElement;
+	//#region IView
+
+	readonly minimumWidth: number = 0;
+	readonly maximumWidth: number = Number.POSITIVE_INFINITY;
+	readonly minimumHeight: number = 22;
+	readonly maximumHeight: number = 22;
+
+	//#endregion
+
 	private statusMsgDispose: IDisposable;
-
-
-	minimumWidth: number = 0;
-	maximumWidth: number = Number.POSITIVE_INFINITY;
-	minimumHeight: number = 22;
-	maximumHeight: number = 22;
-
-	private _onDidChange = new Emitter<{ width: number; height: number; }>();
-	readonly onDidChange = this._onDidChange.event;
-
 	private styleElement: HTMLStyleElement;
 
 	constructor(
-		id: string,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@IThemeService themeService: IThemeService,
 		@IWorkspaceContextService private readonly contextService: IWorkspaceContextService,
-		@IStorageService storageService: IStorageService
+		@IStorageService storageService: IStorageService,
+		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService
 	) {
-		super(id, { hasTitle: false }, themeService, storageService);
+		super(Parts.STATUSBAR_PART, { hasTitle: false }, themeService, storageService, layoutService);
 
 		this.registerListeners();
 	}
@@ -152,7 +149,7 @@ export class StatusbarPart extends Part implements IStatusbarService, ISerializa
 		return this.element;
 	}
 
-	protected updateStyles(): void {
+	updateStyles(): void {
 		super.updateStyles();
 
 		const container = this.getContainer();
@@ -233,14 +230,8 @@ export class StatusbarPart extends Part implements IStatusbarService, ISerializa
 		return dispose;
 	}
 
-	layout(dimension: Dimension): Dimension[];
-	layout(width: number, height: number): void;
-	layout(dim1: Dimension | number, dim2?: number): Dimension[] | void {
-		if (dim1 instanceof Dimension) {
-			return super.layout(dim1);
-		} else {
-			super.layout(new Dimension(dim1, dim2!));
-		}
+	layout(width: number, height: number): void {
+		super.layoutContents(width, height);
 	}
 
 	toJSON(): object {
@@ -292,18 +283,13 @@ class StatusBarEntryItem implements IStatusbarItem {
 			textContainer.title = this.entry.tooltip;
 		}
 
-		// Color
-		let color = this.entry.color;
-		if (color) {
-			if (isThemeColor(color)) {
-				let colorId = color.id;
-				color = (this.themeService.getTheme().getColor(colorId) || Color.transparent).toString();
-				toDispose.push(this.themeService.onThemeChange(theme => {
-					let colorValue = (this.themeService.getTheme().getColor(colorId) || Color.transparent).toString();
-					textContainer.style.color = colorValue;
-				}));
-			}
-			textContainer.style.color = color;
+		// Color (only applies to text container)
+		toDispose.push(this.applyColor(textContainer, this.entry.color));
+
+		// Background Color (applies to parent element to fully fill container)
+		if (this.entry.backgroundColor) {
+			toDispose.push(this.applyColor(el, this.entry.backgroundColor, true));
+			addClass(el, 'has-background-color');
 		}
 
 		// Context Menu
@@ -326,6 +312,24 @@ class StatusBarEntryItem implements IStatusbarItem {
 				toDispose = dispose(toDispose);
 			}
 		};
+	}
+
+	private applyColor(container: HTMLElement, color: string | ThemeColor | undefined, isBackground?: boolean): IDisposable {
+		const disposable: IDisposable[] = [];
+
+		if (color) {
+			if (isThemeColor(color)) {
+				const colorId = color.id;
+				color = (this.themeService.getTheme().getColor(colorId) || Color.transparent).toString();
+				disposable.push(this.themeService.onThemeChange(theme => {
+					const colorValue = (theme.getColor(colorId) || Color.transparent).toString();
+					isBackground ? container.style.backgroundColor = colorValue : container.style.color = colorValue;
+				}));
+			}
+			isBackground ? container.style.backgroundColor = color : container.style.color = color;
+		}
+
+		return combinedDisposable(disposable);
 	}
 
 	private executeCommand(id: string, args?: any[]) {
@@ -382,3 +386,5 @@ registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 		collector.addRule(`.monaco-workbench .part.statusbar > .statusbar-item a.status-bar-info:hover { background-color: ${statusBarProminentItemHoverBackground}; }`);
 	}
 });
+
+registerSingleton(IStatusbarService, StatusbarPart);

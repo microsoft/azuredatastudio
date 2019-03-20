@@ -17,10 +17,10 @@ import Severity from 'vs/base/common/severity';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { TaskHistoryView } from 'sql/parts/taskHistory/viewlet/taskHistoryView';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
-import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IStorageService } from 'vs/platform/storage/common/storage';
+import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 
 export const VIEWLET_ID = 'workbench.view.taskHistory';
 
@@ -35,11 +35,11 @@ export class TaskHistoryViewlet extends Viewlet {
 		@IThemeService themeService: IThemeService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@INotificationService private _notificationService: INotificationService,
-		@IPartService partService: IPartService,
+		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@IStorageService storageService: IStorageService
 	) {
-		super(VIEWLET_ID, configurationService, partService, telemetryService, themeService, storageService);
+		super(VIEWLET_ID, configurationService, layoutService, telemetryService, themeService, storageService);
 	}
 
 	private onError(err: any): void {

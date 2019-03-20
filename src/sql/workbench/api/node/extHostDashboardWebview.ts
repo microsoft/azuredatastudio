@@ -6,7 +6,7 @@
 
 import { SqlMainContext, ExtHostDashboardWebviewsShape, MainThreadDashboardWebviewShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 
-import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
+import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { Emitter } from 'vs/base/common/event';
 import { deepClone } from 'vs/base/common/objects';
 

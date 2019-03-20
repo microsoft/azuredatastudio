@@ -33,12 +33,12 @@ import { TextResourceEditor } from 'vs/workbench/browser/parts/editor/textResour
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
-import { IEditorGroup } from 'vs/workbench/services/group/common/editorGroupsService';
 import { IFlexibleSash, HorizontalFlexibleSash } from 'sql/parts/query/views/flexibleSash';
 import { EditDataResultsEditor } from 'sql/parts/editData/editor/editDataResultsEditor';
 import { EditDataResultsInput } from 'sql/parts/editData/common/editDataResultsInput';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
+import { IEditorGroup } from 'vs/workbench/services/editor/common/editorGroupsService';
 
 /**
  * Editor that hosts an action bar and a resultSetInput for an edit data session

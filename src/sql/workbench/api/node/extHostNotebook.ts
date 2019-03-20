@@ -7,7 +7,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 
-import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
+import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { Disposable } from 'vs/workbench/api/node/extHostTypes';
 import { localize } from 'vs/nls';
 import { URI, UriComponents } from 'vs/base/common/uri';

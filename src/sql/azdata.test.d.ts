@@ -5,7 +5,6 @@
 
 // This is the place for APIs used for testing
 
-import * as core from 'azdata';
 import * as vscode from 'vscode';
 
 declare module 'azdata' {

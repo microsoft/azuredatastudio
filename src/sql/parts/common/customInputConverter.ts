@@ -6,7 +6,6 @@
 import { EditorInput, IEditorInput } from 'vs/workbench/common/editor';
 import { IInstantiationService, ServiceIdentifier } from 'vs/platform/instantiation/common/instantiation';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
-import { FileEditorInput } from 'vs/workbench/parts/files/common/editors/fileEditorInput';
 import { URI } from 'vs/base/common/uri';
 
 import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
@@ -17,6 +16,7 @@ import { NotebookInput } from 'sql/parts/notebook/notebookInput';
 import { INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
 import { ResourceEditorInput } from 'vs/workbench/common/editor/resourceEditorInput';
 import { notebookModeId } from 'sql/common/constants';
+import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 
 const fs = require('fs');
 

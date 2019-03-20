@@ -7,27 +7,30 @@ import { IDisposable } from 'vs/base/common/lifecycle';
 import { Emitter } from 'vs/base/common/event';
 import { ITextModel, ISingleEditOperation } from 'vs/editor/common/model';
 import * as modes from 'vs/editor/common/modes';
-import * as search from 'vs/workbench/parts/search/common/search';
+import * as search from 'vs/workbench/contrib/search/common/search';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { Position as EditorPosition } from 'vs/editor/common/core/position';
 import { Range as EditorRange } from 'vs/editor/common/core/range';
-import { ExtHostContext, MainThreadLanguageFeaturesShape, ExtHostLanguageFeaturesShape, MainContext, IExtHostContext, ISerializedLanguageConfiguration, ISerializedRegExp, ISerializedIndentationRule, ISerializedOnEnterRule, LocationDto, WorkspaceSymbolDto, CodeActionDto, reviveWorkspaceEditDto, ISerializedDocumentFilter, DefinitionLinkDto, ISerializedSignatureHelpProviderMetadata } from '../node/extHost.protocol';
+import { ExtHostContext, MainThreadLanguageFeaturesShape, ExtHostLanguageFeaturesShape, MainContext, IExtHostContext, ISerializedLanguageConfiguration, ISerializedRegExp, ISerializedIndentationRule, ISerializedOnEnterRule, LocationDto, WorkspaceSymbolDto, CodeActionDto, reviveWorkspaceEditDto, ISerializedDocumentFilter, DefinitionLinkDto, ISerializedSignatureHelpProviderMetadata, CodeInsetDto, LinkDto, CallHierarchyDto } from '../common/extHost.protocol';
 import { LanguageConfigurationRegistry } from 'vs/editor/common/modes/languageConfigurationRegistry';
 import { LanguageConfiguration, IndentationRule, OnEnterRule } from 'vs/editor/common/modes/languageConfiguration';
 import { IHeapService } from './mainThreadHeapService';
 import { IModeService } from 'vs/editor/common/services/modeService';
-import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
+import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import * as typeConverters from 'vs/workbench/api/node/extHostTypeConverters';
 import { URI } from 'vs/base/common/uri';
 import { Selection } from 'vs/editor/common/core/selection';
+import * as codeInset from 'vs/workbench/contrib/codeinset/common/codeInset';
+import { ExtensionIdentifier } from 'vs/platform/extensions/common/extensions';
+import * as callh from 'vs/workbench/contrib/callHierarchy/common/callHierarchy';
 
 @extHostNamedCustomer(MainContext.MainThreadLanguageFeatures)
 export class MainThreadLanguageFeatures implements MainThreadLanguageFeaturesShape {
 
-	private _proxy: ExtHostLanguageFeaturesShape;
-	private _heapService: IHeapService;
-	private _modeService: IModeService;
-	private _registrations: { [handle: number]: IDisposable; } = Object.create(null);
+	private readonly _proxy: ExtHostLanguageFeaturesShape;
+	private readonly _heapService: IHeapService;
+	private readonly _modeService: IModeService;
+	private readonly _registrations: { [handle: number]: IDisposable; } = Object.create(null);
 
 	constructor(
 		extHostContext: IExtHostContext,
@@ -46,7 +49,7 @@ export class MainThreadLanguageFeatures implements MainThreadLanguageFeaturesSha
 	}
 
 	$unregister(handle: number): void {
-		let registration = this._registrations[handle];
+		const registration = this._registrations[handle];
 		if (registration) {
 			registration.dispose();
 			delete this._registrations[handle];
@@ -85,9 +88,10 @@ export class MainThreadLanguageFeatures implements MainThreadLanguageFeaturesSha
 
 	private static _reviveWorkspaceSymbolDto(data: WorkspaceSymbolDto): search.IWorkspaceSymbol;
 	private static _reviveWorkspaceSymbolDto(data: WorkspaceSymbolDto[]): search.IWorkspaceSymbol[];
-	private static _reviveWorkspaceSymbolDto(data: WorkspaceSymbolDto | WorkspaceSymbolDto[]): search.IWorkspaceSymbol | search.IWorkspaceSymbol[] {
+	private static _reviveWorkspaceSymbolDto(data: undefined): undefined;
+	private static _reviveWorkspaceSymbolDto(data: WorkspaceSymbolDto | WorkspaceSymbolDto[] | undefined): search.IWorkspaceSymbol | search.IWorkspaceSymbol[] | undefined {
 		if (!data) {
-			return <search.IWorkspaceSymbol>data;
+			return <undefined>data;
 		} else if (Array.isArray(data)) {
 			data.forEach(MainThreadLanguageFeatures._reviveWorkspaceSymbolDto);
 			return <search.IWorkspaceSymbol[]>data;
@@ -97,11 +101,25 @@ export class MainThreadLanguageFeatures implements MainThreadLanguageFeaturesSha
 		}
 	}
 
-	private static _reviveCodeActionDto(data: CodeActionDto[]): modes.CodeAction[] {
+	private static _reviveCodeActionDto(data: CodeActionDto[] | undefined): modes.CodeAction[] {
 		if (data) {
 			data.forEach(code => reviveWorkspaceEditDto(code.edit));
 		}
 		return <modes.CodeAction[]>data;
+	}
+
+	private static _reviveLinkDTO(data: LinkDto): modes.ILink {
+		if (data.url && typeof data.url !== 'string') {
+			data.url = URI.revive(data.url);
+		}
+		return <modes.ILink>data;
+	}
+
+	private static _reviveCallHierarchyItemDto(data: CallHierarchyDto | undefined): callh.CallHierarchyItem {
+		if (data) {
+			data.uri = URI.revive(data.uri);
+		}
+		return data as callh.CallHierarchyItem;
 	}
 
 	//#endregion
@@ -111,7 +129,7 @@ export class MainThreadLanguageFeatures implements MainThreadLanguageFeaturesSha
 	$registerDocumentSymbolProvider(handle: number, selector: ISerializedDocumentFilter[], displayName: string): void {
 		this._registrations[handle] = modes.DocumentSymbolProviderRegistry.register(typeConverters.LanguageSelector.from(selector), <modes.DocumentSymbolProvider>{
 			displayName,
-			provideDocumentSymbols: (model: ITextModel, token: CancellationToken): Promise<modes.DocumentSymbol[]> => {
+			provideDocumentSymbols: (model: ITextModel, token: CancellationToken): Promise<modes.DocumentSymbol[] | undefined> => {
 				return this._proxy.$provideDocumentSymbols(handle, model.uri, token);
 			}
 		});
@@ -119,14 +137,28 @@ export class MainThreadLanguageFeatures implements MainThreadLanguageFeaturesSha
 
 	// --- code lens
 
-	$registerCodeLensSupport(handle: number, selector: ISerializedDocumentFilter[], eventHandle: number): void {
+	$registerCodeLensSupport(handle: number, selector: ISerializedDocumentFilter[], eventHandle: number | undefined): void {
 
 		const provider = <modes.CodeLensProvider>{
 			provideCodeLenses: (model: ITextModel, token: CancellationToken): modes.ICodeLensSymbol[] | Promise<modes.ICodeLensSymbol[]> => {
-				return this._heapService.trackRecursive(this._proxy.$provideCodeLenses(handle, model.uri, token));
+				return this._proxy.$provideCodeLenses(handle, model.uri, token).then(dto => {
+					if (dto) {
+						dto.forEach(obj => {
+							this._heapService.trackObject(obj);
+							this._heapService.trackObject(obj.command);
+						});
+					}
+					return dto;
+				});
 			},
-			resolveCodeLens: (model: ITextModel, codeLens: modes.ICodeLensSymbol, token: CancellationToken): modes.ICodeLensSymbol | Promise<modes.ICodeLensSymbol> => {
-				return this._heapService.trackRecursive(this._proxy.$resolveCodeLens(handle, model.uri, codeLens, token));
+			resolveCodeLens: (model: ITextModel, codeLens: modes.ICodeLensSymbol, token: CancellationToken): Promise<modes.ICodeLensSymbol | undefined> => {
+				return this._proxy.$resolveCodeLens(handle, model.uri, codeLens, token).then(obj => {
+					if (obj) {
+						this._heapService.trackObject(obj);
+						this._heapService.trackObject(obj.command);
+					}
+					return obj;
+				});
 			}
 		};
 
@@ -144,6 +176,35 @@ export class MainThreadLanguageFeatures implements MainThreadLanguageFeaturesSha
 		if (obj instanceof Emitter) {
 			obj.fire(event);
 		}
+	}
+
+	// -- code inset
+
+	$registerCodeInsetSupport(handle: number, selector: ISerializedDocumentFilter[], eventHandle: number): void {
+
+		const provider = <codeInset.CodeInsetProvider>{
+			provideCodeInsets: (model: ITextModel, token: CancellationToken): CodeInsetDto[] | Thenable<CodeInsetDto[]> => {
+				return this._proxy.$provideCodeInsets(handle, model.uri, token).then(dto => {
+					if (dto) { dto.forEach(obj => this._heapService.trackObject(obj)); }
+					return dto;
+				});
+			},
+			resolveCodeInset: (model: ITextModel, codeInset: CodeInsetDto, token: CancellationToken): CodeInsetDto | Thenable<CodeInsetDto> => {
+				return this._proxy.$resolveCodeInset(handle, model.uri, codeInset, token).then(obj => {
+					this._heapService.trackObject(obj);
+					return obj;
+				});
+			}
+		};
+
+		if (typeof eventHandle === 'number') {
+			const emitter = new Emitter<codeInset.CodeInsetProvider>();
+			this._registrations[eventHandle] = emitter;
+			provider.onDidChange = emitter.event;
+		}
+
+		const langSelector = typeConverters.LanguageSelector.from(selector);
+		this._registrations[handle] = codeInset.CodeInsetProviderRegistry.register(langSelector, provider);
 	}
 
 	// --- declaration
@@ -184,7 +245,7 @@ export class MainThreadLanguageFeatures implements MainThreadLanguageFeaturesSha
 
 	$registerHoverProvider(handle: number, selector: ISerializedDocumentFilter[]): void {
 		this._registrations[handle] = modes.HoverProviderRegistry.register(typeConverters.LanguageSelector.from(selector), <modes.HoverProvider>{
-			provideHover: (model: ITextModel, position: EditorPosition, token: CancellationToken): Promise<modes.Hover> => {
+			provideHover: (model: ITextModel, position: EditorPosition, token: CancellationToken): Promise<modes.Hover | undefined> => {
 				return this._proxy.$provideHover(handle, model.uri, position, token);
 			}
 		});
@@ -194,7 +255,7 @@ export class MainThreadLanguageFeatures implements MainThreadLanguageFeaturesSha
 
 	$registerDocumentHighlightProvider(handle: number, selector: ISerializedDocumentFilter[]): void {
 		this._registrations[handle] = modes.DocumentHighlightProviderRegistry.register(typeConverters.LanguageSelector.from(selector), <modes.DocumentHighlightProvider>{
-			provideDocumentHighlights: (model: ITextModel, position: EditorPosition, token: CancellationToken): Promise<modes.DocumentHighlight[]> => {
+			provideDocumentHighlights: (model: ITextModel, position: EditorPosition, token: CancellationToken): Promise<modes.DocumentHighlight[] | undefined> => {
 				return this._proxy.$provideDocumentHighlights(handle, model.uri, position, token);
 			}
 		});
@@ -215,7 +276,12 @@ export class MainThreadLanguageFeatures implements MainThreadLanguageFeaturesSha
 	$registerQuickFixSupport(handle: number, selector: ISerializedDocumentFilter[], providedCodeActionKinds?: string[]): void {
 		this._registrations[handle] = modes.CodeActionProviderRegistry.register(typeConverters.LanguageSelector.from(selector), <modes.CodeActionProvider>{
 			provideCodeActions: (model: ITextModel, rangeOrSelection: EditorRange | Selection, context: modes.CodeActionContext, token: CancellationToken): Promise<modes.CodeAction[]> => {
-				return this._heapService.trackRecursive(this._proxy.$provideCodeActions(handle, model.uri, rangeOrSelection, context, token)).then(MainThreadLanguageFeatures._reviveCodeActionDto);
+				return this._proxy.$provideCodeActions(handle, model.uri, rangeOrSelection, context, token).then(dto => {
+					if (dto) {
+						dto.forEach(obj => { this._heapService.trackObject(obj.command); });
+					}
+					return MainThreadLanguageFeatures._reviveCodeActionDto(dto);
+				});
 			},
 			providedCodeActionKinds
 		});
@@ -223,30 +289,29 @@ export class MainThreadLanguageFeatures implements MainThreadLanguageFeaturesSha
 
 	// --- formatting
 
-	$registerDocumentFormattingSupport(handle: number, selector: ISerializedDocumentFilter[], displayName: string): void {
+	$registerDocumentFormattingSupport(handle: number, selector: ISerializedDocumentFilter[], extensionId: ExtensionIdentifier): void {
 		this._registrations[handle] = modes.DocumentFormattingEditProviderRegistry.register(typeConverters.LanguageSelector.from(selector), <modes.DocumentFormattingEditProvider>{
-			displayName,
-			provideDocumentFormattingEdits: (model: ITextModel, options: modes.FormattingOptions, token: CancellationToken): Promise<ISingleEditOperation[]> => {
+			extensionId,
+			provideDocumentFormattingEdits: (model: ITextModel, options: modes.FormattingOptions, token: CancellationToken): Promise<ISingleEditOperation[] | undefined> => {
 				return this._proxy.$provideDocumentFormattingEdits(handle, model.uri, options, token);
 			}
 		});
 	}
 
-	$registerRangeFormattingSupport(handle: number, selector: ISerializedDocumentFilter[], displayName: string): void {
+	$registerRangeFormattingSupport(handle: number, selector: ISerializedDocumentFilter[], extensionId: ExtensionIdentifier): void {
 		this._registrations[handle] = modes.DocumentRangeFormattingEditProviderRegistry.register(typeConverters.LanguageSelector.from(selector), <modes.DocumentRangeFormattingEditProvider>{
-			displayName,
-			provideDocumentRangeFormattingEdits: (model: ITextModel, range: EditorRange, options: modes.FormattingOptions, token: CancellationToken): Promise<ISingleEditOperation[]> => {
+			extensionId,
+			provideDocumentRangeFormattingEdits: (model: ITextModel, range: EditorRange, options: modes.FormattingOptions, token: CancellationToken): Promise<ISingleEditOperation[] | undefined> => {
 				return this._proxy.$provideDocumentRangeFormattingEdits(handle, model.uri, range, options, token);
 			}
 		});
 	}
 
-	$registerOnTypeFormattingSupport(handle: number, selector: ISerializedDocumentFilter[], autoFormatTriggerCharacters: string[]): void {
+	$registerOnTypeFormattingSupport(handle: number, selector: ISerializedDocumentFilter[], autoFormatTriggerCharacters: string[], extensionId: ExtensionIdentifier): void {
 		this._registrations[handle] = modes.OnTypeFormattingEditProviderRegistry.register(typeConverters.LanguageSelector.from(selector), <modes.OnTypeFormattingEditProvider>{
-
+			extensionId,
 			autoFormatTriggerCharacters,
-
-			provideOnTypeFormattingEdits: (model: ITextModel, position: EditorPosition, ch: string, options: modes.FormattingOptions, token: CancellationToken): Promise<ISingleEditOperation[]> => {
+			provideOnTypeFormattingEdits: (model: ITextModel, position: EditorPosition, ch: string, options: modes.FormattingOptions, token: CancellationToken): Promise<ISingleEditOperation[] | undefined> => {
 				return this._proxy.$provideOnTypeFormattingEdits(handle, model.uri, position, ch, options, token);
 			}
 		});
@@ -255,7 +320,7 @@ export class MainThreadLanguageFeatures implements MainThreadLanguageFeaturesSha
 	// --- navigate type
 
 	$registerNavigateTypeSupport(handle: number): void {
-		let lastResultId: number;
+		let lastResultId: number | undefined;
 		this._registrations[handle] = search.WorkspaceSymbolProviderRegistry.register(<search.IWorkspaceSymbolProvider>{
 			provideWorkspaceSymbols: (search: string, token: CancellationToken): Promise<search.IWorkspaceSymbol[]> => {
 				return this._proxy.$provideWorkspaceSymbols(handle, search, token).then(result => {
@@ -266,8 +331,13 @@ export class MainThreadLanguageFeatures implements MainThreadLanguageFeaturesSha
 					return MainThreadLanguageFeatures._reviveWorkspaceSymbolDto(result.symbols);
 				});
 			},
-			resolveWorkspaceSymbol: (item: search.IWorkspaceSymbol, token: CancellationToken): Promise<search.IWorkspaceSymbol> => {
-				return this._proxy.$resolveWorkspaceSymbol(handle, item, token).then(i => MainThreadLanguageFeatures._reviveWorkspaceSymbolDto(i));
+			resolveWorkspaceSymbol: (item: search.IWorkspaceSymbol, token: CancellationToken): Promise<search.IWorkspaceSymbol | undefined> => {
+				return this._proxy.$resolveWorkspaceSymbol(handle, item, token).then(i => {
+					if (i) {
+						return MainThreadLanguageFeatures._reviveWorkspaceSymbolDto(i);
+					}
+					return undefined;
+				});
 			}
 		});
 	}
@@ -281,7 +351,7 @@ export class MainThreadLanguageFeatures implements MainThreadLanguageFeaturesSha
 				return this._proxy.$provideRenameEdits(handle, model.uri, position, newName, token).then(reviveWorkspaceEditDto);
 			},
 			resolveRenameLocation: supportResolveLocation
-				? (model: ITextModel, position: EditorPosition, token: CancellationToken): Promise<modes.RenameLocation> => this._proxy.$resolveRenameLocation(handle, model.uri, position, token)
+				? (model: ITextModel, position: EditorPosition, token: CancellationToken): Promise<modes.RenameLocation | undefined> => this._proxy.$resolveRenameLocation(handle, model.uri, position, token)
 				: undefined
 		});
 	}
@@ -291,7 +361,7 @@ export class MainThreadLanguageFeatures implements MainThreadLanguageFeaturesSha
 	$registerSuggestSupport(handle: number, selector: ISerializedDocumentFilter[], triggerCharacters: string[], supportsResolveDetails: boolean): void {
 		this._registrations[handle] = modes.CompletionProviderRegistry.register(typeConverters.LanguageSelector.from(selector), <modes.CompletionItemProvider>{
 			triggerCharacters,
-			provideCompletionItems: (model: ITextModel, position: EditorPosition, context: modes.CompletionContext, token: CancellationToken): Promise<modes.CompletionList> => {
+			provideCompletionItems: (model: ITextModel, position: EditorPosition, context: modes.CompletionContext, token: CancellationToken): Promise<modes.CompletionList | undefined> => {
 				return this._proxy.$provideCompletionItems(handle, model.uri, position, context, token).then(result => {
 					if (!result) {
 						return result;
@@ -299,7 +369,11 @@ export class MainThreadLanguageFeatures implements MainThreadLanguageFeaturesSha
 					return {
 						suggestions: result.suggestions,
 						incomplete: result.incomplete,
-						dispose: () => this._proxy.$releaseCompletionItems(handle, result._id)
+						dispose: () => {
+							if (typeof result._id === 'number') {
+								this._proxy.$releaseCompletionItems(handle, result._id);
+							}
+						}
 					};
 				});
 			},
@@ -317,7 +391,7 @@ export class MainThreadLanguageFeatures implements MainThreadLanguageFeaturesSha
 			signatureHelpTriggerCharacters: metadata.triggerCharacters,
 			signatureHelpRetriggerCharacters: metadata.retriggerCharacters,
 
-			provideSignatureHelp: (model: ITextModel, position: EditorPosition, token: CancellationToken, context: modes.SignatureHelpContext): Promise<modes.SignatureHelp> => {
+			provideSignatureHelp: (model: ITextModel, position: EditorPosition, token: CancellationToken, context: modes.SignatureHelpContext): Promise<modes.SignatureHelp | undefined> => {
 				return this._proxy.$provideSignatureHelp(handle, model.uri, position, context, token);
 			}
 		});
@@ -328,10 +402,24 @@ export class MainThreadLanguageFeatures implements MainThreadLanguageFeaturesSha
 	$registerDocumentLinkProvider(handle: number, selector: ISerializedDocumentFilter[]): void {
 		this._registrations[handle] = modes.LinkProviderRegistry.register(typeConverters.LanguageSelector.from(selector), <modes.LinkProvider>{
 			provideLinks: (model, token) => {
-				return this._heapService.trackRecursive(this._proxy.$provideDocumentLinks(handle, model.uri, token));
+				return this._proxy.$provideDocumentLinks(handle, model.uri, token).then(dto => {
+					if (dto) {
+						dto.forEach(obj => {
+							MainThreadLanguageFeatures._reviveLinkDTO(obj);
+							this._heapService.trackObject(obj);
+						});
+					}
+					return dto;
+				});
 			},
 			resolveLink: (link, token) => {
-				return this._proxy.$resolveDocumentLink(handle, link, token);
+				return this._proxy.$resolveDocumentLink(handle, link, token).then(obj => {
+					if (obj) {
+						MainThreadLanguageFeatures._reviveLinkDTO(obj);
+						this._heapService.trackObject(obj);
+					}
+					return obj;
+				});
 			}
 		});
 	}
@@ -385,8 +473,32 @@ export class MainThreadLanguageFeatures implements MainThreadLanguageFeaturesSha
 
 	$registerSelectionRangeProvider(handle: number, selector: ISerializedDocumentFilter[]): void {
 		this._registrations[handle] = modes.SelectionRangeRegistry.register(typeConverters.LanguageSelector.from(selector), {
-			provideSelectionRanges: (model, position, token) => {
-				return this._proxy.$provideSelectionRanges(handle, model.uri, position, token);
+			provideSelectionRanges: (model, positions, token) => {
+				return this._proxy.$provideSelectionRanges(handle, model.uri, positions, token);
+			}
+		});
+	}
+
+	// --- call hierarchy
+
+	$registerCallHierarchyProvider(handle: number, selector: ISerializedDocumentFilter[]): void {
+		this._registrations[handle] = callh.CallHierarchyProviderRegistry.register(typeConverters.LanguageSelector.from(selector), {
+			provideCallHierarchyItem: (document, position, token) => {
+				return this._proxy.$provideCallHierarchyItem(handle, document.uri, position, token).then(MainThreadLanguageFeatures._reviveCallHierarchyItemDto);
+			},
+			resolveCallHierarchyItem: (item, direction, token) => {
+				return this._proxy.$resolveCallHierarchyItem(handle, item, direction, token).then(data => {
+					if (data) {
+						for (let i = 0; i < data.length; i++) {
+							const [item, locations] = data[i];
+							data[i] = [
+								MainThreadLanguageFeatures._reviveCallHierarchyItemDto(item),
+								MainThreadLanguageFeatures._reviveLocationDto(locations)
+							];
+						}
+					}
+					return data as [callh.CallHierarchyItem, modes.Location[]][];
+				});
 			}
 		});
 	}
@@ -394,61 +506,43 @@ export class MainThreadLanguageFeatures implements MainThreadLanguageFeaturesSha
 	// --- configuration
 
 	private static _reviveRegExp(regExp: ISerializedRegExp): RegExp {
-		if (typeof regExp === 'undefined') {
-			return undefined;
-		}
-		if (regExp === null) {
-			return null;
-		}
 		return new RegExp(regExp.pattern, regExp.flags);
 	}
 
 	private static _reviveIndentationRule(indentationRule: ISerializedIndentationRule): IndentationRule {
-		if (typeof indentationRule === 'undefined') {
-			return undefined;
-		}
-		if (indentationRule === null) {
-			return null;
-		}
 		return {
 			decreaseIndentPattern: MainThreadLanguageFeatures._reviveRegExp(indentationRule.decreaseIndentPattern),
 			increaseIndentPattern: MainThreadLanguageFeatures._reviveRegExp(indentationRule.increaseIndentPattern),
-			indentNextLinePattern: MainThreadLanguageFeatures._reviveRegExp(indentationRule.indentNextLinePattern),
-			unIndentedLinePattern: MainThreadLanguageFeatures._reviveRegExp(indentationRule.unIndentedLinePattern),
+			indentNextLinePattern: indentationRule.indentNextLinePattern ? MainThreadLanguageFeatures._reviveRegExp(indentationRule.indentNextLinePattern) : undefined,
+			unIndentedLinePattern: indentationRule.unIndentedLinePattern ? MainThreadLanguageFeatures._reviveRegExp(indentationRule.unIndentedLinePattern) : undefined,
 		};
 	}
 
 	private static _reviveOnEnterRule(onEnterRule: ISerializedOnEnterRule): OnEnterRule {
 		return {
 			beforeText: MainThreadLanguageFeatures._reviveRegExp(onEnterRule.beforeText),
-			afterText: MainThreadLanguageFeatures._reviveRegExp(onEnterRule.afterText),
-			oneLineAboveText: MainThreadLanguageFeatures._reviveRegExp(onEnterRule.oneLineAboveText),
+			afterText: onEnterRule.afterText ? MainThreadLanguageFeatures._reviveRegExp(onEnterRule.afterText) : undefined,
+			oneLineAboveText: onEnterRule.oneLineAboveText ? MainThreadLanguageFeatures._reviveRegExp(onEnterRule.oneLineAboveText) : undefined,
 			action: onEnterRule.action
 		};
 	}
 
 	private static _reviveOnEnterRules(onEnterRules: ISerializedOnEnterRule[]): OnEnterRule[] {
-		if (typeof onEnterRules === 'undefined') {
-			return undefined;
-		}
-		if (onEnterRules === null) {
-			return null;
-		}
 		return onEnterRules.map(MainThreadLanguageFeatures._reviveOnEnterRule);
 	}
 
 	$setLanguageConfiguration(handle: number, languageId: string, _configuration: ISerializedLanguageConfiguration): void {
 
-		let configuration: LanguageConfiguration = {
+		const configuration: LanguageConfiguration = {
 			comments: _configuration.comments,
 			brackets: _configuration.brackets,
-			wordPattern: MainThreadLanguageFeatures._reviveRegExp(_configuration.wordPattern),
-			indentationRules: MainThreadLanguageFeatures._reviveIndentationRule(_configuration.indentationRules),
-			onEnterRules: MainThreadLanguageFeatures._reviveOnEnterRules(_configuration.onEnterRules),
+			wordPattern: _configuration.wordPattern ? MainThreadLanguageFeatures._reviveRegExp(_configuration.wordPattern) : undefined,
+			indentationRules: _configuration.indentationRules ? MainThreadLanguageFeatures._reviveIndentationRule(_configuration.indentationRules) : undefined,
+			onEnterRules: _configuration.onEnterRules ? MainThreadLanguageFeatures._reviveOnEnterRules(_configuration.onEnterRules) : undefined,
 
-			autoClosingPairs: null,
-			surroundingPairs: null,
-			__electricCharacterSupport: null
+			autoClosingPairs: undefined,
+			surroundingPairs: undefined,
+			__electricCharacterSupport: undefined
 		};
 
 		if (_configuration.__characterPairSupport) {
@@ -465,7 +559,7 @@ export class MainThreadLanguageFeatures implements MainThreadLanguageFeaturesSha
 			};
 		}
 
-		let languageIdentifier = this._modeService.getLanguageIdentifier(languageId);
+		const languageIdentifier = this._modeService.getLanguageIdentifier(languageId);
 		if (languageIdentifier) {
 			this._registrations[handle] = LanguageConfigurationRegistry.register(languageIdentifier, configuration);
 		}

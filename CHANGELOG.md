@@ -1,5 +1,20 @@
 # Change Log
 
+## Version 1.5.1
+* Release date: March 18, 2019
+* Release status: General Availability
+
+## What's new in this version
+* Announcing T-SQL Notebooks
+* Announcing PostgreSQL extension
+* Announcing SQL Server Dacpac extension
+* Resolved [bugs and issues](https://github.com/Microsoft/azuredatastudio/milestone/25?closed=1).
+
+## Contributions and "thank you"
+We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
+
+* GeoffYoung for `Fix sqlDropColumn description #4422`
+
 ## Version 1.4.5
 * Release date: February 13, 2019
 * Release status: General Availability

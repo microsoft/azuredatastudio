@@ -9,6 +9,9 @@ import BarChart, { IBarChartConfig } from './barChart.component';
 import { memoize, unmemoize } from 'sql/base/common/decorators';
 import { clone } from 'sql/base/common/objects';
 import { ChartType, DataType, defaultChartConfig, IDataSet, IPointDataSet } from 'sql/parts/dashboard/widgets/insights/views/charts/interfaces';
+import { ChangeDetectorRef, Inject, forwardRef, ElementRef } from '@angular/core';
+import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 
 export interface ILineConfig extends IBarChartConfig {
 	dataType?: DataType;
@@ -20,6 +23,15 @@ export default class LineChart extends BarChart {
 	protected readonly chartType: ChartType = ChartType.Line;
 	protected _config: ILineConfig;
 	protected _defaultConfig = defaultLineConfig;
+
+	constructor(
+		@Inject(forwardRef(() => ChangeDetectorRef)) _changeRef: ChangeDetectorRef,
+		@Inject(forwardRef(() => ElementRef)) _el: ElementRef,
+		@Inject(IWorkbenchThemeService) themeService: IWorkbenchThemeService,
+		@Inject(ITelemetryService) telemetryService: ITelemetryService
+	) {
+		super(_changeRef, _el, themeService, telemetryService);
+	}
 
 	public init() {
 		if (this._config.dataType === DataType.Point) {
