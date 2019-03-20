@@ -19,6 +19,7 @@ import { ContextKeyExpr, IContextKey, IContextKeyService, RawContextKey } from '
 import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { ILogService } from 'vs/platform/log/common/log';
 import { SnippetSession } from './snippetSession';
+import { EditorState, CodeEditorStateFlag } from 'vs/editor/browser/core/editorState';
 
 export class SnippetController2 implements IEditorContribution {
 
@@ -34,10 +35,10 @@ export class SnippetController2 implements IEditorContribution {
 	private readonly _hasNextTabstop: IContextKey<boolean>;
 	private readonly _hasPrevTabstop: IContextKey<boolean>;
 
-	private _session: SnippetSession;
+	private _session?: SnippetSession;
 	private _snippetListener: IDisposable[] = [];
 	private _modelVersionId: number;
-	private _currentChoice: Choice;
+	private _currentChoice?: Choice;
 
 	constructor(
 		private readonly _editor: ICodeEditor,
@@ -87,6 +88,9 @@ export class SnippetController2 implements IEditorContribution {
 		undoStopBefore: boolean = true, undoStopAfter: boolean = true,
 		adjustWhitespace: boolean = true,
 	): void {
+		if (!this._editor.hasModel()) {
+			return;
+		}
 
 		// don't listen while inserting the snippet
 		// as that is the inflight state causing cancelation
@@ -110,15 +114,31 @@ export class SnippetController2 implements IEditorContribution {
 
 		this._updateState();
 
+		// we listen on model and selection changes. usually
+		// both events come in together and this is to prevent
+		// that we don't call _updateState twice.
+		let state: EditorState;
+		let dedupedUpdateState = () => {
+			if (!state || !state.validate(this._editor)) {
+				this._updateState();
+				state = new EditorState(this._editor, CodeEditorStateFlag.Selection | CodeEditorStateFlag.Value);
+			}
+		};
 		this._snippetListener = [
-			this._editor.onDidChangeModelContent(e => e.isFlush && this.cancel()),
+			this._editor.onDidChangeModelContent(e => {
+				if (e.isFlush) {
+					this.cancel();
+				} else {
+					setTimeout(dedupedUpdateState, 0);
+				}
+			}),
+			this._editor.onDidChangeCursorSelection(dedupedUpdateState),
 			this._editor.onDidChangeModel(() => this.cancel()),
-			this._editor.onDidChangeCursorSelection(() => this._updateState())
 		];
 	}
 
 	private _updateState(): void {
-		if (!this._session) {
+		if (!this._session || !this._editor.hasModel()) {
 			// canceled in the meanwhile
 			return;
 		}
@@ -147,6 +167,11 @@ export class SnippetController2 implements IEditorContribution {
 	}
 
 	private _handleChoice(): void {
+		if (!this._session || !this._editor.hasModel()) {
+			this._currentChoice = undefined;
+			return;
+		}
+
 		const { choice } = this._session;
 		if (!choice) {
 			this._currentChoice = undefined;
@@ -173,7 +198,7 @@ export class SnippetController2 implements IEditorContribution {
 					// insertText: `\${1|${after.concat(before).join(',')}|}$0`,
 					// snippetType: 'textmate',
 					sortText: repeat('a', i),
-					range: Range.fromPositions(this._editor.getPosition(), this._editor.getPosition().delta(0, first.value.length))
+					range: Range.fromPositions(this._editor.getPosition()!, this._editor.getPosition()!.delta(0, first.value.length))
 				};
 			}));
 		}
@@ -185,7 +210,7 @@ export class SnippetController2 implements IEditorContribution {
 		}
 	}
 
-	cancel(): void {
+	cancel(resetSelection: boolean = false): void {
 		this._inSnippet.reset();
 		this._hasPrevTabstop.reset();
 		this._hasNextTabstop.reset();
@@ -193,23 +218,33 @@ export class SnippetController2 implements IEditorContribution {
 		dispose(this._session);
 		this._session = undefined;
 		this._modelVersionId = -1;
+		if (resetSelection) {
+			// reset selection to the primary cursor when being asked
+			// for. this happens when explicitly cancelling snippet mode,
+			// e.g. when pressing ESC
+			this._editor.setSelections([this._editor.getSelection()!]);
+		}
 	}
 
 	prev(): void {
-		this._session.prev();
+		if (this._session) {
+			this._session.prev();
+		}
 		this._updateState();
 	}
 
 	next(): void {
-		this._session.next();
+		if (this._session) {
+			this._session.next();
+		}
 		this._updateState();
 	}
 
 	isInSnippet(): boolean {
-		return this._inSnippet.get();
+		return Boolean(this._inSnippet.get());
 	}
 
-	getSessionEnclosingRange(): Range {
+	getSessionEnclosingRange(): Range | undefined {
 		if (this._session) {
 			return this._session.getEnclosingRange();
 		}
@@ -245,7 +280,7 @@ registerEditorCommand(new CommandCtor({
 registerEditorCommand(new CommandCtor({
 	id: 'leaveSnippet',
 	precondition: SnippetController2.InSnippetMode,
-	handler: ctrl => ctrl.cancel(),
+	handler: ctrl => ctrl.cancel(true),
 	kbOpts: {
 		weight: KeybindingWeight.EditorContrib + 30,
 		kbExpr: EditorContextKeys.editorTextFocus,

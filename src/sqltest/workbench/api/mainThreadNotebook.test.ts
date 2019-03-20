@@ -10,7 +10,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 
 import { URI, UriComponents } from 'vs/base/common/uri';
-import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
+import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 
 import { ExtHostNotebookShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { MainThreadNotebook } from 'sql/workbench/api/node/mainThreadNotebook';
@@ -19,6 +19,7 @@ import { INotebookProvider } from 'sql/workbench/services/notebook/common/notebo
 import { INotebookManagerDetails, INotebookSessionDetails, INotebookKernelDetails, INotebookFutureDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { LocalContentManager } from 'sql/workbench/services/notebook/node/localContentManager';
 import { ContextKeyServiceStub } from 'sqltest/stubs/contextKeyServiceStub';
+import { TestLifecycleService } from 'vs/workbench/test/workbenchTestServices';
 
 suite('MainThreadNotebook Tests', () => {
 
@@ -27,12 +28,13 @@ suite('MainThreadNotebook Tests', () => {
 	let notebookUri: URI;
 	let mockNotebookService: TypeMoq.Mock<NotebookService>;
 	let providerId = 'TestProvider';
+
 	setup(() => {
 		mockProxy = TypeMoq.Mock.ofType(ExtHostNotebookStub);
 		let extContext = <IExtHostContext>{
 			getProxy: proxyType => mockProxy.object
 		};
-		mockNotebookService = TypeMoq.Mock.ofType(NotebookService, undefined, undefined, undefined, undefined, undefined, new ContextKeyServiceStub());
+		mockNotebookService = TypeMoq.Mock.ofType(NotebookService, undefined, new TestLifecycleService(), undefined, undefined, undefined, undefined, new ContextKeyServiceStub());
 		notebookUri = URI.parse('file:/user/default/my.ipynb');
 		mainThreadNotebook = new MainThreadNotebook(extContext, mockNotebookService.object);
 	});

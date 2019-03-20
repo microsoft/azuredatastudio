@@ -199,11 +199,6 @@ export class TabbedPanel extends Disposable implements IThemable {
 					this.showTab(lastTab);
 				}
 			}
-
-			// this shouldn't happen but just in case
-			if (this._shownTab === undefined && this._tabMap.size > 0) {
-				this.showTab(this._tabMap.keys().next().value);
-			}
 		}
 
 		if (!this.options.showHeaderWhenSingleView && this._tabMap.size === 1 && this._headerVisible) {

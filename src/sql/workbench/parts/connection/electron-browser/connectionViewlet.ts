@@ -7,7 +7,6 @@
 
 import 'vs/css!./media/connectionViewlet';
 import * as DOM from 'vs/base/browser/dom';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { Builder } from 'sql/base/browser/builder';
 import { Viewlet } from 'vs/workbench/browser/viewlet';
 import { IAction } from 'vs/base/common/actions';
@@ -24,12 +23,12 @@ import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { ClearSearchAction, AddServerAction, AddServerGroupAction, ActiveConnectionsFilterAction } from 'sql/parts/objectExplorer/viewlet/connectionTreeAction';
 import { warn } from 'sql/base/common/log';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
-import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { localize } from 'vs/nls';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { IConnectionsViewlet } from 'sql/workbench/parts/connection/common/connectionViewlet';
+import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 
 export class ConnectionViewlet extends Viewlet implements IConnectionsViewlet {
 
@@ -48,12 +47,12 @@ export class ConnectionViewlet extends Viewlet implements IConnectionsViewlet {
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@INotificationService private _notificationService: INotificationService,
 		@IObjectExplorerService private objectExplorerService: IObjectExplorerService,
-		@IPartService partService: IPartService,
+		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@IStorageService storageService: IStorageService
 	) {
 
-		super(VIEWLET_ID, configurationService, partService, telemetryService, _themeService, storageService);
+		super(VIEWLET_ID, configurationService, layoutService, telemetryService, _themeService, storageService);
 
 		this._clearSearchAction = this._instantiationService.createInstance(ClearSearchAction, ClearSearchAction.ID, ClearSearchAction.LABEL, this);
 		this._addServerAction = this._instantiationService.createInstance(AddServerAction,
@@ -77,8 +76,8 @@ export class ConnectionViewlet extends Viewlet implements IConnectionsViewlet {
 		});
 	}
 
-	public create(parent: HTMLElement): TPromise<void> {
-		return new TPromise<void>((resolve) => {
+	public create(parent: HTMLElement): Promise<void> {
+		return new Promise<void>((resolve) => {
 			super.create(parent);
 			this._root = parent;
 			let parentBuilder = new Builder(parent);

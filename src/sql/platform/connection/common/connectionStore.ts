@@ -190,13 +190,11 @@ export class ConnectionStore {
 	 * Password values are stored to a separate credential store if the "savePassword" option is true
 	 *
 	 * @param {IConnectionCredentials} conn the connection to add
+	 * @param {boolean} addToMru Whether to add this connection to the MRU
 	 * @returns {Promise<void>} a Promise that returns when the connection was saved
 	 */
-	public addRecentConnection(conn: IConnectionProfile, isConnectionToDefaultDb: boolean = false): Promise<void> {
+	public addRecentConnection(conn: IConnectionProfile): Promise<void> {
 		let maxConnections = this.getMaxRecentConnectionsCount();
-		if (isConnectionToDefaultDb) {
-			conn.databaseName = '';
-		}
 		return this.addConnectionToState(conn, RECENT_CONNECTIONS_STATE_KEY, maxConnections, conn.savePassword);
 	}
 

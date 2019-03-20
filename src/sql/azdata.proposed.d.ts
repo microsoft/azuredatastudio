@@ -5,7 +5,6 @@
 
 // This is the place for API experiments and proposal.
 
-import * as core from 'azdata';
 import * as vscode from 'vscode';
 
 declare module 'azdata' {
@@ -214,6 +213,44 @@ declare module 'azdata' {
 	export interface ConnectionInfo {
 
 		options: { [name: string]: any };
+	}
+
+	// Object Explorer interfaces  -----------------------------------------------------------------------
+	export interface ObjectExplorerSession {
+		success: boolean;
+		sessionId: string;
+		rootNode: NodeInfo;
+		errorMessage: string;
+	}
+
+	/**
+	 * A NodeInfo object represents an element in the Object Explorer tree under
+	 * a connection.
+	 */
+	export interface NodeInfo {
+		nodePath: string;
+		nodeType: string;
+		nodeSubType: string;
+		nodeStatus: string;
+		label: string;
+		isLeaf: boolean;
+		metadata: ObjectMetadata;
+		errorMessage: string;
+		/**
+		 * Optional iconType for the object in the tree. Currently this only supports
+		 * an icon name or SqlThemeIcon name, rather than a path to an icon.
+		 * If not defined, the nodeType + nodeStatus / nodeSubType values
+		 * will be used instead.
+		 */
+		iconType?: string | SqlThemeIcon;
+		/**
+		 * Informs who provides the children to a node, used by data explorer tree view api
+		 */
+		childProvider?: string;
+		/**
+		 * Holds the connection profile for nodes, used by data explorer tree view api
+		 */
+		payload?: any;
 	}
 
 	export interface IConnectionProfile extends ConnectionInfo {
@@ -1012,36 +1049,6 @@ declare module 'azdata' {
 	}
 
 	/**
-	 * A NodeInfo object represents an element in the Object Explorer tree under
-	 * a connection.
-	 */
-	export interface NodeInfo {
-		nodePath: string;
-		nodeType: string;
-		nodeSubType: string;
-		nodeStatus: string;
-		label: string;
-		isLeaf: boolean;
-		metadata: ObjectMetadata;
-		errorMessage: string;
-		/**
-		 * Optional iconType for the object in the tree. Currently this only supports
-		 * an icon name or SqlThemeIcon name, rather than a path to an icon.
-		 * If not defined, the nodeType + nodeStatus / nodeSubType values
-		 * will be used instead.
-		 */
-		iconType?: string | SqlThemeIcon;
-		/**
-		 * Informs who provides the children to a node, used by data explorer tree view api
-		 */
-		childProvider?: string;
-		/**
-		 * Holds the connection profile for nodes, used by data explorer tree view api
-		 */
-		payload?: any;
-	}
-
-	/**
 	 * A reference to a named icon. Currently only a subset of the SQL icons are available.
 	 * Using a theme icon is preferred over a custom icon as it gives theme authors the possibility to change the icons.
 	 */
@@ -1142,14 +1149,6 @@ declare module 'azdata' {
 		 * Gets the ID for the theme icon for help in cases where string comparison is needed
 		 */
 		public readonly id: string;
-	}
-
-	// Object Explorer interfaces  -----------------------------------------------------------------------
-	export interface ObjectExplorerSession {
-		success: boolean;
-		sessionId: string;
-		rootNode: NodeInfo;
-		errorMessage: string;
 	}
 
 	export interface ObjectExplorerSessionResponse {
@@ -3667,19 +3666,30 @@ declare module 'azdata' {
 		export function getProvidersByType<T extends DataProvider>(providerType: DataProviderType): T[];
 	}
 
+
 	/**
 	 * Context object passed as an argument to command callbacks.
-	 * Defines the key properties required to identify a node in the object
-	 * explorer tree and take action against it.
+	 * Defines properties that can be sent for any connected context,
+	 * whether that is the Object Explorer context menu or a command line
+	 * startup argument.
 	 */
-	export interface ObjectExplorerContext {
 
+	export interface ConnectedContext {
 		/**
 		 * The connection information for the selected object.
 		 * Note that the connection is not guaranteed to be in a connected
 		 * state on click.
 		 */
 		connectionProfile: IConnectionProfile;
+	}
+
+	/**
+	 * Context object passed as an argument to command callbacks.
+	 * Defines the key properties required to identify a node in the object
+	 * explorer tree and take action against it.
+	 */
+	export interface ObjectExplorerContext extends ConnectedContext {
+
 		/**
 		 * Defines whether this is a Connection-level object.
 		 * If not, the object is expected to be a child object underneath
@@ -4016,9 +4026,9 @@ declare module 'azdata' {
 			providerId?: string;
 
 			/**
-			 * Optional ID indicating the initial connection to use for this editor
+			 * Optional profile indicating the initial connection to use for this editor
 			 */
-			connectionId?: string;
+			connectionProfile?: IConnectionProfile;
 
 			/**
 			 * Default kernel for notebook

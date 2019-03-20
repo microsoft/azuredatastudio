@@ -5,15 +5,24 @@
 
 import { localize } from 'vs/nls';
 import { Disposable } from 'vs/base/common/lifecycle';
-import { IChannel, getDelayedChannel, IServerChannel } from 'vs/base/parts/ipc/node/ipc';
+import { getDelayedChannel } from 'vs/base/parts/ipc/node/ipc';
 import { Client } from 'vs/base/parts/ipc/node/ipc.net';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { INotificationService } from 'vs/platform/notification/common/notification';
-import { connectRemoteAgentManagement, RemoteAgentConnectionContext } from 'vs/platform/remote/node/remoteAgentConnection';
-import { IWindowConfiguration } from 'vs/platform/windows/common/windows';
+import { connectRemoteAgentManagement } from 'vs/platform/remote/node/remoteAgentConnection';
+import { IWindowService } from 'vs/platform/windows/common/windows';
 import { RemoteExtensionEnvironmentChannelClient } from 'vs/workbench/services/remote/node/remoteAgentEnvironmentChannel';
-import { IRemoteAgentConnection, IRemoteAgentEnvironment, IRemoteAgentService } from 'vs/workbench/services/remote/node/remoteAgentService';
+import { IRemoteAgentConnection, IRemoteAgentService } from 'vs/workbench/services/remote/common/remoteAgentService';
 import { IRemoteAuthorityResolverService } from 'vs/platform/remote/common/remoteAuthorityResolver';
+import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
+import { ILifecycleService, LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
+import { DialogChannel } from 'vs/platform/dialogs/node/dialogIpc';
+import { DownloadServiceChannel } from 'vs/platform/download/node/downloadIpc';
+import { LogLevelSetterChannel } from 'vs/platform/log/node/logIpc';
+import { ILogService } from 'vs/platform/log/common/log';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IRemoteAgentEnvironment, RemoteAgentConnectionContext } from 'vs/platform/remote/common/remoteAgentEnvironment';
+import { IChannel, IServerChannel } from 'vs/base/parts/ipc/common/ipc';
 
 export class RemoteAgentService implements IRemoteAgentService {
 
@@ -22,13 +31,23 @@ export class RemoteAgentService implements IRemoteAgentService {
 	private readonly _connection: IRemoteAgentConnection | null = null;
 
 	constructor(
-		window: IWindowConfiguration,
+		@IWindowService windowService: IWindowService,
 		@INotificationService notificationService: INotificationService,
 		@IEnvironmentService environmentService: IEnvironmentService,
-		@IRemoteAuthorityResolverService remoteAuthorityResolverService: IRemoteAuthorityResolverService
+		@IRemoteAuthorityResolverService remoteAuthorityResolverService: IRemoteAuthorityResolverService,
+		@ILifecycleService lifecycleService: ILifecycleService,
+		@ILogService logService: ILogService,
+		@IInstantiationService instantiationService: IInstantiationService
 	) {
-		if (window.remoteAuthority) {
-			this._connection = new RemoteAgentConnection(window.remoteAuthority, notificationService, environmentService, remoteAuthorityResolverService);
+		const { remoteAuthority } = windowService.getConfiguration();
+		if (remoteAuthority) {
+			const connection = this._connection = new RemoteAgentConnection(remoteAuthority, notificationService, environmentService, remoteAuthorityResolverService);
+
+			lifecycleService.when(LifecyclePhase.Ready).then(() => {
+				connection.registerChannel('dialog', instantiationService.createInstance(DialogChannel));
+				connection.registerChannel('download', new DownloadServiceChannel());
+				connection.registerChannel('loglevel', new LogLevelSetterChannel(logService));
+			});
 		}
 	}
 
@@ -40,8 +59,8 @@ export class RemoteAgentService implements IRemoteAgentService {
 class RemoteAgentConnection extends Disposable implements IRemoteAgentConnection {
 
 	readonly remoteAuthority: string;
-	private _connection: Thenable<Client<RemoteAgentConnectionContext>> | null;
-	private _environment: Thenable<IRemoteAgentEnvironment | null> | null;
+	private _connection: Promise<Client<RemoteAgentConnectionContext>> | null;
+	private _environment: Promise<IRemoteAgentEnvironment | null> | null;
 
 	constructor(
 		remoteAuthority: string,
@@ -55,7 +74,7 @@ class RemoteAgentConnection extends Disposable implements IRemoteAgentConnection
 		this._environment = null;
 	}
 
-	getEnvironment(): Thenable<IRemoteAgentEnvironment | null> {
+	getEnvironment(): Promise<IRemoteAgentEnvironment | null> {
 		if (!this._environment) {
 			const client = new RemoteExtensionEnvironmentChannelClient(this.getChannel('remoteextensionsenvironment'));
 
@@ -74,12 +93,19 @@ class RemoteAgentConnection extends Disposable implements IRemoteAgentConnection
 		this._getOrCreateConnection().then(client => client.registerChannel(channelName, channel));
 	}
 
-	private _getOrCreateConnection(): Thenable<Client<RemoteAgentConnectionContext>> {
+	private _getOrCreateConnection(): Promise<Client<RemoteAgentConnectionContext>> {
 		if (!this._connection) {
-			this._connection = this._remoteAuthorityResolverService.resolveAuthority(this.remoteAuthority).then((resolvedAuthority) => {
-				return connectRemoteAgentManagement(this.remoteAuthority, resolvedAuthority.host, resolvedAuthority.port, `renderer`);
-			});
+			this._connection = this._createConnection();
 		}
 		return this._connection;
 	}
+
+	private async _createConnection(): Promise<Client<RemoteAgentConnectionContext>> {
+		const resolvedAuthority = await this._remoteAuthorityResolverService.resolveAuthority(this.remoteAuthority);
+		const connection = await connectRemoteAgentManagement(this.remoteAuthority, resolvedAuthority.host, resolvedAuthority.port, `renderer`, this._environmentService.isBuilt);
+		this._register(connection);
+		return connection.client;
+	}
 }
+
+registerSingleton(IRemoteAgentService, RemoteAgentService);

@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
+import * as azdata from 'azdata';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ICommandLineProcessing } from 'sql/workbench/services/commandLine/common/commandLine';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
@@ -15,12 +16,14 @@ import { IConnectionProviderRegistry, Extensions as ConnectionProviderExtensions
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { warn } from 'sql/base/common/log';
 import { ipcRenderer as ipc} from 'electron';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 export class CommandLineService implements ICommandLineProcessing {
+	public _serviceBrand: any;
 
 	constructor(
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
@@ -30,7 +33,7 @@ export class CommandLineService implements ICommandLineProcessing {
 		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
 		@IEditorService private _editorService: IEditorService,
 		@ICommandService private _commandService: ICommandService,
-		@IWorkspaceConfigurationService private _configurationService: IWorkspaceConfigurationService
+		@IConfigurationService private _configurationService: IConfigurationService
 	) {
 		if (ipc) {
 		    ipc.on('ads:processCommandLine', (event: any, args: ParsedArgs) => this.onLaunched(args));
@@ -57,14 +60,13 @@ export class CommandLineService implements ICommandLineProcessing {
 		}
 	}
 
-	public _serviceBrand: any;
 	// We base our logic on the combination of (server, command) values.
 	// (serverName, commandName) => Connect object explorer and execute the command, passing the connection profile to the command. Do not load query editor.
 	// (null, commandName) => Launch the command with a null connection. If the command implementation needs a connection, it will need to create it.
 	// (serverName, null) => Connect object explorer and open a new query editor
 	// (null, null) => Prompt for a connection unless there are registered servers
-	public processCommandLine(args: ParsedArgs): Promise<void> {
-		let profile = undefined;
+	public async processCommandLine(args: ParsedArgs): Promise<void> {
+		let profile: IConnectionProfile = undefined;
 		let commandName = undefined;
 		if (args) {
 			if (this._commandService) {
@@ -72,66 +74,58 @@ export class CommandLineService implements ICommandLineProcessing {
 			}
 
 			if (args.server) {
-				profile = new ConnectionProfile(this._capabilitiesService, null);
-				// We want connection store to use any matching password it finds
-				profile.savePassword = true;
-				profile.providerName = Constants.mssqlProviderName;
-				profile.serverName = args.server;
-				profile.databaseName = args.database ? args.database : '';
-				profile.userName = args.user ? args.user : '';
-				profile.authenticationType = args.integrated ? 'Integrated' : 'SqlLogin';
-				profile.connectionName = '';
-				profile.setOptionValue('applicationName', Constants.applicationName);
-				profile.setOptionValue('databaseDisplayName', profile.databaseName);
-				profile.setOptionValue('groupId', profile.groupId);
+				profile = this.readProfileFromArgs(args);
 			}
 	    }
-		let self = this;
-		return new Promise<void>((resolve, reject) => {
-			let showConnectDialogOnStartup: boolean = self._configurationService.getValue('workbench.showConnectDialogOnStartup');
-			if (showConnectDialogOnStartup && !commandName && !profile && !self._connectionManagementService.hasRegisteredServers()) {
-				// prompt the user for a new connection on startup if no profiles are registered
-				self._connectionManagementService.showConnectionDialog()
-					.then(() => {
-						resolve();
-					},
-						error => {
-							reject(error);
-						});
-			} else if (profile) {
-				if (!commandName) {
-					self._connectionManagementService.connectIfNotConnected(profile, 'connection', true)
-						.then(() => {
-							TaskUtilities.newQuery(profile,
-								self._connectionManagementService,
-								self._queryEditorService,
-								self._objectExplorerService,
-								self._editorService)
-								.then(() => {
-									resolve();
-								}, error => {
-									// ignore query editor failing to open.
-									// the tests don't mock this out
-									warn('unable to open query editor ' + error);
-									resolve();
-								});
-						}, error => {
-							reject(error);
-						});
-				} else {
-					self._connectionManagementService.connectIfNotConnected(profile, 'connection', true)
-						.then(() => {
-							self._commandService.executeCommand(commandName, profile.id).then(() => resolve(), error => reject(error));
-						}, error => {
-							reject(error);
-						});
-				}
-			} else if (commandName) {
-				self._commandService.executeCommand(commandName).then(() => resolve(), error => reject(error));
+		let showConnectDialogOnStartup: boolean = this._configurationService.getValue('workbench.showConnectDialogOnStartup');
+		if (showConnectDialogOnStartup && !commandName && !profile && !this._connectionManagementService.hasRegisteredServers()) {
+			// prompt the user for a new connection on startup if no profiles are registered
+			await this._connectionManagementService.showConnectionDialog();
+			return;
+		}
+		let connectedContext: azdata.ConnectedContext = undefined;
+		if (profile) {
+			try {
+				await this._connectionManagementService.connectIfNotConnected(profile, 'connection', true);
+				// Before sending to extensions, we should a) serialize to IConnectionProfile or things will fail,
+				// and b) use the latest version of the profile from the service so most fields are filled in.
+				let updatedProfile = this._connectionManagementService.getConnectionProfileById(profile.id);
+				connectedContext = { connectionProfile: new ConnectionProfile(this._capabilitiesService, updatedProfile).toIConnectionProfile() };
+			} catch (err) {
+				warn('Failed to connect due to error' + err.message);
 			}
-			else {
-				resolve();
+		}
+		if (commandName) {
+			await this._commandService.executeCommand(commandName, connectedContext);
+		} else if (profile) {
+			// Default to showing new query
+			try {
+				await TaskUtilities.newQuery(profile,
+					this._connectionManagementService,
+					this._queryEditorService,
+					this._objectExplorerService,
+					this._editorService);
+			} catch (error) {
+				warn('unable to open query editor ' + error);
+				// Note: we are intentionally swallowing this error.
+				// In part this is to accommodate unit testing where we don't want to set up the query stack
 			}
-		});
+		}
+	}
+
+	private readProfileFromArgs(args: ParsedArgs) {
+		let profile = new ConnectionProfile(this._capabilitiesService, null);
+		// We want connection store to use any matching password it finds
+		profile.savePassword = true;
+		profile.providerName = Constants.mssqlProviderName;
+		profile.serverName = args.server;
+		profile.databaseName = args.database ? args.database : '';
+		profile.userName = args.user ? args.user : '';
+		profile.authenticationType = args.integrated ? 'Integrated' : 'SqlLogin';
+		profile.connectionName = '';
+		profile.setOptionValue('applicationName', Constants.applicationName);
+		profile.setOptionValue('databaseDisplayName', profile.databaseName);
+		profile.setOptionValue('groupId', profile.groupId);
+		return profile;
 	}
 }

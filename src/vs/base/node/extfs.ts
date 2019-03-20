@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as fs from 'fs';
-import * as paths from 'path';
+import * as paths from 'vs/base/common/path';
 import { nfcall } from 'vs/base/common/async';
 import { normalizeNFC } from 'vs/base/common/normalization';
 import * as platform from 'vs/base/common/platform';
@@ -128,7 +128,7 @@ function doCopyFile(source: string, target: string, mode: number, callback: (err
 
 export function mkdirp(path: string, mode?: number, token?: CancellationToken): Promise<boolean> {
 	const mkdir = (): Promise<null> => {
-		return nfcall(fs.mkdir, path, mode).then(null, (mkdirErr: NodeJS.ErrnoException) => {
+		return nfcall(fs.mkdir, path, mode).then(undefined, (mkdirErr: NodeJS.ErrnoException) => {
 
 			// ENOENT: a parent folder does not exist yet
 			if (mkdirErr.code === 'ENOENT') {
@@ -155,7 +155,7 @@ export function mkdirp(path: string, mode?: number, token?: CancellationToken): 
 	}
 
 	// recursively mkdir
-	return mkdir().then(null, (err: NodeJS.ErrnoException) => {
+	return mkdir().then(undefined, (err: NodeJS.ErrnoException) => {
 
 		// Respect cancellation
 		if (token && token.isCancellationRequested) {
@@ -219,7 +219,7 @@ export function del(path: string, tmpFolder: string, callback: (error: Error | n
 }
 
 function rmRecursive(path: string, callback: (error: Error | null) => void): void {
-	if (path === '\\' || path === '/') {
+	if (path === paths.win32.sep || path === paths.posix.sep) {
 		return callback(new Error('Will not delete root!'));
 	}
 
@@ -277,6 +277,10 @@ function rmRecursive(path: string, callback: (error: Error | null) => void): voi
 }
 
 export function delSync(path: string): void {
+	if (path === paths.win32.sep || path === paths.posix.sep) {
+		throw new Error('Will not delete root!');
+	}
+
 	try {
 		const stat = fs.lstatSync(path);
 		if (stat.isDirectory() && !stat.isSymbolicLink()) {
@@ -390,7 +394,7 @@ function doWriteFileStreamAndFlush(path: string, reader: NodeJS.ReadableStream, 
 			if (error) {
 				if (isOpen) {
 					writer.once('close', () => callback(error));
-					writer.close();
+					writer.destroy();
 				} else {
 					callback(error);
 				}
@@ -450,10 +454,10 @@ function doWriteFileStreamAndFlush(path: string, reader: NodeJS.ReadableStream, 
 					canFlush = false;
 				}
 
-				writer.close();
+				writer.destroy();
 			});
 		} else {
-			writer.close();
+			writer.destroy();
 		}
 	});
 

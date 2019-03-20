@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as assert from 'assert';
-import * as path from 'path';
+import * as path from 'vs/base/common/path';
 import * as glob from 'vs/base/common/glob';
 import { isWindows } from 'vs/base/common/platform';
 
@@ -102,6 +102,9 @@ suite('Glob', () => {
 		p = 'C:/DNXConsoleApp/**/*.cs';
 		assertGlobMatch(p, 'C:\\DNXConsoleApp\\Program.cs');
 		assertGlobMatch(p, 'C:\\DNXConsoleApp\\foo\\Program.cs');
+
+		p = '*';
+		assertGlobMatch(p, '');
 	});
 
 	test('dot hidden', function () {
@@ -719,7 +722,10 @@ suite('Glob', () => {
 		assert.strictEqual(glob.match(expr, 'bar', hasSibling), '**/bar');
 		assert.strictEqual(glob.match(expr, 'foo', hasSibling), null);
 		assert.strictEqual(glob.match(expr, 'foo/bar', hasSibling), '**/bar');
-		assert.strictEqual(glob.match(expr, 'foo\\bar', hasSibling), '**/bar');
+		if (isWindows) {
+			// backslash is a valid file name character on posix
+			assert.strictEqual(glob.match(expr, 'foo\\bar', hasSibling), '**/bar');
+		}
 		assert.strictEqual(glob.match(expr, 'foo/foo', hasSibling), null);
 		assert.strictEqual(glob.match(expr, 'foo.js', hasSibling), '**/*.js');
 		assert.strictEqual(glob.match(expr, 'bar.js', hasSibling), null);
@@ -738,24 +744,24 @@ suite('Glob', () => {
 	});
 
 	test('falsy expression/pattern', function () {
-		assert.strictEqual(glob.match(null, 'foo'), false);
+		assert.strictEqual(glob.match(null!, 'foo'), false);
 		assert.strictEqual(glob.match('', 'foo'), false);
-		assert.strictEqual(glob.parse(null)('foo'), false);
+		assert.strictEqual(glob.parse(null!)('foo'), false);
 		assert.strictEqual(glob.parse('')('foo'), false);
 	});
 
 	test('falsy path', function () {
-		assert.strictEqual(glob.parse('foo')(null), false);
+		assert.strictEqual(glob.parse('foo')(null!), false);
 		assert.strictEqual(glob.parse('foo')(''), false);
-		assert.strictEqual(glob.parse('**/*.j?')(null), false);
+		assert.strictEqual(glob.parse('**/*.j?')(null!), false);
 		assert.strictEqual(glob.parse('**/*.j?')(''), false);
-		assert.strictEqual(glob.parse('**/*.foo')(null), false);
+		assert.strictEqual(glob.parse('**/*.foo')(null!), false);
 		assert.strictEqual(glob.parse('**/*.foo')(''), false);
-		assert.strictEqual(glob.parse('**/foo')(null), false);
+		assert.strictEqual(glob.parse('**/foo')(null!), false);
 		assert.strictEqual(glob.parse('**/foo')(''), false);
-		assert.strictEqual(glob.parse('{**/baz,**/foo}')(null), false);
+		assert.strictEqual(glob.parse('{**/baz,**/foo}')(null!), false);
 		assert.strictEqual(glob.parse('{**/baz,**/foo}')(''), false);
-		assert.strictEqual(glob.parse('{**/*.baz,**/*.foo}')(null), false);
+		assert.strictEqual(glob.parse('{**/*.baz,**/*.foo}')(null!), false);
 		assert.strictEqual(glob.parse('{**/*.baz,**/*.foo}')(''), false);
 	});
 
@@ -808,7 +814,7 @@ suite('Glob', () => {
 		}, ['foo', 'bar', 'baz'], [
 				['bar/foo', '**/foo/**'],
 				['foo/bar', '{**/bar/**,**/baz/**}'],
-				['bar/nope', null]
+				['bar/nope', null!]
 			]);
 
 		const siblings = ['baz', 'baz.zip', 'nope'];
@@ -817,12 +823,12 @@ suite('Glob', () => {
 			'**/foo/**': { when: '$(basename).zip' },
 			'**/bar/**': true
 		}, ['bar'], [
-				['bar/foo', null],
-				['bar/foo/baz', null],
-				['bar/foo/nope', null],
+				['bar/foo', null!],
+				['bar/foo/baz', null!],
+				['bar/foo/nope', null!],
 				['foo/bar', '**/bar/**'],
 			], [
-				null,
+				null!,
 				hasSibling,
 				hasSibling
 			]);
@@ -832,7 +838,7 @@ suite('Glob', () => {
 		const parsed = glob.parse(<glob.IExpression>pattern, { trimForExclusions: true });
 		assert.deepStrictEqual(glob.getBasenameTerms(parsed), basenameTerms);
 		matches.forEach(([text, result], i) => {
-			assert.strictEqual(parsed(text, null, siblingsFns[i]), result);
+			assert.strictEqual(parsed(text, null!, siblingsFns[i]), result);
 		});
 	}
 
@@ -914,7 +920,7 @@ suite('Glob', () => {
 				[nativeSep('bar/foo/bar'), '**/foo/bar/**'],
 				// Not supported
 				// [nativeSep('foo/bar/bar'), '{**/bar/bar/**,**/baz/bar/**}'],
-				[nativeSep('/foo/bar/nope'), null]
+				[nativeSep('/foo/bar/nope'), null!]
 			]);
 
 		const siblings = ['baz', 'baz.zip', 'nope'];
@@ -923,12 +929,12 @@ suite('Glob', () => {
 			'**/foo/123/**': { when: '$(basename).zip' },
 			'**/bar/123/**': true
 		}, ['*/bar/123'], [
-				[nativeSep('bar/foo/123'), null],
-				[nativeSep('bar/foo/123/baz'), null],
-				[nativeSep('bar/foo/123/nope'), null],
+				[nativeSep('bar/foo/123'), null!],
+				[nativeSep('bar/foo/123/baz'), null!],
+				[nativeSep('bar/foo/123/nope'), null!],
 				[nativeSep('foo/bar/123'), '**/bar/123/**'],
 			], [
-				null,
+				null!,
 				hasSibling,
 				hasSibling
 			]);
@@ -938,7 +944,7 @@ suite('Glob', () => {
 		const parsed = glob.parse(<glob.IExpression>pattern, { trimForExclusions: true });
 		assert.deepStrictEqual(glob.getPathTerms(parsed), pathTerms);
 		matches.forEach(([text, result], i) => {
-			assert.strictEqual(parsed(text, null, siblingsFns[i]), result);
+			assert.strictEqual(parsed(text, null!, siblingsFns[i]), result);
 		});
 	}
 
@@ -948,14 +954,14 @@ suite('Glob', () => {
 
 	test('relative pattern - glob star', function () {
 		if (isWindows) {
-			let p: glob.IRelativePattern = { base: 'C:\\DNXConsoleApp\\foo', pattern: '**/*.cs', pathToRelative: (from, to) => path.relative(from, to) };
+			let p: glob.IRelativePattern = { base: 'C:\\DNXConsoleApp\\foo', pattern: '**/*.cs' };
 			assertGlobMatch(p, 'C:\\DNXConsoleApp\\foo\\Program.cs');
 			assertGlobMatch(p, 'C:\\DNXConsoleApp\\foo\\bar\\Program.cs');
 			assertNoGlobMatch(p, 'C:\\DNXConsoleApp\\foo\\Program.ts');
 			assertNoGlobMatch(p, 'C:\\DNXConsoleApp\\Program.cs');
 			assertNoGlobMatch(p, 'C:\\other\\DNXConsoleApp\\foo\\Program.ts');
 		} else {
-			let p: glob.IRelativePattern = { base: '/DNXConsoleApp/foo', pattern: '**/*.cs', pathToRelative: (from, to) => path.relative(from, to) };
+			let p: glob.IRelativePattern = { base: '/DNXConsoleApp/foo', pattern: '**/*.cs' };
 			assertGlobMatch(p, '/DNXConsoleApp/foo/Program.cs');
 			assertGlobMatch(p, '/DNXConsoleApp/foo/bar/Program.cs');
 			assertNoGlobMatch(p, '/DNXConsoleApp/foo/Program.ts');
@@ -966,14 +972,14 @@ suite('Glob', () => {
 
 	test('relative pattern - single star', function () {
 		if (isWindows) {
-			let p: glob.IRelativePattern = { base: 'C:\\DNXConsoleApp\\foo', pattern: '*.cs', pathToRelative: (from, to) => path.relative(from, to) };
+			let p: glob.IRelativePattern = { base: 'C:\\DNXConsoleApp\\foo', pattern: '*.cs' };
 			assertGlobMatch(p, 'C:\\DNXConsoleApp\\foo\\Program.cs');
 			assertNoGlobMatch(p, 'C:\\DNXConsoleApp\\foo\\bar\\Program.cs');
 			assertNoGlobMatch(p, 'C:\\DNXConsoleApp\\foo\\Program.ts');
 			assertNoGlobMatch(p, 'C:\\DNXConsoleApp\\Program.cs');
 			assertNoGlobMatch(p, 'C:\\other\\DNXConsoleApp\\foo\\Program.ts');
 		} else {
-			let p: glob.IRelativePattern = { base: '/DNXConsoleApp/foo', pattern: '*.cs', pathToRelative: (from, to) => path.relative(from, to) };
+			let p: glob.IRelativePattern = { base: '/DNXConsoleApp/foo', pattern: '*.cs' };
 			assertGlobMatch(p, '/DNXConsoleApp/foo/Program.cs');
 			assertNoGlobMatch(p, '/DNXConsoleApp/foo/bar/Program.cs');
 			assertNoGlobMatch(p, '/DNXConsoleApp/foo/Program.ts');
@@ -984,11 +990,11 @@ suite('Glob', () => {
 
 	test('relative pattern - single star with path', function () {
 		if (isWindows) {
-			let p: glob.IRelativePattern = { base: 'C:\\DNXConsoleApp\\foo', pattern: 'something/*.cs', pathToRelative: (from, to) => path.relative(from, to) };
+			let p: glob.IRelativePattern = { base: 'C:\\DNXConsoleApp\\foo', pattern: 'something/*.cs' };
 			assertGlobMatch(p, 'C:\\DNXConsoleApp\\foo\\something\\Program.cs');
 			assertNoGlobMatch(p, 'C:\\DNXConsoleApp\\foo\\Program.cs');
 		} else {
-			let p: glob.IRelativePattern = { base: '/DNXConsoleApp/foo', pattern: 'something/*.cs', pathToRelative: (from, to) => path.relative(from, to) };
+			let p: glob.IRelativePattern = { base: '/DNXConsoleApp/foo', pattern: 'something/*.cs' };
 			assertGlobMatch(p, '/DNXConsoleApp/foo/something/Program.cs');
 			assertNoGlobMatch(p, '/DNXConsoleApp/foo/Program.cs');
 		}
@@ -1000,11 +1006,11 @@ suite('Glob', () => {
 
 	test('relative pattern - #57475', function () {
 		if (isWindows) {
-			let p: glob.IRelativePattern = { base: 'C:\\DNXConsoleApp\\foo', pattern: 'styles/style.css', pathToRelative: (from, to) => path.relative(from, to) };
+			let p: glob.IRelativePattern = { base: 'C:\\DNXConsoleApp\\foo', pattern: 'styles/style.css' };
 			assertGlobMatch(p, 'C:\\DNXConsoleApp\\foo\\styles\\style.css');
 			assertNoGlobMatch(p, 'C:\\DNXConsoleApp\\foo\\Program.cs');
 		} else {
-			let p: glob.IRelativePattern = { base: '/DNXConsoleApp/foo', pattern: 'styles/style.css', pathToRelative: (from, to) => path.relative(from, to) };
+			let p: glob.IRelativePattern = { base: '/DNXConsoleApp/foo', pattern: 'styles/style.css' };
 			assertGlobMatch(p, '/DNXConsoleApp/foo/styles/style.css');
 			assertNoGlobMatch(p, '/DNXConsoleApp/foo/Program.cs');
 		}

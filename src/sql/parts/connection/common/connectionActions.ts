@@ -5,7 +5,6 @@
 
 import nls = require('vs/nls');
 import { Action } from 'vs/base/common/actions';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
@@ -50,7 +49,7 @@ export class ClearRecentConnectionsAction extends Action {
 		this._useConfirmationMessage = value;
 	}
 
-	public run(): TPromise<void> {
+	public run(): Promise<void> {
 		if (this._useConfirmationMessage) {
 			return this.promptConfirmationMessage().then(result => {
 				if (result.confirmed) {
@@ -75,9 +74,9 @@ export class ClearRecentConnectionsAction extends Action {
 		}
 	}
 
-	private promptQuickOpenService(): TPromise<boolean> {
+	private promptQuickOpenService(): Promise<boolean> {
 		const self = this;
-		return new TPromise<boolean>((resolve, reject) => {
+		return new Promise<boolean>((resolve, reject) => {
 			let choices: { key, value }[] = [
 				{ key: nls.localize('connectionAction.yes', 'Yes'), value: true },
 				{ key: nls.localize('connectionAction.no', 'No'), value: false }
@@ -90,7 +89,7 @@ export class ClearRecentConnectionsAction extends Action {
 		});
 	}
 
-	private promptConfirmationMessage(): TPromise<IConfirmationResult> {
+	private promptConfirmationMessage(): Promise<IConfirmationResult> {
 		let confirm: IConfirmation = {
 			message: nls.localize('clearRecentConnectionMessage', 'Are you sure you want to delete all the connections from the list?'),
 			primaryButton: nls.localize('connectionDialog.yes', 'Yes'),
@@ -98,7 +97,7 @@ export class ClearRecentConnectionsAction extends Action {
 			type: 'question'
 		};
 
-		return new TPromise<IConfirmationResult>((resolve, reject) => {
+		return new Promise<IConfirmationResult>((resolve, reject) => {
 			this._dialogService.confirm(confirm).then((confirmed) => {
 				resolve(confirmed);
 			});
@@ -126,8 +125,8 @@ export class ClearSingleRecentConnectionAction extends Action {
 		this.enabled = true;
 	}
 
-	public run(): TPromise<void> {
-		return new TPromise<void>((resolve, reject) => {
+	public run(): Promise<void> {
+		return new Promise<void>((resolve, reject) => {
 			resolve(this._connectionManagementService.clearRecentConnection(this._connectionProfile));
 			this._onRecentConnectionRemoved.fire();
 		});
@@ -155,8 +154,8 @@ export class GetCurrentConnectionStringAction extends Action {
 		this.enabled = true;
 	}
 
-	public run(): TPromise<void> {
-		return new TPromise<void>((resolve, reject) => {
+	public run(): Promise<void> {
+		return new Promise<void>((resolve, reject) => {
 			let activeInput = this._editorService.activeEditor;
 			if (activeInput && (activeInput instanceof QueryInput || activeInput instanceof EditDataInput || activeInput instanceof DashboardInput)
 				&& this._connectionManagementService.isConnected(activeInput.uri)) {

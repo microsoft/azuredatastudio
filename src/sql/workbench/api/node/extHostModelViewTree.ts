@@ -6,15 +6,14 @@
 
 import { localize } from 'vs/nls';
 import * as vscode from 'vscode';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { SqlMainContext, ExtHostModelViewTreeViewsShape, MainThreadModelViewShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { ITreeComponentItem } from 'sql/workbench/common/views';
 import { CommandsConverter } from 'vs/workbench/api/node/extHostCommands';
-import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
+import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import * as azdata from 'azdata';
 import * as  vsTreeExt from 'vs/workbench/api/node/extHostTreeViews';
 import { Emitter } from 'vs/base/common/event';
-import { IExtensionDescription } from 'vs/workbench/services/extensions/common/extensions';
+import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 
 export class ExtHostModelViewTreeViews implements ExtHostModelViewTreeViewsShape {
 	private _proxy: MainThreadModelViewShape;
@@ -43,11 +42,11 @@ export class ExtHostModelViewTreeViews implements ExtHostModelViewTreeViewsShape
 		};
 	}
 
-	$getChildren(treeViewId: string, treeItemHandle?: string): TPromise<ITreeComponentItem[]> {
+	$getChildren(treeViewId: string, treeItemHandle?: string): Promise<ITreeComponentItem[]> {
 		const treeView = this.treeViews.get(treeViewId);
 		if (!treeView) {
 
-			return TPromise.wrapError<ITreeComponentItem[]>(new Error(localize('treeView.notRegistered', 'No tree view with id \'{0}\' registered.', treeViewId)));
+			return Promise.reject(new Error(localize('treeView.notRegistered', 'No tree view with id \'{0}\' registered.', treeViewId)));
 		}
 		return treeView.getChildren(treeItemHandle);
 	}

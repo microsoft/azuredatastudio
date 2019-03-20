@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { TPromise } from 'vs/base/common/winjs.base';
 import { EditorInput, EditorModel } from 'vs/workbench/common/editor';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { URI } from 'vs/base/common/uri';
@@ -140,7 +139,7 @@ export class DashboardInput extends EditorInput {
 		return this._connectionService.getConnectionProfile(this._uri);
 	}
 
-	public resolve(refresh?: boolean): TPromise<EditorModel> {
+	public resolve(refresh?: boolean): Promise<EditorModel> {
 		return undefined;
 	}
 

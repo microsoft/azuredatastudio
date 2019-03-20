@@ -21,9 +21,11 @@
     "buffer-stream-reader": "^0.1.1",
     "bytes": "^3.1.0",
     "clipboardy": "^1.2.3",
-    "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#0.2.15",
+    "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#0.2.16",
     "error-ex": "^1.3.2",
+    "find-remove": "1.2.1",
     "figures": "^2.0.0",
+    "fs-extra": "^3.0.1",
     "opener": "^1.4.3",
     "request": "^2.88.0",
     "request-promise": "^4.2.2",
@@ -35,17 +37,6 @@
   },
   "devDependencies": {},
   "contributes": {
-    "languages": [
-      {
-        "id": "sql",
-        "extensions": [
-          ".sql"
-        ],
-        "aliases": [
-          "SQL"
-        ]
-      }
-    ],
     "commands": [
       {
         "command": "mssqlCluster.uploadFiles",

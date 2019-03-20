@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import { TPromise } from 'vs/base/common/winjs.base';
 import Severity from 'vs/base/common/severity';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -77,7 +76,7 @@ export class ServerGroupController implements IServerGroupController {
 	}
 
 
-	public showCreateGroupDialog(connectionManagementService: IConnectionManagementService, callbacks?: IServerGroupDialogCallbacks): TPromise<void> {
+	public showCreateGroupDialog(connectionManagementService: IConnectionManagementService, callbacks?: IServerGroupDialogCallbacks): Promise<void> {
 		this._connectionManagementService = connectionManagementService;
 		this._group = null;
 		this._viewModel = new ServerGroupViewModel(undefined, this._configurationService.getValue(SERVER_GROUP_CONFIG)[SERVER_GROUP_COLORS_CONFIG]);
@@ -85,14 +84,14 @@ export class ServerGroupController implements IServerGroupController {
 		return this.openServerGroupDialog();
 	}
 
-	public showEditGroupDialog(connectionManagementService: IConnectionManagementService, group: ConnectionProfileGroup): TPromise<void> {
+	public showEditGroupDialog(connectionManagementService: IConnectionManagementService, group: ConnectionProfileGroup): Promise<void> {
 		this._connectionManagementService = connectionManagementService;
 		this._group = group;
 		this._viewModel = new ServerGroupViewModel(group, this._configurationService.getValue(SERVER_GROUP_CONFIG)[SERVER_GROUP_COLORS_CONFIG]);
 		return this.openServerGroupDialog();
 	}
 
-	private openServerGroupDialog(): TPromise<void> {
+	private openServerGroupDialog(): Promise<void> {
 		if (!this._serverGroupDialog) {
 			this._serverGroupDialog = this._instantiationService.createInstance(ServerGroupDialog);
 			this._serverGroupDialog.viewModel = this._viewModel;
@@ -105,7 +104,7 @@ export class ServerGroupController implements IServerGroupController {
 			this._serverGroupDialog.viewModel = this._viewModel;
 		}
 
-		return new TPromise<void>(() => {
+		return new Promise<void>(() => {
 			this._serverGroupDialog.open();
 		});
 	}

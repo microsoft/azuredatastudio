@@ -5,12 +5,8 @@
 'use strict';
 
 import * as extHostApi from 'vs/workbench/api/node/extHost.api.impl';
-import { TrieMap } from 'sql/base/common/map';
-import { TPromise } from 'vs/base/common/winjs.base';
-import { IInitData, IExtHostContext, IMainContext } from 'vs/workbench/api/node/extHost.protocol';
+import { IInitData, IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { ExtHostExtensionService } from 'vs/workbench/api/node/extHostExtensionService';
-import { IExtensionDescription } from 'vs/workbench/services/extensions/common/extensions';
-import { realpath } from 'fs';
 import * as extHostTypes from 'vs/workbench/api/node/extHostTypes';
 import { URI } from 'vs/base/common/uri';
 
@@ -25,7 +21,7 @@ import { ExtHostSerializationProvider } from 'sql/workbench/api/node/extHostSeri
 import { ExtHostResourceProvider } from 'sql/workbench/api/node/extHostResourceProvider';
 import * as sqlExtHostTypes from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ExtHostWorkspace } from 'vs/workbench/api/node/extHostWorkspace';
-import { ExtHostConfiguration } from 'vs/workbench/api/node/extHostConfiguration';
+import { ExtHostConfiguration, ExtHostConfigProvider } from 'vs/workbench/api/node/extHostConfiguration';
 import { ExtHostModalDialogs } from 'sql/workbench/api/node/extHostModalDialog';
 import { ExtHostTasks } from 'sql/workbench/api/node/extHostTasks';
 import { ExtHostDashboardWebviews } from 'sql/workbench/api/node/extHostDashboardWebview';
@@ -43,9 +39,11 @@ import { ExtHostNotebookDocumentsAndEditors } from 'sql/workbench/api/node/extHo
 import { ExtHostStorage } from 'vs/workbench/api/node/extHostStorage';
 import { ExtensionDescriptionRegistry } from 'vs/workbench/services/extensions/node/extensionDescriptionRegistry';
 import { ExtHostExtensionManagement } from 'sql/workbench/api/node/extHostExtensionManagement';
+import { ExtensionIdentifier, IExtensionDescription } from 'vs/platform/extensions/common/extensions';
+import { TernarySearchTree } from 'vs/base/common/map';
 
 export interface ISqlExtensionApiFactory {
-	vsCodeFactory(extension: IExtensionDescription, registry: ExtensionDescriptionRegistry): typeof vscode;
+	vsCodeFactory(extension: IExtensionDescription, registry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): typeof vscode;
 	sqlopsFactory(extension: IExtensionDescription): typeof sqlops;
 	azdataFactory(extension: IExtensionDescription): typeof azdata;
 }
@@ -994,34 +992,11 @@ export function createApiFactory(
 	};
 }
 
-export function initializeExtensionApi(extensionService: ExtHostExtensionService, apiFactory: ISqlExtensionApiFactory, extensionRegistry: ExtensionDescriptionRegistry): TPromise<void> {
-	return createExtensionPathIndex(extensionService, extensionRegistry).then(trie => defineAPI(apiFactory, trie, extensionRegistry));
+export function initializeExtensionApi(extensionService: ExtHostExtensionService, apiFactory: ISqlExtensionApiFactory, extensionRegistry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): Promise<void> {
+	return extensionService.getExtensionPathIndex().then(trie => defineAPI(apiFactory, trie, extensionRegistry, configProvider));
 }
 
-function createExtensionPathIndex(extensionService: ExtHostExtensionService, extensionRegistry: ExtensionDescriptionRegistry): Promise<TrieMap<IExtensionDescription>> {
-
-	// create trie to enable fast 'filename -> extension id' look up
-	const trie = new TrieMap<IExtensionDescription>(TrieMap.PathSplitter);
-	const extensions = extensionRegistry.getAllExtensionDescriptions().map(ext => {
-		if (!ext.main) {
-			return undefined;
-		}
-		return new Promise((resolve, reject) => {
-			realpath(ext.extensionLocation.fsPath, (err, path) => {
-				if (err) {
-					reject(err);
-				} else {
-					trie.insert(path, ext);
-					resolve(void 0);
-				}
-			});
-		});
-	});
-
-	return Promise.all(extensions).then(() => trie);
-}
-
-function defineAPI(factory: ISqlExtensionApiFactory, extensionPaths: TrieMap<IExtensionDescription>, extensionRegistry: ExtensionDescriptionRegistry): void {
+function defineAPI(factory: ISqlExtensionApiFactory, extensionPaths: TernarySearchTree<IExtensionDescription>, extensionRegistry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): void {
 	type ApiImpl = typeof vscode | typeof azdata | typeof sqlops;
 
 	// each extension is meant to get its own api implementation
@@ -1042,10 +1017,10 @@ function defineAPI(factory: ISqlExtensionApiFactory, extensionPaths: TrieMap<IEx
 		// get extension id from filename and api for extension
 		const ext = extensionPaths.findSubstr(URI.file(parent.filename).fsPath);
 		if (ext) {
-			let apiImpl = apiMap.get(ext.id);
+			let apiImpl = apiMap.get(ext.identifier.value);
 			if (!apiImpl) {
 				apiImpl = createApi(ext);
-				apiMap.set(ext.id, apiImpl);
+				apiMap.set(ext.identifier.value, apiImpl);
 			}
 			return apiImpl;
 		}
@@ -1065,14 +1040,14 @@ function defineAPI(factory: ISqlExtensionApiFactory, extensionPaths: TrieMap<IEx
 	// TODO look into de-duplicating this code
 	node_module._load = function load(request, parent, isMain) {
 		if (request === 'vscode') {
-			return getModuleFactory(extApiImpl, (ext) => factory.vsCodeFactory(ext, extensionRegistry),
+			return getModuleFactory(extApiImpl, (ext) => factory.vsCodeFactory(ext, extensionRegistry, configProvider),
 				defaultApiImpl,
 				(impl) => defaultApiImpl = <typeof vscode>impl,
 				parent);
 		} else if (request === 'azdata') {
 			return getModuleFactory(azDataExtApiImpl,
 				(ext) => factory.azdataFactory(ext),
-				defaultDataApiImpl,
+				defaultAzDataApiImpl,
 				(impl) => defaultAzDataApiImpl = <typeof azdata>impl,
 				parent);
 		} else if (request === 'sqlops') {
@@ -1090,7 +1065,7 @@ function defineAPI(factory: ISqlExtensionApiFactory, extensionPaths: TrieMap<IEx
 
 
 const nullExtensionDescription: IExtensionDescription = {
-	id: 'nullExtensionDescription',
+	identifier: new ExtensionIdentifier('nullExtensionDescription'),
 	name: 'Null Extension Description',
 	publisher: 'vscode',
 	activationEvents: undefined,

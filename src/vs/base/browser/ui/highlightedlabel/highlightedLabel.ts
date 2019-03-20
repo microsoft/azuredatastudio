@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IDisposable } from 'vs/base/common/lifecycle';
 import * as dom from 'vs/base/browser/dom';
 import * as objects from 'vs/base/common/objects';
 import { renderOcticons } from 'vs/base/browser/ui/octiconLabel/octiconLabel';
@@ -14,7 +13,7 @@ export interface IHighlight {
 	end: number;
 }
 
-export class HighlightedLabel implements IDisposable {
+export class HighlightedLabel {
 
 	private domNode: HTMLElement;
 	private text: string;
@@ -33,7 +32,7 @@ export class HighlightedLabel implements IDisposable {
 		return this.domNode;
 	}
 
-	set(text: string, highlights: IHighlight[] = [], title: string = '', escapeNewLines?: boolean) {
+	set(text: string | undefined, highlights: IHighlight[] = [], title: string = '', escapeNewLines?: boolean) {
 		if (!text) {
 			text = '';
 		}
@@ -58,12 +57,10 @@ export class HighlightedLabel implements IDisposable {
 	private render() {
 		dom.clearNode(this.domNode);
 
-		let htmlContent: string[] = [],
-			highlight: IHighlight,
-			pos = 0;
+		let htmlContent: string[] = [];
+		let pos = 0;
 
-		for (let i = 0; i < this.highlights.length; i++) {
-			highlight = this.highlights[i];
+		for (const highlight of this.highlights) {
 			if (highlight.end === highlight.start) {
 				continue;
 			}
@@ -93,17 +90,12 @@ export class HighlightedLabel implements IDisposable {
 		this.didEverRender = true;
 	}
 
-	dispose() {
-		this.text = null!; // StrictNullOverride: nulling out ok in dispose
-		this.highlights = null!; // StrictNullOverride: nulling out ok in dispose
-	}
-
 	static escapeNewLines(text: string, highlights: IHighlight[]): string {
 
 		let total = 0;
 		let extra = 0;
 
-		return text.replace(/\r\n|\r|\n/, (match, offset) => {
+		return text.replace(/\r\n|\r|\n/g, (match, offset) => {
 			extra = match === '\r\n' ? -1 : 0;
 			offset += total;
 

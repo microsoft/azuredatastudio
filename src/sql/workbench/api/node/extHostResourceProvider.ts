@@ -6,8 +6,7 @@
 'use strict';
 
 import * as azdata from 'azdata';
-import { TPromise } from 'vs/base/common/winjs.base';
-import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
+import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { Disposable } from 'vs/workbench/api/node/extHostTypes';
 import {
 	ExtHostResourceProviderShape,
@@ -79,7 +78,7 @@ export class ExtHostResourceProvider extends ExtHostResourceProviderShape {
 	private _withProvider<R>(handle: number, callback: (provider: azdata.ResourceProvider) => Thenable<R>): Thenable<R> {
 		let provider = this._providers[handle];
 		if (provider === undefined) {
-			return TPromise.wrapError(new Error(`Provider ${handle} not found.`));
+			return Promise.reject(new Error(`Provider ${handle} not found.`));
 		}
 		return callback(provider.provider);
 	}
@@ -89,5 +88,3 @@ interface ResourceProviderWithMetadata {
 	metadata: azdata.ResourceProviderMetadata;
 	provider: azdata.ResourceProvider;
 }
-
-

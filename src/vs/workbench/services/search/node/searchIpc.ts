@@ -4,9 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Event } from 'vs/base/common/event';
-import { IChannel, IServerChannel } from 'vs/base/parts/ipc/node/ipc';
-import { IRawFileQuery, IRawTextQuery } from 'vs/platform/search/common/search';
-import { IRawSearchService, ISerializedSearchComplete, ISerializedSearchProgressItem } from './search';
+import { IChannel, IServerChannel } from 'vs/base/parts/ipc/common/ipc';
+import { IRawFileQuery, IRawTextQuery, IRawSearchService, ISerializedSearchComplete, ISerializedSearchProgressItem } from 'vs/workbench/services/search/common/search';
 
 export class SearchChannel implements IServerChannel {
 
@@ -20,7 +19,7 @@ export class SearchChannel implements IServerChannel {
 		throw new Error('Event not found');
 	}
 
-	call(_, command: string, arg?: any): Thenable<any> {
+	call(_, command: string, arg?: any): Promise<any> {
 		switch (command) {
 			case 'clearCache': return this.service.clearCache(arg);
 		}
@@ -40,7 +39,7 @@ export class SearchChannelClient implements IRawSearchService {
 		return this.channel.listen('textSearch', search);
 	}
 
-	clearCache(cacheKey: string): Thenable<void> {
+	clearCache(cacheKey: string): Promise<void> {
 		return this.channel.call('clearCache', cacheKey);
 	}
 }

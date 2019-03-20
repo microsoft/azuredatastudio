@@ -16,9 +16,9 @@ export class DiffEditorInput extends SideBySideEditorInput {
 
 	static readonly ID = 'workbench.editors.diffEditorInput';
 
-	private cachedModel: DiffEditorModel;
+	private cachedModel: DiffEditorModel | null;
 
-	constructor(name: string, description: string, original: EditorInput, modified: EditorInput, private forceOpenAsBinary?: boolean) {
+	constructor(name: string, description: string | null, original: EditorInput, modified: EditorInput, private readonly forceOpenAsBinary?: boolean) {
 		super(name, description, original, modified);
 	}
 
@@ -34,7 +34,7 @@ export class DiffEditorInput extends SideBySideEditorInput {
 		return this.master;
 	}
 
-	resolve(): Thenable<EditorModel> {
+	resolve(): Promise<EditorModel> {
 
 		// Create Model - we never reuse our cached model if refresh is true because we cannot
 		// decide for the inputs within if the cached model can be reused or not. There may be
@@ -55,7 +55,7 @@ export class DiffEditorInput extends SideBySideEditorInput {
 		return this.forceOpenAsBinary ? BINARY_DIFF_EDITOR_ID : TEXT_DIFF_EDITOR_ID;
 	}
 
-	private createModel(): Thenable<DiffEditorModel> {
+	private createModel(): Promise<DiffEditorModel> {
 
 		// Join resolve call over two inputs and build diff editor model
 		return Promise.all([

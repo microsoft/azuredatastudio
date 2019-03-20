@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IChannel, IServerChannel } from 'vs/base/parts/ipc/node/ipc';
+import { IChannel, IServerChannel } from 'vs/base/parts/ipc/common/ipc';
 import { ITelemetryAppender } from 'vs/platform/telemetry/common/telemetryUtils';
 import { Event } from 'vs/base/common/event';
 
@@ -20,7 +20,7 @@ export class TelemetryAppenderChannel implements IServerChannel {
 		throw new Error(`Event not found: ${event}`);
 	}
 
-	call(_, command: string, { eventName, data }: ITelemetryLog): Thenable<any> {
+	call(_, command: string, { eventName, data }: ITelemetryLog): Promise<any> {
 		this.appender.log(eventName, data);
 		return Promise.resolve(null);
 	}

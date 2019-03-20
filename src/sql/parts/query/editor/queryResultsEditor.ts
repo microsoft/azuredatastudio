@@ -5,7 +5,6 @@
 
 'use strict';
 
-import { TPromise } from 'vs/base/common/winjs.base';
 import { EditorOptions } from 'vs/workbench/common/editor';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { RawContextKey } from 'vs/platform/contextkey/common/contextkey';
@@ -126,7 +125,7 @@ export class QueryResultsEditor extends BaseEditor {
 			cssRuleText = this._rawOptions.cellPadding.join('px ') + 'px;';
 		}
 		let content = `.grid-panel .monaco-table .slick-cell { padding: ${cssRuleText} }`;
-		content += `.grid-panel .monaco-table { ${getBareResultsGridInfoStyles(this._rawOptions)} }`;
+		content += `.grid-panel .monaco-table, .message-tree { ${getBareResultsGridInfoStyles(this._rawOptions)} }`;
 		this.styleSheet.innerHTML = content;
 	}
 
@@ -148,10 +147,10 @@ export class QueryResultsEditor extends BaseEditor {
 		this.resultsView.layout(dimension);
 	}
 
-	setInput(input: QueryResultsInput, options: EditorOptions): TPromise<void> {
+	setInput(input: QueryResultsInput, options: EditorOptions): Promise<void> {
 		super.setInput(input, options, CancellationToken.None);
 		this.resultsView.input = input;
-		return TPromise.wrap<void>(null);
+		return Promise.resolve<void>(null);
 	}
 
 	clearInput() {

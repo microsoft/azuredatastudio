@@ -7,11 +7,10 @@ import * as chokidar from 'vscode-chokidar';
 import * as fs from 'fs';
 import * as gracefulFs from 'graceful-fs';
 gracefulFs.gracefulify(fs);
-import * as paths from 'vs/base/common/paths';
+import * as extpath from 'vs/base/common/extpath';
 import * as glob from 'vs/base/common/glob';
 import { FileChangeType } from 'vs/platform/files/common/files';
 import { ThrottledDelayer } from 'vs/base/common/async';
-import * as strings from 'vs/base/common/strings';
 import { normalizeNFC } from 'vs/base/common/normalization';
 import { realcaseSync } from 'vs/base/node/extfs';
 import { isMacintosh } from 'vs/base/common/platform';
@@ -58,13 +57,13 @@ export class ChokidarWatcherService implements IWatcherService {
 		return this.onWatchEvent;
 	}
 
-	public setVerboseLogging(enabled: boolean): Thenable<void> {
+	public setVerboseLogging(enabled: boolean): Promise<void> {
 		this._verboseLogging = enabled;
 
 		return Promise.resolve();
 	}
 
-	public setRoots(requests: IWatcherRequest[]): Thenable<void> {
+	public setRoots(requests: IWatcherRequest[]): Promise<void> {
 		const watchers = Object.create(null);
 		const newRequests: string[] = [];
 
@@ -220,7 +219,7 @@ export class ChokidarWatcherService implements IWatcherService {
 				this.spamCheckStartTime = now;
 			} else if (!this.spamWarningLogged && this.spamCheckStartTime + ChokidarWatcherService.EVENT_SPAM_WARNING_THRESHOLD < now) {
 				this.spamWarningLogged = true;
-				console.warn(strings.format('Watcher is busy catching up with {0} file changes in 60 seconds. Latest changed path is "{1}"', undeliveredFileEvents.length, event.path));
+				console.warn(`Watcher is busy catching up with ${undeliveredFileEvents.length} file changes in 60 seconds. Latest changed path is "${event.path}"`);
 			}
 
 			// Add to buffer
@@ -243,7 +242,7 @@ export class ChokidarWatcherService implements IWatcherService {
 						});
 					}
 
-					return Promise.resolve();
+					return Promise.resolve(undefined);
 				});
 			}
 		});
@@ -270,7 +269,7 @@ export class ChokidarWatcherService implements IWatcherService {
 		return watcher;
 	}
 
-	public stop(): Thenable<void> {
+	public stop(): Promise<void> {
 		for (let path in this._watchers) {
 			let watcher = this._watchers[path];
 			watcher.stop();
@@ -285,7 +284,7 @@ function isIgnored(path: string, requests: ExtendedWatcherRequest[]): boolean {
 		if (request.basePath === path) {
 			return false;
 		}
-		if (paths.isEqualOrParent(path, request.basePath)) {
+		if (extpath.isEqualOrParent(path, request.basePath)) {
 			if (!request.parsedPattern) {
 				if (request.ignored && request.ignored.length > 0) {
 					let pattern = `{${request.ignored.join(',')}}`;
@@ -314,7 +313,7 @@ export function normalizeRoots(requests: IWatcherRequest[]): { [basePath: string
 	for (let request of requests) {
 		let basePath = request.basePath;
 		let ignored = (request.ignored || []).sort();
-		if (prevRequest && (paths.isEqualOrParent(basePath, prevRequest.basePath))) {
+		if (prevRequest && (extpath.isEqualOrParent(basePath, prevRequest.basePath))) {
 			if (!isEqualIgnore(ignored, prevRequest.ignored)) {
 				result[prevRequest.basePath].push({ basePath, ignored });
 			}

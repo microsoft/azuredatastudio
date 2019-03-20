@@ -7,7 +7,6 @@
 import * as DOM from 'vs/base/browser/dom';
 import * as tree from 'vs/base/parts/tree/browser/tree';
 import * as TreeDefaults from 'vs/base/parts/tree/browser/treeDefaults';
-import { Promise, TPromise } from 'vs/base/common/winjs.base';
 import { IMouseEvent } from 'vs/base/browser/mouseEvent';
 import { generateUuid } from 'vs/base/common/uuid';
 import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
@@ -71,19 +70,19 @@ export class JobStepsViewDataSource implements tree.IDataSource {
 		}
 	}
 
-	public getChildren(tree: tree.ITree, element: JobStepsViewRow | JobStepsViewModel): Promise {
+	public getChildren(tree: tree.ITree, element: JobStepsViewRow | JobStepsViewModel): Promise<JobStepsViewRow[]> {
 		if (element instanceof JobStepsViewModel) {
-			return TPromise.as(this._data);
+			return Promise.resolve(this._data);
 		} else {
-			return TPromise.as(undefined);
+			return Promise.resolve(undefined);
 		}
 	}
 
-	public getParent(tree: tree.ITree, element: JobStepsViewRow | JobStepsViewModel): Promise {
+	public getParent(tree: tree.ITree, element: JobStepsViewRow | JobStepsViewModel): Promise<JobStepsViewModel> {
 		if (element instanceof JobStepsViewModel) {
-			return TPromise.as(undefined);
+			return Promise.resolve(undefined);
 		} else {
-			return TPromise.as(new JobStepsViewModel());
+			return Promise.resolve(new JobStepsViewModel());
 		}
 	}
 

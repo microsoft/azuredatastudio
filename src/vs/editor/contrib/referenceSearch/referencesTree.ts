@@ -3,11 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-
 import { ReferencesModel, FileReferences, OneReference } from './referencesModel';
-import { IDataSource } from 'vs/base/browser/ui/tree/asyncDataTree';
 import { ITextModelService } from 'vs/editor/common/services/resolverService';
-import { ITreeRenderer, ITreeNode } from 'vs/base/browser/ui/tree/tree';
+import { ITreeRenderer, ITreeNode, IAsyncDataSource } from 'vs/base/browser/ui/tree/tree';
 import { IconLabel } from 'vs/base/browser/ui/iconLabel/iconLabel';
 import { CountBadge } from 'vs/base/browser/ui/countBadge/countBadge';
 import { ILabelService } from 'vs/platform/label/common/label';
@@ -16,29 +14,26 @@ import { attachBadgeStyler } from 'vs/platform/theme/common/styler';
 import * as dom from 'vs/base/browser/dom';
 import { localize } from 'vs/nls';
 import { getBaseLabel } from 'vs/base/common/labels';
-import { dirname } from 'vs/base/common/resources';
+import { dirname, basename } from 'vs/base/common/resources';
 import { escape } from 'vs/base/common/strings';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IAccessibilityProvider } from 'vs/base/browser/ui/list/listWidget';
-import { IListVirtualDelegate } from 'vs/base/browser/ui/list/list';
+import { IListVirtualDelegate, IKeyboardNavigationLabelProvider, IIdentityProvider } from 'vs/base/browser/ui/list/list';
+import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
+import { FuzzyScore, createMatches, IMatch } from 'vs/base/common/filters';
 
 //#region data source
 
 export type TreeElement = FileReferences | OneReference;
 
-export class DataSource implements IDataSource<TreeElement> {
+export class DataSource implements IAsyncDataSource<ReferencesModel | FileReferences, TreeElement> {
 
-	root: ReferencesModel | FileReferences;
+	constructor(@ITextModelService private readonly _resolverService: ITextModelService) { }
 
-	constructor(
-		@ITextModelService private readonly _resolverService: ITextModelService,
-	) {
-		//
-	}
-
-	hasChildren(element: TreeElement): boolean {
-		if (!element) {
+	hasChildren(element: ReferencesModel | FileReferences | TreeElement): boolean {
+		if (element instanceof ReferencesModel) {
 			return true;
 		}
 		if (element instanceof FileReferences && !element.failure) {
@@ -47,10 +42,11 @@ export class DataSource implements IDataSource<TreeElement> {
 		return false;
 	}
 
-	getChildren(element: TreeElement): Thenable<TreeElement[]> {
-		if (!element && this.root instanceof FileReferences) {
-			element = this.root;
+	getChildren(element: ReferencesModel | FileReferences | TreeElement): TreeElement[] | Promise<TreeElement[]> {
+		if (element instanceof ReferencesModel) {
+			return element.groups;
 		}
+
 		if (element instanceof FileReferences) {
 			return element.resolve(this._resolverService).then(val => {
 				// if (element.failure) {
@@ -61,9 +57,7 @@ export class DataSource implements IDataSource<TreeElement> {
 				return val.children;
 			});
 		}
-		if (this.root instanceof ReferencesModel) {
-			return Promise.resolve(this.root.groups);
-		}
+
 		throw new Error('bad tree');
 	}
 }
@@ -83,6 +77,28 @@ export class Delegate implements IListVirtualDelegate<TreeElement> {
 	}
 }
 
+export class StringRepresentationProvider implements IKeyboardNavigationLabelProvider<TreeElement> {
+
+	constructor(@IKeybindingService private readonly _keybindingService: IKeybindingService) { }
+
+	getKeyboardNavigationLabel(element: TreeElement): { toString(): string; } {
+		// todo@joao `OneReference` elements are lazy and their "real" label
+		// isn't known yet
+		return basename(element.uri);
+	}
+
+	mightProducePrintableCharacter(event: IKeyboardEvent): boolean {
+		return this._keybindingService.mightProducePrintableCharacter(event);
+	}
+}
+
+export class IdentityProvider implements IIdentityProvider<TreeElement> {
+
+	getId(element: TreeElement): { toString(): string; } {
+		return element.id;
+	}
+}
+
 //#region render: File
 
 class FileReferencesTemplate extends Disposable {
@@ -98,7 +114,7 @@ class FileReferencesTemplate extends Disposable {
 		super();
 		const parent = document.createElement('div');
 		dom.addClass(parent, 'reference-file');
-		this.file = this._register(new IconLabel(parent));
+		this.file = this._register(new IconLabel(parent, { supportHighlights: true }));
 
 		this.badge = new CountBadge(dom.append(parent, dom.$('.count')));
 		this._register(attachBadgeStyler(this.badge, themeService));
@@ -106,9 +122,9 @@ class FileReferencesTemplate extends Disposable {
 		container.appendChild(parent);
 	}
 
-	set(element: FileReferences) {
+	set(element: FileReferences, matches: IMatch[]) {
 		let parent = dirname(element.uri);
-		this.file.setValue(getBaseLabel(element.uri), parent ? this._uriLabel.getUriLabel(parent, { relative: true }) : undefined, { title: this._uriLabel.getUriLabel(element.uri) });
+		this.file.setLabel(getBaseLabel(element.uri), this._uriLabel.getUriLabel(parent, { relative: true }), { title: this._uriLabel.getUriLabel(element.uri), matches });
 		const len = element.children.length;
 		this.badge.setCount(len);
 		if (element.failure) {
@@ -121,7 +137,7 @@ class FileReferencesTemplate extends Disposable {
 	}
 }
 
-export class FileReferencesRenderer implements ITreeRenderer<FileReferences, void, FileReferencesTemplate> {
+export class FileReferencesRenderer implements ITreeRenderer<FileReferences, FuzzyScore, FileReferencesTemplate> {
 
 	static readonly id = 'FileReferencesRenderer';
 
@@ -132,11 +148,8 @@ export class FileReferencesRenderer implements ITreeRenderer<FileReferences, voi
 	renderTemplate(container: HTMLElement): FileReferencesTemplate {
 		return this._instantiationService.createInstance(FileReferencesTemplate, container);
 	}
-	renderElement(node: ITreeNode<FileReferences, void>, index: number, template: FileReferencesTemplate): void {
-		template.set(node.element);
-	}
-	disposeElement(element: ITreeNode<FileReferences, void>, index: number, templateData: FileReferencesTemplate): void {
-		//
+	renderElement(node: ITreeNode<FileReferences, FuzzyScore>, index: number, template: FileReferencesTemplate): void {
+		template.set(node.element, createMatches(node.filterData));
 	}
 	disposeTemplate(templateData: FileReferencesTemplate): void {
 		templateData.dispose();
@@ -177,7 +190,7 @@ class OneReferenceTemplate {
 	}
 }
 
-export class OneReferenceRenderer implements ITreeRenderer<OneReference, void, OneReferenceTemplate> {
+export class OneReferenceRenderer implements ITreeRenderer<OneReference, FuzzyScore, OneReferenceTemplate> {
 
 	static readonly id = 'OneReferenceRenderer';
 
@@ -186,11 +199,8 @@ export class OneReferenceRenderer implements ITreeRenderer<OneReference, void, O
 	renderTemplate(container: HTMLElement): OneReferenceTemplate {
 		return new OneReferenceTemplate(container);
 	}
-	renderElement(element: ITreeNode<OneReference, void>, index: number, templateData: OneReferenceTemplate): void {
+	renderElement(element: ITreeNode<OneReference, FuzzyScore>, index: number, templateData: OneReferenceTemplate): void {
 		templateData.set(element.element);
-	}
-	disposeElement(): void {
-		//
 	}
 	disposeTemplate(): void {
 		//

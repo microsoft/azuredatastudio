@@ -10,7 +10,7 @@ import * as Constants from 'sql/common/constants';
 import { ConnectionProviderProperties, IConnectionProviderRegistry, Extensions as ConnectionExtensions } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
 import { toObject } from 'sql/base/common/map';
 
-import * as azdata from 'azdata';
+import * as azdata from 'sqlops';
 
 import { Event, Emitter } from 'vs/base/common/event';
 import { IAction } from 'vs/base/common/actions';
@@ -21,7 +21,7 @@ import { IStorageService, StorageScope } from 'vs/platform/storage/common/storag
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IExtensionManagementService } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
-import { getIdFromLocalExtensionId } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
+import { entries } from 'sql/base/common/objects';
 
 export const SERVICE_ID = 'capabilitiesService';
 export const HOST_NAME = 'azdata';
@@ -116,14 +116,14 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 		}
 
 		// handle in case some extensions have already registered (unlikley)
-		Object.entries(connectionRegistry.providers).map(v => {
+		entries(connectionRegistry.providers).map(v => {
 			this.handleConnectionProvider({ id: v[0], properties: v[1] });
 		});
 		// register for when new extensions are added
 		this._register(connectionRegistry.onNewProvider(this.handleConnectionProvider, this));
 
 		// handle adding already known capabilities (could have caching problems)
-		Object.entries(this.capabilities.connectionProviderCache).map(v => {
+		entries(this.capabilities.connectionProviderCache).map(v => {
 			this.handleConnectionProvider({ id: v[0], properties: v[1] }, false);
 		});
 
@@ -131,11 +131,12 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 			this.cleanupProviders();
 		});
 
+		_storageService.onWillSaveState(() => this.shutdown());
+
 		this._register(extentionManagementService.onDidUninstallExtension(({ identifier }) => {
 			const connectionProvider = 'connectionProvider';
-			let extensionid = getIdFromLocalExtensionId(identifier.id);
 			extensionService.getExtensions().then(i => {
-				let extension = i.find(c => c.id === extensionid);
+				let extension = i.find(c => c.identifier.value.toLowerCase() === identifier.id.toLowerCase());
 				if (extension && extension.contributes
 					&& extension.contributes[connectionProvider]
 					&& extension.contributes[connectionProvider].providerId) {
@@ -239,7 +240,7 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 		}
 	}
 
-	public shutdown(): void {
+	private shutdown(): void {
 		this._momento.saveMemento();
 	}
 }

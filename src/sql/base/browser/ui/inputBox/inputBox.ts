@@ -20,12 +20,12 @@ export interface IInputBoxStyles extends vsIInputBoxStyles {
 }
 
 export class InputBox extends vsInputBox {
-	private enabledInputBackground: Color;
-	private enabledInputForeground: Color;
-	private enabledInputBorder: Color;
-	private disabledInputBackground: Color;
-	private disabledInputForeground: Color;
-	private disabledInputBorder: Color;
+	private enabledInputBackground?: Color;
+	private enabledInputForeground?: Color;
+	private enabledInputBorder?: Color;
+	private disabledInputBackground?: Color;
+	private disabledInputForeground?: Color;
+	private disabledInputBorder?: Color;
 
 	private _lastLoseFocusValue: string;
 
@@ -41,8 +41,6 @@ export class InputBox extends vsInputBox {
 		this.enabledInputForeground = this.inputForeground;
 		this.enabledInputBorder = this.inputBorder;
 		this.disabledInputBackground = Color.transparent;
-		this.disabledInputForeground = null;
-		this.disabledInputBorder = null;
 
 		this._lastLoseFocusValue = this.value;
 		let self = this;

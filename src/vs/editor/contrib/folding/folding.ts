@@ -36,7 +36,7 @@ export const ID = 'editor.contrib.folding';
 
 export interface RangeProvider {
 	readonly id: string;
-	compute(cancelationToken: CancellationToken): Thenable<FoldingRegions | null>;
+	compute(cancelationToken: CancellationToken): Promise<FoldingRegions | null>;
 	dispose(): void;
 }
 
@@ -55,12 +55,12 @@ export class FoldingController implements IEditorContribution {
 		return editor.getContribution<FoldingController>(ID);
 	}
 
-	private editor: ICodeEditor;
+	private readonly editor: ICodeEditor;
 	private _isEnabled: boolean;
 	private _autoHideFoldingControls: boolean;
 	private _useFoldingProviders: boolean;
 
-	private foldingDecorationProvider: FoldingDecorationProvider;
+	private readonly foldingDecorationProvider: FoldingDecorationProvider;
 
 	private foldingModel: FoldingModel | null;
 	private hiddenRangeModel: HiddenRangeModel | null;
@@ -70,7 +70,7 @@ export class FoldingController implements IEditorContribution {
 
 	private foldingStateMemento: FoldingStateMemento | null;
 
-	private foldingModelPromise: Thenable<FoldingModel | null> | null;
+	private foldingModelPromise: Promise<FoldingModel | null> | null;
 	private updateScheduler: Delayer<FoldingModel | null> | null;
 
 	private globalToDispose: IDisposable[];
@@ -92,7 +92,6 @@ export class FoldingController implements IEditorContribution {
 		this.foldingDecorationProvider.autoHideFoldingControls = this._autoHideFoldingControls;
 
 		this.globalToDispose.push(this.editor.onDidChangeModel(() => this.onModelChanged()));
-		this.globalToDispose.push(FoldingRangeProviderRegistry.onDidChange(() => this.onFoldingStrategyChanged()));
 
 		this.globalToDispose.push(this.editor.onDidChangeConfiguration((e: IConfigurationChangedEvent) => {
 			if (e.contribInfo) {
@@ -136,10 +135,10 @@ export class FoldingController implements IEditorContribution {
 		}
 		if (this.foldingModel) { // disposed ?
 			let collapsedRegions = this.foldingModel.isInitialized ? this.foldingModel.getMemento() : this.hiddenRangeModel!.getMemento();
-			let provider = this.rangeProvider ? this.rangeProvider.id : void 0;
+			let provider = this.rangeProvider ? this.rangeProvider.id : undefined;
 			return { collapsedRegions, lineCount: model.getLineCount(), provider };
 		}
-		return void 0;
+		return undefined;
 	}
 
 	/**
@@ -193,7 +192,8 @@ export class FoldingController implements IEditorContribution {
 
 		this.cursorChangedScheduler = new RunOnceScheduler(() => this.revealCursor(), 200);
 		this.localToDispose.push(this.cursorChangedScheduler);
-		this.localToDispose.push(this.editor.onDidChangeModelLanguageConfiguration(() => this.onModelContentChanged())); // covers model language changes as well
+		this.localToDispose.push(FoldingRangeProviderRegistry.onDidChange(() => this.onFoldingStrategyChanged()));
+		this.localToDispose.push(this.editor.onDidChangeModelLanguageConfiguration(() => this.onFoldingStrategyChanged())); // covers model language changes as well
 		this.localToDispose.push(this.editor.onDidChangeModelContent(() => this.onModelContentChanged()));
 		this.localToDispose.push(this.editor.onDidChangeCursorPosition(() => this.onCursorPositionChanged()));
 		this.localToDispose.push(this.editor.onMouseDown(e => this.onEditorMouseDown(e)));
@@ -279,6 +279,9 @@ export class FoldingController implements IEditorContribution {
 					}
 					return foldingModel;
 				});
+			}).then(undefined, (err) => {
+				onUnexpectedError(err);
+				return null;
 			});
 		}
 	}
@@ -432,7 +435,7 @@ abstract class FoldingAction<T> extends EditorAction {
 
 	abstract invoke(foldingController: FoldingController, foldingModel: FoldingModel, editor: ICodeEditor, args: T): void;
 
-	public runEditorCommand(accessor: ServicesAccessor, editor: ICodeEditor, args: T): void | Thenable<void> {
+	public runEditorCommand(accessor: ServicesAccessor, editor: ICodeEditor, args: T): void | Promise<void> {
 		let foldingController = FoldingController.get(editor);
 		if (!foldingController) {
 			return;
@@ -519,7 +522,27 @@ class UnfoldAction extends FoldingAction<FoldingArguments> {
 						* 'direction': If 'up', unfold given number of levels up otherwise unfolds down.
 						* 'selectionLines': The start lines (0-based) of the editor selections to apply the unfold action to. If not set, the active selection(s) will be used.
 						`,
-						constraint: foldingArgumentsConstraint
+						constraint: foldingArgumentsConstraint,
+						schema: {
+							'type': 'object',
+							'properties': {
+								'levels': {
+									'type': 'number',
+									'default': 1
+								},
+								'direction': {
+									'type': 'string',
+									'enum': ['up', 'down'],
+									'default': 'down'
+								},
+								'selectionLines': {
+									'type': 'array',
+									'items': {
+										'type': 'number'
+									}
+								}
+							}
+						}
 					}
 				]
 			}
@@ -584,7 +607,27 @@ class FoldAction extends FoldingAction<FoldingArguments> {
 							* 'direction': If 'up', folds given number of levels up otherwise folds down.
 							* 'selectionLines': The start lines (0-based) of the editor selections to apply the fold action to. If not set, the active selection(s) will be used.
 						`,
-						constraint: foldingArgumentsConstraint
+						constraint: foldingArgumentsConstraint,
+						schema: {
+							'type': 'object',
+							'properties': {
+								'levels': {
+									'type': 'number',
+									'default': 1
+								},
+								'direction': {
+									'type': 'string',
+									'enum': ['up', 'down'],
+									'default': 'down'
+								},
+								'selectionLines': {
+									'type': 'array',
+									'items': {
+										'type': 'number'
+									}
+								}
+							}
+						}
 					}
 				]
 			}

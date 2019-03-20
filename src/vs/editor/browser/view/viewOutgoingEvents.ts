@@ -32,7 +32,7 @@ export class ViewOutgoingEvents extends Disposable {
 	public onMouseDrag: EventCallback<IEditorMouseEvent> | null = null;
 	public onMouseDrop: EventCallback<IPartialEditorMouseEvent> | null = null;
 
-	private _viewModel: IViewModel;
+	private readonly _viewModel: IViewModel;
 
 	constructor(viewModel: IViewModel) {
 		super();
@@ -47,13 +47,13 @@ export class ViewOutgoingEvents extends Disposable {
 
 	public emitViewFocusGained(): void {
 		if (this.onDidGainFocus) {
-			this.onDidGainFocus(void 0);
+			this.onDidGainFocus(undefined);
 		}
 	}
 
 	public emitViewFocusLost(): void {
 		if (this.onDidLoseFocus) {
-			this.onDidLoseFocus(void 0);
+			this.onDidLoseFocus(undefined);
 		}
 	}
 

@@ -22,7 +22,7 @@ export function listProcesses(rootPid: number): Promise<ProcessItem> {
 
 	return new Promise((resolve, reject) => {
 
-		let rootItem: ProcessItem;
+		let rootItem: ProcessItem | undefined;
 		const map = new Map<number, ProcessItem>();
 
 		function addToTree(pid: number, ppid: number, cmd: string, load: number, mem: number) {
@@ -109,7 +109,7 @@ export function listProcesses(rootPid: number): Promise<ProcessItem> {
 			} while (matches);
 
 			if (result) {
-				if (cmd.indexOf('node ') !== 0) {
+				if (cmd.indexOf('node ') < 0 && cmd.indexOf('node.exe') < 0) {
 					return `electron_node ${result}`;
 				}
 			}
@@ -151,7 +151,7 @@ export function listProcesses(rootPid: number): Promise<ProcessItem> {
 						rootItem = processItems.get(rootPid);
 						if (rootItem) {
 							processItems.forEach(item => {
-								let parent = processItems.get(item.ppid);
+								const parent = processItems.get(item.ppid);
 								if (parent) {
 									if (!parent.children) {
 										parent.children = [];
@@ -186,7 +186,7 @@ export function listProcesses(rootPid: number): Promise<ProcessItem> {
 
 					const lines = stdout.toString().split('\n');
 					for (const line of lines) {
-						let matches = PID_CMD.exec(line.trim());
+						const matches = PID_CMD.exec(line.trim());
 						if (matches && matches.length === 6) {
 							addToTree(parseInt(matches[1]), parseInt(matches[2]), matches[5], parseFloat(matches[3]), parseFloat(matches[4]));
 						}
@@ -218,7 +218,7 @@ export function listProcesses(rootPid: number): Promise<ProcessItem> {
 							} else {
 								const cpuUsage = stdout.toString().split('\n');
 								for (let i = 0; i < pids.length; i++) {
-									const processInfo = map.get(pids[i]);
+									const processInfo = map.get(pids[i])!;
 									processInfo.load = parseFloat(cpuUsage[i]);
 								}
 

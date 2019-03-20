@@ -6,7 +6,6 @@
 import { EditorInput, IEditorInput } from 'vs/workbench/common/editor';
 import { IInstantiationService, ServiceIdentifier } from 'vs/platform/instantiation/common/instantiation';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
-import { FileEditorInput } from 'vs/workbench/parts/files/common/editors/fileEditorInput';
 import { URI } from 'vs/base/common/uri';
 
 import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
@@ -14,9 +13,10 @@ import { QueryInput } from 'sql/parts/query/common/queryInput';
 import { IQueryEditorOptions } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { QueryPlanInput } from 'sql/parts/queryPlan/queryPlanInput';
 import { NotebookInput } from 'sql/parts/notebook/notebookInput';
-import { DEFAULT_NOTEBOOK_PROVIDER, INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
+import { INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
 import { ResourceEditorInput } from 'vs/workbench/common/editor/resourceEditorInput';
 import { notebookModeId } from 'sql/common/constants';
+import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 
 const fs = require('fs');
 
@@ -57,15 +57,12 @@ export function convertEditorInput(input: EditorInput, options: IQueryEditorOpti
 		//Notebook
 		uri = getNotebookEditorUri(input, instantiationService);
 		if (uri) {
-			return withService<INotebookService, NotebookInput>(instantiationService, INotebookService, notebookService => {
-				let fileName: string = 'untitled';
-				let providerIds: string[] = [DEFAULT_NOTEBOOK_PROVIDER];
-				if (input) {
-					fileName = input.getName();
-				}
-				let notebookInput: NotebookInput = instantiationService.createInstance(NotebookInput, fileName, uri);
-				return notebookInput;
-			});
+			let fileName: string = 'untitled';
+			if (input) {
+				fileName = input.getName();
+			}
+			let notebookInput: NotebookInput = instantiationService.createInstance(NotebookInput, fileName, uri, input);
+			return notebookInput;
 		}
 	}
 	return input;

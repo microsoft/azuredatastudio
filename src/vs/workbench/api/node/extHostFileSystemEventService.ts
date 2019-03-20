@@ -8,11 +8,11 @@ import { AsyncEmitter, Emitter, Event } from 'vs/base/common/event';
 import { IRelativePattern, parse } from 'vs/base/common/glob';
 import { URI, UriComponents } from 'vs/base/common/uri';
 import { ExtHostDocumentsAndEditors } from 'vs/workbench/api/node/extHostDocumentsAndEditors';
-import { IExtensionDescription } from 'vs/workbench/services/extensions/common/extensions';
 import * as vscode from 'vscode';
-import { ExtHostFileSystemEventServiceShape, FileSystemEvents, IMainContext, MainContext, ResourceFileEditDto, ResourceTextEditDto, MainThreadTextEditorsShape } from './extHost.protocol';
+import { ExtHostFileSystemEventServiceShape, FileSystemEvents, IMainContext, MainContext, ResourceFileEditDto, ResourceTextEditDto, MainThreadTextEditorsShape } from '../common/extHost.protocol';
 import * as typeConverter from './extHostTypeConverters';
 import { Disposable, WorkspaceEdit } from './extHostTypes';
+import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 
 class FileSystemWatcher implements vscode.FileSystemWatcher {
 
@@ -49,10 +49,10 @@ class FileSystemWatcher implements vscode.FileSystemWatcher {
 
 		const parsedPattern = parse(globPattern);
 
-		let subscription = dispatcher(events => {
+		const subscription = dispatcher(events => {
 			if (!ignoreCreateEvents) {
 				for (let created of events.created) {
-					let uri = URI.revive(created);
+					const uri = URI.revive(created);
 					if (parsedPattern(uri.fsPath)) {
 						this._onDidCreate.fire(uri);
 					}
@@ -60,7 +60,7 @@ class FileSystemWatcher implements vscode.FileSystemWatcher {
 			}
 			if (!ignoreChangeEvents) {
 				for (let changed of events.changed) {
-					let uri = URI.revive(changed);
+					const uri = URI.revive(changed);
 					if (parsedPattern(uri.fsPath)) {
 						this._onDidChange.fire(uri);
 					}
@@ -68,7 +68,7 @@ class FileSystemWatcher implements vscode.FileSystemWatcher {
 			}
 			if (!ignoreDeleteEvents) {
 				for (let deleted of events.deleted) {
-					let uri = URI.revive(deleted);
+					const uri = URI.revive(deleted);
 					if (parsedPattern(uri.fsPath)) {
 						this._onDidDelete.fire(uri);
 					}
@@ -131,15 +131,15 @@ export class ExtHostFileSystemEventService implements ExtHostFileSystemEventServ
 
 	getOnWillRenameFileEvent(extension: IExtensionDescription): Event<vscode.FileWillRenameEvent> {
 		return (listener, thisArg, disposables) => {
-			let wrappedListener = <WillRenameListener><any>function () {
-				listener.apply(thisArg, arguments);
-			};
+			const wrappedListener: WillRenameListener = <any>((e: vscode.FileWillRenameEvent) => {
+				listener.call(thisArg, e);
+			});
 			wrappedListener.extension = extension;
 			return this._onWillRenameFile.event(wrappedListener, undefined, disposables);
 		};
 	}
 
-	$onWillRename(oldUriDto: UriComponents, newUriDto: UriComponents): Thenable<any> {
+	$onWillRename(oldUriDto: UriComponents, newUriDto: UriComponents): Promise<any> {
 		const oldUri = URI.revive(oldUriDto);
 		const newUri = URI.revive(newUriDto);
 
@@ -148,7 +148,7 @@ export class ExtHostFileSystemEventService implements ExtHostFileSystemEventServ
 			return {
 				oldUri,
 				newUri,
-				waitUntil: (thenable: Thenable<vscode.WorkspaceEdit>): void => {
+				waitUntil: (thenable: Promise<vscode.WorkspaceEdit>): void => {
 					if (Object.isFrozen(bucket)) {
 						throw new TypeError('waitUntil cannot be called async');
 					}
@@ -163,13 +163,13 @@ export class ExtHostFileSystemEventService implements ExtHostFileSystemEventServ
 					bucket.push(wrappedThenable);
 				}
 			};
-		}).then(() => {
+		}).then((): any => {
 			if (edits.length === 0) {
 				return undefined;
 			}
 			// flatten all WorkspaceEdits collected via waitUntil-call
 			// and apply them in one go.
-			let allEdits = new Array<(ResourceFileEditDto | ResourceTextEditDto)[]>();
+			const allEdits = new Array<Array<ResourceFileEditDto | ResourceTextEditDto>>();
 			for (let edit of edits) {
 				if (edit) { // sparse array
 					let { edits } = typeConverter.WorkspaceEdit.from(edit, this._extHostDocumentsAndEditors);

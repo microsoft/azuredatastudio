@@ -1,18 +1,26 @@
 {
 	"compilerOptions": {
 		"module": "amd",
-		"moduleResolution": "classic",
+		"moduleResolution": "node",
 		"noImplicitAny": false,
 		"target": "es5",
 		"experimentalDecorators": true,
 		"noImplicitReturns": true,
-		"noUnusedLocals": true,
+		"noUnusedLocals": false,
 		"noImplicitThis": true,
 		"alwaysStrict": true,
+		"strictBindCallApply": true,
+		"strictNullChecks": false,
 		"baseUrl": ".",
 		"paths": {
 			"vs/*": [
 				"./vs/*"
+			],
+			"sql/*": [
+				"./sql/*"
+			],
+			"sqltest/*": [
+				"./sqltest/*"
 			]
 		},
 		"types": [

@@ -321,6 +321,16 @@
         "category": "Git"
       },
       {
+        "command": "git.addRemote",
+        "title": "%command.addRemote%",
+        "category": "Git"
+      },
+      {
+        "command": "git.removeRemote",
+        "title": "%command.removeRemote%",
+        "category": "Git"
+      },
+      {
         "command": "git.sync",
         "title": "%command.sync%",
         "category": "Git"
@@ -571,6 +581,14 @@
           "when": "config.git.enabled && config.git.allowForcePush && gitOpenRepositoryCount != 0"
         },
         {
+          "command": "git.addRemote",
+          "when": "config.git.enabled && gitOpenRepositoryCount != 0"
+        },
+        {
+          "command": "git.removeRemote",
+          "when": "config.git.enabled && gitOpenRepositoryCount != 0"
+        },
+        {
           "command": "git.sync",
           "when": "config.git.enabled && gitOpenRepositoryCount != 0"
         },
@@ -662,9 +680,19 @@
           "when": "scmProvider == git"
         },
         {
+          "command": "git.pushForce",
+          "group": "1_sync",
+          "when": "scmProvider == git && config.git.allowForcePush"
+        },
+        {
           "command": "git.pushTo",
           "group": "1_sync",
           "when": "scmProvider == git"
+        },
+        {
+          "command": "git.pushToForce",
+          "group": "1_sync",
+          "when": "scmProvider == git && config.git.allowForcePush"
         },
         {
           "command": "git.publish",
@@ -1018,11 +1046,18 @@
         },
         "git.autofetch": {
           "type": "boolean",
+          "scope": "resource",
           "description": "%config.autofetch%",
           "default": false,
           "tags": [
             "usesOnlineServices"
           ]
+        },
+        "git.autofetchPeriod": {
+          "type": "number",
+          "scope": "resource",
+          "description": "%config.autofetchPeriod%",
+          "default": 180
         },
         "git.branchValidationRegex": {
           "type": "string",
@@ -1133,6 +1168,7 @@
             "%config.postCommitCommand.sync%"
           ],
           "markdownDescription": "%config.postCommitCommand%",
+          "scope": "resource",
           "default": "none"
         },
         "git.showInlineOpenFileAction": {
@@ -1159,6 +1195,14 @@
           "type": "number",
           "default": 72,
           "description": "%config.inputValidationLength%"
+        },
+        "git.inputValidationSubjectLength": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "default": 50,
+          "description": "%config.inputValidationSubjectLength%"
         },
         "git.detectSubmodules": {
           "type": "boolean",
@@ -1214,6 +1258,12 @@
           "default": false,
           "description": "%config.fetchOnPull%"
         },
+        "git.autoStash": {
+          "type": "boolean",
+          "scope": "resource",
+          "default": false,
+          "description": "%config.autoStash%"
+        },
         "git.allowForcePush": {
           "type": "boolean",
           "default": false,
@@ -1231,6 +1281,7 @@
         },
         "git.openDiffOnClick": {
           "type": "boolean",
+          "scope": "resource",
           "default": true,
           "description": "%config.openDiffOnClick%"
         }
@@ -1385,7 +1436,7 @@
     "file-type": "^7.2.0",
     "iconv-lite": "^0.4.24",
     "jschardet": "^1.6.0",
-    "vscode-extension-telemetry": "0.1.0",
+    "vscode-extension-telemetry": "0.1.1",
     "vscode-nls": "^4.0.0",
     "which": "^1.3.0"
   },
@@ -1393,7 +1444,7 @@
     "@types/byline": "4.2.31",
     "@types/file-type": "^5.2.1",
     "@types/mocha": "2.2.43",
-    "@types/node": "^8.10.25",
+    "@types/node": "^10.12.21",
     "@types/which": "^1.0.28",
     "mocha": "^3.2.0"
   }

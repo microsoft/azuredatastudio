@@ -32,6 +32,7 @@ import { TreeNode, TreeItemCollapsibleState } from 'sql/parts/objectExplorer/com
 import { SERVER_GROUP_CONFIG, SERVER_GROUP_AUTOEXPAND_CONFIG } from 'sql/parts/objectExplorer/serverGroupDialog/serverGroup.contribution';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { ServerTreeActionProvider } from 'sql/parts/objectExplorer/viewlet/serverTreeActionProvider';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 
 const $ = builder.$;
 
@@ -54,7 +55,8 @@ export class ServerTreeView {
 		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
 		@IThemeService private _themeService: IThemeService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
-		@IConfigurationService private _configurationService: IConfigurationService
+		@IConfigurationService private _configurationService: IConfigurationService,
+		@ICapabilitiesService capabilitiesService: ICapabilitiesService
 	) {
 		this._activeConnectionsFilterAction = this._instantiationService.createInstance(
 			ActiveConnectionsFilterAction,
@@ -64,6 +66,12 @@ export class ServerTreeView {
 		this._treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
 		this._onSelectionOrFocusChange = new Emitter();
 		this._actionProvider = this._instantiationService.createInstance(ServerTreeActionProvider);
+		capabilitiesService.onCapabilitiesRegistered(() => {
+			if (this._connectionManagementService.hasRegisteredServers()) {
+				this.refreshTree();
+				this._treeSelectionHandler.onTreeActionStateChange(false);
+			}
+		});
 	}
 
 	/**
@@ -164,7 +172,7 @@ export class ServerTreeView {
 		return uri && uri.startsWith(ConnectionUtils.uriPrefixes.default) && !isBackupRestoreUri;
 	}
 
-	private handleAddConnectionProfile(newProfile: IConnectionProfile) {
+	private async handleAddConnectionProfile(newProfile: IConnectionProfile): Promise<void> {
 		if (newProfile) {
 			let groups = this._connectionManagementService.getConnectionGroups();
 			let profile = ConnectionUtils.findProfileInGroup(newProfile, groups);
@@ -183,7 +191,7 @@ export class ServerTreeView {
 		if (newProfile && currentSelectedElement && !newProfileIsSelected) {
 			this._tree.clearSelection();
 		}
-		this.refreshTree();
+		await this.refreshTree();
 		if (newProfile && !newProfileIsSelected) {
 			this._tree.reveal(newProfile);
 			this._tree.select(newProfile);
@@ -248,10 +256,10 @@ export class ServerTreeView {
 		return Promise.resolve();
 	}
 
-	public refreshTree(): void {
+	public refreshTree(): Promise<void> {
 		this.messages.hide();
 		this.clearOtherActions();
-		TreeUpdateUtils.registeredServerUpdate(this._tree, this._connectionManagementService);
+		return TreeUpdateUtils.registeredServerUpdate(this._tree, this._connectionManagementService);
 	}
 
 	public refreshElement(element: any): Thenable<void> {

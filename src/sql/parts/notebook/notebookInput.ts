@@ -6,7 +6,6 @@
 'use strict';
 
 import * as nls from 'vs/nls';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { IEditorModel } from 'vs/platform/editor/common/editor';
 import { EditorInput, EditorModel, ConfirmResult } from 'vs/workbench/common/editor';
 import { Emitter, Event } from 'vs/base/common/event';
@@ -15,7 +14,7 @@ import * as resources from 'vs/base/common/resources';
 import * as azdata from 'azdata';
 
 import { IStandardKernelWithProvider, getProvidersForFileName, getStandardKernelsForProvider } from 'sql/parts/notebook/notebookUtils';
-import { INotebookService, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/common/notebookService';
+import { INotebookService, DEFAULT_NOTEBOOK_PROVIDER, IProviderInfo } from 'sql/workbench/services/notebook/common/notebookService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITextModelService } from 'vs/editor/common/services/resolverService';
 import { INotebookModel, IContentManager } from 'sql/parts/notebook/models/modelInterfaces';
@@ -27,9 +26,11 @@ import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/un
 import { notebookModeId } from 'sql/common/constants';
 import { ITextFileService, ISaveOptions } from 'vs/workbench/services/textfile/common/textfiles';
 import { LocalContentManager } from 'sql/workbench/services/notebook/node/localContentManager';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
+import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
-
 
 export class NotebookEditorModel extends EditorModel {
 	private dirty: boolean;
@@ -44,8 +45,8 @@ export class NotebookEditorModel extends EditorModel {
 			if (notebook.id === this.notebookUri.toString()) {
 				// Hook to content change events
 				notebook.modelReady.then(() => {
-					this._register(notebook.model.contentChanged(e => this.updateModel()));
 					this._register(notebook.model.kernelChanged(e => this.updateModel()));
+					this._register(notebook.model.contentChanged(e => this.updateModel()));
 				}, err => undefined);
 			}
 		}));
@@ -75,7 +76,7 @@ export class NotebookEditorModel extends EditorModel {
 		this._onDidChangeDirty.fire();
 	}
 
-	public confirmSave(): TPromise<ConfirmResult> {
+	public confirmSave(): Promise<ConfirmResult> {
 		return this.textFileService.confirmSave([this.notebookUri]);
 	}
 
@@ -83,10 +84,10 @@ export class NotebookEditorModel extends EditorModel {
 	 * UntitledEditor uses TextFileService to save data from UntitledEditorInput
 	 * Titled editor uses TextFileEditorModel to save existing notebook
 	*/
-	save(options: ISaveOptions): TPromise<boolean> {
+	save(options: ISaveOptions): Promise<boolean> {
 		if (this.textEditorModel instanceof TextFileEditorModel) {
 			this.textEditorModel.save(options);
-			return TPromise.as(true);
+			return Promise.resolve(true);
 		}
 		else {
 			return this.textFileService.save(this.notebookUri, options);
@@ -99,7 +100,8 @@ export class NotebookEditorModel extends EditorModel {
 			let content = JSON.stringify(notebookModel.toJSON(), undefined, '    ');
 			let model = this.textEditorModel.textEditorModel;
 			let endLine = model.getLineCount();
-			let endCol = model.getLineLength(endLine);
+			let endCol = model.getLineMaxColumn(endLine);
+
 			this.textEditorModel.textEditorModel.applyEdits([{
 				range: new Range(1, 1, endLine, endCol),
 				text: content
@@ -129,7 +131,7 @@ export class NotebookInput extends EditorInput {
 	private _providerId: string;
 	private _providers: string[];
 	private _standardKernels: IStandardKernelWithProvider[];
-	private _connectionProfileId: string;
+	private _connectionProfile: IConnectionProfile;
 	private _defaultKernel: azdata.nb.IKernelSpec;
 	private _isTrusted: boolean = false;
 	public hasBootstrapped = false;
@@ -137,25 +139,33 @@ export class NotebookInput extends EditorInput {
 	private _parentContainer: HTMLElement;
 	private readonly _layoutChanged: Emitter<void> = this._register(new Emitter<void>());
 	private _model: NotebookEditorModel;
-	private _untitledEditorService: IUntitledEditorService;
 	private _contentManager: IContentManager;
+	private _providersLoaded: Promise<void>;
 
 	constructor(private _title: string,
 		private resource: URI,
+		private _textInput: UntitledEditorInput,
 		@ITextModelService private textModelService: ITextModelService,
-		@IUntitledEditorService untitledEditorService: IUntitledEditorService,
 		@IInstantiationService private instantiationService: IInstantiationService,
-		@INotebookService private notebookService: INotebookService
+		@INotebookService private notebookService: INotebookService,
+		@IExtensionService private extensionService: IExtensionService
 	) {
 		super();
-		this._untitledEditorService = untitledEditorService;
 		this.resource = resource;
 		this._standardKernels = [];
-		this.assignProviders();
+		this._providersLoaded = this.assignProviders();
 	}
 
-	public confirmSave(): TPromise<ConfirmResult> {
+	public get textInput(): UntitledEditorInput {
+		return this._textInput;
+	}
+
+	public confirmSave(): Promise<ConfirmResult> {
 		return this._model.confirmSave();
+	}
+
+	public revert(): Promise<boolean> {
+		return this._textInput.revert();
 	}
 
 	public get notebookUri(): URI {
@@ -176,14 +186,13 @@ export class NotebookInput extends EditorInput {
 		return this._title;
 	}
 
-	public get providerId(): string {
-		return this._providerId;
+	public async getProviderInfo(): Promise<IProviderInfo> {
+		await this._providersLoaded;
+		return {
+			providerId: this._providerId ? this._providerId : DEFAULT_NOTEBOOK_PROVIDER,
+			providers: this._providers ? this._providers : [DEFAULT_NOTEBOOK_PROVIDER]
+		};
 	}
-
-	public set providerId(value: string) {
-		this._providerId = value;
-	}
-
 	public get isTrusted(): boolean {
 		return this._isTrusted;
 	}
@@ -192,27 +201,19 @@ export class NotebookInput extends EditorInput {
 		this._isTrusted = value;
 	}
 
-	public set connectionProfileId(value: string) {
-		this._connectionProfileId = value;
+	public set connectionProfile(value: IConnectionProfile) {
+		this._connectionProfile = value;
 	}
 
-	public get connectionProfileId(): string {
-		return this._connectionProfileId;
+	public get connectionProfile(): IConnectionProfile {
+		return this._connectionProfile;
 	}
 
 	public get standardKernels(): IStandardKernelWithProvider[] {
 		return this._standardKernels;
 	}
 
-	public get providers(): string[] {
-		return this._providers;
-	}
-
-	public set providers(value: string[]) {
-		this._providers = value;
-	}
-
-	public save(): TPromise<boolean> {
+	public save(): Promise<boolean> {
 		let options: ISaveOptions = { force: false };
 		return this._model.save(options);
 	}
@@ -252,13 +253,13 @@ export class NotebookInput extends EditorInput {
 		return this.resource;
 	}
 
-	async resolve(): TPromise<NotebookEditorModel> {
+	async resolve(): Promise<NotebookEditorModel> {
 		if (this._model && this._model.isModelCreated()) {
-			return TPromise.as(this._model);
+			return Promise.resolve(this._model);
 		} else {
 			let textOrUntitledEditorModel: UntitledEditorModel | IEditorModel;
 			if (this.resource.scheme === Schemas.untitled) {
-				textOrUntitledEditorModel = await this._untitledEditorService.loadOrCreate({ resource: this.resource, modeId: notebookModeId });
+				textOrUntitledEditorModel = await this._textInput.resolve();
 			}
 			else {
 				const textEditorModelReference = await this.textModelService.createModelReference(this.resource);
@@ -270,7 +271,8 @@ export class NotebookInput extends EditorInput {
 		}
 	}
 
-	private assignProviders(): void {
+	private async assignProviders(): Promise<void> {
+		await this.extensionService.whenInstalledExtensionsRegistered();
 		let providerIds: string[] = getProvidersForFileName(this._title, this.notebookService);
 		if (providerIds && providerIds.length > 0) {
 			this._providerId = providerIds.filter(provider => provider !== DEFAULT_NOTEBOOK_PROVIDER)[0];

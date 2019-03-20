@@ -3,14 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { TPromise } from 'vs/base/common/winjs.base';
 import { EditorInput, ITextEditorModel } from 'vs/workbench/common/editor';
 import { URI } from 'vs/base/common/uri';
 import { IReference } from 'vs/base/common/lifecycle';
-import { telemetryURIDescriptor } from 'vs/platform/telemetry/common/telemetryUtils';
 import { ITextModelService } from 'vs/editor/common/services/resolverService';
 import { ResourceEditorModel } from 'vs/workbench/common/editor/resourceEditorModel';
-import { IHashService } from 'vs/workbench/services/hash/common/hashService';
 
 /**
  * A read-only text editor input whos contents are made of the provided resource that points to an existing
@@ -20,17 +17,13 @@ export class ResourceEditorInput extends EditorInput {
 
 	static readonly ID: string = 'workbench.editors.resourceEditorInput';
 
-	private modelReference: TPromise<IReference<ITextEditorModel>>;
-	private resource: URI;
-	private name: string;
-	private description: string;
+	private modelReference: Promise<IReference<ITextEditorModel>> | null;
 
 	constructor(
-		name: string,
-		description: string,
-		resource: URI,
-		@ITextModelService private textModelResolverService: ITextModelService,
-		@IHashService private hashService: IHashService
+		private name: string,
+		private description: string | null,
+		private readonly resource: URI,
+		@ITextModelService private readonly textModelResolverService: ITextModelService
 	) {
 		super();
 
@@ -58,7 +51,7 @@ export class ResourceEditorInput extends EditorInput {
 		}
 	}
 
-	getDescription(): string {
+	getDescription(): string | null {
 		return this.description;
 	}
 
@@ -69,19 +62,7 @@ export class ResourceEditorInput extends EditorInput {
 		}
 	}
 
-	getTelemetryDescriptor(): object {
-		const descriptor = super.getTelemetryDescriptor();
-		descriptor['resource'] = telemetryURIDescriptor(this.resource, path => this.hashService.createSHA1(path));
-
-		/* __GDPR__FRAGMENT__
-			"EditorTelemetryDescriptor" : {
-				"resource": { "${inline}": [ "${URIDescriptor}" ] }
-			}
-		*/
-		return descriptor;
-	}
-
-	resolve(): Thenable<ITextEditorModel> {
+	resolve(): Promise<ITextEditorModel> {
 		if (!this.modelReference) {
 			this.modelReference = this.textModelResolverService.createModelReference(this.resource);
 		}
@@ -93,7 +74,7 @@ export class ResourceEditorInput extends EditorInput {
 				ref.dispose();
 				this.modelReference = null;
 
-				return Promise.reject(new Error(`Unexpected model for ResourceInput: ${this.resource}`));
+				return Promise.reject<any>(new Error(`Unexpected model for ResourceInput: ${this.resource}`));
 			}
 
 			return model;

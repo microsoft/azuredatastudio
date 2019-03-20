@@ -15,7 +15,7 @@ suite('StandaloneKeybindingService', () => {
 
 	class TestStandaloneKeybindingService extends StandaloneKeybindingService {
 		public testDispatch(e: IKeyboardEvent): void {
-			super._dispatch(e, null);
+			super._dispatch(e, null!);
 		}
 	}
 
@@ -42,12 +42,13 @@ suite('StandaloneKeybindingService', () => {
 		}, null);
 
 		keybindingService.testDispatch({
+			_standardKeyboardEventBrand: true,
 			ctrlKey: false,
 			shiftKey: false,
 			altKey: false,
 			metaKey: false,
 			keyCode: KeyCode.F9,
-			code: null
+			code: null!
 		});
 
 		assert.ok(commandInvoked, 'command invoked');

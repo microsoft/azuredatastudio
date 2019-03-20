@@ -3,16 +3,16 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IChannel, IServerChannel } from 'vs/base/parts/ipc/node/ipc';
+import { IChannel, IServerChannel } from 'vs/base/parts/ipc/common/ipc';
 import { LogLevel, ILogService, DelegatedLogService } from 'vs/platform/log/common/log';
-import { Event, buffer } from 'vs/base/common/event';
+import { Event } from 'vs/base/common/event';
 
 export class LogLevelSetterChannel implements IServerChannel {
 
 	onDidChangeLogLevel: Event<LogLevel>;
 
 	constructor(private service: ILogService) {
-		this.onDidChangeLogLevel = buffer(service.onDidChangeLogLevel, true);
+		this.onDidChangeLogLevel = Event.buffer(service.onDidChangeLogLevel, true);
 	}
 
 	listen(_, event: string): Event<any> {
@@ -23,9 +23,9 @@ export class LogLevelSetterChannel implements IServerChannel {
 		throw new Error(`Event not found: ${event}`);
 	}
 
-	call(_, command: string, arg?: any): Thenable<any> {
+	call(_, command: string, arg?: any): Promise<any> {
 		switch (command) {
-			case 'setLevel': this.service.setLevel(arg);
+			case 'setLevel': this.service.setLevel(arg); return Promise.resolve();
 		}
 
 		throw new Error(`Call not found: ${command}`);

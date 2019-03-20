@@ -3,11 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
-import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
+import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { TaskRegistry, ITaskHandlerDescription } from 'sql/platform/tasks/common/tasks';
 import { IDisposable } from 'vs/base/common/lifecycle';
-import { TPromise } from 'vs/base/common/winjs.base';
-import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
+import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 
 import {
 	ExtHostAccountManagementShape,
@@ -42,7 +41,7 @@ export class MainThreadTasks implements MainThreadTasksShape {
 		this._generateCommandsDocumentationRegistration.dispose();
 	}
 
-	$registerTask(id: string): TPromise<any> {
+	$registerTask(id: string): Promise<any> {
 		this._disposables.set(
 			id,
 			TaskRegistry.registerTask(id, (accessor, profile: IConnectionProfile, ...args) => {
@@ -55,7 +54,7 @@ export class MainThreadTasks implements MainThreadTasksShape {
 		return undefined;
 	}
 
-	$unregisterTask(id: string): TPromise<any> {
+	$unregisterTask(id: string): Promise<any> {
 		if (this._disposables.has(id)) {
 			this._disposables.get(id).dispose();
 			this._disposables.delete(id);

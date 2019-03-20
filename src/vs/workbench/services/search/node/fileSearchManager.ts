@@ -3,15 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as path from 'path';
+import * as path from 'vs/base/common/path';
 import { CancellationToken, CancellationTokenSource } from 'vs/base/common/cancellation';
 import { toErrorMessage } from 'vs/base/common/errorMessage';
 import * as glob from 'vs/base/common/glob';
 import * as resources from 'vs/base/common/resources';
 import { StopWatch } from 'vs/base/common/stopwatch';
 import { URI } from 'vs/base/common/uri';
-import { IFileMatch, IFileSearchProviderStats, IFolderQuery, ISearchCompleteStats, IFileQuery } from 'vs/platform/search/common/search';
-import { QueryGlobTester, resolvePatternsForProvider } from 'vs/workbench/services/search/node/search';
+import { IFileMatch, IFileSearchProviderStats, IFolderQuery, ISearchCompleteStats, IFileQuery, QueryGlobTester, resolvePatternsForProvider } from 'vs/workbench/services/search/common/search';
 import * as vscode from 'vscode';
 
 export interface IInternalFileMatch {
@@ -56,13 +55,13 @@ class FileSearchEngine {
 		this.globalExcludePattern = config.excludePattern && glob.parse(config.excludePattern);
 	}
 
-	public cancel(): void {
+	cancel(): void {
 		this.isCanceled = true;
 		this.activeCancellationTokens.forEach(t => t.cancel());
 		this.activeCancellationTokens = new Set();
 	}
 
-	public search(_onResult: (match: IInternalFileMatch) => void): Promise<IInternalSearchComplete> {
+	search(_onResult: (match: IInternalFileMatch) => void): Promise<IInternalSearchComplete> {
 		const folderQueries = this.config.folderQueries || [];
 
 		return new Promise((resolve, reject) => {

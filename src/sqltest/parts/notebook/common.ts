@@ -89,9 +89,6 @@ export class NotebookModelStub implements INotebookModel {
 	deleteCell(cellModel: ICellModel): void {
 		throw new Error('Method not implemented.');
 	}
-	saveModel(): Promise<boolean> {
-		throw new Error('Method not implemented.');
-	}
 	pushEditOperations(edits: ISingleNotebookEditOperation[]): void {
 		throw new Error('Method not implemented.');
 	}

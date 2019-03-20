@@ -30,6 +30,7 @@ import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegis
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { contrastBorder, editorWidgetBackground, widgetShadow } from 'vs/platform/theme/common/colorRegistry';
 import { registerThemingParticipant } from 'vs/platform/theme/common/themeService';
+import { AccessibilitySupport } from 'vs/platform/accessibility/common/accessibility';
 
 const CONTEXT_ACCESSIBILITY_WIDGET_VISIBLE = new RawContextKey<boolean>('accessibilityHelpWidgetVisible', false);
 
@@ -43,8 +44,8 @@ class AccessibilityHelpController extends Disposable
 		);
 	}
 
-	private _editor: ICodeEditor;
-	private _widget: AccessibilityHelpWidget;
+	private readonly _editor: ICodeEditor;
+	private readonly _widget: AccessibilityHelpWidget;
 
 	constructor(
 		editor: ICodeEditor,
@@ -77,7 +78,7 @@ const nlsSingleSelection = nls.localize("singleSelection", "Line {0}, Column {1}
 const nlsMultiSelectionRange = nls.localize("multiSelectionRange", "{0} selections ({1} characters selected)");
 const nlsMultiSelection = nls.localize("multiSelection", "{0} selections");
 
-function getSelectionLabel(selections: Selection[] | null, charactersSelected: number): string | null {
+function getSelectionLabel(selections: Selection[] | null, charactersSelected: number): string {
 	if (!selections || selections.length === 0) {
 		return nlsNoSelection;
 	}
@@ -98,7 +99,7 @@ function getSelectionLabel(selections: Selection[] | null, charactersSelected: n
 		return strings.format(nlsMultiSelection, selections.length);
 	}
 
-	return null;
+	return '';
 }
 
 class AccessibilityHelpWidget extends Widget implements IOverlayWidget {
@@ -106,11 +107,11 @@ class AccessibilityHelpWidget extends Widget implements IOverlayWidget {
 	private static readonly WIDTH = 500;
 	private static readonly HEIGHT = 300;
 
-	private _editor: ICodeEditor;
-	private _domNode: FastDomNode<HTMLElement>;
-	private _contentDomNode: FastDomNode<HTMLElement>;
+	private readonly _editor: ICodeEditor;
+	private readonly _domNode: FastDomNode<HTMLElement>;
+	private readonly _contentDomNode: FastDomNode<HTMLElement>;
 	private _isVisible: boolean;
-	private _isVisibleKey: IContextKey<boolean>;
+	private readonly _isVisibleKey: IContextKey<boolean>;
 
 	constructor(
 		editor: ICodeEditor,
@@ -263,13 +264,13 @@ class AccessibilityHelpWidget extends Widget implements IOverlayWidget {
 				: nls.localize("changeConfigToOnWinLinux", "To configure the editor to be optimized for usage with a Screen Reader press Control+E now.")
 		);
 		switch (opts.accessibilitySupport) {
-			case platform.AccessibilitySupport.Unknown:
+			case AccessibilitySupport.Unknown:
 				text += '\n\n - ' + turnOnMessage;
 				break;
-			case platform.AccessibilitySupport.Enabled:
+			case AccessibilitySupport.Enabled:
 				text += '\n\n - ' + nls.localize("auto_on", "The editor is configured to be optimized for usage with a Screen Reader.");
 				break;
-			case platform.AccessibilitySupport.Disabled:
+			case AccessibilitySupport.Disabled:
 				text += '\n\n - ' + nls.localize("auto_off", "The editor is configured to never be optimized for usage with a Screen Reader, which is not the case at this time.");
 				text += ' ' + turnOnMessage;
 				break;

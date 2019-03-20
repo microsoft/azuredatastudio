@@ -6,7 +6,7 @@
 import Severity from 'vs/base/common/severity';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { URI } from 'vs/base/common/uri';
-import { basename } from 'vs/base/common/paths';
+import { basename } from 'vs/base/common/resources';
 import { localize } from 'vs/nls';
 import { FileFilter } from 'vs/platform/windows/common/windows';
 import { ITelemetryData } from 'vs/platform/telemetry/common/telemetry';
@@ -66,6 +66,12 @@ export interface ISaveDialogOptions {
 	 * A human-readable string for the ok button
 	 */
 	saveLabel?: string;
+
+	/**
+	 * Specifies a list of schemas for the file systems the user can save to. If not specified, uses the schema of the defaultURI or, if also not specified,
+	 * the schema of the current window.
+	 */
+	availableFileSystems?: string[];
 }
 
 export interface IOpenDialogOptions {
@@ -104,6 +110,12 @@ export interface IOpenDialogOptions {
 	 * like "TypeScript", and an array of extensions.
 	 */
 	filters?: FileFilter[];
+
+	/**
+	 * Specifies a list of schemas for the file systems the user can load from. If not specified, uses the schema of the defaultURI or, if also not available,
+	 * the schema of the current window.
+	 */
+	availableFileSystems?: string[];
 }
 
 
@@ -127,7 +139,7 @@ export interface IDialogService {
 	/**
 	 * Ask the user for confirmation with a modal dialog.
 	 */
-	confirm(confirmation: IConfirmation): Thenable<IConfirmationResult>;
+	confirm(confirmation: IConfirmation): Promise<IConfirmationResult>;
 
 	/**
 	 * Present a modal dialog to the user.
@@ -136,7 +148,7 @@ export interface IDialogService {
 	 * then a promise with index of `cancelId` option is returned. If there is no such
 	 * option then promise with index `0` is returned.
 	 */
-	show(severity: Severity, message: string, buttons: string[], options?: IDialogOptions): Thenable<number>;
+	show(severity: Severity, message: string, buttons: string[], options?: IDialogOptions): Promise<number>;
 }
 
 export const IFileDialogService = createDecorator<IFileDialogService>('fileDialogService');
@@ -150,51 +162,51 @@ export interface IFileDialogService {
 
 	/**
 	 * The default path for a new file based on previously used files.
-	 * @param schemeFilter The scheme of the file path.
+	 * @param schemeFilter The scheme of the file path. If no filter given, the scheme of the current window is used.
 	 */
-	defaultFilePath(schemeFilter: string): URI;
+	defaultFilePath(schemeFilter?: string): URI | undefined;
 
 	/**
 	 * The default path for a new folder based on previously used folders.
-	 * @param schemeFilter The scheme of the folder path.
+	 * @param schemeFilter The scheme of the folder path. If no filter given, the scheme of the current window is used.
 	 */
-	defaultFolderPath(schemeFilter: string): URI;
+	defaultFolderPath(schemeFilter?: string): URI | undefined;
 
 	/**
 	 * The default path for a new workspace based on previously used workspaces.
-	 * @param schemeFilter The scheme of the workspace path.
+	 * @param schemeFilter The scheme of the workspace path. If no filter given, the scheme of the current window is used.
 	 */
-	defaultWorkspacePath(schemeFilter: string): URI;
+	defaultWorkspacePath(schemeFilter?: string): URI | undefined;
 
 	/**
 	 * Shows a file-folder selection dialog and opens the selected entry.
 	 */
-	pickFileFolderAndOpen(options: IPickAndOpenOptions): Thenable<any>;
+	pickFileFolderAndOpen(options: IPickAndOpenOptions): Promise<any>;
 
 	/**
 	 * Shows a file selection dialog and opens the selected entry.
 	 */
-	pickFileAndOpen(options: IPickAndOpenOptions): Thenable<any>;
+	pickFileAndOpen(options: IPickAndOpenOptions): Promise<any>;
 
 	/**
 	 * Shows a folder selection dialog and opens the selected entry.
 	 */
-	pickFolderAndOpen(options: IPickAndOpenOptions): Thenable<any>;
+	pickFolderAndOpen(options: IPickAndOpenOptions): Promise<any>;
 
 	/**
 	 * Shows a workspace selection dialog and opens the selected entry.
 	 */
-	pickWorkspaceAndOpen(options: IPickAndOpenOptions): Thenable<any>;
+	pickWorkspaceAndOpen(options: IPickAndOpenOptions): Promise<any>;
 
 	/**
 	 * Shows a save file dialog and returns the chosen file URI.
 	 */
-	showSaveDialog(options: ISaveDialogOptions): Thenable<URI>;
+	showSaveDialog(options: ISaveDialogOptions): Promise<URI | undefined>;
 
 	/**
 	 * Shows a open file dialog and returns the chosen file URI.
 	 */
-	showOpenDialog(options: IOpenDialogOptions): Thenable<URI[] | undefined>;
+	showOpenDialog(options: IOpenDialogOptions): Promise<URI[] | undefined>;
 
 }
 
@@ -202,7 +214,7 @@ const MAX_CONFIRM_FILES = 10;
 export function getConfirmMessage(start: string, resourcesToConfirm: URI[]): string {
 	const message = [start];
 	message.push('');
-	message.push(...resourcesToConfirm.slice(0, MAX_CONFIRM_FILES).map(r => basename(r.fsPath)));
+	message.push(...resourcesToConfirm.slice(0, MAX_CONFIRM_FILES).map(r => basename(r)));
 
 	if (resourcesToConfirm.length > MAX_CONFIRM_FILES) {
 		if (resourcesToConfirm.length - MAX_CONFIRM_FILES === 1) {

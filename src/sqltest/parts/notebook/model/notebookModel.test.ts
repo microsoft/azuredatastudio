@@ -27,6 +27,7 @@ import { Memento } from 'vs/workbench/common/memento';
 import { Emitter } from 'vs/base/common/event';
 import { CapabilitiesTestService } from 'sqltest/stubs/capabilitiesTestService';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { TestStorageService } from 'vs/workbench/test/workbenchTestServices';
 
 let expectedNotebookContent: nb.INotebookContents = {
 	cells: [{
@@ -86,7 +87,7 @@ suite('notebook model', function (): void {
 		capabilitiesService = TypeMoq.Mock.ofType(CapabilitiesTestService);
 		memento = TypeMoq.Mock.ofType(Memento, TypeMoq.MockBehavior.Loose, '');
 		memento.setup(x => x.getMemento(TypeMoq.It.isAny())).returns(() => void 0);
-		queryConnectionService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Loose, memento.object, undefined);
+		queryConnectionService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Loose, memento.object, undefined, new TestStorageService());
 		queryConnectionService.callBase = true;
 		defaultModelOptions = {
 			notebookUri: defaultUri,

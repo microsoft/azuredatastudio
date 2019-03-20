@@ -5,7 +5,6 @@
 
 'use strict';
 import { localize } from 'vs/nls';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { Action } from 'vs/base/common/actions';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { ExecuteCommandAction } from 'vs/platform/actions/common/actions';
@@ -38,7 +37,7 @@ export class ObjectExplorerActionsContext implements azdata.ObjectExplorerContex
 	public isConnectionNode: boolean = false;
 }
 
-async function getTreeNode(context: ObjectExplorerActionsContext, objectExplorerService: IObjectExplorerService): TPromise<TreeNode> {
+async function getTreeNode(context: ObjectExplorerActionsContext, objectExplorerService: IObjectExplorerService): Promise<TreeNode> {
 	if (context.isConnectionNode) {
 		return Promise.resolve(undefined);
 	}
@@ -100,11 +99,11 @@ export class ManageConnectionAction extends Action {
 		super(id, label);
 	}
 
-	run(actionContext: ObjectExplorerActionsContext): TPromise<any> {
+	run(actionContext: ObjectExplorerActionsContext): Promise<any> {
 		this._treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
 		this._treeSelectionHandler.onTreeActionStateChange(true);
 		let self = this;
-		let promise = new TPromise<boolean>((resolve, reject) => {
+		let promise = new Promise<boolean>((resolve, reject) => {
 			self.doManage(actionContext).then((success) => {
 				self.done();
 				resolve(success);
@@ -116,7 +115,7 @@ export class ManageConnectionAction extends Action {
 		return promise;
 	}
 
-	private async doManage(actionContext: ObjectExplorerActionsContext): TPromise<boolean> {
+	private async doManage(actionContext: ObjectExplorerActionsContext): Promise<boolean> {
 		let treeNode: TreeNode = undefined;
 		let connectionProfile: IConnectionProfile = undefined;
 		if (actionContext instanceof ObjectExplorerActionsContext) {

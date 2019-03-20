@@ -6,12 +6,10 @@
 
 import {
 	createMainContextProxyIdentifier as createMainId,
-	createExtHostContextProxyIdentifier as createExtId,
-	ProxyIdentifier, IRPCProtocol
-} from 'vs/workbench/services/extensions/node/proxyIdentifier';
+	createExtHostContextProxyIdentifier as createExtId
+} from 'vs/workbench/services/extensions/common/proxyIdentifier';
 import { UriComponents } from 'vs/base/common/uri';
 
-import { TPromise } from 'vs/base/common/winjs.base';
 import { IDisposable } from 'vs/base/common/lifecycle';
 
 import * as azdata from 'azdata';
@@ -23,9 +21,9 @@ import {
 	IItemConfig, ModelComponentTypes, IComponentShape, IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails,
 	IModelViewWizardDetails, IModelViewWizardPageDetails, INotebookManagerDetails, INotebookSessionDetails, INotebookKernelDetails, INotebookFutureDetails, FutureMessageType, INotebookFutureDone, ISingleNotebookEditOperation
 } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { EditorViewColumn } from 'vs/workbench/api/shared/editor';
-import { IUndoStopOptions } from 'vs/workbench/api/node/extHost.protocol';
-import { IExtensionDescription } from 'vs/workbench/services/extensions/common/extensions';
+import { EditorViewColumn } from 'vs/workbench/api/common/shared/editor';
+import { IUndoStopOptions } from 'vs/workbench/api/common/extHost.protocol';
+import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 
 export abstract class ExtHostAccountManagementShape {
 	$autoOAuthCancelled(handle: number): Thenable<void> { throw ni(); }
@@ -510,22 +508,22 @@ export interface MainThreadResourceProviderShape extends IDisposable {
 }
 
 export interface MainThreadDataProtocolShape extends IDisposable {
-	$registerConnectionProvider(providerId: string, handle: number): TPromise<any>;
-	$registerBackupProvider(providerId: string, handle: number): TPromise<any>;
-	$registerRestoreProvider(providerId: string, handle: number): TPromise<any>;
-	$registerScriptingProvider(providerId: string, handle: number): TPromise<any>;
-	$registerQueryProvider(providerId: string, handle: number): TPromise<any>;
-	$registerProfilerProvider(providerId: string, handle: number): TPromise<any>;
-	$registerObjectExplorerProvider(providerId: string, handle: number): TPromise<any>;
-	$registerObjectExplorerNodeProvider(providerId: string, supportedProviderId: string, group: string, handle: number): TPromise<any>;
-	$registerMetadataProvider(providerId: string, handle: number): TPromise<any>;
-	$registerTaskServicesProvider(providerId: string, handle: number): TPromise<any>;
-	$registerFileBrowserProvider(providerId: string, handle: number): TPromise<any>;
-	$registerCapabilitiesServiceProvider(providerId: string, handle: number): TPromise<any>;
-	$registerAdminServicesProvider(providerId: string, handle: number): TPromise<any>;
-	$registerAgentServicesProvider(providerId: string, handle: number): TPromise<any>;
-	$registerDacFxServicesProvider(providerId: string, handle: number): TPromise<any>;
-	$unregisterProvider(handle: number): TPromise<any>;
+	$registerConnectionProvider(providerId: string, handle: number): Promise<any>;
+	$registerBackupProvider(providerId: string, handle: number): Promise<any>;
+	$registerRestoreProvider(providerId: string, handle: number): Promise<any>;
+	$registerScriptingProvider(providerId: string, handle: number): Promise<any>;
+	$registerQueryProvider(providerId: string, handle: number): Promise<any>;
+	$registerProfilerProvider(providerId: string, handle: number): Promise<any>;
+	$registerObjectExplorerProvider(providerId: string, handle: number): Promise<any>;
+	$registerObjectExplorerNodeProvider(providerId: string, supportedProviderId: string, group: string, handle: number): Promise<any>;
+	$registerMetadataProvider(providerId: string, handle: number): Promise<any>;
+	$registerTaskServicesProvider(providerId: string, handle: number): Promise<any>;
+	$registerFileBrowserProvider(providerId: string, handle: number): Promise<any>;
+	$registerCapabilitiesServiceProvider(providerId: string, handle: number): Promise<any>;
+	$registerAdminServicesProvider(providerId: string, handle: number): Promise<any>;
+	$registerAgentServicesProvider(providerId: string, handle: number): Promise<any>;
+	$registerDacFxServicesProvider(providerId: string, handle: number): Promise<any>;
+	$unregisterProvider(handle: number): Promise<any>;
 	$onConnectionComplete(handle: number, connectionInfoSummary: azdata.ConnectionInfoSummary): void;
 	$onIntelliSenseCacheComplete(handle: number, connectionUri: string): void;
 	$onConnectionChangeNotification(handle: number, changedConnInfo: azdata.ChangedConnectionInfo): void;
@@ -568,13 +566,13 @@ export interface MainThreadConnectionManagementShape extends IDisposable {
 }
 
 export interface MainThreadCredentialManagementShape extends IDisposable {
-	$registerCredentialProvider(handle: number): TPromise<any>;
-	$unregisterCredentialProvider(handle: number): TPromise<any>;
+	$registerCredentialProvider(handle: number): Promise<any>;
+	$unregisterCredentialProvider(handle: number): Promise<any>;
 }
 
 export interface MainThreadSerializationProviderShape extends IDisposable {
-	$registerSerializationProvider(handle: number): TPromise<any>;
-	$unregisterSerializationProvider(handle: number): TPromise<any>;
+	$registerSerializationProvider(handle: number): Promise<any>;
+	$unregisterSerializationProvider(handle: number): Promise<any>;
 }
 
 function ni() { return new Error('Not implemented'); }
@@ -650,12 +648,12 @@ export interface ExtHostModalDialogsShape {
 
 export interface ExtHostTasksShape {
 	$executeContributedTask<T>(id: string, ...args: any[]): Thenable<T>;
-	$getContributedTaskHandlerDescriptions(): TPromise<{ [id: string]: string | ITaskHandlerDescription }>;
+	$getContributedTaskHandlerDescriptions(): Promise<{ [id: string]: string | ITaskHandlerDescription }>;
 }
 
 export interface MainThreadTasksShape extends IDisposable {
-	$registerTask(id: string): TPromise<any>;
-	$unregisterTask(id: string): TPromise<any>;
+	$registerTask(id: string): Promise<any>;
+	$unregisterTask(id: string): Promise<any>;
 }
 
 export interface ExtHostDashboardWebviewsShape {
@@ -680,7 +678,7 @@ export interface ExtHostModelViewShape {
 }
 
 export interface ExtHostModelViewTreeViewsShape {
-	$getChildren(treeViewId: string, treeItemHandle?: string): TPromise<ITreeComponentItem[]>;
+	$getChildren(treeViewId: string, treeItemHandle?: string): Promise<ITreeComponentItem[]>;
 	$createTreeView(handle: number, componentId: string, options: { treeDataProvider: vscode.TreeDataProvider<any> }, extension: IExtensionDescription): azdata.TreeComponentView<any>;
 	$onNodeCheckedChanged(treeViewId: string, treeItemHandle?: string, checked?: boolean): void;
 	$onNodeSelected(treeViewId: string, nodes: string[]): void;
@@ -850,7 +848,7 @@ export interface INotebookShowOptions {
 	preserveFocus?: boolean;
 	preview?: boolean;
 	providerId?: string;
-	connectionId?: string;
+	connectionProfile?: azdata.IConnectionProfile;
 	defaultKernel?: azdata.nb.IKernelSpec;
 }
 
@@ -861,9 +859,9 @@ export interface ExtHostNotebookDocumentsAndEditorsShape {
 
 export interface MainThreadNotebookDocumentsAndEditorsShape extends IDisposable {
 	$trySaveDocument(uri: UriComponents): Thenable<boolean>;
-	$tryShowNotebookDocument(resource: UriComponents, options: INotebookShowOptions): TPromise<string>;
-	$tryApplyEdits(id: string, modelVersionId: number, edits: ISingleNotebookEditOperation[], opts: IUndoStopOptions): TPromise<boolean>;
-	$runCell(id: string, cellUri: UriComponents): TPromise<boolean>;
+	$tryShowNotebookDocument(resource: UriComponents, options: INotebookShowOptions): Promise<string>;
+	$tryApplyEdits(id: string, modelVersionId: number, edits: ISingleNotebookEditOperation[], opts: IUndoStopOptions): Promise<boolean>;
+	$runCell(id: string, cellUri: UriComponents): Promise<boolean>;
 }
 
 export interface ExtHostExtensionManagementShape {

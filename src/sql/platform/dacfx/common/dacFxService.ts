@@ -8,7 +8,6 @@
 import * as azdata from 'azdata';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { localize } from 'vs/nls';
 
 export const SERVICE_ID = 'dacFxService';
@@ -79,13 +78,13 @@ export class DacFxService implements IDacFxService {
 		let providerId: string = this._connectionService.getProviderIdFromUri(uri);
 
 		if (!providerId) {
-			return TPromise.wrapError(new Error(localize('providerIdNotValidError', "Connection is required in order to interact with DacFxService")));
+			return Promise.reject(new Error(localize('providerIdNotValidError', "Connection is required in order to interact with DacFxService")));
 		}
 		let handler = this._providers[providerId];
 		if (handler) {
 			return action(handler);
 		} else {
-			return TPromise.wrapError(new Error(localize('noHandlerRegistered', "No Handler Registered")));
+			return Promise.reject(new Error(localize('noHandlerRegistered', "No Handler Registered")));
 		}
 	}
 }

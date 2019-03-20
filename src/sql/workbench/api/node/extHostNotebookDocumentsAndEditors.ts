@@ -12,7 +12,7 @@ import { dispose } from 'vs/base/common/lifecycle';
 import { URI, UriComponents } from 'vs/base/common/uri';
 import { Disposable } from 'vs/workbench/api/node/extHostTypes';
 import * as typeConverters from 'vs/workbench/api/node/extHostTypeConverters';
-import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
+import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { ok } from 'vs/base/common/assert';
 
 import {
@@ -167,7 +167,7 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 			options.preview = showOptions.preview;
 			options.position = showOptions.viewColumn;
 			options.providerId = showOptions.providerId;
-			options.connectionId = showOptions.connectionId;
+			options.connectionProfile = showOptions.connectionProfile;
 			options.defaultKernel = showOptions.defaultKernel;
 		}
 		let id = await this._proxy.$tryShowNotebookDocument(uri, options);

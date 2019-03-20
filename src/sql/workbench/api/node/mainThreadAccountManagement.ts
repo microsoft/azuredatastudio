@@ -5,7 +5,6 @@
 'use strict';
 
 import * as azdata from 'azdata';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { IAccountManagementService } from 'sql/platform/accountManagement/common/interfaces';
 import { dispose, IDisposable } from 'vs/base/common/lifecycle';
 import {
@@ -14,8 +13,8 @@ import {
 	SqlExtHostContext,
 	SqlMainContext
 } from 'sql/workbench/api/node/sqlExtHost.protocol';
-import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
-import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
+import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
+import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { UpdateAccountListEventParams } from 'sql/platform/accountManagement/common/eventTypes';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadAccountManagement)
@@ -92,12 +91,12 @@ export class MainThreadAccountManagement implements MainThreadAccountManagementS
 		this._accountManagementService.registerProvider(providerMetadata, accountProvider);
 		this._providerMetadata[handle] = providerMetadata;
 
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 
 	public $unregisterAccountProvider(handle: number): Thenable<any> {
 		this._accountManagementService.unregisterProvider(this._providerMetadata[handle]);
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 
 	public dispose(): void {

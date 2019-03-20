@@ -3,8 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { TPromise } from 'vs/base/common/winjs.base';
-import { IChannel, IServerChannel } from 'vs/base/parts/ipc/node/ipc';
+import { IChannel, IServerChannel } from 'vs/base/parts/ipc/common/ipc';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IURLService } from 'vs/platform/url/common/url';
 import { IProcessEnvironment, isMacintosh } from 'vs/base/common/platform';
@@ -61,10 +60,10 @@ function parseOpenUrl(args: ParsedArgs): URI[] {
 
 export interface ILaunchService {
 	_serviceBrand: any;
-	start(args: ParsedArgs, userEnv: IProcessEnvironment): TPromise<void>;
-	getMainProcessId(): TPromise<number>;
-	getMainProcessInfo(): TPromise<IMainProcessInfo>;
-	getLogsPath(): TPromise<string>;
+	start(args: ParsedArgs, userEnv: IProcessEnvironment): Promise<void>;
+	getMainProcessId(): Promise<number>;
+	getMainProcessInfo(): Promise<IMainProcessInfo>;
+	getLogsPath(): Promise<string>;
 }
 
 export class LaunchChannel implements IServerChannel {
@@ -75,7 +74,7 @@ export class LaunchChannel implements IServerChannel {
 		throw new Error(`Event not found: ${event}`);
 	}
 
-	call(_, command: string, arg: any): TPromise<any> {
+	call(_, command: string, arg: any): Promise<any> {
 		switch (command) {
 			case 'start':
 				const { args, userEnv } = arg as IStartArguments;
@@ -101,19 +100,19 @@ export class LaunchChannelClient implements ILaunchService {
 
 	constructor(private channel: IChannel) { }
 
-	start(args: ParsedArgs, userEnv: IProcessEnvironment): TPromise<void> {
+	start(args: ParsedArgs, userEnv: IProcessEnvironment): Promise<void> {
 		return this.channel.call('start', { args, userEnv });
 	}
 
-	getMainProcessId(): TPromise<number> {
+	getMainProcessId(): Promise<number> {
 		return this.channel.call('get-main-process-id', null);
 	}
 
-	getMainProcessInfo(): TPromise<IMainProcessInfo> {
+	getMainProcessInfo(): Promise<IMainProcessInfo> {
 		return this.channel.call('get-main-process-info', null);
 	}
 
-	getLogsPath(): TPromise<string> {
+	getLogsPath(): Promise<string> {
 		return this.channel.call('get-logs-path', null);
 	}
 }
@@ -123,22 +122,22 @@ export class LaunchService implements ILaunchService {
 	_serviceBrand: any;
 
 	constructor(
-		@ILogService private logService: ILogService,
-		@IWindowsMainService private windowsMainService: IWindowsMainService,
-		@IURLService private urlService: IURLService,
-		@IWorkspacesMainService private workspacesMainService: IWorkspacesMainService,
+		@ILogService private readonly logService: ILogService,
+		@IWindowsMainService private readonly windowsMainService: IWindowsMainService,
+		@IURLService private readonly urlService: IURLService,
+		@IWorkspacesMainService private readonly workspacesMainService: IWorkspacesMainService,
 		@IEnvironmentService private readonly environmentService: IEnvironmentService,
 		@IConfigurationService private readonly configurationService: IConfigurationService
 	) { }
 
-	start(args: ParsedArgs, userEnv: IProcessEnvironment): TPromise<void> {
+	start(args: ParsedArgs, userEnv: IProcessEnvironment): Promise<void> {
 		this.logService.trace('Received data from other instance: ', args, userEnv);
 
 		const urlsToOpen = parseOpenUrl(args);
 
 		// Check early for open-url which is handled in URL service
 		if (urlsToOpen.length) {
-			let whenWindowReady = TPromise.as<any>(null);
+			let whenWindowReady: Promise<any> = Promise.resolve<any>(null);
 
 			// Create a window if there is none
 			if (this.windowsMainService.getWindowCount() === 0) {
@@ -153,20 +152,20 @@ export class LaunchService implements ILaunchService {
 				}
 			});
 
-			return TPromise.as(void 0);
+			return Promise.resolve(undefined);
 		}
 
 		// Otherwise handle in windows service
 		return this.startOpenWindow(args, userEnv);
 	}
 
-	private startOpenWindow(args: ParsedArgs, userEnv: IProcessEnvironment): TPromise<void> {
+	private startOpenWindow(args: ParsedArgs, userEnv: IProcessEnvironment): Promise<void> {
 		const context = !!userEnv['VSCODE_CLI'] ? OpenContext.CLI : OpenContext.DESKTOP;
 		let usedWindows: ICodeWindow[] = [];
 
 		// Special case extension development
 		if (!!args.extensionDevelopmentPath) {
-			this.windowsMainService.openExtensionDevelopmentHostWindow({ context, cli: args, userEnv });
+			this.windowsMainService.openExtensionDevelopmentHostWindow(args.extensionDevelopmentPath, { context, cli: args, userEnv });
 		}
 
 		// Start without file/folder arguments
@@ -236,19 +235,19 @@ export class LaunchService implements ILaunchService {
 			return Promise.race([
 				this.windowsMainService.waitForWindowCloseOrLoad(usedWindows[0].id),
 				whenDeleted(args.waitMarkerFilePath)
-			]).then(() => void 0, () => void 0);
+			]).then(() => undefined, () => undefined);
 		}
 
-		return TPromise.as(void 0);
+		return Promise.resolve(undefined);
 	}
 
-	getMainProcessId(): TPromise<number> {
+	getMainProcessId(): Promise<number> {
 		this.logService.trace('Received request for process ID from other instance.');
 
-		return TPromise.as(process.pid);
+		return Promise.resolve(process.pid);
 	}
 
-	getMainProcessInfo(): TPromise<IMainProcessInfo> {
+	getMainProcessInfo(): Promise<IMainProcessInfo> {
 		this.logService.trace('Received request for main process info from other instance.');
 
 		const windows: IWindowInfo[] = [];
@@ -261,17 +260,17 @@ export class LaunchService implements ILaunchService {
 			}
 		});
 
-		return TPromise.wrap({
+		return Promise.resolve({
 			mainPID: process.pid,
 			mainArguments: process.argv.slice(1),
 			windows
-		} as IMainProcessInfo);
+		});
 	}
 
-	getLogsPath(): TPromise<string> {
+	getLogsPath(): Promise<string> {
 		this.logService.trace('Received request for logs path from other instance.');
 
-		return TPromise.as(this.environmentService.logsPath);
+		return Promise.resolve(this.environmentService.logsPath);
 	}
 
 	private codeWindowToInfo(window: ICodeWindow): IWindowInfo {
@@ -280,12 +279,16 @@ export class LaunchService implements ILaunchService {
 		if (window.openedFolderUri) {
 			folderURIs.push(window.openedFolderUri);
 		} else if (window.openedWorkspace) {
-			const resolvedWorkspace = this.workspacesMainService.resolveWorkspaceSync(window.openedWorkspace.configPath);
+			// workspace folders can only be shown for local workspaces
+			const workspaceConfigPath = window.openedWorkspace.configPath;
+			const resolvedWorkspace = this.workspacesMainService.resolveLocalWorkspaceSync(workspaceConfigPath);
 			if (resolvedWorkspace) {
 				const rootFolders = resolvedWorkspace.folders;
 				rootFolders.forEach(root => {
 					folderURIs.push(root.uri);
 				});
+			} else {
+				//TODO: can we add the workspace file here?
 			}
 		}
 

@@ -17,7 +17,6 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ITextResourceConfigurationService } from 'vs/editor/common/services/resourceConfiguration';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
-import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
 import { EditorOptions } from 'vs/workbench/common/editor';
 import { StandaloneCodeEditor } from 'vs/editor/standalone/browser/standaloneCodeEditor';
 import { CancellationToken } from 'vs/base/common/cancellation';
@@ -25,7 +24,9 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { Configuration } from 'vs/editor/browser/config/configuration';
 import { IWindowService } from 'vs/platform/windows/common/windows';
-import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
+import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
+import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 /**
  * Extension of TextResourceEditor that is always readonly rather than only with non UntitledInputs
@@ -52,7 +53,8 @@ export class QueryTextEditor extends BaseTextEditor {
 		@IEditorGroupsService editorGroupService: IEditorGroupsService,
 		@IEditorService protected editorService: IEditorService,
 		@IWindowService windowService: IWindowService,
-		@IWorkspaceConfigurationService private workspaceConfigurationService: IWorkspaceConfigurationService
+		@IConfigurationService private workspaceConfigurationService: IConfigurationService,
+		@IAccessibilityService private accessibilityService: IAccessibilityService
 
 	) {
 		super(
@@ -91,7 +93,7 @@ export class QueryTextEditor extends BaseTextEditor {
 		return options;
 	}
 
-	setInput(input: UntitledEditorInput, options: EditorOptions): Thenable<void> {
+	setInput(input: UntitledEditorInput, options: EditorOptions): Promise<void> {
 		return super.setInput(input, options, CancellationToken.None)
 			.then(() => this.input.resolve()
 				.then(editorModel => editorModel.load())
@@ -131,7 +133,7 @@ export class QueryTextEditor extends BaseTextEditor {
 	public setHeightToScrollHeight(configChanged?: boolean): void {
 		let editorWidget = this.getControl() as ICodeEditor;
 		if (!this._config) {
-			this._config = new Configuration(undefined, editorWidget.getDomNode());
+			this._config = new Configuration(undefined, editorWidget.getDomNode(), this.accessibilityService);
 			this._scrollbarHeight = this._config.editor.viewInfo.scrollbar.horizontalScrollbarSize;
 		}
 		let editorWidgetModel = editorWidget.getModel();

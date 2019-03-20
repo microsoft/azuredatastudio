@@ -21,7 +21,7 @@ declare namespace monaco {
 	export class Emitter<T> {
 		constructor();
 		readonly event: IEvent<T>;
-		fire(event?: T): void;
+		fire(event: T): void;
 		dispose(): void;
 	}
 
@@ -35,29 +35,6 @@ declare namespace monaco {
 		Info = 2,
 		Warning = 4,
 		Error = 8
-	}
-
-
-	export class Promise<T = any> {
-		constructor(executor: (resolve: (value: T | PromiseLike<T>) => void, reject: (reason: any) => void) => void);
-
-		public then<TResult1 = T, TResult2 = never>(
-			onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | null,
-			onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | null): Promise<TResult1 | TResult2>;
-
-
-		public static as(value: null): Promise<null>;
-		public static as(value: undefined): Promise<undefined>;
-		public static as<T>(value: PromiseLike<T>): PromiseLike<T>;
-		public static as<T, SomePromise extends PromiseLike<T>>(value: SomePromise): SomePromise;
-		public static as<T>(value: T): Promise<T>;
-
-		public static join<T1, T2>(promises: [T1 | PromiseLike<T1>, T2 | PromiseLike<T2>]): Promise<[T1, T2]>;
-		public static join<T>(promises: (T | PromiseLike<T>)[]): Promise<T[]>;
-
-		public static wrap<T>(value: T | PromiseLike<T>): Promise<T>;
-
-		public static wrapError<T = never>(error: Error): Promise<T>;
 	}
 
 	export class CancellationTokenSource {
@@ -385,6 +362,7 @@ declare namespace monaco {
 		 */
 		MAX_VALUE = 112
 	}
+
 	export class KeyMod {
 		static readonly CtrlCmd: number;
 		static readonly Shift: number;
@@ -402,6 +380,7 @@ declare namespace monaco {
 	}
 
 	export interface IKeyboardEvent {
+		readonly _standardKeyboardEventBrand: true;
 		readonly browserEvent: KeyboardEvent;
 		readonly target: HTMLElement;
 		readonly ctrlKey: boolean;
@@ -490,7 +469,7 @@ declare namespace monaco {
 		/**
 		 * Test if position `a` equals position `b`
 		 */
-		static equals(a: IPosition, b: IPosition): boolean;
+		static equals(a: IPosition | null, b: IPosition | null): boolean;
 		/**
 		 * Test if this position is before other position.
 		 * If the two positions are equal, the result will be false.
@@ -868,8 +847,8 @@ declare namespace monaco.editor {
 
 	/**
 	 * Get markers for owner and/or resource
-	 * @returns {IMarker[]} list of markers
-	 * @param filter
+	 *
+	 * @returns list of markers
 	 */
 	export function getModelMarkers(filter: {
 		owner?: string;
@@ -943,6 +922,11 @@ declare namespace monaco.editor {
 	 * Switches to a theme.
 	 */
 	export function setTheme(themeName: string): void;
+
+	/**
+	 * Clears all cached font measurements and triggers re-measurement.
+	 */
+	export function remeasureFonts(): void;
 
 	export type BuiltinTheme = 'vs' | 'vs-dark' | 'hc-black';
 
@@ -1093,13 +1077,13 @@ declare namespace monaco.editor {
 	}
 
 	export interface IStandaloneCodeEditor extends ICodeEditor {
-		addCommand(keybinding: number, handler: ICommandHandler, context: string): string | null;
+		addCommand(keybinding: number, handler: ICommandHandler, context?: string): string | null;
 		createContextKey<T>(key: string, defaultValue: T): IContextKey<T>;
 		addAction(descriptor: IActionDescriptor): IDisposable;
 	}
 
 	export interface IStandaloneDiffEditor extends IDiffEditor {
-		addCommand(keybinding: number, handler: ICommandHandler, context: string): string | null;
+		addCommand(keybinding: number, handler: ICommandHandler, context?: string): string | null;
 		createContextKey<T>(key: string, defaultValue: T): IContextKey<T>;
 		addAction(descriptor: IActionDescriptor): IDisposable;
 		getOriginalEditor(): IStandaloneCodeEditor;
@@ -1403,7 +1387,7 @@ declare namespace monaco.editor {
 		/**
 		 * The text to replace with. This can be null to emulate a simple delete.
 		 */
-		text: string;
+		text: string | null;
 		/**
 		 * This indicates that this operation has "insert" semantics.
 		 * i.e. forceMoveMarkers = true => if `range` is collapsed, all markers at the position will be moved.
@@ -1443,6 +1427,7 @@ declare namespace monaco.editor {
 	export class TextModelResolvedOptions {
 		_textModelResolvedOptionsBrand: void;
 		readonly tabSize: number;
+		readonly indentSize: number;
 		readonly insertSpaces: boolean;
 		readonly defaultEOL: DefaultEndOfLine;
 		readonly trimAutoWhitespace: boolean;
@@ -1450,6 +1435,7 @@ declare namespace monaco.editor {
 
 	export interface ITextModelUpdateOptions {
 		tabSize?: number;
+		indentSize?: number;
 		insertSpaces?: boolean;
 		trimAutoWhitespace?: boolean;
 	}
@@ -1737,10 +1723,6 @@ declare namespace monaco.editor {
 		 */
 		normalizeIndentation(str: string): string;
 		/**
-		 * Get what is considered to be one indent (e.g. a tab character or 4 spaces, etc.).
-		 */
-		getOneIndent(): string;
-		/**
 		 * Change the options of this model.
 		 */
 		updateOptions(newOpts: ITextModelUpdateOptions): void;
@@ -1993,8 +1975,8 @@ declare namespace monaco.editor {
 	 * (Serializable) View state for the diff editor.
 	 */
 	export interface IDiffEditorViewState {
-		original: ICodeEditorViewState;
-		modified: ICodeEditorViewState;
+		original: ICodeEditorViewState | null;
+		modified: ICodeEditorViewState | null;
 	}
 
 	/**
@@ -2285,6 +2267,7 @@ declare namespace monaco.editor {
 	 * An event describing that some ranges of lines have been tokenized (their tokens have changed).
 	 */
 	export interface IModelTokensChangedEvent {
+		readonly tokenizationSupportChanged: boolean;
 		readonly ranges: {
 			/**
 			 * The start of the range (inclusive)
@@ -2299,6 +2282,7 @@ declare namespace monaco.editor {
 
 	export interface IModelOptionsChangedEvent {
 		readonly tabSize: boolean;
+		readonly indentSize: boolean;
 		readonly insertSpaces: boolean;
 		readonly trimAutoWhitespace: boolean;
 	}
@@ -2454,6 +2438,7 @@ declare namespace monaco.editor {
 		 * Controls if Find in Selection flag is turned on when multiple lines of text are selected in the editor.
 		 */
 		autoFindInSelection: boolean;
+		addExtraSpaceOnTop?: boolean;
 	}
 
 	/**
@@ -2561,7 +2546,26 @@ declare namespace monaco.editor {
 		/**
 		 * Enable using global storage for remembering suggestions.
 		 */
-		useGlobalStorageForSuggestions?: boolean;
+		shareSuggestSelections?: boolean;
+		/**
+		 * Enable or disable icons in suggestions. Defaults to true.
+		 */
+		showIcons?: boolean;
+		/**
+		 * Max suggestions to show in suggestions. Defaults to 12.
+		 */
+		maxVisibleSuggestions?: boolean;
+		/**
+		 * Names of suggestion types to filter.
+		 */
+		filteredTypes?: Record<string, boolean>;
+	}
+
+	export interface IGotoLocationOptions {
+		/**
+		 * Control how goto-command work when having multiple results.
+		 */
+		many?: 'peek' | 'revealAndPeek' | 'reveal';
 	}
 
 	/**
@@ -2602,6 +2606,11 @@ declare namespace monaco.editor {
 		 * Defaults to true.
 		 */
 		lineNumbers?: 'on' | 'off' | 'relative' | 'interval' | ((lineNumber: number) => string);
+		/**
+		 * Render last line number when the file ends with a newline.
+		 * Defaults to true on Windows/Mac and to false on Linux.
+		*/
+		renderFinalNewline?: boolean;
 		/**
 		 * Should the corresponding line be selected when clicking on the line number?
 		 * Defaults to true.
@@ -2810,6 +2819,11 @@ declare namespace monaco.editor {
 		 */
 		mouseWheelScrollSensitivity?: number;
 		/**
+		 * FastScrolling mulitplier speed when pressing `Alt`
+		 * Defaults to 5.
+		 */
+		fastScrollSensitivity?: number;
+		/**
 		 * The modifier to be used to add multiple cursors with the mouse.
 		 * Defaults to 'alt'
 		 */
@@ -2829,6 +2843,10 @@ declare namespace monaco.editor {
 		 */
 		suggest?: ISuggestOptions;
 		/**
+		 *
+		 */
+		gotoLocation?: IGotoLocationOptions;
+		/**
 		 * Enable quick suggestions (shadow suggestions)
 		 * Defaults to true.
 		 */
@@ -2846,11 +2864,6 @@ declare namespace monaco.editor {
 		 * Parameter hint options.
 		 */
 		parameterHints?: IEditorParameterHintOptions;
-		/**
-		 * Render icons in suggestions box.
-		 * Defaults to true.
-		 */
-		iconsInSuggestions?: boolean;
 		/**
 		 * Options for auto closing brackets.
 		 * Defaults to language defined behavior.
@@ -3171,6 +3184,7 @@ declare namespace monaco.editor {
 		readonly verticalScrollbarSize: number;
 		readonly verticalSliderSize: number;
 		readonly mouseWheelScrollSensitivity: number;
+		readonly fastScrollSensitivity: number;
 	}
 
 	export interface InternalEditorMinimapOptions {
@@ -3184,6 +3198,7 @@ declare namespace monaco.editor {
 	export interface InternalEditorFindOptions {
 		readonly seedSearchStringFromSelection: boolean;
 		readonly autoFindInSelection: boolean;
+		readonly addExtraSpaceOnTop: boolean;
 	}
 
 	export interface InternalEditorHoverOptions {
@@ -3192,12 +3207,19 @@ declare namespace monaco.editor {
 		readonly sticky: boolean;
 	}
 
+	export interface InternalGoToLocationOptions {
+		readonly many: 'peek' | 'revealAndPeek' | 'reveal';
+	}
+
 	export interface InternalSuggestOptions {
 		readonly filterGraceful: boolean;
 		readonly snippets: 'top' | 'bottom' | 'inline' | 'none';
 		readonly snippetsPreventQuickSuggestions: boolean;
 		readonly localityBonus: boolean;
 		readonly shareSuggestSelections: boolean;
+		readonly showIcons: boolean;
+		readonly maxVisibleSuggestions: number;
+		readonly filteredTypes: Record<string, boolean>;
 	}
 
 	export interface InternalParameterHintOptions {
@@ -3232,6 +3254,7 @@ declare namespace monaco.editor {
 		readonly ariaLabel: string;
 		readonly renderLineNumbers: RenderLineNumbersType;
 		readonly renderCustomLineNumbers: ((lineNumber: number) => string) | null;
+		readonly renderFinalNewline: boolean;
 		readonly selectOnLineNumbers: boolean;
 		readonly glyphMargin: boolean;
 		readonly revealHorizontalRightPadding: number;
@@ -3271,7 +3294,6 @@ declare namespace monaco.editor {
 		};
 		readonly quickSuggestionsDelay: number;
 		readonly parameterHints: InternalParameterHintOptions;
-		readonly iconsInSuggestions: boolean;
 		readonly formatOnType: boolean;
 		readonly formatOnPaste: boolean;
 		readonly suggestOnTriggerCharacters: boolean;
@@ -3283,6 +3305,7 @@ declare namespace monaco.editor {
 		readonly suggestLineHeight: number;
 		readonly tabCompletion: 'on' | 'off' | 'onlySnippets';
 		readonly suggest: InternalSuggestOptions;
+		readonly gotoLocation: InternalGoToLocationOptions;
 		readonly selectionHighlight: boolean;
 		readonly occurrencesHighlight: boolean;
 		readonly codeLens: boolean;
@@ -4058,7 +4081,7 @@ declare namespace monaco.editor {
 		/**
 		 * Force an editor render now.
 		 */
-		render(): void;
+		render(forceRedraw?: boolean): void;
 		/**
 		 * Get the hit test target at coordinates `clientX` and `clientY`.
 		 * The coordinates are relative to the top-left of the viewport.
@@ -4286,12 +4309,12 @@ declare namespace monaco.languages {
 	/**
 	 * Set the tokens provider for a language (manual implementation).
 	 */
-	export function setTokensProvider(languageId: string, provider: TokensProvider | EncodedTokensProvider): IDisposable;
+	export function setTokensProvider(languageId: string, provider: TokensProvider | EncodedTokensProvider | Thenable<TokensProvider | EncodedTokensProvider>): IDisposable;
 
 	/**
 	 * Set the tokens provider for a language (monarch implementation).
 	 */
-	export function setMonarchTokensProvider(languageId: string, languageDef: IMonarchLanguage): IDisposable;
+	export function setMonarchTokensProvider(languageId: string, languageDef: IMonarchLanguage | Thenable<IMonarchLanguage>): IDisposable;
 
 	/**
 	 * Register a reference provider (used by e.g. reference search).
@@ -4390,8 +4413,6 @@ declare namespace monaco.languages {
 	export interface CodeActionContext {
 		/**
 		 * An array of diagnostics.
-		 *
-		 * @readonly
 		 */
 		readonly markers: editor.IMarkerData[];
 		/**
@@ -4408,7 +4429,7 @@ declare namespace monaco.languages {
 		/**
 		 * Provide commands for the given document and range.
 		 */
-		provideCodeActions(model: editor.ITextModel, range: Range, context: CodeActionContext, token: CancellationToken): (Command | CodeAction)[] | Thenable<(Command | CodeAction)[]>;
+		provideCodeActions(model: editor.ITextModel, range: Range, context: CodeActionContext, token: CancellationToken): (Command | CodeAction)[] | Promise<(Command | CodeAction)[]>;
 	}
 
 	/**
@@ -4571,7 +4592,7 @@ declare namespace monaco.languages {
 		/**
 		 * The string that appears on the last line and closes the doc comment (e.g. ' * /').
 		 */
-		close: string;
+		close?: string;
 	}
 
 	/**
@@ -4783,7 +4804,7 @@ declare namespace monaco.languages {
 		 * *Note:* The range must be a [single line](#Range.isSingleLine) and it must
 		 * [contain](#Range.contains) the position at which completion has been [requested](#CompletionItemProvider.provideCompletionItems).
 		 */
-		range?: IRange;
+		range: IRange;
 		/**
 		 * An optional set of characters that when pressed while this completion is active will accept it first and
 		 * then type that character. *Note* that all commit characters should have `length=1` and that superfluous
@@ -4866,6 +4887,7 @@ declare namespace monaco.languages {
 		edit?: WorkspaceEdit;
 		diagnostics?: editor.IMarkerData[];
 		kind?: string;
+		isPreferred?: boolean;
 	}
 
 	/**
@@ -4937,6 +4959,7 @@ declare namespace monaco.languages {
 		readonly triggerKind: SignatureHelpTriggerKind;
 		readonly triggerCharacter?: string;
 		readonly isRetrigger: boolean;
+		readonly activeSignatureHelp?: SignatureHelp;
 	}
 
 	/**
@@ -4983,7 +5006,7 @@ declare namespace monaco.languages {
 		/**
 		 * The highlight kind, default is [text](#DocumentHighlightKind.Text).
 		 */
-		kind: DocumentHighlightKind;
+		kind?: DocumentHighlightKind;
 	}
 
 	/**
@@ -5035,19 +5058,27 @@ declare namespace monaco.languages {
 		range: IRange;
 	}
 
-	/**
-	 * The definition of a symbol represented as one or many [locations](#Location).
-	 * For most programming languages there is only one location at which a symbol is
-	 * defined.
-	 */
-	export type Definition = Location | Location[];
-
-	export interface DefinitionLink {
-		origin?: IRange;
+	export interface LocationLink {
+		/**
+		 * A range to select where this link originates from.
+		 */
+		originSelectionRange?: IRange;
+		/**
+		 * The target uri this link points to.
+		 */
 		uri: Uri;
+		/**
+		 * The full range this link points to.
+		 */
 		range: IRange;
-		selectionRange?: IRange;
+		/**
+		 * A range to select this link points to. Must be contained
+		 * in `LocationLink.range`.
+		 */
+		targetSelectionRange?: IRange;
 	}
+
+	export type Definition = Location | Location[] | LocationLink[];
 
 	/**
 	 * The definition provider interface defines the contract between extensions and
@@ -5058,7 +5089,7 @@ declare namespace monaco.languages {
 		/**
 		 * Provide the definition of the symbol at the given position and document.
 		 */
-		provideDefinition(model: editor.ITextModel, position: Position, token: CancellationToken): ProviderResult<Definition | DefinitionLink[]>;
+		provideDefinition(model: editor.ITextModel, position: Position, token: CancellationToken): ProviderResult<Definition | LocationLink[]>;
 	}
 
 	/**
@@ -5070,7 +5101,7 @@ declare namespace monaco.languages {
 		/**
 		 * Provide the declaration of the symbol at the given position and document.
 		 */
-		provideDeclaration(model: editor.ITextModel, position: Position, token: CancellationToken): ProviderResult<Definition | DefinitionLink[]>;
+		provideDeclaration(model: editor.ITextModel, position: Position, token: CancellationToken): ProviderResult<Definition | LocationLink[]>;
 	}
 
 	/**
@@ -5081,7 +5112,7 @@ declare namespace monaco.languages {
 		/**
 		 * Provide the implementation of the symbol at the given position and document.
 		 */
-		provideImplementation(model: editor.ITextModel, position: Position, token: CancellationToken): ProviderResult<Definition | DefinitionLink[]>;
+		provideImplementation(model: editor.ITextModel, position: Position, token: CancellationToken): ProviderResult<Definition | LocationLink[]>;
 	}
 
 	/**
@@ -5092,7 +5123,7 @@ declare namespace monaco.languages {
 		/**
 		 * Provide the type definition of the symbol at the given position and document.
 		 */
-		provideTypeDefinition(model: editor.ITextModel, position: Position, token: CancellationToken): ProviderResult<Definition | DefinitionLink[]>;
+		provideTypeDefinition(model: editor.ITextModel, position: Position, token: CancellationToken): ProviderResult<Definition | LocationLink[]>;
 	}
 
 	/**
@@ -5216,7 +5247,7 @@ declare namespace monaco.languages {
 	 */
 	export interface ILink {
 		range: IRange;
-		url?: string;
+		url?: Uri | string;
 	}
 
 	/**
@@ -5299,11 +5330,16 @@ declare namespace monaco.languages {
 		provideColorPresentations(model: editor.ITextModel, colorInfo: IColorInformation, token: CancellationToken): ProviderResult<IColorPresentation[]>;
 	}
 
+	export interface SelectionRange {
+		kind: string;
+		range: IRange;
+	}
+
 	export interface SelectionRangeProvider {
 		/**
 		 * Provide ranges that should be selected from the given position.
 		 */
-		provideSelectionRanges(model: editor.ITextModel, position: Position, token: CancellationToken): ProviderResult<IRange[]>;
+		provideSelectionRanges(model: editor.ITextModel, positions: Position[], token: CancellationToken): ProviderResult<SelectionRange[][]>;
 	}
 
 	export interface FoldingContext {
@@ -5378,7 +5414,7 @@ declare namespace monaco.languages {
 	}
 
 	export interface WorkspaceEdit {
-		edits?: Array<ResourceTextEdit | ResourceFileEdit>;
+		edits: Array<ResourceTextEdit | ResourceFileEdit>;
 	}
 
 	export interface Rejection {

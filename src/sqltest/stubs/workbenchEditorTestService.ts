@@ -7,12 +7,11 @@ import { IEditorService, SIDE_GROUP_TYPE, ACTIVE_GROUP_TYPE, IResourceEditor, IR
 import { ServiceIdentifier, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorOptions, IResourceInput, ITextEditorOptions  } from 'vs/platform/editor/common/editor';
 import { IEditor, IEditorInput, IResourceDiffInput, IResourceSideBySideInput, GroupIdentifier, ITextEditor, IUntitledResourceInput, ITextDiffEditor, ITextSideBySideEditor, IEditorInputWithOptions } from 'vs/workbench/common/editor';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { Event } from 'vs/base/common/event';
 import { Position } from 'vs/editor/common/core/position';
-import { IEditorGroup, IEditorReplacement } from 'vs/workbench/services/group/common/editorGroupsService';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { IDisposable } from 'vs/base/common/lifecycle';
+import { IEditorGroup, IEditorReplacement } from 'vs/workbench/services/editor/common/editorGroupsService';
 
 export class WorkbenchEditorTestService implements IEditorService {
 	_serviceBrand: ServiceIdentifier<any>;
@@ -46,30 +45,30 @@ export class WorkbenchEditorTestService implements IEditorService {
 		return undefined;
 	}
 
-	public openEditor(editor: IEditorInput, options?: IEditorOptions | ITextEditorOptions, group?: IEditorGroup | GroupIdentifier | SIDE_GROUP_TYPE | ACTIVE_GROUP_TYPE): TPromise<IEditor>;
-	public openEditor(editor: IResourceInput | IUntitledResourceInput, group?: IEditorGroup | GroupIdentifier | SIDE_GROUP_TYPE | ACTIVE_GROUP_TYPE): TPromise<ITextEditor>;
-	public openEditor(editor: IResourceDiffInput, group?: IEditorGroup | GroupIdentifier | SIDE_GROUP_TYPE | ACTIVE_GROUP_TYPE): TPromise<ITextDiffEditor>;
-	public openEditor(editor: IResourceSideBySideInput, group?: IEditorGroup | GroupIdentifier | SIDE_GROUP_TYPE | ACTIVE_GROUP_TYPE): TPromise<ITextSideBySideEditor>;
-	public openEditor(input: any, arg2?: any, arg3?: any): TPromise<IEditor>  {
+	public openEditor(editor: IEditorInput, options?: IEditorOptions | ITextEditorOptions, group?: IEditorGroup | GroupIdentifier | SIDE_GROUP_TYPE | ACTIVE_GROUP_TYPE): Promise<IEditor>;
+	public openEditor(editor: IResourceInput | IUntitledResourceInput, group?: IEditorGroup | GroupIdentifier | SIDE_GROUP_TYPE | ACTIVE_GROUP_TYPE): Promise<ITextEditor>;
+	public openEditor(editor: IResourceDiffInput, group?: IEditorGroup | GroupIdentifier | SIDE_GROUP_TYPE | ACTIVE_GROUP_TYPE): Promise<ITextDiffEditor>;
+	public openEditor(editor: IResourceSideBySideInput, group?: IEditorGroup | GroupIdentifier | SIDE_GROUP_TYPE | ACTIVE_GROUP_TYPE): Promise<ITextSideBySideEditor>;
+	public openEditor(input: any, arg2?: any, arg3?: any): Promise<IEditor>  {
 		return undefined;
 	}
 
-	public openEditors(editors: IEditorInputWithOptions[], group?: IEditorGroup | GroupIdentifier | SIDE_GROUP_TYPE | ACTIVE_GROUP_TYPE): TPromise<ReadonlyArray<IEditor>>;
-	public openEditors(editors: IResourceEditor[], group?: IEditorGroup | GroupIdentifier | SIDE_GROUP_TYPE | ACTIVE_GROUP_TYPE): TPromise<ReadonlyArray<IEditor>>;
-	public openEditors(editors: any[]): TPromise<IEditor[]> {
+	public openEditors(editors: IEditorInputWithOptions[], group?: IEditorGroup | GroupIdentifier | SIDE_GROUP_TYPE | ACTIVE_GROUP_TYPE): Promise<ReadonlyArray<IEditor>>;
+	public openEditors(editors: IResourceEditor[], group?: IEditorGroup | GroupIdentifier | SIDE_GROUP_TYPE | ACTIVE_GROUP_TYPE): Promise<ReadonlyArray<IEditor>>;
+	public openEditors(editors: any[]): Promise<IEditor[]> {
 		return undefined;
 	}
 
-	public replaceEditors(editors: IResourceEditorReplacement[], group: IEditorGroup | GroupIdentifier): TPromise<void>;
-	public replaceEditors(editors: IEditorReplacement[], group: IEditorGroup | GroupIdentifier): TPromise<void>;
-	public replaceEditors(editors: any[], group: any): TPromise<void> {
+	public replaceEditors(editors: IResourceEditorReplacement[], group: IEditorGroup | GroupIdentifier): Promise<void>;
+	public replaceEditors(editors: IEditorReplacement[], group: IEditorGroup | GroupIdentifier): Promise<void>;
+	public replaceEditors(editors: any[], group: any): Promise<void> {
 		return undefined;
 	}
 
 	/**
 	 * Closes the editor at the provided position.
 	 */
-	closeEditor(position: Position, input: IEditorInput): TPromise<void> {
+	closeEditor(position: Position, input: IEditorInput): Promise<void> {
 		return undefined;
 	}
 
@@ -78,14 +77,14 @@ export class WorkbenchEditorTestService implements IEditorService {
 	 * will not be closed. The direction can be used in that case to control if all other editors should get closed,
 	 * or towards a specific direction.
 	 */
-	closeEditors(p1?: any, p2?: any, p3?: any): TPromise<void> {
+	closeEditors(p1?: any, p2?: any, p3?: any): Promise<void> {
 		return undefined;
 	}
 
 	/**
 	 * Closes all editors across all groups. The optional position allows to keep one group alive.
 	 */
-	closeAllEditors(except?: Position): TPromise<void> {
+	closeAllEditors(except?: Position): Promise<void> {
 		return undefined;
 	}
 

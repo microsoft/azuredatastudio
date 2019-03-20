@@ -42,7 +42,7 @@ bootstrapWindow.load([
 			perf.mark('main/startup');
 
 			// @ts-ignore
-			return require('vs/workbench/electron-browser/main').startup(configuration);
+			return require('vs/workbench/electron-browser/main').main(configuration);
 		});
 	}, {
 		removeDeveloperKeybindingsAfterLoad: true,
@@ -50,14 +50,13 @@ bootstrapWindow.load([
 			showPartsSplash(windowConfig);
 		},
 		beforeLoaderConfig: function (windowConfig, loaderConfig) {
-			loaderConfig.recordStats = !!windowConfig.performance;
+			loaderConfig.recordStats = !!windowConfig['prof-modules'];
 			if (loaderConfig.nodeCachedData) {
 				const onNodeCachedData = window['MonacoEnvironment'].onNodeCachedData = [];
 				loaderConfig.nodeCachedData.onData = function () {
 					onNodeCachedData.push(arguments);
 				};
 			}
-
 		},
 		beforeRequire: function () {
 			perf.mark('willLoadWorkbenchMain');
@@ -71,18 +70,12 @@ function showPartsSplash(configuration) {
 	perf.mark('willShowPartsSplash');
 
 	let data;
-	try {
-		if (!process.env['VSCODE_TEST_STORAGE_MIGRATION']) {
-			// TODO@Ben remove me after a while
-			perf.mark('willReadLocalStorage');
-			let raw = window.localStorage.getItem('storage://global/parts-splash-data');
-			perf.mark('didReadLocalStorage');
-			data = JSON.parse(raw);
-		} else {
-			data = JSON.parse(configuration.partsSplashData);
+	if (typeof configuration.partsSplashPath === 'string') {
+		try {
+			data = JSON.parse(require('fs').readFileSync(configuration.partsSplashPath, 'utf8'));
+		} catch (e) {
+			// ignore
 		}
-	} catch (e) {
-		// ignore
 	}
 
 	// high contrast mode has been turned on from the outside, e.g OS -> ignore stored colors and layouts
