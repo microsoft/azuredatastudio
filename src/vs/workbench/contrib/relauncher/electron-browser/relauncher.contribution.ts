@@ -59,12 +59,12 @@ export class SettingsChangeRelauncher extends Disposable implements IWorkbenchCo
 	private onConfigurationChange(config: IConfiguration, notify: boolean): void {
 		let changed = false;
 
+		// {{SQL CARBON EDIT}}
 		// Titlebar style
-		if (config.window && config.window.titleBarStyle !== this.titleBarStyle && (config.window.titleBarStyle === 'native' || config.window.titleBarStyle === 'custom')) {
-			// {{SQL CARBON EDIT}}
-			this.titleBarStyle = 'native'; //config.window.titleBarStyle;
-			changed = true;
-		}
+		// if (config.window && config.window.titleBarStyle !== this.titleBarStyle && (config.window.titleBarStyle === 'native' || config.window.titleBarStyle === 'custom')) {
+		// 	this.titleBarStyle = 'native'; //config.window.titleBarStyle;
+		// 	changed = true;
+		// }
 
 		// macOS: Native tabs
 		if (isMacintosh && config.window && typeof config.window.nativeTabs === 'boolean' && config.window.nativeTabs !== this.nativeTabs) {
