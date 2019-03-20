@@ -10,7 +10,7 @@ import * as assert from 'assert';
 import { Mock, It, Times } from 'typemoq';
 import { ExtHostModelViewDialog } from 'sql/workbench/api/node/extHostModelViewDialog';
 import { MainThreadModelViewDialogShape, ExtHostModelViewShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
-import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
+import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { MessageLevel } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 

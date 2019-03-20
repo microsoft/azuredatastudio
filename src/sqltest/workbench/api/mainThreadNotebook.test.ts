@@ -10,7 +10,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 
 import { URI, UriComponents } from 'vs/base/common/uri';
-import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
+import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 
 import { ExtHostNotebookShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { MainThreadNotebook } from 'sql/workbench/api/node/mainThreadNotebook';

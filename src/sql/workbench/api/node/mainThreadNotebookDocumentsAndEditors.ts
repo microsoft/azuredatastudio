@@ -6,15 +6,14 @@
 
 import * as azdata from 'azdata';
 import * as path from 'path';
-import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
+import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import { URI, UriComponents } from 'vs/base/common/uri';
 import { Event, Emitter } from 'vs/base/common/event';
-import { IExtHostContext, IUndoStopOptions } from 'vs/workbench/api/node/extHost.protocol';
+import { IExtHostContext, IUndoStopOptions } from 'vs/workbench/api/common/extHost.protocol';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITextEditorOptions } from 'vs/platform/editor/common/editor';
-import { viewColumnToEditorGroup } from 'vs/workbench/api/shared/editor';
 import { Schemas } from 'vs/base/common/network';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
@@ -32,6 +31,7 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { notebookModeId } from 'sql/common/constants';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
+import { viewColumnToEditorGroup } from 'vs/workbench/api/common/shared/editor';
 
 class MainThreadNotebookEditor extends Disposable {
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();

@@ -15,7 +15,7 @@ import { URI } from 'vs/base/common/uri';
 import * as pfs from 'vs/base/node/pfs';
 import { ILogService } from 'vs/platform/log/common/log';
 // {{SQL CARBON EDIT}} - Remove createApiFactory initializeExtensionApi, and IExtensionApiFactory imports
-import { ExtHostExtensionServiceShape, IEnvironment, IInitData, IMainContext, MainContext, MainThreadExtensionServiceShape, MainThreadTelemetryShape, MainThreadWorkspaceShape, IStaticWorkspaceData } from 'vs/workbench/api/node/extHost.protocol';
+import { ExtHostExtensionServiceShape, IEnvironment, IInitData, IMainContext, MainContext, MainThreadExtensionServiceShape, MainThreadTelemetryShape, MainThreadWorkspaceShape, IStaticWorkspaceData } from 'vs/workbench/api/common/extHost.protocol';
 import { ExtHostConfiguration } from 'vs/workbench/api/node/extHostConfiguration';
 import { ActivatedExtension, EmptyExtension, ExtensionActivatedByAPI, ExtensionActivatedByEvent, ExtensionActivationReason, ExtensionActivationTimes, ExtensionActivationTimesBuilder, ExtensionsActivator, IExtensionAPI, IExtensionContext, IExtensionMemento, IExtensionModule, HostExtension } from 'vs/workbench/api/node/extHostExtensionActivator';
 import { ExtHostLogService } from 'vs/workbench/api/node/extHostLogService';
@@ -31,6 +31,7 @@ import * as vscode from 'vscode';
 import { ExtensionIdentifier, IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { IWorkspace } from 'vs/platform/workspace/common/workspace';
 import { Schemas } from 'vs/base/common/network';
+import { withNullAsUndefined } from 'vs/base/common/types';
 
 class ExtensionMemento implements IExtensionMemento {
 
@@ -203,7 +204,7 @@ export class ExtHostExtensionService implements ExtHostExtensionServiceShape {
 		this._readyToRunExtensions = new Barrier();
 		this._registry = new ExtensionDescriptionRegistry(initData.extensions);
 		this._storage = new ExtHostStorage(this._extHostContext);
-		this._storagePath = new ExtensionStoragePath(initData.workspace, initData.environment);
+		this._storagePath = new ExtensionStoragePath(withNullAsUndefined(initData.workspace), initData.environment);
 
 		const hostExtensions = new Set<string>();
 		initData.hostExtensions.forEach((extensionId) => hostExtensions.add(ExtensionIdentifier.toKey(extensionId)));

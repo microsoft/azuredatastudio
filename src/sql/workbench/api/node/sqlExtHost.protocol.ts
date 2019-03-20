@@ -6,9 +6,8 @@
 
 import {
 	createMainContextProxyIdentifier as createMainId,
-	createExtHostContextProxyIdentifier as createExtId,
-	ProxyIdentifier, IRPCProtocol
-} from 'vs/workbench/services/extensions/node/proxyIdentifier';
+	createExtHostContextProxyIdentifier as createExtId
+} from 'vs/workbench/services/extensions/common/proxyIdentifier';
 import { UriComponents } from 'vs/base/common/uri';
 
 import { IDisposable } from 'vs/base/common/lifecycle';
@@ -22,8 +21,8 @@ import {
 	IItemConfig, ModelComponentTypes, IComponentShape, IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails,
 	IModelViewWizardDetails, IModelViewWizardPageDetails, INotebookManagerDetails, INotebookSessionDetails, INotebookKernelDetails, INotebookFutureDetails, FutureMessageType, INotebookFutureDone, ISingleNotebookEditOperation
 } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { EditorViewColumn } from 'vs/workbench/api/shared/editor';
-import { IUndoStopOptions } from 'vs/workbench/api/node/extHost.protocol';
+import { EditorViewColumn } from 'vs/workbench/api/common/shared/editor';
+import { IUndoStopOptions } from 'vs/workbench/api/common/extHost.protocol';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 
 export abstract class ExtHostAccountManagementShape {

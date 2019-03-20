@@ -6,7 +6,7 @@
 
 import { validateConstraint } from 'vs/base/common/types';
 import { ILogService } from 'vs/platform/log/common/log';
-import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
+import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import * as extHostTypes from 'vs/workbench/api/node/extHostTypes';
 
 import * as azdata from 'azdata';
