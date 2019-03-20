@@ -404,7 +404,12 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 
 	getCompatibleExtension(arg1: IExtensionIdentifier | IGalleryExtension, version?: string): Promise<IGalleryExtension | null> {
 		const extension: IGalleryExtension | null = isIExtensionIdentifier(arg1) ? null : arg1;
-		if (extension && extension.properties.engine && isEngineValid(extension.properties.engine)) {
+		// {{SQL CARBON EDIT}}
+		// Change to original version: removed the extension version validation
+		// Reason: This method is used to find the matching gallery extension for the locally installed extension,
+		//         since we only have one entry for each extension (not in-scope to enable mutiple version support for now),
+		//         if the new version of extension is not compatible, the extension won't be displayed properly.
+		if (extension) {
 			return Promise.resolve(extension);
 		}
 		const { id, uuid } = extension ? extension.identifier : <IExtensionIdentifier>arg1;
