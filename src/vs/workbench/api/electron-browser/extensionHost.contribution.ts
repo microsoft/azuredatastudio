@@ -14,7 +14,6 @@ import { ColorExtensionPoint } from 'vs/workbench/services/themes/common/colorEx
 import { LanguageConfigurationFileHandler } from 'vs/workbench/contrib/codeEditor/browser/languageConfigurationExtensionPoint';
 
 // --- mainThread participants
-import 'vs/workbench/api/node/apiCommands';
 import '../browser/mainThreadClipboard';
 import '../browser/mainThreadCommands';
 import '../browser/mainThreadConfiguration';
@@ -27,6 +26,8 @@ import '../browser/mainThreadDocumentContentProviders';
 import '../browser/mainThreadErrors';
 import '../browser/mainThreadFileSystem';
 import '../browser/mainThreadFileSystemEventService';
+import '../browser/mainThreadLanguages';
+import '../browser/mainThreadLogService';
 import '../browser/mainThreadMessageService';
 import '../browser/mainThreadOutputService';
 import '../browser/mainThreadProgress';
@@ -36,6 +37,11 @@ import '../browser/mainThreadSCM';
 import '../browser/mainThreadSearch';
 import '../browser/mainThreadStatusBar';
 import '../browser/mainThreadStorage';
+import '../browser/mainThreadTelemetry';
+import '../browser/mainThreadTerminalService';
+import '../browser/mainThreadTreeViews';
+import '../browser/mainThreadWindow';
+import '../browser/mainThreadWorkspace';
 import './mainThreadComments';
 import './mainThreadConsole';
 import './mainThreadDocuments';
@@ -45,16 +51,10 @@ import './mainThreadEditors';
 import './mainThreadExtensionService';
 import './mainThreadHeapService';
 import './mainThreadLanguageFeatures';
-import '../browser/mainThreadLanguages';
-import '../browser/mainThreadLogService';
 import './mainThreadTask';
-import '../browser/mainThreadTelemetry';
-import '../browser/mainThreadTerminalService';
-import '../browser/mainThreadTreeViews';
 import './mainThreadUrls';
 import './mainThreadWebview';
-import '../browser/mainThreadWindow';
-import '../browser/mainThreadWorkspace';
+import 'vs/workbench/api/node/apiCommands';
 
 export class ExtensionPoints implements IWorkbenchContribution {
 
