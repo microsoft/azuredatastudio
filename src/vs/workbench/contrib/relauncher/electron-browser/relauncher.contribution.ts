@@ -61,7 +61,8 @@ export class SettingsChangeRelauncher extends Disposable implements IWorkbenchCo
 
 		// Titlebar style
 		if (config.window && config.window.titleBarStyle !== this.titleBarStyle && (config.window.titleBarStyle === 'native' || config.window.titleBarStyle === 'custom')) {
-			this.titleBarStyle = config.window.titleBarStyle;
+			// {{SQL CARBON EDIT}}
+			this.titleBarStyle = 'native'; //config.window.titleBarStyle;
 			changed = true;
 		}
 
