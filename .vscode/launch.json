@@ -211,13 +211,6 @@
 				"Launch azuredatastudio",
 				"Attach to Extension Host"
 			]
-		},
-		{
-			"name": "Debug Unit Tests",
-			"configurations": [
-				"Attach to VS Code",
-				"Run Unit Tests"
-			]
-		},
+		}
 	]
 }
