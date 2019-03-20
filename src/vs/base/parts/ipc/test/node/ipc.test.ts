@@ -4,7 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
-import { IMessagePassingProtocol, IPCServer, ClientConnectionEvent, IPCClient, IChannel, IServerChannel } from 'vs/base/parts/ipc/node/ipc';
+import { IChannel, IServerChannel } from 'vs/base/parts/ipc/common/ipc';
+import { IMessagePassingProtocol, IPCServer, ClientConnectionEvent, IPCClient } from 'vs/base/parts/ipc/node/ipc';
 import { Emitter, Event } from 'vs/base/common/event';
 import { CancellationToken, CancellationTokenSource } from 'vs/base/common/cancellation';
 import { canceled } from 'vs/base/common/errors';
@@ -71,7 +72,7 @@ class TestIPCClient extends IPCClient<string> {
 
 class TestIPCServer extends IPCServer<string> {
 
-	private onDidClientConnect: Emitter<ClientConnectionEvent>;
+	private readonly onDidClientConnect: Emitter<ClientConnectionEvent>;
 
 	constructor() {
 		const onDidClientConnect = new Emitter<ClientConnectionEvent>();

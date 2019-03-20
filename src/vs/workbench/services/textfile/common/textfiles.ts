@@ -10,7 +10,7 @@ import { IEncodingSupport, ConfirmResult, IRevertOptions } from 'vs/workbench/co
 import { IBaseStat, IResolveContentOptions, ITextSnapshot } from 'vs/platform/files/common/files';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { ITextEditorModel } from 'vs/editor/common/services/resolverService';
-import { ITextBufferFactory } from 'vs/editor/common/model';
+import { ITextBufferFactory, ITextModel } from 'vs/editor/common/model';
 import { RawContextKey } from 'vs/platform/contextkey/common/contextkey';
 
 /**
@@ -29,7 +29,7 @@ export interface ISaveParticipant {
 	/**
 	 * Participate in a save of a model. Allows to change the model before it is being saved to disk.
 	 */
-	participate(model: ITextFileEditorModel, env: { reason: SaveReason }): Promise<void>;
+	participate(model: IResolvedTextFileEditorModel, env: { reason: SaveReason }): Promise<void>;
 }
 
 /**
@@ -101,7 +101,7 @@ export interface IResult {
 }
 
 export interface IAutoSaveConfiguration {
-	autoSaveDelay: number;
+	autoSaveDelay?: number;
 	autoSaveFocusChange: boolean;
 	autoSaveApplicationChange: boolean;
 }
@@ -189,7 +189,7 @@ export interface ITextFileEditorModelManager {
 	onModelsSaved: Event<TextFileModelChangeEvent[]>;
 	onModelsReverted: Event<TextFileModelChangeEvent[]>;
 
-	get(resource: URI): ITextFileEditorModel;
+	get(resource: URI): ITextFileEditorModel | undefined;
 
 	getAll(resource?: URI): ITextFileEditorModel[];
 
@@ -236,7 +236,7 @@ export interface ITextFileEditorModel extends ITextEditorModel, IEncodingSupport
 
 	hasState(state: ModelState): boolean;
 
-	getETag(): string;
+	getETag(): string | null;
 
 	updatePreferredEncoding(encoding: string): void;
 
@@ -246,13 +246,19 @@ export interface ITextFileEditorModel extends ITextEditorModel, IEncodingSupport
 
 	revert(soft?: boolean): Promise<void>;
 
-	createSnapshot(): ITextSnapshot;
+	createSnapshot(): ITextSnapshot | null;
 
 	isDirty(): boolean;
 
 	isResolved(): boolean;
 
 	isDisposed(): boolean;
+}
+
+export interface IResolvedTextFileEditorModel extends ITextFileEditorModel {
+	readonly textEditorModel: ITextModel;
+
+	createSnapshot(): ITextSnapshot;
 }
 
 
@@ -313,9 +319,9 @@ export interface ITextFileService extends IDisposable {
 	 * @param resource the resource to save as.
 	 * @param targetResource the optional target to save to.
 	 * @param options optional save options
-	 * @return true if the file was saved.
+	 * @return Path of the saved resource.
 	 */
-	saveAs(resource: URI, targetResource?: URI, options?: ISaveOptions): Promise<URI>;
+	saveAs(resource: URI, targetResource?: URI, options?: ISaveOptions): Promise<URI | undefined>;
 
 	/**
 	 * Saves the set of resources and returns a promise with the operation result.

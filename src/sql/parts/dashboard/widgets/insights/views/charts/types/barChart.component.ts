@@ -7,9 +7,11 @@ import { ChartInsight } from 'sql/parts/dashboard/widgets/insights/views/charts/
 import { mixin } from 'sql/base/common/objects';
 import { ChartType, IChartConfig, customMixin } from 'sql/parts/dashboard/widgets/insights/views/charts/interfaces';
 
-import { IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as colors from 'vs/platform/theme/common/colorRegistry';
 import { editorLineNumbers } from 'vs/editor/common/view/editorColorRegistry';
+import { ChangeDetectorRef, Inject, ElementRef, forwardRef } from '@angular/core';
+import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 
 export interface IBarChartConfig extends IChartConfig {
 	yAxisMin: number;
@@ -22,6 +24,15 @@ export interface IBarChartConfig extends IChartConfig {
 
 export default class BarChart extends ChartInsight {
 	protected readonly chartType: ChartType = ChartType.Bar;
+
+	constructor(
+		@Inject(forwardRef(() => ChangeDetectorRef)) _changeRef: ChangeDetectorRef,
+		@Inject(forwardRef(() => ElementRef)) _el: ElementRef,
+		@Inject(IWorkbenchThemeService) themeService: IWorkbenchThemeService,
+		@Inject(ITelemetryService) telemetryService: ITelemetryService
+	) {
+		super(_changeRef, _el, themeService, telemetryService);
+	}
 
 	public setConfig(config: IBarChartConfig): void {
 		let options = {};

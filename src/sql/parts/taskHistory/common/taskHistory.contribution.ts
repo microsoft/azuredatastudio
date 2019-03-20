@@ -21,9 +21,8 @@ import ext = require('vs/workbench/common/contributions');
 import { ITaskService } from 'sql/platform/taskHistory/common/taskService';
 import { IActivityService, NumberBadge } from 'vs/workbench/services/activity/common/activity';
 import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
-import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
 import { ToggleViewletAction } from 'vs/workbench/browser/parts/activitybar/activitybarActions';
-import { IPartService } from 'vs/workbench/services/part/common/partService';
+import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 
 export class StatusUpdater implements ext.IWorkbenchContribution {
 	static ID = 'data.taskhistory.statusUpdater';
@@ -83,9 +82,9 @@ export class TaskHistoryViewletAction extends ToggleViewletAction {
 		id: string,
 		label: string,
 		@IViewletService viewletService: IViewletService,
-		@IPartService partService: IPartService
+		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService
 	) {
-		super(viewletDescriptor, partService, viewletService);
+		super(viewletDescriptor, layoutService, viewletService);
 	}
 }
 

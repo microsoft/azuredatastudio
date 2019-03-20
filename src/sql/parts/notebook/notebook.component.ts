@@ -19,7 +19,6 @@ import { IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { fillInActions, LabeledMenuItemActionItem } from 'vs/platform/actions/browser/menuItemActionItem';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
-import { VIEWLET_ID, IExtensionsViewlet } from 'vs/workbench/parts/extensions/common/extensions';
 
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { AngularDisposable } from 'sql/base/node/lifecycle';
@@ -41,6 +40,7 @@ import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHos
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { CellMagicMapper } from 'sql/parts/notebook/models/cellMagicMapper';
+import { IExtensionsViewlet, VIEWLET_ID } from 'vs/workbench/contrib/extensions/common/extensions';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 
@@ -51,6 +51,7 @@ export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 })
 export class NotebookComponent extends AngularDisposable implements OnInit, OnDestroy, INotebookEditor {
 	@ViewChild('toolbar', { read: ElementRef }) private toolbar: ElementRef;
+	@ViewChild('container', { read: ElementRef }) private container: ElementRef;
 	private _model: NotebookModel;
 	private _isInErrorState: boolean = false;
 	private _errorMessage: string;
@@ -62,6 +63,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private profile: IConnectionProfile;
 	private _trustedAction: TrustedAction;
 	private _providerRelatedActions: IAction[] = [];
+	private _scrollTop: number;
 
 
 	constructor(
@@ -112,6 +114,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
 		this.initActionBar();
+		this.setScrollPosition();
 		this.doLoad();
 	}
 
@@ -157,6 +160,11 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		}
 	}
 
+	//Saves scrollTop value on scroll change
+	public scrollHandler(event: Event){
+		this._scrollTop = event.srcElement.scrollTop;
+	}
+
 	public unselectActiveCell() {
 		if (this.model && this.model.activeCell) {
 			this.model.activeCell.active = false;
@@ -176,7 +184,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._model.cells.forEach(cell => {
 			cell.trustedMode = isTrusted;
 		});
-		//TODO: Handle dirty for trust?
+		//Updates dirty state
+		this._notebookParams.input && this._notebookParams.input.updateModel();
 		this.detectChanges();
 	}
 
@@ -197,6 +206,15 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				break;
 			default:
 				break;
+		}
+	}
+
+	private setScrollPosition(): void {
+		if (this._notebookParams && this._notebookParams.input) {
+			this._notebookParams.input.layoutChanged(() => {
+				let containerElement = <HTMLElement>this.container.nativeElement;
+				containerElement.scrollTop = this._scrollTop;
+			});
 		}
 	}
 
@@ -223,10 +241,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	private async loadModel(): Promise<void> {
 		await this.awaitNonDefaultProvider();
-		let providerId = 'sql'; // this is tricky; really should also depend on the connection profile
-		this.setContextKeyServiceWithProviderId(providerId);
-		this.fillInActionsForCurrentContext();
-
 		let model = new NotebookModel({
 			factory: this.modelFactory,
 			notebookUri: this._notebookParams.notebookUri,
@@ -249,6 +263,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this.updateToolbarComponents(this._model.trustedMode);
 		this._modelRegisteredDeferred.resolve(this._model);
 		await model.startSession(this.model.notebookManager, undefined, true);
+		this.setContextKeyServiceWithProviderId(model.providerId);
+		this.fillInActionsForCurrentContext();
 		this.detectChanges();
 	}
 

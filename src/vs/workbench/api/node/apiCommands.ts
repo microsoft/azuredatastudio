@@ -3,21 +3,16 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { tmpdir } from 'os';
-import { posix } from 'path';
 import * as vscode from 'vscode';
 import { URI } from 'vs/base/common/uri';
-import { isMalformedFileUri } from 'vs/base/common/resources';
 import * as typeConverters from 'vs/workbench/api/node/extHostTypeConverters';
 import { CommandsRegistry, ICommandService, ICommandHandler } from 'vs/platform/commands/common/commands';
 import { ITextEditorOptions } from 'vs/platform/editor/common/editor';
-import { EditorViewColumn } from 'vs/workbench/api/shared/editor';
-import { EditorGroupLayout } from 'vs/workbench/services/group/common/editorGroupsService';
+import { EditorViewColumn } from 'vs/workbench/api/common/shared/editor';
+import { EditorGroupLayout } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
-import { IWorkspaceIdentifier, ISingleFolderWorkspaceIdentifier } from 'vs/platform/workspaces/common/workspaces';
-import { IWindowsService } from 'vs/platform/windows/common/windows';
+import { IWindowsService, IOpenSettings } from 'vs/platform/windows/common/windows';
 import { IDownloadService } from 'vs/platform/download/common/download';
-import { generateUuid } from 'vs/base/common/uuid';
 
 // -----------------------------------------------------------------
 // The following commands are registered on both sides separately.
@@ -27,7 +22,7 @@ import { generateUuid } from 'vs/base/common/uuid';
 // -----------------------------------------------------------------
 
 export interface ICommandsExecutor {
-	executeCommand<T>(id: string, ...args: any[]): Promise<T>;
+	executeCommand<T>(id: string, ...args: any[]): Promise<T | undefined>;
 }
 
 function adjustHandler(handler: (executor: ICommandsExecutor, ...args: any[]) => any): ICommandHandler {
@@ -36,36 +31,42 @@ function adjustHandler(handler: (executor: ICommandsExecutor, ...args: any[]) =>
 	};
 }
 
-export class PreviewHTMLAPICommand {
-	public static ID = 'vscode.previewHtml';
-	public static execute(executor: ICommandsExecutor, uri: URI, position?: vscode.ViewColumn, label?: string, options?: any): Promise<any> {
-		return executor.executeCommand('_workbench.previewHtml',
-			uri,
-			typeof position === 'number' && typeConverters.ViewColumn.from(position),
-			label,
-			options
-		);
-	}
+interface IOpenFolderAPICommandOptions {
+	forceNewWindow?: boolean;
+	noRecentEntry?: boolean;
+	recentEntryLabel?: string;
 }
-CommandsRegistry.registerCommand(PreviewHTMLAPICommand.ID, adjustHandler(PreviewHTMLAPICommand.execute));
 
 export class OpenFolderAPICommand {
 	public static ID = 'vscode.openFolder';
-	public static execute(executor: ICommandsExecutor, uri?: URI, forceNewWindow?: boolean): Promise<any> {
+	public static execute(executor: ICommandsExecutor, uri?: URI, forceNewWindow?: boolean): Promise<any>;
+	public static execute(executor: ICommandsExecutor, uri?: URI, options?: IOpenFolderAPICommandOptions): Promise<any>;
+	public static execute(executor: ICommandsExecutor, uri?: URI, arg: boolean | IOpenFolderAPICommandOptions = {}): Promise<any> {
+		if (typeof arg === 'boolean') {
+			arg = { forceNewWindow: arg };
+		}
 		if (!uri) {
-			return executor.executeCommand('_files.pickFolderAndOpen', forceNewWindow);
+			return executor.executeCommand('_files.pickFolderAndOpen', arg.forceNewWindow);
 		}
-		let correctedUri = isMalformedFileUri(uri);
-		if (correctedUri) {
-			// workaround for #55916 and #55891, will be removed in 1.28
-			console.warn(`'vscode.openFolder' command invoked with an invalid URI (file:// scheme missing): '${uri}'. Converted to a 'file://' URI: ${correctedUri}`);
-			uri = correctedUri;
+		const options: IOpenSettings = { forceNewWindow: arg.forceNewWindow };
+		if (arg.noRecentEntry) {
+			options.args = { _: [], 'skip-add-to-recently-opened': true };
 		}
-
-		return executor.executeCommand('_files.windowOpen', { folderURIs: [uri], forceNewWindow });
+		uri = URI.revive(uri);
+		return executor.executeCommand('_files.windowOpen', [{ uri, label: arg.recentEntryLabel }], options);
 	}
 }
-CommandsRegistry.registerCommand(OpenFolderAPICommand.ID, adjustHandler(OpenFolderAPICommand.execute));
+CommandsRegistry.registerCommand({
+	id: OpenFolderAPICommand.ID,
+	handler: adjustHandler(OpenFolderAPICommand.execute),
+	description: {
+		description: 'Open a folder or workspace in the current window or new window depending on the newWindow argument. Note that opening in the same window will shutdown the current extension host process and start a new one on the given folder/workspace unless the newWindow parameter is set to true.',
+		args: [
+			{ name: 'uri', description: '(optional) Uri of the folder or workspace file to open. If not provided, a native dialog will ask the user for the folder', constraint: (value: any) => value === undefined || value instanceof URI },
+			{ name: 'options', description: '(optional) Options. Object with the following properties: `forceNewWindow `: Whether to open the folder/workspace in a new window or the same. Defaults to opening in the same window. `noRecentEntry`: Wheter the opened URI will appear in the \'Open Recent\' list. Defaults to true. `recentEntryLabel`: The label used for \'Open Recent\' list. Note, for backward compatibility, options can also be of type boolean, representing the `forceNewWindow` setting.', constraint: (value: any) => value === undefined || typeof value === 'object' || typeof value === 'boolean' }
+		]
+	}
+});
 
 export class DiffAPICommand {
 	public static ID = 'vscode.diff';
@@ -84,8 +85,8 @@ CommandsRegistry.registerCommand(DiffAPICommand.ID, adjustHandler(DiffAPICommand
 export class OpenAPICommand {
 	public static ID = 'vscode.open';
 	public static execute(executor: ICommandsExecutor, resource: URI, columnOrOptions?: vscode.ViewColumn | vscode.TextDocumentShowOptions, label?: string): Promise<any> {
-		let options: ITextEditorOptions;
-		let position: EditorViewColumn;
+		let options: ITextEditorOptions | undefined;
+		let position: EditorViewColumn | undefined;
 
 		if (columnOrOptions) {
 			if (typeof columnOrOptions === 'number') {
@@ -106,15 +107,19 @@ export class OpenAPICommand {
 }
 CommandsRegistry.registerCommand(OpenAPICommand.ID, adjustHandler(OpenAPICommand.execute));
 
-CommandsRegistry.registerCommand('_workbench.removeFromRecentlyOpened', function (accessor: ServicesAccessor, path: IWorkspaceIdentifier | ISingleFolderWorkspaceIdentifier | URI | string) {
+CommandsRegistry.registerCommand('_workbench.removeFromRecentlyOpened', function (accessor: ServicesAccessor, uri: URI) {
 	const windowsService = accessor.get(IWindowsService);
-
-	return windowsService.removeFromRecentlyOpened([path]).then(() => undefined);
+	return windowsService.removeFromRecentlyOpened([uri]).then(() => undefined);
 });
 
 export class RemoveFromRecentlyOpenedAPICommand {
 	public static ID = 'vscode.removeFromRecentlyOpened';
-	public static execute(executor: ICommandsExecutor, path: string): Promise<any> {
+	public static execute(executor: ICommandsExecutor, path: string | URI): Promise<any> {
+		if (typeof path === 'string') {
+			path = path.match(/^[^:/?#]+:\/\//) ? URI.parse(path) : URI.file(path);
+		} else {
+			path = URI.revive(path); // called from extension host
+		}
 		return executor.executeCommand('_workbench.removeFromRecentlyOpened', path);
 	}
 }
@@ -126,11 +131,33 @@ export class SetEditorLayoutAPICommand {
 		return executor.executeCommand('layoutEditorGroups', layout);
 	}
 }
-CommandsRegistry.registerCommand(SetEditorLayoutAPICommand.ID, adjustHandler(SetEditorLayoutAPICommand.execute));
+CommandsRegistry.registerCommand({
+	id: SetEditorLayoutAPICommand.ID,
+	handler: adjustHandler(SetEditorLayoutAPICommand.execute),
+	description: {
+		description: 'Set Editor Layout',
+		args: [{
+			name: 'args',
+			schema: {
+				'type': 'object',
+				'required': ['groups'],
+				'properties': {
+					'orientation': {
+						'type': 'number',
+						'default': 0,
+						'enum': [0, 1]
+					},
+					'groups': {
+						'$ref': '#/definitions/editorGroupsSchema', // defined in keybindingService.ts ...
+						'default': [{}, {}],
+					}
+				}
+			}
+		}]
+	}
+});
 
 CommandsRegistry.registerCommand('_workbench.downloadResource', function (accessor: ServicesAccessor, resource: URI) {
 	const downloadService = accessor.get(IDownloadService);
-	const location = posix.join(tmpdir(), generateUuid());
-
-	return downloadService.download(resource, location).then(() => URI.file(location));
+	return downloadService.download(resource).then(location => URI.file(location));
 });

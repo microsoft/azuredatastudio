@@ -29,10 +29,10 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { attachInputBoxStyler, attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
-import { IPartService } from 'vs/workbench/services/part/common/partService';
 import * as DOM from 'vs/base/browser/dom';
 import * as strings from 'vs/base/common/strings';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
+import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 
 export class FileBrowserDialog extends Modal {
 	private _viewModel: FileBrowserViewModel;
@@ -50,7 +50,7 @@ export class FileBrowserDialog extends Modal {
 	private _isFolderSelected: boolean;
 
 	constructor(title: string,
-		@IPartService partService: IPartService,
+		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
 		@IWorkbenchThemeService private _workbenchthemeService: IWorkbenchThemeService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IContextViewService private _contextViewService: IContextViewService,
@@ -58,7 +58,7 @@ export class FileBrowserDialog extends Modal {
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IClipboardService clipboardService: IClipboardService
 	) {
-		super(title, TelemetryKeys.Backup, partService, telemetryService, clipboardService, _workbenchthemeService, contextKeyService, { isFlyout: true, hasTitleIcon: false, hasBackButton: true, hasSpinner: true });
+		super(title, TelemetryKeys.Backup, telemetryService, layoutService, clipboardService, _workbenchthemeService, contextKeyService, { isFlyout: true, hasTitleIcon: false, hasBackButton: true, hasSpinner: true });
 		this._viewModel = this._instantiationService.createInstance(FileBrowserViewModel);
 		this._viewModel.onAddFileTree(args => this.handleOnAddFileTree(args.rootNode, args.selectedNode, args.expandedNodes));
 		this._viewModel.onPathValidate(args => this.handleOnValidate(args.succeeded, args.message));

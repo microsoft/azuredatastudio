@@ -7,7 +7,6 @@ import nls = require('vs/nls');
 
 import { Action } from 'vs/base/common/actions';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 
 import * as azdata from 'azdata';
 
@@ -20,6 +19,7 @@ import * as Constants from 'sql/parts/query/common/constants';
 import * as ConnectionConstants from 'sql/platform/connection/common/constants';
 import { EditDataEditor } from 'sql/parts/editData/editor/editDataEditor';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 const singleQuote = '\'';
 
@@ -247,7 +247,7 @@ export class RunQueryShortcutAction extends Action {
 		@IQueryModelService protected _queryModelService: IQueryModelService,
 		@IQueryManagementService private _queryManagementService: IQueryManagementService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@IWorkspaceConfigurationService private _workspaceConfigurationService: IWorkspaceConfigurationService
+		@IConfigurationService private _workspaceConfigurationService: IConfigurationService
 	) {
 		super(RunQueryShortcutAction.ID);
 	}

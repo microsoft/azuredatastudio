@@ -10,7 +10,7 @@ import * as assert from 'assert';
 import * as TypeMoq from 'typemoq';
 
 import { URI } from 'vs/base/common/uri';
-import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
+import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
 import { ExtHostNotebook } from 'sql/workbench/api/node/extHostNotebook';
 import { MainThreadNotebookShape } from 'sql/workbench/api/node/sqlExtHost.protocol';

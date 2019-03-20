@@ -9,7 +9,6 @@ import { IDisposable, combinedDisposable } from 'vs/base/common/lifecycle';
 import { IStatusbarItem } from 'vs/workbench/browser/parts/statusbar/statusbar';
 import { IEditorCloseEvent } from 'vs/workbench/common/editor';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Action } from 'vs/base/common/actions';
 import errors = require('vs/base/common/errors');
@@ -69,7 +68,6 @@ export class SqlFlavorStatusbarItem implements IStatusbarItem {
 	constructor(
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IEditorService private _editorService: EditorServiceImpl,
-		@IEditorGroupsService private _editorGroupService: IEditorGroupsService,
 		@IQuickInputService private _quickInputService: IQuickInputService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 	) {

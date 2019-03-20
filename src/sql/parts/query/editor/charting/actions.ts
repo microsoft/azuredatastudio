@@ -14,7 +14,7 @@ import { resolveCurrentDirectory, getRootPath } from 'sql/platform/node/pathUtil
 
 import { localize } from 'vs/nls';
 import { Action } from 'vs/base/common/actions';
-import { join, normalize } from 'vs/base/common/paths';
+import { join, normalize } from 'vs/base/common/path';
 import { writeFile } from 'vs/base/node/pfs';
 import { IWindowsService, IWindowService } from 'vs/platform/windows/common/windows';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
@@ -193,7 +193,7 @@ export class SaveImageAction extends Action {
 		filepathPlaceHolder = join(filepathPlaceHolder, 'chart.png');
 		return this.windowService.showSaveDialog({
 			title: localize('chartViewer.saveAsFileTitle', 'Choose Results File'),
-			defaultPath: normalize(filepathPlaceHolder, true)
+			defaultPath: normalize(filepathPlaceHolder)
 		});
 	}
 

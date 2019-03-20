@@ -8,17 +8,17 @@ import * as sinon from 'sinon';
 import { Emitter } from 'vs/base/common/event';
 import { ExtHostTreeViews } from 'vs/workbench/api/node/extHostTreeViews';
 import { ExtHostCommands } from 'vs/workbench/api/node/extHostCommands';
-import { MainThreadTreeViewsShape, MainContext } from 'vs/workbench/api/node/extHost.protocol';
+import { MainThreadTreeViewsShape, MainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { TreeDataProvider, TreeItem } from 'vscode';
 import { TestRPCProtocol } from './testRPCProtocol';
 import { ExtHostHeapService } from 'vs/workbench/api/node/extHostHeapService';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
-import { MainThreadCommands } from 'vs/workbench/api/electron-browser/mainThreadCommands';
+import { MainThreadCommands } from 'vs/workbench/api/browser/mainThreadCommands';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { mock } from 'vs/workbench/test/electron-browser/api/mock';
 import { TreeItemCollapsibleState, ITreeItem } from 'vs/workbench/common/views';
 import { NullLogService } from 'vs/platform/log/common/log';
-import { IExtensionDescription } from 'vs/workbench/services/extensions/common/extensions';
+import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 
 suite('ExtHostTreeView', function () {
 
@@ -29,12 +29,12 @@ suite('ExtHostTreeView', function () {
 		$registerTreeViewDataProvider(treeViewId: string): void {
 		}
 
-		$refresh(viewId: string, itemsToRefresh?: { [treeItemHandle: string]: ITreeItem }): Promise<void> {
+		$refresh(viewId: string, itemsToRefresh: { [treeItemHandle: string]: ITreeItem }): Promise<void> {
 			return Promise.resolve(null).then(() => this.onRefresh.fire(itemsToRefresh));
 		}
 
 		$reveal(): Promise<void> {
-			return null;
+			return Promise.resolve();
 		}
 
 	}
@@ -625,7 +625,7 @@ suite('ExtHostTreeView', function () {
 			getTreeItem: (element: { key: string }): TreeItem => {
 				return getTreeItem(element.key);
 			},
-			getParent: ({ key }: { key: string }): { key: string } => {
+			getParent: ({ key }: { key: string }): { key: string } | undefined => {
 				const parentKey = key.substring(0, key.length - 1);
 				return parentKey ? new Key(parentKey) : undefined;
 			},
@@ -672,7 +672,7 @@ suite('ExtHostTreeView', function () {
 		return parent;
 	}
 
-	function getChildren(key: string): string[] {
+	function getChildren(key: string | undefined): string[] {
 		if (!key) {
 			return Object.keys(tree);
 		}

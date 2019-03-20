@@ -22,9 +22,9 @@ import { TestConnectionManagementService } from 'sqltest/stubs/connectionManagem
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { TestCommandService } from 'vs/editor/test/browser/editorTestServices';
 import { WorkspaceConfigurationTestService } from 'sqltest/stubs/workspaceConfigurationTestService';
-import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { assertThrowsAsync } from 'sqltest/utils/testUtils';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 class TestParsedArgs implements ParsedArgs {
 	[arg: string]: any;
@@ -63,7 +63,7 @@ class TestParsedArgs implements ParsedArgs {
 	locale?: string;
 	log?: string;
 	logExtensionHostCommunication?: boolean;
-	'max-memory'?: number;
+	'max-memory'?: string;
 	'new-window'?: boolean;
 	'open-url'?: boolean;
 	performance?: boolean;
@@ -104,7 +104,7 @@ suite('commandLineService tests', () => {
 	});
 
 	function getCommandLineService(connectionManagementService: IConnectionManagementService,
-		configurationService: IWorkspaceConfigurationService,
+		configurationService: IConfigurationService,
 		capabilitiesService?: ICapabilitiesService,
 		commandService?: ICommandService
 	): CommandLineService {
@@ -121,8 +121,8 @@ suite('commandLineService tests', () => {
 		return service;
 	}
 
-	function getConfigurationServiceMock(showConnectDialogOnStartup: boolean): TypeMoq.Mock<IWorkspaceConfigurationService> {
-		let configurationService = TypeMoq.Mock.ofType<IWorkspaceConfigurationService>(WorkspaceConfigurationTestService);
+	function getConfigurationServiceMock(showConnectDialogOnStartup: boolean): TypeMoq.Mock<IConfigurationService> {
+		let configurationService = TypeMoq.Mock.ofType<IConfigurationService>(WorkspaceConfigurationTestService);
 		configurationService.setup((c) => c.getValue(TypeMoq.It.isAnyString())).returns((config: string) => showConnectDialogOnStartup);
 		return configurationService;
 	}
@@ -283,4 +283,3 @@ suite('commandLineService tests', () => {
 		assertThrowsAsync(async () => await service.processCommandLine(args));
 	});
 });
-

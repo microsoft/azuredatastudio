@@ -12,7 +12,6 @@ import { Dialog, DialogButton } from 'sql/platform/dialog/dialogTypes';
 import { DialogPane } from 'sql/platform/dialog/dialogPane';
 
 import { Builder } from 'sql/base/browser/builder';
-import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -26,6 +25,7 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { DialogMessage, MessageLevel } from '../../workbench/api/common/sqlExtHostTypes';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 
 export class DialogModal extends Modal {
 	private _dialogPane: DialogPane;
@@ -40,14 +40,14 @@ export class DialogModal extends Modal {
 		private _dialog: Dialog,
 		name: string,
 		options: IModalOptions,
-		@IPartService partService: IPartService,
+		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
 		@IWorkbenchThemeService themeService: IWorkbenchThemeService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IClipboardService clipboardService: IClipboardService,
 		@IInstantiationService private _instantiationService: IInstantiationService
 	) {
-		super(_dialog.title, name, partService, telemetryService, clipboardService, themeService, contextKeyService, options);
+		super(_dialog.title, name, telemetryService, layoutService, clipboardService, themeService, contextKeyService, options);
 	}
 
 	public layout(): void {

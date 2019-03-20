@@ -15,9 +15,9 @@ import { ConnectionConfig } from './connectionConfig';
 import { Memento } from 'vs/workbench/common/memento';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from './connectionProfileGroup';
-import { ConfigurationEditingService } from 'vs/workbench/services/configuration/node/configurationEditingService';
-import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { ConfigurationEditingService } from 'vs/workbench/services/configuration/common/configurationEditingService';
 
 const MAX_CONNECTIONS_DEFAULT = 25;
 
@@ -36,7 +36,7 @@ export class ConnectionStore {
 		private _storageService: IStorageService,
 		private _context: Memento,
 		private _configurationEditService: ConfigurationEditingService,
-		private _workspaceConfigurationService: IWorkspaceConfigurationService,
+		private _configurationService: IConfigurationService,
 		private _credentialService: ICredentialsService,
 		private _capabilitiesService: ICapabilitiesService,
 		private _connectionConfig?: IConnectionConfig
@@ -48,7 +48,7 @@ export class ConnectionStore {
 		this._groupFullNameToIdMap = {};
 		if (!this._connectionConfig) {
 			this._connectionConfig = new ConnectionConfig(this._configurationEditService,
-				this._workspaceConfigurationService, this._capabilitiesService);
+				this._configurationService, this._capabilitiesService);
 		}
 	}
 
@@ -488,7 +488,7 @@ export class ConnectionStore {
 	}
 
 	private getMaxRecentConnectionsCount(): number {
-		let config = this._workspaceConfigurationService.getValue(Constants.sqlConfigSectionName);
+		let config = this._configurationService.getValue(Constants.sqlConfigSectionName);
 
 		let maxConnections: number = config[Constants.configMaxRecentConnections];
 		if (typeof (maxConnections) !== 'number' || maxConnections <= 0) {

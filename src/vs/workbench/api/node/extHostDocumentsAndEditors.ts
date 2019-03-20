@@ -3,11 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as assert from 'assert';
+import * as assert from 'vs/base/common/assert';
 import { Emitter, Event } from 'vs/base/common/event';
 import { dispose } from 'vs/base/common/lifecycle';
 import { URI } from 'vs/base/common/uri';
-import { ExtHostDocumentsAndEditorsShape, IDocumentsAndEditorsDelta, IMainContext, MainContext } from 'vs/workbench/api/node/extHost.protocol';
+import { ExtHostDocumentsAndEditorsShape, IDocumentsAndEditorsDelta, IMainContext, MainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { ExtHostDocumentData } from 'vs/workbench/api/node/extHostDocumentData';
 import { ExtHostTextEditor } from 'vs/workbench/api/node/extHostTextEditor';
 import * as typeConverters from 'vs/workbench/api/node/extHostTypeConverters';
@@ -17,7 +17,7 @@ export class ExtHostDocumentsAndEditors implements ExtHostDocumentsAndEditorsSha
 
 	private _disposables: Disposable[] = [];
 
-	private _activeEditorId: string;
+	private _activeEditorId: string | null;
 
 	private readonly _editors = new Map<string, ExtHostTextEditor>();
 	private readonly _documents = new Map<string, ExtHostDocumentData>();
@@ -25,12 +25,12 @@ export class ExtHostDocumentsAndEditors implements ExtHostDocumentsAndEditorsSha
 	private readonly _onDidAddDocuments = new Emitter<ExtHostDocumentData[]>();
 	private readonly _onDidRemoveDocuments = new Emitter<ExtHostDocumentData[]>();
 	private readonly _onDidChangeVisibleTextEditors = new Emitter<ExtHostTextEditor[]>();
-	private readonly _onDidChangeActiveTextEditor = new Emitter<ExtHostTextEditor>();
+	private readonly _onDidChangeActiveTextEditor = new Emitter<ExtHostTextEditor | undefined>();
 
 	readonly onDidAddDocuments: Event<ExtHostDocumentData[]> = this._onDidAddDocuments.event;
 	readonly onDidRemoveDocuments: Event<ExtHostDocumentData[]> = this._onDidRemoveDocuments.event;
 	readonly onDidChangeVisibleTextEditors: Event<ExtHostTextEditor[]> = this._onDidChangeVisibleTextEditors.event;
-	readonly onDidChangeActiveTextEditor: Event<ExtHostTextEditor> = this._onDidChangeActiveTextEditor.event;
+	readonly onDidChangeActiveTextEditor: Event<ExtHostTextEditor | undefined> = this._onDidChangeActiveTextEditor.event;
 
 	constructor(
 		private readonly _mainContext: IMainContext,
@@ -52,7 +52,9 @@ export class ExtHostDocumentsAndEditors implements ExtHostDocumentsAndEditorsSha
 				const id = uri.toString();
 				const data = this._documents.get(id);
 				this._documents.delete(id);
-				removedDocuments.push(data);
+				if (data) {
+					removedDocuments.push(data);
+				}
 			}
 		}
 
@@ -79,7 +81,9 @@ export class ExtHostDocumentsAndEditors implements ExtHostDocumentsAndEditorsSha
 			for (const id of delta.removedEditors) {
 				const editor = this._editors.get(id);
 				this._editors.delete(id);
-				removedEditors.push(editor);
+				if (editor) {
+					removedEditors.push(editor);
+				}
 			}
 		}
 
@@ -89,15 +93,15 @@ export class ExtHostDocumentsAndEditors implements ExtHostDocumentsAndEditorsSha
 				assert.ok(this._documents.has(resource.toString()), `document '${resource}' does not exist`);
 				assert.ok(!this._editors.has(data.id), `editor '${data.id}' already exists!`);
 
-				const documentData = this._documents.get(resource.toString());
+				const documentData = this._documents.get(resource.toString())!;
 				const editor = new ExtHostTextEditor(
 					this._mainContext.getProxy(MainContext.MainThreadTextEditors),
 					data.id,
 					documentData,
 					data.selections.map(typeConverters.Selection.to),
 					data.options,
-					data.visibleRanges.map(typeConverters.Range.to),
-					typeConverters.ViewColumn.to(data.editorPosition)
+					data.visibleRanges.map(range => typeConverters.Range.to(range)),
+					typeof data.editorPosition === 'number' ? typeConverters.ViewColumn.to(data.editorPosition) : undefined
 				);
 				this._editors.set(data.id, editor);
 			}
@@ -127,8 +131,8 @@ export class ExtHostDocumentsAndEditors implements ExtHostDocumentsAndEditorsSha
 		}
 	}
 
-	getDocument(strUrl: string): ExtHostDocumentData {
-		return this._documents.get(strUrl);
+	getDocument(uri: URI): ExtHostDocumentData | undefined {
+		return this._documents.get(uri.toString());
 	}
 
 	allDocuments(): ExtHostDocumentData[] {
@@ -137,7 +141,7 @@ export class ExtHostDocumentsAndEditors implements ExtHostDocumentsAndEditorsSha
 		return result;
 	}
 
-	getEditor(id: string): ExtHostTextEditor {
+	getEditor(id: string): ExtHostTextEditor | undefined {
 		return this._editors.get(id);
 	}
 

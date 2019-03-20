@@ -5,7 +5,7 @@
 
 import * as vscode from 'vscode';
 import { URI } from 'vs/base/common/uri';
-import { MainContext, MainThreadDiaglogsShape, IMainContext } from 'vs/workbench/api/node/extHost.protocol';
+import { MainContext, MainThreadDiaglogsShape, IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
 export class ExtHostDialogs {
 
@@ -15,15 +15,15 @@ export class ExtHostDialogs {
 		this._proxy = mainContext.getProxy(MainContext.MainThreadDialogs);
 	}
 
-	showOpenDialog(options: vscode.OpenDialogOptions): Promise<URI[]> {
+	showOpenDialog(options: vscode.OpenDialogOptions): Promise<URI[] | undefined> {
 		return this._proxy.$showOpenDialog(options).then(filepaths => {
-			return filepaths && filepaths.map(URI.revive);
+			return filepaths ? filepaths.map(URI.revive) : undefined;
 		});
 	}
 
-	showSaveDialog(options: vscode.SaveDialogOptions): Promise<URI> {
+	showSaveDialog(options: vscode.SaveDialogOptions): Promise<URI | undefined> {
 		return this._proxy.$showSaveDialog(options).then(filepath => {
-			return filepath && URI.revive(filepath);
+			return filepath ? URI.revive(filepath) : undefined;
 		});
 	}
 }

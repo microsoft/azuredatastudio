@@ -1,7 +1,7 @@
 steps:
 - task: NodeTool@0
   inputs:
-    versionSpec: "8.12.0"
+    versionSpec: "10.15.1"
 
 - task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@2
   inputs:
@@ -9,12 +9,19 @@ steps:
 
 - script: |
     set -e
-    echo "machine monacotools.visualstudio.com password $(VSO_PAT)" > ~/.netrc
+
+    cat << EOF > ~/.netrc
+    machine monacotools.visualstudio.com
+    password $(VSO_PAT)
+    machine github.com
+    login vscode
+    password $(VSCODE_MIXIN_PASSWORD)
+    EOF
+
     yarn
+    VSCODE_MIXIN_PASSWORD="$(VSCODE_MIXIN_PASSWORD)" yarn gulp -- mixin
     yarn gulp -- hygiene
     yarn monaco-compile-check
-    yarn strict-null-check
-    VSCODE_MIXIN_PASSWORD="$(VSCODE_MIXIN_PASSWORD)" yarn gulp -- mixin
     node build/azure-pipelines/common/installDistro.js
     node build/lib/builtInExtensions.js
   displayName: Prepare build
@@ -23,7 +30,10 @@ steps:
     set -e
     VSCODE_MIXIN_PASSWORD="$(VSCODE_MIXIN_PASSWORD)" \
     AZURE_STORAGE_ACCESS_KEY="$(AZURE_STORAGE_ACCESS_KEY)" \
-    yarn gulp -- vscode-darwin-min upload-vscode-sourcemaps
+    yarn gulp -- vscode-darwin-min
+    VSCODE_MIXIN_PASSWORD="$(VSCODE_MIXIN_PASSWORD)" \
+    AZURE_STORAGE_ACCESS_KEY="$(AZURE_STORAGE_ACCESS_KEY)" \
+    yarn gulp -- upload-vscode-sourcemaps
   displayName: Build
 
 - script: |
