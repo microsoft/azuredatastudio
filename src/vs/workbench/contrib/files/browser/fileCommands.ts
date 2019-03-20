@@ -7,7 +7,7 @@ import * as nls from 'vs/nls';
 import { URI } from 'vs/base/common/uri';
 // {{SQL CARBON EDIT}} - Import EditorInput
 import { toResource, IEditorCommandsContext, EditorInput } from 'vs/workbench/common/editor';
-import { IWindowsService, IWindowService, IURIToOpen, IOpenSettings } from 'vs/platform/windows/common/windows';
+import { IWindowsService, IWindowService, IURIToOpen, IOpenSettings, INewWindowOptions } from 'vs/platform/windows/common/windows';
 import { ServicesAccessor, IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
@@ -86,6 +86,11 @@ export const openWindowCommand = (accessor: ServicesAccessor, urisToOpen: IURITo
 		const windowService = accessor.get(IWindowService);
 		windowService.openWindow(urisToOpen, options);
 	}
+};
+
+export const newWindowCommand = (accessor: ServicesAccessor, options?: INewWindowOptions) => {
+	const windowsService = accessor.get(IWindowsService);
+	windowsService.openNewWindow(options);
 };
 
 // {{SQL CARBON EDIT}}
