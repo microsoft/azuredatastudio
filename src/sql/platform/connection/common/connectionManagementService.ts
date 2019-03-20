@@ -56,7 +56,6 @@ import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { ConfigurationEditingService } from 'vs/workbench/services/configuration/common/configurationEditingService';
 
 export class ConnectionManagementService extends Disposable implements IConnectionManagementService {
 
@@ -76,8 +75,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	private _onConnectionChanged = new Emitter<IConnectionParams>();
 	private _onLanguageFlavorChanged = new Emitter<azdata.DidChangeLanguageFlavorParams>();
 	private _connectionGlobalStatus = new ConnectionGlobalStatus(this._statusBarService);
-
-	private _configurationEditService: ConfigurationEditingService;
 
 	constructor(
 		private _connectionMemento: Memento,
@@ -99,17 +96,14 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		@IAccountManagementService private _accountManagementService: IAccountManagementService
 	) {
 		super();
-		if (this._instantiationService) {
-			this._configurationEditService = this._instantiationService.createInstance(ConfigurationEditingService);
-		}
 
 		// _connectionMemento and _connectionStore are in constructor to enable this class to be more testable
 		if (!this._connectionMemento) {
 			this._connectionMemento = new Memento('ConnectionManagement', _storageService);
 		}
 		if (!this._connectionStore) {
-			this._connectionStore = new ConnectionStore(_storageService, this._connectionMemento,
-				this._configurationEditService, this._configurationService, this._credentialsService, this._capabilitiesService);
+			this._connectionStore = new ConnectionStore(this._connectionMemento,
+				this._configurationService, this._credentialsService, this._capabilitiesService);
 		}
 
 		// Register Statusbar item

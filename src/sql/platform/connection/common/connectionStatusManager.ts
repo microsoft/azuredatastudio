@@ -4,22 +4,20 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { ConnectionManagementInfo } from './connectionManagementInfo';
+import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { IConnectionProfile } from './interfaces';
-import * as Utils from './utils';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import * as Utils from 'sql/platform/connection/common/utils';
 import * as azdata from 'azdata';
 import { StopWatch } from 'vs/base/common/stopwatch';
 
 export class ConnectionStatusManager {
 
 	private _connections: { [id: string]: ConnectionManagementInfo };
-	private _providerCapabilitiesMap: { [providerName: string]: azdata.DataProtocolServerCapabilities };
 
 	constructor( @ICapabilitiesService private _capabilitiesService: ICapabilitiesService) {
 		this._connections = {};
-		this._providerCapabilitiesMap = {};
 	}
 
 	public findConnection(uri: string): ConnectionManagementInfo {
