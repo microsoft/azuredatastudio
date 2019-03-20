@@ -443,7 +443,7 @@ interface SymbolConstructor {
     /**
       * A reference to the prototype.
       */
-    prototype: Symbol;
+    readonly prototype: Symbol;
 
     /**
       * Returns a new unique Symbol value.
@@ -600,56 +600,6 @@ interface JSON {
 // Modules: es6.map, es6.set, es6.weak-map, and es6.weak-set
 // #############################################################################################
 
-interface Map<K, V> {
-    clear(): void;
-    delete(key: K): boolean;
-    forEach(callbackfn: (value: V, index: K, map: Map<K, V>) => void, thisArg?: any): void;
-    get(key: K): V;
-    has(key: K): boolean;
-    set(key: K, value?: V): Map<K, V>;
-    size: number;
-}
-
-interface MapConstructor {
-    new <K, V>(): Map<K, V>;
-    new <K, V>(iterable: Iterable<[K, V]>): Map<K, V>;
-    prototype: Map<any, any>;
-}
-
-declare var Map: MapConstructor;
-
-interface Set<T> {
-    add(value: T): Set<T>;
-    clear(): void;
-    delete(value: T): boolean;
-    forEach(callbackfn: (value: T, index: T, set: Set<T>) => void, thisArg?: any): void;
-    has(value: T): boolean;
-    size: number;
-}
-
-interface SetConstructor {
-    new <T>(): Set<T>;
-    new <T>(iterable: Iterable<T>): Set<T>;
-    prototype: Set<any>;
-}
-
-declare var Set: SetConstructor;
-
-interface WeakMap<K, V> {
-    delete(key: K): boolean;
-    get(key: K): V;
-    has(key: K): boolean;
-    set(key: K, value?: V): WeakMap<K, V>;
-}
-
-interface WeakMapConstructor {
-    new <K, V>(): WeakMap<K, V>;
-    new <K, V>(iterable: Iterable<[K, V]>): WeakMap<K, V>;
-    prototype: WeakMap<any, any>;
-}
-
-declare var WeakMap: WeakMapConstructor;
-
 interface WeakSet<T> {
     add(value: T): WeakSet<T>;
     delete(value: T): boolean;
@@ -657,9 +607,9 @@ interface WeakSet<T> {
 }
 
 interface WeakSetConstructor {
-    new <T>(): WeakSet<T>;
-    new <T>(iterable: Iterable<T>): WeakSet<T>;
-    prototype: WeakSet<any>;
+    new <T extends object>(): WeakSet<T>;
+    new <T extends object>(iterable: Iterable<T>): WeakSet<T>;
+    readonly prototype: WeakSet<any>;
 }
 
 declare var WeakSet: WeakSetConstructor;
@@ -671,7 +621,7 @@ declare var WeakSet: WeakSetConstructor;
 
 interface IteratorResult<T> {
     done: boolean;
-    value?: T;
+    value: T;
 }
 
 interface Iterator<T> {
@@ -711,20 +661,6 @@ interface Array<T> {
       * Returns an list of values in the array
       */
     values(): IterableIterator<T>;
-}
-
-interface Map<K, V> {
-    entries(): IterableIterator<[K, V]>;
-    keys(): IterableIterator<K>;
-    values(): IterableIterator<V>;
-    [Symbol.iterator](): IterableIterator<[K, V]>;
-}
-
-interface Set<T> {
-    entries(): IterableIterator<[T, T]>;
-    keys(): IterableIterator<T>;
-    values(): IterableIterator<T>;
-    [Symbol.iterator](): IterableIterator<T>;
 }
 
 interface NodeList {
@@ -895,14 +831,6 @@ interface ObjectConstructor {
 
 interface RegExpConstructor {
     escape(str: string): string;
-}
-
-interface Map<K, V> {
-    toJSON(): any;
-}
-
-interface Set<T> {
-    toJSON(): any;
 }
 
 // #############################################################################################

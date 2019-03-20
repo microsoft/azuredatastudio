@@ -8,7 +8,6 @@ import 'vs/css!./media/autoOAuthDialog';
 import { Builder, $ } from 'sql/base/browser/builder';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachInputBoxStyler } from 'vs/platform/theme/common/styler';
-import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { localize } from 'vs/nls';
@@ -22,6 +21,7 @@ import { attachModalDialogStyler, attachButtonStyler } from 'sql/platform/theme/
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 
 export class AutoOAuthDialog extends Modal {
 	private _copyAndOpenButton: Button;
@@ -42,7 +42,7 @@ export class AutoOAuthDialog extends Modal {
 	public get onCloseEvent(): Event<void> { return this._onCloseEvent.event; }
 
 	constructor(
-		@IPartService partService: IPartService,
+		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
 		@IThemeService themeService: IThemeService,
 		@IContextViewService private _contextViewService: IContextViewService,
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -52,8 +52,8 @@ export class AutoOAuthDialog extends Modal {
 		super(
 			'',
 			TelemetryKeys.AutoOAuth,
-			partService,
 			telemetryService,
+			layoutService,
 			clipboardService,
 			themeService,
 			contextKeyService,

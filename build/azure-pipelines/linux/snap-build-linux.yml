@@ -1,7 +1,7 @@
 steps:
 - task: NodeTool@0
   inputs:
-    versionSpec: "8.12.0"
+    versionSpec: "10.15.1"
 
 - task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@2
   inputs:
@@ -16,6 +16,11 @@ steps:
 - script: |
     set -e
 
+    # Make sure we get latest packages
+    sudo apt-get update
+    sudo apt-get upgrade -y
+
+    # Define variables
     REPO="$(pwd)"
     ARCH="$(VSCODE_ARCH)"
     SNAP_ROOT="$REPO/.build/linux/snap/$ARCH"

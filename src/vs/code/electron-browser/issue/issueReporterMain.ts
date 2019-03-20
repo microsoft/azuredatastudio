@@ -10,13 +10,12 @@ import { $ } from 'vs/base/browser/dom';
 import * as collections from 'vs/base/common/collections';
 import * as browser from 'vs/base/browser/browser';
 import { escape } from 'vs/base/common/strings';
-import product from 'vs/platform/node/product';
-import pkg from 'vs/platform/node/package';
+import product from 'vs/platform/product/node/product';
+import pkg from 'vs/platform/product/node/package';
 import * as os from 'os';
 import { debounce } from 'vs/base/common/decorators';
 import * as platform from 'vs/base/common/platform';
 import { Disposable } from 'vs/base/common/lifecycle';
-import { Client as ElectronIPCClient } from 'vs/base/parts/ipc/electron-browser/ipc.electron-browser';
 import { getDelayedChannel } from 'vs/base/parts/ipc/node/ipc';
 import { connect as connectNet } from 'vs/base/parts/ipc/node/ipc.net';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
@@ -28,7 +27,8 @@ import { TelemetryAppenderClient } from 'vs/platform/telemetry/node/telemetryIpc
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { resolveCommonProperties } from 'vs/platform/telemetry/node/commonProperties';
-import { WindowsChannelClient } from 'vs/platform/windows/node/windowsIpc';
+import { WindowsService } from 'vs/platform/windows/electron-browser/windowsService';
+import { MainProcessService, IMainProcessService } from 'vs/platform/ipc/electron-browser/mainProcessService';
 import { EnvironmentService } from 'vs/platform/environment/node/environmentService';
 import { IssueReporterModel } from 'vs/code/electron-browser/issue/issueReporterModel';
 import { IssueReporterData, IssueReporterStyles, IssueType, ISettingsSearchIssueReporterData, IssueReporterFeatures, IssueReporterExtensionData } from 'vs/platform/issue/common/issue';
@@ -64,14 +64,14 @@ export class IssueReporter extends Disposable {
 	private environmentService: IEnvironmentService;
 	private telemetryService: ITelemetryService;
 	private logService: ILogService;
-	private issueReporterModel: IssueReporterModel;
+	private readonly issueReporterModel: IssueReporterModel;
 	private numberOfSearchResultsDisplayed = 0;
 	private receivedSystemInfo = false;
 	private receivedPerformanceInfo = false;
 	private shouldQueueSearch = false;
 	private hasBeenSubmitted = false;
 
-	private previewButton: Button;
+	private readonly previewButton: Button;
 
 	constructor(configuration: IssueReporterConfiguration) {
 		super();
@@ -273,14 +273,14 @@ export class IssueReporter extends Disposable {
 
 	private initServices(configuration: IWindowConfiguration): void {
 		const serviceCollection = new ServiceCollection();
-		const mainProcessClient = new ElectronIPCClient(String(`window${configuration.windowId}`));
+		const mainProcessService = new MainProcessService(configuration.windowId);
+		serviceCollection.set(IMainProcessService, mainProcessService);
 
-		const windowsChannel = mainProcessClient.getChannel('windows');
-		serviceCollection.set(IWindowsService, new WindowsChannelClient(windowsChannel));
+		serviceCollection.set(IWindowsService, new WindowsService(mainProcessService));
 		this.environmentService = new EnvironmentService(configuration, configuration.execPath);
 
 		const logService = createSpdLogService(`issuereporter${configuration.windowId}`, getLogLevel(this.environmentService), this.environmentService.logsPath);
-		const logLevelClient = new LogLevelSetterChannelClient(mainProcessClient.getChannel('loglevel'));
+		const logLevelClient = new LogLevelSetterChannelClient(mainProcessService.getChannel('loglevel'));
 		this.logService = new FollowerLogService(logLevelClient, logService);
 
 		const sharedProcess = (<IWindowsService>serviceCollection.get(IWindowsService)).whenSharedProcessReady()
@@ -311,6 +311,7 @@ export class IssueReporter extends Disposable {
 				ipcRenderer.send('vscode:issuePerformanceInfoRequest');
 			}
 			this.updatePreviewButtonState();
+			this.setSourceOptions();
 			this.render();
 		});
 
@@ -342,8 +343,20 @@ export class IssueReporter extends Disposable {
 		}
 
 		this.addEventListener('issue-source', 'change', (e: Event) => {
-			const fileOnExtension = JSON.parse((<HTMLInputElement>e.target).value);
-			this.issueReporterModel.update({ fileOnExtension: fileOnExtension, includeExtensions: !fileOnExtension });
+			const value = (<HTMLInputElement>e.target).value;
+			const problemSourceHelpText = this.getElementById('problem-source-help-text')!;
+			if (value === '') {
+				this.issueReporterModel.update({ fileOnExtension: undefined });
+				show(problemSourceHelpText);
+				this.clearSearchResults();
+				this.render();
+				return;
+			} else {
+				hide(problemSourceHelpText);
+			}
+
+			const fileOnExtension = JSON.parse(value);
+			this.issueReporterModel.update({ fileOnExtension: fileOnExtension });
 			this.render();
 
 			const title = (<HTMLInputElement>this.getElementById('issue-title')).value;
@@ -360,7 +373,7 @@ export class IssueReporter extends Disposable {
 			this.issueReporterModel.update({ issueDescription });
 
 			// Only search for extension issues on title change
-			if (!this.issueReporterModel.fileOnExtension()) {
+			if (this.issueReporterModel.fileOnExtension() === false) {
 				const title = (<HTMLInputElement>this.getElementById('issue-title')).value;
 				this.searchVSCodeIssues(title, issueDescription);
 			}
@@ -375,7 +388,12 @@ export class IssueReporter extends Disposable {
 				hide(lengthValidationMessage);
 			}
 
-			if (this.issueReporterModel.fileOnExtension()) {
+			const fileOnExtension = this.issueReporterModel.fileOnExtension();
+			if (fileOnExtension === undefined) {
+				return;
+			}
+
+			if (fileOnExtension) {
 				this.searchExtensionIssues(title);
 			} else {
 				const description = this.issueReporterModel.getData().issueDescription;
@@ -663,6 +681,45 @@ export class IssueReporter extends Disposable {
 		}
 
 		typeSelect.value = issueType.toString();
+
+		this.setSourceOptions();
+	}
+
+	private makeOption(value: string, description: string, disabled: boolean): HTMLOptionElement {
+		const option: HTMLOptionElement = document.createElement('option');
+		option.disabled = disabled;
+		option.value = value;
+		option.textContent = description;
+
+		return option;
+	}
+
+	private setSourceOptions(): void {
+		const sourceSelect = this.getElementById('issue-source')! as HTMLSelectElement;
+		const selected = sourceSelect.selectedIndex;
+		sourceSelect.innerHTML = '';
+		const { issueType } = this.issueReporterModel.getData();
+		if (issueType === IssueType.FeatureRequest) {
+			sourceSelect.append(...[
+				this.makeOption('', localize('selectSource', "Select source"), true),
+				this.makeOption('false', localize('vscode', "Visual Studio Code"), false),
+				this.makeOption('true', localize('extension', "An extension"), false)
+			]);
+		} else {
+			sourceSelect.append(...[
+				this.makeOption('', localize('selectSource', "Select source"), true),
+				this.makeOption('false', localize('vscode', "Visual Studio Code"), false),
+				this.makeOption('true', localize('extension', "An extension"), false),
+				this.makeOption('', localize('unknown', "Don't Know"), false)
+			]);
+		}
+
+		if (selected !== -1 && selected < sourceSelect.options.length) {
+			sourceSelect.selectedIndex = selected;
+		} else {
+			sourceSelect.selectedIndex = 0;
+			hide(this.getElementById('problem-source-help-text'));
+		}
 	}
 
 	private renderBlocks(): void {
@@ -677,7 +734,6 @@ export class IssueReporter extends Disposable {
 		const settingsSearchResultsBlock = document.querySelector('.block-settingsSearchResults');
 
 		const problemSource = this.getElementById('problem-source')!;
-		const problemSourceHelpText = this.getElementById('problem-source-help-text')!;
 		const descriptionTitle = this.getElementById('issue-description-label')!;
 		const descriptionSubtitle = this.getElementById('issue-description-subtitle')!;
 		const extensionSelector = this.getElementById('extension-selection')!;
@@ -691,7 +747,6 @@ export class IssueReporter extends Disposable {
 		hide(searchedExtensionsBlock);
 		hide(settingsSearchResultsBlock);
 		hide(problemSource);
-		hide(problemSourceHelpText);
 		hide(extensionSelector);
 
 		if (issueType === IssueType.Bug) {
@@ -703,7 +758,6 @@ export class IssueReporter extends Disposable {
 				show(extensionSelector);
 			} else {
 				show(extensionsBlock);
-				show(problemSourceHelpText);
 			}
 
 			descriptionTitle.innerHTML = `${localize('stepsToReproduce', "Steps to Reproduce")} <span class="required-input">*</span>`;
@@ -719,7 +773,6 @@ export class IssueReporter extends Disposable {
 				show(extensionSelector);
 			} else {
 				show(extensionsBlock);
-				show(problemSourceHelpText);
 			}
 
 			descriptionTitle.innerHTML = `${localize('stepsToReproduce', "Steps to Reproduce")} <span class="required-input">*</span>`;
@@ -781,6 +834,10 @@ export class IssueReporter extends Disposable {
 
 			this.addEventListener('description', 'input', _ => {
 				this.validateInput('description');
+			});
+
+			this.addEventListener('issue-source', 'change', _ => {
+				this.validateInput('issue-source');
 			});
 
 			if (this.issueReporterModel.fileOnExtension()) {

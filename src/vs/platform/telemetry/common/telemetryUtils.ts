@@ -4,9 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IDisposable } from 'vs/base/common/lifecycle';
-import { guessMimeTypes } from 'vs/base/common/mime';
-import * as paths from 'vs/base/common/paths';
-import { URI } from 'vs/base/common/uri';
 import { IConfigurationService, ConfigurationTarget, ConfigurationTargetToString } from 'vs/platform/configuration/common/configuration';
 import { IKeybindingService, KeybindingSource } from 'vs/platform/keybinding/common/keybinding';
 import { ITelemetryService, ITelemetryInfo, ITelemetryData } from 'vs/platform/telemetry/common/telemetry';
@@ -77,11 +74,6 @@ export interface URIDescriptor {
 	path?: string;
 }
 
-export function telemetryURIDescriptor(uri: URI, hashPath: (path: string) => string): URIDescriptor {
-	const fsPath = uri && uri.fsPath;
-	return fsPath ? { mimeType: guessMimeTypes(fsPath).join(', '), scheme: uri.scheme, ext: paths.extname(fsPath), path: hashPath(fsPath) } : {};
-}
-
 /**
  * Only add settings that cannot contain any personal/private information of users (PII).
  */
@@ -95,6 +87,7 @@ const configurationValueWhitelist = [
 	'editor.rulers',
 	'editor.wordSeparators',
 	'editor.tabSize',
+	'editor.indentSize',
 	'editor.insertSpaces',
 	'editor.detectIndentation',
 	'editor.roundedSelection',

@@ -5,9 +5,6 @@
 
 'use strict';
 
-import 'vs/css!vs/workbench/parts/extensions/electron-browser/media/extensionEditor';
-
-
 import { append, $ } from 'vs/base/browser/dom';
 import { IInsightTypeContrib } from 'sql/parts/dashboard/widgets/insights/interfaces';
 import { IDashboardTabContrib } from 'sql/parts/dashboard/common/dashboardTab.contribution';
@@ -106,4 +103,3 @@ function renderDashboardInsights(onDetailsToggle: Function, contributionReader: 
 	append(container, details);
 	return true;
 }
-

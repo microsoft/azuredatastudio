@@ -14,9 +14,9 @@ import { IConnectionConfig } from 'sql/platform/connection/common/iconnectionCon
 import { ConnectionConfig } from 'sql/platform/connection/common/connectionConfig';
 import { Memento } from 'vs/workbench/common/memento';
 import { StorageScope } from 'vs/platform/storage/common/storage';
-import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
-import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
+import { ConnectionProfileGroup, IConnectionProfileGroup } from './connectionProfileGroup';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 const MAX_CONNECTIONS_DEFAULT = 25;
 
@@ -33,7 +33,7 @@ export class ConnectionStore {
 
 	constructor(
 		private _context: Memento,
-		private _workspaceConfigurationService: IWorkspaceConfigurationService,
+		private _configurationService: IConfigurationService,
 		private _credentialService: ICredentialsService,
 		private _capabilitiesService: ICapabilitiesService,
 		private _connectionConfig?: IConnectionConfig
@@ -44,7 +44,7 @@ export class ConnectionStore {
 		this._groupIdToFullNameMap = {};
 		this._groupFullNameToIdMap = {};
 		if (!this._connectionConfig) {
-			this._connectionConfig = new ConnectionConfig(this._workspaceConfigurationService, this._capabilitiesService);
+			this._connectionConfig = new ConnectionConfig(this._configurationService, this._capabilitiesService);
 		}
 	}
 
@@ -484,7 +484,7 @@ export class ConnectionStore {
 	}
 
 	private getMaxRecentConnectionsCount(): number {
-		let config = this._workspaceConfigurationService.getValue(Constants.sqlConfigSectionName);
+		let config = this._configurationService.getValue(Constants.sqlConfigSectionName);
 
 		let maxConnections: number = config[Constants.configMaxRecentConnections];
 		if (typeof (maxConnections) !== 'number' || maxConnections <= 0) {

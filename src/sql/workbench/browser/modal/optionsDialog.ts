@@ -16,7 +16,6 @@ import { ScrollableSplitView } from 'sql/base/browser/ui/scrollableSplitview/scr
 
 import * as azdata from 'azdata';
 
-import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { Event, Emitter } from 'vs/base/common/event';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { IContextViewService, IContextMenuService } from 'vs/platform/contextview/browser/contextView';
@@ -34,6 +33,7 @@ import { IViewletPanelOptions, ViewletPanel } from 'vs/workbench/browser/parts/v
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 
 export class CategoryView extends ViewletPanel {
 
@@ -88,7 +88,7 @@ export class OptionsDialog extends Modal {
 		title: string,
 		name: string,
 		options: IOptionsDialogOptions,
-		@IPartService partService: IPartService,
+		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
 		@IWorkbenchThemeService private _workbenchThemeService: IWorkbenchThemeService,
 		@IContextViewService private _contextViewService: IContextViewService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
@@ -96,7 +96,7 @@ export class OptionsDialog extends Modal {
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IClipboardService clipboardService: IClipboardService
 	) {
-		super(title, name, partService, telemetryService, clipboardService, _workbenchThemeService, contextKeyService, options);
+		super(title, name, telemetryService, layoutService, clipboardService, _workbenchThemeService, contextKeyService, options);
 	}
 
 	public render() {

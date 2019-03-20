@@ -4,12 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Event } from 'vs/base/common/event';
-import { IWindowService, IWindowsService, INativeOpenDialogOptions, IEnterWorkspaceResult, IMessageBoxResult, IWindowConfiguration, IDevToolsOptions, IOpenSettings } from 'vs/platform/windows/common/windows';
+import { IWindowService, IWindowsService, INativeOpenDialogOptions, IEnterWorkspaceResult, IMessageBoxResult, IWindowConfiguration, IDevToolsOptions, IOpenSettings, IURIToOpen } from 'vs/platform/windows/common/windows';
 import { IRecentlyOpened } from 'vs/platform/history/common/history';
 import { ISerializableCommandAction } from 'vs/platform/actions/common/actions';
 import { ParsedArgs } from 'vs/platform/environment/common/environment';
 import { URI } from 'vs/base/common/uri';
 import { Disposable } from 'vs/base/common/lifecycle';
+import { hasWorkspaceFileExtension } from 'vs/platform/workspaces/common/workspaces';
+import { ILabelService } from 'vs/platform/label/common/label';
 
 export class WindowService extends Disposable implements IWindowService {
 
@@ -18,20 +20,24 @@ export class WindowService extends Disposable implements IWindowService {
 
 	_serviceBrand: any;
 
+	private windowId: number;
+
 	private _hasFocus: boolean;
 	get hasFocus(): boolean { return this._hasFocus; }
 
 	constructor(
-		private windowId: number,
 		private configuration: IWindowConfiguration,
-		@IWindowsService private readonly windowsService: IWindowsService
+		@IWindowsService private readonly windowsService: IWindowsService,
+		@ILabelService private readonly labelService: ILabelService
 	) {
 		super();
 
-		const onThisWindowFocus = Event.map(Event.filter(windowsService.onWindowFocus, id => id === windowId), _ => true);
-		const onThisWindowBlur = Event.map(Event.filter(windowsService.onWindowBlur, id => id === windowId), _ => false);
-		const onThisWindowMaximize = Event.map(Event.filter(windowsService.onWindowMaximize, id => id === windowId), _ => true);
-		const onThisWindowUnmaximize = Event.map(Event.filter(windowsService.onWindowUnmaximize, id => id === windowId), _ => false);
+		this.windowId = configuration.windowId;
+
+		const onThisWindowFocus = Event.map(Event.filter(windowsService.onWindowFocus, id => id === this.windowId), _ => true);
+		const onThisWindowBlur = Event.map(Event.filter(windowsService.onWindowBlur, id => id === this.windowId), _ => false);
+		const onThisWindowMaximize = Event.map(Event.filter(windowsService.onWindowMaximize, id => id === this.windowId), _ => true);
+		const onThisWindowUnmaximize = Event.map(Event.filter(windowsService.onWindowUnmaximize, id => id === this.windowId), _ => false);
 		this.onDidChangeFocus = Event.any(onThisWindowFocus, onThisWindowBlur);
 		this.onDidChangeMaximize = Event.any(onThisWindowMaximize, onThisWindowUnmaximize);
 
@@ -92,8 +98,11 @@ export class WindowService extends Disposable implements IWindowService {
 		return this.windowsService.enterWorkspace(this.windowId, path);
 	}
 
-	openWindow(paths: URI[], options?: IOpenSettings): Promise<void> {
-		return this.windowsService.openWindow(this.windowId, paths, options);
+	openWindow(uris: IURIToOpen[], options?: IOpenSettings): Promise<void> {
+		if (!!this.configuration.remoteAuthority) {
+			uris.forEach(u => u.label = u.label || this.getRecentLabel(u, !!(options && options.forceOpenWorkspaceAsFile)));
+		}
+		return this.windowsService.openWindow(this.windowId, uris, options);
 	}
 
 	closeWindow(): Promise<void> {
@@ -167,4 +176,15 @@ export class WindowService extends Disposable implements IWindowService {
 	resolveProxy(url: string): Promise<string | undefined> {
 		return this.windowsService.resolveProxy(this.windowId, url);
 	}
+
+	private getRecentLabel(u: IURIToOpen, forceOpenWorkspaceAsFile: boolean): string {
+		if (u.typeHint === 'folder') {
+			return this.labelService.getWorkspaceLabel(u.uri, { verbose: true });
+		} else if (!forceOpenWorkspaceAsFile && hasWorkspaceFileExtension(u.uri.path)) {
+			return this.labelService.getWorkspaceLabel({ id: '', configPath: u.uri }, { verbose: true });
+		} else {
+			return this.labelService.getUriLabel(u.uri);
+		}
+	}
 }
+

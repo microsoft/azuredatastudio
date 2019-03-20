@@ -69,6 +69,12 @@ export class SqlClusterConnection {
 		return FileSourceFactory.instance.createHdfsFileSource(options);
 	}
 
+	public updatePassword(password : string): void{
+		if(password){
+			this._password = password;
+		}
+	}
+
 	private validate(connectionInfo: azdata.ConnectionInfo): void {
 		if (!connectionInfo) {
 			throw new Error(localize('connectionInfoUndefined', 'ConnectionInfo is undefined.'));

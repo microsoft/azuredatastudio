@@ -9,11 +9,23 @@ import { ChartType, defaultChartConfig, IPointDataSet } from 'sql/parts/dashboar
 
 import { mixin } from 'vs/base/common/objects';
 import { Color } from 'vs/base/common/color';
+import { ChangeDetectorRef, Inject, forwardRef, ElementRef } from '@angular/core';
+import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 
 const defaultTimeSeriesConfig = mixin(clone(defaultChartConfig), { dataType: 'point', dataDirection: 'horizontal' }) as ILineConfig;
 
 export default class TimeSeriesChart extends LineChart {
 	protected _defaultConfig = defaultTimeSeriesConfig;
+
+	constructor(
+		@Inject(forwardRef(() => ChangeDetectorRef)) _changeRef: ChangeDetectorRef,
+		@Inject(forwardRef(() => ElementRef)) _el: ElementRef,
+		@Inject(IWorkbenchThemeService) themeService: IWorkbenchThemeService,
+		@Inject(ITelemetryService) telemetryService: ITelemetryService
+	) {
+		super(_changeRef, _el, themeService, telemetryService);
+	}
 
 	protected addAxisLabels(): void {
 		let xLabel = this._config.xAxisLabel || this.getLabels()[1] || 'x';

@@ -8,7 +8,6 @@ import { IDisposable, combinedDisposable } from 'vs/base/common/lifecycle';
 import { IStatusbarItem } from 'vs/workbench/browser/parts/statusbar/statusbar';
 import { IEditorCloseEvent } from 'vs/workbench/common/editor';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import LocalizedConstants = require('sql/parts/query/common/localizedConstants');
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
@@ -30,8 +29,7 @@ export class QueryStatusbarItem implements IStatusbarItem {
 
 	constructor(
 		@IQueryModelService private _queryModelService: IQueryModelService,
-		@IEditorService private _editorService: EditorServiceImpl,
-		@IEditorGroupsService private _editorGroupService: IEditorGroupsService,
+		@IEditorService private _editorService: EditorServiceImpl
 	) {
 		this._queryStatusEditors = {};
 	}

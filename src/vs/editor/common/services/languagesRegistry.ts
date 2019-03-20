@@ -36,8 +36,8 @@ export class LanguagesRegistry extends Disposable {
 	private readonly _warnOnOverwrite: boolean;
 
 	private _nextLanguageId2: number;
-	private _languageIdToLanguage: string[];
-	private _languageToLanguageId: { [id: string]: number; };
+	private readonly _languageIdToLanguage: string[];
+	private readonly _languageToLanguageId: { [id: string]: number; };
 
 	private _languages: { [id: string]: IResolvedLanguage; };
 	private _mimeTypesMap: { [mimeType: string]: LanguageIdentifier; };
@@ -155,10 +155,7 @@ export class LanguagesRegistry extends Disposable {
 		if (Array.isArray(lang.extensions)) {
 			for (let extension of lang.extensions) {
 				mime.registerTextMime({ id: langId, mime: primaryMime, extension: extension }, this._warnOnOverwrite);
-				// {{SQL CARBON EDIT}}
-				if (!resolvedLanguage.extensions.includes(extension)) {
-					resolvedLanguage.extensions.push(extension);
-				}
+				resolvedLanguage.extensions.push(extension);
 			}
 		}
 
@@ -273,7 +270,7 @@ export class LanguagesRegistry extends Disposable {
 		return (language.mimetypes[0] || null);
 	}
 
-	public extractModeIds(commaSeparatedMimetypesOrCommaSeparatedIds: string): string[] {
+	public extractModeIds(commaSeparatedMimetypesOrCommaSeparatedIds: string | undefined): string[] {
 		if (!commaSeparatedMimetypesOrCommaSeparatedIds) {
 			return [];
 		}

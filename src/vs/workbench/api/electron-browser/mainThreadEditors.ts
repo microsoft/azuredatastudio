@@ -20,23 +20,23 @@ import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { MainThreadDocumentsAndEditors } from 'vs/workbench/api/electron-browser/mainThreadDocumentsAndEditors';
 import { MainThreadTextEditor } from 'vs/workbench/api/electron-browser/mainThreadEditor';
-import { ExtHostContext, ExtHostEditorsShape, IApplyEditsOptions, IExtHostContext, ITextDocumentShowOptions, ITextEditorConfigurationUpdate, ITextEditorPositionData, IUndoStopOptions, MainThreadTextEditorsShape, TextEditorRevealType, WorkspaceEditDto, reviveWorkspaceEditDto } from 'vs/workbench/api/node/extHost.protocol';
-import { EditorViewColumn, editorGroupToViewColumn, viewColumnToEditorGroup } from 'vs/workbench/api/shared/editor';
+import { ExtHostContext, ExtHostEditorsShape, IApplyEditsOptions, IExtHostContext, ITextDocumentShowOptions, ITextEditorConfigurationUpdate, ITextEditorPositionData, IUndoStopOptions, MainThreadTextEditorsShape, TextEditorRevealType, WorkspaceEditDto, reviveWorkspaceEditDto } from 'vs/workbench/api/common/extHost.protocol';
+import { EditorViewColumn, editorGroupToViewColumn, viewColumnToEditorGroup } from 'vs/workbench/api/common/shared/editor';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
+import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { IURLService } from 'vs/platform/url/common/url';
-import product from 'vs/platform/node/product';
+import product from 'vs/platform/product/node/product';
 
 export class MainThreadTextEditors implements MainThreadTextEditorsShape {
 
 	private static INSTANCE_COUNT: number = 0;
 
-	private _instanceId: string;
-	private _proxy: ExtHostEditorsShape;
-	private _documentsAndEditors: MainThreadDocumentsAndEditors;
+	private readonly _instanceId: string;
+	private readonly _proxy: ExtHostEditorsShape;
+	private readonly _documentsAndEditors: MainThreadDocumentsAndEditors;
 	private _toDispose: IDisposable[];
 	private _textEditorsListenersMap: { [editorId: string]: IDisposable[]; };
-	private _editorPositionData: ITextEditorPositionData;
+	private _editorPositionData: ITextEditorPositionData | null;
 	private _registeredDecorationTypes: { [decorationType: string]: boolean; };
 
 	constructor(
@@ -77,8 +77,8 @@ export class MainThreadTextEditors implements MainThreadTextEditorsShape {
 	}
 
 	private _onTextEditorAdd(textEditor: MainThreadTextEditor): void {
-		let id = textEditor.getId();
-		let toDispose: IDisposable[] = [];
+		const id = textEditor.getId();
+		const toDispose: IDisposable[] = [];
 		toDispose.push(textEditor.onPropertiesChanged((data) => {
 			this._proxy.$acceptEditorPropertiesChanged(id, data);
 		}));
@@ -94,7 +94,7 @@ export class MainThreadTextEditors implements MainThreadTextEditorsShape {
 	private _updateActiveAndVisibleTextEditors(): void {
 
 		// editor columns
-		let editorPositionData = this._getTextEditorPositionData();
+		const editorPositionData = this._getTextEditorPositionData();
 		if (!objectEquals(this._editorPositionData, editorPositionData)) {
 			this._editorPositionData = editorPositionData;
 			this._proxy.$acceptEditorPositionData(this._editorPositionData);
@@ -102,7 +102,7 @@ export class MainThreadTextEditors implements MainThreadTextEditorsShape {
 	}
 
 	private _getTextEditorPositionData(): ITextEditorPositionData {
-		let result: ITextEditorPositionData = Object.create(null);
+		const result: ITextEditorPositionData = Object.create(null);
 		for (let workbenchEditor of this._editorService.visibleControls) {
 			const id = this._documentsAndEditors.findTextEditorIdFor(workbenchEditor);
 			if (id) {
@@ -114,7 +114,7 @@ export class MainThreadTextEditors implements MainThreadTextEditorsShape {
 
 	// --- from extension host process
 
-	$tryShowTextDocument(resource: UriComponents, options: ITextDocumentShowOptions): Promise<string> {
+	$tryShowTextDocument(resource: UriComponents, options: ITextDocumentShowOptions): Promise<string | undefined> {
 		const uri = URI.revive(resource);
 
 		const editorOptions: ITextEditorOptions = {
@@ -137,28 +137,28 @@ export class MainThreadTextEditors implements MainThreadTextEditorsShape {
 	}
 
 	$tryShowEditor(id: string, position?: EditorViewColumn): Promise<void> {
-		let mainThreadEditor = this._documentsAndEditors.getEditor(id);
+		const mainThreadEditor = this._documentsAndEditors.getEditor(id);
 		if (mainThreadEditor) {
-			let model = mainThreadEditor.getModel();
+			const model = mainThreadEditor.getModel();
 			return this._editorService.openEditor({
 				resource: model.uri,
 				options: { preserveFocus: false }
 			}, viewColumnToEditorGroup(this._editorGroupService, position)).then(() => { return; });
 		}
-		return undefined;
+		return Promise.resolve();
 	}
 
 	$tryHideEditor(id: string): Promise<void> {
-		let mainThreadEditor = this._documentsAndEditors.getEditor(id);
+		const mainThreadEditor = this._documentsAndEditors.getEditor(id);
 		if (mainThreadEditor) {
-			let editors = this._editorService.visibleControls;
+			const editors = this._editorService.visibleControls;
 			for (let editor of editors) {
 				if (mainThreadEditor.matches(editor)) {
 					return editor.group.closeEditor(editor.input).then(() => { return; });
 				}
 			}
 		}
-		return undefined;
+		return Promise.resolve();
 	}
 
 	$trySetSelections(id: string, selections: ISelection[]): Promise<void> {
@@ -192,7 +192,7 @@ export class MainThreadTextEditors implements MainThreadTextEditorsShape {
 			return Promise.reject(disposed(`TextEditor(${id})`));
 		}
 		this._documentsAndEditors.getEditor(id).revealRange(range, revealType);
-		return undefined;
+		return Promise.resolve();
 	}
 
 	$trySetOptions(id: string, options: ITextEditorConfigurationUpdate): Promise<void> {
@@ -242,12 +242,16 @@ export class MainThreadTextEditors implements MainThreadTextEditorsShape {
 		}
 
 		const codeEditor = editor.getCodeEditor();
+		if (!codeEditor) {
+			return Promise.reject(new Error('No such CodeEditor'));
+		}
+
 		const codeEditorId = codeEditor.getId();
 		const diffEditors = this._codeEditorService.listDiffEditors();
 		const [diffEditor] = diffEditors.filter(d => d.getOriginalEditor().getId() === codeEditorId || d.getModifiedEditor().getId() === codeEditorId);
 
 		if (diffEditor) {
-			return Promise.resolve(diffEditor.getLineChanges());
+			return Promise.resolve(diffEditor.getLineChanges() || []);
 		}
 
 		const dirtyDiffContribution = codeEditor.getContribution('editor.contrib.dirtydiff');

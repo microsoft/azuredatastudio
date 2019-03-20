@@ -1,5 +1,6 @@
 import { Action } from 'vs/base/common/actions';
 import { IWindowsService } from 'vs/platform/windows/common/windows';
+import { URI } from 'vs/base/common/uri';
 
 export class ShowFileInFolderAction extends Action {
 
@@ -8,7 +9,7 @@ export class ShowFileInFolderAction extends Action {
 	}
 
 	run(): Promise<void> {
-		return this.windowsService.showItemInFolder(this.path);
+		return this.windowsService.showItemInFolder(URI.parse(this.path));
 	}
 }
 

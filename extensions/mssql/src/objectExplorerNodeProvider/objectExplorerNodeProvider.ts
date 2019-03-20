@@ -20,6 +20,7 @@ import { AppContext } from '../appContext';
 import * as constants from '../constants';
 import * as SqlClusterLookUp from '../sqlClusterLookUp';
 import { ICommandObjectExplorerContext } from './command';
+import { IPrompter, IQuestion, QuestionTypes } from '../prompts/question';
 
 export const mssqlOutputChannel = vscode.window.createOutputChannel(constants.providerId);
 
@@ -28,7 +29,7 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements azd
 	private sessionMap: Map<string, SqlClusterSession>;
 	private expandCompleteEmitter = new vscode.EventEmitter<azdata.ObjectExplorerExpandInfo>();
 
-	constructor(private appContext: AppContext) {
+	constructor(private prompter: IPrompter, private appContext: AppContext) {
 		super();
 		this.sessionMap = new Map<string, SqlClusterSession>();
 		this.appContext.registerService<MssqlObjectExplorerNodeProvider>(constants.ObjectExplorerService, this);
@@ -95,6 +96,13 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements azd
 		return true;
 	}
 
+	private hasExpansionError(children: TreeNode[]): boolean {
+		if(children.find(c => c.errorStatusCode > 0)){
+			return true;
+		}
+		return false;
+	}
+
 	private async startExpansion(session: SqlClusterSession, nodeInfo: azdata.ExpandNodeInfo, isRefresh: boolean = false): Promise<void> {
 		let expandResult: azdata.ObjectExplorerExpandInfo = {
 			sessionId: session.sessionId,
@@ -107,15 +115,25 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements azd
 			if (node) {
 				expandResult.errorMessage = node.getNodeInfo().errorMessage;
 				let children = await node.getChildren(true);
-				if (children) {
-					expandResult.nodes = children.map(c => c.getNodeInfo());
-					// There is only child returned when failure happens
-					if (children.length === 1) {
-						let child = children[0].getNodeInfo();
-						if (child && child.nodeType === constants.MssqlClusterItems.Error) {
-							expandResult.errorMessage = child.label;
-							expandResult.nodes = [];
+				if (children && children.length > 0) {
+					// Only child returned when failure happens : When failed with 'Unauthorized' error, prompt for password.
+					if (children.length === 1 && this.hasExpansionError(children)) {
+						if (children[0].errorStatusCode === 401) {
+							//Prompt for password
+							let password: string = await this.promptPassword(localize('prmptPwd', 'Please provide the password to connect to HDFS:'));
+							if (password && password.length > 0) {
+								session.sqlClusterConnection.updatePassword(password);
+								node.updateFileSource(session.sqlClusterConnection);
+								children = await node.getChildren(true);
+							}
 						}
+					}
+
+					expandResult.nodes = children.map(c => c.getNodeInfo());
+					if (children.length === 1 && this.hasExpansionError(children)) {
+						let child = children[0].getNodeInfo();
+						expandResult.errorMessage = child ? child.label : 'Unknown Error';
+						expandResult.nodes = [];
 					}
 				}
 			}
@@ -123,6 +141,15 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements azd
 			expandResult.errorMessage = utils.getErrorMessage(error);
 		}
 		this.expandCompleteEmitter.fire(expandResult);
+	}
+
+	private async promptPassword(promptMsg: string): Promise<string> {
+		return await this.prompter.promptSingle(<IQuestion>{
+			type: QuestionTypes.password,
+			name: 'passwordPrompt',
+			message: promptMsg,
+			default: ''
+		}).then(confirmed => <string>confirmed);
 	}
 
 	refreshNode(nodeInfo: azdata.ExpandNodeInfo): Thenable<boolean> {

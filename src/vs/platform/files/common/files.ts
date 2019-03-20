@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as paths from 'vs/base/common/paths';
+import { sep } from 'vs/base/common/path';
 import { URI } from 'vs/base/common/uri';
 import * as glob from 'vs/base/common/glob';
 import { isLinux } from 'vs/base/common/platform';
@@ -17,32 +17,29 @@ import { isUndefinedOrNull } from 'vs/base/common/types';
 export const IFileService = createDecorator<IFileService>('fileService');
 
 export interface IResourceEncodings {
-	getWriteEncoding(resource: URI, preferredEncoding?: string): string;
+	getWriteEncoding(resource: URI, preferredEncoding?: string): IResourceEncoding;
+}
+
+export interface IResourceEncoding {
+	encoding: string;
+	hasBOM: boolean;
 }
 
 export interface IFileService {
 	_serviceBrand: any;
 
-	/**
-	 * Helper to determine read/write encoding for resources.
-	 */
-	encoding: IResourceEncodings;
-
-	/**
-	 * Allows to listen for file changes. The event will fire for every file within the opened workspace
-	 * (if any) as well as all files that have been watched explicitly using the #watchFileChanges() API.
-	 */
-	onFileChanges: Event<FileChangesEvent>;
-
-	/**
-	 * An event that is fired upon successful completion of a certain file operation.
-	 */
-	onAfterOperation: Event<FileOperationEvent>;
+	//#region File System Provider
 
 	/**
 	 * An event that is fired when a file system provider is added or removed
 	 */
-	onDidChangeFileSystemProviderRegistrations: Event<IFileSystemProviderRegistrationEvent>;
+	readonly onDidChangeFileSystemProviderRegistrations: Event<IFileSystemProviderRegistrationEvent>;
+
+	/**
+	 * An event that is fired when a file system provider is about to be activated. Listeners
+	 * can join this event with a long running promise to help in the activation process.
+	 */
+	readonly onWillActivateFileSystemProvider: Event<IFileSystemProviderActivationEvent>;
 
 	/**
 	 * Registers a file system provider for a certain scheme.
@@ -58,6 +55,24 @@ export interface IFileService {
 	 * Checks if this file service can handle the given resource.
 	 */
 	canHandleResource(resource: URI): boolean;
+
+	//#endregion
+
+	/**
+	 * Helper to determine read/write encoding for resources.
+	 */
+	encoding: IResourceEncodings;
+
+	/**
+	 * Allows to listen for file changes. The event will fire for every file within the opened workspace
+	 * (if any) as well as all files that have been watched explicitly using the #watchFileChanges() API.
+	 */
+	readonly onFileChanges: Event<FileChangesEvent>;
+
+	/**
+	 * An event that is fired upon successful completion of a certain file operation.
+	 */
+	readonly onAfterOperation: Event<FileOperationEvent>;
 
 	/**
 	 * Resolve the properties of a file identified by the resource.
@@ -123,12 +138,6 @@ export interface IFileService {
 	 * The optional parameter content can be used as value to fill into the new file.
 	 */
 	createFile(resource: URI, content?: string, options?: ICreateFileOptions): Promise<IFileStat>;
-
-	/**
-	 * Reads a folder's content with the given path. The returned promise
-	 * will have the list of children as a result.
-	 */
-	readFolder(resource: URI): Promise<string[]>;
 
 	/**
 	 * Creates a new folder with the given path. The returned promise
@@ -229,10 +238,86 @@ export interface IFileSystemProvider {
 	write?(fd: number, pos: number, data: Uint8Array, offset: number, length: number): Promise<number>;
 }
 
+export enum FileSystemProviderErrorCode {
+	FileExists = 'EntryExists',
+	FileNotFound = 'EntryNotFound',
+	FileNotADirectory = 'EntryNotADirectory',
+	FileIsADirectory = 'EntryIsADirectory',
+	NoPermissions = 'NoPermissions',
+	Unavailable = 'Unavailable'
+}
+
+export class FileSystemProviderError extends Error {
+
+	constructor(message: string, public readonly code?: FileSystemProviderErrorCode) {
+		super(message);
+	}
+}
+
+export function createFileSystemProviderError(error: Error, code?: FileSystemProviderErrorCode): FileSystemProviderError {
+	const providerError = new FileSystemProviderError(error.toString(), code);
+	markAsFileSystemProviderError(providerError);
+
+	return providerError;
+}
+
+export function markAsFileSystemProviderError(error: Error, code?: FileSystemProviderErrorCode): Error {
+	error.name = code ? `${code} (FileSystemError)` : `FileSystemError`;
+
+	return error;
+}
+
+export function toFileSystemProviderErrorCode(error: Error): FileSystemProviderErrorCode | undefined {
+
+	// FileSystemProviderError comes with the code
+	if (error instanceof FileSystemProviderError) {
+		return error.code;
+	}
+
+	// Any other error, check for name match by assuming that the error
+	// went through the markAsFileSystemProviderError() method
+	const match = /^(.+) \(FileSystemError\)$/.exec(error.name);
+	if (!match) {
+		return undefined;
+	}
+
+	switch (match[1]) {
+		case FileSystemProviderErrorCode.FileExists: return FileSystemProviderErrorCode.FileExists;
+		case FileSystemProviderErrorCode.FileIsADirectory: return FileSystemProviderErrorCode.FileIsADirectory;
+		case FileSystemProviderErrorCode.FileNotADirectory: return FileSystemProviderErrorCode.FileNotADirectory;
+		case FileSystemProviderErrorCode.FileNotFound: return FileSystemProviderErrorCode.FileNotFound;
+		case FileSystemProviderErrorCode.NoPermissions: return FileSystemProviderErrorCode.NoPermissions;
+		case FileSystemProviderErrorCode.Unavailable: return FileSystemProviderErrorCode.Unavailable;
+	}
+
+	return undefined;
+}
+
+export function toFileOperationResult(error: Error): FileOperationResult {
+	switch (toFileSystemProviderErrorCode(error)) {
+		case FileSystemProviderErrorCode.FileNotFound:
+			return FileOperationResult.FILE_NOT_FOUND;
+		case FileSystemProviderErrorCode.FileIsADirectory:
+			return FileOperationResult.FILE_IS_DIRECTORY;
+		case FileSystemProviderErrorCode.NoPermissions:
+			return FileOperationResult.FILE_PERMISSION_DENIED;
+		case FileSystemProviderErrorCode.FileExists:
+			return FileOperationResult.FILE_MOVE_CONFLICT;
+		case FileSystemProviderErrorCode.FileNotADirectory:
+		default:
+			return FileOperationResult.FILE_OTHER_ERROR;
+	}
+}
+
 export interface IFileSystemProviderRegistrationEvent {
 	added: boolean;
 	scheme: string;
 	provider?: IFileSystemProvider;
+}
+
+export interface IFileSystemProviderActivationEvent {
+	scheme: string;
+	join(promise: Promise<void>): void;
 }
 
 export const enum FileOperation {
@@ -385,8 +470,8 @@ export function isParent(path: string, candidate: string, ignoreCase?: boolean):
 		return false;
 	}
 
-	if (candidate.charAt(candidate.length - 1) !== paths.nativeSep) {
-		candidate += paths.nativeSep;
+	if (candidate.charAt(candidate.length - 1) !== sep) {
+		candidate += sep;
 	}
 
 	if (ignoreCase) {
@@ -419,7 +504,7 @@ export interface IBaseStat {
 	 * A unique identifier thet represents the
 	 * current state of the file or directory.
 	 */
-	etag: string;
+	etag?: string;
 
 	/**
 	 * The resource is readonly.
@@ -455,7 +540,7 @@ export interface IFileStat extends IBaseStat {
 }
 
 export interface IResolveFileResult {
-	stat: IFileStat;
+	stat?: IFileStat;
 	success: boolean;
 }
 
@@ -650,7 +735,8 @@ export const enum FileOperationResult {
 	FILE_PERMISSION_DENIED,
 	FILE_TOO_LARGE,
 	FILE_INVALID_PATH,
-	FILE_EXCEED_MEMORY_LIMIT
+	FILE_EXCEED_MEMORY_LIMIT,
+	FILE_OTHER_ERROR
 }
 
 export const AutoSaveConfiguration = {
@@ -937,3 +1023,38 @@ export enum FileKind {
 
 export const MIN_MAX_MEMORY_SIZE_MB = 2048;
 export const FALLBACK_MAX_MEMORY_SIZE_MB = 4096;
+
+// TODO@ben remove traces of legacy file service
+export const ILegacyFileService = createDecorator<ILegacyFileService>('legacyFileService');
+export interface ILegacyFileService {
+	_serviceBrand: any;
+
+	encoding: IResourceEncodings;
+
+	onFileChanges: Event<FileChangesEvent>;
+	onAfterOperation: Event<FileOperationEvent>;
+
+	resolveFile(resource: URI, options?: IResolveFileOptions): Promise<IFileStat>;
+
+	resolveFiles(toResolve: { resource: URI, options?: IResolveFileOptions }[]): Promise<IResolveFileResult[]>;
+
+	existsFile(resource: URI): Promise<boolean>;
+
+	resolveContent(resource: URI, options?: IResolveContentOptions): Promise<IContent>;
+
+	resolveStreamContent(resource: URI, options?: IResolveContentOptions): Promise<IStreamContent>;
+
+	updateContent(resource: URI, value: string | ITextSnapshot, options?: IUpdateContentOptions): Promise<IFileStat>;
+
+	moveFile(source: URI, target: URI, overwrite?: boolean): Promise<IFileStat>;
+
+	copyFile(source: URI, target: URI, overwrite?: boolean): Promise<IFileStat>;
+
+	createFile(resource: URI, content?: string, options?: ICreateFileOptions): Promise<IFileStat>;
+
+	del(resource: URI, options?: { useTrash?: boolean, recursive?: boolean }): Promise<void>;
+
+	watchFileChanges(resource: URI): void;
+
+	unwatchFileChanges(resource: URI): void;
+}

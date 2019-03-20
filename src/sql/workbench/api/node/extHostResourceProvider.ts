@@ -6,7 +6,7 @@
 'use strict';
 
 import * as azdata from 'azdata';
-import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
+import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { Disposable } from 'vs/workbench/api/node/extHostTypes';
 import {
 	ExtHostResourceProviderShape,
@@ -88,5 +88,3 @@ interface ResourceProviderWithMetadata {
 	metadata: azdata.ResourceProviderMetadata;
 	provider: azdata.ResourceProvider;
 }
-
-
