@@ -318,9 +318,6 @@ export class ExtensionManagementService extends Disposable implements IExtension
 				const existingExtension = installed.filter(i => areSameExtensions(i.identifier, extension.identifier))[0];
 				if (existingExtension) {
 					operation = InstallOperation.Update;
-					if (semver.gt(existingExtension.manifest.version, extension.version)) {
-						await this.uninstall(existingExtension, true);
-					}
 				}
 
 				this.downloadInstallableExtension(extension, operation)
@@ -329,7 +326,10 @@ export class ExtensionManagementService extends Disposable implements IExtension
 					.then(local => this.installDependenciesAndPackExtensions(local, existingExtension)
 						.then(() => local, error => this.uninstall(local, true).then(() => Promise.reject(error), () => Promise.reject(error))))
 					.then(
-						local => {
+						async local => {
+							if (existingExtension && semver.neq(existingExtension.manifest.version, extension.version)) {
+								await this.setUninstalled(existingExtension);
+							}
 							this.installingExtensions.delete(key);
 							onDidInstallExtensionSuccess(extension, operation, local);
 							successCallback(null);
@@ -529,7 +529,7 @@ export class ExtensionManagementService extends Disposable implements IExtension
 						// filter out installed extensions
 						const names = dependenciesAndPackExtensions.filter(id => installed.every(({ identifier: galleryIdentifier }) => !areSameExtensions(galleryIdentifier, { id })));
 						if (names.length) {
-							return this.galleryService.query({ names, pageSize: dependenciesAndPackExtensions.length })
+							return this.galleryService.query({ names, pageSize: dependenciesAndPackExtensions.length }, CancellationToken.None)
 								.then(galleryResult => {
 									const extensionsToInstall = galleryResult.firstPage;
 									return Promise.all(extensionsToInstall.map(async e => {
@@ -609,11 +609,11 @@ export class ExtensionManagementService extends Disposable implements IExtension
 	}
 
 	private findGalleryExtensionById(uuid: string): Promise<IGalleryExtension> {
-		return this.galleryService.query({ ids: [uuid], pageSize: 1 }).then(galleryResult => galleryResult.firstPage[0]);
+		return this.galleryService.query({ ids: [uuid], pageSize: 1 }, CancellationToken.None).then(galleryResult => galleryResult.firstPage[0]);
 	}
 
 	private findGalleryExtensionByName(name: string): Promise<IGalleryExtension> {
-		return this.galleryService.query({ names: [name], pageSize: 1 }).then(galleryResult => galleryResult.firstPage[0]);
+		return this.galleryService.query({ names: [name], pageSize: 1 }, CancellationToken.None).then(galleryResult => galleryResult.firstPage[0]);
 	}
 
 	private joinErrors(errorOrErrors: (Error | string) | (Array<Error | string>)): Error {

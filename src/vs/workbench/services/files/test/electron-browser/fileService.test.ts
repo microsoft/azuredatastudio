@@ -13,7 +13,6 @@ import { URI as uri } from 'vs/base/common/uri';
 import * as uuid from 'vs/base/common/uuid';
 import * as pfs from 'vs/base/node/pfs';
 import * as encodingLib from 'vs/base/node/encoding';
-import * as utils from 'vs/workbench/services/files/test/electron-browser/utils';
 import { TestEnvironmentService, TestContextService, TestTextResourceConfigurationService, TestLifecycleService, TestStorageService } from 'vs/workbench/test/workbenchTestServices';
 import { getRandomTestPath } from 'vs/base/test/node/testUtils';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
@@ -403,92 +402,6 @@ suite('FileService', () => {
 			const target = targetParent.with({ path: path.posix.join(targetParent.path, path.posix.basename(source.resource.path)) });
 			return service.copyFile(source.resource, target, true).then(copied => {
 				assert.equal(copied.size, source.size);
-			});
-		});
-	});
-
-	test('deleteFile', () => {
-		let event: FileOperationEvent;
-		const toDispose = service.onAfterOperation(e => {
-			event = e;
-		});
-
-		const resource = uri.file(path.join(testDir, 'deep', 'conway.js'));
-		return service.resolveFile(resource).then(source => {
-			return service.del(source.resource).then(() => {
-				assert.equal(fs.existsSync(source.resource.fsPath), false);
-
-				assert.ok(event);
-				assert.equal(event.resource.fsPath, resource.fsPath);
-				assert.equal(event.operation, FileOperation.DELETE);
-				toDispose.dispose();
-			});
-		});
-	});
-
-	test('deleteFolder (recursive)', function () {
-		let event: FileOperationEvent;
-		const toDispose = service.onAfterOperation(e => {
-			event = e;
-		});
-
-		const resource = uri.file(path.join(testDir, 'deep'));
-		return service.resolveFile(resource).then(source => {
-			return service.del(source.resource, { recursive: true }).then(() => {
-				assert.equal(fs.existsSync(source.resource.fsPath), false);
-
-				assert.ok(event);
-				assert.equal(event.resource.fsPath, resource.fsPath);
-				assert.equal(event.operation, FileOperation.DELETE);
-				toDispose.dispose();
-			});
-		});
-	});
-
-	test('deleteFolder (non recursive)', function () {
-		const resource = uri.file(path.join(testDir, 'deep'));
-		return service.resolveFile(resource).then(source => {
-			return service.del(source.resource).then(() => {
-				return Promise.reject(new Error('Unexpected'));
-			}, error => {
-				return Promise.resolve(true);
-			});
-		});
-	});
-
-	test('resolveFile', () => {
-		return service.resolveFile(uri.file(testDir), { resolveTo: [uri.file(path.join(testDir, 'deep'))] }).then(r => {
-			assert.equal(r.children!.length, 8);
-
-			const deep = utils.getByName(r, 'deep')!;
-			assert.equal(deep.children!.length, 4);
-		});
-	});
-
-	test('resolveFiles', () => {
-		return service.resolveFiles([
-			{ resource: uri.file(testDir), options: { resolveTo: [uri.file(path.join(testDir, 'deep'))] } },
-			{ resource: uri.file(path.join(testDir, 'deep')) }
-		]).then(res => {
-			const r1 = res[0].stat!;
-
-			assert.equal(r1.children!.length, 8);
-
-			const deep = utils.getByName(r1, 'deep')!;
-			assert.equal(deep.children!.length, 4);
-
-			const r2 = res[1].stat!;
-			assert.equal(r2.children!.length, 4);
-			assert.equal(r2.name, 'deep');
-		});
-	});
-
-	test('existsFile', () => {
-		return service.existsFile(uri.file(testDir)).then((exists) => {
-			assert.equal(exists, true);
-
-			return service.existsFile(uri.file(testDir + 'something')).then((exists) => {
-				assert.equal(exists, false);
 			});
 		});
 	});

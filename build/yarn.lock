@@ -112,12 +112,12 @@
     "@types/node" "*"
 
 "@types/gulp-uglify@^3.0.5":
-  version "3.0.6"
-  resolved "https://registry.yarnpkg.com/@types/gulp-uglify/-/gulp-uglify-3.0.6.tgz#7c7c38017680bbb8a3d815e23a7026799432ce54"
-  integrity sha512-NvnNG0lg0+fJHNDK/b4OvLZkn5uHSIgm1XslRqgHal8CHG85sxmcktnNR1XdIUkwYpNbYZkXfvpzNtAxb6cgyQ==
+  version "3.0.5"
+  resolved "https://registry.yarnpkg.com/@types/gulp-uglify/-/gulp-uglify-3.0.5.tgz#ddcbbb6bd15a84b8a6c5e2218c2efba98102d135"
+  integrity sha512-LD2b6gCPugrKI1W188nIp0gm+cAnGGwaTFpPdeZYVXwPHdoCQloy3du0JR62MeMjAwUwlcOb+SKYT6Qgw7yBiA==
   dependencies:
     "@types/node" "*"
-    "@types/uglify-js" "*"
+    "@types/uglify-js" "^2"
 
 "@types/gulp@^4.0.5":
   version "4.0.6"
@@ -218,6 +218,13 @@
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/@types/uglify-js/-/uglify-js-3.0.3.tgz#801a5ca1dc642861f47c46d14b700ed2d610840b"
   integrity sha512-MAT0BW2ruO0LhQKjvlipLGCF/Yx0y/cj+tT67tK3QIQDrM2+9R78HgJ54VlrE8AbfjYJJBCQCEPM5ZblPVTuww==
+  dependencies:
+    source-map "^0.6.1"
+
+"@types/uglify-js@^2":
+  version "2.6.32"
+  resolved "https://registry.yarnpkg.com/@types/uglify-js/-/uglify-js-2.6.32.tgz#1b60906946fcf6ee4ceafa812d2b86f1358da904"
+  integrity sha512-pVD2cG2wsKPvtpcxVZiSvK8eV9CpxXdlvhbAN//1eD3rOodqQLaEZ1qMNPl/+J93HrECsNLItRx5DkZuSW3j3A==
   dependencies:
     source-map "^0.6.1"
 
