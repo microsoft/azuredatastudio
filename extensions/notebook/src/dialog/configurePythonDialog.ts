@@ -125,7 +125,7 @@ export class ConfigurePythonDialog {
 				label: localize('configurePython.newInstall', 'New Installation'),
 				checked: true
 			}).component();
-			this.newInstallButton.onDidClick(() => {
+		this.newInstallButton.onDidClick(() => {
 			this.dialog.okButton.label = this.InstallButtonText;
 		});
 
@@ -134,7 +134,7 @@ export class ConfigurePythonDialog {
 				name: buttonGroup,
 				label: localize('configurePython.existingInstall', 'Existing Installation')
 			}).component();
-			this.existingInstallButton.onDidClick(() => {
+		this.existingInstallButton.onDidClick(() => {
 			this.dialog.okButton.label = this.CompleteButtonText;
 		});
 
