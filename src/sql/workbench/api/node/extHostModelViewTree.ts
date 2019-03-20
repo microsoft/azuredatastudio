@@ -9,7 +9,7 @@ import * as vscode from 'vscode';
 import { SqlMainContext, ExtHostModelViewTreeViewsShape, MainThreadModelViewShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { ITreeComponentItem } from 'sql/workbench/common/views';
 import { CommandsConverter } from 'vs/workbench/api/node/extHostCommands';
-import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
+import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import * as azdata from 'azdata';
 import * as  vsTreeExt from 'vs/workbench/api/node/extHostTreeViews';
 import { Emitter } from 'vs/base/common/event';

@@ -22,8 +22,6 @@
     "update-localization-extension": "node build/npm/update-localization-extension.js",
     "smoketest": "cd test/smoke && node test/index.js",
     "monaco-compile-check": "tsc -p src/tsconfig.monaco.json --noEmit",
-    "download-builtin-extensions": "node build/lib/builtInExtensions.js",
-    "check-monaco-editor-compilation": "tsc -p src/tsconfig.monaco.json --noEmit",
     "tslint": "node node_modules/tslint/bin/tslint -c tslint-gci.json -p src/tsconfig.json",
     "strict-null-check": "tsc -p src/tsconfig.strictNullChecks.json",
     "strict-null-check-watch": "tsc -p src/tsconfig.strictNullChecks.json --watch"

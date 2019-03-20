@@ -10,7 +10,7 @@ import { TestRPCProtocol } from 'vs/workbench/test/electron-browser/api/testRPCP
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { ExtHostCredentialManagement } from 'sql/workbench/api/node/extHostCredentialManagement';
 import { SqlMainContext } from 'sql/workbench/api/node/sqlExtHost.protocol';
-import { IRPCProtocol } from 'vs/workbench/services/extensions/node/proxyIdentifier';
+import { IRPCProtocol } from 'vs/workbench/services/extensions/common/proxyIdentifier';
 import { MainThreadCredentialManagement } from 'sql/workbench/api/node/mainThreadCredentialManagement';
 import { CredentialsTestProvider, CredentialsTestService } from 'sqltest/stubs/credentialsTestStubs';
 import { ICredentialsService } from 'sql/platform/credentials/common/credentialsService';

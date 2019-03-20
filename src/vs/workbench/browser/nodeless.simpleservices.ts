@@ -695,6 +695,7 @@ export class SimpleRemoteFileService implements IFileService {
 	readonly onFileChanges = Event.None;
 	readonly onAfterOperation = Event.None;
 	readonly onDidChangeFileSystemProviderRegistrations = Event.None;
+	readonly onWillActivateFileSystemProvider = Event.None;
 
 	resolveFile(resource: URI, options?: IResolveFileOptions): Promise<IFileStat> {
 		// @ts-ignore
@@ -781,8 +782,6 @@ export class SimpleRemoteFileService implements IFileService {
 
 		return Promise.resolve(createFile(parent, basename(_resource.path)));
 	}
-
-	readFolder(_resource: URI) { return Promise.resolve([]); }
 
 	createFolder(_resource: URI): Promise<IFileStat> {
 		const parent = fileMap.get(dirname(_resource));
