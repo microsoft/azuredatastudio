@@ -100,7 +100,8 @@ export class NotebookEditorModel extends EditorModel {
 			let content = JSON.stringify(notebookModel.toJSON(), undefined, '    ');
 			let model = this.textEditorModel.textEditorModel;
 			let endLine = model.getLineCount();
-			let endCol = model.getLineLength(endLine);
+			let endCol = model.getLineMaxColumn(endLine);
+
 			this.textEditorModel.textEditorModel.applyEdits([{
 				range: new Range(1, 1, endLine, endCol),
 				text: content
