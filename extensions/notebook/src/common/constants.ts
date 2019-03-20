@@ -16,6 +16,7 @@ export const pyspark3kernel = 'pyspark3kernel';
 export const python3DisplayName = 'Python 3';
 export const defaultSparkKernel = 'pyspark3kernel';
 export const pythonPathConfigKey = 'pythonPath';
+export const existingPythonConfigKey = 'useExistingPythonInstallation';
 export const notebookConfigKey = 'notebook';
 
 export const outputChannelName = 'dataManagement';

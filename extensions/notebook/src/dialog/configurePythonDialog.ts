@@ -32,6 +32,8 @@ export class ConfigurePythonDialog {
 
 	private pythonLocationTextBox: azdata.InputBoxComponent;
 	private browseButton: azdata.ButtonComponent;
+	private newInstallButton: azdata.RadioButtonComponent;
+	private existingInstallButton: azdata.RadioButtonComponent;
 
 	private _setupComplete: Deferred<void>;
 
@@ -117,31 +119,31 @@ export class ConfigurePythonDialog {
 
 	private createInstallRadioButtons(modelBuilder: azdata.ModelBuilder): azdata.FormComponentGroup {
 		let buttonGroup = 'installationType';
-		let newInstallButton = modelBuilder.radioButton()
+		this.newInstallButton = modelBuilder.radioButton()
 			.withProperties<azdata.RadioButtonProperties>({
 				name: buttonGroup,
 				label: localize('configurePython.newInstall', 'New Installation'),
 				checked: true
 			}).component();
-		newInstallButton.onDidClick(() => {
+			this.newInstallButton.onDidClick(() => {
 			this.dialog.okButton.label = this.InstallButtonText;
 		});
 
-		let existingInstallButton = modelBuilder.radioButton()
+		this.existingInstallButton = modelBuilder.radioButton()
 			.withProperties<azdata.RadioButtonProperties>({
 				name: buttonGroup,
 				label: localize('configurePython.existingInstall', 'Existing Installation')
 			}).component();
-		existingInstallButton.onDidClick(() => {
+			this.existingInstallButton.onDidClick(() => {
 			this.dialog.okButton.label = this.CompleteButtonText;
 		});
 
 		return {
 			components: [{
-				component: newInstallButton,
+				component: this.newInstallButton,
 				title: undefined
 			}, {
-				component: existingInstallButton,
+				component: this.existingInstallButton,
 				title: undefined
 			}],
 			title: localize('configurePython.installationType', 'Installation Type')
@@ -165,15 +167,20 @@ export class ConfigurePythonDialog {
 			return false;
 		}
 
-		// Don't wait on installation, since there's currently no Cancel functionality
-		this.jupyterInstallation.startInstallProcess(pythonLocation)
-			.then(() => {
-				this._setupComplete.resolve();
-			})
-			.catch(err => {
-				this._setupComplete.reject(utils.getErrorMessage(err));
-			});
-		return true;
+		if (this.existingInstallButton.checked) {
+			this.jupyterInstallation.completeWithExistingInstall(pythonLocation);
+			return false;
+		} else {
+			// Don't wait on installation, since there's currently no Cancel functionality
+			this.jupyterInstallation.startInstallProcess(pythonLocation)
+				.then(() => {
+					this._setupComplete.resolve();
+				})
+				.catch(err => {
+					this._setupComplete.reject(utils.getErrorMessage(err));
+				});
+			return true;
+		}
 	}
 
 	private isFileValid(pythonLocation: string): Promise<boolean> {

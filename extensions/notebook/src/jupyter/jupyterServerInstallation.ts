@@ -72,6 +72,16 @@ export default class JupyterServerInstallation {
 		}
 	}
 
+	public completeWithExistingInstall(pythonInstallationPath: string): void {
+		this._pythonInstallationPath = pythonInstallationPath;
+		this.configurePackagePaths(false);
+
+		let notebookConfig = this.apiWrapper.getConfiguration(constants.notebookConfigKey);
+		notebookConfig.update(constants.existingPythonConfigKey, true, ConfigurationTarget.Global);
+
+		this._installReady.resolve();
+	}
+
 	public get installReady(): Promise<void> {
 		return this._installReady.promise;
 	}
@@ -208,9 +218,11 @@ export default class JupyterServerInstallation {
 		});
 	}
 
-	private configurePackagePaths(): void {
+	private configurePackagePaths(includeBundleVersion: boolean = true): void {
 		//Python source path up to bundle version
-		let pythonSourcePath = path.join(this._pythonInstallationPath, constants.pythonBundleVersion);
+		let pythonSourcePath = includeBundleVersion
+			? path.join(this._pythonInstallationPath, constants.pythonBundleVersion)
+			: this._pythonInstallationPath;
 
 		this._pythonPackageDir = path.join(pythonSourcePath, 'offlinePackages');
 
@@ -319,9 +331,11 @@ export default class JupyterServerInstallation {
 			return false;
 		}
 
+		let useExistingInstall = JupyterServerInstallation.getExistingPythonSetting(apiWrapper);
+
 		let pythonExe = path.join(
 			pathSetting,
-			constants.pythonBundleVersion,
+			useExistingInstall ? '' : constants.pythonBundleVersion,
 			process.platform === constants.winPlatform ? 'python.exe' : 'bin/python3');
 		return fs.existsSync(pythonExe);
 	}
@@ -329,6 +343,17 @@ export default class JupyterServerInstallation {
 	public static getPythonInstallPath(apiWrapper: ApiWrapper): string {
 		let userPath = JupyterServerInstallation.getPythonPathSetting(apiWrapper);
 		return userPath ? userPath : JupyterServerInstallation.DefaultPythonLocation;
+	}
+
+	private static getExistingPythonSetting(apiWrapper: ApiWrapper): boolean {
+		let useExistingPython = false;
+		if (apiWrapper) {
+			let notebookConfig = apiWrapper.getConfiguration(constants.notebookConfigKey);
+			if (notebookConfig) {
+				useExistingPython = !!notebookConfig[constants.existingPythonConfigKey];
+			}
+		}
+		return useExistingPython;
 	}
 
 	private static getPythonPathSetting(apiWrapper: ApiWrapper): string {
@@ -348,9 +373,11 @@ export default class JupyterServerInstallation {
 	public static getPythonBinPath(apiWrapper: ApiWrapper): string {
 		let pythonBinPathSuffix = process.platform === constants.winPlatform ? '' : 'bin';
 
+		let useExistingInstall = JupyterServerInstallation.getExistingPythonSetting(apiWrapper);
+
 		return path.join(
 			JupyterServerInstallation.getPythonInstallPath(apiWrapper),
-			constants.pythonBundleVersion,
+			useExistingInstall ? '' : constants.pythonBundleVersion,
 			pythonBinPathSuffix);
 	}
 }
