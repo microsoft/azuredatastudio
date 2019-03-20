@@ -13,6 +13,7 @@ import { MimeModel } from 'sql/parts/notebook/outputs/common/mimemodel';
 import * as outputProcessor from 'sql/parts/notebook/outputs/common/outputProcessor';
 import { RenderMimeRegistry } from 'sql/parts/notebook/outputs/registry';
 import 'vs/css!sql/parts/notebook/outputs/style/index';
+import { IThemeService } from 'vs/platform/theme/common/themeService';
 
 export const OUTPUT_SELECTOR: string = 'output-component';
 
@@ -31,7 +32,8 @@ export class OutputComponent extends AngularDisposable implements OnInit {
 
 
 	constructor(
-		@Inject(INotebookService) private _notebookService: INotebookService
+		@Inject(INotebookService) private _notebookService: INotebookService,
+		@Inject(IThemeService) private _themeService: IThemeService
 	) {
 		super();
 		this.registry = _notebookService.getMimeRegistry();
@@ -49,6 +51,7 @@ export class OutputComponent extends AngularDisposable implements OnInit {
 		let node = this.outputElement.nativeElement;
 		let output = this.cellOutput;
 		let options = outputProcessor.getBundleOptions({ value: output, trusted: this.trustedMode });
+		options.themeService = this._themeService;
 		// TODO handle safe/unsafe mapping
 		this.createRenderedMimetype(options, node);
 	}
