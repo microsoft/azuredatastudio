@@ -15,6 +15,7 @@ import { CmsResourceItemType } from '../constants';
 import { ICmsResourceTreeChangeHandler } from './treeChangeHandler';
 import { RegisteredServerTreeNode } from './registeredServerTreeNode';
 import { ServerGroupTreeNode } from './serverGroupTreeNode';
+import { CmsResourceMessageTreeNode } from '../messageTreeNode';
 
 const localize = nls.loadMessageBundle();
 
@@ -65,7 +66,12 @@ export class CmsResourceTreeNode extends CmsResourceTreeNodeBase {
 							});
 						}
 					}
-					return nodes;
+					if (nodes.length > 0) {
+						return nodes;
+					} else {
+						return [CmsResourceMessageTreeNode.create(CmsResourceTreeNode.noResourcesLabel, undefined)];
+					}
+
 				}
 			});
 		} catch {
@@ -102,4 +108,6 @@ export class CmsResourceTreeNode extends CmsResourceTreeNodeBase {
 	public get connection(): azdata.connection.Connection {
 		return this._connection;
 	}
+
+	private static readonly noResourcesLabel = localize('cms.resource.cmsResourceTreeNode.noResourcesLabel', 'No resources found');
 }

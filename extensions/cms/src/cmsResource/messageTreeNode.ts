@@ -32,7 +32,7 @@ export class CmsResourceMessageTreeNode extends TreeNode {
 
 	public getTreeItem(): TreeItem | Promise<TreeItem> {
 		let item = new TreeItem(this.message, TreeItemCollapsibleState.None);
-		item.contextValue = CmsResourceItemType.registeredServer;
+		item.contextValue = CmsResourceItemType.cmsMessageNodeContainer;
 		return item;
 	}
 
@@ -44,9 +44,9 @@ export class CmsResourceMessageTreeNode extends TreeNode {
 			metadata: undefined,
 			nodePath: this.generateNodePath(),
 			nodeStatus: undefined,
-			nodeType: CmsResourceItemType.registeredServer,
+			nodeType: CmsResourceItemType.cmsMessageNodeContainer,
 			nodeSubType: undefined,
-			iconType: CmsResourceItemType.registeredServer
+			iconType: CmsResourceItemType.cmsMessageNodeContainer
 		};
 	}
 

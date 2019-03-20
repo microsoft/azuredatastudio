@@ -23,14 +23,31 @@ export function registerCmsResourceCommands(appContext: AppContext, tree: CmsRes
 		if (node && !(node instanceof CmsResourceEmptyTreeNode)) {
 			return;
 		}
-		appContext.apiWrapper.connection.then(async (connection) => {
+		await appContext.apiWrapper.connection.then(async (connection) => {
 			if (connection && connection.options) {
-				let registeredCmsServerName = connection.options.registeredServerName;
-				let registeredCmsServerDescription = connection.options.registeredServerDescription;
-				let ownerUri = await azdata.connection.getUriForConnection(connection.connectionId);
-				appContext.apiWrapper.cacheRegisteredCmsServer(registeredCmsServerName, registeredCmsServerDescription, ownerUri, connection);
-				tree.isSystemInitialized = true;
-				tree.notifyNodeChanged(undefined);
+				let registeredCmsServerName = connection.options.registeredServerName ?
+					connection.options.registeredServerName : connection.options.server;
+				// check if a CMS with the same name is registered or not
+				let cachedServers = appContext.apiWrapper.registeredCmsServers;
+				let serverExists: boolean = false;
+				if (cachedServers) {
+					serverExists = cachedServers.some((server) => {
+						return server.name === registeredCmsServerName;
+					});
+				}
+				if (!serverExists) {
+					let registeredCmsServerDescription = connection.options.registeredServerDescription;
+					let ownerUri = await azdata.connection.getUriForConnection(connection.connectionId);
+					appContext.apiWrapper.cacheRegisteredCmsServer(registeredCmsServerName, registeredCmsServerDescription, ownerUri, connection);
+					tree.isSystemInitialized = true;
+					tree.notifyNodeChanged(undefined);
+				} else {
+					// error out for same server name
+					let errorText = localize('cms.errors.sameCmsServerName', 'Central Management Server Group already has a Registered Server with the name {0}', registeredCmsServerName);
+					appContext.apiWrapper.showErrorMessage(errorText);
+					return;
+				}
+
 			}
 		});
 	});

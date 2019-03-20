@@ -44,6 +44,8 @@ export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICms
 							server.ownerUri,
 							server.connection,
 							this._appContext, this, null));
+						this.appContext.apiWrapper.cacheRegisteredCmsServer(server.name, server.description,
+							server.ownerUri, server.connection);
 					});
 					return servers;
 				}

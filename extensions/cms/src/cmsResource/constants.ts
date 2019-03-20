@@ -6,6 +6,7 @@
 'use strict';
 
 export enum CmsResourceItemType {
+	cmsMessageNodeContainer = 'cms.resource.itemType.cmsMessageNodeContainer',
 	cmsEmptyNodeContainer = 'cms.resource.itemType.cmsEmptyNodeContainer',
 	cmsNodeContainer = 'cms.resource.itemType.cmsNodeContainer',
 	registeredServer = 'cms.resource.itemType.registeredServer',
