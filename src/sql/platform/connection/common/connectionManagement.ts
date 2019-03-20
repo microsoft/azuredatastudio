@@ -11,7 +11,7 @@ import * as azdata from 'azdata';
 import { IConnectionProfileGroup, ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { ConnectionManagementInfo } from './connectionManagementInfo';
+import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 import { IServerGroupDialogCallbacks } from 'sql/platform/serverGroup/common/serverGroupController';
 
 export const VIEWLET_ID = 'workbench.view.connections';

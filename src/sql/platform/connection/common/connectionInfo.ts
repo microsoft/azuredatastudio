@@ -5,17 +5,17 @@
 
 'use strict';
 
-import Interfaces = require('./interfaces');
+import * as interfaces from 'sql/platform/connection/common/interfaces';
 
 /**
  * Sets sensible defaults for key connection properties, especially
  * if connection to Azure
  *
  * @export connectionInfo/fixupConnectionCredentials
- * @param {Interfaces.IConnectionCredentials} connCreds connection to be fixed up
- * @returns {Interfaces.IConnectionCredentials} the updated connection
+ * @param {interfaces.IConnectionCredentials} connCreds connection to be fixed up
+ * @returns {interfaces.IConnectionCredentials} the updated connection
  */
-export function fixupConnectionCredentials(connCreds: Interfaces.IConnectionProfile): Interfaces.IConnectionProfile {
+export function fixupConnectionCredentials(connCreds: interfaces.IConnectionProfile): interfaces.IConnectionProfile {
 	if (!connCreds.serverName) {
 		connCreds.serverName = '';
 	}
@@ -33,4 +33,3 @@ export function fixupConnectionCredentials(connCreds: Interfaces.IConnectionProf
 	}
 	return connCreds;
 }
-

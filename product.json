@@ -16,6 +16,8 @@
 	"win32AppUserModelId": "Microsoft.azuredatastudio",
 	"win32ShellNameShort": "Azure Data Studio",
 	"darwinBundleIdentifier": "com.azuredatastudio.oss",
+	"linuxIconName": "com.azuredatastudio.oss",
+	"licenseFileName": "LICENSE.txt",
 	"reportIssueUrl": "https://github.com/Microsoft/azuredatastudio/issues/new?labels=customer%20reported%20issue",
 	"requestFeatureUrl": "https://github.com/Microsoft/azuredatastudio/issues/new?labels=feature-request",
 	"privacyStatementUrl": "https://privacy.microsoft.com/en-us/privacystatement",

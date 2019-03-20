@@ -6,10 +6,10 @@
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { Event } from 'vs/base/common/event';
 import { ITelemetryData } from 'vs/platform/telemetry/common/telemetry';
-import { IProcessEnvironment, isMacintosh } from 'vs/base/common/platform';
+import { IProcessEnvironment, isMacintosh, isLinux } from 'vs/base/common/platform';
 import { ParsedArgs, IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { IWorkspaceIdentifier, ISingleFolderWorkspaceIdentifier } from 'vs/platform/workspaces/common/workspaces';
-import { IRecentlyOpened } from 'vs/platform/history/common/history';
+import { IRecentlyOpened, IRecent } from 'vs/platform/history/common/history';
 import { ISerializableCommandAction } from 'vs/platform/actions/common/actions';
 import { ExportData } from 'vs/base/common/performance';
 import { LogLevel } from 'vs/platform/log/common/log';
@@ -31,7 +31,7 @@ export interface INativeOpenDialogOptions {
 
 export interface IEnterWorkspaceResult {
 	workspace: IWorkspaceIdentifier;
-	backupPath: string;
+	backupPath?: string;
 }
 
 export interface CrashReporterStartOptions {
@@ -117,8 +117,8 @@ export interface IWindowsService {
 	enterWorkspace(windowId: number, path: URI): Promise<IEnterWorkspaceResult | undefined>;
 	toggleFullScreen(windowId: number): Promise<void>;
 	setRepresentedFilename(windowId: number, fileName: string): Promise<void>;
-	addRecentlyOpened(files: URI[]): Promise<void>;
-	removeFromRecentlyOpened(paths: Array<IWorkspaceIdentifier | ISingleFolderWorkspaceIdentifier | URI | string>): Promise<void>;
+	addRecentlyOpened(recents: IRecent[]): Promise<void>;
+	removeFromRecentlyOpened(paths: URI[]): Promise<void>;
 	clearRecentlyOpened(): Promise<void>;
 	getRecentlyOpened(windowId: number): Promise<IRecentlyOpened>;
 	focusWindow(windowId: number): Promise<void>;
@@ -149,13 +149,13 @@ export interface IWindowsService {
 	toggleSharedProcess(): Promise<void>;
 
 	// Global methods
-	openWindow(windowId: number, paths: URI[], options?: IOpenSettings): Promise<void>;
+	openWindow(windowId: number, uris: IURIToOpen[], options?: IOpenSettings): Promise<void>;
 	openNewWindow(options?: INewWindowOptions): Promise<void>;
 	showWindow(windowId: number): Promise<void>;
 	getWindows(): Promise<{ id: number; workspace?: IWorkspaceIdentifier; folderUri?: ISingleFolderWorkspaceIdentifier; title: string; filename?: string; }[]>;
 	getWindowCount(): Promise<number>;
 	log(severity: string, ...messages: string[]): Promise<void>;
-	showItemInFolder(path: string): Promise<void>;
+	showItemInFolder(path: URI): Promise<void>;
 	getActiveWindowId(): Promise<number | undefined>;
 
 	// This needs to be handled from browser process to prevent
@@ -185,6 +185,14 @@ export interface IOpenSettings {
 	args?: ParsedArgs;
 }
 
+export type URIType = 'file' | 'folder';
+
+export interface IURIToOpen {
+	uri: URI;
+	typeHint?: URIType;
+	label?: string;
+}
+
 export interface IWindowService {
 
 	_serviceBrand: any;
@@ -211,7 +219,7 @@ export interface IWindowService {
 	getRecentlyOpened(): Promise<IRecentlyOpened>;
 	focusWindow(): Promise<void>;
 	closeWindow(): Promise<void>;
-	openWindow(paths: URI[], options?: IOpenSettings): Promise<void>;
+	openWindow(uris: IURIToOpen[], options?: IOpenSettings): Promise<void>;
 	isFocused(): Promise<boolean>;
 	setDocumentEdited(flag: boolean): Promise<void>;
 	isMaximized(): Promise<boolean>;
@@ -270,14 +278,14 @@ export function getTitleBarStyle(configurationService: IConfigurationService, en
 		}
 
 		const style = configuration.titleBarStyle;
-		if (style === 'native') {
-			return 'native';
+		if (style === 'native' || style === 'custom') {
+			return style;
 		}
 	}
 
 	// {{SQL CARBON EDIT}} - Always use native toolbar
 	return 'native';
-	// return 'custom'; // default to custom on all OS
+	// return isLinux ? 'native' : 'custom'; // default to custom on all macOS and Windows
 }
 
 export const enum OpenContext {
@@ -332,11 +340,12 @@ export interface IPath extends IPathData {
 
 export interface IPathsToWaitFor extends IPathsToWaitForData {
 	paths: IPath[];
+	waitMarkerFileUri: URI;
 }
 
 export interface IPathsToWaitForData {
 	paths: IPathData[];
-	waitMarkerFilePath: string;
+	waitMarkerFileUri: UriComponents;
 }
 
 export interface IPathData {
@@ -375,7 +384,7 @@ export interface IWindowConfiguration extends ParsedArgs {
 	isInitialStartup?: boolean;
 
 	userEnv: IProcessEnvironment;
-	nodeCachedDataDir: string;
+	nodeCachedDataDir?: string;
 
 	backupPath?: string;
 
@@ -390,7 +399,7 @@ export interface IWindowConfiguration extends ParsedArgs {
 	highContrast?: boolean;
 	frameless?: boolean;
 	accessibilitySupport?: boolean;
-	partsSplashData?: string;
+	partsSplashPath?: string;
 
 	perfStartTime?: number;
 	perfAppReady?: number;

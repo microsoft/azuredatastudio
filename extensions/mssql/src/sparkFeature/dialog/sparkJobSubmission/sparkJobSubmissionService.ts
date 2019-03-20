@@ -42,7 +42,7 @@ export class SparkJobSubmissionService {
 				},
 				// authentication headers
 				headers: {
-					'Authorization': 'Basic ' + new Buffer(submissionArgs.user + ':' + submissionArgs.password).toString('base64')
+					'Authorization': 'Basic ' + Buffer.from(submissionArgs.user + ':' + submissionArgs.password).toString('base64')
 				}
 			};
 
@@ -100,7 +100,7 @@ export class SparkJobSubmissionService {
 				rejectUnauthorized: false,
 				// authentication headers
 				headers: {
-					'Authorization': 'Basic ' + new Buffer(submissionArgs.user + ':' + submissionArgs.password).toString('base64')
+					'Authorization': 'Basic ' + Buffer.from(submissionArgs.user + ':' + submissionArgs.password).toString('base64')
 				}
 			};
 

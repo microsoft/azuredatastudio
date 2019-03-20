@@ -7,7 +7,7 @@ import { localize } from 'vs/nls';
 import { forEach } from 'vs/base/common/collections';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { IViewContainersRegistry, ViewContainer, Extensions as ViewContainerExtensions, ViewsRegistry, ITreeViewDescriptor } from 'vs/workbench/common/views';
+import { IViewContainersRegistry, ViewContainer, Extensions as ViewContainerExtensions, ITreeViewDescriptor, IViewsRegistry } from 'vs/workbench/common/views';
 import { IExtensionPoint, ExtensionsRegistry, ExtensionMessageCollector } from 'vs/workbench/services/extensions/common/extensionsRegistry';
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions, IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -102,7 +102,7 @@ class DataExplorerContainerExtensionHandler implements IWorkbenchContribution {
 						collector.warn(localize('ViewsContainerDoesnotExist', "View container '{0}' does not exist and all views registered to it will be added to 'Data Explorer'.", entry.key));
 						container = this.viewContainersRegistry.get(VIEWLET_ID);
 					}
-					const registeredViews = ViewsRegistry.getViews(container);
+					const registeredViews = Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).getViews(container);
 					const viewIds = [];
 					const viewDescriptors = coalesce(entry.value.map(item => {
 						// validate
@@ -118,7 +118,7 @@ class DataExplorerContainerExtensionHandler implements IWorkbenchContribution {
 						const viewDescriptor = <ITreeViewDescriptor>{
 							id: item.id,
 							name: item.name,
-							ctor: CustomTreeViewPanel,
+							ctorDescriptor: { ctor: CustomTreeViewPanel },
 							when: ContextKeyExpr.deserialize(item.when),
 							canToggleVisibility: true,
 							collapsed: this.showCollapsed(container),
@@ -128,7 +128,7 @@ class DataExplorerContainerExtensionHandler implements IWorkbenchContribution {
 						viewIds.push(viewDescriptor.id);
 						return viewDescriptor;
 					}));
-					ViewsRegistry.registerViews(viewDescriptors, container);
+					Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).registerViews(viewDescriptors, container);
 				});
 			}
 		});

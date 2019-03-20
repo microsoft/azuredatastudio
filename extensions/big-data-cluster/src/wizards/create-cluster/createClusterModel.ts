@@ -26,7 +26,7 @@ export class CreateClusterModel implements Scriptable {
 	}
 
 	public async changeKubernetesContext(targetContext: string): Promise<void> {
-		await setContext(this._kubectl, targetContext)
+		await setContext(this._kubectl, targetContext);
 	}
 
 	public getDefaultPorts(): Thenable<ClusterPorts> {

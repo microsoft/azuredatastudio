@@ -3,8 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IChannel, IServerChannel } from 'vs/base/parts/ipc/node/ipc';
-import { IWorkspacesService, IWorkspaceIdentifier, IWorkspaceFolderCreationData, IWorkspacesMainService } from 'vs/platform/workspaces/common/workspaces';
+import { IServerChannel } from 'vs/base/parts/ipc/common/ipc';
+import { IWorkspaceIdentifier, IWorkspaceFolderCreationData, IWorkspacesMainService } from 'vs/platform/workspaces/common/workspaces';
 import { URI } from 'vs/base/common/uri';
 import { Event } from 'vs/base/common/event';
 
@@ -19,7 +19,8 @@ export class WorkspacesChannel implements IServerChannel {
 	call(_, command: string, arg?: any): Promise<any> {
 		switch (command) {
 			case 'createUntitledWorkspace': {
-				const rawFolders: IWorkspaceFolderCreationData[] = arg;
+				const rawFolders: IWorkspaceFolderCreationData[] = arg[0];
+				const remoteAuthority: string = arg[1];
 				let folders: IWorkspaceFolderCreationData[] | undefined = undefined;
 				if (Array.isArray(rawFolders)) {
 					folders = rawFolders.map(rawFolder => {
@@ -30,21 +31,17 @@ export class WorkspacesChannel implements IServerChannel {
 					});
 				}
 
-				return this.service.createUntitledWorkspace(folders);
+				return this.service.createUntitledWorkspace(folders, remoteAuthority);
+			}
+			case 'deleteUntitledWorkspace': {
+				const w: IWorkspaceIdentifier = arg;
+				return this.service.deleteUntitledWorkspace({ id: w.id, configPath: URI.revive(w.configPath) });
+			}
+			case 'getWorkspaceIdentifier': {
+				return this.service.getWorkspaceIdentifier(URI.revive(arg));
 			}
 		}
 
 		throw new Error(`Call not found: ${command}`);
-	}
-}
-
-export class WorkspacesChannelClient implements IWorkspacesService {
-
-	_serviceBrand: any;
-
-	constructor(private channel: IChannel) { }
-
-	createUntitledWorkspace(folders?: IWorkspaceFolderCreationData[]): Promise<IWorkspaceIdentifier> {
-		return this.channel.call('createUntitledWorkspace', folders);
 	}
 }
