@@ -160,12 +160,6 @@ namespace ShellExecutionDTO {
 			return new types.ShellExecution(value.command!, value.args ? value.args : [], value.options);
 		}
 	}
-
-	export function from(value: vscode.CustomExecution): CustomExecutionDTO {
-		return {
-			customExecution: 'customExecution'
-		};
-	}
 }
 
 namespace CustomExecutionDTO {
