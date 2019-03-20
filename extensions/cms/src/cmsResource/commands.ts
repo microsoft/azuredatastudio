@@ -20,18 +20,29 @@ export function registerCmsResourceCommands(appContext: AppContext, tree: CmsRes
 
 	// Create a CMS Server
 	appContext.apiWrapper.registerCommand('cms.resource.registerCMSServer', async (node?: TreeNode) => {
-		if (!(node instanceof CmsResourceEmptyTreeNode)) {
+		if (node && !(node instanceof CmsResourceEmptyTreeNode)) {
 			return;
 		}
 		appContext.apiWrapper.connection.then(async (connection) => {
 			if (connection && connection.options) {
-				let registeredCmsServerName = connection.options.registeredCmsServerName;
-				let registeredCmsServerDescription = connection.options.registeredCmsServerDescription;
+				let registeredCmsServerName = connection.options.registeredServerName;
+				let registeredCmsServerDescription = connection.options.registeredServerDescription;
 				let ownerUri = await azdata.connection.getUriForConnection(connection.connectionId);
 				appContext.apiWrapper.cacheRegisteredCmsServer(registeredCmsServerName, registeredCmsServerDescription, ownerUri, connection);
+				tree.isSystemInitialized = true;
 				tree.notifyNodeChanged(undefined);
 			}
 		});
+	});
+
+	// Delete a CMS Server
+	appContext.apiWrapper.registerCommand('cms.resource.deleteCMSServer', async (node?: TreeNode) => {
+		if (!(node instanceof CmsResourceTreeNode)) {
+			return;
+		}
+		await appContext.apiWrapper.deleteCmsServer(node.name);
+		tree.isSystemInitialized = false;
+		tree.notifyNodeChanged(undefined);
 	});
 
 	// Add a registered server

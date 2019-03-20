@@ -30,20 +30,22 @@ export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICms
 			return element.getChildren(true);
 		}
 
-		if (!this.isSystemInitialized && !this._hasCachedServers) {
+		if (!this.isSystemInitialized) {
 			try {
 				// Call to collect all locally saved CMS servers
 				// to determine whether the system has been initialized.
 				let cachedServers = this._appContext.apiWrapper.getConfiguration().cmsServers;
 				if (cachedServers && cachedServers.length > 0) {
+					let servers = [];
 					cachedServers.forEach((server) => {
-						this._servers.push(new CmsResourceTreeNode(
+						servers.push(new CmsResourceTreeNode(
 							server.name,
 							server.description,
 							server.ownerUri,
 							server.connection,
 							this._appContext, this, null));
 					});
+					return servers;
 				}
 				this.isSystemInitialized = true; // change this
 				this._onDidChangeTreeData.fire(undefined);
@@ -52,10 +54,6 @@ export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICms
 				this.isSystemInitialized = false;
 			}
 			return [CmsResourceMessageTreeNode.create(CmsResourceTreeProvider.loadingLabel, undefined)];
-
-		}
-		if (this._servers && this._servers.length > 0) {
-			return this._servers;
 		}
 		try {
 			let registeredCmsServers = this.appContext.apiWrapper.registeredCmsServers;
@@ -97,8 +95,6 @@ export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICms
 	}
 
 	public isSystemInitialized: boolean = false;
-	private _hasCachedServers: boolean = false;
-	private _servers = [];
 	private _onDidChangeTreeData = new EventEmitter<TreeNode>();
 
 	private static readonly loadingLabel = localize('cms.resource.tree.treeProvider.loadingLabel', 'Loading ...');

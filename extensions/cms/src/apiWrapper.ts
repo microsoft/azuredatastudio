@@ -223,6 +223,16 @@ export class ApiWrapper {
 		});
 	}
 
+	public async deleteCmsServer(cmsServer: any) {
+		let newServers = this.getConfiguration().cmsServers.filter((cachedServer) => {
+			return cachedServer.name !== cmsServer;
+		});
+		await this.setConfiguration(newServers);
+		this._registeredCmsServers = this._registeredCmsServers.filter((cachedServer) => {
+			return cachedServer.name !== cmsServer;
+		});
+	}
+
 	public cacheRegisteredCmsServer(name: string, description: string, ownerUri: string, connection: azdata.connection.Connection) {
 		if (!this._registeredCmsServers) {
 			this._registeredCmsServers = [];

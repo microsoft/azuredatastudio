@@ -2,14 +2,13 @@
 	"cms.displayName": "CMS",
 	"cms.title": "Central Management Servers",
 	"cms.resource.explorer.title": "Central Management Servers",
-	"cms.resource.refreshall.title": "Refresh All",
 	"cms.resource.refresh.title": "Refresh",
-	"cms.resource.connectsqlserver.title": "Connect",
-	"cms.resource.connectsqldb.title": "Connect",
 	"cms.resource.deleteRegisteredServer.title": "Delete registered server",
 	"cms.resource.addRegisteredServer.title": "Add registered server",
 	"cms.resource.deleteServerGroup.title": "Delete server group",
-	"cms.resource.addServerGroup.title": "Add server group"
+	"cms.resource.addServerGroup.title": "Add server group",
+	"cms.resource.registerCMSServer.title": "Register Central Management Server",
+	"cms.resource.deleteCMSServer.title": "Delete Central Management Server"
 
 
 }

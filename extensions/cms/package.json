@@ -16,14 +16,6 @@
 	"contributes": {
 		"commands": [
 			{
-				"command": "cms.resource.connectsqlserver",
-				"title": "%cms.resource.connectsqlserver.title%",
-				"icon": {
-					"dark": "resources/dark/connect_to_inverse.svg",
-					"light": "resources/light/connect_to.svg"
-				}
-			},
-			{
 				"command": "cms.resource.deleteRegisteredServer",
 				"title": "%cms.resource.deleteRegisteredServer.title%",
 				"when": "viewItem == cms.resource.itemType.registeredServer"
@@ -51,6 +43,18 @@
 					"light": "resources/light/refresh.svg",
 					"dark": "resources/dark/refresh_inverse.svg"
 				}
+			},
+			{
+				"command": "cms.resource.registerCMSServer",
+				"title": "%cms.resource.registerCMSServer.title%",
+				"icon": {
+					"light": "resources/light/add_server.svg",
+					"dark": "resources/dark/add_server_inverse.svg"
+				}
+			},
+			{
+				"command": "cms.resource.deleteCMSServer",
+				"title": "%cms.resource.deleteCMSServer.title%"
 			}
 		],
 		"dataExplorer": {
@@ -62,6 +66,13 @@
 			]
 		},
 		"menus": {
+			"view/title": [
+				{
+					"command": "cms.resource.registerCMSServer",
+					"when": "view == cmsResourceExplorer",
+					"group": "navigation"
+				}
+			],
 			"view/item/context": [
 				{
 					"command": "cms.resource.deleteRegisteredServer",
@@ -96,6 +107,10 @@
 					"command": "cms.resource.refresh",
 					"when": "viewItem == cms.resource.itemType.cmsNodeContainer",
 					"group": "inline"
+				},
+				{
+					"command": "cms.resource.deleteCMSServer",
+					"when": "viewItem == cms.resource.itemType.cmsNodeContainer"
 				}
 			]
 		}
