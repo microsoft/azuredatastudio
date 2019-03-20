@@ -21,7 +21,8 @@ export class ConfigurePythonDialog {
 	private dialog: azdata.window.Dialog;
 
 	private readonly DialogTitle = localize('configurePython.dialogName', 'Configure Python for Notebooks');
-	private readonly OkButtonText = localize('configurePython.okButtonText', 'Install');
+	private readonly InstallButtonText = localize('configurePython.okButtonText', 'Install');
+	private readonly CompleteButtonText = localize('configurePython.completeButtonText', 'Complete');
 	private readonly CancelButtonText = localize('configurePython.cancelButtonText', 'Cancel');
 	private readonly BrowseButtonText = localize('configurePython.browseButtonText', 'Change location');
 	private readonly LocationTextBoxTitle = localize('configurePython.locationTextBoxText', 'Notebook dependencies will be installed in this location');
@@ -48,11 +49,11 @@ export class ConfigurePythonDialog {
 
 		this.initializeContent();
 
-		this.dialog.okButton.label = this.OkButtonText;
+		this.dialog.okButton.label = this.InstallButtonText;
 		this.dialog.cancelButton.label = this.CancelButtonText;
 		this.dialog.cancelButton.onClick(() => {
 			if (rejectOnCancel) {
-				this._setupComplete.reject(localize('pythonInstallDeclined', 'Python installation was declined.'));
+				this._setupComplete.reject(localize('configurePython.pythonInstallDeclined', 'Python installation was declined.'));
 			} else {
 				this._setupComplete.resolve();
 			}
@@ -94,8 +95,11 @@ export class ConfigurePythonDialog {
 				}
 			});
 
+			let installRadioButtons = this.createInstallRadioButtons(view.modelBuilder);
+
 			let formModel = view.modelBuilder.formContainer()
-				.withFormItems([{
+				.withFormItems([
+				installRadioButtons, {
 					component: this.pythonLocationTextBox,
 					title: this.LocationTextBoxTitle
 				}, {
@@ -109,6 +113,39 @@ export class ConfigurePythonDialog {
 
 			await view.initializeModel(formModel);
 		});
+	}
+
+	private createInstallRadioButtons(modelBuilder: azdata.ModelBuilder): azdata.FormComponentGroup {
+		let buttonGroup = 'installationType';
+		let newInstallButton = modelBuilder.radioButton()
+			.withProperties<azdata.RadioButtonProperties>({
+				name: buttonGroup,
+				label: localize('configurePython.newInstall', 'New Installation'),
+				checked: true
+			}).component();
+		newInstallButton.onDidClick(() => {
+			this.dialog.okButton.label = this.InstallButtonText;
+		});
+
+		let existingInstallButton = modelBuilder.radioButton()
+			.withProperties<azdata.RadioButtonProperties>({
+				name: buttonGroup,
+				label: localize('configurePython.existingInstall', 'Existing Installation')
+			}).component();
+		existingInstallButton.onDidClick(() => {
+			this.dialog.okButton.label = this.CompleteButtonText;
+		});
+
+		return {
+			components: [{
+				component: newInstallButton,
+				title: undefined
+			}, {
+				component: existingInstallButton,
+				title: undefined
+			}],
+			title: localize('configurePython.installationType', 'Installation Type')
+		};
 	}
 
 	private async handleInstall(): Promise<boolean> {
