@@ -49,6 +49,7 @@ export default class JupyterServerInstallation {
 	private _pythonInstallationPath: string;
 	private _pythonExecutable: string;
 	private _pythonPackageDir: string;
+	private _usingExistingPython: boolean;
 
 	// Allows dependencies to be installed even if an existing installation is already present
 	private _forceInstall: boolean;
@@ -62,6 +63,7 @@ export default class JupyterServerInstallation {
 		this.outputChannel = outputChannel;
 		this.apiWrapper = apiWrapper;
 		this._pythonInstallationPath = pythonInstallationPath || JupyterServerInstallation.getPythonInstallPath(this.apiWrapper);
+		this._usingExistingPython = JupyterServerInstallation.getExistingPythonSetting(this.apiWrapper);
 		this._forceInstall = !!forceInstall;
 
 		this.configurePackagePaths();
@@ -74,10 +76,12 @@ export default class JupyterServerInstallation {
 
 	public completeWithExistingInstall(pythonInstallationPath: string): void {
 		this._pythonInstallationPath = pythonInstallationPath;
-		this.configurePackagePaths(false);
+		this._usingExistingPython = true;
 
 		let notebookConfig = this.apiWrapper.getConfiguration(constants.notebookConfigKey);
 		notebookConfig.update(constants.existingPythonConfigKey, true, ConfigurationTarget.Global);
+
+		this.configurePackagePaths();
 
 		this._installReady.resolve();
 	}
@@ -102,12 +106,17 @@ export default class JupyterServerInstallation {
 	private async installDependencies(backgroundOperation: azdata.BackgroundOperation): Promise<void> {
 		if (!fs.existsSync(this._pythonExecutable) || this._forceInstall) {
 			window.showInformationMessage(msgInstallPkgStart);
-			this.outputChannel.show(true);
-			this.outputChannel.appendLine(msgPythonInstallationProgress);
-			backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonInstallationProgress);
-			await this.installPythonPackage(backgroundOperation);
-			backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonInstallationComplete);
-			this.outputChannel.appendLine(msgPythonInstallationComplete);
+
+			if (!this._usingExistingPython) {
+				this.outputChannel.show(true);
+				this.outputChannel.appendLine(msgPythonInstallationProgress);
+				backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonInstallationProgress);
+
+				await this.installPythonPackage(backgroundOperation);
+
+				backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonInstallationComplete);
+				this.outputChannel.appendLine(msgPythonInstallationComplete);
+			}
 
 			// Install jupyter on Windows because local python is not bundled with jupyter unlike linux and MacOS.
 			await this.installJupyterProsePackage();
@@ -218,11 +227,11 @@ export default class JupyterServerInstallation {
 		});
 	}
 
-	private configurePackagePaths(includeBundleVersion: boolean = true): void {
+	private configurePackagePaths(): void {
 		//Python source path up to bundle version
-		let pythonSourcePath = includeBundleVersion
-			? path.join(this._pythonInstallationPath, constants.pythonBundleVersion)
-			: this._pythonInstallationPath;
+		let pythonSourcePath = this._usingExistingPython
+			? this._pythonInstallationPath
+			: path.join(this._pythonInstallationPath, constants.pythonBundleVersion);
 
 		this._pythonPackageDir = path.join(pythonSourcePath, 'offlinePackages');
 
