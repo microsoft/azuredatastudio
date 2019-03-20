@@ -53,9 +53,9 @@ export function mixin(destination: any, source: any, overwrite: boolean = true, 
 }
 
 export function entries<T>(o: { [key: string]: T }): [string, T][] {
-	return Object.entries(o);
+	return Object.keys(o).map(k => [k, o[k]] as [string, T]);
 }
 
 export function values<T>(o: { [key: string]: T }): T[] {
-	return Object.values(o);
+	return Object.keys(o).map(k => o[k]);
 }

@@ -9,7 +9,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule, Routes, UrlSerializer, Router, NavigationEnd } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { NgGridModule } from 'angular2-grid';
-import { ChartsModule } from 'ng2-charts/ng2-charts';
+import { ChartsModule } from 'ng2-charts';
 
 import CustomUrlSerializer from 'sql/base/node/urlSerializer';
 import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/common/insightRegistry';

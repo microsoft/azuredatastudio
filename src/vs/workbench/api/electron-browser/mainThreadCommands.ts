@@ -64,13 +64,14 @@ export class MainThreadCommands implements MainThreadCommandsShape {
 	}
 
 	$unregisterCommand(id: string): void {
-		if (this._disposables.has(id)) {
-			this._disposables.get(id).dispose();
+		const command = this._disposables.get(id);
+		if (command) {
+			command.dispose();
 			this._disposables.delete(id);
 		}
 	}
 
-	$executeCommand<T>(id: string, args: any[]): Promise<T> {
+	$executeCommand<T>(id: string, args: any[]): Promise<T | undefined> {
 		for (let i = 0; i < args.length; i++) {
 			args[i] = revive(args[i], 0);
 		}
@@ -88,7 +89,7 @@ function _generateMarkdown(description: string | ICommandHandlerDescription): st
 	if (typeof description === 'string') {
 		return description;
 	} else {
-		let parts = [description.description];
+		const parts = [description.description];
 		parts.push('\n\n');
 		if (description.args) {
 			for (let arg of description.args) {

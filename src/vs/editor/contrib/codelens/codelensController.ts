@@ -33,7 +33,7 @@ export class CodeLensContribution implements editorCommon.IEditorContribution {
 	private _detectVisibleLenses: RunOnceScheduler;
 
 	constructor(
-		private _editor: editorBrowser.ICodeEditor,
+		private readonly _editor: editorBrowser.ICodeEditor,
 		@ICommandService private readonly _commandService: ICommandService,
 		@INotificationService private readonly _notificationService: INotificationService
 	) {
@@ -309,13 +309,14 @@ export class CodeLensContribution implements editorCommon.IEditorContribution {
 
 				const resolvedSymbols = new Array<ICodeLensSymbol | undefined | null>(request.length);
 				const promises = request.map((request, i) => {
-					if (typeof request.provider.resolveCodeLens === 'function') {
+					if (!request.symbol.command && typeof request.provider.resolveCodeLens === 'function') {
 						return Promise.resolve(request.provider.resolveCodeLens(model, request.symbol, token)).then(symbol => {
 							resolvedSymbols[i] = symbol;
 						});
+					} else {
+						resolvedSymbols[i] = request.symbol;
+						return Promise.resolve(undefined);
 					}
-					resolvedSymbols[i] = request.symbol;
-					return Promise.resolve(undefined);
 				});
 
 				return Promise.all(promises).then(() => {

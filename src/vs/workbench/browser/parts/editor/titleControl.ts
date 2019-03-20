@@ -32,13 +32,14 @@ import { DraggedEditorGroupIdentifier, DraggedEditorIdentifier, fillResourceData
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { BreadcrumbsConfig } from 'vs/workbench/browser/parts/editor/breadcrumbs';
 import { BreadcrumbsControl, IBreadcrumbsControlOptions } from 'vs/workbench/browser/parts/editor/breadcrumbsControl';
-import { EDITOR_TITLE_HEIGHT, IEditorGroupsAccessor, IEditorGroupView, IEditorPartOptions } from 'vs/workbench/browser/parts/editor/editor';
-import { EditorCommandsContextActionRunner, IEditorCommandsContext, IEditorInput, toResource } from 'vs/workbench/common/editor';
+import { EDITOR_TITLE_HEIGHT, IEditorGroupsAccessor, IEditorGroupView } from 'vs/workbench/browser/parts/editor/editor';
+import { EditorCommandsContextActionRunner, IEditorCommandsContext, IEditorInput, toResource, IEditorPartOptions } from 'vs/workbench/common/editor';
 import { ResourceContextKey } from 'vs/workbench/common/resources';
 import { Themable } from 'vs/workbench/common/theme';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { AnchorAlignment } from 'vs/base/browser/ui/contextview/contextview';
 import { IFileService } from 'vs/platform/files/common/files';
+import { withUndefinedAsNull } from 'vs/base/common/types';
 
 export interface IToolbarActions {
 	primary: IAction[];
@@ -50,7 +51,7 @@ export abstract class TitleControl extends Themable {
 	protected readonly groupTransfer = LocalSelectionTransfer.getInstance<DraggedEditorGroupIdentifier>();
 	protected readonly editorTransfer = LocalSelectionTransfer.getInstance<DraggedEditorIdentifier>();
 
-	protected breadcrumbsControl: BreadcrumbsControl;
+	protected breadcrumbsControl?: BreadcrumbsControl;
 
 	private currentPrimaryEditorActionIds: string[] = [];
 	private currentSecondaryEditorActionIds: string[] = [];
@@ -155,18 +156,18 @@ export abstract class TitleControl extends Themable {
 		}));
 	}
 
-	private actionItemProvider(action: Action): IActionItem {
+	private actionItemProvider(action: Action): IActionItem | null {
 		const activeControl = this.group.activeControl;
 
 		// Check Active Editor
-		let actionItem: IActionItem;
+		let actionItem: IActionItem | null = null;
 		if (activeControl instanceof BaseEditor) {
 			actionItem = activeControl.getActionItem(action);
 		}
 
 		// Check extensions
 		if (!actionItem) {
-			actionItem = createActionItem(action, this.keybindingService, this.notificationService, this.contextMenuService);
+			actionItem = withUndefinedAsNull(createActionItem(action, this.keybindingService, this.notificationService, this.contextMenuService));
 		}
 
 		return actionItem;
@@ -218,7 +219,7 @@ export abstract class TitleControl extends Themable {
 		this.editorToolBarMenuDisposables = dispose(this.editorToolBarMenuDisposables);
 
 		// Update the resource context
-		this.resourceContext.set(toResource(this.group.activeEditor, { supportSideBySide: true }));
+		this.resourceContext.set(this.group.activeEditor ? toResource(this.group.activeEditor, { supportSideBySide: true }) : null);
 
 		// Editor actions require the editor control to be there, so we retrieve it via service
 		const activeControl = this.group.activeControl;
@@ -254,23 +255,25 @@ export abstract class TitleControl extends Themable {
 
 			// Set editor group as transfer
 			this.groupTransfer.setData([new DraggedEditorGroupIdentifier(this.group.id)], DraggedEditorGroupIdentifier.prototype);
-			e.dataTransfer.effectAllowed = 'copyMove';
+			e.dataTransfer!.effectAllowed = 'copyMove';
 
 			// If tabs are disabled, treat dragging as if an editor tab was dragged
 			if (!this.accessor.partOptions.showTabs) {
-				const resource = toResource(this.group.activeEditor, { supportSideBySide: true });
+				const resource = this.group.activeEditor ? toResource(this.group.activeEditor, { supportSideBySide: true }) : null;
 				if (resource) {
 					this.instantiationService.invokeFunction(fillResourceDataTransfers, [resource], e);
 				}
 			}
 
 			// Drag Image
-			let label = this.group.activeEditor.getName();
-			if (this.accessor.partOptions.showTabs && this.group.count > 1) {
-				label = localize('draggedEditorGroup', "{0} (+{1})", label, this.group.count - 1);
-			}
+			if (this.group.activeEditor) {
+				let label = this.group.activeEditor.getName();
+				if (this.accessor.partOptions.showTabs && this.group.count > 1) {
+					label = localize('draggedEditorGroup', "{0} (+{1})", label, this.group.count - 1);
+				}
 
-			applyDragImage(e, label, 'monaco-editor-group-drag-image');
+				applyDragImage(e, label, 'monaco-editor-group-drag-image');
+			}
 		}));
 
 		// Drag end
@@ -305,7 +308,7 @@ export abstract class TitleControl extends Themable {
 			onHide: () => {
 
 				// restore previous context
-				this.resourceContext.set(currentContext);
+				this.resourceContext.set(currentContext || null);
 
 				// restore focus to active group
 				this.accessor.activeGroup.focus();
@@ -313,14 +316,14 @@ export abstract class TitleControl extends Themable {
 		});
 	}
 
-	private getKeybinding(action: IAction): ResolvedKeybinding {
+	private getKeybinding(action: IAction): ResolvedKeybinding | undefined {
 		return this.keybindingService.lookupKeybinding(action.id);
 	}
 
-	protected getKeybindingLabel(action: IAction): string {
+	protected getKeybindingLabel(action: IAction): string | undefined {
 		const keybinding = this.getKeybinding(action);
 
-		return keybinding ? keybinding.getLabel() : undefined;
+		return keybinding ? keybinding.getLabel() || undefined : undefined;
 	}
 
 	abstract openEditor(editor: IEditorInput): void;
@@ -356,7 +359,8 @@ export abstract class TitleControl extends Themable {
 	}
 
 	dispose(): void {
-		this.breadcrumbsControl = dispose(this.breadcrumbsControl);
+		dispose(this.breadcrumbsControl);
+		this.breadcrumbsControl = undefined;
 		this.editorToolBarMenuDisposables = dispose(this.editorToolBarMenuDisposables);
 
 		super.dispose();

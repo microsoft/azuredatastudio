@@ -14,8 +14,8 @@ import { ExtHostDocuments } from 'vs/workbench/api/node/extHostDocuments';
 import { SaveReason } from 'vs/workbench/services/textfile/common/textfiles';
 import * as vscode from 'vscode';
 import { LinkedList } from 'vs/base/common/linkedList';
-import { IExtensionDescription } from 'vs/workbench/services/extensions/common/extensions';
 import { ILogService } from 'vs/platform/log/common/log';
+import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 
 type Listener = [Function, any, IExtensionDescription];
 
@@ -53,17 +53,17 @@ export class ExtHostDocumentSaveParticipant implements ExtHostDocumentSavePartic
 		const entries = this._callbacks.toArray();
 
 		let didTimeout = false;
-		let didTimeoutHandle = setTimeout(() => didTimeout = true, this._thresholds.timeout);
+		const didTimeoutHandle = setTimeout(() => didTimeout = true, this._thresholds.timeout);
 
 		const promise = sequence(entries.map(listener => {
 			return () => {
 
 				if (didTimeout) {
 					// timeout - no more listeners
-					return undefined;
+					return Promise.resolve();
 				}
 
-				const document = this._documents.getDocumentData(resource).document;
+				const document = this._documents.getDocument(resource);
 				return this._deliverEventAsyncAndBlameBadListeners(listener, <any>{ document, reason: TextDocumentSaveReason.to(reason) });
 			};
 		}));
@@ -72,7 +72,7 @@ export class ExtHostDocumentSaveParticipant implements ExtHostDocumentSavePartic
 
 	private _deliverEventAsyncAndBlameBadListeners([listener, thisArg, extension]: Listener, stubEvent: vscode.TextDocumentWillSaveEvent): Promise<any> {
 		const errors = this._badListeners.get(listener);
-		if (errors > this._thresholds.errors) {
+		if (typeof errors === 'number' && errors > this._thresholds.errors) {
 			// bad listener - ignore
 			return Promise.resolve(false);
 		}
@@ -90,7 +90,7 @@ export class ExtHostDocumentSaveParticipant implements ExtHostDocumentSavePartic
 				const errors = this._badListeners.get(listener);
 				this._badListeners.set(listener, !errors ? 1 : errors + 1);
 
-				if (errors > this._thresholds.errors) {
+				if (typeof errors === 'number' && errors > this._thresholds.errors) {
 					this._logService.info(`onWillSaveTextDocument-listener from extension '${extension.identifier.value}' will now be IGNORED because of timeouts and/or errors`);
 				}
 			}
@@ -169,7 +169,6 @@ export class ExtHostDocumentSaveParticipant implements ExtHostDocumentSavePartic
 				return this._mainThreadEditors.$tryApplyWorkspaceEdit({ edits: [resourceEdit] });
 			}
 
-			// TODO@joh bubble this to listener?
 			return Promise.reject(new Error('concurrent_edits'));
 		});
 	}

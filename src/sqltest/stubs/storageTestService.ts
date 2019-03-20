@@ -65,6 +65,12 @@ export class StorageTestService implements IStorageService {
 		return undefined;
 	}
 
+	getNumber(key: string, scope: StorageScope, fallbackValue: number): number;
+	getNumber(key: string, scope: StorageScope, fallbackValue?: number): number;
+	getNumber(key: any, scope: any, fallbackValue?: any): number {
+		return undefined;
+	}
+
 	/**
 	 * Retrieve an element stored with the given key from local storage. Use
 	 * the provided defaultValue if the element is null or undefined. The element

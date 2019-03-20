@@ -15,8 +15,8 @@ import { ExtHostConfiguration } from 'vs/workbench/api/node/extHostConfiguration
 import { ExtHostExtensionService } from 'vs/workbench/api/node/extHostExtensionService';
 import { ExtHostLogService } from 'vs/workbench/api/node/extHostLogService';
 import { ExtHostWorkspace } from 'vs/workbench/api/node/extHostWorkspace';
-import { IExtensionDescription } from 'vs/workbench/services/extensions/common/extensions';
 import { RPCProtocol } from 'vs/workbench/services/extensions/node/rpcProtocol';
+import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 
 // we don't (yet) throw when extensions parse
 // uris that have no scheme
@@ -49,7 +49,6 @@ export class ExtensionHostMain {
 	private _isTerminating: boolean;
 	private readonly _environment: IEnvironment;
 	private readonly _extensionService: ExtHostExtensionService;
-	private readonly _extHostConfiguration: ExtHostConfiguration;
 	private readonly _extHostLogService: ExtHostLogService;
 	private disposables: IDisposable[] = [];
 
@@ -57,14 +56,14 @@ export class ExtensionHostMain {
 
 	constructor(protocol: IMessagePassingProtocol, initData: IInitData) {
 		this._isTerminating = false;
-		const uriTransformer: IURITransformer = null;
+		const uriTransformer: IURITransformer | null = null;
 		const rpcProtocol = new RPCProtocol(protocol, null, uriTransformer);
 
 		// ensure URIs are transformed and revived
 		initData = this.transform(initData, rpcProtocol);
 		this._environment = initData.environment;
 
-		const allowExit = !!this._environment.extensionTestsPath; // to support other test frameworks like Jasmin that use process.exit (https://github.com/Microsoft/vscode/issues/37708)
+		const allowExit = !!this._environment.extensionTestsLocationURI; // to support other test frameworks like Jasmin that use process.exit (https://github.com/Microsoft/vscode/issues/37708)
 		patchProcess(allowExit);
 
 		this._patchPatchedConsole(rpcProtocol.getProxy(MainContext.MainThreadConsole));
@@ -74,13 +73,13 @@ export class ExtensionHostMain {
 		this.disposables.push(this._extHostLogService);
 
 		this._searchRequestIdProvider = new Counter();
-		const extHostWorkspace = new ExtHostWorkspace(rpcProtocol, initData.workspace, this._extHostLogService, this._searchRequestIdProvider);
+		const extHostWorkspace = new ExtHostWorkspace(rpcProtocol, this._extHostLogService, this._searchRequestIdProvider, initData.workspace);
 
 		this._extHostLogService.info('extension host started');
 		this._extHostLogService.trace('initData', initData);
 
-		this._extHostConfiguration = new ExtHostConfiguration(rpcProtocol.getProxy(MainContext.MainThreadConfiguration), extHostWorkspace);
-		this._extensionService = new ExtHostExtensionService(nativeExit, initData, rpcProtocol, extHostWorkspace, this._extHostConfiguration, this._extHostLogService);
+		const extHostConfiguraiton = new ExtHostConfiguration(rpcProtocol.getProxy(MainContext.MainThreadConfiguration), extHostWorkspace);
+		this._extensionService = new ExtHostExtensionService(nativeExit, initData, rpcProtocol, extHostWorkspace, extHostConfiguraiton, this._extHostLogService);
 
 		// error forwarding and stack trace scanning
 		Error.stackTraceLimit = 100; // increase number of stack frames (from 10, https://github.com/v8/v8/wiki/Stack-Trace-API)
@@ -88,7 +87,7 @@ export class ExtensionHostMain {
 		this._extensionService.getExtensionPathIndex().then(map => {
 			(<any>Error).prepareStackTrace = (error: Error, stackTrace: errors.V8CallSite[]) => {
 				let stackTraceMessage = '';
-				let extension: IExtensionDescription;
+				let extension: IExtensionDescription | undefined;
 				let fileName: string;
 				for (const call of stackTrace) {
 					stackTraceMessage += `\n\tat ${call.toString()}`;
@@ -118,7 +117,7 @@ export class ExtensionHostMain {
 
 	private _patchPatchedConsole(mainThreadConsole: MainThreadConsoleShape): void {
 		// The console is already patched to use `process.send()`
-		const nativeProcessSend = process.send;
+		const nativeProcessSend = process.send!;
 		process.send = (...args: any[]) => {
 			if (args.length === 0 || !args[0] || args[0].type !== '__$console') {
 				return nativeProcessSend.apply(process, args);
@@ -154,7 +153,9 @@ export class ExtensionHostMain {
 		initData.environment.appRoot = URI.revive(rpcProtocol.transformIncomingURIs(initData.environment.appRoot));
 		initData.environment.appSettingsHome = URI.revive(rpcProtocol.transformIncomingURIs(initData.environment.appSettingsHome));
 		initData.environment.extensionDevelopmentLocationURI = URI.revive(rpcProtocol.transformIncomingURIs(initData.environment.extensionDevelopmentLocationURI));
+		initData.environment.extensionTestsLocationURI = URI.revive(rpcProtocol.transformIncomingURIs(initData.environment.extensionTestsLocationURI));
 		initData.environment.globalStorageHome = URI.revive(rpcProtocol.transformIncomingURIs(initData.environment.globalStorageHome));
+		initData.environment.userHome = URI.revive(rpcProtocol.transformIncomingURIs(initData.environment.userHome));
 		initData.logsLocation = URI.revive(rpcProtocol.transformIncomingURIs(initData.logsLocation));
 		initData.workspace = rpcProtocol.transformIncomingURIs(initData.workspace);
 		return initData;

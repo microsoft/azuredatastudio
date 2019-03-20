@@ -58,7 +58,9 @@ suite('Files - TextFileService', () => {
 	});
 
 	teardown(() => {
-		model.dispose();
+		if (model) {
+			model.dispose();
+		}
 		(<TextFileEditorModelManager>accessor.textFileService.models).clear();
 		(<TextFileEditorModelManager>accessor.textFileService.models).dispose();
 		accessor.untitledEditorService.revertAll();
@@ -89,7 +91,7 @@ suite('Files - TextFileService', () => {
 		service.setConfirmResult(ConfirmResult.CANCEL);
 
 		return model.load().then(() => {
-			model.textEditorModel.setValue('foo');
+			model.textEditorModel!.setValue('foo');
 
 			assert.equal(service.getDirty().length, 1);
 
@@ -109,7 +111,7 @@ suite('Files - TextFileService', () => {
 		service.onFilesConfigurationChange({ files: { hotExit: 'off' } });
 
 		return model.load().then(() => {
-			model.textEditorModel.setValue('foo');
+			model.textEditorModel!.setValue('foo');
 
 			assert.equal(service.getDirty().length, 1);
 
@@ -140,7 +142,7 @@ suite('Files - TextFileService', () => {
 		service.onFilesConfigurationChange({ files: { hotExit: 'off' } });
 
 		return model.load().then(() => {
-			model.textEditorModel.setValue('foo');
+			model.textEditorModel!.setValue('foo');
 
 			assert.equal(service.getDirty().length, 1);
 
@@ -161,7 +163,7 @@ suite('Files - TextFileService', () => {
 		const service = accessor.textFileService;
 		return model.load().then(() => {
 			assert.ok(!service.isDirty(model.getResource()));
-			model.textEditorModel.setValue('foo');
+			model.textEditorModel!.setValue('foo');
 
 			assert.ok(service.isDirty(model.getResource()));
 			assert.equal(service.getDirty().length, 1);
@@ -171,7 +173,7 @@ suite('Files - TextFileService', () => {
 			return untitled.resolve().then((model: UntitledEditorModel) => {
 				assert.ok(!service.isDirty(untitled.getResource()));
 				assert.equal(service.getDirty().length, 1);
-				model.textEditorModel.setValue('changed');
+				model.textEditorModel!.setValue('changed');
 
 				assert.ok(service.isDirty(untitled.getResource()));
 				assert.equal(service.getDirty().length, 2);
@@ -187,7 +189,7 @@ suite('Files - TextFileService', () => {
 		const service = accessor.textFileService;
 
 		return model.load().then(() => {
-			model.textEditorModel.setValue('foo');
+			model.textEditorModel!.setValue('foo');
 
 			assert.ok(service.isDirty(model.getResource()));
 
@@ -212,7 +214,7 @@ suite('Files - TextFileService', () => {
 		sinon.stub(accessor.modelService, 'updateModel', () => { });
 
 		return model.load().then(() => {
-			model.textEditorModel.setValue('foo');
+			model.textEditorModel!.setValue('foo');
 
 			return accessor.textFileService.saveAll(true).then(res => {
 				assert.ok(loadOrCreateStub.calledOnce);
@@ -233,7 +235,7 @@ suite('Files - TextFileService', () => {
 		const service = accessor.textFileService;
 
 		return model.load().then(() => {
-			model.textEditorModel.setValue('foo');
+			model.textEditorModel!.setValue('foo');
 
 			assert.ok(service.isDirty(model.getResource()));
 
@@ -254,12 +256,12 @@ suite('Files - TextFileService', () => {
 		service.setPromptPath(model.getResource());
 
 		return model.load().then(() => {
-			model.textEditorModel.setValue('foo');
+			model.textEditorModel!.setValue('foo');
 
 			assert.ok(service.isDirty(model.getResource()));
 
 			return service.saveAs(model.getResource()).then(res => {
-				assert.equal(res.toString(), model.getResource().toString());
+				assert.equal(res!.toString(), model.getResource().toString());
 				assert.ok(!service.isDirty(model.getResource()));
 			});
 		});
@@ -273,7 +275,7 @@ suite('Files - TextFileService', () => {
 		service.setPromptPath(model.getResource());
 
 		return model.load().then(() => {
-			model.textEditorModel.setValue('foo');
+			model!.textEditorModel!.setValue('foo');
 
 			assert.ok(service.isDirty(model.getResource()));
 
@@ -291,7 +293,7 @@ suite('Files - TextFileService', () => {
 		const service = accessor.textFileService;
 
 		return model.load().then(() => {
-			model.textEditorModel.setValue('foo');
+			model!.textEditorModel!.setValue('foo');
 
 			assert.ok(service.isDirty(model.getResource()));
 
@@ -310,7 +312,7 @@ suite('Files - TextFileService', () => {
 		const service = accessor.textFileService;
 
 		return sourceModel.load().then(() => {
-			sourceModel.textEditorModel.setValue('foo');
+			sourceModel.textEditorModel!.setValue('foo');
 
 			assert.ok(service.isDirty(sourceModel.getResource()));
 
@@ -447,7 +449,7 @@ suite('Files - TextFileService', () => {
 			service.setConfirmResult(ConfirmResult.CANCEL);
 
 			return model.load().then(() => {
-				model.textEditorModel.setValue('foo');
+				model.textEditorModel!.setValue('foo');
 
 				assert.equal(service.getDirty().length, 1);
 

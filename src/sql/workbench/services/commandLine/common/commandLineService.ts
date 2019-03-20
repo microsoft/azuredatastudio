@@ -16,11 +16,11 @@ import { IConnectionProviderRegistry, Extensions as ConnectionProviderExtensions
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { warn } from 'sql/base/common/log';
 import { ipcRenderer as ipc} from 'electron';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 export class CommandLineService implements ICommandLineProcessing {
 	public _serviceBrand: any;
@@ -33,7 +33,7 @@ export class CommandLineService implements ICommandLineProcessing {
 		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
 		@IEditorService private _editorService: IEditorService,
 		@ICommandService private _commandService: ICommandService,
-		@IWorkspaceConfigurationService private _configurationService: IWorkspaceConfigurationService
+		@IConfigurationService private _configurationService: IConfigurationService
 	) {
 		if (ipc) {
 		    ipc.on('ads:processCommandLine', (event: any, args: ParsedArgs) => this.onLaunched(args));
