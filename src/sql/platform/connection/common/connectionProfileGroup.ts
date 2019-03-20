@@ -5,7 +5,7 @@
 
 'use strict';
 
-import { ConnectionProfile } from './connectionProfile';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 export interface IConnectionProfileGroup {
 	id: string;

@@ -14,10 +14,8 @@ import { ConnectionStore } from 'sql/platform/connection/common/connectionStore'
 import { CredentialsService } from 'sql/platform/credentials/common/credentialsService';
 import * as assert from 'assert';
 import { Memento } from 'vs/workbench/common/memento';
-import { CapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import * as azdata from 'azdata';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { Emitter } from 'vs/base/common/event';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { CapabilitiesTestService } from '../../stubs/capabilitiesTestService';
@@ -25,8 +23,6 @@ import { ConnectionProviderProperties } from 'sql/workbench/parts/connection/com
 
 suite('SQL ConnectionStore tests', () => {
 	let defaultNamedProfile: IConnectionProfile;
-	let defaultUnnamedProfile: IConnectionProfile;
-	let profileForProvider2: IConnectionProfile;
 	let context: TypeMoq.Mock<Memento>;
 	let credentialStore: TypeMoq.Mock<CredentialsService>;
 	let connectionConfig: TypeMoq.Mock<ConnectionConfig>;
@@ -58,42 +54,6 @@ suite('SQL ConnectionStore tests', () => {
 			id: undefined
 		});
 
-		defaultUnnamedProfile = Object.assign({}, {
-			connectionName: 'new name',
-			serverName: 'unnamedServer',
-			databaseName: undefined,
-			authenticationType: 'SqlLogin',
-			userName: 'aUser',
-			password: 'asdf!@#$',
-			savePassword: true,
-			groupId: '',
-			groupFullName: '',
-			getOptionsKey: undefined,
-			matches: undefined,
-			providerName: 'MSSQL',
-			options: {},
-			saveProfile: true,
-			id: undefined
-		});
-
-		profileForProvider2 = Object.assign({}, {
-			connectionName: 'new name',
-			serverName: 'unnamedServer',
-			databaseName: undefined,
-			authenticationType: 'SqlLogin',
-			userName: 'aUser',
-			password: 'asdf!@#$',
-			savePassword: true,
-			groupId: '',
-			groupFullName: '',
-			getOptionsKey: undefined,
-			matches: undefined,
-			providerName: 'MSSQL',
-			options: {},
-			saveProfile: true,
-			id: undefined
-		});
-
 		storageServiceMock = TypeMoq.Mock.ofType(StorageTestService);
 
 		let momento = new Memento('ConnectionManagement', storageServiceMock.object);
@@ -111,12 +71,6 @@ suite('SQL ConnectionStore tests', () => {
 		workspaceConfigurationServiceMock = TypeMoq.Mock.ofType(WorkspaceConfigurationTestService);
 		workspaceConfigurationServiceMock.setup(x => x.getValue(Constants.sqlConfigSectionName))
 			.returns(() => configResult);
-
-		let extensionManagementServiceMock = {
-			getInstalled: () => {
-				return Promise.resolve([]);
-			}
-		};
 
 		capabilitiesService = new CapabilitiesTestService();
 		let connectionProvider: azdata.ConnectionOption[] = [
@@ -237,7 +191,7 @@ suite('SQL ConnectionStore tests', () => {
 
 		// When saving 4 connections
 		// Expect all of them to be saved even if size is limited to 3
-		let connectionStore = new ConnectionStore(storageServiceMock.object, context.object, undefined, workspaceConfigurationServiceMock.object,
+		let connectionStore = new ConnectionStore(context.object, workspaceConfigurationServiceMock.object,
 			credentialStore.object, capabilitiesService, connectionConfig.object);
 		for (let i = 0; i < numCreds; i++) {
 			let cred = Object.assign({}, defaultNamedProfile, { serverName: defaultNamedProfile.serverName + i });
@@ -264,7 +218,7 @@ suite('SQL ConnectionStore tests', () => {
 			.returns(() => Promise.resolve(true));
 
 		const numCreds = 3;
-		let connectionStore = new ConnectionStore(storageServiceMock.object, context.object, undefined, workspaceConfigurationServiceMock.object,
+		let connectionStore = new ConnectionStore(context.object, workspaceConfigurationServiceMock.object,
 			credentialStore.object, capabilitiesService, connectionConfig.object);
 		connectionStore.clearActiveConnections();
 		connectionStore.clearRecentlyUsed();
@@ -283,7 +237,7 @@ suite('SQL ConnectionStore tests', () => {
 	});
 
 	test('getRecentlyUsedConnections should return connection for given provider', () => {
-		let connectionStore = new ConnectionStore(storageServiceMock.object, context.object, undefined, workspaceConfigurationServiceMock.object,
+		let connectionStore = new ConnectionStore(context.object, workspaceConfigurationServiceMock.object,
 			credentialStore.object, capabilitiesService, connectionConfig.object);
 		let connections = connectionStore.getRecentlyUsedConnections(['Provider2']);
 		assert.notEqual(connections, undefined);
@@ -297,7 +251,7 @@ suite('SQL ConnectionStore tests', () => {
 
 		// Given we save the same connection twice
 		// Then expect the only 1 instance of that connection to be listed in the MRU
-		let connectionStore = new ConnectionStore(storageServiceMock.object, context.object, undefined, workspaceConfigurationServiceMock.object,
+		let connectionStore = new ConnectionStore(context.object, workspaceConfigurationServiceMock.object,
 			credentialStore.object, capabilitiesService, connectionConfig.object);
 		connectionStore.clearActiveConnections();
 		connectionStore.clearRecentlyUsed();
@@ -325,7 +279,8 @@ suite('SQL ConnectionStore tests', () => {
 			})
 			.returns(() => Promise.resolve(true));
 
-		let connectionStore = new ConnectionStore(storageServiceMock.object, context.object, undefined, workspaceConfigurationServiceMock.object,
+		// Given we save 1 connection with password and multiple other connections without
+		let connectionStore = new ConnectionStore(context.object, workspaceConfigurationServiceMock.object,
 			credentialStore.object, capabilitiesService, connectionConfig.object);
 		connectionStore.clearActiveConnections();
 		connectionStore.clearRecentlyUsed();
@@ -380,7 +335,7 @@ suite('SQL ConnectionStore tests', () => {
 	test('can clear connections list', (done) => {
 		connectionConfig.setup(x => x.getConnections(TypeMoq.It.isAny())).returns(() => []);
 
-		let connectionStore = new ConnectionStore(storageServiceMock.object, context.object, undefined, workspaceConfigurationServiceMock.object,
+		let connectionStore = new ConnectionStore(context.object, workspaceConfigurationServiceMock.object,
 			credentialStore.object, capabilitiesService, connectionConfig.object);
 
 		// When we clear the connections list and get the list of available connection items
@@ -398,7 +353,7 @@ suite('SQL ConnectionStore tests', () => {
 
 	test('isPasswordRequired should return true for MSSQL SqlLogin', () => {
 
-		let connectionStore = new ConnectionStore(storageServiceMock.object, context.object, undefined, workspaceConfigurationServiceMock.object,
+		let connectionStore = new ConnectionStore(context.object, workspaceConfigurationServiceMock.object,
 			credentialStore.object, capabilitiesService, connectionConfig.object);
 
 		let expected: boolean = true;
@@ -408,7 +363,7 @@ suite('SQL ConnectionStore tests', () => {
 	});
 
 	test('isPasswordRequired should return true for MSSQL SqlLogin for connection profile object', () => {
-		let connectionStore = new ConnectionStore(storageServiceMock.object, context.object, undefined, workspaceConfigurationServiceMock.object,
+		let connectionStore = new ConnectionStore(context.object, workspaceConfigurationServiceMock.object,
 			credentialStore.object, capabilitiesService, connectionConfig.object);
 		let connectionProfile = new ConnectionProfile(capabilitiesService, defaultNamedProfile);
 		let expected: boolean = true;
@@ -433,7 +388,7 @@ suite('SQL ConnectionStore tests', () => {
 
 		capabilitiesService.capabilities[providerName] = { connection: providerCapabilities };
 
-		let connectionStore = new ConnectionStore(storageServiceMock.object, context.object, undefined, workspaceConfigurationServiceMock.object,
+		let connectionStore = new ConnectionStore(context.object, workspaceConfigurationServiceMock.object,
 			credentialStore.object, capabilitiesService, connectionConfig.object);
 		let connectionProfile: IConnectionProfile = Object.assign({}, defaultNamedProfile, { providerName: providerName });
 		let expected: boolean = false;
@@ -450,7 +405,7 @@ suite('SQL ConnectionStore tests', () => {
 		connectionConfig.setup(x => x.addConnection(TypeMoq.It.isAny())).returns(() => Promise.resolve(savedConnection));
 		credentialStore.setup(x => x.saveCredential(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(true));
 
-		let connectionStore = new ConnectionStore(storageServiceMock.object, context.object, undefined, workspaceConfigurationServiceMock.object,
+		let connectionStore = new ConnectionStore(context.object, workspaceConfigurationServiceMock.object,
 			credentialStore.object, capabilitiesService, connectionConfig.object);
 
 		connectionStore.saveProfile(connectionProfile).then(profile => {
@@ -467,7 +422,7 @@ suite('SQL ConnectionStore tests', () => {
 	});
 
 	test('addConnectionToMemento should not add duplicate items', () => {
-		let connectionStore = new ConnectionStore(storageServiceMock.object, context.object, undefined, workspaceConfigurationServiceMock.object,
+		let connectionStore = new ConnectionStore(context.object, workspaceConfigurationServiceMock.object,
 			credentialStore.object, capabilitiesService, connectionConfig.object);
 		let mementoKey = 'RECENT_CONNECTIONS2';
 		connectionStore.clearFromMemento(mementoKey);
@@ -509,7 +464,7 @@ suite('SQL ConnectionStore tests', () => {
 	});
 
 	test('getGroupFromId returns undefined when there is no group with the given ID', () => {
-		let connectionStore = new ConnectionStore(storageServiceMock.object, context.object, undefined, workspaceConfigurationServiceMock.object,
+		let connectionStore = new ConnectionStore(context.object, workspaceConfigurationServiceMock.object,
 			credentialStore.object, capabilitiesService, connectionConfig.object);
 		let group = connectionStore.getGroupFromId('invalidId');
 		assert.equal(group, undefined, 'Returned group was not undefined when there was no group with the given ID');
@@ -525,7 +480,7 @@ suite('SQL ConnectionStore tests', () => {
 		groups.push(parentGroup, childGroup);
 		let newConnectionConfig = TypeMoq.Mock.ofType(ConnectionConfig);
 		newConnectionConfig.setup(x => x.getAllGroups()).returns(() => groups);
-		let connectionStore = new ConnectionStore(storageServiceMock.object, context.object, undefined, workspaceConfigurationServiceMock.object,
+		let connectionStore = new ConnectionStore(context.object, workspaceConfigurationServiceMock.object,
 			credentialStore.object, capabilitiesService, newConnectionConfig.object);
 
 		// If I look up the parent group using its ID, then I get back the correct group
@@ -538,7 +493,7 @@ suite('SQL ConnectionStore tests', () => {
 	});
 
 	test('getProfileWithoutPassword can return the profile without credentials in the password property or options dictionary', () => {
-		let connectionStore = new ConnectionStore(storageServiceMock.object, context.object, undefined, workspaceConfigurationServiceMock.object,
+		let connectionStore = new ConnectionStore(context.object, workspaceConfigurationServiceMock.object,
 			credentialStore.object, capabilitiesService, connectionConfig.object);
 		let profile = Object.assign({}, defaultNamedProfile);
 		profile.options['password'] = profile.password;

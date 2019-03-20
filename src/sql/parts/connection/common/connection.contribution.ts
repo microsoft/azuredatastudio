@@ -3,29 +3,21 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IExtensionGalleryService, IExtensionTipsService } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { EditorDescriptor, IEditorRegistry, Extensions as EditorExtensions } from 'vs/workbench/browser/editor';
 import { IConfigurationRegistry, Extensions as ConfigExtensions } from 'vs/platform/configuration/common/configurationRegistry';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
-import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { DashboardEditor } from 'sql/parts/dashboard/dashboardEditor';
 import { DashboardInput } from 'sql/parts/dashboard/dashboardInput';
 import { AddServerGroupAction, AddServerAction } from 'sql/parts/objectExplorer/viewlet/connectionTreeAction';
 import { ClearRecentConnectionsAction, GetCurrentConnectionStringAction } from 'sql/parts/connection/common/connectionActions';
 
-import { ExtensionGalleryService } from 'vs/platform/extensionManagement/node/extensionGalleryService';
 import { IWorkbenchActionRegistry, Extensions } from 'vs/workbench/common/actions';
 import { SyncActionDescriptor } from 'vs/platform/actions/common/actions';
 import { localize } from 'vs/nls';
 import { IExtensionsWorkbenchService } from 'vs/workbench/contrib/extensions/common/extensions';
 import { ExtensionTipsService } from 'vs/workbench/contrib/extensions/electron-browser/extensionTipsService';
 import { ExtensionsWorkbenchService } from 'vs/workbench/contrib/extensions/node/extensionsWorkbenchService';
-
-// Singletons
-registerSingleton(IExtensionGalleryService, ExtensionGalleryService);
-registerSingleton(IExtensionTipsService, ExtensionTipsService);
-registerSingleton(IExtensionsWorkbenchService, ExtensionsWorkbenchService);
 
 // Connection Dashboard registration
 const dashboardEditorDescriptor = new EditorDescriptor(

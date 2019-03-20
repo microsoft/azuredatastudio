@@ -58,4 +58,3 @@ export class JupyterNotebookProvider implements nb.NotebookProvider {
 		return [];
 	}
 }
-
