@@ -36,6 +36,7 @@ import { ILanguageMagic, notebookConstants } from 'sql/parts/notebook/models/mod
 import { ILifecycleService } from 'vs/platform/lifecycle/common/lifecycle';
 import { SqlNotebookProvider } from 'sql/workbench/services/notebook/sql/sqlNotebookProvider';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
+import { keys } from 'vs/base/common/map';
 
 export interface NotebookProviderProperties {
 	provider: string;
@@ -271,7 +272,7 @@ export class NotebookService extends Disposable implements INotebookService {
 	}
 
 	getSupportedFileExtensions(): string[] {
-		return Array.from(this._fileToProviders.keys());
+		return Array.from(keys(this._fileToProviders));
 	}
 
 	getProvidersForFileType(fileType: string): string[] {

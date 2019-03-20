@@ -246,6 +246,19 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 });
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
+	id: KEYBINDINGS_EDITOR_COMMAND_DEFINE_WHEN,
+	weight: KeybindingWeight.WorkbenchContrib,
+	when: ContextKeyExpr.and(CONTEXT_KEYBINDINGS_EDITOR, CONTEXT_KEYBINDING_FOCUS),
+	primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_K, KeyMod.CtrlCmd | KeyCode.KEY_E),
+	handler: (accessor, args: any) => {
+		const control = accessor.get(IEditorService).activeControl as IKeybindingsEditor;
+		if (control && control instanceof KeybindingsEditor && control.activeKeybindingEntry.keybindingItem.keybinding) {
+			control.defineWhenExpression(control.activeKeybindingEntry);
+		}
+	}
+});
+
+KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: KEYBINDINGS_EDITOR_COMMAND_REMOVE,
 	weight: KeybindingWeight.WorkbenchContrib,
 	when: ContextKeyExpr.and(CONTEXT_KEYBINDINGS_EDITOR, CONTEXT_KEYBINDING_FOCUS),

@@ -31,7 +31,7 @@ import { IAngularEventingService, AngularEventType } from 'sql/platform/angularE
 import * as QueryConstants from 'sql/parts/query/common/constants';
 import { Deferred } from 'sql/base/common/promise';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { values } from 'sql/base/common/objects';
+import { values, entries } from 'sql/base/common/objects';
 import { ConnectionProviderProperties, IConnectionProviderRegistry, Extensions as ConnectionProviderExtensions } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
 import { IAccountManagementService, AzureResource } from 'sql/platform/accountManagement/common/interfaces';
 import { IServerGroupController, IServerGroupDialogCallbacks } from 'sql/platform/serverGroup/common/serverGroupController';
@@ -130,7 +130,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		};
 
 		registry.onNewProvider(providerRegistration, this);
-		Object.entries(registry.providers).map(v => {
+		entries(registry.providers).map(v => {
 			providerRegistration({ id: v[0], properties: v[1] });
 		});
 

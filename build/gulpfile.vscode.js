@@ -326,7 +326,8 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 		// TODO the API should be copied to `out` during compile, not here
 		const api = gulp.src('src/vs/vscode.d.ts').pipe(rename('out/vs/vscode.d.ts'));
 		// {{SQL CARBON EDIT}}
-		const dataApi = gulp.src('src/vs/data.d.ts').pipe(rename('out/sql/data.d.ts'));
+		const dataApi = gulp.src('src/sql/azdata.d.ts').pipe(rename('out/sql/azdata.d.ts'));
+		const sqlopsAPI = gulp.src('src/sql/sqlops.d.ts').pipe(rename('out/sql/sqlops.d.ts'));
 
 		const depsSrc = [
 			..._.flatten(productionDependencies.map(d => path.relative(root, d.path)).map(d => [`${d}/**`, `!${d}/**/{test,tests}/**`])),
@@ -373,6 +374,11 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 			'node_modules/underscore/**/*.*',
 			'node_modules/zone.js/**/*.*',
 			'node_modules/chart.js/**/*.*',
+			'node_modules/chartjs-color/**/*.*',
+			'node_modules/chartjs-color-string/**/*.*',
+			'node_modules/color-convert/**/*.*',
+			'node_modules/color-name/**/*.*',
+			'node_modules/moment/**/*.*'
 		], { base: '.', dot: true });
 
 		let all = es.merge(
@@ -383,39 +389,14 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 			// {{SQL CARBON EDIT}}
 			copiedModules,
 			dataApi,
+			sqlopsAPI,
 			sources,
 			deps
 		);
 
 		if (platform === 'win32') {
 			all = es.merge(all, gulp.src([
-				'resources/win32/bower.ico',
-				'resources/win32/c.ico',
-				'resources/win32/config.ico',
-				'resources/win32/cpp.ico',
-				'resources/win32/csharp.ico',
-				'resources/win32/css.ico',
-				'resources/win32/default.ico',
-				'resources/win32/go.ico',
-				'resources/win32/html.ico',
-				'resources/win32/jade.ico',
-				'resources/win32/java.ico',
-				'resources/win32/javascript.ico',
-				'resources/win32/json.ico',
-				'resources/win32/less.ico',
-				'resources/win32/markdown.ico',
-				'resources/win32/php.ico',
-				'resources/win32/powershell.ico',
-				'resources/win32/python.ico',
-				'resources/win32/react.ico',
-				'resources/win32/ruby.ico',
-				'resources/win32/sass.ico',
-				'resources/win32/shell.ico',
-				'resources/win32/sql.ico',
-				'resources/win32/typescript.ico',
-				'resources/win32/vue.ico',
-				'resources/win32/xml.ico',
-				'resources/win32/yaml.ico',
+				// {{SQL CARBON EDIT}} remove unused icons
 				'resources/win32/code_70x70.png',
 				'resources/win32/code_150x150.png'
 			], { base: '.' }));
@@ -496,6 +477,8 @@ BUILD_TARGETS.forEach(buildTarget => {
 				minified ? minifyVSCodeTask : optimizeVSCodeTask,
 				util.rimraf(path.join(buildRoot, destinationFolderName))
 			),
+			ext.packageExtensionTask('mssql', platform, arch),
+			ext.packageExtensionTask('azurecore', platform, arch),
 			packageTask(platform, arch, sourceFolderName, destinationFolderName, opts)
 		));
 		gulp.task(vscodeTask);

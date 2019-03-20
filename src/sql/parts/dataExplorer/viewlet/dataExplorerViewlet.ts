@@ -47,7 +47,7 @@ export class DataExplorerViewletViewsContribution implements IWorkbenchContribut
 		return {
 			id: 'dataExplorer.servers',
 			name: localize('dataExplorer.servers', "Servers"),
-			ctorDescriptor: { ctor: DataExplorerViewlet },
+			ctorDescriptor: { ctor: ConnectionViewletPanel },
 			weight: 100,
 			canToggleVisibility: true,
 			order: 0

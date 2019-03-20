@@ -158,7 +158,8 @@ export class InstantiationService implements IInstantiationService {
 
 			// TODO@joh use the graph to find a cycle
 			// a weak heuristic for cycle checks
-			if (count++ > 100) {
+			// {{SQL CARBON EDIT}} we hit ~102 with our services; when they implement graph cycle; we can remove
+			if (count++ > 200) {
 				throwCycleError();
 			}
 

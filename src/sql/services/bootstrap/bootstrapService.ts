@@ -8,15 +8,18 @@ import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { IInstantiationService, _util } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorInput } from 'vs/workbench/common/editor';
 import { Trace } from 'vs/platform/instantiation/common/instantiationService';
+import { values } from 'vs/base/common/map';
 
 const selectorCounter = new Map<string, number>();
 
 export function providerIterator(service: IInstantiationService): Provider[] {
-	return Array.from(_util.serviceIds.values()).map(v => {
+	return Array.from(values(_util.serviceIds)).map(v => {
+		let factory = () => {
+			return (<any>service)._getOrCreateServiceInstance(v, Trace.traceCreation(v));
+		};
+		factory.prototype = factory;
 		return {
-			provide: v, useFactory: () => {
-				return (<any>service)._getOrCreateServiceInstance(v, Trace.traceCreation(v));
-			}
+			provide: v, useFactory: factory
 		};
 	});
 }

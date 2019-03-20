@@ -23,7 +23,6 @@ import { ConfiguredInput, IConfigurationResolverService } from 'vs/workbench/ser
 import { IWindowService } from 'vs/platform/windows/common/windows';
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 
-
 export class ConfigurationResolverService extends AbstractVariableResolverService {
 
 	static INPUT_OR_COMMAND_VARIABLES_PATTERN = /\${((input|command):(.*?))}/g;

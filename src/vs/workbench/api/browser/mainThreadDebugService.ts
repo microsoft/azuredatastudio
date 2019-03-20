@@ -383,4 +383,3 @@ class ExtensionHostDebugAdapter extends AbstractDebugAdapter {
 }
 // {{SQL CARBON EDIT}}
 */
-

@@ -735,4 +735,3 @@ export class CodeApplication extends Disposable {
 		});
 	}
 }
-
