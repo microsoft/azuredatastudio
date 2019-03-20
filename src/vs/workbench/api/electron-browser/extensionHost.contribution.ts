@@ -44,6 +44,7 @@ import '../browser/mainThreadStorage';
 import '../browser/mainThreadTelemetry';
 import '../browser/mainThreadTerminalService';
 import '../browser/mainThreadTreeViews';
+import '../browser/mainThreadUrls';
 import '../browser/mainThreadWindow';
 import '../browser/mainThreadWorkspace';
 import './mainThreadComments';
@@ -52,7 +53,6 @@ import './mainThreadExtensionService';
 import './mainThreadHeapService';
 import './mainThreadLanguageFeatures';
 import './mainThreadTask';
-import './mainThreadUrls';
 import './mainThreadWebview';
 import 'vs/workbench/api/node/apiCommands';
 
