@@ -195,6 +195,9 @@ export class ExtensionManagementService extends Disposable implements IExtension
 	}
 
 	install(vsix: URI, type: ExtensionType = ExtensionType.User): Promise<IExtensionIdentifier> {
+		// {{SQL CARBON EDIT}}
+		let startTime = new Date().getTime();
+
 		this.logService.trace('ExtensionManagementService#install', vsix.toString());
 		return createCancelablePromise(token => {
 			return this.downloadVsix(vsix).then(downloadLocation => {
@@ -205,7 +208,7 @@ export class ExtensionManagementService extends Disposable implements IExtension
 						const identifier = { id: getGalleryExtensionId(manifest.publisher, manifest.name) };
 						let operation: InstallOperation = InstallOperation.Install;
 						// {{SQL CARBON EDIT - Check VSCode and ADS version}}
-						if (manifest.engines && manifest.engines.vscode && (!isEngineValid(manifest.engines.vscode, product.vscodeVersion) || (manifest.engines.azdata && !isEngineValid(manifest.engines.azdata, pkg.version)))) {
+						if (manifest.engines && ((manifest.engines.vscode && !isEngineValid(manifest.engines.vscode, product.vscodeVersion)) || (manifest.engines.azdata && !isEngineValid(manifest.engines.azdata, pkg.version)))) {
 							return Promise.reject(new Error(nls.localize('incompatible', "Unable to install version '{2}' of extension '{0}' as it is not compatible with Azure Data Studio '{1}'.", identifier.id, pkg.version, manifest.version)));
 						}
 						const identifierWithVersion = new ExtensionIdentifierWithVersion(identifier, manifest.version);
@@ -229,7 +232,11 @@ export class ExtensionManagementService extends Disposable implements IExtension
 								// Until there's a gallery for SQL Ops Studio, skip retrieving the metadata from the gallery
 								return this.installExtension({ zipPath, identifierWithVersion, metadata: null }, type, token)
 								.then(
-									local => { this._onDidInstallExtension.fire({ identifier, zipPath, local, operation: InstallOperation.Install }); return identifier; },
+									local => {
+										this.reportTelemetry(this.getTelemetryEvent(InstallOperation.Install), getLocalExtensionTelemetryData(local), new Date().getTime() - startTime, void 0);
+										this._onDidInstallExtension.fire({ identifier, zipPath, local, operation: InstallOperation.Install });
+										return identifier;
+									},
 									error => { this._onDidInstallExtension.fire({ identifier, zipPath, error, operation: InstallOperation.Install }); return Promise.reject(error); }
 								);
 								// return this.getMetadata(getGalleryExtensionId(manifest.publisher, manifest.name))
