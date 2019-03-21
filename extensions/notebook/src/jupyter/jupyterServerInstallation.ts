@@ -78,9 +78,6 @@ export default class JupyterServerInstallation {
 		this._pythonInstallationPath = pythonInstallationPath;
 		this._usingExistingPython = true;
 
-		let notebookConfig = this.apiWrapper.getConfiguration(constants.notebookConfigKey);
-		notebookConfig.update(constants.existingPythonConfigKey, true, ConfigurationTarget.Global);
-
 		this.configurePackagePaths();
 
 		return this.startInstallProcess();
@@ -268,6 +265,7 @@ export default class JupyterServerInstallation {
 		let updateConfig = () => {
 			let notebookConfig = this.apiWrapper.getConfiguration(constants.notebookConfigKey);
 			notebookConfig.update(constants.pythonPathConfigKey, this._pythonInstallationPath, ConfigurationTarget.Global);
+			notebookConfig.update(constants.existingPythonConfigKey, this._usingExistingPython, ConfigurationTarget.Global);
 		};
 		if (!fs.existsSync(this._pythonExecutable) || this._forceInstall || this._usingExistingPython) {
 			this.apiWrapper.startBackgroundOperation({
