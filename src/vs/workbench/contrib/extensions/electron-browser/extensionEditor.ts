@@ -258,7 +258,7 @@ export class ExtensionEditor extends BaseEditor {
 				if (action instanceof ExtensionEditorDropDownAction) {
 					return action.createActionItem();
 				}
-				return null;
+				return undefined;
 			}
 		});
 
