@@ -4,6 +4,7 @@
 |----------------------------------------------------------------------------*/
 import { IRenderMime } from './renderMimeInterfaces';
 import { ReadonlyJSONObject } from '../../models/jsonext';
+import { IThemeService } from 'vs/platform/theme/common/themeService';
 
 /**
  * The default mime model implementation.
@@ -17,6 +18,7 @@ export class MimeModel implements IRenderMime.IMimeModel {
 		this._data = options.data || {};
 		this._metadata = options.metadata || {};
 		this._callback = options.callback;
+		this._themeService = options.themeService;
 	}
 
 	/**
@@ -38,6 +40,10 @@ export class MimeModel implements IRenderMime.IMimeModel {
 		return this._metadata;
 	}
 
+	get themeService(): IThemeService {
+	 	return this._themeService;
+	}
+
 	/**
 	 * Set the data associated with the model.
 	 *
@@ -54,6 +60,7 @@ export class MimeModel implements IRenderMime.IMimeModel {
 	private _callback: (options: IRenderMime.ISetDataOptions) => void;
 	private _data: ReadonlyJSONObject;
 	private _metadata: ReadonlyJSONObject;
+	private _themeService: IThemeService;
 }
 
 /**
@@ -83,5 +90,10 @@ export namespace MimeModel {
 		 * The initial mime metadata.
 		 */
 		metadata?: ReadonlyJSONObject;
+
+		/**
+		 * Theme service used to react to theme change events
+		 */
+		themeService?: IThemeService;
 	}
 }
