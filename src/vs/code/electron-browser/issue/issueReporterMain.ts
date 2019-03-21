@@ -702,13 +702,13 @@ export class IssueReporter extends Disposable {
 		if (issueType === IssueType.FeatureRequest) {
 			sourceSelect.append(...[
 				this.makeOption('', localize('selectSource', "Select source"), true),
-				this.makeOption('false', localize('vscode', "Visual Studio Code"), false),
+				this.makeOption('false', localize('azuredatastudio', "Azure Data Studio"), false),
 				this.makeOption('true', localize('extension', "An extension"), false)
 			]);
 		} else {
 			sourceSelect.append(...[
 				this.makeOption('', localize('selectSource', "Select source"), true),
-				this.makeOption('false', localize('vscode', "Visual Studio Code"), false),
+				this.makeOption('false', localize('azuredatastudio', "Azure Data Studio"), false),
 				this.makeOption('true', localize('extension', "An extension"), false),
 				this.makeOption('', localize('unknown', "Don't Know"), false)
 			]);
