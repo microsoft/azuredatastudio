@@ -44,6 +44,8 @@ import { ResolvedAuthority } from 'vs/platform/remote/common/remoteAuthorityReso
 import { ExtensionIdentifier, IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import * as codeInset from 'vs/workbench/contrib/codeinset/common/codeInset';
 import * as callHierarchy from 'vs/workbench/contrib/callHierarchy/common/callHierarchy';
+import { IRelativePattern } from 'vs/base/common/glob';
+import { IRemoteConsoleLog } from 'vs/base/common/console';
 
 // {{SQL CARBON EDIT}}
 import { ITreeItem as sqlITreeItem } from 'sql/workbench/common/views';
@@ -310,7 +312,7 @@ export interface ISerializedDocumentFilter {
 	$serialized: true;
 	language?: string;
 	scheme?: string;
-	pattern?: GlobPattern;
+	pattern?: string | IRelativePattern;
 	exclusive?: boolean;
 }
 
@@ -610,6 +612,7 @@ export interface MainThreadExtensionServiceShape extends IDisposable {
 	$onDidActivateExtension(extensionId: ExtensionIdentifier, startup: boolean, codeLoadingTime: number, activateCallTime: number, activateResolvedTime: number, activationEvent: string | null): void;
 	$onExtensionActivationError(extensionId: ExtensionIdentifier, error: ExtensionActivationError): Promise<void>;
 	$onExtensionRuntimeError(extensionId: ExtensionIdentifier, error: SerializedError): void;
+	$onExtensionHostExit(code: number): void;
 }
 
 export interface SCMProviderFeatures {
