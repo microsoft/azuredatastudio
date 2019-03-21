@@ -169,5 +169,6 @@ export class ConnectionViewletPanel extends ViewletPanel {
 
 	focus(): void {
 		super.focus();
+		this._serverTreeView.tree.domFocus();
 	}
 }

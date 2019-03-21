@@ -29,11 +29,10 @@ import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editor
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { IDimension } from 'vs/platform/layout/browser/layoutService';
 
-const $ = dom.$;
-
 // {{SQL CARBON EDIT}}
-import { OpenConnectionsViewletAction } from 'sql/parts/objectExplorer/common/registeredServer.contribution';
+import { OpenDataExplorerViewletAction } from 'sql/workbench/parts/dataExplorer/browser/dataExplorer.contribution';
 
+const $ = dom.$;
 
 interface WatermarkEntry {
 	text: string;
@@ -44,7 +43,7 @@ interface WatermarkEntry {
 // {{SQL CARBON EDIT}}
 const showServers: WatermarkEntry = {
 	text: nls.localize('watermark.showServers', 'Show Servers'),
-	id: OpenConnectionsViewletAction.ID
+	id: OpenDataExplorerViewletAction.ID
 };
 
 const newSqlFile: WatermarkEntry = {
