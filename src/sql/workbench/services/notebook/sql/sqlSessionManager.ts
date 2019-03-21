@@ -312,7 +312,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	private doneHandler: nb.MessageHandler<nb.IShellMessage>;
 	private doneDeferred = new Deferred<nb.IShellMessage>();
 	private configuredMaxRows: number = MAX_ROWS;
-
+	private _outputAddedPromises: Promise<void>[] = [];
 	constructor(private _queryRunner: QueryRunner, private _executionCount: number | undefined, private configurationService: IConfigurationService) {
 		super();
 		let config = configurationService.getValue(NotebookConfigSectionName);
@@ -341,6 +341,16 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	}
 
 	public handleDone(err?: Error): void {
+		this.handleDoneAsync(err);
+		// TODO we should reject where some failure happened?
+	}
+
+	private async handleDoneAsync(err?: Error): Promise<void> {
+		// must wait on all outstanding output updates to complete
+		if (this._outputAddedPromises && this._outputAddedPromises.length > 0) {
+			// Do not care about error handling as this is handled elsewhere
+			await Promise.all(this._outputAddedPromises).catch((err) => undefined);
+		}
 		let msg: nb.IExecuteReplyMsg = {
 			channel: 'shell',
 			type: 'execute_reply',
@@ -357,7 +367,6 @@ export class SQLFuture extends Disposable implements FutureInternal {
 			this.doneHandler.handle(msg);
 		}
 		this.doneDeferred.resolve(msg);
-		// TODO we should reject where some failure happened?
 	}
 
 	sendInputReply(content: nb.IInputReply): void {
@@ -391,7 +400,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	public handleBatchEnd(batch: BatchSummary): void {
 		if (this.ioHandler) {
 			this.handleMessage(strings.format(elapsedTimeLabel, batch.executionElapsed));
-			this.processResultSets(batch);
+			this._outputAddedPromises.push(this.processResultSets(batch));
 		}
 	}
 
