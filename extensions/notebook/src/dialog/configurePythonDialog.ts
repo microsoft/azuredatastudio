@@ -116,7 +116,6 @@ export class ConfigurePythonDialog {
 					title: undefined
 				}]).component();
 
-
 			await view.initializeModel(formModel);
 		});
 	}
