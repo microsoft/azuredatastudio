@@ -441,12 +441,11 @@ import 'sql/parts/taskHistory/viewlet/taskHistoryViewlet';
 import 'sql/parts/tasks/common/tasks.contribution';
 
 // data explorer
-import 'sql/parts/dataExplorer/common/dataExplorer.contribution';
-import 'sql/parts/dataExplorer/viewlet/dataExplorerViewlet';
-import 'sql/parts/dataExplorer/common/dataExplorerExtensionPoint';
+import 'sql/workbench/parts/dataExplorer/browser/dataExplorer.contribution';
+import 'sql/workbench/parts/dataExplorer/browser/dataExplorerViewlet';
+import 'sql/workbench/parts/dataExplorer/browser/dataExplorerExtensionPoint';
 import 'sql/workbench/parts/dataExplorer/electron-browser/nodeActions.contribution';
 
-import 'sql/parts/objectExplorer/common/registeredServer.contribution';
 import 'sql/workbench/parts/connection/electron-browser/connectionViewlet';
 import 'sql/workbench/api/node/sqlExtHost.contribution';
 import 'sql/parts/connection/common/connection.contribution';
