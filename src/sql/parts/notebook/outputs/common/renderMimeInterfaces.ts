@@ -4,6 +4,7 @@
 | Distributed under the terms of the Modified BSD License.
 |----------------------------------------------------------------------------*/
 import { ReadonlyJSONObject } from '../../models/jsonext';
+import { IThemeService } from 'vs/platform/theme/common/themeService';
 
 /**
  * A namespace for rendermime associated interfaces.
@@ -37,6 +38,11 @@ export namespace IRenderMime {
 		 * containing the new data.
 		 */
 		setData(options: ISetDataOptions): void;
+
+		/**
+		 * Theme service used to react to theme change events
+		 */
+		readonly themeService: IThemeService;
 	}
 
 	/**
