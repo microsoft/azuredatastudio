@@ -1236,7 +1236,7 @@ abstract class DiffEditorWidgetStyle extends Disposable implements IDiffEditorWi
 					};
 				});
 
-				let zones = this._getViewZones(revertedLineChanges, modifiedWhitespaces, originalWhitespaces, modifiedEditor, originalEditor, renderIndicators);
+				let zones = this._getViewZones(lineChanges, originalWhitespaces, modifiedWhitespaces, originalEditor, modifiedEditor, renderIndicators);
 
 				// Get decorations & overview ruler zones
 				let modifiedDecorations = this._getOriginalEditorDecorations(revertedLineChanges, ignoreTrimWhitespace, renderIndicators, modifiedEditor, originalEditor);
