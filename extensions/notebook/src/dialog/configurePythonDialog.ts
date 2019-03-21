@@ -97,11 +97,16 @@ export class ConfigurePythonDialog {
 				}
 			});
 
-			let installRadioButtons = this.createInstallRadioButtons(view.modelBuilder);
+			this.createInstallRadioButtons(view.modelBuilder);
 
 			let formModel = view.modelBuilder.formContainer()
-				.withFormItems([
-				installRadioButtons, {
+				.withFormItems([{
+					component: this.newInstallButton,
+					title: localize('configurePython.installationType', 'Installation Type')
+				}, {
+					component: this.existingInstallButton,
+					title: undefined
+				}, {
 					component: this.pythonLocationTextBox,
 					title: this.LocationTextBoxTitle
 				}, {
@@ -117,7 +122,7 @@ export class ConfigurePythonDialog {
 		});
 	}
 
-	private createInstallRadioButtons(modelBuilder: azdata.ModelBuilder): azdata.FormComponentGroup {
+	private createInstallRadioButtons(modelBuilder: azdata.ModelBuilder): void {
 		let buttonGroup = 'installationType';
 		this.newInstallButton = modelBuilder.radioButton()
 			.withProperties<azdata.RadioButtonProperties>({
@@ -137,17 +142,6 @@ export class ConfigurePythonDialog {
 		this.existingInstallButton.onDidClick(() => {
 			this.dialog.okButton.label = this.CompleteButtonText;
 		});
-
-		return {
-			components: [{
-				component: this.newInstallButton,
-				title: undefined
-			}, {
-				component: this.existingInstallButton,
-				title: undefined
-			}],
-			title: localize('configurePython.installationType', 'Installation Type')
-		};
 	}
 
 	private async handleInstall(): Promise<boolean> {
