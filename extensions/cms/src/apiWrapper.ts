@@ -292,6 +292,9 @@ export class ApiWrapper {
 		let cmsDialog: azdata.CmsDialog = azdata.CmsDialog.cmsRegistrationDialog;
 		return this.openConnectionDialog(['MSSQL'], undefined, undefined, cmsDialog).then((connection) => {
 			if (connection) {
+				// remove group ID from connection if a user chose connection
+				// from the recent connections list
+				connection.options['groupId'] = null;
 				return connection;
 			}
 		});

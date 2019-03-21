@@ -22,6 +22,7 @@ const localize = nls.loadMessageBundle();
 export class CmsResourceTreeNode extends CmsResourceTreeNodeBase {
 
 	private _id: string = undefined;
+	private _serverGroupNodes: ServerGroupTreeNode[] = [];
 
 	public constructor(
 		name: string,
@@ -55,14 +56,17 @@ export class CmsResourceTreeNode extends CmsResourceTreeNodeBase {
 					}
 					if (result.registeredServerGroups) {
 						if (result.registeredServerGroups) {
+							this._serverGroupNodes = [];
 							result.registeredServerGroups.forEach((serverGroup) => {
-								nodes.push(new ServerGroupTreeNode(
+								let serverGroupNode = new ServerGroupTreeNode(
 									serverGroup.name,
 									serverGroup.description,
 									serverGroup.relativePath,
 									this.ownerUri,
 									this.appContext,
-									this.treeChangeHandler, this));
+									this.treeChangeHandler, this);
+								nodes.push(serverGroupNode);
+								this._serverGroupNodes.push(serverGroupNode);
 							});
 						}
 					}
@@ -109,5 +113,9 @@ export class CmsResourceTreeNode extends CmsResourceTreeNodeBase {
 		return this._connection;
 	}
 
-	private static readonly noResourcesLabel = localize('cms.resource.cmsResourceTreeNode.noResourcesLabel', 'No resources found');
+	public get serverGroupNodes(): ServerGroupTreeNode[] {
+		return this._serverGroupNodes;
+	}
+
+	public static readonly noResourcesLabel = localize('cms.resource.cmsResourceTreeNode.noResourcesLabel', 'No resources found');
 }

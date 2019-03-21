@@ -128,13 +128,24 @@ export function registerCmsResourceCommands(appContext: AppContext, tree: CmsRes
 		dialog.content = [mainTab];
 		azdata.window.openDialog(dialog);
 		dialog.modelView;
+		let groupExists = false;
 		dialog.okButton.onClick(() => {
 			let path = node instanceof ServerGroupTreeNode ? node.relativePath : '';
-			appContext.apiWrapper.addServerGroup(serverGroupName, serverDescription, path, node.ownerUri).then((result) => {
-				if (result) {
-					tree.notifyNodeChanged(undefined);
-				}
-			});
+			if (node.serverGroupNodes.some(node => node.name === serverGroupName)) {
+				groupExists = true;
+			}
+			if (!groupExists) {
+				appContext.apiWrapper.addServerGroup(serverGroupName, serverDescription, path, node.ownerUri).then((result) => {
+					if (result) {
+						tree.notifyNodeChanged(undefined);
+					}
+				});
+			} else {
+				// error out for same server group
+				let errorText = localize('cms.errors.sameServerGroupName', '{0} already has a Server Group with the name {1}', node.name, serverGroupName);
+				appContext.apiWrapper.showErrorMessage(errorText);
+				return;
+			}
 		});
 	});
 

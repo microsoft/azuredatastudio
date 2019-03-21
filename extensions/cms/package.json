@@ -38,7 +38,16 @@
 			{
 				"command": "cms.resource.refresh",
 				"title": "%cms.resource.refresh.title%",
-				"when": "viewItem == cms.resource.itemType.serverGroup || viewItem == cms.resource.itemType.cmsNodeContainer",
+				"when": "viewItem == cms.resource.itemType.serverGroup",
+				"icon": {
+					"light": "resources/light/refresh.svg",
+					"dark": "resources/dark/refresh_inverse.svg"
+				}
+			},
+			{
+				"command": "cms.resource.refresh",
+				"title": "%cms.resource.refresh.title%",
+				"when": "viewItem == cms.resource.itemType.cmsNodeContainer",
 				"icon": {
 					"light": "resources/light/refresh.svg",
 					"dark": "resources/dark/refresh_inverse.svg"

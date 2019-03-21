@@ -16,10 +16,13 @@ import { CmsResourceTreeNodeBase } from './baseTreeNodes';
 import { AppContext } from '../../appContext';
 import { ICmsResourceTreeChangeHandler } from './treeChangeHandler';
 import { RegisteredServerTreeNode } from './registeredServerTreeNode';
+import { CmsResourceMessageTreeNode } from '../messageTreeNode';
+import { CmsResourceTreeNode } from './cmsResourceTreeNode';
 
 export class ServerGroupTreeNode extends CmsResourceTreeNodeBase {
 
 	private _id: string = undefined;
+	private _serverGroupNodes: ServerGroupTreeNode[] = [];
 
 	constructor(
 		name: string,
@@ -52,17 +55,26 @@ export class ServerGroupTreeNode extends CmsResourceTreeNodeBase {
 					}
 					if (result.registeredServerGroups) {
 						if (result.registeredServerGroups) {
+							this._serverGroupNodes = [];
 							result.registeredServerGroups.forEach((serverGroup) => {
-								nodes.push(new ServerGroupTreeNode(
+								let serverGroupNode = new ServerGroupTreeNode(
 									serverGroup.name,
 									serverGroup.description,
 									serverGroup.relativePath,
 									this.ownerUri,
-									this.appContext, this.treeChangeHandler, this));
+									this.appContext, this.treeChangeHandler, this);
+								nodes.push(serverGroupNode);
+								this._serverGroupNodes.push(serverGroupNode);
 							});
 						}
 					}
-					return nodes;
+					if (nodes.length > 0) {
+						return nodes;
+					} else {
+						return [CmsResourceMessageTreeNode.create(CmsResourceTreeNode.noResourcesLabel, undefined)];
+					}
+				} else {
+					return [CmsResourceMessageTreeNode.create(CmsResourceTreeNode.noResourcesLabel, undefined)];
 				}
 			});
 		} catch {
@@ -98,5 +110,9 @@ export class ServerGroupTreeNode extends CmsResourceTreeNodeBase {
 
 	public get relativePath(): string {
 		return this._relativePath;
+	}
+
+	public get serverGroupNodes(): ServerGroupTreeNode[] {
+		return this._serverGroupNodes;
 	}
 }

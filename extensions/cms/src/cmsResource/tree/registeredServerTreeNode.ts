@@ -32,12 +32,7 @@ export class RegisteredServerTreeNode extends CmsResourceTreeNodeBase {
 	}
 
 	public async getChildren(): Promise<TreeNode[]> {
-		try {
-			let nodes: TreeNode[] = [];
-			return nodes;
-		} catch {
-			return [];
-		}
+		return;
 	}
 
 	public getTreeItem(): azdata.TreeItem | Promise<azdata.TreeItem> {
