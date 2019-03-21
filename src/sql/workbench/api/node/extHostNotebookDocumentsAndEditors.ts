@@ -109,7 +109,7 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 					this._mainContext.getProxy(SqlMainContext.MainThreadNotebookDocumentsAndEditors),
 					data.id,
 					documentData,
-					typeConverters.ViewColumn.to(data.editorPosition)
+					typeof data.editorPosition === 'number' ? typeConverters.ViewColumn.to(data.editorPosition) : undefined
 				);
 				this._editors.set(data.id, editor);
 			}
