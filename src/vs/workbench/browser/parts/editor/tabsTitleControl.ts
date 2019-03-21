@@ -887,8 +887,6 @@ export class TabsTitleControl extends TitleControl {
 
 		// Active / dirty state
 		this.redrawEditorActiveAndDirty(this.accessor.activeGroup === this.group, editor, tabContainer, tabLabelWidget);
-		// {{SQL CARBON EDIT}} -- Display the editor's tab color
-		this.setEditorTabColor(editor, tabContainer, this.group.isActive(editor));
 	}
 
 	private redrawLabel(editor: IEditorInput, tabContainer: HTMLElement, tabLabelWidget: IResourceLabel, tabLabel: IEditorInputLabel): void {
@@ -960,6 +958,9 @@ export class TabsTitleControl extends TitleControl {
 			// Label
 			tabLabelWidget.element.style.color = this.getColor(isGroupActive ? TAB_INACTIVE_FOREGROUND : TAB_UNFOCUSED_INACTIVE_FOREGROUND);
 		}
+
+		// {{SQL CARBON EDIT}} - Override the editor's tab color if query tab coloring is set
+		this.setEditorTabColor(editor, tabContainer, this.group.isActive(editor));
 	}
 
 	private doRedrawEditorDirty(isGroupActive: boolean, isTabActive: boolean, editor: IEditorInput, tabContainer: HTMLElement): boolean {
