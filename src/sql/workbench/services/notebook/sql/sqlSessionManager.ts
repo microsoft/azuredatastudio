@@ -220,8 +220,6 @@ class SqlKernel extends Disposable implements nb.IKernel {
 			// Cancel any existing query
 			if (this._future && !this._queryRunner.hasCompleted) {
 				this._queryRunner.cancelQuery().then(ok => undefined, error => this._errorMessageService.showDialog(Severity.Error, sqlKernelError, error));
-				// TODO when we can just show error as an output, should show an "execution canceled" error in output
-				this._future.handleDone();
 			}
 			this._queryRunner.runQuery(code);
 		} else if (this._currentConnection) {
@@ -280,11 +278,6 @@ class SqlKernel extends Disposable implements nb.IKernel {
 	}
 
 	private addQueryEventListeners(queryRunner: QueryRunner): void {
-		this._register(queryRunner.addListener(EventType.COMPLETE, () => {
-			this.queryComplete().catch(error => {
-				this._errorMessageService.showDialog(Severity.Error, sqlKernelError, error);
-			});
-		}));
 		this._register(queryRunner.addListener(EventType.MESSAGE, message => {
 			// TODO handle showing a messages output (should be updated with all messages, only changing 1 output in total)
 			if (this._future) {
@@ -403,6 +396,9 @@ export class SQLFuture extends Disposable implements FutureInternal {
 					this.handleMessage(localize('sqlMaxRowsDisplayed', "Displaying Top {0} rows.", rowCount));
 				}
 				await this.sendResultSetAsIOPub(rowCount, resultSet);
+			}
+			if (this.doneDeferred) {
+				this.handleDone();
 			}
 		} catch (err) {
 			// TODO should we output this somewhere else?
