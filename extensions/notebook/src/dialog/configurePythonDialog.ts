@@ -162,10 +162,14 @@ export class ConfigurePythonDialog {
 		}
 
 		if (this.existingInstallButton.checked) {
-			this.jupyterInstallation.completeWithExistingInstall(pythonLocation);
-			return false;
+			this.jupyterInstallation.completeWithExistingInstall(pythonLocation)
+				.then(() => {
+					this._setupComplete.resolve();
+				})
+				.catch(err => {
+					this._setupComplete.reject(utils.getErrorMessage(err));
+				});
 		} else {
-			// Don't wait on installation, since there's currently no Cancel functionality
 			this.jupyterInstallation.startInstallProcess(pythonLocation)
 				.then(() => {
 					this._setupComplete.resolve();
@@ -173,8 +177,8 @@ export class ConfigurePythonDialog {
 				.catch(err => {
 					this._setupComplete.reject(utils.getErrorMessage(err));
 				});
-			return true;
 		}
+		return true;
 	}
 
 	private isFileValid(pythonLocation: string): Promise<boolean> {

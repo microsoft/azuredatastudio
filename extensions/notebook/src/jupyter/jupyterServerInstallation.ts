@@ -74,7 +74,7 @@ export default class JupyterServerInstallation {
 		}
 	}
 
-	public completeWithExistingInstall(pythonInstallationPath: string): void {
+	public completeWithExistingInstall(pythonInstallationPath: string): Promise<void> {
 		this._pythonInstallationPath = pythonInstallationPath;
 		this._usingExistingPython = true;
 
@@ -83,7 +83,7 @@ export default class JupyterServerInstallation {
 
 		this.configurePackagePaths();
 
-		this._installReady.resolve();
+		return this.startInstallProcess();
 	}
 
 	public get installReady(): Promise<void> {
@@ -104,7 +104,7 @@ export default class JupyterServerInstallation {
 	}
 
 	private async installDependencies(backgroundOperation: azdata.BackgroundOperation): Promise<void> {
-		if (!fs.existsSync(this._pythonExecutable) || this._forceInstall) {
+		if (!fs.existsSync(this._pythonExecutable) || this._forceInstall || this._usingExistingPython) {
 			window.showInformationMessage(msgInstallPkgStart);
 
 			if (!this._usingExistingPython) {
@@ -269,7 +269,7 @@ export default class JupyterServerInstallation {
 			let notebookConfig = this.apiWrapper.getConfiguration(constants.notebookConfigKey);
 			notebookConfig.update(constants.pythonPathConfigKey, this._pythonInstallationPath, ConfigurationTarget.Global);
 		};
-		if (!fs.existsSync(this._pythonExecutable) || this._forceInstall) {
+		if (!fs.existsSync(this._pythonExecutable) || this._forceInstall || this._usingExistingPython) {
 			this.apiWrapper.startBackgroundOperation({
 				displayName: msgTaskName,
 				description: msgTaskName,
