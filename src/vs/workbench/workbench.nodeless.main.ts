@@ -140,6 +140,7 @@ import 'vs/workbench/services/notification/common/notificationService';
 
 
 
+
 registerSingleton(IMenuService, MenuService, true);
 registerSingleton(IListService, ListService, true);
 registerSingleton(IOpenerService, OpenerService, true);

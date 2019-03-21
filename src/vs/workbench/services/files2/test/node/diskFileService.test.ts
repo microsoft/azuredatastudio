@@ -444,6 +444,30 @@ suite('Disk File Service', () => {
 				toDispose.dispose();
 			});
 		});
+
+		const resource = URI.file(join(testDir, 'deep'));
+		const source = await service.resolveFile(resource);
+
+		await service.del(source.resource, { recursive: true });
+
+		assert.equal(existsSync(source.resource.fsPath), false);
+		assert.ok(event!);
+		assert.equal(event!.resource.fsPath, resource.fsPath);
+		assert.equal(event!.operation, FileOperation.DELETE);
+
+		toDispose.dispose();
+	});
+
+	test('deleteFolder (non recursive)', async () => {
+		const resource = URI.file(join(testDir, 'deep'));
+		const source = await service.resolveFile(resource);
+		try {
+			await service.del(source.resource);
+			return Promise.reject(new Error('Unexpected'));
+		}
+		catch (error) {
+			return Promise.resolve(true);
+		}
 	});
 
 	test('moveFile', async () => {
