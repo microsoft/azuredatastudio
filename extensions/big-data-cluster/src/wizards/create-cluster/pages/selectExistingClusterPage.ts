@@ -91,7 +91,9 @@ export class SelectExistingClusterPage extends WizardPageBase<CreateClusterWizar
 		this.errorLoadingClustersLabel = this.view.modelBuilder.text().withProperties({ value: localize('bdc-errorLoadingClustersText', 'No cluster information is found in the config file or an error ocurred while loading the config file') }).component();
 		this.clusterContextContainer = this.view.modelBuilder.divContainer().component();
 		this.clusterContextLoadingComponent = this.view.modelBuilder.loadingComponent().withItem(this.clusterContextContainer).component();
-		this.existingClusterControl = this.view.modelBuilder.divContainer().withItems([configFileContainer, this.clusterContextLoadingComponent], { CSSStyles: { 'margin-top': '0px' } }).component();
+		this.existingClusterControl = this.view.modelBuilder.divContainer().component();
+		this.existingClusterControl.addItem(configFileContainer, { CSSStyles: { 'margin-top': '0px' } });
+		this.existingClusterControl.addItem(this.clusterContextLoadingComponent, { CSSStyles: { 'width': '400px', 'margin-top': '10px' } });
 
 		this.browseFileButton.onDidClick(async () => {
 			let fileUris = await vscode.window.showOpenDialog(
