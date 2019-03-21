@@ -22,7 +22,6 @@ export class ConfigurePythonDialog {
 
 	private readonly DialogTitle = localize('configurePython.dialogName', 'Configure Python for Notebooks');
 	private readonly InstallButtonText = localize('configurePython.okButtonText', 'Install');
-	private readonly CompleteButtonText = localize('configurePython.completeButtonText', 'Complete');
 	private readonly CancelButtonText = localize('configurePython.cancelButtonText', 'Cancel');
 	private readonly BrowseButtonText = localize('configurePython.browseButtonText', 'Change location');
 	private readonly LocationTextBoxTitle = localize('configurePython.locationTextBoxText', 'Notebook dependencies will be installed in this location');
@@ -123,25 +122,21 @@ export class ConfigurePythonDialog {
 	}
 
 	private createInstallRadioButtons(modelBuilder: azdata.ModelBuilder): void {
+		let useExistingPython = JupyterServerInstallation.getExistingPythonSetting(this.apiWrapper);
 		let buttonGroup = 'installationType';
 		this.newInstallButton = modelBuilder.radioButton()
 			.withProperties<azdata.RadioButtonProperties>({
 				name: buttonGroup,
 				label: localize('configurePython.newInstall', 'New Installation'),
-				checked: true
+				checked: !useExistingPython
 			}).component();
-		this.newInstallButton.onDidClick(() => {
-			this.dialog.okButton.label = this.InstallButtonText;
-		});
 
 		this.existingInstallButton = modelBuilder.radioButton()
 			.withProperties<azdata.RadioButtonProperties>({
 				name: buttonGroup,
-				label: localize('configurePython.existingInstall', 'Existing Installation')
+				label: localize('configurePython.existingInstall', 'Existing Installation'),
+				checked: useExistingPython
 			}).component();
-		this.existingInstallButton.onDidClick(() => {
-			this.dialog.okButton.label = this.CompleteButtonText;
-		});
 	}
 
 	private async handleInstall(): Promise<boolean> {

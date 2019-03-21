@@ -366,7 +366,7 @@ export default class JupyterServerInstallation {
 		return userPath ? userPath : JupyterServerInstallation.DefaultPythonLocation;
 	}
 
-	private static getExistingPythonSetting(apiWrapper: ApiWrapper): boolean {
+	public static getExistingPythonSetting(apiWrapper: ApiWrapper): boolean {
 		let useExistingPython = false;
 		if (apiWrapper) {
 			let notebookConfig = apiWrapper.getConfiguration(constants.notebookConfigKey);
