@@ -646,7 +646,7 @@ export class EditorGroup extends Disposable {
 		let serializedEditors: ISerializedEditorInput[] = [];
 		let serializablePreviewIndex: number | undefined;
 		// {{SQL CARBON EDIT}}
-		let editors = this.editors.map(e => {
+		const editors = this.editors.map(e => {
 			if (e instanceof QueryInput) {
 				return e.sql;
 			} else if (e instanceof NotebookInput) {
@@ -655,7 +655,7 @@ export class EditorGroup extends Disposable {
 			return e;
 		});
 		editors.forEach(e => {
-			let factory = registry.getEditorInputFactory(e.getTypeId());
+			const factory = registry.getEditorInputFactory(e.getTypeId());
 			if (factory) {
 				// {{SQL CARBON EDIT}}
 				// don't serialize unmodified unitited files
@@ -665,7 +665,7 @@ export class EditorGroup extends Disposable {
 				}
 				// {{SQL CARBON EDIT}} - End
 
-				let value = factory.serialize(e);
+				const value = factory.serialize(e);
 				if (typeof value === 'string') {
 					serializedEditors.push({ id: e.getTypeId(), value });
 					serializableEditors.push(e);
