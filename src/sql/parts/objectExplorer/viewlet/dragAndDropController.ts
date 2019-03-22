@@ -6,12 +6,11 @@
 'use strict';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ITree, IDragAndDrop, IDragOverReaction, DRAG_OVER_ACCEPT_BUBBLE_DOWN, DRAG_OVER_REJECT } from 'vs/base/parts/tree/browser/tree';
-import * as Constants from 'sql/platform/connection/common/constants';
 import { DragMouseEvent } from 'vs/base/browser/mouseEvent';
 import { TreeUpdateUtils } from 'sql/parts/objectExplorer/viewlet/treeUpdateUtils';
+import { UNSAVED_GROUP_ID } from 'sql/platform/connection/common/constants';
 import { IDragAndDropData } from 'vs/base/browser/dnd';
 
 /**
@@ -19,8 +18,8 @@ import { IDragAndDropData } from 'vs/base/browser/dnd';
  */
 export class ServerTreeDragAndDrop implements IDragAndDrop {
 
-	constructor(@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@IInstantiationService private _instantiationService: IInstantiationService
+	constructor(
+		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
 	) {
 	}
 
@@ -143,7 +142,7 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 
 		let isDropToItself = source && targetConnectionProfileGroup && (source instanceof ConnectionProfileGroup) && source.name === targetConnectionProfileGroup.name;
 		let isDropToSameLevel = oldParent && oldParent.equals(targetConnectionProfileGroup);
-		let isUnsavedDrag = source && (source instanceof ConnectionProfileGroup) && (source.id === Constants.unsavedGroupId);
+		let isUnsavedDrag = source && (source instanceof ConnectionProfileGroup) && (source.id === UNSAVED_GROUP_ID);
 		return (!isDropToSameLevel && !isDropToItself && !isUnsavedDrag);
 	}
 }
@@ -152,11 +151,6 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
  * Implements drag and drop for the connection tree
  */
 export class RecentConnectionsDragAndDrop implements IDragAndDrop {
-
-	constructor(@IConnectionManagementService private connectionManagementService: IConnectionManagementService,
-		@IInstantiationService private instantiationService: IInstantiationService
-	) {
-	}
 
 	/**
 	 * Returns a uri if the given element should be allowed to drag.
