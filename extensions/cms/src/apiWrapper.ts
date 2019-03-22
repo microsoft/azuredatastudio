@@ -4,12 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-
+import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as mssql from '../../mssql/src/api/mssqlapis';
 import * as Utils from './cmsResource/utils';
 import { CmsResourceNodeInfo } from './cmsResource/tree/baseTreeNodes';
+
+const localize = nls.loadMessageBundle();
 
 /**
  * Wrapper class to act as a facade over VSCode and Data APIs and allow us to test / mock callbacks into
@@ -240,17 +242,25 @@ export class ApiWrapper {
 		this._registeredCmsServers.push(cmsServerNode);
 	}
 
-	public async addRegisteredServer(relativePath: string, ownerUri: string) {
+	public async addRegisteredServer(relativePath: string, ownerUri: string, parentServerName?: string) {
 		let provider = await this.getCmsService();
 		let cmsDialog: azdata.CmsDialog = azdata.CmsDialog.serverRegistrationDialog;
 		return this.openConnectionDialog(['MSSQL'], undefined, undefined, cmsDialog).then((connection) => {
 			if (connection && connection.options) {
-				return provider.addRegisteredServer(ownerUri, relativePath,
+				if (connection.options.server === parentServerName) {
+					// error out for same server registration
+					let errorText = localize('cms.errors.sameServerUnderCMS', 'You cannot add a shared registered server with the same name as the Configuration Server');
+					this.showErrorMessage(errorText);
+					return;
+				} else {
+					return provider.addRegisteredServer(ownerUri, relativePath,
 					connection.options.registeredServerName, connection.options.registeredServerDescription, connection).then((result) => {
 						if (result) {
 							return connection.options.server;
 						}
 					});
+				}
+
 			}
 		});
 	}

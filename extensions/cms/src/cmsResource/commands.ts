@@ -36,10 +36,12 @@ export function registerCmsResourceCommands(appContext: AppContext, tree: CmsRes
 					});
 				}
 				if (!serverExists) {
+					// remove any group ID if user selects a connection from
+					// recent connection list
+					connection.options.groupId = null;
 					let registeredCmsServerDescription = connection.options.registeredServerDescription;
 					let ownerUri = await azdata.connection.getUriForConnection(connection.connectionId);
 					appContext.apiWrapper.cacheRegisteredCmsServer(registeredCmsServerName, registeredCmsServerDescription, ownerUri, connection);
-					tree.isSystemInitialized = true;
 					tree.notifyNodeChanged(undefined);
 				} else {
 					// error out for same server name
@@ -68,7 +70,8 @@ export function registerCmsResourceCommands(appContext: AppContext, tree: CmsRes
 			return;
 		}
 		let relativePath = node instanceof CmsResourceTreeNode ? '' : node.relativePath;
-		await appContext.apiWrapper.addRegisteredServer(relativePath, node.ownerUri).then((result) => {
+		let serverName = node instanceof CmsResourceTreeNode ? node.connection.options.server : null;
+		await appContext.apiWrapper.addRegisteredServer(relativePath, node.ownerUri, serverName).then((result) => {
 			if (result) {
 				tree.notifyNodeChanged(undefined);
 			}

@@ -15,6 +15,7 @@ import { ApiWrapper } from '../../../apiWrapper';
 import { CmsResourceTreeProvider } from '../../../cmsResource/tree/treeProvider';
 import { CmsResourceMessageTreeNode } from '../../../cmsResource/messageTreeNode';
 import { CmsResourceTreeNode } from '../../../cmsResource/tree/cmsResourceTreeNode';
+import { CmsResourceEmptyTreeNode } from '../../../cmsResource/tree/cmsResourceEmptyTreeNode';
 
 // Mock services
 let mockAppContext: AppContext;
@@ -27,7 +28,6 @@ describe('CmsResourceTreeProvider.getChildren', function(): void {
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 		mockApiWrapper = TypeMoq.Mock.ofType<ApiWrapper>();
 		mockAppContext = new AppContext(mockExtensionContext.object, mockApiWrapper.object);
-
 	});
 
 	it('Should not be initialized.', async function(): Promise<void> {
@@ -45,16 +45,8 @@ describe('CmsResourceTreeProvider.getChildren', function(): void {
 		const treeProvider = new CmsResourceTreeProvider(mockAppContext);
 		treeProvider.isSystemInitialized = true;
 		should.equal(true, treeProvider.isSystemInitialized);
+		mockApiWrapper.setup(x => x.registeredCmsServers).returns(null);
 		const children = await treeProvider.getChildren(undefined);
-		should.notEqual(children[0] instanceof CmsResourceMessageTreeNode, false);
-	};
-
-	it('Should show an empty node if no CMS Servers exist'), async function (): Promise<void> {
-		const treeProvider = new CmsResourceTreeProvider(mockAppContext);
-		treeProvider.isSystemInitialized = true;
-		mockApiWrapper.setup(x => x.registeredCmsServers).returns(() => TypeMoq.It.isAny());
-		const children = await treeProvider.getChildren(undefined);
-		should.notEqual(children[0] instanceof CmsResourceMessageTreeNode, false);
-		should.equal(children[0] instanceof CmsResourceTreeNode, true);
+		should.equal(children[0] instanceof CmsResourceEmptyTreeNode, true);
 	};
 });

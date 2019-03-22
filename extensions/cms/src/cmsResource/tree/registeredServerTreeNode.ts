@@ -58,8 +58,13 @@ export class RegisteredServerTreeNode extends CmsResourceTreeNodeBase {
 			contextValue: CmsResourceItemType.registeredServer,
 			collapsibleState: TreeItemCollapsibleState.Collapsed,
 			label: this.name ? this.name : this.serverName,
-			childProvider: 'MSSQL'
+			childProvider: 'MSSQL',
+			iconPath: {
+				dark: this.appContext.extensionContext.asAbsolutePath('resources/light/regserverserver.svg'),
+				light: this.appContext.extensionContext.asAbsolutePath('resources/light/regserverserver.svg')
+			}
 		};
+
 		return treeItem;
 	}
 

@@ -7,9 +7,6 @@
 
 import { TreeItem, TreeItemCollapsibleState } from 'vscode';
 import * as azdata from 'azdata';
-import * as nls from 'vscode-nls';
-const localize = nls.loadMessageBundle();
-
 import { TreeNode } from '../treeNode';
 import { CmsResourceItemType } from '../constants';
 import { CmsResourceTreeNodeBase } from './baseTreeNodes';
@@ -88,6 +85,10 @@ export class ServerGroupTreeNode extends CmsResourceTreeNodeBase {
 		item.contextValue = CmsResourceItemType.serverGroup;
 		item.id = this._id;
 		item.tooltip = this.description;
+		item.iconPath = {
+			dark: this.appContext.extensionContext.asAbsolutePath('resources/light/folder.svg'),
+			light: this.appContext.extensionContext.asAbsolutePath('resources/light/folder.svg')
+		}
 		return item;
 	}
 

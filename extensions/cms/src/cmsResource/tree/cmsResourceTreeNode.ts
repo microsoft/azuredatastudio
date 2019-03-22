@@ -6,8 +6,7 @@
 'use strict';
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
-import * as mssql from '../../../../mssql/src/api/mssqlapis';
-import { TreeItem, TreeItemCollapsibleState } from 'vscode';
+import { TreeItemCollapsibleState } from 'vscode';
 import { AppContext } from '../../appContext';
 import { TreeNode } from '../treeNode';
 import { CmsResourceTreeNodeBase } from './baseTreeNodes';
@@ -88,6 +87,10 @@ export class CmsResourceTreeNode extends CmsResourceTreeNodeBase {
 		item.contextValue = CmsResourceItemType.cmsNodeContainer;
 		item.id = this._id;
 		item.tooltip = this.description;
+		item.iconPath = {
+			dark: this.appContext.extensionContext.asAbsolutePath('resources/light/centralmanagement_server.svg'),
+			light: this.appContext.extensionContext.asAbsolutePath('resources/light/centralmanagement_server.svg')
+		};
 		return item;
 	}
 
