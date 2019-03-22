@@ -9,6 +9,8 @@ import { getContexts, KubectlContext, setContext, inferCurrentClusterType } from
 import { Kubectl } from '../../kubectl/kubectl';
 import { Scriptable, ScriptingDictionary } from '../../scripting/scripting';
 import * as nls from 'vscode-nls';
+import * as os from 'os';
+import * as path from 'path';
 
 const localize = nls.loadMessageBundle();
 
@@ -61,8 +63,8 @@ export class CreateClusterModel implements Scriptable {
 				description: localize('bdc-create.AKSClusterDescription',
 					'This option configures new Azure Kubernetes Service (AKS) for SQL Server big data cluster deployments. AKS makes it simple to create, configure and manage a cluster of virutal machines that are preconfigured with a Kubernetes cluster to run containerized applications.'),
 				iconPath: {
-					dark: 'images/cluster_inverse.svg',
-					light: 'images/cluster.svg'
+					dark: 'images/aks.svg',
+					light: 'images/aks.svg'
 				}
 			};
 
@@ -72,8 +74,8 @@ export class CreateClusterModel implements Scriptable {
 				fullName: localize('bdc-create.ExistingClusterFullName', 'Existing Kubernetes Cluster'),
 				description: localize('bdc-create.ExistingClusterDescription', 'This option assumes you already have a Kubernetes cluster installed, Once a prerequisite check is done, ensure the correct cluster context is selected.'),
 				iconPath: {
-					dark: 'images/cluster_inverse.svg',
-					light: 'images/cluster.svg'
+					dark: 'images/kubernetes.svg',
+					light: 'images/kubernetes.svg'
 				}
 			};
 			resolve([aksCluster, existingCluster]);
@@ -118,6 +120,10 @@ export class CreateClusterModel implements Scriptable {
 			}, 2000);
 		});
 		return promise;
+	}
+
+	public getDefaultKubeConfigPath(): string {
+		return path.join(os.homedir(), '.kube', 'config');
 	}
 
 	public targetClusterType: TargetClusterType;

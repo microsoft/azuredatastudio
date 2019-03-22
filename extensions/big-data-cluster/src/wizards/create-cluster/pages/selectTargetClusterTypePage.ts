@@ -30,8 +30,8 @@ export class SelectTargetClusterTypePage extends WizardPageBase<CreateClusterWiz
 	private requiredTools: ToolInfo[];
 
 	constructor(wizard: CreateClusterWizard) {
-		super(localize('bdc-create.selectTargetClusterTypePageTitle', 'Where do you want to deploy this SQL Server big data cluster?'),
-			localize('bdc-create.selectTargetClusterTypePageDescription', 'Choose the target environment and then install the required tools.'),
+		super(localize('bdc-create.selectTargetClusterTypePageTitle', 'What is your target cluster environment?'),
+			localize('bdc-create.selectTargetClusterTypePageDescription', 'Choose the target environment and then install the required tools for it.'),
 			wizard);
 		this.installToolsButton = azdata.window.createButton(InstallToolsButtonText);
 		this.installToolsButton.hidden = true;
@@ -74,7 +74,7 @@ export class SelectTargetClusterTypePage extends WizardPageBase<CreateClusterWiz
 				let card = self.createCard(view, clusterType);
 				self.cards.push(card);
 			});
-			let cardsContainer = view.modelBuilder.flexContainer().withItems(self.cards, { flex: '0 0 auto' }).withLayout({ flexFlow: 'row', alignItems: 'left' }).component();
+			let cardsContainer = view.modelBuilder.flexContainer().withItems(self.cards, { flex: '0 0 auto', CSSStyles: { 'margin-bottom': '20px' } }).withLayout({ flexFlow: 'row', alignItems: 'left' }).component();
 
 			self.targetDescriptionText = view.modelBuilder.text().component();
 
