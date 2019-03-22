@@ -25,11 +25,11 @@ export const ICredentialsService = createDecorator<ICredentialsService>(SERVICE_
 export interface ICredentialsService {
 	_serviceBrand: any;
 
-	saveCredential(credentialId: string, password: string): Promise<boolean>;
+	saveCredential(credentialId: string, password: string): Thenable<boolean>;
 
-	readCredential(credentialId: string): Promise<azdata.Credential>;
+	readCredential(credentialId: string): Thenable<azdata.Credential>;
 
-	deleteCredential(credentialId: string): Promise<boolean>;
+	deleteCredential(credentialId: string): Thenable<boolean>;
 
 	addEventListener(handle: number, events: CredentialManagementEvents): IDisposable;
 }
@@ -62,15 +62,15 @@ export class CredentialsService implements ICredentialsService {
 		};
 	}
 
-	public saveCredential(credentialId: string, password: string): Promise<boolean> {
+	public saveCredential(credentialId: string, password: string): Thenable<boolean> {
 		return this._onServerEventsReady.promise.then(() => this._serverEvents[this._lastHandle].onSaveCredential(credentialId, password));
 	}
 
-	public readCredential(credentialId: string): Promise<azdata.Credential> {
+	public readCredential(credentialId: string): Thenable<azdata.Credential> {
 		return this._onServerEventsReady.promise.then(() => this._serverEvents[this._lastHandle].onReadCredential(credentialId));
 	}
 
-	public deleteCredential(credentialId: string): Promise<boolean> {
+	public deleteCredential(credentialId: string): Thenable<boolean> {
 		return this._onServerEventsReady.promise.then(() => this._serverEvents[this._lastHandle].onDeleteCredential(credentialId));
 	}
 
