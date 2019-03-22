@@ -15,7 +15,6 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
-import * as Constants from 'sql/platform/connection/common/constants';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { TreeNode } from 'sql/parts/objectExplorer/common/treeNode';
 import Severity from 'vs/base/common/severity';
@@ -23,6 +22,7 @@ import { ObjectExplorerActionsContext } from 'sql/parts/objectExplorer/viewlet/o
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { ConnectionViewletPanel } from 'sql/workbench/parts/dataExplorer/browser/connectionViewletPanel';
+import { UNSAVED_GROUP_ID } from 'sql/platform/connection/common/constants';
 
 export class RefreshAction extends Action {
 
@@ -356,13 +356,13 @@ export class DeleteConnectionAction extends Action {
 	) {
 		super(id, label);
 		this.class = 'delete-connection-action';
-		if (element instanceof ConnectionProfileGroup && element.id === Constants.unsavedGroupId) {
+		if (element instanceof ConnectionProfileGroup && element.id === UNSAVED_GROUP_ID) {
 			this.enabled = false;
 		}
 
 		if (element instanceof ConnectionProfile) {
 			let parent: ConnectionProfileGroup = element.parent;
-			if (parent && parent.id === Constants.unsavedGroupId) {
+			if (parent && parent.id === UNSAVED_GROUP_ID) {
 				this.enabled = false;
 			}
 		}

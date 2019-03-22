@@ -17,13 +17,8 @@ export class TestConfigurationService implements IConfigurationService {
 		return Promise.resolve(this.getValue());
 	}
 
-	public getValue(arg1?: any, arg2?: any): any {
-		let configuration;
-		configuration = configuration ? configuration : this.configuration;
-		if (arg1 && typeof arg1 === 'string') {
-			return getConfigurationValue(configuration, arg1);
-		}
-		return configuration;
+	public getValue(arg1?: any): any {
+		return getConfigurationValue(this.configuration.user, arg1);
 	}
 
 	public updateValue(key: string, value: any, target?: any): Promise<void> {
