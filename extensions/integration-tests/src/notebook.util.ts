@@ -50,7 +50,7 @@ export const sqlNotebookContent: azdata.nb.INotebookContents = {
 	nbformat_minor: 2
 };
 
-export const pyPark3KernelMetadata = {
+export const pySpark3KernelMetadata = {
 	'kernelspec': {
 		'name': 'pyspark3kernel',
 		'display_name': 'PySpark3'

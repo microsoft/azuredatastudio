@@ -11,7 +11,7 @@ import assert = require('assert');
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { context } from './testContext';
-import { sqlNotebookContent, writeNotebookToFile, pyPark3KernelMetadata, sqlKernelMetadata, pythonKernelMetadata, pySparkNotebookContent } from './notebook.util';
+import { sqlNotebookContent, writeNotebookToFile, pySpark3KernelMetadata, sqlKernelMetadata, pythonKernelMetadata, pySparkNotebookContent } from './notebook.util';
 import { getBdcServer } from './testConfig';
 import { connectToServer } from './utils';
 
@@ -40,7 +40,7 @@ if (context.RunTest) {
 
 		test('PySpark3 notebook test', async function () {
 			this.timeout(12000);
-			let notebook = await openNotebook(pySparkNotebookContent, pyPark3KernelMetadata);
+			let notebook = await openNotebook(pySparkNotebookContent, pySpark3KernelMetadata);
 			let cellOutputs = notebook.document.cells[0].contents.outputs;
 			let sparkResult = (<azdata.nb.IStreamResult>cellOutputs[3]).text;
 			assert(sparkResult === '2', `Expected: 2, Acutal: '${sparkResult}'`);
