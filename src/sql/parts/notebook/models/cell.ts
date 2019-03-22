@@ -233,8 +233,8 @@ export class CellModel implements ICellModel {
 			let message: string;
 			if (error.message === 'Canceled') {
 				// swallow the error
-				message = localize('executionCanceled', 'Query execution is canceled');
-			}else{
+				message = localize('executionCanceled', 'Query execution was canceled');
+			} else {
 				message = notebookUtils.getErrorMessage(error);
 			}
 			this.sendNotification(notificationService, Severity.Error, message);
