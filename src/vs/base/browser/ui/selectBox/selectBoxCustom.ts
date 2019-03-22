@@ -124,12 +124,6 @@ export class SelectBoxList implements ISelectBoxDelegate, IListVirtualDelegate<I
 
 		this.selectElement = document.createElement('select');
 
-		// Workaround for Electron 2.x
-		// Native select should not require explicit role attribute, however, Electron 2.x
-		// incorrectly exposes select as menuItem which interferes with labeling and results
-		// in the unlabeled not been read.  Electron 3 appears to fix.
-		this.selectElement.setAttribute('role', 'combobox');
-
 		// Use custom CSS vars for padding calculation
 		this.selectElement.className = 'monaco-select-box monaco-select-box-dropdown-padding';
 
@@ -430,6 +424,7 @@ export class SelectBoxList implements ISelectBoxDelegate, IListVirtualDelegate<I
 	// ContextView dropdown methods
 
 	private showSelectDropDown() {
+		this.selectionDetailsPane.innerText = '';
 
 		if (!this.contextViewProvider || this._isVisible) {
 			return;
@@ -438,8 +433,6 @@ export class SelectBoxList implements ISelectBoxDelegate, IListVirtualDelegate<I
 		// Lazily create and populate list only at open, moved from constructor
 		this.createSelectList(this.selectDropDownContainer);
 		this.setOptionsList();
-
-		this.cloneElementFont(this.selectElement, this.selectDropDownContainer);
 
 		// This allows us to flip the position based on measurement
 		// Set drop-down position above/below from required height and margins
@@ -581,7 +574,8 @@ export class SelectBoxList implements ISelectBoxDelegate, IListVirtualDelegate<I
 
 			this.selectDropDownContainer.style.width = selectOptimalWidth;
 
-			// Get initial list height and determine space ab1you knowove and below
+			// Get initial list height and determine space above and below
+			this.selectList.getHTMLElement().style.height = '';
 			this.selectList.layout();
 			let listHeight = this.selectList.contentHeight;
 
@@ -680,6 +674,7 @@ export class SelectBoxList implements ISelectBoxDelegate, IListVirtualDelegate<I
 			if (this._hasDetails) {
 				// Leave the selectDropDownContainer to size itself according to children (list + details) - #57447
 				this.selectList.getHTMLElement().style.height = (listHeight + verticalPadding) + 'px';
+				this.selectDropDownContainer.style.height = '';
 			} else {
 				this.selectDropDownContainer.style.height = (listHeight + verticalPadding) + 'px';
 			}
@@ -718,13 +713,6 @@ export class SelectBoxList implements ISelectBoxDelegate, IListVirtualDelegate<I
 		}
 
 		return elementWidth;
-	}
-
-	private cloneElementFont(source: HTMLElement, target: HTMLElement) {
-		const fontSize = window.getComputedStyle(source, null).getPropertyValue('font-size');
-		const fontFamily = window.getComputedStyle(source, null).getPropertyValue('font-family');
-		target.style.fontFamily = fontFamily;
-		target.style.fontSize = fontSize;
 	}
 
 	private createSelectList(parent: HTMLElement): void {

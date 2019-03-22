@@ -14,6 +14,8 @@ import { ResourceMap } from 'vs/base/common/map';
 import { UntitledEditorModel } from 'vs/workbench/common/editor/untitledEditorModel';
 import { Schemas } from 'vs/base/common/network';
 import { Disposable } from 'vs/base/common/lifecycle';
+import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
+import { basename } from 'vs/base/common/resources';
 
 export const IUntitledEditorService = createDecorator<IUntitledEditorService>('untitledEditorService');
 
@@ -106,7 +108,7 @@ export interface IUntitledEditorService {
 	/**
 	 * Get the configured encoding for the given untitled resource if any.
 	 */
-	getEncoding(resource: URI): string;
+	getEncoding(resource: URI): string | undefined;
 }
 
 export class UntitledEditorService extends Disposable implements IUntitledEditorService {
@@ -135,7 +137,7 @@ export class UntitledEditorService extends Disposable implements IUntitledEditor
 		super();
 	}
 
-	protected get(resource: URI): UntitledEditorInput {
+	protected get(resource: URI): UntitledEditorInput | undefined {
 		return this.mapResourceToInput.get(resource);
 	}
 
@@ -171,7 +173,7 @@ export class UntitledEditorService extends Disposable implements IUntitledEditor
 	isDirty(resource: URI): boolean {
 		const input = this.get(resource);
 
-		return input && input.isDirty();
+		return input ? input.isDirty() : false;
 	}
 
 	getDirty(resources?: URI[]): URI[] {
@@ -207,7 +209,7 @@ export class UntitledEditorService extends Disposable implements IUntitledEditor
 
 		// Return existing instance if asked for it
 		if (resource && this.mapResourceToInput.has(resource)) {
-			return this.mapResourceToInput.get(resource);
+			return this.mapResourceToInput.get(resource)!;
 		}
 
 		// Create new otherwise
@@ -236,19 +238,19 @@ export class UntitledEditorService extends Disposable implements IUntitledEditor
 		const input = this.instantiationService.createInstance(UntitledEditorInput, resource, hasAssociatedFilePath, modeId, initialValue, encoding);
 
 		const contentListener = input.onDidModelChangeContent(() => {
-			this._onDidChangeContent.fire(resource);
+			this._onDidChangeContent.fire(resource!);
 		});
 
 		const dirtyListener = input.onDidChangeDirty(() => {
-			this._onDidChangeDirty.fire(resource);
+			this._onDidChangeDirty.fire(resource!);
 		});
 
 		const encodingListener = input.onDidModelChangeEncoding(() => {
-			this._onDidChangeEncoding.fire(resource);
+			this._onDidChangeEncoding.fire(resource!);
 		});
 
 		const disposeListener = input.onDispose(() => {
-			this._onDidDisposeModel.fire(resource);
+			this._onDidDisposeModel.fire(resource!);
 		});
 
 		// Remove from cache on dispose
@@ -275,12 +277,14 @@ export class UntitledEditorService extends Disposable implements IUntitledEditor
 	suggestFileName(resource: URI): string {
 		const input = this.get(resource);
 
-		return input ? input.suggestFileName() : undefined;
+		return input ? input.suggestFileName() : basename(resource);
 	}
 
-	getEncoding(resource: URI): string {
+	getEncoding(resource: URI): string | undefined {
 		const input = this.get(resource);
 
 		return input ? input.getEncoding() : undefined;
 	}
 }
+
+registerSingleton(IUntitledEditorService, UntitledEditorService, true);

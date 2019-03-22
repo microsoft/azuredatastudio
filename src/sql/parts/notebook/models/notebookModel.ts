@@ -23,6 +23,7 @@ import { URI } from 'vs/base/common/uri';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { uriPrefixes } from 'sql/platform/connection/common/utils';
+import { keys } from 'vs/base/common/map';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -205,7 +206,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public standardKernelsDisplayName(): string[] {
-		return Array.from(this._kernelDisplayNameToNotebookProviderIds.keys());
+		return Array.from(keys(this._kernelDisplayNameToNotebookProviderIds));
 	}
 
 	public get inErrorState(): boolean {

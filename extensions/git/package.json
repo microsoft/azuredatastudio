@@ -241,6 +241,11 @@
         "category": "Git"
       },
       {
+        "command": "git.branchFrom",
+        "title": "%command.branchFrom%",
+        "category": "Git"
+      },
+      {
         "command": "git.deleteBranch",
         "title": "%command.deleteBranch%",
         "category": "Git"
@@ -318,6 +323,16 @@
       {
         "command": "git.pushWithTagsForce",
         "title": "%command.pushWithTagsForce%",
+        "category": "Git"
+      },
+      {
+        "command": "git.addRemote",
+        "title": "%command.addRemote%",
+        "category": "Git"
+      },
+      {
+        "command": "git.removeRemote",
+        "title": "%command.removeRemote%",
         "category": "Git"
       },
       {
@@ -503,6 +518,10 @@
           "when": "config.git.enabled && gitOpenRepositoryCount != 0"
         },
         {
+          "command": "git.branchFrom",
+          "when": "config.git.enabled && gitOpenRepositoryCount != 0"
+        },
+        {
           "command": "git.deleteBranch",
           "when": "config.git.enabled && gitOpenRepositoryCount != 0"
         },
@@ -569,6 +588,14 @@
         {
           "command": "git.pushWithTagsForce",
           "when": "config.git.enabled && config.git.allowForcePush && gitOpenRepositoryCount != 0"
+        },
+        {
+          "command": "git.addRemote",
+          "when": "config.git.enabled && gitOpenRepositoryCount != 0"
+        },
+        {
+          "command": "git.removeRemote",
+          "when": "config.git.enabled && gitOpenRepositoryCount != 0"
         },
         {
           "command": "git.sync",
@@ -1150,6 +1177,7 @@
             "%config.postCommitCommand.sync%"
           ],
           "markdownDescription": "%config.postCommitCommand%",
+          "scope": "resource",
           "default": "none"
         },
         "git.showInlineOpenFileAction": {
@@ -1182,7 +1210,7 @@
             "number",
             "null"
           ],
-          "default": null,
+          "default": 50,
           "description": "%config.inputValidationSubjectLength%"
         },
         "git.detectSubmodules": {
@@ -1425,7 +1453,7 @@
     "@types/byline": "4.2.31",
     "@types/file-type": "^5.2.1",
     "@types/mocha": "2.2.43",
-    "@types/node": "^8.10.25",
+    "@types/node": "^10.12.21",
     "@types/which": "^1.0.28",
     "mocha": "^3.2.0"
   }

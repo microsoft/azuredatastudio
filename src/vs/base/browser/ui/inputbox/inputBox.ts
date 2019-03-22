@@ -37,18 +37,18 @@ export interface IInputOptions extends IInputBoxStyles {
 }
 
 export interface IInputBoxStyles {
-	readonly inputBackground?: Color | null;
-	readonly inputForeground?: Color | null;
-	readonly inputBorder?: Color | null;
-	readonly inputValidationInfoBorder?: Color | null;
-	readonly inputValidationInfoBackground?: Color | null;
-	readonly inputValidationInfoForeground?: Color | null;
-	readonly inputValidationWarningBorder?: Color | null;
-	readonly inputValidationWarningBackground?: Color | null;
-	readonly inputValidationWarningForeground?: Color | null;
-	readonly inputValidationErrorBorder?: Color | null;
-	readonly inputValidationErrorBackground?: Color | null;
-	readonly inputValidationErrorForeground?: Color | null;
+	readonly inputBackground?: Color;
+	readonly inputForeground?: Color;
+	readonly inputBorder?: Color;
+	readonly inputValidationInfoBorder?: Color;
+	readonly inputValidationInfoBackground?: Color;
+	readonly inputValidationInfoForeground?: Color;
+	readonly inputValidationWarningBorder?: Color;
+	readonly inputValidationWarningBackground?: Color;
+	readonly inputValidationWarningForeground?: Color;
+	readonly inputValidationErrorBorder?: Color;
+	readonly inputValidationErrorBackground?: Color;
+	readonly inputValidationErrorForeground?: Color;
 }
 
 export interface IInputValidator {
@@ -104,20 +104,20 @@ export class InputBox extends Widget {
 
 	// {{SQL CARBON EDIT}} - Add showValidationMessage and set inputBackground, inputForeground, and inputBorder as protected
 	protected showValidationMessage: boolean;
-	protected inputBackground?: Color | null;
-	protected inputForeground?: Color | null;
-	protected inputBorder?: Color | null;
+	protected inputBackground?: Color;
+	protected inputForeground?: Color;
+	protected inputBorder?: Color;
 	// {{SQL CARBON EDIT}} - End
 
-	private inputValidationInfoBorder?: Color | null;
-	private inputValidationInfoBackground?: Color | null;
-	private inputValidationInfoForeground?: Color | null;
-	private inputValidationWarningBorder?: Color | null;
-	private inputValidationWarningBackground?: Color | null;
-	private inputValidationWarningForeground?: Color | null;
-	private inputValidationErrorBorder?: Color | null;
-	private inputValidationErrorBackground?: Color | null;
-	private inputValidationErrorForeground?: Color | null;
+	private inputValidationInfoBorder?: Color;
+	private inputValidationInfoBackground?: Color;
+	private inputValidationInfoForeground?: Color;
+	private inputValidationWarningBorder?: Color;
+	private inputValidationWarningBackground?: Color;
+	private inputValidationWarningForeground?: Color;
+	private inputValidationErrorBorder?: Color;
+	private inputValidationErrorBackground?: Color;
+	private inputValidationErrorForeground?: Color;
 
 	private _onDidChange = this._register(new Emitter<string>());
 	public readonly onDidChange: Event<string> = this._onDidChange.event;
@@ -251,6 +251,10 @@ export class InputBox extends Widget {
 				this.input.removeAttribute('aria-label');
 			}
 		}
+	}
+
+	public get mirrorElement(): HTMLElement {
+		return this.mirror;
 	}
 
 	public get inputElement(): HTMLInputElement {
@@ -393,7 +397,7 @@ export class InputBox extends Widget {
 		return errorMsg ? errorMsg.type !== MessageType.ERROR : true;
 	}
 
-	private stylesForType(type: MessageType | undefined): { border: Color | undefined | null; background: Color | undefined | null; foreground: Color | undefined | null } {
+	private stylesForType(type: MessageType | undefined): { border: Color | undefined; background: Color | undefined; foreground: Color | undefined } {
 		switch (type) {
 			case MessageType.INFO: return { border: this.inputValidationInfoBorder, background: this.inputValidationInfoBackground, foreground: this.inputValidationInfoForeground };
 			case MessageType.WARNING: return { border: this.inputValidationWarningBorder, background: this.inputValidationWarningBackground, foreground: this.inputValidationWarningForeground };

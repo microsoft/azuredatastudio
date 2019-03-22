@@ -5,7 +5,7 @@
 
 import * as assert from 'assert';
 import { URI } from 'vs/base/common/uri';
-import { MainThreadDocumentContentProviders } from 'vs/workbench/api/electron-browser/mainThreadDocumentContentProviders';
+import { MainThreadDocumentContentProviders } from 'vs/workbench/api/browser/mainThreadDocumentContentProviders';
 import { TextModel } from 'vs/editor/common/model/textModel';
 import { mock } from 'vs/workbench/test/electron-browser/api/mock';
 import { IModelService } from 'vs/editor/common/services/modelService';
@@ -19,7 +19,7 @@ suite('MainThreadDocumentContentProviders', function () {
 		let uri = URI.parse('test:uri');
 		let model = TextModel.createFromString('1', undefined, undefined, uri);
 
-		let providers = new MainThreadDocumentContentProviders(new TestRPCProtocol(), null, null,
+		let providers = new MainThreadDocumentContentProviders(new TestRPCProtocol(), null!, null!,
 			new class extends mock<IModelService>() {
 				getModel(_uri) {
 					assert.equal(uri.toString(), _uri.toString());

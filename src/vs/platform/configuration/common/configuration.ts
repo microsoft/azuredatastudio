@@ -83,8 +83,7 @@ export interface IConfigurationService {
 	updateValue(key: string, value: any, target: ConfigurationTarget): Promise<void>;
 	updateValue(key: string, value: any, overrides: IConfigurationOverrides, target: ConfigurationTarget, donotNotifyError?: boolean): Promise<void>;
 
-	reloadConfiguration(): Promise<void>;
-	reloadConfiguration(folder: IWorkspaceFolder): Promise<void>;
+	reloadConfiguration(folder?: IWorkspaceFolder): Promise<void>;
 
 	inspect<T>(key: string, overrides?: IConfigurationOverrides): {
 		default: T,
@@ -279,4 +278,17 @@ export function overrideIdentifierFromKey(key: string): string {
 
 export function keyFromOverrideIdentifier(overrideIdentifier: string): string {
 	return `[${overrideIdentifier}]`;
+}
+
+export function getMigratedSettingValue<T>(configurationService: IConfigurationService, currentSettingName: string, legacySettingName: string): T {
+	const setting = configurationService.inspect<T>(currentSettingName);
+	const legacySetting = configurationService.inspect<T>(legacySettingName);
+
+	if (typeof setting.user !== 'undefined' || typeof setting.workspace !== 'undefined' || typeof setting.workspaceFolder !== 'undefined') {
+		return setting.value;
+	} else if (typeof legacySetting.user !== 'undefined' || typeof legacySetting.workspace !== 'undefined' || typeof legacySetting.workspaceFolder !== 'undefined') {
+		return legacySetting.value;
+	} else {
+		return setting.default;
+	}
 }

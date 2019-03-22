@@ -7,10 +7,10 @@ import { localize } from 'vs/nls';
 import { IMarkerData, MarkerSeverity } from 'vs/platform/markers/common/markers';
 import { URI } from 'vs/base/common/uri';
 import * as vscode from 'vscode';
-import { MainContext, MainThreadDiagnosticsShape, ExtHostDiagnosticsShape, IMainContext } from './extHost.protocol';
-import { DiagnosticSeverity, Diagnostic } from './extHostTypes';
+import { MainContext, MainThreadDiagnosticsShape, ExtHostDiagnosticsShape, IMainContext } from '../common/extHost.protocol';
+import { DiagnosticSeverity } from './extHostTypes';
 import * as converter from './extHostTypeConverters';
-import { mergeSort, equals } from 'vs/base/common/arrays';
+import { mergeSort } from 'vs/base/common/arrays';
 import { Event, Emitter } from 'vs/base/common/event';
 import { keys } from 'vs/base/common/map';
 
@@ -37,7 +37,7 @@ export class DiagnosticCollection implements vscode.DiagnosticCollection {
 		if (!this._isDisposed) {
 			this._onDidChangeDiagnostics.fire(keys(this._data));
 			this._proxy.$clear(this._owner);
-			this._data = undefined;
+			this._data = undefined!;
 			this._isDisposed = true;
 		}
 	}
@@ -60,13 +60,9 @@ export class DiagnosticCollection implements vscode.DiagnosticCollection {
 		// the actual implementation for #set
 
 		this._checkDisposed();
-		let toSync: vscode.Uri[];
-		let hasChanged = true;
+		let toSync: vscode.Uri[] = [];
 
 		if (first instanceof URI) {
-
-			// check if this has actually changed
-			hasChanged = hasChanged && !equals(diagnostics, this.get(first), Diagnostic.isEqual);
 
 			if (!diagnostics) {
 				// remove this entry
@@ -81,7 +77,7 @@ export class DiagnosticCollection implements vscode.DiagnosticCollection {
 		} else if (Array.isArray(first)) {
 			// update many rows
 			toSync = [];
-			let lastUri: vscode.Uri;
+			let lastUri: vscode.Uri | undefined;
 
 			// ensure stable-sort
 			mergeSort(first, DiagnosticCollection._compareIndexedTuplesByUri);
@@ -89,7 +85,7 @@ export class DiagnosticCollection implements vscode.DiagnosticCollection {
 			for (const tuple of first) {
 				const [uri, diagnostics] = tuple;
 				if (!lastUri || uri.toString() !== lastUri.toString()) {
-					if (lastUri && this._data.get(lastUri.toString()).length === 0) {
+					if (lastUri && this._data.get(lastUri.toString())!.length === 0) {
 						this._data.delete(lastUri.toString());
 					}
 					lastUri = uri;
@@ -99,9 +95,15 @@ export class DiagnosticCollection implements vscode.DiagnosticCollection {
 
 				if (!diagnostics) {
 					// [Uri, undefined] means clear this
-					this._data.get(uri.toString()).length = 0;
+					const currentDiagnostics = this._data.get(uri.toString());
+					if (currentDiagnostics) {
+						currentDiagnostics.length = 0;
+					}
 				} else {
-					this._data.get(uri.toString()).push(...diagnostics);
+					const currentDiagnostics = this._data.get(uri.toString());
+					if (currentDiagnostics) {
+						currentDiagnostics.push(...diagnostics);
+					}
 				}
 			}
 		}
@@ -109,19 +111,11 @@ export class DiagnosticCollection implements vscode.DiagnosticCollection {
 		// send event for extensions
 		this._onDidChangeDiagnostics.fire(toSync);
 
-		// if nothing has changed then there is nothing else to do
-		// we have updated the diagnostics but we don't send a message
-		// to the renderer. tho we have still send an event for other
-		// extensions because the diagnostic might carry more information
-		// than known to us
-		if (!hasChanged) {
-			return;
-		}
 		// compute change and send to main side
 		const entries: [URI, IMarkerData[]][] = [];
 		for (let uri of toSync) {
-			let marker: IMarkerData[];
-			let diagnostics = this._data.get(uri.toString());
+			let marker: IMarkerData[] = [];
+			const diagnostics = this._data.get(uri.toString());
 			if (diagnostics) {
 
 				// no more than N diagnostics per file
@@ -149,7 +143,7 @@ export class DiagnosticCollection implements vscode.DiagnosticCollection {
 						endColumn: marker[marker.length - 1].endColumn
 					});
 				} else {
-					marker = diagnostics.map(converter.Diagnostic.from);
+					marker = diagnostics.map(diag => converter.Diagnostic.from(diag));
 				}
 			}
 
@@ -176,18 +170,18 @@ export class DiagnosticCollection implements vscode.DiagnosticCollection {
 	forEach(callback: (uri: URI, diagnostics: vscode.Diagnostic[], collection: DiagnosticCollection) => any, thisArg?: any): void {
 		this._checkDisposed();
 		this._data.forEach((value, key) => {
-			let uri = URI.parse(key);
+			const uri = URI.parse(key);
 			callback.apply(thisArg, [uri, this.get(uri), this]);
 		});
 	}
 
 	get(uri: URI): vscode.Diagnostic[] {
 		this._checkDisposed();
-		let result = this._data.get(uri.toString());
+		const result = this._data.get(uri.toString());
 		if (Array.isArray(result)) {
 			return <vscode.Diagnostic[]>Object.freeze(result.slice(0));
 		}
-		return undefined;
+		return [];
 	}
 
 	has(uri: URI): boolean {
@@ -230,8 +224,8 @@ export class ExtHostDiagnostics implements ExtHostDiagnosticsShape {
 	}
 
 	static _mapper(last: (vscode.Uri | string)[]): { uris: vscode.Uri[] } {
-		let uris: vscode.Uri[] = [];
-		let map = new Set<string>();
+		const uris: vscode.Uri[] = [];
+		const map = new Set<string>();
 		for (const uri of last) {
 			if (typeof uri === 'string') {
 				if (!map.has(uri)) {
@@ -255,7 +249,7 @@ export class ExtHostDiagnostics implements ExtHostDiagnosticsShape {
 		this._proxy = mainContext.getProxy(MainContext.MainThreadDiagnostics);
 	}
 
-	createDiagnosticCollection(name: string): vscode.DiagnosticCollection {
+	createDiagnosticCollection(name?: string): vscode.DiagnosticCollection {
 		let { _collections, _proxy, _onDidChangeDiagnostics } = this;
 		let owner: string;
 		if (!name) {
@@ -272,7 +266,7 @@ export class ExtHostDiagnostics implements ExtHostDiagnosticsShape {
 
 		const result = new class extends DiagnosticCollection {
 			constructor() {
-				super(name, owner, ExtHostDiagnostics._maxDiagnosticsPerFile, _proxy, _onDidChangeDiagnostics);
+				super(name!, owner, ExtHostDiagnostics._maxDiagnosticsPerFile, _proxy, _onDidChangeDiagnostics);
 				_collections.set(owner, this);
 			}
 			dispose() {
@@ -286,12 +280,13 @@ export class ExtHostDiagnostics implements ExtHostDiagnosticsShape {
 
 	getDiagnostics(resource: vscode.Uri): vscode.Diagnostic[];
 	getDiagnostics(): [vscode.Uri, vscode.Diagnostic[]][];
+	getDiagnostics(resource?: vscode.Uri): vscode.Diagnostic[] | [vscode.Uri, vscode.Diagnostic[]][];
 	getDiagnostics(resource?: vscode.Uri): vscode.Diagnostic[] | [vscode.Uri, vscode.Diagnostic[]][] {
 		if (resource) {
 			return this._getDiagnostics(resource);
 		} else {
-			let index = new Map<string, number>();
-			let res: [vscode.Uri, vscode.Diagnostic[]][] = [];
+			const index = new Map<string, number>();
+			const res: [vscode.Uri, vscode.Diagnostic[]][] = [];
 			this._collections.forEach(collection => {
 				collection.forEach((uri, diagnostics) => {
 					let idx = index.get(uri.toString());

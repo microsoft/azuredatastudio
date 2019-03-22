@@ -27,7 +27,7 @@ export interface IResourceDescriptor {
 	readonly resource: URI;
 	readonly name: string;
 	readonly size: number;
-	readonly etag: string;
+	readonly etag?: string;
 	readonly mime: string;
 }
 
@@ -236,7 +236,7 @@ export class ZoomStatusbarItem extends Themable implements IStatusbarItem {
 
 	static instance: ZoomStatusbarItem;
 
-	showTimeout: any;
+	private showTimeout: any;
 
 	private statusBarItem: HTMLElement;
 	private onSelectScale?: (scale: Scale) => void;

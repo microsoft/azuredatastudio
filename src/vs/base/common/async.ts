@@ -45,14 +45,14 @@ export function createCancelablePromise<T>(callback: (token: CancellationToken) 
 			return this.then(undefined, reject);
 		}
 		finally(onfinally?: (() => void) | undefined | null): Promise<T> {
-			return always(promise, onfinally || (() => { }));
+			return promise.finally(onfinally);
 		}
 	};
 }
 
 export function asPromise<T>(callback: () => T | Thenable<T>): Promise<T> {
 	return new Promise<T>((resolve, reject) => {
-		let item = callback();
+		const item = callback();
 		if (isThenable<T>(item)) {
 			item.then(resolve, reject);
 		} else {
@@ -324,25 +324,6 @@ export function timeout(millis: number, token?: CancellationToken): CancelablePr
 export function disposableTimeout(handler: () => void, timeout = 0): IDisposable {
 	const timer = setTimeout(handler, timeout);
 	return toDisposable(() => clearTimeout(timer));
-}
-
-/**
- * Returns a new promise that joins the provided promise. Upon completion of
- * the provided promise the provided function will always be called. This
- * method is comparable to a try-finally code block.
- * @param promise a promise
- * @param callback a function that will be call in the success and error case.
- */
-export function always<T>(promise: Promise<T>, callback: () => void): Promise<T> {
-	function safeCallback() {
-		try {
-			callback();
-		} catch (err) {
-			errors.onUnexpectedError(err);
-		}
-	}
-	promise.then(_ => safeCallback(), _ => safeCallback());
-	return Promise.resolve(promise);
 }
 
 export function ignoreErrors<T>(promise: Promise<T>): Promise<T | undefined> {
@@ -707,12 +688,12 @@ declare function cancelIdleCallback(handle: number): void;
 
 (function () {
 	if (typeof requestIdleCallback !== 'function' || typeof cancelIdleCallback !== 'function') {
-		let dummyIdle: IdleDeadline = Object.freeze({
+		const dummyIdle: IdleDeadline = Object.freeze({
 			didTimeout: true,
 			timeRemaining() { return 15; }
 		});
 		runWhenIdle = (runner) => {
-			let handle = setTimeout(() => runner(dummyIdle));
+			const handle = setTimeout(() => runner(dummyIdle));
 			let disposed = false;
 			return {
 				dispose() {
@@ -726,7 +707,7 @@ declare function cancelIdleCallback(handle: number): void;
 		};
 	} else {
 		runWhenIdle = (runner, timeout?) => {
-			let handle: number = requestIdleCallback(runner, typeof timeout === 'number' ? { timeout } : undefined);
+			const handle: number = requestIdleCallback(runner, typeof timeout === 'number' ? { timeout } : undefined);
 			let disposed = false;
 			return {
 				dispose() {

@@ -31,7 +31,7 @@ import * as azdata from 'azdata';
 
 import Severity from 'vs/base/common/severity';
 import * as nls from 'vs/nls';
-import * as path from 'vs/base/common/paths';
+import * as path from 'vs/base/common/path';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 
 // map for the version of SQL Server (default is 140)

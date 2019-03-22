@@ -6,7 +6,8 @@
 import { Profile, ProfileNode } from 'v8-inspect-profiler';
 import { TernarySearchTree } from 'vs/base/common/map';
 import { realpathSync } from 'vs/base/node/extfs';
-import { IExtensionDescription, IExtensionHostProfile, IExtensionService, ProfileSegmentId, ProfileSession } from 'vs/workbench/services/extensions/common/extensions';
+import { IExtensionHostProfile, IExtensionService, ProfileSegmentId, ProfileSession } from 'vs/workbench/services/extensions/common/extensions';
+import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 
 export class ExtensionHostProfiler {
 
@@ -33,12 +34,12 @@ export class ExtensionHostProfiler {
 
 		let nodes = profile.nodes;
 		let idsToNodes = new Map<number, ProfileNode>();
-		let idsToSegmentId = new Map<number, ProfileSegmentId>();
+		let idsToSegmentId = new Map<number, ProfileSegmentId | null>();
 		for (let node of nodes) {
 			idsToNodes.set(node.id, node);
 		}
 
-		function visit(node: ProfileNode, segmentId: ProfileSegmentId) {
+		function visit(node: ProfileNode, segmentId: ProfileSegmentId | null) {
 			if (!segmentId) {
 				switch (node.callFrame.functionName) {
 					case '(root)':
