@@ -38,7 +38,7 @@ class LogOutputChannels extends Disposable implements IWorkbenchContribution {
 		outputChannelRegistry.registerChannel({ id: Constants.sqlToolsLogChannellId, label: nls.localize('sqlToolsLog', "Log (SqlTools)"), file: URI.file(toolsServiceLogFile), log: true });
 		// {{SQL CARBON EDIT}} - End
 
-		const registerTelemetryChannel = (level) => {
+		const registerTelemetryChannel = (level: LogLevel) => {
 			if (level === LogLevel.Trace && !outputChannelRegistry.getChannel(Constants.telemetryLogChannelId)) {
 				outputChannelRegistry.registerChannel({ id: Constants.telemetryLogChannelId, label: nls.localize('telemetryLog', "Telemetry"), file: URI.file(join(environmentService.logsPath, `telemetry.log`)), log: true });
 			}

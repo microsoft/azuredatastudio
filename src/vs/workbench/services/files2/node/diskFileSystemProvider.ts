@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { mkdir } from 'fs';
@@ -11,7 +11,7 @@ import { IFileSystemProvider, FileSystemProviderCapabilities, IFileChange, IWatc
 import { URI } from 'vs/base/common/uri';
 import { Event, Emitter } from 'vs/base/common/event';
 import { isLinux } from 'vs/base/common/platform';
-import { statLink, readdir, unlink, del } from 'vs/base/node/pfs';
+import { statLink, readdir, unlink, del, move, copy } from 'vs/base/node/pfs';
 import { normalize } from 'vs/base/common/path';
 import { joinPath } from 'vs/base/common/resources';
 
@@ -132,12 +132,26 @@ export class DiskFileSystemProvider extends Disposable implements IFileSystemPro
 		}
 	}
 
-	rename(from: URI, to: URI, opts: FileOverwriteOptions): Promise<void> {
-		throw new Error('Method not implemented.');
+	async rename(from: URI, to: URI, opts: FileOverwriteOptions): Promise<void> {
+		try {
+			const fromFilePath = this.toFilePath(from);
+			const toFilePath = this.toFilePath(to);
+
+			await move(fromFilePath, toFilePath);
+		} catch (error) {
+			throw this.toFileSystemProviderError(error);
+		}
 	}
 
-	copy?(from: URI, to: URI, opts: FileOverwriteOptions): Promise<void> {
-		throw new Error('Method not implemented.');
+	async copy(from: URI, to: URI, opts: FileOverwriteOptions): Promise<void> {
+		try {
+			const fromFilePath = this.toFilePath(from);
+			const toFilePath = this.toFilePath(to);
+
+			return copy(fromFilePath, toFilePath);
+		} catch (error) {
+			throw this.toFileSystemProviderError(error);
+		}
 	}
 
 	//#endregion
@@ -160,6 +174,10 @@ export class DiskFileSystemProvider extends Disposable implements IFileSystemPro
 	}
 
 	private toFileSystemProviderError(error: NodeJS.ErrnoException): FileSystemProviderError {
+		if (error instanceof FileSystemProviderError) {
+			return error; // avoid double conversion
+		}
+
 		let code: FileSystemProviderErrorCode | undefined = undefined;
 		switch (error.code) {
 			case 'ENOENT':

@@ -80,10 +80,6 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 		return false;
 	}
 
-	public getSecondaryActions(tree: ITree, element: any): IAction[] {
-		return super.getSecondaryActions(tree, element);
-	}
-
 	/**
 	 * Return actions for connection elements
 	 */

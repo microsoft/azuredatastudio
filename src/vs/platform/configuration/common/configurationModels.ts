@@ -454,7 +454,7 @@ export class Configuration {
 		if (workspace && resource) {
 			const root = workspace.getFolder(resource);
 			if (root) {
-				return this._folderConfigurations.get(root.uri) || null;
+				return types.withUndefinedAsNull(this._folderConfigurations.get(root.uri));
 			}
 		}
 		return null;

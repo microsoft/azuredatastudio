@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/callHierarchy';
@@ -11,7 +11,7 @@ import { CallHierarchyProvider, CallHierarchyDirection, CallHierarchyItem } from
 import { WorkbenchAsyncDataTree } from 'vs/platform/list/browser/listService';
 import { FuzzyScore } from 'vs/base/common/filters';
 import * as callHTree from 'vs/workbench/contrib/callHierarchy/browser/callHierarchyTree';
-import { IAsyncDataTreeOptions } from 'vs/base/browser/ui/tree/asyncDataTree';
+import { IAsyncDataTreeOptions, IAsyncDataTreeViewState } from 'vs/base/browser/ui/tree/asyncDataTree';
 import { localize } from 'vs/nls';
 import { ScrollType } from 'vs/editor/common/editorCommon';
 import { IRange, Range } from 'vs/editor/common/core/range';
@@ -40,25 +40,29 @@ const enum State {
 	Data = 'data'
 }
 
-class ToggleHierarchyDirectionAction extends Action {
+class ChangeHierarchyDirectionAction extends Action {
 
-	constructor(public direction: () => CallHierarchyDirection, callback: () => void) {
-		super('toggle.dir', undefined, 'call-hierarchy-toggle', true, () => {
-			callback();
-			this._update();
+	constructor(direction: CallHierarchyDirection, updateDirection: (direction: CallHierarchyDirection) => void) {
+		super('', undefined, '', true, () => {
+			if (direction === CallHierarchyDirection.CallsTo) {
+				direction = CallHierarchyDirection.CallsFrom;
+			} else {
+				direction = CallHierarchyDirection.CallsTo;
+			}
+			updateDirection(direction);
+			update();
 			return Promise.resolve();
 		});
-		this._update();
-	}
-
-	private _update() {
-		if (this.direction() === CallHierarchyDirection.CallsFrom) {
-			this.label = localize('toggle.from', "Calls From...");
-			this.checked = true;
-		} else {
-			this.label = localize('toggle.to', "Calls To...");
-			this.checked = false;
-		}
+		const update = () => {
+			if (direction === CallHierarchyDirection.CallsFrom) {
+				this.label = localize('toggle.from', "Showing Calls");
+				this.class = 'calls-from';
+			} else {
+				this.label = localize('toggle.to', "Showing Callers");
+				this.class = 'calls-to';
+			}
+		};
+		update();
 	}
 }
 
@@ -86,11 +90,12 @@ class LayoutInfo {
 
 export class CallHierarchyTreePeekWidget extends PeekViewWidget {
 
-	private _toggleDirection: ToggleHierarchyDirectionAction;
+	private _changeDirectionAction: ChangeHierarchyDirectionAction;
 	private _parent: HTMLElement;
 	private _message: HTMLElement;
 	private _splitView: SplitView;
 	private _tree: WorkbenchAsyncDataTree<CallHierarchyItem, callHTree.Call, FuzzyScore>;
+	private _treeViewStates = new Map<CallHierarchyDirection, IAsyncDataTreeViewState>();
 	private _editor: EmbeddedCodeEditorWidget;
 	private _dim: Dimension;
 	private _layoutInfo: LayoutInfo;
@@ -311,7 +316,7 @@ export class CallHierarchyTreePeekWidget extends PeekViewWidget {
 		this._tree.onDidChangeSelection(e => {
 			const [element] = e.elements;
 			// don't close on click
-			if (element && isNonEmptyArray(element.locations) && !(e.browserEvent instanceof MouseEvent)) {
+			if (element && isNonEmptyArray(element.locations) && e.browserEvent instanceof KeyboardEvent) {
 				this.dispose();
 				this._editorService.openEditor({
 					resource: element.item.uri,
@@ -338,7 +343,8 @@ export class CallHierarchyTreePeekWidget extends PeekViewWidget {
 	async showItem(item: CallHierarchyItem): Promise<void> {
 
 		this._show();
-		await this._tree.setInput(item);
+		const viewState = this._treeViewStates.get(this._direction);
+		await this._tree.setInput(item, viewState);
 
 		const [root] = this._tree.getNode(item).children;
 		await this._tree.expand(root.element as callHTree.Call);
@@ -352,24 +358,26 @@ export class CallHierarchyTreePeekWidget extends PeekViewWidget {
 		} else {
 			this._parent.dataset['state'] = State.Data;
 			this._tree.domFocus();
-			this._tree.setFocus([firstChild]);
+			if (!viewState) {
+				this._tree.setFocus([firstChild]);
+			}
 			this.setTitle(
 				item.name,
 				item.detail || this._labelService.getUriLabel(item.uri, { relative: true }),
 			);
 		}
 
-		if (!this._toggleDirection) {
-			this._toggleDirection = new ToggleHierarchyDirectionAction(
-				() => this._direction,
-				() => {
-					let newDirection = this._direction === CallHierarchyDirection.CallsFrom ? CallHierarchyDirection.CallsTo : CallHierarchyDirection.CallsFrom;
+		if (!this._changeDirectionAction) {
+			const changeDirection = (newDirection: CallHierarchyDirection) => {
+				if (this._direction !== newDirection) {
+					this._treeViewStates.set(this._direction, this._tree.getViewState());
 					this._direction = newDirection;
 					this.showItem(item);
 				}
-			);
-			this._actionbarWidget.push(this._toggleDirection, { label: false, icon: true });
-			this._disposables.push(this._toggleDirection);
+			};
+			this._changeDirectionAction = new ChangeHierarchyDirectionAction(this._direction, changeDirection);
+			this._disposables.push(this._changeDirectionAction);
+			this._actionbarWidget.push(this._changeDirectionAction, { icon: true, label: false });
 		}
 	}
 
