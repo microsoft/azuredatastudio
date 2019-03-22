@@ -8,10 +8,8 @@
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as mssql from '../../mssql/src/api/mssqlapis';
-import * as constants from './constants';
 import * as Utils from './cmsResource/utils';
 import { CmsResourceNodeInfo } from './cmsResource/tree/baseTreeNodes';
-import { stringify } from 'querystring';
 
 /**
  * Wrapper class to act as a facade over VSCode and Data APIs and allow us to test / mock callbacks into
@@ -94,10 +92,6 @@ export class ApiWrapper {
 
 	public registerTreeDataProvider<T>(viewId: string, treeDataProvider: vscode.TreeDataProvider<T>): vscode.Disposable {
 		return vscode.window.registerTreeDataProvider(viewId, treeDataProvider);
-	}
-
-	public setCommandContext(key: string, value: any): Thenable<any> {
-		return vscode.commands.executeCommand(constants.BuiltInCommands.SetContext, key, value);
 	}
 
 	/**
