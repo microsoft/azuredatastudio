@@ -36,15 +36,15 @@ export class CredentialsTestProvider implements azdata.CredentialProvider {
 export class CredentialsTestService implements ICredentialsService {
 	_serviceBrand: any;
 
-	saveCredential(credentialId: string, password: string): Promise<boolean> {
+	saveCredential(credentialId: string, password: string): Thenable<boolean> {
 		return undefined;
 	}
 
-	readCredential(credentialId: string): Promise<azdata.Credential> {
+	readCredential(credentialId: string): Thenable<azdata.Credential> {
 		return undefined;
 	}
 
-	deleteCredential(credentialId: string): Promise<boolean> {
+	deleteCredential(credentialId: string): Thenable<boolean> {
 		return undefined;
 	}
 
