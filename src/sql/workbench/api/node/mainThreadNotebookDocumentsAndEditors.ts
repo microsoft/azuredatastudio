@@ -376,7 +376,11 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		input.isTrusted = isUntitled;
 		input.defaultKernel = options.defaultKernel;
 		input.connectionProfile = new ConnectionProfile(this._capabilitiesService, options.connectionProfile);
-
+		if(isUntitled){
+			let untitledModel = await input.textInput.resolve();
+			untitledModel.load();
+			input.untitledEditorModel = untitledModel;
+		}
 		let editor = await this._editorService.openEditor(input, editorOptions, viewColumnToEditorGroup(this._editorGroupService, options.position));
 		if (!editor) {
 			return undefined;
