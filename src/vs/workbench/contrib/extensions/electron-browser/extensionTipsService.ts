@@ -1016,17 +1016,18 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 	 * Fetch extension recommendations from currently running experiments
 	 */
 	private fetchExperimentalRecommendations() {
-		// {{SQL CARBON EDIT}} disable experiements
-		// this.experimentService.getExperimentsByType(ExperimentActionType.AddToRecommendations).then(experiments => {
-		// 	(experiments || []).forEach(experiment => {
-		// 		const action = experiment.action;
-		// 		if (action && experiment.state === ExperimentState.Run && action.properties && Array.isArray(action.properties.recommendations) && action.properties.recommendationReason) {
-		// 			action.properties.recommendations.forEach(id => {
-		// 				this._experimentalRecommendations[id] = action.properties.recommendationReason;
-		// 			});
-		// 		}
-		// 	});
-		// });
+		/* // {{SQL CARBON EDIT}} disable experiements
+		this.experimentService.getExperimentsByType(ExperimentActionType.AddToRecommendations).then(experiments => {
+			(experiments || []).forEach(experiment => {
+				const action = experiment.action;
+				if (action && experiment.state === ExperimentState.Run && action.properties && Array.isArray(action.properties.recommendations) && action.properties.recommendationReason) {
+					action.properties.recommendations.forEach((id: string) => {
+						this._experimentalRecommendations[id] = action.properties.recommendationReason;
+					});
+				}
+			});
+		});
+		*/
 	}
 
 	//#endregion
