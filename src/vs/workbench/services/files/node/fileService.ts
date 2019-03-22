@@ -217,19 +217,6 @@ export class FileService extends Disposable implements ILegacyFileService {
 		return resource.scheme === Schemas.file;
 	}
 
-	resolveFile(resource: uri, options?: IResolveFileOptions): Promise<IFileStat> {
-		return this.resolve(resource, options);
-	}
-
-	resolveFiles(toResolve: { resource: uri, options?: IResolveFileOptions }[]): Promise<IResolveFileResult[]> {
-		return Promise.all(toResolve.map(resourceAndOptions => this.resolve(resourceAndOptions.resource, resourceAndOptions.options)
-			.then(stat => ({ stat, success: true }), error => ({ stat: undefined, success: false }))));
-	}
-
-	existsFile(resource: uri): Promise<boolean> {
-		return this.resolveFile(resource).then(() => true, () => false);
-	}
-
 	resolveContent(resource: uri, options?: IResolveContentOptions): Promise<IContent> {
 		return this.resolveStreamContent(resource, options).then(streamContent => {
 			return new Promise<IContent>((resolve, reject) => {
@@ -1096,6 +1083,15 @@ export class FileService extends Disposable implements ILegacyFileService {
 
 	// Tests only
 
+	resolveFile(resource: uri, options?: IResolveFileOptions): Promise<IFileStat> {
+		return this.resolve(resource, options);
+	}
+
+	resolveFiles(toResolve: { resource: uri, options?: IResolveFileOptions }[]): Promise<IResolveFileResult[]> {
+		return Promise.all(toResolve.map(resourceAndOptions => this.resolve(resourceAndOptions.resource, resourceAndOptions.options)
+			.then(stat => ({ stat, success: true }), error => ({ stat: undefined, success: false }))));
+	}
+
 	createFolder(resource: uri): Promise<IFileStat> {
 
 		// 1.) Create folder
@@ -1111,6 +1107,10 @@ export class FileService extends Disposable implements ILegacyFileService {
 				return result;
 			});
 		});
+	}
+
+	existsFile(resource: uri): Promise<boolean> {
+		return this.resolveFile(resource).then(() => true, () => false);
 	}
 }
 

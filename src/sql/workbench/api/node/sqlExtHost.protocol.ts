@@ -840,7 +840,7 @@ export interface INotebookModelChangedData {
 export interface INotebookEditorAddData {
 	id: string;
 	documentUri: UriComponents;
-	editorPosition: EditorViewColumn;
+	editorPosition: EditorViewColumn | undefined;
 }
 
 export interface INotebookShowOptions {

@@ -8,7 +8,6 @@ import Severity from 'vs/base/common/severity';
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { IExtHostContext, MainContext, MainThreadExtensionServiceShape } from 'vs/workbench/api/common/extHost.protocol';
 import { IExtensionService, ExtensionActivationError } from 'vs/workbench/services/extensions/common/extensions';
-import { ExtensionService } from 'vs/workbench/services/extensions/electron-browser/extensionService';
 import { ExtensionIdentifier, IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { localize } from 'vs/nls';
@@ -17,11 +16,12 @@ import { EnablementState } from 'vs/platform/extensionManagement/common/extensio
 import { areSameExtensions } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 import { IWindowService } from 'vs/platform/windows/common/windows';
 import { IExtensionsWorkbenchService, IExtension } from 'vs/workbench/contrib/extensions/common/extensions';
+import { CancellationToken } from 'vs/base/common/cancellation';
 
 @extHostNamedCustomer(MainContext.MainThreadExtensionService)
 export class MainThreadExtensionService implements MainThreadExtensionServiceShape {
 
-	private readonly _extensionService: ExtensionService;
+	private readonly _extensionService: IExtensionService;
 	private readonly _notificationService: INotificationService;
 	private readonly _extensionsWorkbenchService: IExtensionsWorkbenchService;
 	private readonly _windowService: IWindowService;
@@ -33,9 +33,7 @@ export class MainThreadExtensionService implements MainThreadExtensionServiceSha
 		@IExtensionsWorkbenchService extensionsWorkbenchService: IExtensionsWorkbenchService,
 		@IWindowService windowService: IWindowService
 	) {
-		if (extensionService instanceof ExtensionService) {
-			this._extensionService = extensionService;
-		}
+		this._extensionService = extensionService;
 		this._notificationService = notificationService;
 		this._extensionsWorkbenchService = extensionsWorkbenchService;
 		this._windowService = windowService;
@@ -108,7 +106,7 @@ export class MainThreadExtensionService implements MainThreadExtensionServiceSha
 
 	private async _handleMissingNotInstalledDependency(extension: IExtensionDescription, missingDependency: string): Promise<void> {
 		const extName = extension.displayName || extension.name;
-		const dependencyExtension = (await this._extensionsWorkbenchService.queryGallery({ names: [missingDependency] })).firstPage[0];
+		const dependencyExtension = (await this._extensionsWorkbenchService.queryGallery({ names: [missingDependency] }, CancellationToken.None)).firstPage[0];
 		if (dependencyExtension) {
 			this._notificationService.notify({
 				severity: Severity.Error,
@@ -124,4 +122,7 @@ export class MainThreadExtensionService implements MainThreadExtensionServiceSha
 		}
 	}
 
+	$onExtensionHostExit(code: number): void {
+		this._extensionService._onExtensionHostExit(code);
+	}
 }

@@ -8,6 +8,7 @@ import * as renderers from './renderers';
 import { IRenderMime } from './common/renderMimeInterfaces';
 import { ReadonlyJSONObject } from '../models/jsonext';
 import * as tableRenderers from 'sql/parts/notebook/outputs/tableRenderers';
+import { IThemeService } from 'vs/platform/theme/common/themeService';
 
 /**
  * A common base class for mime renderers.
@@ -372,7 +373,8 @@ export class RenderedDataResource extends RenderedCommon {
 	render(model: IRenderMime.IMimeModel): Promise<void> {
 		return tableRenderers.renderDataResource({
 			host: this.node,
-			source: JSON.stringify(model.data[this.mimeType])
+			source: JSON.stringify(model.data[this.mimeType]),
+			themeService: model.themeService
 		});
 	}
 }

@@ -4,14 +4,16 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { mkdir } from 'fs';
+import { tmpdir } from 'os';
 import { promisify } from 'util';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { IFileSystemProvider, FileSystemProviderCapabilities, IFileChange, IWatchOptions, IStat, FileType, FileDeleteOptions, FileOverwriteOptions, FileWriteOptions, FileOpenOptions, FileSystemProviderErrorCode, createFileSystemProviderError, FileSystemProviderError } from 'vs/platform/files/common/files';
 import { URI } from 'vs/base/common/uri';
 import { Event, Emitter } from 'vs/base/common/event';
 import { isLinux } from 'vs/base/common/platform';
-import { statLink } from 'vs/base/node/pfs';
+import { statLink, readdir, unlink, del } from 'vs/base/node/pfs';
 import { normalize } from 'vs/base/common/path';
+import { joinPath } from 'vs/base/common/resources';
 
 export class DiskFileSystemProvider extends Disposable implements IFileSystemProvider {
 
@@ -54,8 +56,22 @@ export class DiskFileSystemProvider extends Disposable implements IFileSystemPro
 		}
 	}
 
-	readdir(resource: URI): Promise<[string, FileType][]> {
-		throw new Error('Method not implemented.');
+	async readdir(resource: URI): Promise<[string, FileType][]> {
+		try {
+			const children = await readdir(this.toFilePath(resource));
+
+			const result: [string, FileType][] = [];
+			for (let i = 0; i < children.length; i++) {
+				const child = children[i];
+
+				const stat = await this.stat(joinPath(resource, child));
+				result.push([child, stat.type]);
+			}
+
+			return result;
+		} catch (error) {
+			throw this.toFileSystemProviderError(error);
+		}
 	}
 
 	//#endregion
@@ -90,12 +106,30 @@ export class DiskFileSystemProvider extends Disposable implements IFileSystemPro
 
 	//#region Move/Copy/Delete/Create Folder
 
-	mkdir(resource: URI): Promise<void> {
-		return promisify(mkdir)(resource.fsPath);
+	async mkdir(resource: URI): Promise<void> {
+		try {
+			await promisify(mkdir)(this.toFilePath(resource));
+		} catch (error) {
+			throw this.toFileSystemProviderError(error);
+		}
 	}
 
-	delete(resource: URI, opts: FileDeleteOptions): Promise<void> {
-		throw new Error('Method not implemented.');
+	async delete(resource: URI, opts: FileDeleteOptions): Promise<void> {
+		try {
+			const filePath = this.toFilePath(resource);
+
+			if (opts.recursive) {
+				await del(filePath, tmpdir());
+			} else {
+				await unlink(filePath);
+			}
+		} catch (error) {
+			if (error.code === 'ENOENT') {
+				return Promise.resolve(); // tolerate that the file might not exist
+			}
+
+			throw this.toFileSystemProviderError(error);
+		}
 	}
 
 	rename(from: URI, to: URI, opts: FileOverwriteOptions): Promise<void> {

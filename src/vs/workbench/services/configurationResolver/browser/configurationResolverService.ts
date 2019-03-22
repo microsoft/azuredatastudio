@@ -164,7 +164,7 @@ export class ConfigurationResolverService extends AbstractVariableResolverServic
 
 			const [type, name] = variable.split(':', 2);
 
-			let result: string | undefined | null;
+			let result: string | undefined;
 
 			switch (type) {
 
