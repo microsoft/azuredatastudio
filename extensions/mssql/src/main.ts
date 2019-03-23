@@ -13,7 +13,7 @@ const localize = nls.loadMessageBundle();
 
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
 import { IConfig, ServerProvider, Events } from 'service-downloader';
-import { ServerOptions, TransportKind } from 'vscode-languageclient';
+import { ServerOptions, TransportKind, LanguageClient } from 'vscode-languageclient';
 
 import * as Constants from './constants';
 import ContextProvider from './contextProvider';
@@ -31,6 +31,7 @@ import { MssqlExtensionApi, MssqlObjectExplorerBrowser } from './api/mssqlapis';
 import { OpenSparkJobSubmissionDialogCommand, OpenSparkJobSubmissionDialogFromFileCommand, OpenSparkJobSubmissionDialogTask } from './sparkFeature/dialog/dialogCommands';
 import { OpenSparkYarnHistoryTask } from './sparkFeature/historyTask';
 import { MssqlObjectExplorerNodeProvider, mssqlOutputChannel } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
+import { CmsService } from './cms/cmsService';
 
 const baseConfig = require('./config.json');
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
@@ -57,6 +58,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 	const credentialsStore = new CredentialStore(config);
 	const resourceProvider = new AzureResourceProvider(config);
 	let languageClient: SqlOpsDataClient;
+	let cmsService: CmsService;
 
 	const serverdownloader = new ServerProvider(config);
 
@@ -83,7 +85,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 	let appContext = new AppContext(context, new ApiWrapper());
 
 	const installationStart = Date.now();
-	serverdownloader.getOrDownloadServer().then(e => {
+	let serverPromise = serverdownloader.getOrDownloadServer().then(e => {
 		const installationComplete = Date.now();
 		let serverOptions = generateServerOptions(e);
 		languageClient = new SqlOpsDataClient(Constants.serviceName, serverOptions, clientOptions);
@@ -109,6 +111,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 
 		let nodeProvider = new MssqlObjectExplorerNodeProvider(prompter, appContext);
 		azdata.dataprotocol.registerObjectExplorerNodeProvider(nodeProvider);
+
+		cmsService = new CmsService(appContext, languageClient);
+
 		activateSparkFeatures(appContext);
 		activateNotebookTask(appContext);
 	}, e => {
@@ -136,6 +141,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 					return <any>oeProvider.findSqlClusterNodeByContext(context);
 				}
 			};
+		},
+		getCmsServiceProvider(): Promise<CmsService> {
+			return serverPromise.then(() => cmsService);
 		}
 	};
 	return api;
