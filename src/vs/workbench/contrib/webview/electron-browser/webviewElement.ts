@@ -556,7 +556,7 @@ export class WebviewElement extends Disposable {
 				colors['vscode-' + entry.id.replace('.', '-')] = color.toString();
 			}
 			return colors;
-		}, {});
+		}, {} as { [key: string]: string });
 
 
 		const styles = {
