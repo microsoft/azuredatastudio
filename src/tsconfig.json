@@ -1,30 +1,24 @@
 {
+	"extends": "./tsconfig.base.json",
 	"compilerOptions": {
-		"module": "amd",
-		"moduleResolution": "classic",
-		"noImplicitAny": false,
 		"removeComments": false,
 		"preserveConstEnums": true,
-		"target": "es5",
 		"sourceMap": false,
-		"experimentalDecorators": true,
-		"declaration": true,
-		"noImplicitReturns": true,
-		"noUnusedLocals": false,
-		"noImplicitThis": true,
-		"alwaysStrict": true,
-		"baseUrl": ".",
 		"outDir": "../out",
-		"typeRoots": [
-			"typings"
-		],
-		"types": [
-			"mocha"
+		"target": "es6",
+		"lib": [
+			"dom",
+			"es5",
+			"es2015.iterable"
 		]
 	},
+	"include": [
+		"./typings",
+		"./vs",
+		"./sql",
+		"./sqltest"
+	],
 	"exclude": [
-		"../out",
-		"../out-build",
-		"../out-vscode"
+		"./typings/require-monaco.d.ts"
 	]
 }

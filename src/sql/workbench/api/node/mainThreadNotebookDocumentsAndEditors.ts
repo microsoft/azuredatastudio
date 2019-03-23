@@ -5,16 +5,15 @@
 'use strict';
 
 import * as azdata from 'azdata';
-import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
+import * as path from 'path';
+import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import { URI, UriComponents } from 'vs/base/common/uri';
 import { Event, Emitter } from 'vs/base/common/event';
-import { IExtHostContext, IUndoStopOptions } from 'vs/workbench/api/node/extHost.protocol';
+import { IExtHostContext, IUndoStopOptions } from 'vs/workbench/api/common/extHost.protocol';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITextEditorOptions } from 'vs/platform/editor/common/editor';
-import { viewColumnToEditorGroup } from 'vs/workbench/api/shared/editor';
 import { Schemas } from 'vs/base/common/network';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
@@ -24,7 +23,6 @@ import {
 } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { NotebookInput } from 'sql/parts/notebook/notebookInput';
 import { INotebookService, INotebookEditor, IProviderInfo } from 'sql/workbench/services/notebook/common/notebookService';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { disposed } from 'vs/base/common/errors';
 import { ICellModel, NotebookContentChange, INotebookModel } from 'sql/parts/notebook/models/modelInterfaces';
@@ -32,7 +30,8 @@ import { NotebookChangeType, CellTypes } from 'sql/parts/notebook/models/contrac
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { notebookModeId } from 'sql/common/constants';
-import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
+import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
+import { viewColumnToEditorGroup } from 'vs/workbench/api/common/shared/editor';
 
 class MainThreadNotebookEditor extends Disposable {
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
@@ -323,16 +322,16 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		}
 	}
 
-	$tryShowNotebookDocument(resource: UriComponents, options: INotebookShowOptions): TPromise<string> {
-		return TPromise.wrap(this.doOpenEditor(resource, options));
+	$tryShowNotebookDocument(resource: UriComponents, options: INotebookShowOptions): Promise<string> {
+		return Promise.resolve(this.doOpenEditor(resource, options));
 	}
 
-	$tryApplyEdits(id: string, modelVersionId: number, edits: ISingleNotebookEditOperation[], opts: IUndoStopOptions): TPromise<boolean> {
+	$tryApplyEdits(id: string, modelVersionId: number, edits: ISingleNotebookEditOperation[], opts: IUndoStopOptions): Promise<boolean> {
 		let editor = this.getEditor(id);
 		if (!editor) {
-			return TPromise.wrapError<boolean>(disposed(`TextEditor(${id})`));
+			return Promise.reject(disposed(`TextEditor(${id})`));
 		}
-		return TPromise.as(editor.applyEdits(modelVersionId, edits, opts));
+		return Promise.resolve(editor.applyEdits(modelVersionId, edits, opts));
 	}
 
 	$runCell(id: string, cellUri: UriComponents): Promise<boolean> {
@@ -371,8 +370,9 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		};
 		let isUntitled: boolean = uri.scheme === Schemas.untitled;
 
-		const fileInput: UntitledEditorInput = isUntitled ? this._untitledEditorService.createOrGet(uri, notebookModeId) : undefined;
-		let input = this._instantiationService.createInstance(NotebookInput, uri.fsPath, uri, fileInput);
+		const fileInput = isUntitled ? this._untitledEditorService.createOrGet(uri, notebookModeId) :
+										this._editorService.createInput({resource: uri, language: notebookModeId});
+		let input = this._instantiationService.createInstance(NotebookInput, path.basename(uri.fsPath), uri, fileInput);
 		input.isTrusted = isUntitled;
 		input.defaultKernel = options.defaultKernel;
 		input.connectionProfile = new ConnectionProfile(this._capabilitiesService, options.connectionProfile);

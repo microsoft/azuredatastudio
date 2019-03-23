@@ -7,8 +7,6 @@ import nls = require('vs/nls');
 
 import { Action } from 'vs/base/common/actions';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { TPromise } from 'vs/base/common/winjs.base';
-import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 
 import * as azdata from 'azdata';
 
@@ -21,6 +19,7 @@ import * as Constants from 'sql/parts/query/common/constants';
 import * as ConnectionConstants from 'sql/platform/connection/common/constants';
 import { EditDataEditor } from 'sql/parts/editData/editor/editDataEditor';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 const singleQuote = '\'';
 
@@ -71,13 +70,13 @@ export class FocusOnCurrentQueryKeyboardAction extends Action {
 		this.enabled = true;
 	}
 
-	public run(): TPromise<void> {
+	public run(): Promise<void> {
 		let editor = this._editorService.activeControl;
 		if (editor && editor instanceof QueryEditor) {
 			let queryEditor: QueryEditor = editor;
 			queryEditor.focus();
 		}
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 }
 
@@ -98,13 +97,13 @@ export class RunQueryKeyboardAction extends Action {
 		this.enabled = true;
 	}
 
-	public run(): TPromise<void> {
+	public run(): Promise<void> {
 		let editor = this._editorService.activeControl;
 		if (editor && (editor instanceof QueryEditor || editor instanceof EditDataEditor)) {
 			let queryEditor: QueryEditor | EditDataEditor = editor;
 			queryEditor.runQuery();
 		}
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 }
 
@@ -124,13 +123,13 @@ export class RunCurrentQueryKeyboardAction extends Action {
 		this.enabled = true;
 	}
 
-	public run(): TPromise<void> {
+	public run(): Promise<void> {
 		let editor = this._editorService.activeControl;
 		if (editor && editor instanceof QueryEditor) {
 			let queryEditor: QueryEditor = editor;
 			queryEditor.runCurrentQuery();
 		}
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 }
 
@@ -147,13 +146,13 @@ export class RunCurrentQueryWithActualPlanKeyboardAction extends Action {
 		this.enabled = true;
 	}
 
-	public run(): TPromise<void> {
+	public run(): Promise<void> {
 		let editor = this._editorService.activeControl;
 		if (editor && editor instanceof QueryEditor) {
 			let queryEditor: QueryEditor = editor;
 			queryEditor.runCurrentQueryWithActualPlan();
 		}
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 }
 
@@ -174,13 +173,13 @@ export class CancelQueryKeyboardAction extends Action {
 		this.enabled = true;
 	}
 
-	public run(): TPromise<void> {
+	public run(): Promise<void> {
 		let editor = this._editorService.activeControl;
 		if (editor && (editor instanceof QueryEditor || editor instanceof EditDataEditor)) {
 			let queryEditor: QueryEditor | EditDataEditor = editor;
 			queryEditor.cancelQuery();
 		}
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 }
 
@@ -200,13 +199,13 @@ export class RefreshIntellisenseKeyboardAction extends Action {
 		this.enabled = true;
 	}
 
-	public run(): TPromise<void> {
+	public run(): Promise<void> {
 		let editor = this._editorService.activeControl;
 		if (editor && editor instanceof QueryEditor) {
 			let queryEditor: QueryEditor = editor;
 			queryEditor.rebuildIntelliSenseCache();
 		}
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 }
 
@@ -227,13 +226,13 @@ export class ToggleQueryResultsKeyboardAction extends Action {
 		this.enabled = true;
 	}
 
-	public run(): TPromise<void> {
+	public run(): Promise<void> {
 		let editor = this._editorService.activeControl;
 		if (editor && editor instanceof QueryEditor) {
 			let queryEditor: QueryEditor = editor;
 			queryEditor.toggleResultsEditorVisibility();
 		}
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 }
 
@@ -248,17 +247,17 @@ export class RunQueryShortcutAction extends Action {
 		@IQueryModelService protected _queryModelService: IQueryModelService,
 		@IQueryManagementService private _queryManagementService: IQueryManagementService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@IWorkspaceConfigurationService private _workspaceConfigurationService: IWorkspaceConfigurationService
+		@IConfigurationService private _workspaceConfigurationService: IConfigurationService
 	) {
 		super(RunQueryShortcutAction.ID);
 	}
 
-	public run(index: number): TPromise<void> {
-		let promise: Thenable<void> = TPromise.as(null);
+	public run(index: number): Promise<void> {
+		let promise: Thenable<void> = Promise.resolve(null);
 		runActionOnActiveQueryEditor(this._editorService, (editor) => {
 			promise = this.runQueryShortcut(editor, index);
 		});
-		return new TPromise((resolve, reject) => {
+		return new Promise((resolve, reject) => {
 			promise.then(success => resolve(null), err => resolve(null));
 		});
 	}
@@ -280,7 +279,7 @@ export class RunQueryShortcutAction extends Action {
 			let shortcutText = this.getShortcutText(shortcutIndex);
 			if (!shortcutText.trim()) {
 				// no point going further
-				return TPromise.as(null);
+				return Promise.resolve(null);
 			}
 
 			// if the selection isn't empty then execute the selection
@@ -294,7 +293,7 @@ export class RunQueryShortcutAction extends Action {
 				return null;
 			});
 		} else {
-			return TPromise.as(null);
+			return Promise.resolve(null);
 		}
 	}
 
@@ -336,9 +335,9 @@ export class RunQueryShortcutAction extends Action {
 						return parameterText;
 					});
 			}
-			return TPromise.as(parameterText);
+			return Promise.resolve(parameterText);
 		}
-		return TPromise.as('');
+		return Promise.resolve('');
 	}
 
 	private isProcWithSingleArgument(result: azdata.SimpleExecuteResult): number {
@@ -410,7 +409,7 @@ export class ParseSyntaxAction extends Action {
 		this.enabled = true;
 	}
 
-	public run(): TPromise<void> {
+	public run(): Promise<void> {
 		let editor = this._editorService.activeControl;
 		if (editor && editor instanceof QueryEditor) {
 			let queryEditor: QueryEditor = editor;
@@ -442,7 +441,7 @@ export class ParseSyntaxAction extends Action {
 
 		}
 
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 
 	/**

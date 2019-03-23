@@ -62,7 +62,7 @@ export class LocalJupyterServerManager implements nb.ServerManager, vscode.Dispo
 			this._onServerStarted.fire();
 
 		} catch (error) {
-			this.apiWrapper.showErrorMessage(localize('startServerFailed', 'Starting local Notebook server failed with error: {0}', utils.getErrorMessage(error)));
+			// this is caught and notified up the stack, no longer showing a message here
 			throw error;
 		}
 	}

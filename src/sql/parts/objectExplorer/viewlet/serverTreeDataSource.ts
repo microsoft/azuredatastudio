@@ -9,7 +9,6 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { ITree, IDataSource } from 'vs/base/parts/tree/browser/tree';
 import { TreeNode, TreeItemCollapsibleState } from 'sql/parts/objectExplorer/common/treeNode';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { TreeUpdateUtils } from 'sql/parts/objectExplorer/viewlet/treeUpdateUtils';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import Severity from 'vs/base/common/severity';
@@ -58,8 +57,8 @@ export class ServerTreeDataSource implements IDataSource {
 	/**
 	 * Returns the element's children as an array in a promise.
 	 */
-	public getChildren(tree: ITree, element: any): TPromise<any> {
-		return new TPromise<any>((resolve) => {
+	public getChildren(tree: ITree, element: any): Promise<any> {
+		return new Promise<any>((resolve) => {
 			if (element instanceof ConnectionProfile) {
 				TreeUpdateUtils.getObjectExplorerNode(<ConnectionProfile>element, this._connectionManagementService, this._objectExplorerService).then(nodes => {
 					resolve(nodes);
@@ -93,15 +92,15 @@ export class ServerTreeDataSource implements IDataSource {
 	/**
 	 * Returns the element's parent in a promise.
 	 */
-	public getParent(tree: ITree, element: any): TPromise<any> {
+	public getParent(tree: ITree, element: any): Promise<any> {
 		if (element instanceof ConnectionProfile) {
-			return TPromise.as(element.getParent());
+			return Promise.resolve(element.getParent());
 		} else if (element instanceof ConnectionProfileGroup) {
-			return TPromise.as(element.getParent());
+			return Promise.resolve(element.getParent());
 		} else if (element instanceof TreeNode) {
-			return TPromise.as(TreeUpdateUtils.getObjectExplorerParent(element, this._connectionManagementService));
+			return Promise.resolve(TreeUpdateUtils.getObjectExplorerParent(element, this._connectionManagementService));
 		} else {
-			return TPromise.as(null);
+			return Promise.resolve(null);
 		}
 	}
 

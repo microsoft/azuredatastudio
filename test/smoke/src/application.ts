@@ -60,7 +60,7 @@ export class Application {
 		return this.options.userDataDir;
 	}
 
-	async start(): Promise<any> {
+	async start(expectWalkthroughPart = true): Promise<any> {
 		await this._start();
 		//{{SQL CARBON EDIT}}
 		await this.code.waitForElement('.object-explorer-view');
@@ -68,9 +68,12 @@ export class Application {
 		//Original
 		/*
 		await this.code.waitForElement('.explorer-folders-view');
-		await this.code.waitForActiveElement(`.editor-instance[id="workbench.editor.walkThroughPart"] > div > div[tabIndex="0"]`);
-		 */
-		//{{END}}
+
+		if (expectWalkthroughPart) {
+			await this.code.waitForActiveElement(`.editor-instance[id="workbench.editor.walkThroughPart"] > div > div[tabIndex="0"]`);
+		}
+		*/
+		//{{SQL CARBON EDIT}}
 	}
 
 	async restart(options: { workspaceOrFolder?: string, extraArgs?: string[] }): Promise<any> {
@@ -96,6 +99,7 @@ export class Application {
 
 	async stop(): Promise<any> {
 		if (this._code) {
+			await this._code.exit();
 			this._code.dispose();
 			this._code = undefined;
 		}

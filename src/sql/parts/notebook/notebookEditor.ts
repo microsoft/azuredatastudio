@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { TPromise } from 'vs/base/common/winjs.base';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
@@ -59,9 +58,9 @@ export class NotebookEditor extends BaseEditor {
 		}
 	}
 
-	public setInput(input: NotebookInput, options: EditorOptions): TPromise<void> {
+	public setInput(input: NotebookInput, options: EditorOptions): Promise<void> {
 		if (this.input && this.input.matches(input)) {
-			return TPromise.as(undefined);
+			return Promise.resolve(undefined);
 		}
 
 		const parentElement = this.getContainer();
@@ -75,11 +74,11 @@ export class NotebookEditor extends BaseEditor {
 			container.style.height = '100%';
 			this._notebookContainer = DOM.append(parentElement, container);
 			input.container = this._notebookContainer;
-			return TPromise.wrap<void>(this.bootstrapAngular(input));
+			return Promise.resolve(this.bootstrapAngular(input));
 		} else {
 			this._notebookContainer = DOM.append(parentElement, input.container);
 			input.doChangeLayout();
-			return TPromise.wrap<void>(null);
+			return Promise.resolve(null);
 		}
 	}
 

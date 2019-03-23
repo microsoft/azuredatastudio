@@ -180,18 +180,18 @@ export class SettingsPage extends WizardPageBase<CreateClusterWizard> {
 			acceptEulaCheckbox.checked = false;
 
 			let eulaLink: azdata.LinkArea = {
-				text: localize('bdc-create.LicenseAgreementText', 'License Agreement'),
-				url: 'https://docs.microsoft.com/en-us/sql/getting-started/about-the-sql-server-license-terms?view=sql-server-2014'
+				text: localize('bdc-create.LicenseTerms', 'license terms'),
+				url: 'https://go.microsoft.com/fwlink/?LinkId=2002534'
 			};
 			let privacyPolicyLink: azdata.LinkArea = {
-				text: localize('bdc-create.PrivacyPolicyText', 'Privacy Policy'),
-				url: 'https://privacy.microsoft.com/en-us/privacystatement'
+				text: localize('bdc-create.PrivacyPolicyText', 'privacy policy'),
+				url: 'https://go.microsoft.com/fwlink/?LinkId=853010'
 			};
 
 			let checkboxText = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 				value: localize({
 					key: 'bdc-create.AcceptTermsText',
-					comment: ['{0} is the place holder for License Agreement, {1} is the place holder for Privacy Policy']
+					comment: ['{0} is the place holder for license terms, {1} is the place holder for privacy policy']
 				}, 'I accept the {0} and {1}.'),
 				links: [eulaLink, privacyPolicyLink]
 			}).component();

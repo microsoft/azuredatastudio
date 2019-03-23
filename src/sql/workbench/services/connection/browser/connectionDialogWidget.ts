@@ -23,7 +23,6 @@ import { ClearRecentConnectionsAction } from 'sql/parts/connection/common/connec
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IWorkbenchThemeService, IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { contrastBorder } from 'vs/platform/theme/common/colorRegistry';
-import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Builder, $ } from 'sql/base/browser/builder';
 import { ICancelableEvent } from 'vs/base/parts/tree/browser/treeDefaults';
@@ -39,6 +38,7 @@ import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { CmsDialog } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 
 export interface OnShowUIResponse {
 	selectedProviderType: string;
@@ -95,7 +95,7 @@ export class ConnectionDialogWidget extends Modal {
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IWorkbenchThemeService private _workbenchThemeService: IWorkbenchThemeService,
-		@IPartService _partService: IPartService,
+		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IContextMenuService private _contextMenuService: IContextMenuService,
@@ -105,7 +105,18 @@ export class ConnectionDialogWidget extends Modal {
 		super(!cmsDialog ? localize('connection', 'Connection')
 			: cmsDialog === CmsDialog.cmsRegistrationDialog ? localize('registerCMS', 'Register Central Management Server')
 			: localize('registerServer', 'New Server Registration'),
-			TelemetryKeys.Connection, _partService, telemetryService, clipboardService, _workbenchThemeService, contextKeyService, { hasSpinner: true, hasErrors: true });
+			TelemetryKeys.Connection, telemetryService, layoutService, clipboardService, _workbenchThemeService, contextKeyService, { hasSpinner: true, hasErrors: true });
+	}
+
+	/**
+	 * Update the available connection providers, this is called when new providers are registered
+	 * So that the connection type dropdown always has up to date values
+	 */
+	public updateConnectionProviders(providerTypeOptions: string[],
+		providerNameToDisplayNameMap: { [providerDisplayName: string]: string }) {
+		this.providerTypeOptions = providerTypeOptions;
+		this.providerNameToDisplayNameMap = providerNameToDisplayNameMap;
+		this.refresh();
 	}
 
 	public refresh(): void {
@@ -172,19 +183,19 @@ export class ConnectionDialogWidget extends Modal {
 			}
 		});
 
-		this._panel.onTabChange(c => {
+		this._panel.onTabChange(async c => {
 			if (c === savedConnectionTabId && this._savedConnectionTree.getContentHeight() === 0) {
 				// Update saved connection tree
-				TreeUpdateUtils.structuralTreeUpdate(this._savedConnectionTree, 'saved', this._connectionManagementService, this._providers).then(() => {
-					if (this._savedConnectionTree.getContentHeight() > 0) {
-						this._noSavedConnectionBuilder.hide();
-						this._savedConnectionBuilder.show();
-					} else {
-						this._noSavedConnectionBuilder.show();
-						this._savedConnectionBuilder.hide();
-					}
-					this._savedConnectionTree.layout(DOM.getTotalHeight(this._savedConnectionTree.getHTMLElement()));
-				});
+				await TreeUpdateUtils.structuralTreeUpdate(this._savedConnectionTree, 'saved', this._connectionManagementService, this._providers);
+
+				if (this._savedConnectionTree.getContentHeight() > 0) {
+					this._noSavedConnectionBuilder.hide();
+					this._savedConnectionBuilder.show();
+				} else {
+					this._noSavedConnectionBuilder.show();
+					this._savedConnectionBuilder.hide();
+				}
+				this._savedConnectionTree.layout(DOM.getTotalHeight(this._savedConnectionTree.getHTMLElement()));
 			}
 		});
 
@@ -387,7 +398,7 @@ export class ConnectionDialogWidget extends Modal {
 	 * Open the flyout dialog
 	 * @param recentConnections Are there recent connections that should be shown
 	 */
-	public open(recentConnections: boolean, cmsDialog: azdata.CmsDialog = undefined) {
+	public async open(recentConnections: boolean, cmsDialog: azdata.CmsDialog = undefined): Promise<void> {
 		this._panel.showTab(this._recentConnectionTabId);
 
 		this.show();
@@ -398,7 +409,7 @@ export class ConnectionDialogWidget extends Modal {
 			this._recentConnectionBuilder.hide();
 			this._noRecentConnectionBuilder.show();
 		}
-		TreeUpdateUtils.structuralTreeUpdate(this._recentConnectionTree, 'recent', this._connectionManagementService, this._providers);
+		await TreeUpdateUtils.structuralTreeUpdate(this._recentConnectionTree, 'recent', this._connectionManagementService, this._providers);
 
 		// reset saved connection tree
 		this._savedConnectionTree.setInput([]);

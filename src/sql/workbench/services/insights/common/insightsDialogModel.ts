@@ -7,7 +7,7 @@ import { IInsightsDialogModel, ListResource } from 'sql/workbench/services/insig
 import { IInsightsConfigDetails, IInsightsLabel } from 'sql/parts/dashboard/widgets/insights/interfaces';
 import { Conditional } from 'sql/parts/dashboard/common/interfaces';
 
-import { Event, Emitter, debounceEvent } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 
 export class InsightsDialogModel implements IInsightsDialogModel {
 	private _rows: string[][];
@@ -16,7 +16,7 @@ export class InsightsDialogModel implements IInsightsDialogModel {
 
 	private _onDataChangeEmitter: Emitter<void> = new Emitter<void>();
 	private _onDataChangeEvent: Event<void> = this._onDataChangeEmitter.event;
-	public onDataChange: Event<void> = debounceEvent(this._onDataChangeEvent, (last, event) => event, 75, false);
+	public onDataChange: Event<void> = Event.debounce(this._onDataChangeEvent, (last, event) => event, 75, false);
 
 	public set insight(insight: IInsightsConfigDetails) {
 		this._insight = insight;

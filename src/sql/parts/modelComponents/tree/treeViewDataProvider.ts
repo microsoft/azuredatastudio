@@ -5,11 +5,10 @@
 'use strict';
 
 import { ExtHostModelViewTreeViewsShape, SqlExtHostContext } from 'sql/workbench/api/node/sqlExtHost.protocol';
-import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
+import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { IModelViewTreeViewDataProvider, ITreeComponentItem } from 'sql/workbench/common/views';
 import { INotificationService } from 'vs/platform/notification/common/notification';
-import * as vsTreeView from 'vs/workbench/api/electron-browser/mainThreadTreeViews';
-import { TPromise } from 'vs/base/common/winjs.base';
+import * as vsTreeView from 'vs/workbench/api/browser/mainThreadTreeViews';
 
 export class TreeViewDataProvider extends vsTreeView.TreeViewDataProvider implements IModelViewTreeViewDataProvider {
 	constructor(handle: number, treeViewId: string,

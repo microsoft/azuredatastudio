@@ -5,7 +5,7 @@
 
 'use strict';
 
-import { ConnectionProfileGroup } from './connectionProfileGroup';
+import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import * as azdata from 'azdata';
 import { ProviderConnectionInfo } from 'sql/platform/connection/common/providerConnectionInfo';
 import * as interfaces from 'sql/platform/connection/common/interfaces';

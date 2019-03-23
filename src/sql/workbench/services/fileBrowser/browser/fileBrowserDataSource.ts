@@ -7,7 +7,6 @@
 
 import { IFileBrowserService } from 'sql/platform/fileBrowser/common/interfaces';
 import { FileNode } from 'sql/workbench/services/fileBrowser/common/fileNode';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { ITree, IDataSource } from 'vs/base/parts/tree/browser/tree';
 
 /**
@@ -45,8 +44,8 @@ export class FileBrowserDataSource implements IDataSource {
 	/**
 	 * Returns the element's children as an array in a promise.
 	 */
-	public getChildren(tree: ITree, element: any): TPromise<any> {
-		return new TPromise<any>((resolve) => {
+	public getChildren(tree: ITree, element: any): Promise<any> {
+		return new Promise<any>((resolve) => {
 			if (element instanceof FileNode) {
 				var node = <FileNode>element;
 				if (node.children) {
@@ -67,7 +66,7 @@ export class FileBrowserDataSource implements IDataSource {
 	/**
 	 * Returns the element's parent in a promise.
 	 */
-	public getParent(tree: ITree, element: any): TPromise<any> {
-		return TPromise.as(null);
+	public getParent(tree: ITree, element: any): Promise<any> {
+		return Promise.resolve(null);
 	}
 }

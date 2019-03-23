@@ -5,7 +5,6 @@
 
 'use strict';
 
-import { TPromise } from 'vs/base/common/winjs.base';
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
@@ -27,7 +26,6 @@ import { NodeType } from 'sql/parts/objectExplorer/common/nodeType';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { ServerTreeDataSource } from 'sql/parts/objectExplorer/viewlet/serverTreeDataSource';
 import { Builder, $ } from 'sql/base/browser/builder';
-import WinJS = require('vs/base/common/winjs.base');
 import { Emitter } from 'vs/base/common/event';
 import Severity from 'vs/base/common/severity';
 import { ObjectExplorerActionsContext, ManageConnectionAction } from 'sql/parts/objectExplorer/viewlet/objectExplorerActions';
@@ -202,7 +200,7 @@ suite('SQL Connection Tree Action tests', () => {
 
 		let instantiationService = TypeMoq.Mock.ofType(InstantiationService, TypeMoq.MockBehavior.Loose);
 		instantiationService.setup(x => x.createInstance(TypeMoq.It.isAny())).returns((input) => {
-			return new TPromise((resolve) => resolve({}));
+			return new Promise((resolve) => resolve({}));
 		});
 
 		let serverTreeView = TypeMoq.Mock.ofType(ServerTreeView, TypeMoq.MockBehavior.Strict, undefined, instantiationService.object, undefined, undefined, undefined, undefined, capabilitiesService);
@@ -219,7 +217,7 @@ suite('SQL Connection Tree Action tests', () => {
 
 		let instantiationService = TypeMoq.Mock.ofType(InstantiationService, TypeMoq.MockBehavior.Loose);
 		instantiationService.setup(x => x.createInstance(TypeMoq.It.isAny())).returns((input) => {
-			return new TPromise((resolve) => resolve({}));
+			return new Promise((resolve) => resolve({}));
 		});
 
 		let serverTreeView = TypeMoq.Mock.ofType(ServerTreeView, TypeMoq.MockBehavior.Strict, undefined, instantiationService.object, undefined, undefined, undefined, undefined, capabilitiesService);
@@ -237,7 +235,7 @@ suite('SQL Connection Tree Action tests', () => {
 
 		let instantiationService = TypeMoq.Mock.ofType(InstantiationService, TypeMoq.MockBehavior.Loose);
 		instantiationService.setup(x => x.createInstance(TypeMoq.It.isAny())).returns((input) => {
-			return new TPromise((resolve) => resolve({}));
+			return new Promise((resolve) => resolve({}));
 		});
 
 		let serverTreeView = TypeMoq.Mock.ofType(ServerTreeView, TypeMoq.MockBehavior.Strict, undefined, instantiationService.object, undefined, undefined, undefined, undefined, capabilitiesService);
@@ -254,7 +252,7 @@ suite('SQL Connection Tree Action tests', () => {
 
 		let instantiationService = TypeMoq.Mock.ofType(InstantiationService, TypeMoq.MockBehavior.Loose);
 		instantiationService.setup(x => x.createInstance(TypeMoq.It.isAny())).returns((input) => {
-			return new TPromise((resolve) => resolve({}));
+			return new Promise((resolve) => resolve({}));
 		});
 
 		let serverTreeView = TypeMoq.Mock.ofType(ServerTreeView, TypeMoq.MockBehavior.Strict, undefined, instantiationService.object, undefined, undefined, undefined, undefined, capabilitiesService);
@@ -401,15 +399,15 @@ suite('SQL Connection Tree Action tests', () => {
 		let objectExplorerService = TypeMoq.Mock.ofType(ObjectExplorerService, TypeMoq.MockBehavior.Loose, connectionManagementService.object);
 		objectExplorerService.callBase = true;
 		objectExplorerService.setup(x => x.getObjectExplorerNode(TypeMoq.It.isAny())).returns(() => tablesNode);
-		objectExplorerService.setup(x => x.refreshTreeNode(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => TPromise.as([table1Node, table2Node]));
+		objectExplorerService.setup(x => x.refreshTreeNode(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve([table1Node, table2Node]));
 		let builder: Builder = $().div();
 		var dataSource = new ServerTreeDataSource(objectExplorerService.object, connectionManagementService.object, undefined);
 		let tree = TypeMoq.Mock.ofType(Tree, TypeMoq.MockBehavior.Loose, builder.getHTMLElement(), { dataSource });
 		tree.callBase = true;
 
-		tree.setup(x => x.refresh(TypeMoq.It.isAny())).returns(() => WinJS.TPromise.as(null));
-		tree.setup(x => x.expand(TypeMoq.It.isAny())).returns(() => WinJS.TPromise.as(null));
-		tree.setup(x => x.collapse(TypeMoq.It.isAny())).returns(() => WinJS.TPromise.as(null));
+		tree.setup(x => x.refresh(TypeMoq.It.isAny())).returns(() => Promise.resolve(null));
+		tree.setup(x => x.expand(TypeMoq.It.isAny())).returns(() => Promise.resolve(null));
+		tree.setup(x => x.collapse(TypeMoq.It.isAny())).returns(() => Promise.resolve(null));
 		let connectionAction: RefreshAction = new RefreshAction(RefreshAction.ID,
 			RefreshAction.LABEL,
 			tree.object,
@@ -424,7 +422,9 @@ suite('SQL Connection Tree Action tests', () => {
 			objectExplorerService.verify(x => x.refreshTreeNode(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
 			tree.verify(x => x.refresh(TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
 			tree.verify(x => x.expand(TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
-		}).then(() => done(), (err) => done(err));
+		}).then(() => done(), (err) => {
+			done(err);
+		});
 	});
 
 	test('RefreshConnectionAction - refresh should not be called if connection status is not connect', (done) => {
@@ -488,14 +488,14 @@ suite('SQL Connection Tree Action tests', () => {
 		let objectExplorerService = TypeMoq.Mock.ofType(ObjectExplorerService, TypeMoq.MockBehavior.Loose, connectionManagementService.object);
 		objectExplorerService.callBase = true;
 		objectExplorerService.setup(x => x.getObjectExplorerNode(TypeMoq.It.isAny())).returns(() => tablesNode);
-		objectExplorerService.setup(x => x.refreshTreeNode(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => TPromise.as([table1Node, table2Node]));
+		objectExplorerService.setup(x => x.refreshTreeNode(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve([table1Node, table2Node]));
 		let builder: Builder = $().div();
 		var dataSource = new ServerTreeDataSource(objectExplorerService.object, connectionManagementService.object, undefined);
 		let tree = TypeMoq.Mock.ofType(Tree, TypeMoq.MockBehavior.Loose, builder.getHTMLElement(), { dataSource });
 		tree.callBase = true;
 
-		tree.setup(x => x.refresh(TypeMoq.It.isAny())).returns(() => WinJS.TPromise.as(null));
-		tree.setup(x => x.expand(TypeMoq.It.isAny())).returns(() => WinJS.TPromise.as(null));
+		tree.setup(x => x.refresh(TypeMoq.It.isAny())).returns(() => Promise.resolve(null));
+		tree.setup(x => x.expand(TypeMoq.It.isAny())).returns(() => Promise.resolve(null));
 		let connectionAction: RefreshAction = new RefreshAction(RefreshAction.ID,
 			RefreshAction.LABEL,
 			tree.object,

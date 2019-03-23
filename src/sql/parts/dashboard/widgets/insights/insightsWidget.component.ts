@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import {
 	Component, Inject, ViewContainerRef, forwardRef, AfterContentInit,
-	ComponentFactoryResolver, ViewChild, ChangeDetectorRef
+	ComponentFactoryResolver, ViewChild, ChangeDetectorRef, Injector
 } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
@@ -29,7 +29,6 @@ import { WorkbenchState, IWorkspaceContextService } from 'vs/platform/workspace/
 import { IntervalTimer, createCancelablePromise } from 'vs/base/common/async';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { toDisposable } from 'vs/base/common/lifecycle';
 import { isPromiseCanceledError } from 'vs/base/common/errors';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -69,8 +68,8 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 		@Inject(forwardRef(() => ComponentFactoryResolver)) private _componentFactoryResolver: ComponentFactoryResolver,
 		@Inject(forwardRef(() => CommonServiceInterface)) private dashboardService: CommonServiceInterface,
 		@Inject(WIDGET_CONFIG) protected _config: WidgetConfig,
-		@Inject(forwardRef(() => ViewContainerRef)) private viewContainerRef: ViewContainerRef,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
+		@Inject(forwardRef(() => Injector)) private _injector: Injector,
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
 		@Inject(IStorageService) private storageService: IStorageService,
 		@Inject(IWorkspaceContextService) private workspaceContextService: IWorkspaceContextService,
@@ -93,7 +92,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 								this._updateChild(result);
 								this.setupInterval();
 							} else {
-								this.queryObv = Observable.fromPromise(TPromise.as<SimpleExecuteResult>(result));
+								this.queryObv = Observable.fromPromise(Promise.resolve<SimpleExecuteResult>(result));
 							}
 						},
 						error => {
@@ -104,7 +103,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 							if (this._init) {
 								this.showError(error);
 							} else {
-								this.queryObv = Observable.fromPromise(TPromise.as<SimpleExecuteResult>(error));
+								this.queryObv = Observable.fromPromise(Promise.resolve<SimpleExecuteResult>(error));
 							}
 						}
 					).then(() => this._cd.detectChanges());
@@ -211,8 +210,8 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 		return `insights.${this.insightConfig.cacheId}.${this.dashboardService.connectionManagementService.connectionInfo.connectionProfile.getOptionsKey()}`;
 	}
 
-	private _runQuery(): TPromise<SimpleExecuteResult> {
-		return TPromise.wrap(this.dashboardService.queryManagementService.runQueryAndReturn(this.insightConfig.query as string).then(
+	private _runQuery(): Promise<SimpleExecuteResult> {
+		return Promise.resolve(this.dashboardService.queryManagementService.runQueryAndReturn(this.insightConfig.query as string).then(
 			result => {
 				return this._storeResult(result);
 			},
@@ -234,8 +233,9 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 
 		let componentFactory = this._componentFactoryResolver.resolveComponentFactory<IInsightsView>(insightRegistry.getCtorFromId(this._typeKey));
 
-		let componentRef = this.componentHost.viewContainerRef.createComponent(componentFactory);
+		let componentRef = this.componentHost.viewContainerRef.createComponent(componentFactory, 0, this._injector);
 		let componentInstance = componentRef.instance;
+
 		// check if the setter is defined
 		if (componentInstance.setConfig) {
 			componentInstance.setConfig(this.insightConfig.type[this._typeKey]);

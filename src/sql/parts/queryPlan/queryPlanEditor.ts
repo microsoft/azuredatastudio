@@ -5,7 +5,6 @@
 
 import 'vs/css!sql/parts/query/editor/media/queryEditor';
 import * as DOM from 'vs/base/browser/dom';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { EditorOptions } from 'vs/workbench/common/editor';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -72,9 +71,9 @@ export class QueryPlanEditor extends BaseEditor {
 	public layout(dimension: DOM.Dimension): void {
 	}
 
-	public setInput(input: QueryPlanInput, options: EditorOptions): Thenable<void> {
+	public setInput(input: QueryPlanInput, options: EditorOptions): Promise<void> {
 		if (this.input instanceof QueryPlanInput && this.input.matches(input)) {
-			return TPromise.as(undefined);
+			return Promise.resolve(undefined);
 		}
 
 		if (!input.hasInitialized) {

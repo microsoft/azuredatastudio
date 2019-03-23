@@ -109,7 +109,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 		credentialsStore.start();
 		resourceProvider.start();
 
-		let nodeProvider = new MssqlObjectExplorerNodeProvider(appContext);
+		let nodeProvider = new MssqlObjectExplorerNodeProvider(prompter, appContext);
 		azdata.dataprotocol.registerObjectExplorerNodeProvider(nodeProvider);
 
 		cmsService = new CmsService(appContext, languageClient);
@@ -180,19 +180,27 @@ function saveProfileAndCreateNotebook(profile: azdata.IConnectionProfile): Promi
 	return handleNewNotebookTask(undefined, profile);
 }
 
+function findNextUntitledEditorName(): string {
+	let nextVal = untitledCounter;
+	// Note: this will go forever if it's coded wrong, or you have inifinite Untitled notebooks!
+	while (true) {
+		let title = `Notebook-${nextVal++}`;
+		let hasTextDoc = vscode.workspace.textDocuments.findIndex(doc => doc.isUntitled && doc.fileName === title) > -1;
+		let hasNotebookDoc = azdata.nb.notebookDocuments.findIndex(doc => doc.isUntitled && doc.fileName === title) > -1;
+		if (!hasTextDoc && !hasNotebookDoc) {
+			untitledCounter = nextVal;
+			return title;
+		}
+	}
+}
 async function handleNewNotebookTask(oeContext?: azdata.ObjectExplorerContext, profile?: azdata.IConnectionProfile): Promise<void> {
 	// Ensure we get a unique ID for the notebook. For now we're using a different prefix to the built-in untitled files
 	// to handle this. We should look into improving this in the future
-	let untitledUri = vscode.Uri.parse(`untitled:Notebook-${untitledCounter++}`);
+	let title = findNextUntitledEditorName();
+	let untitledUri = vscode.Uri.parse(`untitled:${title}`);
 	let editor = await azdata.nb.showNotebookDocument(untitledUri, {
 		connectionProfile: profile,
-		providerId: jupyterNotebookProviderId,
-		preview: false,
-		defaultKernel: {
-			name: 'pyspark3kernel',
-			display_name: 'PySpark3',
-			language: 'python'
-		}
+		preview: false
 	});
 	if (oeContext && oeContext.nodeInfo && oeContext.nodeInfo.nodePath) {
 		// Get the file path after '/HDFS'
@@ -229,7 +237,6 @@ async function handleOpenNotebookTask(profile: azdata.IConnectionProfile): Promi
 		} else {
 			await azdata.nb.showNotebookDocument(fileUri, {
 				connectionProfile: profile,
-				providerId: jupyterNotebookProviderId,
 				preview: false
 			});
 		}

@@ -14,7 +14,6 @@ import { MessageType, IInputOptions } from 'vs/base/browser/ui/inputbox/inputBox
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { localize } from 'vs/nls';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { mixin } from 'vs/base/common/objects';
@@ -42,6 +41,7 @@ import { TabbedPanel, PanelTabIdentifier } from 'sql/base/browser/ui/panel/panel
 import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { IFileBrowserDialogController } from 'sql/workbench/services/fileBrowser/common/fileBrowserDialogController';
+import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 
 interface FileListElement {
 	logicalFileName: string;
@@ -128,7 +128,7 @@ export class RestoreDialog extends Modal {
 
 	constructor(
 		optionsMetadata: azdata.ServiceOption[],
-		@IPartService partService: IPartService,
+		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
 		@IThemeService themeService: IThemeService,
 		@IContextViewService private _contextViewService: IContextViewService,
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -136,7 +136,7 @@ export class RestoreDialog extends Modal {
 		@IFileBrowserDialogController private fileBrowserDialogService: IFileBrowserDialogController,
 		@IClipboardService clipboardService: IClipboardService
 	) {
-		super(localize('RestoreDialogTitle', 'Restore database'), TelemetryKeys.Restore, partService, telemetryService, clipboardService, themeService, contextKeyService, { hasErrors: true, isWide: true, hasSpinner: true });
+		super(localize('RestoreDialogTitle', 'Restore database'), TelemetryKeys.Restore, telemetryService, layoutService, clipboardService, themeService, contextKeyService, { hasErrors: true, isWide: true, hasSpinner: true });
 		this._restoreTitle = localize('restoreDialog.restoreTitle', 'Restore database');
 		this._databaseTitle = localize('restoreDialog.database', 'Database');
 		this._backupFileTitle = localize('restoreDialog.backupFile', 'Backup file');
@@ -233,7 +233,7 @@ export class RestoreDialog extends Modal {
 				inputContainer.div({ class: 'dialog-input' }, (inputCellContainer) => {
 					// Get the bootstrap params and perform the bootstrap
 					inputCellContainer.style('width', '100%');
-					this._databaseDropdown = new Dropdown(inputCellContainer.getHTMLElement(), this._contextViewService, this._themeService,
+					this._databaseDropdown = new Dropdown(inputCellContainer.getHTMLElement(), this._contextViewService,
 						{
 							strictSelection: false,
 							ariaLabel: LocalizedStrings.TARGETDATABASE,

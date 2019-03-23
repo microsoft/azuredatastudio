@@ -23,7 +23,6 @@ import * as statusbar from 'vs/workbench/browser/parts/statusbar/statusbar';
 import * as platform from 'vs/platform/registry/common/platform';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Event, Emitter } from 'vs/base/common/event';
-import { TPromise } from 'vs/base/common/winjs.base';
 import * as strings from 'vs/base/common/strings';
 import * as types from 'vs/base/common/types';
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -460,7 +459,7 @@ export class QueryModelService implements IQueryModelService {
 		if (queryRunner) {
 			return queryRunner.disposeEdit(ownerUri);
 		}
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 
 	public updateCell(ownerUri: string, rowId: number, columnId: number, newValue: string): Thenable<azdata.EditUpdateCellResult> {
@@ -475,7 +474,7 @@ export class QueryModelService implements IQueryModelService {
 				return Promise.reject(error);
 			});
 		}
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 
 	public commitEdit(ownerUri): Thenable<void> {
@@ -490,7 +489,7 @@ export class QueryModelService implements IQueryModelService {
 				return Promise.reject(error);
 			});
 		}
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 
 	public createRow(ownerUri: string): Thenable<azdata.EditCreateRowResult> {
@@ -499,7 +498,7 @@ export class QueryModelService implements IQueryModelService {
 		if (queryRunner) {
 			return queryRunner.createRow(ownerUri);
 		}
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 
 	public deleteRow(ownerUri: string, rowId: number): Thenable<void> {
@@ -508,7 +507,7 @@ export class QueryModelService implements IQueryModelService {
 		if (queryRunner) {
 			return queryRunner.deleteRow(ownerUri, rowId);
 		}
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 
 	public revertCell(ownerUri: string, rowId: number, columnId: number): Thenable<azdata.EditRevertCellResult> {
@@ -517,7 +516,7 @@ export class QueryModelService implements IQueryModelService {
 		if (queryRunner) {
 			return queryRunner.revertCell(ownerUri, rowId, columnId);
 		}
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 
 	public revertRow(ownerUri: string, rowId: number): Thenable<void> {
@@ -526,7 +525,7 @@ export class QueryModelService implements IQueryModelService {
 		if (queryRunner) {
 			return queryRunner.revertRow(ownerUri, rowId);
 		}
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 
 	public getQueryRunner(ownerUri): QueryRunner {

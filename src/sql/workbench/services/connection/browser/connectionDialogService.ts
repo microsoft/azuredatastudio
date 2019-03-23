@@ -21,18 +21,17 @@ import { Deferred } from 'sql/base/common/promise';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 
-import { IPartService } from 'vs/workbench/services/part/common/partService';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as platform from 'vs/base/common/platform';
 import Severity from 'vs/base/common/severity';
-import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 import { Action, IAction } from 'vs/base/common/actions';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import * as types from 'vs/base/common/types';
 import { trim } from 'vs/base/common/strings';
 import { localize } from 'vs/nls';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 
 export interface IConnectionValidateResult {
 	isValid: boolean;
@@ -85,14 +84,45 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	private _connectionManagementService: IConnectionManagementService;
 
 	constructor(
-		@IPartService private _partService: IPartService,
+		@IWorkbenchLayoutService private layoutService: IWorkbenchLayoutService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
-		@IWorkspaceConfigurationService private _workspaceConfigurationService: IWorkspaceConfigurationService,
+		@IConfigurationService private _configurationService: IConfigurationService,
 		@IClipboardService private _clipboardService: IClipboardService,
 		@ICommandService private _commandService: ICommandService
-	) { }
+	) {
+		this.initializeConnectionProviders();
+	}
+
+	/**
+	 * Set the initial value for the connection provider and listen to the provider change event
+	 */
+	private initializeConnectionProviders() {
+		this.setConnectionProviders();
+		if (this._capabilitiesService) {
+			this._capabilitiesService.onCapabilitiesRegistered(() => {
+				this.setConnectionProviders();
+				if (this._connectionDialog) {
+					this._connectionDialog.updateConnectionProviders(this._providerTypes, this._providerNameToDisplayNameMap);
+				}
+			});
+		}
+	}
+
+	/**
+	 * Update the available provider types using the values from capabilities service
+	 */
+	private setConnectionProviders() {
+		if (this._capabilitiesService) {
+			this._providerTypes = [];
+			this._providerNameToDisplayNameMap = {};
+			entries(this._capabilitiesService.providers).forEach(p => {
+				this._providerTypes.push(p[1].connection.displayName);
+				this._providerNameToDisplayNameMap[p[0]] = p[1].connection.displayName;
+			});
+		}
+	}
 
 	/**
 	 * Gets the default provider with the following actions
@@ -120,8 +150,8 @@ export class ConnectionDialogService implements IConnectionDialogService {
 				}
 			}
 		}
-		if (!defaultProvider && this._workspaceConfigurationService) {
-			defaultProvider = WorkbenchUtils.getSqlConfigValue<string>(this._workspaceConfigurationService, Constants.defaultEngine);
+		if (!defaultProvider && this._configurationService) {
+			defaultProvider = WorkbenchUtils.getSqlConfigValue<string>(this._configurationService, Constants.defaultEngine);
 		}
 		// as a fallback, default to MSSQL if the value from settings is not available
 		return defaultProvider || Constants.mssqlProviderName;
@@ -313,8 +343,8 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		return newProfile;
 	}
 
-	private showDialogWithModel(cmsDialog: azdata.CmsDialog = undefined): TPromise<void> {
-		return new TPromise<void>((resolve, reject) => {
+	private showDialogWithModel(cmsDialog: azdata.CmsDialog = undefined): Promise<void> {
+		return new Promise<void>((resolve, reject) => {
 			this.updateModelServerCapabilities(this._inputModel, cmsDialog);
 			this.doShowDialog(cmsDialog, this._params);
 			resolve(null);
@@ -356,13 +386,6 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		this._params = params;
 		this._inputModel = model;
 		return new Promise<void>((resolve, reject) => {
-			// only create the provider maps first time the dialog gets called
-			if (this._providerTypes.length === 0) {
-				entries(this._capabilitiesService.providers).forEach(p => {
-					this._providerTypes.push(p[1].connection.displayName);
-					this._providerNameToDisplayNameMap[p[0]] = p[1].connection.displayName;
-				});
-			}
 			this.updateModelServerCapabilities(model, cmsDialog);
 			// If connecting from a query editor set "save connection" to false
 			if (params && params.input && params.connectionType === ConnectionType.editor) {
@@ -378,12 +401,12 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	}
 
 
-	private doShowDialog(cmsDialog: azdata.CmsDialog = undefined, params: INewConnectionParams): TPromise<void> {
+	private doShowDialog(cmsDialog: azdata.CmsDialog = undefined, params: INewConnectionParams): Promise<void> {
 		if (this._previousCMSDialog !== cmsDialog) {
 			this._connectionDialog = null;
 		}
 		if (!this._connectionDialog) {
-			let container = this._partService.getWorkbenchElement().parentElement;
+			let container = this.layoutService.getWorkbenchElement().parentElement;
 			this._container = container;
 			this._connectionDialog = this._instantiationService.createInstance(ConnectionDialogWidget, this._providerTypes, this._providerNameToDisplayNameMap[this._model.providerName], this._providerNameToDisplayNameMap, cmsDialog);
 			this._connectionDialog.onCancel(() => {
@@ -401,7 +424,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		}
 		this._connectionDialog.newConnectionParams = params;
 
-		return new TPromise<void>(() => {
+		return new Promise<void>(() => {
 			this._connectionDialog.open(this._connectionManagementService.getRecentConnections(params.providers).length > 0, cmsDialog);
 			this.uiController.focusOnOpen(cmsDialog);
 			if (this._previousCMSDialog !== cmsDialog) {
