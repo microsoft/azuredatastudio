@@ -10,11 +10,12 @@ import Severity from 'vs/base/common/severity';
 import { EXTENSION_IDENTIFIER_PATTERN } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { Extensions, IJSONContributionRegistry } from 'vs/platform/jsonschemas/common/jsonContributionRegistry';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { IExtensionDescription, IMessage } from 'vs/workbench/services/extensions/common/extensions';
-import { ExtensionIdentifier } from 'vs/platform/extensions/common/extensions';
+import { IMessage } from 'vs/workbench/services/extensions/common/extensions';
+import { ExtensionIdentifier, IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 
 const hasOwnProperty = Object.hasOwnProperty;
 const schemaRegistry = Registry.as<IJSONContributionRegistry>(Extensions.JSONContribution);
+export type ExtensionKind = 'workspace' | 'ui' | undefined;
 
 export class ExtensionMessageCollector {
 
@@ -67,6 +68,7 @@ export interface IExtensionPointHandler<T> {
 export interface IExtensionPoint<T> {
 	name: string;
 	setHandler(handler: IExtensionPointHandler<T>): void;
+	defaultExtensionKind: ExtensionKind;
 }
 
 export class ExtensionPointUserDelta<T> {
@@ -105,18 +107,16 @@ export class ExtensionPointUserDelta<T> {
 export class ExtensionPoint<T> implements IExtensionPoint<T> {
 
 	public readonly name: string;
-	public readonly isDynamic: boolean;
+	public readonly defaultExtensionKind: ExtensionKind;
 
 	private _handler: IExtensionPointHandler<T> | null;
-	private _handlerCalled: boolean;
 	private _users: IExtensionPointUser<T>[] | null;
 	private _delta: ExtensionPointUserDelta<T> | null;
 
-	constructor(name: string, isDynamic: boolean) {
+	constructor(name: string, defaultExtensionKind: ExtensionKind) {
 		this.name = name;
-		this.isDynamic = isDynamic;
+		this.defaultExtensionKind = defaultExtensionKind;
 		this._handler = null;
-		this._handlerCalled = false;
 		this._users = null;
 		this._delta = null;
 	}
@@ -140,12 +140,7 @@ export class ExtensionPoint<T> implements IExtensionPoint<T> {
 			return;
 		}
 
-		if (this._handlerCalled && !this.isDynamic) {
-			throw new Error('The extension point is not dynamic!');
-		}
-
 		try {
-			this._handlerCalled = true;
 			this._handler(this._users, this._delta);
 		} catch (err) {
 			onUnexpectedError(err);
@@ -367,10 +362,10 @@ export const schema = {
 };
 
 export interface IExtensionPointDescriptor {
-	isDynamic?: boolean;
 	extensionPoint: string;
 	deps?: IExtensionPoint<any>[];
 	jsonSchema: IJSONSchema;
+	defaultExtensionKind?: ExtensionKind;
 }
 
 export class ExtensionsRegistryImpl {
@@ -385,7 +380,7 @@ export class ExtensionsRegistryImpl {
 		if (hasOwnProperty.call(this._extensionPoints, desc.extensionPoint)) {
 			throw new Error('Duplicate extension point: ' + desc.extensionPoint);
 		}
-		let result = new ExtensionPoint<T>(desc.extensionPoint, desc.isDynamic || false);
+		let result = new ExtensionPoint<T>(desc.extensionPoint, desc.defaultExtensionKind);
 		this._extensionPoints[desc.extensionPoint] = result;
 
 		schema.properties['contributes'].properties[desc.extensionPoint] = desc.jsonSchema;

@@ -27,7 +27,6 @@ import { IContextMenuService } from 'vs/platform/contextview/browser/contextView
 import { IActionItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { Action } from 'vs/base/common/actions';
 import { ISelectionData } from 'azdata';
-import { IEditorGroup } from 'vs/workbench/services/group/common/editorGroupsService';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { IRange } from 'vs/editor/common/core/range';
 
@@ -48,6 +47,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { IStorageService } from 'vs/platform/storage/common/storage';
+import { IEditorGroup } from 'vs/workbench/services/editor/common/editorGroupsService';
 
 /**
  * Editor that hosts 2 sub-editors: A TextResourceEditor for SQL file editing, and a QueryResultsEditor

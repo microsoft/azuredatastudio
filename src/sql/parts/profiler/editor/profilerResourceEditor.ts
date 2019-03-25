@@ -17,12 +17,12 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ITextResourceConfigurationService } from 'vs/editor/common/services/resourceConfiguration';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
-import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
 import { EditorOptions } from 'vs/workbench/common/editor';
 import { StandaloneCodeEditor } from 'vs/editor/standalone/browser/standaloneCodeEditor';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IWindowService } from 'vs/platform/windows/common/windows';
+import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 
 class ProfilerResourceCodeEditor extends StandaloneCodeEditor {
 

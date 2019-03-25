@@ -73,6 +73,7 @@ class ModelData implements IDisposable {
 
 interface IRawEditorConfig {
 	tabSize?: any;
+	indentSize?: any;
 	insertSpaces?: any;
 	detectIndentation?: any;
 	trimAutoWhitespace?: any;
@@ -90,9 +91,9 @@ const DEFAULT_EOL = (platform.isLinux || platform.isMacintosh) ? DefaultEndOfLin
 export class ModelServiceImpl extends Disposable implements IModelService {
 	public _serviceBrand: any;
 
-	private _configurationService: IConfigurationService;
-	private _configurationServiceSubscription: IDisposable;
-	private _resourcePropertiesService: ITextResourcePropertiesService;
+	private readonly _configurationService: IConfigurationService;
+	private readonly _configurationServiceSubscription: IDisposable;
+	private readonly _resourcePropertiesService: ITextResourcePropertiesService;
 
 	private readonly _onModelAdded: Emitter<ITextModel> = this._register(new Emitter<ITextModel>());
 	public readonly onModelAdded: Event<ITextModel> = this._onModelAdded.event;
@@ -110,7 +111,7 @@ export class ModelServiceImpl extends Disposable implements IModelService {
 	/**
 	 * All the models known in the system.
 	 */
-	private _models: { [modelId: string]: ModelData; };
+	private readonly _models: { [modelId: string]: ModelData; };
 
 	constructor(
 		@IConfigurationService configurationService: IConfigurationService,
@@ -135,6 +136,17 @@ export class ModelServiceImpl extends Disposable implements IModelService {
 			}
 			if (tabSize < 1) {
 				tabSize = 1;
+			}
+		}
+
+		let indentSize = tabSize;
+		if (config.editor && typeof config.editor.indentSize !== 'undefined' && config.editor.indentSize !== 'tabSize') {
+			let parsedIndentSize = parseInt(config.editor.indentSize, 10);
+			if (!isNaN(parsedIndentSize)) {
+				indentSize = parsedIndentSize;
+			}
+			if (indentSize < 1) {
+				indentSize = 1;
 			}
 		}
 
@@ -169,6 +181,7 @@ export class ModelServiceImpl extends Disposable implements IModelService {
 		return {
 			isForSimpleWidget: isForSimpleWidget,
 			tabSize: tabSize,
+			indentSize: indentSize,
 			insertSpaces: insertSpaces,
 			detectIndentation: detectIndentation,
 			defaultEOL: newDefaultEOL,
@@ -210,6 +223,7 @@ export class ModelServiceImpl extends Disposable implements IModelService {
 			&& (currentOptions.detectIndentation === newOptions.detectIndentation)
 			&& (currentOptions.insertSpaces === newOptions.insertSpaces)
 			&& (currentOptions.tabSize === newOptions.tabSize)
+			&& (currentOptions.indentSize === newOptions.indentSize)
 			&& (currentOptions.trimAutoWhitespace === newOptions.trimAutoWhitespace)
 		) {
 			// Same indent opts, no need to touch the model
@@ -225,6 +239,7 @@ export class ModelServiceImpl extends Disposable implements IModelService {
 			model.updateOptions({
 				insertSpaces: newOptions.insertSpaces,
 				tabSize: newOptions.tabSize,
+				indentSize: newOptions.indentSize,
 				trimAutoWhitespace: newOptions.trimAutoWhitespace
 			});
 		}

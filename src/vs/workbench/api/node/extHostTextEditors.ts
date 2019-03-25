@@ -4,7 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Emitter, Event } from 'vs/base/common/event';
-import { ExtHostEditorsShape, IEditorPropertiesChangeData, IMainContext, ITextDocumentShowOptions, ITextEditorPositionData, MainContext, MainThreadTextEditorsShape } from 'vs/workbench/api/node/extHost.protocol';
+import * as arrays from 'vs/base/common/arrays';
+import { ExtHostEditorsShape, IEditorPropertiesChangeData, IMainContext, ITextDocumentShowOptions, ITextEditorPositionData, MainContext, MainThreadTextEditorsShape } from 'vs/workbench/api/common/extHost.protocol';
 import { ExtHostDocumentsAndEditors } from 'vs/workbench/api/node/extHostDocumentsAndEditors';
 import { ExtHostTextEditor, TextEditorDecorationType } from 'vs/workbench/api/node/extHostTextEditor';
 import * as TypeConverters from 'vs/workbench/api/node/extHostTypeConverters';
@@ -42,7 +43,7 @@ export class ExtHostEditors implements ExtHostEditorsShape {
 		this._extHostDocumentsAndEditors.onDidChangeActiveTextEditor(e => this._onDidChangeActiveTextEditor.fire(e));
 	}
 
-	getActiveTextEditor(): ExtHostTextEditor {
+	getActiveTextEditor(): ExtHostTextEditor | undefined {
 		return this._extHostDocumentsAndEditors.activeEditor();
 	}
 
@@ -52,8 +53,8 @@ export class ExtHostEditors implements ExtHostEditorsShape {
 
 	showTextDocument(document: vscode.TextDocument, column: vscode.ViewColumn, preserveFocus: boolean): Promise<vscode.TextEditor>;
 	showTextDocument(document: vscode.TextDocument, options: { column: vscode.ViewColumn, preserveFocus: boolean, pinned: boolean }): Promise<vscode.TextEditor>;
-	showTextDocument(document: vscode.TextDocument, columnOrOptions: vscode.ViewColumn | vscode.TextDocumentShowOptions, preserveFocus?: boolean): Promise<vscode.TextEditor>;
-	showTextDocument(document: vscode.TextDocument, columnOrOptions: vscode.ViewColumn | vscode.TextDocumentShowOptions, preserveFocus?: boolean): Promise<vscode.TextEditor> {
+	showTextDocument(document: vscode.TextDocument, columnOrOptions: vscode.ViewColumn | vscode.TextDocumentShowOptions | undefined, preserveFocus?: boolean): Promise<vscode.TextEditor>;
+	showTextDocument(document: vscode.TextDocument, columnOrOptions: vscode.ViewColumn | vscode.TextDocumentShowOptions | undefined, preserveFocus?: boolean): Promise<vscode.TextEditor> {
 		let options: ITextDocumentShowOptions;
 		if (typeof columnOrOptions === 'number') {
 			options = {
@@ -74,7 +75,7 @@ export class ExtHostEditors implements ExtHostEditorsShape {
 		}
 
 		return this._proxy.$tryShowTextDocument(document.uri, options).then(id => {
-			let editor = this._extHostDocumentsAndEditors.getEditor(id);
+			const editor = id && this._extHostDocumentsAndEditors.getEditor(id);
 			if (editor) {
 				return editor;
 			} else {
@@ -96,6 +97,9 @@ export class ExtHostEditors implements ExtHostEditorsShape {
 
 	$acceptEditorPropertiesChanged(id: string, data: IEditorPropertiesChangeData): void {
 		const textEditor = this._extHostDocumentsAndEditors.getEditor(id);
+		if (!textEditor) {
+			throw new Error('unknown text editor');
+		}
 
 		// (1) set all properties
 		if (data.options) {
@@ -106,7 +110,7 @@ export class ExtHostEditors implements ExtHostEditorsShape {
 			textEditor._acceptSelections(selections);
 		}
 		if (data.visibleRanges) {
-			const visibleRanges = data.visibleRanges.map(TypeConverters.Range.to);
+			const visibleRanges = arrays.coalesce(data.visibleRanges.map(TypeConverters.Range.to));
 			textEditor._acceptVisibleRanges(visibleRanges);
 		}
 
@@ -114,7 +118,7 @@ export class ExtHostEditors implements ExtHostEditorsShape {
 		if (data.options) {
 			this._onDidChangeTextEditorOptions.fire({
 				textEditor: textEditor,
-				options: data.options
+				options: { ...data.options, lineNumbers: TypeConverters.TextEditorLineNumbersStyle.to(data.options.lineNumbers) }
 			});
 		}
 		if (data.selections) {
@@ -127,7 +131,7 @@ export class ExtHostEditors implements ExtHostEditorsShape {
 			});
 		}
 		if (data.visibleRanges) {
-			const visibleRanges = data.visibleRanges.map(TypeConverters.Range.to);
+			const visibleRanges = arrays.coalesce(data.visibleRanges.map(TypeConverters.Range.to));
 			this._onDidChangeTextEditorVisibleRanges.fire({
 				textEditor,
 				visibleRanges
@@ -136,9 +140,12 @@ export class ExtHostEditors implements ExtHostEditorsShape {
 	}
 
 	$acceptEditorPositionData(data: ITextEditorPositionData): void {
-		for (let id in data) {
-			let textEditor = this._extHostDocumentsAndEditors.getEditor(id);
-			let viewColumn = TypeConverters.ViewColumn.to(data[id]);
+		for (const id in data) {
+			const textEditor = this._extHostDocumentsAndEditors.getEditor(id);
+			if (!textEditor) {
+				throw new Error('Unknown text editor');
+			}
+			const viewColumn = TypeConverters.ViewColumn.to(data[id]);
 			if (textEditor.viewColumn !== viewColumn) {
 				textEditor._acceptViewColumn(viewColumn);
 				this._onDidChangeTextEditorViewColumn.fire({ textEditor, viewColumn });

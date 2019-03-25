@@ -32,6 +32,12 @@ exports.load = function (modulePaths, resultCallback, options) {
 	const args = parseURLQueryArgs();
 	const configuration = JSON.parse(args['config'] || '{}') || {};
 
+	// Apply zoom level early to avoid glitches
+	const zoomLevel = configuration.zoomLevel;
+	if (typeof zoomLevel === 'number' && zoomLevel !== 0) {
+		webFrame.setZoomLevel(zoomLevel);
+	}
+
 	// Error handler
 	// @ts-ignore
 	process.on('uncaughtException', function (error) {
@@ -50,37 +56,6 @@ exports.load = function (modulePaths, resultCallback, options) {
 
 	// Enable ASAR support
 	bootstrap.enableASARSupport(path.join(configuration.appRoot, 'node_modules'));
-
-	// Apply zoom level early to avoid glitches
-	const zoomLevel = configuration.zoomLevel;
-	if (typeof zoomLevel === 'number' && zoomLevel !== 0) {
-		webFrame.setZoomLevel(zoomLevel);
-	}
-
-	// {{SQL CARBON EDIT}}
-	// Load the loader and start loading the workbench
-	function createScript(src, onload) {
-		const script = document.createElement('script');
-		script.src = src;
-		script.addEventListener('load', onload);
-
-		const head = document.getElementsByTagName('head')[0];
-		head.insertBefore(script, head.lastChild);
-	}
-
-	function uriFromPath(_path) {
-		var pathName = path.resolve(_path).replace(/\\/g, '/');
-		if (pathName.length > 0 && pathName.charAt(0) !== '/') {
-			pathName = '/' + pathName;
-		}
-
-		return encodeURI('file://' + pathName);
-	}
-
-	const appRoot = uriFromPath(configuration.appRoot);
-
-	createScript(appRoot + '/node_modules/chart.js/dist/Chart.js', undefined);
-	// {{SQL CARBON EDIT}} - End
 
 	if (options && typeof options.canModifyDOM === 'function') {
 		options.canModifyDOM(configuration);
@@ -120,6 +95,7 @@ exports.load = function (modulePaths, resultCallback, options) {
 
 	// {{SQL CARBON EDIT}}
 	require('reflect-metadata');
+	require('chart.js');
 	loaderConfig.nodeModules = loaderConfig.nodeModules.concat([
 		'@angular/common',
 		'@angular/core',

@@ -34,11 +34,14 @@ namespace schema {
 			case 'explorer/context': return MenuId.ExplorerContext;
 			case 'editor/title/context': return MenuId.EditorTitleContext;
 			case 'debug/callstack/context': return MenuId.DebugCallStackContext;
+			case 'debug/toolbar': return MenuId.DebugToolbar;
+			case 'menuBar/file': return MenuId.MenubarFileMenu;
 			case 'scm/title': return MenuId.SCMTitle;
 			case 'scm/sourceControl': return MenuId.SCMSourceControl;
 			case 'scm/resourceGroup/context': return MenuId.SCMResourceGroupContext;
 			case 'scm/resourceState/context': return MenuId.SCMResourceContext;
 			case 'scm/change/title': return MenuId.SCMChangeContext;
+			case 'statusBar/windowIndicator': return MenuId.StatusBarWindowIndicatorMenu;
 			case 'view/title': return MenuId.ViewTitle;
 			case 'view/item/context': return MenuId.ViewItemContext;
 			// {{SQL CARBON EDIT}}
@@ -136,6 +139,11 @@ namespace schema {
 			},
 			'debug/callstack/context': {
 				description: localize('menus.debugCallstackContext', "The debug callstack context menu"),
+				type: 'array',
+				items: menuItem
+			},
+			'debug/toolbar': {
+				description: localize('menus.debugToolbar', "The debug toolbar menu"),
 				type: 'array',
 				items: menuItem
 			},
@@ -286,8 +294,7 @@ let _commandRegistrations: IDisposable[] = [];
 
 ExtensionsRegistry.registerExtensionPoint<schema.IUserFriendlyCommand | schema.IUserFriendlyCommand[]>({
 	extensionPoint: 'commands',
-	jsonSchema: schema.commandsContribution,
-	isDynamic: true
+	jsonSchema: schema.commandsContribution
 }).setHandler(extensions => {
 
 	function handleCommand(userFriendlyCommand: schema.IUserFriendlyCommand, extension: IExtensionPointUser<any>, disposables: IDisposable[]) {
@@ -336,8 +343,7 @@ let _menuRegistrations: IDisposable[] = [];
 
 ExtensionsRegistry.registerExtensionPoint<{ [loc: string]: schema.IUserFriendlyMenuItem[] }>({
 	extensionPoint: 'menus',
-	jsonSchema: schema.menusContribtion,
-	isDynamic: true
+	jsonSchema: schema.menusContribtion
 }).setHandler(extensions => {
 
 	// remove all previous menu registrations

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as extfs from 'vs/base/node/extfs';
-import { join } from 'path';
+import { join } from 'vs/base/common/path';
 import { nfcall, Queue } from 'vs/base/common/async';
 import * as fs from 'fs';
 import * as os from 'os';
@@ -57,6 +57,10 @@ export function statLink(path: string): Promise<{ stat: fs.Stats, isSymbolicLink
 
 export function lstat(path: string): Promise<fs.Stats> {
 	return nfcall(fs.lstat, path);
+}
+
+export function move(oldPath: string, newPath: string): Promise<void> {
+	return nfcall(extfs.mv, oldPath, newPath);
 }
 
 export function rename(oldPath: string, newPath: string): Promise<void> {

@@ -1601,7 +1601,7 @@ declare module 'sqlops' {
 		AgentServicesProvider = 'AgentServicesProvider',
 		CapabilitiesProvider = 'CapabilitiesProvider',
 		DacFxServicesProvider = 'DacFxServicesProvider',
-		ObjectExplorerNodeProvider = 'ObjectExplorerNodeProvider',
+		ObjectExplorerNodeProvider = 'ObjectExplorerNodeProvider'
 	}
 
 	export namespace dataprotocol {

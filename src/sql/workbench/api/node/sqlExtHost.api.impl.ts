@@ -5,9 +5,8 @@
 'use strict';
 
 import * as extHostApi from 'vs/workbench/api/node/extHost.api.impl';
-import { IInitData, IMainContext } from 'vs/workbench/api/node/extHost.protocol';
+import { IInitData, IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { ExtHostExtensionService } from 'vs/workbench/api/node/extHostExtensionService';
-import { IExtensionDescription } from 'vs/workbench/services/extensions/common/extensions';
 import * as extHostTypes from 'vs/workbench/api/node/extHostTypes';
 import { URI } from 'vs/base/common/uri';
 
@@ -40,7 +39,7 @@ import { ExtHostNotebookDocumentsAndEditors } from 'sql/workbench/api/node/extHo
 import { ExtHostStorage } from 'vs/workbench/api/node/extHostStorage';
 import { ExtensionDescriptionRegistry } from 'vs/workbench/services/extensions/node/extensionDescriptionRegistry';
 import { ExtHostExtensionManagement } from 'sql/workbench/api/node/extHostExtensionManagement';
-import { ExtensionIdentifier } from 'vs/platform/extensions/common/extensions';
+import { ExtensionIdentifier, IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { TernarySearchTree } from 'vs/base/common/map';
 
 export interface ISqlExtensionApiFactory {

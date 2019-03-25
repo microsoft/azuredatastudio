@@ -5,9 +5,10 @@
 
 import { IDisposable, toDisposable, combinedDisposable } from 'vs/base/common/lifecycle';
 import { Event, Emitter, Relay } from 'vs/base/common/event';
-import { always, CancelablePromise, createCancelablePromise, timeout } from 'vs/base/common/async';
+import { CancelablePromise, createCancelablePromise, timeout } from 'vs/base/common/async';
 import { CancellationToken, CancellationTokenSource } from 'vs/base/common/cancellation';
 import * as errors from 'vs/base/common/errors';
+import { IServerChannel, IChannel } from 'vs/base/parts/ipc/common/ipc';
 
 export const enum RequestType {
 	Promise = 100,
@@ -49,27 +50,6 @@ export interface IMessagePassingProtocol {
 enum State {
 	Uninitialized,
 	Idle
-}
-
-/**
- * An `IChannel` is an abstraction over a collection of commands.
- * You can `call` several commands on a channel, each taking at
- * most one single argument. A `call` always returns a promise
- * with at most one single return value.
- */
-export interface IChannel {
-	call<T>(command: string, arg?: any, cancellationToken?: CancellationToken): Promise<T>;
-	listen<T>(event: string, arg?: any): Event<T>;
-}
-
-/**
- * An `IServerChannel` is the couter part to `IChannel`,
- * on the server-side. You should implement this interface
- * if you'd like to handle remote promises or events.
- */
-export interface IServerChannel<TContext = string> {
-	call<T>(ctx: TContext, command: string, arg?: any, cancellationToken?: CancellationToken): Promise<T>;
-	listen<T>(ctx: TContext, event: string, arg?: any): Event<T>;
 }
 
 /**
@@ -448,9 +428,7 @@ export class ChannelClient implements IChannelClient, IDisposable {
 			this.activeRequests.add(disposable);
 		});
 
-		always(result, () => this.activeRequests.delete(disposable));
-
-		return result;
+		return result.finally(() => this.activeRequests.delete(disposable));
 	}
 
 	private requestEvent(channelName: string, name: string, arg?: any): Event<any> {
@@ -690,7 +668,7 @@ export class IPCClient<TContext = string> implements IChannelClient, IChannelSer
 export function getDelayedChannel<T extends IChannel>(promise: Promise<T>): T {
 	return {
 		call(command: string, arg?: any, cancellationToken?: CancellationToken): Promise<T> {
-			return promise.then(c => c.call(command, arg, cancellationToken));
+			return promise.then(c => c.call<T>(command, arg, cancellationToken));
 		},
 
 		listen<T>(event: string, arg?: any): Event<T> {

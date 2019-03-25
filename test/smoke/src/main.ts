@@ -12,11 +12,12 @@ import * as rimraf from 'rimraf';
 import * as mkdirp from 'mkdirp';
 import { ncp } from 'ncp';
 import { Application, Quality, ApplicationOptions } from './application';
+
 //{{SQL CARBON EDIT}}
 import { setup as runProfilerTests } from './sql/profiler/profiler.test';
 //Original
 /*
-// import { setup as setupDataMigrationTests } from './areas/workbench/data-migration.test';
+import { setup as setupDataMigrationTests } from './areas/workbench/data-migration.test';
 import { setup as setupDataLossTests } from './areas/workbench/data-loss.test';
 import { setup as setupDataExplorerTests } from './areas/explorer/explorer.test';
 import { setup as setupDataPreferencesTests } from './areas/preferences/preferences.test';
@@ -34,6 +35,11 @@ import { setup as setupLaunchTests } from './areas/workbench/launch.test';
 */
 //{{END}}
 import { MultiLogger, Logger, ConsoleLogger, FileLogger } from './logger';
+
+if (!/^v10/.test(process.version)) {
+	console.error('Error: Smoketest must be run using Node 10. Currently running', process.version);
+	process.exit(1);
+}
 
 const tmpDir = tmp.dirSync({ prefix: 't' }) as { name: string; removeCallback: Function; };
 const testDataPath = tmpDir.name;
@@ -113,16 +119,16 @@ function getBuildElectronPath(root: string): string {
 }
 
 let testCodePath = opts.build;
-// let stableCodePath = opts['stable-build'];
+let stableCodePath = opts['stable-build'];
 let electronPath: string;
-// let stablePath: string;
+let stablePath: string | undefined = undefined;
 
 if (testCodePath) {
 	electronPath = getBuildElectronPath(testCodePath);
 
-	// if (stableCodePath) {
-	// 	stablePath = getBuildElectronPath(stableCodePath);
-	// }
+	if (stableCodePath) {
+		stablePath = getBuildElectronPath(stableCodePath);
+	}
 } else {
 	testCodePath = getDevElectronPath();
 	electronPath = testCodePath;
@@ -133,6 +139,10 @@ if (testCodePath) {
 
 if (!fs.existsSync(electronPath || '')) {
 	fail(`Can't find Code at ${electronPath}.`);
+}
+
+if (typeof stablePath === 'string' && !fs.existsSync(stablePath)) {
+	fail(`Can't find Stable Code at ${stablePath}.`);
 }
 
 const userDataDir = path.join(testDataPath, 'd');
@@ -222,10 +232,6 @@ after(async function () {
 
 	await new Promise((c, e) => rimraf(testDataPath, { maxBusyTries: 10 }, err => err ? e(err) : c()));
 });
-
-// describe('Data Migration', () => {
-// 	setupDataMigrationTests(userDataDir, createApp);
-// });
 
 describe('Running Code', () => {
 	before(async function () {

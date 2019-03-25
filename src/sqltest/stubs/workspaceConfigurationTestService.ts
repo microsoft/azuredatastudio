@@ -4,13 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
-import { IConfigurationData, IConfigurationOverrides, ConfigurationTarget, IConfigurationChangeEvent } from 'vs/platform/configuration/common/configuration';
+import { IConfigurationData, IConfigurationOverrides, ConfigurationTarget, IConfigurationChangeEvent, IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 import { Event } from 'vs/base/common/event';
 import { IWorkspaceFolder } from 'vs/platform/workspace/common/workspace';
 
-export class WorkspaceConfigurationTestService implements IWorkspaceConfigurationService {
+export class WorkspaceConfigurationTestService implements IConfigurationService {
 	_serviceBrand: any;
 
 	getValue<T>(): T;

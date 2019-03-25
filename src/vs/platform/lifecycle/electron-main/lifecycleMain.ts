@@ -233,7 +233,7 @@ export class LifecycleService extends Disposable implements ILifecycleService {
 			}
 		});
 
-		this.pendingWillShutdownPromise = Promise.all(joiners).then(undefined, err => this.logService.error(err));
+		this.pendingWillShutdownPromise = Promise.all(joiners).then(() => undefined, err => this.logService.error(err));
 
 		return this.pendingWillShutdownPromise;
 	}
@@ -276,7 +276,7 @@ export class LifecycleService extends Disposable implements ILifecycleService {
 		});
 
 		// Window After Closing
-		window.win.on('closed', e => {
+		window.win.on('closed', () => {
 			this.logService.trace(`Lifecycle#window.on('closed') - window ID ${window.id}`);
 
 			// update window count

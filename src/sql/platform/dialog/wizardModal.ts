@@ -16,7 +16,6 @@ import { DialogModule } from 'sql/platform/dialog/dialog.module';
 import { Button } from 'vs/base/browser/ui/button/button';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { Builder } from 'sql/base/browser/builder';
-import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
@@ -25,6 +24,7 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { Emitter } from 'vs/base/common/event';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 
 export class WizardModal extends Modal {
 	private _dialogPanes = new Map<WizardPage, DialogPane>();
@@ -48,14 +48,14 @@ export class WizardModal extends Modal {
 		private _wizard: Wizard,
 		name: string,
 		options: IModalOptions,
-		@IPartService partService: IPartService,
+		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
 		@IWorkbenchThemeService themeService: IWorkbenchThemeService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IClipboardService clipboardService: IClipboardService
 	) {
-		super(_wizard.title, name, partService, telemetryService, clipboardService, themeService, contextKeyService, options);
+		super(_wizard.title, name, telemetryService, layoutService, clipboardService, themeService, contextKeyService, options);
 		this._useDefaultMessageBoxLocation = false;
 	}
 

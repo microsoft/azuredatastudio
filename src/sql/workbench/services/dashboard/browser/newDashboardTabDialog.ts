@@ -10,7 +10,6 @@ import 'vs/css!./media/newDashboardTabDialog';
 
 import * as DOM from 'vs/base/browser/dom';
 import { List } from 'vs/base/browser/ui/list/listWidget';
-import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { Event, Emitter } from 'vs/base/common/event';
 import { localize } from 'vs/nls';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
@@ -29,6 +28,7 @@ import { NewDashboardTabViewModel, IDashboardUITab } from 'sql/workbench/service
 import { IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { Orientation } from 'vs/base/browser/ui/sash/sash';
+import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 
 class ExtensionListDelegate implements IListVirtualDelegate<IDashboardUITab> {
 
@@ -113,7 +113,7 @@ export class NewDashboardTabDialog extends Modal {
 	public get onCancel(): Event<void> { return this._onCancel.event; }
 
 	constructor(
-		@IPartService partService: IPartService,
+		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
 		@IThemeService themeService: IThemeService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
@@ -122,8 +122,8 @@ export class NewDashboardTabDialog extends Modal {
 		super(
 			localize('newDashboardTab.openDashboardExtensions', 'Open dashboard extensions'),
 			TelemetryKeys.AddNewDashboardTab,
-			partService,
 			telemetryService,
+			layoutService,
 			clipboardService,
 			themeService,
 			contextKeyService,

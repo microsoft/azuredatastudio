@@ -15,13 +15,13 @@ import { Builder } from 'sql/base/browser/builder';
 import Severity from 'vs/base/common/severity';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { SIDE_BAR_BACKGROUND, SIDE_BAR_FOREGROUND } from 'vs/workbench/common/theme';
-import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { Event, Emitter } from 'vs/base/common/event';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { localize } from 'vs/nls';
 import { IAction } from 'vs/base/common/actions';
+import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 
 const maxActions = 1;
 
@@ -44,11 +44,11 @@ export class ErrorMessageDialog extends Modal {
 	constructor(
 		@IThemeService themeService: IThemeService,
 		@IClipboardService clipboardService: IClipboardService,
-		@IPartService partService: IPartService,
+		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService
 	) {
-		super('', TelemetryKeys.ErrorMessage, partService, telemetryService, clipboardService, themeService, contextKeyService, { isFlyout: false, hasTitleIcon: true });
+		super('', TelemetryKeys.ErrorMessage, telemetryService, layoutService, clipboardService, themeService, contextKeyService, { isFlyout: false, hasTitleIcon: true });
 		this._okLabel = localize('errorMessageDialog.ok', 'OK');
 		this._closeLabel = localize('errorMessageDialog.close', 'Close');
 	}

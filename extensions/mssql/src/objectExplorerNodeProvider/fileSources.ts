@@ -150,7 +150,7 @@ export class HdfsFileSource implements IFileSource {
 		return new Promise((resolve, reject) => {
 			this.client.readdir(path, (error, files) => {
 				if (error) {
-					reject(error.message);
+					reject(error);
 				} else {
 					let hdfsFiles: IFile[] = files.map(file => {
 						let hdfsFile = <IHdfsFileStatus> file;

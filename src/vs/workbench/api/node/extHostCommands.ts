@@ -8,7 +8,7 @@ import { ICommandHandlerDescription } from 'vs/platform/commands/common/commands
 import * as extHostTypes from 'vs/workbench/api/node/extHostTypes';
 import * as extHostTypeConverter from 'vs/workbench/api/node/extHostTypeConverters';
 import { cloneAndChange } from 'vs/base/common/objects';
-import { MainContext, MainThreadCommandsShape, ExtHostCommandsShape, ObjectIdentifier, IMainContext } from './extHost.protocol';
+import { MainContext, MainThreadCommandsShape, ExtHostCommandsShape, ObjectIdentifier, IMainContext, CommandDto } from '../common/extHost.protocol';
 import { ExtHostHeapService } from 'vs/workbench/api/node/extHostHeapService';
 import { isNonEmptyArray } from 'vs/base/common/arrays';
 import * as modes from 'vs/editor/common/modes';
@@ -22,7 +22,7 @@ import { URI } from 'vs/base/common/uri';
 interface CommandHandler {
 	callback: Function;
 	thisArg: any;
-	description: ICommandHandlerDescription;
+	description?: ICommandHandlerDescription;
 }
 
 export interface ArgumentProcessor {
@@ -138,7 +138,11 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 	}
 
 	private _executeContributedCommand<T>(id: string, args: any[]): Promise<T> {
-		let { callback, thisArg, description } = this._commands.get(id);
+		const command = this._commands.get(id);
+		if (!command) {
+			throw new Error('Unknown command');
+		}
+		let { callback, thisArg, description } = command;
 		if (description) {
 			for (let i = 0; i < description.args.length; i++) {
 				try {
@@ -150,7 +154,7 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 		}
 
 		try {
-			let result = callback.apply(thisArg, args);
+			const result = callback.apply(thisArg, args);
 			return Promise.resolve(result);
 		} catch (err) {
 			this._logService.error(err, id);
@@ -207,15 +211,19 @@ export class CommandsConverter {
 		this._commands.registerCommand(true, this._delegatingCommandId, this._executeConvertedCommand, this);
 	}
 
-	toInternal(command: vscode.Command): modes.Command {
+	toInternal(command: vscode.Command): CommandDto;
+	toInternal(command: undefined): undefined;
+	toInternal(command: vscode.Command | undefined): CommandDto | undefined;
+	toInternal(command: vscode.Command | undefined): CommandDto | undefined {
 
 		if (!command) {
 			return undefined;
 		}
 
-		const result: modes.Command = {
+		const result: CommandDto = {
+			$ident: undefined,
 			id: command.command,
-			title: command.title
+			title: command.title,
 		};
 
 		if (command.command && isNonEmptyArray(command.arguments)) {
@@ -223,7 +231,7 @@ export class CommandsConverter {
 			// means we don't want to send the arguments around
 
 			const id = this._heap.keep(command);
-			ObjectIdentifier.mixin(result, id);
+			result.$ident = id;
 
 			result.id = this._delegatingCommandId;
 			result.arguments = [id];
@@ -237,10 +245,6 @@ export class CommandsConverter {
 	}
 
 	fromInternal(command: modes.Command): vscode.Command {
-
-		if (!command) {
-			return undefined;
-		}
 
 		const id = ObjectIdentifier.of(command);
 		if (typeof id === 'number') {
@@ -257,7 +261,7 @@ export class CommandsConverter {
 
 	private _executeConvertedCommand<R>(...args: any[]): Promise<R> {
 		const actualCmd = this._heap.get<vscode.Command>(args[0]);
-		return this._commands.executeCommand(actualCmd.command, ...actualCmd.arguments);
+		return this._commands.executeCommand(actualCmd.command, ...(actualCmd.arguments || []));
 	}
 
 }
