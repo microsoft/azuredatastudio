@@ -9,7 +9,6 @@ import 'vs/css!./media/accountDialog';
 import 'vs/css!sql/parts/accountManagement/common/media/accountActions';
 import * as DOM from 'vs/base/browser/dom';
 import { List } from 'vs/base/browser/ui/list/listWidget';
-import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { Event, Emitter } from 'vs/base/common/event';
 import { localize } from 'vs/nls';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
@@ -36,6 +35,7 @@ import { AccountListRenderer, AccountListDelegate } from 'sql/parts/accountManag
 import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/platform/accountManagement/common/eventTypes';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
+import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 
 class AccountPanel extends ViewletPanel {
 	public index: number;
@@ -115,7 +115,7 @@ export class AccountDialog extends Modal {
 	public get onCloseEvent(): Event<void> { return this._onCloseEmitter.event; }
 
 	constructor(
-		@IPartService partService: IPartService,
+		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
 		@IThemeService themeService: IThemeService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IContextMenuService private _contextMenuService: IContextMenuService,
@@ -128,8 +128,8 @@ export class AccountDialog extends Modal {
 		super(
 			localize('linkedAccounts', 'Linked accounts'),
 			TelemetryKeys.Accounts,
-			partService,
 			telemetryService,
+			layoutService,
 			clipboardService,
 			themeService,
 			contextKeyService,

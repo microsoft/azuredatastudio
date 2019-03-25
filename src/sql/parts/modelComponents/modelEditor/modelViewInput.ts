@@ -5,15 +5,14 @@
 
 import * as azdata from 'azdata';
 
-import { TPromise } from 'vs/base/common/winjs.base';
 import { IEditorModel } from 'vs/platform/editor/common/editor';
 import { EditorInput, EditorModel, ConfirmResult } from 'vs/workbench/common/editor';
 import * as DOM from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IPartService, Parts } from 'vs/workbench/services/part/common/partService';
 
 import { DialogPane } from 'sql/platform/dialog/dialogPane';
 import { Emitter, Event } from 'vs/base/common/event';
+import { IWorkbenchLayoutService, Parts } from 'vs/workbench/services/layout/browser/layoutService';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
 
@@ -40,11 +39,11 @@ export class ModelViewInputModel extends EditorModel {
 		this._onDidChangeDirty.fire();
 	}
 
-	save(): TPromise<boolean> {
+	save(): Promise<boolean> {
 		if (this.saveHandler) {
-			return TPromise.wrap(this.saveHandler(this.handle));
+			return Promise.resolve(this.saveHandler(this.handle));
 		}
-		return TPromise.wrap(true);
+		return Promise.resolve(true);
 	}
 }
 export class ModelViewInput extends EditorInput {
@@ -57,13 +56,13 @@ export class ModelViewInput extends EditorInput {
 	constructor(private _title: string, private _model: ModelViewInputModel,
 		private _options: azdata.ModelViewEditorOptions,
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IPartService private readonly _partService: IPartService
+		@IWorkbenchLayoutService private readonly layoutService: IWorkbenchLayoutService
 	) {
 		super();
 		this._model.onDidChangeDirty(() => this._onDidChangeDirty.fire());
 		this._container = document.createElement('div');
 		this._container.id = `modelView-${_model.modelViewId}`;
-		this._partService.getContainer(Parts.EDITOR_PART).appendChild(this._container);
+		this.layoutService.getContainer(Parts.EDITOR_PART).appendChild(this._container);
 
 	}
 
@@ -79,7 +78,7 @@ export class ModelViewInput extends EditorInput {
 		return 'ModelViewEditorInput';
 	}
 
-	public resolve(refresh?: boolean): TPromise<IEditorModel> {
+	public resolve(refresh?: boolean): Promise<IEditorModel> {
 		return undefined;
 	}
 
@@ -130,18 +129,18 @@ export class ModelViewInput extends EditorInput {
 	/**
 	 * Subclasses should bring up a proper dialog for the user if the editor is dirty and return the result.
 	 */
-	confirmSave(): TPromise<ConfirmResult> {
+	confirmSave(): Promise<ConfirmResult> {
 		// TODO #2530 support save on close / confirm save. This is significantly more work
 		// as we need to either integrate with textFileService (seems like this isn't viable)
 		// or register our own complimentary service that handles the lifecycle operations such
 		// as close all, auto save etc.
-		return TPromise.wrap(ConfirmResult.DONT_SAVE);
+		return Promise.resolve(ConfirmResult.DONT_SAVE);
 	}
 
 	/**
 	 * Saves the editor if it is dirty. Subclasses return a promise with a boolean indicating the success of the operation.
 	 */
-	save(): TPromise<boolean> {
+	save(): Promise<boolean> {
 		return this._model.save();
 	}
 

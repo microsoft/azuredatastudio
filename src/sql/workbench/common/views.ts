@@ -32,7 +32,8 @@ export interface ITreeView extends vsITreeView {
 export type TreeViewItemHandleArg = {
 	$treeViewId: string,
 	$treeItemHandle: string,
-	$treeItem?: ITreeItem
+	$treeItem?: ITreeItem,
+	$treeContainerId?: string
 };
 
 export interface ICustomViewDescriptor extends IViewDescriptor {

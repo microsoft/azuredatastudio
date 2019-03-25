@@ -5,8 +5,6 @@
 
 'use strict';
 
-import * as nls from 'vs/nls';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { IEditorModel } from 'vs/platform/editor/common/editor';
 import { EditorInput, EditorModel, ConfirmResult } from 'vs/workbench/common/editor';
 import { Emitter, Event } from 'vs/base/common/event';
@@ -23,8 +21,6 @@ import { TextFileEditorModel } from 'vs/workbench/services/textfile/common/textF
 import { Range } from 'vs/editor/common/core/range';
 import { UntitledEditorModel } from 'vs/workbench/common/editor/untitledEditorModel';
 import { Schemas } from 'vs/base/common/network';
-import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
-import { notebookModeId } from 'sql/common/constants';
 import { ITextFileService, ISaveOptions } from 'vs/workbench/services/textfile/common/textfiles';
 import { LocalContentManager } from 'sql/workbench/services/notebook/node/localContentManager';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
@@ -32,7 +28,6 @@ import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorIn
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
-
 
 export class NotebookEditorModel extends EditorModel {
 	private dirty: boolean;
@@ -47,6 +42,7 @@ export class NotebookEditorModel extends EditorModel {
 			if (notebook.id === this.notebookUri.toString()) {
 				// Hook to content change events
 				notebook.modelReady.then(() => {
+					this._register(notebook.model.kernelChanged(e => this.updateModel()));
 					this._register(notebook.model.contentChanged(e => this.updateModel()));
 				}, err => undefined);
 			}
@@ -77,18 +73,14 @@ export class NotebookEditorModel extends EditorModel {
 		this._onDidChangeDirty.fire();
 	}
 
-	public confirmSave(): TPromise<ConfirmResult> {
-		return this.textFileService.confirmSave([this.notebookUri]);
-	}
-
 	/**
 	 * UntitledEditor uses TextFileService to save data from UntitledEditorInput
 	 * Titled editor uses TextFileEditorModel to save existing notebook
 	*/
-	save(options: ISaveOptions): TPromise<boolean> {
+	save(options: ISaveOptions): Promise<boolean> {
 		if (this.textEditorModel instanceof TextFileEditorModel) {
 			this.textEditorModel.save(options);
-			return TPromise.as(true);
+			return Promise.resolve(true);
 		}
 		else {
 			return this.textFileService.save(this.notebookUri, options);
@@ -101,7 +93,8 @@ export class NotebookEditorModel extends EditorModel {
 			let content = JSON.stringify(notebookModel.toJSON(), undefined, '    ');
 			let model = this.textEditorModel.textEditorModel;
 			let endLine = model.getLineCount();
-			let endCol = model.getLineLength(endLine);
+			let endCol = model.getLineMaxColumn(endLine);
+
 			this.textEditorModel.textEditorModel.applyEdits([{
 				range: new Range(1, 1, endLine, endCol),
 				text: content
@@ -139,7 +132,6 @@ export class NotebookInput extends EditorInput {
 	private _parentContainer: HTMLElement;
 	private readonly _layoutChanged: Emitter<void> = this._register(new Emitter<void>());
 	private _model: NotebookEditorModel;
-	private _untitledEditorService: IUntitledEditorService;
 	private _contentManager: IContentManager;
 	private _providersLoaded: Promise<void>;
 
@@ -147,13 +139,11 @@ export class NotebookInput extends EditorInput {
 		private resource: URI,
 		private _textInput: UntitledEditorInput,
 		@ITextModelService private textModelService: ITextModelService,
-		@IUntitledEditorService untitledEditorService: IUntitledEditorService,
 		@IInstantiationService private instantiationService: IInstantiationService,
 		@INotebookService private notebookService: INotebookService,
 		@IExtensionService private extensionService: IExtensionService
 	) {
 		super();
-		this._untitledEditorService = untitledEditorService;
 		this.resource = resource;
 		this._standardKernels = [];
 		this._providersLoaded = this.assignProviders();
@@ -163,11 +153,11 @@ export class NotebookInput extends EditorInput {
 		return this._textInput;
 	}
 
-	public confirmSave(): TPromise<ConfirmResult> {
-		return this._model.confirmSave();
+	public confirmSave(): Promise<ConfirmResult> {
+		return this._textInput.confirmSave();
 	}
 
-	public revert(): TPromise<boolean> {
+	public revert(): Promise<boolean> {
 		return this._textInput.revert();
 	}
 
@@ -216,7 +206,7 @@ export class NotebookInput extends EditorInput {
 		return this._standardKernels;
 	}
 
-	public save(): TPromise<boolean> {
+	public save(): Promise<boolean> {
 		let options: ISaveOptions = { force: false };
 		return this._model.save(options);
 	}
@@ -256,9 +246,9 @@ export class NotebookInput extends EditorInput {
 		return this.resource;
 	}
 
-	async resolve(): TPromise<NotebookEditorModel> {
+	async resolve(): Promise<NotebookEditorModel> {
 		if (this._model && this._model.isModelCreated()) {
-			return TPromise.as(this._model);
+			return Promise.resolve(this._model);
 		} else {
 			let textOrUntitledEditorModel: UntitledEditorModel | IEditorModel;
 			if (this.resource.scheme === Schemas.untitled) {

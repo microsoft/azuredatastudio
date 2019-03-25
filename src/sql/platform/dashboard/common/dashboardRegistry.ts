@@ -164,7 +164,7 @@ const dashboardContrib: IJSONSchema = {
 	}
 };
 
-ExtensionsRegistry.registerExtensionPoint<ProviderProperties | ProviderProperties[]>('dashboard', [], dashboardContrib).setHandler(extensions => {
+ExtensionsRegistry.registerExtensionPoint<ProviderProperties | ProviderProperties[]>({ extensionPoint: 'dashboard', jsonSchema: dashboardContrib }).setHandler(extensions => {
 
 	function handleCommand(contrib: ProviderProperties, extension: IExtensionPointUser<any>) {
 		dashboardRegistry.registerDashboardProvider(contrib.provider, contrib);

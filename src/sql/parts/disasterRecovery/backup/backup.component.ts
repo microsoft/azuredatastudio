@@ -270,7 +270,7 @@ export class BackupComponent {
 		});
 
 		// Set backup path list
-		this.pathListBox = new ListBox([], '', this.contextViewService, this.clipboardService);
+		this.pathListBox = new ListBox([], this.contextViewService, this.clipboardService);
 		this.pathListBox.render(this.pathElement.nativeElement);
 
 		// Set backup path add/remove buttons

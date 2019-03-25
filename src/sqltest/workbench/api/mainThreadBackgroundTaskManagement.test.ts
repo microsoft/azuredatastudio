@@ -10,7 +10,7 @@ import { Mock, It, Times } from 'typemoq';
 import { MainThreadBackgroundTaskManagement, TaskStatus } from 'sql/workbench/api/node/mainThreadBackgroundTaskManagement';
 import { ExtHostBackgroundTaskManagementShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { ITaskService } from 'sql/platform/taskHistory/common/taskService';
-import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
+import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { TaskNode } from 'sql/parts/taskHistory/common/taskNode';
 import { Emitter } from 'vs/base/common/event';
 

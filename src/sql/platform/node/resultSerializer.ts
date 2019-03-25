@@ -12,15 +12,13 @@ import { IQueryManagementService } from 'sql/platform/query/common/queryManageme
 import { ISaveRequest, SaveFormat } from 'sql/parts/grid/common/interfaces';
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IOutputService, IOutputChannel, IOutputChannelRegistry, Extensions as OutputExtensions } from 'vs/workbench/parts/output/common/output';
-import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { IWindowsService, IWindowService, FileFilter } from 'vs/platform/windows/common/windows';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { URI } from 'vs/base/common/uri';
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { Schemas } from 'vs/base/common/network';
-import * as paths from 'vs/base/common/paths';
+import * as path from 'vs/base/common/path';
 import * as nls from 'vs/nls';
 import * as pretty from 'pretty-data';
 
@@ -30,6 +28,8 @@ import { getBaseLabel } from 'vs/base/common/labels';
 import { ShowFileInFolderAction, OpenFileInFolderAction } from 'sql/workbench/common/workspaceActions';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { getRootPath, resolveCurrentDirectory, resolveFilePath } from 'sql/platform/node/pathUtilities';
+import { IOutputService, IOutputChannelRegistry, IOutputChannel, Extensions as OutputExtensions } from 'vs/workbench/contrib/output/common/output';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 let prevSavePath: string;
 
@@ -47,7 +47,7 @@ export class ResultSerializer {
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IOutputService private _outputService: IOutputService,
 		@IQueryManagementService private _queryManagementService: IQueryManagementService,
-		@IWorkspaceConfigurationService private _workspaceConfigurationService: IWorkspaceConfigurationService,
+		@IConfigurationService private _workspaceConfigurationService: IConfigurationService,
 		@IEditorService private _editorService: IEditorService,
 		@IWorkspaceContextService private _contextService: IWorkspaceContextService,
 		@IWindowsService private _windowsService: IWindowsService,
@@ -148,11 +148,11 @@ export class ResultSerializer {
 	}
 
 	private promptForFilepath(saveRequest: ISaveRequest): Thenable<string> {
-		let filepathPlaceHolder = (prevSavePath) ? paths.dirname(prevSavePath) : resolveCurrentDirectory(this._uri, this.rootPath);
-		filepathPlaceHolder = paths.join(filepathPlaceHolder, this.getResultsDefaultFilename(saveRequest));
+		let filepathPlaceHolder = (prevSavePath) ? path.dirname(prevSavePath) : resolveCurrentDirectory(this._uri, this.rootPath);
+		filepathPlaceHolder = path.join(filepathPlaceHolder, this.getResultsDefaultFilename(saveRequest));
 		return this._windowService.showSaveDialog({
 			title: nls.localize('resultsSerializer.saveAsFileTitle', 'Choose Results File'),
-			defaultPath: paths.normalize(filepathPlaceHolder, true),
+			defaultPath: path.normalize(filepathPlaceHolder),
 			filters: this.getResultsFileExtension(saveRequest)
 		}).then(filePath => {
 			prevSavePath = filePath;
@@ -277,7 +277,7 @@ export class ResultSerializer {
 
 	private getParameters(filePath: string, batchIndex: number, resultSetNo: number, format: string, selection: Slick.Range): SaveResultsRequestParams {
 		let saveResultsParams: SaveResultsRequestParams;
-		if (!paths.isAbsolute(filePath)) {
+		if (!path.isAbsolute(filePath)) {
 			this._filePath = resolveFilePath(this._uri, filePath, this.rootPath);
 		} else {
 			this._filePath = filePath;
@@ -315,7 +315,7 @@ export class ResultSerializer {
 
 
 	private promptFileSavedNotification(savedFilePath: string) {
-		let label = getBaseLabel(paths.dirname(savedFilePath));
+		let label = getBaseLabel(path.dirname(savedFilePath));
 
 		this._notificationService.prompt(
 			Severity.Info,
@@ -323,14 +323,14 @@ export class ResultSerializer {
 			[{
 				label: nls.localize('openLocation', "Open file location"),
 				run: () => {
-					let action = new ShowFileInFolderAction(savedFilePath, label || paths.sep, this._windowsService);
+					let action = new ShowFileInFolderAction(savedFilePath, label || path.sep, this._windowsService);
 					action.run();
 					action.dispose();
 				}
 			}, {
 				label: nls.localize('openFile', "Open file"),
 				run: () => {
-					let action = new OpenFileInFolderAction(savedFilePath, label || paths.sep, this._windowsService);
+					let action = new OpenFileInFolderAction(savedFilePath, label || path.sep, this._windowsService);
 					action.run();
 					action.dispose();
 				}

@@ -5,10 +5,9 @@
 
 'use strict';
 
-import { IConnectionProfile } from './interfaces';
-import { IConnectionProfileGroup, ConnectionProfileGroup } from './connectionProfileGroup';
-import { ConnectionProfile } from './connectionProfile';
-import * as azdata from 'azdata';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { IConnectionProfileGroup, ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 /**
  * Interface for a configuration file that stores connection profiles.

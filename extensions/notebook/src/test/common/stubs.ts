@@ -14,6 +14,7 @@ export class MockExtensionContext implements vscode.ExtensionContext {
 		return relativePath;
 	}
 	storagePath: string;
+	globalStoragePath: string;
 
 	constructor() {
 		this.subscriptions = [];

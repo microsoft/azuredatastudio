@@ -18,7 +18,7 @@ import * as nls from 'vs/nls';
 import { PanelViewlet } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as DOM from 'vs/base/browser/dom';
-import { once, anyEvent } from 'vs/base/common/event';
+import { Event } from 'vs/base/common/event';
 import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
 
 class ResultsView extends Disposable implements IPanelView {
@@ -42,7 +42,7 @@ class ResultsView extends Disposable implements IPanelView {
 		this.panelViewlet.addPanels([
 			{ panel: this.messagePanel, size: this.messagePanel.minimumSize, index: 1 }
 		]);
-		anyEvent(this.gridPanel.onDidChange, this.messagePanel.onDidChange)(e => {
+		Event.any(this.gridPanel.onDidChange, this.messagePanel.onDidChange)(e => {
 			let size = this.gridPanel.maximumBodySize;
 			if (size < 1 && this.gridPanel.isVisible()) {
 				this.gridPanel.setVisible(false);
@@ -62,7 +62,7 @@ class ResultsView extends Disposable implements IPanelView {
 				this.panelViewlet.addPanels([{ panel: this.gridPanel, index: 0, size: panelSize }]);
 			}
 		});
-		let resizeList = anyEvent(this.gridPanel.onDidChange, this.messagePanel.onDidChange)(() => {
+		let resizeList = Event.any(this.gridPanel.onDidChange, this.messagePanel.onDidChange)(() => {
 			let panelSize: number;
 			if (this.state && this.state.gridPanelSize) {
 				panelSize = this.state.gridPanelSize;
@@ -78,7 +78,7 @@ class ResultsView extends Disposable implements IPanelView {
 			this.panelViewlet.resizePanel(this.gridPanel, panelSize);
 		});
 		// once the user changes the sash we should stop trying to resize the grid
-		once(this.panelViewlet.onDidSashChange)(e => {
+		Event.once(this.panelViewlet.onDidSashChange)(e => {
 			this.needsGridResize = false;
 			resizeList.dispose();
 		});

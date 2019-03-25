@@ -75,7 +75,7 @@ export const accountsContribution: IJSONSchema = {
 	]
 };
 
-ExtensionsRegistry.registerExtensionPoint<IAccountContrib | IAccountContrib[]>('account-type', [], accountsContribution).setHandler(extensions => {
+ExtensionsRegistry.registerExtensionPoint<IAccountContrib | IAccountContrib[]>({ extensionPoint: 'account-type', jsonSchema: accountsContribution }).setHandler(extensions => {
 
 	function handleCommand(account: IAccountContrib, extension: IExtensionPointUser<any>) {
 		let { icon, id } = account;
