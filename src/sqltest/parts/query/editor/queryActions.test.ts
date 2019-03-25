@@ -116,7 +116,7 @@ suite('SQL QueryAction Tests', () => {
 
 		// ... Mock "showDialog" ConnectionDialogService
 		let connectionDialogService = TypeMoq.Mock.ofType(ConnectionDialogService, TypeMoq.MockBehavior.Loose);
-		connectionDialogService.setup(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), undefined, undefined))
+		connectionDialogService.setup(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), undefined, undefined, undefined))
 			.callback((service: IConnectionManagementService, params: INewConnectionParams) => {
 				connectionParams = params;
 				countCalledShowDialog++;
@@ -138,13 +138,13 @@ suite('SQL QueryAction Tests', () => {
 		let queryAction: RunQueryAction = new RunQueryAction(editor.object, queryModelService.object, connectionManagementService.object);
 		isConnected = false;
 		calledRunQueryOnInput = false;
-		queryAction.run();
+		queryAction.run().then(() => {
+			// runQuery should not be run
+			assert.equal(calledRunQueryOnInput, false, 'run should not call runQuery');
+			testQueryInput.verify(x => x.runQuery(undefined), TypeMoq.Times.never());
+		});
 
-		// runQuery should not be run
-		assert.equal(calledRunQueryOnInput, false, 'run should not call runQuery');
-		testQueryInput.verify(x => x.runQuery(undefined), TypeMoq.Times.never());
-
-		// and the conneciton dialog should open with the correct parameter details
+		// and the connection dialog should open with the correct parameter details
 		assert.equal(countCalledShowDialog, 1, 'run should call showDialog');
 		assert.equal(connectionParams.connectionType, ConnectionType.editor, 'connectionType should be queryEditor');
 		assert.equal(connectionParams.runQueryOnCompletion, RunQueryOnConnectionMode.executeQuery, 'runQueryOnCompletion should be true`');
@@ -153,11 +153,12 @@ suite('SQL QueryAction Tests', () => {
 
 		// If I call run on RunQueryAction when I am connected
 		isConnected = true;
-		queryAction.run();
+		queryAction.run().then(() => {
+			//runQuery should be run, and the conneciton dialog should not open
+			assert.equal(calledRunQueryOnInput, true, 'run should call runQuery');
+			testQueryInput.verify(x => x.runQuery(undefined), TypeMoq.Times.once());
+		});
 
-		//runQuery should be run, and the conneciton dialog should not open
-		assert.equal(calledRunQueryOnInput, true, 'run should call runQuery');
-		testQueryInput.verify(x => x.runQuery(undefined), TypeMoq.Times.once());
 		assert.equal(countCalledShowDialog, 1, 'run should not call showDialog');
 		done();
 	});
@@ -221,7 +222,7 @@ suite('SQL QueryAction Tests', () => {
 
 		// ... Mock "showDialog" ConnectionDialogService
 		let connectionDialogService = TypeMoq.Mock.ofType(ConnectionDialogService, TypeMoq.MockBehavior.Loose);
-		connectionDialogService.setup(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), undefined, undefined))
+		connectionDialogService.setup(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), undefined, undefined, undefined))
 			.callback((service: IConnectionManagementService, params: INewConnectionParams) => {
 				showDialogConnectionParams = params;
 				countCalledShowDialog++;
@@ -379,7 +380,7 @@ suite('SQL QueryAction Tests', () => {
 
 		// ... Mock "showDialog" ConnectionDialogService
 		let connectionDialogService = TypeMoq.Mock.ofType(ConnectionDialogService, TypeMoq.MockBehavior.Loose);
-		connectionDialogService.setup(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), undefined, undefined))
+		connectionDialogService.setup(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), undefined, undefined, undefined))
 			.callback((service: IConnectionManagementService, params: INewConnectionParams) => {
 				connectionParams = params;
 				countCalledShowDialog++;
@@ -425,7 +426,7 @@ suite('SQL QueryAction Tests', () => {
 
 		// ... Mock "showDialog" ConnectionDialogService
 		let connectionDialogService = TypeMoq.Mock.ofType(ConnectionDialogService, TypeMoq.MockBehavior.Loose);
-		connectionDialogService.setup(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), undefined, undefined))
+		connectionDialogService.setup(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), undefined, undefined, undefined))
 			.callback((service: IConnectionManagementService, params: INewConnectionParams) => {
 				calledShowDialog++;
 				connectionParams = params;
@@ -442,7 +443,7 @@ suite('SQL QueryAction Tests', () => {
 		isConnected = false;
 		queryAction.run();
 
-		// The conneciton dialog should open with the params set as below
+		// The connection dialog should open with the params set as below
 		assert.equal(calledShowDialog, 1, 'showDialog should be called when URI is connected');
 		assert.equal(connectionParams.connectionType, ConnectionType.editor, 'connectionType should be queryEditor');
 		assert.equal(connectionParams.runQueryOnCompletion, false, 'runQueryOnCompletion should be false`');

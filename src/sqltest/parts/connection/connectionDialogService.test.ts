@@ -36,6 +36,7 @@ suite('ConnectionDialogService tests', () => {
 			undefined,
 			undefined,
 			undefined,
+			undefined,
 			new ContextKeyServiceStub()
 		);
 		mockConnectionDialog.setup(c => c.resetConnection());
@@ -67,7 +68,7 @@ suite('ConnectionDialogService tests', () => {
 			() => Promise.resolve(<IConnectionResult>{ connected: true, errorMessage: undefined, errorCode: undefined }));
 
 		// If I call handleDefaultOnConnect with the given parameters
-		let thenable: Thenable<void> = (connectionDialogService as any).handleDefaultOnConnect(connectionParams, undefined);
+		let thenable: Thenable<void> = (connectionDialogService as any).handleDefaultOnConnect(connectionParams, undefined, undefined);
 		return thenable.then(() => {
 			// Then the Connection Management Service's connect method was called with the expected URI
 			let expectedUri = isEditor ? testUri : undefined;
