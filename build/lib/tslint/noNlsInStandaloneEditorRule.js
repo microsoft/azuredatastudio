@@ -1,7 +1,7 @@
 "use strict";
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
 const ts = require("typescript");
@@ -9,15 +9,19 @@ const Lint = require("tslint");
 const path_1 = require("path");
 class Rule extends Lint.Rules.AbstractRule {
     apply(sourceFile) {
-        if (/vs(\/|\\)editor/.test(sourceFile.fileName)) {
-            // the vs/editor folder is allowed to use the standalone editor
-            return [];
+        console.log(sourceFile.fileName);
+        if (/vs(\/|\\)editor(\/|\\)standalone(\/|\\)/.test(sourceFile.fileName)
+            || /vs(\/|\\)editor(\/|\\)common(\/|\\)standalone(\/|\\)/.test(sourceFile.fileName)
+            || /vs(\/|\\)editor(\/|\\)editor.api/.test(sourceFile.fileName)
+            || /vs(\/|\\)editor(\/|\\)editor.main/.test(sourceFile.fileName)
+            || /vs(\/|\\)editor(\/|\\)editor.worker/.test(sourceFile.fileName)) {
+            return this.applyWithWalker(new NoNlsInStandaloneEditorRuleWalker(sourceFile, this.getOptions()));
         }
-        return this.applyWithWalker(new NoStandaloneEditorRuleWalker(sourceFile, this.getOptions()));
+        return [];
     }
 }
 exports.Rule = Rule;
-class NoStandaloneEditorRuleWalker extends Lint.RuleWalker {
+class NoNlsInStandaloneEditorRuleWalker extends Lint.RuleWalker {
     constructor(file, opts) {
         super(file, opts);
     }
@@ -37,21 +41,15 @@ class NoStandaloneEditorRuleWalker extends Lint.RuleWalker {
             this._validateImport(path.getText(), node);
         }
     }
-    // {{SQL CARBON EDIT}} - Rename node argument to _node to prevent errors since it is not used
-    _validateImport(path, _node) {
+    _validateImport(path, node) {
         // remove quotes
         path = path.slice(1, -1);
         // resolve relative paths
         if (path[0] === '.') {
             path = path_1.join(this.getSourceFile().fileName, path);
         }
-        if (/vs(\/|\\)editor(\/|\\)standalone(\/|\\)/.test(path)
-            || /vs(\/|\\)editor(\/|\\)common(\/|\\)standalone(\/|\\)/.test(path)
-            || /vs(\/|\\)editor(\/|\\)editor.api/.test(path)
-            || /vs(\/|\\)editor(\/|\\)editor.main/.test(path)
-            || /vs(\/|\\)editor(\/|\\)editor.worker/.test(path)) {
-            // {{SQL CARBON EDIT}}
-            //this.addFailure(this.createFailure(node.getStart(), node.getWidth(), `Not allowed to import standalone editor modules. See https://github.com/Microsoft/vscode/wiki/Code-Organization`));
+        if (/vs(\/|\\)nls/.test(path)) {
+            this.addFailure(this.createFailure(node.getStart(), node.getWidth(), `Not allowed to import vs/nls in standalone editor modules. Use standaloneStrings.ts`));
         }
     }
 }
