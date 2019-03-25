@@ -6,6 +6,7 @@ import {
 	Component, Inject, ViewContainerRef, forwardRef, AfterContentInit,
 	ComponentFactoryResolver, ViewChild, ChangeDetectorRef, Injector
 } from '@angular/core';
+import * as fs from 'fs';
 import { Observable } from 'rxjs/Observable';
 
 import { DashboardWidget, IDashboardWidget, WIDGET_CONFIG, WidgetConfig } from 'sql/parts/dashboard/common/dashboardWidget';
@@ -300,28 +301,15 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 			let match = filePath.match(insertValueRegex);
 			if (match && match.length > 0 && match[1] === 'workspaceRoot') {
 				filePath = filePath.replace(match[0], '');
-
-				//filePath = this.dashboardService.workspaceContextService.toResource(filePath).fsPath;
 				switch (this.workspaceContextService.getWorkbenchState()) {
 					case WorkbenchState.FOLDER:
 						filePath = this.workspaceContextService.getWorkspace().folders[0].toResource(filePath).fsPath;
 						break;
 					case WorkbenchState.WORKSPACE:
-						let filePathArray = filePath.split('/');
-						// filter out empty sections
-						filePathArray = filePathArray.filter(i => !!i);
-						let folder = this.workspaceContextService.getWorkspace().folders.find(i => i.name === filePathArray[0]);
-						if (!folder) {
-							return Promise.reject(new Error(`Could not find workspace folder ${filePathArray[0]}`));
-						}
-						// remove the folder name from the filepath
-						filePathArray.shift();
-						// rejoin the filepath after doing the work to find the right folder
-						filePath = '/' + filePathArray.join('/');
-						filePath = folder.toResource(filePath).fsPath;
-						break;
+						// Look through all the folders in the workspace use the first one that has the file we're looking for
+						let filePaths = this.workspaceContextService.getWorkspace().folders.map(f => f.toResource(filePath)).filter(p => fs.existsSync(p.fsPath));
+						filePath = filePaths.length > 0 ? filePaths[0].fsPath : filePath;
 				}
-
 			}
 			promises.push(new Promise((resolve, reject) => {
 				pfs.readFile(filePath).then(
