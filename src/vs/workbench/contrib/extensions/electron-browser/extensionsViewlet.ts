@@ -71,8 +71,8 @@ const viewIdNameMappings: { [id: string]: string } = {
 	'extensions.listView': localize('marketPlace', "Marketplace"),
 	'extensions.enabledExtensionList': localize('enabledExtensions', "Enabled"),
 	'extensions.disabledExtensionList': localize('disabledExtensions', "Disabled"),
-	'extensions.popularExtensionsList': localize('popularExtensions', "Popular"),
 	// {{SQL CARBON EDIT}}
+	// 'extensions.popularExtensionsList': localize('popularExtensions', "Popular"),
 	'extensions.recommendedList': localize('recommendedExtensions', "Marketplace"),
 	'extensions.otherrecommendedList': localize('otherRecommendedExtensions', "Other Recommendations"),
 	'extensions.workspaceRecommendedList': localize('workspaceRecommendedExtensions', "Workspace Recommendations"),
@@ -94,7 +94,8 @@ export class ExtensionsViewletViewsContribution implements IWorkbenchContributio
 		viewDescriptors.push(this.createMarketPlaceExtensionsListViewDescriptor());
 		viewDescriptors.push(this.createEnabledExtensionsListViewDescriptor());
 		viewDescriptors.push(this.createDisabledExtensionsListViewDescriptor());
-		viewDescriptors.push(this.createPopularExtensionsListViewDescriptor());
+		// {{SQL CARBON EDIT}}
+		// viewDescriptors.push(this.createPopularExtensionsListViewDescriptor());
 		viewDescriptors.push(this.createBuiltInExtensionsListViewDescriptor());
 		viewDescriptors.push(this.createBuiltInBasicsExtensionsListViewDescriptor());
 		viewDescriptors.push(this.createBuiltInThemesExtensionsListViewDescriptor());
@@ -153,19 +154,20 @@ export class ExtensionsViewletViewsContribution implements IWorkbenchContributio
 		};
 	}
 
-	// Separate view for popular extensions required as we need to show popular and recommended sections
-	// in the default view when there is no search text, and user has no installed extensions.
-	private createPopularExtensionsListViewDescriptor(): IViewDescriptor {
-		const id = 'extensions.popularExtensionsList';
-		return {
-			id,
-			name: viewIdNameMappings[id],
-			ctorDescriptor: { ctor: ExtensionsListView },
-			when: ContextKeyExpr.and(ContextKeyExpr.not('searchExtensions'), ContextKeyExpr.not('hasInstalledExtensions')),
-			weight: 60,
-			order: 1
-		};
-	}
+	// {{SQL CARBON EDIT}}
+	// // Separate view for popular extensions required as we need to show popular and recommended sections
+	// // in the default view when there is no search text, and user has no installed extensions.
+	// private createPopularExtensionsListViewDescriptor(): IViewDescriptor {
+	// 	const id = 'extensions.popularExtensionsList';
+	// 	return {
+	// 		id,
+	// 		name: viewIdNameMappings[id],
+	// 		ctorDescriptor: { ctor: ExtensionsListView },
+	// 		when: ContextKeyExpr.and(ContextKeyExpr.not('searchExtensions'), ContextKeyExpr.not('hasInstalledExtensions')),
+	// 		weight: 60,
+	// 		order: 1
+	// 	};
+	// }
 
 	private createExtensionsViewDescriptorsForServer(server: IExtensionManagementServer): IViewDescriptor[] {
 		return [{
@@ -406,7 +408,8 @@ export class ExtensionsViewlet extends ViewContainerViewlet implements IExtensio
 				this.instantiationService.createInstance(ShowDisabledExtensionsAction, ShowDisabledExtensionsAction.ID, ShowDisabledExtensionsAction.LABEL),
 				this.instantiationService.createInstance(ShowBuiltInExtensionsAction, ShowBuiltInExtensionsAction.ID, ShowBuiltInExtensionsAction.LABEL),
 				this.instantiationService.createInstance(ShowRecommendedExtensionsAction, ShowRecommendedExtensionsAction.ID, ShowRecommendedExtensionsAction.LABEL),
-				this.instantiationService.createInstance(ShowPopularExtensionsAction, ShowPopularExtensionsAction.ID, ShowPopularExtensionsAction.LABEL),
+				// {{SQL CARBON EDIT}}
+				// this.instantiationService.createInstance(ShowPopularExtensionsAction, ShowPopularExtensionsAction.ID, ShowPopularExtensionsAction.LABEL),
 				new Separator(),
 				// {{SQL CARBON EDIT}}
 				//this.instantiationService.createInstance(ChangeSortAction, 'extensions.sort.install', localize('sort by installs', "Sort By: Install Count"), this.onSearchChange, 'installs'),
