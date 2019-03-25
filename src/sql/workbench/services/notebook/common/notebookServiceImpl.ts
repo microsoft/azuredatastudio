@@ -114,7 +114,10 @@ export class NotebookService extends Disposable implements INotebookService {
 		// So, explicitly updating registered providers here.
 		if (notebookRegistry.providers.length > 0) {
 			notebookRegistry.providers.forEach(p => {
-				this.updateRegisteredProviders({id: p.provider, registration: p});
+				// Don't need to re-register SQL_NOTEBOOK_PROVIDER
+				if (p.provider !== SQL_NOTEBOOK_PROVIDER) {
+					this.updateRegisteredProviders({id: p.provider, registration: p});
+				}
 			});
 		}
 
