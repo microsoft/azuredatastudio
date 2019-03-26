@@ -66,7 +66,7 @@ export function textFormatter(row: number, cell: any, value: any, columnDef: any
 }
 
 /**
- * Provide slick grid cell with encoded ariaLabel and text.
+ * Provide slick grid cell with encoded ariaLabel and plain text.
  * text will be escaped by the textFormatter and ariaLabel will be consumed by slickgrid directly.
  */
 export function slickGridDataItemColumnValueExtractor(value: any, columnDef: any): { text: string; ariaLabel: string; } {
