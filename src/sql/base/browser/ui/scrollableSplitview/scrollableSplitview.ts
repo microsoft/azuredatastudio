@@ -41,7 +41,7 @@ const defaultStyles: ISplitViewStyles = {
 };
 
 const defaultOptions: ISplitViewOptions = {
-	enableResizing: true
+	enableResizing: false
 };
 
 export interface IView extends HeightIView {

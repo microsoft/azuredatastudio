@@ -10,7 +10,6 @@ import { IEditorDescriptor } from 'vs/workbench/browser/editor';
 import { URI } from 'vs/base/common/uri';
 import * as DOM from 'vs/base/browser/dom';
 import { Memento } from 'vs/workbench/common/memento';
-import { Builder } from 'sql/base/browser/builder';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 
 import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
@@ -28,24 +27,17 @@ import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
-import { INotificationService } from 'vs/platform/notification/common/notification';
-import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { ConfigurationService } from 'vs/platform/configuration/node/configurationService';
 import { TestStorageService } from 'vs/workbench/test/workbenchTestServices';
 
 suite('SQL QueryEditor Tests', () => {
-	let queryModelService: QueryModelService;
 	let instantiationService: TypeMoq.Mock<InstantiationService>;
 	let themeService: TestThemeService = new TestThemeService();
-	let notificationService: TypeMoq.Mock<INotificationService>;
 	let editorDescriptorService: TypeMoq.Mock<EditorDescriptorService>;
 	let connectionManagementService: TypeMoq.Mock<ConnectionManagementService>;
 	let configurationService: TypeMoq.Mock<ConfigurationService>;
 	let memento: TypeMoq.Mock<Memento>;
 
-	let queryInput: QueryInput;
-	let queryInput2: QueryInput;
-	let parentBuilder: Builder;
 	let mockEditor: any;
 
 	let getQueryEditor = function (): QueryEditor {
@@ -64,10 +56,6 @@ suite('SQL QueryEditor Tests', () => {
 	};
 
 	setup(() => {
-		// Setup DOM elements
-		let element = DOM.$('queryEditorParent');
-		parentBuilder = new Builder(element);
-
 		// Create object to mock the Editor classes
 		// QueryResultsEditor fails at runtime due to the way we are importing Angualar,
 		// so a {} mock is used here. This mock simply needs to have empty method stubs
@@ -119,23 +107,6 @@ suite('SQL QueryEditor Tests', () => {
 			return { enablePreviewFeatures: true };
 		});
 
-		// Create a QueryInput
-		let filePath = 'file://someFile.sql';
-		let uri: URI = URI.parse(filePath);
-		let fileInput = new UntitledEditorInput(uri, false, '', '', '', instantiationService.object, undefined, undefined);
-		let queryResultsInput: QueryResultsInput = new QueryResultsInput(uri.fsPath, configurationService.object);
-		queryInput = new QueryInput('first', fileInput, queryResultsInput, undefined, undefined, undefined, undefined, undefined);
-
-		// Create a QueryInput to compare to the previous one
-		let filePath2 = 'file://someFile2.sql';
-		let uri2: URI = URI.parse(filePath2);
-		let fileInput2 = new UntitledEditorInput(uri2, false, '', '', '', instantiationService.object, undefined, undefined);
-		let queryResultsInput2: QueryResultsInput = new QueryResultsInput(uri2.fsPath, configurationService.object);
-		queryInput2 = new QueryInput('second', fileInput2, queryResultsInput2, undefined, undefined, undefined, undefined, undefined);
-
-		// Mock IMessageService
-		notificationService = TypeMoq.Mock.ofType(TestNotificationService, TypeMoq.MockBehavior.Loose);
-
 		// Mock ConnectionManagementService
 		memento = TypeMoq.Mock.ofType(Memento, TypeMoq.MockBehavior.Loose, '');
 		memento.setup(x => x.getMemento(TypeMoq.It.isAny())).returns(() => void 0);
@@ -144,15 +115,12 @@ suite('SQL QueryEditor Tests', () => {
 		connectionManagementService.setup(x => x.isConnected(TypeMoq.It.isAny())).returns(() => false);
 		connectionManagementService.setup(x => x.disconnectEditor(TypeMoq.It.isAny())).returns(() => void 0);
 		connectionManagementService.setup(x => x.ensureDefaultLanguageFlavor(TypeMoq.It.isAnyString())).returns(() => void 0);
-
-		// Create a QueryModelService
-		queryModelService = new QueryModelService(instantiationService.object, notificationService.object);
 	});
 
 	test('createEditor creates only the taskbar', (done) => {
 		// If I call createEditor
 		let editor: QueryEditor = getQueryEditor();
-		editor.createEditor(parentBuilder.getHTMLElement());
+		editor.createEditor(DOM.$('queryEditorParent'));
 
 		// The taskbar should be created
 		assert.equal(!!editor.taskbar, true);

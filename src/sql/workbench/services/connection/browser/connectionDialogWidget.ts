@@ -201,7 +201,7 @@ export class ConnectionDialogWidget extends Modal {
 		this._bodyBuilder.div({ class: 'connection-type' }, (modelTableContent) => {
 			modelTableContent.element('table', { class: 'connection-table-content' }, (tableContainer) => {
 				DialogHelper.appendInputSelectBox(
-					DialogHelper.appendRow(tableContainer, connectTypeLabel, 'connection-label', 'connection-input'), this._providerTypeSelectBox);
+					DialogHelper.appendRow(tableContainer.getHTMLElement(), connectTypeLabel, 'connection-label', 'connection-input'), this._providerTypeSelectBox);
 			});
 		});
 
