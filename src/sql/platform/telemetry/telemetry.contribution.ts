@@ -9,7 +9,6 @@ import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
-import { isActive } from 'windows-mutex';
 
 export class SqlTelemetryContribution extends Disposable implements IWorkbenchContribution {
 
