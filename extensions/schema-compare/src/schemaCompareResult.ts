@@ -46,7 +46,7 @@ export class SchemaCompareResult {
 			this.diffEditor = view.modelBuilder.diffeditor().withProperties({
 				contentLeft: '\n',
 				contentRight: '\n',
-				height: 300,
+				height: 500,
 				title: localize('schemaCompare.ObjectDefinitionsTitle', 'Object Definitions')
 			}).component();
 
@@ -73,11 +73,13 @@ export class SchemaCompareResult {
 			this.createGenerateScriptButton(view);
 
 			let toolBar = view.modelBuilder.toolbarContainer();
-
 			toolBar.addToolbarItems([{
-				component: this.compareButton,
-			},{
-				component: this.generateScriptButton,
+				component: this.compareButton
+			}, {
+				component: this.generateScriptButton
+			},
+			{
+				component: this.switchButton
 			}]);
 
 			let sourceLabel = view.modelBuilder.text().withProperties({
@@ -88,9 +90,13 @@ export class SchemaCompareResult {
 				value: localize('schemaCompare.targetLabel', 'Target:')
 			}).component();
 
+			let switchLabel = view.modelBuilder.text().withProperties({
+				value: localize('schemaCompare.switchLabel', '🡲')
+			}).component();
+
 			this.sourceTargetFlexLayout.addItem(sourceLabel, { CSSStyles: { 'width': '5%', 'margin-left': '1em' } });
 			this.sourceTargetFlexLayout.addItem(this.sourceDropdown, { CSSStyles: { 'width': '40%', 'margin': '1em' } });
-			this.sourceTargetFlexLayout.addItem(this.switchButton, { CSSStyles: { 'width': '3em', 'margin': '1em' } });
+			this.sourceTargetFlexLayout.addItem(switchLabel, { CSSStyles: { 'width': '3em', 'font-size': 'larger', 'text-align-last':'center'} });
 			this.sourceTargetFlexLayout.addItem(targetLabel, { CSSStyles: { 'width': '5%', 'margin-left': '1em' } });
 			this.sourceTargetFlexLayout.addItem(this.targetDropdown, { CSSStyles: { 'width': '40%', 'margin': '1em' } });
 
@@ -100,11 +106,12 @@ export class SchemaCompareResult {
 			}).component();
 
 			this.flexModel = view.modelBuilder.flexContainer().component();
-			this.flexModel.addItem(toolBar.component());
-			this.flexModel.addItem(this.sourceTargetFlexLayout);
+			this.flexModel.addItem(toolBar.component(), { flex: 'none'});
+			this.flexModel.addItem(this.sourceTargetFlexLayout, { flex: 'none'});
 			this.flexModel.addItem(this.loader);
 			this.flexModel.setLayout({
-				flexFlow: 'column'
+				flexFlow: 'column',
+				height: '100%'
 			});
 
 			await view.initializeModel(this.flexModel);
@@ -153,7 +160,7 @@ export class SchemaCompareResult {
 		this.splitView.addItem(this.diffEditor);
 		this.splitView.setLayout({
 			orientation: 'vertical',
-			splitViewHeight: 700
+			splitViewHeight: 800
 		});
 
 		this.flexModel.removeItem(this.loader);
@@ -166,7 +173,7 @@ export class SchemaCompareResult {
 		}
 
 		if (this.comparisonResult.differences.length > 0) {
-			this.flexModel.addItem(this.splitView, {flex: '1, 1'});
+			this.flexModel.addItem(this.splitView);
 		} else {
 			this.flexModel.addItem(this.noDifferencesLabel, { CSSStyles: { 'margin': 'auto' } });
 		}
@@ -226,25 +233,15 @@ export class SchemaCompareResult {
 		return script;
 	}
 
-	private createSwitchButton(view: azdata.ModelView) {
-		this.switchButton = view.modelBuilder.button().withProperties({
-			label: '⇄',
-			enabled: false
-		}).component();
-
-		this.switchButton.onDidClick(async (click) => {
-			// switch source and target
-			[this.sourceDropdown.values, this.targetDropdown.values] = [this.targetDropdown.values, this.sourceDropdown.values];
-			[this.sourceEndpointInfo, this.targetEndpointInfo] = [this.targetEndpointInfo, this.sourceEndpointInfo];
-			[this.sourceName, this.targetName] = [this.targetName, this.sourceName];
-			this.reExecute();
-		});
-	}
-
 	private reExecute() {
 		this.flexModel.removeItem(this.splitView);
 		this.flexModel.removeItem(this.noDifferencesLabel);
 		this.flexModel.addItem(this.loader);
+		this.diffEditor.updateProperties({
+			contentLeft: '\n',
+			contentRight: '\n'
+		});
+		this.differencesTable.selectedRows = null;
 		this.compareButton.enabled = false;
 		this.switchButton.enabled = false;
 		this.generateScriptButton.enabled = false;
@@ -301,6 +298,24 @@ export class SchemaCompareResult {
 				vscode.window.showErrorMessage(
 					localize('schemaCompare.generateScriptErrorMessage', "Generate Script failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
 			}
+		});
+	}
+
+	private createSwitchButton(view: azdata.ModelView) {
+		let swapIcon = path.join(__dirname, '.', 'media', 'swap.png');
+
+		this.switchButton = view.modelBuilder.button().withProperties({
+			label: localize('schemaCompare.switchDirectionButton', 'Switch Direction'),
+			iconPath: swapIcon,
+			enabled: false
+		}).component();
+
+		this.switchButton.onDidClick(async (click) => {
+			// switch source and target
+			[this.sourceDropdown.values, this.targetDropdown.values] = [this.targetDropdown.values, this.sourceDropdown.values];
+			[this.sourceEndpointInfo, this.targetEndpointInfo] = [this.targetEndpointInfo, this.sourceEndpointInfo];
+			[this.sourceName, this.targetName] = [this.targetName, this.sourceName];
+			this.reExecute();
 		});
 	}
 
