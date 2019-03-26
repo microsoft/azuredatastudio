@@ -23,6 +23,8 @@ import * as DOM from 'vs/base/browser/dom';
 import types = require('vs/base/common/types');
 import { elementAt } from 'rxjs/operator/elementAt';
 import { componentFactoryName } from '@angular/compiler';
+import TableComponent from 'sql/parts/modelComponents/table.component';
+import DiffEditorComponent from 'sql/parts/modelComponents/diffeditor.component';
 
 
 class SplitPane implements IView {
@@ -34,6 +36,25 @@ class SplitPane implements IView {
 	component: ComponentBase;
 	layout(size: number): void {
 		this.size = size;
+		try {
+			if (this.component instanceof TableComponent) {
+				this.component.setProperties({
+					height: size,
+					data: this.component.data,
+					columns: this.component.columns
+				});
+			} else if (this.component instanceof DiffEditorComponent){
+				this.component.setProperties({
+					height: size,
+					title: this.component.title
+					// contentLef
+				});
+			} else {
+				this.component.setProperties({
+					height: size
+				});
+			}
+		} catch {}
 	}
 }
 class FlexItem {

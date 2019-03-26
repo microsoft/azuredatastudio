@@ -3264,6 +3264,10 @@ declare module 'azdata' {
 		 */
 		minimumHeight: number;
 
+		/**
+		 * Optional title
+		 */
+		title?: string;
 	}
 
 	export interface ButtonComponent extends Component, ButtonProperties {

@@ -36,7 +36,13 @@ import { BaseTextEditorModel } from 'vs/workbench/common/editor/textEditorModel'
 import { CancellationTokenSource } from 'vs/base/common/cancellation';
 
 @Component({
-	template: '',
+	template: `
+	<div *ngIf="_title">
+		<div style="width: 100%; height:100%; padding-left:3px !important; background: #F4F4F4; border: 1px solid #BFBDBD;">
+			{{_title}}
+		</div>
+	</div>
+`,
 	selector: 'modelview-diff-editor-component'
 })
 export default class DiffEditorComponent extends ComponentBase implements IComponent, OnDestroy {
@@ -51,7 +57,7 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 	private _isAutoResizable: boolean;
 	private _minimumHeight: number;
 	private _instancetiationService: IInstantiationService;
-
+	protected _title: string;
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
@@ -63,6 +69,7 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 	}
 
 	ngOnInit(): void {
+		// this._title = 'Object Definitions';
 		this.baseInit();
 		this._createEditor();
 		this._register(DOM.addDisposableListener(window, DOM.EventType.RESIZE, e => {
@@ -183,6 +190,7 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 		//this.editorUri = this._uri;
 		this._isAutoResizable = this.isAutoResizable;
 		this._minimumHeight = this.minimumHeight;
+		this._title = this.title;
 		this.layout();
 		this.validate();
 	}
@@ -234,5 +242,13 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 
 	public set editorUri(newValue: string) {
 		this.setPropertyFromUI<sqlops.EditorProperties, string>((properties, editorUri) => { properties.editorUri = editorUri; }, newValue);
+	}
+
+	public get title(): string {
+		return this.getPropertyOrDefault<sqlops.EditorProperties, string>((props) => props.title, undefined);
+	}
+
+	public set title(newValue: string) {
+		this.setPropertyFromUI<sqlops.EditorProperties, string>((properties, title) => { properties.title = title; }, newValue);
 	}
 }

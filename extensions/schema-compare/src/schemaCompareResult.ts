@@ -16,13 +16,10 @@ export class SchemaCompareResult {
 	private differencesTable: azdata.TableComponent;
 	private loader: azdata.LoadingComponent;
 	private editor: azdata.workspace.ModelViewEditor;
-	private diffContainer: azdata.FlexContainer;
 	private diffEditor: azdata.DiffEditorComponent;
-	private diffTitle: azdata.TableComponent;
 	private splitView: azdata.SplitViewContainer;
 	private flexModel: azdata.FlexContainer;
 	private noDifferencesLabel: azdata.TextComponent;
-	private webViewComponent: azdata.WebViewComponent;
 	private sourceDropdown: azdata.DropDownComponent;
 	private targetDropdown: azdata.DropDownComponent;
 	private sourceTargetFlexLayout: azdata.FlexContainer;
@@ -41,39 +38,19 @@ export class SchemaCompareResult {
 		this.editor = azdata.workspace.createModelViewEditor(localize('schemaCompare.Title', 'Schema Compare'), { retainContextWhenHidden: true, supportsSave: true });
 
 		this.editor.registerContent(async view => {
-			// this.diffEditor = view.modelBuilder.diffeditor().withProperties({
-			// 	contentLeft: '\n',
-			// 	contentRight: '\n',
-			// }).component();
-
 			this.differencesTable = view.modelBuilder.table().withProperties({
 				data: [],
-				height: 200,
+				height: 300,
 			}).component();
 
 			this.diffEditor = view.modelBuilder.diffeditor().withProperties({
-				contentLeft: '',
-				contentRight: '',
-				height: 300
+				contentLeft: '\n',
+				contentRight: '\n',
+				height: 300,
+				title: localize('schemaCompare.ObjectDefinitionsTitle', 'Object Definitions')
 			}).component();
-
-			this.diffTitle = view.modelBuilder.table().withProperties({
-				data: [],
-				height: 30
-			}).component();
-
-			this.diffContainer = view.modelBuilder.flexContainer().component();
 
 			this.splitView = view.modelBuilder.splitViewContainer().component();
-
-			// let html = fs.readFileSync('../../extensions/import/out/dialogs/table.html');
-
-			// this.webViewComponent = view.modelBuilder.webView().withProperties({
-			// 	html: html.toString(),
-			// 	options: {
-			// 		enableScripts: true
-			// 	}
-			// }).component();
 
 			this.sourceDropdown = view.modelBuilder.dropDown().withProperties({
 				values: [sourceName],
@@ -95,13 +72,13 @@ export class SchemaCompareResult {
 			this.createCompareButton(view);
 			this.createGenerateScriptButton(view);
 
-			let buttonsFlexLayout = view.modelBuilder.flexContainer()
-				.withProperties({
-					horizontal: true
-				}).component();
+			let toolBar = view.modelBuilder.toolbarContainer();
 
-			buttonsFlexLayout.addItem(this.compareButton, { CSSStyles: { 'width': '100px', 'margin': '20px 20px 0px' } });
-			buttonsFlexLayout.addItem(this.generateScriptButton, { CSSStyles: { 'width': '120px', 'margin': '20px 0px 0px' } });
+			toolBar.addToolbarItems([{
+				component: this.compareButton,
+			},{
+				component: this.generateScriptButton,
+			}]);
 
 			let sourceLabel = view.modelBuilder.text().withProperties({
 				value: localize('schemaCompare.sourceLabel', 'Source:')
@@ -123,14 +100,11 @@ export class SchemaCompareResult {
 			}).component();
 
 			this.flexModel = view.modelBuilder.flexContainer().component();
-			// this.flexModel.addItem(buttonsFlexLayout);
+			this.flexModel.addItem(toolBar.component());
 			this.flexModel.addItem(this.sourceTargetFlexLayout);
 			this.flexModel.addItem(this.loader);
-			// this.flexModel.addItem(this.webViewComponent);
 			this.flexModel.setLayout({
-				flexFlow: 'column',
-				// alignItems: 'stretch',
-				// height: '100%'
+				flexFlow: 'column'
 			});
 
 			await view.initializeModel(this.flexModel);
@@ -175,29 +149,11 @@ export class SchemaCompareResult {
 				}]
 		});
 
-		this.diffTitle.updateProperties({
-			data: [],
-			columns:[
-				{
-					value: localize('schemaCompare.ScriptDifference', 'Object Definitions'),
-					cssClass: 'align-with-header',
-					width: '100%'
-				}
-			]
-		});
-
-		this.diffContainer.addItem(this.diffTitle);
-		this.diffContainer.addItem(this.diffEditor);
-		this.diffContainer.setLayout({
-			flexFlow: 'column',
-
-		});
-
 		this.splitView.addItem(this.differencesTable);
-		this.splitView.addItem(this.diffContainer);
+		this.splitView.addItem(this.diffEditor);
 		this.splitView.setLayout({
 			orientation: 'vertical',
-			splitViewHeight: 500
+			splitViewHeight: 700
 		});
 
 		this.flexModel.removeItem(this.loader);
@@ -211,8 +167,6 @@ export class SchemaCompareResult {
 
 		if (this.comparisonResult.differences.length > 0) {
 			this.flexModel.addItem(this.splitView, {flex: '1, 1'});
-			//this.flexModel.addItem(this.differencesTable, { flex: '1 1' });
-			// this.flexModel.addItem(this.diffEditor, { flex: '1 1' });
 		} else {
 			this.flexModel.addItem(this.noDifferencesLabel, { CSSStyles: { 'margin': 'auto' } });
 		}
@@ -223,17 +177,10 @@ export class SchemaCompareResult {
 				sourceText = difference.sourceScript === null ? '\n' : this.getAggregatedScript(difference, true);
 				targetText = difference.targetScript === null ? '\n' : this.getAggregatedScript(difference, false);
 
-				// this.diffEditor.contentLeft = sourceText;
-				// this.diffEditor.contentRight = targetText;
-
-				let objectName = difference.sourceValue === null ? difference.targetValue : difference.sourceValue;
-				const title = localize('schemaCompare.objectDefinitionsTitle', '{0} (Source ⟷ Target)', objectName);
-				//vscode.commands.executeCommand('vscode.diff', vscode.Uri.parse('source:'), vscode.Uri.parse('target:'), title);
 				this.diffEditor.updateProperties({
 					contentLeft: sourceText,
 					contentRight: targetText
 				});
-
 			}
 		});
 
@@ -294,19 +241,8 @@ export class SchemaCompareResult {
 		});
 	}
 
-	private createCompareButton(view: azdata.ModelView) {
-		this.compareButton = view.modelBuilder.button().withProperties({
-			label: localize('schemaCompare.compareButton', 'Compare'),
-			enabled: false
-		}).component();
-
-		this.compareButton.onDidClick(async (click) => {
-			this.reExecute();
-		});
-	}
-
 	private reExecute() {
-		this.flexModel.removeItem(this.differencesTable);
+		this.flexModel.removeItem(this.splitView);
 		this.flexModel.removeItem(this.noDifferencesLabel);
 		this.flexModel.addItem(this.loader);
 		this.compareButton.enabled = false;
@@ -315,11 +251,29 @@ export class SchemaCompareResult {
 		this.execute();
 	}
 
+	private createCompareButton(view: azdata.ModelView) {
+		let runIcon = path.join(__dirname, '.', 'media', 'start.svg');
+
+		this.compareButton = view.modelBuilder.button().withProperties({
+			label: localize('schemaCompare.compareButton', 'Compare'),
+			iconPath: runIcon,
+			enabled: false,
+			title: localize('schemaCompare.compareButtonTitle','Compare')
+		}).component();
+
+		this.compareButton.onDidClick(async (click) => {
+			this.reExecute();
+		});
+	}
+
 	private createGenerateScriptButton(view: azdata.ModelView) {
+		let fileIcon = path.join(__dirname, '.', 'media', 'file.svg');
+
 		this.generateScriptButton = view.modelBuilder.button().withProperties({
 			label: localize('schemaCompare.generateScriptButton', 'Generate Script'),
-			title: 'Script can only be generated when the target is a database',
-			enabled: false
+			iconPath: fileIcon,
+			enabled: false,
+			title: localize('schemaCompare.generateScriptButtonTitle', 'Generate Script is enabled when the target is a database')
 		}).component();
 
 		this.generateScriptButton.onDidClick(async (click) => {
