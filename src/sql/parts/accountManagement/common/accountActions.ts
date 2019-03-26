@@ -8,7 +8,6 @@
 import * as azdata from 'azdata';
 import { Event, Emitter } from 'vs/base/common/event';
 import { localize } from 'vs/nls';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { Action } from 'vs/base/common/actions';
 
 import { error } from 'sql/base/common/log';
@@ -47,13 +46,13 @@ export class AddAccountAction extends Action {
 		this._addAccountStartEmitter = new Emitter<void>();
 	}
 
-	public run(): TPromise<boolean> {
+	public run(): Promise<boolean> {
 		let self = this;
 
 		// Fire the event that we've started adding accounts
 		this._addAccountStartEmitter.fire();
 
-		return new TPromise((resolve, reject) => {
+		return new Promise((resolve, reject) => {
 			self._accountManagementService.addAccount(self._providerId)
 				.then(
 				() => {
@@ -87,7 +86,7 @@ export class RemoveAccountAction extends Action {
 		super(RemoveAccountAction.ID, RemoveAccountAction.LABEL, 'remove-account-action icon remove');
 	}
 
-	public run(): TPromise<boolean> {
+	public run(): Promise<boolean> {
 		let self = this;
 
 		// Ask for Confirm
@@ -100,9 +99,9 @@ export class RemoveAccountAction extends Action {
 
 		return this._dialogService.confirm(confirm).then(result => {
 			if (!result) {
-				return TPromise.as(false);
+				return Promise.resolve(false);
 			} else {
-				return new TPromise((resolve, reject) => {
+				return new Promise((resolve, reject) => {
 					self._accountManagementService.removeAccount(self._account.key)
 						.then(
 						(result) => { resolve(result); },
@@ -135,9 +134,9 @@ export class ApplyFilterAction extends Action {
 		super(id, label, 'apply-filters-action icon filter');
 	}
 
-	public run(): TPromise<boolean> {
+	public run(): Promise<boolean> {
 		// Todo: apply filter to the account
-		return TPromise.as(true);
+		return Promise.resolve(true);
 	}
 }
 
@@ -154,9 +153,9 @@ export class RefreshAccountAction extends Action {
 	) {
 		super(RefreshAccountAction.ID, RefreshAccountAction.LABEL, 'refresh-account-action icon refresh');
 	}
-	public run(): TPromise<boolean> {
+	public run(): Promise<boolean> {
 		let self = this;
-		return new TPromise((resolve, reject) => {
+		return new Promise((resolve, reject) => {
 			if (self.account) {
 				self._accountManagementService.refreshAccount(self.account)
 					.then(

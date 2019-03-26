@@ -14,7 +14,6 @@ import { ProfilerColumnEditorDialog } from 'sql/parts/profiler/dialog/profilerCo
 
 import * as azdata from 'azdata';
 
-import { TPromise } from 'vs/base/common/winjs.base';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -90,7 +89,7 @@ export class ProfilerService implements IProfilerService {
 		this._sessionMap.set(uri, session);
 		this._connectionMap.set(uri, connectionProfile);
 		this._idMap.set(uri, uri);
-		return TPromise.wrap(uri);
+		return Promise.resolve(uri);
 	}
 
 	public onMoreRows(params: azdata.ProfilerSessionEvents): void {
@@ -162,13 +161,13 @@ export class ProfilerService implements IProfilerService {
 		let providerId = 'MSSQL';
 
 		if (!providerId) {
-			return TPromise.wrapError(new Error('Connection is required in order to interact with queries'));
+			return Promise.reject(new Error('Connection is required in order to interact with queries'));
 		}
 		let handler = this._providers.get(providerId);
 		if (handler) {
 			return action(handler);
 		} else {
-			return TPromise.wrapError(new Error('No Handler Registered'));
+			return Promise.reject(new Error('No Handler Registered'));
 		}
 	}
 
@@ -228,7 +227,7 @@ export class ProfilerService implements IProfilerService {
 		}
 
 		this._editColumnDialog.open(input);
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 
 	public launchCreateSessionDialog(input?: ProfilerInput): Thenable<void> {

@@ -251,36 +251,41 @@
 			],
 			"standardKernels": [
 				{
-					"name": "Python 3",
+					"name": "pyspark3kernel",
+					"displayName": "PySpark3",
+					"connectionProviderIds": [
+						"HADOOP_KNOX",
+						"MSSQL"
+					]
+				},
+				{
+					"name": "pysparkkernel",
+					"displayName": "PySpark",
+					"connectionProviderIds": [
+						"HADOOP_KNOX",
+						"MSSQL"
+					]
+				},
+				{
+					"name": "sparkkernel",
+					"displayName": "Spark | Scala",
+					"connectionProviderIds": [
+						"HADOOP_KNOX",
+						"MSSQL"
+					]
+				},
+				{
+					"name": "sparkrkernel",
+					"displayName": "Spark | R",
+					"connectionProviderIds": [
+						"HADOOP_KNOX",
+						"MSSQL"
+					]
+				},
+				{
+					"name": "python3",
+					"displayName": "Python 3",
 					"connectionProviderIds": []
-				},
-				{
-					"name": "PySpark",
-					"connectionProviderIds": [
-						"HADOOP_KNOX",
-						"MSSQL"
-					]
-				},
-				{
-					"name": "PySpark3",
-					"connectionProviderIds": [
-						"HADOOP_KNOX",
-						"MSSQL"
-					]
-				},
-				{
-					"name": "Spark | R",
-					"connectionProviderIds": [
-						"HADOOP_KNOX",
-						"MSSQL"
-					]
-				},
-				{
-					"name": "Spark | Scala",
-					"connectionProviderIds": [
-						"HADOOP_KNOX",
-						"MSSQL"
-					]
 				}
 			]
 		}

@@ -226,7 +226,7 @@ export class ConnectionWidget {
 		let databaseOption = this._optionsMaps[ConnectionOptionSpecialType.databaseName];
 		let databaseNameBuilder = DialogHelper.appendRow(this._tableContainer, databaseOption.displayName, 'connection-label', 'connection-input');
 
-		this._databaseNameInputBox = new Dropdown(databaseNameBuilder.getHTMLElement(), this._contextViewService, this._themeService, {
+		this._databaseNameInputBox = new Dropdown(databaseNameBuilder.getHTMLElement(), this._contextViewService, {
 			values: [this._defaultDatabaseName, this._loadingDatabaseName],
 			strictSelection: false,
 			placeholder: this._defaultDatabaseName,

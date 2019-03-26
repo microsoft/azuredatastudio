@@ -6,7 +6,6 @@ import { $, append, show, hide } from 'vs/base/browser/dom';
 import { IDisposable, combinedDisposable } from 'vs/base/common/lifecycle';
 import { IStatusbarItem } from 'vs/workbench/browser/parts/statusbar/statusbar';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';

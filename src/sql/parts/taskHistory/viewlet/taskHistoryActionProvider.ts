@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { ContributableActionProvider } from 'vs/workbench/browser/actions';
 import { IAction } from 'vs/base/common/actions';
@@ -39,10 +38,6 @@ export class TaskHistoryActionProvider extends ContributableActionProvider {
 
 	public hasSecondaryActions(tree: ITree, element: any): boolean {
 		return false;
-	}
-
-	public getSecondaryActions(tree: ITree, element: any): IAction[] {
-		return super.getSecondaryActions(tree, element);
 	}
 
 	/**

@@ -24,7 +24,9 @@ The built-in tool for reporting an issue, which you can access by using `Report 
 
 Please include the following with each issue.
 
-* Version of Azure Data Studio (formerly SQL Operations Studio).
+* Version of Azure Data Studio (formerly SQL Operations Studio)
+
+* Your operating system
 
 > **Tip:** You can easily create an issue using `Report Issues` from Azure Data Studio Help menu.
 

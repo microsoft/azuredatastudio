@@ -27,6 +27,7 @@ import { Memento } from 'vs/workbench/common/memento';
 import { Emitter } from 'vs/base/common/event';
 import { CapabilitiesTestService } from 'sqltest/stubs/capabilitiesTestService';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { TestStorageService } from 'vs/workbench/test/workbenchTestServices';
 
 let expectedNotebookContent: nb.INotebookContents = {
 	cells: [{
@@ -86,7 +87,7 @@ suite('notebook model', function (): void {
 		capabilitiesService = TypeMoq.Mock.ofType(CapabilitiesTestService);
 		memento = TypeMoq.Mock.ofType(Memento, TypeMoq.MockBehavior.Loose, '');
 		memento.setup(x => x.getMemento(TypeMoq.It.isAny())).returns(() => void 0);
-		queryConnectionService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Loose, memento.object, undefined);
+		queryConnectionService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Loose, memento.object, undefined, new TestStorageService());
 		queryConnectionService.callBase = true;
 		defaultModelOptions = {
 			notebookUri: defaultUri,
@@ -96,7 +97,7 @@ suite('notebook model', function (): void {
 			notificationService: notificationService.object,
 			connectionService: queryConnectionService.object,
 			providerId: 'SQL',
-			standardKernels: [{ name: 'SQL', connectionProviderIds: ['MSSQL'], notebookProvider: 'sql' }],
+			standardKernels: [{ name: 'SQL', displayName: 'SQL', connectionProviderIds: ['MSSQL'], notebookProvider: 'sql' }],
 			cellMagicMapper: undefined,
 			defaultKernel: undefined,
 			layoutChanged: undefined,
@@ -141,21 +142,21 @@ suite('notebook model', function (): void {
 	});
 
 	// test('Should throw if model load fails', async function(): Promise<void> {
-	//     // Given a call to get Contents fails
-	//     let error = new Error('File not found');
-	//     let mockContentManager = TypeMoq.Mock.ofType(LocalContentManager);
-	//     mockContentManager.setup(c => c.getNotebookContents(TypeMoq.It.isAny())).throws(error);
-	//     notebookManagers[0].contentManager = mockContentManager.object;
+	// 	// Given a call to get Contents fails
+	// 	let error = new Error('File not found');
+	// 	let mockContentManager = TypeMoq.Mock.ofType(LocalContentManager);
+	// 	mockContentManager.setup(c => c.getNotebookContents(TypeMoq.It.isAny())).throws(error);
+	// 	notebookManagers[0].contentManager = mockContentManager.object;
 
-	//     // When I initalize the model
-	//     // Then it should throw
-	//     let model = new NotebookModel(defaultModelOptions);
-	//     should(model.inErrorState).be.false();
-	//     await testUtils.assertThrowsAsync(() => model.requestModelLoad(), error.message);
-	//     should(model.inErrorState).be.true();
+	// 	// When I initalize the model
+	// 	// Then it should throw
+	// 	let model = new NotebookModel(defaultModelOptions);
+	// 	should(model.inErrorState).be.false();
+	// 	await testUtils.assertThrowsAsync(() => model.requestModelLoad(), error.message);
+	// 	should(model.inErrorState).be.true();
 	// });
 
-	// test('Should convert cell info to CellModels', async function (): Promise<void> {
+	// test('Should convert cell info to CellModels', async function(): Promise<void> {
 	// 	// Given a notebook with 2 cells
 	// 	let mockContentManager = TypeMoq.Mock.ofType(LocalContentManager);
 	// 	mockContentManager.setup(c => c.getNotebookContents(TypeMoq.It.isAny())).returns(() => Promise.resolve(expectedNotebookContent));
@@ -172,35 +173,35 @@ suite('notebook model', function (): void {
 	// });
 
 	// test('Should load contents but then go to error state if client session startup fails', async function(): Promise<void> {
-	//     let mockContentManager = TypeMoq.Mock.ofType(LocalContentManager);
-	//     mockContentManager.setup(c => c.getNotebookContents(TypeMoq.It.isAny())).returns(() => Promise.resolve(expectedNotebookContentOneCell));
-	//     notebookManagers[0].contentManager = mockContentManager.object;
+	// 	let mockContentManager = TypeMoq.Mock.ofType(LocalContentManager);
+	// 	mockContentManager.setup(c => c.getNotebookContents(TypeMoq.It.isAny())).returns(() => Promise.resolve(expectedNotebookContentOneCell));
+	// 	notebookManagers[0].contentManager = mockContentManager.object;
 
-	//     // Given I have a session that fails to start
-	//     mockClientSession.setup(c => c.isInErrorState).returns(() => true);
-	//     mockClientSession.setup(c => c.errorMessage).returns(() => 'Error');
-	//     sessionReady.resolve();
-	//     let sessionFired = false;
+	// 	// Given I have a session that fails to start
+	// 	mockClientSession.setup(c => c.isInErrorState).returns(() => true);
+	// 	mockClientSession.setup(c => c.errorMessage).returns(() => 'Error');
+	// 	sessionReady.resolve();
+	// 	let sessionFired = false;
 
-	//     let options: INotebookModelOptions = Object.assign({}, defaultModelOptions, <Partial<INotebookModelOptions>> {
-	//         factory: mockModelFactory.object
-	//     });
-	//     let model = new NotebookModel(options);
-	//     model.onClientSessionReady((session) => sessionFired = true);
-	//     await model.requestModelLoad();
-	//     model.backgroundStartSession();
+	// 	let options: INotebookModelOptions = Object.assign({}, defaultModelOptions, <Partial<INotebookModelOptions>> {
+	// 		factory: mockModelFactory.object
+	// 	});
+	// 	let model = new NotebookModel(options);
+	// 	model.onClientSessionReady((session) => sessionFired = true);
+	// 	await model.requestModelLoad();
+	// 	model.startSession(notebookManagers[0]);
 
-	//     // Then I expect load to succeed
-	//     shouldHaveOneCell(model);
-	//     should(model.clientSession).not.be.undefined();
-	//     // but on server load completion I expect error state to be set
-	//     // Note: do not expect serverLoad event to throw even if failed
-	//     await model.sessionLoadFinished;
-	//     should(model.inErrorState).be.true();
-	//     should(sessionFired).be.false();
+	// 	// Then I expect load to succeed
+	// 	shouldHaveOneCell(model);
+	// 	should(model.clientSession).not.be.undefined();
+	// 	// but on server load completion I expect error state to be set
+	// 	// Note: do not expect serverLoad event to throw even if failed
+	// 	await model.sessionLoadFinished;
+	// 	should(model.inErrorState).be.true();
+	// 	should(sessionFired).be.false();
 	// });
 
-	test('Should not be in error state if client session initialization succeeds', async function (): Promise<void> {
+	test('Should not be in error state if client session initialization succeeds', async function(): Promise<void> {
 		let mockContentManager = TypeMoq.Mock.ofType(LocalContentManager);
 		mockContentManager.setup(c => c.getNotebookContents(TypeMoq.It.isAny())).returns(() => Promise.resolve(expectedNotebookContentOneCell));
 		notebookManagers[0].contentManager = mockContentManager.object;
@@ -217,13 +218,13 @@ suite('notebook model', function (): void {
 		sessionReady.resolve();
 		let actualSession: IClientSession = undefined;
 
-		let options: INotebookModelOptions = Object.assign({}, defaultModelOptions, <Partial<INotebookModelOptions>>{
+		let options: INotebookModelOptions = Object.assign({}, defaultModelOptions, <Partial<INotebookModelOptions>> {
 			factory: mockModelFactory.object
 		});
 		let model = new NotebookModel(options, undefined);
 		model.onClientSessionReady((session) => actualSession = session);
 		await model.requestModelLoad();
-		model.backgroundStartSession();
+		await model.startSession(notebookManagers[0]);
 
 		// Then I expect load to succeed
 		should(model.clientSession).not.be.undefined();
@@ -237,7 +238,7 @@ suite('notebook model', function (): void {
 		should(model.clientSession).equal(mockClientSession.object);
 	});
 
-	test('Should sanitize kernel display name when IP is included', async function (): Promise<void> {
+	test('Should sanitize kernel display name when IP is included', async function(): Promise<void> {
 		let model = new NotebookModel(defaultModelOptions);
 		let displayName = 'PySpark (1.1.1.1)';
 		let sanitizedDisplayName = model.sanitizeDisplayName(displayName);

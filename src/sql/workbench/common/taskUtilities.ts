@@ -31,7 +31,7 @@ import * as azdata from 'azdata';
 
 import Severity from 'vs/base/common/severity';
 import * as nls from 'vs/nls';
-import * as path from 'vs/base/common/paths';
+import * as path from 'vs/base/common/path';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 
 // map for the version of SQL Server (default is 140)
@@ -223,7 +223,8 @@ export function script(connectionProfile: IConnectionProfile, metadata: azdata.O
 					let script: string = result.script;
 
 					if (script) {
-						queryEditorService.newSqlEditor(script, connectionProfile.providerName).then((owner) => {
+						let description = (metadata.schema && metadata.schema !== '') ? `${metadata.schema}.${metadata.name}`  : metadata.name;
+						queryEditorService.newSqlEditor(script, connectionProfile.providerName, undefined, description).then((owner) => {
 							// Connect our editor to the input connection
 							let options: IConnectionCompletionOptions = {
 								params: { connectionType: ConnectionType.editor, runQueryOnCompletion: RunQueryOnConnectionMode.none, input: owner },

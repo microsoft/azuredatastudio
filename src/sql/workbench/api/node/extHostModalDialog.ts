@@ -5,7 +5,7 @@
 'use strict';
 
 import { SqlMainContext, MainThreadModalDialogShape, ExtHostModalDialogsShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
-import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
+import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import { Emitter } from 'vs/base/common/event';
@@ -117,6 +117,6 @@ export class ExtHostModalDialogs implements ExtHostModalDialogsShape {
 
 	$onClosed(handle: number): void {
 		const webview = this._webviews.get(handle);
-		webview.onClosedEmitter.fire();
+		webview.onClosedEmitter.fire(undefined);
 	}
 }

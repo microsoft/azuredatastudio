@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { MainContext, MainThreadLanguagesShape, IMainContext } from './extHost.protocol';
+import { MainContext, MainThreadLanguagesShape, IMainContext } from '../common/extHost.protocol';
 import * as vscode from 'vscode';
 import { ExtHostDocuments } from 'vs/workbench/api/node/extHostDocuments';
 
@@ -20,13 +20,14 @@ export class ExtHostLanguages {
 		this._documents = documents;
 	}
 
-	getLanguages(): Thenable<string[]> {
+	getLanguages(): Promise<string[]> {
 		return this._proxy.$getLanguages();
 	}
 
-	changeLanguage(uri: vscode.Uri, languageId: string): Thenable<vscode.TextDocument> {
+	changeLanguage(uri: vscode.Uri, languageId: string): Promise<vscode.TextDocument | undefined> {
 		return this._proxy.$changeLanguage(uri, languageId).then(() => {
-			return this._documents.getDocumentData(uri).document;
+			const data = this._documents.getDocumentData(uri);
+			return data ? data.document : undefined;
 		});
 	}
 }

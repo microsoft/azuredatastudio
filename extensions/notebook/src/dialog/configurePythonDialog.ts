@@ -11,8 +11,9 @@ import * as azdata from 'azdata';
 import * as fs from 'fs';
 import * as utils from '../common/utils';
 
-import { AppContext } from '../common/appContext';
 import JupyterServerInstallation from '../jupyter/jupyterServerInstallation';
+import { ApiWrapper } from '../common/apiWrapper';
+import { Deferred } from '../common/promise';
 
 const localize = nls.loadMessageBundle();
 
@@ -31,27 +32,44 @@ export class ConfigurePythonDialog {
 	private pythonLocationTextBox: azdata.InputBoxComponent;
 	private browseButton: azdata.ButtonComponent;
 
-	constructor(private appContext: AppContext, private outputChannel: vscode.OutputChannel, private jupyterInstallation: JupyterServerInstallation) {
+	private _setupComplete: Deferred<void>;
+
+	constructor(private apiWrapper: ApiWrapper, private outputChannel: vscode.OutputChannel, private jupyterInstallation: JupyterServerInstallation) {
+		this._setupComplete = new Deferred<void>();
 	}
 
-	public async showDialog() {
+	/**
+	 * Opens a dialog to configure python installation for notebooks.
+	 * @param rejectOnCancel Specifies whether an error should be thrown after clicking Cancel.
+	 * @returns A promise that is resolved when the python installation completes.
+	 */
+	public showDialog(rejectOnCancel: boolean = false): Promise<void> {
 		this.dialog = azdata.window.createModelViewDialog(this.DialogTitle);
 
 		this.initializeContent();
 
 		this.dialog.okButton.label = this.OkButtonText;
 		this.dialog.cancelButton.label = this.CancelButtonText;
+		this.dialog.cancelButton.onClick(() => {
+			if (rejectOnCancel) {
+				this._setupComplete.reject(localize('pythonInstallDeclined', 'Python installation was declined.'));
+			} else {
+				this._setupComplete.resolve();
+			}
+		});
 
 		this.dialog.registerCloseValidator(() => this.handleInstall());
 
 		azdata.window.openDialog(this.dialog);
+
+		return this._setupComplete.promise;
 	}
 
-	private initializeContent() {
+	private initializeContent(): void {
 		this.dialog.registerContent(async view => {
 			this.pythonLocationTextBox = view.modelBuilder.inputBox()
 				.withProperties<azdata.InputBoxProperties>({
-					value: JupyterServerInstallation.getPythonInstallPath(this.appContext.apiWrapper),
+					value: JupyterServerInstallation.getPythonInstallPath(this.apiWrapper),
 					width: '100%'
 				}).component();
 
@@ -106,14 +124,18 @@ export class ConfigurePythonDialog {
 				return false;
 			}
 		} catch (err) {
-			this.appContext.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
+			this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
 			return false;
 		}
 
 		// Don't wait on installation, since there's currently no Cancel functionality
-		this.jupyterInstallation.startInstallProcess(pythonLocation).catch(err => {
-			this.appContext.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
-		});
+		this.jupyterInstallation.startInstallProcess(pythonLocation)
+			.then(() => {
+				this._setupComplete.resolve();
+			})
+			.catch(err => {
+				this._setupComplete.reject(utils.getErrorMessage(err));
+			});
 		return true;
 	}
 
@@ -149,20 +171,13 @@ export class ConfigurePythonDialog {
 			openLabel: this.SelectFileLabel
 		};
 
-		let fileUris: vscode.Uri[] = await this.appContext.apiWrapper.showOpenDialog(options);
+		let fileUris: vscode.Uri[] = await this.apiWrapper.showOpenDialog(options);
 		if (fileUris && fileUris[0]) {
 			this.pythonLocationTextBox.value = fileUris[0].fsPath;
 		}
 	}
 
-	private showInfoMessage(message: string) {
-		this.dialog.message = {
-			text: message,
-			level: azdata.window.MessageLevel.Information
-		};
-	}
-
-	private showErrorMessage(message: string) {
+	private showErrorMessage(message: string): void {
 		this.dialog.message = {
 			text: message,
 			level: azdata.window.MessageLevel.Error

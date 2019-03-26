@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./modelViewEditor';
 
-import { TPromise } from 'vs/base/common/winjs.base';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';

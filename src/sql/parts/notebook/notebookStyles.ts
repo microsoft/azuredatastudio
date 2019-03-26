@@ -42,6 +42,10 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean): IDi
 				box-shadow: 0;
 			}
 
+			.notebookEditor .notebook-cell.active:hover {
+				border-color: ${activeBorder};
+			}
+
 			.notebookEditor .notebook-cell:hover:not(.active) {
 				box-shadow: ${lightBoxShadow};
 			}
@@ -98,13 +102,14 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean): IDi
 			// Standard notebook cell behavior
 			collector.addRule(`
 				.notebookEditor .notebook-cell {
-					border-color: ${inactiveBorder};
+					border-color: transparent;
 					border-width: 1px;
 				}
 				.notebookEditor .notebook-cell.active {
 					border-width: 1px;
 				}
 				.notebookEditor .notebook-cell:hover {
+					border-color: ${inactiveBorder};
 					border-width: 1px;
 				}
 			`);

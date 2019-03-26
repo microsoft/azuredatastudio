@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import * as assert from 'assert';
 import * as extHostTypes from 'vs/workbench/api/node/extHostTypes';
-import { MainContext, MainThreadTextEditorsShape, WorkspaceEditDto } from 'vs/workbench/api/node/extHost.protocol';
+import { MainContext, MainThreadTextEditorsShape, WorkspaceEditDto } from 'vs/workbench/api/common/extHost.protocol';
 import { URI } from 'vs/base/common/uri';
 import { mock } from 'vs/workbench/test/electron-browser/api/mock';
 import { ExtHostDocumentsAndEditors } from 'vs/workbench/api/node/extHostDocumentsAndEditors';
@@ -19,7 +19,7 @@ suite('ExtHostTextEditors.applyWorkspaceEdit', () => {
 	let workspaceResourceEdits: WorkspaceEditDto;
 
 	setup(() => {
-		workspaceResourceEdits = null;
+		workspaceResourceEdits = null!;
 
 		let rpcProtocol = new TestRPCProtocol();
 		rpcProtocol.set(MainContext.MainThreadTextEditors, new class extends mock<MainThreadTextEditorsShape>() {

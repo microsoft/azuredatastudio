@@ -81,7 +81,7 @@ export class TreeSelectionHandler {
 		let connectionProfile: ConnectionProfile = undefined;
 		let options: IConnectionCompletionOptions = {
 			params: undefined,
-			saveTheConnection: false,
+			saveTheConnection: true,
 			showConnectionDialogOnError: true,
 			showFirewallRuleOnError: true,
 			showDashboard: isDoubleClick // only show the dashboard if the action is double click

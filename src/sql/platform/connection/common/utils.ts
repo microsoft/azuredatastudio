@@ -5,9 +5,9 @@
 
 'use strict';
 
-import { IConnectionProfile } from './interfaces';
-import { ConnectionProfile } from './connectionProfile';
-import { ConnectionProfileGroup } from './connectionProfileGroup';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 
 // CONSTANTS //////////////////////////////////////////////////////////////////////////////////////
 const msInH = 3.6e6;
@@ -17,7 +17,8 @@ export const uriPrefixes = {
 	default: 'connection://',
 	connection: 'connection://',
 	dashboard: 'dashboard://',
-	insights: 'insights://'
+	insights: 'insights://',
+	notebook: 'notebook://'
 };
 
 

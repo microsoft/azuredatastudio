@@ -1,22 +1,18 @@
 {
-	"compileOnSave": true,
+	"extends": "../shared.tsconfig.json",
 	"compilerOptions": {
-		"module": "commonjs",
-		"target": "es6",
-		"outDir": "./out",
 		"lib": [
-			"dom", "es6", "es2015.promise"
+			"dom"
 		],
-		"typeRoots": [
-			"./node_modules/@types"
-		],
-		"sourceMap": true,
-		"emitDecoratorMetadata": true,
-		"experimentalDecorators": true,
-		"moduleResolution": "node",
-		"declaration": true
+		"outDir": "./out",
+		"strict": false,
+		"alwaysStrict": false,
+		"noImplicitAny": false,
+		"noImplicitReturns": false,
+		"noUnusedLocals": false,
+		"noUnusedParameters": false
 	},
-	"exclude": [
-		"node_modules"
+	"include": [
+		"src/**/*"
 	]
 }

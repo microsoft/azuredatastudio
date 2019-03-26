@@ -5,7 +5,7 @@
 
 'use strict';
 
-import { ConnectionProfileGroup } from './connectionProfileGroup';
+import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import * as azdata from 'azdata';
 import { ProviderConnectionInfo } from 'sql/platform/connection/common/providerConnectionInfo';
 import * as interfaces from 'sql/platform/connection/common/interfaces';
@@ -179,6 +179,13 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 		return {
 			options: this.options
 		};
+	}
+
+	/**
+	 * Returns whether this profile is connected to the default database (it doesn't specify a database to connect to)
+	 */
+	public static isConnectionToDefaultDb(profile: azdata.IConnectionProfile): boolean {
+		return !profile.databaseName || profile.databaseName.trim() === '';
 	}
 
 	public static fromIConnectionProfile(capabilitiesService: ICapabilitiesService, profile: azdata.IConnectionProfile) {

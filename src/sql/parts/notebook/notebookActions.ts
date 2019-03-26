@@ -6,13 +6,12 @@
 import * as azdata from 'azdata';
 
 import { Action } from 'vs/base/common/actions';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { localize } from 'vs/nls';
 import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
 import { INotificationService, Severity, INotificationActions } from 'vs/platform/notification/common/notification';
 
 import { SelectBox, ISelectBoxOptionsWithLabel } from 'sql/base/browser/ui/selectBox/selectBox';
-import { INotebookModel, IDefaultConnection } from 'sql/parts/notebook/models/modelInterfaces';
+import { INotebookModel } from 'sql/parts/notebook/models/modelInterfaces';
 import { CellType } from 'sql/parts/notebook/models/contracts';
 import { NotebookComponent } from 'sql/parts/notebook/notebook.component';
 import { getErrorMessage, formatServerNameWithDatabaseNameForAttachTo, getServerFromFormattedAttachToName, getDatabaseFromFormattedAttachToName } from 'sql/parts/notebook/notebookUtils';
@@ -21,14 +20,16 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { noKernel } from 'sql/workbench/services/notebook/common/sessionManager';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
+import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
 
-const msgLoading = localize('loading', 'Loading kernels...');
-const kernelLabel: string = localize('Kernel', 'Kernel: ');
-const attachToLabel: string = localize('AttachTo', 'Attach to: ');
-const msgLoadingContexts = localize('loadingContexts', 'Loading contexts...');
-const msgAddNewConnection = localize('addNewConnection', 'Add new connection');
-const msgSelectConnection = localize('selectConnection', 'Select connection');
-const msgLocalHost = localize('localhost', 'localhost');
+const msgLoading = localize('loading', "Loading kernels...");
+const msgChanging = localize('changing', "Changing kernel...");
+const kernelLabel: string = localize('Kernel', "Kernel: ");
+const attachToLabel: string = localize('AttachTo', "Attach to: ");
+const msgLoadingContexts = localize('loadingContexts', "Loading contexts...");
+const msgAddNewConnection = localize('addNewConnection', "Add new connection");
+const msgSelectConnection = localize('selectConnection', "Select connection");
+const msgLocalHost = localize('localhost', "localhost");
 const HIDE_ICON_CLASS = ' hideIcon';
 
 // Action to add a cell to notebook based on cell type(code/markdown).
@@ -40,8 +41,8 @@ export class AddCellAction extends Action {
 	) {
 		super(id, label, cssClass);
 	}
-	public run(context: NotebookComponent): TPromise<boolean> {
-		return new TPromise<boolean>((resolve, reject) => {
+	public run(context: NotebookComponent): Promise<boolean> {
+		return new Promise<boolean>((resolve, reject) => {
 			try {
 				context.addCell(this.cellType);
 				resolve(true);
@@ -49,26 +50,6 @@ export class AddCellAction extends Action {
 				reject(e);
 			}
 		});
-	}
-}
-
-export class SaveNotebookAction extends Action {
-	private static readonly notebookSavedMsg = localize('notebookSavedMsg', 'Notebook saved successfully.');
-	private static readonly notebookFailedSaveMsg = localize('notebookFailedSaveMsg', 'Failed to save Notebook.');
-	constructor(
-		id: string, label: string, cssClass: string,
-		@INotificationService private _notificationService: INotificationService
-	) {
-		super(id, label, cssClass);
-	}
-
-	public async run(context: NotebookComponent): TPromise<boolean> {
-		const actions: INotificationActions = { primary: [] };
-		let saved = await context.save();
-		if (saved) {
-			this._notificationService.notify({ severity: Severity.Info, message: SaveNotebookAction.notebookSavedMsg, actions });
-		}
-		return saved;
 	}
 }
 
@@ -212,9 +193,9 @@ export class TrustedAction extends ToggleableAction {
 		this.toggle(value);
 	}
 
-	public run(context: NotebookComponent): TPromise<boolean> {
+	public run(context: NotebookComponent): Promise<boolean> {
 		let self = this;
-		return new TPromise<boolean>((resolve, reject) => {
+		return new Promise<boolean>((resolve, reject) => {
 			try {
 				if (self.trusted) {
 					const actions: INotificationActions = { primary: [] };
@@ -233,16 +214,12 @@ export class TrustedAction extends ToggleableAction {
 }
 
 export class KernelsDropdown extends SelectBox {
-	private model: INotebookModel;
-	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, modelRegistered: Promise<INotebookModel>
-	) {
-		let selectBoxOptionsWithLabel: ISelectBoxOptionsWithLabel = {
-			labelText: kernelLabel,
-			labelOnTop: false
-		};
-		super([msgLoading], msgLoading, contextViewProvider, container, selectBoxOptionsWithLabel);
-		if (modelRegistered) {
-			modelRegistered
+	private model: NotebookModel;
+	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, modelReady: Promise<INotebookModel>) {
+		super([msgLoading], msgLoading, contextViewProvider, container, { labelText: kernelLabel, labelOnTop: false } as ISelectBoxOptionsWithLabel);
+
+		if (modelReady) {
+			modelReady
 				.then((model) => this.updateModel(model))
 				.catch((err) => {
 					// No-op for now
@@ -253,44 +230,48 @@ export class KernelsDropdown extends SelectBox {
 	}
 
 	updateModel(model: INotebookModel): void {
-		this.model = model;
-		model.kernelsChanged((defaultKernel) => {
-			this.updateKernel(defaultKernel);
-		});
-		if (model.clientSession) {
-			model.clientSession.kernelChanged((changedArgs: azdata.nb.IKernelChangedArgs) => {
-				if (changedArgs.newValue) {
-					this.updateKernel(changedArgs.newValue);
-				}
-			});
-		}
+		this.model = model as NotebookModel;
+		this._register(this.model.kernelChanged((changedArgs: azdata.nb.IKernelChangedArgs) => {
+			this.updateKernel(changedArgs.newValue);
+		}));
+		let kernel = this.model.clientSession && this.model.clientSession.kernel;
+		this.updateKernel(kernel);
 	}
 
 	// Update SelectBox values
-	private updateKernel(defaultKernel: azdata.nb.IKernelSpec) {
-		let specs = this.model.specs;
-		if (specs && specs.kernels) {
-			let index = specs.kernels.findIndex((kernel => kernel.name === defaultKernel.name));
-			this.setOptions(specs.kernels.map(kernel => kernel.display_name), index);
+	public updateKernel(kernel: azdata.nb.IKernel) {
+		let kernels: string[] = this.model.standardKernelsDisplayName();
+		if (kernel && kernel.isReady) {
+			let standardKernel = this.model.getStandardKernelFromName(kernel.name);
+
+			if (kernels && standardKernel) {
+				let index = kernels.findIndex((kernel => kernel === standardKernel.displayName));
+				this.setOptions(kernels, index);
+			}
+		} else if (this.model.clientSession.isInErrorState) {
+			let noKernelName = localize('noKernel', "No Kernel");
+			kernels.unshift(noKernelName);
+			this.setOptions(kernels, 0);
 		}
 	}
 
 	public doChangeKernel(displayName: string): void {
+		this.setOptions([msgChanging], 0);
 		this.model.changeKernel(displayName);
 	}
 }
 
 export class AttachToDropdown extends SelectBox {
-	private model: INotebookModel;
+	private model: NotebookModel;
 
-	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, modelRegistered: Promise<INotebookModel>,
+	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, modelReady: Promise<INotebookModel>,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IConnectionDialogService private _connectionDialogService: IConnectionDialogService,
 		@INotificationService private _notificationService: INotificationService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService) {
 		super([msgLoadingContexts], msgLoadingContexts, contextViewProvider, container, { labelText: attachToLabel, labelOnTop: false } as ISelectBoxOptionsWithLabel);
-		if (modelRegistered) {
-			modelRegistered
+		if (modelReady) {
+			modelReady
 				.then(model => {
 					this.updateModel(model);
 					this.updateAttachToDropdown(model);
@@ -305,22 +286,28 @@ export class AttachToDropdown extends SelectBox {
 	}
 
 	public updateModel(model: INotebookModel): void {
-		this.model = model;
-		model.contextsChanged(() => {
-			let kernelDisplayName: string = this.getKernelDisplayName();
-			if (kernelDisplayName) {
-				this.loadAttachToDropdown(this.model, kernelDisplayName);
-			}
-		});
+		this.model = model as NotebookModel;
+		this._register(model.contextsChanged(() => {
+			this.handleContextsChanged();
+		}));
+		this._register(this.model.contextsLoading(() => {
+			this.setOptions([msgLoadingContexts], 0);
+		}));
+		this.handleContextsChanged();
+	}
+
+	private handleContextsChanged(showSelectConnection?: boolean) {
+		let kernelDisplayName: string = this.getKernelDisplayName();
+		if (kernelDisplayName) {
+			this.loadAttachToDropdown(this.model, kernelDisplayName, showSelectConnection);
+		} else if (this.model.clientSession.isInErrorState) {
+			this.setOptions([localize('noContextAvailable', "None")], 0);
+		}
 	}
 
 	private updateAttachToDropdown(model: INotebookModel): void {
-		this.model = model;
 		model.onValidConnectionSelected(validConnection => {
-			let kernelDisplayName: string = this.getKernelDisplayName();
-			if (kernelDisplayName) {
-				this.loadAttachToDropdown(this.model, kernelDisplayName, !validConnection);
-			}
+			this.handleContextsChanged(!validConnection);
 		});
 	}
 
@@ -460,6 +447,7 @@ export class AttachToDropdown extends SelectBox {
 				}
 				this.select(index);
 
+				this.model.addAttachToConnectionsToBeDisposed(connectionProfile);
 				// Call doChangeContext to set the newly chosen connection in the model
 				this.doChangeContext(connectionProfile);
 			});

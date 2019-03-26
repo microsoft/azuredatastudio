@@ -7,7 +7,6 @@ import { IInsightDialogActionContext } from 'sql/workbench/services/insights/com
 
 import { Action } from 'vs/base/common/actions';
 import * as nls from 'vs/nls';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 
 export class CopyInsightDialogSelectionAction extends Action {
@@ -21,8 +20,8 @@ export class CopyInsightDialogSelectionAction extends Action {
 		super(id, label);
 	}
 
-	public run(event?: IInsightDialogActionContext): TPromise<any> {
+	public run(event?: IInsightDialogActionContext): Promise<any> {
 		this._clipboardService.writeText(event.cellData);
-		return TPromise.as(void 0);
+		return Promise.resolve(void 0);
 	}
 }

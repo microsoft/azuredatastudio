@@ -65,11 +65,11 @@ describe('Notebook Integration Test', function (): void {
 		await ensureJupyterInstalled();
 
 		// Given a connection to a server exists
-		let connectionId = await connectToSparkIntegrationServer();
+		let connectionProfile = await connectToSparkIntegrationServer();
 
 		// When I open a Spark notebook and run the cell
 		let notebook = await azdata.nb.showNotebookDocument(uri, {
-			connectionId: connectionId
+			connectionProfile: connectionProfile
 		});
 		should(notebook.document.cells).have.length(1);
 		let ran = await notebook.runCell(notebook.document.cells[0]);
@@ -90,7 +90,7 @@ describe('Notebook Integration Test', function (): void {
 	});
 });
 
-async function connectToSparkIntegrationServer(): Promise<string> {
+async function connectToSparkIntegrationServer(): Promise<azdata.IConnectionProfile> {
 	assert.ok(process.env.BACKEND_HOSTNAME, 'BACKEND_HOSTNAME, BACKEND_USERNAME, BACKEND_PWD must be set using ./tasks/setbackenvariables.sh or .\\tasks\\setbackendvaraibles.bat');
 	let connInfo: azdata.connection.Connection = {
 		options: {
@@ -114,7 +114,7 @@ async function connectToSparkIntegrationServer(): Promise<string> {
 	let activeConnections = await azdata.connection.getActiveConnections();
 	should(activeConnections).have.length(1);
 
-	return result.connectionId;
+	return <azdata.IConnectionProfile><any>connInfo;
 }
 
 function writeNotebookToFile(pythonNotebook: INotebook): vscode.Uri {
@@ -127,6 +127,6 @@ function writeNotebookToFile(pythonNotebook: INotebook): vscode.Uri {
 async function ensureJupyterInstalled(): Promise<void> {
 	let jupterControllerExports = vscode.extensions.getExtension('Microsoft.sql-vnext').exports;
 	let jupyterController = jupterControllerExports.getJupterController() as JupyterController;
-	await jupyterController.jupyterInstallation;
+	await jupyterController.jupyterInstallation.installReady;
 }
 
