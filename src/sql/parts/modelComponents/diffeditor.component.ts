@@ -103,37 +103,6 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 		this._register(this._editor);
 		this._register(this._editorInput);
 		this._register(this._editorModel);
-		this._register(this._editorModel.textDiffEditorModel.original.onDidChangeContent(e => {
-			this.contentLeft = this._editorModel.textDiffEditorModel.original.getValue();
-			if (this._isAutoResizable) {
-				if (this._minimumHeight) {
-					//this._editor.setMinimumHeight(this._minimumHeight);
-				}
-				//this._editor.setHeightToScrollHeight();
-			}
-
-			// Notify via an event so that extensions can detect and propagate changes
-			this.fireEvent({
-				eventType: ComponentEventType.onDidChange,
-				args: e
-			});
-		}));
-
-		this._register(this._editorModel.textDiffEditorModel.modified.onDidChangeContent(e => {
-			this.contentRight = this._editorModel.textDiffEditorModel.modified.getValue();
-			if (this._isAutoResizable) {
-				if (this._minimumHeight) {
-					//this._editor.setMinimumHeight(this._minimumHeight);
-				}
-				//this._editor.setHeightToScrollHeight();
-			}
-
-			// Notify via an event so that extensions can detect and propagate changes
-			this.fireEvent({
-				eventType: ComponentEventType.onDidChange,
-				args: e
-			});
-		}));
 	}
 
 	private createUri(input:string): URI {
