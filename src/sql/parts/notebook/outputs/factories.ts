@@ -5,6 +5,7 @@
 
 import * as widgets from './widgets';
 import { IRenderMime } from './common/renderMimeInterfaces';
+import { ServicesAccessor, IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 /**
  * A mime renderer factory for raw html.
@@ -77,7 +78,7 @@ export const javaScriptRendererFactory: IRenderMime.IRendererFactory = {
 	safe: false,
 	mimeTypes: ['text/javascript', 'application/javascript'],
 	defaultRank: 110,
-	createRenderer: options => new widgets.RenderedJavaScript(options)
+	createRenderer: (accessor: ServicesAccessor, options) => accessor.get(IInstantiationService).createInstance(widgets.RenderedJavaScript, options)
 };
 
 export const dataResourceRendererFactory: IRenderMime.IRendererFactory = {
@@ -87,7 +88,7 @@ export const dataResourceRendererFactory: IRenderMime.IRendererFactory = {
 		'application/vnd.dataresource'
 	],
 	defaultRank: 40,
-	createRenderer: options => new widgets.RenderedDataResource(options)
+	createRenderer: (accessor: ServicesAccessor, options) => accessor.get(IInstantiationService).createInstance(widgets.RenderedDataResource, options)
 };
 
 /**

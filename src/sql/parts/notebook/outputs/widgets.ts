@@ -329,7 +329,7 @@ export class RenderedJavaScript extends RenderedCommon {
 	 *
 	 * @param options - The options for initializing the widget.
 	 */
-	constructor(options: IRenderMime.IRendererOptions) {
+	constructor(options: IRenderMime.IRendererOptions, @IThemeService themeService: IThemeService) {
 		super(options);
 		this.addClass('jp-RenderedJavaScript');
 	}

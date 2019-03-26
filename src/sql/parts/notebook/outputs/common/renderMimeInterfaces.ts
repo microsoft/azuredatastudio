@@ -5,6 +5,7 @@
 |----------------------------------------------------------------------------*/
 import { ReadonlyJSONObject } from '../../models/jsonext';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 
 /**
  * A namespace for rendermime associated interfaces.
@@ -259,7 +260,7 @@ export namespace IRenderMime {
 		 *
 		 * @param options - The options used to render the data.
 		 */
-		createRenderer(options: IRendererOptions): IRenderer;
+		createRenderer(accessor: ServicesAccessor, options: IRendererOptions): IRenderer;
 	}
 
 	/**

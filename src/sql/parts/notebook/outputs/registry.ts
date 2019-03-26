@@ -7,6 +7,7 @@ import { IRenderMime } from './common/renderMimeInterfaces';
 import { MimeModel } from './common/mimemodel';
 import { ReadonlyJSONObject } from '../models/jsonext';
 import { defaultSanitizer } from './sanitizer';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 /**
  * An object which manages mime renderer factories.
@@ -24,7 +25,7 @@ export class RenderMimeRegistry {
 	 *
 	 * @param options - The options for initializing the instance.
 	 */
-	constructor(options: RenderMimeRegistry.IOptions = {}) {
+	constructor(options: RenderMimeRegistry.IOptions = {}, @IInstantiationService private instantiationService: IInstantiationService) {
 		// Parse the options.
 		this.resolver = options.resolver || null;
 		this.linkHandler = options.linkHandler || null;
@@ -121,7 +122,7 @@ export class RenderMimeRegistry {
 		}
 
 		// Invoke the best factory for the given mime type.
-		return this._factories[mimeType].createRenderer({
+		return this.instantiationService.invokeFunction(this._factories[mimeType].createRenderer, {
 			mimeType,
 			resolver: this.resolver,
 			sanitizer: this.sanitizer,
@@ -155,7 +156,7 @@ export class RenderMimeRegistry {
 			sanitizer: options.sanitizer || this.sanitizer || undefined,
 			linkHandler: options.linkHandler || this.linkHandler || undefined,
 			latexTypesetter: options.latexTypesetter || this.latexTypesetter
-		});
+		}, this.instantiationService);
 
 		// Clone the internal state.
 		clone._factories = { ...this._factories };
