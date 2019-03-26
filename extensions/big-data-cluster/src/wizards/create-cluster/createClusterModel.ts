@@ -126,6 +126,8 @@ export class CreateClusterModel implements Scriptable {
 		return path.join(os.homedir(), '.kube', 'config');
 	}
 
+	public clusterName: string;
+
 	public targetClusterType: TargetClusterType;
 
 	public selectedCluster: KubectlContext;

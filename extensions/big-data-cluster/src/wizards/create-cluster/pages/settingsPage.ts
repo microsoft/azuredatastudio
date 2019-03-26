@@ -37,6 +37,14 @@ export class SettingsPage extends WizardPageBase<CreateClusterWizard> {
 			let formBuilder = view.modelBuilder.formContainer();
 
 			// User settings
+			let clusterNameInput = this.createInputWithLabel(view, {
+				label: localize('bdc-create.ClusterName', 'Cluster name'),
+				inputWidth: UserNameInputWidth,
+				isRequiredField: true
+			}, (input) => {
+				this.wizard.model.clusterName = input.value;
+			});
+
 			let adminUserNameInput = this.createInputWithLabel(view, {
 				label: localize('bdc-create.AdminUsernameText', 'Admin username'),
 				isRequiredField: true,
@@ -172,7 +180,7 @@ export class SettingsPage extends WizardPageBase<CreateClusterWizard> {
 				imageTagInput.input.value = containerRegistryInfo.imageTag;
 			});
 
-			let basicSettingsGroup = view.modelBuilder.groupContainer().withItems([adminUserNameInput.row, adminPasswordInput.row]).withLayout({ header: localize('bdc-create.BasicSettingsText', 'Basic Settings'), collapsible: true }).component();
+			let basicSettingsGroup = view.modelBuilder.groupContainer().withItems([clusterNameInput.row, adminUserNameInput.row, adminPasswordInput.row]).withLayout({ header: localize('bdc-create.BasicSettingsText', 'Basic Settings'), collapsible: true }).component();
 			let containerSettingsGroup = view.modelBuilder.groupContainer().withItems([registryInput.row, repositoryInput.row, imageTagInput.row, registryUserNameInput.row, registryPasswordInput.row, restoreContainerSettingsButton]).withLayout({ header: localize('bdc-create.ContainerRegistrySettings', 'Container Registry Settings'), collapsible: true }).component();
 			let portSettingsGroup = view.modelBuilder.groupContainer().withItems([sqlPortInput.row, knoxPortInput.row, controllerPortInput.row, proxyPortInput.row, grafanaPortInput.row, kibanaPortInput.row, restorePortSettingsButton]).withLayout({ header: localize('bdc-create.PortSettings', 'Port Settings (Optional)'), collapsible: true, collapsed: true }).component();
 
@@ -202,8 +210,7 @@ export class SettingsPage extends WizardPageBase<CreateClusterWizard> {
 				{
 					title: '',
 					component: eulaContainer
-				},
-				{
+				}, {
 					title: '',
 					component: basicSettingsGroup
 				}, {
