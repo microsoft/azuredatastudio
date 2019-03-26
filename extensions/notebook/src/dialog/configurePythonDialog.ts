@@ -126,14 +126,14 @@ export class ConfigurePythonDialog {
 		this.newInstallButton = modelBuilder.radioButton()
 			.withProperties<azdata.RadioButtonProperties>({
 				name: buttonGroup,
-				label: localize('configurePython.newInstall', 'New Installation'),
+				label: localize('configurePython.newInstall', 'New Python installation'),
 				checked: !useExistingPython
 			}).component();
 
 		this.existingInstallButton = modelBuilder.radioButton()
 			.withProperties<azdata.RadioButtonProperties>({
 				name: buttonGroup,
-				label: localize('configurePython.existingInstall', 'Existing Installation'),
+				label: localize('configurePython.existingInstall', 'Use existing Python installation'),
 				checked: useExistingPython
 			}).component();
 	}
