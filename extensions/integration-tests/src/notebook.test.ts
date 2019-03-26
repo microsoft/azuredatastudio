@@ -11,7 +11,7 @@ import assert = require('assert');
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { context } from './testContext';
-import { sqlNotebookContent, writeNotebookToFile, pySpark3KernelMetadata, sqlKernelMetadata, pythonKernelMetadata, pySparkNotebookContent } from './notebook.util';
+import { sqlNotebookContent, writeNotebookToFile, sqlKernelMetadata, pythonKernelMetadata, pySparkNotebookContent } from './notebook.util';
 import { getBdcServer } from './testConfig';
 import { connectToServer } from './utils';
 
