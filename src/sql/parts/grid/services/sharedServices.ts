@@ -70,7 +70,7 @@ export function slickGridDataItemColumnValueExtractor(value: any, columnDef: any
 	return {
 		text: displayValue,
 		ariaLabel: displayValue ? escape(displayValue) : displayValue
-	}
+	};
 }
 
 /** The following code is a rewrite over the both formatter function using dom builder
