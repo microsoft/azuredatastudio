@@ -15,7 +15,7 @@ import { ProfilerTableEditor, ProfilerTableViewState } from './controller/profil
 import * as Actions from 'sql/parts/profiler/contrib/profilerActions';
 import { CONTEXT_PROFILER_EDITOR, PROFILER_TABLE_COMMAND_SEARCH } from './interfaces';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
-import { textFormatter } from 'sql/parts/grid/services/sharedServices';
+import { textFormatter, slickGridDataItemColumnValueExtractor } from 'sql/parts/grid/services/sharedServices';
 import { ProfilerResourceEditor } from './profilerResourceEditor';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { ITextModel } from 'vs/editor/common/model';
@@ -365,7 +365,10 @@ export class ProfilerEditor extends BaseEditor {
 					formatter: textFormatter
 				}
 			]
-		}, { forceFitColumns: true });
+		}, {
+				forceFitColumns: true,
+				dataItemColumnValueExtractor: slickGridDataItemColumnValueExtractor
+			});
 
 		this._detailTableData.onRowCountChange(() => {
 			this._detailTable.updateRowCount();
