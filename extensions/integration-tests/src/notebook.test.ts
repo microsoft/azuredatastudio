@@ -18,7 +18,6 @@ import { connectToServer } from './utils';
 if (context.RunTest) {
 	suite('Notebook integration test suite', async () => {
 		test('Sql NB test', async function () {
-			this.timeout(6000);
 			let notebook = await openNotebook(sqlNotebookContent, sqlKernelMetadata);
 
 			const expectedOutput0 = '(1 row affected)';
@@ -31,20 +30,19 @@ if (context.RunTest) {
 		});
 
 		test('Python3 notebook test', async function () {
-			this.timeout(6000);
 			let notebook = await openNotebook(pySparkNotebookContent, pythonKernelMetadata);
 			let cellOutputs = notebook.document.cells[0].contents.outputs;
 			let result = (<azdata.nb.IExecuteResult>cellOutputs[0]).data['text/plain'];
 			assert(result === '2', `Expected: 2, Acutal: '${result}'`);
 		});
 
-		test('PySpark3 notebook test', async function () {
-			this.timeout(12000);
-			let notebook = await openNotebook(pySparkNotebookContent, pySpark3KernelMetadata);
-			let cellOutputs = notebook.document.cells[0].contents.outputs;
-			let sparkResult = (<azdata.nb.IStreamResult>cellOutputs[3]).text;
-			assert(sparkResult === '2', `Expected: 2, Acutal: '${sparkResult}'`);
-		});
+		// test('PySpark3 notebook test', async function () {
+		// 	this.timeout(12000);
+		// 	let notebook = await openNotebook(pySparkNotebookContent, pySpark3KernelMetadata);
+		// 	let cellOutputs = notebook.document.cells[0].contents.outputs;
+		// 	let sparkResult = (<azdata.nb.IStreamResult>cellOutputs[3]).text;
+		// 	assert(sparkResult === '2', `Expected: 2, Acutal: '${sparkResult}'`);
+		// });
 	});
 }
 async function openNotebook(content: azdata.nb.INotebookContents, kernelMetadata: any): Promise<azdata.nb.NotebookEditor> {
