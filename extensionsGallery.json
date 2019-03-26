@@ -584,14 +584,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.3.0",
-							"lastUpdated": "7/20/2018",
+							"version": "2.0.0",
+							"lastUpdated": "3/26/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.SQLOps.DownloadPage",
-									"source": "https://github.com/BateleurIO/sqlops-combine-scripts/releases/tag/1.3.0"
+									"source": "https://github.com/BateleurIO/azuredatastudio-combine-scripts/releases/tag/2.0.0"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
