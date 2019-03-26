@@ -63,7 +63,7 @@ export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICms
 			if (registeredCmsServers && registeredCmsServers.length > 0) {
 				this.isSystemInitialized = true;
 				// save the CMS Servers for future use
-				this._appContext.apiWrapper.setConfiguration(registeredCmsServers);
+				await this._appContext.apiWrapper.setConfiguration(registeredCmsServers);
 				return registeredCmsServers.map((server) => {
 					return new CmsResourceTreeNode(
 						server.name,

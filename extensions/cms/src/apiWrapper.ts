@@ -102,11 +102,11 @@ export class ApiWrapper {
 	 * @param resource The optional URI, as a URI object or a string, to use to get resource-scoped configurations
 	 */
 	public getConfiguration(): vscode.WorkspaceConfiguration {
-		return vscode.workspace.getConfiguration().get('cms');
+		return vscode.workspace.getConfiguration('cms');
 	}
 
 	public async setConfiguration(value: any) {
-		await vscode.workspace.getConfiguration().update('cms.cmsServers', value, true);
+		await vscode.workspace.getConfiguration('cms').update('cmsServers', value, true);
 	}
 
 	/**
@@ -220,13 +220,16 @@ export class ApiWrapper {
 	}
 
 	public async deleteCmsServer(cmsServer: any) {
-		let newServers = this.getConfiguration().cmsServers.filter((cachedServer) => {
-			return cachedServer.name !== cmsServer;
-		});
-		await this.setConfiguration(newServers);
-		this._registeredCmsServers = this._registeredCmsServers.filter((cachedServer) => {
-			return cachedServer.name !== cmsServer;
-		});
+		let config = this.getConfiguration();
+		if (config && config.cmsServers) {
+			let newServers = config.cmsServers.filter((cachedServer) => {
+				return cachedServer.name !== cmsServer;
+			});
+			await this.setConfiguration(newServers);
+			this._registeredCmsServers = this._registeredCmsServers.filter((cachedServer) => {
+				return cachedServer.name !== cmsServer;
+			});
+		}
 	}
 
 	public cacheRegisteredCmsServer(name: string, description: string, ownerUri: string, connection: azdata.connection.Connection) {
