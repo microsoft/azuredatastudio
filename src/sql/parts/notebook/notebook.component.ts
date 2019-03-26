@@ -33,7 +33,7 @@ import * as notebookUtils from 'sql/parts/notebook/notebookUtils';
 import { Deferred } from 'sql/base/common/promise';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
-import { KernelsDropdown, AttachToDropdown, AddCellAction, TrustedAction } from 'sql/parts/notebook/notebookActions';
+import { KernelsDropdown, AttachToDropdown, AddCellAction, TrustedAction, ClearAllOutputsAction } from 'sql/parts/notebook/notebookActions';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
@@ -371,6 +371,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		let addTextCellButton = new AddCellAction('notebook.AddTextCell', localize('text', 'Text'), 'notebook-button icon-add');
 		addTextCellButton.cellType = CellTypes.Markdown;
 
+		let clearResultsButton = new ClearAllOutputsAction('notebook.ClearAllOutputs', localize('clearAllOutputs', 'Clear Results'), 'notebook-button icon-clear-results');
+
 		this._trustedAction = this.instantiationService.createInstance(TrustedAction, 'notebook.Trusted');
 		this._trustedAction.enabled = false;
 
@@ -382,7 +384,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			{ element: attachToContainer },
 			{ action: addCodeCellButton },
 			{ action: addTextCellButton },
-			{ action: this._trustedAction }
+			{ action: this._trustedAction },
+			{ action: clearResultsButton }
 		]);
 
 	}

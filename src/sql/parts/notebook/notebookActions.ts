@@ -12,7 +12,7 @@ import { INotificationService, Severity, INotificationActions } from 'vs/platfor
 
 import { SelectBox, ISelectBoxOptionsWithLabel } from 'sql/base/browser/ui/selectBox/selectBox';
 import { INotebookModel } from 'sql/parts/notebook/models/modelInterfaces';
-import { CellType } from 'sql/parts/notebook/models/contracts';
+import { CellType, CellTypes } from 'sql/parts/notebook/models/contracts';
 import { NotebookComponent } from 'sql/parts/notebook/notebook.component';
 import { getErrorMessage, formatServerNameWithDatabaseNameForAttachTo, getServerFromFormattedAttachToName, getDatabaseFromFormattedAttachToName } from 'sql/parts/notebook/notebookUtils';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
@@ -21,6 +21,7 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { noKernel } from 'sql/workbench/services/notebook/common/sessionManager';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
+import { CellModel } from 'sql/parts/notebook/models/cell';
 
 const msgLoading = localize('loading', "Loading kernels...");
 const msgChanging = localize('changing', "Changing kernel...");
@@ -45,6 +46,30 @@ export class AddCellAction extends Action {
 		return new Promise<boolean>((resolve, reject) => {
 			try {
 				context.addCell(this.cellType);
+				resolve(true);
+			} catch (e) {
+				reject(e);
+			}
+		});
+	}
+}
+
+
+// Action to clear outputs of all code cells.
+export class ClearAllOutputsAction extends Action {
+	constructor(
+		id: string, label: string, cssClass: string
+	) {
+		super(id, label, cssClass);
+	}
+	public run(context: NotebookModel): Promise<boolean> {
+		return new Promise<boolean>((resolve, reject) => {
+			try {
+				context.cells.forEach(cell => {
+					if (cell.cellType === CellTypes.Code) {
+						(cell as CellModel).clearOutputs();
+					}
+				});
 				resolve(true);
 			} catch (e) {
 				reject(e);
