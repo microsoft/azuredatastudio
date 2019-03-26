@@ -365,7 +365,10 @@ export class ProfilerEditor extends BaseEditor {
 					formatter: textFormatter
 				}
 			]
-		}, { forceFitColumns: true, dataItemColumnValueExtractor: slickGridDataItemColumnValueExtractor });
+		}, {
+				forceFitColumns: true,
+				dataItemColumnValueExtractor: slickGridDataItemColumnValueExtractor
+			});
 
 		this._detailTableData.onRowCountChange(() => {
 			this._detailTable.updateRowCount();
