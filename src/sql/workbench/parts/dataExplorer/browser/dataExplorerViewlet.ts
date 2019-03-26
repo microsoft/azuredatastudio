@@ -53,7 +53,7 @@ export class DataExplorerViewletViewsContribution implements IWorkbenchContribut
 	}
 }
 
-export class DataExplorerViewlet extends ViewContainerViewlet  {
+export class DataExplorerViewlet extends ViewContainerViewlet {
 	private root: HTMLElement;
 
 	private dataSourcesBox: HTMLElement;
