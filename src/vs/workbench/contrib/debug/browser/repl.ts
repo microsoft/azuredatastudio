@@ -373,9 +373,9 @@ export class Repl extends Panel implements IPrivateReplService, IHistoryNavigati
 		], new ReplDataSource(), {
 				ariaLabel: nls.localize('replAriaLabel', "Read Eval Print Loop Panel"),
 				accessibilityProvider: new ReplAccessibilityProvider(),
-				identityProvider: { getId: element => (<IReplElement>element).getId() },
+				identityProvider: { getId: (element: IReplElement) => element.getId() },
 				mouseSupport: false,
-				keyboardNavigationLabelProvider: { getKeyboardNavigationLabel: e => e },
+				keyboardNavigationLabelProvider: { getKeyboardNavigationLabel: (e: IReplElement) => e },
 				horizontalScrolling: false,
 				setRowLineHeight: false,
 				supportDynamicHeights: true
@@ -452,7 +452,10 @@ export class Repl extends Panel implements IPrivateReplService, IHistoryNavigati
 	private onContextMenu(e: ITreeContextMenuEvent<IReplElement>): void {
 		const actions: IAction[] = [];
 		actions.push(new Action('debug.replCopy', nls.localize('copy', "Copy"), undefined, true, () => {
-			this.clipboardService.writeText(window.getSelection().toString());
+			const nativeSelection = window.getSelection();
+			if (nativeSelection) {
+				this.clipboardService.writeText(nativeSelection.toString());
+			}
 			return Promise.resolve();
 		}));
 		actions.push(new Action('workbench.debug.action.copyAll', nls.localize('copyAll', "Copy All"), undefined, true, () => {
@@ -740,7 +743,8 @@ class ReplDelegate implements IListVirtualDelegate<IReplElement> {
 	}
 
 	hasDynamicHeight?(element: IReplElement): boolean {
-		return true;
+		// Empty elements should not have dynamic height since they will be invisible
+		return element.toString().length > 0;
 	}
 }
 
