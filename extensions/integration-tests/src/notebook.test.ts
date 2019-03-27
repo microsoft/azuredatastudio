@@ -43,22 +43,32 @@ if (context.RunTest) {
 		// 	console.log('Python3 NB done');
 		// });
 
-		test('Clear all outputs - Python3 notebook ', async function () {
-			let notebook = await openNotebook(pySparkNotebookContent, pythonKernelMetadata);
-			//Check if at least one cell with output
-			let cellWithOutputs = notebook.document.cells.find(cell => cell.contents && cell.contents.outputs && cell.contents.outputs.length > 0);
-			if (cellWithOutputs) {
-				let clearedOutputs = await notebook.clearAllOutputs();
-				assert(clearedOutputs, 'Outputs of all the code cells from Python notebook should be cleared');
-			}
-		});
+		// test('Clear all outputs - Python3 notebook ', async function () {
+		// 	let notebook = await openNotebook(pySparkNotebookContent, pythonKernelMetadata);
+		// 	//Check if at least one cell with output
+		// 	let cellWithOutputs = notebook.document.cells.find(cell => cell.contents && cell.contents.outputs && cell.contents.outputs.length > 0);
+		// 	console.log("Before clearing cell outputs");
+		// 	if (cellWithOutputs) {
+		// 		let clearedOutputs = await notebook.clearAllOutputs();
+		// 		assert(clearedOutputs, 'Outputs of all the code cells from Python notebook should be cleared');
+		// 		console.log("After clearing cell outputs");
+		// 	}
+		// 	else{
+		// 		assert('Could not find notebook cells with outputs');
+		// 	}
+		// });
 
 		test('Clear all outputs - SQL notebook ', async function () {
 			let notebook = await openNotebook(sqlNotebookContent, sqlKernelMetadata);
 			let cellWithOutputs = notebook.document.cells.find(cell => cell.contents && cell.contents.outputs && cell.contents.outputs.length > 0);
+			console.log("Before clearing cell outputs");
 			if (cellWithOutputs) {
 				let clearedOutputs = await notebook.clearAllOutputs();
 				assert(clearedOutputs, 'Outputs of all the code cells from SQL notebook should be cleared');
+				console.log("After clearing cell outputs");
+			}
+			else{
+				assert('Could not find notebook cells with outputs');
 			}
 		});
 
