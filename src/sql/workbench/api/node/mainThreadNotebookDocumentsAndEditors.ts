@@ -367,7 +367,6 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 	}
 
 	$clearAllOutputs(id: string): Promise<boolean> {
-		// Requires an editor and the matching cell in that editor
 		let editor = this.getEditor(id);
 		if (!editor) {
 			return Promise.reject(disposed(`TextEditor(${id})`));
