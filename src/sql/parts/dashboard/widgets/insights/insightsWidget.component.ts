@@ -3,10 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import {
-	Component, Inject, ViewContainerRef, forwardRef, AfterContentInit,
+	Component, Inject, forwardRef, AfterContentInit,
 	ComponentFactoryResolver, ViewChild, ChangeDetectorRef, Injector
 } from '@angular/core';
-import * as fs from 'fs';
 import { Observable } from 'rxjs/Observable';
 
 import { DashboardWidget, IDashboardWidget, WIDGET_CONFIG, WidgetConfig } from 'sql/parts/dashboard/common/dashboardWidget';
@@ -16,7 +15,8 @@ import { InsightAction, InsightActionContext } from 'sql/workbench/common/action
 import { toDisposableSubscription } from 'sql/base/node/rxjsUtils';
 import { IInsightsConfig, IInsightsView } from './interfaces';
 import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/common/insightRegistry';
-import { insertValueRegex } from 'sql/workbench/services/insights/common/insightsDialogService';
+import { InsightsUtils } from 'sql/workbench/services/insights/common/insightsUtils';
+
 import { RunInsightQueryAction } from './actions';
 
 import { SimpleExecuteResult } from 'azdata';
@@ -26,13 +26,14 @@ import * as types from 'vs/base/common/types';
 import * as pfs from 'vs/base/node/pfs';
 import * as nls from 'vs/nls';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { WorkbenchState, IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
+import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { IntervalTimer, createCancelablePromise } from 'vs/base/common/async';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import { toDisposable } from 'vs/base/common/lifecycle';
 import { isPromiseCanceledError } from 'vs/base/common/errors';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IConfigurationResolverService } from 'vs/workbench/services/configurationResolver/common/configurationResolver';
 
 const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribution);
 
@@ -73,8 +74,9 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 		@Inject(forwardRef(() => Injector)) private _injector: Injector,
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
 		@Inject(IStorageService) private storageService: IStorageService,
-		@Inject(IWorkspaceContextService) private workspaceContextService: IWorkspaceContextService,
-		@Inject(IConfigurationService) private readonly _configurationService: IConfigurationService
+		@Inject(IWorkspaceContextService) private readonly _workspaceContextService: IWorkspaceContextService,
+		@Inject(IConfigurationService) private readonly _configurationService: IConfigurationService,
+		@Inject(IConfigurationResolverService) private readonly _configurationResolverService: IConfigurationResolverService
 	) {
 		super();
 		this.insightConfig = <IInsightsConfig>this._config.widget['insights-widget'];
@@ -280,9 +282,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 		}
 	}
 
-	private _parseConfig(): Thenable<void[]> {
-		let promises: Array<Promise<void>> = [];
-
+	private async _parseConfig(): Promise<void> {
 		this._typeKey = Object.keys(this.insightConfig.type)[0];
 
 		// When the editor.accessibilitySupport setting is on, we will force the chart type to be table.
@@ -296,34 +296,11 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 		if (types.isStringArray(this.insightConfig.query)) {
 			this.insightConfig.query = this.insightConfig.query.join(' ');
 		} else if (this.insightConfig.queryFile) {
-			let filePath = this.insightConfig.queryFile;
-			// check for workspace relative path
-			let match = filePath.match(insertValueRegex);
-			if (match && match.length > 0 && match[1] === 'workspaceRoot') {
-				filePath = filePath.replace(match[0], '');
-				switch (this.workspaceContextService.getWorkbenchState()) {
-					case WorkbenchState.FOLDER:
-						filePath = this.workspaceContextService.getWorkspace().folders[0].toResource(filePath).fsPath;
-						break;
-					case WorkbenchState.WORKSPACE:
-						// Look through all the folders in the workspace use the first one that has the file we're looking for
-						let filePaths = this.workspaceContextService.getWorkspace().folders.map(f => f.toResource(filePath)).filter(p => fs.existsSync(p.fsPath));
-						filePath = filePaths.length > 0 ? filePaths[0].fsPath : filePath;
-				}
-			}
-			promises.push(new Promise((resolve, reject) => {
-				pfs.readFile(filePath).then(
-					buffer => {
-						this.insightConfig.query = buffer.toString();
-						resolve();
-					},
-					error => {
-						reject(error);
-					}
-				);
-			}));
-		}
+			let filePath = InsightsUtils.resolveQueryFilePath(this.insightConfig.queryFile,
+				this._workspaceContextService,
+				this._configurationResolverService);
 
-		return Promise.all(promises);
+			this.insightConfig.query = (await pfs.readFile(filePath)).toString();
+		}
 	}
 }
