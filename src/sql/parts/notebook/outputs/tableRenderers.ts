@@ -60,11 +60,16 @@ export function renderDataResource(
 		});
 	detailTable.registerPlugin(rowNumberColumn);
 
+	let numRows = detailTable.grid.getDataLength();
 	// Need to include column headers and scrollbar, so that's why 1 needs to be added
-	let rowsHeight = (detailTable.grid.getDataLength() + 1) * ROW_HEIGHT + BOTTOM_PADDING_AND_SCROLLBAR;
-
-	// Set the height dynamically if the grid's height is < 500px high; otherwise, set height to 500px
-	tableContainer.style.height = rowsHeight >= 500 ? '500px' : rowsHeight.toString() + 'px';
+	let rowsHeight = (numRows + 1) * ROW_HEIGHT + BOTTOM_PADDING_AND_SCROLLBAR;
+	// if no rows are in the grid, set height to 100% of the container's height
+	if (numRows === 0) {
+		tableContainer.style.height = '100%';
+	} else {
+		// Set the height dynamically if the grid's height is < 500px high; otherwise, set height to 500px
+		tableContainer.style.height = rowsHeight >= 500 ? '500px' : rowsHeight.toString() + 'px';
+	}
 
 	attachTableStyler(detailTable, options.themeService);
 	host.appendChild(tableContainer);
