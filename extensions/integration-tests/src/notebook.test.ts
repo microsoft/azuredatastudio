@@ -48,26 +48,26 @@ if (context.RunTest) {
 			}
 		});
 
-		test('Python3 notebook test', async function () {
-			console.log('Start Python3 NB test');
-			let notebook = await openNotebook(pySparkNotebookContent, pythonKernelMetadata);
-			let cellOutputs = notebook.document.cells[0].contents.outputs;
-			console.log('Got cell outputs');
-			let result = (<azdata.nb.IExecuteResult>cellOutputs[0]).data['text/plain'];
-			assert(result === '2', `Expected: 2, Actual: '${result}'`);
-			console.log('Python3 NB done');
-		});
+		// test('Python3 notebook test', async function () {
+		// 	console.log('Start Python3 NB test');
+		// 	let notebook = await openNotebook(pySparkNotebookContent, pythonKernelMetadata);
+		// 	let cellOutputs = notebook.document.cells[0].contents.outputs;
+		// 	console.log('Got cell outputs');
+		// 	let result = (<azdata.nb.IExecuteResult>cellOutputs[0]).data['text/plain'];
+		// 	assert(result === '2', `Expected: 2, Actual: '${result}'`);
+		// 	console.log('Python3 NB done');
+		// });
 
-		test('Python3 multiple cells notebook test', async function () {
-			let notebook = await openNotebook(pythonNotebookMultipleCellsContent, pythonKernelMetadata, true);
-			for (let i = 0; i < 4; i++) {
-				let cellOutputs = notebook.document.cells[i].contents.outputs;
-				let result = (<azdata.nb.IExecuteResult>cellOutputs[0]).data['text/plain'];
-				let expectedResult = 2+i;
-				assert(result === expectedResult.toString(), `Expected: '${expectedResult.toString()}', Actual: '${result}'`);
-				console.log('Python3 multiple cells NB done');
-			}
-		});
+		// test('Python3 multiple cells notebook test', async function () {
+		// 	let notebook = await openNotebook(pythonNotebookMultipleCellsContent, pythonKernelMetadata, true);
+		// 	for (let i = 0; i < 4; i++) {
+		// 		let cellOutputs = notebook.document.cells[i].contents.outputs;
+		// 		let result = (<azdata.nb.IExecuteResult>cellOutputs[0]).data['text/plain'];
+		// 		let expectedResult = 2+i;
+		// 		assert(result === expectedResult.toString(), `Expected: '${expectedResult.toString()}', Actual: '${result}'`);
+		// 		console.log('Python3 multiple cells NB done');
+		// 	}
+		// });
 
 		// test('PySpark3 notebook test', async function () {
 		// 	this.timeout(12000);
