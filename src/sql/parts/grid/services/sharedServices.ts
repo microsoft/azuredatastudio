@@ -52,12 +52,29 @@ export function textFormatter(row: number, cell: any, value: any, columnDef: any
 		} else {
 			cellClasses += ' missing-value';
 		}
-	} else if (typeof value === 'string') {
-		valueToDisplay = escape(value.length > 250 ? value.slice(0, 250) + '...' : value);
+	} else if (typeof value === 'string' || (value && value.text)) {
+		if (value.text) {
+			valueToDisplay = value.text;
+		} else {
+			valueToDisplay = value;
+		}
+		valueToDisplay = escape(valueToDisplay.length > 250 ? valueToDisplay.slice(0, 250) + '...' : valueToDisplay);
 		titleValue = valueToDisplay;
 	}
 
 	return `<span title="${titleValue}" class="${cellClasses}">${valueToDisplay}</span>`;
+}
+
+/**
+ * Provide slick grid cell with encoded ariaLabel and plain text.
+ * text will be escaped by the textFormatter and ariaLabel will be consumed by slickgrid directly.
+ */
+export function slickGridDataItemColumnValueExtractor(value: any, columnDef: any): { text: string; ariaLabel: string; } {
+	let displayValue = value[columnDef.field];
+	return {
+		text: displayValue,
+		ariaLabel: displayValue ? escape(displayValue) : displayValue
+	};
 }
 
 /** The following code is a rewrite over the both formatter function using dom builder

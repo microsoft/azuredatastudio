@@ -46,6 +46,8 @@ import { WorkbenchContextKeysHandler } from 'vs/workbench/browser/contextkeys';
 import { coalesce } from 'vs/base/common/arrays';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { Layout } from 'vs/workbench/browser/layout';
+import { ICommandLineProcessing } from 'sql/workbench/services/commandLine/common/commandLine';
+import { CommandLineService } from 'sql/workbench/services/commandLine/common/commandLineService';
 
 export class Workbench extends Layout {
 
@@ -173,10 +175,10 @@ export class Workbench extends Layout {
 		// Layout Service
 		serviceCollection.set(IWorkbenchLayoutService, this);
 
-		//
+		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		// NOTE: DO NOT ADD ANY OTHER SERVICE INTO THE COLLECTION HERE.
-		// INSTEAD, CONTRIBUTE IT VIA WORKBENCH.MAIN.TS
-		//
+		// CONTRIBUTE IT VIA WORKBENCH.MAIN.TS AND registerSingleton().
+		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 		// All Contributed Services
 		const contributedServices = getServices();
@@ -186,14 +188,19 @@ export class Workbench extends Layout {
 
 		const instantiationService = new InstantiationService(serviceCollection, true);
 
+		// {{SQL CARBON EDIT }}
+		// TODO@Davidshi commandLineService currently has no referents, so force its creation
+		serviceCollection.set(ICommandLineProcessing, instantiationService.createInstance(CommandLineService));
+		// {{SQL CARBON EDIT}} - End
+
 		// Wrap up
 		instantiationService.invokeFunction(accessor => {
 			const lifecycleService = accessor.get(ILifecycleService);
 
 			// TODO@Ben legacy file service
 			const fileService = accessor.get(IFileService) as any;
-			if (typeof fileService.setImpl === 'function') {
-				fileService.setImpl(accessor.get(ILegacyFileService));
+			if (typeof fileService.setLegacyService === 'function') {
+				fileService.setLegacyService(accessor.get(ILegacyFileService));
 			}
 
 			// TODO@Sandeep debt around cyclic dependencies

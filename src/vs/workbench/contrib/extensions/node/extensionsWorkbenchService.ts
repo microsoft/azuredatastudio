@@ -1056,7 +1056,7 @@ export class ExtensionsWorkbenchService implements IExtensionsWorkbenchService, 
 			const extension = local.filter(local => areSameExtensions(local.identifier, { id: extensionId }))[0];
 
 			if (extension) {
-				return this.windowService.show()
+				return this.windowService.focusWindow()
 					.then(() => this.open(extension));
 			}
 
@@ -1067,7 +1067,7 @@ export class ExtensionsWorkbenchService implements IExtensionsWorkbenchService, 
 
 				const extension = result.firstPage[0];
 
-				return this.windowService.show().then(() => {
+				return this.windowService.focusWindow().then(() => {
 					return this.open(extension).then(() => {
 						this.notificationService.prompt(
 							Severity.Info,

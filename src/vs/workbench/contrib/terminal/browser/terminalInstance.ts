@@ -422,11 +422,13 @@ export class TerminalInstance implements ITerminalInstance {
 		if (this._shellLaunchConfig.initialText) {
 			this._xterm.writeln(this._shellLaunchConfig.initialText);
 		}
-		this._xterm.winptyCompatInit();
 		this._xterm.on('linefeed', () => this._onLineFeed());
 		this._xterm.on('key', (key, ev) => this._onKey(key, ev));
 
 		if (this._processManager) {
+			if (this._processManager.os === platform.OperatingSystem.Windows) {
+				this._xterm.winptyCompatInit();
+			}
 			this._processManager.onProcessData(data => this._onProcessData(data));
 			this._xterm.on('data', data => this._processManager!.write(data));
 			// TODO: How does the cwd work on detached processes?
@@ -953,7 +955,7 @@ export class TerminalInstance implements ITerminalInstance {
 			if (typeof this._shellLaunchConfig.waitOnExit === 'string') {
 				let message = this._shellLaunchConfig.waitOnExit;
 				// Bold the message and add an extra new line to make it stand out from the rest of the output
-				message = `\n\x1b[1m${message}\x1b[0m`;
+				message = `\r\n\x1b[1m${message}\x1b[0m`;
 				this._xterm.writeln(message);
 			}
 			// Disable all input if the terminal is exiting and listen for next keypress

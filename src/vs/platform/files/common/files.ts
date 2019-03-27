@@ -56,6 +56,11 @@ export interface IFileService {
 	 */
 	canHandleResource(resource: URI): boolean;
 
+	/**
+	 * Checks if the provider for the provided resource has the provided file system capability.
+	 */
+	hasCapability(resource: URI, capability: FileSystemProviderCapabilities): Promise<boolean>;
+
 	//#endregion
 
 	/**
@@ -188,6 +193,7 @@ export interface FileOpenOptions {
 
 export interface FileDeleteOptions {
 	recursive: boolean;
+	useTrash: boolean;
 }
 
 export enum FileType {
@@ -215,7 +221,9 @@ export const enum FileSystemProviderCapabilities {
 	FileFolderCopy = 1 << 3,
 
 	PathCaseSensitive = 1 << 10,
-	Readonly = 1 << 11
+	Readonly = 1 << 11,
+
+	Trash = 1 << 12
 }
 
 export interface IFileSystemProvider {
@@ -243,36 +251,65 @@ export interface IFileSystemProvider {
 	write?(fd: number, pos: number, data: Uint8Array, offset: number, length: number): Promise<number>;
 }
 
+export interface IFileSystemProviderWithFileReadWriteCapability extends IFileSystemProvider {
+	readFile(resource: URI): Promise<Uint8Array>;
+	writeFile(resource: URI, content: Uint8Array, opts: FileWriteOptions): Promise<void>;
+}
+
+export function hasReadWriteCapability(provider: IFileSystemProvider): provider is IFileSystemProviderWithFileReadWriteCapability {
+	return !!(provider.capabilities & FileSystemProviderCapabilities.FileReadWrite);
+}
+
+export interface IFileSystemProviderWithFileFolderCopyCapability extends IFileSystemProvider {
+	copy(from: URI, to: URI, opts: FileOverwriteOptions): Promise<void>;
+}
+
+export function hasFileFolderCopyCapability(provider: IFileSystemProvider): provider is IFileSystemProviderWithFileFolderCopyCapability {
+	return !!(provider.capabilities & FileSystemProviderCapabilities.FileFolderCopy);
+}
+
+export interface IFileSystemProviderWithOpenReadWriteCloseCapability extends IFileSystemProvider {
+	open(resource: URI, opts: FileOpenOptions): Promise<number>;
+	close(fd: number): Promise<void>;
+	read(fd: number, pos: number, data: Uint8Array, offset: number, length: number): Promise<number>;
+	write(fd: number, pos: number, data: Uint8Array, offset: number, length: number): Promise<number>;
+}
+
+export function hasOpenReadWriteCloseCapability(provider: IFileSystemProvider): provider is IFileSystemProviderWithOpenReadWriteCloseCapability {
+	return !!(provider.capabilities & FileSystemProviderCapabilities.FileOpenReadWriteClose);
+}
+
 export enum FileSystemProviderErrorCode {
 	FileExists = 'EntryExists',
 	FileNotFound = 'EntryNotFound',
 	FileNotADirectory = 'EntryNotADirectory',
 	FileIsADirectory = 'EntryIsADirectory',
 	NoPermissions = 'NoPermissions',
-	Unavailable = 'Unavailable'
+	Unavailable = 'Unavailable',
+	Unknown = 'Unknown'
 }
 
 export class FileSystemProviderError extends Error {
 
-	constructor(message: string, public readonly code?: FileSystemProviderErrorCode) {
+	constructor(message: string, public readonly code: FileSystemProviderErrorCode) {
 		super(message);
 	}
 }
 
-export function createFileSystemProviderError(error: Error, code?: FileSystemProviderErrorCode): FileSystemProviderError {
+export function createFileSystemProviderError(error: Error, code: FileSystemProviderErrorCode): FileSystemProviderError {
 	const providerError = new FileSystemProviderError(error.toString(), code);
-	markAsFileSystemProviderError(providerError);
+	markAsFileSystemProviderError(providerError, code);
 
 	return providerError;
 }
 
-export function markAsFileSystemProviderError(error: Error, code?: FileSystemProviderErrorCode): Error {
+export function markAsFileSystemProviderError(error: Error, code: FileSystemProviderErrorCode): Error {
 	error.name = code ? `${code} (FileSystemError)` : `FileSystemError`;
 
 	return error;
 }
 
-export function toFileSystemProviderErrorCode(error: Error): FileSystemProviderErrorCode | undefined {
+export function toFileSystemProviderErrorCode(error: Error): FileSystemProviderErrorCode {
 
 	// FileSystemProviderError comes with the code
 	if (error instanceof FileSystemProviderError) {
@@ -283,7 +320,7 @@ export function toFileSystemProviderErrorCode(error: Error): FileSystemProviderE
 	// went through the markAsFileSystemProviderError() method
 	const match = /^(.+) \(FileSystemError\)$/.exec(error.name);
 	if (!match) {
-		return undefined;
+		return FileSystemProviderErrorCode.Unknown;
 	}
 
 	switch (match[1]) {
@@ -295,7 +332,7 @@ export function toFileSystemProviderErrorCode(error: Error): FileSystemProviderE
 		case FileSystemProviderErrorCode.Unavailable: return FileSystemProviderErrorCode.Unavailable;
 	}
 
-	return undefined;
+	return FileSystemProviderErrorCode.Unknown;
 }
 
 export function toFileOperationResult(error: Error): FileOperationResult {
@@ -1102,8 +1139,6 @@ export interface ILegacyFileService {
 	updateContent(resource: URI, value: string | ITextSnapshot, options?: IUpdateContentOptions): Promise<IFileStat>;
 
 	createFile(resource: URI, content?: string, options?: ICreateFileOptions): Promise<IFileStat>;
-
-	del(resource: URI, options?: { useTrash?: boolean, recursive?: boolean }): Promise<void>;
 
 	watchFileChanges(resource: URI): void;
 
