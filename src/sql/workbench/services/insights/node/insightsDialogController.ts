@@ -11,17 +11,16 @@ import * as Utils from 'sql/platform/connection/common/utils';
 import { IInsightsDialogModel } from 'sql/workbench/services/insights/common/insightsDialogService';
 import { error } from 'sql/base/common/log';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
-import { InsightsUtils} from '../common/insightsUtils';
+import { resolveQueryFilePath} from '../common/insightsUtils';
 
 import { DbCellValue, IDbColumn, QueryExecuteSubsetResult } from 'azdata';
 
 import Severity from 'vs/base/common/severity';
 import * as types from 'vs/base/common/types';
 import * as pfs from 'vs/base/node/pfs';
-import * as fs from 'fs';
 import * as nls from 'vs/nls';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IWorkspaceContextService, WorkbenchState } from 'vs/platform/workspace/common/workspace';
+import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IConfigurationResolverService } from 'vs/workbench/services/configurationResolver/common/configurationResolver';
 
@@ -61,9 +60,18 @@ export class InsightsDialogController {
 					this._errorMessageService.showDialog(Severity.Error, nls.localize("insightsError", "Insights error"), e);
 				}).then(() => undefined);
 			} else if (types.isString(input.queryFile)) {
-				let filePath = InsightsUtils.resolveQueryFilePath(input.queryFile,
-					this._workspaceContextService,
-					this._configurationResolverService);
+				let filePath: string;
+				try {
+					filePath = await resolveQueryFilePath(input.queryFile,
+						this._workspaceContextService,
+						this._configurationResolverService);
+				}
+				catch(e) {
+					this._notificationService.notify({
+						severity: Severity.Error,
+						message: e});
+					return Promise.resolve();
+				}
 
 				try {
 					let buffer: Buffer = await pfs.readFile(filePath);

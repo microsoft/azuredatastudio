@@ -6,7 +6,7 @@
 import { equal } from 'assert';
 import * as os from 'os';
 
-import { InsightsUtils } from 'sql/workbench/services/insights/common/insightsUtils';
+import { resolveQueryFilePath } from 'sql/workbench/services/insights/common/insightsUtils';
 import { TestWindowService } from 'sqltest/stubs/windowTestService';
 
 import * as path from 'vs/base/common/path';
@@ -33,7 +33,7 @@ suite('Insights Utils tests', function() {
 
 	});
 
-	test('resolveQueryFilePath resolves path correctly with fully qualified path', () => {
+	test('resolveQueryFilePath resolves path correctly with fully qualified path', async () => {
 		let configurationResolverService = new ConfigurationResolverService(
 			new TestWindowService( { } ),
 			undefined,
@@ -43,11 +43,11 @@ suite('Insights Utils tests', function() {
 			new TestContextService(),
 			undefined);
 
-		let resolvedPath = InsightsUtils.resolveQueryFilePath(queryFilePath, new TestContextService(), configurationResolverService);
+		let resolvedPath = await resolveQueryFilePath(queryFilePath, new TestContextService(), configurationResolverService);
 		equal(resolvedPath, queryFilePath);
 	});
 
-	test('resolveQueryFilePath resolves path correctly with workspaceRoot var', () => {
+	test('resolveQueryFilePath resolves path correctly with workspaceRoot var and non-empty workspace containing file', async () => {
 		// Create mock context service with our test folder added as a workspace folder for resolution
 		let contextService = new TestContextService(
 			new Workspace(
@@ -63,11 +63,62 @@ suite('Insights Utils tests', function() {
 			contextService,
 			undefined);
 
-		let resolvedPath = InsightsUtils.resolveQueryFilePath('${workspaceRoot}\\test.sql', contextService, configurationResolverService)
+		let resolvedPath = await resolveQueryFilePath('${workspaceRoot}\\test.sql', contextService, configurationResolverService);
 		equal(resolvedPath, queryFilePath);
 	});
 
-	test('resolveQueryFilePath resolves path correctly with env var', () => {
+	test('resolveQueryFilePath throws with workspaceRoot var and non-empty workspace not containing file', async (done) => {
+		let tokenizedPath = '${workspaceRoot}\\test.sql';
+		// Create mock context service with a folder NOT containing our test file to verify it returns original path
+		let contextService = new TestContextService(
+			new Workspace(
+				'TestWorkspace',
+				toWorkspaceFolders([{ path: os.tmpdir() }])
+		));
+		let configurationResolverService = new ConfigurationResolverService(
+			new TestWindowService( { } ),
+			undefined,
+			undefined,
+			undefined,
+			undefined,
+			contextService,
+			undefined);
+
+		try {
+			await resolveQueryFilePath(tokenizedPath, contextService, configurationResolverService);
+		}
+		catch(e) {
+			done();
+		}
+	});
+
+	test('resolveQueryFilePath throws with workspaceRoot var and empty workspace', async (done) => {
+		let tokenizedPath = '${workspaceRoot}\\test.sql';
+		// Create mock context service with an empty workspace
+		let contextService = new TestContextService(
+			new Workspace(
+				'TestWorkspace'));
+		let configurationResolverService = new ConfigurationResolverService(
+			new TestWindowService( { } ),
+			undefined,
+			undefined,
+			undefined,
+			undefined,
+			contextService,
+			undefined);
+
+		try {
+			await resolveQueryFilePath(tokenizedPath, contextService, configurationResolverService);
+		}
+		catch(e) {
+			done();
+		}
+	});
+
+	test('resolveQueryFilePath resolves path correctly with env var and empty workspace', async () => {
+		let contextService = new TestContextService(
+			new Workspace('TestWorkspace'));
+
 		// Create mock window service with env variable containing test folder for resolution
 		let configurationResolverService = new ConfigurationResolverService(
 			new TestWindowService({ TEST_PATH: queryFileDir }),
@@ -78,11 +129,29 @@ suite('Insights Utils tests', function() {
 			undefined,
 			undefined);
 
-		let resolvedPath = InsightsUtils.resolveQueryFilePath('${env:TEST_PATH}\\test.sql', new TestContextService(), configurationResolverService)
+		let resolvedPath = await resolveQueryFilePath('${env:TEST_PATH}\\test.sql', contextService, configurationResolverService);
 		equal(resolvedPath, queryFilePath);
 	});
 
-	test('resolveQueryFilePath returns original path if invalid param var specified', () => {
+	test('resolveQueryFilePath resolves path correctly with env var and non-empty workspace', async () => {
+		let contextService = new TestContextService(
+			new Workspace('TestWorkspace', toWorkspaceFolders([{ path: os.tmpdir() }])));
+
+		// Create mock window service with env variable containing test folder for resolution
+		let configurationResolverService = new ConfigurationResolverService(
+			new TestWindowService({ TEST_PATH: queryFileDir }),
+			undefined,
+			undefined,
+			undefined,
+			undefined,
+			undefined,
+			undefined);
+
+		let resolvedPath = await resolveQueryFilePath('${env:TEST_PATH}\\test.sql', contextService, configurationResolverService);
+		equal(resolvedPath, queryFilePath);
+	});
+
+	test('resolveQueryFilePath throws if invalid param var specified', async (done) => {
 		let invalidPath = '${INVALID}\\test.sql';
 		let configurationResolverService = new ConfigurationResolverService(
 			new TestWindowService({ }),
@@ -93,13 +162,17 @@ suite('Insights Utils tests', function() {
 			undefined,
 			undefined);
 
-		let resolvedPath = InsightsUtils.resolveQueryFilePath(invalidPath, new TestContextService(), configurationResolverService)
-		equal(resolvedPath, invalidPath);
+		try {
+			await resolveQueryFilePath(invalidPath, new TestContextService(), configurationResolverService);
+		}
+		catch(e) {
+			done();
+		}
+
 	});
 
 	teardown( done => {
 		// Clean up our test files
 		pfs.del(testRootPath).then(done());
 	});
-
 });

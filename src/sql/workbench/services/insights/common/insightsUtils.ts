@@ -3,33 +3,39 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
- import * as fs from 'fs';
+import * as pfs from 'vs/base/node/pfs';
+import { localize } from 'vs/nls';
 
-import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
+import { IWorkspaceContextService, IWorkspaceFolder } from 'vs/platform/workspace/common/workspace';
 import { IConfigurationResolverService } from 'vs/workbench/services/configurationResolver/common/configurationResolver';
 
-export class InsightsUtils {
-
-	/**
-	 * Resolves the given file path using the VS ConfigurationResolver service, replacing macros such as
-	 * ${workspaceRoot} with their expected values and then testing each path to see if it exists. It will
-	 * return either the first full path that exists or the original file path if none of the paths existed.
-	 * @param filePath The path to resolve
-	 * @param workspaceContextService The workspace context to use for resolving workspace vars
-	 * @param configurationResolverService The resolver service to use to resolve the vars
-	 */
-	public static resolveQueryFilePath(filePath: string,
-		workspaceContextService: IWorkspaceContextService,
-		configurationResolverService: IConfigurationResolverService): string {
-			if(!filePath || !workspaceContextService || !configurationResolverService) {
-				return filePath;
-			}
-			// Look through all the folders in the workspace use the first one that has the file we're looking for
-			let foundFilePaths = workspaceContextService.getWorkspace().folders
-						.map(f => configurationResolverService.resolve(f, filePath))
-						.filter(p => fs.existsSync(p));
-
-			// Default to the original path if resolution didn't come back with any valid paths
-			return foundFilePaths.length > 0 ? foundFilePaths[0] : filePath;
+/**
+ * Resolves the given file path using the VS ConfigurationResolver service, replacing macros such as
+ * ${workspaceRoot} with their expected values and then testing each path to see if it exists. It will
+ * return either the first full path that exists or throw an error if none of the resolved paths exist
+ * @param filePath The path to resolve
+ * @param workspaceContextService The workspace context to use for resolving workspace vars
+ * @param configurationResolverService The resolver service to use to resolve the vars
+ */
+export async function resolveQueryFilePath(filePath: string,
+	workspaceContextService: IWorkspaceContextService,
+	configurationResolverService: IConfigurationResolverService): Promise<string> {
+		if(!filePath || !workspaceContextService || !configurationResolverService) {
+			return filePath;
 		}
+
+		let workspaceFolders: IWorkspaceFolder[] = workspaceContextService.getWorkspace().folders;
+		// Resolve the path using each folder in our workspace, or undefined if there aren't any
+		// (so that non-folder vars such as environment vars still resolve)
+		let resolvedFilePaths = (workspaceFolders.length > 0 ? workspaceFolders : [ undefined ])
+					.map(f => configurationResolverService.resolve(f, filePath));
+
+		// Just need a single query file so use the first we find that exists
+		for (const path of resolvedFilePaths) {
+			if(await pfs.exists(path)) {
+				return path;
+			}
+		}
+
+		throw Error(localize('insightsDidNotFindResolvedFile', 'Could not find query file at any of the following paths :\n {0}', resolvedFilePaths.join('\n')));
 }

@@ -15,7 +15,7 @@ import { InsightAction, InsightActionContext } from 'sql/workbench/common/action
 import { toDisposableSubscription } from 'sql/base/node/rxjsUtils';
 import { IInsightsConfig, IInsightsView } from './interfaces';
 import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/common/insightRegistry';
-import { InsightsUtils } from 'sql/workbench/services/insights/common/insightsUtils';
+import { resolveQueryFilePath } from 'sql/workbench/services/insights/common/insightsUtils';
 
 import { RunInsightQueryAction } from './actions';
 
@@ -114,6 +114,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 				this._register(toDisposable(() => cancelablePromise.cancel()));
 			}
 		}, error => {
+			this._loading = false;
 			this.showError(error);
 		});
 	}
@@ -296,7 +297,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 		if (types.isStringArray(this.insightConfig.query)) {
 			this.insightConfig.query = this.insightConfig.query.join(' ');
 		} else if (this.insightConfig.queryFile) {
-			let filePath = InsightsUtils.resolveQueryFilePath(this.insightConfig.queryFile,
+			let filePath = await resolveQueryFilePath(this.insightConfig.queryFile,
 				this._workspaceContextService,
 				this._configurationResolverService);
 
