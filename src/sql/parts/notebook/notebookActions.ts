@@ -213,6 +213,25 @@ export class TrustedAction extends ToggleableAction {
 	}
 }
 
+// Action to run all code cells in a notebook.
+export class RunAllCellsAction extends Action {
+	constructor(
+		id: string, label: string, cssClass: string
+	) {
+		super(id, label, cssClass);
+	}
+	public run(context: NotebookComponent): Promise<boolean> {
+		return new Promise<boolean>((resolve, reject) => {
+			try {
+				context.runAllCells();
+				resolve(true);
+			} catch (e) {
+				reject(e);
+			}
+		});
+	}
+}
+
 export class KernelsDropdown extends SelectBox {
 	private model: NotebookModel;
 	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, modelReady: Promise<INotebookModel>) {

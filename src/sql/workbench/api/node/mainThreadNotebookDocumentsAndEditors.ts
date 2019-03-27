@@ -122,8 +122,14 @@ class MainThreadNotebookEditor extends Disposable {
 		if (!this.editor) {
 			return Promise.resolve(false);
 		}
-
 		return this.editor.runCell(cell);
+	}
+
+	public runAllCells(): Promise<boolean> {
+		if (!this.editor) {
+			return Promise.resolve(false);
+		}
+		return this.editor.runAllCells();
 	}
 }
 
@@ -365,16 +371,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 			return Promise.reject(disposed(`TextEditor(${id})`));
 		}
 		let codeCells = editor.cells.filter(cell => cell.cellType === CellTypes.Code);
-		try {
-			if (codeCells && codeCells.length > 0) {
-				codeCells.forEach(cell => {
-					editor.runCell(cell);
-				});
-			}
-		} catch {
-			return Promise.resolve(false);
-		}
-		return Promise.resolve(true);
+		return this.doRunAllCells(codeCells, editor);
 	}
 
 	//#endregion
@@ -417,6 +414,19 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 			}
 		}
 		return id;
+	}
+
+	private async doRunAllCells(codeCells: ICellModel[], editor: MainThreadNotebookEditor): Promise<boolean> {
+		try {
+			if (codeCells && codeCells.length > 0) {
+				for (let i = 0; i < codeCells.length; i++) {
+					await editor.runCell(codeCells[i]);
+				}
+			}
+		} catch {
+			return Promise.resolve(false);
+		}
+		return Promise.resolve(true);
 	}
 
 	findNotebookEditorIdFor(input: NotebookInput): string {

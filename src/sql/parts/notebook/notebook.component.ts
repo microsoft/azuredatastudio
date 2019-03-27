@@ -33,7 +33,7 @@ import * as notebookUtils from 'sql/parts/notebook/notebookUtils';
 import { Deferred } from 'sql/base/common/promise';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
-import { KernelsDropdown, AttachToDropdown, AddCellAction, TrustedAction } from 'sql/parts/notebook/notebookActions';
+import { KernelsDropdown, AttachToDropdown, AddCellAction, TrustedAction, RunAllCellsAction } from 'sql/parts/notebook/notebookActions';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
@@ -62,6 +62,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private _modelRegisteredDeferred = new Deferred<NotebookModel>();
 	private profile: IConnectionProfile;
 	private _trustedAction: TrustedAction;
+	private _runAllCellsAction: RunAllCellsAction;
 	private _providerRelatedActions: IAction[] = [];
 	private _scrollTop: number;
 
@@ -371,6 +372,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		let addTextCellButton = new AddCellAction('notebook.AddTextCell', localize('text', 'Text'), 'notebook-button icon-add');
 		addTextCellButton.cellType = CellTypes.Markdown;
 
+		this._runAllCellsAction = new RunAllCellsAction('notebook.runAllCells', localize('runAll', 'Run Cells'), 'notebook-button icon-run-cells');
+
 		this._trustedAction = this.instantiationService.createInstance(TrustedAction, 'notebook.Trusted');
 		this._trustedAction.enabled = false;
 
@@ -382,7 +385,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			{ element: attachToContainer },
 			{ action: addCodeCellButton },
 			{ action: addTextCellButton },
-			{ action: this._trustedAction }
+			{ action: this._trustedAction },
+			{ action: this._runAllCellsAction }
 		]);
 
 	}
@@ -477,6 +481,18 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		} else {
 			return Promise.reject(new Error(localize('cellNotFound', 'cell with URI {0} was not found in this model', uriString)));
 		}
+	}
+
+	public async runAllCells(): Promise<boolean> {
+		await this.modelReady;
+		let codeCells = this._model.cells.filter(cell => cell.cellType === CellTypes.Code);
+		for (let i = 0; i < codeCells.length; i++) {
+			let cellStatus = await this.runCell(codeCells[i]);
+			if (!cellStatus) {
+				return Promise.reject(new Error(localize('cellRunFailed', 'running cell id {0} failed', codeCells[i].id)));
+			}
+		}
+		return Promise.resolve(true);
 	}
 
 }
