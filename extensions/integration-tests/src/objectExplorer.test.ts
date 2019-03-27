@@ -38,7 +38,13 @@ if (context.RunTest) {
 
 			let node = nodes[index];
 			let actions = await azdata.objectexplorer.getNodeActions(node.connectionId, node.nodePath);
-			const expectedActions = ['Manage', 'New Query', 'Disconnect', 'Delete Connection', 'Refresh', 'New Notebook', 'Launch Profiler'];
+			let expectedActions;
+
+			if (process.platform === 'win32') {
+				expectedActions = ['Manage', 'New Query', 'Disconnect', 'Delete Connection', 'Refresh', 'New Notebook', 'Properties', 'Launch Profiler'];
+			} else {
+				expectedActions = ['Manage', 'New Query', 'Disconnect', 'Delete Connection', 'Refresh', 'New Notebook', 'Launch Profiler'];
+			}
 
 			const expectedString = expectedActions.join(',');
 			const actualString = actions.join(',');
@@ -46,7 +52,7 @@ if (context.RunTest) {
 		});
 	});
 }
-async function VerifyOeNode(server: TestServerProfile, timeout: number,expectedNodeLable: string[]) {
+async function VerifyOeNode(server: TestServerProfile, timeout: number, expectedNodeLable: string[]) {
 	await connectToServer(server, timeout);
 	let nodes = <azdata.objectexplorer.ObjectExplorerNode[]>await azdata.objectexplorer.getActiveConnectionNodes();
 	assert(nodes.length > 0, `Expecting at least one active connection, actual: ${nodes.length}`);

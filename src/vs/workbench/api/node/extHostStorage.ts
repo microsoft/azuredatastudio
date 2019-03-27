@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { MainContext, MainThreadStorageShape, IMainContext, ExtHostStorageShape } from './extHost.protocol';
+import { MainContext, MainThreadStorageShape, IMainContext, ExtHostStorageShape } from '../common/extHost.protocol';
 import { Emitter } from 'vs/base/common/event';
 
 export interface IStorageChangeEvent {
@@ -23,11 +23,11 @@ export class ExtHostStorage implements ExtHostStorageShape {
 		this._proxy = mainContext.getProxy(MainContext.MainThreadStorage);
 	}
 
-	getValue<T>(shared: boolean, key: string, defaultValue?: T): Thenable<T> {
+	getValue<T>(shared: boolean, key: string, defaultValue?: T): Promise<T | undefined> {
 		return this._proxy.$getValue<T>(shared, key).then(value => value || defaultValue);
 	}
 
-	setValue(shared: boolean, key: string, value: object): Thenable<void> {
+	setValue(shared: boolean, key: string, value: object): Promise<void> {
 		return this._proxy.$setValue(shared, key, value);
 	}
 

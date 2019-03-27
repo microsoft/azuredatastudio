@@ -68,19 +68,11 @@
 	background-image: url("./media/dark/nottrusted_inverse.svg");
 }
 
-.notebookEditor .notebook-button.icon-save{
-	background-image: url("./media/light/save.svg");
-}
-
-.vs-dark .notebookEditor .notebook-button.icon-save,
-.hc-black .notebookEditor .notebook-button.icon-save{
-	background-image: url("./media/dark/save_inverse.svg");
-}
-
 .moreActions .action-label.icon.toggle-more {
 	height: 20px;
 	width: 20px;
 }
+
 .moreActions.actionhidden {
 	visibility: hidden
 }

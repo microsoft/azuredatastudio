@@ -46,6 +46,9 @@ export class FlatFileWizard {
 			return;
 		}
 
+		let currentConnection = await azdata.connection.getCurrentConnection();
+		model.serverId = currentConnection.connectionId;
+
 		this.wizard = azdata.window.createWizard(localize('flatFileImport.wizardName', 'Import flat file wizard'));
 		let page1 = azdata.window.createWizardPage(localize('flatFileImport.page1Name', 'Specify Input File'));
 		let page2 = azdata.window.createWizardPage(localize('flatFileImport.page2Name', 'Preview Data'));

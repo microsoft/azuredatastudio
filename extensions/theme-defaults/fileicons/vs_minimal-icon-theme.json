@@ -29,6 +29,12 @@
 		},
 		"_file_light": {
 			"iconPath": "./images/Document_16x.svg"
+		},
+		"notebook": {
+			"iconPath": "./images/notebook.svg"
+		},
+		"notebook_dark": {
+			"iconPath": "./images/notebook_inverse.svg"
 		}
 	},
 
@@ -39,12 +45,14 @@
 	"rootFolder": "_root_folder_dark",
 	"fileExtensions": {
 		// icons by file extension
+		"ipynb": "notebook_dark"
 	},
 	"fileNames": {
 		// icons by file name
 	},
 	"languageIds": {
 		// icons by language id
+		"notebook": "notebook_dark"
 	},
 	"light": {
 		"folderExpanded": "_folder_open_light",
@@ -54,12 +62,14 @@
 		"file": "_file_light",
 		"fileExtensions": {
 			// icons by file extension
+			"ipynb": "notebook"
 		},
 		"fileNames": {
 			// icons by file name
 		},
 		"languageIds": {
 			// icons by language id
+			"notebook": "notebook"
 		}
 	},
 	"highContrast": {

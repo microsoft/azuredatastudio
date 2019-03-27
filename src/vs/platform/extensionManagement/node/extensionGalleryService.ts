@@ -4,18 +4,18 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { tmpdir } from 'os';
-import * as path from 'path';
+import * as path from 'vs/base/common/path';
 import { distinct } from 'vs/base/common/arrays';
 import { getErrorMessage, isPromiseCanceledError, canceled } from 'vs/base/common/errors';
-import { StatisticType, IGalleryExtension, IExtensionGalleryService, IGalleryExtensionAsset, IQueryOptions, SortBy, SortOrder, IExtensionManifest, IExtensionIdentifier, IReportedExtension, InstallOperation, ITranslation, IGalleryExtensionVersion } from 'vs/platform/extensionManagement/common/extensionManagement';
+import { StatisticType, IGalleryExtension, IExtensionGalleryService, IGalleryExtensionAsset, IQueryOptions, SortBy, SortOrder, IExtensionIdentifier, IReportedExtension, InstallOperation, ITranslation, IGalleryExtensionVersion, IGalleryExtensionAssets, isIExtensionIdentifier } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { getGalleryExtensionId, getGalleryExtensionTelemetryData, adoptToGalleryExtensionId } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 import { assign, getOrDefault } from 'vs/base/common/objects';
 import { IRequestService } from 'vs/platform/request/node/request';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IPager } from 'vs/base/common/paging';
 import { IRequestOptions, IRequestContext, download, asJson, asText } from 'vs/base/node/request';
-import pkg from 'vs/platform/node/package';
-import product from 'vs/platform/node/product';
+import pkg from 'vs/platform/product/node/package';
+import product from 'vs/platform/product/node/product';
 import { isEngineValid } from 'vs/platform/extensions/node/extensionValidator';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { readFile } from 'vs/base/node/pfs';
@@ -24,10 +24,11 @@ import { generateUuid, isUUID } from 'vs/base/common/uuid';
 import { values } from 'vs/base/common/map';
 // {{SQL CARBON EDIT}}
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { ExtensionsPolicy, ExtensionsPolicyKey } from 'vs/workbench/parts/extensions/common/extensions';
+import { ExtensionsPolicy, ExtensionsPolicyKey } from 'vs/workbench/contrib/extensions/common/extensions';
 // {{SQL CARBON EDIT}} - End
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { ILogService } from 'vs/platform/log/common/log';
+import { IExtensionManifest } from 'vs/platform/extensions/common/extensions';
 
 interface IRawGalleryExtensionFile {
 	assetType: string;
@@ -123,6 +124,8 @@ const PropertyType = {
 	Dependency: 'Microsoft.VisualStudio.Code.ExtensionDependencies',
 	ExtensionPack: 'Microsoft.VisualStudio.Code.ExtensionPack',
 	Engine: 'Microsoft.VisualStudio.Code.Engine',
+	// {{SQL CARBON EDIT}}
+	AzDataEngine: 'Microsoft.AzDataEngine',
 	LocalizedLanguages: 'Microsoft.VisualStudio.Code.LocalizedLanguages'
 };
 
@@ -202,7 +205,7 @@ class Query {
 
 	get searchText(): string {
 		const criterium = this.state.criteria.filter(criterium => criterium.filterType === FilterType.SearchText)[0];
-		return criterium ? criterium.value : '';
+		return criterium && criterium.value ? criterium.value : '';
 	}
 }
 
@@ -220,7 +223,41 @@ function getCoreTranslationAssets(version: IRawGalleryExtensionVersion): { [lang
 	}, {});
 }
 
-function getVersionAsset(version: IRawGalleryExtensionVersion, type: string): IGalleryExtensionAsset {
+function getRepositoryAsset(version: IRawGalleryExtensionVersion): IGalleryExtensionAsset | null {
+	if (version.properties) {
+		const results = version.properties.filter(p => p.key === AssetType.Repository);
+		const gitRegExp = new RegExp('((git|ssh|http(s)?)|(git@[\w\.]+))(:(//)?)([\w\.@\:/\-~]+)(\.git)(/)?');
+
+		const uri = results.filter(r => gitRegExp.test(r.value))[0];
+		return uri ? { uri: uri.value, fallbackUri: uri.value } : null;
+	}
+	return getVersionAsset(version, AssetType.Repository);
+}
+
+function getDownloadAsset(version: IRawGalleryExtensionVersion): IGalleryExtensionAsset {
+	// {{SQL CARBON EDIT}} - Use the extension VSIX download URL if present
+	const asset = getVersionAsset(version, AssetType.VSIX);
+	if (asset) {
+		return asset;
+	}
+	// {{SQL CARBON EDIT}} - End
+
+	return {
+		uri: `${version.fallbackAssetUri}/${AssetType.VSIX}?redirect=true`,
+		fallbackUri: `${version.fallbackAssetUri}/${AssetType.VSIX}`
+	};
+}
+
+function getIconAsset(version: IRawGalleryExtensionVersion): IGalleryExtensionAsset {
+	const asset = getVersionAsset(version, AssetType.Icon);
+	if (asset) {
+		return asset;
+	}
+	const uri = require.toUrl('./media/defaultIcon.png');
+	return { uri, fallbackUri: uri };
+}
+
+function getVersionAsset(version: IRawGalleryExtensionVersion, type: string): IGalleryExtensionAsset | null {
 	const result = version.files.filter(f => f.assetType === type)[0];
 
 	// {{SQL CARBON EDIT}}
@@ -228,63 +265,22 @@ function getVersionAsset(version: IRawGalleryExtensionVersion, type: string): IG
 	if (result) {
 		uriFromSource = result.source;
 	}
-
-	if (type === AssetType.Repository) {
-		if (version.properties) {
-			const results = version.properties.filter(p => p.key === type);
-			const gitRegExp = new RegExp('((git|ssh|http(s)?)|(git@[\w\.]+))(:(//)?)([\w\.@\:/\-~]+)(\.git)(/)?');
-
-			const uri = results.filter(r => gitRegExp.test(r.value))[0];
-			if (!uri) {
-				return {
-					uri: null,
-					fallbackUri: null
-				};
-			}
-
-			return {
-				uri: uri.value,
-				fallbackUri: uri.value,
-			};
-		}
-	}
-
-	if (!result) {
-		if (type === AssetType.Icon) {
-			const uri = require.toUrl('./media/defaultIcon.png');
-			return { uri, fallbackUri: uri };
-		}
-
-		if (type === AssetType.Repository) {
-			return {
-				uri: null,
-				fallbackUri: null
-			};
-		}
-
-		return null;
-	}
-
 	if (type === AssetType.VSIX) {
 		return {
-			// {{SQL CARBON EDIT}}
 			uri: uriFromSource || `${version.fallbackAssetUri}/${type}?redirect=true`,
 			fallbackUri: `${version.fallbackAssetUri}/${type}`
 		};
 	}
-
-	// {{SQL CARBON EDIT}}
 	if (version.assetUri) {
 		return {
 			uri: `${version.assetUri}/${type}`,
 			fallbackUri: `${version.fallbackAssetUri}/${type}`
 		};
 	} else {
-		return {
-			uri: uriFromSource,
-			fallbackUri: `${version.fallbackAssetUri}/${type}`
-		};
+		return result ? { uri: uriFromSource, fallbackUri: `${version.fallbackAssetUri}/${type}` } : null;
 	}
+	// return result ? { uri: `${version.assetUri}/${type}`, fallbackUri: `${version.fallbackAssetUri}/${type}` } : null;
+	// {{SQL CARBON EDIT}} - End
 }
 
 function getExtensions(version: IRawGalleryExtensionVersion, property: string): string[] {
@@ -295,6 +291,12 @@ function getExtensions(version: IRawGalleryExtensionVersion, property: string): 
 
 function getEngine(version: IRawGalleryExtensionVersion): string {
 	const values = version.properties ? version.properties.filter(p => p.key === PropertyType.Engine) : [];
+	return (values.length > 0 && values[0].value) || '';
+}
+
+// {{SQL CARBON EDIT}}
+function getAzureDataStudioEngine(version: IRawGalleryExtensionVersion): string {
+	const values = version.properties ? version.properties.filter(p => p.key === PropertyType.AzDataEngine) : [];
 	return (values.length > 0 && values[0].value) || '';
 }
 
@@ -309,16 +311,16 @@ function getIsPreview(flags: string): boolean {
 }
 
 function toExtension(galleryExtension: IRawGalleryExtension, version: IRawGalleryExtensionVersion, index: number, query: Query, querySource?: string): IGalleryExtension {
-	const assets = {
+	const assets = <IGalleryExtensionAssets>{
 		manifest: getVersionAsset(version, AssetType.Manifest),
 		readme: getVersionAsset(version, AssetType.Details),
 		changelog: getVersionAsset(version, AssetType.Changelog),
-		download: getVersionAsset(version, AssetType.VSIX),
+		license: getVersionAsset(version, AssetType.License),
+		repository: getRepositoryAsset(version),
+		download: getDownloadAsset(version),
 		// {{SQL CARBON EDIT}} - Add downloadPage
 		downloadPage: getVersionAsset(version, AssetType.DownloadPage),
-		icon: getVersionAsset(version, AssetType.Icon),
-		license: getVersionAsset(version, AssetType.License),
-		repository: getVersionAsset(version, AssetType.Repository),
+		icon: getIconAsset(version),
 		coreTranslations: getCoreTranslationAssets(version)
 	};
 
@@ -343,6 +345,8 @@ function toExtension(galleryExtension: IRawGalleryExtension, version: IRawGaller
 			dependencies: getExtensions(version, PropertyType.Dependency),
 			extensionPack: getExtensions(version, PropertyType.ExtensionPack),
 			engine: getEngine(version),
+			// {{SQL CARBON EDIT}}
+			azDataEngine: getAzureDataStudioEngine(version),
 			localizedLanguages: getLocalizedLanguages(version)
 		},
 		/* __GDPR__FRAGMENT__
@@ -376,10 +380,10 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 	private readonly commonHeadersPromise: Promise<{ [key: string]: string; }>;
 
 	constructor(
-		@IRequestService private requestService: IRequestService,
-		@ILogService private logService: ILogService,
-		@IEnvironmentService private environmentService: IEnvironmentService,
-		@ITelemetryService private telemetryService: ITelemetryService,
+		@IRequestService private readonly requestService: IRequestService,
+		@ILogService private readonly logService: ILogService,
+		@IEnvironmentService private readonly environmentService: IEnvironmentService,
+		@ITelemetryService private readonly telemetryService: ITelemetryService,
 		// {{SQL CARBON EDIT}}
 		@IConfigurationService private configurationService: IConfigurationService
 	) {
@@ -398,9 +402,19 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		return !!this.extensionsGalleryUrl;
 	}
 
-	getExtension({ id, uuid }: IExtensionIdentifier, version?: string): Promise<IGalleryExtension> {
+	getCompatibleExtension(arg1: IExtensionIdentifier | IGalleryExtension, version?: string): Promise<IGalleryExtension | null> {
+		const extension: IGalleryExtension | null = isIExtensionIdentifier(arg1) ? null : arg1;
+		// {{SQL CARBON EDIT}}
+		// Change to original version: removed the extension version validation
+		// Reason: This method is used to find the matching gallery extension for the locally installed extension,
+		//         since we only have one entry for each extension (not in-scope to enable mutiple version support for now),
+		//         if the new version of extension is not compatible, the extension won't be displayed properly.
+		if (extension) {
+			return Promise.resolve(extension);
+		}
+		const { id, uuid } = extension ? extension.identifier : <IExtensionIdentifier>arg1;
 		let query = new Query()
-			.withFlags(Flags.IncludeAssetUri, Flags.IncludeStatistics, Flags.IncludeFiles, Flags.IncludeVersionProperties)
+			.withFlags(Flags.IncludeAssetUri, Flags.IncludeStatistics, Flags.IncludeFiles, Flags.IncludeVersionProperties, Flags.ExcludeNonValidated)
 			.withPage(1, 1)
 			.withFilter(FilterType.Target, 'Microsoft.VisualStudio.Code')
 			.withFilter(FilterType.ExcludeWithFlags, flagsToString(Flags.Unpublished));
@@ -411,19 +425,38 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			query = query.withFilter(FilterType.ExtensionName, id);
 		}
 
-		return this.queryGallery(query, CancellationToken.None).then(({ galleryExtensions }) => {
-			if (galleryExtensions.length) {
-				const galleryExtension = galleryExtensions[0];
-				const versionAsset = version ? galleryExtension.versions.filter(v => v.version === version)[0] : galleryExtension.versions[0];
-				if (versionAsset) {
-					return toExtension(galleryExtension, versionAsset, 0, query);
+		return this.queryGallery(query, CancellationToken.None)
+			.then(({ galleryExtensions }) => {
+				const [rawExtension] = galleryExtensions;
+				if (!rawExtension || !rawExtension.versions.length) {
+					return null;
 				}
-			}
-			return null;
-		});
+				if (version) {
+					const versionAsset = rawExtension.versions.filter(v => v.version === version)[0];
+					if (versionAsset) {
+						const extension = toExtension(rawExtension, versionAsset, 0, query);
+						if (extension.properties.engine && isEngineValid(extension.properties.engine)) {
+							return extension;
+						}
+					}
+					return null;
+				}
+				return this.getLastValidExtensionVersion(rawExtension, rawExtension.versions)
+					.then(rawVersion => {
+						if (rawVersion) {
+							return toExtension(rawExtension, rawVersion, 0, query);
+						}
+						return null;
+					});
+			});
 	}
 
-	query(options: IQueryOptions = {}): Promise<IPager<IGalleryExtension>> {
+	query(token: CancellationToken): Promise<IPager<IGalleryExtension>>;
+	query(options: IQueryOptions, token: CancellationToken): Promise<IPager<IGalleryExtension>>;
+	query(arg1: any, arg2?: any): Promise<IPager<IGalleryExtension>> {
+		const options: IQueryOptions = CancellationToken.isCancellationToken(arg1) ? {} : arg1;
+		const token: CancellationToken = CancellationToken.isCancellationToken(arg1) ? arg1 : arg2;
+
 		if (!this.isEnabled()) {
 			return Promise.reject(new Error('No extension gallery service configured.'));
 		}
@@ -483,7 +516,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			query = query.withSortOrder(options.sortOrder);
 		}
 
-		return this.queryGallery(query, CancellationToken.None).then(({ galleryExtensions, total }) => {
+		return this.queryGallery(query, token).then(({ galleryExtensions, total }) => {
 			const extensions = galleryExtensions.map((e, index) => toExtension(e, e.versions[0], index, query, options.source));
 			// {{SQL CARBON EDIT}}
 			const pageSize = extensions.length;
@@ -525,14 +558,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			if (searchTexts && searchTexts.length > 0) {
 				searchTexts.forEach(searchText => {
 					if (searchText !== '@allmarketplace') {
-						filteredExtensions = filteredExtensions.filter(
-							e => 	e.extensionName && e.extensionName.includes(searchText) ||
-									e.publisher && e.publisher.publisherName && e.publisher.publisherName.includes(searchText) ||
-									e.publisher && e.publisher.displayName && e.publisher.displayName.includes(searchText) ||
-									e.displayName && e.displayName.includes(searchText) ||
-									e.shortDescription && e.shortDescription.includes(searchText) ||
-									e.extensionId && e.extensionId.includes(searchText)
-						);
+						filteredExtensions = filteredExtensions.filter(e => ExtensionGalleryService.isMatchingExtension(e, searchText));
 					}
 				});
 			}
@@ -541,11 +567,11 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		// Sorting
 		switch (query.sortBy) {
 			case SortBy.PublisherName:
-				filteredExtensions.sort( (a, b) => ExtensionGalleryService.compareByField(a.publisher, b.publisher, 'publisherName'));
+				filteredExtensions.sort((a, b) => ExtensionGalleryService.compareByField(a.publisher, b.publisher, 'publisherName'));
 				break;
 			case SortBy.Title:
 			default:
-				filteredExtensions.sort( (a, b) => ExtensionGalleryService.compareByField(a, b, 'displayName'));
+				filteredExtensions.sort((a, b) => ExtensionGalleryService.compareByField(a, b, 'displayName'));
 				break;
 		}
 
@@ -557,6 +583,24 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			filteredExtensions = filteredExtensions.filter(ext => ext.publisher && ext.publisher.displayName === 'Microsoft');
 		}
 		return { galleryExtensions: filteredExtensions, total: actualTotal };
+	}
+
+	// {{SQL CARBON EDIT}}
+	/*
+	 * Checks whether the extension matches the search text
+	 */
+	public static isMatchingExtension(extension: IRawGalleryExtension, searchText: string): boolean {
+		if (!searchText) {
+			return true;
+		}
+		let text = searchText.toLocaleLowerCase();
+		return extension
+			&& (extension.extensionName && extension.extensionName.toLocaleLowerCase().includes(text) ||
+				extension.publisher && extension.publisher.publisherName && extension.publisher.publisherName.toLocaleLowerCase().includes(text) ||
+				extension.publisher && extension.publisher.displayName && extension.publisher.displayName.toLocaleLowerCase().includes(text) ||
+				extension.displayName && extension.displayName.toLocaleLowerCase().includes(text) ||
+				extension.shortDescription && extension.shortDescription.toLocaleLowerCase().includes(text) ||
+				extension.extensionId && extension.extensionId.toLocaleLowerCase().includes(text));
 	}
 
 	public static compareByField(a: any, b: any, fieldName: string): number {
@@ -575,13 +619,16 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		if (!b || !b[fieldName] && (!a || !a[fieldName])) {
 			return 0;
 		}
-		if (a[fieldName] ===  b[fieldName]) {
+		if (a[fieldName] === b[fieldName]) {
 			return 0;
 		}
 		return a[fieldName] < b[fieldName] ? -1 : 1;
 	}
 
 	private queryGallery(query: Query, token: CancellationToken): Promise<{ galleryExtensions: IRawGalleryExtension[], total: number; }> {
+		if (!this.isEnabled()) {
+			return Promise.reject(new Error('No extension gallery service configured.'));
+		}
 		return this.commonHeadersPromise.then(commonHeaders => {
 			const data = JSON.stringify(query.raw);
 			const headers = assign({}, commonHeaders, {
@@ -601,20 +648,24 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 
 				// {{SQL CARBON EDIT}}
 				let extensionPolicy: string = this.configurationService.getValue<string>(ExtensionsPolicyKey);
-				if (context.res.statusCode >= 400 && context.res.statusCode < 500 || extensionPolicy === ExtensionsPolicy.allowNone) {
+				if (context.res.statusCode && context.res.statusCode >= 400 && context.res.statusCode < 500 || extensionPolicy === ExtensionsPolicy.allowNone) {
 					return { galleryExtensions: [], total: 0 };
 				}
 
 				return asJson<IRawGalleryQueryResult>(context).then(result => {
-					const r = result.results[0];
-					const galleryExtensions = r.extensions;
-					const resultCount = r.resultMetadata && r.resultMetadata.filter(m => m.metadataType === 'ResultCount')[0];
-					const total = resultCount && resultCount.metadataItems.filter(i => i.name === 'TotalCount')[0].count || 0;
+					if (result) {
+						const r = result.results[0];
+						const galleryExtensions = r.extensions;
+						const resultCount = r.resultMetadata && r.resultMetadata.filter(m => m.metadataType === 'ResultCount')[0];
+						const total = resultCount && resultCount.metadataItems.filter(i => i.name === 'TotalCount')[0].count || 0;
 
-					// {{SQL CARBON EDIT}}
-					let filteredExtensionsResult = this.createQueryResult(query, galleryExtensions);
+						// {{SQL CARBON EDIT}}
+						let filteredExtensionsResult = this.createQueryResult(query, galleryExtensions);
 
-					return { galleryExtensions: filteredExtensionsResult.galleryExtensions, total: filteredExtensionsResult.total };
+						return { galleryExtensions: filteredExtensionsResult.galleryExtensions, total: filteredExtensionsResult.total };
+						// {{SQL CARBON EDIT}} - End
+					}
+					return { galleryExtensions: [], total: 0 };
 				});
 			});
 		});
@@ -622,7 +673,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 
 	reportStatistic(publisher: string, name: string, version: string, type: StatisticType): Promise<void> {
 		if (!this.isEnabled()) {
-			return Promise.resolve(null);
+			return Promise.resolve(undefined);
 		}
 
 		return this.commonHeadersPromise.then(commonHeaders => {
@@ -632,7 +683,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 				type: 'POST',
 				url: this.api(`/publishers/${publisher}/extensions/${name}/${version}/stats?statType=${type}`),
 				headers
-			}, CancellationToken.None).then(null, () => null);
+			}, CancellationToken.None).then(undefined, () => undefined);
 		});
 	}
 
@@ -666,17 +717,24 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 	}
 
 	getReadme(extension: IGalleryExtension, token: CancellationToken): Promise<string> {
-		return this.getAsset(extension.assets.readme, {}, token)
-			.then(asText);
+		if (extension.assets.readme) {
+			return this.getAsset(extension.assets.readme, {}, token)
+				.then(context => asText(context))
+				.then(content => content || '');
+		}
+		return Promise.resolve('');
 	}
 
-	getManifest(extension: IGalleryExtension, token: CancellationToken): Promise<IExtensionManifest> {
-		return this.getAsset(extension.assets.manifest, {}, token)
-			.then(asText)
-			.then(JSON.parse);
+	getManifest(extension: IGalleryExtension, token: CancellationToken): Promise<IExtensionManifest | null> {
+		if (extension.assets.manifest) {
+			return this.getAsset(extension.assets.manifest, {}, token)
+				.then(asText)
+				.then(JSON.parse);
+		}
+		return Promise.resolve(null);
 	}
 
-	getCoreTranslation(extension: IGalleryExtension, languageId: string): Promise<ITranslation> {
+	getCoreTranslation(extension: IGalleryExtension, languageId: string): Promise<ITranslation | null> {
 		const asset = extension.assets.coreTranslations[languageId.toUpperCase()];
 		if (asset) {
 			return this.getAsset(asset)
@@ -687,8 +745,12 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 	}
 
 	getChangelog(extension: IGalleryExtension, token: CancellationToken): Promise<string> {
-		return this.getAsset(extension.assets.changelog, {}, token)
-			.then(asText);
+		if (extension.assets.changelog) {
+			return this.getAsset(extension.assets.changelog, {}, token)
+				.then(context => asText(context))
+				.then(content => content || '');
+		}
+		return Promise.resolve('');
 	}
 
 	loadAllDependencies(extensions: IExtensionIdentifier[], token: CancellationToken): Promise<IGalleryExtension[]> {
@@ -697,7 +759,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 
 	getAllVersions(extension: IGalleryExtension, compatible: boolean): Promise<IGalleryExtensionVersion[]> {
 		let query = new Query()
-			.withFlags(Flags.IncludeVersions, Flags.IncludeFiles, Flags.IncludeVersionProperties)
+			.withFlags(Flags.IncludeVersions, Flags.IncludeFiles, Flags.IncludeVersionProperties, Flags.ExcludeNonValidated)
 			.withPage(1, 1)
 			.withFilter(FilterType.Target, 'Microsoft.VisualStudio.Code')
 			.withFilter(FilterType.ExcludeWithFlags, flagsToString(Flags.Unpublished));
@@ -714,67 +776,13 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 					return Promise.all(galleryExtensions[0].versions.map(v => this.getEngine(v).then(engine => isEngineValid(engine) ? v : null)))
 						.then(versions => versions
 							.filter(v => !!v)
-							.map(v => ({ version: v.version, date: v.lastUpdated })));
+							.map(v => ({ version: v!.version, date: v!.lastUpdated })));
 				} else {
 					return galleryExtensions[0].versions.map(v => ({ version: v.version, date: v.lastUpdated }));
 				}
 			}
 			return [];
 		});
-	}
-
-	loadCompatibleVersion(extension: IGalleryExtension, fromVersion: string = extension.version): Promise<IGalleryExtension> {
-		if (extension.version === fromVersion && extension.properties.engine && isEngineValid(extension.properties.engine)) {
-			return Promise.resolve(extension);
-		}
-		const query = new Query()
-			.withFlags(Flags.IncludeVersions, Flags.IncludeFiles, Flags.IncludeVersionProperties)
-			.withPage(1, 1)
-			.withFilter(FilterType.Target, 'Microsoft.VisualStudio.Code')
-			.withFilter(FilterType.ExcludeWithFlags, flagsToString(Flags.Unpublished))
-			.withAssetTypes(AssetType.Manifest, AssetType.VSIX)
-			.withFilter(FilterType.ExtensionId, extension.identifier.uuid);
-
-		return this.queryGallery(query, CancellationToken.None)
-			.then(({ galleryExtensions }) => {
-				const [rawExtension] = galleryExtensions;
-
-				if (!rawExtension) {
-					return null;
-				}
-
-				const versions: IRawGalleryExtensionVersion[] = this.getVersionsFrom(rawExtension.versions, fromVersion);
-				if (!versions.length) {
-					return null;
-				}
-
-				return this.getLastValidExtensionVersion(rawExtension, versions)
-					.then(rawVersion => {
-						if (rawVersion) {
-							return toExtension(rawExtension, rawVersion, 0, query);
-						}
-						return null;
-					});
-			});
-	}
-
-	private getVersionsFrom(versions: IRawGalleryExtensionVersion[], version: string): IRawGalleryExtensionVersion[] {
-		if (versions[0].version === version) {
-			return versions;
-		}
-		const result: IRawGalleryExtensionVersion[] = [];
-		let currentVersion: IRawGalleryExtensionVersion = null;
-		for (const v of versions) {
-			if (!currentVersion) {
-				if (v.version === version) {
-					currentVersion = v;
-				}
-			}
-			if (currentVersion) {
-				result.push(v);
-			}
-		}
-		return result;
 	}
 
 	private loadDependencies(extensionNames: string[], token: CancellationToken): Promise<IGalleryExtension[]> {
@@ -848,7 +856,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 					return asText(context)
 						.then(message => Promise.reject(new Error(`Expected 200, got back ${context.res.statusCode} instead.\n\n${message}`)));
 				})
-				.then(null, err => {
+				.then(undefined, err => {
 					if (isPromiseCanceledError(err)) {
 						return Promise.reject(err);
 					}
@@ -871,7 +879,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 					this.telemetryService.publicLog('galleryService:cdnFallback', { url, message });
 
 					const fallbackOptions = assign({}, options, { url: fallbackUrl });
-					return this.requestService.request(fallbackOptions, token).then(null, err => {
+					return this.requestService.request(fallbackOptions, token).then(undefined, err => {
 						if (isPromiseCanceledError(err)) {
 							return Promise.reject(err);
 						}
@@ -891,7 +899,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		});
 	}
 
-	private getLastValidExtensionVersion(extension: IRawGalleryExtension, versions: IRawGalleryExtensionVersion[]): Promise<IRawGalleryExtensionVersion> {
+	private getLastValidExtensionVersion(extension: IRawGalleryExtension, versions: IRawGalleryExtensionVersion[]): Promise<IRawGalleryExtensionVersion | null> {
 		const version = this.getLastValidExtensionVersionFromProperties(extension, versions);
 		if (version) {
 			return version;
@@ -899,7 +907,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		return this.getLastValidExtensionVersionReccursively(extension, versions);
 	}
 
-	private getLastValidExtensionVersionFromProperties(extension: IRawGalleryExtension, versions: IRawGalleryExtensionVersion[]): Promise<IRawGalleryExtensionVersion> {
+	private getLastValidExtensionVersionFromProperties(extension: IRawGalleryExtension, versions: IRawGalleryExtensionVersion[]): Promise<IRawGalleryExtensionVersion> | null {
 		for (const version of versions) {
 			const engine = getEngine(version);
 			if (!engine) {
@@ -918,17 +926,20 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			return Promise.resolve(engine);
 		}
 
-		const asset = getVersionAsset(version, AssetType.Manifest);
-		const headers = { 'Accept-Encoding': 'gzip' };
+		const manifest = getVersionAsset(version, AssetType.Manifest);
+		if (!manifest) {
+			return Promise.reject('Manifest was not found');
+		}
 
-		return this.getAsset(asset, { headers })
+		const headers = { 'Accept-Encoding': 'gzip' };
+		return this.getAsset(manifest, { headers })
 			.then(context => asJson<IExtensionManifest>(context))
-			.then(manifest => manifest.engines.vscode);
+			.then(manifest => manifest ? manifest.engines.vscode : Promise.reject<string>('Error while reading manifest'));
 	}
 
-	private getLastValidExtensionVersionReccursively(extension: IRawGalleryExtension, versions: IRawGalleryExtensionVersion[]): Promise<IRawGalleryExtensionVersion> {
+	private getLastValidExtensionVersionReccursively(extension: IRawGalleryExtension, versions: IRawGalleryExtensionVersion[]): Promise<IRawGalleryExtensionVersion | null> {
 		if (!versions.length) {
-			return null;
+			return Promise.resolve(null);
 		}
 
 		const version = versions[0];
@@ -970,10 +981,12 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			return asJson<IRawExtensionsReport>(context).then(result => {
 				const map = new Map<string, IReportedExtension>();
 
-				for (const id of result.malicious) {
-					const ext = map.get(id) || { id: { id }, malicious: true, slow: false };
-					ext.malicious = true;
-					map.set(id, ext);
+				if (result) {
+					for (const id of result.malicious) {
+						const ext = map.get(id) || { id: { id }, malicious: true, slow: false };
+						ext.malicious = true;
+						map.set(id, ext);
+					}
 				}
 
 				return Promise.resolve(values(map));
@@ -985,29 +998,21 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 export function resolveMarketplaceHeaders(environmentService: IEnvironmentService): Promise<{ [key: string]: string; }> {
 	const marketplaceMachineIdFile = path.join(environmentService.userDataPath, 'machineid');
 
-	return readFile(marketplaceMachineIdFile, 'utf8').then(contents => {
-		if (isUUID(contents)) {
-			return contents;
-		}
-
-		return Promise.resolve(null); // invalid marketplace UUID
-	}, error => {
-		return Promise.resolve(null); // error reading ID file
-	}).then(uuid => {
-		if (!uuid) {
-			uuid = generateUuid();
-
-			try {
-				writeFileAndFlushSync(marketplaceMachineIdFile, uuid);
-			} catch (error) {
-				//noop
+	return readFile(marketplaceMachineIdFile, 'utf8')
+		.then<string | null>(contents => isUUID(contents) ? contents : null, () => null /* error reading ID file */)
+		.then(uuid => {
+			if (!uuid) {
+				uuid = generateUuid();
+				try {
+					writeFileAndFlushSync(marketplaceMachineIdFile, uuid);
+				} catch (error) {
+					//noop
+				}
 			}
-		}
-
-		return {
-			'X-Market-Client-Id': `VSCode ${pkg.version}`,
-			'User-Agent': `VSCode ${pkg.version}`,
-			'X-Market-User-Id': uuid
-		};
-	});
+			return {
+				'X-Market-Client-Id': `VSCode ${pkg.version}`,
+				'User-Agent': `VSCode ${pkg.version}`,
+				'X-Market-User-Id': uuid
+			};
+		});
 }

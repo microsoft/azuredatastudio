@@ -6,7 +6,6 @@
 import { nb } from 'azdata';
 
 import { Action } from 'vs/base/common/actions';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { localize } from 'vs/nls';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import * as types from 'vs/base/common/types';
@@ -15,6 +14,7 @@ import { INotificationService, Severity } from 'vs/platform/notification/common/
 import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
 import { getErrorMessage } from 'sql/parts/notebook/notebookUtils';
 import { ICellModel, CellExecutionState } from 'sql/parts/notebook/models/modelInterfaces';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { MultiStateAction, IMultiStateData, IActionStateData } from 'sql/parts/notebook/notebookActions';
 
 let notebookMoreActionMsg = localize('notebook.failed', "Please select active cell and try again");
@@ -53,11 +53,11 @@ export abstract class CellActionBase extends Action {
 		return true;
 	}
 
-	public run(context: CellContext): TPromise<boolean> {
+	public run(context: CellContext): Promise<boolean> {
 		if (hasModelAndCell(context, this.notificationService)) {
-			return TPromise.wrap(this.doRun(context).then(() => true));
+			return this.doRun(context).then(() => true);
 		}
-		return TPromise.as(true);
+		return Promise.resolve(true);
 	}
 
 	abstract doRun(context: CellContext): Promise<void>;
@@ -68,7 +68,8 @@ export class RunCellAction extends MultiStateAction<CellExecutionState> {
 	public static LABEL = 'Run cell';
 	private _executionChangedDisposable: IDisposable;
 	private _context: CellContext;
-	constructor(context: CellContext, @INotificationService private notificationService: INotificationService) {
+	constructor(context: CellContext, @INotificationService private notificationService: INotificationService,
+		@IConnectionManagementService private connectionManagementService: IConnectionManagementService) {
 		super(RunCellAction.ID, new IMultiStateData<CellExecutionState>([
 			{ key: CellExecutionState.Hidden, value: { label: emptyExecutionCountLabel, className: '', tooltip: '', hideIcon: true }},
 			{ key: CellExecutionState.Stopped, value: { label: '', className: 'toolbarIconRun', tooltip: localize('runCell', 'Run cell') }},
@@ -78,8 +79,8 @@ export class RunCellAction extends MultiStateAction<CellExecutionState> {
 		this.ensureContextIsUpdated(context);
 	}
 
-	public run(context?: CellContext): TPromise<boolean> {
-		return TPromise.wrap(this.doRun(context).then(() => true));
+	public run(context?: CellContext): Promise<boolean> {
+		return this.doRun(context).then(() => true);
 	}
 
 	public async doRun(context: CellContext): Promise<void> {
@@ -89,7 +90,7 @@ export class RunCellAction extends MultiStateAction<CellExecutionState> {
 			return;
 		}
 		try {
-			await this._context.cell.runCell(this.notificationService);
+			await this._context.cell.runCell(this.notificationService, this.connectionManagementService);
 		} catch (error) {
 			let message = getErrorMessage(error);
 			this.notificationService.error(message);

@@ -24,7 +24,6 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { Emitter, Event } from 'vs/base/common/event';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ResultSerializer } from 'sql/platform/node/resultSerializer';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IQueryPlanInfo } from 'sql/platform/query/common/queryModel';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
@@ -75,6 +74,7 @@ export default class QueryRunner extends Disposable {
 	private _batchSets: azdata.BatchSummary[] = [];
 	private _messages: azdata.IResultMessage[] = [];
 	private _eventEmitter = new EventEmitter();
+	private registered = false;
 
 	private _isQueryPlan: boolean;
 	public get isQueryPlan(): boolean { return this._isQueryPlan; }
@@ -189,7 +189,7 @@ export default class QueryRunner extends Disposable {
 	private doRunQuery(input: azdata.ISelectionData, runCurrentStatement: boolean, runOptions?: azdata.ExecutionPlanOptions): Thenable<void>;
 	private doRunQuery(input, runCurrentStatement: boolean, runOptions?: azdata.ExecutionPlanOptions): Thenable<void> {
 		if (this.isExecuting) {
-			return TPromise.as(undefined);
+			return Promise.resolve(undefined);
 		}
 		this._planXml = new Deferred<string>();
 		this._batchSets = [];
@@ -210,6 +210,8 @@ export default class QueryRunner extends Disposable {
 				this._isQueryPlan = false;
 			}
 
+			this._onQueryStart.fire();
+
 			// Send the request to execute the query
 			return runCurrentStatement
 				? this._queryManagementService.runQueryStatement(this.uri, input.startLine, input.startColumn).then(() => this.handleSuccessRunQueryResult(), e => this.handleFailureRunQueryResult(e))
@@ -229,9 +231,11 @@ export default class QueryRunner extends Disposable {
 		// this isn't exact, but its the best we can do
 		this._queryStartTime = new Date();
 		// The query has started, so lets fire up the result pane
-		this._onQueryStart.fire();
 		this._eventEmitter.emit(EventType.START);
-		this._queryManagementService.registerRunner(this, this.uri);
+		if (!this.registered) {
+			this.registered = true;
+			this._queryManagementService.registerRunner(this, this.uri);
+		}
 	}
 
 	private handleFailureRunQueryResult(error: any) {

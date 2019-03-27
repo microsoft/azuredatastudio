@@ -6,7 +6,7 @@
     "publisher": "Microsoft",
     "engines": {
         "vscode": "^1.26.0",
-        "sqlops": "*"
+        "azdata": "*"
     },
     "license": "SEE LICENSE IN LICENSE.txt",
     "repository": "https://github.com/Microsoft/azuredatastudio",

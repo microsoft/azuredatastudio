@@ -13,7 +13,6 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { IConnectionManagementService, IConnectionCompletionOptions } from 'sql/platform/connection/common/connectionManagement';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
-import { TPromise } from 'vs/base/common/winjs.base';
 import { Action } from 'vs/base/common/actions';
 import * as nls from 'vs/nls';
 import { IEditorAction } from 'vs/editor/common/editorCommon';
@@ -38,17 +37,17 @@ export class ProfilerConnect extends Action {
 		super(id, label, 'connect');
 	}
 
-	public run(input: ProfilerInput): TPromise<boolean> {
+	public run(input: ProfilerInput): Promise<boolean> {
 		this.enabled = false;
 		if (!this._connected) {
-			return TPromise.wrap(this._profilerService.connectSession(input.id).then(() => {
+			return Promise.resolve(this._profilerService.connectSession(input.id).then(() => {
 				this.enabled = true;
 				this.connected = true;
 				input.state.change({ isConnected: true, isRunning: false, isPaused: false, isStopped: true });
 				return true;
 			}));
 		} else {
-			return TPromise.wrap(this._profilerService.disconnectSession(input.id).then(() => {
+			return Promise.resolve(this._profilerService.disconnectSession(input.id).then(() => {
 				this.enabled = true;
 				this.connected = false;
 				input.state.change({ isConnected: false, isRunning: false, isPaused: false, isStopped: false });
@@ -79,9 +78,9 @@ export class ProfilerStart extends Action {
 		super(id, label, 'sql start');
 	}
 
-	public run(input: ProfilerInput): TPromise<boolean> {
+	public run(input: ProfilerInput): Promise<boolean> {
 		input.data.clear();
-		return TPromise.wrap(this._profilerService.startSession(input.id, input.sessionName));
+		return Promise.resolve(this._profilerService.startSession(input.id, input.sessionName));
 	}
 }
 
@@ -98,8 +97,8 @@ export class ProfilerCreate extends Action {
 		super(id, label, 'add');
 	}
 
-	public run(input: ProfilerInput): TPromise<boolean> {
-		return TPromise.wrap(this._profilerService.launchCreateSessionDialog(input).then(() => {
+	public run(input: ProfilerInput): Promise<boolean> {
+		return Promise.resolve(this._profilerService.launchCreateSessionDialog(input).then(() => {
 			return true;
 		}));
 	}
@@ -123,8 +122,8 @@ export class ProfilerPause extends Action {
 		super(id, label, ProfilerPause.PauseCssClass);
 	}
 
-	public run(input: ProfilerInput): TPromise<boolean> {
-		return TPromise.wrap(this._profilerService.pauseSession(input.id).then(() => {
+	public run(input: ProfilerInput): Promise<boolean> {
+		return Promise.resolve(this._profilerService.pauseSession(input.id).then(() => {
 			this.paused = !this._paused;
 			input.state.change({ isPaused: this.paused, isStopped: false, isRunning: !this.paused });
 			return true;
@@ -153,8 +152,8 @@ export class ProfilerStop extends Action {
 		super(id, label, 'sql stop');
 	}
 
-	public run(input: ProfilerInput): TPromise<boolean> {
-		return TPromise.wrap(this._profilerService.stopSession(input.id));
+	public run(input: ProfilerInput): Promise<boolean> {
+		return Promise.resolve(this._profilerService.stopSession(input.id));
 	}
 }
 
@@ -166,9 +165,9 @@ export class ProfilerClear extends Action {
 		super(id, label, 'clear-results');
 	}
 
-	run(input: ProfilerInput): TPromise<void> {
+	run(input: ProfilerInput): Promise<void> {
 		input.data.clear();
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 }
 
@@ -184,12 +183,12 @@ export class ProfilerAutoScroll extends Action {
 		super(id, label, ProfilerAutoScroll.CheckedCssClass);
 	}
 
-	run(input: ProfilerInput): TPromise<boolean> {
+	run(input: ProfilerInput): Promise<boolean> {
 		this.checked = !this.checked;
 		this._setLabel(this.checked ? ProfilerAutoScroll.AutoScrollOnText : ProfilerAutoScroll.AutoScrollOffText);
 		this._setClass(this.checked ? ProfilerAutoScroll.CheckedCssClass : '');
 		input.state.change({ autoscroll: this.checked });
-		return TPromise.as(true);
+		return Promise.resolve(true);
 	}
 }
 
@@ -203,10 +202,10 @@ export class ProfilerCollapsablePanelAction extends Action {
 		super(id, label, 'minimize-panel-action');
 	}
 
-	public run(input: ProfilerInput): TPromise<boolean> {
+	public run(input: ProfilerInput): Promise<boolean> {
 		this.collapsed = !this._collapsed;
 		input.state.change({ isPanelCollapsed: this._collapsed });
-		return TPromise.as(true);
+		return Promise.resolve(true);
 	}
 
 	set collapsed(val: boolean) {
@@ -226,8 +225,8 @@ export class ProfilerEditColumns extends Action {
 		super(id, label);
 	}
 
-	public run(input: ProfilerInput): TPromise<boolean> {
-		return TPromise.wrap(this._profilerService.launchColumnEditor(input)).then(() => true);
+	public run(input: ProfilerInput): Promise<boolean> {
+		return Promise.resolve(this._profilerService.launchColumnEditor(input)).then(() => true);
 	}
 }
 
@@ -281,7 +280,7 @@ export class NewProfilerAction extends Task {
 		});
 	}
 
-	public runTask(accessor: ServicesAccessor, profile: IConnectionProfile): TPromise<void> {
+	public runTask(accessor: ServicesAccessor, profile: IConnectionProfile): Promise<void> {
 		let profilerInput = accessor.get<IInstantiationService>(IInstantiationService).createInstance(ProfilerInput, profile);
 		return accessor.get<IEditorService>(IEditorService).openEditor(profilerInput, { pinned: true }, ACTIVE_GROUP).then(() => {
 			let options: IConnectionCompletionOptions = {
@@ -293,7 +292,7 @@ export class NewProfilerAction extends Task {
 			};
 			accessor.get<IConnectionManagementService>(IConnectionManagementService).connect(this._connectionProfile, profilerInput.id, options);
 
-			return TPromise.as(void 0);
+			return Promise.resolve(void 0);
 		});
 	}
 }
@@ -309,9 +308,9 @@ export class ProfilerFilterSession extends Action {
 		super(id, label, 'filterLabel');
 	}
 
-	public run(input: ProfilerInput): TPromise<boolean> {
+	public run(input: ProfilerInput): Promise<boolean> {
 		this._profilerService.launchFilterSessionDialog(input);
-		return TPromise.wrap(true);
+		return Promise.resolve(true);
 	}
 }
 
@@ -325,8 +324,8 @@ export class ProfilerClearSessionFilter extends Action {
 		super(id, label, 'clear-filter');
 	}
 
-	public run(input: ProfilerInput): TPromise<boolean> {
+	public run(input: ProfilerInput): Promise<boolean> {
 		input.clearFilter();
-		return TPromise.wrap(true);
+		return Promise.resolve(true);
 	}
 }

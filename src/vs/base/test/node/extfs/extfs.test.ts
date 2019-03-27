@@ -6,7 +6,7 @@
 import * as assert from 'assert';
 import * as fs from 'fs';
 import * as os from 'os';
-import * as path from 'path';
+import * as path from 'vs/base/common/path';
 import { Readable } from 'stream';
 import { canNormalize } from 'vs/base/common/normalization';
 import { isLinux, isWindows } from 'vs/base/common/platform';
@@ -17,7 +17,7 @@ import { CancellationTokenSource } from 'vs/base/common/cancellation';
 
 const ignore = () => { };
 
-const mkdirp = (path: string, mode: number, callback: (error) => void) => {
+const mkdirp = (path: string, mode: number, callback: (error: any) => void) => {
 	extfs.mkdirp(path, mode).then(() => callback(null), error => callback(error));
 };
 
@@ -38,7 +38,7 @@ function toReadable(value: string, throwError?: boolean): Readable {
 				this.emit('error', new Error(readError));
 			}
 
-			let res: string;
+			let res!: string;
 			let canPush = true;
 			while (canPush && (res = stringChunks[counter++])) {
 				canPush = this.push(res);
@@ -96,14 +96,14 @@ suite('Extfs', () => {
 					return done(error);
 				}
 
-				assert.ok(!statAndIsLink.isSymbolicLink);
+				assert.ok(!statAndIsLink!.isSymbolicLink);
 
 				extfs.statLink(symbolicLink, (error, statAndIsLink) => {
 					if (error) {
 						return done(error);
 					}
 
-					assert.ok(statAndIsLink.isSymbolicLink);
+					assert.ok(statAndIsLink!.isSymbolicLink);
 					extfs.delSync(directory);
 					done();
 				});
@@ -246,41 +246,40 @@ suite('Extfs', () => {
 	});
 
 	test('writeFileAndFlush (string)', function (done) {
-		const id = uuid.generateUuid();
-		const parentDir = path.join(os.tmpdir(), 'vsctests', id);
-		const newDir = path.join(parentDir, 'extfs', id);
-		const testFile = path.join(newDir, 'flushed.txt');
+		const smallData = 'Hello World';
+		const bigData = (new Array(100 * 1024)).join('Large String\n');
 
-		mkdirp(newDir, 493, error => {
-			if (error) {
-				return done(error);
-			}
+		testWriteFileAndFlush(smallData, smallData, bigData, bigData, done);
+	});
 
-			assert.ok(fs.existsSync(newDir));
+	test('writeFileAndFlush (Buffer)', function (done) {
+		const smallData = 'Hello World';
+		const bigData = (new Array(100 * 1024)).join('Large String\n');
 
-			extfs.writeFileAndFlush(testFile, 'Hello World', null, error => {
-				if (error) {
-					return done(error);
-				}
+		testWriteFileAndFlush(Buffer.from(smallData), smallData, Buffer.from(bigData), bigData, done);
+	});
 
-				assert.equal(fs.readFileSync(testFile), 'Hello World');
+	test('writeFileAndFlush (UInt8Array)', function (done) {
+		const smallData = 'Hello World';
+		const bigData = (new Array(100 * 1024)).join('Large String\n');
 
-				const largeString = (new Array(100 * 1024)).join('Large String\n');
-
-				extfs.writeFileAndFlush(testFile, largeString, null, error => {
-					if (error) {
-						return done(error);
-					}
-
-					assert.equal(fs.readFileSync(testFile), largeString);
-
-					extfs.del(parentDir, os.tmpdir(), done, ignore);
-				});
-			});
-		});
+		testWriteFileAndFlush(new TextEncoder().encode(smallData), smallData, new TextEncoder().encode(bigData), bigData, done);
 	});
 
 	test('writeFileAndFlush (stream)', function (done) {
+		const smallData = 'Hello World';
+		const bigData = (new Array(100 * 1024)).join('Large String\n');
+
+		testWriteFileAndFlush(toReadable(smallData), smallData, toReadable(bigData), bigData, done);
+	});
+
+	function testWriteFileAndFlush(
+		smallData: string | Buffer | NodeJS.ReadableStream | Uint8Array,
+		smallDataValue: string,
+		bigData: string | Buffer | NodeJS.ReadableStream | Uint8Array,
+		bigDataValue: string,
+		done: (error: Error | null) => void
+	): void {
 		const id = uuid.generateUuid();
 		const parentDir = path.join(os.tmpdir(), 'vsctests', id);
 		const newDir = path.join(parentDir, 'extfs', id);
@@ -293,27 +292,25 @@ suite('Extfs', () => {
 
 			assert.ok(fs.existsSync(newDir));
 
-			extfs.writeFileAndFlush(testFile, toReadable('Hello World'), null, error => {
+			extfs.writeFileAndFlush(testFile, smallData, null!, error => {
 				if (error) {
 					return done(error);
 				}
 
-				assert.equal(fs.readFileSync(testFile), 'Hello World');
+				assert.equal(fs.readFileSync(testFile), smallDataValue);
 
-				const largeString = (new Array(100 * 1024)).join('Large String\n');
-
-				extfs.writeFileAndFlush(testFile, toReadable(largeString), null, error => {
+				extfs.writeFileAndFlush(testFile, bigData, null!, error => {
 					if (error) {
 						return done(error);
 					}
 
-					assert.equal(fs.readFileSync(testFile), largeString);
+					assert.equal(fs.readFileSync(testFile), bigDataValue);
 
 					extfs.del(parentDir, os.tmpdir(), done, ignore);
 				});
 			});
 		});
-	});
+	}
 
 	test('writeFileAndFlush (file stream)', function (done) {
 		const id = uuid.generateUuid();
@@ -329,7 +326,7 @@ suite('Extfs', () => {
 
 			assert.ok(fs.existsSync(newDir));
 
-			extfs.writeFileAndFlush(testFile, fs.createReadStream(sourceFile), null, error => {
+			extfs.writeFileAndFlush(testFile, fs.createReadStream(sourceFile), null!, error => {
 				if (error) {
 					return done(error);
 				}
@@ -356,7 +353,7 @@ suite('Extfs', () => {
 
 			fs.mkdirSync(testFile); // this will trigger an error because testFile is now a directory!
 
-			extfs.writeFileAndFlush(testFile, 'Hello World', null, error => {
+			extfs.writeFileAndFlush(testFile, 'Hello World', null!, error => {
 				if (!error) {
 					return done(new Error('Expected error for writing to readonly file'));
 				}
@@ -382,7 +379,7 @@ suite('Extfs', () => {
 			fs.mkdirSync(testFile); // this will trigger an error because testFile is now a directory!
 
 			const readable = toReadable('Hello World');
-			extfs.writeFileAndFlush(testFile, readable, null, error => {
+			extfs.writeFileAndFlush(testFile, readable, null!, error => {
 				if (!error || (<any>error).code !== 'EISDIR') {
 					return done(new Error('Expected EISDIR error for writing to folder but got: ' + (error ? (<any>error).code : 'no error')));
 				}
@@ -408,7 +405,7 @@ suite('Extfs', () => {
 
 			assert.ok(fs.existsSync(newDir));
 
-			extfs.writeFileAndFlush(testFile, toReadable('Hello World', true /* throw error */), null, error => {
+			extfs.writeFileAndFlush(testFile, toReadable('Hello World', true /* throw error */), null!, error => {
 				if (!error || error.message !== readError) {
 					return done(new Error('Expected error for writing to folder'));
 				}
@@ -438,7 +435,7 @@ suite('Extfs', () => {
 			fs.writeFileSync(testFile, '');
 			fs.chmodSync(testFile, 33060); // make readonly
 
-			extfs.writeFileAndFlush(testFile, toReadable('Hello World'), null, error => {
+			extfs.writeFileAndFlush(testFile, toReadable('Hello World'), null!, error => {
 				if (!error || !((<any>error).code !== 'EACCES' || (<any>error).code !== 'EPERM')) {
 					return done(new Error('Expected EACCES/EPERM error for writing to folder but got: ' + (error ? (<any>error).code : 'no error')));
 				}
@@ -464,7 +461,7 @@ suite('Extfs', () => {
 
 			fs.mkdirSync(testFile); // this will trigger an error because testFile is now a directory!
 
-			extfs.writeFileAndFlush(testFile, fs.createReadStream(sourceFile), null, error => {
+			extfs.writeFileAndFlush(testFile, fs.createReadStream(sourceFile), null!, error => {
 				if (!error) {
 					return done(new Error('Expected error for writing to folder'));
 				}
@@ -487,12 +484,12 @@ suite('Extfs', () => {
 
 			assert.ok(fs.existsSync(newDir));
 
-			extfs.writeFileAndFlushSync(testFile, 'Hello World', null);
+			extfs.writeFileAndFlushSync(testFile, 'Hello World', null!);
 			assert.equal(fs.readFileSync(testFile), 'Hello World');
 
 			const largeString = (new Array(100 * 1024)).join('Large String\n');
 
-			extfs.writeFileAndFlushSync(testFile, largeString, null);
+			extfs.writeFileAndFlushSync(testFile, largeString, null!);
 			assert.equal(fs.readFileSync(testFile), largeString);
 
 			extfs.del(parentDir, os.tmpdir(), done, ignore);
@@ -551,13 +548,13 @@ suite('Extfs', () => {
 		const newDir = path.join(parentDir, 'extfs', id);
 
 		mkdirp(newDir, 493, error => {
-			let realpath: string;
+			let realpath!: string;
 			try {
 				realpath = extfs.realpathSync(newDir);
 			} catch (error) {
 				assert.ok(!error);
 			}
-			assert.ok(realpath);
+			assert.ok(realpath!);
 
 			extfs.del(parentDir, os.tmpdir(), done, ignore);
 		});

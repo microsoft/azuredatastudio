@@ -28,11 +28,11 @@ export class IssueService implements IIssueService {
 	constructor(
 		private machineId: string,
 		private userEnv: IProcessEnvironment,
-		@IEnvironmentService private environmentService: IEnvironmentService,
-		@ILaunchService private launchService: ILaunchService,
-		@ILogService private logService: ILogService,
-		@IDiagnosticsService private diagnosticsService: IDiagnosticsService,
-		@IWindowsService private windowsService: IWindowsService
+		@IEnvironmentService private readonly environmentService: IEnvironmentService,
+		@ILaunchService private readonly launchService: ILaunchService,
+		@ILogService private readonly logService: ILogService,
+		@IDiagnosticsService private readonly diagnosticsService: IDiagnosticsService,
+		@IWindowsService private readonly windowsService: IWindowsService
 	) {
 		this.registerListeners();
 	}
@@ -50,7 +50,7 @@ export class IssueService implements IIssueService {
 			});
 		});
 
-		ipcMain.on('vscode:issueReporterConfirmClose', (_) => {
+		ipcMain.on('vscode:issueReporterConfirmClose', () => {
 			const messageOptions = {
 				message: localize('confirmCloseIssueReporter', "Your input will not be saved. Are you sure you want to close this window?"),
 				type: 'warning',
@@ -72,7 +72,7 @@ export class IssueService implements IIssueService {
 			}
 		});
 
-		ipcMain.on('vscode:workbenchCommand', (_, commandInfo) => {
+		ipcMain.on('vscode:workbenchCommand', (_: unknown, commandInfo: { id: any; from: any; args: any; }) => {
 			const { id, from, args } = commandInfo;
 
 			let parentWindow: BrowserWindow | null;
@@ -92,7 +92,7 @@ export class IssueService implements IIssueService {
 			}
 		});
 
-		ipcMain.on('vscode:openExternal', (_, arg) => {
+		ipcMain.on('vscode:openExternal', (_: unknown, arg: string) => {
 			this.windowsService.openExternal(arg);
 		});
 
@@ -118,6 +118,7 @@ export class IssueService implements IIssueService {
 					const position = this.getWindowPosition(this._issueParentWindow, 700, 800);
 
 					this._issueWindow = new BrowserWindow({
+						fullscreen: false,
 						width: position.width,
 						height: position.height,
 						minWidth: 300,
@@ -163,6 +164,7 @@ export class IssueService implements IIssueService {
 					this._processExplorerWindow = new BrowserWindow({
 						skipTaskbar: true,
 						resizable: true,
+						fullscreen: false,
 						width: position.width,
 						height: position.height,
 						minWidth: 300,
@@ -187,7 +189,7 @@ export class IssueService implements IIssueService {
 					const environment = parseArgs(process.argv);
 					const config = objects.assign(environment, windowConfiguration);
 					for (let key in config) {
-						if (config[key] === void 0 || config[key] === null || config[key] === '') {
+						if (config[key] === undefined || config[key] === null || config[key] === '') {
 							delete config[key]; // only send over properties that have a true value
 						}
 					}
@@ -209,6 +211,12 @@ export class IssueService implements IIssueService {
 			if (this._processExplorerWindow) {
 				this._processExplorerWindow.focus();
 			}
+		});
+	}
+
+	public getSystemStatus(): Promise<string> {
+		return this.launchService.getMainProcessInfo().then(info => {
+			return this.diagnosticsService.getDiagnostics(info);
 		});
 	}
 
@@ -321,7 +329,7 @@ export class IssueService implements IIssueService {
 		const environment = parseArgs(process.argv);
 		const config = objects.assign(environment, windowConfiguration);
 		for (let key in config) {
-			if (config[key] === void 0 || config[key] === null || config[key] === '') {
+			if (config[key] === undefined || config[key] === null || config[key] === '') {
 				delete config[key]; // only send over properties that have a true value
 			}
 		}

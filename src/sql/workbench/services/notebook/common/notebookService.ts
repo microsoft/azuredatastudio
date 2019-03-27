@@ -67,8 +67,6 @@ export interface INotebookService {
 
 	listNotebookEditors(): INotebookEditor[];
 
-	shutdown(): void;
-
 	getMimeRegistry(): RenderMimeRegistry;
 
 	renameNotebookEditor(oldUri: URI, newUri: URI, currentEditor: INotebookEditor): void;
@@ -87,15 +85,17 @@ export interface INotebookManager {
 	readonly serverManager: azdata.nb.ServerManager;
 }
 
+export interface IProviderInfo {
+	providerId: string;
+	providers: string[];
+}
 export interface INotebookParams extends IBootstrapParams {
 	notebookUri: URI;
 	input: NotebookInput;
-	providerId: string;
-	providers: string[];
+	providerInfo: Promise<IProviderInfo>;
 	isTrusted: boolean;
 	profile?: IConnectionProfile;
 	modelFactory?: ModelFactory;
-	connectionProfileId?: string;
 }
 
 export interface INotebookEditor {
@@ -107,7 +107,6 @@ export interface INotebookEditor {
 	isDirty(): boolean;
 	isActive(): boolean;
 	isVisible(): boolean;
-	save(): Promise<boolean>;
 	executeEdits(edits: ISingleNotebookEditOperation[]): boolean;
 	runCell(cell: ICellModel): Promise<boolean>;
 }

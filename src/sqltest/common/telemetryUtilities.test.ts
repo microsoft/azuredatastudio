@@ -8,7 +8,6 @@ import * as TelemetryUtils from 'sql/common/telemetryUtilities';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { TelemetryServiceStub } from 'sqltest/stubs/telemetryServiceStub';
 import * as TypeMoq from 'typemoq';
-import { TPromise } from 'vs/base/common/winjs.base';
 import * as assert from 'assert';
 
 suite('SQL Telemetry Utilities tests', () => {
@@ -37,7 +36,7 @@ suite('SQL Telemetry Utilities tests', () => {
 
 	setup(() => {
 		telemetryService = TypeMoq.Mock.ofType(TelemetryServiceStub, TypeMoq.MockBehavior.Strict);
-		telemetryService.setup(x => x.publicLog(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(x => TPromise.as(none));
+		telemetryService.setup(x => x.publicLog(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(x => Promise.resolve(none));
 	});
 
 	test('addTelemetry should add provider id using the connection', (done) => {

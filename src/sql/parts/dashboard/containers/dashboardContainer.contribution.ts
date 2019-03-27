@@ -55,7 +55,7 @@ const containerContributionSchema: IJSONSchema = {
 	]
 };
 
-ExtensionsRegistry.registerExtensionPoint<IDashboardContainerContrib | IDashboardContainerContrib[]>('dashboard.containers', [], containerContributionSchema).setHandler(extensions => {
+ExtensionsRegistry.registerExtensionPoint<IDashboardContainerContrib | IDashboardContainerContrib[]>({ extensionPoint: 'dashboard.containers', jsonSchema: containerContributionSchema }).setHandler(extensions => {
 
 	function handleCommand(dashboardContainer: IDashboardContainerContrib, extension: IExtensionPointUser<any>) {
 		let { id, container } = dashboardContainer;

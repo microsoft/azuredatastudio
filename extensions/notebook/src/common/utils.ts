@@ -88,6 +88,12 @@ export enum Platform {
 	Others
 }
 
+export interface IEndpoint {
+	serviceName: string;
+	ipAddress: string;
+	port: number;
+}
+
 export function getOSPlatform(): Platform {
 	switch (process.platform) {
 		case 'win32':

@@ -7,7 +7,7 @@
 
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { NodeType, SqlThemeIcon } from 'sql/parts/objectExplorer/common/nodeType';
-import * as azdata from 'azdata';
+import * as azdata from 'sqlops';
 
 import * as UUID from 'vs/base/common/uuid';
 

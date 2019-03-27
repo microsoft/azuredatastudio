@@ -6,7 +6,6 @@ import { Observable } from 'rxjs/Observable';
 import { Observer } from 'rxjs/Observer';
 
 import { Event, Emitter } from 'vs/base/common/event';
-import { TPromise } from 'vs/base/common/winjs.base';
 import * as types from 'vs/base/common/types';
 import { compare as stringCompare } from 'vs/base/common/strings';
 
@@ -153,7 +152,7 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 
 	find(exp: string, maxMatches: number = 0): Thenable<IFindPosition> {
 		if (!this._findFn) {
-			return TPromise.wrapError(new Error('no find function provided'));
+			return Promise.reject(new Error('no find function provided'));
 		}
 		this._findArray = new Array<IFindPosition>();
 		this._findIndex = 0;
@@ -180,7 +179,7 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 				return this._findArray[this._findIndex];
 			});
 		} else {
-			return TPromise.wrapError(new Error('no expression'));
+			return Promise.reject(new Error('no expression'));
 		}
 	}
 
@@ -198,9 +197,9 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 			} else {
 				++this._findIndex;
 			}
-			return TPromise.as(this._findArray[this._findIndex]);
+			return Promise.resolve(this._findArray[this._findIndex]);
 		} else {
-			return TPromise.wrapError(new Error('no search running'));
+			return Promise.reject(new Error('no search running'));
 		}
 	}
 
@@ -211,17 +210,17 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 			} else {
 				--this._findIndex;
 			}
-			return TPromise.as(this._findArray[this._findIndex]);
+			return Promise.resolve(this._findArray[this._findIndex]);
 		} else {
-			return TPromise.wrapError(new Error('no search running'));
+			return Promise.reject(new Error('no search running'));
 		}
 	}
 
 	get currentFindPosition(): Thenable<IFindPosition> {
 		if (this._findArray && this._findArray.length !== 0) {
-			return TPromise.as(this._findArray[this._findIndex]);
+			return Promise.resolve(this._findArray[this._findIndex]);
 		} else {
-			return TPromise.wrapError(new Error('no search running'));
+			return Promise.reject(new Error('no search running'));
 		}
 	}
 

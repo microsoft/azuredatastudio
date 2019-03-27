@@ -136,7 +136,7 @@ export class FolderNode extends HdfsFileSourceNode {
 					});
 				}
 			} catch (error) {
-				this.children = [ErrorNode.create(localize('errorExpanding', 'Error: {0}', utils.getErrorMessage(error)), this)];
+				this.children = [ErrorNode.create(localize('errorExpanding', 'Error: {0}', utils.getErrorMessage(error)), this, error.statusCode)];
 			}
 		}
 		return this.children;
@@ -224,6 +224,23 @@ export class ConnectionNode extends FolderNode {
 		let item = await super.getTreeItem();
 		item.contextValue = this._nodeType;
 		return item;
+	}
+
+	getNodeInfo(): azdata.NodeInfo {
+		// TODO handle error message case by returning it in the OE API
+		// TODO support better mapping of node type
+		let nodeInfo: azdata.NodeInfo = {
+			label: this.getDisplayName(),
+			isLeaf: false,
+			errorMessage: undefined,
+			metadata: undefined,
+			nodePath: this.generateNodePath(),
+			nodeStatus: undefined,
+			nodeType: this._nodeType,
+			nodeSubType: undefined,
+			iconType: 'HDFSFolder'
+		};
+		return nodeInfo;
 	}
 }
 
@@ -325,9 +342,12 @@ export class ErrorNode extends TreeNode {
 		super();
 	}
 
-	public static create(message: string, parent: TreeNode): ErrorNode {
+	public static create(message: string, parent: TreeNode, errorCode?: number): ErrorNode {
 		let node = new ErrorNode(message);
 		node.parent = parent;
+		if(errorCode){
+			node.errorStatusCode = errorCode;
+		}
 		return node;
 	}
 

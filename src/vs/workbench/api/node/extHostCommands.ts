@@ -8,18 +8,21 @@ import { ICommandHandlerDescription } from 'vs/platform/commands/common/commands
 import * as extHostTypes from 'vs/workbench/api/node/extHostTypes';
 import * as extHostTypeConverter from 'vs/workbench/api/node/extHostTypeConverters';
 import { cloneAndChange } from 'vs/base/common/objects';
-import { MainContext, MainThreadCommandsShape, ExtHostCommandsShape, ObjectIdentifier, IMainContext } from './extHost.protocol';
+import { MainContext, MainThreadCommandsShape, ExtHostCommandsShape, ObjectIdentifier, IMainContext, CommandDto } from '../common/extHost.protocol';
 import { ExtHostHeapService } from 'vs/workbench/api/node/extHostHeapService';
 import { isNonEmptyArray } from 'vs/base/common/arrays';
 import * as modes from 'vs/editor/common/modes';
 import * as vscode from 'vscode';
 import { ILogService } from 'vs/platform/log/common/log';
 import { revive } from 'vs/base/common/marshalling';
+import { Range } from 'vs/editor/common/core/range';
+import { Position } from 'vs/editor/common/core/position';
+import { URI } from 'vs/base/common/uri';
 
 interface CommandHandler {
 	callback: Function;
 	thisArg: any;
-	description: ICommandHandlerDescription;
+	description?: ICommandHandlerDescription;
 }
 
 export interface ArgumentProcessor {
@@ -42,7 +45,33 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 		this._proxy = mainContext.getProxy(MainContext.MainThreadCommands);
 		this._logService = logService;
 		this._converter = new CommandsConverter(this, heapService);
-		this._argumentProcessors = [{ processArgument(a) { return revive(a, 0); } }];
+		this._argumentProcessors = [
+			{
+				processArgument(a) {
+					// URI, Regex
+					return revive(a, 0);
+				}
+			},
+			{
+				processArgument(arg) {
+					return cloneAndChange(arg, function (obj) {
+						// Reverse of https://github.com/Microsoft/vscode/blob/1f28c5fc681f4c01226460b6d1c7e91b8acb4a5b/src/vs/workbench/api/node/extHostCommands.ts#L112-L127
+						if (Range.isIRange(obj)) {
+							return extHostTypeConverter.Range.to(obj);
+						}
+						if (Position.isIPosition(obj)) {
+							return extHostTypeConverter.Position.to(obj);
+						}
+						if (Range.isIRange((obj as modes.Location).range) && URI.isUri((obj as modes.Location).uri)) {
+							return extHostTypeConverter.location.to(obj);
+						}
+						if (!Array.isArray(obj)) {
+							return obj;
+						}
+					});
+				}
+			}
+		];
 	}
 
 	get converter(): CommandsConverter {
@@ -78,7 +107,7 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 		});
 	}
 
-	executeCommand<T>(id: string, ...args: any[]): Thenable<T> {
+	executeCommand<T>(id: string, ...args: any[]): Promise<T> {
 		this._logService.trace('ExtHostCommands#executeCommand', id);
 
 		if (this._commands.has(id)) {
@@ -108,8 +137,12 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 		}
 	}
 
-	private _executeContributedCommand<T>(id: string, args: any[]): Thenable<T> {
-		let { callback, thisArg, description } = this._commands.get(id);
+	private _executeContributedCommand<T>(id: string, args: any[]): Promise<T> {
+		const command = this._commands.get(id);
+		if (!command) {
+			throw new Error('Unknown command');
+		}
+		let { callback, thisArg, description } = command;
 		if (description) {
 			for (let i = 0; i < description.args.length; i++) {
 				try {
@@ -121,7 +154,7 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 		}
 
 		try {
-			let result = callback.apply(thisArg, args);
+			const result = callback.apply(thisArg, args);
 			return Promise.resolve(result);
 		} catch (err) {
 			this._logService.error(err, id);
@@ -129,7 +162,7 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 		}
 	}
 
-	$executeContributedCommand<T>(id: string, ...args: any[]): Thenable<T> {
+	$executeContributedCommand<T>(id: string, ...args: any[]): Promise<T> {
 		this._logService.trace('ExtHostCommands#$executeContributedCommand', id);
 
 		if (!this._commands.has(id)) {
@@ -140,7 +173,7 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 		}
 	}
 
-	getCommands(filterUnderscoreCommands: boolean = false): Thenable<string[]> {
+	getCommands(filterUnderscoreCommands: boolean = false): Promise<string[]> {
 		this._logService.trace('ExtHostCommands#getCommands', filterUnderscoreCommands);
 
 		return this._proxy.$getCommands().then(result => {
@@ -151,7 +184,7 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 		});
 	}
 
-	$getContributedCommandHandlerDescriptions(): Thenable<{ [id: string]: string | ICommandHandlerDescription }> {
+	$getContributedCommandHandlerDescriptions(): Promise<{ [id: string]: string | ICommandHandlerDescription }> {
 		const result: { [id: string]: string | ICommandHandlerDescription } = Object.create(null);
 		this._commands.forEach((command, id) => {
 			let { description } = command;
@@ -178,15 +211,19 @@ export class CommandsConverter {
 		this._commands.registerCommand(true, this._delegatingCommandId, this._executeConvertedCommand, this);
 	}
 
-	toInternal(command: vscode.Command): modes.Command {
+	toInternal(command: vscode.Command): CommandDto;
+	toInternal(command: undefined): undefined;
+	toInternal(command: vscode.Command | undefined): CommandDto | undefined;
+	toInternal(command: vscode.Command | undefined): CommandDto | undefined {
 
 		if (!command) {
 			return undefined;
 		}
 
-		const result: modes.Command = {
+		const result: CommandDto = {
+			$ident: undefined,
 			id: command.command,
-			title: command.title
+			title: command.title,
 		};
 
 		if (command.command && isNonEmptyArray(command.arguments)) {
@@ -194,7 +231,7 @@ export class CommandsConverter {
 			// means we don't want to send the arguments around
 
 			const id = this._heap.keep(command);
-			ObjectIdentifier.mixin(result, id);
+			result.$ident = id;
 
 			result.id = this._delegatingCommandId;
 			result.arguments = [id];
@@ -209,10 +246,6 @@ export class CommandsConverter {
 
 	fromInternal(command: modes.Command): vscode.Command {
 
-		if (!command) {
-			return undefined;
-		}
-
 		const id = ObjectIdentifier.of(command);
 		if (typeof id === 'number') {
 			return this._heap.get<vscode.Command>(id);
@@ -226,9 +259,9 @@ export class CommandsConverter {
 		}
 	}
 
-	private _executeConvertedCommand<R>(...args: any[]): Thenable<R> {
+	private _executeConvertedCommand<R>(...args: any[]): Promise<R> {
 		const actualCmd = this._heap.get<vscode.Command>(args[0]);
-		return this._commands.executeCommand(actualCmd.command, ...actualCmd.arguments);
+		return this._commands.executeCommand(actualCmd.command, ...(actualCmd.arguments || []));
 	}
 
 }

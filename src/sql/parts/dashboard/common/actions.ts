@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 import { Action, IAction } from 'vs/base/common/actions';
 import * as nls from 'vs/nls';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { IDisposable } from 'vs/base/common/lifecycle';
@@ -30,13 +29,13 @@ export class EditDashboardAction extends Action {
 		super(EditDashboardAction.ID, EditDashboardAction.EDITLABEL, EditDashboardAction.ICON);
 	}
 
-	run(): TPromise<boolean> {
+	run(): Promise<boolean> {
 		try {
 			this.editFn.apply(this.context);
 			this.toggleLabel();
-			return TPromise.as(true);
+			return Promise.resolve(true);
 		} catch (e) {
-			return TPromise.as(false);
+			return Promise.resolve(false);
 		}
 	}
 
@@ -64,12 +63,12 @@ export class RefreshWidgetAction extends Action {
 		super(RefreshWidgetAction.ID, RefreshWidgetAction.LABEL, RefreshWidgetAction.ICON);
 	}
 
-	run(): TPromise<boolean> {
+	run(): Promise<boolean> {
 		try {
 			this.refreshFn.apply(this.context);
-			return TPromise.as(true);
+			return Promise.resolve(true);
 		} catch (e) {
-			return TPromise.as(false);
+			return Promise.resolve(false);
 		}
 	}
 }
@@ -111,9 +110,9 @@ export class DeleteWidgetAction extends Action {
 		super(DeleteWidgetAction.ID, DeleteWidgetAction.LABEL, DeleteWidgetAction.ICON);
 	}
 
-	run(): TPromise<boolean> {
+	run(): Promise<boolean> {
 		this.angularEventService.sendAngularEvent(this._uri, AngularEventType.DELETE_WIDGET, { id: this._widgetId });
-		return TPromise.as(true);
+		return Promise.resolve(true);
 	}
 }
 
@@ -144,11 +143,11 @@ export class PinUnpinTabAction extends Action {
 		}
 	}
 
-	public run(): TPromise<boolean> {
+	public run(): Promise<boolean> {
 		this._isPinned = !this._isPinned;
 		this.updatePinStatus();
 		this.angularEventService.sendAngularEvent(this._uri, AngularEventType.PINUNPIN_TAB, { tabId: this._tabId, isPinned: this._isPinned });
-		return TPromise.as(true);
+		return Promise.resolve(true);
 	}
 }
 
@@ -170,9 +169,9 @@ export class AddFeatureTabAction extends Action {
 		this._disposables.push(toDisposableSubscription(this._angularEventService.onAngularEvent(this._uri, (event) => this.handleDashboardEvent(event))));
 	}
 
-	run(): TPromise<boolean> {
+	run(): Promise<boolean> {
 		this._newDashboardTabService.showDialog(this._dashboardTabs, this._openedTabs, this._uri);
-		return TPromise.as(true);
+		return Promise.resolve(true);
 	}
 
 	dispose() {
@@ -219,10 +218,10 @@ export class CollapseWidgetAction extends Action {
 		);
 	}
 
-	run(): TPromise<boolean> {
+	run(): Promise<boolean> {
 		this._toggleState();
 		this._angularEventService.sendAngularEvent(this._uri, AngularEventType.COLLAPSE_WIDGET, this._widgetUuid);
-		return TPromise.as(true);
+		return Promise.resolve(true);
 	}
 
 	private _toggleState(): void {

@@ -7,11 +7,13 @@ import 'vs/css!./code';
 import { OnInit, Component, Input, Inject, ElementRef, ViewChild } from '@angular/core';
 import { AngularDisposable } from 'sql/base/node/lifecycle';
 import { nb } from 'azdata';
+import { ICellModel } from 'sql/parts/notebook/models/modelInterfaces';
 import { INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
 import { MimeModel } from 'sql/parts/notebook/outputs/common/mimemodel';
 import * as outputProcessor from 'sql/parts/notebook/outputs/common/outputProcessor';
 import { RenderMimeRegistry } from 'sql/parts/notebook/outputs/registry';
 import 'vs/css!sql/parts/notebook/outputs/style/index';
+import { IThemeService } from 'vs/platform/theme/common/themeService';
 
 export const OUTPUT_SELECTOR: string = 'output-component';
 
@@ -22,6 +24,7 @@ export const OUTPUT_SELECTOR: string = 'output-component';
 export class OutputComponent extends AngularDisposable implements OnInit {
 	@ViewChild('output', { read: ElementRef }) private outputElement: ElementRef;
 	@Input() cellOutput: nb.ICellOutput;
+	@Input() cellModel: ICellModel;
 	private _trusted: boolean;
 	private _initialized: boolean = false;
 	private readonly _minimumHeight = 30;
@@ -29,7 +32,8 @@ export class OutputComponent extends AngularDisposable implements OnInit {
 
 
 	constructor(
-		@Inject(INotebookService) private _notebookService: INotebookService
+		@Inject(INotebookService) private _notebookService: INotebookService,
+		@Inject(IThemeService) private _themeService: IThemeService
 	) {
 		super();
 		this.registry = _notebookService.getMimeRegistry();
@@ -38,12 +42,16 @@ export class OutputComponent extends AngularDisposable implements OnInit {
 	ngOnInit() {
 		this.renderOutput();
 		this._initialized = true;
+		this.cellModel.notebookModel.layoutChanged(() => {
+			this.renderOutput();
+		});
 	}
 
 	private renderOutput() {
 		let node = this.outputElement.nativeElement;
 		let output = this.cellOutput;
 		let options = outputProcessor.getBundleOptions({ value: output, trusted: this.trustedMode });
+		options.themeService = this._themeService;
 		// TODO handle safe/unsafe mapping
 		this.createRenderedMimetype(options, node);
 	}

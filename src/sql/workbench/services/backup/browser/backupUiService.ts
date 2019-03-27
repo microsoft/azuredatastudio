@@ -7,7 +7,6 @@
 
 import { Event, Emitter } from 'vs/base/common/event';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { TPromise } from 'vs/base/common/winjs.base';
 
 import * as azdata from 'azdata';
 
@@ -61,7 +60,7 @@ export class BackupUiService implements IBackupUiService {
 		}
 	}
 
-	public showBackupDialog(connection: IConnectionProfile): TPromise<void> {
+	public showBackupDialog(connection: IConnectionProfile): Promise<void> {
 		let self = this;
 		self._connectionUri = ConnectionUtils.generateUri(connection);
 		self._currentProvider = connection.providerName;
@@ -81,7 +80,7 @@ export class BackupUiService implements IBackupUiService {
 		}
 
 		let backupOptions = this.getOptions(this._currentProvider);
-		return new TPromise<void>((resolve) => {
+		return new Promise<void>((resolve) => {
 			let uri = this._connectionManagementService.getConnectionUri(connection)
 				+ ProviderConnectionInfo.idSeparator
 				+ ConnectionUtils.ConnectionUriBackupIdAttributeName

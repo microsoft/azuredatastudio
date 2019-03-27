@@ -3,13 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as azdata from 'azdata';
 import { ElementRef, AfterContentChecked, ViewChild } from '@angular/core';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { IAction, Action } from 'vs/base/common/actions';
 import { ResolvedKeybinding } from 'vs/base/common/keyCodes';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -75,7 +75,7 @@ export abstract class JobManagementView extends TabChild implements AfterContent
 		let rowIndex = event.cell.row;
 
 		let targetObject = this.getCurrentTableObject(rowIndex);
-		let actions = this.getTableActions();
+		let actions = this.getTableActions(targetObject);
 		if (actions) {
 			let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
 			let actionContext = {
@@ -98,11 +98,11 @@ export abstract class JobManagementView extends TabChild implements AfterContent
 		return kb;
 	}
 
-	protected getTableActions(): IAction[] {
+	protected getTableActions(targetObject?: any): IAction[] {
 		return undefined;
 	}
 
-	protected getCurrentTableObject(rowIndex: number): any {
+	protected getCurrentTableObject(rowIndex: number): JobActionContext {
 		return undefined;
 	}
 
@@ -117,4 +117,9 @@ export abstract class JobManagementView extends TabChild implements AfterContent
 			{ action: newAction }
 		]);
 	}
+}
+
+export interface JobActionContext {
+	canEdit: boolean;
+	job: azdata.AgentJobInfo;
 }

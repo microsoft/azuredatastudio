@@ -172,12 +172,12 @@ export function shellEnvironment(baseEnvironment: any): any {
 function pathVariableName(env: any): string {
     if (isWindows()) {
         for (const v of Object.keys(env)) {
-            if (v.toLowerCase() === "path") {
+            if (v.toLowerCase() === 'path') {
                 return v;
             }
         }
     }
-    return "PATH";
+    return 'PATH';
 }
 
 function pathEntrySeparator() {

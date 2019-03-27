@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
+import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { Emitter } from 'vs/base/common/event';
 import { deepClone } from 'vs/base/common/objects';
 import { URI } from 'vs/base/common/uri';
@@ -15,7 +15,7 @@ import * as azdata from 'azdata';
 
 import { SqlMainContext, ExtHostModelViewShape, MainThreadModelViewShape, ExtHostModelViewTreeViewsShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { IItemConfig, ModelComponentTypes, IComponentShape, IComponentEventArgs, ComponentEventType } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { IExtensionDescription } from 'vs/workbench/services/extensions/common/extensions';
+import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 
 class ModelBuilderImpl implements azdata.ModelBuilder {
 	private nextComponentId: number;
@@ -1072,6 +1072,13 @@ class DropDownWrapper extends ComponentWrapper implements azdata.DropDownCompone
 		this.setProperty('editable', v);
 	}
 
+	public get fireOnTextChange(): boolean {
+		return this.properties['fireOnTextChange'];
+	}
+	public set fireOnTextChange(v: boolean) {
+		this.setProperty('fireOnTextChange', v);
+	}
+
 	public get onValueChanged(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
 		return emitter && emitter.event;
@@ -1357,7 +1364,7 @@ export class ExtHostModelView implements ExtHostModelViewShape {
 
 	$onClosed(handle: number): void {
 		const view = this._modelViews.get(handle);
-		view.onClosedEmitter.fire();
+		view.onClosedEmitter.fire(undefined);
 		this._modelViews.delete(handle);
 	}
 

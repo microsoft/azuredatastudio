@@ -22,11 +22,14 @@ import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHos
 import { IStandardKernelWithProvider } from 'sql/parts/notebook/notebookUtils';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { localize } from 'vs/nls';
+import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
 
 export interface IClientSessionOptions {
 	notebookUri: URI;
 	notebookManager: INotebookManager;
 	notificationService: INotificationService;
+	kernelSpec: nb.IKernelSpec;
 }
 
 /**
@@ -310,6 +313,11 @@ export interface INotebookModel {
 	readonly contextsChanged: Event<void>;
 
 	/**
+	 * Event fired on when switching kernel and should show loading context
+	 */
+	readonly contextsLoading: Event<void>;
+
+	/**
 	 * The specs for available kernels, or undefined if these have
 	 * not been loaded yet
 	 */
@@ -364,10 +372,9 @@ export interface INotebookModel {
 	deleteCell(cellModel: ICellModel): void;
 
 	/**
-	 * Save the model to its backing content manager.
-	 * Serializes the model and then calls through to save it
+	 * Serialize notebook cell content to JSON
 	 */
-	saveModel(): Promise<boolean>;
+	toJSON(): nb.INotebookContents;
 
 	/**
 	 * Notifies the notebook of a change in the cell
@@ -383,6 +390,12 @@ export interface INotebookModel {
 	pushEditOperations(edits: ISingleNotebookEditOperation[]): void;
 
 	getApplicableConnectionProviderIds(kernelName: string): string[];
+
+	/**
+	 * Get the standardKernelWithProvider by name
+	 * @param name The kernel name
+	 */
+	getStandardKernelFromName(name: string): IStandardKernelWithProvider;
 
 	/** Event fired once we get call back from ConfigureConnection method in sqlops extension */
 	readonly onValidConnectionSelected: Event<boolean>;
@@ -437,9 +450,10 @@ export interface ICellModel {
 	readonly outputs: ReadonlyArray<nb.ICellOutput>;
 	readonly onOutputsChanged: Event<ReadonlyArray<nb.ICellOutput>>;
 	readonly onExecutionStateChange: Event<CellExecutionState>;
-	setFuture(future: FutureInternal): void;
 	readonly executionState: CellExecutionState;
-	runCell(notificationService?: INotificationService): Promise<boolean>;
+	readonly notebookModel: NotebookModel;
+	setFuture(future: FutureInternal): void;
+	runCell(notificationService?: INotificationService, connectionManagementService?: IConnectionManagementService): Promise<boolean>;
 	setOverrideLanguage(language: string);
 	equals(cellModel: ICellModel): boolean;
 	toJSON(): nb.ICellContents;
@@ -455,6 +469,12 @@ export interface IModelFactory {
 	createClientSession(options: IClientSessionOptions): IClientSession;
 }
 
+export interface IContentManager {
+	/**
+	 * This is a specialized method intended to load for a default context - just the current Notebook's URI
+	 */
+	loadContent(): Promise<nb.INotebookContents>;
+}
 
 export interface INotebookModelOptions {
 	/**
@@ -467,6 +487,7 @@ export interface INotebookModelOptions {
 	 */
 	factory: IModelFactory;
 
+	contentManager: IContentManager;
 	notebookManagers: INotebookManager[];
 	providerId: string;
 	standardKernels: IStandardKernelWithProvider[];
@@ -498,4 +519,11 @@ export interface ICellMagicMapper {
 
 export namespace notebookConstants {
 	export const SQL = 'SQL';
+	export const SQL_CONNECTION_PROVIDER = 'MSSQL';
+	export const sqlKernel: string = localize('sqlKernel', 'SQL');
+	export const sqlKernelSpec: nb.IKernelSpec = ({
+		name: sqlKernel,
+		language: 'sql',
+		display_name: sqlKernel
+	});
 }

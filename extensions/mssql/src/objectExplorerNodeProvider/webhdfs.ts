@@ -67,7 +67,7 @@ export class WebHDFS {
 			params || {}
 		);
 		endpoint.search = querystring.stringify(searchOpts);
-		return url.format(endpoint);
+		return encodeURI(url.format(endpoint));
 	}
 
 	/**
@@ -213,11 +213,12 @@ export class WebHDFS {
 
 		request(requestParams, (error, response, body) => {
 			if (!callback) { return; }
-			if (this.isSuccess(response)) {
-				callback(undefined, response);
-			} else if (error || this.isError(response)) {
+
+			if (error || this.isError(response)) {
 				let hdfsError = this.parseError(response, body, error);
 				callback(hdfsError, response);
+			} else if (this.isSuccess(response)) {
+				callback(undefined, response);
 			} else {
 				let hdfsError = new HdfsError(
 					localize('webhdfs.unexpectedRedirect', 'Unexpected Redirect'),

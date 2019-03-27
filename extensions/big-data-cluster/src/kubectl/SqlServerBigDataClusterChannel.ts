@@ -3,14 +3,17 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from "vscode";
+import * as vscode from 'vscode';
+import * as nls from 'vscode-nls';
+const localize = nls.loadMessageBundle();
 
 export interface ISqlServerBigDataClusterChannel {
     showOutput(message: any, title?: string): void;
 }
 
+const outputChannelName = localize('bigDataClusterOutputChannel', 'SQL Server big data cluster');
 class SqlServerBigDataCluster implements ISqlServerBigDataClusterChannel {
-    private readonly channel: vscode.OutputChannel = vscode.window.createOutputChannel("SQL Server big data cluster");
+    private readonly channel: vscode.OutputChannel = vscode.window.createOutputChannel(outputChannelName);
 
     showOutput(message: any, title?: string): void {
         if (title) {

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
+import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { ExtHostQueryEditorShape, SqlMainContext, MainThreadQueryEditorShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import * as azdata from 'azdata';
 import { IQueryEvent } from 'sql/platform/query/common/queryModel';
@@ -26,7 +26,7 @@ class ExtHostQueryDocument implements azdata.queryeditor.QueryDocument {
 
 	}
 
-	createQueryTab(tab: azdata.window.modelviewdialog.DialogTab): void {
+	createQueryTab(tab: azdata.window.DialogTab): void {
 		this._proxy.$createQueryTab(this.uri, tab.title, tab.content);
 	}
 }
