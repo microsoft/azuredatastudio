@@ -37,6 +37,10 @@ import { Schemas } from 'vs/base/common/network';
 import { originalFSPath } from 'vs/base/common/resources';
 import { isLinux } from 'vs/base/common/platform';
 import { IWorkspaceIdentifier } from 'vs/workbench/services/configuration/node/configuration';
+import { IWindowConfiguration } from 'vs/platform/windows/common/windows';
+import { RemoteAgentService } from 'vs/workbench/services/remote/electron-browser/remoteAgentServiceImpl';
+import { RemoteAuthorityResolverService } from 'vs/platform/remote/electron-browser/remoteAuthorityResolverService';
+import { IRemoteAgentService } from 'vs/workbench/services/remote/common/remoteAgentService';
 
 class SettingsTestEnvironmentService extends EnvironmentService {
 

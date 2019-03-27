@@ -340,13 +340,13 @@ export class ExtensionsViewlet extends ViewContainerViewlet implements IExtensio
 
 		this.searchBox = this.instantiationService.createInstance(SuggestEnabledInput, `${VIEWLET_ID}.searchbox`, header, {
 			triggerCharacters: ['@'],
-			sortKey: item => {
+			sortKey: (item: string) => {
 				if (item.indexOf(':') === -1) { return 'a'; }
 				else if (/ext:/.test(item) || /tag:/.test(item)) { return 'b'; }
 				else if (/sort:/.test(item)) { return 'c'; }
 				else { return 'd'; }
 			},
-			provideResults: (query) => Query.suggestions(query)
+			provideResults: (query: string) => Query.suggestions(query)
 		}, placeholder, 'extensions:searchinput', { placeholderText: placeholder, value: searchValue });
 
 		if (this.searchBox.getValue()) {
@@ -453,7 +453,7 @@ export class ExtensionsViewlet extends ViewContainerViewlet implements IExtensio
 		super.saveState();
 	}
 
-	private doSearch(): Promise<any> {
+	private doSearch(): Promise<void> {
 		const value = this.normalizedQuery();
 		this.searchExtensionsContextKey.set(!!value);
 		this.searchBuiltInExtensionsContextKey.set(ExtensionsListView.isBuiltInExtensionsQuery(value));
@@ -465,9 +465,9 @@ export class ExtensionsViewlet extends ViewContainerViewlet implements IExtensio
 			return this.progress(Promise.all(this.panels.map(view =>
 				(<ExtensionsListView>view).show(this.normalizedQuery())
 					.then(model => this.alertSearchResult(model.length, view.id))
-			)));
+			))).then(() => undefined);
 		}
-		return Promise.resolve(null);
+		return Promise.resolve();
 	}
 
 	protected onDidAddViews(added: IAddedViewDescriptorRef[]): ViewletPanel[] {
@@ -479,7 +479,7 @@ export class ExtensionsViewlet extends ViewContainerViewlet implements IExtensio
 		return addedViews;
 	}
 
-	private alertSearchResult(count: number, viewId: string) {
+	private alertSearchResult(count: number, viewId: string): void {
 		switch (count) {
 			case 0:
 				break;
@@ -531,7 +531,7 @@ export class ExtensionsViewlet extends ViewContainerViewlet implements IExtensio
 		return this.progressService.withProgress({ location: ProgressLocation.Extensions }, () => promise);
 	}
 
-	private onError(err: any): void {
+	private onError(err: Error): void {
 		if (isPromiseCanceledError(err)) {
 			return;
 		}
@@ -614,7 +614,7 @@ export class MaliciousExtensionChecker implements IWorkbenchContribution {
 			.then(() => this.loopCheckForMaliciousExtensions());
 	}
 
-	private checkForMaliciousExtensions(): Promise<any> {
+	private checkForMaliciousExtensions(): Promise<void> {
 		return this.extensionsManagementService.getExtensionsReport().then(report => {
 			const maliciousSet = getMaliciousExtensionsSet(report);
 
@@ -635,9 +635,9 @@ export class MaliciousExtensionChecker implements IWorkbenchContribution {
 						);
 					})));
 				} else {
-					return Promise.resolve(null);
+					return Promise.resolve(undefined);
 				}
-			});
+			}).then(() => undefined);
 		}, err => this.logService.error(err));
 	}
 
