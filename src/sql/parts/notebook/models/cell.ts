@@ -230,13 +230,14 @@ export class CellModel implements ICellModel {
 				}
 			}
 		} catch (error) {
+			let message: string;
 			if (error.message === 'Canceled') {
-				// swallow the error
+				message = localize('executionCanceled', 'Query execution was canceled');
+			} else {
+				message = notebookUtils.getErrorMessage(error);
 			}
-			let message = notebookUtils.getErrorMessage(error);
 			this.sendNotification(notificationService, Severity.Error, message);
 			// TODO track error state for the cell
-			throw error;
 		} finally {
 			this.fireExecutionStateChanged();
 		}
