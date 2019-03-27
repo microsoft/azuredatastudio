@@ -19,7 +19,6 @@ import * as BackupConstants from 'sql/parts/disasterRecovery/backup/constants';
 import { IBackupService, TaskExecutionMode } from 'sql/platform/backup/common/backupService';
 import * as FileValidationConstants from 'sql/workbench/services/fileBrowser/common/fileValidationServiceConstants';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { ScrollableSplitView } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
 import { IFileBrowserDialogController } from 'sql/workbench/services/fileBrowser/common/fileBrowserDialogController';
 import { IBackupUiService } from 'sql/workbench/services/backup/common/backupUiService';
 
@@ -33,6 +32,7 @@ import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/work
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { SplitView, Sizing } from 'vs/base/browser/ui/splitview/splitview';
 
 export const BACKUP_SELECTOR: string = 'backup-component';
 
@@ -338,10 +338,12 @@ export class BackupComponent {
 
 	ngAfterViewInit() {
 		// Set category view for advanced options. This should be defined in ngAfterViewInit so that it correctly calculates the text height after data binding.
-		var splitview = new ScrollableSplitView(this.advancedOptionElement.nativeElement);
-		var advancedBodySize = DOM.getTotalHeight(this.advancedOptionBodyElement.nativeElement);
-		var categoryView = this.instantiationService.createInstance(CategoryView, this.advancedOptionBodyElement.nativeElement, advancedBodySize, { title: LocalizedStrings.ADVANCED_CONFIGURATION, id: LocalizedStrings.ADVANCED_CONFIGURATION, ariaHeaderLabel: LocalizedStrings.ADVANCED_CONFIGURATION });
-		splitview.addView(categoryView, 0);
+		let advancedBodySize = DOM.getTotalHeight(this.advancedOptionBodyElement.nativeElement);
+		let bodyElement: HTMLElement = this.advancedOptionBodyElement.nativeElement;
+		bodyElement.remove();
+		let splitview = new SplitView(this.advancedOptionElement.nativeElement);
+		let categoryView = this.instantiationService.createInstance(CategoryView, bodyElement, advancedBodySize, { title: LocalizedStrings.ADVANCED_CONFIGURATION, id: LocalizedStrings.ADVANCED_CONFIGURATION, ariaHeaderLabel: LocalizedStrings.ADVANCED_CONFIGURATION });
+		splitview.addView(categoryView, advancedBodySize);
 		splitview.layout(advancedBodySize + this._advancedHeaderSize);
 
 		this._backupUiService.onShowBackupDialog();
@@ -434,14 +436,14 @@ export class BackupComponent {
 
 			// Set backup path list
 			this.setDefaultBackupPaths();
-			var pathlist = [];
-			for (var i in this.backupPathTypePairs) {
+			let pathlist = [];
+			for (let i in this.backupPathTypePairs) {
 				pathlist.push(i);
 			}
 			this.pathListBox.setOptions(pathlist, 0);
 
 			// Set encryption
-			var encryptorItems = this.populateEncryptorCombo();
+			let encryptorItems = this.populateEncryptorCombo();
 			this.encryptorSelectBox.setOptions(encryptorItems, 0);
 
 			if (encryptorItems.length === 0) {
@@ -729,9 +731,9 @@ export class BackupComponent {
 	}
 
 	private populateEncryptorCombo(): string[] {
-		var encryptorCombo = [];
+		let encryptorCombo = [];
 		this.backupEncryptors.forEach((encryptor) => {
-			var encryptorTypeStr = (encryptor.encryptorType === 0 ? BackupConstants.serverCertificate : BackupConstants.asymmetricKey);
+			let encryptorTypeStr = (encryptor.encryptorType === 0 ? BackupConstants.serverCertificate : BackupConstants.asymmetricKey);
 			encryptorCombo.push(encryptor.encryptorName + '(' + encryptorTypeStr + ')');
 		});
 		return encryptorCombo;
@@ -867,18 +869,18 @@ export class BackupComponent {
 	}
 
 	private createBackupInfo(): MssqlBackupInfo {
-		var backupPathArray = [];
-		for (var i in this.backupPathTypePairs) {
+		let backupPathArray = [];
+		for (let i in this.backupPathTypePairs) {
 			backupPathArray.push(i);
 		}
 
 		// get encryptor type and name
-		var encryptorName = '';
-		var encryptorType;
+		let encryptorName = '';
+		let encryptorType;
 
 		if (this.encryptCheckBox.checked && this.encryptorSelectBox.value !== '') {
-			var selectedEncryptor = this.encryptorSelectBox.value;
-			var encryptorTypeStr = selectedEncryptor.substring(selectedEncryptor.lastIndexOf('(') + 1, selectedEncryptor.lastIndexOf(')'));
+			let selectedEncryptor = this.encryptorSelectBox.value;
+			let encryptorTypeStr = selectedEncryptor.substring(selectedEncryptor.lastIndexOf('(') + 1, selectedEncryptor.lastIndexOf(')'));
 			encryptorType = (encryptorTypeStr === BackupConstants.serverCertificate ? 0 : 1);
 			encryptorName = selectedEncryptor.substring(0, selectedEncryptor.lastIndexOf('('));
 		}
