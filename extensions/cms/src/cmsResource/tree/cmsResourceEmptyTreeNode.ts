@@ -25,6 +25,7 @@ export class CmsResourceEmptyTreeNode extends TreeNode {
 			command: 'cms.resource.registerCMSServer',
 			arguments: [this]
 		};
+		item.contextValue = CmsResourceItemType.cmsEmptyNodeContainer;
 		return item;
 	}
 
@@ -37,6 +38,7 @@ export class CmsResourceEmptyTreeNode extends TreeNode {
 			nodePath: this.generateNodePath(),
 			nodeStatus: undefined,
 			nodeType: CmsResourceItemType.cmsEmptyNodeContainer,
+			iconType: CmsResourceItemType.cmsEmptyNodeContainer,
 			nodeSubType: undefined
 		};
 	}

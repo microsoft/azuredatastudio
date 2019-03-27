@@ -45,8 +45,8 @@
 				"when": "viewItem == cms.resource.itemType.serverGroup"
 			},
 			{
-				"command": "cms.resource.refresh",
-				"title": "%cms.resource.refresh.title%",
+				"command": "cms.resource.refreshServerGroup",
+				"title": "%cms.resource.refreshServerGroup.title%",
 				"when": "viewItem == cms.resource.itemType.serverGroup",
 				"icon": {
 					"light": "resources/light/refresh.svg",
@@ -54,8 +54,8 @@
 				}
 			},
 			{
-				"command": "cms.resource.refresh",
-				"title": "%cms.resource.refresh.title%",
+				"command": "cms.resource.refreshCmsServer",
+				"title": "%cms.resource.refreshCmsServer.title%",
 				"when": "viewItem == cms.resource.itemType.cmsNodeContainer",
 				"icon": {
 					"light": "resources/light/refresh.svg",
@@ -117,12 +117,12 @@
 					"when": "viewItem == cms.resource.itemType.cmsNodeContainer"
 				},
 				{
-					"command": "cms.resource.refresh",
+					"command": "cms.resource.refreshServerGroup",
 					"when": "viewItem == cms.resource.itemType.serverGroup",
 					"group": "inline"
 				},
 				{
-					"command": "cms.resource.refresh",
+					"command": "cms.resource.refreshCmsServer",
 					"when": "viewItem == cms.resource.itemType.cmsNodeContainer",
 					"group": "inline"
 				},
