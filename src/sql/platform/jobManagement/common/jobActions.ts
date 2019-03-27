@@ -68,9 +68,9 @@ export class NewJobAction extends Action {
 	}
 
 	public run(context: JobsViewComponent): Promise<boolean> {
-		return new Promise<boolean>((resolve, reject) => {
+		return new Promise<boolean>(async (resolve, reject) => {
 			try {
-				context.openCreateJobDialog();
+				await context.openCreateJobDialog();
 				resolve(true);
 			} catch (e) {
 				reject(e);
@@ -183,7 +183,7 @@ export class DeleteJobAction extends Action {
 
 	public run(actionInfo: IJobActionInfo): Promise<boolean> {
 		let self = this;
-		let job = actionInfo.targetObject as azdata.AgentJobInfo;
+		let job = actionInfo.targetObject.job as azdata.AgentJobInfo;
 		self._notificationService.prompt(
 			Severity.Info,
 			nls.localize('jobaction.deleteJobConfirm', "Are you sure you'd like to delete the job '{0}'?", job.name),
@@ -191,7 +191,7 @@ export class DeleteJobAction extends Action {
 				label: DeleteJobAction.LABEL,
 				run: () => {
 					this._telemetryService.publicLog(TelemetryKeys.DeleteAgentJob);
-					self._jobService.deleteJob(actionInfo.ownerUri, actionInfo.targetObject).then(result => {
+					self._jobService.deleteJob(actionInfo.ownerUri, actionInfo.targetObject.job).then(result => {
 						if (!result || !result.success) {
 							let errorMessage = nls.localize("jobaction.failedToDeleteJob", "Could not delete job '{0}'.\nError: {1}",
 								job.name, result.errorMessage ? result.errorMessage : 'Unknown error');
