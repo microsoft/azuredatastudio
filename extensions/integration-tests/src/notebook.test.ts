@@ -53,9 +53,7 @@ if (context.RunTest) {
 		// 		assert(clearedOutputs, 'Outputs of all the code cells from Python notebook should be cleared');
 		// 		console.log("After clearing cell outputs");
 		// 	}
-		// 	else{
-		// 		assert('Could not find notebook cells with outputs');
-		// 	}
+		//	assert(cellWithOutputs === undefined, 'Could not find notebook cells with outputs');
 		// });
 
 		test('Clear all outputs - SQL notebook ', async function () {
@@ -67,9 +65,7 @@ if (context.RunTest) {
 				assert(clearedOutputs, 'Outputs of all the code cells from SQL notebook should be cleared');
 				console.log("After clearing cell outputs");
 			}
-			else{
-				assert('Could not find notebook cells with outputs');
-			}
+			assert(cellWithOutputs === undefined, 'Could not find notebook cells with outputs');
 		});
 
 
