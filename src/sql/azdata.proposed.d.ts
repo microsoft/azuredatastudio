@@ -3992,6 +3992,12 @@ declare module 'azdata' {
 			 * @return A promise that resolves with a value indicating if the cell was run or not.
 			 */
 			runCell(cell?: NotebookCell): Thenable<boolean>;
+
+			/**
+			* Clears the outputs of all code cells in a Notebook
+			* @return A promise that resolves with a value indicating if the outputs are cleared or not.
+			*/
+			clearAllOutputs(): Thenable<boolean>;
 		}
 
 		export interface NotebookCell {

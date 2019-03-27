@@ -62,19 +62,8 @@ export class ClearAllOutputsAction extends Action {
 	) {
 		super(id, label, cssClass);
 	}
-	public run(context: NotebookModel): Promise<boolean> {
-		return new Promise<boolean>((resolve, reject) => {
-			try {
-				context.cells.forEach(cell => {
-					if (cell.cellType === CellTypes.Code) {
-						(cell as CellModel).clearOutputs();
-					}
-				});
-				resolve(true);
-			} catch (e) {
-				reject(e);
-			}
-		});
+	public run(context: NotebookComponent): Promise<boolean> {
+		return context.clearAllOutputs();
 	}
 }
 

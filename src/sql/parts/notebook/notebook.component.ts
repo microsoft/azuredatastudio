@@ -41,6 +41,7 @@ import { IConnectionDialogService } from 'sql/workbench/services/connection/comm
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { CellMagicMapper } from 'sql/parts/notebook/models/cellMagicMapper';
 import { IExtensionsViewlet, VIEWLET_ID } from 'vs/workbench/contrib/extensions/common/extensions';
+import { CellModel } from 'sql/parts/notebook/models/cell';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 
@@ -479,6 +480,21 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			return cell.runCell(this.notificationService, this.connectionManagementService);
 		} else {
 			return Promise.reject(new Error(localize('cellNotFound', 'cell with URI {0} was not found in this model', uriString)));
+		}
+	}
+
+	public async clearAllOutputs(): Promise<boolean> {
+		try {
+			await this.modelReady;
+			this._model.cells.forEach(cell => {
+				if (cell.cellType === CellTypes.Code) {
+					(cell as CellModel).clearOutputs();
+				}
+			});
+			return Promise.resolve(true);
+		}
+		catch (e) {
+			return Promise.reject(e);
 		}
 	}
 
