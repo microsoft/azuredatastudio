@@ -50,10 +50,14 @@ if (context.RunTest) {
 		// 	console.log("Before clearing cell outputs");
 		// 	if (cellWithOutputs) {
 		// 		let clearedOutputs = await notebook.clearAllOutputs();
+		// 		let cells = notebook.document.cells;
+		// 		cells.forEach(cell => {
+		// 			assert(cell.contents && cell.contents.outputs && cell.contents.outputs.length === 0, `Expected Output: 0, Acutal: '${cell.contents.outputs.length}'`);
+		// 		});
 		// 		assert(clearedOutputs, 'Outputs of all the code cells from Python notebook should be cleared');
 		// 		console.log("After clearing cell outputs");
 		// 	}
-		//	assert(cellWithOutputs === undefined, 'Could not find notebook cells with outputs');
+		// 	assert(cellWithOutputs === undefined, 'Could not find notebook cells with outputs');
 		// });
 
 		test('Clear all outputs - SQL notebook ', async function () {
@@ -62,6 +66,10 @@ if (context.RunTest) {
 			console.log("Before clearing cell outputs");
 			if (cellWithOutputs) {
 				let clearedOutputs = await notebook.clearAllOutputs();
+				let cells = notebook.document.cells;
+				cells.forEach(cell => {
+					assert(cell.contents && cell.contents.outputs && cell.contents.outputs.length === 0, `Expected Output: 0, Acutal: '${cell.contents.outputs.length}'`);
+				});
 				assert(clearedOutputs, 'Outputs of all the code cells from SQL notebook should be cleared');
 				console.log("After clearing cell outputs");
 			}
