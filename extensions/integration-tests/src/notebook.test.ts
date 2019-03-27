@@ -11,7 +11,7 @@ import assert = require('assert');
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { context } from './testContext';
-import { sqlNotebookContent, writeNotebookToFile, sqlKernelMetadata, pythonKernelMetadata, pySparkNotebookContent } from './notebook.util';
+import { sqlNotebookContent, writeNotebookToFile, sqlKernelMetadata } from './notebook.util';
 import { getBdcServer } from './testConfig';
 import { connectToServer } from './utils';
 
@@ -33,15 +33,15 @@ if (context.RunTest) {
 			console.log('Sql NB done');
 		});
 
-		test('Python3 notebook test', async function () {
-			console.log('Start Python3 NB test');
-			let notebook = await openNotebook(pySparkNotebookContent, pythonKernelMetadata);
-			let cellOutputs = notebook.document.cells[0].contents.outputs;
-			console.log('Got cell outputs');
-			let result = (<azdata.nb.IExecuteResult>cellOutputs[0]).data['text/plain'];
-			assert(result === '2', `Expected: 2, Acutal: '${result}'`);
-			console.log('Python3 NB done');
-		});
+		// test('Python3 notebook test', async function () {
+		// 	console.log('Start Python3 NB test');
+		// 	let notebook = await openNotebook(pySparkNotebookContent, pythonKernelMetadata);
+		// 	let cellOutputs = notebook.document.cells[0].contents.outputs;
+		// 	console.log('Got cell outputs');
+		// 	let result = (<azdata.nb.IExecuteResult>cellOutputs[0]).data['text/plain'];
+		// 	assert(result === '2', `Expected: 2, Acutal: '${result}'`);
+		// 	console.log('Python3 NB done');
+		// });
 
 		// test('PySpark3 notebook test', async function () {
 		// 	this.timeout(12000);
