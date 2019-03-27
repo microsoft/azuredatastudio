@@ -173,7 +173,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		this.onActiveCellChanged = this.onCellSelect;
 
 		this.onCellEditEnd = (event: Slick.OnCellChangeEventArgs<any>): void => {
-			if(self.currentEditCellValue !== event.item[event.cell]) {
+			if (self.currentEditCellValue !== event.item[event.cell]) {
 				self.currentCell.isDirty = true;
 			}
 			// Store the value that was set
@@ -720,7 +720,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 
 	private setCurrentCell(row: number, column: number) {
 		// Only update if we're actually changing cells
-		if(this.currentCell && (row !== this.currentCell.row || column !== this.currentCell.column)) {
+		if (this.currentCell && (row !== this.currentCell.row || column !== this.currentCell.column)) {
 			this.currentCell = {
 				row: row,
 				column: column,

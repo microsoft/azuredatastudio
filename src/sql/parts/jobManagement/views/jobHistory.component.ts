@@ -17,8 +17,10 @@ import { RunJobAction, StopJobAction, EditJobAction, JobsRefreshAction } from 's
 import { JobCacheObject } from 'sql/platform/jobManagement/common/jobManagementService';
 import { JobManagementUtilities } from 'sql/platform/jobManagement/common/jobManagementUtilities';
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
-import { JobHistoryController, JobHistoryDataSource,
-	JobHistoryRenderer, JobHistoryFilter, JobHistoryModel, JobHistoryRow } from 'sql/parts/jobManagement/views/jobHistoryTree';
+import {
+	JobHistoryController, JobHistoryDataSource,
+	JobHistoryRenderer, JobHistoryFilter, JobHistoryModel, JobHistoryRow
+} from 'sql/parts/jobManagement/views/jobHistoryTree';
 import { JobStepsViewRow } from 'sql/parts/jobManagement/views/jobStepsViewTree';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
@@ -204,7 +206,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 				});
 				self._stepRows.unshift(new JobStepsViewRow());
 				self._stepRows[0].rowID = 'stepsColumn' + self._agentJobInfo.jobId;
-				self._stepRows[0].stepId = nls.localize('stepRow.stepID','Step ID');
+				self._stepRows[0].stepId = nls.localize('stepRow.stepID', 'Step ID');
 				self._stepRows[0].stepName = nls.localize('stepRow.stepName', 'Step Name');
 				self._stepRows[0].message = nls.localize('stepRow.message', 'Message');
 				this._showSteps = self._stepRows.length > 1;
@@ -338,10 +340,10 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 	protected initActionBar() {
 		let runJobAction = this.instantiationService.createInstance(RunJobAction);
 		let stopJobAction = this.instantiationService.createInstance(StopJobAction);
-		switch(this._agentJobInfo.currentExecutionStatus) {
-			case(1):
-			case(2):
-			case(3):
+		switch (this._agentJobInfo.currentExecutionStatus) {
+			case (1):
+			case (2):
+			case (3):
 				stopJobAction.enabled = true;
 				break;
 			default:
