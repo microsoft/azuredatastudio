@@ -8,7 +8,7 @@
 import 'mocha';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import * as tempWrite from 'temp-write';
+import * as fs from 'fs';
 
 export class CellTypes {
 	public static readonly Code = 'code';
@@ -72,8 +72,11 @@ export const pythonKernelMetadata = {
 };
 
 export function writeNotebookToFile(pythonNotebook: azdata.nb.INotebookContents): vscode.Uri {
+	var path = require('path');
 	let notebookContentString = JSON.stringify(pythonNotebook);
-	let localFile = tempWrite.sync(notebookContentString, 'notebook.ipynb');
+	let localFile = path.join(process.cwd(), 'notebook' + Math.floor(Math.random() * 11) + '.ipynb');
+	console.log(`Local file is created: '${localFile}'`);
+	fs.writeFileSync(localFile, notebookContentString);
 	let uri = vscode.Uri.file(localFile);
 	return uri;
 }
