@@ -11,7 +11,7 @@ import assert = require('assert');
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { context } from './testContext';
-import { sqlNotebookContent, writeNotebookToFile, sqlKernelMetadata, pythonKernelMetadata, pySparkNotebookContent } from './notebook.util';
+import { sqlNotebookContent, writeNotebookToFile, sqlKernelMetadata, pythonKernelMetadata, pySparkNotebookContent, pySparkNotebookMultipleCellsContent } from './notebook.util';
 import { getBdcServer } from './testConfig';
 import { connectToServer } from './utils';
 
@@ -22,18 +22,28 @@ if (context.RunTest) {
 
 			const expectedOutput0 = '(1 row affected)';
 			let cellOutputs = notebook.document.cells[0].contents.outputs;
-			assert(cellOutputs.length === 3, `Expected length: 3, Acutal: '${cellOutputs.length}'`);
+			assert(cellOutputs.length === 3, `Expected length: 3, Actual: '${cellOutputs.length}'`);
 			let actualOutput0 = (<azdata.nb.IDisplayData>cellOutputs[0]).data['text/html'];
-			assert(actualOutput0 === expectedOutput0, `Expected row count: '${expectedOutput0}', Acutal: '${actualOutput0}'`);
+			assert(actualOutput0 === expectedOutput0, `Expected row count: '${expectedOutput0}', Actual: '${actualOutput0}'`);
 			let actualOutput2 = (<azdata.nb.IExecuteResult>cellOutputs[2]).data['application/vnd.dataresource+json'].data[0];
-			assert(actualOutput2[0] === '1', `Expected result: 1, Acutal: '${actualOutput2[0]}'`);
+			assert(actualOutput2[0] === '1', `Expected result: 1, Actual: '${actualOutput2[0]}'`);
 		});
 
 		test('Python3 notebook test', async function () {
 			let notebook = await openNotebook(pySparkNotebookContent, pythonKernelMetadata);
 			let cellOutputs = notebook.document.cells[0].contents.outputs;
 			let result = (<azdata.nb.IExecuteResult>cellOutputs[0]).data['text/plain'];
-			assert(result === '2', `Expected: 2, Acutal: '${result}'`);
+			assert(result === '2', `Expected: 2, Actual: '${result}'`);
+		});
+
+		test('Python3 multiple cells notebook test', async function () {
+			let notebook = await openNotebook(pySparkNotebookMultipleCellsContent, pythonKernelMetadata, true);
+			for (let i = 0; i < 4; i++) {
+				let cellOutputs = notebook.document.cells[i].contents.outputs;
+				let result = (<azdata.nb.IExecuteResult>cellOutputs[0]).data['text/plain'];
+				let expectedResult = 2+i;
+				assert(result === expectedResult.toString(), `Expected: '${expectedResult.toString()}', Actual: '${result}'`);
+			}
 		});
 
 		// test('PySpark3 notebook test', async function () {
@@ -41,11 +51,11 @@ if (context.RunTest) {
 		// 	let notebook = await openNotebook(pySparkNotebookContent, pySpark3KernelMetadata);
 		// 	let cellOutputs = notebook.document.cells[0].contents.outputs;
 		// 	let sparkResult = (<azdata.nb.IStreamResult>cellOutputs[3]).text;
-		// 	assert(sparkResult === '2', `Expected: 2, Acutal: '${sparkResult}'`);
+		// 	assert(sparkResult === '2', `Expected: 2, Actual: '${sparkResult}'`);
 		// });
 	});
 }
-async function openNotebook(content: azdata.nb.INotebookContents, kernelMetadata: any): Promise<azdata.nb.NotebookEditor> {
+async function openNotebook(content: azdata.nb.INotebookContents, kernelMetadata: any, runAllCells?: boolean): Promise<azdata.nb.NotebookEditor> {
 	let notebookConfig = vscode.workspace.getConfiguration('notebook');
 	notebookConfig.update('pythonPath', process.env.PYTHON_TEST_PATH, 1);
 	let server = await getBdcServer();
@@ -53,9 +63,14 @@ async function openNotebook(content: azdata.nb.INotebookContents, kernelMetadata
 	let pythonNotebook = Object.assign({}, content, { metadata: kernelMetadata });
 	let uri = writeNotebookToFile(pythonNotebook);
 	let notebook = await azdata.nb.showNotebookDocument(uri);
-	assert(notebook.document.cells.length === 1, 'Notebook should have 1 cell');
-	let ran = await notebook.runCell(notebook.document.cells[0]);
-	assert(ran, 'Notebook runCell should succeed');
+	if (!runAllCells) {
+		assert(notebook.document.cells.length === 1, 'Notebook should have 1 cell');
+		let ran = await notebook.runCell(notebook.document.cells[0]);
+		assert(ran, 'Notebook runCell should succeed');
+	} else {
+		let ran = await notebook.runAllCells();
+		assert(ran, 'Notebook runCell should succeed');
+	}
 	return notebook;
 }
 

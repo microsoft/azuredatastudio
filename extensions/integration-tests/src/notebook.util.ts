@@ -33,6 +33,38 @@ export const pySparkNotebookContent: azdata.nb.INotebookContents = {
 	nbformat_minor: 2
 };
 
+export const pySparkNotebookMultipleCellsContent: azdata.nb.INotebookContents = {
+	cells: [{
+		cell_type: CellTypes.Code,
+		source: '1+1',
+		metadata: { language: 'python' },
+		execution_count: 1
+	}, {
+		cell_type: CellTypes.Code,
+		source: '1+2',
+		metadata: { language: 'python' },
+		execution_count: 1
+	}, {
+		cell_type: CellTypes.Code,
+		source: '1+3',
+		metadata: { language: 'python' },
+		execution_count: 1
+	}, {
+		cell_type: CellTypes.Code,
+		source: '1+4',
+		metadata: { language: 'python' },
+		execution_count: 1
+	}],
+	metadata: {
+		'kernelspec': {
+			'name': 'pyspark3kernel',
+			'display_name': 'PySpark3'
+		}
+	},
+	nbformat: 4,
+	nbformat_minor: 2
+};
+
 export const sqlNotebookContent: azdata.nb.INotebookContents = {
 	cells: [{
 		cell_type: CellTypes.Code,
