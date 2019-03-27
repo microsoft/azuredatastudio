@@ -22,7 +22,7 @@ import { ipcRenderer as ipc} from 'electron';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IStatusbarService, StatusbarAlignment } from 'vs/platform/statusbar/common/statusbar';
-import { localize } from 'vs/nls'
+import { localize } from 'vs/nls';
 
 export class CommandLineService implements ICommandLineProcessing {
 	public _serviceBrand: any;
