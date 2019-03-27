@@ -59,11 +59,11 @@ export class JobStepsViewComponent extends JobManagementView implements OnInit, 
 	}
 
 	ngAfterContentChecked() {
-		$('.steps-tree .step-column-heading').closest('.monaco-tree-row').addClass('step-column-row');
+		jQuery('.steps-tree .step-column-heading').closest('.monaco-tree-row').addClass('step-column-row');
 		this.layout();
 		this._tree.setInput(new JobStepsViewModel());
 		this._tree.onDidScroll(() => {
-			$('.steps-tree .step-column-heading').closest('.monaco-tree-row').addClass('step-column-row');
+			jQuery('.steps-tree .step-column-heading').closest('.monaco-tree-row').addClass('step-column-row');
 		});
 		this._treeController.onClick = (tree, element, event, origin = 'mouse') => {
 			const payload = { origin: origin };
@@ -81,12 +81,12 @@ export class JobStepsViewComponent extends JobManagementView implements OnInit, 
 				tree.setFocus(element, payload);
 				tree.setSelection([element], payload);
 			}
-			$('.steps-tree .step-column-heading').closest('.monaco-tree-row').addClass('step-column-row');
+			jQuery('.steps-tree .step-column-heading').closest('.monaco-tree-row').addClass('step-column-row');
 			return true;
 		};
 		this._treeController.onKeyDown = (tree, event) => {
 			this._treeController.onKeyDownWrapper(tree, event);
-			$('.steps-tree .step-column-heading').closest('.monaco-tree-row').addClass('step-column-row');
+			jQuery('.steps-tree .step-column-heading').closest('.monaco-tree-row').addClass('step-column-row');
 			return true;
 		};
 		this._tree.onDidFocus(() => {
@@ -118,4 +118,3 @@ export class JobStepsViewComponent extends JobManagementView implements OnInit, 
 		}
 	}
 }
-

@@ -245,7 +245,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 	}
 
 	private toggleCollapse(): void {
-		let arrow: HTMLElement = $('.resultsViewCollapsible').get(0);
+		let arrow: HTMLElement = jQuery('.resultsViewCollapsible').get(0);
 		let checkbox: any = document.getElementById('accordion');
 		if (arrow.className === 'resultsViewCollapsible' && checkbox.checked === false) {
 			arrow.className = 'resultsViewCollapsible collapsed';
@@ -311,8 +311,8 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 	}
 
 	public layout() {
-		let historyDetails = $('.overview-container').get(0);
-		let statusBar = $('.part.statusbar').get(0);
+		let historyDetails = jQuery('.overview-container').get(0);
+		let statusBar = jQuery('.part.statusbar').get(0);
 		if (historyDetails && statusBar) {
 			let historyBottom = historyDetails.getBoundingClientRect().bottom;
 			let statusTop = statusBar.getBoundingClientRect().top;
