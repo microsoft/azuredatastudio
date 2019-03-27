@@ -82,6 +82,21 @@ suite('Insights Utils tests', function() {
 		equal(resolvedPath, queryFilePath);
 	});
 
+	test('resolveQueryFilePath returns original path if invalid param var specified', () => {
+		let invalidPath = '${INVALID}\\test.sql';
+		let configurationResolverService = new ConfigurationResolverService(
+			new TestWindowService({ }),
+			undefined,
+			undefined,
+			undefined,
+			undefined,
+			undefined,
+			undefined);
+
+		let resolvedPath = InsightsUtils.resolveQueryFilePath(invalidPath, new TestContextService(), configurationResolverService)
+		equal(resolvedPath, invalidPath);
+	});
+
 	teardown( done => {
 		// Clean up our test files
 		pfs.del(testRootPath).then(done());
