@@ -17,8 +17,9 @@ describe('CmsResourceEmptyTreeNode.info', function(): void {
 		const label = 'Register Central Management Server';
 
 		const treeNode = new CmsResourceEmptyTreeNode();
-
-		should(treeNode.nodePathValue).equal('message_accountNotSignedIn');
+		let children = await treeNode.getChildren();
+		should.equal(0, children.length);
+		should(treeNode.nodePathValue).equal('message_cmsTreeNode');
 
 		const treeItem = await treeNode.getTreeItem();
 		should(treeItem.label).equal(label);

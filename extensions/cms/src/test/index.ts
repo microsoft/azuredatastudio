@@ -6,7 +6,7 @@
 const path = require('path');
 const testRunner = require('vscode/lib/testrunner');
 
-const suite = 'Integration Azure Tests';
+const suite = 'CMS Unit Tests';
 
 const options: any = {
 	ui: 'bdd',
