@@ -19,6 +19,8 @@ import { FileOperation, FileOperationEvent, IFileStat, FileOperationResult, File
 import { NullLogService } from 'vs/platform/log/common/log';
 import { isLinux, isWindows } from 'vs/base/common/platform';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { promisify } from 'util';
+import { exec } from 'child_process';
 
 function getByName(root: IFileStat, name: string): IFileStat | null {
 	if (root.children === undefined) {
