@@ -20,22 +20,22 @@ import { IConfigurationResolverService } from 'vs/workbench/services/configurati
 export async function resolveQueryFilePath(filePath: string,
 	workspaceContextService: IWorkspaceContextService,
 	configurationResolverService: IConfigurationResolverService): Promise<string> {
-		if(!filePath || !workspaceContextService || !configurationResolverService) {
-			return filePath;
+	if (!filePath || !workspaceContextService || !configurationResolverService) {
+		return filePath;
+	}
+
+	let workspaceFolders: IWorkspaceFolder[] = workspaceContextService.getWorkspace().folders;
+	// Resolve the path using each folder in our workspace, or undefined if there aren't any
+	// (so that non-folder vars such as environment vars still resolve)
+	let resolvedFilePaths = (workspaceFolders.length > 0 ? workspaceFolders : [undefined])
+		.map(f => configurationResolverService.resolve(f, filePath));
+
+	// Just need a single query file so use the first we find that exists
+	for (const path of resolvedFilePaths) {
+		if (await pfs.exists(path)) {
+			return path;
 		}
+	}
 
-		let workspaceFolders: IWorkspaceFolder[] = workspaceContextService.getWorkspace().folders;
-		// Resolve the path using each folder in our workspace, or undefined if there aren't any
-		// (so that non-folder vars such as environment vars still resolve)
-		let resolvedFilePaths = (workspaceFolders.length > 0 ? workspaceFolders : [ undefined ])
-					.map(f => configurationResolverService.resolve(f, filePath));
-
-		// Just need a single query file so use the first we find that exists
-		for (const path of resolvedFilePaths) {
-			if(await pfs.exists(path)) {
-				return path;
-			}
-		}
-
-		throw Error(localize('insightsDidNotFindResolvedFile', 'Could not find query file at any of the following paths :\n {0}', resolvedFilePaths.join('\n')));
+	throw Error(localize('insightsDidNotFindResolvedFile', 'Could not find query file at any of the following paths :\n {0}', resolvedFilePaths.join('\n')));
 }

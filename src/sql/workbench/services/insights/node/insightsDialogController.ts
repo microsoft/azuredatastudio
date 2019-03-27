@@ -11,7 +11,7 @@ import * as Utils from 'sql/platform/connection/common/utils';
 import { IInsightsDialogModel } from 'sql/workbench/services/insights/common/insightsDialogService';
 import { error } from 'sql/base/common/log';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
-import { resolveQueryFilePath} from '../common/insightsUtils';
+import { resolveQueryFilePath } from '../common/insightsUtils';
 
 import { DbCellValue, IDbColumn, QueryExecuteSubsetResult } from 'azdata';
 
@@ -66,23 +66,25 @@ export class InsightsDialogController {
 						this._workspaceContextService,
 						this._configurationResolverService);
 				}
-				catch(e) {
+				catch (e) {
 					this._notificationService.notify({
 						severity: Severity.Error,
-						message: e});
+						message: e
+					});
 					return Promise.resolve();
 				}
 
 				try {
 					let buffer: Buffer = await pfs.readFile(filePath);
-					this.createQuery(buffer.toString(), connectionProfile).catch( e => {
+					this.createQuery(buffer.toString(), connectionProfile).catch(e => {
 						this._errorMessageService.showDialog(Severity.Error, nls.localize("insightsError", "Insights error"), e);
 					});
 				}
-				catch(e) {
+				catch (e) {
 					this._notificationService.notify({
 						severity: Severity.Error,
-						message: nls.localize("insightsFileError", "There was an error reading the query file: ") + e});
+						message: nls.localize("insightsFileError", "There was an error reading the query file: ") + e
+					});
 				}
 			} else {
 				error('Error reading details Query: ', input);
