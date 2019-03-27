@@ -238,6 +238,7 @@ export class CellModel implements ICellModel {
 			// TODO track error state for the cell
 			throw error;
 		} finally {
+			this.disposeFuture();
 			this.fireExecutionStateChanged();
 		}
 
@@ -323,8 +324,7 @@ export class CellModel implements ICellModel {
 		let output: nb.ICellOutput = msg.content as nb.ICellOutput;
 
 		if (!this._future.inProgress) {
-			this._future.dispose();
-			this._future = undefined;
+			this.disposeFuture();
 		}
 	}
 
@@ -485,5 +485,11 @@ export class CellModel implements ICellModel {
 			}
 		}
 		return endpoint;
+	}
+
+	// Dispose and set current future to undefined
+	private disposeFuture() {
+		this._future.dispose();
+		this._future = undefined;
 	}
 }
