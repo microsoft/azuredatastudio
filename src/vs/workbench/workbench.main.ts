@@ -224,8 +224,6 @@ import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardServi
 import { DashboardService } from 'sql/platform/dashboard/browser/dashboardServiceImpl';
 import { NotebookService } from 'sql/workbench/services/notebook/common/notebookServiceImpl';
 import { INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
-import { ICommandLineProcessing } from 'sql/workbench/services/commandLine/common/commandLine';
-import { CommandLineService } from 'sql/workbench/services/commandLine/common/commandLineService';
 import { OEShimService, IOEShimService } from 'sql/parts/objectExplorer/common/objectExplorerViewTreeShim';
 
 registerSingleton(IDashboardService, DashboardService);
@@ -265,7 +263,6 @@ registerSingleton(IInsightsDialogService, InsightsDialogService);
 registerSingleton(INotebookService, NotebookService);
 registerSingleton(IAccountPickerService, AccountPickerService);
 registerSingleton(IProfilerService, ProfilerService);
-registerSingleton(ICommandLineProcessing, CommandLineService);
 registerSingleton(IDacFxService, DacFxService);
 // {{SQL CARBON EDIT}} - End
 
