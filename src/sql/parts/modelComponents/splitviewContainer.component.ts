@@ -47,7 +47,6 @@ class SplitPane implements IView {
 				this.component.setProperties({
 					height: size,
 					title: this.component.title
-					// contentLef
 				});
 			} else {
 				this.component.setProperties({

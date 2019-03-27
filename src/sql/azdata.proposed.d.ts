@@ -2970,6 +2970,7 @@ declare module 'azdata' {
 		value: string;
 		width?: number;
 		cssClass?: string;
+		headerCssClass ?:string;
 		toolTip?: string;
 	}
 

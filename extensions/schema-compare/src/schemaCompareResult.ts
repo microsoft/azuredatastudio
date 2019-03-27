@@ -9,7 +9,6 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as os from 'os';
 import * as path from 'path';
-
 const localize = nls.loadMessageBundle();
 
 export class SchemaCompareResult {
@@ -20,14 +19,14 @@ export class SchemaCompareResult {
 	private splitView: azdata.SplitViewContainer;
 	private flexModel: azdata.FlexContainer;
 	private noDifferencesLabel: azdata.TextComponent;
-	private sourceDropdown: azdata.DropDownComponent;
-	private targetDropdown: azdata.DropDownComponent;
 	private sourceTargetFlexLayout: azdata.FlexContainer;
 	private switchButton: azdata.ButtonComponent;
 	private compareButton: azdata.ButtonComponent;
 	private generateScriptButton: azdata.ButtonComponent;
 	private SchemaCompareActionMap: Map<Number, string>;
 	private comparisonResult: azdata.SchemaCompareResult;
+	private sourceNameComponent: azdata.TableComponent;
+	private targetNameComponent: azdata.TableComponent;
 
 	constructor(private sourceName: string, private targetName: string, private sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, private targetEndpointInfo: azdata.SchemaCompareEndpointInfo) {
 		this.SchemaCompareActionMap = new Map<Number, string>();
@@ -52,15 +51,11 @@ export class SchemaCompareResult {
 
 			this.splitView = view.modelBuilder.splitViewContainer().component();
 
-			this.sourceDropdown = view.modelBuilder.dropDown().withProperties({
-				values: [sourceName],
-				enabled: false
-			}).component();
-
-			this.targetDropdown = view.modelBuilder.dropDown().withProperties({
-				values: [targetName],
-				enabled: false
-			}).component();
+			let sourceTargetLabels = view.modelBuilder.flexContainer()
+				.withProperties({
+					alignItems:'stretch',
+					horizontal: true
+				}).component();
 
 			this.sourceTargetFlexLayout = view.modelBuilder.flexContainer()
 				.withProperties({
@@ -83,22 +78,41 @@ export class SchemaCompareResult {
 			}]);
 
 			let sourceLabel = view.modelBuilder.text().withProperties({
-				value: localize('schemaCompare.sourceLabel', 'Source:')
+				value: localize('schemaCompare.sourceLabel', 'Source')
 			}).component();
 
 			let targetLabel = view.modelBuilder.text().withProperties({
-				value: localize('schemaCompare.targetLabel', 'Target:')
+				value: localize('schemaCompare.targetLabel', 'Target')
 			}).component();
 
 			let switchLabel = view.modelBuilder.text().withProperties({
 				value: localize('schemaCompare.switchLabel', '🡲')
 			}).component();
 
-			this.sourceTargetFlexLayout.addItem(sourceLabel, { CSSStyles: { 'width': '5%', 'margin-left': '1em' } });
-			this.sourceTargetFlexLayout.addItem(this.sourceDropdown, { CSSStyles: { 'width': '40%', 'margin': '1em' } });
-			this.sourceTargetFlexLayout.addItem(switchLabel, { CSSStyles: { 'width': '3em', 'font-size': 'larger', 'text-align-last':'center'} });
-			this.sourceTargetFlexLayout.addItem(targetLabel, { CSSStyles: { 'width': '5%', 'margin-left': '1em' } });
-			this.sourceTargetFlexLayout.addItem(this.targetDropdown, { CSSStyles: { 'width': '40%', 'margin': '1em' } });
+			this.sourceNameComponent = view.modelBuilder.table().withProperties({
+				columns: [
+					{
+						value: sourceName,
+						headerCssClass: 'no-borders',
+						toolTip: sourceName
+					},
+				]}).component();
+
+			this.targetNameComponent = view.modelBuilder.table().withProperties({
+				columns: [
+					{
+						value: targetName,
+						headerCssClass: 'no-borders',
+						toolTip: targetName
+					},
+				]}).component();
+
+			sourceTargetLabels.addItem(targetLabel, { CSSStyles: { 'width': '55%', 'margin-left': '15px', 'font-size': 'larger', 'font-weight': 'bold' } });
+			sourceTargetLabels.addItem(sourceLabel, { CSSStyles: { 'width': '45%', 'font-size': 'larger', 'font-weight': 'bold' } });
+
+			this.sourceTargetFlexLayout.addItem(this.targetNameComponent, { CSSStyles: { 'width': '45%', 'margin-left': '15px'} });
+			this.sourceTargetFlexLayout.addItem(switchLabel, { CSSStyles: { 'width': '10%', 'font-size': 'larger', 'text-align-last':'center'} });
+			this.sourceTargetFlexLayout.addItem(this.sourceNameComponent, { CSSStyles: { 'width': '45%'} });
 
 			this.loader = view.modelBuilder.loadingComponent().component();
 			this.noDifferencesLabel = view.modelBuilder.text().withProperties({
@@ -107,8 +121,9 @@ export class SchemaCompareResult {
 
 			this.flexModel = view.modelBuilder.flexContainer().component();
 			this.flexModel.addItem(toolBar.component(), { flex: 'none'});
+			this.flexModel.addItem(sourceTargetLabels, { flex: 'none' });
 			this.flexModel.addItem(this.sourceTargetFlexLayout, { flex: 'none'});
-			this.flexModel.addItem(this.loader);
+			this.flexModel.addItem(this.loader, { CSSStyles: {'margin-top': '2em'}});
 			this.flexModel.setLayout({
 				flexFlow: 'column',
 				height: '100%'
@@ -142,8 +157,9 @@ export class SchemaCompareResult {
 					width: 50
 				},
 				{
-					value: localize('schemaCompare.sourceNameColumn', 'Source Name'),
-					cssClass: 'align-with-header'
+					value: localize('schemaCompare.sourceNameColumn', 'Target Name'),
+					cssClass: 'align-with-header',
+					width: 90
 				},
 				{
 					value: localize('schemaCompare.actionColumn', 'Action'),
@@ -151,8 +167,9 @@ export class SchemaCompareResult {
 					width: 30
 				},
 				{
-					value: localize('schemaCompare.targetNameColumn', 'Target Name'),
-					cssClass: 'align-with-header'
+					value: localize('schemaCompare.targetNameColumn', 'Source Name'),
+					cssClass: 'align-with-header',
+					width: 150
 				}]
 		});
 
@@ -185,8 +202,8 @@ export class SchemaCompareResult {
 				targetText = difference.targetScript === null ? '\n' : this.getAggregatedScript(difference, false);
 
 				this.diffEditor.updateProperties({
-					contentLeft: sourceText,
-					contentRight: targetText
+					contentLeft: targetText,
+					contentRight: sourceText
 				});
 			}
 		});
@@ -211,7 +228,7 @@ export class SchemaCompareResult {
 		differences.forEach(difference => {
 			if (difference.differenceType === azdata.SchemaDifferenceType.Object) {
 				if (difference.sourceValue !== null || difference.targetValue !== null) {
-					data.push([difference.name, difference.sourceValue, this.SchemaCompareActionMap[difference.updateAction], difference.targetValue]);
+					data.push([difference.name, difference.targetValue, this.SchemaCompareActionMap[difference.updateAction], difference.sourceValue]);
 				}
 			}
 		});
@@ -236,7 +253,7 @@ export class SchemaCompareResult {
 	private reExecute() {
 		this.flexModel.removeItem(this.splitView);
 		this.flexModel.removeItem(this.noDifferencesLabel);
-		this.flexModel.addItem(this.loader);
+		this.flexModel.addItem(this.loader, { CSSStyles: {'margin-top': '2em'}});
 		this.diffEditor.updateProperties({
 			contentLeft: '\n',
 			contentRight: '\n'
@@ -312,9 +329,29 @@ export class SchemaCompareResult {
 
 		this.switchButton.onDidClick(async (click) => {
 			// switch source and target
-			[this.sourceDropdown.values, this.targetDropdown.values] = [this.targetDropdown.values, this.sourceDropdown.values];
 			[this.sourceEndpointInfo, this.targetEndpointInfo] = [this.targetEndpointInfo, this.sourceEndpointInfo];
 			[this.sourceName, this.targetName] = [this.targetName, this.sourceName];
+
+			this.sourceNameComponent.updateProperties({
+				columns: [
+					{
+						value: this.sourceName,
+						headerCssClass: 'no-borders',
+						toolTip: this.sourceName
+					},
+				]
+			});
+
+			this.targetNameComponent.updateProperties({
+				columns: [
+					{
+						value: this.targetName,
+						headerCssClass: 'no-borders',
+						toolTip: this.targetName
+					},
+				]
+			});
+
 			this.reExecute();
 		});
 	}
