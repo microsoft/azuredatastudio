@@ -8,7 +8,7 @@
 import 'mocha';
 import * as azdata from 'azdata';
 import { context } from './testContext';
-import { getDefaultTestingServer, getBdcServer, TestServerProfile } from './testConfig';
+import { getDefaultTestingServer, getBdcServer, TestServerProfile, getAzureServer } from './testConfig';
 import { connectToServer } from './utils';
 import assert = require('assert');
 
@@ -22,9 +22,14 @@ if (context.RunTest) {
 			let server = await getBdcServer();
 			await VerifyOeNode(server, 6000, expectedNodeLabel);
 		});
-		test('Standard alone instance node label test', async function () {
-			const expectedNodeLabel = ['Databases', 'Security', 'Server Objects'];
-			let server = await getDefaultTestingServer();
+		// test('Standard alone instance node label test', async function () {
+		// 	const expectedNodeLabel = ['Databases', 'Security', 'Server Objects'];
+		// 	let server = await getStandaloneServer();
+		// 	await VerifyOeNode(server, 3000, expectedNodeLabel);
+		// });
+		test('Azure SQL DB instance node label test', async function () {
+			const expectedNodeLabel = ['Databases', 'Security'];
+			let server = await getAzureServer();
 			await VerifyOeNode(server, 3000, expectedNodeLabel);
 		});
 		test('context menu test', async function () {
