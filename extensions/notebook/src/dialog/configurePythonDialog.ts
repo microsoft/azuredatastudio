@@ -24,7 +24,7 @@ export class ConfigurePythonDialog {
 	private readonly InstallButtonText = localize('configurePython.okButtonText', 'Install');
 	private readonly CancelButtonText = localize('configurePython.cancelButtonText', 'Cancel');
 	private readonly BrowseButtonText = localize('configurePython.browseButtonText', 'Change location');
-	private readonly LocationTextBoxTitle = localize('configurePython.locationTextBoxText', 'Notebook dependencies will be installed in this location');
+	private readonly LocationTextBoxTitle = localize('configurePython.locationTextBoxText', 'Python Install Location');
 	private readonly SelectFileLabel = localize('configurePython.selectFileLabel', 'Select');
 	private readonly InstallationNote = localize('configurePython.installNote', 'This installation will take some time. It is recommended to not close the application until the installation is complete.');
 	private readonly InvalidLocationMsg = localize('configurePython.invalidLocationMsg', 'The specified install location is invalid.');
