@@ -86,3 +86,7 @@
 .notebookEditor .notebook-cellTable .ui-widget-content.slick-row {
 	border-left: 1px silver dotted;
 }
+
+.notebookEditor .notebook-cellTable .slick-viewport {
+	min-height: 39px;
+}

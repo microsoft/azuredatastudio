@@ -466,7 +466,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		if (finalResult) {
 			if (errorMessages.length > 0) {
 				if (errorMessages.length > 1) {
-					errorMessages.unshift(nls.localize('nodeExpansionError', 'Mulitiple errors:'));
+					errorMessages.unshift(nls.localize('nodeExpansionError', 'Multiple errors:'));
 				}
 				errorNode.errorMessage = errorMessages.join('\n');
 				errorNode.label = errorNode.errorMessage;

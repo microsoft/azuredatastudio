@@ -109,14 +109,17 @@ export class NotebookService extends Disposable implements INotebookService {
 		super();
 		this._memento = new Memento('notebookProviders', this._storageService);
 		this._register(notebookRegistry.onNewRegistration(this.updateRegisteredProviders, this));
+		this.registerBuiltInProvider();
 		// If a provider has been already registered, the onNewRegistration event will not have a listener attached yet
 		// So, explicitly updating registered providers here.
 		if (notebookRegistry.providers.length > 0) {
 			notebookRegistry.providers.forEach(p => {
-				this.updateRegisteredProviders({id: p.provider, registration: p});
+				// Don't need to re-register SQL_NOTEBOOK_PROVIDER
+				if (p.provider !== SQL_NOTEBOOK_PROVIDER) {
+					this.updateRegisteredProviders({id: p.provider, registration: p});
+				}
 			});
 		}
-		this.registerBuiltInProvider();
 
 		if (extensionService) {
 			extensionService.whenInstalledExtensionsRegistered().then(() => {
