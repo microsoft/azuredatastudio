@@ -74,15 +74,6 @@ export default class JupyterServerInstallation {
 		}
 	}
 
-	public completeWithExistingInstall(pythonInstallationPath: string): Promise<void> {
-		this._pythonInstallationPath = pythonInstallationPath;
-		this._usingExistingPython = true;
-
-		this.configurePackagePaths();
-
-		return this.startInstallProcess();
-	}
-
 	public get installReady(): Promise<void> {
 		return this._installReady.promise;
 	}
@@ -257,9 +248,10 @@ export default class JupyterServerInstallation {
 		};
 	}
 
-	public startInstallProcess(pythonInstallationPath?: string): Promise<void> {
-		if (pythonInstallationPath) {
-			this._pythonInstallationPath = pythonInstallationPath;
+	public startInstallProcess(installSettings?: { installPath: string, existingPython: boolean }): Promise<void> {
+		if (installSettings) {
+			this._pythonInstallationPath = installSettings.installPath;
+			this._usingExistingPython = installSettings.existingPython;
 			this.configurePackagePaths();
 		}
 		let updateConfig = () => {

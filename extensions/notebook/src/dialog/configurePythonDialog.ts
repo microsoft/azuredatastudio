@@ -155,23 +155,14 @@ export class ConfigurePythonDialog {
 			return false;
 		}
 
-		if (this.existingInstallButton.checked) {
-			this.jupyterInstallation.completeWithExistingInstall(pythonLocation)
-				.then(() => {
-					this._setupComplete.resolve();
-				})
-				.catch(err => {
-					this._setupComplete.reject(utils.getErrorMessage(err));
-				});
-		} else {
-			this.jupyterInstallation.startInstallProcess(pythonLocation)
-				.then(() => {
-					this._setupComplete.resolve();
-				})
-				.catch(err => {
-					this._setupComplete.reject(utils.getErrorMessage(err));
-				});
-		}
+		this.jupyterInstallation.startInstallProcess({ installPath: pythonLocation, existingPython: !!this.existingInstallButton.checked })
+			.then(() => {
+				this._setupComplete.resolve();
+			})
+			.catch(err => {
+				this._setupComplete.reject(utils.getErrorMessage(err));
+			});
+
 		return true;
 	}
 
