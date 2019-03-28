@@ -108,6 +108,7 @@ export class JobData implements IAgentDialogData {
 			this._defaultOwner = jobDefaults.owner;
 
 			this._operators = ['', this._defaultOwner];
+			this.owner = this.owner ? this.owner : this._defaultOwner;
 		}
 
 		this._jobCompletionActionConditions = [{
@@ -130,6 +131,9 @@ export class JobData implements IAgentDialogData {
 		if (!result || !result.success) {
 			vscode.window.showErrorMessage(
 				localize('jobData.saveErrorMessage', "Job update failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
+		} else {
+			vscode.window.showInformationMessage(
+				localize('jobData.saveSucessMessage', "Job '{0}' updated successfully", jobInfo.name));
 		}
 	}
 
@@ -149,7 +153,7 @@ export class JobData implements IAgentDialogData {
 	public toAgentJobInfo(): azdata.AgentJobInfo {
 		return {
 			name: this.name,
-			owner: this.owner,
+			owner: this.owner ? this.owner : this.defaultOwner,
 			description: this.description,
 			emailLevel: this.emailLevel,
 			pageLevel: this.pageLevel,
