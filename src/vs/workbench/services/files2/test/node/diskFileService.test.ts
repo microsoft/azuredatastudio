@@ -12,7 +12,7 @@ import { getRandomTestPath } from 'vs/base/test/node/testUtils';
 import { generateUuid } from 'vs/base/common/uuid';
 import { join, basename, dirname, posix } from 'vs/base/common/path';
 import { getPathFromAmdModule } from 'vs/base/common/amd';
-import { copy, del } from 'vs/base/node/pfs';
+import { copy, del, symlink } from 'vs/base/node/pfs';
 import { URI } from 'vs/base/common/uri';
 import { existsSync, statSync, readdirSync, readFileSync } from 'fs';
 import { FileOperation, FileOperationEvent, IFileStat, FileOperationResult, FileSystemProviderCapabilities } from 'vs/platform/files/common/files';
@@ -313,11 +313,11 @@ suite('Disk File Service', () => {
 
 	test('resolveFile - folder symbolic link', async () => {
 		if (isWindows) {
-			return; // only for unix systems
+			return; // not happy
 		}
 
 		const link = URI.file(join(testDir, 'deep-link'));
-		await promisify(exec)(`ln -s deep ${basename(link.fsPath)}`, { cwd: testDir });
+		await symlink(join(testDir, 'deep'), link.fsPath);
 
 		const resolved = await service.resolveFile(link);
 		assert.equal(resolved.children!.length, 4);
@@ -327,11 +327,11 @@ suite('Disk File Service', () => {
 
 	test('resolveFile - file symbolic link', async () => {
 		if (isWindows) {
-			return; // only for unix systems
+			return; // not happy
 		}
 
 		const link = URI.file(join(testDir, 'lorem.txt-linked'));
-		await promisify(exec)(`ln -s lorem.txt ${basename(link.fsPath)}`, { cwd: testDir });
+		await symlink(join(testDir, 'lorem.txt'), link.fsPath);
 
 		const resolved = await service.resolveFile(link);
 		assert.equal(resolved.isDirectory, false);
@@ -340,10 +340,11 @@ suite('Disk File Service', () => {
 
 	test('resolveFile - invalid symbolic link does not break', async () => {
 		if (isWindows) {
-			return; // only for unix systems
+			return; // not happy
 		}
 
-		await promisify(exec)('ln -s foo bar', { cwd: testDir });
+		const link = URI.file(join(testDir, 'foo'));
+		await symlink(link.fsPath, join(testDir, 'bar'));
 
 		const resolved = await service.resolveFile(URI.file(testDir));
 		assert.equal(resolved.isDirectory, true);
@@ -488,7 +489,7 @@ suite('Disk File Service', () => {
 		assert.equal(existsSync(source.fsPath), false);
 		assert.ok(event!);
 		assert.equal(event!.resource.fsPath, source.fsPath);
-		assert.equal(event!.operation, FileOperation.MOVE);
+		assert.equal(event!.operation, FileOperation.COPY);
 		assert.equal(event!.target!.resource.fsPath, renamed.resource.fsPath);
 
 		const targetContents = readFileSync(target.fsPath);
@@ -575,7 +576,7 @@ suite('Disk File Service', () => {
 		assert.equal(existsSync(source.fsPath), false);
 		assert.ok(event!);
 		assert.equal(event!.resource.fsPath, source.fsPath);
-		assert.equal(event!.operation, FileOperation.MOVE);
+		assert.equal(event!.operation, FileOperation.COPY);
 		assert.equal(event!.target!.resource.fsPath, renamed.resource.fsPath);
 
 		const targetChildren = readdirSync(target.fsPath);
