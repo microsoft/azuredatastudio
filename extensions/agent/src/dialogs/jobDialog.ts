@@ -349,13 +349,13 @@ export class JobDialog extends AgentDialog<JobData>  {
 				}
 			});
 
-			this.deleteStepButton.onDidClick(() => {
+			this.deleteStepButton.onDidClick(async() => {
 				if (this.stepsTable.selectedRows.length === 1) {
 					let rowNumber = this.stepsTable.selectedRows[0];
-					AgentUtils.getAgentService().then((agentService) => {
+					AgentUtils.getAgentService().then(async (agentService) => {
 						let stepData = this.steps[rowNumber];
 						if (stepData.jobId) {
-							agentService.deleteJobStep(this.ownerUri, stepData).then((result) => {
+							await agentService.deleteJobStep(this.ownerUri, stepData).then((result) => {
 								if (result && result.success) {
 									this.steps.splice(rowNumber, 1);
 									let data = this.convertStepsToData(this.steps);
