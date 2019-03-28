@@ -12,12 +12,13 @@ import * as vscode from 'vscode';
 import { IConfig, ServerProvider } from 'service-downloader';
 import { Telemetry } from './telemetry';
 import * as utils from './utils';
-import { ChildProcess, exec } from 'child_process';
+import { ChildProcess, exec, ExecException } from 'child_process';
+import { stringify } from 'querystring';
 
 const baseConfig = require('./config.json');
 const localize = nls.loadMessageBundle();
 let exePath: string;
-let processes: Map<number, ChildProcess> = new Map<number, ChildProcess>();
+let runningProcesses: Map<number, ChildProcess> = new Map<number, ChildProcess>();
 
 // Params to pass to SsmsMin.exe, only an action and server are required - the rest are optional based on the
 // action used. Exported for use in testing.
@@ -64,9 +65,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 			});
 		}
 		catch (err) {
-			Telemetry.sendTelemetryEvent('startup/ExtensionInitializationFailed', {
-				error: err
-			});
+			Telemetry.sendTelemetryEvent('startup/ExtensionInitializationFailed');
+			console.error(`Error Initializing Admin Tool Extension for Windows - ${err}`);
 		}
 	}
 }
@@ -75,7 +75,7 @@ export async function deactivate(): Promise<void> {
 	// If the extension is being deactivated we want to kill all processes that are still currently
 	// running otherwise they will continue to run as orphan processes. We use taskkill here in case
 	// they started off child processes of their own
-	processes.forEach(p => exec('taskkill /pid ' + p.pid + ' /T /F'));
+	runningProcesses.forEach(p => exec('taskkill /pid ' + p.pid + ' /T /F'));
 }
 
 /**
@@ -119,13 +119,17 @@ function launchSsmsDialog(action: string, connectionProfile: azdata.IConnectionP
 	var proc: ChildProcess = exec(
 	   /*command*/`"${exePath}" ${args}`,
 	   /*options*/undefined,
-		(code, stdout, stderr, pid = proc.pid) => {
-			processes.delete(pid);
+		(execException, stdout, stderr) => {
+			// Process has exited so remove from map of running processes
+			runningProcesses.delete(proc.pid);
 			Telemetry.sendTelemetryEvent('LaunchSsmsDialogResult', {
 				'action': params.action,
-				'returnCode': code.toString(),
-				'error': stderr.toString()
+				'returnCode': execException && execException.code ? execException.code.toString() : '0'
 			});
+			let err = stderr.toString();
+			if (err !== '') {
+				console.warn(`Error calling SsmsMin with args '${args}' - ${err}`);
+			}
 		});
 
 	// If we're not using AAD the tool prompts for a password on stdin
@@ -134,7 +138,7 @@ function launchSsmsDialog(action: string, connectionProfile: azdata.IConnectionP
 	}
 
 	// Save the process into our map so we can make sure to stop them if we exit before shutting down
-	processes.set(proc.pid, proc);
+	runningProcesses.set(proc.pid, proc);
 }
 
 /**
