@@ -20,6 +20,7 @@ if (!context.RunTest) {
 		});
 		test('test setup verify BDC instance variables', async function () {
 			console.log(`BDC_BACKEND_HOSTNAME: '${process.env.BDC_BACKEND_HOSTNAME}', BDC_BACKEND_USERNAME: '${process.env.BDC_BACKEND_USERNAME}'`);
+			console.log(`PYTHON_TEST_PATH: '${process.env.PYTHON_TEST_PATH}'`);
 			assert(process.env.BDC_BACKEND_HOSTNAME !== undefined &&
 				process.env.BDC_BACKEND_USERNAME !== undefined &&
 				process.env.BDC_BACKEND_PWD !== undefined &&
