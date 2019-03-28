@@ -260,7 +260,7 @@ export default class JupyterServerInstallation {
 							updateConfig();
 						})
 						.catch(err => {
-							let errorMsg = msgDependenciesInstallationFailed(err);
+							let errorMsg = msgDependenciesInstallationFailed(utils.getErrorMessage(err));
 							op.updateStatus(azdata.TaskStatus.Failed, errorMsg);
 							this.apiWrapper.showErrorMessage(errorMsg);
 							this._installReady.reject(errorMsg);
