@@ -481,17 +481,25 @@ export class EditProxyAction extends Action {
 	public static LABEL = nls.localize('jobaction.editProxy', "Edit Proxy");
 
 	constructor(
-		@ICommandService private _commandService: ICommandService
+		@ICommandService private _commandService: ICommandService,
+		@IJobManagementService private _jobManagementService: IJobManagementService
 	) {
 		super(EditProxyAction.ID, EditProxyAction.LABEL);
 	}
 
 	public run(actionInfo: IJobActionInfo): Promise<boolean> {
-		this._commandService.executeCommand(
-			'agent.openProxyDialog',
-			actionInfo.ownerUri,
-			actionInfo.targetObject);
-		return Promise.resolve(true);
+		return Promise.resolve(this._jobManagementService.getCredentials(actionInfo.ownerUri).then((result) => {
+			if (result && result.credentials) {
+				this._commandService.executeCommand(
+					'agent.openProxyDialog',
+					actionInfo.ownerUri,
+					actionInfo.targetObject,
+					result.credentials);
+				return true;
+			} else {
+				return false;
+			}
+		}));
 	}
 }
 
