@@ -24,12 +24,12 @@ if (context.RunTest) {
 			const expectedOutput0 = '(1 row affected)';
 			let cellOutputs = notebook.document.cells[0].contents.outputs;
 			console.log('Got cell outputs');
-			assert(cellOutputs.length === 3, `Expected length: 3, Acutal: '${cellOutputs.length}'`);
+			assert(cellOutputs.length === 3, `Expected length: 3, Acutal: ${cellOutputs.length}`);
 			let actualOutput0 = (<azdata.nb.IDisplayData>cellOutputs[0]).data['text/html'];
 			console.log('Got first output');
-			assert(actualOutput0 === expectedOutput0, `Expected row count: '${expectedOutput0}', Acutal: '${actualOutput0}'`);
+			assert(actualOutput0 === expectedOutput0, `Expected row count: ${expectedOutput0}, Acutal: ${actualOutput0}`);
 			let actualOutput2 = (<azdata.nb.IExecuteResult>cellOutputs[2]).data['application/vnd.dataresource+json'].data[0];
-			assert(actualOutput2[0] === '1', `Expected result: 1, Acutal: '${actualOutput2[0]}'`);
+			assert(actualOutput2[0] === '1', `Expected result: 1, Acutal: ${actualOutput2[0]}`);
 			console.log('Sql NB done');
 		});
 
@@ -39,7 +39,7 @@ if (context.RunTest) {
 		// 	let cellOutputs = notebook.document.cells[0].contents.outputs;
 		// 	console.log('Got cell outputs');
 		// 	let result = (<azdata.nb.IExecuteResult>cellOutputs[0]).data['text/plain'];
-		// 	assert(result === '2', `Expected: 2, Acutal: '${result}'`);
+		// 	assert(result === '2', `Expected: 2, Acutal: ${result}`);
 		// 	console.log('Python3 NB done');
 		// });
 
@@ -48,7 +48,7 @@ if (context.RunTest) {
 		// 	let notebook = await openNotebook(pySparkNotebookContent, pySpark3KernelMetadata);
 		// 	let cellOutputs = notebook.document.cells[0].contents.outputs;
 		// 	let sparkResult = (<azdata.nb.IStreamResult>cellOutputs[3]).text;
-		// 	assert(sparkResult === '2', `Expected: 2, Acutal: '${sparkResult}'`);
+		// 	assert(sparkResult === '2', `Expected: 2, Acutal: ${sparkResult}`);
 		// });
 	});
 }
