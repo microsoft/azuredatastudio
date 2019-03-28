@@ -3576,6 +3576,31 @@ declare module 'azdata' {
 	 * Namespace for interacting with query editor
 	*/
 	export namespace queryeditor {
+		export type QueryEvent =
+			| 'queryStart'
+			| 'queryStop'
+			| 'executionPlan';
+
+		export interface QueryEventListener {
+			onQueryEvent(type: QueryEvent, document: queryeditor.QueryDocument, args: any);
+		}
+
+		// new extensibility interfaces
+		export interface QueryDocument {
+			providerId: string;
+
+			uri: string;
+
+			// get the document's execution options
+			getOptions(): Map<string, string>;
+
+			// set the document's execution options
+			setOptions(options: Map<string, string>): void;
+
+			// tab content is build using the modelview UI builder APIs
+			// probably should rename DialogTab class since it is useful outside dialogs
+			createQueryTab(tab: window.DialogTab): void;
+		}
 
 		/**
 		 * Make connection for the query editor
@@ -3588,7 +3613,14 @@ declare module 'azdata' {
 		 * Run query if it is a query editor and it is already opened.
 		 * @param {string} fileUri file URI for the query editor
 		 */
-		export function runQuery(fileUri: string): void;
+		export function runQuery(fileUri: string, options?: Map<string, string>): void;
+
+		/**
+		 * Register a query event listener
+		 */
+		export function registerQueryEventListener(listener: queryeditor.QueryEventListener): void;
+
+		export function getQueryDocument(fileUri: string): queryeditor.QueryDocument
 	}
 
 	/**
