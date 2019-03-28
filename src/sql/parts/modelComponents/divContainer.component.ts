@@ -9,7 +9,7 @@ import {
 	ViewChild, ViewChildren, ElementRef, Injector, OnDestroy, QueryList,
 } from '@angular/core';
 
-import { IComponent, IComponentDescriptor, IModelStore } from 'sql/parts/modelComponents/interfaces';
+import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
 import * as azdata from 'azdata';
 
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
@@ -24,7 +24,7 @@ class DivItem {
 
 @Component({
 	template: `
-		<div #divContainer *ngIf="items" class="divContainer" [style.height]="height" [style.width]="width">
+		<div #divContainer *ngIf="items" class="divContainer" [style.height]="height" [style.width]="width"  (click)="onClick()">
 			<div *ngFor="let item of items" [style.order]="getItemOrder(item)" [ngStyle]="getItemStyles(item)">
 				<model-component-wrapper [descriptor]="item.descriptor" [modelStore]="modelStore">
 				</model-component-wrapper>
@@ -76,15 +76,22 @@ export default class DivContainer extends ContainerBase<azdata.DivItemLayout> im
 	private updateOverflowY() {
 		this._overflowY = this.overflowY;
 		if (this._overflowY) {
-			let element = <HTMLElement> this.divContainer.nativeElement;
+			let element = <HTMLElement>this.divContainer.nativeElement;
 			element.style.overflowY = this._overflowY;
 		}
 	}
 
 	private updateScroll() {
-		let element = <HTMLElement> this.divContainer.nativeElement;
+		let element = <HTMLElement>this.divContainer.nativeElement;
 		element.scrollTop = element.scrollTop - this.yOffsetChange;
 		element.dispatchEvent(new Event('scroll'));
+	}
+
+	private onClick() {
+		this.fireEvent({
+			eventType: ComponentEventType.onDidClick,
+			args: undefined
+		});
 	}
 
 	// CSS-bound properties

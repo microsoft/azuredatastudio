@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { TargetClusterType, ClusterPorts, ClusterType, ContainerRegistryInfo, TargetClusterTypeInfo, ToolInfo, ToolInstallationStatus } from '../../interfaces';
+import { TargetClusterType, ClusterPorts, ClusterType, ContainerRegistryInfo, TargetClusterTypeInfo, ToolInfo, ToolInstallationStatus, ClusterProfile } from '../../interfaces';
 import { getContexts, KubectlContext, setContext, inferCurrentClusterType } from '../../kubectl/kubectlUtils';
 import { Kubectl } from '../../kubectl/kubectl';
 import { Scriptable, ScriptingDictionary } from '../../scripting/scripting';
@@ -158,6 +158,8 @@ export class CreateClusterModel implements Scriptable {
 
 	public containerRegistryPassword: string;
 
+	public profile: ClusterProfile;
+
 	public async getTargetClusterPlatform(targetContextName: string): Promise<string> {
 		await setContext(this._kubectl, targetContextName);
 		let clusterType = await inferCurrentClusterType(this._kubectl);
@@ -208,5 +210,90 @@ export class CreateClusterModel implements Scriptable {
 
 	public getTargetKubectlContext(): KubectlContext {
 		return this.selectedCluster;
+	}
+
+	public getProfiles(): Thenable<ClusterProfile[]> {
+		let promise = new Promise<ClusterProfile[]>(resolve => {
+			setTimeout(() => {
+				let profiles: ClusterProfile[] = [];
+				profiles.push({
+					name: 'Basic',
+					pools: [
+						{
+							name: 'SQL Server master',
+							scale: 1
+						},
+						{
+							name: 'Compute pool',
+							scale: 1
+						},
+						{
+							name: 'Data pool',
+							scale: 1
+						},
+						{
+							name: 'Storage pool',
+							scale: 1
+						},
+						{
+							name: 'Spark pool',
+							scale: 1
+						},
+					]
+				});
+				profiles.push({
+					name: 'Standard',
+					pools: [
+						{
+							name: 'SQL Server master',
+							scale: 3
+						},
+						{
+							name: 'Compute pool',
+							scale: 3
+						},
+						{
+							name: 'Data pool',
+							scale: 2
+						},
+						{
+							name: 'Storage pool',
+							scale: 2
+						},
+						{
+							name: 'Spark pool',
+							scale: 2
+						},
+					]
+				});
+				profiles.push({
+					name: 'Premium',
+					pools: [
+						{
+							name: 'SQL Server master',
+							scale: 5
+						},
+						{
+							name: 'Compute pool',
+							scale: 7
+						},
+						{
+							name: 'Data pool',
+							scale: 7
+						},
+						{
+							name: 'Storage pool',
+							scale: 7
+						},
+						{
+							name: 'Spark pool',
+							scale: 4
+						},
+					]
+				});
+				resolve(profiles);
+			}, 2000);
+		});
+		return promise;
 	}
 }

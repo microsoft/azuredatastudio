@@ -81,3 +81,13 @@ export enum ClusterType {
 	Kubernetes,
 	Other
 }
+
+export interface ClusterProfile {
+	name: string;
+	pools: PoolConfiguration[];
+}
+
+export interface PoolConfiguration {
+	name: string;
+	scale: number;
+}

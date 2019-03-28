@@ -2760,6 +2760,10 @@ declare module 'azdata' {
 	}
 
 	export interface DivContainer extends Container<DivLayout, DivItemLayout>, DivContainerProperties {
+		/**
+ 		 * An event called when the div is clicked
+ 		 */
+		onDidClick: vscode.Event<any>;
 	}
 
 	export interface FlexContainer extends Container<FlexLayout, FlexItemLayout> {
