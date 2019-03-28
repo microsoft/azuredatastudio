@@ -184,11 +184,15 @@ export class TabbedPanel extends Disposable implements IThemable {
 
 	public removeTab(tab: PanelTabIdentifier) {
 		let actualTab = this._tabMap.get(tab);
-		if (actualTab.view.remove) {
+		if (actualTab.view && actualTab.view.remove) {
 			actualTab.view.remove();
 		}
-		actualTab.header.remove();
-		actualTab.body.remove();
+		if (actualTab.header && actualTab.header.remove) {
+			actualTab.header.remove();
+		}
+		if (actualTab.body && actualTab.body.remove) {
+			actualTab.body.remove();
+		}
 		dispose(actualTab.disposables);
 		this._tabMap.delete(tab);
 		if (this._shownTab === tab) {
