@@ -42,7 +42,7 @@ export interface ITextEditOperation {
 export interface IEditData {
 	documentVersionId: number;
 	edits: ITextEditOperation[];
-	setEndOfLine: EndOfLine | undefined;
+	setEndOfLine: EndOfLine;
 	undoStopBefore: boolean;
 	undoStopAfter: boolean;
 }
@@ -52,7 +52,7 @@ export class TextEditorEdit {
 	private readonly _document: vscode.TextDocument;
 	private readonly _documentVersionId: number;
 	private _collectedEdits: ITextEditOperation[];
-	private _setEndOfLine: EndOfLine | undefined;
+	private _setEndOfLine: EndOfLine;
 	private readonly _undoStopBefore: boolean;
 	private readonly _undoStopAfter: boolean;
 
@@ -60,7 +60,7 @@ export class TextEditorEdit {
 		this._document = document;
 		this._documentVersionId = document.version;
 		this._collectedEdits = [];
-		this._setEndOfLine = undefined;
+		this._setEndOfLine = 0;
 		this._undoStopBefore = options.undoStopBefore;
 		this._undoStopAfter = options.undoStopAfter;
 	}
@@ -607,7 +607,7 @@ export class ExtHostTextEditor implements vscode.TextEditor {
 		});
 
 		return this._proxy.$tryApplyEdits(this._id, editData.documentVersionId, edits, {
-			setEndOfLine: typeof editData.setEndOfLine === 'number' ? TypeConverters.EndOfLine.from(editData.setEndOfLine) : undefined,
+			setEndOfLine: editData.setEndOfLine && TypeConverters.EndOfLine.from(editData.setEndOfLine),
 			undoStopBefore: editData.undoStopBefore,
 			undoStopAfter: editData.undoStopAfter
 		});

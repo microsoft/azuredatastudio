@@ -65,7 +65,6 @@ const hasOwnProperty = Object.hasOwnProperty;
 
 export abstract class CommonEditorConfiguration extends Disposable implements editorCommon.IConfiguration {
 
-	public readonly isSimpleWidget: boolean;
 	protected _rawOptions: editorOptions.IEditorOptions;
 	protected _validatedOptions: editorOptions.IValidatedEditorOptions;
 	public editor: editorOptions.InternalEditorOptions;
@@ -75,10 +74,8 @@ export abstract class CommonEditorConfiguration extends Disposable implements ed
 	private _onDidChange = this._register(new Emitter<editorOptions.IConfigurationChangedEvent>());
 	public readonly onDidChange: Event<editorOptions.IConfigurationChangedEvent> = this._onDidChange.event;
 
-	constructor(isSimpleWidget: boolean, options: editorOptions.IEditorOptions) {
+	constructor(options: editorOptions.IEditorOptions) {
 		super();
-
-		this.isSimpleWidget = isSimpleWidget;
 
 		// Do a "deep clone of sorts" on the incoming options
 		this._rawOptions = objects.mixin({}, options || {});
@@ -125,7 +122,7 @@ export abstract class CommonEditorConfiguration extends Disposable implements ed
 	private _computeInternalOptions(): editorOptions.InternalEditorOptions {
 		const opts = this._validatedOptions;
 		const partialEnv = this._getEnvConfiguration();
-		const bareFontInfo = BareFontInfo.createFromRawSettings(this._rawOptions, partialEnv.zoomLevel, this.isSimpleWidget);
+		const bareFontInfo = BareFontInfo.createFromRawSettings(this._rawOptions, partialEnv.zoomLevel);
 		const env: editorOptions.IEnvironmentalOptions = {
 			outerWidth: partialEnv.outerWidth,
 			outerHeight: partialEnv.outerHeight,
@@ -691,8 +688,8 @@ const editorConfiguration: IConfigurationNode = {
 			type: 'number',
 			default: EDITOR_DEFAULTS.contribInfo.suggest.maxVisibleSuggestions,
 			minimum: 1,
-			maximum: 15,
-			description: nls.localize('suggest.maxVisibleSuggestions', "Controls how many suggestions IntelliSense will show before showing a scrollbar (maximum 15).")
+			maximum: 12,
+			description: nls.localize('suggest.maxVisibleSuggestions', "Controls how many suggestions IntelliSense will show before showing a scrollbar.")
 		},
 		'editor.suggest.filteredTypes': {
 			type: 'object',
@@ -831,15 +828,15 @@ const editorConfiguration: IConfigurationNode = {
 				},
 			}
 		},
-		'editor.gotoLocation.multiple': {
-			description: nls.localize('editor.gotoLocation.multiple', "Controls the behavior of 'Go To' commands, like Go To Definition, when multiple target locations exist."),
+		'editor.gotoLocation.many': {
+			description: nls.localize('editor.gotoLocation.many', "Controls the behaviour of 'go to'-commands, like go to definition, when multiple target locations exist."),
 			type: 'string',
-			enum: ['peek', 'gotoAndPeek', 'goto'],
-			default: EDITOR_DEFAULTS.contribInfo.gotoLocation.multiple,
+			enum: ['peek', 'revealAndPeek', 'reveal'],
+			default: 'peek',
 			enumDescriptions: [
-				nls.localize('editor.gotoLocation.multiple.peek', 'Show peek view of the results (default)'),
-				nls.localize('editor.gotoLocation.multiple.gotoAndPeek', 'Go to the primary result and show a peek view'),
-				nls.localize('editor.gotoLocation.multiple.goto', 'Go to the primary result and ignore others')
+				nls.localize('editor.gotoLocation.many.peek', 'Show peek view of the results at the request location'),
+				nls.localize('editor.gotoLocation.many.revealAndPeek', 'Reveal the first result and show peek view at its location'),
+				nls.localize('editor.gotoLocation.many.reveal', 'Reveal the first result and ignore others')
 			]
 		},
 		'editor.selectionHighlight': {

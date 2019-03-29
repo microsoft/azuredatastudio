@@ -11,7 +11,7 @@ const withDefaults = require('../../shared.webpack.config');
 const path = require('path');
 var webpack = require('webpack');
 
-const config = withDefaults({
+module.exports = withDefaults({
 	context: path.join(__dirname),
 	entry: {
 		extension: './src/jsonServerMain.ts',
@@ -19,10 +19,8 @@ const config = withDefaults({
 	output: {
 		filename: 'jsonServerMain.js',
 		path: path.join(__dirname, 'dist')
-	}
+	},
+	plugins: [
+		new webpack.IgnorePlugin(/vertx/) // request-light dependendeny
+	]
 });
-
-// add plugin, don't replace inherited
-config.plugins.push(new webpack.IgnorePlugin(/vertx/)); // request-light dependency
-
-module.exports = config;

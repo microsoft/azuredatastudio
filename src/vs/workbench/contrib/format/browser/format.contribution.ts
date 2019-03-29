@@ -3,5 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import 'vs/css!./media/format.contribution';
 import './formatActionsMultiple';
 import './formatActionsNone';

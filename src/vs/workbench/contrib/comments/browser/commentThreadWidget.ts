@@ -199,27 +199,25 @@ export class ReviewZoneWidget extends ZoneWidget implements ICommentThreadWidget
 		this._actionbarWidget = new ActionBar(actionsContainer, {});
 		this._disposables.push(this._actionbarWidget);
 
-		this._collapseAction = new Action('review.expand', nls.localize('label.collapse', "Collapse"), COLLAPSE_ACTION_CLASS, true, () => this.collapse());
-
-		this._actionbarWidget.push(this._collapseAction, { label: false, icon: true });
-	}
-
-	public collapse(): Promise<void> {
-		if (this._commentThread.comments.length === 0) {
-			if ((this._commentThread as modes.CommentThread2).commentThreadHandle === undefined) {
-				this.dispose();
-				return Promise.resolve();
-			} else {
-				const deleteCommand = (this._commentThread as modes.CommentThread2).deleteCommand;
-				if (deleteCommand) {
-					return this.commandService.executeCommand(deleteCommand.id, ...(deleteCommand.arguments || []));
+		this._collapseAction = new Action('review.expand', nls.localize('label.collapse', "Collapse"), COLLAPSE_ACTION_CLASS, true, () => {
+			if (this._commentThread.comments.length === 0) {
+				if ((this._commentThread as modes.CommentThread2).commentThreadHandle === undefined) {
+					this.dispose();
+					return Promise.resolve();
+				} else {
+					const deleteCommand = (this._commentThread as modes.CommentThread2).deleteCommand;
+					if (deleteCommand) {
+						return this.commandService.executeCommand(deleteCommand.id, ...(deleteCommand.arguments || []));
+					}
 				}
 			}
-		}
 
-		this._isCollapsed = true;
-		this.hide();
-		return Promise.resolve();
+			this._isCollapsed = true;
+			this.hide();
+			return Promise.resolve();
+		});
+
+		this._actionbarWidget.push(this._collapseAction, { label: false, icon: true });
 	}
 
 	public getGlyphPosition(): number {
@@ -293,10 +291,8 @@ export class ReviewZoneWidget extends ZoneWidget implements ICommentThreadWidget
 
 		// Move comment glyph widget and show position if the line has changed.
 		const lineNumber = this._commentThread.range.startLineNumber;
-		let shouldMoveWidget = false;
 		if (this._commentGlyph) {
 			if (this._commentGlyph.getPosition().position!.lineNumber !== lineNumber) {
-				shouldMoveWidget = true;
 				this._commentGlyph.setLineNumber(lineNumber);
 			}
 		}
@@ -305,7 +301,7 @@ export class ReviewZoneWidget extends ZoneWidget implements ICommentThreadWidget
 			this.createReplyButton();
 		}
 
-		if (shouldMoveWidget && !this._isCollapsed) {
+		if (!this._isCollapsed) {
 			this.show({ lineNumber, column: 1 }, 2);
 		}
 	}
@@ -323,11 +319,11 @@ export class ReviewZoneWidget extends ZoneWidget implements ICommentThreadWidget
 	}
 
 	protected _onWidth(widthInPixel: number): void {
-		this._commentEditor.layout({ height: 5 * 18, width: widthInPixel - 54 /* margin 20px * 10 + scrollbar 14px*/ });
+		this._commentEditor.layout({ height: (this._commentEditor.hasWidgetFocus() ? 5 : 1) * 18, width: widthInPixel - 54 /* margin 20px * 10 + scrollbar 14px*/ });
 	}
 
 	protected _doLayout(heightInPixel: number, widthInPixel: number): void {
-		this._commentEditor.layout({ height: 5 * 18, width: widthInPixel - 54 /* margin 20px * 10 + scrollbar 14px*/ });
+		this._commentEditor.layout({ height: (this._commentEditor.hasWidgetFocus() ? 5 : 1) * 18, width: widthInPixel - 54 /* margin 20px * 10 + scrollbar 14px*/ });
 	}
 
 	display(lineNumber: number) {
@@ -455,15 +451,13 @@ export class ReviewZoneWidget extends ZoneWidget implements ICommentThreadWidget
 			this._disposables.push((this._commentThread as modes.CommentThread2).onDidChangeRange(range => {
 				// Move comment glyph widget and show position if the line has changed.
 				const lineNumber = this._commentThread.range.startLineNumber;
-				let shouldMoveWidget = false;
 				if (this._commentGlyph) {
 					if (this._commentGlyph.getPosition().position!.lineNumber !== lineNumber) {
-						shouldMoveWidget = true;
 						this._commentGlyph.setLineNumber(lineNumber);
 					}
 				}
 
-				if (shouldMoveWidget && !this._isCollapsed) {
+				if (!this._isCollapsed) {
 					this.show({ lineNumber, column: 1 }, 2);
 				}
 			}));
@@ -1003,8 +997,6 @@ export class ReviewZoneWidget extends ZoneWidget implements ICommentThreadWidget
 
 	hide() {
 		this._isCollapsed = true;
-		// Focus the container so that the comment editor will be blurred before it is hidden
-		this.editor.focus();
 		super.hide();
 	}
 

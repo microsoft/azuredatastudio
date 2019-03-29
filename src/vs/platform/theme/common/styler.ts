@@ -334,14 +334,12 @@ export interface IDialogStyleOverrides extends IButtonStyleOverrides {
 	dialogForeground?: ColorIdentifier;
 	dialogBackground?: ColorIdentifier;
 	dialogShadow?: ColorIdentifier;
-	dialogBorder?: ColorIdentifier;
 }
 
 export const defaultDialogStyles = <IDialogStyleOverrides>{
 	dialogBackground: editorWidgetBackground,
 	dialogForeground: foreground,
 	dialogShadow: widgetShadow,
-	dialogBorder: contrastBorder,
 	buttonForeground: buttonForeground,
 	buttonBackground: buttonBackground,
 	buttonHoverBackground: buttonHoverBackground,

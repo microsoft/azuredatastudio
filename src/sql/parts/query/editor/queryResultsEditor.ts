@@ -165,8 +165,4 @@ export class QueryResultsEditor extends BaseEditor {
 	public showQueryPlan(xml: string) {
 		this.resultsView.showPlan(xml);
 	}
-
-	public registerQueryModelViewTab(title: string, componentId: string): void {
-		this.resultsView.registerQueryModelViewTab(title, componentId);
-	}
 }

@@ -222,8 +222,7 @@ export class FilesRenderer implements ITreeRenderer<ExplorerItem, FuzzyScore, IF
 			const value = inputBox.value;
 			dispose(toDispose);
 			container.removeChild(label.element);
-			// Timeout: once done rendering only then re-render #70902
-			setTimeout(() => editableData.onFinish(value, success), 0);
+			editableData.onFinish(value, success);
 		});
 
 		let ignoreDisposeAndBlur = true;
@@ -253,7 +252,7 @@ export class FilesRenderer implements ITreeRenderer<ExplorerItem, FuzzyScore, IF
 		return toDisposable(() => {
 			if (!ignoreDisposeAndBlur) {
 				blurDisposable.dispose();
-				done(false);
+				done(inputBox.isInputValid());
 			}
 		});
 	}
@@ -782,7 +781,7 @@ export class FileDragAndDrop implements ITreeDragAndDrop<ExplorerItem> {
 				rootsToMove.push(data);
 			}
 		}
-		if (targetIndex === undefined) {
+		if (!targetIndex) {
 			targetIndex = workspaceCreationData.length;
 		}
 
@@ -805,10 +804,6 @@ export class FileDragAndDrop implements ITreeDragAndDrop<ExplorerItem> {
 
 		// Otherwise move
 		const targetResource = joinPath(target.resource, source.name);
-		if (source.isReadonly) {
-			// Do not allow moving readonly items
-			return Promise.resolve();
-		}
 
 		return this.textFileService.move(source.resource, targetResource).then(undefined, error => {
 

@@ -206,7 +206,7 @@ export class FileService2 extends Disposable implements IFileService {
 		});
 	}
 
-	private async toFileStat(provider: IFileSystemProvider, resource: URI, stat: IStat | { type: FileType } & Partial<IStat>, siblings: number | undefined, resolveMetadata: boolean, recurse: (stat: IFileStat, siblings?: number) => boolean): Promise<IFileStat> {
+	private async toFileStat(provider: IFileSystemProvider, resource: URI, stat: IStat, siblings: number | undefined, resolveMetadata: boolean, recurse: (stat: IFileStat, siblings?: number) => boolean): Promise<IFileStat> {
 
 		// convert to file stat
 		const fileStat: IFileStat = {
@@ -355,11 +355,11 @@ export class FileService2 extends Disposable implements IFileService {
 		const targetProvider = this.throwIfFileSystemIsReadonly(await this.withProvider(target));
 
 		// move
-		const mode = await this.doMoveCopy(sourceProvider, source, targetProvider, target, 'move', overwrite);
+		await this.doMoveCopy(sourceProvider, source, targetProvider, target, 'move', overwrite);
 
 		// resolve and send events
 		const fileStat = await this.resolveFile(target, { resolveMetadata: true });
-		this._onAfterOperation.fire(new FileOperationEvent(source, mode === 'move' ? FileOperation.MOVE : FileOperation.COPY, fileStat));
+		this._onAfterOperation.fire(new FileOperationEvent(source, FileOperation.MOVE, fileStat));
 
 		return fileStat;
 	}
@@ -369,16 +369,16 @@ export class FileService2 extends Disposable implements IFileService {
 		const targetProvider = this.throwIfFileSystemIsReadonly(await this.withProvider(target));
 
 		// copy
-		const mode = await this.doMoveCopy(sourceProvider, source, targetProvider, target, 'copy', overwrite);
+		await this.doMoveCopy(sourceProvider, source, targetProvider, target, 'copy', overwrite);
 
 		// resolve and send events
 		const fileStat = await this.resolveFile(target, { resolveMetadata: true });
-		this._onAfterOperation.fire(new FileOperationEvent(source, mode === 'copy' ? FileOperation.COPY : FileOperation.MOVE, fileStat));
+		this._onAfterOperation.fire(new FileOperationEvent(source, FileOperation.COPY, fileStat));
 
 		return fileStat;
 	}
 
-	private async doMoveCopy(sourceProvider: IFileSystemProvider, source: URI, targetProvider: IFileSystemProvider, target: URI, mode: 'move' | 'copy', overwrite?: boolean): Promise<'move' | 'copy'> {
+	private async doMoveCopy(sourceProvider: IFileSystemProvider, source: URI, targetProvider: IFileSystemProvider, target: URI, mode: 'move' | 'copy', overwrite?: boolean): Promise<void> {
 
 		// validation
 		const { exists, isCaseChange } = await this.doValidateMoveCopy(sourceProvider, source, targetProvider, target, overwrite);
@@ -396,7 +396,7 @@ export class FileService2 extends Disposable implements IFileService {
 
 			// same provider with fast copy: leverage copy() functionality
 			if (sourceProvider === targetProvider && hasFileFolderCopyCapability(sourceProvider)) {
-				return sourceProvider.copy(source, target, { overwrite: !!overwrite }).then(() => mode);
+				return sourceProvider.copy(source, target, { overwrite: !!overwrite });
 			}
 
 			// otherwise, ensure we got the capabilities to do this
@@ -411,9 +411,9 @@ export class FileService2 extends Disposable implements IFileService {
 			// traverse the source if it is a folder and not a file
 			const sourceFile = await this.resolveFile(source);
 			if (sourceFile.isDirectory) {
-				return this.doCopyFolder(sourceProvider, sourceFile, targetProvider, target, overwrite).then(() => mode);
+				return this.doCopyFolder(sourceProvider, sourceFile, targetProvider, target, overwrite);
 			} else {
-				return this.doCopyFile(sourceProvider, source, targetProvider, target, overwrite).then(() => mode);
+				return this.doCopyFile(sourceProvider, source, targetProvider, target, overwrite);
 			}
 		}
 
@@ -422,14 +422,14 @@ export class FileService2 extends Disposable implements IFileService {
 
 			// same provider: leverage rename() functionality
 			if (sourceProvider === targetProvider) {
-				return sourceProvider.rename(source, target, { overwrite: !!overwrite }).then(() => mode);
+				return sourceProvider.rename(source, target, { overwrite: !!overwrite });
 			}
 
 			// across providers: copy to target & delete at source
 			else {
 				await this.doMoveCopy(sourceProvider, source, targetProvider, target, 'copy', overwrite);
 
-				return this.del(source, { recursive: true }).then(() => 'copy' as 'move' | 'copy');
+				return this.del(source, { recursive: true });
 			}
 		}
 	}

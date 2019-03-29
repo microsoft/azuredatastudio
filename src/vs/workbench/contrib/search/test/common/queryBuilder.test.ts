@@ -668,14 +668,6 @@ suite('QueryBuilder', () => {
 					}
 				],
 				[
-					'..',
-					{
-						searchPaths: [{
-							searchPath: getUri('/foo')
-						}]
-					}
-				],
-				[
 					'..\\bar',
 					{
 						searchPaths: [{

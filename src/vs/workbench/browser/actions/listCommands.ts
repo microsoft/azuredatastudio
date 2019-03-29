@@ -28,7 +28,7 @@ function ensureDOMFocus(widget: ListWidget | undefined): void {
 	}
 }
 
-function focusDown(accessor: ServicesAccessor, arg2?: number, loop: boolean = false): void {
+function focusDown(accessor: ServicesAccessor, arg2?: number, loop: boolean = true): void {
 	const focused = accessor.get(IListService).lastFocusedList;
 	const count = typeof arg2 === 'number' ? arg2 : 1;
 
@@ -165,7 +165,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	}
 });
 
-function focusUp(accessor: ServicesAccessor, arg2?: number, loop: boolean = false): void {
+function focusUp(accessor: ServicesAccessor, arg2?: number, loop: boolean = true): void {
 	const focused = accessor.get(IListService).lastFocusedList;
 	const count = typeof arg2 === 'number' ? arg2 : 1;
 
@@ -582,14 +582,8 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 		else if (focused instanceof ObjectTree || focused instanceof DataTree || focused instanceof AsyncDataTree) {
 			const list = focused;
 			const fakeKeyboardEvent = getSelectionKeyboardEvent('keydown', false);
-			const focus = list.getFocus();
-
-			if (focus.length > 0) {
-				list.toggleCollapsed(focus[0]);
-			}
-
-			list.setSelection(focus, fakeKeyboardEvent);
-			list.open(focus, fakeKeyboardEvent);
+			list.setSelection(list.getFocus(), fakeKeyboardEvent);
+			list.open(list.getFocus(), fakeKeyboardEvent);
 		}
 
 		// Tree

@@ -279,7 +279,7 @@ class FileOutputChannelModel extends AbstractFileOutputChannelModel implements I
 	}
 }
 
-export class BufferredOutputChannel extends Disposable implements IOutputChannelModel {
+class BufferredOutputChannel extends Disposable implements IOutputChannelModel {
 
 	readonly file: URI | null = null;
 	scrollLock: boolean = false;

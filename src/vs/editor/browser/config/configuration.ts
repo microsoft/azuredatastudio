@@ -320,13 +320,8 @@ export class Configuration extends CommonEditorConfiguration {
 
 	private readonly _elementSizeObserver: ElementSizeObserver;
 
-	constructor(
-		isSimpleWidget: boolean,
-		options: IEditorOptions,
-		referenceDomElement: HTMLElement | null = null,
-		private readonly accessibilityService: IAccessibilityService
-	) {
-		super(isSimpleWidget, options);
+	constructor(options: IEditorOptions, referenceDomElement: HTMLElement | null = null, private readonly accessibilityService: IAccessibilityService) {
+		super(options);
 
 		this._elementSizeObserver = this._register(new ElementSizeObserver(referenceDomElement, () => this._onReferenceDomElementSizeChanged()));
 

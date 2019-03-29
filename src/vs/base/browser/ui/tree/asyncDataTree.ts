@@ -17,7 +17,6 @@ import { ElementsDragAndDropData } from 'vs/base/browser/ui/list/listView';
 import { isPromiseCanceledError, onUnexpectedError } from 'vs/base/common/errors';
 import { toggleClass } from 'vs/base/browser/dom';
 import { values } from 'vs/base/common/map';
-import { ScrollEvent } from 'vs/base/common/scrollable';
 
 interface IAsyncDataTreeNode<TInput, T> {
 	element: TInput | T;
@@ -297,7 +296,7 @@ export class AsyncDataTree<TInput, T, TFilterData = void> implements IDisposable
 
 	protected readonly disposables: IDisposable[] = [];
 
-	get onDidScroll(): Event<ScrollEvent> { return this.tree.onDidScroll; }
+	get onDidScroll(): Event<void> { return this.tree.onDidScroll; }
 
 	get onDidChangeFocus(): Event<ITreeEvent<T>> { return Event.map(this.tree.onDidChangeFocus, asTreeEvent); }
 	get onDidChangeSelection(): Event<ITreeEvent<T>> { return Event.map(this.tree.onDidChangeSelection, asTreeEvent); }

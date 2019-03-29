@@ -16,26 +16,13 @@ import {
 	EditSubsetResult,
 	EditCreateRowResult,
 	EditRevertCellResult,
-	ExecutionPlanOptions,
-	queryeditor
+	ExecutionPlanOptions
 } from 'azdata';
 import { QueryInfo } from 'sql/platform/query/common/queryModelService';
 
 export const SERVICE_ID = 'queryModelService';
 
 export const IQueryModelService = createDecorator<IQueryModelService>(SERVICE_ID);
-
-export interface IQueryPlanInfo {
-	providerId: string;
-	fileUri: string;
-	planXml: string;
-}
-
-export interface IQueryEvent {
-	type: queryeditor.QueryEvent;
-	uri: string;
-	params?: any;
-}
 
 /**
  * Interface for the logic of handling running queries and grid interactions for all URIs.
@@ -69,7 +56,7 @@ export interface IQueryModelService {
 
 	onRunQueryStart: Event<string>;
 	onRunQueryComplete: Event<string>;
-	onQueryEvent: Event<IQueryEvent>;
+
 
 	// Edit Data Functions
 	initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number, queryString: string): void;
