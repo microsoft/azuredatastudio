@@ -55,7 +55,7 @@ export class JobStepsViewComponent extends JobManagementView implements OnInit, 
 		@Inject(IDashboardService) dashboardService: IDashboardService,
 		@Inject(ITelemetryService) private _telemetryService: ITelemetryService
 	) {
-		super(commonService, dashboardService, contextMenuService, keybindingService, instantiationService);
+		super(commonService, dashboardService, contextMenuService, keybindingService, instantiationService, undefined);
 	}
 
 	ngAfterContentChecked() {

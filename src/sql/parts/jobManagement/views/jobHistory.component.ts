@@ -72,7 +72,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
 		@Inject(forwardRef(() => CommonServiceInterface)) commonService: CommonServiceInterface,
-		@Inject(forwardRef(() => AgentViewComponent)) private _agentViewComponent: AgentViewComponent,
+		@Inject(forwardRef(() => AgentViewComponent)) _agentViewComponent: AgentViewComponent,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
 		@Inject(IContextMenuService) private contextMenuService: IContextMenuService,
@@ -81,7 +81,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		@Inject(IDashboardService) dashboardService: IDashboardService,
 		@Inject(ITelemetryService) private _telemetryService: ITelemetryService
 	) {
-		super(commonService, dashboardService, contextMenuService, keybindingService, instantiationService);
+		super(commonService, dashboardService, contextMenuService, keybindingService, instantiationService, _agentViewComponent);
 		this._treeController = new JobHistoryController();
 		this._treeDataSource = new JobHistoryDataSource();
 		this._treeRenderer = new JobHistoryRenderer();
@@ -331,10 +331,6 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		}
 	}
 
-	public refreshJobs() {
-		this._agentViewComponent.refresh = true;
-	}
-
 	protected initActionBar() {
 		let runJobAction = this.instantiationService.createInstance(RunJobAction);
 		let stopJobAction = this.instantiationService.createInstance(StopJobAction);
@@ -351,7 +347,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		let refreshAction = this.instantiationService.createInstance(JobsRefreshAction);
 		let taskbar = <HTMLElement>this.actionBarContainer.nativeElement;
 		this._actionBar = new Taskbar(taskbar, this.contextMenuService);
-		this._actionBar.context = { targetObject: this._agentJobInfo, ownerUri: this.ownerUri, jobHistoryComponent: this };
+		this._actionBar.context = { targetObject: this._agentJobInfo, ownerUri: this.ownerUri, component: this };
 		this._actionBar.setContent([
 			{ action: runJobAction },
 			{ action: stopJobAction },
