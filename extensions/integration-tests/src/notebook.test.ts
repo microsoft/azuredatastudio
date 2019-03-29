@@ -68,7 +68,7 @@ if (context.RunTest) {
 				let clearedOutputs = await notebook.clearAllOutputs();
 				let cells = notebook.document.cells;
 				cells.forEach(cell => {
-					assert(cell.contents && cell.contents.outputs && cell.contents.outputs.length === 0, `Expected cell outputs to be empty. Acutal: '${cell.contents.outputs}'`);
+					assert(cell.contents && cell.contents.outputs && cell.contents.outputs.length === 0, `Expected cell outputs to be empty. Actual: '${cell.contents.outputs}'`);
 				});
 				assert(clearedOutputs, 'Outputs of all the code cells from SQL notebook should be cleared');
 				console.log('After clearing cell outputs');
