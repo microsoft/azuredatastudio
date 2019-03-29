@@ -176,7 +176,7 @@ export class FileEditorTracker extends Disposable implements IWorkbenchContribut
 				// flag.
 				let checkExists: Promise<boolean>;
 				if (isExternal) {
-					checkExists = timeout(100).then(() => this.fileService.existsFile(resource));
+					checkExists = timeout(100).then(() => this.fileService.exists(resource));
 				} else {
 					checkExists = Promise.resolve(false);
 				}
@@ -360,7 +360,7 @@ export class FileEditorTracker extends Disposable implements IWorkbenchContribut
 		// Handle no longer visible out of workspace resources
 		this.activeOutOfWorkspaceWatchers.forEach(resource => {
 			if (!visibleOutOfWorkspacePaths.get(resource)) {
-				this.fileService.unwatchFileChanges(resource);
+				this.fileService.unwatch(resource);
 				this.activeOutOfWorkspaceWatchers.delete(resource);
 			}
 		});
@@ -368,7 +368,7 @@ export class FileEditorTracker extends Disposable implements IWorkbenchContribut
 		// Handle newly visible out of workspace resources
 		visibleOutOfWorkspacePaths.forEach(resource => {
 			if (!this.activeOutOfWorkspaceWatchers.get(resource)) {
-				this.fileService.watchFileChanges(resource);
+				this.fileService.watch(resource);
 				this.activeOutOfWorkspaceWatchers.set(resource, resource);
 			}
 		});
@@ -378,7 +378,7 @@ export class FileEditorTracker extends Disposable implements IWorkbenchContribut
 		super.dispose();
 
 		// Dispose watchers if any
-		this.activeOutOfWorkspaceWatchers.forEach(resource => this.fileService.unwatchFileChanges(resource));
+		this.activeOutOfWorkspaceWatchers.forEach(resource => this.fileService.unwatch(resource));
 		this.activeOutOfWorkspaceWatchers.clear();
 	}
 }
