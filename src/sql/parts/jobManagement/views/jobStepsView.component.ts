@@ -61,7 +61,6 @@ export class JobStepsViewComponent extends JobManagementView implements OnInit, 
 	ngAfterContentChecked() {
 		$('.steps-tree .step-column-heading').closest('.monaco-tree-row').addClass('step-column-row');
 		this.layout();
-		this._tree.setInput(new JobStepsViewModel());
 		this._tree.onDidScroll(() => {
 			$('.steps-tree .step-column-heading').closest('.monaco-tree-row').addClass('step-column-row');
 		});
@@ -94,6 +93,7 @@ export class JobStepsViewComponent extends JobManagementView implements OnInit, 
 			let element = this._tree.getFocus();
 			this._tree.select(element);
 		});
+		this._tree.setInput(new JobStepsViewModel());
 	}
 
 	ngOnInit() {
