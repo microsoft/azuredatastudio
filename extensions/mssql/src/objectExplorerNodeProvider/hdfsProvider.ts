@@ -136,7 +136,7 @@ export class FolderNode extends HdfsFileSourceNode {
 					});
 				}
 			} catch (error) {
-				this.children = [ErrorNode.create(localize('errorExpanding', 'Error: {0}', utils.getErrorMessage(error)), this)];
+				this.children = [ErrorNode.create(localize('errorExpanding', 'Error: {0}', utils.getErrorMessage(error)), this, error.statusCode)];
 			}
 		}
 		return this.children;
@@ -342,9 +342,12 @@ export class ErrorNode extends TreeNode {
 		super();
 	}
 
-	public static create(message: string, parent: TreeNode): ErrorNode {
+	public static create(message: string, parent: TreeNode, errorCode?: number): ErrorNode {
 		let node = new ErrorNode(message);
 		node.parent = parent;
+		if(errorCode){
+			node.errorStatusCode = errorCode;
+		}
 		return node;
 	}
 

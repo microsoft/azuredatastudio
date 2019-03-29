@@ -9,6 +9,8 @@ import { textFormatter } from 'sql/parts/grid/services/sharedServices';
 import { RowNumberColumn } from 'sql/base/browser/ui/table/plugins/rowNumberColumn.plugin';
 import { escape } from 'sql/base/common/strings';
 import { IDataResource } from 'sql/workbench/services/notebook/sql/sqlSessionManager';
+import { attachTableStyler } from 'sql/platform/theme/common/styler';
+import { IThemeService } from 'vs/platform/theme/common/themeService';
 
 /**
  * Render DataResource as a grid into a host node.
@@ -58,12 +60,18 @@ export function renderDataResource(
 		});
 	detailTable.registerPlugin(rowNumberColumn);
 
+	let numRows = detailTable.grid.getDataLength();
 	// Need to include column headers and scrollbar, so that's why 1 needs to be added
-	let rowsHeight = (detailTable.grid.getDataLength() + 1) * ROW_HEIGHT + BOTTOM_PADDING_AND_SCROLLBAR;
+	let rowsHeight = (numRows + 1) * ROW_HEIGHT + BOTTOM_PADDING_AND_SCROLLBAR;
+	// if no rows are in the grid, set height to 100% of the container's height
+	if (numRows === 0) {
+		tableContainer.style.height = '100%';
+	} else {
+		// Set the height dynamically if the grid's height is < 500px high; otherwise, set height to 500px
+		tableContainer.style.height = rowsHeight >= 500 ? '500px' : rowsHeight.toString() + 'px';
+	}
 
-	// Set the height dynamically if the grid's height is < 500px high; otherwise, set height to 500px
-	tableContainer.style.height = rowsHeight >= 500 ? '500px' : rowsHeight.toString() + 'px';
-
+	attachTableStyler(detailTable, options.themeService);
 	host.appendChild(tableContainer);
 	detailTable.resizeCanvas();
 
@@ -116,5 +124,10 @@ export namespace renderDataResource {
 		 * The DataResource source to render.
 		 */
 		source: string;
+
+		/**
+		 * Theme service used to react to theme change events
+		 */
+		themeService?: IThemeService;
 	}
 }

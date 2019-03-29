@@ -18,7 +18,7 @@ import { DataTree } from 'vs/base/browser/ui/tree/dataTree';
 import { ITreeNode } from 'vs/base/browser/ui/tree/tree';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 
-function ensureDOMFocus(widget: ListWidget): void {
+function ensureDOMFocus(widget: ListWidget | undefined): void {
 	// it can happen that one of the commands is executed while
 	// DOM focus is within another focusable control within the
 	// list/tree item. therefor we should ensure that the
@@ -28,7 +28,7 @@ function ensureDOMFocus(widget: ListWidget): void {
 	}
 }
 
-function focusDown(accessor: ServicesAccessor, arg2?: number, loop: boolean = true): void {
+function focusDown(accessor: ServicesAccessor, arg2?: number, loop: boolean = false): void {
 	const focused = accessor.get(IListService).lastFocusedList;
 	const count = typeof arg2 === 'number' ? arg2 : 1;
 
@@ -88,10 +88,12 @@ function expandMultiSelection(focused: List<any> | PagedList<any> | ITree | Obje
 
 		const focus = list.getFocus() ? list.getFocus()[0] : undefined;
 		const selection = list.getSelection();
-		if (selection && selection.indexOf(focus) >= 0) {
+		if (selection && typeof focus === 'number' && selection.indexOf(focus) >= 0) {
 			list.setSelection(selection.filter(s => s !== previousFocus));
 		} else {
-			list.setSelection(selection.concat(focus));
+			if (typeof focus === 'number') {
+				list.setSelection(selection.concat(focus));
+			}
 		}
 	}
 
@@ -163,7 +165,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	}
 });
 
-function focusUp(accessor: ServicesAccessor, arg2?: number, loop: boolean = true): void {
+function focusUp(accessor: ServicesAccessor, arg2?: number, loop: boolean = false): void {
 	const focused = accessor.get(IListService).lastFocusedList;
 	const count = typeof arg2 === 'number' ? arg2 : 1;
 
@@ -580,8 +582,14 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 		else if (focused instanceof ObjectTree || focused instanceof DataTree || focused instanceof AsyncDataTree) {
 			const list = focused;
 			const fakeKeyboardEvent = getSelectionKeyboardEvent('keydown', false);
-			list.setSelection(list.getFocus(), fakeKeyboardEvent);
-			list.open(list.getFocus());
+			const focus = list.getFocus();
+
+			if (focus.length > 0) {
+				list.toggleCollapsed(focus[0]);
+			}
+
+			list.setSelection(focus, fakeKeyboardEvent);
+			list.open(focus, fakeKeyboardEvent);
 		}
 
 		// Tree
@@ -636,7 +644,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 				const selectedNode = tree.getNode(start);
 				const parentNode = selectedNode.parent;
 
-				if (!parentNode.parent) { // root
+				if (!parentNode || !parentNode.parent) { // root
 					scope = undefined;
 				} else {
 					scope = parentNode.element;
@@ -752,7 +760,8 @@ CommandsRegistry.registerCommand({
 
 		// List
 		if (focused instanceof List || focused instanceof PagedList) {
-			// TODO@joao
+			const list = focused;
+			list.toggleKeyboardNavigation();
 		}
 
 		// ObjectTree

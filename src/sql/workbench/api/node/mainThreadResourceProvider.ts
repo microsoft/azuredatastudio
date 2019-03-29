@@ -13,8 +13,8 @@ import {
 	SqlExtHostContext,
 	SqlMainContext
 } from 'sql/workbench/api/node/sqlExtHost.protocol';
-import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
-import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
+import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
+import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 
 
 @extHostNamedCustomer(SqlMainContext.MainThreadResourceProvider)

@@ -5,11 +5,11 @@
 
 import * as cp from 'child_process';
 import { EventEmitter } from 'events';
-import * as path from 'path';
+import * as path from 'vs/base/common/path';
 import { NodeStringDecoder, StringDecoder } from 'string_decoder';
 import { createRegExp, startsWith, startsWithUTF8BOM, stripUTF8BOM, escapeRegExpCharacters, endsWith } from 'vs/base/common/strings';
 import { URI } from 'vs/base/common/uri';
-import { IExtendedExtensionSearchOptions, SearchError, SearchErrorCode, serializeSearchError } from 'vs/platform/search/common/search';
+import { IExtendedExtensionSearchOptions, SearchError, SearchErrorCode, serializeSearchError } from 'vs/workbench/services/search/common/search';
 import * as vscode from 'vscode';
 import { rgPath } from 'vscode-ripgrep';
 import { anchorGlob, createTextSearchResult, IOutputChannel, Maybe, Range } from './ripgrepSearchUtils';
@@ -140,6 +140,10 @@ export function rgErrorMsgForDisplay(msg: string): Maybe<SearchError> {
 		return new SearchError(firstLine.charAt(0).toUpperCase() + firstLine.substr(1), SearchErrorCode.invalidLiteral);
 	}
 
+	if (startsWith(firstLine, 'PCRE2: error compiling pattern')) {
+		return new SearchError(firstLine, SearchErrorCode.regexParseError);
+	}
+
 	return undefined;
 }
 
@@ -165,10 +169,11 @@ export class RipgrepParser extends EventEmitter {
 	}
 
 
-	on(event: 'result', listener: (result: vscode.TextSearchResult) => void);
-	on(event: 'hitLimit', listener: () => void);
-	on(event: string, listener: (...args: any[]) => void) {
+	on(event: 'result', listener: (result: vscode.TextSearchResult) => void): this;
+	on(event: 'hitLimit', listener: () => void): this;
+	on(event: string, listener: (...args: any[]) => void): this {
 		super.on(event, listener);
+		return this;
 	}
 
 	handleData(data: Buffer | string): void {

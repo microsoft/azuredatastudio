@@ -12,58 +12,38 @@ import { timeout } from 'vs/base/common/async';
 import { toErrorMessage } from 'vs/base/common/errorMessage';
 import { Emitter, Event } from 'vs/base/common/event';
 import { IDisposable, dispose, toDisposable } from 'vs/base/common/lifecycle';
-import { Schemas } from 'vs/base/common/network';
 import * as objects from 'vs/base/common/objects';
 import { isWindows } from 'vs/base/common/platform';
 import { isEqual } from 'vs/base/common/resources';
 import { URI } from 'vs/base/common/uri';
-import { IRemoteConsoleLog, log, parse } from 'vs/base/node/console';
+import { IRemoteConsoleLog, log, parse } from 'vs/base/common/console';
 import { findFreePort, randomPort } from 'vs/base/node/ports';
-import { IMessagePassingProtocol } from 'vs/base/parts/ipc/node/ipc';
-import { Protocol, generateRandomPipeName, BufferedProtocol } from 'vs/base/parts/ipc/node/ipc.net';
-import { IBroadcast, IBroadcastService } from 'vs/platform/broadcast/electron-browser/broadcastService';
+import { IMessagePassingProtocol } from 'vs/base/parts/ipc/common/ipc';
+import { PersistentProtocol } from 'vs/base/parts/ipc/common/ipc.net';
+import { generateRandomPipeName, NodeSocket } from 'vs/base/parts/ipc/node/ipc.net';
+import { IBroadcast, IBroadcastService } from 'vs/workbench/services/broadcast/common/broadcast';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { EXTENSION_ATTACH_BROADCAST_CHANNEL, EXTENSION_CLOSE_EXTHOST_BROADCAST_CHANNEL, EXTENSION_LOG_BROADCAST_CHANNEL, EXTENSION_RELOAD_BROADCAST_CHANNEL, EXTENSION_TERMINATE_BROADCAST_CHANNEL } from 'vs/platform/extensions/common/extensionHost';
 import { ILabelService } from 'vs/platform/label/common/label';
 import { ILifecycleService, WillShutdownEvent } from 'vs/platform/lifecycle/common/lifecycle';
 import { ILogService } from 'vs/platform/log/common/log';
-import product from 'vs/platform/node/product';
+import product from 'vs/platform/product/node/product';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IWindowService, IWindowsService } from 'vs/platform/windows/common/windows';
 import { IWorkspaceContextService, WorkbenchState } from 'vs/platform/workspace/common/workspace';
-import { IInitData } from 'vs/workbench/api/node/extHost.protocol';
-import { MessageType, createMessageOfType, isMessageOfType } from 'vs/workbench/common/extensionHostProtocol';
-import { ICrashReporterService } from 'vs/workbench/services/crashReporter/electron-browser/crashReporterService';
-import { IExtensionDescription } from 'vs/workbench/services/extensions/common/extensions';
+import { IInitData } from 'vs/workbench/api/common/extHost.protocol';
+import { MessageType, createMessageOfType, isMessageOfType } from 'vs/workbench/services/extensions/node/extensionHostProtocol';
+import { withNullAsUndefined } from 'vs/base/common/types';
+import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
+import { parseExtensionDevOptions } from '../common/extensionDevOptions';
+import { VSBuffer } from 'vs/base/common/buffer';
 
 export interface IExtensionHostStarter {
-	readonly onCrashed: Event<[number, string]>;
-	start(): Promise<IMessagePassingProtocol>;
-	getInspectPort(): number;
+	readonly onCrashed: Event<[number, string | null]>;
+	start(): Promise<IMessagePassingProtocol> | null;
+	getInspectPort(): number | undefined;
 	dispose(): void;
-}
-
-export interface IExtensionDevOptions {
-	readonly isExtensionDevHost: boolean;
-	readonly isExtensionDevDebug: boolean;
-	readonly isExtensionDevDebugBrk: boolean;
-	readonly isExtensionDevTestFromCli: boolean;
-}
-export function parseExtensionDevOptions(environmentService: IEnvironmentService): IExtensionDevOptions {
-	// handle extension host lifecycle a bit special when we know we are developing an extension that runs inside
-	let isExtensionDevHost = environmentService.isExtensionDevelopment;
-	const extDevLoc = environmentService.extensionDevelopmentLocationURI;
-	const debugOk = !extDevLoc || extDevLoc.scheme === Schemas.file;
-	let isExtensionDevDebug = debugOk && typeof environmentService.debugExtensionHost.port === 'number';
-	let isExtensionDevDebugBrk = debugOk && !!environmentService.debugExtensionHost.break;
-	let isExtensionDevTestFromCli = isExtensionDevHost && !!environmentService.extensionTestsPath && !environmentService.debugExtensionHost.break;
-	return {
-		isExtensionDevHost,
-		isExtensionDevDebug,
-		isExtensionDevDebugBrk,
-		isExtensionDevTestFromCli,
-	};
 }
 
 export class ExtensionHostProcessWorker implements IExtensionHostStarter {
@@ -79,15 +59,15 @@ export class ExtensionHostProcessWorker implements IExtensionHostStarter {
 	private readonly _isExtensionDevTestFromCli: boolean;
 
 	// State
-	private _lastExtensionHostError: string;
+	private _lastExtensionHostError: string | null;
 	private _terminating: boolean;
 
 	// Resources, in order they get acquired/created when .start() is called:
-	private _namedPipeServer: Server;
+	private _namedPipeServer: Server | null;
 	private _inspectPort: number;
-	private _extensionHostProcess: ChildProcess;
-	private _extensionHostConnection: Socket;
-	private _messageProtocol: Promise<IMessagePassingProtocol>;
+	private _extensionHostProcess: ChildProcess | null;
+	private _extensionHostConnection: Socket | null;
+	private _messageProtocol: Promise<PersistentProtocol> | null;
 
 	constructor(
 		private readonly _autoStart: boolean,
@@ -101,7 +81,6 @@ export class ExtensionHostProcessWorker implements IExtensionHostStarter {
 		@ILifecycleService private readonly _lifecycleService: ILifecycleService,
 		@IEnvironmentService private readonly _environmentService: IEnvironmentService,
 		@ITelemetryService private readonly _telemetryService: ITelemetryService,
-		@ICrashReporterService private readonly _crashReporterService: ICrashReporterService,
 		@ILogService private readonly _logService: ILogService,
 		@ILabelService private readonly _labelService: ILabelService
 	) {
@@ -159,7 +138,7 @@ export class ExtensionHostProcessWorker implements IExtensionHostStarter {
 		}
 	}
 
-	public start(): Promise<IMessagePassingProtocol> {
+	public start(): Promise<IMessagePassingProtocol> | null {
 		if (this._terminating) {
 			// .terminate() was called
 			return null;
@@ -185,7 +164,7 @@ export class ExtensionHostProcessWorker implements IExtensionHostStarter {
 					// We detach because we have noticed that when the renderer exits, its child processes
 					// (i.e. extension host) are taken down in a brutal fashion by the OS
 					detached: !!isWindows,
-					execArgv: <string[]>undefined,
+					execArgv: undefined as string[] | undefined,
 					silent: true
 				};
 
@@ -201,7 +180,7 @@ export class ExtensionHostProcessWorker implements IExtensionHostStarter {
 					}
 				}
 
-				const crashReporterOptions = this._crashReporterService.getChildProcessStartOptions('extensionHost');
+				const crashReporterOptions = undefined; // TODO@electron pass this in as options to the extension host after verifying this actually works
 				if (crashReporterOptions) {
 					opts.env.CRASH_REPORTER_START_OPTIONS = JSON.stringify(crashReporterOptions);
 				}
@@ -229,9 +208,14 @@ export class ExtensionHostProcessWorker implements IExtensionHostStarter {
 
 				// Print out extension host output
 				onDebouncedOutput(output => {
-					const inspectorUrlMatch = !this._environmentService.isBuilt && output.data && output.data.match(/ws:\/\/([^\s]+)/);
+					const inspectorUrlMatch = output.data && output.data.match(/ws:\/\/([^\s]+:(\d+)\/[^\s]+)/);
 					if (inspectorUrlMatch) {
-						console.log(`%c[Extension Host] %cdebugger inspector at chrome-devtools://devtools/bundled/inspector.html?experiments=true&v8only=true&ws=${inspectorUrlMatch[1]}`, 'color: blue', 'color: black');
+						if (!this._environmentService.isBuilt) {
+							console.log(`%c[Extension Host] %cdebugger inspector at chrome-devtools://devtools/bundled/inspector.html?experiments=true&v8only=true&ws=${inspectorUrlMatch[1]}`, 'color: blue', 'color: black');
+						}
+						if (!this._inspectPort) {
+							this._inspectPort = Number(inspectorUrlMatch[2]);
+						}
 					} else {
 						console.group('Extension Host');
 						console.log(output.data, ...output.format);
@@ -301,7 +285,9 @@ export class ExtensionHostProcessWorker implements IExtensionHostStarter {
 			this._namedPipeServer = createServer();
 			this._namedPipeServer.on('error', reject);
 			this._namedPipeServer.listen(pipeName, () => {
-				this._namedPipeServer.removeListener('error', reject);
+				if (this._namedPipeServer) {
+					this._namedPipeServer.removeListener('error', reject);
+				}
 				resolve(pipeName);
 			});
 		});
@@ -335,35 +321,39 @@ export class ExtensionHostProcessWorker implements IExtensionHostStarter {
 		});
 	}
 
-	private _tryExtHostHandshake(): Promise<IMessagePassingProtocol> {
+	private _tryExtHostHandshake(): Promise<PersistentProtocol> {
 
-		return new Promise<IMessagePassingProtocol>((resolve, reject) => {
+		return new Promise<PersistentProtocol>((resolve, reject) => {
 
 			// Wait for the extension host to connect to our named pipe
 			// and wrap the socket in the message passing protocol
 			let handle = setTimeout(() => {
-				this._namedPipeServer.close();
-				this._namedPipeServer = null;
+				if (this._namedPipeServer) {
+					this._namedPipeServer.close();
+					this._namedPipeServer = null;
+				}
 				reject('timeout');
 			}, 60 * 1000);
 
-			this._namedPipeServer.on('connection', socket => {
+			this._namedPipeServer!.on('connection', socket => {
 				clearTimeout(handle);
-				this._namedPipeServer.close();
-				this._namedPipeServer = null;
+				if (this._namedPipeServer) {
+					this._namedPipeServer.close();
+					this._namedPipeServer = null;
+				}
 				this._extensionHostConnection = socket;
 
 				// using a buffered message protocol here because between now
 				// and the first time a `then` executes some messages might be lost
 				// unless we immediately register a listener for `onMessage`.
-				resolve(new BufferedProtocol(new Protocol(this._extensionHostConnection)));
+				resolve(new PersistentProtocol(new NodeSocket(this._extensionHostConnection)));
 			});
 
 		}).then((protocol) => {
 
 			// 1) wait for the incoming `ready` event and send the initialization data.
 			// 2) wait for the incoming `initialized` event.
-			return new Promise<IMessagePassingProtocol>((resolve, reject) => {
+			return new Promise<PersistentProtocol>((resolve, reject) => {
 
 				let timeoutHandle: NodeJS.Timer;
 				const installTimeoutCheck = () => {
@@ -389,7 +379,7 @@ export class ExtensionHostProcessWorker implements IExtensionHostStarter {
 							// Wait 60s for the initialized message
 							installTimeoutCheck();
 
-							protocol.send(Buffer.from(JSON.stringify(data)));
+							protocol.send(VSBuffer.fromString(JSON.stringify(data)));
 						});
 						return;
 					}
@@ -426,16 +416,17 @@ export class ExtensionHostProcessWorker implements IExtensionHostStarter {
 						appRoot: this._environmentService.appRoot ? URI.file(this._environmentService.appRoot) : undefined,
 						appSettingsHome: this._environmentService.appSettingsHome ? URI.file(this._environmentService.appSettingsHome) : undefined,
 						extensionDevelopmentLocationURI: this._environmentService.extensionDevelopmentLocationURI,
-						extensionTestsPath: this._environmentService.extensionTestsPath,
-						globalStorageHome: URI.file(this._environmentService.globalStorageHome)
+						extensionTestsLocationURI: this._environmentService.extensionTestsLocationURI,
+						globalStorageHome: URI.file(this._environmentService.globalStorageHome),
+						userHome: URI.file(this._environmentService.userHome)
 					},
-					workspace: this._contextService.getWorkbenchState() === WorkbenchState.EMPTY ? null : {
-						configuration: workspace.configuration,
-						folders: workspace.folders,
+					workspace: this._contextService.getWorkbenchState() === WorkbenchState.EMPTY ? undefined : {
+						configuration: withNullAsUndefined(workspace.configuration),
 						id: workspace.id,
 						name: this._labelService.getWorkspaceLabel(workspace)
 					},
 					resolvedExtensions: [],
+					hostExtensions: [],
 					extensions: extensionDescriptions,
 					telemetryInfo,
 					logLevel: this._logService.getLevel(),
@@ -503,6 +494,18 @@ export class ExtensionHostProcessWorker implements IExtensionHostStarter {
 		}
 	}
 
+	public enableInspector(): Promise<void> {
+		if (this._inspectPort) {
+			return Promise.resolve();
+		}
+		// send SIGUSR1 and wait a little the actual port is read from the process stdout which we
+		// scan here: https://github.com/Microsoft/vscode/blob/67ffab8dcd1a6752d8b62bcd13d7020101eef568/src/vs/workbench/services/extensions/electron-browser/extensionHost.ts#L225-L240
+		if (this._extensionHostProcess) {
+			this._extensionHostProcess.kill('SIGUSR1');
+		}
+		return timeout(1000);
+	}
+
 	public getInspectPort(): number {
 		return this._inspectPort;
 	}
@@ -525,6 +528,8 @@ export class ExtensionHostProcessWorker implements IExtensionHostStarter {
 			// Send the extension host a request to terminate itself
 			// (graceful termination)
 			protocol.send(createMessageOfType(MessageType.Terminate));
+
+			protocol.dispose();
 
 			// Give the extension host 10s, after which we will
 			// try to kill the process and release any resources

@@ -5,7 +5,7 @@
 
 import { startsWith } from 'vs/base/common/strings';
 import { ILogService } from 'vs/platform/log/common/log';
-import { SearchRange, TextSearchMatch } from 'vs/platform/search/common/search';
+import { SearchRange, TextSearchMatch } from 'vs/workbench/services/search/common/search';
 import * as vscode from 'vscode';
 import { mapArrayOrNot } from 'vs/base/common/arrays';
 
@@ -42,7 +42,7 @@ function searchRangeToRange(range: SearchRange): Range {
 }
 
 export class Position {
-	constructor(readonly line, readonly character) { }
+	constructor(readonly line: number, readonly character: number) { }
 
 	isBefore(other: Position): boolean { return false; }
 	isBeforeOrEqual(other: Position): boolean { return false; }

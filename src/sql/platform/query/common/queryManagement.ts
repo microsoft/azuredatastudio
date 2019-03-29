@@ -12,6 +12,7 @@ import * as TelemetryKeys from 'sql/common/telemetryKeys';
 import * as TelemetryUtils from 'sql/common/telemetryUtilities';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { Event, Emitter } from 'vs/base/common/event';
+import { keys } from 'vs/base/common/map';
 
 export const SERVICE_ID = 'queryManagementService';
 
@@ -157,7 +158,7 @@ export class QueryManagementService implements IQueryManagementService {
 	}
 
 	public getRegisteredProviders(): string[] {
-		return Array.from(this._requestHandlers.keys());
+		return Array.from(keys(this._requestHandlers));
 	}
 
 	private addTelemetry(eventName: string, ownerUri: string, runOptions?: azdata.ExecutionPlanOptions): void {

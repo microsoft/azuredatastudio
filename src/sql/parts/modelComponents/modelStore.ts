@@ -11,6 +11,7 @@ import * as azdata from 'azdata';
 import { IModelStore, IComponentDescriptor, IComponent } from './interfaces';
 import { Extensions, IComponentRegistry } from 'sql/platform/dashboard/common/modelComponentRegistry';
 import { Deferred } from 'sql/base/common/promise';
+import { entries } from 'sql/base/common/objects';
 
 const componentRegistry = <IComponentRegistry>Registry.as(Extensions.ComponentContribution);
 
@@ -73,7 +74,7 @@ export class ModelStore implements IModelStore {
 	}
 
 	validate(component: IComponent): Thenable<boolean> {
-		let componentId = Object.entries(this._componentMappings).find(([id, mappedComponent]) => component === mappedComponent)[0];
+		let componentId = entries(this._componentMappings).find(([id, mappedComponent]) => component === mappedComponent)[0];
 		return Promise.all(this._validationCallbacks.map(callback => callback(componentId))).then(validations => validations.every(validation => validation === true));
 	}
 

@@ -12,6 +12,7 @@ import * as contracts from './contracts';
 import * as azdata from 'azdata';
 import * as Utils from './utils';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
+import { ConnectParams } from 'dataprotocol-client/lib/protocol';
 
 export class TelemetryFeature implements StaticFeature {
 

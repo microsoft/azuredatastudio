@@ -13,6 +13,7 @@ import { GridPanel } from './gridPanel';
 import { ChartTab } from './charting/chartTab';
 import { QueryPlanTab } from 'sql/parts/queryPlan/queryPlan';
 import { TopOperationsTab } from 'sql/parts/queryPlan/topOperations';
+import { QueryModelViewTab } from 'sql/parts/query/modelViewTab/queryModelViewTab';
 
 import * as nls from 'vs/nls';
 import { PanelViewlet } from 'vs/workbench/browser/parts/views/panelViewlet';
@@ -175,12 +176,13 @@ export class QueryResultsView extends Disposable {
 	private chartTab: ChartTab;
 	private qpTab: QueryPlanTab;
 	private topOperationsTab: TopOperationsTab;
+	private dynamicModelViewTabs: QueryModelViewTab[] = [];
 
 	private runnerDisposables: IDisposable[];
 
 	constructor(
 		container: HTMLElement,
-		@IInstantiationService instantiationService: IInstantiationService,
+		@IInstantiationService private instantiationService: IInstantiationService,
 		@IQueryModelService private queryModelService: IQueryModelService
 	) {
 		super();
@@ -207,6 +209,7 @@ export class QueryResultsView extends Disposable {
 		this.runnerDisposables.push(runner.onQueryStart(e => {
 			this.hideChart();
 			this.hidePlan();
+			this.hideDynamicViewModelTabs();
 			this.input.state.visibleTabs = new Set();
 			this.input.state.activeTab = this.resultsTab.identifier;
 		}));
@@ -225,6 +228,23 @@ export class QueryResultsView extends Disposable {
 				this._panelView.pushTab(this.topOperationsTab);
 			}
 		}
+
+		// restore query model view tabs
+		this.input.state.visibleTabs.forEach(tabId => {
+			if (tabId.startsWith('querymodelview;')) {
+				// tab id format is 'tab type;title;model view id'
+				let parts = tabId.split(';');
+				if (parts.length === 3) {
+					let tab = this._register(new QueryModelViewTab(parts[1], this.instantiationService));
+					tab.view._componentId = parts[2];
+					this.dynamicModelViewTabs.push(tab);
+					if (!this._panelView.contains(tab)) {
+						this._panelView.pushTab(tab);
+					}
+				}
+			}
+		});
+
 		this.runnerDisposables.push(runner.onQueryEnd(() => {
 			if (runner.isQueryPlan) {
 				runner.planXml.then(e => {
@@ -311,10 +331,35 @@ export class QueryResultsView extends Disposable {
 		if (this._panelView.contains(this.qpTab)) {
 			this._panelView.removeTab(this.qpTab.identifier);
 		}
+
+		if (this._panelView.contains(this.topOperationsTab)) {
+			this._panelView.removeTab(this.topOperationsTab.identifier);
+		}
+	}
+
+	public hideDynamicViewModelTabs() {
+		this.dynamicModelViewTabs.forEach(tab => {
+			if (this._panelView.contains(tab)) {
+				this._panelView.removeTab(tab.identifier);
+			}
+		});
+
+		this.dynamicModelViewTabs = [];
 	}
 
 	public dispose() {
 		dispose(this.runnerDisposables);
 		super.dispose();
+	}
+
+	public registerQueryModelViewTab(title: string, componentId: string): void {
+		let tab = this._register(new QueryModelViewTab(title, this.instantiationService));
+		tab.view._componentId = componentId;
+		this.dynamicModelViewTabs.push(tab);
+
+		this.input.state.visibleTabs.add('querymodelview;' + title + ';' + componentId);
+		if (!this._panelView.contains(tab)) {
+			this._panelView.pushTab(tab);
+		}
 	}
 }

@@ -6,9 +6,8 @@
 
 import {
 	createMainContextProxyIdentifier as createMainId,
-	createExtHostContextProxyIdentifier as createExtId,
-	ProxyIdentifier, IRPCProtocol
-} from 'vs/workbench/services/extensions/node/proxyIdentifier';
+	createExtHostContextProxyIdentifier as createExtId
+} from 'vs/workbench/services/extensions/common/proxyIdentifier';
 import { UriComponents } from 'vs/base/common/uri';
 
 import { IDisposable } from 'vs/base/common/lifecycle';
@@ -22,9 +21,10 @@ import {
 	IItemConfig, ModelComponentTypes, IComponentShape, IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails,
 	IModelViewWizardDetails, IModelViewWizardPageDetails, INotebookManagerDetails, INotebookSessionDetails, INotebookKernelDetails, INotebookFutureDetails, FutureMessageType, INotebookFutureDone, ISingleNotebookEditOperation
 } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { EditorViewColumn } from 'vs/workbench/api/shared/editor';
-import { IUndoStopOptions } from 'vs/workbench/api/node/extHost.protocol';
-import { IExtensionDescription } from 'vs/workbench/services/extensions/common/extensions';
+import { EditorViewColumn } from 'vs/workbench/api/common/shared/editor';
+import { IUndoStopOptions } from 'vs/workbench/api/common/extHost.protocol';
+import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
+import { IQueryEvent } from 'sql/platform/query/common/queryModel';
 
 export abstract class ExtHostAccountManagementShape {
 	$autoOAuthCancelled(handle: number): Thenable<void> { throw ni(); }
@@ -758,11 +758,14 @@ export interface MainThreadModelViewDialogShape extends IDisposable {
 	$setDirty(handle: number, isDirty: boolean): void;
 }
 export interface ExtHostQueryEditorShape {
+	$onQueryEvent(handle: number, fileUri:string, event: IQueryEvent): void;
 }
 
 export interface MainThreadQueryEditorShape extends IDisposable {
 	$connect(fileUri: string, connectionId: string): Thenable<void>;
 	$runQuery(fileUri: string): void;
+	$createQueryTab(fileUri: string, title: string, content: string): void;
+	$registerQueryInfoListener(handle: number, providerId: string): void;
 }
 
 export interface ExtHostNotebookShape {
@@ -841,7 +844,7 @@ export interface INotebookModelChangedData {
 export interface INotebookEditorAddData {
 	id: string;
 	documentUri: UriComponents;
-	editorPosition: EditorViewColumn;
+	editorPosition: EditorViewColumn | undefined;
 }
 
 export interface INotebookShowOptions {
@@ -863,6 +866,7 @@ export interface MainThreadNotebookDocumentsAndEditorsShape extends IDisposable 
 	$tryShowNotebookDocument(resource: UriComponents, options: INotebookShowOptions): Promise<string>;
 	$tryApplyEdits(id: string, modelVersionId: number, edits: ISingleNotebookEditOperation[], opts: IUndoStopOptions): Promise<boolean>;
 	$runCell(id: string, cellUri: UriComponents): Promise<boolean>;
+	$clearAllOutputs(id: string): Promise<boolean>;
 }
 
 export interface ExtHostExtensionManagementShape {

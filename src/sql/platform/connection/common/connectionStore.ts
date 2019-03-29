@@ -5,19 +5,18 @@
 
 'use strict';
 
-import * as Constants from './constants';
-import * as ConnInfo from './connectionInfo';
-import { ConnectionProfile } from '../common/connectionProfile';
+import * as Constants from 'sql/platform/connection/common/constants';
+import * as ConnInfo from 'sql/platform/connection/common/connectionInfo';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ICredentialsService } from 'sql/platform/credentials/common/credentialsService';
-import { IConnectionConfig } from './iconnectionConfig';
-import { ConnectionConfig } from './connectionConfig';
+import { IConnectionConfig } from 'sql/platform/connection/common/iconnectionConfig';
+import { ConnectionConfig } from 'sql/platform/connection/common/connectionConfig';
 import { Memento } from 'vs/workbench/common/memento';
-import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
+import { StorageScope } from 'vs/platform/storage/common/storage';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from './connectionProfileGroup';
-import { ConfigurationEditingService } from 'vs/workbench/services/configuration/node/configurationEditingService';
-import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 const MAX_CONNECTIONS_DEFAULT = 25;
 
@@ -33,10 +32,8 @@ export class ConnectionStore {
 	private _groupFullNameToIdMap: { [groupId: string]: string };
 
 	constructor(
-		private _storageService: IStorageService,
 		private _context: Memento,
-		private _configurationEditService: ConfigurationEditingService,
-		private _workspaceConfigurationService: IWorkspaceConfigurationService,
+		private _configurationService: IConfigurationService,
 		private _credentialService: ICredentialsService,
 		private _capabilitiesService: ICapabilitiesService,
 		private _connectionConfig?: IConnectionConfig
@@ -47,8 +44,7 @@ export class ConnectionStore {
 		this._groupIdToFullNameMap = {};
 		this._groupFullNameToIdMap = {};
 		if (!this._connectionConfig) {
-			this._connectionConfig = new ConnectionConfig(this._configurationEditService,
-				this._workspaceConfigurationService, this._capabilitiesService);
+			this._connectionConfig = new ConnectionConfig(this._configurationService, this._capabilitiesService);
 		}
 	}
 
@@ -488,7 +484,7 @@ export class ConnectionStore {
 	}
 
 	private getMaxRecentConnectionsCount(): number {
-		let config = this._workspaceConfigurationService.getValue(Constants.sqlConfigSectionName);
+		let config = this._configurationService.getValue(Constants.sqlConfigSectionName);
 
 		let maxConnections: number = config[Constants.configMaxRecentConnections];
 		if (typeof (maxConnections) !== 'number' || maxConnections <= 0) {

@@ -9,15 +9,13 @@ import { IWindowService } from 'vs/platform/windows/common/windows';
 import { ITelemetryData } from 'vs/platform/telemetry/common/telemetry';
 import { IWorkspaceContextService, WorkbenchState, IWorkspaceFolder } from 'vs/platform/workspace/common/workspace';
 import { IWorkspaceEditingService } from 'vs/workbench/services/workspace/common/workspaceEditing';
-import { WORKSPACE_FILTER, IWorkspacesService } from 'vs/platform/workspaces/common/workspaces';
-import { mnemonicButtonLabel } from 'vs/base/common/labels';
+import { IWorkspacesService } from 'vs/platform/workspaces/common/workspaces';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { ADD_ROOT_FOLDER_COMMAND_ID, ADD_ROOT_FOLDER_LABEL, PICK_WORKSPACE_FOLDER_COMMAND_ID } from 'vs/workbench/browser/actions/workspaceCommands';
-import { URI } from 'vs/base/common/uri';
-import { Schemas } from 'vs/base/common/network';
 import { IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { INotificationService } from 'vs/platform/notification/common/notification';
+import { Schemas } from 'vs/base/common/network';
 
 export class OpenFileAction extends Action {
 
@@ -34,6 +32,24 @@ export class OpenFileAction extends Action {
 
 	run(event?: any, data?: ITelemetryData): Promise<any> {
 		return this.dialogService.pickFileAndOpen({ forceNewWindow: false, telemetryExtraData: data });
+	}
+}
+
+export class OpenLocalFileAction extends Action {
+
+	static readonly ID = 'workbench.action.files.openLocalFile';
+	static LABEL = nls.localize('openLocalFile', "Open Local File...");
+
+	constructor(
+		id: string,
+		label: string,
+		@IFileDialogService private readonly dialogService: IFileDialogService
+	) {
+		super(id, label);
+	}
+
+	run(event?: any, data?: ITelemetryData): Promise<any> {
+		return this.dialogService.pickFileAndOpen({ forceNewWindow: false, telemetryExtraData: data, availableFileSystems: [Schemas.file] });
 	}
 }
 
@@ -55,6 +71,25 @@ export class OpenFolderAction extends Action {
 	}
 }
 
+export class OpenLocalFolderAction extends Action {
+
+	static readonly ID = 'workbench.action.files.openLocalFolder';
+	static LABEL = nls.localize('openLocalFolder', "Open Local Folder...");
+
+	constructor(
+		id: string,
+		label: string,
+		@IFileDialogService private readonly dialogService: IFileDialogService
+	) {
+		super(id, label);
+	}
+
+	run(event?: any, data?: ITelemetryData): Promise<any> {
+		return this.dialogService.pickFolderAndOpen({ forceNewWindow: false, telemetryExtraData: data, availableFileSystems: [Schemas.file] });
+	}
+}
+
+
 export class OpenFileFolderAction extends Action {
 
 	static readonly ID = 'workbench.action.files.openFileFolder';
@@ -70,6 +105,24 @@ export class OpenFileFolderAction extends Action {
 
 	run(event?: any, data?: ITelemetryData): Promise<any> {
 		return this.dialogService.pickFileFolderAndOpen({ forceNewWindow: false, telemetryExtraData: data });
+	}
+}
+
+export class OpenLocalFileFolderAction extends Action {
+
+	static readonly ID = 'workbench.action.files.openLocalFileFolder';
+	static LABEL = nls.localize('openLocalFileFolder', "Open Local...");
+
+	constructor(
+		id: string,
+		label: string,
+		@IFileDialogService private readonly dialogService: IFileDialogService
+	) {
+		super(id, label);
+	}
+
+	run(event?: any, data?: ITelemetryData): Promise<any> {
+		return this.dialogService.pickFileFolderAndOpen({ forceNewWindow: false, telemetryExtraData: data, availableFileSystems: [Schemas.file] });
 	}
 }
 
@@ -133,15 +186,14 @@ export class SaveWorkspaceAsAction extends Action {
 		id: string,
 		label: string,
 		@IWorkspaceContextService private readonly contextService: IWorkspaceContextService,
-		@IWorkspaceEditingService private readonly workspaceEditingService: IWorkspaceEditingService,
-		@IFileDialogService private readonly dialogService: IFileDialogService
+		@IWorkspaceEditingService private readonly workspaceEditingService: IWorkspaceEditingService
 
 	) {
 		super(id, label);
 	}
 
 	run(): Promise<any> {
-		return this.getNewWorkspaceConfigPath().then((configPathUri): Promise<void> | void => {
+		return this.workspaceEditingService.pickNewWorkspacePath().then((configPathUri): Promise<void> | void => {
 			if (configPathUri) {
 				switch (this.contextService.getWorkbenchState()) {
 					case WorkbenchState.EMPTY:
@@ -153,15 +205,6 @@ export class SaveWorkspaceAsAction extends Action {
 						return this.workspaceEditingService.saveAndEnterWorkspace(configPathUri);
 				}
 			}
-		});
-	}
-
-	private getNewWorkspaceConfigPath(): Promise<URI | undefined> {
-		return this.dialogService.showSaveDialog({
-			saveLabel: mnemonicButtonLabel(nls.localize({ key: 'save', comment: ['&& denotes a mnemonic'] }, "&&Save")),
-			title: nls.localize('saveWorkspace', "Save Workspace"),
-			filters: WORKSPACE_FILTER,
-			defaultUri: this.dialogService.defaultWorkspacePath(Schemas.file)
 		});
 	}
 }
@@ -253,10 +296,11 @@ export class DuplicateWorkspaceInNewWindowAction extends Action {
 
 	run(): Promise<any> {
 		const folders = this.workspaceContextService.getWorkspace().folders;
+		const remoteAuthority = this.windowService.getConfiguration().remoteAuthority;
 
-		return this.workspacesService.createUntitledWorkspace(folders).then(newWorkspace => {
+		return this.workspacesService.createUntitledWorkspace(folders, remoteAuthority).then(newWorkspace => {
 			return this.workspaceEditingService.copyWorkspaceSettings(newWorkspace).then(() => {
-				return this.windowService.openWindow([URI.file(newWorkspace.configPath)], { forceNewWindow: true });
+				return this.windowService.openWindow([{ uri: newWorkspace.configPath, typeHint: 'file' }], { forceNewWindow: true });
 			});
 		});
 	}
