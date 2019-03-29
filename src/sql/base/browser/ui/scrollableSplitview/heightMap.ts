@@ -140,14 +140,7 @@ export class HeightMap {
 
 		let viewItem = this.heightMap[i];
 
-		let delta = viewItem.height - size;
-
 		viewItem.height = size;
-
-		// update all items after this item
-		for (let j = i + 1; j < this.heightMap.length; j++) {
-			this.heightMap[j].top -= delta;
-		}
 	}
 
 	protected updateTop(item: string, top: number): void {
