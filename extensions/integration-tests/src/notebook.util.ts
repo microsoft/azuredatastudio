@@ -10,7 +10,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as os from 'os';
-const path = require('path');
+import * as path from 'path';
 
 export class CellTypes {
 	public static readonly Code = 'code';
