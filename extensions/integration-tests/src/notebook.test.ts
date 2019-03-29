@@ -63,17 +63,19 @@ if (context.RunTest) {
 		test('Clear all outputs - SQL notebook ', async function () {
 			let notebook = await openNotebook(sqlNotebookContent, sqlKernelMetadata);
 			let cellWithOutputs = notebook.document.cells.find(cell => cell.contents && cell.contents.outputs && cell.contents.outputs.length > 0);
-			console.log("Before clearing cell outputs");
+			console.log('Before clearing cell outputs');
 			if (cellWithOutputs) {
 				let clearedOutputs = await notebook.clearAllOutputs();
 				let cells = notebook.document.cells;
 				cells.forEach(cell => {
-					assert(cell.contents && cell.contents.outputs && cell.contents.outputs.length === 0, `Expected Output: 0, Acutal: '${cell.contents.outputs.length}'`);
+					assert(cell.contents && cell.contents.outputs && cell.contents.outputs.length === 0, `Expected cell outputs to be empty. Actual: '${cell.contents.outputs}'`);
 				});
 				assert(clearedOutputs, 'Outputs of all the code cells from SQL notebook should be cleared');
-				console.log("After clearing cell outputs");
+				console.log('After clearing cell outputs');
 			}
-			assert(cellWithOutputs === undefined, 'Could not find notebook cells with outputs');
+			else {
+				throw new Error('Could not find notebook cells with outputs');
+			}
 		});
 
 
