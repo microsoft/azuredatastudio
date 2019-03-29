@@ -72,7 +72,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
 		@Inject(forwardRef(() => CommonServiceInterface)) commonService: CommonServiceInterface,
-		@Inject(forwardRef(() => AgentViewComponent)) private _agentViewComponent: AgentViewComponent,
+		@Inject(forwardRef(() => AgentViewComponent)) _agentViewComponent: AgentViewComponent,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
 		@Inject(IContextMenuService) private contextMenuService: IContextMenuService,
@@ -81,7 +81,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		@Inject(IDashboardService) dashboardService: IDashboardService,
 		@Inject(ITelemetryService) private _telemetryService: ITelemetryService
 	) {
-		super(commonService, dashboardService, contextMenuService, keybindingService, instantiationService);
+		super(commonService, dashboardService, contextMenuService, keybindingService, instantiationService, _agentViewComponent);
 		this._treeController = new JobHistoryController();
 		this._treeDataSource = new JobHistoryDataSource();
 		this._treeRenderer = new JobHistoryRenderer();
@@ -184,10 +184,16 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		});
 	}
 
-	private setStepsTree(element: any) {
+	private setStepsTree(element: JobHistoryRow) {
 		const self = this;
-		self.agentJobHistoryInfo = self._treeController.jobHistories.find(
+		let cachedHistory = self._jobCacheObject.getJobHistory(element.jobID);
+		if (cachedHistory) {
+			self.agentJobHistoryInfo = cachedHistory.find(
 			history => self.formatTime(history.runDate) === self.formatTime(element.runDate));
+		} else {
+			self.agentJobHistoryInfo = self._treeController.jobHistories.find(
+				history => self.formatTime(history.runDate) === self.formatTime(element.runDate));
+		}
 		if (self.agentJobHistoryInfo) {
 			self.agentJobHistoryInfo.runDate = self.formatTime(self.agentJobHistoryInfo.runDate);
 			if (self.agentJobHistoryInfo.steps) {
@@ -264,6 +270,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		jobHistoryRow.runDate = this.formatTime(historyInfo.runDate);
 		jobHistoryRow.runStatus = JobManagementUtilities.convertToStatusString(historyInfo.runStatus);
 		jobHistoryRow.instanceID = historyInfo.instanceId;
+		jobHistoryRow.jobID = historyInfo.jobId;
 		return jobHistoryRow;
 	}
 
@@ -331,27 +338,14 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		}
 	}
 
-	public refreshJobs() {
-		this._agentViewComponent.refresh = true;
-	}
-
 	protected initActionBar() {
 		let runJobAction = this.instantiationService.createInstance(RunJobAction);
 		let stopJobAction = this.instantiationService.createInstance(StopJobAction);
-		switch(this._agentJobInfo.currentExecutionStatus) {
-			case(1):
-			case(2):
-			case(3):
-				stopJobAction.enabled = true;
-				break;
-			default:
-				stopJobAction.enabled = false;
-		}
 		let editJobAction = this.instantiationService.createInstance(EditJobAction);
 		let refreshAction = this.instantiationService.createInstance(JobsRefreshAction);
 		let taskbar = <HTMLElement>this.actionBarContainer.nativeElement;
 		this._actionBar = new Taskbar(taskbar, this.contextMenuService);
-		this._actionBar.context = { targetObject: this._agentJobInfo, ownerUri: this.ownerUri, jobHistoryComponent: this };
+		this._actionBar.context = { targetObject: this._agentJobInfo, ownerUri: this.ownerUri, component: this };
 		this._actionBar.setContent([
 			{ action: runJobAction },
 			{ action: stopJobAction },

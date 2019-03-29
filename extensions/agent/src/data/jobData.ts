@@ -108,6 +108,7 @@ export class JobData implements IAgentDialogData {
 			this._defaultOwner = jobDefaults.owner;
 
 			this._operators = ['', this._defaultOwner];
+			this.owner = this.owner ? this.owner : this._defaultOwner;
 		}
 
 		this._jobCompletionActionConditions = [{
@@ -128,8 +129,22 @@ export class JobData implements IAgentDialogData {
 			? await this._agentService.createJob(this.ownerUri,  jobInfo)
 			: await this._agentService.updateJob(this.ownerUri, this.originalName, jobInfo);
 		if (!result || !result.success) {
-			vscode.window.showErrorMessage(
-				localize('jobData.saveErrorMessage', "Job update failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
+			if (this.dialogMode === AgentDialogMode.EDIT) {
+				vscode.window.showErrorMessage(
+					localize('jobData.saveErrorMessage', "Job update failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
+			} else {
+				vscode.window.showErrorMessage(
+					localize('jobData.newJobErrorMessage', "Job creation failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
+			}
+		} else {
+			if (this.dialogMode === AgentDialogMode.EDIT) {
+				vscode.window.showInformationMessage(
+					localize('jobData.saveSucessMessage', "Job '{0}' updated successfully", jobInfo.name));
+			} else {
+				vscode.window.showInformationMessage(
+					localize('jobData.newJobSuccessMessage',"Job '{0}' created successfully", jobInfo.name));
+			}
+
 		}
 	}
 
@@ -149,7 +164,7 @@ export class JobData implements IAgentDialogData {
 	public toAgentJobInfo(): azdata.AgentJobInfo {
 		return {
 			name: this.name,
-			owner: this.owner,
+			owner: this.owner ? this.owner : this.defaultOwner,
 			description: this.description,
 			emailLevel: this.emailLevel,
 			pageLevel: this.pageLevel,
