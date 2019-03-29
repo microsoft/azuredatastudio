@@ -22,7 +22,7 @@ suite('Insights Utils tests', function () {
     let queryFileDir: string;
     let queryFilePath: string;
 
-    setup(done => {
+    suiteSetup(done => {
         // Create test file - just needs to exist for verifying the path resolution worked correctly
         testRootPath = path.join(os.tmpdir(), 'adstests');
         queryFileDir = getRandomTestPath(testRootPath, 'insightsutils');
@@ -171,7 +171,7 @@ suite('Insights Utils tests', function () {
 
     });
 
-    teardown(done => {
+    suiteTeardown(done => {
         // Clean up our test files
         pfs.del(testRootPath).then(done());
     });
