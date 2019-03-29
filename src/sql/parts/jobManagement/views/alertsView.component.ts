@@ -201,7 +201,7 @@ export class AlertsViewComponent extends JobManagementView implements OnInit, On
 		this._table.resizeCanvas();
 	}
 
-	protected getTableActions(): IAction[] {
+	protected getTableActions(targetObject: any): IAction[] {
 		let actions: IAction[] = [];
 		actions.push(this._instantiationService.createInstance(EditAlertAction));
 		actions.push(this._instantiationService.createInstance(DeleteAlertAction));
@@ -209,9 +209,10 @@ export class AlertsViewComponent extends JobManagementView implements OnInit, On
 	}
 
 	protected getCurrentTableObject(rowIndex: number): any {
-		return (this.alerts && this.alerts.length >= rowIndex)
-			? this.alerts[rowIndex]
-			: undefined;
+		let targetObject = {
+			alertInfo: this.alerts && this.alerts.length >= rowIndex ? this.alerts[rowIndex] : undefined
+		};
+		return targetObject;
 	}
 
 
@@ -227,16 +228,6 @@ export class AlertsViewComponent extends JobManagementView implements OnInit, On
 
 	public openCreateAlertDialog() {
 		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
-		this._jobManagementService.getJobs(ownerUri).then((result) => {
-			if (result && result.jobs.length > 0) {
-				let jobs = [];
-				result.jobs.forEach(job => {
-					jobs.push(job.name);
-				});
-				this._commandService.executeCommand('agent.openAlertDialog', ownerUri, null, jobs);
-			} else {
-				this._commandService.executeCommand('agent.openAlertDialog', ownerUri, null, null);
-			}
-		});
+		this._commandService.executeCommand('agent.openAlertDialog', ownerUri, null, null);
 	}
 }

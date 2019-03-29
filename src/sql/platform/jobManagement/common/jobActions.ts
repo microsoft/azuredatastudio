@@ -70,9 +70,9 @@ export class NewJobAction extends Action {
 	}
 
 	public run(context: JobsViewComponent): Promise<boolean> {
-		return new Promise<boolean>((resolve, reject) => {
+		return new Promise<boolean>(async (resolve, reject) => {
 			try {
-				context.openCreateJobDialog();
+				await context.openCreateJobDialog();
 				resolve(true);
 			} catch (e) {
 				reject(e);
@@ -185,7 +185,7 @@ export class DeleteJobAction extends Action {
 
 	public run(actionInfo: IJobActionInfo): Promise<boolean> {
 		let self = this;
-		let job = actionInfo.targetObject as azdata.AgentJobInfo;
+		let job = actionInfo.targetObject.job as azdata.AgentJobInfo;
 		self._notificationService.prompt(
 			Severity.Info,
 			nls.localize('jobaction.deleteJobConfirm', "Are you sure you'd like to delete the job '{0}'?", job.name),
@@ -193,7 +193,7 @@ export class DeleteJobAction extends Action {
 				label: DeleteJobAction.LABEL,
 				run: () => {
 					this._telemetryService.publicLog(TelemetryKeys.DeleteAgentJob);
-					self._jobService.deleteJob(actionInfo.ownerUri, actionInfo.targetObject).then(result => {
+					self._jobService.deleteJob(actionInfo.ownerUri, actionInfo.targetObject.job).then(result => {
 						if (!result || !result.success) {
 							let errorMessage = nls.localize("jobaction.failedToDeleteJob", "Could not delete job '{0}'.\nError: {1}",
 								job.name, result.errorMessage ? result.errorMessage : 'Unknown error');
@@ -319,7 +319,8 @@ export class EditAlertAction extends Action {
 		this._commandService.executeCommand(
 			'agent.openAlertDialog',
 			actionInfo.ownerUri,
-			actionInfo.targetObject);
+			actionInfo.targetObject.jobInfo,
+			actionInfo.targetObject.alertInfo);
 		return Promise.resolve(true);
 	}
 }
@@ -340,7 +341,7 @@ export class DeleteAlertAction extends Action {
 
 	public run(actionInfo: IJobActionInfo): Promise<boolean> {
 		let self = this;
-		let alert = actionInfo.targetObject as azdata.AgentAlertInfo;
+		let alert = actionInfo.targetObject.alertInfo as azdata.AgentAlertInfo;
 		self._notificationService.prompt(
 			Severity.Info,
 			nls.localize('jobaction.deleteAlertConfirm', "Are you sure you'd like to delete the alert '{0}'?", alert.name),
@@ -348,7 +349,7 @@ export class DeleteAlertAction extends Action {
 				label: DeleteAlertAction.LABEL,
 				run: () => {
 					this._telemetryService.publicLog(TelemetryKeys.DeleteAgentAlert);
-					self._jobService.deleteAlert(actionInfo.ownerUri, actionInfo.targetObject).then(result => {
+					self._jobService.deleteAlert(actionInfo.ownerUri, alert).then(result => {
 						if (!result || !result.success) {
 							let errorMessage = nls.localize("jobaction.failedToDeleteAlert", "Could not delete alert '{0}'.\nError: {1}",
 								alert.name, result.errorMessage ? result.errorMessage : 'Unknown error');
@@ -482,17 +483,25 @@ export class EditProxyAction extends Action {
 	public static LABEL = nls.localize('jobaction.editProxy', "Edit Proxy");
 
 	constructor(
-		@ICommandService private _commandService: ICommandService
+		@ICommandService private _commandService: ICommandService,
+		@IJobManagementService private _jobManagementService: IJobManagementService
 	) {
 		super(EditProxyAction.ID, EditProxyAction.LABEL);
 	}
 
 	public run(actionInfo: IJobActionInfo): Promise<boolean> {
-		this._commandService.executeCommand(
-			'agent.openProxyDialog',
-			actionInfo.ownerUri,
-			actionInfo.targetObject);
-		return Promise.resolve(true);
+		return Promise.resolve(this._jobManagementService.getCredentials(actionInfo.ownerUri).then((result) => {
+			if (result && result.credentials) {
+				this._commandService.executeCommand(
+					'agent.openProxyDialog',
+					actionInfo.ownerUri,
+					actionInfo.targetObject,
+					result.credentials);
+				return true;
+			} else {
+				return false;
+			}
+		}));
 	}
 }
 
