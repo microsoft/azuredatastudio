@@ -8,9 +8,10 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IInsightsConfigDetails } from 'sql/parts/dashboard/widgets/insights/interfaces';
 import QueryRunner, { EventType as QREvents } from 'sql/platform/query/common/queryRunner';
 import * as Utils from 'sql/platform/connection/common/utils';
-import { IInsightsDialogModel, insertValueRegex } from 'sql/workbench/services/insights/common/insightsDialogService';
+import { IInsightsDialogModel } from 'sql/workbench/services/insights/common/insightsDialogService';
 import { error } from 'sql/base/common/log';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
+import { resolveQueryFilePath } from '../common/insightsUtils';
 
 import { DbCellValue, IDbColumn, QueryExecuteSubsetResult } from 'azdata';
 
@@ -19,8 +20,9 @@ import * as types from 'vs/base/common/types';
 import * as pfs from 'vs/base/node/pfs';
 import * as nls from 'vs/nls';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IWorkspaceContextService, WorkbenchState } from 'vs/platform/workspace/common/workspace';
+import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { INotificationService } from 'vs/platform/notification/common/notification';
+import { IConfigurationResolverService } from 'vs/workbench/services/configurationResolver/common/configurationResolver';
 
 export class InsightsDialogController {
 	private _queryRunner: QueryRunner;
@@ -35,10 +37,11 @@ export class InsightsDialogController {
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@IWorkspaceContextService private _workspaceContextService: IWorkspaceContextService
+		@IWorkspaceContextService private _workspaceContextService: IWorkspaceContextService,
+		@IConfigurationResolverService private _configurationResolverService: IConfigurationResolverService
 	) { }
 
-	public update(input: IInsightsConfigDetails, connectionProfile: IConnectionProfile): Thenable<void> {
+	public async update(input: IInsightsConfigDetails, connectionProfile: IConnectionProfile): Promise<void> {
 		// execute string
 		if (typeof input === 'object') {
 			if (connectionProfile === undefined) {
@@ -57,49 +60,32 @@ export class InsightsDialogController {
 					this._errorMessageService.showDialog(Severity.Error, nls.localize("insightsError", "Insights error"), e);
 				}).then(() => undefined);
 			} else if (types.isString(input.queryFile)) {
-				let filePath = input.queryFile;
-				// check for workspace relative path
-				let match = filePath.match(insertValueRegex);
-				if (match && match.length > 0 && match[1] === 'workspaceRoot') {
-					filePath = filePath.replace(match[0], '');
-
-					switch (this._workspaceContextService.getWorkbenchState()) {
-						case WorkbenchState.FOLDER:
-							filePath = this._workspaceContextService.getWorkspace().folders[0].toResource(filePath).fsPath;
-							break;
-						case WorkbenchState.WORKSPACE:
-							let filePathArray = filePath.split('/');
-							// filter out empty sections
-							filePathArray = filePathArray.filter(i => !!i);
-							let folder = this._workspaceContextService.getWorkspace().folders.find(i => i.name === filePathArray[0]);
-							if (!folder) {
-								return Promise.reject(new Error(`Could not find workspace folder ${filePathArray[0]}`));
-							}
-							// remove the folder name from the filepath
-							filePathArray.shift();
-							// rejoin the filepath after doing the work to find the right folder
-							filePath = '/' + filePathArray.join('/');
-							filePath = folder.toResource(filePath).fsPath;
-							break;
-					}
-
+				let filePath: string;
+				try {
+					filePath = await resolveQueryFilePath(input.queryFile,
+						this._workspaceContextService,
+						this._configurationResolverService);
 				}
-				return new Promise((resolve, reject) => {
-					pfs.readFile(filePath).then(
-						buffer => {
-							this.createQuery(buffer.toString(), connectionProfile).catch(e => {
-								this._errorMessageService.showDialog(Severity.Error, nls.localize("insightsError", "Insights error"), e);
-							}).then(() => resolve());
-						},
-						error => {
-							this._notificationService.notify({
-								severity: Severity.Error,
-								message: nls.localize("insightsFileError", "There was an error reading the query file: ") + error
-							});
-							resolve();
-						}
-					);
-				});
+				catch (e) {
+					this._notificationService.notify({
+						severity: Severity.Error,
+						message: e
+					});
+					return Promise.resolve();
+				}
+
+				try {
+					let buffer: Buffer = await pfs.readFile(filePath);
+					this.createQuery(buffer.toString(), connectionProfile).catch(e => {
+						this._errorMessageService.showDialog(Severity.Error, nls.localize("insightsError", "Insights error"), e);
+					});
+				}
+				catch (e) {
+					this._notificationService.notify({
+						severity: Severity.Error,
+						message: nls.localize("insightsFileError", "There was an error reading the query file: ") + e
+					});
+				}
 			} else {
 				error('Error reading details Query: ', input);
 				this._notificationService.notify({
