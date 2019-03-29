@@ -21,25 +21,21 @@ if (context.RunTest) {
 		test('Sql NB test', async function () {
 			console.log('Start Sql NB test');
 			let notebook = await openNotebook(sqlNotebookContent, sqlKernelMetadata);
-			try {
-				const expectedOutput0 = '(1 row affected)';
-				let cellOutputs = notebook.document.cells[0].contents.outputs;
-				console.log('Got cell outputs');
-				assert(cellOutputs.length === 3, `Expected length: 3, Acutal: ${cellOutputs.length}`);
-				let actualOutput0 = (<azdata.nb.IDisplayData>cellOutputs[0]).data['text/html'];
-				console.log('Got first output');
-				assert(actualOutput0 === expectedOutput0, `Expected row count: ${expectedOutput0}, Acutal: ${actualOutput0}`);
-				let actualOutput2 = (<azdata.nb.IExecuteResult>cellOutputs[2]).data['application/vnd.dataresource+json'].data[0];
-				assert(actualOutput2[0] === '1', `Expected result: 1, Acutal: '${actualOutput2[0]}'`);
 
-				if (fs.existsSync(notebook.document.fileName)) {
-					fs.unlinkSync(notebook.document.fileName);
-				}
-				console.log('Sql NB done');
+			const expectedOutput0 = '(1 row affected)';
+			let cellOutputs = notebook.document.cells[0].contents.outputs;
+			console.log('Got cell outputs');
+			assert(cellOutputs.length === 3, `Expected length: 3, Acutal: ${cellOutputs.length}`);
+			let actualOutput0 = (<azdata.nb.IDisplayData>cellOutputs[0]).data['text/html'];
+			console.log('Got first output');
+			assert(actualOutput0 === expectedOutput0, `Expected row count: ${expectedOutput0}, Acutal: ${actualOutput0}`);
+			let actualOutput2 = (<azdata.nb.IExecuteResult>cellOutputs[2]).data['application/vnd.dataresource+json'].data[0];
+			assert(actualOutput2[0] === '1', `Expected result: 1, Acutal: '${actualOutput2[0]}'`);
+
+			if (fs.existsSync(notebook.document.fileName)) {
+				fs.unlinkSync(notebook.document.fileName);
 			}
-			catch (err) {
-				console.log(err);
-			}
+			console.log('Sql NB done');
 		});
 
 		// test('Python3 notebook test', async function () {
