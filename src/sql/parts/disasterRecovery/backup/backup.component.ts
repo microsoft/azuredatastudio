@@ -11,7 +11,6 @@ import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { ListBox } from 'sql/base/browser/ui/listBox/listBox';
 import { ModalFooterStyle } from 'sql/workbench/browser/modal/modal';
-import { CategoryView } from 'sql/workbench/browser/modal/optionsDialog';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { attachButtonStyler, attachListBoxStyler, attachInputBoxStyler, attachSelectBoxStyler, attachCheckboxStyler } from 'sql/platform/theme/common/styler';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
@@ -25,14 +24,13 @@ import { IBackupUiService } from 'sql/workbench/services/backup/common/backupUiS
 import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import * as lifecycle from 'vs/base/common/lifecycle';
 import { localize } from 'vs/nls';
-import * as DOM from 'vs/base/browser/dom';
 import * as types from 'vs/base/common/types';
 import * as strings from 'vs/base/common/strings';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { SplitView, Sizing } from 'vs/base/browser/ui/splitview/splitview';
+import { ISelectOptionItem } from 'vs/base/browser/ui/selectBox/selectBox';
 
 export const BACKUP_SELECTOR: string = 'backup-component';
 
@@ -337,15 +335,6 @@ export class BackupComponent {
 	}
 
 	ngAfterViewInit() {
-		// Set category view for advanced options. This should be defined in ngAfterViewInit so that it correctly calculates the text height after data binding.
-		let advancedBodySize = DOM.getTotalHeight(this.advancedOptionBodyElement.nativeElement);
-		let bodyElement: HTMLElement = this.advancedOptionBodyElement.nativeElement;
-		bodyElement.remove();
-		let splitview = new SplitView(this.advancedOptionElement.nativeElement);
-		let categoryView = this.instantiationService.createInstance(CategoryView, bodyElement, advancedBodySize, { title: LocalizedStrings.ADVANCED_CONFIGURATION, id: LocalizedStrings.ADVANCED_CONFIGURATION, ariaHeaderLabel: LocalizedStrings.ADVANCED_CONFIGURATION });
-		splitview.addView(categoryView, advancedBodySize);
-		splitview.layout(advancedBodySize + this._advancedHeaderSize);
-
 		this._backupUiService.onShowBackupDialog();
 	}
 
@@ -436,9 +425,9 @@ export class BackupComponent {
 
 			// Set backup path list
 			this.setDefaultBackupPaths();
-			let pathlist = [];
+			let pathlist: ISelectOptionItem[] = [];
 			for (let i in this.backupPathTypePairs) {
-				pathlist.push(i);
+				pathlist.push({ text: i });
 			}
 			this.pathListBox.setOptions(pathlist, 0);
 
