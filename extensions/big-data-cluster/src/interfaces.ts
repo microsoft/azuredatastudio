@@ -84,7 +84,11 @@ export enum ClusterType {
 
 export interface ClusterProfile {
 	name: string;
-	pools: PoolConfiguration[];
+	sqlServerMasterConfiguration: SQLServerMasterConfiguration;
+	computePoolConfiguration: PoolConfiguration;
+	dataPoolConfiguration: PoolConfiguration;
+	storagePoolConfiguration: PoolConfiguration;
+	sparkPoolConfiguration: PoolConfiguration;
 }
 
 export interface PoolConfiguration {

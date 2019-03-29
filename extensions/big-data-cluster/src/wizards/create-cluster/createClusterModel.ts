@@ -71,7 +71,7 @@ export class CreateClusterModel implements Scriptable {
 			let existingCluster: TargetClusterTypeInfo = {
 				type: TargetClusterType.ExistingKubernetesCluster,
 				name: localize('bdc-create.ExistingClusterCardText', 'Existing Cluster'),
-				fullName: localize('bdc-create.ExistingClusterFullName', 'Existing Kubernetes Cluster'),
+				fullName: localize('bdc-create.ExistingClusterFullName', 'Existing Kubernetes cluster'),
 				description: localize('bdc-create.ExistingClusterDescription', 'This option assumes you already have a Kubernetes cluster installed, Once a prerequisite check is done, ensure the correct cluster context is selected.'),
 				iconPath: {
 					dark: 'images/kubernetes.svg',
@@ -259,33 +259,27 @@ export class CreateClusterModel implements Scriptable {
 				let profiles: ClusterProfile[] = [];
 				profiles.push({
 					name: 'Basic',
-					pools: [
-						this.createSQLPoolConfiguration(1, 1),
-						this.createComputePoolConfiguration(2),
-						this.createDataPoolConfiguration(2),
-						this.createStoragePoolConfiguration(2),
-						this.createSparkPoolConfiguration(2)
-					]
+					sqlServerMasterConfiguration: this.createSQLPoolConfiguration(1, 1),
+					computePoolConfiguration: this.createComputePoolConfiguration(2),
+					dataPoolConfiguration: this.createDataPoolConfiguration(2),
+					storagePoolConfiguration: this.createStoragePoolConfiguration(2),
+					sparkPoolConfiguration: this.createSparkPoolConfiguration(2)
 				});
 				profiles.push({
 					name: 'Standard',
-					pools: [
-						this.createSQLPoolConfiguration(3, 9),
-						this.createComputePoolConfiguration(5),
-						this.createDataPoolConfiguration(5),
-						this.createStoragePoolConfiguration(5),
-						this.createSparkPoolConfiguration(5)
-					]
+					sqlServerMasterConfiguration: this.createSQLPoolConfiguration(3, 9),
+					computePoolConfiguration: this.createComputePoolConfiguration(5),
+					dataPoolConfiguration: this.createDataPoolConfiguration(5),
+					storagePoolConfiguration: this.createStoragePoolConfiguration(5),
+					sparkPoolConfiguration: this.createSparkPoolConfiguration(5)
 				});
 				profiles.push({
 					name: 'Premium',
-					pools: [
-						this.createSQLPoolConfiguration(5, 9),
-						this.createComputePoolConfiguration(7),
-						this.createDataPoolConfiguration(7),
-						this.createStoragePoolConfiguration(7),
-						this.createSparkPoolConfiguration(7)
-					]
+					sqlServerMasterConfiguration: this.createSQLPoolConfiguration(5, 9),
+					computePoolConfiguration: this.createComputePoolConfiguration(7),
+					dataPoolConfiguration: this.createDataPoolConfiguration(7),
+					storagePoolConfiguration: this.createStoragePoolConfiguration(7),
+					sparkPoolConfiguration: this.createSparkPoolConfiguration(7)
 				});
 				resolve(profiles);
 			}, 1000);

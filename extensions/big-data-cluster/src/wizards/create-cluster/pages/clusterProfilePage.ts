@@ -172,18 +172,43 @@ export class ClusterProfilePage extends WizardPageBase<CreateClusterWizard> {
 	}
 
 	private initializePoolList(): void {
-		let poolTypes = [ClusterPoolType.SQL, ClusterPoolType.Compute, ClusterPoolType.Data, ClusterPoolType.Storage, ClusterPoolType.Spark];
-		poolTypes.forEach(poolType => {
+		let pools = [this.wizard.model.profile.sqlServerMasterConfiguration,
+		this.wizard.model.profile.computePoolConfiguration,
+		this.wizard.model.profile.dataPoolConfiguration,
+		this.wizard.model.profile.sparkPoolConfiguration,
+		this.wizard.model.profile.storagePoolConfiguration];
+		pools.forEach(pool => {
 			let poolSummaryButton = this.view.modelBuilder.divContainer().component();
 			let container = this.view.modelBuilder.flexContainer().component();
 			poolSummaryButton.onDidClick(() => {
 				this.clearPoolDetail();
-				let currentPool = this.wizard.model.profile.pools.filter(pool => pool.type === poolType)[0];
-				this.detailContainer.addItem(this.createPoolConfigurationPart(currentPool), { CSSStyles: { 'margin-left': '10px' } });
+				let currentPool: PoolConfiguration;
+				switch (pool.type) {
+					case ClusterPoolType.SQL:
+						currentPool = this.wizard.model.profile.sqlServerMasterConfiguration;
+						break;
+					case ClusterPoolType.Compute:
+						currentPool = this.wizard.model.profile.computePoolConfiguration;
+						break;
+					case ClusterPoolType.Data:
+						currentPool = this.wizard.model.profile.dataPoolConfiguration;
+						break;
+					case ClusterPoolType.Storage:
+						currentPool = this.wizard.model.profile.storagePoolConfiguration;
+						break;
+					case ClusterPoolType.Spark:
+						currentPool = this.wizard.model.profile.sparkPoolConfiguration;
+						break;
+					default:
+						break;
+				}
+				if (currentPool) {
+					this.detailContainer.addItem(this.createPoolConfigurationPart(currentPool), { CSSStyles: { 'margin-left': '10px' } });
+				}
 			});
 
 			let text = this.view.modelBuilder.text().component();
-			this.poolListMap[poolType] = text;
+			this.poolListMap[pool.type] = text;
 			text.width = '250px';
 			let chrevron = this.view.modelBuilder.text().withProperties({ value: '>' }).component();
 			chrevron.width = '30px';
@@ -345,7 +370,12 @@ export class ClusterProfilePage extends WizardPageBase<CreateClusterWizard> {
 	}
 
 	private updatePoolList(): void {
-		this.wizard.model.profile.pools.forEach(pool => {
+		let pools = [this.wizard.model.profile.sqlServerMasterConfiguration,
+		this.wizard.model.profile.computePoolConfiguration,
+		this.wizard.model.profile.dataPoolConfiguration,
+		this.wizard.model.profile.sparkPoolConfiguration,
+		this.wizard.model.profile.storagePoolConfiguration];
+		pools.forEach(pool => {
 			let text = this.poolListMap[pool.type] as azdata.TextComponent;
 			if (text) {
 				text.value = localize({
