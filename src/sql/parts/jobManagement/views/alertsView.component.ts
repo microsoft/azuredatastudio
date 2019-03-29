@@ -77,7 +77,7 @@ export class AlertsViewComponent extends JobManagementView implements OnInit, On
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
-		@Inject(forwardRef(() => AgentViewComponent)) private _agentViewComponent: AgentViewComponent,
+		@Inject(forwardRef(() => AgentViewComponent)) _agentViewComponent: AgentViewComponent,
 		@Inject(IJobManagementService) private _jobManagementService: IJobManagementService,
 		@Inject(ICommandService) private _commandService: ICommandService,
 		@Inject(IInstantiationService) instantiationService: IInstantiationService,
@@ -85,7 +85,7 @@ export class AlertsViewComponent extends JobManagementView implements OnInit, On
 		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
 		@Inject(IKeybindingService) keybindingService: IKeybindingService,
 		@Inject(IDashboardService) _dashboardService: IDashboardService) {
-		super(commonService, _dashboardService, contextMenuService, keybindingService, instantiationService);
+		super(commonService, _dashboardService, contextMenuService, keybindingService, instantiationService, _agentViewComponent);
 		this._didTabChange = false;
 		this._isCloud = commonService.connectionManagementService.connectionInfo.serverInfo.isCloud;
 		let alertsCacheObjectMap = this._jobManagementService.alertsCacheObjectMap;
@@ -147,6 +147,7 @@ export class AlertsViewComponent extends JobManagementView implements OnInit, On
 		$(this._gridEl.nativeElement).empty();
 		$(this.actionBarContainer.nativeElement).empty();
 		this.initActionBar();
+
 		this._table = new Table(this._gridEl.nativeElement, { columns }, this.options);
 		this._table.grid.setData(this.dataView, true);
 		this._register(this._table.onContextMenu(e => {
@@ -237,9 +238,5 @@ export class AlertsViewComponent extends JobManagementView implements OnInit, On
 				this._commandService.executeCommand('agent.openAlertDialog', ownerUri, null, null);
 			}
 		});
-	}
-
-	private refreshJobs() {
-		this._agentViewComponent.refresh = true;
 	}
 }

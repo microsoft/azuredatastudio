@@ -21,7 +21,7 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
 import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowdetailview';
 import { JobCacheObject } from 'sql/platform/jobManagement/common/jobManagementService';
-import { EditJobAction, DeleteJobAction, NewJobAction } from 'sql/platform/jobManagement/common/jobActions';
+import { EditJobAction, DeleteJobAction, NewJobAction, IJobActionInfo } from 'sql/platform/jobManagement/common/jobActions';
 import { JobManagementUtilities } from 'sql/platform/jobManagement/common/jobManagementUtilities';
 import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
@@ -99,7 +99,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		@Inject(forwardRef(() => CommonServiceInterface)) commonService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
-		@Inject(forwardRef(() => AgentViewComponent)) private _agentViewComponent: AgentViewComponent,
+		@Inject(forwardRef(() => AgentViewComponent)) _agentViewComponent: AgentViewComponent,
 		@Inject(IJobManagementService) private _jobManagementService: IJobManagementService,
 		@Inject(IWorkbenchThemeService) private _themeService: IWorkbenchThemeService,
 		@Inject(ICommandService) private _commandService: ICommandService,
@@ -109,7 +109,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		@Inject(IDashboardService) _dashboardService: IDashboardService,
 		@Inject(ITelemetryService) private _telemetryService: ITelemetryService
 	) {
-		super(commonService, _dashboardService, contextMenuService, keybindingService, instantiationService);
+		super(commonService, _dashboardService, contextMenuService, keybindingService, instantiationService, _agentViewComponent);
 		let jobCacheObjectMap = this._jobManagementService.jobCacheObjectMap;
 		let jobCache = jobCacheObjectMap[this._serverName];
 		if (jobCache) {

@@ -19,6 +19,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
+import { JobManagementView } from 'sql/parts/jobManagement/views/jobManagementView';
 
 export const successLabel: string = nls.localize('jobaction.successLabel', 'Success');
 export const errorLabel: string = nls.localize('jobaction.faillabel', 'Error');
@@ -31,8 +32,7 @@ export enum JobActions {
 export class IJobActionInfo {
 	ownerUri: string;
 	targetObject: any;
-	jobHistoryComponent?: JobHistoryComponent;
-	jobViewComponent?: JobsViewComponent;
+	component: JobManagementView;
 }
 
 // Job actions
@@ -49,7 +49,9 @@ export class JobsRefreshAction extends Action {
 	public run(context: IJobActionInfo): Promise<boolean> {
 		return new Promise<boolean>((resolve, reject) => {
 			if (context) {
-				context.jobHistoryComponent.refreshJobs();
+				if (context.component) {
+					context.component.refreshJobs();
+				}
 				resolve(true);
 			} else {
 				reject(false);
