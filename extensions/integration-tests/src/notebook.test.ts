@@ -14,6 +14,7 @@ import { context } from './testContext';
 import { sqlNotebookContent, writeNotebookToFile, sqlKernelMetadata } from './notebook.util';
 import { getBdcServer } from './testConfig';
 import { connectToServer } from './utils';
+import * as fs from 'fs';
 
 if (context.RunTest) {
 	suite('Notebook integration test suite', () => {
@@ -30,6 +31,9 @@ if (context.RunTest) {
 			assert(actualOutput0 === expectedOutput0, `Expected row count: '${expectedOutput0}', Acutal: '${actualOutput0}'`);
 			let actualOutput2 = (<azdata.nb.IExecuteResult>cellOutputs[2]).data['application/vnd.dataresource+json'].data[0];
 			assert(actualOutput2[0] === '1', `Expected result: 1, Acutal: '${actualOutput2[0]}'`);
+			if (fs.existsSync(notebook.document.fileName)) {
+				fs.unlink(notebook.document.fileName);
+			}
 			console.log('Sql NB done');
 		});
 

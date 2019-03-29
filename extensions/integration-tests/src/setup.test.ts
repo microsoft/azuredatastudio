@@ -20,7 +20,10 @@ if (!context.RunTest) {
 
 			assert(process.env.BDC_BACKEND_HOSTNAME !== undefined &&
 				process.env.BDC_BACKEND_USERNAME !== undefined &&
-				process.env.BDC_BACKEND_PWD !== undefined, 'BDC_BACKEND_HOSTNAME, BDC_BACKEND_USERNAME, BDC_BACKEND_PWD must be set using ./scripts/setbackenvariables.sh or .\\scripts\\setbackendvaraibles.bat');
+				process.env.BDC_BACKEND_PWD !== undefined &&
+				process.env.STANDALONE_SQL_PWD !== undefined &&
+				process.env.STANDALONE_SQL_USERNAME !== undefined &&
+				process.env.PYTHON_TEST_PATH, 'BDC_BACKEND_HOSTNAME, BDC_BACKEND_USERNAME, BDC_BACKEND_PWD must be set using ./scripts/setbackenvariables.sh or .\\scripts\\setbackendvaraibles.bat');
 		});
 	});
 }
