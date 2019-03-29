@@ -39,7 +39,6 @@ const statusView = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.L
 const jupyterNotebookProviderId = 'jupyter';
 const msgSampleCodeDataFrame = localize('msgSampleCodeDataFrame', 'This sample code loads the file into a data frame and shows the first 10 results.');
 
-let untitledCounter = 0;
 
 export async function activate(context: vscode.ExtensionContext): Promise<MssqlExtensionApi> {
 	// lets make sure we support this platform first
@@ -181,18 +180,18 @@ function saveProfileAndCreateNotebook(profile: azdata.IConnectionProfile): Promi
 }
 
 function findNextUntitledEditorName(): string {
-	let nextVal = untitledCounter;
+	let nextVal = 0;
 	// Note: this will go forever if it's coded wrong, or you have inifinite Untitled notebooks!
 	while (true) {
-		let title = `Notebook-${nextVal++}`;
-		let hasTextDoc = vscode.workspace.textDocuments.findIndex(doc => doc.isUntitled && doc.fileName === title) > -1;
+		let title = `Notebook-${nextVal}`;
 		let hasNotebookDoc = azdata.nb.notebookDocuments.findIndex(doc => doc.isUntitled && doc.fileName === title) > -1;
-		if (!hasTextDoc && !hasNotebookDoc) {
-			untitledCounter = nextVal;
+		if (!hasNotebookDoc) {
 			return title;
 		}
+		nextVal++;
 	}
 }
+
 async function handleNewNotebookTask(oeContext?: azdata.ObjectExplorerContext, profile?: azdata.IConnectionProfile): Promise<void> {
 	// Ensure we get a unique ID for the notebook. For now we're using a different prefix to the built-in untitled files
 	// to handle this. We should look into improving this in the future

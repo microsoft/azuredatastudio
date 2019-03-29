@@ -11,7 +11,7 @@ import assert = require('assert');
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { context } from './testContext';
-import { sqlNotebookContent, writeNotebookToFile, sqlKernelMetadata, pythonKernelMetadata, pySparkNotebookContent } from './notebook.util';
+import { sqlNotebookContent, writeNotebookToFile, sqlKernelMetadata } from './notebook.util';
 import { getBdcServer } from './testConfig';
 import { connectToServer } from './utils';
 
@@ -33,15 +33,51 @@ if (context.RunTest) {
 			console.log('Sql NB done');
 		});
 
-		test('Python3 notebook test', async function () {
-			console.log('Start Python3 NB test');
-			let notebook = await openNotebook(pySparkNotebookContent, pythonKernelMetadata);
-			let cellOutputs = notebook.document.cells[0].contents.outputs;
-			console.log('Got cell outputs');
-			let result = (<azdata.nb.IExecuteResult>cellOutputs[0]).data['text/plain'];
-			assert(result === '2', `Expected: 2, Acutal: '${result}'`);
-			console.log('Python3 NB done');
+		// test('Python3 notebook test', async function () {
+		// 	console.log('Start Python3 NB test');
+		// 	let notebook = await openNotebook(pySparkNotebookContent, pythonKernelMetadata);
+		// 	let cellOutputs = notebook.document.cells[0].contents.outputs;
+		// 	console.log('Got cell outputs');
+		// 	let result = (<azdata.nb.IExecuteResult>cellOutputs[0]).data['text/plain'];
+		// 	assert(result === '2', `Expected: 2, Acutal: '${result}'`);
+		// 	console.log('Python3 NB done');
+		// });
+
+		// test('Clear all outputs - Python3 notebook ', async function () {
+		// 	let notebook = await openNotebook(pySparkNotebookContent, pythonKernelMetadata);
+		// 	//Check if at least one cell with output
+		// 	let cellWithOutputs = notebook.document.cells.find(cell => cell.contents && cell.contents.outputs && cell.contents.outputs.length > 0);
+		// 	console.log("Before clearing cell outputs");
+		// 	if (cellWithOutputs) {
+		// 		let clearedOutputs = await notebook.clearAllOutputs();
+		// 		let cells = notebook.document.cells;
+		// 		cells.forEach(cell => {
+		// 			assert(cell.contents && cell.contents.outputs && cell.contents.outputs.length === 0, `Expected Output: 0, Acutal: '${cell.contents.outputs.length}'`);
+		// 		});
+		// 		assert(clearedOutputs, 'Outputs of all the code cells from Python notebook should be cleared');
+		// 		console.log("After clearing cell outputs");
+		// 	}
+		// 	assert(cellWithOutputs === undefined, 'Could not find notebook cells with outputs');
+		// });
+
+		test('Clear all outputs - SQL notebook ', async function () {
+			let notebook = await openNotebook(sqlNotebookContent, sqlKernelMetadata);
+			let cellWithOutputs = notebook.document.cells.find(cell => cell.contents && cell.contents.outputs && cell.contents.outputs.length > 0);
+			console.log('Before clearing cell outputs');
+			if (cellWithOutputs) {
+				let clearedOutputs = await notebook.clearAllOutputs();
+				let cells = notebook.document.cells;
+				cells.forEach(cell => {
+					assert(cell.contents && cell.contents.outputs && cell.contents.outputs.length === 0, `Expected cell outputs to be empty. Actual: '${cell.contents.outputs}'`);
+				});
+				assert(clearedOutputs, 'Outputs of all the code cells from SQL notebook should be cleared');
+				console.log('After clearing cell outputs');
+			}
+			else {
+				throw new Error('Could not find notebook cells with outputs');
+			}
 		});
+
 
 		// test('PySpark3 notebook test', async function () {
 		// 	this.timeout(12000);
