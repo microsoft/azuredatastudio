@@ -12,7 +12,7 @@ const withDefaults = require('../shared.webpack.config');
 module.exports = withDefaults({
 	context: __dirname,
 	entry: {
-		extension: './src/main.ts'
+		main: './src/main.ts'
 	},
 	externals: {
 		'clipboardy': 'commonjs clipboardy',
