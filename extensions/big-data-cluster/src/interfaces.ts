@@ -88,6 +88,32 @@ export interface ClusterProfile {
 }
 
 export interface PoolConfiguration {
-	name: string;
+	type: ClusterPoolType;
 	scale: number;
+	maxScale?: number;
+	hardwareLabel?: string;
+}
+
+export interface SQLServerMasterConfiguration extends PoolConfiguration {
+	engineOnly: boolean;
+}
+
+export enum ClusterPoolType {
+	SQL,
+	Compute,
+	Data,
+	Storage,
+	Spark
+}
+
+export interface ClusterResourceSummary {
+	hardwareLabels: HardwareLabel[];
+}
+
+export interface HardwareLabel {
+	name: string;
+	totalNodes: number;
+	totalCores: number;
+	totalMemoryInGB: number;
+	totalDisks: number;
 }

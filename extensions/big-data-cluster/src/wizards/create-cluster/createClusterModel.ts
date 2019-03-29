@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { TargetClusterType, ClusterPorts, ClusterType, ContainerRegistryInfo, TargetClusterTypeInfo, ToolInfo, ToolInstallationStatus, ClusterProfile } from '../../interfaces';
+import { TargetClusterType, ClusterPorts, ClusterType, ContainerRegistryInfo, TargetClusterTypeInfo, ToolInfo, ToolInstallationStatus, ClusterProfile, PoolConfiguration, SQLServerMasterConfiguration, ClusterPoolType, ClusterResourceSummary } from '../../interfaces';
 import { getContexts, KubectlContext, setContext, inferCurrentClusterType } from '../../kubectl/kubectlUtils';
 import { Kubectl } from '../../kubectl/kubectl';
 import { Scriptable, ScriptingDictionary } from '../../scripting/scripting';
@@ -106,7 +106,7 @@ export class CreateClusterModel implements Scriptable {
 			setTimeout(() => {
 				let tools = this.targetClusterType === TargetClusterType.ExistingKubernetesCluster ? [kubeCtl, mssqlCtl] : [kubeCtl, mssqlCtl, azureCli];
 				resolve(tools);
-			}, 2000);
+			}, 1000);
 		});
 		return promise;
 	}
@@ -117,7 +117,7 @@ export class CreateClusterModel implements Scriptable {
 				tool.status = ToolInstallationStatus.Installed;
 				this._tmp_tools_installed = true;
 				resolve();
-			}, 2000);
+			}, 1000);
 		});
 		return promise;
 	}
@@ -212,6 +212,47 @@ export class CreateClusterModel implements Scriptable {
 		return this.selectedCluster;
 	}
 
+	public getClusterResource(): Thenable<ClusterResourceSummary> {
+		let promise = new Promise<ClusterResourceSummary>(resolve => {
+			setTimeout(() => {
+				let resoureSummary: ClusterResourceSummary = {
+					hardwareLabels: [
+						{
+							name: '<Default>',
+							totalNodes: 10,
+							totalCores: 22,
+							totalDisks: 128,
+							totalMemoryInGB: 77
+						},
+						{
+							name: '#data',
+							totalNodes: 4,
+							totalCores: 22,
+							totalDisks: 200,
+							totalMemoryInGB: 100
+						},
+						{
+							name: '#compute',
+							totalNodes: 12,
+							totalCores: 124,
+							totalDisks: 24,
+							totalMemoryInGB: 100
+						},
+						{
+							name: '#premium',
+							totalNodes: 10,
+							totalCores: 100,
+							totalDisks: 200,
+							totalMemoryInGB: 770
+						}
+					]
+				};
+				resolve(resoureSummary);
+			}, 1000);
+		});
+		return promise;
+	}
+
 	public getProfiles(): Thenable<ClusterProfile[]> {
 		let promise = new Promise<ClusterProfile[]>(resolve => {
 			setTimeout(() => {
@@ -219,81 +260,73 @@ export class CreateClusterModel implements Scriptable {
 				profiles.push({
 					name: 'Basic',
 					pools: [
-						{
-							name: 'SQL Server master',
-							scale: 1
-						},
-						{
-							name: 'Compute pool',
-							scale: 1
-						},
-						{
-							name: 'Data pool',
-							scale: 1
-						},
-						{
-							name: 'Storage pool',
-							scale: 1
-						},
-						{
-							name: 'Spark pool',
-							scale: 1
-						},
+						this.createSQLPoolConfiguration(1, 1),
+						this.createComputePoolConfiguration(2),
+						this.createDataPoolConfiguration(2),
+						this.createStoragePoolConfiguration(2),
+						this.createSparkPoolConfiguration(2)
 					]
 				});
 				profiles.push({
 					name: 'Standard',
 					pools: [
-						{
-							name: 'SQL Server master',
-							scale: 3
-						},
-						{
-							name: 'Compute pool',
-							scale: 3
-						},
-						{
-							name: 'Data pool',
-							scale: 2
-						},
-						{
-							name: 'Storage pool',
-							scale: 2
-						},
-						{
-							name: 'Spark pool',
-							scale: 2
-						},
+						this.createSQLPoolConfiguration(3, 9),
+						this.createComputePoolConfiguration(5),
+						this.createDataPoolConfiguration(5),
+						this.createStoragePoolConfiguration(5),
+						this.createSparkPoolConfiguration(5)
 					]
 				});
 				profiles.push({
 					name: 'Premium',
 					pools: [
-						{
-							name: 'SQL Server master',
-							scale: 5
-						},
-						{
-							name: 'Compute pool',
-							scale: 7
-						},
-						{
-							name: 'Data pool',
-							scale: 7
-						},
-						{
-							name: 'Storage pool',
-							scale: 7
-						},
-						{
-							name: 'Spark pool',
-							scale: 4
-						},
+						this.createSQLPoolConfiguration(5, 9),
+						this.createComputePoolConfiguration(7),
+						this.createDataPoolConfiguration(7),
+						this.createStoragePoolConfiguration(7),
+						this.createSparkPoolConfiguration(7)
 					]
 				});
 				resolve(profiles);
-			}, 2000);
+			}, 1000);
 		});
 		return promise;
+	}
+
+	private createSQLPoolConfiguration(scale: number, maxScale: number): SQLServerMasterConfiguration {
+		return <SQLServerMasterConfiguration>{
+			type: ClusterPoolType.SQL,
+			engineOnly: false,
+			scale: scale,
+			maxScale: maxScale
+		};
+	}
+
+	private createComputePoolConfiguration(scale: number): PoolConfiguration {
+		return {
+			type: ClusterPoolType.Compute,
+			scale: scale
+		};
+	}
+
+	private createDataPoolConfiguration(scale: number): PoolConfiguration {
+		return {
+			type: ClusterPoolType.Data,
+			scale: scale
+		};
+	}
+
+	private createStoragePoolConfiguration(scale: number): PoolConfiguration {
+		return {
+			type: ClusterPoolType.Storage,
+			scale: scale
+		};
+	}
+
+	private createSparkPoolConfiguration(scale: number): PoolConfiguration {
+		return {
+			type: ClusterPoolType.Spark,
+			scale: scale
+		};
 	}
 }
