@@ -35,7 +35,7 @@ export class SelectTargetClusterTypePage extends WizardPageBase<CreateClusterWiz
 			wizard);
 		this.installToolsButton = azdata.window.createButton(InstallToolsButtonText);
 		this.installToolsButton.hidden = true;
-		this.installToolsButton.onClick(async () => {
+		this.wizard.registerDisposable(this.installToolsButton.onClick(async () => {
 			this.wizard.wizardObject.message = null;
 			this.installToolsButton.label = InstallingButtonText;
 			this.installToolsButton.enabled = false;
@@ -53,14 +53,14 @@ export class SelectTargetClusterTypePage extends WizardPageBase<CreateClusterWiz
 
 			this.installToolsButton.label = InstallToolsButtonText;
 			this.updateRequiredToolStatus();
-		});
+		}));
 		this.wizard.addButton(this.installToolsButton);
 
 		this.refreshToolsButton = azdata.window.createButton(localize('bdc-create.RefreshToolsButtonText', 'Refresh Status'));
 		this.refreshToolsButton.hidden = true;
-		this.refreshToolsButton.onClick(() => {
+		this.wizard.registerDisposable(this.refreshToolsButton.onClick(() => {
 			this.updateRequiredToolStatus();
-		});
+		}));
 		this.wizard.addButton(this.refreshToolsButton);
 	}
 
@@ -168,7 +168,7 @@ export class SelectTargetClusterTypePage extends WizardPageBase<CreateClusterWiz
 			},
 			label: targetClusterTypeInfo.name
 		}).component();
-		card.onCardSelectedChanged(() => {
+		this.wizard.registerDisposable(card.onCardSelectedChanged(() => {
 			if (card.selected) {
 				self.wizard.wizardObject.message = null;
 				self.wizard.model.targetClusterType = targetClusterTypeInfo.type;
@@ -201,7 +201,7 @@ export class SelectTargetClusterTypePage extends WizardPageBase<CreateClusterWiz
 					card.selected = true;
 				}
 			}
-		});
+		}));
 		return card;
 	}
 

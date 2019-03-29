@@ -23,7 +23,6 @@ export class ClusterProfilePage extends WizardPageBase<CreateClusterWizard> {
 	private detailContainer: azdata.FlexContainer;
 	private clusterResourceView: azdata.GroupContainer;
 	private poolListMap = {};
-	private toDispose: vscode.Disposable[] = [];
 	private clusterResourceContainer: azdata.FlexContainer;
 	private clusterResourceLoadingComponent: azdata.LoadingComponent;
 	private clusterResource: ClusterResourceSummary;
@@ -89,14 +88,14 @@ export class ClusterProfilePage extends WizardPageBase<CreateClusterWizard> {
 				}
 			});
 
-			profileDropdown.onValueChanged(() => {
+			this.wizard.registerDisposable(profileDropdown.onValueChanged(() => {
 				let profiles = this.clusterProfiles.filter(p => profileDropdown.value === p.name);
 				if (profiles && profiles.length === 1) {
 					this.wizard.model.profile = profiles[0];
 					this.updatePoolList();
 					this.clearPoolDetail();
 				}
-			});
+			}));
 
 			this.initializePoolList();
 
@@ -180,7 +179,7 @@ export class ClusterProfilePage extends WizardPageBase<CreateClusterWizard> {
 		pools.forEach(pool => {
 			let poolSummaryButton = this.view.modelBuilder.divContainer().withProperties<azdata.DivContainerProperties>({ clickable: true }).component();
 			let container = this.view.modelBuilder.flexContainer().component();
-			poolSummaryButton.onDidClick(() => {
+			this.wizard.registerDisposable(poolSummaryButton.onDidClick(() => {
 				this.clearPoolDetail();
 				let currentPool: PoolConfiguration;
 				switch (pool.type) {
@@ -205,7 +204,7 @@ export class ClusterProfilePage extends WizardPageBase<CreateClusterWizard> {
 				if (currentPool) {
 					this.detailContainer.addItem(this.createPoolConfigurationPart(currentPool), { CSSStyles: { 'margin-left': '10px' } });
 				}
-			});
+			}));
 
 			let text = this.view.modelBuilder.text().component();
 			this.poolListMap[pool.type] = text;
@@ -286,7 +285,7 @@ export class ClusterProfilePage extends WizardPageBase<CreateClusterWizard> {
 			max: configuration.maxScale
 		}).component();
 
-		this.toDispose.push(input.onTextChanged(() => {
+		this.wizard.registerDisposable(input.onTextChanged(() => {
 			configuration.scale = Number(input.value);
 			this.updatePoolList();
 		}));
@@ -301,7 +300,7 @@ export class ClusterProfilePage extends WizardPageBase<CreateClusterWizard> {
 		let optionalValues = this.clusterResource.hardwareLabels.map(label => label.name);
 		configuration.hardwareLabel = configuration.hardwareLabel ? configuration.hardwareLabel : optionalValues[0];
 		let input = this.view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({ value: configuration.hardwareLabel, values: optionalValues }).component();
-		this.toDispose.push(input.onValueChanged(() => {
+		this.wizard.registerDisposable(input.onValueChanged(() => {
 			configuration.hardwareLabel = input.value.toString();
 		}));
 		input.width = InputWidth;
@@ -319,10 +318,10 @@ export class ClusterProfilePage extends WizardPageBase<CreateClusterWizard> {
 		optionContainer.width = InputWidth;
 		optionContainer.addItems([engineOnlyOption, engineWithFeaturesOption]);
 		container.addItem(this.createRow([label, optionContainer]));
-		this.toDispose.push(engineOnlyOption.onDidClick(() => {
+		this.wizard.registerDisposable(engineOnlyOption.onDidClick(() => {
 			configuration.engineOnly = true;
 		}));
-		this.toDispose.push(engineWithFeaturesOption.onDidClick(() => {
+		this.wizard.registerDisposable(engineWithFeaturesOption.onDidClick(() => {
 			configuration.engineOnly = false;
 		}));
 	}
@@ -388,12 +387,5 @@ export class ClusterProfilePage extends WizardPageBase<CreateClusterWizard> {
 
 	private clearPoolDetail(): void {
 		this.detailContainer.clearItems();
-		this.toDispose.forEach(disposable => {
-			try {
-				disposable.dispose();
-			}
-			catch{ }
-		});
-		this.toDispose = [];
 	}
 }
