@@ -17,6 +17,8 @@ import { ContainerBase } from 'sql/parts/modelComponents/componentBase';
 import { ModelComponentWrapper } from 'sql/parts/modelComponents/modelComponentWrapper.component';
 
 import types = require('vs/base/common/types');
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { KeyCode } from 'vs/base/common/keyCodes';
 
 class DivItem {
 	constructor(public descriptor: IComponentDescriptor, public config: azdata.DivItemLayout) { }
@@ -24,7 +26,7 @@ class DivItem {
 
 @Component({
 	template: `
-		<div #divContainer *ngIf="items" class="divContainer" [style.height]="height" [style.width]="width"  (click)="onClick()">
+		<div #divContainer *ngIf="items" class="divContainer" [style.height]="height" [style.width]="width"  (click)="onClick()" (keyup)="onKey($event)" [tabIndex]="tabIndex">
 			<div *ngFor="let item of items" [style.order]="getItemOrder(item)" [ngStyle]="getItemStyles(item)">
 				<model-component-wrapper [descriptor]="item.descriptor" [modelStore]="modelStore">
 				</model-component-wrapper>
@@ -116,6 +118,22 @@ export default class DivContainer extends ContainerBase<azdata.DivItemLayout> im
 	}
 	public set yOffsetChange(newValue: number) {
 		this.setPropertyFromUI<azdata.DivContainerProperties, any>((properties, newValue) => { properties.yOffsetChange = newValue; }, newValue);
+	}
+
+	public get clickable(): boolean {
+		return this.getPropertyOrDefault<azdata.DivContainerProperties, boolean>((props) => props.clickable, false);
+	}
+
+	public get tabIndex(): number {
+		return this.clickable ? 0 : -1;
+	}
+
+	private onKey(e: KeyboardEvent) {
+		let event = new StandardKeyboardEvent(e);
+		if (event.equals(KeyCode.Enter) || event.equals(KeyCode.Space)) {
+			this.onClick();
+			e.stopPropagation();
+		}
 	}
 
 	private getItemOrder(item: DivItem): number {

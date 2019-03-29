@@ -3027,6 +3027,11 @@ declare module 'azdata' {
 		 * This is used when its child component is webview
 		 */
 		yOffsetChange?: number;
+
+		/**
+		 * Indicates whether the element is clickable
+		 */
+		clickable?: boolean;
 	}
 
 	export interface CardComponent extends Component, CardProperties {

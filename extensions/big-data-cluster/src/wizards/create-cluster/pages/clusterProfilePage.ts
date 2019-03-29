@@ -178,7 +178,7 @@ export class ClusterProfilePage extends WizardPageBase<CreateClusterWizard> {
 		this.wizard.model.profile.sparkPoolConfiguration,
 		this.wizard.model.profile.storagePoolConfiguration];
 		pools.forEach(pool => {
-			let poolSummaryButton = this.view.modelBuilder.divContainer().component();
+			let poolSummaryButton = this.view.modelBuilder.divContainer().withProperties<azdata.DivContainerProperties>({ clickable: true }).component();
 			let container = this.view.modelBuilder.flexContainer().component();
 			poolSummaryButton.onDidClick(() => {
 				this.clearPoolDetail();
