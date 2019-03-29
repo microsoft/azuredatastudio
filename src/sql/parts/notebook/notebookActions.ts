@@ -12,7 +12,7 @@ import { INotificationService, Severity, INotificationActions } from 'vs/platfor
 
 import { SelectBox, ISelectBoxOptionsWithLabel } from 'sql/base/browser/ui/selectBox/selectBox';
 import { INotebookModel } from 'sql/parts/notebook/models/modelInterfaces';
-import { CellType } from 'sql/parts/notebook/models/contracts';
+import { CellType, CellTypes } from 'sql/parts/notebook/models/contracts';
 import { NotebookComponent } from 'sql/parts/notebook/notebook.component';
 import { getErrorMessage, formatServerNameWithDatabaseNameForAttachTo, getServerFromFormattedAttachToName, getDatabaseFromFormattedAttachToName } from 'sql/parts/notebook/notebookUtils';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
@@ -51,6 +51,19 @@ export class AddCellAction extends Action {
 				reject(e);
 			}
 		});
+	}
+}
+
+
+// Action to clear outputs of all code cells.
+export class ClearAllOutputsAction extends Action {
+	constructor(
+		id: string, label: string, cssClass: string
+	) {
+		super(id, label, cssClass);
+	}
+	public run(context: NotebookComponent): Promise<boolean> {
+		return context.clearAllOutputs();
 	}
 }
 
