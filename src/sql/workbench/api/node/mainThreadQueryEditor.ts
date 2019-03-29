@@ -12,6 +12,7 @@ import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/q
 import { QueryEditor } from 'sql/parts/query/editor/queryEditor';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { dispose, IDisposable } from 'vs/base/common/lifecycle';
+import { IQueryModelService, IQueryEvent } from 'sql/platform/query/common/queryModel';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadQueryEditor)
 export class MainThreadQueryEditor implements MainThreadQueryEditorShape {
@@ -23,6 +24,7 @@ export class MainThreadQueryEditor implements MainThreadQueryEditorShape {
 		extHostContext: IExtHostContext,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IQueryEditorService private _queryEditorService: IQueryEditorService,
+		@IQueryModelService private _queryModelService: IQueryModelService,
 		@IEditorService private _editorService: IEditorService
 	) {
 		if (extHostContext) {
@@ -72,6 +74,26 @@ export class MainThreadQueryEditor implements MainThreadQueryEditorShape {
 			if (editor instanceof QueryEditor) {
 				let queryEditor: QueryEditor = editor;
 				queryEditor.runCurrentQuery();
+			}
+		}
+	}
+
+	public $registerQueryInfoListener(handle: number, providerId: string): void {
+		this._toDispose.push(this._queryModelService.onQueryEvent(event => {
+			this._proxy.$onQueryEvent(handle, event.uri, event);
+		}));
+	}
+
+	public $createQueryTab(fileUri: string, title: string, componentId: string): void {
+		let editors = this._editorService.visibleControls.filter(resource => {
+			return !!resource && resource.input.getResource().toString() === fileUri;
+		});
+
+		let editor = editors && editors.length > 0 ? editors[0] : undefined;
+		if (editor) {
+			let queryEditor = editor as QueryEditor;
+			if (queryEditor) {
+				queryEditor.registerQueryModelViewTab(title, componentId);
 			}
 		}
 	}

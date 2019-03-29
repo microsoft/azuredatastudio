@@ -968,4 +968,8 @@ export class QueryEditor extends BaseEditor {
 	public get changeConnectionAction(): ConnectDatabaseAction {
 		return this._changeConnectionAction;
 	}
+
+	public registerQueryModelViewTab(title: string, componentId: string): void {
+		this._resultsEditor.registerQueryModelViewTab(title, componentId);
+	}
 }

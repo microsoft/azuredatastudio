@@ -133,7 +133,7 @@ export class QueryTextEditor extends BaseTextEditor {
 	public setHeightToScrollHeight(configChanged?: boolean): void {
 		let editorWidget = this.getControl() as ICodeEditor;
 		if (!this._config) {
-			this._config = new Configuration(undefined, editorWidget.getDomNode(), this.accessibilityService);
+			this._config = new Configuration(true, undefined, editorWidget.getDomNode(), this.accessibilityService);
 			this._scrollbarHeight = this._config.editor.viewInfo.scrollbar.horizontalScrollbarSize;
 		}
 		let editorWidgetModel = editorWidget.getModel();

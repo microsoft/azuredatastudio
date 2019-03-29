@@ -60,9 +60,9 @@ var TestingServers: TestServerProfile[] = [
 	new TestServerProfile(
 		{
 			serverName: 'SQLTOOLS2017-3',
-			userName: '',
-			password: '',
-			authenticationType: AuthenticationType.Windows,
+			userName: process.env.STANDALONE_SQL_USERNAME,
+			password: process.env.STANDALONE_SQL_PWD,
+			authenticationType: AuthenticationType.SqlLogin,
 			database: 'master',
 			provider: ConnectionProvider.SQLServer,
 			version: '2017'

@@ -125,6 +125,13 @@ class MainThreadNotebookEditor extends Disposable {
 
 		return this.editor.runCell(cell);
 	}
+
+	public clearAllOutputs(): Promise<boolean> {
+		if (!this.editor) {
+			return Promise.resolve(false);
+		}
+		return this.editor.clearAllOutputs();
+	}
 }
 
 function wait(timeMs: number): Promise<void> {
@@ -357,6 +364,14 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		}
 
 		return editor.runCell(cell);
+	}
+
+	$clearAllOutputs(id: string): Promise<boolean> {
+		let editor = this.getEditor(id);
+		if (!editor) {
+			return Promise.reject(disposed(`TextEditor(${id})`));
+		}
+		return editor.clearAllOutputs();
 	}
 
 	//#endregion

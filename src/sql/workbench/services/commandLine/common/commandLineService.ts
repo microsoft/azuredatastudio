@@ -21,6 +21,8 @@ import { warn } from 'sql/base/common/log';
 import { ipcRenderer as ipc} from 'electron';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IStatusbarService, StatusbarAlignment } from 'vs/platform/statusbar/common/statusbar';
+import { localize } from 'vs/nls';
 
 export class CommandLineService implements ICommandLineProcessing {
 	public _serviceBrand: any;
@@ -33,7 +35,8 @@ export class CommandLineService implements ICommandLineProcessing {
 		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
 		@IEditorService private _editorService: IEditorService,
 		@ICommandService private _commandService: ICommandService,
-		@IConfigurationService private _configurationService: IConfigurationService
+		@IConfigurationService private _configurationService: IConfigurationService,
+		@IStatusbarService private _statusBarService: IStatusbarService
 	) {
 		if (ipc) {
 		    ipc.on('ads:processCommandLine', (event: any, args: ParsedArgs) => this.onLaunched(args));
@@ -85,6 +88,10 @@ export class CommandLineService implements ICommandLineProcessing {
 		}
 		let connectedContext: azdata.ConnectedContext = undefined;
 		if (profile) {
+			if (this._statusBarService)
+			{
+				this._statusBarService.setStatusMessage(localize('connectingLabel','Connecting:')  + profile.serverName, 2500);
+			}
 			try {
 				await this._connectionManagementService.connectIfNotConnected(profile, 'connection', true);
 				// Before sending to extensions, we should a) serialize to IConnectionProfile or things will fail,
@@ -96,8 +103,16 @@ export class CommandLineService implements ICommandLineProcessing {
 			}
 		}
 		if (commandName) {
+			if (this._statusBarService)
+			{
+				this._statusBarService.setStatusMessage(localize('runningCommandLabel','Running command:') + commandName, 2500);
+			}
 			await this._commandService.executeCommand(commandName, connectedContext);
 		} else if (profile) {
+			if (this._statusBarService)
+			{
+				this._statusBarService.setStatusMessage(localize('openingNewQueryLabel','Opening new query:') + profile.serverName, 2500);
+			}
 			// Default to showing new query
 			try {
 				await TaskUtilities.newQuery(profile,

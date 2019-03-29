@@ -25,6 +25,7 @@ import { Emitter, Event } from 'vs/base/common/event';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ResultSerializer } from 'sql/platform/node/resultSerializer';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IQueryPlanInfo } from 'sql/platform/query/common/queryModel';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 import { URI } from 'vs/base/common/uri';
 
@@ -41,7 +42,8 @@ export const enum EventType {
 	BATCH_START = 'batchStart',
 	BATCH_COMPLETE = 'batchComplete',
 	RESULT_SET = 'resultSet',
-	EDIT_SESSION_READY = 'editSessionReady'
+	EDIT_SESSION_READY = 'editSessionReady',
+	QUERY_PLAN_AVAILABLE = 'queryPlanAvailable'
 }
 
 export interface IEventType {
@@ -52,6 +54,7 @@ export interface IEventType {
 	batchComplete: azdata.BatchSummary;
 	resultSet: azdata.ResultSetSummary;
 	editSessionReady: IEditSessionReadyEvent;
+	queryPlanAvailable: IQueryPlanInfo;
 }
 
 export interface IGridMessage extends azdata.IResultMessage {
@@ -363,7 +366,11 @@ export default class QueryRunner extends Disposable {
 				// check if this result has show plan, this needs work, it won't work for any other provider
 				let hasShowPlan = !!result.resultSetSummary.columnInfo.find(e => e.columnName === 'Microsoft SQL Server 2005 XML Showplan');
 				if (hasShowPlan) {
-					this.getQueryRows(0, 1, result.resultSetSummary.batchId, result.resultSetSummary.id).then(e => this._planXml.resolve(e.resultSubset.rows[0][0].displayValue));
+					this.getQueryRows(0, 1, result.resultSetSummary.batchId, result.resultSetSummary.id).then(e => {
+						if (e.resultSubset.rows) {
+							this._planXml.resolve(e.resultSubset.rows[0][0].displayValue);
+						}
+					});
 				}
 			}
 			// we will just ignore the set if we already have it
@@ -387,7 +394,20 @@ export default class QueryRunner extends Disposable {
 				// check if this result has show plan, this needs work, it won't work for any other provider
 				let hasShowPlan = !!result.resultSetSummary.columnInfo.find(e => e.columnName === 'Microsoft SQL Server 2005 XML Showplan');
 				if (hasShowPlan) {
-					this.getQueryRows(0, 1, result.resultSetSummary.batchId, result.resultSetSummary.id).then(e => this._planXml.resolve(e.resultSubset.rows[0][0].displayValue));
+					this.getQueryRows(0, 1, result.resultSetSummary.batchId, result.resultSetSummary.id).then(e => {
+						if (e.resultSubset.rows) {
+							let planXmlString = e.resultSubset.rows[0][0].displayValue;
+							this._planXml.resolve(e.resultSubset.rows[0][0].displayValue);
+							// fire query plan available event if execution is completed
+							if (result.resultSetSummary.complete) {
+								this._eventEmitter.emit(EventType.QUERY_PLAN_AVAILABLE, {
+									providerId: 'MSSQL',
+									fileUri: result.ownerUri,
+									planXml: planXmlString
+								});
+							}
+						}
+					});
 				}
 			}
 			if (batchSet) {

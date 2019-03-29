@@ -438,13 +438,20 @@ export function createApiFactory(
 
 			// namespace: queryeditor
 			const queryEditor: typeof azdata.queryeditor = {
-
 				connect(fileUri: string, connectionId: string): Thenable<void> {
 					return extHostQueryEditor.$connect(fileUri, connectionId);
 				},
 
-				runQuery(fileUri: string): void {
+				runQuery(fileUri: string, options?: Map<string, string>): void {
 					extHostQueryEditor.$runQuery(fileUri);
+				},
+
+				registerQueryEventListener(listener: azdata.queryeditor.QueryEventListener): void {
+					extHostQueryEditor.$registerQueryInfoListener('MSSQL', listener);
+				},
+
+				getQueryDocument(fileUri: string): azdata.queryeditor.QueryDocument {
+					return undefined;
 				}
 			};
 
