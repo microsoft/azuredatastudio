@@ -184,10 +184,16 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		});
 	}
 
-	private setStepsTree(element: any) {
+	private setStepsTree(element: JobHistoryRow) {
 		const self = this;
-		self.agentJobHistoryInfo = self._treeController.jobHistories.find(
+		let cachedHistory = self._jobCacheObject.getJobHistory(element.jobID);
+		if (cachedHistory) {
+			self.agentJobHistoryInfo = cachedHistory.find(
 			history => self.formatTime(history.runDate) === self.formatTime(element.runDate));
+		} else {
+			self.agentJobHistoryInfo = self._treeController.jobHistories.find(
+				history => self.formatTime(history.runDate) === self.formatTime(element.runDate));
+		}
 		if (self.agentJobHistoryInfo) {
 			self.agentJobHistoryInfo.runDate = self.formatTime(self.agentJobHistoryInfo.runDate);
 			if (self.agentJobHistoryInfo.steps) {
@@ -264,6 +270,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		jobHistoryRow.runDate = this.formatTime(historyInfo.runDate);
 		jobHistoryRow.runStatus = JobManagementUtilities.convertToStatusString(historyInfo.runStatus);
 		jobHistoryRow.instanceID = historyInfo.instanceId;
+		jobHistoryRow.jobID = historyInfo.jobId;
 		return jobHistoryRow;
 	}
 
@@ -334,15 +341,6 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 	protected initActionBar() {
 		let runJobAction = this.instantiationService.createInstance(RunJobAction);
 		let stopJobAction = this.instantiationService.createInstance(StopJobAction);
-		switch(this._agentJobInfo.currentExecutionStatus) {
-			case(1):
-			case(2):
-			case(3):
-				stopJobAction.enabled = true;
-				break;
-			default:
-				stopJobAction.enabled = false;
-		}
 		let editJobAction = this.instantiationService.createInstance(EditJobAction);
 		let refreshAction = this.instantiationService.createInstance(JobsRefreshAction);
 		let taskbar = <HTMLElement>this.actionBarContainer.nativeElement;
