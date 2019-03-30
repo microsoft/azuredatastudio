@@ -25,12 +25,12 @@ if (context.RunTest) {
 			const expectedOutput0 = '(1 row affected)';
 			let cellOutputs = notebook.document.cells[0].contents.outputs;
 			console.log('Got cell outputs');
-			assert(cellOutputs.length === 3, `Expected length: 3, Acutal: ${cellOutputs.length}`);
+			assert(cellOutputs.length === 3, `Expected length: 3, Actual: ${cellOutputs.length}`);
 			let actualOutput0 = (<azdata.nb.IDisplayData>cellOutputs[0]).data['text/html'];
 			console.log('Got first output');
-			assert(actualOutput0 === expectedOutput0, `Expected row count: ${expectedOutput0}, Acutal: ${actualOutput0}`);
+			assert(actualOutput0 === expectedOutput0, `Expected row count: ${expectedOutput0}, Actual: ${actualOutput0}`);
 			let actualOutput2 = (<azdata.nb.IExecuteResult>cellOutputs[2]).data['application/vnd.dataresource+json'].data[0];
-			assert(actualOutput2[0] === '1', `Expected result: 1, Acutal: '${actualOutput2[0]}'`);
+			assert(actualOutput2[0] === '1', `Expected result: 1, Actual: '${actualOutput2[0]}'`);
 
 			if (fs.existsSync(notebook.document.fileName)) {
 				fs.unlinkSync(notebook.document.fileName);
@@ -44,7 +44,7 @@ if (context.RunTest) {
 		// 	let cellOutputs = notebook.document.cells[0].contents.outputs;
 		// 	console.log('Got cell outputs');
 		// 	let result = (<azdata.nb.IExecuteResult>cellOutputs[0]).data['text/plain'];
-		// 	assert(result === '2', `Expected: 2, Acutal: ${result}`);
+		// 	assert(result === '2', `Expected: 2, Actual: ${result}`);
 		// 	console.log('Python3 NB done');
 		// });
 
@@ -57,7 +57,7 @@ if (context.RunTest) {
 		// 		let clearedOutputs = await notebook.clearAllOutputs();
 		// 		let cells = notebook.document.cells;
 		// 		cells.forEach(cell => {
-		// 			assert(cell.contents && cell.contents.outputs && cell.contents.outputs.length === 0, `Expected Output: 0, Acutal: '${cell.contents.outputs.length}'`);
+		// 			assert(cell.contents && cell.contents.outputs && cell.contents.outputs.length === 0, `Expected Output: 0, Actual: '${cell.contents.outputs.length}'`);
 		// 		});
 		// 		assert(clearedOutputs, 'Outputs of all the code cells from Python notebook should be cleared');
 		// 		console.log("After clearing cell outputs");
@@ -89,7 +89,7 @@ if (context.RunTest) {
 		// 	let notebook = await openNotebook(pySparkNotebookContent, pySpark3KernelMetadata);
 		// 	let cellOutputs = notebook.document.cells[0].contents.outputs;
 		// 	let sparkResult = (<azdata.nb.IStreamResult>cellOutputs[3]).text;
-		// 	assert(sparkResult === '2', `Expected: 2, Acutal: ${sparkResult}`);
+		// 	assert(sparkResult === '2', `Expected: 2, Actual: ${sparkResult}`);
 		// });
 	});
 }
