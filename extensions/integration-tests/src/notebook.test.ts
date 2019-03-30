@@ -17,11 +17,11 @@ import { connectToServer } from './utils';
 import * as fs from 'fs';
 
 if (context.RunTest) {
-	suite('Notebook integration test suite', () => {
+	suite('Notebook integration test suite', function() {
 		test('Sql NB test', async function () {
-			console.log('Start Sql NB test');
+			let testName = this.test.title;
+			console.log(`Start "${testName}"`);
 			let notebook = await openNotebook(sqlNotebookContent, sqlKernelMetadata);
-
 			const expectedOutput0 = '(1 row affected)';
 			let cellOutputs = notebook.document.cells[0].contents.outputs;
 			console.log('Got cell outputs');
@@ -35,7 +35,7 @@ if (context.RunTest) {
 			if (fs.existsSync(notebook.document.fileName)) {
 				fs.unlinkSync(notebook.document.fileName);
 			}
-			console.log('Sql NB done');
+			console.log(`"${testName}" done`);
 		});
 
 		// test('Python3 notebook test', async function () {
