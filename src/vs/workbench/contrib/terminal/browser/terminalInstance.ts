@@ -797,7 +797,6 @@ export class TerminalInstance implements ITerminalInstance {
 	public paste(): void {
 		this.focus();
 		document.execCommand('paste');
-		this.forceRedraw();
 	}
 
 	public write(text: string): void {
