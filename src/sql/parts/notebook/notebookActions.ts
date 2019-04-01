@@ -14,7 +14,7 @@ import { SelectBox, ISelectBoxOptionsWithLabel } from 'sql/base/browser/ui/selec
 import { INotebookModel } from 'sql/parts/notebook/models/modelInterfaces';
 import { CellType, CellTypes } from 'sql/parts/notebook/models/contracts';
 import { NotebookComponent } from 'sql/parts/notebook/notebook.component';
-import { getErrorMessage, formatServerNameWithDatabaseNameForAttachTo, getServerFromFormattedAttachToName, getDatabaseFromFormattedAttachToName } from 'sql/parts/notebook/notebookUtils';
+import { getErrorMessage, getServerFromFormattedAttachToName, getDatabaseFromFormattedAttachToName } from 'sql/parts/notebook/notebookUtils';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
@@ -381,13 +381,13 @@ export class AttachToDropdown extends SelectBox {
 			this.selectWithOptionName(model.contexts.defaultConnection.serverName);
 		} else {
 			if (model.contexts.defaultConnection) {
-				this.selectWithOptionName(formatServerNameWithDatabaseNameForAttachTo(model.contexts.defaultConnection));
+				this.selectWithOptionName(model.contexts.defaultConnection.title ? model.contexts.defaultConnection.title : model.contexts.defaultConnection.serverName);
 			} else {
 				this.select(0);
 			}
 		}
 		otherConnections = this.setConnectionsList(model.contexts.defaultConnection, model.contexts.otherConnections);
-		let connections = otherConnections.map((context) => context.databaseName ? context.serverName + ' (' + context.databaseName + ')' : context.serverName);
+		let connections = otherConnections.map((context) => context.title ? context.title : context.serverName);
 		return connections;
 	}
 
@@ -440,7 +440,7 @@ export class AttachToDropdown extends SelectBox {
 					return;
 				}
 				let connectionProfile = new ConnectionProfile(this._capabilitiesService, connection);
-				let connectedServer = formatServerNameWithDatabaseNameForAttachTo(connectionProfile);
+				let connectedServer = connectionProfile.title? connectionProfile.title : connectionProfile.serverName;
 				//Check to see if the same server is already there in dropdown. We only have server names in dropdown
 				if (attachToConnections.some(val => val === connectedServer)) {
 					this.loadAttachToDropdown(this.model, this.getKernelDisplayName());
