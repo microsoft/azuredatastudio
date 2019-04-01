@@ -215,7 +215,7 @@ export class TextFileEditorModel extends BaseTextEditorModel implements ITextFil
 		// Unset flags
 		const undo = this.setDirty(false);
 
-		let loadPromise: Promise<any>;
+		let loadPromise: Promise<unknown>;
 		if (soft) {
 			loadPromise = Promise.resolve();
 		} else {
@@ -918,7 +918,7 @@ export class TextFileEditorModel extends BaseTextEditorModel implements ITextFil
 		}
 	}
 
-	private onSaveError(error: any): void {
+	private onSaveError(error: Error): void {
 
 		// Prepare handler
 		if (!TextFileEditorModel.saveErrorHandler) {
@@ -1151,7 +1151,7 @@ class DefaultSaveErrorHandler implements ISaveErrorHandler {
 
 	constructor(@INotificationService private readonly notificationService: INotificationService) { }
 
-	onSaveError(error: any, model: TextFileEditorModel): void {
+	onSaveError(error: Error, model: TextFileEditorModel): void {
 		this.notificationService.error(nls.localize('genericSaveError', "Failed to save '{0}': {1}", basename(model.getResource()), toErrorMessage(error, false)));
 	}
 }

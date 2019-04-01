@@ -319,7 +319,7 @@ export interface IEditorInput extends IDisposable {
 	/**
 	 * Returns if the other object matches this input.
 	 */
-	matches(other: any): boolean;
+	matches(other: unknown): boolean;
 }
 
 /**
@@ -392,7 +392,7 @@ export abstract class EditorInput extends Disposable implements IEditorInput {
 	 *
 	 * Subclasses should extend if they can contribute.
 	 */
-	getTelemetryDescriptor(): { [key: string]: any } {
+	getTelemetryDescriptor(): { [key: string]: unknown } {
 		/* __GDPR__FRAGMENT__
 			"EditorTelemetryDescriptor" : {
 				"typeId" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
@@ -453,7 +453,7 @@ export abstract class EditorInput extends Disposable implements IEditorInput {
 	/**
 	 * Returns true if this input is identical to the otherInput.
 	 */
-	matches(otherInput: any): boolean {
+	matches(otherInput: unknown): boolean {
 		return this === otherInput;
 	}
 
@@ -623,7 +623,7 @@ export class SideBySideEditorInput extends EditorInput {
 		return this.description;
 	}
 
-	matches(otherInput: any): boolean {
+	matches(otherInput: unknown): boolean {
 		if (super.matches(otherInput) === true) {
 			return true;
 		}
@@ -684,7 +684,7 @@ export interface IEditorInputWithOptions {
 	options?: IEditorOptions | ITextEditorOptions;
 }
 
-export function isEditorInputWithOptions(obj: any): obj is IEditorInputWithOptions {
+export function isEditorInputWithOptions(obj: unknown): obj is IEditorInputWithOptions {
 	const editorInputWithOptions = obj as IEditorInputWithOptions;
 
 	return !!editorInputWithOptions && !!editorInputWithOptions.editor;
@@ -948,7 +948,7 @@ export class EditorCommandsContextActionRunner extends ActionRunner {
 		super();
 	}
 
-	run(action: IAction, context?: any): Promise<void> {
+	run(action: IAction): Promise<void> {
 		return super.run(action, this.context);
 	}
 }
