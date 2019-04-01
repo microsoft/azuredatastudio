@@ -107,12 +107,12 @@ export class SchemaCompareResult {
 					},
 				]}).component();
 
-			sourceTargetLabels.addItem(targetLabel, { CSSStyles: { 'width': '55%', 'margin-left': '15px', 'font-size': 'larger', 'font-weight': 'bold' } });
-			sourceTargetLabels.addItem(sourceLabel, { CSSStyles: { 'width': '45%', 'font-size': 'larger', 'font-weight': 'bold' } });
+			sourceTargetLabels.addItem(sourceLabel, { CSSStyles: { 'width': '55%', 'margin-left': '15px', 'font-size': 'larger', 'font-weight': 'bold' } });
+			sourceTargetLabels.addItem(targetLabel, { CSSStyles: { 'width': '45%', 'font-size': 'larger', 'font-weight': 'bold' } });
 
-			this.sourceTargetFlexLayout.addItem(this.targetNameComponent, { CSSStyles: { 'width': '45%', 'margin-left': '15px'} });
+			this.sourceTargetFlexLayout.addItem(this.sourceNameComponent, { CSSStyles: { 'width': '45%', 'margin-left': '15px'} });
 			this.sourceTargetFlexLayout.addItem(switchLabel, { CSSStyles: { 'width': '10%', 'font-size': 'larger', 'text-align-last':'center'} });
-			this.sourceTargetFlexLayout.addItem(this.sourceNameComponent, { CSSStyles: { 'width': '45%'} });
+			this.sourceTargetFlexLayout.addItem(this.targetNameComponent, { CSSStyles: { 'width': '45%'} });
 
 			this.loader = view.modelBuilder.loadingComponent().component();
 			this.noDifferencesLabel = view.modelBuilder.text().withProperties({
@@ -142,8 +142,8 @@ export class SchemaCompareResult {
 		let service = await SchemaCompareResult.getService('MSSQL');
 		this.comparisonResult = await service.schemaCompare(this.sourceEndpointInfo, this.targetEndpointInfo, azdata.TaskExecutionMode.execute);
 		if (!this.comparisonResult || !this.comparisonResult.success) {
-			vscode.window.showErrorMessage(
-				localize('schemaCompare.compareErrorMessage', "Schema Compare failed '{0}'", this.comparisonResult.errorMessage ? this.comparisonResult.errorMessage : 'Unknown'));
+			vscode.window.showErrorMessage(localize('schemaCompare.compareErrorMessage', "Schema Compare failed: {0}", this.comparisonResult.errorMessage ? this.comparisonResult.errorMessage : 'Unknown'));
+			return;
 		}
 
 		let data = this.getAllDifferences(this.comparisonResult.differences);
@@ -195,6 +195,8 @@ export class SchemaCompareResult {
 			this.flexModel.addItem(this.noDifferencesLabel, { CSSStyles: { 'margin': 'auto' } });
 		}
 
+		let sourceText = '';
+		let targetText = '';
 		this.differencesTable.onRowSelected(e => {
 			let difference = this.comparisonResult.differences[this.differencesTable.selectedRows[0]];
 			if (difference !== undefined) {
@@ -202,36 +204,24 @@ export class SchemaCompareResult {
 				targetText = difference.targetScript === null ? '\n' : this.getAggregatedScript(difference, false);
 
 				this.diffEditor.updateProperties({
-					contentLeft: targetText,
-					contentRight: sourceText
+					contentLeft: sourceText,
+					contentRight: targetText
 				});
-			}
-		});
-
-		let sourceText = '';
-		let targetText = '';
-		vscode.workspace.registerTextDocumentContentProvider('source', {
-			provideTextDocumentContent() {
-				return sourceText;
-			}
-		});
-
-		vscode.workspace.registerTextDocumentContentProvider('target', {
-			provideTextDocumentContent() {
-				return targetText;
 			}
 		});
 	}
 
 	private getAllDifferences(differences: azdata.DiffEntry[]): string[][] {
 		let data = [];
-		differences.forEach(difference => {
-			if (difference.differenceType === azdata.SchemaDifferenceType.Object) {
-				if (difference.sourceValue !== null || difference.targetValue !== null) {
-					data.push([difference.name, difference.targetValue, this.SchemaCompareActionMap[difference.updateAction], difference.sourceValue]);
+		if (differences) {
+			differences.forEach(difference => {
+				if (difference.differenceType === azdata.SchemaDifferenceType.Object) {
+					if (difference.sourceValue !== null || difference.targetValue !== null) {
+						data.push([difference.name, difference.sourceValue, this.SchemaCompareActionMap[difference.updateAction], difference.targetValue]);
+					}
 				}
-			}
-		});
+			});
+		}
 
 		return data;
 	}
