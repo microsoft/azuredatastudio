@@ -710,10 +710,11 @@ export class EditorGroup extends Disposable {
 		this.editors = coalesce(data.editors.map(e => {
 			const factory = registry.getEditorInputFactory(e.id);
 			if (factory) {
-				const editor = factory.deserialize(this.instantiationService, e.value)!;
-
-				this.registerEditorListeners(editor);
-				this.updateResourceMap(editor, false /* add */);
+				const editor = factory.deserialize(this.instantiationService, e.value);
+				if (editor) {
+					this.registerEditorListeners(editor);
+					this.updateResourceMap(editor, false /* add */);
+				}
 
 				// {{SQL CARBON EDIT}}
 				return CustomInputConverter.convertEditorInput(editor, undefined, this.instantiationService);
