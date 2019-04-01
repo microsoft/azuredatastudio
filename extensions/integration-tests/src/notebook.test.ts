@@ -19,7 +19,7 @@ if (context.RunTest) {
 	suite('Notebook integration test suite', function () {
 		setup(function () {
 			console.log(`Start "${this.currentTest.title}"`);
-		})
+		});
 		teardown(function () {
 			let testName = this.currentTest.title;
 			try {
@@ -61,7 +61,7 @@ if (context.RunTest) {
 				let cellOutputs = notebook.document.cells[0].contents.outputs;
 				console.log('Got cell outputs');
 				let result = (<azdata.nb.IExecuteResult>cellOutputs[0]).data['text/plain'];
-				assert(result === '2', `Expected: 2, Actual: ${result}`);
+				assert(result === '2', `Expected python result: 2, Actual: ${result}`);
 			});
 
 			test('Clear all outputs - Python3 notebook ', async function () {
@@ -75,7 +75,7 @@ if (context.RunTest) {
 				let notebook = await openNotebook(pySparkNotebookContent, pySpark3KernelMetadata, this.test.title);
 				let cellOutputs = notebook.document.cells[0].contents.outputs;
 				let sparkResult = (<azdata.nb.IStreamResult>cellOutputs[3]).text;
-				assert(sparkResult === '2', `Expected: 2, Actual: ${sparkResult}`);
+				assert(sparkResult === '2', `Expected spark result: 2, Actual: ${sparkResult}`);
 			});
 		}
 	});

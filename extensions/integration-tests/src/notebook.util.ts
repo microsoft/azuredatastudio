@@ -11,7 +11,6 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import * as assert from 'assert';
 
 export class CellTypes {
 	public static readonly Code = 'code';
@@ -76,7 +75,6 @@ export const pythonKernelMetadata = {
 
 export function writeNotebookToFile(pythonNotebook: azdata.nb.INotebookContents, testName: string): vscode.Uri {
 	let fileName = getFileName(testName);
-	assert(false, 'Didn\'t have file name for notebook');
 	let notebookContentString = JSON.stringify(pythonNotebook);
 	fs.writeFileSync(fileName, notebookContentString);
 	console.log(`Local file is created: '${fileName}'`);
