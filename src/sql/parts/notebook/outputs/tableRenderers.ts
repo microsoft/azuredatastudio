@@ -11,6 +11,9 @@ import { escape } from 'sql/base/common/strings';
 import { IDataResource } from 'sql/workbench/services/notebook/sql/sqlSessionManager';
 import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { MouseWheelSupport } from 'sql/base/browser/ui/table/plugins/mousewheelTableScroll.plugin';
+import { AutoColumnSize } from 'sql/base/browser/ui/table/plugins/autoSizeColumns.plugin';
+import { AdditionalKeyBindings } from 'sql/base/browser/ui/table/plugins/additionalKeyBindings.plugin';
 
 /**
  * Render DataResource as a grid into a host node.
@@ -59,7 +62,9 @@ export function renderDataResource(
 			defaultColumnWidth: 120
 		});
 	detailTable.registerPlugin(rowNumberColumn);
-
+	detailTable.registerPlugin(new MouseWheelSupport());
+	detailTable.registerPlugin(new AutoColumnSize({ autoSizeOnRender: true }));
+	detailTable.registerPlugin(new AdditionalKeyBindings());
 	let numRows = detailTable.grid.getDataLength();
 	// Need to include column headers and scrollbar, so that's why 1 needs to be added
 	let rowsHeight = (numRows + 1) * ROW_HEIGHT + BOTTOM_PADDING_AND_SCROLLBAR;

@@ -185,7 +185,10 @@ export class InstallAction extends ExtensionAction {
 
 		const extension = await this.install(this.extension);
 
-		if (extension.local) {
+		// {{SQL CARBON EDIT}}
+		// Add extension object check since ADS third party extensions will be directed to a download page
+		// and the extension object will be undefined.
+		if (extension && extension.local) {
 			const runningExtension = await this.getRunningExtension(extension.local);
 			if (runningExtension) {
 				const colorThemes = await this.workbenchThemeService.getColorThemes();

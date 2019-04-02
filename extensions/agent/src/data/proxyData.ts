@@ -4,9 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
+import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 import { AgentUtils } from '../agentUtils';
 import { IAgentDialogData, AgentDialogMode } from '../interfaces';
+const localize = nls.loadMessageBundle();
 
 export class ProxyData implements IAgentDialogData {
 	public dialogMode: AgentDialogMode = AgentDialogMode.CREATE;
@@ -34,9 +37,20 @@ export class ProxyData implements IAgentDialogData {
 
 	public async save() {
 		let agentService = await AgentUtils.getAgentService();
-		let result = await agentService.createProxy(this.ownerUri,  this.toAgentProxyInfo());
+		let proxyInfo = this.toAgentProxyInfo();
+		let result = await agentService.createProxy(this.ownerUri, proxyInfo);
 		if (!result || !result.success) {
-			// TODO handle error here
+			vscode.window.showErrorMessage(
+				localize('proxyData.saveErrorMessage', "Proxy update failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
+		} else {
+			if (this.dialogMode === AgentDialogMode.EDIT) {
+				vscode.window.showInformationMessage(
+					localize('proxyData.saveSucessMessage', "Proxy '{0}' updated successfully", proxyInfo.accountName));
+			} else {
+				vscode.window.showInformationMessage(
+					localize('proxyData.newJobSuccessMessage',"Proxy '{0}' created successfully", proxyInfo.accountName));
+			}
+
 		}
 	}
 
