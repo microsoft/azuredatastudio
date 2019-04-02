@@ -11,7 +11,6 @@ import { Modal } from 'sql/workbench/browser/modal/modal';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
 import { attachButtonStyler, attachModalDialogStyler } from 'sql/platform/theme/common/styler';
 
-import { Builder } from 'sql/base/browser/builder';
 import Severity from 'vs/base/common/severity';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { SIDE_BAR_BACKGROUND, SIDE_BAR_FOREGROUND } from 'vs/workbench/common/theme';
@@ -22,6 +21,7 @@ import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService
 import { localize } from 'vs/nls';
 import { IAction } from 'vs/base/common/actions';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
+import * as DOM from 'vs/base/browser/dom';
 
 const maxActions = 1;
 
@@ -54,9 +54,7 @@ export class ErrorMessageDialog extends Modal {
 	}
 
 	protected renderBody(container: HTMLElement) {
-		new Builder(container).div({ 'class': 'error-dialog' }, (bodyBuilder) => {
-			this._body = bodyBuilder.getHTMLElement();
-		});
+		this._body = DOM.append(container, DOM.$('div.error-dialog'));
 	}
 
 	public render() {
@@ -99,10 +97,8 @@ export class ErrorMessageDialog extends Modal {
 	}
 
 	private updateDialogBody(): void {
-		let builder = new Builder(this._body).empty();
-		builder.div({ class: 'error-message' }, (errorContainer) => {
-			errorContainer.getHTMLElement().innerText = this._message;
-		});
+		DOM.clearNode(this._body);
+		DOM.append(this._body, DOM.$('div.error-message')).innerText = this._message;
 	}
 
 	private updateIconTitle(): void {
