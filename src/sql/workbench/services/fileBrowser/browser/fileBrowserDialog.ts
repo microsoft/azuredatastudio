@@ -19,7 +19,6 @@ import { FileBrowserTreeView } from 'sql/workbench/services/fileBrowser/browser/
 import { FileBrowserViewModel } from 'sql/workbench/services/fileBrowser/common/fileBrowserViewModel';
 
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { Builder } from 'sql/base/browser/builder';
 import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import { Event, Emitter } from 'vs/base/common/event';
 import { localize } from 'vs/nls';
@@ -36,7 +35,7 @@ import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/la
 
 export class FileBrowserDialog extends Modal {
 	private _viewModel: FileBrowserViewModel;
-	private _bodyBuilder: Builder;
+	private _body: HTMLElement;
 	private _filePathInputBox: InputBox;
 	private _fileFilterSelectBox: SelectBox;
 	private _okButton: Button;
@@ -44,7 +43,7 @@ export class FileBrowserDialog extends Modal {
 	private _onOk = new Emitter<string>();
 	public onOk: Event<string> = this._onOk.event;
 
-	private _treeContainer: Builder;
+	private _treeContainer: HTMLElement;
 	private _fileBrowserTreeView: FileBrowserTreeView;
 	private _selectedFilePath: string;
 	private _isFolderSelected: boolean;
@@ -68,9 +67,7 @@ export class FileBrowserDialog extends Modal {
 	}
 
 	protected renderBody(container: HTMLElement) {
-		new Builder(container).div({ 'class': 'file-browser-dialog' }, (bodyBuilder) => {
-			this._bodyBuilder = bodyBuilder;
-		});
+		this._body = DOM.append(container, DOM.$('.file-browser-dialog'));
 	}
 
 	public render() {
@@ -86,24 +83,19 @@ export class FileBrowserDialog extends Modal {
 			this._register(attachButtonStyler(this.backButton, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND }));
 		}
 
-		this._bodyBuilder.div({ class: 'tree-view' }, (treeContainer) => {
-			this._treeContainer = treeContainer;
+		this._treeContainer = DOM.append(this._body, DOM.$('.tree-view'));
+
+		let tableContainer: HTMLElement = DOM.append(DOM.append(this._body, DOM.$('.option-section')), DOM.$('table.file-table-content'));
+		let pathLabel = localize('filebrowser.filepath', 'Selected path');
+		let pathBuilder = DialogHelper.appendRow(tableContainer, pathLabel, 'file-input-label', 'file-input-box');
+		this._filePathInputBox = new InputBox(pathBuilder, this._contextViewService, {
+			ariaLabel: pathLabel
 		});
 
-		this._bodyBuilder.div({ class: 'option-section' }, (tableWrapper) => {
-			tableWrapper.element('table', { class: 'file-table-content' }, (tableContainer) => {
-				let pathLabel = localize('filebrowser.filepath', 'Selected path');
-				let pathBuilder = DialogHelper.appendRow(tableContainer, pathLabel, 'file-input-label', 'file-input-box');
-				this._filePathInputBox = new InputBox(pathBuilder.getHTMLElement(), this._contextViewService, {
-					ariaLabel: pathLabel
-				});
-
-				this._fileFilterSelectBox = new SelectBox(['*'], '*', this._contextViewService);
-				let filterLabel = localize('fileFilter', 'Files of type');
-				let filterBuilder = DialogHelper.appendRow(tableContainer, filterLabel, 'file-input-label', 'file-input-box');
-				DialogHelper.appendInputSelectBox(filterBuilder, this._fileFilterSelectBox);
-			});
-		});
+		this._fileFilterSelectBox = new SelectBox(['*'], '*', this._contextViewService);
+		let filterLabel = localize('fileFilter', 'Files of type');
+		let filterBuilder = DialogHelper.appendRow(tableContainer, filterLabel, 'file-input-label', 'file-input-box');
+		DialogHelper.appendInputSelectBox(filterBuilder, this._fileFilterSelectBox);
 
 		this._okButton = this.addFooterButton(localize('fileBrowser.ok', 'OK'), () => this.ok());
 		this._okButton.enabled = false;
@@ -209,9 +201,9 @@ export class FileBrowserDialog extends Modal {
 	}
 
 	private updateFileTree(rootNode: FileNode, selectedNode: FileNode, expandedNodes: FileNode[]): void {
-		this._fileBrowserTreeView.renderBody(this._treeContainer.getHTMLElement(), rootNode, selectedNode, expandedNodes);
+		this._fileBrowserTreeView.renderBody(this._treeContainer, rootNode, selectedNode, expandedNodes);
 		this._fileBrowserTreeView.setVisible(true);
-		this._fileBrowserTreeView.layout(DOM.getTotalHeight(this._treeContainer.getHTMLElement()));
+		this._fileBrowserTreeView.layout(DOM.getTotalHeight(this._treeContainer));
 	}
 
 	private onFilterSelectChanged(filterIndex) {
@@ -242,7 +234,7 @@ export class FileBrowserDialog extends Modal {
 	// Update theming that is specific to file browser
 	private updateTheme(): void {
 		if (this._treeContainer) {
-			this._treeContainer.style('background-color', this.headerAndFooterBackground);
+			this._treeContainer.style.backgroundColor = this.headerAndFooterBackground;
 		}
 	}
 }

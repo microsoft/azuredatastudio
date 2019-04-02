@@ -32,14 +32,13 @@ import { localize } from 'vs/nls';
 import * as DOM from 'vs/base/browser/dom';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { OS, OperatingSystem } from 'vs/base/common/platform';
-import { Builder, $ } from 'sql/base/browser/builder';
 import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import { endsWith, startsWith } from 'vs/base/common/strings';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 export class ConnectionWidget {
-	private _builder: Builder;
+	private _container: HTMLElement;
 	private _serverGroupSelectBox: SelectBox;
 	private _previousGroupOption: string;
 	private _serverGroupOptions: IConnectionProfileGroup[];
@@ -52,7 +51,7 @@ export class ConnectionWidget {
 	private _rememberPasswordCheckBox: Checkbox;
 	private _azureAccountDropdown: SelectBox;
 	private _azureTenantDropdown: SelectBox;
-	private _refreshCredentialsLinkBuilder: Builder;
+	private _refreshCredentialsLink: HTMLLinkElement;
 	private _addAzureAccountMessage: string = localize('connectionWidget.AddAzureAccount', 'Add an account...');
 	private readonly _azureProviderId = 'azurePublicCloud';
 	private _azureTenantId: string;
@@ -62,7 +61,7 @@ export class ConnectionWidget {
 	private _authTypeSelectBox: SelectBox;
 	private _toDispose: lifecycle.IDisposable[];
 	private _optionsMaps: { [optionType: number]: azdata.ConnectionOption };
-	private _tableContainer: Builder;
+	private _tableContainer: HTMLElement;
 	private _focusedBeforeHandleOnConnection: HTMLElement;
 	private _providerName: string;
 	private _authTypeMap: { [providerName: string]: AuthenticationType[] } = {
@@ -130,11 +129,8 @@ export class ConnectionWidget {
 		this._serverGroupOptions = [this.DefaultServerGroup];
 		this._serverGroupSelectBox = new SelectBox(this._serverGroupOptions.map(g => g.name), this.DefaultServerGroup.name, this._contextViewService, undefined, { ariaLabel: this._serverGroupDisplayString });
 		this._previousGroupOption = this._serverGroupSelectBox.value;
-		this._builder = $().div({ class: 'connection-table' }, (modelTableContent) => {
-			modelTableContent.element('table', { class: 'connection-table-content' }, (tableContainer) => {
-				this._tableContainer = tableContainer;
-			});
-		});
+		this._container = DOM.append(container, DOM.$('div.connection-table'));
+		this._tableContainer = DOM.append(this._container, DOM.$('table.connection-table-content'));
 		this.fillInConnectionForm();
 		this.registerListeners();
 		if (this._authTypeSelectBox) {
@@ -144,8 +140,6 @@ export class ConnectionWidget {
 		DOM.addDisposableListener(container, 'paste', e => {
 			this._handleClipboard();
 		});
-
-		DOM.append(container, this._builder.getHTMLElement());
 	}
 
 	private _handleClipboard(): void {
@@ -166,8 +160,8 @@ export class ConnectionWidget {
 	private fillInConnectionForm(): void {
 		// Server name
 		let serverNameOption = this._optionsMaps[ConnectionOptionSpecialType.serverName];
-		let serverNameBuilder = DialogHelper.appendRow(this._tableContainer, serverNameOption.displayName, 'connection-label', 'connection-input');
-		this._serverNameInputBox = new InputBox(serverNameBuilder.getHTMLElement(), this._contextViewService, {
+		let serverName = DialogHelper.appendRow(this._tableContainer, serverNameOption.displayName, 'connection-label', 'connection-input');
+		this._serverNameInputBox = new InputBox(serverName, this._contextViewService, {
 			validationOptions: {
 				validation: (value: string) => {
 					if (!value) {
@@ -183,15 +177,15 @@ export class ConnectionWidget {
 
 		// Authentication type
 		if (this._optionsMaps[ConnectionOptionSpecialType.authType]) {
-			let authTypeBuilder = DialogHelper.appendRow(this._tableContainer, this._optionsMaps[ConnectionOptionSpecialType.authType].displayName, 'connection-label', 'connection-input');
-			DialogHelper.appendInputSelectBox(authTypeBuilder, this._authTypeSelectBox);
+			let authType = DialogHelper.appendRow(this._tableContainer, this._optionsMaps[ConnectionOptionSpecialType.authType].displayName, 'connection-label', 'connection-input');
+			DialogHelper.appendInputSelectBox(authType, this._authTypeSelectBox);
 		}
 
 		// Username
 		let self = this;
 		let userNameOption = this._optionsMaps[ConnectionOptionSpecialType.userName];
-		let userNameBuilder = DialogHelper.appendRow(this._tableContainer, userNameOption.displayName, 'connection-label', 'connection-input', 'username-password-row');
-		this._userNameInputBox = new InputBox(userNameBuilder.getHTMLElement(), this._contextViewService, {
+		let userName = DialogHelper.appendRow(this._tableContainer, userNameOption.displayName, 'connection-label', 'connection-input', 'username-password-row');
+		this._userNameInputBox = new InputBox(userName, this._contextViewService, {
 			validationOptions: {
 				validation: (value: string) => self.validateUsername(value, userNameOption.isRequired) ? ({ type: MessageType.ERROR, content: localize('connectionWidget.missingRequireField', '{0} is required.', userNameOption.displayName) }) : null
 			},
@@ -199,34 +193,36 @@ export class ConnectionWidget {
 		});
 		// Password
 		let passwordOption = this._optionsMaps[ConnectionOptionSpecialType.password];
-		let passwordBuilder = DialogHelper.appendRow(this._tableContainer, passwordOption.displayName, 'connection-label', 'connection-input', 'username-password-row');
-		this._passwordInputBox = new InputBox(passwordBuilder.getHTMLElement(), this._contextViewService, { ariaLabel: passwordOption.displayName });
+		let password = DialogHelper.appendRow(this._tableContainer, passwordOption.displayName, 'connection-label', 'connection-input', 'username-password-row');
+		this._passwordInputBox = new InputBox(password, this._contextViewService, { ariaLabel: passwordOption.displayName });
 		this._passwordInputBox.inputElement.type = 'password';
 		this._password = '';
 
 		// Remember password
 		let rememberPasswordLabel = localize('rememberPassword', 'Remember password');
-		this._rememberPasswordCheckBox = this.appendCheckbox(this._tableContainer, rememberPasswordLabel, 'connection-checkbox', 'connection-input', 'username-password-row', false);
+		this._rememberPasswordCheckBox = this.appendCheckbox(this._tableContainer, rememberPasswordLabel, 'connection-input', 'username-password-row', false);
 
 		// Azure account picker
 		let accountLabel = localize('connection.azureAccountDropdownLabel', 'Account');
-		let accountDropdownBuilder = DialogHelper.appendRow(this._tableContainer, accountLabel, 'connection-label', 'connection-input', 'azure-account-row');
-		this._azureAccountDropdown = new SelectBox([], undefined, this._contextViewService, accountDropdownBuilder.getContainer(), { ariaLabel: accountLabel });
-		DialogHelper.appendInputSelectBox(accountDropdownBuilder, this._azureAccountDropdown);
-		let refreshCredentialsBuilder = DialogHelper.appendRow(this._tableContainer, '', 'connection-label', 'connection-input', 'azure-account-row refresh-credentials-link');
-		this._refreshCredentialsLinkBuilder = refreshCredentialsBuilder.a({ href: '#' }).text(localize('connectionWidget.refreshAzureCredentials', 'Refresh account credentials'));
+		let accountDropdown = DialogHelper.appendRow(this._tableContainer, accountLabel, 'connection-label', 'connection-input', 'azure-account-row');
+		this._azureAccountDropdown = new SelectBox([], undefined, this._contextViewService, accountDropdown, { ariaLabel: accountLabel });
+		DialogHelper.appendInputSelectBox(accountDropdown, this._azureAccountDropdown);
+		let refreshCredentials = DialogHelper.appendRow(this._tableContainer, '', 'connection-label', 'connection-input', ['azure-account-row', 'refresh-credentials-link']);
+		this._refreshCredentialsLink = DOM.append(refreshCredentials, DOM.$('a'));
+		this._refreshCredentialsLink.href = '#';
+		this._refreshCredentialsLink.innerText = localize('connectionWidget.refreshAzureCredentials', 'Refresh account credentials');
 
 		// Azure tenant picker
 		let tenantLabel = localize('connection.azureTenantDropdownLabel', 'Azure AD tenant');
-		let tenantDropdownBuilder = DialogHelper.appendRow(this._tableContainer, tenantLabel, 'connection-label', 'connection-input', 'azure-account-row azure-tenant-row');
-		this._azureTenantDropdown = new SelectBox([], undefined, this._contextViewService, tenantDropdownBuilder.getContainer(), { ariaLabel: tenantLabel });
-		DialogHelper.appendInputSelectBox(tenantDropdownBuilder, this._azureTenantDropdown);
+		let tenantDropdown = DialogHelper.appendRow(this._tableContainer, tenantLabel, 'connection-label', 'connection-input', ['azure-account-row', 'azure-tenant-row']);
+		this._azureTenantDropdown = new SelectBox([], undefined, this._contextViewService, tenantDropdown, { ariaLabel: tenantLabel });
+		DialogHelper.appendInputSelectBox(tenantDropdown, this._azureTenantDropdown);
 
 		// Database
 		let databaseOption = this._optionsMaps[ConnectionOptionSpecialType.databaseName];
-		let databaseNameBuilder = DialogHelper.appendRow(this._tableContainer, databaseOption.displayName, 'connection-label', 'connection-input');
+		let databaseName = DialogHelper.appendRow(this._tableContainer, databaseOption.displayName, 'connection-label', 'connection-input');
 
-		this._databaseNameInputBox = new Dropdown(databaseNameBuilder.getHTMLElement(), this._contextViewService, {
+		this._databaseNameInputBox = new Dropdown(databaseName, this._contextViewService, {
 			values: [this._defaultDatabaseName, this._loadingDatabaseName],
 			strictSelection: false,
 			placeholder: this._defaultDatabaseName,
@@ -236,13 +232,13 @@ export class ConnectionWidget {
 		});
 
 		// Server group
-		let serverGroupBuilder = DialogHelper.appendRow(this._tableContainer, this._serverGroupDisplayString, 'connection-label', 'connection-input');
-		DialogHelper.appendInputSelectBox(serverGroupBuilder, this._serverGroupSelectBox);
+		let serverGroup = DialogHelper.appendRow(this._tableContainer, this._serverGroupDisplayString, 'connection-label', 'connection-input');
+		DialogHelper.appendInputSelectBox(serverGroup, this._serverGroupSelectBox);
 
 		// Connection name
 		let connectionNameOption = this._optionsMaps[ConnectionOptionSpecialType.connectionName];
 		let connectionNameBuilder = DialogHelper.appendRow(this._tableContainer, connectionNameOption.displayName, 'connection-label', 'connection-input');
-		this._connectionNameInputBox = new InputBox(connectionNameBuilder.getHTMLElement(), this._contextViewService, { ariaLabel: connectionNameOption.displayName });
+		this._connectionNameInputBox = new InputBox(connectionNameBuilder, this._contextViewService, { ariaLabel: connectionNameOption.displayName });
 
 		let AdvancedLabel = localize('advanced', 'Advanced...');
 		this._advancedButton = this.createAdvancedButton(this._tableContainer, AdvancedLabel);
@@ -258,33 +254,26 @@ export class ConnectionWidget {
 		return false;
 	}
 
-	private createAdvancedButton(container: Builder, title: string): Button {
-		let button;
-		container.element('tr', {}, (rowContainer) => {
-			rowContainer.element('td');
-			rowContainer.element('td', { align: 'right' }, (cellContainer) => {
-				cellContainer.div({ class: 'advanced-button' }, (divContainer) => {
-					button = new Button(divContainer.getHTMLElement());
-					button.label = title;
-					button.onDidClick(() => {
-						//open advanced page
-						this._callbacks.onAdvancedProperties();
-					});
-				});
-			});
+	private createAdvancedButton(container: HTMLElement, title: string): Button {
+		let rowContainer = DOM.append(container, DOM.$('tr'));
+		DOM.append(rowContainer, DOM.$('td'));
+		let cellContainer = DOM.append(rowContainer, DOM.$('td'));
+		cellContainer.setAttribute('align', 'right');
+		let divContainer = DOM.append(cellContainer, DOM.$('div.advanced-button'));
+		let button = new Button(divContainer);
+		button.label = title;
+		button.onDidClick(() => {
+			//open advanced page
+			this._callbacks.onAdvancedProperties();
 		});
 		return button;
 	}
 
-	private appendCheckbox(container: Builder, label: string, checkboxClass: string, cellContainerClass: string, rowContainerClass: string, isChecked: boolean): Checkbox {
-		let checkbox: Checkbox;
-		container.element('tr', { class: rowContainerClass }, (rowContainer) => {
-			rowContainer.element('td');
-			rowContainer.element('td', { class: cellContainerClass }, (inputCellContainer) => {
-				checkbox = new Checkbox(inputCellContainer.getHTMLElement(), { label, checked: isChecked, ariaLabel: label });
-			});
-		});
-		return checkbox;
+	private appendCheckbox(container: HTMLElement, label: string, cellContainerClass: string, rowContainerClass: string, isChecked: boolean): Checkbox {
+		let rowContainer = DOM.append(container, DOM.$(`tr.${rowContainerClass}`));
+		DOM.append(rowContainer, DOM.$('td'));
+		let checkboxContainer = DOM.append(rowContainer, DOM.$(`td.${cellContainerClass}`));
+		return new Checkbox(checkboxContainer, { label, checked: isChecked, ariaLabel: label });
 	}
 
 	private registerListeners(): void {
@@ -322,8 +311,8 @@ export class ConnectionWidget {
 			}));
 		}
 
-		if (this._refreshCredentialsLinkBuilder) {
-			this._toDispose.push(this._refreshCredentialsLinkBuilder.on(DOM.EventType.CLICK, async () => {
+		if (this._refreshCredentialsLink) {
+			this._toDispose.push(DOM.addDisposableListener(this._refreshCredentialsLink, DOM.EventType.CLICK, async () => {
 				let account = this._azureAccountList.find(account => account.key.accountId === this._azureAccountDropdown.value);
 				if (account) {
 					await this._accountManagementService.refreshAccount(account);
@@ -417,14 +406,12 @@ export class ConnectionWidget {
 		if (currentAuthType === AuthenticationType.AzureMFA) {
 			this.fillInAzureAccountOptions();
 			this._azureAccountDropdown.enable();
-			let tableContainer = this._tableContainer.getContainer();
-			tableContainer.classList.add('hide-username-password');
-			tableContainer.classList.remove('hide-azure-accounts');
+			DOM.addClass(this._tableContainer, 'hide-username-password');
+			DOM.removeClass(this._tableContainer, 'hide-azure-accounts');
 		} else {
 			this._azureAccountDropdown.disable();
-			let tableContainer = this._tableContainer.getContainer();
-			tableContainer.classList.remove('hide-username-password');
-			tableContainer.classList.add('hide-azure-accounts');
+			DOM.removeClass(this._tableContainer, 'hide-username-password');
+			DOM.addClass(this._tableContainer, 'hide-azure-accounts');
 			this._azureAccountDropdown.hideMessage();
 		}
 	}
@@ -446,9 +433,9 @@ export class ConnectionWidget {
 	private async updateRefreshCredentialsLink(): Promise<void> {
 		let chosenAccount = this._azureAccountList.find(account => account.key.accountId === this._azureAccountDropdown.value);
 		if (chosenAccount && chosenAccount.isStale) {
-			this._tableContainer.getContainer().classList.remove('hide-refresh-link');
+			DOM.removeClass(this._tableContainer, 'hide-refresh-link');
 		} else {
-			this._tableContainer.getContainer().classList.add('hide-refresh-link');
+			DOM.addClass(this._tableContainer, 'hide-refresh-link');
 		}
 	}
 
@@ -482,7 +469,7 @@ export class ConnectionWidget {
 			// There are multiple tenants available so let the user select one
 			let options = selectedAccount.properties.tenants.map(tenant => tenant.displayName);
 			this._azureTenantDropdown.setOptions(options);
-			this._tableContainer.getContainer().classList.remove(hideTenantsClassName);
+			DOM.removeClass(this._tableContainer, hideTenantsClassName);
 			this.onAzureTenantSelected(0);
 		} else {
 			if (selectedAccount && selectedAccount.properties.tenants && selectedAccount.properties.tenants.length === 1) {
@@ -490,7 +477,7 @@ export class ConnectionWidget {
 			} else {
 				this._azureTenantId = undefined;
 			}
-			this._tableContainer.getContainer().classList.add(hideTenantsClassName);
+			DOM.addClass(this._tableContainer, hideTenantsClassName);
 		}
 	}
 
@@ -589,9 +576,8 @@ export class ConnectionWidget {
 			if (this._authTypeSelectBox) {
 				this.onAuthTypeSelected(this._authTypeSelectBox.value);
 			} else {
-				let tableContainerElement = this._tableContainer.getContainer();
-				tableContainerElement.classList.remove('hide-username-password');
-				tableContainerElement.classList.add('hide-azure-accounts');
+				DOM.removeClass(this._tableContainer, 'hide-username-password');
+				DOM.addClass(this._tableContainer, 'hide-azure-accounts');
 			}
 
 			if (this.authType === AuthenticationType.AzureMFA) {

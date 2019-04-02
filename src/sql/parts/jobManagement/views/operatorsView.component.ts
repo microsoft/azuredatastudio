@@ -145,8 +145,8 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit,
 		});
 		columns.unshift(rowDetail.getColumnDefinition());
 
-		$(this._gridEl.nativeElement).empty();
-		$(this.actionBarContainer.nativeElement).empty();
+		jQuery(this._gridEl.nativeElement).empty();
+		jQuery(this.actionBarContainer.nativeElement).empty();
 		this.initActionBar();
 		this._table = new Table(this._gridEl.nativeElement, { columns }, this.options);
 		this._table.grid.setData(this.dataView, true);
