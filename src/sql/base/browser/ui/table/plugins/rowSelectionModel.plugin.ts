@@ -128,7 +128,7 @@ export class RowSelectionModel<T extends Slick.SlickData> implements Slick.Selec
 		}
 
 		let selection = this.rangesToRows(this._ranges);
-		let idx = $.inArray(cell.row, selection);
+		let idx = jQuery.inArray(cell.row, selection);
 
 		if (idx === -1 && (e.ctrlKey || e.metaKey)) {
 			selection.push(cell.row);

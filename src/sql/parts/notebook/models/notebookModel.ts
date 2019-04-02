@@ -72,9 +72,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _onValidConnectionSelected = new Emitter<boolean>();
 	private _oldKernel: nb.IKernel;
 	private _clientSessionListeners: IDisposable[] = [];
-	private _connectionsToDispose: ConnectionProfile[] = [];
+	private _connectionUrisToDispose: string[] = [];
 
-	constructor(private _notebookOptions: INotebookModelOptions, startSessionImmediately?: boolean, private connectionProfile?: IConnectionProfile) {
+	constructor(private _notebookOptions: INotebookModelOptions, startSessionImmediately?: boolean, public connectionProfile?: IConnectionProfile) {
 		super();
 		if (!_notebookOptions || !_notebookOptions.notebookUri || !_notebookOptions.notebookManagers) {
 			throw new Error('path or notebook service not defined');
@@ -490,7 +490,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	private isValidConnection(profile: IConnectionProfile | connection.Connection) {
-		let standardKernels = this._notebookOptions.standardKernels.find(kernel => this._savedKernelInfo && kernel.displayName === this._savedKernelInfo.display_name);
+		let standardKernels = this._notebookOptions.standardKernels.find(kernel => this._defaultKernel && kernel.displayName === this._defaultKernel.display_name);
 		let connectionProviderIds = standardKernels ? standardKernels.connectionProviderIds : undefined;
 		return profile && connectionProviderIds && connectionProviderIds.find(provider => provider === profile.providerName) !== undefined;
 	}
@@ -652,7 +652,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			if (newConnection) {
 				this._activeConnection = newConnection;
 				this.refreshConnections(newConnection);
-				console.log(this._activeConnection);
 				this._activeClientSession.updateConnection(newConnection.toIConnectionProfile()).then(
 					result => {
 						//Remove 'Select connection' from 'Attach to' drop-down since its a valid connection
@@ -746,8 +745,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return newKernelDisplayName;
 	}
 
-	public addAttachToConnectionsToBeDisposed(conn: ConnectionProfile) {
-		this._connectionsToDispose.push(conn);
+	public addAttachToConnectionsToBeDisposed(connUri: string) {
+		this._connectionUrisToDispose.push(connUri);
 	}
 
 	private setErrorState(errMsg: string): void {
@@ -896,16 +895,17 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	// let connectionUri = Utils.generateUri(connection, 'notebook');
 	private async disconnectNotebookConnection(conn: ConnectionProfile): Promise<void> {
 		if (this.notebookOptions.connectionService.getConnectionUri(conn).includes(uriPrefixes.notebook)) {
-			await this.notebookOptions.connectionService.disconnect(conn).catch(e => console.log(e));
+			let uri = this._notebookOptions.connectionService.getConnectionUri(conn);
+			await this.notebookOptions.connectionService.disconnect(uri).catch(e => console.log(e));
 		}
 	}
 
 	// Disconnect any connections that were added through the "Add new connection" functionality in the Attach To dropdown
 	private async disconnectAttachToConnections(): Promise<void> {
-		this._connectionsToDispose.forEach(async conn => {
+		notebookUtils.asyncForEach(this._connectionUrisToDispose, async conn => {
 			await this.notebookOptions.connectionService.disconnect(conn).catch(e => console.log(e));
 		});
-		this._connectionsToDispose = [];
+		this._connectionUrisToDispose = [];
 	}
 
 	/**

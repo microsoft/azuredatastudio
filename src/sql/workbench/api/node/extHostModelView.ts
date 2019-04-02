@@ -1224,6 +1224,12 @@ class FileBrowserTreeComponentWrapper extends ComponentWrapper implements azdata
 }
 
 class DivContainerWrapper extends ComponentWrapper implements azdata.DivContainer {
+	constructor(proxy: MainThreadModelViewShape, handle: number, type: ModelComponentTypes, id: string) {
+		super(proxy, handle, type, id);
+		this.properties = {};
+		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<any>());
+	}
+
 	public get overflowY(): string {
 		return this.properties['overflowY'];
 	}
@@ -1238,6 +1244,11 @@ class DivContainerWrapper extends ComponentWrapper implements azdata.DivContaine
 
 	public set yOffsetChange(value: number) {
 		this.setProperty('yOffsetChange', value);
+	}
+
+	public get onDidClick(): vscode.Event<any> {
+		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
+		return emitter && emitter.event;
 	}
 }
 

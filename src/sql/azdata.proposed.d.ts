@@ -2760,6 +2760,10 @@ declare module 'azdata' {
 	}
 
 	export interface DivContainer extends Container<DivLayout, DivItemLayout>, DivContainerProperties {
+		/**
+ 		 * An event called when the div is clicked
+ 		 */
+		onDidClick: vscode.Event<any>;
 	}
 
 	export interface FlexContainer extends Container<FlexLayout, FlexItemLayout> {
@@ -3023,6 +3027,11 @@ declare module 'azdata' {
 		 * This is used when its child component is webview
 		 */
 		yOffsetChange?: number;
+
+		/**
+		 * Indicates whether the element is clickable
+		 */
+		clickable?: boolean;
 	}
 
 	export interface CardComponent extends Component, CardProperties {

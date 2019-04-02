@@ -11,7 +11,6 @@ import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { ListBox } from 'sql/base/browser/ui/listBox/listBox';
 import { ModalFooterStyle } from 'sql/workbench/browser/modal/modal';
-import { CategoryView } from 'sql/workbench/browser/modal/optionsDialog';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { attachButtonStyler, attachListBoxStyler, attachInputBoxStyler, attachSelectBoxStyler, attachCheckboxStyler } from 'sql/platform/theme/common/styler';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
@@ -19,20 +18,19 @@ import * as BackupConstants from 'sql/parts/disasterRecovery/backup/constants';
 import { IBackupService, TaskExecutionMode } from 'sql/platform/backup/common/backupService';
 import * as FileValidationConstants from 'sql/workbench/services/fileBrowser/common/fileValidationServiceConstants';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { ScrollableSplitView } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
 import { IFileBrowserDialogController } from 'sql/workbench/services/fileBrowser/common/fileBrowserDialogController';
 import { IBackupUiService } from 'sql/workbench/services/backup/common/backupUiService';
 
 import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import * as lifecycle from 'vs/base/common/lifecycle';
 import { localize } from 'vs/nls';
-import * as DOM from 'vs/base/browser/dom';
 import * as types from 'vs/base/common/types';
 import * as strings from 'vs/base/common/strings';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { ISelectOptionItem } from 'vs/base/browser/ui/selectBox/selectBox';
 
 export const BACKUP_SELECTOR: string = 'backup-component';
 
@@ -337,13 +335,6 @@ export class BackupComponent {
 	}
 
 	ngAfterViewInit() {
-		// Set category view for advanced options. This should be defined in ngAfterViewInit so that it correctly calculates the text height after data binding.
-		var splitview = new ScrollableSplitView(this.advancedOptionElement.nativeElement);
-		var advancedBodySize = DOM.getTotalHeight(this.advancedOptionBodyElement.nativeElement);
-		var categoryView = this.instantiationService.createInstance(CategoryView, this.advancedOptionBodyElement.nativeElement, advancedBodySize, { title: LocalizedStrings.ADVANCED_CONFIGURATION, id: LocalizedStrings.ADVANCED_CONFIGURATION, ariaHeaderLabel: LocalizedStrings.ADVANCED_CONFIGURATION });
-		splitview.addView(categoryView, 0);
-		splitview.layout(advancedBodySize + this._advancedHeaderSize);
-
 		this._backupUiService.onShowBackupDialog();
 	}
 
@@ -434,14 +425,14 @@ export class BackupComponent {
 
 			// Set backup path list
 			this.setDefaultBackupPaths();
-			var pathlist = [];
-			for (var i in this.backupPathTypePairs) {
-				pathlist.push(i);
+			let pathlist: ISelectOptionItem[] = [];
+			for (let i in this.backupPathTypePairs) {
+				pathlist.push({ text: i });
 			}
 			this.pathListBox.setOptions(pathlist, 0);
 
 			// Set encryption
-			var encryptorItems = this.populateEncryptorCombo();
+			let encryptorItems = this.populateEncryptorCombo();
 			this.encryptorSelectBox.setOptions(encryptorItems, 0);
 
 			if (encryptorItems.length === 0) {
@@ -729,9 +720,9 @@ export class BackupComponent {
 	}
 
 	private populateEncryptorCombo(): string[] {
-		var encryptorCombo = [];
+		let encryptorCombo = [];
 		this.backupEncryptors.forEach((encryptor) => {
-			var encryptorTypeStr = (encryptor.encryptorType === 0 ? BackupConstants.serverCertificate : BackupConstants.asymmetricKey);
+			let encryptorTypeStr = (encryptor.encryptorType === 0 ? BackupConstants.serverCertificate : BackupConstants.asymmetricKey);
 			encryptorCombo.push(encryptor.encryptorName + '(' + encryptorTypeStr + ')');
 		});
 		return encryptorCombo;
@@ -867,18 +858,18 @@ export class BackupComponent {
 	}
 
 	private createBackupInfo(): MssqlBackupInfo {
-		var backupPathArray = [];
-		for (var i in this.backupPathTypePairs) {
+		let backupPathArray = [];
+		for (let i in this.backupPathTypePairs) {
 			backupPathArray.push(i);
 		}
 
 		// get encryptor type and name
-		var encryptorName = '';
-		var encryptorType;
+		let encryptorName = '';
+		let encryptorType;
 
 		if (this.encryptCheckBox.checked && this.encryptorSelectBox.value !== '') {
-			var selectedEncryptor = this.encryptorSelectBox.value;
-			var encryptorTypeStr = selectedEncryptor.substring(selectedEncryptor.lastIndexOf('(') + 1, selectedEncryptor.lastIndexOf(')'));
+			let selectedEncryptor = this.encryptorSelectBox.value;
+			let encryptorTypeStr = selectedEncryptor.substring(selectedEncryptor.lastIndexOf('(') + 1, selectedEncryptor.lastIndexOf(')'));
 			encryptorType = (encryptorTypeStr === BackupConstants.serverCertificate ? 0 : 1);
 			encryptorName = selectedEncryptor.substring(0, selectedEncryptor.lastIndexOf('('));
 		}
