@@ -102,8 +102,9 @@ export const options: Option[] = [
 	{ id: 'user', type: 'string', alias: 'U' },
 	{ id: 'command', type: 'string', alias: 'c' },
 	{ id: 'aad', type: 'boolean' },
-	{ id: 'integrated', type: 'boolean', alias: 'E' }
+	{ id: 'integrated', type: 'boolean', alias: 'E' },
 	// {{SQL CARBON EDIT}} - End
+	{ id: '_', type: 'string' }
 ];
 
 export function parseArgs(args: string[], isOptionSupported = (_: Option) => true): ParsedArgs {
