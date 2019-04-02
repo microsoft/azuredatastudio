@@ -6,10 +6,11 @@
 import * as assert from 'assert';
 import * as dom from 'vs/base/browser/dom';
 import { generateUuid } from 'vs/base/common/uuid';
-import { appendStylizedStringToContainer, handleANSIOutput } from 'vs/workbench/contrib/debug/browser/debugANSIHandling';
+import { appendStylizedStringToContainer, handleANSIOutput, calcANSI8bitColor } from 'vs/workbench/contrib/debug/browser/debugANSIHandling';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { workbenchInstantiationService } from 'vs/workbench/test/workbenchTestServices';
 import { LinkDetector } from 'vs/workbench/contrib/debug/browser/linkDetector';
+import { Color, RGBA } from 'vs/base/common/color';
 
 suite('Debug - ANSI Handling', () => {
 	test('appendStylizedStringToContainer', () => {
