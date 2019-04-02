@@ -73,14 +73,18 @@ export const pythonKernelMetadata = {
 	}
 };
 
-export function writeNotebookToFile(pythonNotebook: azdata.nb.INotebookContents): vscode.Uri {
+export function writeNotebookToFile(pythonNotebook: azdata.nb.INotebookContents, testName: string): vscode.Uri {
+	let fileName = getFileName(testName);
 	let notebookContentString = JSON.stringify(pythonNotebook);
-	let localFile = path.join(os.tmpdir(), 'notebook' + Math.floor(Math.random() * 101) + '.ipynb');
-	while (fs.existsSync(localFile)) {
-		localFile = path.join(os.tmpdir(), 'notebook' + Math.floor(Math.random() * 101) + '.ipynb');
-	}
-	fs.writeFileSync(localFile, notebookContentString);
-	console.log(`Local file is created: '${localFile}'`);
-	let uri = vscode.Uri.file(localFile);
+	fs.writeFileSync(fileName, notebookContentString);
+	console.log(`Local file is created: '${fileName}'`);
+	let uri = vscode.Uri.file(fileName);
 	return uri;
+}
+
+export function getFileName(testName: string): string {
+	if (testName) {
+		return path.join(os.tmpdir(), testName + '.ipynb');
+	}
+	return undefined;
 }
