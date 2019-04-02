@@ -295,7 +295,7 @@ export class AttachToDropdown extends SelectBox {
 				});
 		}
 		this.onDidSelect(e => {
-			this.doChangeContext(new ConnectionProfile(this._capabilitiesService, this.getConnectionWithServerAndDatabaseNames(e.selected)));
+			this.doChangeContext(this.getSelectedConnection(e.selected));
 		});
 	}
 
@@ -402,17 +402,14 @@ export class AttachToDropdown extends SelectBox {
 		return otherConnections;
 	}
 
-	public getConnectionWithServerAndDatabaseNames(selection: string): ConnectionProfile {
+	public getSelectedConnection(selection: string): ConnectionProfile {
 		// Find all connections with the the same server as the selected option
-		let connections = this.model.contexts.otherConnections.filter((c) => selection === c.serverName);
+		let connections = this.model.contexts.otherConnections.filter((c) => selection === c.title);
 		// If only one connection exists with the same server name, use that one
 		if (connections.length === 1) {
 			return connections[0];
 		} else {
-			// Extract server and database name
-			let serverName = getServerFromFormattedAttachToName(selection);
-			let databaseName = getDatabaseFromFormattedAttachToName(selection);
-			return this.model.contexts.otherConnections.find((c) => serverName === c.serverName && databaseName === c.databaseName);
+			return this.model.contexts.otherConnections.find((c) => selection === c.title);
 		}
 	}
 

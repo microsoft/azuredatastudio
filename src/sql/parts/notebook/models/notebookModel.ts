@@ -24,6 +24,7 @@ import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHos
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { uriPrefixes } from 'sql/platform/connection/common/utils';
 import { keys } from 'vs/base/common/map';
+import { stringDiff } from 'vs/base/common/diff/diff';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -637,34 +638,39 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return spec;
 	}
 
-	public async changeContext(server: string, newConnection?: IConnectionProfile, hideErrorMessage?: boolean): Promise<void> {
+	public async changeContext(server: string, newConnection?: ConnectionProfile, hideErrorMessage?: boolean): Promise<void> {
 		try {
 			if (!newConnection) {
 				newConnection = this._activeContexts.otherConnections.find((connection) => connection.serverName === server);
 			}
-			if (!newConnection && (this._activeContexts.defaultConnection.serverName === server)) {
+			if ((!newConnection) && (this._activeContexts.defaultConnection.serverName === server)) {
 				newConnection = this._activeContexts.defaultConnection;
 			}
-			let newConnectionProfile = new ConnectionProfile(this._notebookOptions.capabilitiesService, newConnection);
+
 			if (this._activeConnection) {
 				this._otherConnections.push(this._activeConnection);
 			}
-			this._activeConnection = newConnectionProfile;
-			this.refreshConnections(newConnectionProfile);
-			this._activeClientSession.updateConnection(this._activeConnection.toIConnectionProfile()).then(
-				result => {
-					//Remove 'Select connection' from 'Attach to' drop-down since its a valid connection
-					this._onValidConnectionSelected.fire(true);
-				},
-				error => {
-					if (error) {
-						if (!hideErrorMessage) {
-							this.notifyError(notebookUtils.getErrorMessage(error));
+			if (newConnection) {
+				this._activeConnection = newConnection;
+				this.refreshConnections(newConnection);
+				console.log(this._activeConnection);
+				this._activeClientSession.updateConnection(newConnection.toIConnectionProfile()).then(
+					result => {
+						//Remove 'Select connection' from 'Attach to' drop-down since its a valid connection
+						this._onValidConnectionSelected.fire(true);
+					},
+					error => {
+						if (error) {
+							if (!hideErrorMessage) {
+								this.notifyError(notebookUtils.getErrorMessage(error));
+							}
+							//Selected a wrong connection, Attach to should be defaulted with 'Select connection'
+							this._onValidConnectionSelected.fire(false);
 						}
-						//Selected a wrong connection, Attach to should be defaulted with 'Select connection'
-						this._onValidConnectionSelected.fire(false);
-					}
-				});
+					});
+			} else {
+				throw new Error('No valid connection');
+			}
 		} catch (err) {
 			let msg = notebookUtils.getErrorMessage(err);
 			this.notifyError(localize('changeContextFailed', "Changing context failed: {0}", msg));
@@ -796,8 +802,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			let kernelDisplayName = this.getDisplayNameFromSpecName(kernelChangedArgs.newValue);
 			this._activeContexts = await NotebookContexts.getContextsForKernel(this._notebookOptions.connectionService, this.getApplicableConnectionProviderIds(kernelDisplayName), kernelChangedArgs, this.connectionProfile);
 			this._contextsChangedEmitter.fire();
-			if (this.contexts.defaultConnection !== undefined && this.contexts.defaultConnection.serverName !== undefined) {
-				await this.changeContext(this.contexts.defaultConnection.serverName);
+			if (this.contexts.defaultConnection !== undefined && this.contexts.defaultConnection.serverName !== undefined && this.contexts.defaultConnection.title !== undefined) {
+				await this.changeContext(this.contexts.defaultConnection.title, this.contexts.defaultConnection);
 			}
 		}
 	}
