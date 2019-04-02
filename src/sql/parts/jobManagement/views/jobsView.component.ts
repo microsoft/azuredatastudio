@@ -21,7 +21,7 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
 import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowdetailview';
 import { JobCacheObject } from 'sql/platform/jobManagement/common/jobManagementService';
-import { EditJobAction, DeleteJobAction, NewJobAction } from 'sql/platform/jobManagement/common/jobActions';
+import { EditJobAction, DeleteJobAction, NewJobAction, IJobActionInfo } from 'sql/platform/jobManagement/common/jobActions';
 import { JobManagementUtilities } from 'sql/platform/jobManagement/common/jobManagementUtilities';
 import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
@@ -99,7 +99,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		@Inject(forwardRef(() => CommonServiceInterface)) commonService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
-		@Inject(forwardRef(() => AgentViewComponent)) private _agentViewComponent: AgentViewComponent,
+		@Inject(forwardRef(() => AgentViewComponent)) _agentViewComponent: AgentViewComponent,
 		@Inject(IJobManagementService) private _jobManagementService: IJobManagementService,
 		@Inject(IWorkbenchThemeService) private _themeService: IWorkbenchThemeService,
 		@Inject(ICommandService) private _commandService: ICommandService,
@@ -109,7 +109,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		@Inject(IDashboardService) _dashboardService: IDashboardService,
 		@Inject(ITelemetryService) private _telemetryService: ITelemetryService
 	) {
-		super(commonService, _dashboardService, contextMenuService, keybindingService, instantiationService);
+		super(commonService, _dashboardService, contextMenuService, keybindingService, instantiationService, _agentViewComponent);
 		let jobCacheObjectMap = this._jobManagementService.jobCacheObjectMap;
 		let jobCache = jobCacheObjectMap[this._serverName];
 		if (jobCache) {
@@ -622,7 +622,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		let chartHeights = this.getChartHeights(jobHistories);
 		let runCharts = [];
 		for (let i = 0; i < chartHeights.length; i++) {
-			let runGraph = $(`table#${jobId}.jobprevruns > tbody > tr > td > div.bar${i}`);
+			let runGraph = $(`table.jobprevruns#${jobId} > tbody > tr > td > div.bar${i}`);
 			if (runGraph.length > 0) {
 				runGraph.css('height', chartHeights[i]);
 				let bgColor = jobHistories[i].runStatus === 0 ? 'red' : 'green';
@@ -666,7 +666,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		// if the durations are all 0 secs, show minimal chart
 		// instead of nothing
 		if (zeroDurationJobCount === jobHistories.length) {
-			return ['5px', '5px', '5px', '5px', '5px'];
+			return Array(jobHistories.length).fill('5px');
 		} else {
 			return chartHeights;
 		}
@@ -948,12 +948,8 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		return undefined;
 	}
 
-	public openCreateJobDialog() {
+	public async openCreateJobDialog() {
 		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
-		this._commandService.executeCommand('agent.openJobDialog', ownerUri);
-	}
-
-	public refreshJobs() {
-		this._agentViewComponent.refresh = true;
+		await this._commandService.executeCommand('agent.openJobDialog', ownerUri);
 	}
 }

@@ -286,7 +286,7 @@ export default class JupyterServerInstallation {
 	private async installJupyterProsePackage(): Promise<void> {
 		if (process.platform === constants.winPlatform) {
 			let requirements = path.join(this._pythonPackageDir, 'requirements.txt');
-			let installJupyterCommand = `${this._pythonExecutable} -m pip install --no-index -r ${requirements} --find-links ${this._pythonPackageDir} --no-warn-script-location`;
+			let installJupyterCommand = `"${this._pythonExecutable}" -m pip install --no-index -r "${requirements}" --find-links "${this._pythonPackageDir}" --no-warn-script-location`;
 			this.outputChannel.show(true);
 			this.outputChannel.appendLine(localize('msgInstallStart', 'Installing required packages to run Notebooks...'));
 			await utils.executeStreamedCommand(installJupyterCommand, this.outputChannel);
@@ -299,7 +299,7 @@ export default class JupyterServerInstallation {
 	private async installSparkMagic(): Promise<void> {
 		if (process.platform === constants.winPlatform) {
 			let sparkWheel = path.join(this._pythonPackageDir, `sparkmagic-${constants.sparkMagicVersion}-py3-none-any.whl`);
-			let installSparkMagic = `${this._pythonExecutable} -m pip install --no-index ${sparkWheel} --find-links ${this._pythonPackageDir} --no-warn-script-location`;
+			let installSparkMagic = `"${this._pythonExecutable}" -m pip install --no-index "${sparkWheel}" --find-links "${this._pythonPackageDir}" --no-warn-script-location`;
 			this.outputChannel.show(true);
 			this.outputChannel.appendLine(localize('msgInstallingSpark', 'Installing SparkMagic...'));
 			await utils.executeStreamedCommand(installSparkMagic, this.outputChannel);

@@ -1503,9 +1503,9 @@ declare module 'azdata' {
 
 	export interface AgentJobHistoryResult extends ResultStatus {
 		histories: AgentJobHistoryInfo[];
-		steps: AgentJobStepInfo[];
 		schedules: AgentJobScheduleInfo[];
 		alerts: AgentAlertInfo[];
+		steps: AgentJobStepInfo[];
 	}
 
 	export interface CreateAgentJobResult extends ResultStatus {

@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import {
-	Component, Inject, ViewContainerRef, forwardRef, AfterContentInit,
+	Component, Inject, forwardRef, AfterContentInit,
 	ComponentFactoryResolver, ViewChild, ChangeDetectorRef, Injector
 } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
@@ -15,7 +15,8 @@ import { InsightAction, InsightActionContext } from 'sql/workbench/common/action
 import { toDisposableSubscription } from 'sql/base/node/rxjsUtils';
 import { IInsightsConfig, IInsightsView } from './interfaces';
 import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/common/insightRegistry';
-import { insertValueRegex } from 'sql/workbench/services/insights/common/insightsDialogService';
+import { resolveQueryFilePath } from 'sql/workbench/services/insights/common/insightsUtils';
+
 import { RunInsightQueryAction } from './actions';
 
 import { SimpleExecuteResult } from 'azdata';
@@ -25,13 +26,14 @@ import * as types from 'vs/base/common/types';
 import * as pfs from 'vs/base/node/pfs';
 import * as nls from 'vs/nls';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { WorkbenchState, IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
+import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { IntervalTimer, createCancelablePromise } from 'vs/base/common/async';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import { toDisposable } from 'vs/base/common/lifecycle';
 import { isPromiseCanceledError } from 'vs/base/common/errors';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IConfigurationResolverService } from 'vs/workbench/services/configurationResolver/common/configurationResolver';
 
 const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribution);
 
@@ -72,8 +74,9 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 		@Inject(forwardRef(() => Injector)) private _injector: Injector,
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
 		@Inject(IStorageService) private storageService: IStorageService,
-		@Inject(IWorkspaceContextService) private workspaceContextService: IWorkspaceContextService,
-		@Inject(IConfigurationService) private readonly _configurationService: IConfigurationService
+		@Inject(IWorkspaceContextService) private readonly _workspaceContextService: IWorkspaceContextService,
+		@Inject(IConfigurationService) private readonly _configurationService: IConfigurationService,
+		@Inject(IConfigurationResolverService) private readonly _configurationResolverService: IConfigurationResolverService
 	) {
 		super();
 		this.insightConfig = <IInsightsConfig>this._config.widget['insights-widget'];
@@ -111,6 +114,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 				this._register(toDisposable(() => cancelablePromise.cancel()));
 			}
 		}, error => {
+			this._loading = false;
 			this.showError(error);
 		});
 	}
@@ -279,9 +283,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 		}
 	}
 
-	private _parseConfig(): Thenable<void[]> {
-		let promises: Array<Promise<void>> = [];
-
+	private async _parseConfig(): Promise<void> {
 		this._typeKey = Object.keys(this.insightConfig.type)[0];
 
 		// When the editor.accessibilitySupport setting is on, we will force the chart type to be table.
@@ -295,47 +297,11 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 		if (types.isStringArray(this.insightConfig.query)) {
 			this.insightConfig.query = this.insightConfig.query.join(' ');
 		} else if (this.insightConfig.queryFile) {
-			let filePath = this.insightConfig.queryFile;
-			// check for workspace relative path
-			let match = filePath.match(insertValueRegex);
-			if (match && match.length > 0 && match[1] === 'workspaceRoot') {
-				filePath = filePath.replace(match[0], '');
+			let filePath = await resolveQueryFilePath(this.insightConfig.queryFile,
+				this._workspaceContextService,
+				this._configurationResolverService);
 
-				//filePath = this.dashboardService.workspaceContextService.toResource(filePath).fsPath;
-				switch (this.workspaceContextService.getWorkbenchState()) {
-					case WorkbenchState.FOLDER:
-						filePath = this.workspaceContextService.getWorkspace().folders[0].toResource(filePath).fsPath;
-						break;
-					case WorkbenchState.WORKSPACE:
-						let filePathArray = filePath.split('/');
-						// filter out empty sections
-						filePathArray = filePathArray.filter(i => !!i);
-						let folder = this.workspaceContextService.getWorkspace().folders.find(i => i.name === filePathArray[0]);
-						if (!folder) {
-							return Promise.reject(new Error(`Could not find workspace folder ${filePathArray[0]}`));
-						}
-						// remove the folder name from the filepath
-						filePathArray.shift();
-						// rejoin the filepath after doing the work to find the right folder
-						filePath = '/' + filePathArray.join('/');
-						filePath = folder.toResource(filePath).fsPath;
-						break;
-				}
-
-			}
-			promises.push(new Promise((resolve, reject) => {
-				pfs.readFile(filePath).then(
-					buffer => {
-						this.insightConfig.query = buffer.toString();
-						resolve();
-					},
-					error => {
-						reject(error);
-					}
-				);
-			}));
+			this.insightConfig.query = (await pfs.readFile(filePath)).toString();
 		}
-
-		return Promise.all(promises);
 	}
 }
