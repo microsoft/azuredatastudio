@@ -119,7 +119,7 @@ export class OEShimService extends Disposable implements IOEShimService {
 	private treeNodeToITreeItem(viewId: string, node: TreeNode, parentNode: ITreeItem): ITreeItem {
 		let handle = generateUuid();
 		let nodePath = node.nodePath;
-		let icon: string;
+		let icon: string = '';
 		if (node.iconType) {
 			icon = (typeof node.iconType === 'string') ? node.iconType : node.iconType.id;
 		} else {
