@@ -668,6 +668,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 						}
 					});
 			} else {
+				this._onValidConnectionSelected.fire(false);
 				throw new Error('No valid connection');
 			}
 		} catch (err) {
