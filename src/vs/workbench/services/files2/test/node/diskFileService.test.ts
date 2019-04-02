@@ -12,13 +12,15 @@ import { getRandomTestPath } from 'vs/base/test/node/testUtils';
 import { generateUuid } from 'vs/base/common/uuid';
 import { join, basename, dirname, posix } from 'vs/base/common/path';
 import { getPathFromAmdModule } from 'vs/base/common/amd';
-import { copy, del } from 'vs/base/node/pfs';
+import { copy, del, symlink } from 'vs/base/node/pfs';
 import { URI } from 'vs/base/common/uri';
 import { existsSync, statSync, readdirSync, readFileSync } from 'fs';
 import { FileOperation, FileOperationEvent, IFileStat, FileOperationResult, FileSystemProviderCapabilities } from 'vs/platform/files/common/files';
 import { NullLogService } from 'vs/platform/log/common/log';
-import { isLinux } from 'vs/base/common/platform';
+import { isLinux, isWindows } from 'vs/base/common/platform';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { promisify } from 'util';
+import { exec } from 'child_process';
 
 function getByName(root: IFileStat, name: string): IFileStat | null {
 	if (root.children === undefined) {
@@ -70,13 +72,15 @@ suite('Disk File Service', () => {
 	let disposables: IDisposable[] = [];
 
 	setup(async () => {
-		service = new FileService2(new NullLogService());
+		const logService = new NullLogService();
+
+		service = new FileService2(logService);
 		disposables.push(service);
 
-		fileProvider = new TestDiskFileSystemProvider();
+		fileProvider = new TestDiskFileSystemProvider(logService);
 		service.registerProvider(Schemas.file, fileProvider);
 
-		testProvider = new TestDiskFileSystemProvider();
+		testProvider = new TestDiskFileSystemProvider(logService);
 		service.registerProvider(testSchema, testProvider);
 
 		const id = generateUuid();
@@ -307,6 +311,46 @@ suite('Disk File Service', () => {
 		assert.equal(r2.name, 'deep');
 	});
 
+	test('resolveFile - folder symbolic link', async () => {
+		if (isWindows) {
+			return; // not happy
+		}
+
+		const link = URI.file(join(testDir, 'deep-link'));
+		await symlink(join(testDir, 'deep'), link.fsPath);
+
+		const resolved = await service.resolveFile(link);
+		assert.equal(resolved.children!.length, 4);
+		assert.equal(resolved.isDirectory, true);
+		assert.equal(resolved.isSymbolicLink, true);
+	});
+
+	test('resolveFile - file symbolic link', async () => {
+		if (isWindows) {
+			return; // not happy
+		}
+
+		const link = URI.file(join(testDir, 'lorem.txt-linked'));
+		await symlink(join(testDir, 'lorem.txt'), link.fsPath);
+
+		const resolved = await service.resolveFile(link);
+		assert.equal(resolved.isDirectory, false);
+		assert.equal(resolved.isSymbolicLink, true);
+	});
+
+	test('resolveFile - invalid symbolic link does not break', async () => {
+		if (isWindows) {
+			return; // not happy
+		}
+
+		const link = URI.file(join(testDir, 'foo'));
+		await symlink(link.fsPath, join(testDir, 'bar'));
+
+		const resolved = await service.resolveFile(URI.file(testDir));
+		assert.equal(resolved.isDirectory, true);
+		assert.equal(resolved.children!.length, 8);
+	});
+
 	test('deleteFile', async () => {
 		let event: FileOperationEvent;
 		disposables.push(service.onAfterOperation(e => event = e));
@@ -445,7 +489,7 @@ suite('Disk File Service', () => {
 		assert.equal(existsSync(source.fsPath), false);
 		assert.ok(event!);
 		assert.equal(event!.resource.fsPath, source.fsPath);
-		assert.equal(event!.operation, FileOperation.MOVE);
+		assert.equal(event!.operation, FileOperation.COPY);
 		assert.equal(event!.target!.resource.fsPath, renamed.resource.fsPath);
 
 		const targetContents = readFileSync(target.fsPath);
@@ -532,7 +576,7 @@ suite('Disk File Service', () => {
 		assert.equal(existsSync(source.fsPath), false);
 		assert.ok(event!);
 		assert.equal(event!.resource.fsPath, source.fsPath);
-		assert.equal(event!.operation, FileOperation.MOVE);
+		assert.equal(event!.operation, FileOperation.COPY);
 		assert.equal(event!.target!.resource.fsPath, renamed.resource.fsPath);
 
 		const targetChildren = readdirSync(target.fsPath);

@@ -33,7 +33,7 @@ import * as notebookUtils from 'sql/parts/notebook/notebookUtils';
 import { Deferred } from 'sql/base/common/promise';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
-import { KernelsDropdown, AttachToDropdown, AddCellAction, TrustedAction, RunAllCellsAction } from 'sql/parts/notebook/notebookActions';
+import { KernelsDropdown, AttachToDropdown, AddCellAction, TrustedAction, RunAllCellsAction, ClearAllOutputsAction } from 'sql/parts/notebook/notebookActions';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
@@ -41,6 +41,7 @@ import { IConnectionDialogService } from 'sql/workbench/services/connection/comm
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { CellMagicMapper } from 'sql/parts/notebook/models/cellMagicMapper';
 import { IExtensionsViewlet, VIEWLET_ID } from 'vs/workbench/contrib/extensions/common/extensions';
+import { CellModel } from 'sql/parts/notebook/models/cell';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 
@@ -373,6 +374,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		addTextCellButton.cellType = CellTypes.Markdown;
 
 		this._runAllCellsAction = new RunAllCellsAction('notebook.runAllCells', localize('runAll', 'Run Cells'), 'notebook-button icon-run-cells');
+		let clearResultsButton = new ClearAllOutputsAction('notebook.ClearAllOutputs', localize('clearResults', 'Clear Results'), 'notebook-button icon-clear-results');
 
 		this._trustedAction = this.instantiationService.createInstance(TrustedAction, 'notebook.Trusted');
 		this._trustedAction.enabled = false;
@@ -386,7 +388,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			{ action: addCodeCellButton },
 			{ action: addTextCellButton },
 			{ action: this._trustedAction },
-			{ action: this._runAllCellsAction }
+			{ action: this._runAllCellsAction },
+			{ action: clearResultsButton }
 		]);
 
 	}
@@ -495,6 +498,21 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			}
 		}
 		return Promise.resolve(true);
+	}
+
+	public async clearAllOutputs(): Promise<boolean> {
+		try {
+			await this.modelReady;
+			this._model.cells.forEach(cell => {
+				if (cell.cellType === CellTypes.Code) {
+					(cell as CellModel).clearOutputs();
+				}
+			});
+			return Promise.resolve(true);
+		}
+		catch (e) {
+			return Promise.reject(e);
+		}
 	}
 
 }
