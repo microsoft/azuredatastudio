@@ -257,7 +257,7 @@ export class SchemaCompareResult {
 	}
 
 	private createCompareButton(view: azdata.ModelView) {
-		let runIcon = path.join(__dirname, '.', 'media', 'start.svg');
+		let runIcon = path.join(__dirname, '.', 'media', 'compare.svg');
 
 		this.compareButton = view.modelBuilder.button().withProperties({
 			label: localize('schemaCompare.compareButton', 'Compare'),
@@ -272,10 +272,10 @@ export class SchemaCompareResult {
 	}
 
 	private createGenerateScriptButton(view: azdata.ModelView) {
-		let fileIcon = path.join(__dirname, '.', 'media', 'file.svg');
+		let fileIcon = path.join(__dirname, '.', 'media', 'generate-script.svg');
 
 		this.generateScriptButton = view.modelBuilder.button().withProperties({
-			label: localize('schemaCompare.generateScriptButton', 'Generate Script'),
+			label: localize('schemaCompare.generateScriptButton', 'Generate script'),
 			iconPath: fileIcon,
 			enabled: false,
 			title: localize('schemaCompare.generateScriptButtonTitle', 'Generate Script is enabled when the target is a database')
@@ -310,10 +310,10 @@ export class SchemaCompareResult {
 	}
 
 	private createSwitchButton(view: azdata.ModelView) {
-		let swapIcon = path.join(__dirname, '.', 'media', 'swap.png');
+		let swapIcon = path.join(__dirname, '.', 'media', 'switch-directions.svg');
 
 		this.switchButton = view.modelBuilder.button().withProperties({
-			label: localize('schemaCompare.switchDirectionButton', 'Switch Direction'),
+			label: localize('schemaCompare.switchDirectionButton', 'Switch direction'),
 			iconPath: swapIcon,
 			enabled: false
 		}).component();
