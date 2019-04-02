@@ -17,6 +17,8 @@ module.exports = withDefaults({
 	externals: {
 		'clipboardy': 'commonjs clipboardy',
 		'dataprotocol-client': 'commonjs dataprotocol-client',
-		'vscode-languageclient': 'commonjs vscode-languageclient'
+		'vscode-languageclient': 'commonjs vscode-languageclient',
+		'vscode-extension-telemetry': 'commonjs vscode-extension-telemetry',
+		'request': 'commonjs request',
 	}
 });
