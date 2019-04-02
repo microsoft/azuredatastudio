@@ -237,6 +237,7 @@ export function createApiFactory(
 			get language() { return platform.language!; },
 			get appName() { return product.nameLong; },
 			get appRoot() { return initData.environment.appRoot!.fsPath; },
+			get uriScheme() { return product.urlProtocol; },
 			get logLevel() {
 				checkProposedApiEnabled(extension);
 				return typeConverters.LogLevel.to(extHostLogService.getLevel());
