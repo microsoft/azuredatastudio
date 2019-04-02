@@ -96,11 +96,16 @@ export class TimeElapsedStatusBarItem implements IStatusbarItem {
 		this.intervalTimer.cancel();
 		if (runner.isExecuting) {
 			this.intervalTimer.cancelAndSet(() => {
-				this._flavorElement.innerText = parseNumAsTimeString(Date.now() - runner.queryStartTime.getTime(), false);
+				let value = runner.queryStartTime ? Date.now() - runner.queryStartTime.getTime() : 0;
+				this._flavorElement.innerText = parseNumAsTimeString(value, false);
 			}, 1000);
-			this._flavorElement.innerText = parseNumAsTimeString(Date.now() - runner.queryStartTime.getTime(), false);
+
+			let value = runner.queryStartTime ? Date.now() - runner.queryStartTime.getTime() : 0;
+			this._flavorElement.innerText = parseNumAsTimeString(value, false);
 		} else {
-			this._flavorElement.innerText = parseNumAsTimeString(runner.queryEndTime.getTime() - runner.queryStartTime.getTime(), false);
+			let value = runner.queryStartTime && runner.queryEndTime
+				? runner.queryEndTime.getTime() - runner.queryStartTime.getTime() : 0;
+			this._flavorElement.innerText = parseNumAsTimeString(value, false);
 		}
 		show(this._flavorElement);
 	}
