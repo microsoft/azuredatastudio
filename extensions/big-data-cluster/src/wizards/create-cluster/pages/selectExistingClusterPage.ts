@@ -21,7 +21,7 @@ export class SelectExistingClusterPage extends WizardPageBase<CreateClusterWizar
 	private existingClusterControl: azdata.FlexContainer;
 	private clusterContextsLabel: azdata.TextComponent;
 	private errorLoadingClustersLabel: azdata.TextComponent;
-	private clusterContextContainer: azdata.DivContainer;
+	private clusterContextList: azdata.DivContainer;
 	private clusterContextLoadingComponent: azdata.LoadingComponent;
 	private configFileInput: azdata.InputBoxComponent;
 	private browseFileButton: azdata.ButtonComponent;
@@ -80,7 +80,9 @@ export class SelectExistingClusterPage extends WizardPageBase<CreateClusterWizar
 
 	private initExistingClusterControl(): void {
 		let self = this;
+		const labelWidth = '150px';
 		let configFileLabel = this.view.modelBuilder.text().withProperties({ value: localize('bdc-create.kubeConfigFileLabelText', 'Kube config file path') }).component();
+		configFileLabel.width = labelWidth;
 		this.configFileInput = this.view.modelBuilder.inputBox().withProperties({ width: '300px' }).component();
 		this.configFileInput.enabled = false;
 		this.browseFileButton = this.view.modelBuilder.button().withProperties({ label: localize('bdc-browseText', 'Browse'), width: '100px' }).component();
@@ -88,14 +90,21 @@ export class SelectExistingClusterPage extends WizardPageBase<CreateClusterWizar
 			.withLayout({ flexFlow: 'row', alignItems: 'baseline' })
 			.withItems([configFileLabel, this.configFileInput, this.browseFileButton], { CSSStyles: { 'margin-right': '10px' } }).component();
 		this.clusterContextsLabel = this.view.modelBuilder.text().withProperties({ value: localize('bdc-clusterContextsLabelText', 'Cluster Contexts') }).component();
+		this.clusterContextsLabel.width = labelWidth;
 		this.errorLoadingClustersLabel = this.view.modelBuilder.text().withProperties({ value: localize('bdc-errorLoadingClustersText', 'No cluster information is found in the config file or an error ocurred while loading the config file') }).component();
-		this.clusterContextContainer = this.view.modelBuilder.divContainer().component();
-		this.clusterContextLoadingComponent = this.view.modelBuilder.loadingComponent().withItem(this.clusterContextContainer).component();
+		this.clusterContextList = this.view.modelBuilder.divContainer().component();
+		this.clusterContextLoadingComponent = this.view.modelBuilder.loadingComponent().withItem(this.clusterContextList).component();
 		this.existingClusterControl = this.view.modelBuilder.divContainer().component();
-		this.existingClusterControl.addItem(configFileContainer, { CSSStyles: { 'margin-top': '0px' } });
-		this.existingClusterControl.addItem(this.clusterContextLoadingComponent, { CSSStyles: { 'width': '400px', 'margin-top': '10px' } });
+		let clusterContextContainer = this.view.modelBuilder.flexContainer().withLayout({ flexFlow: 'row', alignItems: 'start' }).component();
+		clusterContextContainer.addItem(this.clusterContextsLabel, { flex: '0 0 auto' });
+		clusterContextContainer.addItem(this.clusterContextLoadingComponent, { flex: '0 0 auto', CSSStyles: { 'width': '400px', 'margin-left': '10px', 'margin-top': '10px' } });
 
-		this.browseFileButton.onDidClick(async () => {
+		this.existingClusterControl.addItem(configFileContainer, { CSSStyles: { 'margin-top': '0px' } });
+		this.existingClusterControl.addItem(clusterContextContainer, {
+			CSSStyles: { 'margin- top': '10px' }
+		});
+
+		this.wizard.registerDisposable(this.browseFileButton.onDidClick(async () => {
 			let fileUris = await vscode.window.showOpenDialog(
 				{
 					canSelectFiles: true,
@@ -112,12 +121,12 @@ export class SelectExistingClusterPage extends WizardPageBase<CreateClusterWizar
 			if (!fileUris || fileUris.length === 0) {
 				return;
 			}
-			self.clusterContextContainer.clearItems();
+			self.clusterContextList.clearItems();
 
 			let fileUri = fileUris[0];
 
 			self.loadClusterContexts(fileUri.fsPath);
-		});
+		}));
 	}
 
 	private async loadClusterContexts(configPath: string): Promise<void> {
@@ -140,17 +149,15 @@ export class SelectExistingClusterPage extends WizardPageBase<CreateClusterWizar
 					self.wizard.wizardObject.message = null;
 				}
 
-				option.onDidClick(() => {
+				this.wizard.registerDisposable(option.onDidClick(() => {
 					self.wizard.model.selectedCluster = cluster;
 					self.wizard.wizardObject.message = null;
-				});
+				}));
 				return option;
 			});
-
-			self.clusterContextContainer.addItem(self.clusterContextsLabel);
-			self.clusterContextContainer.addItems(options);
+			self.clusterContextList.addItems(options);
 		} else {
-			self.clusterContextContainer.addItem(this.errorLoadingClustersLabel);
+			self.clusterContextList.addItem(this.errorLoadingClustersLabel);
 		}
 		this.clusterContextLoadingComponent.loading = false;
 	}

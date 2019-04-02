@@ -103,7 +103,7 @@ export default class CardComponent extends ComponentWithIconBase implements ICom
 	}
 
 	private get selectable(): boolean {
-		return this.cardType === 'VerticalButton' || this.cardType === 'ListItem';
+		return this.enabled && (this.cardType === 'VerticalButton' || this.cardType === 'ListItem');
 	}
 
 	// CSS-bound properties
