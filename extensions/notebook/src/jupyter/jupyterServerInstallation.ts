@@ -124,7 +124,7 @@ export default class JupyterServerInstallation {
 		let pythonVersion = constants.pythonVersion;
 		let platformId = utils.getOSPlatformId();
 		let packageName: string;
-		let pythonDownloadUrl:string;
+		let pythonDownloadUrl: string;
 
 		if (this._usingExistingPython) {
 			packageName = `python-${pythonVersion}-${bundleVersion}-offlinePackages.zip`;
