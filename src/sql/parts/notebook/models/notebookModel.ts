@@ -24,7 +24,6 @@ import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHos
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { uriPrefixes } from 'sql/platform/connection/common/utils';
 import { keys } from 'vs/base/common/map';
-import { stringDiff } from 'vs/base/common/diff/diff';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
