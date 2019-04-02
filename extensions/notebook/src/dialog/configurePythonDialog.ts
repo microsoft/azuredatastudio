@@ -163,7 +163,7 @@ export class ConfigurePythonDialog {
 
 			if (useExistingPython) {
 				let exePath = path.join(pythonLocation, process.platform === constants.winPlatform ? 'python.exe' : 'bin/python3');
-				let pythonExists = await fs.existsSync(exePath);
+				let pythonExists = fs.existsSync(exePath);
 				if (!pythonExists) {
 					this.showErrorMessage(this.PythonNotFoundMsg);
 					return false;
