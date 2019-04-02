@@ -32,7 +32,6 @@ import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/un
 import { notebookModeId } from 'sql/common/constants';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { viewColumnToEditorGroup } from 'vs/workbench/api/common/shared/editor';
-import { localize } from 'vs/nls';
 
 class MainThreadNotebookEditor extends Disposable {
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
