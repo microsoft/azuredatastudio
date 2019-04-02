@@ -652,7 +652,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			if (newConnection) {
 				this._activeConnection = newConnection;
 				this.refreshConnections(newConnection);
-				console.log(this._activeConnection);
 				this._activeClientSession.updateConnection(newConnection.toIConnectionProfile()).then(
 					result => {
 						//Remove 'Select connection' from 'Attach to' drop-down since its a valid connection
