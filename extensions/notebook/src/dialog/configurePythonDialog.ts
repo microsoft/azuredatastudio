@@ -9,7 +9,9 @@ import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
 import * as fs from 'fs';
+import * as path from 'path';
 import * as utils from '../common/utils';
+import * as constants from '../common/constants';
 
 import JupyterServerInstallation from '../jupyter/jupyterServerInstallation';
 import { ApiWrapper } from '../common/apiWrapper';
@@ -28,6 +30,7 @@ export class ConfigurePythonDialog {
 	private readonly SelectFileLabel = localize('configurePython.selectFileLabel', 'Select');
 	private readonly InstallationNote = localize('configurePython.installNote', 'This installation will take some time. It is recommended to not close the application until the installation is complete.');
 	private readonly InvalidLocationMsg = localize('configurePython.invalidLocationMsg', 'The specified install location is invalid.');
+	private readonly PythonNotFoundMsg = localize('configurePython.pythonNotFoundMsg', 'No python installation was found at the specified location.');
 
 	private pythonLocationTextBox: azdata.InputBoxComponent;
 	private browseButton: azdata.ButtonComponent;
@@ -151,17 +154,27 @@ export class ConfigurePythonDialog {
 			return false;
 		}
 
+		let useExistingPython = !!this.existingInstallButton.checked;
 		try {
 			let isValid = await this.isFileValid(pythonLocation);
 			if (!isValid) {
 				return false;
+			}
+
+			if (useExistingPython) {
+				let exePath = path.join(pythonLocation, process.platform === constants.winPlatform ? 'python.exe' : 'bin/python3');
+				let pythonExists = await fs.existsSync(exePath);
+				if (!pythonExists) {
+					this.showErrorMessage(this.PythonNotFoundMsg);
+					return false;
+				}
 			}
 		} catch (err) {
 			this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
 			return false;
 		}
 
-		this.jupyterInstallation.startInstallProcess({ installPath: pythonLocation, existingPython: !!this.existingInstallButton.checked })
+		this.jupyterInstallation.startInstallProcess({ installPath: pythonLocation, existingPython: useExistingPython })
 			.then(() => {
 				this._setupComplete.resolve();
 			})
