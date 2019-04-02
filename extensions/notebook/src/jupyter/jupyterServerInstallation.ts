@@ -28,6 +28,7 @@ const msgPythonDownloadPending = localize('msgPythonDownloadPending', 'Downloadi
 const msgPythonUnpackPending = localize('msgPythonUnpackPending', 'Unpacking python package');
 const msgPythonDirectoryError = localize('msgPythonDirectoryError', 'Error while creating python installation directory');
 const msgPythonUnpackError = localize('msgPythonUnpackError', 'Error while unpacking python bundle');
+const msgDeleteOfflinePackagesError = localize('msgDeleteOfflinePackagesError', 'Error while deleting offline packages directory');
 const msgTaskName = localize('msgTaskName', 'Installing Notebook dependencies');
 const msgInstallPkgStart = localize('msgInstallPkgStart', 'Installing Notebook dependencies, see Tasks view for more information');
 const msgInstallPkgFinish = localize('msgInstallPkgFinish', 'Notebook dependencies installation is complete');
@@ -95,20 +96,24 @@ export default class JupyterServerInstallation {
 		if (!fs.existsSync(this._pythonExecutable) || this._forceInstall || this._usingExistingPython) {
 			window.showInformationMessage(msgInstallPkgStart);
 
-			if (!this._usingExistingPython) {
-				this.outputChannel.show(true);
-				this.outputChannel.appendLine(msgPythonInstallationProgress);
-				backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonInstallationProgress);
+			this.outputChannel.show(true);
+			this.outputChannel.appendLine(msgPythonInstallationProgress);
+			backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonInstallationProgress);
 
-				await this.installPythonPackage(backgroundOperation);
+			await this.installPythonPackage(backgroundOperation);
 
-				backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonInstallationComplete);
-				this.outputChannel.appendLine(msgPythonInstallationComplete);
-			}
+			backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonInstallationComplete);
+			this.outputChannel.appendLine(msgPythonInstallationComplete);
 
 			// Install jupyter on Windows because local python is not bundled with jupyter unlike linux and MacOS.
 			await this.installJupyterProsePackage();
 			await this.installSparkMagic();
+			fs.remove(this._pythonPackageDir, (err: Error) => {
+				if (err) {
+					this.outputChannel.appendLine(err.message);
+				}
+			});
+
 			backgroundOperation.updateStatus(azdata.TaskStatus.Succeeded, msgInstallPkgFinish);
 			window.showInformationMessage(msgInstallPkgFinish);
 		}
@@ -117,26 +122,29 @@ export default class JupyterServerInstallation {
 	private installPythonPackage(backgroundOperation: azdata.BackgroundOperation): Promise<void> {
 		let bundleVersion = constants.pythonBundleVersion;
 		let pythonVersion = constants.pythonVersion;
-		let packageName = 'python-#pythonversion-#platform-#bundleversion.#extension';
 		let platformId = utils.getOSPlatformId();
+		let packageName: string;
+		let pythonDownloadUrl:string;
 
-		packageName = packageName.replace('#platform', platformId)
-			.replace('#pythonversion', pythonVersion)
-			.replace('#bundleversion', bundleVersion)
-			.replace('#extension', process.platform === constants.winPlatform ? 'zip' : 'tar.gz');
+		if (this._usingExistingPython) {
+			packageName = `python-${pythonVersion}-${bundleVersion}-offlinePackages.zip`;
+			pythonDownloadUrl = 'https://bundledpython.blob.core.windows.net/test/python-3.6.6-0.0.1-offlinePackages.zip';
+		} else {
+			let extension = process.platform === constants.winPlatform ? 'zip' : 'tar.gz';
+			packageName = `python-${pythonVersion}-${platformId}-${bundleVersion}.${extension}`;
 
-		let pythonDownloadUrl = undefined;
-		switch (utils.getOSPlatform()) {
-			case utils.Platform.Windows:
-				pythonDownloadUrl = 'https://go.microsoft.com/fwlink/?linkid=2074021';
-				break;
-			case utils.Platform.Mac:
-				pythonDownloadUrl = 'https://go.microsoft.com/fwlink/?linkid=2065976';
-				break;
-			default:
-				// Default to linux
-				pythonDownloadUrl = 'https://go.microsoft.com/fwlink/?linkid=2065975';
-				break;
+			switch (utils.getOSPlatform()) {
+				case utils.Platform.Windows:
+					pythonDownloadUrl = 'https://go.microsoft.com/fwlink/?linkid=2074021';
+					break;
+				case utils.Platform.Mac:
+					pythonDownloadUrl = 'https://go.microsoft.com/fwlink/?linkid=2065976';
+					break;
+				default:
+					// Default to linux
+					pythonDownloadUrl = 'https://go.microsoft.com/fwlink/?linkid=2065975';
+					break;
+			}
 		}
 
 		let pythonPackagePathLocal = this._pythonInstallationPath + '/' + packageName;
@@ -296,10 +304,7 @@ export default class JupyterServerInstallation {
 
 	private async installJupyterProsePackage(): Promise<void> {
 		let installJupyterCommand: string;
-		if (this._usingExistingPython) {
-			let packages = 'pandas==0.22.0 jupyter prose-codeaccelerator==1.3.0';
-			installJupyterCommand = `"${this._pythonExecutable}" -m pip install ${packages} --extra-index-url https://prose-python-packages.azurewebsites.net --no-warn-script-location`;
-		} else if (process.platform === constants.winPlatform) {
+		if (process.platform === constants.winPlatform || this._usingExistingPython) {
 			let requirements = path.join(this._pythonPackageDir, 'requirements.txt');
 			installJupyterCommand = `"${this._pythonExecutable}" -m pip install --no-index -r "${requirements}" --find-links "${this._pythonPackageDir}" --no-warn-script-location`;
 		}
@@ -314,10 +319,7 @@ export default class JupyterServerInstallation {
 
 	private async installSparkMagic(): Promise<void> {
 		let installSparkMagic: string;
-		if (this._usingExistingPython) {
-			let packages = 'sparkmagic';
-			installSparkMagic = `"${this._pythonExecutable}" -m pip install ${packages} --no-warn-script-location`;
-		} else if (process.platform === constants.winPlatform) {
+		if (process.platform === constants.winPlatform || this._usingExistingPython) {
 			let sparkWheel = path.join(this._pythonPackageDir, `sparkmagic-${constants.sparkMagicVersion}-py3-none-any.whl`);
 			installSparkMagic = `"${this._pythonExecutable}" -m pip install --no-index "${sparkWheel}" --find-links "${this._pythonPackageDir}" --no-warn-script-location`;
 		}
