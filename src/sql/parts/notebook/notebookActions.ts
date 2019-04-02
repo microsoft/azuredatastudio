@@ -21,7 +21,7 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { noKernel } from 'sql/workbench/services/notebook/common/sessionManager';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
-import { CellModel } from 'sql/parts/notebook/models/cell';
+import { generateUri } from 'sql/platform/connection/common/utils';
 
 const msgLoading = localize('loading', "Loading kernels...");
 const msgChanging = localize('changing', "Changing kernel...");
@@ -320,6 +320,19 @@ export class AttachToDropdown extends SelectBox {
 	}
 
 	private updateAttachToDropdown(model: INotebookModel): void {
+		if (this.model.connectionProfile && this.model.connectionProfile.serverName) {
+			let connectionUri = generateUri(this.model.connectionProfile, 'notebook');
+			this.model.notebookOptions.connectionService.connect(this.model.connectionProfile, connectionUri).then(result => {
+				if (result.connected) {
+					let connectionProfile = new ConnectionProfile(this._capabilitiesService, result.connectionProfile);
+					this.model.addAttachToConnectionsToBeDisposed(connectionUri);
+					this.doChangeContext(connectionProfile);
+				} else {
+					this.openConnectionDialog(true);
+				}
+			}).catch(err =>
+				console.log(err));
+		}
 		model.onValidConnectionSelected(validConnection => {
 			this.handleContextsChanged(!validConnection);
 		});
@@ -427,15 +440,16 @@ export class AttachToDropdown extends SelectBox {
 	 * Bind the server value to 'Attach To' drop down
 	 * Connected server is displayed at the top of drop down
 	 **/
-	public async openConnectionDialog(): Promise<void> {
+	public async openConnectionDialog(useProfile: boolean = false): Promise<void> {
 		try {
-			await this._connectionDialogService.openDialogAndWait(this._connectionManagementService, { connectionType: 1, providers: this.model.getApplicableConnectionProviderIds(this.model.clientSession.kernel.name) }).then(connection => {
+			await this._connectionDialogService.openDialogAndWait(this._connectionManagementService, { connectionType: 1, providers: this.model.getApplicableConnectionProviderIds(this.model.clientSession.kernel.name) }, useProfile ? this.model.connectionProfile : undefined).then(connection => {
 				let attachToConnections = this.values;
 				if (!connection) {
 					this.loadAttachToDropdown(this.model, this.getKernelDisplayName());
 					this.doChangeContext(undefined, true);
 					return;
 				}
+				let connectionUri = this._connectionManagementService.getConnectionUri(connection);
 				let connectionProfile = new ConnectionProfile(this._capabilitiesService, connection);
 				let connectedServer = connectionProfile.title? connectionProfile.title : connectionProfile.serverName;
 				//Check to see if the same server is already there in dropdown. We only have server names in dropdown
@@ -458,7 +472,7 @@ export class AttachToDropdown extends SelectBox {
 				}
 				this.select(index);
 
-				this.model.addAttachToConnectionsToBeDisposed(connectionProfile);
+				this.model.addAttachToConnectionsToBeDisposed(connectionUri);
 				// Call doChangeContext to set the newly chosen connection in the model
 				this.doChangeContext(connectionProfile);
 			});
