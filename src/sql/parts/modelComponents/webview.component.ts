@@ -25,7 +25,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { WebviewElement } from 'vs/workbench/contrib/webview/electron-browser/webviewElement';
 import { IWorkbenchLayoutService, Parts } from 'vs/workbench/services/layout/browser/layoutService';
-import { WebviewContentOptions } from 'vs/workbench/contrib/webview/browser/webviewService';
+import { WebviewContentOptions } from 'vs/workbench/contrib/webview/common/webview';
 
 function reviveWebviewOptions(options: vscode.WebviewOptions): vscode.WebviewOptions {
 	return {
