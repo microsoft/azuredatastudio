@@ -21,8 +21,10 @@ import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace
 import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
 import { IAction } from 'vs/base/common/actions';
 import { ServerTreeView } from 'sql/parts/objectExplorer/viewlet/serverTreeView';
-import { ClearSearchAction, ActiveConnectionsFilterAction,
-	AddServerAction, AddServerGroupAction } from 'sql/parts/objectExplorer/viewlet/connectionTreeAction';
+import {
+	ClearSearchAction, ActiveConnectionsFilterAction,
+	AddServerAction, AddServerGroupAction
+} from 'sql/parts/objectExplorer/viewlet/connectionTreeAction';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { IExtensionsWorkbenchService } from 'vs/workbench/contrib/extensions/common/extensions';
 
