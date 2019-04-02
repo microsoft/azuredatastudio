@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/callHierarchy';
-import { PeekViewWidget } from 'vs/editor/contrib/referenceSearch/peekViewWidget';
+import { PeekViewWidget, IPeekViewService } from 'vs/editor/contrib/referenceSearch/peekViewWidget';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { CallHierarchyProvider, CallHierarchyDirection, CallHierarchyItem } from 'vs/workbench/contrib/callHierarchy/common/callHierarchy';
@@ -106,6 +106,7 @@ export class CallHierarchyTreePeekWidget extends PeekViewWidget {
 		private readonly _provider: CallHierarchyProvider,
 		private _direction: CallHierarchyDirection,
 		@IThemeService themeService: IThemeService,
+		@IPeekViewService private readonly _peekViewService: IPeekViewService,
 		@IEditorService private readonly _editorService: IEditorService,
 		@ITextModelService private readonly _textModelService: ITextModelService,
 		@ILabelService private readonly _labelService: ILabelService,
@@ -114,6 +115,7 @@ export class CallHierarchyTreePeekWidget extends PeekViewWidget {
 	) {
 		super(editor, { showFrame: true, showArrow: true, isResizeable: true, isAccessible: true });
 		this.create();
+		this._peekViewService.addExclusiveWidget(editor, this);
 		this._applyTheme(themeService.getTheme());
 		themeService.onThemeChange(this._applyTheme, this, this._disposables);
 	}
@@ -155,6 +157,7 @@ export class CallHierarchyTreePeekWidget extends PeekViewWidget {
 		addClass(message, 'message');
 		parent.appendChild(message);
 		this._message = message;
+		this._message.tabIndex = 0;
 
 		const container = document.createElement('div');
 		addClass(container, 'results');
@@ -338,6 +341,7 @@ export class CallHierarchyTreePeekWidget extends PeekViewWidget {
 		this.setMetaTitle('');
 		this._message.innerText = message;
 		this._show();
+		this._message.focus();
 	}
 
 	async showItem(item: CallHierarchyItem): Promise<void> {

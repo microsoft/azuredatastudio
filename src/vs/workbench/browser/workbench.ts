@@ -46,6 +46,8 @@ import { WorkbenchContextKeysHandler } from 'vs/workbench/browser/contextkeys';
 import { coalesce } from 'vs/base/common/arrays';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { Layout } from 'vs/workbench/browser/layout';
+import { ICommandLineProcessing } from 'sql/workbench/services/commandLine/common/commandLine';
+import { CommandLineService } from 'sql/workbench/services/commandLine/common/commandLineService';
 
 export class Workbench extends Layout {
 
@@ -168,51 +170,15 @@ export class Workbench extends Layout {
 		}
 	}
 
-	// {{SQL CARBON EDIT}}
-	/*
-	private sendUsageEvents(telemetryService: ITelemetryService): void {
-		const dailyLastUseDate = Date.parse(this.storageService.get('telemetry.dailyLastUseDate', StorageScope.GLOBAL, '0'));
-		const weeklyLastUseDate = Date.parse(this.storageService.get('telemetry.weeklyLastUseDate', StorageScope.GLOBAL, '0'));
-		const monthlyLastUseDate = Date.parse(this.storageService.get('telemetry.monthlyLastUseDate', StorageScope.GLOBAL, '0'));
-
-		let today = new Date().toUTCString();
-
-		// daily user event
-		if (this.diffInDays(Date.parse(today), dailyLastUseDate) >= 1) {
-			// daily first use
-			telemetryService.publicLog('telemetry.dailyFirstUse', { dailyFirstUse: true });
-			this.storageService.store('telemetry.dailyLastUseDate', today, StorageScope.GLOBAL);
-		}
-
-		// weekly user event
-		if (this.diffInDays(Date.parse(today), weeklyLastUseDate) >= 7) {
-			// weekly first use
-			telemetryService.publicLog('telemetry.weeklyFirstUse', { weeklyFirstUse: true });
-			this.storageService.store('telemetry.weeklyLastUseDate', today, StorageScope.GLOBAL);
-		}
-
-		// monthly user events
-		if (this.diffInDays(Date.parse(today), monthlyLastUseDate) >= 30) {
-			telemetryService.publicLog('telemetry.monthlyUse', { monthlyFirstUse: true });
-			this.storageService.store('telemetry.monthlyLastUseDate', today, StorageScope.GLOBAL);
-		}
-	}
-
-	// {{SQL CARBON EDIT}}
-	private diffInDays(nowDate: number, lastUseDate: number): number {
-		return (nowDate - lastUseDate) / (24 * 3600 * 1000);
-	}
-	*/
-
 	private initServices(serviceCollection: ServiceCollection): IInstantiationService {
 
 		// Layout Service
 		serviceCollection.set(IWorkbenchLayoutService, this);
 
-		//
+		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		// NOTE: DO NOT ADD ANY OTHER SERVICE INTO THE COLLECTION HERE.
-		// INSTEAD, CONTRIBUTE IT VIA WORKBENCH.MAIN.TS
-		//
+		// CONTRIBUTE IT VIA WORKBENCH.MAIN.TS AND registerSingleton().
+		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 		// All Contributed Services
 		const contributedServices = getServices();
@@ -222,14 +188,19 @@ export class Workbench extends Layout {
 
 		const instantiationService = new InstantiationService(serviceCollection, true);
 
+		// {{SQL CARBON EDIT }}
+		// TODO@Davidshi commandLineService currently has no referents, so force its creation
+		serviceCollection.set(ICommandLineProcessing, instantiationService.createInstance(CommandLineService));
+		// {{SQL CARBON EDIT}} - End
+
 		// Wrap up
 		instantiationService.invokeFunction(accessor => {
 			const lifecycleService = accessor.get(ILifecycleService);
 
 			// TODO@Ben legacy file service
 			const fileService = accessor.get(IFileService) as any;
-			if (typeof fileService.setImpl === 'function') {
-				fileService.setImpl(accessor.get(ILegacyFileService));
+			if (typeof fileService.setLegacyService === 'function') {
+				fileService.setLegacyService(accessor.get(ILegacyFileService));
 			}
 
 			// TODO@Sandeep debt around cyclic dependencies

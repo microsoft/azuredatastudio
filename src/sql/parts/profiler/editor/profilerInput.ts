@@ -18,7 +18,6 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { Event, Emitter } from 'vs/base/common/event';
 import { generateUuid } from 'vs/base/common/uuid';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
-import { escape } from 'sql/base/common/strings';
 import * as types from 'vs/base/common/types';
 import { URI } from 'vs/base/common/uri';
 import Severity from 'vs/base/common/severity';
@@ -258,7 +257,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 				let columnName = this._columnMapping[key];
 				if (columnName) {
 					let value = e.values[key];
-					data[columnName] = escape(value);
+					data[columnName] = value;
 				}
 			}
 			newEvents.push(data);

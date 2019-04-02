@@ -234,7 +234,7 @@ export class MainPanel extends ViewletPanel {
 	protected renderBody(container: HTMLElement): void {
 		const delegate = new ProvidersListDelegate();
 		const renderer = this.instantiationService.createInstance(ProviderRenderer);
-		const identityProvider = { getId: r => r.provider.id };
+		const identityProvider = { getId: (r: ISCMRepository) => r.provider.id };
 
 		this.list = this.instantiationService.createInstance(WorkbenchList, container, delegate, [renderer], {
 			identityProvider,
@@ -1179,6 +1179,10 @@ export class SCMViewlet extends ViewContainerViewlet implements IViewModel {
 			this.viewsModel.setVisible(MainPanel.ID, true);
 		} else if (this.repositoryCount >= 2 && repositoryCount === 1) {
 			this.viewsModel.setVisible(MainPanel.ID, false);
+		}
+
+		if (repositoryCount === 1) {
+			this.viewsModel.setVisible(this.viewDescriptors[0].id, true);
 		}
 
 		toggleClass(this.el, 'empty', repositoryCount === 0);

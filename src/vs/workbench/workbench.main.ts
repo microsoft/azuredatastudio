@@ -115,7 +115,6 @@ import 'vs/workbench/services/backup/node/backupFileService';
 import 'vs/workbench/services/editor/browser/editorService';
 import 'vs/workbench/services/history/browser/history';
 import 'vs/workbench/services/files/node/remoteFileService';
-import 'vs/workbench/services/files2/common/fileService2';
 import 'vs/workbench/services/activity/browser/activityService';
 import 'vs/workbench/browser/parts/views/views';
 import 'vs/workbench/services/keybinding/electron-browser/keybindingService';
@@ -225,8 +224,6 @@ import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardServi
 import { DashboardService } from 'sql/platform/dashboard/browser/dashboardServiceImpl';
 import { NotebookService } from 'sql/workbench/services/notebook/common/notebookServiceImpl';
 import { INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
-import { ICommandLineProcessing } from 'sql/workbench/services/commandLine/common/commandLine';
-import { CommandLineService } from 'sql/workbench/services/commandLine/common/commandLineService';
 import { OEShimService, IOEShimService } from 'sql/parts/objectExplorer/common/objectExplorerViewTreeShim';
 
 registerSingleton(IDashboardService, DashboardService);
@@ -266,7 +263,6 @@ registerSingleton(IInsightsDialogService, InsightsDialogService);
 registerSingleton(INotebookService, NotebookService);
 registerSingleton(IAccountPickerService, AccountPickerService);
 registerSingleton(IProfilerService, ProfilerService);
-registerSingleton(ICommandLineProcessing, CommandLineService);
 registerSingleton(IDacFxService, DacFxService);
 // {{SQL CARBON EDIT}} - End
 
@@ -336,7 +332,7 @@ import 'vs/workbench/contrib/scm/browser/scmViewlet';
 import 'vs/workbench/contrib/markers/browser/markers.contribution';
 
 // Comments
-import 'vs/workbench/contrib/comments/electron-browser/comments.contribution';
+import 'vs/workbench/contrib/comments/browser/comments.contribution';
 
 // URL Support
 import 'vs/workbench/contrib/url/common/url.contribution';
@@ -442,6 +438,7 @@ import 'sql/workbench/parts/dataExplorer/browser/dataExplorerViewlet';
 import 'sql/workbench/parts/dataExplorer/browser/dataExplorerExtensionPoint';
 import 'sql/workbench/parts/dataExplorer/electron-browser/nodeActions.contribution';
 
+import 'sql/platform/telemetry/telemetry.contribution';
 import 'sql/workbench/parts/connection/electron-browser/connectionViewlet';
 import 'sql/workbench/api/node/sqlExtHost.contribution';
 import 'sql/parts/connection/common/connection.contribution';

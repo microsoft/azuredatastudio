@@ -94,7 +94,10 @@ export class MainThreadWebviews extends Disposable implements MainThreadWebviews
 			mainThreadShowOptions.group = viewColumnToEditorGroup(this._editorGroupService, showOptions.viewColumn);
 		}
 
-		const webview = this._webviewService.createWebview(this.getInternalWebviewId(viewType), title, mainThreadShowOptions, reviveWebviewOptions(options), URI.revive(extensionLocation), this.createWebviewEventDelegate(handle));
+		const webview = this._webviewService.createWebview(this.getInternalWebviewId(viewType), title, mainThreadShowOptions, reviveWebviewOptions(options), {
+			location: URI.revive(extensionLocation),
+			id: extensionId
+		}, this.createWebviewEventDelegate(handle));
 		webview.state = {
 			viewType: viewType,
 			state: undefined
@@ -111,7 +114,13 @@ export class MainThreadWebviews extends Disposable implements MainThreadWebviews
 		this._telemetryService.publicLog('webviews:createWebviewPanel', { extensionId: extensionId.value });
 	}
 
-	$createWebviewCodeInset(handle: WebviewInsetHandle, symbolId: string, options: IWebviewOptions, extensionLocation: UriComponents): void {
+	$createWebviewCodeInset(
+		handle: WebviewInsetHandle,
+		symbolId: string,
+		options: IWebviewOptions,
+		extensionId: ExtensionIdentifier,
+		extensionLocation: UriComponents
+	): void {
 		// todo@joh main is for the lack of a code-inset service
 		// which we maybe wanna have... this is how it now works
 		// 1) create webview element
@@ -122,7 +131,10 @@ export class MainThreadWebviews extends Disposable implements MainThreadWebviews
 			WebviewElement,
 			this._layoutService.getContainer(Parts.EDITOR_PART),
 			{
-				extensionLocation: URI.revive(extensionLocation),
+				extension: {
+					location: URI.revive(extensionLocation),
+					id: extensionId
+				},
 				enableFindWidget: false,
 			},
 			{
@@ -238,7 +250,7 @@ export class MainThreadWebviews extends Disposable implements MainThreadWebviews
 				}
 
 				try {
-					await this._proxy.$deserializeWebviewPanel(handle, viewType, webview.getTitle(), state, editorGroupToViewColumn(this._editorGroupService, webview.group || ACTIVE_GROUP), webview.options);
+					await this._proxy.$deserializeWebviewPanel(handle, viewType, webview.getTitle(), state, editorGroupToViewColumn(this._editorGroupService, webview.group || 0), webview.options);
 				} catch (error) {
 					onUnexpectedError(error);
 					webview.html = MainThreadWebviews.getDeserializationFailedContents(viewType);
@@ -300,7 +312,7 @@ export class MainThreadWebviews extends Disposable implements MainThreadWebviews
 			this._proxy.$onDidChangeWebviewPanelViewState(newActiveWebview.handle, {
 				active: true,
 				visible: true,
-				position: editorGroupToViewColumn(this._editorGroupService, newActiveWebview.input.group || ACTIVE_GROUP)
+				position: editorGroupToViewColumn(this._editorGroupService, newActiveWebview.input.group || 0)
 			});
 			return;
 		}
@@ -312,7 +324,7 @@ export class MainThreadWebviews extends Disposable implements MainThreadWebviews
 				this._proxy.$onDidChangeWebviewPanelViewState(this._activeWebview, {
 					active: false,
 					visible: this._editorService.visibleControls.some(editor => !!editor.input && editor.input.matches(oldActiveWebview)),
-					position: editorGroupToViewColumn(this._editorGroupService, oldActiveWebview.group || ACTIVE_GROUP),
+					position: editorGroupToViewColumn(this._editorGroupService, oldActiveWebview.group || 0),
 				});
 			}
 		}

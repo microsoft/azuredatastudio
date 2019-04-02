@@ -116,7 +116,8 @@ suite('commandLineService tests', () => {
 			undefined,
 			undefined,
 			commandService,
-			configurationService
+			configurationService,
+			undefined
 		);
 		return service;
 	}
