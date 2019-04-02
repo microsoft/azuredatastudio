@@ -72,7 +72,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _onValidConnectionSelected = new Emitter<boolean>();
 	private _oldKernel: nb.IKernel;
 	private _clientSessionListeners: IDisposable[] = [];
-	private _connectionsToDispose: ConnectionProfile[] = [];
+	private _connectionUrisToDispose: string[] = [];
 
 	constructor(private _notebookOptions: INotebookModelOptions, startSessionImmediately?: boolean, public connectionProfile?: IConnectionProfile) {
 		super();
@@ -746,8 +746,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return newKernelDisplayName;
 	}
 
-	public addAttachToConnectionsToBeDisposed(conn: ConnectionProfile) {
-		this._connectionsToDispose.push(conn);
+	public addAttachToConnectionsToBeDisposed(connUri: string) {
+		this._connectionUrisToDispose.push(connUri);
 	}
 
 	private setErrorState(errMsg: string): void {
@@ -896,16 +896,17 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	// let connectionUri = Utils.generateUri(connection, 'notebook');
 	private async disconnectNotebookConnection(conn: ConnectionProfile): Promise<void> {
 		if (this.notebookOptions.connectionService.getConnectionUri(conn).includes(uriPrefixes.notebook)) {
-			await this.notebookOptions.connectionService.disconnect(conn).catch(e => console.log(e));
+			let uri = this._notebookOptions.connectionService.getConnectionUri(conn);
+			await this.notebookOptions.connectionService.disconnect(uri).catch(e => console.log(e));
 		}
 	}
 
 	// Disconnect any connections that were added through the "Add new connection" functionality in the Attach To dropdown
 	private async disconnectAttachToConnections(): Promise<void> {
-		notebookUtils.asyncForEach(this._connectionsToDispose, async conn => {
+		notebookUtils.asyncForEach(this._connectionUrisToDispose, async conn => {
 			await this.notebookOptions.connectionService.disconnect(conn).catch(e => console.log(e));
 		});
-		this._connectionsToDispose = [];
+		this._connectionUrisToDispose = [];
 	}
 
 	/**

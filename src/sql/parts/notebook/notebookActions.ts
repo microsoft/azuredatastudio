@@ -325,8 +325,8 @@ export class AttachToDropdown extends SelectBox {
 			this.model.notebookOptions.connectionService.connect(this.model.connectionProfile, connectionUri).then(result => {
 				if (result.connected) {
 					let connectionProfile = new ConnectionProfile(this._capabilitiesService, result.connectionProfile);
-					this.model.addAttachToConnectionsToBeDisposed(connectionProfile);
-					this.doChangeContext(result.connectionProfile as ConnectionProfile);
+					this.model.addAttachToConnectionsToBeDisposed(connectionUri);
+					this.doChangeContext(connectionProfile);
 				} else {
 					this.openConnectionDialog(true);
 				}
@@ -449,6 +449,7 @@ export class AttachToDropdown extends SelectBox {
 					this.doChangeContext(undefined, true);
 					return;
 				}
+				let connectionUri = this._connectionManagementService.getConnectionUri(connection);
 				let connectionProfile = new ConnectionProfile(this._capabilitiesService, connection);
 				let connectedServer = connectionProfile.title? connectionProfile.title : connectionProfile.serverName;
 				//Check to see if the same server is already there in dropdown. We only have server names in dropdown
@@ -471,7 +472,7 @@ export class AttachToDropdown extends SelectBox {
 				}
 				this.select(index);
 
-				this.model.addAttachToConnectionsToBeDisposed(connectionProfile);
+				this.model.addAttachToConnectionsToBeDisposed(connectionUri);
 				// Call doChangeContext to set the newly chosen connection in the model
 				this.doChangeContext(connectionProfile);
 			});
