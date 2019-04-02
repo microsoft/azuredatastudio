@@ -32,6 +32,7 @@ import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/un
 import { notebookModeId } from 'sql/common/constants';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { viewColumnToEditorGroup } from 'vs/workbench/api/common/shared/editor';
+import { localize } from 'vs/nls';
 
 class MainThreadNotebookEditor extends Disposable {
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
@@ -370,8 +371,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		if (!editor) {
 			return Promise.reject(disposed(`TextEditor(${id})`));
 		}
-		let codeCells = editor.cells.filter(cell => cell.cellType === CellTypes.Code);
-		return this.doRunAllCells(codeCells, editor);
+		return editor.runAllCells();
 	}
 
 	//#endregion
@@ -414,19 +414,6 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 			}
 		}
 		return id;
-	}
-
-	private async doRunAllCells(codeCells: ICellModel[], editor: MainThreadNotebookEditor): Promise<boolean> {
-		try {
-			if (codeCells && codeCells.length > 0) {
-				for (let i = 0; i < codeCells.length; i++) {
-					await editor.runCell(codeCells[i]);
-				}
-			}
-		} catch {
-			return Promise.resolve(false);
-		}
-		return Promise.resolve(true);
 	}
 
 	findNotebookEditorIdFor(input: NotebookInput): string {

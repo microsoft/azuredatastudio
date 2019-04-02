@@ -486,10 +486,12 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	public async runAllCells(): Promise<boolean> {
 		await this.modelReady;
 		let codeCells = this._model.cells.filter(cell => cell.cellType === CellTypes.Code);
-		for (let i = 0; i < codeCells.length; i++) {
-			let cellStatus = await this.runCell(codeCells[i]);
-			if (!cellStatus) {
-				return Promise.reject(new Error(localize('cellRunFailed', 'running cell id {0} failed', codeCells[i].id)));
+		if (codeCells && codeCells.length) {
+			for (let i = 0; i < codeCells.length; i++) {
+				let cellStatus = await this.runCell(codeCells[i]);
+				if (!cellStatus) {
+					return Promise.reject(new Error(localize('cellRunFailed', 'running cell id {0} failed', codeCells[i].id)));
+				}
 			}
 		}
 		return Promise.resolve(true);
