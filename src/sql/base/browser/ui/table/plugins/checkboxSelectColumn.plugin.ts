@@ -108,7 +108,7 @@ export class CheckboxSelectColumn<T> implements Slick.Plugin<T> {
 
 	private handleClick(e: Event, args: Slick.OnClickEventArgs<T>): void {
 		// clicking on a row select checkbox
-		if (this._grid.getColumns()[args.cell].id === this._options.columnId && $(e.target).is('input[type="checkbox"]')) {
+		if (this._grid.getColumns()[args.cell].id === this._options.columnId && jQuery(e.target).is('input[type="checkbox"]')) {
 			// if editing, try to commit
 			if (this._grid.getEditorLock().isActive() && !this._grid.getEditorLock().commitCurrentEdit()) {
 				e.preventDefault();
@@ -131,7 +131,7 @@ export class CheckboxSelectColumn<T> implements Slick.Plugin<T> {
 	}
 
 	private handleHeaderClick(e: Event, args: Slick.OnHeaderClickEventArgs<T>): void {
-		if (!this._options.title && args.column.id === this._options.columnId && $(e.target).is('input[type="checkbox"]')) {
+		if (!this._options.title && args.column.id === this._options.columnId && jQuery(e.target).is('input[type="checkbox"]')) {
 			// if editing, try to commit
 			if (this._grid.getEditorLock().isActive() && !this._grid.getEditorLock().commitCurrentEdit()) {
 				e.preventDefault();
@@ -139,7 +139,7 @@ export class CheckboxSelectColumn<T> implements Slick.Plugin<T> {
 				return;
 			}
 
-			if ($(e.target).is('input[checked]')) {
+			if (jQuery(e.target).is('input[checked]')) {
 				let rows = [];
 				for (let i = 0; i < this._grid.getDataLength(); i++) {
 					rows.push(i);

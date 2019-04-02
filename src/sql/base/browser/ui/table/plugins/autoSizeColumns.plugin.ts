@@ -31,7 +31,7 @@ export class AutoColumnSize<T> implements Slick.Plugin<T> {
 			this.onPostEventHandler.subscribe(this._grid.onRendered, () => this.onPostRender());
 		}
 
-		this._$container = $(this._grid.getContainerNode());
+		this._$container = jQuery(this._grid.getContainerNode());
 		this._$container.on('dblclick.autosize', '.slick-resizable-handle', e => this.handleDoubleClick(e));
 		this._context = document.createElement('canvas').getContext('2d');
 	}
@@ -67,7 +67,7 @@ export class AutoColumnSize<T> implements Slick.Plugin<T> {
 			return;
 		}
 
-		let headerColumnsQuery = $(this._grid.getContainerNode()).find('.slick-header-columns');
+		let headerColumnsQuery = jQuery(this._grid.getContainerNode()).find('.slick-header-columns');
 		if (headerColumnsQuery && headerColumnsQuery.length) {
 			let headerColumns = headerColumnsQuery[0];
 			let origCols = this._grid.getColumns();
@@ -78,7 +78,7 @@ export class AutoColumnSize<T> implements Slick.Plugin<T> {
 			});
 			let change = false;
 			for (let i = 0; i <= headerColumns.children.length; i++) {
-				let headerEl = $(headerColumns.children.item(i));
+				let headerEl = jQuery(headerColumns.children.item(i));
 				let columnDef = headerEl.data('column');
 				if (columnDef) {
 					let headerWidth = this.getElementWidth(headerEl[0]);
@@ -100,7 +100,7 @@ export class AutoColumnSize<T> implements Slick.Plugin<T> {
 	}
 
 	private handleDoubleClick(e: JQuery.Event<HTMLElement, string>) {
-		let headerEl = $(e.currentTarget).closest('.slick-header-column');
+		let headerEl = jQuery(e.currentTarget).closest('.slick-header-column');
 		let columnDef = headerEl.data('column');
 
 		if (!columnDef || !columnDef.resizable) {
@@ -150,9 +150,9 @@ export class AutoColumnSize<T> implements Slick.Plugin<T> {
 	}
 
 	private getTemplateWidth(rowEl: JQuery, template: JQuery | HTMLElement): number {
-		let cell = $(rowEl.find('.slick-cell'));
+		let cell = jQuery(rowEl.find('.slick-cell'));
 		cell.append(template);
-		$(cell).find('*').css('position', 'relative');
+		jQuery(cell).find('*').css('position', 'relative');
 		return cell.outerWidth() + 1;
 	}
 
@@ -163,7 +163,7 @@ export class AutoColumnSize<T> implements Slick.Plugin<T> {
 		texts.forEach((text, index) => {
 			let template;
 			if (formatFun) {
-				template = $('<span>' + formatFun(index, colIndex, text, columnDef, data[index]) + '</span>');
+				template = jQuery('<span>' + formatFun(index, colIndex, text, columnDef, data[index]) + '</span>');
 				text = template.text() || text;
 			}
 			let length = text ? this.getElementWidthUsingCanvas(rowEl, text) : 0;
@@ -176,19 +176,19 @@ export class AutoColumnSize<T> implements Slick.Plugin<T> {
 	}
 
 	private createRow(columnDef): JQuery {
-		let rowEl = $('<div class="slick-row"><div class="slick-cell"></div></div>');
+		let rowEl = jQuery('<div class="slick-row"><div class="slick-cell"></div></div>');
 		rowEl.find('.slick-cell').css({
 			'visibility': 'hidden',
 			'text-overflow': 'initial',
 			'white-space': 'nowrap'
 		});
 		let gridCanvas = this._$container.find('.grid-canvas');
-		$(gridCanvas).append(rowEl);
+		jQuery(gridCanvas).append(rowEl);
 		return rowEl;
 	}
 
 	private deleteRow(rowEl: JQuery) {
-		$(rowEl).remove();
+		jQuery(rowEl).remove();
 	}
 
 	private getElementWidth(element: HTMLElement): number {

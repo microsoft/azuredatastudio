@@ -60,12 +60,12 @@ export class RowDetailView {
 	}
 
 	public setOptions(options: any) {
-		this._options = $.extend(true, {}, this._options, options);
+		this._options = jQuery.extend(true, {}, this._options, options);
 	}
 
 	public handleClick(e: any, args: any): void {
 		// clicking on a row select checkbox
-		if (this._options.useRowClick || this._grid.getColumns()[args.cell].id === this._options.columnId && $(e.target).hasClass('detailView-toggle')) {
+		if (this._options.useRowClick || this._grid.getColumns()[args.cell].id === this._options.columnId && jQuery(e.target).hasClass('detailView-toggle')) {
 			// if editing, try to commit
 			if (this._grid.getEditorLock().isActive() && !this._grid.getEditorLock().commitCurrentEdit()) {
 				e.preventDefault();
@@ -151,9 +151,9 @@ export class RowDetailView {
 
 	// Saves the current state of the detail view
 	public saveDetailView(item) {
-		let view = $('#innerDetailView_' + item.id);
+		let view = jQuery('#innerDetailView_' + item.id);
 		if (view) {
-			let html = $('#innerDetailView_' + item.id).html();
+			let html = jQuery('#innerDetailView_' + item.id).html();
 			if (html !== undefined) {
 				item._detailContent = html;
 			}
