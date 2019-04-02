@@ -50,6 +50,7 @@ export interface ContainerRegistryInfo {
 }
 
 export interface TargetClusterTypeInfo {
+	enabled: boolean;
 	type: TargetClusterType;
 	name: string;
 	fullName: string;

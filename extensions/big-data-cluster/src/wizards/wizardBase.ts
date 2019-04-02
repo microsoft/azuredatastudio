@@ -39,7 +39,12 @@ export abstract class WizardBase<T, W> {
 			this.onCancel();
 			this.dispose();
 		}));
-		return this.wizardObject.open();
+
+		return this.wizardObject.open().then(() => {
+			if (this.pages && this.pages.length > 0) {
+				this.pages[0].onEnter();
+			}
+		});
 
 	}
 

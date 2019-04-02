@@ -57,6 +57,7 @@ export class CreateClusterModel implements Scriptable {
 	public getAllTargetClusterTypeInfo(): Thenable<TargetClusterTypeInfo[]> {
 		let promise = new Promise<TargetClusterTypeInfo[]>(resolve => {
 			let aksCluster: TargetClusterTypeInfo = {
+				enabled: false,
 				type: TargetClusterType.NewAksCluster,
 				name: localize('bdc-create.AKSClusterCardText', 'New AKS Cluster'),
 				fullName: localize('bdc-create.AKSClusterFullName', 'New Azure Kubernetes Service cluster'),
@@ -69,6 +70,7 @@ export class CreateClusterModel implements Scriptable {
 			};
 
 			let existingCluster: TargetClusterTypeInfo = {
+				enabled: true,
 				type: TargetClusterType.ExistingKubernetesCluster,
 				name: localize('bdc-create.ExistingClusterCardText', 'Existing Cluster'),
 				fullName: localize('bdc-create.ExistingClusterFullName', 'Existing Kubernetes cluster'),
