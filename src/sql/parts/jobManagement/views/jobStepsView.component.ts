@@ -55,13 +55,12 @@ export class JobStepsViewComponent extends JobManagementView implements OnInit, 
 		@Inject(IDashboardService) dashboardService: IDashboardService,
 		@Inject(ITelemetryService) private _telemetryService: ITelemetryService
 	) {
-		super(commonService, dashboardService, contextMenuService, keybindingService, instantiationService);
+		super(commonService, dashboardService, contextMenuService, keybindingService, instantiationService, undefined);
 	}
 
 	ngAfterContentChecked() {
 		jQuery('.steps-tree .step-column-heading').closest('.monaco-tree-row').addClass('step-column-row');
 		this.layout();
-		this._tree.setInput(new JobStepsViewModel());
 		this._tree.onDidScroll(() => {
 			jQuery('.steps-tree .step-column-heading').closest('.monaco-tree-row').addClass('step-column-row');
 		});
@@ -94,6 +93,7 @@ export class JobStepsViewComponent extends JobManagementView implements OnInit, 
 			let element = this._tree.getFocus();
 			this._tree.select(element);
 		});
+		this._tree.setInput(new JobStepsViewModel());
 	}
 
 	ngOnInit() {

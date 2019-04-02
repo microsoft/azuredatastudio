@@ -59,13 +59,23 @@ export class TestServerProfile {
 var TestingServers: TestServerProfile[] = [
 	new TestServerProfile(
 		{
-			serverName: 'SQLTOOLS2017-3',
+			serverName: process.env.STANDALONE_SQL,
 			userName: process.env.STANDALONE_SQL_USERNAME,
 			password: process.env.STANDALONE_SQL_PWD,
 			authenticationType: AuthenticationType.SqlLogin,
 			database: 'master',
 			provider: ConnectionProvider.SQLServer,
 			version: '2017'
+		}),
+	new TestServerProfile(
+			{
+				serverName: process.env.AZURE_SQL,
+				userName: process.env.AZURE_SQL_USERNAME,
+				password: process.env.AZURE_SQL_PWD,
+				authenticationType: AuthenticationType.SqlLogin,
+				database: 'master',
+				provider: ConnectionProvider.SQLServer,
+				version: '2012'
 		}),
 	new TestServerProfile(
 		{
@@ -91,6 +101,16 @@ function getEnumMappingEntry(mapping: any, enumValue: any): INameDisplayNamePair
 export async function getDefaultTestingServer(): Promise<TestServerProfile> {
 	let servers = await getTestingServers();
 	return servers[0];
+}
+
+export async function getAzureServer(): Promise<TestServerProfile> {
+	let servers = await getTestingServers();
+	return servers.filter(s => s.version === '2012')[0];
+}
+
+export async function getStandaloneServer(): Promise<TestServerProfile> {
+	let servers = await getTestingServers();
+	return servers.filter(s => s.version === '2017')[0];
 }
 
 export async function getBdcServer(): Promise<TestServerProfile> {
