@@ -497,7 +497,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				}
 			}
 		}
-		return Promise.resolve(true);
+		return true;
 	}
 
 	public async clearAllOutputs(): Promise<boolean> {
