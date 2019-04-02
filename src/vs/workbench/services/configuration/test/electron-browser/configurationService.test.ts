@@ -42,6 +42,8 @@ import { RemoteAgentService } from 'vs/workbench/services/remote/electron-browse
 import { RemoteAuthorityResolverService } from 'vs/platform/remote/electron-browser/remoteAuthorityResolverService';
 import { IRemoteAgentService } from 'vs/workbench/services/remote/common/remoteAgentService';
 import { setUnexpectedErrorHandler } from 'vs/base/common/errors';
+import { HashService } from 'vs/workbench/services/hash/node/hashService';
+import { ConfigurationCache } from 'vs/workbench/services/configuration/node/configurationCache';
 
 class SettingsTestEnvironmentService extends EnvironmentService {
 
@@ -92,7 +94,7 @@ function setUpWorkspace(folders: string[]): Promise<{ parentDir: string, configP
 
 suite('WorkspaceContextService - Folder', () => {
 	test('getWorkspace()', () => {
-		// {{SQL CARBON EDIT}} - Remove test
+		// {{SQL CARBON EDIT}} - Remove tests
 		assert.equal(0, 0);
 	});
 });
