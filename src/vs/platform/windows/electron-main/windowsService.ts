@@ -380,6 +380,7 @@ export class WindowsService implements IWindowsService, IURLHandler, IDisposable
 			version = `${version} (${product.target} setup)`;
 		}
 
+		const isSnap = process.platform === 'linux' && process.env.SNAP && process.env.SNAP_REVISION;
 		// {{SQL CARBON EDIT}}
 		const detail = nls.localize('aboutDetail',
 			"Version: {0}\nCommit: {1}\nDate: {2}\nVS Code {8}\nElectron: {3}\nChrome: {4}\nNode.js: {5}\nV8: {6}\nOS: {7}",
@@ -390,7 +391,7 @@ export class WindowsService implements IWindowsService, IURLHandler, IDisposable
 			process.versions['chrome'],
 			process.versions['node'],
 			process.versions['v8'],
-			`${os.type()} ${os.arch()} ${os.release()}`,
+			`${os.type()} ${os.arch()} ${os.release()}${isSnap ? ' snap' : ''}`,
 			product.vscodeVersion
 		);
 
