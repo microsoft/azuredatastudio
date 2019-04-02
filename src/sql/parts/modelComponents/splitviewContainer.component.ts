@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 
 import { IComponent, IComponentDescriptor, IModelStore } from 'sql/parts/modelComponents/interfaces';
-import { FlexLayout, FlexItemLayout, SplitViewLayout } from 'sqlops';
+import { FlexLayout, FlexItemLayout, SplitViewLayout } from 'azdata';
 
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { ContainerBase, ComponentBase } from 'sql/parts/modelComponents/componentBase';

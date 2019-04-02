@@ -53,7 +53,7 @@ export class SchemaCompareResult {
 
 			let sourceTargetLabels = view.modelBuilder.flexContainer()
 				.withProperties({
-					alignItems:'stretch',
+					alignItems: 'stretch',
 					horizontal: true
 				}).component();
 
@@ -85,7 +85,7 @@ export class SchemaCompareResult {
 				value: localize('schemaCompare.targetLabel', 'Target')
 			}).component();
 
-			let switchLabel = view.modelBuilder.text().withProperties({
+			let arrowLabel = view.modelBuilder.text().withProperties({
 				value: localize('schemaCompare.switchLabel', '🡲')
 			}).component();
 
@@ -96,7 +96,8 @@ export class SchemaCompareResult {
 						headerCssClass: 'no-borders',
 						toolTip: sourceName
 					},
-				]}).component();
+				]
+			}).component();
 
 			this.targetNameComponent = view.modelBuilder.table().withProperties({
 				columns: [
@@ -105,14 +106,14 @@ export class SchemaCompareResult {
 						headerCssClass: 'no-borders',
 						toolTip: targetName
 					},
-				]}).component();
+				]
+			}).component();
 
 			sourceTargetLabels.addItem(sourceLabel, { CSSStyles: { 'width': '55%', 'margin-left': '15px', 'font-size': 'larger', 'font-weight': 'bold' } });
 			sourceTargetLabels.addItem(targetLabel, { CSSStyles: { 'width': '45%', 'font-size': 'larger', 'font-weight': 'bold' } });
-
-			this.sourceTargetFlexLayout.addItem(this.sourceNameComponent, { CSSStyles: { 'width': '45%', 'margin-left': '15px'} });
-			this.sourceTargetFlexLayout.addItem(switchLabel, { CSSStyles: { 'width': '10%', 'font-size': 'larger', 'text-align-last':'center'} });
-			this.sourceTargetFlexLayout.addItem(this.targetNameComponent, { CSSStyles: { 'width': '45%'} });
+			this.sourceTargetFlexLayout.addItem(this.sourceNameComponent, { CSSStyles: { 'width': '45%', 'height': '2em', 'margin-left': '15px' } });
+			this.sourceTargetFlexLayout.addItem(arrowLabel, { CSSStyles: { 'width': '10%', 'font-size': 'larger', 'text-align-last': 'center' } });
+			this.sourceTargetFlexLayout.addItem(this.targetNameComponent, { CSSStyles: { 'width': '45%', 'height': '2em' } });
 
 			this.loader = view.modelBuilder.loadingComponent().component();
 			this.noDifferencesLabel = view.modelBuilder.text().withProperties({
@@ -120,10 +121,10 @@ export class SchemaCompareResult {
 			}).component();
 
 			this.flexModel = view.modelBuilder.flexContainer().component();
-			this.flexModel.addItem(toolBar.component(), { flex: 'none'});
+			this.flexModel.addItem(toolBar.component(), { flex: 'none' });
 			this.flexModel.addItem(sourceTargetLabels, { flex: 'none' });
-			this.flexModel.addItem(this.sourceTargetFlexLayout, { flex: 'none'});
-			this.flexModel.addItem(this.loader, { CSSStyles: {'margin-top': '2em'}});
+			this.flexModel.addItem(this.sourceTargetFlexLayout, { flex: 'none' });
+			this.flexModel.addItem(this.loader, { CSSStyles: { 'margin-top': '2em' } });
 			this.flexModel.setLayout({
 				flexFlow: 'column',
 				height: '100%'
@@ -197,7 +198,7 @@ export class SchemaCompareResult {
 
 		let sourceText = '';
 		let targetText = '';
-		this.differencesTable.onRowSelected(e => {
+		this.differencesTable.onRowSelected(() => {
 			let difference = this.comparisonResult.differences[this.differencesTable.selectedRows[0]];
 			if (difference !== undefined) {
 				sourceText = difference.sourceScript === null ? '\n' : this.getAggregatedScript(difference, true);
@@ -228,11 +229,11 @@ export class SchemaCompareResult {
 
 	private getAggregatedScript(diffEntry: azdata.DiffEntry, getSourceScript: boolean): string {
 		let script = '';
-		if(diffEntry !== null) {
+		if (diffEntry !== null) {
 			script += getSourceScript ? diffEntry.sourceScript : diffEntry.targetScript;
 			diffEntry.children.forEach(child => {
 				let childScript = this.getAggregatedScript(child, getSourceScript);
-				if(childScript !== 'null') {
+				if (childScript !== 'null') {
 					script += childScript;
 				}
 			});
@@ -243,7 +244,7 @@ export class SchemaCompareResult {
 	private reExecute() {
 		this.flexModel.removeItem(this.splitView);
 		this.flexModel.removeItem(this.noDifferencesLabel);
-		this.flexModel.addItem(this.loader, { CSSStyles: {'margin-top': '2em'}});
+		this.flexModel.addItem(this.loader, { CSSStyles: { 'margin-top': '2em' } });
 		this.diffEditor.updateProperties({
 			contentLeft: '\n',
 			contentRight: '\n'
@@ -262,7 +263,7 @@ export class SchemaCompareResult {
 			label: localize('schemaCompare.compareButton', 'Compare'),
 			iconPath: runIcon,
 			enabled: false,
-			title: localize('schemaCompare.compareButtonTitle','Compare')
+			title: localize('schemaCompare.compareButtonTitle', 'Compare')
 		}).component();
 
 		this.compareButton.onDidClick(async (click) => {
@@ -284,7 +285,7 @@ export class SchemaCompareResult {
 			// get file path
 			let now = new Date();
 			let datetime = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate() + '-' + now.getHours() + '-' + now.getMinutes();
-			let defaultFilePath = path.join(os.homedir(), this.targetName + '_Update_'+ datetime + '.sql');
+			let defaultFilePath = path.join(os.homedir(), this.targetName + '_Update_' + datetime + '.sql');
 			let fileUri = await vscode.window.showSaveDialog(
 				{
 					defaultUri: vscode.Uri.file(defaultFilePath),

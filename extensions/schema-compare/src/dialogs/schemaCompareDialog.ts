@@ -65,7 +65,7 @@ export class SchemaCompareDialog {
 		}
 
 		let event = dialogName ? dialogName : null;
-		this.dialog = azdata.window.modelviewdialog.createDialog('Schema Compare', event);
+		this.dialog = azdata.window.modelviewdialog.createDialog(localize('schemaCompare.dialogTitle', 'Schema Compare'), event);
 
 		await this.initializeDialog();
 
@@ -355,18 +355,14 @@ export class SchemaCompareDialog {
 		};
 	}
 
-	protected async populateServerDropdown(isTarget: boolean): Promise<boolean> {
+	protected async populateServerDropdown(isTarget: boolean) {
 		let currentDropdown = isTarget ? this.targetServerDropdown : this.sourceServerDropdown;
 
 		let values = await this.getServerValues();
-		if (values === undefined) {
-			return false;
-		}
 
 		currentDropdown.updateProperties({
 			values: values
 		});
-		return true;
 	}
 
 	protected async getServerValues(): Promise<{ connection, displayName, name }[]> {
@@ -418,7 +414,7 @@ export class SchemaCompareDialog {
 		};
 	}
 
-	protected async populateDatabaseDropdown(connectionId: string, isTarget: boolean): Promise<boolean> {
+	protected async populateDatabaseDropdown(connectionId: string, isTarget: boolean) {
 		let currentDropdown = isTarget ? this.targetDatabaseDropdown : this.sourceDatabaseDropdown;
 		currentDropdown.updateProperties({ values: [] });
 
@@ -426,8 +422,6 @@ export class SchemaCompareDialog {
 		currentDropdown.updateProperties({
 			values: values
 		});
-
-		return true;
 	}
 
 	protected async getDatabaseValues(connectionId: string): Promise<{ displayName, name }[]> {
