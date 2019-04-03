@@ -728,14 +728,14 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 			return false;
 		}
 
-		let elementAfter: HTMLElement | null = null;
+		let elementAfter: HTMLElement | undefined = undefined;
 		let itemAfter = <IViewItem>this.itemAfter(item);
 
 		if (itemAfter && itemAfter.container) {
 			elementAfter = itemAfter.container;
 		}
 
-		if (elementAfter === null) {
+		if (elementAfter === undefined) {
 			this.viewContainer.appendChild(item.container);
 		} else {
 			try {
