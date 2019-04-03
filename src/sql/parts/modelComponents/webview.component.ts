@@ -8,15 +8,13 @@ import {
 	ViewChild, ViewChildren, ElementRef, Injector, OnDestroy, QueryList
 } from '@angular/core';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { addDisposableListener, EventType } from 'vs/base/browser/dom';
-import { Parts, IPartService } from 'vs/workbench/services/part/common/partService';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { WebviewElement, WebviewOptions } from 'vs/workbench/parts/webview/electron-browser/webviewElement';
 import { URI, UriComponents } from 'vs/base/common/uri';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
@@ -25,6 +23,8 @@ import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
+import { WebviewElement, WebviewOptions, WebviewContentOptions } from 'vs/workbench/contrib/webview/electron-browser/webviewElement';
+import { IWorkbenchLayoutService, Parts } from 'vs/workbench/services/layout/browser/layoutService';
 
 function reviveWebviewOptions(options: vscode.WebviewOptions): vscode.WebviewOptions {
 	return {
@@ -54,7 +54,7 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 		@Inject(forwardRef(() => CommonServiceInterface)) private _commonService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
-		@Inject(IPartService) private partService: IPartService,
+		@Inject(IWorkbenchLayoutService) private layoutService: IWorkbenchLayoutService,
 		@Inject(IThemeService) private themeService: IThemeService,
 		@Inject(IEnvironmentService) private environmentService: IEnvironmentService,
 		@Inject(IContextViewService) private contextViewService: IContextViewService,
@@ -76,10 +76,12 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 
 	private _createWebview(): void {
 		this._webview = this.instantiationService.createInstance(WebviewElement,
-			this.partService.getContainer(Parts.EDITOR_PART),
+			this.layoutService.getContainer(Parts.EDITOR_PART),
 			{
-				allowScripts: true,
-				enableWrappedPostMessage: true
+				allowSvgs: true
+			},
+			{
+				allowScripts: true
 			});
 
 		this._webview.mountTo(this._el.nativeElement);
@@ -165,27 +167,27 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 	// CSS-bound properties
 
 	public get message(): any {
-		return this.getPropertyOrDefault<sqlops.WebViewProperties, any>((props) => props.message, undefined);
+		return this.getPropertyOrDefault<azdata.WebViewProperties, any>((props) => props.message, undefined);
 	}
 
 	public set message(newValue: any) {
-		this.setPropertyFromUI<sqlops.WebViewProperties, any>((properties, message) => { properties.message = message; }, newValue);
+		this.setPropertyFromUI<azdata.WebViewProperties, any>((properties, message) => { properties.message = message; }, newValue);
 	}
 
 	public get html(): string {
-		return this.getPropertyOrDefault<sqlops.WebViewProperties, string>((props) => props.html, undefined);
+		return this.getPropertyOrDefault<azdata.WebViewProperties, string>((props) => props.html, undefined);
 	}
 
 	public set html(newValue: string) {
-		this.setPropertyFromUI<sqlops.WebViewProperties, string>((properties, html) => { properties.html = html; }, newValue);
+		this.setPropertyFromUI<azdata.WebViewProperties, string>((properties, html) => { properties.html = html; }, newValue);
 	}
 
 	public get options(): vscode.WebviewOptions {
-		return this.getPropertyOrDefault<sqlops.WebViewProperties, vscode.WebviewOptions>((props) => props.options, undefined);
+		return this.getPropertyOrDefault<azdata.WebViewProperties, vscode.WebviewOptions>((props) => props.options, undefined);
 	}
 
 	public get extensionLocation(): UriComponents {
-		return this.getPropertyOrDefault<sqlops.WebViewProperties, UriComponents>((props) => props.extensionLocation, undefined);
+		return this.getPropertyOrDefault<azdata.WebViewProperties, UriComponents>((props) => props.extensionLocation, undefined);
 	}
 
 	private get extensionLocationUri(): URI {
@@ -195,14 +197,11 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 		return this._extensionLocationUri;
 	}
 
-	private getExtendedOptions(): WebviewOptions {
+	private getExtendedOptions(): WebviewContentOptions {
 		let options = this.options || { enableScripts: true };
 		options = reviveWebviewOptions(options);
 		return {
 			allowScripts: options.enableScripts,
-			allowSvgs: true,
-			enableWrappedPostMessage: true,
-			useSameOriginForRoot: false,
 			localResourceRoots: options!.localResourceRoots || this.getDefaultLocalResourceRoots()
 		};
 	}

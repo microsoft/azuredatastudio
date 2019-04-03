@@ -5,7 +5,7 @@
 
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import * as utils from '../../../utils';
@@ -22,7 +22,7 @@ import { SqlClusterConnection } from '../../../objectExplorerNodeProvider/connec
 const localize = nls.loadMessageBundle();
 
 export class SparkJobSubmissionDialog {
-	private _dialog: sqlops.window.Dialog;
+	private _dialog: azdata.window.Dialog;
 	private _dataModel: SparkJobSubmissionModel;
 	private _sparkConfigTab: SparkConfigurationTab;
 	private _sparkAdvancedTab: SparkAdvancedTab;
@@ -76,7 +76,7 @@ export class SparkJobSubmissionDialog {
 		);
 	}
 
-	private async onSubmit(op: sqlops.BackgroundOperation): Promise<void> {
+	private async onSubmit(op: azdata.BackgroundOperation): Promise<void> {
 		try {
 			this.outputChannel.show();
 			let msg = localize('sparkJobSubmission_SubmissionStartMessage',
@@ -86,15 +86,15 @@ export class SparkJobSubmissionDialog {
 			if (this._dataModel.isMainSourceFromLocal) {
 				try {
 					this.outputChannel.appendLine(this.addInfoTag(LocalizedConstants.sparkJobSubmissionPrepareUploadingFile(this._dataModel.localFileSourcePath, this._dataModel.hdfsFolderDestinationPath)));
-					op.updateStatus(sqlops.TaskStatus.InProgress, LocalizedConstants.sparkJobSubmissionPrepareUploadingFile(this._dataModel.localFileSourcePath, this._dataModel.hdfsFolderDestinationPath));
+					op.updateStatus(azdata.TaskStatus.InProgress, LocalizedConstants.sparkJobSubmissionPrepareUploadingFile(this._dataModel.localFileSourcePath, this._dataModel.hdfsFolderDestinationPath));
 					await this._dataModel.uploadFile(this._dataModel.localFileSourcePath, this._dataModel.hdfsFolderDestinationPath);
 					vscode.window.showInformationMessage(LocalizedConstants.sparkJobSubmissionUploadingFileSucceeded);
 					this.outputChannel.appendLine(this.addInfoTag(LocalizedConstants.sparkJobSubmissionUploadingFileSucceeded));
-					op.updateStatus(sqlops.TaskStatus.InProgress, LocalizedConstants.sparkJobSubmissionUploadingFileSucceeded);
+					op.updateStatus(azdata.TaskStatus.InProgress, LocalizedConstants.sparkJobSubmissionUploadingFileSucceeded);
 				} catch (error) {
 					vscode.window.showErrorMessage(LocalizedConstants.sparkJobSubmissionUploadingFileFailed(utils.getErrorMessage(error)));
 					this.outputChannel.appendLine(this.addErrorTag(LocalizedConstants.sparkJobSubmissionUploadingFileFailed(utils.getErrorMessage(error))));
-					op.updateStatus(sqlops.TaskStatus.Failed, LocalizedConstants.sparkJobSubmissionUploadingFileFailed(utils.getErrorMessage(error)));
+					op.updateStatus(azdata.TaskStatus.Failed, LocalizedConstants.sparkJobSubmissionUploadingFileFailed(utils.getErrorMessage(error)));
 					this.outputChannel.appendLine(LocalizedConstants.sparkJobSubmissionEndMessage);
 					return;
 				}
@@ -103,11 +103,11 @@ export class SparkJobSubmissionDialog {
 			// 2. Submit job to cluster.
 			let submissionSettings: SparkJobSubmissionInput = this.getSubmissionInput();
 			this.outputChannel.appendLine(this.addInfoTag(LocalizedConstants.sparkJobSubmissionPrepareSubmitJob(submissionSettings.jobName)));
-			op.updateStatus(sqlops.TaskStatus.InProgress, LocalizedConstants.sparkJobSubmissionPrepareSubmitJob(submissionSettings.jobName));
+			op.updateStatus(azdata.TaskStatus.InProgress, LocalizedConstants.sparkJobSubmissionPrepareSubmitJob(submissionSettings.jobName));
 			let livyBatchId = await this._dataModel.submitBatchJobByLivy(submissionSettings);
 			vscode.window.showInformationMessage(LocalizedConstants.sparkJobSubmissionSparkJobHasBeenSubmitted);
 			this.outputChannel.appendLine(this.addInfoTag(LocalizedConstants.sparkJobSubmissionSparkJobHasBeenSubmitted));
-			op.updateStatus(sqlops.TaskStatus.InProgress, LocalizedConstants.sparkJobSubmissionSparkJobHasBeenSubmitted);
+			op.updateStatus(azdata.TaskStatus.InProgress, LocalizedConstants.sparkJobSubmissionSparkJobHasBeenSubmitted);
 
 			// 3. Get SparkHistory/YarnUI Url.
 			try {
@@ -116,24 +116,24 @@ export class SparkJobSubmissionDialog {
 				let sparkHistoryUrl = this._dataModel.generateSparkHistoryUIUrl(submissionSettings, appId);
 				vscode.window.showInformationMessage(LocalizedConstants.sparkJobSubmissionSparkHistoryLinkMessage(sparkHistoryUrl));
 				this.outputChannel.appendLine(this.addInfoTag(LocalizedConstants.sparkJobSubmissionSparkHistoryLinkMessage(sparkHistoryUrl)));
-				op.updateStatus(sqlops.TaskStatus.Succeeded, LocalizedConstants.sparkJobSubmissionSparkHistoryLinkMessage(sparkHistoryUrl));
+				op.updateStatus(azdata.TaskStatus.Succeeded, LocalizedConstants.sparkJobSubmissionSparkHistoryLinkMessage(sparkHistoryUrl));
 
 				/*
 				// Spark Tracking URl is not working now.
 				let sparkTrackingUrl = this._dataModel.generateSparkTrackingUIUrl(submissionSettings, appId);
 				vscode.window.showInformationMessage(LocalizedConstants.sparkJobSubmissionTrackingLinkMessage(sparkTrackingUrl));
 				this.outputChannel.appendLine(this.addInfoTag(LocalizedConstants.sparkJobSubmissionTrackingLinkMessage(sparkTrackingUrl)));
-				op.updateStatus(sqlops.TaskStatus.Succeeded, LocalizedConstants.sparkJobSubmissionTrackingLinkMessage(sparkTrackingUrl));
+				op.updateStatus(azdata.TaskStatus.Succeeded, LocalizedConstants.sparkJobSubmissionTrackingLinkMessage(sparkTrackingUrl));
 				*/
 
 				let yarnUIUrl = this._dataModel.generateYarnUIUrl(submissionSettings, appId);
 				vscode.window.showInformationMessage(LocalizedConstants.sparkJobSubmissionYarnUIMessage(yarnUIUrl));
 				this.outputChannel.appendLine(this.addInfoTag(LocalizedConstants.sparkJobSubmissionYarnUIMessage(yarnUIUrl)));
-				op.updateStatus(sqlops.TaskStatus.Succeeded, LocalizedConstants.sparkJobSubmissionYarnUIMessage(yarnUIUrl));
+				op.updateStatus(azdata.TaskStatus.Succeeded, LocalizedConstants.sparkJobSubmissionYarnUIMessage(yarnUIUrl));
 			} catch (error) {
 				vscode.window.showErrorMessage(LocalizedConstants.sparkJobSubmissionGetApplicationIdFailed(utils.getErrorMessage(error)));
 				this.outputChannel.appendLine(this.addErrorTag(LocalizedConstants.sparkJobSubmissionGetApplicationIdFailed(utils.getErrorMessage(error))));
-				op.updateStatus(sqlops.TaskStatus.Failed, LocalizedConstants.sparkJobSubmissionGetApplicationIdFailed(utils.getErrorMessage(error)));
+				op.updateStatus(azdata.TaskStatus.Failed, LocalizedConstants.sparkJobSubmissionGetApplicationIdFailed(utils.getErrorMessage(error)));
 				this.outputChannel.appendLine(LocalizedConstants.sparkJobSubmissionEndMessage);
 				return;
 			}
@@ -142,7 +142,7 @@ export class SparkJobSubmissionDialog {
 		} catch (error) {
 			vscode.window.showErrorMessage(LocalizedConstants.sparkJobSubmissionSubmitJobFailed(utils.getErrorMessage(error)));
 			this.outputChannel.appendLine(this.addErrorTag(LocalizedConstants.sparkJobSubmissionSubmitJobFailed(utils.getErrorMessage(error))));
-			op.updateStatus(sqlops.TaskStatus.Failed, LocalizedConstants.sparkJobSubmissionSubmitJobFailed(utils.getErrorMessage(error)));
+			op.updateStatus(azdata.TaskStatus.Failed, LocalizedConstants.sparkJobSubmissionSubmitJobFailed(utils.getErrorMessage(error)));
 			this.outputChannel.appendLine(LocalizedConstants.sparkJobSubmissionEndMessage);
 		}
 	}

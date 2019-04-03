@@ -9,7 +9,6 @@ import { ServicesAccessor, IInstantiationService } from 'vs/platform/instantiati
 import { IEditorService, ACTIVE_GROUP } from 'vs/workbench/services/editor/common/editorService';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ProfilerInput } from 'sql/parts/profiler/editor/profilerInput';
-import { TPromise } from 'vs/base/common/winjs.base';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { IProfilerService } from 'sql/workbench/services/profiler/common/interfaces';
 import { KeybindingsRegistry, KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
@@ -60,7 +59,7 @@ CommandsRegistry.registerCommand({
 
 			if (connectionProfile && connectionProfile.providerName === mssqlProviderName) {
 				let profilerInput = instantiationService.createInstance(ProfilerInput, connectionProfile);
-				editorService.openEditor(profilerInput, { pinned: true }, ACTIVE_GROUP).then(() => TPromise.as(true));
+				editorService.openEditor(profilerInput, { pinned: true }, ACTIVE_GROUP).then(() => Promise.resolve(true));
 			}
 		});
 	}
@@ -96,6 +95,6 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 				return profilerService.startSession(profilerInput.id, profilerInput.sessionName);
 			}
 		}
-		return TPromise.as(false);
+		return Promise.resolve(false);
 	}
 });

@@ -4,16 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { TPromise } from 'vs/base/common/winjs.base';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import {
 	SqlExtHostContext, ExtHostCredentialManagementShape,
 	MainThreadCredentialManagementShape, SqlMainContext
 } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { ICredentialsService } from 'sql/platform/credentials/common/credentialsService';
-import * as sqlops from 'sqlops';
-import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
-import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
+import * as azdata from 'azdata';
+import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
+import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadCredentialManagement)
 export class MainThreadCredentialManagement implements MainThreadCredentialManagementShape {
@@ -37,14 +36,14 @@ export class MainThreadCredentialManagement implements MainThreadCredentialManag
 		this._toDispose = dispose(this._toDispose);
 	}
 
-	public $registerCredentialProvider(handle: number): TPromise<any> {
+	public $registerCredentialProvider(handle: number): Promise<any> {
 		let self = this;
 
 		this._registrations[handle] = this.credentialService.addEventListener(handle, {
 			onSaveCredential(credentialId: string, password: string): Thenable<boolean> {
 				return self._proxy.$saveCredential(credentialId, password);
 			},
-			onReadCredential(credentialId: string): Thenable<sqlops.Credential> {
+			onReadCredential(credentialId: string): Thenable<azdata.Credential> {
 				return self._proxy.$readCredential(credentialId);
 			},
 			onDeleteCredential(credentialId: string): Thenable<boolean> {
@@ -55,7 +54,7 @@ export class MainThreadCredentialManagement implements MainThreadCredentialManag
 		return undefined;
 	}
 
-	public $unregisterCredentialProvider(handle: number): TPromise<any> {
+	public $unregisterCredentialProvider(handle: number): Promise<any> {
 		let registration = this._registrations[handle];
 		if (registration) {
 			registration.dispose();

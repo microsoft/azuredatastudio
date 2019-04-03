@@ -10,7 +10,6 @@ import { Action, IAction } from 'vs/base/common/actions';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { $, append } from 'vs/base/browser/dom';
 import { onUnexpectedError } from 'vs/base/common/errors';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { localize } from 'vs/nls';
 import { IStatusbarItem } from 'vs/workbench/browser/parts/statusbar/statusbar';
@@ -68,7 +67,7 @@ export class ManageLinkedAccountAction extends Action {
 		super(id, label);
 	}
 
-	public run(): TPromise<any> {
-		return new TPromise<any>(() => this._accountManagementService.openAccountListDialog());
+	public run(): Promise<any> {
+		return new Promise<any>(() => this._accountManagementService.openAccountListDialog());
 	}
 }

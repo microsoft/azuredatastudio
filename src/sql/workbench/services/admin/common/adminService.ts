@@ -13,34 +13,33 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { CreateLoginInput } from 'sql/parts/admin/security/createLoginInput';
 import { TaskDialogInput } from 'sql/parts/tasks/dialog/taskDialogInput';
 
-import { TPromise } from 'vs/base/common/winjs.base';
 import { IEditorService, ACTIVE_GROUP } from 'vs/workbench/services/editor/common/editorService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 export const IAdminService = createDecorator<IAdminService>(SERVICE_ID);
 
 export interface IAdminService {
 	_serviceBrand: any;
 
-	registerProvider(providerId: string, provider: sqlops.AdminServicesProvider): void;
+	registerProvider(providerId: string, provider: azdata.AdminServicesProvider): void;
 
 	showCreateDatabaseWizard(uri: string, connection: IConnectionProfile): Promise<any>;
 
 	showCreateLoginWizard(uri: string, connection: IConnectionProfile): Promise<any>;
 
-	createDatabase(connectionUri: string, database: sqlops.DatabaseInfo): Thenable<sqlops.CreateDatabaseResponse>;
+	createDatabase(connectionUri: string, database: azdata.DatabaseInfo): Thenable<azdata.CreateDatabaseResponse>;
 
-	getDefaultDatabaseInfo(connectionUri: string): Thenable<sqlops.DatabaseInfo>;
+	getDefaultDatabaseInfo(connectionUri: string): Thenable<azdata.DatabaseInfo>;
 
-	getDatabaseInfo(connectionUri: string): Thenable<sqlops.DatabaseInfo>;
+	getDatabaseInfo(connectionUri: string): Thenable<azdata.DatabaseInfo>;
 }
 
 export class AdminService implements IAdminService {
 	_serviceBrand: any;
 
-	private _providers: { [handle: string]: sqlops.AdminServicesProvider; } = Object.create(null);
+	private _providers: { [handle: string]: azdata.AdminServicesProvider; } = Object.create(null);
 
 	constructor(
 		@IInstantiationService private _instantiationService: IInstantiationService,
@@ -49,17 +48,17 @@ export class AdminService implements IAdminService {
 	) {
 	}
 
-	private _runAction<T>(uri: string, action: (handler: sqlops.AdminServicesProvider) => Thenable<T>): Thenable<T> {
+	private _runAction<T>(uri: string, action: (handler: azdata.AdminServicesProvider) => Thenable<T>): Thenable<T> {
 		let providerId: string = this._connectionService.getProviderIdFromUri(uri);
 
 		if (!providerId) {
-			return TPromise.wrapError(new Error(localize('adminService.providerIdNotValidError', 'Connection is required in order to interact with adminservice')));
+			return Promise.reject(new Error(localize('adminService.providerIdNotValidError', 'Connection is required in order to interact with adminservice')));
 		}
 		let handler = this._providers[providerId];
 		if (handler) {
 			return action(handler);
 		} else {
-			return TPromise.wrapError(new Error(localize('adminService.noHandlerRegistered', 'No Handler Registered')));
+			return Promise.reject(new Error(localize('adminService.noHandlerRegistered', 'No Handler Registered')));
 		}
 	}
 
@@ -72,7 +71,7 @@ export class AdminService implements IAdminService {
 		});
 	}
 
-	public createDatabase(connectionUri: string, database: sqlops.DatabaseInfo): Thenable<sqlops.CreateDatabaseResponse> {
+	public createDatabase(connectionUri: string, database: azdata.DatabaseInfo): Thenable<azdata.CreateDatabaseResponse> {
 		let providerId: string = this._connectionService.getProviderIdFromUri(connectionUri);
 		if (providerId) {
 			let provider = this._providers[providerId];
@@ -95,7 +94,7 @@ export class AdminService implements IAdminService {
 		});
 	}
 
-	public createLogin(connectionUri: string, login: sqlops.LoginInfo): Thenable<sqlops.CreateLoginResponse> {
+	public createLogin(connectionUri: string, login: azdata.LoginInfo): Thenable<azdata.CreateLoginResponse> {
 		let providerId: string = this._connectionService.getProviderIdFromUri(connectionUri);
 		if (providerId) {
 			let provider = this._providers[providerId];
@@ -106,7 +105,7 @@ export class AdminService implements IAdminService {
 		return Promise.resolve(undefined);
 	}
 
-	public getDefaultDatabaseInfo(connectionUri: string): Thenable<sqlops.DatabaseInfo> {
+	public getDefaultDatabaseInfo(connectionUri: string): Thenable<azdata.DatabaseInfo> {
 		let providerId: string = this._connectionService.getProviderIdFromUri(connectionUri);
 		if (providerId) {
 			let provider = this._providers[providerId];
@@ -117,13 +116,13 @@ export class AdminService implements IAdminService {
 		return Promise.resolve(undefined);
 	}
 
-	public getDatabaseInfo(connectionUri: string): Thenable<sqlops.DatabaseInfo> {
+	public getDatabaseInfo(connectionUri: string): Thenable<azdata.DatabaseInfo> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.getDatabaseInfo(connectionUri);
 		});
 	}
 
-	public registerProvider(providerId: string, provider: sqlops.AdminServicesProvider): void {
+	public registerProvider(providerId: string, provider: azdata.AdminServicesProvider): void {
 		this._providers[providerId] = provider;
 	}
 }

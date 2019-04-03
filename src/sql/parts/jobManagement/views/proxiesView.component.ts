@@ -13,7 +13,7 @@ import 'vs/css!sql/media/icons/common-icons';
 import 'vs/css!sql/base/browser/ui/table/media/table';
 
 import * as dom from 'vs/base/browser/dom';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as nls from 'vs/nls';
 import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnInit, OnDestroy } from '@angular/core';
 import { Table } from 'sql/base/browser/ui/table/table';
@@ -25,7 +25,6 @@ import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { JobManagementView } from 'sql/parts/jobManagement/views/jobManagementView';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { IAction } from 'vs/base/common/actions';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -72,7 +71,7 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit, O
 	private _isCloud: boolean;
 	private _proxiesCacheObject: ProxiesCacheObject;
 
-	public proxies: sqlops.AgentProxyInfo[];
+	public proxies: azdata.AgentProxyInfo[];
 	public readonly contextAction = NewProxyAction;
 
 	private _didTabChange: boolean;
@@ -81,7 +80,7 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit, O
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
-		@Inject(forwardRef(() => AgentViewComponent)) private _agentViewComponent: AgentViewComponent,
+		@Inject(forwardRef(() => AgentViewComponent)) _agentViewComponent: AgentViewComponent,
 		@Inject(IJobManagementService) private _jobManagementService: IJobManagementService,
 		@Inject(ICommandService) private _commandService: ICommandService,
 		@Inject(IInstantiationService) instantiationService: IInstantiationService,
@@ -90,7 +89,7 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit, O
 		@Inject(IKeybindingService) keybindingService: IKeybindingService,
 		@Inject(IDashboardService) _dashboardService: IDashboardService
 	) {
-		super(commonService, _dashboardService, contextMenuService, keybindingService, instantiationService);
+		super(commonService, _dashboardService, contextMenuService, keybindingService, instantiationService, _agentViewComponent);
 		this._isCloud = commonService.connectionManagementService.connectionInfo.serverInfo.isCloud;
 		let proxiesCacheObjectMap = this._jobManagementService.proxiesCacheObjectMap;
 		let proxiesCacheObject = proxiesCacheObjectMap[this._serverName];
@@ -149,8 +148,8 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit, O
 		});
 		columns.unshift(rowDetail.getColumnDefinition());
 
-		$(this._gridEl.nativeElement).empty();
-		$(this.actionBarContainer.nativeElement).empty();
+		jQuery(this._gridEl.nativeElement).empty();
+		jQuery(this.actionBarContainer.nativeElement).empty();
 		this.initActionBar();
 		this._table = new Table(this._gridEl.nativeElement, { columns }, this.options);
 		this._table.grid.setData(this.dataView, true);
@@ -186,7 +185,7 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit, O
 		}
 	}
 
-	private onProxiesAvailable(proxies: sqlops.AgentProxyInfo[]) {
+	private onProxiesAvailable(proxies: azdata.AgentProxyInfo[]) {
 		let items: any = proxies.map((item) => {
 			return {
 				id: item.accountName,
@@ -234,9 +233,5 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit, O
 				this._commandService.executeCommand('agent.openProxyDialog', ownerUri, undefined, result.credentials);
 			}
 		});
-	}
-
-	private refreshJobs() {
-		this._agentViewComponent.refresh = true;
 	}
 }

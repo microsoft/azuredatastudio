@@ -25,7 +25,7 @@ import { ITableStyles, ITableMouseEvent } from 'sql/base/browser/ui/table/interf
 import { warn } from 'sql/base/common/log';
 import { $ } from 'sql/base/browser/builder';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
@@ -38,7 +38,6 @@ import { range } from 'vs/base/common/arrays';
 import { Orientation } from 'vs/base/browser/ui/splitview/splitview';
 import { Disposable, IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { generateUuid } from 'vs/base/common/uuid';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { Separator, ActionBar, ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { isInDOM } from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -187,7 +186,7 @@ export class GridPanel extends ViewletPanel {
 			}
 			this.reset();
 		}));
-		this.addResultSet(this.runner.batchSets.reduce<sqlops.ResultSetSummary[]>((p, e) => {
+		this.addResultSet(this.runner.batchSets.reduce<azdata.ResultSetSummary[]>((p, e) => {
 			if (this.configurationService.getValue<boolean>('sql.results.streaming')) {
 				p = p.concat(e.resultSetSummaries);
 			} else {
@@ -204,8 +203,12 @@ export class GridPanel extends ViewletPanel {
 		}
 	}
 
-	private onResultSet(resultSet: sqlops.ResultSetSummary | sqlops.ResultSetSummary[]) {
-		let resultsToAdd: sqlops.ResultSetSummary[];
+	public resetScrollPosition() : void {
+		this.splitView.setScrollPosition(this.state.scrollPosition);
+	}
+
+	private onResultSet(resultSet: azdata.ResultSetSummary | azdata.ResultSetSummary[]) {
+		let resultsToAdd: azdata.ResultSetSummary[];
 		if (!Array.isArray(resultSet)) {
 			resultsToAdd = [resultSet];
 		} else {
@@ -237,8 +240,8 @@ export class GridPanel extends ViewletPanel {
 		}
 	}
 
-	private updateResultSet(resultSet: sqlops.ResultSetSummary | sqlops.ResultSetSummary[]) {
-		let resultsToUpdate: sqlops.ResultSetSummary[];
+	private updateResultSet(resultSet: azdata.ResultSetSummary | azdata.ResultSetSummary[]) {
+		let resultsToUpdate: azdata.ResultSetSummary[];
 		if (!Array.isArray(resultSet)) {
 			resultsToUpdate = [resultSet];
 		} else {
@@ -274,7 +277,7 @@ export class GridPanel extends ViewletPanel {
 		}
 	}
 
-	private addResultSet(resultSet: sqlops.ResultSetSummary[]) {
+	private addResultSet(resultSet: azdata.ResultSetSummary[]) {
 		let tables: GridTable<any>[] = [];
 
 		for (let set of resultSet) {
@@ -406,18 +409,20 @@ class GridTable<T> extends Disposable implements IView {
 	private scrolled = false;
 	private visible = false;
 
-	public get resultSet(): sqlops.ResultSetSummary {
+	private rowHeight: number;
+
+	public get resultSet(): azdata.ResultSetSummary {
 		return this._resultSet;
 	}
 
 	// this handles if the row count is small, like 4-5 rows
 	private get maxSize(): number {
-		return ((this.resultSet.rowCount) * ROW_HEIGHT) + HEADER_HEIGHT + ESTIMATED_SCROLL_BAR_HEIGHT;
+		return ((this.resultSet.rowCount) * this.rowHeight) + HEADER_HEIGHT + ESTIMATED_SCROLL_BAR_HEIGHT;
 	}
 
 	constructor(
 		private runner: QueryRunner,
-		private _resultSet: sqlops.ResultSetSummary,
+		private _resultSet: azdata.ResultSetSummary,
 		state: GridTableState,
 		@IContextMenuService private contextMenuService: IContextMenuService,
 		@IInstantiationService private instantiationService: IInstantiationService,
@@ -426,6 +431,8 @@ class GridTable<T> extends Disposable implements IView {
 		@IConfigurationService private configurationService: IConfigurationService
 	) {
 		super();
+		let config = this.configurationService.getValue<{ rowHeight: number }>('resultsGrid');
+		this.rowHeight = config && config.rowHeight ? config.rowHeight : ROW_HEIGHT;
 		this.state = state;
 		this.container.style.width = '100%';
 		this.container.style.height = '100%';
@@ -468,7 +475,7 @@ class GridTable<T> extends Disposable implements IView {
 			50,
 			index => this.placeholdGenerator(index),
 			0,
-			() => TPromise.as([])
+			() => Promise.resolve([])
 		);
 		this.dataProvider.dataRows = collection;
 		this.table.updateRowCount();
@@ -487,7 +494,7 @@ class GridTable<T> extends Disposable implements IView {
 			50,
 			index => this.placeholdGenerator(index),
 			0,
-			() => TPromise.as([])
+			() => Promise.resolve([])
 		);
 		collection.setCollectionChangedCallback((startIndex, count) => {
 			this.renderGridDataRowsRange(startIndex, count);
@@ -499,7 +506,7 @@ class GridTable<T> extends Disposable implements IView {
 		});
 		this.columns.unshift(this.rowNumberColumn.getColumnDefinition());
 		let tableOptions: Slick.GridOptions<T> = {
-			rowHeight: ROW_HEIGHT,
+			rowHeight: this.rowHeight,
 			showRowNumber: true,
 			forceFitColumns: false,
 			defaultColumnWidth: 120
@@ -508,7 +515,7 @@ class GridTable<T> extends Disposable implements IView {
 		this.table = this._register(new Table(tableContainer, { dataProvider: this.dataProvider, columns: this.columns }, tableOptions));
 		this.table.setSelectionModel(this.selectionModel);
 		this.table.registerPlugin(new MouseWheelSupport());
-		this.table.registerPlugin(new AutoColumnSize({ autoSizeOnRender: !this.state.columnSizes && this.configurationService.getValue('resultsGrid.autoSizeColumns') }));
+		this.table.registerPlugin(new AutoColumnSize({ autoSizeOnRender: !this.state.columnSizes && this.configurationService.getValue('resultsGrid.autoSizeColumns'), maxWidth: this.configurationService.getValue<number>('resultsGrid.maxColumnWidth') }));
 		this.table.registerPlugin(copyHandler);
 		this.table.registerPlugin(this.rowNumberColumn);
 		this.table.registerPlugin(new AdditionalKeyBindings());
@@ -647,13 +654,13 @@ class GridTable<T> extends Disposable implements IView {
 		}
 	}
 
-	public updateResult(resultSet: sqlops.ResultSetSummary) {
+	public updateResult(resultSet: azdata.ResultSetSummary) {
 		this._resultSet = resultSet;
 		if (this.table && this.visible) {
 			this.dataProvider.length = resultSet.rowCount;
 			this.table.updateRowCount();
 		}
-		this._onDidChange.fire();
+		this._onDidChange.fire(undefined);
 	}
 
 	private generateContext(cell?: Slick.Cell): IGridActionContext {

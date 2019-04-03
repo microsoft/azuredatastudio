@@ -7,7 +7,7 @@
 
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
@@ -26,7 +26,7 @@ export interface IResourceProviderService {
 	/**
 	 * Register a resource provider
 	 */
-	registerProvider(providerId: string, provider: sqlops.ResourceProvider): void;
+	registerProvider(providerId: string, provider: azdata.ResourceProvider): void;
 
 	/**
 	 * Unregister a resource provider
@@ -36,7 +36,7 @@ export interface IResourceProviderService {
 	/**
 	 * Create a firewall rule
 	 */
-	createFirewallRule(selectedAccount: sqlops.Account, firewallruleInfo: sqlops.FirewallRuleInfo, resourceProviderId: string): Promise<sqlops.CreateFirewallRuleResponse>;
+	createFirewallRule(selectedAccount: azdata.Account, firewallruleInfo: azdata.FirewallRuleInfo, resourceProviderId: string): Promise<azdata.CreateFirewallRuleResponse>;
 
 	/**
 	 * handle a firewall rule

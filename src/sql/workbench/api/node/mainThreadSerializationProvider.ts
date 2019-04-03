@@ -4,16 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { TPromise } from 'vs/base/common/winjs.base';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import {
 	SqlExtHostContext, ExtHostSerializationProviderShape,
 	MainThreadSerializationProviderShape, SqlMainContext
 } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { ISerializationService } from 'sql/platform/serialization/common/serializationService';
-import * as sqlops from 'sqlops';
-import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
-import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
+import * as azdata from 'azdata';
+import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
+import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadSerializationProvider)
 export class MainThreadSerializationProvider implements MainThreadSerializationProviderShape {
@@ -38,11 +37,11 @@ export class MainThreadSerializationProvider implements MainThreadSerializationP
 		this._toDispose = dispose(this._toDispose);
 	}
 
-	public $registerSerializationProvider(handle: number): TPromise<any> {
+	public $registerSerializationProvider(handle: number): Promise<any> {
 		let self = this;
 
 		this._registrations[handle] = this.serializationService.addEventListener(handle, {
-			onSaveAs(saveFormat: string, savePath: string, results: string, appendToFile: boolean): Thenable<sqlops.SaveResultRequestResult> {
+			onSaveAs(saveFormat: string, savePath: string, results: string, appendToFile: boolean): Thenable<azdata.SaveResultRequestResult> {
 				return self._proxy.$saveAs(saveFormat, savePath, results, appendToFile);
 			}
 		});
@@ -50,7 +49,7 @@ export class MainThreadSerializationProvider implements MainThreadSerializationP
 		return undefined;
 	}
 
-	public $unregisterSerializationProvider(handle: number): TPromise<any> {
+	public $unregisterSerializationProvider(handle: number): Promise<any> {
 		let registration = this._registrations[handle];
 		if (registration) {
 			registration.dispose();

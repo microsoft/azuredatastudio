@@ -5,7 +5,7 @@
 
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 
 import { ImportDataModel } from '../api/models';
@@ -17,12 +17,12 @@ const localize = nls.loadMessageBundle();
 
 
 export class SummaryPage extends ImportPage {
-	private table: sqlops.TableComponent;
-	private statusText: sqlops.TextComponent;
-	private loading: sqlops.LoadingComponent;
-	private form: sqlops.FormContainer;
+	private table: azdata.TableComponent;
+	private statusText: azdata.TextComponent;
+	private loading: azdata.LoadingComponent;
+	private form: azdata.FormContainer;
 
-	public constructor(instance: FlatFileWizard, wizardPage: sqlops.window.WizardPage, model: ImportDataModel, view: sqlops.ModelView, provider: FlatFileProvider) {
+	public constructor(instance: FlatFileWizard, wizardPage: azdata.window.WizardPage, model: ImportDataModel, view: azdata.ModelView, provider: FlatFileProvider) {
 		super(instance, wizardPage, model, view, provider);
 	}
 
@@ -142,18 +142,18 @@ export class SummaryPage extends ImportPage {
 		if (options.authenticationType === 'Integrated') {
 			connectionString = `Data Source=${options.server + (options.port ? `,${options.port}` : '')};Initial Catalog=${this.model.database};Integrated Security=True`;
 		} else {
-			let credentials = await sqlops.connection.getCredentials(this.model.server.connectionId);
+			let credentials = await azdata.connection.getCredentials(this.model.server.connectionId);
 			connectionString = `Data Source=${options.server + (options.port ? `,${options.port}` : '')};Initial Catalog=${this.model.database};Integrated Security=False;User Id=${options.user};Password=${credentials.password}`;
 		}
 
 		// TODO: Fix this, it's returning undefined string.
-		//await sqlops.connection.getConnectionString(this.model.server.connectionId, true);
+		//await azdata.connection.getConnectionString(this.model.server.connectionId, true);
 		return connectionString;
 	}
 
 	// private async getCountRowsInserted(): Promise<Number> {
-	// 	let connectionUri = await sqlops.connection.getUriForConnection(this.model.server.connectionId);
-	// 	let queryProvider = sqlops.dataprotocol.getProvider<sqlops.QueryProvider>(this.model.server.providerName, sqlops.DataProviderType.QueryProvider);
+	// 	let connectionUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
+	// 	let queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(this.model.server.providerName, azdata.DataProviderType.QueryProvider);
 	// 	try {
 	// 		let query = sqlstring.format('USE ?; SELECT COUNT(*) FROM ?', [this.model.database, this.model.table]);
 	// 		let results = await queryProvider.runQueryAndReturn(connectionUri, query);

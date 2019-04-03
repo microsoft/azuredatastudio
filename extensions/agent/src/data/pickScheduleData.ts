@@ -4,15 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { AgentUtils } from '../agentUtils';
 import { IAgentDialogData, AgentDialogMode } from '../interfaces';
 
 export class PickScheduleData implements IAgentDialogData {
 	public dialogMode: AgentDialogMode = AgentDialogMode.VIEW;
 	public ownerUri: string;
-	public schedules: sqlops.AgentJobScheduleInfo[];
-	public selectedSchedule: sqlops.AgentJobScheduleInfo;
+	public schedules: azdata.AgentJobScheduleInfo[];
+	public selectedSchedule: azdata.AgentJobScheduleInfo;
 	private jobName: string;
 
 	constructor(ownerUri:string, jobName: string) {

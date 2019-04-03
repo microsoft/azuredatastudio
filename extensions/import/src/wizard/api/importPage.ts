@@ -5,20 +5,20 @@
 'use strict';
 
 import { ImportDataModel } from './models';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { FlatFileProvider } from '../../services/contracts';
 import { FlatFileWizard } from '../flatFileWizard';
 import { BasePage } from './basePage';
 
 export abstract class ImportPage extends BasePage {
 
-	protected readonly wizardPage: sqlops.window.WizardPage;
+	protected readonly wizardPage: azdata.window.WizardPage;
 	protected readonly instance: FlatFileWizard;
 	protected readonly model: ImportDataModel;
-	protected readonly view: sqlops.ModelView;
+	protected readonly view: azdata.ModelView;
 	protected readonly provider: FlatFileProvider;
 
-	protected constructor(instance: FlatFileWizard, wizardPage: sqlops.window.WizardPage, model: ImportDataModel, view: sqlops.ModelView, provider: FlatFileProvider) {
+	protected constructor(instance: FlatFileWizard, wizardPage: azdata.window.WizardPage, model: ImportDataModel, view: azdata.ModelView, provider: FlatFileProvider) {
 		super();
 		this.instance = instance;
 		this.wizardPage = wizardPage;

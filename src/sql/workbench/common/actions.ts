@@ -19,15 +19,15 @@ import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/co
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { IBackupUiService } from 'sql/workbench/services/backup/common/backupUiService';
 
-import { ObjectMetadata } from 'sqlops';
+import { ObjectMetadata } from 'azdata';
 
 import { Action } from 'vs/base/common/actions';
 import { IWindowsService } from 'vs/platform/windows/common/windows';
 import * as nls from 'vs/nls';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
-import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 import { INotificationService } from 'vs/platform/notification/common/notification';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 export interface BaseActionContext {
 	object?: ObjectMetadata;
@@ -307,7 +307,7 @@ export class BackupAction extends Task {
 			let workbenchEditorService = accessor.get<IEditorService>(IEditorService);
 			profile = TaskUtilities.getCurrentGlobalConnection(objectExplorerService, connectionManagementService, workbenchEditorService);
 		}
-		let configurationService = accessor.get<IWorkspaceConfigurationService>(IWorkspaceConfigurationService);
+		let configurationService = accessor.get<IConfigurationService>(IConfigurationService);
 		let previewFeaturesEnabled: boolean = configurationService.getValue('workbench')['enablePreviewFeatures'];
 		if (!previewFeaturesEnabled) {
 			return new Promise<void>((resolve, reject) => {
@@ -346,7 +346,7 @@ export class RestoreAction extends Task {
 	}
 
 	runTask(accessor: ServicesAccessor, profile: IConnectionProfile): Promise<void> {
-		let configurationService = accessor.get<IWorkspaceConfigurationService>(IWorkspaceConfigurationService);
+		let configurationService = accessor.get<IConfigurationService>(IConfigurationService);
 		let previewFeaturesEnabled: boolean = configurationService.getValue('workbench')['enablePreviewFeatures'];
 		if (!previewFeaturesEnabled) {
 			return new Promise<void>((resolve, reject) => {

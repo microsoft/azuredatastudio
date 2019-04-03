@@ -7,7 +7,7 @@
 
 import * as should from 'should';
 import * as TypeMoq from 'typemoq';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import 'mocha';
 
@@ -18,7 +18,7 @@ import { AzureResourceResourceTreeNode } from '../../azureResource/resourceTreeN
 const resourceService = AzureResourceService.getInstance();
 
 // Mock test data
-const mockAccount: sqlops.Account = {
+const mockAccount: azdata.Account = {
 	key: {
 		accountId: 'mock_account',
 		providerId: 'mock_provider'

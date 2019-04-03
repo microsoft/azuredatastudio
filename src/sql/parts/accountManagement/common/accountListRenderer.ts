@@ -15,20 +15,20 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 
 import { RemoveAccountAction, RefreshAccountAction } from 'sql/parts/accountManagement/common/accountActions';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
-export class AccountListDelegate implements IListVirtualDelegate<sqlops.Account> {
+export class AccountListDelegate implements IListVirtualDelegate<azdata.Account> {
 
 	constructor(
 		private _height: number
 	) {
 	}
 
-	public getHeight(element: sqlops.Account): number {
+	public getHeight(element: azdata.Account): number {
 		return this._height;
 	}
 
-	public getTemplateId(element: sqlops.Account): string {
+	public getTemplateId(element: azdata.Account): string {
 		return 'accountListRenderer';
 	}
 }
@@ -44,7 +44,7 @@ export interface AccountListTemplate {
 	actions?: ActionBar;
 }
 
-export class AccountPickerListRenderer implements IListRenderer<sqlops.Account, AccountListTemplate> {
+export class AccountPickerListRenderer implements IListRenderer<azdata.Account, AccountListTemplate> {
 	public static TEMPLATE_ID = 'accountListRenderer';
 
 	public get templateId(): string {
@@ -64,7 +64,7 @@ export class AccountPickerListRenderer implements IListRenderer<sqlops.Account, 
 		return tableTemplate;
 	}
 
-	public renderElement(account: sqlops.Account, index: number, templateData: AccountListTemplate): void {
+	public renderElement(account: azdata.Account, index: number, templateData: AccountListTemplate): void {
 		// Set the account icon
 		templateData.icon.classList.add('account-logo', account.displayInfo.accountType);
 
@@ -81,7 +81,7 @@ export class AccountPickerListRenderer implements IListRenderer<sqlops.Account, 
 		// noop
 	}
 
-	public disposeElement(element: sqlops.Account, index: number, templateData: AccountListTemplate): void {
+	public disposeElement(element: azdata.Account, index: number, templateData: AccountListTemplate): void {
 		// noop
 	}
 }
@@ -105,7 +105,7 @@ export class AccountListRenderer extends AccountPickerListRenderer {
 		return tableTemplate;
 	}
 
-	public renderElement(account: sqlops.Account, index: number, templateData: AccountListTemplate): void {
+	public renderElement(account: azdata.Account, index: number, templateData: AccountListTemplate): void {
 		super.renderElement(account, index, templateData);
 		if (account.isStale) {
 			templateData.content.innerText = localize('refreshCredentials', 'You need to refresh the credentials for this account.');

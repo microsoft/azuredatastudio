@@ -5,7 +5,7 @@
 
 'use strict';
 
-import { nb } from 'sqlops';
+import { nb } from 'azdata';
 
 import { CellModel } from './cell';
 import { IClientSession, IClientSessionOptions, ICellModelOptions, ICellModel, IModelFactory } from './modelInterfaces';

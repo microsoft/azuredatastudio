@@ -5,7 +5,7 @@
 
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 import { Event } from 'vs/base/common/event';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
@@ -50,7 +50,7 @@ export interface INotebookService {
 
 	getProvidersForFileType(fileType: string): string[];
 
-	getStandardKernelsForProvider(provider: string): sqlops.nb.IStandardKernel[];
+	getStandardKernelsForProvider(provider: string): azdata.nb.IStandardKernel[];
 
 	/**
 	 * Initializes and returns a Notebook manager that can handle all important calls to open, display, and
@@ -67,8 +67,6 @@ export interface INotebookService {
 
 	listNotebookEditors(): INotebookEditor[];
 
-	shutdown(): void;
-
 	getMimeRegistry(): RenderMimeRegistry;
 
 	renameNotebookEditor(oldUri: URI, newUri: URI, currentEditor: INotebookEditor): void;
@@ -82,20 +80,22 @@ export interface INotebookProvider {
 
 export interface INotebookManager {
 	providerId: string;
-	readonly contentManager: sqlops.nb.ContentManager;
-	readonly sessionManager: sqlops.nb.SessionManager;
-	readonly serverManager: sqlops.nb.ServerManager;
+	readonly contentManager: azdata.nb.ContentManager;
+	readonly sessionManager: azdata.nb.SessionManager;
+	readonly serverManager: azdata.nb.ServerManager;
 }
 
+export interface IProviderInfo {
+	providerId: string;
+	providers: string[];
+}
 export interface INotebookParams extends IBootstrapParams {
 	notebookUri: URI;
 	input: NotebookInput;
-	providerId: string;
-	providers: string[];
+	providerInfo: Promise<IProviderInfo>;
 	isTrusted: boolean;
 	profile?: IConnectionProfile;
 	modelFactory?: ModelFactory;
-	connectionProfileId?: string;
 }
 
 export interface INotebookEditor {
@@ -107,7 +107,8 @@ export interface INotebookEditor {
 	isDirty(): boolean;
 	isActive(): boolean;
 	isVisible(): boolean;
-	save(): Promise<boolean>;
 	executeEdits(edits: ISingleNotebookEditOperation[]): boolean;
 	runCell(cell: ICellModel): Promise<boolean>;
+	runAllCells(): Promise<boolean>;
+	clearAllOutputs(): Promise<boolean>;
 }

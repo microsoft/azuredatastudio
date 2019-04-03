@@ -6,50 +6,38 @@
 'use strict';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { Button } from 'sql/base/browser/ui/button/button';
+import { append, $, addClass, addClasses } from 'vs/base/browser/dom';
 
-import { Builder } from 'sql/base/browser/builder';
 import * as types from 'vs/base/common/types';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
-export function appendRow(container: Builder, label: string, labelClass: string, cellContainerClass: string, rowContainerClass?: string): Builder {
-	let cellContainer: Builder;
-	let rowAttributes = rowContainerClass ? { class: rowContainerClass } : {};
-	container.element('tr', rowAttributes, (rowContainer) => {
-		rowContainer.element('td', { class: labelClass }, (labelCellContainer) => {
-			labelCellContainer.div({}, (labelContainer) => {
-				labelContainer.text(label);
-			});
-		});
-		rowContainer.element('td', { class: cellContainerClass }, (inputCellContainer) => {
-			cellContainer = inputCellContainer;
-		});
-	});
+export function appendRow(container: HTMLElement, label: string, labelClass: string, cellContainerClass: string, rowContainerClass?: string | Array<string>): HTMLElement {
+	let rowContainer = append(container, $('tr'));
+	if (rowContainerClass) {
+		if (types.isString(rowContainerClass)) {
+			addClass(rowContainer, rowContainerClass);
+		} else {
+			addClasses(rowContainer, ...rowContainerClass);
+		}
+	}
+	append(append(rowContainer, $(`td.${labelClass}`)), $('div')).innerText = label;
+	let inputCellContainer = append(rowContainer, $(`td.${cellContainerClass}`));
 
-	return cellContainer;
+	return inputCellContainer;
 }
 
-export function appendRowLink(container: Builder, label: string, labelClass: string, cellContainerClass: string): Builder {
-	let rowButton: Button;
-	container.element('tr', {}, (rowContainer) => {
-		rowContainer.element('td', { class: labelClass }, (labelCellContainer) => {
-			labelCellContainer.div({}, (labelContainer) => {
-				labelContainer.text(label);
-			});
-		});
-		rowContainer.element('td', { class: cellContainerClass }, (inputCellContainer) => {
-			inputCellContainer.element('div', {}, (rowContainer) => {
-				rowButton = new Button(rowContainer.getHTMLElement());
+export function appendRowLink(container: HTMLElement, label: string, labelClass: string, cellContainerClass: string): HTMLElement {
+	let rowContainer = append(container, $('tr'));
+	append(append(rowContainer, $(`td.${labelClass}`)), $('div')).innerText = label;
+	let buttonContainer = append(append(rowContainer, $(`td.${cellContainerClass}`)), $('div'));
+	let rowButton = new Button(buttonContainer);
 
-			});
-		});
-	});
-
-	return new Builder(rowButton.element);
+	return rowButton.element;
 }
 
-export function appendInputSelectBox(container: Builder, selectBox: SelectBox): SelectBox {
-	selectBox.render(container.getHTMLElement());
+export function appendInputSelectBox(container: HTMLElement, selectBox: SelectBox): SelectBox {
+	selectBox.render(container);
 	return selectBox;
 }
 
@@ -62,7 +50,7 @@ export function getBooleanValueFromStringOrBoolean(value: any): boolean {
 	return false;
 }
 
-export function getCategoryDisplayName(categories: sqlops.CategoryValue[], categoryName: string) {
+export function getCategoryDisplayName(categories: azdata.CategoryValue[], categoryName: string) {
 	var displayName: string;
 	categories.forEach(c => {
 		if (c.name === categoryName) {
@@ -72,7 +60,7 @@ export function getCategoryDisplayName(categories: sqlops.CategoryValue[], categ
 	return displayName;
 }
 
-export function getCategoryName(categories: sqlops.CategoryValue[], categoryDisplayName: string) {
+export function getCategoryName(categories: azdata.CategoryValue[], categoryDisplayName: string) {
 	var categoryName: string;
 	categories.forEach(c => {
 		if (c.displayName === categoryDisplayName) {

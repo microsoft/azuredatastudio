@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as assert from 'assert';
 import * as TypeMoq from 'typemoq';
 import { EventVerifierSingle } from 'sqltest/utils/eventVerifier';
@@ -19,7 +19,7 @@ import { InstantiationService } from 'vs/platform/instantiation/common/instantia
 let mockAddAccountCompleteEmitter: Emitter<void>;
 let mockAddAccountErrorEmitter: Emitter<string>;
 let mockAddAccountStartEmitter: Emitter<void>;
-let mockOnAccountSelectionChangeEvent: Emitter<sqlops.Account>;
+let mockOnAccountSelectionChangeEvent: Emitter<azdata.Account>;
 
 // TESTS ///////////////////////////////////////////////////////////////////
 suite('Account picker service tests', () => {
@@ -28,7 +28,7 @@ suite('Account picker service tests', () => {
 		mockAddAccountCompleteEmitter = new Emitter<void>();
 		mockAddAccountErrorEmitter = new Emitter<string>();
 		mockAddAccountStartEmitter = new Emitter<void>();
-		mockOnAccountSelectionChangeEvent = new Emitter<sqlops.Account>();
+		mockOnAccountSelectionChangeEvent = new Emitter<azdata.Account>();
 	});
 
 	test('Construction - Events are properly defined', () => {
@@ -76,7 +76,7 @@ suite('Account picker service tests', () => {
 			properties: [],
 			isStale: false
 		};
-		let evOnAccountSelectionChangeEvent = new EventVerifierSingle<sqlops.Account>();
+		let evOnAccountSelectionChangeEvent = new EventVerifierSingle<azdata.Account>();
 		service.onAccountSelectionChangeEvent(evOnAccountSelectionChangeEvent.eventHandler);
 		mockOnAccountSelectionChangeEvent.fire(account);
 		evOnAccountSelectionChangeEvent.assertFired(account);

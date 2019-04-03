@@ -5,19 +5,18 @@
 
 'use strict';
 
-import * as Constants from './constants';
-import * as ConnInfo from './connectionInfo';
-import { ConnectionProfile } from '../common/connectionProfile';
+import * as Constants from 'sql/platform/connection/common/constants';
+import * as ConnInfo from 'sql/platform/connection/common/connectionInfo';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ICredentialsService } from 'sql/platform/credentials/common/credentialsService';
-import { IConnectionConfig } from './iconnectionConfig';
-import { ConnectionConfig } from './connectionConfig';
+import { IConnectionConfig } from 'sql/platform/connection/common/iconnectionConfig';
+import { ConnectionConfig } from 'sql/platform/connection/common/connectionConfig';
 import { Memento } from 'vs/workbench/common/memento';
-import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
+import { StorageScope } from 'vs/platform/storage/common/storage';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from './connectionProfileGroup';
-import { ConfigurationEditingService } from 'vs/workbench/services/configuration/node/configurationEditingService';
-import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 const MAX_CONNECTIONS_DEFAULT = 25;
 
@@ -33,10 +32,8 @@ export class ConnectionStore {
 	private _groupFullNameToIdMap: { [groupId: string]: string };
 
 	constructor(
-		private _storageService: IStorageService,
 		private _context: Memento,
-		private _configurationEditService: ConfigurationEditingService,
-		private _workspaceConfigurationService: IWorkspaceConfigurationService,
+		private _configurationService: IConfigurationService,
 		private _credentialService: ICredentialsService,
 		private _capabilitiesService: ICapabilitiesService,
 		private _connectionConfig?: IConnectionConfig
@@ -47,8 +44,7 @@ export class ConnectionStore {
 		this._groupIdToFullNameMap = {};
 		this._groupFullNameToIdMap = {};
 		if (!this._connectionConfig) {
-			this._connectionConfig = new ConnectionConfig(this._configurationEditService,
-				this._workspaceConfigurationService, this._capabilitiesService);
+			this._connectionConfig = new ConnectionConfig(this._configurationService, this._capabilitiesService);
 		}
 	}
 
@@ -209,7 +205,7 @@ export class ConnectionStore {
 	 * Gets the list of recently used connections. These will not include the password - a separate call to
 	 * {addSavedPassword} is needed to fill that before connecting
 	 *
-	 * @returns {sqlops.ConnectionInfo} the array of connections, empty if none are found
+	 * @returns {azdata.ConnectionInfo} the array of connections, empty if none are found
 	 */
 	public getRecentlyUsedConnections(providers?: string[]): ConnectionProfile[] {
 		let configValues: IConnectionProfile[] = this._memento[Constants.recentConnections];
@@ -249,7 +245,7 @@ export class ConnectionStore {
 	 * Gets the list of active connections. These will not include the password - a separate call to
 	 * {addSavedPassword} is needed to fill that before connecting
 	 *
-	 * @returns {sqlops.ConnectionInfo} the array of connections, empty if none are found
+	 * @returns {azdata.ConnectionInfo} the array of connections, empty if none are found
 	 */
 	public getActiveConnections(): ConnectionProfile[] {
 		let configValues: IConnectionProfile[] = this._memento[Constants.activeConnections];
@@ -277,20 +273,30 @@ export class ConnectionStore {
 	 * Password values are stored to a separate credential store if the "savePassword" option is true
 	 *
 	 * @param {IConnectionCredentials} conn the connection to add
+	 * @param {boolean} addToMru Whether to add this connection to the MRU
 	 * @returns {Promise<void>} a Promise that returns when the connection was saved
 	 */
-	public addActiveConnection(conn: IConnectionProfile, isConnectionToDefaultDb: boolean = false): Promise<void> {
-		if (this.getActiveConnections().some(existingConn => existingConn.id === conn.id)) {
-			return Promise.resolve(undefined);
-		} else {
-			return this.addConnectionToMemento(conn, Constants.activeConnections, undefined, conn.savePassword).then(() => {
-				let maxConnections = this.getMaxRecentConnectionsCount();
-				if (isConnectionToDefaultDb) {
-					conn.databaseName = '';
-				}
-				return this.addConnectionToMemento(conn, Constants.recentConnections, maxConnections);
-			});
+	public async addActiveConnection(conn: IConnectionProfile, addToMru: boolean): Promise<void> {
+		if (addToMru) {
+			await this.addConnectionToMru(conn);
 		}
+
+		// Only add connections we don't already know about
+		if (!this.getActiveConnections().some(existingConn => existingConn.id === conn.id)) {
+			await this.addConnectionToMemento(conn, Constants.activeConnections, undefined, conn.savePassword);
+		}
+	}
+
+	/**
+	 * Adds the specified connection to the MRU list
+	 * @param conn The connection to add
+	 */
+	private async addConnectionToMru(conn: IConnectionProfile): Promise<void> {
+		let maxConnections = this.getMaxRecentConnectionsCount();
+		if (ConnectionProfile.isConnectionToDefaultDb(conn)) {
+			conn.databaseName = '';
+		}
+		await this.addConnectionToMemento(conn, Constants.recentConnections, maxConnections);
 	}
 
 	public addConnectionToMemento(conn: IConnectionProfile, mementoKey: string, maxConnections?: number, savePassword?: boolean): Promise<void> {
@@ -478,7 +484,7 @@ export class ConnectionStore {
 	}
 
 	private getMaxRecentConnectionsCount(): number {
-		let config = this._workspaceConfigurationService.getValue(Constants.sqlConfigSectionName);
+		let config = this._configurationService.getValue(Constants.sqlConfigSectionName);
 
 		let maxConnections: number = config[Constants.configMaxRecentConnections];
 		if (typeof (maxConnections) !== 'number' || maxConnections <= 0) {

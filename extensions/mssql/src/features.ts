@@ -9,9 +9,10 @@ import { ClientCapabilities, StaticFeature, RPCMessageType, ServerCapabilities }
 import { Disposable } from 'vscode';
 import { Telemetry } from './telemetry';
 import * as contracts from './contracts';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as Utils from './utils';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
+import { ConnectParams } from 'dataprotocol-client/lib/protocol';
 
 export class TelemetryFeature implements StaticFeature {
 
@@ -54,7 +55,7 @@ export class DacFxServicesFeature extends SqlOpsFeature<undefined> {
 		const client = this._client;
 		let self = this;
 
-		let exportBacpac = (databaseName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> => {
+		let exportBacpac = (databaseName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> => {
 			let params: contracts.ExportParams = { databaseName: databaseName, packageFilePath: packageFilePath, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
 			return client.sendRequest(contracts.ExportRequest.type, params).then(
 				r => {
@@ -67,7 +68,7 @@ export class DacFxServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let importBacpac = (packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> => {
+		let importBacpac = (packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> => {
 			let params: contracts.ImportParams = { packageFilePath: packageFilePath, databaseName: databaseName, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
 			return client.sendRequest(contracts.ImportRequest.type, params).then(
 				r => {
@@ -80,7 +81,7 @@ export class DacFxServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let extractDacpac = (databaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> => {
+		let extractDacpac = (databaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> => {
 			let params: contracts.ExtractParams = { databaseName: databaseName, packageFilePath: packageFilePath, applicationName: applicationName, applicationVersion: applicationVersion, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
 			return client.sendRequest(contracts.ExtractRequest.type, params).then(
 				r => {
@@ -93,7 +94,7 @@ export class DacFxServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let deployDacpac = (packageFilePath: string, targetDatabaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> => {
+		let deployDacpac = (packageFilePath: string, targetDatabaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> => {
 			let params: contracts.DeployParams = { packageFilePath: packageFilePath, databaseName: targetDatabaseName, upgradeExisting: upgradeExisting, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
 			return client.sendRequest(contracts.DeployRequest.type, params).then(
 				r => {
@@ -106,7 +107,7 @@ export class DacFxServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let generateDeployScript = (packageFilePath: string, targetDatabaseName: string, scriptFilePath: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> => {
+		let generateDeployScript = (packageFilePath: string, targetDatabaseName: string, scriptFilePath: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> => {
 			let params: contracts.GenerateDeployScriptParams = { packageFilePath: packageFilePath, databaseName: targetDatabaseName, scriptFilePath: scriptFilePath, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
 			return client.sendRequest(contracts.GenerateDeployScriptRequest.type, params).then(
 				r => {
@@ -119,7 +120,7 @@ export class DacFxServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let generateDeployPlan = (packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.GenerateDeployPlanResult> => {
+		let generateDeployPlan = (packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.GenerateDeployPlanResult> => {
 			let params: contracts.GenerateDeployPlanParams = { packageFilePath: packageFilePath, databaseName: targetDatabaseName, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
 			return client.sendRequest(contracts.GenerateDeployPlanRequest.type, params).then(
 				r => {
@@ -132,7 +133,7 @@ export class DacFxServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		return sqlops.dataprotocol.registerDacFxServicesProvider({
+		return azdata.dataprotocol.registerDacFxServicesProvider({
 			providerId: client.providerId,
 			exportBacpac,
 			importBacpac,
@@ -185,7 +186,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 		};
 
 		// Job management methods
-		let getJobs = (ownerUri: string): Thenable<sqlops.AgentJobsResult> => {
+		let getJobs = (ownerUri: string): Thenable<azdata.AgentJobsResult> => {
 			let params: contracts.AgentJobsParams = { ownerUri: ownerUri, jobId: null };
 			return client.sendRequest(contracts.AgentJobsRequest.type, params).then(
 				r => r,
@@ -196,7 +197,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let getJobHistory = (ownerUri: string, jobID: string, jobName: string): Thenable<sqlops.AgentJobHistoryResult> => {
+		let getJobHistory = (ownerUri: string, jobID: string, jobName: string): Thenable<azdata.AgentJobHistoryResult> => {
 			let params: contracts.AgentJobHistoryParams = { ownerUri: ownerUri, jobId: jobID, jobName: jobName };
 
 			return client.sendRequest(contracts.AgentJobHistoryRequest.type, params).then(
@@ -208,7 +209,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let jobAction = (ownerUri: string, jobName: string, action: string): Thenable<sqlops.ResultStatus> => {
+		let jobAction = (ownerUri: string, jobName: string, action: string): Thenable<azdata.ResultStatus> => {
 			let params: contracts.AgentJobActionParams = { ownerUri: ownerUri, jobName: jobName, action: action };
 			return client.sendRequest(contracts.AgentJobActionRequest.type, params).then(
 				r => r,
@@ -219,7 +220,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let createJob = (ownerUri: string, jobInfo: sqlops.AgentJobInfo): Thenable<sqlops.CreateAgentJobResult> => {
+		let createJob = (ownerUri: string, jobInfo: azdata.AgentJobInfo): Thenable<azdata.CreateAgentJobResult> => {
 			let params: contracts.CreateAgentJobParams = {
 				ownerUri: ownerUri,
 				job: jobInfo
@@ -237,7 +238,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let updateJob = (ownerUri: string, originalJobName: string, jobInfo: sqlops.AgentJobInfo): Thenable<sqlops.UpdateAgentJobResult> => {
+		let updateJob = (ownerUri: string, originalJobName: string, jobInfo: azdata.AgentJobInfo): Thenable<azdata.UpdateAgentJobResult> => {
 			let params: contracts.UpdateAgentJobParams = {
 				ownerUri: ownerUri,
 				originalJobName: originalJobName,
@@ -256,7 +257,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let deleteJob = (ownerUri: string, jobInfo: sqlops.AgentJobInfo): Thenable<sqlops.ResultStatus> => {
+		let deleteJob = (ownerUri: string, jobInfo: azdata.AgentJobInfo): Thenable<azdata.ResultStatus> => {
 			let params: contracts.DeleteAgentJobParams = {
 				ownerUri: ownerUri,
 				job: jobInfo
@@ -274,7 +275,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let getJobDefaults = (ownerUri: string): Thenable<sqlops.AgentJobDefaultsResult> => {
+		let getJobDefaults = (ownerUri: string): Thenable<azdata.AgentJobDefaultsResult> => {
 			let params: contracts.AgentJobDefaultsParams = {
 				ownerUri: ownerUri
 			};
@@ -289,7 +290,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 		};
 
 		// Job Step management methods
-		let createJobStep = (ownerUri: string, stepInfo: sqlops.AgentJobStepInfo): Thenable<sqlops.CreateAgentJobStepResult> => {
+		let createJobStep = (ownerUri: string, stepInfo: azdata.AgentJobStepInfo): Thenable<azdata.CreateAgentJobStepResult> => {
 			let params: contracts.CreateAgentJobStepParams = {
 				ownerUri: ownerUri,
 				step: stepInfo
@@ -307,7 +308,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let updateJobStep = (ownerUri: string, originalJobStepName: string, stepInfo: sqlops.AgentJobStepInfo): Thenable<sqlops.UpdateAgentJobStepResult> => {
+		let updateJobStep = (ownerUri: string, originalJobStepName: string, stepInfo: azdata.AgentJobStepInfo): Thenable<azdata.UpdateAgentJobStepResult> => {
 			let params: contracts.UpdateAgentJobStepParams = {
 				ownerUri: ownerUri,
 				originalJobStepName: originalJobStepName,
@@ -326,7 +327,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let deleteJobStep = (ownerUri: string, stepInfo: sqlops.AgentJobStepInfo): Thenable<sqlops.ResultStatus> => {
+		let deleteJobStep = (ownerUri: string, stepInfo: azdata.AgentJobStepInfo): Thenable<azdata.ResultStatus> => {
 			let params: contracts.DeleteAgentJobStepParams = {
 				ownerUri: ownerUri,
 				step: stepInfo
@@ -345,7 +346,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 		};
 
 		// Alert management methods
-		let getAlerts = (ownerUri: string): Thenable<sqlops.AgentAlertsResult> => {
+		let getAlerts = (ownerUri: string): Thenable<azdata.AgentAlertsResult> => {
 			let params: contracts.AgentAlertsParams = {
 				ownerUri: ownerUri
 			};
@@ -359,7 +360,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let createAlert = (ownerUri: string, alertInfo: sqlops.AgentAlertInfo): Thenable<sqlops.CreateAgentAlertResult> => {
+		let createAlert = (ownerUri: string, alertInfo: azdata.AgentAlertInfo): Thenable<azdata.CreateAgentAlertResult> => {
 			let params: contracts.CreateAgentAlertParams = {
 				ownerUri: ownerUri,
 				alert: alertInfo
@@ -377,7 +378,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let updateAlert = (ownerUri: string, originalAlertName: string, alertInfo: sqlops.AgentAlertInfo): Thenable<sqlops.UpdateAgentAlertResult> => {
+		let updateAlert = (ownerUri: string, originalAlertName: string, alertInfo: azdata.AgentAlertInfo): Thenable<azdata.UpdateAgentAlertResult> => {
 			let params: contracts.UpdateAgentAlertParams = {
 				ownerUri: ownerUri,
 				originalAlertName: originalAlertName,
@@ -396,7 +397,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let deleteAlert = (ownerUri: string, alertInfo: sqlops.AgentAlertInfo): Thenable<sqlops.ResultStatus> => {
+		let deleteAlert = (ownerUri: string, alertInfo: azdata.AgentAlertInfo): Thenable<azdata.ResultStatus> => {
 			let params: contracts.DeleteAgentAlertParams = {
 				ownerUri: ownerUri,
 				alert: alertInfo
@@ -415,7 +416,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 		};
 
 		// Operator management methods
-		let getOperators = (ownerUri: string): Thenable<sqlops.AgentOperatorsResult> => {
+		let getOperators = (ownerUri: string): Thenable<azdata.AgentOperatorsResult> => {
 			let params: contracts.AgentOperatorsParams = {
 				ownerUri: ownerUri
 			};
@@ -429,7 +430,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let createOperator = (ownerUri: string, operatorInfo: sqlops.AgentOperatorInfo): Thenable<sqlops.CreateAgentOperatorResult> => {
+		let createOperator = (ownerUri: string, operatorInfo: azdata.AgentOperatorInfo): Thenable<azdata.CreateAgentOperatorResult> => {
 			let params: contracts.CreateAgentOperatorParams = {
 				ownerUri: ownerUri,
 				operator: operatorInfo
@@ -447,7 +448,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let updateOperator = (ownerUri: string, originalOperatorName: string, operatorInfo: sqlops.AgentOperatorInfo): Thenable<sqlops.UpdateAgentOperatorResult> => {
+		let updateOperator = (ownerUri: string, originalOperatorName: string, operatorInfo: azdata.AgentOperatorInfo): Thenable<azdata.UpdateAgentOperatorResult> => {
 			let params: contracts.UpdateAgentOperatorParams = {
 				ownerUri: ownerUri,
 				originalOperatorName: originalOperatorName,
@@ -466,7 +467,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let deleteOperator = (ownerUri: string, operatorInfo: sqlops.AgentOperatorInfo): Thenable<sqlops.ResultStatus> => {
+		let deleteOperator = (ownerUri: string, operatorInfo: azdata.AgentOperatorInfo): Thenable<azdata.ResultStatus> => {
 			let params: contracts.DeleteAgentOperatorParams = {
 				ownerUri: ownerUri,
 				operator: operatorInfo
@@ -485,7 +486,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 		};
 
 		// Proxy management methods
-		let getProxies = (ownerUri: string): Thenable<sqlops.AgentProxiesResult> => {
+		let getProxies = (ownerUri: string): Thenable<azdata.AgentProxiesResult> => {
 			let params: contracts.AgentProxiesParams = {
 				ownerUri: ownerUri
 			};
@@ -499,7 +500,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let createProxy = (ownerUri: string, proxyInfo: sqlops.AgentProxyInfo): Thenable<sqlops.CreateAgentOperatorResult> => {
+		let createProxy = (ownerUri: string, proxyInfo: azdata.AgentProxyInfo): Thenable<azdata.CreateAgentOperatorResult> => {
 			let params: contracts.CreateAgentProxyParams = {
 				ownerUri: ownerUri,
 				proxy: proxyInfo
@@ -517,7 +518,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let updateProxy = (ownerUri: string, originalProxyName: string, proxyInfo: sqlops.AgentProxyInfo): Thenable<sqlops.UpdateAgentOperatorResult> => {
+		let updateProxy = (ownerUri: string, originalProxyName: string, proxyInfo: azdata.AgentProxyInfo): Thenable<azdata.UpdateAgentOperatorResult> => {
 			let params: contracts.UpdateAgentProxyParams = {
 				ownerUri: ownerUri,
 				originalProxyName: originalProxyName,
@@ -536,7 +537,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let deleteProxy = (ownerUri: string, proxyInfo: sqlops.AgentProxyInfo): Thenable<sqlops.ResultStatus> => {
+		let deleteProxy = (ownerUri: string, proxyInfo: azdata.AgentProxyInfo): Thenable<azdata.ResultStatus> => {
 			let params: contracts.DeleteAgentProxyParams = {
 				ownerUri: ownerUri,
 				proxy: proxyInfo
@@ -555,7 +556,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 		};
 
 		// Agent Credential Method
-		let getCredentials = (ownerUri: string): Thenable<sqlops.GetCredentialsResult> => {
+		let getCredentials = (ownerUri: string): Thenable<azdata.GetCredentialsResult> => {
 			let params: contracts.GetCredentialsParams = {
 				ownerUri: ownerUri
 			};
@@ -571,7 +572,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 
 
 		// Job Schedule management methods
-		let getJobSchedules = (ownerUri: string): Thenable<sqlops.AgentJobSchedulesResult> => {
+		let getJobSchedules = (ownerUri: string): Thenable<azdata.AgentJobSchedulesResult> => {
 			let params: contracts.AgentJobScheduleParams = {
 				ownerUri: ownerUri
 			};
@@ -585,7 +586,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let createJobSchedule = (ownerUri: string, scheduleInfo: sqlops.AgentJobScheduleInfo): Thenable<sqlops.CreateAgentJobScheduleResult> => {
+		let createJobSchedule = (ownerUri: string, scheduleInfo: azdata.AgentJobScheduleInfo): Thenable<azdata.CreateAgentJobScheduleResult> => {
 			let params: contracts.CreateAgentJobScheduleParams = {
 				ownerUri: ownerUri,
 				schedule: scheduleInfo
@@ -603,7 +604,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let updateJobSchedule = (ownerUri: string, originalScheduleName: string, scheduleInfo: sqlops.AgentJobScheduleInfo): Thenable<sqlops.UpdateAgentJobScheduleResult> => {
+		let updateJobSchedule = (ownerUri: string, originalScheduleName: string, scheduleInfo: azdata.AgentJobScheduleInfo): Thenable<azdata.UpdateAgentJobScheduleResult> => {
 			let params: contracts.UpdateAgentJobScheduleParams = {
 				ownerUri: ownerUri,
 				originalScheduleName: originalScheduleName,
@@ -622,7 +623,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let deleteJobSchedule = (ownerUri: string, scheduleInfo: sqlops.AgentJobScheduleInfo): Thenable<sqlops.ResultStatus> => {
+		let deleteJobSchedule = (ownerUri: string, scheduleInfo: azdata.AgentJobScheduleInfo): Thenable<azdata.ResultStatus> => {
 			let params: contracts.DeleteAgentJobScheduleParams = {
 				ownerUri: ownerUri,
 				schedule: scheduleInfo
@@ -640,7 +641,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		return sqlops.dataprotocol.registerAgentServicesProvider({
+		return azdata.dataprotocol.registerAgentServicesProvider({
 			providerId: client.providerId,
 			getJobs,
 			getJobHistory,

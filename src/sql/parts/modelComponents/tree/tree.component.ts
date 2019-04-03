@@ -10,7 +10,7 @@ import {
 	ViewChild, ElementRef, OnDestroy, AfterViewInit
 } from '@angular/core';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
@@ -155,10 +155,10 @@ export default class TreeComponent extends ComponentBase implements IComponent, 
 	}
 
 	public get withCheckbox(): boolean {
-		return this.getPropertyOrDefault<sqlops.TreeProperties, boolean>((props) => props.withCheckbox, false);
+		return this.getPropertyOrDefault<azdata.TreeProperties, boolean>((props) => props.withCheckbox, false);
 	}
 
 	public set withCheckbox(newValue: boolean) {
-		this.setPropertyFromUI<sqlops.TreeProperties, boolean>((properties, value) => { properties.withCheckbox = value; }, newValue);
+		this.setPropertyFromUI<azdata.TreeProperties, boolean>((properties, value) => { properties.withCheckbox = value; }, newValue);
 	}
 }

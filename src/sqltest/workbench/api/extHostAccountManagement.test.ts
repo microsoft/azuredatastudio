@@ -6,13 +6,13 @@
 'use strict';
 
 import * as assert from 'assert';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as TypeMoq from 'typemoq';
 import { AccountProviderStub, AccountManagementTestService } from 'sqltest/stubs/accountManagementStubs';
 import { ExtHostAccountManagement } from 'sql/workbench/api/node/extHostAccountManagement';
 import { TestRPCProtocol } from 'vs/workbench/test/electron-browser/api/testRPCProtocol';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
-import { IRPCProtocol } from 'vs/workbench/services/extensions/node/proxyIdentifier';
+import { IRPCProtocol } from 'vs/workbench/services/extensions/common/proxyIdentifier';
 import { SqlMainContext } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { MainThreadAccountManagement } from 'sql/workbench/api/node/mainThreadAccountManagement';
 import { IAccountManagementService, AzureResource } from 'sql/platform/accountManagement/common/interfaces';
@@ -22,8 +22,8 @@ const IRPCProtocol = createDecorator<IRPCProtocol>('rpcProtocol');
 
 // SUITE STATE /////////////////////////////////////////////////////////////
 let instantiationService: TestInstantiationService;
-let mockAccountMetadata: sqlops.AccountProviderMetadata;
-let mockAccount: sqlops.Account;
+let mockAccountMetadata: azdata.AccountProviderMetadata;
+let mockAccount: azdata.Account;
 let threadService: TestRPCProtocol;
 
 // TESTS ///////////////////////////////////////////////////////////////////
@@ -428,8 +428,8 @@ suite('ExtHostAccountManagement', () => {
 	});
 });
 
-function getMockAccountProvider(): TypeMoq.Mock<sqlops.AccountProvider> {
-	let mock = TypeMoq.Mock.ofType<sqlops.AccountProvider>(AccountProviderStub);
+function getMockAccountProvider(): TypeMoq.Mock<azdata.AccountProvider> {
+	let mock = TypeMoq.Mock.ofType<azdata.AccountProvider>(AccountProviderStub);
 	mock.setup((obj) => obj.clear(TypeMoq.It.isValue(mockAccount.key)))
 		.returns(() => Promise.resolve(undefined));
 	mock.setup((obj) => obj.refresh(TypeMoq.It.isValue(mockAccount)))
@@ -442,7 +442,7 @@ function getMockAccountProvider(): TypeMoq.Mock<sqlops.AccountProvider> {
 	return mock;
 }
 
-function getMockAccountManagementService(accounts: sqlops.Account[]): TypeMoq.Mock<AccountManagementTestService> {
+function getMockAccountManagementService(accounts: azdata.Account[]): TypeMoq.Mock<AccountManagementTestService> {
 	let mockAccountManagementService = TypeMoq.Mock.ofType(AccountManagementTestService);
 
 	mockAccountManagementService.setup(x => x.getAccountsForProvider(TypeMoq.It.isAny()))

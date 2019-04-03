@@ -31,7 +31,7 @@ export function generateDashboardWidgetSchema(type?: 'database' | 'server', exte
 				type: 'string'
 			},
 			when: {
-				description: localize('sqlops.extension.contributes.widget.when', 'Condition which must be true to show this item'),
+				description: localize('azdata.extension.contributes.widget.when', 'Condition which must be true to show this item'),
 				type: 'string'
 			},
 			gridItemConfig: {
@@ -117,7 +117,7 @@ export function generateDashboardGridLayoutSchema(type?: 'database' | 'server', 
 				]
 			},
 			when: {
-				description: localize('sqlops.extension.contributes.widget.when', 'Condition which must be true to show this item'),
+				description: localize('azdata.extension.contributes.widget.when', 'Condition which must be true to show this item'),
 				type: 'string'
 			}
 		}
@@ -130,7 +130,7 @@ export function generateDashboardTabSchema(type?: 'database' | 'server'): IJSONS
 		properties: {
 			tabId: {
 				type: 'string',
-				description: localize('sqlops.extension.contributes.dashboardPage.tab.id', "Unique identifier for this tab. Will be passed to the extension for any requests."),
+				description: localize('azdata.extension.contributes.dashboardPage.tab.id', "Unique identifier for this tab. Will be passed to the extension for any requests."),
 				enum: [],
 				enumDescriptions: [],
 				errorMessage: localize('dashboardTabError', "Extension tab is unknown or not installed.")

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { Event, Emitter } from 'vs/base/common/event';
 
 import { IAccountManagementService } from 'sql/platform/accountManagement/common/interfaces';
@@ -18,7 +18,7 @@ export class AccountPickerViewModel {
 	private _updateAccountListEmitter: Emitter<UpdateAccountListEventParams>;
 	public get updateAccountListEvent(): Event<UpdateAccountListEventParams> { return this._updateAccountListEmitter.event; }
 
-	public selectedAccount: sqlops.Account;
+	public selectedAccount: azdata.Account;
 
 	constructor(
 		private _providerId: string,
@@ -38,7 +38,7 @@ export class AccountPickerViewModel {
 	 * Loads an initial list of accounts from the account management service
 	 * @return {Thenable<Account[]>} Promise to return the list of accounts
 	 */
-	public initialize(): Thenable<sqlops.Account[]> {
+	public initialize(): Thenable<azdata.Account[]> {
 		// Load a baseline of the accounts for the provider
 		return this._accountManagementService.getAccountsForProvider(this._providerId)
 			.then(null, () => {

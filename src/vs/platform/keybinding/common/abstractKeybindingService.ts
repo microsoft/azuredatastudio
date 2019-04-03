@@ -17,6 +17,7 @@ import { ResolvedKeybindingItem } from 'vs/platform/keybinding/common/resolvedKe
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IStatusbarService } from 'vs/platform/statusbar/common/statusbar';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
+import { withNullAsUndefined } from 'vs/base/common/types';
 
 interface CurrentChord {
 	keypress: string;
@@ -70,6 +71,7 @@ export abstract class AbstractKeybindingService extends Disposable implements IK
 	public abstract resolveKeybinding(keybinding: Keybinding): ResolvedKeybinding[];
 	public abstract resolveKeyboardEvent(keyboardEvent: IKeyboardEvent): ResolvedKeybinding;
 	public abstract resolveUserBinding(userBinding: string): ResolvedKeybinding[];
+	public abstract _dumpDebugInfo(): string;
 
 	public getDefaultKeybindingsContent(): string {
 		return '';
@@ -93,12 +95,16 @@ export abstract class AbstractKeybindingService extends Disposable implements IK
 		);
 	}
 
-	public lookupKeybinding(commandId: string): ResolvedKeybinding | null {
+	public lookupKeybinding(commandId: string): ResolvedKeybinding | undefined {
 		let result = this._getResolver().lookupPrimaryKeybinding(commandId);
 		if (!result) {
-			return null;
+			return undefined;
 		}
-		return result.resolvedKeybinding;
+		return withNullAsUndefined(result.resolvedKeybinding);
+	}
+
+	public dispatchEvent(e: IKeyboardEvent, target: IContextKeyServiceTarget): boolean {
+		return this._dispatch(e, target);
 	}
 
 	public softDispatch(e: IKeyboardEvent, target: IContextKeyServiceTarget): IResolveResult | null {
@@ -152,10 +158,20 @@ export abstract class AbstractKeybindingService extends Disposable implements IK
 		this._currentChord = null;
 	}
 
+	public dispatchByUserSettingsLabel(userSettingsLabel: string, target: IContextKeyServiceTarget): void {
+		const keybindings = this.resolveUserBinding(userSettingsLabel);
+		if (keybindings.length >= 1) {
+			this._doDispatch(keybindings[0], target);
+		}
+	}
+
 	protected _dispatch(e: IKeyboardEvent, target: IContextKeyServiceTarget): boolean {
+		return this._doDispatch(this.resolveKeyboardEvent(e), target);
+	}
+
+	private _doDispatch(keybinding: ResolvedKeybinding, target: IContextKeyServiceTarget): boolean {
 		let shouldPreventDefault = false;
 
-		const keybinding = this.resolveKeyboardEvent(e);
 		if (keybinding.isChord()) {
 			console.warn('Unexpected keyboard event mapped to a chord');
 			return false;

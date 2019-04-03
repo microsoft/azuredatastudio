@@ -64,8 +64,13 @@ const resultsGridConfiguration: IConfigurationNode = {
 		},
 		'resultsGrid.autoSizeColumns': {
 			type: 'boolean',
-			default: false,
+			default: true,
 			description: nls.localize('autoSizeColumns', "Auto size the columns width on inital results. Could have performance problems with large number of columns or large cells")
+		},
+		'resultsGrid.maxColumnWidth': {
+			type: 'number',
+			default: 212,
+			description: nls.localize('maxColumnWidth', "The maximum width in pixels for auto-sized columns")
 		}
 	}
 };

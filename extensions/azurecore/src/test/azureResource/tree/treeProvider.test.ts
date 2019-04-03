@@ -8,7 +8,7 @@
 import * as vscode from 'vscode';
 import * as should from 'should';
 import * as TypeMoq from 'typemoq';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import 'mocha';
 import { AppContext } from '../../../appContext';
 import { ApiWrapper } from '../../../apiWrapper';
@@ -30,7 +30,7 @@ let mockCacheService: TypeMoq.IMock<IAzureResourceCacheService>;
 let mockAccountService: TypeMoq.IMock<IAzureResourceAccountService>;
 
 // Mock test data
-const mockAccount1: sqlops.Account = {
+const mockAccount1: azdata.Account = {
 	key: {
 		accountId: 'mock_account_1',
 		providerId: 'mock_provider'
@@ -43,7 +43,7 @@ const mockAccount1: sqlops.Account = {
 	properties: undefined,
 	isStale: false
 };
-const mockAccount2: sqlops.Account = {
+const mockAccount2: azdata.Account = {
 	key: {
 		accountId: 'mock_account_2',
 		providerId: 'mock_provider'

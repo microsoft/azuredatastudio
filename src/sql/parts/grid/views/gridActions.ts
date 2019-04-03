@@ -9,7 +9,6 @@ import { IGridInfo, SaveFormat } from 'sql/parts/grid/common/interfaces';
 import { DataService } from 'sql/parts/grid/services/dataService';
 
 import { localize } from 'vs/nls';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { IAction, Action } from 'vs/base/common/actions';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -88,14 +87,14 @@ export class SaveResultAction extends Action {
 		super(id, label);
 	}
 
-	public run(gridInfo: IGridInfo): TPromise<boolean> {
+	public run(gridInfo: IGridInfo): Promise<boolean> {
 		this.dataService.sendSaveRequest({
 			batchIndex: gridInfo.batchIndex,
 			resultSetNumber: gridInfo.resultSetNumber,
 			selection: gridInfo.selection,
 			format: this.format
 		});
-		return TPromise.as(true);
+		return Promise.resolve(true);
 	}
 }
 
@@ -115,9 +114,9 @@ export class CopyResultAction extends Action {
 		super(id, label);
 	}
 
-	public run(gridInfo: IGridInfo): TPromise<boolean> {
+	public run(gridInfo: IGridInfo): Promise<boolean> {
 		this.dataService.copyResults(gridInfo.selection, gridInfo.batchIndex, gridInfo.resultSetNumber, this.copyHeader);
-		return TPromise.as(true);
+		return Promise.resolve(true);
 	}
 }
 
@@ -133,9 +132,9 @@ export class SelectAllGridAction extends Action {
 		super(id, label);
 	}
 
-	public run(gridInfo: IGridInfo): TPromise<boolean> {
+	public run(gridInfo: IGridInfo): Promise<boolean> {
 		this.selectAllCallback(gridInfo.gridIndex);
-		return TPromise.as(true);
+		return Promise.resolve(true);
 	}
 }
 
@@ -151,9 +150,9 @@ export class SelectAllMessagesAction extends Action {
 		super(id, label);
 	}
 
-	public run(): TPromise<boolean> {
+	public run(): Promise<boolean> {
 		this.selectAllCallback();
-		return TPromise.as(true);
+		return Promise.resolve(true);
 	}
 }
 
@@ -169,8 +168,8 @@ export class CopyMessagesAction extends Action {
 		super(id, label);
 	}
 
-	public run(selectedRange: Selection): TPromise<boolean> {
+	public run(selectedRange: Selection): Promise<boolean> {
 		this.clipboardService.writeText(selectedRange.toString());
-		return TPromise.as(true);
+		return Promise.resolve(true);
 	}
 }

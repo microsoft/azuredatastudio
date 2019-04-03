@@ -6,23 +6,22 @@
 'use strict';
 
 import * as DialogHelper from './dialogHelper';
-import { Builder } from 'sql/base/browser/builder';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import * as types from 'vs/base/common/types';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { localize } from 'vs/nls';
 import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export interface IOptionElement {
 	optionWidget: any;
-	option: sqlops.ServiceOption;
+	option: azdata.ServiceOption;
 	optionValue: any;
 }
 
-export function createOptionElement(option: sqlops.ServiceOption, rowContainer: Builder, options: { [name: string]: any },
+export function createOptionElement(option: azdata.ServiceOption, rowContainer: HTMLElement, options: { [name: string]: any },
 	optionsMap: { [optionName: string]: IOptionElement }, contextViewService: IContextViewService, onFocus: (name) => void): void {
 	let possibleInputs: string[] = [];
 	let optionValue = getOptionValueAndCategoryValues(option, options, possibleInputs);
@@ -32,7 +31,7 @@ export function createOptionElement(option: sqlops.ServiceOption, rowContainer: 
 	let invalidInputMessage = localize('optionsDialog.invalidInput', 'Invalid input.  Numeric value expected.');
 
 	if (option.valueType === ServiceOptionType.number) {
-		optionWidget = new InputBox(rowContainer.getHTMLElement(), contextViewService, {
+		optionWidget = new InputBox(rowContainer, contextViewService, {
 			validationOptions: {
 				validation: (value: string) => {
 					if (!value && option.isRequired) {
@@ -53,7 +52,7 @@ export function createOptionElement(option: sqlops.ServiceOption, rowContainer: 
 		DialogHelper.appendInputSelectBox(rowContainer, optionWidget);
 		inputElement = findElement(rowContainer, 'monaco-select-box');
 	} else if (option.valueType === ServiceOptionType.string || option.valueType === ServiceOptionType.password) {
-		optionWidget = new InputBox(rowContainer.getHTMLElement(), contextViewService, {
+		optionWidget = new InputBox(rowContainer, contextViewService, {
 			validationOptions: {
 				validation: (value: string) => (!value && option.isRequired) ? ({ type: MessageType.ERROR, content: option.displayName + missingErrorMessage }) : null
 			},
@@ -69,7 +68,7 @@ export function createOptionElement(option: sqlops.ServiceOption, rowContainer: 
 	inputElement.onfocus = () => onFocus(option.name);
 }
 
-export function getOptionValueAndCategoryValues(option: sqlops.ServiceOption, options: { [optionName: string]: any }, possibleInputs: string[]): any {
+export function getOptionValueAndCategoryValues(option: azdata.ServiceOption, options: { [optionName: string]: any }, possibleInputs: string[]): any {
 	var optionValue = option.defaultValue;
 	if (options[option.name]) {
 		// if the value type is boolean, the option value can be either boolean or string
@@ -149,20 +148,20 @@ export function updateOptions(options: { [optionName: string]: any }, optionsMap
 export let trueInputValue: string = 'True';
 export let falseInputValue: string = 'False';
 
-export function findElement(container: Builder, className: string): HTMLElement {
-	var elementBuilder: Builder = container;
-	while (elementBuilder.getHTMLElement()) {
-		var htmlElement = elementBuilder.getHTMLElement();
+export function findElement(container: HTMLElement, className: string): HTMLElement {
+	var elementBuilder = container;
+	while (elementBuilder) {
+		var htmlElement = elementBuilder;
 		if (htmlElement.className.startsWith(className)) {
 			break;
 		}
-		elementBuilder = elementBuilder.child(0);
+		elementBuilder = elementBuilder.firstChild as HTMLElement;
 	}
-	return elementBuilder.getHTMLElement();
+	return elementBuilder;
 }
 
-export function groupOptionsByCategory(options: sqlops.ServiceOption[]): { [category: string]: sqlops.ServiceOption[] } {
-	var connectionOptionsMap: { [category: string]: sqlops.ServiceOption[] } = {};
+export function groupOptionsByCategory(options: azdata.ServiceOption[]): { [category: string]: azdata.ServiceOption[] } {
+	var connectionOptionsMap: { [category: string]: azdata.ServiceOption[] } = {};
 	options.forEach(option => {
 		var groupName = option.groupName;
 		if (groupName === null || groupName === undefined) {

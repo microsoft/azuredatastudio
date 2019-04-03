@@ -11,7 +11,7 @@ import { AdvancedPropertiesController } from 'sql/parts/connection/connectionDia
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import * as Constants from 'sql/platform/connection/common/constants';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as Utils from 'sql/platform/connection/common/utils';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
@@ -25,7 +25,7 @@ export class ConnectionController implements IConnectionComponentController {
 	private _connectionWidget: ConnectionWidget;
 	private _advancedController: AdvancedPropertiesController;
 	private _model: IConnectionProfile;
-	private _providerOptions: sqlops.ConnectionOption[];
+	private _providerOptions: azdata.ConnectionOption[];
 	private _providerName: string;
 	/* key: uri, value : list of databases */
 	private _databaseCache = new Map<string, string[]>();

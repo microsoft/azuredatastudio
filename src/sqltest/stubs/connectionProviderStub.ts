@@ -3,12 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
-export class ConnectionProviderStub implements sqlops.ConnectionProvider {
+export class ConnectionProviderStub implements azdata.ConnectionProvider {
 	public readonly providerId = 'MSSQL';
 
-	connect(connectionUri: string, connectionInfo: sqlops.ConnectionInfo): Thenable<boolean> {
+	connect(connectionUri: string, connectionInfo: azdata.ConnectionInfo): Thenable<boolean> {
 		return undefined;
 	}
 
@@ -20,7 +20,7 @@ export class ConnectionProviderStub implements sqlops.ConnectionProvider {
 		return undefined;
 	}
 
-	listDatabases(connectionUri: string): Thenable<sqlops.ListDatabasesResult> {
+	listDatabases(connectionUri: string): Thenable<azdata.ListDatabasesResult> {
 		return undefined;
 	}
 
@@ -36,7 +36,7 @@ export class ConnectionProviderStub implements sqlops.ConnectionProvider {
 		return undefined;
 	}
 
-	registerOnConnectionComplete(handler: (connSummary: sqlops.ConnectionInfoSummary) => any) {
+	registerOnConnectionComplete(handler: (connSummary: azdata.ConnectionInfoSummary) => any) {
 		return undefined;
 	}
 
@@ -44,7 +44,7 @@ export class ConnectionProviderStub implements sqlops.ConnectionProvider {
 		return undefined;
 	}
 
-	registerOnConnectionChanged(handler: (changedConnInfo: sqlops.ChangedConnectionInfo) => any) {
+	registerOnConnectionChanged(handler: (changedConnInfo: azdata.ChangedConnectionInfo) => any) {
 		return undefined;
 	}
 }

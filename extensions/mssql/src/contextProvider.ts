@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 import * as vscode from 'vscode';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 import * as types from './types';
 import * as Constants from './constants';
@@ -33,11 +33,11 @@ export default class ContextProvider {
 	private _disposables = new Array<vscode.Disposable>();
 
 	constructor() {
-		this._disposables.push(sqlops.workspace.onDidOpenDashboard(this.onDashboardOpen, this));
-		this._disposables.push(sqlops.workspace.onDidChangeToDashboard(this.onDashboardOpen, this));
+		this._disposables.push(azdata.workspace.onDidOpenDashboard(this.onDashboardOpen, this));
+		this._disposables.push(azdata.workspace.onDidChangeToDashboard(this.onDashboardOpen, this));
 	}
 
-	public onDashboardOpen(e: sqlops.DashboardDocument): void {
+	public onDashboardOpen(e: azdata.DashboardDocument): void {
 		let iscloud: boolean;
 		let edition: number;
 		let isCluster: boolean = false;

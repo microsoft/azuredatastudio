@@ -7,17 +7,18 @@
 
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as fs from 'fs';
 import * as utils from '../common/utils';
 
-import { AppContext } from '../common/appContext';
 import JupyterServerInstallation from '../jupyter/jupyterServerInstallation';
+import { ApiWrapper } from '../common/apiWrapper';
+import { Deferred } from '../common/promise';
 
 const localize = nls.loadMessageBundle();
 
 export class ConfigurePythonDialog {
-	private dialog: sqlops.window.modelviewdialog.Dialog;
+	private dialog: azdata.window.Dialog;
 
 	private readonly DialogTitle = localize('configurePython.dialogName', 'Configure Python for Notebooks');
 	private readonly OkButtonText = localize('configurePython.okButtonText', 'Install');
@@ -28,35 +29,52 @@ export class ConfigurePythonDialog {
 	private readonly InstallationNote = localize('configurePython.installNote', 'This installation will take some time. It is recommended to not close the application until the installation is complete.');
 	private readonly InvalidLocationMsg = localize('configurePython.invalidLocationMsg', 'The specified install location is invalid.');
 
-	private pythonLocationTextBox: sqlops.InputBoxComponent;
-	private browseButton: sqlops.ButtonComponent;
+	private pythonLocationTextBox: azdata.InputBoxComponent;
+	private browseButton: azdata.ButtonComponent;
 
-	constructor(private appContext: AppContext, private outputChannel: vscode.OutputChannel, private jupyterInstallation: JupyterServerInstallation) {
+	private _setupComplete: Deferred<void>;
+
+	constructor(private apiWrapper: ApiWrapper, private outputChannel: vscode.OutputChannel, private jupyterInstallation: JupyterServerInstallation) {
+		this._setupComplete = new Deferred<void>();
 	}
 
-	public async showDialog() {
-		this.dialog = sqlops.window.modelviewdialog.createDialog(this.DialogTitle);
+	/**
+	 * Opens a dialog to configure python installation for notebooks.
+	 * @param rejectOnCancel Specifies whether an error should be thrown after clicking Cancel.
+	 * @returns A promise that is resolved when the python installation completes.
+	 */
+	public showDialog(rejectOnCancel: boolean = false): Promise<void> {
+		this.dialog = azdata.window.createModelViewDialog(this.DialogTitle);
 
 		this.initializeContent();
 
 		this.dialog.okButton.label = this.OkButtonText;
 		this.dialog.cancelButton.label = this.CancelButtonText;
+		this.dialog.cancelButton.onClick(() => {
+			if (rejectOnCancel) {
+				this._setupComplete.reject(localize('pythonInstallDeclined', 'Python installation was declined.'));
+			} else {
+				this._setupComplete.resolve();
+			}
+		});
 
 		this.dialog.registerCloseValidator(() => this.handleInstall());
 
-		sqlops.window.modelviewdialog.openDialog(this.dialog);
+		azdata.window.openDialog(this.dialog);
+
+		return this._setupComplete.promise;
 	}
 
-	private initializeContent() {
+	private initializeContent(): void {
 		this.dialog.registerContent(async view => {
 			this.pythonLocationTextBox = view.modelBuilder.inputBox()
-				.withProperties<sqlops.InputBoxProperties>({
-					value: JupyterServerInstallation.getPythonInstallPath(this.appContext.apiWrapper),
+				.withProperties<azdata.InputBoxProperties>({
+					value: JupyterServerInstallation.getPythonInstallPath(this.apiWrapper),
 					width: '100%'
 				}).component();
 
 			this.browseButton = view.modelBuilder.button()
-				.withProperties<sqlops.ButtonProperties>({
+				.withProperties<azdata.ButtonProperties>({
 					label: this.BrowseButtonText,
 					width: '100px'
 				}).component();
@@ -106,14 +124,18 @@ export class ConfigurePythonDialog {
 				return false;
 			}
 		} catch (err) {
-			this.appContext.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
+			this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
 			return false;
 		}
 
 		// Don't wait on installation, since there's currently no Cancel functionality
-		this.jupyterInstallation.startInstallProcess(pythonLocation).catch(err => {
-			this.appContext.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
-		});
+		this.jupyterInstallation.startInstallProcess(pythonLocation)
+			.then(() => {
+				this._setupComplete.resolve();
+			})
+			.catch(err => {
+				this._setupComplete.reject(utils.getErrorMessage(err));
+			});
 		return true;
 	}
 
@@ -149,23 +171,16 @@ export class ConfigurePythonDialog {
 			openLabel: this.SelectFileLabel
 		};
 
-		let fileUris: vscode.Uri[] = await this.appContext.apiWrapper.showOpenDialog(options);
+		let fileUris: vscode.Uri[] = await this.apiWrapper.showOpenDialog(options);
 		if (fileUris && fileUris[0]) {
 			this.pythonLocationTextBox.value = fileUris[0].fsPath;
 		}
 	}
 
-	private showInfoMessage(message: string) {
+	private showErrorMessage(message: string): void {
 		this.dialog.message = {
 			text: message,
-			level: sqlops.window.modelviewdialog.MessageLevel.Information
-		};
-	}
-
-	private showErrorMessage(message: string) {
-		this.dialog.message = {
-			text: message,
-			level: sqlops.window.modelviewdialog.MessageLevel.Error
+			level: azdata.window.MessageLevel.Error
 		};
 	}
 }

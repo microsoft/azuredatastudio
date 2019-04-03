@@ -4,11 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
-export interface IConnectionProfile extends sqlops.IConnectionProfile {
+export interface IConnectionProfile extends azdata.IConnectionProfile {
 	getOptionsKey(): string;
-	matches(profile: sqlops.IConnectionProfile): boolean;
+	matches(profile: azdata.IConnectionProfile): boolean;
 }
 
 export interface IConnectionProfileStore {

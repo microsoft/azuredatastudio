@@ -6,7 +6,7 @@
 'use strict';
 
 import { ServiceClientCredentials } from 'ms-rest';
-import { Account, DidChangeAccountsParams } from 'sqlops';
+import { Account, DidChangeAccountsParams } from 'azdata';
 import { Event } from 'vscode';
 
 import { azureResource } from './azure-resource';

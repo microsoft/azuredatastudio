@@ -8,7 +8,7 @@ import {
 	ViewChild, ViewChildren, ElementRef, Injector, OnDestroy, QueryList
 } from '@angular/core';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as DOM from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITextModel } from 'vs/editor/common/model';
@@ -161,42 +161,42 @@ export default class EditorComponent extends ComponentBase implements IComponent
 
 	// CSS-bound properties
 	public get content(): string {
-		return this.getPropertyOrDefault<sqlops.EditorProperties, string>((props) => props.content, undefined);
+		return this.getPropertyOrDefault<azdata.EditorProperties, string>((props) => props.content, undefined);
 	}
 
 	public set content(newValue: string) {
-		this.setPropertyFromUI<sqlops.EditorProperties, string>((properties, content) => { properties.content = content; }, newValue);
+		this.setPropertyFromUI<azdata.EditorProperties, string>((properties, content) => { properties.content = content; }, newValue);
 	}
 
 	public get languageMode(): string {
-		return this.getPropertyOrDefault<sqlops.EditorProperties, string>((props) => props.languageMode, undefined);
+		return this.getPropertyOrDefault<azdata.EditorProperties, string>((props) => props.languageMode, undefined);
 	}
 
 	public set languageMode(newValue: string) {
-		this.setPropertyFromUI<sqlops.EditorProperties, string>((properties, languageMode) => { properties.languageMode = languageMode; }, newValue);
+		this.setPropertyFromUI<azdata.EditorProperties, string>((properties, languageMode) => { properties.languageMode = languageMode; }, newValue);
 	}
 
 	public get isAutoResizable(): boolean {
-		return this.getPropertyOrDefault<sqlops.EditorProperties, boolean>((props) => props.isAutoResizable, false);
+		return this.getPropertyOrDefault<azdata.EditorProperties, boolean>((props) => props.isAutoResizable, false);
 	}
 
 	public set isAutoResizable(newValue: boolean) {
-		this.setPropertyFromUI<sqlops.EditorProperties, boolean>((properties, isAutoResizable) => { properties.isAutoResizable = isAutoResizable; }, newValue);
+		this.setPropertyFromUI<azdata.EditorProperties, boolean>((properties, isAutoResizable) => { properties.isAutoResizable = isAutoResizable; }, newValue);
 	}
 
 	public get minimumHeight(): number {
-		return this.getPropertyOrDefault<sqlops.EditorProperties, number>((props) => props.minimumHeight, this._editor.minimumHeight);
+		return this.getPropertyOrDefault<azdata.EditorProperties, number>((props) => props.minimumHeight, this._editor.minimumHeight);
 	}
 
 	public set minimumHeight(newValue: number) {
-		this.setPropertyFromUI<sqlops.EditorProperties, number>((properties, minimumHeight) => { properties.minimumHeight = minimumHeight; }, newValue);
+		this.setPropertyFromUI<azdata.EditorProperties, number>((properties, minimumHeight) => { properties.minimumHeight = minimumHeight; }, newValue);
 	}
 
 	public get editorUri(): string {
-		return this.getPropertyOrDefault<sqlops.EditorProperties, string>((props) => props.editorUri, '');
+		return this.getPropertyOrDefault<azdata.EditorProperties, string>((props) => props.editorUri, '');
 	}
 
 	public set editorUri(newValue: string) {
-		this.setPropertyFromUI<sqlops.EditorProperties, string>((properties, editorUri) => { properties.editorUri = editorUri; }, newValue);
+		this.setPropertyFromUI<azdata.EditorProperties, string>((properties, editorUri) => { properties.editorUri = editorUri; }, newValue);
 	}
 }

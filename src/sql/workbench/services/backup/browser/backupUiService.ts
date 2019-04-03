@@ -7,9 +7,8 @@
 
 import { Event, Emitter } from 'vs/base/common/event';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { TPromise } from 'vs/base/common/winjs.base';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
@@ -52,7 +51,7 @@ export class BackupUiService implements IBackupUiService {
 		});
 	}
 
-	private getOptions(provider: string): sqlops.ServiceOption[] {
+	private getOptions(provider: string): azdata.ServiceOption[] {
 		let feature = this._capabilitiesService.getLegacyCapabilities(this._currentProvider).features.find(f => f.featureName === 'backup');
 		if (feature) {
 			return feature.optionsMetadata;
@@ -61,7 +60,7 @@ export class BackupUiService implements IBackupUiService {
 		}
 	}
 
-	public showBackupDialog(connection: IConnectionProfile): TPromise<void> {
+	public showBackupDialog(connection: IConnectionProfile): Promise<void> {
 		let self = this;
 		self._connectionUri = ConnectionUtils.generateUri(connection);
 		self._currentProvider = connection.providerName;
@@ -81,7 +80,7 @@ export class BackupUiService implements IBackupUiService {
 		}
 
 		let backupOptions = this.getOptions(this._currentProvider);
-		return new TPromise<void>((resolve) => {
+		return new Promise<void>((resolve) => {
 			let uri = this._connectionManagementService.getConnectionUri(connection)
 				+ ProviderConnectionInfo.idSeparator
 				+ ConnectionUtils.ConnectionUriBackupIdAttributeName

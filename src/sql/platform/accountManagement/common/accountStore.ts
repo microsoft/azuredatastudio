@@ -5,7 +5,7 @@
 
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { AccountAdditionResult } from 'sql/platform/accountManagement/common/eventTypes';
 import { IAccountStore } from 'sql/platform/accountManagement/common/interfaces';
 
@@ -19,7 +19,7 @@ export default class AccountStore implements IAccountStore {
 	constructor(private _memento: object) { }
 
 	// PUBLIC METHODS //////////////////////////////////////////////////////
-	public addOrUpdate(newAccount: sqlops.Account): Thenable<AccountAdditionResult> {
+	public addOrUpdate(newAccount: azdata.Account): Thenable<AccountAdditionResult> {
 		let self = this;
 
 		return this.doOperation(() => {
@@ -36,7 +36,7 @@ export default class AccountStore implements IAccountStore {
 		});
 	}
 
-	public getAccountsByProvider(providerId: string): Thenable<sqlops.Account[]> {
+	public getAccountsByProvider(providerId: string): Thenable<azdata.Account[]> {
 		let self = this;
 
 		return this.doOperation(() => {
@@ -45,7 +45,7 @@ export default class AccountStore implements IAccountStore {
 		});
 	}
 
-	public getAllAccounts(): Thenable<sqlops.Account[]> {
+	public getAllAccounts(): Thenable<azdata.Account[]> {
 		let self = this;
 
 		return this.doOperation(() => {
@@ -53,7 +53,7 @@ export default class AccountStore implements IAccountStore {
 		});
 	}
 
-	public remove(key: sqlops.AccountKey): Thenable<boolean> {
+	public remove(key: azdata.AccountKey): Thenable<boolean> {
 		let self = this;
 
 		return this.doOperation(() => {
@@ -64,7 +64,7 @@ export default class AccountStore implements IAccountStore {
 		});
 	}
 
-	public update(key: sqlops.AccountKey, updateOperation: (account: sqlops.Account) => void): Thenable<boolean> {
+	public update(key: azdata.AccountKey, updateOperation: (account: azdata.Account) => void): Thenable<boolean> {
 		let self = this;
 
 		return this.doOperation(() => {
@@ -76,12 +76,12 @@ export default class AccountStore implements IAccountStore {
 	}
 
 	// PRIVATE METHODS /////////////////////////////////////////////////////
-	private static findAccountByKey(key1: sqlops.AccountKey, key2: sqlops.AccountKey): boolean {
+	private static findAccountByKey(key1: azdata.AccountKey, key2: azdata.AccountKey): boolean {
 		// Provider ID and Account ID must match
 		return key1.providerId === key2.providerId && key1.accountId === key2.accountId;
 	}
 
-	private static mergeAccounts(source: sqlops.Account, target: sqlops.Account): void {
+	private static mergeAccounts(source: azdata.Account, target: azdata.Account): void {
 		// Take any display info changes
 		target.displayInfo = source.displayInfo;
 
@@ -109,7 +109,7 @@ export default class AccountStore implements IAccountStore {
 		return <Promise<T>>this._activeOperation;
 	}
 
-	private addToAccountList(accounts: sqlops.Account[], accountToAdd: sqlops.Account): AccountListOperationResult {
+	private addToAccountList(accounts: azdata.Account[], accountToAdd: azdata.Account): AccountListOperationResult {
 		// Check if the entry already exists
 		let match = accounts.findIndex(account => AccountStore.findAccountByKey(account.key, accountToAdd.key));
 		if (match >= 0) {
@@ -134,7 +134,7 @@ export default class AccountStore implements IAccountStore {
 		};
 	}
 
-	private removeFromAccountList(accounts: sqlops.Account[], accountToRemove: sqlops.AccountKey): AccountListOperationResult {
+	private removeFromAccountList(accounts: azdata.Account[], accountToRemove: azdata.AccountKey): AccountListOperationResult {
 		// Check if the entry exists
 		let match = accounts.findIndex(account => AccountStore.findAccountByKey(account.key, accountToRemove));
 		if (match >= 0) {
@@ -151,7 +151,7 @@ export default class AccountStore implements IAccountStore {
 		};
 	}
 
-	private updateAccountList(accounts: sqlops.Account[], accountToUpdate: sqlops.AccountKey, updateOperation: (account: sqlops.Account) => void): AccountListOperationResult {
+	private updateAccountList(accounts: azdata.Account[], accountToUpdate: azdata.AccountKey, updateOperation: (account: azdata.Account) => void): AccountListOperationResult {
 		// Check if the entry exists
 		let match = accounts.findIndex(account => AccountStore.findAccountByKey(account.key, accountToUpdate));
 		if (match < 0) {
@@ -178,7 +178,7 @@ export default class AccountStore implements IAccountStore {
 	}
 
 	// MEMENTO IO METHODS //////////////////////////////////////////////////
-	private readFromMemento(): Thenable<sqlops.Account[]> {
+	private readFromMemento(): Thenable<azdata.Account[]> {
 		// Initialize the account list if it isn't already
 		let accounts = this._memento[AccountStore.MEMENTO_KEY];
 		if (!accounts) {
@@ -191,7 +191,7 @@ export default class AccountStore implements IAccountStore {
 		return Promise.resolve(accounts);
 	}
 
-	private writeToMemento(accounts: sqlops.Account[]): Thenable<void> {
+	private writeToMemento(accounts: azdata.Account[]): Thenable<void> {
 		// Store a shallow copy of the account list to disconnect the memento list from the active list
 		this._memento[AccountStore.MEMENTO_KEY] = JSON.parse(JSON.stringify(accounts));
 		return Promise.resolve();
@@ -200,5 +200,5 @@ export default class AccountStore implements IAccountStore {
 
 interface AccountListOperationResult extends AccountAdditionResult {
 	accountRemoved: boolean;
-	updatedAccounts: sqlops.Account[];
+	updatedAccounts: azdata.Account[];
 }

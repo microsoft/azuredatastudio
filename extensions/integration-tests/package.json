@@ -6,7 +6,7 @@
   "private": true,
   "engines": {
     "vscode": "*",
-    "sqlops": "*"
+    "azdata": "*"
   },
   "activationEvents": [
     "*"

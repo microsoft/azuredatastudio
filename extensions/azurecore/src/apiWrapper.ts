@@ -6,7 +6,7 @@
 'use strict';
 
 import * as vscode from 'vscode';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 import * as constants from './constants';
 
@@ -19,64 +19,64 @@ import * as constants from './constants';
  */
 export class ApiWrapper {
 	// Data APIs
-	public registerConnectionProvider(provider: sqlops.ConnectionProvider): vscode.Disposable {
-		return sqlops.dataprotocol.registerConnectionProvider(provider);
+	public registerConnectionProvider(provider: azdata.ConnectionProvider): vscode.Disposable {
+		return azdata.dataprotocol.registerConnectionProvider(provider);
 	}
 
-	public registerObjectExplorerProvider(provider: sqlops.ObjectExplorerProvider): vscode.Disposable {
-		return sqlops.dataprotocol.registerObjectExplorerProvider(provider);
+	public registerObjectExplorerProvider(provider: azdata.ObjectExplorerProvider): vscode.Disposable {
+		return azdata.dataprotocol.registerObjectExplorerProvider(provider);
 	}
 
-	public registerTaskServicesProvider(provider: sqlops.TaskServicesProvider): vscode.Disposable {
-		return sqlops.dataprotocol.registerTaskServicesProvider(provider);
+	public registerTaskServicesProvider(provider: azdata.TaskServicesProvider): vscode.Disposable {
+		return azdata.dataprotocol.registerTaskServicesProvider(provider);
 	}
 
-	public registerFileBrowserProvider(provider: sqlops.FileBrowserProvider): vscode.Disposable {
-		return sqlops.dataprotocol.registerFileBrowserProvider(provider);
+	public registerFileBrowserProvider(provider: azdata.FileBrowserProvider): vscode.Disposable {
+		return azdata.dataprotocol.registerFileBrowserProvider(provider);
 	}
 
-	public registerCapabilitiesServiceProvider(provider: sqlops.CapabilitiesProvider): vscode.Disposable {
-		return sqlops.dataprotocol.registerCapabilitiesServiceProvider(provider);
+	public registerCapabilitiesServiceProvider(provider: azdata.CapabilitiesProvider): vscode.Disposable {
+		return azdata.dataprotocol.registerCapabilitiesServiceProvider(provider);
 	}
 
-	public registerModelViewProvider(widgetId: string, handler: (modelView: sqlops.ModelView) => void): void {
-		return sqlops.ui.registerModelViewProvider(widgetId, handler);
+	public registerModelViewProvider(widgetId: string, handler: (modelView: azdata.ModelView) => void): void {
+		return azdata.ui.registerModelViewProvider(widgetId, handler);
 	}
 
-	public registerWebviewProvider(widgetId: string, handler: (webview: sqlops.DashboardWebview) => void): void {
-		return sqlops.dashboard.registerWebviewProvider(widgetId, handler);
+	public registerWebviewProvider(widgetId: string, handler: (webview: azdata.DashboardWebview) => void): void {
+		return azdata.dashboard.registerWebviewProvider(widgetId, handler);
 	}
 
-	public createDialog(title: string): sqlops.window.Dialog {
-		return sqlops.window.createModelViewDialog(title);
+	public createDialog(title: string): azdata.window.Dialog {
+		return azdata.window.createModelViewDialog(title);
 	}
 
-	public openDialog(dialog: sqlops.window.Dialog): void {
-		return sqlops.window.openDialog(dialog);
+	public openDialog(dialog: azdata.window.Dialog): void {
+		return azdata.window.openDialog(dialog);
 	}
 
-	public closeDialog(dialog: sqlops.window.Dialog): void {
-		return sqlops.window.closeDialog(dialog);
+	public closeDialog(dialog: azdata.window.Dialog): void {
+		return azdata.window.closeDialog(dialog);
 	}
 
-	public registerTaskHandler(taskId: string, handler: (profile: sqlops.IConnectionProfile) => void): void {
-		sqlops.tasks.registerTask(taskId, handler);
+	public registerTaskHandler(taskId: string, handler: (profile: azdata.IConnectionProfile) => void): void {
+		azdata.tasks.registerTask(taskId, handler);
 	}
 
-	public startBackgroundOperation(operationInfo: sqlops.BackgroundOperationInfo): void {
-		sqlops.tasks.startBackgroundOperation(operationInfo);
+	public startBackgroundOperation(operationInfo: azdata.BackgroundOperationInfo): void {
+		azdata.tasks.startBackgroundOperation(operationInfo);
 	}
 
-	public getActiveConnections(): Thenable<sqlops.connection.Connection[]> {
-		return sqlops.connection.getActiveConnections();
+	public getActiveConnections(): Thenable<azdata.connection.Connection[]> {
+		return azdata.connection.getActiveConnections();
 	}
 
-	public getCurrentConnection(): Thenable<sqlops.connection.Connection> {
-		return sqlops.connection.getCurrentConnection();
+	public getCurrentConnection(): Thenable<azdata.connection.ConnectionProfile> {
+		return azdata.connection.getCurrentConnection();
 	}
 
-	public createModelViewEditor(title: string, options?: sqlops.ModelViewEditorOptions): sqlops.workspace.ModelViewEditor {
-		return sqlops.workspace.createModelViewEditor(title, options);
+	public createModelViewEditor(title: string, options?: azdata.ModelViewEditorOptions): azdata.workspace.ModelViewEditor {
+		return azdata.workspace.createModelViewEditor(title, options);
 	}
 
 	// VSCode APIs
@@ -195,31 +195,31 @@ export class ApiWrapper {
 		return vscode.window.createOutputChannel(name);
 	}
 
-	public createWizardPage(title: string): sqlops.window.WizardPage {
-		return sqlops.window.createWizardPage(title);
+	public createWizardPage(title: string): azdata.window.WizardPage {
+		return azdata.window.createWizardPage(title);
 	}
 
 	public registerCompletionItemProvider(selector: vscode.DocumentSelector, provider: vscode.CompletionItemProvider, ...triggerCharacters: string[]): vscode.Disposable {
 		return vscode.languages.registerCompletionItemProvider(selector, provider, ...triggerCharacters);
 	}
 
-	public createTab(title: string): sqlops.window.DialogTab {
-		return sqlops.window.createTab(title);
+	public createTab(title: string): azdata.window.DialogTab {
+		return azdata.window.createTab(title);
 	}
 
 	// Account APIs
-	public getAllAccounts(): Thenable<sqlops.Account[]> {
-		return sqlops.accounts.getAllAccounts();
+	public getAllAccounts(): Thenable<azdata.Account[]> {
+		return azdata.accounts.getAllAccounts();
 	}
 
-	public getSecurityToken(account: sqlops.Account, resource: sqlops.AzureResource): Thenable<{}> {
-		return sqlops.accounts.getSecurityToken(account, resource);
+	public getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Thenable<{}> {
+		return azdata.accounts.getSecurityToken(account, resource);
 	}
 
-	public readonly onDidChangeAccounts = sqlops.accounts.onDidChangeAccounts;
+	public readonly onDidChangeAccounts = azdata.accounts.onDidChangeAccounts;
 
 	// Connection APIs
-	public openConnectionDialog(providers: string[], initialConnectionProfile?: sqlops.IConnectionProfile, connectionCompletionOptions?: sqlops.IConnectionCompletionOptions): Thenable<sqlops.connection.Connection> {
-		return sqlops.connection.openConnectionDialog(providers, initialConnectionProfile, connectionCompletionOptions);
+	public openConnectionDialog(providers: string[], initialConnectionProfile?: azdata.IConnectionProfile, connectionCompletionOptions?: azdata.IConnectionCompletionOptions): Thenable<azdata.connection.Connection> {
+		return azdata.connection.openConnectionDialog(providers, initialConnectionProfile, connectionCompletionOptions);
 	}
 }

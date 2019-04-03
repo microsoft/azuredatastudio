@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
-import { GroupLayout, GroupItemLayout } from 'sqlops';
+import { GroupLayout, GroupItemLayout } from 'azdata';
 
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { ContainerBase } from 'sql/parts/modelComponents/componentBase';

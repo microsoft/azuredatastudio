@@ -9,7 +9,7 @@ import {
 	Component, Input, Inject, ChangeDetectorRef, forwardRef, ViewChild, ElementRef, OnDestroy, AfterViewInit
 } from '@angular/core';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
@@ -47,7 +47,7 @@ export default class TableComponent extends ComponentBase implements IComponent,
 
 	}
 
-	transformColumns(columns: string[] | sqlops.TableColumn[]): Slick.Column<any>[] {
+	transformColumns(columns: string[] | azdata.TableColumn[]): Slick.Column<any>[] {
 		let tableColumns: any[] = <any[]>columns;
 		if (tableColumns) {
 			return (<any[]>columns).map(col => {
@@ -172,30 +172,30 @@ export default class TableComponent extends ComponentBase implements IComponent,
 	// CSS-bound properties
 
 	public get data(): any[][] {
-		return this.getPropertyOrDefault<sqlops.TableComponentProperties, any[]>((props) => props.data, []);
+		return this.getPropertyOrDefault<azdata.TableComponentProperties, any[]>((props) => props.data, []);
 	}
 
 	public set data(newValue: any[][]) {
-		this.setPropertyFromUI<sqlops.TableComponentProperties, any[][]>((props, value) => props.data = value, newValue);
+		this.setPropertyFromUI<azdata.TableComponentProperties, any[][]>((props, value) => props.data = value, newValue);
 	}
 
 	public get columns(): string[] {
-		return this.getPropertyOrDefault<sqlops.TableComponentProperties, string[]>((props) => props.columns, []);
+		return this.getPropertyOrDefault<azdata.TableComponentProperties, string[]>((props) => props.columns, []);
 	}
 
 	public get fontSize(): number | string {
-		return this.getPropertyOrDefault<sqlops.TableComponentProperties, number | string>((props) => props.fontSize, '');
+		return this.getPropertyOrDefault<azdata.TableComponentProperties, number | string>((props) => props.fontSize, '');
 	}
 
 	public set columns(newValue: string[]) {
-		this.setPropertyFromUI<sqlops.TableComponentProperties, string[]>((props, value) => props.columns = value, newValue);
+		this.setPropertyFromUI<azdata.TableComponentProperties, string[]>((props, value) => props.columns = value, newValue);
 	}
 
 	public get selectedRows(): number[] {
-		return this.getPropertyOrDefault<sqlops.TableComponentProperties, number[]>((props) => props.selectedRows, []);
+		return this.getPropertyOrDefault<azdata.TableComponentProperties, number[]>((props) => props.selectedRows, []);
 	}
 
 	public set selectedRows(newValue: number[]) {
-		this.setPropertyFromUI<sqlops.TableComponentProperties, number[]>((props, value) => props.selectedRows = value, newValue);
+		this.setPropertyFromUI<azdata.TableComponentProperties, number[]>((props, value) => props.selectedRows = value, newValue);
 	}
 }

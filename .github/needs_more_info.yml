@@ -1,0 +1,6 @@
+{
+  daysUntilClose: 7,
+  needsMoreInfoLabel: 'needs more info',
+  perform: true,
+  closeComment: "This issue has been closed automatically because it needs more information and has not had recent activity in the last 7 days. If you have more info to help resolve the issue, leave a comment"
+}

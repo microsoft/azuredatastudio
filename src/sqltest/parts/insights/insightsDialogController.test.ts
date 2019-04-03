@@ -12,10 +12,11 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 
-import { IDbColumn, BatchSummary, QueryExecuteSubsetResult, ResultSetSubset } from 'sqlops';
+import { IDbColumn, BatchSummary, QueryExecuteSubsetResult, ResultSetSubset } from 'azdata';
 import { EventEmitter } from 'sql/base/common/eventEmitter';
 import { equal } from 'assert';
 import { Mock, MockBehavior, It } from 'typemoq';
+import { TestStorageService } from 'vs/workbench/test/workbenchTestServices';
 
 const testData: string[][] = [
 	['1', '2', '3', '4'],
@@ -38,7 +39,7 @@ suite('Insights Dialog Controller Tests', () => {
 		instMoq.setup(x => x.createInstance(It.isValue(QueryRunner), It.isAny()))
 			.returns(() => runner);
 
-		let connMoq = Mock.ofType(ConnectionManagementService, MockBehavior.Strict, {}, {});
+		let connMoq = Mock.ofType(ConnectionManagementService, MockBehavior.Strict, {}, {}, new TestStorageService());
 		connMoq.setup(x => x.connect(It.isAny(), It.isAny()))
 			.returns(() => Promise.resolve(undefined));
 
@@ -48,6 +49,7 @@ suite('Insights Dialog Controller Tests', () => {
 			undefined,
 			instMoq.object,
 			connMoq.object,
+			undefined,
 			undefined
 		);
 

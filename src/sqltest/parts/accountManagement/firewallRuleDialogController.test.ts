@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as TypeMoq from 'typemoq';
 import { Emitter } from 'vs/base/common/event';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
@@ -21,7 +21,7 @@ import { Deferred } from 'sql/base/common/promise';
 // TESTS ///////////////////////////////////////////////////////////////////
 suite('Firewall rule dialog controller tests', () => {
 	let connectionProfile: IConnectionProfile;
-	let account: sqlops.Account;
+	let account: azdata.Account;
 	let IPAddress = '250.222.155.198';
 	let mockOnAddAccountErrorEvent: Emitter<string>;
 	let mockOnCreateFirewallRule: Emitter<void>;
@@ -237,7 +237,7 @@ function getMockAccountManagementService(resolveSecurityToken: boolean): TypeMoq
 	return mockAccountManagementService;
 }
 
-function getMockResourceProvider(resolveCreateFirewallRule: boolean, response?: sqlops.CreateFirewallRuleResponse): TypeMoq.Mock<ResourceProviderStub> {
+function getMockResourceProvider(resolveCreateFirewallRule: boolean, response?: azdata.CreateFirewallRuleResponse): TypeMoq.Mock<ResourceProviderStub> {
 	let resourceProviderStub = new ResourceProviderStub();
 	let mockResourceProvider = TypeMoq.Mock.ofInstance(resourceProviderStub);
 	mockResourceProvider.setup(x => x.createFirewallRule(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()))

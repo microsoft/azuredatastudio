@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
+import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
 import { ExtHostExtensionManagementShape, MainThreadExtensionManagementShape, SqlMainContext } from 'sql/workbench/api/node/sqlExtHost.protocol';
 

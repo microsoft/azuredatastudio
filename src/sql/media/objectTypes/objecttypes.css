@@ -195,6 +195,11 @@
 	    background: url("FullTextStopList.svg") center center no-repeat;
 }
 
+.vs .icon.hdfsfolder,
+.vs-dark .icon.hdfsfolder,
+.hc-black .icon.hdfsfolder {
+	    background: url("HDFSFolder.svg") center center no-repeat;
+}
 .vs .icon.index,
 .vs-dark .icon.index,
 .hc-black .icon.index {

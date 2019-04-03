@@ -6,7 +6,7 @@
 'use strict';
 
 import { Event } from 'vscode';
-import { Account, DidChangeAccountsParams } from 'sqlops';
+import { Account, DidChangeAccountsParams } from 'azdata';
 import { ApiWrapper } from '../../apiWrapper';
 
 import { IAzureResourceAccountService } from '../interfaces';

@@ -8,7 +8,7 @@
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { Event } from 'vs/base/common/event';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 export const IAccountPickerService = createDecorator<IAccountPickerService>('AccountPickerService');
 export interface IAccountPickerService {
@@ -17,6 +17,6 @@ export interface IAccountPickerService {
 	addAccountCompleteEvent: Event<void>;
 	addAccountErrorEvent: Event<string>;
 	addAccountStartEvent: Event<void>;
-	onAccountSelectionChangeEvent: Event<sqlops.Account>;
-	selectedAccount: sqlops.Account;
+	onAccountSelectionChangeEvent: Event<azdata.Account>;
+	selectedAccount: azdata.Account;
 }

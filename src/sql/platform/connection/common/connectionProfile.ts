@@ -5,8 +5,8 @@
 
 'use strict';
 
-import { ConnectionProfileGroup } from './connectionProfileGroup';
-import * as sqlops from 'sqlops';
+import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
+import * as azdata from 'azdata';
 import { ProviderConnectionInfo } from 'sql/platform/connection/common/providerConnectionInfo';
 import * as interfaces from 'sql/platform/connection/common/interfaces';
 import { equalsIgnoreCase } from 'vs/base/common/strings';
@@ -33,7 +33,7 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 
 	public constructor(
 		capabilitiesService: ICapabilitiesService,
-		model: string | sqlops.IConnectionProfile
+		model: string | azdata.IConnectionProfile
 	) {
 		super(capabilitiesService, model);
 		if (model && !isString(model)) {
@@ -175,13 +175,20 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 		return result;
 	}
 
-	public toConnectionInfo(): sqlops.ConnectionInfo {
+	public toConnectionInfo(): azdata.ConnectionInfo {
 		return {
 			options: this.options
 		};
 	}
 
-	public static fromIConnectionProfile(capabilitiesService: ICapabilitiesService, profile: sqlops.IConnectionProfile) {
+	/**
+	 * Returns whether this profile is connected to the default database (it doesn't specify a database to connect to)
+	 */
+	public static isConnectionToDefaultDb(profile: azdata.IConnectionProfile): boolean {
+		return !profile.databaseName || profile.databaseName.trim() === '';
+	}
+
+	public static fromIConnectionProfile(capabilitiesService: ICapabilitiesService, profile: azdata.IConnectionProfile) {
 		if (profile) {
 			if (profile instanceof ConnectionProfile) {
 				return profile;

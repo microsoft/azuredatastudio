@@ -6,7 +6,7 @@
 'use strict';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Event, Emitter } from 'vs/base/common/event';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 import { IAccountPickerService } from 'sql/platform/accountManagement/common/accountPicker';
 import { AccountPicker } from 'sql/platform/accountManagement/browser/accountPicker';
@@ -26,8 +26,8 @@ export class AccountPickerService implements IAccountPickerService {
 	private _addAccountStartEmitter: Emitter<void>;
 	public get addAccountStartEvent(): Event<void> { return this._addAccountStartEmitter.event; }
 
-	private _onAccountSelectionChangeEvent: Emitter<sqlops.Account>;
-	public get onAccountSelectionChangeEvent(): Event<sqlops.Account> { return this._onAccountSelectionChangeEvent.event; }
+	private _onAccountSelectionChangeEvent: Emitter<azdata.Account>;
+	public get onAccountSelectionChangeEvent(): Event<azdata.Account> { return this._onAccountSelectionChangeEvent.event; }
 
 	constructor(
 		@IInstantiationService private _instantiationService: IInstantiationService
@@ -36,13 +36,13 @@ export class AccountPickerService implements IAccountPickerService {
 		this._addAccountCompleteEmitter = new Emitter<void>();
 		this._addAccountErrorEmitter = new Emitter<string>();
 		this._addAccountStartEmitter = new Emitter<void>();
-		this._onAccountSelectionChangeEvent = new Emitter<sqlops.Account>();
+		this._onAccountSelectionChangeEvent = new Emitter<azdata.Account>();
 	}
 
 	/**
 	 * Get selected account
 	 */
-	public get selectedAccount(): sqlops.Account {
+	public get selectedAccount(): azdata.Account {
 		return this._accountPicker.viewModel.selectedAccount;
 	}
 

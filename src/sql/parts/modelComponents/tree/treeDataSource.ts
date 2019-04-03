@@ -6,7 +6,6 @@
 'use strict';
 
 import { ITree, IDataSource } from 'vs/base/parts/tree/browser/tree';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { IModelViewTreeViewDataProvider, ITreeComponentItem } from 'sql/workbench/common/views';
 import { TreeItemCollapsibleState } from 'vs/workbench/common/views';
 
@@ -41,7 +40,7 @@ export class TreeComponentDataSource implements IDataSource {
 	/**
 	 * Returns the element's children as an array in a promise.
 	 */
-	public getChildren(tree: ITree, node: ITreeComponentItem): TPromise<any> {
+	public getChildren(tree: ITree, node: ITreeComponentItem): Promise<any> {
 		if (this._dataProvider) {
 			if (node && node.handle === '0') {
 				return this._dataProvider.getChildren(undefined);
@@ -49,11 +48,11 @@ export class TreeComponentDataSource implements IDataSource {
 				return this._dataProvider.getChildren(node);
 			}
 		}
-		return TPromise.as([]);
+		return Promise.resolve([]);
 	}
 
-	public getParent(tree: ITree, node: any): TPromise<any> {
-		return TPromise.as(null);
+	public getParent(tree: ITree, node: any): Promise<any> {
+		return Promise.resolve(null);
 	}
 
 	public shouldAutoexpand(tree: ITree, node: ITreeComponentItem): boolean {

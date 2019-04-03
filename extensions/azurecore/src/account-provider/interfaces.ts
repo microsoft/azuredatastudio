@@ -1,6 +1,6 @@
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 /**
  * Represents a tenant (an Azure Active Directory instance) to which a user has access
@@ -123,7 +123,7 @@ export interface ProviderSettings {
 /**
  * Extension of account provider metadata to override settings type for Azure account providers
  */
-export interface AzureAccountProviderMetadata extends sqlops.AccountProviderMetadata {
+export interface AzureAccountProviderMetadata extends azdata.AccountProviderMetadata {
 	/**
 	 * Azure specific account provider settings.
 	 */
@@ -148,7 +148,7 @@ export interface AzureAccountProperties {
 /**
  * Override of the Account type to enforce properties that are AzureAccountProperties
  */
-export interface AzureAccount extends sqlops.Account {
+export interface AzureAccount extends azdata.Account {
 	/**
 	 * AzureAccountProperties specifically used for Azure accounts
 	 */

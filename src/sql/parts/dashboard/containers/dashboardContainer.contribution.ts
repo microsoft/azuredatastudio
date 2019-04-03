@@ -34,10 +34,10 @@ const containerSchema: IJSONSchema = {
 	properties: {
 		id: {
 			type: 'string',
-			description: localize('sqlops.extension.contributes.dashboard.container.id', "Unique identifier for this container.")
+			description: localize('azdata.extension.contributes.dashboard.container.id', "Unique identifier for this container.")
 		},
 		container: {
-			description: localize('sqlops.extension.contributes.dashboard.container.container', "The container that will be displayed in the tab."),
+			description: localize('azdata.extension.contributes.dashboard.container.container', "The container that will be displayed in the tab."),
 			type: 'object',
 			properties: generateContainerTypeSchemaProperties()
 		}
@@ -45,7 +45,7 @@ const containerSchema: IJSONSchema = {
 };
 
 const containerContributionSchema: IJSONSchema = {
-	description: localize('sqlops.extension.contributes.containers', "Contributes a single or multiple dashboard containers for users to add to their dashboard."),
+	description: localize('azdata.extension.contributes.containers', "Contributes a single or multiple dashboard containers for users to add to their dashboard."),
 	oneOf: [
 		containerSchema,
 		{
@@ -55,7 +55,7 @@ const containerContributionSchema: IJSONSchema = {
 	]
 };
 
-ExtensionsRegistry.registerExtensionPoint<IDashboardContainerContrib | IDashboardContainerContrib[]>('dashboard.containers', [], containerContributionSchema).setHandler(extensions => {
+ExtensionsRegistry.registerExtensionPoint<IDashboardContainerContrib | IDashboardContainerContrib[]>({ extensionPoint: 'dashboard.containers', jsonSchema: containerContributionSchema }).setHandler(extensions => {
 
 	function handleCommand(dashboardContainer: IDashboardContainerContrib, extension: IExtensionPointUser<any>) {
 		let { id, container } = dashboardContainer;

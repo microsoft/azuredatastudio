@@ -6,15 +6,17 @@
 
 import * as vscode from 'vscode';
 import { CreateClusterWizard } from './wizards/create-cluster/createClusterWizard';
-
+import { Kubectl } from './kubectl/kubectl';
 /**
  * The main controller class that initializes the extension
  */
 export class MainController {
 	protected _context: vscode.ExtensionContext;
+	protected _kubectl : Kubectl;
 
-	public constructor(context: vscode.ExtensionContext) {
+	public constructor(context: vscode.ExtensionContext, kubectl: Kubectl) {
 		this._context = context;
+		this._kubectl = kubectl;
 	}
 
 	/**
@@ -22,7 +24,7 @@ export class MainController {
 	 */
 	public activate(): void {
 		vscode.commands.registerCommand('mssql.cluster.create', () => {
-			let wizard = new CreateClusterWizard(this._context);
+			let wizard = new CreateClusterWizard(this._context, this._kubectl);
 			wizard.open();
 		});
 	}

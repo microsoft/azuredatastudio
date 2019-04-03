@@ -14,7 +14,7 @@ import 'vs/css!sql/base/browser/ui/table/media/table';
 
 import * as dom from 'vs/base/browser/dom';
 import * as nls from 'vs/nls';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnInit, OnDestroy } from '@angular/core';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { Table } from 'sql/base/browser/ui/table/table';
@@ -26,7 +26,6 @@ import { CommonServiceInterface } from 'sql/services/common/commonServiceInterfa
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IAction } from 'vs/base/common/actions';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardService';
@@ -72,13 +71,13 @@ export class AlertsViewComponent extends JobManagementView implements OnInit, On
 	private _didTabChange: boolean;
 	@ViewChild('jobalertsgrid') _gridEl: ElementRef;
 
-	public alerts: sqlops.AgentAlertInfo[];
+	public alerts: azdata.AgentAlertInfo[];
 	public contextAction = NewAlertAction;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
-		@Inject(forwardRef(() => AgentViewComponent)) private _agentViewComponent: AgentViewComponent,
+		@Inject(forwardRef(() => AgentViewComponent)) _agentViewComponent: AgentViewComponent,
 		@Inject(IJobManagementService) private _jobManagementService: IJobManagementService,
 		@Inject(ICommandService) private _commandService: ICommandService,
 		@Inject(IInstantiationService) instantiationService: IInstantiationService,
@@ -86,7 +85,7 @@ export class AlertsViewComponent extends JobManagementView implements OnInit, On
 		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
 		@Inject(IKeybindingService) keybindingService: IKeybindingService,
 		@Inject(IDashboardService) _dashboardService: IDashboardService) {
-		super(commonService, _dashboardService, contextMenuService, keybindingService, instantiationService);
+		super(commonService, _dashboardService, contextMenuService, keybindingService, instantiationService, _agentViewComponent);
 		this._didTabChange = false;
 		this._isCloud = commonService.connectionManagementService.connectionInfo.serverInfo.isCloud;
 		let alertsCacheObjectMap = this._jobManagementService.alertsCacheObjectMap;
@@ -145,9 +144,10 @@ export class AlertsViewComponent extends JobManagementView implements OnInit, On
 			panelRows: 1
 		});
 		columns.unshift(rowDetail.getColumnDefinition());
-		$(this._gridEl.nativeElement).empty();
-		$(this.actionBarContainer.nativeElement).empty();
+		jQuery(this._gridEl.nativeElement).empty();
+		jQuery(this.actionBarContainer.nativeElement).empty();
 		this.initActionBar();
+
 		this._table = new Table(this._gridEl.nativeElement, { columns }, this.options);
 		this._table.grid.setData(this.dataView, true);
 		this._register(this._table.onContextMenu(e => {
@@ -181,7 +181,7 @@ export class AlertsViewComponent extends JobManagementView implements OnInit, On
 		}
 	}
 
-	private onAlertsAvailable(alerts: sqlops.AgentAlertInfo[]) {
+	private onAlertsAvailable(alerts: azdata.AgentAlertInfo[]) {
 		let items: any = alerts.map((item) => {
 			return {
 				id: item.id,
@@ -201,7 +201,7 @@ export class AlertsViewComponent extends JobManagementView implements OnInit, On
 		this._table.resizeCanvas();
 	}
 
-	protected getTableActions(): IAction[] {
+	protected getTableActions(targetObject: any): IAction[] {
 		let actions: IAction[] = [];
 		actions.push(this._instantiationService.createInstance(EditAlertAction));
 		actions.push(this._instantiationService.createInstance(DeleteAlertAction));
@@ -209,9 +209,10 @@ export class AlertsViewComponent extends JobManagementView implements OnInit, On
 	}
 
 	protected getCurrentTableObject(rowIndex: number): any {
-		return (this.alerts && this.alerts.length >= rowIndex)
-			? this.alerts[rowIndex]
-			: undefined;
+		let targetObject = {
+			alertInfo: this.alerts && this.alerts.length >= rowIndex ? this.alerts[rowIndex] : undefined
+		};
+		return targetObject;
 	}
 
 
@@ -227,20 +228,6 @@ export class AlertsViewComponent extends JobManagementView implements OnInit, On
 
 	public openCreateAlertDialog() {
 		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
-		this._jobManagementService.getJobs(ownerUri).then((result) => {
-			if (result && result.jobs.length > 0) {
-				let jobs = [];
-				result.jobs.forEach(job => {
-					jobs.push(job.name);
-				});
-				this._commandService.executeCommand('agent.openAlertDialog', ownerUri, null, jobs);
-			} else {
-				this._commandService.executeCommand('agent.openAlertDialog', ownerUri, null, null);
-			}
-		});
-	}
-
-	private refreshJobs() {
-		this._agentViewComponent.refresh = true;
+		this._commandService.executeCommand('agent.openAlertDialog', ownerUri, null, null);
 	}
 }

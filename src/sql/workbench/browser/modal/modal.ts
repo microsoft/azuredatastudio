@@ -5,7 +5,6 @@
 import 'vs/css!./media/modal';
 import { IThemable, attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { Color } from 'vs/base/common/color';
-import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import { mixin } from 'vs/base/common/objects';
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
@@ -24,6 +23,7 @@ import { localize } from 'vs/nls';
 import { MessageLevel } from 'sql/workbench/api/common/sqlExtHostTypes';
 import * as os from 'os';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 
 export const MODAL_SHOWING_KEY = 'modalShowing';
 export const MODAL_SHOWING_CONTEXT = new RawContextKey<Array<string>>(MODAL_SHOWING_KEY, []);
@@ -74,6 +74,7 @@ const defaultOptions: IModalOptions = {
 export abstract class Modal extends Disposable implements IThemable {
 	protected _useDefaultMessageBoxLocation: boolean = true;
 	protected _messageElement: HTMLElement;
+	protected _modalOptions: IModalOptions;
 	private _messageIcon: HTMLElement;
 	private _messageSeverity: Builder;
 	private _messageSummary: Builder;
@@ -114,7 +115,6 @@ export abstract class Modal extends Disposable implements IThemable {
 	private _keydownListener: IDisposable;
 	private _resizeListener: IDisposable;
 
-	private _modalOptions: IModalOptions;
 	private _backButton: Button;
 
 	private _modalShowingContext: IContextKey<Array<string>>;
@@ -151,8 +151,8 @@ export abstract class Modal extends Disposable implements IThemable {
 	constructor(
 		private _title: string,
 		private _name: string,
-		private _partService: IPartService,
 		private _telemetryService: ITelemetryService,
+		protected layoutService: IWorkbenchLayoutService,
 		protected _clipboardService: IClipboardService,
 		protected _themeService: IThemeService,
 		_contextKeyService: IContextKeyService,
@@ -394,7 +394,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	 */
 	protected show() {
 		this._modalShowingContext.get().push(this._staticKey);
-		this._builder.appendTo(this._partService.getWorkbenchElement());
+		this._builder.appendTo(this.layoutService.getWorkbenchElement());
 
 		this.setFocusableElements();
 

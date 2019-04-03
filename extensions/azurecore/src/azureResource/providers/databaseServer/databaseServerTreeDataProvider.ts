@@ -5,7 +5,7 @@
 
 'use strict';
 
-import { AzureResource } from 'sqlops';
+import { AzureResource } from 'azdata';
 import { TreeItem, TreeItemCollapsibleState, ExtensionContext } from 'vscode';
 import { TokenCredentials } from 'ms-rest';
 import * as nls from 'vscode-nls';
@@ -55,7 +55,7 @@ export class AzureResourceDatabaseServerTreeDataProvider implements azureResourc
 					dark: this._extensionContext.asAbsolutePath('resources/dark/sql_server_inverse.svg'),
 					light: this._extensionContext.asAbsolutePath('resources/light/sql_server.svg')
 				},
-				collapsibleState: process.env.NODE_ENV === 'development' ? TreeItemCollapsibleState.Collapsed : TreeItemCollapsibleState.None,
+				collapsibleState: TreeItemCollapsibleState.Collapsed,
 				contextValue: AzureResourceItemType.databaseServer,
 				payload: {
 					id: generateGuid(),

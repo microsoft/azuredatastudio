@@ -8,7 +8,7 @@ import {
 	ViewChild, ViewChildren, ElementRef, Injector, OnDestroy, QueryList, AfterViewInit
 } from '@angular/core';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
@@ -88,17 +88,17 @@ export default class DeclarativeTableComponent extends ComponentBase implements 
 	}
 
 	private isCheckBox(cell: number): boolean {
-		let column: sqlops.DeclarativeTableColumn = this.columns[cell];
+		let column: azdata.DeclarativeTableColumn = this.columns[cell];
 		return column.valueType === DeclarativeDataType.boolean;
 	}
 
 	private isControlEnabled(cell: number): boolean {
-		let column: sqlops.DeclarativeTableColumn = this.columns[cell];
+		let column: azdata.DeclarativeTableColumn = this.columns[cell];
 		return !column.isReadOnly;
 	}
 
 	private isLabel(cell: number): boolean {
-		let column: sqlops.DeclarativeTableColumn = this.columns[cell];
+		let column: azdata.DeclarativeTableColumn = this.columns[cell];
 		return column.isReadOnly && column.valueType === DeclarativeDataType.string;
 	}
 
@@ -117,7 +117,7 @@ export default class DeclarativeTableComponent extends ComponentBase implements 
 
 	private onSelectBoxChanged(e: ISelectData | string, row: number, cell: number): void {
 
-		let column: sqlops.DeclarativeTableColumn = this.columns[cell];
+		let column: azdata.DeclarativeTableColumn = this.columns[cell];
 		if (column.categoryValues) {
 			if (typeof e === 'string') {
 				let category = column.categoryValues.find(c => c.displayName === e);
@@ -135,7 +135,7 @@ export default class DeclarativeTableComponent extends ComponentBase implements 
 	private onCellDataChanged(newValue: any, row: number, cell: number): void {
 		this.data[row][cell] = newValue;
 		this.data = this.data;
-		let newCellData: sqlops.TableCell = {
+		let newCellData: azdata.TableCell = {
 			row: row,
 			column: cell,
 			value: newValue
@@ -147,32 +147,32 @@ export default class DeclarativeTableComponent extends ComponentBase implements 
 	}
 
 	private isSelectBox(cell: number): boolean {
-		let column: sqlops.DeclarativeTableColumn = this.columns[cell];
+		let column: azdata.DeclarativeTableColumn = this.columns[cell];
 		return column.valueType === DeclarativeDataType.category;
 	}
 
 	private isEditableSelectBox(cell: number): boolean {
-		let column: sqlops.DeclarativeTableColumn = this.columns[cell];
+		let column: azdata.DeclarativeTableColumn = this.columns[cell];
 		return column.valueType === DeclarativeDataType.editableCategory;
 	}
 
 	private isInputBox(cell: number): boolean {
-		let column: sqlops.DeclarativeTableColumn = this.columns[cell];
+		let column: azdata.DeclarativeTableColumn = this.columns[cell];
 		return column.valueType === DeclarativeDataType.string && !column.isReadOnly;
 	}
 
 	private getColumnWidth(cell: number): string {
-		let column: sqlops.DeclarativeTableColumn = this.columns[cell];
+		let column: azdata.DeclarativeTableColumn = this.columns[cell];
 		return this.convertSize(column.width, '30px');
 	}
 
 	private GetOptions(cell: number): string[] {
-		let column: sqlops.DeclarativeTableColumn = this.columns[cell];
+		let column: azdata.DeclarativeTableColumn = this.columns[cell];
 		return column.categoryValues ? column.categoryValues.map(x => x.displayName) : [];
 	}
 
 	private GetSelectedOptionDisplayName(row: number, cell: number): string {
-		let column: sqlops.DeclarativeTableColumn = this.columns[cell];
+		let column: azdata.DeclarativeTableColumn = this.columns[cell];
 		let cellData = this.data[row][cell];
 		if (cellData && column.categoryValues) {
 			let category = column.categoryValues.find(v => v.name === cellData);
@@ -200,18 +200,18 @@ export default class DeclarativeTableComponent extends ComponentBase implements 
 	}
 
 	public get data(): any[][] {
-		return this.getPropertyOrDefault<sqlops.DeclarativeTableProperties, any[]>((props) => props.data, []);
+		return this.getPropertyOrDefault<azdata.DeclarativeTableProperties, any[]>((props) => props.data, []);
 	}
 
 	public set data(newValue: any[][]) {
-		this.setPropertyFromUI<sqlops.DeclarativeTableProperties, any[][]>((props, value) => props.data = value, newValue);
+		this.setPropertyFromUI<azdata.DeclarativeTableProperties, any[][]>((props, value) => props.data = value, newValue);
 	}
 
-	public get columns(): sqlops.DeclarativeTableColumn[] {
-		return this.getPropertyOrDefault<sqlops.DeclarativeTableProperties, sqlops.DeclarativeTableColumn[]>((props) => props.columns, []);
+	public get columns(): azdata.DeclarativeTableColumn[] {
+		return this.getPropertyOrDefault<azdata.DeclarativeTableProperties, azdata.DeclarativeTableColumn[]>((props) => props.columns, []);
 	}
 
-	public set columns(newValue: sqlops.DeclarativeTableColumn[]) {
-		this.setPropertyFromUI<sqlops.DeclarativeTableProperties, sqlops.DeclarativeTableColumn[]>((props, value) => props.columns = value, newValue);
+	public set columns(newValue: azdata.DeclarativeTableColumn[]) {
+		this.setPropertyFromUI<azdata.DeclarativeTableProperties, azdata.DeclarativeTableColumn[]>((props, value) => props.columns = value, newValue);
 	}
 }

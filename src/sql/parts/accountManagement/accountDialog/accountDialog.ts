@@ -9,7 +9,6 @@ import 'vs/css!./media/accountDialog';
 import 'vs/css!sql/parts/accountManagement/common/media/accountActions';
 import * as DOM from 'vs/base/browser/dom';
 import { List } from 'vs/base/browser/ui/list/listWidget';
-import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { Event, Emitter } from 'vs/base/common/event';
 import { localize } from 'vs/nls';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
@@ -25,7 +24,7 @@ import { ViewletPanel, IViewletPanelOptions } from 'vs/workbench/browser/parts/v
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { values } from 'vs/base/common/map';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/workbench/browser/modal/modal';
@@ -36,10 +35,11 @@ import { AccountListRenderer, AccountListDelegate } from 'sql/parts/accountManag
 import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/platform/accountManagement/common/eventTypes';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
+import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 
 class AccountPanel extends ViewletPanel {
 	public index: number;
-	private accountList: List<sqlops.Account>;
+	private accountList: List<azdata.Account>;
 
 	constructor(
 		private options: IViewletPanelOptions,
@@ -53,7 +53,7 @@ class AccountPanel extends ViewletPanel {
 	}
 
 	protected renderBody(container: HTMLElement): void {
-		this.accountList = new List<sqlops.Account>(container, new AccountListDelegate(AccountDialog.ACCOUNTLIST_HEIGHT), [this.instantiationService.createInstance(AccountListRenderer)]);
+		this.accountList = new List<azdata.Account>(container, new AccountListDelegate(AccountDialog.ACCOUNTLIST_HEIGHT), [this.instantiationService.createInstance(AccountListRenderer)]);
 		this.disposables.push(attachListStyler(this.accountList, this.themeService));
 	}
 
@@ -71,7 +71,7 @@ class AccountPanel extends ViewletPanel {
 		this.accountList.domFocus();
 	}
 
-	public updateAccounts(accounts: sqlops.Account[]) {
+	public updateAccounts(accounts: azdata.Account[]) {
 		this.accountList.splice(0, this.accountList.length, accounts);
 	}
 
@@ -115,7 +115,7 @@ export class AccountDialog extends Modal {
 	public get onCloseEvent(): Event<void> { return this._onCloseEmitter.event; }
 
 	constructor(
-		@IPartService partService: IPartService,
+		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
 		@IThemeService themeService: IThemeService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IContextMenuService private _contextMenuService: IContextMenuService,
@@ -128,8 +128,8 @@ export class AccountDialog extends Modal {
 		super(
 			localize('linkedAccounts', 'Linked accounts'),
 			TelemetryKeys.Accounts,
-			partService,
 			telemetryService,
+			layoutService,
 			clipboardService,
 			themeService,
 			contextKeyService,
@@ -315,7 +315,7 @@ export class AccountDialog extends Modal {
 		this._providerViewsMap.set(newProvider.addedProvider.id, { view: providerView, addAccountAction: addAccountAction });
 	}
 
-	private removeProvider(removedProvider: sqlops.AccountProviderMetadata) {
+	private removeProvider(removedProvider: azdata.AccountProviderMetadata) {
 		// Skip removing the provider if it doesn't exist
 		let providerView = this._providerViewsMap.get(removedProvider.id);
 		if (!providerView || !providerView.view) {

@@ -11,7 +11,7 @@ import { Color } from 'vs/base/common/color';
 import { mixin } from 'vs/base/common/objects';
 import { Event as BaseEvent, Emitter } from 'vs/base/common/event';
 import { Disposable } from 'vs/base/common/lifecycle';
-import { Gesture } from 'vs/base/browser/touch';
+import { Gesture, EventType } from 'vs/base/browser/touch';
 
 export interface IButtonOptions extends IButtonStyles {
 	title?: boolean;
@@ -32,8 +32,7 @@ const defaultOptions: IButtonStyles = {
 
 export class Button extends Disposable {
 
-	// {{SQL CARBON EDIT}} -- changed access modifier to protected
-	protected _element: HTMLElement;
+	private _element: HTMLElement;
 	private options: IButtonOptions;
 
 	private buttonBackground: Color | undefined;
@@ -66,14 +65,16 @@ export class Button extends Disposable {
 
 		Gesture.addTarget(this._element);
 
-		this._register(DOM.addDisposableListener(this._element, DOM.EventType.CLICK, e => {
-			if (!this.enabled) {
-				DOM.EventHelper.stop(e);
-				return;
-			}
+		[DOM.EventType.CLICK, EventType.Tap].forEach(eventType => {
+			this._register(DOM.addDisposableListener(this._element, eventType, e => {
+				if (!this.enabled) {
+					DOM.EventHelper.stop(e);
+					return;
+				}
 
-			this._onDidClick.fire(e);
-		}));
+				this._onDidClick.fire(e);
+			}));
+		});
 
 		this._register(DOM.addDisposableListener(this._element, DOM.EventType.KEY_DOWN, e => {
 			const event = new StandardKeyboardEvent(e);

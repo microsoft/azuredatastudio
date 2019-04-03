@@ -9,7 +9,7 @@ import { ChangeDetectorRef } from '@angular/core';
 import { Registry } from 'vs/platform/registry/common/platform';
 import nls = require('vs/nls');
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { IModelStore, IComponentDescriptor, IComponent } from './interfaces';
 import { IItemConfig, ModelComponentTypes, IComponentShape } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IModelView, IModelViewEventArgs } from 'sql/platform/model/common/modelViewService';
@@ -36,8 +36,8 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 
 	// Properties needed by the model view code
 	abstract id: string;
-	abstract connection: sqlops.connection.Connection;
-	abstract serverInfo: sqlops.ServerInfo;
+	abstract connection: azdata.connection.Connection;
+	abstract serverInfo: azdata.ServerInfo;
 	private _onEventEmitter = new Emitter<IModelViewEventArgs>();
 
 	initializeModel(rootComponent: IComponentShape, validationCallback: (componentId: string) => Thenable<boolean>): void {

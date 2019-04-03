@@ -9,7 +9,6 @@ import { IGridInfo } from 'sql/parts/grid/common/interfaces';
 import { DataService } from 'sql/parts/grid/services/dataService';
 import { GridActionProvider } from 'sql/parts/grid/views/gridActions';
 import { localize } from 'vs/nls';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { IAction, Action } from 'vs/base/common/actions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
@@ -48,9 +47,9 @@ export class DeleteRowAction extends Action {
 		super(id, label);
 	}
 
-	public run(gridInfo: IGridInfo): TPromise<boolean> {
+	public run(gridInfo: IGridInfo): Promise<boolean> {
 		this.callback(gridInfo.rowIndex);
-		return TPromise.as(true);
+		return Promise.resolve(true);
 	}
 }
 
@@ -66,8 +65,8 @@ export class RevertRowAction extends Action {
 		super(id, label);
 	}
 
-	public run(gridInfo: IGridInfo): TPromise<boolean> {
+	public run(gridInfo: IGridInfo): Promise<boolean> {
 		this.callback();
-		return TPromise.as(true);
+		return Promise.resolve(true);
 	}
 }

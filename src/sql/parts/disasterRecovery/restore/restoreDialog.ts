@@ -14,13 +14,12 @@ import { MessageType, IInputOptions } from 'vs/base/browser/ui/inputbox/inputBox
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { localize } from 'vs/nls';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { mixin } from 'vs/base/common/objects';
 import * as strings from 'vs/base/common/strings';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
@@ -42,6 +41,7 @@ import { TabbedPanel, PanelTabIdentifier } from 'sql/base/browser/ui/panel/panel
 import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { IFileBrowserDialogController } from 'sql/workbench/services/fileBrowser/common/fileBrowserDialogController';
+import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 
 interface FileListElement {
 	logicalFileName: string;
@@ -127,8 +127,8 @@ export class RestoreDialog extends Modal {
 	public onDatabaseListFocused: Event<void> = this._onDatabaseListFocused.event;
 
 	constructor(
-		optionsMetadata: sqlops.ServiceOption[],
-		@IPartService partService: IPartService,
+		optionsMetadata: azdata.ServiceOption[],
+		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
 		@IThemeService themeService: IThemeService,
 		@IContextViewService private _contextViewService: IContextViewService,
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -136,7 +136,7 @@ export class RestoreDialog extends Modal {
 		@IFileBrowserDialogController private fileBrowserDialogService: IFileBrowserDialogController,
 		@IClipboardService clipboardService: IClipboardService
 	) {
-		super(localize('RestoreDialogTitle', 'Restore database'), TelemetryKeys.Restore, partService, telemetryService, clipboardService, themeService, contextKeyService, { hasErrors: true, isWide: true, hasSpinner: true });
+		super(localize('RestoreDialogTitle', 'Restore database'), TelemetryKeys.Restore, telemetryService, layoutService, clipboardService, themeService, contextKeyService, { hasErrors: true, isWide: true, hasSpinner: true });
 		this._restoreTitle = localize('restoreDialog.restoreTitle', 'Restore database');
 		this._databaseTitle = localize('restoreDialog.database', 'Database');
 		this._backupFileTitle = localize('restoreDialog.backupFile', 'Backup file');
@@ -233,7 +233,7 @@ export class RestoreDialog extends Modal {
 				inputContainer.div({ class: 'dialog-input' }, (inputCellContainer) => {
 					// Get the bootstrap params and perform the bootstrap
 					inputCellContainer.style('width', '100%');
-					this._databaseDropdown = new Dropdown(inputCellContainer.getHTMLElement(), this._contextViewService, this._themeService,
+					this._databaseDropdown = new Dropdown(inputCellContainer.getHTMLElement(), this._contextViewService,
 						{
 							strictSelection: false,
 							ariaLabel: LocalizedStrings.TARGETDATABASE,
@@ -843,7 +843,7 @@ export class RestoreDialog extends Modal {
 		}
 	}
 
-	private updateRestoreDatabaseFiles(dbFiles: sqlops.RestoreDatabaseFileInfo[]) {
+	private updateRestoreDatabaseFiles(dbFiles: azdata.RestoreDatabaseFileInfo[]) {
 		this.clearFileListTable();
 		if (dbFiles && dbFiles.length > 0) {
 			let data = [];
@@ -864,7 +864,7 @@ export class RestoreDialog extends Modal {
 		}
 	}
 
-	private updateBackupSetsToRestore(backupSetsToRestore: sqlops.DatabaseFileInfo[]) {
+	private updateBackupSetsToRestore(backupSetsToRestore: azdata.DatabaseFileInfo[]) {
 		if (this._isBackupFileCheckboxChanged) {
 			let selectedRow = [];
 			for (let i = 0; i < backupSetsToRestore.length; i++) {

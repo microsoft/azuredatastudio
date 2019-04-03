@@ -14,7 +14,7 @@ import 'vs/css!sql/base/browser/ui/table/media/table';
 
 import * as dom from 'vs/base/browser/dom';
 import * as nls from 'vs/nls';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnInit, OnDestroy } from '@angular/core';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
@@ -26,7 +26,6 @@ import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { IAction } from 'vs/base/common/actions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardService';
@@ -71,13 +70,13 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit,
 	private _didTabChange: boolean;
 	@ViewChild('operatorsgrid') _gridEl: ElementRef;
 
-	public operators: sqlops.AgentOperatorInfo[];
+	public operators: azdata.AgentOperatorInfo[];
 	public contextAction = NewOperatorAction;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
-		@Inject(forwardRef(() => AgentViewComponent)) private _agentViewComponent: AgentViewComponent,
+		@Inject(forwardRef(() => AgentViewComponent)) _agentViewComponent: AgentViewComponent,
 		@Inject(IJobManagementService) private _jobManagementService: IJobManagementService,
 		@Inject(ICommandService) private _commandService: ICommandService,
 		@Inject(IInstantiationService) instantiationService: IInstantiationService,
@@ -86,7 +85,7 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit,
 		@Inject(IKeybindingService) keybindingService: IKeybindingService,
 		@Inject(IDashboardService) _dashboardService: IDashboardService
 	) {
-		super(commonService, _dashboardService, contextMenuService, keybindingService, instantiationService);
+		super(commonService, _dashboardService, contextMenuService, keybindingService, instantiationService, _agentViewComponent);
 		this._isCloud = commonService.connectionManagementService.connectionInfo.serverInfo.isCloud;
 		let operatorsCacheObject = this._jobManagementService.operatorsCacheObjectMap;
 		let operatorsCache = operatorsCacheObject[this._serverName];
@@ -146,8 +145,8 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit,
 		});
 		columns.unshift(rowDetail.getColumnDefinition());
 
-		$(this._gridEl.nativeElement).empty();
-		$(this.actionBarContainer.nativeElement).empty();
+		jQuery(this._gridEl.nativeElement).empty();
+		jQuery(this.actionBarContainer.nativeElement).empty();
 		this.initActionBar();
 		this._table = new Table(this._gridEl.nativeElement, { columns }, this.options);
 		this._table.grid.setData(this.dataView, true);
@@ -183,7 +182,7 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit,
 		}
 	}
 
-	private onOperatorsAvailable(operators: sqlops.AgentOperatorInfo[]) {
+	private onOperatorsAvailable(operators: azdata.AgentOperatorInfo[]) {
 		let items: any = operators.map((item) => {
 			return {
 				id: item.id,
@@ -226,9 +225,5 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit,
 	public openCreateOperatorDialog() {
 		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
 		this._commandService.executeCommand('agent.openOperatorDialog', ownerUri);
-	}
-
-	private refreshJobs() {
-		this._agentViewComponent.refresh = true;
 	}
 }

@@ -5,7 +5,7 @@
 
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 import { ImportDataModel } from '../api/models';
 import { ImportPage } from '../api/importPage';
@@ -15,12 +15,12 @@ import { FlatFileWizard } from '../flatFileWizard';
 const localize = nls.loadMessageBundle();
 
 export class ProsePreviewPage extends ImportPage {
-	private table: sqlops.TableComponent;
-	private loading: sqlops.LoadingComponent;
-	private form: sqlops.FormContainer;
-	private refresh: sqlops.ButtonComponent;
+	private table: azdata.TableComponent;
+	private loading: azdata.LoadingComponent;
+	private form: azdata.FormContainer;
+	private refresh: azdata.ButtonComponent;
 
-	public constructor(instance: FlatFileWizard, wizardPage: sqlops.window.WizardPage, model: ImportDataModel, view: sqlops.ModelView, provider: FlatFileProvider) {
+	public constructor(instance: FlatFileWizard, wizardPage: azdata.window.WizardPage, model: ImportDataModel, view: azdata.ModelView, provider: FlatFileProvider) {
 		super(instance, wizardPage, model, view, provider);
 	}
 

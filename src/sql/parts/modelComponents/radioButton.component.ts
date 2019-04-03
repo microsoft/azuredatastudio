@@ -9,7 +9,7 @@ import {
 	ViewChild, ViewChildren, ElementRef, Injector, OnDestroy, QueryList, AfterViewInit
 } from '@angular/core';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { Event, Emitter } from 'vs/base/common/event';
 
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
@@ -84,19 +84,19 @@ export default class RadioButtonComponent extends ComponentBase implements IComp
 	// CSS-bound properties
 
 	public get checked(): boolean {
-		return this.getPropertyOrDefault<sqlops.RadioButtonProperties, boolean>((props) => props.checked, false);
+		return this.getPropertyOrDefault<azdata.RadioButtonProperties, boolean>((props) => props.checked, false);
 	}
 
 	public set checked(newValue: boolean) {
-		this.setPropertyFromUI<sqlops.RadioButtonProperties, boolean>((properties, value) => { properties.checked = value; }, newValue);
+		this.setPropertyFromUI<azdata.RadioButtonProperties, boolean>((properties, value) => { properties.checked = value; }, newValue);
 	}
 
 	public set value(newValue: string) {
-		this.setPropertyFromUI<sqlops.RadioButtonProperties, string>((properties, value) => { properties.value = value; }, newValue);
+		this.setPropertyFromUI<azdata.RadioButtonProperties, string>((properties, value) => { properties.value = value; }, newValue);
 	}
 
 	public get value(): string {
-		return this.getPropertyOrDefault<sqlops.RadioButtonProperties, string>((props) => props.value, '');
+		return this.getPropertyOrDefault<azdata.RadioButtonProperties, string>((props) => props.value, '');
 	}
 
 	public getLabel(): string {
@@ -104,18 +104,18 @@ export default class RadioButtonComponent extends ComponentBase implements IComp
 	}
 
 	public get label(): string {
-		return this.getPropertyOrDefault<sqlops.RadioButtonProperties, string>((props) => props.label, '');
+		return this.getPropertyOrDefault<azdata.RadioButtonProperties, string>((props) => props.label, '');
 	}
 
 	public set label(newValue: string) {
-		this.setPropertyFromUI<sqlops.RadioButtonProperties, string>((properties, label) => { properties.label = label; }, newValue);
+		this.setPropertyFromUI<azdata.RadioButtonProperties, string>((properties, label) => { properties.label = label; }, newValue);
 	}
 
 	public get name(): string {
-		return this.getPropertyOrDefault<sqlops.RadioButtonProperties, string>((props) => props.name, '');
+		return this.getPropertyOrDefault<azdata.RadioButtonProperties, string>((props) => props.name, '');
 	}
 
 	public set name(newValue: string) {
-		this.setPropertyFromUI<sqlops.RadioButtonProperties, string>((properties, label) => { properties.name = label; }, newValue);
+		this.setPropertyFromUI<azdata.RadioButtonProperties, string>((properties, label) => { properties.name = label; }, newValue);
 	}
 }

@@ -4,12 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as types from 'vs/base/common/types';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IRestoreService, IRestoreDialogController, TaskExecutionMode } from 'sql/platform/restore/common/restoreService';
@@ -31,7 +30,7 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 export class RestoreService implements IRestoreService {
 
 	public _serviceBrand: any;
-	private _providers: { [handle: string]: sqlops.RestoreProvider; } = Object.create(null);
+	private _providers: { [handle: string]: azdata.RestoreProvider; } = Object.create(null);
 
 	constructor(
 		@IConnectionManagementService private _connectionService: IConnectionManagementService,
@@ -42,8 +41,8 @@ export class RestoreService implements IRestoreService {
 	/**
 	 * Gets restore config Info
 	 */
-	getRestoreConfigInfo(connectionUri: string): Thenable<sqlops.RestoreConfigInfo> {
-		return new Promise<sqlops.RestoreConfigInfo>((resolve, reject) => {
+	getRestoreConfigInfo(connectionUri: string): Thenable<azdata.RestoreConfigInfo> {
+		return new Promise<azdata.RestoreConfigInfo>((resolve, reject) => {
 			let providerResult = this.getProvider(connectionUri);
 			if (providerResult) {
 				providerResult.provider.getRestoreConfigInfo(connectionUri).then(result => {
@@ -60,8 +59,8 @@ export class RestoreService implements IRestoreService {
 	/**
 	 * Restore a data source using a backup file or database
 	 */
-	restore(connectionUri: string, restoreInfo: sqlops.RestoreInfo): Thenable<sqlops.RestoreResponse> {
-		return new Promise<sqlops.RestoreResponse>((resolve, reject) => {
+	restore(connectionUri: string, restoreInfo: azdata.RestoreInfo): Thenable<azdata.RestoreResponse> {
+		return new Promise<azdata.RestoreResponse>((resolve, reject) => {
 			let providerResult = this.getProvider(connectionUri);
 			if (providerResult) {
 				TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.RestoreRequested, { provider: providerResult.providerName });
@@ -76,7 +75,7 @@ export class RestoreService implements IRestoreService {
 		});
 	}
 
-	private getProvider(connectionUri: string): { provider: sqlops.RestoreProvider, providerName: string } {
+	private getProvider(connectionUri: string): { provider: azdata.RestoreProvider, providerName: string } {
 		let providerId: string = this._connectionService.getProviderIdFromUri(connectionUri);
 		if (providerId) {
 			return { provider: this._providers[providerId], providerName: providerId };
@@ -88,8 +87,8 @@ export class RestoreService implements IRestoreService {
 	/**
 	 * Gets restore plan to do the restore operation on a database
 	 */
-	getRestorePlan(connectionUri: string, restoreInfo: sqlops.RestoreInfo): Thenable<sqlops.RestorePlanResponse> {
-		return new Promise<sqlops.RestorePlanResponse>((resolve, reject) => {
+	getRestorePlan(connectionUri: string, restoreInfo: azdata.RestoreInfo): Thenable<azdata.RestorePlanResponse> {
+		return new Promise<azdata.RestorePlanResponse>((resolve, reject) => {
 			let providerResult = this.getProvider(connectionUri);
 			if (providerResult) {
 				providerResult.provider.getRestorePlan(connectionUri, restoreInfo).then(result => {
@@ -107,7 +106,7 @@ export class RestoreService implements IRestoreService {
 	/**
 	 * Cancels a restore plan
 	 */
-	cancelRestorePlan(connectionUri: string, restoreInfo: sqlops.RestoreInfo): Thenable<boolean> {
+	cancelRestorePlan(connectionUri: string, restoreInfo: azdata.RestoreInfo): Thenable<boolean> {
 		return new Promise<boolean>((resolve, reject) => {
 			let providerResult = this.getProvider(connectionUri);
 			if (providerResult) {
@@ -126,7 +125,7 @@ export class RestoreService implements IRestoreService {
 	/**
 	 * Register a disaster recovery provider
 	 */
-	public registerProvider(providerId: string, provider: sqlops.RestoreProvider): void {
+	public registerProvider(providerId: string, provider: azdata.RestoreProvider): void {
 		this._providers[providerId] = provider;
 	}
 }
@@ -233,7 +232,7 @@ export class RestoreDialogController implements IRestoreDialogController {
 		});
 	}
 
-	private setRestoreOption(overwriteTargetDatabase: boolean = false): sqlops.RestoreInfo {
+	private setRestoreOption(overwriteTargetDatabase: boolean = false): azdata.RestoreInfo {
 		let restoreInfo = undefined;
 
 		let providerId: string = this.getCurrentProviderId();
@@ -264,8 +263,8 @@ export class RestoreDialogController implements IRestoreDialogController {
 		return restoreInfo;
 	}
 
-	private getRestoreOption(): sqlops.ServiceOption[] {
-		let options: sqlops.ServiceOption[] = [];
+	private getRestoreOption(): azdata.ServiceOption[] {
+		let options: azdata.ServiceOption[] = [];
 		let providerId: string = this.getCurrentProviderId();
 		let providerCapabilities = this._capabilitiesService.getLegacyCapabilities(providerId);
 
@@ -290,8 +289,8 @@ export class RestoreDialogController implements IRestoreDialogController {
 		});
 	}
 
-	public showDialog(connection: IConnectionProfile): TPromise<void> {
-		return new TPromise<void>((resolve, reject) => {
+	public showDialog(connection: IConnectionProfile): Promise<void> {
+		return new Promise<void>((resolve, reject) => {
 			let result: void;
 
 			this._ownerUri = this._connectionService.getConnectionUri(connection)

@@ -4,21 +4,20 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 
 import { ok } from 'vs/base/common/assert';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { readonly } from 'vs/base/common/errors';
-import { TPromise } from 'vs/base/common/winjs.base';
 
 import { MainThreadNotebookDocumentsAndEditorsShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { ExtHostNotebookDocumentData } from 'sql/workbench/api/node/extHostNotebookDocumentData';
 import { CellRange, ISingleNotebookEditOperation, ICellRange } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export interface INotebookEditOperation {
-	range: sqlops.nb.CellRange;
-	cell: Partial<sqlops.nb.ICellContents>;
+	range: azdata.nb.CellRange;
+	cell: Partial<azdata.nb.ICellContents>;
 	forceMoveMarkers: boolean;
 }
 
@@ -29,7 +28,7 @@ export interface INotebookEditData {
 	undoStopAfter: boolean;
 }
 
-function toICellRange(range: sqlops.nb.CellRange): ICellRange {
+function toICellRange(range: azdata.nb.CellRange): ICellRange {
 	return {
 		start: range.start,
 		end: range.end
@@ -38,13 +37,13 @@ function toICellRange(range: sqlops.nb.CellRange): ICellRange {
 
 export class NotebookEditorEdit {
 
-	private readonly _document: sqlops.nb.NotebookDocument;
+	private readonly _document: azdata.nb.NotebookDocument;
 	private readonly _documentVersionId: number;
 	private _collectedEdits: INotebookEditOperation[];
 	private readonly _undoStopBefore: boolean;
 	private readonly _undoStopAfter: boolean;
 
-	constructor(document: sqlops.nb.NotebookDocument, options: { undoStopBefore: boolean; undoStopAfter: boolean; }) {
+	constructor(document: azdata.nb.NotebookDocument, options: { undoStopBefore: boolean; undoStopAfter: boolean; }) {
 		this._document = document;
 		// TODO add version handling
 		this._documentVersionId = 0;
@@ -63,7 +62,7 @@ export class NotebookEditorEdit {
 		};
 	}
 
-	replace(location: number | CellRange, value: Partial<sqlops.nb.ICellContents>): void {
+	replace(location: number | CellRange, value: Partial<azdata.nb.ICellContents>): void {
 		let range: CellRange = this.getAsRange(location);
 		this._pushEdit(range, value, false);
 	}
@@ -82,7 +81,7 @@ export class NotebookEditorEdit {
 		return range;
 	}
 
-	insertCell(value:  Partial<sqlops.nb.ICellContents>, location?: number): void {
+	insertCell(value:  Partial<azdata.nb.ICellContents>, location?: number): void {
 		if (location === null || location === undefined) {
 			// If not specified, assume adding to end of list
 			location = this._document.cells.length;
@@ -105,7 +104,7 @@ export class NotebookEditorEdit {
 		this._pushEdit(range, null, true);
 	}
 
-	private _pushEdit(range: sqlops.nb.CellRange, cell:  Partial<sqlops.nb.ICellContents>, forceMoveMarkers: boolean): void {
+	private _pushEdit(range: azdata.nb.CellRange, cell:  Partial<azdata.nb.ICellContents>, forceMoveMarkers: boolean): void {
 		let validRange = this._document.validateCellRange(range);
 		this._collectedEdits.push({
 			range: validRange,
@@ -115,7 +114,7 @@ export class NotebookEditorEdit {
 	}
 }
 
-export class ExtHostNotebookEditor implements sqlops.nb.NotebookEditor, IDisposable {
+export class ExtHostNotebookEditor implements azdata.nb.NotebookEditor, IDisposable {
 	private _disposed: boolean = false;
 
 	constructor(
@@ -132,7 +131,7 @@ export class ExtHostNotebookEditor implements sqlops.nb.NotebookEditor, IDisposa
 		this._disposed = true;
 	}
 
-	get document(): sqlops.nb.NotebookDocument {
+	get document(): azdata.nb.NotebookDocument {
 		return this._documentData.document;
 	}
 
@@ -152,26 +151,34 @@ export class ExtHostNotebookEditor implements sqlops.nb.NotebookEditor, IDisposa
 		return this._id;
 	}
 
-	public runCell(cell: sqlops.nb.NotebookCell): Thenable<boolean> {
+	public runCell(cell: azdata.nb.NotebookCell): Thenable<boolean> {
 		let uri = cell ? cell.uri : undefined;
 		return this._proxy.$runCell(this._id, uri);
 	}
 
-	public edit(callback: (editBuilder: sqlops.nb.NotebookEditorEdit) => void, options?: { undoStopBefore: boolean; undoStopAfter: boolean; }): Thenable<boolean> {
+	public runAllCells(): Thenable<boolean> {
+		return this._proxy.$runAllCells(this._id);
+	}
+
+	public clearAllOutputs(): Thenable<boolean> {
+		return this._proxy.$clearAllOutputs(this._id);
+	}
+
+	public edit(callback: (editBuilder: azdata.nb.NotebookEditorEdit) => void, options?: { undoStopBefore: boolean; undoStopAfter: boolean; }): Thenable<boolean> {
 		if (this._disposed) {
-			return TPromise.wrapError<boolean>(new Error('NotebookEditor#edit not possible on closed editors'));
+			return Promise.reject(new Error('NotebookEditor#edit not possible on closed editors'));
 		}
 		let edit = new NotebookEditorEdit(this._documentData.document, options);
 		callback(edit);
 		return this._applyEdit(edit);
 	}
 
-	private _applyEdit(editBuilder: NotebookEditorEdit): TPromise<boolean> {
+	private _applyEdit(editBuilder: NotebookEditorEdit): Promise<boolean> {
 		let editData = editBuilder.finalize();
 
 		// return when there is nothing to do
 		if (editData.edits.length === 0) {
-			return TPromise.wrap(true);
+			return Promise.resolve(true);
 		}
 
 		// check that the edits are not overlapping (i.e. illegal)
@@ -192,9 +199,7 @@ export class ExtHostNotebookEditor implements sqlops.nb.NotebookEditor, IDisposa
 
 			if (nextRangeStart < rangeEnd) {
 				// overlapping ranges
-				return TPromise.wrapError<boolean>(
-					new Error('Overlapping ranges are not allowed!')
-				);
+				return Promise.reject(new Error('Overlapping ranges are not allowed!'));
 			}
 		}
 

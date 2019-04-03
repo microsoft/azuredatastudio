@@ -9,22 +9,24 @@ import {
 	ViewChild, ViewChildren, ElementRef, Injector, OnDestroy, QueryList,
 } from '@angular/core';
 
-import { IComponent, IComponentDescriptor, IModelStore } from 'sql/parts/modelComponents/interfaces';
-import * as sqlops from 'sqlops';
+import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
+import * as azdata from 'azdata';
 
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { ContainerBase } from 'sql/parts/modelComponents/componentBase';
 import { ModelComponentWrapper } from 'sql/parts/modelComponents/modelComponentWrapper.component';
 
 import types = require('vs/base/common/types');
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { KeyCode } from 'vs/base/common/keyCodes';
 
 class DivItem {
-	constructor(public descriptor: IComponentDescriptor, public config: sqlops.DivItemLayout) { }
+	constructor(public descriptor: IComponentDescriptor, public config: azdata.DivItemLayout) { }
 }
 
 @Component({
 	template: `
-		<div #divContainer *ngIf="items" class="divContainer" [style.height]="height" [style.width]="width">
+		<div #divContainer *ngIf="items" class="divContainer" [style.height]="height" [style.width]="width"  (click)="onClick()" (keyup)="onKey($event)" [tabIndex]="tabIndex">
 			<div *ngFor="let item of items" [style.order]="getItemOrder(item)" [ngStyle]="getItemStyles(item)">
 				<model-component-wrapper [descriptor]="item.descriptor" [modelStore]="modelStore">
 				</model-component-wrapper>
@@ -32,7 +34,7 @@ class DivItem {
 		</div>
 	`
 })
-export default class DivContainer extends ContainerBase<sqlops.DivItemLayout> implements IComponent, OnDestroy {
+export default class DivContainer extends ContainerBase<azdata.DivItemLayout> implements IComponent, OnDestroy {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 	@ViewChild('divContainer', { read: ElementRef }) divContainer;
@@ -59,7 +61,7 @@ export default class DivContainer extends ContainerBase<sqlops.DivItemLayout> im
 
 	/// IComponent implementation
 
-	public setLayout(layout: sqlops.DivLayout): void {
+	public setLayout(layout: azdata.DivLayout): void {
 		this._height = this.convertSize(layout.height);
 		this._width = this.convertSize(layout.width);
 		this.layout();
@@ -76,15 +78,22 @@ export default class DivContainer extends ContainerBase<sqlops.DivItemLayout> im
 	private updateOverflowY() {
 		this._overflowY = this.overflowY;
 		if (this._overflowY) {
-			let element = <HTMLElement> this.divContainer.nativeElement;
+			let element = <HTMLElement>this.divContainer.nativeElement;
 			element.style.overflowY = this._overflowY;
 		}
 	}
 
 	private updateScroll() {
-		let element = <HTMLElement> this.divContainer.nativeElement;
+		let element = <HTMLElement>this.divContainer.nativeElement;
 		element.scrollTop = element.scrollTop - this.yOffsetChange;
 		element.dispatchEvent(new Event('scroll'));
+	}
+
+	private onClick() {
+		this.fireEvent({
+			eventType: ComponentEventType.onDidClick,
+			args: undefined
+		});
 	}
 
 	// CSS-bound properties
@@ -98,17 +107,33 @@ export default class DivContainer extends ContainerBase<sqlops.DivItemLayout> im
 
 	// CSS-bound properties
 	public get overflowY(): string {
-		return this.getPropertyOrDefault<sqlops.DivContainerProperties, any>((props) => props.overflowY, '');
+		return this.getPropertyOrDefault<azdata.DivContainerProperties, any>((props) => props.overflowY, '');
 	}
 	public set overflowY(newValue: string) {
-		this.setPropertyFromUI<sqlops.DivContainerProperties, any>((properties, newValue) => { properties.overflowY = newValue; }, newValue);
+		this.setPropertyFromUI<azdata.DivContainerProperties, any>((properties, newValue) => { properties.overflowY = newValue; }, newValue);
 	}
 
 	public get yOffsetChange(): number {
-		return this.getPropertyOrDefault<sqlops.DivContainerProperties, any>((props) => props.yOffsetChange, 0);
+		return this.getPropertyOrDefault<azdata.DivContainerProperties, any>((props) => props.yOffsetChange, 0);
 	}
 	public set yOffsetChange(newValue: number) {
-		this.setPropertyFromUI<sqlops.DivContainerProperties, any>((properties, newValue) => { properties.yOffsetChange = newValue; }, newValue);
+		this.setPropertyFromUI<azdata.DivContainerProperties, any>((properties, newValue) => { properties.yOffsetChange = newValue; }, newValue);
+	}
+
+	public get clickable(): boolean {
+		return this.getPropertyOrDefault<azdata.DivContainerProperties, boolean>((props) => props.clickable, false);
+	}
+
+	public get tabIndex(): number {
+		return this.clickable ? 0 : -1;
+	}
+
+	private onKey(e: KeyboardEvent) {
+		let event = new StandardKeyboardEvent(e);
+		if (event.equals(KeyCode.Enter) || event.equals(KeyCode.Space)) {
+			this.onClick();
+			e.stopPropagation();
+		}
 	}
 
 	private getItemOrder(item: DivItem): number {

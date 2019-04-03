@@ -5,7 +5,7 @@
 'use strict';
 
 import * as nls from 'vscode-nls';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { AlertDialog } from './dialogs/alertDialog';
 import { JobDialog } from './dialogs/jobDialog';
@@ -38,35 +38,35 @@ export class MainController {
      * Activates the extension
      */
     public activate(): void {
-        vscode.commands.registerCommand('agent.openJobDialog', (ownerUri: string, jobInfo: sqlops.AgentJobInfo) => {
+        vscode.commands.registerCommand('agent.openJobDialog', async (ownerUri: string, jobInfo: azdata.AgentJobInfo) => {
             let dialog = new JobDialog(ownerUri, jobInfo);
-            dialog.dialogName ? dialog.openDialog(dialog.dialogName) : dialog.openDialog();
+            dialog.dialogName ? await dialog.openDialog(dialog.dialogName) : await dialog.openDialog();
         });
-        vscode.commands.registerCommand('agent.openNewStepDialog', (ownerUri: string, server: string, jobInfo: sqlops.AgentJobInfo, jobStepInfo: sqlops.AgentJobStepInfo) => {
-            AgentUtils.getAgentService().then((agentService) => {
+        vscode.commands.registerCommand('agent.openNewStepDialog', (ownerUri: string, server: string, jobInfo: azdata.AgentJobInfo, jobStepInfo: azdata.AgentJobStepInfo) => {
+            AgentUtils.getAgentService().then(async(agentService) => {
                 let jobData: JobData = new JobData(ownerUri, jobInfo, agentService);
                 let dialog = new JobStepDialog(ownerUri, server, jobData, jobStepInfo, false);
-                dialog.dialogName ? dialog.openDialog(dialog.dialogName) : dialog.openDialog();
+                dialog.dialogName ? await dialog.openDialog(dialog.dialogName) : await dialog.openDialog();
             });
         });
-        vscode.commands.registerCommand('agent.openPickScheduleDialog', (ownerUri: string, jobName: string) => {
+        vscode.commands.registerCommand('agent.openPickScheduleDialog', async (ownerUri: string, jobName: string) => {
             let dialog = new PickScheduleDialog(ownerUri, jobName);
-            dialog.showDialog();
+            await dialog.showDialog();
         });
-        vscode.commands.registerCommand('agent.openAlertDialog', (ownerUri: string, jobInfo: sqlops.AgentJobInfo, alertInfo: sqlops.AgentAlertInfo) => {
-            AgentUtils.getAgentService().then((agentService) => {
+        vscode.commands.registerCommand('agent.openAlertDialog', (ownerUri: string, jobInfo: azdata.AgentJobInfo, alertInfo: azdata.AgentAlertInfo) => {
+            AgentUtils.getAgentService().then(async (agentService) => {
                 let jobData: JobData = new JobData(ownerUri, jobInfo, agentService);
                 let dialog = new AlertDialog(ownerUri, jobData, alertInfo, false);
-                dialog.dialogName ? dialog.openDialog(dialog.dialogName) : dialog.openDialog();
+                dialog.dialogName ? await dialog.openDialog(dialog.dialogName) : await dialog.openDialog();
             });
         });
-        vscode.commands.registerCommand('agent.openOperatorDialog', (ownerUri: string, operatorInfo: sqlops.AgentOperatorInfo) => {
+        vscode.commands.registerCommand('agent.openOperatorDialog', async (ownerUri: string, operatorInfo: azdata.AgentOperatorInfo) => {
             let dialog = new OperatorDialog(ownerUri, operatorInfo);
-            dialog.dialogName ? dialog.openDialog(dialog.dialogName) : dialog.openDialog();
+            dialog.dialogName ? await dialog.openDialog(dialog.dialogName) : await dialog.openDialog();
         });
-        vscode.commands.registerCommand('agent.openProxyDialog', (ownerUri: string, proxyInfo: sqlops.AgentProxyInfo, credentials: sqlops.CredentialInfo[]) => {
+        vscode.commands.registerCommand('agent.openProxyDialog', async (ownerUri: string, proxyInfo: azdata.AgentProxyInfo, credentials: azdata.CredentialInfo[]) => {
             let dialog = new ProxyDialog(ownerUri, proxyInfo, credentials);
-            dialog.dialogName ? dialog.openDialog(dialog.dialogName) : dialog.openDialog();
+            dialog.dialogName ? await dialog.openDialog(dialog.dialogName) : await dialog.openDialog();
         });
     }
 

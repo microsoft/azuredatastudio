@@ -1240,6 +1240,13 @@
 		"_zip_1": {
 			"fontCharacter": "\\E091",
 			"fontColor": "#6d8086"
+		},
+		// {{SQL CARBON EDIT}}
+		"notebook": {
+			"iconPath": "./images/notebook.svg"
+		},
+		"notebook_dark": {
+			"iconPath": "./images/notebook_inverse.svg"
 		}
 	},
 	"file": "_default",
@@ -1422,7 +1429,9 @@
 		"htaccess": "_config",
 		"key": "_lock",
 		"cert": "_lock",
-		"ds_store": "_ignored"
+		"ds_store": "_ignored",
+		// {{SQL CARBON EDIT}}
+		"ipynb": "notebook_dark"
 	},
 	"fileNames": {
 		"mix": "_hex",
@@ -1531,7 +1540,9 @@
 		"haml": "_haml",
 		"stylus": "_stylus",
 		"vala": "_vala",
-		"todo": "_todo"
+		"todo": "_todo",
+		// {{SQL CARBON EDIT}}
+		"notebook": "notebook_dark"
 	},
 	"light": {
 		"file": "_default_light",
@@ -1714,7 +1725,9 @@
 			"htaccess": "_config_light",
 			"key": "_lock_light",
 			"cert": "_lock_light",
-			"ds_store": "_ignored_light"
+			"ds_store": "_ignored_light",
+			// {{SQL CARBON EDIT}}
+			"ipynb": "notebook"
 		},
 		"languageIds": {
 			"bat": "_windows_light",
@@ -1773,7 +1786,9 @@
 			"elixir": "_elixir_light",
 			"haml": "_haml_light",
 			"stylus": "_stylus_light",
-			"vala": "_vala_light"
+			"vala": "_vala_light",
+			// {{SQL CARBON EDIT}}
+			"notebook": "notebook"
 		},
 		"fileNames": {
 			"mix": "_hex_light",
@@ -1824,5 +1839,5 @@
 			"profiler": "_csv_light"
 		}
 	},
-	"version": "https://github.com/jesseweed/seti-ui/commit/7714a720646300bb8f6d1690752cd71f50991414"
+	"version": "https://github.com/jesseweed/seti-ui/commit/89175d7f9e0c70cd325b80a18a3c77fc8eb7c798"
 }

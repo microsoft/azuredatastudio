@@ -10,7 +10,7 @@ import {
 	ViewChild, ViewChildren, ElementRef, Injector, OnDestroy, QueryList
 } from '@angular/core';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as DOM from 'vs/base/browser/dom';
 import { $, Builder } from 'sql/base/browser/builder';
 
@@ -83,10 +83,10 @@ export default class DomComponent extends ComponentBase implements IComponent, O
 
 	// CSS-bound properties
 	public get html(): string {
-		return this.getPropertyOrDefault<sqlops.DomProperties, string>((props) => props.html, '');
+		return this.getPropertyOrDefault<azdata.DomProperties, string>((props) => props.html, '');
 	}
 
 	public set html(newValue: string) {
-		this.setPropertyFromUI<sqlops.DomProperties, string>((properties, html) => { properties.html = html; }, newValue);
+		this.setPropertyFromUI<azdata.DomProperties, string>((properties, html) => { properties.html = html; }, newValue);
 	}
 }

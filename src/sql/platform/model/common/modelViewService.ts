@@ -4,15 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { IItemConfig, IComponentShape } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IComponentEventArgs } from 'sql/parts/modelComponents/interfaces';
 import { Event } from 'vs/base/common/event';
 
 export interface IView {
 	readonly id: string;
-	readonly connection: sqlops.connection.Connection;
-	readonly serverInfo: sqlops.ServerInfo;
+	readonly connection: azdata.connection.Connection;
+	readonly serverInfo: azdata.ServerInfo;
 }
 
 export interface IModelViewEventArgs extends IComponentEventArgs {

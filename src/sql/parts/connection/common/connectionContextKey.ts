@@ -6,7 +6,7 @@
 'use strict';
 
 import { RawContextKey, IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
-import { IConnectionProfile } from 'sqlops';
+import { IConnectionProfile } from 'azdata';
 
 export class ConnectionContextKey implements IContextKey<IConnectionProfile> {
 

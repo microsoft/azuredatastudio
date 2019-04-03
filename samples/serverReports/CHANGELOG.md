@@ -1,5 +1,8 @@
 # Change Log
 
+## v1.5?
+* Add VDI_CLIENT_OTHER to the ignore list in the script used by the wait counts widget
+
 ## v1.4?
 * Add PREEMPTIVE_OS_FLUSHFILEBUFFERS to the ignore list in the script used by the wait counts widget
 

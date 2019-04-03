@@ -9,7 +9,7 @@ import {
 	OnDestroy, AfterViewInit, ElementRef, SecurityContext
 } from '@angular/core';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore } from 'sql/parts/modelComponents/interfaces';
@@ -52,15 +52,15 @@ export default class TextComponent extends ComponentBase implements IComponent, 
 	}
 
 	public set value(newValue: string) {
-		this.setPropertyFromUI<sqlops.TextComponentProperties, string>((properties, value) => { properties.value = value; }, newValue);
+		this.setPropertyFromUI<azdata.TextComponentProperties, string>((properties, value) => { properties.value = value; }, newValue);
 	}
 
 	public get value(): string {
-		return this.getPropertyOrDefault<sqlops.TextComponentProperties, string>((props) => props.value, '');
+		return this.getPropertyOrDefault<azdata.TextComponentProperties, string>((props) => props.value, '');
 	}
 
 	public getValue(): SafeHtml {
-		let links = this.getPropertyOrDefault<sqlops.TextComponentProperties, sqlops.LinkArea[]>((props) => props.links, []);
+		let links = this.getPropertyOrDefault<azdata.TextComponentProperties, azdata.LinkArea[]>((props) => props.links, []);
 		let text = this._domSanitizer.sanitize(SecurityContext.HTML, this.value);
 		if (links.length !== 0) {
 			for (let i: number = 0; i < links.length; i++) {

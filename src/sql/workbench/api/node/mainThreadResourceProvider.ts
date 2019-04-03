@@ -4,8 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import * as sqlops from 'sqlops';
-import { TPromise } from 'vs/base/common/winjs.base';
+import * as azdata from 'azdata';
 import { IResourceProviderService } from 'sql/workbench/services/resourceProvider/common/resourceProviderService';
 import { dispose, IDisposable } from 'vs/base/common/lifecycle';
 import {
@@ -14,13 +13,13 @@ import {
 	SqlExtHostContext,
 	SqlMainContext
 } from 'sql/workbench/api/node/sqlExtHost.protocol';
-import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
-import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
+import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
+import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 
 
 @extHostNamedCustomer(SqlMainContext.MainThreadResourceProvider)
 export class MainThreadResourceProvider implements MainThreadResourceProviderShape {
-	private _providerMetadata: { [handle: number]: sqlops.AccountProviderMetadata };
+	private _providerMetadata: { [handle: number]: azdata.AccountProviderMetadata };
 	private _proxy: ExtHostResourceProviderShape;
 	private _toDispose: IDisposable[];
 
@@ -35,27 +34,27 @@ export class MainThreadResourceProvider implements MainThreadResourceProviderSha
 		this._toDispose = [];
 	}
 
-	public $registerResourceProvider(providerMetadata: sqlops.ResourceProviderMetadata, handle: number): Thenable<any> {
+	public $registerResourceProvider(providerMetadata: azdata.ResourceProviderMetadata, handle: number): Thenable<any> {
 		let self = this;
 
 		// Create the account provider that interfaces with the extension via the proxy and register it
-		let resourceProvider: sqlops.ResourceProvider = {
-			createFirewallRule(account: sqlops.Account, firewallruleInfo: sqlops.FirewallRuleInfo): Thenable<sqlops.CreateFirewallRuleResponse> {
+		let resourceProvider: azdata.ResourceProvider = {
+			createFirewallRule(account: azdata.Account, firewallruleInfo: azdata.FirewallRuleInfo): Thenable<azdata.CreateFirewallRuleResponse> {
 				return self._proxy.$createFirewallRule(handle, account, firewallruleInfo);
 			},
-			handleFirewallRule(errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<sqlops.HandleFirewallRuleResponse> {
+			handleFirewallRule(errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<azdata.HandleFirewallRuleResponse> {
 				return self._proxy.$handleFirewallRule(handle, errorCode, errorMessage, connectionTypeId);
 			}
 		};
 		this._resourceProviderService.registerProvider(providerMetadata.id, resourceProvider);
 		this._providerMetadata[handle] = providerMetadata;
 
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 
 	public $unregisterResourceProvider(handle: number): Thenable<any> {
 		this._resourceProviderService.unregisterProvider(this._providerMetadata[handle].id);
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 
 	public dispose(): void {

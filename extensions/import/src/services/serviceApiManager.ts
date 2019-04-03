@@ -5,7 +5,7 @@
 
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as contracts from './contracts';
 import { SqlOpsDataClient } from 'dataprotocol-client/lib/main';
@@ -21,7 +21,7 @@ export interface IServiceApi {
 
 export interface IModelViewDefinition {
 	id: string;
-	modelView: sqlops.ModelView;
+	modelView: azdata.ModelView;
 }
 
 export class ServiceApiManager implements IServiceApi {
@@ -53,7 +53,7 @@ export class ServiceApiManager implements IServiceApi {
 		return this._onRegisteredModelView.event;
 	}
 
-	public registerModelView(id: string, modelView: sqlops.ModelView): void {
+	public registerModelView(id: string, modelView: azdata.ModelView): void {
 		this._onRegisteredModelView.fire({
 			id: id,
 			modelView: modelView

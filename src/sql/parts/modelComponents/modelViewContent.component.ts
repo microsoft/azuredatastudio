@@ -16,7 +16,7 @@ import { IModelView } from 'sql/platform/model/common/modelViewService';
 import { ViewBase } from 'sql/parts/modelComponents/viewBase';
 import { IModelViewService } from 'sql/platform/modelComponents/common/modelViewService';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 @Component({
 	selector: 'modelview-content',
@@ -66,13 +66,13 @@ export class ModelViewContent extends ViewBase implements OnInit, IModelView {
 	}
 
 	@memoize
-	public get connection(): sqlops.connection.Connection {
+	public get connection(): azdata.connection.Connection {
 		if (!this._commonService.connectionManagementService || !this._commonService.connectionManagementService.connectionInfo) {
 			return undefined;
 		}
 
 		let currentConnection = this._commonService.connectionManagementService.connectionInfo.connectionProfile;
-		let connection: sqlops.connection.Connection = {
+		let connection: azdata.connection.Connection = {
 			providerName: currentConnection.providerName,
 			connectionId: currentConnection.id,
 			options: currentConnection.options
@@ -81,7 +81,7 @@ export class ModelViewContent extends ViewBase implements OnInit, IModelView {
 	}
 
 	@memoize
-	public get serverInfo(): sqlops.ServerInfo {
+	public get serverInfo(): azdata.ServerInfo {
 		if (!this._commonService.connectionManagementService || !this._commonService.connectionManagementService.connectionInfo) {
 			return undefined;
 		}

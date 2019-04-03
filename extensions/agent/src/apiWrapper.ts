@@ -5,7 +5,7 @@
 
 'use strict';
 import * as vscode from 'vscode';
-import * as data from 'sqlops';
+import * as data from 'azdata';
 
 /**
  * Wrapper class to act as a facade over VSCode and Data APIs and allow us to test / mock callbacks into

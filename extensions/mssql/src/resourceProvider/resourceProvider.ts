@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { IConfig, ServerProvider } from 'service-downloader';
 import { SqlOpsDataClient, SqlOpsFeature, ClientOptions } from 'dataprotocol-client';
 import { ServerCapabilities, ClientCapabilities, RPCMessageType, ServerOptions, TransportKind } from 'vscode-languageclient';
@@ -39,16 +39,16 @@ class FireWallFeature extends SqlOpsFeature<any> {
 	protected registerProvider(options: any): Disposable {
 		const client = this._client;
 
-		let createFirewallRule = (account: sqlops.Account, firewallruleInfo: sqlops.FirewallRuleInfo): Thenable<sqlops.CreateFirewallRuleResponse> => {
+		let createFirewallRule = (account: azdata.Account, firewallruleInfo: azdata.FirewallRuleInfo): Thenable<azdata.CreateFirewallRuleResponse> => {
 			return client.sendRequest(CreateFirewallRuleRequest.type, asCreateFirewallRuleParams(account, firewallruleInfo));
 		};
 
-		let handleFirewallRule = (errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<sqlops.HandleFirewallRuleResponse> => {
+		let handleFirewallRule = (errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<azdata.HandleFirewallRuleResponse> => {
 			let params: HandleFirewallRuleParams = { errorCode: errorCode, errorMessage: errorMessage, connectionTypeId: connectionTypeId };
 			return client.sendRequest(HandleFirewallRuleRequest.type, params);
 		};
 
-		return sqlops.resources.registerResourceProvider({
+		return azdata.resources.registerResourceProvider({
 			displayName: 'Azure SQL Resource Provider', // TODO Localize
 			id: 'Microsoft.Azure.SQL.ResourceProvider',
 			settings: {
@@ -61,7 +61,7 @@ class FireWallFeature extends SqlOpsFeature<any> {
 	}
 }
 
-function asCreateFirewallRuleParams(account: sqlops.Account, params: sqlops.FirewallRuleInfo): CreateFirewallRuleParams {
+function asCreateFirewallRuleParams(account: azdata.Account, params: azdata.FirewallRuleInfo): CreateFirewallRuleParams {
 	return {
 		account: account,
 		serverName: params.serverName,

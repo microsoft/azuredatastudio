@@ -7,7 +7,7 @@ import {
 	Component, Input, Inject, ChangeDetectorRef, forwardRef, ViewChild, ElementRef, OnDestroy, AfterViewInit
 } from '@angular/core';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
@@ -124,10 +124,10 @@ export default class FileBrowserTreeComponent extends ComponentBase implements I
 
 	// CSS-bound properties
 	public get ownerUri(): string {
-		return this.getPropertyOrDefault<sqlops.FileBrowserTreeProperties, string>((props) => props.ownerUri, '');
+		return this.getPropertyOrDefault<azdata.FileBrowserTreeProperties, string>((props) => props.ownerUri, '');
 	}
 
 	public set ownerUri(newValue: string) {
-		this.setPropertyFromUI<sqlops.FileBrowserTreeProperties, string>((props, value) => props.ownerUri = value, newValue);
+		this.setPropertyFromUI<azdata.FileBrowserTreeProperties, string>((props, value) => props.ownerUri = value, newValue);
 	}
 }

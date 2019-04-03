@@ -2,7 +2,7 @@
 
 // CONFIG VALUES ///////////////////////////////////////////////////////////
 export const extensionConfigSectionName = 'dataManagement';
-export const extensionOutputChannel = 'SQL Server 2019 Preview';
+export const extensionOutputChannel = 'Jupyter Notebooks';
 export const configLogDebugInfo = 'logDebugInfo';
 
 // JUPYTER CONFIG //////////////////////////////////////////////////////////
@@ -27,8 +27,6 @@ export const winPlatform = 'win32';
 export const jupyterNotebookProviderId = 'jupyter';
 export const jupyterConfigRootFolder = 'jupyter_config';
 export const jupyterKernelsMasterFolder = 'kernels_master';
-export const jupyterNotebookLanguageId = 'jupyter-notebook';
-export const jupyterNotebookViewType = 'jupyter-notebook';
 export const jupyterNewNotebookTask = 'jupyter.task.newNotebook';
 export const jupyterOpenNotebookTask = 'jupyter.task.openNotebook';
 export const jupyterNewNotebookCommand = 'jupyter.cmd.newNotebook';

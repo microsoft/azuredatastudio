@@ -5,7 +5,7 @@
 
 'use strict';
 import * as vscode from 'vscode';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
@@ -42,7 +42,7 @@ export interface ICommandViewContext extends ICommandBaseContext {
 
 export interface ICommandObjectExplorerContext extends ICommandBaseContext {
 	type: 'objectexplorer';
-	explorerContext: sqlops.ObjectExplorerContext;
+	explorerContext: azdata.ObjectExplorerContext;
 }
 
 export type CommandContext = ICommandObjectExplorerContext | ICommandViewContext | ICommandUriContext | ICommandUnknownContext;
@@ -115,7 +115,7 @@ export abstract class Command extends vscode.Disposable {
 		}
 
 		if (firstArg && utils.isObjectExplorerContext(firstArg)) {
-			const [explorerContext, ...rest] = args as [sqlops.ObjectExplorerContext, any];
+			const [explorerContext, ...rest] = args as [azdata.ObjectExplorerContext, any];
 			return [{ command: command, type: constants.ObjectExplorerService, explorerContext: explorerContext }, rest];
 		}
 

@@ -5,22 +5,23 @@
 
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as constants from './constants';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import { AppContext } from './appContext';
 import { SqlClusterConnection } from './objectExplorerNodeProvider/connection';
 import { ICommandObjectExplorerContext } from './objectExplorerNodeProvider/command';
+import { IEndpoint } from './utils';
 import { MssqlObjectExplorerNodeProvider } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
 
 
 export function findSqlClusterConnection(
-	obj: ICommandObjectExplorerContext | sqlops.IConnectionProfile,
+	obj: ICommandObjectExplorerContext | azdata.IConnectionProfile,
 	appContext: AppContext) : SqlClusterConnection  {
 
 	if (!obj || !appContext) { return undefined; }
 
-	let sqlConnProfile: sqlops.IConnectionProfile;
+	let sqlConnProfile: azdata.IConnectionProfile;
 	if ('type' in obj && obj.type === constants.ObjectExplorerService
 		&& 'explorerContext' in obj && obj.explorerContext && obj.explorerContext.connectionProfile) {
 		sqlConnProfile = obj.explorerContext.connectionProfile;
@@ -35,7 +36,7 @@ export function findSqlClusterConnection(
 	return sqlClusterConnection;
 }
 
-function findSqlClusterConnectionBySqlConnProfile(sqlConnProfile: sqlops.IConnectionProfile, appContext: AppContext): SqlClusterConnection {
+function findSqlClusterConnectionBySqlConnProfile(sqlConnProfile: azdata.IConnectionProfile, appContext: AppContext): SqlClusterConnection {
 	if (!sqlConnProfile || !appContext) { return undefined; }
 
 	let sqlOeNodeProvider = appContext.getService<MssqlObjectExplorerNodeProvider>(constants.ObjectExplorerService);
@@ -48,7 +49,7 @@ function findSqlClusterConnectionBySqlConnProfile(sqlConnProfile: sqlops.IConnec
 }
 
 export async function getSqlClusterConnection(
-	obj: sqlops.IConnectionProfile | sqlops.connection.Connection | ICommandObjectExplorerContext): Promise<ConnectionParam> {
+	obj: azdata.IConnectionProfile | azdata.connection.Connection | ICommandObjectExplorerContext): Promise<ConnectionParam> {
 
 	if (!obj) { return undefined; }
 
@@ -66,13 +67,13 @@ export async function getSqlClusterConnection(
 	return sqlClusterConnInfo;
 }
 
-async function createSqlClusterConnInfo(sqlConnInfo: sqlops.IConnectionProfile | sqlops.connection.Connection): Promise<ConnectionParam> {
+async function createSqlClusterConnInfo(sqlConnInfo: azdata.IConnectionProfile | azdata.connection.Connection): Promise<ConnectionParam> {
 	if (!sqlConnInfo) { return undefined; }
 
 	let connectionId: string = 'id' in sqlConnInfo ? sqlConnInfo.id : sqlConnInfo.connectionId;
 	if (!connectionId) { return undefined; }
 
-	let serverInfo = await sqlops.connection.getServerInfo(connectionId);
+	let serverInfo = await azdata.connection.getServerInfo(connectionId);
 	if (!serverInfo || !serverInfo.options) { return undefined; }
 
 	let endpoints: IEndpoint[] = serverInfo.options[constants.clusterEndpointsProperty];
@@ -81,7 +82,7 @@ async function createSqlClusterConnInfo(sqlConnInfo: sqlops.IConnectionProfile |
 	let index = endpoints.findIndex(ep => ep.serviceName === constants.hadoopKnoxEndpointName);
 	if (index < 0) { return undefined; }
 
-	let credentials = await sqlops.connection.getCredentials(connectionId);
+	let credentials = await azdata.connection.getCredentials(connectionId);
 	if (!credentials) { return undefined; }
 
 	let clusterConnInfo = <ConnectionParam>{
@@ -99,12 +100,12 @@ async function createSqlClusterConnInfo(sqlConnInfo: sqlops.IConnectionProfile |
 	return clusterConnInfo;
 }
 
-function connProfileToConnectionParam(connectionProfile: sqlops.IConnectionProfile): ConnectionParam {
+function connProfileToConnectionParam(connectionProfile: azdata.IConnectionProfile): ConnectionParam {
 	let result = Object.assign(connectionProfile, { connectionId: connectionProfile.id });
 	return <ConnectionParam>result;
 }
 
-function connToConnectionParam(connection: sqlops.connection.Connection): ConnectionParam {
+function connToConnectionParam(connection: azdata.connection.Connection): ConnectionParam {
 	let connectionId = connection.connectionId;
 	let options = connection.options;
 	let result = Object.assign(connection,
@@ -118,13 +119,7 @@ function connToConnectionParam(connection: sqlops.connection.Connection): Connec
 	return <ConnectionParam>result;
 }
 
-interface IEndpoint {
-	serviceName: string;
-	ipAddress: string;
-	port: number;
-}
-
-class ConnectionParam implements sqlops.connection.Connection, sqlops.IConnectionProfile, sqlops.ConnectionInfo
+class ConnectionParam implements azdata.connection.Connection, azdata.IConnectionProfile, azdata.ConnectionInfo
 {
 	public connectionName: string;
 	public serverName: string;

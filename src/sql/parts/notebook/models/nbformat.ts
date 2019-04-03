@@ -7,7 +7,7 @@
 
 
 import { JSONObject } from './jsonext';
-import { nb } from 'sqlops';
+import { nb } from 'azdata';
 
 /**
  * A namespace for nbformat interfaces.

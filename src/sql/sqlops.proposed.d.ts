@@ -600,6 +600,7 @@ declare module 'sqlops' {
 		value?: string | CategoryValue;
 		values?: string[] | CategoryValue[];
 		editable?: boolean;
+		fireOnTextChange?: boolean;
 	}
 
 	export interface DeclarativeTableColumn {
@@ -1681,7 +1682,7 @@ declare module 'sqlops' {
 		AgentServicesProvider = 'AgentServicesProvider',
 		CapabilitiesProvider = 'CapabilitiesProvider',
 		DacFxServicesProvider = 'DacFxServicesProvider',
-		ObjectExplorerNodeProvider = 'ObjectExplorerNodeProvider',
+		ObjectExplorerNodeProvider = 'ObjectExplorerNodeProvider'
 	}
 
 	export namespace dataprotocol {
@@ -2130,6 +2131,7 @@ declare module 'sqlops' {
 
 		export interface IStandardKernel {
 			readonly name: string;
+			readonly displayName: string;
 			readonly connectionProviderIds: string[];
 		}
 

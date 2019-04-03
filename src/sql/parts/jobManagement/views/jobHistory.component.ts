@@ -6,7 +6,7 @@
 import 'vs/css!./jobHistory';
 import 'vs/css!sql/media/icons/common-icons';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as nls from 'vs/nls';
 import * as dom from 'vs/base/browser/dom';
 import { OnInit, Component, Inject, Input, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, ChangeDetectionStrategy, Injectable } from '@angular/core';
@@ -17,8 +17,10 @@ import { RunJobAction, StopJobAction, EditJobAction, JobsRefreshAction } from 's
 import { JobCacheObject } from 'sql/platform/jobManagement/common/jobManagementService';
 import { JobManagementUtilities } from 'sql/platform/jobManagement/common/jobManagementUtilities';
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
-import { JobHistoryController, JobHistoryDataSource,
-	JobHistoryRenderer, JobHistoryFilter, JobHistoryModel, JobHistoryRow } from 'sql/parts/jobManagement/views/jobHistoryTree';
+import {
+	JobHistoryController, JobHistoryDataSource,
+	JobHistoryRenderer, JobHistoryFilter, JobHistoryModel, JobHistoryRow
+} from 'sql/parts/jobManagement/views/jobHistoryTree';
 import { JobStepsViewRow } from 'sql/parts/jobManagement/views/jobStepsViewTree';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
@@ -53,9 +55,9 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 	@ViewChild('table') private _tableContainer: ElementRef;
 	@ViewChild('jobsteps') private _jobStepsView: ElementRef;
 
-	@Input() public agentJobInfo: sqlops.AgentJobInfo = undefined;
-	@Input() public agentJobHistories: sqlops.AgentJobHistoryInfo[] = undefined;
-	public agentJobHistoryInfo: sqlops.AgentJobHistoryInfo = undefined;
+	@Input() public agentJobInfo: azdata.AgentJobInfo = undefined;
+	@Input() public agentJobHistories: azdata.AgentJobHistoryInfo[] = undefined;
+	public agentJobHistoryInfo: azdata.AgentJobHistoryInfo = undefined;
 
 	private _isVisible: boolean = false;
 	private _stepRows: JobStepsViewRow[] = [];
@@ -63,7 +65,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 	private _showPreviousRuns: boolean = undefined;
 	private _runStatus: string = undefined;
 	private _jobCacheObject: JobCacheObject;
-	private _agentJobInfo: sqlops.AgentJobInfo;
+	private _agentJobInfo: azdata.AgentJobInfo;
 	private _noJobsAvailable: boolean = false;
 
 	private static readonly HEADING_HEIGHT: number = 24;
@@ -72,7 +74,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
 		@Inject(forwardRef(() => CommonServiceInterface)) commonService: CommonServiceInterface,
-		@Inject(forwardRef(() => AgentViewComponent)) private _agentViewComponent: AgentViewComponent,
+		@Inject(forwardRef(() => AgentViewComponent)) _agentViewComponent: AgentViewComponent,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
 		@Inject(IContextMenuService) private contextMenuService: IContextMenuService,
@@ -81,7 +83,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		@Inject(IDashboardService) dashboardService: IDashboardService,
 		@Inject(ITelemetryService) private _telemetryService: ITelemetryService
 	) {
-		super(commonService, dashboardService, contextMenuService, keybindingService, instantiationService);
+		super(commonService, dashboardService, contextMenuService, keybindingService, instantiationService, _agentViewComponent);
 		this._treeController = new JobHistoryController();
 		this._treeDataSource = new JobHistoryDataSource();
 		this._treeRenderer = new JobHistoryRenderer();
@@ -184,10 +186,16 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		});
 	}
 
-	private setStepsTree(element: any) {
+	private setStepsTree(element: JobHistoryRow) {
 		const self = this;
-		self.agentJobHistoryInfo = self._treeController.jobHistories.find(
+		let cachedHistory = self._jobCacheObject.getJobHistory(element.jobID);
+		if (cachedHistory) {
+			self.agentJobHistoryInfo = cachedHistory.find(
 			history => self.formatTime(history.runDate) === self.formatTime(element.runDate));
+		} else {
+			self.agentJobHistoryInfo = self._treeController.jobHistories.find(
+				history => self.formatTime(history.runDate) === self.formatTime(element.runDate));
+		}
 		if (self.agentJobHistoryInfo) {
 			self.agentJobHistoryInfo.runDate = self.formatTime(self.agentJobHistoryInfo.runDate);
 			if (self.agentJobHistoryInfo.steps) {
@@ -204,7 +212,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 				});
 				self._stepRows.unshift(new JobStepsViewRow());
 				self._stepRows[0].rowID = 'stepsColumn' + self._agentJobInfo.jobId;
-				self._stepRows[0].stepId = nls.localize('stepRow.stepID','Step ID');
+				self._stepRows[0].stepId = nls.localize('stepRow.stepID', 'Step ID');
 				self._stepRows[0].stepName = nls.localize('stepRow.stepName', 'Step Name');
 				self._stepRows[0].message = nls.localize('stepRow.message', 'Message');
 				this._showSteps = self._stepRows.length > 1;
@@ -217,7 +225,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		}
 	}
 
-	private didJobFail(job: sqlops.AgentJobHistoryInfo): boolean {
+	private didJobFail(job: azdata.AgentJobHistoryInfo): boolean {
 		for (let i = 0; i < job.steps.length; i++) {
 			if (job.steps[i].runStatus === 0) {
 				return true;
@@ -226,7 +234,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		return false;
 	}
 
-	private buildHistoryTree(self: any, jobHistories: sqlops.AgentJobHistoryInfo[]) {
+	private buildHistoryTree(self: any, jobHistories: azdata.AgentJobHistoryInfo[]) {
 		self._treeController.jobHistories = jobHistories;
 		let jobHistoryRows = this._treeController.jobHistories.map(job => self.convertToJobHistoryRow(job));
 		self._treeDataSource.data = jobHistoryRows;
@@ -245,7 +253,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 	}
 
 	private toggleCollapse(): void {
-		let arrow: HTMLElement = $('.resultsViewCollapsible').get(0);
+		let arrow: HTMLElement = jQuery('.resultsViewCollapsible').get(0);
 		let checkbox: any = document.getElementById('accordion');
 		if (arrow.className === 'resultsViewCollapsible' && checkbox.checked === false) {
 			arrow.className = 'resultsViewCollapsible collapsed';
@@ -259,11 +267,12 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		this._agentViewComponent.showHistory = false;
 	}
 
-	private convertToJobHistoryRow(historyInfo: sqlops.AgentJobHistoryInfo): JobHistoryRow {
+	private convertToJobHistoryRow(historyInfo: azdata.AgentJobHistoryInfo): JobHistoryRow {
 		let jobHistoryRow = new JobHistoryRow();
 		jobHistoryRow.runDate = this.formatTime(historyInfo.runDate);
 		jobHistoryRow.runStatus = JobManagementUtilities.convertToStatusString(historyInfo.runStatus);
 		jobHistoryRow.instanceID = historyInfo.instanceId;
+		jobHistoryRow.jobID = historyInfo.jobId;
 		return jobHistoryRow;
 	}
 
@@ -311,8 +320,8 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 	}
 
 	public layout() {
-		let historyDetails = $('.overview-container').get(0);
-		let statusBar = $('.part.statusbar').get(0);
+		let historyDetails = jQuery('.overview-container').get(0);
+		let statusBar = jQuery('.part.statusbar').get(0);
 		if (historyDetails && statusBar) {
 			let historyBottom = historyDetails.getBoundingClientRect().bottom;
 			let statusTop = statusBar.getBoundingClientRect().top;
@@ -331,27 +340,14 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		}
 	}
 
-	public refreshJobs() {
-		this._agentViewComponent.refresh = true;
-	}
-
 	protected initActionBar() {
 		let runJobAction = this.instantiationService.createInstance(RunJobAction);
 		let stopJobAction = this.instantiationService.createInstance(StopJobAction);
-		switch(this._agentJobInfo.currentExecutionStatus) {
-			case(1):
-			case(2):
-			case(3):
-				stopJobAction.enabled = true;
-				break;
-			default:
-				stopJobAction.enabled = false;
-		}
 		let editJobAction = this.instantiationService.createInstance(EditJobAction);
 		let refreshAction = this.instantiationService.createInstance(JobsRefreshAction);
 		let taskbar = <HTMLElement>this.actionBarContainer.nativeElement;
 		this._actionBar = new Taskbar(taskbar, this.contextMenuService);
-		this._actionBar.context = { targetObject: this._agentJobInfo, ownerUri: this.ownerUri, jobHistoryComponent: this };
+		this._actionBar.context = { targetObject: this._agentJobInfo, ownerUri: this.ownerUri, component: this };
 		this._actionBar.setContent([
 			{ action: runJobAction },
 			{ action: stopJobAction },

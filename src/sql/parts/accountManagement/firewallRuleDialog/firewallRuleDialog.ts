@@ -8,7 +8,6 @@
 import 'vs/css!./media/firewallRuleDialog';
 import { Builder, $ } from 'sql/base/browser/builder';
 import * as DOM from 'vs/base/browser/dom';
-import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { localize } from 'vs/nls';
@@ -22,7 +21,7 @@ import { IWindowsService } from 'vs/platform/windows/common/windows';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/workbench/browser/modal/modal';
 import { FirewallRuleViewModel } from 'sql/parts/accountManagement/firewallRuleDialog/firewallRuleViewModel';
@@ -30,6 +29,7 @@ import { attachModalDialogStyler, attachButtonStyler } from 'sql/platform/theme/
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { IAccountPickerService } from 'sql/platform/accountManagement/common/accountPicker';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
+import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 
 // TODO: Make the help link 1) extensible (01/08/2018, https://github.com/Microsoft/azuredatastudio/issues/450)
 // in case that other non-Azure sign in is to be used
@@ -64,7 +64,7 @@ export class FirewallRuleDialog extends Modal {
 
 	constructor(
 		@IAccountPickerService private _accountPickerService: IAccountPickerService,
-		@IPartService partService: IPartService,
+		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
 		@IThemeService themeService: IThemeService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IContextViewService private _contextViewService: IContextViewService,
@@ -76,8 +76,8 @@ export class FirewallRuleDialog extends Modal {
 		super(
 			localize('createNewFirewallRule', 'Create new firewall rule'),
 			TelemetryKeys.FireWallRule,
-			partService,
 			telemetryService,
+			layoutService,
 			clipboardService,
 			themeService,
 			contextKeyService,
@@ -304,7 +304,7 @@ export class FirewallRuleDialog extends Modal {
 		}
 	}
 
-	public onAccountSelectionChange(account: sqlops.Account): void {
+	public onAccountSelectionChange(account: azdata.Account): void {
 		this.viewModel.selectedAccount = account;
 		if (account && !account.isStale) {
 			this._createButton.enabled = true;

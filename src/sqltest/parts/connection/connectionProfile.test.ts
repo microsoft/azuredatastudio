@@ -8,7 +8,7 @@
 
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionProfile, IConnectionProfileStore } from 'sql/platform/connection/common/interfaces';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as assert from 'assert';
 import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { CapabilitiesTestService } from 'sqltest/stubs/capabilitiesTestService';
@@ -52,7 +52,7 @@ suite('SQL ConnectionProfileInfo tests', () => {
 	};
 
 	setup(() => {
-		let connectionProvider: sqlops.ConnectionOption[] = [
+		let connectionProvider: azdata.ConnectionOption[] = [
 			{
 				name: 'connectionName',
 				displayName: undefined,

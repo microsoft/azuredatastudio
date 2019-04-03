@@ -9,21 +9,20 @@ import * as GridContentEvents from 'sql/parts/grid/common/gridContentEvents';
 import * as LocalizedConstants from 'sql/parts/query/common/localizedConstants';
 import QueryRunner, { EventType as QREvents } from 'sql/platform/query/common/queryRunner';
 import { DataService } from 'sql/parts/grid/services/dataService';
-import { IQueryModelService } from 'sql/platform/query/common/queryModel';
+import { IQueryModelService, IQueryPlanInfo, IQueryEvent } from 'sql/platform/query/common/queryModel';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
 import { QueryStatusbarItem } from 'sql/parts/query/execution/queryStatus';
 import { SqlFlavorStatusbarItem } from 'sql/parts/query/common/flavorStatus';
 import { RowCountStatusBarItem } from 'sql/parts/query/common/rowCountStatus';
 import { TimeElapsedStatusBarItem } from 'sql/parts/query/common/timeElapsedStatus';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 import * as nls from 'vs/nls';
 import * as statusbar from 'vs/workbench/browser/parts/statusbar/statusbar';
 import * as platform from 'vs/platform/registry/common/platform';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Event, Emitter } from 'vs/base/common/event';
-import { TPromise } from 'vs/base/common/winjs.base';
 import * as strings from 'vs/base/common/strings';
 import * as types from 'vs/base/common/types';
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -44,7 +43,7 @@ export class QueryInfo {
 	public queryRunner: QueryRunner;
 	public dataService: DataService;
 	public queryEventQueue: QueryEvent[];
-	public selection: Array<sqlops.ISelectionData>;
+	public selection: Array<azdata.ISelectionData>;
 	public queryInput: QueryInput;
 	public selectionSnippet: string;
 
@@ -69,12 +68,14 @@ export class QueryModelService implements IQueryModelService {
 	private _queryInfoMap: Map<string, QueryInfo>;
 	private _onRunQueryStart: Emitter<string>;
 	private _onRunQueryComplete: Emitter<string>;
-	private _onEditSessionReady: Emitter<sqlops.EditSessionReadyParams>;
+	private _onQueryEvent: Emitter<IQueryEvent>;
+	private _onEditSessionReady: Emitter<azdata.EditSessionReadyParams>;
 
 	// EVENTS /////////////////////////////////////////////////////////////
 	public get onRunQueryStart(): Event<string> { return this._onRunQueryStart.event; }
 	public get onRunQueryComplete(): Event<string> { return this._onRunQueryComplete.event; }
-	public get onEditSessionReady(): Event<sqlops.EditSessionReadyParams> { return this._onEditSessionReady.event; }
+	public get onQueryEvent(): Event<IQueryEvent> { return this._onQueryEvent.event; }
+	public get onEditSessionReady(): Event<azdata.EditSessionReadyParams> { return this._onEditSessionReady.event; }
 
 	// CONSTRUCTOR /////////////////////////////////////////////////////////
 	constructor(
@@ -84,7 +85,8 @@ export class QueryModelService implements IQueryModelService {
 		this._queryInfoMap = new Map<string, QueryInfo>();
 		this._onRunQueryStart = new Emitter<string>();
 		this._onRunQueryComplete = new Emitter<string>();
-		this._onEditSessionReady = new Emitter<sqlops.EditSessionReadyParams>();
+		this._onQueryEvent = new Emitter<IQueryEvent>();
+		this._onEditSessionReady = new Emitter<azdata.EditSessionReadyParams>();
 
 		// Register Statusbar items
 
@@ -157,13 +159,13 @@ export class QueryModelService implements IQueryModelService {
 	/**
 	 * Get more data rows from the current resultSets from the service layer
 	 */
-	public getQueryRows(uri: string, rowStart: number, numberOfRows: number, batchId: number, resultId: number): Thenable<sqlops.ResultSetSubset> {
+	public getQueryRows(uri: string, rowStart: number, numberOfRows: number, batchId: number, resultId: number): Thenable<azdata.ResultSetSubset> {
 		return this._getQueryInfo(uri).queryRunner.getQueryRows(rowStart, numberOfRows, batchId, resultId).then(results => {
 			return results.resultSubset;
 		});
 	}
 
-	public getEditRows(uri: string, rowStart: number, numberOfRows: number): Thenable<sqlops.EditSubsetResult> {
+	public getEditRows(uri: string, rowStart: number, numberOfRows: number): Thenable<azdata.EditSubsetResult> {
 		return this._queryInfoMap.get(uri).queryRunner.getEditRows(rowStart, numberOfRows).then(results => {
 			return results;
 		});
@@ -210,14 +212,14 @@ export class QueryModelService implements IQueryModelService {
 	/**
 	 * Run a query for the given URI with the given text selection
 	 */
-	public runQuery(uri: string, selection: sqlops.ISelectionData, queryInput: QueryInput, runOptions?: sqlops.ExecutionPlanOptions): void {
+	public runQuery(uri: string, selection: azdata.ISelectionData, queryInput: QueryInput, runOptions?: azdata.ExecutionPlanOptions): void {
 		this.doRunQuery(uri, selection, queryInput, false, runOptions);
 	}
 
 	/**
 	 * Run the current SQL statement for the given URI
 	 */
-	public runQueryStatement(uri: string, selection: sqlops.ISelectionData, queryInput: QueryInput): void {
+	public runQueryStatement(uri: string, selection: azdata.ISelectionData, queryInput: QueryInput): void {
 		this.doRunQuery(uri, selection, queryInput, true);
 	}
 
@@ -231,8 +233,8 @@ export class QueryModelService implements IQueryModelService {
 	/**
 	 * Run Query implementation
 	 */
-	private doRunQuery(uri: string, selection: sqlops.ISelectionData | string, queryInput: QueryInput,
-		runCurrentStatement: boolean, runOptions?: sqlops.ExecutionPlanOptions): void {
+	private doRunQuery(uri: string, selection: azdata.ISelectionData | string, queryInput: QueryInput,
+		runCurrentStatement: boolean, runOptions?: azdata.ExecutionPlanOptions): void {
 		// Reuse existing query runner if it exists
 		let queryRunner: QueryRunner;
 		let info: QueryInfo;
@@ -309,11 +311,38 @@ export class QueryModelService implements IQueryModelService {
 		});
 		queryRunner.addListener(QREvents.COMPLETE, totalMilliseconds => {
 			this._onRunQueryComplete.fire(uri);
+
+			// fire extensibility API event
+			let event: IQueryEvent = {
+				type: 'queryStop',
+				uri: uri
+			};
+			this._onQueryEvent.fire(event);
+
+			// fire UI event
 			this._fireQueryEvent(uri, 'complete', totalMilliseconds);
 		});
 		queryRunner.addListener(QREvents.START, () => {
 			this._onRunQueryStart.fire(uri);
+
+			// fire extensibility API event
+			let event: IQueryEvent = {
+				type: 'queryStart',
+				uri: uri
+			};
+			this._onQueryEvent.fire(event);
+
 			this._fireQueryEvent(uri, 'start');
+		});
+
+		queryRunner.addListener(QREvents.QUERY_PLAN_AVAILABLE, (planInfo) => {
+			// fire extensibility API event
+			let event: IQueryEvent = {
+				type: 'executionPlan',
+				uri: planInfo.fileUri,
+				params: planInfo
+			};
+			this._onQueryEvent.fire(event);
 		});
 
 		info.queryRunner = queryRunner;
@@ -423,10 +452,26 @@ export class QueryModelService implements IQueryModelService {
 			});
 			queryRunner.addListener(QREvents.COMPLETE, totalMilliseconds => {
 				this._onRunQueryComplete.fire(ownerUri);
+				// fire extensibility API event
+				let event: IQueryEvent = {
+					type: 'queryStop',
+					uri: ownerUri
+				};
+				this._onQueryEvent.fire(event);
+
+				// fire UI event
 				this._fireQueryEvent(ownerUri, 'complete', totalMilliseconds);
 			});
 			queryRunner.addListener(QREvents.START, () => {
 				this._onRunQueryStart.fire(ownerUri);
+				// fire extensibility API event
+				let event: IQueryEvent = {
+					type: 'queryStart',
+					uri: ownerUri
+				};
+				this._onQueryEvent.fire(event);
+
+				// fire UI event
 				this._fireQueryEvent(ownerUri, 'start');
 			});
 			queryRunner.addListener(QREvents.EDIT_SESSION_READY, e => {
@@ -460,10 +505,10 @@ export class QueryModelService implements IQueryModelService {
 		if (queryRunner) {
 			return queryRunner.disposeEdit(ownerUri);
 		}
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 
-	public updateCell(ownerUri: string, rowId: number, columnId: number, newValue: string): Thenable<sqlops.EditUpdateCellResult> {
+	public updateCell(ownerUri: string, rowId: number, columnId: number, newValue: string): Thenable<azdata.EditUpdateCellResult> {
 		// Get existing query runner
 		let queryRunner = this.internalGetQueryRunner(ownerUri);
 		if (queryRunner) {
@@ -475,7 +520,7 @@ export class QueryModelService implements IQueryModelService {
 				return Promise.reject(error);
 			});
 		}
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 
 	public commitEdit(ownerUri): Thenable<void> {
@@ -490,16 +535,16 @@ export class QueryModelService implements IQueryModelService {
 				return Promise.reject(error);
 			});
 		}
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 
-	public createRow(ownerUri: string): Thenable<sqlops.EditCreateRowResult> {
+	public createRow(ownerUri: string): Thenable<azdata.EditCreateRowResult> {
 		// Get existing query runner
 		let queryRunner = this.internalGetQueryRunner(ownerUri);
 		if (queryRunner) {
 			return queryRunner.createRow(ownerUri);
 		}
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 
 	public deleteRow(ownerUri: string, rowId: number): Thenable<void> {
@@ -508,16 +553,16 @@ export class QueryModelService implements IQueryModelService {
 		if (queryRunner) {
 			return queryRunner.deleteRow(ownerUri, rowId);
 		}
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 
-	public revertCell(ownerUri: string, rowId: number, columnId: number): Thenable<sqlops.EditRevertCellResult> {
+	public revertCell(ownerUri: string, rowId: number, columnId: number): Thenable<azdata.EditRevertCellResult> {
 		// Get existing query runner
 		let queryRunner = this.internalGetQueryRunner(ownerUri);
 		if (queryRunner) {
 			return queryRunner.revertCell(ownerUri, rowId, columnId);
 		}
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 
 	public revertRow(ownerUri: string, rowId: number): Thenable<void> {
@@ -526,7 +571,7 @@ export class QueryModelService implements IQueryModelService {
 		if (queryRunner) {
 			return queryRunner.revertRow(ownerUri, rowId);
 		}
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 
 	public getQueryRunner(ownerUri): QueryRunner {
@@ -595,9 +640,9 @@ export class QueryModelService implements IQueryModelService {
 
 	// TODO remove this funciton and its usages when #821 in vscode-mssql is fixed and
 	// the SqlToolsService version is updated in this repo - coquagli 4/19/2017
-	private _validateSelection(selection: sqlops.ISelectionData): sqlops.ISelectionData {
+	private _validateSelection(selection: azdata.ISelectionData): azdata.ISelectionData {
 		if (!selection) {
-			selection = <sqlops.ISelectionData>{};
+			selection = <azdata.ISelectionData>{};
 		}
 		selection.endColumn = selection ? Math.max(0, selection.endColumn) : 0;
 		selection.endLine = selection ? Math.max(0, selection.endLine) : 0;

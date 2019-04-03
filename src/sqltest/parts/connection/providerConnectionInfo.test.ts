@@ -8,7 +8,7 @@
 
 import { ProviderConnectionInfo } from 'sql/platform/connection/common/providerConnectionInfo';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as assert from 'assert';
 import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
@@ -37,8 +37,8 @@ suite('SQL ProviderConnectionInfo tests', () => {
 	};
 
 	setup(() => {
-		let capabilities: sqlops.DataProtocolServerCapabilities[] = [];
-		let connectionProvider: sqlops.ConnectionOption[] = [
+		let capabilities: azdata.DataProtocolServerCapabilities[] = [];
+		let connectionProvider: azdata.ConnectionOption[] = [
 			{
 				name: 'connectionName',
 				displayName: undefined,

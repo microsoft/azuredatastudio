@@ -6,7 +6,7 @@
 'use strict';
 
 import * as vscode from 'vscode';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as os from 'os';
 import * as nls from 'vscode-nls';
 
@@ -20,13 +20,16 @@ const JUPYTER_NOTEBOOK_PROVIDER = 'jupyter';
 const msgSampleCodeDataFrame = localize('msgSampleCodeDataFrame', 'This sample code loads the file into a data frame and shows the first 10 results.');
 const noNotebookVisible = localize('noNotebookVisible', 'No notebook editor is active');
 
-let counter = 0;
 
 export let controller: JupyterController;
 
 export function activate(extensionContext: vscode.ExtensionContext) {
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.new', (connectionId?: string) => {
-		newNotebook(connectionId);
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.new', (context?: azdata.ConnectedContext) => {
+		let connectionProfile: azdata.IConnectionProfile = undefined;
+		if (context && context.connectionProfile) {
+			connectionProfile = context.connectionProfile;
+		}
+		newNotebook(connectionProfile);
 	}));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.open', () => {
 		openNotebook();
@@ -40,7 +43,7 @@ export function activate(extensionContext: vscode.ExtensionContext) {
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.addtext', () => {
 		addCell('markdown');
 	}));
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.analyzeNotebook', (explorerContext: sqlops.ObjectExplorerContext) => {
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.analyzeNotebook', (explorerContext: azdata.ObjectExplorerContext) => {
 		analyzeNotebook(explorerContext);
 	}));
 
@@ -49,22 +52,35 @@ export function activate(extensionContext: vscode.ExtensionContext) {
 	controller.activate();
 }
 
-function newNotebook(connectionId: string) {
-	let title = `Untitled-${counter++}`;
+function newNotebook(connectionProfile: azdata.IConnectionProfile) {
+	let title = findNextUntitledEditorName();
 	let untitledUri = vscode.Uri.parse(`untitled:${title}`);
-	let options: sqlops.nb.NotebookShowOptions = connectionId ? {
+	let options: azdata.nb.NotebookShowOptions = connectionProfile ? {
 		viewColumn: null,
 		preserveFocus: true,
 		preview: null,
 		providerId: null,
-		connectionId: connectionId,
+		connectionProfile: connectionProfile,
 		defaultKernel: null
 	} : null;
-	sqlops.nb.showNotebookDocument(untitledUri, options).then(success => {
+	azdata.nb.showNotebookDocument(untitledUri, options).then(success => {
 
 	}, (err: Error) => {
 		vscode.window.showErrorMessage(err.message);
 	});
+}
+
+function findNextUntitledEditorName(): string {
+	let nextVal = 0;
+	// Note: this will go forever if it's coded wrong, or you have infinite Untitled notebooks!
+	while (true) {
+		let title = `Notebook-${nextVal}`;
+		let hasNotebookDoc = azdata.nb.notebookDocuments.findIndex(doc => doc.isUntitled && doc.fileName === title) > -1;
+		if (!hasNotebookDoc) {
+			return title;
+		}
+		nextVal++;
+	}
 }
 
 async function openNotebook(): Promise<void> {
@@ -86,7 +102,7 @@ async function openNotebook(): Promise<void> {
 
 async function runActiveCell(): Promise<void> {
 	try {
-		let notebook = sqlops.nb.activeNotebookEditor;
+		let notebook = azdata.nb.activeNotebookEditor;
 		if (notebook) {
 			await notebook.runCell();
 		} else {
@@ -97,11 +113,11 @@ async function runActiveCell(): Promise<void> {
 	}
 }
 
-async function addCell(cellType: sqlops.nb.CellType): Promise<void> {
+async function addCell(cellType: azdata.nb.CellType): Promise<void> {
 	try {
-		let notebook = sqlops.nb.activeNotebookEditor;
+		let notebook = azdata.nb.activeNotebookEditor;
 		if (notebook) {
-			await notebook.edit((editBuilder: sqlops.nb.NotebookEditorEdit) => {
+			await notebook.edit((editBuilder: azdata.nb.NotebookEditorEdit) => {
 				// TODO should prompt and handle cell placement
 				editBuilder.insertCell({
 					cell_type: cellType,
@@ -116,13 +132,14 @@ async function addCell(cellType: sqlops.nb.CellType): Promise<void> {
 	}
 }
 
-async function analyzeNotebook(oeContext?: sqlops.ObjectExplorerContext): Promise<void> {
+async function analyzeNotebook(oeContext?: azdata.ObjectExplorerContext): Promise<void> {
 	// Ensure we get a unique ID for the notebook. For now we're using a different prefix to the built-in untitled files
 	// to handle this. We should look into improving this in the future
-	let untitledUri = vscode.Uri.parse(`untitled:Notebook-${counter++}`);
+	let title = findNextUntitledEditorName();
+	let untitledUri = vscode.Uri.parse(`untitled:${title}`);
 
-	let editor = await sqlops.nb.showNotebookDocument(untitledUri, {
-		connectionId: oeContext ? oeContext.connectionProfile.id : '',
+	let editor = await azdata.nb.showNotebookDocument(untitledUri, {
+		connectionProfile: oeContext ? oeContext.connectionProfile : undefined,
 		providerId: JUPYTER_NOTEBOOK_PROVIDER,
 		preview: false,
 		defaultKernel: {

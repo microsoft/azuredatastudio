@@ -35,7 +35,7 @@ export class ServerDashboardPage extends DashboardPage implements OnInit {
 	};
 
 	protected readonly context = 'server';
-	private _letDashboardPromise: Thenable<boolean>;
+	private _letDashboardPromise: Promise<void>;
 
 	constructor(
 		@Inject(forwardRef(() => IBreadcrumbService)) private breadcrumbService: IBreadcrumbService,
@@ -48,8 +48,15 @@ export class ServerDashboardPage extends DashboardPage implements OnInit {
 		@Inject(IConfigurationService) configurationService: IConfigurationService
 	) {
 		super(dashboardService, el, _cd, instantiationService, notificationService, angularEventingService, configurationService);
-		// revert back to default database
-		this._letDashboardPromise = this.dashboardService.connectionManagementService.changeDatabase('master');
+
+		// special-case handling for MSSQL data provider
+		let connInfo = this.dashboardService.connectionManagementService.connectionInfo;
+		if (connInfo && connInfo.providerId === 'MSSQL') {
+			// revert back to default database
+			this._letDashboardPromise = this.dashboardService.connectionManagementService.changeDatabase('master').then();
+		} else {
+			this._letDashboardPromise = Promise.resolve();
+		}
 	}
 
 	ngOnInit() {

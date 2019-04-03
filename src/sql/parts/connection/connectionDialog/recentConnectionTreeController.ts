@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { DefaultController, ICancelableEvent } from 'vs/base/parts/tree/browser/treeDefaults';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { ITree } from 'vs/base/parts/tree/browser/tree';

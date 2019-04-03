@@ -4,21 +4,20 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { TPromise } from 'vs/base/common/winjs.base';
-import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
+import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { SqlMainContext, MainThreadSerializationProviderShape, ExtHostSerializationProviderShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import * as vscode from 'vscode';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { Disposable } from 'vs/workbench/api/node/extHostTypes';
 
 class SerializationAdapter {
-	private _provider: sqlops.SerializationProvider;
+	private _provider: azdata.SerializationProvider;
 
-	constructor(provider: sqlops.SerializationProvider) {
+	constructor(provider: azdata.SerializationProvider) {
 		this._provider = provider;
 	}
 
-	public saveAs(saveFormat: string, savePath: string, results: string, appendToFile: boolean): Thenable<sqlops.SaveResultRequestResult> {
+	public saveAs(saveFormat: string, savePath: string, results: string, appendToFile: boolean): Thenable<azdata.SaveResultRequestResult> {
 		return this._provider.saveAs(saveFormat, savePath, results, appendToFile);
 	}
 
@@ -47,7 +46,7 @@ export class ExtHostSerializationProvider extends ExtHostSerializationProviderSh
 	private _withAdapter<A, R>(handle: number, ctor: { new(...args: any[]): A }, callback: (adapter: A) => Thenable<R>): Thenable<R> {
 		let adapter = this._adapter[handle];
 		if (!(adapter instanceof ctor)) {
-			return TPromise.wrapError(new Error('no adapter found'));
+			return Promise.reject(new Error('no adapter found'));
 		}
 		return callback(<any>adapter);
 	}
@@ -59,14 +58,14 @@ export class ExtHostSerializationProvider extends ExtHostSerializationProviderSh
 		this._proxy = mainContext.getProxy(SqlMainContext.MainThreadSerializationProvider);
 	}
 
-	public $registerSerializationProvider(provider: sqlops.SerializationProvider): vscode.Disposable {
+	public $registerSerializationProvider(provider: azdata.SerializationProvider): vscode.Disposable {
 		provider.handle = this._nextHandle();
 		this._adapter[provider.handle] = new SerializationAdapter(provider);
 		this._proxy.$registerSerializationProvider(provider.handle);
 		return this._createDisposable(provider.handle);
 	}
 
-	public $saveAs(saveFormat: string, savePath: string, results: string, appendToFile: boolean): Thenable<sqlops.SaveResultRequestResult> {
+	public $saveAs(saveFormat: string, savePath: string, results: string, appendToFile: boolean): Thenable<azdata.SaveResultRequestResult> {
 		return this._withAdapter(0, SerializationAdapter, adapter => adapter.saveAs(saveFormat, savePath, results, appendToFile));
 	}
 

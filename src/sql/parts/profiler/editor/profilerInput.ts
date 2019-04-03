@@ -8,10 +8,9 @@ import { IProfilerSession, IProfilerService, ProfilerSessionID, IProfilerViewTem
 import { ProfilerState } from './profilerState';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as nls from 'vs/nls';
 
-import { TPromise } from 'vs/base/common/winjs.base';
 import { EditorInput, ConfirmResult } from 'vs/workbench/common/editor';
 import { IEditorModel } from 'vs/platform/editor/common/editor';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -19,7 +18,6 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { Event, Emitter } from 'vs/base/common/event';
 import { generateUuid } from 'vs/base/common/uuid';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
-import { escape } from 'sql/base/common/strings';
 import * as types from 'vs/base/common/types';
 import { URI } from 'vs/base/common/uri';
 import Severity from 'vs/base/common/severity';
@@ -124,7 +122,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		return ProfilerInput.ID;
 	}
 
-	public resolve(refresh?: boolean): TPromise<IEditorModel> {
+	public resolve(refresh?: boolean): Promise<IEditorModel> {
 		return undefined;
 	}
 
@@ -199,7 +197,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		return this._filter;
 	}
 
-	public onSessionStopped(notification: sqlops.ProfilerSessionStoppedParams) {
+	public onSessionStopped(notification: azdata.ProfilerSessionStoppedParams) {
 		this._notificationService.error(nls.localize("profiler.sessionStopped", "XEvent Profiler Session stopped unexpectedly on the server {0}.", this.connection.serverName));
 
 		this.state.change({
@@ -209,7 +207,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		});
 	}
 
-	public onProfilerSessionCreated(params: sqlops.ProfilerSessionCreatedParams) {
+	public onProfilerSessionCreated(params: azdata.ProfilerSessionCreatedParams) {
 		if (types.isUndefinedOrNull(params.sessionName) || types.isUndefinedOrNull(params.templateName)) {
 			this._notificationService.error(nls.localize("profiler.sessionCreationError", "Error while starting new session"));
 		} else {
@@ -239,14 +237,14 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		this.state.change(state);
 	}
 
-	public onMoreRows(eventMessage: sqlops.ProfilerSessionEvents) {
+	public onMoreRows(eventMessage: azdata.ProfilerSessionEvents) {
 		if (eventMessage.eventsLost) {
 			this._notificationService.warn(nls.localize("profiler.eventsLost", "The XEvent Profiler session for {0} has lost events.", this.connection.serverName));
 		}
 
 		let newEvents = [];
 		for (let i: number = 0; i < eventMessage.events.length && i < 500; ++i) {
-			let e: sqlops.ProfilerEvent = eventMessage.events[i];
+			let e: azdata.ProfilerEvent = eventMessage.events[i];
 			let data = {};
 			data['EventClass'] = e.name;
 			data['StartTime'] = e.timestamp;
@@ -259,7 +257,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 				let columnName = this._columnMapping[key];
 				if (columnName) {
 					let value = e.values[key];
-					data[columnName] = escape(value);
+					data[columnName] = value;
 				}
 			}
 			newEvents.push(data);
@@ -284,7 +282,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		this.data.clearFilter();
 	}
 
-	confirmSave(): TPromise<ConfirmResult> {
+	confirmSave(): Promise<ConfirmResult> {
 		if (this.state.isRunning || this.state.isPaused) {
 			return this._dialogService.show(Severity.Warning,
 				nls.localize('confirmStopProfilerSession', "Would you like to stop the running XEvent session?"),
@@ -303,7 +301,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 					}
 				});
 		} else {
-			return TPromise.wrap(ConfirmResult.DONT_SAVE);
+			return Promise.resolve(ConfirmResult.DONT_SAVE);
 		}
 	}
 

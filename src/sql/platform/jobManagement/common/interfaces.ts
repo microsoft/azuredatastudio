@@ -5,7 +5,7 @@
 
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { JobCacheObject, AlertsCacheObject, ProxiesCacheObject, OperatorsCacheObject } from './jobManagementService';
 import { Event } from 'vs/base/common/event';
@@ -18,27 +18,27 @@ export interface IJobManagementService {
 	_serviceBrand: any;
 	onDidChange: Event<void>;
 
-	registerProvider(providerId: string, provider: sqlops.AgentServicesProvider): void;
+	registerProvider(providerId: string, provider: azdata.AgentServicesProvider): void;
 	fireOnDidChange(): void;
 
-	getJobs(connectionUri: string): Thenable<sqlops.AgentJobsResult>;
-	getJobHistory(connectionUri: string, jobID: string, jobName: string): Thenable<sqlops.AgentJobHistoryResult>;
-	deleteJob(connectionUri: string, job: sqlops.AgentJobInfo): Thenable<sqlops.ResultStatus>;
+	getJobs(connectionUri: string): Thenable<azdata.AgentJobsResult>;
+	getJobHistory(connectionUri: string, jobID: string, jobName: string): Thenable<azdata.AgentJobHistoryResult>;
+	deleteJob(connectionUri: string, job: azdata.AgentJobInfo): Thenable<azdata.ResultStatus>;
 
-	deleteJobStep(connectionUri: string, step: sqlops.AgentJobStepInfo): Thenable<sqlops.ResultStatus>;
+	deleteJobStep(connectionUri: string, step: azdata.AgentJobStepInfo): Thenable<azdata.ResultStatus>;
 
-	getAlerts(connectionUri: string): Thenable<sqlops.AgentAlertsResult>;
-	deleteAlert(connectionUri: string, alert: sqlops.AgentAlertInfo): Thenable<sqlops.ResultStatus>;
+	getAlerts(connectionUri: string): Thenable<azdata.AgentAlertsResult>;
+	deleteAlert(connectionUri: string, alert: azdata.AgentAlertInfo): Thenable<azdata.ResultStatus>;
 
-	getOperators(connectionUri: string): Thenable<sqlops.AgentOperatorsResult>;
-	deleteOperator(connectionUri: string, operator: sqlops.AgentOperatorInfo): Thenable<sqlops.ResultStatus>;
+	getOperators(connectionUri: string): Thenable<azdata.AgentOperatorsResult>;
+	deleteOperator(connectionUri: string, operator: azdata.AgentOperatorInfo): Thenable<azdata.ResultStatus>;
 
-	getProxies(connectionUri: string): Thenable<sqlops.AgentProxiesResult>;
-	deleteProxy(connectionUri: string, proxy: sqlops.AgentProxyInfo): Thenable<sqlops.ResultStatus>;
+	getProxies(connectionUri: string): Thenable<azdata.AgentProxiesResult>;
+	deleteProxy(connectionUri: string, proxy: azdata.AgentProxyInfo): Thenable<azdata.ResultStatus>;
 
-	getCredentials(connectionUri: string): Thenable<sqlops.GetCredentialsResult>;
+	getCredentials(connectionUri: string): Thenable<azdata.GetCredentialsResult>;
 
-	jobAction(connectionUri: string, jobName: string, action: string): Thenable<sqlops.ResultStatus>;
+	jobAction(connectionUri: string, jobName: string, action: string): Thenable<azdata.ResultStatus>;
 	addToCache(server: string, cache: JobCacheObject | OperatorsCacheObject);
 	jobCacheObjectMap: { [server: string]: JobCacheObject; };
 	operatorsCacheObjectMap: { [server: string]: OperatorsCacheObject; };

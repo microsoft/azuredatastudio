@@ -3,18 +3,18 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ElementRef, AfterContentChecked, ViewChild } from '@angular/core';
+import * as azdata from 'azdata';
+import { ElementRef, AfterContentChecked, ViewChild, forwardRef, Inject } from '@angular/core';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { IAction, Action } from 'vs/base/common/actions';
 import { ResolvedKeybinding } from 'vs/base/common/keyCodes';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Taskbar } from '../../../base/browser/ui/taskbar/taskbar';
-import { JobsRefreshAction } from 'sql/platform/jobManagement/common/jobActions';
+import { JobsRefreshAction, IJobActionInfo } from 'sql/platform/jobManagement/common/jobActions';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardService';
 
@@ -37,7 +37,8 @@ export abstract class JobManagementView extends TabChild implements AfterContent
 		protected _dashboardService: IDashboardService,
 		protected _contextMenuService: IContextMenuService,
 		protected _keybindingService: IKeybindingService,
-		protected _instantiationService: IInstantiationService) {
+		protected _instantiationService: IInstantiationService,
+		protected _agentViewComponent: AgentViewComponent) {
 		super();
 
 		let self = this;
@@ -75,7 +76,7 @@ export abstract class JobManagementView extends TabChild implements AfterContent
 		let rowIndex = event.cell.row;
 
 		let targetObject = this.getCurrentTableObject(rowIndex);
-		let actions = this.getTableActions();
+		let actions = this.getTableActions(targetObject);
 		if (actions) {
 			let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
 			let actionContext = {
@@ -98,11 +99,11 @@ export abstract class JobManagementView extends TabChild implements AfterContent
 		return kb;
 	}
 
-	protected getTableActions(): IAction[] {
+	protected getTableActions(targetObject?: any): IAction[] {
 		return undefined;
 	}
 
-	protected getCurrentTableObject(rowIndex: number): any {
+	protected getCurrentTableObject(rowIndex: number): JobActionContext {
 		return undefined;
 	}
 
@@ -111,10 +112,19 @@ export abstract class JobManagementView extends TabChild implements AfterContent
 		let newAction: Action = this._instantiationService.createInstance(this.contextAction);
 		let taskbar = <HTMLElement>this.actionBarContainer.nativeElement;
 		this._actionBar = new Taskbar(taskbar, this._contextMenuService);
-		this._actionBar.context = this;
 		this._actionBar.setContent([
 			{ action: refreshAction },
 			{ action: newAction }
 		]);
+		this._actionBar.context = { component: this };
 	}
+
+	public refreshJobs() {
+		this._agentViewComponent.refresh = true;
+	}
+}
+
+export interface JobActionContext {
+	canEdit: boolean;
+	job: azdata.AgentJobInfo;
 }

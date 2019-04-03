@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { Action } from 'vs/base/common/actions';
 import { ITaskService } from 'sql/platform/taskHistory/common/taskService';
 import { TaskNode } from 'sql/parts/taskHistory/common/taskNode';
@@ -24,7 +23,7 @@ export class CancelAction extends Action {
 	) {
 		super(id, label);
 	}
-	public run(element: TaskNode): TPromise<boolean> {
+	public run(element: TaskNode): Promise<boolean> {
 		if (element instanceof TaskNode) {
 			this._taskService.cancelTask(element.providerName, element.id).then((result) => {
 				if (!result) {
@@ -33,10 +32,10 @@ export class CancelAction extends Action {
 				}
 			}, error => {
 				this.showError(error);
-				return TPromise.as(true);
+				return Promise.resolve(true);
 			});
 		}
-		return TPromise.as(true);
+		return Promise.resolve(true);
 	}
 
 	private showError(errorMessage: string) {
@@ -58,12 +57,12 @@ export class ScriptAction extends Action {
 		super(id, label);
 	}
 
-	public run(element: TaskNode): TPromise<boolean> {
+	public run(element: TaskNode): Promise<boolean> {
 		if (element instanceof TaskNode) {
 			if (element.script && element.script !== '') {
 				this._queryEditorService.newSqlEditor(element.script);
 			}
 		}
-		return TPromise.as(true);
+		return Promise.resolve(true);
 	}
 }

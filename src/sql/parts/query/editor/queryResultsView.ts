@@ -13,12 +13,13 @@ import { GridPanel } from './gridPanel';
 import { ChartTab } from './charting/chartTab';
 import { QueryPlanTab } from 'sql/parts/queryPlan/queryPlan';
 import { TopOperationsTab } from 'sql/parts/queryPlan/topOperations';
+import { QueryModelViewTab } from 'sql/parts/query/modelViewTab/queryModelViewTab';
 
 import * as nls from 'vs/nls';
 import { PanelViewlet } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as DOM from 'vs/base/browser/dom';
-import { once, anyEvent } from 'vs/base/common/event';
+import { Event } from 'vs/base/common/event';
 import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
 
 class ResultsView extends Disposable implements IPanelView {
@@ -42,7 +43,7 @@ class ResultsView extends Disposable implements IPanelView {
 		this.panelViewlet.addPanels([
 			{ panel: this.messagePanel, size: this.messagePanel.minimumSize, index: 1 }
 		]);
-		anyEvent(this.gridPanel.onDidChange, this.messagePanel.onDidChange)(e => {
+		Event.any(this.gridPanel.onDidChange, this.messagePanel.onDidChange)(e => {
 			let size = this.gridPanel.maximumBodySize;
 			if (size < 1 && this.gridPanel.isVisible()) {
 				this.gridPanel.setVisible(false);
@@ -62,7 +63,7 @@ class ResultsView extends Disposable implements IPanelView {
 				this.panelViewlet.addPanels([{ panel: this.gridPanel, index: 0, size: panelSize }]);
 			}
 		});
-		let resizeList = anyEvent(this.gridPanel.onDidChange, this.messagePanel.onDidChange)(() => {
+		let resizeList = Event.any(this.gridPanel.onDidChange, this.messagePanel.onDidChange)(() => {
 			let panelSize: number;
 			if (this.state && this.state.gridPanelSize) {
 				panelSize = this.state.gridPanelSize;
@@ -78,7 +79,7 @@ class ResultsView extends Disposable implements IPanelView {
 			this.panelViewlet.resizePanel(this.gridPanel, panelSize);
 		});
 		// once the user changes the sash we should stop trying to resize the grid
-		once(this.panelViewlet.onDidSashChange)(e => {
+		Event.once(this.panelViewlet.onDidSashChange)(e => {
 			this.needsGridResize = false;
 			resizeList.dispose();
 		});
@@ -108,6 +109,8 @@ class ResultsView extends Disposable implements IPanelView {
 		this.currentDimension = dimension;
 		if (this.needsGridResize) {
 			this.panelViewlet.resizePanel(this.gridPanel, this.state.gridPanelSize || Math.round(this.currentDimension.height * .7));
+			// we have the right scroll position saved as part of gridPanel state, use this to re-position scrollbar
+			this.gridPanel.resetScrollPosition();
 		}
 	}
 
@@ -173,12 +176,13 @@ export class QueryResultsView extends Disposable {
 	private chartTab: ChartTab;
 	private qpTab: QueryPlanTab;
 	private topOperationsTab: TopOperationsTab;
+	private dynamicModelViewTabs: QueryModelViewTab[] = [];
 
 	private runnerDisposables: IDisposable[];
 
 	constructor(
 		container: HTMLElement,
-		@IInstantiationService instantiationService: IInstantiationService,
+		@IInstantiationService private instantiationService: IInstantiationService,
 		@IQueryModelService private queryModelService: IQueryModelService
 	) {
 		super();
@@ -205,6 +209,7 @@ export class QueryResultsView extends Disposable {
 		this.runnerDisposables.push(runner.onQueryStart(e => {
 			this.hideChart();
 			this.hidePlan();
+			this.hideDynamicViewModelTabs();
 			this.input.state.visibleTabs = new Set();
 			this.input.state.activeTab = this.resultsTab.identifier;
 		}));
@@ -223,6 +228,23 @@ export class QueryResultsView extends Disposable {
 				this._panelView.pushTab(this.topOperationsTab);
 			}
 		}
+
+		// restore query model view tabs
+		this.input.state.visibleTabs.forEach(tabId => {
+			if (tabId.startsWith('querymodelview;')) {
+				// tab id format is 'tab type;title;model view id'
+				let parts = tabId.split(';');
+				if (parts.length === 3) {
+					let tab = this._register(new QueryModelViewTab(parts[1], this.instantiationService));
+					tab.view._componentId = parts[2];
+					this.dynamicModelViewTabs.push(tab);
+					if (!this._panelView.contains(tab)) {
+						this._panelView.pushTab(tab);
+					}
+				}
+			}
+		});
+
 		this.runnerDisposables.push(runner.onQueryEnd(() => {
 			if (runner.isQueryPlan) {
 				runner.planXml.then(e => {
@@ -309,10 +331,35 @@ export class QueryResultsView extends Disposable {
 		if (this._panelView.contains(this.qpTab)) {
 			this._panelView.removeTab(this.qpTab.identifier);
 		}
+
+		if (this._panelView.contains(this.topOperationsTab)) {
+			this._panelView.removeTab(this.topOperationsTab.identifier);
+		}
+	}
+
+	public hideDynamicViewModelTabs() {
+		this.dynamicModelViewTabs.forEach(tab => {
+			if (this._panelView.contains(tab)) {
+				this._panelView.removeTab(tab.identifier);
+			}
+		});
+
+		this.dynamicModelViewTabs = [];
 	}
 
 	public dispose() {
 		dispose(this.runnerDisposables);
 		super.dispose();
+	}
+
+	public registerQueryModelViewTab(title: string, componentId: string): void {
+		let tab = this._register(new QueryModelViewTab(title, this.instantiationService));
+		tab.view._componentId = componentId;
+		this.dynamicModelViewTabs.push(tab);
+
+		this.input.state.visibleTabs.add('querymodelview;' + title + ';' + componentId);
+		if (!this._panelView.contains(tab)) {
+			this._panelView.pushTab(tab);
+		}
 	}
 }

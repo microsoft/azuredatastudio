@@ -4,11 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import {
-	Component, Input, Inject, ChangeDetectorRef, forwardRef, ComponentFactoryResolver,
-	ViewChild, ViewChildren, ElementRef, Injector, OnDestroy, QueryList, AfterViewInit
+	Component, Input, Inject, ChangeDetectorRef, forwardRef,
+	ViewChild, ElementRef, OnDestroy, AfterViewInit
 } from '@angular/core';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
@@ -17,8 +17,6 @@ import { ListBox } from 'sql/base/browser/ui/listBox/listBox';
 import { attachListBoxStyler } from 'sql/platform/theme/common/styler';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { Emitter } from 'vs/base/common/event';
-import * as nls from 'vs/nls';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 
 @Component({
@@ -50,7 +48,7 @@ export default class ListBoxComponent extends ComponentBase implements IComponen
 
 	ngAfterViewInit(): void {
 		if (this._inputContainer) {
-			this._input = new ListBox([], undefined, this.contextViewService, this.clipboardService);
+			this._input = new ListBox([], this.contextViewService, this.clipboardService);
 			this._input.render(this._inputContainer.nativeElement);
 
 			this._register(this._input);
@@ -83,7 +81,7 @@ export default class ListBoxComponent extends ComponentBase implements IComponen
 
 	public setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
-		this._input.setOptions(this.values, this.selectedRow);
+		this._input.setOptions(this.values.map(value => { return { text: value }; }), this.selectedRow);
 
 		this.validate();
 	}
@@ -91,18 +89,18 @@ export default class ListBoxComponent extends ComponentBase implements IComponen
 	// CSS-bound properties
 
 	private get values(): string[] {
-		return this.getPropertyOrDefault<sqlops.ListBoxProperties, string[]>((props) => props.values, undefined);
+		return this.getPropertyOrDefault<azdata.ListBoxProperties, string[]>((props) => props.values, undefined);
 	}
 
 	private set values(newValue: string[]) {
-		this.setPropertyFromUI<sqlops.ListBoxProperties, string[]>((props, value) => props.values = value, newValue);
+		this.setPropertyFromUI<azdata.ListBoxProperties, string[]>((props, value) => props.values = value, newValue);
 	}
 
 	private get selectedRow(): number {
-		return this.getPropertyOrDefault<sqlops.ListBoxProperties, number>((props) => props.selectedRow, undefined);
+		return this.getPropertyOrDefault<azdata.ListBoxProperties, number>((props) => props.selectedRow, undefined);
 	}
 
 	private set selectedRow(newValue: number) {
-		this.setPropertyFromUI<sqlops.ListBoxProperties, number>((props, value) => props.selectedRow = value, newValue);
+		this.setPropertyFromUI<azdata.ListBoxProperties, number>((props, value) => props.selectedRow = value, newValue);
 	}
 }

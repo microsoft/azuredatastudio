@@ -4,8 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import * as sqlops from 'sqlops';
-import { TPromise } from 'vs/base/common/winjs.base';
+import * as azdata from 'azdata';
 import { IAccountManagementService } from 'sql/platform/accountManagement/common/interfaces';
 import { dispose, IDisposable } from 'vs/base/common/lifecycle';
 import {
@@ -14,13 +13,13 @@ import {
 	SqlExtHostContext,
 	SqlMainContext
 } from 'sql/workbench/api/node/sqlExtHost.protocol';
-import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
-import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
+import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
+import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { UpdateAccountListEventParams } from 'sql/platform/accountManagement/common/eventTypes';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadAccountManagement)
 export class MainThreadAccountManagement implements MainThreadAccountManagementShape {
-	private _providerMetadata: { [handle: number]: sqlops.AccountProviderMetadata };
+	private _providerMetadata: { [handle: number]: azdata.AccountProviderMetadata };
 	private _proxy: ExtHostAccountManagementShape;
 	private _toDispose: IDisposable[];
 
@@ -39,7 +38,7 @@ export class MainThreadAccountManagement implements MainThreadAccountManagementS
 				return;
 			}
 
-			const providerMetadataIndex = Object.values(this._providerMetadata).findIndex((providerMetadata: sqlops.AccountProviderMetadata) => providerMetadata.id === e.providerId);
+			const providerMetadataIndex = Object.values(this._providerMetadata).findIndex((providerMetadata: azdata.AccountProviderMetadata) => providerMetadata.id === e.providerId);
 			if (providerMetadataIndex === -1) {
 				return;
 			}
@@ -57,47 +56,47 @@ export class MainThreadAccountManagement implements MainThreadAccountManagementS
 		return this._accountManagementService.endAutoOAuthDeviceCode();
 	}
 
-	$accountUpdated(updatedAccount: sqlops.Account): void {
+	$accountUpdated(updatedAccount: azdata.Account): void {
 		this._accountManagementService.accountUpdated(updatedAccount);
 	}
 
-	public $getAccountsForProvider(providerId: string): Thenable<sqlops.Account[]> {
+	public $getAccountsForProvider(providerId: string): Thenable<azdata.Account[]> {
 		return this._accountManagementService.getAccountsForProvider(providerId);
 	}
 
-	public $registerAccountProvider(providerMetadata: sqlops.AccountProviderMetadata, handle: number): Thenable<any> {
+	public $registerAccountProvider(providerMetadata: azdata.AccountProviderMetadata, handle: number): Thenable<any> {
 		let self = this;
 
 		// Create the account provider that interfaces with the extension via the proxy and register it
-		let accountProvider: sqlops.AccountProvider = {
+		let accountProvider: azdata.AccountProvider = {
 			autoOAuthCancelled(): Thenable<void> {
 				return self._proxy.$autoOAuthCancelled(handle);
 			},
-			clear(accountKey: sqlops.AccountKey): Thenable<void> {
+			clear(accountKey: azdata.AccountKey): Thenable<void> {
 				return self._proxy.$clear(handle, accountKey);
 			},
-			getSecurityToken(account: sqlops.Account, resource: sqlops.AzureResource): Thenable<{}> {
+			getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Thenable<{}> {
 				return self._proxy.$getSecurityToken(account, resource);
 			},
-			initialize(restoredAccounts: sqlops.Account[]): Thenable<sqlops.Account[]> {
+			initialize(restoredAccounts: azdata.Account[]): Thenable<azdata.Account[]> {
 				return self._proxy.$initialize(handle, restoredAccounts);
 			},
-			prompt(): Thenable<sqlops.Account> {
+			prompt(): Thenable<azdata.Account> {
 				return self._proxy.$prompt(handle);
 			},
-			refresh(account: sqlops.Account): Thenable<sqlops.Account> {
+			refresh(account: azdata.Account): Thenable<azdata.Account> {
 				return self._proxy.$refresh(handle, account);
 			}
 		};
 		this._accountManagementService.registerProvider(providerMetadata, accountProvider);
 		this._providerMetadata[handle] = providerMetadata;
 
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 
 	public $unregisterAccountProvider(handle: number): Thenable<any> {
 		this._accountManagementService.unregisterProvider(this._providerMetadata[handle]);
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 
 	public dispose(): void {

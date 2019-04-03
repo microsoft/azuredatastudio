@@ -5,13 +5,12 @@
 
 'use strict';
 import { localize } from 'vs/nls';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { Action } from 'vs/base/common/actions';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { ExecuteCommandAction } from 'vs/platform/actions/common/actions';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { IConnectionManagementService, IConnectionCompletionOptions } from 'sql/platform/connection/common/connectionManagement';
 import { TreeNode } from 'sql/parts/objectExplorer/common/treeNode';
 import {
@@ -32,13 +31,13 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 
 
-export class ObjectExplorerActionsContext implements sqlops.ObjectExplorerContext {
-	public connectionProfile: sqlops.IConnectionProfile;
-	public nodeInfo: sqlops.NodeInfo;
+export class ObjectExplorerActionsContext implements azdata.ObjectExplorerContext {
+	public connectionProfile: azdata.IConnectionProfile;
+	public nodeInfo: azdata.NodeInfo;
 	public isConnectionNode: boolean = false;
 }
 
-async function getTreeNode(context: ObjectExplorerActionsContext, objectExplorerService: IObjectExplorerService): TPromise<TreeNode> {
+async function getTreeNode(context: ObjectExplorerActionsContext, objectExplorerService: IObjectExplorerService): Promise<TreeNode> {
 	if (context.isConnectionNode) {
 		return Promise.resolve(undefined);
 	}
@@ -100,11 +99,11 @@ export class ManageConnectionAction extends Action {
 		super(id, label);
 	}
 
-	run(actionContext: ObjectExplorerActionsContext): TPromise<any> {
+	run(actionContext: ObjectExplorerActionsContext): Promise<any> {
 		this._treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
 		this._treeSelectionHandler.onTreeActionStateChange(true);
 		let self = this;
-		let promise = new TPromise<boolean>((resolve, reject) => {
+		let promise = new Promise<boolean>((resolve, reject) => {
 			self.doManage(actionContext).then((success) => {
 				self.done();
 				resolve(success);
@@ -116,7 +115,7 @@ export class ManageConnectionAction extends Action {
 		return promise;
 	}
 
-	private async doManage(actionContext: ObjectExplorerActionsContext): TPromise<boolean> {
+	private async doManage(actionContext: ObjectExplorerActionsContext): Promise<boolean> {
 		let treeNode: TreeNode = undefined;
 		let connectionProfile: IConnectionProfile = undefined;
 		if (actionContext instanceof ObjectExplorerActionsContext) {

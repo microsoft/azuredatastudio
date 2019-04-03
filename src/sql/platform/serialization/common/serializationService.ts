@@ -9,12 +9,12 @@ import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 export const SERVICE_ID = 'serializationService';
 
 export interface SerializationProviderEvents {
-	onSaveAs(saveFormat: string, savePath: string, results: string, appendToFile: boolean): Thenable<sqlops.SaveResultRequestResult>;
+	onSaveAs(saveFormat: string, savePath: string, results: string, appendToFile: boolean): Thenable<azdata.SaveResultRequestResult>;
 }
 
 export const ISerializationService = createDecorator<ISerializationService>(SERVICE_ID);
@@ -22,13 +22,13 @@ export const ISerializationService = createDecorator<ISerializationService>(SERV
 export interface ISerializationService {
 	_serviceBrand: any;
 
-	saveAs(saveFormat: string, savePath: string, results: string, appendToFile: boolean): Thenable<sqlops.SaveResultRequestResult>;
+	saveAs(saveFormat: string, savePath: string, results: string, appendToFile: boolean): Thenable<azdata.SaveResultRequestResult>;
 
-	disabledSaveAs(): Thenable<sqlops.SaveResultRequestResult>;
+	disabledSaveAs(): Thenable<azdata.SaveResultRequestResult>;
 
 	addEventListener(handle: number, events: SerializationProviderEvents): IDisposable;
 
-	getSerializationFeatureMetadataProvider(ownerUri: string): sqlops.FeatureMetadataProvider;
+	getSerializationFeatureMetadataProvider(ownerUri: string): azdata.FeatureMetadataProvider;
 }
 
 export class SerializationService implements ISerializationService {
@@ -58,7 +58,7 @@ export class SerializationService implements ISerializationService {
 		};
 	}
 
-	public saveAs(saveFormat: string, savePath: string, results: string, appendToFile: boolean): Thenable<sqlops.SaveResultRequestResult> {
+	public saveAs(saveFormat: string, savePath: string, results: string, appendToFile: boolean): Thenable<azdata.SaveResultRequestResult> {
 		if (this._serverEvents === undefined || this._serverEvents[this._lastHandle] === undefined) {
 			return this.disabledSaveAs();
 		}
@@ -66,12 +66,12 @@ export class SerializationService implements ISerializationService {
 		return this._serverEvents[this._lastHandle].onSaveAs(saveFormat, savePath, results, appendToFile);
 	}
 
-	public disabledSaveAs(): Thenable<sqlops.SaveResultRequestResult> {
+	public disabledSaveAs(): Thenable<azdata.SaveResultRequestResult> {
 		return Promise.resolve({ messages: 'Saving results into different format disabled for this data provider.' });
 
 	}
 
-	public getSerializationFeatureMetadataProvider(ownerUri: string): sqlops.FeatureMetadataProvider {
+	public getSerializationFeatureMetadataProvider(ownerUri: string): azdata.FeatureMetadataProvider {
 		let providerId: string = this._connectionService.getProviderIdFromUri(ownerUri);
 		let providerCapabilities = this._capabilitiesService.getLegacyCapabilities(providerId);
 

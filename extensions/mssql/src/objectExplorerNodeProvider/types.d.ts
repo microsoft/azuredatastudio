@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 /**
  * A tree node in the object explorer tree
@@ -13,7 +13,7 @@ import * as sqlops from 'sqlops';
  * @interface ITreeNode
  */
 export interface ITreeNode {
-	getNodeInfo(): sqlops.NodeInfo;
+	getNodeInfo(): azdata.NodeInfo;
 	getChildren(refreshChildren: boolean): ITreeNode[] | Promise<ITreeNode[]>;
 }
 

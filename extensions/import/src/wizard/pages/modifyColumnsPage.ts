@@ -5,7 +5,7 @@
 
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 import { ColumnMetadata, ImportDataModel } from '../api/models';
 import { ImportPage } from '../api/importPage';
@@ -51,12 +51,12 @@ export class ModifyColumnsPage extends ImportPage {
 		{ name: 'varchar(50)', displayName: 'varchar(50)' },
 		{ name: 'varchar(MAX)', displayName: 'varchar(MAX)' }
 	];
-	private table: sqlops.DeclarativeTableComponent;
-	private loading: sqlops.LoadingComponent;
-	private text: sqlops.TextComponent;
-	private form: sqlops.FormContainer;
+	private table: azdata.DeclarativeTableComponent;
+	private loading: azdata.LoadingComponent;
+	private text: azdata.TextComponent;
+	private form: azdata.FormContainer;
 
-	public constructor(instance: FlatFileWizard, wizardPage: sqlops.window.WizardPage, model: ImportDataModel, view: sqlops.ModelView, provider: FlatFileProvider) {
+	public constructor(instance: FlatFileWizard, wizardPage: azdata.window.WizardPage, model: ImportDataModel, view: azdata.ModelView, provider: FlatFileProvider) {
 		super(instance, wizardPage, model, view, provider);
 	}
 
@@ -142,23 +142,23 @@ export class ModifyColumnsPage extends ImportPage {
 			height: 400,
 			columns: [{
 				displayName: localize('flatFileImport.columnName', 'Column Name'),
-				valueType: sqlops.DeclarativeDataType.string,
+				valueType: azdata.DeclarativeDataType.string,
 				width: '150px',
 				isReadOnly: false
 			}, {
 				displayName: localize('flatFileImport.dataType', 'Data Type'),
-				valueType: sqlops.DeclarativeDataType.editableCategory,
+				valueType: azdata.DeclarativeDataType.editableCategory,
 				width: '150px',
 				isReadOnly: false,
 				categoryValues: this.categoryValues
 			}, {
 				displayName: localize('flatFileImport.primaryKey', 'Primary Key'),
-				valueType: sqlops.DeclarativeDataType.boolean,
+				valueType: azdata.DeclarativeDataType.boolean,
 				width: '100px',
 				isReadOnly: false
 			}, {
 				displayName: localize('flatFileImport.allowNulls', 'Allow Nulls'),
-				valueType: sqlops.DeclarativeDataType.boolean,
+				valueType: azdata.DeclarativeDataType.boolean,
 				isReadOnly: false,
 				width: '100px'
 			}],

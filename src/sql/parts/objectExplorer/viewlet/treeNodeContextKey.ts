@@ -6,7 +6,7 @@
 'use strict';
 
 import { RawContextKey, IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
-import { IConnectionProfile } from 'sqlops';
+import { IConnectionProfile } from 'azdata';
 import { TreeNode } from 'sql/parts/objectExplorer/common/treeNode';
 
 export class TreeNodeContextKey implements IContextKey<TreeNode> {

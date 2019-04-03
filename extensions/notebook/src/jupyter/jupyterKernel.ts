@@ -6,7 +6,7 @@
 
 'use strict';
 
-import { nb } from 'sqlops';
+import { nb } from 'azdata';
 import { Kernel, KernelMessage } from '@jupyterlab/services';
 
 function toShellMessage(msgImpl: KernelMessage.IShellMessage): nb.IShellMessage {

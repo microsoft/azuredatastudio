@@ -5,9 +5,8 @@
 
 'use strict';
 
-import * as sqlops from 'sqlops';
-import { TPromise } from 'vs/base/common/winjs.base';
-import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
+import * as azdata from 'azdata';
+import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { Disposable } from 'vs/workbench/api/node/extHostTypes';
 import {
 	ExtHostResourceProviderShape,
@@ -27,15 +26,15 @@ export class ExtHostResourceProvider extends ExtHostResourceProviderShape {
 
 	// PUBLIC METHODS //////////////////////////////////////////////////////
 	// - MAIN THREAD AVAILABLE METHODS /////////////////////////////////////
-	public $createFirewallRule(handle: number, account: sqlops.Account, firewallRuleInfo: sqlops.FirewallRuleInfo): Thenable<sqlops.CreateFirewallRuleResponse> {
-		return this._withProvider(handle, (provider: sqlops.ResourceProvider) => provider.createFirewallRule(account, firewallRuleInfo));
+	public $createFirewallRule(handle: number, account: azdata.Account, firewallRuleInfo: azdata.FirewallRuleInfo): Thenable<azdata.CreateFirewallRuleResponse> {
+		return this._withProvider(handle, (provider: azdata.ResourceProvider) => provider.createFirewallRule(account, firewallRuleInfo));
 	}
-	public $handleFirewallRule(handle: number, errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<sqlops.HandleFirewallRuleResponse> {
-		return this._withProvider(handle, (provider: sqlops.ResourceProvider) => provider.handleFirewallRule(errorCode, errorMessage, connectionTypeId));
+	public $handleFirewallRule(handle: number, errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<azdata.HandleFirewallRuleResponse> {
+		return this._withProvider(handle, (provider: azdata.ResourceProvider) => provider.handleFirewallRule(errorCode, errorMessage, connectionTypeId));
 	}
 
 	// - EXTENSION HOST AVAILABLE METHODS //////////////////////////////////
-	public $registerResourceProvider(providerMetadata: sqlops.ResourceProviderMetadata, provider: sqlops.ResourceProvider): Disposable {
+	public $registerResourceProvider(providerMetadata: azdata.ResourceProviderMetadata, provider: azdata.ResourceProvider): Disposable {
 		let self = this;
 
 		// Look for any account providers that have the same provider ID
@@ -76,18 +75,16 @@ export class ExtHostResourceProvider extends ExtHostResourceProviderShape {
 		return this._handlePool++;
 	}
 
-	private _withProvider<R>(handle: number, callback: (provider: sqlops.ResourceProvider) => Thenable<R>): Thenable<R> {
+	private _withProvider<R>(handle: number, callback: (provider: azdata.ResourceProvider) => Thenable<R>): Thenable<R> {
 		let provider = this._providers[handle];
 		if (provider === undefined) {
-			return TPromise.wrapError(new Error(`Provider ${handle} not found.`));
+			return Promise.reject(new Error(`Provider ${handle} not found.`));
 		}
 		return callback(provider.provider);
 	}
 }
 
 interface ResourceProviderWithMetadata {
-	metadata: sqlops.ResourceProviderMetadata;
-	provider: sqlops.ResourceProvider;
+	metadata: azdata.ResourceProviderMetadata;
+	provider: azdata.ResourceProvider;
 }
-
-

@@ -14,12 +14,12 @@ import * as TelemetryKeys from 'sql/common/telemetryKeys';
 import * as TelemetryUtils from 'sql/common/telemetryUtilities';
 import { FirewallRuleDialogController } from 'sql/parts/accountManagement/firewallRuleDialog/firewallRuleDialogController';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 export class ResourceProviderService implements IResourceProviderService {
 
 	public _serviceBrand: any;
-	private _providers: { [handle: string]: sqlops.ResourceProvider; } = Object.create(null);
+	private _providers: { [handle: string]: azdata.ResourceProvider; } = Object.create(null);
 	private _firewallRuleDialogController: FirewallRuleDialogController;
 
 	constructor(
@@ -44,8 +44,8 @@ export class ResourceProviderService implements IResourceProviderService {
 	/**
 	 * Create a firewall rule
 	 */
-	public createFirewallRule(selectedAccount: sqlops.Account, firewallruleInfo: sqlops.FirewallRuleInfo, resourceProviderId: string): Promise<sqlops.CreateFirewallRuleResponse> {
-		return new Promise<sqlops.CreateFirewallRuleResponse>((resolve, reject) => {
+	public createFirewallRule(selectedAccount: azdata.Account, firewallruleInfo: azdata.FirewallRuleInfo, resourceProviderId: string): Promise<azdata.CreateFirewallRuleResponse> {
+		return new Promise<azdata.CreateFirewallRuleResponse>((resolve, reject) => {
 			let provider = this._providers[resourceProviderId];
 			if (provider) {
 				TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.FirewallRuleRequested, { provider: resourceProviderId });
@@ -96,7 +96,7 @@ export class ResourceProviderService implements IResourceProviderService {
 	/**
 	 * Register a resource provider
 	 */
-	public registerProvider(providerId: string, provider: sqlops.ResourceProvider): void {
+	public registerProvider(providerId: string, provider: azdata.ResourceProvider): void {
 		this._providers[providerId] = provider;
 	}
 

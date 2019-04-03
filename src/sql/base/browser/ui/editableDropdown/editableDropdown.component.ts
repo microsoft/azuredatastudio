@@ -49,7 +49,7 @@ export class EditableDropDown extends AngularDisposable implements OnInit, OnCha
 			ariaLabel: '',
 			actionLabel: ''
 		};
-		this._selectbox = new Dropdown(this._el.nativeElement, this.contextViewService, this.themeService, dropdownOptions);
+		this._selectbox = new Dropdown(this._el.nativeElement, this.contextViewService, dropdownOptions);
 		this._selectbox.values = this.options;
 		this._selectbox.value = this.selectedOption;
 

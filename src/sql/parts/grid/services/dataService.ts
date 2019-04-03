@@ -9,7 +9,7 @@ import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 import { Observer } from 'rxjs/Observer';
 
-import { ResultSetSubset, EditUpdateCellResult, EditSubsetResult, EditCreateRowResult } from 'sqlops';
+import { ResultSetSubset, EditUpdateCellResult, EditSubsetResult, EditCreateRowResult } from 'azdata';
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import { ResultSerializer } from 'sql/platform/node/resultSerializer';
 import { ISaveRequest } from 'sql/parts/grid/common/interfaces';

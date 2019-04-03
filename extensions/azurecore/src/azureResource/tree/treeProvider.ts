@@ -35,7 +35,7 @@ export class AzureResourceTreeProvider implements TreeDataProvider<TreeNode>, IA
 		if (!this.isSystemInitialized && !this._loadingTimer) {
 			this._loadingTimer = setInterval(async () => {
 				try {
-					// Call sqlops.accounts.getAllAccounts() to determine whether the system has been initialized.
+					// Call azdata.accounts.getAllAccounts() to determine whether the system has been initialized.
 					await this.appContext.getService<IAzureResourceAccountService>(AzureResourceServiceNames.accountService).getAccounts();
 
 					// System has been initialized

@@ -5,7 +5,7 @@
 
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
@@ -14,12 +14,12 @@ import { AppContext } from '../../../appContext';
 import { ApiWrapper } from '../../../apiWrapper';
 
 export class SparkAdvancedTab {
-	private _tab: sqlops.window.DialogTab;
-	public get tab(): sqlops.window.DialogTab { return this._tab; }
+	private _tab: azdata.window.DialogTab;
+	public get tab(): azdata.window.DialogTab { return this._tab; }
 
-	private _referenceFilesInputBox: sqlops.InputBoxComponent;
-	private _referenceJARFilesInputBox: sqlops.InputBoxComponent;
-	private _referencePyFilesInputBox: sqlops.InputBoxComponent;
+	private _referenceFilesInputBox: azdata.InputBoxComponent;
+	private _referenceJARFilesInputBox: azdata.InputBoxComponent;
+	private _referencePyFilesInputBox: azdata.InputBoxComponent;
 
 	private get apiWrapper(): ApiWrapper {
 		return this.appContext.apiWrapper;
@@ -30,7 +30,7 @@ export class SparkAdvancedTab {
 
 		this._tab.registerContent(async (modelView) => {
 			let builder = modelView.modelBuilder;
-			let parentLayout: sqlops.FormItemLayout = {
+			let parentLayout: azdata.FormItemLayout = {
 				horizontal: false,
 				componentWidth: '400px'
 			};

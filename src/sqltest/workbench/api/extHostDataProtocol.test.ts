@@ -7,7 +7,7 @@
 
 import * as assert from 'assert';
 import { Mock } from 'typemoq';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { ExtHostDataProtocol } from 'sql/workbench/api/node/extHostDataProtocol';
 import { DataProviderType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ProxyAuthHandler } from 'vs/code/electron-main/auth';
@@ -36,7 +36,7 @@ suite('ExtHostDataProtocol', () => {
 			getTableInfo: () => undefined,
 			getViewInfo: () => undefined,
 			providerId: extension1Id
-		} as sqlops.MetadataProvider);
+		} as azdata.MetadataProvider);
 
 		let extension2Id = 'provider2';
 		let extension2MetadataMock = Mock.ofInstance({
@@ -45,15 +45,15 @@ suite('ExtHostDataProtocol', () => {
 			getTableInfo: () => undefined,
 			getViewInfo: () => undefined,
 			providerId: extension2Id
-		} as sqlops.MetadataProvider);
+		} as azdata.MetadataProvider);
 
 		// If I register both providers and then get them using the getProvider API
 		extHostDataProtocol.$registerMetadataProvider(extension1MetadataMock.object);
 		extHostDataProtocol.$registerMetadataProvider(extension2MetadataMock.object);
-		extHostDataProtocol.$registerConnectionProvider({} as sqlops.ConnectionProvider);
-		let retrievedProvider1 = extHostDataProtocol.getProvider<sqlops.MetadataProvider>(extension1Id, DataProviderType.MetadataProvider);
-		let retrievedProvider2 = extHostDataProtocol.getProvider<sqlops.MetadataProvider>(extension2Id, DataProviderType.MetadataProvider);
-		let allProviders = extHostDataProtocol.getProvidersByType<sqlops.MetadataProvider>(DataProviderType.MetadataProvider);
+		extHostDataProtocol.$registerConnectionProvider({} as azdata.ConnectionProvider);
+		let retrievedProvider1 = extHostDataProtocol.getProvider<azdata.MetadataProvider>(extension1Id, DataProviderType.MetadataProvider);
+		let retrievedProvider2 = extHostDataProtocol.getProvider<azdata.MetadataProvider>(extension2Id, DataProviderType.MetadataProvider);
+		let allProviders = extHostDataProtocol.getProvidersByType<azdata.MetadataProvider>(DataProviderType.MetadataProvider);
 
 		// Then each provider was retrieved successfully
 		assert.equal(retrievedProvider1, extension1MetadataMock.object, 'Expected metadata provider was not retrieved for extension 1');

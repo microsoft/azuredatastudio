@@ -7,20 +7,20 @@
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { Event } from 'vs/base/common/event';
 import * as DOM from 'vs/base/browser/dom';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 export const IDashboardService = createDecorator<IDashboardService>('dashboardService');
 
 export interface IDashboardService {
 
 	_serviceBrand: any;
-	readonly onDidOpenDashboard: Event<sqlops.DashboardDocument>;
-	readonly onDidChangeToDashboard: Event<sqlops.DashboardDocument>;
+	readonly onDidOpenDashboard: Event<azdata.DashboardDocument>;
+	readonly onDidChangeToDashboard: Event<azdata.DashboardDocument>;
 	readonly onLayout: Event<DOM.Dimension>;
 
-	openDashboard(document: sqlops.DashboardDocument): void;
+	openDashboard(document: azdata.DashboardDocument): void;
 
-	changeToDashboard(document: sqlops.DashboardDocument): void;
+	changeToDashboard(document: azdata.DashboardDocument): void;
 
 	layout(dimension: DOM.Dimension): void;
 }

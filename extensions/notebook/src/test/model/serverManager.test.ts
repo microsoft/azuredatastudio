@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -23,7 +23,7 @@ import { MockExtensionContext } from '../common/stubs';
 describe('Local Jupyter Server Manager', function (): void {
 	let expectedPath = 'my/notebook.ipynb';
 	let serverManager: LocalJupyterServerManager;
-	let deferredInstall: Deferred<JupyterServerInstallation>;
+	let deferredInstall: Deferred<void>;
 	let mockApiWrapper: TypeMoq.IMock<ApiWrapper>;
 	let mockExtensionContext: MockExtensionContext;
 	let mockFactory: TypeMoq.IMock<ServerInstanceFactory>;
@@ -33,10 +33,14 @@ describe('Local Jupyter Server Manager', function (): void {
 		mockApiWrapper.setup(a => a.showErrorMessage(TypeMoq.It.isAny()));
 		mockApiWrapper.setup(a => a.getWorkspacePathFromUri(TypeMoq.It.isAny())).returns(() => undefined);
 		mockFactory = TypeMoq.Mock.ofType(ServerInstanceFactory);
-		deferredInstall = new Deferred<JupyterServerInstallation>();
+
+		deferredInstall = new Deferred<void>();
+		let mockInstall = TypeMoq.Mock.ofType(JupyterServerInstallation, undefined, undefined, '/root');
+		mockInstall.setup(j => j.promptForPythonInstall()).returns(() => deferredInstall.promise);
+
 		serverManager = new LocalJupyterServerManager({
 			documentPath: expectedPath,
-			jupyterInstallation: deferredInstall.promise,
+			jupyterInstallation: mockInstall.object,
 			extensionContext: mockExtensionContext,
 			apiWrapper: mockApiWrapper.object,
 			factory: mockFactory.object
@@ -52,14 +56,13 @@ describe('Local Jupyter Server Manager', function (): void {
 		let error = 'Error!!';
 		deferredInstall.reject(error);
 		await testUtils.assertThrowsAsync(() => serverManager.startServer(), undefined);
-		mockApiWrapper.verify(a => a.showErrorMessage(TypeMoq.It.isAny()), TypeMoq.Times.once());
 	});
 
 	it('Should configure and start install', async function (): Promise<void> {
 		// Given an install and instance that start with no issues
 		let expectedUri = vscode.Uri.parse('http://localhost:1234?token=abcdefghijk');
-		let [mockInstall, mockServerInstance] = initInstallAndInstance(expectedUri);
-		deferredInstall.resolve(mockInstall.object);
+		let mockServerInstance = initInstallAndInstance(expectedUri);
+		deferredInstall.resolve();
 
 		// When I start the server
 		let notified = false;
@@ -83,9 +86,9 @@ describe('Local Jupyter Server Manager', function (): void {
 	it('Should call stop on server instance', async function (): Promise<void> {
 		// Given an install and instance that start with no issues
 		let expectedUri = vscode.Uri.parse('http://localhost:1234?token=abcdefghijk');
-		let [mockInstall, mockServerInstance] = initInstallAndInstance(expectedUri);
+		let mockServerInstance = initInstallAndInstance(expectedUri);
 		mockServerInstance.setup(s => s.stop()).returns(() => Promise.resolve());
-		deferredInstall.resolve(mockInstall.object);
+		deferredInstall.resolve();
 
 		// When I start and then the server
 		await serverManager.startServer();
@@ -98,9 +101,9 @@ describe('Local Jupyter Server Manager', function (): void {
 	it('Should call stop when extension is disposed', async function (): Promise<void> {
 		// Given an install and instance that start with no issues
 		let expectedUri = vscode.Uri.parse('http://localhost:1234?token=abcdefghijk');
-		let [mockInstall, mockServerInstance] = initInstallAndInstance(expectedUri);
+		let mockServerInstance = initInstallAndInstance(expectedUri);
 		mockServerInstance.setup(s => s.stop()).returns(() => Promise.resolve());
-		deferredInstall.resolve(mockInstall.object);
+		deferredInstall.resolve();
 
 		// When I start and then dispose the extension
 		await serverManager.startServer();
@@ -111,13 +114,12 @@ describe('Local Jupyter Server Manager', function (): void {
 		mockServerInstance.verify(s => s.stop(), TypeMoq.Times.once());
 	});
 
-	function initInstallAndInstance(uri: vscode.Uri): [TypeMoq.IMock<JupyterServerInstallation>, TypeMoq.IMock<IServerInstance>] {
-		let mockInstall = TypeMoq.Mock.ofType(JupyterServerInstallation, undefined, undefined, '/root');
+	function initInstallAndInstance(uri: vscode.Uri): TypeMoq.IMock<IServerInstance> {
 		let mockServerInstance = TypeMoq.Mock.ofType(JupyterServerInstanceStub);
 		mockFactory.setup(f => f.createInstance(TypeMoq.It.isAny())).returns(() => mockServerInstance.object);
 		mockServerInstance.setup(s => s.configure()).returns(() => Promise.resolve());
 		mockServerInstance.setup(s => s.start()).returns(() => Promise.resolve());
 		mockServerInstance.setup(s => s.uri).returns(() => uri);
-		return [mockInstall, mockServerInstance];
+		return mockServerInstance;
 	}
 });

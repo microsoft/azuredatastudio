@@ -10,7 +10,7 @@ import * as Constants from 'sql/common/constants';
 import { ConnectionProviderProperties, IConnectionProviderRegistry, Extensions as ConnectionExtensions } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
 import { toObject } from 'sql/base/common/map';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'sqlops';
 
 import { Event, Emitter } from 'vs/base/common/event';
 import { IAction } from 'vs/base/common/actions';
@@ -21,10 +21,10 @@ import { IStorageService, StorageScope } from 'vs/platform/storage/common/storag
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IExtensionManagementService } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
-import { getIdFromLocalExtensionId } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
+import { entries } from 'sql/base/common/objects';
 
 export const SERVICE_ID = 'capabilitiesService';
-export const HOST_NAME = 'sqlops';
+export const HOST_NAME = 'azdata';
 export const HOST_VERSION = '1.0';
 
 const connectionRegistry = Registry.as<IConnectionProviderRegistry>(ConnectionExtensions.ConnectionProviderContributions);
@@ -63,12 +63,12 @@ export interface ICapabilitiesService {
 	/**
 	 * get the old version of provider information
 	 */
-	getLegacyCapabilities(provider: string): sqlops.DataProtocolServerCapabilities;
+	getLegacyCapabilities(provider: string): azdata.DataProtocolServerCapabilities;
 
 	/**
 	 * Register a capabilities provider
 	 */
-	registerProvider(provider: sqlops.CapabilitiesProvider): void;
+	registerProvider(provider: azdata.CapabilitiesProvider): void;
 
 	/**
 	 * Returns true if the feature is available for given connection
@@ -97,7 +97,7 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 	private _momento: Memento;
 	private _providers = new Map<string, ProviderFeatures>();
 	private _featureUpdateEvents = new Map<string, Emitter<ProviderFeatures>>();
-	private _legacyProviders = new Map<string, sqlops.DataProtocolServerCapabilities>();
+	private _legacyProviders = new Map<string, azdata.DataProtocolServerCapabilities>();
 
 	private _onCapabilitiesRegistered = this._register(new Emitter<ProviderFeatures>());
 	public readonly onCapabilitiesRegistered = this._onCapabilitiesRegistered.event;
@@ -116,14 +116,14 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 		}
 
 		// handle in case some extensions have already registered (unlikley)
-		Object.entries(connectionRegistry.providers).map(v => {
+		entries(connectionRegistry.providers).map(v => {
 			this.handleConnectionProvider({ id: v[0], properties: v[1] });
 		});
 		// register for when new extensions are added
 		this._register(connectionRegistry.onNewProvider(this.handleConnectionProvider, this));
 
 		// handle adding already known capabilities (could have caching problems)
-		Object.entries(this.capabilities.connectionProviderCache).map(v => {
+		entries(this.capabilities.connectionProviderCache).map(v => {
 			this.handleConnectionProvider({ id: v[0], properties: v[1] }, false);
 		});
 
@@ -131,12 +131,18 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 			this.cleanupProviders();
 		});
 
+		_storageService.onWillSaveState(() => this.shutdown());
+
 		this._register(extentionManagementService.onDidUninstallExtension(({ identifier }) => {
-			let extensionid = getIdFromLocalExtensionId(identifier.id);
+			const connectionProvider = 'connectionProvider';
 			extensionService.getExtensions().then(i => {
-				let extension = i.find(c => c.id === extensionid);
-				let id = extension.contributes['connectionProvider'].providerId;
-				delete this.capabilities.connectionProviderCache[id];
+				let extension = i.find(c => c.identifier.value.toLowerCase() === identifier.id.toLowerCase());
+				if (extension && extension.contributes
+					&& extension.contributes[connectionProvider]
+					&& extension.contributes[connectionProvider].providerId) {
+					let id = extension.contributes[connectionProvider].providerId;
+					delete this.capabilities.connectionProviderCache[id];
+				}
 			});
 		}));
 	}
@@ -179,7 +185,7 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 		return this._providers.get(provider);
 	}
 
-	public getLegacyCapabilities(provider: string): sqlops.DataProtocolServerCapabilities {
+	public getLegacyCapabilities(provider: string): azdata.DataProtocolServerCapabilities {
 		return this._legacyProviders.get(provider);
 	}
 
@@ -195,7 +201,7 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 	 * Register the capabilities provider and query the provider for its capabilities
 	 * @param provider
 	 */
-	public registerProvider(provider: sqlops.CapabilitiesProvider): void {
+	public registerProvider(provider: azdata.CapabilitiesProvider): void {
 		// request the capabilities from server
 		provider.getServerCapabilities(clientCapabilities).then(serverCapabilities => {
 			this._legacyProviders.set(serverCapabilities.providerName, serverCapabilities);
@@ -234,7 +240,7 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 		}
 	}
 
-	public shutdown(): void {
+	private shutdown(): void {
 		this._momento.saveMemento();
 	}
 }

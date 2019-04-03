@@ -6,7 +6,7 @@
 'use strict';
 
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 export enum TaskExecutionMode {
 	execute = 0,
@@ -21,15 +21,15 @@ export const IBackupService = createDecorator<IBackupService>(SERVICE_ID);
 export interface IBackupService {
 	_serviceBrand: any;
 
-	getBackupConfigInfo(connectionUri: string): Thenable<sqlops.BackupConfigInfo>;
+	getBackupConfigInfo(connectionUri: string): Thenable<azdata.BackupConfigInfo>;
 
 	/**
 	 * Backup a data source using the provided connection
 	 */
-	backup(connectionUri: string, backupInfo: { [key: string]: any }, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.BackupResponse>;
+	backup(connectionUri: string, backupInfo: { [key: string]: any }, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.BackupResponse>;
 
 	/**
 	 * Register a disaster recovery provider
 	 */
-	registerProvider(providerId: string, provider: sqlops.BackupProvider): void;
+	registerProvider(providerId: string, provider: azdata.BackupProvider): void;
 }

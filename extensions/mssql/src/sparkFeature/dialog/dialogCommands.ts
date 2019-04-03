@@ -5,7 +5,7 @@
 
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
 const localize = nls.loadMessageBundle();
@@ -48,9 +48,9 @@ export class OpenSparkJobSubmissionDialogCommand extends Command {
 	}
 
 	private async selectConnection(): Promise<SqlClusterConnection> {
-		let connectionList: sqlops.connection.Connection[] = await this.apiWrapper.getActiveConnections();
+		let connectionList: azdata.connection.Connection[] = await this.apiWrapper.getActiveConnections();
 		let displayList: string[] = new Array();
-		let connectionMap: Map<string, sqlops.connection.Connection> = new Map();
+		let connectionMap: Map<string, azdata.connection.Connection> = new Map();
 		if (connectionList && connectionList.length > 0) {
 			connectionList.forEach(conn => {
 				if (conn.providerName === constants.sqlProviderName) {
@@ -125,7 +125,7 @@ export class OpenSparkJobSubmissionDialogTask {
 	constructor(private appContext: AppContext, private outputChannel: vscode.OutputChannel) {
 	}
 
-	async execute(profile: sqlops.IConnectionProfile, ...args: any[]): Promise<void> {
+	async execute(profile: azdata.IConnectionProfile, ...args: any[]): Promise<void> {
 		try {
 			let sqlClusterConnection = SqlClusterLookUp.findSqlClusterConnection(profile, this.appContext);
 			if (!sqlClusterConnection) {

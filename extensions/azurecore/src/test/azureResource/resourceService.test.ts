@@ -7,7 +7,7 @@
 
 import * as should from 'should';
 import * as TypeMoq from 'typemoq';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import 'mocha';
 import { fail } from 'assert';
 
@@ -15,7 +15,7 @@ import { azureResource } from '../../azureResource/azure-resource';
 import { AzureResourceService } from '../../azureResource/resourceService';
 
 // Mock test data
-const mockAccount: sqlops.Account = {
+const mockAccount: azdata.Account = {
 	key: {
 		accountId: 'mock_account',
 		providerId: 'mock_provider'

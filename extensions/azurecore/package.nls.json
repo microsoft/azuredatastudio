@@ -5,7 +5,7 @@
 
 	"azure.resource.config.title": "Azure Resource Configuration",
 	"azure.resource.config.filter.description": "The resource filter, each element is an account id, a subscription id and name separated by a slash",
-	"azure.resource.explorer.title": "Resource Explorer",
+	"azure.resource.explorer.title": "Azure",
 	"azure.resource.refreshall.title": "Refresh All",
 	"azure.resource.refresh.title": "Refresh",
 	"azure.resource.signin.title": "Sign In",

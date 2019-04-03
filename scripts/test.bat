@@ -29,7 +29,7 @@ if not "%BUILD_BUILDID%" == "" (
 
 rem Otherwise
 if "%BUILD_BUILDID%" == "" (
-	%CODE% .\test\electron\index.js --reporter mocha-junit-reporter %*
+	%CODE% .\test\electron\index.js %*
 )
 popd
 

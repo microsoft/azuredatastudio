@@ -76,24 +76,24 @@ class AlternativeKeyEmitter extends Emitter<boolean> {
 	}
 }
 
-export function fillInContextMenuActions(menu: IMenu, options: IMenuActionOptions, target: IAction[] | { primary: IAction[]; secondary: IAction[]; }, contextMenuService: IContextMenuService, isPrimaryGroup?: (group: string) => boolean): void {
+export function fillInContextMenuActions(menu: IMenu, options: IMenuActionOptions | undefined, target: IAction[] | { primary: IAction[]; secondary: IAction[]; }, contextMenuService: IContextMenuService, isPrimaryGroup?: (group: string) => boolean): void {
 	const groups = menu.getActions(options);
 	const getAlternativeActions = AlternativeKeyEmitter.getInstance(contextMenuService).isPressed;
 
 	fillInActions(groups, target, getAlternativeActions, isPrimaryGroup);
 }
 
-export function fillInActionBarActions(menu: IMenu, options: IMenuActionOptions, target: IAction[] | { primary: IAction[]; secondary: IAction[]; }, isPrimaryGroup?: (group: string) => boolean): void {
+export function fillInActionBarActions(menu: IMenu, options: IMenuActionOptions | undefined, target: IAction[] | { primary: IAction[]; secondary: IAction[]; }, isPrimaryGroup?: (group: string) => boolean): void {
 	const groups = menu.getActions(options);
 	// Action bars handle alternative actions on their own so the alternative actions should be ignored
 	fillInActions(groups, target, false, isPrimaryGroup);
 }
 
 // {{SQL CARBON EDIT}} add export modifier
-export function fillInActions(groups: [string, (MenuItemAction | SubmenuItemAction)[]][], target: IAction[] | { primary: IAction[]; secondary: IAction[]; }, getAlternativeActions, isPrimaryGroup: (group: string) => boolean = group => group === 'navigation'): void {
+export function fillInActions(groups: [string, Array<MenuItemAction | SubmenuItemAction>][], target: IAction[] | { primary: IAction[]; secondary: IAction[]; }, useAlternativeActions: boolean, isPrimaryGroup: (group: string) => boolean = group => group === 'navigation'): void {
 	for (let tuple of groups) {
 		let [group, actions] = tuple;
-		if (getAlternativeActions) {
+		if (useAlternativeActions) {
 			actions = actions.map(a => (a instanceof MenuItemAction) && !!a.alt ? a.alt : a);
 		}
 
@@ -114,7 +114,7 @@ export function fillInActions(groups: [string, (MenuItemAction | SubmenuItemActi
 }
 
 
-export function createActionItem(action: IAction, keybindingService: IKeybindingService, notificationService: INotificationService, contextMenuService: IContextMenuService): ActionItem {
+export function createActionItem(action: IAction, keybindingService: IKeybindingService, notificationService: INotificationService, contextMenuService: IContextMenuService): ActionItem | undefined {
 	if (action instanceof MenuItemAction) {
 		return new MenuItemActionItem(action, keybindingService, notificationService, contextMenuService);
 	}
@@ -128,7 +128,7 @@ export class MenuItemActionItem extends ActionItem {
 	static readonly ICON_PATH_TO_CSS_RULES: Map<string /* path*/, string /* CSS rule */> = new Map<string, string>();
 
 	private _wantsAltCommand: boolean;
-	private _itemClassDispose: IDisposable;
+	private _itemClassDispose?: IDisposable;
 	private readonly _altKey: AlternativeKeyEmitter;
 
 	constructor(
@@ -213,7 +213,9 @@ export class MenuItemActionItem extends ActionItem {
 	updateClass(): void {
 		if (this.options.icon) {
 			if (this._commandAction !== this._action) {
-				this._updateItemClass(this._action.alt.item);
+				if (this._action.alt) {
+					this._updateItemClass(this._action.alt.item);
+				}
 			} else if ((<MenuItemAction>this._action).alt) {
 				this._updateItemClass(this._action.item);
 			}
@@ -230,7 +232,7 @@ export class MenuItemActionItem extends ActionItem {
 			const iconPathMapKey = item.iconLocation.dark.toString();
 
 			if (MenuItemActionItem.ICON_PATH_TO_CSS_RULES.has(iconPathMapKey)) {
-				iconClass = MenuItemActionItem.ICON_PATH_TO_CSS_RULES.get(iconPathMapKey);
+				iconClass = MenuItemActionItem.ICON_PATH_TO_CSS_RULES.get(iconPathMapKey)!;
 			} else {
 				iconClass = ids.nextId();
 				createCSSRule(`.icon.${iconClass}`, `background-image: url("${(item.iconLocation.light || item.iconLocation.dark).toString()}")`);
@@ -283,8 +285,9 @@ export class LabeledMenuItemActionItem extends MenuItemActionItem {
 	) {
 		super(_action, _labeledkeybindingService, _notificationService, _labeledcontextMenuService);
 	}
-	_updateLabel(): void {
-		this.element.innerText = this._commandAction.label;
+
+	updateLabel(): void {
+		this.label.innerText = this._commandAction.label;
 	}
 
 	// Overwrite item class to ensure that we can pass in a CSS class that other items use
@@ -307,14 +310,8 @@ export class LabeledMenuItemActionItem extends MenuItemActionItem {
 				MenuItemActionItem.ICON_PATH_TO_CSS_RULES.set(iconPathMapKey, iconClass);
 			}
 
-			this.element.classList.add('icon', iconClass);
-			this.element.classList.add(this._defaultCSSClassToAdd);
-			this._labeledItemClassDispose = {
-				dispose: () => {
-					this.element.classList.remove('icon', iconClass);
-					this.element.classList.remove(this._defaultCSSClassToAdd);
-				}
-			};
+			addClasses(this.label, 'icon', iconClass, this._defaultCSSClassToAdd);
+			this._labeledItemClassDispose = toDisposable(() => removeClasses(this.label, 'icon', iconClass, this._defaultCSSClassToAdd));
 		}
 	}
 
