@@ -93,7 +93,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IThemabl
 		if (configuration && configuration.sorter) {
 			this._sorter = configuration.sorter;
 			this._grid.onSort.subscribe((e, args) => {
-				this._sorter.sort(args);
+				this._sorter(args);
 				this._grid.invalidate();
 				this._grid.render();
 			});
