@@ -154,7 +154,7 @@ export class VirtualizedCollection<T extends Slick.SlickData> implements IObserv
 	}
 
 	private getRangeFromCurrent(start: number, end: number): T[] {
-		let currentData = [];
+		const currentData: Array<T> = [];
 		for (let i = 0; i < end - start; i++) {
 			currentData.push(this.getDataFromCurrent(start + i));
 		}

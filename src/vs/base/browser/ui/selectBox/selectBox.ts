@@ -137,12 +137,13 @@ export class SelectBox extends Widget implements ISelectBoxDelegate {
 	public applyStyles(): void {
 		this.selectBoxDelegate.applyStyles();
 	}
+
 	// {{SQL CARBON EDIT}}
 	protected createOption(value: string, disabled?: boolean): HTMLOptionElement {
 		let option = document.createElement('option');
 		option.value = value;
 		option.text = value;
-		option.disabled = disabled;
+		option.disabled = disabled || false;
 
 		return option;
 	}

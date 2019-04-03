@@ -6,7 +6,6 @@
 import 'vs/css!./media/table';
 import { TableDataView } from './tableDataView';
 import { IDisposableDataProvider, ITableSorter, ITableMouseEvent, ITableConfiguration, ITableStyles } from 'sql/base/browser/ui/table/interfaces';
-import { $ } from 'sql/base/browser/builder';
 
 import { IThemable } from 'vs/platform/theme/common/styler';
 import * as DOM from 'vs/base/browser/dom';
@@ -121,7 +120,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IThemabl
 	}
 
 	public dispose() {
-		$(this._container).dispose();
+		this._container.remove();
 		super.dispose();
 	}
 

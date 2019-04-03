@@ -20,6 +20,9 @@ import { ISelectBoxDelegate, ISelectOptionItem, ISelectBoxOptions, ISelectBoxSty
 import { isMacintosh } from 'vs/base/common/platform';
 import { renderMarkdown } from 'vs/base/browser/htmlContentRenderer';
 
+// {{SQL CARBON EDIT}} import color
+import { Color } from 'vs/base/common/color';
+
 const $ = dom.$;
 
 const SELECT_OPTION_ENTRY_TEMPLATE_ID = 'selectOption.entry.template';
@@ -372,23 +375,22 @@ export class SelectBoxList implements ISelectBoxDelegate, IListVirtualDelegate<I
 		// Style parent select
 
 		// {{SQL CARBON EDIT}}
-		let background = null;
-		let foreground = null;
-		let border = null;
+		let background: Color | undefined = undefined;
+		let foreground: Color | undefined = undefined;
+		let border: Color | undefined = undefined;
 
 		if (this.selectElement) {
 			if (this.selectElement.disabled) {
-				background = (<any>this.styles).disabledSelectBackground ? (<any>this.styles).disabledSelectBackground.toString() : null;
-				foreground = (<any>this.styles).disabledSelectForeground ? (<any>this.styles).disabledSelectForeground.toString() : null;
-				border = null;
+				background = (<any>this.styles).disabledSelectBackground;
+				foreground = (<any>this.styles).disabledSelectForeground;
 			} else {
-				background = this.styles.selectBackground ? this.styles.selectBackground.toString() : null;
-				foreground = this.styles.selectForeground ? this.styles.selectForeground.toString() : null;
-				border = this.styles.selectBorder ? this.styles.selectBorder.toString() : null;
+				background = this.styles.selectBackground;
+				foreground = this.styles.selectForeground;
+				border = this.styles.selectBorder;
 			}
-			this.selectElement.style.backgroundColor = background;
-			this.selectElement.style.color = foreground;
-			this.selectElement.style.borderColor = border;
+			this.selectElement.style.backgroundColor = background ? background.toString() : null;
+			this.selectElement.style.color = foreground ? foreground.toString() : null;
+			this.selectElement.style.borderColor = border ? border.toString() : null;
 		}
 
 		// Style drop down select list (non-native mode only)

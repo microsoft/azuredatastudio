@@ -16,22 +16,27 @@ export interface IFindPosition {
 	row: number;
 }
 
-function defaultSort<T>(args: Slick.OnSortEventArgs<T>, data: Array<T>): Array<T> {
-	let field = args.sortCol.field;
-	let sign = args.sortAsc ? 1 : -1;
-	let comparer: (a: any | any, b: number | string) => number;
+function defaultSort<T extends {[key: string]: any}>(args: Slick.OnSortEventArgs<T>, data: Array<T>): Array<T> {
+	if (!args.sortCol || !args.sortCol.field) {
+		return data;
+	}
+	const field = args.sortCol.field;
+	const sign = args.sortAsc ? 1 : -1;
+	let comparer: (a: T , b: T) => number;
 	if (types.isString(data[0][field])) {
 		if (Number(data[0][field]) !== NaN) {
-			comparer = (a: number, b: number) => {
+			comparer = (a: T, b: T) => {
 				let anum = Number(a[field]);
 				let bnum = Number(b[field]);
 				return anum === bnum ? 0 : anum > bnum ? 1 : -1;
 			};
 		} else {
-			comparer = stringCompare;
+			comparer = (a: T, b: T) => {
+				return stringCompare(a[field], b[field]);
+			};
 		}
 	} else {
-		comparer = (a: number, b: number) => {
+		comparer = (a: T, b: T) => {
 			return a[field] === b[field] ? 0 : (a[field] > b[field] ? 1 : -1);
 		};
 	}
