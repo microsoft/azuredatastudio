@@ -76,7 +76,6 @@ export default class SplitViewContainer extends ContainerBase<FlexItemLayout> im
 		this._splitView = this._register(new SplitView(this._el.nativeElement, { orientation: this._orientation }));
 	}
 
-
 	private GetCorrespondingView(component: IComponent, orientation: Orientation): IView {
 		let c = component as ComponentBase;
 		let basicView: SplitPane = new SplitPane();
@@ -85,7 +84,6 @@ export default class SplitViewContainer extends ContainerBase<FlexItemLayout> im
 		basicView.maximumSize = Number.MAX_VALUE;
 		return basicView;
 	}
-
 
 	/// IComponent implementation
 
@@ -119,7 +117,6 @@ export default class SplitViewContainer extends ContainerBase<FlexItemLayout> im
 		}
 		this._splitView.layout(this._splitViewHeight);
 	}
-
 
 	// CSS-bound properties
 	public get flexFlow(): string {

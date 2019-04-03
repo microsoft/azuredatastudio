@@ -128,6 +128,15 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 		}
 	}
 
+	private updateLanguageMode() {
+		if (this._editorModel && this._editor) {
+			this._languageMode = this.languageMode;
+			let languageSelection = this._modeService.create(this._languageMode);
+			this._modelService.setMode(this._editorModel.originalModel.textEditorModel, languageSelection);
+			this._modelService.setMode(this._editorModel.modifiedModel.textEditorModel, languageSelection);
+		}
+	}
+
 	/// IComponent implementation
 	public setLayout(layout: any): void {
 		// TODO allow configuring the look and feel
@@ -137,6 +146,9 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 		super.setProperties(properties);
 		if (this.contentLeft !== this._renderedContentLeft || this.contentRight !== this._renderedContentRight) {
 			this.updateModel();
+		}
+		if (this.languageMode !== this._languageMode) {
+			this.updateLanguageMode();
 		}
 		this._isAutoResizable = this.isAutoResizable;
 		this._minimumHeight = this.minimumHeight;
