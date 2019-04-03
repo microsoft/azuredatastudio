@@ -16,13 +16,13 @@ export interface IFindPosition {
 	row: number;
 }
 
-function defaultSort<T extends {[key: string]: any}>(args: Slick.OnSortEventArgs<T>, data: Array<T>): Array<T> {
+function defaultSort<T extends { [key: string]: any }>(args: Slick.OnSortEventArgs<T>, data: Array<T>): Array<T> {
 	if (!args.sortCol || !args.sortCol.field) {
 		return data;
 	}
 	const field = args.sortCol.field;
 	const sign = args.sortAsc ? 1 : -1;
-	let comparer: (a: T , b: T) => number;
+	let comparer: (a: T, b: T) => number;
 	if (types.isString(data[0][field])) {
 		if (Number(data[0][field]) !== NaN) {
 			comparer = (a: T, b: T) => {
