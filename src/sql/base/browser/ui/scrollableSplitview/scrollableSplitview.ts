@@ -420,7 +420,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 	}
 
 	clear(): void {
-		for(let i = this.viewItems.length - 1; i >= 0; i--) {
+		for (let i = this.viewItems.length - 1; i >= 0; i--) {
 			this.removeView(i);
 		}
 	}
