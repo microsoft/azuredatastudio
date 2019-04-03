@@ -13,6 +13,7 @@ import QueryRunner, { EventType } from 'sql/platform/query/common/queryRunner';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import Severity from 'vs/base/common/severity';
+import * as Utils from 'sql/platform/connection/common/utils';
 import { Deferred } from 'sql/base/common/promise';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
@@ -228,14 +229,12 @@ class SqlKernel extends Disposable implements nb.IKernel {
 			}
 			this._queryRunner.runQuery(code);
 		} else if (this._currentConnection) {
-			let connectionUri = this._connectionManagementService.getConnectionUriFromId(this._currentConnectionProfile.id);
-			if (!this._connectionManagementService.isConnected(connectionUri)) {
-				canRun = false;
-			} else {
-				this._queryRunner = this._instantiationService.createInstance(QueryRunner, connectionUri);
+			let connectionUri = Utils.generateUri(this._currentConnection, 'notebook');
+			this._queryRunner = this._instantiationService.createInstance(QueryRunner, connectionUri);
+			this._connectionManagementService.connect(this._currentConnection, connectionUri).then((result) => {
 				this.addQueryEventListeners(this._queryRunner);
 				this._queryRunner.runQuery(code);
-			}
+			});
 		} else {
 			canRun = false;
 		}
