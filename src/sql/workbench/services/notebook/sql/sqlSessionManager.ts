@@ -228,7 +228,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 				this._future.handleDone();
 			}
 			this._queryRunner.runQuery(code);
-		} else if (this._currentConnection) {
+		} else if (this._currentConnection && this._currentConnectionProfile) {
 			let connectionUri = Utils.generateUri(this._currentConnectionProfile, 'notebook');
 			this._queryRunner = this._instantiationService.createInstance(QueryRunner, connectionUri);
 			this._connectionManagementService.connect(this._currentConnectionProfile, connectionUri).then((result) => {
