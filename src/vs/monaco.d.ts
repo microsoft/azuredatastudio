@@ -3079,7 +3079,6 @@ declare namespace monaco.editor {
 		 * Defaults to false.
 		 */
 		originalEditable?: boolean;
-
 		/**
 		 * Adding option to reverse coloring in diff editor
 		 */
