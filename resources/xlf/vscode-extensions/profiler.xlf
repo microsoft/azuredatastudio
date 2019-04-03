@@ -5,16 +5,19 @@
       <source xml:lang="en">Cancel</source>
     </trans-unit>
     <trans-unit id="createSessionDialog.create">
-      <source xml:lang="en">Create</source>
+      <source xml:lang="en">Start</source>
     </trans-unit>
     <trans-unit id="createSessionDialog.title">
-      <source xml:lang="en">Create New Profiler Session</source>
+      <source xml:lang="en">Start New Profiler Session</source>
     </trans-unit>
     <trans-unit id="createSessionDialog.templatesInvalid">
       <source xml:lang="en">Invalid templates list, cannot open dialog</source>
     </trans-unit>
     <trans-unit id="createSessionDialog.dialogOwnerInvalid">
       <source xml:lang="en">Invalid dialog owner, cannot open dialog</source>
+    </trans-unit>
+    <trans-unit id="createSessionDialog.invalidProviderType">
+      <source xml:lang="en">Invalid provider type, cannot open dialog</source>
     </trans-unit>
     <trans-unit id="createSessionDialog.selectTemplates">
       <source xml:lang="en">Select session template:</source>
