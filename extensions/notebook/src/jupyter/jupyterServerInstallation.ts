@@ -128,7 +128,7 @@ export default class JupyterServerInstallation {
 
 		if (this._usingExistingPython) {
 			packageName = `python-${pythonVersion}-${bundleVersion}-offlinePackages.zip`;
-			pythonDownloadUrl = 'https://bundledpython.blob.core.windows.net/test/python-3.6.6-0.0.1-offlinePackages.zip';
+			pythonDownloadUrl = 'https://go.microsoft.com/fwlink/?linkid=2086702';
 		} else {
 			let extension = process.platform === constants.winPlatform ? 'zip' : 'tar.gz';
 			packageName = `python-${pythonVersion}-${platformId}-${bundleVersion}.${extension}`;
