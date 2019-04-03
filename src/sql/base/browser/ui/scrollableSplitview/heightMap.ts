@@ -37,7 +37,7 @@ export class HeightMap {
 		let totalSize: number;
 		let sizeDiff = 0;
 
-		if (afterItemId === null) {
+		if (afterItemId === undefined) {
 			i = 0;
 			totalSize = 0;
 		} else {
@@ -201,12 +201,12 @@ export class HeightMap {
 		return this.heightMap[index];
 	}
 
-	public itemAfter(item: IViewItem): IViewItem {
-		return this.heightMap[this.indexes[item.view.id] + 1] || null;
+	public itemAfter(item: IViewItem): IViewItem | undefined {
+		return this.heightMap[this.indexes[item.view.id] + 1] || undefined;
 	}
 
 	public dispose(): void {
-		this.heightMap = null;
-		this.indexes = null;
+		this.heightMap = undefined;
+		this.indexes = undefined;
 	}
 }
