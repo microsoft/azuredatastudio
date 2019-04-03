@@ -13,7 +13,6 @@ import QueryRunner, { EventType } from 'sql/platform/query/common/queryRunner';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import Severity from 'vs/base/common/severity';
-import * as Utils from 'sql/platform/connection/common/utils';
 import { Deferred } from 'sql/base/common/promise';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
@@ -23,6 +22,7 @@ import { escape } from 'sql/base/common/strings';
 import { elapsedTimeLabel } from 'sql/parts/query/common/localizedConstants';
 import * as notebookUtils from 'sql/parts/notebook/notebookUtils';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 
 export const sqlKernelError: string = localize("sqlKernelError", "SQL kernel error");
 export const MAX_ROWS = 5000;
@@ -138,6 +138,7 @@ export class SqlSession implements nb.ISession {
 class SqlKernel extends Disposable implements nb.IKernel {
 	private _queryRunner: QueryRunner;
 	private _currentConnection: IConnectionProfile;
+	private _currentConnectionProfile: ConnectionProfile;
 	static kernelId: number = 0;
 
 	private _id: string;
@@ -146,6 +147,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 	private _magicToExecutorMap = new Map<string, ExternalScriptMagic>();
 
 	constructor(@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
+		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
 		@IConfigurationService private _configurationService: IConfigurationService
@@ -206,6 +208,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 
 	public set connection(conn: IConnectionProfile) {
 		this._currentConnection = conn;
+		this._currentConnectionProfile = new ConnectionProfile(this._capabilitiesService, this._currentConnection);
 		this._queryRunner = undefined;
 	}
 
@@ -225,12 +228,14 @@ class SqlKernel extends Disposable implements nb.IKernel {
 			}
 			this._queryRunner.runQuery(code);
 		} else if (this._currentConnection) {
-			let connectionUri = Utils.generateUri(this._currentConnection, 'notebook');
-			this._queryRunner = this._instantiationService.createInstance(QueryRunner, connectionUri);
-			this._connectionManagementService.connect(this._currentConnection, connectionUri).then((result) => {
+			let connectionUri = this._connectionManagementService.getConnectionUriFromId(this._currentConnectionProfile.id);
+			if (!this._connectionManagementService.isConnected(connectionUri)) {
+				canRun = false;
+			} else {
+				this._queryRunner = this._instantiationService.createInstance(QueryRunner, connectionUri);
 				this.addQueryEventListeners(this._queryRunner);
 				this._queryRunner.runQuery(code);
-			});
+			}
 		} else {
 			canRun = false;
 		}
