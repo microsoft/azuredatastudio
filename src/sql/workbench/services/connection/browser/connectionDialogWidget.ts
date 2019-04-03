@@ -37,13 +37,11 @@ import * as DOM from 'vs/base/browser/dom';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
-import { CmsDialog } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 
 export interface OnShowUIResponse {
 	selectedProviderType: string;
 	container: HTMLElement;
-	cmsDialog: azdata.CmsDialog;
 }
 
 export class ConnectionDialogWidget extends Modal {
@@ -67,8 +65,8 @@ export class ConnectionDialogWidget extends Modal {
 	private _panel: TabbedPanel;
 	private _recentConnectionTabId: PanelTabIdentifier;
 
-	private _onInitDialog = new Emitter<azdata.CmsDialog>();
-	public onInitDialog: Event<azdata.CmsDialog> = this._onInitDialog.event;
+	private _onInitDialog = new Emitter<void>();
+	public onInitDialog: Event<void> = this._onInitDialog.event;
 
 	private _onCancel = new Emitter<void>();
 	public onCancel: Event<void> = this._onCancel.event;
@@ -91,7 +89,6 @@ export class ConnectionDialogWidget extends Modal {
 		private providerTypeOptions: string[],
 		private selectedProviderType: string,
 		private providerNameToDisplayNameMap: { [providerDisplayName: string]: string },
-		private cmsDialog: azdata.CmsDialog = undefined,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IWorkbenchThemeService private _workbenchThemeService: IWorkbenchThemeService,
@@ -102,10 +99,13 @@ export class ConnectionDialogWidget extends Modal {
 		@IContextViewService private _contextViewService: IContextViewService,
 		@IClipboardService clipboardService: IClipboardService,
 	) {
-		super(!cmsDialog ? localize('connection', 'Connection')
-			: cmsDialog === CmsDialog.cmsRegistrationDialog ? localize('registerCMS', 'Register Central Management Server')
-			: localize('registerServer', 'New Server Registration'),
-			TelemetryKeys.Connection, telemetryService, layoutService, clipboardService, _workbenchThemeService, contextKeyService, { hasSpinner: true, hasErrors: true });
+		super(localize('connection', 'Connection'), TelemetryKeys.Connection, telemetryService, layoutService, clipboardService, _workbenchThemeService, contextKeyService, { hasSpinner: true, hasErrors: true });
+		// this._toDispose.push(this._onInitDialog);
+		// this._toDispose.push(this._onCancel);
+		// this._toDispose.push(this._onConnect);
+		// this._toDispose.push(this._onShowUiComponent);
+		// this._toDispose.push(this._onFillinConnectionInputs);
+		// this._toDispose.push(this._onResetConnection);
 	}
 
 	/**
@@ -222,7 +222,7 @@ export class ConnectionDialogWidget extends Modal {
 	/**
 	 * Render the connection flyout
 	 */
-	public render(cmsDialog: azdata.CmsDialog = undefined) {
+	public render() {
 		super.render();
 		attachModalDialogStyler(this, this._themeService);
 		let connectLabel = localize('connectionDialog.connect', 'Connect');
@@ -231,7 +231,7 @@ export class ConnectionDialogWidget extends Modal {
 		this._connectButton.enabled = false;
 		this._closeButton = this.addFooterButton(cancelLabel, () => this.cancel());
 		this.registerListeners();
-		this.onProviderTypeSelected(this._providerTypeSelectBox.value, cmsDialog);
+		this.onProviderTypeSelected(this._providerTypeSelectBox.value);
 	}
 
 	// Update theming that is specific to connection flyout body
@@ -258,14 +258,13 @@ export class ConnectionDialogWidget extends Modal {
 		}));
 	}
 
-	private onProviderTypeSelected(selectedProviderType: string, cmsDialog: azdata.CmsDialog = undefined) {
+	private onProviderTypeSelected(selectedProviderType: string) {
 		// Show connection form based on server type
 		this.$connectionUIContainer.empty();
 		this._onShowUiComponent.fire({ selectedProviderType: selectedProviderType,
-			container: this.$connectionUIContainer.getHTMLElement(),
-			cmsDialog: cmsDialog
+			container: this.$connectionUIContainer.getHTMLElement()
 		});
-		this.initDialog(cmsDialog);
+		this.initDialog();
 	}
 
 	private connect(element?: IConnectionProfile): void {
@@ -398,7 +397,7 @@ export class ConnectionDialogWidget extends Modal {
 	 * Open the flyout dialog
 	 * @param recentConnections Are there recent connections that should be shown
 	 */
-	public async open(recentConnections: boolean, cmsDialog: azdata.CmsDialog = undefined): Promise<void> {
+	public async open(recentConnections: boolean): Promise<void> {
 		this._panel.showTab(this._recentConnectionTabId);
 
 		this.show();
@@ -416,7 +415,7 @@ export class ConnectionDialogWidget extends Modal {
 
 		// call layout with view height
 		this.layout();
-		this.initDialog(cmsDialog);
+		this.initDialog();
 	}
 
 	protected layout(height?: number): void {
@@ -439,10 +438,10 @@ export class ConnectionDialogWidget extends Modal {
 		return this._connectButton.enabled;
 	}
 
-	private initDialog(cmsDialog: azdata.CmsDialog = undefined): void {
+	private initDialog(): void {
 		super.setError('');
 		this.hideSpinner();
-		this._onInitDialog.fire(cmsDialog);
+		this._onInitDialog.fire();
 	}
 
 	public resetConnection(): void {
@@ -463,10 +462,15 @@ export class ConnectionDialogWidget extends Modal {
 		this.refresh();
 	}
 
-	public updateProvider(displayName: string, cmsDialog: azdata.CmsDialog = undefined) {
+	public updateProvider(displayName: string) {
 		this._providerTypeSelectBox.selectWithOptionName(displayName);
 
-		this.onProviderTypeSelected(displayName, cmsDialog);
+		this.onProviderTypeSelected(displayName);
+	}
+
+	public dispose(): void {
+		this._toDispose.forEach(obj => obj.dispose());
+		this.dispose();
 	}
 
 	public set databaseDropdownExpanded(val: boolean) {

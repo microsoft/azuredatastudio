@@ -180,8 +180,8 @@ export class ApiWrapper {
 	}
 
 	// Connection APIs
-	public openConnectionDialog(providers: string[], initialConnectionProfile?: azdata.IConnectionProfile, connectionCompletionOptions?: azdata.IConnectionCompletionOptions, cmsDialog?: azdata.CmsDialog): Thenable<azdata.connection.Connection> {
-		return azdata.connection.openConnectionDialog(providers, initialConnectionProfile, connectionCompletionOptions, cmsDialog);
+	public openConnectionDialog(providers: string[], initialConnectionProfile?: azdata.IConnectionProfile, connectionCompletionOptions?: azdata.IConnectionCompletionOptions): Thenable<azdata.connection.Connection> {
+		return azdata.connection.openConnectionDialog(providers, initialConnectionProfile, connectionCompletionOptions);
 	}
 
 	// CMS APIs
@@ -247,8 +247,7 @@ export class ApiWrapper {
 
 	public async addRegisteredServer(relativePath: string, ownerUri: string, parentServerName?: string) {
 		let provider = await this.getCmsService();
-		let cmsDialog: azdata.CmsDialog = azdata.CmsDialog.serverRegistrationDialog;
-		return this.openConnectionDialog(['MSSQL'], undefined, undefined, cmsDialog).then((connection) => {
+		return this.openConnectionDialog(['MSSQL'], undefined, undefined).then((connection) => {
 			if (connection && connection.options) {
 				if (connection.options.server === parentServerName) {
 					// error out for same server registration
@@ -296,8 +295,7 @@ export class ApiWrapper {
 	}
 
 	public get connection(): Thenable<azdata.connection.Connection> {
-		let cmsDialog: azdata.CmsDialog = azdata.CmsDialog.cmsRegistrationDialog;
-		return this.openConnectionDialog(['MSSQL'], undefined, undefined, cmsDialog).then((connection) => {
+		return this.openConnectionDialog(['MSSQL-CMS'], undefined, undefined).then((connection) => {
 			if (connection) {
 				// remove group ID from connection if a user chose connection
 				// from the recent connections list

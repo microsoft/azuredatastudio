@@ -18,7 +18,7 @@ export interface IConnectionDialogService {
 	 * @param model
 	 * @param connectionResult
 	 */
-	showDialog(connectionManagementService: IConnectionManagementService, params: INewConnectionParams, model: IConnectionProfile, connectionResult?: IConnectionResult, cmsDialog?: azdata.CmsDialog): Thenable<void>;
+	showDialog(connectionManagementService: IConnectionManagementService, params: INewConnectionParams, model: IConnectionProfile, connectionResult?: IConnectionResult): Thenable<void>;
 
 	/**
 	 * Opens the connection dialog and returns the promise when connection is made
@@ -28,6 +28,6 @@ export interface IConnectionDialogService {
 	 * @param model
 	 * @param connectionResult
 	 */
-	openDialogAndWait(connectionManagementService: IConnectionManagementService, params?: INewConnectionParams, model?: IConnectionProfile, connectionResult?: IConnectionResult, cmsDialog?: azdata.CmsDialog, doConnect?: boolean): Thenable<IConnectionProfile>;
+	openDialogAndWait(connectionManagementService: IConnectionManagementService, params?: INewConnectionParams, model?: IConnectionProfile, connectionResult?: IConnectionResult, doConnect?: boolean): Thenable<IConnectionProfile>;
 }
 

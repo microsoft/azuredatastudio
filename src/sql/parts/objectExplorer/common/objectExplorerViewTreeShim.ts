@@ -49,7 +49,7 @@ export class OEShimService extends Disposable implements IOEShimService {
 		let connProfile = new ConnectionProfile(this.capabilities, node.payload);
 		connProfile.saveProfile = false;
 		if (this.cm.providerRegistered(providerId)) {
-			let userProfile = await this.cd.openDialogAndWait(this.cm, { connectionType: ConnectionType.default, showDashboard: false }, connProfile, undefined, undefined, false);
+			let userProfile = await this.cd.openDialogAndWait(this.cm, { connectionType: ConnectionType.default, showDashboard: false }, connProfile, undefined, false);
 			if (userProfile) {
 				connProfile = new ConnectionProfile(this.capabilities, userProfile);
 			} else {

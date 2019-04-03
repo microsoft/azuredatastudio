@@ -12,15 +12,13 @@ export class ConnectionDialogTestService implements IConnectionDialogService {
 	_serviceBrand: any;
 
 	public showDialog(connectionManagementService: IConnectionManagementService,
-		params: INewConnectionParams, model: IConnectionProfile, connectionResult?: IConnectionResult,
-		cmsDialog?: azdata.CmsDialog ): Promise<void> {
+		params: INewConnectionParams, model: IConnectionProfile, connectionResult?: IConnectionResult): Promise<void> {
 		let none: void;
 		return Promise.resolve(none);
 	}
 
 	public openDialogAndWait(connectionManagementService: IConnectionManagementService,
-		params?: INewConnectionParams, model?: IConnectionProfile, connectionResult?: IConnectionResult,
-		cmsDialog?: azdata.CmsDialog): Promise<IConnectionProfile> {
+		params?: INewConnectionParams, model?: IConnectionProfile, connectionResult?: IConnectionResult): Promise<IConnectionProfile> {
 		return Promise.resolve(undefined);
 	}
 
