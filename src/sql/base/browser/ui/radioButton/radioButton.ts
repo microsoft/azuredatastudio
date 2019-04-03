@@ -39,19 +39,23 @@ export class RadioButton extends Widget {
 		container.appendChild(this._label);
 	}
 
-	public setName(value: string) {
-		this.inputElement.setAttribute('name', value);
+	public set name(value: string | undefined) {
+		if (value) {
+			this.inputElement.setAttribute('name', value);
+		}
 	}
 
-	public getName(): string | undefined {
+	public get name(): string | undefined {
 		return withNullAsUndefined(this.inputElement.getAttribute('name'));
 	}
 
-	public setValue(value: string) {
-		this.inputElement.setAttribute('value', value);
+	public set value(value: string | undefined) {
+		if (value) {
+			this.inputElement.setAttribute('value', value);
+		}
 	}
 
-	public getValue(): string | undefined {
+	public get value(): string | undefined {
 		return withNullAsUndefined(this.inputElement.getAttribute('value'));
 	}
 
