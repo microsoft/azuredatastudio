@@ -167,7 +167,7 @@ export enum ModelComponentTypes {
 	Editor,
 	DiffEditor,
 	Dom,
-	Hyperlink,
+	Hyperlink
 }
 
 export interface IComponentShape {

@@ -8,7 +8,7 @@ import {
 	ViewChild, ViewChildren, ElementRef, Injector, OnDestroy, QueryList
 } from '@angular/core';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as DOM from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
@@ -158,58 +158,58 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 
 	// CSS-bound properties
 	public get contentLeft(): string {
-		return this.getPropertyOrDefault<sqlops.EditorProperties, string>((props) => props.contentLeft, undefined);
+		return this.getPropertyOrDefault<azdata.EditorProperties, string>((props) => props.contentLeft, undefined);
 	}
 
 	public set contentLeft(newValue: string) {
-		this.setPropertyFromUI<sqlops.EditorProperties, string>((properties, contentLeft) => { properties.contentLeft = contentLeft; }, newValue);
+		this.setPropertyFromUI<azdata.EditorProperties, string>((properties, contentLeft) => { properties.contentLeft = contentLeft; }, newValue);
 	}
 
 	public get contentRight(): string {
-		return this.getPropertyOrDefault<sqlops.EditorProperties, string>((props) => props.contentRight, undefined);
+		return this.getPropertyOrDefault<azdata.EditorProperties, string>((props) => props.contentRight, undefined);
 	}
 
 	public set contentRight(newValue: string) {
-		this.setPropertyFromUI<sqlops.EditorProperties, string>((properties, contentRight) => { properties.contentRight = contentRight; }, newValue);
+		this.setPropertyFromUI<azdata.EditorProperties, string>((properties, contentRight) => { properties.contentRight = contentRight; }, newValue);
 	}
 
 	public get languageMode(): string {
-		return this.getPropertyOrDefault<sqlops.EditorProperties, string>((props) => props.languageMode, undefined);
+		return this.getPropertyOrDefault<azdata.EditorProperties, string>((props) => props.languageMode, undefined);
 	}
 
 	public set languageMode(newValue: string) {
-		this.setPropertyFromUI<sqlops.EditorProperties, string>((properties, languageMode) => { properties.languageMode = languageMode; }, newValue);
+		this.setPropertyFromUI<azdata.EditorProperties, string>((properties, languageMode) => { properties.languageMode = languageMode; }, newValue);
 	}
 
 	public get isAutoResizable(): boolean {
-		return this.getPropertyOrDefault<sqlops.EditorProperties, boolean>((props) => props.isAutoResizable, false);
+		return this.getPropertyOrDefault<azdata.EditorProperties, boolean>((props) => props.isAutoResizable, false);
 	}
 
 	public set isAutoResizable(newValue: boolean) {
-		this.setPropertyFromUI<sqlops.EditorProperties, boolean>((properties, isAutoResizable) => { properties.isAutoResizable = isAutoResizable; }, newValue);
+		this.setPropertyFromUI<azdata.EditorProperties, boolean>((properties, isAutoResizable) => { properties.isAutoResizable = isAutoResizable; }, newValue);
 	}
 
 	public get minimumHeight(): number {
-		return this.getPropertyOrDefault<sqlops.EditorProperties, number>((props) => props.minimumHeight, this._editor.minimumHeight);
+		return this.getPropertyOrDefault<azdata.EditorProperties, number>((props) => props.minimumHeight, this._editor.minimumHeight);
 	}
 
 	public set minimumHeight(newValue: number) {
-		this.setPropertyFromUI<sqlops.EditorProperties, number>((properties, minimumHeight) => { properties.minimumHeight = minimumHeight; }, newValue);
+		this.setPropertyFromUI<azdata.EditorProperties, number>((properties, minimumHeight) => { properties.minimumHeight = minimumHeight; }, newValue);
 	}
 
 	public get editorUriLeft(): string {
-		return this.getPropertyOrDefault<sqlops.EditorProperties, string>((props) => props.editorUriLeft, '');
+		return this.getPropertyOrDefault<azdata.EditorProperties, string>((props) => props.editorUriLeft, '');
 	}
 
 	public set editorUriLeft(newValue: string) {
-		this.setPropertyFromUI<sqlops.EditorProperties, string>((properties, editorUriLeft) => { properties.editorUriLeft = editorUriLeft; }, newValue);
+		this.setPropertyFromUI<azdata.EditorProperties, string>((properties, editorUriLeft) => { properties.editorUriLeft = editorUriLeft; }, newValue);
 	}
 
 	public get editorUriRight(): string {
-		return this.getPropertyOrDefault<sqlops.EditorProperties, string>((props) => props.editorUriRight, '');
+		return this.getPropertyOrDefault<azdata.EditorProperties, string>((props) => props.editorUriRight, '');
 	}
 
 	public set editorUriRight(newValue: string) {
-		this.setPropertyFromUI<sqlops.EditorProperties, string>((properties, editorUriRight) => { properties.editorUriRight = editorUriRight; }, newValue);
+		this.setPropertyFromUI<azdata.EditorProperties, string>((properties, editorUriRight) => { properties.editorUriRight = editorUriRight; }, newValue);
 	}
 }
