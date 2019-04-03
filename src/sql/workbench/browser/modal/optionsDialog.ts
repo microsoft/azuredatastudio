@@ -120,7 +120,10 @@ export class OptionsDialog extends Modal {
 
 		this._dividerBuilder = append(this._body, $('div'));
 
-		let descriptionContainer = append(this._body, $('div.optionsDialog-description'));
+		this._optionGroups = append(this._body, $('div.optionsDialog-options-groups.monaco-panel-view'));
+		this.splitview = new ScrollableSplitView(this._optionGroups, { enableResizing: false, scrollDebounce: 0 });
+
+		const descriptionContainer = append(this._body, $('div.optionsDialog-description'));
 
 		this._optionTitle = append(descriptionContainer, $('div.modal-title'));
 		this._optionDescription = append(descriptionContainer, $('div.optionsDialog-description-content'));
@@ -208,7 +211,6 @@ export class OptionsDialog extends Modal {
 	}
 
 	public close() {
-		this._optionGroups.remove();
 		this.dispose();
 		this.hide();
 		this._onCloseEvent.fire();
@@ -217,8 +219,7 @@ export class OptionsDialog extends Modal {
 	public open(options: azdata.ServiceOption[], optionValues: { [name: string]: any }) {
 		this._optionValues = optionValues;
 		let firstOption: string;
-		this._optionGroups = $('div.optionsDialog-options-groups.monaco-panel-view');
-		this.splitview = new ScrollableSplitView(this._optionGroups, { enableResizing: false, scrollDebounce: 0 });
+		this.splitview.clear();
 		let categoryMap = OptionsDialogHelper.groupOptionsByCategory(options);
 		for (let category in categoryMap) {
 			let serviceOptions: azdata.ServiceOption[] = categoryMap[category];
@@ -238,7 +239,6 @@ export class OptionsDialog extends Modal {
 		if (this.height) {
 			this.splitview.layout(this.height - 120);
 		}
-		append(this._body, this._optionGroups);
 		this.show();
 		let firstOptionWidget = this._optionElements[firstOption].optionWidget;
 		this.registerStyling();

@@ -419,6 +419,12 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 		}
 	}
 
+	clear(): void {
+		for(let i = this.viewItems.length - 1; i >= 0; i--) {
+			this.removeView(i);
+		}
+	}
+
 	removeView(index: number, sizing?: Sizing): IView {
 		if (this.state !== State.Idle) {
 			throw new Error('Cant modify splitview');
