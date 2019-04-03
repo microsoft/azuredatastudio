@@ -18,7 +18,7 @@ import { ModelComponentWrapper } from 'sql/parts/modelComponents/modelComponentW
 
 import types = require('vs/base/common/types');
 
-class FlexItem {
+export class FlexItem {
 	constructor(public descriptor: IComponentDescriptor, public config: FlexItemLayout) { }
 }
 

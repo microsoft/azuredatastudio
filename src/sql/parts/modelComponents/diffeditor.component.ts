@@ -11,7 +11,6 @@ import {
 import * as sqlops from 'sqlops';
 import * as DOM from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { ITextModel } from 'vs/editor/common/model';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { URI } from 'vs/base/common/uri';
 import { Schemas } from 'vs/base/common/network';
@@ -20,19 +19,12 @@ import { IModelService } from 'vs/editor/common/services/modelService';
 
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
-import { QueryTextEditor } from 'sql/parts/modelComponents/queryTextEditor';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
 import { SimpleProgressService } from 'vs/editor/standalone/browser/simpleServices';
 import { IProgressService } from 'vs/platform/progress/common/progress';
-import { ITextDiffEditor, IResourceDiffInput, EditorModel, ITextEditorModel } from 'vs/workbench/common/editor';
 import { TextDiffEditor } from 'vs/workbench/browser/parts/editor/textDiffEditor';
 import { DiffEditorInput } from 'vs/workbench/common/editor/diffEditorInput';
-import {DiffEditorModel} from 'vs/workbench/common/editor/diffEditorModel';
 import { TextDiffEditorModel} from 'vs/workbench/common/editor/textDiffEditorModel';
-import {IEditorModel} from 'vs/platform/editor/common/editor';
-
-import { Uri } from 'vscode';
-import { BaseTextEditorModel } from 'vs/workbench/common/editor/textEditorModel';
 import { CancellationTokenSource } from 'vs/base/common/cancellation';
 
 @Component({
@@ -75,14 +67,16 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 		this._editor = this._instantiationService.createInstance(TextDiffEditor);
 		this._editor.create(this._el.nativeElement);
 		this._editor.setVisible(true);
-		let uri1 = this.createUri('1');
-		let uri2 = this.createUri('2');
-		let cancell = new CancellationTokenSource();
+		let uri1 = this.createUri('source');
+		this.editorUriLeft = uri1.toString();
+		let uri2 = this.createUri('target');
+		this.editorUriRight = uri2.toString();
 
+		let cancellationTokenSource = new CancellationTokenSource();
 		let editorinput1 =	this._instantiationService.createInstance(UntitledEditorInput, uri1, false, 'plaintext', '', '');
 		let editorinput2 =	this._instantiationService.createInstance(UntitledEditorInput, uri2, false, 'plaintext', '', '');
 		this._editorInput = this._instantiationService.createInstance(DiffEditorInput, 'MyEditor', 'My description', editorinput1, editorinput2, true);
-		this._editor.setInput(this._editorInput, undefined, cancell.token);
+		this._editor.setInput(this._editorInput, undefined, cancellationTokenSource.token);
 
 
 		this._editorInput.resolve().then(model => {
@@ -95,37 +89,6 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 		this._register(this._editor);
 		this._register(this._editorInput);
 		this._register(this._editorModel);
-		this._register(this._editorModel.textDiffEditorModel.original.onDidChangeContent(e => {
-			this.contentLeft = this._editorModel.textDiffEditorModel.original.getValue();
-			if (this._isAutoResizable) {
-				if (this._minimumHeight) {
-					//this._editor.setMinimumHeight(this._minimumHeight);
-				}
-				//this._editor.setHeightToScrollHeight();
-			}
-
-			// Notify via an event so that extensions can detect and propagate changes
-			this.fireEvent({
-				eventType: ComponentEventType.onDidChange,
-				args: e
-			});
-		}));
-
-		this._register(this._editorModel.textDiffEditorModel.modified.onDidChangeContent(e => {
-			this.contentRight = this._editorModel.textDiffEditorModel.modified.getValue();
-			if (this._isAutoResizable) {
-				if (this._minimumHeight) {
-					//this._editor.setMinimumHeight(this._minimumHeight);
-				}
-				//this._editor.setHeightToScrollHeight();
-			}
-
-			// Notify via an event so that extensions can detect and propagate changes
-			this.fireEvent({
-				eventType: ComponentEventType.onDidChange,
-				args: e
-			});
-		}));
 	}
 
 	private createUri(input:string): URI {
@@ -175,11 +138,6 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 		if (this.contentLeft !== this._renderedContentLeft || this.contentRight !== this._renderedContentRight) {
 			this.updateModel();
 		}
-		if (this.languageMode !== this._languageMode) {
-			//this.updateLanguageMode();
-		}
-		// TODO : what is editor URI used for?
-		//this.editorUri = this._uri;
 		this._isAutoResizable = this.isAutoResizable;
 		this._minimumHeight = this.minimumHeight;
 		this.layout();
@@ -227,11 +185,19 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 		this.setPropertyFromUI<sqlops.EditorProperties, number>((properties, minimumHeight) => { properties.minimumHeight = minimumHeight; }, newValue);
 	}
 
-	public get editorUri(): string {
-		return this.getPropertyOrDefault<sqlops.EditorProperties, string>((props) => props.editorUri, '');
+	public get editorUriLeft(): string {
+		return this.getPropertyOrDefault<sqlops.EditorProperties, string>((props) => props.editorUriLeft, '');
 	}
 
-	public set editorUri(newValue: string) {
-		this.setPropertyFromUI<sqlops.EditorProperties, string>((properties, editorUri) => { properties.editorUri = editorUri; }, newValue);
+	public set editorUriLeft(newValue: string) {
+		this.setPropertyFromUI<sqlops.EditorProperties, string>((properties, editorUriLeft) => { properties.editorUriLeft = editorUriLeft; }, newValue);
+	}
+
+	public get editorUriRight(): string {
+		return this.getPropertyOrDefault<sqlops.EditorProperties, string>((props) => props.editorUriRight, '');
+	}
+
+	public set editorUriRight(newValue: string) {
+		this.setPropertyFromUI<sqlops.EditorProperties, string>((properties, editorUriRight) => { properties.editorUriRight = editorUriRight; }, newValue);
 	}
 }

@@ -10,18 +10,11 @@ import {
 } from '@angular/core';
 
 import { IComponent, IComponentDescriptor, IModelStore } from 'sql/parts/modelComponents/interfaces';
-import { FlexLayout, FlexItemLayout, SplitViewLayout } from 'sqlops';
-
-import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
+import { FlexItemLayout, SplitViewLayout } from 'azdata';
+import { FlexItem } from './flexContainer.component';
 import { ContainerBase, ComponentBase } from 'sql/parts/modelComponents/componentBase';
-import { ModelComponentWrapper } from 'sql/parts/modelComponents/modelComponentWrapper.component';
 import { Event, Emitter } from 'vs/base/common/event';
-
 import { SplitView, Orientation, Sizing, IView } from 'vs/base/browser/ui/splitview/splitview';
-import { ScrollableSplitView } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
-import * as DOM from 'vs/base/browser/dom';
-import types = require('vs/base/common/types');
-
 
 class SplitPane implements IView {
 	element: HTMLElement;
@@ -32,9 +25,6 @@ class SplitPane implements IView {
 	layout(size: number): void {
 		this.size = size;
 	}
-}
-class FlexItem {
-	constructor(public descriptor: IComponentDescriptor, public config: FlexItemLayout) { }
 }
 
 @Component({
@@ -48,6 +38,7 @@ class FlexItem {
 		</div>
 	`
 })
+
 export default class SplitViewContainer extends ContainerBase<FlexItemLayout> implements IComponent, OnDestroy {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
@@ -88,11 +79,9 @@ export default class SplitViewContainer extends ContainerBase<FlexItemLayout> im
 
 	private GetCorrespondingView(component: IComponent, orientation: Orientation): IView {
 		let c = component as ComponentBase;
-		// TODO : Find what variables (not static values) to use here
 		let basicView: SplitPane = new SplitPane();
 		basicView.element = c.getHtml(),
 		basicView.minimumSize = orientation === Orientation.VERTICAL ? c.convertSizeToNumber(c.height) : c.convertSizeToNumber(c.width);
-		//basicView.minimumSize = 20;
 		basicView.maximumSize = Number.MAX_VALUE;
 		return basicView;
 	}
@@ -122,13 +111,12 @@ export default class SplitViewContainer extends ContainerBase<FlexItemLayout> im
 						this._splitView.addView(view, Sizing.Split(i));
 					}
 					else{
-						console.log('something went wrong again');
+						console.log('Could not add views inside split view container');
 					}
 				});
 				i++;
 			});
 		}
-		//let size = this._orientation === Orientation.VERTICAL ? this.convertSizeToNumber(this._height) : this.convertSizeToNumber(this._width);
 		this._splitView.layout(this._splitViewHeight);
 	}
 
@@ -167,7 +155,6 @@ export default class SplitViewContainer extends ContainerBase<FlexItemLayout> im
 	}
 
 	public get orientation(): string {
-
 		return this._orientation.toString();
 	}
 

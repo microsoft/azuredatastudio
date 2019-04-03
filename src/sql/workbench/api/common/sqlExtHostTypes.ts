@@ -6,7 +6,6 @@
 
 import { nb, IConnectionProfile } from 'azdata';
 import * as vsExtTypes from 'vs/workbench/api/node/extHostTypes';
-import { ShellQuotingOptions } from 'vscode';
 
 // SQL added extension host types
 export enum ServiceOptionType {
