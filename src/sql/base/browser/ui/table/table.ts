@@ -146,9 +146,9 @@ export class Table<T extends Slick.SlickData> extends Widget implements IThemabl
 		return this._grid;
 	}
 
-	setData(data: Array<T>);
-	setData(data: TableDataView<T>);
-	setData(data: Array<T> | TableDataView<T>) {
+	setData(data: Array<T>): void;
+	setData(data: TableDataView<T>): void;
+	setData(data: Array<T> | TableDataView<T>): void {
 		if (data instanceof TableDataView) {
 			this._data = data;
 		} else {

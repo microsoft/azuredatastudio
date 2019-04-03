@@ -16,7 +16,7 @@ export interface IObservableCollection<T> {
 }
 
 class DataWindow<T> {
-	private _data: T[];
+	private _data: T[] | undefined;
 	private _length: number = 0;
 	private _offsetFromDataSource: number = -1;
 
@@ -30,9 +30,6 @@ class DataWindow<T> {
 
 	dispose() {
 		this._data = undefined;
-		this.loadFunction = undefined;
-		this.placeholderItemGenerator = undefined;
-		this.loadCompleteCallback = undefined;
 		this.cancellationToken.cancel();
 	}
 

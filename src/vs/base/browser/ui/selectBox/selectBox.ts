@@ -74,9 +74,9 @@ export interface ISelectData {
 export class SelectBox extends Widget implements ISelectBoxDelegate {
 	// {{SQL CARBON EDIT}}
 	protected selectElement: HTMLSelectElement;
-	protected selectBackground: Color;
-	protected selectForeground: Color;
-	protected selectBorder: Color;
+	protected selectBackground?: Color;
+	protected selectForeground?: Color;
+	protected selectBorder?: Color;
 	private styles: ISelectBoxStyles;
 	private selectBoxDelegate: ISelectBoxDelegate;
 

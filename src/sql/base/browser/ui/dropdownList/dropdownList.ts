@@ -98,7 +98,7 @@ export class DropdownList extends Dropdown {
 	 * Render the selected label of the dropdown
 	 */
 	public renderLabel(): void {
-		if (this._options.labelRenderer) {
+		if (this._options.labelRenderer && this.label) {
 			this._options.labelRenderer(this.label);
 		}
 	}
