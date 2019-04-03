@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as types from 'vs/base/common/types';
@@ -290,8 +289,8 @@ export class RestoreDialogController implements IRestoreDialogController {
 		});
 	}
 
-	public showDialog(connection: IConnectionProfile): TPromise<void> {
-		return new TPromise<void>((resolve, reject) => {
+	public showDialog(connection: IConnectionProfile): Promise<void> {
+		return new Promise<void>((resolve, reject) => {
 			let result: void;
 
 			this._ownerUri = this._connectionService.getConnectionUri(connection)

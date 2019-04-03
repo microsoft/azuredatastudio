@@ -1377,7 +1377,7 @@ export const $: QuickBuilder = function (arg?: any): Builder {
 		if (arg[0] === '<') {
 			let element: Node;
 			let container = document.createElement('div');
-			container.innerHTML = strings.format.apply(strings, arguments);
+			container.innerHTML = strings.format.apply(strings, <[string, ...any[]]>(<any>arguments));
 
 			if (container.children.length === 0) {
 				throw new Error('Bad use of $');
@@ -1426,7 +1426,7 @@ export const $: QuickBuilder = function (arg?: any): Builder {
 		// Use the arguments as the arguments to Builder#element(...)
 		else {
 			let result = offDOM();
-			result.element.apply(result, arguments);
+			result.element.apply(result, <[string, any?, ((builder: Builder) => void)?]>(<any>arguments));
 			return result;
 		}
 	} else {

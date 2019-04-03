@@ -5,7 +5,6 @@
 
 // This is the place for API experiments and proposal.
 
-import * as core from 'azdata';
 import * as vscode from 'vscode';
 
 declare module 'azdata' {
@@ -214,6 +213,44 @@ declare module 'azdata' {
 	export interface ConnectionInfo {
 
 		options: { [name: string]: any };
+	}
+
+	// Object Explorer interfaces  -----------------------------------------------------------------------
+	export interface ObjectExplorerSession {
+		success: boolean;
+		sessionId: string;
+		rootNode: NodeInfo;
+		errorMessage: string;
+	}
+
+	/**
+	 * A NodeInfo object represents an element in the Object Explorer tree under
+	 * a connection.
+	 */
+	export interface NodeInfo {
+		nodePath: string;
+		nodeType: string;
+		nodeSubType: string;
+		nodeStatus: string;
+		label: string;
+		isLeaf: boolean;
+		metadata: ObjectMetadata;
+		errorMessage: string;
+		/**
+		 * Optional iconType for the object in the tree. Currently this only supports
+		 * an icon name or SqlThemeIcon name, rather than a path to an icon.
+		 * If not defined, the nodeType + nodeStatus / nodeSubType values
+		 * will be used instead.
+		 */
+		iconType?: string | SqlThemeIcon;
+		/**
+		 * Informs who provides the children to a node, used by data explorer tree view api
+		 */
+		childProvider?: string;
+		/**
+		 * Holds the connection profile for nodes, used by data explorer tree view api
+		 */
+		payload?: any;
 	}
 
 	export interface IConnectionProfile extends ConnectionInfo {
@@ -1012,36 +1049,6 @@ declare module 'azdata' {
 	}
 
 	/**
-	 * A NodeInfo object represents an element in the Object Explorer tree under
-	 * a connection.
-	 */
-	export interface NodeInfo {
-		nodePath: string;
-		nodeType: string;
-		nodeSubType: string;
-		nodeStatus: string;
-		label: string;
-		isLeaf: boolean;
-		metadata: ObjectMetadata;
-		errorMessage: string;
-		/**
-		 * Optional iconType for the object in the tree. Currently this only supports
-		 * an icon name or SqlThemeIcon name, rather than a path to an icon.
-		 * If not defined, the nodeType + nodeStatus / nodeSubType values
-		 * will be used instead.
-		 */
-		iconType?: string | SqlThemeIcon;
-		/**
-		 * Informs who provides the children to a node, used by data explorer tree view api
-		 */
-		childProvider?: string;
-		/**
-		 * Holds the connection profile for nodes, used by data explorer tree view api
-		 */
-		payload?: any;
-	}
-
-	/**
 	 * A reference to a named icon. Currently only a subset of the SQL icons are available.
 	 * Using a theme icon is preferred over a custom icon as it gives theme authors the possibility to change the icons.
 	 */
@@ -1142,14 +1149,6 @@ declare module 'azdata' {
 		 * Gets the ID for the theme icon for help in cases where string comparison is needed
 		 */
 		public readonly id: string;
-	}
-
-	// Object Explorer interfaces  -----------------------------------------------------------------------
-	export interface ObjectExplorerSession {
-		success: boolean;
-		sessionId: string;
-		rootNode: NodeInfo;
-		errorMessage: string;
 	}
 
 	export interface ObjectExplorerSessionResponse {
@@ -1504,9 +1503,9 @@ declare module 'azdata' {
 
 	export interface AgentJobHistoryResult extends ResultStatus {
 		histories: AgentJobHistoryInfo[];
-		steps: AgentJobStepInfo[];
 		schedules: AgentJobScheduleInfo[];
 		alerts: AgentAlertInfo[];
+		steps: AgentJobStepInfo[];
 	}
 
 	export interface CreateAgentJobResult extends ResultStatus {
@@ -2761,6 +2760,10 @@ declare module 'azdata' {
 	}
 
 	export interface DivContainer extends Container<DivLayout, DivItemLayout>, DivContainerProperties {
+		/**
+ 		 * An event called when the div is clicked
+ 		 */
+		onDidClick: vscode.Event<any>;
 	}
 
 	export interface FlexContainer extends Container<FlexLayout, FlexItemLayout> {
@@ -3024,6 +3027,11 @@ declare module 'azdata' {
 		 * This is used when its child component is webview
 		 */
 		yOffsetChange?: number;
+
+		/**
+		 * Indicates whether the element is clickable
+		 */
+		clickable?: boolean;
 	}
 
 	export interface CardComponent extends Component, CardProperties {
@@ -3577,6 +3585,31 @@ declare module 'azdata' {
 	 * Namespace for interacting with query editor
 	*/
 	export namespace queryeditor {
+		export type QueryEvent =
+			| 'queryStart'
+			| 'queryStop'
+			| 'executionPlan';
+
+		export interface QueryEventListener {
+			onQueryEvent(type: QueryEvent, document: queryeditor.QueryDocument, args: any);
+		}
+
+		// new extensibility interfaces
+		export interface QueryDocument {
+			providerId: string;
+
+			uri: string;
+
+			// get the document's execution options
+			getOptions(): Map<string, string>;
+
+			// set the document's execution options
+			setOptions(options: Map<string, string>): void;
+
+			// tab content is build using the modelview UI builder APIs
+			// probably should rename DialogTab class since it is useful outside dialogs
+			createQueryTab(tab: window.DialogTab): void;
+		}
 
 		/**
 		 * Make connection for the query editor
@@ -3589,7 +3622,14 @@ declare module 'azdata' {
 		 * Run query if it is a query editor and it is already opened.
 		 * @param {string} fileUri file URI for the query editor
 		 */
-		export function runQuery(fileUri: string): void;
+		export function runQuery(fileUri: string, options?: Map<string, string>): void;
+
+		/**
+		 * Register a query event listener
+		 */
+		export function registerQueryEventListener(listener: queryeditor.QueryEventListener): void;
+
+		export function getQueryDocument(fileUri: string): queryeditor.QueryDocument
 	}
 
 	/**
@@ -3993,6 +4033,16 @@ declare module 'azdata' {
 			 * @return A promise that resolves with a value indicating if the cell was run or not.
 			 */
 			runCell(cell?: NotebookCell): Thenable<boolean>;
+
+			/**
+			 * Kicks off execution of all code cells. Thenable will resolve only when full execution of all cells is completed.
+			 */
+			runAllCells(): Thenable<boolean>;
+
+			/** Clears the outputs of all code cells in a Notebook
+			* @return A promise that resolves with a value indicating if the outputs are cleared or not.
+			*/
+			clearAllOutputs(): Thenable<boolean>;
 		}
 
 		export interface NotebookCell {

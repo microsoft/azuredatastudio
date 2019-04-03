@@ -5,15 +5,11 @@
 
 'use strict';
 
-import 'vs/css!vs/workbench/parts/extensions/electron-browser/media/extensionEditor';
-
-
-import { IExtensionManifest } from 'vs/platform/extensionManagement/common/extensionManagement';
-import { Color } from 'vs/base/common/color';
-import { append, $, addClass, removeClass, finalHandler, join, toggleClass } from 'vs/base/browser/dom';
+import { append, $ } from 'vs/base/browser/dom';
 import { IInsightTypeContrib } from 'sql/parts/dashboard/widgets/insights/interfaces';
 import { IDashboardTabContrib } from 'sql/parts/dashboard/common/dashboardTab.contribution';
 import { localize } from 'vs/nls';
+import { IExtensionManifest } from 'vs/platform/extensions/common/extensions';
 
 class ContributionReader {
 	constructor(private manifest: IExtensionManifest) { }
@@ -107,4 +103,3 @@ function renderDashboardInsights(onDetailsToggle: Function, contributionReader: 
 	append(container, details);
 	return true;
 }
-

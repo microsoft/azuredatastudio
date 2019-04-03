@@ -35,10 +35,9 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { ViewletPanel, IViewletPanelOptions } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { range } from 'vs/base/common/arrays';
-import { Orientation, Sizing } from 'vs/base/browser/ui/splitview/splitview';
+import { Orientation } from 'vs/base/browser/ui/splitview/splitview';
 import { Disposable, IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { generateUuid } from 'vs/base/common/uuid';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { Separator, ActionBar, ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { isInDOM } from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -145,7 +144,6 @@ export class GridPanel extends ViewletPanel {
 		@IInstantiationService private instantiationService: IInstantiationService
 	) {
 		super(options, keybindingService, contextMenuService, configurationService);
-		this.maximumBodySize = 0;
 		this.splitView = new ScrollableSplitView(this.container, { enableResizing: false, verticalScrollbarVisibility: ScrollbarVisibility.Visible });
 		this.splitView.onScroll(e => {
 			if (this.state && this.splitView.length !== 0) {
@@ -196,6 +194,9 @@ export class GridPanel extends ViewletPanel {
 			}
 			return p;
 		}, []));
+		this.maximumBodySize = this.tables.reduce((p, c) => {
+			return p + c.maximumSize;
+		}, 0);
 
 		if (this.state && this.state.scrollPosition) {
 			this.splitView.setScrollPosition(this.state.scrollPosition);
@@ -217,6 +218,10 @@ export class GridPanel extends ViewletPanel {
 			this.tables.map(t => {
 				t.state.canBeMaximized = this.tables.length > 1;
 			});
+
+			this.maximumBodySize = this.tables.reduce((p, c) => {
+				return p + c.maximumSize;
+			}, 0);
 
 			if (this.state && this.state.scrollPosition) {
 				this.splitView.setScrollPosition(this.state.scrollPosition);
@@ -244,6 +249,9 @@ export class GridPanel extends ViewletPanel {
 		}
 
 		const sizeChanges = () => {
+			this.maximumBodySize = this.tables.reduce((p, c) => {
+				return p + c.maximumSize;
+			}, 0);
 
 			if (this.state && this.state.scrollPosition) {
 				this.splitView.setScrollPosition(this.state.scrollPosition);
@@ -270,9 +278,6 @@ export class GridPanel extends ViewletPanel {
 	}
 
 	private addResultSet(resultSet: azdata.ResultSetSummary[]) {
-		if (resultSet.length > 0) {
-			this.maximumBodySize = Number.POSITIVE_INFINITY;
-		}
 		let tables: GridTable<any>[] = [];
 
 		for (let set of resultSet) {
@@ -302,7 +307,7 @@ export class GridPanel extends ViewletPanel {
 		// possible to need a sort?
 
 		if (isUndefinedOrNull(this.maximizedGrid)) {
-			this.splitView.addViews(tables, Sizing.Distribute, this.splitView.length);
+			this.splitView.addViews(tables, tables.map(i => i.minimumSize), this.splitView.length);
 		}
 
 		this.tables = this.tables.concat(tables);
@@ -316,12 +321,15 @@ export class GridPanel extends ViewletPanel {
 		for (let i = this.splitView.length - 1; i >= 0; i--) {
 			this.splitView.removeView(i);
 		}
-		this.maximumBodySize = 0;
 		dispose(this.tables);
 		dispose(this.tableDisposable);
 		this.tableDisposable = [];
 		this.tables = [];
 		this.maximizedGrid = undefined;
+
+		this.maximumBodySize = this.tables.reduce((p, c) => {
+			return p + c.maximumSize;
+		}, 0);
 	}
 
 	private maximizeTable(tableid: string): void {
@@ -345,7 +353,7 @@ export class GridPanel extends ViewletPanel {
 			this.maximizedGrid.state.maximized = false;
 			this.maximizedGrid = undefined;
 			this.splitView.removeView(0);
-			this.splitView.addViews(this.tables, Sizing.Distribute);
+			this.splitView.addViews(this.tables, this.tables.map(i => i.minimumSize));
 		}
 	}
 
@@ -467,7 +475,7 @@ class GridTable<T> extends Disposable implements IView {
 			50,
 			index => this.placeholdGenerator(index),
 			0,
-			() => TPromise.as([])
+			() => Promise.resolve([])
 		);
 		this.dataProvider.dataRows = collection;
 		this.table.updateRowCount();
@@ -486,7 +494,7 @@ class GridTable<T> extends Disposable implements IView {
 			50,
 			index => this.placeholdGenerator(index),
 			0,
-			() => TPromise.as([])
+			() => Promise.resolve([])
 		);
 		collection.setCollectionChangedCallback((startIndex, count) => {
 			this.renderGridDataRowsRange(startIndex, count);
@@ -652,7 +660,7 @@ class GridTable<T> extends Disposable implements IView {
 			this.dataProvider.length = resultSet.rowCount;
 			this.table.updateRowCount();
 		}
-		this._onDidChange.fire();
+		this._onDidChange.fire(undefined);
 	}
 
 	private generateContext(cell?: Slick.Cell): IGridActionContext {
@@ -716,7 +724,7 @@ class GridTable<T> extends Disposable implements IView {
 	}
 
 	public get maximumSize(): number {
-		return Number.POSITIVE_INFINITY;
+		return Math.max(this.maxSize, ACTIONBAR_HEIGHT + BOTTOM_PADDING);
 	}
 
 	private loadData(offset: number, count: number): Thenable<T[]> {

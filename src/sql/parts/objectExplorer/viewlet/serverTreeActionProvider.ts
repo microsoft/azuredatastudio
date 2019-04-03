@@ -4,8 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import * as azdata from 'azdata';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { ContributableActionProvider } from 'vs/workbench/browser/actions';
 import { IAction } from 'vs/base/common/actions';
@@ -33,7 +31,6 @@ import { IContextMenuService } from 'vs/platform/contextview/browser/contextView
 import { TreeNodeContextKey } from 'sql/parts/objectExplorer/viewlet/treeNodeContextKey';
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
 import { IScriptingService } from 'sql/platform/scripting/common/scriptingService';
-import * as constants from 'sql/common/constants';
 import { ServerInfoContextKey } from 'sql/parts/connection/common/serverInfoContextKey';
 
 /**
@@ -82,10 +79,6 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 		return false;
 	}
 
-	public getSecondaryActions(tree: ITree, element: any): IAction[] {
-		return super.getSecondaryActions(tree, element);
-	}
-
 	/**
 	 * Return actions for connection elements
 	 */
@@ -107,7 +100,7 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 		let actions = getDefaultActions(context);
 		let options = { arg: undefined, shouldForwardArgs: true };
 		const groups = menu.getActions(options);
-		fillInActions(groups, actions, this.contextMenuService);
+		fillInActions(groups, actions, false);
 
 		// Cleanup
 		scopedContextService.dispose();
@@ -181,7 +174,10 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 
 		this.addScriptingActions(context, actions);
 
-		if (isAvailableDatabaseNode) {
+		let serverInfo = this._connectionManagementService.getServerInfo(context.profile.id);
+		let isCloud = serverInfo && serverInfo.isCloud;
+
+		if (isAvailableDatabaseNode && !isCloud) {
 			this.addBackupAction(context, actions);
 			this.addRestoreAction(context, actions);
 		}

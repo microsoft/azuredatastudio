@@ -175,6 +175,8 @@ div[class|='qp-icon'] {
 div.qp-node .qp-tt,
 .qp-noCssTooltip div.qp-node:hover .qp-tt {
     visibility: hidden;
+    position: absolute;
+    overflow: hidden;
 }
 
 div.qp-node:hover .qp-tt {
@@ -204,13 +206,13 @@ div.qp-node:hover .qp-tt {
     position: relative;
 }
 
-    .qp-root svg {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        top: 0;
-        left: 0;
-        z-index: 0;
-        background: transparent;
-        pointer-events: none;
-    }
+.qp-root svg {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    background: transparent;
+    pointer-events: none;
+}

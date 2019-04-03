@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { EncodingMode } from 'vs/workbench/common/editor';
 import { TextFileEditorModel, SaveSequentializer } from 'vs/workbench/services/textfile/common/textFileEditorModel';
@@ -14,11 +13,7 @@ import { toResource } from 'vs/base/test/common/utils';
 import { TextFileEditorModelManager } from 'vs/workbench/services/textfile/common/textFileEditorModelManager';
 import { FileOperationResult, FileOperationError, IFileService, snapshotToString } from 'vs/platform/files/common/files';
 import { IModelService } from 'vs/editor/common/services/modelService';
-import { timeout as thenableTimeout } from 'vs/base/common/async';
-
-function timeout(n: number) {
-	return TPromise.wrap(thenableTimeout(n));
-}
+import { timeout } from 'vs/base/common/async';
 
 class ServiceAccessor {
 	constructor(@ITextFileService public textFileService: TestTextFileService, @IModelService public modelService: IModelService, @IFileService public fileService: TestFileService) {
@@ -53,7 +48,7 @@ suite('Files - TextFileEditorModel', () => {
 		const model: TextFileEditorModel = instantiationService.createInstance(TextFileEditorModel, toResource.call(this, '/path/index_async.txt'), 'utf8');
 
 		return model.load().then(() => {
-			model.textEditorModel.setValue('bar');
+			model.textEditorModel!.setValue('bar');
 			assert.ok(getLastModifiedTime(model) <= Date.now());
 
 			return model.save().then(() => {
@@ -84,16 +79,18 @@ suite('Files - TextFileEditorModel', () => {
 
 		model.setEncoding('utf16', EncodingMode.Decode);
 
-		assert.ok(model.isResolved()); // model got loaded due to decoding
+		return timeout(0).then(() => { // due to model updating async
+			assert.ok(model.isResolved()); // model got loaded due to decoding
 
-		model.dispose();
+			model.dispose();
+		});
 	});
 
 	test('disposes when underlying model is destroyed', function () {
 		const model: TextFileEditorModel = instantiationService.createInstance(TextFileEditorModel, toResource.call(this, '/path/index_async.txt'), 'utf8');
 
 		return model.load().then(() => {
-			model.textEditorModel.dispose();
+			model.textEditorModel!.dispose();
 
 			assert.ok(model.isDisposed());
 		});
@@ -120,7 +117,7 @@ suite('Files - TextFileEditorModel', () => {
 		const model = instantiationService.createInstance(TextFileEditorModel, toResource.call(this, '/path/index_async.txt'), 'utf8');
 
 		return model.load().then(() => {
-			model.textEditorModel.setValue('foo');
+			model.textEditorModel!.setValue('foo');
 
 			assert.ok(model.isDirty());
 			assert.ok(model.hasState(ModelState.DIRTY));
@@ -144,13 +141,13 @@ suite('Files - TextFileEditorModel', () => {
 		});
 
 		return model.load().then(() => {
-			model.textEditorModel.setValue('foo');
+			model.textEditorModel!.setValue('foo');
 
 			assert.ok(model.isDirty());
 
 			return model.revert().then(() => {
 				assert.ok(!model.isDirty());
-				assert.equal(model.textEditorModel.getValue(), 'Hello Html');
+				assert.equal(model.textEditorModel!.getValue(), 'Hello Html');
 				assert.equal(eventCounter, 1);
 
 				model.dispose();
@@ -170,13 +167,13 @@ suite('Files - TextFileEditorModel', () => {
 		});
 
 		return model.load().then(() => {
-			model.textEditorModel.setValue('foo');
+			model.textEditorModel!.setValue('foo');
 
 			assert.ok(model.isDirty());
 
 			return model.revert(true /* soft revert */).then(() => {
 				assert.ok(!model.isDirty());
-				assert.equal(model.textEditorModel.getValue(), 'foo');
+				assert.equal(model.textEditorModel!.getValue(), 'foo');
 				assert.equal(eventCounter, 1);
 
 				model.dispose();
@@ -189,7 +186,7 @@ suite('Files - TextFileEditorModel', () => {
 		return model.load().then(() => {
 			accessor.fileService.setContent('Hello Change');
 			return model.load().then(() => {
-				model.textEditorModel.undo();
+				model.textEditorModel!.undo();
 
 				assert.ok(model.isDirty());
 			});
@@ -230,7 +227,7 @@ suite('Files - TextFileEditorModel', () => {
 
 		return input1.resolve().then((model1: TextFileEditorModel) => {
 			return input2.resolve().then((model2: TextFileEditorModel) => {
-				model1.textEditorModel.setValue('foo');
+				model1.textEditorModel!.setValue('foo');
 
 				const m1Mtime = model1.getStat().mtime;
 				const m2Mtime = model2.getStat().mtime;
@@ -241,7 +238,7 @@ suite('Files - TextFileEditorModel', () => {
 				assert.ok(accessor.textFileService.isDirty(toResource.call(this, '/path/index_async2.txt')));
 				assert.ok(!accessor.textFileService.isDirty(toResource.call(this, '/path/index_async.txt')));
 
-				model2.textEditorModel.setValue('foo');
+				model2.textEditorModel!.setValue('foo');
 				assert.ok(accessor.textFileService.isDirty(toResource.call(this, '/path/index_async.txt')));
 
 				return timeout(10).then(() => {
@@ -267,7 +264,7 @@ suite('Files - TextFileEditorModel', () => {
 
 		model.onDidStateChange(e => {
 			if (e === StateChange.SAVED) {
-				assert.equal(snapshotToString(model.createSnapshot()), 'bar');
+				assert.equal(snapshotToString(model.createSnapshot()!), 'bar');
 				assert.ok(!model.isDirty());
 				eventCounter++;
 			}
@@ -279,12 +276,12 @@ suite('Files - TextFileEditorModel', () => {
 				model.textEditorModel.setValue('bar');
 				assert.ok(model.isDirty());
 				eventCounter++;
-				return undefined;
+				return Promise.resolve();
 			}
 		});
 
 		return model.load().then(() => {
-			model.textEditorModel.setValue('foo');
+			model.textEditorModel!.setValue('foo');
 
 			return model.save().then(() => {
 				model.dispose();
@@ -305,7 +302,7 @@ suite('Files - TextFileEditorModel', () => {
 		});
 
 		return model.load().then(() => {
-			model.textEditorModel.setValue('foo');
+			model.textEditorModel!.setValue('foo');
 
 			const now = Date.now();
 			return model.save().then(() => {
@@ -320,12 +317,12 @@ suite('Files - TextFileEditorModel', () => {
 
 		TextFileEditorModel.setSaveParticipant({
 			participate: (model) => {
-				return TPromise.wrapError(new Error('boom'));
+				return Promise.reject(new Error('boom'));
 			}
 		});
 
 		return model.load().then(() => {
-			model.textEditorModel.setValue('foo');
+			model.textEditorModel!.setValue('foo');
 			return model.save().then(() => {
 				model.dispose();
 			});
@@ -340,22 +337,23 @@ suite('Files - TextFileEditorModel', () => {
 		assert.ok(!sequentializer.pendingSave);
 
 		// pending removes itself after done
-		sequentializer.setPending(1, TPromise.as(null));
-		assert.ok(!sequentializer.hasPendingSave());
-		assert.ok(!sequentializer.hasPendingSave(1));
-		assert.ok(!sequentializer.pendingSave);
-
-		// pending removes itself after done (use timeout)
-		sequentializer.setPending(2, timeout(1));
-		assert.ok(sequentializer.hasPendingSave());
-		assert.ok(sequentializer.hasPendingSave(2));
-		assert.ok(!sequentializer.hasPendingSave(1));
-		assert.ok(sequentializer.pendingSave);
-
-		return timeout(2).then(() => {
+		return sequentializer.setPending(1, Promise.resolve()).then(() => {
 			assert.ok(!sequentializer.hasPendingSave());
-			assert.ok(!sequentializer.hasPendingSave(2));
+			assert.ok(!sequentializer.hasPendingSave(1));
 			assert.ok(!sequentializer.pendingSave);
+
+			// pending removes itself after done (use timeout)
+			sequentializer.setPending(2, timeout(1));
+			assert.ok(sequentializer.hasPendingSave());
+			assert.ok(sequentializer.hasPendingSave(2));
+			assert.ok(!sequentializer.hasPendingSave(1));
+			assert.ok(sequentializer.pendingSave);
+
+			return timeout(2).then(() => {
+				assert.ok(!sequentializer.hasPendingSave());
+				assert.ok(!sequentializer.hasPendingSave(2));
+				assert.ok(!sequentializer.pendingSave);
+			});
 		});
 	});
 
@@ -363,11 +361,11 @@ suite('Files - TextFileEditorModel', () => {
 		const sequentializer = new SaveSequentializer();
 
 		let pendingDone = false;
-		sequentializer.setPending(1, timeout(1).then(() => { pendingDone = true; return null; }));
+		sequentializer.setPending(1, timeout(1).then(() => { pendingDone = true; return; }));
 
 		// next finishes instantly
 		let nextDone = false;
-		const res = sequentializer.setNext(() => TPromise.as(null).then(() => { nextDone = true; return null; }));
+		const res = sequentializer.setNext(() => Promise.resolve(null).then(() => { nextDone = true; return; }));
 
 		return res.then(() => {
 			assert.ok(pendingDone);
@@ -379,11 +377,11 @@ suite('Files - TextFileEditorModel', () => {
 		const sequentializer = new SaveSequentializer();
 
 		let pendingDone = false;
-		sequentializer.setPending(1, timeout(1).then(() => { pendingDone = true; return null; }));
+		sequentializer.setPending(1, timeout(1).then(() => { pendingDone = true; return; }));
 
 		// next finishes after timeout
 		let nextDone = false;
-		const res = sequentializer.setNext(() => timeout(1).then(() => { nextDone = true; return null; }));
+		const res = sequentializer.setNext(() => timeout(1).then(() => { nextDone = true; return; }));
 
 		return res.then(() => {
 			assert.ok(pendingDone);
@@ -395,19 +393,19 @@ suite('Files - TextFileEditorModel', () => {
 		const sequentializer = new SaveSequentializer();
 
 		let pendingDone = false;
-		sequentializer.setPending(1, timeout(1).then(() => { pendingDone = true; return null; }));
+		sequentializer.setPending(1, timeout(1).then(() => { pendingDone = true; return; }));
 
 		// next finishes after timeout
 		let firstDone = false;
-		let firstRes = sequentializer.setNext(() => timeout(2).then(() => { firstDone = true; return null; }));
+		let firstRes = sequentializer.setNext(() => timeout(2).then(() => { firstDone = true; return; }));
 
 		let secondDone = false;
-		let secondRes = sequentializer.setNext(() => timeout(3).then(() => { secondDone = true; return null; }));
+		let secondRes = sequentializer.setNext(() => timeout(3).then(() => { secondDone = true; return; }));
 
 		let thirdDone = false;
-		let thirdRes = sequentializer.setNext(() => timeout(4).then(() => { thirdDone = true; return null; }));
+		let thirdRes = sequentializer.setNext(() => timeout(4).then(() => { thirdDone = true; return; }));
 
-		return TPromise.join([firstRes, secondRes, thirdRes]).then(() => {
+		return Promise.all([firstRes, secondRes, thirdRes]).then(() => {
 			assert.ok(pendingDone);
 			assert.ok(!firstDone);
 			assert.ok(!secondDone);

@@ -30,12 +30,12 @@ export class SelectTargetClusterTypePage extends WizardPageBase<CreateClusterWiz
 	private requiredTools: ToolInfo[];
 
 	constructor(wizard: CreateClusterWizard) {
-		super(localize('bdc-create.selectTargetClusterTypePageTitle', 'Where do you want to deploy this SQL Server big data cluster?'),
-			localize('bdc-create.selectTargetClusterTypePageDescription', 'Choose the target environment and then install the required tools.'),
+		super(localize('bdc-create.selectTargetClusterTypePageTitle', 'What is your target cluster environment?'),
+			localize('bdc-create.selectTargetClusterTypePageDescription', 'Choose the target environment and then install the required tools for it.'),
 			wizard);
 		this.installToolsButton = azdata.window.createButton(InstallToolsButtonText);
 		this.installToolsButton.hidden = true;
-		this.installToolsButton.onClick(async () => {
+		this.wizard.registerDisposable(this.installToolsButton.onClick(async () => {
 			this.wizard.wizardObject.message = null;
 			this.installToolsButton.label = InstallingButtonText;
 			this.installToolsButton.enabled = false;
@@ -53,14 +53,14 @@ export class SelectTargetClusterTypePage extends WizardPageBase<CreateClusterWiz
 
 			this.installToolsButton.label = InstallToolsButtonText;
 			this.updateRequiredToolStatus();
-		});
+		}));
 		this.wizard.addButton(this.installToolsButton);
 
 		this.refreshToolsButton = azdata.window.createButton(localize('bdc-create.RefreshToolsButtonText', 'Refresh Status'));
 		this.refreshToolsButton.hidden = true;
-		this.refreshToolsButton.onClick(() => {
+		this.wizard.registerDisposable(this.refreshToolsButton.onClick(() => {
 			this.updateRequiredToolStatus();
-		});
+		}));
 		this.wizard.addButton(this.refreshToolsButton);
 	}
 
@@ -74,7 +74,7 @@ export class SelectTargetClusterTypePage extends WizardPageBase<CreateClusterWiz
 				let card = self.createCard(view, clusterType);
 				self.cards.push(card);
 			});
-			let cardsContainer = view.modelBuilder.flexContainer().withItems(self.cards, { flex: '0 0 auto' }).withLayout({ flexFlow: 'row', alignItems: 'left' }).component();
+			let cardsContainer = view.modelBuilder.flexContainer().withItems(self.cards, { flex: '0 0 auto', CSSStyles: { 'margin-bottom': '20px' } }).withLayout({ flexFlow: 'row', alignItems: 'left' }).component();
 
 			self.targetDescriptionText = view.modelBuilder.text().component();
 
@@ -114,7 +114,6 @@ export class SelectTargetClusterTypePage extends WizardPageBase<CreateClusterWiz
 					horizontal: false
 				}
 			);
-
 
 			self.form = self.formBuilder.withLayout({ width: '100%' }).component();
 			return view.initializeModel(self.form);
@@ -160,49 +159,59 @@ export class SelectTargetClusterTypePage extends WizardPageBase<CreateClusterWiz
 
 	private createCard(view: azdata.ModelView, targetClusterTypeInfo: TargetClusterTypeInfo): azdata.CardComponent {
 		let self = this;
+		let descriptions = targetClusterTypeInfo.enabled ? [] : [localize('bdc-create.ComingSoonText', '(Coming Soon)')];
 		let card = view.modelBuilder.card().withProperties<azdata.CardProperties>({
 			cardType: azdata.CardType.VerticalButton,
 			iconPath: {
 				dark: self.wizard.context.asAbsolutePath(targetClusterTypeInfo.iconPath.dark),
 				light: self.wizard.context.asAbsolutePath(targetClusterTypeInfo.iconPath.light)
 			},
-			label: targetClusterTypeInfo.name
+			label: targetClusterTypeInfo.name,
+			descriptions: descriptions
 		}).component();
-		card.onCardSelectedChanged(() => {
-			if (card.selected) {
-				self.wizard.wizardObject.message = null;
-				self.wizard.model.targetClusterType = targetClusterTypeInfo.type;
-				self.cards.forEach(c => {
-					if (c !== card) {
-						c.selected = false;
-					}
-				});
 
-				self.targetDescriptionText.value = targetClusterTypeInfo.description;
+		card.enabled = targetClusterTypeInfo.enabled;
 
-				if (self.form.items.length === 1) {
-					self.formBuilder.addFormItem({
-						title: localize('bdc-create.RequiredToolsText', 'Required tools'),
-						component: self.toolsLoadingWrapper
-					});
-				} else {
-					self.formBuilder.removeFormItem(self.targetDescriptionGroup);
-				}
-
-				self.targetDescriptionGroup = {
-					title: targetClusterTypeInfo.fullName,
-					component: self.targetDescriptionText
-				};
-				self.formBuilder.insertFormItem(self.targetDescriptionGroup, 1);
-
-				self.updateRequiredToolStatus();
-			} else {
-				if (self.cards.filter(c => { return c !== card && c.selected; }).length === 0) {
-					card.selected = true;
-				}
-			}
-		});
+		self.wizard.registerDisposable(card.onCardSelectedChanged(() => {
+			self.onCardSelected(card, targetClusterTypeInfo);
+		}));
 		return card;
+	}
+
+	private onCardSelected(card: azdata.CardComponent, targetClusterTypeInfo: TargetClusterTypeInfo): void {
+		let self = this;
+		if (card.selected) {
+			self.wizard.wizardObject.message = null;
+			self.wizard.model.targetClusterType = targetClusterTypeInfo.type;
+			self.cards.forEach(c => {
+				if (c !== card) {
+					c.selected = false;
+				}
+			});
+
+			self.targetDescriptionText.value = targetClusterTypeInfo.description;
+
+			if (self.form.items.length === 1) {
+				self.formBuilder.addFormItem({
+					title: localize('bdc-create.RequiredToolsText', 'Required tools'),
+					component: self.toolsLoadingWrapper
+				});
+			} else {
+				self.formBuilder.removeFormItem(self.targetDescriptionGroup);
+			}
+
+			self.targetDescriptionGroup = {
+				title: targetClusterTypeInfo.fullName,
+				component: self.targetDescriptionText
+			};
+			self.formBuilder.insertFormItem(self.targetDescriptionGroup, 1);
+
+			self.updateRequiredToolStatus();
+		} else {
+			if (self.cards.filter(c => { return c !== card && c.selected; }).length === 0) {
+				card.selected = true;
+			}
+		}
 	}
 
 	private updateRequiredToolStatus(): Thenable<void> {

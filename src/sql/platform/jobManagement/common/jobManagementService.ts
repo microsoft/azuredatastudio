@@ -7,7 +7,6 @@
 
 import { localize } from 'vs/nls';
 import * as azdata from 'azdata';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { Event, Emitter } from 'vs/base/common/event';
@@ -115,13 +114,13 @@ export class JobManagementService implements IJobManagementService {
 		let providerId: string = this._connectionService.getProviderIdFromUri(uri);
 
 		if (!providerId) {
-			return TPromise.wrapError(new Error(localize('providerIdNotValidError', "Connection is required in order to interact with JobManagementService")));
+			return Promise.reject(new Error(localize('providerIdNotValidError', "Connection is required in order to interact with JobManagementService")));
 		}
 		let handler = this._providers[providerId];
 		if (handler) {
 			return action(handler);
 		} else {
-			return TPromise.wrapError(new Error(localize('noHandlerRegistered', "No Handler Registered")));
+			return Promise.reject(new Error(localize('noHandlerRegistered', "No Handler Registered")));
 		}
 	}
 

@@ -21,6 +21,7 @@ import { warn, error } from 'sql/base/common/log';
 import { ServerTreeView } from 'sql/parts/objectExplorer/viewlet/serverTreeView';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import * as Utils from 'sql/platform/connection/common/utils';
+import { entries } from 'sql/base/common/objects';
 
 export const SERVICE_ID = 'ObjectExplorerService';
 
@@ -465,7 +466,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		if (finalResult) {
 			if (errorMessages.length > 0) {
 				if (errorMessages.length > 1) {
-					errorMessages.unshift(nls.localize('nodeExpansionError', 'Mulitiple errors:'));
+					errorMessages.unshift(nls.localize('nodeExpansionError', 'Multiple errors:'));
 				}
 				errorNode.errorMessage = errorMessages.join('\n');
 				errorNode.label = errorNode.errorMessage;
@@ -490,7 +491,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		// Complete any requests that are still open for the session
 		let sessionStatus = this._sessions[session.sessionId];
 		if (sessionStatus && sessionStatus.nodes) {
-			Object.entries(sessionStatus.nodes).forEach(([nodePath, nodeStatus]: [string, NodeStatus]) => {
+			entries(sessionStatus.nodes).forEach(([nodePath, nodeStatus]: [string, NodeStatus]) => {
 				if (nodeStatus.expandEmitter) {
 					nodeStatus.expandEmitter.fire({
 						sessionId: session.sessionId,

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
+import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { Emitter } from 'vs/base/common/event';
 import { deepClone } from 'vs/base/common/objects';
 import { URI } from 'vs/base/common/uri';
@@ -15,7 +15,7 @@ import * as azdata from 'azdata';
 
 import { SqlMainContext, ExtHostModelViewShape, MainThreadModelViewShape, ExtHostModelViewTreeViewsShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { IItemConfig, ModelComponentTypes, IComponentShape, IComponentEventArgs, ComponentEventType } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { IExtensionDescription } from 'vs/workbench/services/extensions/common/extensions';
+import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 
 class ModelBuilderImpl implements azdata.ModelBuilder {
 	private nextComponentId: number;
@@ -1224,6 +1224,12 @@ class FileBrowserTreeComponentWrapper extends ComponentWrapper implements azdata
 }
 
 class DivContainerWrapper extends ComponentWrapper implements azdata.DivContainer {
+	constructor(proxy: MainThreadModelViewShape, handle: number, type: ModelComponentTypes, id: string) {
+		super(proxy, handle, type, id);
+		this.properties = {};
+		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<any>());
+	}
+
 	public get overflowY(): string {
 		return this.properties['overflowY'];
 	}
@@ -1238,6 +1244,11 @@ class DivContainerWrapper extends ComponentWrapper implements azdata.DivContaine
 
 	public set yOffsetChange(value: number) {
 		this.setProperty('yOffsetChange', value);
+	}
+
+	public get onDidClick(): vscode.Event<any> {
+		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
+		return emitter && emitter.event;
 	}
 }
 
@@ -1364,7 +1375,7 @@ export class ExtHostModelView implements ExtHostModelViewShape {
 
 	$onClosed(handle: number): void {
 		const view = this._modelViews.get(handle);
-		view.onClosedEmitter.fire();
+		view.onClosedEmitter.fire(undefined);
 		this._modelViews.delete(handle);
 	}
 

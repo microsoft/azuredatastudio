@@ -9,9 +9,9 @@ import { ITree, IRenderer } from 'vs/base/parts/tree/browser/tree';
 import { FileKind } from 'vs/platform/files/common/files';
 import { URI } from 'vs/base/common/uri';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { FileLabel } from 'vs/workbench/browser/labels';
-import { IFileTemplateData } from 'vs/workbench/parts/files/electron-browser/views/explorerViewer';
 import { toDisposable } from 'vs/base/common/lifecycle';
+import { ResourceLabels, DEFAULT_LABELS_CONTAINER } from 'vs/workbench/browser/labels';
+import { IFileTemplateData } from 'vs/workbench/contrib/files/browser/views/explorerViewer';
 
 const EmptyDisposable = toDisposable(() => null);
 
@@ -22,10 +22,12 @@ const EmptyDisposable = toDisposable(() => null);
 export class FileBrowserRenderer implements IRenderer {
 	public static readonly FILE_HEIGHT = 22;
 	private static readonly FILE_TEMPLATE_ID = 'carbonFileBrowser';
+	private resourceLabels: ResourceLabels;
 
 	constructor(
 		@IInstantiationService private instantiationService: IInstantiationService
 	) {
+		this.resourceLabels = this.instantiationService.createInstance(ResourceLabels, DEFAULT_LABELS_CONTAINER);
 	}
 
 	/**
@@ -46,8 +48,8 @@ export class FileBrowserRenderer implements IRenderer {
 	 * Render template in a dom element based on template id
 	 */
 	public renderTemplate(tree: ITree, templateId: string, container: HTMLElement): IFileTemplateData {
+		const label = this.resourceLabels.create(container);
 		const elementDisposable = EmptyDisposable;
-		const label = this.instantiationService.createInstance(FileLabel, container, void 0);
 		return { elementDisposable, label, container };
 	}
 

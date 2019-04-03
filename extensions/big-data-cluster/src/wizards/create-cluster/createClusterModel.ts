@@ -4,11 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { TargetClusterType, ClusterPorts, ClusterType, ContainerRegistryInfo, TargetClusterTypeInfo, ToolInfo, ToolInstallationStatus } from '../../interfaces';
+import { TargetClusterType, ClusterPorts, ClusterType, ContainerRegistryInfo, TargetClusterTypeInfo, ToolInfo, ToolInstallationStatus, ClusterProfile, PoolConfiguration, SQLServerMasterConfiguration, ClusterPoolType, ClusterResourceSummary } from '../../interfaces';
 import { getContexts, KubectlContext, setContext, inferCurrentClusterType } from '../../kubectl/kubectlUtils';
 import { Kubectl } from '../../kubectl/kubectl';
 import { Scriptable, ScriptingDictionary } from '../../scripting/scripting';
 import * as nls from 'vscode-nls';
+import * as os from 'os';
+import * as path from 'path';
 
 const localize = nls.loadMessageBundle();
 
@@ -24,7 +26,7 @@ export class CreateClusterModel implements Scriptable {
 	}
 
 	public async changeKubernetesContext(targetContext: string): Promise<void> {
-		await setContext(this._kubectl, targetContext)
+		await setContext(this._kubectl, targetContext);
 	}
 
 	public getDefaultPorts(): Thenable<ClusterPorts> {
@@ -55,25 +57,27 @@ export class CreateClusterModel implements Scriptable {
 	public getAllTargetClusterTypeInfo(): Thenable<TargetClusterTypeInfo[]> {
 		let promise = new Promise<TargetClusterTypeInfo[]>(resolve => {
 			let aksCluster: TargetClusterTypeInfo = {
+				enabled: false,
 				type: TargetClusterType.NewAksCluster,
 				name: localize('bdc-create.AKSClusterCardText', 'New AKS Cluster'),
 				fullName: localize('bdc-create.AKSClusterFullName', 'New Azure Kubernetes Service cluster'),
 				description: localize('bdc-create.AKSClusterDescription',
 					'This option configures new Azure Kubernetes Service (AKS) for SQL Server big data cluster deployments. AKS makes it simple to create, configure and manage a cluster of virutal machines that are preconfigured with a Kubernetes cluster to run containerized applications.'),
 				iconPath: {
-					dark: 'images/cluster_inverse.svg',
-					light: 'images/cluster.svg'
+					dark: 'images/aks.svg',
+					light: 'images/aks.svg'
 				}
 			};
 
 			let existingCluster: TargetClusterTypeInfo = {
+				enabled: true,
 				type: TargetClusterType.ExistingKubernetesCluster,
 				name: localize('bdc-create.ExistingClusterCardText', 'Existing Cluster'),
-				fullName: localize('bdc-create.ExistingClusterFullName', 'Existing Kubernetes Cluster'),
+				fullName: localize('bdc-create.ExistingClusterFullName', 'Existing Kubernetes cluster'),
 				description: localize('bdc-create.ExistingClusterDescription', 'This option assumes you already have a Kubernetes cluster installed, Once a prerequisite check is done, ensure the correct cluster context is selected.'),
 				iconPath: {
-					dark: 'images/cluster_inverse.svg',
-					light: 'images/cluster.svg'
+					dark: 'images/kubernetes.svg',
+					light: 'images/kubernetes.svg'
 				}
 			};
 			resolve([aksCluster, existingCluster]);
@@ -104,7 +108,7 @@ export class CreateClusterModel implements Scriptable {
 			setTimeout(() => {
 				let tools = this.targetClusterType === TargetClusterType.ExistingKubernetesCluster ? [kubeCtl, mssqlCtl] : [kubeCtl, mssqlCtl, azureCli];
 				resolve(tools);
-			}, 2000);
+			}, 1000);
 		});
 		return promise;
 	}
@@ -115,10 +119,16 @@ export class CreateClusterModel implements Scriptable {
 				tool.status = ToolInstallationStatus.Installed;
 				this._tmp_tools_installed = true;
 				resolve();
-			}, 2000);
+			}, 1000);
 		});
 		return promise;
 	}
+
+	public getDefaultKubeConfigPath(): string {
+		return path.join(os.homedir(), '.kube', 'config');
+	}
+
+	public clusterName: string;
 
 	public targetClusterType: TargetClusterType;
 
@@ -149,6 +159,8 @@ export class CreateClusterModel implements Scriptable {
 	public containerRegistryUserName: string;
 
 	public containerRegistryPassword: string;
+
+	public profile: ClusterProfile;
 
 	public async getTargetClusterPlatform(targetContextName: string): Promise<string> {
 		await setContext(this._kubectl, targetContextName);
@@ -200,5 +212,117 @@ export class CreateClusterModel implements Scriptable {
 
 	public getTargetKubectlContext(): KubectlContext {
 		return this.selectedCluster;
+	}
+
+	public getClusterResource(): Thenable<ClusterResourceSummary> {
+		let promise = new Promise<ClusterResourceSummary>(resolve => {
+			setTimeout(() => {
+				let resoureSummary: ClusterResourceSummary = {
+					hardwareLabels: [
+						{
+							name: '<Default>',
+							totalNodes: 10,
+							totalCores: 22,
+							totalDisks: 128,
+							totalMemoryInGB: 77
+						},
+						{
+							name: '#data',
+							totalNodes: 4,
+							totalCores: 22,
+							totalDisks: 200,
+							totalMemoryInGB: 100
+						},
+						{
+							name: '#compute',
+							totalNodes: 12,
+							totalCores: 124,
+							totalDisks: 24,
+							totalMemoryInGB: 100
+						},
+						{
+							name: '#premium',
+							totalNodes: 10,
+							totalCores: 100,
+							totalDisks: 200,
+							totalMemoryInGB: 770
+						}
+					]
+				};
+				resolve(resoureSummary);
+			}, 1000);
+		});
+		return promise;
+	}
+
+	public getProfiles(): Thenable<ClusterProfile[]> {
+		let promise = new Promise<ClusterProfile[]>(resolve => {
+			setTimeout(() => {
+				let profiles: ClusterProfile[] = [];
+				profiles.push({
+					name: 'Basic',
+					sqlServerMasterConfiguration: this.createSQLPoolConfiguration(1, 1),
+					computePoolConfiguration: this.createComputePoolConfiguration(2),
+					dataPoolConfiguration: this.createDataPoolConfiguration(2),
+					storagePoolConfiguration: this.createStoragePoolConfiguration(2),
+					sparkPoolConfiguration: this.createSparkPoolConfiguration(2)
+				});
+				profiles.push({
+					name: 'Standard',
+					sqlServerMasterConfiguration: this.createSQLPoolConfiguration(3, 9),
+					computePoolConfiguration: this.createComputePoolConfiguration(5),
+					dataPoolConfiguration: this.createDataPoolConfiguration(5),
+					storagePoolConfiguration: this.createStoragePoolConfiguration(5),
+					sparkPoolConfiguration: this.createSparkPoolConfiguration(5)
+				});
+				profiles.push({
+					name: 'Premium',
+					sqlServerMasterConfiguration: this.createSQLPoolConfiguration(5, 9),
+					computePoolConfiguration: this.createComputePoolConfiguration(7),
+					dataPoolConfiguration: this.createDataPoolConfiguration(7),
+					storagePoolConfiguration: this.createStoragePoolConfiguration(7),
+					sparkPoolConfiguration: this.createSparkPoolConfiguration(7)
+				});
+				resolve(profiles);
+			}, 1000);
+		});
+		return promise;
+	}
+
+	private createSQLPoolConfiguration(scale: number, maxScale: number): SQLServerMasterConfiguration {
+		return <SQLServerMasterConfiguration>{
+			type: ClusterPoolType.SQL,
+			engineOnly: false,
+			scale: scale,
+			maxScale: maxScale
+		};
+	}
+
+	private createComputePoolConfiguration(scale: number): PoolConfiguration {
+		return {
+			type: ClusterPoolType.Compute,
+			scale: scale
+		};
+	}
+
+	private createDataPoolConfiguration(scale: number): PoolConfiguration {
+		return {
+			type: ClusterPoolType.Data,
+			scale: scale
+		};
+	}
+
+	private createStoragePoolConfiguration(scale: number): PoolConfiguration {
+		return {
+			type: ClusterPoolType.Storage,
+			scale: scale
+		};
+	}
+
+	private createSparkPoolConfiguration(scale: number): PoolConfiguration {
+		return {
+			type: ClusterPoolType.Spark,
+			scale: scale
+		};
 	}
 }

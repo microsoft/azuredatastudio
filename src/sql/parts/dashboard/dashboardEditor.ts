@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as DOM from 'vs/base/browser/dom';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { EditorOptions } from 'vs/workbench/common/editor';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -77,9 +76,9 @@ export class DashboardEditor extends BaseEditor {
 		this._dashboardService.layout(dimension);
 	}
 
-	public setInput(input: DashboardInput, options: EditorOptions): TPromise<void> {
+	public setInput(input: DashboardInput, options: EditorOptions): Promise<void> {
 		if (this.input && this.input.matches(input)) {
-			return TPromise.as(undefined);
+			return Promise.resolve(undefined);
 		}
 
 		const parentElement = this.getContainer();
@@ -93,10 +92,10 @@ export class DashboardEditor extends BaseEditor {
 			container.style.height = '100%';
 			this._dashboardContainer = DOM.append(parentElement, container);
 			this.input.container = this._dashboardContainer;
-			return TPromise.wrap(input.initializedPromise.then(() => this.bootstrapAngular(input)));
+			return Promise.resolve(input.initializedPromise.then(() => this.bootstrapAngular(input)));
 		} else {
 			this._dashboardContainer = DOM.append(parentElement, this.input.container);
-			return TPromise.wrap<void>(null);
+			return Promise.resolve(null);
 		}
 	}
 

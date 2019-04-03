@@ -11,7 +11,6 @@ import { localize } from 'vs/nls';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 
-import { CellModel } from './cell';
 import { IClientSession, INotebookModel, IDefaultConnection, INotebookModelOptions, ICellModel, NotebookContentChange, notebookConstants } from './modelInterfaces';
 import { NotebookChangeType, CellType } from 'sql/parts/notebook/models/contracts';
 import { nbversion } from '../notebookConstants';
@@ -24,6 +23,7 @@ import { URI } from 'vs/base/common/uri';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { uriPrefixes } from 'sql/platform/connection/common/utils';
+import { keys } from 'vs/base/common/map';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -72,9 +72,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _onValidConnectionSelected = new Emitter<boolean>();
 	private _oldKernel: nb.IKernel;
 	private _clientSessionListeners: IDisposable[] = [];
-	private _connectionsToDispose: ConnectionProfile[] = [];
+	private _connectionUrisToDispose: string[] = [];
 
-	constructor(private _notebookOptions: INotebookModelOptions, startSessionImmediately?: boolean, private connectionProfile?: IConnectionProfile) {
+	constructor(private _notebookOptions: INotebookModelOptions, startSessionImmediately?: boolean, public connectionProfile?: IConnectionProfile) {
 		super();
 		if (!_notebookOptions || !_notebookOptions.notebookUri || !_notebookOptions.notebookManagers) {
 			throw new Error('path or notebook service not defined');
@@ -206,7 +206,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public standardKernelsDisplayName(): string[] {
-		return Array.from(this._kernelDisplayNameToNotebookProviderIds.keys());
+		return Array.from(keys(this._kernelDisplayNameToNotebookProviderIds));
 	}
 
 	public get inErrorState(): boolean {
@@ -354,7 +354,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				cellIndex: index
 			});
 		} else {
-			this.notifyError(localize('deleteCellFailed', 'Failed to delete cell.'));
+			this.notifyError(localize('deleteCellFailed', "Failed to delete cell."));
 		}
 	}
 
@@ -392,7 +392,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		this._onErrorEmitter.fire({ message: error, severity: Severity.Error });
 	}
 
-	public async startSession(manager: INotebookManager, displayName?: string): Promise<void> {
+	public async startSession(manager: INotebookManager, displayName?: string, setErrorStateOnFail?: boolean): Promise<void> {
 		if (displayName) {
 			let standardKernel = this._notebookOptions.standardKernels.find(kernel => kernel.displayName === displayName);
 			this._defaultKernel = displayName ? { name: standardKernel.name, display_name: standardKernel.displayName } : this._defaultKernel;
@@ -406,7 +406,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			});
 			if (!this._activeClientSession) {
 				this.updateActiveClientSession(clientSession);
-
 			}
 			let profile = new ConnectionProfile(this._notebookOptions.capabilitiesService, this.connectionProfile);
 
@@ -420,16 +419,31 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				this._activeConnection = undefined;
 			}
 
+			clientSession.onKernelChanging(async (e) => {
+				await this.loadActiveContexts(e);
+			});
+			clientSession.statusChanged(async (session) => {
+				this._kernelsChangedEmitter.fire(session.kernel);
+			});
 			await clientSession.initialize();
 			// By somehow we have to wait for ready, otherwise may not be called for some cases.
 			await clientSession.ready;
-			if (clientSession.isInErrorState) {
-				this.setErrorState(clientSession.errorMessage);
-			} else {
-				this._onClientSessionReady.fire(clientSession);
-				// Once session is loaded, can use the session manager to retrieve useful info
-				this.loadKernelInfo(clientSession, this.defaultKernel.display_name);
+			if (clientSession.kernel) {
+				await clientSession.kernel.ready;
+				await this.updateKernelInfoOnKernelChange(clientSession.kernel);
 			}
+			if (clientSession.isInErrorState) {
+				if (setErrorStateOnFail) {
+					this.setErrorState(clientSession.errorMessage);
+				} else {
+					throw new Error(clientSession.errorMessage);
+				}
+			}
+			this._onClientSessionReady.fire(clientSession);
+			this._kernelChangedEmitter.fire({
+				oldValue: undefined,
+				newValue: clientSession.kernel
+			});
 		}
 	}
 
@@ -476,7 +490,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	private isValidConnection(profile: IConnectionProfile | connection.Connection) {
-		let standardKernels = this._notebookOptions.standardKernels.find(kernel => this._savedKernelInfo && kernel.displayName === this._savedKernelInfo.display_name);
+		let standardKernels = this._notebookOptions.standardKernels.find(kernel => this._defaultKernel && kernel.displayName === this._defaultKernel.display_name);
 		let connectionProviderIds = standardKernels ? standardKernels.connectionProviderIds : undefined;
 		return profile && connectionProviderIds && connectionProviderIds.find(provider => provider === profile.providerName) !== undefined;
 	}
@@ -552,10 +566,63 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		this.doChangeKernel(displayName, true);
 	}
 
-	public async doChangeKernel(displayName: string, mustSetProvider: boolean = true): Promise<void> {
-		if (mustSetProvider) {
-			await this.setProviderIdAndStartSession(displayName);
+	private async doChangeKernel(displayName: string, mustSetProvider: boolean = true, restoreOnFail: boolean = true): Promise<void> {
+		if (!displayName) {
+			// Can't change to an undefined kernel
+			return;
 		}
+		let oldDisplayName = this._activeClientSession && this._activeClientSession.kernel ? this._activeClientSession.kernel.name : undefined;
+		try {
+			let changeKernelNeeded = true;
+			if (mustSetProvider) {
+				let providerChanged = await this.tryStartSessionByChangingProviders(displayName);
+				// If provider was changed, a new session with new kernel is already created. We can skip calling changeKernel.
+				changeKernelNeeded = !providerChanged;
+			}
+			if (changeKernelNeeded) {
+				let spec = this.findSpec(displayName);
+				if (this._activeClientSession && this._activeClientSession.isReady) {
+					let kernel = await this._activeClientSession.changeKernel(spec, this._oldKernel);
+					try {
+						await kernel.ready;
+						await this.updateKernelInfoOnKernelChange(kernel);
+					} catch (err2) {
+						// TODO should we handle this in any way?
+						console.log(`doChangeKernel: ignoring error ${notebookUtils.getErrorMessage(err2)}`);
+					}
+				}
+			}
+		} catch (err) {
+			if (oldDisplayName && restoreOnFail) {
+				this.notifyError(localize('changeKernelFailedRetry', "Failed to change kernel. Kernel {0} will be used. Error was: {1}", oldDisplayName, notebookUtils.getErrorMessage(err)));
+				// Clear out previous kernel
+				let failedProviderId = this.tryFindProviderForKernel(displayName, true);
+				let oldProviderId = this.tryFindProviderForKernel(oldDisplayName, true);
+				if (failedProviderId !== oldProviderId) {
+					// We need to clear out the old kernel information so we switch providers. Otherwise in the SQL -> Jupyter -> SQL failure case,
+					// we would never reset the providers
+					this._oldKernel = undefined;
+				}
+				return this.doChangeKernel(oldDisplayName, mustSetProvider, false);
+			} else {
+				this.notifyError(localize('changeKernelFailed', "Failed to change kernel due to error: {0}", notebookUtils.getErrorMessage(err)));
+				this._kernelChangedEmitter.fire({
+					newValue: undefined,
+					oldValue: undefined
+				});
+			}
+		}
+		// Else no need to do anything
+	}
+
+	private async updateKernelInfoOnKernelChange(kernel: nb.IKernel) {
+		await this.updateKernelInfo(kernel);
+		if (kernel.info) {
+			this.updateLanguageInfo(kernel.info.language_info);
+		}
+	}
+
+	private findSpec(displayName: string) {
 		let spec = this.getKernelSpecFromDisplayName(displayName);
 		if (spec) {
 			// Ensure that the kernel we try to switch to is a valid kernel; if not, use the default
@@ -563,57 +630,49 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			if (kernelSpecs && kernelSpecs.length > 0 && kernelSpecs.findIndex(k => k.display_name === spec.display_name) < 0) {
 				spec = kernelSpecs.find(spec => spec.name === this.notebookManager.sessionManager.specs.defaultKernel);
 			}
-		} else {
+		}
+		else {
 			spec = notebookConstants.sqlKernelSpec;
 		}
-		if (this._activeClientSession && this._activeClientSession.isReady) {
-			return this._activeClientSession.changeKernel(spec, this._oldKernel)
-				.then((kernel) => {
-					this.updateKernelInfo(kernel);
-					kernel.ready.then(() => {
-						if (kernel.info) {
-							this.updateLanguageInfo(kernel.info.language_info);
-						}
-					}, err => undefined);
-				}).catch((err) => {
-					this.notifyError(localize('changeKernelFailed', 'Failed to change kernel: {0}', notebookUtils.getErrorMessage(err)));
-					// TODO should revert kernels dropdown
-				});
-		}
-		return Promise.resolve();
+		return spec;
 	}
 
-	public async changeContext(server: string, newConnection?: IConnectionProfile, hideErrorMessage?: boolean): Promise<void> {
+	public async changeContext(server: string, newConnection?: ConnectionProfile, hideErrorMessage?: boolean): Promise<void> {
 		try {
 			if (!newConnection) {
 				newConnection = this._activeContexts.otherConnections.find((connection) => connection.serverName === server);
 			}
-			if (!newConnection && (this._activeContexts.defaultConnection.serverName === server)) {
+			if ((!newConnection) && (this._activeContexts.defaultConnection.serverName === server)) {
 				newConnection = this._activeContexts.defaultConnection;
 			}
-			let newConnectionProfile = new ConnectionProfile(this._notebookOptions.capabilitiesService, newConnection);
+
 			if (this._activeConnection) {
 				this._otherConnections.push(this._activeConnection);
 			}
-			this._activeConnection = newConnectionProfile;
-			this.refreshConnections(newConnectionProfile);
-			this._activeClientSession.updateConnection(this._activeConnection.toIConnectionProfile()).then(
-				result => {
-					//Remove 'Select connection' from 'Attach to' drop-down since its a valid connection
-					this._onValidConnectionSelected.fire(true);
-				},
-				error => {
-					if (error) {
-						if (!hideErrorMessage) {
-							this.notifyError(notebookUtils.getErrorMessage(error));
+			if (newConnection) {
+				this._activeConnection = newConnection;
+				this.refreshConnections(newConnection);
+				this._activeClientSession.updateConnection(newConnection.toIConnectionProfile()).then(
+					result => {
+						//Remove 'Select connection' from 'Attach to' drop-down since its a valid connection
+						this._onValidConnectionSelected.fire(true);
+					},
+					error => {
+						if (error) {
+							if (!hideErrorMessage) {
+								this.notifyError(notebookUtils.getErrorMessage(error));
+							}
+							//Selected a wrong connection, Attach to should be defaulted with 'Select connection'
+							this._onValidConnectionSelected.fire(false);
 						}
-						//Selected a wrong connection, Attach to should be defaulted with 'Select connection'
-						this._onValidConnectionSelected.fire(false);
-					}
-				});
+					});
+			} else {
+				this._onValidConnectionSelected.fire(false);
+				throw new Error('No valid connection');
+			}
 		} catch (err) {
 			let msg = notebookUtils.getErrorMessage(err);
-			this.notifyError(localize('changeContextFailed', 'Changing context failed: {0}', msg));
+			this.notifyError(localize('changeContextFailed', "Changing context failed: {0}", msg));
 		}
 	}
 
@@ -629,17 +688,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			// Change the defaultConnection to newConnection
 			this._activeContexts.defaultConnection = newConnection;
 		}
-	}
-
-	private loadKernelInfo(clientSession: IClientSession, displayName: string): void {
-		clientSession.onKernelChanging(async (e) => {
-			await this.loadActiveContexts(e);
-		});
-		clientSession.statusChanged(async (session) => {
-			this._kernelsChangedEmitter.fire(session.kernel);
-		});
-
-		this.doChangeKernel(displayName, false);
 	}
 
 	// Get default language if saved in notebook file
@@ -697,13 +745,13 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return newKernelDisplayName;
 	}
 
-	public addAttachToConnectionsToBeDisposed(conn: ConnectionProfile) {
-		this._connectionsToDispose.push(conn);
+	public addAttachToConnectionsToBeDisposed(connUri: string) {
+		this._connectionUrisToDispose.push(connUri);
 	}
 
 	private setErrorState(errMsg: string): void {
 		this._inErrorState = true;
-		let msg = localize('startSessionFailed', 'Could not start session: {0}', errMsg);
+		let msg = localize('startSessionFailed', "Could not start session: {0}", errMsg);
 		this.notifyError(msg);
 
 	}
@@ -730,7 +778,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			}
 			await this.shutdownActiveSession();
 		} catch (err) {
-			this.notifyError(localize('shutdownError', 'An error occurred when closing the notebook: {0}', err));
+			this.notifyError(localize('shutdownError', "An error occurred when closing the notebook: {0}", err));
 		}
 	}
 
@@ -740,7 +788,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				await this._activeClientSession.ready;
 			}
 			catch (err) {
-				this.notifyError(localize('shutdownClientSessionError', 'A client session error occurred when closing the notebook: {0}', err));
+				this.notifyError(localize('shutdownClientSessionError', "A client session error occurred when closing the notebook: {0}", err));
 			}
 			await this._activeClientSession.shutdown();
 			this.clearClientSessionListeners();
@@ -753,8 +801,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			let kernelDisplayName = this.getDisplayNameFromSpecName(kernelChangedArgs.newValue);
 			this._activeContexts = await NotebookContexts.getContextsForKernel(this._notebookOptions.connectionService, this.getApplicableConnectionProviderIds(kernelDisplayName), kernelChangedArgs, this.connectionProfile);
 			this._contextsChangedEmitter.fire();
-			if (this.contexts.defaultConnection !== undefined && this.contexts.defaultConnection.serverName !== undefined) {
-				await this.changeContext(this.contexts.defaultConnection.serverName);
+			if (this.contexts.defaultConnection !== undefined && this.contexts.defaultConnection.serverName !== undefined && this.contexts.defaultConnection.title !== undefined) {
+				await this.changeContext(this.contexts.defaultConnection.title, this.contexts.defaultConnection);
 			}
 		}
 	}
@@ -794,46 +842,39 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	 * Set _providerId and start session if it is new provider
 	 * @param displayName Kernel dispay name
 	 */
-	private async setProviderIdAndStartSession(displayName: string): Promise<void> {
+	private async tryStartSessionByChangingProviders(displayName: string): Promise<boolean> {
 		if (displayName) {
 			if (this._activeClientSession && this._activeClientSession.isReady) {
 				this._oldKernel = this._activeClientSession.kernel;
-				let providerId = this.tryFindProviderForKernel(displayName);
+			}
+			let providerId = this.tryFindProviderForKernel(displayName);
 
-				if (providerId) {
-					if (providerId !== this._providerId) {
-						this._providerId = providerId;
-						this._onProviderIdChanged.fire(this._providerId);
+			if (providerId && providerId !== this._providerId) {
+				this._providerId = providerId;
+				this._onProviderIdChanged.fire(this._providerId);
 
-						await this.shutdownActiveSession();
-
-						try {
-							let manager = this.getNotebookManager(providerId);
-							if (manager) {
-								await this.startSession(manager, displayName);
-							} else {
-								throw new Error(localize('ProviderNoManager', "Can't find notebook manager for provider {0}", providerId));
-							}
-						}
-						catch (err) {
-							console.log(err);
-						}
-					} else {
-						console.log(`No provider found supporting the kernel: ${displayName}`);
-					}
+				await this.shutdownActiveSession();
+				let manager = this.getNotebookManager(providerId);
+				if (manager) {
+					await this.startSession(manager, displayName, false);
+				} else {
+					throw new Error(localize('ProviderNoManager', "Can't find notebook manager for provider {0}", providerId));
 				}
+				return true;
 			}
 		}
+		return false;
 	}
 
-	private tryFindProviderForKernel(displayName: string) {
+	private tryFindProviderForKernel(displayName: string, alwaysReturnId: boolean = false): string {
 		if (!displayName) {
 			return undefined;
 		}
 		let standardKernel = this.getStandardKernelFromDisplayName(displayName);
-		if (standardKernel && this._oldKernel && this._oldKernel.name !== standardKernel.name) {
-			if (this._kernelDisplayNameToNotebookProviderIds.has(displayName)) {
-				return this._kernelDisplayNameToNotebookProviderIds.get(displayName);
+		if (standardKernel) {
+			let providerId = this._kernelDisplayNameToNotebookProviderIds.get(displayName);
+			if (alwaysReturnId || (!this._oldKernel || this._oldKernel.name !== standardKernel.name)) {
+				return providerId;
 			}
 		}
 		return undefined;
@@ -854,16 +895,17 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	// let connectionUri = Utils.generateUri(connection, 'notebook');
 	private async disconnectNotebookConnection(conn: ConnectionProfile): Promise<void> {
 		if (this.notebookOptions.connectionService.getConnectionUri(conn).includes(uriPrefixes.notebook)) {
-			await this.notebookOptions.connectionService.disconnect(conn).catch(e => console.log(e));
+			let uri = this._notebookOptions.connectionService.getConnectionUri(conn);
+			await this.notebookOptions.connectionService.disconnect(uri).catch(e => console.log(e));
 		}
 	}
 
 	// Disconnect any connections that were added through the "Add new connection" functionality in the Attach To dropdown
 	private async disconnectAttachToConnections(): Promise<void> {
-		this._connectionsToDispose.forEach(async conn => {
+		notebookUtils.asyncForEach(this._connectionUrisToDispose, async conn => {
 			await this.notebookOptions.connectionService.disconnect(conn).catch(e => console.log(e));
 		});
-		this._connectionsToDispose = [];
+		this._connectionUrisToDispose = [];
 	}
 
 	/**
@@ -883,7 +925,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		};
 	}
 
-	onCellChange(cell: CellModel, change: NotebookChangeType): void {
+	onCellChange(cell: ICellModel, change: NotebookChangeType): void {
 		let changeInfo: NotebookContentChange = {
 			changeType: change,
 			cells: [cell]

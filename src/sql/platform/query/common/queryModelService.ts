@@ -9,7 +9,7 @@ import * as GridContentEvents from 'sql/parts/grid/common/gridContentEvents';
 import * as LocalizedConstants from 'sql/parts/query/common/localizedConstants';
 import QueryRunner, { EventType as QREvents } from 'sql/platform/query/common/queryRunner';
 import { DataService } from 'sql/parts/grid/services/dataService';
-import { IQueryModelService } from 'sql/platform/query/common/queryModel';
+import { IQueryModelService, IQueryPlanInfo, IQueryEvent } from 'sql/platform/query/common/queryModel';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
 import { QueryStatusbarItem } from 'sql/parts/query/execution/queryStatus';
 import { SqlFlavorStatusbarItem } from 'sql/parts/query/common/flavorStatus';
@@ -23,7 +23,6 @@ import * as statusbar from 'vs/workbench/browser/parts/statusbar/statusbar';
 import * as platform from 'vs/platform/registry/common/platform';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Event, Emitter } from 'vs/base/common/event';
-import { TPromise } from 'vs/base/common/winjs.base';
 import * as strings from 'vs/base/common/strings';
 import * as types from 'vs/base/common/types';
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -69,11 +68,13 @@ export class QueryModelService implements IQueryModelService {
 	private _queryInfoMap: Map<string, QueryInfo>;
 	private _onRunQueryStart: Emitter<string>;
 	private _onRunQueryComplete: Emitter<string>;
+	private _onQueryEvent: Emitter<IQueryEvent>;
 	private _onEditSessionReady: Emitter<azdata.EditSessionReadyParams>;
 
 	// EVENTS /////////////////////////////////////////////////////////////
 	public get onRunQueryStart(): Event<string> { return this._onRunQueryStart.event; }
 	public get onRunQueryComplete(): Event<string> { return this._onRunQueryComplete.event; }
+	public get onQueryEvent(): Event<IQueryEvent> { return this._onQueryEvent.event; }
 	public get onEditSessionReady(): Event<azdata.EditSessionReadyParams> { return this._onEditSessionReady.event; }
 
 	// CONSTRUCTOR /////////////////////////////////////////////////////////
@@ -84,6 +85,7 @@ export class QueryModelService implements IQueryModelService {
 		this._queryInfoMap = new Map<string, QueryInfo>();
 		this._onRunQueryStart = new Emitter<string>();
 		this._onRunQueryComplete = new Emitter<string>();
+		this._onQueryEvent = new Emitter<IQueryEvent>();
 		this._onEditSessionReady = new Emitter<azdata.EditSessionReadyParams>();
 
 		// Register Statusbar items
@@ -309,11 +311,38 @@ export class QueryModelService implements IQueryModelService {
 		});
 		queryRunner.addListener(QREvents.COMPLETE, totalMilliseconds => {
 			this._onRunQueryComplete.fire(uri);
+
+			// fire extensibility API event
+			let event: IQueryEvent = {
+				type: 'queryStop',
+				uri: uri
+			};
+			this._onQueryEvent.fire(event);
+
+			// fire UI event
 			this._fireQueryEvent(uri, 'complete', totalMilliseconds);
 		});
 		queryRunner.addListener(QREvents.START, () => {
 			this._onRunQueryStart.fire(uri);
+
+			// fire extensibility API event
+			let event: IQueryEvent = {
+				type: 'queryStart',
+				uri: uri
+			};
+			this._onQueryEvent.fire(event);
+
 			this._fireQueryEvent(uri, 'start');
+		});
+
+		queryRunner.addListener(QREvents.QUERY_PLAN_AVAILABLE, (planInfo) => {
+			// fire extensibility API event
+			let event: IQueryEvent = {
+				type: 'executionPlan',
+				uri: planInfo.fileUri,
+				params: planInfo
+			};
+			this._onQueryEvent.fire(event);
 		});
 
 		info.queryRunner = queryRunner;
@@ -423,10 +452,26 @@ export class QueryModelService implements IQueryModelService {
 			});
 			queryRunner.addListener(QREvents.COMPLETE, totalMilliseconds => {
 				this._onRunQueryComplete.fire(ownerUri);
+				// fire extensibility API event
+				let event: IQueryEvent = {
+					type: 'queryStop',
+					uri: ownerUri
+				};
+				this._onQueryEvent.fire(event);
+
+				// fire UI event
 				this._fireQueryEvent(ownerUri, 'complete', totalMilliseconds);
 			});
 			queryRunner.addListener(QREvents.START, () => {
 				this._onRunQueryStart.fire(ownerUri);
+				// fire extensibility API event
+				let event: IQueryEvent = {
+					type: 'queryStart',
+					uri: ownerUri
+				};
+				this._onQueryEvent.fire(event);
+
+				// fire UI event
 				this._fireQueryEvent(ownerUri, 'start');
 			});
 			queryRunner.addListener(QREvents.EDIT_SESSION_READY, e => {
@@ -460,7 +505,7 @@ export class QueryModelService implements IQueryModelService {
 		if (queryRunner) {
 			return queryRunner.disposeEdit(ownerUri);
 		}
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 
 	public updateCell(ownerUri: string, rowId: number, columnId: number, newValue: string): Thenable<azdata.EditUpdateCellResult> {
@@ -475,7 +520,7 @@ export class QueryModelService implements IQueryModelService {
 				return Promise.reject(error);
 			});
 		}
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 
 	public commitEdit(ownerUri): Thenable<void> {
@@ -490,7 +535,7 @@ export class QueryModelService implements IQueryModelService {
 				return Promise.reject(error);
 			});
 		}
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 
 	public createRow(ownerUri: string): Thenable<azdata.EditCreateRowResult> {
@@ -499,7 +544,7 @@ export class QueryModelService implements IQueryModelService {
 		if (queryRunner) {
 			return queryRunner.createRow(ownerUri);
 		}
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 
 	public deleteRow(ownerUri: string, rowId: number): Thenable<void> {
@@ -508,7 +553,7 @@ export class QueryModelService implements IQueryModelService {
 		if (queryRunner) {
 			return queryRunner.deleteRow(ownerUri, rowId);
 		}
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 
 	public revertCell(ownerUri: string, rowId: number, columnId: number): Thenable<azdata.EditRevertCellResult> {
@@ -517,7 +562,7 @@ export class QueryModelService implements IQueryModelService {
 		if (queryRunner) {
 			return queryRunner.revertCell(ownerUri, rowId, columnId);
 		}
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 
 	public revertRow(ownerUri: string, rowId: number): Thenable<void> {
@@ -526,7 +571,7 @@ export class QueryModelService implements IQueryModelService {
 		if (queryRunner) {
 			return queryRunner.revertRow(ownerUri, rowId);
 		}
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 
 	public getQueryRunner(ownerUri): QueryRunner {

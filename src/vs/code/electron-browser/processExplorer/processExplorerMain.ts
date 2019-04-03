@@ -8,7 +8,7 @@ import { listProcesses, ProcessItem } from 'vs/base/node/ps';
 import { webFrame, ipcRenderer, clipboard } from 'electron';
 import { repeat } from 'vs/base/common/strings';
 import { totalmem } from 'os';
-import product from 'vs/platform/node/product';
+import product from 'vs/platform/product/node/product';
 import { localize } from 'vs/nls';
 import { ProcessExplorerStyles, ProcessExplorerData } from 'vs/platform/issue/common/issue';
 import * as browser from 'vs/base/browser/browser';
@@ -96,10 +96,10 @@ function attachTo(item: ProcessItem) {
 		config.port = parseInt(matches[2]);
 	}
 
-	ipcRenderer.send('vscode:workbenchCommand', { id: 'workbench.action.debug.start', from: 'processExplorer', args: [config] });
+	ipcRenderer.send('vscode:workbenchCommand', { id: 'debug.startFromConfig', from: 'processExplorer', args: [config] });
 }
 
-function getProcessIdWithHighestProperty(processList, propertyName: string) {
+function getProcessIdWithHighestProperty(processList: any[], propertyName: string) {
 	let max = 0;
 	let maxProcessId;
 	processList.forEach(process => {
@@ -112,43 +112,57 @@ function getProcessIdWithHighestProperty(processList, propertyName: string) {
 	return maxProcessId;
 }
 
-function updateProcessInfo(processList): void {
-	const target = document.getElementById('process-list');
-	if (!target) {
+function updateProcessInfo(processList: any[]): void {
+	const container = document.getElementById('process-list');
+	if (!container) {
 		return;
 	}
 
+	container.innerHTML = '';
 	const highestCPUProcess = getProcessIdWithHighestProperty(processList, 'cpu');
 	const highestMemoryProcess = getProcessIdWithHighestProperty(processList, 'memory');
 
-	let tableHtml = `
-		<thead>
-			<tr>
-				<th scope="col" class="cpu">${localize('cpu', "CPU %")}</th>
-				<th scope="col" class="memory">${localize('memory', "Memory (MB)")}</th>
-				<th scope="col" class="pid">${localize('pid', "pid")}</th>
-				<th scope="col" class="nameLabel">${localize('name', "Name")}</th>
-			</tr>
-		</thead>`;
+	const tableHead = document.createElement('thead');
+	tableHead.innerHTML = `<tr>
+		<th scope="col" class="cpu">${localize('cpu', "CPU %")}</th>
+		<th scope="col" class="memory">${localize('memory', "Memory (MB)")}</th>
+		<th scope="col" class="pid">${localize('pid', "pid")}</th>
+		<th scope="col" class="nameLabel">${localize('name', "Name")}</th>
+	</tr>`;
 
-	tableHtml += `<tbody>`;
+	const tableBody = document.createElement('tbody');
 
 	processList.forEach(p => {
-		const cpuClass = p.pid === highestCPUProcess ? 'highest' : '';
-		const memoryClass = p.pid === highestMemoryProcess ? 'highest' : '';
+		const row = document.createElement('tr');
+		row.id = p.pid;
 
-		tableHtml += `
-			<tr id=${p.pid}>
-				<td class="centered ${cpuClass}">${p.cpu}</td>
-				<td class="centered ${memoryClass}">${p.memory}</td>
-				<td class="centered">${p.pid}</td>
-				<td title="${p.name}" class="data">${p.formattedName}</td>
-			</tr>`;
+		const cpu = document.createElement('td');
+		p.pid === highestCPUProcess
+			? cpu.classList.add('centered', 'highest')
+			: cpu.classList.add('centered');
+		cpu.textContent = p.cpu;
+
+		const memory = document.createElement('td');
+		p.pid === highestMemoryProcess
+			? memory.classList.add('centered', 'highest')
+			: memory.classList.add('centered');
+		memory.textContent = p.memory;
+
+		const pid = document.createElement('td');
+		pid.classList.add('centered');
+		pid.textContent = p.pid;
+
+		const name = document.createElement('th');
+		name.scope = 'row';
+		name.classList.add('data');
+		name.title = p.cmd;
+		name.textContent = p.formattedName;
+
+		row.append(cpu, memory, pid, name);
+		tableBody.appendChild(row);
 	});
 
-	tableHtml += `</tbody>`;
-
-	target.innerHTML = tableHtml;
+	container.append(tableHead, tableBody);
 }
 
 function applyStyles(styles: ProcessExplorerStyles): void {
@@ -171,7 +185,9 @@ function applyStyles(styles: ProcessExplorerStyles): void {
 	if (document.head) {
 		document.head.appendChild(styleTag);
 	}
-	document.body.style.color = styles.color;
+	if (styles.color) {
+		document.body.style.color = styles.color;
+	}
 }
 
 function applyZoom(zoomLevel: number): void {
@@ -183,12 +199,12 @@ function applyZoom(zoomLevel: number): void {
 	browser.setZoomLevel(webFrame.getZoomLevel(), /*isTrusted*/false);
 }
 
-function showContextMenu(e) {
+function showContextMenu(e: MouseEvent) {
 	e.preventDefault();
 
 	const items: IContextMenuItem[] = [];
 
-	const pid = parseInt(e.currentTarget.id);
+	const pid = parseInt((e.currentTarget as HTMLElement).id);
 	if (pid && typeof pid === 'number') {
 		items.push({
 			label: localize('killProcess', "Kill Process"),
@@ -261,7 +277,7 @@ export function startup(data: ProcessExplorerData): void {
 	applyZoom(data.zoomLevel);
 
 	// Map window process pids to titles, annotate process names with this when rendering to distinguish between them
-	ipcRenderer.on('vscode:windowsInfoResponse', (event, windows) => {
+	ipcRenderer.on('vscode:windowsInfoResponse', (_event: unknown, windows: any[]) => {
 		mapPidToWindowTitle = new Map<number, string>();
 		windows.forEach(window => mapPidToWindowTitle.set(window.pid, window.title));
 	});

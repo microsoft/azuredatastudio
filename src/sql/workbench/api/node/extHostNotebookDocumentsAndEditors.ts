@@ -12,7 +12,7 @@ import { dispose } from 'vs/base/common/lifecycle';
 import { URI, UriComponents } from 'vs/base/common/uri';
 import { Disposable } from 'vs/workbench/api/node/extHostTypes';
 import * as typeConverters from 'vs/workbench/api/node/extHostTypeConverters';
-import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
+import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { ok } from 'vs/base/common/assert';
 
 import {
@@ -109,7 +109,7 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 					this._mainContext.getProxy(SqlMainContext.MainThreadNotebookDocumentsAndEditors),
 					data.id,
 					documentData,
-					typeConverters.ViewColumn.to(data.editorPosition)
+					typeof data.editorPosition === 'number' ? typeConverters.ViewColumn.to(data.editorPosition) : undefined
 				);
 				this._editors.set(data.id, editor);
 			}

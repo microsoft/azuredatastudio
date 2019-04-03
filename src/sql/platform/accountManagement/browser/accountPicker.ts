@@ -106,7 +106,7 @@ export class AccountPicker extends Disposable {
 		addAccountAction.addAccountErrorEvent((msg) => this._addAccountErrorEmitter.fire(msg));
 		addAccountAction.addAccountStartEvent(() => this._addAccountStartEmitter.fire());
 
-		this._dropdown = this._register(new DropdownList(this._rootElement, option, this._listContainer, this._accountList, this._themeService, addAccountAction));
+		this._dropdown = this._register(new DropdownList(this._rootElement, option, this._listContainer, this._accountList, addAccountAction));
 		this._register(attachDropdownStyler(this._dropdown, this._themeService));
 		this._register(this._accountList.onSelectionChange((e: IListEvent<azdata.Account>) => {
 			if (e.elements.length === 1) {

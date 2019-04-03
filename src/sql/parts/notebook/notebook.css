@@ -50,6 +50,15 @@
 	background-image: url("./media/dark/add_inverse.svg");
 }
 
+.notebookEditor .notebook-button.icon-run-cells{
+	background-image: url("./media/light/run_cells.svg");
+}
+
+.vs-dark .notebookEditor .notebook-button.icon-run-cells,
+.hc-black .notebookEditor .notebook-button.icon-run-cells{
+	background-image: url("./media/dark/run_cells_inverse.svg");
+}
+
 .notebookEditor .notebook-button.icon-trusted{
 	background-image: url("./media/light/trusted.svg");
 }
@@ -66,6 +75,15 @@
 .vs-dark .notebookEditor .notebook-button.icon-notTrusted,
 .hc-black .notebookEditor .notebook-button.icon-notTrusted{
 	background-image: url("./media/dark/nottrusted_inverse.svg");
+}
+
+.notebookEditor .notebook-button.icon-clear-results{
+	background-image: url("./media/light/clear_results.svg");
+}
+
+.vs-dark .notebookEditor .notebook-button.icon-clear-results,
+.hc-black .notebookEditor .notebook-button.icon-clear-results{
+	background-image: url("./media/dark/clear_results_inverse.svg");
 }
 
 .moreActions .action-label.icon.toggle-more {
@@ -85,4 +103,8 @@
 
 .notebookEditor .notebook-cellTable .ui-widget-content.slick-row {
 	border-left: 1px silver dotted;
+}
+
+.notebookEditor .notebook-cellTable .slick-viewport {
+	min-height: 39px;
 }

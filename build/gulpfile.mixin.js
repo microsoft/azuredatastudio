@@ -10,14 +10,14 @@ const json = require('gulp-json-editor');
 const buffer = require('gulp-buffer');
 const filter = require('gulp-filter');
 const es = require('event-stream');
-const util = require('./lib/util');
-const remote = require('gulp-remote-src');
-const zip = require('gulp-vinyl-zip');
+const vfs = require('vinyl-fs');
+const pkg = require('../package.json');
+const cp = require('child_process');
+const fancyLog = require('fancy-log');
+const ansiColors = require('ansi-colors');
 
 // {{SQL CARBON EDIT}}
 const jeditor = require('gulp-json-editor');
-
-const pkg = require('../package.json');
 
 gulp.task('mixin', function () {
   // {{SQL CARBON EDIT}}
