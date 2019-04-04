@@ -24,6 +24,7 @@ import { elapsedTimeLabel } from 'sql/parts/query/common/localizedConstants';
 import * as notebookUtils from 'sql/parts/notebook/notebookUtils';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { generateUuid } from 'vs/base/common/uuid';
 
 export const sqlKernelError: string = localize("sqlKernelError", "SQL kernel error");
 export const MAX_ROWS = 5000;
@@ -48,6 +49,7 @@ export interface SQLData {
 
 export class SqlSessionManager implements nb.SessionManager {
 	constructor(private _instantiationService: IInstantiationService) { }
+	private _session: SqlSession;
 
 	public get isReady(): boolean {
 		return true;
@@ -55,6 +57,10 @@ export class SqlSessionManager implements nb.SessionManager {
 
 	public get ready(): Thenable<void> {
 		return Promise.resolve();
+	}
+
+	public get session(): SqlSession {
+		return this._session;
 	}
 
 	public get specs(): nb.IAllKernels {
@@ -66,12 +72,13 @@ export class SqlSessionManager implements nb.SessionManager {
 	}
 
 	startNew(options: nb.ISessionOptions): Thenable<nb.ISession> {
-		let session = new SqlSession(options, this._instantiationService);
-		return Promise.resolve(session);
+		this._session = new SqlSession(options, this._instantiationService);
+		return Promise.resolve(this._session);
 	}
 
 	shutdown(id: string): Thenable<void> {
-		return Promise.resolve();
+		let sqlKernel = this._session.kernel as SqlKernel;
+		return sqlKernel.disconnect();
 	}
 }
 
@@ -140,6 +147,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 	private _queryRunner: QueryRunner;
 	private _currentConnection: IConnectionProfile;
 	private _currentConnectionProfile: ConnectionProfile;
+	private _activeConnectionUri: string;
 	static kernelId: number = 0;
 
 	private _id: string;
@@ -162,6 +170,10 @@ class SqlKernel extends Disposable implements nb.IKernel {
 			let scriptMagic = new ExternalScriptMagic(magic.language);
 			this._magicToExecutorMap.set(magic.magic, scriptMagic);
 		}
+	}
+
+	public get activeConnectionUri(): string {
+		return this._activeConnectionUri;
 	}
 
 	public get id(): string {
@@ -213,6 +225,10 @@ class SqlKernel extends Disposable implements nb.IKernel {
 		this._queryRunner = undefined;
 	}
 
+	public set activeConnectionUri(uri) {
+		this._activeConnectionUri = uri;
+	}
+
 	getSpec(): Thenable<nb.IKernelSpec> {
 		return Promise.resolve(notebookConstants.sqlKernelSpec);
 	}
@@ -229,9 +245,9 @@ class SqlKernel extends Disposable implements nb.IKernel {
 			}
 			this._queryRunner.runQuery(code);
 		} else if (this._currentConnection && this._currentConnectionProfile) {
-			let connectionUri = Utils.generateUri(this._currentConnectionProfile, 'notebook');
-			this._queryRunner = this._instantiationService.createInstance(QueryRunner, connectionUri);
-			this._connectionManagementService.connect(this._currentConnectionProfile, connectionUri).then((result) => {
+			this._activeConnectionUri = Utils.generateUri(this._currentConnectionProfile, 'notebook') + '|' + generateUuid();
+			this._queryRunner = this._instantiationService.createInstance(QueryRunner, this._activeConnectionUri);
+			this._connectionManagementService.connect(this._currentConnectionProfile, this._activeConnectionUri).then((result) => {
 				this.addQueryEventListeners(this._queryRunner);
 				this._queryRunner.runQuery(code);
 			});
@@ -307,6 +323,13 @@ class SqlKernel extends Disposable implements nb.IKernel {
 			this._future.handleDone();
 		}
 		// TODO issue #2746 should ideally show a warning inside the dialog if have no data
+	}
+
+	public async disconnect(): Promise<void> {
+		if (this.activeConnectionUri) {
+			await this._connectionManagementService.disconnect(this.activeConnectionUri);
+		}
+		return;
 	}
 }
 
@@ -428,7 +451,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		if (rowCount > 0) {
 			subsetResult = await this._queryRunner.getQueryRows(0, rowCount, resultSet.batchId, resultSet.id);
 		} else {
-			subsetResult = { message: '', resultSubset: { rowCount: 0, rows: [] }};
+			subsetResult = { message: '', resultSubset: { rowCount: 0, rows: [] } };
 		}
 		let msg: nb.IIOPubMessage = {
 			channel: 'iopub',

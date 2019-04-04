@@ -116,6 +116,13 @@ export function generateUriWithPrefix(connection: IConnectionProfile, prefix: st
 	return uri;
 }
 
+export function generateUriFromExistingUri(connection: IConnectionProfile, id: string): string {
+	let db = connection.serverName + ':' + connection.databaseName;
+	let uri = id ? id + '|' + db : id;
+
+	return uri;
+}
+
 export function findProfileInGroup(og: IConnectionProfile, groups: ConnectionProfileGroup[]): ConnectionProfile {
 	for (let group of groups) {
 		for (let conn of group.connections) {

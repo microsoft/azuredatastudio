@@ -111,7 +111,8 @@ export class ClientSession implements IClientSession {
 			// TODO #3164 should use URI instead of path for startNew
 			session = await this.notebookManager.sessionManager.startNew({
 				path: this.notebookUri.fsPath,
-				kernelName: kernelName
+				kernelName: kernelName,
+				kernelId: kernelName
 				// TODO add kernel name if saved in the document
 			});
 			session.defaultKernelLoaded = true;
