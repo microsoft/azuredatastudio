@@ -164,7 +164,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	//Saves scrollTop value on scroll change
 	public scrollHandler(event: Event){
-		this._scrollTop = event.srcElement.scrollTop;
+		this._scrollTop = (<any>event.srcElement).scrollTop;
 	}
 
 	public unselectActiveCell() {
