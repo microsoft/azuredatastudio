@@ -30,7 +30,7 @@ export class ScrollableDirective extends AngularDisposable {
 
 	ngOnInit() {
 		this.scrolled = this._el.nativeElement as HTMLElement;
-		this.parent = this.scrolled.parentElement;
+		this.parent = this.scrolled.parentElement!;
 		const next = this.scrolled.nextSibling;
 		this.parent.removeChild(this.scrolled);
 

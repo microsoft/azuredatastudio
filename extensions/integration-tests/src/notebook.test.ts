@@ -51,7 +51,7 @@ if (context.RunTest) {
 		});
 
 		test('Sql NB multiple cells test', async function () {
-			let notebook = await openNotebook(sqlNotebookMultipleCellsContent, sqlKernelMetadata, this.test.title);
+			let notebook = await openNotebook(sqlNotebookMultipleCellsContent, sqlKernelMetadata, this.test.title, true);
 			const expectedOutput0 = '(1 row affected)';
 			for (let i = 0; i < 3; i++) {
 				let cellOutputs = notebook.document.cells[i].contents.outputs;

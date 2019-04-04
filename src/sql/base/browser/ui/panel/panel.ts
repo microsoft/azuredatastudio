@@ -47,7 +47,7 @@ export type PanelTabIdentifier = string;
 
 export class TabbedPanel extends Disposable implements IThemable {
 	private _tabMap = new Map<PanelTabIdentifier, IInternalPanelTab>();
-	private _shownTab: PanelTabIdentifier;
+	private _shownTabId?: PanelTabIdentifier;
 	public readonly headersize = 35;
 	private header: HTMLElement;
 	private tabList: HTMLElement;
@@ -103,7 +103,7 @@ export class TabbedPanel extends Disposable implements IThemable {
 		internalTab.disposables = [];
 		this._tabMap.set(tab.identifier, internalTab);
 		this._createTab(internalTab);
-		if (!this._shownTab) {
+		if (!this._shownTabId) {
 			this.showTab(tab.identifier);
 		}
 		if (this._tabMap.size > 1 && !this._headerVisible) {
@@ -147,24 +147,23 @@ export class TabbedPanel extends Disposable implements IThemable {
 	}
 
 	public showTab(id: PanelTabIdentifier): void {
-		if (this._shownTab && this._shownTab === id) {
+		if (this._shownTabId === id || !this._tabMap.has(id)) {
 			return;
 		}
 
-		if (this._shownTab) {
-			DOM.removeClass(this._tabMap.get(this._shownTab).label, 'active');
-			DOM.removeClass(this._tabMap.get(this._shownTab).header, 'active');
-			this._tabMap.get(this._shownTab).header.setAttribute('aria-selected', 'false');
+		if (this._shownTabId) {
+			const shownTab = this._tabMap.get(this._shownTabId);
+			if (shownTab) {
+				DOM.removeClass(shownTab.label, 'active');
+				DOM.removeClass(shownTab.header, 'active');
+				shownTab.header.setAttribute('aria-selected', 'false');
+				shownTab.body.remove();
+			}
 		}
 
-		let prevTab = this._tabMap.get(this._shownTab);
-		if (prevTab) {
-			prevTab.body.remove();
-		}
-
-		this._shownTab = id;
+		this._shownTabId = id;
 		this.tabHistory.push(id);
-		let tab = this._tabMap.get(this._shownTab);
+		const tab = this._tabMap.get(this._shownTabId)!; // @anthonydresser we know this can't be undefined since we check further up if the map contains the id
 		if (!tab.body) {
 			tab.body = DOM.$('.tab-container');
 			tab.body.style.width = '100%';
@@ -183,7 +182,10 @@ export class TabbedPanel extends Disposable implements IThemable {
 	}
 
 	public removeTab(tab: PanelTabIdentifier) {
-		let actualTab = this._tabMap.get(tab);
+		const actualTab = this._tabMap.get(tab);
+		if (!actualTab) {
+			return;
+		}
 		if (actualTab.view && actualTab.view.remove) {
 			actualTab.view.remove();
 		}
@@ -195,12 +197,14 @@ export class TabbedPanel extends Disposable implements IThemable {
 		}
 		dispose(actualTab.disposables);
 		this._tabMap.delete(tab);
-		if (this._shownTab === tab) {
-			this._shownTab = undefined;
-			while (this._shownTab === undefined && this.tabHistory.length > 0) {
+		if (this._shownTabId === tab) {
+			this._shownTabId = undefined;
+			while (this._shownTabId === undefined && this.tabHistory.length > 0) {
 				let lastTab = this.tabHistory.shift();
-				if (this._tabMap.get(lastTab)) {
-					this.showTab(lastTab);
+				if (lastTab) {
+					if (this._tabMap.get(lastTab)) {
+						this.showTab(lastTab);
+					}
 				}
 			}
 		}
@@ -230,11 +234,13 @@ export class TabbedPanel extends Disposable implements IThemable {
 	}
 
 	private _layoutCurrentTab(dimension: DOM.Dimension): void {
-		if (this._shownTab) {
-			let tab = this._tabMap.get(this._shownTab);
-			tab.body.style.width = dimension.width + 'px';
-			tab.body.style.height = dimension.height + 'px';
-			tab.view.layout(dimension);
+		if (this._shownTabId) {
+			const tab = this._tabMap.get(this._shownTabId);
+			if (tab) {
+				tab.body.style.width = dimension.width + 'px';
+				tab.body.style.height = dimension.height + 'px';
+				tab.view.layout(dimension);
+			}
 		}
 	}
 

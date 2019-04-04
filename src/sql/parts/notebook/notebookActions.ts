@@ -389,8 +389,8 @@ export class AttachToDropdown extends SelectBox {
 				else {
 					connections.push(msgAddNewConnection);
 				}
+				this.setOptions(connections);
 			}
-			this.setOptions(connections);
 		}
 	}
 

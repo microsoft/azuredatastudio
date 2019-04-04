@@ -5,7 +5,6 @@
 
 'use strict';
 import 'vs/css!./media/accountPicker';
-import { Builder } from 'sql/base/browser/builder';
 import * as DOM from 'vs/base/browser/dom';
 import { Event, Emitter } from 'vs/base/common/event';
 import { List } from 'vs/base/browser/ui/list/listWidget';
@@ -126,7 +125,7 @@ export class AccountPicker extends Disposable {
 			this._accountList.setSelection([0]);
 			this.onAccountSelectionChange(this._accountList.getSelectedElements()[0]);
 		} else {
-			new Builder(this._refreshContainer).hide();
+			DOM.hide(this._refreshContainer);
 		}
 
 		this._register(this._themeService.onThemeChange(e => this.updateTheme(e)));
@@ -151,9 +150,9 @@ export class AccountPicker extends Disposable {
 		this.viewModel.selectedAccount = account;
 		if (account && account.isStale) {
 			this._refreshAccountAction.account = account;
-			new Builder(this._refreshContainer).show();
+			DOM.show(this._refreshContainer);
 		} else {
-			new Builder(this._refreshContainer).hide();
+			DOM.hide(this._refreshContainer);
 		}
 
 		this._onAccountSelectionChangeEvent.fire(account);

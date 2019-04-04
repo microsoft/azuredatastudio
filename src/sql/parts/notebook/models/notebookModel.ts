@@ -637,19 +637,19 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return spec;
 	}
 
-	public async changeContext(server: string, newConnection?: ConnectionProfile, hideErrorMessage?: boolean): Promise<void> {
+	public async changeContext(title: string, newConnection?: ConnectionProfile, hideErrorMessage?: boolean): Promise<void> {
 		try {
 			if (!newConnection) {
-				newConnection = this._activeContexts.otherConnections.find((connection) => connection.serverName === server);
+				newConnection = this._activeContexts.otherConnections.find((connection) => connection.title === title);
 			}
-			if ((!newConnection) && (this._activeContexts.defaultConnection.serverName === server)) {
+			if ((!newConnection) && (this._activeContexts.defaultConnection.title === title)) {
 				newConnection = this._activeContexts.defaultConnection;
 			}
 
-			if (this._activeConnection) {
-				this._otherConnections.push(this._activeConnection);
-			}
 			if (newConnection) {
+				if (this._activeConnection && this._activeConnection.id !== newConnection.id) {
+					this._otherConnections.push(this._activeConnection);
+				}
 				this._activeConnection = newConnection;
 				this.refreshConnections(newConnection);
 				this._activeClientSession.updateConnection(newConnection.toIConnectionProfile()).then(
