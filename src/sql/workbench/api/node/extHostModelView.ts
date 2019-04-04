@@ -965,6 +965,7 @@ class DiffEditorWrapper extends ComponentWrapper implements azdata.DiffEditorCom
 	public get contentLeft(): string {
 		return this.properties['contentLeft'];
 	}
+
 	public set contentLeft(v: string) {
 		this.setProperty('contentLeft', v);
 	}
@@ -972,6 +973,7 @@ class DiffEditorWrapper extends ComponentWrapper implements azdata.DiffEditorCom
 	public get contentRight(): string {
 		return this.properties['contentRight'];
 	}
+
 	public set contentRight(v: string) {
 		this.setProperty('contentRight', v);
 	}
@@ -1011,6 +1013,22 @@ class DiffEditorWrapper extends ComponentWrapper implements azdata.DiffEditorCom
 	public get onEditorCreated(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onComponentCreated);
 		return emitter && emitter.event;
+	}
+
+	public get editorUriLeft(): string {
+		return this.properties['editorUriLeft'];
+	}
+
+	public set editorUriLeft(v: string) {
+		this.setProperty('editorUriLeft', v);
+	}
+
+	public get editorUriRight(): string {
+		return this.properties['editorUriRight'];
+	}
+
+	public set editorUriRight(v: string) {
+		this.setProperty('editorUriRight', v);
 	}
 }
 
