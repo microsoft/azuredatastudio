@@ -113,7 +113,7 @@ export class SchemaCompareResult {
 			sourceTargetLabels.addItem(targetLabel, { CSSStyles: { 'width': '45%', 'font-size': 'larger', 'font-weight': 'bold' } });
 			this.sourceTargetFlexLayout.addItem(this.sourceNameComponent, { CSSStyles: { 'width': '45%', 'height': '25px', 'margin-top': '10px', 'margin-left': '15px' } });
 			this.sourceTargetFlexLayout.addItem(arrowLabel, { CSSStyles: { 'width': '10%', 'font-size': 'larger', 'text-align-last': 'center' } });
-			this.sourceTargetFlexLayout.addItem(this.targetNameComponent, { CSSStyles: { 'width': '45%', 'height': '25px', 'margin-top': '10px' } });
+			this.sourceTargetFlexLayout.addItem(this.targetNameComponent, { CSSStyles: { 'width': '45%', 'height': '25px', 'margin-top': '10px', 'margin-left': '15px' } });
 
 			this.loader = view.modelBuilder.loadingComponent().component();
 			this.noDifferencesLabel = view.modelBuilder.text().withProperties({
@@ -187,7 +187,7 @@ export class SchemaCompareResult {
 
 		// only enable generate script button if the target is a db
 		if (this.targetEndpointInfo.endpointType === azdata.SchemaCompareEndpointType.database) {
-			this.generateScriptButton.enabled = true;
+			this.toggleGenerateScriptButton(true);
 		}
 
 		if (this.comparisonResult.differences.length > 0) {
@@ -252,7 +252,7 @@ export class SchemaCompareResult {
 		this.differencesTable.selectedRows = null;
 		this.compareButton.enabled = false;
 		this.switchButton.enabled = false;
-		this.generateScriptButton.enabled = false;
+		this.toggleGenerateScriptButton(false);
 		this.execute();
 	}
 
@@ -276,10 +276,9 @@ export class SchemaCompareResult {
 
 		this.generateScriptButton = view.modelBuilder.button().withProperties({
 			label: localize('schemaCompare.generateScriptButton', 'Generate script'),
-			iconPath: fileIcon,
-			enabled: false,
-			title: localize('schemaCompare.generateScriptButtonTitle', 'Generate Script is enabled when the target is a database')
+			iconPath: fileIcon
 		}).component();
+		this.toggleGenerateScriptButton(false);
 
 		this.generateScriptButton.onDidClick(async (click) => {
 			// get file path
@@ -304,9 +303,14 @@ export class SchemaCompareResult {
 			let result = await service.schemaCompareGenerateScript(this.comparisonResult.operationId, this.targetEndpointInfo.databaseName, fileUri.fsPath, azdata.TaskExecutionMode.execute);
 			if (!result || !result.success) {
 				vscode.window.showErrorMessage(
-					localize('schemaCompare.generateScriptErrorMessage', "Generate Script failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
+					localize('schemaCompare.generateScriptErrorMessage', "Generate script failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
 			}
 		});
+	}
+
+	private toggleGenerateScriptButton(enable: boolean) {
+		this.generateScriptButton.enabled = enable ? true : false;
+		this.generateScriptButton.title = enable ? localize('schemaCompare.generateScriptEnabledButton', 'Generate script to deploy changes to target') : localize('schemaCompare.generateScriptButtonDisabledTitle', 'Generate script is enabled when the target is a database');
 	}
 
 	private createSwitchButton(view: azdata.ModelView) {
