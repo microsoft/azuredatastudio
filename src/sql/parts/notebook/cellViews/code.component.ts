@@ -25,7 +25,6 @@ import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorIn
 import * as DOM from 'vs/base/browser/dom';
 import { IModeService } from 'vs/editor/common/services/modeService';
 import { IModelService } from 'vs/editor/common/services/modelService';
-import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { Event, Emitter } from 'vs/base/common/event';
 import { CellTypes } from 'sql/parts/notebook/models/contracts';
@@ -102,7 +101,6 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(IModelService) private _modelService: IModelService,
 		@Inject(IModeService) private _modeService: IModeService,
-		@Inject(IContextMenuService) private contextMenuService: IContextMenuService,
 		@Inject(IConfigurationService) private _configurationService: IConfigurationService
 	) {
 		super();
@@ -230,7 +228,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		let runCellAction = this._instantiationService.createInstance(RunCellAction, context);
 
 		let taskbar = <HTMLElement>this.toolbarElement.nativeElement;
-		this._actionBar = new Taskbar(taskbar, this.contextMenuService);
+		this._actionBar = new Taskbar(taskbar);
 		this._actionBar.context = context;
 		this._actionBar.setContent([
 			{ action: runCellAction }

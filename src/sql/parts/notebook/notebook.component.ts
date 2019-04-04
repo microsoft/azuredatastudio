@@ -20,7 +20,6 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { fillInActions, LabeledMenuItemActionItem } from 'vs/platform/actions/browser/menuItemActionItem';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { AngularDisposable } from 'sql/base/node/lifecycle';
 import { CellTypes, CellType } from 'sql/parts/notebook/models/contracts';
 import { ICellModel, IModelFactory, INotebookModel, NotebookContentChange } from 'sql/parts/notebook/models/modelInterfaces';
@@ -69,7 +68,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 
 	constructor(
-		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrapService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IConnectionManagementService) private connectionManagementService: IConnectionManagementService,
@@ -380,7 +378,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._trustedAction.enabled = false;
 
 		let taskbar = <HTMLElement>this.toolbar.nativeElement;
-		this._actionBar = new Taskbar(taskbar, this.contextMenuService, { actionItemProvider: action => this.actionItemProvider(action as Action) });
+		this._actionBar = new Taskbar(taskbar, { actionItemProvider: action => this.actionItemProvider(action as Action) });
 		this._actionBar.context = this;
 		this._actionBar.setContent([
 			{ element: kernelContainer },
