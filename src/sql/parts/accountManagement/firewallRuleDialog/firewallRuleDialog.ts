@@ -126,12 +126,12 @@ export class FirewallRuleDialog extends Modal {
 		});
 
 		// Create account picker with event handling
-		this._accountPickerService.addAccountCompleteEvent(() => this.hideSpinner());
+		this._accountPickerService.addAccountCompleteEvent(() => this.spinner = false);
 		this._accountPickerService.addAccountErrorEvent((msg) => {
-			this.hideSpinner();
+			this.spinner = false;
 			this._onAddAccountErrorEmitter.fire(msg);
 		});
-		this._accountPickerService.addAccountStartEvent(() => this.showSpinner());
+		this._accountPickerService.addAccountStartEvent(() => this.spinner = true);
 		this._accountPickerService.onAccountSelectionChangeEvent((account) => this.onAccountSelectionChange(account));
 
 		let azureAccountSection;
@@ -299,7 +299,7 @@ export class FirewallRuleDialog extends Modal {
 	public createFirewallRule() {
 		if (this._createButton.enabled) {
 			this._createButton.enabled = false;
-			this.showSpinner();
+			this.spinner = true;
 			this._onCreateFirewallRule.fire();
 		}
 	}
@@ -315,7 +315,7 @@ export class FirewallRuleDialog extends Modal {
 
 	public onServiceComplete() {
 		this._createButton.enabled = true;
-		this.hideSpinner();
+		this.spinner = false;
 	}
 
 	public open() {
