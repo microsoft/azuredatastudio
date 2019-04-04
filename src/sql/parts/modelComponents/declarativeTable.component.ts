@@ -30,7 +30,7 @@ export enum DeclarativeDataType {
 		<ng-container *ngFor="let column of columns;let h = index">
 		<th class="declarative-table-header" tabindex="-1" role="button" aria-sort="none">{{column.displayName}}</th>
 		</ng-container>
-    </thead>
+	</thead>
 		<ng-container *ngIf="data">
 			<ng-container *ngFor="let row of data;let r = index">
 				<tr class="declarative-table-row" >
