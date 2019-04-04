@@ -8,10 +8,15 @@
 	"include": [
 		"./typings",
 		"./vs/**.*.ts",
+		"./sql/azdata.d.ts",
+		"./sql/azdata.proposed.d.ts",
 		"./sql/base/browser/ui/breadcrumb/*.ts",
 		"./sql/base/browser/ui/button/*.ts",
 		"./sql/base/browser/ui/checkbox/*.ts",
 		"./sql/base/browser/ui/dropdownList/*.ts",
+		"./sql/base/browser/ui/editableDropdown/actions.ts", //ignoreing angular component
+		"./sql/base/browser/ui/editableDropdown/dropdown.ts",
+		"./sql/base/browser/ui/editableDropdown/dropdownTree.ts",
 		"./sql/base/browser/ui/inputBox/*.ts",
 		"./sql/base/browser/ui/listBox/*.ts",
 		"./sql/base/browser/ui/panel/*.ts",
@@ -19,6 +24,13 @@
 		"./sql/base/browser/ui/scrollable/*.ts",
 		"./sql/base/browser/ui/selectBox/*.ts",
 		"./sql/base/browser/ui/table/*.ts",
+		"./sql/base/common/**/*.ts",
+		"./sql/base/node/**/*.ts",
+		"./sql/platform/angularEventing/**/*.ts",
+		"./sql/platform/clipboard/**/*.ts",
+		"./sql/platform/credentials/**/*.ts",
+		// "./sql/platform/theme/**/*.ts",
+		"./sql/platform/telemetry/**/*.ts"
 	],
 	"exclude": [
 		"node_modules/**"
