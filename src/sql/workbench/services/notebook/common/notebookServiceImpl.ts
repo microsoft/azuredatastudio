@@ -424,8 +424,8 @@ export class NotebookService extends Disposable implements INotebookService {
 	}
 
 	private waitOnProviderAvailability(providerDescriptor: ProviderDescriptor, timeout?: number): Promise<INotebookProvider> {
-		// Wait up to 10 seconds for the provider to be registered
-		timeout = timeout || 10000;
+		// Wait up to 30 seconds for the provider to be registered
+		timeout = timeout || 30000;
 		let promises: Promise<INotebookProvider>[] = [
 			providerDescriptor.instanceReady,
 			new Promise<INotebookProvider>((resolve, reject) => setTimeout(() => resolve(), timeout))
