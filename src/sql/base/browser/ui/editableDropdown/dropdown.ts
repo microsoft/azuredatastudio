@@ -292,9 +292,7 @@ export class Dropdown extends Disposable {
 	style(style: IListStyles & IInputBoxStyles & IDropdownStyles) {
 		this._tree.style(style);
 		this._input.style(style);
-		if (style.contextBackground) {
-			this._treeContainer.style.backgroundColor = style.contextBackground.toString();
-		}
+		this._treeContainer.style.backgroundColor = style.contextBackground ? style.contextBackground.toString() : null;
 		this._treeContainer.style.outline = `1px solid ${style.contextBorder || this._options.contextBorder}`;
 	}
 
