@@ -21,6 +21,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
+import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 
 export interface IDropdownOptions extends IDropdownStyles {
 	/**
@@ -100,10 +101,11 @@ export class Dropdown extends Disposable {
 	constructor(
 		container: HTMLElement,
 		contextViewService: IContextViewProvider,
+		readonly layoutService: ILayoutService,
 		opt?: IDropdownOptions
 	) {
 		super();
-		this._contextView = new ContextView(document.body);
+		this._contextView = new ContextView(layoutService.container);
 		this._options = opt || Object.create(null);
 		mixin(this._options, defaults, false) as IDropdownOptions;
 		this._el = DOM.append(container, DOM.$('.monaco-dropdown'));
