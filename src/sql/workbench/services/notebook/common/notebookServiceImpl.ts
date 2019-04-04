@@ -410,9 +410,9 @@ export class NotebookService extends Disposable implements INotebookService {
 			}
 		}
 
-		// Fall back to default if this failed
+		// Fall back to default (SQL) if this failed
 		if (!instance) {
-			providerDescriptor = this._providers.get(DEFAULT_NOTEBOOK_PROVIDER);
+			providerDescriptor = this._providers.get(SQL_NOTEBOOK_PROVIDER);
 			instance = providerDescriptor ? providerDescriptor.instance : undefined;
 		}
 
