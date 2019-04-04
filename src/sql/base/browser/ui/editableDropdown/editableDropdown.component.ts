@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import {
 	Component, Inject, forwardRef, ElementRef, OnInit, Input,
 	Output, OnChanges, SimpleChanges, EventEmitter
@@ -12,9 +10,9 @@ import {
 
 import { Dropdown, IDropdownOptions } from 'sql/base/browser/ui/editableDropdown/dropdown';
 import { AngularDisposable } from 'sql/base/node/lifecycle';
+import { attachEditableDropdownStyler } from 'sql/platform/theme/common/styler';
 
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { attachEditableDropdownStyler } from 'sql/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 

@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import {
 	Component, Inject, forwardRef, ElementRef, OnInit, Input,
 	Output, OnChanges, SimpleChanges, EventEmitter

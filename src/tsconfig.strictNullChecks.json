@@ -14,7 +14,7 @@
 		"./sql/base/browser/ui/button/*.ts",
 		"./sql/base/browser/ui/checkbox/*.ts",
 		"./sql/base/browser/ui/dropdownList/*.ts",
-		"./sql/base/browser/ui/editableDropdown/actions.ts", //ignoreing angular component
+		"./sql/base/browser/ui/editableDropdown/actions.ts", //ignoring angular component
 		"./sql/base/browser/ui/editableDropdown/dropdown.ts",
 		"./sql/base/browser/ui/editableDropdown/dropdownTree.ts",
 		"./sql/base/browser/ui/inputBox/*.ts",
