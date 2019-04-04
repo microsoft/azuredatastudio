@@ -324,7 +324,7 @@ suite('commandLineService tests', () => {
 				databaseName: 'mydatabase',
 				authenticationType: Constants.integrated,
 				password: undefined,
-				userName: undefined,
+				userName: '',
 				groupId: undefined,
 				providerName: 'MSSQL',
 				options: {},
@@ -346,7 +346,7 @@ suite('commandLineService tests', () => {
 				return Promise.resolve('unused');
 			})
 			.verifiable(TypeMoq.Times.once());
-		connectionManagementService.setup(c => c.getConnectionProfileById(TypeMoq.It.isAnyString())).returns(() => originalProfile);
+		connectionManagementService.setup(c => c.getConnectionProfileById('testID')).returns(() => originalProfile).verifiable(TypeMoq.Times.once());
 		connectionManagementService.setup(x => x.getConnectionGroups(TypeMoq.It.isAny())).returns(() => [conProfGroup]);
 		const configurationService = getConfigurationServiceMock(true);
 		let service = getCommandLineService(connectionManagementService.object, configurationService.object, capabilitiesService);

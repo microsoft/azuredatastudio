@@ -5,6 +5,7 @@
 'use strict';
 import * as azdata from 'azdata';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import {ConnectionProfileGroup} from 'sql/platform/connection/common/connectionProfileGroup';
 import { equalsIgnoreCase } from 'vs/base/common/strings';
 import { ICommandLineProcessing } from 'sql/workbench/services/commandLine/common/commandLine';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
@@ -153,7 +154,7 @@ export class CommandLineService implements ICommandLineProcessing {
 		if (groups && groups.length > 0)
 		{
 			let rootGroup = groups[0];
-			let connections = rootGroup.connections;
+			let connections = ConnectionProfileGroup.getConnectionsInGroup(rootGroup);
 			match = connections.find((c) => this.matchProfile(profile, c)) ;
 		}
 		return match ? match : profile;
