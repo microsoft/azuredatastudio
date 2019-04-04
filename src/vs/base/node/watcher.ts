@@ -18,13 +18,17 @@ export function watchFolder(path: string, onChange: (type: 'added' | 'changed' |
 	return doWatchNonRecursive({ path, isDirectory: true }, onChange, onError);
 }
 
+export const CHANGE_BUFFER_DELAY = 100;
+
 function doWatchNonRecursive(file: { path: string, isDirectory: boolean }, onChange: (type: 'added' | 'changed' | 'deleted', path: string) => void, onError: (error: string) => void): IDisposable {
+	const originalFileName = basename(file.path);
 	const mapPathToStatDisposable = new Map<string, IDisposable>();
 
 	let disposed = false;
-	let watcherDisposables: IDisposable[] = [];
-
-	const originalFileName = basename(file.path);
+	let watcherDisposables: IDisposable[] = [toDisposable(() => {
+		mapPathToStatDisposable.forEach(disposable => dispose(disposable));
+		mapPathToStatDisposable.clear();
+	})];
 
 	try {
 
@@ -82,7 +86,6 @@ function doWatchNonRecursive(file: { path: string, isDirectory: boolean }, onCha
 					// In addition, we send out a delete event if after a timeout we detect that the file
 					// does indeed not exist anymore.
 
-					// Wait a bit and try to install watcher again, assuming that the file was renamed quickly ("Atomic Save")
 					const timeoutHandle = setTimeout(async () => {
 						const fileExists = await exists(changedFilePath);
 
@@ -101,7 +104,7 @@ function doWatchNonRecursive(file: { path: string, isDirectory: boolean }, onCha
 						else {
 							onChange('deleted', changedFilePath);
 						}
-					}, 300);
+					}, CHANGE_BUFFER_DELAY);
 
 					// Very important to dispose the watcher which now points to a stale inode
 					// and wire in a new disposable that tracks our timeout that is installed
@@ -151,7 +154,7 @@ function doWatchNonRecursive(file: { path: string, isDirectory: boolean }, onCha
 						}
 
 						onChange(type, changedFilePath);
-					}, 100);
+					}, CHANGE_BUFFER_DELAY);
 
 					mapPathToStatDisposable.set(changedFilePath, toDisposable(() => clearTimeout(timeoutHandle)));
 				}
@@ -185,8 +188,5 @@ function doWatchNonRecursive(file: { path: string, isDirectory: boolean }, onCha
 		disposed = true;
 
 		watcherDisposables = dispose(watcherDisposables);
-
-		mapPathToStatDisposable.forEach(disposable => dispose(disposable));
-		mapPathToStatDisposable.clear();
 	});
 }
