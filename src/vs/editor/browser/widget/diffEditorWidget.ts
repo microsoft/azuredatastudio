@@ -40,6 +40,8 @@ import { ServiceCollection } from 'vs/platform/instantiation/common/serviceColle
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { defaultInsertColor, defaultRemoveColor, diffBorder, diffInserted, diffInsertedOutline, diffRemoved, diffRemovedOutline, scrollbarShadow } from 'vs/platform/theme/common/colorRegistry';
 import { ITheme, IThemeService, getThemeTypeSelector, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
+// {{SQL CARBON EDIT}}
+import { DiffEditorHelper } from 'sql/editor/browser/DiffEditorHelper';
 
 interface IEditorDiffDecorations {
 	decorations: IModelDeltaDecoration[];
@@ -61,6 +63,7 @@ interface IEditorsZones {
 }
 
 interface IDiffEditorWidgetStyle {
+	// {{SQL CARBON EDIT}}
 	getEditorsDiffDecorations(lineChanges: editorCommon.ILineChange[], ignoreTrimWhitespace: boolean, renderIndicators: boolean, originalWhitespaces: IEditorWhitespace[], modifiedWhitespaces: IEditorWhitespace[], originalEditor: editorBrowser.ICodeEditor, modifiedEditor: editorBrowser.ICodeEditor, reverse?: boolean): IEditorsDiffDecorationsWithZones;
 	setEnableSplitViewResizing(enableSplitViewResizing: boolean): void;
 	applyColors(theme: ITheme): boolean;
@@ -193,6 +196,7 @@ export class DiffEditorWidget extends Disposable implements editorBrowser.IDiffE
 	private readonly _notificationService: INotificationService;
 
 	private readonly _reviewPane: DiffReview;
+	// {{SQL CARBON EDIT}}
 	private _options: editorOptions.IDiffEditorOptions;
 
 	constructor(
@@ -213,6 +217,7 @@ export class DiffEditorWidget extends Disposable implements editorBrowser.IDiffE
 		this._contextKeyService.createKey('isInDiffEditor', true);
 		this._themeService = themeService;
 		this._notificationService = notificationService;
+		// {{SQL CARBON EDIT}}
 		this._options = options;
 
 		this.id = (++DIFF_EDITOR_ID);
@@ -929,6 +934,7 @@ export class DiffEditorWidget extends Disposable implements editorBrowser.IDiffE
 		let foreignOriginal = this._originalEditorState.getForeignViewZones(this.originalEditor.getWhitespaces());
 		let foreignModified = this._modifiedEditorState.getForeignViewZones(this.modifiedEditor.getWhitespaces());
 
+		// {{SQL CARBON EDIT}}
 		let diffDecorations = this._strategy.getEditorsDiffDecorations(lineChanges, this._ignoreTrimWhitespace, this._renderIndicators, foreignOriginal, foreignModified, this.originalEditor, this.modifiedEditor, this._options.reverse);
 
 		try {
@@ -1205,6 +1211,7 @@ abstract class DiffEditorWidgetStyle extends Disposable implements IDiffEditorWi
 		return hasChanges;
 	}
 
+	// {{SQL CARBON EDIT}}
 	public getEditorsDiffDecorations(lineChanges: editorCommon.ILineChange[], ignoreTrimWhitespace: boolean, renderIndicators: boolean, originalWhitespaces: IEditorWhitespace[], modifiedWhitespaces: IEditorWhitespace[], originalEditor: editorBrowser.ICodeEditor, modifiedEditor: editorBrowser.ICodeEditor, reverse?: boolean): IEditorsDiffDecorationsWithZones {
 		// Get view zones
 		modifiedWhitespaces = modifiedWhitespaces.sort((a, b) => {
@@ -1213,44 +1220,21 @@ abstract class DiffEditorWidgetStyle extends Disposable implements IDiffEditorWi
 		originalWhitespaces = originalWhitespaces.sort((a, b) => {
 			return a.afterLineNumber - b.afterLineNumber;
 		});
-
-		let originalDecorations: IEditorDiffDecorations;
-		let modifiedDecorations: IEditorDiffDecorations;
 		let zones = this._getViewZones(lineChanges, originalWhitespaces, modifiedWhitespaces, originalEditor, modifiedEditor, renderIndicators);
 
-		// if we need to reverse coloring
+		// {{SQL CARBON EDIT}}
 		if (reverse) {
-			// change lines to be highlighted
-			let revertedLineChanges = lineChanges.map(linechange => {
-				return {
-					modifiedStartLineNumber: linechange.originalStartLineNumber,
-					modifiedEndLineNumber: linechange.originalEndLineNumber,
-					originalStartLineNumber: linechange.modifiedStartLineNumber,
-					originalEndLineNumber: linechange.modifiedEndLineNumber,
-					charChanges: (linechange.charChanges) ?
-						linechange.charChanges.map(charchange => {
-							return {
-								originalStartColumn: charchange.modifiedStartColumn,
-								originalEndColumn: charchange.modifiedEndColumn,
-								modifiedStartColumn: charchange.originalStartColumn,
-								modifiedEndColumn: charchange.originalEndColumn,
-								modifiedStartLineNumber: charchange.originalStartLineNumber,
-								modifiedEndLineNumber: charchange.originalEndLineNumber,
-								originalStartLineNumber: charchange.modifiedStartLineNumber,
-								originalEndLineNumber: charchange.modifiedEndLineNumber,
-							};
-						}) : undefined
-				};
-			});
+			lineChanges = DiffEditorHelper.reverseLineChanges(lineChanges);
+			[originalEditor, modifiedEditor] = [modifiedEditor, originalEditor];
+		}
 
-			// Get decorations & overview ruler zones
-			modifiedDecorations = this._getOriginalEditorDecorations(revertedLineChanges, ignoreTrimWhitespace, renderIndicators, modifiedEditor, originalEditor);
-			originalDecorations = this._getModifiedEditorDecorations(revertedLineChanges, ignoreTrimWhitespace, renderIndicators, modifiedEditor, originalEditor);
+		// Get decorations & overview ruler zones
+		let originalDecorations = this._getOriginalEditorDecorations(lineChanges, ignoreTrimWhitespace, renderIndicators, originalEditor, modifiedEditor);
+		let modifiedDecorations = this._getModifiedEditorDecorations(lineChanges, ignoreTrimWhitespace, renderIndicators, originalEditor, modifiedEditor);
 
-		} else {
-			// Get decorations & overview ruler zones
-			originalDecorations = this._getOriginalEditorDecorations(lineChanges, ignoreTrimWhitespace, renderIndicators, originalEditor, modifiedEditor);
-			modifiedDecorations = this._getModifiedEditorDecorations(lineChanges, ignoreTrimWhitespace, renderIndicators, originalEditor, modifiedEditor);
+		// {{SQL CARBON EDIT}}
+		if (reverse) {
+			[originalDecorations, modifiedDecorations] = [modifiedDecorations, originalDecorations];
 		}
 
 		return {

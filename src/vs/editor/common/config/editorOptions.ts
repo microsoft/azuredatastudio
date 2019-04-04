@@ -745,6 +745,7 @@ export interface IDiffEditorOptions extends IEditorOptions {
 	 */
 	originalEditable?: boolean;
 
+	// {{SQL CARBON EDIT}}
 	/**
 	 * Adding option to reverse coloring in diff editor
 	 */
