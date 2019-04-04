@@ -1,3 +1,5 @@
+import { getEnvironmentVariable, EnvironmentVariable_STANDALONE_SERVER, EnvironmentVariable_STANDALONE_USERNAME, EnvironmentVariable_STANDALONE_PASSWORD, EnvironmentVariable_AZURE_SERVER, EnvironmentVariable_AZURE_USERNAME, EnvironmentVariable_AZURE_PASSWORD, EnvironmentVariable_BDC_SERVER, EnvironmentVariable_BDC_USERNAME, EnvironmentVariable_BDC_PASSWORD } from './utils';
+
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
@@ -59,29 +61,29 @@ export class TestServerProfile {
 var TestingServers: TestServerProfile[] = [
 	new TestServerProfile(
 		{
-			serverName: process.env.STANDALONE_SQL,
-			userName: process.env.STANDALONE_SQL_USERNAME,
-			password: process.env.STANDALONE_SQL_PWD,
+			serverName: getEnvironmentVariable(EnvironmentVariable_STANDALONE_SERVER),
+			userName: getEnvironmentVariable(EnvironmentVariable_STANDALONE_USERNAME),
+			password: getEnvironmentVariable(EnvironmentVariable_STANDALONE_PASSWORD),
 			authenticationType: AuthenticationType.SqlLogin,
 			database: 'master',
 			provider: ConnectionProvider.SQLServer,
 			version: '2017'
 		}),
 	new TestServerProfile(
-			{
-				serverName: process.env.AZURE_SQL,
-				userName: process.env.AZURE_SQL_USERNAME,
-				password: process.env.AZURE_SQL_PWD,
-				authenticationType: AuthenticationType.SqlLogin,
-				database: 'master',
-				provider: ConnectionProvider.SQLServer,
-				version: '2012'
+		{
+			serverName: getEnvironmentVariable(EnvironmentVariable_AZURE_SERVER),
+			userName: getEnvironmentVariable(EnvironmentVariable_AZURE_USERNAME),
+			password: getEnvironmentVariable(EnvironmentVariable_AZURE_PASSWORD),
+			authenticationType: AuthenticationType.SqlLogin,
+			database: 'master',
+			provider: ConnectionProvider.SQLServer,
+			version: '2012'
 		}),
 	new TestServerProfile(
 		{
-			serverName: process.env.BDC_BACKEND_HOSTNAME,
-			userName:  process.env.BDC_BACKEND_USERNAME,
-			password:  process.env.BDC_BACKEND_PWD,
+			serverName: getEnvironmentVariable(EnvironmentVariable_BDC_SERVER),
+			userName: getEnvironmentVariable(EnvironmentVariable_BDC_USERNAME),
+			password: getEnvironmentVariable(EnvironmentVariable_BDC_PASSWORD),
 			authenticationType: AuthenticationType.SqlLogin,
 			database: 'master',
 			provider: ConnectionProvider.SQLServer,

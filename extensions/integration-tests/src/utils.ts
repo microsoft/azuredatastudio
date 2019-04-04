@@ -7,6 +7,9 @@ import assert = require('assert');
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { TestServerProfile } from './testConfig';
+import * as dotenv from 'dotenv';
+import * as os from 'os';
+import * as path from 'path';
 
 export async function connectToServer(server: TestServerProfile, timeout: number = 3000) {
 	let connectionProfile: azdata.IConnectionProfile = {
@@ -36,3 +39,25 @@ export async function connectToServer(server: TestServerProfile, timeout: number
 export async function ensureConnectionViewOpened() {
 	await vscode.commands.executeCommand('dataExplorer.servers.focus');
 }
+
+export function getEnvironmentVariable(name: string): string {
+	if (!process.env[name]) {
+		loadEnvironmentVariables();
+	}
+	return process.env[name];
+}
+
+function loadEnvironmentVariables() {
+	dotenv.config({ path: path.join(os.homedir(), '.ads-int-test-env') });
+}
+
+export const EnvironmentVariable_BDC_SERVER: string = 'BDC_BACKEND_HOSTNAME';
+export const EnvironmentVariable_BDC_USERNAME: string = 'BDC_BACKEND_USERNAME';
+export const EnvironmentVariable_BDC_PASSWORD: string = 'BDC_BACKEND_PWD';
+export const EnvironmentVariable_STANDALONE_SERVER: string = 'STANDALONE_SQL';
+export const EnvironmentVariable_STANDALONE_USERNAME: string = 'STANDALONE_SQL_USERNAME';
+export const EnvironmentVariable_STANDALONE_PASSWORD: string = 'STANDALONE_SQL_PWD';
+export const EnvironmentVariable_AZURE_SERVER: string = 'AZURE_SQL';
+export const EnvironmentVariable_AZURE_USERNAME: string = 'AZURE_SQL_USERNAME';
+export const EnvironmentVariable_AZURE_PASSWORD: string = 'AZURE_SQL_PWD';
+export const EnvironmentVariable_PYTHON_PATH: string = 'PYTHON_TEST_PATH';

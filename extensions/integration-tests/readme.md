@@ -6,22 +6,22 @@ extensionInstallers folder: copy the VISX installers for the extensions we would
 src folder: this is where the test file for features should be added, name the file like this: feature.test.ts. e.g. objectExplorer.test.ts
 
 UI automation testing:
-the ADS UI automation test cases should be added under $root/test/smoke/src/sql folder. Each feature should create its own folder and add 2 files, one for accessing the feature and the other for the test cases. For example: objectExplorer.ts and objectExplorer.test.ts. 
+the ADS UI automation test cases should be added under $root/test/smoke/src/sql folder. Each feature should create its own folder and add 2 files, one for accessing the feature and the other for the test cases. For example: objectExplorer.ts and objectExplorer.test.ts. only tested on Windows for now.
 
 Setup step:
 1.	Launch ADS
 2.	Install extensions from /extensions/integration-tests/extensionInstallers by calling the test command in the integration-tests extension
 3.	Set configuration values. E.g. Enable preview features by calling the test command in the integration-tests extension
 
-For now this has only been tested for Windows platform
-
 How to run the test:
-1.	In the build pipeline: 
+1.	In the build pipeline:
 The integration tests and UI automation tests have been added to ADS windows pipeline to run the test and report the results, you can find the test result under the test tab.
 
 2.	Local environment:
 Integration tests:
-test-integration.bat or test-integration.sh under scripts folder
+a. Open a terminal window/command line window.
+b. navigate to this folder and then run 'node setEnvironmentVariables.js', please follow the instructions in the window: you will be prompted to login to azure portal.
+c. navigate to the scripts folder and run sql-test-integration.bat or sql-test-integration.sh based on your environment.
 
 UI automation tests:
 navigate to test/smoke folder and run: node test/index.js
