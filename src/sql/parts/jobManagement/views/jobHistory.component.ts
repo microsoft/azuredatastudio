@@ -190,7 +190,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		let cachedHistory = self._jobCacheObject.getJobHistory(element.jobID);
 		if (cachedHistory) {
 			self.agentJobHistoryInfo = cachedHistory.find(
-			history => self.formatTime(history.runDate) === self.formatTime(element.runDate));
+				history => self.formatTime(history.runDate) === self.formatTime(element.runDate));
 		} else {
 			self.agentJobHistoryInfo = self._treeController.jobHistories.find(
 				history => self.formatTime(history.runDate) === self.formatTime(element.runDate));

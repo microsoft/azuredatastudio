@@ -52,7 +52,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 	@Input() public set cellModel(value: ICellModel) {
 		this._cellModel = value;
 		if (this.toolbarElement && value && value.cellType === CellTypes.Markdown) {
-			let nativeToolbar = <HTMLElement> this.toolbarElement.nativeElement;
+			let nativeToolbar = <HTMLElement>this.toolbarElement.nativeElement;
 			DOM.addClass(nativeToolbar, MARKDOWN_CLASS);
 		}
 	}
@@ -106,7 +106,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		super();
 		this._cellToggleMoreActions = this._instantiationService.createInstance(CellToggleMoreActions);
 		this._register(Event.debounce(this._layoutEmitter.event, (l, e) => e, 250, /*leading=*/false)
-		(() => this.layout()));
+			(() => this.layout()));
 		// Handle disconnect on removal of the cell, if it was the active cell
 		this._register({ dispose: () => this.updateConnectionState(false) });
 
