@@ -490,7 +490,9 @@ export class CellModel implements ICellModel {
 
 	// Dispose and set current future to undefined
 	private disposeFuture() {
-		this._future.dispose();
+		if (this._future) {
+			this._future.dispose();
+		}
 		this._future = undefined;
 	}
 }
