@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
- 
+
 import * as assert from 'assert';
 import * as sinon from 'sinon';
 import * as fs from 'fs';
@@ -19,7 +19,7 @@ import { IConfigurationRegistry, Extensions as ConfigurationExtensions, Configur
 import { WorkspaceService } from 'vs/workbench/services/configuration/node/configurationService';
 import { ISingleFolderWorkspaceInitializationPayload } from 'vs/platform/workspaces/common/workspaces';
 import { ConfigurationEditingErrorCode } from 'vs/workbench/services/configuration/common/configurationEditingService';
-import { IFileService, FileChangesEvent, FileChangeType } from 'vs/platform/files/common/files';
+import { IFileService } from 'vs/platform/files/common/files';
 import { IWorkspaceContextService, WorkbenchState, IWorkspaceFoldersChangeEvent } from 'vs/platform/workspace/common/workspace';
 import { ConfigurationTarget, IConfigurationService, IConfigurationChangeEvent } from 'vs/platform/configuration/common/configuration';
 import { workbenchInstantiationService, TestTextResourceConfigurationService, TestTextFileService, TestEnvironmentService } from 'vs/workbench/test/workbenchTestServices';
@@ -31,7 +31,6 @@ import { TextModelResolverService } from 'vs/workbench/services/textmodelResolve
 import { IJSONEditingService } from 'vs/workbench/services/configuration/common/jsonEditing';
 import { JSONEditingService } from 'vs/workbench/services/configuration/common/jsonEditingService';
 import { createHash } from 'crypto';
-import { Emitter } from 'vs/base/common/event';
 import { Schemas } from 'vs/base/common/network';
 import { originalFSPath } from 'vs/base/common/resources';
 import { isLinux } from 'vs/base/common/platform';
