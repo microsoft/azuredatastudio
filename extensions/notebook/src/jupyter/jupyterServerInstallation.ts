@@ -296,7 +296,6 @@ export default class JupyterServerInstallation {
 			// so update it here
 			this._installReady.resolve();
 			updateConfig();
-			this._installInProgress = false;
 		}
 		await this._installReady.promise;
 	}
