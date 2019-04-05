@@ -32,6 +32,7 @@ const msgTaskName = localize('msgTaskName', 'Installing Notebook dependencies');
 const msgInstallPkgStart = localize('msgInstallPkgStart', 'Installing Notebook dependencies, see Tasks view for more information');
 const msgInstallPkgFinish = localize('msgInstallPkgFinish', 'Notebook dependencies installation is complete');
 const msgPythonRunningError = localize('msgPythonRunningError', 'Cannot overwrite existing Python installation while python is running.');
+const msgPendingInstallError = localize('msgPendingInstallError', 'Another Python installation is currently in progress.');
 function msgDependenciesInstallationFailed(errorMessage: string): string { return localize('msgDependenciesInstallationFailed', 'Installing Notebook dependencies failed with error: {0}', errorMessage); }
 function msgDownloadPython(platform: string, pythonDownloadUrl: string): string { return localize('msgDownloadPython', 'Downloading local python for platform: {0} to {1}', platform, pythonDownloadUrl); }
 
@@ -57,13 +58,15 @@ export default class JupyterServerInstallation {
 	private static readonly DefaultPythonLocation = path.join(utils.getUserHome(), 'azuredatastudio-python');
 
 	private _installReady: Deferred<void>;
+	private _installInProgress: boolean;
 
-	constructor(extensionPath: string, outputChannel: OutputChannel, apiWrapper: ApiWrapper, pythonInstallationPath?: string, forceInstall?: boolean) {
+	constructor(extensionPath: string, outputChannel: OutputChannel, apiWrapper: ApiWrapper, pythonInstallationPath?: string) {
 		this.extensionPath = extensionPath;
 		this.outputChannel = outputChannel;
 		this.apiWrapper = apiWrapper;
 		this._pythonInstallationPath = pythonInstallationPath || JupyterServerInstallation.getPythonInstallPath(this.apiWrapper);
-		this._forceInstall = !!forceInstall;
+		this._forceInstall = false;
+		this._installInProgress = false;
 
 		this.configurePackagePaths();
 
@@ -75,19 +78,6 @@ export default class JupyterServerInstallation {
 
 	public get installReady(): Promise<void> {
 		return this._installReady.promise;
-	}
-
-	public static async getInstallation(
-		extensionPath: string,
-		outputChannel: OutputChannel,
-		apiWrapper: ApiWrapper,
-		pythonInstallationPath?: string,
-		forceInstall?: boolean): Promise<JupyterServerInstallation> {
-
-		let installation = new JupyterServerInstallation(extensionPath, outputChannel, apiWrapper, pythonInstallationPath, forceInstall);
-		await installation.startInstallProcess();
-
-		return installation;
 	}
 
 	private async installDependencies(backgroundOperation: azdata.BackgroundOperation): Promise<void> {
@@ -255,45 +245,58 @@ export default class JupyterServerInstallation {
 		return await filePromise;
 	}
 
-	public async startInstallProcess(pythonInstallationPath?: string): Promise<void> {
+	public async startInstallProcess(pythonInstallationPath: string, forceInstall?: boolean): Promise<void> {
 		if (pythonInstallationPath) {
 			this._pythonInstallationPath = pythonInstallationPath;
-			this.configurePackagePaths();
 		}
+		if (forceInstall !== undefined) {
+			this._forceInstall = forceInstall;
+		}
+		this.configurePackagePaths();
+
 		let updateConfig = () => {
 			let notebookConfig = this.apiWrapper.getConfiguration(constants.notebookConfigKey);
 			notebookConfig.update(constants.pythonPathConfigKey, this._pythonInstallationPath, ConfigurationTarget.Global);
 		};
+
 		if (!fs.existsSync(this._pythonExecutable) || this._forceInstall) {
+			this._installReady = new Deferred<void>();
 			let isPythonRunning = await this.isPythonRunning();
 			if (isPythonRunning) {
-				throw new Error(msgPythonRunningError);
-			}
+				this._installReady.reject(msgPythonRunningError);
+			} else {
+				this.apiWrapper.startBackgroundOperation({
+					displayName: msgTaskName,
+					description: msgTaskName,
+					isCancelable: false,
+					operation: op => {
+						if (this._installInProgress){
+							this._installReady.reject(msgPendingInstallError);
+						}
+						this._installInProgress = true;
 
-			this._installReady = new Deferred<void>();
-			this.apiWrapper.startBackgroundOperation({
-				displayName: msgTaskName,
-				description: msgTaskName,
-				isCancelable: false,
-				operation: op => {
-					this.installDependencies(op)
-						.then(() => {
-							this._installReady.resolve();
-							updateConfig();
-						})
-						.catch(err => {
-							let errorMsg = msgDependenciesInstallationFailed(utils.getErrorMessage(err));
-							op.updateStatus(azdata.TaskStatus.Failed, errorMsg);
-							this.apiWrapper.showErrorMessage(errorMsg);
-							this._installReady.reject(errorMsg);
-						});
-				}
-			});
+						this.installDependencies(op)
+							.then(() => {
+								this._installReady.resolve();
+								updateConfig();
+								this._installInProgress = false;
+							})
+							.catch(err => {
+								let errorMsg = msgDependenciesInstallationFailed(utils.getErrorMessage(err));
+								op.updateStatus(azdata.TaskStatus.Failed, errorMsg);
+								this.apiWrapper.showErrorMessage(errorMsg);
+								this._installReady.reject(errorMsg);
+								this._installInProgress = false;
+							});
+					}
+				});
+			}
 		} else {
 			// Python executable already exists, but the path setting wasn't defined,
 			// so update it here
 			this._installReady.resolve();
 			updateConfig();
+			this._installInProgress = false;
 		}
 		await this._installReady.promise;
 	}
