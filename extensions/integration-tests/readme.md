@@ -19,9 +19,10 @@ The integration tests and UI automation tests have been added to ADS windows pip
 
 2.	Local environment:
 Integration tests:
-a. Open a terminal window/command line window.
-b. navigate to this folder and then run 'node setEnvironmentVariables.js', please follow the instructions in the window: you will be prompted to login to azure portal.
-c. navigate to the scripts folder and run sql-test-integration.bat or sql-test-integration.sh based on your environment.
+a. Install the python tool set required by Notebook, Open ADS and run command 'Configure Python for Notebooks' command and install it to the default folder, if you install it to a different folder you will have to update the setEnvironmentVariables.js to set it to your custom path. the environment variable name is ENVAR_PYTHON_INSTALL_PATH.
+b. Open a terminal window/command line window.
+c. navigate to this folder and then run 'node setEnvironmentVariables.js', please follow the instructions in the window: you will be prompted to login to azure portal.
+d. navigate to the scripts folder and run sql-test-integration.bat or sql-test-integration.sh based on your environment.
 
 UI automation tests:
 navigate to test/smoke folder and run: node test/index.js
