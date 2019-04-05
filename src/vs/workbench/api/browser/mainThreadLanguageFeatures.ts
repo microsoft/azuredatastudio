@@ -429,7 +429,7 @@ export class MainThreadLanguageFeatures implements MainThreadLanguageFeaturesSha
 	// --- links
 
 	$registerDocumentLinkProvider(handle: number, selector: ISerializedDocumentFilter[]): void {
-		this._registrations[handle] = modes.LinkProviderRegistry.register(selector, <modes.LinkProvider>{
+		this._registrations[handle] = modes.LinkProviderRegistry.register(selector, {
 			provideLinks: (model, token) => {
 				return this._proxy.$provideDocumentLinks(handle, model.uri, token).then(dto => {
 					if (dto) {
@@ -438,7 +438,7 @@ export class MainThreadLanguageFeatures implements MainThreadLanguageFeaturesSha
 							this._heapService.trackObject(obj);
 						});
 					}
-					return dto;
+					return { links: dto as modes.ILink[] };
 				});
 			},
 			resolveLink: (link, token) => {
@@ -447,7 +447,7 @@ export class MainThreadLanguageFeatures implements MainThreadLanguageFeaturesSha
 						MainThreadLanguageFeatures._reviveLinkDTO(obj);
 						this._heapService.trackObject(obj);
 					}
-					return obj;
+					return obj as modes.ILink;
 				});
 			}
 		});
