@@ -5,14 +5,14 @@
 
 import 'vs/css!sql/parts/query/editor/media/queryActions';
 import * as nls from 'vs/nls';
-import { Builder, $ } from 'sql/base/browser/builder';
-import { Dropdown } from 'sql/base/browser/ui/editableDropdown/dropdown';
 import { Action, IActionItem, IActionRunner } from 'vs/base/common/actions';
-import { EventEmitter } from 'sql/base/common/eventEmitter';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { attachEditableDropdownStyler, attachSelectBoxStyler } from 'sql/platform/theme/common/styler';
+import { INotificationService } from 'vs/platform/notification/common/notification';
+import Severity from 'vs/base/common/severity';
+import { append, $ } from 'vs/base/browser/dom';
 
 import { ISelectionData } from 'azdata';
 import {
@@ -24,10 +24,10 @@ import {
 } from 'sql/platform/connection/common/connectionManagement';
 import { QueryEditor } from 'sql/parts/query/editor/queryEditor';
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
-import { INotificationService } from 'vs/platform/notification/common/notification';
-import Severity from 'vs/base/common/severity';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { attachEditableDropdownStyler, attachSelectBoxStyler } from 'sql/platform/theme/common/styler';
+import { EventEmitter } from 'sql/base/common/eventEmitter';
+import { Dropdown } from 'sql/base/browser/ui/editableDropdown/dropdown';
 
 /**
  * Action class that query-based Actions will extend. This base class automatically handles activating and
@@ -436,7 +436,7 @@ export class ListDatabasesActionItem extends EventEmitter implements IActionItem
 	private _context: any;
 	private _currentDatabaseName: string;
 	private _isConnected: boolean;
-	private $databaseListDropdown: Builder;
+	private _databaseListDropdown: HTMLElement;
 	private _dropdown: Dropdown;
 	private _databaseSelectBox: SelectBox;
 	private _isInAccessibilityMode: boolean;
@@ -452,17 +452,17 @@ export class ListDatabasesActionItem extends EventEmitter implements IActionItem
 	) {
 		super();
 		this._toDispose = [];
-		this.$databaseListDropdown = $('.databaseListDropdown');
+		this._databaseListDropdown = $('.databaseListDropdown');
 		this._isInAccessibilityMode = this._configurationService.getValue('editor.accessibilitySupport') === 'on';
 
 		if (this._isInAccessibilityMode) {
 			this._databaseSelectBox = new SelectBox([this._selectDatabaseString], this._selectDatabaseString, contextViewProvider, undefined, { ariaLabel: this._selectDatabaseString });
-			this._databaseSelectBox.render(this.$databaseListDropdown.getHTMLElement());
+			this._databaseSelectBox.render(this._databaseListDropdown);
 			this._databaseSelectBox.onDidSelect(e => { this.databaseSelected(e.selected); });
 			this._databaseSelectBox.disable();
 
 		} else {
-			this._dropdown = new Dropdown(this.$databaseListDropdown.getHTMLElement(), contextViewProvider, {
+			this._dropdown = new Dropdown(this._databaseListDropdown, contextViewProvider, {
 				strictSelection: true,
 				placeholder: this._selectDatabaseString,
 				ariaLabel: this._selectDatabaseString,
@@ -479,7 +479,7 @@ export class ListDatabasesActionItem extends EventEmitter implements IActionItem
 
 	// PUBLIC METHODS //////////////////////////////////////////////////////
 	public render(container: HTMLElement): void {
-		this.$databaseListDropdown.appendTo(container);
+		append(container, this._databaseListDropdown);
 	}
 
 	public style(styles) {
