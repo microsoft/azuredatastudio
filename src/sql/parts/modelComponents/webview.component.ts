@@ -77,7 +77,6 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 
 	private _createWebview(): void {
 		this._webview = this.instantiationService.createInstance(WebviewElement,
-			this.layoutService.getContainer(Parts.EDITOR_PART),
 			{
 				allowSvgs: true
 			},
