@@ -55,31 +55,6 @@ const targetDatabaseEngineEditionMap = {
 	7: 'SqlServerStretchEdition'
 };
 
-// map for object types for scripting
-const objectScriptMap = {
-	Table: 'Table',
-	View: 'View',
-	StoredProcedure: 'Procedure',
-	UserDefinedFunction: 'Function',
-	UserDefinedDataType: 'Type',
-	User: 'User',
-	Default: 'Default',
-	Rule: 'Rule',
-	DatabaseRole: 'Role',
-	ApplicationRole: 'Application Role',
-	SqlAssembly: 'Assembly',
-	DdlTrigger: 'Trigger',
-	Synonym: 'Synonym',
-	XmlSchemaCollection: 'Xml Schema Collection',
-	Schema: 'Schema',
-	PlanGuide: 'sp_create_plan_guide',
-	UserDefinedType: 'Type',
-	UserDefinedAggregate: 'Aggregate',
-	FullTextCatalog: 'Fulltext Catalog',
-	UserDefinedTableType: 'Type',
-	MaterializedView: 'Materialized View'
-};
-
 export enum ScriptOperation {
 	Select = 0,
 	Create = 1,
@@ -107,31 +82,6 @@ export function GetScriptOperationName(operation: ScriptOperation) {
 			// return the raw, non-localized string name
 			return defaultName;
 	}
-}
-
-export function connectIfNotAlreadyConnected(connectionProfile: IConnectionProfile, connectionService: IConnectionManagementService): Promise<void> {
-	return new Promise<void>((resolve, reject) => {
-		let connectionID = connectionService.getConnectionUri(connectionProfile);
-		let uri: string = connectionService.getFormattedUri(connectionID, connectionProfile);
-		if (!connectionService.isConnected(uri)) {
-			let options: IConnectionCompletionOptions = {
-				params: { connectionType: ConnectionType.editor, runQueryOnCompletion: RunQueryOnConnectionMode.executeQuery, input: undefined },
-				saveTheConnection: false,
-				showDashboard: false,
-				showConnectionDialogOnError: false,
-				showFirewallRuleOnError: true
-			};
-			connectionService.connect(connectionProfile, uri, options).then(() => {
-				setTimeout(function () {
-					resolve();
-				}, 2000);
-			}).catch(connectionError => {
-				reject(connectionError);
-			});
-		} else {
-			resolve();
-		}
-	});
 }
 
 /**
@@ -221,7 +171,7 @@ export function script(connectionProfile: IConnectionProfile, metadata: azdata.O
 					let script: string = result.script;
 
 					if (script) {
-						let description = (metadata.schema && metadata.schema !== '') ? `${metadata.schema}.${metadata.name}`  : metadata.name;
+						let description = (metadata.schema && metadata.schema !== '') ? `${metadata.schema}.${metadata.name}` : metadata.name;
 						queryEditorService.newSqlEditor(script, connectionProfile.providerName, undefined, description).then((owner) => {
 							// Connect our editor to the input connection
 							let options: IConnectionCompletionOptions = {
@@ -394,26 +344,6 @@ export function getCurrentGlobalConnection(objectExplorerService: IObjectExplore
 
 	return connection;
 }
-
-/* Helper Methods */
-function getStartPos(script: string, operation: ScriptOperation, typeName: string): number {
-	let objectTypeName = objectScriptMap[typeName];
-	if (objectTypeName && script) {
-		let scriptTypeName = objectTypeName.toLowerCase();
-		switch (operation) {
-			case (ScriptOperation.Create):
-				return script.toLowerCase().indexOf(`create ${scriptTypeName}`);
-			case (ScriptOperation.Delete):
-				return script.toLowerCase().indexOf(`drop ${scriptTypeName}`);
-			default:
-				/* script wasn't found for that object */
-				return -1;
-		}
-	} else {
-		return -1;
-	}
-}
-
 
 function getScriptingParamDetails(connectionService: IConnectionManagementService, ownerUri: string, metadata: azdata.ObjectMetadata): azdata.ScriptingParamDetails {
 	let serverInfo: azdata.ServerInfo = getServerInfo(connectionService, ownerUri);
