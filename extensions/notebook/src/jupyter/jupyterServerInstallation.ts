@@ -54,11 +54,9 @@ export default class JupyterServerInstallation {
 
 	// Allows dependencies to be installed even if an existing installation is already present
 	private _forceInstall: boolean;
+	private _installInProgress: boolean;
 
 	private static readonly DefaultPythonLocation = path.join(utils.getUserHome(), 'azuredatastudio-python');
-
-	private _installReady: Deferred<void>;
-	private _installInProgress: boolean;
 
 	constructor(extensionPath: string, outputChannel: OutputChannel, apiWrapper: ApiWrapper, pythonInstallationPath?: string) {
 		this.extensionPath = extensionPath;
@@ -69,15 +67,6 @@ export default class JupyterServerInstallation {
 		this._installInProgress = false;
 
 		this.configurePackagePaths();
-
-		this._installReady = new Deferred<void>();
-		if (JupyterServerInstallation.isPythonInstalled(this.apiWrapper)) {
-			this._installReady.resolve();
-		}
-	}
-
-	public get installReady(): Promise<void> {
-		return this._installReady.promise;
 	}
 
 	private async installDependencies(backgroundOperation: azdata.BackgroundOperation): Promise<void> {
@@ -246,6 +235,10 @@ export default class JupyterServerInstallation {
 	}
 
 	public async startInstallProcess(pythonInstallationPath: string, forceInstall?: boolean): Promise<void> {
+		if (this._installInProgress) {
+			return Promise.reject(msgPendingInstallError);
+		}
+
 		if (pythonInstallationPath) {
 			this._pythonInstallationPath = pythonInstallationPath;
 		}
@@ -259,33 +252,30 @@ export default class JupyterServerInstallation {
 			notebookConfig.update(constants.pythonPathConfigKey, this._pythonInstallationPath, ConfigurationTarget.Global);
 		};
 
+		let installReady = new Deferred<void>();
 		if (!fs.existsSync(this._pythonExecutable) || this._forceInstall) {
-			this._installReady = new Deferred<void>();
 			let isPythonRunning = await this.isPythonRunning();
 			if (isPythonRunning) {
-				this._installReady.reject(msgPythonRunningError);
+				installReady.reject(msgPythonRunningError);
 			} else {
+				this._installInProgress = true;
+
 				this.apiWrapper.startBackgroundOperation({
 					displayName: msgTaskName,
 					description: msgTaskName,
 					isCancelable: false,
 					operation: op => {
-						if (this._installInProgress) {
-							this._installReady.reject(msgPendingInstallError);
-						}
-						this._installInProgress = true;
-
 						this.installDependencies(op)
 							.then(() => {
-								this._installReady.resolve();
 								updateConfig();
+								installReady.resolve();
 								this._installInProgress = false;
 							})
 							.catch(err => {
 								let errorMsg = msgDependenciesInstallationFailed(utils.getErrorMessage(err));
 								op.updateStatus(azdata.TaskStatus.Failed, errorMsg);
 								this.apiWrapper.showErrorMessage(errorMsg);
-								this._installReady.reject(errorMsg);
+								installReady.reject(errorMsg);
 								this._installInProgress = false;
 							});
 					}
@@ -294,10 +284,10 @@ export default class JupyterServerInstallation {
 		} else {
 			// Python executable already exists, but the path setting wasn't defined,
 			// so update it here
-			this._installReady.resolve();
 			updateConfig();
+			installReady.resolve();
 		}
-		await this._installReady.promise;
+		await installReady.promise;
 	}
 
 	public async promptForPythonInstall(): Promise<void> {
