@@ -116,8 +116,8 @@ suite('Account Management Dialog ViewModel Tests', () => {
 				assert.equal(results[0].addedProvider, providers[0]);
 				assert.equal(results[0].initialAccounts, accounts);
 			}).then(
-			() => done(),
-			err => done(err)
+				() => done(),
+				err => done(err)
 			);
 	});
 
@@ -145,8 +145,8 @@ suite('Account Management Dialog ViewModel Tests', () => {
 				assert.equal(results.length, 0);
 			})
 			.then(
-			() => done(),
-			err => done(err)
+				() => done(),
+				err => done(err)
 			);
 	});
 
@@ -175,8 +175,8 @@ suite('Account Management Dialog ViewModel Tests', () => {
 				assert.equal(result[0].addedProvider, providers[0]);
 				assert.equal(result[0].initialAccounts, accounts);
 			}).then(
-			() => done(),
-			err => done()
+				() => done(),
+				err => done()
 			);
 	});
 });

@@ -91,8 +91,8 @@ suite('Account picker view model tests', () => {
 				assert.equal(results.length, 2);
 				assert.equal(results, accounts);
 			}).then(
-			() => done(),
-			err => done(err)
+				() => done(),
+				err => done(err)
 			);
 	});
 
@@ -117,8 +117,8 @@ suite('Account picker view model tests', () => {
 				assert.equal(result.length, 0);
 				assert.equal(result, []);
 			}).then(
-			() => done(),
-			err => done()
+				() => done(),
+				err => done()
 			);
 	});
 });

@@ -82,7 +82,7 @@ suite('auto OAuth dialog controller tests', () => {
 
 		// If: a oauth flyout is already open
 		autoOAuthDialogController.openAutoOAuthDialog(providerId, title, message, userCode, uri)
-		.then(success => done('Failure: Expected error on 2nd dialog open'), error => done());
+			.then(success => done('Failure: Expected error on 2nd dialog open'), error => done());
 
 		// Then: An error dialog should have been opened
 		mockErrorMessageService.verify(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());

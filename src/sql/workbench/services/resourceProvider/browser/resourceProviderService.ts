@@ -77,8 +77,8 @@ export class ResourceProviderService implements IResourceProviderService {
 								handleFirewallRuleResult = { canHandleFirewallRule: response.result, ipAddress: response.ipAddress, resourceProviderId: key };
 							}
 						},
-						() => { /* Swallow failures at getting accounts, we'll just hide that provider */
-						}));
+							() => { /* Swallow failures at getting accounts, we'll just hide that provider */
+							}));
 				}
 			}
 
