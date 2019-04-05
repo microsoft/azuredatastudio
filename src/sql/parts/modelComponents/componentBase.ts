@@ -13,8 +13,8 @@ import * as types from 'vs/base/common/types';
 
 import { IComponent, IComponentDescriptor, IModelStore, IComponentEventArgs, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
 import * as azdata from 'azdata';
-import { ComponentHostDirective } from 'sql/parts/dashboard/common/componentHost.directive';
-import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
+import { ComponentHostDirective } from 'sql/workbench/parts/dashboard/common/componentHost.directive';
+import { DashboardServiceInterface } from 'sql/workbench/parts/dashboard/services/dashboardServiceInterface.service';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { ModelComponentWrapper } from 'sql/parts/modelComponents/modelComponentWrapper.component';
