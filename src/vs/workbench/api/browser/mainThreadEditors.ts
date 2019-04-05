@@ -118,7 +118,8 @@ export class MainThreadTextEditors implements MainThreadTextEditorsShape {
 		const editorOptions: ITextEditorOptions = {
 			preserveFocus: options.preserveFocus,
 			pinned: options.pinned,
-			selection: options.selection
+			selection: options.selection,
+			contents: options.contents
 		};
 
 		const input = {

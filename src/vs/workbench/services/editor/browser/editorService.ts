@@ -33,6 +33,10 @@ import { withNullAsUndefined, withUndefinedAsNull } from 'vs/base/common/types';
 import { convertEditorInput, getFileMode } from 'sql/parts/common/customInputConverter';
 //{{SQL CARBON EDIT}} - End
 
+import { BaseTextEditorModel } from 'vs/workbench/common/editor/textEditorModel';
+import { NotebookInput } from 'sql/parts/notebook/notebookInput';
+import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
+
 type ICachedEditorInput = ResourceEditorInput | IFileEditorInput | DataUriEditorInput;
 
 export class EditorService extends Disposable implements EditorServiceImpl {
@@ -240,7 +244,24 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 		if (typedInput) {
 			const editorOptions = TextEditorOptions.from(textInput);
 			const targetGroup = this.findTargetGroup(typedInput, editorOptions, optionsOrGroup as IEditorGroup | GroupIdentifier);
-			return this.doOpenEditor(targetGroup, typedInput, editorOptions);
+			let editorPromise = this.doOpenEditor(targetGroup, typedInput, editorOptions);
+			let contents: string = textInput.options.contents;
+			if (contents) {
+				editorPromise = editorPromise.then(async editor => {
+					let model: BaseTextEditorModel = undefined;
+					let editorInput = editor.input;
+					if (typedInput instanceof NotebookInput) {
+						model = await (<NotebookInput>editorInput).textInput.resolve();
+					} else if (editorInput instanceof UntitledEditorInput) {
+						model = await (<UntitledEditorInput>editorInput).resolve();
+					}
+					if (model) {
+						model.textEditorModel.setValue(contents);
+					}
+					return editor;
+				});
+			}
+			return editorPromise;
 		}
 
 		return Promise.resolve(null);

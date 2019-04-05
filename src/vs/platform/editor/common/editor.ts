@@ -140,4 +140,9 @@ export interface ITextEditorOptions extends IEditorOptions {
 	 * Option to scroll vertically or horizontally as necessary and reveal a range centered vertically only if it lies outside the viewport.
 	 */
 	revealInCenterIfOutsideViewport?: boolean;
+
+	/**
+	 * An optional contents string that needs to be set when opening document.
+	 */
+	contents?: string;
 }

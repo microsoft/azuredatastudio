@@ -228,6 +228,7 @@ export interface ITextDocumentShowOptions {
 	preserveFocus?: boolean;
 	pinned?: boolean;
 	selection?: IRange;
+	contents?: string;
 }
 
 export interface MainThreadTextEditorsShape extends IDisposable {

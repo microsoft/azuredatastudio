@@ -774,6 +774,11 @@ declare module 'vscode' {
 		 * An optional selection to apply for the document in the [editor](#TextEditor).
 		 */
 		selection?: Range;
+
+		/**
+		 * An optional contents string that needs to be set when opening document.
+		 */
+		contents?: string;
 	}
 
 	/**

@@ -62,11 +62,13 @@ export class ExtHostEditors implements ExtHostEditorsShape {
 				preserveFocus
 			};
 		} else if (typeof columnOrOptions === 'object') {
+			columnOrOptions.preview = !!columnOrOptions.preview;
 			options = {
 				position: TypeConverters.ViewColumn.from(columnOrOptions.viewColumn),
 				preserveFocus: columnOrOptions.preserveFocus,
 				selection: typeof columnOrOptions.selection === 'object' ? TypeConverters.Range.from(columnOrOptions.selection) : undefined,
-				pinned: typeof columnOrOptions.preview === 'boolean' ? !columnOrOptions.preview : undefined
+				pinned: typeof columnOrOptions.preview === 'boolean' ? !columnOrOptions.preview : undefined,
+				contents: columnOrOptions.contents
 			};
 		} else {
 			options = {
@@ -76,11 +78,10 @@ export class ExtHostEditors implements ExtHostEditorsShape {
 
 		return this._proxy.$tryShowTextDocument(document.uri, options).then(id => {
 			const editor = id && this._extHostDocumentsAndEditors.getEditor(id);
-			if (editor) {
-				return editor;
-			} else {
+			if (id && !editor) {
 				throw new Error(`Failed to show text document ${document.uri.toString()}, should show in editor #${id}`);
 			}
+			return editor;
 		});
 	}
 

@@ -92,11 +92,12 @@ export class ApiWrapper {
 		return vscode.workspace.openTextDocument(uriOrOptions);
 	}
 
-	public showTextDocument(document: vscode.TextDocument, column?: vscode.ViewColumn, preserveFocus?: boolean, preview?: boolean): Thenable<vscode.TextEditor> {
+	public showTextDocument(document: vscode.TextDocument, contents?: string, column?: vscode.ViewColumn, preserveFocus?: boolean, preview?: boolean): Thenable<vscode.TextEditor> {
 		let options: vscode.TextDocumentShowOptions = {
 			viewColumn: column,
 			preserveFocus: preserveFocus,
-			preview: preview
+			preview: preview,
+			contents: contents
 		};
 		return vscode.window.showTextDocument(document, options);
 	}
