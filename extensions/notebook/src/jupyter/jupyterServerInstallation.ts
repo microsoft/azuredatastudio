@@ -270,7 +270,7 @@ export default class JupyterServerInstallation {
 					description: msgTaskName,
 					isCancelable: false,
 					operation: op => {
-						if (this._installInProgress){
+						if (this._installInProgress) {
 							this._installReady.reject(msgPendingInstallError);
 						}
 						this._installInProgress = true;
