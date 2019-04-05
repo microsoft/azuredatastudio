@@ -9,7 +9,7 @@ import * as assert from 'assert';
 import * as azdata from 'azdata';
 import * as TypeMoq from 'typemoq';
 import AccountStore from 'sql/platform/accountManagement/common/accountStore';
-import { AccountDialogController } from 'sql/parts/accountManagement/accountDialog/accountDialogController';
+import { AccountDialogController } from 'sql/platform/accountManagement/browser/accountDialogController';
 import { AccountManagementService } from 'sql/workbench/services/accountManagement/browser/accountManagementService';
 import { AccountAdditionResult, AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/platform/accountManagement/common/eventTypes';
 import { IAccountStore } from 'sql/platform/accountManagement/common/interfaces';

@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import 'vs/css!./media/accountPicker';
 import * as DOM from 'vs/base/browser/dom';
 import { Event, Emitter } from 'vs/base/common/event';
@@ -21,8 +20,8 @@ import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
 import * as azdata from 'azdata';
 import { DropdownList } from 'sql/base/browser/ui/dropdownList/dropdownList';
 import { attachDropdownStyler } from 'sql/platform/theme/common/styler';
-import { AddAccountAction, RefreshAccountAction } from 'sql/parts/accountManagement/common/accountActions';
-import { AccountPickerListRenderer, AccountListDelegate } from 'sql/parts/accountManagement/common/accountListRenderer';
+import { AddAccountAction, RefreshAccountAction } from 'sql/platform/accountManagement/common/accountActions';
+import { AccountPickerListRenderer, AccountListDelegate } from 'sql/platform/accountManagement/browser/accountListRenderer';
 import { AccountPickerViewModel } from 'sql/platform/accountManagement/common/accountPickerViewModel';
 
 export class AccountPicker extends Disposable {

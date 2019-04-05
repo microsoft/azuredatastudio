@@ -3,10 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import Severity from 'vs/base/common/severity';
-import { AccountDialog } from 'sql/parts/accountManagement/accountDialog/accountDialog';
+import { AccountDialog } from 'sql/platform/accountManagement/browser/accountDialog';
 import { localize } from 'vs/nls';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';

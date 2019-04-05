@@ -2,6 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
 .no-account-view {
 	font-size: 12px;
 	padding: 15px;
@@ -101,8 +102,4 @@
 .account-view .monaco-list .monaco-list-row.selected .list-row .actions-container,
 .account-view .monaco-list .monaco-list-row.focused .list-row .actions-container{
 	display: block;
-}
-
-.account-view .monaco-list .monaco-list-row {
-
 }

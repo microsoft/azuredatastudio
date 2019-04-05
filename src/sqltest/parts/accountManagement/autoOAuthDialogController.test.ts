@@ -8,8 +8,8 @@ import * as TypeMoq from 'typemoq';
 import { Emitter } from 'vs/base/common/event';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 
-import { AutoOAuthDialog } from 'sql/parts/accountManagement/autoOAuthDialog/autoOAuthDialog';
-import { AutoOAuthDialogController } from 'sql/parts/accountManagement/autoOAuthDialog/autoOAuthDialogController';
+import { AutoOAuthDialog } from 'sql/platform/accountManagement/browser/autoOAuthDialog';
+import { AutoOAuthDialogController } from 'sql/platform/accountManagement/browser/autoOAuthDialogController';
 import { AccountManagementTestService } from 'sqltest/stubs/accountManagementStubs';
 import { ErrorMessageServiceStub } from 'sqltest/stubs/errorMessageServiceStub';
 import { ContextKeyServiceStub } from 'sqltest/stubs/contextKeyServiceStub';

@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import 'vs/css!./media/accountListStatusbarItem';
 import { Action, IAction } from 'vs/base/common/actions';
 import { IDisposable } from 'vs/base/common/lifecycle';
@@ -24,7 +22,6 @@ export class AccountListStatusbarItem extends Themable implements IStatusbarItem
 
 	constructor(
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IAccountManagementService private _accountManagementService: IAccountManagementService,
 		@IThemeService themeService: IThemeService
 	) {
 		super(themeService);

@@ -3,10 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import 'vs/css!./media/accountDialog';
-import 'vs/css!sql/parts/accountManagement/common/media/accountActions';
+import 'vs/css!./media/accountActions';
 import * as DOM from 'vs/base/browser/dom';
 import { List } from 'vs/base/browser/ui/list/listWidget';
 import { Event, Emitter } from 'vs/base/common/event';
@@ -29,9 +27,9 @@ import * as azdata from 'azdata';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/workbench/browser/modal/modal';
 import { attachModalDialogStyler, attachButtonStyler, attachPanelStyler } from 'sql/platform/theme/common/styler';
-import { AccountViewModel } from 'sql/parts/accountManagement/accountDialog/accountViewModel';
-import { AddAccountAction } from 'sql/parts/accountManagement/common/accountActions';
-import { AccountListRenderer, AccountListDelegate } from 'sql/parts/accountManagement/common/accountListRenderer';
+import { AccountViewModel } from 'sql/platform/accountManagement/common/accountViewModel';
+import { AddAccountAction } from 'sql/platform/accountManagement/common/accountActions';
+import { AccountListRenderer, AccountListDelegate } from 'sql/platform/accountManagement/browser/accountListRenderer';
 import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/platform/accountManagement/common/eventTypes';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
