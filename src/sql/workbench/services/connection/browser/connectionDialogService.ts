@@ -291,12 +291,9 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	private handleShowUiComponent(input: OnShowUIResponse) {
 		if (input.selectedProviderType) {
 			this._currentProviderType = input.selectedProviderType;
-			this._model.providerName = Object.keys(this._providerNameToDisplayNameMap).find(providerName => {
-				return this._currentProviderType === this._providerNameToDisplayNameMap[providerName];
-			});
-		} else {
-			this._model.providerName = this.getCurrentProviderName();
 		}
+		this._model.providerName = this.getCurrentProviderName();
+
 		this._model = new ConnectionProfile(this._capabilitiesService, this._model);
 		this.uiController.showUiComponent(input.container);
 	}
@@ -419,6 +416,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			this._connectionDialog.render();
 			this._previousProviderType = this._currentProviderType;
 		}
+		this._connectionDialog.newConnectionParams = params;
 		// if provider changed
 		if ((this._previousProviderType !== this._currentProviderType) ||
 			// or if currentProvider not set correctly yet

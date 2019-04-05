@@ -19,7 +19,7 @@ import { RecentConnectionTreeController, RecentConnectionActionsProvider } from 
 import { SavedConnectionTreeController } from 'sql/parts/connection/connectionDialog/savedConnectionTreeController';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
 import { ClearRecentConnectionsAction } from 'sql/parts/connection/common/connectionActions';
-
+import * as Constants from 'sql/platform/connection/common/constants';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IWorkbenchThemeService, IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { contrastBorder } from 'vs/platform/theme/common/colorRegistry';
@@ -100,12 +100,12 @@ export class ConnectionDialogWidget extends Modal {
 		@IClipboardService clipboardService: IClipboardService,
 	) {
 		super(localize('connection', 'Connection'), TelemetryKeys.Connection, telemetryService, layoutService, clipboardService, _workbenchThemeService, contextKeyService, { hasSpinner: true, hasErrors: true });
-		// this._toDispose.push(this._onInitDialog);
-		// this._toDispose.push(this._onCancel);
-		// this._toDispose.push(this._onConnect);
-		// this._toDispose.push(this._onShowUiComponent);
-		// this._toDispose.push(this._onFillinConnectionInputs);
-		// this._toDispose.push(this._onResetConnection);
+		this._toDispose.push(this._onInitDialog);
+		this._toDispose.push(this._onCancel);
+		this._toDispose.push(this._onConnect);
+		this._toDispose.push(this._onShowUiComponent);
+		this._toDispose.push(this._onFillinConnectionInputs);
+		this._toDispose.push(this._onResetConnection);
 	}
 
 	/**
@@ -127,6 +127,8 @@ export class ConnectionDialogWidget extends Modal {
 			if (validProviderNames && validProviderNames.length > 0) {
 				filteredProviderTypes = filteredProviderTypes.filter(x => validProviderNames.find(v => this.providerNameToDisplayNameMap[v] === x) !== undefined);
 			}
+		} else {
+			filteredProviderTypes = filteredProviderTypes.filter(x => x !== Constants.cmsProviderDisplayName);
 		}
 		this._providerTypeSelectBox.setOptions(filteredProviderTypes);
 	}
@@ -470,7 +472,6 @@ export class ConnectionDialogWidget extends Modal {
 
 	public dispose(): void {
 		this._toDispose.forEach(obj => obj.dispose());
-		this.dispose();
 	}
 
 	public set databaseDropdownExpanded(val: boolean) {

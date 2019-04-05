@@ -37,4 +37,4 @@ export const azureMFA = 'AzureMFA';
 
 /* CMS constants */
 export const cmsProviderName = 'MSSQL-CMS';
-export const cmsProviderDisplayName = 'Microsoft SQL Server - CMS';
+export const cmsProviderDisplayName = 'Microsoft SQL Server (CMS)';
