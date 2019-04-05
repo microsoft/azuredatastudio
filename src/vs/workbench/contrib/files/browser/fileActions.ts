@@ -882,7 +882,7 @@ export class CompareWithClipboardAction extends Action {
 
 	private static readonly SCHEME = 'clipboardCompare';
 
-	private registrationDisposal: IDisposable;
+	private registrationDisposal: IDisposable | undefined;
 
 	constructor(
 		id: string,
@@ -909,7 +909,8 @@ export class CompareWithClipboardAction extends Action {
 			const editorLabel = nls.localize('clipboardComparisonLabel', "Clipboard ↔ {0}", name);
 
 			return this.editorService.openEditor({ leftResource: resource.with({ scheme: CompareWithClipboardAction.SCHEME }), rightResource: resource, label: editorLabel }).finally(() => {
-				this.registrationDisposal = dispose(this.registrationDisposal);
+				dispose(this.registrationDisposal);
+				this.registrationDisposal = undefined;
 			});
 		}
 
@@ -919,7 +920,8 @@ export class CompareWithClipboardAction extends Action {
 	public dispose(): void {
 		super.dispose();
 
-		this.registrationDisposal = dispose(this.registrationDisposal);
+		dispose(this.registrationDisposal);
+		this.registrationDisposal = undefined;
 	}
 }
 

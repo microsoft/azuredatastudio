@@ -145,7 +145,7 @@ export class WorkspaceChangeExtHostRelauncher extends Disposable implements IWor
 	private firstFolderResource?: URI;
 	private extensionHostRestarter: RunOnceScheduler;
 
-	private onDidChangeWorkspaceFoldersUnbind: IDisposable;
+	private onDidChangeWorkspaceFoldersUnbind: IDisposable | undefined;
 
 	constructor(
 		@IWorkspaceContextService private readonly contextService: IWorkspaceContextService,
@@ -197,7 +197,8 @@ export class WorkspaceChangeExtHostRelauncher extends Disposable implements IWor
 
 		// Ignore the workspace folder changes in EMPTY or FOLDER state
 		else {
-			this.onDidChangeWorkspaceFoldersUnbind = dispose(this.onDidChangeWorkspaceFoldersUnbind);
+			dispose(this.onDidChangeWorkspaceFoldersUnbind);
+			this.onDidChangeWorkspaceFoldersUnbind = undefined;
 		}
 	}
 

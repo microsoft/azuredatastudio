@@ -135,7 +135,7 @@ class NavBar {
 	}
 
 	dispose(): void {
-		this.actionbar = dispose(this.actionbar);
+		dispose(this.actionbar);
 	}
 }
 

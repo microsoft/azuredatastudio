@@ -223,7 +223,7 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 		let activeEditorListener: IDisposable;
 
 		const observeActiveEditor = () => {
-			activeEditorListener = dispose(activeEditorListener);
+			dispose(activeEditorListener);
 
 			const activeEditor = this._group.activeEditor;
 			if (activeEditor) {
