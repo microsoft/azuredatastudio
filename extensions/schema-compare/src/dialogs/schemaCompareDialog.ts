@@ -125,7 +125,8 @@ export class SchemaCompareDialog {
 		}
 
 		let schemaCompareResult = new SchemaCompareResult(sourceName, targetName, sourceEndpointInfo, targetEndpointInfo);
-		schemaCompareResult.start();
+		await schemaCompareResult.initializeDialog();
+		await schemaCompareResult.start();
 	}
 
 	protected async cancel() {

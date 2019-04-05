@@ -36,6 +36,10 @@ export class SchemaCompareResult {
 
 		this.editor = azdata.workspace.createModelViewEditor(localize('schemaCompare.Title', 'Schema Compare'), { retainContextWhenHidden: true, supportsSave: true });
 
+	}
+
+	public async initializeDialog()
+	{
 		this.editor.registerContent(async view => {
 			this.differencesTable = view.modelBuilder.table().withProperties({
 				data: [],
@@ -92,9 +96,9 @@ export class SchemaCompareResult {
 			this.sourceNameComponent = view.modelBuilder.table().withProperties({
 				columns: [
 					{
-						value: sourceName,
+						value: this.sourceName,
 						headerCssClass: 'no-borders',
-						toolTip: sourceName
+						toolTip: this.sourceName
 					},
 				]
 			}).component();
@@ -102,9 +106,9 @@ export class SchemaCompareResult {
 			this.targetNameComponent = view.modelBuilder.table().withProperties({
 				columns: [
 					{
-						value: targetName,
+						value: this.targetName,
 						headerCssClass: 'no-borders',
-						toolTip: targetName
+						toolTip: this.targetName
 					},
 				]
 			}).component();
@@ -132,11 +136,18 @@ export class SchemaCompareResult {
 
 			await view.initializeModel(this.flexModel);
 		});
+
+		await this.editor.openEditor();
 	}
 
 	public async start() {
-		this.editor.openEditor();
-		this.execute();
+		await this.execute();
+	}
+
+	// Added for testing
+	public getComparisonResult(): azdata.SchemaCompareResult
+	{
+		return this.comparisonResult;
 	}
 
 	private async execute() {
@@ -148,7 +159,6 @@ export class SchemaCompareResult {
 		}
 
 		let data = this.getAllDifferences(this.comparisonResult.differences);
-
 		this.differencesTable.updateProperties({
 			data: data,
 			columns: [
@@ -352,7 +362,7 @@ export class SchemaCompareResult {
 	}
 
 	private static async getService(providerName: string): Promise<azdata.DacFxServicesProvider> {
-		let service = azdata.dataprotocol.getProvider<azdata.DacFxServicesProvider>(providerName, azdata.DataProviderType.DacFxServicesProvider);
+		let service = await azdata.dataprotocol.getProvider<azdata.DacFxServicesProvider>(providerName, azdata.DataProviderType.DacFxServicesProvider);
 		return service;
 	}
 }
