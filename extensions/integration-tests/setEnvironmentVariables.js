@@ -1,8 +1,74 @@
-const msrestAzure = require('ms-rest-azure');
-const KeyVault = require('azure-keyvault');
 const path = require('path');
 const os = require('os');
 const fs = require('fs');
+
+/**
+ * Launch options
+ * This script will launch a new process with environment variables required to run the test cases
+ * below are launch options, feel free to contribute new options here
+ */
+const LAUNCH_TERMINAL_WINDOWS = 'start cmd.exe';
+const LAUNCH_TERMINAL_MAC = 'open -a Terminal -n';
+const LAUNCH_GIT_BASH_WINDOWS = '"C:\\Program Files\\Git\\git-bash.exe"';
+const LAUNCH_VSCODE = 'code';
+
+let LAUNCH_OPTION = LAUNCH_VSCODE;
+
+// Parse the command-line argument
+if (process.argv.length === 3 && process.argv[2]) {
+	const argValue = process.argv[2];
+	switch (argValue.toUpperCase()) {
+		case 'CODE':
+			LAUNCH_OPTION = LAUNCH_VSCODE;
+			break;
+		case 'TERMINAL':
+			if (os.platform() === 'win32') {
+				LAUNCH_OPTION = LAUNCH_TERMINAL_WINDOWS;
+			} else if (os.platform() === 'darwin') {
+				LAUNCH_OPTION = LAUNCH_TERMINAL_MAC;
+			} else {
+				console.warn(`Launch terminal option is not implemented for your os: ${os.platform()}, vscode will be launched`);
+			}
+			break;
+		case 'BASHWIN':
+			LAUNCH_OPTION = LAUNCH_GIT_BASH_WINDOWS;
+			break;
+		default:
+			break;
+	}
+}
+
+/**
+ * Below are the environment variable values that are not saved in AKV and might vary by machine
+ */
+
+// Pyton for Notebooks
+// This environment variable is required by notebook tests.
+// How to install it:
+// Open ADS and run command 'Configure Python for Notebooks' command and install it to the default folder,
+// if you install it to a different folder you will have to update the value of this variable
+const NOTEBOOK_PYTHON_INSTALL_PATH = path.join(os.homedir(), 'azuredatastudio-python');
+
+
+/**
+ * ----------------------------------------------------------------------------------------------
+ * You *DON'T* need to change the code below if you just need to run the integration tests.
+ * ----------------------------------------------------------------------------------------------
+ */
+
+// Environment variable value validation
+if (!fs.existsSync(NOTEBOOK_PYTHON_INSTALL_PATH)) {
+	const message = 'the specified Pyton install path does not exist.'
+		+ os.EOL
+		+ 'if you have installed it, please update the NOTEBOOK_PYTHON_INSTALL_PATH variable in this script,'
+		+ os.EOL
+		+ 'otherwise, please open Azure Data Studio and run "Configure Python for Notebooks" command and install it to the default folder.';
+	throw message;
+}
+
+const msrestAzure = require('ms-rest-azure');
+const KeyVault = require('azure-keyvault');
+const child_process = require('child_process');
 
 // Name of the values that are stored in Azure Key Vault
 const AKV_URL = 'https://sqltoolssecretstore.vault.azure.net/';
@@ -28,58 +94,34 @@ const ENVAR_STANDALONE_SERVER_USERNAME = 'STANDALONE_SQL_USERNAME';
 const ENVAR_STANDALONE_SERVER_PASSWORD = 'STANDALONE_SQL_PWD';
 const ENVAR_PYTHON_INSTALL_PATH = 'PYTHON_TEST_PATH';
 
-const SecretEnVarMapping = {};
-SecretEnVarMapping[SECRET_AZURE_SERVER] = ENVAR_AZURE_SERVER;
-SecretEnVarMapping[SECRET_AZURE_SERVER_PASSWORD] = ENVAR_AZURE_SERVER_PASSWORD;
-SecretEnVarMapping[SECRET_AZURE_SERVER_USERNAME] = ENVAR_AZURE_SERVER_USERNAME;
-SecretEnVarMapping[SECRET_BDC_SERVER] = ENVAR_BDC_SERVER;
-SecretEnVarMapping[SECRET_BDC_SERVER_PASSWORD] = ENVAR_BDC_SERVER_PASSWORD;
-SecretEnVarMapping[SECRET_BDC_SERVER_USERNAME] = ENVAR_BDC_SERVER_USERNAME;
-SecretEnVarMapping[SECRET_STANDALONE_SERVER] = ENVAR_STANDALONE_SERVER;
-SecretEnVarMapping[SECRET_STANDALONE_SERVER_PASSWORD] = ENVAR_STANDALONE_SERVER_PASSWORD;
-SecretEnVarMapping[SECRET_STANDALONE_SERVER_USERNAME] = ENVAR_STANDALONE_SERVER_USERNAME;
-
-const EnVarNameValueMapping = {};
-
-const AkvSecrets = [
-	SECRET_AZURE_SERVER,
-	SECRET_AZURE_SERVER_PASSWORD,
-	SECRET_AZURE_SERVER_USERNAME,
-	SECRET_BDC_SERVER,
-	SECRET_BDC_SERVER_PASSWORD,
-	SECRET_BDC_SERVER_USERNAME,
-	SECRET_STANDALONE_SERVER,
-	SECRET_STANDALONE_SERVER_PASSWORD,
-	SECRET_STANDALONE_SERVER_USERNAME
-];
-
-const EnvironmentVariables = [
-	ENVAR_AZURE_SERVER,
-	ENVAR_AZURE_SERVER_PASSWORD,
-	ENVAR_AZURE_SERVER_USERNAME,
-	ENVAR_BDC_SERVER,
-	ENVAR_BDC_SERVER_PASSWORD,
-	ENVAR_BDC_SERVER_USERNAME,
-	ENVAR_STANDALONE_SERVER,
-	ENVAR_STANDALONE_SERVER_PASSWORD,
-	ENVAR_STANDALONE_SERVER_USERNAME,
-	ENVAR_PYTHON_INSTALL_PATH
-];
+// Mapping between AKV secret and the environment variable names
+const SecretEnVarMapping = [];
+SecretEnVarMapping.push([SECRET_AZURE_SERVER, ENVAR_AZURE_SERVER]);
+SecretEnVarMapping.push([SECRET_AZURE_SERVER_PASSWORD, ENVAR_AZURE_SERVER_PASSWORD]);
+SecretEnVarMapping.push([SECRET_AZURE_SERVER_USERNAME, ENVAR_AZURE_SERVER_USERNAME]);
+SecretEnVarMapping.push([SECRET_BDC_SERVER, ENVAR_BDC_SERVER]);
+SecretEnVarMapping.push([SECRET_BDC_SERVER_PASSWORD, ENVAR_BDC_SERVER_PASSWORD]);
+SecretEnVarMapping.push([SECRET_BDC_SERVER_USERNAME, ENVAR_BDC_SERVER_USERNAME]);
+SecretEnVarMapping.push([SECRET_STANDALONE_SERVER, ENVAR_STANDALONE_SERVER]);
+SecretEnVarMapping.push([SECRET_STANDALONE_SERVER_PASSWORD, ENVAR_STANDALONE_SERVER_PASSWORD]);
+SecretEnVarMapping.push([SECRET_STANDALONE_SERVER_USERNAME, ENVAR_STANDALONE_SERVER_USERNAME]);
 
 // Set the values that are not stored in AKV here
-EnVarNameValueMapping[ENVAR_PYTHON_INSTALL_PATH] = path.join(os.homedir(), 'azuredatastudio-python');
+process.env[ENVAR_PYTHON_INSTALL_PATH] = NOTEBOOK_PYTHON_INSTALL_PATH;
 
-let promises = [];
+const promises = [];
 
 // Fetch the values from AKV
 msrestAzure.interactiveLogin().then((credentials) => {
 	const client = new KeyVault.KeyVaultClient(credentials);
-	AkvSecrets.forEach(secret => {
-		let promise = client.getSecret(AKV_URL, secret, '').then((result) => {
-			console.log(`${secret}: ${result.value}`);
-			EnVarNameValueMapping[SecretEnVarMapping[secret]] = result.value;
+	SecretEnVarMapping.forEach(entry => {
+		const secretName = entry[0];
+		const environmentVariable = entry[1];
+		let promise = client.getSecret(AKV_URL, secretName, '').then((result) => {
+			console.log(`${secretName}: ${result.value}`);
+			process.env[environmentVariable] = result.value;
 		}, (err) => {
-			console.error('An error occured while retrieving the key value');
+			console.error('An error occured while retrieving the value for secret:' + secretName);
 			console.error(err);
 		});
 		promises.push(promise);
@@ -87,15 +129,13 @@ msrestAzure.interactiveLogin().then((credentials) => {
 
 	Promise.all(promises).then(
 		() => {
-			let content = '';
-			EnvironmentVariables.forEach(envar => {
-				content += `${envar}=${EnVarNameValueMapping[envar]}${os.EOL}`;
-			});
-			fs.writeFileSync(path.join(os.homedir(), '.ads-int-test-env'), content);
-			console.log('all done!');
+			console.log('Done reading values from Azure KeyVault!');
+			console.log(`Launching new window: ${LAUNCH_OPTION}...`);
+			child_process.execSync(LAUNCH_OPTION);
+			console.log('New window for running test has been opened.');
 		}
 	);
 }, (err) => {
-	console.error('An error occured while retrieving the key value');
+	console.error('An error occured while loggin in to Azure portal');
 	console.error(err);
 });

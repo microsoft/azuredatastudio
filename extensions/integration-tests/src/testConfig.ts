@@ -1,4 +1,4 @@
-import { getEnvironmentVariable, EnvironmentVariable_STANDALONE_SERVER, EnvironmentVariable_STANDALONE_USERNAME, EnvironmentVariable_STANDALONE_PASSWORD, EnvironmentVariable_AZURE_SERVER, EnvironmentVariable_AZURE_USERNAME, EnvironmentVariable_AZURE_PASSWORD, EnvironmentVariable_BDC_SERVER, EnvironmentVariable_BDC_USERNAME, EnvironmentVariable_BDC_PASSWORD } from './utils';
+import { getConfigValue, EnvironmentVariable_STANDALONE_SERVER, EnvironmentVariable_STANDALONE_USERNAME, EnvironmentVariable_STANDALONE_PASSWORD, EnvironmentVariable_AZURE_SERVER, EnvironmentVariable_AZURE_USERNAME, EnvironmentVariable_AZURE_PASSWORD, EnvironmentVariable_BDC_SERVER, EnvironmentVariable_BDC_USERNAME, EnvironmentVariable_BDC_PASSWORD } from './utils';
 
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
@@ -61,9 +61,9 @@ export class TestServerProfile {
 var TestingServers: TestServerProfile[] = [
 	new TestServerProfile(
 		{
-			serverName: getEnvironmentVariable(EnvironmentVariable_STANDALONE_SERVER),
-			userName: getEnvironmentVariable(EnvironmentVariable_STANDALONE_USERNAME),
-			password: getEnvironmentVariable(EnvironmentVariable_STANDALONE_PASSWORD),
+			serverName: getConfigValue(EnvironmentVariable_STANDALONE_SERVER),
+			userName: getConfigValue(EnvironmentVariable_STANDALONE_USERNAME),
+			password: getConfigValue(EnvironmentVariable_STANDALONE_PASSWORD),
 			authenticationType: AuthenticationType.SqlLogin,
 			database: 'master',
 			provider: ConnectionProvider.SQLServer,
@@ -71,9 +71,9 @@ var TestingServers: TestServerProfile[] = [
 		}),
 	new TestServerProfile(
 		{
-			serverName: getEnvironmentVariable(EnvironmentVariable_AZURE_SERVER),
-			userName: getEnvironmentVariable(EnvironmentVariable_AZURE_USERNAME),
-			password: getEnvironmentVariable(EnvironmentVariable_AZURE_PASSWORD),
+			serverName: getConfigValue(EnvironmentVariable_AZURE_SERVER),
+			userName: getConfigValue(EnvironmentVariable_AZURE_USERNAME),
+			password: getConfigValue(EnvironmentVariable_AZURE_PASSWORD),
 			authenticationType: AuthenticationType.SqlLogin,
 			database: 'master',
 			provider: ConnectionProvider.SQLServer,
@@ -81,9 +81,9 @@ var TestingServers: TestServerProfile[] = [
 		}),
 	new TestServerProfile(
 		{
-			serverName: getEnvironmentVariable(EnvironmentVariable_BDC_SERVER),
-			userName: getEnvironmentVariable(EnvironmentVariable_BDC_USERNAME),
-			password: getEnvironmentVariable(EnvironmentVariable_BDC_PASSWORD),
+			serverName: getConfigValue(EnvironmentVariable_BDC_SERVER),
+			userName: getConfigValue(EnvironmentVariable_BDC_USERNAME),
+			password: getConfigValue(EnvironmentVariable_BDC_PASSWORD),
 			authenticationType: AuthenticationType.SqlLogin,
 			database: 'master',
 			provider: ConnectionProvider.SQLServer,

@@ -7,9 +7,6 @@ import assert = require('assert');
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { TestServerProfile } from './testConfig';
-import * as dotenv from 'dotenv';
-import * as os from 'os';
-import * as path from 'path';
 
 export async function connectToServer(server: TestServerProfile, timeout: number = 3000) {
 	let connectionProfile: azdata.IConnectionProfile = {
@@ -40,15 +37,8 @@ export async function ensureConnectionViewOpened() {
 	await vscode.commands.executeCommand('dataExplorer.servers.focus');
 }
 
-export function getEnvironmentVariable(name: string): string {
-	if (!process.env[name]) {
-		loadEnvironmentVariables();
-	}
+export function getConfigValue(name: string): string {
 	return process.env[name];
-}
-
-function loadEnvironmentVariables() {
-	dotenv.config({ path: path.join(os.homedir(), '.ads-int-test-env') });
 }
 
 export const EnvironmentVariable_BDC_SERVER: string = 'BDC_BACKEND_HOSTNAME';

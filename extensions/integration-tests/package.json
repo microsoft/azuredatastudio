@@ -58,7 +58,6 @@
   },
   "dependencies": {
     "azure-keyvault": "^3.0.4",
-    "dotenv": "^7.0.0",
     "ms-rest-azure": "^2.6.0"
   }
 }
