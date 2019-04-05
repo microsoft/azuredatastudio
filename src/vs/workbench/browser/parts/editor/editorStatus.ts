@@ -14,7 +14,7 @@ import { IStatusbarItem } from 'vs/workbench/browser/parts/statusbar/statusbar';
 import { Action } from 'vs/base/common/actions';
 import { Language } from 'vs/base/common/platform';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
-import { IFileEditorInput, EncodingMode, IEncodingSupport, toResource, SideBySideEditorInput, IEditor as IBaseEditor, IEditorInput } from 'vs/workbench/common/editor';
+import { IFileEditorInput, EncodingMode, IEncodingSupport, toResource, SideBySideEditorInput, IEditor as IBaseEditor, IEditorInput, SideBySideEditor } from 'vs/workbench/common/editor';
 import { IDisposable, combinedDisposable, dispose, toDisposable } from 'vs/base/common/lifecycle';
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { IEditorAction } from 'vs/editor/common/editorCommon';
@@ -772,7 +772,7 @@ export class EditorStatus implements IStatusbarItem {
 	private onResourceEncodingChange(resource: URI): void {
 		const activeControl = this.editorService.activeControl;
 		if (activeControl) {
-			const activeResource = toResource(activeControl.input, { supportSideBySide: true });
+			const activeResource = toResource(activeControl.input, { supportSideBySide: SideBySideEditor.MASTER });
 			if (activeResource && activeResource.toString() === resource.toString()) {
 				return this.onEncodingChange(<IBaseEditor>activeControl); // only update if the encoding changed for the active resource
 			}
@@ -850,7 +850,7 @@ export class ChangeModeAction extends Action {
 		}
 
 		const textModel = activeTextEditorWidget.getModel();
-		const resource = this.editorService.activeEditor ? toResource(this.editorService.activeEditor, { supportSideBySide: true }) : null;
+		const resource = this.editorService.activeEditor ? toResource(this.editorService.activeEditor, { supportSideBySide: SideBySideEditor.MASTER }) : null;
 
 		let hasLanguageSupport = !!resource;
 		if (resource && resource.scheme === Schemas.untitled && !this.untitledEditorService.hasAssociatedFilePath(resource)) {
@@ -976,7 +976,7 @@ export class ChangeModeAction extends Action {
 			if (pick === autoDetectMode) {
 				if (textModel) {
 					// {{SQL CARBON EDIT}} - use activeEditor.input instead of activeEditor
-					const resource = toResource(activeEditor.input, { supportSideBySide: true });
+					const resource = toResource(activeEditor.input, { supportSideBySide: SideBySideEditor.MASTER });
 					if (resource) {
 						languageSelection = this.modeService.createByFilepathOrFirstLine(resource.fsPath, textModel.getLineContent(1));
 					}
@@ -1195,7 +1195,7 @@ export class ChangeEncodingAction extends Action {
 				return undefined;
 			}
 
-			const resource = toResource(activeControl!.input, { supportSideBySide: true });
+			const resource = toResource(activeControl!.input, { supportSideBySide: SideBySideEditor.MASTER });
 
 			return timeout(50 /* quick open is sensitive to being opened so soon after another */)
 				.then(() => {
