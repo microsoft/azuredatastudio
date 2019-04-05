@@ -51,7 +51,7 @@ export class DashboardHomeContainer extends DashboardWidgetContainer {
 	}
 
 	ngAfterContentInit() {
-		let collapsedVal = this.dashboardService.getSettings<string>(`${this.properties.context}.properties`);
+		const collapsedVal = this.dashboardService.getSettings<string>(`${this.properties.context}.properties`);
 		if (collapsedVal === 'collapsed') {
 			this._propertiesClass.collapsed = true;
 		}

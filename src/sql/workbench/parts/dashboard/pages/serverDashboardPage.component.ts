@@ -50,7 +50,7 @@ export class ServerDashboardPage extends DashboardPage implements OnInit {
 		super(dashboardService, el, _cd, instantiationService, notificationService, angularEventingService, configurationService);
 
 		// special-case handling for MSSQL data provider
-		let connInfo = this.dashboardService.connectionManagementService.connectionInfo;
+		const connInfo = this.dashboardService.connectionManagementService.connectionInfo;
 		if (connInfo && connInfo.providerId === 'MSSQL') {
 			// revert back to default database
 			this._letDashboardPromise = this.dashboardService.connectionManagementService.changeDatabase('master').then();

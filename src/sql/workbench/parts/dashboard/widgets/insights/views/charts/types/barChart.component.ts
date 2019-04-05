@@ -37,7 +37,7 @@ export default class BarChart extends ChartInsight {
 	public setConfig(config: IBarChartConfig): void {
 		let options = {};
 		if (config.xAxisMax) {
-			let opts = {
+			const opts = {
 				scales: {
 					xAxes: [{
 						display: true,
@@ -51,7 +51,7 @@ export default class BarChart extends ChartInsight {
 		}
 
 		if (config.xAxisMin) {
-			let opts = {
+			const opts = {
 				scales: {
 					xAxes: [{
 						display: true,
@@ -65,7 +65,7 @@ export default class BarChart extends ChartInsight {
 		}
 
 		if (config.xAxisLabel) {
-			let opts = {
+			const opts = {
 				scales: {
 					xAxes: [{
 						display: true,
@@ -80,7 +80,7 @@ export default class BarChart extends ChartInsight {
 		}
 
 		if (config.yAxisMax) {
-			let opts = {
+			const opts = {
 				scales: {
 					yAxes: [{
 						display: true,
@@ -94,7 +94,7 @@ export default class BarChart extends ChartInsight {
 		}
 
 		if (config.yAxisMin) {
-			let opts = {
+			const opts = {
 				scales: {
 					yAxes: [{
 						display: true,
@@ -108,7 +108,7 @@ export default class BarChart extends ChartInsight {
 		}
 
 		if (config.yAxisLabel) {
-			let opts = {
+			const opts = {
 				scales: {
 					yAxes: [{
 						display: true,
@@ -128,11 +128,11 @@ export default class BarChart extends ChartInsight {
 
 	protected updateTheme(e: IColorTheme): void {
 		super.updateTheme(e);
-		let foregroundColor = e.getColor(colors.editorForeground);
-		let foreground = foregroundColor ? foregroundColor.toString() : null;
-		let gridLinesColor = e.getColor(editorLineNumbers);
-		let gridLines = gridLinesColor ? gridLinesColor.toString() : null;
-		let options = {
+		const foregroundColor = e.getColor(colors.editorForeground);
+		const foreground = foregroundColor ? foregroundColor.toString() : null;
+		const gridLinesColor = e.getColor(editorLineNumbers);
+		const gridLines = gridLinesColor ? gridLinesColor.toString() : null;
+		const options = {
 			scales: {
 				xAxes: [{
 					scaleLabel: {

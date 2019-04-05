@@ -2,6 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
 import * as types from 'vs/base/common/types';
 import { generateUuid } from 'vs/base/common/uuid';
 import { Registry } from 'vs/platform/registry/common/platform';
@@ -33,31 +34,6 @@ const containerTypes = [
 	NAV_SECTION
 ];
 
-
-/**
- * @returns whether the provided parameter is a JavaScript Array and each element in the array is a number.
- */
-function isNumberArray(value: any): value is number[] {
-	return types.isArray(value) && (<any[]>value).every(elem => types.isNumber(elem));
-}
-
-/**
- * Does a compare against the val passed in and the compare string
- * @param val string or array of strings to compare the compare value to; if array, it will compare each val in the array
- * @param compare value to compare to
- */
-function stringOrStringArrayCompare(val: string | Array<string>, compare: string): boolean {
-	if (types.isUndefinedOrNull(val)) {
-		return true;
-	} else if (types.isString(val)) {
-		return val === compare;
-	} else if (types.isStringArray(val)) {
-		return val.some(item => item === compare);
-	} else {
-		return false;
-	}
-}
-
 /**
  * Validates configs to make sure nothing will error out and returns the modified widgets
  * @param config Array of widgets to validate
@@ -88,11 +64,11 @@ export function validateGridConfig(config: WidgetConfig[], originalConfig: Widge
 }
 
 export function initExtensionConfigs(configurations: WidgetConfig[]): Array<WidgetConfig> {
-	let widgetRegistry = <IInsightRegistry>Registry.as(Extensions.InsightContribution);
+	const widgetRegistry = <IInsightRegistry>Registry.as(Extensions.InsightContribution);
 	return configurations.map((config) => {
 		if (config.widget && Object.keys(config.widget).length === 1) {
-			let key = Object.keys(config.widget)[0];
-			let insightConfig = widgetRegistry.getRegisteredExtensionInsights(key);
+			const key = Object.keys(config.widget)[0];
+			const insightConfig = widgetRegistry.getRegisteredExtensionInsights(key);
 			if (insightConfig !== undefined) {
 				// Setup the default properties for this extension if needed
 				if (!config.when && insightConfig.when) {
@@ -121,7 +97,7 @@ export function initExtensionConfigs(configurations: WidgetConfig[]): Array<Widg
  * @param widgets Array of widgets to add provider onto
  */
 export function addProvider<T extends { connectionManagementService: SingleConnectionManagementService }>(config: WidgetConfig[], collection: T): Array<WidgetConfig> {
-	let provider = collection.connectionManagementService.connectionInfo.providerId;
+	const provider = collection.connectionManagementService.connectionInfo.providerId;
 	return config.map((item) => {
 		if (item.provider === undefined) {
 			item.provider = provider;
@@ -135,9 +111,9 @@ export function addProvider<T extends { connectionManagementService: SingleConne
  * @param widgets Array of widgets to add edition onto
  */
 export function addEdition<T extends { connectionManagementService: SingleConnectionManagementService }>(config: WidgetConfig[], collection: DashboardServiceInterface): Array<WidgetConfig> {
-	let connectionInfo: ConnectionManagementInfo = collection.connectionManagementService.connectionInfo;
+	const connectionInfo: ConnectionManagementInfo = collection.connectionManagementService.connectionInfo;
 	if (connectionInfo.serverInfo) {
-		let edition = connectionInfo.serverInfo.engineEditionId;
+		const edition = connectionInfo.serverInfo.engineEditionId;
 		return config.map((item) => {
 			if (item.edition === undefined) {
 				item.edition = edition;
@@ -184,10 +160,10 @@ export function filterConfigs<T extends { provider?: string | string[], when?: s
  */
 function hasCompatibleProvider(provider: string | string[], contextKeyService: IContextKeyService): boolean {
 	let isCompatible = true;
-	let connectionProvider = contextKeyService.getContextKeyValue<string>(Constants.connectionProviderContextKey);
+	const connectionProvider = contextKeyService.getContextKeyValue<string>(Constants.connectionProviderContextKey);
 	if (connectionProvider) {
-		let providers = (provider instanceof Array) ? provider : [provider];
-		let matchingProvider = providers.find((p) => p === connectionProvider || p === Constants.anyProviderName);
+		const providers = (provider instanceof Array) ? provider : [provider];
+		const matchingProvider = providers.find((p) => p === connectionProvider || p === Constants.anyProviderName);
 		isCompatible = (matchingProvider !== undefined);
 	}	// Else there's no connection context so skip the check
 	return isCompatible;
@@ -198,17 +174,17 @@ function hasCompatibleProvider(provider: string | string[], contextKeyService: I
  * @param container dashboard container
  */
 export function getDashboardContainer(container: object): { result: boolean, message: string, container: object } {
-	let key = Object.keys(container)[0];
-	let containerTypeFound = containerTypes.find(c => (c === key));
+	const key = Object.keys(container)[0];
+	const containerTypeFound = containerTypes.find(c => (c === key));
 	if (!containerTypeFound) {
-		let dashboardContainer = dashboardcontainerRegistry.getRegisteredContainer(key);
+		const dashboardContainer = dashboardcontainerRegistry.getRegisteredContainer(key);
 		if (!dashboardContainer) {
-			let errorMessage = nls.localize('unknownDashboardContainerError', '{0} is an unknown container.', key);
+			const errorMessage = nls.localize('unknownDashboardContainerError', '{0} is an unknown container.', key);
 			error(errorMessage);
-			return { result: false, message: errorMessage, container: null };
+			return { result: false, message: errorMessage, container: undefined };
 		} else {
 			container = dashboardContainer.container;
 		}
 	}
-	return { result: true, message: null, container: container };
+	return { result: true, message: undefined, container: container };
 }

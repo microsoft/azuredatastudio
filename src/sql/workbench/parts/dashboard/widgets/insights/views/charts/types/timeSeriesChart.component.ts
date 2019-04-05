@@ -28,10 +28,10 @@ export default class TimeSeriesChart extends LineChart {
 	}
 
 	protected addAxisLabels(): void {
-		let xLabel = this._config.xAxisLabel || this.getLabels()[1] || 'x';
-		let yLabel = this._config.yAxisLabel || this.getLabels()[2] || 'y';
+		const xLabel = this._config.xAxisLabel || this.getLabels()[1] || 'x';
+		const yLabel = this._config.yAxisLabel || this.getLabels()[2] || 'y';
 
-		let options = {
+		const options = {
 			scales: {
 				xAxes: [{
 					type: 'time',
@@ -61,10 +61,10 @@ export default class TimeSeriesChart extends LineChart {
 	}
 
 	protected getDataAsPoint(): Array<IPointDataSet> {
-		let dataSetMap: { [label: string]: IPointDataSet } = {};
+		const dataSetMap: { [label: string]: IPointDataSet } = {};
 		this._data.rows.map(row => {
 			if (row && row.length >= 3) {
-				let legend = row[0];
+				const legend = row[0];
 				if (!dataSetMap[legend]) {
 					dataSetMap[legend] = { label: legend, data: [], fill: false };
 				}

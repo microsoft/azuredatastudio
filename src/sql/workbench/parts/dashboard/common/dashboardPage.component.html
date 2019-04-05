@@ -4,10 +4,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 -->
-<panel class="dashboard-panel" (onTabChange)="handleTabChange($event)" (onTabClose)="handleTabClose($event)" [actions]="panelActions">
-	<tab [visibilityType]="'visibility'" *ngFor="let tab of tabs" [title]="tab.title" class="fullsize" [identifier]="tab.id" [canClose]="tab.canClose" [actions]="tab.actions">
+<panel class="dashboard-panel" (onTabChange)="handleTabChange($event)" (onTabClose)="handleTabClose($event)"
+	[actions]="panelActions">
+	<tab [visibilityType]="'visibility'" *ngFor="let tab of tabs" [title]="tab.title" class="fullsize"
+		[identifier]="tab.id" [canClose]="tab.canClose" [actions]="tab.actions">
 		<ng-template>
-			<dashboard-home-container *ngIf="tab.id === 'homeTab'; else not_home" [properties]="propertiesWidget" [tab]="tab">
+			<dashboard-home-container *ngIf="tab.id === 'homeTab'; else not_home" [properties]="propertiesWidget"
+				[tab]="tab">
 			</dashboard-home-container>
 			<ng-template #not_home>
 				<dashboard-webview-container *ngIf="getContentType(tab) === 'webview-container'" [tab]="tab">

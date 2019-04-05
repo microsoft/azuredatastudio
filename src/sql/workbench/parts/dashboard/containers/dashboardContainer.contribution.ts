@@ -2,12 +2,10 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
 import { IExtensionPointUser, ExtensionsRegistry } from 'vs/workbench/services/extensions/common/extensionsRegistry';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import { localize } from 'vs/nls';
-import { join } from 'path';
-import { createCSSRule } from 'vs/base/browser/dom';
-import { URI } from 'vs/base/common/uri';
 
 import { registerContainer, generateContainerTypeSchemaProperties } from 'sql/platform/dashboard/common/dashboardContainerRegistry';
 import { NAV_SECTION, validateNavSectionContributionAndRegisterIcon } from 'sql/workbench/parts/dashboard/containers/dashboardNavSection.contribution';
@@ -58,7 +56,7 @@ const containerContributionSchema: IJSONSchema = {
 ExtensionsRegistry.registerExtensionPoint<IDashboardContainerContrib | IDashboardContainerContrib[]>({ extensionPoint: 'dashboard.containers', jsonSchema: containerContributionSchema }).setHandler(extensions => {
 
 	function handleCommand(dashboardContainer: IDashboardContainerContrib, extension: IExtensionPointUser<any>) {
-		let { id, container } = dashboardContainer;
+		const { id, container } = dashboardContainer;
 		if (!id) {
 			extension.collector.error(localize('dashboardContainer.contribution.noIdError', 'No id in dashboard container specified for extension.'));
 			return;
@@ -74,10 +72,10 @@ ExtensionsRegistry.registerExtensionPoint<IDashboardContainerContrib | IDashboar
 		}
 
 		let result = true;
-		let containerkey = Object.keys(container)[0];
-		let containerValue = Object.values(container)[0];
+		const containerkey = Object.keys(container)[0];
+		const containerValue = Object.values(container)[0];
 
-		let containerTypeFound = containerTypes.find(c => (c === containerkey));
+		const containerTypeFound = containerTypes.find(c => (c === containerkey));
 		if (!containerTypeFound) {
 			extension.collector.error(localize('dashboardTab.contribution.unKnownContainerType', 'Unknown container type defines in dashboard container for extension.'));
 			return;
@@ -100,10 +98,10 @@ ExtensionsRegistry.registerExtensionPoint<IDashboardContainerContrib | IDashboar
 		}
 	}
 
-	for (let extension of extensions) {
+	for (const extension of extensions) {
 		const { value } = extension;
 		if (Array.isArray<IDashboardContainerContrib>(value)) {
-			for (let command of value) {
+			for (const command of value) {
 				handleCommand(command, extension);
 			}
 		} else {

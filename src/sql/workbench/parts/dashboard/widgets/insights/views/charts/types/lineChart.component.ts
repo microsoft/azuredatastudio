@@ -55,10 +55,10 @@ export default class LineChart extends BarChart {
 
 	@memoize
 	protected getDataAsPoint(): Array<IPointDataSet> {
-		let dataSetMap: { [label: string]: IPointDataSet } = {};
+		const dataSetMap: { [label: string]: IPointDataSet } = {};
 		this._data.rows.map(row => {
 			if (row && row.length >= 3) {
-				let legend = row[0];
+				const legend = row[0];
 				if (!dataSetMap[legend]) {
 					dataSetMap[legend] = { label: legend, data: [], fill: false };
 				}
@@ -77,9 +77,9 @@ export default class LineChart extends BarChart {
 	}
 
 	protected addAxisLabels(): void {
-		let xLabel = this._config.xAxisLabel || this._data.columns[1] || 'x';
-		let yLabel = this._config.yAxisLabel || this._data.columns[2] || 'y';
-		let options = {
+		const xLabel = this._config.xAxisLabel || this._data.columns[1] || 'x';
+		const yLabel = this._config.yAxisLabel || this._data.columns[2] || 'y';
+		const options = {
 			scales: {
 				xAxes: [{
 					type: 'linear',

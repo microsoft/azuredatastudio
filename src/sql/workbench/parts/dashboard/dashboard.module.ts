@@ -61,11 +61,11 @@ import { EditableDropDown } from 'sql/base/browser/ui/editableDropdown/editableD
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox.component';
 import LoadingSpinner from 'sql/parts/modelComponents/loadingSpinner.component';
 
-let baseComponents = [DashboardHomeContainer, DashboardComponent, DashboardWidgetWrapper, DashboardWebviewContainer,
+const baseComponents = [DashboardHomeContainer, DashboardComponent, DashboardWidgetWrapper, DashboardWebviewContainer,
 	DashboardWidgetContainer, DashboardGridContainer, DashboardErrorContainer, DashboardNavSection, ModelViewContent, WebviewContent, WidgetContent,
 	ComponentHostDirective, BreadcrumbComponent, ControlHostContent, DashboardControlHostContainer,
 	JobsViewComponent, AgentViewComponent, JobHistoryComponent, JobStepsViewComponent, AlertsViewComponent, ProxiesViewComponent, OperatorsViewComponent,
-	DashboardModelViewContainer, ModelComponentWrapper, Checkbox, EditableDropDown, SelectBox, InputBox, LoadingSpinner ];
+	DashboardModelViewContainer, ModelComponentWrapper, Checkbox, EditableDropDown, SelectBox, InputBox, LoadingSpinner];
 
 /* Panel */
 import { PanelModule } from 'sql/base/browser/ui/panel/panel.module';
@@ -76,7 +76,7 @@ import { ScrollableModule } from 'sql/base/browser/ui/scrollable/scrollable.modu
 import { ServerDashboardPage } from 'sql/workbench/parts/dashboard/pages/serverDashboardPage.component';
 import { DatabaseDashboardPage } from 'sql/workbench/parts/dashboard/pages/databaseDashboardPage.component';
 
-let pageComponents = [ServerDashboardPage, DatabaseDashboardPage];
+const pageComponents = [ServerDashboardPage, DatabaseDashboardPage];
 
 /* Widget Components */
 import { PropertiesWidgetComponent } from 'sql/workbench/parts/dashboard/widgets/properties/propertiesWidget.component';
@@ -87,7 +87,7 @@ import { WebviewWidget } from 'sql/workbench/parts/dashboard/widgets/webview/web
 import { JobStepsViewComponent } from 'sql/parts/jobManagement/views/jobStepsView.component';
 import { IInstantiationService, _util } from 'vs/platform/instantiation/common/instantiation';
 
-let widgetComponents = [
+const widgetComponents = [
 	PropertiesWidgetComponent,
 	ExplorerWidget,
 	TasksWidget,
@@ -96,10 +96,10 @@ let widgetComponents = [
 ];
 
 /* Insights */
-let insightComponents = Registry.as<IInsightRegistry>(Extensions.InsightContribution).getAllCtors();
+const insightComponents = Registry.as<IInsightRegistry>(Extensions.InsightContribution).getAllCtors();
 
 /* Model-backed components */
-let extensionComponents = Registry.as<IComponentRegistry>(ComponentExtensions.ComponentContribution).getAllCtors();
+const extensionComponents = Registry.as<IComponentRegistry>(ComponentExtensions.ComponentContribution).getAllCtors();
 
 // Setup routes for various child components
 const appRoutes: Routes = [

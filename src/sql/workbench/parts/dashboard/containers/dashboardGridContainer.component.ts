@@ -52,14 +52,14 @@ export class DashboardGridContainer extends DashboardTab implements OnDestroy {
 	protected cols: number[];
 
 	protected getContent(row: number, col: number): GridCellConfig {
-		let widget = this._contents.filter(w => w.row === row && w.col === col);
+		const widget = this._contents.filter(w => w.row === row && w.col === col);
 		return widget ? widget[0] : undefined;
 	}
 
 	protected getWidgetContent(row: number, col: number): GridWidgetConfig {
-		let content = this.getContent(row, col);
+		const content = this.getContent(row, col);
 		if (content) {
-			let widgetConfig = <GridWidgetConfig>content;
+			const widgetConfig = <GridWidgetConfig>content;
 			if (widgetConfig && widgetConfig.widget) {
 				return widgetConfig;
 			}
@@ -68,9 +68,9 @@ export class DashboardGridContainer extends DashboardTab implements OnDestroy {
 	}
 
 	protected getWebviewContent(row: number, col: number): GridWebviewConfig {
-		let content = this.getContent(row, col);
+		const content = this.getContent(row, col);
 		if (content) {
-			let webviewConfig = <GridWebviewConfig>content;
+			const webviewConfig = <GridWebviewConfig>content;
 			if (webviewConfig && webviewConfig.webview) {
 				return webviewConfig;
 			}
@@ -80,17 +80,17 @@ export class DashboardGridContainer extends DashboardTab implements OnDestroy {
 
 
 	protected isWidget(row: number, col: number): boolean {
-		let widgetConfig = this.getWidgetContent(row, col);
+		const widgetConfig = this.getWidgetContent(row, col);
 		return widgetConfig !== undefined;
 	}
 
 	protected isWebview(row: number, col: number): boolean {
-		let webview = this.getWebviewContent(row, col);
+		const webview = this.getWebviewContent(row, col);
 		return webview !== undefined;
 	}
 
 	protected getWebviewId(row: number, col: number): string {
-		let widgetConfig = this.getWebviewContent(row, col);
+		const widgetConfig = this.getWebviewContent(row, col);
 		if (widgetConfig && widgetConfig.webview) {
 			return widgetConfig.webview.id;
 		}
@@ -98,7 +98,7 @@ export class DashboardGridContainer extends DashboardTab implements OnDestroy {
 	}
 
 	protected getColspan(row: number, col: number): string {
-		let content = this.getContent(row, col);
+		const content = this.getContent(row, col);
 		let colspan: string = '1';
 		if (content && content.colspan) {
 			colspan = this.convertToNumber(content.colspan, this.cols.length).toString();
@@ -107,7 +107,7 @@ export class DashboardGridContainer extends DashboardTab implements OnDestroy {
 	}
 
 	protected getRowspan(row: number, col: number): string {
-		let content = this.getContent(row, col);
+		const content = this.getContent(row, col);
 		if (content && (content.rowspan)) {
 			return this.convertToNumber(content.rowspan, this.rows.length).toString();
 		} else {
@@ -116,17 +116,15 @@ export class DashboardGridContainer extends DashboardTab implements OnDestroy {
 	}
 
 	protected getWidgetWidth(row: number, col: number): string {
-		let content = this.getContent(row, col);
-		let colspan = this.getColspan(row, col);
-		let columnCount = this.convertToNumber(colspan, this.cols.length);
+		const colspan = this.getColspan(row, col);
+		const columnCount = this.convertToNumber(colspan, this.cols.length);
 
 		return columnCount * this.cellWidth + 'px';
 	}
 
 	protected getWidgetHeight(row: number, col: number): string {
-		let content = this.getContent(row, col);
-		let rowspan = this.getRowspan(row, col);
-		let rowCount = this.convertToNumber(rowspan, this.rows.length);
+		const rowspan = this.getRowspan(row, col);
+		const rowCount = this.convertToNumber(rowspan, this.rows.length);
 
 		return rowCount * this.cellHeight + 'px';
 	}
@@ -181,7 +179,7 @@ export class DashboardGridContainer extends DashboardTab implements OnDestroy {
 	}
 
 	private createIndexes(indexes: number[]) {
-		let max = Math.max(...indexes) + 1;
+		const max = Math.max(...indexes) + 1;
 		return Array(max).fill(0).map((x, i) => i);
 	}
 

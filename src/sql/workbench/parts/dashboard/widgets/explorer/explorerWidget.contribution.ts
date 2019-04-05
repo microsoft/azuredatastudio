@@ -6,7 +6,7 @@
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import { registerDashboardWidget } from 'sql/platform/dashboard/common/widgetRegistry';
 
-let explorerSchema: IJSONSchema = {
+const explorerSchema: IJSONSchema = {
 	type: 'object',
 };
 

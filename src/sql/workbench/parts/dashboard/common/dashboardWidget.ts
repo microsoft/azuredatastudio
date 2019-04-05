@@ -2,6 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
 import { InjectionToken, OnDestroy } from '@angular/core';
 import { NgGridItemConfig } from 'angular2-grid';
 import { Action } from 'vs/base/common/actions';

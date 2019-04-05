@@ -79,7 +79,7 @@ export class ObjectMetadataWrapper implements ObjectMetadata {
 
 			// otherwise compare the schema
 		} else {
-			let schemaCompare: number = metadata1.schema && metadata2.schema
+			const schemaCompare: number = metadata1.schema && metadata2.schema
 				? metadata1.schema.localeCompare(metadata2.schema)
 				// schemas are not expected to be undefined, but if they are then compare using object names
 				: 0;
@@ -172,7 +172,7 @@ export class ExplorerController extends TreeDefaults.DefaultController {
 	}
 
 	protected onEnter(tree: tree.ITree, event: IKeyboardEvent): boolean {
-		let result = super.onEnter(tree, event);
+		const result = super.onEnter(tree, event);
 		if (result) {
 			const focus = tree.getFocus();
 			if (focus && !(focus instanceof ObjectMetadataWrapper)) {
@@ -251,8 +251,8 @@ export class ExplorerRenderer implements tree.IRenderer {
 	}
 
 	public renderTemplate(tree: tree.ITree, templateId: string, container: HTMLElement): IListTemplate {
-		let row = $('.list-row');
-		let label = $('.label');
+		const row = $('.list-row');
+		const label = $('.label');
 
 		let icon: HTMLElement;
 		if (templateId === TEMPLATEIDS.object) {
@@ -313,7 +313,7 @@ export class ExplorerFilter implements tree.IFilter {
 		if (!this._filterString) {
 			return true;
 		}
-		let filterString = this._filterString.trim().toLowerCase();
+		const filterString = this._filterString.trim().toLowerCase();
 		return element.databaseName.toLowerCase().includes(filterString);
 	}
 
@@ -330,7 +330,7 @@ export class ExplorerFilter implements tree.IFilter {
 		let metadataType: MetadataType;
 
 		if (filterString.includes(':')) {
-			let filterArray = filterString.split(':');
+			const filterArray = filterString.split(':');
 
 			if (filterArray.length > 2) {
 				filterString = filterArray.slice(1, filterArray.length - 1).join(':');
@@ -371,7 +371,7 @@ export class ExplorerFilter implements tree.IFilter {
 }
 
 function getExplorerActions(element: TreeResource, instantiationService: IInstantiationService, capabilitiesService: ICapabilitiesService, info: ConnectionManagementInfo): IAction[] {
-	let actions: IAction[] = [];
+	const actions: IAction[] = [];
 
 	if (element instanceof ObjectMetadataWrapper) {
 		if (element.metadataType === MetadataType.View || element.metadataType === MetadataType.Table) {
@@ -430,7 +430,7 @@ class ExplorerScriptSelectAction extends ScriptSelectAction {
 	}
 
 	public run(actionContext: BaseActionContext): Promise<boolean> {
-		let promise = super.run(actionContext);
+		const promise = super.run(actionContext);
 		this.progressService.showWhile(promise);
 		return promise;
 	}
@@ -449,7 +449,7 @@ class ExplorerScriptCreateAction extends ScriptCreateAction {
 	}
 
 	public run(actionContext: BaseActionContext): Promise<boolean> {
-		let promise = super.run(actionContext);
+		const promise = super.run(actionContext);
 		this.progressService.showWhile(promise);
 		return promise;
 	}
@@ -468,7 +468,7 @@ class ExplorerScriptAlterAction extends ScriptAlterAction {
 	}
 
 	public run(actionContext: BaseActionContext): Promise<boolean> {
-		let promise = super.run(actionContext);
+		const promise = super.run(actionContext);
 		this.progressService.showWhile(promise);
 		return promise;
 	}
@@ -487,7 +487,7 @@ class ExplorerScriptExecuteAction extends ScriptExecuteAction {
 	}
 
 	public run(actionContext: BaseActionContext): Promise<boolean> {
-		let promise = super.run(actionContext);
+		const promise = super.run(actionContext);
 		this.progressService.showWhile(promise);
 		return promise;
 	}
@@ -504,7 +504,7 @@ class ExplorerManageAction extends ManageAction {
 	}
 
 	public run(actionContext: ManageActionContext): Promise<boolean> {
-		let promise = super.run(actionContext);
+		const promise = super.run(actionContext);
 		this._progressService.showWhile(promise);
 		return promise;
 	}

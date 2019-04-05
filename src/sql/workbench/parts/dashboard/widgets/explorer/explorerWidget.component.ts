@@ -75,9 +75,9 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 	ngOnInit() {
 		this._inited = true;
 
-		let placeholderLabel = this._config.context === 'database' ? nls.localize('seachObjects', 'Search by name of type (a:, t:, v:, f:, or sp:)') : nls.localize('searchDatabases', 'Search databases');
+		const placeholderLabel = this._config.context === 'database' ? nls.localize('seachObjects', 'Search by name of type (a:, t:, v:, f:, or sp:)') : nls.localize('searchDatabases', 'Search databases');
 
-		let inputOptions: IInputOptions = {
+		const inputOptions: IInputOptions = {
 			placeholder: placeholderLabel,
 			ariaLabel: placeholderLabel
 		};
@@ -106,7 +106,7 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 			this._register(toDisposableSubscription(this._bootstrap.metadataService.metadata.subscribe(
 				data => {
 					if (data) {
-						let objectData = ObjectMetadataWrapper.createFromObjectMetadata(data.objectMetadata);
+						const objectData = ObjectMetadataWrapper.createFromObjectMetadata(data.objectMetadata);
 						objectData.sort(ObjectMetadataWrapper.sort);
 						this._treeDataSource.data = objectData;
 						this._tree.setInput(new ExplorerModel());
@@ -117,13 +117,13 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 				}
 			)));
 		} else {
-			let currentProfile = this._bootstrap.connectionManagementService.connectionInfo.connectionProfile;
+			const currentProfile = this._bootstrap.connectionManagementService.connectionInfo.connectionProfile;
 			this._register(toDisposableSubscription(this._bootstrap.metadataService.databaseNames.subscribe(
 				data => {
 					// Handle the case where there is no metadata service
 					data = data || [];
-					let profileData = data.map(d => {
-						let profile = new ConnectionProfile(this.capabilitiesService, currentProfile);
+					const profileData = data.map(d => {
+						const profile = new ConnectionProfile(this.capabilitiesService, currentProfile);
 						profile.databaseName = d;
 						return profile;
 					});

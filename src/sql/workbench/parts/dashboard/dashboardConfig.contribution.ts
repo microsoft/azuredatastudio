@@ -2,6 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IConfigurationRegistry, Extensions, IConfigurationNode } from 'vs/platform/configuration/common/configurationRegistry';
 import { DASHBOARD_CONFIG_ID } from 'sql/workbench/parts/dashboard/pages/dashboardPageContribution';

@@ -17,7 +17,6 @@ import { GRID_CONTAINER } from 'sql/workbench/parts/dashboard/containers/dashboa
 import * as dashboardHelper from 'sql/workbench/parts/dashboard/common/dashboardHelper';
 
 import { Event, Emitter } from 'vs/base/common/event';
-import * as nls from 'vs/nls';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
 @Component({
@@ -91,14 +90,13 @@ export class DashboardNavSection extends DashboardTab implements OnDestroy, OnCh
 
 	private loadNewTabs(dashboardTabs: NavSectionConfig[]) {
 		if (dashboardTabs && dashboardTabs.length > 0) {
-			let selectedTabs = dashboardTabs.map(v => {
-
-				let containerResult = dashboardHelper.getDashboardContainer(v.container);
+			dashboardTabs.map(v => {
+				const containerResult = dashboardHelper.getDashboardContainer(v.container);
 				if (!containerResult.result) {
 					return { id: v.id, title: v.title, container: { 'error-container': undefined } };
 				}
 
-				let key = Object.keys(containerResult.container)[0];
+				const key = Object.keys(containerResult.container)[0];
 				if (key === WIDGETS_CONTAINER || key === GRID_CONTAINER) {
 					let configs = <WidgetConfig[]>Object.values(containerResult.container)[0];
 					this._configModifiers.forEach(cb => {
@@ -116,7 +114,7 @@ export class DashboardNavSection extends DashboardTab implements OnDestroy, OnCh
 				}
 				return { id: v.id, title: v.title, container: containerResult.container, iconClass: v.iconClass };
 			}).map(v => {
-				let config = v as TabConfig;
+				const config = v as TabConfig;
 				config.context = this.tab.context;
 				config.editable = false;
 				config.canClose = false;
@@ -127,15 +125,11 @@ export class DashboardNavSection extends DashboardTab implements OnDestroy, OnCh
 	}
 
 	private addNewTab(tab: TabConfig): void {
-		let existedTab = this.tabs.find(i => i.id === tab.id);
+		const existedTab = this.tabs.find(i => i.id === tab.id);
 		if (!existedTab) {
 			this.tabs.push(tab);
 			this._cd.detectChanges();
 		}
-	}
-
-	private getContentType(tab: TabConfig): string {
-		return tab.container ? Object.keys(tab.container)[0] : '';
 	}
 
 	public get id(): string {
@@ -147,8 +141,8 @@ export class DashboardNavSection extends DashboardTab implements OnDestroy, OnCh
 	}
 
 	public layout() {
-		let activeTabId = this._panel.getActiveTab;
-		let localtab = this._tabs.find(i => i.id === activeTabId);
+		const activeTabId = this._panel.getActiveTab;
+		const localtab = this._tabs.find(i => i.id === activeTabId);
 		this._cd.detectChanges();
 		localtab.layout();
 	}

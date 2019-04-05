@@ -2,6 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
 import { Extensions, IDashboardWidgetRegistry } from 'sql/platform/dashboard/common/widgetRegistry';
 
 import { Registry } from 'vs/platform/registry/common/platform';
@@ -14,7 +15,7 @@ let widgetRegistry = <IDashboardWidgetRegistry>Registry.as(Extensions.DashboardW
 export function generateDashboardWidgetSchema(type?: 'database' | 'server', extension?: boolean): IJSONSchema {
 	let schemas;
 	if (extension) {
-		let extensionSchemas = type === 'server' ? widgetRegistry.serverWidgetSchema.extensionProperties : type === 'database' ? widgetRegistry.databaseWidgetSchema.extensionProperties : widgetRegistry.allSchema.extensionProperties;
+		const extensionSchemas = type === 'server' ? widgetRegistry.serverWidgetSchema.extensionProperties : type === 'database' ? widgetRegistry.databaseWidgetSchema.extensionProperties : widgetRegistry.allSchema.extensionProperties;
 		schemas = type === 'server' ? widgetRegistry.serverWidgetSchema.properties : type === 'database' ? widgetRegistry.databaseWidgetSchema.properties : widgetRegistry.allSchema.properties;
 		schemas = mixin(schemas, extensionSchemas, true);
 	} else {
@@ -64,7 +65,7 @@ export function generateDashboardWidgetSchema(type?: 'database' | 'server', exte
 export function generateDashboardGridLayoutSchema(type?: 'database' | 'server', extension?: boolean): IJSONSchema {
 	let schemas;
 	if (extension) {
-		let extensionSchemas = type === 'server' ? widgetRegistry.serverWidgetSchema.extensionProperties : type === 'database' ? widgetRegistry.databaseWidgetSchema.extensionProperties : widgetRegistry.allSchema.extensionProperties;
+		const extensionSchemas = type === 'server' ? widgetRegistry.serverWidgetSchema.extensionProperties : type === 'database' ? widgetRegistry.databaseWidgetSchema.extensionProperties : widgetRegistry.allSchema.extensionProperties;
 		schemas = type === 'server' ? widgetRegistry.serverWidgetSchema.properties : type === 'database' ? widgetRegistry.databaseWidgetSchema.properties : widgetRegistry.allSchema.properties;
 		schemas = mixin(schemas, extensionSchemas, true);
 	} else {

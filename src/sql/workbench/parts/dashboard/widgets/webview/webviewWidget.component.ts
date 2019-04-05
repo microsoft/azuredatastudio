@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Component, Inject, forwardRef, ChangeDetectorRef, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, Inject, forwardRef, OnInit, ElementRef } from '@angular/core';
 
 import { Event, Emitter } from 'vs/base/common/event';
 import { IDisposable } from 'vs/base/common/lifecycle';
@@ -71,8 +71,8 @@ export class WebviewWidget extends DashboardWidget implements IDashboardWidget, 
 
 	@memoize
 	public get connection(): azdata.connection.Connection {
-		let currentConnection = this._dashboardService.connectionManagementService.connectionInfo.connectionProfile;
-		let connection: azdata.connection.Connection = {
+		const currentConnection = this._dashboardService.connectionManagementService.connectionInfo.connectionProfile;
+		const connection: azdata.connection.Connection = {
 			providerName: currentConnection.providerName,
 			connectionId: currentConnection.id,
 			options: currentConnection.options

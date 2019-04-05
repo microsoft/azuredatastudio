@@ -64,7 +64,7 @@ export class DashboardEditor extends BaseEditor {
 		} else {
 			profile = this.input.connectionProfile;
 		}
-		let serverInfo = this._connMan.getConnectionInfo(this.input.uri).serverInfo;
+		const serverInfo = this._connMan.getConnectionInfo(this.input.uri).serverInfo;
 		this._dashboardService.changeToDashboard({ profile, serverInfo });
 	}
 
@@ -88,7 +88,7 @@ export class DashboardEditor extends BaseEditor {
 		$(parentElement).clearChildren();
 
 		if (!input.hasBootstrapped) {
-			let container = DOM.$<HTMLElement>('.dashboardEditor');
+			const container = DOM.$<HTMLElement>('.dashboardEditor');
 			container.style.height = '100%';
 			this._dashboardContainer = DOM.append(parentElement, container);
 			this.input.container = this._dashboardContainer;
@@ -110,13 +110,13 @@ export class DashboardEditor extends BaseEditor {
 		} else {
 			profile = this.input.connectionProfile;
 		}
-		let serverInfo = this._connMan.getConnectionInfo(this.input.uri).serverInfo;
+		const serverInfo = this._connMan.getConnectionInfo(this.input.uri).serverInfo;
 		this._dashboardService.changeToDashboard({ profile, serverInfo });
-		let scopedContextService = this._contextKeyService.createScoped(input.container);
-		let connectionContextKey = new ConnectionContextKey(scopedContextService);
+		const scopedContextService = this._contextKeyService.createScoped(input.container);
+		const connectionContextKey = new ConnectionContextKey(scopedContextService);
 		connectionContextKey.set(input.connectionProfile);
 
-		let params: IDashboardComponentParams = {
+		const params: IDashboardComponentParams = {
 			connection: input.connectionProfile,
 			ownerUri: input.uri,
 			scopedContextService,
@@ -125,7 +125,7 @@ export class DashboardEditor extends BaseEditor {
 
 		input.hasBootstrapped = true;
 
-		let uniqueSelector = bootstrapAngular(this.instantiationService,
+		const uniqueSelector = bootstrapAngular(this.instantiationService,
 			DashboardModule,
 			this._dashboardContainer,
 			DASHBOARD_SELECTOR,

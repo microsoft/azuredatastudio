@@ -2,6 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
 import { Component, Input, Inject, ChangeDetectorRef, forwardRef, ElementRef, OnInit } from '@angular/core';
 
 import { getContentHeight, getContentWidth, Dimension } from 'vs/base/browser/dom';
@@ -71,7 +72,7 @@ export default class TableInsight extends Disposable implements IInsightsView, O
 
 function transformData(rows: string[][], columns: string[]): { [key: string]: string }[] {
 	return rows.map(row => {
-		let object: { [key: string]: string } = {};
+		const object: { [key: string]: string } = {};
 		row.forEach((val, index) => {
 			object[columns[index]] = val;
 		});

@@ -140,7 +140,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		allTabs = this.setAndRemoveHomeTab(allTabs, homeWidgets);
 
 		// If preview features are disabled only show the home tab
-		let extensionTabsEnabled = this.configurationService.getValue('workbench')['enablePreviewFeatures'];
+		const extensionTabsEnabled = this.configurationService.getValue('workbench')['enablePreviewFeatures'];
 		if (!extensionTabsEnabled) {
 			allTabs = [];
 		}
@@ -148,18 +148,18 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		// Load tab setting configs
 		this._tabSettingConfigs = this.dashboardService.getSettings<Array<TabSettingConfig>>([this.context, 'tabs'].join('.'));
 
-		let pinnedDashboardTabs: IDashboardTab[] = [];
-		let alwaysShowTabs = allTabs.filter(tab => tab.alwaysShow);
+		const pinnedDashboardTabs: IDashboardTab[] = [];
+		const alwaysShowTabs = allTabs.filter(tab => tab.alwaysShow);
 
 		this._tabSettingConfigs.forEach(config => {
 			if (config.tabId && types.isBoolean(config.isPinned)) {
-				let tab = allTabs.find(i => i.id === config.tabId);
+				const tab = allTabs.find(i => i.id === config.tabId);
 				if (tab) {
 					if (config.isPinned) {
 						pinnedDashboardTabs.push(tab);
 					} else {
 						// overwrite always show if specify in user settings
-						let index = alwaysShowTabs.findIndex(i => i.id === tab.id);
+						const index = alwaysShowTabs.findIndex(i => i.id === tab.id);
 						alwaysShowTabs.splice(index, 1);
 					}
 				}
@@ -170,9 +170,9 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		this.loadNewTabs(alwaysShowTabs);
 
 		// Set panel actions
-		let openedTabs = [...pinnedDashboardTabs, ...alwaysShowTabs];
+		const openedTabs = [...pinnedDashboardTabs, ...alwaysShowTabs];
 		if (extensionTabsEnabled) {
-			let addNewTabAction = this.instantiationService.createInstance(AddFeatureTabAction, allTabs, openedTabs, this.dashboardService.getUnderlyingUri());
+			const addNewTabAction = this.instantiationService.createInstance(AddFeatureTabAction, allTabs, openedTabs, this.dashboardService.getUnderlyingUri());
 			this._tabsDispose.push(addNewTabAction);
 			this.panelActions = [addNewTabAction];
 		} else {
@@ -181,7 +181,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		this._cd.detectChanges();
 
 		this._tabsDispose.push(this.dashboardService.onPinUnpinTab(e => {
-			let tabConfig = this._tabSettingConfigs.find(i => i.tabId === e.tabId);
+			const tabConfig = this._tabSettingConfigs.find(i => i.tabId === e.tabId);
 			if (tabConfig) {
 				tabConfig.isPinned = e.isPinned;
 			} else {
@@ -196,7 +196,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	}
 
 	private setAndRemoveHomeTab(allTabs: IDashboardTab[], homeWidgets: WidgetConfig[]): IDashboardTab[] {
-		let homeTabConfig: TabConfig = {
+		const homeTabConfig: TabConfig = {
 			id: 'homeTab',
 			provider: Constants.anyProviderName,
 			publisher: undefined,
@@ -209,11 +209,11 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			actions: []
 		};
 
-		let homeTabIndex = allTabs.findIndex((tab) => tab.isHomeTab === true);
+		const homeTabIndex = allTabs.findIndex((tab) => tab.isHomeTab === true);
 		if (homeTabIndex !== undefined && homeTabIndex > -1) {
 			// Have a tab: get its information and copy over to the home tab definition
-			let homeTab = allTabs.splice(homeTabIndex, 1)[0];
-			let tabConfig = this.initTabComponents(homeTab);
+			const homeTab = allTabs.splice(homeTabIndex, 1)[0];
+			const tabConfig = this.initTabComponents(homeTab);
 			homeTabConfig.id = tabConfig.id;
 			homeTabConfig.container = tabConfig.container;
 		}
@@ -222,17 +222,17 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	}
 
 	private rewriteConfig(): void {
-		let writeableConfig = objects.deepClone(this._tabSettingConfigs);
+		const writeableConfig = objects.deepClone(this._tabSettingConfigs);
 
-		let target: ConfigurationTarget = ConfigurationTarget.USER;
+		const target: ConfigurationTarget = ConfigurationTarget.USER;
 		this.dashboardService.writeSettings([this.context, 'tabs'].join('.'), writeableConfig, target);
 	}
 
 	private loadNewTabs(dashboardTabs: IDashboardTab[], openLastTab: boolean = false) {
 		if (dashboardTabs && dashboardTabs.length > 0) {
-			let selectedTabs = dashboardTabs.map(v => this.initTabComponents(v)).map(v => {
-				let actions = [];
-				let tabSettingConfig = this._tabSettingConfigs.find(i => i.tabId === v.id);
+			const selectedTabs = dashboardTabs.map(v => this.initTabComponents(v)).map(v => {
+				const actions = [];
+				const tabSettingConfig = this._tabSettingConfigs.find(i => i.tabId === v.id);
 				let isPinned = false;
 				if (tabSettingConfig) {
 					isPinned = tabSettingConfig.isPinned;
@@ -241,7 +241,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 				}
 				actions.push(this.instantiationService.createInstance(PinUnpinTabAction, v.id, this.dashboardService.getUnderlyingUri(), isPinned));
 
-				let config = v as TabConfig;
+				const config = v as TabConfig;
 				config.context = this.context;
 				config.editable = false;
 				config.canClose = true;
@@ -253,7 +253,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			if (openLastTab) {
 				// put this immediately on the stack so that is ran *after* the tab is rendered
 				setTimeout(() => {
-					let selectedLastTab = selectedTabs.pop();
+					const selectedLastTab = selectedTabs.pop();
 					this._panel.selectTab(selectedLastTab.id);
 				});
 			}
@@ -261,11 +261,11 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	}
 
 	private initTabComponents(value: IDashboardTab): { id: string; title: string; container: object; alwaysShow: boolean; } {
-		let containerResult = dashboardHelper.getDashboardContainer(value.container);
+		const containerResult = dashboardHelper.getDashboardContainer(value.container);
 		if (!containerResult.result) {
 			return { id: value.id, title: value.title, container: { 'error-container': undefined }, alwaysShow: value.alwaysShow };
 		}
-		let key = Object.keys(containerResult.container)[0];
+		const key = Object.keys(containerResult.container)[0];
 		if (key === WIDGETS_CONTAINER || key === GRID_CONTAINER) {
 			let configs = <WidgetConfig[]>Object.values(containerResult.container)[0];
 			this._configModifiers.forEach(cb => {
@@ -284,12 +284,8 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		return { id: value.id, title: value.title, container: containerResult.container, alwaysShow: value.alwaysShow };
 	}
 
-	private getContentType(tab: TabConfig): string {
-		return tab.container ? Object.keys(tab.container)[0] : '';
-	}
-
 	private addNewTab(tab: TabConfig): void {
-		let existedTab = this.tabs.find(i => i.id === tab.id);
+		const existedTab = this.tabs.find(i => i.id === tab.id);
 		if (!existedTab) {
 			this.tabs.push(tab);
 			this._cd.detectChanges();
@@ -297,7 +293,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	}
 
 	private getProperties(): Array<WidgetConfig> {
-		let properties = this.dashboardService.getSettings<IPropertiesConfig[] | string | boolean>([this.context, 'properties'].join('.'));
+		const properties = this.dashboardService.getSettings<IPropertiesConfig[] | string | boolean>([this.context, 'properties'].join('.'));
 		this._propertiesConfigLocation = 'default';
 		if (types.isUndefinedOrNull(properties)) {
 			return [this.propertiesWidget];
@@ -307,7 +303,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			return [this.propertiesWidget];
 		} else if (types.isArray(properties)) {
 			return properties.map((item) => {
-				let retVal = Object.assign({}, this.propertiesWidget);
+				const retVal = Object.assign({}, this.propertiesWidget);
 				retVal.edition = item.edition;
 				retVal.provider = item.provider;
 				retVal.widget = { 'properties-widget': { properties: item.properties } };
@@ -340,13 +336,13 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 
 	public handleTabChange(tab: TabComponent): void {
 		this._cd.detectChanges();
-		let localtab = this._tabs.find(i => i.id === tab.identifier);
+		const localtab = this._tabs.find(i => i.id === tab.identifier);
 		this._editEnabled.fire(localtab.editable);
 		this._cd.detectChanges();
 	}
 
 	public handleTabClose(tab: TabComponent): void {
-		let index = this.tabs.findIndex(i => i.id === tab.identifier);
+		const index = this.tabs.findIndex(i => i.id === tab.identifier);
 		this.tabs.splice(index, 1);
 		this.angularEventingService.sendAngularEvent(this.dashboardService.getUnderlyingUri(), AngularEventType.CLOSE_TAB, { id: tab.identifier });
 	}

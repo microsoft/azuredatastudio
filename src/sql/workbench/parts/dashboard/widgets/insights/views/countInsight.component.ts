@@ -2,6 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
 import { Component, Input, Inject, ChangeDetectorRef, forwardRef } from '@angular/core';
 
 import { IInsightsView, IInsightData } from 'sql/workbench/parts/dashboard/widgets/insights/interfaces';

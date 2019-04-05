@@ -2,6 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
 import { IExtensionPointUser } from 'vs/workbench/services/extensions/common/extensionsRegistry';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import * as nls from 'vs/nls';
@@ -55,7 +56,7 @@ const navSectionContainerSchema: IJSONSchema = {
 	}
 };
 
-let NavSectionSchema: IJSONSchema = {
+const NavSectionSchema: IJSONSchema = {
 	type: 'array',
 	description: nls.localize('dashboard.container.left-nav-bar', "The list of dashboard containers that will be displayed in this navigation section."),
 	items: navSectionContainerSchema
@@ -117,8 +118,8 @@ export function validateNavSectionContributionAndRegisterIcon(extension: IExtens
 			section.iconClass = createCSSRuleForIcon(section.icon, extension);
 		}
 
-		let containerKey = Object.keys(section.container)[0];
-		let containerValue = Object.values(section.container)[0];
+		const containerKey = Object.keys(section.container)[0];
+		const containerValue = Object.values(section.container)[0];
 
 		switch (containerKey) {
 			case WIDGETS_CONTAINER:

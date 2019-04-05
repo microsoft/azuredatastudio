@@ -125,8 +125,8 @@ export class WidgetContent extends AngularDisposable implements AfterViewInit {
 
 	ngAfterViewInit() {
 		if (this.scrollContent) {
-			let container = this._scrollContainer.nativeElement as HTMLElement;
-			let scrollable = this._scrollable.nativeElement as HTMLElement;
+			const container = this._scrollContainer.nativeElement as HTMLElement;
+			const scrollable = this._scrollable.nativeElement as HTMLElement;
 			container.removeChild(scrollable);
 
 			this._scrollableElement = new ScrollableElement(scrollable, {
@@ -140,7 +140,7 @@ export class WidgetContent extends AngularDisposable implements AfterViewInit {
 			});
 
 			container.appendChild(this._scrollableElement.getDomNode());
-			let initalHeight = getContentHeight(scrollable);
+			const initalHeight = getContentHeight(scrollable);
 			this._scrollableElement.setScrollDimensions({
 				scrollHeight: getContentHeight(scrollable),
 				height: getContentHeight(container)
@@ -152,7 +152,7 @@ export class WidgetContent extends AngularDisposable implements AfterViewInit {
 
 			// unforunately because of angular rendering behavior we need to do a double check to make sure nothing changed after this point
 			setTimeout(() => {
-				let currentheight = getContentHeight(scrollable);
+				const currentheight = getContentHeight(scrollable);
 				if (initalHeight !== currentheight) {
 					this._scrollableElement.setScrollDimensions({
 						scrollHeight: currentheight,
@@ -176,8 +176,8 @@ export class WidgetContent extends AngularDisposable implements AfterViewInit {
 	}
 
 	private resetScrollDimensions() {
-		let container = this._scrollContainer.nativeElement as HTMLElement;
-		let scrollable = this._scrollable.nativeElement as HTMLElement;
+		const container = this._scrollContainer.nativeElement as HTMLElement;
+		const scrollable = this._scrollable.nativeElement as HTMLElement;
 
 		this._scrollableElement.setScrollDimensions({
 			scrollHeight: getContentHeight(scrollable),
@@ -219,8 +219,8 @@ export class WidgetContent extends AngularDisposable implements AfterViewInit {
 			}));
 			this._editDispose.push(subscriptionToDisposable(this._grid.onResizeStop.subscribe((e: NgGridItem) => {
 				this._onResize.fire();
-				let event = e.getEventOutput();
-				let config = this.originalConfig.find(i => i.id === event.payload.id);
+				const event = e.getEventOutput();
+				const config = this.originalConfig.find(i => i.id === event.payload.id);
 
 				if (!config.gridItemConfig) {
 					config.gridItemConfig = {};
@@ -228,7 +228,7 @@ export class WidgetContent extends AngularDisposable implements AfterViewInit {
 				config.gridItemConfig.sizex = e.sizex;
 				config.gridItemConfig.sizey = e.sizey;
 
-				let component = this._widgets.find(i => i.id === event.payload.id);
+				const component = this._widgets.find(i => i.id === event.payload.id);
 
 				component.layout();
 				this._rewriteConfig();
@@ -236,9 +236,9 @@ export class WidgetContent extends AngularDisposable implements AfterViewInit {
 			})));
 			this._editDispose.push(subscriptionToDisposable(this._grid.onDragStop.subscribe((e: NgGridItem) => {
 				this._onResize.fire();
-				let event = e.getEventOutput();
+				const event = e.getEventOutput();
 				this._items.forEach(i => {
-					let config = this.originalConfig.find(j => j.id === i.getEventOutput().payload.id);
+					const config = this.originalConfig.find(j => j.id === i.getEventOutput().payload.id);
 					if ((config.gridItemConfig && config.gridItemConfig.col) || config.id === event.payload.id) {
 						if (!config.gridItemConfig) {
 							config.gridItemConfig = {};
@@ -261,12 +261,12 @@ export class WidgetContent extends AngularDisposable implements AfterViewInit {
 	}
 
 	private _rewriteConfig(): void {
-		let writeableConfig = objects.deepClone(this.originalConfig);
+		const writeableConfig = objects.deepClone(this.originalConfig);
 
 		writeableConfig.forEach(i => {
 			delete i.id;
 		});
-		let target: ConfigurationTarget = ConfigurationTarget.USER;
+		const target: ConfigurationTarget = ConfigurationTarget.USER;
 		this.dashboardService.writeSettings([this.context, 'widgets'].join('.'), writeableConfig, target);
 	}
 }

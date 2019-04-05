@@ -2,6 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
 import { Component, Input, Inject, ChangeDetectorRef, forwardRef, ViewChild, OnInit, ElementRef } from '@angular/core';
 
 import { IInsightsView, IInsightData } from 'sql/workbench/parts/dashboard/widgets/insights/interfaces';
@@ -36,7 +37,7 @@ export default class ImageInsight implements IInsightsView, OnInit {
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef) { }
 
 	ngOnInit() {
-		let size = Math.min(this.container.nativeElement.parentElement.parentElement.offsetHeight, this.container.nativeElement.parentElement.parentElement.offsetWidth);
+		const size = Math.min(this.container.nativeElement.parentElement.parentElement.offsetHeight, this.container.nativeElement.parentElement.parentElement.offsetWidth);
 		this.image.nativeElement.style.width = size + 'px';
 		this.image.nativeElement.style.height = size + 'px';
 	}
@@ -47,9 +48,8 @@ export default class ImageInsight implements IInsightsView, OnInit {
 	}
 
 	@Input() set data(data: IInsightData) {
-		let self = this;
 		if (data.rows && data.rows.length > 0 && data.rows[0].length > 0) {
-			self._rawSource = data.rows[0][0];
+			this._rawSource = data.rows[0][0];
 		} else {
 			this._rawSource = '';
 		}

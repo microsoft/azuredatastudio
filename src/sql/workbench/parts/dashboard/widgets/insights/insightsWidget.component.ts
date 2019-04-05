@@ -2,6 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
 import {
 	Component, Inject, forwardRef, AfterContentInit,
 	ComponentFactoryResolver, ViewChild, ChangeDetectorRef, Injector
@@ -85,9 +86,9 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 
 		this._parseConfig().then(() => {
 			if (!this._checkStorage()) {
-				let promise = this._runQuery();
+				const promise = this._runQuery();
 				this.queryObv = Observable.fromPromise(promise);
-				let cancelablePromise = createCancelablePromise(() => {
+				const cancelablePromise = createCancelablePromise(() => {
 					return promise.then(
 						result => {
 							this._loading = false;
@@ -150,7 +151,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 	}
 
 	get actions(): Array<Action> {
-		let actions: Array<Action> = [];
+		const actions: Array<Action> = [];
 		if (this.insightConfig.details && (this.insightConfig.details.query || this.insightConfig.details.queryFile)) {
 			actions.push(this.instantiationService.createInstance(InsightAction, InsightAction.ID, InsightAction.LABEL));
 		}
@@ -167,8 +168,8 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 
 	private _storeResult(result: SimpleExecuteResult): SimpleExecuteResult {
 		if (this.insightConfig.cacheId) {
-			let currentTime = new Date();
-			let store: IStorageResult = {
+			const currentTime = new Date();
+			const store: IStorageResult = {
 				date: currentTime.toString(),
 				results: result
 			};
@@ -181,10 +182,10 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 
 	private _checkStorage(): boolean {
 		if (this.insightConfig.cacheId) {
-			let storage = this.storageService.get(this._getStorageKey(), StorageScope.GLOBAL);
+			const storage = this.storageService.get(this._getStorageKey(), StorageScope.GLOBAL);
 			if (storage) {
-				let storedResult: IStorageResult = JSON.parse(storage);
-				let date = new Date(storedResult.date);
+				const storedResult: IStorageResult = JSON.parse(storage);
+				const date = new Date(storedResult.date);
 				this.lastUpdated = nls.localize('insights.lastUpdated', "Last Updated: {0} {1}", date.toLocaleTimeString(), date.toLocaleDateString());
 				this._loading = false;
 				if (this._init) {
@@ -235,10 +236,10 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 			return;
 		}
 
-		let componentFactory = this._componentFactoryResolver.resolveComponentFactory<IInsightsView>(insightRegistry.getCtorFromId(this._typeKey));
+		const componentFactory = this._componentFactoryResolver.resolveComponentFactory<IInsightsView>(insightRegistry.getCtorFromId(this._typeKey));
 
-		let componentRef = this.componentHost.viewContainerRef.createComponent(componentFactory, 0, this._injector);
-		let componentInstance = componentRef.instance;
+		const componentRef = this.componentHost.viewContainerRef.createComponent(componentFactory, 0, this._injector);
+		const componentInstance = componentRef.instance;
 
 		// check if the setter is defined
 		if (componentInstance.setConfig) {
@@ -289,7 +290,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 		// When the editor.accessibilitySupport setting is on, we will force the chart type to be table.
 		// so that the information is accessible to the user.
 		// count chart type is already a text based chart, we don't have to apply this rule for it.
-		let isAccessibilitySupportOn = this._configurationService.getValue('editor.accessibilitySupport') === 'on';
+		const isAccessibilitySupportOn = this._configurationService.getValue('editor.accessibilitySupport') === 'on';
 		if (isAccessibilitySupportOn && this._typeKey !== 'count') {
 			this._typeKey = 'table';
 		}
@@ -297,7 +298,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 		if (types.isStringArray(this.insightConfig.query)) {
 			this.insightConfig.query = this.insightConfig.query.join(' ');
 		} else if (this.insightConfig.queryFile) {
-			let filePath = await resolveQueryFilePath(this.insightConfig.queryFile,
+			const filePath = await resolveQueryFilePath(this.insightConfig.queryFile,
 				this._workspaceContextService,
 				this._configurationResolverService);
 

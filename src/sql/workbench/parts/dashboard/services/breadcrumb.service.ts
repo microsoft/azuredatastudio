@@ -24,7 +24,7 @@ export class BreadcrumbService implements IBreadcrumbService {
 	private itemBreadcrums: MenuItem[];
 	private _currentPage: BreadcrumbClass;
 
-	constructor( @Inject(forwardRef(() => CommonServiceInterface)) private commonService: DashboardServiceInterface) {
+	constructor(@Inject(forwardRef(() => CommonServiceInterface)) private commonService: DashboardServiceInterface) {
 		this.commonService.onUpdatePage(() => {
 			this.setBreadcrumbs(this._currentPage);
 		});
@@ -34,13 +34,13 @@ export class BreadcrumbService implements IBreadcrumbService {
 	public setBreadcrumbs(page: BreadcrumbClass) {
 		this._currentPage = page;
 		this.itemBreadcrums = [];
-		let refList: MenuItem[] = this.getBreadcrumbsLink(page);
+		const refList: MenuItem[] = this.getBreadcrumbsLink(page);
 		this.breadcrumbItem.next(refList);
 	}
 
 	private getBreadcrumbsLink(page: BreadcrumbClass): MenuItem[] {
 		this.itemBreadcrums = [];
-		let profile = this.commonService.connectionManagementService.connectionInfo.connectionProfile;
+		const profile = this.commonService.connectionManagementService.connectionInfo.connectionProfile;
 		this.itemBreadcrums.push({ label: nls.localize('homeCrumb', 'Home') });
 		switch (page) {
 			case BreadcrumbClass.DatabasePage:

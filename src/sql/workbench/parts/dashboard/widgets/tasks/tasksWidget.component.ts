@@ -2,6 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
 import 'vs/css!sql/media/icons/common-icons';
 import 'vs/css!./media/taskWidget';
 
@@ -11,25 +12,20 @@ import { DomSanitizer } from '@angular/platform-browser';
 
 /* SQL imports */
 import { DashboardWidget, IDashboardWidget, WidgetConfig, WIDGET_CONFIG } from 'sql/workbench/parts/dashboard/common/dashboardWidget';
-import { DashboardServiceInterface } from 'sql/workbench/parts/dashboard/services/dashboardServiceInterface.service';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { TaskRegistry } from 'sql/platform/tasks/common/tasks';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { BaseActionContext } from 'sql/workbench/common/actions';
 
 /* VS imports */
 import * as themeColors from 'vs/workbench/common/theme';
 import * as colors from 'vs/platform/theme/common/colorRegistry';
 import { registerThemingParticipant, ICssStyleCollector, ITheme } from 'vs/platform/theme/common/themeService';
-import { Action } from 'vs/base/common/actions';
-import Severity from 'vs/base/common/severity';
-import * as nls from 'vs/nls';
 import * as types from 'vs/base/common/types';
 import { ScrollableElement } from 'vs/base/browser/ui/scrollbar/scrollableElement';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { $, Builder } from 'sql/base/browser/builder';
 import * as DOM from 'vs/base/browser/dom';
-import { CommandsRegistry, ICommand, ICommandService } from 'vs/platform/commands/common/commands';
+import { ICommandService } from 'vs/platform/commands/common/commands';
 import { MenuRegistry, ICommandAction } from 'vs/platform/actions/common/actions';
 import { ContextKeyExpr, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
@@ -68,7 +64,7 @@ export class TasksWidget extends DashboardWidget implements IDashboardWidget, On
 	) {
 		super();
 		this._profile = this._bootstrap.connectionManagementService.connectionInfo.connectionProfile;
-		let tasksConfig = this._config.widget[selector] as Array<string | ITask>;
+		const tasksConfig = this._config.widget[selector] as Array<string | ITask>;
 		let tasks = TaskRegistry.getTasks();
 
 		if (types.isArray(tasksConfig) && tasksConfig.length > 0) {
@@ -119,9 +115,9 @@ export class TasksWidget extends DashboardWidget implements IDashboardWidget, On
 	}
 
 	private _computeContainer(): void {
-		let height = DOM.getContentHeight(this._container.nativeElement);
-		let tilesHeight = Math.floor(height / (this._size + 10));
-		let width = (this._size + 18) * Math.ceil(this._tasks.length / tilesHeight);
+		const height = DOM.getContentHeight(this._container.nativeElement);
+		const tilesHeight = Math.floor(height / (this._size + 10));
+		const width = (this._size + 18) * Math.ceil(this._tasks.length / tilesHeight);
 		if (!this.$container) {
 			this.$container = $('.tile-container');
 			this._register(this.$container);
@@ -130,13 +126,13 @@ export class TasksWidget extends DashboardWidget implements IDashboardWidget, On
 	}
 
 	private _createTile(action: ICommandAction): HTMLElement {
-		let label = $('div').safeInnerHtml(types.isString(action.title) ? action.title : action.title.value);
-		let tile = $('div.task-tile').style('height', this._size + 'px').style('width', this._size + 'px');
-		let innerTile = $('div');
+		const label = $('div').safeInnerHtml(types.isString(action.title) ? action.title : action.title.value);
+		const tile = $('div.task-tile').style('height', this._size + 'px').style('width', this._size + 'px');
+		const innerTile = $('div');
 
-		let iconClassName = TaskRegistry.getOrCreateTaskIconClassName(action);
+		const iconClassName = TaskRegistry.getOrCreateTaskIconClassName(action);
 		if (iconClassName) {
-			let icon = $('span.icon').addClass(iconClassName);
+			const icon = $('span.icon').addClass(iconClassName);
 			innerTile.append(icon);
 		}
 		innerTile.append(label);
@@ -144,7 +140,7 @@ export class TasksWidget extends DashboardWidget implements IDashboardWidget, On
 		tile.attr('tabindex', '0');
 		tile.on(DOM.EventType.CLICK, () => this.runTask(action));
 		tile.on(DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
-			let event = new StandardKeyboardEvent(e);
+			const event = new StandardKeyboardEvent(e);
 			if (event.equals(KeyCode.Enter)) {
 				this.runTask(action);
 				e.stopImmediatePropagation();
@@ -154,13 +150,13 @@ export class TasksWidget extends DashboardWidget implements IDashboardWidget, On
 	}
 
 	private registerThemeing(theme: ITheme, collector: ICssStyleCollector) {
-		let contrastBorder = theme.getColor(colors.contrastBorder);
-		let sideBarColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND);
+		const contrastBorder = theme.getColor(colors.contrastBorder);
+		const sideBarColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND);
 		if (contrastBorder) {
-			let contrastBorderString = contrastBorder.toString();
+			const contrastBorderString = contrastBorder.toString();
 			collector.addRule(`tasks-widget .task-tile { border: 1px solid ${contrastBorderString} }`);
 		} else {
-			let sideBarColorString = sideBarColor.toString();
+			const sideBarColorString = sideBarColor.toString();
 			collector.addRule(`tasks-widget .task-tile { background-color: ${sideBarColorString} }`);
 		}
 	}

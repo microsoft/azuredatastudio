@@ -2,6 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
 import { registerInsight } from 'sql/platform/dashboard/common/insightRegistry';
 
 import ImageInsight from './imageInsight.component';
@@ -9,7 +10,7 @@ import ImageInsight from './imageInsight.component';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import * as nls from 'vs/nls';
 
-let imageInsightSchema: IJSONSchema = {
+const imageInsightSchema: IJSONSchema = {
 	type: 'object',
 	description: nls.localize('imageInsightDescription', 'Displays an image, for example one returned by an R query using ggplot2'),
 	properties: {

@@ -47,7 +47,7 @@ export class DashboardComponent extends AngularDisposable implements OnInit {
 	ngOnInit() {
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
-		let profile: IConnectionProfile = this._bootstrapService.getOriginalConnectionProfile();
+		const profile: IConnectionProfile = this._bootstrapService.getOriginalConnectionProfile();
 		this.actionbar = new ActionBar(this.actionbarContainer.nativeElement);
 		this.actionbar.push(new RefreshWidgetAction(this.refresh, this), {
 			icon: true,
@@ -65,7 +65,7 @@ export class DashboardComponent extends AngularDisposable implements OnInit {
 	}
 
 	private updateTheme(theme: IColorTheme): void {
-		let headerEl = <HTMLElement>this.header.nativeElement;
+		const headerEl = <HTMLElement>this.header.nativeElement;
 		headerEl.style.borderBottomColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
 		headerEl.style.borderBottomWidth = '1px';
 		headerEl.style.borderBottomStyle = 'solid';

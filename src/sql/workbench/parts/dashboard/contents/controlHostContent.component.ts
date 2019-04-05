@@ -2,6 +2,7 @@
 *  Copyright (c) Microsoft Corporation. All rights reserved.
 *  Licensed under the Source EULA. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
+
 import 'vs/css!./controlHostContent';
 
 import { Component, forwardRef, Input, OnInit, Inject, ChangeDetectorRef, ElementRef, ViewChild } from '@angular/core';
@@ -49,8 +50,8 @@ export class ControlHostContent {
 
 	@memoize
 	public get connection(): azdata.connection.Connection {
-		let currentConnection = this._dashboardService.connectionManagementService.connectionInfo.connectionProfile;
-		let connection: azdata.connection.Connection = {
+		const currentConnection = this._dashboardService.connectionManagementService.connectionInfo.connectionProfile;
+		const connection: azdata.connection.Connection = {
 			providerName: currentConnection.providerName,
 			connectionId: currentConnection.id,
 			options: currentConnection.options

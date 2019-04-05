@@ -2,6 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
 import { IExtensionPointUser, ExtensionsRegistry } from 'vs/workbench/services/extensions/common/extensionsRegistry';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import { localize } from 'vs/nls';
@@ -85,7 +86,7 @@ ExtensionsRegistry.registerExtensionPoint<IDashboardTabContrib | IDashboardTabCo
 		if (!types.isBoolean(alwaysShow)) {
 			alwaysShow = true;
 		}
-		let publisher = extension.description.publisher;
+		const publisher = extension.description.publisher;
 		if (!title) {
 			extension.collector.error(localize('dashboardTab.contribution.noTitleError', 'No title specified for extension.'));
 			return;
@@ -113,8 +114,8 @@ ExtensionsRegistry.registerExtensionPoint<IDashboardTabContrib | IDashboardTabCo
 		}
 
 		let result = true;
-		let containerkey = Object.keys(container)[0];
-		let containerValue = Object.values(container)[0];
+		const containerkey = Object.keys(container)[0];
+		const containerValue = Object.values(container)[0];
 
 		switch (containerkey) {
 			case WIDGETS_CONTAINER:
@@ -133,10 +134,10 @@ ExtensionsRegistry.registerExtensionPoint<IDashboardTabContrib | IDashboardTabCo
 		}
 	}
 
-	for (let extension of extensions) {
+	for (const extension of extensions) {
 		const { value } = extension;
 		if (Array.isArray<IDashboardTabContrib>(value)) {
-			for (let command of value) {
+			for (const command of value) {
 				handleCommand(command, extension);
 			}
 		} else {

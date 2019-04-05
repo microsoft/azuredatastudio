@@ -2,6 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
 import { Component, Input, Inject, ChangeDetectorRef, forwardRef, ElementRef, ViewChild } from '@angular/core';
 import { BaseChartDirective } from 'ng2-charts';
 
@@ -19,7 +20,7 @@ import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/theme
 import * as nls from 'vs/nls';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 
-declare var Chart: any;
+declare const Chart: any;
 
 @Component({
 	template: `	<div style="display: block; width: 100%; height: 100%; position: relative">
@@ -93,12 +94,12 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 	}
 
 	protected updateTheme(e: IColorTheme): void {
-		let foregroundColor = e.getColor(colors.editorForeground);
-		let foreground = foregroundColor ? foregroundColor.toString() : null;
-		let backgroundColor = e.getColor(colors.editorBackground);
-		let background = backgroundColor ? backgroundColor.toString() : null;
+		const foregroundColor = e.getColor(colors.editorForeground);
+		const foreground = foregroundColor ? foregroundColor.toString() : null;
+		const backgroundColor = e.getColor(colors.editorBackground);
+		const background = backgroundColor ? backgroundColor.toString() : null;
 
-		let options = {
+		const options = {
 			legend: {
 				labels: {
 					fontColor: foreground
@@ -247,10 +248,10 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 	@memoize
 	private get colors(): { backgroundColor: string[] }[] {
 		if (this._config && this._config.colorMap) {
-			let backgroundColor = this.labels.map((item) => {
+			const backgroundColor = this.labels.map((item) => {
 				return this._config.colorMap[item];
 			});
-			let colorsMap = { backgroundColor };
+			const colorsMap = { backgroundColor };
 			return [colorsMap];
 		} else {
 			return undefined;
@@ -258,7 +259,7 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 	}
 
 	public set legendPosition(input: LegendPosition) {
-		let options = {
+		const options = {
 			legend: {
 				display: true,
 				position: 'top'

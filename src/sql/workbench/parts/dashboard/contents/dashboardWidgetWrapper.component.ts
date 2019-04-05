@@ -2,6 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
 import 'vs/css!sql/media/icons/common-icons';
 import 'vs/css!./dashboardWidgetWrapper';
 
@@ -97,9 +98,8 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 	}
 
 	ngOnInit() {
-		let self = this;
-		this._register(self.themeService.onDidColorThemeChange((event: IColorTheme) => {
-			self.updateTheme(event);
+		this._register(this.themeService.onDidColorThemeChange((event: IColorTheme) => {
+			this.updateTheme(event);
 		}));
 	}
 
@@ -149,8 +149,8 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 			error('Exactly 1 widget must be defined per space');
 			return;
 		}
-		let key = Object.keys(this._config.widget)[0];
-		let selector = this.getOrCreateSelector(key);
+		const key = Object.keys(this._config.widget)[0];
+		const selector = this.getOrCreateSelector(key);
 		if (selector === undefined) {
 			error('Could not find selector', key);
 			return;
@@ -158,23 +158,23 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 
 		// If _config.name is not set, set it to _config.widget.name
 		if (!this._config.name) {
-			let widget = Object.values(this._config.widget)[0];
+			const widget = Object.values(this._config.widget)[0];
 			if (widget.name) {
 				this._config.name = widget.name;
 			}
 		}
 
-		let componentFactory = this._componentFactoryResolver.resolveComponentFactory(selector);
+		const componentFactory = this._componentFactoryResolver.resolveComponentFactory(selector);
 
-		let viewContainerRef = this.componentHost.viewContainerRef;
+		const viewContainerRef = this.componentHost.viewContainerRef;
 		viewContainerRef.clear();
 
-		let injector = ReflectiveInjector.resolveAndCreate([{ provide: WIDGET_CONFIG, useValue: this._config }], this._injector);
+		const injector = ReflectiveInjector.resolveAndCreate([{ provide: WIDGET_CONFIG, useValue: this._config }], this._injector);
 		let componentRef: ComponentRef<IDashboardWidget>;
 		try {
 			componentRef = viewContainerRef.createComponent(componentFactory, 0, injector);
 			this._component = componentRef.instance;
-			let actions = componentRef.instance.actions;
+			const actions = componentRef.instance.actions;
 			if (componentRef.instance.refresh) {
 				actions.push(new RefreshWidgetAction(this.refresh, this));
 			}
@@ -186,7 +186,7 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 			error('Error rendering widget', key, e);
 			return;
 		}
-		let el = <HTMLElement>componentRef.location.nativeElement;
+		const el = <HTMLElement>componentRef.location.nativeElement;
 
 		// set widget styles to conform to its box
 		el.style.overflow = 'hidden';
@@ -207,8 +207,8 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 		let selector = componentMap[key];
 		if (selector === undefined) {
 			// Load the widget from the registry
-			let widgetRegistry = <IInsightRegistry>Registry.as(Extensions.InsightContribution);
-			let insightConfig = widgetRegistry.getRegisteredExtensionInsights(key);
+			const widgetRegistry = <IInsightRegistry>Registry.as(Extensions.InsightContribution);
+			const insightConfig = widgetRegistry.getRegisteredExtensionInsights(key);
 			if (insightConfig === undefined) {
 				return undefined;
 			}
@@ -221,12 +221,12 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 	}
 
 	private updateTheme(theme: IColorTheme): void {
-		let el = <HTMLElement>this._ref.nativeElement;
-		let headerEl: HTMLElement = this.header.nativeElement;
+		const el = <HTMLElement>this._ref.nativeElement;
+		const headerEl: HTMLElement = this.header.nativeElement;
 		let borderColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true);
 		let backgroundColor = theme.getColor(colors.editorBackground, true);
-		let foregroundColor = theme.getColor(themeColors.SIDE_BAR_FOREGROUND, true);
-		let border = theme.getColor(colors.contrastBorder, true);
+		const foregroundColor = theme.getColor(themeColors.SIDE_BAR_FOREGROUND, true);
+		const border = theme.getColor(colors.contrastBorder, true);
 
 		if (this._config.background_color) {
 			backgroundColor = theme.getColor(this._config.background_color);

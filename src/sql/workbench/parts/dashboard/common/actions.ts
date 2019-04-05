@@ -2,6 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
 import { Action, IAction } from 'vs/base/common/actions';
 import * as nls from 'vs/nls';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
@@ -182,16 +183,16 @@ export class AddFeatureTabAction extends Action {
 	private handleDashboardEvent(event: IAngularEvent): void {
 		switch (event.event) {
 			case AngularEventType.NEW_TABS:
-				let openedTabs = <IDashboardTab[]>event.payload.dashboardTabs;
+				const openedTabs = <IDashboardTab[]>event.payload.dashboardTabs;
 				openedTabs.forEach(tab => {
-					let existedTab = this._openedTabs.find(i => i === tab);
+					const existedTab = this._openedTabs.find(i => i === tab);
 					if (!existedTab) {
 						this._openedTabs.push(tab);
 					}
 				});
 				break;
 			case AngularEventType.CLOSE_TAB:
-				let index = this._openedTabs.findIndex(i => i.id === event.payload.id);
+				const index = this._openedTabs.findIndex(i => i.id === event.payload.id);
 				this._openedTabs.splice(index, 1);
 				break;
 		}

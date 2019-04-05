@@ -2,6 +2,7 @@
 *  Copyright (c) Microsoft Corporation. All rights reserved.
 *  Licensed under the Source EULA. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
+
 import 'vs/css!./webviewContent';
 
 import { Component, forwardRef, Input, OnInit, Inject, ElementRef } from '@angular/core';
@@ -11,8 +12,6 @@ import { IDisposable } from 'vs/base/common/lifecycle';
 import { addDisposableListener, EventType } from 'vs/base/browser/dom';
 import { memoize } from 'vs/base/common/decorators';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { DashboardServiceInterface } from 'sql/workbench/parts/dashboard/services/dashboardServiceInterface.service';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { IDashboardWebview, IDashboardViewService } from 'sql/platform/dashboard/common/dashboardViewService';
@@ -20,7 +19,6 @@ import { AngularDisposable } from 'sql/base/node/lifecycle';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 import * as azdata from 'azdata';
-import { IContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { WebviewElement } from 'vs/workbench/contrib/webview/electron-browser/webviewElement';
 import { IWorkbenchLayoutService, Parts } from 'vs/workbench/services/layout/browser/layoutService';
 
@@ -69,8 +67,8 @@ export class WebviewContent extends AngularDisposable implements OnInit, IDashbo
 
 	@memoize
 	public get connection(): azdata.connection.Connection {
-		let currentConnection = this._dashboardService.connectionManagementService.connectionInfo.connectionProfile;
-		let connection: azdata.connection.Connection = {
+		const currentConnection = this._dashboardService.connectionManagementService.connectionInfo.connectionProfile;
+		const connection: azdata.connection.Connection = {
 			providerName: currentConnection.providerName,
 			connectionId: currentConnection.id,
 			options: currentConnection.options

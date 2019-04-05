@@ -51,7 +51,7 @@ export class DashboardInput extends EditorInput {
 		this._initializedPromise = _connectionService.connectIfNotConnected(_connectionProfile, 'dashboard').then(
 			u => {
 				this._uri = u;
-				let info = this._connectionService.getConnectionInfo(u);
+				const info = this._connectionService.getConnectionInfo(u);
 				if (info) {
 					this._onConnectionChanged = this._connectionService.onConnectionChanged(e => {
 						if (e.connectionUri === u) {
@@ -115,7 +115,7 @@ export class DashboardInput extends EditorInput {
 			return;
 		}
 
-		let parentNode = this._parentContainer.parentNode;
+		const parentNode = this._parentContainer.parentNode;
 		if (parentNode) {
 			parentNode.removeChild(this._parentContainer);
 			this._parentContainer = null;

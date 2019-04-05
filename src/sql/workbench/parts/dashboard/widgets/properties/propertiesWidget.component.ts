@@ -115,16 +115,16 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 	}
 
 	private parseProperties() {
-		let provider = this._config.provider;
+		const provider = this._config.provider;
 
 		let propertyArray: Array<Property>;
 
 		// if config exists use that, otherwise use default
 		if (this._config.widget['properties-widget'] && this._config.widget['properties-widget'].properties) {
-			let config = <PropertiesConfig>this._config.widget['properties-widget'];
+			const config = <PropertiesConfig>this._config.widget['properties-widget'];
 			propertyArray = config.properties;
 		} else {
-			let providerProperties = dashboardRegistry.getProperties(provider as string);
+			const providerProperties = dashboardRegistry.getProperties(provider as string);
 
 			if (!providerProperties) {
 				this.consoleError('No property definitions found for provider', provider);
@@ -141,8 +141,8 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 					'. If there are not multiple flavors of this provider, add one flavor without a condition');
 				return;
 			} else {
-				let flavorArray = providerProperties.flavors.filter((item) => {
-					let condition = this._connection.serverInfo[item.condition.field];
+				const flavorArray = providerProperties.flavors.filter((item) => {
+					const condition = this._connection.serverInfo[item.condition.field];
 					switch (item.condition.operator) {
 						case '==':
 							return condition === item.condition.value;
@@ -203,8 +203,8 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 		// iterate over properties and display them
 		this.properties = [];
 		for (let i = 0; i < propertyArray.length; i++) {
-			let property = propertyArray[i];
-			let assignProperty = {};
+			const property = propertyArray[i];
+			const assignProperty = {};
 			let propertyObject = this.getValueOrDefault<string>(infoObject, property.value, property.default || '--');
 
 			// make sure the value we got shouldn't be ignored

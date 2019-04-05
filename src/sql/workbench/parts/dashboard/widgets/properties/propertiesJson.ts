@@ -6,8 +6,8 @@
 import { ProviderProperties } from './propertiesWidget.component';
 import * as nls from 'vs/nls';
 
-let azureEditionDisplayName = nls.localize('azureEdition', 'Edition');
-let azureType = nls.localize('azureType', 'Type');
+const azureEditionDisplayName = nls.localize('azureEdition', 'Edition');
+const azureType = nls.localize('azureType', 'Type');
 
 export const properties: Array<ProviderProperties> = [
 	{

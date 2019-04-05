@@ -2,6 +2,7 @@
 *  Copyright (c) Microsoft Corporation. All rights reserved.
 *  Licensed under the Source EULA. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
+
 import 'vs/css!./dashboardControlHostContainer';
 
 import { Component, forwardRef, Input, AfterContentInit, ViewChild, OnChanges } from '@angular/core';
@@ -38,7 +39,7 @@ export class DashboardControlHostContainer extends DashboardTab implements After
 			this._onResize.fire();
 		}));
 
-		let container = <any>this.tab.container;
+		const container = <any>this.tab.container;
 		if (container['controlhost-container'] && container['controlhost-container'].type) {
 			this._hostContent.setControlType(container['controlhost-container'].type);
 		}
