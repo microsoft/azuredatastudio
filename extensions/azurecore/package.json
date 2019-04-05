@@ -61,6 +61,14 @@
 				"category": "Azure Accounts"
 			},
 			{
+				"command": "azure.resource.signin",
+				"title": "%azure.resource.signin.title%",
+				"icon": {
+					"dark": "resources/dark/add_inverse.svg",
+					"light": "resources/light/add.svg"
+				}
+			},
+			{
 				"command": "azure.resource.refreshall",
 				"title": "%azure.resource.refreshall.title%",
 				"icon": {
@@ -75,10 +83,6 @@
 					"dark": "resources/dark/refresh_inverse.svg",
 					"light": "resources/light/refresh.svg"
 				}
-			},
-			{
-				"command": "azure.resource.signin",
-				"title": "%azure.resource.signin.title%"
 			},
 			{
 				"command": "azure.resource.selectsubscriptions",
@@ -116,9 +120,14 @@
 		"menus": {
 			"view/title": [
 				{
-					"command": "azure.resource.refreshall",
+					"command": "azure.resource.signin",
 					"when": "view == azureResourceExplorer",
 					"group": "navigation@1"
+				},
+				{
+					"command": "azure.resource.refreshall",
+					"when": "view == azureResourceExplorer",
+					"group": "navigation@2"
 				}
 			],
 			"view/item/context": [
