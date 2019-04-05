@@ -31,6 +31,7 @@ const msgPythonUnpackError = localize('msgPythonUnpackError', 'Error while unpac
 const msgTaskName = localize('msgTaskName', 'Installing Notebook dependencies');
 const msgInstallPkgStart = localize('msgInstallPkgStart', 'Installing Notebook dependencies, see Tasks view for more information');
 const msgInstallPkgFinish = localize('msgInstallPkgFinish', 'Notebook dependencies installation is complete');
+const msgPythonRunningError = localize('msgPythonRunningError', 'Cannot overwrite existing Python installation while python is running.');
 function msgDependenciesInstallationFailed(errorMessage: string): string { return localize('msgDependenciesInstallationFailed', 'Installing Notebook dependencies failed with error: {0}', errorMessage); }
 function msgDownloadPython(platform: string, pythonDownloadUrl: string): string { return localize('msgDownloadPython', 'Downloading local python for platform: {0} to {1}', platform, pythonDownloadUrl); }
 
@@ -239,7 +240,22 @@ export default class JupyterServerInstallation {
 		};
 	}
 
-	public startInstallProcess(pythonInstallationPath?: string): Promise<void> {
+	private async isPythonRunning(): Promise<boolean> {
+		let filePromise = new Promise<boolean>(resolve => {
+			fs.open(this._pythonExecutable, 'r+', (err, fd) => {
+				if (!err) {
+					fs.close(fd);
+					resolve(false);
+				}
+
+				resolve(err.code === 'EBUSY' || err.code === 'EPERM');
+			});
+		});
+
+		return await filePromise;
+	}
+
+	public async startInstallProcess(pythonInstallationPath?: string): Promise<void> {
 		if (pythonInstallationPath) {
 			this._pythonInstallationPath = pythonInstallationPath;
 			this.configurePackagePaths();
@@ -249,6 +265,12 @@ export default class JupyterServerInstallation {
 			notebookConfig.update(constants.pythonPathConfigKey, this._pythonInstallationPath, ConfigurationTarget.Global);
 		};
 		if (!fs.existsSync(this._pythonExecutable) || this._forceInstall) {
+			let isPythonRunning = await this.isPythonRunning();
+			if (isPythonRunning) {
+				throw new Error(msgPythonRunningError);
+			}
+
+			this._installReady = new Deferred<void>();
 			this.apiWrapper.startBackgroundOperation({
 				displayName: msgTaskName,
 				description: msgTaskName,
@@ -273,7 +295,7 @@ export default class JupyterServerInstallation {
 			this._installReady.resolve();
 			updateConfig();
 		}
-		return this._installReady.promise;
+		await this._installReady.promise;
 	}
 
 	public async promptForPythonInstall(): Promise<void> {
