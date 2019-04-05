@@ -284,6 +284,10 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		return { id: value.id, title: value.title, container: containerResult.container, alwaysShow: value.alwaysShow };
 	}
 
+	protected getContentType(tab: TabConfig): string {
+		return tab.container ? Object.keys(tab.container)[0] : '';
+	}
+
 	private addNewTab(tab: TabConfig): void {
 		const existedTab = this.tabs.find(i => i.id === tab.id);
 		if (!existedTab) {

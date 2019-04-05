@@ -132,6 +132,10 @@ export class DashboardNavSection extends DashboardTab implements OnDestroy, OnCh
 		}
 	}
 
+	protected getContentType(tab: TabConfig): string {
+		return tab.container ? Object.keys(tab.container)[0] : '';
+	}
+
 	public get id(): string {
 		return this.tab.id;
 	}
