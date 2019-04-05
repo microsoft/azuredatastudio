@@ -14,7 +14,7 @@ import { IStatusbarItem } from 'vs/workbench/browser/parts/statusbar/statusbar';
 import { Themable, STATUS_BAR_FOREGROUND } from 'vs/workbench/common/theme';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 
-import { IAccountManagementService } from 'sql/platform/accountManagement/common/interfaces';
+import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 
 export class AccountListStatusbarItem extends Themable implements IStatusbarItem {
 	private _manageLinkedAccountAction: IAction;

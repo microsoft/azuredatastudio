@@ -10,8 +10,8 @@ import * as azdata from 'azdata';
 import * as TypeMoq from 'typemoq';
 import { EventVerifierSingle } from 'sqltest/utils/eventVerifier';
 import { Emitter } from 'vs/base/common/event';
-import { AccountViewModel } from 'sql/platform/accountManagement/common/accountViewModel';
-import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/platform/accountManagement/common/eventTypes';
+import { AccountViewModel } from 'sql/platform/accounts/common/accountViewModel';
+import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/platform/accounts/common/eventTypes';
 import { AccountManagementTestService } from 'sqltest/stubs/accountManagementStubs';
 
 // SUITE STATE /////////////////////////////////////////////////////////////

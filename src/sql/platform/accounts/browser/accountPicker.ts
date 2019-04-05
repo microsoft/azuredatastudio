@@ -20,9 +20,9 @@ import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
 import * as azdata from 'azdata';
 import { DropdownList } from 'sql/base/browser/ui/dropdownList/dropdownList';
 import { attachDropdownStyler } from 'sql/platform/theme/common/styler';
-import { AddAccountAction, RefreshAccountAction } from 'sql/platform/accountManagement/common/accountActions';
-import { AccountPickerListRenderer, AccountListDelegate } from 'sql/platform/accountManagement/browser/accountListRenderer';
-import { AccountPickerViewModel } from 'sql/platform/accountManagement/common/accountPickerViewModel';
+import { AddAccountAction, RefreshAccountAction } from 'sql/platform/accounts/common/accountActions';
+import { AccountPickerListRenderer, AccountListDelegate } from 'sql/platform/accounts/browser/accountListRenderer';
+import { AccountPickerViewModel } from 'sql/platform/accounts/common/accountPickerViewModel';
 
 export class AccountPicker extends Disposable {
 	public static ACCOUNTPICKERLIST_HEIGHT = 47;
@@ -84,8 +84,8 @@ export class AccountPicker extends Disposable {
 	 */
 	public createAccountPickerComponent() {
 		// Create an account list
-		let delegate = new AccountListDelegate(AccountPicker.ACCOUNTPICKERLIST_HEIGHT);
-		let accountRenderer = new AccountPickerListRenderer();
+		const delegate = new AccountListDelegate(AccountPicker.ACCOUNTPICKERLIST_HEIGHT);
+		const accountRenderer = new AccountPickerListRenderer();
 		this._listContainer = DOM.$('div.account-list-container');
 		this._accountList = new List<azdata.Account>(this._listContainer, delegate, [accountRenderer]);
 		this._register(attachListStyler(this._accountList, this._themeService));
@@ -93,13 +93,13 @@ export class AccountPicker extends Disposable {
 		this._rootElement = DOM.$('div.account-picker-container');
 
 		// Create a dropdown for account picker
-		let option: IDropdownOptions = {
+		const option: IDropdownOptions = {
 			contextViewProvider: this._contextViewService,
 			labelRenderer: (container) => this.renderLabel(container)
 		};
 
 		// Create the add account action
-		let addAccountAction = this._instantiationService.createInstance(AddAccountAction, this._providerId);
+		const addAccountAction = this._instantiationService.createInstance(AddAccountAction, this._providerId);
 		addAccountAction.addAccountCompleteEvent(() => this._addAccountCompleteEmitter.fire());
 		addAccountAction.addAccountErrorEvent((msg) => this._addAccountErrorEmitter.fire(msg));
 		addAccountAction.addAccountStartEvent(() => this._addAccountStartEmitter.fire());
@@ -116,7 +116,7 @@ export class AccountPicker extends Disposable {
 		// Create refresh account action
 		this._refreshContainer = DOM.append(this._rootElement, DOM.$('div.refresh-container'));
 		DOM.append(this._refreshContainer, DOM.$('div.sql icon warning'));
-		let actionBar = new ActionBar(this._refreshContainer, { animated: false });
+		const actionBar = new ActionBar(this._refreshContainer, { animated: false });
 		this._refreshAccountAction = this._instantiationService.createInstance(RefreshAccountAction);
 		actionBar.push(this._refreshAccountAction, { icon: false, label: true });
 
@@ -164,8 +164,8 @@ export class AccountPicker extends Disposable {
 			}
 		}
 
-		let selectedAccounts = this._accountList.getSelectedElements();
-		let account = selectedAccounts ? selectedAccounts[0] : null;
+		const selectedAccounts = this._accountList.getSelectedElements();
+		const account = selectedAccounts ? selectedAccounts[0] : undefined;
 		if (account) {
 			const badge = DOM.$('div.badge');
 			const row = DOM.append(container, DOM.$('div.selected-account-container'));
@@ -189,12 +189,12 @@ export class AccountPicker extends Disposable {
 			const row = DOM.append(container, DOM.$('div.no-account-container'));
 			row.innerText = AddAccountAction.LABEL + '...';
 		}
-		return null;
+		return undefined;
 	}
 
 	private updateAccountList(accounts: azdata.Account[]): void {
 		// keep the selection to the current one
-		let selectedElements = this._accountList.getSelectedElements();
+		const selectedElements = this._accountList.getSelectedElements();
 
 		// find selected index
 		let selectedIndex: number;
@@ -226,8 +226,8 @@ export class AccountPicker extends Disposable {
 	 * Update theming that is specific to account picker
 	 */
 	private updateTheme(theme: ITheme): void {
-		let linkColor = theme.getColor(buttonBackground);
-		let link = linkColor ? linkColor.toString() : null;
+		const linkColor = theme.getColor(buttonBackground);
+		const link = linkColor ? linkColor.toString() : null;
 		this._refreshContainer.style.color = link;
 		if (this._refreshContainer) {
 			this._refreshContainer.style.color = link;

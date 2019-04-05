@@ -24,10 +24,10 @@ import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
 import * as azdata from 'azdata';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/workbench/browser/modal/modal';
-import { FirewallRuleViewModel } from 'sql/platform/accountManagement/common/firewallRuleViewModel';
+import { FirewallRuleViewModel } from 'sql/platform/accounts/common/firewallRuleViewModel';
 import { attachModalDialogStyler, attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
-import { IAccountPickerService } from 'sql/platform/accountManagement/common/accountPicker';
+import { IAccountPickerService } from 'sql/platform/accounts/common/accountPicker';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 
@@ -173,7 +173,7 @@ export class FirewallRuleDialog extends Modal {
 		let firewallRuleSection;
 		$().div({ 'class': 'firewall-rule-section new-section' }, (firewallRuleContainer) => {
 			firewallRuleSection = firewallRuleContainer.getHTMLElement();
-			let firewallRuleLabel = localize('filewallRule', 'Firewall rule');
+			const firewallRuleLabel = localize('filewallRule', 'Firewall rule');
 			this.createLabelElement(firewallRuleContainer, firewallRuleLabel, true);
 			firewallRuleContainer.div({ 'class': 'radio-section' }, (radioContainer) => {
 				const form = DOM.append(radioContainer.getHTMLElement(), DOM.$('form.firewall-rule'));
@@ -244,8 +244,8 @@ export class FirewallRuleDialog extends Modal {
 
 	// Update theming that is specific to firewall rule flyout body
 	private updateTheme(theme: ITheme): void {
-		let linkColor = theme.getColor(buttonBackground);
-		let link = linkColor ? linkColor.toString() : null;
+		const linkColor = theme.getColor(buttonBackground);
+		const link = linkColor ? linkColor.toString() : null;
 		if (this._helpLink) {
 			this._helpLink.style.color = link;
 		}

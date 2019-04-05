@@ -13,7 +13,7 @@ import { ActionBar, IActionOptions } from 'vs/base/browser/ui/actionbar/actionba
 import { localize } from 'vs/nls';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
-import { RemoveAccountAction, RefreshAccountAction } from 'sql/platform/accountManagement/common/accountActions';
+import { RemoveAccountAction, RefreshAccountAction } from 'sql/platform/accounts/common/accountActions';
 
 import * as azdata from 'azdata';
 
@@ -114,9 +114,9 @@ export class AccountListRenderer extends AccountPickerListRenderer {
 		}
 		templateData.actions.clear();
 
-		let actionOptions: IActionOptions = { icon: true, label: false };
+		const actionOptions: IActionOptions = { icon: true, label: false };
 		if (account.isStale) {
-			let refreshAction = this._instantiationService.createInstance(RefreshAccountAction);
+			const refreshAction = this._instantiationService.createInstance(RefreshAccountAction);
 			refreshAction.account = account;
 			templateData.actions.push(refreshAction, actionOptions);
 		} else {
@@ -124,7 +124,7 @@ export class AccountListRenderer extends AccountPickerListRenderer {
 			// templateData.actions.push(new ApplyFilterAction(ApplyFilterAction.ID, ApplyFilterAction.LABEL), actionOptions);
 		}
 
-		let removeAction = this._instantiationService.createInstance(RemoveAccountAction, account);
+		const removeAction = this._instantiationService.createInstance(RemoveAccountAction, account);
 		templateData.actions.push(removeAction, actionOptions);
 	}
 }

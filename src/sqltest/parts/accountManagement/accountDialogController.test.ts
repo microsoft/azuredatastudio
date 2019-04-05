@@ -8,13 +8,13 @@
 import * as assert from 'assert';
 import * as TypeMoq from 'typemoq';
 import { Emitter } from 'vs/base/common/event';
-import { AccountDialog } from 'sql/platform/accountManagement/browser/accountDialog';
-import { AccountDialogController } from 'sql/platform/accountManagement/browser/accountDialogController';
-import { AccountViewModel } from 'sql/platform/accountManagement/common/accountViewModel';
+import { AccountDialog } from 'sql/platform/accounts/browser/accountDialog';
+import { AccountDialogController } from 'sql/platform/accounts/browser/accountDialogController';
+import { AccountViewModel } from 'sql/platform/accounts/common/accountViewModel';
 import { AccountManagementTestService } from 'sqltest/stubs/accountManagementStubs';
 import { ErrorMessageServiceStub } from 'sqltest/stubs/errorMessageServiceStub';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
-import { AccountListRenderer } from 'sql/platform/accountManagement/browser/accountListRenderer';
+import { AccountListRenderer } from 'sql/platform/accounts/browser/accountListRenderer';
 import { ContextKeyServiceStub } from 'sqltest/stubs/contextKeyServiceStub';
 
 // TESTS ///////////////////////////////////////////////////////////////////

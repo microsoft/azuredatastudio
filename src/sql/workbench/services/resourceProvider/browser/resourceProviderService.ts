@@ -12,7 +12,7 @@ import { IResourceProviderService, IHandleFirewallRuleResult } from 'sql/workben
 import * as Constants from 'sql/common/constants';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
 import * as TelemetryUtils from 'sql/common/telemetryUtilities';
-import { FirewallRuleDialogController } from 'sql/platform/accountManagement/browser/firewallRuleDialogController';
+import { FirewallRuleDialogController } from 'sql/platform/accounts/browser/firewallRuleDialogController';
 
 import * as azdata from 'azdata';
 

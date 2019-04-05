@@ -5,7 +5,7 @@
 'use strict';
 
 import * as azdata from 'azdata';
-import { IAccountManagementService } from 'sql/platform/accountManagement/common/interfaces';
+import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 import { dispose, IDisposable } from 'vs/base/common/lifecycle';
 import {
 	ExtHostAccountManagementShape,
@@ -15,7 +15,7 @@ import {
 } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
-import { UpdateAccountListEventParams } from 'sql/platform/accountManagement/common/eventTypes';
+import { UpdateAccountListEventParams } from 'sql/platform/accounts/common/eventTypes';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadAccountManagement)
 export class MainThreadAccountManagement implements MainThreadAccountManagementShape {

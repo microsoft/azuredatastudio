@@ -9,7 +9,7 @@ import { localize } from 'vs/nls';
 import { Action } from 'vs/base/common/actions';
 
 import { error } from 'sql/base/common/log';
-import { IAccountManagementService } from 'sql/platform/accountManagement/common/interfaces';
+import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 import { IDialogService, IConfirmation } from 'vs/platform/dialogs/common/dialogs';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
@@ -45,26 +45,19 @@ export class AddAccountAction extends Action {
 	}
 
 	public run(): Promise<boolean> {
-		let self = this;
 
 		// Fire the event that we've started adding accounts
 		this._addAccountStartEmitter.fire();
 
-		return new Promise((resolve, reject) => {
-			self._accountManagementService.addAccount(self._providerId)
-				.then(
-				() => {
-					self._addAccountCompleteEmitter.fire();
-					resolve(true);
-				},
-				err => {
-					error(`Error while adding account: ${err}`);
-					self._addAccountErrorEmitter.fire(err);
-					self._addAccountCompleteEmitter.fire();
-					reject(err);
-				}
-				);
-		});
+		return Promise.resolve(this._accountManagementService.addAccount(this._providerId)
+			.then(() => {
+				this._addAccountCompleteEmitter.fire();
+				return true;
+			}, err => {
+				error(`Error while adding account: ${err}`);
+				this._addAccountErrorEmitter.fire(err);
+				this._addAccountCompleteEmitter.fire();
+			}));
 	}
 }
 
@@ -85,10 +78,8 @@ export class RemoveAccountAction extends Action {
 	}
 
 	public run(): Promise<boolean> {
-		let self = this;
-
 		// Ask for Confirm
-		let confirm: IConfirmation = {
+		const confirm: IConfirmation = {
 			message: localize('confirmRemoveUserAccountMessage', "Are you sure you want to remove '{0}'?", this._account.displayInfo.displayName),
 			primaryButton: localize('accountActions.yes', 'Yes'),
 			secondaryButton: localize('accountActions.no', 'No'),
@@ -99,19 +90,13 @@ export class RemoveAccountAction extends Action {
 			if (!result) {
 				return Promise.resolve(false);
 			} else {
-				return new Promise((resolve, reject) => {
-					self._accountManagementService.removeAccount(self._account.key)
-						.then(
-						(result) => { resolve(result); },
-						(err) => {
-							// Must handle here as this is an independent action
-							self._notificationService.notify({
-								severity: Severity.Error,
-								message: localize('removeAccountFailed', 'Failed to remove account')
-							});
-							resolve(false);
-						}
-						);
+				return Promise.resolve(this._accountManagementService.removeAccount(this._account.key)).catch(err => {
+					// Must handle here as this is an independent action
+					this._notificationService.notify({
+						severity: Severity.Error,
+						message: localize('removeAccountFailed', 'Failed to remove account')
+					});
+					return false;
 				});
 			}
 		});
@@ -152,23 +137,17 @@ export class RefreshAccountAction extends Action {
 		super(RefreshAccountAction.ID, RefreshAccountAction.LABEL, 'refresh-account-action icon refresh');
 	}
 	public run(): Promise<boolean> {
-		let self = this;
-		return new Promise((resolve, reject) => {
-			if (self.account) {
-				self._accountManagementService.refreshAccount(self.account)
-					.then(
-					() => {
-						resolve(true);
-					},
+		if (this.account) {
+			return Promise.resolve(this._accountManagementService.refreshAccount(this.account)
+				.then(() => true,
 					err => {
 						error(`Error while refreshing account: ${err}`);
-						reject(err);
+						return Promise.reject(err);
 					}
-					);
-			} else {
-				let errorMessage = localize('NoAccountToRefresh', 'There is no account to refresh');
-				reject(errorMessage);
-			}
-		});
+				));
+		} else {
+			const errorMessage = localize('NoAccountToRefresh', 'There is no account to refresh');
+			return Promise.reject(errorMessage);
+		}
 	}
 }

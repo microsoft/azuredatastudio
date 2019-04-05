@@ -13,7 +13,7 @@ import { join } from 'path';
 import { createCSSRule } from 'vs/base/browser/dom';
 import { URI } from 'vs/base/common/uri';
 
-import { ManageLinkedAccountAction } from 'sql/platform/accountManagement/browser/accountListStatusbarItem';
+import { ManageLinkedAccountAction } from 'sql/platform/accounts/browser/accountListStatusbarItem';
 
 let actionRegistry = <IWorkbenchActionRegistry>Registry.as(Extensions.WorkbenchActions);
 
@@ -76,10 +76,9 @@ export const accountsContribution: IJSONSchema = {
 ExtensionsRegistry.registerExtensionPoint<IAccountContrib | IAccountContrib[]>({ extensionPoint: 'account-type', jsonSchema: accountsContribution }).setHandler(extensions => {
 
 	function handleCommand(account: IAccountContrib, extension: IExtensionPointUser<any>) {
-		let { icon, id } = account;
-		let iconClass: string;
+		const { icon, id } = account;
 		if (icon) {
-			iconClass = id;
+			const iconClass = id;
 			if (typeof icon === 'string') {
 				const path = join(extension.description.extensionLocation.fsPath, icon);
 				createCSSRule(`.icon.${iconClass}`, `background-image: url("${URI.file(path).toString()}")`);
