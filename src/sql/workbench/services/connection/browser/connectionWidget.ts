@@ -68,7 +68,8 @@ export class ConnectionWidget {
 	private _focusedBeforeHandleOnConnection: HTMLElement;
 	private _providerName: string;
 	private _authTypeMap: { [providerName: string]: AuthenticationType[] } = {
-		[Constants.mssqlProviderName]: [AuthenticationType.SqlLogin, AuthenticationType.Integrated, AuthenticationType.AzureMFA]
+		[Constants.mssqlProviderName]: [AuthenticationType.SqlLogin, AuthenticationType.Integrated, AuthenticationType.AzureMFA],
+		[Constants.cmsProviderName]: [AuthenticationType.SqlLogin, AuthenticationType.Integrated, AuthenticationType.AzureMFA]
 	};
 	private _saveProfile: boolean;
 	private _databaseDropdownExpanded: boolean = false;
@@ -418,7 +419,7 @@ export class ConnectionWidget {
 	}
 
 	private setConnectButton(): void {
-		let showUsernameAndPassword: boolean = true;
+		let showUsernameAndPassword: boolean = this._providerName !== Constants.cmsProviderName;
 		if (this.authType) {
 			showUsernameAndPassword = this.authType === AuthenticationType.SqlLogin;
 		}
@@ -751,7 +752,7 @@ export class ConnectionWidget {
 	}
 
 	public get databaseName(): string {
-		return this._databaseNameInputBox.value;
+		return this._databaseNameInputBox ? this._databaseNameInputBox.value : undefined;
 	}
 
 	public get userName(): string {
