@@ -126,16 +126,10 @@ export interface MainThreadCommentsShape extends IDisposable {
 	$registerCommentController(handle: number, id: string, label: string): void;
 	$unregisterCommentController(handle: number): void;
 	$updateCommentControllerFeatures(handle: number, features: CommentProviderFeatures): void;
-	$createCommentThread(handle: number, commentThreadHandle: number, threadId: string, resource: UriComponents, range: IRange, comments: modes.Comment[], acceptInputCommand: modes.Command | undefined, additionalCommands: modes.Command[], deleteCommand: modes.Command | undefined, collapseState: modes.CommentThreadCollapsibleState): modes.CommentThread2 | undefined;
+	$createCommentThread(handle: number, commentThreadHandle: number, threadId: string, resource: UriComponents, range: IRange): modes.CommentThread2 | undefined;
+	$updateCommentThread(handle: number, commentThreadHandle: number, threadId: string, resource: UriComponents, range: IRange, label: string, comments: modes.Comment[], acceptInputCommand: modes.Command | undefined, additionalCommands: modes.Command[], deleteCommand: modes.Command | undefined, collapseState: modes.CommentThreadCollapsibleState): void;
 	$deleteCommentThread(handle: number, commentThreadHandle: number): void;
-	$updateComments(handle: number, commentThreadHandle: number, comments: modes.Comment[]): void;
 	$setInputValue(handle: number, input: string): void;
-	$updateCommentThreadAcceptInputCommand(handle: number, commentThreadHandle: number, acceptInputCommand: modes.Command): void;
-	$updateCommentThreadAdditionalCommands(handle: number, commentThreadHandle: number, additionalCommands: modes.Command[]): void;
-	$updateCommentThreadDeleteCommand(handle: number, commentThreadHandle: number, deleteCommand: modes.Command): void;
-	$updateCommentThreadCollapsibleState(handle: number, commentThreadHandle: number, collapseState: modes.CommentThreadCollapsibleState): void;
-	$updateCommentThreadRange(handle: number, commentThreadHandle: number, range: IRange): void;
-	$updateCommentThreadLabel(handle: number, commentThreadHandle: number, label: string): void;
 	$registerDocumentCommentProvider(handle: number, features: CommentProviderFeatures): void;
 	$unregisterDocumentCommentProvider(handle: number): void;
 	$registerWorkspaceCommentProvider(handle: number, extensionId: ExtensionIdentifier): void;
@@ -264,6 +258,13 @@ export interface MainThreadConsoleShape extends IDisposable {
 		severity: string;
 		arguments: string;
 	}): void;
+}
+
+export interface MainThreadKeytarShape extends IDisposable {
+	$getPassword(service: string, account: string): Promise<string | null>;
+	$setPassword(service: string, account: string, password: string): Promise<void>;
+	$deletePassword(service: string, account: string): Promise<boolean>;
+	$findPassword(service: string): Promise<string | null>;
 }
 
 export interface ISerializedRegExp {
@@ -862,14 +863,30 @@ export class IdObject {
 	}
 }
 
-export interface SuggestionDto extends modes.CompletionItem {
-	_id: number;
-	_parentId: number;
+export interface SuggestDataDto {
+	a/* label */: string;
+	b/* kind */: modes.CompletionItemKind;
+	c/* detail */?: string;
+	d/* documentation */?: string | IMarkdownString;
+	e/* sortText */?: string;
+	f/* filterText */?: string;
+	g/* preselect */?: boolean;
+	h/* insertText */?: string;
+	i/* insertTextRules */?: modes.CompletionItemInsertTextRule;
+	j/* range */?: IRange;
+	k/* commitCharacters */?: string[];
+	l/* additionalTextEdits */?: ISingleEditOperation[];
+	m/* command */?: modes.Command;
+	// not-standard
+	x: number;
+	y: number;
 }
 
-export interface SuggestResultDto extends IdObject {
-	suggestions: SuggestionDto[];
-	incomplete?: boolean;
+export interface SuggestResultDto {
+	x: number;
+	a: IRange;
+	b: SuggestDataDto[];
+	c?: boolean;
 }
 
 export interface LocationDto {
@@ -970,7 +987,7 @@ export interface CallHierarchyDto {
 export interface ExtHostLanguageFeaturesShape {
 	$provideDocumentSymbols(handle: number, resource: UriComponents, token: CancellationToken): Promise<modes.DocumentSymbol[] | undefined>;
 	$provideCodeLenses(handle: number, resource: UriComponents, token: CancellationToken): Promise<CodeLensDto[]>;
-	$resolveCodeLens(handle: number, resource: UriComponents, symbol: CodeLensDto, token: CancellationToken): Promise<CodeLensDto | undefined>;
+	$resolveCodeLens(handle: number, symbol: CodeLensDto, token: CancellationToken): Promise<CodeLensDto | undefined>;
 	$provideCodeInsets(handle: number, resource: UriComponents, token: CancellationToken): Promise<CodeInsetDto[] | undefined>;
 	$resolveCodeInset(handle: number, resource: UriComponents, symbol: CodeInsetDto, token: CancellationToken): Promise<CodeInsetDto>;
 	$provideDefinition(handle: number, resource: UriComponents, position: IPosition, token: CancellationToken): Promise<DefinitionLinkDto[]>;
@@ -990,7 +1007,7 @@ export interface ExtHostLanguageFeaturesShape {
 	$provideRenameEdits(handle: number, resource: UriComponents, position: IPosition, newName: string, token: CancellationToken): Promise<WorkspaceEditDto | undefined>;
 	$resolveRenameLocation(handle: number, resource: UriComponents, position: IPosition, token: CancellationToken): Promise<modes.RenameLocation | undefined>;
 	$provideCompletionItems(handle: number, resource: UriComponents, position: IPosition, context: modes.CompletionContext, token: CancellationToken): Promise<SuggestResultDto | undefined>;
-	$resolveCompletionItem(handle: number, resource: UriComponents, position: IPosition, suggestion: modes.CompletionItem, token: CancellationToken): Promise<modes.CompletionItem>;
+	$resolveCompletionItem(handle: number, resource: UriComponents, position: IPosition, id: number, pid: number, token: CancellationToken): Promise<SuggestDataDto | undefined>;
 	$releaseCompletionItems(handle: number, id: number): void;
 	$provideSignatureHelp(handle: number, resource: UriComponents, position: IPosition, context: modes.SignatureHelpContext, token: CancellationToken): Promise<modes.SignatureHelp | undefined>;
 	$provideDocumentLinks(handle: number, resource: UriComponents, token: CancellationToken): Promise<LinkDto[] | undefined>;
@@ -1199,6 +1216,7 @@ export const MainContext = {
 	MainThreadTextEditors: createMainId<MainThreadTextEditorsShape>('MainThreadTextEditors'),
 	MainThreadErrors: createMainId<MainThreadErrorsShape>('MainThreadErrors'),
 	MainThreadTreeViews: createMainId<MainThreadTreeViewsShape>('MainThreadTreeViews'),
+	MainThreadKeytar: createMainId<MainThreadKeytarShape>('MainThreadKeytar'),
 	MainThreadLanguageFeatures: createMainId<MainThreadLanguageFeaturesShape>('MainThreadLanguageFeatures'),
 	MainThreadLanguages: createMainId<MainThreadLanguagesShape>('MainThreadLanguages'),
 	MainThreadMessageService: createMainId<MainThreadMessageServiceShape>('MainThreadMessageService'),

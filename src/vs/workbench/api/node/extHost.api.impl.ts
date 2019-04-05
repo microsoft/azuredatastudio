@@ -19,7 +19,7 @@ import { score } from 'vs/editor/common/modes/languageSelector';
 import * as files from 'vs/platform/files/common/files';
 import pkg from 'vs/platform/product/node/package';
 import product from 'vs/platform/product/node/product';
-import { ExtHostContext, IInitData, IMainContext, MainContext } from 'vs/workbench/api/common/extHost.protocol';
+import { ExtHostContext, IInitData, IMainContext, MainContext, MainThreadKeytarShape } from 'vs/workbench/api/common/extHost.protocol';
 import { ExtHostApiCommands } from 'vs/workbench/api/node/extHostApiCommands';
 import { ExtHostClipboard } from 'vs/workbench/api/node/extHostClipboard';
 import { ExtHostCommands } from 'vs/workbench/api/node/extHostCommands';
@@ -237,6 +237,7 @@ export function createApiFactory(
 			get language() { return platform.language!; },
 			get appName() { return product.nameLong; },
 			get appRoot() { return initData.environment.appRoot!.fsPath; },
+			get uriScheme() { return product.urlProtocol; },
 			get logLevel() {
 				checkProposedApiEnabled(extension);
 				return typeConverters.LogLevel.to(extHostLogService.getLevel());
@@ -883,41 +884,105 @@ class Extension<T> implements vscode.Extension<T> {
 	}
 }
 
-export function initializeExtensionApi(extensionService: ExtHostExtensionService, apiFactory: IExtensionApiFactory, extensionRegistry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): Promise<void> {
-	return extensionService.getExtensionPathIndex().then(trie => defineAPI(apiFactory, trie, extensionRegistry, configProvider));
+interface INodeModuleFactory {
+	readonly nodeModuleName: string;
+	load(request: string, parent: { filename: string; }): any;
 }
 
-function defineAPI(factory: IExtensionApiFactory, extensionPaths: TernarySearchTree<IExtensionDescription>, extensionRegistry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): void {
+export class NodeModuleRequireInterceptor {
+	public static INSTANCE = new NodeModuleRequireInterceptor();
 
-	// each extension is meant to get its own api implementation
-	const extApiImpl = new Map<string, typeof vscode>();
-	let defaultApiImpl: typeof vscode;
+	private readonly _factories: Map<string, INodeModuleFactory>;
 
-	const node_module = <any>require.__$__nodeRequire('module');
-	const original = node_module._load;
-	node_module._load = function load(request: string, parent: any, isMain: any) {
-		if (request !== 'vscode') {
-			return original.apply(this, arguments);
-		}
+	constructor() {
+		this._factories = new Map<string, INodeModuleFactory>();
+		this._installInterceptor(this._factories);
+	}
+
+	private _installInterceptor(factories: Map<string, INodeModuleFactory>): void {
+		const node_module = <any>require.__$__nodeRequire('module');
+		const original = node_module._load;
+		node_module._load = function load(request: string, parent: { filename: string; }, isMain: any) {
+			if (!factories.has(request)) {
+				return original.apply(this, arguments);
+			}
+			return factories.get(request)!.load(request, parent);
+		};
+	}
+
+	public register(interceptor: INodeModuleFactory): void {
+		this._factories.set(interceptor.nodeModuleName, interceptor);
+	}
+}
+
+export class VSCodeNodeModuleFactory implements INodeModuleFactory {
+	public readonly nodeModuleName = 'vscode';
+
+	private readonly _extApiImpl = new Map<string, typeof vscode>();
+	private _defaultApiImpl: typeof vscode;
+
+	constructor(
+		private readonly _apiFactory: IExtensionApiFactory,
+		private readonly _extensionPaths: TernarySearchTree<IExtensionDescription>,
+		private readonly _extensionRegistry: ExtensionDescriptionRegistry,
+		private readonly _configProvider: ExtHostConfigProvider
+	) {
+	}
+
+	public load(request: string, parent: { filename: string; }): any {
 
 		// get extension id from filename and api for extension
-		const ext = extensionPaths.findSubstr(URI.file(parent.filename).fsPath);
+		const ext = this._extensionPaths.findSubstr(URI.file(parent.filename).fsPath);
 		if (ext) {
-			let apiImpl = extApiImpl.get(ExtensionIdentifier.toKey(ext.identifier));
+			let apiImpl = this._extApiImpl.get(ExtensionIdentifier.toKey(ext.identifier));
 			if (!apiImpl) {
-				apiImpl = factory(ext, extensionRegistry, configProvider);
-				extApiImpl.set(ExtensionIdentifier.toKey(ext.identifier), apiImpl);
+				apiImpl = this._apiFactory(ext, this._extensionRegistry, this._configProvider);
+				this._extApiImpl.set(ExtensionIdentifier.toKey(ext.identifier), apiImpl);
 			}
 			return apiImpl;
 		}
 
 		// fall back to a default implementation
-		if (!defaultApiImpl) {
+		if (!this._defaultApiImpl) {
 			let extensionPathsPretty = '';
-			extensionPaths.forEach((value, index) => extensionPathsPretty += `\t${index} -> ${value.identifier.value}\n`);
+			this._extensionPaths.forEach((value, index) => extensionPathsPretty += `\t${index} -> ${value.identifier.value}\n`);
 			console.warn(`Could not identify extension for 'vscode' require call from ${parent.filename}. These are the extension path mappings: \n${extensionPathsPretty}`);
-			defaultApiImpl = factory(nullExtensionDescription, extensionRegistry, configProvider);
+			this._defaultApiImpl = this._apiFactory(nullExtensionDescription, this._extensionRegistry, this._configProvider);
 		}
-		return defaultApiImpl;
-	};
+		return this._defaultApiImpl;
+	}
+}
+
+interface IKeytarModule {
+	getPassword(service: string, account: string): Promise<string | null>;
+	setPassword(service: string, account: string, password: string): Promise<void>;
+	deletePassword(service: string, account: string): Promise<boolean>;
+	findPassword(service: string): Promise<string | null>;
+}
+
+export class KeytarNodeModuleFactory implements INodeModuleFactory {
+	public readonly nodeModuleName = 'keytar';
+
+	private _impl: IKeytarModule;
+
+	constructor(mainThreadKeytar: MainThreadKeytarShape) {
+		this._impl = {
+			getPassword: (service: string, account: string): Promise<string | null> => {
+				return mainThreadKeytar.$getPassword(service, account);
+			},
+			setPassword: (service: string, account: string, password: string): Promise<void> => {
+				return mainThreadKeytar.$setPassword(service, account, password);
+			},
+			deletePassword: (service: string, account: string): Promise<boolean> => {
+				return mainThreadKeytar.$deletePassword(service, account);
+			},
+			findPassword: (service: string): Promise<string | null> => {
+				return mainThreadKeytar.$findPassword(service);
+			}
+		};
+	}
+
+	public load(request: string, parent: { filename: string; }): any {
+		return this._impl;
+	}
 }

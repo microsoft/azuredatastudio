@@ -18,6 +18,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
+import { IExpandableTree } from 'sql/parts/objectExplorer/viewlet/treeUpdateUtils';
 
 /**
  * Implements tree view for file browser
@@ -96,7 +97,9 @@ export class FileBrowserTreeView implements IDisposable {
 			if (selection && selection.length === 1) {
 				selectedElement = <any>selection[0];
 			}
-			targetsToExpand = this._tree.getExpandedElements();
+			// convert to old VS Code tree interface with expandable methods
+			let expandableTree: IExpandableTree = <IExpandableTree>this._tree;
+			targetsToExpand = expandableTree.getExpandedElements();
 		}
 
 		if (rootNode) {

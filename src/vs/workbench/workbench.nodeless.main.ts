@@ -106,7 +106,7 @@ import 'vs/workbench/services/keybinding/common/keybindingEditing';
 import 'vs/workbench/services/hash/common/hashService';
 // import 'vs/workbench/services/textMate/electron-browser/textMateService';
 import 'vs/workbench/services/configurationResolver/browser/configurationResolverService';
-// import 'vs/workbench/services/workspace/node/workspaceEditingService';
+// import 'vs/workbench/services/workspace/electron-browser/workspaceEditingService';
 // import 'vs/workbench/services/extensions/electron-browser/inactiveExtensionUrlHandler';
 import 'vs/workbench/services/decorations/browser/decorationsService';
 // import 'vs/workbench/services/search/node/searchService';
@@ -192,6 +192,9 @@ import 'vs/workbench/browser/parts/statusbar/statusbarPart';
 
 //#region --- workbench contributions
 
+// Workspace File Watching
+import 'vs/workbench/services/files2/common/workspaceWatcher';
+
 // Telemetry
 import 'vs/workbench/contrib/telemetry/browser/telemetry.contribution';
 
@@ -237,6 +240,7 @@ import 'vs/workbench/contrib/scm/browser/scmViewlet';
 // import 'vs/workbench/contrib/debug/browser/debugEditorContribution';
 // import 'vs/workbench/contrib/debug/browser/repl';
 // import 'vs/workbench/contrib/debug/browser/debugViewlet';
+// import 'vs/workbench/services/extensions/electron-browser/extensionHostDebugService';
 
 // Markers
 import 'vs/workbench/contrib/markers/browser/markers.contribution';
