@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import 'vs/css!./media/firewallRuleDialog';
 import { Builder, $ } from 'sql/base/browser/builder';
 import * as DOM from 'vs/base/browser/dom';
