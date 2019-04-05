@@ -219,7 +219,7 @@
       <target state="translated">Spezifiziert Sitzungsvorlagen</target>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/widgets/insights/views/charts/types/barChart.contribution" source-language="en" target-language="de" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/widgets/insights/views/charts/types/barChart.contribution" source-language="en" target-language="de" datatype="plaintext"><body>
     <trans-unit id="yAxisMin">
       <source xml:lang="en">Minimum value of the y axis</source>
     </trans-unit>
@@ -243,13 +243,13 @@
       <target state="translated">Bezeichnung für die x-Achse</target>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/widgets/insights/views/charts/types/lineChart.contribution" source-language="en" target-language="de" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/widgets/insights/views/charts/types/lineChart.contribution" source-language="en" target-language="de" datatype="plaintext"><body>
     <trans-unit id="dataTypeDescription">
       <source xml:lang="en">Indicates data property of a data set for a chart.</source>
       <target state="translated">Zeigt die Daten-Eigenschaft eines Datensatzes für ein Diagramm an.</target>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/widgets/insights/views/imageInsight.contribution" source-language="en" target-language="de" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/widgets/insights/views/imageInsight.contribution" source-language="en" target-language="de" datatype="plaintext"><body>
     <trans-unit id="imageInsightDescription">
       <source xml:lang="en">Displays an image, for example one returned by an R query using ggplot2</source>
       <target state="translated">Zeigt ein Bild an, zum Beispiel eins, das über eine R-Abfrage und mithilfe von ggplot2 erzeugt wurde</target>
@@ -263,24 +263,24 @@
       <target state="translated">Ist dies als Hex, base64 oder einem anderen Format kodiert?</target>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/widgets/insights/views/tableInsight.contribution" source-language="en" target-language="de" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/widgets/insights/views/tableInsight.contribution" source-language="en" target-language="de" datatype="plaintext"><body>
     <trans-unit id="tableInsightDescription">
       <source xml:lang="en">Displays the results in a simple table</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/widgets/insights/views/countInsight.contribution" source-language="en" target-language="de" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/widgets/insights/views/countInsight.contribution" source-language="en" target-language="de" datatype="plaintext"><body>
     <trans-unit id="countInsightDescription">
       <source xml:lang="en">For each column in a resultset, displays the value in row 0 as a count followed by the column name. Supports "1 Healthy", "3 Unhealthy" for example, where "Healthy" is the column name and 1 is the value in row 1 cell 1</source>
       <target state="translated">Für jede Spalte in einem Resultset zeigt den Wert in Zeile 0 als Graf gefolgt von den Namen der Spalte. Unterstützt "1 gesund", "3 fehlerhaft"., wo "Gesund" der Spaltenname ist und 1 der Wert in Zeile 1 ist 1</target>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/containers/dashboardWebviewContainer.contribution" source-language="en" target-language="de" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/containers/dashboardWebviewContainer.contribution" source-language="en" target-language="de" datatype="plaintext"><body>
     <trans-unit id="dashboard.container.webview">
       <source xml:lang="en">The webview that will be displayed in this tab.</source>
       <target state="translated">Die Webview, die auf dieser Registerkarte angezeigt wird.</target>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/containers/dashboardWidgetContainer.contribution" source-language="en" target-language="de" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/containers/dashboardWidgetContainer.contribution" source-language="en" target-language="de" datatype="plaintext"><body>
     <trans-unit id="dashboard.container.widgets">
       <source xml:lang="en">The list of widgets that will be displayed in this tab.</source>
       <target state="translated">Die Liste der Widgets, die auf dieser Registerkarte angezeigt wird.</target>
@@ -289,7 +289,7 @@
       <source xml:lang="en">The list of widgets is expected inside widgets-container for extension.</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/containers/dashboardGridContainer.contribution" source-language="en" target-language="de" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/containers/dashboardGridContainer.contribution" source-language="en" target-language="de" datatype="plaintext"><body>
     <trans-unit id="dashboard.container.gridtab.items">
       <source xml:lang="en">The list of widgets or webviews that will be displayed in this tab.</source>
       <target state="translated">Die Liste der Widgets oder Webviews, die auf dieser Registerkarte angezeigt wird.</target>
@@ -298,7 +298,7 @@
       <source xml:lang="en">widgets or webviews are expected inside widgets-container for extension.</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/containers/dashboardNavSection.contribution" source-language="en" target-language="de" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/containers/dashboardNavSection.contribution" source-language="en" target-language="de" datatype="plaintext"><body>
     <trans-unit id="dashboard.container.left-nav-bar.id">
       <source xml:lang="en">Unique identifier for this nav section. Will be passed to the extension for any requests.</source>
       <target state="translated">Eindeutiger Bezeichner für diesen Navigationsbereich. Wird für alle Anfragen an die Erweiterung übergeben.</target>
@@ -340,7 +340,7 @@
       <source xml:lang="en">NAV_SECTION within NAV_SECTION is an invalid container for extension.</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/containers/dashboardContainer.contribution" source-language="en" target-language="de" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/containers/dashboardContainer.contribution" source-language="en" target-language="de" datatype="plaintext"><body>
     <trans-unit id="sqlops.extension.contributes.dashboard.container.id">
       <source xml:lang="en">Unique identifier for this container.</source>
       <target state="translated">Eindeutiger Bezeichner für diesen Container.</target>
@@ -365,17 +365,17 @@
       <source xml:lang="en">Unknown container type defines in dashboard container for extension.</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/containers/dashboardModelViewContainer.contribution" source-language="en" target-language="de" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/containers/dashboardModelViewContainer.contribution" source-language="en" target-language="de" datatype="plaintext"><body>
     <trans-unit id="dashboard.container.modelview">
       <source xml:lang="en">The model-backed view that will be displayed in this tab.</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/containers/dashboardControlHostContainer.contribution" source-language="en" target-language="de" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/containers/dashboardControlHostContainer.contribution" source-language="en" target-language="de" datatype="plaintext"><body>
     <trans-unit id="dashboard.container.controlhost">
       <source xml:lang="en">The controlhost that will be displayed in this tab.</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/common/dashboardTab.contribution" source-language="en" target-language="de" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/common/dashboardTab.contribution" source-language="en" target-language="de" datatype="plaintext"><body>
     <trans-unit id="sqlops.extension.contributes.dashboard.tab.id">
       <source xml:lang="en">Unique identifier for this tab. Will be passed to the extension for any requests.</source>
       <target state="translated">Eindeutiger Bezeichner für diese Registerkarte. Wird für alle Anfragen an die Erweiterung übergeben werden.</target>
@@ -866,7 +866,7 @@
       <target state="translated">In den Dashboards verwendetes Widget</target>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/widgets/insights/views/charts/chartInsight.contribution" source-language="en" target-language="de" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/widgets/insights/views/charts/chartInsight.contribution" source-language="en" target-language="de" datatype="plaintext"><body>
     <trans-unit id="chartInsightDescription">
       <source xml:lang="en">Displays results of a query as a chart on the dashboard</source>
       <target state="translated">Zeigt die Ergebnisse einer Abfrage als Diagramm auf dem Dashboard</target>
@@ -894,7 +894,7 @@
       <source xml:lang="en">If showTopNData is set, showing only top N data in the chart.</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/widgets/insights/insightsWidgetSchemas" source-language="en" target-language="de" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/widgets/insights/insightsWidgetSchemas" source-language="en" target-language="de" datatype="plaintext"><body>
     <trans-unit id="insightWidgetDescription">
       <source xml:lang="en">Adds a widget that can query a server or database and display the results in multiple ways - as a chart, summarized count, and more</source>
       <target state="translated">Fügt eine Widget hinzu, das einen Server oder eine Datenbank abfragen und die Ergebnisse anzeigen kann - als ein Diagramm, Zähler und mehr</target>
@@ -946,7 +946,7 @@
       <target state="translated">Zeige "Erste Schritte"</target>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/pages/databaseDashboardPage.contribution" source-language="en" target-language="de" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/pages/databaseDashboardPage.contribution" source-language="en" target-language="de" datatype="plaintext"><body>
     <trans-unit id="dashboardDatabaseProperties">
       <source xml:lang="en">Enable or disable the properties widget</source>
       <target state="translated">Aktivieren Sie oder deaktivieren Sie das Eigenschaften-widget</target>
@@ -996,7 +996,7 @@
       <target state="translated">Passt die Datenbank-Dashboard-Registerkarten an</target>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/pages/dashboardPageContribution" source-language="en" target-language="de" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/pages/dashboardPageContribution" source-language="en" target-language="de" datatype="plaintext"><body>
     <trans-unit id="sqlops.extension.contributes.widget.when">
       <source xml:lang="en">Condition which must be true to show this item</source>
     </trans-unit>
@@ -1023,7 +1023,7 @@
       <source xml:lang="en">Extension tab is unknown or not installed.</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/pages/serverDashboardPage.contribution" source-language="en" target-language="de" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/pages/serverDashboardPage.contribution" source-language="en" target-language="de" datatype="plaintext"><body>
     <trans-unit id="dashboardServerProperties">
       <source xml:lang="en">Enable or disable the properties widget</source>
       <target state="translated">Aktivieren Sie oder deaktivieren Sie das Eigenschaften-widget</target>
@@ -1597,7 +1597,7 @@
       <target state="translated">Optionen</target>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/newDashboardTabDialog/newDashboardTabDialog" source-language="en" target-language="de" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/newDashboardTabDialog/newDashboardTabDialog" source-language="en" target-language="de" datatype="plaintext"><body>
     <trans-unit id="newDashboardTab.openDashboardExtensions">
       <source xml:lang="en">Open dashboard extensions</source>
     </trans-unit>
@@ -1938,7 +1938,7 @@
       <target state="translated">Profiler-Editor für Ereignistext. Nur lesend</target>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/widgets/insights/views/charts/chartInsight.component" source-language="en" target-language="de" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/widgets/insights/views/charts/chartInsight.component" source-language="en" target-language="de" datatype="plaintext"><body>
     <trans-unit id="chartErrorMessage">
       <source xml:lang="en">Chart cannot be displayed with the given data</source>
     </trans-unit>
@@ -2618,19 +2618,19 @@
       <target state="translated">My-Widget</target>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/services/breadcrumb.service" source-language="en" target-language="de" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/services/breadcrumb.service" source-language="en" target-language="de" datatype="plaintext"><body>
     <trans-unit id="homeCrumb">
       <source xml:lang="en">Home</source>
       <target state="translated">Start</target>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/services/dashboardServiceInterface.service" source-language="en" target-language="de" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/services/dashboardServiceInterface.service" source-language="en" target-language="de" datatype="plaintext"><body>
     <trans-unit id="dashboard.changeDatabaseFailure">
       <source xml:lang="en">Failed to change database</source>
       <target state="translated">Fehler beim Wechseln der Datenbank</target>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/containers/dashboardErrorContainer.component" source-language="en" target-language="de" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/containers/dashboardErrorContainer.component" source-language="en" target-language="de" datatype="plaintext"><body>
     <trans-unit id="dashboardNavSection_loadTabError">
       <source xml:lang="en">The "{0}" section has invalid content. Please contact extension owner.</source>
     </trans-unit>
@@ -2737,13 +2737,13 @@
       <target state="translated">Fehler: </target>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/pages/serverDashboardPage.component" source-language="en" target-language="de" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/pages/serverDashboardPage.component" source-language="en" target-language="de" datatype="plaintext"><body>
     <trans-unit id="serverPageName">
       <source xml:lang="en">SERVER DASHBOARD</source>
       <target state="translated">SERVER-DASHBOARD</target>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/pages/databaseDashboardPage.component" source-language="en" target-language="de" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/pages/databaseDashboardPage.component" source-language="en" target-language="de" datatype="plaintext"><body>
     <trans-unit id="databasePageName">
       <source xml:lang="en">DATABASE DASHBOARD</source>
     </trans-unit>
@@ -2765,7 +2765,7 @@
       <target state="translated">Name der Anmeldeinformationen</target>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/widgets/explorer/explorerWidget.component" source-language="en" target-language="de" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/widgets/explorer/explorerWidget.component" source-language="en" target-language="de" datatype="plaintext"><body>
     <trans-unit id="seachObjects">
       <source xml:lang="en">Search by name of type (a:, t:, v:, f:, or sp:)</source>
     </trans-unit>
@@ -2782,7 +2782,7 @@
       <target state="translated">Datenbanken konnten nicht geladen werden</target>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/widgets/properties/propertiesWidget.component" source-language="en" target-language="de" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/widgets/properties/propertiesWidget.component" source-language="en" target-language="de" datatype="plaintext"><body>
     <trans-unit id="dashboard.properties.error">
       <source xml:lang="en">Unable to load dashboard properties</source>
     </trans-unit>
@@ -2797,7 +2797,7 @@
       <target state="translated">Aktuelle Zeile zurücksetzen</target>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/common/actions" source-language="en" target-language="de" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/common/actions" source-language="en" target-language="de" datatype="plaintext"><body>
     <trans-unit id="editDashboard">
       <source xml:lang="en">Edit</source>
       <target state="translated">Bearbeiten</target>
@@ -2908,7 +2908,7 @@
       <source xml:lang="en">No tree view with id '{0}' registered.</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/widgets/insights/insightsWidget.component" source-language="en" target-language="de" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/widgets/insights/insightsWidget.component" source-language="en" target-language="de" datatype="plaintext"><body>
     <trans-unit id="insights.lastUpdated">
       <source xml:lang="en">Last Updated: {0} {1}</source>
       <target state="translated">Letzte Aktualisierung: {0} {1}</target>
@@ -2924,7 +2924,7 @@
       <target state="translated">{0} Aktionen</target>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/common/dashboardHelper" source-language="en" target-language="de" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/common/dashboardHelper" source-language="en" target-language="de" datatype="plaintext"><body>
     <trans-unit id="unknownDashboardContainerError">
       <source xml:lang="en">{0} is an unknown container.</source>
       <target state="translated">{0} ist ein unbekannter Container.</target>
@@ -3112,7 +3112,7 @@ Error: {1}</source>
       <source xml:lang="en">Never Run</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/common/dashboardPage.component" source-language="en" target-language="de" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/common/dashboardPage.component" source-language="en" target-language="de" datatype="plaintext"><body>
     <trans-unit id="home">
       <source xml:lang="en">Home</source>
       <target state="translated">Start</target>
@@ -3122,7 +3122,7 @@ Error: {1}</source>
       <target state="translated">Für dieses Dashboard wurden keine Verbindungsinformationen gefunden</target>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/widgets/insights/actions" source-language="en" target-language="de" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/widgets/insights/actions" source-language="en" target-language="de" datatype="plaintext"><body>
     <trans-unit id="insights.runQuery">
       <source xml:lang="en">Run Query</source>
       <target state="translated">Abfrage ausführen</target>

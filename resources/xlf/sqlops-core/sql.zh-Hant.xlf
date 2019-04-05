@@ -219,7 +219,7 @@
       <target state="translated">指定工作階段範本</target>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/widgets/insights/views/charts/types/barChart.contribution" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/widgets/insights/views/charts/types/barChart.contribution" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
     <trans-unit id="yAxisMin">
       <source xml:lang="en">Minimum value of the y axis</source>
     </trans-unit>
@@ -243,13 +243,13 @@
       <target state="translated">X 軸標籤</target>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/widgets/insights/views/charts/types/lineChart.contribution" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/widgets/insights/views/charts/types/lineChart.contribution" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
     <trans-unit id="dataTypeDescription">
       <source xml:lang="en">Indicates data property of a data set for a chart.</source>
       <target state="translated">指定圖表資料集的資料屬性。</target>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/widgets/insights/views/imageInsight.contribution" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/widgets/insights/views/imageInsight.contribution" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
     <trans-unit id="imageInsightDescription">
       <source xml:lang="en">Displays an image, for example one returned by an R query using ggplot2</source>
       <target state="translated">顯示圖像， 如使用 ggplot2 R查詢返回的圖像。</target>
@@ -263,24 +263,24 @@
       <target state="translated">此編碼為十六進位、base64 或是其他格式？</target>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/widgets/insights/views/tableInsight.contribution" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/widgets/insights/views/tableInsight.contribution" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
     <trans-unit id="tableInsightDescription">
       <source xml:lang="en">Displays the results in a simple table</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/widgets/insights/views/countInsight.contribution" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/widgets/insights/views/countInsight.contribution" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
     <trans-unit id="countInsightDescription">
       <source xml:lang="en">For each column in a resultset, displays the value in row 0 as a count followed by the column name. Supports "1 Healthy", "3 Unhealthy" for example, where "Healthy" is the column name and 1 is the value in row 1 cell 1</source>
       <target state="translated">對於結果集每一行資料，列0顯示值作為計數，其次為欄位名稱. 例如: 設定 "1 健康", "3 不健康"，健康是欄位名稱，而1是第1列第1個儲存格的值</target>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/containers/dashboardWebviewContainer.contribution" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/containers/dashboardWebviewContainer.contribution" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
     <trans-unit id="dashboard.container.webview">
       <source xml:lang="en">The webview that will be displayed in this tab.</source>
       <target state="translated">顯示在此索引標籤的 webview。</target>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/containers/dashboardWidgetContainer.contribution" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/containers/dashboardWidgetContainer.contribution" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
     <trans-unit id="dashboard.container.widgets">
       <source xml:lang="en">The list of widgets that will be displayed in this tab.</source>
       <target state="translated">顯示在此索引標籤中的小工具清單。</target>
@@ -289,7 +289,7 @@
       <source xml:lang="en">The list of widgets is expected inside widgets-container for extension.</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/containers/dashboardGridContainer.contribution" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/containers/dashboardGridContainer.contribution" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
     <trans-unit id="dashboard.container.gridtab.items">
       <source xml:lang="en">The list of widgets or webviews that will be displayed in this tab.</source>
       <target state="translated">顯示在此索引標籤的小工具或 webviews 的清單。</target>
@@ -298,7 +298,7 @@
       <source xml:lang="en">widgets or webviews are expected inside widgets-container for extension.</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/containers/dashboardNavSection.contribution" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/containers/dashboardNavSection.contribution" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
     <trans-unit id="dashboard.container.left-nav-bar.id">
       <source xml:lang="en">Unique identifier for this nav section. Will be passed to the extension for any requests.</source>
       <target state="translated">導覽區的唯一識別碼。將傳遞給任何要求的擴充功能。</target>
@@ -343,7 +343,7 @@
       <source xml:lang="en">NAV_SECTION within NAV_SECTION is an invalid container for extension.</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/containers/dashboardContainer.contribution" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/containers/dashboardContainer.contribution" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
     <trans-unit id="sqlops.extension.contributes.dashboard.container.id">
       <source xml:lang="en">Unique identifier for this container.</source>
       <target state="translated">此容器的唯一識別碼。</target>
@@ -369,17 +369,17 @@
       <source xml:lang="en">Unknown container type defines in dashboard container for extension.</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/containers/dashboardModelViewContainer.contribution" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/containers/dashboardModelViewContainer.contribution" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
     <trans-unit id="dashboard.container.modelview">
       <source xml:lang="en">The model-backed view that will be displayed in this tab.</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/containers/dashboardControlHostContainer.contribution" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/containers/dashboardControlHostContainer.contribution" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
     <trans-unit id="dashboard.container.controlhost">
       <source xml:lang="en">The controlhost that will be displayed in this tab.</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/common/dashboardTab.contribution" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/common/dashboardTab.contribution" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
     <trans-unit id="sqlops.extension.contributes.dashboard.tab.id">
       <source xml:lang="en">Unique identifier for this tab. Will be passed to the extension for any requests.</source>
       <target state="translated">此索引標籤的唯一識別碼。將傳遞給任何要求的擴充功能。</target>
@@ -872,7 +872,7 @@
       <target state="translated">儀表板中使用的小工具</target>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/widgets/insights/views/charts/chartInsight.contribution" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/widgets/insights/views/charts/chartInsight.contribution" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
     <trans-unit id="chartInsightDescription">
       <source xml:lang="en">Displays results of a query as a chart on the dashboard</source>
       <target state="translated">將查詢結果以圖表方式顯示在儀表板上</target>
@@ -900,7 +900,7 @@
       <source xml:lang="en">If showTopNData is set, showing only top N data in the chart.</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/widgets/insights/insightsWidgetSchemas" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/widgets/insights/insightsWidgetSchemas" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
     <trans-unit id="insightWidgetDescription">
       <source xml:lang="en">Adds a widget that can query a server or database and display the results in multiple ways - as a chart, summarized count, and more</source>
       <target state="translated">加入一個可查詢伺服器或資料庫並以多種方式呈現結果的小工具，如圖表、計數總結等。</target>
@@ -952,7 +952,7 @@
       <target state="translated">顯示入門指南</target>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/pages/databaseDashboardPage.contribution" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/pages/databaseDashboardPage.contribution" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
     <trans-unit id="dashboardDatabaseProperties">
       <source xml:lang="en">Enable or disable the properties widget</source>
       <target state="translated">啟用或禁用屬性小工具</target>
@@ -1002,7 +1002,7 @@
       <target state="translated">自訂資料庫儀表板索引標籤</target>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/pages/dashboardPageContribution" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/pages/dashboardPageContribution" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
     <trans-unit id="sqlops.extension.contributes.widget.when">
       <source xml:lang="en">Condition which must be true to show this item</source>
     </trans-unit>
@@ -1030,7 +1030,7 @@
       <target state="translated">未知的擴充功能索引標籤或未安裝。</target>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/pages/serverDashboardPage.contribution" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/pages/serverDashboardPage.contribution" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
     <trans-unit id="dashboardServerProperties">
       <source xml:lang="en">Enable or disable the properties widget</source>
       <target state="translated">啟用或禁用屬性小工具</target>
@@ -1618,7 +1618,7 @@
       <target state="translated">選項</target>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/newDashboardTabDialog/newDashboardTabDialog" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/newDashboardTabDialog/newDashboardTabDialog" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
     <trans-unit id="newDashboardTab.openDashboardExtensions">
       <source xml:lang="en">Open dashboard extensions</source>
     </trans-unit>
@@ -1960,7 +1960,7 @@
       <target state="translated">事件文字的分析編輯器。唯讀</target>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/widgets/insights/views/charts/chartInsight.component" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/widgets/insights/views/charts/chartInsight.component" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
     <trans-unit id="chartErrorMessage">
       <source xml:lang="en">Chart cannot be displayed with the given data</source>
     </trans-unit>
@@ -2642,19 +2642,19 @@
       <target state="translated">我的小工具</target>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/services/breadcrumb.service" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/services/breadcrumb.service" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
     <trans-unit id="homeCrumb">
       <source xml:lang="en">Home</source>
       <target state="translated">首頁</target>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/services/dashboardServiceInterface.service" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/services/dashboardServiceInterface.service" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
     <trans-unit id="dashboard.changeDatabaseFailure">
       <source xml:lang="en">Failed to change database</source>
       <target state="translated">變更資料庫失敗</target>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/containers/dashboardErrorContainer.component" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/containers/dashboardErrorContainer.component" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
     <trans-unit id="dashboardNavSection_loadTabError">
       <source xml:lang="en">The "{0}" section has invalid content. Please contact extension owner.</source>
     </trans-unit>
@@ -2751,13 +2751,13 @@
       <target state="translated">錯誤︰</target>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/pages/serverDashboardPage.component" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/pages/serverDashboardPage.component" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
     <trans-unit id="serverPageName">
       <source xml:lang="en">SERVER DASHBOARD</source>
       <target state="translated">伺服器儀表板</target>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/pages/databaseDashboardPage.component" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/pages/databaseDashboardPage.component" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
     <trans-unit id="databasePageName">
       <source xml:lang="en">DATABASE DASHBOARD</source>
       <target state="translated">資料庫儀表板</target>
@@ -2779,7 +2779,7 @@
       <target state="translated">認證名稱</target>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/widgets/explorer/explorerWidget.component" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/widgets/explorer/explorerWidget.component" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
     <trans-unit id="seachObjects">
       <source xml:lang="en">Search by name of type (a:, t:, v:, f:, or sp:)</source>
       <target state="translated">按類型名稱搜索 (a:, t:, v:, f: 或 sp:)</target>
@@ -2797,7 +2797,7 @@
       <target state="translated">無法載入資料庫</target>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/widgets/properties/propertiesWidget.component" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/widgets/properties/propertiesWidget.component" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
     <trans-unit id="dashboard.properties.error">
       <source xml:lang="en">Unable to load dashboard properties</source>
       <target state="translated">無法載入儀表板屬性</target>
@@ -2812,7 +2812,7 @@
       <source xml:lang="en">Revert Current Row</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/common/actions" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/common/actions" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
     <trans-unit id="editDashboard">
       <source xml:lang="en">Edit</source>
       <target state="translated">編輯</target>
@@ -2922,7 +2922,7 @@
       <source xml:lang="en">No tree view with id '{0}' registered.</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/widgets/insights/insightsWidget.component" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/widgets/insights/insightsWidget.component" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
     <trans-unit id="insights.lastUpdated">
       <source xml:lang="en">Last Updated: {0} {1}</source>
       <target state="translated">最近更新: {0} {1}</target>
@@ -2938,7 +2938,7 @@
       <target state="translated">{0} 個動作</target>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/common/dashboardHelper" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/common/dashboardHelper" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
     <trans-unit id="unknownDashboardContainerError">
       <source xml:lang="en">{0} is an unknown container.</source>
     </trans-unit>
@@ -3117,7 +3117,7 @@ Error: {1}</source>
       <source xml:lang="en">Never Run</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/common/dashboardPage.component" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/common/dashboardPage.component" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
     <trans-unit id="home">
       <source xml:lang="en">Home</source>
       <target state="translated">首頁</target>
@@ -3127,7 +3127,7 @@ Error: {1}</source>
       <target state="translated">此儀表板上找不到連接資訊</target>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/parts/dashboard/widgets/insights/actions" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
+  <file original="src/sql/parts/dashboard/widgets/insights/actions" source-language="en" target-language="zh-Hant" datatype="plaintext"><body>
     <trans-unit id="insights.runQuery">
       <source xml:lang="en">Run Query</source>
       <target state="translated">執行查詢</target>
