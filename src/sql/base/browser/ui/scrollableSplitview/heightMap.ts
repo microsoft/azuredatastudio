@@ -31,8 +31,8 @@ export class HeightMap {
 		return !last ? 0 : last.top + last.height;
 	}
 
-	public onInsertItems(iterator: INextIterator<IViewItem>, afterItemId: string = null): number {
-		let viewItem: IViewItem;
+	public onInsertItems(iterator: INextIterator<IViewItem>, afterItemId: string | undefined = undefined): number | undefined {
+		let viewItem: IViewItem | undefined = undefined;
 		let i: number, j: number;
 		let totalSize: number;
 		let sizeDiff = 0;
@@ -89,10 +89,10 @@ export class HeightMap {
 
 	// Contiguous items
 	public onRemoveItems(iterator: INextIterator<string>): void {
-		let itemId: string;
+		let itemId: string | undefined = undefined;
 		let viewItem: IViewItem;
-		let startIndex: number = null;
-		let i: number;
+		let startIndex: number | undefined = undefined;
+		let i = 0;
 		let sizeDiff = 0;
 
 		while (itemId = iterator.next()) {
@@ -108,12 +108,12 @@ export class HeightMap {
 			delete this.indexes[itemId];
 			this.onRemoveItem(viewItem);
 
-			if (startIndex === null) {
+			if (startIndex === undefined) {
 				startIndex = i;
 			}
 		}
 
-		if (sizeDiff === 0) {
+		if (sizeDiff === 0 || startIndex === undefined) {
 			return;
 		}
 

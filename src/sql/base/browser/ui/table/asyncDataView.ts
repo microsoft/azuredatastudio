@@ -16,7 +16,7 @@ export interface IObservableCollection<T> {
 }
 
 class DataWindow<T> {
-	private _data: T[];
+	private _data: T[] | undefined;
 	private _length: number = 0;
 	private _offsetFromDataSource: number = -1;
 
@@ -30,9 +30,6 @@ class DataWindow<T> {
 
 	dispose() {
 		this._data = undefined;
-		this.loadFunction = undefined;
-		this.placeholderItemGenerator = undefined;
-		this.loadCompleteCallback = undefined;
 		this.cancellationToken.cancel();
 	}
 
@@ -157,7 +154,7 @@ export class VirtualizedCollection<T extends Slick.SlickData> implements IObserv
 	}
 
 	private getRangeFromCurrent(start: number, end: number): T[] {
-		let currentData = [];
+		const currentData: Array<T> = [];
 		for (let i = 0; i < end - start; i++) {
 			currentData.push(this.getDataFromCurrent(start + i));
 		}
