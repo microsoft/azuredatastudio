@@ -171,8 +171,8 @@ suite('Insights Utils tests', function () {
 
 	});
 
-	suiteTeardown(done => {
+	suiteTeardown(() => {
 		// Clean up our test files
-		pfs.del(testRootPath).then(done());
+		return pfs.rimraf(testRootPath);
 	});
 });

@@ -7,7 +7,6 @@ import { createDecorator } from 'vs/platform/instantiation/common/instantiation'
 import { URI } from 'vs/base/common/uri';
 
 export interface ParsedArgs {
-	[arg: string]: any;
 	_: string[];
 	'folder-uri'?: string | string[];
 	'file-uri'?: string | string[];
@@ -19,6 +18,7 @@ export interface ParsedArgs {
 	waitMarkerFilePath?: string;
 	diff?: boolean;
 	add?: boolean;
+	gitCredential?: string;
 	goto?: boolean;
 	'new-window'?: boolean;
 	'unity-launch'?: boolean; // Always open a new window, except if opening the first window or opening a file or folder as part of the launch.
