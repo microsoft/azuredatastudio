@@ -67,6 +67,7 @@ import { ExtensionIdentifier, IExtensionDescription } from 'vs/platform/extensio
 import { originalFSPath } from 'vs/base/common/resources';
 import { CLIServer } from 'vs/workbench/api/node/extHostCLIServer';
 import { withNullAsUndefined } from 'vs/base/common/types';
+import { values } from 'vs/base/common/collections';
 
 export interface IExtensionApiFactory {
 	(extension: IExtensionDescription, registry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): typeof vscode;
@@ -133,7 +134,7 @@ export function createApiFactory(
 	}
 
 	// Check that no named customers are missing
-	const expected: ProxyIdentifier<any>[] = Object.keys(ExtHostContext).map((key) => (<any>ExtHostContext)[key]);
+	const expected: ProxyIdentifier<any>[] = values(ExtHostContext);
 	rpcProtocol.assertRegistered(expected);
 
 	// Other instances
