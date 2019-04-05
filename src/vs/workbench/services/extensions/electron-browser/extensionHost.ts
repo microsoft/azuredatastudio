@@ -13,8 +13,9 @@ import { toErrorMessage } from 'vs/base/common/errorMessage';
 import { Emitter, Event } from 'vs/base/common/event';
 import { IDisposable, dispose, toDisposable } from 'vs/base/common/lifecycle';
 import * as objects from 'vs/base/common/objects';
-import { isWindows } from 'vs/base/common/platform';
+import * as platform from 'vs/base/common/platform';
 import { isEqual } from 'vs/base/common/resources';
+import pkg from 'vs/platform/product/node/package';
 import { URI } from 'vs/base/common/uri';
 import { IRemoteConsoleLog, log, parse } from 'vs/base/common/console';
 import { findFreePort, randomPort } from 'vs/base/node/ports';
@@ -102,12 +103,12 @@ export class ExtensionHostProcessWorker implements IExtensionHostStarter {
 		this._toDispose.push(this._lifecycleService.onWillShutdown(e => this._onWillShutdown(e)));
 		this._toDispose.push(this._lifecycleService.onShutdown(reason => this.terminate()));
 		this._toDispose.push(this._extensionHostDebugService.onClose(resource => {
-			if (this._isExtensionDevHost && isEqual(resource, this._environmentService.extensionDevelopmentLocationURI)) {
+			if (this._isExtensionDevHost && this.matchesExtDevLocations(resource)) {
 				this._windowService.closeWindow();
 			}
 		}));
 		this._toDispose.push(this._extensionHostDebugService.onReload(resource => {
-			if (this._isExtensionDevHost && isEqual(resource, this._environmentService.extensionDevelopmentLocationURI)) {
+			if (this._isExtensionDevHost && this.matchesExtDevLocations(resource)) {
 				this._windowService.reloadWindow();
 			}
 		}));
@@ -117,6 +118,18 @@ export class ExtensionHostProcessWorker implements IExtensionHostStarter {
 		this._toDispose.push(toDisposable(() => {
 			process.removeListener('exit', globalExitListener);
 		}));
+	}
+
+	// returns true if the given resource url matches one of the extension development paths passed to VS Code
+	private matchesExtDevLocations(resource: URI): boolean {
+
+		const extDevLocs = this._environmentService.extensionDevelopmentLocationURI;
+		if (Array.isArray(extDevLocs)) {
+			return extDevLocs.some(extDevLoc => isEqual(extDevLoc, resource));
+		} else if (extDevLocs) {
+			return isEqual(extDevLocs, resource);
+		}
+		return false;
 	}
 
 	public dispose(): void {
@@ -148,7 +161,7 @@ export class ExtensionHostProcessWorker implements IExtensionHostStarter {
 					// and detach under Linux and Mac create another process group.
 					// We detach because we have noticed that when the renderer exits, its child processes
 					// (i.e. extension host) are taken down in a brutal fashion by the OS
-					detached: !!isWindows,
+					detached: !!platform.isWindows,
 					execArgv: undefined as string[] | undefined,
 					silent: true
 				};
@@ -389,11 +402,15 @@ export class ExtensionHostProcessWorker implements IExtensionHostStarter {
 				const workspace = this._contextService.getWorkspace();
 				const r: IInitData = {
 					commit: product.commit,
+					version: pkg.version,
 					parentPid: process.pid,
 					environment: {
 						isExtensionDevelopmentDebug: this._isExtensionDevDebug,
 						appRoot: this._environmentService.appRoot ? URI.file(this._environmentService.appRoot) : undefined,
 						appSettingsHome: this._environmentService.appSettingsHome ? URI.file(this._environmentService.appSettingsHome) : undefined,
+						appName: product.nameLong,
+						appUriScheme: product.urlProtocol,
+						appLanguage: platform.language,
 						extensionDevelopmentLocationURI: this._environmentService.extensionDevelopmentLocationURI,
 						extensionTestsLocationURI: this._environmentService.extensionTestsLocationURI,
 						globalStorageHome: URI.file(this._environmentService.globalStorageHome),

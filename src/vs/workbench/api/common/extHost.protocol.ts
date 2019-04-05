@@ -52,9 +52,12 @@ import { ITreeItem as sqlITreeItem } from 'sql/workbench/common/views';
 
 export interface IEnvironment {
 	isExtensionDevelopmentDebug: boolean;
+	appName: string;
 	appRoot?: URI;
+	appLanguage: string;
+	appUriScheme: string;
 	appSettingsHome?: URI;
-	extensionDevelopmentLocationURI?: URI;
+	extensionDevelopmentLocationURI?: URI | URI[];
 	extensionTestsLocationURI?: URI;
 	globalStorageHome: URI;
 	userHome: URI;
@@ -71,6 +74,7 @@ export interface IWorkspaceData extends IStaticWorkspaceData {
 }
 
 export interface IInitData {
+	version: string;
 	commit?: string;
 	parentPid: number;
 	environment: IEnvironment;
@@ -318,8 +322,8 @@ export interface ISerializedDocumentFilter {
 }
 
 export interface ISerializedSignatureHelpProviderMetadata {
-	readonly triggerCharacters: ReadonlyArray<string>;
-	readonly retriggerCharacters: ReadonlyArray<string>;
+	readonly triggerCharacters: readonly string[];
+	readonly retriggerCharacters: readonly string[];
 }
 
 export interface MainThreadLanguageFeaturesShape extends IDisposable {
@@ -343,7 +347,7 @@ export interface MainThreadLanguageFeaturesShape extends IDisposable {
 	$registerRenameSupport(handle: number, selector: ISerializedDocumentFilter[], supportsResolveInitialValues: boolean): void;
 	$registerSuggestSupport(handle: number, selector: ISerializedDocumentFilter[], triggerCharacters: string[], supportsResolveDetails: boolean): void;
 	$registerSignatureHelpProvider(handle: number, selector: ISerializedDocumentFilter[], metadata: ISerializedSignatureHelpProviderMetadata): void;
-	$registerDocumentLinkProvider(handle: number, selector: ISerializedDocumentFilter[]): void;
+	$registerDocumentLinkProvider(handle: number, selector: ISerializedDocumentFilter[], supportsResolve: boolean): void;
 	$registerDocumentColorProvider(handle: number, selector: ISerializedDocumentFilter[]): void;
 	$registerFoldingRangeProvider(handle: number, selector: ISerializedDocumentFilter[]): void;
 	$registerSelectionRangeProvider(handle: number, selector: ISerializedDocumentFilter[]): void;
@@ -878,12 +882,11 @@ export interface SuggestDataDto {
 	l/* additionalTextEdits */?: ISingleEditOperation[];
 	m/* command */?: modes.Command;
 	// not-standard
-	x: number;
-	y: number;
+	x?: ChainedCacheId;
 }
 
 export interface SuggestResultDto {
-	x: number;
+	x?: number;
 	a: IRange;
 	b: SuggestDataDto[];
 	c?: boolean;
@@ -961,7 +964,16 @@ export interface CodeActionDto {
 	isPreferred?: boolean;
 }
 
-export interface LinkDto extends ObjectIdentifier {
+export type CacheId = number;
+export type ChainedCacheId = [CacheId, CacheId];
+
+export interface LinksListDto {
+	id?: CacheId;
+	links: LinkDto[];
+}
+
+export interface LinkDto {
+	cacheId?: ChainedCacheId;
 	range: IRange;
 	url?: string | UriComponents;
 }
@@ -1007,11 +1019,12 @@ export interface ExtHostLanguageFeaturesShape {
 	$provideRenameEdits(handle: number, resource: UriComponents, position: IPosition, newName: string, token: CancellationToken): Promise<WorkspaceEditDto | undefined>;
 	$resolveRenameLocation(handle: number, resource: UriComponents, position: IPosition, token: CancellationToken): Promise<modes.RenameLocation | undefined>;
 	$provideCompletionItems(handle: number, resource: UriComponents, position: IPosition, context: modes.CompletionContext, token: CancellationToken): Promise<SuggestResultDto | undefined>;
-	$resolveCompletionItem(handle: number, resource: UriComponents, position: IPosition, id: number, pid: number, token: CancellationToken): Promise<SuggestDataDto | undefined>;
+	$resolveCompletionItem(handle: number, resource: UriComponents, position: IPosition, id: ChainedCacheId, token: CancellationToken): Promise<SuggestDataDto | undefined>;
 	$releaseCompletionItems(handle: number, id: number): void;
 	$provideSignatureHelp(handle: number, resource: UriComponents, position: IPosition, context: modes.SignatureHelpContext, token: CancellationToken): Promise<modes.SignatureHelp | undefined>;
-	$provideDocumentLinks(handle: number, resource: UriComponents, token: CancellationToken): Promise<LinkDto[] | undefined>;
-	$resolveDocumentLink(handle: number, link: LinkDto, token: CancellationToken): Promise<LinkDto | undefined>;
+	$provideDocumentLinks(handle: number, resource: UriComponents, token: CancellationToken): Promise<LinksListDto | undefined>;
+	$resolveDocumentLink(handle: number, id: ChainedCacheId, token: CancellationToken): Promise<LinkDto | undefined>;
+	$releaseDocumentLinks(handle: number, id: number): void;
 	$provideDocumentColors(handle: number, resource: UriComponents, token: CancellationToken): Promise<IRawColorInfo[]>;
 	$provideColorPresentations(handle: number, resource: UriComponents, colorInfo: IRawColorInfo, token: CancellationToken): Promise<modes.IColorPresentation[] | undefined>;
 	$provideFoldingRanges(handle: number, resource: UriComponents, context: modes.FoldingContext, token: CancellationToken): Promise<modes.FoldingRange[] | undefined>;

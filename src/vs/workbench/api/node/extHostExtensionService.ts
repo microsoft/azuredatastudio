@@ -707,8 +707,6 @@ export class ExtHostExtensionService implements ExtHostExtensionServiceShape {
 			authority: remoteAuthority,
 			host: result.host,
 			port: result.port,
-			debugListenPort: result.debugListenPort,
-			debugConnectPort: result.debugConnectPort,
 		};
 	}
 

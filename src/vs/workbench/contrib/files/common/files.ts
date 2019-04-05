@@ -5,7 +5,7 @@
 
 import { URI } from 'vs/base/common/uri';
 import { IEditorOptions } from 'vs/editor/common/config/editorOptions';
-import { IWorkbenchEditorConfiguration, IEditorIdentifier, IEditorInput, toResource } from 'vs/workbench/common/editor';
+import { IWorkbenchEditorConfiguration, IEditorIdentifier, IEditorInput, toResource, SideBySideEditor } from 'vs/workbench/common/editor';
 import { IFilesConfiguration, FileChangeType, IFileService } from 'vs/platform/files/common/files';
 import { ContextKeyExpr, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { ITextModelContentProvider } from 'vs/editor/common/services/resolverService';
@@ -43,7 +43,7 @@ export interface IExplorerService {
 	readonly roots: ExplorerItem[];
 	readonly sortOrder: SortOrder;
 	readonly onDidChangeRoots: Event<void>;
-	readonly onDidChangeItem: Event<ExplorerItem | undefined>;
+	readonly onDidChangeItem: Event<{ item?: ExplorerItem, recursive: boolean }>;
 	readonly onDidChangeEditable: Event<ExplorerItem>;
 	readonly onDidSelectResource: Event<{ resource?: URI, reveal?: boolean }>;
 	readonly onDidCopyItems: Event<{ items: ExplorerItem[], cut: boolean, previouslyCutItems: ExplorerItem[] | undefined }>;
@@ -231,7 +231,7 @@ export class OpenEditor implements IEditorIdentifier {
 	}
 
 	public isUntitled(): boolean {
-		return !!toResource(this.editor, { supportSideBySide: true, filter: Schemas.untitled });
+		return !!toResource(this.editor, { supportSideBySide: SideBySideEditor.MASTER, filterByScheme: Schemas.untitled });
 	}
 
 	public isDirty(): boolean {
@@ -239,6 +239,6 @@ export class OpenEditor implements IEditorIdentifier {
 	}
 
 	public getResource(): URI | null {
-		return toResource(this.editor, { supportSideBySide: true });
+		return toResource(this.editor, { supportSideBySide: SideBySideEditor.MASTER });
 	}
 }

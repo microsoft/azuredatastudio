@@ -10,7 +10,7 @@ import { Action, IAction } from 'vs/base/common/actions';
 import { memoize } from 'vs/base/common/decorators';
 import { IFilesConfiguration, ExplorerFolderContext, FilesExplorerFocusedContext, ExplorerFocusedContext, ExplorerRootContext, ExplorerResourceReadonlyContext, IExplorerService, ExplorerResourceCut, ExplorerResourceMoveableToTrash } from 'vs/workbench/contrib/files/common/files';
 import { NewFolderAction, NewFileAction, FileCopiedContext, RefreshExplorerView } from 'vs/workbench/contrib/files/browser/fileActions';
-import { toResource } from 'vs/workbench/common/editor';
+import { toResource, SideBySideEditor } from 'vs/workbench/common/editor';
 import { DiffEditorInput } from 'vs/workbench/common/editor/diffEditorInput';
 import * as DOM from 'vs/base/browser/dom';
 import { CollapseAction } from 'vs/workbench/browser/viewlet';
@@ -167,11 +167,11 @@ export class ExplorerView extends ViewletPanel {
 
 		this.disposables.push(this.labelService.onDidChangeFormatters(() => {
 			this._onDidChangeTitleArea.fire();
-			this.refresh();
+			this.refresh(true);
 		}));
 
 		this.disposables.push(this.explorerService.onDidChangeRoots(() => this.setTreeInput()));
-		this.disposables.push(this.explorerService.onDidChangeItem(e => this.refresh(e)));
+		this.disposables.push(this.explorerService.onDidChangeItem(e => this.refresh(e.recursive, e.item)));
 		this.disposables.push(this.explorerService.onDidChangeEditable(async e => {
 			const isEditing = !!this.explorerService.getEditableData(e);
 
@@ -181,7 +181,7 @@ export class ExplorerView extends ViewletPanel {
 				DOM.removeClass(treeContainer, 'highlight');
 			}
 
-			await this.refresh(e.parent);
+			await this.refresh(false, e.parent);
 
 			if (isEditing) {
 				DOM.addClass(treeContainer, 'highlight');
@@ -365,7 +365,7 @@ export class ExplorerView extends ViewletPanel {
 
 		// Refresh viewer as needed if this originates from a config event
 		if (event && needsRefresh) {
-			this.refresh();
+			this.refresh(true);
 		}
 	}
 
@@ -421,7 +421,7 @@ export class ExplorerView extends ViewletPanel {
 	 * Refresh the contents of the explorer to get up to date data from the disk about the file structure.
 	 * If the item is passed we refresh only that level of the tree, otherwise we do a full refresh.
 	 */
-	private refresh(item?: ExplorerItem): Promise<void> {
+	private refresh(recursive: boolean, item?: ExplorerItem): Promise<void> {
 		if (!this.tree || !this.isBodyVisible()) {
 			this.shouldRefresh = true;
 			return Promise.resolve(undefined);
@@ -432,7 +432,6 @@ export class ExplorerView extends ViewletPanel {
 			return Promise.resolve(undefined);
 		}
 
-		const recursive = !item;
 		const toRefresh = item || this.tree.getInput();
 
 		return this.tree.updateChildren(toRefresh, recursive);
@@ -504,7 +503,7 @@ export class ExplorerView extends ViewletPanel {
 		}
 
 		// check for files
-		return withNullAsUndefined(toResource(input, { supportSideBySide: true }));
+		return withNullAsUndefined(toResource(input, { supportSideBySide: SideBySideEditor.MASTER }));
 	}
 
 	private async onSelectResource(resource: URI | undefined, reveal = this.autoReveal): Promise<void> {
