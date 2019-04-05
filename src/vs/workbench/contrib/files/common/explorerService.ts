@@ -40,6 +40,7 @@ export class ExplorerService implements IExplorerService {
 	private editable: { stat: ExplorerItem, data: IEditableData } | undefined;
 	private _sortOrder: SortOrder;
 	private cutItems: ExplorerItem[] | undefined;
+	private fileSystemProviderSchemes = new Set<string>();
 
 	constructor(
 		@IFileService private fileService: IFileService,
