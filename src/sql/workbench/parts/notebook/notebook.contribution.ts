@@ -6,8 +6,8 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { EditorDescriptor, IEditorRegistry, Extensions as EditorExtensions } from 'vs/workbench/browser/editor';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 
-import { NotebookInput } from 'sql/parts/notebook/notebookInput';
-import { NotebookEditor } from 'sql/parts/notebook/notebookEditor';
+import { NotebookInput } from 'sql/workbench/parts/notebook/notebookInput';
+import { NotebookEditor } from 'sql/workbench/parts/notebook/notebookEditor';
 
 // Model View editor registration
 const viewModelEditorDescriptor = new EditorDescriptor(

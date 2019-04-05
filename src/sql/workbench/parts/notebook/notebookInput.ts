@@ -12,11 +12,11 @@ import { URI } from 'vs/base/common/uri';
 import * as resources from 'vs/base/common/resources';
 import * as azdata from 'azdata';
 
-import { IStandardKernelWithProvider, getProvidersForFileName, getStandardKernelsForProvider } from 'sql/parts/notebook/notebookUtils';
+import { IStandardKernelWithProvider, getProvidersForFileName, getStandardKernelsForProvider } from 'sql/workbench/parts/notebook/notebookUtils';
 import { INotebookService, DEFAULT_NOTEBOOK_PROVIDER, IProviderInfo } from 'sql/workbench/services/notebook/common/notebookService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITextModelService } from 'vs/editor/common/services/resolverService';
-import { INotebookModel, IContentManager } from 'sql/parts/notebook/models/modelInterfaces';
+import { INotebookModel, IContentManager } from 'sql/workbench/parts/notebook/models/modelInterfaces';
 import { TextFileEditorModel } from 'vs/workbench/services/textfile/common/textFileEditorModel';
 import { Range } from 'vs/editor/common/core/range';
 import { UntitledEditorModel } from 'vs/workbench/common/editor/untitledEditorModel';

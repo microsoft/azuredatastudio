@@ -22,26 +22,26 @@ import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { AngularDisposable } from 'sql/base/node/lifecycle';
-import { CellTypes, CellType } from 'sql/parts/notebook/models/contracts';
-import { ICellModel, IModelFactory, INotebookModel, NotebookContentChange } from 'sql/parts/notebook/models/modelInterfaces';
+import { CellTypes, CellType } from 'sql/workbench/parts/notebook/models/contracts';
+import { ICellModel, IModelFactory, INotebookModel, NotebookContentChange } from 'sql/workbench/parts/notebook/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { INotebookService, INotebookParams, INotebookManager, INotebookEditor, DEFAULT_NOTEBOOK_PROVIDER, SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/common/notebookService';
 import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
-import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
-import { ModelFactory } from 'sql/parts/notebook/models/modelFactory';
-import * as notebookUtils from 'sql/parts/notebook/notebookUtils';
+import { NotebookModel } from 'sql/workbench/parts/notebook/models/notebookModel';
+import { ModelFactory } from 'sql/workbench/parts/notebook/models/modelFactory';
+import * as notebookUtils from 'sql/workbench/parts/notebook/notebookUtils';
 import { Deferred } from 'sql/base/common/promise';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
-import { KernelsDropdown, AttachToDropdown, AddCellAction, TrustedAction, RunAllCellsAction, ClearAllOutputsAction } from 'sql/parts/notebook/notebookActions';
+import { KernelsDropdown, AttachToDropdown, AddCellAction, TrustedAction, RunAllCellsAction, ClearAllOutputsAction } from 'sql/workbench/parts/notebook/notebookActions';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { CellMagicMapper } from 'sql/parts/notebook/models/cellMagicMapper';
+import { CellMagicMapper } from 'sql/workbench/parts/notebook/models/cellMagicMapper';
 import { IExtensionsViewlet, VIEWLET_ID } from 'vs/workbench/contrib/extensions/common/extensions';
-import { CellModel } from 'sql/parts/notebook/models/cell';
+import { CellModel } from 'sql/workbench/parts/notebook/models/cell';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 
