@@ -26,7 +26,7 @@ import { ITelemetryService, ITelemetryData } from 'vs/platform/telemetry/common/
 import { IWindowsMainService, IOpenConfiguration, IWindowsCountChangedEvent, ICodeWindow, IWindowState as ISingleWindowState, WindowMode } from 'vs/platform/windows/electron-main/windows';
 import { IHistoryMainService, IRecent } from 'vs/platform/history/common/history';
 import { IProcessEnvironment, isMacintosh, isWindows } from 'vs/base/common/platform';
-import { IWorkspacesMainService, IWorkspaceIdentifier, WORKSPACE_FILTER, isSingleFolderWorkspaceIdentifier } from 'vs/platform/workspaces/common/workspaces';
+import { IWorkspacesMainService, IWorkspaceIdentifier, WORKSPACE_FILTER, isSingleFolderWorkspaceIdentifier, hasWorkspaceFileExtension } from 'vs/platform/workspaces/common/workspaces';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { mnemonicButtonLabel } from 'vs/base/common/labels';
 import { Schemas } from 'vs/base/common/network';
@@ -899,7 +899,7 @@ export class WindowsManager implements IWindowsMainService {
 		for (let f of fileUris) {
 			const fileUri = this.argToUri(f);
 			if (fileUri) {
-				const path = this.parseUri({ fileUri }, parseOptions);
+				const path = this.parseUri(hasWorkspaceFileExtension(f) ? { workspaceUri: fileUri } : { fileUri }, parseOptions);
 				if (path) {
 					pathsToOpen.push(path);
 				}
@@ -1153,7 +1153,7 @@ export class WindowsManager implements IWindowsMainService {
 		return { openFolderInNewWindow: !!openFolderInNewWindow, openFilesInNewWindow };
 	}
 
-	openExtensionDevelopmentHostWindow(extensionDevelopmentPath: string, openConfig: IOpenConfiguration): void {
+	openExtensionDevelopmentHostWindow(extensionDevelopmentPath: string | string[], openConfig: IOpenConfiguration): void {
 
 		// Reload an existing extension development host window on the same path
 		// We currently do not allow more than one extension development window
@@ -1207,9 +1207,30 @@ export class WindowsManager implements IWindowsMainService {
 		openConfig.cli['folder-uri'] = folderUris;
 		openConfig.cli['file-uri'] = fileUris;
 
-		const match = extensionDevelopmentPath.match(/^vscode-remote:\/\/([^\/]+)/);
-		if (match) {
-			openConfig.cli['remote'] = URI.parse(extensionDevelopmentPath).authority;
+		if (Array.isArray(extensionDevelopmentPath)) {
+			let authority: string | undefined = undefined;
+			for (let p of extensionDevelopmentPath) {
+				const match = p.match(/^vscode-remote:\/\/([^\/]+)/);
+				if (match) {
+					const auth = URI.parse(p).authority;
+					if (authority) {
+						if (auth !== authority) {
+							console.log('more than one authority');
+						}
+					} else {
+						authority = auth;
+					}
+				}
+			}
+			if (authority) {
+				openConfig.cli['remote'] = authority;
+			}
+
+		} else {
+			const match = extensionDevelopmentPath.match(/^vscode-remote:\/\/([^\/]+)/);
+			if (match) {
+				openConfig.cli['remote'] = URI.parse(extensionDevelopmentPath).authority;
+			}
 		}
 
 		// Open it

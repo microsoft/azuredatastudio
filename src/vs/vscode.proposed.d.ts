@@ -75,8 +75,6 @@ declare module 'vscode' {
 	export class ResolvedAuthority {
 		readonly host: string;
 		readonly port: number;
-		debugListenPort?: number;
-		debugConnectPort?: number;
 
 		constructor(host: string, port: number);
 	}
@@ -473,11 +471,6 @@ declare module 'vscode' {
 	}
 
 	export namespace workspace {
-		/**
-		 * DEPRECATED
-		 */
-		export function registerSearchProvider(): Disposable;
-
 		/**
 		 * Register a search provider.
 		 *
@@ -1017,9 +1010,7 @@ declare module 'vscode' {
 		 * Provide a list of ranges which allow new comment threads creation or null for a given document
 		 */
 		provideCommentingRanges(document: TextDocument, token: CancellationToken): ProviderResult<Range[]>;
-	}
 
-	export interface EmptyCommentThreadFactory {
 		/**
 		 * The method `createEmptyCommentThread` is called when users attempt to create new comment thread from the gutter or command palette.
 		 * Extensions still need to call `createCommentThread` inside this call when appropriate.
@@ -1053,11 +1044,6 @@ declare module 'vscode' {
 		 * Provide a list [ranges](#Range) which support commenting to any given resource uri.
 		 */
 		commentingRangeProvider?: CommentingRangeProvider;
-
-		/**
-		 * Optional new comment thread factory.
-		 */
-		emptyCommentThreadFactory?: EmptyCommentThreadFactory;
 
 		/**
 		 * Optional reaction provider
