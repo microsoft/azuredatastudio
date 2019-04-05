@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import * as os from 'os';
 
@@ -15,7 +14,6 @@ import {
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { IScriptingService } from 'sql/platform/scripting/common/scriptingService';
 import { EditDataInput } from 'sql/parts/editData/common/editDataInput';
-import { IAdminService } from 'sql/workbench/services/admin/common/adminService';
 import { IRestoreDialogController } from 'sql/platform/restore/common/restoreService';
 import { IInsightsConfig } from 'sql/parts/dashboard/widgets/insights/interfaces';
 import { IInsightsDialogService } from 'sql/workbench/services/insights/common/insightsDialogService';
@@ -333,27 +331,6 @@ export function replaceConnection(oldUri: string, newUri: string, connectionServ
 		} else {
 			resolve(defaultResult);
 		}
-	});
-}
-
-export function showCreateDatabase(
-	connection: IConnectionProfile,
-	adminService: IAdminService,
-	errorMessageService: IErrorMessageService): Promise<void> {
-
-	return new Promise<void>((resolve) => {
-		// show not implemented
-		errorMessageService.showDialog(Severity.Info,
-			'Coming Soon',
-			'This feature is not yet implemented.  It will be available in an upcoming release.');
-
-		// adminService.showCreateDatabaseWizard(uri, connection);
-	});
-}
-
-export function showCreateLogin(uri: string, connection: IConnectionProfile, adminService: IAdminService): Promise<void> {
-	return new Promise<void>((resolve) => {
-		adminService.showCreateLoginWizard(uri, connection);
 	});
 }
 
