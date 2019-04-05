@@ -286,7 +286,7 @@ export abstract class Modal extends Disposable implements IThemable {
 
 	private updateExpandMessageState() {
 		this._messageSummary.style.cursor = this.shouldShowExpandMessageButton ? 'pointer' : 'default';
-		this._messageSummary.classList.remove(MESSAGE_EXPANDED_MODE_CLASS);
+		DOM.removeClass(this._messageSummary, MESSAGE_EXPANDED_MODE_CLASS);
 		if (this.shouldShowExpandMessageButton) {
 			DOM.show(this._toggleMessageDetailButton.element);
 		} else {
@@ -295,7 +295,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	}
 
 	private toggleMessageDetail() {
-		const isExpanded = this._messageSummary.classList.contains(MESSAGE_EXPANDED_MODE_CLASS);
+		const isExpanded = DOM.hasClass(this._messageSummary, MESSAGE_EXPANDED_MODE_CLASS);
 		DOM.toggleClass(this._messageSummary, MESSAGE_EXPANDED_MODE_CLASS, !isExpanded);
 		this._toggleMessageDetailButton.label = isExpanded ? SHOW_DETAILS_TEXT : localize('hideMessageDetails', 'Hide Details');
 
@@ -433,13 +433,8 @@ export abstract class Modal extends Disposable implements IThemable {
 					severityText = WARNING_ALT_TEXT;
 				}
 				levelClasses.forEach(level => {
-					if (selectedLevel === level) {
-						this._messageIcon.classList.add(level);
-						this._messageElement.classList.add(level);
-					} else {
-						this._messageIcon.classList.remove(level);
-						this._messageElement.classList.remove(level);
-					}
+					DOM.toggleClass(this._messageIcon, level, selectedLevel === level);
+					DOM.toggleClass(this._messageElement, level, selectedLevel === level);
 				});
 
 				this._messageIcon.title = severityText;
