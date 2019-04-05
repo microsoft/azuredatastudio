@@ -323,6 +323,9 @@ export class ConnectionWidget {
 		this._toDispose.push(styler.attachButtonStyler(this._advancedButton, this._themeService));
 		this._toDispose.push(styler.attachCheckboxStyler(this._rememberPasswordCheckBox, this._themeService));
 		this._toDispose.push(styler.attachSelectBoxStyler(this._azureAccountDropdown, this._themeService));
+		if (this._serverDescriptionInputBox) {
+			this._toDispose.push(styler.attachInputBoxStyler(this._serverDescriptionInputBox, this._themeService));
+		}
 		if (this._serverGroupSelectBox) {
 			this._toDispose.push(styler.attachSelectBoxStyler(this._serverGroupSelectBox, this._themeService));
 			this._toDispose.push(this._serverGroupSelectBox.onDidSelect(selectedGroup => {
@@ -696,6 +699,9 @@ export class ConnectionWidget {
 		if (this._authTypeSelectBox) {
 			this._authTypeSelectBox.disable();
 		}
+		if (this._serverDescriptionInputBox) {
+			this._serverDescriptionInputBox.disable();
+		}
 	}
 
 	public handleResetConnection(): void {
@@ -725,6 +731,10 @@ export class ConnectionWidget {
 
 		if (this._databaseNameInputBox) {
 			this._databaseNameInputBox.enabled = true;
+		}
+
+		if (this._serverDescriptionInputBox) {
+			this._serverDescriptionInputBox.enable();
 		}
 	}
 
