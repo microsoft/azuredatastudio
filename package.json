@@ -24,7 +24,8 @@
     "monaco-compile-check": "tsc -p src/tsconfig.monaco.json --noEmit",
     "tslint": "node node_modules/tslint/bin/tslint -c tslint-gci.json -p src/tsconfig.json",
     "strict-null-check": "tsc -p src/tsconfig.strictNullChecks.json",
-    "strict-null-check-watch": "tsc -p src/tsconfig.strictNullChecks.json --watch"
+    "strict-null-check-watch": "tsc -p src/tsconfig.strictNullChecks.json --watch",
+    "strict-initialization-watch": "tsc --watch -p src/tsconfig.json --noEmit --strictPropertyInitialization"
   },
   "dependencies": {
     "@angular/animations": "~4.1.3",
