@@ -185,7 +185,7 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 	}
 
 	/* Typescript does not allow you to access getters/setters for super classes.
-	   This is a workaround that allows us to still call base getter */
+		his is a workaround that allows us to still call base getter */
 	@memoize
 	protected getChartData(): Array<IDataSet> {
 		if (this._config.dataDirection === 'horizontal') {
