@@ -24,6 +24,8 @@ import { ExtHostComments } from 'vs/workbench/api/node/extHostComments';
 import { ExtHostConfiguration, ExtHostConfigProvider } from 'vs/workbench/api/node/extHostConfiguration';
 // {{SQL CARBON EDIT}} - Remove ExtHostDebugService
 // import { ExtHostDebugService } from 'vs/workbench/api/node/extHostDebugService';
+// {{SQL CARBON EDIT}} - Import product
+import product from 'vs/platform/product/node/product';
 import { ExtHostDecorations } from 'vs/workbench/api/node/extHostDecorations';
 import { ExtHostDiagnostics } from 'vs/workbench/api/node/extHostDiagnostics';
 import { ExtHostDialogs } from 'vs/workbench/api/node/extHostDialogs';
