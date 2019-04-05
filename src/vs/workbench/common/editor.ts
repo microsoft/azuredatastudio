@@ -91,7 +91,7 @@ export interface IEditor {
 	/**
 	 * Returns the underlying control of this editor.
 	 */
-	getControl(): IEditorControl | null;
+	getControl(): IEditorControl | undefined;
 
 	/**
 	 * Asks the underlying control to focus.
@@ -279,7 +279,7 @@ export interface IEditorInput extends IDisposable {
 	/**
 	 * Returns the associated resource of this input.
 	 */
-	getResource(): URI | null;
+	getResource(): URI | undefined;
 
 	/**
 	 * Unique type identifier for this inpput.
@@ -319,7 +319,7 @@ export interface IEditorInput extends IDisposable {
 	/**
 	 * Returns if the other object matches this input.
 	 */
-	matches(other: any): boolean;
+	matches(other: unknown): boolean;
 }
 
 /**
@@ -347,8 +347,8 @@ export abstract class EditorInput extends Disposable implements IEditorInput {
 	/**
 	 * Returns the associated resource of this input if any.
 	 */
-	getResource(): URI | null {
-		return null;
+	getResource(): URI | undefined {
+		return undefined;
 	}
 
 	/**
@@ -392,7 +392,7 @@ export abstract class EditorInput extends Disposable implements IEditorInput {
 	 *
 	 * Subclasses should extend if they can contribute.
 	 */
-	getTelemetryDescriptor(): { [key: string]: any } {
+	getTelemetryDescriptor(): { [key: string]: unknown } {
 		/* __GDPR__FRAGMENT__
 			"EditorTelemetryDescriptor" : {
 				"typeId" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
@@ -453,7 +453,7 @@ export abstract class EditorInput extends Disposable implements IEditorInput {
 	/**
 	 * Returns true if this input is identical to the otherInput.
 	 */
-	matches(otherInput: any): boolean {
+	matches(otherInput: unknown): boolean {
 		return this === otherInput;
 	}
 
@@ -623,7 +623,7 @@ export class SideBySideEditorInput extends EditorInput {
 		return this.description;
 	}
 
-	matches(otherInput: any): boolean {
+	matches(otherInput: unknown): boolean {
 		if (super.matches(otherInput) === true) {
 			return true;
 		}
@@ -684,7 +684,7 @@ export interface IEditorInputWithOptions {
 	options?: IEditorOptions | ITextEditorOptions;
 }
 
-export function isEditorInputWithOptions(obj: any): obj is IEditorInputWithOptions {
+export function isEditorInputWithOptions(obj: unknown): obj is IEditorInputWithOptions {
 	const editorInputWithOptions = obj as IEditorInputWithOptions;
 
 	return !!editorInputWithOptions && !!editorInputWithOptions.editor;
@@ -948,7 +948,7 @@ export class EditorCommandsContextActionRunner extends ActionRunner {
 		super();
 	}
 
-	run(action: IAction, context?: any): Promise<void> {
+	run(action: IAction): Promise<void> {
 		return super.run(action, this.context);
 	}
 }
@@ -1007,7 +1007,7 @@ export function toResource(editor: IEditorInput | null | undefined, options?: IR
 
 	const resource = editor.getResource();
 	if (!options || !options.filter) {
-		return resource; // return early if no filter is specified
+		return types.withUndefinedAsNull(resource); // return early if no filter is specified
 	}
 
 	if (!resource) {
