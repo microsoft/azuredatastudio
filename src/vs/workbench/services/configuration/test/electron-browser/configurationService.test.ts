@@ -16,8 +16,8 @@ import { parseArgs } from 'vs/platform/environment/node/argv';
 import * as pfs from 'vs/base/node/pfs';
 import * as uuid from 'vs/base/common/uuid';
 import { IConfigurationRegistry, Extensions as ConfigurationExtensions, ConfigurationScope } from 'vs/platform/configuration/common/configurationRegistry';
-import { WorkspaceService } from 'vs/workbench/services/configuration/node/configurationService';
-import { ISingleFolderWorkspaceInitializationPayload } from 'vs/platform/workspaces/common/workspaces';
+import { WorkspaceService } from 'vs/workbench/services/configuration/browser/configurationService';
+import { ISingleFolderWorkspaceInitializationPayload, IWorkspaceIdentifier } from 'vs/platform/workspaces/common/workspaces';
 import { ConfigurationEditingErrorCode } from 'vs/workbench/services/configuration/common/configurationEditingService';
 import { IFileService } from 'vs/platform/files/common/files';
 import { IWorkspaceContextService, WorkbenchState, IWorkspaceFoldersChangeEvent } from 'vs/platform/workspace/common/workspace';
@@ -34,7 +34,6 @@ import { createHash } from 'crypto';
 import { Schemas } from 'vs/base/common/network';
 import { originalFSPath } from 'vs/base/common/resources';
 import { isLinux } from 'vs/base/common/platform';
-import { IWorkspaceIdentifier } from 'vs/workbench/services/configuration/node/configuration';
 import { IWindowConfiguration } from 'vs/platform/windows/common/windows';
 import { RemoteAgentService } from 'vs/workbench/services/remote/electron-browser/remoteAgentServiceImpl';
 import { RemoteAuthorityResolverService } from 'vs/platform/remote/electron-browser/remoteAuthorityResolverService';
@@ -45,6 +44,7 @@ import { DiskFileSystemProvider } from 'vs/workbench/services/files2/node/diskFi
 import { setUnexpectedErrorHandler } from 'vs/base/common/errors';
 import { HashService } from 'vs/workbench/services/hash/node/hashService';
 import { ConfigurationCache } from 'vs/workbench/services/configuration/node/configurationCache';
+import { ConfigurationFileService } from 'vs/workbench/services/configuration/node/configurationFileService';
 
 class SettingsTestEnvironmentService extends EnvironmentService {
 
