@@ -26,5 +26,9 @@ steps:
   condition: succeededOrFailed()
 
 - script: |
-    yarn run tslint
+    yarn tslint
   displayName: 'Run TSLint'
+
+- script: |
+    yarn strict-null-check
+  displayName: 'Run Strict Null Check'

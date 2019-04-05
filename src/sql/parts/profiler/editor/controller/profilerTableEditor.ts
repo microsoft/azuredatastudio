@@ -80,12 +80,10 @@ export class ProfilerTableEditor extends BaseEditor implements IProfilerControll
 		parent.appendChild(this._overlay);
 
 		this._profilerTable = new Table(parent, {
-			sorter: {
-				sort: (args) => {
-					let input = this.input as ProfilerInput;
-					if (input && input.data) {
-						input.data.sort(args);
-					}
+			sorter: (args) => {
+				let input = this.input as ProfilerInput;
+				if (input && input.data) {
+					input.data.sort(args);
 				}
 			}
 		}, {
