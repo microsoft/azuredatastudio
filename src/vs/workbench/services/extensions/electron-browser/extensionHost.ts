@@ -132,11 +132,6 @@ export class ExtensionHostProcessWorker implements IExtensionHostStarter {
 		return false;
 	}
 
-	// {{SQL CARBON EDIT}}
-	public getExtenstionHostProcess(): ChildProcess {
-		return this._extensionHostProcess;
-	}
-
 	public dispose(): void {
 		this.terminate();
 	}
