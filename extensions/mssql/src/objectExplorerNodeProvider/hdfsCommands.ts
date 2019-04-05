@@ -306,7 +306,7 @@ export class PreviewFileCommand extends ProgressCommand {
 					async (cancelToken: vscode.CancellationTokenSource) => {
 						let contents = await fileNode.getFileContentsAsString(PreviewFileCommand.DefaultMaxSize);
 						let doc = await this.openTextDocument(fspath.basename(fileNode.hdfsPath));
-						await this.apiWrapper.showTextDocument(doc, contents, vscode.ViewColumn.Active, false);
+						await this.apiWrapper.showTextDocument(doc, vscode.ViewColumn.Active, false, false, contents);
 					},
 					localize('previewing', 'Generating preview'),
 					false);
