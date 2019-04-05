@@ -105,7 +105,6 @@ export class WebviewContent extends AngularDisposable implements OnInit, IDashbo
 		}
 
 		this._webview = this.instantiationService.createInstance(WebviewElement,
-			this.layoutService.getContainer(Parts.EDITOR_PART),
 			{},
 			{
 				allowScripts: true

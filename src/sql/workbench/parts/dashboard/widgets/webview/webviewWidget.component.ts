@@ -104,7 +104,6 @@ export class WebviewWidget extends DashboardWidget implements IDashboardWidget, 
 		}
 
 		this._webview = this.instantiationService.createInstance(WebviewElement,
-			this.layoutService.getContainer(Parts.EDITOR_PART),
 			{},
 			{
 				allowScripts: true,

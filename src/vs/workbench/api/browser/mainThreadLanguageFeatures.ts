@@ -377,7 +377,6 @@ export class MainThreadLanguageFeatures implements MainThreadLanguageFeaturesSha
 			command: data.m,
 			// not-standard
 			_id: data.x,
-			_pid: data.y
 		};
 	}
 
@@ -393,14 +392,14 @@ export class MainThreadLanguageFeatures implements MainThreadLanguageFeaturesSha
 					return {
 						suggestions: result.b.map(d => MainThreadLanguageFeatures._inflateSuggestDto(result.a, d)),
 						incomplete: result.c,
-						dispose: () => this._proxy.$releaseCompletionItems(handle, result.x)
+						dispose: () => typeof result.x === 'number' && this._proxy.$releaseCompletionItems(handle, result.x)
 					};
 				});
 			}
 		};
 		if (supportsResolveDetails) {
 			provider.resolveCompletionItem = (model, position, suggestion, token) => {
-				return this._proxy.$resolveCompletionItem(handle, model.uri, position, suggestion._id, suggestion._pid, token).then(result => {
+				return this._proxy.$resolveCompletionItem(handle, model.uri, position, suggestion._id, token).then(result => {
 					if (!result) {
 						return suggestion;
 					}
@@ -428,29 +427,36 @@ export class MainThreadLanguageFeatures implements MainThreadLanguageFeaturesSha
 
 	// --- links
 
-	$registerDocumentLinkProvider(handle: number, selector: ISerializedDocumentFilter[]): void {
-		this._registrations[handle] = modes.LinkProviderRegistry.register(selector, <modes.LinkProvider>{
+	$registerDocumentLinkProvider(handle: number, selector: ISerializedDocumentFilter[], supportsResolve: boolean): void {
+		const provider: modes.LinkProvider = {
 			provideLinks: (model, token) => {
 				return this._proxy.$provideDocumentLinks(handle, model.uri, token).then(dto => {
-					if (dto) {
-						dto.forEach(obj => {
-							MainThreadLanguageFeatures._reviveLinkDTO(obj);
-							this._heapService.trackObject(obj);
-						});
+					if (!dto) {
+						return undefined;
 					}
-					return dto;
-				});
-			},
-			resolveLink: (link, token) => {
-				return this._proxy.$resolveDocumentLink(handle, link, token).then(obj => {
-					if (obj) {
-						MainThreadLanguageFeatures._reviveLinkDTO(obj);
-						this._heapService.trackObject(obj);
-					}
-					return obj;
+					return {
+						links: dto.links.map(MainThreadLanguageFeatures._reviveLinkDTO),
+						dispose: () => {
+							if (typeof dto.id === 'number') {
+								this._proxy.$releaseDocumentLinks(handle, dto.id);
+							}
+						}
+					};
 				});
 			}
-		});
+		};
+		if (supportsResolve) {
+			provider.resolveLink = (link, token) => {
+				const dto: LinkDto = link;
+				if (!dto.cacheId) {
+					return link;
+				}
+				return this._proxy.$resolveDocumentLink(handle, dto.cacheId, token).then(obj => {
+					return obj && MainThreadLanguageFeatures._reviveLinkDTO(obj);
+				});
+			};
+		}
+		this._registrations[handle] = modes.LinkProviderRegistry.register(selector, provider);
 	}
 
 	// --- colors
