@@ -42,7 +42,6 @@ import { ILabelService } from 'vs/platform/label/common/label';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { basename } from 'vs/base/common/resources';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
-import { DiffEditorInput } from 'vs/workbench/common/editor/diffEditorInput';
 
 // {{SQL CARBON EDIT}}
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
@@ -348,15 +347,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 				// Dispose once no more diff editor is opened with the scheme
 				if (registerEditorListener) {
 					providerDisposables.push(editorService.onDidVisibleEditorsChange(() => {
-						if (!editorService.editors.some(editor => {
-							if (editor instanceof DiffEditorInput) {
-								const originalResource = toResource(editor.originalInput);
-
-								return !!(originalResource && originalResource.scheme === COMPARE_WITH_SAVED_SCHEMA);
-							}
-
-							return false;
-						})) {
+						if (!editorService.editors.some(editor => !!toResource(editor, { supportSideBySide: SideBySideEditor.DETAILS, filterByScheme: COMPARE_WITH_SAVED_SCHEMA }))) {
 							providerDisposables = dispose(providerDisposables);
 						}
 					}));
