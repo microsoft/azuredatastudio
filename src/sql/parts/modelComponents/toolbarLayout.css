@@ -71,3 +71,9 @@
 	-o-transform: scale(1.272019649, 1.272019649);
 	transform: scale(1.272019649, 1.272019649);
 }
+
+.toolbarSeparator {
+	width: 1px;
+	background-color:#EAEAEA;
+	margin: 6px 8px;
+}

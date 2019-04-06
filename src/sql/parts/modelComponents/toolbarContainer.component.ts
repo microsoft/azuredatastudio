@@ -18,6 +18,7 @@ import { CommonServiceInterface } from 'sql/services/common/commonServiceInterfa
 
 export interface ToolbarItemConfig {
 	title?: string;
+	toolbarSeparatorAfter?: boolean;
 }
 
 export class ToolbarItem {
@@ -36,6 +37,8 @@ export class ToolbarItem {
 				<div class="modelview-toolbar-component">
 					<model-component-wrapper  [descriptor]="item.descriptor" [modelStore]="modelStore" >
 					</model-component-wrapper>
+				</div>
+				<div *ngIf="shouldShowToolbarSeparator(item)"class="toolbarSeparator" >
 				</div>
 			</div>
 			</ng-container>
@@ -83,6 +86,10 @@ export default class ToolbarContainer extends ContainerBase<ToolbarItemConfig> i
 
 	public shouldShowTitle(item: ToolbarItem): boolean {
 		return this.hasTitle(item) && this.isHorizontal();
+	}
+
+	public shouldShowToolbarSeparator(item: ToolbarItem): boolean {
+		return item.config.toolbarSeparatorAfter;
 	}
 
 	private hasTitle(item: ToolbarItem): boolean {
