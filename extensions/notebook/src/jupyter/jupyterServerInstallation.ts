@@ -223,7 +223,9 @@ export default class JupyterServerInstallation {
 		return new Promise<boolean>(resolve => {
 			fs.open(this._pythonExecutable, 'r+', (err, fd) => {
 				if (!err) {
-					fs.close(fd);
+					fs.close(fd, err => {
+						this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
+					});
 					resolve(false);
 				}
 
