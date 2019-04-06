@@ -239,6 +239,11 @@ export default class JupyterServerInstallation {
 			return Promise.reject(msgPendingInstallError);
 		}
 
+		let isPythonRunning = await this.isPythonRunning();
+		if (isPythonRunning) {
+			return Promise.reject(msgPythonRunningError);
+		}
+
 		if (pythonInstallationPath) {
 			this._pythonInstallationPath = pythonInstallationPath;
 		}
@@ -254,33 +259,28 @@ export default class JupyterServerInstallation {
 
 		let installReady = new Deferred<void>();
 		if (!fs.existsSync(this._pythonExecutable) || this._forceInstall) {
-			let isPythonRunning = await this.isPythonRunning();
-			if (isPythonRunning) {
-				installReady.reject(msgPythonRunningError);
-			} else {
-				this._installInProgress = true;
+			this._installInProgress = true;
 
-				this.apiWrapper.startBackgroundOperation({
-					displayName: msgTaskName,
-					description: msgTaskName,
-					isCancelable: false,
-					operation: op => {
-						this.installDependencies(op)
-							.then(() => {
-								updateConfig();
-								installReady.resolve();
-								this._installInProgress = false;
-							})
-							.catch(err => {
-								let errorMsg = msgDependenciesInstallationFailed(utils.getErrorMessage(err));
-								op.updateStatus(azdata.TaskStatus.Failed, errorMsg);
-								this.apiWrapper.showErrorMessage(errorMsg);
-								installReady.reject(errorMsg);
-								this._installInProgress = false;
-							});
-					}
-				});
-			}
+			this.apiWrapper.startBackgroundOperation({
+				displayName: msgTaskName,
+				description: msgTaskName,
+				isCancelable: false,
+				operation: op => {
+					this.installDependencies(op)
+						.then(() => {
+							updateConfig();
+							installReady.resolve();
+							this._installInProgress = false;
+						})
+						.catch(err => {
+							let errorMsg = msgDependenciesInstallationFailed(utils.getErrorMessage(err));
+							op.updateStatus(azdata.TaskStatus.Failed, errorMsg);
+							this.apiWrapper.showErrorMessage(errorMsg);
+							installReady.reject(errorMsg);
+							this._installInProgress = false;
+						});
+				}
+			});
 		} else {
 			// Python executable already exists, but the path setting wasn't defined,
 			// so update it here
