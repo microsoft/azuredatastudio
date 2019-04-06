@@ -219,8 +219,8 @@ export default class JupyterServerInstallation {
 		};
 	}
 
-	private async isPythonRunning(): Promise<boolean> {
-		let filePromise = new Promise<boolean>(resolve => {
+	private isPythonRunning(): Promise<boolean> {
+		return new Promise<boolean>(resolve => {
 			fs.open(this._pythonExecutable, 'r+', (err, fd) => {
 				if (!err) {
 					fs.close(fd);
@@ -230,8 +230,6 @@ export default class JupyterServerInstallation {
 				resolve(err.code === 'EBUSY' || err.code === 'EPERM');
 			});
 		});
-
-		return await filePromise;
 	}
 
 	public async startInstallProcess(pythonInstallationPath: string, forceInstall?: boolean): Promise<void> {
