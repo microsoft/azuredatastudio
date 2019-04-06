@@ -77,8 +77,10 @@ export class SqlSessionManager implements nb.SessionManager {
 	}
 
 	shutdown(id: string): Thenable<void> {
-		let sqlKernel = this._session.kernel as SqlKernel;
-		return sqlKernel.disconnect();
+		if (this._session.kernel) {
+			let sqlKernel = this._session.kernel as SqlKernel;
+			return sqlKernel.disconnect();
+		}
 	}
 }
 
@@ -245,7 +247,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 			}
 			this._queryRunner.runQuery(code);
 		} else if (this._currentConnection && this._currentConnectionProfile) {
-			this._activeConnectionUri = Utils.generateUri(this._currentConnectionProfile, 'notebook') + '|' + generateUuid();
+			this._activeConnectionUri = Utils.generateUri(this._currentConnectionProfile, 'notebook');
 			this._queryRunner = this._instantiationService.createInstance(QueryRunner, this._activeConnectionUri);
 			this._connectionManagementService.connect(this._currentConnectionProfile, this._activeConnectionUri).then((result) => {
 				this.addQueryEventListeners(this._queryRunner);

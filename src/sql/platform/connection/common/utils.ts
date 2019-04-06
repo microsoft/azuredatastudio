@@ -118,7 +118,7 @@ export function generateUriWithPrefix(connection: IConnectionProfile, prefix: st
 
 export function generateUriFromExistingUri(connection: IConnectionProfile, id: string): string {
 	let db = connection.serverName + ':' + connection.databaseName;
-	let uri = id ? id + '|' + db : id;
+	let uri = id ? id + ':' + db : id;
 
 	return uri;
 }

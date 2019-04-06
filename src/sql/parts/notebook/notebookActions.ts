@@ -341,7 +341,7 @@ export class AttachToDropdown extends SelectBox {
 
 	private updateAttachToDropdown(model: INotebookModel): void {
 		if (this.model.connectionProfile && this.model.connectionProfile.serverName) {
-			let connectionUri = generateUri(this.model.connectionProfile, 'notebook') + '|' + generateUuid();
+			let connectionUri = this.model.notebookUri.toString();
 			this.model.notebookOptions.connectionService.connect(this.model.connectionProfile, connectionUri).then(result => {
 				if (result.connected) {
 					let connectionProfile = new ConnectionProfile(this._capabilitiesService, result.connectionProfile);
