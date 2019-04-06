@@ -234,7 +234,7 @@ export default class JupyterServerInstallation {
 		});
 	}
 
-	public async startInstallProcess(pythonInstallationPath: string, forceInstall?: boolean): Promise<void> {
+	public async startInstallProcess(forceInstall: boolean, pythonInstallationPath?: string): Promise<void> {
 		if (this._installInProgress) {
 			return Promise.reject(msgPendingInstallError);
 		}
@@ -244,11 +244,9 @@ export default class JupyterServerInstallation {
 			return Promise.reject(msgPythonRunningError);
 		}
 
+		this._forceInstall = forceInstall;
 		if (pythonInstallationPath) {
 			this._pythonInstallationPath = pythonInstallationPath;
-		}
-		if (forceInstall !== undefined) {
-			this._forceInstall = forceInstall;
 		}
 		this.configurePackagePaths();
 
