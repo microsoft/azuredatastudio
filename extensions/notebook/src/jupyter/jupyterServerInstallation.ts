@@ -285,7 +285,7 @@ export default class JupyterServerInstallation {
 			updateConfig();
 			installReady.resolve();
 		}
-		await installReady.promise;
+		return installReady.promise;
 	}
 
 	public async promptForPythonInstall(): Promise<void> {
