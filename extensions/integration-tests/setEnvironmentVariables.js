@@ -117,7 +117,7 @@ msrestAzure.interactiveLogin().then((credentials) => {
 	SecretEnVarMapping.forEach(entry => {
 		const secretName = entry[0];
 		const environmentVariable = entry[1];
-		let promise = client.getSecret(AKV_URL, secretName, '').then((result) => {
+		const promise = client.getSecret(AKV_URL, secretName, '').then((result) => {
 			console.log(`${secretName}: ${result.value}`);
 			process.env[environmentVariable] = result.value;
 		}, (err) => {

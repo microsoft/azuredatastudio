@@ -13,7 +13,7 @@ ADS will be launched using new temp folders: extension folder and data folder so
 The integration test suite has been added to ADS windows pipeline to run the test and report the results, you can find the test results under the test tab.
 
 2.	Local environment:
-a. open a terminal window/command line window.
+a. open a terminal window/command line window.(When testing on Mac we found some issue with VSCode scenario, you might have to close VSCode before running the command)
 b. navigate to this folder and then run 'node setEnvironmentVariables.js'
 	there are different options, by default VSCode will be opened.
     Terminal(Mac)/CMD(Windows): node setEnvironmentVariables.js Terminal
