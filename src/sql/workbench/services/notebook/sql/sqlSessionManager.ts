@@ -81,6 +81,7 @@ export class SqlSessionManager implements nb.SessionManager {
 			let sqlKernel = this._session.kernel as SqlKernel;
 			return sqlKernel.disconnect();
 		}
+		return Promise.resolve();
 	}
 }
 
