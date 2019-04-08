@@ -70,7 +70,6 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	private _providerNameToDisplayNameMap: { [providerDisplayName: string]: string } = {};
 	private _providerTypes: string[] = [];
 	private _currentProviderType: string = 'Microsoft SQL Server';
-	private readonly _cmsProviderId = 'MSSQL-CMS';
 	private _previousProviderType: string = undefined;
 	private _connecting: boolean = false;
 	private _connectionErrorTitle = localize('connectionError', 'Connection error');

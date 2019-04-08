@@ -14,7 +14,7 @@ import { CmsResourceItemType } from '../../../cmsResource/constants';
 
 describe('CmsResourceEmptyTreeNode.info', function(): void {
 	it('Should be correct.', async function(): Promise<void> {
-		const label = 'Register Central Management Server';
+		const label = 'Add Central Management Server...';
 
 		const treeNode = new CmsResourceEmptyTreeNode();
 		let children = await treeNode.getChildren();

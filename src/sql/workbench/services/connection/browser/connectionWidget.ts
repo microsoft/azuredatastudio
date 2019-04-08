@@ -55,7 +55,6 @@ export class ConnectionWidget {
 	private _refreshCredentialsLink: HTMLLinkElement;
 	private _addAzureAccountMessage: string = localize('connectionWidget.AddAzureAccount', 'Add an account...');
 	private readonly _azureProviderId = 'azurePublicCloud';
-	private readonly _cmsProviderId = 'MSSQL-CMS';
 	private _azureTenantId: string;
 	private _azureAccountList: azdata.Account[];
 	private _advancedButton: Button;
@@ -129,14 +128,14 @@ export class ConnectionWidget {
 	}
 
 	public createConnectionWidget(container: HTMLElement): void {
-		if (this._providerName !== this._cmsProviderId) {
+		if (this._providerName !== Constants.cmsProviderName) {
 			this._serverGroupOptions = [this.DefaultServerGroup];
 			this._serverGroupSelectBox = new SelectBox(this._serverGroupOptions.map(g => g.name), this.DefaultServerGroup.name, this._contextViewService, undefined, { ariaLabel: this._serverGroupDisplayString });
 			this._previousGroupOption = this._serverGroupSelectBox.value;
 		}
 		this._container = DOM.append(container, DOM.$('div.connection-table'));
 		this._tableContainer = DOM.append(this._container, DOM.$('table.connection-table-content'));
-		this.fillInConnectionForm();
+		this.fillInConnectionForm(this._providerName === Constants.cmsProviderName);
 		this.registerListeners();
 		if (this._authTypeSelectBox) {
 			this.onAuthTypeSelected(this._authTypeSelectBox.value);
@@ -162,7 +161,7 @@ export class ConnectionWidget {
 		}
 	}
 
-	private fillInConnectionForm(): void {
+	private fillInConnectionForm(isCMSDialog: boolean = false): void {
 		// Server name
 		let serverNameOption = this._optionsMaps[ConnectionOptionSpecialType.serverName];
 		let serverName = DialogHelper.appendRow(this._tableContainer, serverNameOption.displayName, 'connection-label', 'connection-input');
@@ -225,9 +224,8 @@ export class ConnectionWidget {
 
 		// Database
 		let databaseOption = this._optionsMaps[ConnectionOptionSpecialType.databaseName];
-		if (databaseOption) {
+		if (databaseOption && !isCMSDialog) {
 			let databaseName = DialogHelper.appendRow(this._tableContainer, databaseOption.displayName, 'connection-label', 'connection-input');
-
 			this._databaseNameInputBox = new Dropdown(databaseName, this._contextViewService, {
 				values: [this._defaultDatabaseName, this._loadingDatabaseName],
 				strictSelection: false,
@@ -239,21 +237,10 @@ export class ConnectionWidget {
 		}
 
 		// Server group
-		if (this._serverGroupSelectBox) {
-		let serverGroup = DialogHelper.appendRow(this._tableContainer, this._serverGroupDisplayString, 'connection-label', 'connection-input');
-		DialogHelper.appendInputSelectBox(serverGroup, this._serverGroupSelectBox);
+		if (this._serverGroupSelectBox && isCMSDialog) {
+			let serverGroup = DialogHelper.appendRow(this._tableContainer, this._serverGroupDisplayString, 'connection-label', 'connection-input');
+			DialogHelper.appendInputSelectBox(serverGroup, this._serverGroupSelectBox);
 		}
-
-			// // Change Auth options for CMS call for registering a server
-			// if (cmsDialog === CmsDialog.serverRegistrationDialog) {
-			// 	let newOptions = [];
-			// 	this._authTypeSelectBox.values.forEach((auth) => {
-			// 		if (auth !== this.getAuthTypeDisplayName(AuthenticationType.SqlLogin)) {
-			// 			newOptions.push(auth);
-			// 		}
-			// 	});
-			// 	this._authTypeSelectBox.setOptions(newOptions);
-			// }
 
 		// Connection name
 		let connectionNameOption = this._optionsMaps[ConnectionOptionSpecialType.connectionName];
@@ -261,14 +248,13 @@ export class ConnectionWidget {
 		let connectionNameBuilder = DialogHelper.appendRow(this._tableContainer, connectionNameOption.displayName, 'connection-label', 'connection-input');
 		this._connectionNameInputBox = new InputBox(connectionNameBuilder, this._contextViewService, { ariaLabel: connectionNameOption.displayName });
 
-
 		// Registered Server Description
 		let serverDescriptionOption = this._optionsMaps['serverDescription'];
 		if (serverDescriptionOption) {
 			serverDescriptionOption.displayName = localize('serverDescription','Server Description (optional)');
 			let serverDescriptionBuilder = DialogHelper.appendRow(this._tableContainer, serverDescriptionOption.displayName, 'connection-label', 'connection-input', 'server-description-input');
 			this._serverDescriptionInputBox = new InputBox(serverDescriptionBuilder, this._contextViewService, {type: 'textarea', flexibleHeight: true});
-			this._serverDescriptionInputBox.setHeight('100px');
+			this._serverDescriptionInputBox.setHeight('75px');
 		}
 
 		let AdvancedLabel = localize('advanced', 'Advanced...');
