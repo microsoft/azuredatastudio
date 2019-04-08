@@ -38,7 +38,7 @@ export class ToolbarItem {
 					<model-component-wrapper  [descriptor]="item.descriptor" [modelStore]="modelStore" >
 					</model-component-wrapper>
 				</div>
-				<div *ngIf="shouldShowToolbarSeparator(item)"class="toolbarSeparator" >
+				<div *ngIf="shouldShowToolbarSeparator(item)" class="toolbarSeparator" >
 				</div>
 			</div>
 			</ng-container>
@@ -89,6 +89,9 @@ export default class ToolbarContainer extends ContainerBase<ToolbarItemConfig> i
 	}
 
 	public shouldShowToolbarSeparator(item: ToolbarItem): boolean {
+		if (!item || !item.config) {
+			return false;
+		}
 		return item.config.toolbarSeparatorAfter;
 	}
 
