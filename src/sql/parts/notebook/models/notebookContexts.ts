@@ -12,6 +12,7 @@ import { IDefaultConnection, notebookConstants } from 'sql/parts/notebook/models
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
 
 export class NotebookContexts {
 	private static MSSQL_PROVIDER = 'MSSQL';
@@ -51,7 +52,7 @@ export class NotebookContexts {
 	 * @param kernelChangedArgs kernel changed args (both old and new kernel info)
 	 * @param profile current connection profile
 	 */
-	public static async getContextsForKernel(connectionService: IConnectionManagementService, connProviderIds: string[], kernelChangedArgs?: nb.IKernelChangedArgs, profile?: IConnectionProfile): Promise<IDefaultConnection> {
+	public static async getContextsForKernel(model: NotebookModel, connectionService: IConnectionManagementService, connProviderIds: string[], kernelChangedArgs?: nb.IKernelChangedArgs, profile?: IConnectionProfile): Promise<IDefaultConnection> {
 		let connections: IDefaultConnection = this.DefaultContext;
 		if (!profile) {
 			if (!kernelChangedArgs || !kernelChangedArgs.newValue ||
@@ -63,7 +64,7 @@ export class NotebookContexts {
 		if (kernelChangedArgs && kernelChangedArgs.newValue && kernelChangedArgs.newValue.name && connProviderIds.length < 1) {
 			return connections;
 		} else {
-			connections = await this.getActiveContexts(connectionService, connProviderIds, profile);
+			connections = await this.getActiveContexts(model, connectionService, connProviderIds, profile);
 		}
 		return connections;
 	}
@@ -73,9 +74,13 @@ export class NotebookContexts {
 	 * @param apiWrapper ApiWrapper
 	 * @param profile current connection profile
 	 */
-	public static async getActiveContexts(connectionService: IConnectionManagementService, connProviderIds: string[], profile: IConnectionProfile): Promise<IDefaultConnection> {
+	public static async getActiveContexts(model: NotebookModel, connectionService: IConnectionManagementService, connProviderIds: string[], profile: IConnectionProfile): Promise<IDefaultConnection> {
 		let defaultConnection: ConnectionProfile = NotebookContexts.DefaultContext.defaultConnection;
-		let activeConnections: ConnectionProfile[] = await connectionService.getActiveConnections();
+		let activeConnections: ConnectionProfile[] = [];
+		for(let value of model._connections.values()) {
+			activeConnections.push(value);
+		}
+
 		if (activeConnections && activeConnections.length > 0) {
 			activeConnections = activeConnections.filter(conn => conn.id !== '-1');
 		}
@@ -84,7 +89,7 @@ export class NotebookContexts {
 			return NotebookContexts.LocalContext;
 		}
 		// If no active connections exist, show "Select connection" as the default value
-		if (activeConnections.length === 0) {
+		if (activeConnections && activeConnections.length === 0) {
 			return NotebookContexts.DefaultContext;
 		}
 		// Filter active connections by their provider ids to match kernel's supported connection providers

@@ -22,6 +22,7 @@ import { noKernel } from 'sql/workbench/services/notebook/common/sessionManager'
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
 import { generateUri } from 'sql/platform/connection/common/utils';
+import { currentSessionDateStorageKey } from 'vs/platform/telemetry/node/workbenchCommonProperties';
 
 const msgLoading = localize('loading', "Loading kernels...");
 const msgChanging = localize('changing', "Changing kernel...");
@@ -344,7 +345,7 @@ export class AttachToDropdown extends SelectBox {
 			this.model.notebookOptions.connectionService.connect(this.model.connectionProfile, connectionUri).then(result => {
 				if (result.connected) {
 					let connectionProfile = new ConnectionProfile(this._capabilitiesService, result.connectionProfile);
-					this.model.addAttachToConnectionsToBeDisposed(connectionUri);
+					this.model.addAttachToConnectionsToBeDisposed(connectionUri, connectionProfile);
 					this.doChangeContext(connectionProfile);
 				} else {
 					this.openConnectionDialog(true);
@@ -378,7 +379,7 @@ export class AttachToDropdown extends SelectBox {
 		else {
 			let connections = this.getConnections(model);
 			this.enable();
-			if (showSelectConnection) {
+			if (showSelectConnection || (currentKernel !== 'SQL' && currentKernel !== 'Python 3')) {
 				connections = this.loadWithSelectConnection(connections);
 			}
 			else {
@@ -407,6 +408,7 @@ export class AttachToDropdown extends SelectBox {
 	//Get connections from context
 	public getConnections(model: INotebookModel): string[] {
 		let otherConnections: ConnectionProfile[] = [];
+
 		model.contexts.otherConnections.forEach((conn) => { otherConnections.push(conn); });
 		// If current connection connects to master, select the option in the dropdown that doesn't specify a database
 		if (!model.contexts.defaultConnection.databaseName) {
@@ -491,7 +493,7 @@ export class AttachToDropdown extends SelectBox {
 				}
 				this.select(index);
 
-				this.model.addAttachToConnectionsToBeDisposed(connectionUri);
+				this.model.addAttachToConnectionsToBeDisposed(connectionUri, connectionProfile);
 				// Call doChangeContext to set the newly chosen connection in the model
 				this.doChangeContext(connectionProfile);
 			});

@@ -73,6 +73,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _oldKernel: nb.IKernel;
 	private _clientSessionListeners: IDisposable[] = [];
 	private _connectionUrisToDispose: string[] = [];
+	public _connections: Map<string, ConnectionProfile> = new Map<string, ConnectionProfile>();
 
 	constructor(private _notebookOptions: INotebookModelOptions, startSessionImmediately?: boolean, public connectionProfile?: IConnectionProfile) {
 		super();
@@ -745,8 +746,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return newKernelDisplayName;
 	}
 
-	public addAttachToConnectionsToBeDisposed(connUri: string) {
+	public addAttachToConnectionsToBeDisposed(connUri: string, connectionProfile: ConnectionProfile) {
 		this._connectionUrisToDispose.push(connUri);
+		//dup, connection again?
+		this._connections.set(connUri, connectionProfile);
 	}
 
 	private setErrorState(errMsg: string): void {
@@ -799,7 +802,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private async loadActiveContexts(kernelChangedArgs: nb.IKernelChangedArgs): Promise<void> {
 		if (kernelChangedArgs && kernelChangedArgs.newValue && kernelChangedArgs.newValue.name) {
 			let kernelDisplayName = this.getDisplayNameFromSpecName(kernelChangedArgs.newValue);
-			this._activeContexts = await NotebookContexts.getContextsForKernel(this._notebookOptions.connectionService, this.getApplicableConnectionProviderIds(kernelDisplayName), kernelChangedArgs, this.connectionProfile);
+			this._activeContexts = await NotebookContexts.getContextsForKernel(this, this._notebookOptions.connectionService, this.getApplicableConnectionProviderIds(kernelDisplayName), kernelChangedArgs, this.connectionProfile);
 			this._contextsChangedEmitter.fire();
 			if (this.contexts.defaultConnection !== undefined && this.contexts.defaultConnection.serverName !== undefined && this.contexts.defaultConnection.title !== undefined) {
 				await this.changeContext(this.contexts.defaultConnection.title, this.contexts.defaultConnection);
