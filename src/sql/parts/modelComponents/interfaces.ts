@@ -23,6 +23,7 @@ export interface IComponent extends IDisposable {
 	addToContainer?: (componentDescriptor: IComponentDescriptor, config: any, index?: number) => void;
 	removeFromContainer?: (componentDescriptor: IComponentDescriptor) => void;
 	setLayout?: (layout: any) => void;
+	getHtml: () => any;
 	setProperties?: (properties: { [key: string]: any; }) => void;
 	enabled: boolean;
 	readonly valid?: boolean;
