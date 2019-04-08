@@ -231,9 +231,9 @@ export default class JupyterServerInstallation {
 						this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
 					});
 					resolve(false);
+				} else {
+					resolve(err.code === 'EBUSY' || err.code === 'EPERM');
 				}
-
-				resolve(err.code === 'EBUSY' || err.code === 'EPERM');
 			});
 		});
 	}
