@@ -132,8 +132,8 @@ export class ConnectionWidget {
 		this._previousGroupOption = this._serverGroupSelectBox.value;
 		this._container = DOM.append(container, DOM.$('div.connection-table'));
 		this._tableContainer = DOM.append(this._container, DOM.$('table.connection-table-content'));
-		this.fillInConnectionForm();
-		this.registerListeners();
+		this.fillInConnectionForm(cmsDialog);
+		this.registerListeners(cmsDialog);
 		if (this._authTypeSelectBox) {
 			this.onAuthTypeSelected(this._authTypeSelectBox.value);
 		}

@@ -1,8 +1,8 @@
 {
 	"name": "cms",
 	"displayName": "%cms.displayName%",
-	"description": "%cms.description",
-	"version": "0.1.0",
+	"description": "%cms.description%",
+	"version": "0.2.0",
 	"publisher": "Microsoft",
 	"preview": true,
 	"engines": {
@@ -66,8 +66,8 @@
 				"command": "cms.resource.registerCMSServer",
 				"title": "%cms.resource.registerCMSServer.title%",
 				"icon": {
-					"light": "resources/light/add_server.svg",
-					"dark": "resources/dark/add_server_inverse.svg"
+					"dark": "resources/dark/add_inverse.svg",
+					"light": "resources/light/add.svg"
 				}
 			},
 			{

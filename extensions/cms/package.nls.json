@@ -1,5 +1,6 @@
 {
 	"cms.displayName": "CMS",
+	"cms.description": "Central Management Servers",
 	"cms.title": "Central Management Servers",
 	"cms.resource.explorer.title": "Central Management Servers",
 	"cms.resource.refreshServerGroup.title": "Refresh Server Group",
@@ -10,6 +11,4 @@
 	"cms.resource.addServerGroup.title": "Add Server Group",
 	"cms.resource.registerCMSServer.title": "Add Central Management Server",
 	"cms.resource.deleteCMSServer.title": "Delete Central Management Server"
-
-
 }

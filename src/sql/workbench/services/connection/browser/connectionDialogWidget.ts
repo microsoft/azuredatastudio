@@ -103,7 +103,7 @@ export class ConnectionDialogWidget extends Modal {
 		@IClipboardService clipboardService: IClipboardService,
 	) {
 		super(!cmsDialog ? localize('connection', 'Connection')
-			: cmsDialog === CmsDialog.cmsRegistrationDialog ? localize('registerCMS', 'Register Central Management Server')
+			: cmsDialog === CmsDialog.cmsRegistrationDialog ? localize('registerCMS', 'Add Central Management Server')
 			: localize('registerServer', 'New Server Registration'),
 			TelemetryKeys.Connection, telemetryService, layoutService, clipboardService, _workbenchThemeService, contextKeyService, { hasSpinner: true, hasErrors: true });
 	}
