@@ -14,22 +14,21 @@ export class AngularEventingService implements IAngularEventingService {
 	private _angularMap = new Map<string, Subject<IAngularEvent>>();
 
 	public onAngularEvent(uri: string, cb: (event: IAngularEvent) => void): Subscription {
-		let subject: Subject<IAngularEvent>;
-		if (!this._angularMap.has(uri)) {
+		let subject = this._angularMap.get(uri);
+		if (!subject) {
 			subject = new Subject<IAngularEvent>();
 			this._angularMap.set(uri, subject);
-		} else {
-			subject = this._angularMap.get(uri);
 		}
 		let sub = subject.subscribe(cb);
 		return sub;
 	}
 
 	public sendAngularEvent(uri: string, event: AngularEventType, payload?: any): void {
-		if (!this._angularMap.has(uri)) {
+		const subject = this._angularMap.get(uri);
+		if (!subject) {
 			warn('Got request to send an event to a dashboard that has not started listening');
 		} else {
-			this._angularMap.get(uri).next({ event, payload });
+			subject.next({ event, payload });
 		}
 	}
 }

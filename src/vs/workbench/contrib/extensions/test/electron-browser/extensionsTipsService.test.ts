@@ -9,6 +9,7 @@ import * as path from 'vs/base/common/path';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as uuid from 'vs/base/common/uuid';
+import { mkdirp, rimraf, RimRafMode } from 'vs/base/node/pfs';
 import {
 	IExtensionGalleryService, IGalleryExtensionAssets, IGalleryExtension, IExtensionManagementService,
 	IExtensionEnablementService, DidInstallExtensionEvent, DidUninstallExtensionEvent, InstallExtensionEvent, IExtensionIdentifier
@@ -25,9 +26,7 @@ import { TestNotificationService } from 'vs/platform/notification/test/common/te
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { URI } from 'vs/base/common/uri';
 import { testWorkspace } from 'vs/platform/workspace/test/common/testWorkspace';
-import { IFileService } from 'vs/platform/files/common/files';
-import { FileService } from 'vs/workbench/services/files/node/fileService';
-import * as extfs from 'vs/base/node/extfs';
+import { LegacyFileService } from 'vs/workbench/services/files/node/fileService';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 import { IPager } from 'vs/base/common/paging';
 import { assign } from 'vs/base/common/objects';
@@ -35,7 +34,7 @@ import { getGalleryExtensionId } from 'vs/platform/extensionManagement/common/ex
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { ConfigurationKey } from 'vs/workbench/contrib/extensions/common/extensions';
 import { ExtensionManagementService } from 'vs/platform/extensionManagement/node/extensionManagementService';
-import { TestExtensionEnablementService } from 'vs/platform/extensionManagement/test/electron-browser/extensionEnablementService.test';
+import { TestExtensionEnablementService } from 'vs/workbench/services/extensionManagement/test/electron-browser/extensionEnablementService.test';
 import { IURLService } from 'vs/platform/url/common/url';
 import product from 'vs/platform/product/node/product';
 import { ITextModel } from 'vs/editor/common/model';

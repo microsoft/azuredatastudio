@@ -21,7 +21,7 @@ import { ChartType } from 'sql/parts/dashboard/widgets/insights/views/charts/int
 import { Registry } from 'vs/platform/registry/common/platform';
 import * as DOM from 'vs/base/browser/dom';
 import { SelectBox } from 'vs/base/browser/ui/selectBox/selectBox';
-import { IContextViewService, IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
 import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
 import { attachSelectBoxStyler, attachInputBoxStyler } from 'vs/platform/theme/common/styler';
@@ -83,13 +83,12 @@ export class ChartView extends Disposable implements IPanelView {
 		@IContextViewService private _contextViewService: IContextViewService,
 		@IThemeService private _themeService: IThemeService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IContextMenuService contextMenuService: IContextMenuService
 	) {
 		super();
 		this.taskbarContainer = DOM.$('div.taskbar-container');
-		this.taskbar = new Taskbar(this.taskbarContainer, contextMenuService);
+		this.taskbar = new Taskbar(this.taskbarContainer);
 		this.optionsControl = DOM.$('div.options-container');
-		let generalControls = DOM.$('div.general-controls');
+		const generalControls = DOM.$('div.general-controls');
 		this.optionsControl.appendChild(generalControls);
 		this.typeControls = DOM.$('div.type-controls');
 		this.optionsControl.appendChild(this.typeControls);
@@ -100,7 +99,7 @@ export class ChartView extends Disposable implements IPanelView {
 
 		this.taskbar.setContent([{ action: this._createInsightAction }]);
 
-		let self = this;
+		const self = this;
 		this.options = new Proxy(this.options, {
 			get: function (target, key, receiver) {
 				return Reflect.get(target, key, receiver);

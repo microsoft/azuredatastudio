@@ -420,7 +420,7 @@ export class CellModel implements ICellModel {
 		if (this._cellType === CellTypes.Code) {
 			cellJson.metadata.language = this._language,
 				cellJson.outputs = this._outputs;
-			cellJson.execution_count = this.executionCount;
+			cellJson.execution_count = this.executionCount ? this.executionCount : 0;
 		}
 		return cellJson as nb.ICellContents;
 	}
@@ -490,7 +490,9 @@ export class CellModel implements ICellModel {
 
 	// Dispose and set current future to undefined
 	private disposeFuture() {
-		this._future.dispose();
+		if (this._future) {
+			this._future.dispose();
+		}
 		this._future = undefined;
 	}
 }

@@ -224,7 +224,7 @@ export class UntitledEditorInput extends EditorInput implements IEncodingSupport
 		return model;
 	}
 
-	matches(otherInput: any): boolean {
+	matches(otherInput: unknown): boolean {
 		if (super.matches(otherInput) === true) {
 			return true;
 		}
