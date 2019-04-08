@@ -2590,6 +2590,7 @@ declare module 'azdata' {
 	export interface ToolbarComponent {
 		component: Component;
 		title?: string;
+		toolbarSeparatorAfter?: boolean;
 	}
 
 	/**

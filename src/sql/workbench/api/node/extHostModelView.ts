@@ -428,7 +428,8 @@ class ToolbarContainerBuilder extends GenericContainerBuilder<azdata.ToolbarCont
 		let componentWrapper = toolbarComponent.component as ComponentWrapper;
 
 		return new InternalItemConfig(componentWrapper, {
-			title: toolbarComponent.title
+			title: toolbarComponent.title,
+			toolbarSeparatorAfter: toolbarComponent.toolbarSeparatorAfter
 		});
 	}
 
