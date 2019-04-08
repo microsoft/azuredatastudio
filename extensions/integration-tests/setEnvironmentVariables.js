@@ -14,11 +14,13 @@ const LAUNCH_VSCODE = 'code';
 
 let LAUNCH_OPTION = LAUNCH_VSCODE;
 
+const VSCODE_WARNING_MESSAGE = 'Trying to lauch vscode, make sure you have it set properly in the PATH environment variable';
 // Parse the command-line argument
 if (process.argv.length === 3 && process.argv[2]) {
 	const argValue = process.argv[2];
 	switch (argValue.toUpperCase()) {
 		case 'CODE':
+			console.warn(VSCODE_WARNING_MESSAGE);
 			LAUNCH_OPTION = LAUNCH_VSCODE;
 			break;
 		case 'TERMINAL':
@@ -28,9 +30,13 @@ if (process.argv.length === 3 && process.argv[2]) {
 				LAUNCH_OPTION = LAUNCH_TERMINAL_MAC;
 			} else {
 				console.warn(`Launch terminal option is not implemented for your os: ${os.platform()}, vscode will be launched`);
+				console.warn(VSCODE_WARNING_MESSAGE);
 			}
 			break;
 		case 'BASHWIN':
+			if (!fs.existsSync()) {
+				throw `Not able to find git-bash.exe in its default location: ${LAUNCH_GIT_BASH_WINDOWS}, please update the variable LAUNCH_GIT_BASH_WINDOWS accordingly.`;
+			}
 			LAUNCH_OPTION = LAUNCH_GIT_BASH_WINDOWS;
 			break;
 		default:
