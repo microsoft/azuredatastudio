@@ -5,7 +5,7 @@
 
 import { URI } from 'vs/base/common/uri';
 import { IBackupFileService } from 'vs/workbench/services/backup/common/backup';
-import { ITextSnapshot, IFileStat, IContent, IFileService, IResourceEncodings, IResolveFileOptions, IResolveFileResult, IResolveContentOptions, IStreamContent, IUpdateContentOptions, snapshotToString, ICreateFileOptions, IResourceEncoding, IFileStatWithMetadata } from 'vs/platform/files/common/files';
+import { ITextSnapshot, IFileStat, IContent, IFileService, IResourceEncodings, IResolveFileOptions, IResolveFileResult, IResolveContentOptions, IStreamContent, IUpdateContentOptions, snapshotToString, ICreateFileOptions, IResourceEncoding, IFileStatWithMetadata, FileSystemProviderCapabilities } from 'vs/platform/files/common/files';
 import { ITextBufferFactory } from 'vs/editor/common/model';
 import { createTextBufferFactoryFromSnapshot } from 'vs/editor/common/model/textModel';
 import { keys, ResourceMap } from 'vs/base/common/map';
@@ -14,14 +14,13 @@ import { Event } from 'vs/base/common/event';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 // tslint:disable-next-line: import-patterns no-standalone-editor
-import { SimpleConfigurationService as StandaloneEditorConfigurationService, SimpleDialogService as StandaloneEditorDialogService, StandaloneKeybindingService, SimpleResourcePropertiesService } from 'vs/editor/standalone/browser/simpleServices';
-import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { SimpleConfigurationService as StandaloneEditorConfigurationService, StandaloneKeybindingService, SimpleResourcePropertiesService } from 'vs/editor/standalone/browser/simpleServices';
 import { IDownloadService } from 'vs/platform/download/common/download';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IEnvironmentService, IExtensionHostDebugParams, IDebugParams } from 'vs/platform/environment/common/environment';
-import { IExtensionGalleryService, IQueryOptions, IGalleryExtension, InstallOperation, StatisticType, ITranslation, IGalleryExtensionVersion, IExtensionIdentifier, IReportedExtension, IExtensionManagementService, ILocalExtension, IGalleryMetadata, IExtensionTipsService, ExtensionRecommendationReason, IExtensionRecommendation } from 'vs/platform/extensionManagement/common/extensionManagement';
+import { IExtensionGalleryService, IQueryOptions, IGalleryExtension, InstallOperation, StatisticType, ITranslation, IGalleryExtensionVersion, IExtensionIdentifier, IReportedExtension, IExtensionManagementService, ILocalExtension, IGalleryMetadata, IExtensionTipsService, ExtensionRecommendationReason, IExtensionRecommendation, IExtensionEnablementService, EnablementState } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { IPager } from 'vs/base/common/paging';
-import { IExtensionManifest, ExtensionType, ExtensionIdentifier } from 'vs/platform/extensions/common/extensions';
+import { IExtensionManifest, ExtensionType, ExtensionIdentifier, IExtension } from 'vs/platform/extensions/common/extensions';
 import { NullExtensionService, IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { IURLHandler, IURLService } from 'vs/platform/url/common/url';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
@@ -48,7 +47,7 @@ import { InMemoryStorageService, IStorageService } from 'vs/platform/storage/com
 import { ITextMateService, IGrammar as ITextMategrammar } from 'vs/workbench/services/textMate/common/textMateService';
 import { LanguageId, TokenizationRegistry } from 'vs/editor/common/modes';
 import { IUpdateService, State } from 'vs/platform/update/common/update';
-import { IWindowConfiguration, IPath, IPathsToWaitFor, IWindowService, INativeOpenDialogOptions, IEnterWorkspaceResult, IURIToOpen, IMessageBoxResult, IWindowsService } from 'vs/platform/windows/common/windows';
+import { IWindowConfiguration, IPath, IPathsToWaitFor, IWindowService, INativeOpenDialogOptions, IEnterWorkspaceResult, IURIToOpen, IMessageBoxResult, IWindowsService, IOpenSettings } from 'vs/platform/windows/common/windows';
 import { IProcessEnvironment, isWindows } from 'vs/base/common/platform';
 import { IWorkspaceIdentifier, ISingleFolderWorkspaceIdentifier, IWorkspaceFolderCreationData, isSingleFolderWorkspaceIdentifier, IWorkspacesService } from 'vs/platform/workspaces/common/workspaces';
 import { ExportData } from 'vs/base/common/performance';
@@ -202,9 +201,9 @@ registerSingleton(IConfigurationService, SimpleConfigurationService);
 
 //#region Dialog
 
-export class SimpleDialogService extends StandaloneEditorDialogService { }
+// export class SimpleDialogService extends StandaloneEditorDialogService { }
 
-registerSingleton(IDialogService, SimpleDialogService, true);
+// registerSingleton(IDialogService, SimpleDialogService, true);
 
 //#endregion
 
@@ -252,7 +251,7 @@ export class SimpleEnvironmentService implements IEnvironmentService {
 	disableExtensions: boolean | string[];
 	builtinExtensionsPath: string;
 	extensionsPath: string;
-	extensionDevelopmentLocationURI?: URI;
+	extensionDevelopmentLocationURI?: URI | URI[];
 	extensionTestsPath?: string;
 	debugExtensionHost: IExtensionHostDebugParams;
 	debugSearch: IDebugParams;
@@ -354,6 +353,38 @@ registerSingleton(IExtensionGalleryService, SimpleExtensionGalleryService, true)
 //#endregion
 
 //#region Extension Management
+
+//#region Extension Enablement
+
+export class SimpleExtensionEnablementService implements IExtensionEnablementService {
+
+	_serviceBrand: any;
+
+	readonly onEnablementChanged = Event.None;
+
+	readonly allUserExtensionsDisabled = true;
+
+	getEnablementState(extension: IExtension): EnablementState {
+		return EnablementState.Disabled;
+	}
+
+	canChangeEnablement(extension: IExtension): boolean {
+		return false;
+	}
+
+	setEnablement(extensions: IExtension[], newState: EnablementState): Promise<boolean[]> {
+		throw new Error('not implemented');
+	}
+
+	isEnabled(extension: IExtension): boolean {
+		return false;
+	}
+
+}
+
+registerSingleton(IExtensionEnablementService, SimpleExtensionEnablementService, true);
+
+//#endregion
 
 //#region Extension Tips
 
@@ -655,6 +686,8 @@ export class SimpleRemoteAgentService implements IRemoteAgentService {
 	}
 }
 
+registerSingleton(IRemoteAgentService, SimpleRemoteAgentService);
+
 //#endregion
 
 //#region Remote Authority Resolver
@@ -667,6 +700,8 @@ export class SimpleRemoteAuthorityResolverService implements IRemoteAuthorityRes
 		// @ts-ignore
 		return Promise.resolve(undefined);
 	}
+
+	clearResolvedAuthority(authority: string): void { }
 
 	setResolvedAuthority(resolvedAuthority: ResolvedAuthority): void { }
 
@@ -693,17 +728,18 @@ export class SimpleRemoteFileService implements IFileService {
 	readonly onAfterOperation = Event.None;
 	readonly onDidChangeFileSystemProviderRegistrations = Event.None;
 	readonly onWillActivateFileSystemProvider = Event.None;
+	readonly onError = Event.None;
 
-	resolveFile(resource: URI, options?: IResolveFileOptions): Promise<IFileStatWithMetadata> {
+	resolve(resource: URI, options?: IResolveFileOptions): Promise<IFileStatWithMetadata> {
 		// @ts-ignore
 		return Promise.resolve(fileMap.get(resource));
 	}
 
-	resolveFiles(toResolve: { resource: URI, options?: IResolveFileOptions }[]): Promise<IResolveFileResult[]> {
-		return Promise.all(toResolve.map(resourceAndOption => this.resolveFile(resourceAndOption.resource, resourceAndOption.options))).then(stats => stats.map(stat => ({ stat, success: true })));
+	resolveAll(toResolve: { resource: URI, options?: IResolveFileOptions }[]): Promise<IResolveFileResult[]> {
+		return Promise.all(toResolve.map(resourceAndOption => this.resolve(resourceAndOption.resource, resourceAndOption.options))).then(stats => stats.map(stat => ({ stat, success: true })));
 	}
 
-	existsFile(resource: URI): Promise<boolean> {
+	exists(resource: URI): Promise<boolean> {
 		return Promise.resolve(fileMap.has(resource));
 	}
 
@@ -760,9 +796,9 @@ export class SimpleRemoteFileService implements IFileService {
 		});
 	}
 
-	moveFile(_source: URI, _target: URI, _overwrite?: boolean): Promise<IFileStatWithMetadata> { return Promise.resolve(null!); }
+	move(_source: URI, _target: URI, _overwrite?: boolean): Promise<IFileStatWithMetadata> { return Promise.resolve(null!); }
 
-	copyFile(_source: URI, _target: URI, _overwrite?: boolean): Promise<any> {
+	copy(_source: URI, _target: URI, _overwrite?: boolean): Promise<any> {
 		const parent = fileMap.get(dirname(_target));
 		if (!parent) {
 			return Promise.resolve(undefined);
@@ -797,11 +833,11 @@ export class SimpleRemoteFileService implements IFileService {
 
 	canHandleResource(resource: URI): boolean { return resource.scheme === 'file'; }
 
+	hasCapability(resource: URI, capability: FileSystemProviderCapabilities): boolean { return false; }
+
 	del(_resource: URI, _options?: { useTrash?: boolean, recursive?: boolean }): Promise<void> { return Promise.resolve(); }
 
-	watchFileChanges(_resource: URI): void { }
-
-	unwatchFileChanges(_resource: URI): void { }
+	watch(_resource: URI): IDisposable { return Disposable.None; }
 
 	getWriteEncoding(_resource: URI): IResourceEncoding { return { encoding: 'utf8', hasBOM: false }; }
 
@@ -1431,7 +1467,7 @@ export class SimpleWindowService implements IWindowService {
 		return Promise.resolve();
 	}
 
-	openWindow(_uris: IURIToOpen[], _options?: { forceNewWindow?: boolean, forceReuseWindow?: boolean, forceOpenWorkspaceAsFile?: boolean }): Promise<void> {
+	openWindow(_uris: IURIToOpen[], _options?: IOpenSettings): Promise<void> {
 		return Promise.resolve();
 	}
 
@@ -1444,10 +1480,6 @@ export class SimpleWindowService implements IWindowService {
 	}
 
 	onWindowTitleDoubleClick(): Promise<void> {
-		return Promise.resolve();
-	}
-
-	show(): Promise<void> {
 		return Promise.resolve();
 	}
 
@@ -1606,15 +1638,11 @@ export class SimpleWindowsService implements IWindowsService {
 	}
 
 	// Global methods
-	openWindow(_windowId: number, _uris: IURIToOpen[], _options?: { forceNewWindow?: boolean, forceReuseWindow?: boolean, forceOpenWorkspaceAsFile?: boolean }): Promise<void> {
+	openWindow(_windowId: number, _uris: IURIToOpen[], _options: IOpenSettings): Promise<void> {
 		return Promise.resolve();
 	}
 
 	openNewWindow(): Promise<void> {
-		return Promise.resolve();
-	}
-
-	showWindow(_windowId: number): Promise<void> {
 		return Promise.resolve();
 	}
 
@@ -1815,7 +1843,7 @@ export class SimpleWorkspacesService implements IWorkspacesService {
 
 	_serviceBrand: any;
 
-	createUntitledWorkspace(folders?: IWorkspaceFolderCreationData[]): Promise<IWorkspaceIdentifier> {
+	createUntitledWorkspace(folders?: IWorkspaceFolderCreationData[], remoteAuthority?: string): Promise<IWorkspaceIdentifier> {
 		// @ts-ignore
 		return Promise.resolve(undefined);
 	}

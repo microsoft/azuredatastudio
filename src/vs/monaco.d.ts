@@ -38,6 +38,7 @@ declare namespace monaco {
 	}
 
 	export class CancellationTokenSource {
+		constructor(parent?: CancellationToken);
 		readonly token: CancellationToken;
 		cancel(): void;
 		dispose(): void;
@@ -2565,7 +2566,7 @@ declare namespace monaco.editor {
 		/**
 		 * Control how goto-command work when having multiple results.
 		 */
-		many?: 'peek' | 'revealAndPeek' | 'reveal';
+		multiple?: 'peek' | 'gotoAndPeek' | 'goto';
 	}
 
 	/**
@@ -2608,7 +2609,7 @@ declare namespace monaco.editor {
 		lineNumbers?: 'on' | 'off' | 'relative' | 'interval' | ((lineNumber: number) => string);
 		/**
 		 * Render last line number when the file ends with a newline.
-		 * Defaults to true on Windows/Mac and to false on Linux.
+		 * Defaults to true.
 		*/
 		renderFinalNewline?: boolean;
 		/**
@@ -3208,7 +3209,7 @@ declare namespace monaco.editor {
 	}
 
 	export interface InternalGoToLocationOptions {
-		readonly many: 'peek' | 'revealAndPeek' | 'reveal';
+		readonly multiple: 'peek' | 'gotoAndPeek' | 'goto';
 	}
 
 	export interface InternalSuggestOptions {
@@ -5252,11 +5253,16 @@ declare namespace monaco.languages {
 		url?: Uri | string;
 	}
 
+	export interface ILinksList {
+		links: ILink[];
+		dispose?(): void;
+	}
+
 	/**
 	 * A provider of links.
 	 */
 	export interface LinkProvider {
-		provideLinks(model: editor.ITextModel, token: CancellationToken): ProviderResult<ILink[]>;
+		provideLinks(model: editor.ITextModel, token: CancellationToken): ProviderResult<ILinksList>;
 		resolveLink?: (link: ILink, token: CancellationToken) => ProviderResult<ILink>;
 	}
 

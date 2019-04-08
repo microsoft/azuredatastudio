@@ -32,9 +32,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 export class DataExplorerViewletViewsContribution implements IWorkbenchContribution {
 
 	constructor() {
-		if (process.env.NODE_ENV === 'development') {
-			this.registerViews();
-		}
+		this.registerViews();
 	}
 
 	private registerViews(): void {
@@ -55,7 +53,7 @@ export class DataExplorerViewletViewsContribution implements IWorkbenchContribut
 	}
 }
 
-export class DataExplorerViewlet extends ViewContainerViewlet  {
+export class DataExplorerViewlet extends ViewContainerViewlet {
 	private root: HTMLElement;
 
 	private dataSourcesBox: HTMLElement;

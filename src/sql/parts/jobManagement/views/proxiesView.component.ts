@@ -80,7 +80,7 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit, O
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
-		@Inject(forwardRef(() => AgentViewComponent)) private _agentViewComponent: AgentViewComponent,
+		@Inject(forwardRef(() => AgentViewComponent)) _agentViewComponent: AgentViewComponent,
 		@Inject(IJobManagementService) private _jobManagementService: IJobManagementService,
 		@Inject(ICommandService) private _commandService: ICommandService,
 		@Inject(IInstantiationService) instantiationService: IInstantiationService,
@@ -89,7 +89,7 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit, O
 		@Inject(IKeybindingService) keybindingService: IKeybindingService,
 		@Inject(IDashboardService) _dashboardService: IDashboardService
 	) {
-		super(commonService, _dashboardService, contextMenuService, keybindingService, instantiationService);
+		super(commonService, _dashboardService, contextMenuService, keybindingService, instantiationService, _agentViewComponent);
 		this._isCloud = commonService.connectionManagementService.connectionInfo.serverInfo.isCloud;
 		let proxiesCacheObjectMap = this._jobManagementService.proxiesCacheObjectMap;
 		let proxiesCacheObject = proxiesCacheObjectMap[this._serverName];
@@ -148,8 +148,8 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit, O
 		});
 		columns.unshift(rowDetail.getColumnDefinition());
 
-		$(this._gridEl.nativeElement).empty();
-		$(this.actionBarContainer.nativeElement).empty();
+		jQuery(this._gridEl.nativeElement).empty();
+		jQuery(this.actionBarContainer.nativeElement).empty();
 		this.initActionBar();
 		this._table = new Table(this._gridEl.nativeElement, { columns }, this.options);
 		this._table.grid.setData(this.dataView, true);
@@ -233,9 +233,5 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit, O
 				this._commandService.executeCommand('agent.openProxyDialog', ownerUri, undefined, result.credentials);
 			}
 		});
-	}
-
-	private refreshJobs() {
-		this._agentViewComponent.refresh = true;
 	}
 }

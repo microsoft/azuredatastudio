@@ -7,10 +7,10 @@
 import * as OptionsDialogHelper from 'sql/workbench/browser/modal/optionsDialogHelper';
 import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
 import * as azdata from 'azdata';
-import { Builder, $ } from 'sql/base/browser/builder';
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
 import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { $ } from 'vs/base/browser/dom';
 
 suite('Advanced options helper tests', () => {
 	var possibleInputs: string[];
@@ -98,9 +98,7 @@ suite('Advanced options helper tests', () => {
 			isArray: undefined
 		};
 
-
-		let builder: Builder = $().div();
-		inputBox = TypeMoq.Mock.ofType(InputBox, TypeMoq.MockBehavior.Loose, builder.getHTMLElement(), null, null);
+		inputBox = TypeMoq.Mock.ofType(InputBox, TypeMoq.MockBehavior.Loose, $('div'), null, null);
 		inputBox.callBase = true;
 		inputBox.setup(x => x.validate()).returns(() => isValid);
 		inputBox.setup(x => x.value).returns(() => inputValue);

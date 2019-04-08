@@ -36,12 +36,26 @@ declare module 'vscode' {
 
 	export interface CallHierarchyItemProvider {
 
+		/**
+		 * Given a document and position compute a call hierarchy item. This is justed as
+		 * anchor for call hierarchy and then `resolveCallHierarchyItem` is being called.
+		 */
 		provideCallHierarchyItem(
 			document: TextDocument,
 			postion: Position,
 			token: CancellationToken
 		): ProviderResult<CallHierarchyItem>;
 
+		/**
+		 * Resolve a call hierarchy item, e.g. compute all calls from or to a function.
+		 * The result is an array of item/location-tuples. The location in the returned tuples
+		 * is always relative to the "caller" with the caller either being the provided item or
+		 * the returned item.
+		 *
+		 * @param item A call hierarchy item previously returned from `provideCallHierarchyItem` or `resolveCallHierarchyItem`
+		 * @param direction Resolve calls from a function or calls to a function
+		 * @param token A cancellation token
+		 */
 		resolveCallHierarchyItem(
 			item: CallHierarchyItem,
 			direction: CallHierarchyDirection,
@@ -61,8 +75,6 @@ declare module 'vscode' {
 	export class ResolvedAuthority {
 		readonly host: string;
 		readonly port: number;
-		debugListenPort?: number;
-		debugConnectPort?: number;
 
 		constructor(host: string, port: number);
 	}
@@ -208,7 +220,6 @@ declare module 'vscode' {
 		 * See the vscode setting `"search.useGlobalIgnoreFiles"`.
 		 */
 		useGlobalIgnoreFiles: boolean;
-
 	}
 
 	/**
@@ -377,7 +388,6 @@ declare module 'vscode' {
 		 * Provide the set of files that match a certain file path pattern.
 		 * @param query The parameters for this query.
 		 * @param options A set of options to consider while searching files.
-		 * @param progress A progress callback that must be invoked for all results.
 		 * @param token A cancellation token.
 		 */
 		provideFileSearchResults(query: FileSearchQuery, options: FileSearchOptions, token: CancellationToken): ProviderResult<Uri[]>;
@@ -461,11 +471,6 @@ declare module 'vscode' {
 	}
 
 	export namespace workspace {
-		/**
-		 * DEPRECATED
-		 */
-		export function registerSearchProvider(): Disposable;
-
 		/**
 		 * Register a search provider.
 		 *
@@ -574,22 +579,6 @@ declare module 'vscode' {
 
 	//#region André: debug
 
-	export namespace debug {
-
-		/**
-		 * Start debugging by using either a named launch or named compound configuration,
-		 * or by directly passing a [DebugConfiguration](#DebugConfiguration).
-		 * The named configurations are looked up in '.vscode/launch.json' found in the given folder.
-		 * Before debugging starts, all unsaved files are saved and the launch configurations are brought up-to-date.
-		 * Folder specific variables used in the configuration (e.g. '${workspaceFolder}') are resolved against the given folder.
-		 * @param folder The [workspace folder](#WorkspaceFolder) for looking up named configurations and resolving variables or `undefined` for a non-folder setup.
-		 * @param nameOrConfiguration Either the name of a debug or compound configuration or a [DebugConfiguration](#DebugConfiguration) object.
-		 * @param parent If specified the newly created debug session is registered as a "child" session of a "parent" debug session.
-		 * @return A thenable that resolves when debugging could be successfully started.
-		 */
-		export function startDebugging(folder: WorkspaceFolder | undefined, nameOrConfiguration: string | DebugConfiguration, parentSession?: DebugSession): Thenable<boolean>;
-	}
-
 	// deprecated
 
 	export interface DebugConfigurationProvider {
@@ -627,6 +616,11 @@ declare module 'vscode' {
 		 * An [event](#Event) that fires when the log level has changed.
 		 */
 		export const onDidChangeLogLevel: Event<LogLevel>;
+
+		/**
+		 * The custom uri scheme the editor registers to in the operating system, like 'vscode', 'vscode-insiders'.
+		 */
+		export const uriScheme: string;
 	}
 
 	//#endregion
@@ -1016,9 +1010,7 @@ declare module 'vscode' {
 		 * Provide a list of ranges which allow new comment threads creation or null for a given document
 		 */
 		provideCommentingRanges(document: TextDocument, token: CancellationToken): ProviderResult<Range[]>;
-	}
 
-	export interface EmptyCommentThreadFactory {
 		/**
 		 * The method `createEmptyCommentThread` is called when users attempt to create new comment thread from the gutter or command palette.
 		 * Extensions still need to call `createCommentThread` inside this call when appropriate.
@@ -1052,11 +1044,6 @@ declare module 'vscode' {
 		 * Provide a list [ranges](#Range) which support commenting to any given resource uri.
 		 */
 		commentingRangeProvider?: CommentingRangeProvider;
-
-		/**
-		 * Optional new comment thread factory.
-		 */
-		emptyCommentThreadFactory?: EmptyCommentThreadFactory;
 
 		/**
 		 * Optional reaction provider
@@ -1404,7 +1391,7 @@ declare module 'vscode' {
 		 * running on.
 		 *
 		 * If a webview accesses localhost content, we recomend that you specify port mappings even if
-		 * the `from` and `to` ports are the same.
+		 * the `port` and `resolvedPort` ports are the same.
 		 */
 		readonly portMapping?: ReadonlyArray<WebviewPortMapping>;
 	}

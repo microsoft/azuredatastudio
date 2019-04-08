@@ -12,15 +12,16 @@ import { INotificationService, Severity, INotificationActions } from 'vs/platfor
 
 import { SelectBox, ISelectBoxOptionsWithLabel } from 'sql/base/browser/ui/selectBox/selectBox';
 import { INotebookModel } from 'sql/parts/notebook/models/modelInterfaces';
-import { CellType } from 'sql/parts/notebook/models/contracts';
+import { CellType, CellTypes } from 'sql/parts/notebook/models/contracts';
 import { NotebookComponent } from 'sql/parts/notebook/notebook.component';
-import { getErrorMessage, formatServerNameWithDatabaseNameForAttachTo, getServerFromFormattedAttachToName, getDatabaseFromFormattedAttachToName } from 'sql/parts/notebook/notebookUtils';
+import { getErrorMessage, getServerFromFormattedAttachToName, getDatabaseFromFormattedAttachToName } from 'sql/parts/notebook/notebookUtils';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { noKernel } from 'sql/workbench/services/notebook/common/sessionManager';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
+import { generateUri } from 'sql/platform/connection/common/utils';
 
 const msgLoading = localize('loading', "Loading kernels...");
 const msgChanging = localize('changing', "Changing kernel...");
@@ -50,6 +51,19 @@ export class AddCellAction extends Action {
 				reject(e);
 			}
 		});
+	}
+}
+
+
+// Action to clear outputs of all code cells.
+export class ClearAllOutputsAction extends Action {
+	constructor(
+		id: string, label: string, cssClass: string
+	) {
+		super(id, label, cssClass);
+	}
+	public run(context: NotebookComponent): Promise<boolean> {
+		return context.clearAllOutputs();
 	}
 }
 
@@ -213,6 +227,25 @@ export class TrustedAction extends ToggleableAction {
 	}
 }
 
+// Action to run all code cells in a notebook.
+export class RunAllCellsAction extends Action {
+	constructor(
+		id: string, label: string, cssClass: string
+	) {
+		super(id, label, cssClass);
+	}
+	public run(context: NotebookComponent): Promise<boolean> {
+		return new Promise<boolean>((resolve, reject) => {
+			try {
+				context.runAllCells();
+				resolve(true);
+			} catch (e) {
+				reject(e);
+			}
+		});
+	}
+}
+
 export class KernelsDropdown extends SelectBox {
 	private model: NotebookModel;
 	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, modelReady: Promise<INotebookModel>) {
@@ -281,7 +314,7 @@ export class AttachToDropdown extends SelectBox {
 				});
 		}
 		this.onDidSelect(e => {
-			this.doChangeContext(new ConnectionProfile(this._capabilitiesService, this.getConnectionWithServerAndDatabaseNames(e.selected)));
+			this.doChangeContext(this.getSelectedConnection(e.selected));
 		});
 	}
 
@@ -306,6 +339,19 @@ export class AttachToDropdown extends SelectBox {
 	}
 
 	private updateAttachToDropdown(model: INotebookModel): void {
+		if (this.model.connectionProfile && this.model.connectionProfile.serverName) {
+			let connectionUri = generateUri(this.model.connectionProfile, 'notebook');
+			this.model.notebookOptions.connectionService.connect(this.model.connectionProfile, connectionUri).then(result => {
+				if (result.connected) {
+					let connectionProfile = new ConnectionProfile(this._capabilitiesService, result.connectionProfile);
+					this.model.addAttachToConnectionsToBeDisposed(connectionUri);
+					this.doChangeContext(connectionProfile);
+				} else {
+					this.openConnectionDialog(true);
+				}
+			}).catch(err =>
+				console.log(err));
+		}
 		model.onValidConnectionSelected(validConnection => {
 			this.handleContextsChanged(!validConnection);
 		});
@@ -343,8 +389,8 @@ export class AttachToDropdown extends SelectBox {
 				else {
 					connections.push(msgAddNewConnection);
 				}
+				this.setOptions(connections);
 			}
-			this.setOptions(connections);
 		}
 	}
 
@@ -367,13 +413,13 @@ export class AttachToDropdown extends SelectBox {
 			this.selectWithOptionName(model.contexts.defaultConnection.serverName);
 		} else {
 			if (model.contexts.defaultConnection) {
-				this.selectWithOptionName(formatServerNameWithDatabaseNameForAttachTo(model.contexts.defaultConnection));
+				this.selectWithOptionName(model.contexts.defaultConnection.title ? model.contexts.defaultConnection.title : model.contexts.defaultConnection.serverName);
 			} else {
 				this.select(0);
 			}
 		}
 		otherConnections = this.setConnectionsList(model.contexts.defaultConnection, model.contexts.otherConnections);
-		let connections = otherConnections.map((context) => context.databaseName ? context.serverName + ' (' + context.databaseName + ')' : context.serverName);
+		let connections = otherConnections.map((context) => context.title ? context.title : context.serverName);
 		return connections;
 	}
 
@@ -388,17 +434,14 @@ export class AttachToDropdown extends SelectBox {
 		return otherConnections;
 	}
 
-	public getConnectionWithServerAndDatabaseNames(selection: string): ConnectionProfile {
+	public getSelectedConnection(selection: string): ConnectionProfile {
 		// Find all connections with the the same server as the selected option
-		let connections = this.model.contexts.otherConnections.filter((c) => selection === c.serverName);
+		let connections = this.model.contexts.otherConnections.filter((c) => selection === c.title);
 		// If only one connection exists with the same server name, use that one
 		if (connections.length === 1) {
 			return connections[0];
 		} else {
-			// Extract server and database name
-			let serverName = getServerFromFormattedAttachToName(selection);
-			let databaseName = getDatabaseFromFormattedAttachToName(selection);
-			return this.model.contexts.otherConnections.find((c) => serverName === c.serverName && databaseName === c.databaseName);
+			return this.model.contexts.otherConnections.find((c) => selection === c.title);
 		}
 	}
 
@@ -416,17 +459,18 @@ export class AttachToDropdown extends SelectBox {
 	 * Bind the server value to 'Attach To' drop down
 	 * Connected server is displayed at the top of drop down
 	 **/
-	public async openConnectionDialog(): Promise<void> {
+	public async openConnectionDialog(useProfile: boolean = false): Promise<void> {
 		try {
-			await this._connectionDialogService.openDialogAndWait(this._connectionManagementService, { connectionType: 1, providers: this.model.getApplicableConnectionProviderIds(this.model.clientSession.kernel.name) }).then(connection => {
+			await this._connectionDialogService.openDialogAndWait(this._connectionManagementService, { connectionType: 1, providers: this.model.getApplicableConnectionProviderIds(this.model.clientSession.kernel.name) }, useProfile ? this.model.connectionProfile : undefined).then(connection => {
 				let attachToConnections = this.values;
 				if (!connection) {
 					this.loadAttachToDropdown(this.model, this.getKernelDisplayName());
 					this.doChangeContext(undefined, true);
 					return;
 				}
+				let connectionUri = this._connectionManagementService.getConnectionUri(connection);
 				let connectionProfile = new ConnectionProfile(this._capabilitiesService, connection);
-				let connectedServer = formatServerNameWithDatabaseNameForAttachTo(connectionProfile);
+				let connectedServer = connectionProfile.title? connectionProfile.title : connectionProfile.serverName;
 				//Check to see if the same server is already there in dropdown. We only have server names in dropdown
 				if (attachToConnections.some(val => val === connectedServer)) {
 					this.loadAttachToDropdown(this.model, this.getKernelDisplayName());
@@ -447,7 +491,7 @@ export class AttachToDropdown extends SelectBox {
 				}
 				this.select(index);
 
-				this.model.addAttachToConnectionsToBeDisposed(connectionProfile);
+				this.model.addAttachToConnectionsToBeDisposed(connectionUri);
 				// Call doChangeContext to set the newly chosen connection in the model
 				this.doChangeContext(connectionProfile);
 			});

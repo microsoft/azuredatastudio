@@ -8,7 +8,9 @@
 import 'mocha';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import * as tempWrite from 'temp-write';
+import * as fs from 'fs';
+import * as os from 'os';
+import * as path from 'path';
 
 export class CellTypes {
 	public static readonly Code = 'code';
@@ -33,10 +35,69 @@ export const pySparkNotebookContent: azdata.nb.INotebookContents = {
 	nbformat_minor: 2
 };
 
+export const pythonNotebookMultipleCellsContent: azdata.nb.INotebookContents = {
+	cells: [{
+		cell_type: CellTypes.Code,
+		source: '1+1',
+		metadata: { language: 'python' },
+		execution_count: 1
+	}, {
+		cell_type: CellTypes.Code,
+		source: '1+2',
+		metadata: { language: 'python' },
+		execution_count: 1
+	}, {
+		cell_type: CellTypes.Code,
+		source: '1+3',
+		metadata: { language: 'python' },
+		execution_count: 1
+	}, {
+		cell_type: CellTypes.Code,
+		source: '1+4',
+		metadata: { language: 'python' },
+		execution_count: 1
+	}],
+	metadata: {
+		'kernelspec': {
+			'name': 'python3',
+			'display_name': 'Python 3'
+		}
+	},
+	nbformat: 4,
+	nbformat_minor: 2
+};
+
 export const sqlNotebookContent: azdata.nb.INotebookContents = {
 	cells: [{
 		cell_type: CellTypes.Code,
 		source: 'select 1',
+		metadata: { language: 'sql' },
+		execution_count: 1
+	}],
+	metadata: {
+		'kernelspec': {
+			'name': 'SQL',
+			'display_name': 'SQL'
+		}
+	},
+	nbformat: 4,
+	nbformat_minor: 2
+};
+
+export const sqlNotebookMultipleCellsContent: azdata.nb.INotebookContents = {
+	cells: [{
+		cell_type: CellTypes.Code,
+		source: 'select 0',
+		metadata: { language: 'sql' },
+		execution_count: 1
+	}, {
+		cell_type: CellTypes.Code,
+		source: `WAITFOR DELAY '00:00:02'\nselect 1`,
+		metadata: { language: 'sql' },
+		execution_count: 1
+	}, {
+		cell_type: CellTypes.Code,
+		source: 'select 2',
 		metadata: { language: 'sql' },
 		execution_count: 1
 	}],
@@ -71,9 +132,18 @@ export const pythonKernelMetadata = {
 	}
 };
 
-export function writeNotebookToFile(pythonNotebook: azdata.nb.INotebookContents): vscode.Uri {
+export function writeNotebookToFile(pythonNotebook: azdata.nb.INotebookContents, testName: string): vscode.Uri {
+	let fileName = getFileName(testName);
 	let notebookContentString = JSON.stringify(pythonNotebook);
-	let localFile = tempWrite.sync(notebookContentString, 'notebook.ipynb');
-	let uri = vscode.Uri.file(localFile);
+	fs.writeFileSync(fileName, notebookContentString);
+	console.log(`Local file is created: '${fileName}'`);
+	let uri = vscode.Uri.file(fileName);
 	return uri;
+}
+
+export function getFileName(testName: string): string {
+	if (testName) {
+		return path.join(os.tmpdir(), testName + '.ipynb');
+	}
+	return undefined;
 }

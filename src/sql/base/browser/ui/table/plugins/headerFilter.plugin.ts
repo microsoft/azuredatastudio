@@ -41,14 +41,14 @@ export class HeaderFilter {
 			.subscribe(this.grid.onKeyDown, (e) => this.handleKeyDown);
 		this.grid.setColumns(this.grid.getColumns());
 
-		$(document.body).bind('mousedown', this.handleBodyMouseDown);
-		$(document.body).bind('keydown', this.handleKeyDown);
+		jQuery(document.body).bind('mousedown', this.handleBodyMouseDown);
+		jQuery(document.body).bind('keydown', this.handleKeyDown);
 	}
 
 	public destroy() {
 		this.handler.unsubscribeAll();
-		$(document.body).unbind('mousedown', this.handleBodyMouseDown);
-		$(document.body).unbind('keydown', this.handleKeyDown);
+		jQuery(document.body).unbind('mousedown', this.handleBodyMouseDown);
+		jQuery(document.body).unbind('keydown', this.handleKeyDown);
 	}
 
 	private handleKeyDown = (e) => {
@@ -60,7 +60,7 @@ export class HeaderFilter {
 	}
 
 	private handleBodyMouseDown = (e) => {
-		if (this.$menu && this.$menu[0] !== e.target && !$.contains(this.$menu[0], e.target)) {
+		if (this.$menu && this.$menu[0] !== e.target && !jQuery.contains(this.$menu[0], e.target)) {
 			this.hideMenu();
 			e.preventDefault();
 			e.stopPropagation();
@@ -79,7 +79,7 @@ export class HeaderFilter {
 		if (column.id === '_detail_selector') {
 			return;
 		}
-		let $el = $('<div></div>')
+		let $el = jQuery('<div></div>')
 			.addClass('slick-header-menubutton')
 			.data('column', column);
 
@@ -87,19 +87,19 @@ export class HeaderFilter {
 	}
 
 	private handleBeforeHeaderCellDestroy(e, args) {
-		$(args.node)
+		jQuery(args.node)
 			.find('.slick-header-menubutton')
 			.remove();
 	}
 
 	private addMenuItem(menu, columnDef, title, command, image) {
-		let $item = $('<div class="slick-header-menuitem">')
+		let $item = jQuery('<div class="slick-header-menuitem">')
 			.data('command', command)
 			.data('column', columnDef)
 			.bind('click', (e) => this.handleMenuItemClick(e, command, columnDef))
 			.appendTo(menu);
 
-		let $icon = $('<div class="slick-header-menuicon">')
+		let $icon = jQuery('<div class="slick-header-menuicon">')
 			.appendTo($item);
 
 		if (title === 'Sort Ascending') {
@@ -108,17 +108,17 @@ export class HeaderFilter {
 			$icon.get(0).className += ' descending';
 		}
 
-		$('<span class="slick-header-menucontent">')
+		jQuery('<span class="slick-header-menucontent">')
 			.text(title)
 			.appendTo($item);
 	}
 
 	private addMenuInput(menu, columnDef) {
 		const self = this;
-		$('<input class="input" placeholder="Search" style="margin-top: 5px; width: 206px">')
+		jQuery('<input class="input" placeholder="Search" style="margin-top: 5px; width: 206px">')
 			.data('column', columnDef)
 			.bind('keyup', (e) => {
-				let filterVals = this.getFilterValuesByInput($(e.target));
+				let filterVals = this.getFilterValuesByInput(jQuery(e.target));
 				self.updateFilterInputs(menu, columnDef, filterVals);
 			})
 			.appendTo(menu);
@@ -139,15 +139,15 @@ export class HeaderFilter {
 				+ '/>' + filterItems[i] + '</label>';
 		}
 		let $filter = menu.find('.filter');
-		$filter.empty().append($(filterOptions));
+		$filter.empty().append(jQuery(filterOptions));
 
-		$(':checkbox', $filter).bind('click', (e) => {
-			this.workingFilters = this.changeWorkingFilter(filterItems, this.workingFilters, $(e.target));
+		jQuery(':checkbox', $filter).bind('click', (e) => {
+			this.workingFilters = this.changeWorkingFilter(filterItems, this.workingFilters, jQuery(e.target));
 		});
 	}
 
 	private showFilter(e) {
-		let $menuButton = $(e.target);
+		let $menuButton = jQuery(e.target);
 		this.columnDef = $menuButton.data('column');
 
 		this.columnDef.filterValues = this.columnDef.filterValues || [];
@@ -167,7 +167,7 @@ export class HeaderFilter {
 		}
 
 		if (!this.$menu) {
-			this.$menu = $('<div class="slick-header-menu">').appendTo(document.body);
+			this.$menu = jQuery('<div class="slick-header-menu">').appendTo(document.body);
 		}
 
 		this.$menu.empty();
@@ -186,15 +186,15 @@ export class HeaderFilter {
 					+ '/>' + escape(filterItems[i]) + '</label>';
 			}
 		}
-		let $filter = $('<div class="filter">')
-			.append($(filterOptions))
+		let $filter = jQuery('<div class="filter">')
+			.append(jQuery(filterOptions))
 			.appendTo(this.$menu);
 
 		this.okButton = new Button(this.$menu.get(0));
 		this.okButton.label = 'OK';
 		this.okButton.title = 'OK';
 		this.okButton.element.id = 'filter-ok-button';
-		let okElement = $('#filter-ok-button');
+		let okElement = jQuery('#filter-ok-button');
 		okElement.bind('click', (ev) => {
 			this.columnDef.filterValues = this.workingFilters.splice(0);
 			this.setButtonImage($menuButton, this.columnDef.filterValues.length > 0);
@@ -205,7 +205,7 @@ export class HeaderFilter {
 		this.clearButton.label = 'Clear';
 		this.clearButton.title = 'Clear';
 		this.clearButton.element.id = 'filter-clear-button';
-		let clearElement = $('#filter-clear-button');
+		let clearElement = jQuery('#filter-clear-button');
 		clearElement.bind('click', (ev) => {
 			this.columnDef.filterValues.length = 0;
 			this.setButtonImage($menuButton, false);
@@ -216,23 +216,23 @@ export class HeaderFilter {
 		this.cancelButton.label = 'Cancel';
 		this.cancelButton.title = 'Cancel';
 		this.cancelButton.element.id = 'filter-cancel-button';
-		let cancelElement = $('#filter-cancel-button');
+		let cancelElement = jQuery('#filter-cancel-button');
 		cancelElement.bind('click', () => this.hideMenu());
 		attachButtonStyler(this.okButton, this._themeService);
 		attachButtonStyler(this.clearButton, this._themeService);
 		attachButtonStyler(this.cancelButton, this._themeService);
 
-		$(':checkbox', $filter).bind('click', (e) => {
-			this.workingFilters = this.changeWorkingFilter(filterItems, this.workingFilters, $(e.target));
+		jQuery(':checkbox', $filter).bind('click', (e) => {
+			this.workingFilters = this.changeWorkingFilter(filterItems, this.workingFilters, jQuery(e.target));
 		});
 
-		let offset = $(e.target).offset();
-		let left = offset.left - this.$menu.width() + $(e.target).width() - 8;
+		let offset = jQuery(e.target).offset();
+		let left = offset.left - this.$menu.width() + jQuery(e.target).width() - 8;
 
-		let menutop = offset.top + $(e.target).height();
+		let menutop = offset.top + jQuery(e.target).height();
 
-		if (menutop + offset.top > $(window).height()) {
-			menutop -= (this.$menu.height() + $(e.target).height() + 8);
+		if (menutop + offset.top > jQuery(window).height()) {
+			menutop -= (this.$menu.height() + jQuery(e.target).height() + 8);
 		}
 		this.$menu.css('top', menutop)
 			.css('left', (left > 0 ? left : 0));
@@ -249,10 +249,10 @@ export class HeaderFilter {
 		if ($checkbox.val() < 0) {
 			// Select All
 			if ($checkbox.prop('checked')) {
-				$(':checkbox', $filter).prop('checked', true);
+				jQuery(':checkbox', $filter).prop('checked', true);
 				workingFilters = filterItems.slice(0);
 			} else {
-				$(':checkbox', $filter).prop('checked', false);
+				jQuery(':checkbox', $filter).prop('checked', false);
 				workingFilters.length = 0;
 			}
 		} else {

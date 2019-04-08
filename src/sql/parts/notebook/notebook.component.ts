@@ -33,7 +33,7 @@ import * as notebookUtils from 'sql/parts/notebook/notebookUtils';
 import { Deferred } from 'sql/base/common/promise';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
-import { KernelsDropdown, AttachToDropdown, AddCellAction, TrustedAction } from 'sql/parts/notebook/notebookActions';
+import { KernelsDropdown, AttachToDropdown, AddCellAction, TrustedAction, RunAllCellsAction, ClearAllOutputsAction } from 'sql/parts/notebook/notebookActions';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
@@ -41,6 +41,7 @@ import { IConnectionDialogService } from 'sql/workbench/services/connection/comm
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { CellMagicMapper } from 'sql/parts/notebook/models/cellMagicMapper';
 import { IExtensionsViewlet, VIEWLET_ID } from 'vs/workbench/contrib/extensions/common/extensions';
+import { CellModel } from 'sql/parts/notebook/models/cell';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 
@@ -62,6 +63,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private _modelRegisteredDeferred = new Deferred<NotebookModel>();
 	private profile: IConnectionProfile;
 	private _trustedAction: TrustedAction;
+	private _runAllCellsAction: RunAllCellsAction;
 	private _providerRelatedActions: IAction[] = [];
 	private _scrollTop: number;
 
@@ -162,7 +164,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	//Saves scrollTop value on scroll change
 	public scrollHandler(event: Event){
-		this._scrollTop = event.srcElement.scrollTop;
+		this._scrollTop = (<any>event.srcElement).scrollTop;
 	}
 
 	public unselectActiveCell() {
@@ -371,6 +373,9 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		let addTextCellButton = new AddCellAction('notebook.AddTextCell', localize('text', 'Text'), 'notebook-button icon-add');
 		addTextCellButton.cellType = CellTypes.Markdown;
 
+		this._runAllCellsAction = new RunAllCellsAction('notebook.runAllCells', localize('runAll', 'Run Cells'), 'notebook-button icon-run-cells');
+		let clearResultsButton = new ClearAllOutputsAction('notebook.ClearAllOutputs', localize('clearResults', 'Clear Results'), 'notebook-button icon-clear-results');
+
 		this._trustedAction = this.instantiationService.createInstance(TrustedAction, 'notebook.Trusted');
 		this._trustedAction.enabled = false;
 
@@ -382,7 +387,9 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			{ element: attachToContainer },
 			{ action: addCodeCellButton },
 			{ action: addTextCellButton },
-			{ action: this._trustedAction }
+			{ action: this._trustedAction },
+			{ action: this._runAllCellsAction },
+			{ action: clearResultsButton }
 		]);
 
 	}
@@ -476,6 +483,35 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			return cell.runCell(this.notificationService, this.connectionManagementService);
 		} else {
 			return Promise.reject(new Error(localize('cellNotFound', 'cell with URI {0} was not found in this model', uriString)));
+		}
+	}
+
+	public async runAllCells(): Promise<boolean> {
+		await this.modelReady;
+		let codeCells = this._model.cells.filter(cell => cell.cellType === CellTypes.Code);
+		if (codeCells && codeCells.length) {
+			for (let i = 0; i < codeCells.length; i++) {
+				let cellStatus = await this.runCell(codeCells[i]);
+				if (!cellStatus) {
+					return Promise.reject(new Error(localize('cellRunFailed', 'running cell id {0} failed', codeCells[i].id)));
+				}
+			}
+		}
+		return true;
+	}
+
+	public async clearAllOutputs(): Promise<boolean> {
+		try {
+			await this.modelReady;
+			this._model.cells.forEach(cell => {
+				if (cell.cellType === CellTypes.Code) {
+					(cell as CellModel).clearOutputs();
+				}
+			});
+			return Promise.resolve(true);
+		}
+		catch (e) {
+			return Promise.reject(e);
 		}
 	}
 

@@ -5935,7 +5935,7 @@ declare module 'vscode' {
 		 * serializer must restore the webview's `.html` and hook up all webview events.
 		 * @param state Persisted state from the webview content.
 		 *
-		 * @return Thenble indicating that the webview has been fully restored.
+		 * @return Thenable indicating that the webview has been fully restored.
 		 */
 		deserializeWebviewPanel(webviewPanel: WebviewPanel, state: any): Thenable<void>;
 	}
@@ -6599,10 +6599,11 @@ declare module 'vscode' {
 		 *
 		 * @param name Optional human-readable string which will be used to represent the terminal in the UI.
 		 * @param shellPath Optional path to a custom shell executable to be used in the terminal.
-		 * @param shellArgs Optional args for the custom shell executable, this does not work on Windows (see #8429)
+		 * @param shellArgs Optional args for the custom shell executable. A string can be used on Windows only which
+		 * allows specifying shell args in [command-line format](https://msdn.microsoft.com/en-au/08dfcab2-eb6e-49a4-80eb-87d4076c98c6).
 		 * @return A new Terminal.
 		 */
-		export function createTerminal(name?: string, shellPath?: string, shellArgs?: string[]): Terminal;
+		export function createTerminal(name?: string, shellPath?: string, shellArgs?: string[] | string): Terminal;
 
 		/**
 		 * Creates a [Terminal](#Terminal). The cwd of the terminal will be the workspace directory
@@ -6639,7 +6640,7 @@ declare module 'vscode' {
 		 * be able to handle uris which are directed to the extension itself. A uri must respect
 		 * the following rules:
 		 *
-		 * - The uri-scheme must be the product name;
+		 * - The uri-scheme must be `vscode.env.uriScheme`;
 		 * - The uri-authority must be the extension id (eg. `my.extension`);
 		 * - The uri-path, -query and -fragment parts are arbitrary.
 		 *
@@ -8828,9 +8829,10 @@ declare module 'vscode' {
 		 * Folder specific variables used in the configuration (e.g. '${workspaceFolder}') are resolved against the given folder.
 		 * @param folder The [workspace folder](#WorkspaceFolder) for looking up named configurations and resolving variables or `undefined` for a non-folder setup.
 		 * @param nameOrConfiguration Either the name of a debug or compound configuration or a [DebugConfiguration](#DebugConfiguration) object.
+		 * @param parent If specified the newly created debug session is registered as a "child" session of a "parent" debug session.
 		 * @return A thenable that resolves when debugging could be successfully started.
 		 */
-		export function startDebugging(folder: WorkspaceFolder | undefined, nameOrConfiguration: string | DebugConfiguration): Thenable<boolean>;
+		export function startDebugging(folder: WorkspaceFolder | undefined, nameOrConfiguration: string | DebugConfiguration, parentSession?: DebugSession): Thenable<boolean>;
 
 		/**
 		 * Add breakpoints.

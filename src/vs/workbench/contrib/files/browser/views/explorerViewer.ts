@@ -67,7 +67,8 @@ export class ExplorerDataSource implements IAsyncDataSource<ExplorerItem | Explo
 		@INotificationService private readonly notificationService: INotificationService,
 		@IWorkbenchLayoutService private readonly layoutService: IWorkbenchLayoutService,
 		@IFileService private readonly fileService: IFileService,
-		@IExplorerService private readonly explorerService: IExplorerService
+		@IExplorerService private readonly explorerService: IExplorerService,
+		@IWorkspaceContextService private readonly contextService: IWorkspaceContextService
 	) { }
 
 	hasChildren(element: ExplorerItem | ExplorerItem[]): boolean {
@@ -80,8 +81,17 @@ export class ExplorerDataSource implements IAsyncDataSource<ExplorerItem | Explo
 		}
 
 		const promise = element.fetchChildren(this.fileService, this.explorerService).then(undefined, e => {
-			// Do not show error for roots since we already use an explorer decoration to notify user
-			if (!(element instanceof ExplorerItem && element.isRoot)) {
+
+			if (element instanceof ExplorerItem && element.isRoot) {
+				if (this.contextService.getWorkbenchState() === WorkbenchState.FOLDER) {
+					// Single folder create a dummy explorer item to show error
+					const placeholder = new ExplorerItem(element.resource, undefined, false);
+					placeholder.isError = true;
+
+					return [placeholder];
+				}
+			} else {
+				// Do not show error for roots since we already use an explorer decoration to notify user
 				this.notificationService.error(e);
 			}
 
@@ -212,7 +222,8 @@ export class FilesRenderer implements ITreeRenderer<ExplorerItem, FuzzyScore, IF
 			const value = inputBox.value;
 			dispose(toDispose);
 			container.removeChild(label.element);
-			editableData.onFinish(value, success);
+			// Timeout: once done rendering only then re-render #70902
+			setTimeout(() => editableData.onFinish(value, success), 0);
 		});
 
 		let ignoreDisposeAndBlur = true;
@@ -242,7 +253,7 @@ export class FilesRenderer implements ITreeRenderer<ExplorerItem, FuzzyScore, IF
 		return toDisposable(() => {
 			if (!ignoreDisposeAndBlur) {
 				blurDisposable.dispose();
-				done(inputBox.isInputValid());
+				done(false);
 			}
 		});
 	}
@@ -298,7 +309,7 @@ export class FilesFilter implements ITreeFilter<ExplorerItem, FuzzyScore> {
 
 			const excludesConfigCopy = deepClone(excludesConfig); // do not keep the config, as it gets mutated under our hoods
 
-			this.hiddenExpressionPerRoot.set(folder.uri.toString(), { original: excludesConfigCopy, parsed: glob.parse(excludesConfigCopy) } as CachedParsedExpression);
+			this.hiddenExpressionPerRoot.set(folder.uri.toString(), { original: excludesConfigCopy, parsed: glob.parse(excludesConfigCopy) });
 		});
 
 		return needsRefresh;
@@ -314,8 +325,7 @@ export class FilesFilter implements ITreeFilter<ExplorerItem, FuzzyScore> {
 
 		// Hide those that match Hidden Patterns
 		const cached = this.hiddenExpressionPerRoot.get(stat.root.resource.toString());
-		if (cached && cached.parsed(path.normalize(path.relative(stat.root.resource.path, stat.resource.path)), stat.name, name => !!(stat.parent && stat.parent.getChild(name)))) {
-			// review (isidor): is path.normalize necessary? path.relative already returns an os path
+		if (cached && cached.parsed(path.relative(stat.root.resource.path, stat.resource.path), stat.name, name => !!(stat.parent && stat.parent.getChild(name)))) {
 			return false; // hidden through pattern
 		}
 
@@ -323,7 +333,7 @@ export class FilesFilter implements ITreeFilter<ExplorerItem, FuzzyScore> {
 	}
 
 	public dispose(): void {
-		this.workspaceFolderChangeListener = dispose(this.workspaceFolderChangeListener);
+		dispose(this.workspaceFolderChangeListener);
 	}
 }
 
@@ -419,6 +429,7 @@ export class FileDragAndDrop implements ITreeDragAndDrop<ExplorerItem> {
 
 	private toDispose: IDisposable[];
 	private dropEnabled: boolean;
+	private isCopy: boolean;
 
 	constructor(
 		@INotificationService private notificationService: INotificationService,
@@ -539,7 +550,7 @@ export class FileDragAndDrop implements ITreeDragAndDrop<ExplorerItem> {
 	}
 
 	getDragURI(element: ExplorerItem): string | null {
-		if (this.explorerService.isEditable(element)) {
+		if (this.explorerService.isEditable(element) || (!this.isCopy && element.isReadonly)) {
 			return null;
 		}
 
@@ -555,6 +566,7 @@ export class FileDragAndDrop implements ITreeDragAndDrop<ExplorerItem> {
 	}
 
 	onDragStart(data: IDragAndDropData, originalEvent: DragEvent): void {
+		this.isCopy = (originalEvent.ctrlKey && !isMacintosh) || (originalEvent.altKey && isMacintosh);
 		const items = (data as ElementsDragAndDropData<ExplorerItem>).elements;
 		if (items && items.length && originalEvent.dataTransfer) {
 			// Apply some datatransfer types to allow for dragging the element outside of the application
@@ -587,7 +599,7 @@ export class FileDragAndDrop implements ITreeDragAndDrop<ExplorerItem> {
 		}
 		// In-Explorer DND (Move/Copy file)
 		else {
-			this.handleExplorerDrop(data, target, originalEvent);
+			this.handleExplorerDrop(data, target);
 		}
 	}
 
@@ -595,7 +607,7 @@ export class FileDragAndDrop implements ITreeDragAndDrop<ExplorerItem> {
 		const droppedResources = extractResources(originalEvent, true);
 
 		// Check for dropped external files to be folders
-		return this.fileService.resolveFiles(droppedResources).then(result => {
+		return this.fileService.resolveAll(droppedResources).then(result => {
 
 			// Pass focus to window
 			this.windowService.focusWindow();
@@ -636,7 +648,7 @@ export class FileDragAndDrop implements ITreeDragAndDrop<ExplorerItem> {
 		if (resources && resources.length > 0) {
 
 			// Resolve target to check for name collisions and ask user
-			return this.fileService.resolveFile(target.resource).then(targetStat => {
+			return this.fileService.resolve(target.resource).then(targetStat => {
 
 				// Check for name collisions
 				const targetNames = new Set<string>();
@@ -682,7 +694,7 @@ export class FileDragAndDrop implements ITreeDragAndDrop<ExplorerItem> {
 
 							return revertPromise.then(() => {
 								const copyTarget = joinPath(target.resource, basename(sourceFile));
-								return this.fileService.copyFile(sourceFile, copyTarget, true).then(stat => {
+								return this.fileService.copy(sourceFile, copyTarget, true).then(stat => {
 
 									// if we only add one file, just open it directly
 									if (resources.length === 1) {
@@ -701,15 +713,14 @@ export class FileDragAndDrop implements ITreeDragAndDrop<ExplorerItem> {
 		return Promise.resolve(undefined);
 	}
 
-	private handleExplorerDrop(data: IDragAndDropData, target: ExplorerItem, originalEvent: DragEvent): Promise<void> {
+	private handleExplorerDrop(data: IDragAndDropData, target: ExplorerItem): Promise<void> {
 		const elementsData = (data as ElementsDragAndDropData<ExplorerItem>).elements;
 		const items = distinctParents(elementsData, s => s.resource);
-		const isCopy = (originalEvent.ctrlKey && !isMacintosh) || (originalEvent.altKey && isMacintosh);
 
 		let confirmPromise: Promise<IConfirmationResult>;
 
 		// Handle confirm setting
-		const confirmDragAndDrop = !isCopy && this.configurationService.getValue<boolean>(FileDragAndDrop.CONFIRM_DND_SETTING_KEY);
+		const confirmDragAndDrop = !this.isCopy && this.configurationService.getValue<boolean>(FileDragAndDrop.CONFIRM_DND_SETTING_KEY);
 		if (confirmDragAndDrop) {
 			confirmPromise = this.dialogService.confirm({
 				message: items.length > 1 && items.every(s => s.isRoot) ? localize('confirmRootsMove', "Are you sure you want to change the order of multiple root folders in your workspace?")
@@ -723,7 +734,7 @@ export class FileDragAndDrop implements ITreeDragAndDrop<ExplorerItem> {
 				primaryButton: localize({ key: 'moveButtonLabel', comment: ['&& denotes a mnemonic'] }, "&&Move")
 			});
 		} else {
-			confirmPromise = Promise.resolve({ confirmed: true } as IConfirmationResult);
+			confirmPromise = Promise.resolve({ confirmed: true });
 		}
 
 		return confirmPromise.then(res => {
@@ -737,7 +748,7 @@ export class FileDragAndDrop implements ITreeDragAndDrop<ExplorerItem> {
 			return updateConfirmSettingsPromise.then(() => {
 				if (res.confirmed) {
 					const rootDropPromise = this.doHandleRootDrop(items.filter(s => s.isRoot), target);
-					return Promise.all(items.filter(s => !s.isRoot).map(source => this.doHandleExplorerDrop(source, target, isCopy)).concat(rootDropPromise)).then(() => undefined);
+					return Promise.all(items.filter(s => !s.isRoot).map(source => this.doHandleExplorerDrop(source, target, this.isCopy)).concat(rootDropPromise)).then(() => undefined);
 				}
 
 				return Promise.resolve(undefined);
@@ -770,7 +781,7 @@ export class FileDragAndDrop implements ITreeDragAndDrop<ExplorerItem> {
 				rootsToMove.push(data);
 			}
 		}
-		if (!targetIndex) {
+		if (targetIndex === undefined) {
 			targetIndex = workspaceCreationData.length;
 		}
 
@@ -782,7 +793,7 @@ export class FileDragAndDrop implements ITreeDragAndDrop<ExplorerItem> {
 		// Reuse duplicate action if user copies
 		if (isCopy) {
 
-			return this.fileService.copyFile(source.resource, findValidPasteFileTarget(target, { resource: source.resource, isDirectory: source.isDirectory, allowOverwirte: false })).then(stat => {
+			return this.fileService.copy(source.resource, findValidPasteFileTarget(target, { resource: source.resource, isDirectory: source.isDirectory, allowOverwirte: false })).then(stat => {
 				if (!stat.isDirectory) {
 					return this.editorService.openEditor({ resource: stat.resource, options: { pinned: true } }).then(() => undefined);
 				}
@@ -793,6 +804,10 @@ export class FileDragAndDrop implements ITreeDragAndDrop<ExplorerItem> {
 
 		// Otherwise move
 		const targetResource = joinPath(target.resource, source.name);
+		if (source.isReadonly) {
+			// Do not allow moving readonly items
+			return Promise.resolve();
+		}
 
 		return this.textFileService.move(source.resource, targetResource).then(undefined, error => {
 

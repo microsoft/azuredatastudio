@@ -119,7 +119,20 @@ export class OEShimService extends Disposable implements IOEShimService {
 	private treeNodeToITreeItem(viewId: string, node: TreeNode, parentNode: ITreeItem): ITreeItem {
 		let handle = generateUuid();
 		let nodePath = node.nodePath;
-		let newTreeItem = {
+		let icon: string = '';
+		if (node.iconType) {
+			icon = (typeof node.iconType === 'string') ? node.iconType : node.iconType.id;
+		} else {
+			icon = node.nodeTypeId;
+			if (node.nodeStatus) {
+				icon = node.nodeTypeId + '_' + node.nodeStatus;
+			}
+			if (node.nodeSubType) {
+				icon = node.nodeTypeId + '_' + node.nodeSubType;
+			}
+		}
+		icon = icon.toLowerCase();
+		let newTreeItem: ITreeItem = {
 			parentHandle: node.parent.id,
 			handle,
 			collapsibleState: node.isAlwaysLeaf ? TreeItemCollapsibleState.None : TreeItemCollapsibleState.Collapsed,
@@ -129,7 +142,8 @@ export class OEShimService extends Disposable implements IOEShimService {
 			childProvider: node.childProvider || parentNode.childProvider,
 			providerHandle: parentNode.childProvider,
 			payload: node.payload || parentNode.payload,
-			contextValue: node.nodeTypeId
+			contextValue: node.nodeTypeId,
+			sqlIcon: icon
 		};
 		this.nodeHandleMap.set(generateNodeMapKey(viewId, newTreeItem), nodePath);
 		return newTreeItem;

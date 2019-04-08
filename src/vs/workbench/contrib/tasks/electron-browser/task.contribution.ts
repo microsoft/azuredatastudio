@@ -870,7 +870,7 @@ class TaskService extends Disposable implements ITaskService {
 		});
 	}
 
-	public run(task: Task | undefined, options?: ProblemMatcherRunOptions): Promise<ITaskSummary> {
+	public run(task: Task | undefined, options?: ProblemMatcherRunOptions, runSource: TaskRunSource = TaskRunSource.System): Promise<ITaskSummary> {
 		if (!task) {
 			throw new TaskError(Severity.Info, nls.localize('TaskServer.noTask', 'Task to execute is undefined'), TaskErrors.TaskNotFound);
 		}
@@ -886,7 +886,14 @@ class TaskService extends Disposable implements ITaskService {
 				});
 			}
 			return this.executeTask(task, resolver);
-		}).then(value => value, (error) => {
+		}).then((value) => {
+			if (runSource === TaskRunSource.User) {
+				this.getWorkspaceTasks().then(workspaceTasks => {
+					RunAutomaticTasks.promptForPermission(this, this.storageService, this.notificationService, workspaceTasks);
+				});
+			}
+			return value;
+		}, (error) => {
 			this.handleError(error);
 			return Promise.reject(error);
 		});
@@ -1377,6 +1384,8 @@ class TaskService extends Disposable implements ITaskService {
 		return Promise.all([this.extensionService.activateByEvent('onCommand:workbench.action.tasks.runTask'), TaskDefinitionRegistry.onReady()]).then(() => {
 			let validTypes: IStringDictionary<boolean> = Object.create(null);
 			TaskDefinitionRegistry.all().forEach(definition => validTypes[definition.taskType] = true);
+			validTypes['shell'] = true;
+			validTypes['process'] = true;
 			return new Promise<TaskSet[]>(resolve => {
 				let result: TaskSet[] = [];
 				let counter: number = 0;
@@ -1548,11 +1557,6 @@ class TaskService extends Disposable implements ITaskService {
 			return this._workspaceTasksPromise;
 		}
 		this.updateWorkspaceTasks(runSource);
-		if (runSource === TaskRunSource.User) {
-			this._workspaceTasksPromise!.then(workspaceFolderTasks => {
-				RunAutomaticTasks.promptForPermission(this, this.storageService, this.notificationService, workspaceFolderTasks);
-			});
-		}
 		return this._workspaceTasksPromise!;
 	}
 
@@ -2049,7 +2053,7 @@ class TaskService extends Disposable implements ITaskService {
 					if (task === null) {
 						this.runConfigureTasks();
 					} else {
-						this.run(task, { attachProblemMatcher: true }).then(undefined, reason => {
+						this.run(task, { attachProblemMatcher: true }, TaskRunSource.User).then(undefined, reason => {
 							// eat the error, it has already been surfaced to the user and we don't care about it here
 						});
 					}
@@ -2314,7 +2318,7 @@ class TaskService extends Disposable implements ITaskService {
 		let openTaskFile = (workspaceFolder: IWorkspaceFolder): void => {
 			let resource = workspaceFolder.toResource('.vscode/tasks.json');
 			let configFileCreated = false;
-			this.fileService.resolveFile(resource).then((stat) => stat, () => undefined).then((stat) => {
+			this.fileService.resolve(resource).then((stat) => stat, () => undefined).then((stat) => {
 				if (stat) {
 					return stat.resource;
 				}
@@ -2371,7 +2375,7 @@ class TaskService extends Disposable implements ITaskService {
 		}
 
 		let stats = this.contextService.getWorkspace().folders.map<Promise<IFileStat | undefined>>((folder) => {
-			return this.fileService.resolveFile(folder.toResource('.vscode/tasks.json')).then(stat => stat, () => undefined);
+			return this.fileService.resolve(folder.toResource('.vscode/tasks.json')).then(stat => stat, () => undefined);
 		});
 
 		let createLabel = nls.localize('TaskService.createJsonFile', 'Create tasks.json file from template');

@@ -15,6 +15,8 @@ import { URI } from 'vs/base/common/uri';
 import * as pfs from 'vs/base/node/pfs';
 import { ILogService } from 'vs/platform/log/common/log';
 // {{SQL CARBON EDIT}} - Remove createApiFactory initializeExtensionApi, and IExtensionApiFactory imports
+//import { createApiFactory, IExtensionApiFactory, NodeModuleRequireInterceptor, VSCodeNodeModuleFactory } from 'vs/workbench/api/node/extHost.api.impl';
+import { NodeModuleRequireInterceptor, VSCodeNodeModuleFactory, KeytarNodeModuleFactory } from 'vs/workbench/api/node/extHost.api.impl';
 import { ExtHostExtensionServiceShape, IEnvironment, IInitData, IMainContext, MainContext, MainThreadExtensionServiceShape, MainThreadTelemetryShape, MainThreadWorkspaceShape, IStaticWorkspaceData } from 'vs/workbench/api/common/extHost.protocol';
 import { ExtHostConfiguration } from 'vs/workbench/api/node/extHostConfiguration';
 import { ActivatedExtension, EmptyExtension, ExtensionActivatedByAPI, ExtensionActivatedByEvent, ExtensionActivationReason, ExtensionActivationTimes, ExtensionActivationTimesBuilder, ExtensionsActivator, IExtensionAPI, IExtensionContext, IExtensionMemento, IExtensionModule, HostExtension } from 'vs/workbench/api/node/extHostExtensionActivator';
@@ -32,6 +34,7 @@ import { ExtensionIdentifier, IExtensionDescription } from 'vs/platform/extensio
 import { IWorkspace } from 'vs/platform/workspace/common/workspace';
 import { Schemas } from 'vs/base/common/network';
 import { withNullAsUndefined } from 'vs/base/common/types';
+import { realpath } from 'vs/base/node/extpath';
 
 class ExtensionMemento implements IExtensionMemento {
 
@@ -243,7 +246,13 @@ export class ExtHostExtensionService implements ExtHostExtensionServiceShape {
 	private async _initialize(): Promise<void> {
 		try {
 			const configProvider = await this._extHostConfiguration.getConfigProvider();
+
+			// {{SQL CARBON EDIT}} - disable VSCodeNodeModuleFactory and use older initializeExtensionApi
+			// const extensionPaths = await this.getExtensionPathIndex();
+			// NodeModuleRequireInterceptor.INSTANCE.register(new VSCodeNodeModuleFactory(this._extensionApiFactory, extensionPaths, this._registry, configProvider));
 			await initializeExtensionApi(this, this._extensionApiFactory, this._registry, configProvider);
+			NodeModuleRequireInterceptor.INSTANCE.register(new KeytarNodeModuleFactory(this._extHostContext.getProxy(MainContext.MainThreadKeytar)));
+
 			// Do this when extension service exists, but extensions are not being activated yet.
 			await connectProxyResolver(this._extHostWorkspace, configProvider, this, this._extHostLogService, this._mainThreadTelemetryProxy);
 			this._almostReadyToRunExtensions.open();
@@ -318,7 +327,7 @@ export class ExtHostExtensionService implements ExtHostExtensionServiceShape {
 				if (!ext.main) {
 					return undefined;
 				}
-				return pfs.realpath(ext.extensionLocation.fsPath).then(value => tree.set(URI.file(value).fsPath, ext));
+				return realpath(ext.extensionLocation.fsPath).then(value => tree.set(URI.file(value).fsPath, ext));
 			});
 			this._extensionPathIndex = Promise.all(extensions).then(() => tree);
 		}
@@ -643,11 +652,12 @@ export class ExtHostExtensionService implements ExtHostExtensionServiceShape {
 		// to give the PH process a chance to flush any outstanding console
 		// messages to the main process, we delay the exit() by some time
 		setTimeout(() => {
-			if (!!this._initData.environment.extensionTestsLocationURI) {
-				// If extension tests are running, give the exit code to the renderer
+			// If extension tests are running, give the exit code to the renderer
+			if (this._initData.remoteAuthority && !!this._initData.environment.extensionTestsLocationURI) {
 				this._mainThreadExtensionsProxy.$onExtensionHostExit(code);
 				return;
 			}
+
 			this._nativeExit(code);
 		}, 500);
 	}
@@ -697,8 +707,6 @@ export class ExtHostExtensionService implements ExtHostExtensionServiceShape {
 			authority: remoteAuthority,
 			host: result.host,
 			port: result.port,
-			debugListenPort: result.debugListenPort,
-			debugConnectPort: result.debugConnectPort,
 		};
 	}
 
@@ -734,13 +742,13 @@ export class ExtHostExtensionService implements ExtHostExtensionServiceShape {
 			if (!extensionDescription) {
 				return;
 			}
-			const realpath = await pfs.realpath(extensionDescription.extensionLocation.fsPath);
-			trie.delete(URI.file(realpath).fsPath);
+			const realpathValue = await realpath(extensionDescription.extensionLocation.fsPath);
+			trie.delete(URI.file(realpathValue).fsPath);
 		}));
 
 		await Promise.all(toAdd.map(async (extensionDescription) => {
-			const realpath = await pfs.realpath(extensionDescription.extensionLocation.fsPath);
-			trie.set(URI.file(realpath).fsPath, extensionDescription);
+			const realpathValue = await realpath(extensionDescription.extensionLocation.fsPath);
+			trie.set(URI.file(realpathValue).fsPath, extensionDescription);
 		}));
 
 		this._registry.deltaExtensions(toAdd, toRemove);

@@ -71,8 +71,8 @@ const viewIdNameMappings: { [id: string]: string } = {
 	'extensions.listView': localize('marketPlace', "Marketplace"),
 	'extensions.enabledExtensionList': localize('enabledExtensions', "Enabled"),
 	'extensions.disabledExtensionList': localize('disabledExtensions', "Disabled"),
-	'extensions.popularExtensionsList': localize('popularExtensions', "Popular"),
 	// {{SQL CARBON EDIT}}
+	// 'extensions.popularExtensionsList': localize('popularExtensions', "Popular"),
 	'extensions.recommendedList': localize('recommendedExtensions', "Marketplace"),
 	'extensions.otherrecommendedList': localize('otherRecommendedExtensions', "Other Recommendations"),
 	'extensions.workspaceRecommendedList': localize('workspaceRecommendedExtensions', "Workspace Recommendations"),
@@ -94,7 +94,8 @@ export class ExtensionsViewletViewsContribution implements IWorkbenchContributio
 		viewDescriptors.push(this.createMarketPlaceExtensionsListViewDescriptor());
 		viewDescriptors.push(this.createEnabledExtensionsListViewDescriptor());
 		viewDescriptors.push(this.createDisabledExtensionsListViewDescriptor());
-		viewDescriptors.push(this.createPopularExtensionsListViewDescriptor());
+		// {{SQL CARBON EDIT}}
+		// viewDescriptors.push(this.createPopularExtensionsListViewDescriptor());
 		viewDescriptors.push(this.createBuiltInExtensionsListViewDescriptor());
 		viewDescriptors.push(this.createBuiltInBasicsExtensionsListViewDescriptor());
 		viewDescriptors.push(this.createBuiltInThemesExtensionsListViewDescriptor());
@@ -153,19 +154,20 @@ export class ExtensionsViewletViewsContribution implements IWorkbenchContributio
 		};
 	}
 
-	// Separate view for popular extensions required as we need to show popular and recommended sections
-	// in the default view when there is no search text, and user has no installed extensions.
-	private createPopularExtensionsListViewDescriptor(): IViewDescriptor {
-		const id = 'extensions.popularExtensionsList';
-		return {
-			id,
-			name: viewIdNameMappings[id],
-			ctorDescriptor: { ctor: ExtensionsListView },
-			when: ContextKeyExpr.and(ContextKeyExpr.not('searchExtensions'), ContextKeyExpr.not('hasInstalledExtensions')),
-			weight: 60,
-			order: 1
-		};
-	}
+	// {{SQL CARBON EDIT}}
+	// // Separate view for popular extensions required as we need to show popular and recommended sections
+	// // in the default view when there is no search text, and user has no installed extensions.
+	// private createPopularExtensionsListViewDescriptor(): IViewDescriptor {
+	// 	const id = 'extensions.popularExtensionsList';
+	// 	return {
+	// 		id,
+	// 		name: viewIdNameMappings[id],
+	// 		ctorDescriptor: { ctor: ExtensionsListView },
+	// 		when: ContextKeyExpr.and(ContextKeyExpr.not('searchExtensions'), ContextKeyExpr.not('hasInstalledExtensions')),
+	// 		weight: 60,
+	// 		order: 1
+	// 	};
+	// }
 
 	private createExtensionsViewDescriptorsForServer(server: IExtensionManagementServer): IViewDescriptor[] {
 		return [{
@@ -338,13 +340,13 @@ export class ExtensionsViewlet extends ViewContainerViewlet implements IExtensio
 
 		this.searchBox = this.instantiationService.createInstance(SuggestEnabledInput, `${VIEWLET_ID}.searchbox`, header, {
 			triggerCharacters: ['@'],
-			sortKey: item => {
+			sortKey: (item: string) => {
 				if (item.indexOf(':') === -1) { return 'a'; }
 				else if (/ext:/.test(item) || /tag:/.test(item)) { return 'b'; }
 				else if (/sort:/.test(item)) { return 'c'; }
 				else { return 'd'; }
 			},
-			provideResults: (query) => Query.suggestions(query)
+			provideResults: (query: string) => Query.suggestions(query)
 		}, placeholder, 'extensions:searchinput', { placeholderText: placeholder, value: searchValue });
 
 		if (this.searchBox.getValue()) {
@@ -406,7 +408,8 @@ export class ExtensionsViewlet extends ViewContainerViewlet implements IExtensio
 				this.instantiationService.createInstance(ShowDisabledExtensionsAction, ShowDisabledExtensionsAction.ID, ShowDisabledExtensionsAction.LABEL),
 				this.instantiationService.createInstance(ShowBuiltInExtensionsAction, ShowBuiltInExtensionsAction.ID, ShowBuiltInExtensionsAction.LABEL),
 				this.instantiationService.createInstance(ShowRecommendedExtensionsAction, ShowRecommendedExtensionsAction.ID, ShowRecommendedExtensionsAction.LABEL),
-				this.instantiationService.createInstance(ShowPopularExtensionsAction, ShowPopularExtensionsAction.ID, ShowPopularExtensionsAction.LABEL),
+				// {{SQL CARBON EDIT}}
+				// this.instantiationService.createInstance(ShowPopularExtensionsAction, ShowPopularExtensionsAction.ID, ShowPopularExtensionsAction.LABEL),
 				new Separator(),
 				// {{SQL CARBON EDIT}}
 				//this.instantiationService.createInstance(ChangeSortAction, 'extensions.sort.install', localize('sort by installs', "Sort By: Install Count"), this.onSearchChange, 'installs'),
@@ -450,7 +453,7 @@ export class ExtensionsViewlet extends ViewContainerViewlet implements IExtensio
 		super.saveState();
 	}
 
-	private doSearch(): Promise<any> {
+	private doSearch(): Promise<void> {
 		const value = this.normalizedQuery();
 		this.searchExtensionsContextKey.set(!!value);
 		this.searchBuiltInExtensionsContextKey.set(ExtensionsListView.isBuiltInExtensionsQuery(value));
@@ -462,9 +465,9 @@ export class ExtensionsViewlet extends ViewContainerViewlet implements IExtensio
 			return this.progress(Promise.all(this.panels.map(view =>
 				(<ExtensionsListView>view).show(this.normalizedQuery())
 					.then(model => this.alertSearchResult(model.length, view.id))
-			)));
+			))).then(() => undefined);
 		}
-		return Promise.resolve(null);
+		return Promise.resolve();
 	}
 
 	protected onDidAddViews(added: IAddedViewDescriptorRef[]): ViewletPanel[] {
@@ -476,7 +479,7 @@ export class ExtensionsViewlet extends ViewContainerViewlet implements IExtensio
 		return addedViews;
 	}
 
-	private alertSearchResult(count: number, viewId: string) {
+	private alertSearchResult(count: number, viewId: string): void {
 		switch (count) {
 			case 0:
 				break;
@@ -528,7 +531,7 @@ export class ExtensionsViewlet extends ViewContainerViewlet implements IExtensio
 		return this.progressService.withProgress({ location: ProgressLocation.Extensions }, () => promise);
 	}
 
-	private onError(err: any): void {
+	private onError(err: Error): void {
 		if (isPromiseCanceledError(err)) {
 			return;
 		}
@@ -611,7 +614,7 @@ export class MaliciousExtensionChecker implements IWorkbenchContribution {
 			.then(() => this.loopCheckForMaliciousExtensions());
 	}
 
-	private checkForMaliciousExtensions(): Promise<any> {
+	private checkForMaliciousExtensions(): Promise<void> {
 		return this.extensionsManagementService.getExtensionsReport().then(report => {
 			const maliciousSet = getMaliciousExtensionsSet(report);
 
@@ -632,9 +635,9 @@ export class MaliciousExtensionChecker implements IWorkbenchContribution {
 						);
 					})));
 				} else {
-					return Promise.resolve(null);
+					return Promise.resolve(undefined);
 				}
-			});
+			}).then(() => undefined);
 		}, err => this.logService.error(err));
 	}
 

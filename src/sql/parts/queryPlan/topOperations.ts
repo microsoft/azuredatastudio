@@ -70,10 +70,8 @@ export class TopOperationsView implements IPanelView {
 		this.table = new Table(this.container, {
 			columns: topOperationColumns,
 			dataProvider: this.dataView,
-			sorter: {
-				sort: (args) => {
-					this.dataView.sort(args);
-				}
+			sorter: (args) => {
+				this.dataView.sort(args);
 			}
 		});
 		this.disposables.push(this.table);

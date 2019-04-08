@@ -519,7 +519,7 @@ export abstract class GridParentComponent {
 
 	private handleQueryPlanLink(cellRef: string, value: string): void {
 		const self = this;
-		$(cellRef).children('.xmlLink').click(function (): void {
+		jQuery(cellRef).children('.xmlLink').click(function (): void {
 			self.queryEditorService.newQueryPlanEditor(value);
 		});
 	}
@@ -527,7 +527,7 @@ export abstract class GridParentComponent {
 	private handleLink(cellRef: string, row: number, dataContext: JSON, colDef: any, linkType: string): void {
 		const self = this;
 		let value = self.getCellValueString(dataContext, colDef);
-		$(cellRef).children('.xmlLink').click(function (): void {
+		jQuery(cellRef).children('.xmlLink').click(function (): void {
 			self.dataService.openLink(value, colDef.name, linkType);
 		});
 	}

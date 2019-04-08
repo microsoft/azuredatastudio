@@ -5,7 +5,6 @@
 
 'use strict';
 
-import * as nls from 'vs/nls';
 import { IEditorModel } from 'vs/platform/editor/common/editor';
 import { EditorInput, EditorModel, ConfirmResult } from 'vs/workbench/common/editor';
 import { Emitter, Event } from 'vs/base/common/event';
@@ -22,8 +21,6 @@ import { TextFileEditorModel } from 'vs/workbench/services/textfile/common/textF
 import { Range } from 'vs/editor/common/core/range';
 import { UntitledEditorModel } from 'vs/workbench/common/editor/untitledEditorModel';
 import { Schemas } from 'vs/base/common/network';
-import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
-import { notebookModeId } from 'sql/common/constants';
 import { ITextFileService, ISaveOptions } from 'vs/workbench/services/textfile/common/textfiles';
 import { LocalContentManager } from 'sql/workbench/services/notebook/node/localContentManager';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
@@ -74,10 +71,6 @@ export class NotebookEditorModel extends EditorModel {
 		}
 		this.dirty = dirty;
 		this._onDidChangeDirty.fire();
-	}
-
-	public confirmSave(): Promise<ConfirmResult> {
-		return this.textFileService.confirmSave([this.notebookUri]);
 	}
 
 	/**
@@ -139,6 +132,7 @@ export class NotebookInput extends EditorInput {
 	private _parentContainer: HTMLElement;
 	private readonly _layoutChanged: Emitter<void> = this._register(new Emitter<void>());
 	private _model: NotebookEditorModel;
+	private _untitledEditorModel: UntitledEditorModel;
 	private _contentManager: IContentManager;
 	private _providersLoaded: Promise<void>;
 
@@ -161,7 +155,7 @@ export class NotebookInput extends EditorInput {
 	}
 
 	public confirmSave(): Promise<ConfirmResult> {
-		return this._model.confirmSave();
+		return this._textInput.confirmSave();
 	}
 
 	public revert(): Promise<boolean> {
@@ -253,13 +247,21 @@ export class NotebookInput extends EditorInput {
 		return this.resource;
 	}
 
+	public get untitledEditorModel() : UntitledEditorModel {
+		return this._untitledEditorModel;
+	}
+
+	public set untitledEditorModel(value : UntitledEditorModel) {
+		this._untitledEditorModel = value;
+	}
+
 	async resolve(): Promise<NotebookEditorModel> {
 		if (this._model && this._model.isModelCreated()) {
 			return Promise.resolve(this._model);
 		} else {
 			let textOrUntitledEditorModel: UntitledEditorModel | IEditorModel;
 			if (this.resource.scheme === Schemas.untitled) {
-				textOrUntitledEditorModel = await this._textInput.resolve();
+				textOrUntitledEditorModel = this._untitledEditorModel ? this._untitledEditorModel : await this._textInput.resolve();
 			}
 			else {
 				const textEditorModelReference = await this.textModelService.createModelReference(this.resource);
