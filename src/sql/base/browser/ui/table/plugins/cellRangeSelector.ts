@@ -92,8 +92,8 @@ export class CellRangeSelector<T> implements ICellRangeSelector<T> {
 		this.grid.setActiveCell(cell.row, cell.cell);
 
 		let start = this.grid.getCellFromPoint(
-			dd.startX - $(this.canvas).offset().left,
-			dd.startY - $(this.canvas).offset().top);
+			dd.startX - jQuery(this.canvas).offset().left,
+			dd.startY - jQuery(this.canvas).offset().top);
 
 		dd.range = { start: start, end: undefined };
 		this.currentlySelectedRange = dd.range;
@@ -108,8 +108,8 @@ export class CellRangeSelector<T> implements ICellRangeSelector<T> {
 		e.stopImmediatePropagation();
 
 		let end = this.grid.getCellFromPoint(
-			e.pageX - $(this.canvas).offset().left,
-			e.pageY - $(this.canvas).offset().top);
+			e.pageX - jQuery(this.canvas).offset().left,
+			e.pageY - jQuery(this.canvas).offset().top);
 
 		if (!this.grid.canCellBeSelected(end.row, end.cell)) {
 			return;

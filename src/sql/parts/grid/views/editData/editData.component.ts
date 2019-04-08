@@ -173,7 +173,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		this.onActiveCellChanged = this.onCellSelect;
 
 		this.onCellEditEnd = (event: Slick.OnCellChangeEventArgs<any>): void => {
-			if(self.currentEditCellValue !== event.item[event.cell]) {
+			if (self.currentEditCellValue !== event.item[event.cell]) {
 				self.currentCell.isDirty = true;
 			}
 			// Store the value that was set
@@ -541,12 +541,12 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		let grid = slick._grid;
 		if (dirtyState) {
 			// Change cell color
-			$(grid.getCellNode(row, column)).addClass('dirtyCell').removeClass('selected');
+			jQuery(grid.getCellNode(row, column)).addClass('dirtyCell').removeClass('selected');
 			if (this.dirtyCells.indexOf(column) === -1) {
 				this.dirtyCells.push(column);
 			}
 		} else {
-			$(grid.getCellNode(row, column)).removeClass('dirtyCell');
+			jQuery(grid.getCellNode(row, column)).removeClass('dirtyCell');
 			if (this.dirtyCells.indexOf(column) !== -1) {
 				this.dirtyCells.splice(this.dirtyCells.indexOf(column), 1);
 			}
@@ -559,17 +559,17 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		let grid = slick._grid;
 		if (dirtyState) {
 			// Change row header color
-			$(grid.getCellNode(row, 0)).addClass('dirtyRowHeader');
+			jQuery(grid.getCellNode(row, 0)).addClass('dirtyRowHeader');
 		} else {
-			$(grid.getCellNode(row, 0)).removeClass('dirtyRowHeader');
+			jQuery(grid.getCellNode(row, 0)).removeClass('dirtyRowHeader');
 		}
 	}
 
 	// Sets CSS to clean the entire grid of dirty state cells and rows
 	private setGridClean(): void {
 		// Remove dirty classes from the entire table
-		let allRows = $($('.grid-canvas').children());
-		let allCells = $(allRows.children());
+		let allRows = jQuery(jQuery('.grid-canvas').children());
+		let allCells = jQuery(allRows.children());
 		allCells.removeClass('dirtyCell').removeClass('dirtyRowHeader');
 		this.dirtyCells = [];
 	}
@@ -720,7 +720,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 
 	private setCurrentCell(row: number, column: number) {
 		// Only update if we're actually changing cells
-		if(this.currentCell && (row !== this.currentCell.row || column !== this.currentCell.column)) {
+		if (this.currentCell && (row !== this.currentCell.row || column !== this.currentCell.column)) {
 			this.currentCell = {
 				row: row,
 				column: column,

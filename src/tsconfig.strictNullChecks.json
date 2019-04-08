@@ -1,0 +1,29 @@
+{
+	"extends": "./tsconfig.base.json",
+	"compilerOptions": {
+		"noEmit": true,
+		"strictNullChecks": true,
+		"moduleResolution": "classic"
+	},
+	"include": [
+		"./typings",
+		"./vs/vscode.d.ts",
+		"./vs/vscode.proposed.d.ts",
+		"./sql/azdata.d.ts",
+		"./sql/azdata.proposed.d.ts",
+		"./sql/base/browser/ui/breadcrumb/*.ts",
+		"./sql/base/browser/ui/button/*.ts",
+		"./sql/base/browser/ui/checkbox/*.ts",
+		"./sql/base/browser/ui/dropdownList/*.ts",
+		"./sql/base/browser/ui/inputBox/*.ts",
+		"./sql/base/browser/ui/listBox/*.ts",
+		"./sql/base/browser/ui/panel/*.ts",
+		"./sql/base/browser/ui/radioButton/*.ts",
+		"./sql/base/browser/ui/scrollable/*.ts",
+		"./sql/base/browser/ui/selectBox/*.ts",
+		"./sql/base/browser/ui/table/*.ts",
+	],
+	"exclude": [
+		"node_modules/**"
+	]
+}

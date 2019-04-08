@@ -15,7 +15,6 @@ declare module 'jquery/dist/jquery.slim' {
 declare function factory(window: Window, noGlobal?: boolean): JQueryStatic;
 
 declare const jQuery: JQueryStatic;
-declare const $: JQueryStatic;
 
 // Used by JQuery.Event
 type _Event = Event;

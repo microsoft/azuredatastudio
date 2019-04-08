@@ -122,8 +122,14 @@ class MainThreadNotebookEditor extends Disposable {
 		if (!this.editor) {
 			return Promise.resolve(false);
 		}
-
 		return this.editor.runCell(cell);
+	}
+
+	public runAllCells(): Promise<boolean> {
+		if (!this.editor) {
+			return Promise.resolve(false);
+		}
+		return this.editor.runAllCells();
 	}
 
 	public clearAllOutputs(): Promise<boolean> {
@@ -364,6 +370,14 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		}
 
 		return editor.runCell(cell);
+	}
+
+	$runAllCells(id: string): Promise<boolean> {
+		let editor = this.getEditor(id);
+		if (!editor) {
+			return Promise.reject(disposed(`TextEditor(${id})`));
+		}
+		return editor.runAllCells();
 	}
 
 	$clearAllOutputs(id: string): Promise<boolean> {

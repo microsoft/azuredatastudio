@@ -41,7 +41,7 @@ const defaultStyles: ISplitViewStyles = {
 };
 
 const defaultOptions: ISplitViewOptions = {
-	enableResizing: true
+	enableResizing: false
 };
 
 export interface IView extends HeightIView {
@@ -275,7 +275,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 			// Add sash
 			if (this.options.enableResizing && this.viewItems.length > 1) {
 				const orientation = this.orientation === Orientation.VERTICAL ? Orientation.HORIZONTAL : Orientation.VERTICAL;
-				const layoutProvider = this.orientation === Orientation.VERTICAL ? { getHorizontalSashTop: sash => this.getSashPosition(sash) } : { getVerticalSashLeft: sash => this.getSashPosition(sash) };
+				const layoutProvider = this.orientation === Orientation.VERTICAL ? { getHorizontalSashTop: (sash: Sash) => this.getSashPosition(sash) } : { getVerticalSashLeft: (sash: Sash) => this.getSashPosition(sash) };
 				const sash = new Sash(this.sashContainer, layoutProvider, {
 					orientation,
 					orthogonalStartSash: this.orthogonalStartSash,
@@ -321,8 +321,8 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 		// this isn't actually scrolling up or down
 		let scrollTop = this.lastRenderTop;
 		let viewHeight = this.lastRenderHeight;
-		this.lastRenderTop = undefined;
-		this.lastRenderHeight = undefined;
+		this.lastRenderTop = 0;
+		this.lastRenderHeight = 0;
 		this.render(scrollTop, viewHeight);
 	}
 
@@ -378,7 +378,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 		// Add sash
 		if (this.options.enableResizing && this.viewItems.length > 1) {
 			const orientation = this.orientation === Orientation.VERTICAL ? Orientation.HORIZONTAL : Orientation.VERTICAL;
-			const layoutProvider = this.orientation === Orientation.VERTICAL ? { getHorizontalSashTop: sash => this.getSashPosition(sash) } : { getVerticalSashLeft: sash => this.getSashPosition(sash) };
+			const layoutProvider = this.orientation === Orientation.VERTICAL ? { getHorizontalSashTop: (sash: Sash) => this.getSashPosition(sash) } : { getVerticalSashLeft: (sash: Sash) => this.getSashPosition(sash) };
 			const sash = new Sash(this.sashContainer, layoutProvider, {
 				orientation,
 				orthogonalStartSash: this.orthogonalStartSash,
@@ -416,6 +416,12 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 
 		if (typeof size !== 'number' && size.type === 'distribute') {
 			this.distributeViewSizes();
+		}
+	}
+
+	clear(): void {
+		for (let i = this.viewItems.length - 1; i >= 0; i--) {
+			this.removeView(i);
 		}
 	}
 
@@ -496,8 +502,8 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 		const previousSize = Math.max(this.size, this.contentSize);
 		this.size = size;
 		this.contentSize = 0;
-		this.lastRenderHeight = undefined;
-		this.lastRenderTop = undefined;
+		this.lastRenderHeight = 0;
+		this.lastRenderTop = 0;
 
 		if (!this.proportions) {
 			this.resize(this.viewItems.length - 1, size - previousSize);
@@ -728,14 +734,14 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 			return false;
 		}
 
-		let elementAfter: HTMLElement = null;
+		let elementAfter: HTMLElement | undefined = undefined;
 		let itemAfter = <IViewItem>this.itemAfter(item);
 
 		if (itemAfter && itemAfter.container) {
 			elementAfter = itemAfter.container;
 		}
 
-		if (elementAfter === null) {
+		if (elementAfter === undefined) {
 			this.viewContainer.appendChild(item.container);
 		} else {
 			try {

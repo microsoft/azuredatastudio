@@ -205,6 +205,7 @@ export class ApiWrapper {
 
 	public async createCmsServer(connection: azdata.connection.Connection, name: string, description: string) {
 		let provider = await this.getCmsService();
+		connection.providerName = connection.providerName === 'MSSQL-CMS' ? 'MSSQL' : connection.providerName;
 		let ownerUri = await azdata.connection.getUriForConnection(connection.connectionId);
 		if (!ownerUri) {
 			// Make a connection if it's not already connected
@@ -300,6 +301,7 @@ export class ApiWrapper {
 				// remove group ID from connection if a user chose connection
 				// from the recent connections list
 				connection.options['groupId'] = null;
+				connection.providerName = 'MSSQL';
 				return connection;
 			}
 		});

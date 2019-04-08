@@ -141,51 +141,54 @@ export class PanelComponent extends Disposable {
 	 * Select a tab based on index (unrecommended)
 	 * @param index index of tab in the html
 	 */
-	selectTab(index: number);
+	selectTab(index: number): void;
 	/**
 	 * Select a tab based on the identifier that was passed into the tab
 	 * @param identifier specified identifer of the tab
 	 */
-	selectTab(identifier: string);
+	selectTab(identifier: string): void;
 	/**
 	 * Select a tab directly if you have access to the object
 	 * @param tab tab to navigate to
 	 */
-	selectTab(tab: TabComponent);
-	selectTab(input: TabComponent | number | string) {
+	selectTab(tab: TabComponent): void;
+	selectTab(input: TabComponent | number | string): void {
 		if (this._tabs && this._tabs.length > 0) {
-			let tab: TabComponent;
+			let foundTab: TabComponent | undefined;
 			if (input instanceof TabComponent) {
-				tab = input;
+				foundTab = input;
 			} else if (types.isNumber(input)) {
-				tab = this._tabs.toArray()[input];
+				foundTab = this._tabs.toArray()[input];
 			} else if (types.isString(input)) {
-				tab = this._tabs.find(i => i.identifier === input);
+				foundTab = this._tabs.find(i => i.identifier === input);
 			}
 
-			// since we need to compare identifiers in this next step we are going to go through and make sure all tabs have one
-			this._tabs.forEach(i => {
-				if (!i.identifier) {
-					i.identifier = 'tabIndex_' + idPool++;
-				}
-			});
+			if (foundTab) {
+				const tab = foundTab;
+				// since we need to compare identifiers in this next step we are going to go through and make sure all tabs have one
+				this._tabs.forEach(i => {
+					if (!i.identifier) {
+						i.identifier = 'tabIndex_' + idPool++;
+					}
+				});
 
-			if (this._activeTab && tab === this._activeTab) {
-				this.onTabChange.emit(tab);
-				return;
+				if (this._activeTab && tab === this._activeTab) {
+					this.onTabChange.emit(tab);
+					return;
+				}
+
+				this._zone.run(() => {
+					if (this._activeTab) {
+						this._activeTab.active = false;
+					}
+
+					this._activeTab = tab;
+					this.setMostRecentlyUsed(tab);
+					this._activeTab.active = true;
+
+					this.onTabChange.emit(tab);
+				});
 			}
-
-			this._zone.run(() => {
-				if (this._activeTab) {
-					this._activeTab.active = false;
-				}
-
-				this._activeTab = tab;
-				this.setMostRecentlyUsed(tab);
-				this._activeTab.active = true;
-
-				this.onTabChange.emit(tab);
-			});
 		}
 	}
 

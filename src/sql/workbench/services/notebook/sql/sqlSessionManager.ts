@@ -23,6 +23,7 @@ import { escape } from 'sql/base/common/strings';
 import { elapsedTimeLabel } from 'sql/parts/query/common/localizedConstants';
 import * as notebookUtils from 'sql/parts/notebook/notebookUtils';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 
 export const sqlKernelError: string = localize("sqlKernelError", "SQL kernel error");
 export const MAX_ROWS = 5000;
@@ -138,6 +139,7 @@ export class SqlSession implements nb.ISession {
 class SqlKernel extends Disposable implements nb.IKernel {
 	private _queryRunner: QueryRunner;
 	private _currentConnection: IConnectionProfile;
+	private _currentConnectionProfile: ConnectionProfile;
 	static kernelId: number = 0;
 
 	private _id: string;
@@ -146,6 +148,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 	private _magicToExecutorMap = new Map<string, ExternalScriptMagic>();
 
 	constructor(@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
+		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
 		@IConfigurationService private _configurationService: IConfigurationService
@@ -206,6 +209,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 
 	public set connection(conn: IConnectionProfile) {
 		this._currentConnection = conn;
+		this._currentConnectionProfile = new ConnectionProfile(this._capabilitiesService, this._currentConnection);
 		this._queryRunner = undefined;
 	}
 
@@ -224,10 +228,10 @@ class SqlKernel extends Disposable implements nb.IKernel {
 				this._future.handleDone();
 			}
 			this._queryRunner.runQuery(code);
-		} else if (this._currentConnection) {
-			let connectionUri = Utils.generateUri(this._currentConnection, 'notebook');
+		} else if (this._currentConnection && this._currentConnectionProfile) {
+			let connectionUri = Utils.generateUri(this._currentConnectionProfile, 'notebook');
 			this._queryRunner = this._instantiationService.createInstance(QueryRunner, connectionUri);
-			this._connectionManagementService.connect(this._currentConnection, connectionUri).then((result) => {
+			this._connectionManagementService.connect(this._currentConnectionProfile, connectionUri).then((result) => {
 				this.addQueryEventListeners(this._queryRunner);
 				this._queryRunner.runQuery(code);
 			});

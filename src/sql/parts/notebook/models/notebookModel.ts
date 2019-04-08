@@ -72,9 +72,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _onValidConnectionSelected = new Emitter<boolean>();
 	private _oldKernel: nb.IKernel;
 	private _clientSessionListeners: IDisposable[] = [];
-	private _connectionsToDispose: ConnectionProfile[] = [];
+	private _connectionUrisToDispose: string[] = [];
 
-	constructor(private _notebookOptions: INotebookModelOptions, startSessionImmediately?: boolean, private connectionProfile?: IConnectionProfile) {
+	constructor(private _notebookOptions: INotebookModelOptions, startSessionImmediately?: boolean, public connectionProfile?: IConnectionProfile) {
 		super();
 		if (!_notebookOptions || !_notebookOptions.notebookUri || !_notebookOptions.notebookManagers) {
 			throw new Error('path or notebook service not defined');
@@ -490,7 +490,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	private isValidConnection(profile: IConnectionProfile | connection.Connection) {
-		let standardKernels = this._notebookOptions.standardKernels.find(kernel => this._savedKernelInfo && kernel.displayName === this._savedKernelInfo.display_name);
+		let standardKernels = this._notebookOptions.standardKernels.find(kernel => this._defaultKernel && kernel.displayName === this._defaultKernel.display_name);
 		let connectionProviderIds = standardKernels ? standardKernels.connectionProviderIds : undefined;
 		return profile && connectionProviderIds && connectionProviderIds.find(provider => provider === profile.providerName) !== undefined;
 	}
@@ -637,34 +637,39 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return spec;
 	}
 
-	public async changeContext(server: string, newConnection?: IConnectionProfile, hideErrorMessage?: boolean): Promise<void> {
+	public async changeContext(title: string, newConnection?: ConnectionProfile, hideErrorMessage?: boolean): Promise<void> {
 		try {
 			if (!newConnection) {
-				newConnection = this._activeContexts.otherConnections.find((connection) => connection.serverName === server);
+				newConnection = this._activeContexts.otherConnections.find((connection) => connection.title === title);
 			}
-			if (!newConnection && (this._activeContexts.defaultConnection.serverName === server)) {
+			if ((!newConnection) && (this._activeContexts.defaultConnection.title === title)) {
 				newConnection = this._activeContexts.defaultConnection;
 			}
-			let newConnectionProfile = new ConnectionProfile(this._notebookOptions.capabilitiesService, newConnection);
-			if (this._activeConnection) {
-				this._otherConnections.push(this._activeConnection);
-			}
-			this._activeConnection = newConnectionProfile;
-			this.refreshConnections(newConnectionProfile);
-			this._activeClientSession.updateConnection(this._activeConnection.toIConnectionProfile()).then(
-				result => {
-					//Remove 'Select connection' from 'Attach to' drop-down since its a valid connection
-					this._onValidConnectionSelected.fire(true);
-				},
-				error => {
-					if (error) {
-						if (!hideErrorMessage) {
-							this.notifyError(notebookUtils.getErrorMessage(error));
+
+			if (newConnection) {
+				if (this._activeConnection && this._activeConnection.id !== newConnection.id) {
+					this._otherConnections.push(this._activeConnection);
+				}
+				this._activeConnection = newConnection;
+				this.refreshConnections(newConnection);
+				this._activeClientSession.updateConnection(newConnection.toIConnectionProfile()).then(
+					result => {
+						//Remove 'Select connection' from 'Attach to' drop-down since its a valid connection
+						this._onValidConnectionSelected.fire(true);
+					},
+					error => {
+						if (error) {
+							if (!hideErrorMessage) {
+								this.notifyError(notebookUtils.getErrorMessage(error));
+							}
+							//Selected a wrong connection, Attach to should be defaulted with 'Select connection'
+							this._onValidConnectionSelected.fire(false);
 						}
-						//Selected a wrong connection, Attach to should be defaulted with 'Select connection'
-						this._onValidConnectionSelected.fire(false);
-					}
-				});
+					});
+			} else {
+				this._onValidConnectionSelected.fire(false);
+				throw new Error('No valid connection');
+			}
 		} catch (err) {
 			let msg = notebookUtils.getErrorMessage(err);
 			this.notifyError(localize('changeContextFailed', "Changing context failed: {0}", msg));
@@ -740,8 +745,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return newKernelDisplayName;
 	}
 
-	public addAttachToConnectionsToBeDisposed(conn: ConnectionProfile) {
-		this._connectionsToDispose.push(conn);
+	public addAttachToConnectionsToBeDisposed(connUri: string) {
+		this._connectionUrisToDispose.push(connUri);
 	}
 
 	private setErrorState(errMsg: string): void {
@@ -796,8 +801,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			let kernelDisplayName = this.getDisplayNameFromSpecName(kernelChangedArgs.newValue);
 			this._activeContexts = await NotebookContexts.getContextsForKernel(this._notebookOptions.connectionService, this.getApplicableConnectionProviderIds(kernelDisplayName), kernelChangedArgs, this.connectionProfile);
 			this._contextsChangedEmitter.fire();
-			if (this.contexts.defaultConnection !== undefined && this.contexts.defaultConnection.serverName !== undefined) {
-				await this.changeContext(this.contexts.defaultConnection.serverName);
+			if (this.contexts.defaultConnection !== undefined && this.contexts.defaultConnection.serverName !== undefined && this.contexts.defaultConnection.title !== undefined) {
+				await this.changeContext(this.contexts.defaultConnection.title, this.contexts.defaultConnection);
 			}
 		}
 	}
@@ -890,16 +895,17 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	// let connectionUri = Utils.generateUri(connection, 'notebook');
 	private async disconnectNotebookConnection(conn: ConnectionProfile): Promise<void> {
 		if (this.notebookOptions.connectionService.getConnectionUri(conn).includes(uriPrefixes.notebook)) {
-			await this.notebookOptions.connectionService.disconnect(conn).catch(e => console.log(e));
+			let uri = this._notebookOptions.connectionService.getConnectionUri(conn);
+			await this.notebookOptions.connectionService.disconnect(uri).catch(e => console.log(e));
 		}
 	}
 
 	// Disconnect any connections that were added through the "Add new connection" functionality in the Attach To dropdown
 	private async disconnectAttachToConnections(): Promise<void> {
-		this._connectionsToDispose.forEach(async conn => {
+		notebookUtils.asyncForEach(this._connectionUrisToDispose, async conn => {
 			await this.notebookOptions.connectionService.disconnect(conn).catch(e => console.log(e));
 		});
-		this._connectionsToDispose = [];
+		this._connectionUrisToDispose = [];
 	}
 
 	/**

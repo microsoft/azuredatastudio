@@ -18,7 +18,7 @@ import { ScriptGenerator } from '../../scripting/scripting';
 const localize = nls.loadMessageBundle();
 
 export class CreateClusterWizard extends WizardBase<CreateClusterModel, CreateClusterWizard> {
-	private scripter : ScriptGenerator;
+	private scripter: ScriptGenerator;
 	constructor(context: ExtensionContext, kubectl: Kubectl) {
 		let model = new CreateClusterModel(kubectl);
 		super(model, context, localize('bdc-create.wizardTitle', 'Create a big data cluster'));
@@ -31,19 +31,24 @@ export class CreateClusterWizard extends WizardBase<CreateClusterModel, CreateCl
 		let selectTargetClusterPage = new SelectExistingClusterPage(this);
 		let summaryPage = new SummaryPage(this);
 		let targetClusterTypePage = new SelectTargetClusterTypePage(this);
-		this.setPages([targetClusterTypePage, selectTargetClusterPage, clusterProfilePage, settingsPage, summaryPage]);
+		this.setPages([targetClusterTypePage, selectTargetClusterPage, settingsPage, clusterProfilePage, summaryPage]);
 
 		this.wizardObject.generateScriptButton.label = localize('bdc-create.generateScriptsButtonText', 'Generate Scripts');
 		this.wizardObject.generateScriptButton.hidden = false;
 		this.wizardObject.doneButton.label = localize('bdc-create.createClusterButtonText', 'Create');
 
-		this.wizardObject.generateScriptButton.onClick(async () => {
-															this.wizardObject.generateScriptButton.enabled = false;
-															this.scripter.generateDeploymentScript(this.model).then( () => {
-																this.wizardObject.generateScriptButton.enabled = true;
-																//TODO: Add error handling.
-															});
-														});
-		this.wizardObject.doneButton.onClick(() => { });
+		this.registerDisposable(this.wizardObject.generateScriptButton.onClick(async () => {
+			this.wizardObject.generateScriptButton.enabled = false;
+			this.scripter.generateDeploymentScript(this.model).then(() => {
+				this.wizardObject.generateScriptButton.enabled = true;
+				//TODO: Add error handling.
+			});
+		}));
+	}
+
+	protected onCancel(): void {
+	}
+
+	protected onOk(): void {
 	}
 }

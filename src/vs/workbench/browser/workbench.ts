@@ -93,7 +93,7 @@ export class Workbench extends Layout {
 	}
 
 	private previousUnexpectedError: { message: string | undefined, time: number } = { message: undefined, time: 0 };
-	private handleUnexpectedError(error: any, logService: ILogService): void {
+	private handleUnexpectedError(error: unknown, logService: ILogService): void {
 		const message = toErrorMessage(error, true);
 		if (!message) {
 			return;
@@ -205,8 +205,7 @@ export class Workbench extends Layout {
 
 			// TODO@Sandeep debt around cyclic dependencies
 			const configurationService = accessor.get(IConfigurationService) as any;
-			if (typeof configurationService.acquireFileService === 'function') {
-				configurationService.acquireFileService(fileService);
+			if (typeof configurationService.acquireInstantiationService === 'function') {
 				configurationService.acquireInstantiationService(instantiationService);
 			}
 

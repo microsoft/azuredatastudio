@@ -17,8 +17,10 @@ import { RunJobAction, StopJobAction, EditJobAction, JobsRefreshAction } from 's
 import { JobCacheObject } from 'sql/platform/jobManagement/common/jobManagementService';
 import { JobManagementUtilities } from 'sql/platform/jobManagement/common/jobManagementUtilities';
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
-import { JobHistoryController, JobHistoryDataSource,
-	JobHistoryRenderer, JobHistoryFilter, JobHistoryModel, JobHistoryRow } from 'sql/parts/jobManagement/views/jobHistoryTree';
+import {
+	JobHistoryController, JobHistoryDataSource,
+	JobHistoryRenderer, JobHistoryFilter, JobHistoryModel, JobHistoryRow
+} from 'sql/parts/jobManagement/views/jobHistoryTree';
 import { JobStepsViewRow } from 'sql/parts/jobManagement/views/jobStepsViewTree';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
@@ -210,7 +212,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 				});
 				self._stepRows.unshift(new JobStepsViewRow());
 				self._stepRows[0].rowID = 'stepsColumn' + self._agentJobInfo.jobId;
-				self._stepRows[0].stepId = nls.localize('stepRow.stepID','Step ID');
+				self._stepRows[0].stepId = nls.localize('stepRow.stepID', 'Step ID');
 				self._stepRows[0].stepName = nls.localize('stepRow.stepName', 'Step Name');
 				self._stepRows[0].message = nls.localize('stepRow.message', 'Message');
 				this._showSteps = self._stepRows.length > 1;
@@ -251,7 +253,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 	}
 
 	private toggleCollapse(): void {
-		let arrow: HTMLElement = $('.resultsViewCollapsible').get(0);
+		let arrow: HTMLElement = jQuery('.resultsViewCollapsible').get(0);
 		let checkbox: any = document.getElementById('accordion');
 		if (arrow.className === 'resultsViewCollapsible' && checkbox.checked === false) {
 			arrow.className = 'resultsViewCollapsible collapsed';
@@ -318,8 +320,8 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 	}
 
 	public layout() {
-		let historyDetails = $('.overview-container').get(0);
-		let statusBar = $('.part.statusbar').get(0);
+		let historyDetails = jQuery('.overview-container').get(0);
+		let statusBar = jQuery('.part.statusbar').get(0);
 		if (historyDetails && statusBar) {
 			let historyBottom = historyDetails.getBoundingClientRect().bottom;
 			let statusTop = statusBar.getBoundingClientRect().top;

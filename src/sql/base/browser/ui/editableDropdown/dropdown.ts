@@ -233,7 +233,7 @@ export class Dropdown extends Disposable {
 					this._layoutTree();
 					return { dispose: () => { } };
 				},
-				onDOMEvent: e => {
+				onDOMEvent: (e: any) => {
 					if (!DOM.isAncestor(e.srcElement, this.$el.getHTMLElement()) && !DOM.isAncestor(e.srcElement, this.$treeContainer.getHTMLElement())) {
 						this._input.validate();
 						this._onBlur.fire();
@@ -298,7 +298,7 @@ export class Dropdown extends Disposable {
 		this.$treeContainer.style('outline', `1px solid ${style.contextBorder || this._options.contextBorder}`);
 	}
 
-	private _inputValidator(value: string): IMessage {
+	private _inputValidator(value: string): IMessage | null {
 		if (this._dataSource.options && !this._dataSource.options.find(i => i.value === value)) {
 			if (this._options.strictSelection && this._options.errorMessage) {
 				return {
@@ -313,7 +313,7 @@ export class Dropdown extends Disposable {
 			}
 		}
 
-		return undefined;
+		return null;
 	}
 
 	public set enabled(val: boolean) {
