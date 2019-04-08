@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import 'vs/css!./media/autoOAuthDialog';
 import { Builder, $ } from 'sql/base/browser/builder';
 import { IThemeService } from 'vs/platform/theme/common/themeService';

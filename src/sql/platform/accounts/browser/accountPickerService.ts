@@ -3,13 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Event, Emitter } from 'vs/base/common/event';
 import * as azdata from 'azdata';
 
-import { IAccountPickerService } from 'sql/platform/accountManagement/common/accountPicker';
-import { AccountPicker } from 'sql/platform/accountManagement/browser/accountPicker';
+import { IAccountPickerService } from 'sql/platform/accounts/common/accountPicker';
+import { AccountPicker } from 'sql/platform/accounts/browser/accountPicker';
 
 export class AccountPickerService implements IAccountPickerService {
 	_serviceBrand: any;
