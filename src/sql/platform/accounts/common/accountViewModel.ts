@@ -3,12 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as azdata from 'azdata';
 import { Event, Emitter } from 'vs/base/common/event';
-import { IAccountManagementService } from 'sql/platform/accountManagement/common/interfaces';
-import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/platform/accountManagement/common/eventTypes';
+import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
+import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/platform/accounts/common/eventTypes';
 
 /**
  * View model for account dialog
@@ -24,18 +22,16 @@ export class AccountViewModel {
 	private _updateAccountListEmitter: Emitter<UpdateAccountListEventParams>;
 	public get updateAccountListEvent(): Event<UpdateAccountListEventParams> { return this._updateAccountListEmitter.event; }
 
-	constructor( @IAccountManagementService private _accountManagementService: IAccountManagementService) {
-		let self = this;
-
+	constructor(@IAccountManagementService private _accountManagementService: IAccountManagementService) {
 		// Create our event emitters
 		this._addProviderEmitter = new Emitter<AccountProviderAddedEventParams>();
 		this._removeProviderEmitter = new Emitter<azdata.AccountProviderMetadata>();
 		this._updateAccountListEmitter = new Emitter<UpdateAccountListEventParams>();
 
 		// Register handlers for any changes to the providers or accounts
-		this._accountManagementService.addAccountProviderEvent(arg => self._addProviderEmitter.fire(arg));
-		this._accountManagementService.removeAccountProviderEvent(arg => self._removeProviderEmitter.fire(arg));
-		this._accountManagementService.updateAccountListEvent(arg => self._updateAccountListEmitter.fire(arg));
+		this._accountManagementService.addAccountProviderEvent(arg => this._addProviderEmitter.fire(arg));
+		this._accountManagementService.removeAccountProviderEvent(arg => this._removeProviderEmitter.fire(arg));
+		this._accountManagementService.updateAccountListEvent(arg => this._updateAccountListEmitter.fire(arg));
 	}
 
 	// PUBLIC METHODS //////////////////////////////////////////////////////
@@ -45,30 +41,26 @@ export class AccountViewModel {
 	 *
 	 */
 	public initialize(): Thenable<AccountProviderAddedEventParams[]> {
-		let self = this;
-
 		// Load a baseline of the account provider metadata and accounts
 		// 1) Get all the providers from the account management service
 		// 2) For each provider, get the accounts
 		// 3) Build parameters to add a provider and return it
 		return this._accountManagementService.getAccountProviderMetadata()
 			.then(
-			(providers: azdata.AccountProviderMetadata[]) => {
-				let promises = providers.map(provider => {
-					return self._accountManagementService.getAccountsForProvider(provider.id)
-						.then(
-						accounts => <AccountProviderAddedEventParams>{
-							addedProvider: provider,
-							initialAccounts: accounts
-						},
-						() => { /* Swallow failures at getting accounts, we'll just hide that provider */ });
+				(providers: azdata.AccountProviderMetadata[]) => {
+					const promises = providers.map(provider => {
+						return this._accountManagementService.getAccountsForProvider(provider.id)
+							.then(
+								accounts => <AccountProviderAddedEventParams>{
+									addedProvider: provider,
+									initialAccounts: accounts
+								},
+								() => { /* Swallow failures at getting accounts, we'll just hide that provider */ });
+					});
+					return Promise.all(promises);
+				}, () => {
+					/* Swallow failures and just pretend we don't have any providers */
+					return [];
 				});
-				return Promise.all(promises);
-			},
-			() => {
-				/* Swallow failures and just pretend we don't have any providers */
-				return [];
-			}
-			);
 	}
 }

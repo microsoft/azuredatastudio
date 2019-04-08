@@ -22,7 +22,7 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import * as styler from 'sql/platform/theme/common/styler';
-import { IAccountManagementService } from 'sql/platform/accountManagement/common/interfaces';
+import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 
 import * as azdata from 'azdata';
 
@@ -36,6 +36,7 @@ import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import { endsWith, startsWith } from 'vs/base/common/strings';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 
 export class ConnectionWidget {
 	private _container: HTMLElement;
@@ -101,6 +102,7 @@ export class ConnectionWidget {
 		providerName: string,
 		@IThemeService private _themeService: IThemeService,
 		@IContextViewService private _contextViewService: IContextViewService,
+		@ILayoutService private _layoutService: ILayoutService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@IClipboardService private _clipboardService: IClipboardService,
@@ -226,7 +228,7 @@ export class ConnectionWidget {
 		let databaseOption = this._optionsMaps[ConnectionOptionSpecialType.databaseName];
 		if (databaseOption && !isCMSDialog) {
 			let databaseName = DialogHelper.appendRow(this._tableContainer, databaseOption.displayName, 'connection-label', 'connection-input');
-			this._databaseNameInputBox = new Dropdown(databaseName, this._contextViewService, {
+			this._databaseNameInputBox = new Dropdown(databaseName, this._contextViewService, this._layoutService, {
 				values: [this._defaultDatabaseName, this._loadingDatabaseName],
 				strictSelection: false,
 				placeholder: this._defaultDatabaseName,
@@ -250,7 +252,7 @@ export class ConnectionWidget {
 
 		// Registered Server Description
 		let serverDescriptionOption = this._optionsMaps['serverDescription'];
-		if (serverDescriptionOption) {
+		if (serverDescriptionOption && isCMSDialog) {
 			serverDescriptionOption.displayName = localize('serverDescription','Server Description (optional)');
 			let serverDescriptionBuilder = DialogHelper.appendRow(this._tableContainer, serverDescriptionOption.displayName, 'connection-label', 'connection-input', 'server-description-input');
 			this._serverDescriptionInputBox = new InputBox(serverDescriptionBuilder, this._contextViewService, {type: 'textarea', flexibleHeight: true});

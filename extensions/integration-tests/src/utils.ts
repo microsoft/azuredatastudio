@@ -36,3 +36,18 @@ export async function connectToServer(server: TestServerProfile, timeout: number
 export async function ensureConnectionViewOpened() {
 	await vscode.commands.executeCommand('dataExplorer.servers.focus');
 }
+
+export function getConfigValue(name: string): string {
+	return process.env[name];
+}
+
+export const EnvironmentVariable_BDC_SERVER: string = 'BDC_BACKEND_HOSTNAME';
+export const EnvironmentVariable_BDC_USERNAME: string = 'BDC_BACKEND_USERNAME';
+export const EnvironmentVariable_BDC_PASSWORD: string = 'BDC_BACKEND_PWD';
+export const EnvironmentVariable_STANDALONE_SERVER: string = 'STANDALONE_SQL';
+export const EnvironmentVariable_STANDALONE_USERNAME: string = 'STANDALONE_SQL_USERNAME';
+export const EnvironmentVariable_STANDALONE_PASSWORD: string = 'STANDALONE_SQL_PWD';
+export const EnvironmentVariable_AZURE_SERVER: string = 'AZURE_SQL';
+export const EnvironmentVariable_AZURE_USERNAME: string = 'AZURE_SQL_USERNAME';
+export const EnvironmentVariable_AZURE_PASSWORD: string = 'AZURE_SQL_PWD';
+export const EnvironmentVariable_PYTHON_PATH: string = 'PYTHON_TEST_PATH';

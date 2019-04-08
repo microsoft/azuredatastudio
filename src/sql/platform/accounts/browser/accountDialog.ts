@@ -3,10 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import 'vs/css!./media/accountDialog';
-import 'vs/css!sql/parts/accountManagement/common/media/accountActions';
+import 'vs/css!./media/accountActions';
 import * as DOM from 'vs/base/browser/dom';
 import { List } from 'vs/base/browser/ui/list/listWidget';
 import { Event, Emitter } from 'vs/base/common/event';
@@ -29,10 +27,10 @@ import * as azdata from 'azdata';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/workbench/browser/modal/modal';
 import { attachModalDialogStyler, attachButtonStyler, attachPanelStyler } from 'sql/platform/theme/common/styler';
-import { AccountViewModel } from 'sql/parts/accountManagement/accountDialog/accountViewModel';
-import { AddAccountAction } from 'sql/parts/accountManagement/common/accountActions';
-import { AccountListRenderer, AccountListDelegate } from 'sql/parts/accountManagement/common/accountListRenderer';
-import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/platform/accountManagement/common/eventTypes';
+import { AccountViewModel } from 'sql/platform/accounts/common/accountViewModel';
+import { AddAccountAction } from 'sql/platform/accounts/common/accountActions';
+import { AccountListRenderer, AccountListDelegate } from 'sql/platform/accounts/browser/accountListRenderer';
+import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/platform/accounts/common/eventTypes';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
@@ -149,7 +147,7 @@ export class AccountDialog extends Modal {
 		// Load the initial contents of the view model
 		this.viewModel.initialize()
 			.then(addedProviders => {
-				for (let addedProvider of addedProviders) {
+				for (const addedProvider of addedProviders) {
 					this.addProvider(addedProvider);
 				}
 			});
@@ -174,13 +172,13 @@ export class AccountDialog extends Modal {
 		this._splitView = new SplitView(this._splitViewContainer);
 
 		this._noaccountViewContainer = DOM.$('div.no-account-view');
-		let noAccountTitle = DOM.append(this._noaccountViewContainer, DOM.$('.no-account-view-label'));
-		let noAccountLabel = localize('accountDialog.noAccountLabel', 'There is no linked account. Please add an account.');
+		const noAccountTitle = DOM.append(this._noaccountViewContainer, DOM.$('.no-account-view-label'));
+		const noAccountLabel = localize('accountDialog.noAccountLabel', 'There is no linked account. Please add an account.');
 		noAccountTitle.innerText = noAccountLabel;
 
 		// Show the add account button for the first provider
 		// Todo: If we have more than 1 provider, need to show all add account buttons for all providers
-		let buttonSection = DOM.append(this._noaccountViewContainer, DOM.$('div.button-section'));
+		const buttonSection = DOM.append(this._noaccountViewContainer, DOM.$('div.button-section'));
 		this._addAccountButton = new Button(buttonSection);
 		this._addAccountButton.label = localize('accountDialog.addConnection', 'Add an account');
 		this._register(this._addAccountButton.onDidClick(() => {
@@ -231,7 +229,7 @@ export class AccountDialog extends Modal {
 		this._splitViewContainer.hidden = false;
 		this._noaccountViewContainer.hidden = true;
 		if (values(this._providerViewsMap).length > 0) {
-			let firstView = values(this._providerViewsMap)[0];
+			const firstView = values(this._providerViewsMap)[0];
 			if (firstView instanceof AccountPanel) {
 				firstView.setSelection([0]);
 				firstView.focus();
@@ -240,8 +238,8 @@ export class AccountDialog extends Modal {
 	}
 
 	private isEmptyLinkedAccount(): boolean {
-		for (let provider of values(this._providerViewsMap)) {
-			let listView = provider.view;
+		for (const provider of values(this._providerViewsMap)) {
+			const listView = provider.view;
 			if (listView && listView.length > 0) {
 				return false;
 			}
@@ -251,7 +249,7 @@ export class AccountDialog extends Modal {
 
 	public dispose(): void {
 		super.dispose();
-		for (let provider of values(this._providerViewsMap)) {
+		for (const provider of values(this._providerViewsMap)) {
 			if (provider.addAccountAction) {
 				provider.addAccountAction.dispose();
 			}
@@ -317,7 +315,7 @@ export class AccountDialog extends Modal {
 
 	private removeProvider(removedProvider: azdata.AccountProviderMetadata) {
 		// Skip removing the provider if it doesn't exist
-		let providerView = this._providerViewsMap.get(removedProvider.id);
+		const providerView = this._providerViewsMap.get(removedProvider.id);
 		if (!providerView || !providerView.view) {
 			return;
 		}
@@ -332,7 +330,7 @@ export class AccountDialog extends Modal {
 	}
 
 	private updateProviderAccounts(args: UpdateAccountListEventParams) {
-		let providerMapping = this._providerViewsMap.get(args.providerId);
+		const providerMapping = this._providerViewsMap.get(args.providerId);
 		if (!providerMapping || !providerMapping.view) {
 			return;
 		}

@@ -3,11 +3,10 @@
 *  Licensed under the Source EULA. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as azdata from 'azdata';
-import { AccountAdditionResult } from 'sql/platform/accountManagement/common/eventTypes';
-import { IAccountStore } from 'sql/platform/accountManagement/common/interfaces';
+import { AccountAdditionResult } from 'sql/platform/accounts/common/eventTypes';
+import { IAccountStore } from 'sql/platform/accounts/common/interfaces';
+import { deepClone } from 'vs/base/common/objects';
 
 export default class AccountStore implements IAccountStore {
 	// CONSTANTS ///////////////////////////////////////////////////////////
@@ -20,57 +19,47 @@ export default class AccountStore implements IAccountStore {
 
 	// PUBLIC METHODS //////////////////////////////////////////////////////
 	public addOrUpdate(newAccount: azdata.Account): Thenable<AccountAdditionResult> {
-		let self = this;
-
 		return this.doOperation(() => {
-			return self.readFromMemento()
+			return this.readFromMemento()
 				.then(accounts => {
 					// Determine if account exists and proceed accordingly
-					let match = accounts.findIndex(account => AccountStore.findAccountByKey(account.key, newAccount.key));
+					const match = accounts.findIndex(account => AccountStore.findAccountByKey(account.key, newAccount.key));
 					return match < 0
-						? self.addToAccountList(accounts, newAccount)
-						: self.updateAccountList(accounts, newAccount.key, (matchAccount) => { AccountStore.mergeAccounts(newAccount, matchAccount); });
+						? this.addToAccountList(accounts, newAccount)
+						: this.updateAccountList(accounts, newAccount.key, matchAccount => AccountStore.mergeAccounts(newAccount, matchAccount));
 				})
-				.then(result => self.writeToMemento(result.updatedAccounts).then(() => result))
+				.then(result => this.writeToMemento(result.updatedAccounts).then(() => result))
 				.then(result => <AccountAdditionResult>result);
 		});
 	}
 
 	public getAccountsByProvider(providerId: string): Thenable<azdata.Account[]> {
-		let self = this;
-
 		return this.doOperation(() => {
-			return self.readFromMemento()
+			return this.readFromMemento()
 				.then(accounts => accounts.filter(account => account.key.providerId === providerId));
 		});
 	}
 
 	public getAllAccounts(): Thenable<azdata.Account[]> {
-		let self = this;
-
 		return this.doOperation(() => {
-			return self.readFromMemento();
+			return this.readFromMemento();
 		});
 	}
 
 	public remove(key: azdata.AccountKey): Thenable<boolean> {
-		let self = this;
-
 		return this.doOperation(() => {
-			return self.readFromMemento()
-				.then(accounts => self.removeFromAccountList(accounts, key))
-				.then(result => self.writeToMemento(result.updatedAccounts).then(() => result))
+			return this.readFromMemento()
+				.then(accounts => this.removeFromAccountList(accounts, key))
+				.then(result => this.writeToMemento(result.updatedAccounts).then(() => result))
 				.then(result => result.accountRemoved);
 		});
 	}
 
 	public update(key: azdata.AccountKey, updateOperation: (account: azdata.Account) => void): Thenable<boolean> {
-		let self = this;
-
 		return this.doOperation(() => {
-			return self.readFromMemento()
-				.then(accounts => self.updateAccountList(accounts, key, updateOperation))
-				.then(result => self.writeToMemento(result.updatedAccounts).then(() => result))
+			return this.readFromMemento()
+				.then(accounts => this.updateAccountList(accounts, key, updateOperation))
+				.then(result => this.writeToMemento(result.updatedAccounts).then(() => result))
 				.then(result => result.accountModified);
 		});
 	}
@@ -111,7 +100,7 @@ export default class AccountStore implements IAccountStore {
 
 	private addToAccountList(accounts: azdata.Account[], accountToAdd: azdata.Account): AccountListOperationResult {
 		// Check if the entry already exists
-		let match = accounts.findIndex(account => AccountStore.findAccountByKey(account.key, accountToAdd.key));
+		const match = accounts.findIndex(account => AccountStore.findAccountByKey(account.key, accountToAdd.key));
 		if (match >= 0) {
 			// Account already exists, we won't do anything
 			return {
@@ -136,7 +125,7 @@ export default class AccountStore implements IAccountStore {
 
 	private removeFromAccountList(accounts: azdata.Account[], accountToRemove: azdata.AccountKey): AccountListOperationResult {
 		// Check if the entry exists
-		let match = accounts.findIndex(account => AccountStore.findAccountByKey(account.key, accountToRemove));
+		const match = accounts.findIndex(account => AccountStore.findAccountByKey(account.key, accountToRemove));
 		if (match >= 0) {
 			// Account exists, remove it from the account list
 			accounts.splice(match, 1);
@@ -153,7 +142,7 @@ export default class AccountStore implements IAccountStore {
 
 	private updateAccountList(accounts: azdata.Account[], accountToUpdate: azdata.AccountKey, updateOperation: (account: azdata.Account) => void): AccountListOperationResult {
 		// Check if the entry exists
-		let match = accounts.findIndex(account => AccountStore.findAccountByKey(account.key, accountToUpdate));
+		const match = accounts.findIndex(account => AccountStore.findAccountByKey(account.key, accountToUpdate));
 		if (match < 0) {
 			// Account doesn't exist, we won't do anything
 			return {
@@ -186,14 +175,14 @@ export default class AccountStore implements IAccountStore {
 		}
 
 		// Make a deep copy of the account list to ensure that the memento list isn't obliterated
-		accounts = JSON.parse(JSON.stringify(accounts));
+		accounts = deepClone(accounts);
 
 		return Promise.resolve(accounts);
 	}
 
 	private writeToMemento(accounts: azdata.Account[]): Thenable<void> {
 		// Store a shallow copy of the account list to disconnect the memento list from the active list
-		this._memento[AccountStore.MEMENTO_KEY] = JSON.parse(JSON.stringify(accounts));
+		this._memento[AccountStore.MEMENTO_KEY] = deepClone(accounts);
 		return Promise.resolve();
 	}
 }
