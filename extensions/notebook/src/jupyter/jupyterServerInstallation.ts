@@ -219,9 +219,13 @@ export default class JupyterServerInstallation {
 		};
 	}
 
-	private isPythonRunning(): Promise<boolean> {
+	private isPythonRunning(pythonInstallPath: string): Promise<boolean> {
+		let pythonExePath = path.join(
+			pythonInstallPath,
+			constants.pythonBundleVersion,
+			process.platform === constants.winPlatform ? 'python.exe' : 'bin/python3');
 		return new Promise<boolean>(resolve => {
-			fs.open(this._pythonExecutable, 'r+', (err, fd) => {
+			fs.open(pythonExePath, 'r+', (err, fd) => {
 				if (!err) {
 					fs.close(fd, err => {
 						this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
@@ -234,19 +238,19 @@ export default class JupyterServerInstallation {
 		});
 	}
 
-	public async startInstallProcess(forceInstall: boolean, pythonInstallationPath?: string): Promise<void> {
+	public async startInstallProcess(forceInstall: boolean, installationPath?: string): Promise<void> {
 		if (this._installInProgress) {
 			return Promise.reject(msgPendingInstallError);
 		}
 
-		let isPythonRunning = await this.isPythonRunning();
+		let isPythonRunning = await this.isPythonRunning(installationPath ? installationPath : this._pythonInstallationPath);
 		if (isPythonRunning) {
 			return Promise.reject(msgPythonRunningError);
 		}
 
 		this._forceInstall = forceInstall;
-		if (pythonInstallationPath) {
-			this._pythonInstallationPath = pythonInstallationPath;
+		if (installationPath) {
+			this._pythonInstallationPath = installationPath;
 		}
 		this.configurePackagePaths();
 
