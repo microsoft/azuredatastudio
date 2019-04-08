@@ -76,7 +76,7 @@ export class NotebookContexts {
 	 */
 	public static async getActiveContexts(model: NotebookModel, connectionService: IConnectionManagementService, connProviderIds: string[], profile: IConnectionProfile): Promise<IDefaultConnection> {
 		let activeConnections: ConnectionProfile[] = [];
-		for (let value of model._connections.values()) {
+		for (let value of model.connectionsForAttachTo.values()) {
 			activeConnections.push(value);
 		}
 

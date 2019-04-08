@@ -73,7 +73,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _oldKernel: nb.IKernel;
 	private _clientSessionListeners: IDisposable[] = [];
 	private _connectionUrisToDispose: string[] = [];
-	public _connections: Map<string, ConnectionProfile> = new Map<string, ConnectionProfile>();
+	private _connectionsForAttachTo: Map<string, ConnectionProfile> = new Map<string, ConnectionProfile>();
 
 	constructor(private _notebookOptions: INotebookModelOptions, startSessionImmediately?: boolean, public connectionProfile?: IConnectionProfile) {
 		super();
@@ -521,6 +521,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this._language;
 	}
 
+	public get connectionsForAttachTo(): Map<string, ConnectionProfile> {
+		return this._connectionsForAttachTo;
+	}
+	
 	private updateLanguageInfo(info: nb.ILanguageInfo) {
 		if (info) {
 			this._defaultLanguageInfo = info;
@@ -747,8 +751,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public addAttachToConnectionsToBeDisposed(connUri: string, connectionProfile: ConnectionProfile) {
 		this._connectionUrisToDispose.push(connUri);
-		//dup, connection again?
-		this._connections.set(connUri, connectionProfile);
+
+		if (!this._connectionsForAttachTo.has(connUri)) {
+			this._connectionsForAttachTo.set(connUri, connectionProfile);
+		}
 	}
 
 	private setErrorState(errMsg: string): void {

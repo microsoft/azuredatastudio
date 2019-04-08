@@ -478,6 +478,7 @@ export class AttachToDropdown extends SelectBox {
 				let connectionUri = this._connectionManagementService.getConnectionUri(connection);
 				let connectionProfile = new ConnectionProfile(this._capabilitiesService, connection);
 				let connectedServer = connectionProfile.title ? connectionProfile.title : connectionProfile.serverName;
+				this.model.addAttachToConnectionsToBeDisposed(connectionUri, connectionProfile);
 				//Check to see if the same server is already there in dropdown. We only have server names in dropdown
 				if (attachToConnections.some(val => val === connectedServer)) {
 					this.loadAttachToDropdown(this.model, this.getKernelDisplayName());
