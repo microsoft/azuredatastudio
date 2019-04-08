@@ -210,8 +210,12 @@ export default class JupyterServerInstallation {
 		}
 		this.pythonEnvVarPath = this.pythonBinPath + delimiter + this.pythonEnvVarPath;
 
+		// Delete existing Python variables in ADS to prevent conflict with other installs
+		delete process.env['PYTHONPATH'];
+		delete process.env['PYTHONSTARTUP'];
+		delete process.env['PYTHONHOME'];
+
 		// Store the executable options to run child processes with env var without interfering parent env var.
-		delete process.env['PYTHONPATH']; // Delete existing PYTHONPATH to prevent conflicts with existing installs
 		let env = Object.assign({}, process.env);
 		delete env['Path']; // Delete extra 'Path' variable for Windows, just in case.
 		env['PATH'] = this.pythonEnvVarPath;
