@@ -16,9 +16,8 @@ The integration test suite has been added to ADS windows pipeline to run the tes
 a. open a terminal window/command line window.(When testing on Mac we found some issue with VSCode scenario, you might have to close VSCode before running the command)
 b. navigate to this folder and then run 'node setEnvironmentVariables.js'
 	there are different options, by default VSCode will be opened.
-    Terminal(Mac)/CMD(Windows): node setEnvironmentVariables.js Terminal
-	Git-Bash on Windows: node setEnvironmentVariables.js GitWin
-	VSCode: node setEnvironmentVariables.js Code
+    1. Terminal(Mac)/CMD(Windows): node setEnvironmentVariables.js Terminal
+	2. Git-Bash on Windows: node setEnvironmentVariables.js BashWin
 c. follow the instructions in the window: you will be prompted to login to azure portal.
 d. a new window will be opened based on your selection and the new window will have the required environment variables set.
 e. in the new window navigate to the scripts folder and run sql-test-integration.bat or sql-test-integration.sh based on your environment.
