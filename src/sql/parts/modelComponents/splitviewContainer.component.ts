@@ -17,13 +17,23 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { SplitView, Orientation, Sizing, IView } from 'vs/base/browser/ui/splitview/splitview';
 
 class SplitPane implements IView {
+	orientation: Orientation;
 	element: HTMLElement;
 	minimumSize: number;
 	maximumSize: number;
 	onDidChange: Event<number> = Event.None;
 	size: number;
+	component: ComponentBase;
 	layout(size: number): void {
 		this.size = size;
+		try {
+			if (this.orientation === Orientation.VERTICAL) {
+				this.component.updateProperty('height', size);
+			}
+			else {
+				this.component.updateProperty('width', size);
+			}
+		} catch { }
 	}
 }
 
@@ -79,6 +89,7 @@ export default class SplitViewContainer extends ContainerBase<FlexItemLayout> im
 	private GetCorrespondingView(component: IComponent, orientation: Orientation): IView {
 		let c = component as ComponentBase;
 		let basicView: SplitPane = new SplitPane();
+		basicView.orientation = orientation;
 		basicView.element = c.getHtml(),
 		basicView.minimumSize = orientation === Orientation.VERTICAL ? c.convertSizeToNumber(c.height) : c.convertSizeToNumber(c.width);
 		basicView.maximumSize = Number.MAX_VALUE;
