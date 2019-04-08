@@ -144,6 +144,7 @@ export enum ModelComponentTypes {
 	NavContainer,
 	DivContainer,
 	FlexContainer,
+	SplitViewContainer,
 	Card,
 	InputBox,
 	DropDown,
@@ -164,6 +165,7 @@ export enum ModelComponentTypes {
 	TreeComponent,
 	FileBrowserTree,
 	Editor,
+	DiffEditor,
 	Dom,
 	Hyperlink
 }

@@ -78,6 +78,10 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 
 	abstract setLayout(layout: any): void;
 
+	getHtml(): any{
+		return this._el.nativeElement;
+	}
+
 	public setDataProvider(handle: number, componentId: string, context: any): void {
 	}
 
@@ -100,6 +104,19 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 		}
 		this.layout();
 		this.validate();
+	}
+
+	// Helper Function to update single property
+	public updateProperty(key: string, value: any): void {
+		if (key) {
+			this.properties[key] = value;
+
+			if (this.CSSStyles !== this._CSSStyles) {
+				this.updateStyles();
+			}
+			this.layout();
+			this.validate();
+		}
 	}
 
 	protected getProperties<TPropertyBag>(): TPropertyBag {
