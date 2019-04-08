@@ -302,6 +302,9 @@ export default class JupyterServerInstallation {
 		return installReady.promise;
 	}
 
+	/**
+	 * Opens a dialog for configuring the installation path for the Notebook Python dependencies.
+	 */
 	public async promptForPythonInstall(): Promise<void> {
 		if (!JupyterServerInstallation.isPythonInstalled(this.apiWrapper)) {
 			let pythonDialog = new ConfigurePythonDialog(this.apiWrapper, this.outputChannel, this);
@@ -338,6 +341,10 @@ export default class JupyterServerInstallation {
 		return this._pythonExecutable;
 	}
 
+	/**
+	 * Checks if a python executable exists at the "notebook.pythonPath" defined in the user's settings.
+	 * @param apiWrapper An ApiWrapper to use when retrieving user settings info.
+	 */
 	public static isPythonInstalled(apiWrapper: ApiWrapper): boolean {
 		// Don't use _pythonExecutable here, since it could be populated with a default value
 		let pathSetting = JupyterServerInstallation.getPythonPathSetting(apiWrapper);
@@ -352,6 +359,11 @@ export default class JupyterServerInstallation {
 		return fs.existsSync(pythonExe);
 	}
 
+	/**
+	 * Returns the Python installation path defined in "notebook.pythonPath" in the user's settings.
+	 * Returns a default path if the setting is not defined.
+	 * @param apiWrapper An ApiWrapper to use when retrieving user settings info.
+	 */
 	public static getPythonInstallPath(apiWrapper: ApiWrapper): string {
 		let userPath = JupyterServerInstallation.getPythonPathSetting(apiWrapper);
 		return userPath ? userPath : JupyterServerInstallation.DefaultPythonLocation;
@@ -371,6 +383,11 @@ export default class JupyterServerInstallation {
 		return path;
 	}
 
+	/**
+	 * Returns the folder containing the python executable under the path defined in
+	 * "notebook.pythonPath" in the user's settings.
+	 * @param apiWrapper An ApiWrapper to use when retrieving user settings info.
+	 */
 	public static getPythonBinPath(apiWrapper: ApiWrapper): string {
 		let pythonBinPathSuffix = process.platform === constants.winPlatform ? '' : 'bin';
 
