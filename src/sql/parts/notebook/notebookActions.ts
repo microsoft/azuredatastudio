@@ -14,7 +14,7 @@ import { SelectBox, ISelectBoxOptionsWithLabel } from 'sql/base/browser/ui/selec
 import { INotebookModel } from 'sql/parts/notebook/models/modelInterfaces';
 import { CellType, CellTypes } from 'sql/parts/notebook/models/contracts';
 import { NotebookComponent } from 'sql/parts/notebook/notebook.component';
-import { getErrorMessage, getServerFromFormattedAttachToName, getDatabaseFromFormattedAttachToName } from 'sql/parts/notebook/notebookUtils';
+import { getErrorMessage } from 'sql/parts/notebook/notebookUtils';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
@@ -22,7 +22,6 @@ import { noKernel } from 'sql/workbench/services/notebook/common/sessionManager'
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
 import { generateUri } from 'sql/platform/connection/common/utils';
-import { currentSessionDateStorageKey } from 'vs/platform/telemetry/node/workbenchCommonProperties';
 
 const msgLoading = localize('loading', "Loading kernels...");
 const msgChanging = localize('changing', "Changing kernel...");
@@ -290,7 +289,7 @@ export class KernelsDropdown extends SelectBox {
 	}
 
 	public doChangeKernel(displayName: string): void {
-		this.setOptions([msgChanging], 0);
+		this.setOptions([msgChanging]);
 		this.model.changeKernel(displayName);
 	}
 }
@@ -325,7 +324,7 @@ export class AttachToDropdown extends SelectBox {
 			this.handleContextsChanged();
 		}));
 		this._register(this.model.contextsLoading(() => {
-			this.setOptions([msgLoadingContexts], 0);
+			this.setOptions([msgLoadingContexts]);
 		}));
 		this.handleContextsChanged();
 	}
@@ -335,7 +334,7 @@ export class AttachToDropdown extends SelectBox {
 		if (kernelDisplayName) {
 			this.loadAttachToDropdown(this.model, kernelDisplayName, showSelectConnection);
 		} else if (this.model.clientSession.isInErrorState) {
-			this.setOptions([localize('noContextAvailable', "None")], 0);
+			this.setOptions([localize('noContextAvailable', "None")]);
 		}
 	}
 
@@ -379,7 +378,7 @@ export class AttachToDropdown extends SelectBox {
 		else {
 			let connections = this.getConnections(model);
 			this.enable();
-			if (showSelectConnection || (currentKernel !== 'SQL' && currentKernel !== 'Python 3')) {
+			if (showSelectConnection || ( showSelectConnection === undefined && currentKernel !== 'Python 3')) {
 				connections = this.loadWithSelectConnection(connections);
 			}
 			else {
