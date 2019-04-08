@@ -71,7 +71,7 @@ export function getSearchView(viewletService: IViewletService, panelService: IPa
 		return (activePanel as SearchPanel).getSearchView();
 	}
 
-	return null;
+	return undefined;
 }
 
 function doAppendKeyBindingLabel(label: string, keyBinding: ResolvedKeybinding | undefined): string {

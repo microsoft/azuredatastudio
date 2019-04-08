@@ -33,8 +33,6 @@ import { WebviewElement } from 'vs/workbench/contrib/webview/electron-browser/we
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { DomScrollableElement } from 'vs/base/browser/ui/scrollbar/scrollableElement';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
-import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
-import { IWorkbenchLayoutService, Parts } from 'vs/workbench/services/layout/browser/layoutService';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { KeybindingLabel } from 'vs/base/browser/ui/keybindingLabel/keybindingLabel';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
@@ -136,7 +134,7 @@ class NavBar {
 	}
 
 	dispose(): void {
-		this.actionbar = dispose(this.actionbar);
+		dispose(this.actionbar);
 	}
 }
 
@@ -201,7 +199,6 @@ export class ExtensionEditor extends BaseEditor {
 		@IKeybindingService private readonly keybindingService: IKeybindingService,
 		@INotificationService private readonly notificationService: INotificationService,
 		@IOpenerService private readonly openerService: IOpenerService,
-		@IWorkbenchLayoutService private readonly layoutService: IWorkbenchLayoutService,
 		@IExtensionTipsService private readonly extensionTipsService: IExtensionTipsService,
 		@IStorageService storageService: IStorageService,
 		@IExtensionService private readonly extensionService: IExtensionService,
@@ -547,7 +544,6 @@ export class ExtensionEditor extends BaseEditor {
 			.then(removeEmbeddedSVGs)
 			.then(body => {
 				const wbeviewElement = this.instantiationService.createInstance(WebviewElement,
-					this.layoutService.getContainer(Parts.EDITOR_PART),
 					{
 						enableFindWidget: true,
 					},
@@ -671,7 +667,7 @@ export class ExtensionEditor extends BaseEditor {
 			});
 	}
 
-	private renderDependencies(container: HTMLElement, extensionDependencies: IExtensionDependencies): Tree {
+	private renderDependencies(container: HTMLElement, extensionDependencies: IExtensionDependencies): ExtensionsTree {
 		class ExtensionData implements IExtensionData {
 
 			private readonly extensionDependencies: IExtensionDependencies;
@@ -720,7 +716,7 @@ export class ExtensionEditor extends BaseEditor {
 		return Promise.resolve({ focus() { extensionsPackTree.domFocus(); } });
 	}
 
-	private renderExtensionPack(container: HTMLElement, extension: IExtension): Tree {
+	private renderExtensionPack(container: HTMLElement, extension: IExtension): ExtensionsTree {
 		const extensionsWorkbenchService = this.extensionsWorkbenchService;
 		class ExtensionData implements IExtensionData {
 

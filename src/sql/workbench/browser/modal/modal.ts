@@ -22,7 +22,7 @@ import { localize } from 'vs/nls';
 import { MessageLevel } from 'sql/workbench/api/common/sqlExtHostTypes';
 import * as os from 'os';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
+import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 
 export const MODAL_SHOWING_KEY = 'modalShowing';
@@ -143,7 +143,7 @@ export abstract class Modal extends Disposable implements IThemable {
 		private _title: string,
 		private _name: string,
 		private _telemetryService: ITelemetryService,
-		protected layoutService: IWorkbenchLayoutService,
+		protected layoutService: ILayoutService,
 		protected _clipboardService: IClipboardService,
 		protected _themeService: IThemeService,
 		_contextKeyService: IContextKeyService,
@@ -330,8 +330,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	 */
 	protected show() {
 		this._modalShowingContext.get().push(this._staticKey);
-		DOM.append(this.layoutService.getWorkbenchElement(), this._bodyContainer);
-
+		DOM.append(this.layoutService.container, this._bodyContainer);
 		this.setFocusableElements();
 
 		this._keydownListener = DOM.addDisposableListener(document, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {

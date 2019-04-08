@@ -181,33 +181,17 @@ export class Tree implements _.ITree {
 		return this.model.toggleExpansion(element, recursive);
 	}
 
-	public toggleExpansionAll(elements: any[]): Promise<any> {
-		return this.model.toggleExpansionAll(elements);
-	}
-
 	public isExpanded(element: any): boolean {
 		return this.model.isExpanded(element);
-	}
-
-	public getExpandedElements(): any[] {
-		return this.model.getExpandedElements();
 	}
 
 	public reveal(element: any, relativeTop: number | null = null): Promise<any> {
 		return this.model.reveal(element, relativeTop);
 	}
 
-	public getRelativeTop(element: any): number {
-		const item = this.model.getItem(element);
-		return item ? this.view.getRelativeTop(item) : 0;
-	}
-
-	public getFirstVisibleElement(): any {
-		return this.view.getFirstVisibleElement();
-	}
-
-	public getLastVisibleElement(): any {
-		return this.view.getLastVisibleElement();
+	// {{SQL CARBON EDIT }}	- add back deleted VS Code tree methods
+	public getExpandedElements(): any[] {
+		return this.model.getExpandedElements();
 	}
 
 	public getScrollPosition(): number {
@@ -221,10 +205,8 @@ export class Tree implements _.ITree {
 	getContentHeight(): number {
 		return this.view.getContentHeight();
 	}
+	// {{SQL CARBON EDIT }} - end block
 
-	public setHighlight(element?: any, eventPayload?: any): void {
-		this.model.setHighlight(element, eventPayload);
-	}
 
 	public getHighlight(): any {
 		return this.model.getHighlight();

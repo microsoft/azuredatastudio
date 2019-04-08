@@ -10,7 +10,7 @@
 	"azure.resource.refresh.title": "Refresh",
 	"azure.resource.signin.title": "Sign In",
 	"azure.resource.selectsubscriptions.title": "Select Subscriptions",
-	"azure.resource.connectsqlserver.title": "Connect",
+	"azure.resource.connectsqlserver.title": "Add to Servers",
 	"azure.resource.connectsqldb.title": "Connect",
 
 	"accounts.clearTokenCache": "Clear Azure Account Token Cache",

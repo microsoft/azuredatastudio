@@ -48,12 +48,12 @@ export const enum SearchProviderType {
 }
 
 export interface ISearchResultProvider {
-	textSearch(query: ITextQuery, onProgress?: (p: ISearchProgressItem) => void, token?: CancellationToken): Promise<ISearchComplete | undefined>;
-	fileSearch(query: IFileQuery, token?: CancellationToken): Promise<ISearchComplete | undefined>;
+	textSearch(query: ITextQuery, onProgress?: (p: ISearchProgressItem) => void, token?: CancellationToken): Promise<ISearchComplete>;
+	fileSearch(query: IFileQuery, token?: CancellationToken): Promise<ISearchComplete>;
 	clearCache(cacheKey: string): Promise<void>;
 }
 
-export interface IFolderQuery<U extends UriComponents=URI> {
+export interface IFolderQuery<U extends UriComponents = URI> {
 	folder: U;
 	excludePattern?: glob.IExpression;
 	includePattern?: glob.IExpression;

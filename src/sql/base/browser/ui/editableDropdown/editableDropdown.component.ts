@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import {
 	Component, Inject, forwardRef, ElementRef, OnInit, Input,
 	Output, OnChanges, SimpleChanges, EventEmitter
@@ -12,10 +10,11 @@ import {
 
 import { Dropdown, IDropdownOptions } from 'sql/base/browser/ui/editableDropdown/dropdown';
 import { AngularDisposable } from 'sql/base/node/lifecycle';
+import { attachEditableDropdownStyler } from 'sql/platform/theme/common/styler';
 
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { attachEditableDropdownStyler } from 'sql/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 
 @Component({
 	selector: 'editable-select-box',
@@ -35,7 +34,8 @@ export class EditableDropDown extends AngularDisposable implements OnInit, OnCha
 	constructor(
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
 		@Inject(IThemeService) private themeService: IThemeService,
-		@Inject(IContextViewService) private contextViewService: IContextViewService
+		@Inject(IContextViewService) private contextViewService: IContextViewService,
+		@Inject(ILayoutService) private layoutService: ILayoutService
 	) {
 		super();
 	}
@@ -49,7 +49,7 @@ export class EditableDropDown extends AngularDisposable implements OnInit, OnCha
 			ariaLabel: '',
 			actionLabel: ''
 		};
-		this._selectbox = new Dropdown(this._el.nativeElement, this.contextViewService, dropdownOptions);
+		this._selectbox = new Dropdown(this._el.nativeElement, this.contextViewService, this.layoutService, dropdownOptions);
 		this._selectbox.values = this.options;
 		this._selectbox.value = this.selectedOption;
 

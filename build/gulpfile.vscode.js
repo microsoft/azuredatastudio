@@ -33,12 +33,10 @@ const i18n = require('./lib/i18n');
 // {{SQL CARBON EDIT}}
 const serviceDownloader = require('service-downloader').ServiceDownloadProvider;
 const platformInfo = require('service-downloader/out/platform').PlatformInformation;
-const glob = require('glob');
 // {{SQL CARBON EDIT}} - End
 const deps = require('./dependencies');
 const getElectronVersion = require('./lib/electron').getElectronVersion;
 const createAsar = require('./lib/asar').createAsar;
-const minimist = require('minimist');
 const { compileBuildTask } = require('./gulpfile.compile');
 
 const productionDependencies = deps.getProductionDependencies(path.dirname(__dirname));
@@ -84,7 +82,8 @@ const vscodeResources = [
 	'out-build/vs/workbench/browser/media/*-theme.css',
 	'out-build/vs/workbench/contrib/debug/**/*.json',
 	'out-build/vs/workbench/contrib/externalTerminal/**/*.scpt',
-	'out-build/vs/workbench/contrib/webview/electron-browser/webview-pre.js',
+	'out-build/vs/workbench/contrib/webview/browser/pre/*.js',
+	'out-build/vs/workbench/contrib/webview/electron-browser/pre/*.js',
 	'out-build/vs/**/markdown.css',
 	'out-build/vs/workbench/contrib/tasks/**/*.json',
 	'out-build/vs/workbench/contrib/welcome/walkThrough/**/*.md',
@@ -359,7 +358,7 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 			.pipe(util.cleanNodeModule('core-js', ['**/**'], undefined))
 			.pipe(util.cleanNodeModule('slickgrid', ['node_modules/**', 'examples/**'], undefined))
 			.pipe(util.cleanNodeModule('nsfw', ['binding.gyp', 'build/**', 'src/**', 'openpa/**', 'includes/**'], ['**/*.node', '**/*.a']))
-			.pipe(util.cleanNodeModule('vscode-nsfw', ['binding.gyp', 'build/**', 'src/**', 'openpa/**', 'includes/**'], ['**/*.node', '**/*.a']))
+			.pipe(util.cleanNodeModule('vscode-nsfw', ['binding.gyp', 'build/**', 'src/**', 'openpa/**', 'includes/**'], ['build/Release/*.node', '**/*.a']))
 			// {{SQL CARBON EDIT}} - End
 			.pipe(util.cleanNodeModule('vsda', ['binding.gyp', 'README.md', 'build/**', '*.bat', '*.sh', '*.cpp', '*.h'], ['build/Release/vsda.node']))
 			.pipe(util.cleanNodeModule('vscode-windows-ca-certs', ['**/*'], ['package.json', '**/*.node']))
@@ -477,8 +476,6 @@ BUILD_TARGETS.forEach(buildTarget => {
 				minified ? minifyVSCodeTask : optimizeVSCodeTask,
 				util.rimraf(path.join(buildRoot, destinationFolderName))
 			),
-			ext.packageExtensionTask('mssql', platform, arch),
-			ext.packageExtensionTask('azurecore', platform, arch),
 			packageTask(platform, arch, sourceFolderName, destinationFolderName, opts)
 		));
 		gulp.task(vscodeTask);

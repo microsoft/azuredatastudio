@@ -123,7 +123,7 @@ class UntitledEditorInputFactory implements IEditorInputFactory {
 
 		// {{SQL CARBON EDIT}}
 		if (!untitledEditorInput.getResource()) {
-			return null;
+			return undefined;
 		}
 
 		let resource = untitledEditorInput.getResource();
