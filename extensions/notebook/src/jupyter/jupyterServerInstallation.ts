@@ -197,7 +197,7 @@ export default class JupyterServerInstallation {
 		// Update python paths and properties to reference user's local python.
 		let pythonBinPathSuffix = process.platform === constants.winPlatform ? '' : 'bin';
 
-		this._pythonExecutable = path.join(pythonSourcePath, process.platform === constants.winPlatform ? 'python.exe' : 'bin/python3');
+		this._pythonExecutable = JupyterServerInstallation.getPythonExePath(this._pythonInstallationPath);
 		this.pythonBinPath = path.join(pythonSourcePath, pythonBinPathSuffix);
 
 		// Store paths to python libraries required to run jupyter.
@@ -225,10 +225,7 @@ export default class JupyterServerInstallation {
 	}
 
 	private isPythonRunning(pythonInstallPath: string): Promise<boolean> {
-		let pythonExePath = path.join(
-			pythonInstallPath,
-			constants.pythonBundleVersion,
-			process.platform === constants.winPlatform ? 'python.exe' : 'bin/python3');
+		let pythonExePath = JupyterServerInstallation.getPythonExePath(pythonInstallPath);
 		return new Promise<boolean>(resolve => {
 			fs.open(pythonExePath, 'r+', (err, fd) => {
 				if (!err) {
@@ -353,10 +350,7 @@ export default class JupyterServerInstallation {
 			return false;
 		}
 
-		let pythonExe = path.join(
-			pathSetting,
-			constants.pythonBundleVersion,
-			process.platform === constants.winPlatform ? 'python.exe' : 'bin/python3');
+		let pythonExe = JupyterServerInstallation.getPythonExePath(pathSetting);
 		return fs.existsSync(pythonExe);
 	}
 
@@ -396,5 +390,12 @@ export default class JupyterServerInstallation {
 			JupyterServerInstallation.getPythonInstallPath(apiWrapper),
 			constants.pythonBundleVersion,
 			pythonBinPathSuffix);
+	}
+
+	private static getPythonExePath(pythonInstallPath: string): string {
+		return path.join(
+			pythonInstallPath,
+			constants.pythonBundleVersion,
+			process.platform === constants.winPlatform ? 'python.exe' : 'bin/python3');
 	}
 }
