@@ -246,7 +246,8 @@ export default class JupyterServerInstallation {
 	/**
 	 * Installs Python and associated dependencies to the specified directory.
 	 * @param forceInstall Indicates whether an existing installation should be overwritten, if it exists.
-	 * @param installationPath Optional parameter that specifies python installation path. A default path is used if not specified.
+	 * @param installationPath Optional parameter that specifies where to install python.
+	 * The previous path (or the default) is used if a new path is not specified.
 	 */
 	public async startInstallProcess(forceInstall: boolean, installationPath?: string): Promise<void> {
 		if (this._installInProgress) {
