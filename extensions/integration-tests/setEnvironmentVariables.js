@@ -34,7 +34,7 @@ if (process.argv.length === 3 && process.argv[2]) {
 			}
 			break;
 		case 'BASHWIN':
-			if (!fs.existsSync()) {
+			if (!fs.existsSync(LAUNCH_GIT_BASH_WINDOWS)) {
 				throw `Not able to find git-bash.exe in its default location: ${LAUNCH_GIT_BASH_WINDOWS}, please update the variable LAUNCH_GIT_BASH_WINDOWS accordingly.`;
 			}
 			LAUNCH_OPTION = LAUNCH_GIT_BASH_WINDOWS;
