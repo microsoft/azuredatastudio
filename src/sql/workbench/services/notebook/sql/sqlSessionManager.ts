@@ -224,7 +224,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 
 	public set connection(conn: IConnectionProfile) {
 		this._currentConnection = conn;
-		this._currentConnectionProfile = new ConnectionProfile(this._capabilitiesService, this._currentConnection);
+		this._currentConnectionProfile = new ConnectionProfile(this._capabilitiesService, this._currentConnection, true);
 		this._queryRunner = undefined;
 	}
 

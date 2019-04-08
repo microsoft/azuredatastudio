@@ -33,7 +33,8 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 
 	public constructor(
 		capabilitiesService: ICapabilitiesService,
-		model: string | azdata.IConnectionProfile
+		model: string | azdata.IConnectionProfile,
+		generateId: boolean = false
 	) {
 		super(capabilitiesService, model);
 		if (model && !isString(model)) {
@@ -41,7 +42,7 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 			this.groupFullName = model.groupFullName;
 			this.savePassword = model.savePassword;
 			this.saveProfile = model.saveProfile;
-			this._id = model.id;
+			this._id = !generateId? model.id : generateUuid();
 			this.azureTenantId = model.azureTenantId;
 		} else {
 			//Default for a new connection
