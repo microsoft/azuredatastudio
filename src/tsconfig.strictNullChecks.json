@@ -15,6 +15,7 @@
 		"./sql/base/browser/ui/button/*.ts",
 		"./sql/base/browser/ui/checkbox/*.ts",
 		"./sql/base/browser/ui/dropdownList/*.ts",
+		"./sql/base/browser/ui/editableDropdown/*.ts",
 		"./sql/base/browser/ui/inputBox/*.ts",
 		"./sql/base/browser/ui/listBox/*.ts",
 		"./sql/base/browser/ui/panel/*.ts",
@@ -22,6 +23,14 @@
 		"./sql/base/browser/ui/scrollable/*.ts",
 		"./sql/base/browser/ui/selectBox/*.ts",
 		"./sql/base/browser/ui/table/*.ts",
+		"./sql/base/browser/ui/taskbar/*.ts",
+		"./sql/base/common/**/*.ts",
+		"./sql/base/node/**/*.ts",
+		"./sql/platform/angularEventing/**/*.ts",
+		"./sql/platform/clipboard/**/*.ts",
+		"./sql/platform/credentials/**/*.ts",
+		"./sql/platform/theme/**/*.ts",
+		"./sql/platform/telemetry/**/*.ts"
 	],
 	"exclude": [
 		"node_modules/**"

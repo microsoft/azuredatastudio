@@ -388,7 +388,9 @@ export class AttachToDropdown extends SelectBox {
 					this.selectWithOptionName(msgSelectConnection);
 				}
 				else {
-					connections.push(msgAddNewConnection);
+					if (!connections.includes(msgAddNewConnection)) {
+						connections.push(msgAddNewConnection);
+					}
 				}
 				this.setOptions(connections);
 			}
@@ -397,9 +399,13 @@ export class AttachToDropdown extends SelectBox {
 
 	private loadWithSelectConnection(connections: string[]): string[] {
 		if (connections && connections.length > 0) {
-			connections.unshift(msgSelectConnection);
+			if (!connections.includes(msgSelectConnection)) {
+				connections.unshift(msgSelectConnection);
+			}
 			this.selectWithOptionName(msgSelectConnection);
-			connections.push(msgAddNewConnection);
+			if (!connections.includes(msgAddNewConnection)) {
+				connections.push(msgAddNewConnection);
+			}
 			this.setOptions(connections);
 		}
 		return connections;
@@ -472,7 +478,7 @@ export class AttachToDropdown extends SelectBox {
 				}
 				let connectionUri = this._connectionManagementService.getConnectionUri(connection);
 				let connectionProfile = new ConnectionProfile(this._capabilitiesService, connection);
-				let connectedServer = connectionProfile.title? connectionProfile.title : connectionProfile.serverName;
+				let connectedServer = connectionProfile.title ? connectionProfile.title : connectionProfile.serverName;
 				//Check to see if the same server is already there in dropdown. We only have server names in dropdown
 				if (attachToConnections.some(val => val === connectedServer)) {
 					this.loadAttachToDropdown(this.model, this.getKernelDisplayName());
