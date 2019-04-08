@@ -11,7 +11,7 @@ import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview
 import { INotificationService, Severity, INotificationActions } from 'vs/platform/notification/common/notification';
 
 import { SelectBox, ISelectBoxOptionsWithLabel } from 'sql/base/browser/ui/selectBox/selectBox';
-import { INotebookModel } from 'sql/parts/notebook/models/modelInterfaces';
+import { INotebookModel, notebookConstants } from 'sql/parts/notebook/models/modelInterfaces';
 import { CellType, CellTypes } from 'sql/parts/notebook/models/contracts';
 import { NotebookComponent } from 'sql/parts/notebook/notebook.component';
 import { getErrorMessage } from 'sql/parts/notebook/notebookUtils';
@@ -378,7 +378,7 @@ export class AttachToDropdown extends SelectBox {
 		else {
 			let connections = this.getConnections(model);
 			this.enable();
-			if (showSelectConnection || ( showSelectConnection === undefined && currentKernel !== 'Python 3')) {
+			if (showSelectConnection || ( showSelectConnection === undefined && currentKernel !== notebookConstants.python3DisplayName)) {
 				connections = this.loadWithSelectConnection(connections);
 			}
 			else {
