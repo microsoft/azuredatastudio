@@ -61,10 +61,7 @@ describe('Notebook Integration Test', function (): void {
 		let result = (<azdata.nb.IExecuteResult>cellOutputs[0]).data['text/plain'];
 		should(result).equal('2');
 
-		try {
-			await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
-		}
-		catch (e) { }
+		await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
 	});
 
 	/*
