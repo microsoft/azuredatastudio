@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import ConnectionConstants = require('sql/platform/connection/common/constants');
 import { QueryInput } from 'sql/parts/query/common/queryInput';

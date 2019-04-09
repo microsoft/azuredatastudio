@@ -11,11 +11,11 @@ import { nb } from 'azdata';
 
 import * as objects from 'vs/base/common/objects';
 
-import { CellTypes } from 'sql/parts/notebook/models/contracts';
-import { ModelFactory } from 'sql/parts/notebook/models/modelFactory';
+import { CellTypes } from 'sql/workbench/parts/notebook/models/contracts';
+import { ModelFactory } from 'sql/workbench/parts/notebook/models/modelFactory';
 import { NotebookModelStub } from '../common';
 import { EmptyFuture } from 'sql/workbench/services/notebook/common/sessionManager';
-import { ICellModel } from 'sql/parts/notebook/models/modelInterfaces';
+import { ICellModel } from 'sql/workbench/parts/notebook/models/modelInterfaces';
 
 suite('Cell Model', function (): void {
 	let factory = new ModelFactory();

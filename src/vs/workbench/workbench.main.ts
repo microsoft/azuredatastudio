@@ -433,7 +433,6 @@ import 'vs/workbench/contrib/issue/electron-browser/issue.contribution';
 // SQL
 import 'sql/parts/taskHistory/common/taskHistory.contribution';
 import 'sql/parts/taskHistory/viewlet/taskHistoryViewlet';
-import 'sql/parts/tasks/common/tasks.contribution';
 
 // data explorer
 import 'sql/workbench/parts/dataExplorer/browser/dataExplorer.contribution';
@@ -475,7 +474,7 @@ import 'sql/parts/modelComponents/components.contribution';
 /* View Model Editor */
 import 'sql/parts/modelComponents/modelEditor/modelViewEditor.contribution';
 /* Notebook Editor */
-import 'sql/parts/notebook/notebook.contribution';
+import 'sql/workbench/parts/notebook/notebook.contribution';
 /* Containers */
 import 'sql/workbench/parts/dashboard/containers/dashboardWebviewContainer.contribution';
 import 'sql/workbench/parts/dashboard/containers/dashboardControlHostContainer.contribution';
