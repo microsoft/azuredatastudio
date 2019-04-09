@@ -243,7 +243,8 @@ export class JupyterSession implements nb.ISession {
 
 			//Update server info with bigdata endpoint - Unified Connection
 			if (connection.providerName === SQL_PROVIDER) {
-				let clusterEndpoint: utils.IEndpoint = await this.getClusterEndpoint(connection.id, KNOX_ENDPOINT_KNOX) ||
+				let clusterEndpoint: utils.IEndpoint =
+					await this.getClusterEndpoint(connection.id, KNOX_ENDPOINT_KNOX) ||
 					await this.getClusterEndpoint(connection.id, KNOX_ENDPOINT_GATEWAY);
 				if (!clusterEndpoint) {
 					let kernelDisplayName: string = await this.getKernelDisplayName();
