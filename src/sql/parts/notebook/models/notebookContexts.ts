@@ -96,20 +96,19 @@ export class NotebookContexts {
 				}
 				activeConnections = [];
 				connections.forEach(connection => activeConnections.push(connection));
-
-				let newConnection = <ConnectionProfile><any>{
-					providerName: 'SQL',
-					id: '-2',
-					serverName: localize('addConnection', 'Add new connection')
-				};
-				activeConnections.push(newConnection);
-
-				return {
-					otherConnections: activeConnections,
-					defaultConnection: NotebookContexts.DefaultContext.defaultConnection
-				};
 			}
 		}
+		let newConnection = <ConnectionProfile><any>{
+			providerName: 'SQL',
+			id: '-2',
+			serverName: localize('addConnection', 'Add new connection')
+		};
+		activeConnections.push(newConnection);
+
+		return {
+			otherConnections: activeConnections,
+			defaultConnection: NotebookContexts.DefaultContext.defaultConnection
+		};
 	}
 
 	/**
