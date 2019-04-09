@@ -433,7 +433,6 @@ import 'vs/workbench/contrib/issue/electron-browser/issue.contribution';
 // SQL
 import 'sql/parts/taskHistory/common/taskHistory.contribution';
 import 'sql/parts/taskHistory/viewlet/taskHistoryViewlet';
-import 'sql/parts/tasks/common/tasks.contribution';
 
 // data explorer
 import 'sql/workbench/parts/dataExplorer/browser/dataExplorer.contribution';
