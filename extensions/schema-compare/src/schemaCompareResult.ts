@@ -66,6 +66,7 @@ export class SchemaCompareResult {
 			this.createSwitchButton(view);
 			this.createCompareButton(view);
 			this.createGenerateScriptButton(view);
+			this.resetButtons();
 
 			let toolBar = view.modelBuilder.toolbarContainer();
 			toolBar.addToolbarItems([{
@@ -186,13 +187,15 @@ export class SchemaCompareResult {
 		this.switchButton.enabled = true;
 		this.compareButton.enabled = true;
 
-		// only enable generate script button if the target is a db
-		if (this.targetEndpointInfo.endpointType === azdata.SchemaCompareEndpointType.database) {
-			this.toggleGenerateScriptButton(true);
-		}
-
 		if (this.comparisonResult.differences.length > 0) {
 			this.flexModel.addItem(this.splitView);
+
+			// only enable generate script button if the target is a db
+			if (this.targetEndpointInfo.endpointType === azdata.SchemaCompareEndpointType.database) {
+				this.generateScriptButton.enabled = true;
+			} else {
+				this.generateScriptButton.title = localize('schemaCompare.generateScriptButtonDisabledTitle', 'Generate script is enabled when the target is a database');
+			}
 		} else {
 			this.flexModel.addItem(this.noDifferencesLabel, { CSSStyles: { 'margin': 'auto' } });
 		}
@@ -251,9 +254,7 @@ export class SchemaCompareResult {
 			contentRight: '\n'
 		});
 		this.differencesTable.selectedRows = null;
-		this.compareButton.enabled = false;
-		this.switchButton.enabled = false;
-		this.toggleGenerateScriptButton(false);
+		this.resetButtons();
 		this.execute();
 	}
 
@@ -263,7 +264,6 @@ export class SchemaCompareResult {
 		this.compareButton = view.modelBuilder.button().withProperties({
 			label: localize('schemaCompare.compareButton', 'Compare'),
 			iconPath: runIcon,
-			enabled: false,
 			title: localize('schemaCompare.compareButtonTitle', 'Compare')
 		}).component();
 
@@ -279,7 +279,6 @@ export class SchemaCompareResult {
 			label: localize('schemaCompare.generateScriptButton', 'Generate script'),
 			iconPath: fileIcon
 		}).component();
-		this.toggleGenerateScriptButton(false);
 
 		this.generateScriptButton.onDidClick(async (click) => {
 			// get file path
@@ -309,9 +308,12 @@ export class SchemaCompareResult {
 		});
 	}
 
-	private toggleGenerateScriptButton(enable: boolean) {
-		this.generateScriptButton.enabled = enable ? true : false;
-		this.generateScriptButton.title = enable ? localize('schemaCompare.generateScriptEnabledButton', 'Generate script to deploy changes to target') : localize('schemaCompare.generateScriptButtonDisabledTitle', 'Generate script is enabled when the target is a database');
+	private resetButtons() {
+		this.compareButton.enabled = false;
+		this.switchButton.enabled = false;
+		this.generateScriptButton.enabled = false;
+
+		this.generateScriptButton.title = localize('schemaCompare.generateScriptEnabledButton', 'Generate script to deploy changes to target');
 	}
 
 	private createSwitchButton(view: azdata.ModelView) {
@@ -320,7 +322,7 @@ export class SchemaCompareResult {
 		this.switchButton = view.modelBuilder.button().withProperties({
 			label: localize('schemaCompare.switchDirectionButton', 'Switch direction'),
 			iconPath: swapIcon,
-			enabled: false
+			title: localize('schemaCompare.switchButtonTitle', 'Switch source and target')
 		}).component();
 
 		this.switchButton.onDidClick(async (click) => {
