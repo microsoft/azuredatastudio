@@ -67,7 +67,7 @@ suite('ConnectionDialogService tests', () => {
 			() => Promise.resolve(<IConnectionResult>{ connected: true, errorMessage: undefined, errorCode: undefined }));
 
 		// If I call handleDefaultOnConnect with the given parameters
-		let thenable: Thenable<void> = (connectionDialogService as any).handleDefaultOnConnect(connectionParams, undefined, undefined);
+		let thenable: Thenable<void> = (connectionDialogService as any).handleDefaultOnConnect(connectionParams, undefined);
 		return thenable.then(() => {
 			// Then the Connection Management Service's connect method was called with the expected URI
 			let expectedUri = isEditor ? testUri : undefined;

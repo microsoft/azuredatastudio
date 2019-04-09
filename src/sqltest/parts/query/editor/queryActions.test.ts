@@ -138,11 +138,11 @@ suite('SQL QueryAction Tests', () => {
 		let queryAction: RunQueryAction = new RunQueryAction(editor.object, queryModelService.object, connectionManagementService.object);
 		isConnected = false;
 		calledRunQueryOnInput = false;
-		queryAction.run().then(() => {
-			// runQuery should not be run
-			assert.equal(calledRunQueryOnInput, false, 'run should not call runQuery');
-			testQueryInput.verify(x => x.runQuery(undefined), TypeMoq.Times.never());
-		});
+		queryAction.run();
+
+		// runQuery should not be run
+		assert.equal(calledRunQueryOnInput, false, 'run should not call runQuery');
+		testQueryInput.verify(x => x.runQuery(undefined), TypeMoq.Times.never());
 
 		// and the connection dialog should open with the correct parameter details
 		assert.equal(countCalledShowDialog, 1, 'run should call showDialog');
@@ -153,11 +153,11 @@ suite('SQL QueryAction Tests', () => {
 
 		// If I call run on RunQueryAction when I am connected
 		isConnected = true;
-		queryAction.run().then(() => {
-			//runQuery should be run, and the conneciton dialog should not open
-			assert.equal(calledRunQueryOnInput, true, 'run should call runQuery');
-			testQueryInput.verify(x => x.runQuery(undefined), TypeMoq.Times.once());
-		});
+		queryAction.run();
+
+		//runQuery should be run, and the conneciton dialog should not open
+		assert.equal(calledRunQueryOnInput, true, 'run should call runQuery');
+		testQueryInput.verify(x => x.runQuery(undefined), TypeMoq.Times.once());
 
 		assert.equal(countCalledShowDialog, 1, 'run should not call showDialog');
 		done();
