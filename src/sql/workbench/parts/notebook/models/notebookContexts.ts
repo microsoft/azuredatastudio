@@ -12,7 +12,7 @@ import { IDefaultConnection, notebookConstants } from 'sql/workbench/parts/noteb
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
+import { NotebookModel } from 'sql/workbench/parts/notebook/models/notebookModel';
 
 export class NotebookContexts {
 	private static MSSQL_PROVIDER = 'MSSQL';
