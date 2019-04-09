@@ -31,8 +31,8 @@ export class CellToggleMoreActions {
 			instantiationService.createInstance(DeleteCellAction, 'delete', localize('delete', 'Delete')),
 			instantiationService.createInstance(AddCellFromContextAction,'codeBefore', localize('codeBefore', 'Insert Code before'), CellTypes.Code, false),
 			instantiationService.createInstance(AddCellFromContextAction, 'codeAfter', localize('codeAfter', 'Insert Code after'), CellTypes.Code, true),
-			instantiationService.createInstance(AddCellFromContextAction, 'markdownBefore', localize('markdownBefore', 'Insert Markdown before'), CellTypes.Markdown, false),
-			instantiationService.createInstance(AddCellFromContextAction, 'markdownAfter', localize('markdownAfter', 'Insert Markdown after'), CellTypes.Markdown, true),
+			instantiationService.createInstance(AddCellFromContextAction, 'markdownBefore', localize('markdownBefore', 'Insert Text before'), CellTypes.Markdown, false),
+			instantiationService.createInstance(AddCellFromContextAction, 'markdownAfter', localize('markdownAfter', 'Insert Text after'), CellTypes.Markdown, true),
 			instantiationService.createInstance(ClearCellOutputAction, 'clear', localize('clear', 'Clear output'))
 		);
 	}
