@@ -18,7 +18,7 @@ import { IExtension, ExtensionState, IExtensionsWorkbenchService, VIEWLET_ID, IE
 import { ExtensionsConfigurationInitialContent } from 'vs/workbench/contrib/extensions/common/extensionsFileTemplate';
 import { IExtensionEnablementService, IExtensionTipsService, EnablementState, ExtensionsLabel, IExtensionRecommendation, IGalleryExtension, IExtensionsConfigContent, IExtensionGalleryService, INSTALL_ERROR_MALICIOUS, INSTALL_ERROR_INCOMPATIBLE, IGalleryExtensionVersion, ILocalExtension, IExtensionManagementServerService } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { areSameExtensions } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
-import { ExtensionType, ExtensionIdentifier, IExtensionDescription } from 'vs/platform/extensions/common/extensions';
+import { ExtensionType, ExtensionIdentifier, IExtensionDescription, IExtensionManifest } from 'vs/platform/extensions/common/extensions';
 import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { ShowViewletAction } from 'vs/workbench/browser/viewlet';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
@@ -60,7 +60,6 @@ import { ILabelService } from 'vs/platform/label/common/label';
 import { REMOTE_HOST_SCHEME } from 'vs/platform/remote/common/remoteHosts';
 import { isUIExtension } from 'vs/workbench/services/extensions/node/extensionsUtil';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
-import { isEqual } from 'vs/base/common/resources';
 
 // {{SQL CARBON EDIT}}
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
@@ -150,16 +149,29 @@ export class InstallAction extends ExtensionAction {
 	private static readonly Class = 'extension-action prominent install';
 	private static readonly InstallingClass = 'extension-action install installing';
 
+	private disposables: IDisposable[] = [];
+
+	private _manifest: IExtensionManifest | null;
+	set manifest(manifest: IExtensionManifest) {
+		this._manifest = manifest;
+		this.updateLabel();
+	}
+
 	constructor(
 		@IExtensionsWorkbenchService private readonly extensionsWorkbenchService: IExtensionsWorkbenchService,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@INotificationService private readonly notificationService: INotificationService,
 		@IOpenerService private readonly openerService: IOpenerService,
 		@IExtensionService private readonly runtimeExtensionService: IExtensionService,
-		@IWorkbenchThemeService private readonly workbenchThemeService: IWorkbenchThemeService
+		@IWorkbenchThemeService private readonly workbenchThemeService: IWorkbenchThemeService,
+		@IWorkbenchEnvironmentService private readonly workbenchEnvironmentService: IWorkbenchEnvironmentService,
+		@IConfigurationService private readonly configurationService: IConfigurationService,
+		@ILabelService private readonly labelService: ILabelService,
+		@IExtensionManagementServerService private readonly extensionManagementServerService: IExtensionManagementServerService,
 	) {
 		super(`extensions.install`, InstallAction.INSTALL_LABEL, InstallAction.Class, false);
 		this.update();
+		this.labelService.onDidChangeFormatters(() => this.updateLabel(), this, this.disposables);
 	}
 
 	update(): void {
@@ -171,15 +183,28 @@ export class InstallAction extends ExtensionAction {
 		}
 
 		this.enabled = this.extensionsWorkbenchService.canInstall(this.extension) && this.extension.state === ExtensionState.Uninstalled;
+		this.class = this.extension.state === ExtensionState.Installing ? InstallAction.InstallingClass : InstallAction.Class;
+		this.updateLabel();
+	}
 
+	private updateLabel(): void {
 		if (this.extension.state === ExtensionState.Installing) {
 			this.label = InstallAction.INSTALLING_LABEL;
-			this.class = InstallAction.InstallingClass;
 			this.tooltip = InstallAction.INSTALLING_LABEL;
 		} else {
-			this.label = InstallAction.INSTALL_LABEL;
-			this.class = InstallAction.Class;
-			this.tooltip = InstallAction.INSTALL_LABEL;
+			if (this._manifest && this.workbenchEnvironmentService.configuration.remoteAuthority) {
+				if (isUIExtension(this._manifest, this.configurationService)) {
+					this.label = `${InstallAction.INSTALL_LABEL} (${this.extensionManagementServerService.localExtensionManagementServer.label})`;
+					this.tooltip = `${InstallAction.INSTALL_LABEL} (${this.extensionManagementServerService.localExtensionManagementServer.label})`;
+				} else {
+					const host = this.labelService.getHostLabel(REMOTE_HOST_SCHEME, this.workbenchEnvironmentService.configuration.remoteAuthority) || localize('remote', "Remote");
+					this.label = `${InstallAction.INSTALL_LABEL} (${host})`;
+					this.tooltip = `${InstallAction.INSTALL_LABEL} (${host})`;
+				}
+			} else {
+				this.label = InstallAction.INSTALL_LABEL;
+				this.tooltip = InstallAction.INSTALL_LABEL;
+			}
 		}
 	}
 
@@ -190,7 +215,8 @@ export class InstallAction extends ExtensionAction {
 
 		const extension = await this.install(this.extension);
 
-		// {{SQL CARBON EDIT}}
+		alert(localize('installExtensionComplete', "Installing extension {0} is completed. Please reload Azure Data Studio to enable it.", this.extension.displayName));
+
 		// Add extension object check since ADS third party extensions will be directed to a download page
 		// and the extension object will be undefined.
 		if (extension && extension.local) {
@@ -251,74 +277,92 @@ export class InstallAction extends ExtensionAction {
 		}
 		return null;
 	}
+
+	dispose(): void {
+		this.disposables = dispose(this.disposables);
+		super.dispose();
+	}
 }
 
 export class RemoteInstallAction extends ExtensionAction {
 
 	private static INSTALL_LABEL = localize('install', "Install");
-	private static readonly Class = 'extension-action prominent install';
+	private static INSTALLING_LABEL = localize('installing', "Installing");
 
+	private static readonly Class = 'extension-action prominent install';
+	private static readonly InstallingClass = 'extension-action install installing';
+
+	updateWhenCounterExtensionChanges: boolean = true;
 	private disposables: IDisposable[] = [];
-	private _runningExtensions: IExtensionDescription[] = [];
-	private get runningExtensions(): IExtensionDescription[] { return this._runningExtensions; }
-	private set runningExtensions(runningExtensions: IExtensionDescription[]) { this._runningExtensions = runningExtensions; this.update(); }
+	private installing: boolean = false;
 
 	constructor(
 		@IExtensionsWorkbenchService private readonly extensionsWorkbenchService: IExtensionsWorkbenchService,
-		@IInstantiationService private readonly instantiationService: IInstantiationService,
-		@INotificationService private readonly notificationService: INotificationService,
-		@IOpenerService private readonly openerService: IOpenerService,
 		@ILabelService private readonly labelService: ILabelService,
 		@IWorkbenchEnvironmentService private readonly environmentService: IWorkbenchEnvironmentService,
 		@IExtensionManagementServerService private readonly extensionManagementServerService: IExtensionManagementServerService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
-		@IExtensionService private readonly extensionService: IExtensionService
 	) {
 		super(`extensions.remoteinstall`, RemoteInstallAction.INSTALL_LABEL, RemoteInstallAction.Class, false);
 		this.labelService.onDidChangeFormatters(() => this.updateLabel(), this, this.disposables);
 		this.updateLabel();
-		this.extensionService.onDidChangeExtensions(this.updateRunningExtensions, this, this.disposables);
-		this.updateRunningExtensions();
 		this.update();
 	}
 
-	private updateRunningExtensions(): void {
-		this.extensionService.getExtensions().then(runningExtensions => this.runningExtensions = runningExtensions);
-	}
-
 	private updateLabel(): void {
+		if (this.installing) {
+			this.label = RemoteInstallAction.INSTALLING_LABEL;
+			return;
+		}
 		const remoteAuthority = this.environmentService.configuration.remoteAuthority;
 		if (remoteAuthority) {
 			const host = this.labelService.getHostLabel(REMOTE_HOST_SCHEME, this.environmentService.configuration.remoteAuthority) || localize('remote', "Remote");
 			this.label = `${RemoteInstallAction.INSTALL_LABEL} (${host})`;
+			return;
 		}
 	}
 
-	async update(): Promise<void> {
+	update(): void {
 		this.enabled = false;
+		this.class = RemoteInstallAction.Class;
+		if (this.installing) {
+			this.enabled = true;
+			this.class = RemoteInstallAction.InstallingClass;
+			this.updateLabel();
+			return;
+		}
 		if (this.environmentService.configuration.remoteAuthority
+			// Installed User Extension
 			&& this.extension && this.extension.local && this.extension.type === ExtensionType.User && this.extension.state === ExtensionState.Installed
-			&& !this.runningExtensions.some(e => areSameExtensions({ id: e.identifier.value }, this.extension.identifier))
-			&& !isUIExtension(this.extension.local.manifest, this.configurationService)
-			&& this.extensionManagementServerService.localExtensionManagementServer === this.extensionManagementServerService.getExtensionManagementServer(this.extension.local.location)
+			// Local Workspace Extension
+			&& this.extension.server === this.extensionManagementServerService.localExtensionManagementServer && !isUIExtension(this.extension.local.manifest, this.configurationService)
+			// Extension does not exist in remote
+			&& !this.extensionsWorkbenchService.local.some(e => areSameExtensions(e.identifier, this.extension.identifier) && e.server === this.extensionManagementServerService.remoteExtensionManagementServer)
 			&& this.extensionsWorkbenchService.canInstall(this.extension)
 		) {
 			this.enabled = true;
+			this.updateLabel();
+			return;
 		}
 	}
 
-	async run(): Promise<any> {
-		if (this.extensionManagementServerService.remoteExtensionManagementServer) {
+	async run(): Promise<void> {
+		if (this.extensionManagementServerService.remoteExtensionManagementServer && !this.installing) {
+			this.installing = true;
+			this.update();
 			this.extensionsWorkbenchService.open(this.extension);
 			alert(localize('installExtensionStart', "Installing extension {0} started. An editor is now open with more details on this extension", this.extension.displayName));
 			if (this.extension.gallery) {
-				return this.extensionManagementServerService.remoteExtensionManagementServer.extensionManagementService.installFromGallery(this.extension.gallery)
-					.then(null, err => {
-						console.error(err);
-						return promptDownloadManually(this.extension.gallery, localize('failedToInstall', "Failed to install \'{0}\'.", this.extension.identifier.id), err, this.instantiationService, this.notificationService, this.openerService);
-					});
+				await this.extensionManagementServerService.remoteExtensionManagementServer.extensionManagementService.installFromGallery(this.extension.gallery);
+				this.installing = false;
+				this.update();
 			}
 		}
+	}
+
+	dispose(): void {
+		this.disposables = dispose(this.disposables);
+		super.dispose();
 	}
 }
 
@@ -403,6 +447,8 @@ export class CombinedInstallAction extends ExtensionAction {
 
 		this.update();
 	}
+
+	set manifest(manifiest: IExtensionManifest) { this.installAction.manifest = manifiest; this.update(); }
 
 	update(): void {
 		this.installAction.extension = this.extension;
@@ -1118,6 +1164,7 @@ export class ReloadAction extends ExtensionAction {
 	private static readonly EnabledClass = 'extension-action reload';
 	private static readonly DisabledClass = `${ReloadAction.EnabledClass} disabled`;
 
+	updateWhenCounterExtensionChanges: boolean = true;
 	private disposables: IDisposable[] = [];
 	private _runningExtensions: IExtensionDescription[] = [];
 	private get runningExtensions(): IExtensionDescription[] { return this._runningExtensions; }
@@ -1127,7 +1174,10 @@ export class ReloadAction extends ExtensionAction {
 		@IExtensionsWorkbenchService private readonly extensionsWorkbenchService: IExtensionsWorkbenchService,
 		@IWindowService private readonly windowService: IWindowService,
 		@IExtensionService private readonly extensionService: IExtensionService,
-		@IExtensionEnablementService private readonly extensionEnablementService: IExtensionEnablementService
+		@IExtensionEnablementService private readonly extensionEnablementService: IExtensionEnablementService,
+		@IExtensionManagementServerService private readonly extensionManagementServerService: IExtensionManagementServerService,
+		@IWorkbenchEnvironmentService private readonly workbenchEnvironmentService: IWorkbenchEnvironmentService,
+		@IConfigurationService private readonly configurationService: IConfigurationService
 	) {
 		super('extensions.reload', localize('reloadAction', "Reload"), ReloadAction.DisabledClass, false);
 		this.extensionService.onDidChangeExtensions(this.updateRunningExtensions, this, this.disposables);
@@ -1159,57 +1209,65 @@ export class ReloadAction extends ExtensionAction {
 
 	private computeReloadState(local: ILocalExtension | undefined): void {
 		const isUninstalled = this.extension.state === ExtensionState.Uninstalled;
-		const isDisabled = this.extension.local ? !this.extensionEnablementService.isEnabled(this.extension.local) : false;
-		const isEnabled = this.extension.local ? this.extensionEnablementService.isEnabled(this.extension.local) : false;
 		const runningExtension = this.runningExtensions.filter(e => areSameExtensions({ id: e.identifier.value }, this.extension.identifier))[0];
 
-		if (local) {
+		if (isUninstalled) {
 			if (runningExtension) {
-				const isSameExtensionRunning = isEqual(local.location, runningExtension.extensionLocation);
+				this.enabled = true;
+				this.label = localize('reloadRequired', "Reload Required");
+				// {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
+				this.tooltip = localize('postUninstallTooltip', "Please reload Azure Data Studio to complete the uninstallation of this extension.");
+				alert(localize('uninstallExtensionComplete', "Please reload Azure Data Studio to complete the uninstallation of the extension {0}.", this.extension.displayName));
+			}
+			return;
+		}
+		if (local) {
+			const isEnabled = this.extensionEnablementService.isEnabled(local);
+			if (runningExtension) {
+				// Extension is running
+				const isSameExtensionRunning = this.extension.server === this.extensionManagementServerService.getExtensionManagementServer(runningExtension.extensionLocation);
 				const isSameVersionRunning = isSameExtensionRunning && this.extension.version === runningExtension.version;
-				if (!isSameVersionRunning && !isDisabled) {
-					if (!(this.extension.local && this.extensionService.canAddExtension(toExtensionDescription(this.extension.local)))) {
-						// Requires reload to run the updated extension
+				if (isEnabled) {
+					if (!isSameVersionRunning && !this.extensionService.canAddExtension(toExtensionDescription(local))) {
 						this.enabled = true;
 						this.label = localize('reloadRequired', "Reload Required");
 						// {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
-						this.tooltip = localize('postUpdateTooltip', "Please reload Azure Data Studio to complete the updating of this extension.");
+						this.tooltip = localize('postUpdateTooltip', "Please reload Azure Data Studio to enable the updated extension.");
 					}
-					return;
+				} else {
+					if (isSameExtensionRunning) {
+						this.enabled = true;
+						this.label = localize('reloadRequired', "Reload Required");
+						// {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
+						this.tooltip = localize('postDisableTooltip', "Please reload Azure Data Studio to disable this extension.");
+					}
 				}
-				if (isDisabled && isSameExtensionRunning) {
-					// Requires reload to disable the extension
+				return;
+			} else {
+				// Extension is not running
+				if (isEnabled && !this.extensionService.canAddExtension(toExtensionDescription(local))) {
 					this.enabled = true;
 					this.label = localize('reloadRequired', "Reload Required");
 					// {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
-					this.tooltip = localize('postDisableTooltip', "Please reload Azure Data Studio to complete the disabling of this extension.");
+					this.tooltip = localize('postEnableTooltip', "Please reload Azure Data Studio to enable this extension.");
 					return;
 				}
-			} else {
-				if (!isDisabled && !(this.extension.local && this.extensionService.canAddExtension(toExtensionDescription(this.extension.local)))) {
-					this.enabled = true;
-					if (isEnabled) {
+				if (this.workbenchEnvironmentService.configuration.remoteAuthority
+					// Local Workspace Extension
+					&& this.extension.server === this.extensionManagementServerService.localExtensionManagementServer && !isUIExtension(local.manifest, this.configurationService)
+				) {
+					const remoteExtension = this.extensionsWorkbenchService.local.filter(e => areSameExtensions(e.identifier, this.extension.identifier) && e.server === this.extensionManagementServerService.remoteExtensionManagementServer)[0];
+					// Extension exist in remote and enabled
+					if (remoteExtension && remoteExtension.local && this.extensionEnablementService.isEnabled(remoteExtension.local)) {
+						this.enabled = true;
 						this.label = localize('reloadRequired', "Reload Required");
 						// {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
-						this.tooltip = localize('postEnableTooltip', "Please reload Azure Data Studio to complete the enabling of this extension.");
-					} else {
-						this.label = localize('reloadRequired', "Reload Required");
-						// {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
-						this.tooltip = localize('postInstallTooltip', "Please reload Azure Data Studio to complete the installation of this extension.");
+						this.tooltip = localize('postEnableTooltip', "Please reload Azure Data Studio to enable this extension.");
 						alert(localize('installExtensionComplete', "Installing extension {0} is completed. Please reload Azure Data Studio to enable it.", this.extension.displayName));
+						return;
 					}
 				}
 			}
-		}
-
-		if (isUninstalled && runningExtension) {
-			// Requires reload to deactivate the extension
-			this.enabled = true;
-			this.label = localize('reloadRequired', "Reload Required");
-			// {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
-			this.tooltip = localize('postUninstallTooltip', "Please reload Azure Data Studio to complete the uninstallation of this extension.");
-			alert(localize('uninstallExtensionComplete', "Please reload Azure Data Studio to complete the uninstallation of the extension {0}.", this.extension.displayName));
-			return;
 		}
 	}
 
@@ -2481,6 +2539,58 @@ export class MaliciousStatusLabelAction extends ExtensionAction {
 
 	run(): Promise<any> {
 		return Promise.resolve();
+	}
+}
+
+export class DisabledStatusLabelAction extends ExtensionAction {
+
+	private static readonly Class = 'disable-status';
+
+	updateWhenCounterExtensionChanges: boolean = true;
+	private disposables: IDisposable[] = [];
+
+	constructor(
+		@IExtensionManagementServerService private readonly extensionManagementServerService: IExtensionManagementServerService,
+		@IConfigurationService private readonly configurationService: IConfigurationService,
+		@ILabelService private readonly labelService: ILabelService,
+		@IWorkbenchEnvironmentService private readonly workbenchEnvironmentService: IWorkbenchEnvironmentService,
+		@IExtensionsWorkbenchService private readonly extensionsWorkbenchService: IExtensionsWorkbenchService
+	) {
+		super('extensions.install', localize('disabled', "Disabled"), `${DisabledStatusLabelAction.Class} hide`, false);
+		this.labelService.onDidChangeFormatters(() => this.update(), this, this.disposables);
+		this.update();
+	}
+
+	update(): void {
+		this.class = `${DisabledStatusLabelAction.Class} hide`;
+		this.tooltip = '';
+		if (this.extension && this.extension.local) {
+			if (
+				// Remote Window
+				this.workbenchEnvironmentService.configuration.remoteAuthority
+				// Local Workspace Extension
+				&& this.extension.server === this.extensionManagementServerService.localExtensionManagementServer && !isUIExtension(this.extension.local.manifest, this.configurationService)
+				// Extension does not exist in remote
+				&& !this.extensionsWorkbenchService.local.some(e => areSameExtensions(e.identifier, this.extension.identifier) && e.server === this.extensionManagementServerService.remoteExtensionManagementServer)
+			) {
+				this.class = `${DisabledStatusLabelAction.Class}`;
+				const host = this.labelService.getHostLabel(REMOTE_HOST_SCHEME, this.workbenchEnvironmentService.configuration.remoteAuthority) || localize('remote', "Remote");
+				this.label = localize('disabled workspace Extension', "Disabled because the window is connected to remote server and only UI extensions from local server are enabled.", host, host);
+				if (this.extensionsWorkbenchService.canInstall(this.extension)) {
+					this.label = `${this.label} ${localize('Install in remote server', "Install it in '{0}' server to enable.", host)}`;
+				}
+				return;
+			}
+		}
+	}
+
+	run(): Promise<any> {
+		return Promise.resolve(null);
+	}
+
+	dispose(): void {
+		dispose(this.disposables);
+		super.dispose();
 	}
 }
 
