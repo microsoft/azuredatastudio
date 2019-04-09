@@ -11,9 +11,9 @@ import { bootstrapAngular } from 'sql/services/bootstrap/bootstrapService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 import { CancellationToken } from 'vs/base/common/cancellation';
-import { NotebookInput } from 'sql/parts/notebook/notebookInput';
-import { NotebookModule } from 'sql/parts/notebook/notebook.module';
-import { NOTEBOOK_SELECTOR } from 'sql/parts/notebook/notebook.component';
+import { NotebookInput } from 'sql/workbench/parts/notebook/notebookInput';
+import { NotebookModule } from 'sql/workbench/parts/notebook/notebook.module';
+import { NOTEBOOK_SELECTOR } from 'sql/workbench/parts/notebook/notebook.component';
 import { INotebookParams } from 'sql/workbench/services/notebook/common/notebookService';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { $ } from 'sql/base/browser/builder';

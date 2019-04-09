@@ -14,16 +14,16 @@ import { IDisposable } from 'vs/base/common/lifecycle';
 import { URI } from 'vs/base/common/uri';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 
-import { CellType, NotebookChangeType } from 'sql/parts/notebook/models/contracts';
+import { CellType, NotebookChangeType } from 'sql/workbench/parts/notebook/models/contracts';
 import { INotebookManager } from 'sql/workbench/services/notebook/common/notebookService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { IStandardKernelWithProvider } from 'sql/parts/notebook/notebookUtils';
+import { IStandardKernelWithProvider } from 'sql/workbench/parts/notebook/notebookUtils';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { localize } from 'vs/nls';
-import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
+import { NotebookModel } from 'sql/workbench/parts/notebook/models/notebookModel';
 
 export interface IClientSessionOptions {
 	notebookUri: URI;

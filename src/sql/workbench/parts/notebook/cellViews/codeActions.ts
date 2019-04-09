@@ -11,11 +11,11 @@ import { IDisposable } from 'vs/base/common/lifecycle';
 import * as types from 'vs/base/common/types';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 
-import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
-import { getErrorMessage } from 'sql/parts/notebook/notebookUtils';
-import { ICellModel, CellExecutionState } from 'sql/parts/notebook/models/modelInterfaces';
+import { NotebookModel } from 'sql/workbench/parts/notebook/models/notebookModel';
+import { getErrorMessage } from 'sql/workbench/parts/notebook/notebookUtils';
+import { ICellModel, CellExecutionState } from 'sql/workbench/parts/notebook/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { MultiStateAction, IMultiStateData, IActionStateData } from 'sql/parts/notebook/notebookActions';
+import { MultiStateAction, IMultiStateData, IActionStateData } from 'sql/workbench/parts/notebook/notebookActions';
 
 let notebookMoreActionMsg = localize('notebook.failed', "Please select active cell and try again");
 const emptyExecutionCountLabel = '[ ]';

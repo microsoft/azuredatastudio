@@ -18,15 +18,15 @@ import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox.component';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox.component';
 import { EditableDropDown } from 'sql/base/browser/ui/editableDropdown/editableDropdown.component';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox.component';
-import { NotebookComponent } from 'sql/parts/notebook/notebook.component';
+import { NotebookComponent } from 'sql/workbench/parts/notebook/notebook.component';
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { CodeComponent } from 'sql/parts/notebook/cellViews/code.component';
-import { CodeCellComponent } from 'sql/parts/notebook/cellViews/codeCell.component';
-import { TextCellComponent } from 'sql/parts/notebook/cellViews/textCell.component';
-import { OutputAreaComponent } from 'sql/parts/notebook/cellViews/outputArea.component';
-import { OutputComponent } from 'sql/parts/notebook/cellViews/output.component';
-import { PlaceholderCellComponent } from 'sql/parts/notebook/cellViews/placeholderCell.component';
+import { CodeComponent } from 'sql/workbench/parts/notebook/cellViews/code.component';
+import { CodeCellComponent } from 'sql/workbench/parts/notebook/cellViews/codeCell.component';
+import { TextCellComponent } from 'sql/workbench/parts/notebook/cellViews/textCell.component';
+import { OutputAreaComponent } from 'sql/workbench/parts/notebook/cellViews/outputArea.component';
+import { OutputComponent } from 'sql/workbench/parts/notebook/cellViews/output.component';
+import { PlaceholderCellComponent } from 'sql/workbench/parts/notebook/cellViews/placeholderCell.component';
 import LoadingSpinner from 'sql/parts/modelComponents/loadingSpinner.component';
 
 export const NotebookModule = (params, selector: string, instantiationService: IInstantiationService): any => {

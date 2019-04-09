@@ -13,9 +13,9 @@ import { URI } from 'vs/base/common/uri';
 import { localize } from 'vs/nls';
 
 import * as notebookUtils from '../notebookUtils';
-import { CellTypes, CellType, NotebookChangeType } from 'sql/parts/notebook/models/contracts';
-import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
-import { ICellModel } from 'sql/parts/notebook/models/modelInterfaces';
+import { CellTypes, CellType, NotebookChangeType } from 'sql/workbench/parts/notebook/models/contracts';
+import { NotebookModel } from 'sql/workbench/parts/notebook/models/notebookModel';
+import { ICellModel } from 'sql/workbench/parts/notebook/models/modelInterfaces';
 import { ICellModelOptions, IModelFactory, FutureInternal, CellExecutionState } from './modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';

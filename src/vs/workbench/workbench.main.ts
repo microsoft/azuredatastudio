@@ -475,7 +475,7 @@ import 'sql/parts/modelComponents/components.contribution';
 /* View Model Editor */
 import 'sql/parts/modelComponents/modelEditor/modelViewEditor.contribution';
 /* Notebook Editor */
-import 'sql/parts/notebook/notebook.contribution';
+import 'sql/workbench/parts/notebook/notebook.contribution';
 /* Containers */
 import 'sql/workbench/parts/dashboard/containers/dashboardWebviewContainer.contribution';
 import 'sql/workbench/parts/dashboard/containers/dashboardControlHostContainer.contribution';

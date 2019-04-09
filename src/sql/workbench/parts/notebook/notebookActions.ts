@@ -11,16 +11,16 @@ import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview
 import { INotificationService, Severity, INotificationActions } from 'vs/platform/notification/common/notification';
 
 import { SelectBox, ISelectBoxOptionsWithLabel } from 'sql/base/browser/ui/selectBox/selectBox';
-import { INotebookModel } from 'sql/parts/notebook/models/modelInterfaces';
-import { CellType, CellTypes } from 'sql/parts/notebook/models/contracts';
-import { NotebookComponent } from 'sql/parts/notebook/notebook.component';
-import { getErrorMessage, getServerFromFormattedAttachToName, getDatabaseFromFormattedAttachToName } from 'sql/parts/notebook/notebookUtils';
+import { INotebookModel } from 'sql/workbench/parts/notebook/models/modelInterfaces';
+import { CellType, CellTypes } from 'sql/workbench/parts/notebook/models/contracts';
+import { NotebookComponent } from 'sql/workbench/parts/notebook/notebook.component';
+import { getErrorMessage, getServerFromFormattedAttachToName, getDatabaseFromFormattedAttachToName } from 'sql/workbench/parts/notebook/notebookUtils';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { noKernel } from 'sql/workbench/services/notebook/common/sessionManager';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
-import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
+import { NotebookModel } from 'sql/workbench/parts/notebook/models/notebookModel';
 import { generateUri } from 'sql/platform/connection/common/utils';
 
 const msgLoading = localize('loading', "Loading kernels...");
