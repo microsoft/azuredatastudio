@@ -210,7 +210,8 @@ export class SchemaCompareResult {
 
 				this.diffEditor.updateProperties({
 					contentLeft: sourceText,
-					contentRight: targetText
+					contentRight: targetText,
+					title: localize('schemaCompare.ObjectDefinitionsTitle', 'Object Definitions')
 				});
 			}
 		});

@@ -1699,6 +1699,63 @@ declare module 'azdata' {
 		generateDeployPlan(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<GenerateDeployPlanResult>;
 	}
 
+	// Schema Compare interfaces  -----------------------------------------------------------------------
+	export interface SchemaCompareResult extends ResultStatus {
+		operationId: string;
+		areEqual: boolean;
+		differences: DiffEntry[];
+	}
+
+	export interface DiffEntry {
+		updateAction: SchemaUpdateAction;
+		differenceType: SchemaDifferenceType;
+		name: string;
+		sourceValue: string;
+		targetValue: string;
+		parent: DiffEntry;
+		children: DiffEntry[];
+		sourceScript: string;
+		targetScript: string;
+	}
+
+	export enum SchemaUpdateAction {
+		Delete = 0,
+		Change = 1,
+		Add = 2
+	}
+
+	export enum SchemaDifferenceType {
+		Object = 0,
+		Property = 1
+	}
+	export enum SchemaCompareEndpointType {
+		database = 0,
+		dacpac = 1
+	}
+	export interface SchemaCompareEndpointInfo {
+		endpointType: SchemaCompareEndpointType;
+		packageFilePath: string;
+		databaseName: string;
+		ownerUri: string;
+	}
+
+	export interface SchemaCompareParams {
+		sourceEndpointInfo: SchemaCompareEndpointInfo;
+		targetEndpointInfo: SchemaCompareEndpointInfo;
+		taskExecutionMode: TaskExecutionMode;
+	}
+
+	export interface SchemaCompareGenerateScriptParams {
+		operationId: string;
+		targetDatabaseName: string;
+		scriptFilePath: string;
+		taskExecutionMode: TaskExecutionMode;
+	}
+	export interface SchemaCompareServicesProvider extends DataProvider {
+		schemaCompare(sourceEndpointInfo: SchemaCompareEndpointInfo, targetEndpointInfo: SchemaCompareEndpointInfo, taskExecutionMode: TaskExecutionMode): Thenable<SchemaCompareResult>;
+		schemaCompareGenerateScript(operationId: string, targetDatabaseName: string, scriptFilePath: string, taskExecutionMode: TaskExecutionMode): Thenable<ResultStatus>;
+	}
+
 	// Security service interfaces ------------------------------------------------------------------------
 	export interface CredentialInfo {
 		id: number;
@@ -2911,6 +2968,7 @@ declare module 'azdata' {
 		value: string;
 		width?: number;
 		cssClass?: string;
+		headerCssClass?: string;
 		toolTip?: string;
 	}
 
@@ -3759,6 +3817,7 @@ declare module 'azdata' {
 		AgentServicesProvider = 'AgentServicesProvider',
 		CapabilitiesProvider = 'CapabilitiesProvider',
 		DacFxServicesProvider = 'DacFxServicesProvider',
+		SchemaCompareServicesProvider = 'SchemaCompareServicesProvider',
 		ObjectExplorerNodeProvider = 'ObjectExplorerNodeProvider',
 	}
 
