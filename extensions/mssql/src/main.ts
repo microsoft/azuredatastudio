@@ -201,7 +201,10 @@ async function handleNewNotebookTask(oeContext?: azdata.ObjectExplorerContext, p
 		metadata: {
 			kernelspec: { name: 'pyspark3' }
 		},
-		cells: [],
+		cells: [{
+			cell_type: 'markdown',
+			source: 'Hello World'
+		}],
 		nbformat: 4,
 		nbformat_minor: 2
 	};
