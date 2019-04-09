@@ -227,6 +227,6 @@ suite('Insights Utils tests', function () {
 
 	suiteTeardown(() => {
 		// Clean up our test files
-		return pfs.rimraf(testRootPath);
+		return pfs.rimraf(testRootPath, pfs.RimRafMode.MOVE);
 	});
 });
