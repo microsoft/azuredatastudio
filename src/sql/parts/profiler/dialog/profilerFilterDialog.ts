@@ -191,9 +191,9 @@ export class ProfilerFilterDialog extends Modal {
 		const columns = this._input.columns.map(column => column.name);
 		const fieldDropDown = this.createSelectBox(DOM.append(row, DOM.$('td')), columns, columns[0], FieldText);
 
-		const operatorDropDown = this.createSelectBox(DOM.$('td'), Operators, Operators[0], OperatorText);
+		const operatorDropDown = this.createSelectBox(DOM.append(row, DOM.$('td')), Operators, Operators[0], OperatorText);
 
-		const valueText = new InputBox(DOM.$('td'), undefined, {});
+		const valueText = new InputBox(DOM.append(row, DOM.$('td')), undefined, {});
 		this._register(attachInputBoxStyler(valueText, this._themeService));
 
 		const removeCell = DOM.append(row, DOM.$('td'));
