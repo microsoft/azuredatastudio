@@ -57,7 +57,7 @@ const configBase = {
 
 const KNOX_ENDPOINT_SERVER = 'host';
 const KNOX_ENDPOINT_PORT = 'knoxport';
-const KNOX_ENDPOINT = 'knox';
+const KNOX_ENDPOINT = 'gateway';
 const SQL_PROVIDER = 'MSSQL';
 const USER = 'user';
 const DEFAULT_CLUSTER_USER_NAME = 'root';
