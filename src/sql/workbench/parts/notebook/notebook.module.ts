@@ -11,7 +11,7 @@ import { CommonModule, APP_BASE_HREF } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
 
 
-import { ComponentHostDirective } from 'sql/parts/dashboard/common/componentHost.directive';
+import { ComponentHostDirective } from 'sql/workbench/parts/dashboard/common/componentHost.directive';
 import { IBootstrapParams, ISelector, providerIterator } from 'sql/services/bootstrap/bootstrapService';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox.component';

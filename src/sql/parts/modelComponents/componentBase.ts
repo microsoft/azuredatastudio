@@ -5,23 +5,17 @@
 import 'vs/css!./flexContainer';
 
 import {
-	Component, Input, Inject, ChangeDetectorRef, forwardRef, ComponentFactoryResolver,
-	ViewChild, ViewChildren, ElementRef, Injector, OnDestroy, OnInit, QueryList
+	ChangeDetectorRef, ViewChildren, ElementRef, OnDestroy, OnInit, QueryList
 } from '@angular/core';
 
 import * as types from 'vs/base/common/types';
 
 import { IComponent, IComponentDescriptor, IModelStore, IComponentEventArgs, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
 import * as azdata from 'azdata';
-import { ComponentHostDirective } from 'sql/parts/dashboard/common/componentHost.directive';
-import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
-import { Event, Emitter } from 'vs/base/common/event';
+import { Emitter } from 'vs/base/common/event';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { ModelComponentWrapper } from 'sql/parts/modelComponents/modelComponentWrapper.component';
 import { URI } from 'vs/base/common/uri';
-import { Builder } from 'sql/base/browser/builder';
-import { IdGenerator } from 'vs/base/common/idGenerator';
-import { createCSSRule, removeCSSRulesContainingSelector } from 'vs/base/browser/dom';
 import * as nls from 'vs/nls';
 
 
@@ -78,6 +72,10 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 
 	abstract setLayout(layout: any): void;
 
+	getHtml(): any{
+		return this._el.nativeElement;
+	}
+
 	public setDataProvider(handle: number, componentId: string, context: any): void {
 	}
 
@@ -85,9 +83,10 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 	}
 
 	public updateStyles() {
-		let element = new Builder(this._el.nativeElement);
-		this._CSSStyles = this.CSSStyles;
-		element.style(this._CSSStyles);
+		const element = (<HTMLElement>this._el.nativeElement);
+		for (const style in this.CSSStyles) {
+			element.style[style] = this.CSSStyles[style];
+		}
 	}
 
 	public setProperties(properties: { [key: string]: any; }): void {
@@ -100,6 +99,19 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 		}
 		this.layout();
 		this.validate();
+	}
+
+	// Helper Function to update single property
+	public updateProperty(key: string, value: any): void {
+		if (key) {
+			this.properties[key] = value;
+
+			if (this.CSSStyles !== this._CSSStyles) {
+				this.updateStyles();
+			}
+			this.layout();
+			this.validate();
+		}
 	}
 
 	protected getProperties<TPropertyBag>(): TPropertyBag {

@@ -101,7 +101,7 @@ const vscodeResources = [
 	'out-build/sql/parts/admin/**/*.html',
 	'out-build/sql/parts/connection/connectionDialog/media/*.{gif,png,svg}',
 	'out-build/sql/parts/common/dblist/**/*.html',
-	'out-build/sql/parts/dashboard/**/*.html',
+	'out-build/sql/workbench/parts/dashboard/**/*.html',
 	'out-build/sql/parts/disasterRecovery/**/*.html',
 	'out-build/sql/parts/common/modal/media/**',
 	'out-build/sql/parts/grid/load/lib/**',
