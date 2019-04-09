@@ -75,8 +75,9 @@ function findNextUntitledEditorName(): string {
 	// Note: this will go forever if it's coded wrong, or you have infinite Untitled notebooks!
 	while (true) {
 		let title = `Notebook-${nextVal}`;
+		let hasTextDoc = vscode.workspace.textDocuments.findIndex(doc => doc.isUntitled && doc.fileName === title) > -1;
 		let hasNotebookDoc = azdata.nb.notebookDocuments.findIndex(doc => doc.isUntitled && doc.fileName === title) > -1;
-		if (!hasNotebookDoc) {
+		if (!hasTextDoc && !hasNotebookDoc) {
 			return title;
 		}
 		nextVal++;
