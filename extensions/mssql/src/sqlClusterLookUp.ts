@@ -79,7 +79,10 @@ async function createSqlClusterConnInfo(sqlConnInfo: azdata.IConnectionProfile |
 	let endpoints: IEndpoint[] = serverInfo.options[constants.clusterEndpointsProperty];
 	if (!endpoints || endpoints.length === 0) { return undefined; }
 
-	let index = endpoints.findIndex(ep => ep.serviceName === constants.hadoopKnoxEndpointName);
+	let index = endpoints.findIndex(ep => ep.serviceName === constants.hadoopEndpointNameKnox);
+	if (index < 0) {
+		index = endpoints.findIndex(ep => ep.serviceName === constants.hadoopEndpointNameGateway);
+	}
 	if (index < 0) { return undefined; }
 
 	let credentials = await azdata.connection.getCredentials(connectionId);

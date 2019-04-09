@@ -481,7 +481,10 @@ export class CellModel implements ICellModel {
 			if (serverInfo && serverInfo.options && serverInfo.options['clusterEndpoints']) {
 				let endpoints: notebookUtils.IEndpoint[] = serverInfo.options['clusterEndpoints'];
 				if (endpoints && endpoints.length > 0) {
-					endpoint = endpoints.find(ep => ep.serviceName.toLowerCase() === 'gateway');
+					endpoint = endpoints.find(ep => {
+						let serviceName: string = ep.serviceName.toLowerCase();
+						return serviceName === 'knox' || serviceName === 'gateway';
+					});
 				}
 			}
 		}
