@@ -13,6 +13,7 @@ import * as nls from 'vscode-nls';
 import { JupyterController } from './jupyter/jupyterController';
 import { AppContext } from './common/appContext';
 import { ApiWrapper } from './common/apiWrapper';
+import { IExtensionApi } from './types';
 
 const localize = nls.loadMessageBundle();
 
@@ -20,10 +21,9 @@ const JUPYTER_NOTEBOOK_PROVIDER = 'jupyter';
 const msgSampleCodeDataFrame = localize('msgSampleCodeDataFrame', 'This sample code loads the file into a data frame and shows the first 10 results.');
 const noNotebookVisible = localize('noNotebookVisible', 'No notebook editor is active');
 
+let controller: JupyterController;
 
-export let controller: JupyterController;
-
-export function activate(extensionContext: vscode.ExtensionContext) {
+export async function activate(extensionContext: vscode.ExtensionContext): Promise<IExtensionApi> {
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.new', (context?: azdata.ConnectedContext) => {
 		let connectionProfile: azdata.IConnectionProfile = undefined;
 		if (context && context.connectionProfile) {
@@ -49,7 +49,16 @@ export function activate(extensionContext: vscode.ExtensionContext) {
 
 	let appContext = new AppContext(extensionContext, new ApiWrapper());
 	controller = new JupyterController(appContext);
-	controller.activate();
+	let result = await controller.activate();
+	if (!result) {
+		return <IExtensionApi>{ };
+	}
+
+	return {
+		getJupyterController() {
+			return controller;
+		}
+	};
 }
 
 function newNotebook(connectionProfile: azdata.IConnectionProfile) {

@@ -35,12 +35,22 @@ describe('Notebook Integration Test', function (): void {
 		nbformat_minor: 2
 	};
 
+	let installComplete = false;
+	before(async function () {
+		// Ensure Jupyter dependencies are installed first
+		let jupterControllerExports = vscode.extensions.getExtension('Microsoft.notebook').exports;
+		let jupyterController = jupterControllerExports.getJupyterController() as JupyterController;
+		await jupyterController.jupyterInstallation.startInstallProcess(false);
+
+		installComplete = true;
+	});
 
 	it('Should connect to local notebook server with result 2', async function () {
 		this.timeout(60000);
+		should(installComplete).be.true('Python setup did not complete.');
+
 		let pythonNotebook = Object.assign({}, expectedNotebookContent, { metadata: { kernelspec: { name: 'python3', display_name: 'Python 3' } } });
 		let uri = writeNotebookToFile(pythonNotebook);
-		await ensureJupyterInstalled();
 
 		let notebook = await azdata.nb.showNotebookDocument(uri);
 		should(notebook.document.cells).have.length(1);
@@ -52,17 +62,17 @@ describe('Notebook Integration Test', function (): void {
 		should(result).equal('2');
 
 		try {
-			// TODO support closing the editor. Right now this prompts and there's no override for this. Need to fix in core
-			// Close the editor using the recommended vscode API
-			//await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
+			await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
 		}
 		catch (e) { }
 	});
 
+	/*
 	it('Should connect to remote spark server with result 2', async function () {
 		this.timeout(240000);
+		should(installComplete).be.true('Python setup did not complete.');
+
 		let uri = writeNotebookToFile(expectedNotebookContent);
-		await ensureJupyterInstalled();
 
 		// Given a connection to a server exists
 		let connectionProfile = await connectToSparkIntegrationServer();
@@ -82,12 +92,11 @@ describe('Notebook Integration Test', function (): void {
 		should(sparkResult).equal('2');
 
 		try {
-			// TODO support closing the editor. Right now this prompts and there's no override for this. Need to fix in core
-			// Close the editor using the recommended vscode API
-			//await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
+			await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
 		}
 		catch (e) { }
 	});
+	*/
 });
 
 async function connectToSparkIntegrationServer(): Promise<azdata.IConnectionProfile> {
@@ -123,10 +132,3 @@ function writeNotebookToFile(pythonNotebook: INotebook): vscode.Uri {
 	let uri = vscode.Uri.file(localFile);
 	return uri;
 }
-
-async function ensureJupyterInstalled(): Promise<void> {
-	let jupterControllerExports = vscode.extensions.getExtension('Microsoft.sql-vnext').exports;
-	let jupyterController = jupterControllerExports.getJupterController() as JupyterController;
-	await jupyterController.jupyterInstallation.startInstallProcess(false);
-}
-
