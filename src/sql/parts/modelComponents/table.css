@@ -12,3 +12,8 @@
 {
 	padding-left:3px !important;
 }
+
+.no-borders
+{
+	border: none !important
+}
