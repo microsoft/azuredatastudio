@@ -17,12 +17,12 @@ import { IScriptingService } from 'sql/platform/scripting/common/scriptingServic
 import { EditDataInput } from 'sql/parts/editData/common/editDataInput';
 import { IAdminService } from 'sql/workbench/services/admin/common/adminService';
 import { IRestoreDialogController } from 'sql/platform/restore/common/restoreService';
-import { IInsightsConfig } from 'sql/parts/dashboard/widgets/insights/interfaces';
+import { IInsightsConfig } from 'sql/workbench/parts/dashboard/widgets/insights/interfaces';
 import { IInsightsDialogService } from 'sql/workbench/services/insights/common/insightsDialogService';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
-import { DashboardInput } from 'sql/parts/dashboard/dashboardInput';
+import { DashboardInput } from 'sql/workbench/parts/dashboard/dashboardInput';
 import { ProfilerInput } from 'sql/parts/profiler/editor/profilerInput';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { IBackupUiService } from 'sql/workbench/services/backup/common/backupUiService';

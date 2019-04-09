@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IInsight, IInsightOptions, InsightType } from './interfaces';
-import { IInsightData } from 'sql/parts/dashboard/widgets/insights/interfaces';
+import { IInsightData } from 'sql/workbench/parts/dashboard/widgets/insights/interfaces';
 
 import { $ } from 'vs/base/browser/dom';
 import { mixin } from 'vs/base/common/objects';

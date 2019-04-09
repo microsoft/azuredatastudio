@@ -6,8 +6,8 @@
 'use strict';
 import { Dimension } from 'vs/base/browser/dom';
 
-import { IInsightData } from 'sql/parts/dashboard/widgets/insights/interfaces';
-import { DataDirection, ChartType, LegendPosition, DataType } from 'sql/parts/dashboard/widgets/insights/views/charts/interfaces';
+import { IInsightData } from 'sql/workbench/parts/dashboard/widgets/insights/interfaces';
+import { DataDirection, ChartType, LegendPosition, DataType } from 'sql/workbench/parts/dashboard/widgets/insights/views/charts/interfaces';
 
 export interface IInsightOptions {
 	type: InsightType | ChartType;

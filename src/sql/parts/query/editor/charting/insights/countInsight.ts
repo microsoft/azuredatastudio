@@ -6,7 +6,7 @@
 import 'vs/css!./countInsight';
 
 import { IInsight, InsightType } from './interfaces';
-import { IInsightData } from 'sql/parts/dashboard/widgets/insights/interfaces';
+import { IInsightData } from 'sql/workbench/parts/dashboard/widgets/insights/interfaces';
 
 import { $, clearNode } from 'vs/base/browser/dom';
 
