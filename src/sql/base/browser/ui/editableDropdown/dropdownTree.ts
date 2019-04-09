@@ -9,7 +9,6 @@ import { generateUuid } from 'vs/base/common/uuid';
 import * as DOM from 'vs/base/browser/dom';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { $ } from 'sql/base/browser/builder';
 
 export interface Template {
 	label: HTMLElement;
@@ -34,9 +33,13 @@ export class DropdownRenderer implements tree.IRenderer {
 	}
 
 	public renderTemplate(tree: tree.ITree, templateId: string, container: HTMLElement): Template {
-		const row = $('div.list-row').style('height', '22px').style('padding-left', '5px').getHTMLElement();
+		const row = DOM.$('div.list-row');
+		row.style.height = '22px';
+		row.style.paddingLeft = '5px';
 		DOM.append(container, row);
-		const label = $('span.label').style('margin', 'auto').style('vertical-align', 'middle').getHTMLElement();
+		const label = DOM.$('span.label');
+		label.style.margin = 'auto';
+		label.style.verticalAlign = 'middle';
 		DOM.append(row, label);
 
 		return { label, row };

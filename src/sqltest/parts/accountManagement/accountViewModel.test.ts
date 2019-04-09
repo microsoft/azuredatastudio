@@ -10,8 +10,8 @@ import * as azdata from 'azdata';
 import * as TypeMoq from 'typemoq';
 import { EventVerifierSingle } from 'sqltest/utils/eventVerifier';
 import { Emitter } from 'vs/base/common/event';
-import { AccountViewModel } from 'sql/parts/accountManagement/accountDialog/accountViewModel';
-import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/platform/accountManagement/common/eventTypes';
+import { AccountViewModel } from 'sql/platform/accounts/common/accountViewModel';
+import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/platform/accounts/common/eventTypes';
 import { AccountManagementTestService } from 'sqltest/stubs/accountManagementStubs';
 
 // SUITE STATE /////////////////////////////////////////////////////////////
@@ -116,8 +116,8 @@ suite('Account Management Dialog ViewModel Tests', () => {
 				assert.equal(results[0].addedProvider, providers[0]);
 				assert.equal(results[0].initialAccounts, accounts);
 			}).then(
-			() => done(),
-			err => done(err)
+				() => done(),
+				err => done(err)
 			);
 	});
 
@@ -145,8 +145,8 @@ suite('Account Management Dialog ViewModel Tests', () => {
 				assert.equal(results.length, 0);
 			})
 			.then(
-			() => done(),
-			err => done(err)
+				() => done(),
+				err => done(err)
 			);
 	});
 
@@ -175,8 +175,8 @@ suite('Account Management Dialog ViewModel Tests', () => {
 				assert.equal(result[0].addedProvider, providers[0]);
 				assert.equal(result[0].initialAccounts, accounts);
 			}).then(
-			() => done(),
-			err => done()
+				() => done(),
+				err => done()
 			);
 	});
 });

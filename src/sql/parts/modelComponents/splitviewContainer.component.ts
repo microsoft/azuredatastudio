@@ -10,21 +10,36 @@ import {
 } from '@angular/core';
 
 import { IComponent, IComponentDescriptor, IModelStore } from 'sql/parts/modelComponents/interfaces';
-import { FlexLayout, FlexItemLayout } from 'azdata';
+import { FlexItemLayout, SplitViewLayout } from 'azdata';
+import { FlexItem } from './flexContainer.component';
+import { ContainerBase, ComponentBase } from 'sql/parts/modelComponents/componentBase';
+import { Event, Emitter } from 'vs/base/common/event';
+import { SplitView, Orientation, Sizing, IView } from 'vs/base/browser/ui/splitview/splitview';
 
-import { DashboardServiceInterface } from 'sql/workbench/parts/dashboard/services/dashboardServiceInterface.service';
-import { ContainerBase } from 'sql/parts/modelComponents/componentBase';
-import { ModelComponentWrapper } from 'sql/parts/modelComponents/modelComponentWrapper.component';
-
-import types = require('vs/base/common/types');
-
-export class FlexItem {
-	constructor(public descriptor: IComponentDescriptor, public config: FlexItemLayout) { }
+class SplitPane implements IView {
+	orientation: Orientation;
+	element: HTMLElement;
+	minimumSize: number;
+	maximumSize: number;
+	onDidChange: Event<number> = Event.None;
+	size: number;
+	component: ComponentBase;
+	layout(size: number): void {
+		this.size = size;
+		try {
+			if (this.orientation === Orientation.VERTICAL) {
+				this.component.updateProperty('height', size);
+			}
+			else {
+				this.component.updateProperty('width', size);
+			}
+		} catch { }
+	}
 }
 
 @Component({
 	template: `
-		<div *ngIf="items" class="flexContainer" [style.flexFlow]="flexFlow" [style.justifyContent]="justifyContent" [style.position]="position"
+		<div *ngIf="items" class="splitViewContainer" [style.flexFlow]="flexFlow" [style.justifyContent]="justifyContent" [style.position]="position"
 				[style.alignItems]="alignItems" [style.alignContent]="alignContent" [style.height]="height" [style.width]="width">
 			<div *ngFor="let item of items" [style.flex]="getItemFlex(item)" [style.textAlign]="textAlign" [style.order]="getItemOrder(item)" [ngStyle]="getItemStyles(item)">
 				<model-component-wrapper [descriptor]="item.descriptor" [modelStore]="modelStore">
@@ -33,7 +48,8 @@ export class FlexItem {
 		</div>
 	`
 })
-export default class FlexContainer extends ContainerBase<FlexItemLayout> implements IComponent, OnDestroy {
+
+export default class SplitViewContainer extends ContainerBase<FlexItemLayout> implements IComponent, OnDestroy {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 	private _flexFlow: string;
@@ -44,6 +60,9 @@ export default class FlexContainer extends ContainerBase<FlexItemLayout> impleme
 	private _height: string;
 	private _width: string;
 	private _position: string;
+	private _splitView: SplitView;
+	private _orientation : Orientation;
+	private _splitViewHeight : number;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
@@ -52,6 +71,7 @@ export default class FlexContainer extends ContainerBase<FlexItemLayout> impleme
 		super(changeRef, el);
 		this._flexFlow = '';	// default
 		this._justifyContent = '';	// default
+		this._orientation = Orientation.VERTICAL; // default
 	}
 
 	ngOnInit(): void {
@@ -62,10 +82,23 @@ export default class FlexContainer extends ContainerBase<FlexItemLayout> impleme
 		this.baseDestroy();
 	}
 
+	ngAfterViewInit(): void {
+		this._splitView = this._register(new SplitView(this._el.nativeElement, { orientation: this._orientation }));
+	}
+
+	private GetCorrespondingView(component: IComponent, orientation: Orientation): IView {
+		let c = component as ComponentBase;
+		let basicView: SplitPane = new SplitPane();
+		basicView.orientation = orientation;
+		basicView.element = c.getHtml(),
+		basicView.minimumSize = orientation === Orientation.VERTICAL ? c.convertSizeToNumber(c.height) : c.convertSizeToNumber(c.width);
+		basicView.maximumSize = Number.MAX_VALUE;
+		return basicView;
+	}
 
 	/// IComponent implementation
 
-	public setLayout(layout: FlexLayout): void {
+	public setLayout(layout: SplitViewLayout): void {
 		this._flexFlow = layout.flexFlow ? layout.flexFlow : '';
 		this._justifyContent = layout.justifyContent ? layout.justifyContent : '';
 		this._alignItems = layout.alignItems ? layout.alignItems : '';
@@ -74,8 +107,26 @@ export default class FlexContainer extends ContainerBase<FlexItemLayout> impleme
 		this._position = layout.position ? layout.position : '';
 		this._height = this.convertSize(layout.height);
 		this._width = this.convertSize(layout.width);
+		this._orientation = layout.orientation.toLowerCase() === 'vertical' ? Orientation.VERTICAL : Orientation.HORIZONTAL;
+		this._splitViewHeight = this.convertSizeToNumber(layout.splitViewHeight);
 
-		this.layout();
+		if (this._componentWrappers) {
+			let i : number = 0;
+			this._componentWrappers.forEach(item => {
+				var component = item.modelStore.getComponent(item.descriptor.id);
+				item.modelStore.validate(component).then(value => {
+					if(value === true){
+						let view = this.GetCorrespondingView(component, this._orientation);
+						this._splitView.addView(view, Sizing.Split(i));
+					}
+					else{
+						console.log('Could not add views inside split view container');
+					}
+				});
+				i++;
+			});
+		}
+		this._splitView.layout(this._splitViewHeight);
 	}
 
 	// CSS-bound properties
@@ -109,6 +160,10 @@ export default class FlexContainer extends ContainerBase<FlexItemLayout> impleme
 
 	public get position(): string {
 		return this._position;
+	}
+
+	public get orientation(): string {
+		return this._orientation.toString();
 	}
 
 	private getItemFlex(item: FlexItem): string {

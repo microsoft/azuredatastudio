@@ -3,13 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import Severity from 'vs/base/common/severity';
 import { localize } from 'vs/nls';
 
-import { AutoOAuthDialog } from 'sql/parts/accountManagement/autoOAuthDialog/autoOAuthDialog';
-import { IAccountManagementService } from 'sql/platform/accountManagement/common/interfaces';
+import { AutoOAuthDialog } from 'sql/platform/accounts/browser/autoOAuthDialog';
+import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 
 export class AutoOAuthDialogController {
@@ -33,7 +32,7 @@ export class AutoOAuthDialogController {
 	public openAutoOAuthDialog(providerId: string, title: string, message: string, userCode: string, uri: string): Thenable<void> {
 		if (this._providerId !== null) {
 			// If a oauth flyout is already open, return an error
-			let errorMessage = localize('oauthFlyoutIsAlreadyOpen', 'Cannot start auto OAuth. An auto OAuth is already in progress.');
+			const errorMessage = localize('oauthFlyoutIsAlreadyOpen', 'Cannot start auto OAuth. An auto OAuth is already in progress.');
 			this._errorMessageService.showDialog(Severity.Error, '', errorMessage);
 			return Promise.reject(new Error('Auto OAuth dialog already open'));
 		}

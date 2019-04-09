@@ -3,17 +3,17 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-import 'vs/css!sql/parts/accountManagement/common/media/accountListRenderer';
-import 'vs/css!sql/parts/accountManagement/common/media/accountActions';
+import 'vs/css!./media/accountListRenderer';
+import 'vs/css!./media/accountActions';
 import 'vs/css!sql/media/icons/common-icons';
+
 import * as DOM from 'vs/base/browser/dom';
 import { IListRenderer, IListVirtualDelegate } from 'vs/base/browser/ui/list/list';
 import { ActionBar, IActionOptions } from 'vs/base/browser/ui/actionbar/actionbar';
 import { localize } from 'vs/nls';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
-import { RemoveAccountAction, RefreshAccountAction } from 'sql/parts/accountManagement/common/accountActions';
+import { RemoveAccountAction, RefreshAccountAction } from 'sql/platform/accounts/common/accountActions';
 
 import * as azdata from 'azdata';
 
@@ -114,9 +114,9 @@ export class AccountListRenderer extends AccountPickerListRenderer {
 		}
 		templateData.actions.clear();
 
-		let actionOptions: IActionOptions = { icon: true, label: false };
+		const actionOptions: IActionOptions = { icon: true, label: false };
 		if (account.isStale) {
-			let refreshAction = this._instantiationService.createInstance(RefreshAccountAction);
+			const refreshAction = this._instantiationService.createInstance(RefreshAccountAction);
 			refreshAction.account = account;
 			templateData.actions.push(refreshAction, actionOptions);
 		} else {
@@ -124,7 +124,7 @@ export class AccountListRenderer extends AccountPickerListRenderer {
 			// templateData.actions.push(new ApplyFilterAction(ApplyFilterAction.ID, ApplyFilterAction.LABEL), actionOptions);
 		}
 
-		let removeAction = this._instantiationService.createInstance(RemoveAccountAction, account);
+		const removeAction = this._instantiationService.createInstance(RemoveAccountAction, account);
 		templateData.actions.push(removeAction, actionOptions);
 	}
 }
