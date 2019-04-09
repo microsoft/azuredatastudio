@@ -55,7 +55,6 @@ class TestEnvironmentService implements IWorkbenchEnvironmentService {
 	disableExtensions: boolean | string[];
 	builtinExtensionsPath: string;
 	extensionsPath: string;
-	extensionDevelopmentLocationURI?: URI | URI[];
 	extensionTestsLocationURI?: URI;
 	debugExtensionHost: IExtensionHostDebugParams;
 	debugSearch: IDebugParams;

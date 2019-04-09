@@ -125,7 +125,7 @@ export interface IEnvironmentService {
 	disableExtensions: boolean | string[];
 	builtinExtensionsPath: string;
 	extensionsPath: string;
-	extensionDevelopmentLocationURI?: URI | URI[];
+	extensionDevelopmentLocationURI?: URI[];
 	extensionTestsLocationURI?: URI;
 
 	debugExtensionHost: IExtensionHostDebugParams;
