@@ -55,13 +55,26 @@ export function activate(extensionContext: vscode.ExtensionContext) {
 function newNotebook(connectionProfile: azdata.IConnectionProfile) {
 	let title = findNextUntitledEditorName();
 	let untitledUri = vscode.Uri.parse(`untitled:${title}`);
+	let content: azdata.nb.INotebookContents = {
+		metadata: {
+			kernelspec: { name: 'pyspark3', display_name: 'PySpark3', language: 'python' }
+		},
+		cells: [{
+			cell_type: 'markdown',
+			source: 'Hello World'
+		}],
+		nbformat: 4,
+		nbformat_minor: 2
+	};
+
 	let options: azdata.nb.NotebookShowOptions = connectionProfile ? {
 		viewColumn: null,
 		preserveFocus: true,
 		preview: null,
 		providerId: null,
 		connectionProfile: connectionProfile,
-		defaultKernel: null
+		defaultKernel: null,
+		initialContent: content
 	} : null;
 	azdata.nb.showNotebookDocument(untitledUri, options).then(success => {
 
