@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 export interface IRowNumberColumnOptions {
 	numberOfRows: number;
 	cssClass?: string;
