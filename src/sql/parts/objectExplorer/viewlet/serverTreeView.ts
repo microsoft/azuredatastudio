@@ -33,6 +33,7 @@ import { SERVER_GROUP_CONFIG, SERVER_GROUP_AUTOEXPAND_CONFIG } from 'sql/parts/o
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { ServerTreeActionProvider } from 'sql/parts/objectExplorer/viewlet/serverTreeActionProvider';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { isHidden } from 'sql/base/browser/dom';
 
 /**
  * ServerTreeview implements the dynamic tree view.
@@ -321,7 +322,7 @@ export class ServerTreeView {
 				treeInput = filteredResults[0];
 			}
 			this._tree.setInput(treeInput).then(() => {
-				if (this.messages.isHidden()) {
+				if (isHidden(this.messages)) {
 					this._tree.getFocus();
 					this._tree.expandAll(ConnectionProfileGroup.getSubgroups(treeInput));
 				} else {
@@ -340,25 +341,24 @@ export class ServerTreeView {
 		if (!searchString) {
 			return;
 		}
-		const self = this;
-		this.messages.hide();
+		hide(this.messages);
 		// Clear other actions if user searched during other views
 		this.clearOtherActions();
 		// Filter connections based on search
-		let filteredResults = this.searchConnections(searchString);
+		const filteredResults = this.searchConnections(searchString);
 		if (!filteredResults || filteredResults.length === 0) {
-			this.messages.show();
-			this.messages.domFocus();
+			show(this.messages);
+			this.messages.focus();
 		}
 		// Add all connections to tree root and set tree input
-		let treeInput = new ConnectionProfileGroup('searchroot', undefined, 'searchroot', undefined, undefined);
+		const treeInput = new ConnectionProfileGroup('searchroot', undefined, 'searchroot', undefined, undefined);
 		treeInput.addConnections(filteredResults);
 		this._tree.setInput(treeInput).then(() => {
-			if (this.messages.isHidden()) {
-				self._tree.getFocus();
-				self._tree.expandAll(ConnectionProfileGroup.getSubgroups(treeInput));
+			if (isHidden(this.messages)) {
+				this._tree.getFocus();
+				this._tree.expandAll(ConnectionProfileGroup.getSubgroups(treeInput));
 			} else {
-				self._tree.clearFocus();
+				this._tree.clearFocus();
 			}
 		}, errors.onUnexpectedError);
 	}
@@ -368,9 +368,9 @@ export class ServerTreeView {
 	 */
 	private searchConnections(searchString: string): ConnectionProfile[] {
 
-		let root = TreeUpdateUtils.getTreeInput(this._connectionManagementService);
-		let connections = ConnectionProfileGroup.getConnectionsInGroup(root);
-		let results = connections.filter(con => {
+		const root = TreeUpdateUtils.getTreeInput(this._connectionManagementService);
+		const connections = ConnectionProfileGroup.getConnectionsInGroup(root);
+		const results = connections.filter(con => {
 			if (searchString && (searchString.length > 0)) {
 				return this.isMatch(con, searchString);
 			} else {
