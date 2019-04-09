@@ -151,7 +151,7 @@ class DataExplorerContainerExtensionHandler implements IWorkbenchContribution {
 	}
 
 	private showCollapsed(container: ViewContainer): boolean {
-		return false;
+		return true;
 	}
 }
 
