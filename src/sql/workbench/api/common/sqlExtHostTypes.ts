@@ -465,6 +465,7 @@ export interface INotebookKernelDetails {
 	readonly id: string;
 	readonly name: string;
 	readonly supportsIntellisense: boolean;
+	readonly requiresConnection: boolean;
 	readonly info?: any;
 }
 

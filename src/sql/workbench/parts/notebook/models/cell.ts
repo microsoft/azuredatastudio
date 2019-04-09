@@ -210,6 +210,16 @@ export class CellModel implements ICellModel {
 				await kernel.interrupt();
 			} else {
 				// TODO update source based on editor component contents
+				if (kernel.requiresConnection && !this.notebookModel.activeConnection) {
+					// start with an error case
+					let errorMsg: nb.IStreamResult = {
+						name: 'stderr',
+						output_type: 'stream',
+						text: localize('kernelRequiresConnection', 'Please select a connection to run cells. This kernel requires a connection to run code')
+					};
+					this.handleIOPub(this.createIoPubMessage(errorMsg, 'stream'));
+					return false;
+				}
 				let content = this.source;
 				if (content) {
 					let future = await kernel.requestExecute({
@@ -244,6 +254,23 @@ export class CellModel implements ICellModel {
 		}
 
 		return true;
+	}
+
+	private createIoPubMessage(errorMsg: nb.IStreamResult, msg_type: string): nb.IIOPubMessage {
+		return {
+			channel: 'iopub',
+			type: 'iopub',
+			content: errorMsg,
+			header: {
+				msg_type: msg_type,
+				msg_id: undefined,
+				session: undefined,
+				username: undefined,
+				version: undefined
+			},
+			metadata: undefined,
+			parent_header: undefined
+		};
 	}
 
 	private async getOrStartKernel(notificationService: INotificationService): Promise<nb.IKernel> {
