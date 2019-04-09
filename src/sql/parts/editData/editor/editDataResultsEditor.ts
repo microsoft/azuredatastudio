@@ -5,7 +5,6 @@
 
 import * as DOM from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { Builder } from 'sql/base/browser/builder';
 import { EditorOptions } from 'vs/workbench/common/editor';
 import { getZoomLevel } from 'vs/base/browser/browser';
 import { Configuration } from 'vs/editor/browser/config/configuration';

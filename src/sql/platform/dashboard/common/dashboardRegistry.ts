@@ -9,10 +9,10 @@ import { IJSONSchema, IJSONSchemaMap } from 'vs/base/common/jsonSchema';
 import * as nls from 'vs/nls';
 import { IExtensionPointUser, ExtensionsRegistry } from 'vs/workbench/services/extensions/common/extensionsRegistry';
 
-import { ProviderProperties } from 'sql/parts/dashboard/widgets/properties/propertiesWidget.component';
-import { DATABASE_DASHBOARD_TABS } from 'sql/parts/dashboard/pages/databaseDashboardPage.contribution';
-import { SERVER_DASHBOARD_TABS, SERVER_DASHBOARD_PROPERTIES } from 'sql/parts/dashboard/pages/serverDashboardPage.contribution';
-import { DASHBOARD_CONFIG_ID, DASHBOARD_TABS_KEY_PROPERTY } from 'sql/parts/dashboard/pages/dashboardPageContribution';
+import { ProviderProperties } from 'sql/workbench/parts/dashboard/widgets/properties/propertiesWidget.component';
+import { DATABASE_DASHBOARD_TABS } from 'sql/workbench/parts/dashboard/pages/databaseDashboardPage.contribution';
+import { SERVER_DASHBOARD_TABS, SERVER_DASHBOARD_PROPERTIES } from 'sql/workbench/parts/dashboard/pages/serverDashboardPage.contribution';
+import { DASHBOARD_CONFIG_ID, DASHBOARD_TABS_KEY_PROPERTY } from 'sql/workbench/parts/dashboard/pages/dashboardPageContribution';
 
 export const Extensions = {
 	DashboardContributions: 'dashboard.contributions'

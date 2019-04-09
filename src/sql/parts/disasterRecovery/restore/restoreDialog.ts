@@ -606,7 +606,7 @@ export class RestoreDialog extends Modal {
 	}
 
 	public enableRestoreButton(enabled: boolean) {
-		this.hideSpinner();
+		this.spinner = false;
 		this._restoreButton.enabled = enabled;
 		this._scriptButton.enabled = enabled;
 	}
@@ -722,7 +722,7 @@ export class RestoreDialog extends Modal {
 
 	public validateRestore(overwriteTargetDatabase: boolean = false, isBackupFileCheckboxChanged: boolean = false): void {
 		this._isBackupFileCheckboxChanged = isBackupFileCheckboxChanged;
-		this.showSpinner();
+		this.spinner = true;
 		this._restoreButton.enabled = false;
 		this._scriptButton.enabled = false;
 		this._onValidate.fire(overwriteTargetDatabase);

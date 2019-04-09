@@ -9,7 +9,7 @@ import { IInsightOptions, IInsight } from './insights/interfaces';
 import { Graph } from './insights/graphInsight';
 import { QueryEditor } from 'sql/parts/query/editor/queryEditor';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
-import { IInsightsConfig } from 'sql/parts/dashboard/widgets/insights/interfaces';
+import { IInsightsConfig } from 'sql/workbench/parts/dashboard/widgets/insights/interfaces';
 import { resolveCurrentDirectory, getRootPath } from 'sql/platform/node/pathUtilities';
 
 import { localize } from 'vs/nls';
