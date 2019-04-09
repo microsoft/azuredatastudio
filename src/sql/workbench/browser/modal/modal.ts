@@ -384,7 +384,7 @@ export abstract class Modal extends Disposable implements IThemable {
 		let footerButton = DOM.$('.footer-button');
 		let button = new Button(footerButton);
 		button.label = label;
-		this._register(button.onDidClick(() => onSelect()));
+		button.onDidClick(() => onSelect()); // @todo this should be registered to dispose but that brakes some dialogs
 		if (orientation === 'left') {
 			DOM.append(this._leftFooter, footerButton);
 		} else {
