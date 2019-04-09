@@ -32,6 +32,9 @@ import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/un
 import { notebookModeId } from 'sql/common/constants';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { viewColumnToEditorGroup } from 'vs/workbench/api/common/shared/editor';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
+import { getCurrentGlobalConnection } from 'sql/workbench/common/taskUtilities';
 
 class MainThreadNotebookEditor extends Disposable {
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
@@ -313,7 +316,9 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IEditorService private _editorService: IEditorService,
 		@IEditorGroupsService private _editorGroupService: IEditorGroupsService,
-		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService
+		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
+		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
+		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService
 	) {
 		super();
 		if (extHostContext) {
@@ -400,11 +405,16 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		let isUntitled: boolean = uri.scheme === Schemas.untitled;
 
 		const fileInput = isUntitled ? this._untitledEditorService.createOrGet(uri, notebookModeId) :
-										this._editorService.createInput({ resource: uri, language: notebookModeId });
+			this._editorService.createInput({ resource: uri, language: notebookModeId });
 		let input = this._instantiationService.createInstance(NotebookInput, path.basename(uri.fsPath), uri, fileInput);
 		input.isTrusted = isUntitled;
 		input.defaultKernel = options.defaultKernel;
-		input.connectionProfile = new ConnectionProfile(this._capabilitiesService, options.connectionProfile);
+		if (options.connectionProfile) {
+			input.connectionProfile = new ConnectionProfile(this._capabilitiesService, options.connectionProfile);
+		} else {
+			let connectionProfile = getCurrentGlobalConnection(this._objectExplorerService, this._connectionManagementService, this._editorService);
+			input.connectionProfile = new ConnectionProfile(this._capabilitiesService, connectionProfile);
+		}
 		if (isUntitled) {
 			let untitledModel = await input.textInput.resolve();
 			untitledModel.load();
