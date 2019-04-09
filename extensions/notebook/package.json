@@ -168,6 +168,20 @@
 					"when": "false"
 				}
 			],
+			"touchBar": [
+				{
+					"command": "notebook.command.runactivecell",
+					"when": "notebookEditorVisible"
+				},
+				{
+					"command": "notebook.command.addcode",
+					"when": "notebookEditorVisible"
+				},
+				{
+					"command": "notebook.command.addtext",
+					"when": "notebookEditorVisible"
+				}
+			],
 			"objectExplorer/item/context": [
 				{
 					"command": "notebook.command.new",
