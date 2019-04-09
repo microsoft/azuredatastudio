@@ -110,6 +110,10 @@
       {
         "command": "mssqlCluster.livy.cmd.submitFileToSparkJob",
         "title": "%title.submitSparkJob%"
+      },
+      {
+        "command": "mssql.searchServers",
+        "title": "%title.searchServers%"
       }
     ],
     "outputChannels": [

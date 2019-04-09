@@ -174,3 +174,13 @@ export abstract class ProgressCommand extends Command {
 		});
 	}
 }
+
+export function registerSearchServerCommand(appContext: AppContext): void {
+	appContext.apiWrapper.registerCommand('mssql.searchServers', () => {
+		vscode.window.showInputBox({
+			placeHolder: localize('mssql.searchServers', 'Search Server Names')
+		}).then((stringSearch) => {
+			vscode.commands.executeCommand('registeredServers.searchServer', (stringSearch));
+		});
+	});
+}

@@ -1,7 +1,7 @@
 {
 	"name": "cms",
 	"displayName": "%cms.displayName%",
-	"description": "%cms.description",
+	"description": "%cms.description%",
 	"version": "0.1.0",
 	"publisher": "Microsoft",
 	"preview": true,
@@ -578,41 +578,48 @@
 			"view/item/context": [
 				{
 					"command": "cms.resource.deleteRegisteredServer",
-					"when": "viewItem == cms.resource.itemType.registeredServer"
+					"when": "viewItem == cms.resource.itemType.registeredServer",
+					"group": "navigation@2"
 				},
 				{
 					"command": "cms.resource.deleteServerGroup",
-					"when": "viewItem == cms.resource.itemType.serverGroup"
+					"when": "viewItem == cms.resource.itemType.serverGroup",
+					"group": "navigation@10"
 				},
 				{
 					"command": "cms.resource.addRegisteredServer",
-					"when": "viewItem == cms.resource.itemType.serverGroup"
+					"when": "viewItem == cms.resource.itemType.serverGroup",
+					"group": "navigation@10"
 				},
 				{
 					"command": "cms.resource.addRegisteredServer",
-					"when": "viewItem == cms.resource.itemType.cmsNodeContainer"
+					"when": "viewItem == cms.resource.itemType.cmsNodeContainer",
+					"group": "navigation@10"
 				},
 				{
 					"command": "cms.resource.addServerGroup",
-					"when": "viewItem == cms.resource.itemType.serverGroup"
+					"when": "viewItem == cms.resource.itemType.serverGroup",
+					"group": "navigation@10"
 				},
 				{
 					"command": "cms.resource.addServerGroup",
-					"when": "viewItem == cms.resource.itemType.cmsNodeContainer"
+					"when": "viewItem == cms.resource.itemType.cmsNodeContainer",
+					"group": "navigation@10"
 				},
 				{
 					"command": "cms.resource.refreshServerGroup",
 					"when": "viewItem == cms.resource.itemType.serverGroup",
-					"group": "inline"
+					"group": "navigation@10"
 				},
 				{
 					"command": "cms.resource.refreshCmsServer",
 					"when": "viewItem == cms.resource.itemType.cmsNodeContainer",
-					"group": "inline"
+					"group": "navigation@10"
 				},
 				{
 					"command": "cms.resource.deleteCMSServer",
-					"when": "viewItem == cms.resource.itemType.cmsNodeContainer"
+					"when": "viewItem == cms.resource.itemType.cmsNodeContainer",
+					"group": "navigation@10"
 				}
 			]
 		}
