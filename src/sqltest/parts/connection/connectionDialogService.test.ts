@@ -36,7 +36,6 @@ suite('ConnectionDialogService tests', () => {
 			undefined,
 			undefined,
 			undefined,
-			undefined,
 			new ContextKeyServiceStub()
 		);
 		mockConnectionDialog.setup(c => c.resetConnection());

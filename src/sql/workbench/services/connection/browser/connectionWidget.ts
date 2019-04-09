@@ -798,11 +798,6 @@ export class ConnectionWidget {
 			model.password = this.password;
 			model.authenticationType = this.authenticationType;
 			model.savePassword = this._rememberPasswordCheckBox.checked;
-			// if (cmsDialog) {
-			// 	model.saveProfile = false;
-			// 	model.options['registeredServerName'] = this.connectionName ? this.connectionName : this.serverName;
-			// 	model.options['registeredServerDescription'] = this.registeredServerDescription;
-			// } else {
 			model.connectionName = this.connectionName;
 			model.databaseName = this.databaseName;
 			if (this._serverGroupSelectBox) {
