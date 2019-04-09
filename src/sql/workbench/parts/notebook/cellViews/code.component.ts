@@ -8,11 +8,11 @@ import { OnInit, Component, Input, Inject, ElementRef, ViewChild, Output, EventE
 
 import { AngularDisposable } from 'sql/base/node/lifecycle';
 import { QueryTextEditor } from 'sql/parts/modelComponents/queryTextEditor';
-import { CellToggleMoreActions } from 'sql/parts/notebook/cellToggleMoreActions';
-import { ICellModel, notebookConstants } from 'sql/parts/notebook/models/modelInterfaces';
+import { CellToggleMoreActions } from 'sql/workbench/parts/notebook/cellToggleMoreActions';
+import { ICellModel, notebookConstants } from 'sql/workbench/parts/notebook/models/modelInterfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
-import { RunCellAction, CellContext } from 'sql/parts/notebook/cellViews/codeActions';
-import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
+import { RunCellAction, CellContext } from 'sql/workbench/parts/notebook/cellViews/codeActions';
+import { NotebookModel } from 'sql/workbench/parts/notebook/models/notebookModel';
 
 import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as themeColors from 'vs/workbench/common/theme';
@@ -27,9 +27,9 @@ import { IModeService } from 'vs/editor/common/services/modeService';
 import { IModelService } from 'vs/editor/common/services/modelService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { Event, Emitter } from 'vs/base/common/event';
-import { CellTypes } from 'sql/parts/notebook/models/contracts';
+import { CellTypes } from 'sql/workbench/parts/notebook/models/contracts';
 import { OVERRIDE_EDITOR_THEMING_SETTING } from 'sql/workbench/services/notebook/common/notebookService';
-import * as notebookUtils from 'sql/parts/notebook/notebookUtils';
+import * as notebookUtils from 'sql/workbench/parts/notebook/notebookUtils';
 import { UntitledEditorModel } from 'vs/workbench/common/editor/untitledEditorModel';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 

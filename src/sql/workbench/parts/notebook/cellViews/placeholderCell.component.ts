@@ -5,11 +5,11 @@
 import 'vs/css!./placeholder';
 
 import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild, SimpleChange, OnChanges } from '@angular/core';
-import { CellView } from 'sql/parts/notebook/cellViews/interfaces';
-import { ICellModel } from 'sql/parts/notebook/models/modelInterfaces';
-import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
+import { CellView } from 'sql/workbench/parts/notebook/cellViews/interfaces';
+import { ICellModel } from 'sql/workbench/parts/notebook/models/modelInterfaces';
+import { NotebookModel } from 'sql/workbench/parts/notebook/models/notebookModel';
 import { localize } from 'vs/nls';
-import { CellType } from 'sql/parts/notebook/models/contracts';
+import { CellType } from 'sql/workbench/parts/notebook/models/contracts';
 
 
 export const PLACEHOLDER_SELECTOR: string = 'placeholder-cell-component';

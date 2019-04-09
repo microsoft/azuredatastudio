@@ -6,7 +6,7 @@
 
 'use strict';
 
-import { ICellMagicMapper, ILanguageMagic } from 'sql/parts/notebook/models/modelInterfaces';
+import { ICellMagicMapper, ILanguageMagic } from 'sql/workbench/parts/notebook/models/modelInterfaces';
 
 const defaultKernel = '*';
 export class CellMagicMapper implements ICellMagicMapper {
