@@ -520,7 +520,7 @@ export interface ICellMagicMapper {
 export namespace notebookConstants {
 	export const SQL = 'SQL';
 	export const SQL_CONNECTION_PROVIDER = 'MSSQL';
-	export const sqlKernel: string = 'SQL';
+	export const sqlKernel = 'SQL';
 	export const python3DisplayName = 'Python 3';
 	export const sqlKernelSpec: nb.IKernelSpec = ({
 		name: sqlKernel,

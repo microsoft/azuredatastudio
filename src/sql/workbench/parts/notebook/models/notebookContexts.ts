@@ -47,12 +47,12 @@ export class NotebookContexts {
 
 	/**
 	 * Get all of the applicable contexts for a given kernel
-	 * @param connectionService connection management service
+	 * @param existingConnectionProfiles existing connection profiles for attach to
 	 * @param connProviderIds array of connection provider ids applicable for a kernel
 	 * @param kernelChangedArgs kernel changed args (both old and new kernel info)
 	 * @param profile current connection profile
 	 */
-	public static async getContextsForKernel(model: NotebookModel, connectionService: IConnectionManagementService, connProviderIds: string[], kernelChangedArgs?: nb.IKernelChangedArgs, profile?: IConnectionProfile): Promise<IDefaultConnection> {
+	public static async getContextsForKernel(existingConnectionProfiles: ConnectionProfile[], connProviderIds: string[], kernelChangedArgs?: nb.IKernelChangedArgs, profile?: IConnectionProfile): Promise<IDefaultConnection> {
 		let connections: IDefaultConnection = this.DefaultContext;
 		if (!profile) {
 			if (!kernelChangedArgs || !kernelChangedArgs.newValue ||
@@ -64,23 +64,23 @@ export class NotebookContexts {
 		if (kernelChangedArgs && kernelChangedArgs.newValue && kernelChangedArgs.newValue.name && connProviderIds.length < 1) {
 			return connections;
 		} else {
-			connections = await this.getActiveContexts(model, connectionService, connProviderIds, profile);
+			connections = await this.getActiveContexts(existingConnectionProfiles, connProviderIds);
 		}
 		return connections;
 	}
 
 	/**
 	 * Get all active contexts and sort them
-	 * @param apiWrapper ApiWrapper
-	 * @param profile current connection profile
+	 * @param existingConnectionProfiles existing connection profiles for attach to
+	 * @param connProviderIds array of connection provider ids applicable for a kernel
 	 */
-	public static async getActiveContexts(model: NotebookModel, connectionService: IConnectionManagementService, connProviderIds: string[], profile: IConnectionProfile): Promise<IDefaultConnection> {
+	public static async getActiveContexts(existingConnectionProfiles: ConnectionProfile[], connProviderIds: string[]): Promise<IDefaultConnection> {
 		// If no connection provider ids exist for a given kernel, the attach to should show localhost
 		if (connProviderIds.length === 0) {
 			return NotebookContexts.LocalContext;
 		}
 
-		let activeConnections: ConnectionProfile[] = Array.from(model.connectionsForAttachTo.values());
+		let activeConnections: ConnectionProfile[] = existingConnectionProfiles;
 		// If no active connections exist, show "Select connection" as the default value
 		if (activeConnections) {
 			if (activeConnections.length === 0) {
