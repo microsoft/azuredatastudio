@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import * as os from 'os';
 
@@ -15,14 +14,13 @@ import {
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { IScriptingService } from 'sql/platform/scripting/common/scriptingService';
 import { EditDataInput } from 'sql/parts/editData/common/editDataInput';
-import { IAdminService } from 'sql/workbench/services/admin/common/adminService';
 import { IRestoreDialogController } from 'sql/platform/restore/common/restoreService';
-import { IInsightsConfig } from 'sql/parts/dashboard/widgets/insights/interfaces';
+import { IInsightsConfig } from 'sql/workbench/parts/dashboard/widgets/insights/interfaces';
 import { IInsightsDialogService } from 'sql/workbench/services/insights/common/insightsDialogService';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
-import { DashboardInput } from 'sql/parts/dashboard/dashboardInput';
+import { DashboardInput } from 'sql/workbench/parts/dashboard/dashboardInput';
 import { ProfilerInput } from 'sql/parts/profiler/editor/profilerInput';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { IBackupUiService } from 'sql/workbench/services/backup/common/backupUiService';
@@ -57,31 +55,6 @@ const targetDatabaseEngineEditionMap = {
 	7: 'SqlServerStretchEdition'
 };
 
-// map for object types for scripting
-const objectScriptMap = {
-	Table: 'Table',
-	View: 'View',
-	StoredProcedure: 'Procedure',
-	UserDefinedFunction: 'Function',
-	UserDefinedDataType: 'Type',
-	User: 'User',
-	Default: 'Default',
-	Rule: 'Rule',
-	DatabaseRole: 'Role',
-	ApplicationRole: 'Application Role',
-	SqlAssembly: 'Assembly',
-	DdlTrigger: 'Trigger',
-	Synonym: 'Synonym',
-	XmlSchemaCollection: 'Xml Schema Collection',
-	Schema: 'Schema',
-	PlanGuide: 'sp_create_plan_guide',
-	UserDefinedType: 'Type',
-	UserDefinedAggregate: 'Aggregate',
-	FullTextCatalog: 'Fulltext Catalog',
-	UserDefinedTableType: 'Type',
-	MaterializedView: 'Materialized View'
-};
-
 export enum ScriptOperation {
 	Select = 0,
 	Create = 1,
@@ -109,31 +82,6 @@ export function GetScriptOperationName(operation: ScriptOperation) {
 			// return the raw, non-localized string name
 			return defaultName;
 	}
-}
-
-export function connectIfNotAlreadyConnected(connectionProfile: IConnectionProfile, connectionService: IConnectionManagementService): Promise<void> {
-	return new Promise<void>((resolve, reject) => {
-		let connectionID = connectionService.getConnectionUri(connectionProfile);
-		let uri: string = connectionService.getFormattedUri(connectionID, connectionProfile);
-		if (!connectionService.isConnected(uri)) {
-			let options: IConnectionCompletionOptions = {
-				params: { connectionType: ConnectionType.editor, runQueryOnCompletion: RunQueryOnConnectionMode.executeQuery, input: undefined },
-				saveTheConnection: false,
-				showDashboard: false,
-				showConnectionDialogOnError: false,
-				showFirewallRuleOnError: true
-			};
-			connectionService.connect(connectionProfile, uri, options).then(() => {
-				setTimeout(function () {
-					resolve();
-				}, 2000);
-			}).catch(connectionError => {
-				reject(connectionError);
-			});
-		} else {
-			resolve();
-		}
-	});
 }
 
 /**
@@ -223,7 +171,7 @@ export function script(connectionProfile: IConnectionProfile, metadata: azdata.O
 					let script: string = result.script;
 
 					if (script) {
-						let description = (metadata.schema && metadata.schema !== '') ? `${metadata.schema}.${metadata.name}`  : metadata.name;
+						let description = (metadata.schema && metadata.schema !== '') ? `${metadata.schema}.${metadata.name}` : metadata.name;
 						queryEditorService.newSqlEditor(script, connectionProfile.providerName, undefined, description).then((owner) => {
 							// Connect our editor to the input connection
 							let options: IConnectionCompletionOptions = {
@@ -336,27 +284,6 @@ export function replaceConnection(oldUri: string, newUri: string, connectionServ
 	});
 }
 
-export function showCreateDatabase(
-	connection: IConnectionProfile,
-	adminService: IAdminService,
-	errorMessageService: IErrorMessageService): Promise<void> {
-
-	return new Promise<void>((resolve) => {
-		// show not implemented
-		errorMessageService.showDialog(Severity.Info,
-			'Coming Soon',
-			'This feature is not yet implemented.  It will be available in an upcoming release.');
-
-		// adminService.showCreateDatabaseWizard(uri, connection);
-	});
-}
-
-export function showCreateLogin(uri: string, connection: IConnectionProfile, adminService: IAdminService): Promise<void> {
-	return new Promise<void>((resolve) => {
-		adminService.showCreateLoginWizard(uri, connection);
-	});
-}
-
 export function showBackup(connection: IConnectionProfile, backupUiService: IBackupUiService): Promise<void> {
 	return new Promise<void>((resolve) => {
 		backupUiService.showBackup(connection).then(() => {
@@ -417,26 +344,6 @@ export function getCurrentGlobalConnection(objectExplorerService: IObjectExplore
 
 	return connection;
 }
-
-/* Helper Methods */
-function getStartPos(script: string, operation: ScriptOperation, typeName: string): number {
-	let objectTypeName = objectScriptMap[typeName];
-	if (objectTypeName && script) {
-		let scriptTypeName = objectTypeName.toLowerCase();
-		switch (operation) {
-			case (ScriptOperation.Create):
-				return script.toLowerCase().indexOf(`create ${scriptTypeName}`);
-			case (ScriptOperation.Delete):
-				return script.toLowerCase().indexOf(`drop ${scriptTypeName}`);
-			default:
-				/* script wasn't found for that object */
-				return -1;
-		}
-	} else {
-		return -1;
-	}
-}
-
 
 function getScriptingParamDetails(connectionService: IConnectionManagementService, ownerUri: string, metadata: azdata.ObjectMetadata): azdata.ScriptingParamDetails {
 	let serverInfo: azdata.ServerInfo = getServerInfo(connectionService, ownerUri);

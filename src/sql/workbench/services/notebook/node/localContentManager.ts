@@ -14,10 +14,10 @@ import * as pfs from 'vs/base/node/pfs';
 import { URI } from 'vs/base/common/uri';
 import { localize } from 'vs/nls';
 
-import { JSONObject } from 'sql/parts/notebook/models/jsonext';
-import { OutputTypes } from 'sql/parts/notebook/models/contracts';
-import { nbversion } from 'sql/parts/notebook/notebookConstants';
-import { nbformat } from 'sql/parts/notebook/models/nbformat';
+import { JSONObject } from 'sql/workbench/parts/notebook/models/jsonext';
+import { OutputTypes } from 'sql/workbench/parts/notebook/models/contracts';
+import { nbversion } from 'sql/workbench/parts/notebook/notebookConstants';
+import { nbformat } from 'sql/workbench/parts/notebook/models/nbformat';
 
 type MimeBundle = { [key: string]: string | string[] | undefined };
 

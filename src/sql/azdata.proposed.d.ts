@@ -2398,6 +2398,7 @@ declare module 'azdata' {
 		navContainer(): ContainerBuilder<NavContainer, any, any>;
 		divContainer(): DivBuilder;
 		flexContainer(): FlexBuilder;
+		splitViewContainer(): SplitViewBuilder;
 		dom(): ComponentBuilder<DomComponent>;
 		card(): ComponentBuilder<CardComponent>;
 		inputBox(): ComponentBuilder<InputBoxComponent>;
@@ -2405,6 +2406,7 @@ declare module 'azdata' {
 		radioButton(): ComponentBuilder<RadioButtonComponent>;
 		webView(): ComponentBuilder<WebViewComponent>;
 		editor(): ComponentBuilder<EditorComponent>;
+		diffeditor(): ComponentBuilder<DiffEditorComponent>;
 		text(): ComponentBuilder<TextComponent>;
 		button(): ComponentBuilder<ButtonComponent>;
 		dropDown(): ComponentBuilder<DropDownComponent>;

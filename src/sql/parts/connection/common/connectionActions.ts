@@ -14,7 +14,7 @@ import { IDialogService, IConfirmation, IConfirmationResult } from 'vs/platform/
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
 import { EditDataInput } from 'sql/parts/editData/common/editDataInput';
-import { DashboardInput } from 'sql/parts/dashboard/dashboardInput';
+import { DashboardInput } from 'sql/workbench/parts/dashboard/dashboardInput';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
