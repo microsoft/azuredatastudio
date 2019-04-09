@@ -70,10 +70,12 @@
 				"timeout": 20000
 			},
 			"osx": {
-				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh"
+				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh",
+				"timeout": 20000
 			},
 			"linux": {
-				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh"
+				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh",
+				"timeout": 20000
 			},
 			"env": {
 				"VSCODE_EXTHOST_WILL_SEND_SOCKET": null
