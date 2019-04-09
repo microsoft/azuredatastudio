@@ -75,44 +75,41 @@ export class NotebookContexts {
 	 * @param profile current connection profile
 	 */
 	public static async getActiveContexts(model: NotebookModel, connectionService: IConnectionManagementService, connProviderIds: string[], profile: IConnectionProfile): Promise<IDefaultConnection> {
-		let activeConnections: ConnectionProfile[] = [];
-		for (let value of model.connectionsForAttachTo.values()) {
-			activeConnections.push(value);
-		}
-
-		if (activeConnections && activeConnections.length > 0) {
-			activeConnections = activeConnections.filter(conn => conn.id !== '-1');
-		}
 		// If no connection provider ids exist for a given kernel, the attach to should show localhost
 		if (connProviderIds.length === 0) {
 			return NotebookContexts.LocalContext;
 		}
+
+		let activeConnections: ConnectionProfile[] = Array.from(model.connectionsForAttachTo.values());
 		// If no active connections exist, show "Select connection" as the default value
-		if (activeConnections && activeConnections.length === 0) {
-			return NotebookContexts.DefaultContext;
-		}
-		// Filter active connections by their provider ids to match kernel's supported connection providers
-		else if (activeConnections.length > 0) {
-			let connections = activeConnections.filter(connection => {
-				return connProviderIds.includes(connection.providerName);
-			});
-			if (connections && connections.length === 0) {
+		if (activeConnections) {
+			if (activeConnections.length === 0) {
 				return NotebookContexts.DefaultContext;
 			}
-			activeConnections = [];
-			connections.forEach(connection => activeConnections.push(connection));
-		}
-		let newConnection = <ConnectionProfile><any>{
-			providerName: 'SQL',
-			id: '-2',
-			serverName: localize('addConnection', 'Add new connection')
-		};
-		activeConnections.push(newConnection);
+			// Filter active connections by their provider ids to match kernel's supported connection providers
+			else if (activeConnections.length > 0) {
+				let connections = activeConnections.filter(connection => {
+					return connProviderIds.includes(connection.providerName);
+				});
+				if (connections && connections.length === 0) {
+					return NotebookContexts.DefaultContext;
+				}
+				activeConnections = [];
+				connections.forEach(connection => activeConnections.push(connection));
 
-		return {
-			otherConnections: activeConnections,
-			defaultConnection: NotebookContexts.DefaultContext.defaultConnection
-		};
+				let newConnection = <ConnectionProfile><any>{
+					providerName: 'SQL',
+					id: '-2',
+					serverName: localize('addConnection', 'Add new connection')
+				};
+				activeConnections.push(newConnection);
+
+				return {
+					otherConnections: activeConnections,
+					defaultConnection: NotebookContexts.DefaultContext.defaultConnection
+				};
+			}
+		}
 	}
 
 	/**
