@@ -169,6 +169,13 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 			options.providerId = showOptions.providerId;
 			options.connectionProfile = showOptions.connectionProfile;
 			options.defaultKernel = showOptions.defaultKernel;
+			if (showOptions.initialContent) {
+				if (typeof (showOptions.initialContent) !== 'string') {
+					options.initialContent = JSON.stringify(showOptions.initialContent);
+				} else {
+					options.initialContent = showOptions.initialContent;
+				}
+			}
 		}
 		let id = await this._proxy.$tryShowNotebookDocument(uri, options);
 		let editor = this.getEditor(id);
