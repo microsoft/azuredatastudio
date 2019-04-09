@@ -1198,16 +1198,14 @@ export class ReloadAction extends ExtensionAction {
 		if (state === ExtensionState.Installing || state === ExtensionState.Uninstalling) {
 			return;
 		}
-		const installed = this.extensionsWorkbenchService.local.filter(e => areSameExtensions(e.identifier, this.extension.identifier))[0];
-		const local = this.extension.local || (installed && installed.local);
-		if (local && local.manifest && local.manifest.contributes && local.manifest.contributes.localizations && local.manifest.contributes.localizations.length > 0) {
+		if (this.extension.local && this.extension.local.manifest && this.extension.local.manifest.contributes && this.extension.local.manifest.contributes.localizations && this.extension.local.manifest.contributes.localizations.length > 0) {
 			return;
 		}
-		this.computeReloadState(local);
+		this.computeReloadState();
 		this.class = this.enabled ? ReloadAction.EnabledClass : ReloadAction.DisabledClass;
 	}
 
-	private computeReloadState(local: ILocalExtension | undefined): void {
+	private computeReloadState(): void {
 		const isUninstalled = this.extension.state === ExtensionState.Uninstalled;
 		const runningExtension = this.runningExtensions.filter(e => areSameExtensions({ id: e.identifier.value }, this.extension.identifier))[0];
 
@@ -1221,14 +1219,14 @@ export class ReloadAction extends ExtensionAction {
 			}
 			return;
 		}
-		if (local) {
-			const isEnabled = this.extensionEnablementService.isEnabled(local);
+		if (this.extension.local) {
+			const isEnabled = this.extensionEnablementService.isEnabled(this.extension.local);
 			if (runningExtension) {
 				// Extension is running
 				const isSameExtensionRunning = this.extension.server === this.extensionManagementServerService.getExtensionManagementServer(runningExtension.extensionLocation);
 				const isSameVersionRunning = isSameExtensionRunning && this.extension.version === runningExtension.version;
 				if (isEnabled) {
-					if (!isSameVersionRunning && !this.extensionService.canAddExtension(toExtensionDescription(local))) {
+					if (!isSameVersionRunning && !this.extensionService.canAddExtension(toExtensionDescription(this.extension.local))) {
 						this.enabled = true;
 						this.label = localize('reloadRequired', "Reload Required");
 						// {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
@@ -1245,7 +1243,7 @@ export class ReloadAction extends ExtensionAction {
 				return;
 			} else {
 				// Extension is not running
-				if (isEnabled && !this.extensionService.canAddExtension(toExtensionDescription(local))) {
+				if (isEnabled && !this.extensionService.canAddExtension(toExtensionDescription(this.extension.local))) {
 					this.enabled = true;
 					this.label = localize('reloadRequired', "Reload Required");
 					// {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
@@ -1254,7 +1252,7 @@ export class ReloadAction extends ExtensionAction {
 				}
 				if (this.workbenchEnvironmentService.configuration.remoteAuthority
 					// Local Workspace Extension
-					&& this.extension.server === this.extensionManagementServerService.localExtensionManagementServer && !isUIExtension(local.manifest, this.configurationService)
+					&& this.extension.server === this.extensionManagementServerService.localExtensionManagementServer && !isUIExtension(this.extension.local.manifest, this.configurationService)
 				) {
 					const remoteExtension = this.extensionsWorkbenchService.local.filter(e => areSameExtensions(e.identifier, this.extension.identifier) && e.server === this.extensionManagementServerService.remoteExtensionManagementServer)[0];
 					// Extension exist in remote and enabled
