@@ -197,9 +197,18 @@ async function handleNewNotebookTask(oeContext?: azdata.ObjectExplorerContext, p
 	// to handle this. We should look into improving this in the future
 	let title = findNextUntitledEditorName();
 	let untitledUri = vscode.Uri.parse(`untitled:${title}`);
+	let content: azdata.nb.INotebookContents = {
+		metadata: {
+			kernelspec: { name: 'pyspark3' }
+		},
+		cells: [],
+		nbformat: 4,
+		nbformat_minor: 2
+	};
 	let editor = await azdata.nb.showNotebookDocument(untitledUri, {
 		connectionProfile: profile,
-		preview: false
+		preview: false,
+		initialContent: content
 	});
 	if (oeContext && oeContext.nodeInfo && oeContext.nodeInfo.nodePath) {
 		// Get the file path after '/HDFS'
