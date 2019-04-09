@@ -273,9 +273,9 @@ export class AccountDialog extends Modal {
 			AddAccountAction,
 			newProvider.addedProvider.id
 		);
-		addAccountAction.addAccountCompleteEvent(() => { this.hideSpinner(); });
-		addAccountAction.addAccountErrorEvent(msg => { this._onAddAccountErrorEmitter.fire(msg); });
-		addAccountAction.addAccountStartEvent(() => { this.showSpinner(); });
+		addAccountAction.addAccountCompleteEvent(() => this.spinner = false);
+		addAccountAction.addAccountErrorEvent(msg => this._onAddAccountErrorEmitter.fire(msg));
+		addAccountAction.addAccountStartEvent(() => this.spinner = true);
 
 		let providerView = new AccountPanel(
 			{
