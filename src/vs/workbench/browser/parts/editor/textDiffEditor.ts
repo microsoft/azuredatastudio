@@ -42,6 +42,8 @@ export class TextDiffEditor extends BaseTextEditor implements ITextDiffEditor {
 
 	private diffNavigator: DiffNavigator;
 	private diffNavigatorDisposables: IDisposable[] = [];
+	// {{SQL CARBON EDIT}}
+	private reverseColor: boolean;
 
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -69,7 +71,17 @@ export class TextDiffEditor extends BaseTextEditor implements ITextDiffEditor {
 		return nls.localize('textDiffEditor', "Text Diff Editor");
 	}
 
+	// {{SQL CARBON EDIT}}
+	reverseColoring(): void {
+		this.reverseColor = true;
+	}
+
 	createEditorControl(parent: HTMLElement, configuration: ICodeEditorOptions): IDiffEditor {
+		// {{SQL CARBON EDIT}}
+		if (this.reverseColor) {
+			(configuration as IDiffEditorOptions).reverse = true;
+		}
+
 		return this.instantiationService.createInstance(DiffEditorWidget, parent, configuration);
 	}
 
