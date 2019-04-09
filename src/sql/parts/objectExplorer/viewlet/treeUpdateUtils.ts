@@ -14,6 +14,34 @@ import { TreeNode } from 'sql/parts/objectExplorer/common/treeNode';
 import errors = require('vs/base/common/errors');
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
+
+export interface IExpandableTree extends ITree {
+	// {{SQL CARBON EDIT }}	- add back deleted VS Code tree methods
+	/**
+	 * Returns a list of the currently expanded elements.
+	 */
+	getExpandedElements(): any[];
+
+	/**
+	 * Returns a number between 0 and 1 representing how much the tree is scroll down. 0 means all the way
+	 * to the top; 1 means all the way down.
+	 */
+	getScrollPosition(): number;
+
+	/**
+	 * Sets the scroll position with a number between 0 and 1 representing how much the tree is scroll down. 0 means all the way
+	 * to the top; 1 means all the way down.
+	 */
+	setScrollPosition(pos: number): void;
+
+	/**
+	 * Returns the total height of the tree's content.
+	 */
+	getContentHeight(): number;
+	// {{SQL CARBON EDIT }} - end block
+}
+
+
 export class TreeUpdateUtils {
 
 	public static isInDragAndDrop: boolean = false;
@@ -22,6 +50,9 @@ export class TreeUpdateUtils {
 	 * Set input for the tree.
 	 */
 	public static structuralTreeUpdate(tree: ITree, viewKey: string, connectionManagementService: IConnectionManagementService, providers?: string[]): Promise<void> {
+		// convert to old VS Code tree interface with expandable methods
+		let expandableTree: IExpandableTree = <IExpandableTree>tree;
+
 		let selectedElement: any;
 		let targetsToExpand: any[];
 		if (tree) {
@@ -29,7 +60,7 @@ export class TreeUpdateUtils {
 			if (selection && selection.length === 1) {
 				selectedElement = <any>selection[0];
 			}
-			targetsToExpand = tree.getExpandedElements();
+			targetsToExpand = expandableTree.getExpandedElements();
 		}
 		let groups;
 		let treeInput = new ConnectionProfileGroup('root', null, undefined, undefined, undefined);
@@ -59,6 +90,9 @@ export class TreeUpdateUtils {
 	 * Set input for the registered servers tree.
 	 */
 	public static registeredServerUpdate(tree: ITree, connectionManagementService: IConnectionManagementService, elementToSelect?: any): Promise<void> {
+		// convert to old VS Code tree interface with expandable methods
+		let expandableTree: IExpandableTree = <IExpandableTree>tree;
+
 		let selectedElement: any = elementToSelect;
 		let targetsToExpand: any[];
 
@@ -72,7 +106,7 @@ export class TreeUpdateUtils {
 					selectedElement = <any>selection[0];
 				}
 			}
-			targetsToExpand = tree.getExpandedElements();
+			targetsToExpand = expandableTree.getExpandedElements();
 			if (selectedElement && targetsToExpand.indexOf(selectedElement) === -1) {
 				targetsToExpand.push(selectedElement);
 			}

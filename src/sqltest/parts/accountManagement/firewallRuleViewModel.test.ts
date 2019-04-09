@@ -5,7 +5,7 @@
 
 'use strict';
 import * as assert from 'assert';
-import { FirewallRuleViewModel } from 'sql/parts/accountManagement/firewallRuleDialog/firewallRuleViewModel';
+import { FirewallRuleViewModel } from 'sql/platform/accounts/common/firewallRuleViewModel';
 
 suite('Firewall rule view model tests', () => {
 	let viewModel: FirewallRuleViewModel;

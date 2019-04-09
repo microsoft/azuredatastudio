@@ -10,7 +10,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 
 import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/common/insightRegistry';
 import { InsightType, IInsightOptions } from './insights/interfaces';
-import { DataDirection, ChartType, LegendPosition, DataType } from 'sql/parts/dashboard/widgets/insights/views/charts/interfaces';
+import { DataDirection, ChartType, LegendPosition, DataType } from 'sql/workbench/parts/dashboard/widgets/insights/views/charts/interfaces';
 
 const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribution);
 

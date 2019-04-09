@@ -301,7 +301,6 @@ const sqlBuiltInExtensions = [
 	'big-data-cluster',
 	'dacpac'
 ];
-var azureExtensions = ['azurecore', 'mssql'];
 // {{SQL CARBON EDIT}} - End
 
 interface IBuiltInExtension {
@@ -350,8 +349,7 @@ export function packageExtensionsStream(optsIn?: IPackageExtensionsOptions): Nod
 		.filter(({ name }) => opts.desiredExtensions ? opts.desiredExtensions.indexOf(name) >= 0 : true)
 		.filter(({ name }) => builtInExtensions.every(b => b.name !== name))
 		// {{SQL CARBON EDIT}}
-		.filter(({ name }) => sqlBuiltInExtensions.indexOf(name) === -1)
-		.filter(({ name }) => azureExtensions.indexOf(name) === -1);
+		.filter(({ name }) => sqlBuiltInExtensions.indexOf(name) === -1);
 
 	const localExtensions = () => sequence([...localExtensionDescriptions.map(extension => () => {
 		return fromLocal(extension.path, opts.sourceMappingURLBase)

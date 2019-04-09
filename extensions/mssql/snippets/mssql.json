@@ -29,9 +29,9 @@
 			"-- ALTER DATABASE ${1:DatabaseName} SET SINGLE_USER WITH ROLLBACK IMMEDIATE;",
 			"-- Drop the database if it exists",
 			"IF EXISTS (",
-			"  SELECT [name]",
-			"   FROM sys.databases",
-			"   WHERE [name] = N'${1:DatabaseName}'",
+			"\tSELECT [name]",
+			"\t\tFROM sys.databases",
+			"\t\tWHERE [name] = N'${1:DatabaseName}'",
 			")",
 			"DROP DATABASE ${1:DatabaseName}",
 			"GO"

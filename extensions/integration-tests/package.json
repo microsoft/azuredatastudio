@@ -31,7 +31,8 @@
         }
       }
     },
-    "commands": [{
+    "commands": [
+      {
         "command": "test.setupIntegrationTest",
         "title": "Setup Integration Test",
         "category": "Test"
@@ -54,5 +55,9 @@
     "mocha-multi-reporters": "^1.1.7",
     "vscode": "1.1.5",
     "chai": "3.5.0"
+  },
+  "dependencies": {
+    "azure-keyvault": "^3.0.4",
+    "ms-rest-azure": "^2.6.0"
   }
 }

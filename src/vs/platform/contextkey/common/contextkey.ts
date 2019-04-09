@@ -622,8 +622,12 @@ export class ContextKeyGreaterThanEqualsExpr implements ContextKeyExpr {
 	}
 
 	public evaluate(context: IContext): boolean {
-		let keyInt = parseFloat(context.getValue(this.key));
-		let valueInt = parseFloat(this.value);
+		const keyVal = context.getValue<string>(this.key);
+		if (!keyVal) {
+			return false;
+		}
+		const keyInt = parseFloat(keyVal);
+		const valueInt = parseFloat(this.value);
 		return (keyInt >= valueInt);
 	}
 
@@ -677,8 +681,12 @@ export class ContextKeyLessThanEqualsExpr implements ContextKeyExpr {
 	}
 
 	public evaluate(context: IContext): boolean {
-		let keyInt = parseFloat(context.getValue(this.key));
-		let valueInt = parseFloat(this.value);
+		const keyVal = context.getValue<string>(this.key);
+		if (!keyVal) {
+			return false;
+		}
+		const keyInt = parseFloat(keyVal);
+		const valueInt = parseFloat(this.value);
 		return (keyInt <= valueInt);
 	}
 
@@ -762,6 +770,9 @@ export interface IContextKeyService {
 	dispose(): void;
 
 	onDidChangeContext: Event<IContextKeyChangeEvent>;
+	bufferChangeEvents(callback: Function): void;
+
+
 	createKey<T>(key: string, defaultValue: T | undefined): IContextKey<T>;
 	contextMatchesRules(rules: ContextKeyExpr | undefined): boolean;
 	getContextKeyValue<T>(key: string): T | undefined;
