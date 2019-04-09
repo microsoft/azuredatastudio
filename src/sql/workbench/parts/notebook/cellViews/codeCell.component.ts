@@ -4,9 +4,9 @@
 *--------------------------------------------------------------------------------------------*/
 
 import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild, SimpleChange, OnChanges, AfterViewInit } from '@angular/core';
-import { CellView } from 'sql/parts/notebook/cellViews/interfaces';
-import { ICellModel } from 'sql/parts/notebook/models/modelInterfaces';
-import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
+import { CellView } from 'sql/workbench/parts/notebook/cellViews/interfaces';
+import { ICellModel } from 'sql/workbench/parts/notebook/models/modelInterfaces';
+import { NotebookModel } from 'sql/workbench/parts/notebook/models/notebookModel';
 
 
 export const CODE_SELECTOR: string = 'code-cell-component';

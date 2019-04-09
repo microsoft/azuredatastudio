@@ -12,12 +12,12 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import * as DOM from 'vs/base/browser/dom';
 
-import { ICellModel } from 'sql/parts/notebook/models/modelInterfaces';
-import { CellContext, CellActionBase } from 'sql/parts/notebook/cellViews/codeActions';
-import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
-import { ToggleMoreWidgetAction } from 'sql/parts/dashboard/common/actions';
-import { CellTypes, CellType } from 'sql/parts/notebook/models/contracts';
-import { CellModel } from 'sql/parts/notebook/models/cell';
+import { ICellModel } from 'sql/workbench/parts/notebook/models/modelInterfaces';
+import { CellContext, CellActionBase } from 'sql/workbench/parts/notebook/cellViews/codeActions';
+import { NotebookModel } from 'sql/workbench/parts/notebook/models/notebookModel';
+import { ToggleMoreWidgetAction } from 'sql/workbench/parts/dashboard/common/actions';
+import { CellTypes, CellType } from 'sql/workbench/parts/notebook/models/contracts';
+import { CellModel } from 'sql/workbench/parts/notebook/models/cell';
 
 export const HIDDEN_CLASS ='actionhidden';
 

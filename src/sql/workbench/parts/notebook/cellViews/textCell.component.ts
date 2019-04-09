@@ -16,11 +16,11 @@ import { URI } from 'vs/base/common/uri';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import { CellView } from 'sql/parts/notebook/cellViews/interfaces';
-import { ICellModel } from 'sql/parts/notebook/models/modelInterfaces';
-import { ISanitizer, defaultSanitizer } from 'sql/parts/notebook/outputs/sanitizer';
-import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
-import { CellToggleMoreActions } from 'sql/parts/notebook/cellToggleMoreActions';
+import { CellView } from 'sql/workbench/parts/notebook/cellViews/interfaces';
+import { ICellModel } from 'sql/workbench/parts/notebook/models/modelInterfaces';
+import { ISanitizer, defaultSanitizer } from 'sql/workbench/parts/notebook/outputs/sanitizer';
+import { NotebookModel } from 'sql/workbench/parts/notebook/models/notebookModel';
+import { CellToggleMoreActions } from 'sql/workbench/parts/notebook/cellToggleMoreActions';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 

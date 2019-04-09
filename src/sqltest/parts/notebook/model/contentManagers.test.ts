@@ -12,7 +12,7 @@ import { URI } from 'vs/base/common/uri';
 import * as tempWrite from 'temp-write';
 import { LocalContentManager } from 'sql/workbench/services/notebook/node/localContentManager';
 import * as testUtils from '../../../utils/testUtils';
-import { CellTypes } from 'sql/parts/notebook/models/contracts';
+import { CellTypes } from 'sql/workbench/parts/notebook/models/contracts';
 
 let expectedNotebookContent: nb.INotebookContents = {
 	cells: [{

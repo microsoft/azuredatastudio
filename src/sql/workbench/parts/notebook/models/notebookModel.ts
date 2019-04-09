@@ -12,11 +12,11 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 
 import { IClientSession, INotebookModel, IDefaultConnection, INotebookModelOptions, ICellModel, NotebookContentChange, notebookConstants } from './modelInterfaces';
-import { NotebookChangeType, CellType } from 'sql/parts/notebook/models/contracts';
+import { NotebookChangeType, CellType } from 'sql/workbench/parts/notebook/models/contracts';
 import { nbversion } from '../notebookConstants';
 import * as notebookUtils from '../notebookUtils';
 import { INotebookManager, SQL_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/common/notebookService';
-import { NotebookContexts } from 'sql/parts/notebook/models/notebookContexts';
+import { NotebookContexts } from 'sql/workbench/parts/notebook/models/notebookContexts';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { INotification, Severity } from 'vs/platform/notification/common/notification';
 import { URI } from 'vs/base/common/uri';
