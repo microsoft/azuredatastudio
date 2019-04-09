@@ -137,7 +137,7 @@ export class AutoOAuthDialog extends Modal {
 	private addAccount() {
 		if (this._copyAndOpenButton.enabled) {
 			this._copyAndOpenButton.enabled = false;
-			this.showSpinner();
+			this.spinner = true;
 			this._onHandleAddAccount.fire();
 		}
 	}
@@ -149,7 +149,7 @@ export class AutoOAuthDialog extends Modal {
 	public close() {
 		this._copyAndOpenButton.enabled = true;
 		this._onCloseEvent.fire();
-		this.hideSpinner();
+		this.spinner = false;
 		this.hide();
 	}
 

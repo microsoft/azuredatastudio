@@ -116,7 +116,7 @@ export class FileBrowserDialog extends Modal {
 		this._filePathInputBox.value = expandPath;
 		this._isFolderSelected = true;
 		this.enableOkButton();
-		this.showSpinner();
+		this.spinner = true;
 		this.show();
 
 		this._fileBrowserTreeView = this._instantiationService.createInstance(FileBrowserTreeView);
@@ -134,7 +134,7 @@ export class FileBrowserDialog extends Modal {
 
 	private handleOnAddFileTree(rootNode: FileNode, selectedNode: FileNode, expandedNodes: FileNode[]) {
 		this.updateFileTree(rootNode, selectedNode, expandedNodes);
-		this.hideSpinner();
+		this.spinner = false;
 	}
 
 	private enableOkButton() {
@@ -207,7 +207,7 @@ export class FileBrowserDialog extends Modal {
 	}
 
 	private onFilterSelectChanged(filterIndex) {
-		this.showSpinner();
+		this.spinner = true;
 		this._viewModel.openFileBrowser(filterIndex, true);
 	}
 

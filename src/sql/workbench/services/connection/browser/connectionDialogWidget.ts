@@ -267,7 +267,7 @@ export class ConnectionDialogWidget extends Modal {
 			this._connecting = true;
 			this._connectButton.enabled = false;
 			this._providerTypeSelectBox.disable();
-			this.showSpinner();
+			this.spinner = true;
 			this._onConnect.fire(element);
 		}
 	}
@@ -435,12 +435,12 @@ export class ConnectionDialogWidget extends Modal {
 
 	private initDialog(): void {
 		super.setError('');
-		this.hideSpinner();
+		this.spinner = false;
 		this._onInitDialog.fire();
 	}
 
 	public resetConnection(): void {
-		this.hideSpinner();
+		this.spinner = false;
 		this._connectButton.enabled = true;
 		this._providerTypeSelectBox.enable();
 		this._onResetConnection.fire();
