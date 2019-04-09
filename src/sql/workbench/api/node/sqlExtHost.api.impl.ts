@@ -438,13 +438,20 @@ export function createApiFactory(
 
 			// namespace: queryeditor
 			const queryEditor: typeof azdata.queryeditor = {
-
 				connect(fileUri: string, connectionId: string): Thenable<void> {
 					return extHostQueryEditor.$connect(fileUri, connectionId);
 				},
 
-				runQuery(fileUri: string): void {
+				runQuery(fileUri: string, options?: Map<string, string>): void {
 					extHostQueryEditor.$runQuery(fileUri);
+				},
+
+				registerQueryEventListener(listener: azdata.queryeditor.QueryEventListener): void {
+					extHostQueryEditor.$registerQueryInfoListener('MSSQL', listener);
+				},
+
+				getQueryDocument(fileUri: string): azdata.queryeditor.QueryDocument {
+					return undefined;
 				}
 			};
 
@@ -825,11 +832,11 @@ export function createApiFactory(
 				},
 				openDialog(dialog: sqlops.window.modelviewdialog.Dialog) {
 					console.warn('the method sqlops.window.modelviewdialog.openDialog has been deprecated, replace it with azdata.window.openDialog');
-					return extHostModelViewDialog.openDialog(dialog);
+					return extHostModelViewDialog.openDialog(dialog as azdata.window.Dialog);
 				},
 				closeDialog(dialog: sqlops.window.modelviewdialog.Dialog) {
 					console.warn('the method sqlops.window.modelviewdialog.closeDialog has been deprecated, replace it with azdata.window.closeDialog');
-					return extHostModelViewDialog.closeDialog(dialog);
+					return extHostModelViewDialog.closeDialog(dialog as azdata.window.Dialog);
 				},
 				createWizardPage(title: string): sqlops.window.modelviewdialog.WizardPage {
 					console.warn('the method sqlops.window.modelviewdialog.createWizardPage has been deprecated, replace it with azdata.window.createWizardPage');
@@ -861,10 +868,10 @@ export function createApiFactory(
 					return extHostModelViewDialog.createButton(label);
 				},
 				openDialog(dialog: sqlops.window.Dialog) {
-					return extHostModelViewDialog.openDialog(dialog);
+					return extHostModelViewDialog.openDialog(dialog as azdata.window.Dialog);
 				},
 				closeDialog(dialog: sqlops.window.Dialog) {
-					return extHostModelViewDialog.closeDialog(dialog);
+					return extHostModelViewDialog.closeDialog(dialog as azdata.window.Dialog);
 				},
 				createWizardPage(title: string): sqlops.window.WizardPage {
 					return extHostModelViewDialog.createWizardPage(title);

@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as DOM from 'vs/base/browser/dom';
 import * as Platform from 'vs/base/common/platform';
 import { StandardWheelEvent, IMouseWheelEvent } from 'vs/base/browser/mouseEvent';

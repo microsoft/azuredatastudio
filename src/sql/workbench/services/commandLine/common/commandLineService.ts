@@ -5,6 +5,8 @@
 'use strict';
 import * as azdata from 'azdata';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import {ConnectionProfileGroup} from 'sql/platform/connection/common/connectionProfileGroup';
+import { equalsIgnoreCase } from 'vs/base/common/strings';
 import { ICommandLineProcessing } from 'sql/workbench/services/commandLine/common/commandLine';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
@@ -21,6 +23,8 @@ import { warn } from 'sql/base/common/log';
 import { ipcRenderer as ipc} from 'electron';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IStatusbarService, StatusbarAlignment } from 'vs/platform/statusbar/common/statusbar';
+import { localize } from 'vs/nls';
 
 export class CommandLineService implements ICommandLineProcessing {
 	public _serviceBrand: any;
@@ -33,7 +37,8 @@ export class CommandLineService implements ICommandLineProcessing {
 		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
 		@IEditorService private _editorService: IEditorService,
 		@ICommandService private _commandService: ICommandService,
-		@IConfigurationService private _configurationService: IConfigurationService
+		@IConfigurationService private _configurationService: IConfigurationService,
+		@IStatusbarService private _statusBarService: IStatusbarService
 	) {
 		if (ipc) {
 		    ipc.on('ads:processCommandLine', (event: any, args: ParsedArgs) => this.onLaunched(args));
@@ -85,6 +90,10 @@ export class CommandLineService implements ICommandLineProcessing {
 		}
 		let connectedContext: azdata.ConnectedContext = undefined;
 		if (profile) {
+			if (this._statusBarService)
+			{
+				this._statusBarService.setStatusMessage(localize('connectingLabel','Connecting:')  + profile.serverName, 2500);
+			}
 			try {
 				await this._connectionManagementService.connectIfNotConnected(profile, 'connection', true);
 				// Before sending to extensions, we should a) serialize to IConnectionProfile or things will fail,
@@ -96,8 +105,16 @@ export class CommandLineService implements ICommandLineProcessing {
 			}
 		}
 		if (commandName) {
+			if (this._statusBarService)
+			{
+				this._statusBarService.setStatusMessage(localize('runningCommandLabel','Running command:') + commandName, 2500);
+			}
 			await this._commandService.executeCommand(commandName, connectedContext);
 		} else if (profile) {
+			if (this._statusBarService)
+			{
+				this._statusBarService.setStatusMessage(localize('openingNewQueryLabel','Opening new query:') + profile.serverName, 2500);
+			}
 			// Default to showing new query
 			try {
 				await TaskUtilities.newQuery(profile,
@@ -121,11 +138,37 @@ export class CommandLineService implements ICommandLineProcessing {
 		profile.serverName = args.server;
 		profile.databaseName = args.database ? args.database : '';
 		profile.userName = args.user ? args.user : '';
-		profile.authenticationType = args.integrated ? 'Integrated' : 'SqlLogin';
+		profile.authenticationType = args.integrated ? Constants.integrated : args.aad ? Constants.azureMFA : (profile.userName.length > 0) ? Constants.sqlLogin : Constants.integrated;
 		profile.connectionName = '';
 		profile.setOptionValue('applicationName', Constants.applicationName);
 		profile.setOptionValue('databaseDisplayName', profile.databaseName);
 		profile.setOptionValue('groupId', profile.groupId);
-		return profile;
+		return this._connectionManagementService ? this.tryMatchSavedProfile(profile) : profile;
+	}
+
+	private tryMatchSavedProfile(profile: ConnectionProfile)
+	{
+		let match: ConnectionProfile = undefined;
+		// If we can find a saved mssql provider connection that matches the args, use it
+		let groups = this._connectionManagementService.getConnectionGroups([Constants.mssqlProviderName]);
+		if (groups && groups.length > 0)
+		{
+			let rootGroup = groups[0];
+			let connections = ConnectionProfileGroup.getConnectionsInGroup(rootGroup);
+			match = connections.find((c) => this.matchProfile(profile, c)) ;
+		}
+		return match ? match : profile;
+	}
+
+	// determines if the 2 profiles are a functional match
+	// profile1 is the profile generated from command line parameters
+	private matchProfile(profile1: ConnectionProfile, profile2: ConnectionProfile): boolean
+	{
+		return equalsIgnoreCase(profile1.serverName,profile2.serverName)
+		&& equalsIgnoreCase(profile1.providerName, profile2.providerName)
+		// case sensitive servers can have 2 databases whose name differs only in case
+		&& profile1.databaseName === profile2.databaseName
+		&& equalsIgnoreCase(profile1.userName, profile2.userName)
+		&& profile1.authenticationType === profile2.authenticationType;
 	}
 }

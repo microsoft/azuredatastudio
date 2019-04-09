@@ -46,6 +46,8 @@ import { WorkbenchContextKeysHandler } from 'vs/workbench/browser/contextkeys';
 import { coalesce } from 'vs/base/common/arrays';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { Layout } from 'vs/workbench/browser/layout';
+import { ICommandLineProcessing } from 'sql/workbench/services/commandLine/common/commandLine';
+import { CommandLineService } from 'sql/workbench/services/commandLine/common/commandLineService';
 
 export class Workbench extends Layout {
 
@@ -91,7 +93,7 @@ export class Workbench extends Layout {
 	}
 
 	private previousUnexpectedError: { message: string | undefined, time: number } = { message: undefined, time: 0 };
-	private handleUnexpectedError(error: any, logService: ILogService): void {
+	private handleUnexpectedError(error: unknown, logService: ILogService): void {
 		const message = toErrorMessage(error, true);
 		if (!message) {
 			return;
@@ -186,6 +188,11 @@ export class Workbench extends Layout {
 
 		const instantiationService = new InstantiationService(serviceCollection, true);
 
+		// {{SQL CARBON EDIT }}
+		// TODO@Davidshi commandLineService currently has no referents, so force its creation
+		serviceCollection.set(ICommandLineProcessing, instantiationService.createInstance(CommandLineService));
+		// {{SQL CARBON EDIT}} - End
+
 		// Wrap up
 		instantiationService.invokeFunction(accessor => {
 			const lifecycleService = accessor.get(ILifecycleService);
@@ -198,8 +205,7 @@ export class Workbench extends Layout {
 
 			// TODO@Sandeep debt around cyclic dependencies
 			const configurationService = accessor.get(IConfigurationService) as any;
-			if (typeof configurationService.acquireFileService === 'function') {
-				configurationService.acquireFileService(fileService);
+			if (typeof configurationService.acquireInstantiationService === 'function') {
 				configurationService.acquireInstantiationService(instantiationService);
 			}
 

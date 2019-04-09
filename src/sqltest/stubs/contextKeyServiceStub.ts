@@ -36,4 +36,7 @@ export class ContextKeyServiceStub implements IContextKeyService {
 		return undefined;
 	}
 
+	bufferChangeEvents(callback: Function): void {
+	}
+
 }

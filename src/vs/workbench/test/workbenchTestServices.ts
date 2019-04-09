@@ -48,7 +48,6 @@ import { IRecentlyOpened, IRecent } from 'vs/platform/history/common/history';
 import { ITextResourceConfigurationService, ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 import { IPosition, Position as EditorPosition } from 'vs/editor/common/core/position';
 import { IMenuService, MenuId, IMenu, ISerializableCommandAction } from 'vs/platform/actions/common/actions';
-import { IHashService } from 'vs/workbench/services/hash/common/hashService';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { MockContextKeyService, MockKeybindingService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
 import { ITextBufferFactory, DefaultEndOfLine, EndOfLinePreference, IModelDecorationOptions, ITextModel } from 'vs/editor/common/model';
@@ -309,7 +308,6 @@ export function workbenchInstantiationService(): IInstantiationService {
 	instantiationService.stub(ITextFileService, <ITextFileService>instantiationService.createInstance(TestTextFileService));
 	instantiationService.stub(ITextModelService, <ITextModelService>instantiationService.createInstance(TextModelResolverService));
 	instantiationService.stub(IThemeService, new TestThemeService());
-	instantiationService.stub(IHashService, new TestHashService());
 	instantiationService.stub(ILogService, new TestLogService());
 	instantiationService.stub(IEditorGroupsService, new TestEditorGroupsService([new TestEditorGroup(0)]));
 	instantiationService.stub(ILabelService, <ILabelService>instantiationService.createInstance(LabelService));
@@ -897,6 +895,7 @@ export class TestFileService implements IFileService {
 	private readonly _onAfterOperation: Emitter<FileOperationEvent>;
 
 	readonly onWillActivateFileSystemProvider = Event.None;
+	readonly onError: Event<Error> = Event.None;
 
 	private content = 'Hello Html';
 
@@ -929,9 +928,9 @@ export class TestFileService implements IFileService {
 		this._onAfterOperation.fire(event);
 	}
 
-	resolveFile(resource: URI, _options?: IResolveFileOptions): Promise<IFileStat>;
-	resolveFile(resource: URI, _options: IResolveMetadataFileOptions): Promise<IFileStatWithMetadata>;
-	resolveFile(resource: URI, _options?: IResolveFileOptions): Promise<IFileStat> {
+	resolve(resource: URI, _options?: IResolveFileOptions): Promise<IFileStat>;
+	resolve(resource: URI, _options: IResolveMetadataFileOptions): Promise<IFileStatWithMetadata>;
+	resolve(resource: URI, _options?: IResolveFileOptions): Promise<IFileStat> {
 		return Promise.resolve({
 			resource,
 			etag: Date.now().toString(),
@@ -943,11 +942,11 @@ export class TestFileService implements IFileService {
 		});
 	}
 
-	resolveFiles(toResolve: { resource: URI, options?: IResolveFileOptions }[]): Promise<IResolveFileResult[]> {
-		return Promise.all(toResolve.map(resourceAndOption => this.resolveFile(resourceAndOption.resource, resourceAndOption.options))).then(stats => stats.map(stat => ({ stat, success: true })));
+	resolveAll(toResolve: { resource: URI, options?: IResolveFileOptions }[]): Promise<IResolveFileResult[]> {
+		return Promise.all(toResolve.map(resourceAndOption => this.resolve(resourceAndOption.resource, resourceAndOption.options))).then(stats => stats.map(stat => ({ stat, success: true })));
 	}
 
-	existsFile(_resource: URI): Promise<boolean> {
+	exists(_resource: URI): Promise<boolean> {
 		return Promise.resolve(true);
 	}
 
@@ -996,11 +995,11 @@ export class TestFileService implements IFileService {
 		}));
 	}
 
-	moveFile(_source: URI, _target: URI, _overwrite?: boolean): Promise<IFileStatWithMetadata> {
+	move(_source: URI, _target: URI, _overwrite?: boolean): Promise<IFileStatWithMetadata> {
 		return Promise.resolve(null!);
 	}
 
-	copyFile(_source: URI, _target: URI, _overwrite?: boolean): Promise<IFileStatWithMetadata> {
+	copy(_source: URI, _target: URI, _overwrite?: boolean): Promise<IFileStatWithMetadata> {
 		throw new Error('not implemented');
 	}
 
@@ -1026,16 +1025,14 @@ export class TestFileService implements IFileService {
 		return resource.scheme === 'file';
 	}
 
-	hasCapability(resource: URI, capability: FileSystemProviderCapabilities): Promise<boolean> { return Promise.resolve(false); }
+	hasCapability(resource: URI, capability: FileSystemProviderCapabilities): boolean { return false; }
 
 	del(_resource: URI, _options?: { useTrash?: boolean, recursive?: boolean }): Promise<void> {
 		return Promise.resolve();
 	}
 
-	watchFileChanges(_resource: URI): void {
-	}
-
-	unwatchFileChanges(_resource: URI): void {
+	watch(_resource: URI): IDisposable {
+		return Disposable.None;
 	}
 
 	getWriteEncoding(_resource: URI): IResourceEncoding {
@@ -1556,14 +1553,6 @@ export class TestTextResourcePropertiesService implements ITextResourcePropertie
 }
 
 
-export class TestHashService implements IHashService {
-	_serviceBrand: any;
-
-	createSHA1(content: string): Thenable<string> {
-		return Promise.resolve(content);
-	}
-}
-
 export class TestSharedProcessService implements ISharedProcessService {
 
 	_serviceBrand: ServiceIdentifier<any>;
@@ -1582,7 +1571,9 @@ export class NullFileSystemProvider implements IFileSystemProvider {
 	onDidChangeCapabilities: Event<void> = Event.None;
 	onDidChangeFile: Event<IFileChange[]> = Event.None;
 
-	watch(resource: URI, opts: IWatchOptions): IDisposable { return Disposable.None; }
+	constructor(private disposableFactory: () => IDisposable = () => Disposable.None) { }
+
+	watch(resource: URI, opts: IWatchOptions): IDisposable { return this.disposableFactory(); }
 	stat(resource: URI): Promise<IStat> { return Promise.resolve(undefined!); }
 	mkdir(resource: URI): Promise<void> { return Promise.resolve(undefined!); }
 	readdir(resource: URI): Promise<[string, FileType][]> { return Promise.resolve(undefined!); }

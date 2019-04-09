@@ -61,6 +61,14 @@
 				"category": "Azure Accounts"
 			},
 			{
+				"command": "azure.resource.signin",
+				"title": "%azure.resource.signin.title%",
+				"icon": {
+					"dark": "resources/dark/add_inverse.svg",
+					"light": "resources/light/add.svg"
+				}
+			},
+			{
 				"command": "azure.resource.refreshall",
 				"title": "%azure.resource.refreshall.title%",
 				"icon": {
@@ -75,10 +83,6 @@
 					"dark": "resources/dark/refresh_inverse.svg",
 					"light": "resources/light/refresh.svg"
 				}
-			},
-			{
-				"command": "azure.resource.signin",
-				"title": "%azure.resource.signin.title%"
 			},
 			{
 				"command": "azure.resource.selectsubscriptions",
@@ -116,9 +120,14 @@
 		"menus": {
 			"view/title": [
 				{
-					"command": "azure.resource.refreshall",
+					"command": "azure.resource.signin",
 					"when": "view == azureResourceExplorer",
 					"group": "navigation@1"
+				},
+				{
+					"command": "azure.resource.refreshall",
+					"when": "view == azureResourceExplorer",
+					"group": "navigation@2"
 				}
 			],
 			"view/item/context": [
@@ -147,17 +156,18 @@
 		"hasAzureResourceProviders": true
 	},
 	"dependencies": {
+		"adal-node": "^0.1.28",
 		"azure-arm-resource": "^7.0.0",
 		"azure-arm-sql": "^5.0.1",
+		"ms-rest": "^2.5.0",
 		"request": "2.88.0",
 		"vscode-nls": "^4.0.0"
 	},
 	"devDependencies": {
 		"@types/mocha": "^5.2.5",
-		"@types/node": "^8.0.24",
+		"@types/node": "^8.10.25",
 		"mocha": "^5.2.0",
 		"should": "^13.2.1",
-		"typemoq": "^2.1.0",
-		"vscode": "^1.1.26"
+		"typemoq": "^2.1.0"
 	}
 }

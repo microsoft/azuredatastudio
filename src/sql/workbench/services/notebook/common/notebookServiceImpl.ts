@@ -14,8 +14,8 @@ import {
 	INotebookService, INotebookManager, INotebookProvider, DEFAULT_NOTEBOOK_PROVIDER,
 	DEFAULT_NOTEBOOK_FILETYPE, INotebookEditor, SQL_NOTEBOOK_PROVIDER, OVERRIDE_EDITOR_THEMING_SETTING
 } from 'sql/workbench/services/notebook/common/notebookService';
-import { RenderMimeRegistry } from 'sql/parts/notebook/outputs/registry';
-import { standardRendererFactories } from 'sql/parts/notebook/outputs/factories';
+import { RenderMimeRegistry } from 'sql/workbench/parts/notebook/outputs/registry';
+import { standardRendererFactories } from 'sql/workbench/parts/notebook/outputs/factories';
 import { Extensions, INotebookProviderRegistry, NotebookProviderRegistration } from 'sql/workbench/services/notebook/common/notebookRegistry';
 import { Emitter, Event } from 'vs/base/common/event';
 import { Memento } from 'vs/workbench/common/memento';
@@ -28,11 +28,11 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { NotebookEditorVisibleContext } from 'sql/workbench/services/notebook/common/notebookContext';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { NotebookEditor } from 'sql/parts/notebook/notebookEditor';
+import { NotebookEditor } from 'sql/workbench/parts/notebook/notebookEditor';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { registerNotebookThemes } from 'sql/parts/notebook/notebookStyles';
+import { registerNotebookThemes } from 'sql/workbench/parts/notebook/notebookStyles';
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
-import { ILanguageMagic, notebookConstants } from 'sql/parts/notebook/models/modelInterfaces';
+import { ILanguageMagic, notebookConstants } from 'sql/workbench/parts/notebook/models/modelInterfaces';
 import { ILifecycleService } from 'vs/platform/lifecycle/common/lifecycle';
 import { SqlNotebookProvider } from 'sql/workbench/services/notebook/sql/sqlNotebookProvider';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
@@ -109,14 +109,17 @@ export class NotebookService extends Disposable implements INotebookService {
 		super();
 		this._memento = new Memento('notebookProviders', this._storageService);
 		this._register(notebookRegistry.onNewRegistration(this.updateRegisteredProviders, this));
+		this.registerBuiltInProvider();
 		// If a provider has been already registered, the onNewRegistration event will not have a listener attached yet
 		// So, explicitly updating registered providers here.
 		if (notebookRegistry.providers.length > 0) {
 			notebookRegistry.providers.forEach(p => {
-				this.updateRegisteredProviders({id: p.provider, registration: p});
+				// Don't need to re-register SQL_NOTEBOOK_PROVIDER
+				if (p.provider !== SQL_NOTEBOOK_PROVIDER) {
+					this.updateRegisteredProviders({id: p.provider, registration: p});
+				}
 			});
 		}
-		this.registerBuiltInProvider();
 
 		if (extensionService) {
 			extensionService.whenInstalledExtensionsRegistered().then(() => {

@@ -9,8 +9,6 @@ import { IDisposable, combinedDisposable } from 'vs/base/common/lifecycle';
 import { INavigator } from 'vs/base/common/iterator';
 import * as _ from './tree';
 import { Event, Emitter, EventMultiplexer, Relay } from 'vs/base/common/event';
-// {{SQL CARBON EDIT}}
-import { TreeNode } from 'sql/parts/objectExplorer/common/treeNode';
 
 interface IMap<T> { [id: string]: T; }
 interface IItemMap extends IMap<Item> { }
@@ -374,14 +372,7 @@ export class Item {
 			return result.then(() => {
 				this._setExpanded(true);
 				this._onDidExpand.fire(eventData);
-				// {{SQL CARBON EDIT}} - Original code does not handle the need to refresh children in case previous refreshchildren errored out.
-				if ((this.element instanceof TreeNode) && (this.element.errorStateMessage)) {
-					this.needsChildrenRefresh = true;
-					return false;
-				} // We may need special handling for other types of this.element apart from TreeNode as well.
-				else {
-					return true;
-				}
+				return true;
 			});
 		});
 
@@ -564,19 +555,6 @@ export class Item {
 
 	public intersects(other: Item): boolean {
 		return this.isAncestorOf(other) || other.isAncestorOf(this);
-	}
-
-	public getHierarchy(): Item[] {
-		let result: Item[] = [];
-		let node: Item | null = this;
-
-		do {
-			result.push(node);
-			node = node.parent;
-		} while (node);
-
-		result.reverse();
-		return result;
 	}
 
 	private isAncestorOf(startItem: Item): boolean {

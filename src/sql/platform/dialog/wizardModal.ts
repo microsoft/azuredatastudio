@@ -15,7 +15,6 @@ import { DialogMessage } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { DialogModule } from 'sql/platform/dialog/dialog.module';
 import { Button } from 'vs/base/browser/ui/button/button';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
-import { Builder } from 'sql/base/browser/builder';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
@@ -25,6 +24,7 @@ import { Emitter } from 'vs/base/common/event';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
+import { append, $ } from 'vs/base/browser/dom';
 
 export class WizardModal extends Modal {
 	private _dialogPanes = new Map<WizardPage, DialogPane>();
@@ -121,20 +121,14 @@ export class WizardModal extends Modal {
 	}
 
 	protected renderBody(container: HTMLElement): void {
-		let bodyBuilderObj;
-		new Builder(container).div({ class: 'dialogModal-body' }, (bodyBuilder) => {
-			bodyBuilderObj = bodyBuilder;
-			this._body = bodyBuilder.getHTMLElement();
-		});
+		this._body = append(container, $('div.dialogModal-body'));
 
 		this.initializeNavigation(this._body);
 
-		bodyBuilderObj.div({ class: 'dialog-message-and-page-container' }, (mpContainer) => {
-			this._messageAndPageContainer = mpContainer.getHTMLElement();
-			mpContainer.append(this._messageElement);
-			this._pageContainer = mpContainer.div({ class: 'dialogModal-page-container' }).getHTMLElement();
-		});
-
+		const mpContainer = append(this._body, $('div.dialog-message-and-page-container'));
+		this._messageAndPageContainer = mpContainer;
+		mpContainer.append(this._messageElement);
+		this._pageContainer = append(mpContainer, $('div.dialogModal-page-container'));
 
 		this._wizard.pages.forEach(page => {
 			this.registerPage(page);

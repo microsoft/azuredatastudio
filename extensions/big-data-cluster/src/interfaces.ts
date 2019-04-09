@@ -50,6 +50,7 @@ export interface ContainerRegistryInfo {
 }
 
 export interface TargetClusterTypeInfo {
+	enabled: boolean;
 	type: TargetClusterType;
 	name: string;
 	fullName: string;
@@ -80,4 +81,44 @@ export enum ClusterType {
 	Minikube,
 	Kubernetes,
 	Other
+}
+
+export interface ClusterProfile {
+	name: string;
+	sqlServerMasterConfiguration: SQLServerMasterConfiguration;
+	computePoolConfiguration: PoolConfiguration;
+	dataPoolConfiguration: PoolConfiguration;
+	storagePoolConfiguration: PoolConfiguration;
+	sparkPoolConfiguration: PoolConfiguration;
+}
+
+export interface PoolConfiguration {
+	type: ClusterPoolType;
+	scale: number;
+	maxScale?: number;
+	hardwareLabel?: string;
+}
+
+export interface SQLServerMasterConfiguration extends PoolConfiguration {
+	engineOnly: boolean;
+}
+
+export enum ClusterPoolType {
+	SQL,
+	Compute,
+	Data,
+	Storage,
+	Spark
+}
+
+export interface ClusterResourceSummary {
+	hardwareLabels: HardwareLabel[];
+}
+
+export interface HardwareLabel {
+	name: string;
+	totalNodes: number;
+	totalCores: number;
+	totalMemoryInGB: number;
+	totalDisks: number;
 }

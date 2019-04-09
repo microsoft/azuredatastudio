@@ -67,6 +67,7 @@ declare module 'sqlops' {
 		withProperties<U>(properties: U): ComponentBuilder<T>;
 		withValidation(validation: (component: T) => boolean): ComponentBuilder<T>;
 	}
+
 	export interface ContainerBuilder<T extends Component, TLayout, TItemLayout> extends ComponentBuilder<T> {
 		withLayout(layout: TLayout): ContainerBuilder<T, TLayout, TItemLayout>;
 		withItems(components: Array<Component>, itemLayout?: TItemLayout): ContainerBuilder<T, TLayout, TItemLayout>;

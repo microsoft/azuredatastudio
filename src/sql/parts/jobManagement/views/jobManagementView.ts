@@ -37,7 +37,8 @@ export abstract class JobManagementView extends TabChild implements AfterContent
 		protected _dashboardService: IDashboardService,
 		protected _contextMenuService: IContextMenuService,
 		protected _keybindingService: IKeybindingService,
-		protected _instantiationService: IInstantiationService) {
+		protected _instantiationService: IInstantiationService,
+		protected _agentViewComponent: AgentViewComponent) {
 		super();
 
 		let self = this;
@@ -110,12 +111,16 @@ export abstract class JobManagementView extends TabChild implements AfterContent
 		let refreshAction = this._instantiationService.createInstance(JobsRefreshAction);
 		let newAction: Action = this._instantiationService.createInstance(this.contextAction);
 		let taskbar = <HTMLElement>this.actionBarContainer.nativeElement;
-		this._actionBar = new Taskbar(taskbar, this._contextMenuService);
-		this._actionBar.context = this;
+		this._actionBar = new Taskbar(taskbar);
 		this._actionBar.setContent([
 			{ action: refreshAction },
 			{ action: newAction }
 		]);
+		this._actionBar.context = { component: this };
+	}
+
+	public refreshJobs() {
+		this._agentViewComponent.refresh = true;
 	}
 }
 

@@ -12,13 +12,13 @@ import {
 import { IComponent, IComponentDescriptor, IModelStore } from 'sql/parts/modelComponents/interfaces';
 import { FlexLayout, FlexItemLayout } from 'azdata';
 
-import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
+import { DashboardServiceInterface } from 'sql/workbench/parts/dashboard/services/dashboardServiceInterface.service';
 import { ContainerBase } from 'sql/parts/modelComponents/componentBase';
 import { ModelComponentWrapper } from 'sql/parts/modelComponents/modelComponentWrapper.component';
 
 import types = require('vs/base/common/types');
 
-class FlexItem {
+export class FlexItem {
 	constructor(public descriptor: IComponentDescriptor, public config: FlexItemLayout) { }
 }
 

@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import 'vs/css!./media/dropdownList';
 import * as DOM from 'vs/base/browser/dom';
 import { Dropdown, IDropdownOptions } from 'vs/base/browser/ui/dropdown/dropdown';
@@ -98,7 +97,7 @@ export class DropdownList extends Dropdown {
 	 * Render the selected label of the dropdown
 	 */
 	public renderLabel(): void {
-		if (this._options.labelRenderer) {
+		if (this._options.labelRenderer && this.label) {
 			this._options.labelRenderer(this.label);
 		}
 	}

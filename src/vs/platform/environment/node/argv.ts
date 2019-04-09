@@ -7,7 +7,7 @@ import * as minimist from 'minimist';
 import * as os from 'os';
 import { localize } from 'vs/nls';
 import { ParsedArgs } from 'vs/platform/environment/common/environment';
-import { join } from 'path';
+import { join } from 'vs/base/common/path';
 import { writeFileSync } from 'fs';
 
 /**
@@ -102,8 +102,9 @@ export const options: Option[] = [
 	{ id: 'user', type: 'string', alias: 'U' },
 	{ id: 'command', type: 'string', alias: 'c' },
 	{ id: 'aad', type: 'boolean' },
-	{ id: 'integrated', type: 'boolean', alias: 'E' }
+	{ id: 'integrated', type: 'boolean', alias: 'E' },
 	// {{SQL CARBON EDIT}} - End
+	{ id: '_', type: 'string' }
 ];
 
 export function parseArgs(args: string[], isOptionSupported = (_: Option) => true): ParsedArgs {

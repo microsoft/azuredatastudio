@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 /**
  * Alterable version of the vs memorize function; to unmemoize use unmemoize
 */

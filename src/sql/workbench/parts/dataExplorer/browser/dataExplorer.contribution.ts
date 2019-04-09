@@ -22,7 +22,7 @@ import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editor
 // Viewlet Action
 export class OpenDataExplorerViewletAction extends ShowViewletAction {
 	public static ID = VIEWLET_ID;
-	public static LABEL = localize('showDataExplorer', "Show Data Explorer");
+	public static LABEL = localize('showDataExplorer', "Show Connections");
 
 	constructor(
 		id: string,
@@ -39,7 +39,7 @@ export class OpenDataExplorerViewletAction extends ShowViewletAction {
 const viewletDescriptor = new ViewletDescriptor(
 	DataExplorerViewlet,
 	VIEWLET_ID,
-	localize('workbench.dataExplorer', "Data Explorer"),
+	localize('workbench.dataExplorer', "Connections"),
 	'dataExplorer',
 	0
 );

@@ -52,6 +52,13 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 		return container;
 	}
 
+	splitViewContainer(): azdata.SplitViewBuilder {
+		let id = this.getNextComponentId();
+		let container: GenericContainerBuilder<azdata.SplitViewContainer, any, any> = new GenericContainerBuilder<azdata.SplitViewContainer, azdata.SplitViewLayout, azdata.FlexItemLayout>(this._proxy, this._handle, ModelComponentTypes.SplitViewContainer, id);
+		this._componentBuilders.set(id, container);
+		return container;
+	}
+
 	formContainer(): azdata.FormBuilder {
 		let id = this.getNextComponentId();
 		let container = new FormContainerBuilder(this._proxy, this._handle, ModelComponentTypes.Form, id, this);
@@ -125,6 +132,13 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 	editor(): azdata.ComponentBuilder<azdata.EditorComponent> {
 		let id = this.getNextComponentId();
 		let builder: ComponentBuilderImpl<azdata.EditorComponent> = this.getComponentBuilder(new EditorWrapper(this._proxy, this._handle, id), id);
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
+	diffeditor(): azdata.ComponentBuilder<azdata.DiffEditorComponent> {
+		let id = this.getNextComponentId();
+		let builder: ComponentBuilderImpl<azdata.DiffEditorComponent> = this.getComponentBuilder(new DiffEditorWrapper(this._proxy, this._handle, id), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
@@ -414,7 +428,8 @@ class ToolbarContainerBuilder extends GenericContainerBuilder<azdata.ToolbarCont
 		let componentWrapper = toolbarComponent.component as ComponentWrapper;
 
 		return new InternalItemConfig(componentWrapper, {
-			title: toolbarComponent.title
+			title: toolbarComponent.title,
+			toolbarSeparatorAfter: toolbarComponent.toolbarSeparatorAfter
 		});
 	}
 
@@ -940,6 +955,84 @@ class EditorWrapper extends ComponentWrapper implements azdata.EditorComponent {
 	}
 }
 
+class DiffEditorWrapper extends ComponentWrapper implements azdata.DiffEditorComponent {
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
+		super(proxy, handle, ModelComponentTypes.DiffEditor, id);
+		this.properties = {};
+		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<any>());
+		this._emitterMap.set(ComponentEventType.onComponentCreated, new Emitter<any>());
+	}
+
+	public get contentLeft(): string {
+		return this.properties['contentLeft'];
+	}
+
+	public set contentLeft(v: string) {
+		this.setProperty('contentLeft', v);
+	}
+
+	public get contentRight(): string {
+		return this.properties['contentRight'];
+	}
+
+	public set contentRight(v: string) {
+		this.setProperty('contentRight', v);
+	}
+
+	public get languageMode(): string {
+		return this.properties['languageMode'];
+	}
+	public set languageMode(v: string) {
+		this.setProperty('languageMode', v);
+	}
+
+	public get editorUri(): string {
+		return this.properties['editorUri'];
+	}
+
+	public get isAutoResizable(): boolean {
+		return this.properties['isAutoResizable'];
+	}
+
+	public set isAutoResizable(v: boolean) {
+		this.setProperty('isAutoResizable', v);
+	}
+
+	public get minimumHeight(): number {
+		return this.properties['minimumHeight'];
+	}
+
+	public set minimumHeight(v: number) {
+		this.setProperty('minimumHeight', v);
+	}
+
+	public get onContentChanged(): vscode.Event<any> {
+		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
+		return emitter && emitter.event;
+	}
+
+	public get onEditorCreated(): vscode.Event<any> {
+		let emitter = this._emitterMap.get(ComponentEventType.onComponentCreated);
+		return emitter && emitter.event;
+	}
+
+	public get editorUriLeft(): string {
+		return this.properties['editorUriLeft'];
+	}
+
+	public set editorUriLeft(v: string) {
+		this.setProperty('editorUriLeft', v);
+	}
+
+	public get editorUriRight(): string {
+		return this.properties['editorUriRight'];
+	}
+
+	public set editorUriRight(v: string) {
+		this.setProperty('editorUriRight', v);
+	}
+}
+
 class RadioButtonWrapper extends ComponentWrapper implements azdata.RadioButtonComponent {
 
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
@@ -1224,6 +1317,12 @@ class FileBrowserTreeComponentWrapper extends ComponentWrapper implements azdata
 }
 
 class DivContainerWrapper extends ComponentWrapper implements azdata.DivContainer {
+	constructor(proxy: MainThreadModelViewShape, handle: number, type: ModelComponentTypes, id: string) {
+		super(proxy, handle, type, id);
+		this.properties = {};
+		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<any>());
+	}
+
 	public get overflowY(): string {
 		return this.properties['overflowY'];
 	}
@@ -1238,6 +1337,11 @@ class DivContainerWrapper extends ComponentWrapper implements azdata.DivContaine
 
 	public set yOffsetChange(value: number) {
 		this.setProperty('yOffsetChange', value);
+	}
+
+	public get onDidClick(): vscode.Event<any> {
+		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
+		return emitter && emitter.event;
 	}
 }
 

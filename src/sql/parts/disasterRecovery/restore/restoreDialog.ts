@@ -42,6 +42,7 @@ import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { IFileBrowserDialogController } from 'sql/workbench/services/fileBrowser/common/fileBrowserDialogController';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
+import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 
 interface FileListElement {
 	logicalFileName: string;
@@ -128,13 +129,13 @@ export class RestoreDialog extends Modal {
 
 	constructor(
 		optionsMetadata: azdata.ServiceOption[],
-		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
+		@IWorkbenchLayoutService layoutService: ILayoutService,
 		@IThemeService themeService: IThemeService,
 		@IContextViewService private _contextViewService: IContextViewService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IFileBrowserDialogController private fileBrowserDialogService: IFileBrowserDialogController,
-		@IClipboardService clipboardService: IClipboardService
+		@IClipboardService clipboardService: IClipboardService,
 	) {
 		super(localize('RestoreDialogTitle', 'Restore database'), TelemetryKeys.Restore, telemetryService, layoutService, clipboardService, themeService, contextKeyService, { hasErrors: true, isWide: true, hasSpinner: true });
 		this._restoreTitle = localize('restoreDialog.restoreTitle', 'Restore database');
@@ -233,7 +234,7 @@ export class RestoreDialog extends Modal {
 				inputContainer.div({ class: 'dialog-input' }, (inputCellContainer) => {
 					// Get the bootstrap params and perform the bootstrap
 					inputCellContainer.style('width', '100%');
-					this._databaseDropdown = new Dropdown(inputCellContainer.getHTMLElement(), this._contextViewService,
+					this._databaseDropdown = new Dropdown(inputCellContainer.getHTMLElement(), this._contextViewService, this.layoutService,
 						{
 							strictSelection: false,
 							ariaLabel: LocalizedStrings.TARGETDATABASE,
@@ -605,7 +606,7 @@ export class RestoreDialog extends Modal {
 	}
 
 	public enableRestoreButton(enabled: boolean) {
-		this.hideSpinner();
+		this.spinner = false;
 		this._restoreButton.enabled = enabled;
 		this._scriptButton.enabled = enabled;
 	}
@@ -721,7 +722,7 @@ export class RestoreDialog extends Modal {
 
 	public validateRestore(overwriteTargetDatabase: boolean = false, isBackupFileCheckboxChanged: boolean = false): void {
 		this._isBackupFileCheckboxChanged = isBackupFileCheckboxChanged;
-		this.showSpinner();
+		this.spinner = true;
 		this._restoreButton.enabled = false;
 		this._scriptButton.enabled = false;
 		this._onValidate.fire(overwriteTargetDatabase);

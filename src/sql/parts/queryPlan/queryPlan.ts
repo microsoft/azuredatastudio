@@ -8,9 +8,8 @@ import * as QP from 'html-query-plan';
 
 import { IPanelView, IPanelTab } from 'sql/base/browser/ui/panel/panel';
 
-import { Dimension } from 'vs/base/browser/dom';
+import { Dimension, clearNode } from 'vs/base/browser/dom';
 import { localize } from 'vs/nls';
-import { Builder } from 'sql/base/browser/builder';
 import { dispose, Disposable } from 'vs/base/common/lifecycle';
 
 export class QueryPlanState {
@@ -102,7 +101,7 @@ export class QueryPlan {
 
 	public set xml(xml: string) {
 		this._xml = xml;
-		new Builder(this.container).empty();
+		clearNode(this.container);
 		if (this.xml) {
 			QP.showPlan(this.container, this._xml, {
 				jsTooltips: false

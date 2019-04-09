@@ -10,17 +10,18 @@
 	left:0;
 	top:0;
 	z-index: 2000;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 /** Dialog: Container */
 .monaco-workbench .dialog-box {
-	position: absolute;
 	display: flex;
 	flex-direction: column-reverse;
-	top: 200px;
-	left: 50%;
-	margin-left: -250px;
-	width: 500px;
+	width: min-content;
+	min-width: 500px;
+	max-width: 90%;
 	min-height: 75px;
 	padding: 5px;
 }
@@ -135,12 +136,13 @@
 	overflow: hidden; /* buttons row should never overflow */
 }
 
-.monaco-workbench .monaco-workbench .dialog-box > .dialog-buttons-row {
+.monaco-workbench .dialog-box > .dialog-buttons-row {
 	display: flex;
+	white-space: nowrap;
 }
 
 /** Dialog: Buttons */
-.monaco-workbench .monaco-workbench .dialog-box > .dialog-buttons-row > .dialog-buttons {
+.monaco-workbench .dialog-box > .dialog-buttons-row > .dialog-buttons {
 	display: flex;
 	overflow: hidden;
 }

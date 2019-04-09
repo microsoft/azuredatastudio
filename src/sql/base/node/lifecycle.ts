@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import { OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs/Subscription';
 

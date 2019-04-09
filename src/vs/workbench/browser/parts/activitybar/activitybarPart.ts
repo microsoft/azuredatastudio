@@ -106,18 +106,6 @@ export class ActivitybarPart extends Part implements IActivityBarService {
 		this.onDidRegisterViewlets(viewletService.getViewlets());
 	}
 
-	// {{SQL CARBON EDIT}}
-	private getViewlets(): ViewletDescriptor[] {
-		const pinnedViewlets = JSON.parse(this.storageService.get(ActivitybarPart.PINNED_VIEWLETS, StorageScope.GLOBAL, null)) as string[];
-		const allViewLets = this.viewletService.getViewlets();
-
-		if (!pinnedViewlets) {
-			return allViewLets.filter(viewlet => viewlet.id !== 'workbench.view.extensions') ;
-		}
-
-		return allViewLets;
-	}
-
 	private registerListeners(): void {
 
 		// Viewlet registration

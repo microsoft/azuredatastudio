@@ -56,7 +56,6 @@ describe('Local Jupyter Server Manager', function (): void {
 		let error = 'Error!!';
 		deferredInstall.reject(error);
 		await testUtils.assertThrowsAsync(() => serverManager.startServer(), undefined);
-		mockApiWrapper.verify(a => a.showErrorMessage(TypeMoq.It.isAny()), TypeMoq.Times.once());
 	});
 
 	it('Should configure and start install', async function (): Promise<void> {

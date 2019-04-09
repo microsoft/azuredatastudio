@@ -12,7 +12,7 @@ import { IResourceProviderService, IHandleFirewallRuleResult } from 'sql/workben
 import * as Constants from 'sql/common/constants';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
 import * as TelemetryUtils from 'sql/common/telemetryUtilities';
-import { FirewallRuleDialogController } from 'sql/parts/accountManagement/firewallRuleDialog/firewallRuleDialogController';
+import { FirewallRuleDialogController } from 'sql/platform/accounts/browser/firewallRuleDialogController';
 
 import * as azdata from 'azdata';
 
@@ -77,8 +77,8 @@ export class ResourceProviderService implements IResourceProviderService {
 								handleFirewallRuleResult = { canHandleFirewallRule: response.result, ipAddress: response.ipAddress, resourceProviderId: key };
 							}
 						},
-						() => { /* Swallow failures at getting accounts, we'll just hide that provider */
-						}));
+							() => { /* Swallow failures at getting accounts, we'll just hide that provider */
+							}));
 				}
 			}
 
