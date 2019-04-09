@@ -478,6 +478,7 @@ export class AttachToDropdown extends SelectBox {
 				let connectionUri = this._connectionManagementService.getConnectionUri(connection);
 				let connectionProfile = new ConnectionProfile(this._capabilitiesService, connection);
 				let connectedServer = connectionProfile.title ? connectionProfile.title : connectionProfile.serverName;
+
 				this.model.addAttachToConnectionsToBeDisposed(connectionUri, connectionProfile);
 				//Check to see if the same server is already there in dropdown. We only have server names in dropdown
 				if (attachToConnections.some(val => val === connectedServer)) {
@@ -499,7 +500,6 @@ export class AttachToDropdown extends SelectBox {
 				}
 				this.select(index);
 
-				this.model.addAttachToConnectionsToBeDisposed(connectionUri, connectionProfile);
 				// Call doChangeContext to set the newly chosen connection in the model
 				this.doChangeContext(connectionProfile);
 			});
