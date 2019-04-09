@@ -13,7 +13,8 @@ export const extensionConfigSectionName = 'mssql';
 
 // DATA PROTOCOL VALUES ///////////////////////////////////////////////////////////
 export const mssqlClusterProviderName = 'mssqlCluster';
-export const hadoopKnoxEndpointName = 'Knox';
+export const hadoopEndpointNameKnox = 'Knox';
+export const hadoopEndpointNameGateway = 'gateway';
 export const protocolVersion = '1.0';
 export const hostPropName = 'host';
 export const userPropName = 'user';
