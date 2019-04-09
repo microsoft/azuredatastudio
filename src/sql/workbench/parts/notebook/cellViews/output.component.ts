@@ -3,6 +3,7 @@
 *  Licensed under the Source EULA. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./code';
+import 'vs/css!./media/output';
 
 import { OnInit, Component, Input, Inject, ElementRef, ViewChild } from '@angular/core';
 import { AngularDisposable } from 'sql/base/node/lifecycle';
@@ -12,7 +13,6 @@ import { INotebookService } from 'sql/workbench/services/notebook/common/noteboo
 import { MimeModel } from 'sql/workbench/parts/notebook/outputs/common/mimemodel';
 import * as outputProcessor from 'sql/workbench/parts/notebook/outputs/common/outputProcessor';
 import { RenderMimeRegistry } from 'sql/workbench/parts/notebook/outputs/registry';
-import 'vs/css!sql/parts/notebook/outputs/style';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 
 export const OUTPUT_SELECTOR: string = 'output-component';
