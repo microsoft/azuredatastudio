@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import 'vs/css!./media/accountListStatusbarItem';
 import { Action, IAction } from 'vs/base/common/actions';
 import { IDisposable } from 'vs/base/common/lifecycle';
@@ -16,7 +14,7 @@ import { IStatusbarItem } from 'vs/workbench/browser/parts/statusbar/statusbar';
 import { Themable, STATUS_BAR_FOREGROUND } from 'vs/workbench/common/theme';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 
-import { IAccountManagementService } from 'sql/platform/accountManagement/common/interfaces';
+import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 
 export class AccountListStatusbarItem extends Themable implements IStatusbarItem {
 	private _manageLinkedAccountAction: IAction;
@@ -24,7 +22,6 @@ export class AccountListStatusbarItem extends Themable implements IStatusbarItem
 
 	constructor(
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IAccountManagementService private _accountManagementService: IAccountManagementService,
 		@IThemeService themeService: IThemeService
 	) {
 		super(themeService);

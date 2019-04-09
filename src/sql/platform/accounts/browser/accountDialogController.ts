@@ -3,10 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import Severity from 'vs/base/common/severity';
-import { AccountDialog } from 'sql/parts/accountManagement/accountDialog/accountDialog';
+import { AccountDialog } from 'sql/platform/accounts/browser/accountDialog';
 import { localize } from 'vs/nls';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
@@ -28,13 +26,11 @@ export class AccountDialogController {
 	 * Open account dialog
 	 */
 	public openAccountDialog(): void {
-		let self = this;
-
 		// Create a new dialog if one doesn't exist
 		if (!this._accountDialog) {
 			this._accountDialog = this._instantiationService.createInstance(AccountDialog);
-			this._accountDialog.onAddAccountErrorEvent(msg => { self.handleOnAddAccountError(msg); });
-			this._accountDialog.onCloseEvent(() => { self.handleOnClose(); });
+			this._accountDialog.onAddAccountErrorEvent(msg => this.handleOnAddAccountError(msg));
+			this._accountDialog.onCloseEvent(() => this.handleOnClose());
 			this._accountDialog.render();
 		}
 
