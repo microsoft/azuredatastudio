@@ -12,7 +12,7 @@ import { Modal } from 'sql/workbench/browser/modal/modal';
 import { IConnectionManagementService, INewConnectionParams } from 'sql/platform/connection/common/connectionManagement';
 import * as DialogHelper from 'sql/workbench/browser/modal/dialogHelper';
 import { TreeCreationUtils } from 'sql/parts/objectExplorer/viewlet/treeCreationUtils';
-import { TreeUpdateUtils } from 'sql/parts/objectExplorer/viewlet/treeUpdateUtils';
+import { TreeUpdateUtils, IExpandableTree } from 'sql/parts/objectExplorer/viewlet/treeUpdateUtils';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { TabbedPanel, PanelTabIdentifier } from 'sql/base/browser/ui/panel/panel';
 import { RecentConnectionTreeController, RecentConnectionActionsProvider } from 'sql/parts/connection/connectionDialog/recentConnectionTreeController';
@@ -178,11 +178,14 @@ export class ConnectionDialogWidget extends Modal {
 		});
 
 		this._panel.onTabChange(async c => {
-			if (c === savedConnectionTabId && this._savedConnectionTree.getContentHeight() === 0) {
+			// convert to old VS Code tree interface with expandable methods
+			let expandableTree: IExpandableTree = <IExpandableTree>this._savedConnectionTree;
+
+			if (c === savedConnectionTabId && expandableTree.getContentHeight() === 0) {
 				// Update saved connection tree
 				await TreeUpdateUtils.structuralTreeUpdate(this._savedConnectionTree, 'saved', this._connectionManagementService, this._providers);
 
-				if (this._savedConnectionTree.getContentHeight() > 0) {
+				if (expandableTree.getContentHeight() > 0) {
 					this._noSavedConnectionBuilder.hide();
 					this._savedConnectionBuilder.show();
 				} else {
@@ -264,7 +267,7 @@ export class ConnectionDialogWidget extends Modal {
 			this._connecting = true;
 			this._connectButton.enabled = false;
 			this._providerTypeSelectBox.disable();
-			this.showSpinner();
+			this.spinner = true;
 			this._onConnect.fire(element);
 		}
 	}
@@ -432,12 +435,12 @@ export class ConnectionDialogWidget extends Modal {
 
 	private initDialog(): void {
 		super.setError('');
-		this.hideSpinner();
+		this.spinner = false;
 		this._onInitDialog.fire();
 	}
 
 	public resetConnection(): void {
-		this.hideSpinner();
+		this.spinner = false;
 		this._connectButton.enabled = true;
 		this._providerTypeSelectBox.enable();
 		this._onResetConnection.fire();

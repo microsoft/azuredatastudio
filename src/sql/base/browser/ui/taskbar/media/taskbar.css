@@ -68,9 +68,8 @@
 
 .taskbarSeparator {
 	width: 1px;
-	background-color:#555;
-	margin-right: 6px;
-	margin-top: 3px;
+	background-color:#A5A5A5;
+	margin: 6px 8px;
 }
 
 .taskbarTextSeparator {

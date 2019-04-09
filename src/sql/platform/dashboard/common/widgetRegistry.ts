@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { IInsightsConfig } from 'sql/parts/dashboard/widgets/insights/interfaces';
+import { IInsightsConfig } from 'sql/workbench/parts/dashboard/widgets/insights/interfaces';
 
 import * as platform from 'vs/platform/registry/common/platform';
 import { IJSONSchema, IJSONSchemaMap } from 'vs/base/common/jsonSchema';

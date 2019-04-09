@@ -71,13 +71,12 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 	private static readonly HEADING_HEIGHT: number = 24;
 
 	constructor(
-		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
 		@Inject(forwardRef(() => CommonServiceInterface)) commonService: CommonServiceInterface,
 		@Inject(forwardRef(() => AgentViewComponent)) _agentViewComponent: AgentViewComponent,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
-		@Inject(IContextMenuService) private contextMenuService: IContextMenuService,
+		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
 		@Inject(IJobManagementService) private _jobManagementService: IJobManagementService,
 		@Inject(IKeybindingService) keybindingService: IKeybindingService,
 		@Inject(IDashboardService) dashboardService: IDashboardService,
@@ -191,7 +190,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		let cachedHistory = self._jobCacheObject.getJobHistory(element.jobID);
 		if (cachedHistory) {
 			self.agentJobHistoryInfo = cachedHistory.find(
-			history => self.formatTime(history.runDate) === self.formatTime(element.runDate));
+				history => self.formatTime(history.runDate) === self.formatTime(element.runDate));
 		} else {
 			self.agentJobHistoryInfo = self._treeController.jobHistories.find(
 				history => self.formatTime(history.runDate) === self.formatTime(element.runDate));
@@ -346,7 +345,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		let editJobAction = this.instantiationService.createInstance(EditJobAction);
 		let refreshAction = this.instantiationService.createInstance(JobsRefreshAction);
 		let taskbar = <HTMLElement>this.actionBarContainer.nativeElement;
-		this._actionBar = new Taskbar(taskbar, this.contextMenuService);
+		this._actionBar = new Taskbar(taskbar);
 		this._actionBar.context = { targetObject: this._agentJobInfo, ownerUri: this.ownerUri, component: this };
 		this._actionBar.setContent([
 			{ action: runJobAction },
