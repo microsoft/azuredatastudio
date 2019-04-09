@@ -57,7 +57,8 @@ const configBase = {
 
 const KNOX_ENDPOINT_SERVER = 'host';
 const KNOX_ENDPOINT_PORT = 'knoxport';
-const KNOX_ENDPOINT = 'knox';
+const KNOX_ENDPOINT_KNOX = 'knox';
+const KNOX_ENDPOINT_GATEWAY = 'gateway';
 const SQL_PROVIDER = 'MSSQL';
 const USER = 'user';
 const DEFAULT_CLUSTER_USER_NAME = 'root';
@@ -242,7 +243,9 @@ export class JupyterSession implements nb.ISession {
 
 			//Update server info with bigdata endpoint - Unified Connection
 			if (connection.providerName === SQL_PROVIDER) {
-				let clusterEndpoint: utils.IEndpoint = await this.getClusterEndpoint(connection.id, KNOX_ENDPOINT);
+				let clusterEndpoint: utils.IEndpoint =
+					await this.getClusterEndpoint(connection.id, KNOX_ENDPOINT_KNOX) ||
+					await this.getClusterEndpoint(connection.id, KNOX_ENDPOINT_GATEWAY);
 				if (!clusterEndpoint) {
 					let kernelDisplayName: string = await this.getKernelDisplayName();
 					return Promise.reject(new Error(localize('connectionNotValid', 'Spark kernels require a connection to a SQL Server big data cluster master instance.')));
