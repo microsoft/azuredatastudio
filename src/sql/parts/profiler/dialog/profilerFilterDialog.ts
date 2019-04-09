@@ -27,19 +27,19 @@ import { ProfilerFilter, ProfilerFilterClause, ProfilerFilterClauseOperator } fr
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 
 
-const ClearText: string = localize('profilerFilterDialog.clear', 'Clear All');
-const ApplyText: string = localize('profilerFilterDialog.apply', 'Apply');
-const OkText: string = localize('profilerFilterDialog.ok', 'OK');
-const CancelText: string = localize('profilerFilterDialog.cancel', 'Cancel');
-const DialogTitle: string = localize('profilerFilterDialog.title', 'Filters');
-const RemoveText: string = localize('profilerFilterDialog.remove', 'Remove');
-const AddText: string = localize('profilerFilterDialog.add', 'Add');
-const AddClausePromptText: string = localize('profilerFilterDialog.addClauseText', 'Click here to add a clause');
+const ClearText: string = localize('profilerFilterDialog.clear', "Clear All");
+const ApplyText: string = localize('profilerFilterDialog.apply', "Apply");
+const OkText: string = localize('profilerFilterDialog.ok', "OK");
+const CancelText: string = localize('profilerFilterDialog.cancel', "Cancel");
+const DialogTitle: string = localize('profilerFilterDialog.title', "Filters");
+const RemoveText: string = localize('profilerFilterDialog.remove', "Remove");
+const AddText: string = localize('profilerFilterDialog.add', "Add");
+const AddClausePromptText: string = localize('profilerFilterDialog.addClauseText', "Click here to add a clause");
 const TitleIconClass: string = 'icon filterLabel';
 
-const FieldText: string = localize('profilerFilterDialog.fieldColumn', 'Field');
-const OperatorText: string = localize('profilerFilterDialog.operatorColumn', 'Operator');
-const ValueText: string = localize('profilerFilterDialog.valueColumn', 'Value');
+const FieldText: string = localize('profilerFilterDialog.fieldColumn', "Field");
+const OperatorText: string = localize('profilerFilterDialog.operatorColumn', "Operator");
+const ValueText: string = localize('profilerFilterDialog.valueColumn', "Value");
 
 const Equals: string = '=';
 const NotEquals: string = '<>';
@@ -47,12 +47,12 @@ const LessThan: string = '<';
 const LessThanOrEquals: string = '<=';
 const GreaterThan: string = '>';
 const GreaterThanOrEquals: string = '>=';
-const IsNull: string = localize('profilerFilterDialog.isNullOperator', 'Is Null');
-const IsNotNull: string = localize('profilerFilterDialog.isNotNullOperator', 'Is Not Null');
-const Contains: string = localize('profilerFilterDialog.containsOperator', 'Contains');
-const NotContains: string = localize('profilerFilterDialog.notContainsOperator', 'Not Contains');
-const StartsWith: string = localize('profilerFilterDialog.startsWithOperator', 'Starts With');
-const NotStartsWith: string = localize('profilerFilterDialog.notStartsWithOperator', 'Not Starts With');
+const IsNull: string = localize('profilerFilterDialog.isNullOperator', "Is Null");
+const IsNotNull: string = localize('profilerFilterDialog.isNotNullOperator', "Is Not Null");
+const Contains: string = localize('profilerFilterDialog.containsOperator', "Contains");
+const NotContains: string = localize('profilerFilterDialog.notContainsOperator', "Not Contains");
+const StartsWith: string = localize('profilerFilterDialog.startsWithOperator', "Starts With");
+const NotStartsWith: string = localize('profilerFilterDialog.notStartsWithOperator', "Not Starts With");
 
 const Operators = [Equals, NotEquals, LessThan, LessThanOrEquals, GreaterThan, GreaterThanOrEquals, GreaterThan, GreaterThanOrEquals, IsNull, IsNotNull, Contains, NotContains, StartsWith, NotStartsWith];
 
