@@ -19,11 +19,10 @@ import { CopyAction, SaveImageAction, CreateInsightAction, IChartActionContext }
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { ChartType } from 'sql/parts/dashboard/widgets/insights/views/charts/interfaces';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { Dimension, $, getContentHeight, getContentWidth } from 'vs/base/browser/dom';
+import * as DOM from 'vs/base/browser/dom';
 import { SelectBox } from 'vs/base/browser/ui/selectBox/selectBox';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
-import { Builder } from 'sql/base/browser/builder';
 import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
 import { attachSelectBoxStyler, attachInputBoxStyler } from 'vs/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
@@ -86,12 +85,12 @@ export class ChartView extends Disposable implements IPanelView {
 		@IInstantiationService private _instantiationService: IInstantiationService,
 	) {
 		super();
-		this.taskbarContainer = $('div.taskbar-container');
+		this.taskbarContainer = DOM.$('div.taskbar-container');
 		this.taskbar = new Taskbar(this.taskbarContainer);
-		this.optionsControl = $('div.options-container');
-		let generalControls = $('div.general-controls');
+		this.optionsControl = DOM.$('div.options-container');
+		const generalControls = DOM.$('div.general-controls');
 		this.optionsControl.appendChild(generalControls);
-		this.typeControls = $('div.type-controls');
+		this.typeControls = DOM.$('div.type-controls');
 		this.optionsControl.appendChild(this.typeControls);
 
 		this._createInsightAction = this._instantiationService.createInstance(CreateInsightAction);
@@ -100,7 +99,7 @@ export class ChartView extends Disposable implements IPanelView {
 
 		this.taskbar.setContent([{ action: this._createInsightAction }]);
 
-		let self = this;
+		const self = this;
 		this.options = new Proxy(this.options, {
 			get: function (target, key, receiver) {
 				return Reflect.get(target, key, receiver);
@@ -148,9 +147,9 @@ export class ChartView extends Disposable implements IPanelView {
 
 	render(container: HTMLElement): void {
 		if (!this.container) {
-			this.container = $('div.chart-parent-container');
-			this.insightContainer = $('div.insight-container');
-			this.chartingContainer = $('div.charting-container');
+			this.container = DOM.$('div.chart-parent-container');
+			this.insightContainer = DOM.$('div.insight-container');
+			this.chartingContainer = DOM.$('div.charting-container');
 			this.container.appendChild(this.taskbarContainer);
 			this.container.appendChild(this.chartingContainer);
 			this.chartingContainer.appendChild(this.insightContainer);
@@ -174,9 +173,9 @@ export class ChartView extends Disposable implements IPanelView {
 		this.shouldGraph();
 	}
 
-	layout(dimension: Dimension): void {
+	layout(dimension: DOM.Dimension): void {
 		if (this.insight) {
-			this.insight.layout(new Dimension(getContentWidth(this.insightContainer), getContentHeight(this.insightContainer)));
+			this.insight.layout(new DOM.Dimension(DOM.getContentWidth(this.insightContainer), DOM.getContentHeight(this.insightContainer)));
 		}
 	}
 
@@ -215,7 +214,7 @@ export class ChartView extends Disposable implements IPanelView {
 		this.optionMap = {
 			'type': this.optionMap['type']
 		};
-		new Builder(this.typeControls).clearChildren();
+		DOM.clearNode(this.typeControls);
 
 		this.updateActionbar();
 		ChartOptions[this.options.type].map(o => {
@@ -234,9 +233,9 @@ export class ChartView extends Disposable implements IPanelView {
 				let option = ChartOptions[this.options.type].find(e => e.configEntry === key);
 				if (option && option.if) {
 					if (option.if(this.options)) {
-						new Builder(this.optionMap[key].element).show();
+						DOM.show(this.optionMap[key].element);
 					} else {
-						new Builder(this.optionMap[key].element).hide();
+						DOM.hide(this.optionMap[key].element);
 					}
 				}
 			}
@@ -257,9 +256,9 @@ export class ChartView extends Disposable implements IPanelView {
 	}
 
 	private createOption(option: IChartOption, container: HTMLElement) {
-		let label = $('div');
+		let label = DOM.$('div');
 		label.innerText = option.label;
-		let optionContainer = $('div.option-container');
+		let optionContainer = DOM.$('div.option-container');
 		optionContainer.appendChild(label);
 		let setFunc: (val) => void;
 		let value = this.state ? this.state.options[option.configEntry] || option.default : option.default;
