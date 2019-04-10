@@ -134,11 +134,11 @@ export class SchemaCompareDialog {
 	private initializeSchemaCompareTab() {
 		this.schemaCompareTab.registerContent(async view => {
 			this.sourceTextBox = view.modelBuilder.inputBox().withProperties({
-				width: 275,
+				width: 275
 			}).component();
 
 			this.targetTextBox = view.modelBuilder.inputBox().withProperties({
-				width: 275,
+				width: 275
 			}).component();
 
 			this.sourceServerComponent = await this.createSourceServerDropdown(view);
@@ -241,13 +241,13 @@ export class SchemaCompareDialog {
 		let dacpacRadioButton = view.modelBuilder.radioButton()
 			.withProperties({
 				name: 'source',
-				label: SchemaCompareDialog.DacpacRadioButtonLabel,
+				label: SchemaCompareDialog.DacpacRadioButtonLabel
 			}).component();
 
 		let databaseRadioButton = view.modelBuilder.radioButton()
 			.withProperties({
 				name: 'source',
-				label: SchemaCompareDialog.DatabaseRadioButtonLabel,
+				label: SchemaCompareDialog.DatabaseRadioButtonLabel
 			}).component();
 
 		// show dacpac file browser
@@ -293,13 +293,13 @@ export class SchemaCompareDialog {
 		let dacpacRadioButton = view.modelBuilder.radioButton()
 			.withProperties({
 				name: 'target',
-				label: SchemaCompareDialog.DacpacRadioButtonLabel,
+				label: SchemaCompareDialog.DacpacRadioButtonLabel
 			}).component();
 
 		let databaseRadioButton = view.modelBuilder.radioButton()
 			.withProperties({
 				name: 'target',
-				label: SchemaCompareDialog.DatabaseRadioButtonLabel,
+				label: SchemaCompareDialog.DatabaseRadioButtonLabel
 			}).component();
 
 		// show dacpac file browser
@@ -433,8 +433,8 @@ export class SchemaCompareDialog {
 		let count = -1;
 		let values = (await azdata.connection.listDatabases(connectionId)).map(db => {
 			count++;
-		// if schema compare was launched from a db context menu, set that db at the top of the dropdown
-		if (this.database && db === this.database) {
+			// if schema compare was launched from a db context menu, set that db at the top of the dropdown
+			if (this.database && db === this.database) {
 				idx = count;
 			}
 

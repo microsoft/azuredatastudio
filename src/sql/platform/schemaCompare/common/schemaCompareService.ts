@@ -25,10 +25,7 @@ export class SchemaCompareService implements ISchemaCompareService {
 	_serviceBrand: any;
 	private _providers: { [handle: string]: azdata.SchemaCompareServicesProvider; } = Object.create(null);
 
-	constructor(
-		@IConnectionManagementService private _connectionService: IConnectionManagementService
-	) {
-	}
+	constructor(@IConnectionManagementService private _connectionService: IConnectionManagementService) { }
 
 	registerProvider(providerId: string, provider: azdata.SchemaCompareServicesProvider): void {
 		this._providers[providerId] = provider;

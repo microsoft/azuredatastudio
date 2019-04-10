@@ -313,7 +313,6 @@ export class SchemaCompareResult {
 		this.compareButton.enabled = false;
 		this.switchButton.enabled = false;
 		this.generateScriptButton.enabled = false;
-
 		this.generateScriptButton.title = localize('schemaCompare.generateScriptEnabledButton', 'Generate script to deploy changes to target');
 	}
 

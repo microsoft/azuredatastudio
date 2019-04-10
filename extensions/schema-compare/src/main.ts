@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 import * as vscode from 'vscode';
-
 import MainController from './controllers/mainController';
 
 let controllers: MainController[] = [];
