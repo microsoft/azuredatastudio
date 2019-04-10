@@ -139,8 +139,10 @@ export class MarkdownEngine {
 
 	// {{SQL CARBON EDIT}} - Add renderText method
 	public async renderText(document: vscode.Uri, text: string): Promise<string> {
-		const engine = await this.getEngine(this.getConfig(document));
-		return engine.render(text);
+		const config = this.getConfig(document);
+		const engine = await this.getEngine(config);
+		this.currentDocument = document;
+		return engine.render(text, config);
 	}
 	// {{SQL CARBON EDIT}} - End
 
