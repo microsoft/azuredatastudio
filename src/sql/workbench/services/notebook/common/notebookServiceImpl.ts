@@ -401,16 +401,15 @@ export class NotebookService extends Disposable implements INotebookService {
 		let providerDescriptor = this._providers.get(providerId);
 		let instance: INotebookProvider;
 
-		// Await extension registration before awaiting provider registration
-		try {
-			await this._extensionService.whenInstalledExtensionsRegistered;
-		} catch (error) {
-			throw typeof(error) === 'string' ? new Error(error) : error;
-		}
-
 		// Try get from actual provider, waiting on its registration
 		if (providerDescriptor) {
 			if (!providerDescriptor.instance) {
+				// Await extension registration before awaiting provider registration
+				try {
+					await this._extensionService.whenInstalledExtensionsRegistered;
+				} catch (error) {
+					console.error(error);
+				}
 				instance = await this.waitOnProviderAvailability(providerDescriptor);
 			} else {
 				instance = providerDescriptor.instance;
