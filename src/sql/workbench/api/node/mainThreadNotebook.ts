@@ -352,6 +352,10 @@ class KernelWrapper implements azdata.nb.IKernel {
 		return this.kernelDetails.supportsIntellisense;
 	}
 
+	get requiresConnection(): boolean {
+		return this.kernelDetails.requiresConnection;
+	}
+
 	get info(): azdata.nb.IInfoReply {
 		return this._info;
 	}
