@@ -390,16 +390,8 @@ export class CellModel implements ICellModel {
 						let endpoint = this.getKnoxEndpoint(model.activeConnection);
 						let host = endpoint && endpoint.ipAddress ? endpoint.ipAddress : model.activeConnection.serverName;
 						let html = result.data['text/html'];
-						html = html.replace(/(https?:\/\/mssql-master.*\/proxy)(.*)/g, function (a, b, c) {
-							let ret = '';
-							if (b !== '') {
-								ret = 'https://' + host + ':30443/gateway/default/yarn/proxy';
-							}
-							if (c !== '') {
-								ret = ret + c;
-							}
-							return ret;
-						});
+						html =this.rewriteUrlUsingRegex(/(https?:\/\/mssql-master.*\/proxy)(.*)/g, html, host);
+						html =this.rewriteUrlUsingRegex(/(https?:\/\/master.*master-svc.*\/proxy)(.*)/g, html, host);
 						(<nb.IDisplayResult>output).data['text/html'] = html;
 					}
 				}
@@ -407,6 +399,19 @@ export class CellModel implements ICellModel {
 			catch (e) { }
 		}
 		return output;
+	}
+
+	private rewriteUrlUsingRegex(regex: RegExp, html: string, host: string): string {
+		return html.replace(regex, function (a, b, c) {
+			let ret = '';
+			if (b !== '') {
+				ret = 'https://' + host + ':30443/gateway/default/yarn/proxy';
+			}
+			if (c !== '') {
+				ret = ret + c;
+			}
+			return ret;
+		});
 	}
 
 	private getDisplayId(msg: nb.IIOPubMessage): string | undefined {
