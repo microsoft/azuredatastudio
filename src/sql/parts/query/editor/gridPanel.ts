@@ -201,7 +201,7 @@ export class GridPanel extends ViewletPanel {
 		}
 	}
 
-	public resetScrollPosition() : void {
+	public resetScrollPosition(): void {
 		this.splitView.setScrollPosition(this.state.scrollPosition);
 	}
 
