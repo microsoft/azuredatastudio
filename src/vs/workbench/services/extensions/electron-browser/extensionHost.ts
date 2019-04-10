@@ -22,7 +22,7 @@ import { findFreePort, randomPort } from 'vs/base/node/ports';
 import { IMessagePassingProtocol } from 'vs/base/parts/ipc/common/ipc';
 import { PersistentProtocol } from 'vs/base/parts/ipc/common/ipc.net';
 import { generateRandomPipeName, NodeSocket } from 'vs/base/parts/ipc/node/ipc.net';
-import { IEnvironmentService } from 'vs/platform/environment/common/environment';
+import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
 import { ILabelService } from 'vs/platform/label/common/label';
 import { ILifecycleService, WillShutdownEvent } from 'vs/platform/lifecycle/common/lifecycle';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -32,7 +32,7 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IWindowService, IWindowsService } from 'vs/platform/windows/common/windows';
 import { IWorkspaceContextService, WorkbenchState } from 'vs/platform/workspace/common/workspace';
 import { IInitData } from 'vs/workbench/api/common/extHost.protocol';
-import { MessageType, createMessageOfType, isMessageOfType } from 'vs/workbench/services/extensions/node/extensionHostProtocol';
+import { MessageType, createMessageOfType, isMessageOfType } from 'vs/workbench/services/extensions/common/extensionHostProtocol';
 import { withNullAsUndefined } from 'vs/base/common/types';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { parseExtensionDevOptions } from '../common/extensionDevOptions';
@@ -78,7 +78,7 @@ export class ExtensionHostProcessWorker implements IExtensionHostStarter {
 		@IWindowsService private readonly _windowsService: IWindowsService,
 		@IWindowService private readonly _windowService: IWindowService,
 		@ILifecycleService private readonly _lifecycleService: ILifecycleService,
-		@IEnvironmentService private readonly _environmentService: IEnvironmentService,
+		@IWorkbenchEnvironmentService private readonly _environmentService: IWorkbenchEnvironmentService,
 		@ITelemetryService private readonly _telemetryService: ITelemetryService,
 		@ILogService private readonly _logService: ILogService,
 		@ILabelService private readonly _labelService: ILabelService,
@@ -124,10 +124,8 @@ export class ExtensionHostProcessWorker implements IExtensionHostStarter {
 	private matchesExtDevLocations(resource: URI): boolean {
 
 		const extDevLocs = this._environmentService.extensionDevelopmentLocationURI;
-		if (Array.isArray(extDevLocs)) {
+		if (extDevLocs) {
 			return extDevLocs.some(extDevLoc => isEqual(extDevLoc, resource));
-		} else if (extDevLocs) {
-			return isEqual(extDevLocs, resource);
 		}
 		return false;
 	}
@@ -240,7 +238,7 @@ export class ExtensionHostProcessWorker implements IExtensionHostStarter {
 
 				// Help in case we fail to start it
 				let startupTimeoutHandle: any;
-				if (!this._environmentService.isBuilt && !this._windowService.getConfiguration().remoteAuthority || this._isExtensionDevHost) {
+				if (!this._environmentService.isBuilt && !this._environmentService.configuration.remoteAuthority || this._isExtensionDevHost) {
 					startupTimeoutHandle = setTimeout(() => {
 						const msg = this._isExtensionDevDebugBrk
 							? nls.localize('extensionHostProcess.startupFailDebug', "Extension host did not start in 10 seconds, it might be stopped on the first line and needs a debugger to continue.")
