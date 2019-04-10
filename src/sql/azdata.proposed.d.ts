@@ -4085,6 +4085,11 @@ declare module 'azdata' {
 			 * Default kernel for notebook
 			 */
 			defaultKernel?: nb.IKernelSpec;
+
+			/**
+			 * Optional content used to give an initial notebook state
+			 */
+			initialContent?: nb.INotebookContents | string;
 		}
 
 		/**
