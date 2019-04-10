@@ -6,18 +6,23 @@
 'use strict';
 
 import * as azdata from 'azdata';
-import ControllerBase from './controllerBase';
 import * as vscode from 'vscode';
 import { SchemaCompareDialog } from '../dialogs/schemaCompareDialog';
 
 /**
  * The main controller class that initializes the extension
  */
-export default class MainController extends ControllerBase {
+export default class MainController implements vscode.Disposable {
+	protected _context: vscode.ExtensionContext;
 
 	public constructor(context: vscode.ExtensionContext) {
-		super(context);
+		this._context = context;
 	}
+
+	public get extensionContext(): vscode.ExtensionContext {
+		return this._context;
+	}
+
 	/**
 	 */
 	public deactivate(): void {
@@ -30,5 +35,9 @@ export default class MainController extends ControllerBase {
 
 	private initializeSchemaCompareDialog() {
 		azdata.tasks.registerTask('schemaCompare.start', (profile: azdata.IConnectionProfile) => new SchemaCompareDialog().openDialog(profile));
+	}
+
+	public dispose(): void {
+		this.deactivate();
 	}
 }
