@@ -11,7 +11,7 @@ import { URI } from 'vs/base/common/uri';
 import { Registry } from 'vs/platform/registry/common/platform';
 
 import {
-	INotebookService, INotebookManager, INotebookProvider, DEFAULT_NOTEBOOK_PROVIDER,
+	INotebookService, INotebookManager, INotebookProvider,
 	DEFAULT_NOTEBOOK_FILETYPE, INotebookEditor, SQL_NOTEBOOK_PROVIDER, OVERRIDE_EDITOR_THEMING_SETTING
 } from 'sql/workbench/services/notebook/common/notebookService';
 import { RenderMimeRegistry } from 'sql/workbench/parts/notebook/outputs/registry';
@@ -97,7 +97,7 @@ export class NotebookService extends Disposable implements INotebookService {
 	constructor(
 		@ILifecycleService lifecycleService: ILifecycleService,
 		@IStorageService private _storageService: IStorageService,
-		@IExtensionService extensionService: IExtensionService,
+		@IExtensionService private _extensionService: IExtensionService,
 		@IExtensionManagementService extensionManagementService: IExtensionManagementService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IContextKeyService private _contextKeyService: IContextKeyService,
@@ -121,8 +121,8 @@ export class NotebookService extends Disposable implements INotebookService {
 			});
 		}
 
-		if (extensionService) {
-			extensionService.whenInstalledExtensionsRegistered().then(() => {
+		if (this._extensionService) {
+			this._extensionService.whenInstalledExtensionsRegistered().then(() => {
 				this.cleanupProviders();
 
 				// If providers have already registered by this point, add them now (since onHandlerAdded will never fire)
@@ -136,7 +136,7 @@ export class NotebookService extends Disposable implements INotebookService {
 			});
 		}
 		if (extensionManagementService) {
-			this._register(extensionManagementService.onDidUninstallExtension(({ identifier }) => this.removeContributedProvidersFromCache(identifier, extensionService)));
+			this._register(extensionManagementService.onDidUninstallExtension(({ identifier }) => this.removeContributedProvidersFromCache(identifier, this._extensionService)));
 		}
 
 		lifecycleService.onWillShutdown(() => this.shutdown());
@@ -400,6 +400,13 @@ export class NotebookService extends Disposable implements INotebookService {
 	private async getProviderInstance(providerId: string, timeout?: number): Promise<INotebookProvider> {
 		let providerDescriptor = this._providers.get(providerId);
 		let instance: INotebookProvider;
+
+		// Await extension registration before awaiting provider registration
+		try {
+			await this._extensionService.whenInstalledExtensionsRegistered;
+		} catch (error) {
+			throw typeof(error) === 'string' ? new Error(error) : error;
+		}
 
 		// Try get from actual provider, waiting on its registration
 		if (providerDescriptor) {
