@@ -10,17 +10,17 @@ import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/workbench/browser/modal/modal';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
 import { attachButtonStyler, attachModalDialogStyler } from 'sql/platform/theme/common/styler';
-import { Builder } from 'sql/base/browser/builder';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { Event, Emitter } from 'vs/base/common/event';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
+import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { localize } from 'vs/nls';
 import { IDisposable, toDisposable } from 'vs/base/common/lifecycle';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { WebviewElement } from 'vs/workbench/contrib/webview/electron-browser/webviewElement';
 import { IWorkbenchLayoutService, Parts } from 'vs/workbench/services/layout/browser/layoutService';
+import * as DOM from 'vs/base/browser/dom';
 
 export class WebViewDialog extends Modal {
 
@@ -85,29 +85,26 @@ export class WebViewDialog extends Modal {
 	}
 
 	protected renderBody(container: HTMLElement) {
-		new Builder(container).div({ 'class': 'webview-dialog' }, (bodyBuilder) => {
-			this._body = bodyBuilder.getHTMLElement();
+		this._body = DOM.append(container, DOM.$('div.webview-dialog'));
 
-			this._webview = this._instantiationService.createInstance(WebviewElement,
-				this.layoutService.getContainer(Parts.EDITOR_PART),
-				{},
-				{
-					allowScripts: true
-				});
+		this._webview = this._instantiationService.createInstance(WebviewElement,
+			{},
+			{
+				allowScripts: true
+			});
 
-			this._webview.mountTo(this._body);
+		this._webview.mountTo(this._body);
 
-			this._webview.style(this._themeService.getTheme());
+		this._webview.style(this._themeService.getTheme());
 
-			this._webview.onMessage(message => {
-				this._onMessage.fire(message);
-			}, null, this.contentDisposables);
+		this._webview.onMessage(message => {
+			this._onMessage.fire(message);
+		}, null, this.contentDisposables);
 
-			this._themeService.onThemeChange(theme => this._webview.style(theme), null, this.contentDisposables);
+		this._themeService.onThemeChange(theme => this._webview.style(theme), null, this.contentDisposables);
 
-			this.contentDisposables.push(this._webview);
-			this.contentDisposables.push(toDisposable(() => this._webview = null));
-		});
+		this.contentDisposables.push(this._webview);
+		this.contentDisposables.push(toDisposable(() => this._webview = null));
 	}
 
 	get onMessage(): Event<any> {

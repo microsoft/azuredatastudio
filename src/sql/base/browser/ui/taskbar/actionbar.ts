@@ -3,13 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import 'vs/css!vs/base/browser/ui/actionbar/actionbar';
 
-import { Builder, $ } from 'sql/base/browser/builder';
 import { IAction, IActionRunner, ActionRunner } from 'vs/base/common/actions';
-import { EventEmitter } from 'sql/base/common/eventEmitter';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import {
@@ -38,21 +34,22 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 
 	// Items
 	private _items: IActionItem[];
-	private _focusedItem: number;
+	private _focusedItem?: number;
 	private _focusTracker: DOM.IFocusTracker;
 
 	// Elements
 	private _domNode: HTMLElement;
 	private _actionsList: HTMLElement;
 
-	constructor(container: HTMLElement | Builder, options: IActionBarOptions = defaultOptions) {
+	constructor(container: HTMLElement, options: IActionBarOptions = defaultOptions) {
 		super();
 		this._options = options;
 		this._context = options.context;
 		this._toDispose = [];
-		this._actionRunner = this._options.actionRunner;
 
-		if (!this._actionRunner) {
+		if (this._options.actionRunner) {
+			this._actionRunner = this._options.actionRunner;
+		} else {
 			this._actionRunner = new ActionRunner();
 			this._toDispose.push(this._actionRunner);
 		}
@@ -74,7 +71,7 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 			this._domNode.className += ' vertical';
 		}
 
-		$(this._domNode).on(DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
+		this._register(DOM.addDisposableListener(this._domNode, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
 			let event = new StandardKeyboardEvent(e);
 			let eventHandled = true;
 
@@ -94,15 +91,15 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 				event.preventDefault();
 				event.stopPropagation();
 			}
-		});
+		}));
 
 		// Prevent native context menu on actions
-		$(this._domNode).on(DOM.EventType.CONTEXT_MENU, (e: Event) => {
+		this._register(DOM.addDisposableListener(this._domNode, DOM.EventType.CONTEXT_MENU, (e: Event) => {
 			e.preventDefault();
 			e.stopPropagation();
-		});
+		}));
 
-		$(this._domNode).on(DOM.EventType.KEY_UP, (e: KeyboardEvent) => {
+		this._register(DOM.addDisposableListener(this._domNode, DOM.EventType.KEY_UP, (e: KeyboardEvent) => {
 			let event = new StandardKeyboardEvent(e);
 
 			// Run action on Enter/Space
@@ -116,9 +113,9 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 			else if (event.equals(KeyCode.Tab) || event.equals(KeyMod.Shift | KeyCode.Tab)) {
 				this.updateFocusedItem();
 			}
-		});
+		}));
 
-		this._focusTracker = DOM.trackFocus(this._domNode);
+		this._focusTracker = this._register(DOM.trackFocus(this._domNode));
 		this._focusTracker.onDidBlur(() => {
 			if (document.activeElement === this._domNode || !DOM.isAncestor(document.activeElement, this._domNode)) {
 
@@ -139,7 +136,7 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 
 		this._domNode.appendChild(this._actionsList);
 
-		((container instanceof Builder) ? container.getHTMLElement() : container).appendChild(this._domNode);
+		container.appendChild(this._domNode);
 	}
 
 	public setAriaLabel(label: string): void {
@@ -186,8 +183,8 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 		}
 	}
 
-	public getContainer(): Builder {
-		return $(this._domNode);
+	public getContainer(): HTMLElement {
+		return this._domNode;
 	}
 
 	/**
@@ -219,7 +216,7 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 			actionItemElement.className = 'action-item';
 			actionItemElement.setAttribute('role', 'presentation');
 
-			let item: IActionItem = null;
+			let item: IActionItem | undefined = undefined;
 
 			if (this._options.actionItemProvider) {
 				item = this._options.actionItemProvider(action);
@@ -254,7 +251,7 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 	public clear(): void {
 		// Do not dispose action items if they were provided from outside
 		this._items = this._options.actionItemProvider ? [] : lifecycle.dispose(this._items);
-		$(this._actionsList).empty();
+		DOM.clearNode(this._actionsList);
 	}
 
 	public length(): number {
@@ -367,19 +364,12 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 	}
 
 	public dispose(): void {
-		if (this._items !== null) {
-			lifecycle.dispose(this._items);
-		}
-		this._items = null;
-
-		if (this._focusTracker) {
-			this._focusTracker.dispose();
-			this._focusTracker = null;
-		}
+		lifecycle.dispose(this._items);
+		this._items = [];
 
 		this._toDispose = lifecycle.dispose(this._toDispose);
 
-		this.getContainer().destroy();
+		this._domNode.remove();
 
 		super.dispose();
 	}

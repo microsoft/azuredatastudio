@@ -2,25 +2,18 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
 import 'vs/css!./declarativeTable';
+
 import {
-	Component, Input, Inject, ChangeDetectorRef, forwardRef, ComponentFactoryResolver,
-	ViewChild, ViewChildren, ElementRef, Injector, OnDestroy, QueryList, AfterViewInit
+	Component, Input, Inject, ChangeDetectorRef, forwardRef, ViewChild, ElementRef, OnDestroy, AfterViewInit
 } from '@angular/core';
 
 import * as azdata from 'azdata';
 
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
-import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { Event, Emitter } from 'vs/base/common/event';
-import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox.component';
-import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox.component';
-import { EditableDropDown } from 'sql/base/browser/ui/editableDropdown/editableDropdown.component';
 import { ISelectData } from 'vs/base/browser/ui/selectBox/selectBox';
-import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox.component';
-import * as nls from 'vs/nls';
 
 export enum DeclarativeDataType {
 	string = 'string',
@@ -37,7 +30,7 @@ export enum DeclarativeDataType {
 		<ng-container *ngFor="let column of columns;let h = index">
 		<th class="declarative-table-header" tabindex="-1" role="button" aria-sort="none">{{column.displayName}}</th>
 		</ng-container>
-    </thead>
+	</thead>
 		<ng-container *ngIf="data">
 			<ng-container *ngFor="let row of data;let r = index">
 				<tr class="declarative-table-row" >
@@ -63,8 +56,6 @@ export default class DeclarativeTableComponent extends ComponentBase implements 
 	@ViewChild('container', { read: ElementRef }) private _tableContainer: ElementRef;
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
-		@Inject(IContextViewService) private contextViewService: IContextViewService,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef
 	) {
 		super(changeRef, el);

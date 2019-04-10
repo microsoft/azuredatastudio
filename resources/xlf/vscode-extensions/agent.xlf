@@ -83,11 +83,17 @@
     <trans-unit id="pickSchedule.cancel">
       <source xml:lang="en">Cancel</source>
     </trans-unit>
-    <trans-unit id="pickSchedule.scheduleName">
-      <source xml:lang="en">Schedule Name</source>
+    <trans-unit id="pickSchedule.availableSchedules">
+      <source xml:lang="en">Available Schedules:</source>
     </trans-unit>
-    <trans-unit id="pickSchedule.schedules">
-      <source xml:lang="en">Schedules</source>
+    <trans-unit id="pickSchedule.scheduleName">
+      <source xml:lang="en">Name</source>
+    </trans-unit>
+    <trans-unit id="pickSchedule.scheduleID">
+      <source xml:lang="en">ID</source>
+    </trans-unit>
+    <trans-unit id="pickSchedule.description">
+      <source xml:lang="en">Description</source>
     </trans-unit>
   </body></file>
   <file original="extensions/agent/out/dialogs/operatorDialog" source-language="en" datatype="plaintext"><body>
@@ -143,7 +149,7 @@
       <source xml:lang="en">Workday end</source>
     </trans-unit>
     <trans-unit id="createOperator.PagerDutySchedule">
-      <source xml:lang="en">Pager on duty schdule</source>
+      <source xml:lang="en">Pager on duty schedule</source>
     </trans-unit>
     <trans-unit id="createOperator.AlertListHeading">
       <source xml:lang="en">Alert list</source>
@@ -159,9 +165,6 @@
     </trans-unit>
   </body></file>
   <file original="extensions/agent/out/dialogs/jobStepDialog" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="jobStepDialog.newJobStep">
-      <source xml:lang="en">New Job Step</source>
-    </trans-unit>
     <trans-unit id="jobStepDialog.fileBrowserTitle">
       <source xml:lang="en">Locate Database Files - </source>
     </trans-unit>
@@ -183,12 +186,6 @@
     <trans-unit id="jobStepDialog.parse">
       <source xml:lang="en">Parse</source>
     </trans-unit>
-    <trans-unit id="jobStepDialog.next">
-      <source xml:lang="en">Next</source>
-    </trans-unit>
-    <trans-unit id="jobStepDialog.previous">
-      <source xml:lang="en">Previous</source>
-    </trans-unit>
     <trans-unit id="jobStepDialog.successParse">
       <source xml:lang="en">The command was successfully parsed.</source>
     </trans-unit>
@@ -197,6 +194,9 @@
     </trans-unit>
     <trans-unit id="jobStepDialog.blankStepName">
       <source xml:lang="en">The step name cannot be left blank</source>
+    </trans-unit>
+    <trans-unit id="jobStepDialog.processExitCode">
+      <source xml:lang="en">Process exit code of a successful command:</source>
     </trans-unit>
     <trans-unit id="jobStepDialog.stepNameLabel">
       <source xml:lang="en">Step Name</source>
@@ -258,6 +258,12 @@
     <trans-unit id="jobStepDialog.TSQL">
       <source xml:lang="en">Transact-SQL script (T-SQL)</source>
     </trans-unit>
+    <trans-unit id="jobStepDialog.powershell">
+      <source xml:lang="en">PowerShell</source>
+    </trans-unit>
+    <trans-unit id="jobStepDialog.CmdExec">
+      <source xml:lang="en">Operating system (CmdExec)</source>
+    </trans-unit>
     <trans-unit id="jobStepDialog.agentServiceAccount">
       <source xml:lang="en">SQL Server Agent Service Account</source>
     </trans-unit>
@@ -269,6 +275,12 @@
     </trans-unit>
     <trans-unit id="jobStepDialog.quitJobFailure">
       <source xml:lang="en">Quit the job reporting failure</source>
+    </trans-unit>
+    <trans-unit id="jobStepDialog.newJobStep">
+      <source xml:lang="en">New Job Step</source>
+    </trans-unit>
+    <trans-unit id="jobStepDialog.editJobStep">
+      <source xml:lang="en">Edit Job Step</source>
     </trans-unit>
   </body></file>
   <file original="extensions/agent/out/dialogs/jobDialog" source-language="en" datatype="plaintext"><body>
@@ -321,19 +333,22 @@
       <source xml:lang="en">On Failure</source>
     </trans-unit>
     <trans-unit id="jobDialog.new">
-      <source xml:lang="en">New...</source>
+      <source xml:lang="en">New Step</source>
     </trans-unit>
     <trans-unit id="jobDialog.edit">
-      <source xml:lang="en">Edit</source>
+      <source xml:lang="en">Edit Step</source>
     </trans-unit>
     <trans-unit id="jobDialog.delete">
-      <source xml:lang="en">Delete</source>
+      <source xml:lang="en">Delete Step</source>
     </trans-unit>
     <trans-unit id="jobDialog.moveUp">
       <source xml:lang="en">Move Step Up</source>
     </trans-unit>
     <trans-unit id="jobDialog.moveDown">
-      <source xml:lang="en">Move Step Up</source>
+      <source xml:lang="en">Move Step Down</source>
+    </trans-unit>
+    <trans-unit id="jobDialog.startStepAt">
+      <source xml:lang="en">Start step</source>
     </trans-unit>
     <trans-unit id="jobDialog.notificationsTabTop">
       <source xml:lang="en">Actions to perform when the job completes</source>
@@ -367,6 +382,12 @@
     </trans-unit>
     <trans-unit id="jobDialog.alertNameLabel">
       <source xml:lang="en">Alert Name</source>
+    </trans-unit>
+    <trans-unit id="jobDialog.alertEnabledLabel">
+      <source xml:lang="en">Enabled</source>
+    </trans-unit>
+    <trans-unit id="jobDialog.alertTypeLabel">
+      <source xml:lang="en">Type</source>
     </trans-unit>
     <trans-unit id="jobDialog.newJob">
       <source xml:lang="en">New Job</source>
@@ -550,6 +571,28 @@
       <source xml:lang="en">Cancel</source>
     </trans-unit>
   </body></file>
+  <file original="extensions/agent/out/data/proxyData" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="proxyData.saveErrorMessage">
+      <source xml:lang="en">Proxy update failed '{0}'</source>
+    </trans-unit>
+    <trans-unit id="proxyData.saveSucessMessage">
+      <source xml:lang="en">Proxy '{0}' updated successfully</source>
+    </trans-unit>
+    <trans-unit id="proxyData.newJobSuccessMessage">
+      <source xml:lang="en">Proxy '{0}' created successfully</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/agent/out/data/jobStepData" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="jobStepData.saveErrorMessage">
+      <source xml:lang="en">Step update failed '{0}'</source>
+    </trans-unit>
+    <trans-unit id="stepData.jobNameRequired">
+      <source xml:lang="en">Job name must be provided</source>
+    </trans-unit>
+    <trans-unit id="stepData.stepNameRequired">
+      <source xml:lang="en">Step name must be provided</source>
+    </trans-unit>
+  </body></file>
   <file original="extensions/agent/out/data/jobData" source-language="en" datatype="plaintext"><body>
     <trans-unit id="jobData.whenJobCompletes">
       <source xml:lang="en">When the job completes</source>
@@ -565,6 +608,15 @@
     </trans-unit>
     <trans-unit id="jobData.saveErrorMessage">
       <source xml:lang="en">Job update failed '{0}'</source>
+    </trans-unit>
+    <trans-unit id="jobData.newJobErrorMessage">
+      <source xml:lang="en">Job creation failed '{0}'</source>
+    </trans-unit>
+    <trans-unit id="jobData.saveSucessMessage">
+      <source xml:lang="en">Job '{0}' updated successfully</source>
+    </trans-unit>
+    <trans-unit id="jobData.newJobSuccessMessage">
+      <source xml:lang="en">Job '{0}' created successfully</source>
     </trans-unit>
   </body></file>
   <file original="extensions/agent/out/data/alertData" source-language="en" datatype="plaintext"><body>

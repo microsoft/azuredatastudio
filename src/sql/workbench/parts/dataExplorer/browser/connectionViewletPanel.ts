@@ -18,12 +18,13 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { ViewletPanel, IViewletPanelOptions } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
-import { Builder } from 'sql/base/browser/builder';
 import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
 import { IAction } from 'vs/base/common/actions';
 import { ServerTreeView } from 'sql/parts/objectExplorer/viewlet/serverTreeView';
-import { ClearSearchAction, ActiveConnectionsFilterAction,
-	AddServerAction, AddServerGroupAction } from 'sql/parts/objectExplorer/viewlet/connectionTreeAction';
+import {
+	ClearSearchAction, ActiveConnectionsFilterAction,
+	AddServerAction, AddServerGroupAction
+} from 'sql/parts/objectExplorer/viewlet/connectionTreeAction';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { IExtensionsWorkbenchService } from 'vs/workbench/contrib/extensions/common/extensions';
 
@@ -75,36 +76,28 @@ export class ConnectionViewletPanel extends ViewletPanel {
 	}
 
 	renderBody(container: HTMLElement): void {
-		let parentBuilder = new Builder(container);
-		parentBuilder.div({ class: 'server-explorer-viewlet' }, (viewletContainer) => {
-			viewletContainer.div({ class: 'search-box' }, (searchBoxContainer) => {
-				let searchServerString = localize('Search server names', 'Search server names');
-				this._searchBox = new InputBox(
-					searchBoxContainer.getHTMLElement(),
-					null,
-					{
-						placeholder: searchServerString,
-						actions: [this._clearSearchAction],
-						ariaLabel: searchServerString
-					}
-				);
+		const viewletContainer = DOM.append(container, DOM.$('div.server-explorer-viewlet'));
+		const searchBoxContainer = DOM.append(viewletContainer, DOM.$('div.search-box'));
+		this._searchBox = new InputBox(
+			searchBoxContainer,
+			null,
+			{
+				placeholder: localize('Search server names', 'Search server names'),
+				actions: [this._clearSearchAction],
+				ariaLabel: localize('Search server names', 'Search server names')
+			}
+		);
 
-				this._searchBox.onDidChange(() => {
-					this.search(this._searchBox.value);
-				});
+		this._searchBox.onDidChange(() => {
+			this.search(this._searchBox.value);
+		});
 
-				// Theme styler
-				this._toDisposeViewlet.push(attachInputBoxStyler(this._searchBox, this.themeService));
+		// Theme styler
+		this._toDisposeViewlet.push(attachInputBoxStyler(this._searchBox, this.themeService));
 
-			});
-			viewletContainer.div({ Class: 'object-explorer-view' }, (viewContainer) => {
-				this._serverTreeView.renderBody(viewContainer.getHTMLElement()).then(() => {
-					Promise.resolve(null);
-				}, error => {
-					console.warn('render registered servers: ' + error);
-					Promise.resolve(null);
-				});
-			});
+		const viewContainer = DOM.append(viewletContainer, DOM.$('div.object-explorer-view'));
+		this._serverTreeView.renderBody(viewContainer).then(undefined, error => {
+			console.warn('render registered servers: ' + error);
 		});
 		this._root = container;
 	}

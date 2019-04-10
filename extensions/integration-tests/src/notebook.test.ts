@@ -12,7 +12,7 @@ import * as vscode from 'vscode';
 import { context } from './testContext';
 import { sqlNotebookContent, writeNotebookToFile, sqlKernelMetadata, getFileName, pySparkNotebookContent, pySpark3KernelMetadata, pythonKernelMetadata, sqlNotebookMultipleCellsContent } from './notebook.util';
 import { getBdcServer } from './testConfig';
-import { connectToServer } from './utils';
+import { connectToServer, getConfigValue, EnvironmentVariable_PYTHON_PATH } from './utils';
 import * as fs from 'fs';
 
 if (context.RunTest) {
@@ -51,7 +51,7 @@ if (context.RunTest) {
 		});
 
 		test('Sql NB multiple cells test', async function () {
-			let notebook = await openNotebook(sqlNotebookMultipleCellsContent, sqlKernelMetadata, this.test.title);
+			let notebook = await openNotebook(sqlNotebookMultipleCellsContent, sqlKernelMetadata, this.test.title, true);
 			const expectedOutput0 = '(1 row affected)';
 			for (let i = 0; i < 3; i++) {
 				let cellOutputs = notebook.document.cells[i].contents.outputs;
@@ -99,7 +99,7 @@ if (context.RunTest) {
 
 async function openNotebook(content: azdata.nb.INotebookContents, kernelMetadata: any, testName: string, runAllCells?: boolean): Promise<azdata.nb.NotebookEditor> {
 	let notebookConfig = vscode.workspace.getConfiguration('notebook');
-	notebookConfig.update('pythonPath', process.env.PYTHON_TEST_PATH, 1);
+	notebookConfig.update('pythonPath', getConfigValue(EnvironmentVariable_PYTHON_PATH), 1);
 	let server = await getBdcServer();
 	await connectToServer(server, 6000);
 	let pythonNotebook = Object.assign({}, content, { metadata: kernelMetadata });

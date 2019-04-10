@@ -3,13 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-import * as DOM from 'vs/base/browser/dom';
-import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
-import { Color } from 'vs/base/common/color';
-import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Widget } from 'vs/base/browser/ui/widget';
+import { withNullAsUndefined } from 'vs/base/common/types';
 
 export interface IRadioButtonOptions {
 	label: string;
@@ -43,20 +39,24 @@ export class RadioButton extends Widget {
 		container.appendChild(this._label);
 	}
 
-	public set name(value: string) {
-		this.inputElement.setAttribute('name', value);
+	public set name(value: string | undefined) {
+		if (value) {
+			this.inputElement.setAttribute('name', value);
+		}
 	}
 
-	public get name(): string {
-		return this.inputElement.getAttribute('name');
+	public get name(): string | undefined {
+		return withNullAsUndefined(this.inputElement.getAttribute('name'));
 	}
 
-	public set value(value: string) {
-		this.inputElement.setAttribute('value', value);
+	public set value(value: string | undefined) {
+		if (value) {
+			this.inputElement.setAttribute('value', value);
+		}
 	}
 
-	public get value(): string {
-		return this.inputElement.getAttribute('value');
+	public get value(): string | undefined {
+		return withNullAsUndefined(this.inputElement.getAttribute('value'));
 	}
 
 	public set checked(val: boolean) {

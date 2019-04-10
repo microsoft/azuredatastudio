@@ -8,13 +8,13 @@ import errors = require('vs/base/common/errors');
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import Severity from 'vs/base/common/severity';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
-import * as builder from 'sql/base/browser/builder';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { DefaultFilter, DefaultDragAndDrop, DefaultAccessibilityProvider } from 'vs/base/parts/tree/browser/treeDefaults';
 import { localize } from 'vs/nls';
+import { hide, $, append } from 'vs/base/browser/dom';
 
 import { TaskHistoryRenderer } from 'sql/parts/taskHistory/viewlet/taskHistoryRenderer';
 import { TaskHistoryDataSource } from 'sql/parts/taskHistory/viewlet/taskHistoryDataSource';
@@ -23,14 +23,13 @@ import { TaskHistoryActionProvider } from 'sql/parts/taskHistory/viewlet/taskHis
 import { ITaskService } from 'sql/platform/taskHistory/common/taskService';
 import { TaskNode, TaskStatus } from 'sql/parts/taskHistory/common/taskNode';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
-
-const $ = builder.$;
+import { IExpandableTree } from 'sql/parts/objectExplorer/viewlet/treeUpdateUtils';
 
 /**
  * TaskHistoryView implements the dynamic tree view.
  */
 export class TaskHistoryView {
-	private _messages: builder.Builder;
+	private _messages: HTMLElement;
 	private _tree: ITree;
 	private _toDispose: IDisposable[] = [];
 
@@ -50,13 +49,13 @@ export class TaskHistoryView {
 		let taskNode = this._taskService.getAllTasks();
 
 		// Add div to display no task executed message
-		this._messages = $('div.empty-task-message').appendTo(container);
+		this._messages = append(container, $('div.empty-task-message'));
 
 		if (taskNode && taskNode.hasChildren) {
-			this._messages.hide();
+			hide(this._messages);
 		}
 		let noTaskMessage = localize('noTaskMessage', 'No task history to display. Try backup or restore task to view its execution status.');
-		$('span').text(noTaskMessage).appendTo(this._messages);
+		append(this._messages, $('span')).innerText = noTaskMessage;
 
 		this._tree = this.createTaskHistoryTree(container, this._instantiationService);
 		this._toDispose.push(this._tree.onDidChangeSelection((event) => this.onSelected(event)));
@@ -65,7 +64,7 @@ export class TaskHistoryView {
 		this._toDispose.push(attachListStyler(this._tree, this._themeService));
 
 		this._toDispose.push(this._taskService.onAddNewTask(args => {
-			this._messages.hide();
+			hide(this._messages);
 			this.refreshTree();
 		}));
 		this._toDispose.push(this._taskService.onTaskComplete(task => {
@@ -114,7 +113,9 @@ export class TaskHistoryView {
 			if (selection && selection.length === 1) {
 				selectedElement = <any>selection[0];
 			}
-			targetsToExpand = this._tree.getExpandedElements();
+			// convert to old VS Code tree interface with expandable methods
+			let expandableTree: IExpandableTree = <IExpandableTree>this._tree;
+			targetsToExpand = expandableTree.getExpandedElements();
 		}
 
 		//Get the tree Input

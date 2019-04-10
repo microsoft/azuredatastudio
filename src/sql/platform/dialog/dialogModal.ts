@@ -11,21 +11,19 @@ import { attachModalDialogStyler } from 'sql/platform/theme/common/styler';
 import { Dialog, DialogButton } from 'sql/platform/dialog/dialogTypes';
 import { DialogPane } from 'sql/platform/dialog/dialogPane';
 
-import { Builder } from 'sql/base/browser/builder';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { Button } from 'vs/base/browser/ui/button/button';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
-import { localize } from 'vs/nls';
 import { Emitter } from 'vs/base/common/event';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { DialogMessage, MessageLevel } from '../../workbench/api/common/sqlExtHostTypes';
+import { DialogMessage } from '../../workbench/api/common/sqlExtHostTypes';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
+import { append, $ } from 'vs/base/browser/dom';
 
 export class DialogModal extends Modal {
 	private _dialogPane: DialogPane;
@@ -111,10 +109,7 @@ export class DialogModal extends Modal {
 	}
 
 	protected renderBody(container: HTMLElement): void {
-		let body: HTMLElement;
-		new Builder(container).div({ class: 'dialogModal-body' }, (bodyBuilder) => {
-			body = bodyBuilder.getHTMLElement();
-		});
+		const body = append(container, $('div.dialogModal-body'));
 
 		this._dialogPane = new DialogPane(this._dialog.title, this._dialog.content,
 			valid => this._dialog.notifyValidityChanged(valid), this._instantiationService, false);

@@ -62,8 +62,7 @@ import { ITextResourceConfigurationService } from 'vs/editor/common/services/res
 import { TextResourceConfigurationService } from 'vs/editor/common/services/resourceConfigurationImpl';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { AccessibilityService } from 'vs/platform/accessibility/node/accessibilityService';
-import { IExtensionEnablementService, IExtensionGalleryService } from 'vs/platform/extensionManagement/common/extensionManagement';
-import { ExtensionEnablementService } from 'vs/platform/extensionManagement/common/extensionEnablementService';
+import { IExtensionGalleryService } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { ContextViewService } from 'vs/platform/contextview/browser/contextViewService';
 import { ExtensionGalleryService } from 'vs/platform/extensionManagement/node/extensionGalleryService';
@@ -94,16 +93,16 @@ import { RelayURLService } from 'vs/platform/url/electron-browser/urlService';
 import 'vs/workbench/services/bulkEdit/browser/bulkEditService';
 import 'vs/workbench/services/integrity/node/integrityService';
 import 'vs/workbench/services/keybinding/common/keybindingEditing';
-import 'vs/workbench/services/hash/node/hashService';
 import 'vs/workbench/services/textMate/electron-browser/textMateService';
 import 'vs/workbench/services/configurationResolver/browser/configurationResolverService';
-import 'vs/workbench/services/workspace/node/workspaceEditingService';
+import 'vs/workbench/services/workspace/electron-browser/workspaceEditingService';
 import 'vs/workbench/services/extensions/common/inactiveExtensionUrlHandler';
 import 'vs/workbench/services/decorations/browser/decorationsService';
 import 'vs/workbench/services/search/node/searchService';
 import 'vs/workbench/services/progress/browser/progressService2';
 import 'vs/workbench/services/editor/browser/codeEditorService';
 import 'vs/workbench/services/broadcast/electron-browser/broadcastService';
+import 'vs/workbench/services/extensions/electron-browser/extensionHostDebugService';
 import 'vs/workbench/services/preferences/browser/preferencesService';
 import 'vs/workbench/services/output/node/outputChannelModelService';
 import 'vs/workbench/services/configuration/common/jsonEditingService';
@@ -123,9 +122,10 @@ import 'vs/workbench/services/textfile/node/textResourcePropertiesService';
 import 'vs/workbench/services/mode/common/workbenchModeService';
 import 'vs/workbench/services/commands/common/commandService';
 import 'vs/workbench/services/themes/browser/workbenchThemeService';
+import 'vs/workbench/services/extensionManagement/node/extensionEnablementService';
 import 'vs/workbench/services/extensions/electron-browser/extensionService';
 import 'vs/workbench/services/contextmenu/electron-browser/contextmenuService';
-import 'vs/workbench/services/extensionManagement/node/multiExtensionManagement';
+import 'vs/workbench/services/extensions/node/multiExtensionManagement';
 import 'vs/workbench/services/label/common/labelService';
 import 'vs/workbench/services/extensions/electron-browser/extensionManagementServerService';
 import 'vs/workbench/services/remote/electron-browser/remoteAgentServiceImpl';
@@ -144,7 +144,6 @@ registerSingleton(IContextKeyService, ContextKeyService);
 registerSingleton(IModelService, ModelServiceImpl, true);
 registerSingleton(ITextResourceConfigurationService, TextResourceConfigurationService);
 registerSingleton(IAccessibilityService, AccessibilityService, true);
-registerSingleton(IExtensionEnablementService, ExtensionEnablementService, true);
 registerSingleton(IContextViewService, ContextViewService, true);
 registerSingleton(IExtensionGalleryService, ExtensionGalleryService, true);
 registerSingleton(IRequestService, RequestService, true);
@@ -204,7 +203,7 @@ import { IFileBrowserDialogController } from 'sql/workbench/services/fileBrowser
 import { FileBrowserDialogController } from 'sql/workbench/services/fileBrowser/browser/fileBrowserDialogController';
 import { IInsightsDialogService } from 'sql/workbench/services/insights/common/insightsDialogService';
 import { InsightsDialogService } from 'sql/workbench/services/insights/browser/insightsDialogService';
-import { IAccountManagementService } from 'sql/platform/accountManagement/common/interfaces';
+import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 import { AccountManagementService } from 'sql/workbench/services/accountManagement/browser/accountManagementService';
 import { IProfilerService } from 'sql/workbench/services/profiler/common/interfaces';
 import { ProfilerService } from 'sql/workbench/services/profiler/common/profilerService';
@@ -212,8 +211,8 @@ import { ISqlOAuthService } from 'sql/platform/oAuth/common/sqlOAuthService';
 import { SqlOAuthService } from 'sql/platform/oAuth/electron-browser/sqlOAuthServiceImpl';
 import { IClipboardService as sqlIClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { ClipboardService as sqlClipboardService } from 'sql/platform/clipboard/electron-browser/clipboardService';
-import { AccountPickerService } from 'sql/platform/accountManagement/browser/accountPickerService';
-import { IAccountPickerService } from 'sql/platform/accountManagement/common/accountPicker';
+import { AccountPickerService } from 'sql/platform/accounts/browser/accountPickerService';
+import { IAccountPickerService } from 'sql/platform/accounts/common/accountPicker';
 import { IResourceProviderService } from 'sql/workbench/services/resourceProvider/common/resourceProviderService';
 import { ResourceProviderService } from 'sql/workbench/services/resourceProvider/browser/resourceProviderService';
 import { IDashboardViewService } from 'sql/platform/dashboard/common/dashboardViewService';
@@ -281,6 +280,9 @@ import 'vs/workbench/browser/parts/statusbar/statusbarPart';
 
 //#region --- workbench contributions
 
+// Workspace File Watching
+import 'vs/workbench/services/files2/common/workspaceWatcher';
+
 // Telemetry
 import 'vs/workbench/contrib/telemetry/browser/telemetry.contribution';
 
@@ -338,6 +340,7 @@ import 'vs/workbench/contrib/comments/browser/comments.contribution';
 import 'vs/workbench/contrib/url/common/url.contribution';
 
 // Webview
+import 'vs/workbench/contrib/webview/browser/webview.contribution';
 import 'vs/workbench/contrib/webview/electron-browser/webview.contribution';
 
 // Extensions Management
@@ -430,7 +433,6 @@ import 'vs/workbench/contrib/issue/electron-browser/issue.contribution';
 // SQL
 import 'sql/parts/taskHistory/common/taskHistory.contribution';
 import 'sql/parts/taskHistory/viewlet/taskHistoryViewlet';
-import 'sql/parts/tasks/common/tasks.contribution';
 
 // data explorer
 import 'sql/workbench/parts/dataExplorer/browser/dataExplorer.contribution';
@@ -447,38 +449,38 @@ import 'sql/parts/query/editor/resultsGridContribution';
 import 'sql/parts/profiler/contrib/profiler.contribution';
 import 'sql/parts/profiler/contrib/profilerActions.contribution';
 import 'sql/parts/objectExplorer/serverGroupDialog/serverGroup.contribution';
-import 'sql/parts/accountManagement/common/accountManagement.contribution';
+import 'sql/platform/accounts/browser/accountManagement.contribution';
 /* Insights */
-import 'sql/parts/dashboard/widgets/insights/views/charts/types/barChart.contribution';
-import 'sql/parts/dashboard/widgets/insights/views/charts/types/doughnutChart.contribution';
-import 'sql/parts/dashboard/widgets/insights/views/charts/types/horizontalBarChart.contribution';
-import 'sql/parts/dashboard/widgets/insights/views/charts/types/lineChart.contribution';
-import 'sql/parts/dashboard/widgets/insights/views/charts/types/pieChart.contribution';
-import 'sql/parts/dashboard/widgets/insights/views/charts/types/scatterChart.contribution';
-import 'sql/parts/dashboard/widgets/insights/views/charts/types/timeSeriesChart.contribution';
-import 'sql/parts/dashboard/widgets/insights/views/countInsight.contribution';
-import 'sql/parts/dashboard/widgets/insights/views/imageInsight.contribution';
-import 'sql/parts/dashboard/widgets/insights/views/tableInsight.contribution';
+import 'sql/workbench/parts/dashboard/widgets/insights/views/charts/types/barChart.contribution';
+import 'sql/workbench/parts/dashboard/widgets/insights/views/charts/types/doughnutChart.contribution';
+import 'sql/workbench/parts/dashboard/widgets/insights/views/charts/types/horizontalBarChart.contribution';
+import 'sql/workbench/parts/dashboard/widgets/insights/views/charts/types/lineChart.contribution';
+import 'sql/workbench/parts/dashboard/widgets/insights/views/charts/types/pieChart.contribution';
+import 'sql/workbench/parts/dashboard/widgets/insights/views/charts/types/scatterChart.contribution';
+import 'sql/workbench/parts/dashboard/widgets/insights/views/charts/types/timeSeriesChart.contribution';
+import 'sql/workbench/parts/dashboard/widgets/insights/views/countInsight.contribution';
+import 'sql/workbench/parts/dashboard/widgets/insights/views/imageInsight.contribution';
+import 'sql/workbench/parts/dashboard/widgets/insights/views/tableInsight.contribution';
 /* Tasks */
 import 'sql/workbench/common/actions.contribution';
 /* Widgets */
-import 'sql/parts/dashboard/widgets/insights/insightsWidget.contribution';
-import 'sql/parts/dashboard/widgets/explorer/explorerWidget.contribution';
-import 'sql/parts/dashboard/widgets/tasks/tasksWidget.contribution';
-import 'sql/parts/dashboard/widgets/webview/webviewWidget.contribution';
-import 'sql/parts/dashboard/dashboardConfig.contribution';
+import 'sql/workbench/parts/dashboard/widgets/insights/insightsWidget.contribution';
+import 'sql/workbench/parts/dashboard/widgets/explorer/explorerWidget.contribution';
+import 'sql/workbench/parts/dashboard/widgets/tasks/tasksWidget.contribution';
+import 'sql/workbench/parts/dashboard/widgets/webview/webviewWidget.contribution';
+import 'sql/workbench/parts/dashboard/dashboardConfig.contribution';
 /* Model-based Views */
 import 'sql/parts/modelComponents/components.contribution';
 /* View Model Editor */
 import 'sql/parts/modelComponents/modelEditor/modelViewEditor.contribution';
 /* Notebook Editor */
-import 'sql/parts/notebook/notebook.contribution';
+import 'sql/workbench/parts/notebook/notebook.contribution';
 /* Containers */
-import 'sql/parts/dashboard/containers/dashboardWebviewContainer.contribution';
-import 'sql/parts/dashboard/containers/dashboardControlHostContainer.contribution';
-import 'sql/parts/dashboard/containers/dashboardGridContainer.contribution';
-import 'sql/parts/dashboard/containers/dashboardWidgetContainer.contribution';
-import 'sql/parts/dashboard/containers/dashboardContainer.contribution';
-import 'sql/parts/dashboard/containers/dashboardNavSection.contribution';
-import 'sql/parts/dashboard/containers/dashboardModelViewContainer.contribution';
-import 'sql/parts/dashboard/common/dashboardTab.contribution';
+import 'sql/workbench/parts/dashboard/containers/dashboardWebviewContainer.contribution';
+import 'sql/workbench/parts/dashboard/containers/dashboardControlHostContainer.contribution';
+import 'sql/workbench/parts/dashboard/containers/dashboardGridContainer.contribution';
+import 'sql/workbench/parts/dashboard/containers/dashboardWidgetContainer.contribution';
+import 'sql/workbench/parts/dashboard/containers/dashboardContainer.contribution';
+import 'sql/workbench/parts/dashboard/containers/dashboardNavSection.contribution';
+import 'sql/workbench/parts/dashboard/containers/dashboardModelViewContainer.contribution';
+import 'sql/workbench/parts/dashboard/common/dashboardTab.contribution';

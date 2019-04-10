@@ -6,7 +6,6 @@
 import 'vs/css!./media/table';
 import { TableDataView } from './tableDataView';
 import { IDisposableDataProvider, ITableSorter, ITableMouseEvent, ITableConfiguration, ITableStyles } from 'sql/base/browser/ui/table/interfaces';
-import { $ } from 'sql/base/browser/builder';
 
 import { IThemable } from 'vs/platform/theme/common/styler';
 import * as DOM from 'vs/base/browser/dom';
@@ -94,7 +93,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IThemabl
 		if (configuration && configuration.sorter) {
 			this._sorter = configuration.sorter;
 			this._grid.onSort.subscribe((e, args) => {
-				this._sorter.sort(args);
+				this._sorter(args);
 				this._grid.invalidate();
 				this._grid.render();
 			});
@@ -121,7 +120,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IThemabl
 	}
 
 	public dispose() {
-		$(this._container).dispose();
+		this._container.remove();
 		super.dispose();
 	}
 
@@ -146,9 +145,9 @@ export class Table<T extends Slick.SlickData> extends Widget implements IThemabl
 		return this._grid;
 	}
 
-	setData(data: Array<T>);
-	setData(data: TableDataView<T>);
-	setData(data: Array<T> | TableDataView<T>) {
+	setData(data: Array<T>): void;
+	setData(data: TableDataView<T>): void;
+	setData(data: Array<T> | TableDataView<T>): void {
 		if (data instanceof TableDataView) {
 			this._data = data;
 		} else {

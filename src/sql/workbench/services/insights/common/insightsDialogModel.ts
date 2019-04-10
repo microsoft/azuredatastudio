@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IInsightsDialogModel, ListResource } from 'sql/workbench/services/insights/common/insightsDialogService';
-import { IInsightsConfigDetails, IInsightsLabel } from 'sql/parts/dashboard/widgets/insights/interfaces';
-import { Conditional } from 'sql/parts/dashboard/common/interfaces';
+import { IInsightsConfigDetails, IInsightsLabel } from 'sql/workbench/parts/dashboard/widgets/insights/interfaces';
+import { Conditional } from 'sql/workbench/parts/dashboard/common/interfaces';
 
 import { Event, Emitter } from 'vs/base/common/event';
 

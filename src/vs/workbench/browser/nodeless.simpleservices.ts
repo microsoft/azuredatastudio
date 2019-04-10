@@ -18,9 +18,9 @@ import { SimpleConfigurationService as StandaloneEditorConfigurationService, Sta
 import { IDownloadService } from 'vs/platform/download/common/download';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IEnvironmentService, IExtensionHostDebugParams, IDebugParams } from 'vs/platform/environment/common/environment';
-import { IExtensionGalleryService, IQueryOptions, IGalleryExtension, InstallOperation, StatisticType, ITranslation, IGalleryExtensionVersion, IExtensionIdentifier, IReportedExtension, IExtensionManagementService, ILocalExtension, IGalleryMetadata, IExtensionTipsService, ExtensionRecommendationReason, IExtensionRecommendation } from 'vs/platform/extensionManagement/common/extensionManagement';
+import { IExtensionGalleryService, IQueryOptions, IGalleryExtension, InstallOperation, StatisticType, ITranslation, IGalleryExtensionVersion, IExtensionIdentifier, IReportedExtension, IExtensionManagementService, ILocalExtension, IGalleryMetadata, IExtensionTipsService, ExtensionRecommendationReason, IExtensionRecommendation, IExtensionEnablementService, EnablementState } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { IPager } from 'vs/base/common/paging';
-import { IExtensionManifest, ExtensionType, ExtensionIdentifier } from 'vs/platform/extensions/common/extensions';
+import { IExtensionManifest, ExtensionType, ExtensionIdentifier, IExtension } from 'vs/platform/extensions/common/extensions';
 import { NullExtensionService, IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { IURLHandler, IURLService } from 'vs/platform/url/common/url';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
@@ -251,7 +251,7 @@ export class SimpleEnvironmentService implements IEnvironmentService {
 	disableExtensions: boolean | string[];
 	builtinExtensionsPath: string;
 	extensionsPath: string;
-	extensionDevelopmentLocationURI?: URI;
+	extensionDevelopmentLocationURI?: URI | URI[];
 	extensionTestsPath?: string;
 	debugExtensionHost: IExtensionHostDebugParams;
 	debugSearch: IDebugParams;
@@ -353,6 +353,38 @@ registerSingleton(IExtensionGalleryService, SimpleExtensionGalleryService, true)
 //#endregion
 
 //#region Extension Management
+
+//#region Extension Enablement
+
+export class SimpleExtensionEnablementService implements IExtensionEnablementService {
+
+	_serviceBrand: any;
+
+	readonly onEnablementChanged = Event.None;
+
+	readonly allUserExtensionsDisabled = true;
+
+	getEnablementState(extension: IExtension): EnablementState {
+		return EnablementState.Disabled;
+	}
+
+	canChangeEnablement(extension: IExtension): boolean {
+		return false;
+	}
+
+	setEnablement(extensions: IExtension[], newState: EnablementState): Promise<boolean[]> {
+		throw new Error('not implemented');
+	}
+
+	isEnabled(extension: IExtension): boolean {
+		return false;
+	}
+
+}
+
+registerSingleton(IExtensionEnablementService, SimpleExtensionEnablementService, true);
+
+//#endregion
 
 //#region Extension Tips
 
@@ -669,6 +701,8 @@ export class SimpleRemoteAuthorityResolverService implements IRemoteAuthorityRes
 		return Promise.resolve(undefined);
 	}
 
+	clearResolvedAuthority(authority: string): void { }
+
 	setResolvedAuthority(resolvedAuthority: ResolvedAuthority): void { }
 
 	setResolvedAuthorityError(authority: string, err: any): void { }
@@ -694,6 +728,7 @@ export class SimpleRemoteFileService implements IFileService {
 	readonly onAfterOperation = Event.None;
 	readonly onDidChangeFileSystemProviderRegistrations = Event.None;
 	readonly onWillActivateFileSystemProvider = Event.None;
+	readonly onError = Event.None;
 
 	resolve(resource: URI, options?: IResolveFileOptions): Promise<IFileStatWithMetadata> {
 		// @ts-ignore
@@ -798,13 +833,11 @@ export class SimpleRemoteFileService implements IFileService {
 
 	canHandleResource(resource: URI): boolean { return resource.scheme === 'file'; }
 
-	hasCapability(resource: URI, capability: FileSystemProviderCapabilities): Promise<boolean> { return Promise.resolve(false); }
+	hasCapability(resource: URI, capability: FileSystemProviderCapabilities): boolean { return false; }
 
 	del(_resource: URI, _options?: { useTrash?: boolean, recursive?: boolean }): Promise<void> { return Promise.resolve(); }
 
-	watch(_resource: URI): void { }
-
-	unwatch(_resource: URI): void { }
+	watch(_resource: URI): IDisposable { return Disposable.None; }
 
 	getWriteEncoding(_resource: URI): IResourceEncoding { return { encoding: 'utf8', hasBOM: false }; }
 
