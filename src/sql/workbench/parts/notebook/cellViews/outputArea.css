@@ -11,3 +11,7 @@ output-area-component .notebook-output {
 	user-select: text;
 	padding: 5px 20px 0px;
 }
+
+.output.actionselect {
+	user-select: text;
+}

@@ -14,6 +14,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
+import * as DOM from 'vs/base/browser/dom';
 
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { CellView } from 'sql/workbench/parts/notebook/cellViews/interfaces';
@@ -23,6 +24,7 @@ import { NotebookModel } from 'sql/workbench/parts/notebook/models/notebookModel
 import { CellToggleMoreActions } from 'sql/workbench/parts/notebook/cellToggleMoreActions';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
+export const USER_SELECT_CLASS ='actionselect';
 
 @Component({
 	selector: TEXT_SELECTOR,
@@ -176,9 +178,22 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	private updateMoreActions(): void {
 		if (!this.isEditMode && (this.isActive() || this._hover)) {
 			this.toggleMoreActionsButton(true);
+			this.toggleUserSelect(true);
 		}
 		else {
 			this.toggleMoreActionsButton(false);
+			this.toggleUserSelect(false);
+		}
+	}
+
+	private toggleUserSelect(userSelect: boolean): void {
+		if (!this.output) {
+			return;
+		}
+		if (userSelect) {
+			DOM.addClass(this.output.nativeElement, USER_SELECT_CLASS);
+		} else {
+			DOM.removeClass(this.output.nativeElement, USER_SELECT_CLASS);
 		}
 	}
 
