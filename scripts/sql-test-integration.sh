@@ -16,8 +16,9 @@ cd $ROOT
 echo $VSCODEUSERDATADIR
 echo $VSCODEEXTDIR
 
+./scripts/code.sh --extensionDevelopmentPath=$ROOT/extensions/notebook --extensionTestsPath=$ROOT/extensions/notebook/out/integrationTest --user-data-dir=$VSCODEUSERDATADIR --extensions-dir=$VSCODEEXTDIR --remote-debugging-port=9222
 ./scripts/code.sh --extensionDevelopmentPath=$ROOT/extensions/integration-tests --extensionTestsPath=$ROOT/extensions/integration-tests/out --user-data-dir=$VSCODEUSERDATADIR --extensions-dir=$VSCODEEXTDIR --remote-debugging-port=9222
 
-
+rm -r -f ~/TestPythonInstallation
 rm -r $VSCODEUSERDATADIR
 rm -r $VSCODEEXTDIR

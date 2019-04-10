@@ -14,6 +14,7 @@ call .\scripts\code.bat --extensionDevelopmentPath=%~dp0\..\extensions\integrati
 
 if %errorlevel% neq 0 exit /b %errorlevel%
 
+rmdir /s /q %USERPROFILE%\TestPythonInstallation
 rmdir /s /q %VSCODEUSERDATADIR%
 rmdir /s /q %VSCODEEXTENSIONSDIR%
 
