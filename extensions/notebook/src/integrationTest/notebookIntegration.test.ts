@@ -9,8 +9,7 @@ import * as should from 'should';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as tempWrite from 'temp-write';
-import * as fs from 'fs-extra';
-import * as path from 'path';
+import * as assert from 'assert';
 import 'mocha';
 
 import { JupyterController } from '../jupyter/jupyterController';
@@ -38,9 +37,11 @@ describe('Notebook Extension Integration Tests', function () {
 	};
 
 	let installComplete = false;
-	const pythonInstallDir = path.join(process.env.HOME || process.env.USERPROFILE, 'TestPythonInstallation');
+	let pythonInstallDir = process.env.PYTHON_TEST_PATH;
 	let jupyterController: JupyterController;
 	before(async function () {
+		assert.ok(pythonInstallDir, 'Python install directory was not defined.');
+
 		let notebookExtension: vscode.Extension<any>;
 		while (true) {
 			notebookExtension = vscode.extensions.getExtension('Microsoft.notebook');
