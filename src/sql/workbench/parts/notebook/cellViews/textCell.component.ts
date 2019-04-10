@@ -113,6 +113,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			if (propName === 'activeCellId') {
 				let changedProp = changes[propName];
 				this._activeCellId = changedProp.currentValue;
+				this.toggleUserSelect(this.isActive());
 				// If the activeCellId is undefined (i.e. in an active cell update), don't unnecessarily set editMode to false;
 				// it will be set to true in a subsequent call to toggleEditMode()
 				if (changedProp.previousValue !== undefined) {
@@ -178,11 +179,9 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	private updateMoreActions(): void {
 		if (!this.isEditMode && (this.isActive() || this._hover)) {
 			this.toggleMoreActionsButton(true);
-			this.toggleUserSelect(true);
 		}
 		else {
 			this.toggleMoreActionsButton(false);
-			this.toggleUserSelect(false);
 		}
 	}
 
