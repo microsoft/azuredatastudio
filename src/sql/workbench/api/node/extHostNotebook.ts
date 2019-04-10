@@ -111,7 +111,8 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 			id: kernel.id,
 			info: kernel.info,
 			name: kernel.name,
-			supportsIntellisense: kernel.supportsIntellisense
+			supportsIntellisense: kernel.supportsIntellisense,
+			requiresConnection: kernel.requiresConnection
 		};
 		return kernelDetails;
 	}

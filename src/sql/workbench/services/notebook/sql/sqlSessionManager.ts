@@ -179,6 +179,10 @@ class SqlKernel extends Disposable implements nb.IKernel {
 		return true;
 	}
 
+	public get requiresConnection(): boolean {
+		return true;
+	}
+
 	public get isReady(): boolean {
 		// should we be checking on the tools service status here?
 		return true;
