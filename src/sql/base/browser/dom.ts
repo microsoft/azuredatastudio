@@ -3,6 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
- .monaco-builder-hidden {
-	display: none !important;
+export function isHidden(element: HTMLElement): boolean {
+	return element.style.display === 'none';
 }
