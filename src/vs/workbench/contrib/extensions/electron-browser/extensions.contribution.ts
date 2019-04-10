@@ -251,6 +251,11 @@ Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration)
 				description: localize('extensionsPolicy', "Sets the security policy for downloading extensions."),
 				scope: ConfigurationScope.APPLICATION,
 				default: ExtensionsPolicy.allowAll
+			},
+			'extensions.experimental.showGroupByServerAsDefault': {
+				type: 'boolean',
+				description: localize('extensions.experimental.showGroupByServerAsDefault', "When enabled, extensions viewlet shows installed extension grouped by server as default view. This setting is experimental and subjected to be removed."),
+				default: true
 			}
 		}
 	});

@@ -53,7 +53,6 @@ import { createErrorWithActions } from 'vs/base/common/errorsWithActions';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { ExtensionType } from 'vs/platform/extensions/common/extensions';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { RemoteAuthorityContext as RemoteAuthorityContext } from 'vs/workbench/common/contextkeys';
 import { ViewContainerViewlet } from 'vs/workbench/browser/parts/views/viewsViewlet';
 
 interface SearchInputEvent extends Event {
@@ -133,7 +132,7 @@ export class ExtensionsViewletViewsContribution implements IWorkbenchContributio
 			id,
 			name: viewIdNameMappings[id],
 			ctorDescriptor: { ctor: EnabledExtensionsView },
-			when: ContextKeyExpr.and(ContextKeyExpr.has('defaultExtensionViews'), ContextKeyExpr.has('hasInstalledExtensions'), RemoteAuthorityContext.isEqualTo('')),
+			when: ContextKeyExpr.and(ContextKeyExpr.has('defaultExtensionViews'), ContextKeyExpr.has('hasInstalledExtensions'), ContextKeyExpr.not('config.extensions.experimental.showGroupByServerAsDefault')),
 			weight: 40,
 			canToggleVisibility: true,
 			order: 1
@@ -148,7 +147,7 @@ export class ExtensionsViewletViewsContribution implements IWorkbenchContributio
 			id,
 			name: viewIdNameMappings[id],
 			ctorDescriptor: { ctor: DisabledExtensionsView },
-			when: ContextKeyExpr.and(ContextKeyExpr.has('defaultExtensionViews'), ContextKeyExpr.has('hasInstalledExtensions'), RemoteAuthorityContext.isEqualTo('')),
+			when: ContextKeyExpr.and(ContextKeyExpr.has('defaultExtensionViews'), ContextKeyExpr.has('hasInstalledExtensions'), ContextKeyExpr.not('config.extensions.experimental.showGroupByServerAsDefault')),
 			weight: 10,
 			canToggleVisibility: true,
 			order: 3,
@@ -183,7 +182,7 @@ export class ExtensionsViewletViewsContribution implements IWorkbenchContributio
 			id: `extensions.${server.authority}.default`,
 			name: server.label,
 			ctorDescriptor: { ctor: ServerExtensionsView, arguments: [server] },
-			when: ContextKeyExpr.and(ContextKeyExpr.has('defaultExtensionViews'), ContextKeyExpr.has('hasInstalledExtensions'), RemoteAuthorityContext.notEqualsTo('')),
+			when: ContextKeyExpr.and(ContextKeyExpr.has('defaultExtensionViews'), ContextKeyExpr.has('hasInstalledExtensions'), ContextKeyExpr.has('config.extensions.experimental.showGroupByServerAsDefault')),
 			weight: 40,
 			order: 1
 		}];
