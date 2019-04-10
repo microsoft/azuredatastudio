@@ -43,6 +43,7 @@ import { NullLogService } from 'vs/platform/log/common/log';
 import { DiskFileSystemProvider } from 'vs/workbench/services/files2/node/diskFileSystemProvider';
 import { ConfigurationCache } from 'vs/workbench/services/configuration/node/configurationCache';
 import { ConfigurationFileService } from 'vs/workbench/services/configuration/node/configurationFileService';
+import { VSBuffer } from 'vs/base/common/buffer';
 
 class SettingsTestEnvironmentService extends EnvironmentService {
 
