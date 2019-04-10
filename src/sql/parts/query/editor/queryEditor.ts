@@ -23,7 +23,6 @@ import { TextResourceEditor } from 'vs/workbench/browser/parts/editor/textResour
 
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IActionItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { Action } from 'vs/base/common/actions';
 import { ISelectionData } from 'azdata';
@@ -94,7 +93,6 @@ export class QueryEditor extends BaseEditor {
 		@IThemeService themeService: IThemeService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IEditorService private _editorService: IEditorService,
-		@IContextMenuService private _contextMenuService: IContextMenuService,
 		@IQueryModelService private _queryModelService: IQueryModelService,
 		@IEditorDescriptorService private _editorDescriptorService: IEditorDescriptorService,
 		@IContextKeyService contextKeyService: IContextKeyService,
@@ -464,7 +462,7 @@ export class QueryEditor extends BaseEditor {
 	private _createTaskbar(parentElement: HTMLElement): void {
 		// Create QueryTaskbar
 		this._taskbarContainer = DOM.append(parentElement, DOM.$('div'));
-		this._taskbar = new Taskbar(this._taskbarContainer, this._contextMenuService, {
+		this._taskbar = new Taskbar(this._taskbarContainer, {
 			actionItemProvider: (action: Action) => this._getActionItemForAction(action),
 		});
 
@@ -753,7 +751,7 @@ export class QueryEditor extends BaseEditor {
 	}
 
 	private getTaskBarHeight(): number {
-		let taskBarElement = this.taskbar.getContainer().getHTMLElement();
+		let taskBarElement = this.taskbar.getContainer();
 		return DOM.getContentHeight(taskBarElement);
 	}
 

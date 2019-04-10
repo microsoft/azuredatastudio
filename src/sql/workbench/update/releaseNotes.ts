@@ -20,7 +20,7 @@ export class OpenGettingStartedInBrowserAction extends Action {
 	constructor(
 		@IOpenerService private openerService: IOpenerService
 	) {
-		super('update.openGettingStartedGuide', nls.localize('gettingStarted', "Get Started"), null, true);
+		super('update.openGettingStartedGuide', nls.localize('gettingStarted', "Get Started"), undefined, true);
 	}
 
 	run(): Promise<any> {

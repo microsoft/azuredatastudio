@@ -14,6 +14,7 @@ import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { DefaultFilter, DefaultDragAndDrop, DefaultAccessibilityProvider } from 'vs/base/parts/tree/browser/treeDefaults';
 import { localize } from 'vs/nls';
+import { hide, $, append } from 'vs/base/browser/dom';
 
 import { TaskHistoryRenderer } from 'sql/parts/taskHistory/viewlet/taskHistoryRenderer';
 import { TaskHistoryDataSource } from 'sql/parts/taskHistory/viewlet/taskHistoryDataSource';
@@ -22,7 +23,7 @@ import { TaskHistoryActionProvider } from 'sql/parts/taskHistory/viewlet/taskHis
 import { ITaskService } from 'sql/platform/taskHistory/common/taskService';
 import { TaskNode, TaskStatus } from 'sql/parts/taskHistory/common/taskNode';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
-import { hide, $, append } from 'vs/base/browser/dom';
+import { IExpandableTree } from 'sql/parts/objectExplorer/viewlet/treeUpdateUtils';
 
 /**
  * TaskHistoryView implements the dynamic tree view.
@@ -112,7 +113,9 @@ export class TaskHistoryView {
 			if (selection && selection.length === 1) {
 				selectedElement = <any>selection[0];
 			}
-			targetsToExpand = this._tree.getExpandedElements();
+			// convert to old VS Code tree interface with expandable methods
+			let expandableTree: IExpandableTree = <IExpandableTree>this._tree;
+			targetsToExpand = expandableTree.getExpandedElements();
 		}
 
 		//Get the tree Input

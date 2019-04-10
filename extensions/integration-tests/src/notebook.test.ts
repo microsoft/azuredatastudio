@@ -12,7 +12,7 @@ import * as vscode from 'vscode';
 import { context } from './testContext';
 import { sqlNotebookContent, writeNotebookToFile, sqlKernelMetadata, getFileName, pySparkNotebookContent, pySpark3KernelMetadata, pythonKernelMetadata, sqlNotebookMultipleCellsContent } from './notebook.util';
 import { getBdcServer } from './testConfig';
-import { connectToServer } from './utils';
+import { connectToServer, getConfigValue, EnvironmentVariable_PYTHON_PATH } from './utils';
 import * as fs from 'fs';
 
 if (context.RunTest) {
@@ -99,11 +99,12 @@ if (context.RunTest) {
 
 async function openNotebook(content: azdata.nb.INotebookContents, kernelMetadata: any, testName: string, runAllCells?: boolean): Promise<azdata.nb.NotebookEditor> {
 	let notebookConfig = vscode.workspace.getConfiguration('notebook');
-	notebookConfig.update('pythonPath', process.env.PYTHON_TEST_PATH, 1);
+	notebookConfig.update('pythonPath', getConfigValue(EnvironmentVariable_PYTHON_PATH), 1);
 	let server = await getBdcServer();
+	assert(server && server.serverName, 'No server could be found in openNotebook');
 	await connectToServer(server, 6000);
-	let pythonNotebook = Object.assign({}, content, { metadata: kernelMetadata });
-	let uri = writeNotebookToFile(pythonNotebook, testName);
+	let notebookJson = Object.assign({}, content, { metadata: kernelMetadata });
+	let uri = writeNotebookToFile(notebookJson, testName);
 	console.log(uri);
 	let notebook = await azdata.nb.showNotebookDocument(uri);
 	console.log('Notebook is opened');

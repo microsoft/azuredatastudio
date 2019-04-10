@@ -80,6 +80,10 @@ export class ServerTreeDataSource implements IDataSource {
 						node.setExpandedState(TreeItemCollapsibleState.Collapsed);
 						node.errorStateMessage = expandError;
 						this.showError(expandError);
+						// collapse node and refresh in case of error so remove tree cache
+						setTimeout(() => {
+							tree.collapse(element).then(() => tree.refresh(element));
+						});
 						resolve([]);
 					});
 				}

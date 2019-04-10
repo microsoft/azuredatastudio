@@ -305,11 +305,20 @@ export class PreviewFileCommand extends ProgressCommand {
 				await this.executeWithProgress(
 					async (cancelToken: vscode.CancellationTokenSource) => {
 						let contents = await fileNode.getFileContentsAsString(PreviewFileCommand.DefaultMaxSize);
-						let doc = await this.openTextDocument(fspath.basename(fileNode.hdfsPath));
-						let editor = await this.apiWrapper.showTextDocument(doc, vscode.ViewColumn.Active, false);
-						await editor.edit(edit => {
-							edit.insert(new vscode.Position(0, 0), contents);
-						});
+						let fileName: string = fspath.basename(fileNode.hdfsPath);
+						if (fspath.extname(fileName) !== '.ipynb') {
+							let doc = await this.openTextDocument(fileName);
+							let editor = await this.apiWrapper.showTextDocument(doc, vscode.ViewColumn.Active, false);
+							await editor.edit(edit => {
+								edit.insert(new vscode.Position(0, 0), contents);
+							});
+						} else {
+							let connectionProfile: azdata.IConnectionProfile = undefined;
+							if (context.type === constants.ObjectExplorerService) {
+								connectionProfile = context.explorerContext.connectionProfile;
+							}
+							await this.showNotebookDocument(fileName, connectionProfile, contents);
+						}
 					},
 					localize('previewing', 'Generating preview'),
 					false);
@@ -320,6 +329,18 @@ export class PreviewFileCommand extends ProgressCommand {
 			this.apiWrapper.showErrorMessage(
 				localize('previewError', 'Error on previewing file: {0}', utils.getErrorMessage(err, true)));
 		}
+	}
+
+	private async showNotebookDocument(fileName: string, connectionProfile?: azdata.IConnectionProfile,
+		initialContent?: string
+	): Promise<azdata.nb.NotebookEditor> {
+		let docUri: vscode.Uri = getSaveableUri(this.apiWrapper, fileName, true)
+			.with({ scheme: constants.UNTITLED_SCHEMA });
+		return await azdata.nb.showNotebookDocument(docUri, {
+			connectionProfile: connectionProfile,
+			preview: false,
+			initialContent: initialContent
+		});
 	}
 
 	private async openTextDocument(fileName: string): Promise<vscode.TextDocument> {

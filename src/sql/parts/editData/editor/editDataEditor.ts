@@ -21,7 +21,6 @@ import { EditDataInput } from 'sql/parts/editData/common/editDataInput';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import * as queryContext from 'sql/parts/query/common/queryContext';
 import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
-import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IActionItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { Action } from 'vs/base/common/actions';
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
@@ -80,7 +79,6 @@ export class EditDataEditor extends BaseEditor {
 		@IThemeService themeService: IThemeService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IEditorService private _editorService: IEditorService,
-		@IContextMenuService private _contextMenuService: IContextMenuService,
 		@IQueryModelService private _queryModelService: IQueryModelService,
 		@IEditorDescriptorService private _editorDescriptorService: IEditorDescriptorService,
 		@IContextKeyService contextKeyService: IContextKeyService,
@@ -319,7 +317,7 @@ export class EditDataEditor extends BaseEditor {
 	private _createTaskbar(parentElement: HTMLElement): void {
 		// Create QueryTaskbar
 		this._taskbarContainer = DOM.append(parentElement, DOM.$('div'));
-		this._taskbar = new Taskbar(this._taskbarContainer, this._contextMenuService, {
+		this._taskbar = new Taskbar(this._taskbarContainer, {
 			actionItemProvider: (action: Action) => this._getChangeMaxRowsAction(action)
 		});
 
@@ -488,7 +486,7 @@ export class EditDataEditor extends BaseEditor {
 	}
 
 	private _getTaskBarHeight(): number {
-		let taskBarElement = this._taskbar.getContainer().getHTMLElement();
+		let taskBarElement = this._taskbar.getContainer();
 		return DOM.getContentHeight(taskBarElement);
 	}
 

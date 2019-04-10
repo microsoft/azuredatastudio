@@ -19,6 +19,7 @@ import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
 
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
+import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 
 @Component({
 	selector: 'modelview-dropdown',
@@ -42,7 +43,8 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IContextViewService) private contextViewService: IContextViewService,
-		@Inject(forwardRef(() => ElementRef)) el: ElementRef
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
+		@Inject(ILayoutService) private readonly layoutService: ILayoutService
 	) {
 		super(changeRef, el);
 	}
@@ -61,7 +63,7 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 				ariaLabel: '',
 				actionLabel: ''
 			};
-			this._editableDropdown = new Dropdown(this._editableDropDownContainer.nativeElement, this.contextViewService,
+			this._editableDropdown = new Dropdown(this._editableDropDownContainer.nativeElement, this.contextViewService, this.layoutService,
 				dropdownOptions);
 
 			this._register(this._editableDropdown);

@@ -6,8 +6,8 @@
 'use strict';
 
 import { append, $ } from 'vs/base/browser/dom';
-import { IInsightTypeContrib } from 'sql/parts/dashboard/widgets/insights/interfaces';
-import { IDashboardTabContrib } from 'sql/parts/dashboard/common/dashboardTab.contribution';
+import { IInsightTypeContrib } from 'sql/workbench/parts/dashboard/widgets/insights/interfaces';
+import { IDashboardTabContrib } from 'sql/workbench/parts/dashboard/common/dashboardTab.contribution';
 import { localize } from 'vs/nls';
 import { IExtensionManifest } from 'vs/platform/extensions/common/extensions';
 

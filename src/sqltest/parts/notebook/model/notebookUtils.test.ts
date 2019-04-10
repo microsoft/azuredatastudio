@@ -10,7 +10,7 @@ import { nb, IConnectionProfile } from 'azdata';
 
 import { CapabilitiesTestService } from 'sqltest/stubs/capabilitiesTestService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { formatServerNameWithDatabaseNameForAttachTo, getServerFromFormattedAttachToName, getDatabaseFromFormattedAttachToName } from 'sql/parts/notebook/notebookUtils';
+import { formatServerNameWithDatabaseNameForAttachTo, getServerFromFormattedAttachToName, getDatabaseFromFormattedAttachToName } from 'sql/workbench/parts/notebook/notebookUtils';
 
 suite('notebookUtils', function(): void {
     let conn: IConnectionProfile = {

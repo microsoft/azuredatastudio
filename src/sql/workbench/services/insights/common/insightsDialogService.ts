@@ -5,7 +5,7 @@
 import { Event } from 'vs/base/common/event';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 
-import { IInsightsConfigDetails, IInsightsConfig } from 'sql/parts/dashboard/widgets/insights/interfaces';
+import { IInsightsConfigDetails, IInsightsConfig } from 'sql/workbench/parts/dashboard/widgets/insights/interfaces';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { BaseActionContext } from 'sql/workbench/common/actions';
 
