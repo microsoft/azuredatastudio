@@ -44,6 +44,8 @@ declare module 'azdata' {
 
 		export function registerDacFxServicesProvider(provider: DacFxServicesProvider): vscode.Disposable;
 
+		export function registerSchemaCompareServicesProvider(provider: SchemaCompareServicesProvider): vscode.Disposable;
+
 		/**
 		 * An [event](#Event) which fires when the specific flavor of a language used in DMP
 		 * connections has changed. And example is for a SQL connection, the flavor changes

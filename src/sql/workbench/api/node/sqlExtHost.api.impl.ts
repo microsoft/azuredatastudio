@@ -351,6 +351,10 @@ export function createApiFactory(
 				return extHostDataProvider.$registerDacFxServiceProvider(provider);
 			};
 
+			let registerSchemaCompareServicesProvider = (provider: azdata.SchemaCompareServicesProvider): vscode.Disposable => {
+				return extHostDataProvider.$registerSchemaCompareServiceProvider(provider);
+			};
+
 			// namespace: dataprotocol
 			const dataprotocol: typeof azdata.dataprotocol = {
 				registerBackupProvider,
@@ -368,6 +372,7 @@ export function createApiFactory(
 				registerAgentServicesProvider,
 				registerCapabilitiesServiceProvider,
 				registerDacFxServicesProvider,
+				registerSchemaCompareServicesProvider,
 				onDidChangeLanguageFlavor(listener: (e: azdata.DidChangeLanguageFlavorParams) => any, thisArgs?: any, disposables?: extHostTypes.Disposable[]) {
 					return extHostDataProvider.onDidChangeLanguageFlavor(listener, thisArgs, disposables);
 				},
@@ -525,7 +530,10 @@ export function createApiFactory(
 				nb: nb,
 				AzureResource: sqlExtHostTypes.AzureResource,
 				TreeItem: sqlExtHostTypes.TreeItem,
-				extensions: extensions
+				extensions: extensions,
+				SchemaUpdateAction: sqlExtHostTypes.SchemaUpdateAction,
+				SchemaDifferenceType: sqlExtHostTypes.SchemaDifferenceType,
+				SchemaCompareEndpointType: sqlExtHostTypes.SchemaCompareEndpointType
 			};
 		},
 
@@ -789,6 +797,10 @@ export function createApiFactory(
 				return extHostDataProvider.$registerDacFxServiceProvider(provider);
 			};
 
+			let registerSchemaCompareServicesProvider = (provider: sqlops.SchemaCompareServicesProvider): vscode.Disposable => {
+				return extHostDataProvider.$registerSchemaCompareServiceProvider(provider);
+			};
+
 			// namespace: dataprotocol
 			const dataprotocol: typeof sqlops.dataprotocol = {
 				registerBackupProvider,
@@ -806,6 +818,7 @@ export function createApiFactory(
 				registerAgentServicesProvider,
 				registerCapabilitiesServiceProvider,
 				registerDacFxServicesProvider,
+				registerSchemaCompareServicesProvider,
 				onDidChangeLanguageFlavor(listener: (e: sqlops.DidChangeLanguageFlavorParams) => any, thisArgs?: any, disposables?: extHostTypes.Disposable[]) {
 					return extHostDataProvider.onDidChangeLanguageFlavor(listener, thisArgs, disposables);
 				},
@@ -994,6 +1007,9 @@ export function createApiFactory(
 				AzureResource: sqlExtHostTypes.AzureResource,
 				extensions: extensions,
 				TreeItem: sqlExtHostTypes.TreeItem,
+				SchemaUpdateAction: sqlExtHostTypes.SchemaUpdateAction,
+				SchemaDifferenceType: sqlExtHostTypes.SchemaDifferenceType,
+				SchemaCompareEndpointType: sqlExtHostTypes.SchemaCompareEndpointType,
 			};
 		}
 	};

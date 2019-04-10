@@ -41,6 +41,8 @@ declare module 'sqlops' {
 
 		export function registerDacFxServicesProvider(provider: DacFxServicesProvider): vscode.Disposable;
 
+		export function registerSchemaCompareServicesProvider(provider: SchemaCompareServicesProvider): vscode.Disposable;
+
 		/**
 		 * An [event](#Event) which fires when the specific flavor of a language used in DMP
 		 * connections has changed. And example is for a SQL connection, the flavor changes
@@ -1699,6 +1701,65 @@ declare module 'sqlops' {
 		deployDacpac(packageFilePath: string, databaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
 		generateDeployScript(packageFilePath: string, databaseName: string, scriptFilePath: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
 		generateDeployPlan(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<GenerateDeployPlanResult>;
+	}
+
+	// Schema Compare interfaces  -----------------------------------------------------------------------
+	export interface SchemaCompareResult extends ResultStatus {
+		operationId: string;
+		areEqual: boolean;
+		differences: DiffEntry[];
+	}
+
+ 	export interface DiffEntry {
+		updateAction: SchemaUpdateAction;
+		differenceType: SchemaDifferenceType;
+		name: string;
+		sourceValue: string;
+		targetValue: string;
+		parent: DiffEntry;
+		children: DiffEntry[];
+		sourceScript: string;
+		targetScript: string;
+	}
+
+ 	export enum SchemaUpdateAction {
+		Delete = 0,
+		Change = 1,
+		Add = 2
+	}
+
+ 	export enum SchemaDifferenceType {
+		Object = 0,
+		Property = 1
+	}
+
+	export enum SchemaCompareEndpointType {
+		database = 0,
+		dacpac = 1
+	}
+	export interface SchemaCompareEndpointInfo {
+		endpointType: SchemaCompareEndpointType;
+		packageFilePath: string;
+		databaseName: string;
+		ownerUri: string;
+	}
+
+ 	export interface SchemaCompareParams {
+		sourceEndpointInfo: SchemaCompareEndpointInfo;
+		targetEndpointInfo: SchemaCompareEndpointInfo;
+		taskExecutionMode: TaskExecutionMode;
+	}
+
+ 	export interface SchemaCompareGenerateScriptParams {
+		operationId: string;
+		targetDatabaseName: string;
+		scriptFilePath: string;
+		taskExecutionMode: TaskExecutionMode;
+	}
+
+	export interface SchemaCompareServicesProvider extends DataProvider {
+		schemaCompare(sourceEndpointInfo: SchemaCompareEndpointInfo, targetEndpointInfo: SchemaCompareEndpointInfo, taskExecutionMode: TaskExecutionMode): Thenable<SchemaCompareResult>;
+		schemaCompareGenerateScript(operationId: string, targetDatabaseName: string, scriptFilePath: string, taskExecutionMode: TaskExecutionMode): Thenable<ResultStatus>;
 	}
 
 	// Security service interfaces ------------------------------------------------------------------------
