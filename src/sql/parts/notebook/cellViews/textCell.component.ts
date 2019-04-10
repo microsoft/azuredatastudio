@@ -136,7 +136,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			}
 
 			this._commandService.executeCommand<string>('notebook.showPreview', this.cellModel.notebookModel.notebookUri, this._content).then((htmlcontent) => {
-				htmlcontent = this.convertVsCodeResourceToFileInSubDirectories(htmlcontent);
+				htmlcontent = this.convertVscodeResourceToFileInSubDirectories(htmlcontent);
 				let outputElement = <HTMLElement>this.output.nativeElement;
 				outputElement.innerHTML = htmlcontent;
 			});
@@ -153,11 +153,11 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	// Only replace vscode-resource with file when in the same (or a sub) directory
 	// This matches Jupyter Notebook viewer behavior
-	private convertVsCodeResourceToFileInSubDirectories(htmlContent: string): string {
+	private convertVscodeResourceToFileInSubDirectories(htmlContent: string): string {
 		let htmlContentCopy = htmlContent;
 		while (htmlContentCopy.search('(?<=img src=\"vscode-resource:)') > 0) {
 			let pathStartIndex = htmlContentCopy.search('(?<=img src=\"vscode-resource:)');
-			let pathEndIndex = htmlContentCopy.slice(pathStartIndex).indexOf('\" ') + pathStartIndex;
+			let pathEndIndex = htmlContentCopy.indexOf('\" ', pathStartIndex);
 			let filePath = htmlContentCopy.substring(pathStartIndex, pathEndIndex);
 			// If the asset is in the same folder or a subfolder, replace 'vscode-resource:' with 'file:', so the image is visible
 			if (!path.relative(path.dirname(this.cellModel.notebookModel.notebookUri.fsPath), filePath).includes('..')) {
