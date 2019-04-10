@@ -4475,6 +4475,7 @@ declare module 'azdata' {
 			readonly id: string;
 			readonly name: string;
 			readonly supportsIntellisense: boolean;
+			readonly requiresConnection?: boolean;
 			/**
 			 * Test whether the kernel is ready.
 			 */

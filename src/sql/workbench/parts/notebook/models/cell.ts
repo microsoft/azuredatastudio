@@ -210,6 +210,10 @@ export class CellModel implements ICellModel {
 				await kernel.interrupt();
 			} else {
 				// TODO update source based on editor component contents
+				if (kernel.requiresConnection && !this.notebookModel.activeConnection) {
+					this.sendNotification(notificationService, Severity.Error, localize('kernelRequiresConnection', "Please select a connection to run cells for this kernel"));
+					return false;
+				}
 				let content = this.source;
 				if (content) {
 					let future = await kernel.requestExecute({
