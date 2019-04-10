@@ -10,7 +10,7 @@ import { DISCONNECT_COMMAND_ID, MANAGE_COMMAND_ID, NEW_QUERY_COMMAND_ID, REFRESH
 
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	group: 'connection',
-	order: 4,
+	order: 3,
 	command: {
 		id: DISCONNECT_COMMAND_ID,
 		title: localize('disconnect', 'Disconnect')
@@ -20,6 +20,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	group: 'connection',
+	order: 2,
 	command: {
 		id: NEW_QUERY_COMMAND_ID,
 		title: localize('newQuery', 'New Query')
@@ -29,7 +30,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	group: 'connection',
-	order: 4,
+	order: 1,
 	command: {
 		id: MANAGE_COMMAND_ID,
 		title: localize('manage', 'Manage')

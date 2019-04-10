@@ -24,5 +24,8 @@
     "title.openYarnHistory": "View Yarn History",
     "title.tasks": "Tasks",
     "title.installPackages": "Install Packages",
-    "title.configurePython": "Configure Python for Notebooks"
+	"title.configurePython": "Configure Python for Notebooks",
+
+	"title.searchServers": "Search: Servers",
+	"title.clearSearchServerResult": "Search: Clear Search Server Results"
 }
