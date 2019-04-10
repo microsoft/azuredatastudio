@@ -51,7 +51,6 @@ export class ConnectionViewlet extends Viewlet implements IConnectionsViewlet {
 
 		super(VIEWLET_ID, configurationService, layoutService, telemetryService, _themeService, storageService);
 
-		//this._clearSearchAction = this._instantiationService.createInstance(ClearSearchAction, ClearSearchAction.ID, ClearSearchAction.LABEL, this);
 		this._addServerAction = this._instantiationService.createInstance(AddServerAction,
 			AddServerAction.ID,
 			AddServerAction.LABEL);
