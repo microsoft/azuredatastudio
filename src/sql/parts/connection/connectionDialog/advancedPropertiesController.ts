@@ -3,9 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
-// // import { AdvancedPropertiesDialog } from 'sql/parts/connection/connectionDialog/advancedPropertiesDialog';
 import { OptionsDialog } from 'sql/workbench/browser/modal/optionsDialog';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as azdata from 'azdata';
@@ -28,7 +25,7 @@ export class AdvancedPropertiesController {
 
 	public showDialog(providerOptions: azdata.ConnectionOption[], container: HTMLElement, options: { [name: string]: any }): void {
 		this._options = options;
-		var serviceOptions = providerOptions.map(option => AdvancedPropertiesController.connectionOptionToServiceOption(option));
+		let serviceOptions = providerOptions.map(option => AdvancedPropertiesController.connectionOptionToServiceOption(option));
 		this.advancedDialog.open(serviceOptions, this._options);
 	}
 

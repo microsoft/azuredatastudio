@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { append, $, addClass, addClasses } from 'vs/base/browser/dom';
@@ -51,7 +50,7 @@ export function getBooleanValueFromStringOrBoolean(value: any): boolean {
 }
 
 export function getCategoryDisplayName(categories: azdata.CategoryValue[], categoryName: string) {
-	var displayName: string;
+	let displayName: string;
 	categories.forEach(c => {
 		if (c.name === categoryName) {
 			displayName = c.displayName;
@@ -61,7 +60,7 @@ export function getCategoryDisplayName(categories: azdata.CategoryValue[], categ
 }
 
 export function getCategoryName(categories: azdata.CategoryValue[], categoryDisplayName: string) {
-	var categoryName: string;
+	let categoryName: string;
 	categories.forEach(c => {
 		if (c.displayName === categoryDisplayName) {
 			categoryName = c.name;

@@ -18,7 +18,7 @@ export class TreeSelectionHandler {
 	private _clicks: number = 0;
 	private _doubleClickTimeoutTimer: NodeJS.Timer = undefined;
 
-	constructor( @IProgressService private _progressService: IProgressService) {
+	constructor(@IProgressService private _progressService: IProgressService) {
 
 	}
 
@@ -69,12 +69,6 @@ export class TreeSelectionHandler {
 
 	/**
 	 *
-	 * @param connectionManagementService
-	 * @param objectExplorerService
-	 * @param isDoubleClick
-	 * @param isKeyboard
-	 * @param selection
-	 * @param tree
 	 * @param connectionCompleteCallback A function that gets called after a connection is established due to the selection, if needed
 	 */
 	private handleTreeItemSelected(connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, isDoubleClick: boolean, isKeyboard: boolean, selection: any[], tree: ITree, connectionCompleteCallback: () => void): void {

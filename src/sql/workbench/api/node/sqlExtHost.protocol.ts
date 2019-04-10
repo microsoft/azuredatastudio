@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import {
 	createMainContextProxyIdentifier as createMainId,
@@ -758,7 +757,7 @@ export interface MainThreadModelViewDialogShape extends IDisposable {
 	$setDirty(handle: number, isDirty: boolean): void;
 }
 export interface ExtHostQueryEditorShape {
-	$onQueryEvent(handle: number, fileUri:string, event: IQueryEvent): void;
+	$onQueryEvent(handle: number, fileUri: string, event: IQueryEvent): void;
 }
 
 export interface MainThreadQueryEditorShape extends IDisposable {
@@ -772,9 +771,7 @@ export interface ExtHostNotebookShape {
 
 	/**
 	 * Looks up a notebook manager for a given notebook URI
-	 * @param {number} providerHandle
-	 * @param {vscode.Uri} notebookUri
-	 * @returns {Thenable<string>} handle of the manager to be used when sending
+	 * @returns handle of the manager to be used when sending
 	 */
 	$getNotebookManager(providerHandle: number, notebookUri: UriComponents): Thenable<INotebookManagerDetails>;
 	$handleNotebookClosed(notebookUri: UriComponents): void;

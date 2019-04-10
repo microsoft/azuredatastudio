@@ -103,8 +103,8 @@ export class RunJobAction extends Action {
 		return new Promise<boolean>((resolve, reject) => {
 			this.jobManagementService.jobAction(ownerUri, jobName, JobActions.Run).then(result => {
 				if (result.success) {
-					var startMsg = nls.localize('jobSuccessfullyStarted', ': The job was successfully started.');
-					this.notificationService.info(jobName+startMsg);
+					let startMsg = nls.localize('jobSuccessfullyStarted', ': The job was successfully started.');
+					this.notificationService.info(jobName + startMsg);
 					refreshAction.run(context);
 					resolve(true);
 				} else {
@@ -139,8 +139,8 @@ export class StopJobAction extends Action {
 			this.jobManagementService.jobAction(ownerUri, jobName, JobActions.Stop).then(result => {
 				if (result.success) {
 					refreshAction.run(context);
-					var stopMsg = nls.localize('jobSuccessfullyStopped', ': The job was successfully stopped.');
-					this.notificationService.info(jobName+stopMsg);
+					let stopMsg = nls.localize('jobSuccessfullyStopped', ': The job was successfully stopped.');
+					this.notificationService.info(jobName + stopMsg);
 					resolve(true);
 				} else {
 					this.errorMessageService.showDialog(Severity.Error, 'Error', result.errorMessage);
@@ -532,7 +532,7 @@ export class DeleteProxyAction extends Action {
 						if (!result || !result.success) {
 							let errorMessage = nls.localize("jobaction.failedToDeleteProxy", "Could not delete proxy '{0}'.\nError: {1}",
 								proxy.accountName, result.errorMessage ? result.errorMessage : 'Unknown error');
-								self._errorMessageService.showDialog(Severity.Error, errorLabel, errorMessage);
+							self._errorMessageService.showDialog(Severity.Error, errorLabel, errorMessage);
 						} else {
 							let successMessage = nls.localize('jobaction.deletedProxy', 'The proxy was deleted successfully');
 							self._notificationService.info(successMessage);

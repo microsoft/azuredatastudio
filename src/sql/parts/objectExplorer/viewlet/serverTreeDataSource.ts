@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ITree, IDataSource } from 'vs/base/parts/tree/browser/tree';
@@ -68,7 +67,7 @@ export class ServerTreeDataSource implements IDataSource {
 			} else if (element instanceof ConnectionProfileGroup) {
 				resolve((<ConnectionProfileGroup>element).getChildren());
 			} else if (element instanceof TreeNode) {
-				var node = element;
+				let node = element;
 				if (node.children) {
 					resolve(node.children);
 				} else {

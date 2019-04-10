@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import { DefaultController, ICancelableEvent } from 'vs/base/parts/tree/browser/treeDefaults';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
@@ -111,7 +110,7 @@ export class RecentConnectionTreeController extends DefaultController {
 	}
 
 	public showContextMenu(tree: ITree, element: any, event: any): boolean {
-		var actionContext: any;
+		let actionContext: any;
 
 		if (element instanceof ConnectionProfile) {
 			actionContext = new RecentConnectionsActionsContext();

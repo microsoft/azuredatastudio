@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
@@ -163,7 +162,7 @@ export function generateGuid(): string {
 }
 
 export function verifyPlatform(): Thenable<boolean> {
-	if (os.platform() === 'darwin' && parseFloat(os.release()) < 16.0) {
+	if (os.platform() === 'darwin' && parseFloat(os.release()) < 16) {
 		return Promise.resolve(false);
 	} else {
 		return Promise.resolve(true);

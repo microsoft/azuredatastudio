@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import { NodeType } from 'sql/parts/objectExplorer/common/nodeType';
 import { TreeNode, TreeItemCollapsibleState } from 'sql/parts/objectExplorer/common/treeNode';
@@ -190,8 +189,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 	public deleteObjectExplorerNode(connection: IConnectionProfile): Thenable<void> {
 		let self = this;
-		var connectionUri = connection.id;
-		var nodeTree = this._activeObjectExplorerNodes[connectionUri];
+		let connectionUri = connection.id;
+		let nodeTree = this._activeObjectExplorerNodes[connectionUri];
 		if (nodeTree) {
 			return self.closeSession(connection.providerName, nodeTree.getSession()).then(() => {
 				delete self._activeObjectExplorerNodes[connectionUri];

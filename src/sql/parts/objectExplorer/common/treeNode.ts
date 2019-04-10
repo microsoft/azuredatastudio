@@ -1,9 +1,7 @@
 /*---------------------------------------------------------------------------------------------
-*  Copyright (c) Microsoft Corporation. All rights reserved.
-*  Licensed under the Source EULA. See License.txt in the project root for license information.
-*--------------------------------------------------------------------------------------------*/
-
-'use strict';
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { NodeType, SqlThemeIcon } from 'sql/parts/objectExplorer/common/nodeType';
@@ -109,7 +107,7 @@ export class TreeNode {
 		this.nodeStatus = nodeStatus;
 	}
 	public getConnectionProfile(): ConnectionProfile {
-		var currentNode: TreeNode = this;
+		let currentNode: TreeNode = this;
 		while (!currentNode.connection && currentNode.parent) {
 			currentNode = currentNode.parent;
 		}
@@ -120,7 +118,7 @@ export class TreeNode {
 		if (this.connection) {
 			return undefined;
 		}
-		var currentNode: TreeNode = this;
+		let currentNode: TreeNode = this;
 		while (currentNode.nodeTypeId !== NodeType.Database && currentNode.nodeTypeId !== NodeType.Server && currentNode.parent) {
 			currentNode = currentNode.parent;
 		}
@@ -132,7 +130,7 @@ export class TreeNode {
 	}
 
 	public getSession(): azdata.ObjectExplorerSession {
-		var currentNode: TreeNode = this;
+		let currentNode: TreeNode = this;
 		while (!currentNode.session && currentNode.parent) {
 			currentNode = currentNode.parent;
 		}

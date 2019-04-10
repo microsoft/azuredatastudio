@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 import * as Constants from 'sql/common/constants';
 import { ConnectionProviderProperties, IConnectionProviderRegistry, Extensions as ConnectionExtensions } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
@@ -199,7 +197,6 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 
 	/**
 	 * Register the capabilities provider and query the provider for its capabilities
-	 * @param provider
 	 */
 	public registerProvider(provider: azdata.CapabilitiesProvider): void {
 		// request the capabilities from server

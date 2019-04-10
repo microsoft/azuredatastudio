@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { ContributableActionProvider } from 'vs/workbench/browser/actions';
 import { IAction } from 'vs/base/common/actions';
@@ -44,7 +43,7 @@ export class TaskHistoryActionProvider extends ContributableActionProvider {
 	 * Return actions for history task
 	 */
 	public getTaskHistoryActions(tree: ITree, element: TaskNode): IAction[] {
-		var actions = [];
+		let actions = [];
 
 		// get actions for tasks in progress
 		if (element.status === TaskStatus.InProgress && element.isCancelable) {

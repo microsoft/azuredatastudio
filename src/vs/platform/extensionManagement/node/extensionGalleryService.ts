@@ -537,8 +537,6 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 	/**
 	 * The result of querying the gallery returns all the extensions because it's only reading a static file.
 	 * So this method should apply all the filters and return the actual result
-	 * @param query
-	 * @param galleryExtensions
 	 */
 	private createQueryResult(query: Query, galleryExtensions: IRawGalleryExtension[]): { galleryExtensions: IRawGalleryExtension[], total: number; } {
 

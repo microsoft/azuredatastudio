@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 
@@ -15,7 +13,6 @@ import * as constants from './constants';
  * this API from our code
  *
  * @export
- * @class ApiWrapper
  */
 export class ApiWrapper {
 	// Data APIs

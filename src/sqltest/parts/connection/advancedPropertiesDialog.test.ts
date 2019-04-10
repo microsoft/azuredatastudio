@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import { OptionsDialog } from 'sql/workbench/browser/modal/optionsDialog';
 import { AdvancedPropertiesController } from 'sql/parts/connection/connectionDialog/advancedPropertiesController';
 import { ContextKeyServiceStub } from 'sqltest/stubs/contextKeyServiceStub';
@@ -14,8 +13,8 @@ import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { $ } from 'vs/base/browser/dom';
 
 suite('Advanced properties dialog tests', () => {
-	var advancedController: AdvancedPropertiesController;
-	var providerOptions: azdata.ConnectionOption[];
+	let advancedController: AdvancedPropertiesController;
+	let providerOptions: azdata.ConnectionOption[];
 
 	setup(() => {
 		advancedController = new AdvancedPropertiesController(() => { }, null);
@@ -84,7 +83,7 @@ suite('Advanced properties dialog tests', () => {
 	});
 
 	test('advanced dialog should open when showDialog in advancedController get called', () => {
-		var isAdvancedDialogCalled = false;
+		let isAdvancedDialogCalled = false;
 		let options: { [name: string]: any } = {};
 		let advanceDialog = TypeMoq.Mock.ofType(OptionsDialog, TypeMoq.MockBehavior.Strict,
 			'', // title

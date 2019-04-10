@@ -95,7 +95,7 @@ export abstract class JobManagementView extends TabChild implements AfterContent
 	}
 
 	protected _keybindingFor(action: IAction): ResolvedKeybinding {
-		var [kb] = this._keybindingService.lookupKeybindings(action.id);
+		let [kb] = this._keybindingService.lookupKeybindings(action.id);
 		return kb;
 	}
 

@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import { $ } from 'vs/base/browser/dom';
 import { ITree, IRenderer } from 'vs/base/parts/tree/browser/tree';
 import { ITaskHistoryTemplateData } from 'sql/parts/taskHistory/viewlet/templateData';
@@ -48,7 +47,7 @@ export class TaskHistoryRenderer implements IRenderer {
 		const taskTemplate: ITaskHistoryTemplateData = Object.create(null);
 		taskTemplate.root = dom.append(container, $('.task-group'));
 		taskTemplate.icon = dom.append(taskTemplate.root, $('img.task-icon'));
-		var titleContainer = dom.append(taskTemplate.root, $('div.task-details'));
+		let titleContainer = dom.append(taskTemplate.root, $('div.task-details'));
 		taskTemplate.title = dom.append(titleContainer, $('div.title'));
 		taskTemplate.description = dom.append(titleContainer, $('div.description'));
 		taskTemplate.time = dom.append(titleContainer, $('div.time'));
@@ -140,7 +139,5 @@ export class TaskHistoryRenderer implements IRenderer {
 	public disposeTemplate(tree: ITree, templateId: string, templateData: any): void {
 		// no op
 		// InputBox disposed in wrapUp
-
 	}
 }
-

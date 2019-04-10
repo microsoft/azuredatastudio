@@ -689,7 +689,7 @@ export class ExtensionsWorkbenchService implements IExtensionsWorkbenchService, 
 		// The check is added here because we want to fail fast instead of downloading the VSIX and then fail.
 		if (gallery.properties.engine && (!isEngineValid(gallery.properties.engine, product.vscodeVersion)
 			|| (gallery.properties.azDataEngine && !isEngineValid(gallery.properties.azDataEngine, pkg.version)))) {
-			return Promise.reject(new ExtensionManagementError(nls.localize('incompatible', "Unable to install version '{2}' of extension '{0}' as it is not compatible with Azure Data Studio '{1}'.", extension.gallery!.identifier.id, pkg.version, gallery.version), INSTALL_ERROR_INCOMPATIBLE));
+			return Promise.reject(new ExtensionManagementError(nls.localize('incompatible2', "Unable to install version '{2}' of extension '{0}' as it is not compatible with Azure Data Studio '{1}'.", extension.gallery!.identifier.id, pkg.version, gallery.version), INSTALL_ERROR_INCOMPATIBLE));
 		}
 
 		return this.installWithProgress(async () => {

@@ -136,7 +136,6 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * Constructor for modal
 	 * @param _title Title of the modal, if undefined, the title section is not rendered
 	 * @param _name Name of the modal, used for telemetry
-	 * @param _partService
 	 * @param options Modal options
 	 */
 	constructor(
@@ -474,7 +473,6 @@ export abstract class Modal extends Disposable implements IThemable {
 
 	/**
 	 * Set the title of the modal
-	 * @param title
 	 */
 	protected set title(title: string) {
 		if (this._title !== undefined) {
@@ -488,7 +486,6 @@ export abstract class Modal extends Disposable implements IThemable {
 
 	/**
 	 * Set the icon title class name
-	 * @param iconClassName
 	 */
 	protected set titleIconClassName(iconClassName: string) {
 		if (this._modalTitleIcon) {

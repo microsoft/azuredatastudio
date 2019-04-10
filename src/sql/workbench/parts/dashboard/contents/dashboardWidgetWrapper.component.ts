@@ -197,11 +197,6 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 	/**
 	 * Attempts to get the selector for a given key, and if none is defined tries
 	 * to load it from the widget registry and configure as needed
-	 *
-	 * @private
-	 * @param {string} key
-	 * @returns {Type<IDashboardWidget>}
-	 * @memberof DashboardWidgetWrapper
 	 */
 	private getOrCreateSelector(key: string): Type<IDashboardWidget> {
 		let selector = componentMap[key];

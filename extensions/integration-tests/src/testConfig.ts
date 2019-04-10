@@ -1,9 +1,9 @@
-import { getConfigValue, EnvironmentVariable_STANDALONE_SERVER, EnvironmentVariable_STANDALONE_USERNAME, EnvironmentVariable_STANDALONE_PASSWORD, EnvironmentVariable_AZURE_SERVER, EnvironmentVariable_AZURE_USERNAME, EnvironmentVariable_AZURE_PASSWORD, EnvironmentVariable_BDC_SERVER, EnvironmentVariable_BDC_USERNAME, EnvironmentVariable_BDC_PASSWORD } from './utils';
-
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
+import { getConfigValue, EnvironmentVariable_STANDALONE_SERVER, EnvironmentVariable_STANDALONE_USERNAME, EnvironmentVariable_STANDALONE_PASSWORD, EnvironmentVariable_AZURE_SERVER, EnvironmentVariable_AZURE_USERNAME, EnvironmentVariable_AZURE_PASSWORD, EnvironmentVariable_BDC_SERVER, EnvironmentVariable_BDC_USERNAME, EnvironmentVariable_BDC_PASSWORD } from './utils';
 
 /*
 	TODO: Due to a runtime error, I duplicated this file at these 2 locations:
@@ -36,8 +36,8 @@ export enum ConnectionProvider {
 	SQLServer
 }
 
-var connectionProviderMapping = {};
-var authenticationTypeMapping = {};
+let connectionProviderMapping = {};
+let authenticationTypeMapping = {};
 connectionProviderMapping[ConnectionProvider.SQLServer] = { name: 'MSSQL', displayName: 'Microsoft SQL Server' };
 
 authenticationTypeMapping[AuthenticationType.SqlLogin] = { name: 'SqlLogin', displayName: 'SQL Login' };
@@ -58,7 +58,7 @@ export class TestServerProfile {
 	public get authenticationTypeDisplayName(): string { return getEnumMappingEntry(authenticationTypeMapping, this.authenticationType).displayName; }
 }
 
-var TestingServers: TestServerProfile[] = [
+let TestingServers: TestServerProfile[] = [
 	new TestServerProfile(
 		{
 			serverName: getConfigValue(EnvironmentVariable_STANDALONE_SERVER),
@@ -96,7 +96,7 @@ function getEnumMappingEntry(mapping: any, enumValue: any): INameDisplayNamePair
 	if (entry) {
 		return entry;
 	} else {
-		throw `Unknown enum type: ${enumValue.toString()}`;
+		throw new Error(`Unknown enum type: ${enumValue.toString()}`);
 	}
 }
 

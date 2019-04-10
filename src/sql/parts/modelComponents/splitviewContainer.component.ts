@@ -5,8 +5,7 @@
 import 'vs/css!./flexContainer';
 
 import {
-	Component, Input, Inject, ChangeDetectorRef, forwardRef, ComponentFactoryResolver,
-	ViewChild, ViewChildren, ElementRef, Injector, OnDestroy, QueryList,
+	Component, Input, Inject, ChangeDetectorRef, forwardRef, ElementRef, OnDestroy,
 } from '@angular/core';
 
 import { IComponent, IComponentDescriptor, IModelStore } from 'sql/parts/modelComponents/interfaces';
@@ -61,8 +60,8 @@ export default class SplitViewContainer extends ContainerBase<FlexItemLayout> im
 	private _width: string;
 	private _position: string;
 	private _splitView: SplitView;
-	private _orientation : Orientation;
-	private _splitViewHeight : number;
+	private _orientation: Orientation;
+	private _splitViewHeight: number;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
@@ -91,7 +90,7 @@ export default class SplitViewContainer extends ContainerBase<FlexItemLayout> im
 		let basicView: SplitPane = new SplitPane();
 		basicView.orientation = orientation;
 		basicView.element = c.getHtml(),
-		basicView.minimumSize = orientation === Orientation.VERTICAL ? c.convertSizeToNumber(c.height) : c.convertSizeToNumber(c.width);
+			basicView.minimumSize = orientation === Orientation.VERTICAL ? c.convertSizeToNumber(c.height) : c.convertSizeToNumber(c.width);
 		basicView.maximumSize = Number.MAX_VALUE;
 		return basicView;
 	}
@@ -111,15 +110,15 @@ export default class SplitViewContainer extends ContainerBase<FlexItemLayout> im
 		this._splitViewHeight = this.convertSizeToNumber(layout.splitViewHeight);
 
 		if (this._componentWrappers) {
-			let i : number = 0;
+			let i: number = 0;
 			this._componentWrappers.forEach(item => {
-				var component = item.modelStore.getComponent(item.descriptor.id);
+				let component = item.modelStore.getComponent(item.descriptor.id);
 				item.modelStore.validate(component).then(value => {
-					if(value === true){
+					if (value === true) {
 						let view = this.GetCorrespondingView(component, this._orientation);
 						this._splitView.addView(view, Sizing.Split(i));
 					}
-					else{
+					else {
 						console.log('Could not add views inside split view container');
 					}
 				});

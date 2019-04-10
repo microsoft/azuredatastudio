@@ -715,8 +715,8 @@ export class RestoreDialog extends Modal {
 
 	public dispose(): void {
 		super.dispose();
-		for (var key in this._optionsMap) {
-			var widget: Widget = this._optionsMap[key];
+		for (let key in this._optionsMap) {
+			let widget: Widget = this._optionsMap[key];
 			widget.dispose();
 			delete this._optionsMap[key];
 		}

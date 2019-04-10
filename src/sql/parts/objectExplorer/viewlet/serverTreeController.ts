@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import { ITree, ContextMenuEvent } from 'vs/base/parts/tree/browser/tree';
 import treedefaults = require('vs/base/parts/tree/browser/treeDefaults');
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
@@ -75,7 +74,7 @@ export class ServerTreeController extends treedefaults.DefaultController {
 
 		tree.setFocus(element);
 
-		var actionContext: any;
+		let actionContext: any;
 		if (element instanceof TreeNode) {
 			let context = new ObjectExplorerActionsContext();
 			context.nodeInfo = element.toNodeInfo();
