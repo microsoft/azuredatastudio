@@ -7,7 +7,6 @@
 import * as extHostApi from 'vs/workbench/api/node/extHost.api.impl';
 import { IInitData, IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { ExtHostExtensionService } from 'vs/workbench/api/node/extHostExtensionService';
-import * as extHostTypes from 'vs/workbench/api/node/extHostTypes';
 import { URI } from 'vs/base/common/uri';
 
 import * as azdata from 'azdata';
@@ -20,8 +19,6 @@ import { ExtHostDataProtocol } from 'sql/workbench/api/node/extHostDataProtocol'
 import { ExtHostSerializationProvider } from 'sql/workbench/api/node/extHostSerializationProvider';
 import { ExtHostResourceProvider } from 'sql/workbench/api/node/extHostResourceProvider';
 import * as sqlExtHostTypes from 'sql/workbench/api/common/sqlExtHostTypes';
-import { ExtHostWorkspace } from 'vs/workbench/api/node/extHostWorkspace';
-import { ExtHostConfiguration, ExtHostConfigProvider } from 'vs/workbench/api/node/extHostConfiguration';
 import { ExtHostModalDialogs } from 'sql/workbench/api/node/extHostModalDialog';
 import { ExtHostTasks } from 'sql/workbench/api/node/extHostTasks';
 import { ExtHostDashboardWebviews } from 'sql/workbench/api/node/extHostDashboardWebview';
@@ -29,18 +26,21 @@ import { ExtHostModelView } from 'sql/workbench/api/node/extHostModelView';
 import { ExtHostConnectionManagement } from 'sql/workbench/api/node/extHostConnectionManagement';
 import { ExtHostDashboard } from 'sql/workbench/api/node/extHostDashboard';
 import { ExtHostObjectExplorer } from 'sql/workbench/api/node/extHostObjectExplorer';
-import { ExtHostLogService } from 'vs/workbench/api/node/extHostLogService';
+import { ExtHostLogService } from 'vs/workbench/api/common/extHostLogService';
 import { ExtHostModelViewDialog } from 'sql/workbench/api/node/extHostModelViewDialog';
 import { ExtHostModelViewTreeViews } from 'sql/workbench/api/node/extHostModelViewTree';
 import { ExtHostQueryEditor } from 'sql/workbench/api/node/extHostQueryEditor';
 import { ExtHostBackgroundTaskManagement } from './extHostBackgroundTaskManagement';
 import { ExtHostNotebook } from 'sql/workbench/api/node/extHostNotebook';
 import { ExtHostNotebookDocumentsAndEditors } from 'sql/workbench/api/node/extHostNotebookDocumentsAndEditors';
-import { ExtHostStorage } from 'vs/workbench/api/node/extHostStorage';
-import { ExtensionDescriptionRegistry } from 'vs/workbench/services/extensions/node/extensionDescriptionRegistry';
+import { ExtensionDescriptionRegistry } from 'vs/workbench/services/extensions/common/extensionDescriptionRegistry';
 import { ExtHostExtensionManagement } from 'sql/workbench/api/node/extHostExtensionManagement';
 import { ExtensionIdentifier, IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { TernarySearchTree } from 'vs/base/common/map';
+import { ExtHostWorkspace } from 'vs/workbench/api/common/extHostWorkspace';
+import { ExtHostConfiguration, ExtHostConfigProvider } from 'vs/workbench/api/common/extHostConfiguration';
+import { ExtHostStorage } from 'vs/workbench/api/common/extHostStorage';
+import * as extHostTypes from 'vs/workbench/api/common/extHostTypes';
 
 export interface ISqlExtensionApiFactory {
 	vsCodeFactory(extension: IExtensionDescription, registry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): typeof vscode;
