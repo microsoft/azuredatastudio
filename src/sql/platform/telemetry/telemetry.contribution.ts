@@ -33,7 +33,7 @@ export class SqlTelemetryContribution extends Disposable implements IWorkbenchCo
 		}
 
 		// weekly user event
-		if (this.diffInDays(Date.parse(todayString), weeklyLastUseDate) >= 7) {
+		if (this.didWeekChange(weeklyLastUseDate)) {
 			// weekly first use
 			telemetryService.publicLog('telemetry.weeklyFirstUse', { weeklyFirstUse: true });
 			storageService.store('telemetry.weeklyLastUseDate', todayString, StorageScope.GLOBAL);
@@ -42,7 +42,7 @@ export class SqlTelemetryContribution extends Disposable implements IWorkbenchCo
 
 		/* send monthly uses at the end of month */
 		const monthlyUseCount: number = storageService.getNumber('telemetry.monthlyUseCount', StorageScope.GLOBAL, 0);
-		if (this.diffInDays(Date.parse(todayString), monthlyLastUseDate) >= 30) {
+		if (this.didMonthChange(monthlyLastUseDate)) {
 			telemetryService.publicLog('telemetry.monthlyUse', { monthlyFirstUse: true });
 			// the month changed, so send the user usage type event based on monthly count for last month
 			// and reset the count for this month
@@ -82,10 +82,31 @@ export class SqlTelemetryContribution extends Disposable implements IWorkbenchCo
 		}
 	}
 
+	private didWeekChange(lastUseDateNumber: number): boolean {
+		let nowDateNumber: number = Date.parse(new Date().toUTCString());
+		if (this.diffInDays(nowDateNumber, lastUseDateNumber) >= 7) {
+			return true;
+		} else {
+			let nowDate = new Date(nowDateNumber);
+			let lastUseDate = new Date(lastUseDateNumber);
+			return nowDate.getUTCDay() < lastUseDate.getUTCDay();
+		}
+	}
+
+	private didMonthChange(lastUseDateNumber: number): boolean {
+		let nowDateNumber: number = Date.parse(new Date().toUTCString());
+		if (this.diffInDays(nowDateNumber, lastUseDateNumber) >= 30) {
+			return true;
+		} else {
+			let nowDate = new Date(nowDateNumber);
+			let lastUseDate = new Date(lastUseDateNumber);
+			return nowDate.getUTCMonth() !== lastUseDate.getUTCMonth();
+		}
+	}
+
 	private diffInDays(nowDate: number, lastUseDate: number): number {
 		return (nowDate - lastUseDate) / (3600 * 1000 * 24);
 	}
-
 
 	// Usage Metrics
 	private sendUsageEvent(monthlyUseCount: number, lastMonthDate: Date): void {
