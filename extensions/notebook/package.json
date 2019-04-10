@@ -171,15 +171,18 @@
 			"touchBar": [
 				{
 					"command": "notebook.command.runactivecell",
-					"when": "notebookEditorVisible"
+					"when": "activeEditor == workbench.editor.notebookEditor",
+					"group": "1_notebook"
 				},
 				{
 					"command": "notebook.command.addcode",
-					"when": "notebookEditorVisible"
+					"when": "activeEditor == workbench.editor.notebookEditor",
+					"group": "2_notebook"
 				},
 				{
 					"command": "notebook.command.addtext",
-					"when": "notebookEditorVisible"
+					"when": "activeEditor == workbench.editor.notebookEditor",
+					"group": "2_notebook"
 				}
 			],
 			"objectExplorer/item/context": [
