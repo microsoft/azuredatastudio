@@ -54,14 +54,12 @@ export class OutputComponent extends AngularDisposable implements OnInit {
 
 		for (let propName in changes) {
 			if (propName === 'activeCellId') {
-				let changedProp = changes[propName];
-				let isActive = this.cellModel.id === changedProp.currentValue;
-				this.toggleUserSelect(isActive);
+				this.toggleUserSelect(this.isActive());
 				break;
 			}
 		}
 	}
-	
+
 	private toggleUserSelect(userSelect: boolean): void {
 		if (!this.outputElement) {
 			return;
