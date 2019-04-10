@@ -332,7 +332,8 @@ export class PreviewFileCommand extends ProgressCommand {
 	}
 
 	private async showNotebookDocument(fileName: string, connectionProfile?: azdata.IConnectionProfile,
-		initialContent?: string): Promise<azdata.nb.NotebookEditor> {
+		initialContent?: string
+	): Promise<azdata.nb.NotebookEditor> {
 		let docUri: vscode.Uri = getSaveableUri(this.apiWrapper, fileName, true)
 			.with({ scheme: constants.UNTITLED_SCHEMA });
 		return await azdata.nb.showNotebookDocument(docUri, {
