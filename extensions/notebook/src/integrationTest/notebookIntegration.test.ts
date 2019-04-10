@@ -6,16 +6,18 @@
 'use strict';
 
 import * as should from 'should';
-import * as assert from 'assert';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as tempWrite from 'temp-write';
+import * as fs from 'fs-extra';
+import * as path from 'path';
 import 'mocha';
 
 import { JupyterController } from '../jupyter/jupyterController';
 import { INotebook, CellTypes } from '../contracts/content';
+import JupyterServerInstallation from '../jupyter/jupyterServerInstallation';
 
-describe('Notebook Integration Test', function (): void {
+describe('Notebook Extension Integration Tests', function () {
 	this.timeout(600000);
 
 	let expectedNotebookContent: INotebook = {
@@ -36,18 +38,28 @@ describe('Notebook Integration Test', function (): void {
 	};
 
 	let installComplete = false;
+	const pythonInstallDir = path.join(process.env.HOME || process.env.USERPROFILE, 'TestPythonInstallation');
+	let jupyterController: JupyterController;
 	before(async function () {
-		// Ensure Jupyter dependencies are installed first
-		let jupterControllerExports = vscode.extensions.getExtension('Microsoft.notebook').exports;
-		let jupyterController = jupterControllerExports.getJupyterController() as JupyterController;
-		await jupyterController.jupyterInstallation.startInstallProcess(false);
+		let notebookExtension: vscode.Extension<any>;
+		while (true) {
+			notebookExtension = vscode.extensions.getExtension('Microsoft.notebook');
+			if (notebookExtension && notebookExtension.isActive) {
+				break;
+			} else {
+				await new Promise(resolve => { setTimeout(resolve, 1000); });
+			}
+		}
 
+		jupyterController = notebookExtension.exports.getJupyterController() as JupyterController;
+
+		await jupyterController.jupyterInstallation.startInstallProcess(false, pythonInstallDir);
 		installComplete = true;
 	});
 
 	it('Should connect to local notebook server with result 2', async function () {
-		this.timeout(60000);
 		should(installComplete).be.true('Python setup did not complete.');
+		should(JupyterServerInstallation.getPythonInstallPath(jupyterController.jupyterInstallation.apiWrapper)).be.equal(pythonInstallDir);
 
 		let pythonNotebook = Object.assign({}, expectedNotebookContent, { metadata: { kernelspec: { name: 'python3', display_name: 'Python 3' } } });
 		let uri = writeNotebookToFile(pythonNotebook);
@@ -63,65 +75,7 @@ describe('Notebook Integration Test', function (): void {
 
 		await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
 	});
-
-	/*
-	it('Should connect to remote spark server with result 2', async function () {
-		this.timeout(240000);
-		should(installComplete).be.true('Python setup did not complete.');
-
-		let uri = writeNotebookToFile(expectedNotebookContent);
-
-		// Given a connection to a server exists
-		let connectionProfile = await connectToSparkIntegrationServer();
-
-		// When I open a Spark notebook and run the cell
-		let notebook = await azdata.nb.showNotebookDocument(uri, {
-			connectionProfile: connectionProfile
-		});
-		should(notebook.document.cells).have.length(1);
-		let ran = await notebook.runCell(notebook.document.cells[0]);
-		should(ran).be.true('Notebook runCell failed');
-
-		// Then I expect to get the output result of 1+1, executed remotely against the Spark endpoint
-		let cellOutputs = notebook.document.cells[0].contents.outputs;
-		should(cellOutputs).have.length(4);
-		let sparkResult = (<azdata.nb.IStreamResult>cellOutputs[3]).text;
-		should(sparkResult).equal('2');
-
-		try {
-			await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
-		}
-		catch (e) { }
-	});
-	*/
 });
-
-async function connectToSparkIntegrationServer(): Promise<azdata.IConnectionProfile> {
-	assert.ok(process.env.BACKEND_HOSTNAME, 'BACKEND_HOSTNAME, BACKEND_USERNAME, BACKEND_PWD must be set using ./tasks/setbackenvariables.sh or .\\tasks\\setbackendvaraibles.bat');
-	let connInfo: azdata.connection.Connection = {
-		options: {
-			'host': process.env.BACKEND_HOSTNAME,
-			'groupId': 'C777F06B-202E-4480-B475-FA416154D458',
-			'knoxport': '',
-			'user': process.env.BACKEND_USERNAME,
-			'password': process.env.BACKEND_PWD
-		},
-		providerName: 'HADOOP_KNOX',
-		connectionId: 'abcd1234',
-	};
-	connInfo['savePassword'] = true;
-	let result = await azdata.connection.connect(<any>connInfo as azdata.IConnectionProfile);
-
-	should(result.connected).be.true();
-	should(result.connectionId).not.be.undefined();
-	should(result.connectionId).not.be.empty();
-	should(result.errorMessage).be.undefined();
-
-	let activeConnections = await azdata.connection.getActiveConnections();
-	should(activeConnections).have.length(1);
-
-	return <azdata.IConnectionProfile><any>connInfo;
-}
 
 function writeNotebookToFile(pythonNotebook: INotebook): vscode.Uri {
 	let notebookContentString = JSON.stringify(pythonNotebook);

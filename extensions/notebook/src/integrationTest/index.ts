@@ -8,7 +8,7 @@
 const path = require('path');
 const testRunner = require('vscode/lib/testrunner');
 
-const suite = 'Notebook Integration Tests';
+const suite = 'Notebook Extension Integration Tests';
 
 const options: any = {
 	ui: 'bdd',

@@ -247,14 +247,15 @@ export default class JupyterServerInstallation {
 	 * The previous path (or the default) is used if a new path is not specified.
 	 */
 	public async startInstallProcess(forceInstall: boolean, installationPath?: string): Promise<void> {
-		if (this._installInProgress) {
-			return Promise.reject(msgPendingInstallError);
-		}
-
 		let isPythonRunning = await this.isPythonRunning(installationPath ? installationPath : this._pythonInstallationPath);
 		if (isPythonRunning) {
 			return Promise.reject(msgPythonRunningError);
 		}
+
+		if (this._installInProgress) {
+			return Promise.reject(msgPendingInstallError);
+		}
+		this._installInProgress = true;
 
 		this._forceInstall = forceInstall;
 		if (installationPath) {
@@ -262,23 +263,21 @@ export default class JupyterServerInstallation {
 		}
 		this.configurePackagePaths();
 
-		let updateConfig = () => {
+		let updateConfig = async () => {
 			let notebookConfig = this.apiWrapper.getConfiguration(constants.notebookConfigKey);
-			notebookConfig.update(constants.pythonPathConfigKey, this._pythonInstallationPath, ConfigurationTarget.Global);
+			await notebookConfig.update(constants.pythonPathConfigKey, this._pythonInstallationPath, ConfigurationTarget.Global);
 		};
 
 		let installReady = new Deferred<void>();
 		if (!fs.existsSync(this._pythonExecutable) || this._forceInstall) {
-			this._installInProgress = true;
-
 			this.apiWrapper.startBackgroundOperation({
 				displayName: msgTaskName,
 				description: msgTaskName,
 				isCancelable: false,
 				operation: op => {
 					this.installDependencies(op)
-						.then(() => {
-							updateConfig();
+						.then(async () => {
+							await updateConfig();
 							installReady.resolve();
 							this._installInProgress = false;
 						})
@@ -294,7 +293,7 @@ export default class JupyterServerInstallation {
 		} else {
 			// Python executable already exists, but the path setting wasn't defined,
 			// so update it here
-			updateConfig();
+			await updateConfig();
 			installReady.resolve();
 		}
 		return installReady.promise;

@@ -51,7 +51,7 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	controller = new JupyterController(appContext);
 	let result = await controller.activate();
 	if (!result) {
-		return <IExtensionApi>{ };
+		return undefined;
 	}
 
 	return {
