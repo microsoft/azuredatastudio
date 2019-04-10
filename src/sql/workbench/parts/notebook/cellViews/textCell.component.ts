@@ -1,10 +1,11 @@
 /*---------------------------------------------------------------------------------------------
-*  Copyright (c) Microsoft Corporation. All rights reserved.
-*  Licensed under the Source EULA. See License.txt in the project root for license information.
-*--------------------------------------------------------------------------------------------*/
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./textCell';
 
 import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild, OnChanges, SimpleChange } from '@angular/core';
+import * as path from 'path';
 
 import { localize } from 'vs/nls';
 import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
@@ -133,8 +134,9 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			} else {
 				this._content = this.sanitizeContent(this.cellModel.source);
 			}
-			// todo: pass in the notebook filename instead of undefined value
-			this._commandService.executeCommand<string>('notebook.showPreview', undefined, this._content).then((htmlcontent) => {
+
+			this._commandService.executeCommand<string>('notebook.showPreview', this.cellModel.notebookModel.notebookUri, this._content).then((htmlcontent) => {
+				htmlcontent = this.convertVscodeResourceToFileInSubDirectories(htmlcontent);
 				let outputElement = <HTMLElement>this.output.nativeElement;
 				outputElement.innerHTML = htmlcontent;
 			});
@@ -147,6 +149,24 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			content = this.sanitizer.sanitize(content);
 		}
 		return content;
+	}
+
+	// Only replace vscode-resource with file when in the same (or a sub) directory
+	// This matches Jupyter Notebook viewer behavior
+	private convertVscodeResourceToFileInSubDirectories(htmlContent: string): string {
+		let htmlContentCopy = htmlContent;
+		while (htmlContentCopy.search('(?<=img src=\"vscode-resource:)') > 0) {
+			let pathStartIndex = htmlContentCopy.search('(?<=img src=\"vscode-resource:)');
+			let pathEndIndex = htmlContentCopy.indexOf('\" ', pathStartIndex);
+			let filePath = htmlContentCopy.substring(pathStartIndex, pathEndIndex);
+			// If the asset is in the same folder or a subfolder, replace 'vscode-resource:' with 'file:', so the image is visible
+			if (!path.relative(path.dirname(this.cellModel.notebookModel.notebookUri.fsPath), filePath).includes('..')) {
+				// ok to change from vscode-resource: to file:
+				htmlContent = htmlContent.replace('vscode-resource:' + filePath, 'file:' + filePath);
+			}
+			htmlContentCopy = htmlContentCopy.slice(pathEndIndex);
+		}
+		return htmlContent;
 	}
 
 
@@ -167,7 +187,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	public toggleEditMode(editMode?: boolean): void {
-		this.isEditMode = editMode !== undefined? editMode : !this.isEditMode;
+		this.isEditMode = editMode !== undefined ? editMode : !this.isEditMode;
 		this.updateMoreActions();
 		this.updatePreview();
 		this._changeRef.detectChanges();

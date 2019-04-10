@@ -4143,6 +4143,11 @@ declare module 'azdata' {
 			 * Default kernel for notebook
 			 */
 			defaultKernel?: nb.IKernelSpec;
+
+			/**
+			 * Optional content used to give an initial notebook state
+			 */
+			initialContent?: nb.INotebookContents | string;
 		}
 
 		/**
@@ -4533,6 +4538,7 @@ declare module 'azdata' {
 			readonly id: string;
 			readonly name: string;
 			readonly supportsIntellisense: boolean;
+			readonly requiresConnection?: boolean;
 			/**
 			 * Test whether the kernel is ready.
 			 */

@@ -104,8 +104,8 @@
 				"command": "azure.resource.connectsqldb",
 				"title": "%azure.resource.connectsqldb.title%",
 				"icon": {
-					"dark": "resources/dark/connect_to_inverse.svg",
-					"light": "resources/light/connect_to.svg"
+					"dark": "resources/dark/add_to_server_list_inverse.svg",
+					"light": "resources/light/add_to_server_list.svg"
 				}
 			}
 		],

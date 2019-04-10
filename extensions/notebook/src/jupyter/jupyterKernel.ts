@@ -1,10 +1,7 @@
-
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
-'use strict';
 
 import { nb } from 'azdata';
 import { Kernel, KernelMessage } from '@jupyterlab/services';
@@ -61,6 +58,12 @@ export class JupyterKernel implements nb.IKernel {
 
 	public get supportsIntellisense(): boolean {
 		return true;
+	}
+
+	public get requiresConnection(): boolean {
+		// TODO would be good to have a smarter way to do this.
+		// for now only Spark kernels need a connection
+		return !!(this.kernelImpl.name && this.kernelImpl.name.toLowerCase().indexOf('spark') > -1);
 	}
 
 	public get isReady(): boolean {

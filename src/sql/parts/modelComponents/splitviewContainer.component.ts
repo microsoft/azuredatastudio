@@ -12,7 +12,7 @@ import { IComponent, IComponentDescriptor, IModelStore } from 'sql/parts/modelCo
 import { FlexItemLayout, SplitViewLayout } from 'azdata';
 import { FlexItem } from './flexContainer.component';
 import { ContainerBase, ComponentBase } from 'sql/parts/modelComponents/componentBase';
-import { Event, Emitter } from 'vs/base/common/event';
+import { Event } from 'vs/base/common/event';
 import { SplitView, Orientation, Sizing, IView } from 'vs/base/browser/ui/splitview/splitview';
 
 class SplitPane implements IView {
@@ -90,7 +90,8 @@ export default class SplitViewContainer extends ContainerBase<FlexItemLayout> im
 		let basicView: SplitPane = new SplitPane();
 		basicView.orientation = orientation;
 		basicView.element = c.getHtml(),
-			basicView.minimumSize = orientation === Orientation.VERTICAL ? c.convertSizeToNumber(c.height) : c.convertSizeToNumber(c.width);
+			basicView.component = c;
+		basicView.minimumSize = 50;
 		basicView.maximumSize = Number.MAX_VALUE;
 		return basicView;
 	}
@@ -110,19 +111,17 @@ export default class SplitViewContainer extends ContainerBase<FlexItemLayout> im
 		this._splitViewHeight = this.convertSizeToNumber(layout.splitViewHeight);
 
 		if (this._componentWrappers) {
-			let i: number = 0;
 			this._componentWrappers.forEach(item => {
 				let component = item.modelStore.getComponent(item.descriptor.id);
 				item.modelStore.validate(component).then(value => {
 					if (value === true) {
 						let view = this.GetCorrespondingView(component, this._orientation);
-						this._splitView.addView(view, Sizing.Split(i));
+						this._splitView.addView(view, Sizing.Distribute);
 					}
 					else {
 						console.log('Could not add views inside split view container');
 					}
 				});
-				i++;
 			});
 		}
 		this._splitView.layout(this._splitViewHeight);
