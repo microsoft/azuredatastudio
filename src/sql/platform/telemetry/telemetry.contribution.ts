@@ -23,11 +23,10 @@ export class SqlTelemetryContribution extends Disposable implements IWorkbenchCo
 		const monthlyLastUseDate: number  = Date.parse(storageService.get('telemetry.monthlyLastUseDate', StorageScope.GLOBAL, '0'));
 		const firstTimeUser: boolean = dailyLastUseDate === Date.parse('0');
 
-		let today: Date = new Date();
 		let todayString: string = new Date().toUTCString();
 
 		// daily user event
-		if (this.diffInHours(Date.parse(todayString), dailyLastUseDate) >= 24) {
+		if (this.didDayChange(dailyLastUseDate)) {
 			// daily first use
 			telemetryService.publicLog('telemetry.dailyFirstUse', { dailyFirstUse: true });
 			storageService.store('telemetry.dailyLastUseDate', todayString, StorageScope.GLOBAL);
@@ -51,29 +50,20 @@ export class SqlTelemetryContribution extends Disposable implements IWorkbenchCo
 			this.sendUsageEvent(monthlyUseCount, lastMonthDate);
 
 			const wasActiveLastMonth: boolean = storageService.getBoolean('telemetry.wasActiveLastMonth', StorageScope.GLOBAL, false);
-			const isContinuing: boolean = wasActiveLastMonth;
-			const isReturning: boolean = !wasActiveLastMonth;
 
 			if (firstTimeUser) {
 				// new user
-				this.sendGrowthEvent(UserGrowthType.NewUser, lastMonthDate);
+				this.sendGrowthTypeEvent(UserGrowthType.NewUser, lastMonthDate);
 			}
 
-			if (isContinuing) {
-				// continuing user
-				this.sendGrowthEvent(UserGrowthType.ContinuingUser, lastMonthDate);
-			}
-
-			if (isReturning) {
-				// returning user
-				this.sendGrowthEvent(UserGrowthType.ReturningUser, lastMonthDate);
-			}
+			// continuing or returning user
+			this.sendGrowthTypeEvent(wasActiveLastMonth ? UserGrowthType.ContinuingUser : UserGrowthType.ReturningUser, lastMonthDate);
 
 			// set wasActiveUserLastMonth
 			storageService.store('telemetry.wasActiveLastMonth', true, StorageScope.GLOBAL);
 
 			// reset the monthly count for the new month
-			storageService.store('telemetry.monthlyUseCount', 0, StorageScope.GLOBAL);
+			storageService.store('telemetry.monthlyUseCount', 1, StorageScope.GLOBAL);
 			storageService.store('telemetry.monthlyLastUseDate', todayString, StorageScope.GLOBAL);
 		} else {
 			// if it's the same month, increment the monthly use count
@@ -81,12 +71,19 @@ export class SqlTelemetryContribution extends Disposable implements IWorkbenchCo
 		}
 	}
 
-	private diffInHours(nowDate: number, lastUseDate: number): number {
-		return (nowDate - lastUseDate) / (3600 * 1000);
+	private didDayChange(lastUseDateNumber: number): boolean {
+		let nowDateNumber: number = Date.parse(new Date().toUTCString());
+		if (this.diffInDays(nowDateNumber, lastUseDateNumber) >= 1) {
+			return true;
+		} else {
+			let nowDate = new Date(nowDateNumber);
+			let lastUseDate = new Date(lastUseDateNumber);
+			return nowDate.getUTCDay() !== lastUseDate.getUTCDay();
+		}
 	}
 
 	private diffInDays(nowDate: number, lastUseDate: number): number {
-		return this.diffInHours(nowDate, lastUseDate)/24;
+		return (nowDate - lastUseDate) / (3600 * 1000 * 24);
 	}
 
 
@@ -107,14 +104,16 @@ export class SqlTelemetryContribution extends Disposable implements IWorkbenchCo
 	}
 
 	// Growth Metrics
-	private sendGrowthEvent(growthType: UserGrowthType, lastMonthDate: Date): void {
+	private sendGrowthTypeEvent(growthType: UserGrowthType, lastMonthDate: Date): void {
 		this.telemetryService.publicLog('telemetry.userGrowthType', {
 			userGrowthType: growthType, month: lastMonthDate.getMonth().toString(), year: lastMonthDate.getFullYear().toString()});
 	}
 }
 
-/* Growth Metrics */
-// Active here means opened app atleast 1 time in a month
+/**
+ Growth Metrics
+ Active here means opened app atleast 1 time in a month
+ */
 export enum UserGrowthType {
 	// first time opening app
 	NewUser = 1,
@@ -124,7 +123,13 @@ export enum UserGrowthType {
 	ContinuingUser = 3
 }
 
-// Usage Metrics
+/**
+ * Usage Metrics
+ * TireKicker = 1 day/month
+ * Occasional = 2-11 days/month
+ * Engaged = 12-20 days/month
+ * Dedicated = 20+ days/month
+ */
 export enum UserUsageType {
 	/* 1 day per month */
 	TireKicker = 1,
