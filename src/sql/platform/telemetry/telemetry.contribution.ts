@@ -121,10 +121,9 @@ export class SqlTelemetryContribution extends Disposable implements IWorkbenchCo
 		} else if (monthlyUseCount > 20) {
 			userUsageType = UserUsageType.Dedicated;
 		}
-		if (userUsageType) {
-			this.telemetryService.publicLog('telemetry.userUsage',
-				{ userType: userUsageType, monthlyUseCount: monthlyUseCount, month: lastMonthDate.getMonth().toString(), year: lastMonthDate.getFullYear().toString() });
-		}
+		this.telemetryService.publicLog('telemetry.userUsage',
+			{ userType: userUsageType, monthlyUseCount: monthlyUseCount, month: lastMonthDate.getMonth().toString(), year: lastMonthDate.getFullYear().toString() });
+
 	}
 
 	// Growth Metrics
