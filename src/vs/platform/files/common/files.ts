@@ -7,12 +7,13 @@ import { sep } from 'vs/base/common/path';
 import { URI } from 'vs/base/common/uri';
 import * as glob from 'vs/base/common/glob';
 import { isLinux } from 'vs/base/common/platform';
-import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
+import { createDecorator, ServiceIdentifier } from 'vs/platform/instantiation/common/instantiation';
 import { Event } from 'vs/base/common/event';
 import { startsWithIgnoreCase } from 'vs/base/common/strings';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { isEqualOrParent, isEqual } from 'vs/base/common/resources';
 import { isUndefinedOrNull } from 'vs/base/common/types';
+import { VSBuffer, VSBufferReadable } from 'vs/base/common/buffer';
 
 export const IFileService = createDecorator<IFileService>('fileService');
 
@@ -26,7 +27,8 @@ export interface IResourceEncoding {
 }
 
 export interface IFileService {
-	_serviceBrand: any;
+
+	_serviceBrand: ServiceIdentifier<any>;
 
 	//#region File System Provider
 
@@ -59,7 +61,7 @@ export interface IFileService {
 	/**
 	 * Checks if the provider for the provided resource has the provided file system capability.
 	 */
-	hasCapability(resource: URI, capability: FileSystemProviderCapabilities): Promise<boolean>;
+	hasCapability(resource: URI, capability: FileSystemProviderCapabilities): boolean;
 
 	//#endregion
 
@@ -123,9 +125,14 @@ export interface IFileService {
 	resolveStreamContent(resource: URI, options?: IResolveContentOptions): Promise<IStreamContent>;
 
 	/**
+	 * @deprecated use writeFile instead
+	 */
+	updateContent(resource: URI, value: string | ITextSnapshot, options?: IWriteTextFileOptions): Promise<IFileStatWithMetadata>;
+
+	/**
 	 * Updates the content replacing its previous value.
 	 */
-	updateContent(resource: URI, value: string | ITextSnapshot, options?: IUpdateContentOptions): Promise<IFileStatWithMetadata>;
+	writeFile(resource: URI, bufferOrReadable: VSBuffer | VSBufferReadable, options?: IWriteFileOptions): Promise<IFileStatWithMetadata>;
 
 	/**
 	 * Moves the file/folder to a new path identified by the resource.
@@ -142,12 +149,17 @@ export interface IFileService {
 	copy(source: URI, target: URI, overwrite?: boolean): Promise<IFileStatWithMetadata>;
 
 	/**
-	 * Creates a new file with the given path. The returned promise
+	 * @deprecated use createFile2 instead
+	 */
+	createFile(resource: URI, content?: string, options?: ICreateFileOptions): Promise<IFileStatWithMetadata>;
+
+	/**
+	 * Creates a new file with the given path and optional contents. The returned promise
 	 * will have the stat model object as a result.
 	 *
 	 * The optional parameter content can be used as value to fill into the new file.
 	 */
-	createFile(resource: URI, content?: string, options?: ICreateFileOptions): Promise<IFileStatWithMetadata>;
+	createFile2(resource: URI, bufferOrReadable?: VSBuffer | VSBufferReadable, options?: ICreateFileOptions): Promise<IFileStatWithMetadata>;
 
 	/**
 	 * Creates a new folder with the given path. The returned promise
@@ -163,14 +175,11 @@ export interface IFileService {
 	del(resource: URI, options?: { useTrash?: boolean, recursive?: boolean }): Promise<void>;
 
 	/**
-	 * Allows to start a watcher that reports file change events on the provided resource.
+	 * Allows to start a watcher that reports file/folder change events on the provided resource.
+	 *
+	 * Note: watching a folder does not report events recursively for child folders yet.
 	 */
-	watch(resource: URI): void;
-
-	/**
-	 * Allows to stop a watcher on the provided resource or absolute fs path.
-	 */
-	unwatch(resource: URI): void;
+	watch(resource: URI): IDisposable;
 
 	/**
 	 * Frees up any resources occupied by this service.
@@ -230,6 +239,8 @@ export interface IFileSystemProvider {
 
 	readonly capabilities: FileSystemProviderCapabilities;
 	onDidChangeCapabilities: Event<void>;
+
+	onDidErrorOccur?: Event<Error>; // TODO@ben remove once file watchers are solid
 
 	onDidChangeFile: Event<IFileChange[]>;
 	watch(resource: URI, opts: IWatchOptions): IDisposable;
@@ -650,17 +661,6 @@ export interface ITextSnapshot {
 	read(): string | null;
 }
 
-export class StringSnapshot implements ITextSnapshot {
-	private _value: string | null;
-	constructor(value: string) {
-		this._value = value;
-	}
-	read(): string | null {
-		let ret = this._value;
-		this._value = null;
-		return ret;
-	}
-}
 /**
  * Helper method to convert a snapshot into its full string form.
  */
@@ -672,6 +672,35 @@ export function snapshotToString(snapshot: ITextSnapshot): string {
 	}
 
 	return chunks.join('');
+}
+
+export class TextSnapshotReadable implements VSBufferReadable {
+	private preambleHandled: boolean;
+
+	constructor(private snapshot: ITextSnapshot, private preamble?: string) { }
+
+	read(): VSBuffer | null {
+		let value = this.snapshot.read();
+
+		// Handle preamble if provided
+		if (!this.preambleHandled) {
+			this.preambleHandled = true;
+
+			if (typeof this.preamble === 'string') {
+				if (typeof value === 'string') {
+					value = this.preamble + value;
+				} else {
+					value = this.preamble;
+				}
+			}
+		}
+
+		if (typeof value === 'string') {
+			return VSBuffer.fromString(value);
+		}
+
+		return null;
+	}
 }
 
 /**
@@ -724,7 +753,20 @@ export interface IResolveContentOptions {
 	position?: number;
 }
 
-export interface IUpdateContentOptions {
+export interface IWriteFileOptions {
+
+	/**
+	 * The last known modification time of the file. This can be used to prevent dirty writes.
+	 */
+	mtime?: number;
+
+	/**
+	 * The etag of the file. This can be used to prevent dirty writes.
+	 */
+	etag?: string;
+}
+
+export interface IWriteTextFileOptions extends IWriteFileOptions {
 
 	/**
 	 * The encoding to use when updating a file.
@@ -746,21 +788,6 @@ export interface IUpdateContentOptions {
 	 * ask the user to authenticate as super user.
 	 */
 	writeElevated?: boolean;
-
-	/**
-	 * The last known modification time of the file. This can be used to prevent dirty writes.
-	 */
-	mtime?: number;
-
-	/**
-	 * The etag of the file. This can be used to prevent dirty writes.
-	 */
-	etag?: string;
-
-	/**
-	 * Run mkdirp before saving.
-	 */
-	mkdirp?: boolean;
 }
 
 export interface IResolveFileOptions {
@@ -797,11 +824,11 @@ export interface ICreateFileOptions {
 }
 
 export class FileOperationError extends Error {
-	constructor(message: string, public fileOperationResult: FileOperationResult, public options?: IResolveContentOptions & IUpdateContentOptions & ICreateFileOptions) {
+	constructor(message: string, public fileOperationResult: FileOperationResult, public options?: IResolveContentOptions & IWriteTextFileOptions & ICreateFileOptions) {
 		super(message);
 	}
 
-	static isFileOperationError(obj: any): obj is FileOperationError {
+	static isFileOperationError(obj: unknown): obj is FileOperationError {
 		return obj instanceof Error && !isUndefinedOrNull((obj as FileOperationError).fileOperationResult);
 	}
 }
@@ -851,8 +878,8 @@ export interface IFilesConfiguration {
 		autoSave: string;
 		autoSaveDelay: number;
 		eol: string;
+		enableTrash: boolean;
 		hotExit: string;
-		useExperimentalFileWatcher: boolean;
 	};
 }
 
@@ -1119,23 +1146,20 @@ export function etag(mtime: number | undefined, size: number | undefined): strin
 
 // TODO@ben remove traces of legacy file service
 export const ILegacyFileService = createDecorator<ILegacyFileService>('legacyFileService');
-export interface ILegacyFileService {
+export interface ILegacyFileService extends IDisposable {
 	_serviceBrand: any;
 
 	encoding: IResourceEncodings;
 
-	onFileChanges: Event<FileChangesEvent>;
 	onAfterOperation: Event<FileOperationEvent>;
+
+	registerProvider(scheme: string, provider: IFileSystemProvider): IDisposable;
 
 	resolveContent(resource: URI, options?: IResolveContentOptions): Promise<IContent>;
 
 	resolveStreamContent(resource: URI, options?: IResolveContentOptions): Promise<IStreamContent>;
 
-	updateContent(resource: URI, value: string | ITextSnapshot, options?: IUpdateContentOptions): Promise<IFileStat>;
+	updateContent(resource: URI, value: string | ITextSnapshot, options?: IWriteTextFileOptions): Promise<IFileStatWithMetadata>;
 
-	createFile(resource: URI, content?: string, options?: ICreateFileOptions): Promise<IFileStat>;
-
-	watch(resource: URI): void;
-
-	unwatch(resource: URI): void;
+	createFile(resource: URI, content?: string, options?: ICreateFileOptions): Promise<IFileStatWithMetadata>;
 }

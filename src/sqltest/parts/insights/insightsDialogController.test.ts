@@ -7,7 +7,7 @@ import { InsightsDialogController } from 'sql/workbench/services/insights/node/i
 import { InsightsDialogModel } from 'sql/workbench/services/insights/common/insightsDialogModel';
 import QueryRunner, { EventType } from 'sql/platform/query/common/queryRunner';
 import { ConnectionManagementService } from 'sql/platform/connection/common/connectionManagementService';
-import { IInsightsConfigDetails } from 'sql/parts/dashboard/widgets/insights/interfaces';
+import { IInsightsConfigDetails } from 'sql/workbench/parts/dashboard/widgets/insights/interfaces';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';

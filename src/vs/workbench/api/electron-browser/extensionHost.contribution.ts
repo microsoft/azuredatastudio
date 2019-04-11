@@ -33,6 +33,7 @@ import '../browser/mainThreadExtensionService';
 import '../browser/mainThreadFileSystem';
 import '../browser/mainThreadFileSystemEventService';
 import '../browser/mainThreadHeapService';
+import '../browser/mainThreadKeytar';
 import '../browser/mainThreadLanguageFeatures';
 import '../browser/mainThreadLanguages';
 import '../browser/mainThreadLogService';
@@ -54,7 +55,7 @@ import '../browser/mainThreadWorkspace';
 import '../browser/mainThreadComments';
 import '../browser/mainThreadTask';
 import './mainThreadWebview';
-import 'vs/workbench/api/node/apiCommands';
+import 'vs/workbench/api/common/apiCommands';
 
 export class ExtensionPoints implements IWorkbenchContribution {
 

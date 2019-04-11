@@ -587,6 +587,19 @@ export class TerminalInstance implements ITerminalInstance {
 			if (this._processManager) {
 				this._widgetManager = new TerminalWidgetManager(this._wrapperElement);
 				this._processManager.onProcessReady(() => this._linkHandler.setWidgetManager(this._widgetManager));
+
+				this._processManager.onProcessReady(() => {
+					if (this._configHelper.config.enableLatencyMitigation) {
+						if (!this._processManager) {
+							return;
+						}
+						this._processManager.getLatency().then(latency => {
+							if (latency > 20 && (this._xterm as any).typeAheadInit) {
+								(this._xterm as any).typeAheadInit(this._processManager, this._themeService);
+							}
+						});
+					}
+				});
 			}
 
 			const computedStyle = window.getComputedStyle(this._container);
@@ -765,6 +778,14 @@ export class TerminalInstance implements ITerminalInstance {
 	}
 
 	public forceRedraw(): void {
+		if (this._configHelper.config.experimentalRefreshOnResume) {
+			if (this._xterm.getOption('rendererType') !== 'dom') {
+				this._xterm.setOption('rendererType', 'dom');
+				// Do this asynchronously to clear our the texture atlas as all terminals will not
+				// be using canvas
+				setTimeout(() => this._xterm.setOption('rendererType', 'canvas'), 0);
+			}
+		}
 		this._xterm.refresh(0, this._xterm.rows - 1);
 	}
 

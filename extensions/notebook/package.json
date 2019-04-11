@@ -168,6 +168,23 @@
 					"when": "false"
 				}
 			],
+			"touchBar": [
+				{
+					"command": "notebook.command.runactivecell",
+					"when": "activeEditor == workbench.editor.notebookEditor",
+					"group": "1_notebook"
+				},
+				{
+					"command": "notebook.command.addcode",
+					"when": "activeEditor == workbench.editor.notebookEditor",
+					"group": "2_notebook"
+				},
+				{
+					"command": "notebook.command.addtext",
+					"when": "activeEditor == workbench.editor.notebookEditor",
+					"group": "2_notebook"
+				}
+			],
 			"objectExplorer/item/context": [
 				{
 					"command": "notebook.command.new",
@@ -297,7 +314,6 @@
 		"figures": "^2.0.0",
 		"fs-extra": "^5.0.0",
 		"node-fetch": "^2.3.0",
-		"process-nextick-args": "^2.0.0",
 		"request": "^2.88.0",
 		"temp-write": "^3.4.0",
 		"vscode-languageclient": "^5.3.0-next.1",

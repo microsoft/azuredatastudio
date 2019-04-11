@@ -2,13 +2,12 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import 'vs/css!./media/messagePanel';
 import { IMessagesActionContext, CopyMessagesAction, CopyAllMessagesAction } from './actions';
 import QueryRunner from 'sql/platform/query/common/queryRunner';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
-import { $ } from 'sql/base/browser/builder';
+import { IExpandableTree } from 'sql/parts/objectExplorer/viewlet/treeUpdateUtils';
 
 import { IResultMessage, ISelectionData } from 'azdata';
 
@@ -30,6 +29,7 @@ import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { $ } from 'vs/base/browser/dom';
 
 export interface IResultMessageIntern extends IResultMessage {
 	id?: string;
@@ -82,13 +82,12 @@ export class MessagePanel extends ViewletPanel {
 	private renderer = new MessageRenderer(this.messageLineCountMap);
 	private model = new Model();
 	private controller: MessageController;
-	private container = $('div message-tree').getHTMLElement();
+	private container = $('.message-tree');
 
 	private queryRunnerDisposables: IDisposable[] = [];
 	private _state: MessagePanelState;
 
 	private tree: ITree;
-	private _selectAllMessages: boolean;
 
 	constructor(
 		options: IViewletPanelOptions,
@@ -109,8 +108,11 @@ export class MessagePanel extends ViewletPanel {
 		}, { keyboardSupport: false, horizontalScrollMode: ScrollbarVisibility.Auto });
 		this.disposables.push(this.tree);
 		this.tree.onDidScroll(e => {
+			// convert to old VS Code tree interface with expandable methods
+			let expandableTree: IExpandableTree = <IExpandableTree>this.tree;
+
 			if (this.state) {
-				this.state.scrollPosition = this.tree.getScrollPosition();
+				this.state.scrollPosition = expandableTree.getScrollPosition();
 			}
 		});
 		this.onDidChange(e => {
@@ -178,13 +180,16 @@ export class MessagePanel extends ViewletPanel {
 	}
 
 	protected layoutBody(size: number): void {
-		const previousScrollPosition = this.tree.getScrollPosition();
+		// convert to old VS Code tree interface with expandable methods
+		let expandableTree: IExpandableTree = <IExpandableTree>this.tree;
+
+		const previousScrollPosition = expandableTree.getScrollPosition();
 		this.tree.layout(size);
 		if (this.state && this.state.scrollPosition) {
-			this.tree.setScrollPosition(this.state.scrollPosition);
+			expandableTree.setScrollPosition(this.state.scrollPosition);
 		} else {
 			if (previousScrollPosition === 1) {
-				this.tree.setScrollPosition(1);
+				expandableTree.setScrollPosition(1);
 			}
 		}
 	}
@@ -214,17 +219,19 @@ export class MessagePanel extends ViewletPanel {
 		if (hasError) {
 			this.setExpanded(true);
 		}
+		// convert to old VS Code tree interface with expandable methods
+		let expandableTree: IExpandableTree = <IExpandableTree>this.tree;
 		if (this.state.scrollPosition) {
 			this.tree.refresh(this.model).then(() => {
 				// Restore the previous scroll position when switching between tabs
-				this.tree.setScrollPosition(this.state.scrollPosition);
+				expandableTree.setScrollPosition(this.state.scrollPosition);
 			});
 		} else {
-			const previousScrollPosition = this.tree.getScrollPosition();
+			const previousScrollPosition = expandableTree.getScrollPosition();
 			this.tree.refresh(this.model).then(() => {
 				// Scroll to the end if the user was already at the end otherwise leave the current scroll position
 				if (previousScrollPosition === 1) {
-					this.tree.setScrollPosition(1);
+					expandableTree.setScrollPosition(1);
 				}
 			});
 		}
@@ -244,8 +251,10 @@ export class MessagePanel extends ViewletPanel {
 
 	public set state(val: MessagePanelState) {
 		this._state = val;
+		// convert to old VS Code tree interface with expandable methods
+		let expandableTree: IExpandableTree = <IExpandableTree>this.tree;
 		if (this.state.scrollPosition) {
-			this.tree.setScrollPosition(this.state.scrollPosition);
+			expandableTree.setScrollPosition(this.state.scrollPosition);
 		}
 		this.setExpanded(!this.state.collapsed);
 	}
@@ -324,16 +333,22 @@ class MessageRenderer implements IRenderer {
 	renderTemplate(tree: ITree, templateId: string, container: HTMLElement): IMessageTemplate | IBatchTemplate {
 
 		if (templateId === TemplateIds.MESSAGE) {
-			$('div.time-stamp').appendTo(container);
-			const message = $('div.message').style('white-space', 'pre').appendTo(container).getHTMLElement();
+			container.append($('.time-stamp'));
+			const message = $('.message');
+			message.style.whiteSpace = 'pre';
+			container.append(message);
 			return { message };
 		} else if (templateId === TemplateIds.BATCH) {
-			const timeStamp = $('div.time-stamp').appendTo(container).getHTMLElement();
-			const message = $('div.batch-start').style('white-space', 'pre').appendTo(container).getHTMLElement();
+			const timeStamp = $('.time-stamp');
+			container.append(timeStamp);
+			const message = $('.batch-start');
+			message.style.whiteSpace = 'pre';
+			container.append(message);
 			return { message, timeStamp };
 		} else if (templateId === TemplateIds.ERROR) {
-			$('div.time-stamp').appendTo(container);
-			const message = $('div.error-message').appendTo(container).getHTMLElement();
+			container.append($('.time-stamp'));
+			const message = $('.error-message');
+			container.append(message);
 			return { message };
 		} else {
 			return undefined;

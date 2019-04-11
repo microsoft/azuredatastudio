@@ -2,13 +2,13 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
 import 'vs/css!./countInsight';
 
 import { IInsight, InsightType } from './interfaces';
-import { IInsightData } from 'sql/parts/dashboard/widgets/insights/interfaces';
+import { IInsightData } from 'sql/workbench/parts/dashboard/widgets/insights/interfaces';
 
-import { $ } from 'vs/base/browser/dom';
-import { Builder } from 'sql/base/browser/builder';
+import { $, clearNode } from 'vs/base/browser/dom';
 
 export class CountInsight implements IInsight {
 	public options;
@@ -25,7 +25,7 @@ export class CountInsight implements IInsight {
 	public layout() { }
 
 	set data(data: IInsightData) {
-		new Builder(this.countImage).empty();
+		clearNode(this.countImage);
 
 		for (let i = 0; i < data.columns.length; i++) {
 			let container = $('div.count-label-container');

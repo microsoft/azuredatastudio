@@ -7,23 +7,26 @@ import * as fs from 'fs';
 import * as path from 'vs/base/common/path';
 import * as os from 'os';
 import * as assert from 'assert';
-import { FileService } from 'vs/workbench/services/files/node/fileService';
-import { FileOperation, FileOperationEvent, FileChangesEvent, FileOperationResult, FileOperationError } from 'vs/platform/files/common/files';
+import { LegacyFileService } from 'vs/workbench/services/files/node/fileService';
+import { FileOperationResult, FileOperationError } from 'vs/platform/files/common/files';
 import { URI as uri } from 'vs/base/common/uri';
 import * as uuid from 'vs/base/common/uuid';
 import * as pfs from 'vs/base/node/pfs';
 import * as encodingLib from 'vs/base/node/encoding';
-import { TestEnvironmentService, TestContextService, TestTextResourceConfigurationService, TestLifecycleService, TestStorageService } from 'vs/workbench/test/workbenchTestServices';
+import { TestEnvironmentService, TestContextService, TestTextResourceConfigurationService } from 'vs/workbench/test/workbenchTestServices';
 import { getRandomTestPath } from 'vs/base/test/node/testUtils';
-import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { Workspace, toWorkspaceFolders } from 'vs/platform/workspace/common/workspace';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 import { TextModel } from 'vs/editor/common/model/textModel';
 import { IEncodingOverride } from 'vs/workbench/services/files/node/encoding';
 import { getPathFromAmdModule } from 'vs/base/common/amd';
+import { FileService2 } from 'vs/workbench/services/files2/common/fileService2';
+import { NullLogService } from 'vs/platform/log/common/log';
+import { Schemas } from 'vs/base/common/network';
+import { DiskFileSystemProvider } from 'vs/workbench/services/files2/node/diskFileSystemProvider';
 
-suite('FileService', () => {
-	let service: FileService;
+suite('LegacyFileService', () => {
+	let service: LegacyFileService;
 	const parentDir = getRandomTestPath(os.tmpdir(), 'vsctests', 'fileservice');
 	let testDir: string;
 
@@ -32,126 +35,22 @@ suite('FileService', () => {
 		testDir = path.join(parentDir, id);
 		const sourceDir = getPathFromAmdModule(require, './fixtures/service');
 
+		const fileService = new FileService2(new NullLogService());
+		fileService.registerProvider(Schemas.file, new DiskFileSystemProvider(new NullLogService()));
+
 		return pfs.copy(sourceDir, testDir).then(() => {
-			service = new FileService(new TestContextService(new Workspace(testDir, toWorkspaceFolders([{ path: testDir }]))), TestEnvironmentService, new TestTextResourceConfigurationService(), new TestConfigurationService(), new TestLifecycleService(), new TestStorageService(), new TestNotificationService(), { disableWatcher: true });
+			service = new LegacyFileService(
+				fileService,
+				new TestContextService(new Workspace(testDir, toWorkspaceFolders([{ path: testDir }]))),
+				TestEnvironmentService,
+				new TestTextResourceConfigurationService(),
+			);
 		});
 	});
 
 	teardown(() => {
 		service.dispose();
-		return pfs.del(parentDir, os.tmpdir());
-	});
-
-	test('createFile', () => {
-		let event: FileOperationEvent;
-		const toDispose = service.onAfterOperation(e => {
-			event = e;
-		});
-
-		const contents = 'Hello World';
-		const resource = uri.file(path.join(testDir, 'test.txt'));
-		return service.createFile(resource, contents).then(s => {
-			assert.equal(s.name, 'test.txt');
-			assert.equal(fs.existsSync(s.resource.fsPath), true);
-			assert.equal(fs.readFileSync(s.resource.fsPath), contents);
-
-			assert.ok(event);
-			assert.equal(event.resource.fsPath, resource.fsPath);
-			assert.equal(event.operation, FileOperation.CREATE);
-			assert.equal(event.target!.resource.fsPath, resource.fsPath);
-			toDispose.dispose();
-		});
-	});
-
-	test('createFile (does not overwrite by default)', function () {
-		const contents = 'Hello World';
-		const resource = uri.file(path.join(testDir, 'test.txt'));
-
-		fs.writeFileSync(resource.fsPath, ''); // create file
-
-		return service.createFile(resource, contents).then(undefined, error => {
-			assert.ok(error);
-		});
-	});
-
-	test('createFile (allows to overwrite existing)', function () {
-		let event: FileOperationEvent;
-		const toDispose = service.onAfterOperation(e => {
-			event = e;
-		});
-
-		const contents = 'Hello World';
-		const resource = uri.file(path.join(testDir, 'test.txt'));
-
-		fs.writeFileSync(resource.fsPath, ''); // create file
-
-		return service.createFile(resource, contents, { overwrite: true }).then(s => {
-			assert.equal(s.name, 'test.txt');
-			assert.equal(fs.existsSync(s.resource.fsPath), true);
-			assert.equal(fs.readFileSync(s.resource.fsPath), contents);
-
-			assert.ok(event);
-			assert.equal(event.resource.fsPath, resource.fsPath);
-			assert.equal(event.operation, FileOperation.CREATE);
-			assert.equal(event.target!.resource.fsPath, resource.fsPath);
-			toDispose.dispose();
-		});
-	});
-
-	test('updateContent', () => {
-		const resource = uri.file(path.join(testDir, 'small.txt'));
-
-		return service.resolveContent(resource).then(c => {
-			assert.equal(c.value, 'Small File');
-
-			c.value = 'Updates to the small file';
-
-			return service.updateContent(c.resource, c.value).then(c => {
-				assert.equal(fs.readFileSync(resource.fsPath), 'Updates to the small file');
-			});
-		});
-	});
-
-	test('updateContent (ITextSnapShot)', function () {
-		const resource = uri.file(path.join(testDir, 'small.txt'));
-
-		return service.resolveContent(resource).then(c => {
-			assert.equal(c.value, 'Small File');
-
-			const model = TextModel.createFromString('Updates to the small file');
-
-			return service.updateContent(c.resource, model.createSnapshot()).then(c => {
-				assert.equal(fs.readFileSync(resource.fsPath), 'Updates to the small file');
-
-				model.dispose();
-			});
-		});
-	});
-
-	test('updateContent (large file)', function () {
-		const resource = uri.file(path.join(testDir, 'lorem.txt'));
-
-		return service.resolveContent(resource).then(c => {
-			const newValue = c.value + c.value;
-			c.value = newValue;
-
-			return service.updateContent(c.resource, c.value).then(c => {
-				assert.equal(fs.readFileSync(resource.fsPath), newValue);
-			});
-		});
-	});
-
-	test('updateContent (large file, ITextSnapShot)', function () {
-		const resource = uri.file(path.join(testDir, 'lorem.txt'));
-
-		return service.resolveContent(resource).then(c => {
-			const newValue = c.value + c.value;
-			const model = TextModel.createFromString(newValue);
-
-			return service.updateContent(c.resource, model.createSnapshot()).then(c => {
-				assert.equal(fs.readFileSync(resource.fsPath), newValue);
-			});
-		});
+		return pfs.rimraf(parentDir, pfs.RimRafMode.MOVE);
 	});
 
 	test('updateContent - use encoding (UTF 16 BE)', function () {
@@ -240,6 +139,67 @@ suite('FileService', () => {
 		});
 	});
 
+	test('updateContent - UTF 8 BOMs', function () {
+
+		// setup
+		const _id = uuid.generateUuid();
+		const _testDir = path.join(parentDir, _id);
+		const _sourceDir = getPathFromAmdModule(require, './fixtures/service');
+		const resource = uri.file(path.join(testDir, 'index.html'));
+
+		const fileService = new FileService2(new NullLogService());
+		fileService.registerProvider(Schemas.file, new DiskFileSystemProvider(new NullLogService()));
+
+		const _service = new LegacyFileService(
+			fileService,
+			new TestContextService(new Workspace(_testDir, toWorkspaceFolders([{ path: _testDir }]))),
+			TestEnvironmentService,
+			new TestTextResourceConfigurationService()
+		);
+
+		return pfs.copy(_sourceDir, _testDir).then(() => {
+			return pfs.readFile(resource.fsPath).then(data => {
+				assert.equal(encodingLib.detectEncodingByBOMFromBuffer(data, 512), null);
+
+				const model = TextModel.createFromString('Hello Bom');
+
+				// Update content: UTF_8 => UTF_8_BOM
+				return _service.updateContent(resource, model.createSnapshot(), { encoding: encodingLib.UTF8_with_bom }).then(() => {
+					return pfs.readFile(resource.fsPath).then(data => {
+						assert.equal(encodingLib.detectEncodingByBOMFromBuffer(data, 512), encodingLib.UTF8);
+
+						// Update content: PRESERVE BOM when using UTF-8
+						model.setValue('Please stay Bom');
+						return _service.updateContent(resource, model.createSnapshot(), { encoding: encodingLib.UTF8 }).then(() => {
+							return pfs.readFile(resource.fsPath).then(data => {
+								assert.equal(encodingLib.detectEncodingByBOMFromBuffer(data, 512), encodingLib.UTF8);
+
+								// Update content: REMOVE BOM
+								model.setValue('Go away Bom');
+								return _service.updateContent(resource, model.createSnapshot(), { encoding: encodingLib.UTF8, overwriteEncoding: true }).then(() => {
+									return pfs.readFile(resource.fsPath).then(data => {
+										assert.equal(encodingLib.detectEncodingByBOMFromBuffer(data, 512), null);
+
+										// Update content: BOM comes not back
+										model.setValue('Do not come back Bom');
+										return _service.updateContent(resource, model.createSnapshot(), { encoding: encodingLib.UTF8 }).then(() => {
+											return pfs.readFile(resource.fsPath).then(data => {
+												assert.equal(encodingLib.detectEncodingByBOMFromBuffer(data, 512), null);
+
+												model.dispose();
+												_service.dispose();
+											});
+										});
+									});
+								});
+							});
+						});
+					});
+				});
+			});
+		});
+	});
+
 	test('resolveContent - large file', function () {
 		const resource = uri.file(path.join(testDir, 'lorem.txt'));
 
@@ -248,7 +208,7 @@ suite('FileService', () => {
 		});
 	});
 
-	test('Files are intermingled #38331', function () {
+	test('resolveContent - Files are intermingled #38331', function () {
 		let resource1 = uri.file(path.join(testDir, 'lorem.txt'));
 		let resource2 = uri.file(path.join(testDir, 'some_utf16le.css'));
 		let value1: string;
@@ -348,46 +308,7 @@ suite('FileService', () => {
 		});
 	});
 
-	test('watch', function (done) {
-		const toWatch = uri.file(path.join(testDir, 'index.html'));
-
-		service.watch(toWatch);
-
-		service.onFileChanges((e: FileChangesEvent) => {
-			assert.ok(e);
-
-			service.unwatch(toWatch);
-			done();
-		});
-
-		setTimeout(() => {
-			fs.writeFileSync(toWatch.fsPath, 'Changes');
-		}, 100);
-	});
-
-	// test('watch - support atomic save', function (done) {
-	// 	const toWatch = uri.file(path.join(testDir, 'index.html'));
-
-	// 	service.watch(toWatch);
-
-	// 	service.onFileChanges((e: FileChangesEvent) => {
-	// 		assert.ok(e);
-
-	// 		service.unwatch(toWatch);
-	// 		done();
-	// 	});
-
-	// 	setTimeout(() => {
-	// 		// Simulate atomic save by deleting the file, creating it under different name
-	// 		// and then replacing the previously deleted file with those contents
-	// 		const renamed = `${toWatch.fsPath}.bak`;
-	// 		fs.unlinkSync(toWatch.fsPath);
-	// 		fs.writeFileSync(renamed, 'Changes');
-	// 		fs.renameSync(renamed, toWatch.fsPath);
-	// 	}, 100);
-	// });
-
-	test('options - encoding override (parent)', function () {
+	test('resolveContent - options - encoding override (parent)', function () {
 
 		// setup
 		const _id = uuid.generateUuid();
@@ -406,18 +327,15 @@ suite('FileService', () => {
 
 			const textResourceConfigurationService = new TestTextResourceConfigurationService(configurationService);
 
-			const _service = new FileService(
+			const fileService = new FileService2(new NullLogService());
+			fileService.registerProvider(Schemas.file, new DiskFileSystemProvider(new NullLogService()));
+
+			const _service = new LegacyFileService(
+				fileService,
 				new TestContextService(new Workspace(_testDir, toWorkspaceFolders([{ path: _testDir }]))),
 				TestEnvironmentService,
 				textResourceConfigurationService,
-				configurationService,
-				new TestLifecycleService(),
-				new TestStorageService(),
-				new TestNotificationService(),
-				{
-					encodingOverride,
-					disableWatcher: true
-				});
+				{ encodingOverride });
 
 			return _service.resolveContent(uri.file(path.join(testDir, 'index.html'))).then(c => {
 				assert.equal(c.encoding, 'windows1252');
@@ -432,7 +350,7 @@ suite('FileService', () => {
 		});
 	});
 
-	test('options - encoding override (extension)', function () {
+	test('resolveContent - options - encoding override (extension)', function () {
 
 		// setup
 		const _id = uuid.generateUuid();
@@ -451,18 +369,15 @@ suite('FileService', () => {
 
 			const textResourceConfigurationService = new TestTextResourceConfigurationService(configurationService);
 
-			const _service = new FileService(
+			const fileService = new FileService2(new NullLogService());
+			fileService.registerProvider(Schemas.file, new DiskFileSystemProvider(new NullLogService()));
+
+			const _service = new LegacyFileService(
+				fileService,
 				new TestContextService(new Workspace(_testDir, toWorkspaceFolders([{ path: _testDir }]))),
 				TestEnvironmentService,
 				textResourceConfigurationService,
-				configurationService,
-				new TestLifecycleService(),
-				new TestStorageService(),
-				new TestNotificationService(),
-				{
-					encodingOverride,
-					disableWatcher: true
-				});
+				{ encodingOverride });
 
 			return _service.resolveContent(uri.file(path.join(testDir, 'index.html'))).then(c => {
 				assert.equal(c.encoding, 'windows1252');
@@ -472,69 +387,6 @@ suite('FileService', () => {
 
 					// teardown
 					_service.dispose();
-				});
-			});
-		});
-	});
-
-	test('UTF 8 BOMs', function () {
-
-		// setup
-		const _id = uuid.generateUuid();
-		const _testDir = path.join(parentDir, _id);
-		const _sourceDir = getPathFromAmdModule(require, './fixtures/service');
-		const resource = uri.file(path.join(testDir, 'index.html'));
-
-		const _service = new FileService(
-			new TestContextService(new Workspace(_testDir, toWorkspaceFolders([{ path: _testDir }]))),
-			TestEnvironmentService,
-			new TestTextResourceConfigurationService(),
-			new TestConfigurationService(),
-			new TestLifecycleService(),
-			new TestStorageService(),
-			new TestNotificationService(),
-			{
-				disableWatcher: true
-			});
-
-		return pfs.copy(_sourceDir, _testDir).then(() => {
-			return pfs.readFile(resource.fsPath).then(data => {
-				assert.equal(encodingLib.detectEncodingByBOMFromBuffer(data, 512), null);
-
-				const model = TextModel.createFromString('Hello Bom');
-
-				// Update content: UTF_8 => UTF_8_BOM
-				return _service.updateContent(resource, model.createSnapshot(), { encoding: encodingLib.UTF8_with_bom }).then(() => {
-					return pfs.readFile(resource.fsPath).then(data => {
-						assert.equal(encodingLib.detectEncodingByBOMFromBuffer(data, 512), encodingLib.UTF8);
-
-						// Update content: PRESERVE BOM when using UTF-8
-						model.setValue('Please stay Bom');
-						return _service.updateContent(resource, model.createSnapshot(), { encoding: encodingLib.UTF8 }).then(() => {
-							return pfs.readFile(resource.fsPath).then(data => {
-								assert.equal(encodingLib.detectEncodingByBOMFromBuffer(data, 512), encodingLib.UTF8);
-
-								// Update content: REMOVE BOM
-								model.setValue('Go away Bom');
-								return _service.updateContent(resource, model.createSnapshot(), { encoding: encodingLib.UTF8, overwriteEncoding: true }).then(() => {
-									return pfs.readFile(resource.fsPath).then(data => {
-										assert.equal(encodingLib.detectEncodingByBOMFromBuffer(data, 512), null);
-
-										// Update content: BOM comes not back
-										model.setValue('Do not come back Bom');
-										return _service.updateContent(resource, model.createSnapshot(), { encoding: encodingLib.UTF8 }).then(() => {
-											return pfs.readFile(resource.fsPath).then(data => {
-												assert.equal(encodingLib.detectEncodingByBOMFromBuffer(data, 512), null);
-
-												model.dispose();
-												_service.dispose();
-											});
-										});
-									});
-								});
-							});
-						});
-					});
 				});
 			});
 		});

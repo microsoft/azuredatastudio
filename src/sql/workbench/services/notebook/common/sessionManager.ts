@@ -6,7 +6,7 @@
 
 import { nb } from 'azdata';
 import { localize } from 'vs/nls';
-import { FutureInternal } from 'sql/parts/notebook/models/modelInterfaces';
+import { FutureInternal } from 'sql/workbench/parts/notebook/models/modelInterfaces';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 export const noKernel: string = localize('noKernel', 'No Kernel');
@@ -113,6 +113,10 @@ class EmptyKernel implements nb.IKernel {
 	}
 
 	public get supportsIntellisense(): boolean {
+		return false;
+	}
+
+	public get requiresConnection(): boolean {
 		return false;
 	}
 
