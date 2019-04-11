@@ -19,8 +19,8 @@ import { CellType } from './contracts/content';
 const localize = nls.loadMessageBundle();
 
 const JUPYTER_NOTEBOOK_PROVIDER = 'jupyter';
-const msgSampleCodeDataFrame = localize('msgSampleCodeDataFrame', 'This sample code loads the file into a data frame and shows the first 10 results.');
-const noNotebookVisible = localize('noNotebookVisible', 'No notebook editor is active');
+const msgSampleCodeDataFrame = localize('msgSampleCodeDataFrame', "This sample code loads the file into a data frame and shows the first 10 results.");
+const noNotebookVisible = localize('noNotebookVisible', "No notebook editor is active");
 
 let controller: JupyterController;
 type ChooseCellType = { label: string, id: CellType};
@@ -43,15 +43,15 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 		let cellType: CellType;
 		try {
 			let cellTypes: ChooseCellType[] = [{
-				label: localize('codeCellName', 'Code'),
+				label: localize('codeCellName', "Code"),
 				id: 'code'
 			},
 			{
-				label: localize('textCellName', 'Text'),
+				label: localize('textCellName', "Text"),
 				id: 'markdown'
 			}];
 			let selection = await vscode.window.showQuickPick(cellTypes, {
-				placeHolder: localize('selectCellType', 'What type of cell do you want to add?')
+				placeHolder: localize('selectCellType', "What type of cell do you want to add?")
 			});
 			if (selection) {
 				cellType = selection.id;
@@ -123,7 +123,7 @@ async function openNotebook(): Promise<void> {
 	try {
 		let filter = {};
 		// TODO support querying valid notebook file types
-		filter[localize('notebookFiles', 'Notebooks')] = ['ipynb'];
+		filter[localize('notebookFiles', "Notebooks")] = ['ipynb'];
 		let file = await vscode.window.showOpenDialog({
 			filters: filter
 		});
