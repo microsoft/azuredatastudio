@@ -20,6 +20,8 @@ export class OutputAreaComponent extends AngularDisposable implements OnInit {
 	@ViewChild('outputarea', { read: ElementRef }) private outputArea: ElementRef;
 	@Input() cellModel: ICellModel;
 
+	private _activeCellId: string;
+
 	private readonly _minimumHeight = 30;
 
 	constructor(
@@ -39,6 +41,14 @@ export class OutputAreaComponent extends AngularDisposable implements OnInit {
 				}
 			}));
 		}
+	}
+
+	@Input() set activeCellId(value: string) {
+		this._activeCellId = value;
+	}
+
+	get activeCellId(): string {
+		return this._activeCellId;
 	}
 
 	private updateTheme(theme: IColorTheme): void {
