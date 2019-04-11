@@ -3,10 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { NodeContextKey } from 'sql/workbench/parts/dataExplorer/common/nodeContext';
 import { localize } from 'vs/nls';
 import { MenuId, MenuRegistry } from 'vs/platform/actions/common/actions';
 import { DISCONNECT_COMMAND_ID, MANAGE_COMMAND_ID, NEW_QUERY_COMMAND_ID, REFRESH_COMMAND_ID } from './nodeCommands';
+import { ContextKeyDefinedExpr, ContextKeyExpr, ContextKeyEqualsExpr } from 'vs/platform/contextkey/common/contextkey';
 
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	group: 'connection',
@@ -15,7 +15,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		id: DISCONNECT_COMMAND_ID,
 		title: localize('disconnect', 'Disconnect')
 	},
-	when: NodeContextKey.IsConnected
+	when: new ContextKeyEqualsExpr('isConnected', true)
 });
 
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
@@ -25,7 +25,24 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		id: NEW_QUERY_COMMAND_ID,
 		title: localize('newQuery', 'New Query')
 	},
-	when: NodeContextKey.IsConnectable
+	when: ContextKeyExpr.and(
+		new ContextKeyDefinedExpr('isConnectable'),
+		new ContextKeyEqualsExpr('isConnectable', true),
+		new ContextKeyDefinedExpr('viewItem'),
+		new ContextKeyEqualsExpr('viewItem', 'Database'))
+});
+
+MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
+	group: 'connection',
+	command: {
+		id: NEW_QUERY_COMMAND_ID,
+		title: localize('newQuery', 'New Query')
+	},
+	when: ContextKeyExpr.and(
+		new ContextKeyDefinedExpr('isConnectable'),
+		new ContextKeyEqualsExpr('isConnectable', true),
+		new ContextKeyDefinedExpr('viewItem'),
+		new ContextKeyEqualsExpr('viewItem', 'azure.resource.itemType.databaseServer'))
 });
 
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
@@ -35,7 +52,11 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		id: MANAGE_COMMAND_ID,
 		title: localize('manage', 'Manage')
 	},
-	when: NodeContextKey.IsConnectable
+	when: ContextKeyExpr.and(
+		new ContextKeyDefinedExpr('isConnectable'),
+		new ContextKeyEqualsExpr('isConnectable', true),
+		new ContextKeyDefinedExpr('viewItem'),
+		new ContextKeyEqualsExpr('viewItem', 'azure.resource.itemType.databaseServer'))
 });
 
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
