@@ -37,6 +37,16 @@
 					"command": "dacFx.start",
 					"when": "connectionProvider == MSSQL && nodeType && nodeType == Database",
 					"group": "export"
+				},
+				{
+					"command": "dacFx.start",
+					"when": "connectionProvider == MSSQL && nodeType && nodeType == Server",
+					"group": "export"
+				},
+				{
+					"command": "dacFx.start",
+					"when": "connectionProvider == MSSQL && nodeType && nodeType == Folder && nodeLabel == 'Databases'",
+					"group": "export"
 				}
 			]
 		}
