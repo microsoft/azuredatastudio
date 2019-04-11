@@ -168,6 +168,23 @@
 					"when": "false"
 				}
 			],
+			"touchBar": [
+				{
+					"command": "notebook.command.runactivecell",
+					"when": "activeEditor == workbench.editor.notebookEditor",
+					"group": "1_notebook"
+				},
+				{
+					"command": "notebook.command.addcode",
+					"when": "activeEditor == workbench.editor.notebookEditor",
+					"group": "2_notebook"
+				},
+				{
+					"command": "notebook.command.addtext",
+					"when": "activeEditor == workbench.editor.notebookEditor",
+					"group": "2_notebook"
+				}
+			],
 			"objectExplorer/item/context": [
 				{
 					"command": "notebook.command.new",
