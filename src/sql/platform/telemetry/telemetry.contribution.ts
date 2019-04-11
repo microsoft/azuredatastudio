@@ -111,7 +111,7 @@ export class SqlTelemetryContribution extends Disposable implements IWorkbenchCo
 
 	// Usage Metrics
 	private sendUsageEvent(monthlyUseCount: number, lastMonthDate: Date): void {
-		let userUsageType: UserUsageType = undefined;
+		let userUsageType: UserUsageType;
 		if (monthlyUseCount === 1) {
 			userUsageType = UserUsageType.TireKicker;
 		} else if (monthlyUseCount >= 2 && monthlyUseCount <= 11) {
