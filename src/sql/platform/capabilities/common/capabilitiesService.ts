@@ -3,10 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
-import * as Constants from 'sql/common/constants';
 import { ConnectionProviderProperties, IConnectionProviderRegistry, Extensions as ConnectionExtensions } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
 import { toObject } from 'sql/base/common/map';
 
@@ -22,6 +19,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { IExtensionManagementService } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { entries } from 'sql/base/common/objects';
+import { RestoreFeatureName, BackupFeatureName } from 'sql/workbench/common/actions';
 
 export const SERVICE_ID = 'capabilitiesService';
 export const HOST_NAME = 'azdata';
@@ -220,13 +218,13 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 		if (action) {
 			let featureName: string = action.id;
 			switch (featureName) {
-				case Constants.BackupFeatureName:
+				case BackupFeatureName:
 					if (isMssql) {
 						return connectionManagementInfo.connectionProfile.databaseName && !isCloud;
 					} else {
 						return !!connectionManagementInfo.connectionProfile.databaseName;
 					}
-				case Constants.RestoreFeatureName:
+				case RestoreFeatureName:
 					if (isMssql) {
 						return !isCloud;
 					} else {

@@ -10,7 +10,7 @@ import { OptionsDialog } from 'sql/workbench/browser/modal/optionsDialog';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as azdata from 'azdata';
 import { localize } from 'vs/nls';
-import * as TelemetryKeys from 'sql/common/telemetryKeys';
+import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
 
 export class AdvancedPropertiesController {
 	private _advancedDialog: OptionsDialog;
