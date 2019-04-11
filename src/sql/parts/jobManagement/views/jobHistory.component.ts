@@ -12,7 +12,7 @@ import * as dom from 'vs/base/browser/dom';
 import { OnInit, Component, Inject, Input, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, ChangeDetectionStrategy, Injectable } from '@angular/core';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 import { RunJobAction, StopJobAction, EditJobAction, JobsRefreshAction } from 'sql/platform/jobManagement/common/jobActions';
 import { JobCacheObject } from 'sql/platform/jobManagement/common/jobManagementService';
 import { JobManagementUtilities } from 'sql/platform/jobManagement/common/jobManagementUtilities';

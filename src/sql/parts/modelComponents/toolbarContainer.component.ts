@@ -15,7 +15,7 @@ import { Orientation, ToolbarLayout } from 'sql/workbench/api/common/sqlExtHostT
 import { IComponent, IComponentDescriptor, IModelStore } from 'sql/parts/modelComponents/interfaces';
 
 import { ContainerBase } from 'sql/parts/modelComponents/componentBase';
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 
 export interface ToolbarItemConfig {
 	title?: string;
