@@ -4,7 +4,7 @@
 *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./code';
 
-import { OnInit, Component, Input, Inject, ElementRef, ViewChild, Output, EventEmitter, OnChanges, SimpleChange } from '@angular/core';
+import { OnInit, Component, Input, Inject, ElementRef, ViewChild, Output, EventEmitter, OnChanges, SimpleChange, forwardRef, ChangeDetectorRef } from '@angular/core';
 
 import { AngularDisposable } from 'sql/base/node/lifecycle';
 import { QueryTextEditor } from 'sql/parts/modelComponents/queryTextEditor';
@@ -101,7 +101,8 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(IModelService) private _modelService: IModelService,
 		@Inject(IModeService) private _modeService: IModeService,
-		@Inject(IConfigurationService) private _configurationService: IConfigurationService
+		@Inject(IConfigurationService) private _configurationService: IConfigurationService,
+		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef
 	) {
 		super();
 		this._cellToggleMoreActions = this._instantiationService.createInstance(CellToggleMoreActions);
@@ -159,7 +160,14 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 			&& this.cellModel.cellUri;
 	}
 
+	private get destroyed(): boolean{
+		return !!(this._changeRef['destroyed']);
+	}
+
 	ngAfterContentInit(): void {
+		if (this.destroyed) {
+			return;
+		}
 		this.createEditor();
 		this._register(DOM.addDisposableListener(window, DOM.EventType.RESIZE, e => {
 			this._layoutEmitter.fire();
@@ -197,6 +205,14 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		let overrideEditorSetting = this._configurationService.getValue<boolean>(OVERRIDE_EDITOR_THEMING_SETTING);
 		this._editor.hideLineNumbers = (overrideEditorSetting && this.cellModel.cellType === CellTypes.Markdown);
 
+
+		if (this.destroyed) {
+			// At this point, we may have been disposed (scenario: restoring markdown cell in preview mode).
+			// Exiting early to avoid warnings on registering already disposed items, which causes some churning
+			// due to re-disposing things.
+			// There's no negative impact as at this point the component isn't visible (it was removed from the DOM)
+			return;
+		}
 		this._register(this._editor);
 		this._register(this._editorInput);
 		this._register(this._editorModel.onDidChangeContent(e => {
