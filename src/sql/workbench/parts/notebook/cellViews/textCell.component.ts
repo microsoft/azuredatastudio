@@ -24,7 +24,7 @@ import { NotebookModel } from 'sql/workbench/parts/notebook/models/notebookModel
 import { CellToggleMoreActions } from 'sql/workbench/parts/notebook/cellToggleMoreActions';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
-export const USER_SELECT_CLASS ='actionselect';
+const USER_SELECT_CLASS ='actionselect';
 
 @Component({
 	selector: TEXT_SELECTOR,

@@ -17,7 +17,7 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import * as DOM from 'vs/base/browser/dom';
 
 export const OUTPUT_SELECTOR: string = 'output-component';
-export const USER_SELECT_CLASS ='actionselect';
+const USER_SELECT_CLASS ='actionselect';
 
 @Component({
 	selector: OUTPUT_SELECTOR,
@@ -87,8 +87,7 @@ export class OutputComponent extends AngularDisposable implements OnInit {
 		return this._trusted;
 	}
 
-	@Input()
-	set trustedMode(value: boolean) {
+	@Input() set trustedMode(value: boolean) {
 		this._trusted = value;
 		if (this._initialized) {
 			this.renderOutput();

@@ -13,6 +13,6 @@ text-cell-component .notebook-preview {
 	padding-right: 8px;
 }
 
-.notebook-preview.actionselect{
+.notebook-preview.actionselect {
 	user-select: text;
 }
