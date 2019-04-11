@@ -19,8 +19,8 @@ export class SqlTelemetryContribution extends Disposable implements IWorkbenchCo
 		super();
 
 		const dailyLastUseDate: number = Date.parse(storageService.get('telemetry.dailyLastUseDate', StorageScope.GLOBAL, '0'));
-		const weeklyLastUseDate: number  = Date.parse(storageService.get('telemetry.weeklyLastUseDate', StorageScope.GLOBAL, '0'));
-		const monthlyLastUseDate: number  = Date.parse(storageService.get('telemetry.monthlyLastUseDate', StorageScope.GLOBAL, '0'));
+		const weeklyLastUseDate: number = Date.parse(storageService.get('telemetry.weeklyLastUseDate', StorageScope.GLOBAL, '0'));
+		const monthlyLastUseDate: number = Date.parse(storageService.get('telemetry.monthlyLastUseDate', StorageScope.GLOBAL, '0'));
 		const firstTimeUser: boolean = dailyLastUseDate === Date.parse('0');
 
 		let todayString: string = new Date().toUTCString();
@@ -40,7 +40,8 @@ export class SqlTelemetryContribution extends Disposable implements IWorkbenchCo
 		}
 
 
-		/* send monthly uses at the end of month */
+		/* send monthly uses once the user launches on a day that's in a month
+		   after the last time we send a monthly usage count */
 		const monthlyUseCount: number = storageService.getNumber('telemetry.monthlyUseCount', StorageScope.GLOBAL, 0);
 		if (this.didMonthChange(monthlyLastUseDate)) {
 			telemetryService.publicLog('telemetry.monthlyUse', { monthlyFirstUse: true });
@@ -67,7 +68,7 @@ export class SqlTelemetryContribution extends Disposable implements IWorkbenchCo
 			storageService.store('telemetry.monthlyLastUseDate', todayString, StorageScope.GLOBAL);
 		} else {
 			// if it's the same month, increment the monthly use count
-			storageService.store('telemetry.monthlyUseCount', monthlyUseCount+1, StorageScope.GLOBAL);
+			storageService.store('telemetry.monthlyUseCount', monthlyUseCount + 1, StorageScope.GLOBAL);
 		}
 	}
 
@@ -119,15 +120,20 @@ export class SqlTelemetryContribution extends Disposable implements IWorkbenchCo
 			userUsageType = UserUsageType.Engaged;
 		} else if (monthlyUseCount > 20) {
 			userUsageType = UserUsageType.Dedicated;
+		} else {
+			userUsageType = null;
 		}
-		this.telemetryService.publicLog('telemetry.userUsage',
-		{ userType: userUsageType, monthlyUseCount: monthlyUseCount, month: lastMonthDate.getMonth().toString(), year: lastMonthDate.getFullYear().toString() });
+		if (userUsageType) {
+			this.telemetryService.publicLog('telemetry.userUsage',
+				{ userType: userUsageType, monthlyUseCount: monthlyUseCount, month: lastMonthDate.getMonth().toString(), year: lastMonthDate.getFullYear().toString() });
+		}
 	}
 
 	// Growth Metrics
 	private sendGrowthTypeEvent(growthType: UserGrowthType, lastMonthDate: Date): void {
 		this.telemetryService.publicLog('telemetry.userGrowthType', {
-			userGrowthType: growthType, month: lastMonthDate.getMonth().toString(), year: lastMonthDate.getFullYear().toString()});
+			userGrowthType: growthType, month: lastMonthDate.getMonth().toString(), year: lastMonthDate.getFullYear().toString()
+		});
 	}
 }
 
