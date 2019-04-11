@@ -389,8 +389,8 @@ export class CellModel implements ICellModel {
 						let endpoint = this.getKnoxEndpoint(model.activeConnection);
 						let host = endpoint && endpoint.ipAddress ? endpoint.ipAddress : model.activeConnection.serverName;
 						let html = result.data['text/html'];
-						html =this.rewriteUrlUsingRegex(/(https?:\/\/mssql-master.*\/proxy)(.*)/g, html, host);
-						html =this.rewriteUrlUsingRegex(/(https?:\/\/master.*master-svc.*\/proxy)(.*)/g, html, host);
+						html = this.rewriteUrlUsingRegex(/(https?:\/\/mssql-master.*\/proxy)(.*)/g, html, host);
+						html = this.rewriteUrlUsingRegex(/(https?:\/\/master.*master-svc.*\/proxy)(.*)/g, html, host);
 						(<nb.IDisplayResult>output).data['text/html'] = html;
 					}
 				}

@@ -26,7 +26,7 @@ export class FileBrowserService implements IFileBrowserService {
 	private _expandResolveMap: { [key: string]: any } = {};
 	static fileNodeId: number = 0;
 
-	constructor( @IConnectionManagementService private _connectionService: IConnectionManagementService,
+	constructor(@IConnectionManagementService private _connectionService: IConnectionManagementService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService) {
 	}
 
