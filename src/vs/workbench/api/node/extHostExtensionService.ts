@@ -14,8 +14,8 @@ import { TernarySearchTree } from 'vs/base/common/map';
 import { URI } from 'vs/base/common/uri';
 import { ILogService } from 'vs/platform/log/common/log';
 // {{SQL CARBON EDIT}} - Remove createApiFactory initializeExtensionApi, and IExtensionApiFactory imports
-//import { createApiFactory, IExtensionApiFactory, NodeModuleRequireInterceptor, VSCodeNodeModuleFactory } from 'vs/workbench/api/node/extHost.api.impl';
-import { NodeModuleRequireInterceptor, KeytarNodeModuleFactory, OpenNodeModuleFactory } from 'vs/workbench/api/node/extHost.api.impl';
+// import { createApiFactory, IExtensionApiFactory } from 'vs/workbench/api/node/extHost.api.impl';
+import { NodeModuleRequireInterceptor, VSCodeNodeModuleFactory, KeytarNodeModuleFactory, OpenNodeModuleFactory } from 'vs/workbench/api/node/extHostRequireInterceptor';
 import { ExtHostExtensionServiceShape, IEnvironment, IInitData, IMainContext, MainContext, MainThreadExtensionServiceShape, MainThreadTelemetryShape, MainThreadWorkspaceShape } from 'vs/workbench/api/common/extHost.protocol';
 import { ExtHostConfiguration } from 'vs/workbench/api/common/extHostConfiguration';
 import { ActivatedExtension, EmptyExtension, ExtensionActivatedByAPI, ExtensionActivatedByEvent, ExtensionActivationReason, ExtensionActivationTimes, ExtensionActivationTimesBuilder, ExtensionsActivator, IExtensionAPI, IExtensionContext, IExtensionModule, HostExtension } from 'vs/workbench/api/common/extHostExtensionActivator';
