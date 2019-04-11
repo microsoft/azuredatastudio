@@ -41,7 +41,7 @@
     </trans-unit>
     <trans-unit id="flatFileImport.prosePreviewMessage">
       <source xml:lang="en">This operation analyzed the input file structure to generate the preview below for up to the first 50 rows.</source>
-      <target state="translated">此操作分析了输入文件的结构, 以生成下方前50行的预览。</target>
+      <target state="translated">此操作已分析输入文件的结构以在下方生成前 50 行的预览。</target>
     </trans-unit>
   </body></file>
   <file original="extensions/import/out/wizard/pages/modifyColumnsPage" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
@@ -89,63 +89,15 @@
     </trans-unit>
     <trans-unit id="flatFileImport.fileTextboxTitle">
       <source xml:lang="en">Location of the file to be imported</source>
-      <target state="translated">要导入文件的位置</target>
+      <target state="translated">要导入的文件的位置</target>
     </trans-unit>
     <trans-unit id="flatFileImport.tableTextboxTitle">
       <source xml:lang="en">New table name</source>
-      <target state="translated">新表名</target>
+      <target state="translated">新建表名</target>
     </trans-unit>
     <trans-unit id="flatFileImport.schemaTextboxTitle">
       <source xml:lang="en">Table schema</source>
       <target state="translated">表架构</target>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/import/out/services/telemetry" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
-    <trans-unit id="import.serviceCrashButton">
-      <source xml:lang="en">Give Feedback</source>
-      <target state="translated">提供反馈</target>
-    </trans-unit>
-    <trans-unit id="serviceCrashMessage">
-      <source xml:lang="en">service component could not start</source>
-      <target state="translated">服务组件无法启动</target>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/import/out/services/serviceClient" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
-    <trans-unit id="serviceStarted">
-      <source xml:lang="en">Service Started</source>
-      <target state="translated">服务已启动</target>
-    </trans-unit>
-    <trans-unit id="serviceStarting">
-      <source xml:lang="en">Starting service</source>
-      <target state="translated">启动服务</target>
-    </trans-unit>
-    <trans-unit id="flatFileImport.serviceStartFailed">
-      <source xml:lang="en">Failed to start Import service{0}</source>
-      <target state="translated">无法启动导入服务{0}</target>
-    </trans-unit>
-    <trans-unit id="installingServiceDetailed">
-      <source xml:lang="en">Installing {0} service to {1}</source>
-      <target state="translated">正在将 {0} 服务安装到 {1}</target>
-    </trans-unit>
-    <trans-unit id="installingService">
-      <source xml:lang="en">Installing Service</source>
-      <target state="translated">安装服务</target>
-    </trans-unit>
-    <trans-unit id="serviceInstalled">
-      <source xml:lang="en">Installed</source>
-      <target state="translated">已安装</target>
-    </trans-unit>
-    <trans-unit id="downloadingService">
-      <source xml:lang="en">Downloading {0}</source>
-      <target state="translated">下载 {0}</target>
-    </trans-unit>
-    <trans-unit id="downloadingServiceStatus">
-      <source xml:lang="en">Downloading Service</source>
-      <target state="translated">下载服务</target>
-    </trans-unit>
-    <trans-unit id="downloadingServiceComplete">
-      <source xml:lang="en">Done!</source>
-      <target state="translated">完成！</target>
     </trans-unit>
   </body></file>
   <file original="extensions/import/out/wizard/flatFileWizard" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
@@ -176,6 +128,54 @@
     <trans-unit id="flatFileImport.importNewFile">
       <source xml:lang="en">Import new file</source>
       <target state="translated">导入新文件</target>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/import/out/services/telemetry" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="import.serviceCrashButton">
+      <source xml:lang="en">Give Feedback</source>
+      <target state="translated">提供反馈</target>
+    </trans-unit>
+    <trans-unit id="serviceCrashMessage">
+      <source xml:lang="en">service component could not start</source>
+      <target state="translated">服务组件无法启动</target>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/import/out/services/serviceClient" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="serviceStarted">
+      <source xml:lang="en">Service Started</source>
+      <target state="translated">服务已启动</target>
+    </trans-unit>
+    <trans-unit id="serviceStarting">
+      <source xml:lang="en">Starting service</source>
+      <target state="translated">正在启动服务</target>
+    </trans-unit>
+    <trans-unit id="flatFileImport.serviceStartFailed">
+      <source xml:lang="en">Failed to start Import service{0}</source>
+      <target state="translated">未能启动导入服务{0}</target>
+    </trans-unit>
+    <trans-unit id="installingServiceDetailed">
+      <source xml:lang="en">Installing {0} service to {1}</source>
+      <target state="translated">正在将 {0} 服务安装到 {1}</target>
+    </trans-unit>
+    <trans-unit id="installingService">
+      <source xml:lang="en">Installing Service</source>
+      <target state="translated">正在安装服务</target>
+    </trans-unit>
+    <trans-unit id="serviceInstalled">
+      <source xml:lang="en">Installed</source>
+      <target state="translated">已安装</target>
+    </trans-unit>
+    <trans-unit id="downloadingService">
+      <source xml:lang="en">Downloading {0}</source>
+      <target state="translated">正在下载 {0}</target>
+    </trans-unit>
+    <trans-unit id="downloadingServiceStatus">
+      <source xml:lang="en">Downloading Service</source>
+      <target state="translated">正在下载服务</target>
+    </trans-unit>
+    <trans-unit id="downloadingServiceComplete">
+      <source xml:lang="en">Done!</source>
+      <target state="translated">完成！</target>
     </trans-unit>
   </body></file>
 </xliff>

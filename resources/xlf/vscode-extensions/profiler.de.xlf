@@ -6,23 +6,32 @@
       <target state="translated">Abbrechen</target>
     </trans-unit>
     <trans-unit id="createSessionDialog.create">
-      <source xml:lang="en">Create</source>
-      <target state="translated">Erstellen</target>
+      <source xml:lang="en">Start</source>
+      <target state="translated">Start</target>
     </trans-unit>
     <trans-unit id="createSessionDialog.title">
-      <source xml:lang="en">Create New Profiler Session</source>
+      <source xml:lang="en">Start New Profiler Session</source>
+      <target state="translated">Neue Profiler-Sitzung starten</target>
     </trans-unit>
     <trans-unit id="createSessionDialog.templatesInvalid">
       <source xml:lang="en">Invalid templates list, cannot open dialog</source>
+      <target state="translated">Ungültige Vorlagenliste. Dialogfeld kann nicht geöffnet werden.</target>
     </trans-unit>
     <trans-unit id="createSessionDialog.dialogOwnerInvalid">
       <source xml:lang="en">Invalid dialog owner, cannot open dialog</source>
+      <target state="translated">Ungültiger Besitzer für Dialogfeld. Dialogfeld kann nicht geöffnet werden.</target>
+    </trans-unit>
+    <trans-unit id="createSessionDialog.invalidProviderType">
+      <source xml:lang="en">Invalid provider type, cannot open dialog</source>
+      <target state="translated">Ungültiger Anbietertyp. Dialogfeld kann nicht geöffnet werden.</target>
     </trans-unit>
     <trans-unit id="createSessionDialog.selectTemplates">
       <source xml:lang="en">Select session template:</source>
+      <target state="translated">Sitzungsvorlage auswählen:</target>
     </trans-unit>
     <trans-unit id="createSessionDialog.enterSessionName">
       <source xml:lang="en">Enter session name:</source>
+      <target state="translated">Sitzungsnamen eingeben:</target>
     </trans-unit>
   </body></file>
 </xliff>
