@@ -111,7 +111,7 @@ export class SqlTelemetryContribution extends Disposable implements IWorkbenchCo
 
 	// Usage Metrics
 	private sendUsageEvent(monthlyUseCount: number, lastMonthDate: Date): void {
-		let userUsageType: UserUsageType;
+		let userUsageType: UserUsageType | undefined;
 		if (monthlyUseCount === 1) {
 			userUsageType = UserUsageType.TireKicker;
 		} else if (monthlyUseCount >= 2 && monthlyUseCount <= 11) {
@@ -121,9 +121,10 @@ export class SqlTelemetryContribution extends Disposable implements IWorkbenchCo
 		} else if (monthlyUseCount > 20) {
 			userUsageType = UserUsageType.Dedicated;
 		}
-		this.telemetryService.publicLog('telemetry.userUsage',
-			{ userType: userUsageType, monthlyUseCount: monthlyUseCount, month: lastMonthDate.getMonth().toString(), year: lastMonthDate.getFullYear().toString() });
-
+		if (userUsageType) {
+			this.telemetryService.publicLog('telemetry.userUsage',
+				{ userType: userUsageType, monthlyUseCount: monthlyUseCount, month: lastMonthDate.getMonth().toString(), year: lastMonthDate.getFullYear().toString() });
+		}
 	}
 
 	// Growth Metrics
