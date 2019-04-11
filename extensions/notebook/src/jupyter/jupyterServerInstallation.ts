@@ -31,6 +31,8 @@ const msgPythonUnpackError = localize('msgPythonUnpackError', 'Error while unpac
 const msgTaskName = localize('msgTaskName', 'Installing Notebook dependencies');
 const msgInstallPkgStart = localize('msgInstallPkgStart', 'Installing Notebook dependencies, see Tasks view for more information');
 const msgInstallPkgFinish = localize('msgInstallPkgFinish', 'Notebook dependencies installation is complete');
+const msgPythonRunningError = localize('msgPythonRunningError', 'Cannot overwrite existing Python installation while python is running.');
+const msgPendingInstallError = localize('msgPendingInstallError', 'Another Python installation is currently in progress.');
 function msgDependenciesInstallationFailed(errorMessage: string): string { return localize('msgDependenciesInstallationFailed', 'Installing Notebook dependencies failed with error: {0}', errorMessage); }
 function msgDownloadPython(platform: string, pythonDownloadUrl: string): string { return localize('msgDownloadPython', 'Downloading local python for platform: {0} to {1}', platform, pythonDownloadUrl); }
 
@@ -52,41 +54,19 @@ export default class JupyterServerInstallation {
 
 	// Allows dependencies to be installed even if an existing installation is already present
 	private _forceInstall: boolean;
+	private _installInProgress: boolean;
 
 	private static readonly DefaultPythonLocation = path.join(utils.getUserHome(), 'azuredatastudio-python');
 
-	private _installReady: Deferred<void>;
-
-	constructor(extensionPath: string, outputChannel: OutputChannel, apiWrapper: ApiWrapper, pythonInstallationPath?: string, forceInstall?: boolean) {
+	constructor(extensionPath: string, outputChannel: OutputChannel, apiWrapper: ApiWrapper, pythonInstallationPath?: string) {
 		this.extensionPath = extensionPath;
 		this.outputChannel = outputChannel;
 		this.apiWrapper = apiWrapper;
 		this._pythonInstallationPath = pythonInstallationPath || JupyterServerInstallation.getPythonInstallPath(this.apiWrapper);
-		this._forceInstall = !!forceInstall;
+		this._forceInstall = false;
+		this._installInProgress = false;
 
 		this.configurePackagePaths();
-
-		this._installReady = new Deferred<void>();
-		if (JupyterServerInstallation.isPythonInstalled(this.apiWrapper)) {
-			this._installReady.resolve();
-		}
-	}
-
-	public get installReady(): Promise<void> {
-		return this._installReady.promise;
-	}
-
-	public static async getInstallation(
-		extensionPath: string,
-		outputChannel: OutputChannel,
-		apiWrapper: ApiWrapper,
-		pythonInstallationPath?: string,
-		forceInstall?: boolean): Promise<JupyterServerInstallation> {
-
-		let installation = new JupyterServerInstallation(extensionPath, outputChannel, apiWrapper, pythonInstallationPath, forceInstall);
-		await installation.startInstallProcess();
-
-		return installation;
 	}
 
 	private async installDependencies(backgroundOperation: azdata.BackgroundOperation): Promise<void> {
@@ -217,7 +197,7 @@ export default class JupyterServerInstallation {
 		// Update python paths and properties to reference user's local python.
 		let pythonBinPathSuffix = process.platform === constants.winPlatform ? '' : 'bin';
 
-		this._pythonExecutable = path.join(pythonSourcePath, process.platform === constants.winPlatform ? 'python.exe' : 'bin/python3');
+		this._pythonExecutable = JupyterServerInstallation.getPythonExePath(this._pythonInstallationPath);
 		this.pythonBinPath = path.join(pythonSourcePath, pythonBinPathSuffix);
 
 		// Store paths to python libraries required to run jupyter.
@@ -230,6 +210,11 @@ export default class JupyterServerInstallation {
 		}
 		this.pythonEnvVarPath = this.pythonBinPath + delimiter + this.pythonEnvVarPath;
 
+		// Delete existing Python variables in ADS to prevent conflict with other installs
+		delete process.env['PYTHONPATH'];
+		delete process.env['PYTHONSTARTUP'];
+		delete process.env['PYTHONHOME'];
+
 		// Store the executable options to run child processes with env var without interfering parent env var.
 		let env = Object.assign({}, process.env);
 		delete env['Path']; // Delete extra 'Path' variable for Windows, just in case.
@@ -239,15 +224,51 @@ export default class JupyterServerInstallation {
 		};
 	}
 
-	public startInstallProcess(pythonInstallationPath?: string): Promise<void> {
-		if (pythonInstallationPath) {
-			this._pythonInstallationPath = pythonInstallationPath;
-			this.configurePackagePaths();
+	private isPythonRunning(pythonInstallPath: string): Promise<boolean> {
+		let pythonExePath = JupyterServerInstallation.getPythonExePath(pythonInstallPath);
+		return new Promise<boolean>(resolve => {
+			fs.open(pythonExePath, 'r+', (err, fd) => {
+				if (!err) {
+					fs.close(fd, err => {
+						this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
+					});
+					resolve(false);
+				} else {
+					resolve(err.code === 'EBUSY' || err.code === 'EPERM');
+				}
+			});
+		});
+	}
+
+	/**
+	 * Installs Python and associated dependencies to the specified directory.
+	 * @param forceInstall Indicates whether an existing installation should be overwritten, if it exists.
+	 * @param installationPath Optional parameter that specifies where to install python.
+	 * The previous path (or the default) is used if a new path is not specified.
+	 */
+	public async startInstallProcess(forceInstall: boolean, installationPath?: string): Promise<void> {
+		let isPythonRunning = await this.isPythonRunning(installationPath ? installationPath : this._pythonInstallationPath);
+		if (isPythonRunning) {
+			return Promise.reject(msgPythonRunningError);
 		}
-		let updateConfig = () => {
+
+		if (this._installInProgress) {
+			return Promise.reject(msgPendingInstallError);
+		}
+		this._installInProgress = true;
+
+		this._forceInstall = forceInstall;
+		if (installationPath) {
+			this._pythonInstallationPath = installationPath;
+		}
+		this.configurePackagePaths();
+
+		let updateConfig = async () => {
 			let notebookConfig = this.apiWrapper.getConfiguration(constants.notebookConfigKey);
-			notebookConfig.update(constants.pythonPathConfigKey, this._pythonInstallationPath, ConfigurationTarget.Global);
+			await notebookConfig.update(constants.pythonPathConfigKey, this._pythonInstallationPath, ConfigurationTarget.Global);
 		};
+
+		let installReady = new Deferred<void>();
 		if (!fs.existsSync(this._pythonExecutable) || this._forceInstall) {
 			this.apiWrapper.startBackgroundOperation({
 				displayName: msgTaskName,
@@ -255,27 +276,32 @@ export default class JupyterServerInstallation {
 				isCancelable: false,
 				operation: op => {
 					this.installDependencies(op)
-						.then(() => {
-							this._installReady.resolve();
-							updateConfig();
+						.then(async () => {
+							await updateConfig();
+							installReady.resolve();
+							this._installInProgress = false;
 						})
 						.catch(err => {
 							let errorMsg = msgDependenciesInstallationFailed(utils.getErrorMessage(err));
 							op.updateStatus(azdata.TaskStatus.Failed, errorMsg);
 							this.apiWrapper.showErrorMessage(errorMsg);
-							this._installReady.reject(errorMsg);
+							installReady.reject(errorMsg);
+							this._installInProgress = false;
 						});
 				}
 			});
 		} else {
 			// Python executable already exists, but the path setting wasn't defined,
 			// so update it here
-			this._installReady.resolve();
-			updateConfig();
+			await updateConfig();
+			installReady.resolve();
 		}
-		return this._installReady.promise;
+		return installReady.promise;
 	}
 
+	/**
+	 * Opens a dialog for configuring the installation path for the Notebook Python dependencies.
+	 */
 	public async promptForPythonInstall(): Promise<void> {
 		if (!JupyterServerInstallation.isPythonInstalled(this.apiWrapper)) {
 			let pythonDialog = new ConfigurePythonDialog(this.apiWrapper, this.outputChannel, this);
@@ -312,6 +338,10 @@ export default class JupyterServerInstallation {
 		return this._pythonExecutable;
 	}
 
+	/**
+	 * Checks if a python executable exists at the "notebook.pythonPath" defined in the user's settings.
+	 * @param apiWrapper An ApiWrapper to use when retrieving user settings info.
+	 */
 	public static isPythonInstalled(apiWrapper: ApiWrapper): boolean {
 		// Don't use _pythonExecutable here, since it could be populated with a default value
 		let pathSetting = JupyterServerInstallation.getPythonPathSetting(apiWrapper);
@@ -319,13 +349,15 @@ export default class JupyterServerInstallation {
 			return false;
 		}
 
-		let pythonExe = path.join(
-			pathSetting,
-			constants.pythonBundleVersion,
-			process.platform === constants.winPlatform ? 'python.exe' : 'bin/python3');
+		let pythonExe = JupyterServerInstallation.getPythonExePath(pathSetting);
 		return fs.existsSync(pythonExe);
 	}
 
+	/**
+	 * Returns the Python installation path defined in "notebook.pythonPath" in the user's settings.
+	 * Returns a default path if the setting is not defined.
+	 * @param apiWrapper An ApiWrapper to use when retrieving user settings info.
+	 */
 	public static getPythonInstallPath(apiWrapper: ApiWrapper): string {
 		let userPath = JupyterServerInstallation.getPythonPathSetting(apiWrapper);
 		return userPath ? userPath : JupyterServerInstallation.DefaultPythonLocation;
@@ -345,6 +377,11 @@ export default class JupyterServerInstallation {
 		return path;
 	}
 
+	/**
+	 * Returns the folder containing the python executable under the path defined in
+	 * "notebook.pythonPath" in the user's settings.
+	 * @param apiWrapper An ApiWrapper to use when retrieving user settings info.
+	 */
 	public static getPythonBinPath(apiWrapper: ApiWrapper): string {
 		let pythonBinPathSuffix = process.platform === constants.winPlatform ? '' : 'bin';
 
@@ -352,5 +389,12 @@ export default class JupyterServerInstallation {
 			JupyterServerInstallation.getPythonInstallPath(apiWrapper),
 			constants.pythonBundleVersion,
 			pythonBinPathSuffix);
+	}
+
+	private static getPythonExePath(pythonInstallPath: string): string {
+		return path.join(
+			pythonInstallPath,
+			constants.pythonBundleVersion,
+			process.platform === constants.winPlatform ? 'python.exe' : 'bin/python3');
 	}
 }
