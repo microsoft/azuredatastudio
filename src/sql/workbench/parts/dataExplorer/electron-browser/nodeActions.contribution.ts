@@ -19,7 +19,10 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	when: NodeContextKey.IsConnected
 });
 
-// For Database nodes under a Server in the SQL Servers folder
+// The weird regex is because we want this to generically apply to Database and Server nodes but right now
+// there isn't a consistent standard for the values there. We can't just search for database or server being
+// in the string at all because there's lots of node types which have those values (such as ServerLevelLogin)
+// that we don't want these menu items showing up on.
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	group: 'connection',
 	order: 2,
@@ -29,7 +32,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	},
 	when: ContextKeyExpr.and(
 		NodeContextKey.IsConnectable,
-		new ContextKeyRegexExpr('viewItem', /Database|azure.resource.itemType.database|azure.resource.itemType.databaseServer/))
+		new ContextKeyRegexExpr('viewItem', /.+itemType\.database.*|^database$/i))
 });
 
 // Note that we don't show this for Databases under Server nodes (viewItem == Database) because
@@ -43,7 +46,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	},
 	when: ContextKeyExpr.and(
 		NodeContextKey.IsConnectable,
-		new ContextKeyRegexExpr('viewItem', /azure.resource.itemType.databaseServer|azure.resource.itemType.database/))
+		new ContextKeyRegexExpr('viewItem', /.+itemType\.database.*/i))
 });
 
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
