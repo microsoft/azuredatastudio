@@ -6,7 +6,8 @@
 import { localize } from 'vs/nls';
 import { MenuId, MenuRegistry } from 'vs/platform/actions/common/actions';
 import { DISCONNECT_COMMAND_ID, MANAGE_COMMAND_ID, NEW_QUERY_COMMAND_ID, REFRESH_COMMAND_ID } from './nodeCommands';
-import { ContextKeyDefinedExpr, ContextKeyExpr, ContextKeyEqualsExpr, ContextKeyRegexExpr } from 'vs/platform/contextkey/common/contextkey';
+import { ContextKeyExpr, ContextKeyRegexExpr } from 'vs/platform/contextkey/common/contextkey';
+import { NodeContextKey } from 'sql/workbench/parts/dataExplorer/common/nodeContext';
 
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	group: 'connection',
@@ -15,9 +16,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		id: DISCONNECT_COMMAND_ID,
 		title: localize('disconnect', 'Disconnect')
 	},
-	when: ContextKeyExpr.and(
-		new ContextKeyDefinedExpr('isConnected'),
-		new ContextKeyEqualsExpr('isConnected', true))
+	when: NodeContextKey.IsConnected
 });
 
 // For Database nodes under a Server in the SQL Servers folder
@@ -29,9 +28,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		title: localize('newQuery', 'New Query')
 	},
 	when: ContextKeyExpr.and(
-		new ContextKeyDefinedExpr('isConnectable'),
-		new ContextKeyEqualsExpr('isConnectable', true),
-		new ContextKeyDefinedExpr('viewItem'),
+		NodeContextKey.IsConnectable,
 		new ContextKeyRegexExpr('viewItem', /Database|azure.resource.itemType.database|azure.resource.itemType.databaseServer/))
 });
 
@@ -45,9 +42,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		title: localize('manage', 'Manage')
 	},
 	when: ContextKeyExpr.and(
-		new ContextKeyDefinedExpr('isConnectable'),
-		new ContextKeyEqualsExpr('isConnectable', true),
-		new ContextKeyDefinedExpr('viewItem'),
+		NodeContextKey.IsConnectable,
 		new ContextKeyRegexExpr('viewItem', /azure.resource.itemType.databaseServer|azure.resource.itemType.database/))
 });
 
