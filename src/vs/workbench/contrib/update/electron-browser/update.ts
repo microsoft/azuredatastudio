@@ -491,7 +491,8 @@ export class UpdateContribution implements IGlobalActivity {
 			actions.push({
 				label: nls.localize('releaseNotes', "Release Notes"),
 				run: () => {
-					const action = this.instantiationService.createInstance(ShowReleaseNotesAction, update.productVersion);
+					// {{SQL CARBON EDIT}}
+					const action = this.instantiationService.createInstance(OpenLatestReleaseNotesInBrowserAction);
 					action.run();
 					action.dispose();
 				}
