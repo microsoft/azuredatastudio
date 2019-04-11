@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/autoOAuthDialog';
-import { Builder, $ } from 'sql/base/browser/builder';
+
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachInputBoxStyler } from 'vs/platform/theme/common/styler';
 import { Event, Emitter } from 'vs/base/common/event';
@@ -12,6 +12,7 @@ import { IContextViewService } from 'vs/platform/contextview/browser/contextView
 import { localize } from 'vs/nls';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
+import { $, append } from 'vs/base/browser/dom';
 
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/workbench/browser/modal/modal';
@@ -82,37 +83,21 @@ export class AutoOAuthDialog extends Modal {
 	}
 
 	protected renderBody(container: HTMLElement) {
-		$().div({ class: 'auto-oauth-description-section new-section' }, (descriptionContainer) => {
-			this._descriptionElement = descriptionContainer.getHTMLElement();
-		});
+		this._descriptionElement = append(container, $('.auto-oauth-description-section.new-section'));
 
-		let addAccountSection;
-		$().div({ class: 'auto-oauth-info-section  new-section' }, (addAccountContainer) => {
-			addAccountSection = addAccountContainer.getHTMLElement();
-			this._userCodeInputBox = this.createInputBoxHelper(addAccountContainer, localize('userCode', 'User code'));
-			this._websiteInputBox = this.createInputBoxHelper(addAccountContainer, localize('website', 'Website'));
-		});
-
-		new Builder(container).div({ class: 'auto-oauth-dialog' }, (builder) => {
-			builder.append(this._descriptionElement);
-			builder.append(addAccountSection);
-		});
+		const addAccountSection = append(container, $('.auto-oauth-info-section.new-section'));
+		this._userCodeInputBox = this.createInputBoxHelper(addAccountSection, localize('userCode', 'User code'));
+		this._websiteInputBox = this.createInputBoxHelper(addAccountSection, localize('website', 'Website'));
 	}
 
-	private createInputBoxHelper(container: Builder, label: string): InputBox {
-		let inputBox: InputBox;
-		container.div({ class: 'dialog-input-section' }, (inputContainer) => {
-			inputContainer.div({ class: 'dialog-label' }, (labelContainer) => {
-				labelContainer.text(label);
-			});
+	private createInputBoxHelper(container: HTMLElement, label: string): InputBox {
+		const inputContainer = append(container, $('.dialog-input-section'));
+		append(inputContainer, $('.dialog-label')).innerText = label;
+		const inputCellContainer = append(inputContainer, $('.dialog-input'));
 
-			inputContainer.div({ class: 'dialog-input' }, (inputCellContainer) => {
-				inputBox = new InputBox(inputCellContainer.getHTMLElement(), this._contextViewService, {
-					ariaLabel: label
-				});
-			});
+		return new InputBox(inputCellContainer, this._contextViewService, {
+			ariaLabel: label
 		});
-		return inputBox;
 	}
 
 	private registerListeners(): void {

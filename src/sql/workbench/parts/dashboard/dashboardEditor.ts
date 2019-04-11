@@ -23,7 +23,6 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
-import { $ } from 'sql/base/browser/builder';
 
 export class DashboardEditor extends BaseEditor {
 
@@ -85,7 +84,7 @@ export class DashboardEditor extends BaseEditor {
 
 		super.setInput(input, options, CancellationToken.None);
 
-		$(parentElement).clearChildren();
+		DOM.clearNode(parentElement);
 
 		if (!input.hasBootstrapped) {
 			const container = DOM.$<HTMLElement>('.dashboardEditor');
