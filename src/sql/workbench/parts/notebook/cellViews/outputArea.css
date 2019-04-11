@@ -15,3 +15,8 @@ output-area-component .notebook-output {
 .output-userselect.actionselect {
 	user-select: text;
 }
+
+.output-userselect pre{
+	white-space: pre-wrap;
+    word-wrap: break-word;
+}
