@@ -15,9 +15,12 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		id: DISCONNECT_COMMAND_ID,
 		title: localize('disconnect', 'Disconnect')
 	},
-	when: new ContextKeyEqualsExpr('isConnected', true)
+	when: ContextKeyExpr.and(
+		new ContextKeyDefinedExpr('isConnected'),
+		new ContextKeyEqualsExpr('isConnected', true))
 });
 
+// For Database nodes under a Server in the SQL Servers folder
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	group: 'connection',
 	order: 2,
@@ -30,6 +33,21 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		new ContextKeyEqualsExpr('isConnectable', true),
 		new ContextKeyDefinedExpr('viewItem'),
 		new ContextKeyEqualsExpr('viewItem', 'Database'))
+});
+
+// For database nodes under the SQL Databases folder
+MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
+	group: 'connection',
+	order: 2,
+	command: {
+		id: NEW_QUERY_COMMAND_ID,
+		title: localize('newQuery', 'New Query')
+	},
+	when: ContextKeyExpr.and(
+		new ContextKeyDefinedExpr('isConnectable'),
+		new ContextKeyEqualsExpr('isConnectable', true),
+		new ContextKeyDefinedExpr('viewItem'),
+		new ContextKeyEqualsExpr('viewItem', 'azure.resource.itemType.database'))
 });
 
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
@@ -57,6 +75,23 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		new ContextKeyEqualsExpr('isConnectable', true),
 		new ContextKeyDefinedExpr('viewItem'),
 		new ContextKeyEqualsExpr('viewItem', 'azure.resource.itemType.databaseServer'))
+});
+
+// For database nodes under the SQL Databases folder
+// Note that we don't show this for Databases under Server nodes because of an issue there
+// where the connection always being master instead of the actual DB
+MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
+	group: 'connection',
+	order: 1,
+	command: {
+		id: MANAGE_COMMAND_ID,
+		title: localize('manage', 'Manage')
+	},
+	when: ContextKeyExpr.and(
+		new ContextKeyDefinedExpr('isConnectable'),
+		new ContextKeyEqualsExpr('isConnectable', true),
+		new ContextKeyDefinedExpr('viewItem'),
+		new ContextKeyEqualsExpr('viewItem', 'azure.resource.itemType.database'))
 });
 
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
