@@ -61,7 +61,7 @@ export class NotebookEditorModel extends EditorModel {
 		return model.getValue();
 	}
 
-	get isDirty(): boolean {
+	isDirty(): boolean {
 		return this.textEditorModel.isDirty();
 	}
 
@@ -256,7 +256,7 @@ export class NotebookInput extends EditorInput {
 	}
 
 	async resolve(): Promise<NotebookEditorModel> {
-		if (this._model && this._model.isModelCreated()) {
+		if (this._model) {
 			return Promise.resolve(this._model);
 		} else {
 			let textOrUntitledEditorModel: UntitledEditorModel | IEditorModel;
@@ -318,7 +318,9 @@ export class NotebookInput extends EditorInput {
 	 */
 	isDirty(): boolean {
 		if (this._model) {
-			return this._model.isDirty;
+			return this._model.isDirty();
+		} else if (this._textInput) {
+			return this._textInput.isDirty();
 		}
 		return false;
 	}
