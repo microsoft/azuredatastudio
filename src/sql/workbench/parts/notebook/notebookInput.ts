@@ -26,6 +26,7 @@ import { LocalContentManager } from 'sql/workbench/services/notebook/node/localC
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
+import { IDisposable } from 'vs/base/common/lifecycle';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
 
@@ -135,6 +136,7 @@ export class NotebookInput extends EditorInput {
 	private _untitledEditorModel: UntitledEditorModel;
 	private _contentManager: IContentManager;
 	private _providersLoaded: Promise<void>;
+	private _dirtyListener: IDisposable;
 
 	constructor(private _title: string,
 		private resource: URI,
@@ -148,6 +150,9 @@ export class NotebookInput extends EditorInput {
 		this.resource = resource;
 		this._standardKernels = [];
 		this._providersLoaded = this.assignProviders();
+		if (this._textInput) {
+			this.hookDirtyListener(this._textInput.onDidChangeDirty, () => this._onDidChangeDirty.fire());
+		}
 	}
 
 	public get textInput(): UntitledEditorInput {
@@ -268,9 +273,25 @@ export class NotebookInput extends EditorInput {
 				textOrUntitledEditorModel = await textEditorModelReference.object.load();
 			}
 			this._model = this.instantiationService.createInstance(NotebookEditorModel, this.resource, textOrUntitledEditorModel);
-			this._model.onDidChangeDirty(() => this._onDidChangeDirty.fire());
+			this.hookDirtyListener(this._model.onDidChangeDirty, () => this._onDidChangeDirty.fire());
 			return this._model;
 		}
+	}
+
+	private hookDirtyListener(dirtyEvent: Event<void>, listener: (e: any) => void): void {
+		let disposable = dirtyEvent(listener);
+		if (this._dirtyListener) {
+			this._dirtyListener.dispose();
+		} else {
+			this._register({
+				dispose: () => {
+					if (this._dirtyListener) {
+						this._dirtyListener.dispose();
+					}
+				}
+			});
+		}
+		this._dirtyListener = disposable;
 	}
 
 	private async assignProviders(): Promise<void> {
