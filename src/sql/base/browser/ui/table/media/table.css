@@ -5,6 +5,7 @@
 
 .monaco-table * {
 	box-sizing: border-box;
+	white-space: pre;
 }
 
 .monaco-table {
