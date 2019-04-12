@@ -57,7 +57,8 @@
 			},
 			{
 				"command": "notebook.command.runactivecell",
-				"title": "%notebook.command.runactivecell%"
+				"title": "%notebook.command.runactivecell%",
+				"icon": "resources/dark/touchbar_run_cell.png"
 			},
 			{
 				"command": "notebook.command.addcode",
@@ -66,6 +67,11 @@
 			{
 				"command": "notebook.command.addtext",
 				"title": "%notebook.command.addtext%"
+			},
+			{
+				"command": "notebook.command.addcell",
+				"title": "%notebook.command.addcell%",
+				"icon": "resources/dark/touchbar_add_cell.png"
 			},
 			{
 				"command": "jupyter.cmd.analyzeNotebook",
@@ -148,6 +154,10 @@
 					"when": "notebookEditorVisible"
 				},
 				{
+					"command": "notebook.command.addcell",
+					"when": "false"
+				},
+				{
 					"command": "jupyter.task.newNotebook",
 					"when": "false"
 				},
@@ -166,6 +176,18 @@
 				{
 					"command": "jupyter.cmd.installPackages",
 					"when": "false"
+				}
+			],
+			"touchBar": [
+				{
+					"command": "notebook.command.runactivecell",
+					"when": "activeEditor == workbench.editor.notebookEditor",
+					"group": "1_notebook@1"
+				},
+				{
+					"command": "notebook.command.addcell",
+					"when": "activeEditor == workbench.editor.notebookEditor",
+					"group": "1_notebook@2"
 				}
 			],
 			"objectExplorer/item/context": [
@@ -205,17 +227,17 @@
 			{
 				"command": "notebook.command.runactivecell",
 				"key": "F5",
-				"when": "notebookEditorVisible"
+				"when": "activeEditor == workbench.editor.notebookEditor"
 			},
 			{
 				"command": "notebook.command.addcode",
 				"key": "Ctrl+Shift+C",
-				"when": "notebookEditorVisible"
+				"when": "activeEditor == workbench.editor.notebookEditor"
 			},
 			{
 				"command": "notebook.command.addtext",
 				"key": "Ctrl+Shift+T",
-				"when": "notebookEditorVisible"
+				"when": "activeEditor == workbench.editor.notebookEditor"
 			}
 		],
 		"notebook.languagemagics": [

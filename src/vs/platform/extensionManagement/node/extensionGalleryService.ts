@@ -753,7 +753,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 	}
 
 	loadAllDependencies(extensions: IExtensionIdentifier[], token: CancellationToken): Promise<IGalleryExtension[]> {
-		return this.getDependenciesReccursively(extensions.map(e => e.id), [], token);
+		return this.getDependenciesRecursively(extensions.map(e => e.id), [], token);
 	}
 
 	getAllVersions(extension: IGalleryExtension, compatible: boolean): Promise<IGalleryExtensionVersion[]> {
@@ -812,7 +812,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		});
 	}
 
-	private getDependenciesReccursively(toGet: string[], result: IGalleryExtension[], token: CancellationToken): Promise<IGalleryExtension[]> {
+	private getDependenciesRecursively(toGet: string[], result: IGalleryExtension[], token: CancellationToken): Promise<IGalleryExtension[]> {
 		if (!toGet || !toGet.length) {
 			return Promise.resolve(result);
 		}
@@ -832,7 +832,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 				result = distinct(result.concat(loadedDependencies), d => d.identifier.uuid);
 				const dependencies: string[] = [];
 				dependenciesSet.forEach(d => !ExtensionGalleryService.hasExtensionByName(result, d) && dependencies.push(d));
-				return this.getDependenciesReccursively(dependencies, result, token);
+				return this.getDependenciesRecursively(dependencies, result, token);
 			});
 	}
 
@@ -903,7 +903,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		if (version) {
 			return version;
 		}
-		return this.getLastValidExtensionVersionReccursively(extension, versions);
+		return this.getLastValidExtensionVersionRecursively(extension, versions);
 	}
 
 	private getLastValidExtensionVersionFromProperties(extension: IRawGalleryExtension, versions: IRawGalleryExtensionVersion[]): Promise<IRawGalleryExtensionVersion> | null {
@@ -936,7 +936,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			.then(manifest => manifest ? manifest.engines.vscode : Promise.reject<string>('Error while reading manifest'));
 	}
 
-	private getLastValidExtensionVersionReccursively(extension: IRawGalleryExtension, versions: IRawGalleryExtensionVersion[]): Promise<IRawGalleryExtensionVersion | null> {
+	private getLastValidExtensionVersionRecursively(extension: IRawGalleryExtension, versions: IRawGalleryExtensionVersion[]): Promise<IRawGalleryExtensionVersion | null> {
 		if (!versions.length) {
 			return Promise.resolve(null);
 		}
@@ -945,7 +945,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		return this.getEngine(version)
 			.then(engine => {
 				if (!isEngineValid(engine)) {
-					return this.getLastValidExtensionVersionReccursively(extension, versions.slice(1));
+					return this.getLastValidExtensionVersionRecursively(extension, versions.slice(1));
 				}
 
 				version.properties = version.properties || [];

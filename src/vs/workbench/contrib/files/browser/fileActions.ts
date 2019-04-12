@@ -968,6 +968,7 @@ async function openExplorerAndCreate(accessor: ServicesAccessor, isFolder: boole
 	const listService = accessor.get(IListService);
 	const explorerService = accessor.get(IExplorerService);
 	const fileService = accessor.get(IFileService);
+	const textFileService = accessor.get(ITextFileService);
 	const editorService = accessor.get(IEditorService);
 	const viewletService = accessor.get(IViewletService);
 	const activeViewlet = viewletService.getActiveViewlet();
@@ -995,7 +996,7 @@ async function openExplorerAndCreate(accessor: ServicesAccessor, isFolder: boole
 		folder.addChild(newStat);
 
 		const onSuccess = async (value: string) => {
-			const createPromise = isFolder ? fileService.createFolder(resources.joinPath(folder.resource, value)) : fileService.createFile(resources.joinPath(folder.resource, value));
+			const createPromise = isFolder ? fileService.createFolder(resources.joinPath(folder.resource, value)) : textFileService.create(resources.joinPath(folder.resource, value));
 			return createPromise.then(created => {
 				refreshIfSeparator(value, explorerService);
 				return isFolder ? explorerService.select(created.resource, true)

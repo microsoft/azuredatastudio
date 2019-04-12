@@ -11,3 +11,12 @@ output-area-component .notebook-output {
 	user-select: text;
 	padding: 5px 20px 0px;
 }
+
+.output-userselect.actionselect {
+	user-select: text;
+}
+
+.output-userselect pre{
+	white-space: pre-wrap;
+    word-wrap: break-word;
+}

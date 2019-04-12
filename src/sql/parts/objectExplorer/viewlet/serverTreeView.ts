@@ -5,7 +5,7 @@
 
 import 'vs/css!./media/serverTreeActions';
 import * as errors from 'vs/base/common/errors';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import Severity from 'vs/base/common/severity';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
@@ -34,6 +34,7 @@ import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMess
 import { ServerTreeActionProvider } from 'sql/parts/objectExplorer/viewlet/serverTreeActionProvider';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { isHidden } from 'sql/base/browser/dom';
+import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 
 /**
  * ServerTreeview implements the dynamic tree view.
@@ -72,6 +73,7 @@ export class ServerTreeView {
 				this._treeSelectionHandler.onTreeActionStateChange(false);
 			}
 		});
+		this.registerCommands();
 	}
 
 	/**
@@ -94,6 +96,25 @@ export class ServerTreeView {
 
 	public get tree(): ITree {
 		return this._tree;
+	}
+
+	/**
+	 *
+	 * Register search related commands
+	 */
+	public registerCommands(): void {
+		CommandsRegistry.registerCommand({
+			id: 'registeredServers.searchServer',
+			handler: (accessor: ServicesAccessor, ...args: any[]) => {
+				this.searchTree(args[0]);
+			}
+		});
+		CommandsRegistry.registerCommand({
+			id: 'registeredServers.clearSearchServerResult',
+			handler: (accessor: ServicesAccessor, ...args: any[]) => {
+				this.refreshTree();
+			}
+		});
 	}
 
 	/**

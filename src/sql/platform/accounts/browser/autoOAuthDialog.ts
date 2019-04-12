@@ -83,9 +83,10 @@ export class AutoOAuthDialog extends Modal {
 	}
 
 	protected renderBody(container: HTMLElement) {
-		this._descriptionElement = append(container, $('.auto-oauth-description-section.new-section'));
+		const body = append(container, $('.auto-oauth-dialog'));
+		this._descriptionElement = append(body, $('.auto-oauth-description-section.new-section'));
 
-		const addAccountSection = append(container, $('.auto-oauth-info-section.new-section'));
+		const addAccountSection = append(body, $('.auto-oauth-info-section.new-section'));
 		this._userCodeInputBox = this.createInputBoxHelper(addAccountSection, localize('userCode', 'User code'));
 		this._websiteInputBox = this.createInputBoxHelper(addAccountSection, localize('website', 'Website'));
 	}

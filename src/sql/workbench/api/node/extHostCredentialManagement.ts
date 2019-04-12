@@ -8,7 +8,7 @@ import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { SqlMainContext, MainThreadCredentialManagementShape, ExtHostCredentialManagementShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import { Disposable } from 'vs/workbench/api/node/extHostTypes';
+import { Disposable } from 'vs/workbench/api/common/extHostTypes';
 
 class CredentialAdapter {
 	public provider: azdata.CredentialProvider;

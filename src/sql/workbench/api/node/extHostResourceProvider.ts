@@ -7,7 +7,7 @@
 
 import * as azdata from 'azdata';
 import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
-import { Disposable } from 'vs/workbench/api/node/extHostTypes';
+import { Disposable } from 'vs/workbench/api/common/extHostTypes';
 import {
 	ExtHostResourceProviderShape,
 	MainThreadResourceProviderShape,

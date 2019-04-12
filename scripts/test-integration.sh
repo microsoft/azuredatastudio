@@ -17,14 +17,15 @@ cd $ROOT
 
 # Tests in the extension host
 # TODO port over an re-enable API tests
-# ./scripts/code.sh $ROOT/extensions/vscode-api-tests/testWorkspace --extensionDevelopmentPath=$ROOT/extensions/vscode-api-tests --extensionTestsPath=$ROOT/extensions/vscode-api-tests/out --disableExtensions --user-data-dir=$VSCODEUSERDATADIR --skip-getting-started
-./scripts/code.sh $ROOT/extensions/vscode-colorize-tests/test --extensionDevelopmentPath=$ROOT/extensions/vscode-colorize-tests --extensionTestsPath=$ROOT/extensions/vscode-colorize-tests/out --disableExtensions --user-data-dir=$VSCODEUSERDATADIR --skip-getting-started
-./scripts/code.sh $ROOT/extensions/markdown-language-features/test-fixtures --extensionDevelopmentPath=$ROOT/extensions/markdown-language-features --extensionTestsPath=$ROOT/extensions/markdown-language-features/out/test --disableExtensions --user-data-dir=$VSCODEUSERDATADIR --skip-getting-started
+#./scripts/code.sh $ROOT/extensions/vscode-api-tests/testWorkspace --extensionDevelopmentPath=$ROOT/extensions/vscode-api-tests --extensionTestsPath=$ROOT/extensions/vscode-api-tests/out/singlefolder-tests --disable-extensions --user-data-dir=$VSCODEUSERDATADIR --skip-getting-started
+#./scripts/code.sh $ROOT/extensions/vscode-api-tests/testworkspace.code-workspace --extensionDevelopmentPath=$ROOT/extensions/vscode-api-tests --extensionTestsPath=$ROOT/extensions/vscode-api-tests/out/workspace-tests --disable-extensions --user-data-dir=$VSCODEUSERDATADIR --skip-getting-started
+./scripts/code.sh $ROOT/extensions/vscode-colorize-tests/test --extensionDevelopmentPath=$ROOT/extensions/vscode-colorize-tests --extensionTestsPath=$ROOT/extensions/vscode-colorize-tests/out --disable-extensions --user-data-dir=$VSCODEUSERDATADIR --skip-getting-started
+./scripts/code.sh $ROOT/extensions/markdown-language-features/test-fixtures --extensionDevelopmentPath=$ROOT/extensions/markdown-language-features --extensionTestsPath=$ROOT/extensions/markdown-language-features/out/test --disable-extensions --user-data-dir=$VSCODEUSERDATADIR --skip-getting-started
 ./scripts/code.sh $ROOT/extensions/azurecore/test-fixtures --extensionDevelopmentPath=$ROOT/extensions/azurecore --extensionTestsPath=$ROOT/extensions/azurecore/out/test --disableExtensions --user-data-dir=$VSCODEUSERDATADIR --skip-getting-started
 
-mkdir $ROOT/extensions/emmet/test-fixtures
-./scripts/code.sh $ROOT/extensions/emmet/test-fixtures --extensionDevelopmentPath=$ROOT/extensions/emmet --extensionTestsPath=$ROOT/extensions/emmet/out/test --disableExtensions --user-data-dir=$VSCODEUSERDATADIR --skip-getting-started .
-rm -r $ROOT/extensions/emmet/test-fixtures
+mkdir -p $ROOT/extensions/emmet/test-fixtures
+./scripts/code.sh $ROOT/extensions/emmet/test-fixtures --extensionDevelopmentPath=$ROOT/extensions/emmet --extensionTestsPath=$ROOT/extensions/emmet/out/test --disable-extensions --user-data-dir=$VSCODEUSERDATADIR --skip-getting-started
+rm -rf $ROOT/extensions/emmet/test-fixtures
 
 # Tests in commonJS
 cd $ROOT/extensions/css-language-features/server && $ROOT/scripts/node-electron.sh test/index.js
