@@ -178,7 +178,8 @@ import { ServerGroupController } from 'sql/workbench/services/serverGroup/browse
 import { IServerGroupController } from 'sql/platform/serverGroup/common/serverGroupController';
 import { IAngularEventingService } from 'sql/platform/angularEventing/common/angularEventingService';
 import { AngularEventingService } from 'sql/platform/angularEventing/node/angularEventingService';
-import { ICapabilitiesService, CapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { CapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesServiceImpl';
 import { ICredentialsService, CredentialsService } from 'sql/platform/credentials/common/credentialsService';
 import { ISerializationService, SerializationService } from 'sql/platform/serialization/common/serializationService';
 import { IMetadataService, MetadataService } from 'sql/platform/metadata/common/metadataService';
