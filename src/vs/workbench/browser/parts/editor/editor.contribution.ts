@@ -124,7 +124,7 @@ class UntitledEditorInputFactory implements IEditorInputFactory {
 
 		const untitledEditorInput = <UntitledEditorInput>editorInput;
 
-		// {{SQL CARBON EDIT}}
+		// {{SQL CARBON EDIT}} @todo anthonydresser investigate
 		if (!untitledEditorInput.getResource()) {
 			return undefined;
 		}
