@@ -8,13 +8,13 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { BackupModule } from 'sql/parts/disasterRecovery/backup/backup.module';
 import { BACKUP_SELECTOR } from 'sql/parts/disasterRecovery/backup/backup.component';
 import { attachModalDialogStyler } from 'sql/platform/theme/common/styler';
-import * as TelemetryKeys from 'sql/common/telemetryKeys';
+import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
 
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { bootstrapAngular } from 'sql/services/bootstrap/bootstrapService';
+import { bootstrapAngular } from 'sql/platform/bootstrap/node/bootstrapService';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { append, $ } from 'vs/base/browser/dom';

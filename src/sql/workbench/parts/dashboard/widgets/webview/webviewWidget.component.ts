@@ -11,7 +11,7 @@ import { memoize } from 'vs/base/common/decorators';
 
 import { DashboardWidget, IDashboardWidget, WidgetConfig, WIDGET_CONFIG } from 'sql/workbench/parts/dashboard/common/dashboardWidget';
 import { DashboardServiceInterface } from 'sql/workbench/parts/dashboard/services/dashboardServiceInterface.service';
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 import { IDashboardWebview, IDashboardViewService } from 'sql/platform/dashboard/common/dashboardViewService';
 
 import * as azdata from 'azdata';

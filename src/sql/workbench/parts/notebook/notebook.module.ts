@@ -12,8 +12,8 @@ import { BrowserModule } from '@angular/platform-browser';
 
 
 import { ComponentHostDirective } from 'sql/workbench/parts/dashboard/common/componentHost.directive';
-import { IBootstrapParams, ISelector, providerIterator } from 'sql/services/bootstrap/bootstrapService';
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { IBootstrapParams, ISelector, providerIterator } from 'sql/platform/bootstrap/node/bootstrapService';
+import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox.component';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox.component';
 import { EditableDropDown } from 'sql/base/browser/ui/editableDropdown/editableDropdown.component';

@@ -21,7 +21,7 @@ import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.comp
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
 import { EditOperatorAction, DeleteOperatorAction, NewOperatorAction } from 'sql/platform/jobManagement/common/jobActions';
 import { JobManagementView } from 'sql/parts/jobManagement/views/jobManagementView';
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';

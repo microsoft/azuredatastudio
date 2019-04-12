@@ -105,7 +105,7 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 
 	private handleHeaderClick(e: MouseEvent, args: Slick.OnHeaderClickEventArgs<T>) {
 		if (!isUndefinedOrNull(args.column)) {
-			let columnIndex = this.grid.getColumnIndex(args.column.id);
+			let columnIndex = this.grid.getColumnIndex(args.column.id!);
 			if (this.grid.canCellBeSelected(0, columnIndex)) {
 				let ranges: Array<Slick.Range>;
 				if (e.shiftKey) {

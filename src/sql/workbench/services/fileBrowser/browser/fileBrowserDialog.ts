@@ -13,7 +13,7 @@ import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import * as DialogHelper from 'sql/workbench/browser/modal/dialogHelper';
 import { Modal } from 'sql/workbench/browser/modal/modal';
 import { attachModalDialogStyler, attachButtonStyler } from 'sql/platform/theme/common/styler';
-import * as TelemetryKeys from 'sql/common/telemetryKeys';
+import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
 import { FileNode } from 'sql/workbench/services/fileBrowser/common/fileNode';
 import { FileBrowserTreeView } from 'sql/workbench/services/fileBrowser/browser/fileBrowserTreeView';
 import { FileBrowserViewModel } from 'sql/workbench/services/fileBrowser/common/fileBrowserViewModel';

@@ -20,7 +20,7 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
 import { EditProxyAction, DeleteProxyAction, NewProxyAction } from 'sql/platform/jobManagement/common/jobActions';
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { JobManagementView } from 'sql/parts/jobManagement/views/jobManagementView';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';

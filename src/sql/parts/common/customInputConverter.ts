@@ -15,7 +15,6 @@ import { QueryPlanInput } from 'sql/parts/queryPlan/queryPlanInput';
 import { NotebookInput } from 'sql/workbench/parts/notebook/notebookInput';
 import { INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
 import { ResourceEditorInput } from 'vs/workbench/common/editor/resourceEditorInput';
-import { notebookModeId } from 'sql/common/constants';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 
 const fs = require('fs');
@@ -27,6 +26,7 @@ export const untitledFilePrefix = 'SQLQuery';
 
 // mode identifier for SQL mode
 export const sqlModeId = 'sql';
+export const notebookModeId = 'notebook';
 
 /**
  * Checks if the specified input is supported by one our custom input types, and if so convert it

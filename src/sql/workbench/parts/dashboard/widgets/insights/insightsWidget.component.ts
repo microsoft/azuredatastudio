@@ -10,7 +10,7 @@ import {
 import { Observable } from 'rxjs/Observable';
 
 import { DashboardWidget, IDashboardWidget, WIDGET_CONFIG, WidgetConfig } from 'sql/workbench/parts/dashboard/common/dashboardWidget';
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 import { ComponentHostDirective } from 'sql/workbench/parts/dashboard/common/componentHost.directive';
 import { InsightAction, InsightActionContext } from 'sql/workbench/common/actions';
 import { toDisposableSubscription } from 'sql/base/node/rxjsUtils';

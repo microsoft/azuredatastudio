@@ -26,7 +26,7 @@ import { JobManagementUtilities } from 'sql/platform/jobManagement/common/jobMan
 import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
 import { JobManagementView, JobActionContext } from 'sql/parts/jobManagement/views/jobManagementView';
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
@@ -37,7 +37,7 @@ import { escape } from 'sql/base/common/strings';
 import { IWorkbenchThemeService, IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { tableBackground, cellBackground, cellBorderColor } from 'sql/platform/theme/common/colors';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import * as TelemetryKeys from 'sql/common/telemetryKeys';
+import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
 
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
 export const ROW_HEIGHT: number = 45;

@@ -12,7 +12,7 @@ import { IDisposable } from 'vs/base/common/lifecycle';
 import { addDisposableListener, EventType } from 'vs/base/browser/dom';
 import { memoize } from 'vs/base/common/decorators';
 import { DashboardServiceInterface } from 'sql/workbench/parts/dashboard/services/dashboardServiceInterface.service';
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 import { IDashboardWebview, IDashboardViewService } from 'sql/platform/dashboard/common/dashboardViewService';
 import { AngularDisposable } from 'sql/base/node/lifecycle';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';

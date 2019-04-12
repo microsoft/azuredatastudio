@@ -7,7 +7,7 @@ import { Injectable, forwardRef, Inject } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
 
 import { DashboardServiceInterface } from './dashboardServiceInterface.service';
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 import { MenuItem, IBreadcrumbService } from 'sql/base/browser/ui/breadcrumb/interfaces';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 

@@ -33,7 +33,7 @@ export class AutoColumnSize<T> implements Slick.Plugin<T> {
 
 		this._$container = jQuery(this._grid.getContainerNode());
 		this._$container.on('dblclick.autosize', '.slick-resizable-handle', e => this.handleDoubleClick(e));
-		this._context = document.createElement('canvas').getContext('2d');
+		this._context = document.createElement('canvas').getContext('2d')!;
 	}
 
 	public destroy() {
@@ -78,7 +78,7 @@ export class AutoColumnSize<T> implements Slick.Plugin<T> {
 			});
 			let change = false;
 			for (let i = 0; i <= headerColumns.children.length; i++) {
-				let headerEl = jQuery(headerColumns.children.item(i));
+				let headerEl = jQuery(headerColumns.children.item(i)!);
 				let columnDef = headerEl.data('column');
 				if (columnDef) {
 					let headerWidth = this.getElementWidth(headerEl[0]);
@@ -115,7 +115,7 @@ export class AutoColumnSize<T> implements Slick.Plugin<T> {
 
 	private reSizeColumn(headerEl: JQuery, columnDef: Slick.Column<T>) {
 		let headerWidth = this.getElementWidth(headerEl[0]);
-		let colIndex = this._grid.getColumnIndex(columnDef.id);
+		let colIndex = this._grid.getColumnIndex(columnDef.id!);
 		let origCols = this._grid.getColumns();
 		let allColumns = clone(origCols);
 		allColumns.forEach((col, index) => {
@@ -134,7 +134,7 @@ export class AutoColumnSize<T> implements Slick.Plugin<T> {
 	}
 
 	private getMaxColumnTextWidth(columnDef, colIndex: number): number {
-		let texts = [];
+		let texts: Array<string> = [];
 		let rowEl = this.createRow(columnDef);
 		let data = this._grid.getData();
 		let viewPort = this._grid.getViewport();
@@ -146,7 +146,7 @@ export class AutoColumnSize<T> implements Slick.Plugin<T> {
 		let template = this.getMaxTextTemplate(texts, columnDef, colIndex, data, rowEl);
 		let width = this.getTemplateWidth(rowEl, template);
 		this.deleteRow(rowEl);
-		return width > this._options.maxWidth ? this._options.maxWidth : width;
+		return width > this._options.maxWidth! ? this._options.maxWidth! : width;
 	}
 
 	private getTemplateWidth(rowEl: JQuery, template: JQuery | HTMLElement): number {
@@ -172,7 +172,7 @@ export class AutoColumnSize<T> implements Slick.Plugin<T> {
 				maxTemplate = template || text;
 			}
 		});
-		return maxTemplate;
+		return maxTemplate!;
 	}
 
 	private createRow(columnDef): JQuery {
@@ -194,9 +194,9 @@ export class AutoColumnSize<T> implements Slick.Plugin<T> {
 	private getElementWidth(element: HTMLElement): number {
 		let width, clone = element.cloneNode(true) as HTMLElement;
 		clone.style.cssText = 'position: absolute; visibility: hidden;right: auto;text-overflow: initial;white-space: nowrap;';
-		element.parentNode.insertBefore(clone, element);
+		element.parentNode!.insertBefore(clone, element);
 		width = clone.offsetWidth;
-		clone.parentNode.removeChild(clone);
+		clone.parentNode!.removeChild(clone);
 		return width;
 	}
 

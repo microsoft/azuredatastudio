@@ -17,7 +17,7 @@ import { URI } from 'vs/base/common/uri';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import * as DOM from 'vs/base/browser/dom';
 
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 import { CellView } from 'sql/workbench/parts/notebook/cellViews/interfaces';
 import { ICellModel } from 'sql/workbench/parts/notebook/models/modelInterfaces';
 import { ISanitizer, defaultSanitizer } from 'sql/workbench/parts/notebook/outputs/sanitizer';

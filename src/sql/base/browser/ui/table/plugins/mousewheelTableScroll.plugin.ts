@@ -28,12 +28,13 @@ export class MouseWheelSupport implements Slick.Plugin<any> {
 	private _disposables: IDisposable[] = [];
 
 	constructor(options: IMouseWheelSupportOptions = {}) {
-		this.options = mixin(options, defaultOptions, false);
+		this.options = defaultOptions;
+		mixin(this.options, options);
 	}
 
 	public init(grid: Slick.Grid<any>): void {
 		this.canvas = grid.getCanvasNode();
-		this.viewport = this.canvas.parentElement;
+		this.viewport = this.canvas.parentElement!;
 		let onMouseWheel = (browserEvent: IMouseWheelEvent) => {
 			let e = new StandardWheelEvent(browserEvent);
 			this._onMouseWheel(e);
@@ -44,8 +45,8 @@ export class MouseWheelSupport implements Slick.Plugin<any> {
 
 	private _onMouseWheel(e: StandardWheelEvent) {
 		if (e.deltaY || e.deltaX) {
-			let deltaY = e.deltaY * this.options.scrollSpeed;
-			let deltaX = e.deltaX * this.options.scrollSpeed;
+			let deltaY = e.deltaY * this.options.scrollSpeed!;
+			let deltaX = e.deltaX * this.options.scrollSpeed!;
 			const scrollHeight = this.canvas.clientHeight;
 			const scrollWidth = this.canvas.clientWidth;
 			const height = this.viewport.clientHeight;
@@ -67,8 +68,8 @@ export class MouseWheelSupport implements Slick.Plugin<any> {
 				} else {
 					this.viewport.scrollTop = this.viewport.scrollTop - deltaY;
 					this.viewport.dispatchEvent(new Event('scroll'));
-					event.stopPropagation();
-					event.preventDefault();
+					e.stopPropagation();
+					e.preventDefault();
 				}
 				// scroll up
 			} else {
@@ -78,8 +79,8 @@ export class MouseWheelSupport implements Slick.Plugin<any> {
 				} else {
 					this.viewport.scrollTop = this.viewport.scrollTop - deltaY;
 					this.viewport.dispatchEvent(new Event('scroll'));
-					event.stopPropagation();
-					event.preventDefault();
+					e.stopPropagation();
+					e.preventDefault();
 				}
 			}
 
@@ -91,8 +92,8 @@ export class MouseWheelSupport implements Slick.Plugin<any> {
 				} else {
 					this.viewport.scrollLeft = this.viewport.scrollLeft - deltaX;
 					this.viewport.dispatchEvent(new Event('scroll'));
-					event.stopPropagation();
-					event.preventDefault();
+					e.stopPropagation();
+					e.preventDefault();
 				}
 				// scroll left
 			} else {
@@ -102,8 +103,8 @@ export class MouseWheelSupport implements Slick.Plugin<any> {
 				} else {
 					this.viewport.scrollLeft = this.viewport.scrollLeft - deltaX;
 					this.viewport.dispatchEvent(new Event('scroll'));
-					event.stopPropagation();
-					event.preventDefault();
+					e.stopPropagation();
+					e.preventDefault();
 				}
 			}
 		}

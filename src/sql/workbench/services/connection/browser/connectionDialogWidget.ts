@@ -17,7 +17,7 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { TabbedPanel, PanelTabIdentifier } from 'sql/base/browser/ui/panel/panel';
 import { RecentConnectionTreeController, RecentConnectionActionsProvider } from 'sql/parts/connection/connectionDialog/recentConnectionTreeController';
 import { SavedConnectionTreeController } from 'sql/parts/connection/connectionDialog/savedConnectionTreeController';
-import * as TelemetryKeys from 'sql/common/telemetryKeys';
+import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
 import { ClearRecentConnectionsAction } from 'sql/parts/connection/common/connectionActions';
 
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';

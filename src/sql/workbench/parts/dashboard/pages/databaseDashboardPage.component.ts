@@ -10,7 +10,7 @@ import { BreadcrumbClass } from 'sql/workbench/parts/dashboard/services/breadcru
 import { IBreadcrumbService } from 'sql/base/browser/ui/breadcrumb/interfaces';
 import { DashboardServiceInterface } from 'sql/workbench/parts/dashboard/services/dashboardServiceInterface.service';
 import { WidgetConfig } from 'sql/workbench/parts/dashboard/common/dashboardWidget';
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 import { IAngularEventingService } from 'sql/platform/angularEventing/common/angularEventingService';
 
 import * as colors from 'vs/platform/theme/common/colorRegistry';
