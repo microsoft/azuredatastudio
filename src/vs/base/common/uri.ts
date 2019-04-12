@@ -374,9 +374,12 @@ export class URI implements UriComponents {
 	}
 
 	static revive(data: UriComponents | URI): URI;
-	static revive(data: UriComponents | URI | undefined | null): URI | undefined;
-	static revive(data: UriComponents | URI | undefined | null): URI | undefined {
+	static revive(data: UriComponents | URI | undefined): URI | undefined;
+	static revive(data: UriComponents | URI | null): URI | null;
+	static revive(data: UriComponents | URI | undefined | null): URI | undefined | null;
+	static revive(data: UriComponents | URI | undefined | null): URI | undefined | null {
 		if (!data) {
+			// {{SQL CARBON EDIT}} @todo chlafren change back to data when we enable strict null checks
 			return undefined;
 		} else if (data instanceof URI) {
 			return data;
