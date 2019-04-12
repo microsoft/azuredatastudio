@@ -854,6 +854,7 @@ export interface INotebookShowOptions {
 	providerId?: string;
 	connectionProfile?: azdata.IConnectionProfile;
 	defaultKernel?: azdata.nb.IKernelSpec;
+	initialContent?: string;
 }
 
 export interface ExtHostNotebookDocumentsAndEditorsShape {

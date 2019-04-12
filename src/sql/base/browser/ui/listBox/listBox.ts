@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import { SelectBox, ISelectBoxStyles, ISelectOptionItem } from 'vs/base/browser/ui/selectBox/selectBox';
 import { Color } from 'vs/base/common/color';
 import { IMessage, MessageType, defaultOpts } from 'vs/base/browser/ui/inputbox/inputBox';

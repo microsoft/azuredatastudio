@@ -14,7 +14,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { URI } from 'vs/base/common/uri';
 
-import { ClientSession } from 'sql/parts/notebook/models/clientSession';
+import { ClientSession } from 'sql/workbench/parts/notebook/models/clientSession';
 import { SessionManager, EmptySession } from 'sql/workbench/services/notebook/common/sessionManager';
 import { NotebookManagerStub, ServerManagerStub } from 'sqltest/parts/notebook/common';
 

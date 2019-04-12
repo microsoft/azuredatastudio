@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import 'vs/css!./scrollableSplitview';
 import { HeightMap, IView as HeightIView, IViewItem as HeightIViewItem } from './heightMap';
 

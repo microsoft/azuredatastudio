@@ -20,7 +20,7 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { ICredentialsService } from 'sql/platform/credentials/common/credentialsService';
 import * as ConnectionContracts from 'sql/parts/connection/common/connection';
 import { ConnectionStatusManager } from 'sql/platform/connection/common/connectionStatusManager';
-import { DashboardInput } from 'sql/parts/dashboard/dashboardInput';
+import { DashboardInput } from 'sql/workbench/parts/dashboard/dashboardInput';
 import { ConnectionGlobalStatus } from 'sql/parts/connection/common/connectionGlobalStatus';
 import { ConnectionStatusbarItem } from 'sql/parts/connection/common/connectionStatus';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
@@ -33,7 +33,7 @@ import { Deferred } from 'sql/base/common/promise';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { values, entries } from 'sql/base/common/objects';
 import { ConnectionProviderProperties, IConnectionProviderRegistry, Extensions as ConnectionProviderExtensions } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
-import { IAccountManagementService, AzureResource } from 'sql/platform/accountManagement/common/interfaces';
+import { IAccountManagementService, AzureResource } from 'sql/platform/accounts/common/interfaces';
 import { IServerGroupController, IServerGroupDialogCallbacks } from 'sql/platform/serverGroup/common/serverGroupController';
 
 import * as azdata from 'azdata';

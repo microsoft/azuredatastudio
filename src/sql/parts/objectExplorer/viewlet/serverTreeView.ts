@@ -5,8 +5,7 @@
 
 import 'vs/css!./media/serverTreeActions';
 import * as errors from 'vs/base/common/errors';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import * as builder from 'sql/base/browser/builder';
+import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import Severity from 'vs/base/common/severity';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
@@ -14,6 +13,8 @@ import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { localize } from 'vs/nls';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { Event, Emitter } from 'vs/base/common/event';
+import { append, $, hide, show } from 'vs/base/browser/dom';
 
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
@@ -27,28 +28,28 @@ import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/co
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { attachButtonStyler } from 'sql/platform/theme/common/styler';
-import { Event, Emitter } from 'vs/base/common/event';
 import { TreeNode, TreeItemCollapsibleState } from 'sql/parts/objectExplorer/common/treeNode';
 import { SERVER_GROUP_CONFIG, SERVER_GROUP_AUTOEXPAND_CONFIG } from 'sql/parts/objectExplorer/serverGroupDialog/serverGroup.contribution';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { ServerTreeActionProvider } from 'sql/parts/objectExplorer/viewlet/serverTreeActionProvider';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-
-const $ = builder.$;
+import { isHidden } from 'sql/base/browser/dom';
+import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 
 /**
  * ServerTreeview implements the dynamic tree view.
  */
 export class ServerTreeView {
 
-	public messages: builder.Builder;
-	private _buttonSection: builder.Builder;
+	public messages: HTMLElement;
+	private _buttonSection: HTMLElement;
 	private _treeSelectionHandler: TreeSelectionHandler;
 	private _activeConnectionsFilterAction: ActiveConnectionsFilterAction;
 	private _tree: ITree;
 	private _toDispose: IDisposable[] = [];
 	private _onSelectionOrFocusChange: Emitter<void>;
 	private _actionProvider: ServerTreeActionProvider;
+
 	constructor(
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
@@ -72,6 +73,7 @@ export class ServerTreeView {
 				this._treeSelectionHandler.onTreeActionStateChange(false);
 			}
 		});
+		this.registerCommands();
 	}
 
 	/**
@@ -97,19 +99,40 @@ export class ServerTreeView {
 	}
 
 	/**
+	 *
+	 * Register search related commands
+	 */
+	public registerCommands(): void {
+		CommandsRegistry.registerCommand({
+			id: 'registeredServers.searchServer',
+			handler: (accessor: ServicesAccessor, ...args: any[]) => {
+				this.searchTree(args[0]);
+			}
+		});
+		CommandsRegistry.registerCommand({
+			id: 'registeredServers.clearSearchServerResult',
+			handler: (accessor: ServicesAccessor, ...args: any[]) => {
+				this.refreshTree();
+			}
+		});
+	}
+
+	/**
 	 * Render the view body
 	 */
 	public renderBody(container: HTMLElement): Thenable<void> {
 		// Add div to display no connections found message and hide it by default
-		this.messages = $('div.title').appendTo(container);
-		$('span').style('padding-left', '10px').text('No connections found.').appendTo(this.messages);
-		this.messages.hide();
+		this.messages = append(container, $('.title'));
+		const messageText = append(this.messages, $('span'));
+		messageText.style.paddingLeft = '10px';
+		messageText.innerText = localize('servers.noConnections', "No connections found.");
+		hide(this.messages);
 
 		if (!this._connectionManagementService.hasRegisteredServers()) {
 			this._activeConnectionsFilterAction.enabled = false;
-			this._buttonSection = $('div.button-section').appendTo(container);
-			var connectButton = new Button(this._buttonSection.getHTMLElement());
-			connectButton.label = localize('serverTree.addConnection', 'Add Connection');
+			this._buttonSection = append(container, $('.button-section'));
+			const connectButton = new Button(this._buttonSection);
+			connectButton.label = localize('serverTree.addConnection', "Add Connection");
 			this._toDispose.push(attachButtonStyler(connectButton, this._themeService));
 			this._toDispose.push(connectButton.onDidClick(() => {
 				this._connectionManagementService.showConnectionDialog();
@@ -124,41 +147,41 @@ export class ServerTreeView {
 		// Theme styler
 		this._toDispose.push(attachListStyler(this._tree, this._themeService));
 
-		const self = this;
 		// Refresh Tree when these events are emitted
 		this._toDispose.push(this._connectionManagementService.onAddConnectionProfile((newProfile: IConnectionProfile) => {
-			self.handleAddConnectionProfile(newProfile);
+			this.handleAddConnectionProfile(newProfile);
 		}));
 		this._toDispose.push(this._connectionManagementService.onDeleteConnectionProfile(() => {
-			self.refreshTree();
+			this.refreshTree();
 		}));
 		this._toDispose.push(this._connectionManagementService.onDisconnect((connectionParams) => {
-			if (self.isObjectExplorerConnectionUri(connectionParams.connectionUri)) {
-				self.deleteObjectExplorerNodeAndRefreshTree(connectionParams.connectionProfile);
+			if (this.isObjectExplorerConnectionUri(connectionParams.connectionUri)) {
+				this.deleteObjectExplorerNodeAndRefreshTree(connectionParams.connectionProfile);
 			}
 		}));
 
 		if (this._objectExplorerService && this._objectExplorerService.onUpdateObjectExplorerNodes) {
 			this._toDispose.push(this._objectExplorerService.onUpdateObjectExplorerNodes(args => {
 				if (args.errorMessage) {
-					self.showError(args.errorMessage);
+					this.showError(args.errorMessage);
 				}
 				if (args.connection) {
-					self.onObjectExplorerSessionCreated(args.connection);
+					this.onObjectExplorerSessionCreated(args.connection);
 				}
 			}));
 		}
-		return new Promise<void>((resolve, reject) => {
-			self.refreshTree();
-			let root = <ConnectionProfileGroup>self._tree.getInput();
 
-			let expandGroups: boolean = self._configurationService.getValue(SERVER_GROUP_CONFIG)[SERVER_GROUP_AUTOEXPAND_CONFIG];
+		return new Promise<void>((resolve, reject) => {
+			this.refreshTree();
+			const root = <ConnectionProfileGroup>this._tree.getInput();
+
+			const expandGroups: boolean = this._configurationService.getValue(SERVER_GROUP_CONFIG)[SERVER_GROUP_AUTOEXPAND_CONFIG];
 			if (expandGroups) {
-				self._tree.expandAll(ConnectionProfileGroup.getSubgroups(root));
+				this._tree.expandAll(ConnectionProfileGroup.getSubgroups(root));
 			}
 
 			if (root && !root.hasValidConnections) {
-				self._treeSelectionHandler.onTreeActionStateChange(true);
+				this._treeSelectionHandler.onTreeActionStateChange(true);
 				resolve();
 			} else {
 				resolve();
@@ -174,20 +197,20 @@ export class ServerTreeView {
 
 	private async handleAddConnectionProfile(newProfile: IConnectionProfile): Promise<void> {
 		if (newProfile) {
-			let groups = this._connectionManagementService.getConnectionGroups();
-			let profile = ConnectionUtils.findProfileInGroup(newProfile, groups);
+			const groups = this._connectionManagementService.getConnectionGroups();
+			const profile = ConnectionUtils.findProfileInGroup(newProfile, groups);
 			if (profile) {
 				newProfile = profile;
 			}
 		}
 
 		if (this._buttonSection) {
-			this._buttonSection.getHTMLElement().style.display = 'none';
+			hide(this._buttonSection);
 			this._activeConnectionsFilterAction.enabled = true;
 		}
-		let currentSelections = this._tree.getSelection();
-		let currentSelectedElement = currentSelections && currentSelections.length >= 1 ? currentSelections[0] : undefined;
-		let newProfileIsSelected = currentSelectedElement && newProfile ? currentSelectedElement.id === newProfile.id : false;
+		const currentSelections = this._tree.getSelection();
+		const currentSelectedElement = currentSelections && currentSelections.length >= 1 ? currentSelections[0] : undefined;
+		const newProfileIsSelected = currentSelectedElement && newProfile ? currentSelectedElement.id === newProfile.id : false;
 		if (newProfile && currentSelectedElement && !newProfileIsSelected) {
 			this._tree.clearSelection();
 		}
@@ -205,9 +228,9 @@ export class ServerTreeView {
 	}
 
 	private getConnectionInTreeInput(connectionId: string): ConnectionProfile {
-		let root = TreeUpdateUtils.getTreeInput(this._connectionManagementService);
-		let connections = ConnectionProfileGroup.getConnectionsInGroup(root);
-		let results = connections.filter(con => {
+		const root = TreeUpdateUtils.getTreeInput(this._connectionManagementService);
+		const connections = ConnectionProfileGroup.getConnectionsInGroup(root);
+		const results = connections.filter(con => {
 			if (connectionId === con.id) {
 				return true;
 			} else {
@@ -221,7 +244,7 @@ export class ServerTreeView {
 	}
 
 	private onObjectExplorerSessionCreated(connection: IConnectionProfile) {
-		var conn = this.getConnectionInTreeInput(connection.id);
+		const conn = this.getConnectionInTreeInput(connection.id);
 		if (conn) {
 			this._tree.refresh(conn).then(() => {
 				return this._tree.expand(conn).then(() => {
@@ -234,7 +257,7 @@ export class ServerTreeView {
 	}
 
 	public addObjectExplorerNodeAndRefreshTree(connection: IConnectionProfile): void {
-		this.messages.hide();
+		hide(this.messages);
 		if (!this._objectExplorerService.getObjectExplorerNode(connection)) {
 			this._objectExplorerService.updateObjectExplorerNodes(connection).then(() => {
 				// The oe request is sent. an event will be raised when the session is created
@@ -245,7 +268,7 @@ export class ServerTreeView {
 
 	public deleteObjectExplorerNodeAndRefreshTree(connection: IConnectionProfile): Thenable<void> {
 		if (connection) {
-			var conn = this.getConnectionInTreeInput(connection.id);
+			const conn = this.getConnectionInTreeInput(connection.id);
 			if (conn) {
 				return this._objectExplorerService.deleteObjectExplorerNode(conn).then(() => {
 					this._tree.collapse(conn);
@@ -257,7 +280,7 @@ export class ServerTreeView {
 	}
 
 	public refreshTree(): Promise<void> {
-		this.messages.hide();
+		hide(this.messages);
 		this.clearOtherActions();
 		return TreeUpdateUtils.registeredServerUpdate(this._tree, this._connectionManagementService);
 	}
@@ -273,7 +296,7 @@ export class ServerTreeView {
 		if (!treeInput || treeInput.length === 0) {
 			return undefined;
 		}
-		let result = treeInput.map(group => {
+		const result = treeInput.map(group => {
 			// Keep active/recent connections and remove the rest
 			if (group.connections) {
 				group.connections = group.connections.filter(con => {
@@ -305,28 +328,26 @@ export class ServerTreeView {
 	 * Set tree elements based on the view (recent/active)
 	 */
 	public showFilteredTree(view: string): void {
-
-		const self = this;
-		this.messages.hide();
+		hide(this.messages);
 		// Clear other action views if user switched between two views
 		this.clearOtherActions(view);
-		let root = TreeUpdateUtils.getTreeInput(this._connectionManagementService);
+		const root = TreeUpdateUtils.getTreeInput(this._connectionManagementService);
 		let treeInput: ConnectionProfileGroup = null;
 		if (root) {
 			// Filter results based on view
-			let filteredResults = this.filterConnections([root], view);
+			const filteredResults = this.filterConnections([root], view);
 			if (!filteredResults || !filteredResults[0]) {
-				this.messages.show();
-				this.messages.domFocus();
+				show(this.messages);
+				this.messages.focus();
 			} else {
 				treeInput = filteredResults[0];
 			}
 			this._tree.setInput(treeInput).then(() => {
-				if (this.messages.isHidden()) {
-					self._tree.getFocus();
-					self._tree.expandAll(ConnectionProfileGroup.getSubgroups(treeInput));
+				if (isHidden(this.messages)) {
+					this._tree.getFocus();
+					this._tree.expandAll(ConnectionProfileGroup.getSubgroups(treeInput));
 				} else {
-					self._tree.clearFocus();
+					this._tree.clearFocus();
 				}
 			}, errors.onUnexpectedError);
 		} else {
@@ -341,25 +362,24 @@ export class ServerTreeView {
 		if (!searchString) {
 			return;
 		}
-		const self = this;
-		this.messages.hide();
+		hide(this.messages);
 		// Clear other actions if user searched during other views
 		this.clearOtherActions();
 		// Filter connections based on search
-		let filteredResults = this.searchConnections(searchString);
+		const filteredResults = this.searchConnections(searchString);
 		if (!filteredResults || filteredResults.length === 0) {
-			this.messages.show();
-			this.messages.domFocus();
+			show(this.messages);
+			this.messages.focus();
 		}
 		// Add all connections to tree root and set tree input
-		let treeInput = new ConnectionProfileGroup('searchroot', undefined, 'searchroot', undefined, undefined);
+		const treeInput = new ConnectionProfileGroup('searchroot', undefined, 'searchroot', undefined, undefined);
 		treeInput.addConnections(filteredResults);
 		this._tree.setInput(treeInput).then(() => {
-			if (this.messages.isHidden()) {
-				self._tree.getFocus();
-				self._tree.expandAll(ConnectionProfileGroup.getSubgroups(treeInput));
+			if (isHidden(this.messages)) {
+				this._tree.getFocus();
+				this._tree.expandAll(ConnectionProfileGroup.getSubgroups(treeInput));
 			} else {
-				self._tree.clearFocus();
+				this._tree.clearFocus();
 			}
 		}, errors.onUnexpectedError);
 	}
@@ -369,9 +389,9 @@ export class ServerTreeView {
 	 */
 	private searchConnections(searchString: string): ConnectionProfile[] {
 
-		let root = TreeUpdateUtils.getTreeInput(this._connectionManagementService);
-		let connections = ConnectionProfileGroup.getConnectionsInGroup(root);
-		let results = connections.filter(con => {
+		const root = TreeUpdateUtils.getTreeInput(this._connectionManagementService);
+		const connections = ConnectionProfileGroup.getConnectionsInGroup(root);
+		const results = connections.filter(con => {
 			if (searchString && (searchString.length > 0)) {
 				return this.isMatch(con, searchString);
 			} else {

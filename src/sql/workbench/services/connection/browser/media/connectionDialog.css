@@ -90,6 +90,22 @@
 	margin: 0px 13px;
 }
 
+.connection-recent-tab {
+	height: 100%;
+}
+
+.connection-recent {
+	height: 100%;
+}
+
+.connection-saved-tab {
+	height: 100%;
+}
+
+.connection-saved {
+	height: 100%;
+}
+
 .vs-dark .connection-dialog .connection-history-actions .action-label.icon,
 .hc-black .connection-dialog .connection-history-actions .action-label.icon,
 .connection-dialog .connection-history-actions .action-label.icon {

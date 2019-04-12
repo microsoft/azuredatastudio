@@ -19,13 +19,8 @@ import { viewsContainersExtensionPoint } from 'vs/workbench/api/browser/viewsExt
 
 import { CustomTreeView } from 'sql/workbench/browser/parts/views/customView';
 
-export const DataExplorerViewlet = {
-	DataExplorer: 'dataExplorer'
-};
-export const VIEWLET_ID = 'workbench.view.dataExplorer';
+export const VIEWLET_ID = 'workbench.view.connections';
 export const VIEW_CONTAINER: ViewContainer = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer(VIEWLET_ID);
-
-
 
 interface IUserFriendlyViewDescriptor {
 	id: string;
@@ -156,7 +151,7 @@ class DataExplorerContainerExtensionHandler implements IWorkbenchContribution {
 	}
 
 	private showCollapsed(container: ViewContainer): boolean {
-		return false;
+		return true;
 	}
 }
 

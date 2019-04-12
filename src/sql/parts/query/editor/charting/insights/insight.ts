@@ -6,8 +6,8 @@
 'use strict';
 
 import { Graph } from './graphInsight';
-import { IInsightData } from 'sql/parts/dashboard/widgets/insights/interfaces';
-import { DataDirection, ChartType } from 'sql/parts/dashboard/widgets/insights/views/charts/interfaces';
+import { IInsightData } from 'sql/workbench/parts/dashboard/widgets/insights/interfaces';
+import { DataDirection, ChartType } from 'sql/workbench/parts/dashboard/widgets/insights/views/charts/interfaces';
 import { ImageInsight } from './imageInsight';
 import { TableInsight } from './tableInsight';
 import { IInsightOptions, IInsight, InsightType, IInsightCtor } from './interfaces';
