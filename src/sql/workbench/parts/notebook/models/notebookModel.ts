@@ -789,7 +789,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			catch (err) {
 				this.notifyError(localize('shutdownClientSessionError', "A client session error occurred when closing the notebook: {0}", err));
 			}
-			await this._activeClientSession.shutdown();
+			//await this._activeClientSession.shutdown();
 			this.clearClientSessionListeners();
 			this._activeClientSession = undefined;
 		}
