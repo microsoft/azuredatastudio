@@ -2,16 +2,15 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
 import { $, append, show, hide } from 'vs/base/browser/dom';
 import { IDisposable, combinedDisposable } from 'vs/base/common/lifecycle';
 import { IStatusbarItem } from 'vs/workbench/browser/parts/statusbar/statusbar';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
-import { EditorServiceImpl } from 'vs/workbench/browser/parts/editor/editor';
 
 // Connection status bar showing the current global connection
 export class ConnectionStatusbarItem implements IStatusbarItem {
@@ -22,7 +21,7 @@ export class ConnectionStatusbarItem implements IStatusbarItem {
 
 	constructor(
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@IEditorService private _editorService: EditorServiceImpl,
+		@IEditorService private _editorService: IEditorService,
 		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
 	) {
 	}
@@ -37,8 +36,7 @@ export class ConnectionStatusbarItem implements IStatusbarItem {
 			this._connectionManagementService.onConnect(() => this._updateStatus()),
 			this._connectionManagementService.onConnectionChanged(() => this._updateStatus()),
 			this._connectionManagementService.onDisconnect(() => this._updateStatus()),
-			this._editorService.onDidVisibleEditorsChange(() => this._updateStatus()),
-			this._editorService.onDidCloseEditor(() => this._updateStatus()),
+			this._editorService.onDidActiveEditorChange(() => this._updateStatus()),
 			this._objectExplorerService.onSelectionOrFocusChange(() => this._updateStatus())
 		);
 

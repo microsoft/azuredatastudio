@@ -3,33 +3,18 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { EditorDescriptor, IEditorRegistry, Extensions as EditorExtensions } from 'vs/workbench/browser/editor';
 import { IConfigurationRegistry, Extensions as ConfigExtensions } from 'vs/platform/configuration/common/configurationRegistry';
-import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { DashboardEditor } from 'sql/workbench/parts/dashboard/dashboardEditor';
-import { DashboardInput } from 'sql/workbench/parts/dashboard/dashboardInput';
 import { AddServerGroupAction, AddServerAction } from 'sql/parts/objectExplorer/viewlet/connectionTreeAction';
-import { ClearRecentConnectionsAction, GetCurrentConnectionStringAction } from 'sql/parts/connection/common/connectionActions';
+import { ClearRecentConnectionsAction, GetCurrentConnectionStringAction } from 'sql/workbench/parts/connection/common/connectionActions';
 
 import { IWorkbenchActionRegistry, Extensions } from 'vs/workbench/common/actions';
 import { SyncActionDescriptor } from 'vs/platform/actions/common/actions';
 import { localize } from 'vs/nls';
-import { IExtensionsWorkbenchService } from 'vs/workbench/contrib/extensions/common/extensions';
-import { ExtensionTipsService } from 'vs/workbench/contrib/extensions/electron-browser/extensionTipsService';
-import { ExtensionsWorkbenchService } from 'vs/workbench/contrib/extensions/node/extensionsWorkbenchService';
 
 // Connection Dashboard registration
-const dashboardEditorDescriptor = new EditorDescriptor(
-	DashboardEditor,
-	DashboardEditor.ID,
-	'Dashboard'
-);
 
-Registry.as<IEditorRegistry>(EditorExtensions.Editors)
-	.registerEditor(dashboardEditorDescriptor, [new SyncDescriptor(DashboardInput)]);
-
-let actionRegistry = <IWorkbenchActionRegistry>Registry.as(Extensions.WorkbenchActions);
+const actionRegistry = <IWorkbenchActionRegistry>Registry.as(Extensions.WorkbenchActions);
 
 // Connection Actions
 actionRegistry.registerWorkbenchAction(
@@ -68,7 +53,7 @@ actionRegistry.registerWorkbenchAction(
 	GetCurrentConnectionStringAction.LABEL
 );
 
-let configurationRegistry = <IConfigurationRegistry>Registry.as(ConfigExtensions.Configuration);
+const configurationRegistry = <IConfigurationRegistry>Registry.as(ConfigExtensions.Configuration);
 configurationRegistry.registerConfiguration({
 	'id': 'connection',
 	'title': 'Connection',
