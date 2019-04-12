@@ -32,16 +32,16 @@ export class HeightMap {
 	}
 
 	public onInsertItems(iterator: INextIterator<IViewItem>, afterItemId: string | undefined = undefined): number | undefined {
-		let viewItem: IViewItem | undefined = undefined;
+		let viewItem: IViewItem | null = null;
 		let i: number, j: number;
 		let totalSize: number;
 		let sizeDiff = 0;
 
-		if (afterItemId === undefined) {
+		if (afterItemId === null) {
 			i = 0;
 			totalSize = 0;
 		} else {
-			i = this.indexes[afterItemId] + 1;
+			i = this.indexes[afterItemId!] + 1;
 			viewItem = this.heightMap[i - 1];
 
 			if (!viewItem) {
@@ -59,7 +59,7 @@ export class HeightMap {
 		while (viewItem = iterator.next()) {
 			viewItem.top = totalSize + sizeDiff;
 
-			this.indexes[viewItem.view.id] = i++;
+			this.indexes[viewItem.view.id!] = i++;
 			itemsToInsert.push(viewItem);
 			sizeDiff += viewItem.height;
 		}
@@ -69,7 +69,7 @@ export class HeightMap {
 		for (j = i; j < this.heightMap.length; j++) {
 			viewItem = this.heightMap[j];
 			viewItem.top += sizeDiff;
-			this.indexes[viewItem.view.id] = j;
+			this.indexes[viewItem.view.id!] = j;
 		}
 
 		for (j = itemsToInsert.length - 1; j >= 0; j--) {
@@ -89,7 +89,7 @@ export class HeightMap {
 
 	// Contiguous items
 	public onRemoveItems(iterator: INextIterator<string>): void {
-		let itemId: string | undefined = undefined;
+		let itemId: string | null = null;
 		let viewItem: IViewItem;
 		let startIndex: number | undefined = undefined;
 		let i = 0;
@@ -122,7 +122,7 @@ export class HeightMap {
 		for (i = startIndex; i < this.heightMap.length; i++) {
 			viewItem = this.heightMap[i];
 			viewItem.top += sizeDiff;
-			this.indexes[viewItem.view.id] = i;
+			this.indexes[viewItem.view.id!] = i;
 			this.onRefreshItem(viewItem);
 		}
 	}
@@ -156,14 +156,14 @@ export class HeightMap {
 	}
 
 	public itemAt(position: number): string {
-		return this.heightMap[this.indexAt(position)].view.id;
+		return this.heightMap[this.indexAt(position)].view.id!;
 	}
 
 	public withItemsInRange(start: number, end: number, fn: (item: string) => void): void {
 		start = this.indexAt(start);
 		end = this.indexAt(end);
 		for (let i = start; i <= end; i++) {
-			fn(this.heightMap[i].view.id);
+			fn(this.heightMap[i].view.id!);
 		}
 	}
 
@@ -202,11 +202,11 @@ export class HeightMap {
 	}
 
 	public itemAfter(item: IViewItem): IViewItem | undefined {
-		return this.heightMap[this.indexes[item.view.id] + 1] || undefined;
+		return this.heightMap[this.indexes[item.view.id!] + 1] || undefined;
 	}
 
 	public dispose(): void {
-		this.heightMap = undefined;
-		this.indexes = undefined;
+		this.heightMap = [];
+		this.indexes = {};
 	}
 }
