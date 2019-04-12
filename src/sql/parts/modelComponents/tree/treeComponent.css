@@ -2,7 +2,12 @@
 	display: flex;
 }
 
-.tree-component-node-tile .model-view-tree-node-item-icon{
-	width: 15px;
+.tree-component-node-tile .model-view-tree-node-item-icon {
+	width: 17px;
 	height: 15px;
+	flex-shrink: 0;
+}
+
+.tree-component-node-tile .model-view-tree-node-item-label {
+	overflow: hidden;
 }
