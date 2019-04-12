@@ -15,6 +15,12 @@
 
 .list-row.account-picker-list .label .contextual-display-name {
 	font-size: 15px;
+	line-height: 15px;
+}
+
+.list-row.account-picker-list .label .display-name {
+	font-size: 13px;
+	line-height: 13px;
 }
 
 .list-row.account-picker-list .label .content {
