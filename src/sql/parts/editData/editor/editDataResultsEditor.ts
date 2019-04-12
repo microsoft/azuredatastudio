@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------------------------
-*  Copyright (c) Microsoft Corporation. All rights reserved.
-*  Licensed under the Source EULA. See License.txt in the project root for license information.
-*--------------------------------------------------------------------------------------------*/
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
 import * as DOM from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -15,9 +15,9 @@ import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import * as types from 'vs/base/common/types';
 
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
-import { bootstrapAngular } from 'sql/services/bootstrap/bootstrapService';
+import { bootstrapAngular } from 'sql/platform/bootstrap/node/bootstrapService';
 import { BareResultsGridInfo } from 'sql/parts/query/editor/queryResultsEditor';
-import { IEditDataComponentParams } from 'sql/services/bootstrap/bootstrapParams';
+import { IEditDataComponentParams } from 'sql/platform/bootstrap/node/bootstrapParams';
 import { EditDataModule } from 'sql/parts/grid/views/editData/editData.module';
 import { EDITDATA_SELECTOR } from 'sql/parts/grid/views/editData/editData.component';
 import { EditDataResultsInput } from 'sql/parts/editData/common/editDataResultsInput';

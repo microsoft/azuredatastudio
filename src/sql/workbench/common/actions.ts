@@ -12,7 +12,6 @@ import { IScriptingService } from 'sql/platform/scripting/common/scriptingServic
 import { IRestoreDialogController } from 'sql/platform/restore/common/restoreService';
 import { IAngularEventingService, AngularEventType } from 'sql/platform/angularEventing/common/angularEventingService';
 import { IInsightsDialogService } from 'sql/workbench/services/insights/common/insightsDialogService';
-import * as Constants from 'sql/common/constants';
 import { Task } from 'sql/platform/tasks/common/tasks';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
@@ -223,10 +222,12 @@ export class ScriptDeleteAction extends Action {
 	}
 }
 
+export const BackupFeatureName = 'backup';
+
 export class BackupAction extends Task {
-	public static readonly ID = Constants.BackupFeatureName;
+	public static readonly ID = BackupFeatureName;
 	public static readonly LABEL = nls.localize('backupAction.backup', 'Backup');
-	public static readonly ICON = Constants.BackupFeatureName;
+	public static readonly ICON = BackupFeatureName;
 
 	constructor() {
 		super({
@@ -257,10 +258,12 @@ export class BackupAction extends Task {
 	}
 }
 
+export const RestoreFeatureName = 'restore';
+
 export class RestoreAction extends Task {
-	public static readonly ID = Constants.RestoreFeatureName;
+	public static readonly ID = RestoreFeatureName;
 	public static readonly LABEL = nls.localize('restoreAction.restore', 'Restore');
-	public static readonly ICON = Constants.RestoreFeatureName;
+	public static readonly ICON = RestoreFeatureName;
 
 	constructor() {
 		super({

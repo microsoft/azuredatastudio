@@ -19,7 +19,7 @@ import { Modal } from 'sql/workbench/browser/modal/modal';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { attachModalDialogStyler, attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import * as TelemetryKeys from 'sql/common/telemetryKeys';
+import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 
@@ -83,9 +83,10 @@ export class AutoOAuthDialog extends Modal {
 	}
 
 	protected renderBody(container: HTMLElement) {
-		this._descriptionElement = append(container, $('.auto-oauth-description-section.new-section'));
+		const body = append(container, $('.auto-oauth-dialog'));
+		this._descriptionElement = append(body, $('.auto-oauth-description-section.new-section'));
 
-		const addAccountSection = append(container, $('.auto-oauth-info-section.new-section'));
+		const addAccountSection = append(body, $('.auto-oauth-info-section.new-section'));
 		this._userCodeInputBox = this.createInputBoxHelper(addAccountSection, localize('userCode', 'User code'));
 		this._websiteInputBox = this.createInputBoxHelper(addAccountSection, localize('website', 'Website'));
 	}

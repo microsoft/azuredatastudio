@@ -1,15 +1,15 @@
 /*---------------------------------------------------------------------------------------------
-*  Copyright (c) Microsoft Corporation. All rights reserved.
-*  Licensed under the Source EULA. See License.txt in the project root for license information.
-*--------------------------------------------------------------------------------------------*/
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!sql/parts/grid/load/css/qp';
 
 import { ElementRef, Component, Inject, forwardRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import * as QP from 'html-query-plan';
 
-import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
-import { IQueryPlanParams } from 'sql/services/bootstrap/bootstrapParams';
+import { IBootstrapParams } from 'sql/platform/bootstrap/node/bootstrapService';
+import { IQueryPlanParams } from 'sql/platform/bootstrap/node/bootstrapParams';
 
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { registerThemingParticipant, ICssStyleCollector, ITheme } from 'vs/platform/theme/common/themeService';

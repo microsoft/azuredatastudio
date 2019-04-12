@@ -61,7 +61,7 @@ import { ModelServiceImpl } from 'vs/editor/common/services/modelServiceImpl';
 import { ITextResourceConfigurationService } from 'vs/editor/common/services/resourceConfiguration';
 import { TextResourceConfigurationService } from 'vs/editor/common/services/resourceConfigurationImpl';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
-import { AccessibilityService } from 'vs/platform/accessibility/node/accessibilityService';
+import { AccessibilityService } from 'vs/workbench/services/accessibility/node/accessibilityService';
 import { IExtensionGalleryService } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { ContextViewService } from 'vs/platform/contextview/browser/contextViewService';
@@ -73,8 +73,6 @@ import { ILifecycleService } from 'vs/platform/lifecycle/common/lifecycle';
 import { ILocalizationsService } from 'vs/platform/localizations/common/localizations';
 import { LocalizationsService } from 'vs/platform/localizations/electron-browser/localizationsService';
 import { ISharedProcessService, SharedProcessService } from 'vs/platform/ipc/electron-browser/sharedProcessService';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { TelemetryService } from 'vs/platform/telemetry/electron-browser/telemetryService';
 import { IProductService } from 'vs/platform/product/common/product';
 import { ProductService } from 'vs/platform/product/node/productService';
 import { IWindowsService } from 'vs/platform/windows/common/windows';
@@ -89,12 +87,17 @@ import { IMenubarService } from 'vs/platform/menubar/common/menubar';
 import { MenubarService } from 'vs/platform/menubar/electron-browser/menubarService';
 import { IURLService } from 'vs/platform/url/common/url';
 import { RelayURLService } from 'vs/platform/url/electron-browser/urlService';
+import { ITunnelService } from 'vs/platform/remote/common/tunnel';
+import { TunnelService } from 'vs/workbench/services/remote/node/tunnelService';
+import { ConfigurationResolverService } from 'vs/workbench/services/configurationResolver/electron-browser/configurationResolverService';
+import { IConfigurationResolverService } from 'vs/workbench/services/configurationResolver/common/configurationResolver';
+
+import 'vs/platform/remote/node/tunnelService';
 
 import 'vs/workbench/services/bulkEdit/browser/bulkEditService';
 import 'vs/workbench/services/integrity/node/integrityService';
 import 'vs/workbench/services/keybinding/common/keybindingEditing';
 import 'vs/workbench/services/textMate/electron-browser/textMateService';
-import 'vs/workbench/services/configurationResolver/browser/configurationResolverService';
 import 'vs/workbench/services/workspace/electron-browser/workspaceEditingService';
 import 'vs/workbench/services/extensions/common/inactiveExtensionUrlHandler';
 import 'vs/workbench/services/decorations/browser/decorationsService';
@@ -107,7 +110,7 @@ import 'vs/workbench/services/preferences/browser/preferencesService';
 import 'vs/workbench/services/output/node/outputChannelModelService';
 import 'vs/workbench/services/configuration/common/jsonEditingService';
 import 'vs/workbench/services/textmodelResolver/common/textModelResolverService';
-import 'vs/workbench/services/textfile/common/textFileService';
+import 'vs/workbench/services/textfile/node/textFileService';
 import 'vs/workbench/services/dialogs/browser/fileDialogService';
 import 'vs/workbench/services/dialogs/electron-browser/dialogService';
 import 'vs/workbench/services/backup/node/backupFileService';
@@ -131,6 +134,8 @@ import 'vs/workbench/services/extensions/electron-browser/extensionManagementSer
 import 'vs/workbench/services/remote/electron-browser/remoteAgentServiceImpl';
 import 'vs/workbench/services/notification/common/notificationService';
 import 'vs/workbench/services/heap/node/heap';
+import 'vs/workbench/services/window/electron-browser/windowService';
+import 'vs/workbench/services/telemetry/electron-browser/telemetryService';
 
 registerSingleton(IMenuService, MenuService, true);
 registerSingleton(IListService, ListService, true);
@@ -150,7 +155,6 @@ registerSingleton(IRequestService, RequestService, true);
 registerSingleton(ILifecycleService, LifecycleService);
 registerSingleton(ILocalizationsService, LocalizationsService);
 registerSingleton(ISharedProcessService, SharedProcessService, true);
-registerSingleton(ITelemetryService, TelemetryService);
 registerSingleton(IProductService, ProductService, true);
 registerSingleton(IWindowsService, WindowsService);
 registerSingleton(IUpdateService, UpdateService);
@@ -158,6 +162,8 @@ registerSingleton(IIssueService, IssueService);
 registerSingleton(IWorkspacesService, WorkspacesService);
 registerSingleton(IMenubarService, MenubarService);
 registerSingleton(IURLService, RelayURLService);
+registerSingleton(ITunnelService, TunnelService, true);
+registerSingleton(IConfigurationResolverService, ConfigurationResolverService, true);
 
 //#endregion
 
@@ -172,7 +178,8 @@ import { ServerGroupController } from 'sql/workbench/services/serverGroup/browse
 import { IServerGroupController } from 'sql/platform/serverGroup/common/serverGroupController';
 import { IAngularEventingService } from 'sql/platform/angularEventing/common/angularEventingService';
 import { AngularEventingService } from 'sql/platform/angularEventing/node/angularEventingService';
-import { ICapabilitiesService, CapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { CapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesServiceImpl';
 import { ICredentialsService, CredentialsService } from 'sql/platform/credentials/common/credentialsService';
 import { ISerializationService, SerializationService } from 'sql/platform/serialization/common/serializationService';
 import { IMetadataService, MetadataService } from 'sql/platform/metadata/common/metadataService';

@@ -21,7 +21,7 @@ import { MODELVIEW_CONTAINER } from 'sql/workbench/parts/dashboard/containers/da
 import { CONTROLHOST_CONTAINER } from 'sql/workbench/parts/dashboard/containers/dashboardControlHostContainer.contribution';
 import { NAV_SECTION } from 'sql/workbench/parts/dashboard/containers/dashboardNavSection.contribution';
 import { IDashboardContainerRegistry, Extensions as DashboardContainerExtensions } from 'sql/platform/dashboard/common/dashboardContainerRegistry';
-import { SingleConnectionManagementService } from 'sql/services/common/commonServiceInterface.service';
+import { SingleConnectionManagementService } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 import * as Constants from 'sql/platform/connection/common/constants';
 
 const dashboardcontainerRegistry = Registry.as<IDashboardContainerRegistry>(DashboardContainerExtensions.dashboardContainerContributions);

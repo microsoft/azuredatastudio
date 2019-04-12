@@ -8,13 +8,13 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { FileBrowserTree } from 'sql/workbench/services/fileBrowser/common/fileBrowserTree';
 import { FileNode } from 'sql/workbench/services/fileBrowser/common/fileNode';
 import { IFileBrowserService } from 'sql/platform/fileBrowser/common/interfaces';
-import * as Constants from 'sql/common/constants';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 
 import { Event, Emitter } from 'vs/base/common/event';
 import Severity from 'vs/base/common/severity';
 import { localize } from 'vs/nls';
 import * as strings from 'vs/base/common/strings';
+import { invalidProvider } from 'sql/base/common/errors';
 
 export class FileBrowserService implements IFileBrowserService {
 	public _serviceBrand: any;
@@ -48,7 +48,7 @@ export class FileBrowserService implements IFileBrowserService {
 
 	public openFileBrowser(ownerUri: string, expandPath: string, fileFilters: string[], changeFilter: boolean): Thenable<boolean> {
 		return new Promise<boolean>((resolve, reject) => {
-			let provider = this.getProvider(ownerUri);
+			const provider = this.getProvider(ownerUri);
 			if (provider) {
 				provider.openFileBrowser(ownerUri, expandPath, fileFilters, changeFilter).then(result => {
 					resolve(result);
@@ -56,7 +56,7 @@ export class FileBrowserService implements IFileBrowserService {
 					reject(error);
 				});
 			} else {
-				reject(Constants.InvalidProvider);
+				reject(invalidProvider());
 			}
 		});
 	}
@@ -81,7 +81,7 @@ export class FileBrowserService implements IFileBrowserService {
 		this._pathToFileNodeMap[fileNode.fullPath] = fileNode;
 		let self = this;
 		return new Promise<FileNode[]>((resolve, reject) => {
-			let provider = this.getProvider(fileNode.ownerUri);
+			const provider = this.getProvider(fileNode.ownerUri);
 			if (provider) {
 				provider.expandFolderNode(fileNode.ownerUri, fileNode.fullPath).then(result => {
 					let mapKey = self.generateResolveMapKey(fileNode.ownerUri, fileNode.fullPath);
@@ -90,7 +90,7 @@ export class FileBrowserService implements IFileBrowserService {
 					reject(error);
 				});
 			} else {
-				reject(Constants.InvalidProvider);
+				reject(invalidProvider());
 			}
 		});
 	}
@@ -119,7 +119,7 @@ export class FileBrowserService implements IFileBrowserService {
 
 	public validateFilePaths(ownerUri: string, serviceType: string, selectedFiles: string[]): Thenable<boolean> {
 		return new Promise<boolean>((resolve, reject) => {
-			let provider = this.getProvider(ownerUri);
+			const provider = this.getProvider(ownerUri);
 			if (provider) {
 				provider.validateFilePaths(ownerUri, serviceType, selectedFiles).then(result => {
 					resolve(result);
@@ -127,7 +127,7 @@ export class FileBrowserService implements IFileBrowserService {
 					reject(error);
 				});
 			} else {
-				reject(Constants.InvalidProvider);
+				reject(invalidProvider());
 			}
 		});
 	}

@@ -65,8 +65,7 @@ interface Asset {
 	platform: string;
 	type: string;
 	url: string;
-	// {{SQL CARBON EDIT}}
-	mooncakeUrl: string | undefined;
+	mooncakeUrl?: string;
 	hash: string;
 	sha256hash: string;
 	size: number;
@@ -189,56 +188,18 @@ async function publish(commit: string, quality: string, platform: string, type: 
 	const blobService = azure.createBlobService(storageAccount, process.env['AZURE_STORAGE_ACCESS_KEY_2']!)
 		.withFilter(new azure.ExponentialRetryPolicyFilter(20));
 
-	// {{SQL CARBON EDIT}}
 	await assertContainer(blobService, quality);
 
 	const blobExists = await doesAssetExist(blobService, quality, blobName);
 
-	const promises = [];
-
-	if (!blobExists) {
-		promises.push(uploadBlob(blobService, quality, blobName, file));
-	}
-
-	// {{SQL CARBON EDIT}}
-	if (process.env['MOONCAKE_STORAGE_ACCESS_KEY']) {
-		const mooncakeBlobService = azure.createBlobService(storageAccount, process.env['MOONCAKE_STORAGE_ACCESS_KEY']!, `${storageAccount}.blob.core.chinacloudapi.cn`)
-			.withFilter(new azure.ExponentialRetryPolicyFilter(20));
-
-		// mooncake is fussy and far away, this is needed!
-		mooncakeBlobService.defaultClientRequestTimeoutInMs = 10 * 60 * 1000;
-
-		await Promise.all([
-			assertContainer(blobService, quality),
-			assertContainer(mooncakeBlobService, quality)
-		]);
-
-		const [blobExists, moooncakeBlobExists] = await Promise.all([
-			doesAssetExist(blobService, quality, blobName),
-			doesAssetExist(mooncakeBlobService, quality, blobName)
-		]);
-
-		const promises: Array<Promise<void>> = [];
-
-		if (!blobExists) {
-			promises.push(uploadBlob(blobService, quality, blobName, file));
-		}
-
-		if (!moooncakeBlobExists) {
-			promises.push(uploadBlob(mooncakeBlobService, quality, blobName, file));
-		}
-	} else {
-		console.log('Skipping Mooncake publishing.');
-	}
-
-	if (promises.length === 0) {
+	if (blobExists) {
 		console.log(`Blob ${quality}, ${blobName} already exists, not publishing again.`);
 		return;
 	}
 
 	console.log('Uploading blobs to Azure storage...');
 
-	await Promise.all(promises);
+	await uploadBlob(blobService, quality, blobName, file);
 
 	console.log('Blobs successfully uploaded.');
 
@@ -250,8 +211,6 @@ async function publish(commit: string, quality: string, platform: string, type: 
 		platform: platform,
 		type: type,
 		url: `${process.env['AZURE_CDN_URL']}/${quality}/${blobName}`,
-		// {{SQL CARBON EDIT}}
-		mooncakeUrl: process.env['MOONCAKE_CDN_URL'] ? `${process.env['MOONCAKE_CDN_URL']}/${quality}/${blobName}` : undefined,
 		hash: sha1hash,
 		sha256hash,
 		size

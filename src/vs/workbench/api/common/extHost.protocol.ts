@@ -46,6 +46,7 @@ import * as codeInset from 'vs/workbench/contrib/codeinset/common/codeInset';
 import * as callHierarchy from 'vs/workbench/contrib/callHierarchy/common/callHierarchy';
 import { IRelativePattern } from 'vs/base/common/glob';
 import { IRemoteConsoleLog } from 'vs/base/common/console';
+import { VSBuffer } from 'vs/base/common/buffer';
 
 // {{SQL CARBON EDIT}}
 import { ITreeItem as sqlITreeItem } from 'sql/workbench/common/views';
@@ -57,7 +58,7 @@ export interface IEnvironment {
 	appLanguage: string;
 	appUriScheme: string;
 	appSettingsHome?: URI;
-	extensionDevelopmentLocationURI?: URI | URI[];
+	extensionDevelopmentLocationURI?: URI[];
 	extensionTestsLocationURI?: URI;
 	globalStorageHome: URI;
 	userHome: URI;
@@ -791,8 +792,8 @@ export interface ExtHostWorkspaceShape {
 export interface ExtHostFileSystemShape {
 	$stat(handle: number, resource: UriComponents): Promise<files.IStat>;
 	$readdir(handle: number, resource: UriComponents): Promise<[string, files.FileType][]>;
-	$readFile(handle: number, resource: UriComponents): Promise<Buffer>;
-	$writeFile(handle: number, resource: UriComponents, content: Buffer, opts: files.FileWriteOptions): Promise<void>;
+	$readFile(handle: number, resource: UriComponents): Promise<VSBuffer>;
+	$writeFile(handle: number, resource: UriComponents, content: VSBuffer, opts: files.FileWriteOptions): Promise<void>;
 	$rename(handle: number, resource: UriComponents, target: UriComponents, opts: files.FileOverwriteOptions): Promise<void>;
 	$copy(handle: number, resource: UriComponents, target: UriComponents, opts: files.FileOverwriteOptions): Promise<void>;
 	$mkdir(handle: number, resource: UriComponents): Promise<void>;
@@ -801,8 +802,8 @@ export interface ExtHostFileSystemShape {
 	$unwatch(handle: number, session: number): void;
 	$open(handle: number, resource: UriComponents, opts: files.FileOpenOptions): Promise<number>;
 	$close(handle: number, fd: number): Promise<void>;
-	$read(handle: number, fd: number, pos: number, length: number): Promise<Buffer>;
-	$write(handle: number, fd: number, pos: number, data: Buffer): Promise<number>;
+	$read(handle: number, fd: number, pos: number, length: number): Promise<VSBuffer>;
+	$write(handle: number, fd: number, pos: number, data: VSBuffer): Promise<number>;
 }
 
 export interface ExtHostSearchShape {
@@ -820,8 +821,8 @@ export interface ExtHostExtensionServiceShape {
 	$deltaExtensions(toAdd: IExtensionDescription[], toRemove: ExtensionIdentifier[]): Promise<void>;
 
 	$test_latency(n: number): Promise<number>;
-	$test_up(b: Buffer): Promise<number>;
-	$test_down(size: number): Promise<Buffer>;
+	$test_up(b: VSBuffer): Promise<number>;
+	$test_down(size: number): Promise<VSBuffer>;
 }
 
 export interface FileSystemEvents {
@@ -1128,8 +1129,6 @@ export interface ISourceMultiBreakpointDto {
 	}[];
 }
 
-// {{SQL CARBON EDIT}}
-/*
 export interface IDebugSessionFullDto {
 	id: DebugSessionUUID;
 	type: string;
@@ -1156,8 +1155,6 @@ export interface ExtHostDebugServiceShape {
 	$acceptDebugSessionCustomEvent(session: IDebugSessionDto, event: any): void;
 	$acceptBreakpointsDelta(delta: IBreakpointsDeltaDto): void;
 }
-// {{SQL CARBON EDIT}}
-*/
 
 export interface DecorationRequest {
 	readonly id: number;
@@ -1219,8 +1216,7 @@ export const MainContext = {
 	MainThreadComments: createMainId<MainThreadCommentsShape>('MainThreadComments'),
 	MainThreadConfiguration: createMainId<MainThreadConfigurationShape>('MainThreadConfiguration'),
 	MainThreadConsole: createMainId<MainThreadConsoleShape>('MainThreadConsole'),
-	// {{SQL CARBON EDIT}}
-	// MainThreadDebugService: createMainId<MainThreadDebugServiceShape>('MainThreadDebugService'),
+	MainThreadDebugService: createMainId<MainThreadDebugServiceShape>('MainThreadDebugService'),
 	MainThreadDecorations: createMainId<MainThreadDecorationsShape>('MainThreadDecorations'),
 	MainThreadDiagnostics: createMainId<MainThreadDiagnosticsShape>('MainThreadDiagnostics'),
 	MainThreadDialogs: createMainId<MainThreadDiaglogsShape>('MainThreadDiaglogs'),
@@ -1255,8 +1251,7 @@ export const ExtHostContext = {
 	ExtHostCommands: createExtId<ExtHostCommandsShape>('ExtHostCommands'),
 	ExtHostConfiguration: createExtId<ExtHostConfigurationShape>('ExtHostConfiguration'),
 	ExtHostDiagnostics: createExtId<ExtHostDiagnosticsShape>('ExtHostDiagnostics'),
-	// {{SQL CARBON EDIT}}
-	// ExtHostDebugService: createExtId<ExtHostDebugServiceShape>('ExtHostDebugService'),
+	ExtHostDebugService: createExtId<ExtHostDebugServiceShape>('ExtHostDebugService'),
 	ExtHostDecorations: createExtId<ExtHostDecorationsShape>('ExtHostDecorations'),
 	ExtHostDocumentsAndEditors: createExtId<ExtHostDocumentsAndEditorsShape>('ExtHostDocumentsAndEditors'),
 	ExtHostDocuments: createExtId<ExtHostDocumentsShape>('ExtHostDocuments'),

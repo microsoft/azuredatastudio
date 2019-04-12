@@ -11,7 +11,7 @@ import { Component, Inject, forwardRef, ChangeDetectorRef, OnInit, ViewChild, El
 import { Router } from '@angular/router';
 
 import { DashboardWidget, IDashboardWidget, WidgetConfig, WIDGET_CONFIG } from 'sql/workbench/parts/dashboard/common/dashboardWidget';
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 import { toDisposableSubscription } from 'sql/base/node/rxjsUtils';
 import { ExplorerFilter, ExplorerRenderer, ExplorerDataSource, ExplorerController, ObjectMetadataWrapper, ExplorerModel } from './explorerTree';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';

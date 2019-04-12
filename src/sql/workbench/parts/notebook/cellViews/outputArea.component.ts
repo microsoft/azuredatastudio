@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------------------------
-*  Copyright (c) Microsoft Corporation. All rights reserved.
-*  Licensed under the Source EULA. See License.txt in the project root for license information.
-*--------------------------------------------------------------------------------------------*/
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./code';
 import 'vs/css!./outputArea';
 import { OnInit, Component, Input, Inject, ElementRef, ViewChild, forwardRef, ChangeDetectorRef } from '@angular/core';
@@ -19,6 +19,8 @@ export const OUTPUT_AREA_SELECTOR: string = 'output-area-component';
 export class OutputAreaComponent extends AngularDisposable implements OnInit {
 	@ViewChild('outputarea', { read: ElementRef }) private outputArea: ElementRef;
 	@Input() cellModel: ICellModel;
+
+	private _activeCellId: string;
 
 	private readonly _minimumHeight = 30;
 
@@ -39,6 +41,14 @@ export class OutputAreaComponent extends AngularDisposable implements OnInit {
 				}
 			}));
 		}
+	}
+
+	@Input() set activeCellId(value: string) {
+		this._activeCellId = value;
+	}
+
+	get activeCellId(): string {
+		return this._activeCellId;
 	}
 
 	private updateTheme(theme: IColorTheme): void {

@@ -9,7 +9,7 @@ import { Component, Inject, Input, forwardRef, ViewChild, ViewChildren, QueryLis
 import { NgGridConfig, NgGrid, NgGridItem } from 'angular2-grid';
 
 import { DashboardServiceInterface } from 'sql/workbench/parts/dashboard/services/dashboardServiceInterface.service';
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 import { WidgetConfig } from 'sql/workbench/parts/dashboard/common/dashboardWidget';
 import { DashboardWidgetWrapper } from 'sql/workbench/parts/dashboard/contents/dashboardWidgetWrapper.component';
 import { subscriptionToDisposable, AngularDisposable } from 'sql/base/node/lifecycle';

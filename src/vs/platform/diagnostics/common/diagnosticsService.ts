@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { UriComponents } from 'vs/base/common/uri';
@@ -30,6 +30,11 @@ export interface IRemoteDiagnosticInfo extends IDiagnosticInfo {
 	hostName: string;
 }
 
+export interface IRemoteDiagnosticError {
+	hostName: string;
+	errorMessage: string;
+}
+
 export interface IDiagnosticInfoOptions {
 	includeProcesses?: boolean;
 	folders?: UriComponents[];
@@ -46,4 +51,8 @@ export interface WorkspaceStats {
 	configFiles: WorkspaceStatItem[];
 	fileCount: number;
 	maxFilesReached: boolean;
+}
+
+export function isRemoteDiagnosticError(x: any): x is IRemoteDiagnosticError {
+	return !!x.hostName && !!x.errorMessage;
 }

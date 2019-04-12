@@ -11,6 +11,7 @@
 	"notebook.command.runactivecell": "Run Cell",
 	"notebook.command.addcode": "Add Code Cell",
 	"notebook.command.addtext": "Add Text Cell",
+	"notebook.command.addcell": "Add Cell",
 	"title.analyzeJupyterNotebook": "Analyze in Notebook",
 	"title.newJupyterNotebook": "New Notebook",
 	"title.openJupyterNotebook": "Open Notebook",

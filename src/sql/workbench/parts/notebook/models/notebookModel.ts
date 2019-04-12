@@ -777,7 +777,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			}
 			await this.shutdownActiveSession();
 		} catch (err) {
-			this.notifyError(localize('shutdownError', "An error occurred when closing the notebook: {0}", err));
+			this.notifyError(localize('shutdownError', "An error occurred when closing the notebook: {0}", notebookUtils.getErrorMessage(err)));
 		}
 	}
 
@@ -787,7 +787,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				await this._activeClientSession.ready;
 			}
 			catch (err) {
-				this.notifyError(localize('shutdownClientSessionError', "A client session error occurred when closing the notebook: {0}", err));
+				this.notifyError(localize('shutdownClientSessionError', "A client session error occurred when closing the notebook: {0}", notebookUtils.getErrorMessage(err)));
 			}
 			await this._activeClientSession.shutdown();
 			this.clearClientSessionListeners();

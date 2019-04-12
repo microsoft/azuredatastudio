@@ -32,6 +32,7 @@ import { OpenSparkJobSubmissionDialogCommand, OpenSparkJobSubmissionDialogFromFi
 import { OpenSparkYarnHistoryTask } from './sparkFeature/historyTask';
 import { MssqlObjectExplorerNodeProvider, mssqlOutputChannel } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
 import { CmsService } from './cms/cmsService';
+import { registerSearchServerCommand } from './objectExplorerNodeProvider/command';
 
 const baseConfig = require('./config.json');
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
@@ -120,6 +121,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 		vscode.window.showErrorMessage('Failed to start Sql tools service');
 	});
 
+	registerSearchServerCommand(appContext);
 	let contextProvider = new ContextProvider();
 	context.subscriptions.push(contextProvider);
 	context.subscriptions.push(credentialsStore);

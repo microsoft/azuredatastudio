@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------------------------
-*  Copyright (c) Microsoft Corporation. All rights reserved.
-*  Licensed under the Source EULA. See License.txt in the project root for license information.
-*--------------------------------------------------------------------------------------------*/
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 // import 'vs/css!./modelViewContent';
 
 import { Component, forwardRef, Input, OnInit, Inject, ChangeDetectorRef } from '@angular/core';
@@ -11,7 +11,7 @@ import { IDisposable } from 'vs/base/common/lifecycle';
 import { addDisposableListener, EventType } from 'vs/base/browser/dom';
 import { memoize } from 'vs/base/common/decorators';
 
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 import { IModelView } from 'sql/platform/model/common/modelViewService';
 import { ViewBase } from 'sql/parts/modelComponents/viewBase';
 import { IModelViewService } from 'sql/platform/modelComponents/common/modelViewService';

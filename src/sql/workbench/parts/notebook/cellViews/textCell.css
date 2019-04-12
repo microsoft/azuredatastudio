@@ -8,7 +8,11 @@ text-cell-component {
 }
 
 text-cell-component .notebook-preview {
-	user-select: initial;
+	user-select: none;
 	padding-left: 8px;
 	padding-right: 8px;
+}
+
+.notebook-preview.actionselect {
+	user-select: text;
 }

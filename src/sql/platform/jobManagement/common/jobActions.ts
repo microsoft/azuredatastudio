@@ -17,7 +17,7 @@ import { OperatorsViewComponent } from 'sql/parts/jobManagement/views/operatorsV
 import { ProxiesViewComponent } from 'sql/parts/jobManagement/views/proxiesView.component';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import * as TelemetryKeys from 'sql/common/telemetryKeys';
+import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { JobManagementView } from 'sql/parts/jobManagement/views/jobManagementView';
 
