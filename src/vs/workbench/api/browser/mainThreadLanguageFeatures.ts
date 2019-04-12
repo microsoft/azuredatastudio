@@ -386,7 +386,7 @@ export class MainThreadLanguageFeatures implements MainThreadLanguageFeaturesSha
 			provideCompletionItems: (model: ITextModel, position: EditorPosition, context: modes.CompletionContext, token: CancellationToken): Promise<modes.CompletionList | undefined> => {
 				return this._proxy.$provideCompletionItems(handle, model.uri, position, context, token).then(result => {
 					if (!result) {
-						// {{SQL CARBON EDIT}} @todo anthonydresser required because of strict null checks
+						// {{SQL CARBON EDIT}} @todo anthonydresser 4/12/19 required because of strict null checks
 						return undefined;
 					}
 					return {

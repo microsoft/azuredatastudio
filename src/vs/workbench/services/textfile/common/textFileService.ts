@@ -740,7 +740,7 @@ export class TextFileService extends Disposable implements ITextFileService {
 		}
 
 		if (!targetResource) {
-			// {{SQL CARBON EDIT}} @todo anthonydresser necessary to add undefined till we enable strict null check
+			// {{SQL CARBON EDIT}} @todo anthonydresser 4/12/19 necessary to add undefined till we enable strict null check
 			return undefined; // user canceled
 		}
 
