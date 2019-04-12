@@ -5,7 +5,7 @@
 import 'vs/css!./code';
 import 'vs/css!./media/output';
 
-import { OnInit, Component, Input, Inject, ElementRef, ViewChild } from '@angular/core';
+import { OnInit, Component, Input, Inject, ElementRef, ViewChild, SimpleChange } from '@angular/core';
 import { AngularDisposable } from 'sql/base/node/lifecycle';
 import { nb } from 'azdata';
 import { ICellModel } from 'sql/workbench/parts/notebook/models/modelInterfaces';
@@ -14,8 +14,10 @@ import { MimeModel } from 'sql/workbench/parts/notebook/outputs/common/mimemodel
 import * as outputProcessor from 'sql/workbench/parts/notebook/outputs/common/outputProcessor';
 import { RenderMimeRegistry } from 'sql/workbench/parts/notebook/outputs/registry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
+import * as DOM from 'vs/base/browser/dom';
 
 export const OUTPUT_SELECTOR: string = 'output-component';
+const USER_SELECT_CLASS ='actionselect';
 
 @Component({
 	selector: OUTPUT_SELECTOR,
@@ -28,6 +30,7 @@ export class OutputComponent extends AngularDisposable implements OnInit {
 	private _trusted: boolean;
 	private _initialized: boolean = false;
 	private readonly _minimumHeight = 30;
+	private _activeCellId: string;
 	registry: RenderMimeRegistry;
 
 
@@ -47,6 +50,27 @@ export class OutputComponent extends AngularDisposable implements OnInit {
 		});
 	}
 
+	ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
+
+		for (let propName in changes) {
+			if (propName === 'activeCellId') {
+				this.toggleUserSelect(this.isActive());
+				break;
+			}
+		}
+	}
+
+	private toggleUserSelect(userSelect: boolean): void {
+		if (!this.outputElement) {
+			return;
+		}
+		if (userSelect) {
+			DOM.addClass(this.outputElement.nativeElement, USER_SELECT_CLASS);
+		} else {
+			DOM.removeClass(this.outputElement.nativeElement, USER_SELECT_CLASS);
+		}
+	}
+
 	private renderOutput() {
 		let node = this.outputElement.nativeElement;
 		let output = this.cellOutput;
@@ -63,12 +87,19 @@ export class OutputComponent extends AngularDisposable implements OnInit {
 		return this._trusted;
 	}
 
-	@Input()
-	set trustedMode(value: boolean) {
+	@Input() set trustedMode(value: boolean) {
 		this._trusted = value;
 		if (this._initialized) {
 			this.renderOutput();
 		}
+	}
+
+	@Input() set activeCellId(value: string) {
+		this._activeCellId = value;
+	}
+
+	get activeCellId(): string {
+		return this._activeCellId;
 	}
 
 	protected createRenderedMimetype(options: MimeModel.IOptions, node: HTMLElement): void {
@@ -99,5 +130,8 @@ export class OutputComponent extends AngularDisposable implements OnInit {
 				Object.keys(options.data).join(', ');
 			//this.setState({ node: node });
 		}
+	}
+	protected isActive() {
+		return this.cellModel && this.cellModel.id === this.activeCellId;
 	}
 }
