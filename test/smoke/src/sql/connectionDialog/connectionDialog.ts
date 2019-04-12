@@ -46,6 +46,6 @@ export class ConnectionDialog {
 	}
 
 	private async selectAuthType(authType: string) {
-		await this.code.waitAndClick(`.context-view.bottom.left .monaco-select-box-dropdown-container .select-box-dropdown-list-container .monaco-list .monaco-scrollable-element .monaco-list-rows div[aria-label="${authType}"][class*="monaco-list-row"]`);
+		await this.code.waitAndClick(`.context-view.bottom.left .monaco-select-box-dropdown-container .select-box-dropdown-list-container .monaco-list .monaco-scrollable-element .monaco-list-rows .monaco-list-row div[aria-label="${authType}"][class*="option-text"]`);
 	}
 }

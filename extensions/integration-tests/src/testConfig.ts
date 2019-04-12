@@ -1,5 +1,3 @@
-import { getConfigValue, EnvironmentVariable_STANDALONE_SERVER, EnvironmentVariable_STANDALONE_USERNAME, EnvironmentVariable_STANDALONE_PASSWORD, EnvironmentVariable_AZURE_SERVER, EnvironmentVariable_AZURE_USERNAME, EnvironmentVariable_AZURE_PASSWORD, EnvironmentVariable_BDC_SERVER, EnvironmentVariable_BDC_USERNAME, EnvironmentVariable_BDC_PASSWORD } from './utils';
-
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
@@ -42,6 +40,22 @@ connectionProviderMapping[ConnectionProvider.SQLServer] = { name: 'MSSQL', displ
 
 authenticationTypeMapping[AuthenticationType.SqlLogin] = { name: 'SqlLogin', displayName: 'SQL Login' };
 authenticationTypeMapping[AuthenticationType.Windows] = { name: 'Integrated', displayName: 'Windows Authentication' };
+
+export function getConfigValue(name: string): string {
+	let configValue = process.env[name];
+	return configValue ? configValue.toString() : '';
+}
+
+export const EnvironmentVariable_BDC_SERVER: string = 'BDC_BACKEND_HOSTNAME';
+export const EnvironmentVariable_BDC_USERNAME: string = 'BDC_BACKEND_USERNAME';
+export const EnvironmentVariable_BDC_PASSWORD: string = 'BDC_BACKEND_PWD';
+export const EnvironmentVariable_STANDALONE_SERVER: string = 'STANDALONE_SQL';
+export const EnvironmentVariable_STANDALONE_USERNAME: string = 'STANDALONE_SQL_USERNAME';
+export const EnvironmentVariable_STANDALONE_PASSWORD: string = 'STANDALONE_SQL_PWD';
+export const EnvironmentVariable_AZURE_SERVER: string = 'AZURE_SQL';
+export const EnvironmentVariable_AZURE_USERNAME: string = 'AZURE_SQL_USERNAME';
+export const EnvironmentVariable_AZURE_PASSWORD: string = 'AZURE_SQL_PWD';
+export const EnvironmentVariable_PYTHON_PATH: string = 'PYTHON_TEST_PATH';
 
 export class TestServerProfile {
 	constructor(private _profile: ITestServerProfile) { }
@@ -98,11 +112,6 @@ function getEnumMappingEntry(mapping: any, enumValue: any): INameDisplayNamePair
 	} else {
 		throw `Unknown enum type: ${enumValue.toString()}`;
 	}
-}
-
-export async function getDefaultTestingServer(): Promise<TestServerProfile> {
-	let servers = await getTestingServers();
-	return servers[0];
 }
 
 export async function getAzureServer(): Promise<TestServerProfile> {
