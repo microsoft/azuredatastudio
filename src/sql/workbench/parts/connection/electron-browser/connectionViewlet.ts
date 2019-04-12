@@ -32,10 +32,8 @@ import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/la
 export class ConnectionViewlet extends Viewlet implements IConnectionsViewlet {
 
 	private _root: HTMLElement;
-	private _searchBox: InputBox;
 	private _toDisposeViewlet: IDisposable[] = [];
 	private _serverTreeView: ServerTreeView;
-	private _clearSearchAction: ClearSearchAction;
 	private _addServerAction: IAction;
 	private _addServerGroupAction: IAction;
 	private _activeConnectionsFilterAction: ActiveConnectionsFilterAction;
@@ -53,7 +51,6 @@ export class ConnectionViewlet extends Viewlet implements IConnectionsViewlet {
 
 		super(VIEWLET_ID, configurationService, layoutService, telemetryService, _themeService, storageService);
 
-		this._clearSearchAction = this._instantiationService.createInstance(ClearSearchAction, ClearSearchAction.ID, ClearSearchAction.LABEL, this);
 		this._addServerAction = this._instantiationService.createInstance(AddServerAction,
 			AddServerAction.ID,
 			AddServerAction.LABEL);
@@ -79,24 +76,6 @@ export class ConnectionViewlet extends Viewlet implements IConnectionsViewlet {
 		super.create(parent);
 		this._root = parent;
 		const viewletContainer = DOM.append(parent, DOM.$('div.server-explorer-viewlet'));
-		const searchBoxContainer = DOM.append(viewletContainer, DOM.$('div.search-box'));
-		this._searchBox = new InputBox(
-			searchBoxContainer,
-			null,
-			{
-				placeholder: localize('Search server names', 'Search server names'),
-				actions: [this._clearSearchAction],
-				ariaLabel: localize('Search server names', 'Search server names')
-			}
-		);
-
-		this._searchBox.onDidChange(() => {
-			this.search(this._searchBox.value);
-		});
-
-		// Theme styler
-		this._toDisposeViewlet.push(attachInputBoxStyler(this._searchBox, this._themeService));
-
 		const viewContainer = DOM.append(viewletContainer, DOM.$('div.object-explorer-view'));
 		this._serverTreeView.renderBody(viewContainer).then(undefined, error => {
 			warn('render registered servers: ' + error);
@@ -105,7 +84,6 @@ export class ConnectionViewlet extends Viewlet implements IConnectionsViewlet {
 
 	public search(value: string): void {
 		if (value) {
-			this._clearSearchAction.enabled = true;
 			this._serverTreeView.searchTree(value);
 		} else {
 			this.clearSearch();
@@ -129,7 +107,6 @@ export class ConnectionViewlet extends Viewlet implements IConnectionsViewlet {
 	}
 
 	public layout({ height, width }: DOM.Dimension): void {
-		this._searchBox.layout();
 		this._serverTreeView.layout(height - 36); // account for search box
 		DOM.toggleClass(this._root, 'narrow', width <= 350);
 	}
@@ -140,9 +117,6 @@ export class ConnectionViewlet extends Viewlet implements IConnectionsViewlet {
 
 	public clearSearch() {
 		this._serverTreeView.refreshTree();
-		this._searchBox.value = '';
-		this._clearSearchAction.enabled = false;
-		this._searchBox.focus();
 	}
 
 	public dispose(): void {
