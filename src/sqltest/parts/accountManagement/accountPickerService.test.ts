@@ -71,7 +71,8 @@ suite('Account picker service tests', () => {
 			displayInfo: {
 				contextualDisplayName: 'Microsoft Account',
 				accountType: 'microsoft',
-				displayName: 'Account 1'
+				displayName: 'Account 1',
+				userId: 'user@email.com'
 			},
 			properties: [],
 			isStale: false
