@@ -175,13 +175,13 @@ export class JupyterController implements vscode.Disposable {
 	}
 
 	private async handleDependenciesReinstallation(): Promise<void> {
-		if (await this.confirmReinstall()) {
-			this._jupyterInstallation = await JupyterServerInstallation.getInstallation(
-				this.extensionContext.extensionPath,
-				this.outputChannel,
-				this.apiWrapper,
-				undefined,
-				true);
+		try {
+			let doReinstall = await this.confirmReinstall();
+			if (doReinstall) {
+				await this._jupyterInstallation.startInstallProcess(true);
+			}
+		} catch (err) {
+			this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
 		}
 	}
 

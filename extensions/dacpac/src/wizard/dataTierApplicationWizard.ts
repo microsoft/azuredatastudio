@@ -94,7 +94,6 @@ export class DataTierApplicationWizard {
 
 			// don't open the wizard if connection dialog is cancelled
 			if (!this.connection) {
-				vscode.window.showErrorMessage(localize('dacfx.needConnection', 'Please connect to a server before using this wizard.'));
 				return;
 			}
 		}

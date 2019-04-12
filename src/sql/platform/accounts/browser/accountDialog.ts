@@ -32,7 +32,7 @@ import { AddAccountAction } from 'sql/platform/accounts/common/accountActions';
 import { AccountListRenderer, AccountListDelegate } from 'sql/platform/accounts/browser/accountListRenderer';
 import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/platform/accounts/common/eventTypes';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
-import * as TelemetryKeys from 'sql/common/telemetryKeys';
+import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 
 class AccountPanel extends ViewletPanel {
@@ -273,9 +273,9 @@ export class AccountDialog extends Modal {
 			AddAccountAction,
 			newProvider.addedProvider.id
 		);
-		addAccountAction.addAccountCompleteEvent(() => { this.hideSpinner(); });
-		addAccountAction.addAccountErrorEvent(msg => { this._onAddAccountErrorEmitter.fire(msg); });
-		addAccountAction.addAccountStartEvent(() => { this.showSpinner(); });
+		addAccountAction.addAccountCompleteEvent(() => this.spinner = false);
+		addAccountAction.addAccountErrorEvent(msg => this._onAddAccountErrorEmitter.fire(msg));
+		addAccountAction.addAccountStartEvent(() => this.spinner = true);
 
 		let providerView = new AccountPanel(
 			{

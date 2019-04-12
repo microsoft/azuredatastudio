@@ -11,7 +11,7 @@ import { APP_BASE_HREF, CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 
-import { IBootstrapParams, ISelector, providerIterator } from 'sql/services/bootstrap/bootstrapService';
+import { IBootstrapParams, ISelector, providerIterator } from 'sql/platform/bootstrap/node/bootstrapService';
 import { BackupComponent } from 'sql/parts/disasterRecovery/backup/backup.component';
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';

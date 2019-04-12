@@ -10,7 +10,7 @@ import { PlanXmlParser, PlanNode } from 'sql/parts/queryPlan/planXmlParser';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { attachTableStyler } from 'sql/platform/theme/common/styler';
-import { IQueryComponentParams } from 'sql/services/bootstrap/bootstrapParams';
+import { IQueryComponentParams } from 'sql/platform/bootstrap/node/bootstrapParams';
 import * as GridContentEvents from 'sql/parts/grid/common/gridContentEvents';
 import { DataService } from 'sql/parts/grid/services/dataService';
 import { toDisposableSubscription } from 'sql/base/node/rxjsUtils';

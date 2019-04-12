@@ -3,9 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import 'vs/css!./media/serverGroupDialog';
-import { Builder } from 'sql/base/browser/builder';
+
 import { Checkbox } from 'vs/base/browser/ui/checkbox/checkbox';
 import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import * as DOM from 'vs/base/browser/dom';
@@ -17,19 +16,18 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { localize } from 'vs/nls';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
+import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/workbench/browser/modal/modal';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { ServerGroupViewModel } from 'sql/parts/objectExplorer/serverGroupDialog/serverGroupViewModel';
 import { attachButtonStyler, attachModalDialogStyler } from 'sql/platform/theme/common/styler';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import * as TelemetryKeys from 'sql/common/telemetryKeys';
+import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
-import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 
 export class ServerGroupDialog extends Modal {
-	private _bodyBuilder: Builder;
 	private _addServerButton: Button;
 	private _closeButton: Button;
 	private _colorCheckBoxesMap: Array<{ color: string, checkbox: Checkbox }> = [];
@@ -38,7 +36,7 @@ export class ServerGroupDialog extends Modal {
 	private _groupDescriptionInputBox: InputBox;
 	private _viewModel: ServerGroupViewModel;
 	private _skipGroupNameValidation: boolean = false;
-	private $serverGroupContainer: Builder;
+	private _serverGroupContainer: HTMLElement;
 
 	private _onAddServerGroup = new Emitter<void>();
 	public onAddServerGroup: Event<void> = this._onAddServerGroup.event;
@@ -50,7 +48,7 @@ export class ServerGroupDialog extends Modal {
 	public onCloseEvent: Event<void> = this._onCloseEvent.event;
 
 	constructor(
-		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
+		@ILayoutService layoutService: ILayoutService,
 		@IThemeService themeService: IThemeService,
 		@IContextViewService private _contextViewService: IContextViewService,
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -63,8 +61,8 @@ export class ServerGroupDialog extends Modal {
 	public render() {
 		super.render();
 		attachModalDialogStyler(this, this._themeService);
-		let okLabel = localize('serverGroup.ok', 'OK');
-		let cancelLabel = localize('serverGroup.cancel', 'Cancel');
+		const okLabel = localize('serverGroup.ok', "OK");
+		const cancelLabel = localize('serverGroup.cancel', "Cancel");
 		this._addServerButton = this.addFooterButton(okLabel, () => this.addGroup());
 		this._closeButton = this.addFooterButton(cancelLabel, () => this.cancel());
 		this.registerListeners();
@@ -75,68 +73,56 @@ export class ServerGroupDialog extends Modal {
 	}
 
 	protected renderBody(container: HTMLElement) {
-		new Builder(container).div({ class: 'server-group-dialog' }, (builder) => {
-			this._bodyBuilder = builder;
-		});
+		const body = DOM.append(container, DOM.$('.server-group-dialog'));
+
 		// Connection Group Name
-		let serverGroupNameLabel = localize('connectionGroupName', 'Server group name');
-		this._bodyBuilder.div({ class: 'dialog-label' }, (labelContainer) => {
-			labelContainer.text(serverGroupNameLabel);
-		});
-		this._bodyBuilder.div({ class: 'input-divider' }, (inputCellContainer) => {
-			let errorMessage = localize('MissingGroupNameError', 'Group name is required.');
-			this._groupNameInputBox = new InputBox(inputCellContainer.getHTMLElement(), this._contextViewService, {
-				validationOptions: {
-					validation: (value: string) => !value && !this._skipGroupNameValidation ? ({ type: MessageType.ERROR, content: errorMessage }) : null
-				},
-				ariaLabel: serverGroupNameLabel
-			});
+		const serverGroupNameLabel = localize('connectionGroupName', "Server group name");
+
+		DOM.append(body, DOM.$('.dialog-label')).innerText = serverGroupNameLabel;
+
+		this._groupNameInputBox = new InputBox(DOM.append(body, DOM.$('.input-divider')), this._contextViewService, {
+			validationOptions: {
+				validation: (value: string) => !value && !this._skipGroupNameValidation ? ({ type: MessageType.ERROR, content: localize('MissingGroupNameError', "Group name is required.") }) : null
+			},
+			ariaLabel: serverGroupNameLabel
 		});
 
 		// Connection Group Description
-		let groupDescriptionLabel = localize('groupDescription', 'Group description');
-		this._bodyBuilder.div({ class: 'dialog-label' }, (labelContainer) => {
-			labelContainer.text(groupDescriptionLabel);
-		});
-		this._bodyBuilder.div({ class: 'input-divider' }, (inputCellContainer) => {
-			this._groupDescriptionInputBox = new InputBox(inputCellContainer.getHTMLElement(), this._contextViewService, {
-				ariaLabel: groupDescriptionLabel
-			});
+		const groupDescriptionLabel = localize('groupDescription', "Group description");
+		DOM.append(body, DOM.$('.dialog-label')).innerText = groupDescriptionLabel;
+
+		this._groupDescriptionInputBox = new InputBox(DOM.append(body, DOM.$('.input-divider')), this._contextViewService, {
+			ariaLabel: groupDescriptionLabel
 		});
 
 		// Connection Group Color
-		this._bodyBuilder.div({ class: 'dialog-label' }, (labelContainer) => {
-			let groupColorLabel = localize('groupColor', 'Group color');
-			labelContainer.text(groupColorLabel);
-		});
+		const groupColorLabel = localize('groupColor', "Group color");
+		DOM.append(body, DOM.$('.dialog-label')).innerText = groupColorLabel;
 
-		this._bodyBuilder.div({ class: 'group-color-options' }, (groupColorContainer) => {
-			this.$serverGroupContainer = groupColorContainer;
-			this.fillGroupColors(groupColorContainer.getHTMLElement());
-		});
+		this._serverGroupContainer = DOM.append(body, DOM.$('.group-color-options'));
+		this.fillGroupColors(this._serverGroupContainer);
 
-		this._bodyBuilder.on(DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
-			let event = new StandardKeyboardEvent(e);
+		DOM.addStandardDisposableListener(body, DOM.EventType.KEY_DOWN, (event: StandardKeyboardEvent) => {
 			if (event.equals(KeyMod.Shift | KeyCode.Tab)) {
-				this.preventDefaultKeyboardEvent(e);
+				this.preventDefaultKeyboardEvent(event);
 				this.focusPrevious();
 			} else if (event.equals(KeyCode.Tab)) {
-				this.preventDefaultKeyboardEvent(e);
+				this.preventDefaultKeyboardEvent(event);
 				this.focusNext();
 			} else if (event.equals(KeyCode.RightArrow) || event.equals(KeyCode.LeftArrow)) {
-				this.preventDefaultKeyboardEvent(e);
+				this.preventDefaultKeyboardEvent(event);
 				this.focusNextColor(event.equals(KeyCode.RightArrow));
 			}
 		});
 	}
 
-	private preventDefaultKeyboardEvent(e: KeyboardEvent) {
+	private preventDefaultKeyboardEvent(e: StandardKeyboardEvent) {
 		e.preventDefault();
 		e.stopPropagation();
 	}
 
 	private isFocusOnColors(): boolean {
-		var result = false;
+		let result = false;
 		this._colorCheckBoxesMap.forEach(({ checkbox }) => {
 			if (document.activeElement === checkbox.domNode) {
 				result = true;
@@ -229,9 +215,9 @@ export class ServerGroupDialog extends Modal {
 
 	private fillGroupColors(container: HTMLElement): void {
 		for (let i = 0; i < this._viewModel.colors.length; i++) {
-			let color = this._viewModel.colors[i];
+			const color = this._viewModel.colors[i];
 
-			let colorCheckBox = new Checkbox({
+			const colorCheckBox = new Checkbox({
 				actionClassName: 'server-group-color',
 				title: color,
 				isChecked: false
@@ -277,9 +263,9 @@ export class ServerGroupDialog extends Modal {
 	}
 	public set viewModel(theViewModel: ServerGroupViewModel) {
 		this._viewModel = theViewModel;
-		if (this.$serverGroupContainer) {
-			this.$serverGroupContainer.clearChildren();
-			this.fillGroupColors(this.$serverGroupContainer.getHTMLElement());
+		if (this._serverGroupContainer) {
+			DOM.clearNode(this._serverGroupContainer);
+			this.fillGroupColors(this._serverGroupContainer);
 		}
 	}
 

@@ -15,7 +15,7 @@ import { ITheme, ICssStyleCollector } from 'vs/platform/theme/common/themeServic
 import * as colors from 'vs/platform/theme/common/colorRegistry';
 import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 
-import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
+import { DashboardServiceInterface } from 'sql/workbench/parts/dashboard/services/dashboardServiceInterface.service';
 import { ComponentWithIconBase } from 'sql/parts/modelComponents/componentWithIconBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
 import { StatusIndicator, CardProperties, ActionDescriptor } from 'sql/workbench/api/common/sqlExtHostTypes';

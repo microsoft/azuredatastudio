@@ -2398,6 +2398,7 @@ declare module 'azdata' {
 		navContainer(): ContainerBuilder<NavContainer, any, any>;
 		divContainer(): DivBuilder;
 		flexContainer(): FlexBuilder;
+		splitViewContainer(): SplitViewBuilder;
 		dom(): ComponentBuilder<DomComponent>;
 		card(): ComponentBuilder<CardComponent>;
 		inputBox(): ComponentBuilder<InputBoxComponent>;
@@ -2405,6 +2406,7 @@ declare module 'azdata' {
 		radioButton(): ComponentBuilder<RadioButtonComponent>;
 		webView(): ComponentBuilder<WebViewComponent>;
 		editor(): ComponentBuilder<EditorComponent>;
+		diffeditor(): ComponentBuilder<DiffEditorComponent>;
 		text(): ComponentBuilder<TextComponent>;
 		button(): ComponentBuilder<ButtonComponent>;
 		dropDown(): ComponentBuilder<DropDownComponent>;
@@ -2590,6 +2592,7 @@ declare module 'azdata' {
 	export interface ToolbarComponent {
 		component: Component;
 		title?: string;
+		toolbarSeparatorAfter?: boolean;
 	}
 
 	/**
@@ -4152,6 +4155,11 @@ declare module 'azdata' {
 			 * Default kernel for notebook
 			 */
 			defaultKernel?: nb.IKernelSpec;
+
+			/**
+			 * Optional content used to give an initial notebook state
+			 */
+			initialContent?: nb.INotebookContents | string;
 		}
 
 		/**
@@ -4542,6 +4550,7 @@ declare module 'azdata' {
 			readonly id: string;
 			readonly name: string;
 			readonly supportsIntellisense: boolean;
+			readonly requiresConnection?: boolean;
 			/**
 			 * Test whether the kernel is ready.
 			 */

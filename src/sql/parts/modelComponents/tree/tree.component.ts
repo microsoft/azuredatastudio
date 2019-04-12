@@ -15,7 +15,7 @@ import * as azdata from 'azdata';
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 import { TreeComponentRenderer } from 'sql/parts/modelComponents/tree/treeComponentRenderer';
 import { TreeComponentDataSource } from 'sql/parts/modelComponents/tree/treeDataSource';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';

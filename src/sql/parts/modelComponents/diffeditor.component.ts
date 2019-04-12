@@ -24,11 +24,16 @@ import { SimpleProgressService } from 'vs/editor/standalone/browser/simpleServic
 import { IProgressService } from 'vs/platform/progress/common/progress';
 import { TextDiffEditor } from 'vs/workbench/browser/parts/editor/textDiffEditor';
 import { DiffEditorInput } from 'vs/workbench/common/editor/diffEditorInput';
-import { TextDiffEditorModel} from 'vs/workbench/common/editor/textDiffEditorModel';
+import { TextDiffEditorModel } from 'vs/workbench/common/editor/textDiffEditorModel';
 import { CancellationTokenSource } from 'vs/base/common/cancellation';
 
 @Component({
-	template: '',
+	template: `
+	<div *ngIf="_title">
+		<div style="width: 100%; height:100%; padding-left:3px !important; background: #F4F4F4; border: 1px solid #BFBDBD;">
+			{{_title}}
+		</div>
+	</div>`,
 	selector: 'modelview-diff-editor-component'
 })
 export default class DiffEditorComponent extends ComponentBase implements IComponent, OnDestroy {
@@ -43,6 +48,7 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 	private _isAutoResizable: boolean;
 	private _minimumHeight: number;
 	private _instancetiationService: IInstantiationService;
+	protected _title: string;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
@@ -73,8 +79,8 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 		this.editorUriRight = uri2.toString();
 
 		let cancellationTokenSource = new CancellationTokenSource();
-		let editorinput1 =	this._instantiationService.createInstance(UntitledEditorInput, uri1, false, 'plaintext', '', '');
-		let editorinput2 =	this._instantiationService.createInstance(UntitledEditorInput, uri2, false, 'plaintext', '', '');
+		let editorinput1 = this._instantiationService.createInstance(UntitledEditorInput, uri1, false, 'plaintext', '', '');
+		let editorinput2 = this._instantiationService.createInstance(UntitledEditorInput, uri2, false, 'plaintext', '', '');
 		this._editorInput = this._instantiationService.createInstance(DiffEditorInput, 'MyEditor', 'My description', editorinput1, editorinput2, true);
 		this._editor.setInput(this._editorInput, undefined, cancellationTokenSource.token);
 
@@ -91,7 +97,7 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 		this._register(this._editorModel);
 	}
 
-	private createUri(input:string): URI {
+	private createUri(input: string): URI {
 		let uri = URI.from({ scheme: Schemas.untitled, path: `${this.descriptor.type}-${this.descriptor.id}-${input}` });
 		return uri;
 	}
@@ -152,6 +158,7 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 		}
 		this._isAutoResizable = this.isAutoResizable;
 		this._minimumHeight = this.minimumHeight;
+		this._title = this.title;
 		this.layout();
 		this.validate();
 	}
@@ -211,5 +218,13 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 
 	public set editorUriRight(newValue: string) {
 		this.setPropertyFromUI<azdata.EditorProperties, string>((properties, editorUriRight) => { properties.editorUriRight = editorUriRight; }, newValue);
+	}
+
+	public get title(): string {
+		return this.getPropertyOrDefault<azdata.EditorProperties, string>((props) => props.title, undefined);
+	}
+
+	public set title(newValue: string) {
+		this.setPropertyFromUI<azdata.EditorProperties, string>((properties, title) => { properties.title = title; }, newValue);
 	}
 }

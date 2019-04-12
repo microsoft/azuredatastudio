@@ -239,12 +239,12 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 				if (container.parentElement) {
 					this.viewContainer.removeChild(container);
 				}
-				this.onRemoveItems(new ArrayIterator([item.view.id]));
+				this.onRemoveItems(new ArrayIterator([item.view.id!]));
 			});
 			const disposable = combinedDisposable([onChangeDisposable, containerDisposable]);
 
-			const onAdd = view.onAdd ? () => view.onAdd() : () => { };
-			const onRemove = view.onRemove ? () => view.onRemove() : () => { };
+			const onAdd = view.onAdd ? () => view.onAdd!() : () => { };
+			const onRemove = view.onRemove ? () => view.onRemove!() : () => { };
 
 			const layoutContainer = this.orientation === Orientation.VERTICAL
 				? () => item.container.style.height = `${item.size}px`
@@ -342,12 +342,12 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 			if (container.parentElement) {
 				this.viewContainer.removeChild(container);
 			}
-			this.onRemoveItems(new ArrayIterator([item.view.id]));
+			this.onRemoveItems(new ArrayIterator([item.view.id!]));
 		});
 		const disposable = combinedDisposable([onChangeDisposable, containerDisposable]);
 
-		const onAdd = view.onAdd ? () => view.onAdd() : () => { };
-		const onRemove = view.onRemove ? () => view.onRemove() : () => { };
+		const onAdd = view.onAdd ? () => view.onAdd!() : () => { };
+		const onRemove = view.onRemove ? () => view.onRemove!() : () => { };
 
 		const layoutContainer = this.orientation === Orientation.VERTICAL
 			? () => item.container.style.height = `${item.size}px`
@@ -610,11 +610,11 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 			this.layoutViews();
 		} else {
 			item.size = size;
-			this.updateSize(item.view.id, size);
+			this.updateSize(item.view.id!, size);
 			let top = item.top + item.size;
 			for (let i = index + 1; i < this.viewItems.length; i++) {
 				let currentItem = this.viewItems[i];
-				this.updateTop(currentItem.view.id, top);
+				this.updateTop(currentItem.view.id!, top);
 				top += currentItem.size;
 			}
 			this.relayout(index);

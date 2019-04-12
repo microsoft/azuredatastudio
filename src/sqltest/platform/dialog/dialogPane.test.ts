@@ -9,7 +9,7 @@ import * as assert from 'assert';
 import { Dialog, DialogTab } from 'sql/platform/dialog/dialogTypes';
 import { DialogPane } from 'sql/platform/dialog/dialogPane';
 import { DialogComponentParams } from 'sql/platform/dialog/dialogContainer.component';
-import { bootstrapAngular } from 'sql/services/bootstrap/bootstrapService';
+import { bootstrapAngular } from 'sql/platform/bootstrap/node/bootstrapService';
 
 
 interface BootstrapAngular {

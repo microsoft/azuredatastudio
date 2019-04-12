@@ -17,13 +17,13 @@ import { VirtualizedCollection, OnRangeRenderCompletedEventArgs } from 'angular2
 
 import { IGridDataSet } from 'sql/parts/grid/common/interfaces';
 import * as Services from 'sql/parts/grid/services/sharedServices';
-import { IEditDataComponentParams } from 'sql/services/bootstrap/bootstrapParams';
+import { IEditDataComponentParams } from 'sql/platform/bootstrap/node/bootstrapParams';
 import { GridParentComponent } from 'sql/parts/grid/views/gridParentComponent';
 import { EditDataGridActionProvider } from 'sql/parts/grid/views/editData/editDataGridActions';
 import { error } from 'sql/base/common/log';
 import { clone, mixin } from 'sql/base/common/objects';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
-import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
+import { IBootstrapParams } from 'sql/platform/bootstrap/node/bootstrapService';
 import { RowNumberColumn } from 'sql/base/browser/ui/table/plugins/rowNumberColumn.plugin';
 import { AutoColumnSize } from 'sql/base/browser/ui/table/plugins/autoSizeColumns.plugin';
 import { AdditionalKeyBindings } from 'sql/base/browser/ui/table/plugins/additionalKeyBindings.plugin';

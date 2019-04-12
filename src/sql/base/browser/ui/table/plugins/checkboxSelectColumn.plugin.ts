@@ -8,6 +8,7 @@ import { ICheckboxStyles } from 'vs/base/browser/ui/checkbox/checkbox';
 import * as strings from 'vs/base/common/strings';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
+import { range } from 'vs/base/common/arrays';
 
 export interface ICheckboxSelectColumnOptions extends Slick.PluginOptions, ICheckboxStyles {
 	columnId?: string;
@@ -19,7 +20,7 @@ export interface ICheckboxSelectColumnOptions extends Slick.PluginOptions, IChec
 
 const defaultOptions: ICheckboxSelectColumnOptions = {
 	columnId: '_checkbox_selector',
-	cssClass: null,
+	cssClass: undefined,
 	toolTip: nls.localize('selectDeselectAll', 'Select/Deselect All'),
 	width: 30
 };
@@ -54,7 +55,7 @@ export class CheckboxSelectColumn<T> implements Slick.Plugin<T> {
 	}
 
 	private handleSelectedRowsChanged(e: Event, args: Slick.OnSelectedRowsChangedEventArgs<T>): void {
-		let selectedRows = this._grid.getSelectedRows();
+		const selectedRows = this._grid.getSelectedRows();
 		let lookup = {}, row, i;
 		for (i = 0; i < selectedRows.length; i++) {
 			row = selectedRows[i];
@@ -72,11 +73,11 @@ export class CheckboxSelectColumn<T> implements Slick.Plugin<T> {
 
 		if (!this._options.title) {
 			if (selectedRows.length && selectedRows.length === this._grid.getDataLength()) {
-				this._grid.updateColumnHeader(this._options.columnId,
+				this._grid.updateColumnHeader(this._options.columnId!,
 					strings.format(checkboxTemplate, 'checked'),
 					this._options.toolTip);
 			} else {
-				this._grid.updateColumnHeader(this._options.columnId,
+				this._grid.updateColumnHeader(this._options.columnId!,
 					strings.format(checkboxTemplate, ''),
 					this._options.toolTip);
 			}
@@ -108,7 +109,7 @@ export class CheckboxSelectColumn<T> implements Slick.Plugin<T> {
 
 	private handleClick(e: Event, args: Slick.OnClickEventArgs<T>): void {
 		// clicking on a row select checkbox
-		if (this._grid.getColumns()[args.cell].id === this._options.columnId && jQuery(e.target).is('input[type="checkbox"]')) {
+		if (this._grid.getColumns()[args.cell].id === this._options.columnId && jQuery(e.target!).is('input[type="checkbox"]')) {
 			// if editing, try to commit
 			if (this._grid.getEditorLock().isActive() && !this._grid.getEditorLock().commitCurrentEdit()) {
 				e.preventDefault();
@@ -131,7 +132,7 @@ export class CheckboxSelectColumn<T> implements Slick.Plugin<T> {
 	}
 
 	private handleHeaderClick(e: Event, args: Slick.OnHeaderClickEventArgs<T>): void {
-		if (!this._options.title && args.column.id === this._options.columnId && jQuery(e.target).is('input[type="checkbox"]')) {
+		if (!this._options.title && args.column.id === this._options.columnId && jQuery(e.target!).is('input[type="checkbox"]')) {
 			// if editing, try to commit
 			if (this._grid.getEditorLock().isActive() && !this._grid.getEditorLock().commitCurrentEdit()) {
 				e.preventDefault();
@@ -139,18 +140,15 @@ export class CheckboxSelectColumn<T> implements Slick.Plugin<T> {
 				return;
 			}
 
-			if (jQuery(e.target).is('input[checked]')) {
-				let rows = [];
-				for (let i = 0; i < this._grid.getDataLength(); i++) {
-					rows.push(i);
-				}
+			if (jQuery(e.target!).is('input[checked]')) {
+				const rows = range(this._grid.getDataLength());
 				this._grid.setSelectedRows(rows);
-				this._grid.updateColumnHeader(this._options.columnId,
+				this._grid.updateColumnHeader(this._options.columnId!,
 					strings.format(checkboxTemplate, 'checked'),
 					this._options.toolTip);
 			} else {
 				this._grid.setSelectedRows([]);
-				this._grid.updateColumnHeader(this._options.columnId,
+				this._grid.updateColumnHeader(this._options.columnId!,
 					strings.format(checkboxTemplate, ''), this._options.toolTip);
 				e.stopPropagation();
 				e.stopImmediatePropagation();
@@ -173,11 +171,8 @@ export class CheckboxSelectColumn<T> implements Slick.Plugin<T> {
 	}
 
 	private checkboxSelectionFormatter(row, cell, value, columnDef: Slick.Column<T>, dataContext): string {
-		if (dataContext) {
-			return this._selectedRowsLookup[row]
-				? strings.format(checkboxTemplate, 'checked')
-				: strings.format(checkboxTemplate, '');
-		}
-		return null;
+		return this._selectedRowsLookup[row]
+			? strings.format(checkboxTemplate, 'checked')
+			: strings.format(checkboxTemplate, '');
 	}
 }

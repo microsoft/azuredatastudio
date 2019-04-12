@@ -11,7 +11,7 @@ import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 import {
 	JobStepsViewController, JobStepsViewDataSource, JobStepsViewFilter,
 	JobStepsViewRenderer, JobStepsViewModel
@@ -24,7 +24,7 @@ import { IContextMenuService } from 'vs/platform/contextview/browser/contextView
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import * as TelemetryKeys from 'sql/common/telemetryKeys';
+import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
 
 export const JOBSTEPSVIEW_SELECTOR: string = 'jobstepsview-component';
 

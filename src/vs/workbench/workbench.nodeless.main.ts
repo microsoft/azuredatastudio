@@ -75,8 +75,6 @@ import { ContextViewService } from 'vs/platform/contextview/browser/contextViewS
 // import { ISharedProcessService, SharedProcessService } from 'vs/platform/ipc/electron-browser/sharedProcessService';
 // import { RemoteAuthorityResolverService } from 'vs/platform/remote/electron-browser/remoteAuthorityResolverService';
 // import { IRemoteAuthorityResolverService } from 'vs/platform/remote/common/remoteAuthorityResolver';
-// import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-// import { TelemetryService } from 'vs/platform/telemetry/electron-browser/telemetryService';
 // import { IProductService } from 'vs/platform/product/common/product';
 // import { ProductService } from 'vs/platform/product/node/productService';
 // import { IWindowsService } from 'vs/platform/windows/common/windows';
@@ -93,6 +91,10 @@ import { ContextViewService } from 'vs/platform/contextview/browser/contextViewS
 // import { RelayURLService } from 'vs/platform/url/electron-browser/urlService';
 import { IHeapService, NullHeapService } from 'vs/workbench/services/heap/common/heap';
 import { IBroadcastService, NullBroadcastService } from 'vs/workbench/services/broadcast/common/broadcast';
+import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
+import { TextFileService } from 'vs/workbench/services/textfile/common/textFileService';
+import { ConfigurationResolverService } from 'vs/workbench/services/configurationResolver/browser/configurationResolverService';
+import { IConfigurationResolverService } from 'vs/workbench/services/configurationResolver/common/configurationResolver';
 
 import 'vs/workbench/browser/nodeless.simpleservices';
 import 'vs/platform/dialogs/browser/dialogService';
@@ -102,7 +104,6 @@ import 'vs/workbench/services/bulkEdit/browser/bulkEditService';
 // import 'vs/workbench/services/integrity/node/integrityService';
 import 'vs/workbench/services/keybinding/common/keybindingEditing';
 // import 'vs/workbench/services/textMate/electron-browser/textMateService';
-import 'vs/workbench/services/configurationResolver/browser/configurationResolverService';
 // import 'vs/workbench/services/workspace/electron-browser/workspaceEditingService';
 // import 'vs/workbench/services/extensions/electron-browser/inactiveExtensionUrlHandler';
 import 'vs/workbench/services/decorations/browser/decorationsService';
@@ -114,7 +115,7 @@ import 'vs/workbench/services/preferences/browser/preferencesService';
 import 'vs/workbench/services/output/common/outputChannelModelService';
 import 'vs/workbench/services/configuration/common/jsonEditingService';
 import 'vs/workbench/services/textmodelResolver/common/textModelResolverService';
-import 'vs/workbench/services/textfile/common/textFileService';
+// import 'vs/workbench/services/textfile/node/textFileService';
 import 'vs/workbench/services/dialogs/browser/fileDialogService';
 // import 'vs/workbench/services/dialogs/electron-browser/dialogService';
 // import 'vs/workbench/services/backup/node/backupFileService';
@@ -137,7 +138,9 @@ import 'vs/workbench/services/label/common/labelService';
 // import 'vs/workbench/services/extensions/electron-browser/extensionManagementServerService';
 // import 'vs/workbench/services/remote/electron-browser/remoteAgentServiceImpl';
 import 'vs/workbench/services/notification/common/notificationService';
-
+// import 'vs/workbench/services/heap/node/heap';
+// import 'vs/workbench/services/window/electron-browser/windowService';
+// import 'vs/workbench/services/telemetry/electron-browser/telemetryService';
 
 
 
@@ -159,7 +162,6 @@ registerSingleton(IContextViewService, ContextViewService, true);
 // registerSingleton(ILifecycleService, LifecycleService);
 // registerSingleton(ILocalizationsService, LocalizationsService);
 // registerSingleton(ISharedProcessService, SharedProcessService, true);
-// registerSingleton(ITelemetryService, TelemetryService);
 // registerSingleton(IProductService, ProductService, true);
 // registerSingleton(IWindowsService, WindowsService);
 // registerSingleton(IUpdateService, UpdateService);
@@ -169,8 +171,9 @@ registerSingleton(IContextViewService, ContextViewService, true);
 // registerSingleton(IURLService, RelayURLService);
 registerSingleton(IHeapService, NullHeapService);
 registerSingleton(IBroadcastService, NullBroadcastService);
-
 registerSingleton(IContextMenuService, ContextMenuService);
+registerSingleton(ITextFileService, TextFileService);
+registerSingleton(IConfigurationResolverService, ConfigurationResolverService, true);
 
 //#endregion
 

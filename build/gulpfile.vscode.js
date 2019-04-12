@@ -89,6 +89,8 @@ const vscodeResources = [
 	'out-build/vs/workbench/contrib/welcome/walkThrough/**/*.md',
 	'out-build/vs/workbench/services/files/**/*.exe',
 	'out-build/vs/workbench/services/files/**/*.md',
+	'out-build/vs/workbench/services/files2/**/*.exe',
+	'out-build/vs/workbench/services/files2/**/*.md',
 	'out-build/vs/code/electron-browser/workbench/**',
 	'out-build/vs/code/electron-browser/sharedProcess/sharedProcess.js',
 	'out-build/vs/code/electron-browser/issue/issueReporter.js',
@@ -101,7 +103,7 @@ const vscodeResources = [
 	'out-build/sql/parts/admin/**/*.html',
 	'out-build/sql/parts/connection/connectionDialog/media/*.{gif,png,svg}',
 	'out-build/sql/parts/common/dblist/**/*.html',
-	'out-build/sql/parts/dashboard/**/*.html',
+	'out-build/sql/workbench/parts/dashboard/**/*.html',
 	'out-build/sql/parts/disasterRecovery/**/*.html',
 	'out-build/sql/parts/common/modal/media/**',
 	'out-build/sql/parts/grid/load/lib/**',
@@ -113,7 +115,7 @@ const vscodeResources = [
 	'out-build/sql/parts/jobManagement/common/media/*.svg',
 	'out-build/sql/media/objectTypes/*.svg',
 	'out-build/sql/media/icons/*.svg',
-	'out-build/sql/parts/notebook/media/**/*.svg',
+	'out-build/sql/workbench/parts/notebook/media/**/*.svg',
 	'!**/test/**'
 ];
 
@@ -425,6 +427,8 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 
 			result = es.merge(result, gulp.src('resources/win32/bin/code.sh', { base: 'resources/win32' })
 				.pipe(replace('@@NAME@@', product.nameShort))
+				.pipe(replace('@@PRODNAME@@', product.nameLong))
+				.pipe(replace('@@VERSION@@', version))
 				.pipe(replace('@@COMMIT@@', commit))
 				.pipe(replace('@@APPNAME@@', product.applicationName))
 				.pipe(rename(function (f) { f.basename = product.applicationName; f.extname = ''; })));
@@ -433,6 +437,7 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 				.pipe(rename(product.nameShort + '.VisualElementsManifest.xml')));
 		} else if (platform === 'linux') {
 			result = es.merge(result, gulp.src('resources/linux/bin/code.sh', { base: '.' })
+				.pipe(replace('@@PRODNAME@@', product.nameLong))
 				.pipe(replace('@@NAME@@', product.applicationName))
 				.pipe(rename('bin/' + product.applicationName)));
 		}

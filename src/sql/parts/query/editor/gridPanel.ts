@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import * as pretty from 'pretty-data';
 
@@ -23,7 +22,6 @@ import { CopyKeybind } from 'sql/base/browser/ui/table/plugins/copyKeybind.plugi
 import { AdditionalKeyBindings } from 'sql/base/browser/ui/table/plugins/additionalKeyBindings.plugin';
 import { ITableStyles, ITableMouseEvent } from 'sql/base/browser/ui/table/interfaces';
 import { warn } from 'sql/base/common/log';
-import { $ } from 'sql/base/browser/builder';
 
 import * as azdata from 'azdata';
 
@@ -203,7 +201,7 @@ export class GridPanel extends ViewletPanel {
 		}
 	}
 
-	public resetScrollPosition() : void {
+	public resetScrollPosition(): void {
 		this.splitView.setScrollPosition(this.state.scrollPosition);
 	}
 
@@ -813,7 +811,7 @@ class GridTable<T> extends Disposable implements IView {
 	}
 
 	public dispose() {
-		$(this.container).destroy();
+		this.container.remove();
 		this.table.dispose();
 		this.actionBar.dispose();
 		super.dispose();

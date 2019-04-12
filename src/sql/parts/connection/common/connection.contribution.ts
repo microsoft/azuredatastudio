@@ -7,8 +7,8 @@ import { EditorDescriptor, IEditorRegistry, Extensions as EditorExtensions } fro
 import { IConfigurationRegistry, Extensions as ConfigExtensions } from 'vs/platform/configuration/common/configurationRegistry';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { DashboardEditor } from 'sql/parts/dashboard/dashboardEditor';
-import { DashboardInput } from 'sql/parts/dashboard/dashboardInput';
+import { DashboardEditor } from 'sql/workbench/parts/dashboard/dashboardEditor';
+import { DashboardInput } from 'sql/workbench/parts/dashboard/dashboardInput';
 import { AddServerGroupAction, AddServerAction } from 'sql/parts/objectExplorer/viewlet/connectionTreeAction';
 import { ClearRecentConnectionsAction, GetCurrentConnectionStringAction } from 'sql/parts/connection/common/connectionActions';
 

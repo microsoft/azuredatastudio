@@ -13,7 +13,7 @@ import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import * as DialogHelper from 'sql/workbench/browser/modal/dialogHelper';
 import { Modal } from 'sql/workbench/browser/modal/modal';
 import { attachModalDialogStyler, attachButtonStyler } from 'sql/platform/theme/common/styler';
-import * as TelemetryKeys from 'sql/common/telemetryKeys';
+import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
 import { FileNode } from 'sql/workbench/services/fileBrowser/common/fileNode';
 import { FileBrowserTreeView } from 'sql/workbench/services/fileBrowser/browser/fileBrowserTreeView';
 import { FileBrowserViewModel } from 'sql/workbench/services/fileBrowser/common/fileBrowserViewModel';
@@ -116,7 +116,7 @@ export class FileBrowserDialog extends Modal {
 		this._filePathInputBox.value = expandPath;
 		this._isFolderSelected = true;
 		this.enableOkButton();
-		this.showSpinner();
+		this.spinner = true;
 		this.show();
 
 		this._fileBrowserTreeView = this._instantiationService.createInstance(FileBrowserTreeView);
@@ -134,7 +134,7 @@ export class FileBrowserDialog extends Modal {
 
 	private handleOnAddFileTree(rootNode: FileNode, selectedNode: FileNode, expandedNodes: FileNode[]) {
 		this.updateFileTree(rootNode, selectedNode, expandedNodes);
-		this.hideSpinner();
+		this.spinner = false;
 	}
 
 	private enableOkButton() {
@@ -207,7 +207,7 @@ export class FileBrowserDialog extends Modal {
 	}
 
 	private onFilterSelectChanged(filterIndex) {
-		this.showSpinner();
+		this.spinner = true;
 		this._viewModel.openFileBrowser(filterIndex, true);
 	}
 

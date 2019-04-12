@@ -8,8 +8,6 @@ export interface IRowNumberColumnOptions {
 	cssClass?: string;
 }
 
-const sizePerDigit = 15;
-
 export class RowNumberColumn<T> implements Slick.Plugin<T> {
 	private handler = new Slick.EventHandler();
 	private grid: Slick.Grid<T>;
@@ -63,11 +61,7 @@ export class RowNumberColumn<T> implements Slick.Plugin<T> {
 	}
 
 	private formatter(row, cell, value, columnDef: Slick.Column<T>, dataContext): string {
-		if (dataContext) {
-			// row is zero-based, we need make it 1 based for display in the result grid
-			//
-			return `<span>${row + 1}</span>`;
-		}
-		return null;
+		// row is zero-based, we need make it 1 based for display in the result grid
+		return `<span>${row + 1}</span>`;
 	}
 }

@@ -101,9 +101,10 @@ async function openNotebook(content: azdata.nb.INotebookContents, kernelMetadata
 	let notebookConfig = vscode.workspace.getConfiguration('notebook');
 	notebookConfig.update('pythonPath', getConfigValue(EnvironmentVariable_PYTHON_PATH), 1);
 	let server = await getBdcServer();
+	assert(server && server.serverName, 'No server could be found in openNotebook');
 	await connectToServer(server, 6000);
-	let pythonNotebook = Object.assign({}, content, { metadata: kernelMetadata });
-	let uri = writeNotebookToFile(pythonNotebook, testName);
+	let notebookJson = Object.assign({}, content, { metadata: kernelMetadata });
+	let uri = writeNotebookToFile(notebookJson, testName);
 	console.log(uri);
 	let notebook = await azdata.nb.showNotebookDocument(uri);
 	console.log('Notebook is opened');

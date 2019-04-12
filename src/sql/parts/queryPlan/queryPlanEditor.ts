@@ -16,8 +16,8 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { IMetadataService } from 'sql/platform/metadata/common/metadataService';
 import { IScriptingService } from 'sql/platform/scripting/common/scriptingService';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
-import { bootstrapAngular } from 'sql/services/bootstrap/bootstrapService';
-import { IQueryPlanParams } from 'sql/services/bootstrap/bootstrapParams';
+import { bootstrapAngular } from 'sql/platform/bootstrap/node/bootstrapService';
+import { IQueryPlanParams } from 'sql/platform/bootstrap/node/bootstrapParams';
 import { QUERYPLAN_SELECTOR } from 'sql/parts/queryPlan/queryPlan.component';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';

@@ -7,7 +7,7 @@ import { NgModule, Inject, forwardRef, ApplicationRef, ComponentFactoryResolver,
 import { APP_BASE_HREF, CommonModule } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
 
-import { IBootstrapParams, ISelector, providerIterator } from 'sql/services/bootstrap/bootstrapService';
+import { IBootstrapParams, ISelector, providerIterator } from 'sql/platform/bootstrap/node/bootstrapService';
 import { QueryPlanComponent } from 'sql/parts/queryPlan/queryPlan.component';
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';

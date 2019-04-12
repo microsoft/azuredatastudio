@@ -5,7 +5,7 @@
 'use strict';
 
 import { nb, IConnectionProfile } from 'azdata';
-import * as vsExtTypes from 'vs/workbench/api/node/extHostTypes';
+import * as vsExtTypes from 'vs/workbench/api/common/extHostTypes';
 
 // SQL added extension host types
 export enum ServiceOptionType {
@@ -465,6 +465,7 @@ export interface INotebookKernelDetails {
 	readonly id: string;
 	readonly name: string;
 	readonly supportsIntellisense: boolean;
+	readonly requiresConnection: boolean;
 	readonly info?: any;
 }
 
