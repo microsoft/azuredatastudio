@@ -11,7 +11,7 @@ import {
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { addDisposableListener, EventType } from 'vs/base/browser/dom';
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
