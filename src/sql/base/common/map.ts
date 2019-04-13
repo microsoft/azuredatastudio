@@ -24,19 +24,23 @@ export class ReverseLookUpMap<K, V> {
 	}
 
 	public delete(key: K): boolean {
-		let reverseKey = this.forward.get(key);
-		return this.forward.delete(key) && this.reverse.delete(reverseKey);
+		const reverseKey = this.forward.get(key);
+		if (key && reverseKey) {
+			return this.forward.delete(key) && this.reverse.delete(reverseKey);
+		} else {
+			return false;
+		}
 	}
 
-    public forEach(callbackfn: (value: V, index: K, map: Map<K, V>) => void, thisArg?: any): void {
+		public forEach(callbackfn: (value: V, index: K, map: Map<K, V>) => void, thisArg?: any): void {
 		this.forward.forEach(callbackfn, thisArg);
 	}
 
-	public get(key: K): V {
+	public get(key: K): V | undefined {
 		return this.forward.get(key);
 	}
 
-	public reverseGet(key: V): K {
+	public reverseGet(key: V): K | undefined {
 		return this.reverse.get(key);
 	}
 
