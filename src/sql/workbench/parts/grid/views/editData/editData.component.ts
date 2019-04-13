@@ -3,25 +3,20 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
-import 'vs/css!sql/parts/grid/media/slickColorTheme';
-import 'vs/css!sql/parts/grid/media/flexbox';
-import 'vs/css!sql/parts/grid/media/styles';
-import 'vs/css!sql/parts/grid/media/slick.grid';
-import 'vs/css!sql/parts/grid/media/slickGrid';
+import 'vs/css!sql/workbench/parts/grid/media/flexbox';
+import 'vs/css!sql/workbench/parts/grid/media/styles';
 import 'vs/css!./media/editData';
 
 import { ElementRef, ChangeDetectorRef, OnInit, OnDestroy, Component, Inject, forwardRef, EventEmitter } from '@angular/core';
-import { VirtualizedCollection, OnRangeRenderCompletedEventArgs } from 'angular2-slickgrid';
+import { VirtualizedCollection } from 'angular2-slickgrid';
 
-import { IGridDataSet } from 'sql/parts/grid/common/interfaces';
-import * as Services from 'sql/parts/grid/services/sharedServices';
+import { IGridDataSet } from 'sql/workbench/parts/grid/common/interfaces';
+import * as Services from 'sql/base/browser/ui/table/formatters';
 import { IEditDataComponentParams } from 'sql/platform/bootstrap/node/bootstrapParams';
-import { GridParentComponent } from 'sql/parts/grid/views/gridParentComponent';
-import { EditDataGridActionProvider } from 'sql/parts/grid/views/editData/editDataGridActions';
+import { GridParentComponent } from 'sql/workbench/parts/grid/views/gridParentComponent';
+import { EditDataGridActionProvider } from 'sql/workbench/parts/grid/views/editData/editDataGridActions';
 import { error } from 'sql/base/common/log';
-import { clone, mixin } from 'sql/base/common/objects';
+import { clone } from 'sql/base/common/objects';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { IBootstrapParams } from 'sql/platform/bootstrap/node/bootstrapService';
 import { RowNumberColumn } from 'sql/base/browser/ui/table/plugins/rowNumberColumn.plugin';
@@ -96,7 +91,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		@Inject(forwardRef(() => ChangeDetectorRef)) cd: ChangeDetectorRef,
 		@Inject(IBootstrapParams) params: IEditDataComponentParams,
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
-		@Inject(INotificationService) notificationService: INotificationService,
+		@Inject(INotificationService) private notificationService: INotificationService,
 		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
 		@Inject(IKeybindingService) keybindingService: IKeybindingService,
 		@Inject(IContextKeyService) contextKeyService: IContextKeyService,
@@ -104,7 +99,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		@Inject(IClipboardService) clipboardService: IClipboardService,
 		@Inject(IQueryEditorService) queryEditorService: IQueryEditorService
 	) {
-		super(el, cd, contextMenuService, keybindingService, contextKeyService, configurationService, clipboardService, queryEditorService, notificationService);
+		super(el, cd, contextMenuService, keybindingService, contextKeyService, configurationService, clipboardService, queryEditorService);
 		this._el.nativeElement.className = 'slickgridContainer';
 		this.dataService = params.dataService;
 		this.actionProvider = this.instantiationService.createInstance(EditDataGridActionProvider, this.dataService, this.onGridSelectAll(), this.onDeleteRow(), this.onRevertRow());
@@ -144,8 +139,6 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 			}
 			self._cd.detectChanges();
 		});
-
-		this.dataService.onAngularLoaded();
 	}
 
 	protected initShortcuts(shortcuts: { [name: string]: Function }): void {
