@@ -15,7 +15,7 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import * as Constants from 'sql/platform/connection/common/constants';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
-import { Dropdown } from 'sql/base/browser/ui/editableDropdown/dropdown';
+import { Dropdown } from 'sql/base/parts/editableDropdown/browser/dropdown';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';

@@ -7,7 +7,7 @@ import { ElementRef, Component, Inject, forwardRef, OnDestroy, Input, OnInit } f
 import { Subscription, Subject } from 'rxjs/Rx';
 
 import { PlanXmlParser, PlanNode } from 'sql/parts/queryPlan/planXmlParser';
-import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
+import { TabChild } from 'sql/base/electron-browser/ui/panel/tab.component';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { IQueryComponentParams } from 'sql/platform/bootstrap/node/bootstrapParams';

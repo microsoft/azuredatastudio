@@ -12,10 +12,10 @@ import { DashboardServiceInterface } from 'sql/workbench/parts/dashboard/service
 import { CommonServiceInterface, SingleConnectionManagementService } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 import { WidgetConfig, TabConfig, TabSettingConfig } from 'sql/workbench/parts/dashboard/common/dashboardWidget';
 import { IPropertiesConfig } from 'sql/workbench/parts/dashboard/pages/serverDashboardPage.contribution';
-import { PanelComponent } from 'sql/base/browser/ui/panel/panel.component';
+import { PanelComponent } from 'sql/base/electron-browser/ui/panel/panel.component';
 import { IDashboardRegistry, Extensions as DashboardExtensions, IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
 import { PinUnpinTabAction, AddFeatureTabAction } from './actions';
-import { TabComponent, TabChild } from 'sql/base/browser/ui/panel/tab.component';
+import { TabComponent, TabChild } from 'sql/base/electron-browser/ui/panel/tab.component';
 import { AngularEventType, IAngularEventingService } from 'sql/platform/angularEventing/common/angularEventingService';
 import { DashboardTab, IConfigModifierCollection } from 'sql/workbench/parts/dashboard/common/interfaces';
 import * as dashboardHelper from 'sql/workbench/parts/dashboard/common/dashboardHelper';

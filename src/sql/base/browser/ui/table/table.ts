@@ -7,7 +7,6 @@ import 'vs/css!./media/table';
 import { TableDataView } from './tableDataView';
 import { IDisposableDataProvider, ITableSorter, ITableMouseEvent, ITableConfiguration, ITableStyles } from 'sql/base/browser/ui/table/interfaces';
 
-import { IThemable } from 'vs/platform/theme/common/styler';
 import * as DOM from 'vs/base/browser/dom';
 import { mixin } from 'vs/base/common/objects';
 import { IDisposable } from 'vs/base/common/lifecycle';
@@ -24,7 +23,7 @@ function getDefaultOptions<T>(): Slick.GridOptions<T> {
 	};
 }
 
-export class Table<T extends Slick.SlickData> extends Widget implements IThemable, IDisposable {
+export class Table<T extends Slick.SlickData> extends Widget implements IDisposable {
 	private styleElement: HTMLStyleElement;
 	private idPrefix: string;
 

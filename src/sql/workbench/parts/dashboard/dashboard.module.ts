@@ -44,8 +44,8 @@ import { WidgetContent } from 'sql/workbench/parts/dashboard/contents/widgetCont
 import { ModelViewContent } from 'sql/parts/modelComponents/modelViewContent.component';
 import { ModelComponentWrapper } from 'sql/parts/modelComponents/modelComponentWrapper.component';
 import { WebviewContent } from 'sql/workbench/parts/dashboard/contents/webviewContent.component';
-import { BreadcrumbComponent } from 'sql/base/browser/ui/breadcrumb/breadcrumb.component';
-import { IBreadcrumbService } from 'sql/base/browser/ui/breadcrumb/interfaces';
+import { BreadcrumbComponent } from 'sql/base/electron-browser/ui/breadcrumb/breadcrumb.component';
+import { IBreadcrumbService } from 'sql/base/electron-browser/ui/breadcrumb/interfaces';
 import { DashboardHomeContainer } from 'sql/workbench/parts/dashboard/containers/dashboardHomeContainer.component';
 import { ControlHostContent } from 'sql/workbench/parts/dashboard/contents/controlHostContent.component';
 import { DashboardControlHostContainer } from 'sql/workbench/parts/dashboard/containers/dashboardControlHostContainer.component';
@@ -55,10 +55,10 @@ import { AlertsViewComponent } from 'sql/parts/jobManagement/views/alertsView.co
 import { JobHistoryComponent } from 'sql/parts/jobManagement/views/jobHistory.component';
 import { OperatorsViewComponent } from 'sql/parts/jobManagement/views/operatorsView.component';
 import { ProxiesViewComponent } from 'sql/parts/jobManagement/views/proxiesView.component';
-import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox.component';
-import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox.component';
-import { EditableDropDown } from 'sql/base/browser/ui/editableDropdown/editableDropdown.component';
-import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox.component';
+import { Checkbox } from 'sql/base/electron-browser/ui/checkbox/checkbox.component';
+import { SelectBox } from 'sql/platform/ui/electron-browser/selectBox/selectBox.component';
+import { EditableDropDown } from 'sql/platform/ui/electron-browser/editableDropdown/editableDropdown.component';
+import { InputBox } from 'sql/base/electron-browser/ui/inputBox/inputBox.component';
 import LoadingSpinner from 'sql/parts/modelComponents/loadingSpinner.component';
 
 const baseComponents = [DashboardHomeContainer, DashboardComponent, DashboardWidgetWrapper, DashboardWebviewContainer,
@@ -68,9 +68,9 @@ const baseComponents = [DashboardHomeContainer, DashboardComponent, DashboardWid
 	DashboardModelViewContainer, ModelComponentWrapper, Checkbox, EditableDropDown, SelectBox, InputBox, LoadingSpinner];
 
 /* Panel */
-import { PanelModule } from 'sql/base/browser/ui/panel/panel.module';
+import { PanelModule } from 'sql/base/electron-browser/ui/panel/panel.module';
 
-import { ScrollableModule } from 'sql/base/browser/ui/scrollable/scrollable.module';
+import { ScrollableModule } from 'sql/base/electron-browser/ui/scrollable/scrollable.module';
 
 /* Pages */
 import { ServerDashboardPage } from 'sql/workbench/parts/dashboard/pages/serverDashboardPage.component';

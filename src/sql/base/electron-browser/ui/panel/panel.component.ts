@@ -8,10 +8,8 @@ import {
 	Input, EventEmitter, Output, ViewChild, ElementRef
 } from '@angular/core';
 
-import './panelStyles';
-
-import { TabComponent } from './tab.component';
-import { ScrollableDirective } from 'sql/base/browser/ui/scrollable/scrollable.directive';
+import { TabComponent } from 'sql/base/electron-browser/ui/panel/tab.component';
+import { ScrollableDirective } from 'sql/base/electron-browser/ui/scrollable/scrollable.directive';
 import { subscriptionToDisposable } from 'sql/base/node/lifecycle';
 
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
@@ -19,7 +17,7 @@ import { Action } from 'vs/base/common/actions';
 import * as types from 'vs/base/common/types';
 import { mixin } from 'vs/base/common/objects';
 import { Disposable } from 'vs/base/common/lifecycle';
-import { ScrollbarVisibility } from 'vs/editor/common/standalone/standaloneEnums';
+import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 
 export interface IPanelOptions {
 	/**
@@ -49,7 +47,7 @@ let idPool = 0;
 		<div class="tabbedPanel fullsize" [ngClass]="options.layout === NavigationBarLayout.vertical ? 'vertical' : 'horizontal'">
 			<div *ngIf="!options.showTabsWhenOne ? _tabs.length !== 1 : true" class="composite title">
 				<div class="tabContainer">
-					<div class="tabList" role="tablist" scrollable [horizontalScroll]="ScrollbarVisibility.Auto" [verticalScroll]="ScrollbarVisibility.Hidden" [scrollYToX]="true">
+					<div class="tabList" role="tablist" scrollable [horizontalScroll]="AutoScrollbarVisibility" [verticalScroll]="HiddenScrollbarVisibility" [scrollYToX]="true">
 						<div role="presentation" *ngFor="let tab of _tabs">
 							<tab-header role="presentation" [active]="_activeTab === tab" [tab]="tab" [showIcon]="options.showIcon" (onSelectTab)='selectTab($event)' (onCloseTab)='closeTab($event)'></tab-header>
 						</div>
@@ -81,7 +79,8 @@ export class PanelComponent extends Disposable {
 	private _actionbar: ActionBar;
 	private _mru: TabComponent[];
 
-	protected ScrollbarVisibility = ScrollbarVisibility; // used by angular template
+	protected AutoScrollbarVisibility = ScrollbarVisibility.Auto; // used by angular template
+	protected HiddenScrollbarVisibility = ScrollbarVisibility.Hidden; // used by angular template
 	protected NavigationBarLayout = NavigationBarLayout; // used by angular template
 
 	@ViewChild('panelActionbar', { read: ElementRef }) private _actionbarRef: ElementRef;

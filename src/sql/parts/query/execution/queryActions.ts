@@ -27,7 +27,7 @@ import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { attachEditableDropdownStyler, attachSelectBoxStyler } from 'sql/platform/theme/common/styler';
 import { EventEmitter } from 'sql/base/common/eventEmitter';
-import { Dropdown } from 'sql/base/browser/ui/editableDropdown/dropdown';
+import { Dropdown } from 'sql/base/parts/editableDropdown/browser/dropdown';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 
 /**

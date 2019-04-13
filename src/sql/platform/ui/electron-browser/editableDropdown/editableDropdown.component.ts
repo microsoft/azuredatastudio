@@ -8,7 +8,7 @@ import {
 	Output, OnChanges, SimpleChanges, EventEmitter
 } from '@angular/core';
 
-import { Dropdown, IDropdownOptions } from 'sql/base/browser/ui/editableDropdown/dropdown';
+import { Dropdown, IDropdownOptions } from 'sql/base/parts/editableDropdown/browser/dropdown';
 import { AngularDisposable } from 'sql/base/node/lifecycle';
 import { attachEditableDropdownStyler } from 'sql/platform/theme/common/styler';
 

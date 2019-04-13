@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IThemable } from 'vs/platform/theme/common/styler';
 import { Event, Emitter } from 'vs/base/common/event';
 import * as DOM from 'vs/base/browser/dom';
 import { IAction } from 'vs/base/common/actions';
@@ -45,7 +44,7 @@ const defaultOptions: IPanelOptions = {
 
 export type PanelTabIdentifier = string;
 
-export class TabbedPanel extends Disposable implements IThemable {
+export class TabbedPanel extends Disposable {
 	private _tabMap = new Map<PanelTabIdentifier, IInternalPanelTab>();
 	private _shownTabId?: PanelTabIdentifier;
 	public readonly headersize = 35;

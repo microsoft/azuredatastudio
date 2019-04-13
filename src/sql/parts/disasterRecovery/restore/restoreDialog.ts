@@ -37,7 +37,7 @@ import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
 import * as BackupConstants from 'sql/parts/disasterRecovery/backup/constants';
 import { RestoreViewModel, RestoreOptionParam, SouceDatabaseNamesParam } from 'sql/parts/disasterRecovery/restore/restoreViewModel';
 import * as FileValidationConstants from 'sql/workbench/services/fileBrowser/common/fileValidationServiceConstants';
-import { Dropdown } from 'sql/base/browser/ui/editableDropdown/dropdown';
+import { Dropdown } from 'sql/base/parts/editableDropdown/browser/dropdown';
 import { TabbedPanel, PanelTabIdentifier } from 'sql/base/browser/ui/panel/panel';
 import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';

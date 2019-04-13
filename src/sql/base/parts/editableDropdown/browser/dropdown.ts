@@ -22,6 +22,7 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
+import { ITree } from 'vs/base/parts/tree/browser/tree';
 
 export interface IDropdownOptions extends IDropdownStyles {
 	/**
@@ -78,7 +79,7 @@ export class Dropdown extends Disposable {
 	private _inputContainer: HTMLElement;
 	private _treeContainer: HTMLElement;
 	private _input: InputBox;
-	private _tree: Tree;
+	private _tree: ITree;
 	private _options: IDropdownOptions;
 	private _toggleAction: ToggleDropdownAction;
 	// we have to create our own contextview since otherwise inputbox will override ours
