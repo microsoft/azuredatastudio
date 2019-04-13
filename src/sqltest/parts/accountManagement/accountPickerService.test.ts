@@ -9,9 +9,9 @@ import * as assert from 'assert';
 import * as TypeMoq from 'typemoq';
 import { EventVerifierSingle } from 'sqltest/utils/eventVerifier';
 import { Emitter } from 'vs/base/common/event';
-import { AccountPicker } from 'sql/platform/accountManagement/browser/accountPicker';
-import { AccountPickerService } from 'sql/platform/accountManagement/browser/accountPickerService';
-import { AccountPickerViewModel } from 'sql/platform/accountManagement/common/accountPickerViewModel';
+import { AccountPicker } from 'sql/platform/accounts/browser/accountPicker';
+import { AccountPickerService } from 'sql/platform/accounts/browser/accountPickerService';
+import { AccountPickerViewModel } from 'sql/platform/accounts/common/accountPickerViewModel';
 import { AccountManagementTestService } from 'sqltest/stubs/accountManagementStubs';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 
@@ -71,7 +71,8 @@ suite('Account picker service tests', () => {
 			displayInfo: {
 				contextualDisplayName: 'Microsoft Account',
 				accountType: 'microsoft',
-				displayName: 'Account 1'
+				displayName: 'Account 1',
+				userId: 'user@email.com'
 			},
 			properties: [],
 			isStale: false

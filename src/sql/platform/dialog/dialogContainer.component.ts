@@ -8,7 +8,7 @@
 import 'vs/css!./media/dialogModal';
 import { Component, ViewChild, Inject, forwardRef, ElementRef, AfterViewInit } from '@angular/core';
 import { ModelViewContent } from 'sql/parts/modelComponents/modelViewContent.component';
-import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
+import { IBootstrapParams } from 'sql/platform/bootstrap/node/bootstrapService';
 import { DialogPane } from 'sql/platform/dialog/dialogPane';
 import { ComponentEventType } from 'sql/parts/modelComponents/interfaces';
 import { Event, Emitter } from 'vs/base/common/event';

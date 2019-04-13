@@ -9,7 +9,6 @@ import * as errors from 'vs/base/common/errors';
 import { Emitter, Event } from 'vs/base/common/event';
 import { TernarySearchTree } from 'vs/base/common/map';
 import * as path from 'vs/base/common/path';
-import * as platform from 'vs/base/common/platform';
 import Severity from 'vs/base/common/severity';
 import { URI } from 'vs/base/common/uri';
 import { TextEditorCursorStyle } from 'vs/editor/common/config/editorOptions';
@@ -17,57 +16,60 @@ import { OverviewRulerLane } from 'vs/editor/common/model';
 import * as languageConfiguration from 'vs/editor/common/modes/languageConfiguration';
 import { score } from 'vs/editor/common/modes/languageSelector';
 import * as files from 'vs/platform/files/common/files';
-import pkg from 'vs/platform/product/node/package';
-import product from 'vs/platform/product/node/product';
-import { ExtHostContext, IInitData, IMainContext, MainContext } from 'vs/workbench/api/common/extHost.protocol';
-import { ExtHostApiCommands } from 'vs/workbench/api/node/extHostApiCommands';
-import { ExtHostClipboard } from 'vs/workbench/api/node/extHostClipboard';
-import { ExtHostCommands } from 'vs/workbench/api/node/extHostCommands';
-import { ExtHostComments } from 'vs/workbench/api/node/extHostComments';
-import { ExtHostConfiguration, ExtHostConfigProvider } from 'vs/workbench/api/node/extHostConfiguration';
+import { ExtHostContext, IInitData, IMainContext, MainContext, MainThreadKeytarShape, IEnvironment, MainThreadWindowShape, MainThreadTelemetryShape } from 'vs/workbench/api/common/extHost.protocol';
+import { ExtHostApiCommands } from 'vs/workbench/api/common/extHostApiCommands';
+import { ExtHostClipboard } from 'vs/workbench/api/common/extHostClipboard';
+import { ExtHostCommands } from 'vs/workbench/api/common/extHostCommands';
+import { ExtHostComments } from 'vs/workbench/api/common/extHostComments';
+import { ExtHostConfiguration, ExtHostConfigProvider } from 'vs/workbench/api/common/extHostConfiguration';
 // {{SQL CARBON EDIT}} - Remove ExtHostDebugService
 // import { ExtHostDebugService } from 'vs/workbench/api/node/extHostDebugService';
-import { ExtHostDecorations } from 'vs/workbench/api/node/extHostDecorations';
-import { ExtHostDiagnostics } from 'vs/workbench/api/node/extHostDiagnostics';
-import { ExtHostDialogs } from 'vs/workbench/api/node/extHostDialogs';
-import { ExtHostDocumentContentProvider } from 'vs/workbench/api/node/extHostDocumentContentProviders';
-import { ExtHostDocumentSaveParticipant } from 'vs/workbench/api/node/extHostDocumentSaveParticipant';
-import { ExtHostDocuments } from 'vs/workbench/api/node/extHostDocuments';
-import { ExtHostDocumentsAndEditors } from 'vs/workbench/api/node/extHostDocumentsAndEditors';
-import { ExtensionActivatedByAPI } from 'vs/workbench/api/node/extHostExtensionActivator';
+// {{SQL CARBON EDIT}} - Import product
+import product from 'vs/platform/product/node/product';
+import { ExtHostDecorations } from 'vs/workbench/api/common/extHostDecorations';
+import { ExtHostDiagnostics } from 'vs/workbench/api/common/extHostDiagnostics';
+import { ExtHostDialogs } from 'vs/workbench/api/common/extHostDialogs';
+import { ExtHostDocumentContentProvider } from 'vs/workbench/api/common/extHostDocumentContentProviders';
+import { ExtHostDocumentSaveParticipant } from 'vs/workbench/api/common/extHostDocumentSaveParticipant';
+import { ExtHostDocuments } from 'vs/workbench/api/common/extHostDocuments';
+import { ExtHostDocumentsAndEditors } from 'vs/workbench/api/common/extHostDocumentsAndEditors';
+import { ExtensionActivatedByAPI } from 'vs/workbench/api/common/extHostExtensionActivator';
 import { ExtHostExtensionService } from 'vs/workbench/api/node/extHostExtensionService';
-import { ExtHostFileSystem } from 'vs/workbench/api/node/extHostFileSystem';
-import { ExtHostFileSystemEventService } from 'vs/workbench/api/node/extHostFileSystemEventService';
-import { ExtHostHeapService } from 'vs/workbench/api/node/extHostHeapService';
-import { ExtHostLanguageFeatures, ISchemeTransformer } from 'vs/workbench/api/node/extHostLanguageFeatures';
-import { ExtHostLanguages } from 'vs/workbench/api/node/extHostLanguages';
-import { ExtHostLogService } from 'vs/workbench/api/node/extHostLogService';
-import { ExtHostMessageService } from 'vs/workbench/api/node/extHostMessageService';
-import { ExtHostOutputService } from 'vs/workbench/api/node/extHostOutputService';
-import { ExtHostProgress } from 'vs/workbench/api/node/extHostProgress';
-import { ExtHostQuickOpen } from 'vs/workbench/api/node/extHostQuickOpen';
-import { ExtHostSCM } from 'vs/workbench/api/node/extHostSCM';
+import { ExtHostFileSystem } from 'vs/workbench/api/common/extHostFileSystem';
+import { ExtHostFileSystemEventService } from 'vs/workbench/api/common/extHostFileSystemEventService';
+import { ExtHostHeapService } from 'vs/workbench/api/common/extHostHeapService';
+import { ExtHostLanguageFeatures, ISchemeTransformer } from 'vs/workbench/api/common/extHostLanguageFeatures';
+import { ExtHostLanguages } from 'vs/workbench/api/common/extHostLanguages';
+import { ExtHostLogService } from 'vs/workbench/api/common/extHostLogService';
+import { ExtHostMessageService } from 'vs/workbench/api/common/extHostMessageService';
+import { ExtHostOutputService } from 'vs/workbench/api/common/extHostOutput';
+import { LogOutputChannelFactory } from 'vs/workbench/api/node/extHostOutputService';
+import { ExtHostProgress } from 'vs/workbench/api/common/extHostProgress';
+import { ExtHostQuickOpen } from 'vs/workbench/api/common/extHostQuickOpen';
+import { ExtHostSCM } from 'vs/workbench/api/common/extHostSCM';
 import { ExtHostSearch } from 'vs/workbench/api/node/extHostSearch';
-import { ExtHostStatusBar } from 'vs/workbench/api/node/extHostStatusBar';
-import { ExtHostStorage } from 'vs/workbench/api/node/extHostStorage';
+import { ExtHostStatusBar } from 'vs/workbench/api/common/extHostStatusBar';
+import { ExtHostStorage } from 'vs/workbench/api/common/extHostStorage';
 import { ExtHostTask } from 'vs/workbench/api/node/extHostTask';
 import { ExtHostTerminalService } from 'vs/workbench/api/node/extHostTerminalService';
-import { ExtHostEditors } from 'vs/workbench/api/node/extHostTextEditors';
-import { ExtHostTreeViews } from 'vs/workbench/api/node/extHostTreeViews';
-import * as typeConverters from 'vs/workbench/api/node/extHostTypeConverters';
-import * as extHostTypes from 'vs/workbench/api/node/extHostTypes';
-import { ExtHostUrls } from 'vs/workbench/api/node/extHostUrls';
-import { ExtHostWebviews } from 'vs/workbench/api/node/extHostWebview';
-import { ExtHostWindow } from 'vs/workbench/api/node/extHostWindow';
-import { ExtHostWorkspace } from 'vs/workbench/api/node/extHostWorkspace';
+import { ExtHostEditors } from 'vs/workbench/api/common/extHostTextEditors';
+import { ExtHostTreeViews } from 'vs/workbench/api/common/extHostTreeViews';
+import * as typeConverters from 'vs/workbench/api/common/extHostTypeConverters';
+import * as extHostTypes from 'vs/workbench/api/common/extHostTypes';
+import { ExtHostUrls } from 'vs/workbench/api/common/extHostUrls';
+import { ExtHostWebviews } from 'vs/workbench/api/common/extHostWebview';
+import { ExtHostWindow } from 'vs/workbench/api/common/extHostWindow';
+import { ExtHostWorkspace } from 'vs/workbench/api/common/extHostWorkspace';
 import { throwProposedApiError, checkProposedApiEnabled, nullExtensionDescription } from 'vs/workbench/services/extensions/common/extensions';
 import { ProxyIdentifier } from 'vs/workbench/services/extensions/common/proxyIdentifier';
-import { ExtensionDescriptionRegistry } from 'vs/workbench/services/extensions/node/extensionDescriptionRegistry';
+import { ExtensionDescriptionRegistry } from 'vs/workbench/services/extensions/common/extensionDescriptionRegistry';
 import * as vscode from 'vscode';
 import { ExtensionIdentifier, IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { originalFSPath } from 'vs/base/common/resources';
 import { CLIServer } from 'vs/workbench/api/node/extHostCLIServer';
 import { withNullAsUndefined } from 'vs/base/common/types';
+import { values } from 'vs/base/common/collections';
+import { endsWith } from 'vs/base/common/strings';
 
 export interface IExtensionApiFactory {
 	(extension: IExtensionDescription, registry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): typeof vscode;
@@ -126,7 +128,7 @@ export function createApiFactory(
 	const extHostWindow = rpcProtocol.set(ExtHostContext.ExtHostWindow, new ExtHostWindow(rpcProtocol));
 	rpcProtocol.set(ExtHostContext.ExtHostExtensionService, extensionService);
 	const extHostProgress = rpcProtocol.set(ExtHostContext.ExtHostProgress, new ExtHostProgress(rpcProtocol.getProxy(MainContext.MainThreadProgress)));
-	const extHostOutputService = rpcProtocol.set(ExtHostContext.ExtHostOutputService, new ExtHostOutputService(initData.logsLocation, rpcProtocol));
+	const extHostOutputService = rpcProtocol.set(ExtHostContext.ExtHostOutputService, new ExtHostOutputService(LogOutputChannelFactory, initData.logsLocation, rpcProtocol));
 	rpcProtocol.set(ExtHostContext.ExtHostStorage, extHostStorage);
 	if (initData.remoteAuthority) {
 		const cliServer = new CLIServer(extHostCommands);
@@ -134,7 +136,7 @@ export function createApiFactory(
 	}
 
 	// Check that no named customers are missing
-	const expected: ProxyIdentifier<any>[] = Object.keys(ExtHostContext).map((key) => (<any>ExtHostContext)[key]);
+	const expected: ProxyIdentifier<any>[] = values(ExtHostContext);
 	rpcProtocol.assertRegistered(expected);
 
 	// Other instances
@@ -234,9 +236,10 @@ export function createApiFactory(
 		const env: typeof vscode.env = Object.freeze({
 			get machineId() { return initData.telemetryInfo.machineId; },
 			get sessionId() { return initData.telemetryInfo.sessionId; },
-			get language() { return platform.language!; },
-			get appName() { return product.nameLong; },
+			get language() { return initData.environment.appLanguage; },
+			get appName() { return initData.environment.appName; },
 			get appRoot() { return initData.environment.appRoot!.fsPath; },
+			get uriScheme() { return initData.environment.appUriScheme; },
 			get logLevel() {
 				checkProposedApiEnabled(extension);
 				return typeConverters.LogLevel.to(extHostLogService.getLevel());
@@ -433,12 +436,15 @@ export function createApiFactory(
 			onDidChangeWindowState(listener, thisArg?, disposables?) {
 				return extHostWindow.onDidChangeWindowState(listener, thisArg, disposables);
 			},
+			// {{SQL CARBON EDIT}} Typing needs to be disabled; enabled strict null checks allows the typing once we get there
 			showInformationMessage(message, first, ...rest) {
 				return extHostMessageService.showMessage(extension, Severity.Info, message, first, rest);
 			},
+			// {{SQL CARBON EDIT}} Typing needs to be disabled; enabled strict null checks allows the typing once we get there
 			showWarningMessage(message, first, ...rest) {
 				return extHostMessageService.showMessage(extension, Severity.Warning, message, first, rest);
 			},
+			// {{SQL CARBON EDIT}} Typing needs to be disabled; enabled strict null checks allows the typing once we get there
 			showErrorMessage(message, first, ...rest) {
 				return extHostMessageService.showMessage(extension, Severity.Error, message, first, rest);
 			},
@@ -476,7 +482,7 @@ export function createApiFactory(
 			createWebviewPanel(viewType: string, title: string, showOptions: vscode.ViewColumn | { viewColumn: vscode.ViewColumn, preserveFocus?: boolean }, options: vscode.WebviewPanelOptions & vscode.WebviewOptions): vscode.WebviewPanel {
 				return extHostWebviews.createWebviewPanel(extension, viewType, title, showOptions, options);
 			},
-			createTerminal(nameOrOptions?: vscode.TerminalOptions | string, shellPath?: string, shellArgs?: string[]): vscode.Terminal {
+			createTerminal(nameOrOptions?: vscode.TerminalOptions | string, shellPath?: string, shellArgs?: string[] | string): vscode.Terminal {
 				if (typeof nameOrOptions === 'object') {
 					return extHostTerminalService.createTerminalFromOptions(<vscode.TerminalOptions>nameOrOptions);
 				}
@@ -540,17 +546,17 @@ export function createApiFactory(
 			findFiles: (include, exclude, maxResults?, token?) => {
 				return extHostWorkspace.findFiles(typeConverters.GlobPattern.from(include), typeConverters.GlobPattern.from(withNullAsUndefined(exclude)), maxResults, extension.identifier, token);
 			},
-			findTextInFiles: (query: vscode.TextSearchQuery, optionsOrCallback, callbackOrToken?, token?: vscode.CancellationToken) => {
+			findTextInFiles: (query: vscode.TextSearchQuery, optionsOrCallback: vscode.FindTextInFilesOptions | ((result: vscode.TextSearchResult) => void), callbackOrToken?: vscode.CancellationToken | ((result: vscode.TextSearchResult) => void), token?: vscode.CancellationToken) => {
 				let options: vscode.FindTextInFilesOptions;
 				let callback: (result: vscode.TextSearchResult) => void;
 
 				if (typeof optionsOrCallback === 'object') {
 					options = optionsOrCallback;
-					callback = callbackOrToken;
+					callback = callbackOrToken as (result: vscode.TextSearchResult) => void;
 				} else {
 					options = {};
 					callback = optionsOrCallback;
-					token = callbackOrToken;
+					token = callbackOrToken as vscode.CancellationToken;
 				}
 
 				return extHostWorkspace.findTextInFiles(query, options || {}, callback, extension.identifier, token);
@@ -621,14 +627,10 @@ export function createApiFactory(
 			registerFileSystemProvider(scheme, provider, options) {
 				return extHostFileSystem.registerFileSystemProvider(scheme, provider, options);
 			},
-			registerFileSearchProvider: proposedApiFunction(extension, (scheme, provider) => {
+			registerFileSearchProvider: proposedApiFunction(extension, (scheme: string, provider: vscode.FileSearchProvider) => {
 				return extHostSearch.registerFileSearchProvider(scheme, provider);
 			}),
-			registerSearchProvider: proposedApiFunction(extension, () => {
-				// Temp for live share in Insiders
-				return { dispose: () => { } };
-			}),
-			registerTextSearchProvider: proposedApiFunction(extension, (scheme, provider) => {
+			registerTextSearchProvider: proposedApiFunction(extension, (scheme: string, provider: vscode.TextSearchProvider) => {
 				return extHostSearch.registerTextSearchProvider(scheme, provider);
 			}),
 			registerDocumentCommentProvider: proposedApiFunction(extension, (provider: vscode.DocumentCommentProvider) => {
@@ -643,10 +645,10 @@ export function createApiFactory(
 			registerResourceLabelFormatter: proposedApiFunction(extension, (formatter: vscode.ResourceLabelFormatter) => {
 				return extHostFileSystem.registerResourceLabelFormatter(formatter);
 			}),
-			onDidRenameFile: proposedApiFunction(extension, (listener, thisArg?, disposables?) => {
+			onDidRenameFile: proposedApiFunction(extension, (listener: (e: vscode.FileRenameEvent) => any, thisArg?: any, disposables?: vscode.Disposable[]) => {
 				return extHostFileSystemEvent.onDidRenameFile(listener, thisArg, disposables);
 			}),
-			onWillRenameFile: proposedApiFunction(extension, (listener, thisArg?, disposables?) => {
+			onWillRenameFile: proposedApiFunction(extension, (listener: (e: vscode.FileWillRenameEvent) => any, thisArg?: any, disposables?: vscode.Disposable[]) => {
 				return extHostFileSystemEvent.getOnWillRenameFileEvent(extension)(listener, thisArg, disposables);
 			})
 		};
@@ -880,41 +882,239 @@ class Extension<T> implements vscode.Extension<T> {
 	}
 }
 
-export function initializeExtensionApi(extensionService: ExtHostExtensionService, apiFactory: IExtensionApiFactory, extensionRegistry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): Promise<void> {
-	return extensionService.getExtensionPathIndex().then(trie => defineAPI(apiFactory, trie, extensionRegistry, configProvider));
+interface LoadFunction {
+	(request: string, parent: { filename: string; }, isMain: any): any;
 }
 
-function defineAPI(factory: IExtensionApiFactory, extensionPaths: TernarySearchTree<IExtensionDescription>, extensionRegistry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): void {
+interface INodeModuleFactory {
+	readonly nodeModuleName: string | string[];
+	load(request: string, parent: { filename: string; }, isMain: any, original: LoadFunction): any;
+	alternaiveModuleName?(name: string): string | undefined;
+}
 
-	// each extension is meant to get its own api implementation
-	const extApiImpl = new Map<string, typeof vscode>();
-	let defaultApiImpl: typeof vscode;
+export class NodeModuleRequireInterceptor {
+	public static INSTANCE = new NodeModuleRequireInterceptor();
 
-	const node_module = <any>require.__$__nodeRequire('module');
-	const original = node_module._load;
-	node_module._load = function load(request: string, parent: any, isMain: any) {
-		if (request !== 'vscode') {
-			return original.apply(this, arguments);
+	private readonly _factories: Map<string, INodeModuleFactory>;
+	private readonly _alternatives: ((moduleName: string) => string | undefined)[];
+
+	constructor() {
+		this._factories = new Map<string, INodeModuleFactory>();
+		this._alternatives = [];
+		this._installInterceptor(this._factories, this._alternatives);
+	}
+
+	private _installInterceptor(factories: Map<string, INodeModuleFactory>, alternatives: ((moduleName: string) => string | undefined)[]): void {
+		const node_module = <any>require.__$__nodeRequire('module');
+		const original = node_module._load;
+		node_module._load = function load(request: string, parent: { filename: string; }, isMain: any) {
+			for (let alternativeModuleName of alternatives) {
+				let alternative = alternativeModuleName(request);
+				if (alternative) {
+					request = alternative;
+					break;
+				}
+			}
+			if (!factories.has(request)) {
+				return original.apply(this, arguments);
+			}
+			return factories.get(request)!.load(request, parent, isMain, original);
+		};
+	}
+
+	public register(interceptor: INodeModuleFactory): void {
+		if (Array.isArray(interceptor.nodeModuleName)) {
+			for (let moduleName of interceptor.nodeModuleName) {
+				this._factories.set(moduleName, interceptor);
+			}
+		} else {
+			this._factories.set(interceptor.nodeModuleName, interceptor);
 		}
+		if (typeof interceptor.alternaiveModuleName === 'function') {
+			this._alternatives.push((moduleName) => {
+				return interceptor.alternaiveModuleName!(moduleName);
+			});
+		}
+	}
+}
+
+export class VSCodeNodeModuleFactory implements INodeModuleFactory {
+	public readonly nodeModuleName = 'vscode';
+
+	private readonly _extApiImpl = new Map<string, typeof vscode>();
+	private _defaultApiImpl: typeof vscode;
+
+	constructor(
+		private readonly _apiFactory: IExtensionApiFactory,
+		private readonly _extensionPaths: TernarySearchTree<IExtensionDescription>,
+		private readonly _extensionRegistry: ExtensionDescriptionRegistry,
+		private readonly _configProvider: ExtHostConfigProvider
+	) {
+	}
+
+	public load(request: string, parent: { filename: string; }): any {
 
 		// get extension id from filename and api for extension
-		const ext = extensionPaths.findSubstr(URI.file(parent.filename).fsPath);
+		const ext = this._extensionPaths.findSubstr(URI.file(parent.filename).fsPath);
 		if (ext) {
-			let apiImpl = extApiImpl.get(ExtensionIdentifier.toKey(ext.identifier));
+			let apiImpl = this._extApiImpl.get(ExtensionIdentifier.toKey(ext.identifier));
 			if (!apiImpl) {
-				apiImpl = factory(ext, extensionRegistry, configProvider);
-				extApiImpl.set(ExtensionIdentifier.toKey(ext.identifier), apiImpl);
+				apiImpl = this._apiFactory(ext, this._extensionRegistry, this._configProvider);
+				this._extApiImpl.set(ExtensionIdentifier.toKey(ext.identifier), apiImpl);
 			}
 			return apiImpl;
 		}
 
 		// fall back to a default implementation
-		if (!defaultApiImpl) {
+		if (!this._defaultApiImpl) {
 			let extensionPathsPretty = '';
-			extensionPaths.forEach((value, index) => extensionPathsPretty += `\t${index} -> ${value.identifier.value}\n`);
+			this._extensionPaths.forEach((value, index) => extensionPathsPretty += `\t${index} -> ${value.identifier.value}\n`);
 			console.warn(`Could not identify extension for 'vscode' require call from ${parent.filename}. These are the extension path mappings: \n${extensionPathsPretty}`);
-			defaultApiImpl = factory(nullExtensionDescription, extensionRegistry, configProvider);
+			this._defaultApiImpl = this._apiFactory(nullExtensionDescription, this._extensionRegistry, this._configProvider);
 		}
-		return defaultApiImpl;
-	};
+		return this._defaultApiImpl;
+	}
+}
+
+interface IKeytarModule {
+	getPassword(service: string, account: string): Promise<string | null>;
+	setPassword(service: string, account: string, password: string): Promise<void>;
+	deletePassword(service: string, account: string): Promise<boolean>;
+	findPassword(service: string): Promise<string | null>;
+}
+
+export class KeytarNodeModuleFactory implements INodeModuleFactory {
+	public readonly nodeModuleName: string = 'keytar';
+
+	private alternativeNames: Set<string> | undefined;
+	private _impl: IKeytarModule;
+
+	constructor(mainThreadKeytar: MainThreadKeytarShape, environment: IEnvironment) {
+		if (environment.appRoot) {
+			let appRoot = environment.appRoot.fsPath;
+			if (process.platform === 'win32') {
+				appRoot = appRoot.replace(/\\/g, '/');
+			}
+			if (appRoot[appRoot.length - 1] === '/') {
+				appRoot = appRoot.substr(0, appRoot.length - 1);
+			}
+			this.alternativeNames = new Set();
+			this.alternativeNames.add(`${appRoot}/node_modules.asar/keytar`);
+			this.alternativeNames.add(`${appRoot}/node_modules/keytar`);
+		}
+		this._impl = {
+			getPassword: (service: string, account: string): Promise<string | null> => {
+				return mainThreadKeytar.$getPassword(service, account);
+			},
+			setPassword: (service: string, account: string, password: string): Promise<void> => {
+				return mainThreadKeytar.$setPassword(service, account, password);
+			},
+			deletePassword: (service: string, account: string): Promise<boolean> => {
+				return mainThreadKeytar.$deletePassword(service, account);
+			},
+			findPassword: (service: string): Promise<string | null> => {
+				return mainThreadKeytar.$findPassword(service);
+			}
+		};
+	}
+
+	public load(request: string, parent: { filename: string; }): any {
+		return this._impl;
+	}
+
+	public alternaiveModuleName(name: string): string | undefined {
+		const length = name.length;
+		// We need at least something like: `?/keytar` which requires
+		// more than 7 characters.
+		if (length <= 7 || !this.alternativeNames) {
+			return undefined;
+		}
+		const sep = length - 7;
+		if ((name.charAt(sep) === '/' || name.charAt(sep) === '\\') && endsWith(name, 'keytar')) {
+			name = name.replace(/\\/g, '/');
+			if (this.alternativeNames.has(name)) {
+				return 'keytar';
+			}
+		}
+		return undefined;
+	}
+}
+
+interface OpenOptions {
+	wait: boolean;
+	app: string | string[];
+}
+
+interface IOriginalOpen {
+	(target: string, options?: OpenOptions): Thenable<any>;
+}
+
+interface IOpenModule {
+	(target: string, options?: OpenOptions): Thenable<void>;
+}
+
+export class OpenNodeModuleFactory implements INodeModuleFactory {
+
+	public readonly nodeModuleName: string[] = ['open', 'opn'];
+
+	private _extensionId: string | undefined;
+	private _original: IOriginalOpen;
+	private _impl: IOpenModule;
+
+	constructor(mainThreadWindow: MainThreadWindowShape, private _mainThreadTelemerty: MainThreadTelemetryShape, private readonly _extensionPaths: TernarySearchTree<IExtensionDescription>) {
+		this._impl = (target, options) => {
+			const uri: URI = URI.parse(target);
+			// If we have options use the original method.
+			if (options) {
+				return this.callOriginal(target, options);
+			}
+			if (uri.scheme === 'http' || uri.scheme === 'https') {
+				return mainThreadWindow.$openUri(uri);
+			} else if (uri.scheme === 'mailto') {
+				return mainThreadWindow.$openUri(uri);
+			}
+			return this.callOriginal(target, options);
+		};
+	}
+
+	public load(request: string, parent: { filename: string; }, isMain: any, original: LoadFunction): any {
+		// get extension id from filename and api for extension
+		const extension = this._extensionPaths.findSubstr(URI.file(parent.filename).fsPath);
+		if (extension) {
+			this._extensionId = extension.identifier.value;
+			this.sendShimmingTelemetry();
+		}
+
+		this._original = original(request, parent, isMain);
+		return this._impl;
+	}
+
+	private callOriginal(target: string, options: OpenOptions | undefined): Thenable<any> {
+		this.sendNoForwardTelemetry();
+		return this._original(target, options);
+	}
+
+	private sendShimmingTelemetry(): void {
+		if (!this._extensionId) {
+			return;
+		}
+		/* __GDPR__
+			"shimming.open" : {
+				"extension": { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
+			}
+		*/
+		this._mainThreadTelemerty.$publicLog('shimming.open', { extension: this._extensionId });
+	}
+
+	private sendNoForwardTelemetry(): void {
+		if (!this._extensionId) {
+			return;
+		}
+		/* __GDPR__
+			"shimming.open.call.noForward" : {
+				"extension": { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
+			}
+		*/
+		this._mainThreadTelemerty.$publicLog('shimming.open.call.noForward', { extension: this._extensionId });
+	}
 }

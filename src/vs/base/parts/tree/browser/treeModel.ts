@@ -6,12 +6,9 @@
 import * as Assert from 'vs/base/common/assert';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { IDisposable, combinedDisposable } from 'vs/base/common/lifecycle';
-import * as arrays from 'vs/base/common/arrays';
 import { INavigator } from 'vs/base/common/iterator';
 import * as _ from './tree';
 import { Event, Emitter, EventMultiplexer, Relay } from 'vs/base/common/event';
-// {{SQL CARBON EDIT}}
-import { TreeNode } from 'sql/parts/objectExplorer/common/treeNode';
 
 interface IMap<T> { [id: string]: T; }
 interface IItemMap extends IMap<Item> { }
@@ -375,14 +372,7 @@ export class Item {
 			return result.then(() => {
 				this._setExpanded(true);
 				this._onDidExpand.fire(eventData);
-				// {{SQL CARBON EDIT}} - Original code does not handle the need to refresh children in case previous refreshchildren errored out.
-				if ((this.element instanceof TreeNode) && (this.element.errorStateMessage)) {
-					this.needsChildrenRefresh = true;
-					return false;
-				} // We may need special handling for other types of this.element apart from TreeNode as well.
-				else {
-					return true;
-				}
+				return true;
 			});
 		});
 
@@ -565,19 +555,6 @@ export class Item {
 
 	public intersects(other: Item): boolean {
 		return this.isAncestorOf(other) || other.isAncestorOf(this);
-	}
-
-	public getHierarchy(): Item[] {
-		let result: Item[] = [];
-		let node: Item | null = this;
-
-		do {
-			result.push(node);
-			node = node.parent;
-		} while (node);
-
-		result.reverse();
-		return result;
 	}
 
 	private isAncestorOf(startItem: Item): boolean {
@@ -870,42 +847,6 @@ export class TreeNavigator implements INavigator<Item> {
 	public last(): Item | null {
 		return TreeNavigator.lastDescendantOf(this.start);
 	}
-}
-
-function getRange(one: Item, other: Item): Item[] {
-	let oneHierarchy = one.getHierarchy();
-	let otherHierarchy = other.getHierarchy();
-	let length = arrays.commonPrefixLength(oneHierarchy, otherHierarchy);
-	let item: Item | null = oneHierarchy[length - 1];
-	let nav = item.getNavigator();
-
-	let oneIndex: number | null = null;
-	let otherIndex: number | null = null;
-
-	let index = 0;
-	let result: Item[] = [];
-
-	while (item && (oneIndex === null || otherIndex === null)) {
-		result.push(item);
-
-		if (item === one) {
-			oneIndex = index;
-		}
-		if (item === other) {
-			otherIndex = index;
-		}
-
-		index++;
-		item = nav.next();
-	}
-
-	if (oneIndex === null || otherIndex === null) {
-		return [];
-	}
-
-	let min = Math.min(oneIndex, otherIndex);
-	let max = Math.max(oneIndex, otherIndex);
-	return result.slice(min, max + 1);
 }
 
 export interface IBaseEvent {
@@ -1205,28 +1146,6 @@ export class TreeModel {
 		this.selectAll([element], eventPayload);
 	}
 
-	public selectRange(fromElement: any, toElement: any, eventPayload?: any): void {
-		let fromItem = this.getItem(fromElement);
-		let toItem = this.getItem(toElement);
-
-		if (!fromItem || !toItem) {
-			return;
-		}
-
-		this.selectAll(getRange(fromItem, toItem), eventPayload);
-	}
-
-	public deselectRange(fromElement: any, toElement: any, eventPayload?: any): void {
-		let fromItem = this.getItem(fromElement);
-		let toItem = this.getItem(toElement);
-
-		if (!fromItem || !toItem) {
-			return;
-		}
-
-		this.deselectAll(getRange(fromItem, toItem), eventPayload);
-	}
-
 	public selectAll(elements: any[], eventPayload?: any): void {
 		this.addTraits('selected', elements);
 		let eventData: _.ISelectionEvent = { selection: this.getSelection(), payload: eventPayload };
@@ -1245,12 +1164,6 @@ export class TreeModel {
 
 	public setSelection(elements: any[], eventPayload?: any): void {
 		this.setTraits('selected', elements);
-		let eventData: _.ISelectionEvent = { selection: this.getSelection(), payload: eventPayload };
-		this._onDidSelect.fire(eventData);
-	}
-
-	public toggleSelection(element: any, eventPayload?: any): void {
-		this.toggleTrait('selected', element);
 		let eventData: _.ISelectionEvent = { selection: this.getSelection(), payload: eventPayload };
 		this._onDidSelect.fire(eventData);
 	}
@@ -1321,21 +1234,6 @@ export class TreeModel {
 			this.setSelection([item], eventPayload);
 		} else {
 			this.select(item, eventPayload);
-		}
-	}
-
-	public selectParent(eventPayload?: any, clearSelection: boolean = true): void {
-		let selection = this.getSelection();
-		let item: Item = selection.length > 0 ? selection[0] : this.input;
-		let nav = this.getNavigator(item, false);
-		let parent = nav.parent();
-
-		if (parent) {
-			if (clearSelection) {
-				this.setSelection([parent], eventPayload);
-			} else {
-				this.select(parent, eventPayload);
-			}
 		}
 	}
 
@@ -1510,25 +1408,6 @@ export class TreeModel {
 					delete items[item.id];
 				}
 			}
-		}
-	}
-
-	public hasTrait(trait: string, element: any): boolean {
-		const item = this.getItem(element);
-		return !!(item && item.hasTrait(trait));
-	}
-
-	private toggleTrait(trait: string, element: any): void {
-		let item = this.getItem(element);
-
-		if (!item) {
-			return;
-		}
-
-		if (item.hasTrait(trait)) {
-			this.removeTraits(trait, [element]);
-		} else {
-			this.addTraits(trait, [element]);
 		}
 	}
 

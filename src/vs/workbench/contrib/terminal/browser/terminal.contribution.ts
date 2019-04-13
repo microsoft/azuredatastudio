@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
@@ -263,6 +263,16 @@ configurationRegistry.registerConfiguration({
 			description: nls.localize('terminal.integrated.windowsEnableConpty', "Whether to use ConPTY for Windows terminal process communication (requires Windows 10 build number 18309+). Winpty will be used if this is false."),
 			type: 'boolean',
 			default: true
+		},
+		'terminal.integrated.enableLatencyMitigation': {
+			description: nls.localize('terminal.integrated.enableLatencyMitigation', "Whether to enable the latency mitigation feature for high-latency terminals."),
+			type: 'boolean',
+			default: false
+		},
+		'terminal.integrated.experimentalRefreshOnResume': {
+			description: nls.localize('terminal.integrated.experimentalRefreshOnResume', "An experimental setting that will refresh the terminal renderer when the system is resumed."),
+			type: 'boolean',
+			default: false
 		}
 	}
 });

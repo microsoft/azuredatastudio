@@ -86,7 +86,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 	private _workspaceIgnoredRecommendations: string[] = [];
 	private _extensionsRecommendationsUrl: string;
 	private _disposables: IDisposable[] = [];
-	public loadWorkspaceConfigPromise: Promise<any>;
+	public loadWorkspaceConfigPromise: Promise<void>;
 	private proactiveRecommendationsFetched: boolean = false;
 
 	private readonly _onRecommendationChange = new Emitter<RecommendationChangeNotification>();
@@ -137,7 +137,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 		}
 
 		// {{SQL CARBON EDIT}} disable extension recommendation prompt
-		this.loadWorkspaceConfigPromise = this.getWorkspaceRecommendations();
+		this.loadWorkspaceConfigPromise = this.getWorkspaceRecommendations().then();
 		// .then(() => {
 		// 	this.promptWorkspaceRecommendations();
 		// 	this._modelService.onModelAdded(this.promptFiletypeBasedRecommendations, this, this._disposables);
@@ -349,7 +349,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 	private resolveWorkspaceFolderExtensionConfig(workspaceFolder: IWorkspaceFolder): Promise<IExtensionsConfigContent | null> {
 		const extensionsJsonUri = workspaceFolder.toResource(EXTENSIONS_CONFIG);
 
-		return Promise.resolve(this.fileService.resolveFile(extensionsJsonUri)
+		return Promise.resolve(this.fileService.resolve(extensionsJsonUri)
 			.then(() => this.fileService.resolveContent(extensionsJsonUri))
 			.then(content => <IExtensionsConfigContent>json.parse(content.value), err => null));
 	}
@@ -879,7 +879,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 	/**
 	 * If user has any of the tools listed in product.exeBasedExtensionTips, fetch corresponding recommendations
 	 */
-	private fetchExecutableRecommendations(): Promise<any> {
+	private fetchExecutableRecommendations(): Promise<void> {
 		const homeDir = os.homedir();
 		let foundExecutables: Set<string> = new Set<string>();
 
@@ -897,7 +897,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 			});
 		};
 
-		let promises: Promise<any>[] = [];
+		let promises: Promise<void>[] = [];
 		// Loop through recommended extensions
 		forEach(product.exeBasedExtensionTips, entry => {
 			if (typeof entry.value !== 'object' || !Array.isArray(entry.value['recommendations'])) {
@@ -921,7 +921,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 			}
 		});
 
-		return Promise.all(promises);
+		return Promise.all(promises).then(() => undefined);
 	}
 
 	/**
@@ -1016,17 +1016,18 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 	 * Fetch extension recommendations from currently running experiments
 	 */
 	private fetchExperimentalRecommendations() {
-		// {{SQL CARBON EDIT}} disable experiements
-		// this.experimentService.getExperimentsByType(ExperimentActionType.AddToRecommendations).then(experiments => {
-		// 	(experiments || []).forEach(experiment => {
-		// 		const action = experiment.action;
-		// 		if (action && experiment.state === ExperimentState.Run && action.properties && Array.isArray(action.properties.recommendations) && action.properties.recommendationReason) {
-		// 			action.properties.recommendations.forEach(id => {
-		// 				this._experimentalRecommendations[id] = action.properties.recommendationReason;
-		// 			});
-		// 		}
-		// 	});
-		// });
+		/* // {{SQL CARBON EDIT}} disable experiements
+		this.experimentService.getExperimentsByType(ExperimentActionType.AddToRecommendations).then(experiments => {
+			(experiments || []).forEach(experiment => {
+				const action = experiment.action;
+				if (action && experiment.state === ExperimentState.Run && action.properties && Array.isArray(action.properties.recommendations) && action.properties.recommendationReason) {
+					action.properties.recommendations.forEach((id: string) => {
+						this._experimentalRecommendations[id] = action.properties.recommendationReason;
+					});
+				}
+			});
+		});
+		*/
 	}
 
 	//#endregion

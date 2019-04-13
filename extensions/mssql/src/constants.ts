@@ -13,7 +13,8 @@ export const extensionConfigSectionName = 'mssql';
 
 // DATA PROTOCOL VALUES ///////////////////////////////////////////////////////////
 export const mssqlClusterProviderName = 'mssqlCluster';
-export const hadoopKnoxEndpointName = 'Knox';
+export const hadoopEndpointNameKnox = 'Knox';
+export const hadoopEndpointNameGateway = 'gateway';
 export const protocolVersion = '1.0';
 export const hostPropName = 'host';
 export const userPropName = 'user';
@@ -37,6 +38,7 @@ export const isBigDataClusterProperty = 'isBigDataCluster';
 
 // SERVICE NAMES //////////////////////////////////////////////////////////
 export const ObjectExplorerService = 'objectexplorer';
+export const CmsService = 'cmsService';
 export const objectExplorerPrefix: string = 'objectexplorer://';
 export const ViewType = 'view';
 

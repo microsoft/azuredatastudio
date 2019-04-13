@@ -13,7 +13,7 @@ const localize = nls.loadMessageBundle();
 
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
 import { IConfig, ServerProvider, Events } from 'service-downloader';
-import { ServerOptions, TransportKind } from 'vscode-languageclient';
+import { ServerOptions, TransportKind, LanguageClient } from 'vscode-languageclient';
 
 import * as Constants from './constants';
 import ContextProvider from './contextProvider';
@@ -31,6 +31,8 @@ import { MssqlExtensionApi, MssqlObjectExplorerBrowser } from './api/mssqlapis';
 import { OpenSparkJobSubmissionDialogCommand, OpenSparkJobSubmissionDialogFromFileCommand, OpenSparkJobSubmissionDialogTask } from './sparkFeature/dialog/dialogCommands';
 import { OpenSparkYarnHistoryTask } from './sparkFeature/historyTask';
 import { MssqlObjectExplorerNodeProvider, mssqlOutputChannel } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
+import { CmsService } from './cms/cmsService';
+import { registerSearchServerCommand } from './objectExplorerNodeProvider/command';
 
 const baseConfig = require('./config.json');
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
@@ -38,7 +40,6 @@ const statusView = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.L
 const jupyterNotebookProviderId = 'jupyter';
 const msgSampleCodeDataFrame = localize('msgSampleCodeDataFrame', 'This sample code loads the file into a data frame and shows the first 10 results.');
 
-let untitledCounter = 0;
 
 export async function activate(context: vscode.ExtensionContext): Promise<MssqlExtensionApi> {
 	// lets make sure we support this platform first
@@ -57,6 +58,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 	const credentialsStore = new CredentialStore(config);
 	const resourceProvider = new AzureResourceProvider(config);
 	let languageClient: SqlOpsDataClient;
+	let cmsService: CmsService;
 
 	const serverdownloader = new ServerProvider(config);
 
@@ -83,7 +85,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 	let appContext = new AppContext(context, new ApiWrapper());
 
 	const installationStart = Date.now();
-	serverdownloader.getOrDownloadServer().then(e => {
+	let serverPromise = serverdownloader.getOrDownloadServer().then(e => {
 		const installationComplete = Date.now();
 		let serverOptions = generateServerOptions(e);
 		languageClient = new SqlOpsDataClient(Constants.serviceName, serverOptions, clientOptions);
@@ -109,6 +111,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 
 		let nodeProvider = new MssqlObjectExplorerNodeProvider(prompter, appContext);
 		azdata.dataprotocol.registerObjectExplorerNodeProvider(nodeProvider);
+
+		cmsService = new CmsService(appContext, languageClient);
+
 		activateSparkFeatures(appContext);
 		activateNotebookTask(appContext);
 	}, e => {
@@ -116,6 +121,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 		vscode.window.showErrorMessage('Failed to start Sql tools service');
 	});
 
+	registerSearchServerCommand(appContext);
 	let contextProvider = new ContextProvider();
 	context.subscriptions.push(contextProvider);
 	context.subscriptions.push(credentialsStore);
@@ -136,6 +142,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 					return <any>oeProvider.findSqlClusterNodeByContext(context);
 				}
 			};
+		},
+		getCmsServiceProvider(): Promise<CmsService> {
+			return serverPromise.then(() => cmsService);
 		}
 	};
 	return api;
@@ -173,18 +182,18 @@ function saveProfileAndCreateNotebook(profile: azdata.IConnectionProfile): Promi
 }
 
 function findNextUntitledEditorName(): string {
-	let nextVal = untitledCounter;
+	let nextVal = 0;
 	// Note: this will go forever if it's coded wrong, or you have inifinite Untitled notebooks!
 	while (true) {
-		let title = `Notebook-${nextVal++}`;
-		let hasTextDoc = vscode.workspace.textDocuments.findIndex(doc => doc.isUntitled && doc.fileName === title) > -1;
+		let title = `Notebook-${nextVal}`;
 		let hasNotebookDoc = azdata.nb.notebookDocuments.findIndex(doc => doc.isUntitled && doc.fileName === title) > -1;
-		if (!hasTextDoc && !hasNotebookDoc) {
-			untitledCounter = nextVal;
+		if (!hasNotebookDoc) {
 			return title;
 		}
+		nextVal++;
 	}
 }
+
 async function handleNewNotebookTask(oeContext?: azdata.ObjectExplorerContext, profile?: azdata.IConnectionProfile): Promise<void> {
 	// Ensure we get a unique ID for the notebook. For now we're using a different prefix to the built-in untitled files
 	// to handle this. We should look into improving this in the future

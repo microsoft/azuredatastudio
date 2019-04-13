@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
@@ -119,11 +119,11 @@ registerEditorAction(class extends EditorAction {
 	constructor() {
 		super({
 			id: 'editor.showCallHierarchy',
-			label: localize('title', "Call Hierarchy"),
-			alias: 'Call Hierarchy',
+			label: localize('title', "Peek Call Hierarchy"),
+			alias: 'Peek Call Hierarchy',
 			menuOpts: {
 				group: 'navigation',
-				order: 111
+				order: 1.48
 			},
 			kbOpts: {
 				kbExpr: EditorContextKeys.editorTextFocus,

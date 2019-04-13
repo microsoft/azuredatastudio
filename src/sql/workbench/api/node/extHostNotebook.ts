@@ -8,7 +8,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 
 import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
-import { Disposable } from 'vs/workbench/api/node/extHostTypes';
+import { Disposable } from 'vs/workbench/api/common/extHostTypes';
 import { localize } from 'vs/nls';
 import { URI, UriComponents } from 'vs/base/common/uri';
 
@@ -111,7 +111,8 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 			id: kernel.id,
 			info: kernel.info,
 			name: kernel.name,
-			supportsIntellisense: kernel.supportsIntellisense
+			supportsIntellisense: kernel.supportsIntellisense,
+			requiresConnection: kernel.requiresConnection
 		};
 		return kernelDetails;
 	}

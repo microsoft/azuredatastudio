@@ -3,15 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import 'vs/css!sql/media/icons/common-icons';
 import 'vs/css!./media/profilerFilterDialog';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/workbench/browser/modal/modal';
-import * as TelemetryKeys from 'sql/common/telemetryKeys';
+import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
 import { attachButtonStyler, attachModalDialogStyler, attachInputBoxStyler } from 'sql/platform/theme/common/styler';
 import { KeyCode } from 'vs/base/common/keyCodes';
-import { Builder } from 'sql/base/browser/builder';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
@@ -29,19 +27,19 @@ import { ProfilerFilter, ProfilerFilterClause, ProfilerFilterClauseOperator } fr
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 
 
-const ClearText: string = localize('profilerFilterDialog.clear', 'Clear All');
-const ApplyText: string = localize('profilerFilterDialog.apply', 'Apply');
-const OkText: string = localize('profilerFilterDialog.ok', 'OK');
-const CancelText: string = localize('profilerFilterDialog.cancel', 'Cancel');
-const DialogTitle: string = localize('profilerFilterDialog.title', 'Filters');
-const RemoveText: string = localize('profilerFilterDialog.remove', 'Remove');
-const AddText: string = localize('profilerFilterDialog.add', 'Add');
-const AddClausePromptText: string = localize('profilerFilterDialog.addClauseText', 'Click here to add a clause');
+const ClearText: string = localize('profilerFilterDialog.clear', "Clear All");
+const ApplyText: string = localize('profilerFilterDialog.apply', "Apply");
+const OkText: string = localize('profilerFilterDialog.ok', "OK");
+const CancelText: string = localize('profilerFilterDialog.cancel', "Cancel");
+const DialogTitle: string = localize('profilerFilterDialog.title', "Filters");
+const RemoveText: string = localize('profilerFilterDialog.remove', "Remove");
+const AddText: string = localize('profilerFilterDialog.add', "Add");
+const AddClausePromptText: string = localize('profilerFilterDialog.addClauseText', "Click here to add a clause");
 const TitleIconClass: string = 'icon filterLabel';
 
-const FieldText: string = localize('profilerFilterDialog.fieldColumn', 'Field');
-const OperatorText: string = localize('profilerFilterDialog.operatorColumn', 'Operator');
-const ValueText: string = localize('profilerFilterDialog.valueColumn', 'Value');
+const FieldText: string = localize('profilerFilterDialog.fieldColumn', "Field");
+const OperatorText: string = localize('profilerFilterDialog.operatorColumn', "Operator");
+const ValueText: string = localize('profilerFilterDialog.valueColumn', "Value");
 
 const Equals: string = '=';
 const NotEquals: string = '<>';
@@ -49,18 +47,18 @@ const LessThan: string = '<';
 const LessThanOrEquals: string = '<=';
 const GreaterThan: string = '>';
 const GreaterThanOrEquals: string = '>=';
-const IsNull: string = localize('profilerFilterDialog.isNullOperator', 'Is Null');
-const IsNotNull: string = localize('profilerFilterDialog.isNotNullOperator', 'Is Not Null');
-const Contains: string = localize('profilerFilterDialog.containsOperator', 'Contains');
-const NotContains: string = localize('profilerFilterDialog.notContainsOperator', 'Not Contains');
-const StartsWith: string = localize('profilerFilterDialog.startsWithOperator', 'Starts With');
-const NotStartsWith: string = localize('profilerFilterDialog.notStartsWithOperator', 'Not Starts With');
+const IsNull: string = localize('profilerFilterDialog.isNullOperator', "Is Null");
+const IsNotNull: string = localize('profilerFilterDialog.isNotNullOperator', "Is Not Null");
+const Contains: string = localize('profilerFilterDialog.containsOperator', "Contains");
+const NotContains: string = localize('profilerFilterDialog.notContainsOperator', "Not Contains");
+const StartsWith: string = localize('profilerFilterDialog.startsWithOperator', "Starts With");
+const NotStartsWith: string = localize('profilerFilterDialog.notStartsWithOperator', "Not Starts With");
 
 const Operators = [Equals, NotEquals, LessThan, LessThanOrEquals, GreaterThan, GreaterThanOrEquals, GreaterThan, GreaterThanOrEquals, IsNull, IsNotNull, Contains, NotContains, StartsWith, NotStartsWith];
 
 export class ProfilerFilterDialog extends Modal {
 
-	private _clauseBuilder: Builder;
+	private _clauseBuilder: HTMLElement;
 	private _okButton: Button;
 	private _cancelButton: Button;
 	private _clearButton: Button;
@@ -110,36 +108,27 @@ export class ProfilerFilterDialog extends Modal {
 	}
 
 	protected renderBody(container: HTMLElement) {
-		new Builder(container).div({ 'class': 'profiler-filter-dialog' }, (bodyBuilder) => {
-			bodyBuilder.element('table', { 'class': 'profiler-filter-clause-table' }, (builder) => {
-				this._clauseBuilder = builder;
-			});
-			this._clauseBuilder.element('tr', {}, (headerBuilder) => {
-				headerBuilder.element('td').text(FieldText);
-				headerBuilder.element('td').text(OperatorText);
-				headerBuilder.element('td').text(ValueText);
-				headerBuilder.element('td').text('');
-			});
+		const body = DOM.append(container, DOM.$('.profiler-filter-dialog'));
+		this._clauseBuilder = DOM.append(body, DOM.$('table.profiler-filter-clause-table'));
+		const headerRow = DOM.append(this._clauseBuilder, DOM.$('tr'));
+		DOM.append(headerRow, DOM.$('td')).innerText = FieldText;
+		DOM.append(headerRow, DOM.$('td')).innerText = OperatorText;
+		DOM.append(headerRow, DOM.$('td')).innerText = ValueText;
+		DOM.append(headerRow, DOM.$('td')).innerText = '';
 
-			this._input.filter.clauses.forEach(clause => {
-				this.addClauseRow(true, clause.field, this.convertToOperatorString(clause.operator), clause.value);
-			});
-
-			bodyBuilder.div({
-				'class': 'profiler-filter-add-clause-prompt',
-				'tabIndex': '0'
-			}).text(AddClausePromptText).on(DOM.EventType.CLICK, () => {
-				this.addClauseRow(false);
-			}).on(DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
-				let event = new StandardKeyboardEvent(e);
-				if (event.equals(KeyCode.Space) || event.equals(KeyCode.Enter)) {
-					this.addClauseRow(false);
-					event.stopPropagation();
-				}
-			});
-
+		this._input.filter.clauses.forEach(clause => {
+			this.addClauseRow(true, clause.field, this.convertToOperatorString(clause.operator), clause.value);
 		});
 
+		const prompt = DOM.append(body, DOM.$('.profiler-filter-add-clause-prompt', { tabIndex: '0' }));
+		prompt.innerText = AddClausePromptText;
+		DOM.addDisposableListener(prompt, DOM.EventType.CLICK, () => this.addClauseRow(false));
+		DOM.addStandardDisposableListener(prompt, DOM.EventType.KEY_DOWN, (e: StandardKeyboardEvent) => {
+			if (e.equals(KeyCode.Space) || e.equals(KeyCode.Enter)) {
+				this.addClauseRow(false);
+				e.stopPropagation();
+			}
+		});
 	}
 
 	protected layout(height?: number): void {
@@ -169,7 +158,7 @@ export class ProfilerFilterDialog extends Modal {
 	}
 
 	private createSelectBox(container: HTMLElement, options: string[], selectedOption: string, ariaLabel: string): SelectBox {
-		let dropdown = new SelectBox(options, selectedOption, this.contextViewService, undefined, { ariaLabel: ariaLabel });
+		const dropdown = new SelectBox(options, selectedOption, this.contextViewService, undefined, { ariaLabel: ariaLabel });
 		dropdown.render(container);
 		this._register(attachSelectBoxStyler(dropdown, this._themeService));
 		return dropdown;
@@ -180,7 +169,7 @@ export class ProfilerFilterDialog extends Modal {
 	}
 
 	private getFilter(): ProfilerFilter {
-		let clauses: ProfilerFilterClause[] = [];
+		const clauses: ProfilerFilterClause[] = [];
 
 		this._clauseRows.forEach(row => {
 			clauses.push({
@@ -196,62 +185,52 @@ export class ProfilerFilterDialog extends Modal {
 	}
 
 	private addClauseRow(setInitialValue: boolean, field?: string, operator?: string, value?: string): any {
-		this._clauseBuilder.element('tr', {}, (rowBuilder) => {
-			let rowElement = rowBuilder.getHTMLElement();
-			let clauseId = generateUuid();
-			let fieldDropDown: SelectBox;
-			let operatorDropDown: SelectBox;
-			let valueText: InputBox;
+		const row = DOM.append(this._clauseBuilder, DOM.$('tr'));
+		const clauseId = generateUuid();
 
-			rowBuilder.element('td', {}, (fieldCell) => {
-				let columns = this._input.columns.map(column => column.name);
-				fieldDropDown = this.createSelectBox(fieldCell.getHTMLElement(), columns, columns[0], FieldText);
-			});
-			rowBuilder.element('td', {}, (operatorCell) => {
-				operatorDropDown = this.createSelectBox(operatorCell.getHTMLElement(), Operators, Operators[0], OperatorText);
-			});
-			rowBuilder.element('td', {}, (textCell) => {
-				valueText = new InputBox(textCell.getHTMLElement(), undefined, {});
-				this._register(attachInputBoxStyler(valueText, this._themeService));
-			});
-			rowBuilder.element('td', {}, (removeImageCell) => {
-				let removeClauseButton = removeImageCell.div({
-					'class': 'profiler-filter-remove-condition icon remove',
-					'tabIndex': '0',
-					'aria-label': RemoveText,
-					'title': RemoveText
-				});
+		const columns = this._input.columns.map(column => column.name);
+		const fieldDropDown = this.createSelectBox(DOM.append(row, DOM.$('td')), columns, columns[0], FieldText);
 
-				removeClauseButton.on(DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
-					let event = new StandardKeyboardEvent(e);
-					if (event.equals(KeyCode.Space) || event.equals(KeyCode.Enter)) {
-						this.removeRow(clauseId);
-						event.stopPropagation();
-					}
-				});
+		const operatorDropDown = this.createSelectBox(DOM.append(row, DOM.$('td')), Operators, Operators[0], OperatorText);
 
-				removeClauseButton.on(DOM.EventType.CLICK, () => {
-					this.removeRow(clauseId);
-				});
-			});
+		const valueText = new InputBox(DOM.append(row, DOM.$('td')), undefined, {});
+		this._register(attachInputBoxStyler(valueText, this._themeService));
 
-			if (setInitialValue) {
-				fieldDropDown.selectWithOptionName(field);
-				operatorDropDown.selectWithOptionName(operator);
-				valueText.value = value;
+		const removeCell = DOM.append(row, DOM.$('td'));
+		const removeClauseButton = DOM.append(removeCell, DOM.$('.profiler-filter-remove-condition.icon.remove', {
+			'tabIndex': '0',
+			'aria-label': RemoveText,
+			'title': RemoveText
+		}));
+
+		DOM.addStandardDisposableListener(removeClauseButton, DOM.EventType.KEY_DOWN, (e: StandardKeyboardEvent) => {
+			if (e.equals(KeyCode.Space) || e.equals(KeyCode.Enter)) {
+				this.removeRow(clauseId);
+				e.stopPropagation();
 			}
-			this._clauseRows.push({
-				id: clauseId,
-				row: rowElement,
-				field: fieldDropDown,
-				operator: operatorDropDown,
-				value: valueText
-			});
+		});
+
+		DOM.addDisposableListener(removeClauseButton, DOM.EventType.CLICK, (e: MouseEvent) => {
+			this.removeRow(clauseId);
+		});
+
+		if (setInitialValue) {
+			fieldDropDown.selectWithOptionName(field);
+			operatorDropDown.selectWithOptionName(operator);
+			valueText.value = value;
+		}
+
+		this._clauseRows.push({
+			id: clauseId,
+			row,
+			field: fieldDropDown,
+			operator: operatorDropDown,
+			value: valueText
 		});
 	}
 
 	private removeRow(clauseId: string) {
-		let idx = this._clauseRows.findIndex((entry) => { return entry.id === clauseId; });
+		const idx = this._clauseRows.findIndex((entry) => { return entry.id === clauseId; });
 		if (idx !== -1) {
 			this._clauseRows[idx].row.remove();
 			this._clauseRows.splice(idx, 1);

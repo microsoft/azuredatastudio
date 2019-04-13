@@ -9,8 +9,8 @@ import * as assert from 'assert';
 import * as TypeMoq from 'typemoq';
 import { EventVerifierSingle } from 'sqltest/utils/eventVerifier';
 import { Emitter } from 'vs/base/common/event';
-import { AccountPickerViewModel } from 'sql/platform/accountManagement/common/accountPickerViewModel';
-import { UpdateAccountListEventParams } from 'sql/platform/accountManagement/common/eventTypes';
+import { AccountPickerViewModel } from 'sql/platform/accounts/common/accountPickerViewModel';
+import { UpdateAccountListEventParams } from 'sql/platform/accounts/common/eventTypes';
 import { AccountManagementTestService } from 'sqltest/stubs/accountManagementStubs';
 
 // SUITE STATE /////////////////////////////////////////////////////////////
@@ -31,7 +31,8 @@ suite('Account picker view model tests', () => {
 			displayInfo: {
 				contextualDisplayName: 'Microsoft Account',
 				accountType: 'microsoft',
-				displayName: 'Account 1'
+				displayName: 'Account 1',
+				userId: 'user@email.com'
 			},
 			properties: [],
 			isStale: false
@@ -42,7 +43,8 @@ suite('Account picker view model tests', () => {
 			displayInfo: {
 				contextualDisplayName: 'Work/School Account',
 				accountType: 'microsoft',
-				displayName: 'Account 2'
+				displayName: 'Account 2',
+				userId: 'user@email.com'
 			},
 			properties: [],
 			isStale: true
@@ -91,8 +93,8 @@ suite('Account picker view model tests', () => {
 				assert.equal(results.length, 2);
 				assert.equal(results, accounts);
 			}).then(
-			() => done(),
-			err => done(err)
+				() => done(),
+				err => done(err)
 			);
 	});
 
@@ -117,8 +119,8 @@ suite('Account picker view model tests', () => {
 				assert.equal(result.length, 0);
 				assert.equal(result, []);
 			}).then(
-			() => done(),
-			err => done()
+				() => done(),
+				err => done()
 			);
 	});
 });

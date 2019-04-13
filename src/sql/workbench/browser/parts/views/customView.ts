@@ -639,6 +639,7 @@ class TreeRenderer implements IRenderer {
 		const icon = this.themeService.getTheme().type === LIGHT ? node.icon : node.iconDark;
 		const iconUrl = icon ? URI.revive(icon) : null;
 		const title = node.tooltip ? node.tooltip : resource ? void 0 : label;
+		const sqlIcon = node.sqlIcon;
 
 		// reset
 		templateData.resourceLabel.clear();
@@ -652,7 +653,9 @@ class TreeRenderer implements IRenderer {
 		}
 
 		templateData.icon.style.backgroundImage = iconUrl ? `url('${iconUrl.toString(true)}')` : '';
-		DOM.toggleClass(templateData.icon, 'custom-view-tree-node-item-icon', !!iconUrl);
+		DOM.toggleClass(templateData.icon, sqlIcon, !!sqlIcon);
+		DOM.toggleClass(templateData.icon, 'icon', !!sqlIcon);
+		DOM.toggleClass(templateData.icon, 'custom-view-tree-node-item-icon', !!iconUrl || !!sqlIcon);
 		templateData.actionBar.context = (<TreeViewItemHandleArg>{ $treeViewId: this.treeViewId, $treeItemHandle: node.handle });
 		templateData.actionBar.push(this.menus.getResourceActions(node), { icon: true, label: false });
 

@@ -12,11 +12,11 @@ import { localize } from 'vs/nls';
 import { IExtensionManagementServerService, IExtensionTipsService } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { ILabelService } from 'vs/platform/label/common/label';
 import { extensionButtonProminentBackground, extensionButtonProminentForeground } from 'vs/workbench/contrib/extensions/electron-browser/extensionsActions';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
 import { STATUS_BAR_HOST_NAME_BACKGROUND, STATUS_BAR_FOREGROUND, STATUS_BAR_NO_FOLDER_FOREGROUND } from 'vs/workbench/common/theme';
 import { IWorkspaceContextService, WorkbenchState } from 'vs/platform/workspace/common/workspace';
 import { REMOTE_HOST_SCHEME } from 'vs/platform/remote/common/remoteHosts';
-import { IWindowService } from 'vs/platform/windows/common/windows';
+import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
 
 export abstract class ExtensionWidget extends Disposable implements IExtensionContainer {
 	private _extension: IExtension;
@@ -178,7 +178,7 @@ export class RecommendationWidget extends ExtensionWidget {
 			this.element = append(this.parent, $('div.bookmark'));
 			const recommendation = append(this.element, $('.recommendation'));
 			append(recommendation, $('span.octicon.octicon-star'));
-			const applyBookmarkStyle = (theme) => {
+			const applyBookmarkStyle = (theme: ITheme) => {
 				const bgColor = theme.getColor(extensionButtonProminentBackground);
 				const fgColor = theme.getColor(extensionButtonProminentForeground);
 				recommendation.style.borderTopColor = bgColor ? bgColor.toString() : 'transparent';
@@ -205,7 +205,7 @@ export class RemoteBadgeWidget extends ExtensionWidget {
 		@IThemeService private readonly themeService: IThemeService,
 		@IExtensionManagementServerService private readonly extensionManagementServerService: IExtensionManagementServerService,
 		@IWorkspaceContextService private readonly workspaceContextService: IWorkspaceContextService,
-		@IWindowService private readonly windowService: IWindowService
+		@IWorkbenchEnvironmentService private readonly environmentService: IWorkbenchEnvironmentService
 	) {
 		super();
 		this.render();
@@ -222,11 +222,10 @@ export class RemoteBadgeWidget extends ExtensionWidget {
 
 	render(): void {
 		this.clear();
-		if (!this.extension || !this.extension.local) {
+		if (!this.extension || !this.extension.local || !this.extension.server) {
 			return;
 		}
-		const server = this.extensionManagementServerService.getExtensionManagementServer(this.extension.local.location);
-		if (server === this.extensionManagementServerService.remoteExtensionManagementServer) {
+		if (this.extension.server === this.extensionManagementServerService.remoteExtensionManagementServer) {
 			this.element = append(this.parent, $('div.extension-remote-badge'));
 			append(this.element, $('span.octicon.octicon-file-symlink-directory'));
 
@@ -245,7 +244,7 @@ export class RemoteBadgeWidget extends ExtensionWidget {
 
 			const updateTitle = () => {
 				if (this.element) {
-					this.element.title = localize('remote extension title', "Extension in {0}", this.labelService.getHostLabel(REMOTE_HOST_SCHEME, this.windowService.getConfiguration().remoteAuthority));
+					this.element.title = localize('remote extension title', "Extension in {0}", this.labelService.getHostLabel(REMOTE_HOST_SCHEME, this.environmentService.configuration.remoteAuthority));
 				}
 			};
 			this.labelService.onDidChangeFormatters(() => updateTitle(), this, this.disposables);

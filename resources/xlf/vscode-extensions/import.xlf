@@ -77,6 +77,29 @@
       <source xml:lang="en">Table schema</source>
     </trans-unit>
   </body></file>
+  <file original="extensions/import/out/wizard/flatFileWizard" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="import.needConnection">
+      <source xml:lang="en">Please connect to a server before using this wizard.</source>
+    </trans-unit>
+    <trans-unit id="flatFileImport.wizardName">
+      <source xml:lang="en">Import flat file wizard</source>
+    </trans-unit>
+    <trans-unit id="flatFileImport.page1Name">
+      <source xml:lang="en">Specify Input File</source>
+    </trans-unit>
+    <trans-unit id="flatFileImport.page2Name">
+      <source xml:lang="en">Preview Data</source>
+    </trans-unit>
+    <trans-unit id="flatFileImport.page3Name">
+      <source xml:lang="en">Modify Columns</source>
+    </trans-unit>
+    <trans-unit id="flatFileImport.page4Name">
+      <source xml:lang="en">Summary</source>
+    </trans-unit>
+    <trans-unit id="flatFileImport.importNewFile">
+      <source xml:lang="en">Import new file</source>
+    </trans-unit>
+  </body></file>
   <file original="extensions/import/out/services/telemetry" source-language="en" datatype="plaintext"><body>
     <trans-unit id="import.serviceCrashButton">
       <source xml:lang="en">Give Feedback</source>
@@ -112,29 +135,6 @@
     </trans-unit>
     <trans-unit id="downloadingServiceComplete">
       <source xml:lang="en">Done!</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/import/out/wizard/flatFileWizard" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="import.needConnection">
-      <source xml:lang="en">Please connect to a server before using this wizard.</source>
-    </trans-unit>
-    <trans-unit id="flatFileImport.wizardName">
-      <source xml:lang="en">Import flat file wizard</source>
-    </trans-unit>
-    <trans-unit id="flatFileImport.page1Name">
-      <source xml:lang="en">Specify Input File</source>
-    </trans-unit>
-    <trans-unit id="flatFileImport.page2Name">
-      <source xml:lang="en">Preview Data</source>
-    </trans-unit>
-    <trans-unit id="flatFileImport.page3Name">
-      <source xml:lang="en">Modify Columns</source>
-    </trans-unit>
-    <trans-unit id="flatFileImport.page4Name">
-      <source xml:lang="en">Summary</source>
-    </trans-unit>
-    <trans-unit id="flatFileImport.importNewFile">
-      <source xml:lang="en">Import new file</source>
     </trans-unit>
   </body></file>
 </xliff>

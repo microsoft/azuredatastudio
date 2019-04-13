@@ -1,3 +1,5 @@
+import { getConfigValue, EnvironmentVariable_STANDALONE_SERVER, EnvironmentVariable_STANDALONE_USERNAME, EnvironmentVariable_STANDALONE_PASSWORD, EnvironmentVariable_AZURE_SERVER, EnvironmentVariable_AZURE_USERNAME, EnvironmentVariable_AZURE_PASSWORD, EnvironmentVariable_BDC_SERVER, EnvironmentVariable_BDC_USERNAME, EnvironmentVariable_BDC_PASSWORD } from './utils';
+
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
@@ -59,19 +61,29 @@ export class TestServerProfile {
 var TestingServers: TestServerProfile[] = [
 	new TestServerProfile(
 		{
-			serverName: 'SQLTOOLS2017-3',
-			userName: '',
-			password: '',
-			authenticationType: AuthenticationType.Windows,
+			serverName: getConfigValue(EnvironmentVariable_STANDALONE_SERVER),
+			userName: getConfigValue(EnvironmentVariable_STANDALONE_USERNAME),
+			password: getConfigValue(EnvironmentVariable_STANDALONE_PASSWORD),
+			authenticationType: AuthenticationType.SqlLogin,
 			database: 'master',
 			provider: ConnectionProvider.SQLServer,
 			version: '2017'
 		}),
 	new TestServerProfile(
 		{
-			serverName: process.env.BDC_BACKEND_HOSTNAME,
-			userName:  process.env.BDC_BACKEND_USERNAME,
-			password:  process.env.BDC_BACKEND_PWD,
+			serverName: getConfigValue(EnvironmentVariable_AZURE_SERVER),
+			userName: getConfigValue(EnvironmentVariable_AZURE_USERNAME),
+			password: getConfigValue(EnvironmentVariable_AZURE_PASSWORD),
+			authenticationType: AuthenticationType.SqlLogin,
+			database: 'master',
+			provider: ConnectionProvider.SQLServer,
+			version: '2012'
+		}),
+	new TestServerProfile(
+		{
+			serverName: getConfigValue(EnvironmentVariable_BDC_SERVER),
+			userName: getConfigValue(EnvironmentVariable_BDC_USERNAME),
+			password: getConfigValue(EnvironmentVariable_BDC_PASSWORD),
 			authenticationType: AuthenticationType.SqlLogin,
 			database: 'master',
 			provider: ConnectionProvider.SQLServer,
@@ -91,6 +103,16 @@ function getEnumMappingEntry(mapping: any, enumValue: any): INameDisplayNamePair
 export async function getDefaultTestingServer(): Promise<TestServerProfile> {
 	let servers = await getTestingServers();
 	return servers[0];
+}
+
+export async function getAzureServer(): Promise<TestServerProfile> {
+	let servers = await getTestingServers();
+	return servers.filter(s => s.version === '2012')[0];
+}
+
+export async function getStandaloneServer(): Promise<TestServerProfile> {
+	let servers = await getTestingServers();
+	return servers.filter(s => s.version === '2017')[0];
 }
 
 export async function getBdcServer(): Promise<TestServerProfile> {

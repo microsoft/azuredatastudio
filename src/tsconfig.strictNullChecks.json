@@ -1,0 +1,24 @@
+{
+	"extends": "./tsconfig.base.json",
+	"compilerOptions": {
+		"noEmit": true,
+		"strictNullChecks": true,
+		"moduleResolution": "classic"
+	},
+	"include": [
+		"./typings",
+		"./vs/vscode.d.ts",
+		"./vs/vscode.proposed.d.ts",
+		"./sql/azdata.d.ts",
+		"./sql/azdata.proposed.d.ts",
+		"./sql/base/**/*.ts",
+		"./sql/platform/angularEventing/**/*.ts",
+		"./sql/platform/clipboard/**/*.ts",
+		"./sql/platform/credentials/**/*.ts",
+		"./sql/platform/theme/**/*.ts",
+		"./sql/platform/telemetry/**/*.ts"
+	],
+	"exclude": [
+		"node_modules/**"
+	]
+}

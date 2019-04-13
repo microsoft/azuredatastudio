@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./toolbarLayout';
+import 'vs/css!../../../sql/base/browser/ui/taskbar/media/taskbar';
 
 import {
 	Component, Input, Inject, ChangeDetectorRef, forwardRef,
@@ -14,10 +15,11 @@ import { Orientation, ToolbarLayout } from 'sql/workbench/api/common/sqlExtHostT
 import { IComponent, IComponentDescriptor, IModelStore } from 'sql/parts/modelComponents/interfaces';
 
 import { ContainerBase } from 'sql/parts/modelComponents/componentBase';
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 
 export interface ToolbarItemConfig {
 	title?: string;
+	toolbarSeparatorAfter?: boolean;
 }
 
 export class ToolbarItem {
@@ -36,6 +38,8 @@ export class ToolbarItem {
 				<div class="modelview-toolbar-component">
 					<model-component-wrapper  [descriptor]="item.descriptor" [modelStore]="modelStore" >
 					</model-component-wrapper>
+				</div>
+				<div *ngIf="shouldShowToolbarSeparator(item)" class="taskbarSeparator" >
 				</div>
 			</div>
 			</ng-container>
@@ -83,6 +87,13 @@ export default class ToolbarContainer extends ContainerBase<ToolbarItemConfig> i
 
 	public shouldShowTitle(item: ToolbarItem): boolean {
 		return this.hasTitle(item) && this.isHorizontal();
+	}
+
+	public shouldShowToolbarSeparator(item: ToolbarItem): boolean {
+		if (!item || !item.config) {
+			return false;
+		}
+		return item.config.toolbarSeparatorAfter;
 	}
 
 	private hasTitle(item: ToolbarItem): boolean {

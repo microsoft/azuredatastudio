@@ -31,7 +31,6 @@ import { IContextMenuService } from 'vs/platform/contextview/browser/contextView
 import { TreeNodeContextKey } from 'sql/parts/objectExplorer/viewlet/treeNodeContextKey';
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
 import { IScriptingService } from 'sql/platform/scripting/common/scriptingService';
-import * as constants from 'sql/common/constants';
 import { ServerInfoContextKey } from 'sql/parts/connection/common/serverInfoContextKey';
 
 /**
@@ -80,10 +79,6 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 		return false;
 	}
 
-	public getSecondaryActions(tree: ITree, element: any): IAction[] {
-		return super.getSecondaryActions(tree, element);
-	}
-
 	/**
 	 * Return actions for connection elements
 	 */
@@ -105,7 +100,7 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 		let actions = getDefaultActions(context);
 		let options = { arg: undefined, shouldForwardArgs: true };
 		const groups = menu.getActions(options);
-		fillInActions(groups, actions, this.contextMenuService);
+		fillInActions(groups, actions, false);
 
 		// Cleanup
 		scopedContextService.dispose();

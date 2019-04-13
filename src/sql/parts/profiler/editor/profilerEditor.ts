@@ -15,9 +15,9 @@ import { ProfilerTableEditor, ProfilerTableViewState } from './controller/profil
 import * as Actions from 'sql/parts/profiler/contrib/profilerActions';
 import { CONTEXT_PROFILER_EDITOR, PROFILER_TABLE_COMMAND_SEARCH } from './interfaces';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
-import { textFormatter } from 'sql/parts/grid/services/sharedServices';
+import { textFormatter, slickGridDataItemColumnValueExtractor } from 'sql/parts/grid/services/sharedServices';
 import { ProfilerResourceEditor } from './profilerResourceEditor';
-import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
+import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { ITextModel } from 'vs/editor/common/model';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
@@ -151,7 +151,6 @@ export class ProfilerEditor extends BaseEditor {
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IWorkbenchThemeService themeService: IWorkbenchThemeService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IContextMenuService private _contextMenuService: IContextMenuService,
 		@IModelService private _modelService: IModelService,
 		@IProfilerService private _profilerService: IProfilerService,
 		@IContextKeyService private _contextKeyService: IContextKeyService,
@@ -207,7 +206,7 @@ export class ProfilerEditor extends BaseEditor {
 		this._header = document.createElement('div');
 		this._header.className = 'profiler-header';
 		this._container.appendChild(this._header);
-		this._actionBar = new Taskbar(this._header, this._contextMenuService);
+		this._actionBar = new Taskbar(this._header);
 		this._startAction = this._instantiationService.createInstance(Actions.ProfilerStart, Actions.ProfilerStart.ID, Actions.ProfilerStart.LABEL);
 		this._startAction.enabled = false;
 		this._createAction = this._instantiationService.createInstance(Actions.ProfilerCreate, Actions.ProfilerCreate.ID, Actions.ProfilerCreate.LABEL);
@@ -365,7 +364,10 @@ export class ProfilerEditor extends BaseEditor {
 					formatter: textFormatter
 				}
 			]
-		}, { forceFitColumns: true });
+		}, {
+				forceFitColumns: true,
+				dataItemColumnValueExtractor: slickGridDataItemColumnValueExtractor
+			});
 
 		this._detailTableData.onRowCountChange(() => {
 			this._detailTable.updateRowCount();

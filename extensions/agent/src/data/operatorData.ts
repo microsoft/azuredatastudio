@@ -31,11 +31,25 @@ export class OperatorData implements IAgentDialogData {
 
 	constructor(ownerUri:string, operatorInfo: azdata.AgentOperatorInfo) {
 		this.ownerUri = ownerUri;
-
 		if (operatorInfo) {
 			this.dialogMode = AgentDialogMode.EDIT;
 			this.name = operatorInfo.name;
+			this.id = operatorInfo.id;
+			this.emailAddress = operatorInfo.emailAddress;
 			this.enabled = operatorInfo.enabled;
+			this.lastEmailDate = operatorInfo.lastEmailDate;
+			this.lastNetSendDate = operatorInfo.lastNetSendDate;
+			this.lastPagerDate = operatorInfo.lastPagerDate;
+			this.pagerAddress = operatorInfo.pagerAddress;
+			this.categoryName = operatorInfo.categoryName;
+			this.pagerDays = operatorInfo.pagerDays.toString();
+			this.saturdayPagerEndTime = operatorInfo.saturdayPagerEndTime;
+			this.saturdayPagerStartTime = operatorInfo.saturdayPagerStartTime;
+			this.sundayPagerEndTime = operatorInfo.sundayPagerEndTime;
+			this.sundayPagerStartTime = operatorInfo.sundayPagerStartTime;
+			this.netSendAddress = operatorInfo.netSendAddress;
+			this.weekdayPagerStartTime = operatorInfo.weekdayPagerStartTime;
+			this.weekdayPagerEndTime = operatorInfo.weekdayPagerEndTime;
 		}
 	}
 

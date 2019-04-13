@@ -11,7 +11,7 @@ import { CancellationToken, CancellationTokenSource } from 'vs/base/common/cance
 import * as collections from 'vs/base/common/collections';
 import { getErrorMessage, isPromiseCanceledError } from 'vs/base/common/errors';
 import { Iterator } from 'vs/base/common/iterator';
-import { isArray } from 'vs/base/common/types';
+import { isArray, withNullAsUndefined } from 'vs/base/common/types';
 import { URI } from 'vs/base/common/uri';
 import 'vs/css!./media/settingsEditor2';
 import { localize } from 'vs/nls';
@@ -573,7 +573,7 @@ export class SettingsEditor2 extends BaseEditor {
 			this.tocTree.setSelection(element ? [element] : []);
 			if (this.searchResultModel) {
 				if (this.viewState.filterToCategory !== element) {
-					this.viewState.filterToCategory = element || undefined;
+					this.viewState.filterToCategory = withNullAsUndefined(element);
 					this.renderTree();
 					this.settingsTree.scrollTop = 0;
 				}
@@ -1211,7 +1211,8 @@ export class SettingsEditor2 extends BaseEditor {
 	}
 
 	private renderResultCountMessages() {
-		if (!this.currentSettingsModel) {
+		if (!this.currentSettingsModel || !this.searchResultModel) {
+			this.countElement.style.display = 'none';
 			return;
 		}
 

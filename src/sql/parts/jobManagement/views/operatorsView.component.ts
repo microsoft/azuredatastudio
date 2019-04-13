@@ -21,7 +21,7 @@ import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.comp
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
 import { EditOperatorAction, DeleteOperatorAction, NewOperatorAction } from 'sql/platform/jobManagement/common/jobActions';
 import { JobManagementView } from 'sql/parts/jobManagement/views/jobManagementView';
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
@@ -76,7 +76,7 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit,
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
-		@Inject(forwardRef(() => AgentViewComponent)) private _agentViewComponent: AgentViewComponent,
+		@Inject(forwardRef(() => AgentViewComponent)) _agentViewComponent: AgentViewComponent,
 		@Inject(IJobManagementService) private _jobManagementService: IJobManagementService,
 		@Inject(ICommandService) private _commandService: ICommandService,
 		@Inject(IInstantiationService) instantiationService: IInstantiationService,
@@ -85,7 +85,7 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit,
 		@Inject(IKeybindingService) keybindingService: IKeybindingService,
 		@Inject(IDashboardService) _dashboardService: IDashboardService
 	) {
-		super(commonService, _dashboardService, contextMenuService, keybindingService, instantiationService);
+		super(commonService, _dashboardService, contextMenuService, keybindingService, instantiationService, _agentViewComponent);
 		this._isCloud = commonService.connectionManagementService.connectionInfo.serverInfo.isCloud;
 		let operatorsCacheObject = this._jobManagementService.operatorsCacheObjectMap;
 		let operatorsCache = operatorsCacheObject[this._serverName];
@@ -145,8 +145,8 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit,
 		});
 		columns.unshift(rowDetail.getColumnDefinition());
 
-		$(this._gridEl.nativeElement).empty();
-		$(this.actionBarContainer.nativeElement).empty();
+		jQuery(this._gridEl.nativeElement).empty();
+		jQuery(this.actionBarContainer.nativeElement).empty();
 		this.initActionBar();
 		this._table = new Table(this._gridEl.nativeElement, { columns }, this.options);
 		this._table.grid.setData(this.dataView, true);
@@ -225,9 +225,5 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit,
 	public openCreateOperatorDialog() {
 		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
 		this._commandService.executeCommand('agent.openOperatorDialog', ownerUri);
-	}
-
-	private refreshJobs() {
-		this._agentViewComponent.refresh = true;
 	}
 }

@@ -8,11 +8,11 @@
 import * as assert from 'assert';
 import * as azdata from 'azdata';
 import * as TypeMoq from 'typemoq';
-import AccountStore from 'sql/platform/accountManagement/common/accountStore';
-import { AccountDialogController } from 'sql/parts/accountManagement/accountDialog/accountDialogController';
+import AccountStore from 'sql/platform/accounts/common/accountStore';
+import { AccountDialogController } from 'sql/platform/accounts/browser/accountDialogController';
 import { AccountManagementService } from 'sql/workbench/services/accountManagement/browser/accountManagementService';
-import { AccountAdditionResult, AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/platform/accountManagement/common/eventTypes';
-import { IAccountStore } from 'sql/platform/accountManagement/common/interfaces';
+import { AccountAdditionResult, AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/platform/accounts/common/eventTypes';
+import { IAccountStore } from 'sql/platform/accounts/common/interfaces';
 import { AccountProviderStub } from 'sqltest/stubs/accountManagementStubs';
 import { EventVerifierSingle } from 'sqltest/utils/eventVerifier';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
@@ -36,7 +36,9 @@ const account: azdata.Account = {
 	displayInfo: {
 		displayName: 'Test Account 1',
 		accountType: 'test',
-		contextualDisplayName: 'Azure Account'
+		contextualDisplayName: 'Azure Account',
+		userId: 'user@email.com'
+
 	},
 	isStale: false,
 	properties: {}
@@ -86,8 +88,8 @@ suite('Account Management Service Tests:', () => {
 				state.mockAccountStore.verify(x => x.remove(TypeMoq.It.isAny()), TypeMoq.Times.once());
 			})
 			.then(
-			() => done(),
-			err => done(err)
+				() => done(),
+				err => done(err)
 			);
 	});
 
@@ -125,8 +127,8 @@ suite('Account Management Service Tests:', () => {
 				});
 			})
 			.then(
-			() => done(),
-			err => done(err)
+				() => done(),
+				err => done(err)
 			);
 	});
 
@@ -168,8 +170,8 @@ suite('Account Management Service Tests:', () => {
 				});
 			})
 			.then(
-			() => done(),
-			err => done(err)
+				() => done(),
+				err => done(err)
 			);
 	});
 
@@ -211,8 +213,8 @@ suite('Account Management Service Tests:', () => {
 				});
 			})
 			.then(
-			() => done(),
-			err => done(err)
+				() => done(),
+				err => done(err)
 			);
 	});
 
@@ -240,8 +242,8 @@ suite('Account Management Service Tests:', () => {
 		// Then: Nothing should have happened and the promise should be resolved
 		return state.accountManagementService.addAccount(noAccountProvider.id)
 			.then(
-			() => done('Add account promise resolved when it should have rejected'),
-			() => done()
+				() => done('Add account promise resolved when it should have rejected'),
+				() => done()
 			);
 	});
 
@@ -255,8 +257,8 @@ suite('Account Management Service Tests:', () => {
 		// Then: Nothing should have happened and the promise should be resolved
 		return state.accountManagementService.addAccount(noAccountProvider.id)
 			.then(
-			() => done(),
-			err => done(err)
+				() => done(),
+				err => done(err)
 			);
 	});
 
@@ -278,8 +280,8 @@ suite('Account Management Service Tests:', () => {
 				assert.equal(result[0], noAccountProvider);
 			})
 			.then(
-			() => done(),
-			err => done(err)
+				() => done(),
+				err => done(err)
 			);
 	});
 
@@ -295,8 +297,8 @@ suite('Account Management Service Tests:', () => {
 				assert.equal(result.length, 0);
 			})
 			.then(
-			() => done(),
-			err => done(err)
+				() => done(),
+				err => done(err)
 			);
 	});
 
@@ -331,8 +333,8 @@ suite('Account Management Service Tests:', () => {
 				assert.equal(result.length, 0);
 			})
 			.then(
-			() => done(),
-			err => done(err)
+				() => done(),
+				err => done(err)
 			);
 	});
 
@@ -352,8 +354,8 @@ suite('Account Management Service Tests:', () => {
 				assert.equal(result, accountList);
 			})
 			.then(
-			() => done(),
-			err => done(err)
+				() => done(),
+				err => done(err)
 			);
 	});
 
@@ -394,8 +396,8 @@ suite('Account Management Service Tests:', () => {
 				});
 			})
 			.then(
-			() => done(),
-			err => done(err)
+				() => done(),
+				err => done(err)
 			);
 	});
 
@@ -433,8 +435,8 @@ suite('Account Management Service Tests:', () => {
 				state.eventVerifierUpdate.assertNotFired();
 			})
 			.then(
-			() => done(),
-			err => done(err)
+				() => done(),
+				err => done(err)
 			);
 	});
 
@@ -460,8 +462,8 @@ suite('Account Management Service Tests:', () => {
 				mockDialogController.verify(x => x.openAccountDialog(), TypeMoq.Times.once());
 			})
 			.then(
-			() => done(),
-			err => done(err)
+				() => done(),
+				err => done(err)
 			);
 	});
 
@@ -488,8 +490,8 @@ suite('Account Management Service Tests:', () => {
 				mockDialogController.verify(x => x.openAccountDialog(), TypeMoq.Times.exactly(2));
 			})
 			.then(
-			() => done(),
-			err => done(err)
+				() => done(),
+				err => done(err)
 			);
 	});
 
@@ -525,8 +527,8 @@ suite('Account Management Service Tests:', () => {
 				});
 			})
 			.then(
-			() => done(),
-			err => done(err)
+				() => done(),
+				err => done(err)
 			);
 	});
 

@@ -18,8 +18,7 @@ import pkg from 'vs/platform/product/node/package';
 import product from 'vs/platform/product/node/product';
 import { isEngineValid } from 'vs/platform/extensions/node/extensionValidator';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
-import { readFile } from 'vs/base/node/pfs';
-import { writeFileAndFlushSync } from 'vs/base/node/extfs';
+import { writeFileSync, readFile } from 'vs/base/node/pfs';
 import { generateUuid, isUUID } from 'vs/base/common/uuid';
 import { values } from 'vs/base/common/map';
 // {{SQL CARBON EDIT}}
@@ -558,14 +557,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			if (searchTexts && searchTexts.length > 0) {
 				searchTexts.forEach(searchText => {
 					if (searchText !== '@allmarketplace') {
-						filteredExtensions = filteredExtensions.filter(
-							e => 	e.extensionName && e.extensionName.includes(searchText) ||
-									e.publisher && e.publisher.publisherName && e.publisher.publisherName.includes(searchText) ||
-									e.publisher && e.publisher.displayName && e.publisher.displayName.includes(searchText) ||
-									e.displayName && e.displayName.includes(searchText) ||
-									e.shortDescription && e.shortDescription.includes(searchText) ||
-									e.extensionId && e.extensionId.includes(searchText)
-						);
+						filteredExtensions = filteredExtensions.filter(e => ExtensionGalleryService.isMatchingExtension(e, searchText));
 					}
 				});
 			}
@@ -574,11 +566,11 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		// Sorting
 		switch (query.sortBy) {
 			case SortBy.PublisherName:
-				filteredExtensions.sort( (a, b) => ExtensionGalleryService.compareByField(a.publisher, b.publisher, 'publisherName'));
+				filteredExtensions.sort((a, b) => ExtensionGalleryService.compareByField(a.publisher, b.publisher, 'publisherName'));
 				break;
 			case SortBy.Title:
 			default:
-				filteredExtensions.sort( (a, b) => ExtensionGalleryService.compareByField(a, b, 'displayName'));
+				filteredExtensions.sort((a, b) => ExtensionGalleryService.compareByField(a, b, 'displayName'));
 				break;
 		}
 
@@ -590,6 +582,24 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			filteredExtensions = filteredExtensions.filter(ext => ext.publisher && ext.publisher.displayName === 'Microsoft');
 		}
 		return { galleryExtensions: filteredExtensions, total: actualTotal };
+	}
+
+	// {{SQL CARBON EDIT}}
+	/*
+	 * Checks whether the extension matches the search text
+	 */
+	public static isMatchingExtension(extension: IRawGalleryExtension, searchText: string): boolean {
+		if (!searchText) {
+			return true;
+		}
+		let text = searchText.toLocaleLowerCase();
+		return extension
+			&& (extension.extensionName && extension.extensionName.toLocaleLowerCase().includes(text) ||
+				extension.publisher && extension.publisher.publisherName && extension.publisher.publisherName.toLocaleLowerCase().includes(text) ||
+				extension.publisher && extension.publisher.displayName && extension.publisher.displayName.toLocaleLowerCase().includes(text) ||
+				extension.displayName && extension.displayName.toLocaleLowerCase().includes(text) ||
+				extension.shortDescription && extension.shortDescription.toLocaleLowerCase().includes(text) ||
+				extension.extensionId && extension.extensionId.toLocaleLowerCase().includes(text));
 	}
 
 	public static compareByField(a: any, b: any, fieldName: string): number {
@@ -608,7 +618,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		if (!b || !b[fieldName] && (!a || !a[fieldName])) {
 			return 0;
 		}
-		if (a[fieldName] ===  b[fieldName]) {
+		if (a[fieldName] === b[fieldName]) {
 			return 0;
 		}
 		return a[fieldName] < b[fieldName] ? -1 : 1;
@@ -743,7 +753,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 	}
 
 	loadAllDependencies(extensions: IExtensionIdentifier[], token: CancellationToken): Promise<IGalleryExtension[]> {
-		return this.getDependenciesReccursively(extensions.map(e => e.id), [], token);
+		return this.getDependenciesRecursively(extensions.map(e => e.id), [], token);
 	}
 
 	getAllVersions(extension: IGalleryExtension, compatible: boolean): Promise<IGalleryExtensionVersion[]> {
@@ -802,7 +812,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		});
 	}
 
-	private getDependenciesReccursively(toGet: string[], result: IGalleryExtension[], token: CancellationToken): Promise<IGalleryExtension[]> {
+	private getDependenciesRecursively(toGet: string[], result: IGalleryExtension[], token: CancellationToken): Promise<IGalleryExtension[]> {
 		if (!toGet || !toGet.length) {
 			return Promise.resolve(result);
 		}
@@ -822,7 +832,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 				result = distinct(result.concat(loadedDependencies), d => d.identifier.uuid);
 				const dependencies: string[] = [];
 				dependenciesSet.forEach(d => !ExtensionGalleryService.hasExtensionByName(result, d) && dependencies.push(d));
-				return this.getDependenciesReccursively(dependencies, result, token);
+				return this.getDependenciesRecursively(dependencies, result, token);
 			});
 	}
 
@@ -893,7 +903,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		if (version) {
 			return version;
 		}
-		return this.getLastValidExtensionVersionReccursively(extension, versions);
+		return this.getLastValidExtensionVersionRecursively(extension, versions);
 	}
 
 	private getLastValidExtensionVersionFromProperties(extension: IRawGalleryExtension, versions: IRawGalleryExtensionVersion[]): Promise<IRawGalleryExtensionVersion> | null {
@@ -926,7 +936,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			.then(manifest => manifest ? manifest.engines.vscode : Promise.reject<string>('Error while reading manifest'));
 	}
 
-	private getLastValidExtensionVersionReccursively(extension: IRawGalleryExtension, versions: IRawGalleryExtensionVersion[]): Promise<IRawGalleryExtensionVersion | null> {
+	private getLastValidExtensionVersionRecursively(extension: IRawGalleryExtension, versions: IRawGalleryExtensionVersion[]): Promise<IRawGalleryExtensionVersion | null> {
 		if (!versions.length) {
 			return Promise.resolve(null);
 		}
@@ -935,7 +945,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		return this.getEngine(version)
 			.then(engine => {
 				if (!isEngineValid(engine)) {
-					return this.getLastValidExtensionVersionReccursively(extension, versions.slice(1));
+					return this.getLastValidExtensionVersionRecursively(extension, versions.slice(1));
 				}
 
 				version.properties = version.properties || [];
@@ -993,7 +1003,7 @@ export function resolveMarketplaceHeaders(environmentService: IEnvironmentServic
 			if (!uuid) {
 				uuid = generateUuid();
 				try {
-					writeFileAndFlushSync(marketplaceMachineIdFile, uuid);
+					writeFileSync(marketplaceMachineIdFile, uuid);
 				} catch (error) {
 					//noop
 				}

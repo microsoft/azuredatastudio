@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 export function toObject<V>(map: Map<string, V>): { [key: string]: V } {
 	if (map) {
 		let rt: { [key: string]: V } = Object.create(null);

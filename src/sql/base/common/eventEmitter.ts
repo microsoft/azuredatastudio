@@ -2,9 +2,8 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
-import Errors = require('vs/base/common/errors');
+import * as errors from 'vs/base/common/errors';
 import { IDisposable } from 'vs/base/common/lifecycle';
 
 export class EmitterEvent {
@@ -288,7 +287,7 @@ function safeInvokeNoArg<T>(func: Function): T | undefined {
 	try {
 		return func();
 	} catch (e) {
-		Errors.onUnexpectedError(e);
+		errors.onUnexpectedError(e);
 	}
 	return undefined;
 }
@@ -297,6 +296,6 @@ function safeInvoke1Arg(func: Function, arg1: any): any {
 	try {
 		return func(arg1);
 	} catch (e) {
-		Errors.onUnexpectedError(e);
+		errors.onUnexpectedError(e);
 	}
 }

@@ -15,7 +15,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
 import { RadioButton } from 'sql/base/browser/ui/radioButton/radioButton';
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 
 @Component({
 	selector: 'modelview-radioButton',

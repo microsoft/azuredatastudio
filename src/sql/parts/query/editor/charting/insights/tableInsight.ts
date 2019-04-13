@@ -6,7 +6,7 @@
 'use strict';
 
 import { IInsight, InsightType } from './interfaces';
-import { IInsightData } from 'sql/parts/dashboard/widgets/insights/interfaces';
+import { IInsightData } from 'sql/workbench/parts/dashboard/widgets/insights/interfaces';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { attachTableStyler } from 'sql/platform/theme/common/styler';

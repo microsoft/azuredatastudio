@@ -18,22 +18,21 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { ViewletPanel, IViewletPanelOptions } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
-import { Builder } from 'sql/base/browser/builder';
 import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
 import { IAction } from 'vs/base/common/actions';
 import { ServerTreeView } from 'sql/parts/objectExplorer/viewlet/serverTreeView';
-import { ClearSearchAction, ActiveConnectionsFilterAction,
-	AddServerAction, AddServerGroupAction } from 'sql/parts/objectExplorer/viewlet/connectionTreeAction';
+import {
+	ClearSearchAction, ActiveConnectionsFilterAction,
+	AddServerAction, AddServerGroupAction
+} from 'sql/parts/objectExplorer/viewlet/connectionTreeAction';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { IExtensionsWorkbenchService } from 'vs/workbench/contrib/extensions/common/extensions';
 
 export class ConnectionViewletPanel extends ViewletPanel {
 
 	private _root: HTMLElement;
-	private _searchBox: InputBox;
 	private _toDisposeViewlet: IDisposable[] = [];
 	private _serverTreeView: ServerTreeView;
-	private _clearSearchAction: ClearSearchAction;
 	private _addServerAction: IAction;
 	private _addServerGroupAction: IAction;
 	private _activeConnectionsFilterAction: ActiveConnectionsFilterAction;
@@ -53,7 +52,7 @@ export class ConnectionViewletPanel extends ViewletPanel {
 		@IObjectExplorerService private objectExplorerService: IObjectExplorerService
 	) {
 		super({ ...(options as IViewletPanelOptions), ariaHeaderLabel: options.title }, keybindingService, contextMenuService, configurationService);
-		this._clearSearchAction = this.instantiationService.createInstance(ClearSearchAction, ClearSearchAction.ID, ClearSearchAction.LABEL, this);
+		//this._clearSearchAction = this.instantiationService.createInstance(ClearSearchAction, ClearSearchAction.ID, ClearSearchAction.LABEL, this);
 		this._addServerAction = this.instantiationService.createInstance(AddServerAction,
 			AddServerAction.ID,
 			AddServerAction.LABEL);
@@ -75,42 +74,15 @@ export class ConnectionViewletPanel extends ViewletPanel {
 	}
 
 	renderBody(container: HTMLElement): void {
-		let parentBuilder = new Builder(container);
-		parentBuilder.div({ class: 'server-explorer-viewlet' }, (viewletContainer) => {
-			viewletContainer.div({ class: 'search-box' }, (searchBoxContainer) => {
-				let searchServerString = localize('Search server names', 'Search server names');
-				this._searchBox = new InputBox(
-					searchBoxContainer.getHTMLElement(),
-					null,
-					{
-						placeholder: searchServerString,
-						actions: [this._clearSearchAction],
-						ariaLabel: searchServerString
-					}
-				);
-
-				this._searchBox.onDidChange(() => {
-					this.search(this._searchBox.value);
-				});
-
-				// Theme styler
-				this._toDisposeViewlet.push(attachInputBoxStyler(this._searchBox, this.themeService));
-
-			});
-			viewletContainer.div({ Class: 'object-explorer-view' }, (viewContainer) => {
-				this._serverTreeView.renderBody(viewContainer.getHTMLElement()).then(() => {
-					Promise.resolve(null);
-				}, error => {
-					console.warn('render registered servers: ' + error);
-					Promise.resolve(null);
-				});
-			});
+		const viewletContainer = DOM.append(container, DOM.$('div.server-explorer-viewlet'));
+		const viewContainer = DOM.append(viewletContainer, DOM.$('div.object-explorer-view'));
+		this._serverTreeView.renderBody(viewContainer).then(undefined, error => {
+			console.warn('render registered servers: ' + error);
 		});
 		this._root = container;
 	}
 
 	layoutBody(size: number): void {
-		this._searchBox.layout();
 		this._serverTreeView.layout(size - 46); // account for search box and horizontal scroll bar
 		DOM.toggleClass(this._root, 'narrow', this._root.clientWidth < 300);
 	}
@@ -147,14 +119,10 @@ export class ConnectionViewletPanel extends ViewletPanel {
 
 	public clearSearch() {
 		this._serverTreeView.refreshTree();
-		this._searchBox.value = '';
-		this._clearSearchAction.enabled = false;
-		this._searchBox.focus();
 	}
 
 	public search(value: string): void {
 		if (value) {
-			this._clearSearchAction.enabled = true;
 			this._serverTreeView.searchTree(value);
 		} else {
 			this.clearSearch();

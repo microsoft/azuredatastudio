@@ -7,13 +7,11 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { IInsightsConfig } from 'sql/parts/dashboard/widgets/insights/interfaces';
+import { IInsightsConfig } from 'sql/workbench/parts/dashboard/widgets/insights/interfaces';
 import { IScriptingService } from 'sql/platform/scripting/common/scriptingService';
 import { IRestoreDialogController } from 'sql/platform/restore/common/restoreService';
 import { IAngularEventingService, AngularEventType } from 'sql/platform/angularEventing/common/angularEventingService';
 import { IInsightsDialogService } from 'sql/workbench/services/insights/common/insightsDialogService';
-import { IAdminService } from 'sql/workbench/services/admin/common/adminService';
-import * as Constants from 'sql/common/constants';
 import { Task } from 'sql/platform/tasks/common/tasks';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
@@ -58,22 +56,13 @@ export class NewQueryAction extends Task {
 	}
 
 	public runTask(accessor: ServicesAccessor, profile: IConnectionProfile): Promise<void> {
-		return new Promise<void>((resolve, reject) => {
-			TaskUtilities.newQuery(
-				profile,
-				accessor.get<IConnectionManagementService>(IConnectionManagementService),
-				accessor.get<IQueryEditorService>(IQueryEditorService),
-				accessor.get<IObjectExplorerService>(IObjectExplorerService),
-				accessor.get<IEditorService>(IEditorService)
-			).then(
-				result => {
-					resolve(void 0);
-				},
-				error => {
-					resolve(void 0);
-				}
-				);
-		});
+		return TaskUtilities.newQuery(
+			profile,
+			accessor.get<IConnectionManagementService>(IConnectionManagementService),
+			accessor.get<IQueryEditorService>(IQueryEditorService),
+			accessor.get<IObjectExplorerService>(IObjectExplorerService),
+			accessor.get<IEditorService>(IEditorService)
+		).then();
 	}
 }
 
@@ -91,21 +80,13 @@ export class ScriptSelectAction extends Action {
 	}
 
 	public run(actionContext: BaseActionContext): Promise<boolean> {
-		return new Promise<boolean>((resolve, reject) => {
-			TaskUtilities.scriptSelect(
-				actionContext.profile,
-				actionContext.object,
-				this._connectionManagementService,
-				this._queryEditorService,
-				this._scriptingService
-			).then(
-				result => {
-					resolve(true);
-				},
-				error => {
-					resolve(false);
-				});
-		});
+		return TaskUtilities.scriptSelect(
+			actionContext.profile,
+			actionContext.object,
+			this._connectionManagementService,
+			this._queryEditorService,
+			this._scriptingService
+		).then(() => true);
 	}
 }
 
@@ -124,24 +105,15 @@ export class ScriptExecuteAction extends Action {
 	}
 
 	public run(actionContext: BaseActionContext): Promise<boolean> {
-		return new Promise<boolean>((resolve, reject) => {
-			TaskUtilities.script(
-				actionContext.profile,
-				actionContext.object,
-				this._connectionManagementService,
-				this._queryEditorService,
-				this._scriptingService,
-				TaskUtilities.ScriptOperation.Execute,
-				this._errorMessageService
-			).then(
-				result => {
-					resolve(true);
-				},
-				error => {
-					resolve(false);
-				}
-				);
-		});
+		return TaskUtilities.script(
+			actionContext.profile,
+			actionContext.object,
+			this._connectionManagementService,
+			this._queryEditorService,
+			this._scriptingService,
+			TaskUtilities.ScriptOperation.Execute,
+			this._errorMessageService
+		).then(() => true);
 	}
 }
 
@@ -160,24 +132,15 @@ export class ScriptAlterAction extends Action {
 	}
 
 	public run(actionContext: BaseActionContext): Promise<boolean> {
-		return new Promise<boolean>((resolve, reject) => {
-			TaskUtilities.script(
-				actionContext.profile,
-				actionContext.object,
-				this._connectionManagementService,
-				this._queryEditorService,
-				this._scriptingService,
-				TaskUtilities.ScriptOperation.Alter,
-				this._errorMessageService
-			).then(
-				result => {
-					resolve(true);
-				},
-				error => {
-					resolve(false);
-				}
-				);
-		});
+		return TaskUtilities.script(
+			actionContext.profile,
+			actionContext.object,
+			this._connectionManagementService,
+			this._queryEditorService,
+			this._scriptingService,
+			TaskUtilities.ScriptOperation.Alter,
+			this._errorMessageService
+		).then(() => true);
 	}
 }
 
@@ -195,22 +158,13 @@ export class EditDataAction extends Action {
 	}
 
 	public run(actionContext: BaseActionContext): Promise<boolean> {
-		return new Promise<boolean>((resolve, reject) => {
-			TaskUtilities.scriptEditSelect(
-				actionContext.profile,
-				actionContext.object,
-				this._connectionManagementService,
-				this._queryEditorService,
-				this._scriptingService
-			).then(
-				result => {
-					resolve(true);
-				},
-				error => {
-					resolve(false);
-				}
-				);
-		});
+		return TaskUtilities.scriptEditSelect(
+			actionContext.profile,
+			actionContext.object,
+			this._connectionManagementService,
+			this._queryEditorService,
+			this._scriptingService
+		).then(() => true);
 	}
 }
 
@@ -229,24 +183,15 @@ export class ScriptCreateAction extends Action {
 	}
 
 	public run(actionContext: BaseActionContext): Promise<boolean> {
-		return new Promise<boolean>((resolve, reject) => {
-			TaskUtilities.script(
-				actionContext.profile,
-				actionContext.object,
-				this._connectionManagementService,
-				this._queryEditorService,
-				this._scriptingService,
-				TaskUtilities.ScriptOperation.Create,
-				this._errorMessageService
-			).then(
-				result => {
-					resolve(true);
-				},
-				error => {
-					resolve(false);
-				}
-				);
-		});
+		return TaskUtilities.script(
+			actionContext.profile,
+			actionContext.object,
+			this._connectionManagementService,
+			this._queryEditorService,
+			this._scriptingService,
+			TaskUtilities.ScriptOperation.Create,
+			this._errorMessageService
+		).then(() => true);
 	}
 }
 
@@ -265,31 +210,24 @@ export class ScriptDeleteAction extends Action {
 	}
 
 	public run(actionContext: BaseActionContext): Promise<boolean> {
-		return new Promise<boolean>((resolve, reject) => {
-			TaskUtilities.script(
-				actionContext.profile,
-				actionContext.object,
-				this._connectionManagementService,
-				this._queryEditorService,
-				this._scriptingService,
-				TaskUtilities.ScriptOperation.Delete,
-				this._errorMessageService
-			).then(
-				result => {
-					resolve(true);
-				},
-				error => {
-					resolve(false);
-				}
-				);
-		});
+		return TaskUtilities.script(
+			actionContext.profile,
+			actionContext.object,
+			this._connectionManagementService,
+			this._queryEditorService,
+			this._scriptingService,
+			TaskUtilities.ScriptOperation.Delete,
+			this._errorMessageService
+		).then(() => true);
 	}
 }
 
+export const BackupFeatureName = 'backup';
+
 export class BackupAction extends Task {
-	public static readonly ID = Constants.BackupFeatureName;
+	public static readonly ID = BackupFeatureName;
 	public static readonly LABEL = nls.localize('backupAction.backup', 'Backup');
-	public static readonly ICON = Constants.BackupFeatureName;
+	public static readonly ICON = BackupFeatureName;
 
 	constructor() {
 		super({
@@ -300,7 +238,7 @@ export class BackupAction extends Task {
 		});
 	}
 
-	runTask(accessor: ServicesAccessor, profile: IConnectionProfile): Promise<void> {
+	runTask(accessor: ServicesAccessor, profile: IConnectionProfile): void | Promise<void> {
 		if (!profile) {
 			let objectExplorerService = accessor.get<IObjectExplorerService>(IObjectExplorerService);
 			let connectionManagementService = accessor.get<IConnectionManagementService>(IConnectionManagementService);
@@ -310,31 +248,22 @@ export class BackupAction extends Task {
 		let configurationService = accessor.get<IConfigurationService>(IConfigurationService);
 		let previewFeaturesEnabled: boolean = configurationService.getValue('workbench')['enablePreviewFeatures'];
 		if (!previewFeaturesEnabled) {
-			return new Promise<void>((resolve, reject) => {
-				accessor.get<INotificationService>(INotificationService).info(nls.localize('backup.isPreviewFeature', 'You must enable preview features in order to use backup'));
-			});
+			return accessor.get<INotificationService>(INotificationService).info(nls.localize('backup.isPreviewFeature', 'You must enable preview features in order to use backup'));
 		}
 
-		return new Promise<void>((resolve, reject) => {
-			TaskUtilities.showBackup(
-				profile,
-				accessor.get<IBackupUiService>(IBackupUiService)
-			).then(
-				result => {
-					resolve(void 0);
-				},
-				error => {
-					resolve(void 0);
-				}
-				);
-		});
+		TaskUtilities.showBackup(
+			profile,
+			accessor.get<IBackupUiService>(IBackupUiService)
+		).then();
 	}
 }
 
+export const RestoreFeatureName = 'restore';
+
 export class RestoreAction extends Task {
-	public static readonly ID = Constants.RestoreFeatureName;
+	public static readonly ID = RestoreFeatureName;
 	public static readonly LABEL = nls.localize('restoreAction.restore', 'Restore');
-	public static readonly ICON = Constants.RestoreFeatureName;
+	public static readonly ICON = RestoreFeatureName;
 
 	constructor() {
 		super({
@@ -345,28 +274,17 @@ export class RestoreAction extends Task {
 		});
 	}
 
-	runTask(accessor: ServicesAccessor, profile: IConnectionProfile): Promise<void> {
+	runTask(accessor: ServicesAccessor, profile: IConnectionProfile): void | Promise<void> {
 		let configurationService = accessor.get<IConfigurationService>(IConfigurationService);
 		let previewFeaturesEnabled: boolean = configurationService.getValue('workbench')['enablePreviewFeatures'];
 		if (!previewFeaturesEnabled) {
-			return new Promise<void>((resolve, reject) => {
-				accessor.get<INotificationService>(INotificationService).info(nls.localize('restore.isPreviewFeature', 'You must enable preview features in order to use restore'));
-			});
+			return accessor.get<INotificationService>(INotificationService).info(nls.localize('restore.isPreviewFeature', 'You must enable preview features in order to use restore'));
 		}
 
-		return new Promise<void>((resolve, reject) => {
-			TaskUtilities.showRestore(
-				profile,
-				accessor.get<IRestoreDialogController>(IRestoreDialogController)
-			).then(
-				result => {
-					resolve(void 0);
-				},
-				error => {
-					resolve(void 0);
-				}
-				);
-		});
+		TaskUtilities.showRestore(
+			profile,
+			accessor.get<IRestoreDialogController>(IRestoreDialogController)
+		).then();
 	}
 }
 
@@ -383,18 +301,12 @@ export class ManageAction extends Action {
 	}
 
 	run(actionContext: ManageActionContext): Promise<boolean> {
-		let self = this;
-		return new Promise<boolean>((resolve, reject) => {
-			self._connectionManagementService.connect(actionContext.profile, actionContext.uri, { showDashboard: true, saveTheConnection: false, params: undefined, showConnectionDialogOnError: false, showFirewallRuleOnError: true }).then(
-				() => {
-					self._angularEventingService.sendAngularEvent(actionContext.uri, AngularEventType.NAV_DATABASE);
-					resolve(true);
-				},
-				error => {
-					resolve(error);
-				}
-			);
-		});
+		return this._connectionManagementService.connect(actionContext.profile, actionContext.uri, { showDashboard: true, saveTheConnection: false, params: undefined, showConnectionDialogOnError: false, showFirewallRuleOnError: true }).then(
+			() => {
+				this._angularEventingService.sendAngularEvent(actionContext.uri, AngularEventType.NAV_DATABASE);
+				return true;
+			}
+		);
 	}
 }
 
@@ -410,31 +322,8 @@ export class InsightAction extends Action {
 	}
 
 	run(actionContext: InsightActionContext): Promise<boolean> {
-		let self = this;
-		return new Promise<boolean>((resolve, reject) => {
-			self._insightsDialogService.show(actionContext.insight, actionContext.profile);
-			resolve(true);
-		});
-	}
-}
-
-export class NewDatabaseAction extends Action {
-	public static ID = 'newDatabase';
-	public static LABEL = nls.localize('newDatabase', 'New Database');
-	public static ICON = 'new-database';
-
-	constructor(
-		id: string, label: string, icon: string,
-		@IAdminService private _adminService: IAdminService,
-		@IErrorMessageService private _errorMessageService: IErrorMessageService,
-	) {
-		super(id, label, icon);
-	}
-
-	run(actionContext: BaseActionContext): Promise<boolean> {
-		return new Promise<boolean>((resolve, reject) => {
-			TaskUtilities.showCreateDatabase(actionContext.profile, this._adminService, this._errorMessageService);
-		});
+		this._insightsDialogService.show(actionContext.insight, actionContext.profile);
+		return Promise.resolve(true);
 	}
 }
 
@@ -454,12 +343,6 @@ export class ConfigureDashboardAction extends Task {
 	}
 
 	runTask(accessor: ServicesAccessor): Promise<void> {
-		return new Promise<void>((resolve, reject) => {
-			accessor.get<IWindowsService>(IWindowsService).openExternal(ConfigureDashboardAction.configHelpUri).then((result) => {
-				resolve(void 0);
-			}, err => {
-				resolve(void 0);
-			});
-		});
+		return accessor.get<IWindowsService>(IWindowsService).openExternal(ConfigureDashboardAction.configHelpUri).then();
 	}
 }

@@ -10,7 +10,6 @@ import { DropdownDataSource, DropdownFilter, DropdownModel, DropdownRenderer, Dr
 
 import { IContextViewProvider, ContextView } from 'vs/base/browser/ui/contextview/contextview';
 import { mixin } from 'vs/base/common/objects';
-import { Builder, $ } from 'sql/base/browser/builder';
 import { InputBox, IInputBoxStyles } from 'sql/base/browser/ui/inputBox/inputBox';
 import { IMessage, MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import { IListStyles } from 'vs/base/browser/ui/list/listWidget';
@@ -22,6 +21,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
+import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 
 export interface IDropdownOptions extends IDropdownStyles {
 	/**
@@ -74,9 +74,9 @@ const defaults: IDropdownOptions = {
 };
 
 export class Dropdown extends Disposable {
-	private $el: Builder;
-	private $input: Builder;
-	private $treeContainer: Builder;
+	private _el: HTMLElement;
+	private _inputContainer: HTMLElement;
+	private _treeContainer: HTMLElement;
 	private _input: InputBox;
 	private _tree: Tree;
 	private _options: IDropdownOptions;
@@ -101,16 +101,19 @@ export class Dropdown extends Disposable {
 	constructor(
 		container: HTMLElement,
 		contextViewService: IContextViewProvider,
+		readonly layoutService: ILayoutService,
 		opt?: IDropdownOptions
 	) {
 		super();
-		this._contextView = new ContextView(document.body);
+		this._contextView = new ContextView(layoutService.container);
 		this._options = opt || Object.create(null);
 		mixin(this._options, defaults, false) as IDropdownOptions;
-		this.$el = $('.monaco-dropdown').style('width', '100%').appendTo(container);
+		this._el = DOM.append(container, DOM.$('.monaco-dropdown'));
+		this._el.style.width = '100%';
 
-		this.$input = $('.dropdown-input').style('width', '100%').appendTo(this.$el);
-		this.$treeContainer = $('.dropdown-tree');
+		this._inputContainer = DOM.append(this._el, DOM.$('.dropdown-input'));
+		this._inputContainer.style.width = '100%';
+		this._treeContainer = DOM.$('.dropdown-tree');
 
 		this._toggleAction = new ToggleDropdownAction(() => {
 			this._showList();
@@ -118,7 +121,7 @@ export class Dropdown extends Disposable {
 			this._tree.focusFirst();
 		}, this._options.actionLabel);
 
-		this._input = new InputBox(this.$input.getHTMLElement(), contextViewService, {
+		this._input = new InputBox(this._inputContainer, contextViewService, {
 			validationOptions: {
 				// @SQLTODO
 				//showMessage: false,
@@ -156,7 +159,7 @@ export class Dropdown extends Disposable {
 					e.stopPropagation();
 					break;
 				case KeyCode.Escape:
-					if (this.$treeContainer.getHTMLElement().parentElement) {
+					if (this._treeContainer.parentElement) {
 						this._input.validate();
 						this._onBlur.fire();
 						this._contextView.hide();
@@ -170,7 +173,7 @@ export class Dropdown extends Disposable {
 					e.stopPropagation();
 					break;
 				case KeyCode.DownArrow:
-					if (!this.$treeContainer.getHTMLElement().parentElement) {
+					if (!this._treeContainer.parentElement) {
 						this._showList();
 					}
 					this._tree.domFocus();
@@ -181,7 +184,7 @@ export class Dropdown extends Disposable {
 			}
 		}));
 
-		this._tree = new Tree(this.$treeContainer.getHTMLElement(), {
+		this._tree = new Tree(this._treeContainer, {
 			dataSource: this._dataSource,
 			filter: this._filter,
 			renderer: this._renderer,
@@ -214,9 +217,6 @@ export class Dropdown extends Disposable {
 		});
 
 		this._register(this._contextView);
-		this._register(this.$el);
-		this._register(this.$input);
-		this._register(this.$treeContainer);
 		this._register(this._tree);
 		this._register(this._input);
 		this._register(this._contextView);
@@ -227,14 +227,14 @@ export class Dropdown extends Disposable {
 			this._onFocus.fire();
 			this._filter.filterString = '';
 			this._contextView.show({
-				getAnchor: () => this.$input.getHTMLElement(),
+				getAnchor: () => this._inputContainer,
 				render: container => {
-					this.$treeContainer.appendTo(container);
+					DOM.append(container, this._treeContainer);
 					this._layoutTree();
 					return { dispose: () => { } };
 				},
 				onDOMEvent: e => {
-					if (!DOM.isAncestor(e.srcElement, this.$el.getHTMLElement()) && !DOM.isAncestor(e.srcElement, this.$treeContainer.getHTMLElement())) {
+					if (!DOM.isAncestor((<HTMLElement>e.srcElement), this._el) && !DOM.isAncestor((<HTMLElement>e.srcElement), this._treeContainer)) {
 						this._input.validate();
 						this._onBlur.fire();
 						this._contextView.hide();
@@ -254,8 +254,9 @@ export class Dropdown extends Disposable {
 				}
 			}, 0);
 			let height = filteredLength * this._renderer.getHeight() > this._options.maxHeight! ? this._options.maxHeight! : filteredLength * this._renderer.getHeight();
-			this.$treeContainer.style('height', height + 'px').style('width', DOM.getContentWidth(this.$input.getHTMLElement()) - 2 + 'px');
-			this._tree.layout(parseInt(this.$treeContainer.style('height')));
+			this._treeContainer.style.height = height + 'px';
+			this._treeContainer.style.width = DOM.getContentWidth(this._inputContainer) - 2 + 'px';
+			this._tree.layout(parseInt(this._treeContainer.style.height));
 			this._tree.refresh();
 		}
 	}
@@ -265,8 +266,9 @@ export class Dropdown extends Disposable {
 			this._filter.filterString = '';
 			this._dataSource.options = vals.map(i => { return { value: i }; });
 			let height = this._dataSource.options.length * 22 > this._options.maxHeight! ? this._options.maxHeight! : this._dataSource.options.length * 22;
-			this.$treeContainer.style('height', height + 'px').style('width', DOM.getContentWidth(this.$input.getHTMLElement()) - 2 + 'px');
-			this._tree.layout(parseInt(this.$treeContainer.style('height')));
+			this._treeContainer.style.height = height + 'px';
+			this._treeContainer.style.width = DOM.getContentWidth(this._inputContainer) - 2 + 'px';
+			this._tree.layout(parseInt(this._treeContainer.style.height));
 			this._tree.setInput(new DropdownModel());
 			this._input.validate();
 		}
@@ -292,13 +294,11 @@ export class Dropdown extends Disposable {
 	style(style: IListStyles & IInputBoxStyles & IDropdownStyles) {
 		this._tree.style(style);
 		this._input.style(style);
-		if (style.contextBackground) {
-			this.$treeContainer.style('background-color', style.contextBackground.toString());
-		}
-		this.$treeContainer.style('outline', `1px solid ${style.contextBorder || this._options.contextBorder}`);
+		this._treeContainer.style.backgroundColor = style.contextBackground ? style.contextBackground.toString() : null;
+		this._treeContainer.style.outline = `1px solid ${style.contextBorder || this._options.contextBorder}`;
 	}
 
-	private _inputValidator(value: string): IMessage {
+	private _inputValidator(value: string): IMessage | null {
 		if (this._dataSource.options && !this._dataSource.options.find(i => i.value === value)) {
 			if (this._options.strictSelection && this._options.errorMessage) {
 				return {
@@ -313,7 +313,7 @@ export class Dropdown extends Disposable {
 			}
 		}
 
-		return undefined;
+		return null;
 	}
 
 	public set enabled(val: boolean) {

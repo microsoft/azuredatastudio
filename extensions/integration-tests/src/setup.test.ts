@@ -8,6 +8,19 @@
 import 'mocha';
 import * as vscode from 'vscode';
 import { context } from './testContext';
+import assert = require('assert');
+import { getConfigValue, EnvironmentVariable_BDC_SERVER, EnvironmentVariable_BDC_USERNAME, EnvironmentVariable_BDC_PASSWORD, EnvironmentVariable_AZURE_PASSWORD, EnvironmentVariable_AZURE_SERVER, EnvironmentVariable_AZURE_USERNAME, EnvironmentVariable_STANDALONE_PASSWORD, EnvironmentVariable_STANDALONE_SERVER, EnvironmentVariable_STANDALONE_USERNAME, EnvironmentVariable_PYTHON_PATH } from './utils';
+
+assert(getConfigValue(EnvironmentVariable_BDC_SERVER) !== undefined &&
+	getConfigValue(EnvironmentVariable_BDC_USERNAME) !== undefined &&
+	getConfigValue(EnvironmentVariable_BDC_PASSWORD) !== undefined &&
+	getConfigValue(EnvironmentVariable_AZURE_PASSWORD) !== undefined &&
+	getConfigValue(EnvironmentVariable_AZURE_SERVER) !== undefined &&
+	getConfigValue(EnvironmentVariable_AZURE_USERNAME) !== undefined &&
+	getConfigValue(EnvironmentVariable_STANDALONE_PASSWORD) !== undefined &&
+	getConfigValue(EnvironmentVariable_STANDALONE_SERVER) !== undefined &&
+	getConfigValue(EnvironmentVariable_STANDALONE_USERNAME) !== undefined &&
+	getConfigValue(EnvironmentVariable_PYTHON_PATH) !== undefined, 'Required environment variables are not set, if you see this error in the build pipeline, make sure the environment variables are set properly in the build definition, otherwise for local dev environment make sure you follow the instructions in the readme file.');
 
 if (!context.RunTest) {
 	suite('integration test setup', () => {

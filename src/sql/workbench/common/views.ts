@@ -21,6 +21,7 @@ export interface ITreeItem extends vsITreeItem {
 	providerHandle?: string;
 	childProvider?: string;
 	payload?: IConnectionProfile; // its possible we will want this to be more generic
+	sqlIcon?: string;
 }
 
 export interface ITreeView extends vsITreeView {

@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { IInsightsLabel, IInsightsConfigDetails } from 'sql/parts/dashboard/widgets/insights/interfaces';
+import { IInsightsLabel, IInsightsConfigDetails } from 'sql/workbench/parts/dashboard/widgets/insights/interfaces';
 import { InsightsDialogModel } from 'sql/workbench/services/insights/common/insightsDialogModel';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 

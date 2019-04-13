@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import * as azdata from 'azdata';
 import * as path from 'path';
@@ -21,17 +20,17 @@ import {
 	SqlMainContext, MainThreadNotebookDocumentsAndEditorsShape, SqlExtHostContext, ExtHostNotebookDocumentsAndEditorsShape,
 	INotebookDocumentsAndEditorsDelta, INotebookEditorAddData, INotebookShowOptions, INotebookModelAddedData, INotebookModelChangedData
 } from 'sql/workbench/api/node/sqlExtHost.protocol';
-import { NotebookInput } from 'sql/parts/notebook/notebookInput';
+import { NotebookInput } from 'sql/workbench/parts/notebook/notebookInput';
 import { INotebookService, INotebookEditor, IProviderInfo } from 'sql/workbench/services/notebook/common/notebookService';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { disposed } from 'vs/base/common/errors';
-import { ICellModel, NotebookContentChange, INotebookModel } from 'sql/parts/notebook/models/modelInterfaces';
-import { NotebookChangeType, CellTypes } from 'sql/parts/notebook/models/contracts';
+import { ICellModel, NotebookContentChange, INotebookModel } from 'sql/workbench/parts/notebook/models/modelInterfaces';
+import { NotebookChangeType, CellTypes } from 'sql/workbench/parts/notebook/models/contracts';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
-import { notebookModeId } from 'sql/common/constants';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { viewColumnToEditorGroup } from 'vs/workbench/api/common/shared/editor';
+import { notebookModeId } from 'sql/parts/common/customInputConverter';
 
 class MainThreadNotebookEditor extends Disposable {
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
@@ -122,8 +121,21 @@ class MainThreadNotebookEditor extends Disposable {
 		if (!this.editor) {
 			return Promise.resolve(false);
 		}
-
 		return this.editor.runCell(cell);
+	}
+
+	public runAllCells(): Promise<boolean> {
+		if (!this.editor) {
+			return Promise.resolve(false);
+		}
+		return this.editor.runAllCells();
+	}
+
+	public clearAllOutputs(): Promise<boolean> {
+		if (!this.editor) {
+			return Promise.resolve(false);
+		}
+		return this.editor.clearAllOutputs();
 	}
 }
 
@@ -359,6 +371,22 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		return editor.runCell(cell);
 	}
 
+	$runAllCells(id: string): Promise<boolean> {
+		let editor = this.getEditor(id);
+		if (!editor) {
+			return Promise.reject(disposed(`TextEditor(${id})`));
+		}
+		return editor.runAllCells();
+	}
+
+	$clearAllOutputs(id: string): Promise<boolean> {
+		let editor = this.getEditor(id);
+		if (!editor) {
+			return Promise.reject(disposed(`TextEditor(${id})`));
+		}
+		return editor.clearAllOutputs();
+	}
+
 	//#endregion
 
 	private async doOpenEditor(resource: UriComponents, options: INotebookShowOptions): Promise<string> {
@@ -370,13 +398,17 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		};
 		let isUntitled: boolean = uri.scheme === Schemas.untitled;
 
-		const fileInput = isUntitled ? this._untitledEditorService.createOrGet(uri, notebookModeId) :
-										this._editorService.createInput({resource: uri, language: notebookModeId});
+		const fileInput = isUntitled ? this._untitledEditorService.createOrGet(uri, notebookModeId, options.initialContent) :
+			this._editorService.createInput({ resource: uri, language: notebookModeId });
 		let input = this._instantiationService.createInstance(NotebookInput, path.basename(uri.fsPath), uri, fileInput);
 		input.isTrusted = isUntitled;
 		input.defaultKernel = options.defaultKernel;
 		input.connectionProfile = new ConnectionProfile(this._capabilitiesService, options.connectionProfile);
-
+		if (isUntitled) {
+			let untitledModel = await input.textInput.resolve();
+			untitledModel.load();
+			input.untitledEditorModel = untitledModel;
+		}
 		let editor = await this._editorService.openEditor(input, editorOptions, viewColumnToEditorGroup(this._editorGroupService, options.position));
 		if (!editor) {
 			return undefined;

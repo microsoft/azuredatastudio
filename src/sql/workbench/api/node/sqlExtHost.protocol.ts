@@ -24,6 +24,7 @@ import {
 import { EditorViewColumn } from 'vs/workbench/api/common/shared/editor';
 import { IUndoStopOptions } from 'vs/workbench/api/common/extHost.protocol';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
+import { IQueryEvent } from 'sql/platform/query/common/queryModel';
 
 export abstract class ExtHostAccountManagementShape {
 	$autoOAuthCancelled(handle: number): Thenable<void> { throw ni(); }
@@ -757,11 +758,14 @@ export interface MainThreadModelViewDialogShape extends IDisposable {
 	$setDirty(handle: number, isDirty: boolean): void;
 }
 export interface ExtHostQueryEditorShape {
+	$onQueryEvent(handle: number, fileUri:string, event: IQueryEvent): void;
 }
 
 export interface MainThreadQueryEditorShape extends IDisposable {
 	$connect(fileUri: string, connectionId: string): Thenable<void>;
 	$runQuery(fileUri: string): void;
+	$createQueryTab(fileUri: string, title: string, content: string): void;
+	$registerQueryInfoListener(handle: number, providerId: string): void;
 }
 
 export interface ExtHostNotebookShape {
@@ -850,6 +854,7 @@ export interface INotebookShowOptions {
 	providerId?: string;
 	connectionProfile?: azdata.IConnectionProfile;
 	defaultKernel?: azdata.nb.IKernelSpec;
+	initialContent?: string;
 }
 
 export interface ExtHostNotebookDocumentsAndEditorsShape {
@@ -862,6 +867,8 @@ export interface MainThreadNotebookDocumentsAndEditorsShape extends IDisposable 
 	$tryShowNotebookDocument(resource: UriComponents, options: INotebookShowOptions): Promise<string>;
 	$tryApplyEdits(id: string, modelVersionId: number, edits: ISingleNotebookEditOperation[], opts: IUndoStopOptions): Promise<boolean>;
 	$runCell(id: string, cellUri: UriComponents): Promise<boolean>;
+	$runAllCells(id: string): Promise<boolean>;
+	$clearAllOutputs(id: string): Promise<boolean>;
 }
 
 export interface ExtHostExtensionManagementShape {

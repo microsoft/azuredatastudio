@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import { ElementRef, AfterContentChecked, ViewChild } from '@angular/core';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 import { IAction, Action } from 'vs/base/common/actions';
 import { ResolvedKeybinding } from 'vs/base/common/keyCodes';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
@@ -37,7 +37,8 @@ export abstract class JobManagementView extends TabChild implements AfterContent
 		protected _dashboardService: IDashboardService,
 		protected _contextMenuService: IContextMenuService,
 		protected _keybindingService: IKeybindingService,
-		protected _instantiationService: IInstantiationService) {
+		protected _instantiationService: IInstantiationService,
+		protected _agentViewComponent: AgentViewComponent) {
 		super();
 
 		let self = this;
@@ -110,12 +111,16 @@ export abstract class JobManagementView extends TabChild implements AfterContent
 		let refreshAction = this._instantiationService.createInstance(JobsRefreshAction);
 		let newAction: Action = this._instantiationService.createInstance(this.contextAction);
 		let taskbar = <HTMLElement>this.actionBarContainer.nativeElement;
-		this._actionBar = new Taskbar(taskbar, this._contextMenuService);
-		this._actionBar.context = this;
+		this._actionBar = new Taskbar(taskbar);
 		this._actionBar.setContent([
 			{ action: refreshAction },
 			{ action: newAction }
 		]);
+		this._actionBar.context = { component: this };
+	}
+
+	public refreshJobs() {
+		this._agentViewComponent.refresh = true;
 	}
 }
 
