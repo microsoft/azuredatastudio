@@ -382,7 +382,7 @@ export class ExtHostWorkspace implements ExtHostWorkspaceShape, IExtHostWorkspac
 		// Events
 		this._onDidChangeWorkspace.fire(Object.freeze({
 			added,
-			removed
+			removed,
 		}));
 	}
 

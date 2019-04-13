@@ -94,8 +94,7 @@ export async function rename(model: ITextModel, position: Position, newName: str
 
 // ---  register actions and commands
 
-// {{SQL CARBON EDIT}}
-export class RenameController extends Disposable implements IEditorContribution {
+class RenameController extends Disposable implements IEditorContribution {
 
 	private static readonly ID = 'editor.contrib.renameController';
 
