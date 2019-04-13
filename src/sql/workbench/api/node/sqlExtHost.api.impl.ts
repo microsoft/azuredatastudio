@@ -533,7 +533,8 @@ export function createApiFactory(
 				extensions: extensions,
 				SchemaUpdateAction: sqlExtHostTypes.SchemaUpdateAction,
 				SchemaDifferenceType: sqlExtHostTypes.SchemaDifferenceType,
-				SchemaCompareEndpointType: sqlExtHostTypes.SchemaCompareEndpointType
+				SchemaCompareEndpointType: sqlExtHostTypes.SchemaCompareEndpointType,
+				SchemaObjectType: sqlExtHostTypes.SchemaObjectType
 			};
 		},
 

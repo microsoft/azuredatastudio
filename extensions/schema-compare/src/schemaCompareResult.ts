@@ -9,6 +9,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as os from 'os';
 import * as path from 'path';
+import { SchemaCompareOptionsDialog } from './dialogs/schemaCompareOptions';
 const localize = nls.loadMessageBundle();
 
 export class SchemaCompareResult {
@@ -23,10 +24,13 @@ export class SchemaCompareResult {
 	private switchButton: azdata.ButtonComponent;
 	private compareButton: azdata.ButtonComponent;
 	private generateScriptButton: azdata.ButtonComponent;
+	private optionsButton: azdata.ButtonComponent;
 	private SchemaCompareActionMap: Map<Number, string>;
 	private comparisonResult: azdata.SchemaCompareResult;
 	private sourceNameComponent: azdata.TableComponent;
 	private targetNameComponent: azdata.TableComponent;
+	private schemaCompareOptions: azdata.SchemaCompareOptions;
+	private schemaCompareOptionDialog: SchemaCompareOptionsDialog;
 
 	constructor(private sourceName: string, private targetName: string, private sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, private targetEndpointInfo: azdata.SchemaCompareEndpointInfo) {
 		this.SchemaCompareActionMap = new Map<Number, string>();
@@ -35,6 +39,7 @@ export class SchemaCompareResult {
 		this.SchemaCompareActionMap[azdata.SchemaUpdateAction.Add] = localize('schemaCompare.addAction', 'Add');
 
 		this.editor = azdata.workspace.createModelViewEditor(localize('schemaCompare.Title', 'Schema Compare'), { retainContextWhenHidden: true, supportsSave: true });
+		this.GetDefaultSchemaCompareOptions();
 
 		this.editor.registerContent(async view => {
 			this.differencesTable = view.modelBuilder.table().withProperties({
@@ -66,16 +71,18 @@ export class SchemaCompareResult {
 			this.createSwitchButton(view);
 			this.createCompareButton(view);
 			this.createGenerateScriptButton(view);
+			this.createOptionsButton(view);
 			this.resetButtons();
 
 			let toolBar = view.modelBuilder.toolbarContainer();
 			toolBar.addToolbarItems([{
 				component: this.compareButton
 			}, {
-				component: this.generateScriptButton,
+				component: this.generateScriptButton
+			}, {
+				component: this.optionsButton,
 				toolbarSeparatorAfter: true
-			},
-			{
+			}, {
 				component: this.switchButton
 			}]);
 
@@ -142,8 +149,13 @@ export class SchemaCompareResult {
 	}
 
 	private async execute() {
+		if (this.schemaCompareOptionDialog && this.schemaCompareOptionDialog.schemaCompareOptions){
+			// take updates if any
+			this.schemaCompareOptions = this.schemaCompareOptionDialog.schemaCompareOptions;
+		}
+
 		let service = await SchemaCompareResult.getService('MSSQL');
-		this.comparisonResult = await service.schemaCompare(this.sourceEndpointInfo, this.targetEndpointInfo, azdata.TaskExecutionMode.execute);
+		this.comparisonResult = await service.schemaCompare(this.sourceEndpointInfo, this.targetEndpointInfo, azdata.TaskExecutionMode.execute, this.schemaCompareOptions);
 		if (!this.comparisonResult || !this.comparisonResult.success) {
 			vscode.window.showErrorMessage(localize('schemaCompare.compareErrorMessage', "Schema Compare failed: {0}", this.comparisonResult.errorMessage ? this.comparisonResult.errorMessage : 'Unknown'));
 			return;
@@ -309,6 +321,26 @@ export class SchemaCompareResult {
 		});
 	}
 
+	private createOptionsButton(view: azdata.ModelView) {
+		let fileIcon = path.join(__dirname, '.', 'media', 'generate-script.svg'); //placeholder
+
+		this.optionsButton = view.modelBuilder.button().withProperties({
+			label: localize('schemaCompare.optionsButton', 'Options'),
+			iconPath: fileIcon
+		}).component();
+
+		this.optionsButton.onDidClick(async (click) => {
+			//restore options from last time
+			if(this.schemaCompareOptionDialog && this.schemaCompareOptionDialog.schemaCompareOptions)
+			{
+				this.schemaCompareOptions = this.schemaCompareOptionDialog.schemaCompareOptions;
+			}
+			// create fresh every time
+			this.schemaCompareOptionDialog = new SchemaCompareOptionsDialog(this.schemaCompareOptions);
+			await this.schemaCompareOptionDialog.openDialog();
+		});
+	}
+
 	private resetButtons() {
 		this.compareButton.enabled = false;
 		this.switchButton.enabled = false;
@@ -352,6 +384,113 @@ export class SchemaCompareResult {
 
 			this.reExecute();
 		});
+	}
+
+	private GetDefaultSchemaCompareOptions() {
+		// Same as dacfx default options
+		this.schemaCompareOptions = {
+			IgnoreTableOptions: false,
+			IgnoreSemicolonBetweenStatements: true,
+			IgnoreRouteLifetime: true,
+			IgnoreRoleMembership: false,
+			IgnoreQuotedIdentifiers: true,
+			IgnorePermissions: false,
+			IgnorePartitionSchemes: false,
+			IgnoreObjectPlacementOnPartitionScheme: true,
+			IgnoreNotForReplication: false,
+			IgnoreLoginSids: true,
+			IgnoreLockHintsOnIndexes: false,
+			IgnoreKeywordCasing: true,
+			IgnoreIndexPadding: true,
+			IgnoreIndexOptions: false,
+			IgnoreIncrement: false,
+			IgnoreIdentitySeed: false,
+			IgnoreUserSettingsObjects: false,
+			IgnoreFullTextCatalogFilePath: true,
+			IgnoreWhitespace: true,
+			IgnoreWithNocheckOnForeignKeys: false,
+			VerifyCollationCompatibility: true,
+			UnmodifiableObjectWarnings: true,
+			TreatVerificationErrorsAsWarnings: false,
+			ScriptRefreshModule: true,
+			ScriptNewConstraintValidation: true,
+			ScriptFileSize: false,
+			ScriptDeployStateChecks: false,
+			ScriptDatabaseOptions: false,
+			ScriptDatabaseCompatibility: false,
+			ScriptDatabaseCollation: false,
+			RunDeploymentPlanExecutors: false,
+			RegisterDataTierApplication: false,
+			PopulateFilesOnFileGroups: true,
+			NoAlterStatementsToChangeClrTypes: false,
+			IncludeTransactionalScripts: false,
+			IncludeCompositeObjects: false,
+			AllowUnsafeRowLevelSecurityDataMovement: false,
+			IgnoreWithNocheckOnCheckConstraints: false,
+			IgnoreFillFactor: true,
+			IgnoreFileSize: true,
+			IgnoreFilegroupPlacement: true,
+			DoNotAlterReplicatedObjects: true,
+			DoNotAlterChangeDataCaptureObjects: true,
+			DisableAndReenableDdlTriggers: true,
+			DeployDatabaseInSingleUserMode: false,
+			CreateNewDatabase: false,
+			CompareUsingTargetCollation: false,
+			CommentOutSetVarDeclarations: false,
+			BlockWhenDriftDetected: false,
+			BlockOnPossibleDataLoss: true,
+			BackupDatabaseBeforeChanges: false,
+			AllowIncompatiblePlatform: false,
+			AllowDropBlockingAssemblies: false,
+			DropConstraintsNotInSource: true,
+			DropDmlTriggersNotInSource: true,
+			DropExtendedPropertiesNotInSource: true,
+			DropIndexesNotInSource: true,
+			IgnoreFileAndLogFilePath: true,
+			IgnoreExtendedProperties: false,
+			IgnoreDmlTriggerState: false,
+			IgnoreDmlTriggerOrder: false,
+			IgnoreDefaultSchema: false,
+			IgnoreDdlTriggerState: false,
+			IgnoreDdlTriggerOrder: false,
+			IgnoreCryptographicProviderFilePath: true,
+			VerifyDeployment: true,
+			IgnoreComments: false,
+			IgnoreColumnCollation: false,
+			IgnoreAuthorizer: false,
+			IgnoreAnsiNulls: true,
+			GenerateSmartDefaults: false,
+			DropStatisticsNotInSource: true,
+			DropRoleMembersNotInSource: false,
+			DropPermissionsNotInSource: false,
+			DropObjectsNotInSource: true,
+			IgnoreColumnOrder: false,
+			DoNotDropObjectTypes: null,
+			ExcludeObjectTypes: [
+				azdata.SchemaObjectType.ServerTriggers,
+				azdata.SchemaObjectType.Routes,
+				azdata.SchemaObjectType.LinkedServerLogins,
+				azdata.SchemaObjectType.Endpoints,
+				azdata.SchemaObjectType.ErrorMessages,
+				azdata.SchemaObjectType.Filegroups,
+				azdata.SchemaObjectType.Logins,
+				azdata.SchemaObjectType.LinkedServers,
+				azdata.SchemaObjectType.Credentials,
+				azdata.SchemaObjectType.DatabaseScopedCredentials,
+				azdata.SchemaObjectType.DatabaseEncryptionKeys,
+				azdata.SchemaObjectType.MasterKeys,
+				azdata.SchemaObjectType.DatabaseAuditSpecifications,
+				azdata.SchemaObjectType.Audits,
+				azdata.SchemaObjectType.ServerAuditSpecifications,
+				azdata.SchemaObjectType.CryptographicProviders,
+				azdata.SchemaObjectType.ServerRoles,
+				azdata.SchemaObjectType.EventSessions,
+				azdata.SchemaObjectType.DatabaseOptions,
+				azdata.SchemaObjectType.EventNotifications,
+				azdata.SchemaObjectType.ServerRoleMembership,
+				azdata.SchemaObjectType.AssemblyFiles,
+			]
+		};
 	}
 
 	private static async getService(providerName: string): Promise<azdata.SchemaCompareServicesProvider> {

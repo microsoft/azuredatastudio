@@ -440,6 +440,7 @@ export interface SchemaCompareParams {
 	sourceEndpointInfo: azdata.SchemaCompareEndpointInfo;
 	targetEndpointInfo: azdata.SchemaCompareEndpointInfo;
 	taskExecutionMode: TaskExecutionMode;
+	schemaCompareOptions: azdata.SchemaCompareOptions;
 }
 
  export interface SchemaCompareGenerateScriptParams {

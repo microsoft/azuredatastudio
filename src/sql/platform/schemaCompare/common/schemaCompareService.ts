@@ -17,7 +17,7 @@ export interface ISchemaCompareService {
 	_serviceBrand: any;
 
 	registerProvider(providerId: string, provider: azdata.SchemaCompareServicesProvider): void;
-	schemaCompare(sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode): void;
+	schemaCompare(sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, schemaComapareOptions: azdata.SchemaCompareOptions): void;
 	schemaCompareGenerateScript(operationId: string, targetDatabaseName: string, scriptFilePath: string, taskExecutionMode: azdata.TaskExecutionMode): void;
 }
 
@@ -31,9 +31,9 @@ export class SchemaCompareService implements ISchemaCompareService {
 		this._providers[providerId] = provider;
 	}
 
-	schemaCompare(sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.SchemaCompareResult> {
+	schemaCompare(sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, schemacompareOptions: azdata.SchemaCompareOptions): Thenable<azdata.SchemaCompareResult> {
 		return this._runAction(sourceEndpointInfo.ownerUri, (runner) => {
-			return runner.schemaCompare(sourceEndpointInfo, targetEndpointInfo, taskExecutionMode);
+			return runner.schemaCompare(sourceEndpointInfo, targetEndpointInfo, taskExecutionMode, schemacompareOptions);
 		});
 	}
 
