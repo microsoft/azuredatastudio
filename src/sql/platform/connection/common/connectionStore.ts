@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import { ReverseLookUpMap } from 'sql/base/common/map';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionConfig } from 'sql/platform/connection/common/connectionConfig';
@@ -14,7 +12,7 @@ import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/co
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ICredentialsService } from 'sql/platform/credentials/common/credentialsService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IStateService } from 'vs/platform/state/common/state';
+import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 
 const MAX_CONNECTIONS_DEFAULT = 25;
 
@@ -34,13 +32,22 @@ const CRED_PROFILE_USER = 'Profile';
 export class ConnectionStore {
 	private groupIdMap = new ReverseLookUpMap<string, string>();
 	private connectionConfig = new ConnectionConfig(this.configurationService, this.capabilitiesService);
+	private mru: Array<IConnectionProfile>;
 
 	constructor(
-		@IStateService private stateService: IStateService,
+		@IStorageService private storageService: IStorageService,
 		@IConfigurationService private configurationService: IConfigurationService,
 		@ICredentialsService private credentialService: ICredentialsService,
 		@ICapabilitiesService private capabilitiesService: ICapabilitiesService
 	) {
+		try {
+			const configRaw = this.storageService.get(RECENT_CONNECTIONS_STATE_KEY, StorageScope.GLOBAL, '[]');
+			this.mru = JSON.parse(configRaw);
+		} catch (e) {
+			this.mru = [];
+		}
+
+		this.storageService.onWillSaveState(() => this.storageService.store(RECENT_CONNECTIONS_STATE_KEY, JSON.stringify(this.mru), StorageScope.GLOBAL));
 	}
 
 	/**
@@ -52,9 +59,9 @@ export class ConnectionStore {
 	 * @returns {string} formatted string with server, DB and username
 	 */
 	private formatCredentialId(connectionProfile: IConnectionProfile, itemType?: string): string {
-		let connectionProfileInstance: ConnectionProfile = ConnectionProfile.fromIConnectionProfile(
+		const connectionProfileInstance: ConnectionProfile = ConnectionProfile.fromIConnectionProfile(
 			this.capabilitiesService, connectionProfile);
-		let cred: string[] = [CRED_PREFIX];
+		const cred: string[] = [CRED_PREFIX];
 		if (!itemType) {
 			itemType = CRED_PROFILE_USER;
 		}
@@ -70,7 +77,7 @@ export class ConnectionStore {
 	 */
 	public isPasswordRequired(connection: IConnectionProfile): boolean {
 		if (connection) {
-			let connectionProfile = ConnectionProfile.fromIConnectionProfile(this.capabilitiesService, connection);
+			const connectionProfile = ConnectionProfile.fromIConnectionProfile(this.capabilitiesService, connection);
 			return connectionProfile.isPasswordRequired();
 		} else {
 			return false;
@@ -79,7 +86,7 @@ export class ConnectionStore {
 
 	public addSavedPassword(credentialsItem: IConnectionProfile): Promise<{ profile: IConnectionProfile, savedCred: boolean }> {
 		if (credentialsItem.savePassword && this.isPasswordRequired(credentialsItem) && !credentialsItem.password) {
-			let credentialId = this.formatCredentialId(credentialsItem, CRED_PROFILE_USER);
+			const credentialId = this.formatCredentialId(credentialsItem, CRED_PROFILE_USER);
 			return this.credentialService.readCredential(credentialId)
 				.then(savedCred => {
 					if (savedCred) {
@@ -104,7 +111,7 @@ export class ConnectionStore {
 	 */
 	public saveProfile(profile: IConnectionProfile, forceWritePlaintextPassword?: boolean): Promise<IConnectionProfile> {
 		// Add the profile to the saved list, taking care to clear out the password field if necessary
-		let savedProfile = forceWritePlaintextPassword ? profile : this.getProfileWithoutPassword(profile);
+		const savedProfile = forceWritePlaintextPassword ? profile : this.getProfileWithoutPassword(profile);
 		return this.saveProfileToConfig(savedProfile)
 			.then(savedConnectionProfile => {
 				profile.groupId = savedConnectionProfile.groupId;
@@ -144,18 +151,17 @@ export class ConnectionStore {
 	 * @returns {azdata.ConnectionInfo} the array of connections, empty if none are found
 	 */
 	public getRecentlyUsedConnections(providers?: string[]): ConnectionProfile[] {
-		let configValues = this.stateService.getItem<IConnectionProfile[]>(RECENT_CONNECTIONS_STATE_KEY, []).filter(c => !!c);
-
+		let mru = this.mru.slice();
 		if (providers && providers.length > 0) {
-			configValues = configValues.filter(c => providers.includes(c.providerName));
+			mru = mru.filter(c => providers.includes(c.providerName));
 		}
-		return this.convertConfigValuesToConnectionProfiles(configValues);
+		return this.convertConfigValuesToConnectionProfiles(mru);
 	}
 
 	private convertConfigValuesToConnectionProfiles(configValues: IConnectionProfile[]): ConnectionProfile[] {
 		return configValues.map(c => {
 			if (c) {
-				let connectionProfile = new ConnectionProfile(this.capabilitiesService, c);
+				const connectionProfile = new ConnectionProfile(this.capabilitiesService, c);
 				if (connectionProfile.saveProfile) {
 					if (!connectionProfile.groupFullName && connectionProfile.groupId) {
 						connectionProfile.groupFullName = this.getGroupFullName(connectionProfile.groupId);
@@ -194,13 +200,13 @@ export class ConnectionStore {
 	 * @returns {Promise<void>} a Promise that returns when the connection was saved
 	 */
 	public addRecentConnection(conn: IConnectionProfile): Promise<void> {
-		let maxConnections = this.getMaxRecentConnectionsCount();
-		return this.addConnectionToState(conn, RECENT_CONNECTIONS_STATE_KEY, maxConnections, conn.savePassword);
+		const maxConnections = this.getMaxRecentConnectionsCount();
+		return this.addConnectionToState(conn, maxConnections, conn.savePassword);
 	}
 
-	private addConnectionToState(conn: IConnectionProfile, key: string, maxConnections?: number, savePassword?: boolean): Promise<void> {
+	private addConnectionToState(conn: IConnectionProfile, maxConnections?: number, savePassword?: boolean): Promise<void> {
 		// Get all profiles
-		let configValues = this.getConnectionsFromState(key);
+		const configValues = this.convertConfigValuesToConnectionProfiles(this.mru.slice());
 		let configToSave = this.addToConnectionList(conn, configValues);
 		if (maxConnections) {
 			// Remove last element if needed
@@ -208,24 +214,12 @@ export class ConnectionStore {
 				configToSave = configToSave.slice(0, maxConnections);
 			}
 		}
-		this.stateService.setItem(key, configToSave);
+		this.mru = configToSave;
 		return savePassword ? this.doSavePassword(conn).then() : Promise.resolve();
 	}
 
-	private removeConnectionFromState(conn: IConnectionProfile, key: string): void {
-		// Get all profiles
-		let configValues = this.getConnectionsFromState(key);
-		let configToSave = this.removeFromConnectionList(conn, configValues);
-
-		this.stateService.setItem(key, configToSave);
-	}
-
-	private getConnectionsFromState(mementoKey: string): ConnectionProfile[] {
-		return this.convertConfigValuesToConnectionProfiles(this.stateService.getItem<IConnectionProfile[]>(mementoKey, []));
-	}
-
 	private addToConnectionList(conn: IConnectionProfile, list: ConnectionProfile[]): IConnectionProfile[] {
-		let savedProfile: ConnectionProfile = this.getProfileWithoutPassword(conn);
+		const savedProfile: ConnectionProfile = this.getProfileWithoutPassword(conn);
 
 		// Remove the connection from the list if it already exists
 		list = list.filter(value => {
@@ -243,7 +237,7 @@ export class ConnectionStore {
 	}
 
 	private removeFromConnectionList(conn: IConnectionProfile, list: ConnectionProfile[]): IConnectionProfile[] {
-		let savedProfile: ConnectionProfile = this.getProfileWithoutPassword(conn);
+		const savedProfile: ConnectionProfile = this.getProfileWithoutPassword(conn);
 
 		// Remove the connection from the list if it already exists
 		list = list.filter(value => {
@@ -262,11 +256,15 @@ export class ConnectionStore {
 	 * Clear all recently used connections from the MRU list.
 	 */
 	public clearRecentlyUsed(): void {
-		this.stateService.setItem(RECENT_CONNECTIONS_STATE_KEY, []);
+		this.mru = new Array<IConnectionProfile>();
 	}
 
 	public removeRecentConnection(conn: IConnectionProfile): void {
-		this.removeConnectionFromState(conn, RECENT_CONNECTIONS_STATE_KEY);
+		// Get all profiles
+		const configValues = this.convertConfigValuesToConnectionProfiles(this.mru.slice());
+		const configToSave = this.removeFromConnectionList(conn, configValues);
+
+		this.mru = configToSave;
 	}
 
 	private saveProfilePasswordIfNeeded(profile: IConnectionProfile): Promise<boolean> {
@@ -278,7 +276,7 @@ export class ConnectionStore {
 
 	private doSavePassword(conn: IConnectionProfile): Promise<boolean> {
 		if (conn.password) {
-			let credentialId = this.formatCredentialId(conn);
+			const credentialId = this.formatCredentialId(conn);
 			return this.credentialService.saveCredential(credentialId, conn.password);
 		} else {
 			return Promise.resolve(true);
@@ -293,15 +291,14 @@ export class ConnectionStore {
 				profilesInConfiguration = profilesInConfiguration.filter(x => providers.includes(x.providerName));
 			}
 		}
-		let groups = this.connectionConfig.getAllGroups();
+		const groups = this.connectionConfig.getAllGroups();
 
-		let connectionProfileGroups = this.convertToConnectionGroup(groups, profilesInConfiguration, undefined);
-		return connectionProfileGroups;
+		return this.convertToConnectionGroup(groups, profilesInConfiguration, undefined);
 	}
 
 	private convertToConnectionGroup(groups: IConnectionProfileGroup[], connections: ConnectionProfile[], parent: ConnectionProfileGroup = undefined): ConnectionProfileGroup[] {
-		let result: ConnectionProfileGroup[] = [];
-		let children = groups.filter(g => g.parentId === (parent ? parent.id : undefined));
+		const result: ConnectionProfileGroup[] = [];
+		const children = groups.filter(g => g.parentId === (parent ? parent.id : undefined));
 		if (children) {
 			children.map(group => {
 				let connectionGroup = new ConnectionProfileGroup(group.name, parent, group.id, group.color, group.description);
@@ -328,7 +325,7 @@ export class ConnectionStore {
 	}
 
 	public getGroupFromId(groupId: string): IConnectionProfileGroup {
-		let groups = this.connectionConfig.getAllGroups();
+		const groups = this.connectionConfig.getAllGroups();
 		return groups.find(group => group.id === groupId);
 	}
 
@@ -381,7 +378,7 @@ export class ConnectionStore {
 		if (groupFullName === ConnectionProfileGroup.GroupNameSeparator) {
 			groupFullName = '';
 		}
-		let key = groupFullName.toUpperCase();
+		const key = groupFullName.toUpperCase();
 		if (!this.groupIdMap.reverseHas(key)) {
 			// Load the cache
 			this.getConnectionProfileGroups(true);

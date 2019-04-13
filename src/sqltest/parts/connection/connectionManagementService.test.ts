@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import { ConnectionDialogTestService } from 'sqltest/stubs/connectionDialogTestService';
 import { ConnectionManagementService } from 'sql/platform/connection/common/connectionManagementService';
 import { ConnectionStatusManager } from 'sql/platform/connection/common/connectionStatusManager';
@@ -83,7 +81,7 @@ suite('SQL ConnectionManagementService tests', () => {
 
 		capabilitiesService = new CapabilitiesTestService();
 		connectionDialogService = TypeMoq.Mock.ofType(ConnectionDialogTestService);
-		connectionStore = TypeMoq.Mock.ofType(ConnectionStore);
+		connectionStore = TypeMoq.Mock.ofType(ConnectionStore, TypeMoq.MockBehavior.Loose, new TestStorageService());
 		workbenchEditorService = TypeMoq.Mock.ofType(WorkbenchEditorTestService);
 		editorGroupService = TypeMoq.Mock.ofType(EditorGroupTestService);
 		connectionStatusManager = new ConnectionStatusManager(capabilitiesService);
