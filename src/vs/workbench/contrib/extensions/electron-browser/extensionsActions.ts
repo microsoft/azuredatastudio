@@ -183,7 +183,7 @@ export class InstallAction extends ExtensionAction {
 			return;
 		}
 
-		this.enabled = this.extensionsWorkbenchService.canInstall(this.extension) && this.extension.state === ExtensionState.Uninstalled;
+		this.enabled = this.extensionsWorkbenchService.canInstall(this.extension) && !this.extensionsWorkbenchService.local.some(e => areSameExtensions(e.identifier, this.extension.identifier));
 		this.class = this.extension.state === ExtensionState.Installing ? InstallAction.InstallingClass : InstallAction.Class;
 		this.updateLabel();
 	}
@@ -1195,9 +1195,10 @@ export class ReloadAction extends ExtensionAction {
 		}
 		const isUninstalled = this.extension.state === ExtensionState.Uninstalled;
 		const runningExtension = this._runningExtensions.filter(e => areSameExtensions({ id: e.identifier.value }, this.extension.identifier))[0];
+		const isSameExtensionRunning = runningExtension && this.extension.server === this.extensionManagementServerService.getExtensionManagementServer(runningExtension.extensionLocation);
 
 		if (isUninstalled) {
-			if (runningExtension) {
+			if (isSameExtensionRunning) {
 				this.enabled = true;
 				this.label = localize('reloadRequired', "Reload Required");
 				// {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
@@ -1210,7 +1211,6 @@ export class ReloadAction extends ExtensionAction {
 			const isEnabled = this.extensionEnablementService.isEnabled(this.extension.local);
 			if (runningExtension) {
 				// Extension is running
-				const isSameExtensionRunning = this.extension.server === this.extensionManagementServerService.getExtensionManagementServer(runningExtension.extensionLocation);
 				const isSameVersionRunning = isSameExtensionRunning && this.extension.version === runningExtension.version;
 				if (isEnabled) {
 					if (!isSameVersionRunning && !this.extensionService.canAddExtension(toExtensionDescription(this.extension.local))) {
@@ -2484,6 +2484,7 @@ export class StatusLabelAction extends Action implements IExtensionContainer {
 				return canAddExtension() ? this.initialStatus === ExtensionState.Installed ? localize('updated', "Updated") : localize('installed', "Installed") : null;
 			}
 			if (currentStatus === ExtensionState.Uninstalling && this.status === ExtensionState.Uninstalled) {
+				this.initialStatus = this.status;
 				return canRemoveExtension() ? localize('uninstalled', "Uninstalled") : null;
 			}
 		}
