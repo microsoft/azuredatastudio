@@ -534,30 +534,6 @@ export function createApiFactory(
 
 		// "sqlops" namespace provided for back-compat only, add new interfaces to "azdata"
 		sqlopsFactory: function (extension: IExtensionDescription): typeof sqlops {
-			// namespace: accounts
-			const accounts: typeof sqlops.accounts = {
-				registerAccountProvider(providerMetadata: sqlops.AccountProviderMetadata, provider: sqlops.AccountProvider): vscode.Disposable {
-					return extHostAccountManagement.$registerAccountProvider(providerMetadata, provider);
-				},
-				beginAutoOAuthDeviceCode(providerId: string, title: string, message: string, userCode: string, uri: string): Thenable<void> {
-					return extHostAccountManagement.$beginAutoOAuthDeviceCode(providerId, title, message, userCode, uri);
-				},
-				endAutoOAuthDeviceCode(): void {
-					return extHostAccountManagement.$endAutoOAuthDeviceCode();
-				},
-				accountUpdated(updatedAccount: sqlops.Account): void {
-					return extHostAccountManagement.$accountUpdated(updatedAccount);
-				},
-				getAllAccounts(): Thenable<sqlops.Account[]> {
-					return extHostAccountManagement.$getAllAccounts();
-				},
-				getSecurityToken(account: sqlops.Account, resource?: sqlops.AzureResource): Thenable<{}> {
-					return extHostAccountManagement.$getSecurityToken(account, resource);
-				},
-				onDidChangeAccounts(listener: (e: sqlops.DidChangeAccountsParams) => void, thisArgs?: any, disposables?: extHostTypes.Disposable[]) {
-					return extHostAccountManagement.onDidChangeAccounts(listener, thisArgs, disposables);
-				}
-			};
 
 			// namespace: connection
 			const connection: typeof sqlops.connection = {
@@ -626,12 +602,6 @@ export function createApiFactory(
 				},
 			};
 
-			// namespace: serialization
-			const resources: typeof sqlops.resources = {
-				registerResourceProvider(providerMetadata: sqlops.ResourceProviderMetadata, provider: sqlops.ResourceProvider): vscode.Disposable {
-					return extHostResourceProvider.$registerResourceProvider(providerMetadata, provider);
-				}
-			};
 
 			let registerConnectionProvider = (provider: sqlops.ConnectionProvider): vscode.Disposable => {
 				// Connection callbacks
@@ -958,11 +928,9 @@ export function createApiFactory(
 			};
 
 			return {
-				accounts,
 				connection,
 				credentials,
 				objectexplorer: objectExplorer,
-				resources,
 				serialization,
 				dataprotocol,
 				DataProviderType: sqlExtHostTypes.DataProviderType,
