@@ -49,10 +49,10 @@ export class RowDetailView {
 
 	public destroy() {
 		this._handler.unsubscribeAll();
-		this.onAsyncResponse.unsubscribe(undefined);
-		this.onAsyncEndUpdate.unsubscribe(undefined);
-		this.onAfterRowDetailToggle.unsubscribe(undefined);
-		this.onBeforeRowDetailToggle.unsubscribe(undefined);
+		this.onAsyncResponse.unsubscribe();
+		this.onAsyncEndUpdate.unsubscribe();
+		this.onAfterRowDetailToggle.unsubscribe();
+		this.onBeforeRowDetailToggle.unsubscribe();
 	}
 
 	public getOptions(options: any) {
@@ -73,7 +73,7 @@ export class RowDetailView {
 				return;
 			}
 
-			let item = this._dataView.getItem(args.row);
+			const item = this._dataView.getItem(args.row);
 
 			// trigger an event before toggling
 			this.onBeforeRowDetailToggle.notify({
@@ -102,21 +102,21 @@ export class RowDetailView {
 	// If we scroll save detail views that go out of cache range
 	public handleScroll(e, args) {
 
-		let range = this._grid.getRenderedRange();
+		const range = this._grid.getRenderedRange();
 
-		let start: number = (range.top > 0 ? range.top : 0);
-		let end: number = (range.bottom > this._dataView.getLength() ? range.bottom : this._dataView.getLength());
+		const start: number = (range.top > 0 ? range.top : 0);
+		const end: number = (range.bottom > this._dataView.getLength() ? range.bottom : this._dataView.getLength());
 		if (end <= 0) {
 			return;
 		}
 
 		// Get the item at the top of the view
-		let topMostItem = this._dataView.getItemByIdx(start);
+		const topMostItem = this._dataView.getItemByIdx(start);
 
 		// Check it is a parent item
 		if (topMostItem._parent === undefined) {
 			// This is a standard row as we have no parent.
-			let nextItem = this._dataView.getItemByIdx(start + 1);
+			const nextItem = this._dataView.getItemByIdx(start + 1);
 			if (nextItem !== undefined && nextItem._parent !== undefined) {
 				// This is likely the expanded Detail Row View
 				// Check for safety
@@ -127,7 +127,7 @@ export class RowDetailView {
 		}
 
 		// Find the bottom most item that is likely to go off screen
-		let bottomMostItem = this._dataView.getItemByIdx(end - 1);
+		const bottomMostItem = this._dataView.getItemByIdx(end - 1);
 
 		// If we are a detailView and we are about to go out of cache view
 		if (bottomMostItem._parent !== undefined) {
@@ -151,9 +151,9 @@ export class RowDetailView {
 
 	// Saves the current state of the detail view
 	public saveDetailView(item) {
-		let view = jQuery('#innerDetailView_' + item.id);
+		const view = jQuery('#innerDetailView_' + item.id);
 		if (view) {
-			let html = jQuery('#innerDetailView_' + item.id).html();
+			const html = jQuery('#innerDetailView_' + item.id).html();
 			if (html !== undefined) {
 				item._detailContent = html;
 			}
@@ -231,7 +231,6 @@ export class RowDetailView {
 
 			args.itemDetail._detailViewLoaded = true;
 
-			let idxParent = this._dataView.getIdxById(args.itemDetail.id);
 			this._dataView.updateItem(args.itemDetail.id, args.itemDetail);
 
 			// trigger an event once the post template is finished loading
@@ -255,9 +254,9 @@ export class RowDetailView {
 	//////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////
 	public getPaddingItem(parent, offset) {
-		let item: any = {};
+		const item: any = {};
 
-		for (let prop in this._grid.getData()) {
+		for (const prop in this._grid.getData()) {
 			item[prop] = null;
 		}
 		item.id = parent.id + '.' + offset;
@@ -272,7 +271,7 @@ export class RowDetailView {
 	}
 
 	public getErrorItem(parent, offset) {
-		let item: any = {};
+		const item: any = {};
 		item.id = parent.id + '.' + offset;
 		item._collapsed = true;
 		item._isPadding = false;
@@ -288,15 +287,15 @@ export class RowDetailView {
 	//////////////////////////////////////////////////////////////
 	public applyTemplateNewLineHeight(item, showError = false) {
 		// the height seems to be calculated by the template row count (how many line of items does the template have)
-		let rowCount = this._options.panelRows;
+		const rowCount = this._options.panelRows;
 
 		//calculate padding requirements based on detail-content..
 		//ie. worst-case: create an invisible dom node now &find it's height.
-		let lineHeight = 13; //we know cuz we wrote the custom css innit ;)
+		const lineHeight = 13; //we know cuz we wrote the custom css innit ;)
 		item._sizePadding = Math.ceil(((rowCount * 2) * lineHeight) / this._grid.getOptions().rowHeight);
 		item._height = (item._sizePadding * this._grid.getOptions().rowHeight);
 
-		let idxParent = this._dataView.getIdxById(item.id);
+		const idxParent = this._dataView.getIdxById(item.id);
 		for (let idx = 1; idx <= item._sizePadding; idx++) {
 			if (showError) {
 				this._dataView.insertItem(idxParent + idx, this.getErrorItem(item, 'error'));
@@ -336,9 +335,9 @@ export class RowDetailView {
 		} else if (dataContext._collapsed) {
 			return '<div class=\'detailView-toggle expand\'></div>';
 		} else {
-			let html = [];
-			let rowHeight = this._grid.getOptions().rowHeight;
-			let bottomMargin = 5;
+			const html: Array<string> = [];
+			const rowHeight = this._grid.getOptions().rowHeight;
+			const bottomMargin = 5;
 
 			//V313HAX:
 			//putting in an extra closing div after the closing toggle div and ommiting a
@@ -369,9 +368,9 @@ export class RowDetailView {
 		}
 
 		// Grad each of the dom items
-		let mainContainer = document.getElementById('detailViewContainer_' + item.id);
-		let cellItem = document.getElementById('cellDetailView_' + item.id);
-		let inner = document.getElementById('innerDetailView_' + item.id);
+		const mainContainer = document.getElementById('detailViewContainer_' + item.id);
+		const cellItem = document.getElementById('cellDetailView_' + item.id);
+		const inner = document.getElementById('innerDetailView_' + item.id);
 
 		if (!mainContainer || !cellItem || !inner) {
 			return;
@@ -381,14 +380,14 @@ export class RowDetailView {
 			this._dataView.deleteItem(item.id + '.' + idx);
 		}
 
-		let rowHeight = this._grid.getOptions().rowHeight; // height of a row
-		let lineHeight = 13; //we know cuz we wrote the custom css innit ;)
+		const rowHeight = this._grid.getOptions().rowHeight; // height of a row
+		const lineHeight = 13; //we know cuz we wrote the custom css innit ;)
 
 		// Get the inner Item height as this will be the actual size
-		let itemHeight = inner.clientHeight;
+		const itemHeight = inner.clientHeight;
 
 		// Now work out how many rows
-		let rowCount = Math.ceil(itemHeight / rowHeight) + 1;
+		const rowCount = Math.ceil(itemHeight / rowHeight) + 1;
 
 		item._sizePadding = Math.ceil(((rowCount * 2) * lineHeight) / rowHeight);
 		item._height = (item._sizePadding * rowHeight);
@@ -404,7 +403,7 @@ export class RowDetailView {
 			cellItem.setAttribute('style', `height: ${item._height}px;top:${rowHeight}px`);
 		}
 
-		let idxParent = this._dataView.getIdxById(item.id);
+		const idxParent = this._dataView.getIdxById(item.id);
 		for (let idx = 1; idx <= item._sizePadding; idx++) {
 			this._dataView.insertItem(idxParent + idx, this.getPaddingItem(item, idx));
 		}
