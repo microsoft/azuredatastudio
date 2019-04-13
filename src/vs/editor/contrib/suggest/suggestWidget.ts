@@ -214,14 +214,7 @@ class Renderer implements IListRenderer<CompletionItem, ISuggestionTemplateData>
 	}
 
 	disposeTemplate(templateData: ISuggestionTemplateData): void {
-		// {{SQL CARBON EDIT}}
-		if (templateData.iconLabel) {
-			templateData.iconLabel.dispose();
-		}
-		// {{SQL CARBON EDIT}}
-		if (templateData.disposables) {
-			templateData.disposables = dispose(templateData.disposables);
-		}
+		templateData.disposables = dispose(templateData.disposables);
 	}
 }
 

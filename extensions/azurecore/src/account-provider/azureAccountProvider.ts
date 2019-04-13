@@ -431,6 +431,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 					name: tokenResponse.userId,
 					displayInfo: {
 						accountType: accountType,
+						userId: tokenResponse.userId,
 						contextualDisplayName: contextualDisplayName,
 						displayName: displayName
 					},

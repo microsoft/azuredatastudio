@@ -36,7 +36,9 @@ const account: azdata.Account = {
 	displayInfo: {
 		displayName: 'Test Account 1',
 		accountType: 'test',
-		contextualDisplayName: 'Azure Account'
+		contextualDisplayName: 'Azure Account',
+		userId: 'user@email.com'
+
 	},
 	isStale: false,
 	properties: {}

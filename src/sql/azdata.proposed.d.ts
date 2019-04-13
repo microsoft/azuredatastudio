@@ -2051,9 +2051,14 @@ declare module 'azdata' {
 		accountType: string;
 
 		/**
-		 * A display name that identifies the account, such as "user@contoso.com".
+		 * A display name that identifies the account, such as "User Name".
 		 */
 		displayName: string;
+
+		/**
+		 * User id that identifies the account, such as "user@contoso.com".
+		 */
+		userId: string;
 	}
 
 	/**
