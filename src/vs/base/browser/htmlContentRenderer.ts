@@ -171,7 +171,7 @@ export function renderMarkdown(markdown: IMarkdownString, options: RenderOptions
 			// but update the node with the real result later.
 			const id = defaultGenerator.nextId();
 
-			// {{SQL CARBON EDIT}} - Promise.all not returning the strValue properly in original code?
+			// {{SQL CARBON EDIT}} - Promise.all not returning the strValue properly in original code? @todo anthonydresser 4/12/19 investigate a better way to do this.
 			const promise = value.then(strValue => {
 				withInnerHTML.then(e => {
 					const span = element.querySelector(`div[data-code="${id}"]`);
