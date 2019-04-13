@@ -11,9 +11,15 @@ const LAUNCH_TERMINAL_WINDOWS = 'start cmd.exe';
 const LAUNCH_TERMINAL_MAC = 'open -a Terminal -n';
 const LAUNCH_GIT_BASH_WINDOWS = 'C:\\Program Files\\Git\\git-bash.exe';
 const LAUNCH_VSCODE = 'code';
+const LAUNCH_NONE = 'echo';
+const ENVVARS_WINDOWS = 'set ';
+const ENVVARS_BASH = 'export ';
+const SHLLVL = 'SHLVL'; // environment variable specifying the shell level when we are within a bash or a sh shell
 
 let LAUNCH_OPTION;
+let ENVVARS_OPTION='';
 
+console.log(`${process.argv}`);
 // Parse the command-line argument
 if (process.argv.length === 3 && process.argv[2]) {
 	const argValue = process.argv[2];
@@ -37,7 +43,24 @@ if (process.argv.length === 3 && process.argv[2]) {
 				bashPath = '"' + bashPath + '"';
 			}
 
-			LAUNCH_OPTION = bashPath;
+			LAUNCH_OPTION = `${LAUNCH_TERMINAL_WINDOWS} /k ${bashPath}`;
+			break;
+		case 'ENV':
+			if (os.platform() === 'win32') {
+				if (process.env[SHLLVL])
+				{
+					ENVVARS_OPTION = ENVVARS_BASH;
+				}
+				else
+				{
+					ENVVARS_OPTION = ENVVARS_WINDOWS;
+				}
+			} else if (os.platform() === 'darwin') {
+				ENVVARS_OPTION = ENVVARS_BASH;
+			} else {
+				console.warn(`Launch terminal option is not implemented for your os: ${os.platform()}, vscode will be launched`);
+			}
+			LAUNCH_OPTION = LAUNCH_NONE
 			break;
 		default:
 			break;
@@ -125,11 +148,18 @@ const promises = [];
 // Fetch the values from AKV
 msrestAzure.interactiveLogin().then((credentials) => {
 	const client = new KeyVault.KeyVaultClient(credentials);
+	console.log('Reading secrets from Azure KeyVault!');
+	if (LAUNCH_OPTION == LAUNCH_NONE)
+	{
+		console.log();
+		console.log(`Copy and execute the following ${ENVVARS_OPTION}commands in your shell to define the environemnt variables necessary for test execution`);
+		console.log('################ Copy everything from next line ###########################');
+	}
 	SecretEnVarMapping.forEach(entry => {
 		const secretName = entry[0];
 		const environmentVariable = entry[1];
 		const promise = client.getSecret(AKV_URL, secretName, '').then((result) => {
-			console.log(`${secretName}: ${result.value}`);
+			console.log(`${ENVVARS_OPTION}${environmentVariable}=${result.value}`);
 			process.env[environmentVariable] = result.value;
 		}, (err) => {
 			console.error('An error occured while retrieving the value for secret:' + secretName);
@@ -140,13 +170,21 @@ msrestAzure.interactiveLogin().then((credentials) => {
 
 	Promise.all(promises).then(
 		() => {
-			console.log('Done reading values from Azure KeyVault!');
-			console.log(`Launching new window: ${LAUNCH_OPTION}...`);
-			if (LAUNCH_OPTION === LAUNCH_VSCODE) {
-				console.warn('Trying to lauch vscode, make sure you have it set properly in the PATH environment variable');
+			if (LAUNCH_OPTION == LAUNCH_NONE)
+			{
+				console.log('################ Copy everything upto previous line ###########################');
+				console.log();
 			}
-			child_process.execSync(LAUNCH_OPTION);
-			console.log('New window for running test has been opened.');
+			console.log('Done reading secrets from Azure KeyVault!');
+			// Perform the launch if one was requested
+			if (LAUNCH_OPTION != LAUNCH_NONE) {
+				if (LAUNCH_OPTION === LAUNCH_VSCODE) {
+					console.warn('Trying to launch vscode, make sure you have it set properly in the PATH environment variable');
+				}
+				console.log(`Launching new window: ${LAUNCH_OPTION}...`);
+				child_process.execSync(LAUNCH_OPTION);
+				console.log('New window for running test has been opened.');
+			}
 		}
 	);
 }, (err) => {
