@@ -32,7 +32,7 @@ export class ReverseLookUpMap<K, V> {
 		}
 	}
 
-		public forEach(callbackfn: (value: V, index: K, map: Map<K, V>) => void, thisArg?: any): void {
+	public forEach(callbackfn: (value: V, index: K, map: Map<K, V>) => void, thisArg?: any): void {
 		this.forward.forEach(callbackfn, thisArg);
 	}
 
