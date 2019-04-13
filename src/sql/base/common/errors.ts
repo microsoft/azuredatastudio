@@ -3,16 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-// localizable strings
-
-export const InvalidProvider = 'Provider is invalid';
-
-/**
- * Feature names
- */
-export const RestoreFeatureName = 'restore';
-export const BackupFeatureName = 'backup';
-
-export const MssqlProviderId = 'MSSQL';
-export const notebookModeId = 'notebook';
-
+export function invalidProvider(name?: string): Error {
+	if (name) {
+		return new Error(`Invalid provider: ${name}`);
+	} else {
+		return new Error('Invalid provider');
+	}
+}

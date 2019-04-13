@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import * as TelemetryUtils from 'sql/common/telemetryUtilities';
+import * as TelemetryUtils from 'sql/platform/telemetry/telemetryUtilities';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { TelemetryServiceStub } from 'sqltest/stubs/telemetryServiceStub';
 import * as TypeMoq from 'typemoq';

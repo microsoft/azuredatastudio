@@ -8,7 +8,7 @@ import 'vs/css!sql/parts/profiler/media/profiler';
 import { Modal } from 'sql/workbench/browser/modal/modal';
 import { attachModalDialogStyler } from 'sql/platform/theme/common/styler';
 import { ProfilerInput } from 'sql/parts/profiler/editor/profilerInput';
-import * as TelemetryKeys from 'sql/common/telemetryKeys';
+import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
