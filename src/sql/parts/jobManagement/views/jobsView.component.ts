@@ -19,9 +19,9 @@ import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild
 import { TabChild } from 'sql/base/electron-browser/ui/panel/tab.component';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
-import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowdetailview';
+import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowDetailView';
 import { JobCacheObject } from 'sql/platform/jobManagement/common/jobManagementService';
-import { EditJobAction, DeleteJobAction, NewJobAction, IJobActionInfo } from 'sql/platform/jobManagement/common/jobActions';
+import { EditJobAction, DeleteJobAction, NewJobAction } from 'sql/platform/jobManagement/common/jobActions';
 import { JobManagementUtilities } from 'sql/platform/jobManagement/common/jobManagementUtilities';
 import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
@@ -38,6 +38,7 @@ import { IWorkbenchThemeService, IColorTheme } from 'vs/workbench/services/theme
 import { tableBackground, cellBackground, cellBorderColor } from 'sql/platform/theme/common/colors';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
+import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
 export const ROW_HEIGHT: number = 45;
@@ -179,7 +180,8 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		});
 		this.rowDetail = rowDetail;
 		columns.unshift(this.rowDetail.getColumnDefinition());
-		let filterPlugin = new HeaderFilter({}, this._themeService);
+		let filterPlugin = new HeaderFilter({});
+		this._register(attachButtonStyler(filterPlugin, this._themeService));
 		this.filterPlugin = filterPlugin;
 		jQuery(this._gridEl.nativeElement).empty();
 		jQuery(this.actionBarContainer.nativeElement).empty();

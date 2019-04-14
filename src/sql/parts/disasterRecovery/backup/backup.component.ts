@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------------------------
-*  Copyright (c) Microsoft Corporation. All rights reserved.
-*  Licensed under the Source EULA. See License.txt in the project root for license information.
-*--------------------------------------------------------------------------------------------*/
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!sql/parts/disasterRecovery/backup/media/backupDialog';
 
@@ -31,6 +31,7 @@ import { IContextViewService } from 'vs/platform/contextview/browser/contextView
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ISelectOptionItem } from 'vs/base/browser/ui/selectBox/selectBox';
+import { KeyCode } from 'vs/base/common/keyCodes';
 
 export const BACKUP_SELECTOR: string = 'backup-component';
 
@@ -268,7 +269,26 @@ export class BackupComponent {
 		});
 
 		// Set backup path list
-		this.pathListBox = new ListBox([], this.contextViewService, this.clipboardService);
+		this.pathListBox = new ListBox([], this.contextViewService);
+
+		this.pathListBox.onKeyDown(e => {
+			if (this.pathListBox.selectedOptions.length > 0) {
+				let key = e.keyCode;
+				let ctrlOrCmd = e.ctrlKey || e.metaKey;
+
+				if (ctrlOrCmd && key === KeyCode.KEY_C) {
+					let textToCopy = this.pathListBox.selectedOptions[0];
+					for (let i = 1; i < this.pathListBox.selectedOptions.length; i++) {
+						textToCopy = textToCopy + ', ' + this.pathListBox.selectedOptions[i];
+					}
+
+					// Copy to clipboard
+					this.clipboardService.writeText(textToCopy);
+
+					e.stopPropagation();
+				}
+			}
+		});
 		this.pathListBox.render(this.pathElement.nativeElement);
 
 		// Set backup path add/remove buttons

@@ -122,7 +122,9 @@ const copyrightFilter = [
 	'!extensions/*/server/bin/*',
 	// {{SQL CARBON EDIT}}
 	'!extensions/notebook/src/intellisense/text.ts',
-	'!extensions/mssql/src/objectExplorerNodeProvider/webhdfs.ts'
+	'!extensions/mssql/src/objectExplorerNodeProvider/webhdfs.ts',
+	'!src/sql/base/browser/ui/table/plugins/checkboxSelectColumn.plugin.ts',
+	'!src/sql/base/browser/ui/table/plugins/headerFilter.plugin.ts'
 ];
 
 const eslintFilter = [

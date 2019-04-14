@@ -30,7 +30,7 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardService';
 import { AlertsCacheObject } from 'sql/platform/jobManagement/common/jobManagementService';
-import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowdetailview';
+import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowDetailView';
 
 export const VIEW_SELECTOR: string = 'jobalertsview-component';
 export const ROW_HEIGHT: number = 45;

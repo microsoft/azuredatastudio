@@ -3,15 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as sqlcolors from './colors';
 
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import * as cr from 'vs/platform/theme/common/colorRegistry';
 import { IThemable, attachStyler } from 'vs/platform/theme/common/styler';
 import { IDisposable } from 'vs/base/common/lifecycle';
-import { SIDE_BAR_BACKGROUND, SIDE_BAR_SECTION_HEADER_FOREGROUND, SIDE_BAR_SECTION_HEADER_BACKGROUND, SIDE_BAR_DRAG_AND_DROP_BACKGROUND } from 'vs/workbench/common/theme';
+import { SIDE_BAR_BACKGROUND, SIDE_BAR_SECTION_HEADER_FOREGROUND, SIDE_BAR_SECTION_HEADER_BACKGROUND, SIDE_BAR_DRAG_AND_DROP_BACKGROUND, PANEL_INACTIVE_TITLE_FOREGROUND, PANEL_ACTIVE_TITLE_BORDER, PANEL_ACTIVE_TITLE_FOREGROUND } from 'vs/workbench/common/theme';
 import { IPanelColors } from 'vs/workbench/browser/parts/views/panelViewlet';
 
 export function attachModalDialogStyler(widget: IThemable, themeService: IThemeService, style?:
@@ -279,5 +277,15 @@ export function attachPanelStyler(widget: IThemable, themeService: IThemeService
 		headerBackground: SIDE_BAR_SECTION_HEADER_BACKGROUND,
 		// headerHighContrastBorder: index === 0 ? null : contrastBorder,
 		dropBackground: SIDE_BAR_DRAG_AND_DROP_BACKGROUND
+	}, widget);
+}
+
+export function attachTabbedPanelStyler(widget: IThemable, themeService: IThemeService) {
+	return attachStyler(themeService, {
+		titleActiveForeground: PANEL_ACTIVE_TITLE_FOREGROUND,
+		titleActiveBorder: PANEL_ACTIVE_TITLE_BORDER,
+		titleInactiveForeground: PANEL_INACTIVE_TITLE_FOREGROUND,
+		focusBorder: cr.focusBorder,
+		outline: cr.activeContrastBorder
 	}, widget);
 }

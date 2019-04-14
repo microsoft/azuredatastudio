@@ -41,7 +41,7 @@ suite('Dialog Pane Tests', () => {
 			bootstrapCalls++;
 		});
 		dialog.content = modelViewId;
-		let dialogPane = new DialogPane(dialog.title, dialog.content, () => undefined, undefined, false);
+		let dialogPane = new DialogPane(dialog.title, dialog.content, () => undefined, undefined, undefined, false);
 		dialogPane.createBody(container);
 		assert.equal(bootstrapCalls, 1);
 	});
@@ -55,7 +55,7 @@ suite('Dialog Pane Tests', () => {
 			bootstrapCalls++;
 		});
 		dialog.content = [new DialogTab('', modelViewId)];
-		let dialogPane = new DialogPane(dialog.title, dialog.content, () => undefined, undefined, false);
+		let dialogPane = new DialogPane(dialog.title, dialog.content, () => undefined, undefined, undefined, false);
 		dialogPane.createBody(container);
 		assert.equal(bootstrapCalls, 1);
 	});
@@ -71,7 +71,7 @@ suite('Dialog Pane Tests', () => {
 		let modelViewId1 = 'test_content_1';
 		let modelViewId2 = 'test_content_2';
 		dialog.content = [new DialogTab('tab1', modelViewId1), new DialogTab('tab2', modelViewId2)];
-		let dialogPane = new DialogPane(dialog.title, dialog.content, valid => dialog.notifyValidityChanged(valid), undefined, false);
+		let dialogPane = new DialogPane(dialog.title, dialog.content, valid => dialog.notifyValidityChanged(valid), undefined, undefined, false);
 		dialogPane.createBody(container);
 
 		let validityChanges: boolean[] = [];

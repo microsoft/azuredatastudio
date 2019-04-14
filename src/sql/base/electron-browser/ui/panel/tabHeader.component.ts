@@ -3,8 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!sql/media/icons/common-icons';
-import 'vs/css!./tabHeader';
+import 'vs/css!./media/tabHeader';
 
 import { Component, AfterContentInit, OnDestroy, Input, Output, ElementRef, ViewChild, EventEmitter } from '@angular/core';
 

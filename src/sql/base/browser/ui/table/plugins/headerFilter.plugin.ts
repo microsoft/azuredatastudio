@@ -2,10 +2,11 @@
 // heavily modified
 
 import { mixin } from 'vs/base/common/objects';
-import { Button } from '../../button/button';
-import { attachButtonStyler } from 'sql/platform/theme/common/styler';
+import { IButtonStyles } from 'vs/base/browser/ui/button/button';
+import { localize } from 'vs/nls';
+
+import { Button } from 'sql/base/browser/ui/button/button';
 import { escape } from 'sql/base/common/strings';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
 
 export class HeaderFilter {
 
@@ -28,7 +29,7 @@ export class HeaderFilter {
 	private workingFilters: any;
 	private columnDef: any;
 
-	constructor(options: any, private _themeService: IThemeService) {
+	constructor(options: any) {
 		this.options = mixin(options, this.defaults, false);
 	}
 
@@ -213,14 +214,11 @@ export class HeaderFilter {
 		});
 
 		this.cancelButton = new Button(this.$menu.get(0));
-		this.cancelButton.label = 'Cancel';
-		this.cancelButton.title = 'Cancel';
+		this.cancelButton.label = localize('headerFilter.cancel', "Cancel");
+		this.cancelButton.title = localize('headerFilter.cancel', "Cancel");
 		this.cancelButton.element.id = 'filter-cancel-button';
 		const cancelElement = jQuery('#filter-cancel-button');
 		cancelElement.bind('click', () => this.hideMenu());
-		attachButtonStyler(this.okButton, this._themeService);
-		attachButtonStyler(this.clearButton, this._themeService);
-		attachButtonStyler(this.cancelButton, this._themeService);
 
 		jQuery(':checkbox', $filter).bind('click', (e) => {
 			this.workingFilters = this.changeWorkingFilter(filterItems, this.workingFilters, jQuery(e.target));
@@ -236,6 +234,12 @@ export class HeaderFilter {
 		}
 		this.$menu.css('top', menutop)
 			.css('left', (left > 0 ? left : 0));
+	}
+
+	public style(styles: IButtonStyles): void {
+		this.okButton.style(styles);
+		this.clearButton.style(styles);
+		this.cancelButton.style(styles);
 	}
 
 	private columnsResized() {
