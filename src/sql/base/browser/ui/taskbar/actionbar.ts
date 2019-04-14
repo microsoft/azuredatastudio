@@ -14,7 +14,7 @@ import * as lifecycle from 'vs/base/common/lifecycle';
 import * as DOM from 'vs/base/browser/dom';
 import * as types from 'vs/base/common/types';
 
-let defaultOptions: IActionBarOptions = {
+const defaultOptions: IActionBarOptions = {
 	orientation: ActionsOrientation.HORIZONTAL,
 	context: null
 };
