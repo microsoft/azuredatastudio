@@ -797,9 +797,6 @@ export function createApiFactory(
 				return extHostDataProvider.$registerDacFxServiceProvider(provider);
 			};
 
-			let registerSchemaCompareServicesProvider = (provider: sqlops.SchemaCompareServicesProvider): vscode.Disposable => {
-				return extHostDataProvider.$registerSchemaCompareServiceProvider(provider);
-			};
 
 			// namespace: dataprotocol
 			const dataprotocol: typeof sqlops.dataprotocol = {
@@ -818,7 +815,6 @@ export function createApiFactory(
 				registerAgentServicesProvider,
 				registerCapabilitiesServiceProvider,
 				registerDacFxServicesProvider,
-				registerSchemaCompareServicesProvider,
 				onDidChangeLanguageFlavor(listener: (e: sqlops.DidChangeLanguageFlavorParams) => any, thisArgs?: any, disposables?: extHostTypes.Disposable[]) {
 					return extHostDataProvider.onDidChangeLanguageFlavor(listener, thisArgs, disposables);
 				},
@@ -1007,9 +1003,6 @@ export function createApiFactory(
 				AzureResource: sqlExtHostTypes.AzureResource,
 				extensions: extensions,
 				TreeItem: sqlExtHostTypes.TreeItem,
-				SchemaUpdateAction: sqlExtHostTypes.SchemaUpdateAction,
-				SchemaDifferenceType: sqlExtHostTypes.SchemaDifferenceType,
-				SchemaCompareEndpointType: sqlExtHostTypes.SchemaCompareEndpointType,
 			};
 		}
 	};

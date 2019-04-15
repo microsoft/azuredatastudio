@@ -18,7 +18,7 @@ export class SchemaCompareDialog {
 	private static readonly CancelButtonText: string = localize('schemaCompareDialog.Cancel', 'Cancel');
 	private static readonly SourceTextBoxLabel: string = localize('schemaCompareDialog.SourceLabel', 'Source File');
 	private static readonly TargetTextBoxLabel: string = localize('schemaCompareDialog.TargetLabel', 'Target File');
-	private static readonly DacpacRadioButtonLabel: string = localize('schemaCompare.dacpacRadioButtonLabel', 'Dacpac');
+	private static readonly DacpacRadioButtonLabel: string = localize('schemaCompare.dacpacRadioButtonLabel', 'Data-tier Application File (.dacpac)');
 	private static readonly DatabaseRadioButtonLabel: string = localize('schemaCompare.databaseButtonLabel', 'Database');
 	private static readonly SourceRadioButtonsLabel: string = localize('schemaCompare.sourceButtonsLabel', 'Source Type');
 	private static readonly TargetRadioButtonsLabel: string = localize('schemaCompare.targetButtonsLabel', 'Target Type');
@@ -52,13 +52,13 @@ export class SchemaCompareDialog {
 	constructor(public ownerUri?: string) {
 	}
 
-	protected async initializeDialog() {
+	protected initializeDialog() {
 		this.schemaCompareTab = azdata.window.createTab(SchemaCompareDialog.SchemaCompareLabel);
 		this.initializeSchemaCompareTab();
 		this.dialog.content = [this.schemaCompareTab];
 	}
 
-	public async openDialog(p: any, dialogName?: string) {
+	public openDialog(p: any, dialogName?: string) {
 		let profile = p ? <azdata.IConnectionProfile>p.connectionProfile : undefined;
 		if (profile) {
 			this.database = profile.databaseName;
@@ -67,7 +67,7 @@ export class SchemaCompareDialog {
 		let event = dialogName ? dialogName : null;
 		this.dialog = azdata.window.createModelViewDialog(SchemaCompareDialog.SchemaCompareLabel, event);
 
-		await this.initializeDialog();
+		this.initializeDialog();
 
 		this.dialog.okButton.label = SchemaCompareDialog.CompareButtonText;
 		this.dialog.okButton.onClick(async () => await this.execute());

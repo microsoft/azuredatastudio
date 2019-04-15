@@ -136,7 +136,7 @@ export class SchemaCompareResult {
 		});
 	}
 
-	public async start() {
+	public start() {
 		this.editor.openEditor();
 		this.execute();
 	}
@@ -284,7 +284,7 @@ export class SchemaCompareResult {
 		this.generateScriptButton.onDidClick(async (click) => {
 			// get file path
 			let now = new Date();
-			let datetime = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate() + '-' + now.getHours() + '-' + now.getMinutes();
+			let datetime = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate() + '-' + now.getHours() + '-' + now.getMinutes() + '-' + now.getSeconds();
 			let defaultFilePath = path.join(os.homedir(), this.targetName + '_Update_' + datetime + '.sql');
 			let fileUri = await vscode.window.showSaveDialog(
 				{

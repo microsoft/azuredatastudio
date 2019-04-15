@@ -23,8 +23,6 @@ export default class MainController implements vscode.Disposable {
 		return this._context;
 	}
 
-	/**
-	 */
 	public deactivate(): void {
 	}
 
