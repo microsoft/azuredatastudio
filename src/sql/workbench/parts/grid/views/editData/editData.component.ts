@@ -138,6 +138,8 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 			}
 			self._cd.detectChanges();
 		});
+
+		this.dataService.onAngularLoaded();
 	}
 
 	protected initShortcuts(shortcuts: { [name: string]: Function }): void {
