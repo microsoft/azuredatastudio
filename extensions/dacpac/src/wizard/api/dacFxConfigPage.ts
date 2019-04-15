@@ -15,6 +15,9 @@ import { BasePage } from './basePage';
 import { sanitizeStringForFilename } from './utils';
 
 const localize = nls.loadMessageBundle();
+const isWindows = os.type().includes('Windows');
+const INVALID_FILE_CHARS = isWindows ? /[\\/:\*\?"<>\|]/g : /[\\/]/g;
+const WINDOWS_FORBIDDEN_NAMES = /^(con|prn|aux|clock\$|nul|lpt[0-9]|com[0-9])$/i;
 
 export abstract class DacFxConfigPage extends BasePage {
 
@@ -142,7 +145,10 @@ export abstract class DacFxConfigPage extends BasePage {
 	}
 
 	protected async createFileBrowserParts() {
-		this.fileTextBox = this.view.modelBuilder.inputBox().withProperties({
+		this.fileTextBox = this.view.modelBuilder.inputBox().withValidation(
+			component =>  this.isValidBasename(component.value)
+		)
+		.withProperties({
 			required: true
 		}).component();
 
@@ -163,6 +169,49 @@ export abstract class DacFxConfigPage extends BasePage {
 	protected getRootPath(): string {
 		// return rootpath of opened folder in file explorer if one is open, otherwise default to user home directory
 		return vscode.workspace.rootPath ? vscode.workspace.rootPath : os.homedir();
+	}
+
+	protected validateFilePath() {
+		// make sure filepath ends in proper file extension
+		if(!this.model.filePath.endsWith(this.fileExtension)) {
+			this.model.filePath += this.fileExtension;
+			this.fileTextBox.value = this.model.filePath;
+		}
+	}
+
+	private isValidBasename(name: string | null | undefined): boolean {
+
+		let basename = path.parse(name).name;
+		if (!basename || basename.length === 0 || /^\s+$/.test(basename)) {
+			return false; // require a name that is not just whitespace
+		}
+
+		INVALID_FILE_CHARS.lastIndex = 0;
+		if (INVALID_FILE_CHARS.test(basename)) {
+			return false; // check for certain invalid file characters
+		}
+
+		if (isWindows && WINDOWS_FORBIDDEN_NAMES.test(basename)) {
+			return false; // check for certain invalid file names
+		}
+
+		if (basename === '.' || basename === '..') {
+			return false; // check for reserved values
+		}
+
+		if (isWindows && basename[basename.length - 1] === '.') {
+			return false; // Windows: file cannot end with a "."
+		}
+
+		if (isWindows && basename.length !== basename.trim().length) {
+			return false; // Windows: file cannot end with a whitespace
+		}
+
+		if (basename.length > 255) {
+			return false; // most file systems do not allow files > 255 length
+		}
+
+		return true;
 	}
 }
 

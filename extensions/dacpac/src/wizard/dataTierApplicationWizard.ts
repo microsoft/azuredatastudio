@@ -161,22 +161,17 @@ export class DataTierApplicationWizard {
 		});
 
 		this.wizard.onPageChanged(async (event) => {
-			let idx = event.newPage;
-			let page = this.getPage(idx);
-
-			if (page !== undefined) {
-				page.dacFxPage.setupNavigationValidator();
-				page.dacFxPage.onPageEnter();
+			let idxLast = event.lastPage;
+			let lastPage = this.getPage(idxLast);
+			if (lastPage) {
+				lastPage.dacFxPage.onPageLeave();
 			}
 
-			//do onPageLeave for summary page so that GenerateScript button only shows up if upgrading database
-			let idxLast = event.lastPage;
-
-			if (this.isSummaryPage(idxLast)) {
-				let lastPage = this.pages.get('summary');
-				if (lastPage) {
-					lastPage.dacFxPage.onPageLeave();
-				}
+			let idx = event.newPage;
+			let page = this.getPage(idx);
+			if (page) {
+				page.dacFxPage.setupNavigationValidator();
+				page.dacFxPage.onPageEnter();
 			}
 		});
 
