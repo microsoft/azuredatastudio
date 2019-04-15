@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
@@ -125,7 +124,7 @@ export abstract class Command extends vscode.Disposable {
 
 export abstract class ProgressCommand extends Command {
 	static progressId = 0;
-	constructor(private command: string, protected prompter: IPrompter, appContext: AppContext) {
+	constructor(command: string, protected prompter: IPrompter, appContext: AppContext) {
 		super(command, appContext);
 	}
 

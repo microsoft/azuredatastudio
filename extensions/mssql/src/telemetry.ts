@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import * as vscode from 'vscode';
 import * as opener from 'opener';
 import TelemetryReporter from 'vscode-extension-telemetry';
@@ -36,11 +35,11 @@ export function FilterErrorPath(line: string): string {
 			return values[1];
 		}
 	}
+	return undefined;
 }
 
 export class Telemetry {
 	private static reporter: TelemetryReporter;
-	private static userId: string;
 	private static platformInformation: PlatformInformation;
 	private static disabled: boolean;
 

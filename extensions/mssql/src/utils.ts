@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
@@ -113,6 +112,7 @@ export function getPackageInfo(packageJson: any): IPackageInfo {
 			aiKey: packageJson.aiKey
 		};
 	}
+	return undefined;
 }
 
 export function generateUserId(): Promise<string> {

@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as childProcess from 'child_process';
 import * as fs from 'fs-extra';
 import * as nls from 'vscode-nls';
@@ -12,7 +10,6 @@ import * as path from 'path';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as which from 'which';
-import * as Constants from '../constants';
 
 const localize = nls.loadMessageBundle();
 
