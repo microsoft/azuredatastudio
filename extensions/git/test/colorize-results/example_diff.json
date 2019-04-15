@@ -3,10 +3,6 @@
 		"c": "diff --git a/helloworld.txt b/helloworld.txt",
 		"t": "source.diff meta.diff.header.git",
 		"r": {
-			"dark_plus": null,
-			"light_plus": null,
-			"dark_vs": null,
-			"light_vs": null,
 			"hc_black": "meta.diff.header: #000080"
 		}
 	},
@@ -14,10 +10,6 @@
 		"c": "index e4f37c4..557db03 100644",
 		"t": "source.diff meta.diff.index.git",
 		"r": {
-			"dark_plus": null,
-			"light_plus": null,
-			"dark_vs": null,
-			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -25,10 +17,6 @@
 		"c": "---",
 		"t": "source.diff meta.diff.header.from-file punctuation.definition.from-file.diff",
 		"r": {
-			"dark_plus": null,
-			"light_plus": null,
-			"dark_vs": null,
-			"light_vs": null,
 			"hc_black": "meta.diff.header: #000080"
 		}
 	},
@@ -36,10 +24,6 @@
 		"c": " a/helloworld.txt",
 		"t": "source.diff meta.diff.header.from-file",
 		"r": {
-			"dark_plus": null,
-			"light_plus": null,
-			"dark_vs": null,
-			"light_vs": null,
 			"hc_black": "meta.diff.header: #000080"
 		}
 	},
@@ -47,10 +31,6 @@
 		"c": "+++",
 		"t": "source.diff meta.diff.header.to-file punctuation.definition.to-file.diff",
 		"r": {
-			"dark_plus": null,
-			"light_plus": null,
-			"dark_vs": null,
-			"light_vs": null,
 			"hc_black": "meta.diff.header: #000080"
 		}
 	},
@@ -58,10 +38,6 @@
 		"c": " b/helloworld.txt",
 		"t": "source.diff meta.diff.header.to-file",
 		"r": {
-			"dark_plus": null,
-			"light_plus": null,
-			"dark_vs": null,
-			"light_vs": null,
 			"hc_black": "meta.diff.header: #000080"
 		}
 	},
@@ -69,10 +45,6 @@
 		"c": "@@",
 		"t": "source.diff meta.diff.range.unified punctuation.definition.range.diff",
 		"r": {
-			"dark_plus": null,
-			"light_plus": null,
-			"dark_vs": null,
-			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -80,10 +52,6 @@
 		"c": " ",
 		"t": "source.diff meta.diff.range.unified",
 		"r": {
-			"dark_plus": null,
-			"light_plus": null,
-			"dark_vs": null,
-			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -91,10 +59,6 @@
 		"c": "-1 +1",
 		"t": "source.diff meta.diff.range.unified meta.toc-list.line-number.diff",
 		"r": {
-			"dark_plus": null,
-			"light_plus": null,
-			"dark_vs": null,
-			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -102,10 +66,6 @@
 		"c": " ",
 		"t": "source.diff meta.diff.range.unified",
 		"r": {
-			"dark_plus": null,
-			"light_plus": null,
-			"dark_vs": null,
-			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -113,10 +73,6 @@
 		"c": "@@",
 		"t": "source.diff meta.diff.range.unified punctuation.definition.range.diff",
 		"r": {
-			"dark_plus": null,
-			"light_plus": null,
-			"dark_vs": null,
-			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -124,10 +80,6 @@
 		"c": "-",
 		"t": "source.diff markup.deleted.diff punctuation.definition.deleted.diff",
 		"r": {
-			"dark_plus": null,
-			"light_plus": null,
-			"dark_vs": null,
-			"light_vs": null,
 			"hc_black": "markup.deleted: #CE9178"
 		}
 	},
@@ -135,10 +87,6 @@
 		"c": "Hello world",
 		"t": "source.diff markup.deleted.diff",
 		"r": {
-			"dark_plus": null,
-			"light_plus": null,
-			"dark_vs": null,
-			"light_vs": null,
 			"hc_black": "markup.deleted: #CE9178"
 		}
 	},
@@ -146,10 +94,6 @@
 		"c": "+",
 		"t": "source.diff markup.inserted.diff punctuation.definition.inserted.diff",
 		"r": {
-			"dark_plus": null,
-			"light_plus": null,
-			"dark_vs": null,
-			"light_vs": null,
 			"hc_black": "markup.inserted: #B5CEA8"
 		}
 	},
@@ -157,10 +101,6 @@
 		"c": "Hello World",
 		"t": "source.diff markup.inserted.diff",
 		"r": {
-			"dark_plus": null,
-			"light_plus": null,
-			"dark_vs": null,
-			"light_vs": null,
 			"hc_black": "markup.inserted: #B5CEA8"
 		}
 	}

@@ -58,7 +58,7 @@ if (process.argv.length === 3 && process.argv[2]) {
 			} else if (os.platform() === 'darwin') {
 				ENVVARS_OPTION = ENVVARS_BASH;
 			} else {
-				console.warn(`Launch terminal option is not implemented for your os: ${os.platform()}, vscode will be launched`);
+				console.warn(`Launch option: ENV is not implemented for your os: ${os.platform()}, vscode will be launched`);
 			}
 			LAUNCH_OPTION = LAUNCH_NONE
 			break;
