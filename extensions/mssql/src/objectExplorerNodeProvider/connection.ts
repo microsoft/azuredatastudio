@@ -67,8 +67,8 @@ export class SqlClusterConnection {
 		return FileSourceFactory.instance.createHdfsFileSource(options);
 	}
 
-	public updatePassword(password : string): void{
-		if(password){
+	public updatePassword(password: string): void {
+		if (password) {
 			this._password = password;
 		}
 	}

@@ -14,7 +14,7 @@ import * as which from 'which';
 const localize = nls.loadMessageBundle();
 
 export function getDropdownValue(dropdownValue: string | azdata.CategoryValue): string {
-	if (typeof(dropdownValue) === 'string') {
+	if (typeof (dropdownValue) === 'string') {
 		return <string>dropdownValue;
 	} else {
 		return dropdownValue ? (<azdata.CategoryValue>dropdownValue).name : undefined;
