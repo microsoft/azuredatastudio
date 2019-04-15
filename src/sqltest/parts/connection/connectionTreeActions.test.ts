@@ -19,7 +19,7 @@ import { ErrorMessageServiceStub } from 'sqltest/stubs/errorMessageServiceStub';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { ServerTreeView } from 'sql/parts/objectExplorer/viewlet/serverTreeView';
 import * as Constants from 'sql/platform/connection/common/constants';
-import * as  LocalizedConstants from 'sql/parts/connection/common/localizedConstants';
+import * as  LocalizedConstants from 'sql/workbench/parts/connection/common/localizedConstants';
 import { ObjectExplorerService, ObjectExplorerNodeEventArgs } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { TreeNode } from 'sql/parts/objectExplorer/common/treeNode';
 import { NodeType } from 'sql/parts/objectExplorer/common/nodeType';
