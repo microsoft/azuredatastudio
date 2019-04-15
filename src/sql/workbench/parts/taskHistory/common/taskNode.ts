@@ -70,13 +70,13 @@ export class TaskNode {
 	public hasChildren: boolean;
 
 	/**
- 	 * Children of this node
- 	 */
+	 * Children of this node
+	 */
 	public children: TaskNode[];
 
 	/**
- 	 * Task's message
- 	 */
+	 * Task's message
+	 */
 	public message: string;
 
 	/**

@@ -18,7 +18,7 @@ export class TreeSelectionHandler {
 	private _clicks: number = 0;
 	private _doubleClickTimeoutTimer: NodeJS.Timer = undefined;
 
-	constructor( @IProgressService private _progressService: IProgressService) {
+	constructor(@IProgressService private _progressService: IProgressService) {
 
 	}
 
