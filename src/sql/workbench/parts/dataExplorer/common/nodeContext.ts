@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ConnectionContextKey } from 'sql/parts/connection/common/connectionContextKey';
+import { ConnectionContextKey } from 'sql/workbench/parts/connection/common/connectionContextKey';
 import { IOEShimService } from 'sql/parts/objectExplorer/common/objectExplorerViewTreeShim';
 import { ITreeItem } from 'sql/workbench/common/views';
 import { Disposable } from 'vs/base/common/lifecycle';
