@@ -146,7 +146,7 @@ export class JupyterSessionManager implements nb.SessionManager {
 		if (this._sessionManager && !this._sessionManager.isDisposed) {
 			return this._sessionManager.shutdown(id);
 		}
-		return Promise.resolve();
+		return undefined;
 	}
 
 	public shutdownAll(): Promise<void> {
