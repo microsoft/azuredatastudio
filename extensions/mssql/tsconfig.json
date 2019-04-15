@@ -4,9 +4,7 @@
 		"outDir": "./out",
 		"strict": false,
 		"noUnusedParameters": false,
-		"noImplicitAny": false,
-		"noImplicitReturns": false,
-		"noUnusedLocals": false
+		"noImplicitAny": false
 	},
 	"include": [
 		"src/**/*"

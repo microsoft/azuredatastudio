@@ -45,7 +45,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 
 	if (!supported) {
 		vscode.window.showErrorMessage('Unsupported platform');
-		return Promise.resolve(undefined);
+		return undefined;
 	}
 
 	let config: IConfig = JSON.parse(JSON.stringify(baseConfig));
