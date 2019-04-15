@@ -9,7 +9,7 @@ import { TestServerProfile, AuthenticationType } from '../testConfig';
 
 const CONNECTION_DIALOG_TITLE = 'Connection';
 const CONNECTION_DIALOG_SELECTOR: string = '.modal-dialog .modal-content .modal-body .connection-dialog';
-const CONNECTION_DETAIL_CONTROL_SELECTOR: string = '.connection-type .connection-table .connection-input';
+const CONNECTION_DETAIL_CONTROL_SELECTOR: string = '.connection-provider-info .connection-table .connection-input';
 
 const SERVER_INPUT_ARIA_LABEL = 'Server';
 const USERNAME_INPUT_ARIA_LABEL = 'User name';
