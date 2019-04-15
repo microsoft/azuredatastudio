@@ -12,13 +12,14 @@ import { IURITransformer } from 'vs/base/common/uriIpc';
 import { IMessagePassingProtocol } from 'vs/base/parts/ipc/common/ipc';
 import { IInitData, MainContext, MainThreadConsoleShape } from 'vs/workbench/api/common/extHost.protocol';
 import { ExtHostConfiguration } from 'vs/workbench/api/common/extHostConfiguration';
-import { ExtHostExtensionService } from 'vs/workbench/api/node/extHostExtensionService';
+import { ExtHostExtensionService, IHostUtils } from 'vs/workbench/api/node/extHostExtensionService';
 import { ExtHostLogService } from 'vs/workbench/api/common/extHostLogService';
 import { ExtHostWorkspace } from 'vs/workbench/api/common/extHostWorkspace';
 import { RPCProtocol } from 'vs/workbench/services/extensions/common/rpcProtocol';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { withNullAsUndefined } from 'vs/base/common/types';
 import { ILogService } from 'vs/platform/log/common/log';
+import { ISchemeTransformer } from 'vs/workbench/api/common/extHostLanguageFeatures';
 
 // we don't (yet) throw when extensions parse
 // uris that have no scheme
@@ -39,17 +40,25 @@ export interface ILogServiceFn {
 export class ExtensionHostMain {
 
 	private _isTerminating: boolean;
-	private readonly _exitFn: IExitFn;
+	private readonly _hostUtils: IHostUtils;
 	private readonly _extensionService: ExtHostExtensionService;
 	private readonly _extHostLogService: ExtHostLogService;
 	private disposables: IDisposable[] = [];
 
 	private _searchRequestIdProvider: Counter;
 
-	constructor(protocol: IMessagePassingProtocol, initData: IInitData, exitFn: IExitFn, consolePatchFn: IConsolePatchFn, logServiceFn: ILogServiceFn) {
+	constructor(
+		protocol: IMessagePassingProtocol,
+		initData: IInitData,
+		hostUtils: IHostUtils,
+		consolePatchFn: IConsolePatchFn,
+		logServiceFn: ILogServiceFn,
+		uriTransformer: IURITransformer | null,
+		schemeTransformer: ISchemeTransformer | null,
+		outputChannelName: string,
+	) {
 		this._isTerminating = false;
-		this._exitFn = exitFn;
-		const uriTransformer: IURITransformer | null = null;
+		this._hostUtils = hostUtils;
 		const rpcProtocol = new RPCProtocol(protocol, null, uriTransformer);
 
 		// ensure URIs are transformed and revived
@@ -69,7 +78,17 @@ export class ExtensionHostMain {
 		this._extHostLogService.trace('initData', initData);
 
 		const extHostConfiguraiton = new ExtHostConfiguration(rpcProtocol.getProxy(MainContext.MainThreadConfiguration), extHostWorkspace);
-		this._extensionService = new ExtHostExtensionService(exitFn, initData, rpcProtocol, extHostWorkspace, extHostConfiguraiton, initData.environment, this._extHostLogService);
+		this._extensionService = new ExtHostExtensionService(
+			hostUtils,
+			initData,
+			rpcProtocol,
+			extHostWorkspace,
+			extHostConfiguraiton,
+			initData.environment,
+			this._extHostLogService,
+			schemeTransformer,
+			outputChannelName
+		);
 
 		// error forwarding and stack trace scanning
 		Error.stackTraceLimit = 100; // increase number of stack frames (from 10, https://github.com/v8/v8/wiki/Stack-Trace-API)
@@ -122,7 +141,7 @@ export class ExtensionHostMain {
 
 		// Give extensions 1 second to wrap up any async dispose, then exit in at most 4 seconds
 		setTimeout(() => {
-			Promise.race([timeout(4000), extensionsDeactivated]).finally(() => this._exitFn());
+			Promise.race([timeout(4000), extensionsDeactivated]).finally(() => this._hostUtils.exit());
 		}, 1000);
 	}
 

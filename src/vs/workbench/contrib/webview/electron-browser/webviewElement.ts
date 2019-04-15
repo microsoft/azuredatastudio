@@ -605,8 +605,7 @@ export class WebviewElement extends Disposable implements Webview {
 		});
 	}
 
-	// {{SQL CARBON EDIT}} - make public
-	public style(theme: ITheme): void {
+	private style(theme: ITheme): void {
 		const configuration = this._configurationService.getValue<IEditorOptions>('editor');
 		const editorFontFamily = configuration.fontFamily || EDITOR_FONT_DEFAULTS.fontFamily;
 		const editorFontWeight = configuration.fontWeight || EDITOR_FONT_DEFAULTS.fontWeight;

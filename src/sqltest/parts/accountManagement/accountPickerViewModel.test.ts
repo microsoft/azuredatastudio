@@ -31,7 +31,8 @@ suite('Account picker view model tests', () => {
 			displayInfo: {
 				contextualDisplayName: 'Microsoft Account',
 				accountType: 'microsoft',
-				displayName: 'Account 1'
+				displayName: 'Account 1',
+				userId: 'user@email.com'
 			},
 			properties: [],
 			isStale: false
@@ -42,7 +43,8 @@ suite('Account picker view model tests', () => {
 			displayInfo: {
 				contextualDisplayName: 'Work/School Account',
 				accountType: 'microsoft',
-				displayName: 'Account 2'
+				displayName: 'Account 2',
+				userId: 'user@email.com'
 			},
 			properties: [],
 			isStale: true

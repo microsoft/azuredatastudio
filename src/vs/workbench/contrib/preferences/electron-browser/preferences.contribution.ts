@@ -217,8 +217,8 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	weight: KeybindingWeight.WorkbenchContrib,
 	when: null,
 	primary: KeyMod.CtrlCmd | KeyCode.US_COMMA,
-	handler: (accessor, args: any) => {
-		accessor.get(IPreferencesService).openSettings();
+	handler: (accessor, args: string | undefined) => {
+		accessor.get(IPreferencesService).openSettings(undefined, typeof args === 'string' ? args : undefined);
 	}
 });
 
@@ -231,19 +231,6 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 		const control = accessor.get(IEditorService).activeControl as IKeybindingsEditor;
 		if (control && control instanceof KeybindingsEditor) {
 			control.defineKeybinding(control.activeKeybindingEntry!);
-		}
-	}
-});
-
-KeybindingsRegistry.registerCommandAndKeybindingRule({
-	id: KEYBINDINGS_EDITOR_COMMAND_DEFINE_WHEN,
-	weight: KeybindingWeight.WorkbenchContrib,
-	when: ContextKeyExpr.and(CONTEXT_KEYBINDINGS_EDITOR, CONTEXT_KEYBINDING_FOCUS),
-	primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_K, KeyMod.CtrlCmd | KeyCode.KEY_E),
-	handler: (accessor, args: any) => {
-		const control = accessor.get(IEditorService).activeControl as IKeybindingsEditor;
-		if (control && control instanceof KeybindingsEditor && control.activeKeybindingEntry!.keybindingItem.keybinding) {
-			control.defineWhenExpression(control.activeKeybindingEntry!);
 		}
 	}
 });

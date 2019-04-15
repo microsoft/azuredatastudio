@@ -251,6 +251,11 @@ Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration)
 				description: localize('extensionsPolicy', "Sets the security policy for downloading extensions."),
 				scope: ConfigurationScope.APPLICATION,
 				default: ExtensionsPolicy.allowAll
+			},
+			'extensions.showInstalledExtensionsByDefault': {
+				type: 'boolean',
+				description: localize('extensions.showInstalledExtensionsByDefault', "When enabled, extensions view shows installed extensions view by default."),
+				default: false
 			}
 		}
 	});

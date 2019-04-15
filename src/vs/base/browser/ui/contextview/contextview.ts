@@ -273,7 +273,7 @@ export class ContextView extends Disposable {
 		DOM.hide(this.view);
 	}
 
-	// {{SQL CARBON EDIT}}
+	// {{SQL CARBON EDIT}} @todo anthonydresser 4/12/19 investigate a better way to do this
 	public isVisible(): boolean {
 		return !!this.delegate;
 	}

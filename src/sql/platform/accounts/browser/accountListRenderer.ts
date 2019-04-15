@@ -69,7 +69,14 @@ export class AccountPickerListRenderer implements IListRenderer<azdata.Account, 
 		templateData.icon.classList.add('account-logo', account.displayInfo.accountType);
 
 		templateData.contextualDisplayName.innerText = account.displayInfo.contextualDisplayName;
-		templateData.displayName.innerText = account.displayInfo.displayName;
+
+		// show the account display name text, something like "User Name (user@email.com)"
+		if (account.displayInfo.userId && account.displayInfo.displayName) {
+			templateData.displayName.innerText = account.displayInfo.displayName + ' (' + account.displayInfo.userId + ')';
+		} else {
+			templateData.displayName.innerText = account.displayInfo.displayName ;
+		}
+
 		if (account.isStale) {
 			templateData.badgeContent.className = 'badge-content icon warning-badge';
 		} else {

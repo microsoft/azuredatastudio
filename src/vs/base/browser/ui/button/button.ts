@@ -126,7 +126,7 @@ export class Button extends Disposable {
 		this.applyStyles();
 	}
 
-	// {{SQL CARBON EDIT}} -- removed 'private' access modifier
+	// {{SQL CARBON EDIT}} -- removed 'private' access modifier @todo anthonydresser 4/12/19 things needs investigation whether we need this
 	applyStyles(): void {
 		if (this._element) {
 			const background = this.buttonBackground ? this.buttonBackground.toString() : null;
@@ -159,6 +159,7 @@ export class Button extends Disposable {
 		}
 	}
 
+	// {{SQL CARBON EDIT}} from addClass to addClasses to support multiple classes @todo anthonydresser 4/12/19 invesitgate a better way to do this.
 	set icon(iconClassName: string) {
 		DOM.addClasses(this._element, ...iconClassName.split(' '));
 	}

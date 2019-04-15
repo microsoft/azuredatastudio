@@ -19,7 +19,7 @@ import { mnemonicButtonLabel } from 'vs/base/common/labels';
 export interface IDialogOptions {
 	cancelId?: number;
 	detail?: string;
-	type?: 'none' | 'info' | 'error' | 'question' | 'warning';
+	type?: 'none' | 'info' | 'error' | 'question' | 'warning' | 'pending';
 }
 
 export interface IDialogStyles extends IButtonStyles {
@@ -33,6 +33,7 @@ export class Dialog extends Disposable {
 	private element: HTMLElement | undefined;
 	private modal: HTMLElement | undefined;
 	private buttonsContainer: HTMLElement | undefined;
+	private messageDetailElement: HTMLElement | undefined;
 	private iconElement: HTMLElement | undefined;
 	private toolbarContainer: HTMLElement | undefined;
 	private buttonGroup: ButtonGroup | undefined;
@@ -40,7 +41,7 @@ export class Dialog extends Disposable {
 
 	constructor(private container: HTMLElement, private message: string, private buttons: string[], private options: IDialogOptions) {
 		super();
-		this.modal = this.container.appendChild($('.dialog-modal-block'));
+		this.modal = this.container.appendChild($(`.dialog-modal-block${options.type === 'pending' ? '.dimmed' : ''}`));
 		this.element = this.modal.appendChild($('.dialog-box'));
 		hide(this.element);
 
@@ -56,11 +57,17 @@ export class Dialog extends Disposable {
 			messageElement.innerText = this.message;
 		}
 
-		const messageDetailElement = messageContainer.appendChild($('.dialog-message-detail'));
-		messageDetailElement.innerText = this.options.detail ? this.options.detail : message;
+		this.messageDetailElement = messageContainer.appendChild($('.dialog-message-detail'));
+		this.messageDetailElement.innerText = this.options.detail ? this.options.detail : message;
 
 		const toolbarRowElement = this.element.appendChild($('.dialog-toolbar-row'));
 		this.toolbarContainer = toolbarRowElement.appendChild($('.dialog-toolbar'));
+	}
+
+	updateMessage(message: string): void {
+		if (this.messageDetailElement) {
+			this.messageDetailElement.innerText = message;
+		}
 	}
 
 	async show(): Promise<number> {
@@ -128,6 +135,9 @@ export class Dialog extends Disposable {
 					break;
 				case 'warning':
 					addClass(this.iconElement, 'icon-warning');
+					break;
+				case 'pending':
+					addClass(this.iconElement, 'icon-pending');
 					break;
 				case 'none':
 				case 'info':

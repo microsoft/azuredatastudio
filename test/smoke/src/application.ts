@@ -127,6 +127,7 @@ export class Application {
 			verbose: this.options.verbose,
 			log: this.options.log,
 			extraArgs,
+			remote: this.options.remote
 		});
 
 		this._workbench = new Workbench(this._code, this.userDataPath);

@@ -950,7 +950,7 @@ export class ChangeModeAction extends Action {
 			}
 
 			// Change mode for active editor
-			// {{SQL CARBON EDIT}} - Get activeControl instead of activeEditor
+			// {{SQL CARBON EDIT}} - Get activeControl instead of activeEditor @todo anthonydresser 4/12/19 investigate
 			const activeEditor = this.editorService.activeControl;
 			const activeTextEditorWidget = this.editorService.activeTextEditorWidget;
 			const models: ITextModel[] = [];
