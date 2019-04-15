@@ -56,6 +56,16 @@ export abstract class AbstractRemoteAgentService extends Disposable implements I
 
 		return Promise.resolve(undefined);
 	}
+
+	disableTelemetry(): Promise<void> {
+		const connection = this.getConnection();
+		if (connection) {
+			const client = new RemoteExtensionEnvironmentChannelClient(connection.getChannel('remoteextensionsenvironment'));
+			return client.disableTelemetry();
+		}
+
+		return Promise.resolve(undefined);
+	}
 }
 
 export class RemoteAgentConnection extends Disposable implements IRemoteAgentConnection {
@@ -125,7 +135,7 @@ class RemoteConnectionFailureNotificationContribution implements IWorkbenchContr
 	) {
 		// Let's cover the case where connecting to fetch the remote extension info fails
 		remoteAgentService.getEnvironment(true)
-			.then(undefined, err => notificationService.error(nls.localize('connectionError', "Failed to connect to the remote extension host agent (Error: {0})", err ? err.message : '')));
+			.then(undefined, err => notificationService.error(nls.localize('connectionError', "Failed to connect to the remote extension host server (Error: {0})", err ? err.message : '')));
 	}
 
 }

@@ -183,24 +183,24 @@ export class PreferencesService extends Disposable implements IPreferencesServic
 		return this.editorService.openEditor({ resource: this.userSettingsResource });
 	}
 
-	openSettings(jsonEditor?: boolean): Promise<IEditor | null> {
+	openSettings(jsonEditor: boolean | undefined, query: string | undefined): Promise<IEditor | null> {
 		jsonEditor = typeof jsonEditor === 'undefined' ?
 			this.configurationService.getValue('workbench.settings.editor') === 'json' :
 			jsonEditor;
 
 		if (!jsonEditor) {
-			return this.openSettings2();
+			return this.openSettings2({ query: query });
 		}
 
 		const editorInput = this.getActiveSettingsEditorInput() || this.lastOpenedSettingsInput;
 		const resource = editorInput ? editorInput.master.getResource()! : this.userSettingsResource;
 		const target = this.getConfigurationTargetFromSettingsResource(resource);
-		return this.openOrSwitchSettings(target, resource);
+		return this.openOrSwitchSettings(target, resource, { query: query });
 	}
 
-	private openSettings2(): Promise<IEditor> {
+	private openSettings2(options?: ISettingsEditorOptions): Promise<IEditor> {
 		const input = this.settingsEditor2Input;
-		return this.editorGroupService.activeGroup.openEditor(input)
+		return this.editorGroupService.activeGroup.openEditor(input, options)
 			.then(() => this.editorGroupService.activeGroup.activeControl!);
 	}
 
@@ -215,10 +215,10 @@ export class PreferencesService extends Disposable implements IPreferencesServic
 	}
 
 	async openRemoteSettings(): Promise<IEditor | null> {
-		const environemnt = await this.remoteAgentService.getEnvironment();
-		if (environemnt) {
-			await this.createIfNotExists(environemnt.settingsPath, emptyEditableSettingsContent);
-			return this.editorService.openEditor({ resource: environemnt.settingsPath, options: { pinned: true, revealIfOpened: true } });
+		const environment = await this.remoteAgentService.getEnvironment();
+		if (environment) {
+			await this.createIfNotExists(environment.settingsPath, emptyEditableSettingsContent);
+			return this.editorService.openEditor({ resource: environment.settingsPath, options: { pinned: true, revealIfOpened: true } });
 		}
 		return null;
 	}
@@ -520,6 +520,9 @@ export class PreferencesService extends Disposable implements IPreferencesServic
 	private getEditableSettingsURI(configurationTarget: ConfigurationTarget, resource?: URI): URI | null {
 		switch (configurationTarget) {
 			case ConfigurationTarget.USER:
+			case ConfigurationTarget.USER_LOCAL:
+				return URI.file(this.environmentService.appSettingsPath);
+			case ConfigurationTarget.USER_REMOTE:
 				return URI.file(this.environmentService.appSettingsPath);
 			case ConfigurationTarget.WORKSPACE:
 				if (this.contextService.getWorkbenchState() === WorkbenchState.EMPTY) {
