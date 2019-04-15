@@ -1,4 +1,7 @@
-'use strict';
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
 import * as fs from 'fs';
@@ -54,7 +57,7 @@ export function activate(extensionContext: vscode.ExtensionContext) {
 	} catch (e) {
 		console.error(`Initialization of Azure account extension storage failed: ${e}`);
 		console.error('Azure accounts will not be available');
-		return;
+		return undefined;
 	}
 
 	// Create the provider service and activate

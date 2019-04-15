@@ -3,11 +3,10 @@
 	"compilerOptions": {
 		"outDir": "./out",
 		"strict": false,
-		"alwaysStrict": false,
-		"noImplicitAny": false,
-		"noImplicitReturns": false,
-		"noUnusedLocals": false,
-		"noUnusedParameters": false
+		"noUnusedParameters": false,
+		"typeRoots": [
+			"./node_modules/@types"
+		]
 	},
 	"include": [
 		"src/**/*"

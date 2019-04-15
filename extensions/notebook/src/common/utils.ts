@@ -1,4 +1,7 @@
-'use strict';
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
 import * as childProcess from 'child_process';
 import * as fs from 'fs-extra';
@@ -16,7 +19,7 @@ export function getLivyUrl(serverName: string, port: string): string {
 }
 
 export async function mkDir(dirPath: string, outputChannel?: vscode.OutputChannel): Promise<void> {
-	if (!await fs.exists(dirPath)) {
+	if (!await fs.pathExists(dirPath)) {
 		if (outputChannel) {
 			outputChannel.appendLine(localize('mkdirOutputMsg', '... Creating {0}', dirPath));
 		}

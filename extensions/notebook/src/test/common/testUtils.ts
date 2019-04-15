@@ -4,11 +4,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as assert from 'assert';
 
-export async function assertThrowsAsync(fn, regExp): Promise<void> {
+export async function assertThrowsAsync(fn: () => Promise<any>, msg: string): Promise<void> {
 	let f = () => {
 		// Empty
 	};
@@ -17,6 +15,6 @@ export async function assertThrowsAsync(fn, regExp): Promise<void> {
 	} catch (e) {
 		f = () => { throw e; };
 	} finally {
-		assert.throws(f, regExp);
+		assert.throws(f, msg);
 	}
 }

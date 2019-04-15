@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as adal from 'adal-node';
 import * as azdata from 'azdata';
 import * as crypto from 'crypto';
@@ -34,8 +32,8 @@ export default class TokenCache implements adal.TokenCache {
 				.then(cache => self.addToCache(cache, entries))
 				.then(updatedCache => self.writeCache(updatedCache))
 				.then(
-				() => callback(null, false),
-				(err) => callback(err, true)
+					() => callback(null, false),
+					(err) => callback(err, true)
 				);
 		});
 	}
@@ -70,8 +68,8 @@ export default class TokenCache implements adal.TokenCache {
 					);
 				})
 				.then(
-				results => callback(null, results),
-				(err) => callback(err, null)
+					results => callback(null, results),
+					(err) => callback(err, null)
 				);
 		});
 	}
@@ -104,8 +102,8 @@ export default class TokenCache implements adal.TokenCache {
 				.then(cache => self.removeFromCache(cache, entries))
 				.then(updatedCache => self.writeCache(updatedCache))
 				.then(
-				() => callback(null, null),
-				(err) => callback(err, null)
+					() => callback(null, null),
+					(err) => callback(err, null)
 				);
 		});
 	}
@@ -138,7 +136,7 @@ export default class TokenCache implements adal.TokenCache {
 			&& entry1.resource === entry2.resource;
 	}
 
-	private static findByPartial(entry: adal.TokenResponse, query: object): boolean {
+	private static findByPartial(entry: adal.TokenResponse, query: { [key: string]: any }): boolean {
 		for (let key in query) {
 			if (entry[key] === undefined || entry[key] !== query[key]) {
 				return false;
@@ -186,8 +184,8 @@ export default class TokenCache implements adal.TokenCache {
 					if (splitValues.length === 2 && splitValues[0] && splitValues[1]) {
 						try {
 							return <EncryptionParams>{
-								key: new Buffer(splitValues[0], 'hex'),
-								initializationVector: new Buffer(splitValues[1], 'hex')
+								key: Buffer.from(splitValues[0], 'hex'),
+								initializationVector: Buffer.from(splitValues[1], 'hex')
 							};
 						} catch (e) {
 							// Swallow the error and fall through to generate new params

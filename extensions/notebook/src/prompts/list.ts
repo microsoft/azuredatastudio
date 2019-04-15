@@ -1,5 +1,3 @@
-'use strict';
-
 // This code is originally from https://github.com/DonJayamanne/bowerVSCode
 // License: https://github.com/DonJayamanne/bowerVSCode/blob/master/LICENSE
 
@@ -14,7 +12,7 @@ export default class ListPrompt extends Prompt {
 	}
 
 	public render(): any {
-		const choices = this._question.choices.reduce((result, choice) => {
+		const choices = this._question.choices.reduce((result: any, choice: any) => {
 			result[choice.name] = choice.value;
 			return result;
 		}, {});

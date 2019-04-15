@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 
@@ -156,12 +154,6 @@ export class ApiWrapper {
 		return vscode.window.showSaveDialog(options);
 	}
 
-	public openTextDocument(uri: vscode.Uri): Thenable<vscode.TextDocument>;
-	public openTextDocument(options: { language?: string; content?: string; }): Thenable<vscode.TextDocument>;
-	public openTextDocument(uriOrOptions): Thenable<vscode.TextDocument> {
-		return vscode.workspace.openTextDocument(uriOrOptions);
-	}
-
 	public showTextDocument(document: vscode.TextDocument, column?: vscode.ViewColumn, preserveFocus?: boolean, preview?: boolean): Thenable<vscode.TextEditor> {
 		let options: vscode.TextDocumentShowOptions = {
 			viewColumn: column,
@@ -212,7 +204,7 @@ export class ApiWrapper {
 		return azdata.accounts.getAllAccounts();
 	}
 
-	public getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Thenable<{}> {
+	public getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Thenable<{ [key: string]: any }> {
 		return azdata.accounts.getSecurityToken(account, resource);
 	}
 

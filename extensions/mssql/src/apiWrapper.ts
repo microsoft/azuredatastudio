@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 
@@ -86,10 +84,8 @@ export class ApiWrapper {
 		return vscode.window.showSaveDialog(options);
 	}
 
-	public openTextDocument(uri: vscode.Uri): Thenable<vscode.TextDocument>;
-	public openTextDocument(options: { language?: string; content?: string; }): Thenable<vscode.TextDocument>;
-	public openTextDocument(uriOrOptions): Thenable<vscode.TextDocument> {
-		return vscode.workspace.openTextDocument(uriOrOptions);
+	public openTextDocument(options: { language?: string; content?: string; } | vscode.Uri): Thenable<vscode.TextDocument> {
+		return vscode.workspace.openTextDocument(options);
 	}
 
 	public showTextDocument(document: vscode.TextDocument, column?: vscode.ViewColumn, preserveFocus?: boolean, preview?: boolean): Thenable<vscode.TextEditor> {
