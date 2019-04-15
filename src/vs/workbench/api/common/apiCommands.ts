@@ -47,7 +47,7 @@ export class OpenFolderAPICommand {
 			arg = { forceNewWindow: arg };
 		}
 		if (!uri) {
-			return executor.executeCommand('_files.pickFolderAndOpen', arg.forceNewWindow);
+			return executor.executeCommand('_files.pickFolderAndOpen', { forceNewWindow: arg.forceNewWindow });
 		}
 		const options: IOpenSettings = { forceNewWindow: arg.forceNewWindow, noRecentEntry: arg.noRecentEntry };
 		uri = URI.revive(uri);
@@ -143,6 +143,13 @@ export class RemoveFromRecentlyOpenedAPICommand {
 	}
 }
 CommandsRegistry.registerCommand(RemoveFromRecentlyOpenedAPICommand.ID, adjustHandler(RemoveFromRecentlyOpenedAPICommand.execute));
+
+export class OpenIssueReporter {
+	public static ID = 'vscode.openIssueReporter';
+	public static execute(executor: ICommandsExecutor, extensionId: string): Promise<void> {
+		return executor.executeCommand('workbench.action.openIssueReporter', [extensionId]);
+	}
+}
 
 interface RecentEntry {
 	uri: URI;
