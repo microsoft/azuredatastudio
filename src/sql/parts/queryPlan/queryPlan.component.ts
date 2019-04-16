@@ -3,7 +3,7 @@
 *  Licensed under the Source EULA. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!sql/parts/grid/load/css/qp';
+import 'vs/css!./media/qp';
 
 import { ElementRef, Component, Inject, forwardRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import * as QP from 'html-query-plan';
