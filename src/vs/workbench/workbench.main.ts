@@ -458,7 +458,6 @@ import 'sql/parts/objectExplorer/serverGroupDialog/serverGroup.contribution';
 import 'sql/platform/accounts/browser/accountManagement.contribution';
 
 // dashboard
-import 'sql/workbench/parts/dashboard/dashboard.contribution';
 import 'sql/workbench/parts/dashboard/widgets/insights/views/charts/types/barChart.contribution';
 import 'sql/workbench/parts/dashboard/widgets/insights/views/charts/types/doughnutChart.contribution';
 import 'sql/workbench/parts/dashboard/widgets/insights/views/charts/types/horizontalBarChart.contribution';
@@ -469,6 +468,7 @@ import 'sql/workbench/parts/dashboard/widgets/insights/views/charts/types/timeSe
 import 'sql/workbench/parts/dashboard/widgets/insights/views/countInsight.contribution';
 import 'sql/workbench/parts/dashboard/widgets/insights/views/imageInsight.contribution';
 import 'sql/workbench/parts/dashboard/widgets/insights/views/tableInsight.contribution';
+import 'sql/workbench/parts/dashboard/dashboard.contribution';
 /* Tasks */
 import 'sql/workbench/common/actions.contribution';
 /* Widgets */

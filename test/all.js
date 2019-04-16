@@ -71,7 +71,7 @@ function main() {
 			'@angular/platform-browser-dynamic',
 			'@angular/router',
 			'angular2-grid',
-			'ng2-charts/ng2-charts',
+			'ng2-charts',
 			'rxjs/add/observable/of',
 			'rxjs/Observable',
 			'rxjs/Subject',
