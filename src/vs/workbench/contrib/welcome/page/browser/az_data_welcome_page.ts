@@ -5,6 +5,7 @@
 
 import { escape } from 'vs/base/common/strings';
 import { localize } from 'vs/nls';
+import { URI } from 'vs/base/common/uri';
 
 export function used() {
 }
@@ -48,7 +49,7 @@ export default () => `
 				<div class="section notebooks">
 					<h2 class="caption">${escape(localize('welcomePage.sampleNotebooks', "Sample Notebooks"))}</h2>
 					<ul>
-						<li><a href="command:vscode.open?"this/doesnt/work"")>${escape(localize('welcomePage.deployBDCAzure', "Deploy SQL Server Big Data Cluster on Azure"))}</a></li>
+						<li><a href="command:vscode.open?${encodeURIComponent(JSON.stringify(URI.parse('https://raw.githubusercontent.com/Microsoft/sql-server-samples/master/samples/features/Azure%20Data%20Studio/Notebooks/Install%20cluster%20dependencies.ipynb')))}">${escape(localize('welcomePage.deployBDCAzure', "Deploy SQL Server Big Data Cluster on Azure"))}</a></li>
 					</ul>
 				</div>
 				<p class="showOnStartup"><input type="checkbox" id="showOnStartup" class="checkbox"> <label class="caption" for="showOnStartup">${escape(localize('welcomePage.showOnStartup', "Show welcome page on startup"))}</label></p>
