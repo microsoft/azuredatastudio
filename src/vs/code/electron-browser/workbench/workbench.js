@@ -19,6 +19,10 @@ process['lazyEnv'] = getLazyEnv();
 /* eslint-disable */
 
 // SQL global imports
+const jQuery = require('jquery');
+const $ = jQuery;
+require('slickgrid/lib/jquery.event.drag-2.3.0');
+require('slickgrid/lib/jquery-ui-1.9.2');
 const _ = require('underscore')._;
 require('slickgrid/slick.core');
 const Slick = window.Slick;

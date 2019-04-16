@@ -3,9 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
-import * as GridContentEvents from 'sql/parts/grid/common/gridContentEvents';
+import * as GridContentEvents from 'sql/workbench/parts/grid/common/gridContentEvents';
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import { QueryEditor } from 'sql/parts/query/editor/queryEditor';
 import { EditDataEditor } from 'sql/parts/editData/editor/editDataEditor';
@@ -88,4 +86,3 @@ export const viewAsChart = (accessor: ServicesAccessor) => {
 export const goToNextGrid = (accessor: ServicesAccessor) => {
 	runActionOnActiveResultsEditor(accessor, GridContentEvents.GoToNextGrid);
 };
-

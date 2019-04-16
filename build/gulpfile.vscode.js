@@ -52,7 +52,7 @@ const nodeModules = [
 	'rxjs/Observable',
 	'rxjs/Subject',
 	'rxjs/Observer',
-	'ng2-charts/ng2-charts']
+	'ng2-charts']
 	.concat(Object.keys(product.dependencies || {}))
 	.concat(_.uniq(productionDependencies.map(d => d.name)))
 	.concat(baseModules);
@@ -107,10 +107,8 @@ const vscodeResources = [
 	'out-build/sql/workbench/parts/dashboard/**/*.html',
 	'out-build/sql/parts/disasterRecovery/**/*.html',
 	'out-build/sql/parts/common/modal/media/**',
-	'out-build/sql/parts/grid/load/lib/**',
-	'out-build/sql/parts/grid/load/loadJquery.js',
-	'out-build/sql/parts/grid/media/**',
-	'out-build/sql/parts/grid/views/**/*.html',
+	'out-build/sql/workbench/parts/grid/media/**',
+	'out-build/sql/workbench/parts/grid/views/**/*.html',
 	'out-build/sql/parts/tasks/**/*.html',
 	'out-build/sql/parts/taskHistory/viewlet/media/**',
 	'out-build/sql/parts/jobManagement/common/media/*.svg',

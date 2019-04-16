@@ -20,7 +20,6 @@ classes should alter those!
 
 .slick-header-column.ui-state-default {
 	position: relative;
-	display: inline-block;
 	/*box-sizing: content-box !important; use this for Firefox! */
 	overflow: hidden;
 	-o-text-overflow: ellipsis;
@@ -47,7 +46,6 @@ classes should alter those!
 }
 
 .slick-sort-indicator {
-	display: inline-block;
 	width: 8px;
 	height: 5px;
 	margin-left: 4px;
@@ -114,9 +112,6 @@ classes should alter those!
 }
 .slick-footerrow-column {
 	border-top-color: silver;
-}
-
-.slick-group {
 }
 
 .slick-group-toggle {

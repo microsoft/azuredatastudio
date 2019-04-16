@@ -6,33 +6,6 @@
 
 import { ISlickColumn, VirtualizedCollection } from 'angular2-slickgrid';
 
-export interface IGridIcon {
-	showCondition: () => boolean;
-	icon: () => string;
-	hoverText: () => string;
-	functionality: (batchId: number, resultId: number, index: number) => void;
-}
-
-export interface IMessageLink {
-	uri: string;
-	text: string;
-}
-
-export interface IMessage {
-	batchId?: number;
-	time: string;
-	message: string;
-	isError: boolean;
-	link?: IMessageLink;
-}
-
-export interface IGridIcon {
-	showCondition: () => boolean;
-	icon: () => string;
-	hoverText: () => string;
-	functionality: (batchId: number, resultId: number, index: number) => void;
-}
-
 export interface IGridDataSet {
 	dataRows: VirtualizedCollection<{}>;
 	columnDefinitions: ISlickColumn<any>[];

@@ -3,13 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
-import 'vs/css!sql/parts/grid/media/slickColorTheme';
-import 'vs/css!sql/parts/grid/media/flexbox';
-import 'vs/css!sql/parts/grid/media/styles';
-import 'vs/css!sql/parts/grid/media/slick.grid';
-import 'vs/css!sql/parts/grid/media/slickGrid';
+import 'vs/css!sql/workbench/parts/grid/media/flexbox';
+import 'vs/css!sql/workbench/parts/grid/media/styles';
 
 import { Subscription, Subject } from 'rxjs/Rx';
 import { ElementRef, QueryList, ChangeDetectorRef, ViewChildren } from '@angular/core';
@@ -17,12 +12,12 @@ import { SlickGrid } from 'angular2-slickgrid';
 import { toDisposableSubscription } from 'sql/base/node/rxjsUtils';
 import * as Constants from 'sql/parts/query/common/constants';
 import * as LocalizedConstants from 'sql/parts/query/common/localizedConstants';
-import { IGridInfo, IGridDataSet, SaveFormat } from 'sql/parts/grid/common/interfaces';
+import { IGridInfo, IGridDataSet, SaveFormat } from 'sql/workbench/parts/grid/common/interfaces';
 import * as Utils from 'sql/platform/connection/common/utils';
-import { DataService } from 'sql/parts/grid/services/dataService';
-import * as actions from 'sql/parts/grid/views/gridActions';
-import * as Services from 'sql/parts/grid/services/sharedServices';
-import * as GridContentEvents from 'sql/parts/grid/common/gridContentEvents';
+import { DataService } from 'sql/workbench/parts/grid/services/dataService';
+import * as actions from 'sql/workbench/parts/grid/views/gridActions';
+import * as Services from 'sql/base/browser/ui/table/formatters';
+import * as GridContentEvents from 'sql/workbench/parts/grid/common/gridContentEvents';
 import { ResultsVisibleContext, ResultsGridFocussedContext, ResultsMessagesFocussedContext, QueryEditorVisibleContext } from 'sql/parts/query/common/queryContext';
 import { error } from 'sql/base/common/log';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
@@ -37,7 +32,6 @@ import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { INotificationService } from 'vs/platform/notification/common/notification';
 
 export abstract class GridParentComponent {
 	// CONSTANTS
@@ -101,8 +95,7 @@ export abstract class GridParentComponent {
 		protected contextKeyService: IContextKeyService,
 		protected configurationService: IConfigurationService,
 		protected clipboardService: IClipboardService,
-		protected queryEditorService: IQueryEditorService,
-		protected notificationService: INotificationService
+		protected queryEditorService: IQueryEditorService
 	) {
 		this.toDispose = [];
 	}

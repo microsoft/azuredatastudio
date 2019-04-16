@@ -3,15 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as azdata from 'azdata';
 
 import * as Constants from 'sql/parts/query/common/constants';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
 import * as Utils from 'sql/platform/connection/common/utils';
-import { SaveFormat } from 'sql/parts/grid/common/interfaces';
+import { SaveFormat } from 'sql/workbench/parts/grid/common/interfaces';
 import { Deferred } from 'sql/base/common/promise';
 
 import Severity from 'vs/base/common/severity';
