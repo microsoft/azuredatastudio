@@ -198,6 +198,7 @@ export class SchemaCompareResult {
 		this.flexModel.removeItem(this.loader);
 		this.switchButton.enabled = true;
 		this.compareButton.enabled = true;
+		this.optionsButton.enabled = true;
 
 		if (this.comparisonResult.differences.length > 0) {
 			this.flexModel.addItem(this.splitView);
@@ -343,6 +344,7 @@ export class SchemaCompareResult {
 
 	private resetButtons() {
 		this.compareButton.enabled = false;
+		this.optionsButton.enabled = false;
 		this.switchButton.enabled = false;
 		this.generateScriptButton.enabled = false;
 		this.generateScriptButton.title = localize('schemaCompare.generateScriptEnabledButton', 'Generate script to deploy changes to target');
