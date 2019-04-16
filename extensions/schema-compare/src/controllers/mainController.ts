@@ -23,8 +23,6 @@ export default class MainController implements vscode.Disposable {
 		return this._context;
 	}
 
-	/**
-	 */
 	public deactivate(): void {
 	}
 
@@ -33,7 +31,7 @@ export default class MainController implements vscode.Disposable {
 		return Promise.resolve(true);
 	}
 
-	private initializeSchemaCompareDialog() {
+	private initializeSchemaCompareDialog(): void {
 		azdata.tasks.registerTask('schemaCompare.start', (profile: azdata.IConnectionProfile) => new SchemaCompareDialog().openDialog(profile));
 	}
 
