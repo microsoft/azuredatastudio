@@ -157,6 +157,7 @@ label {
     color: #000000;
 }
 
-.vs-dark .slick-header-menu {
+.vs-dark .slick-header-menu,
+.hc-black .slick-header-menu {
     color: #FFFFFF;
 }
