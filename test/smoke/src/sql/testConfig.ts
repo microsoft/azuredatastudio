@@ -18,6 +18,7 @@ interface ITestServerProfile {
 	database: string;
 	provider: ConnectionProvider;
 	version: string;
+	engineType: EngineType;
 }
 
 interface INameDisplayNamePair {
@@ -32,6 +33,12 @@ export enum AuthenticationType {
 
 export enum ConnectionProvider {
 	SQLServer
+}
+
+export enum EngineType {
+	Standalone,
+	Azure,
+	BigDataCluster
 }
 
 var connectionProviderMapping = {};
@@ -70,6 +77,7 @@ export class TestServerProfile {
 	public get authenticationType(): AuthenticationType { return this._profile.authenticationType; }
 	public get authenticationTypeName(): string { return getEnumMappingEntry(authenticationTypeMapping, this.authenticationType).name; }
 	public get authenticationTypeDisplayName(): string { return getEnumMappingEntry(authenticationTypeMapping, this.authenticationType).displayName; }
+	public get engineType(): EngineType { return this._profile.engineType; }
 }
 
 var TestingServers: TestServerProfile[] = [
@@ -81,7 +89,8 @@ var TestingServers: TestServerProfile[] = [
 			authenticationType: AuthenticationType.SqlLogin,
 			database: 'master',
 			provider: ConnectionProvider.SQLServer,
-			version: '2017'
+			version: '2017',
+			engineType: EngineType.Standalone
 		}),
 	new TestServerProfile(
 		{
@@ -91,7 +100,8 @@ var TestingServers: TestServerProfile[] = [
 			authenticationType: AuthenticationType.SqlLogin,
 			database: 'master',
 			provider: ConnectionProvider.SQLServer,
-			version: '2012'
+			version: '2012',
+			engineType: EngineType.Azure
 		}),
 	new TestServerProfile(
 		{
@@ -101,7 +111,8 @@ var TestingServers: TestServerProfile[] = [
 			authenticationType: AuthenticationType.SqlLogin,
 			database: 'master',
 			provider: ConnectionProvider.SQLServer,
-			version: '2019'
+			version: '2019',
+			engineType: EngineType.BigDataCluster
 		})
 ];
 
@@ -116,17 +127,17 @@ function getEnumMappingEntry(mapping: any, enumValue: any): INameDisplayNamePair
 
 export async function getAzureServer(): Promise<TestServerProfile> {
 	let servers = await getTestingServers();
-	return servers.filter(s => s.version === '2012')[0];
+	return servers.filter(s => s.engineType === EngineType.Azure)[0];
 }
 
 export async function getStandaloneServer(): Promise<TestServerProfile> {
 	let servers = await getTestingServers();
-	return servers.filter(s => s.version === '2017')[0];
+	return servers.filter(s => s.version === '2017' && s.engineType === EngineType.Standalone)[0];
 }
 
 export async function getBdcServer(): Promise<TestServerProfile> {
 	let servers = await getTestingServers();
-	return servers.filter(s => s.version === '2019')[0];
+	return servers.filter(s => s.version === '2019' && s.engineType === EngineType.BigDataCluster)[0];
 }
 
 export async function getTestingServers(): Promise<TestServerProfile[]> {
