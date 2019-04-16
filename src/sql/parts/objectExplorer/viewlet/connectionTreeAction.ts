@@ -10,7 +10,6 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { ServerTreeView } from 'sql/parts/objectExplorer/viewlet/serverTreeView';
-import { ConnectionViewlet } from 'sql/workbench/parts/connection/electron-browser/connectionViewlet';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
@@ -374,30 +373,6 @@ export class DeleteConnectionAction extends Action {
 		} else if (this.element instanceof ConnectionProfileGroup) {
 			this._connectionManagementService.deleteConnectionGroup(this.element);
 		}
-		return Promise.resolve(true);
-	}
-}
-
-/**
- * Action to clear search results
- */
-export class ClearSearchAction extends Action {
-	public static ID = 'registeredServers.clearSearch';
-	public static LABEL = localize('clearSearch', 'Clear Search');
-
-	constructor(
-		id: string,
-		label: string,
-		private _viewlet: ConnectionViewlet | ConnectionViewletPanel,
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
-	) {
-		super(id, label);
-		this.class = 'icon close';
-		this.enabled = false;
-	}
-
-	public run(): Promise<boolean> {
-		this._viewlet.clearSearch();
 		return Promise.resolve(true);
 	}
 }
