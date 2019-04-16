@@ -747,7 +747,7 @@
 					"extensionId": "24",
 					"extensionName": "sql-vnext",
 					"displayName": "SQL Server 2019 (Preview)",
-					"shortDescription": "Support for configuring and managing a cluster with scale-out SQL Server and big data sources.",
+					"shortDescription": "Support for SQL Server 2019 features, including Create External Data wizards.",
 					"publisher": {
 						"displayName": "Microsoft",
 						"publisherId": "Microsoft",
@@ -755,8 +755,8 @@
 					},
 					"versions": [
 						{
-							"version": "0.11.0",
-							"lastUpdated": "3/15/2019",
+							"version": "0.12.1",
+							"lastUpdated": "4/17/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
@@ -770,15 +770,15 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://go.microsoft.com/fwlink/?linkid=2083223"
+									"source": "https://go.microsoft.com/fwlink/?linkid=2087446"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://go.microsoft.com/fwlink/?linkid=2083222"
+									"source": "https://go.microsoft.com/fwlink/?linkid=2087445"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://go.microsoft.com/fwlink/?linkid=2083221"
+									"source": "https://go.microsoft.com/fwlink/?linkid=2087444"
 								}
 							],
 							"properties": [
