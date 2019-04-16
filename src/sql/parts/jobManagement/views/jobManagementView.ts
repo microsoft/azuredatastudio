@@ -79,10 +79,10 @@ export abstract class JobManagementView extends TabChild implements AfterContent
 		let actions = this.getTableActions(targetObject);
 		if (actions) {
 			let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
-			let actionContext = {
+			let actionContext: IJobActionInfo = {
 				ownerUri: ownerUri,
-				targetObject: targetObject
-
+				targetObject: targetObject,
+				component: this
 			};
 
 			let anchor = { x: event.pageX + 1, y: event.pageY };
@@ -117,7 +117,7 @@ export abstract class JobManagementView extends TabChild implements AfterContent
 			{ action: refreshAction },
 			{ action: newAction }
 		]);
-		let context: IJobActionInfo = { component: this };
+		let context: IJobActionInfo = { component: this, ownerUri: this._commonService.connectionManagementService.connectionInfo.ownerUri };
 		this._actionBar.context = context;
 	}
 
