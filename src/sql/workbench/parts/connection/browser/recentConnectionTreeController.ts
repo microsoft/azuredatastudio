@@ -3,12 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import { DefaultController, ICancelableEvent } from 'vs/base/parts/tree/browser/treeDefaults';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { ClearSingleRecentConnectionAction } from 'sql/parts/connection/common/connectionActions';
+import { ClearSingleRecentConnectionAction } from 'sql/workbench/parts/connection/common/connectionActions';
 import { ContributableActionProvider } from 'vs/workbench/browser/actions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
@@ -23,8 +22,7 @@ export class RecentConnectionActionsProvider extends ContributableActionProvider
 	public onRecentConnectionRemoved: Event<void> = this._onRecentConnectionRemoved.event;
 
 	constructor(
-		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
+		@IInstantiationService private _instantiationService: IInstantiationService
 	) {
 		super();
 	}

@@ -450,14 +450,15 @@ import 'sql/workbench/parts/dataExplorer/electron-browser/nodeActions.contributi
 import 'sql/platform/telemetry/telemetry.contribution';
 import 'sql/workbench/parts/connection/electron-browser/connectionViewlet';
 import 'sql/workbench/api/node/sqlExtHost.contribution';
-import 'sql/parts/connection/common/connection.contribution';
+import 'sql/workbench/parts/connection/browser/connection.contribution';
 import 'sql/parts/query/common/query.contribution';
 import 'sql/parts/query/editor/resultsGridContribution';
 import 'sql/parts/profiler/contrib/profiler.contribution';
 import 'sql/parts/profiler/contrib/profilerActions.contribution';
 import 'sql/parts/objectExplorer/serverGroupDialog/serverGroup.contribution';
 import 'sql/platform/accounts/browser/accountManagement.contribution';
-/* Insights */
+
+// dashboard
 import 'sql/workbench/parts/dashboard/widgets/insights/views/charts/types/barChart.contribution';
 import 'sql/workbench/parts/dashboard/widgets/insights/views/charts/types/doughnutChart.contribution';
 import 'sql/workbench/parts/dashboard/widgets/insights/views/charts/types/horizontalBarChart.contribution';
@@ -468,6 +469,7 @@ import 'sql/workbench/parts/dashboard/widgets/insights/views/charts/types/timeSe
 import 'sql/workbench/parts/dashboard/widgets/insights/views/countInsight.contribution';
 import 'sql/workbench/parts/dashboard/widgets/insights/views/imageInsight.contribution';
 import 'sql/workbench/parts/dashboard/widgets/insights/views/tableInsight.contribution';
+import 'sql/workbench/parts/dashboard/dashboard.contribution';
 /* Tasks */
 import 'sql/workbench/common/actions.contribution';
 /* Widgets */

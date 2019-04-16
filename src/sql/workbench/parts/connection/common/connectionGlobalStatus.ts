@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import { ConnectionSummary } from 'azdata';
 import { IStatusbarService } from 'vs/platform/statusbar/common/statusbar';
-import * as LocalizedConstants from 'sql/parts/connection/common/localizedConstants';
+import * as LocalizedConstants from 'sql/workbench/parts/connection/common/localizedConstants';
 
 // Status when making connections from the viewlet
 export class ConnectionGlobalStatus {
