@@ -156,3 +156,8 @@ label {
 .hc-black .slick-header-menu > input.input {
     color: #000000;
 }
+
+.vs-dark .slick-header-menu,
+.hc-black .slick-header-menu {
+    color: #FFFFFF;
+}
