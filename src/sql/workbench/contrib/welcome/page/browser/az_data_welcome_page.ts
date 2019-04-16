@@ -5,7 +5,6 @@
 
 import { escape } from 'vs/base/common/strings';
 import { localize } from 'vs/nls';
-import { URI } from 'vs/base/common/uri';
 
 export function used() {
 }
@@ -26,7 +25,7 @@ export default () => `
 						<li><a href="command:workbench.action.files.newUntitledFile">${escape(localize('welcomePage.newQuery', "New query"))}</a></li>
 						<li><a href="command:notebook.command.new">${escape(localize('welcomePage.newNotebook', "New notebook"))}</a></li>
 						<li class="mac-only"><a href="command:workbench.action.files.openLocalFileFolder">${escape(localize('welcomePage.openFileMac', "Open file"))}</a></li>
-						<li class=""windows-only linux-only"><a href="command:workbench.action.files.openFile">${escape(localize('welcomePage.openFileLinuxPC', "Open file"))}</a></li>
+						<li class="windows-only linux-only"><a href="command:workbench.action.files.openFile">${escape(localize('welcomePage.openFileLinuxPC', "Open file"))}</a></li>
 					</ul>
 				</div>
 				<div class="section recent">
