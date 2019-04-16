@@ -82,6 +82,7 @@ export abstract class JobManagementView extends TabChild implements AfterContent
 			let actionContext = {
 				ownerUri: ownerUri,
 				targetObject: targetObject
+
 			};
 
 			let anchor = { x: event.pageX + 1, y: event.pageY };
@@ -116,7 +117,8 @@ export abstract class JobManagementView extends TabChild implements AfterContent
 			{ action: refreshAction },
 			{ action: newAction }
 		]);
-		this._actionBar.context = { component: this };
+		let context: IJobActionInfo = { component: this };
+		this._actionBar.context = context;
 	}
 
 	public refreshJobs() {
