@@ -1,5 +1,18 @@
 # Change Log
 
+## Version 1.6.0
+* Release date: April 18, 2019
+* Release status: General Availability
+
+## What's new in this version
+* Align with latest VS Code editor platform (currently 1.33.1)
+* Resolved [bugs and issues](https://github.com/Microsoft/azuredatastudio/milestone/26?closed=1).
+
+## Contributions and "thank you"
+We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
+
+* yamatoya for `fix the format (#4899)`
+
 ## Version 1.5.1
 * Release date: March 18, 2019
 * Release status: General Availability
