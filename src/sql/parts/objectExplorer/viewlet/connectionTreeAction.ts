@@ -10,7 +10,6 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { ServerTreeView } from 'sql/parts/objectExplorer/viewlet/serverTreeView';
-import { ConnectionViewlet } from 'sql/workbench/parts/connection/electron-browser/connectionViewlet';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
@@ -388,7 +387,7 @@ export class ClearSearchAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		private _viewlet: ConnectionViewlet | ConnectionViewletPanel,
+		private _viewlet: ConnectionViewletPanel,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
 	) {
 		super(id, label);
