@@ -161,6 +161,83 @@ export class SchemaCompareOptionsDialog {
 	private static readonly ServerRoles: string = localize('SchemaCompare.ServerRoles', 'ServerRoles');
 	private static readonly ServerTriggers: string = localize('SchemaCompare.ServerTriggers', 'ServerTriggers');
 
+	private static readonly descriptionIgnoreTableOptions: string = localize('SchemaCompare.Description.IgnoreTableOptions', 'Specifies whether differences in the table options will be ignored or updated when you publish to a database.');
+	private static readonly descriptionIgnoreSemicolonBetweenStatements: string = localize('SchemaCompare.Description.IgnoreSemicolonBetweenStatements', 'Specifies whether differences in the semi-colons between T-SQL statements will be ignored or updated when you publish to a database.');
+	private static readonly descriptionIgnoreRouteLifetime: string = localize('SchemaCompare.Description.IgnoreRouteLifetime', 'Specifies whether differences in the amount of time that SQL Server retains the route in the routing table should be ignored or updated when you publish to a database.');
+	private static readonly descriptionIgnoreRoleMembership: string = localize('SchemaCompare.Description.IgnoreRoleMembership', 'Specifies whether differences in the role membership of logins should be ignored or updated when you publish to a database.');
+	private static readonly descriptionIgnoreQuotedIdentifiers: string = localize('SchemaCompare.Description.IgnoreQuotedIdentifiers', 'Specifies whether differences in the quoted identifiers setting should be ignored or updated when you publish to a database.');
+	private static readonly descriptionIgnorePermissions: string = localize('SchemaCompare.Description.IgnorePermissions', 'Specifies whether permissions should be ignored.');
+	private static readonly descriptionIgnorePartitionSchemes: string = localize('SchemaCompare.Description.IgnorePartitionSchemes', 'Specifies whether differences in partition schemes and functions should be ignored or updated when you publish to a database.');
+	private static readonly descriptionIgnoreObjectPlacementOnPartitionScheme: string = localize('SchemaCompare.Description.IgnoreObjectPlacementOnPartitionScheme', 'Specifies whether an object\'s placement on a partition scheme should be ignored or updated when you publish to a database.');
+	private static readonly descriptionIgnoreNotForReplication: string = localize('SchemaCompare.Description.IgnoreNotForReplication', 'Specifies whether the not for replication settings should be ignored or updated when you publish to a database.');
+	private static readonly descriptionIgnoreLoginSids: string = localize('SchemaCompare.Description.IgnoreLoginSids', 'Specifies whether differences in the security identification number (SID) should be ignored or updated when you publish to a database.');
+	private static readonly descriptionIgnoreLockHintsOnIndexes: string = localize('SchemaCompare.Description.IgnoreLockHintsOnIndexes', 'Specifies whether differences in the lock hints on indexes should be ignored or updated when you publish to a database.');
+	private static readonly descriptionIgnoreKeywordCasing: string = localize('SchemaCompare.Description.IgnoreKeywordCasing', 'Specifies whether differences in the casing of keywords should be ignored or updated when you publish to a database.');
+	private static readonly descriptionIgnoreIndexPadding: string = localize('SchemaCompare.Description.IgnoreIndexPadding', 'Specifies whether differences in the index padding should be ignored or updated when you publish to a database.');
+	private static readonly descriptionIgnoreIndexOptions: string = localize('SchemaCompare.Description.IgnoreIndexOptions', 'Specifies whether differences in the index options should be ignored or updated when you publish to a database.');
+	private static readonly descriptionIgnoreIncrement: string = localize('SchemaCompare.Description.IgnoreIncrement', 'Specifies whether differences in the increment for an identity column should be ignored or updated when you publish to a database.');
+	private static readonly descriptionIgnoreIdentitySeed: string = localize('SchemaCompare.Description.IgnoreIdentitySeed', 'Specifies whether differences in the seed for an identity column should be ignored or updated when you publish updates to a database.');
+	private static readonly descriptionIgnoreUserSettingsObjects: string = localize('SchemaCompare.Description.IgnoreUserSettingsObjects', 'Specifies whether differences in the user settings objects will be ignored or updated when you publish to a database.');
+	private static readonly descriptionIgnoreFullTextCatalogFilePath: string = localize('SchemaCompare.Description.IgnoreFullTextCatalogFilePath', 'Specifies whether differences in the file path for the full-text catalog should be ignored or whether a warning should be issued when you publish to a database.');
+	private static readonly descriptionIgnoreWhitespace: string = localize('SchemaCompare.Description.IgnoreWhitespace', 'Specifies whether differences in white space will be ignored or updated when you publish to a database.');
+	private static readonly descriptionIgnoreWithNocheckOnForeignKeys: string = localize('SchemaCompare.Description.IgnoreWithNocheckOnForeignKeys', 'Specifies whether differences in the value of the WITH NOCHECK clause for foreign keys will be ignored or updated when you publish to a database.');
+	private static readonly descriptionVerifyCollationCompatibility: string = localize('SchemaCompare.Description.VerifyCollationCompatibility', 'Specifies whether collation compatibility is verified.');
+	private static readonly descriptionUnmodifiableObjectWarnings: string = localize('SchemaCompare.Description.UnmodifiableObjectWarnings', 'Specifies whether warnings should be generated when differences are found in objects that cannot be modified, for example, if the file size or file paths were different for a file.');
+	private static readonly descriptionTreatVerificationErrorsAsWarnings: string = localize('SchemaCompare.Description.TreatVerificationErrorsAsWarnings', 'Specifies whether errors encountered during publish verification should be treated as warnings. The check is performed against the generated deployment plan before the plan is executed against your target database. Plan verification detects problems such as the loss of target-only objects (such as indexes) that must be dropped to make a change. Verification will also detect situations where dependencies (such as a table or view) exist because of a reference to a composite project, but do not exist in the target database. You might choose to do this to get a complete list of all issues, instead of having the publish action stop on the first error.');
+	private static readonly descriptionScriptRefreshModule: string = localize('SchemaCompare.Description.ScriptRefreshModule', 'Include refresh statements at the end of the publish script.');
+	private static readonly descriptionScriptNewConstraintValidation: string = localize('SchemaCompare.Description.ScriptNewConstraintValidation', 'At the end of publish all of the constraints will be verified as one set, avoiding data errors caused by a check or foreign key constraint in the middle of publish. If set to False, your constraints will be published without checking the corresponding data.');
+	private static readonly descriptionScriptFileSize: string = localize('SchemaCompare.Description.ScriptFileSize', 'Controls whether size is specified when adding a file to a filegroup.');
+	private static readonly descriptionScriptDeployStateChecks: string = localize('SchemaCompare.Description.ScriptDeployStateChecks', 'Specifies whether statements are generated in the publish script to verify that the database name and server name match the names specified in the database project.');
+	private static readonly descriptionScriptDatabaseOptions: string = localize('SchemaCompare.Description.ScriptDatabaseOptions', 'Specifies whether target database properties should be set or updated as part of the publish action.');
+	private static readonly descriptionScriptDatabaseCompatibility: string = localize('SchemaCompare.Description.ScriptDatabaseCompatibility', 'Specifies whether differences in the database compatibility should be ignored or updated when you publish to a database.');
+	private static readonly descriptionScriptDatabaseCollation: string = localize('SchemaCompare.Description.ScriptDatabaseCollation', 'Specifies whether differences in the database collation should be ignored or updated when you publish to a database.');
+	private static readonly descriptionRunDeploymentPlanExecutors: string = localize('SchemaCompare.Description.RunDeploymentPlanExecutors', 'Specifies whether DeploymentPlanExecutor contributors should be run when other operations are executed.');
+	private static readonly descriptionRegisterDataTierApplication: string = localize('SchemaCompare.Description.RegisterDataTierApplication', 'Specifies whether the schema is registered with the database server.');
+	private static readonly descriptionPopulateFilesOnFileGroups: string = localize('SchemaCompare.Description.PopulateFilesOnFileGroups', 'Specifies whether a new file is also created when a new FileGroup is created in the target database.');
+	private static readonly descriptionNoAlterStatementsToChangeClrTypes: string = localize('SchemaCompare.Description.NoAlterStatementsToChangeClrTypes', 'Specifies that publish should always drop and re-create an assembly if there is a difference instead of issuing an ALTER ASSEMBLY statement');
+	private static readonly descriptionIncludeTransactionalScripts: string = localize('SchemaCompare.Description.IncludeTransactionalScripts', 'Specifies whether transactional statements should be used where possible when you publish to a database.');
+	private static readonly descriptionIncludeCompositeObjects: string = localize('SchemaCompare.Description.IncludeCompositeObjects', 'Include all composite elements as part of a single publish operation.');
+	private static readonly descriptionAllowUnsafeRowLevelSecurityDataMovement: string = localize('SchemaCompare.Description.AllowUnsafeRowLevelSecurityDataMovement', 'Do not block data motion on a table which has Row Level Security if this property is set to true. Default is false.');
+	private static readonly descriptionIgnoreWithNocheckOnCheckConstraints: string = localize('SchemaCompare.Description.IgnoreWithNocheckOnCheckConstraints', 'Specifies whether differences in the value of the WITH NOCHECK clause for check constraints will be ignored or updated when you publish to a database.');
+	private static readonly descriptionIgnoreFillFactor: string = localize('SchemaCompare.Description.IgnoreFillFactor', 'Specifies whether differences in the fill factor for index storage should be ignored or whether a warning should be issued when you publish to a database.');
+	private static readonly descriptionIgnoreFileSize: string = localize('SchemaCompare.Description.IgnoreFileSize', 'Specifies whether differences in the file sizes should be ignored or whether a warning should be issued when you publish to a database.');
+	private static readonly descriptionIgnoreFilegroupPlacement: string = localize('SchemaCompare.Description.IgnoreFilegroupPlacement', 'Specifies whether differences in the placement of objects in FILEGROUPs should be ignored or updated when you publish to a database.');
+	private static readonly descriptionDoNotAlterReplicatedObjects: string = localize('SchemaCompare.Description.DoNotAlterReplicatedObjects', 'Specifies whether objects that are replicated are identified during verification.');
+	private static readonly descriptionDoNotAlterChangeDataCaptureObjects: string = localize('SchemaCompare.Description.DoNotAlterChangeDataCaptureObjects', 'If true, Change Data Capture objects are not altered.');
+	private static readonly descriptionDisableAndReenableDdlTriggers: string = localize('SchemaCompare.Description.DisableAndReenableDdlTriggers', 'Specifies whether Data Definition Language (DDL) triggers are disabled at the beginning of the publish process and re-enabled at the end of the publish action.');
+	private static readonly descriptionDeployDatabaseInSingleUserMode: string = localize('SchemaCompare.Description.DeployDatabaseInSingleUserMode', 'If true, the database is set to Single User Mode before deploying.');
+	private static readonly descriptionCreateNewDatabase: string = localize('SchemaCompare.Description.CreateNewDatabase', 'Specifies whether the target database should be updated or whether it should be dropped and re-created when you publish to a database.');
+	private static readonly descriptionCompareUsingTargetCollation: string = localize('SchemaCompare.Description.CompareUsingTargetCollation', 'This setting dictates how the database\'s collation is handled during deployment; by default the target database\'s collation will be updated if it does not match the collation specified by the source.  When this option is set, the target database\'s (or server\'s) collation should be used.');
+	private static readonly descriptionCommentOutSetVarDeclarations: string = localize('SchemaCompare.Description.CommentOutSetVarDeclarations', 'Specifies whether the declaration of SETVAR variables should be commented out in the generated publish script. You might choose to do this if you plan to specify the values on the command line when you publish by using a tool such as SQLCMD.EXE.');
+	private static readonly descriptionBlockWhenDriftDetected: string = localize('SchemaCompare.Description.BlockWhenDriftDetected', 'Specifies whether to block updating a database whose schema no longer matches its registration or is unregistered.');
+	private static readonly descriptionBlockOnPossibleDataLoss: string = localize('SchemaCompare.Description.BlockOnPossibleDataLoss', 'Specifies that the publish episode should be terminated if there is a possibility of data loss resulting from the publish operation.');
+	private static readonly descriptionBackupDatabaseBeforeChanges: string = localize('SchemaCompare.Description.BackupDatabaseBeforeChanges', 'Backups the database before deploying any changes.');
+	private static readonly descriptionAllowIncompatiblePlatform: string = localize('SchemaCompare.Description.AllowIncompatiblePlatform', 'Specifies whether to attempt the action despite incompatible SQL Server platforms.');
+	private static readonly descriptionAllowDropBlockingAssemblies: string = localize('SchemaCompare.Description.AllowDropBlockingAssemblies', 'This property is used by SqlClr deployment to cause any blocking assemblies to be dropped as part of the deployment plan. By default, any blocking/referencing assemblies will block an assembly update if the referencing assembly needs to be dropped.');
+	private static readonly descriptionDropConstraintsNotInSource: string = localize('SchemaCompare.Description.DropConstraintsNotInSource', 'Specifies whether constraints that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.');
+	private static readonly descriptionDropDmlTriggersNotInSource: string = localize('SchemaCompare.Description.DropDmlTriggersNotInSource', 'Specifies whether DML triggers that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.');
+	private static readonly descriptionDropExtendedPropertiesNotInSource: string = localize('SchemaCompare.Description.DropExtendedPropertiesNotInSource', 'Specifies whether extended properties that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.');
+	private static readonly descriptionDropIndexesNotInSource: string = localize('SchemaCompare.Description.DropIndexesNotInSource', 'Specifies whether indexes that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.');
+	private static readonly descriptionIgnoreFileAndLogFilePath: string = localize('SchemaCompare.Description.IgnoreFileAndLogFilePath', 'Specifies whether differences in the paths for files and log files should be ignored or updated when you publish to a database.');
+	private static readonly descriptionIgnoreExtendedProperties: string = localize('SchemaCompare.Description.IgnoreExtendedProperties', 'Specifies whether extended properties should be ignored.');
+	private static readonly descriptionIgnoreDmlTriggerState: string = localize('SchemaCompare.Description.IgnoreDmlTriggerState', 'Specifies whether differences in the enabled or disabled state of DML triggers should be ignored or updated when you publish to a database.');
+	private static readonly descriptionIgnoreDmlTriggerOrder: string = localize('SchemaCompare.Description.IgnoreDmlTriggerOrder', 'Specifies whether differences in the order of Data Manipulation Language (DML) triggers should be ignored or updated when you publish to a database.');
+	private static readonly descriptionIgnoreDefaultSchema: string = localize('SchemaCompare.Description.IgnoreDefaultSchema', 'Specifies whether differences in the default schema should be ignored or updated when you publish to a database.');
+	private static readonly descriptionIgnoreDdlTriggerState: string = localize('SchemaCompare.Description.IgnoreDdlTriggerState', 'Specifies whether differences in the enabled or disabled state of Data Definition Language (DDL) triggers should be ignored or updated when you publish to a database.');
+	private static readonly descriptionIgnoreDdlTriggerOrder: string = localize('SchemaCompare.Description.IgnoreDdlTriggerOrder', 'Specifies whether differences in the order of Data Definition Language (DDL) triggers should be ignored or updated when you publish to a database or server.');
+	private static readonly descriptionIgnoreCryptographicProviderFilePath: string = localize('SchemaCompare.Description.IgnoreCryptographicProviderFilePath', 'Specifies whether differences in the file path for the cryptographic provider should be ignored or updated when you publish to a database.');
+	private static readonly descriptionVerifyDeployment: string = localize('SchemaCompare.Description.VerifyDeployment', 'Specifies whether checks should be performed before publishing that will stop the publish action if issues are present that might block successful publishing. For example, your publish action might stop if you have foreign keys on the target database that do not exist in the database project, and that will cause errors when you publish.');
+	private static readonly descriptionIgnoreComments: string = localize('SchemaCompare.Description.IgnoreComments', 'Specifies whether differences in the comments should be ignored or updated when you publish to a database.');
+	private static readonly descriptionIgnoreColumnCollation: string = localize('SchemaCompare.Description.IgnoreColumnCollation', 'Specifies whether differences in the column collations should be ignored or updated when you publish to a database.');
+	private static readonly descriptionIgnoreAuthorizer: string = localize('SchemaCompare.Description.IgnoreAuthorizer', 'Specifies whether differences in the Authorizer should be ignored or updated when you publish to a database.');
+	private static readonly descriptionIgnoreAnsiNulls: string = localize('SchemaCompare.Description.IgnoreAnsiNulls', 'Specifies whether differences in the ANSI NULLS setting should be ignored or updated when you publish to a database.');
+	private static readonly descriptionGenerateSmartDefaults: string = localize('SchemaCompare.Description.GenerateSmartDefaults', 'Automatically provides a default value when updating a table that contains data with a column that does not allow null values.');
+	private static readonly descriptionDropStatisticsNotInSource: string = localize('SchemaCompare.Description.DropStatisticsNotInSource', 'Specifies whether statistics that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.');
+	private static readonly descriptionDropRoleMembersNotInSource: string = localize('SchemaCompare.Description.DropRoleMembersNotInSource', 'Specifies whether role members that are not defined in the database snapshot (.dacpac) file will be dropped from the target database when you publish updates to a database.</');
+	private static readonly descriptionDropPermissionsNotInSource: string = localize('SchemaCompare.Description.DropPermissionsNotInSource', 'Specifies whether permissions that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish updates to a database.');
+	private static readonly descriptionDropObjectsNotInSource: string = localize('SchemaCompare.Description.DropObjectsNotInSource', 'Specifies whether objects that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.  This value takes precedence over DropExtendedProperties.');
+	private static readonly descriptionIgnoreColumnOrder: string = localize('SchemaCompare.Description.IgnoreColumnOrder', 'Specifies whether differences in table column order should be ignored or updated when you publish to a database.');
+	
 	public dialog: azdata.window.Dialog;
 	public schemaCompareOptions: azdata.SchemaCompareOptions;
 
@@ -168,6 +245,9 @@ export class SchemaCompareOptionsDialog {
 	private objectTypesTab: azdata.window.DialogTab;
 	private optionsFlexBuilder: azdata.FlexContainer;
 	private objectTypesFlexBuilder: azdata.FlexContainer;
+
+	private descriptionHeading: azdata.TableComponent;
+	private descriptionText: azdata.TextComponent;
 	private generaloptionsCheckBoxes: azdata.CheckBoxComponent[] = [];
 	private objectTypesCheckBoxes: azdata.CheckBoxComponent[] = [];
 	private excludedObjectTypes: azdata.SchemaObjectType[] = [];
@@ -359,14 +439,41 @@ export class SchemaCompareOptionsDialog {
 		this.generalOptionsTab.registerContent(async view => {
 
 			this.optionsFlexBuilder = view.modelBuilder.flexContainer()
-				.withLayout({ flexFlow: 'column', })
-				.component();
+				.withLayout({
+					flexFlow: 'column',
+					height: 760,
+				}).component();
+
+			this.descriptionHeading = view.modelBuilder.table().withProperties({
+					columns: [
+						{
+							value: 'Option Description',
+							headerCssClass: 'no-borders',
+							toolTip: 'Option Description'
+						},
+					],
+					height: 30
+				}).component();
+
+			this.descriptionText = view.modelBuilder.text().withProperties({
+				value: ' ',
+				height: 100
+			}).component();
 
 			this.GetGeneralOptionCheckBoxes(view);
 			this.generaloptionsCheckBoxes.forEach(box => {
 				this.optionsFlexBuilder.addItem(box);
 			});
-			await view.initializeModel(this.optionsFlexBuilder);
+
+			let uberOptionsFlexBuilder = view.modelBuilder.flexContainer()
+			.withLayout({
+				flexFlow: 'column',
+			}).component();
+
+			uberOptionsFlexBuilder.addItem(this.optionsFlexBuilder, { CSSStyles: { 'overflow': 'scroll' } });
+			uberOptionsFlexBuilder.addItem(this.descriptionHeading, { CSSStyles: { 'font-weight': 'bold'}});
+			uberOptionsFlexBuilder.addItem(this.descriptionText, { CSSStyles: { 'padding': '4px' } });
+			await view.initializeModel(uberOptionsFlexBuilder);
 		});
 	}
 
@@ -374,14 +481,24 @@ export class SchemaCompareOptionsDialog {
 		this.objectTypesTab.registerContent(async view => {
 
 			this.objectTypesFlexBuilder = view.modelBuilder.flexContainer()
-				.withLayout({ flexFlow: 'column' })
-				.component();
+				.withLayout({
+					flexFlow: 'column',
+					height: 900
+			 }).component();
 
 			this.GetObjectTypesCheckBoxes(view);
 			this.objectTypesCheckBoxes.forEach(b => {
 				this.objectTypesFlexBuilder.addItem(b);
 			});
-			await view.initializeModel(this.objectTypesFlexBuilder);
+
+			let uberOptionsFlexBuilder = view.modelBuilder.flexContainer()
+			.withLayout({
+				flexFlow: 'column',
+			}).component();
+
+			uberOptionsFlexBuilder.addItem(this.objectTypesFlexBuilder, { CSSStyles: { 'overflow': 'scroll'}});
+
+			await view.initializeModel(uberOptionsFlexBuilder);
 		});
 	}
 
@@ -389,8 +506,14 @@ export class SchemaCompareOptionsDialog {
 		this.optionsLabels.forEach(l => {
 			let box: azdata.CheckBoxComponent = view.modelBuilder.checkBox().withProperties({
 				checked: this.GetSchemaCompareOptionUtil(l),
-				label: l
+				label: l,
 			}).component();
+			
+			box.onChanged(() => {
+				this.descriptionText.updateProperties({
+					value: this.GetDescription(box.label)
+				});
+			});
 			this.generaloptionsCheckBoxes.push(box);
 		});
 	}
@@ -1355,6 +1478,237 @@ export class SchemaCompareOptionsDialog {
 				}
 				return;
 		}
+	}
 
+	private GetDescription(label: string): string{
+		switch (label) {
+			case SchemaCompareOptionsDialog.IgnoreTableOptions:
+				return SchemaCompareOptionsDialog.descriptionIgnoreTableOptions;
+
+			case SchemaCompareOptionsDialog.IgnoreSemicolonBetweenStatements:
+				return SchemaCompareOptionsDialog.descriptionIgnoreSemicolonBetweenStatements;
+
+			case SchemaCompareOptionsDialog.IgnoreRouteLifetime:
+				return SchemaCompareOptionsDialog.descriptionIgnoreRouteLifetime;
+
+			case SchemaCompareOptionsDialog.IgnoreRoleMembership:
+				return SchemaCompareOptionsDialog.descriptionIgnoreRoleMembership;
+
+			case SchemaCompareOptionsDialog.IgnoreQuotedIdentifiers:
+				return SchemaCompareOptionsDialog.descriptionIgnoreQuotedIdentifiers;
+
+			case SchemaCompareOptionsDialog.IgnorePermissions:
+				return SchemaCompareOptionsDialog.descriptionIgnorePermissions;
+
+			case SchemaCompareOptionsDialog.IgnorePartitionSchemes:
+				return SchemaCompareOptionsDialog.descriptionIgnorePartitionSchemes;
+
+			case SchemaCompareOptionsDialog.IgnoreObjectPlacementOnPartitionScheme:
+				return SchemaCompareOptionsDialog.descriptionIgnoreObjectPlacementOnPartitionScheme;
+
+			case SchemaCompareOptionsDialog.IgnoreNotForReplication:
+				return SchemaCompareOptionsDialog.descriptionIgnoreNotForReplication;
+
+			case SchemaCompareOptionsDialog.IgnoreLoginSids:
+				return SchemaCompareOptionsDialog.descriptionIgnoreLoginSids;
+
+			case SchemaCompareOptionsDialog.IgnoreLockHintsOnIndexes:
+				return SchemaCompareOptionsDialog.descriptionIgnoreLockHintsOnIndexes;
+
+			case SchemaCompareOptionsDialog.IgnoreKeywordCasing:
+				return SchemaCompareOptionsDialog.descriptionIgnoreKeywordCasing;
+
+			case SchemaCompareOptionsDialog.IgnoreIndexPadding:
+				return SchemaCompareOptionsDialog.descriptionIgnoreIndexPadding;
+
+			case SchemaCompareOptionsDialog.IgnoreIndexOptions:
+				return SchemaCompareOptionsDialog.descriptionIgnoreIndexOptions;
+
+			case SchemaCompareOptionsDialog.IgnoreIncrement:
+				return SchemaCompareOptionsDialog.descriptionIgnoreIncrement;
+
+			case SchemaCompareOptionsDialog.IgnoreIdentitySeed:
+				return SchemaCompareOptionsDialog.descriptionIgnoreIdentitySeed;
+
+			case SchemaCompareOptionsDialog.IgnoreUserSettingsObjects:
+				return SchemaCompareOptionsDialog.descriptionIgnoreUserSettingsObjects;
+
+			case SchemaCompareOptionsDialog.IgnoreFullTextCatalogFilePath:
+				return SchemaCompareOptionsDialog.descriptionIgnoreFullTextCatalogFilePath;
+
+			case SchemaCompareOptionsDialog.IgnoreWhitespace:
+				return SchemaCompareOptionsDialog.descriptionIgnoreWhitespace;
+
+			case SchemaCompareOptionsDialog.IgnoreWithNocheckOnForeignKeys:
+				return SchemaCompareOptionsDialog.descriptionIgnoreWithNocheckOnForeignKeys;
+
+			case SchemaCompareOptionsDialog.VerifyCollationCompatibility:
+				return SchemaCompareOptionsDialog.descriptionVerifyCollationCompatibility;
+
+			case SchemaCompareOptionsDialog.UnmodifiableObjectWarnings:
+				return SchemaCompareOptionsDialog.descriptionUnmodifiableObjectWarnings;
+
+			case SchemaCompareOptionsDialog.TreatVerificationErrorsAsWarnings:
+				return SchemaCompareOptionsDialog.descriptionTreatVerificationErrorsAsWarnings;
+
+			case SchemaCompareOptionsDialog.ScriptRefreshModule:
+				return SchemaCompareOptionsDialog.descriptionScriptRefreshModule;
+
+			case SchemaCompareOptionsDialog.ScriptNewConstraintValidation:
+				return SchemaCompareOptionsDialog.descriptionScriptNewConstraintValidation;
+
+			case SchemaCompareOptionsDialog.ScriptFileSize:
+				return SchemaCompareOptionsDialog.descriptionScriptFileSize;
+
+			case SchemaCompareOptionsDialog.ScriptDeployStateChecks:
+				return SchemaCompareOptionsDialog.descriptionScriptDeployStateChecks;
+
+			case SchemaCompareOptionsDialog.ScriptDatabaseOptions:
+				return SchemaCompareOptionsDialog.descriptionScriptDatabaseOptions;
+
+			case SchemaCompareOptionsDialog.ScriptDatabaseCompatibility:
+				return SchemaCompareOptionsDialog.descriptionScriptDatabaseCompatibility;
+
+			case SchemaCompareOptionsDialog.ScriptDatabaseCollation:
+				return SchemaCompareOptionsDialog.descriptionScriptDatabaseCollation;
+
+			case SchemaCompareOptionsDialog.RunDeploymentPlanExecutors:
+				return SchemaCompareOptionsDialog.descriptionRunDeploymentPlanExecutors;
+
+			case SchemaCompareOptionsDialog.RegisterDataTierApplication:
+				return SchemaCompareOptionsDialog.descriptionRegisterDataTierApplication;
+
+			case SchemaCompareOptionsDialog.PopulateFilesOnFileGroups:
+				return SchemaCompareOptionsDialog.descriptionPopulateFilesOnFileGroups;
+
+			case SchemaCompareOptionsDialog.NoAlterStatementsToChangeClrTypes:
+				return SchemaCompareOptionsDialog.descriptionNoAlterStatementsToChangeClrTypes;
+
+			case SchemaCompareOptionsDialog.IncludeTransactionalScripts:
+				return SchemaCompareOptionsDialog.descriptionIncludeTransactionalScripts;
+
+			case SchemaCompareOptionsDialog.IncludeCompositeObjects:
+				return SchemaCompareOptionsDialog.descriptionIncludeCompositeObjects;
+
+			case SchemaCompareOptionsDialog.AllowUnsafeRowLevelSecurityDataMovement:
+				return SchemaCompareOptionsDialog.descriptionAllowUnsafeRowLevelSecurityDataMovement;
+
+			case SchemaCompareOptionsDialog.IgnoreWithNocheckOnCheckConstraints:
+				return SchemaCompareOptionsDialog.descriptionIgnoreWithNocheckOnCheckConstraints;
+
+			case SchemaCompareOptionsDialog.IgnoreFillFactor:
+				return SchemaCompareOptionsDialog.descriptionIgnoreFillFactor;
+
+			case SchemaCompareOptionsDialog.IgnoreFileSize:
+				return SchemaCompareOptionsDialog.descriptionIgnoreFileSize;
+
+			case SchemaCompareOptionsDialog.IgnoreFilegroupPlacement:
+				return SchemaCompareOptionsDialog.descriptionIgnoreFilegroupPlacement;
+
+			case SchemaCompareOptionsDialog.DoNotAlterReplicatedObjects:
+				return SchemaCompareOptionsDialog.descriptionDoNotAlterReplicatedObjects;
+
+			case SchemaCompareOptionsDialog.DoNotAlterChangeDataCaptureObjects:
+				return SchemaCompareOptionsDialog.descriptionDoNotAlterChangeDataCaptureObjects;
+
+			case SchemaCompareOptionsDialog.DisableAndReenableDdlTriggers:
+				return SchemaCompareOptionsDialog.descriptionDisableAndReenableDdlTriggers;
+
+			case SchemaCompareOptionsDialog.DeployDatabaseInSingleUserMode:
+				return SchemaCompareOptionsDialog.descriptionDeployDatabaseInSingleUserMode;
+
+			case SchemaCompareOptionsDialog.CreateNewDatabase:
+				return SchemaCompareOptionsDialog.descriptionCreateNewDatabase;
+
+			case SchemaCompareOptionsDialog.CompareUsingTargetCollation:
+				return SchemaCompareOptionsDialog.descriptionCompareUsingTargetCollation;
+
+			case SchemaCompareOptionsDialog.CommentOutSetVarDeclarations:
+				return SchemaCompareOptionsDialog.descriptionCommentOutSetVarDeclarations;
+
+			case SchemaCompareOptionsDialog.BlockWhenDriftDetected:
+				return SchemaCompareOptionsDialog.descriptionBlockWhenDriftDetected;
+
+			case SchemaCompareOptionsDialog.BlockOnPossibleDataLoss:
+				return SchemaCompareOptionsDialog.descriptionBlockOnPossibleDataLoss;
+
+			case SchemaCompareOptionsDialog.BackupDatabaseBeforeChanges:
+				return SchemaCompareOptionsDialog.descriptionBackupDatabaseBeforeChanges;
+
+			case SchemaCompareOptionsDialog.AllowIncompatiblePlatform:
+				return SchemaCompareOptionsDialog.descriptionAllowIncompatiblePlatform;
+
+			case SchemaCompareOptionsDialog.AllowDropBlockingAssemblies:
+				return SchemaCompareOptionsDialog.descriptionAllowDropBlockingAssemblies;
+
+			case SchemaCompareOptionsDialog.DropConstraintsNotInSource:
+				return SchemaCompareOptionsDialog.descriptionDropConstraintsNotInSource;
+
+			case SchemaCompareOptionsDialog.DropDmlTriggersNotInSource:
+				return SchemaCompareOptionsDialog.descriptionDropDmlTriggersNotInSource;
+
+			case SchemaCompareOptionsDialog.DropExtendedPropertiesNotInSource:
+				return SchemaCompareOptionsDialog.descriptionDropExtendedPropertiesNotInSource;
+
+			case SchemaCompareOptionsDialog.DropIndexesNotInSource:
+				return SchemaCompareOptionsDialog.descriptionDropIndexesNotInSource;
+
+			case SchemaCompareOptionsDialog.IgnoreFileAndLogFilePath:
+				return SchemaCompareOptionsDialog.descriptionIgnoreFileAndLogFilePath;
+
+			case SchemaCompareOptionsDialog.IgnoreExtendedProperties:
+				return SchemaCompareOptionsDialog.descriptionIgnoreExtendedProperties;
+
+			case SchemaCompareOptionsDialog.IgnoreDmlTriggerState:
+				return SchemaCompareOptionsDialog.descriptionIgnoreDmlTriggerState;
+
+			case SchemaCompareOptionsDialog.IgnoreDmlTriggerOrder:
+				return SchemaCompareOptionsDialog.descriptionIgnoreDmlTriggerOrder;
+
+			case SchemaCompareOptionsDialog.IgnoreDefaultSchema:
+				return SchemaCompareOptionsDialog.descriptionIgnoreDefaultSchema;
+
+			case SchemaCompareOptionsDialog.IgnoreDdlTriggerState:
+				return SchemaCompareOptionsDialog.descriptionIgnoreDdlTriggerState;
+
+			case SchemaCompareOptionsDialog.IgnoreDdlTriggerOrder:
+				return SchemaCompareOptionsDialog.descriptionIgnoreDdlTriggerOrder;
+
+			case SchemaCompareOptionsDialog.IgnoreCryptographicProviderFilePath:
+				return SchemaCompareOptionsDialog.descriptionIgnoreCryptographicProviderFilePath;
+
+			case SchemaCompareOptionsDialog.VerifyDeployment:
+				return SchemaCompareOptionsDialog.descriptionVerifyDeployment;
+
+			case SchemaCompareOptionsDialog.IgnoreComments:
+				return SchemaCompareOptionsDialog.descriptionIgnoreComments;
+
+			case SchemaCompareOptionsDialog.IgnoreColumnCollation:
+				return SchemaCompareOptionsDialog.descriptionIgnoreColumnCollation;
+
+			case SchemaCompareOptionsDialog.IgnoreAuthorizer:
+				return SchemaCompareOptionsDialog.descriptionIgnoreAuthorizer;
+
+			case SchemaCompareOptionsDialog.IgnoreAnsiNulls:
+				return SchemaCompareOptionsDialog.descriptionIgnoreAnsiNulls;
+
+			case SchemaCompareOptionsDialog.GenerateSmartDefaults:
+				return SchemaCompareOptionsDialog.descriptionGenerateSmartDefaults;
+
+			case SchemaCompareOptionsDialog.DropStatisticsNotInSource:
+				return SchemaCompareOptionsDialog.descriptionDropStatisticsNotInSource;
+
+			case SchemaCompareOptionsDialog.DropRoleMembersNotInSource:
+				return SchemaCompareOptionsDialog.descriptionDropRoleMembersNotInSource;
+
+			case SchemaCompareOptionsDialog.DropPermissionsNotInSource:
+				return SchemaCompareOptionsDialog.descriptionDropPermissionsNotInSource;
+
+			case SchemaCompareOptionsDialog.DropObjectsNotInSource:
+				return SchemaCompareOptionsDialog.descriptionDropObjectsNotInSource;
+
+			case SchemaCompareOptionsDialog.IgnoreColumnOrder:
+				return SchemaCompareOptionsDialog.descriptionIgnoreColumnOrder;
+		}
 	}
 }
