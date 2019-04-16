@@ -3,14 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
-import { IGridInfo } from 'sql/parts/grid/common/interfaces';
-import { DataService } from 'sql/parts/grid/services/dataService';
-import { GridActionProvider } from 'sql/parts/grid/views/gridActions';
+import { IGridInfo } from 'sql/workbench/parts/grid/common/interfaces';
+import { DataService } from 'sql/workbench/parts/grid/services/dataService';
+import { GridActionProvider } from 'sql/workbench/parts/grid/views/gridActions';
 import { localize } from 'vs/nls';
 import { IAction, Action } from 'vs/base/common/actions';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export class EditDataGridActionProvider extends GridActionProvider {
 
@@ -18,10 +15,9 @@ export class EditDataGridActionProvider extends GridActionProvider {
 		dataService: DataService,
 		selectAllCallback: (index: number) => void,
 		private _deleteRowCallback: (index: number) => void,
-		private _revertRowCallback: () => void,
-		@IInstantiationService instantiationService: IInstantiationService
+		private _revertRowCallback: () => void
 	) {
-		super(dataService, selectAllCallback, instantiationService);
+		super(dataService, selectAllCallback);
 	}
 	/**
 	 * Return actions given a click on an edit data grid

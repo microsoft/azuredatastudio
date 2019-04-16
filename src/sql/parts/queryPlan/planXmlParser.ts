@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-export class RunTimeInformation {
+class RunTimeInformation {
 	runtimePerThreads: RuntimePerThread[];
 	public get actualRows(): number {
 		let total = 0;
@@ -27,14 +27,14 @@ export class RunTimeInformation {
 	}
 }
 
-export class RuntimePerThread {
+class RuntimePerThread {
 	threadId: number;
 	actualRow: number;
 	actualExecutionMode: string;
 	actualExecutions: number;
 }
 
-export class IndexObject {
+class IndexObject {
 	database: string;
 	schema: string;
 	table: string;
@@ -53,7 +53,7 @@ export class IndexObject {
 	}
 }
 
-export class PlanNode {
+class PlanNode {
 	root: PlanNode;
 	subtreeCost: number;
 	private childrenNodes: PlanNode[];

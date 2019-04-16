@@ -3,19 +3,16 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 import { Observer } from 'rxjs/Observer';
 
-import { ResultSetSubset, EditUpdateCellResult, EditSubsetResult, EditCreateRowResult } from 'azdata';
+import { EditUpdateCellResult, EditSubsetResult, EditCreateRowResult } from 'azdata';
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import { ResultSerializer } from 'sql/platform/node/resultSerializer';
-import { ISaveRequest } from 'sql/parts/grid/common/interfaces';
+import { ISaveRequest } from 'sql/workbench/parts/grid/common/interfaces';
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 
 /**
  * DataService handles the interactions between QueryModel and app.component. Thus, it handles
@@ -30,29 +27,11 @@ export class DataService {
 	constructor(
 		private _uri: string,
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IQueryModelService private _queryModel: IQueryModelService,
-		@IQueryEditorService private _queryEditorService: IQueryEditorService
+		@IQueryModelService private _queryModel: IQueryModelService
 	) {
 		this.queryEventObserver = new Subject();
 		this.gridContentObserver = new Subject();
 		this.editQueue = Promise.resolve();
-	}
-
-	/**
-	 * Get a specified number of rows starting at a specified row for
-	 * the current results set. Used for query results only.
-	 * @param start The starting row or the requested rows
-	 * @param numberOfRows The amount of rows to return
-	 * @param batchId The batch id of the batch you are querying
-	 * @param resultId The id of the result you want to get the rows for
-	 */
-	getQueryRows(rowStart: number, numberOfRows: number, batchId: number, resultId: number): Observable<ResultSetSubset> {
-		const self = this;
-		return Observable.create(function (observer: Observer<ResultSetSubset>) {
-			self._queryModel.getQueryRows(self._uri, rowStart, numberOfRows, batchId, resultId).then(results => {
-				observer.next(results);
-			});
-		});
 	}
 
 	/**
@@ -185,23 +164,6 @@ export class DataService {
 	 */
 	copyResults(selection: Slick.Range[], batchId: number, resultId: number, includeHeaders?: boolean): void {
 		this._queryModel.copyResults(this._uri, selection, batchId, resultId, includeHeaders);
-	}
-
-	/**
-	 * Sends a request to set the selection in the QueryEditor.
-	 */
-	setEditorSelection(index: number) {
-		this._queryModel.setEditorSelection(this._uri, index);
-	}
-
-	showWarning(message: string): void {
-	}
-
-	showError(message: string): void {
-	}
-
-	get config(): Promise<{ [key: string]: any }> {
-		return undefined;
 	}
 
 	onAngularLoaded(): void {
