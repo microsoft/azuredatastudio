@@ -80,7 +80,7 @@ export class ConnectionViewletPanel extends ViewletPanel {
 	}
 
 	layoutBody(size: number): void {
-		this._serverTreeView.layout(size); // account for search box and horizontal scroll bar
+		this._serverTreeView.layout(size);
 		DOM.toggleClass(this._root, 'narrow', this._root.clientWidth < 300);
 	}
 
