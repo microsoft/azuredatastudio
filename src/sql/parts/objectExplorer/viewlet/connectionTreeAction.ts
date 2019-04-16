@@ -376,27 +376,3 @@ export class DeleteConnectionAction extends Action {
 		return Promise.resolve(true);
 	}
 }
-
-/**
- * Action to clear search results
- */
-export class ClearSearchAction extends Action {
-	public static ID = 'registeredServers.clearSearch';
-	public static LABEL = localize('clearSearch', 'Clear Search');
-
-	constructor(
-		id: string,
-		label: string,
-		private _viewlet: ConnectionViewletPanel,
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
-	) {
-		super(id, label);
-		this.class = 'icon close';
-		this.enabled = false;
-	}
-
-	public run(): Promise<boolean> {
-		this._viewlet.clearSearch();
-		return Promise.resolve(true);
-	}
-}
