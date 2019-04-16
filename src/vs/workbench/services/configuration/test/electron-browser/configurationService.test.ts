@@ -37,7 +37,7 @@ import { IWindowConfiguration } from 'vs/platform/windows/common/windows';
 import { RemoteAgentService } from 'vs/workbench/services/remote/electron-browser/remoteAgentServiceImpl';
 import { RemoteAuthorityResolverService } from 'vs/platform/remote/electron-browser/remoteAuthorityResolverService';
 import { IRemoteAgentService } from 'vs/workbench/services/remote/common/remoteAgentService';
-import { FileService2 } from 'vs/workbench/services/files/common/fileService2';
+import { FileService } from 'vs/workbench/services/files/common/fileService';
 import { NullLogService } from 'vs/platform/log/common/log';
 import { DiskFileSystemProvider } from 'vs/workbench/services/files/node/diskFileSystemProvider';
 import { ConfigurationCache } from 'vs/workbench/services/configuration/node/configurationCache';

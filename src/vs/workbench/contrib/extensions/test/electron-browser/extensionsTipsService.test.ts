@@ -46,7 +46,7 @@ import { TestExperimentService } from 'vs/workbench/contrib/experiments/test/ele
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import { ExtensionType } from 'vs/platform/extensions/common/extensions';
 import { ISharedProcessService } from 'vs/platform/ipc/electron-browser/sharedProcessService';
-import { FileService2 } from 'vs/workbench/services/files/common/fileService2';
+import { FileService } from 'vs/workbench/services/files/common/fileService';
 import { NullLogService } from 'vs/platform/log/common/log';
 import { Schemas } from 'vs/base/common/network';
 import { DiskFileSystemProvider } from 'vs/workbench/services/files/node/diskFileSystemProvider';
