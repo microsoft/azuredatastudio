@@ -58,8 +58,9 @@ export class ConnectionViewletPanel extends ViewletPanel {
 			AddServerGroupAction.LABEL);
 		this._serverTreeView = this.instantiationService.createInstance(ServerTreeView);
 		this._activeConnectionsFilterAction = this._serverTreeView.activeConnectionsFilterAction;
-
-		this.objectExplorerService.registerServerTreeView(this._serverTreeView);
+		if (!this._serverTreeView) {
+			this.objectExplorerService.registerServerTreeView(this._serverTreeView);
+		}
 	}
 
 	protected renderHeader(container: HTMLElement): void {
