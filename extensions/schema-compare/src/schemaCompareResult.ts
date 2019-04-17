@@ -251,8 +251,8 @@ export class SchemaCompareResult {
 		this.flexModel.removeItem(this.noDifferencesLabel);
 		this.flexModel.addItem(this.loader, { CSSStyles: { 'margin-top': '30px' } });
 		this.diffEditor.updateProperties({
-			contentLeft: '\n',
-			contentRight: '\n'
+			contentLeft: os.EOL,
+			contentRight: os.EOL
 		});
 		this.differencesTable.selectedRows = null;
 		this.resetButtons();
@@ -260,7 +260,7 @@ export class SchemaCompareResult {
 	}
 
 	private createCompareButton(view: azdata.ModelView): void {
-		let runIcon = path.join(__dirname, '.', 'media', 'compare.svg');
+		let runIcon = path.join(__dirname, 'media', 'compare.svg');
 
 		this.compareButton = view.modelBuilder.button().withProperties({
 			label: localize('schemaCompare.compareButton', 'Compare'),
@@ -274,7 +274,7 @@ export class SchemaCompareResult {
 	}
 
 	private createGenerateScriptButton(view: azdata.ModelView): void {
-		let fileIcon = path.join(__dirname, '.', 'media', 'generate-script.svg');
+		let fileIcon = path.join(__dirname, 'media', 'generate-script.svg');
 
 		this.generateScriptButton = view.modelBuilder.button().withProperties({
 			label: localize('schemaCompare.generateScriptButton', 'Generate script'),
@@ -304,7 +304,7 @@ export class SchemaCompareResult {
 			let result = await service.schemaCompareGenerateScript(this.comparisonResult.operationId, this.targetEndpointInfo.databaseName, fileUri.fsPath, azdata.TaskExecutionMode.execute);
 			if (!result || !result.success) {
 				vscode.window.showErrorMessage(
-					localize('schemaCompare.generateScriptErrorMessage', "Generate script failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
+					localize('schemaCompare.generateScriptErrorMessage', "Generate script failed: '{0}'", (result && result.errorMessage) ? result.errorMessage : 'Unknown'));
 			}
 		});
 	}
@@ -317,7 +317,7 @@ export class SchemaCompareResult {
 	}
 
 	private createSwitchButton(view: azdata.ModelView): void {
-		let swapIcon = path.join(__dirname, '.', 'media', 'switch-directions.svg');
+		let swapIcon = path.join(__dirname, 'media', 'switch-directions.svg');
 
 		this.switchButton = view.modelBuilder.button().withProperties({
 			label: localize('schemaCompare.switchDirectionButton', 'Switch direction'),
