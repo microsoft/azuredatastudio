@@ -38,11 +38,6 @@
 	overflow: hidden;
 }
 
-/* {{SQL CARBON EDIT}} Overwrite ADS caption display to be initial instead of block */
-.monaco-workbench .part.editor > .content .welcomePage .row .splash .showOnStartup .caption {
-	display: initial;
-}
-
 .monaco-workbench .part.editor > .content .welcomePage p {
 	font-size: 1.3em;
 }
