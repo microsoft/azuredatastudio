@@ -27,6 +27,7 @@
     </trans-unit>
     <trans-unit id="flatFileImport.fileImport">
       <source xml:lang="en">File to be imported</source>
+      <target state="translated">Fichier à importer</target>
     </trans-unit>
     <trans-unit id="flatFileImport.success.norows">
       <source xml:lang="en">✔ You have successfully inserted the data into a table.</source>
@@ -40,6 +41,7 @@
     </trans-unit>
     <trans-unit id="flatFileImport.prosePreviewMessage">
       <source xml:lang="en">This operation analyzed the input file structure to generate the preview below for up to the first 50 rows.</source>
+      <target state="translated">Cette opération a analysé la structure du fichier d’entrée pour générer l’aperçu ci-dessous pour les 50 premières lignes.</target>
     </trans-unit>
   </body></file>
   <file original="extensions/import/out/wizard/pages/modifyColumnsPage" source-language="en" target-language="fr" datatype="plaintext"><body>
@@ -75,6 +77,7 @@
     </trans-unit>
     <trans-unit id="flatFileImport.databaseDropdownTitle">
       <source xml:lang="en">Database the table is created in</source>
+      <target state="translated">Base de données dans laquelle la table est créée</target>
     </trans-unit>
     <trans-unit id="flatFileImport.browseFiles">
       <source xml:lang="en">Browse</source>
@@ -86,6 +89,7 @@
     </trans-unit>
     <trans-unit id="flatFileImport.fileTextboxTitle">
       <source xml:lang="en">Location of the file to be imported</source>
+      <target state="translated">L'emplacement du fichier à importer</target>
     </trans-unit>
     <trans-unit id="flatFileImport.tableTextboxTitle">
       <source xml:lang="en">New table name</source>
@@ -96,6 +100,36 @@
       <target state="translated">Schéma de table</target>
     </trans-unit>
   </body></file>
+  <file original="extensions/import/out/wizard/flatFileWizard" source-language="en" target-language="fr" datatype="plaintext"><body>
+    <trans-unit id="import.needConnection">
+      <source xml:lang="en">Please connect to a server before using this wizard.</source>
+      <target state="translated">Connectez-vous à un serveur avant d’utiliser cet Assistant.</target>
+    </trans-unit>
+    <trans-unit id="flatFileImport.wizardName">
+      <source xml:lang="en">Import flat file wizard</source>
+      <target state="translated">Assistant Importation de fichier plat</target>
+    </trans-unit>
+    <trans-unit id="flatFileImport.page1Name">
+      <source xml:lang="en">Specify Input File</source>
+      <target state="translated">Spécifier le fichier d'entrée</target>
+    </trans-unit>
+    <trans-unit id="flatFileImport.page2Name">
+      <source xml:lang="en">Preview Data</source>
+      <target state="translated">Aperçu des données</target>
+    </trans-unit>
+    <trans-unit id="flatFileImport.page3Name">
+      <source xml:lang="en">Modify Columns</source>
+      <target state="translated">Modifier les colonnes</target>
+    </trans-unit>
+    <trans-unit id="flatFileImport.page4Name">
+      <source xml:lang="en">Summary</source>
+      <target state="translated">Récapitulatif</target>
+    </trans-unit>
+    <trans-unit id="flatFileImport.importNewFile">
+      <source xml:lang="en">Import new file</source>
+      <target state="translated">Importer un nouveau fichier</target>
+    </trans-unit>
+  </body></file>
   <file original="extensions/import/out/services/telemetry" source-language="en" target-language="fr" datatype="plaintext"><body>
     <trans-unit id="import.serviceCrashButton">
       <source xml:lang="en">Give Feedback</source>
@@ -103,6 +137,7 @@
     </trans-unit>
     <trans-unit id="serviceCrashMessage">
       <source xml:lang="en">service component could not start</source>
+      <target state="translated">le composant de service n'a pas pu démarrer</target>
     </trans-unit>
   </body></file>
   <file original="extensions/import/out/services/serviceClient" source-language="en" target-language="fr" datatype="plaintext"><body>
@@ -112,12 +147,15 @@
     </trans-unit>
     <trans-unit id="serviceStarting">
       <source xml:lang="en">Starting service</source>
+      <target state="translated">Démarrage du service</target>
     </trans-unit>
     <trans-unit id="flatFileImport.serviceStartFailed">
       <source xml:lang="en">Failed to start Import service{0}</source>
+      <target state="translated">Le démarrage du service d'importation {0} a échoué</target>
     </trans-unit>
     <trans-unit id="installingServiceDetailed">
       <source xml:lang="en">Installing {0} service to {1}</source>
+      <target state="translated">Installation du service {0} sur {1}</target>
     </trans-unit>
     <trans-unit id="installingService">
       <source xml:lang="en">Installing Service</source>
@@ -133,37 +171,11 @@
     </trans-unit>
     <trans-unit id="downloadingServiceStatus">
       <source xml:lang="en">Downloading Service</source>
+      <target state="translated">Service de téléchargement</target>
     </trans-unit>
     <trans-unit id="downloadingServiceComplete">
       <source xml:lang="en">Done!</source>
       <target state="translated">Terminé !</target>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/import/out/wizard/flatFileWizard" source-language="en" target-language="fr" datatype="plaintext"><body>
-    <trans-unit id="import.needConnection">
-      <source xml:lang="en">Please connect to a server before using this wizard.</source>
-      <target state="translated">Connectez-vous à un serveur avant d’utiliser cet Assistant.</target>
-    </trans-unit>
-    <trans-unit id="flatFileImport.wizardName">
-      <source xml:lang="en">Import flat file wizard</source>
-    </trans-unit>
-    <trans-unit id="flatFileImport.page1Name">
-      <source xml:lang="en">Specify Input File</source>
-      <target state="translated">Spécifier le fichier d'entrée</target>
-    </trans-unit>
-    <trans-unit id="flatFileImport.page2Name">
-      <source xml:lang="en">Preview Data</source>
-    </trans-unit>
-    <trans-unit id="flatFileImport.page3Name">
-      <source xml:lang="en">Modify Columns</source>
-      <target state="translated">Modifier les colonnes</target>
-    </trans-unit>
-    <trans-unit id="flatFileImport.page4Name">
-      <source xml:lang="en">Summary</source>
-      <target state="translated">Récapitulatif</target>
-    </trans-unit>
-    <trans-unit id="flatFileImport.importNewFile">
-      <source xml:lang="en">Import new file</source>
     </trans-unit>
   </body></file>
 </xliff>

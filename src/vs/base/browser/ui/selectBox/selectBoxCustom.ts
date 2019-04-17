@@ -61,6 +61,8 @@ class SelectListRenderer implements IListRenderer<ISelectOptionItem, ISelectList
 
 		data.text.textContent = text;
 		data.decoratorRight.innerText = (!!decoratorRight ? decoratorRight : '');
+		// {{SQL CARBON EDIT}}
+		data.text.setAttribute('aria-label', text);
 
 		if (typeof element.description === 'string') {
 			const itemDescriptionId = (text.replace(/ /g, '_').toLowerCase() + '_description_' + data.root.id);

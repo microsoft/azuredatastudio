@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as nls from 'vs/nls';
@@ -13,6 +13,8 @@ import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachDialogStyler } from 'vs/platform/theme/common/styler';
 import { dispose, IDisposable } from 'vs/base/common/lifecycle';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { EventHelper } from 'vs/base/browser/dom';
 
 export class DialogService implements IDialogService {
 	_serviceBrand: any;
@@ -76,7 +78,10 @@ export class DialogService implements IDialogService {
 			{
 				detail: options ? options.detail : undefined,
 				cancelId: options ? options.cancelId : undefined,
-				type: this.getDialogType(severity)
+				type: this.getDialogType(severity),
+				keyEventProcessor: (event: StandardKeyboardEvent) => {
+					EventHelper.stop(event, true);
+				}
 			});
 
 		dialogDisposables.push(dialog);

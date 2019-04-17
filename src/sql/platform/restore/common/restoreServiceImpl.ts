@@ -20,7 +20,7 @@ import { ProviderConnectionInfo } from 'sql/platform/connection/common/providerC
 import * as Utils from 'sql/platform/connection/common/utils';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { ITaskService } from 'sql/platform/taskHistory/common/taskService';
-import { TaskStatus, TaskNode } from 'sql/parts/taskHistory/common/taskNode';
+import { TaskStatus, TaskNode } from 'sql/workbench/parts/taskHistory/common/taskNode';
 import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
 import * as TelemetryUtils from 'sql/platform/telemetry/telemetryUtilities';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';

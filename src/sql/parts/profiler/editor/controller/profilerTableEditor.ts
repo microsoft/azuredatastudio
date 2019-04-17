@@ -25,10 +25,10 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Dimension } from 'vs/base/browser/dom';
-import { textFormatter, slickGridDataItemColumnValueExtractor } from 'sql/parts/grid/services/sharedServices';
+import { textFormatter, slickGridDataItemColumnValueExtractor } from 'sql/base/browser/ui/table/formatters';
 import { PROFILER_MAX_MATCHES } from 'sql/parts/profiler/editor/controller/profilerFindWidget';
 import { IStorageService } from 'vs/platform/storage/common/storage';
-import { IStatusbarService, StatusbarAlignment, IStatusbarEntry } from 'vs/platform/statusbar/common/statusbar';
+import { IStatusbarService, StatusbarAlignment } from 'vs/platform/statusbar/common/statusbar';
 import { localize } from 'vs/nls';
 
 export interface ProfilerTableViewState {

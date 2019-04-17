@@ -90,7 +90,9 @@ const indentationFilter = [
 	'!**/Dockerfile.*',
 	'!**/*.Dockerfile',
 	'!**/*.dockerfile',
-	'!extensions/markdown-language-features/media/*.js'
+	'!extensions/markdown-language-features/media/*.js',
+	// {{SQL CARBON EDIT}}
+	'!**/*.xlf'
 ];
 
 const copyrightFilter = [
@@ -122,7 +124,9 @@ const copyrightFilter = [
 	'!extensions/*/server/bin/*',
 	// {{SQL CARBON EDIT}}
 	'!extensions/notebook/src/intellisense/text.ts',
-	'!extensions/mssql/src/objectExplorerNodeProvider/webhdfs.ts'
+	'!extensions/mssql/src/objectExplorerNodeProvider/webhdfs.ts',
+	'!src/sql/workbench/parts/notebook/outputs/tableRenderers.ts',
+	'!**/*.xlf'
 ];
 
 const eslintFilter = [
