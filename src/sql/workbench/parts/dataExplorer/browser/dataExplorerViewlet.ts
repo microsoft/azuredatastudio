@@ -115,4 +115,8 @@ export class DataExplorerViewlet extends ViewContainerViewlet {
 		this._register(viewPanel);
 		return viewPanel;
 	}
+
+	dispose() {
+		super.dispose();
+	}
 }
