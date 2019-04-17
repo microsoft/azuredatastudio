@@ -53,7 +53,7 @@ import { isUndefined, withUndefinedAsNull } from 'vs/base/common/types';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 
 // {{SQL CARBON EDIT}}
-import { renderDashboardContributions } from 'sql/parts/extensions/sqlExtensionsHelper';
+import { renderDashboardContributions } from 'sql/workbench/parts/extensions/browser/contributionRenders';
 // {{SQL CARBON EDIT}} - End
 
 function renderBody(body: string): string {

@@ -11,8 +11,8 @@ import QueryRunner from 'sql/platform/query/common/queryRunner';
 import { MessagePanel } from './messagePanel';
 import { GridPanel } from './gridPanel';
 import { ChartTab } from './charting/chartTab';
-import { QueryPlanTab } from 'sql/parts/queryPlan/queryPlan';
-import { TopOperationsTab } from 'sql/parts/queryPlan/topOperations';
+import { QueryPlanTab } from 'sql/workbench/parts/queryPlan/electron-browser/queryPlan';
+import { TopOperationsTab } from 'sql/workbench/parts/queryPlan/browser/topOperations';
 import { QueryModelViewTab } from 'sql/parts/query/modelViewTab/queryModelViewTab';
 
 import * as nls from 'vs/nls';

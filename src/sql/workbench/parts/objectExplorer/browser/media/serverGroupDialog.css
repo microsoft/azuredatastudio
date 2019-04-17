@@ -1,0 +1,19 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.group-color-options {
+	display: flex;
+	width: 100%;
+}
+
+.group-color-options .server-group-color {
+	flex: 1 1 auto;
+	height: 20px;
+	margin: 5px;
+}
+
+.server-group-dialog {
+	padding: 15px
+}
