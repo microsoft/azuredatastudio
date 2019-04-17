@@ -452,8 +452,8 @@ import 'sql/workbench/api/node/sqlExtHost.contribution';
 import 'sql/workbench/parts/connection/browser/connection.contribution';
 import 'sql/parts/query/common/query.contribution';
 import 'sql/parts/query/editor/resultsGridContribution';
-import 'sql/parts/profiler/contrib/profiler.contribution';
-import 'sql/parts/profiler/contrib/profilerActions.contribution';
+import 'sql/workbench/parts/profiler/browser/profiler.contribution';
+import 'sql/workbench/parts/profiler/browser/profilerActions.contribution';
 import 'sql/workbench/parts/objectExplorer/common/serverGroup.contribution';
 import 'sql/platform/accounts/browser/accountManagement.contribution';
 

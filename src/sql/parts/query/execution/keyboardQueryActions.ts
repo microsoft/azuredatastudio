@@ -17,7 +17,7 @@ import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import * as Constants from 'sql/parts/query/common/constants';
 import * as ConnectionConstants from 'sql/platform/connection/common/constants';
-import { EditDataEditor } from 'sql/parts/editData/editor/editDataEditor';
+import { EditDataEditor } from 'sql/workbench/parts/editData/browser/editDataEditor';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
