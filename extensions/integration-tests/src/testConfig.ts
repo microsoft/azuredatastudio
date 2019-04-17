@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { getConfigValue, EnvironmentVariable_STANDALONE_SERVER, EnvironmentVariable_STANDALONE_USERNAME, EnvironmentVariable_STANDALONE_PASSWORD, EnvironmentVariable_AZURE_SERVER, EnvironmentVariable_AZURE_USERNAME, EnvironmentVariable_AZURE_PASSWORD, EnvironmentVariable_BDC_SERVER, EnvironmentVariable_BDC_USERNAME, EnvironmentVariable_BDC_PASSWORD } from './utils';
-
 /*
 	TODO: Due to a runtime error, I duplicated this file at these 2 locations:
 	$/extensions/integration-test/src/testConfig.ts
