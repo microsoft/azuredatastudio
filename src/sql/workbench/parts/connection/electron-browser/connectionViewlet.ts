@@ -107,7 +107,7 @@ export class ConnectionViewlet extends Viewlet implements IConnectionsViewlet {
 	}
 
 	public layout({ height, width }: DOM.Dimension): void {
-		this._serverTreeView.layout(height - 36); // account for search box
+		this._serverTreeView.layout(height);
 		DOM.toggleClass(this._root, 'narrow', width <= 350);
 	}
 
