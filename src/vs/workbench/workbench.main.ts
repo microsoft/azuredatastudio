@@ -230,7 +230,7 @@ import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardServi
 import { DashboardService } from 'sql/platform/dashboard/browser/dashboardServiceImpl';
 import { NotebookService } from 'sql/workbench/services/notebook/common/notebookServiceImpl';
 import { INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
-import { OEShimService, IOEShimService } from 'sql/parts/objectExplorer/common/objectExplorerViewTreeShim';
+import { OEShimService, IOEShimService } from 'sql/workbench/parts/objectExplorer/common/objectExplorerViewTreeShim';
 
 registerSingleton(IDashboardService, DashboardService);
 registerSingleton(IDashboardViewService, DashboardViewService);
@@ -438,8 +438,8 @@ import 'vs/workbench/contrib/issue/electron-browser/issue.contribution';
 
 // {{SQL CARBON EDIT}}
 // SQL
-import 'sql/parts/taskHistory/common/taskHistory.contribution';
-import 'sql/parts/taskHistory/viewlet/taskHistoryViewlet';
+import 'sql/workbench/parts/taskHistory/browser/taskHistory.contribution';
+import 'sql/workbench/parts/taskHistory/browser/taskHistoryViewlet';
 
 // data explorer
 import 'sql/workbench/parts/dataExplorer/browser/dataExplorer.contribution';
@@ -448,16 +448,16 @@ import 'sql/workbench/parts/dataExplorer/browser/dataExplorerExtensionPoint';
 import 'sql/workbench/parts/dataExplorer/electron-browser/nodeActions.contribution';
 
 import 'sql/platform/telemetry/telemetry.contribution';
-import 'sql/workbench/parts/connection/electron-browser/connectionViewlet';
 import 'sql/workbench/api/node/sqlExtHost.contribution';
-import 'sql/parts/connection/common/connection.contribution';
+import 'sql/workbench/parts/connection/browser/connection.contribution';
 import 'sql/parts/query/common/query.contribution';
 import 'sql/parts/query/editor/resultsGridContribution';
 import 'sql/parts/profiler/contrib/profiler.contribution';
 import 'sql/parts/profiler/contrib/profilerActions.contribution';
-import 'sql/parts/objectExplorer/serverGroupDialog/serverGroup.contribution';
+import 'sql/workbench/parts/objectExplorer/common/serverGroup.contribution';
 import 'sql/platform/accounts/browser/accountManagement.contribution';
-/* Insights */
+
+// dashboard
 import 'sql/workbench/parts/dashboard/widgets/insights/views/charts/types/barChart.contribution';
 import 'sql/workbench/parts/dashboard/widgets/insights/views/charts/types/doughnutChart.contribution';
 import 'sql/workbench/parts/dashboard/widgets/insights/views/charts/types/horizontalBarChart.contribution';
@@ -468,6 +468,7 @@ import 'sql/workbench/parts/dashboard/widgets/insights/views/charts/types/timeSe
 import 'sql/workbench/parts/dashboard/widgets/insights/views/countInsight.contribution';
 import 'sql/workbench/parts/dashboard/widgets/insights/views/imageInsight.contribution';
 import 'sql/workbench/parts/dashboard/widgets/insights/views/tableInsight.contribution';
+import 'sql/workbench/parts/dashboard/dashboard.contribution';
 /* Tasks */
 import 'sql/workbench/common/actions.contribution';
 /* Widgets */

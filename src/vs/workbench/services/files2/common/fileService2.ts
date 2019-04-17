@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Disposable, IDisposable, toDisposable, combinedDisposable, dispose } from 'vs/base/common/lifecycle';
-import { IFileService, IResolveFileOptions, IResourceEncodings, FileChangesEvent, FileOperationEvent, IFileSystemProviderRegistrationEvent, IFileSystemProvider, IFileStat, IResolveFileResult, IResolveContentOptions, IContent, IStreamContent, ITextSnapshot, IWriteTextFileOptions, ICreateFileOptions, IFileSystemProviderActivationEvent, FileOperationError, FileOperationResult, FileOperation, FileSystemProviderCapabilities, FileType, toFileSystemProviderErrorCode, FileSystemProviderErrorCode, IStat, IFileStatWithMetadata, IResolveMetadataFileOptions, etag, hasReadWriteCapability, hasFileFolderCopyCapability, hasOpenReadWriteCloseCapability, toFileOperationResult, IFileSystemProviderWithOpenReadWriteCloseCapability, IFileSystemProviderWithFileReadWriteCapability, IResolveFileResultWithMetadata, IWatchOptions, ILegacyFileService, IWriteFileOptions } from 'vs/platform/files/common/files';
+import { IFileService, IResolveFileOptions, IResourceEncodings, FileChangesEvent, FileOperationEvent, IFileSystemProviderRegistrationEvent, IFileSystemProvider, IFileStat, IResolveFileResult, IResolveContentOptions, IContent, IStreamContent, ICreateFileOptions, IFileSystemProviderActivationEvent, FileOperationError, FileOperationResult, FileOperation, FileSystemProviderCapabilities, FileType, toFileSystemProviderErrorCode, FileSystemProviderErrorCode, IStat, IFileStatWithMetadata, IResolveMetadataFileOptions, etag, hasReadWriteCapability, hasFileFolderCopyCapability, hasOpenReadWriteCloseCapability, toFileOperationResult, IFileSystemProviderWithOpenReadWriteCloseCapability, IFileSystemProviderWithFileReadWriteCapability, IResolveFileResultWithMetadata, IWatchOptions, ILegacyFileService, IWriteFileOptions } from 'vs/platform/files/common/files';
 import { URI } from 'vs/base/common/uri';
 import { Event, Emitter } from 'vs/base/common/event';
 import { ServiceIdentifier } from 'vs/platform/instantiation/common/instantiation';
@@ -15,6 +15,7 @@ import { isNonEmptyArray, coalesce } from 'vs/base/common/arrays';
 import { getBaseLabel } from 'vs/base/common/labels';
 import { ILogService } from 'vs/platform/log/common/log';
 import { VSBuffer, VSBufferReadable, readableToBuffer, bufferToReadable } from 'vs/base/common/buffer';
+import { Queue } from 'vs/base/common/async';
 
 export class FileService2 extends Disposable implements IFileService {
 
@@ -295,7 +296,7 @@ export class FileService2 extends Disposable implements IFileService {
 		return this._legacy.encoding;
 	}
 
-	async createFile2(resource: URI, bufferOrReadable: VSBuffer | VSBufferReadable = VSBuffer.fromString(''), options?: ICreateFileOptions): Promise<IFileStatWithMetadata> {
+	async createFile(resource: URI, bufferOrReadable: VSBuffer | VSBufferReadable = VSBuffer.fromString(''), options?: ICreateFileOptions): Promise<IFileStatWithMetadata> {
 
 		// validate overwrite
 		const overwrite = !!(options && options.overwrite);
@@ -316,36 +317,12 @@ export class FileService2 extends Disposable implements IFileService {
 		const provider = this.throwIfFileSystemIsReadonly(await this.withProvider(resource));
 
 		// validate write
-		const exists = await this.exists(resource);
-		if (exists) {
-			const stat = await provider.stat(resource);
-
-			// file cannot be directory
-			if ((stat.type & FileType.Directory) !== 0) {
-				throw new Error(localize('fileIsDirectoryError', "Expected file {0} is actually a directory", resource.toString()));
-			}
-
-			// Dirty write prevention: if the file on disk has been changed and does not match our expected
-			// mtime and etag, we bail out to prevent dirty writing.
-			//
-			// First, we check for a mtime that is in the future before we do more checks. The assumption is
-			// that only the mtime is an indicator for a file that has changd on disk.
-			//
-			// Second, if the mtime has advanced, we compare the size of the file on disk with our previous
-			// one using the etag() function. Relying only on the mtime check has prooven to produce false
-			// positives due to file system weirdness (especially around remote file systems). As such, the
-			// check for size is a weaker check because it can return a false negative if the file has changed
-			// but to the same length. This is a compromise we take to avoid having to produce checksums of
-			// the file content for comparison which would be much slower to compute.
-			if (options && typeof options.mtime === 'number' && typeof options.etag === 'string' && options.mtime < stat.mtime && options.etag !== etag(stat.size, options.mtime)) {
-				throw new FileOperationError(localize('fileModifiedError', "File Modified Since"), FileOperationResult.FILE_MODIFIED_SINCE, options);
-			}
-		}
+		const stat = await this.validateWriteFile(provider, resource, options);
 
 		try {
 
 			// mkdir recursively as needed
-			if (!exists) {
+			if (!stat) {
 				await this.mkdirp(provider, dirname(resource));
 			}
 
@@ -370,8 +347,36 @@ export class FileService2 extends Disposable implements IFileService {
 		return this.resolve(resource, { resolveMetadata: true });
 	}
 
-	createFile(resource: URI, content?: string, options?: ICreateFileOptions): Promise<IFileStatWithMetadata> {
-		return this.joinOnLegacy.then(legacy => legacy.createFile(resource, content, options));
+	private async validateWriteFile(provider: IFileSystemProvider, resource: URI, options?: IWriteFileOptions): Promise<IStat | undefined> {
+		let stat: IStat | undefined = undefined;
+		try {
+			stat = await provider.stat(resource);
+		} catch (error) {
+			return undefined; // file might not exist
+		}
+
+		// file cannot be directory
+		if ((stat.type & FileType.Directory) !== 0) {
+			throw new Error(localize('fileIsDirectoryError', "Expected file {0} is actually a directory", resource.toString()));
+		}
+
+		// Dirty write prevention: if the file on disk has been changed and does not match our expected
+		// mtime and etag, we bail out to prevent dirty writing.
+		//
+		// First, we check for a mtime that is in the future before we do more checks. The assumption is
+		// that only the mtime is an indicator for a file that has changd on disk.
+		//
+		// Second, if the mtime has advanced, we compare the size of the file on disk with our previous
+		// one using the etag() function. Relying only on the mtime check has prooven to produce false
+		// positives due to file system weirdness (especially around remote file systems). As such, the
+		// check for size is a weaker check because it can return a false negative if the file has changed
+		// but to the same length. This is a compromise we take to avoid having to produce checksums of
+		// the file content for comparison which would be much slower to compute.
+		if (options && typeof options.mtime === 'number' && typeof options.etag === 'string' && options.mtime < stat.mtime && options.etag !== etag(stat.size, options.mtime)) {
+			throw new FileOperationError(localize('fileModifiedError', "File Modified Since"), FileOperationResult.FILE_MODIFIED_SINCE, options);
+		}
+
+		return stat;
 	}
 
 	resolveContent(resource: URI, options?: IResolveContentOptions): Promise<IContent> {
@@ -380,10 +385,6 @@ export class FileService2 extends Disposable implements IFileService {
 
 	async resolveStreamContent(resource: URI, options?: IResolveContentOptions): Promise<IStreamContent> {
 		return this.joinOnLegacy.then(legacy => legacy.resolveStreamContent(resource, options));
-	}
-
-	updateContent(resource: URI, value: string | ITextSnapshot, options?: IWriteTextFileOptions): Promise<IFileStatWithMetadata> {
-		return this.joinOnLegacy.then(legacy => legacy.updateContent(resource, value, options));
 	}
 
 	//#endregion
@@ -672,12 +673,10 @@ export class FileService2 extends Disposable implements IFileService {
 	}
 
 	private toWatchKey(provider: IFileSystemProvider, resource: URI, options: IWatchOptions): string {
-		const isPathCaseSensitive = !!(provider.capabilities & FileSystemProviderCapabilities.PathCaseSensitive);
-
 		return [
-			isPathCaseSensitive ? resource.toString() : resource.toString().toLowerCase(), 	// lowercase path is the provider is case insensitive
-			String(options.recursive),														// use recursive: true | false as part of the key
-			options.excludes.join()															// use excludes as part of the key
+			this.toMapKey(provider, resource), 	// lowercase path if the provider is case insensitive
+			String(options.recursive),			// use recursive: true | false as part of the key
+			options.excludes.join()				// use excludes as part of the key
 		].join();
 	}
 
@@ -692,7 +691,39 @@ export class FileService2 extends Disposable implements IFileService {
 
 	//#region Helpers
 
+	private writeQueues: Map<string, Queue<void>> = new Map();
+
+	private ensureWriteQueue(provider: IFileSystemProvider, resource: URI): Queue<void> {
+		// ensure to never write to the same resource without finishing
+		// the one write. this ensures a write finishes consistently
+		// (even with error) before another write is done.
+		const queueKey = this.toMapKey(provider, resource);
+		let writeQueue = this.writeQueues.get(queueKey);
+		if (!writeQueue) {
+			writeQueue = new Queue<void>();
+			this.writeQueues.set(queueKey, writeQueue);
+
+			const onFinish = Event.once(writeQueue.onFinished);
+			onFinish(() => {
+				this.writeQueues.delete(queueKey);
+				dispose(writeQueue);
+			});
+		}
+
+		return writeQueue;
+	}
+
+	private toMapKey(provider: IFileSystemProvider, resource: URI): string {
+		const isPathCaseSensitive = !!(provider.capabilities & FileSystemProviderCapabilities.PathCaseSensitive);
+
+		return isPathCaseSensitive ? resource.toString() : resource.toString().toLowerCase();
+	}
+
 	private async doWriteBuffered(provider: IFileSystemProviderWithOpenReadWriteCloseCapability, resource: URI, readable: VSBufferReadable): Promise<void> {
+		return this.ensureWriteQueue(provider, resource).queue(() => this.doWriteBufferedQueued(provider, resource, readable));
+	}
+
+	private async doWriteBufferedQueued(provider: IFileSystemProviderWithOpenReadWriteCloseCapability, resource: URI, readable: VSBufferReadable): Promise<void> {
 
 		// open handle
 		const handle = await provider.open(resource, { create: true });
@@ -723,6 +754,10 @@ export class FileService2 extends Disposable implements IFileService {
 	}
 
 	private async doWriteUnbuffered(provider: IFileSystemProviderWithFileReadWriteCapability, resource: URI, bufferOrReadable: VSBuffer | VSBufferReadable): Promise<void> {
+		return this.ensureWriteQueue(provider, resource).queue(() => this.doWriteUnbufferedQueued(provider, resource, bufferOrReadable));
+	}
+
+	private async doWriteUnbufferedQueued(provider: IFileSystemProviderWithFileReadWriteCapability, resource: URI, bufferOrReadable: VSBuffer | VSBufferReadable): Promise<void> {
 		let buffer: VSBuffer;
 		if (bufferOrReadable instanceof VSBuffer) {
 			buffer = bufferOrReadable;
@@ -734,6 +769,9 @@ export class FileService2 extends Disposable implements IFileService {
 	}
 
 	private async doPipeBuffered(sourceProvider: IFileSystemProviderWithOpenReadWriteCloseCapability, source: URI, targetProvider: IFileSystemProviderWithOpenReadWriteCloseCapability, target: URI): Promise<void> {
+		return this.ensureWriteQueue(targetProvider, target).queue(() => this.doPipeBufferedQueued(sourceProvider, source, targetProvider, target));
+	}
+	private async doPipeBufferedQueued(sourceProvider: IFileSystemProviderWithOpenReadWriteCloseCapability, source: URI, targetProvider: IFileSystemProviderWithOpenReadWriteCloseCapability, target: URI): Promise<void> {
 		let sourceHandle: number | undefined = undefined;
 		let targetHandle: number | undefined = undefined;
 
@@ -776,10 +814,18 @@ export class FileService2 extends Disposable implements IFileService {
 	}
 
 	private async doPipeUnbuffered(sourceProvider: IFileSystemProviderWithFileReadWriteCapability, source: URI, targetProvider: IFileSystemProviderWithFileReadWriteCapability, target: URI): Promise<void> {
+		return this.ensureWriteQueue(targetProvider, target).queue(() => this.doPipeUnbufferedQueued(sourceProvider, source, targetProvider, target));
+	}
+
+	private async doPipeUnbufferedQueued(sourceProvider: IFileSystemProviderWithFileReadWriteCapability, source: URI, targetProvider: IFileSystemProviderWithFileReadWriteCapability, target: URI): Promise<void> {
 		return targetProvider.writeFile(target, await sourceProvider.readFile(source), { create: true, overwrite: true });
 	}
 
 	private async doPipeUnbufferedToBuffered(sourceProvider: IFileSystemProviderWithFileReadWriteCapability, source: URI, targetProvider: IFileSystemProviderWithOpenReadWriteCloseCapability, target: URI): Promise<void> {
+		return this.ensureWriteQueue(targetProvider, target).queue(() => this.doPipeUnbufferedToBufferedQueued(sourceProvider, source, targetProvider, target));
+	}
+
+	private async doPipeUnbufferedToBufferedQueued(sourceProvider: IFileSystemProviderWithFileReadWriteCapability, source: URI, targetProvider: IFileSystemProviderWithOpenReadWriteCloseCapability, target: URI): Promise<void> {
 
 		// Open handle
 		const targetHandle = await targetProvider.open(target, { create: true });

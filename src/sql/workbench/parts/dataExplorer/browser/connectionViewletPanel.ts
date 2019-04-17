@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import { localize } from 'vs/nls';
+import 'vs/css!./media/connectionViewletPanel';
 import * as DOM from 'vs/base/browser/dom';
 import { dispose, IDisposable } from 'vs/base/common/lifecycle';
 import { IExtensionTipsService, IExtensionManagementServerService } from 'vs/platform/extensionManagement/common/extensionManagement';
@@ -12,19 +12,17 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { attachInputBoxStyler } from 'vs/platform/theme/common/styler';
 import { IViewletViewOptions } from 'vs/workbench/browser/parts/views/viewsViewlet';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { ViewletPanel, IViewletPanelOptions } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
-import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
 import { IAction } from 'vs/base/common/actions';
-import { ServerTreeView } from 'sql/parts/objectExplorer/viewlet/serverTreeView';
+import { ServerTreeView } from 'sql/workbench/parts/objectExplorer/browser/serverTreeView';
 import {
-	ClearSearchAction, ActiveConnectionsFilterAction,
+	ActiveConnectionsFilterAction,
 	AddServerAction, AddServerGroupAction
-} from 'sql/parts/objectExplorer/viewlet/connectionTreeAction';
+} from 'sql/workbench/parts/objectExplorer/browser/connectionTreeAction';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { IExtensionsWorkbenchService } from 'vs/workbench/contrib/extensions/common/extensions';
 
@@ -52,7 +50,6 @@ export class ConnectionViewletPanel extends ViewletPanel {
 		@IObjectExplorerService private objectExplorerService: IObjectExplorerService
 	) {
 		super({ ...(options as IViewletPanelOptions), ariaHeaderLabel: options.title }, keybindingService, contextMenuService, configurationService);
-		//this._clearSearchAction = this.instantiationService.createInstance(ClearSearchAction, ClearSearchAction.ID, ClearSearchAction.LABEL, this);
 		this._addServerAction = this.instantiationService.createInstance(AddServerAction,
 			AddServerAction.ID,
 			AddServerAction.LABEL);
@@ -83,7 +80,7 @@ export class ConnectionViewletPanel extends ViewletPanel {
 	}
 
 	layoutBody(size: number): void {
-		this._serverTreeView.layout(size - 46); // account for search box and horizontal scroll bar
+		this._serverTreeView.layout(size);
 		DOM.toggleClass(this._root, 'narrow', this._root.clientWidth < 300);
 	}
 

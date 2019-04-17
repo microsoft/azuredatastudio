@@ -60,6 +60,7 @@ export function startup(configuration: IssueReporterConfiguration) {
 	const issueReporter = new IssueReporter(configuration);
 	issueReporter.render();
 	document.body.style.display = 'block';
+	issueReporter.setInitialFocus();
 }
 
 export class IssueReporter extends Disposable {
@@ -88,6 +89,8 @@ export class IssueReporter extends Disposable {
 				os: `${os.type()} ${os.arch()} ${os.release()}${isSnap ? ' snap' : ''}`
 			},
 			extensionsDisabled: !!this.environmentService.disableExtensions,
+			fileOnExtension: configuration.data.extensionId ? true : undefined,
+			selectedExtension: configuration.data.extensionId ? configuration.data.enabledExtensions.filter(extension => extension.id === configuration.data.extensionId)[0] : undefined
 		});
 
 		const issueReporterElement = this.getElementById('issue-reporter');
@@ -138,6 +141,21 @@ export class IssueReporter extends Disposable {
 
 	render(): void {
 		this.renderBlocks();
+	}
+
+	setInitialFocus() {
+		const { fileOnExtension } = this.issueReporterModel.getData();
+		if (fileOnExtension) {
+			const issueTitle = document.getElementById('issue-title');
+			if (issueTitle) {
+				issueTitle.focus();
+			}
+		} else {
+			const issueType = document.getElementById('issue-type');
+			if (issueType) {
+				issueType.focus();
+			}
+		}
 	}
 
 	private applyZoom(zoomLevel: number) {
@@ -699,9 +717,13 @@ export class IssueReporter extends Disposable {
 
 	private setSourceOptions(): void {
 		const sourceSelect = this.getElementById('issue-source')! as HTMLSelectElement;
-		const selected = sourceSelect.selectedIndex;
+		const { issueType, fileOnExtension } = this.issueReporterModel.getData();
+		let selected = sourceSelect.selectedIndex;
+		if (selected === -1 && fileOnExtension !== undefined) {
+			selected = fileOnExtension ? 2 : 1;
+		}
+
 		sourceSelect.innerHTML = '';
-		const { issueType } = this.issueReporterModel.getData();
 		if (issueType === IssueType.FeatureRequest) {
 			sourceSelect.append(...[
 				this.makeOption('', localize('selectSource', "Select source"), true),
@@ -961,10 +983,15 @@ export class IssueReporter extends Disposable {
 			return 0;
 		});
 
-		const makeOption = (extension: IOption) => `<option value="${extension.id}">${escape(extension.name)}</option>`;
+		const makeOption = (extension: IOption, selectedExtension?: IssueReporterExtensionData) => {
+			const selected = selectedExtension && extension.id === selectedExtension.id;
+			return `<option value="${extension.id}" ${selected ? 'selected' : ''}>${escape(extension.name)}</option>`;
+		};
+
 		const extensionsSelector = this.getElementById('extension-selector');
 		if (extensionsSelector) {
-			extensionsSelector.innerHTML = '<option></option>' + extensionOptions.map(makeOption).join('\n');
+			const { selectedExtension } = this.issueReporterModel.getData();
+			extensionsSelector.innerHTML = '<option></option>' + extensionOptions.map(extension => makeOption(extension, selectedExtension)).join('\n');
 
 			this.addEventListener('extension-selector', 'change', (e: Event) => {
 				const selectedExtensionId = (<HTMLInputElement>e.target).value;

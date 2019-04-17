@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Application } from '../../application';
-import { getDefaultTestingServer } from '../testConfig';
+import { getStandaloneServer } from '../testConfig';
 
 export function setup() {
 	describe('profiler test suite', () => {
@@ -12,7 +12,7 @@ export function setup() {
 			const app = this.app as Application;
 			await app.workbench.profiler.launchProfiler();
 			await app.workbench.connectionDialog.waitForConnectionDialog();
-			await app.workbench.connectionDialog.connect(await getDefaultTestingServer());
+			await app.workbench.connectionDialog.connect(await getStandaloneServer());
 			await app.workbench.profiler.waitForNewSessionDialogAndStart();
 		});
 	});

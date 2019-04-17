@@ -12,9 +12,9 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 
 import { GridPanelState } from 'sql/parts/query/editor/gridPanel';
 import { MessagePanelState } from 'sql/parts/query/editor/messagePanel';
-import { QueryPlanState } from 'sql/parts/queryPlan/queryPlan';
+import { QueryPlanState } from 'sql/workbench/parts/queryPlan/electron-browser/queryPlan';
 import { ChartState } from 'sql/parts/query/editor/charting/chartView';
-import { TopOperationsState } from 'sql/parts/queryPlan/topOperations';
+import { TopOperationsState } from 'sql/workbench/parts/queryPlan/browser/topOperations';
 
 export class ResultsViewState {
 	public gridPanelState: GridPanelState = new GridPanelState();
