@@ -29,7 +29,7 @@
 }
 
 .server-explorer-viewlet .object-explorer-view {
-	height: calc(100% - 36px);
+	height: 100%;
 }
 
 .server-explorer-viewlet .server-group {
