@@ -43,8 +43,8 @@ export class SchemaCompareResult {
 			}).component();
 
 			this.diffEditor = view.modelBuilder.diffeditor().withProperties({
-				contentLeft: '\n',
-				contentRight: '\n',
+				contentLeft: os.EOL,
+				contentRight: os.EOL,
 				height: 500,
 				title: localize('schemaCompare.ObjectDefinitionsTitle', 'Object Definitions')
 			}).component();
