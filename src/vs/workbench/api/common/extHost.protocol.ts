@@ -40,7 +40,7 @@ import { IRPCProtocol, createExtHostContextProxyIdentifier as createExtId, creat
 import { IProgressOptions, IProgressStep } from 'vs/platform/progress/common/progress';
 import { SaveReason } from 'vs/workbench/services/textfile/common/textfiles';
 import { IMarkdownString } from 'vs/base/common/htmlContent';
-import { ResolvedAuthority } from 'vs/platform/remote/common/remoteAuthorityResolver';
+import { ResolvedAuthority, RemoteAuthorityResolverErrorCode } from 'vs/platform/remote/common/remoteAuthorityResolver';
 import { ExtensionIdentifier, IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import * as codeInset from 'vs/workbench/contrib/codeinset/common/codeInset';
 import * as callHierarchy from 'vs/workbench/contrib/callHierarchy/common/callHierarchy';
@@ -812,8 +812,24 @@ export interface ExtHostSearchShape {
 	$clearCache(cacheKey: string): Promise<void>;
 }
 
+export interface IResolveAuthorityErrorResult {
+	type: 'error';
+	error: {
+		message: string | undefined;
+		code: RemoteAuthorityResolverErrorCode;
+		detail: any;
+	};
+}
+
+export interface IResolveAuthorityOKResult {
+	type: 'ok';
+	value: ResolvedAuthority;
+}
+
+export type IResolveAuthorityResult = IResolveAuthorityErrorResult | IResolveAuthorityOKResult;
+
 export interface ExtHostExtensionServiceShape {
-	$resolveAuthority(remoteAuthority: string): Promise<ResolvedAuthority>;
+	$resolveAuthority(remoteAuthority: string, resolveAttempt: number): Promise<IResolveAuthorityResult>;
 	$startExtensionHost(enabledExtensionIds: ExtensionIdentifier[]): Promise<void>;
 	$activateByEvent(activationEvent: string): Promise<void>;
 	$activate(extensionId: ExtensionIdentifier, activationEvent: string): Promise<boolean>;
@@ -1062,7 +1078,7 @@ export interface ExtHostTerminalServiceShape {
 	$acceptTerminalRendererInput(id: number, data: string): void;
 	$acceptTerminalTitleChange(id: number, name: string): void;
 	$acceptTerminalDimensions(id: number, cols: number, rows: number): void;
-	$createProcess(id: number, shellLaunchConfig: ShellLaunchConfigDto, activeWorkspaceRootUri: UriComponents, cols: number, rows: number): void;
+	$createProcess(id: number, shellLaunchConfig: ShellLaunchConfigDto, activeWorkspaceRootUri: UriComponents, cols: number, rows: number, isWorkspaceShellAllowed: boolean): void;
 	$acceptProcessInput(id: number, data: string): void;
 	$acceptProcessResize(id: number, cols: number, rows: number): void;
 	$acceptProcessShutdown(id: number, immediate: boolean): void;
