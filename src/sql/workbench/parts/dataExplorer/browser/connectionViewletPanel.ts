@@ -128,6 +128,7 @@ export class ConnectionViewletPanel extends ViewletPanel {
 
 	dispose(): void {
 		this._serverTreeView.dispose();
+		this.objectExplorerService.unregisterServerTreeView();
 		super.dispose();
 		this.disposables = dispose(this.disposables);
 	}

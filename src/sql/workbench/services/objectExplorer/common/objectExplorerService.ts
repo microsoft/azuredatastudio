@@ -69,6 +69,8 @@ export interface IObjectExplorerService {
 
 	registerServerTreeView(view: ServerTreeView): void;
 
+	unregisterServerTreeView(): void;
+
 	getSelectedProfileAndDatabase(): { profile: ConnectionProfile, databaseName: string };
 
 	isFocused(): boolean;
@@ -130,6 +132,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	public _serviceBrand: any;
 
 	private _disposables: IDisposable[] = [];
+	private _treeDisposables: IDisposable[] = [];
 
 	private _providers: { [handle: string]: azdata.ObjectExplorerProvider; } = Object.create(null);
 
@@ -611,7 +614,15 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			throw new Error('The object explorer server tree view is already registered');
 		}
 		this._serverTreeView = view;
-		this._serverTreeView.onSelectionOrFocusChange(() => this._onSelectionOrFocusChange.fire());
+		this._treeDisposables.push(this._serverTreeView.onSelectionOrFocusChange(() => this._onSelectionOrFocusChange.fire()));
+	}
+
+	public unregisterServerTreeView(): void {
+		if (this._serverTreeView) {
+			dispose(this._treeDisposables);
+			this._serverTreeView.dispose();
+		}
+		this._serverTreeView = undefined;
 	}
 
 	/**
