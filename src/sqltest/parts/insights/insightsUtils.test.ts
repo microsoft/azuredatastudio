@@ -113,7 +113,7 @@ suite('Insights Utils tests', function () {
 		const contextService = new TestContextService(
 			new Workspace(
 				'TestWorkspace',
-				[toWorkspaceFolder(URI.parse(queryFileDir))]
+				[toWorkspaceFolder(URI.file(queryFileDir))]
 			));
 		const configurationResolverService = new ConfigurationResolverService(
 			undefined,
@@ -133,7 +133,7 @@ suite('Insights Utils tests', function () {
 		const contextService = new TestContextService(
 			new Workspace(
 				'TestWorkspace',
-				[toWorkspaceFolder(URI.parse(os.tmpdir()))])
+				[toWorkspaceFolder(URI.file(os.tmpdir()))])
 			);
 		const configurationResolverService = new ConfigurationResolverService(
 			undefined,
@@ -194,7 +194,7 @@ suite('Insights Utils tests', function () {
 
 	test('resolveQueryFilePath resolves path correctly with env var and non-empty workspace', async () => {
 		const contextService = new TestContextService(
-			new Workspace('TestWorkspace', [toWorkspaceFolder(URI.parse(os.tmpdir()))]));
+			new Workspace('TestWorkspace', [toWorkspaceFolder(URI.file(os.tmpdir()))]));
 
 		// Create mock window service with env variable containing test folder for resolution
 		const configurationResolverService = new ConfigurationResolverService(
