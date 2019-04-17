@@ -252,6 +252,30 @@ Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration)
 				scope: ConfigurationScope.APPLICATION,
 				default: ExtensionsPolicy.allowAll
 			},
+			'extensions.extensionKind': {
+				type: 'object',
+				description: localize('extensions.extensionKind', "Configure ui or workspace extensions and allow them to run locally or remotely in a remote window."),
+				properties: {
+					'ui': {
+						type: 'array',
+						items: {
+							type: 'string',
+							pattern: '^([a-z0-9A-Z][a-z0-9\-A-Z]*)\\.([a-z0-9A-Z][a-z0-9\-A-Z]*)$',
+						}
+					},
+					'workspace': {
+						type: 'array',
+						items: {
+							type: 'string',
+							pattern: '^([a-z0-9A-Z][a-z0-9\-A-Z]*)\\.([a-z0-9A-Z][a-z0-9\-A-Z]*)$',
+						}
+					}
+				},
+				default: {
+					ui: [],
+					workspace: []
+				}
+			},
 			'extensions.showInstalledExtensionsByDefault': {
 				type: 'boolean',
 				description: localize('extensions.showInstalledExtensionsByDefault', "When enabled, extensions view shows installed extensions view by default."),

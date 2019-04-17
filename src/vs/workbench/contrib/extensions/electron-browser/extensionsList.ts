@@ -66,7 +66,7 @@ export class Renderer implements IPagedRenderer<IExtension, ITemplateData> {
 		const element = append(root, $('.extension'));
 		const iconContainer = append(element, $('.icon-container'));
 		const icon = append(iconContainer, $<HTMLImageElement>('img.icon'));
-		const badgeWidget = this.instantiationService.createInstance(RemoteBadgeWidget, iconContainer);
+		const iconRemoteBadgeWidget = this.instantiationService.createInstance(RemoteBadgeWidget, iconContainer);
 		const details = append(element, $('.details'));
 		const headerContainer = append(details, $('.header-container'));
 		const header = append(headerContainer, $('.header'));
@@ -74,6 +74,7 @@ export class Renderer implements IPagedRenderer<IExtension, ITemplateData> {
 		const version = append(header, $('span.version'));
 		const installCount = append(header, $('span.install-count'));
 		const ratings = append(header, $('span.ratings'));
+		const headerRemoteBadgeWidget = this.instantiationService.createInstance(RemoteBadgeWidget, header);
 		const description = append(details, $('.description.ellipsis'));
 		const footer = append(details, $('.footer'));
 		const author = append(footer, $('.author.ellipsis'));
@@ -89,10 +90,11 @@ export class Renderer implements IPagedRenderer<IExtension, ITemplateData> {
 		actionbar.onDidRun(({ error }) => error && this.notificationService.error(error));
 
 		const systemDisabledWarningAction = this.instantiationService.createInstance(SystemDisabledWarningAction);
+		const reloadAction = this.instantiationService.createInstance(ReloadAction);
 		const actions = [
 			this.instantiationService.createInstance(StatusLabelAction),
 			this.instantiationService.createInstance(UpdateAction),
-			this.instantiationService.createInstance(ReloadAction),
+			reloadAction,
 			this.instantiationService.createInstance(InstallAction),
 			this.instantiationService.createInstance(RemoteInstallAction),
 			this.instantiationService.createInstance(MaliciousStatusLabelAction, false),
@@ -100,10 +102,11 @@ export class Renderer implements IPagedRenderer<IExtension, ITemplateData> {
 			this.instantiationService.createInstance(ManageExtensionAction)
 		];
 		const disabledLabelAction = this.instantiationService.createInstance(DisabledLabelAction, systemDisabledWarningAction);
-		const tooltipWidget = this.instantiationService.createInstance(TooltipWidget, root, disabledLabelAction, recommendationWidget);
+		const tooltipWidget = this.instantiationService.createInstance(TooltipWidget, root, disabledLabelAction, recommendationWidget, reloadAction);
 		const widgets = [
 			recommendationWidget,
-			badgeWidget,
+			iconRemoteBadgeWidget,
+			headerRemoteBadgeWidget,
 			tooltipWidget,
 			this.instantiationService.createInstance(Label, version, (e: IExtension) => e.version),
 			this.instantiationService.createInstance(InstallCountWidget, installCount, true),
