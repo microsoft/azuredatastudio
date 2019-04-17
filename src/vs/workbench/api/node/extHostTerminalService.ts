@@ -18,7 +18,8 @@ import { TerminalProcess } from 'vs/workbench/contrib/terminal/node/terminalProc
 import { timeout } from 'vs/base/common/async';
 import { ExtHostWorkspace } from 'vs/workbench/api/common/extHostWorkspace';
 import { IWorkspaceFolder } from 'vs/platform/workspace/common/workspace';
-import { ExtHostVariableResolverService } from 'vs/workbench/api/node/extHostDebugService';
+// {{SQL CARBON EDIT}}
+// import { ExtHostVariableResolverService } from 'vs/workbench/api/node/extHostDebugService';
 import { ExtHostDocumentsAndEditors } from 'vs/workbench/api/common/extHostDocumentsAndEditors';
 
 const RENDERER_NO_PROCESS_ID = -1;
@@ -490,7 +491,9 @@ export class ExtHostTerminalService implements ExtHostTerminalServiceShape {
 		} as IWorkspaceFolder : null;
 		const envFromConfig = this._apiInspectConfigToPlain(configProvider.getConfiguration('terminal.integrated').inspect<ITerminalEnvironment>(`env.${platformKey}`));
 		const workspaceFolders = await this._extHostWorkspace.getWorkspaceFolders2();
-		const variableResolver = workspaceFolders ? new ExtHostVariableResolverService(workspaceFolders, this._extHostDocumentsAndEditors, configProvider) : undefined;
+		// {{SQL CARBON EDIT}}
+		// const variableResolver = workspaceFolders ? new ExtHostVariableResolverService(workspaceFolders, this._extHostDocumentsAndEditors, configProvider) : undefined;
+		const variableResolver = undefined;
 		const env = terminalEnvironment.createTerminalEnvironment(
 			shellLaunchConfig,
 			lastActiveWorkspace,
