@@ -23,7 +23,8 @@ import { Schemas } from 'vs/base/common/network';
 import { IBackupFileService } from 'vs/workbench/services/backup/common/backup';
 import { getInstalledExtensions, IExtensionStatus, onExtensionChanged, isKeymapExtension } from 'vs/workbench/contrib/extensions/common/extensionsUtils';
 import { IExtensionEnablementService, IExtensionManagementService, IExtensionGalleryService, IExtensionTipsService, EnablementState, ILocalExtension } from 'vs/platform/extensionManagement/common/extensionManagement';
-import { used } from 'vs/workbench/contrib/welcome/page/browser/vs_code_welcome_page';
+// {{SQL CARBON EDIT}} - Redirect to ADS welcome page
+import { used } from 'sql/workbench/contrib/welcome/page/browser/az_data_welcome_page';
 import { ILifecycleService, StartupKind } from 'vs/platform/lifecycle/common/lifecycle';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { splitName } from 'vs/base/common/labels';
@@ -106,16 +107,14 @@ export class WelcomePageContribution implements IWorkbenchContribution {
 }
 
 function isWelcomePageEnabled(configurationService: IConfigurationService, contextService: IWorkspaceContextService) {
-	// {{SQL CARBON EDIT}} - Disable the welcome page
-	return false;
-	// const startupEditor = configurationService.inspect(configurationKey);
-	// if (!startupEditor.user && !startupEditor.workspace) {
-	// 	const welcomeEnabled = configurationService.inspect(oldConfigurationKey);
-	// 	if (welcomeEnabled.value !== undefined && welcomeEnabled.value !== null) {
-	// 		return welcomeEnabled.value;
-	// 	}
-	// }
-	// return startupEditor.value === 'welcomePage' || startupEditor.value === 'readme' || startupEditor.value === 'welcomePageInEmptyWorkbench' && contextService.getWorkbenchState() === WorkbenchState.EMPTY;
+	const startupEditor = configurationService.inspect(configurationKey);
+	if (!startupEditor.user && !startupEditor.workspace) {
+		const welcomeEnabled = configurationService.inspect(oldConfigurationKey);
+		if (welcomeEnabled.value !== undefined && welcomeEnabled.value !== null) {
+			return welcomeEnabled.value;
+		}
+	}
+	return startupEditor.value === 'welcomePage' || startupEditor.value === 'readme' || startupEditor.value === 'welcomePageInEmptyWorkbench' && contextService.getWorkbenchState() === WorkbenchState.EMPTY;
 }
 
 export class WelcomePageAction extends Action {
@@ -273,10 +272,11 @@ class WelcomePage {
 
 		const recentlyOpened = this.windowService.getRecentlyOpened();
 		const installedExtensions = this.instantiationService.invokeFunction(getInstalledExtensions);
-		const resource = URI.parse(require.toUrl('./vs_code_welcome_page'))
+		// {{SQL CARBON EDIT}} - Redirect to ADS welcome page
+		const resource = URI.parse(require.toUrl('./az_data_welcome_page'))
 			.with({
 				scheme: Schemas.walkThrough,
-				query: JSON.stringify({ moduleId: 'vs/workbench/contrib/welcome/page/browser/vs_code_welcome_page' })
+				query: JSON.stringify({ moduleId: 'sql/workbench/contrib/welcome/page/browser/az_data_welcome_page' })
 			});
 		this.editorInput = this.instantiationService.createInstance(WalkThroughInput, {
 			typeId: welcomeInputTypeId,
