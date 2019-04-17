@@ -120,7 +120,7 @@ SecretEnVarMapping.push([SECRET_STANDALONE_SERVER_USERNAME, ENVAR_STANDALONE_SER
 
 // Set the values that are not stored in AKV here
 process.env[ENVAR_PYTHON_INSTALL_PATH] = NOTEBOOK_PYTHON_INSTALL_PATH;
-process.env[ENVAR_RUN_PYTHON3_TEST] = 1;
+process.env[ENVAR_RUN_PYTHON3_TEST] = '1';
 
 const promises = [];
 
