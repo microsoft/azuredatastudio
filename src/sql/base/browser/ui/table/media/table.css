@@ -99,7 +99,7 @@
     width: 200px;
 }
 
-label {
+.monaco-table label {
     display: block;
     margin-bottom: 5px;
 }
