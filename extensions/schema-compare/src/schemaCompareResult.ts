@@ -263,8 +263,8 @@ export class SchemaCompareResult {
 		this.compareButton = view.modelBuilder.button().withProperties({
 			label: localize('schemaCompare.compareButton', 'Compare'),
 			iconPath: {
-				dark: path.join(__dirname, 'media', 'compare.svg'),
-				light: path.join(__dirname, 'media', 'compare-inverse.svg')
+				light: path.join(__dirname, 'media', 'compare.svg'),
+				dark: path.join(__dirname, 'media', 'compare-inverse.svg')
 			},
 			title: localize('schemaCompare.compareButtonTitle', 'Compare')
 		}).component();
@@ -278,8 +278,8 @@ export class SchemaCompareResult {
 		this.generateScriptButton = view.modelBuilder.button().withProperties({
 			label: localize('schemaCompare.generateScriptButton', 'Generate script'),
 			iconPath: {
-				dark: path.join(__dirname, 'media', 'generate-script.svg'),
-				light: path.join(__dirname, 'media', 'generate-script-inverse.svg')
+				light : path.join(__dirname, 'media', 'generate-script.svg'),
+				dark: path.join(__dirname, 'media', 'generate-script-inverse.svg')
 			},
 		}).component();
 
@@ -324,8 +324,8 @@ export class SchemaCompareResult {
 		this.switchButton = view.modelBuilder.button().withProperties({
 			label: localize('schemaCompare.switchDirectionButton', 'Switch direction'),
 			iconPath: {
-				dark: path.join(__dirname, 'media', 'switch-directions.svg'),
-				light: path.join(__dirname, 'media', 'switch-directions-inverse.svg')
+				light : path.join(__dirname, 'media', 'switch-directions.svg'),
+				dark: path.join(__dirname, 'media', 'switch-directions-inverse.svg')
 			},
 			title: localize('schemaCompare.switchButtonTitle', 'Switch source and target')
 		}).component();
