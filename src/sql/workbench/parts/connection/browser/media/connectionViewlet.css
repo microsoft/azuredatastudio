@@ -1,0 +1,138 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+/* --- Registered servers tree viewlet --- */
+.server-explorer-viewlet .monaco-tree .monaco-tree-row .content .server-group {
+	cursor: default;
+	width: 100%;
+	display: flex;
+	align-items: center;
+}
+
+/* Bold font style does not go well with CJK fonts */
+.server-explorer-viewlet:lang(zh-Hans) .monaco-tree .monaco-tree-row .server-group,
+.server-explorer-viewlet:lang(zh-Hant) .monaco-tree .monaco-tree-row .server-group,
+.server-explorer-viewlet:lang(ja) .monaco-tree .monaco-tree-row .server-group,
+.server-explorer-viewlet:lang(ko) .monaco-tree .monaco-tree-row .server-group { font-weight: normal; }
+
+/* High Contrast Theming */
+.hc-black .monaco-workbench .server-explorer-viewlet .server-group {
+	line-height: 20px;
+}
+
+.monaco-workbench > .activitybar .monaco-action-bar .action-label.serverTree {
+	background-size: 22px;
+	background-repeat: no-repeat;
+	background-position: 50% !important;
+}
+
+.server-explorer-viewlet .object-explorer-view {
+	height: calc(100% - 36px);
+}
+
+.server-explorer-viewlet .server-group {
+	height: 38px;
+	line-height: 38px;
+	color: #ffffff;
+}
+
+.server-explorer-viewlet  .monaco-action-bar .action-label {
+	margin-right: 0.3em;
+	margin-left: 0.3em;
+	line-height: 15px;
+	width: 10px !important;
+	height: 10px !important;
+}
+
+/* Add space beneath the button */
+.new-connection .monaco-text-button {
+margin-bottom: 2px;
+}
+
+/* display action buttons on hover */
+.server-explorer-viewlet .monaco-tree .monaco-tree-row > .content {
+	display: flex;
+}
+
+/* Added to display the tree in connection dialog */
+.server-explorer-viewlet {
+	height: 100%;
+}
+
+.explorer-servers {
+	height: 100%;
+}
+
+/* search box */
+.server-explorer-viewlet .search-box {
+	padding-bottom: 4px;
+	margin: auto;
+	width: 95%;
+}
+
+/* OE and connection element group */
+.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .connection-tile,
+.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .object-element-group {
+	padding: 5px;
+	overflow: hidden;
+}
+
+/* OE and connection label */
+.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .connection-tile > .label,
+.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .object-element-group > .label {
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+
+/* OE and connection icon */
+.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .connection-tile > .icon,
+.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .object-element-group > .icon {
+	float: left;
+	height: 16px;
+	width: 16px;
+	padding-right: 10px;
+}
+
+.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .connection-tile > .icon.server-page.connected {
+	background: url('connected_active_server.svg') center center no-repeat;
+}
+
+.vs-dark .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .connection-tile > .icon.server-page.connected,
+.hc-black .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .connection-tile > .icon.server-page.connected{
+	background: url('connected_active_server_inverse.svg') center center no-repeat;
+}
+
+.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .connection-tile > .icon.server-page.disconnected {
+	background: url('disconnected_server.svg') center center no-repeat;
+}
+
+.vs-dark .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .connection-tile > .icon.server-page.disconnected,
+.hc-black .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .connection-tile > .icon.server-page.disconnected{
+	background: url('disconnected_server_inverse.svg') center center no-repeat;
+}
+
+/* loading for OE node */
+.server-explorer-viewlet .monaco-tree .monaco-tree-rows > .monaco-tree-row > .icon.in-progress .connection-tile:before,
+.server-explorer-viewlet .monaco-tree .monaco-tree-rows > .monaco-tree-row > .icon.in-progress .object-element-group:before {
+	position: absolute;
+	display: block;
+	width: 36px;
+	height: 100%;
+	top: 0;
+	left: -35px;
+}
+
+.monaco-tree .monaco-tree-rows.show-twisties > .monaco-tree-row.expanded.has-children > .content.server-group:before {
+	background: url('expanded-dark.svg') 50% 50% no-repeat;
+}
+
+.monaco-tree .monaco-tree-rows.show-twisties > .monaco-tree-row.has-children > .content.server-group:before {
+	background: url('collapsed-dark.svg') 50% 50% no-repeat;
+}
+
+/* Add connection button */
+.server-explorer-viewlet .button-section {
+	padding: 20px;
+}

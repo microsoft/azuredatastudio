@@ -18,7 +18,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
-import { IExpandableTree } from 'sql/parts/objectExplorer/viewlet/treeUpdateUtils';
+import { IExpandableTree } from 'sql/workbench/parts/objectExplorer/browser/treeUpdateUtils';
 
 /**
  * Implements tree view for file browser

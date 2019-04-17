@@ -29,8 +29,8 @@ import {
 } from 'sql/parts/query/execution/keyboardQueryActions';
 import * as gridActions from 'sql/workbench/parts/grid/views/gridActions';
 import * as gridCommands from 'sql/workbench/parts/grid/views/gridCommands';
-import { QueryPlanEditor } from 'sql/parts/queryPlan/queryPlanEditor';
-import { QueryPlanInput } from 'sql/parts/queryPlan/queryPlanInput';
+import { QueryPlanEditor } from 'sql/workbench/parts/queryPlan/electron-browser/queryPlanEditor';
+import { QueryPlanInput } from 'sql/workbench/parts/queryPlan/common/queryPlanInput';
 import * as Constants from 'sql/parts/query/common/constants';
 import { localize } from 'vs/nls';
 import { EditDataResultsEditor } from 'sql/parts/editData/editor/editDataResultsEditor';

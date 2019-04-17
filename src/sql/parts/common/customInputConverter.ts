@@ -11,7 +11,7 @@ import { URI } from 'vs/base/common/uri';
 import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
 import { IQueryEditorOptions } from 'sql/workbench/services/queryEditor/common/queryEditorService';
-import { QueryPlanInput } from 'sql/parts/queryPlan/queryPlanInput';
+import { QueryPlanInput } from 'sql/workbench/parts/queryPlan/common/queryPlanInput';
 import { NotebookInput } from 'sql/workbench/parts/notebook/notebookInput';
 import { INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
 import { ResourceEditorInput } from 'vs/workbench/common/editor/resourceEditorInput';
