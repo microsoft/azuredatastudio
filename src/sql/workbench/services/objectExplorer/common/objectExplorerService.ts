@@ -620,6 +620,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	public unregisterServerTreeView(): void {
 		if (this._serverTreeView) {
 			dispose(this._treeDisposables);
+			this._treeDisposables = [];
 			this._serverTreeView.dispose();
 		}
 		this._serverTreeView = undefined;
