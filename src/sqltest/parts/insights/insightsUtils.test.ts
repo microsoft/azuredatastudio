@@ -134,7 +134,7 @@ suite('Insights Utils tests', function () {
 			new Workspace(
 				'TestWorkspace',
 				[toWorkspaceFolder(URI.file(os.tmpdir()))])
-			);
+		);
 		const configurationResolverService = new ConfigurationResolverService(
 			undefined,
 			new TestEnvironmentService({}),
