@@ -30,7 +30,7 @@ import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { withNullAsUndefined, withUndefinedAsNull } from 'vs/base/common/types';
 
 //{{SQL CARBON EDIT}}
-import { convertEditorInput, getFileMode } from 'sql/parts/common/customInputConverter';
+import { convertEditorInput, getFileMode } from 'sql/workbench/common/customInputConverter';
 //{{SQL CARBON EDIT}} - End
 
 type ICachedEditorInput = ResourceEditorInput | IFileEditorInput | DataUriEditorInput;

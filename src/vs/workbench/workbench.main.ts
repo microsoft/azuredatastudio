@@ -477,9 +477,9 @@ import 'sql/workbench/parts/dashboard/widgets/tasks/tasksWidget.contribution';
 import 'sql/workbench/parts/dashboard/widgets/webview/webviewWidget.contribution';
 import 'sql/workbench/parts/dashboard/dashboardConfig.contribution';
 /* Model-based Views */
-import 'sql/parts/modelComponents/components.contribution';
+import 'sql/workbench/electron-browser/modelComponents/components.contribution';
 /* View Model Editor */
-import 'sql/parts/modelComponents/modelEditor/modelViewEditor.contribution';
+import 'sql/workbench/electron-browser/modelComponents/modelViewEditor.contribution';
 /* Notebook Editor */
 import 'sql/workbench/parts/notebook/notebook.contribution';
 /* Containers */
