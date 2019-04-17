@@ -6,7 +6,7 @@
 'use strict';
 import 'vs/css!./media/connectionViewletPanel';
 import * as DOM from 'vs/base/browser/dom';
-import { dispose, IDisposable } from 'vs/base/common/lifecycle';
+import { dispose } from 'vs/base/common/lifecycle';
 import { IExtensionTipsService, IExtensionManagementServerService } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
@@ -29,7 +29,6 @@ import { IExtensionsWorkbenchService } from 'vs/workbench/contrib/extensions/com
 export class ConnectionViewletPanel extends ViewletPanel {
 
 	private _root: HTMLElement;
-	private _toDisposeViewlet: IDisposable[] = [];
 	private _serverTreeView: ServerTreeView;
 	private _addServerAction: IAction;
 	private _addServerGroupAction: IAction;
@@ -41,7 +40,6 @@ export class ConnectionViewletPanel extends ViewletPanel {
 		@IKeybindingService keybindingService: IKeybindingService,
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IInstantiationService protected instantiationService: IInstantiationService,
-		@IThemeService private themeService: IThemeService,
 		@IExtensionsWorkbenchService protected extensionsWorkbenchService: IExtensionsWorkbenchService,
 		@IExtensionTipsService protected tipsService: IExtensionTipsService,
 		@IConfigurationService configurationService: IConfigurationService,
@@ -58,7 +56,8 @@ export class ConnectionViewletPanel extends ViewletPanel {
 			AddServerGroupAction.LABEL);
 		this._serverTreeView = this.instantiationService.createInstance(ServerTreeView);
 		this._activeConnectionsFilterAction = this._serverTreeView.activeConnectionsFilterAction;
-		if (!this._serverTreeView) {
+		let treeView = this.objectExplorerService.getServerTreeView();
+		if (!treeView) {
 			this.objectExplorerService.registerServerTreeView(this._serverTreeView);
 		}
 	}
