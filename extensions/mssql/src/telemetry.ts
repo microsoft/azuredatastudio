@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import * as opener from 'opener';
 import TelemetryReporter from 'vscode-extension-telemetry';
 import { PlatformInformation } from 'service-downloader/out/platform';
 import { ErrorAction, ErrorHandler, Message, CloseAction } from 'vscode-languageclient';
@@ -150,7 +149,7 @@ export class LanguageClientErrorHandler implements ErrorHandler {
 			Constants.serviceCrashMessage,
 			Constants.serviceCrashButton).then(action => {
 				if (action && action === Constants.serviceCrashButton) {
-					opener(Constants.serviceCrashLink);
+					vscode.env.openExternal(vscode.Uri.parse(Constants.serviceCrashLink));
 				}
 			});
 	}
