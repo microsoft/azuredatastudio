@@ -1,0 +1,331 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/dacpac/out/wizard/pages/selectOperationpage" source-language="en" target-language="ru" datatype="plaintext">
+    <body>
+      <trans-unit id="dacFx.deployRadioButtonLabel_selectOperationpage">
+        <source xml:lang="en">Deploy a data-tier application .dacpac file to an instance of SQL Server [Deploy Dacpac]</source>
+        <target state="translated">Развертывание файла DACPAC приложения уровня данных в экземпляре SQL Server [Развертывание DACPAC]</target>
+      </trans-unit>
+      <trans-unit id="dacFx.extractRadioButtonLabel">
+        <source xml:lang="en">Extract a data-tier application from an instance of SQL Server to a .dacpac file [Extract Dacpac]</source>
+        <target state="translated">Извлечение приложения уровня данных из экземпляра SQL Server в файл DACPAC [Извлечение DACPAC]</target>
+      </trans-unit>
+      <trans-unit id="dacFx.importRadioButtonLabel">
+        <source xml:lang="en">Create a database from a .bacpac file [Import Bacpac]</source>
+        <target state="translated">Создание базы данных из файла BACPAC [Импорт BACPAC]</target>
+      </trans-unit>
+      <trans-unit id="dacFx.exportRadioButtonLabel">
+        <source xml:lang="en">Export the schema and data from a database to the logical .bacpac file format [Export Bacpac]</source>
+        <target state="translated">Экспорт схемы и данных из базы данных в логический формат файла BACPAC [Экспорт BACPAC]</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/dacpac/out/wizard/pages/importConfigPage" source-language="en" target-language="ru" datatype="plaintext">
+    <body>
+      <trans-unit id="dacFxImport.openFile">
+        <source xml:lang="en">Open</source>
+        <target state="translated">Открыто</target>
+      </trans-unit>
+      <trans-unit id="dacFxImport.fileTextboxTitle">
+        <source xml:lang="en">File Location</source>
+        <target state="translated">Расположение файла</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/dacpac/out/wizard/pages/extractConfigPage" source-language="en" target-language="ru" datatype="plaintext">
+    <body>
+      <trans-unit id="dacfxExtract.saveFile">
+        <source xml:lang="en">Save</source>
+        <target state="translated">Сохранить</target>
+      </trans-unit>
+      <trans-unit id="dacFxExtract.fileTextboxTitle">
+        <source xml:lang="en">File Location</source>
+        <target state="translated">Расположение файла</target>
+      </trans-unit>
+      <trans-unit id="dacFxExtract.versionTextboxTitle">
+        <source xml:lang="en">Version (use x.x.x.x where x is a number)</source>
+        <target state="translated">Версия (используйте формат x.x.x.x, где x — это число)</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/dacpac/out/wizard/pages/exportConfigPage" source-language="en" target-language="ru" datatype="plaintext">
+    <body>
+      <trans-unit id="dacfxExport.saveFile">
+        <source xml:lang="en">Save</source>
+        <target state="translated">Сохранить</target>
+      </trans-unit>
+      <trans-unit id="dacFxExport.fileTextboxTitle">
+        <source xml:lang="en">File Location</source>
+        <target state="translated">Расположение файла</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/dacpac/out/wizard/pages/deployPlanPage" source-language="en" target-language="ru" datatype="plaintext">
+    <body>
+      <trans-unit id="dacfx.dataLossTextWithCount">
+        <source xml:lang="en">{0} of the deploy actions listed may result in data loss. Please ensure you have a backup or snapshot available in the event of an issue with the deployment.</source>
+        <target state="translated">{0} из указанных действий развертывания может привести к потере данных. Убедитесь в наличии резервной копии или моментального снимка на случай проблем с развертыванием.</target>
+      </trans-unit>
+      <trans-unit id="dacFx.dataLossCheckbox">
+        <source xml:lang="en">Proceed despite possible data loss</source>
+        <target state="translated">Продолжать, несмотря на возможную потерю данных</target>
+      </trans-unit>
+      <trans-unit id="dacfx.noDataLossText">
+        <source xml:lang="en">No data loss will occur from the listed deploy actions.</source>
+        <target state="translated">Указанные действия развертывания не приведут к потере данных.</target>
+      </trans-unit>
+      <trans-unit id="dacfx.dataLossText">
+        <source xml:lang="en">The deploy actions may result in data loss. Please ensure you have a backup or snapshot available in the event of an issue with the deployment.</source>
+        <target state="translated">Действия развертывания могут привести к потере данных. Убедитесь в наличии резервной копии или моментального снимка на случай проблем с развертыванием.</target>
+      </trans-unit>
+      <trans-unit id="dacfx.operationColumn">
+        <source xml:lang="en">Operation</source>
+        <target state="translated">Операция</target>
+      </trans-unit>
+      <trans-unit id="dacfx.operationTooltip">
+        <source xml:lang="en">Operation(Create, Alter, Delete) that will occur during deployment</source>
+        <target state="translated">Операция (Create, Alter, Delete), которая будет выполнена во время развертывания</target>
+      </trans-unit>
+      <trans-unit id="dacfx.typeColumn">
+        <source xml:lang="en">Type</source>
+        <target state="translated">Тип</target>
+      </trans-unit>
+      <trans-unit id="dacfx.typeTooltip">
+        <source xml:lang="en">Type of object that will be affected by deployment</source>
+        <target state="translated">Тип объекта, который будет затронут развертыванием</target>
+      </trans-unit>
+      <trans-unit id="dacfx.objectColumn">
+        <source xml:lang="en">Object</source>
+        <target state="translated">Объект</target>
+      </trans-unit>
+      <trans-unit id="dacfx.objecTooltip">
+        <source xml:lang="en">Name of object that will be affected by deployment</source>
+        <target state="translated">Имя объекта, который будет затронут развертыванием</target>
+      </trans-unit>
+      <trans-unit id="dacfx.dataLossColumn">
+        <source xml:lang="en">Data Loss</source>
+        <target state="translated">Потеря данных</target>
+      </trans-unit>
+      <trans-unit id="dacfx.dataLossTooltip">
+        <source xml:lang="en">Operations that may result in data loss are marked with a warning sign</source>
+        <target state="translated">Операции, которые могут привести к потере данных, отмечены предупреждающим знаком</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/dacpac/out/wizard/pages/deployConfigPage" source-language="en" target-language="ru" datatype="plaintext">
+    <body>
+      <trans-unit id="dacFx.databaseNameTextBox_deployConfigPage">
+        <source xml:lang="en">Database Name</source>
+        <target state="translated">Имя базы данных</target>
+      </trans-unit>
+      <trans-unit id="dacFx.databaseNameDropdown">
+        <source xml:lang="en">Database Name</source>
+        <target state="translated">Имя базы данных</target>
+      </trans-unit>
+      <trans-unit id="dacFxDeploy.openFile">
+        <source xml:lang="en">Open</source>
+        <target state="translated">Открыто</target>
+      </trans-unit>
+      <trans-unit id="dacFxDeploy.fileTextboxTitle">
+        <source xml:lang="en">File Location</source>
+        <target state="translated">Расположение файла</target>
+      </trans-unit>
+      <trans-unit id="dacFx.upgradeRadioButtonLabel">
+        <source xml:lang="en">Upgrade Existing Database</source>
+        <target state="translated">Обновление существующей базы данных</target>
+      </trans-unit>
+      <trans-unit id="dacFx.newRadioButtonLabel">
+        <source xml:lang="en">New Database</source>
+        <target state="translated">Новая база данных</target>
+      </trans-unit>
+      <trans-unit id="dacFx.targetDatabaseRadioButtonsTitle">
+        <source xml:lang="en">Target Database</source>
+        <target state="translated">Целевая база данных</target>
+      </trans-unit>
+      <trans-unit id="dacFx.targetDatabaseDropdownTitle">
+        <source xml:lang="en">Database Name</source>
+        <target state="translated">Имя базы данных</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/dacpac/out/wizard/pages/deployActionPage" source-language="en" target-language="ru" datatype="plaintext">
+    <body>
+      <trans-unit id="dacFx.deployRadioButtonLabel_deployActionPage">
+        <source xml:lang="en">Deploy</source>
+        <target state="translated">Развертывание.</target>
+      </trans-unit>
+      <trans-unit id="dacFx.deployScriptRadioButtonLabel">
+        <source xml:lang="en">Generate Deployment Script and Deploy</source>
+        <target state="translated">Создать сценарий развертывания и развернуть</target>
+      </trans-unit>
+      <trans-unit id="dacFx.scriptRadioButtonLabel">
+        <source xml:lang="en">Generate Deployment Script</source>
+        <target state="translated">Создать сценарий развертывания</target>
+      </trans-unit>
+      <trans-unit id="dacfxDeployScript.saveFile">
+        <source xml:lang="en">Save</source>
+        <target state="translated">Сохранить</target>
+      </trans-unit>
+      <trans-unit id="dacfx.generatedScriptLocation">
+        <source xml:lang="en">Deployment Script Location</source>
+        <target state="translated">Расположение сценария развертывания</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/dacpac/out/wizard/pages/dacFxSummaryPage" source-language="en" target-language="ru" datatype="plaintext">
+    <body>
+      <trans-unit id="dacfx.targetServerName">
+        <source xml:lang="en">Target Server</source>
+        <target state="translated">Целевой сервер</target>
+      </trans-unit>
+      <trans-unit id="dacfx.targetDatabaseName">
+        <source xml:lang="en">Target Database</source>
+        <target state="translated">Целевая база данных</target>
+      </trans-unit>
+      <trans-unit id="dacfx.sourceServerName">
+        <source xml:lang="en">Source Server</source>
+        <target state="translated">Исходный сервер</target>
+      </trans-unit>
+      <trans-unit id="dacfx.sourceDatabaseName">
+        <source xml:lang="en">Source Database</source>
+        <target state="translated">База данных-источник</target>
+      </trans-unit>
+      <trans-unit id="dacfx.fileLocation">
+        <source xml:lang="en">File Location</source>
+        <target state="translated">Расположение файла</target>
+      </trans-unit>
+      <trans-unit id="dacfx.scriptLocation">
+        <source xml:lang="en">Deployment Script Location</source>
+        <target state="translated">Расположение сценария развертывания</target>
+      </trans-unit>
+      <trans-unit id="dacfx.action">
+        <source xml:lang="en">Action</source>
+        <target state="translated">Действие</target>
+      </trans-unit>
+      <trans-unit id="dacfx.deploy">
+        <source xml:lang="en">Deploy</source>
+        <target state="translated">Развертывание.</target>
+      </trans-unit>
+      <trans-unit id="dacfx.generateScript">
+        <source xml:lang="en">Generate Deployment Script</source>
+        <target state="translated">Создать сценарий развертывания</target>
+      </trans-unit>
+      <trans-unit id="dacfxExtract.version">
+        <source xml:lang="en">Version</source>
+        <target state="translated">Версия</target>
+      </trans-unit>
+      <trans-unit id="dacfx.settingColumn">
+        <source xml:lang="en">Setting</source>
+        <target state="translated">Параметр</target>
+      </trans-unit>
+      <trans-unit id="dacfx.valueColumn">
+        <source xml:lang="en">Value</source>
+        <target state="translated">Значение</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/dacpac/out/wizard/api/dacFxConfigPage" source-language="en" target-language="ru" datatype="plaintext">
+    <body>
+      <trans-unit id="dacFx.targetServerDropdownTitle">
+        <source xml:lang="en">Target Server</source>
+        <target state="translated">Целевой сервер</target>
+      </trans-unit>
+      <trans-unit id="dacFx.sourceServerDropdownTitle">
+        <source xml:lang="en">Source Server</source>
+        <target state="translated">Исходный сервер</target>
+      </trans-unit>
+      <trans-unit id="dacFx.databaseNameTextBox_dacFxConfigPage">
+        <source xml:lang="en">Target Database</source>
+        <target state="translated">Целевая база данных</target>
+      </trans-unit>
+      <trans-unit id="dacFx.sourceDatabaseDropdownTitle">
+        <source xml:lang="en">Source Database</source>
+        <target state="translated">База данных-источник</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/dacpac/out/wizard/dataTierApplicationWizard" source-language="en" target-language="ru" datatype="plaintext">
+    <body>
+      <trans-unit id="dacfx.needConnection">
+        <source xml:lang="en">Please connect to a server before using this wizard.</source>
+        <target state="translated">Подключитесь к серверу перед использованием этого мастера.</target>
+      </trans-unit>
+      <trans-unit id="dacFx.selectOperationPageName">
+        <source xml:lang="en">Select an Operation</source>
+        <target state="translated">Выберите операцию</target>
+      </trans-unit>
+      <trans-unit id="dacFx.deployConfigPageName">
+        <source xml:lang="en">Select Deploy Dacpac Settings</source>
+        <target state="translated">Выберите параметры развертывания DACPAC</target>
+      </trans-unit>
+      <trans-unit id="dacFx.deployPlanPage">
+        <source xml:lang="en">Review the deploy plan</source>
+        <target state="translated">Обзор плана развертывания</target>
+      </trans-unit>
+      <trans-unit id="dacFx.deployActionPageName">
+        <source xml:lang="en">Select Action</source>
+        <target state="translated">Выберите действие</target>
+      </trans-unit>
+      <trans-unit id="dacFx.summaryPageName">
+        <source xml:lang="en">Summary</source>
+        <target state="translated">Сводка</target>
+      </trans-unit>
+      <trans-unit id="dacFx.extractConfigPageName">
+        <source xml:lang="en">Select Extract Dacpac Settings</source>
+        <target state="translated">Выберите параметры извлечения DACPAC</target>
+      </trans-unit>
+      <trans-unit id="dacFx.importConfigPageName">
+        <source xml:lang="en">Select Import Bacpac Settings</source>
+        <target state="translated">Выберите параметры импорта BACPAC</target>
+      </trans-unit>
+      <trans-unit id="dacFx.exportConfigPageName">
+        <source xml:lang="en">Select Export Bacpac Settings</source>
+        <target state="translated">Выберите параметры экспорта Bacpac</target>
+      </trans-unit>
+      <trans-unit id="dacFx.deployButton">
+        <source xml:lang="en">Deploy</source>
+        <target state="translated">Развертывание.</target>
+      </trans-unit>
+      <trans-unit id="dacFx.extractButton">
+        <source xml:lang="en">Extract</source>
+        <target state="translated">Извлечь</target>
+      </trans-unit>
+      <trans-unit id="dacFx.importButton">
+        <source xml:lang="en">Import</source>
+        <target state="translated">Импортировать</target>
+      </trans-unit>
+      <trans-unit id="dacFx.exportButton">
+        <source xml:lang="en">Export</source>
+        <target state="translated">Экспортировать</target>
+      </trans-unit>
+      <trans-unit id="dacFx.generateScriptButton">
+        <source xml:lang="en">Generate Script</source>
+        <target state="translated">Создать сценарий</target>
+      </trans-unit>
+      <trans-unit id="alertData.deployErrorMessage">
+        <source xml:lang="en">Deploy failed '{0}'</source>
+        <target state="translated">Ошибка развертывания "{0}"</target>
+      </trans-unit>
+      <trans-unit id="alertData.extractErrorMessage">
+        <source xml:lang="en">Extract failed '{0}'</source>
+        <target state="translated">Ошибка извлечения "{0}"</target>
+      </trans-unit>
+      <trans-unit id="alertData.exportErrorMessage">
+        <source xml:lang="en">Export failed '{0}'</source>
+        <target state="translated">Ошибка экспорта "{0}"</target>
+      </trans-unit>
+      <trans-unit id="alertData.importErrorMessage">
+        <source xml:lang="en">Import failed '{0}'</source>
+        <target state="translated">Сбой импорта "{0}"</target>
+      </trans-unit>
+      <trans-unit id="dacfx.scriptGeneratingMessage">
+        <source xml:lang="en">You can view the status of script generation in the Task History once the wizard is closed</source>
+        <target state="translated">После закрытия мастера вы можете просмотреть состояние создания сценария в журнале задач</target>
+      </trans-unit>
+      <trans-unit id="alertData.deployPlanErrorMessage">
+        <source xml:lang="en">Generating deploy plan failed '{0}'</source>
+        <target state="translated">Сбой при создании плана развертывания "{0}"</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
