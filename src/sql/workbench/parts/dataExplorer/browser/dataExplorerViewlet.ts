@@ -117,7 +117,9 @@ export class DataExplorerViewlet extends ViewContainerViewlet {
 	}
 
 	protected createView(viewDescriptor: IViewDescriptor, options: IViewletViewOptions): ViewletPanel {
-		return this.instantiationService.createInstance(viewDescriptor.ctorDescriptor.ctor, options) as ViewletPanel;
+		let viewletPanel = this.instantiationService.createInstance(viewDescriptor.ctorDescriptor.ctor, options) as ViewletPanel;
+		this._register(viewletPanel);
+		return viewletPanel;
 	}
 
 	dispose(): void {
