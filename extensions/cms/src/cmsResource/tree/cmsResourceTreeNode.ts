@@ -109,7 +109,7 @@ export class CmsResourceTreeNode extends CmsResourceTreeNodeBase {
 	}
 
 	public get nodePathValue(): string {
-        return this._id;
+		return this._id;
 	}
 
 	public get connection(): azdata.connection.Connection {

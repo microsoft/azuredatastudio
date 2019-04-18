@@ -49,7 +49,7 @@ export class RegisteredServerTreeNode extends CmsResourceTreeNodeBase {
 			groupId: '',
 			providerName: 'MSSQL',
 			saveProfile: false,
-			options: { }
+			options: {}
 		};
 		let treeItem = {
 			payload: payload,

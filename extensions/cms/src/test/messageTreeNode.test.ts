@@ -12,8 +12,8 @@ import 'mocha';
 import { CmsResourceItemType } from '../cmsResource/constants';
 import { CmsResourceMessageTreeNode } from '../cmsResource/messageTreeNode';
 
-describe('CmsResourceMessageTreeNode.info', function(): void {
-	it('Should be correct when created.', async function(): Promise<void> {
+describe('CmsResourceMessageTreeNode.info', function (): void {
+	it('Should be correct when created.', async function (): Promise<void> {
 		const mockMessage = 'Test message';
 		const treeNode = new CmsResourceMessageTreeNode(mockMessage, undefined);
 
@@ -32,8 +32,8 @@ describe('CmsResourceMessageTreeNode.info', function(): void {
 	});
 });
 
-describe('CmsResourceMessageTreeNode.create', function(): void {
-	it('Should create a message node.', async function(): Promise<void> {
+describe('CmsResourceMessageTreeNode.create', function (): void {
+	it('Should create a message node.', async function (): Promise<void> {
 		const mockMessage = 'Test messagse';
 		const treeNode = CmsResourceMessageTreeNode.create(mockMessage, undefined);
 		should(treeNode).instanceof(CmsResourceMessageTreeNode);

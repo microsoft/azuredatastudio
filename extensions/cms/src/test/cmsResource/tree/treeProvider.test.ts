@@ -23,16 +23,16 @@ let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
 let mockApiWrapper: TypeMoq.IMock<ApiWrapper>;
 
 
-describe('CmsResourceTreeProvider.getChildren', function(): void {
+describe('CmsResourceTreeProvider.getChildren', function (): void {
 	beforeEach(() => {
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 		mockApiWrapper = TypeMoq.Mock.ofType<ApiWrapper>();
 		mockAppContext = new AppContext(mockExtensionContext.object, mockApiWrapper.object);
 	});
 
-	it('Should not be initialized.', async function(): Promise<void> {
+	it('Should not be initialized.', async function (): Promise<void> {
 		const treeProvider = new CmsResourceTreeProvider(mockAppContext);
-		should.notEqual(treeProvider.isSystemInitialized , true);
+		should.notEqual(treeProvider.isSystemInitialized, true);
 		const children = await treeProvider.getChildren(undefined);
 		should.equal(children.length, 1);
 		should.equal(children[0].parent, undefined);

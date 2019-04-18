@@ -119,18 +119,17 @@ export function registerCmsResourceCommands(appContext: AppContext, tree: CmsRes
 				serverDescription = e;
 			});
 			let formModel = view.modelBuilder.formContainer()
-			.withFormItems([{
-				component: nameTextBox,
-				title: localize('cms.ServerGroupName', 'Server Group Name')
-			}, {
-				component: descriptionTextBox,
-				title: localize('cms.ServerGroupDescription', 'Server Group Description')
-			}]).withLayout({ width: '100%'}).component();
+				.withFormItems([{
+					component: nameTextBox,
+					title: localize('cms.ServerGroupName', 'Server Group Name')
+				}, {
+					component: descriptionTextBox,
+					title: localize('cms.ServerGroupDescription', 'Server Group Description')
+				}]).withLayout({ width: '100%' }).component();
 			await view.initializeModel(formModel);
 		});
 		dialog.content = [mainTab];
 		azdata.window.openDialog(dialog);
-		dialog.modelView;
 		let groupExists = false;
 		dialog.okButton.onClick(() => {
 			let path = node instanceof ServerGroupTreeNode ? node.relativePath : '';
@@ -165,7 +164,7 @@ export function registerCmsResourceCommands(appContext: AppContext, tree: CmsRes
 	});
 
 	// Refresh the cms resource
-	appContext.apiWrapper.registerCommand('cms.resource.refresh', async (node? : TreeNode) => {
+	appContext.apiWrapper.registerCommand('cms.resource.refresh', async (node?: TreeNode) => {
 		if (!node) {
 			return;
 		}

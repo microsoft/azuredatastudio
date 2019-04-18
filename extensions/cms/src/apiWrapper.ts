@@ -18,7 +18,7 @@ const localize = nls.loadMessageBundle();
  * this API from our code
  *
  * @export
- * @class ApiWrapper
+ * ApiWrapper
  */
 export class ApiWrapper {
 
@@ -209,7 +209,7 @@ export class ApiWrapper {
 		let ownerUri = await azdata.connection.getUriForConnection(connection.connectionId);
 		if (!ownerUri) {
 			// Make a connection if it's not already connected
-			await azdata.connection.connect(Utils.toConnectionProfile(connection), false, false).then( async (result) => {
+			await azdata.connection.connect(Utils.toConnectionProfile(connection), false, false).then(async (result) => {
 				ownerUri = await azdata.connection.getUriForConnection(result.connectionId);
 			});
 		}
@@ -257,11 +257,11 @@ export class ApiWrapper {
 					return;
 				} else {
 					return provider.addRegisteredServer(ownerUri, relativePath,
-					connection.options.registeredServerName, connection.options.registeredServerDescription, connection).then((result) => {
-						if (result) {
-							return connection.options.server;
-						}
-					});
+						connection.options.registeredServerName, connection.options.registeredServerDescription, connection).then((result) => {
+							if (result) {
+								return connection.options.server;
+							}
+						});
 				}
 
 			}
