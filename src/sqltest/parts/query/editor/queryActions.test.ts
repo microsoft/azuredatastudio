@@ -19,9 +19,9 @@ import { ConnectionDialogService } from 'sql/workbench/services/connection/brows
 import {
 	RunQueryAction, CancelQueryAction, ListDatabasesActionItem,
 	DisconnectDatabaseAction, ConnectDatabaseAction, QueryTaskbarAction
-} from 'sql/parts/query/execution/queryActions';
-import { QueryInput } from 'sql/parts/query/common/queryInput';
-import { QueryEditor } from 'sql/parts/query/editor/queryEditor';
+} from 'sql/workbench/parts/query/browser/queryActions';
+import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
+import { QueryEditor } from 'sql/workbench/parts/query/browser/queryEditor';
 import { QueryModelService } from 'sql/platform/query/common/queryModelService';
 import { ConnectionManagementService } from 'sql/platform/connection/common/connectionManagementService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';

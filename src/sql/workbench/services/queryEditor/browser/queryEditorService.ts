@@ -3,8 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
-import { QueryInput } from 'sql/parts/query/common/queryInput';
+import { QueryResultsInput } from 'sql/workbench/parts/query/common/queryResultsInput';
+import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
 import { EditDataInput } from 'sql/workbench/parts/editData/common/editDataInput';
 import { IConnectableInput, IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IQueryEditorService, IQueryEditorOptions } from 'sql/workbench/services/queryEditor/common/queryEditorService';
