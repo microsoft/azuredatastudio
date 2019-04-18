@@ -56,10 +56,12 @@ export class ConnectionViewletPanel extends ViewletPanel {
 		this._addServerGroupAction = this.instantiationService.createInstance(AddServerGroupAction,
 			AddServerGroupAction.ID,
 			AddServerGroupAction.LABEL);
-		this._serverTreeView = this.instantiationService.createInstance(ServerTreeView);
+		this._serverTreeView = this.objectExplorerService.getServerTreeView();
+		if (!this._serverTreeView) {
+			this._serverTreeView = this.instantiationService.createInstance(ServerTreeView);
+			this.objectExplorerService.registerServerTreeView(this._serverTreeView);
+		}
 		this._activeConnectionsFilterAction = this._serverTreeView.activeConnectionsFilterAction;
-
-		this.objectExplorerService.registerServerTreeView(this._serverTreeView);
 	}
 
 	protected renderHeader(container: HTMLElement): void {
@@ -127,9 +129,8 @@ export class ConnectionViewletPanel extends ViewletPanel {
 	}
 
 	dispose(): void {
-		this._serverTreeView.dispose();
-		super.dispose();
 		this.disposables = dispose(this.disposables);
+		super.dispose();
 	}
 
 	focus(): void {
