@@ -73,7 +73,6 @@ export class DataExplorerViewlet extends ViewContainerViewlet {
 		@IConfigurationService configurationService: IConfigurationService
 	) {
 		super(VIEWLET_ID, `${VIEWLET_ID}.state`, true, configurationService, layoutService, telemetryService, storageService, instantiationService, themeService, contextMenuService, extensionService, contextService);
-		this.disposables.push(this.viewletService.onDidViewletOpen(this.onViewletOpen, this, this.disposables));
 	}
 
 	create(parent: HTMLElement): void {
@@ -114,18 +113,13 @@ export class DataExplorerViewlet extends ViewContainerViewlet {
 
 	protected onDidAddViews(added: IAddedViewDescriptorRef[]): ViewletPanel[] {
 		const addedViews = super.onDidAddViews(added);
-		Promise.all(addedViews);
 		return addedViews;
 	}
 
 	protected createView(viewDescriptor: IViewDescriptor, options: IViewletViewOptions): ViewletPanel {
-		return this.instantiationService.createInstance(viewDescriptor.ctorDescriptor.ctor, options) as ViewletPanel;
-	}
-
-	private onViewletOpen(viewlet: IViewlet): void {
-		if (!viewlet || viewlet.getId() === VIEWLET_ID) {
-			return;
-		}
+		let viewletPanel = this.instantiationService.createInstance(viewDescriptor.ctorDescriptor.ctor, options) as ViewletPanel;
+		this._register(viewletPanel);
+		return viewletPanel;
 	}
 
 	dispose(): void {

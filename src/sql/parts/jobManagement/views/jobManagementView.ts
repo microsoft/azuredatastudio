@@ -7,14 +7,14 @@ import * as azdata from 'azdata';
 import { ElementRef, AfterContentChecked, ViewChild } from '@angular/core';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 import { IAction, Action } from 'vs/base/common/actions';
 import { ResolvedKeybinding } from 'vs/base/common/keyCodes';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Taskbar } from '../../../base/browser/ui/taskbar/taskbar';
-import { JobsRefreshAction } from 'sql/platform/jobManagement/common/jobActions';
+import { JobsRefreshAction, IJobActionInfo } from 'sql/platform/jobManagement/common/jobActions';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardService';
 
@@ -82,6 +82,7 @@ export abstract class JobManagementView extends TabChild implements AfterContent
 			let actionContext = {
 				ownerUri: ownerUri,
 				targetObject: targetObject
+
 			};
 
 			let anchor = { x: event.pageX + 1, y: event.pageY };
@@ -116,7 +117,8 @@ export abstract class JobManagementView extends TabChild implements AfterContent
 			{ action: refreshAction },
 			{ action: newAction }
 		]);
-		this._actionBar.context = { component: this };
+		let context: IJobActionInfo = { component: this };
+		this._actionBar.context = context;
 	}
 
 	public refreshJobs() {

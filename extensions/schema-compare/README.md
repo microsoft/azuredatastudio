@@ -11,7 +11,6 @@ This experience is currently in its initial preview. Please report issues and fe
 * The main entry point for schema compare is to right click a database in the Object Explorer, and click **Schema Compare**.
 * The user can also launch the schema compare dialog from the command palette (Ctrl+Shift+P) by searching for **Schema Compare**
 
-
  ### Why would I use the Schema Compare?
 Schema Compare was created to add the ability to compare the schemas from .dacpac files and databases and apply the changes.
 

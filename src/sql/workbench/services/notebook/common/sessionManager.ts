@@ -116,6 +116,10 @@ class EmptyKernel implements nb.IKernel {
 		return false;
 	}
 
+	public get requiresConnection(): boolean {
+		return false;
+	}
+
 	public get isReady(): boolean {
 		return true;
 	}

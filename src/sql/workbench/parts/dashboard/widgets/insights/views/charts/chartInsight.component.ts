@@ -6,8 +6,8 @@
 import { Component, Input, Inject, ChangeDetectorRef, forwardRef, ElementRef, ViewChild } from '@angular/core';
 import { BaseChartDirective } from 'ng2-charts';
 
-import * as TelemetryKeys from 'sql/common/telemetryKeys';
-import * as TelemetryUtils from 'sql/common/telemetryUtilities';
+import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
+import * as TelemetryUtils from 'sql/platform/telemetry/telemetryUtilities';
 import { IInsightsView, IInsightData } from 'sql/workbench/parts/dashboard/widgets/insights/interfaces';
 import { memoize, unmemoize } from 'sql/base/common/decorators';
 import { mixin } from 'sql/base/common/objects';

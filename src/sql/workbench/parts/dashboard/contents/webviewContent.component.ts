@@ -11,16 +11,14 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { addDisposableListener, EventType } from 'vs/base/browser/dom';
 import { memoize } from 'vs/base/common/decorators';
-import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { DashboardServiceInterface } from 'sql/workbench/parts/dashboard/services/dashboardServiceInterface.service';
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 import { IDashboardWebview, IDashboardViewService } from 'sql/platform/dashboard/common/dashboardViewService';
 import { AngularDisposable } from 'sql/base/node/lifecycle';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 import * as azdata from 'azdata';
 import { WebviewElement } from 'vs/workbench/contrib/webview/electron-browser/webviewElement';
-import { IWorkbenchLayoutService, Parts } from 'vs/workbench/services/layout/browser/layoutService';
 
 @Component({
 	template: '',
@@ -41,9 +39,7 @@ export class WebviewContent extends AngularDisposable implements OnInit, IDashbo
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _dashboardService: DashboardServiceInterface,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
-		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IDashboardViewService) private dashboardViewService: IDashboardViewService,
-		@Inject(IWorkbenchLayoutService) private layoutService: IWorkbenchLayoutService,
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService
 	) {
 		super();
@@ -115,7 +111,6 @@ export class WebviewContent extends AngularDisposable implements OnInit, IDashbo
 		this._onMessageDisposable = this._webview.onMessage(e => {
 			this._onMessage.fire(e);
 		});
-		this._webview.style(this.themeService.getTheme());
 		if (this._html) {
 			this._webview.contents = this._html;
 		}

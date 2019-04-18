@@ -30,7 +30,7 @@ import { CancellationTokenSource } from 'vs/base/common/cancellation';
 @Component({
 	template: `
 	<div *ngIf="_title">
-		<div style="width: 100%; height:100%; padding-left:3px !important; background: #F4F4F4; border: 1px solid #BFBDBD;">
+		<div class="modelview-diff-editor-title" style="width: 100%; height:100%; padding-left:3px !important; border: 1px solid #BFBDBD;">
 			{{_title}}
 		</div>
 	</div>`,

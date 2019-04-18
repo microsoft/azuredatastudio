@@ -10,7 +10,6 @@ import * as TreeDefaults from 'vs/base/parts/tree/browser/treeDefaults';
 import { IMouseEvent } from 'vs/base/browser/mouseEvent';
 import { generateUuid } from 'vs/base/common/uuid';
 import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { $ } from 'sql/base/browser/builder';
 
 export class JobStepsViewRow {
 	public stepId: string;
@@ -135,7 +134,7 @@ export class JobStepsViewRenderer implements tree.IRenderer {
 			stepIdCol.className += ' step-column-heading';
 			stepMessageCol.className += ' step-column-heading';
 		}
-		$(templateData.label).empty();
+		DOM.clearNode(templateData.label);
 		templateData.label.appendChild(stepIdCol);
 		templateData.label.appendChild(stepNameCol);
 		templateData.label.appendChild(stepMessageCol);

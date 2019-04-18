@@ -129,7 +129,7 @@ export class ConfigurePythonDialog {
 		}
 
 		// Don't wait on installation, since there's currently no Cancel functionality
-		this.jupyterInstallation.startInstallProcess(pythonLocation)
+		this.jupyterInstallation.startInstallProcess(false, pythonLocation)
 			.then(() => {
 				this._setupComplete.resolve();
 			})

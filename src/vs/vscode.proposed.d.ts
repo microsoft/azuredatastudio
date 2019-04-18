@@ -72,6 +72,10 @@ declare module 'vscode' {
 
 	//#region Alex - resolvers
 
+	export interface RemoteAuthorityResolverContext {
+		resolveAttempt: number;
+	}
+
 	export class ResolvedAuthority {
 		readonly host: string;
 		readonly port: number;
@@ -79,8 +83,15 @@ declare module 'vscode' {
 		constructor(host: string, port: number);
 	}
 
+	export class RemoteAuthorityResolverError extends Error {
+		static NotAvailable(message?: string, handled?: boolean): RemoteAuthorityResolverError;
+		static TemporarilyNotAvailable(message?: string): RemoteAuthorityResolverError;
+
+		constructor(message?: string);
+	}
+
 	export interface RemoteAuthorityResolver {
-		resolve(authority: string): ResolvedAuthority | Thenable<ResolvedAuthority>;
+		resolve(authority: string, context: RemoteAuthorityResolverContext): ResolvedAuthority | Thenable<ResolvedAuthority>;
 	}
 
 	export interface ResourceLabelFormatter {
@@ -616,11 +627,6 @@ declare module 'vscode' {
 		 * An [event](#Event) that fires when the log level has changed.
 		 */
 		export const onDidChangeLogLevel: Event<LogLevel>;
-
-		/**
-		 * The custom uri scheme the editor registers to in the operating system, like 'vscode', 'vscode-insiders'.
-		 */
-		export const uriScheme: string;
 	}
 
 	//#endregion
@@ -812,28 +818,28 @@ declare module 'vscode' {
 		/**
 		 * The id of the comment
 		 */
-		commentId: string;
+		readonly commentId: string;
 
 		/**
 		 * The text of the comment
 		 */
-		body: MarkdownString;
+		readonly body: MarkdownString;
 
 		/**
 		 * Optional label describing the [Comment](#Comment)
 		 * Label will be rendered next to userName if exists.
 		 */
-		label?: string;
+		readonly label?: string;
 
 		/**
 		 * The display name of the user who created the comment
 		 */
-		userName: string;
+		readonly userName: string;
 
 		/**
 		 * The icon path for the user who created the comment
 		 */
-		userIconPath?: Uri;
+		readonly userIconPath?: Uri;
 
 		/**
 		 * @deprecated Use userIconPath instead. The avatar src of the user who created the comment
@@ -869,17 +875,17 @@ declare module 'vscode' {
 		/**
 		 * The command to be executed if the comment is selected in the Comments Panel
 		 */
-		selectCommand?: Command;
+		readonly selectCommand?: Command;
 
 		/**
 		 * The command to be executed when users try to save the edits to the comment
 		 */
-		editCommand?: Command;
+		readonly editCommand?: Command;
 
 		/**
 		 * The command to be executed when users try to delete the comment
 		 */
-		deleteCommand?: Command;
+		readonly deleteCommand?: Command;
 
 		/**
 		 * Deprecated
@@ -1363,37 +1369,6 @@ declare module 'vscode' {
 		 * Controls whether the task is executed in a specific terminal group using split panes.
 		 */
 		group?: string;
-	}
-	//#endregion
-
-	//#region Webview Port mapping— mjbvz
-	/**
-	 * Defines a port mapping used for localhost inside the webview.
-	 */
-	export interface WebviewPortMapping {
-		/**
-		 * Localhost port to remap inside the webview.
-		 */
-		readonly port: number;
-
-		/**
-		 * Destination port. The `port` is resolved to this port.
-		 */
-		readonly resolvedPort: number;
-	}
-
-	export interface WebviewOptions {
-		/**
-		 * Mappings of localhost ports used inside the webview.
-		 *
-		 * Port mapping allow webviews to transparently define how localhost ports are resolved. This can be used
-		 * to allow using a static localhost port inside the webview that is resolved to random port that a service is
-		 * running on.
-		 *
-		 * If a webview accesses localhost content, we recomend that you specify port mappings even if
-		 * the `port` and `resolvedPort` ports are the same.
-		 */
-		readonly portMapping?: ReadonlyArray<WebviewPortMapping>;
 	}
 	//#endregion
 }

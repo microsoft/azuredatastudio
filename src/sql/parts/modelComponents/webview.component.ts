@@ -4,17 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./webview';
 import {
-	Component, Input, Inject, ChangeDetectorRef, forwardRef, ComponentFactoryResolver,
-	ViewChild, ViewChildren, ElementRef, Injector, OnDestroy, QueryList
+	Component, Input, Inject, ChangeDetectorRef, forwardRef, ElementRef, OnDestroy
 } from '@angular/core';
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { addDisposableListener, EventType } from 'vs/base/browser/dom';
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import { IEnvironmentService } from 'vs/platform/environment/common/environment';
-import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { URI, UriComponents } from 'vs/base/common/uri';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
@@ -22,9 +17,8 @@ import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
+import { IContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { WebviewElement } from 'vs/workbench/contrib/webview/electron-browser/webviewElement';
-import { IWorkbenchLayoutService, Parts } from 'vs/workbench/services/layout/browser/layoutService';
 import { WebviewContentOptions } from 'vs/workbench/contrib/webview/common/webview';
 
 function reviveWebviewOptions(options: vscode.WebviewOptions): vscode.WebviewOptions {
@@ -52,17 +46,11 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 	protected findInputFocusContextKey: IContextKey<boolean>;
 
 	constructor(
-		@Inject(forwardRef(() => CommonServiceInterface)) private _commonService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
-		@Inject(IWorkbenchLayoutService) private layoutService: IWorkbenchLayoutService,
-		@Inject(IThemeService) private themeService: IThemeService,
-		@Inject(IEnvironmentService) private environmentService: IEnvironmentService,
-		@Inject(IContextViewService) private contextViewService: IContextViewService,
 		@Inject(IOpenerService) private readonly _openerService: IOpenerService,
 		@Inject(IWorkspaceContextService) private readonly _contextService: IWorkspaceContextService,
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
-		@Inject(IContextKeyService) contextKeyService: IContextKeyService
 	) {
 		super(changeRef, el);
 	}
@@ -94,8 +82,6 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 				args: e
 			});
 		}));
-
-		this._webview.style(this.themeService.getTheme());
 		this.setHtml();
 	}
 

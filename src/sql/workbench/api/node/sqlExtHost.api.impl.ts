@@ -7,7 +7,6 @@
 import * as extHostApi from 'vs/workbench/api/node/extHost.api.impl';
 import { IInitData, IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { ExtHostExtensionService } from 'vs/workbench/api/node/extHostExtensionService';
-import * as extHostTypes from 'vs/workbench/api/node/extHostTypes';
 import { URI } from 'vs/base/common/uri';
 
 import * as azdata from 'azdata';
@@ -20,8 +19,6 @@ import { ExtHostDataProtocol } from 'sql/workbench/api/node/extHostDataProtocol'
 import { ExtHostSerializationProvider } from 'sql/workbench/api/node/extHostSerializationProvider';
 import { ExtHostResourceProvider } from 'sql/workbench/api/node/extHostResourceProvider';
 import * as sqlExtHostTypes from 'sql/workbench/api/common/sqlExtHostTypes';
-import { ExtHostWorkspace } from 'vs/workbench/api/node/extHostWorkspace';
-import { ExtHostConfiguration, ExtHostConfigProvider } from 'vs/workbench/api/node/extHostConfiguration';
 import { ExtHostModalDialogs } from 'sql/workbench/api/node/extHostModalDialog';
 import { ExtHostTasks } from 'sql/workbench/api/node/extHostTasks';
 import { ExtHostDashboardWebviews } from 'sql/workbench/api/node/extHostDashboardWebview';
@@ -29,18 +26,22 @@ import { ExtHostModelView } from 'sql/workbench/api/node/extHostModelView';
 import { ExtHostConnectionManagement } from 'sql/workbench/api/node/extHostConnectionManagement';
 import { ExtHostDashboard } from 'sql/workbench/api/node/extHostDashboard';
 import { ExtHostObjectExplorer } from 'sql/workbench/api/node/extHostObjectExplorer';
-import { ExtHostLogService } from 'vs/workbench/api/node/extHostLogService';
+import { ExtHostLogService } from 'vs/workbench/api/common/extHostLogService';
 import { ExtHostModelViewDialog } from 'sql/workbench/api/node/extHostModelViewDialog';
 import { ExtHostModelViewTreeViews } from 'sql/workbench/api/node/extHostModelViewTree';
 import { ExtHostQueryEditor } from 'sql/workbench/api/node/extHostQueryEditor';
 import { ExtHostBackgroundTaskManagement } from './extHostBackgroundTaskManagement';
 import { ExtHostNotebook } from 'sql/workbench/api/node/extHostNotebook';
 import { ExtHostNotebookDocumentsAndEditors } from 'sql/workbench/api/node/extHostNotebookDocumentsAndEditors';
-import { ExtHostStorage } from 'vs/workbench/api/node/extHostStorage';
-import { ExtensionDescriptionRegistry } from 'vs/workbench/services/extensions/node/extensionDescriptionRegistry';
+import { ExtensionDescriptionRegistry } from 'vs/workbench/services/extensions/common/extensionDescriptionRegistry';
 import { ExtHostExtensionManagement } from 'sql/workbench/api/node/extHostExtensionManagement';
 import { ExtensionIdentifier, IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { TernarySearchTree } from 'vs/base/common/map';
+import { ExtHostWorkspace } from 'vs/workbench/api/common/extHostWorkspace';
+import { ExtHostConfiguration, ExtHostConfigProvider } from 'vs/workbench/api/common/extHostConfiguration';
+import { ExtHostStorage } from 'vs/workbench/api/common/extHostStorage';
+import * as extHostTypes from 'vs/workbench/api/common/extHostTypes';
+import { ISchemeTransformer } from 'vs/workbench/api/common/extHostLanguageFeatures';
 
 export interface ISqlExtensionApiFactory {
 	vsCodeFactory(extension: IExtensionDescription, registry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): typeof vscode;
@@ -58,9 +59,11 @@ export function createApiFactory(
 	extHostConfiguration: ExtHostConfiguration,
 	extensionService: ExtHostExtensionService,
 	logService: ExtHostLogService,
-	extHostStorage: ExtHostStorage
+	extHostStorage: ExtHostStorage,
+	schemeTransformer: ISchemeTransformer | null,
+	outputChannelName: string
 ): ISqlExtensionApiFactory {
-	let vsCodeFactory = extHostApi.createApiFactory(initData, rpcProtocol, extHostWorkspace, extHostConfiguration, extensionService, logService, extHostStorage);
+	let vsCodeFactory = extHostApi.createApiFactory(initData, rpcProtocol, extHostWorkspace, extHostConfiguration, extensionService, logService, extHostStorage, schemeTransformer, outputChannelName);
 
 	// Addressable instances
 	const extHostAccountManagement = rpcProtocol.set(SqlExtHostContext.ExtHostAccountManagement, new ExtHostAccountManagement(rpcProtocol));
@@ -540,30 +543,6 @@ export function createApiFactory(
 
 		// "sqlops" namespace provided for back-compat only, add new interfaces to "azdata"
 		sqlopsFactory: function (extension: IExtensionDescription): typeof sqlops {
-			// namespace: accounts
-			const accounts: typeof sqlops.accounts = {
-				registerAccountProvider(providerMetadata: sqlops.AccountProviderMetadata, provider: sqlops.AccountProvider): vscode.Disposable {
-					return extHostAccountManagement.$registerAccountProvider(providerMetadata, provider);
-				},
-				beginAutoOAuthDeviceCode(providerId: string, title: string, message: string, userCode: string, uri: string): Thenable<void> {
-					return extHostAccountManagement.$beginAutoOAuthDeviceCode(providerId, title, message, userCode, uri);
-				},
-				endAutoOAuthDeviceCode(): void {
-					return extHostAccountManagement.$endAutoOAuthDeviceCode();
-				},
-				accountUpdated(updatedAccount: sqlops.Account): void {
-					return extHostAccountManagement.$accountUpdated(updatedAccount);
-				},
-				getAllAccounts(): Thenable<sqlops.Account[]> {
-					return extHostAccountManagement.$getAllAccounts();
-				},
-				getSecurityToken(account: sqlops.Account, resource?: sqlops.AzureResource): Thenable<{}> {
-					return extHostAccountManagement.$getSecurityToken(account, resource);
-				},
-				onDidChangeAccounts(listener: (e: sqlops.DidChangeAccountsParams) => void, thisArgs?: any, disposables?: extHostTypes.Disposable[]) {
-					return extHostAccountManagement.onDidChangeAccounts(listener, thisArgs, disposables);
-				}
-			};
 
 			// namespace: connection
 			const connection: typeof sqlops.connection = {
@@ -632,12 +611,6 @@ export function createApiFactory(
 				},
 			};
 
-			// namespace: serialization
-			const resources: typeof sqlops.resources = {
-				registerResourceProvider(providerMetadata: sqlops.ResourceProviderMetadata, provider: sqlops.ResourceProvider): vscode.Disposable {
-					return extHostResourceProvider.$registerResourceProvider(providerMetadata, provider);
-				}
-			};
 
 			let registerConnectionProvider = (provider: sqlops.ConnectionProvider): vscode.Disposable => {
 				// Connection callbacks
@@ -786,21 +759,10 @@ export function createApiFactory(
 				return extHostDataProvider.$registerAdminServicesProvider(provider);
 			};
 
-			let registerAgentServicesProvider = (provider: sqlops.AgentServicesProvider): vscode.Disposable => {
-				provider.registerOnUpdated(() => {
-					extHostDataProvider.$onJobDataUpdated(provider.handle);
-				});
-
-				return extHostDataProvider.$registerAgentServiceProvider(provider);
-			};
-
 			let registerDacFxServicesProvider = (provider: sqlops.DacFxServicesProvider): vscode.Disposable => {
 				return extHostDataProvider.$registerDacFxServiceProvider(provider);
 			};
 
-			let registerSchemaCompareServicesProvider = (provider: sqlops.SchemaCompareServicesProvider): vscode.Disposable => {
-				return extHostDataProvider.$registerSchemaCompareServiceProvider(provider);
-			};
 
 			// namespace: dataprotocol
 			const dataprotocol: typeof sqlops.dataprotocol = {
@@ -816,10 +778,8 @@ export function createApiFactory(
 				registerTaskServicesProvider,
 				registerQueryProvider,
 				registerAdminServicesProvider,
-				registerAgentServicesProvider,
 				registerCapabilitiesServiceProvider,
 				registerDacFxServicesProvider,
-				registerSchemaCompareServicesProvider,
 				onDidChangeLanguageFlavor(listener: (e: sqlops.DidChangeLanguageFlavorParams) => any, thisArgs?: any, disposables?: extHostTypes.Disposable[]) {
 					return extHostDataProvider.onDidChangeLanguageFlavor(listener, thisArgs, disposables);
 				},
@@ -969,11 +929,9 @@ export function createApiFactory(
 			};
 
 			return {
-				accounts,
 				connection,
 				credentials,
 				objectexplorer: objectExplorer,
-				resources,
 				serialization,
 				dataprotocol,
 				DataProviderType: sqlExtHostTypes.DataProviderType,
@@ -985,14 +943,6 @@ export function createApiFactory(
 				TaskStatus: sqlExtHostTypes.TaskStatus,
 				TaskExecutionMode: sqlExtHostTypes.TaskExecutionMode,
 				ScriptOperation: sqlExtHostTypes.ScriptOperation,
-				WeekDays: sqlExtHostTypes.WeekDays,
-				NotifyMethods: sqlExtHostTypes.NotifyMethods,
-				JobCompletionActionCondition: sqlExtHostTypes.JobCompletionActionCondition,
-				JobExecutionStatus: sqlExtHostTypes.JobExecutionStatus,
-				AlertType: sqlExtHostTypes.AlertType,
-				FrequencyTypes: sqlExtHostTypes.FrequencyTypes,
-				FrequencySubDayTypes: sqlExtHostTypes.FrequencySubDayTypes,
-				FrequencyRelativeIntervals: sqlExtHostTypes.FrequencyRelativeIntervals,
 				window,
 				tasks,
 				dashboard,
@@ -1007,14 +957,11 @@ export function createApiFactory(
 				nb: nb,
 				AzureResource: sqlExtHostTypes.AzureResource,
 				extensions: extensions,
-				TreeItem: sqlExtHostTypes.TreeItem,
-				SchemaUpdateAction: sqlExtHostTypes.SchemaUpdateAction,
-				SchemaDifferenceType: sqlExtHostTypes.SchemaDifferenceType,
-				SchemaCompareEndpointType: sqlExtHostTypes.SchemaCompareEndpointType,
+				TreeItem: sqlExtHostTypes.TreeItem
 			};
 		}
 	};
-}
+} 
 
 export function initializeExtensionApi(extensionService: ExtHostExtensionService, apiFactory: ISqlExtensionApiFactory, extensionRegistry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): Promise<void> {
 	return extensionService.getExtensionPathIndex().then(trie => defineAPI(apiFactory, trie, extensionRegistry, configProvider));

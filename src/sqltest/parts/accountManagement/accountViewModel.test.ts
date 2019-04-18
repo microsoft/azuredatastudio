@@ -36,7 +36,8 @@ suite('Account Management Dialog ViewModel Tests', () => {
 			displayInfo: {
 				contextualDisplayName: 'Microsoft Account',
 				accountType: 'microsoft',
-				displayName: 'Account 1'
+				displayName: 'Account 1',
+				userId: 'user@email.com'
 			},
 			properties: [],
 			isStale: false
@@ -47,7 +48,8 @@ suite('Account Management Dialog ViewModel Tests', () => {
 			displayInfo: {
 				contextualDisplayName: 'Work/School Account',
 				accountType: 'work_school',
-				displayName: 'Account 2'
+				displayName: 'Account 2',
+				userId: 'user@email.com'
 			},
 			properties: [],
 			isStale: true

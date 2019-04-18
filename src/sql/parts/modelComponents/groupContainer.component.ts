@@ -15,7 +15,7 @@ import { GroupLayout, GroupItemLayout } from 'azdata';
 import { DashboardServiceInterface } from 'sql/workbench/parts/dashboard/services/dashboardServiceInterface.service';
 import { ContainerBase } from 'sql/parts/modelComponents/componentBase';
 import { ModelComponentWrapper } from 'sql/parts/modelComponents/modelComponentWrapper.component';
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 
 @Component({
 	selector: 'modelview-groupContainer',

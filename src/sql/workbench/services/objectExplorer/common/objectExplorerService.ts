@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { NodeType } from 'sql/parts/objectExplorer/common/nodeType';
-import { TreeNode, TreeItemCollapsibleState } from 'sql/parts/objectExplorer/common/treeNode';
+import { NodeType } from 'sql/workbench/parts/objectExplorer/common/nodeType';
+import { TreeNode, TreeItemCollapsibleState } from 'sql/workbench/parts/objectExplorer/common/treeNode';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
@@ -14,11 +14,11 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Event, Emitter } from 'vs/base/common/event';
 import * as azdata from 'azdata';
 import * as nls from 'vs/nls';
-import * as TelemetryKeys from 'sql/common/telemetryKeys';
-import * as TelemetryUtils from 'sql/common/telemetryUtilities';
+import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
+import * as TelemetryUtils from 'sql/platform/telemetry/telemetryUtilities';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { warn, error } from 'sql/base/common/log';
-import { ServerTreeView } from 'sql/parts/objectExplorer/viewlet/serverTreeView';
+import { ServerTreeView } from 'sql/workbench/parts/objectExplorer/browser/serverTreeView';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import * as Utils from 'sql/platform/connection/common/utils';
 import { entries } from 'sql/base/common/objects';

@@ -8,8 +8,8 @@ import { Injectable, Inject, forwardRef } from '@angular/core';
 import { Router } from '@angular/router';
 
 /* SQL imports */
-import { IDashboardComponentParams } from 'sql/services/bootstrap/bootstrapParams';
-import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
+import { IDashboardComponentParams } from 'sql/platform/bootstrap/node/bootstrapParams';
+import { IBootstrapParams } from 'sql/platform/bootstrap/node/bootstrapService';
 import { IMetadataService } from 'sql/platform/metadata/common/metadataService';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IAdminService } from 'sql/workbench/services/admin/common/adminService';
@@ -18,7 +18,7 @@ import { toDisposableSubscription } from 'sql/base/node/rxjsUtils';
 import { AngularEventType, IAngularEvent, IAngularEventingService } from 'sql/platform/angularEventing/common/angularEventingService';
 import { IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
 import { TabSettingConfig } from 'sql/workbench/parts/dashboard/common/dashboardWidget';
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 
 /* VS imports */
 import { IConfigurationService, ConfigurationTarget } from 'vs/platform/configuration/common/configuration';

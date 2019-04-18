@@ -69,8 +69,8 @@ declare namespace Slick {
 		* @method unsubscribe
 		* @param fn {Function} Event handler to be removed.
 		*/
-		public unsubscribe(fn: (e: EventData, data: T) => any): void;
-		public unsubscribe(fn: (e: DOMEvent, data: T) => any): void;
+		public unsubscribe(fn?: (e: EventData, data: T) => any): void;
+		public unsubscribe(fn?: (e: DOMEvent, data: T) => any): void;
 
 		/***
 		* Fires an event notifying all subscribers.
@@ -716,7 +716,7 @@ declare namespace Slick {
 			 * Metadata indexed by column index
 			 */
 			[index: number]: ColumnMetadata<T>;
-		}
+		};
 	}
 
 	export interface ColumnMetadata<T extends SlickData> {
@@ -1231,10 +1231,10 @@ declare namespace Slick {
 		public getRenderedRange(viewportTop?: number, viewportLeft?: number): Viewport;
 		public resizeCanvas(): void;
 		public updateRowCount(): void;
-		public scrollRowIntoView(row: number, doPaging: boolean): void;
+		public scrollRowIntoView(row: number, doPaging?: boolean): void;
 		public scrollRowToTop(row: number): void;
 		public scrollCellIntoView(row: number, cell: number, doPaging: boolean): void;
-		public scrollTo(y: number);
+		public scrollTo(y: number): void;
 		public getCanvasNode(): HTMLCanvasElement;
 		public focus(): void;
 
@@ -1278,7 +1278,7 @@ declare namespace Slick {
 		// the documentation is not enlightening
 		startX: number;
 		startY: number;
-		range: { start: Slick.Cell, end: Slick.Cell };
+		range: { start: Slick.Cell, end?: Slick.Cell };
 	}
 
 	export interface OnDragInitEventArgs<T extends SlickData> extends GridEventArgs<T> {
@@ -1448,7 +1448,7 @@ declare namespace Slick {
 	export interface CellCssStylesHash {
 		[index: number]: {
 			[id: string]: string;
-		}
+		};
 	}
 
 	export interface Viewport {

@@ -2266,9 +2266,14 @@ declare module 'azdata' {
 		accountType: string;
 
 		/**
-		 * A display name that identifies the account, such as "user@contoso.com".
+		 * A display name that identifies the account, such as "User Name".
 		 */
 		displayName: string;
+
+		/**
+		 * User id that identifies the account, such as "user@contoso.com".
+		 */
+		userId: string;
 	}
 
 	/**
@@ -4368,6 +4373,11 @@ declare module 'azdata' {
 			 * Default kernel for notebook
 			 */
 			defaultKernel?: nb.IKernelSpec;
+
+			/**
+			 * Optional content used to give an initial notebook state
+			 */
+			initialContent?: nb.INotebookContents | string;
 		}
 
 		/**
@@ -4758,6 +4768,7 @@ declare module 'azdata' {
 			readonly id: string;
 			readonly name: string;
 			readonly supportsIntellisense: boolean;
+			readonly requiresConnection?: boolean;
 			/**
 			 * Test whether the kernel is ready.
 			 */

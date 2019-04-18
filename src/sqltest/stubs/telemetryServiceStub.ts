@@ -7,6 +7,9 @@ import { ITelemetryService, ITelemetryData, ITelemetryInfo } from 'vs/platform/t
 // Test stubs for commonly used objects
 
 export class TelemetryServiceStub implements ITelemetryService {
+	setEnabled(value: boolean): void {
+		// no op;
+	}
 
 	_serviceBrand: any;
 
