@@ -1424,7 +1424,7 @@
 					"flags": "preview"
 				},
 				{
-					"extensionId": "26",
+					"extensionId": "36",
 					"extensionName": "schema-compare",
 					"displayName": "SQL Server Schema Compare",
 					"shortDescription": "Schema Compare tool for dacpac and databases",
