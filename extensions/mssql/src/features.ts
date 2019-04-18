@@ -169,8 +169,8 @@ export class SchemaCompareServicesFeature extends SqlOpsFeature<undefined> {
 		const client = this._client;
 		let self = this;
 
-		let schemaCompare = (sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, schemaCompareOptions: azdata.SchemaCompareOptions): Thenable<azdata.SchemaCompareResult> => {
-			let params: contracts.SchemaCompareParams = {sourceEndpointInfo: sourceEndpointInfo, targetEndpointInfo: targetEndpointInfo, taskExecutionMode: taskExecutionMode, schemaCompareOptions: schemaCompareOptions};
+		let schemaCompare = (sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, deploymentOptions: azdata.DeploymentOptions): Thenable<azdata.SchemaCompareResult> => {
+			let params: contracts.SchemaCompareParams = {sourceEndpointInfo: sourceEndpointInfo, targetEndpointInfo: targetEndpointInfo, taskExecutionMode: taskExecutionMode, deploymentOptions: deploymentOptions};
 			return client.sendRequest(contracts.SchemaCompareRequest.type, params).then(
 				r => {
 					return r;

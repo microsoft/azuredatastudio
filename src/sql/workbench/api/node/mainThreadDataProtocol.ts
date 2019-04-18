@@ -458,7 +458,7 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 	public $registerSchemaCompareServicesProvider(providerId: string, handle: number): Promise<any> {
 		const self = this;
 		this._schemaCompareService.registerProvider(providerId, <azdata.SchemaCompareServicesProvider>{
-			schemaCompare(sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, schemaComapareOptions: azdata.SchemaCompareOptions): Thenable<azdata.SchemaCompareResult> {
+			schemaCompare(sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, schemaComapareOptions: azdata.DeploymentOptions): Thenable<azdata.SchemaCompareResult> {
 				return self._proxy.$schemaCompare(handle, sourceEndpointInfo, targetEndpointInfo, taskExecutionMode, schemaComapareOptions);
 			},
 			schemaCompareGenerateScript(operationId: string, targetDatabaseName: string, scriptFilePath: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {

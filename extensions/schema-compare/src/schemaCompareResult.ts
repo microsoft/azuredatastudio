@@ -29,7 +29,7 @@ export class SchemaCompareResult {
 	private comparisonResult: azdata.SchemaCompareResult;
 	private sourceNameComponent: azdata.TableComponent;
 	private targetNameComponent: azdata.TableComponent;
-	private schemaCompareOptions: azdata.SchemaCompareOptions;
+	private deploymentOptions: azdata.DeploymentOptions;
 	private schemaCompareOptionDialog: SchemaCompareOptionsDialog;
 
 	constructor(private sourceName: string, private targetName: string, private sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, private targetEndpointInfo: azdata.SchemaCompareEndpointInfo) {
@@ -39,7 +39,7 @@ export class SchemaCompareResult {
 		this.SchemaCompareActionMap[azdata.SchemaUpdateAction.Add] = localize('schemaCompare.addAction', 'Add');
 
 		this.editor = azdata.workspace.createModelViewEditor(localize('schemaCompare.Title', 'Schema Compare'), { retainContextWhenHidden: true, supportsSave: true });
-		this.GetDefaultSchemaCompareOptions();
+		this.GetDefaultDeploymentOptions();
 
 		this.editor.registerContent(async view => {
 			this.differencesTable = view.modelBuilder.table().withProperties({
@@ -149,13 +149,13 @@ export class SchemaCompareResult {
 	}
 
 	private async execute(): Promise<void> {
-		if (this.schemaCompareOptionDialog && this.schemaCompareOptionDialog.schemaCompareOptions) {
+		if (this.schemaCompareOptionDialog && this.schemaCompareOptionDialog.deploymentOptions) {
 			// take updates if any
-			this.schemaCompareOptions = this.schemaCompareOptionDialog.schemaCompareOptions;
+			this.deploymentOptions = this.schemaCompareOptionDialog.deploymentOptions;
 		}
 
 		let service = await SchemaCompareResult.getService('MSSQL');
-		this.comparisonResult = await service.schemaCompare(this.sourceEndpointInfo, this.targetEndpointInfo, azdata.TaskExecutionMode.execute, this.schemaCompareOptions);
+		this.comparisonResult = await service.schemaCompare(this.sourceEndpointInfo, this.targetEndpointInfo, azdata.TaskExecutionMode.execute, this.deploymentOptions);
 		if (!this.comparisonResult || !this.comparisonResult.success) {
 			vscode.window.showErrorMessage(localize('schemaCompare.compareErrorMessage', "Schema Compare failed: {0}", this.comparisonResult.errorMessage ? this.comparisonResult.errorMessage : 'Unknown'));
 			return;
@@ -337,11 +337,11 @@ export class SchemaCompareResult {
 
 		this.optionsButton.onDidClick(async (click) => {
 			//restore options from last time
-			if (this.schemaCompareOptionDialog && this.schemaCompareOptionDialog.schemaCompareOptions) {
-				this.schemaCompareOptions = this.schemaCompareOptionDialog.schemaCompareOptions;
+			if (this.schemaCompareOptionDialog && this.schemaCompareOptionDialog.deploymentOptions) {
+				this.deploymentOptions = this.schemaCompareOptionDialog.deploymentOptions;
 			}
 			// create fresh every time
-			this.schemaCompareOptionDialog = new SchemaCompareOptionsDialog(this.schemaCompareOptions);
+			this.schemaCompareOptionDialog = new SchemaCompareOptionsDialog(this.deploymentOptions);
 			await this.schemaCompareOptionDialog.openDialog();
 		});
 	}
@@ -400,9 +400,9 @@ export class SchemaCompareResult {
 		return service;
 	}
 
-	private GetDefaultSchemaCompareOptions() {
+	private GetDefaultDeploymentOptions() {
 		// Same as dacfx default options
-		this.schemaCompareOptions = {
+		this.deploymentOptions = {
 			IgnoreTableOptions: false,
 			IgnoreSemicolonBetweenStatements: true,
 			IgnoreRouteLifetime: true,

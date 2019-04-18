@@ -1745,7 +1745,7 @@ declare module 'azdata' {
 		sourceEndpointInfo: SchemaCompareEndpointInfo;
 		targetEndpointInfo: SchemaCompareEndpointInfo;
 		taskExecutionMode: TaskExecutionMode;
-		schemaCompareOptions: SchemaCompareOptions;
+		deploymentOptions: DeploymentOptions;
 	}
 
 	export interface SchemaCompareGenerateScriptParams {
@@ -1755,7 +1755,7 @@ declare module 'azdata' {
 		taskExecutionMode: TaskExecutionMode;
 	}
 
-	export interface SchemaCompareOptions {
+	export interface DeploymentOptions {
 		IgnoreTableOptions: boolean;
         IgnoreSemicolonBetweenStatements: boolean;
         IgnoreRouteLifetime: boolean;
@@ -1906,7 +1906,7 @@ declare module 'azdata' {
 	}
 
 	export interface SchemaCompareServicesProvider extends DataProvider {
-		schemaCompare(sourceEndpointInfo: SchemaCompareEndpointInfo, targetEndpointInfo: SchemaCompareEndpointInfo, taskExecutionMode: TaskExecutionMode, schemaCompareOptions: SchemaCompareOptions): Thenable<SchemaCompareResult>;
+		schemaCompare(sourceEndpointInfo: SchemaCompareEndpointInfo, targetEndpointInfo: SchemaCompareEndpointInfo, taskExecutionMode: TaskExecutionMode, deploymentOptions: DeploymentOptions): Thenable<SchemaCompareResult>;
 		schemaCompareGenerateScript(operationId: string, targetDatabaseName: string, scriptFilePath: string, taskExecutionMode: TaskExecutionMode): Thenable<ResultStatus>;
 	}
 
