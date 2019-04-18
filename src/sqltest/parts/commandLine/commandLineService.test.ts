@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as assert from 'assert';
 import * as TypeMoq from 'typemoq';
 import * as azdata from 'azdata';
@@ -178,7 +176,7 @@ suite('commandLineService tests', () => {
 		try {
 			await service.processCommandLine(new TestParsedArgs());
 			connectionManagementService.verifyAll();
-		} catch (error){
+		} catch (error) {
 			assert.fail(error, null, 'processCommandLine rejected ' + error);
 		}
 	});
@@ -316,22 +314,22 @@ suite('commandLineService tests', () => {
 		const connectionManagementService: TypeMoq.Mock<IConnectionManagementService>
 			= TypeMoq.Mock.ofType<IConnectionManagementService>(TestConnectionManagementService, TypeMoq.MockBehavior.Strict);
 
-		var connection = new ConnectionProfile(capabilitiesService, {
-				connectionName: 'Test',
-				savePassword: false,
-				groupFullName: 'testGroup',
-				serverName: 'myserver',
-				databaseName: 'mydatabase',
-				authenticationType: Constants.integrated,
-				password: undefined,
-				userName: '',
-				groupId: undefined,
-				providerName: 'MSSQL',
-				options: {},
-				saveProfile: true,
-				id: 'testID'
-			});
-		var conProfGroup = new ConnectionProfileGroup('testGroup', undefined, 'testGroup', undefined, undefined);
+		let connection = new ConnectionProfile(capabilitiesService, {
+			connectionName: 'Test',
+			savePassword: false,
+			groupFullName: 'testGroup',
+			serverName: 'myserver',
+			databaseName: 'mydatabase',
+			authenticationType: Constants.integrated,
+			password: undefined,
+			userName: '',
+			groupId: undefined,
+			providerName: 'MSSQL',
+			options: {},
+			saveProfile: true,
+			id: 'testID'
+		});
+		let conProfGroup = new ConnectionProfileGroup('testGroup', undefined, 'testGroup', undefined, undefined);
 		conProfGroup.connections = [connection];
 		const args: TestParsedArgs = new TestParsedArgs();
 		args.server = 'myserver';

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as assert from 'assert';
 import { URI } from 'vs/base/common/uri';
@@ -570,6 +570,13 @@ suite('Files - TextFileService i/o', () => {
 		assert.equal(result.encoding, 'utf16be');
 	});
 
+	test('readStream - autoguessEncoding', async () => {
+		const resource = URI.file(join(testDir, 'some_cp1252.txt'));
+
+		const result = await service.readStream(resource, { autoGuessEncoding: true });
+		assert.equal(result.encoding, 'windows1252');
+	});
+
 	test('readStream - FILE_IS_BINARY', async () => {
 		const resource = URI.file(join(testDir, 'binary.txt'));
 
@@ -584,6 +591,23 @@ suite('Files - TextFileService i/o', () => {
 		assert.equal(error!.textFileOperationResult, TextFileOperationResult.FILE_IS_BINARY);
 
 		const result = await service.readStream(URI.file(join(testDir, 'small.txt')), { acceptTextOnly: true });
+		assert.equal(result.name, 'small.txt');
+	});
+
+	test('read - FILE_IS_BINARY', async () => {
+		const resource = URI.file(join(testDir, 'binary.txt'));
+
+		let error: TextFileOperationError | undefined = undefined;
+		try {
+			await service.read(resource, { acceptTextOnly: true });
+		} catch (err) {
+			error = err;
+		}
+
+		assert.ok(error);
+		assert.equal(error!.textFileOperationResult, TextFileOperationResult.FILE_IS_BINARY);
+
+		const result = await service.read(URI.file(join(testDir, 'small.txt')), { acceptTextOnly: true });
 		assert.equal(result.name, 'small.txt');
 	});
 });

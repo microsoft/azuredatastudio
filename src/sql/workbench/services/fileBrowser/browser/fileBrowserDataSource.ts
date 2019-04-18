@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import { IFileBrowserService } from 'sql/platform/fileBrowser/common/interfaces';
 import { FileNode } from 'sql/workbench/services/fileBrowser/common/fileNode';
 import { ITree, IDataSource } from 'vs/base/parts/tree/browser/tree';
@@ -47,7 +45,7 @@ export class FileBrowserDataSource implements IDataSource {
 	public getChildren(tree: ITree, element: any): Promise<any> {
 		return new Promise<any>((resolve) => {
 			if (element instanceof FileNode) {
-				var node = <FileNode>element;
+				let node = <FileNode>element;
 				if (node.children) {
 					resolve(node.children);
 				} else {

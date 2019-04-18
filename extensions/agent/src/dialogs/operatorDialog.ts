@@ -135,7 +135,7 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 
 
 			this.pagerTuesdayCheckBox.onChanged(() => {
-				if (this.pagerTuesdayCheckBox .checked) {
+				if (this.pagerTuesdayCheckBox.checked) {
 					this.weekdayPagerStartTimeInput.enabled = true;
 					this.weekdayPagerEndTimeInput.enabled = true;
 				} else {
@@ -153,7 +153,7 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 				}).component();
 
 			this.pagerWednesdayCheckBox.onChanged(() => {
-				if (this.pagerWednesdayCheckBox .checked) {
+				if (this.pagerWednesdayCheckBox.checked) {
 					this.weekdayPagerStartTimeInput.enabled = true;
 					this.weekdayPagerEndTimeInput.enabled = true;
 				} else {
@@ -171,7 +171,7 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 				}).component();
 
 			this.pagerThursdayCheckBox.onChanged(() => {
-				if (this.pagerThursdayCheckBox .checked) {
+				if (this.pagerThursdayCheckBox.checked) {
 					this.weekdayPagerStartTimeInput.enabled = true;
 					this.weekdayPagerEndTimeInput.enabled = true;
 				} else {
@@ -362,7 +362,7 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 					}, {
 						component: pagerSundayCheckboxContainer,
 						title: ''
-					}] ,
+					}],
 					title: OperatorDialog.PagerDutyScheduleLabel
 				}]).withLayout({ width: '100%' }).component();
 			await view.initializeModel(formModel);

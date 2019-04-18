@@ -1,79 +1,85 @@
-﻿div.qp-node {
-    margin: 2px;
-    padding: 2px;
-    border: 1px solid;
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+div.qp-node {
+	margin: 2px;
+	padding: 2px;
+	border: 1px solid;
 }
+
 div.qp-statement-header {
-     margin: 2px;
-     padding: 2px;
-     font-size: 12px;
-     line-height: normal;
- }
+	margin: 2px;
+	padding: 2px;
+	font-size: 12px;
+	line-height: normal;
+}
 
 div.qp-node,
 div.qp-tt {
-    font-size: 11px;
-    line-height: normal;
+	font-size: 11px;
+	line-height: normal;
 }
 
 .qp-node>div {
-    font-family: Monospace;
-    text-align: center;
+	font-family: Monospace;
+	text-align: center;
 }
 
 div[class|='qp-icon'] {
-    height: 32px;
-    width: 32px;
-    margin-left: auto;
-    margin-right: auto;
-    background-repeat: no-repeat;
+	height: 32px;
+	width: 32px;
+	margin-left: auto;
+	margin-right: auto;
+	background-repeat: no-repeat;
 }
 
 .qp-tt {
-    top: 4em;
-    left: 2em;
-    border: 1px solid;
-    padding: 2px;
-    width: 30em;
+	top: 4em;
+	left: 2em;
+	border: 1px solid;
+	padding: 2px;
+	width: 30em;
 }
 
 .qp-tt div,
 .qp-tt table {
-    font-family: Sans-Serif;
-    text-align: left;
+	font-family: Sans-Serif;
+	text-align: left;
 }
 
 .qp-tt table {
-    border-width: 0px;
-    border-spacing: 0px;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    width: 100%;
+	border-width: 0px;
+	border-spacing: 0px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	width: 100%;
 }
 
 .qp-tt td,
 .qp-tt th {
-    font-size: 11px;
-    border-bottom: solid 1px;
-    padding: 1px;
+	font-size: 11px;
+	border-bottom: solid 1px;
+	padding: 1px;
 }
 
 .qp-tt td {
-    text-align: right;
-    padding-left: 10px;
+	text-align: right;
+	padding-left: 10px;
 }
 
 .qp-tt th {
-    text-align: left;
+	text-align: left;
 }
 
 .qp-bold,
 .qp-tt-header {
-    font-weight: bold;
+	font-weight: bold;
 }
 
 .qp-tt-header {
-    text-align: center;
+	text-align: center;
 }
 
 /* Icons */
@@ -165,54 +171,54 @@ div[class|='qp-icon'] {
 
 /* Layout - can't touch this */
 .qp-tt {
-    position: absolute;
-    z-index: 1;
-    white-space: normal;
-    -webkit-transition-delay: 0.5s;
-    transition-delay: 0.5s;
+	position: absolute;
+	z-index: 1;
+	white-space: normal;
+	-webkit-transition-delay: 0.5s;
+	transition-delay: 0.5s;
 }
 
 div.qp-node .qp-tt,
 .qp-noCssTooltip div.qp-node:hover .qp-tt {
-    visibility: hidden;
-    position: absolute;
-    overflow: hidden;
+	visibility: hidden;
+	position: absolute;
+	overflow: hidden;
 }
 
 div.qp-node:hover .qp-tt {
-    visibility: visible;
+	visibility: visible;
 }
 
 .qp-tt table {
-    white-space: nowrap;
+	white-space: nowrap;
 }
 
 .qp-node {
-    position: relative;
-    white-space: nowrap;
+	position: relative;
+	white-space: nowrap;
 }
 
 .qp-tr {
-    display: table;
+	display: table;
 }
 
 .qp-tr>div {
-    display: table-cell;
-    padding-left: 15px;
+	display: table-cell;
+	padding-left: 15px;
 }
 
 .qp-root {
 	display: table;
-    position: relative;
+	position: relative;
 }
 
 .qp-root svg {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    z-index: 0;
-    background: transparent;
-    pointer-events: none;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	z-index: 0;
+	background: transparent;
+	pointer-events: none;
 }

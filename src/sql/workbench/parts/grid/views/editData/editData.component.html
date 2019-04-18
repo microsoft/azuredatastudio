@@ -7,7 +7,7 @@
 
 <div class="fullsize vertBox editdata-component">
 	<div id="results" *ngIf="renderedDataSets.length > 0" class="results vertBox scrollable"
-		 (onScroll)="onScroll($event)" [class.hidden]="!resultActive">
+		(onScroll)="onScroll($event)" [class.hidden]="!resultActive">
 		<div class="boxRow content horzBox slickgrid editable" *ngFor="let dataSet of renderedDataSets; let i = index"
 			[style.max-height]="dataSet.maxHeight" [style.min-height]="dataSet.minHeight">
 			<slick-grid #slickgrid id="slickgrid_{{i}}" [columnDefinitions]="dataSet.columnDefinitions"

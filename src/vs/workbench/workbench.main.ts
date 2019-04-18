@@ -195,6 +195,7 @@ import { IAdminService, AdminService } from 'sql/workbench/services/admin/common
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
 import { JobManagementService } from 'sql/platform/jobManagement/common/jobManagementService';
 import { IDacFxService, DacFxService } from 'sql/platform/dacfx/common/dacFxService';
+import { ISchemaCompareService, SchemaCompareService } from 'sql/platform/schemaCompare/common/schemaCompareService';
 import { IBackupService } from 'sql/platform/backup/common/backupService';
 import { BackupService } from 'sql/platform/backup/common/backupServiceImp';
 import { IBackupUiService } from 'sql/workbench/services/backup/common/backupUiService';
@@ -269,6 +270,7 @@ registerSingleton(INotebookService, NotebookService);
 registerSingleton(IAccountPickerService, AccountPickerService);
 registerSingleton(IProfilerService, ProfilerService);
 registerSingleton(IDacFxService, DacFxService);
+registerSingleton(ISchemaCompareService, SchemaCompareService);
 // {{SQL CARBON EDIT}} - End
 
 //#region --- workbench parts
@@ -451,8 +453,8 @@ import 'sql/workbench/api/node/sqlExtHost.contribution';
 import 'sql/workbench/parts/connection/browser/connection.contribution';
 import 'sql/parts/query/common/query.contribution';
 import 'sql/parts/query/editor/resultsGridContribution';
-import 'sql/parts/profiler/contrib/profiler.contribution';
-import 'sql/parts/profiler/contrib/profilerActions.contribution';
+import 'sql/workbench/parts/profiler/browser/profiler.contribution';
+import 'sql/workbench/parts/profiler/browser/profilerActions.contribution';
 import 'sql/workbench/parts/objectExplorer/common/serverGroup.contribution';
 import 'sql/platform/accounts/browser/accountManagement.contribution';
 
@@ -477,9 +479,9 @@ import 'sql/workbench/parts/dashboard/widgets/tasks/tasksWidget.contribution';
 import 'sql/workbench/parts/dashboard/widgets/webview/webviewWidget.contribution';
 import 'sql/workbench/parts/dashboard/dashboardConfig.contribution';
 /* Model-based Views */
-import 'sql/parts/modelComponents/components.contribution';
+import 'sql/workbench/electron-browser/modelComponents/components.contribution';
 /* View Model Editor */
-import 'sql/parts/modelComponents/modelEditor/modelViewEditor.contribution';
+import 'sql/workbench/electron-browser/modelComponents/modelViewEditor.contribution';
 /* Notebook Editor */
 import 'sql/workbench/parts/notebook/notebook.contribution';
 /* Containers */

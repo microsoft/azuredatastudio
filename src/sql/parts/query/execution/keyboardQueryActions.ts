@@ -17,7 +17,7 @@ import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import * as Constants from 'sql/parts/query/common/constants';
 import * as ConnectionConstants from 'sql/platform/connection/common/constants';
-import { EditDataEditor } from 'sql/parts/editData/editor/editDataEditor';
+import { EditDataEditor } from 'sql/workbench/parts/editData/browser/editDataEditor';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
@@ -266,9 +266,7 @@ export class RunQueryShortcutAction extends Action {
 	 * Runs one of the optionally registered query shortcuts. This will lookup the shortcut's stored procedure
 	 * reference from the settings, and if found will execute it plus any
 	 *
-	 * @param {QueryEditor} editor
-	 * @param {number} shortcutIndex which shortcut should be run?
-	 * @memberof RunQueryShortcutAction
+	 * @param shortcutIndex which shortcut should be run?
 	 */
 	public runQueryShortcut(editor: QueryEditor, shortcutIndex: number): Thenable<void> {
 		if (!editor) {

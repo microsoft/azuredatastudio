@@ -9,8 +9,8 @@ import {
 	PROFILER_SETTINGS, IProfilerSettings
 } from './interfaces';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { ProfilerInput } from 'sql/parts/profiler/editor/profilerInput';
-import { ProfilerColumnEditorDialog } from 'sql/parts/profiler/dialog/profilerColumnEditorDialog';
+import { ProfilerInput } from 'sql/workbench/parts/profiler/browser/profilerInput';
+import { ProfilerColumnEditorDialog } from 'sql/workbench/parts/profiler/browser/profilerColumnEditorDialog';
 
 import * as azdata from 'azdata';
 
@@ -20,7 +20,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import { Memento } from 'vs/workbench/common/memento';
-import { ProfilerFilterDialog } from 'sql/parts/profiler/dialog/profilerFilterDialog';
+import { ProfilerFilterDialog } from 'sql/workbench/parts/profiler/browser/profilerFilterDialog';
 
 class TwoWayMap<T, K> {
 	private forwardMap: Map<T, K>;

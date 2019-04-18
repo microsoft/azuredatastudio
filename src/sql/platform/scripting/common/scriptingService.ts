@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
@@ -50,14 +48,10 @@ export class ScriptingService implements IScriptingService {
 	private _providers: { [handle: string]: azdata.ScriptingProvider; } = Object.create(null);
 
 	private failedScriptingOperations: { [operationId: string]: azdata.ScriptingCompleteResult } = {};
-	constructor( @IConnectionManagementService private _connectionService: IConnectionManagementService) { }
+	constructor(@IConnectionManagementService private _connectionService: IConnectionManagementService) { }
 
 	/**
 	 * Call the service for scripting based on provider and scripting operation
-	 * @param connectionUri
-	 * @param metadata
-	 * @param operation
-	 * @param paramDetails
 	 */
 	public script(connectionUri: string, metadata: azdata.ObjectMetadata, operation: ScriptOperation, paramDetails: azdata.ScriptingParamDetails): Thenable<azdata.ScriptingResult> {
 		let providerId: string = this._connectionService.getProviderIdFromUri(connectionUri);
@@ -73,8 +67,6 @@ export class ScriptingService implements IScriptingService {
 
 	/**
 	 * Callback method for when scripting is complete
-	 * @param handle
-	 * @param scriptingCompleteResult
 	 */
 	public onScriptingComplete(handle: number, scriptingCompleteResult: azdata.ScriptingCompleteResult): void {
 		if (scriptingCompleteResult && scriptingCompleteResult.hasError && scriptingCompleteResult.errorMessage) {

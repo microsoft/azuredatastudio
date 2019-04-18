@@ -35,26 +35,26 @@ export function deactivate(): void {
 }
 
 export async function installDependencies() {
-    const gotKubectl = await kubectl.checkPresent(CheckPresentMessageMode.Silent);
+	const gotKubectl = await kubectl.checkPresent(CheckPresentMessageMode.Silent);
 
 
-    const installPromises = [
-        installDependency('kubectl', gotKubectl, installKubectl)
-    ];
+	const installPromises = [
+		installDependency('kubectl', gotKubectl, installKubectl)
+	];
 
-    await Promise.all(installPromises);
+	await Promise.all(installPromises);
 
-    sqlserverbigdataclusterchannel.showOutput(localize('done', 'Done'));
+	sqlserverbigdataclusterchannel.showOutput(localize('done', 'Done'));
 }
 
 async function installDependency(name: string, alreadyGot: boolean, installFunc: (shell: Shell) => Promise<Errorable<null>>): Promise<void> {
-    if (alreadyGot) {
-        sqlserverbigdataclusterchannel.showOutput(localize('dependencyInstalled', '{0} already installed...', name));
-    } else {
-        sqlserverbigdataclusterchannel.showOutput(localize('installingDependency', 'Installing {0}...', name));
-        const result = await installFunc(shell);
-        if (failed(result)) {
-            sqlserverbigdataclusterchannel.showOutput(localize('installingDependencyFailed', 'Unable to install {0}: {1}', name, result.error[0]));
-        }
-    }
+	if (alreadyGot) {
+		sqlserverbigdataclusterchannel.showOutput(localize('dependencyInstalled', '{0} already installed...', name));
+	} else {
+		sqlserverbigdataclusterchannel.showOutput(localize('installingDependency', 'Installing {0}...', name));
+		const result = await installFunc(shell);
+		if (failed(result)) {
+			sqlserverbigdataclusterchannel.showOutput(localize('installingDependencyFailed', 'Unable to install {0}: {1}', name, result.error[0]));
+		}
+	}
 }

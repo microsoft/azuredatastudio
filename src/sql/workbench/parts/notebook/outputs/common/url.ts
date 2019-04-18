@@ -90,11 +90,11 @@ export namespace URLExt {
 		return (
 			'?' +
 			keys
-			.map(key => {
-				const content = encodeURIComponent(String(value[key]));
-				return key + (content ? '=' + content : '');
-			})
-			.join('&')
+				.map(key => {
+					const content = encodeURIComponent(String(value[key]));
+					return key + (content ? '=' + content : '');
+				})
+				.join('&')
 		);
 	}
 

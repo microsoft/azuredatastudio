@@ -14,7 +14,7 @@ const localize = nls.loadMessageBundle();
 
 export class JobData implements IAgentDialogData {
 
-	private readonly JobCompletionActionCondition_Always: string =  localize('jobData.whenJobCompletes', 'When the job completes');
+	private readonly JobCompletionActionCondition_Always: string = localize('jobData.whenJobCompletes', 'When the job completes');
 	private readonly JobCompletionActionCondition_OnFailure: string = localize('jobData.whenJobFails', 'When the job fails');
 	private readonly JobCompletionActionCondition_OnSuccess: string = localize('jobData.whenJobSucceeds', 'When the job succeeds');
 
@@ -126,7 +126,7 @@ export class JobData implements IAgentDialogData {
 	public async save() {
 		let jobInfo: azdata.AgentJobInfo = this.toAgentJobInfo();
 		let result = this.dialogMode === AgentDialogMode.CREATE
-			? await this._agentService.createJob(this.ownerUri,  jobInfo)
+			? await this._agentService.createJob(this.ownerUri, jobInfo)
 			: await this._agentService.updateJob(this.ownerUri, this.originalName, jobInfo);
 		if (!result || !result.success) {
 			if (this.dialogMode === AgentDialogMode.EDIT) {
@@ -142,7 +142,7 @@ export class JobData implements IAgentDialogData {
 					localize('jobData.saveSucessMessage', "Job '{0}' updated successfully", jobInfo.name));
 			} else {
 				vscode.window.showInformationMessage(
-					localize('jobData.newJobSuccessMessage',"Job '{0}' created successfully", jobInfo.name));
+					localize('jobData.newJobSuccessMessage', "Job '{0}' created successfully", jobInfo.name));
 			}
 
 		}

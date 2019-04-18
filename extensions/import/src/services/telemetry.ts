@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import { ErrorAction, CloseAction } from 'vscode-languageclient';
 import TelemetryReporter from 'vscode-extension-telemetry';
 import { PlatformInformation } from 'service-downloader/out/platform';
@@ -20,22 +18,21 @@ import { IMessage, ITelemetryEventProperties, ITelemetryEventMeasures } from './
 
 /**
  * Handle Language Service client errors
- * @class LanguageClientErrorHandler
  */
 export class LanguageClientErrorHandler {
 
-    /**
-     * Creates an instance of LanguageClientErrorHandler.
-     * @memberOf LanguageClientErrorHandler
-     */
+	/**
+	 * Creates an instance of LanguageClientErrorHandler.
+	 * @memberOf LanguageClientErrorHandler
+	 */
 	constructor() {
 
 	}
 
-    /**
-     * Show an error message prompt with a link to known issues wiki page
-     * @memberOf LanguageClientErrorHandler
-     */
+	/**
+	 * Show an error message prompt with a link to known issues wiki page
+	 * @memberOf LanguageClientErrorHandler
+	 */
 	showOnErrorPrompt(): void {
 		// TODO add telemetry
 		// Telemetry.sendTelemetryEvent('SqlToolsServiceCrash');
@@ -50,16 +47,11 @@ export class LanguageClientErrorHandler {
 		});
 	}
 
-    /**
-     * Callback for language service client error
-     *
-     * @param {Error} error
-     * @param {Message} message
-     * @param {number} count
-     * @returns {ErrorAction}
-     *
-     * @memberOf LanguageClientErrorHandler
-     */
+	/**
+	 * Callback for language service client error
+	 *
+	 * @memberOf LanguageClientErrorHandler
+	 */
 	error(error: Error, message: IMessage, count: number): ErrorAction {
 		this.showOnErrorPrompt();
 
@@ -68,13 +60,11 @@ export class LanguageClientErrorHandler {
 		return ErrorAction.Shutdown;
 	}
 
-    /**
-     * Callback for language service client closed
-     *
-     * @returns {CloseAction}
-     *
-     * @memberOf LanguageClientErrorHandler
-     */
+	/**
+	 * Callback for language service client closed
+	 *
+	 * @memberOf LanguageClientErrorHandler
+	 */
 	closed(): CloseAction {
 		this.showOnErrorPrompt();
 
@@ -134,16 +124,16 @@ export class Telemetry {
 		}
 	}
 
-    /**
-     * Disable telemetry reporting
-     */
+	/**
+	 * Disable telemetry reporting
+	 */
 	public static disable(): void {
 		this.disabled = true;
 	}
 
-    /**
-     * Initialize the telemetry reporter for use.
-     */
+	/**
+	 * Initialize the telemetry reporter for use.
+	 */
 	public static initialize(): void {
 		if (typeof this.reporter === 'undefined') {
 			// Check if the user has opted out of telemetry
@@ -156,9 +146,9 @@ export class Telemetry {
 		}
 	}
 
-    /**
-     * Send a telemetry event for an exception
-     */
+	/**
+	 * Send a telemetry event for an exception
+	 */
 	public static sendTelemetryEventForException(
 		err: any, methodName: string, extensionConfigName: string): void {
 		try {
@@ -181,9 +171,9 @@ export class Telemetry {
 		}
 	}
 
-    /**
-     * Send a telemetry event using application insights
-     */
+	/**
+	 * Send a telemetry event using application insights
+	 */
 	public static sendTelemetryEvent(
 		eventName: string,
 		properties?: ITelemetryEventProperties,

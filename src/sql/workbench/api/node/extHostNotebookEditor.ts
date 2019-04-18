@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
@@ -70,7 +69,7 @@ export class NotebookEditorEdit {
 	private getAsRange(location: number | CellRange): CellRange {
 		let range: CellRange = null;
 		if (typeof (location) === 'number') {
-			range = new CellRange(location, location+1);
+			range = new CellRange(location, location + 1);
 		}
 		else if (location instanceof CellRange) {
 			range = location;
@@ -81,7 +80,7 @@ export class NotebookEditorEdit {
 		return range;
 	}
 
-	insertCell(value:  Partial<azdata.nb.ICellContents>, location?: number): void {
+	insertCell(value: Partial<azdata.nb.ICellContents>, location?: number): void {
 		if (location === null || location === undefined) {
 			// If not specified, assume adding to end of list
 			location = this._document.cells.length;
@@ -92,11 +91,11 @@ export class NotebookEditorEdit {
 	deleteCell(index: number): void {
 		let range: CellRange = null;
 
-		if (typeof(index) === 'number') {
+		if (typeof (index) === 'number') {
 			// Currently only allowing single-cell deletion.
 			// Do this by saying the range extends over 1 cell so on the main thread
 			// we can delete that cell, then handle insertions
-			range = new CellRange(index, index+1);
+			range = new CellRange(index, index + 1);
 		} else {
 			throw new Error('Unrecognized index');
 		}
@@ -104,7 +103,7 @@ export class NotebookEditorEdit {
 		this._pushEdit(range, null, true);
 	}
 
-	private _pushEdit(range: azdata.nb.CellRange, cell:  Partial<azdata.nb.ICellContents>, forceMoveMarkers: boolean): void {
+	private _pushEdit(range: azdata.nb.CellRange, cell: Partial<azdata.nb.ICellContents>, forceMoveMarkers: boolean): void {
 		let validRange = this._document.validateCellRange(range);
 		this._collectedEdits.push({
 			range: validRange,

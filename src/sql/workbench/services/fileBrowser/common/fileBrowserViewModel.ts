@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import { IFileBrowserService } from 'sql/platform/fileBrowser/common/interfaces';
 import { localize } from 'vs/nls';
 
@@ -18,7 +16,7 @@ export class FileBrowserViewModel {
 	private _fileValidationServiceType: string;
 	public formattedFileFilters: string[];
 
-	constructor( @IFileBrowserService private _fileBrowserService: IFileBrowserService) {
+	constructor(@IFileBrowserService private _fileBrowserService: IFileBrowserService) {
 	}
 
 	public onAddFileTree(onAddFileTreeCallback) {
@@ -44,8 +42,8 @@ export class FileBrowserViewModel {
 			this._fileFilters = fileFilters;
 		}
 		this.formattedFileFilters = [];
-		for (var i = 0; i < this._fileFilters.length; i++) {
-			var filterStr = this._fileFilters[i].label + '(' + this._fileFilters[i].filters.join(';') + ')';
+		for (let i = 0; i < this._fileFilters.length; i++) {
+			let filterStr = this._fileFilters[i].label + '(' + this._fileFilters[i].filters.join(';') + ')';
 			this.formattedFileFilters.push(filterStr);
 		}
 	}

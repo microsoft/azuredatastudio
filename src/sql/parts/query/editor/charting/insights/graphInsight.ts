@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import { Chart as ChartJs } from 'chart.js';
 
 import { mixin } from 'sql/base/common/objects';
@@ -303,7 +301,7 @@ export class Graph implements IInsight {
  * color functionality
  */
 
-const defaultColors = [
+const defaultColors: Array<Color> = [
 	[255, 99, 132],
 	[54, 162, 235],
 	[255, 206, 86],
@@ -318,42 +316,71 @@ const defaultColors = [
 	[77, 83, 96]
 ];
 
+type Color = [number, number, number];
 
-function rgba(colour, alpha) {
+interface ILineColor {
+	backgroundColor: string;
+	borderColor: string;
+	pointBackgroundColor: string;
+	pointBorderColor: string;
+	pointHoverBackgroundColor: string;
+	pointHoverBorderColor: string;
+}
+
+interface IBarColor {
+	backgroundColor: string;
+	borderColor: string;
+	hoverBackgroundColor: string;
+	hoverBorderColor: string;
+}
+
+interface IPieColors {
+	backgroundColor: Array<string>;
+	borderColor: Array<string>;
+	pointBackgroundColor: Array<string>;
+	pointBorderColor: Array<string>;
+	pointHoverBackgroundColor: Array<string>;
+	pointHoverBorderColor: Array<string>;
+}
+
+interface IPolarAreaColors {
+	backgroundColor: Array<string>;
+	borderColor: Array<string>;
+	hoverBackgroundColor: Array<string>;
+	hoverBorderColor: Array<string>;
+}
+
+function rgba(colour: Color, alpha: number): string {
 	return 'rgba(' + colour.concat(alpha).join(',') + ')';
 }
 
-function getRandomInt(min, max) {
+function getRandomInt(min: number, max: number): number {
 	return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function getRandomColor() {
+function getRandomColor(): Color {
 	return [getRandomInt(0, 255), getRandomInt(0, 255), getRandomInt(0, 255)];
 }
 
 /**
  * Generate colors for line|bar charts
- * @param index
- * @returns {number[]|Color}
  */
-function generateColor(index) {
+function generateColor(index: number): Color {
 	return defaultColors[index] || getRandomColor();
 }
 
 /**
  * Generate colors for pie|doughnut charts
- * @param count
- * @returns {Colors}
  */
-function generateColors(count) {
-	var colorsArr = new Array(count);
-	for (var i = 0; i < count; i++) {
+function generateColors(count: number): Array<Color> {
+	const colorsArr = new Array(count);
+	for (let i = 0; i < count; i++) {
 		colorsArr[i] = defaultColors[i] || getRandomColor();
 	}
 	return colorsArr;
 }
 
-function formatLineColor(colors) {
+function formatLineColor(colors: Color): ILineColor {
 	return {
 		backgroundColor: rgba(colors, 0.4),
 		borderColor: rgba(colors, 1),
@@ -364,7 +391,7 @@ function formatLineColor(colors) {
 	};
 }
 
-function formatBarColor(colors) {
+function formatBarColor(colors: Color): IBarColor {
 	return {
 		backgroundColor: rgba(colors, 0.6),
 		borderColor: rgba(colors, 1),
@@ -373,34 +400,30 @@ function formatBarColor(colors) {
 	};
 }
 
-function formatPieColors(colors) {
+function formatPieColors(colors: Array<Color>): IPieColors {
 	return {
-		backgroundColor: colors.map(function (color) { return rgba(color, 0.6); }),
-		borderColor: colors.map(function () { return '#fff'; }),
-		pointBackgroundColor: colors.map(function (color) { return rgba(color, 1); }),
-		pointBorderColor: colors.map(function () { return '#fff'; }),
-		pointHoverBackgroundColor: colors.map(function (color) { return rgba(color, 1); }),
-		pointHoverBorderColor: colors.map(function (color) { return rgba(color, 1); })
+		backgroundColor: colors.map(color => rgba(color, 0.6)),
+		borderColor: colors.map(() => '#fff'),
+		pointBackgroundColor: colors.map(color => rgba(color, 1)),
+		pointBorderColor: colors.map(() => '#fff'),
+		pointHoverBackgroundColor: colors.map(color => rgba(color, 1)),
+		pointHoverBorderColor: colors.map(color => rgba(color, 1))
 	};
 }
 
-function formatPolarAreaColors(colors) {
+function formatPolarAreaColors(colors: Array<Color>): IPolarAreaColors {
 	return {
-		backgroundColor: colors.map(function (color) { return rgba(color, 0.6); }),
-		borderColor: colors.map(function (color) { return rgba(color, 1); }),
-		hoverBackgroundColor: colors.map(function (color) { return rgba(color, 0.8); }),
-		hoverBorderColor: colors.map(function (color) { return rgba(color, 1); })
+		backgroundColor: colors.map(color => rgba(color, 0.6)),
+		borderColor: colors.map(color => rgba(color, 1)),
+		hoverBackgroundColor: colors.map(color => rgba(color, 0.8)),
+		hoverBorderColor: colors.map(color => rgba(color, 1))
 	};
 }
 
 /**
  * Generate colors by chart type
- * @param chartType
- * @param index
- * @param count
- * @returns {Color}
  */
-function getColors(chartType, index, count) {
+function getColors(chartType: string, index: number, count: number): Color | ILineColor | IBarColor | IPieColors | IPolarAreaColors {
 	if (chartType === 'pie' || chartType === 'doughnut') {
 		return formatPieColors(generateColors(count));
 	}

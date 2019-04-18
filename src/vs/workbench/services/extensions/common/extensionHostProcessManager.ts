@@ -202,7 +202,8 @@ export class ExtensionHostProcessManager extends Disposable {
 		}
 
 		// Check that no named customers are missing
-		const expected: ProxyIdentifier<any>[] = Object.keys(MainContext).map((key) => (<any>MainContext)[key]);
+		// {{SQL CARBON EDIT}} filter out services we don't expose
+		const expected: ProxyIdentifier<any>[] = Object.keys(MainContext).map((key) => (<any>MainContext)[key]).filter(v => v !== MainContext.MainThreadDebugService);
 		this._extensionHostProcessRPCProtocol.assertRegistered(expected);
 
 		return this._extensionHostProcessRPCProtocol.getProxy(ExtHostContext.ExtHostExtensionService);
