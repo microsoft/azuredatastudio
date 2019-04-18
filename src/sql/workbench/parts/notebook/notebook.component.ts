@@ -224,7 +224,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		try {
 			await this.setNotebookManager();
 			await this.loadModel();
-			this.setLoading(false);
 			this._modelReadyDeferred.resolve(this._model);
 		} catch (error) {
 			this.setViewInErrorState(localize('displayFailed', 'Could not display contents: {0}', notebookUtils.getErrorMessage(error)));
@@ -262,6 +261,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		model.contentChanged((change) => this.handleContentChanged(change));
 		model.onProviderIdChange((provider) => this.handleProviderIdChanged(provider));
 		this._model = this._register(model);
+		this.setLoading(false);
 		this.updateToolbarComponents(this._model.trustedMode);
 		this._modelRegisteredDeferred.resolve(this._model);
 		await model.startSession(this.model.notebookManager, undefined, true);
