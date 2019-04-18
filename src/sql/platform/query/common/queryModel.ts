@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import QueryRunner from 'sql/platform/query/common/queryRunner';
-import { DataService } from 'sql/parts/grid/services/dataService';
+import { DataService } from 'sql/workbench/parts/grid/services/dataService';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { Event } from 'vs/base/common/event';
 import { QueryInput } from 'sql/parts/query/common/queryInput';

@@ -10,7 +10,7 @@ import * as azdata from 'azdata';
 import { Event } from 'vs/base/common/event';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { URI } from 'vs/base/common/uri';
-import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
+import { IBootstrapParams } from 'sql/platform/bootstrap/node/bootstrapService';
 import { RenderMimeRegistry } from 'sql/workbench/parts/notebook/outputs/registry';
 import { ModelFactory } from 'sql/workbench/parts/notebook/models/modelFactory';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';

@@ -3,14 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!sql/parts/grid/media/slickColorTheme';
-import 'vs/css!sql/parts/grid/media/flexbox';
-import 'vs/css!sql/parts/grid/media/styles';
-import 'vs/css!sql/parts/grid/media/slick.grid';
-import 'vs/css!sql/parts/grid/media/slickGrid';
+import 'vs/css!sql/workbench/parts/grid/media/flexbox';
+import 'vs/css!sql/workbench/parts/grid/media/styles';
 import 'vs/css!../common/media/jobs';
 import 'vs/css!sql/media/icons/common-icons';
-import 'vs/css!sql/base/browser/ui/table/media/table';
 
 import * as dom from 'vs/base/browser/dom';
 import * as azdata from 'azdata';
@@ -20,7 +16,7 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
 import { EditProxyAction, DeleteProxyAction, NewProxyAction } from 'sql/platform/jobManagement/common/jobActions';
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { JobManagementView } from 'sql/parts/jobManagement/views/jobManagementView';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';

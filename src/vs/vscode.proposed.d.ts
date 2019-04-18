@@ -72,6 +72,10 @@ declare module 'vscode' {
 
 	//#region Alex - resolvers
 
+	export interface RemoteAuthorityResolverContext {
+		resolveAttempt: number;
+	}
+
 	export class ResolvedAuthority {
 		readonly host: string;
 		readonly port: number;
@@ -79,8 +83,15 @@ declare module 'vscode' {
 		constructor(host: string, port: number);
 	}
 
+	export class RemoteAuthorityResolverError extends Error {
+		static NotAvailable(message?: string, handled?: boolean): RemoteAuthorityResolverError;
+		static TemporarilyNotAvailable(message?: string): RemoteAuthorityResolverError;
+
+		constructor(message?: string);
+	}
+
 	export interface RemoteAuthorityResolver {
-		resolve(authority: string): ResolvedAuthority | Thenable<ResolvedAuthority>;
+		resolve(authority: string, context: RemoteAuthorityResolverContext): ResolvedAuthority | Thenable<ResolvedAuthority>;
 	}
 
 	export interface ResourceLabelFormatter {
@@ -616,11 +627,6 @@ declare module 'vscode' {
 		 * An [event](#Event) that fires when the log level has changed.
 		 */
 		export const onDidChangeLogLevel: Event<LogLevel>;
-
-		/**
-		 * The custom uri scheme the editor registers to in the operating system, like 'vscode', 'vscode-insiders'.
-		 */
-		export const uriScheme: string;
 	}
 
 	//#endregion
@@ -1363,37 +1369,6 @@ declare module 'vscode' {
 		 * Controls whether the task is executed in a specific terminal group using split panes.
 		 */
 		group?: string;
-	}
-	//#endregion
-
-	//#region Webview Port mapping— mjbvz
-	/**
-	 * Defines a port mapping used for localhost inside the webview.
-	 */
-	export interface WebviewPortMapping {
-		/**
-		 * Localhost port to remap inside the webview.
-		 */
-		readonly port: number;
-
-		/**
-		 * Destination port. The `port` is resolved to this port.
-		 */
-		readonly resolvedPort: number;
-	}
-
-	export interface WebviewOptions {
-		/**
-		 * Mappings of localhost ports used inside the webview.
-		 *
-		 * Port mapping allow webviews to transparently define how localhost ports are resolved. This can be used
-		 * to allow using a static localhost port inside the webview that is resolved to random port that a service is
-		 * running on.
-		 *
-		 * If a webview accesses localhost content, we recomend that you specify port mappings even if
-		 * the `port` and `resolvedPort` ports are the same.
-		 */
-		readonly portMapping?: ReadonlyArray<WebviewPortMapping>;
 	}
 	//#endregion
 }

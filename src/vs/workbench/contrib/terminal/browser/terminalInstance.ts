@@ -681,8 +681,7 @@ export class TerminalInstance implements ITerminalInstance {
 	}
 
 	public hasSelection(): boolean {
-		// {{SQL CARBON EDIT}}
-		return this._xterm && this._xterm.hasSelection ? this._xterm.hasSelection() : false;
+		return this._xterm && this._xterm.hasSelection();
 	}
 
 	public copySelection(): void {

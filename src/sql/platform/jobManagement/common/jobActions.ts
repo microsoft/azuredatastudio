@@ -17,7 +17,7 @@ import { OperatorsViewComponent } from 'sql/parts/jobManagement/views/operatorsV
 import { ProxiesViewComponent } from 'sql/parts/jobManagement/views/proxiesView.component';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import * as TelemetryKeys from 'sql/common/telemetryKeys';
+import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { JobManagementView } from 'sql/parts/jobManagement/views/jobManagementView';
 
@@ -30,8 +30,8 @@ export enum JobActions {
 }
 
 export class IJobActionInfo {
-	ownerUri: string;
-	targetObject: any;
+	ownerUri?: string;
+	targetObject?: any;
 	component: JobManagementView;
 }
 
@@ -69,10 +69,11 @@ export class NewJobAction extends Action {
 		super(NewJobAction.ID, NewJobAction.LABEL, 'newStepIcon');
 	}
 
-	public run(context: JobsViewComponent): Promise<boolean> {
+	public run(context: IJobActionInfo): Promise<boolean> {
+		let component = context.component as JobsViewComponent;
 		return new Promise<boolean>(async (resolve, reject) => {
 			try {
-				await context.openCreateJobDialog();
+				await component.openCreateJobDialog();
 				resolve(true);
 			} catch (e) {
 				reject(e);
@@ -104,7 +105,7 @@ export class RunJobAction extends Action {
 			this.jobManagementService.jobAction(ownerUri, jobName, JobActions.Run).then(result => {
 				if (result.success) {
 					var startMsg = nls.localize('jobSuccessfullyStarted', ': The job was successfully started.');
-					this.notificationService.info(jobName+startMsg);
+					this.notificationService.info(jobName + startMsg);
 					refreshAction.run(context);
 					resolve(true);
 				} else {
@@ -140,7 +141,7 @@ export class StopJobAction extends Action {
 				if (result.success) {
 					refreshAction.run(context);
 					var stopMsg = nls.localize('jobSuccessfullyStopped', ': The job was successfully stopped.');
-					this.notificationService.info(jobName+stopMsg);
+					this.notificationService.info(jobName + stopMsg);
 					resolve(true);
 				} else {
 					this.errorMessageService.showDialog(Severity.Error, 'Error', result.errorMessage);
@@ -293,10 +294,11 @@ export class NewAlertAction extends Action {
 		super(NewAlertAction.ID, NewAlertAction.LABEL, 'newStepIcon');
 	}
 
-	public run(context: AlertsViewComponent): Promise<boolean> {
+	public run(context: IJobActionInfo): Promise<boolean> {
+		let component = context.component as AlertsViewComponent;
 		return new Promise<boolean>((resolve, reject) => {
 			try {
-				context.openCreateAlertDialog();
+				component.openCreateAlertDialog();
 				resolve(true);
 			} catch (e) {
 				reject(e);
@@ -380,10 +382,11 @@ export class NewOperatorAction extends Action {
 		super(NewOperatorAction.ID, NewOperatorAction.LABEL, 'newStepIcon');
 	}
 
-	public run(context: OperatorsViewComponent): Promise<boolean> {
+	public run(context: IJobActionInfo): Promise<boolean> {
+		let component = context.component as OperatorsViewComponent;
 		return new Promise<boolean>((resolve, reject) => {
 			try {
-				context.openCreateOperatorDialog();
+				component.openCreateOperatorDialog();
 				resolve(true);
 			} catch (e) {
 				reject(e);
@@ -466,10 +469,11 @@ export class NewProxyAction extends Action {
 		super(NewProxyAction.ID, NewProxyAction.LABEL, 'newStepIcon');
 	}
 
-	public run(context: ProxiesViewComponent): Promise<boolean> {
+	public run(context: IJobActionInfo): Promise<boolean> {
+		let component = context.component as ProxiesViewComponent;
 		return new Promise<boolean>((resolve, reject) => {
 			try {
-				context.openCreateProxyDialog();
+				component.openCreateProxyDialog();
 				resolve(true);
 			} catch (e) {
 				reject(e);
@@ -532,7 +536,7 @@ export class DeleteProxyAction extends Action {
 						if (!result || !result.success) {
 							let errorMessage = nls.localize("jobaction.failedToDeleteProxy", "Could not delete proxy '{0}'.\nError: {1}",
 								proxy.accountName, result.errorMessage ? result.errorMessage : 'Unknown error');
-								self._errorMessageService.showDialog(Severity.Error, errorLabel, errorMessage);
+							self._errorMessageService.showDialog(Severity.Error, errorLabel, errorMessage);
 						} else {
 							let successMessage = nls.localize('jobaction.deletedProxy', 'The proxy was deleted successfully');
 							self._notificationService.info(successMessage);

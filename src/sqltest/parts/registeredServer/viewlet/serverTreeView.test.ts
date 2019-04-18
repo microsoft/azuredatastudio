@@ -6,7 +6,7 @@
 'use strict';
 
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { ServerTreeView } from 'sql/parts/objectExplorer/viewlet/serverTreeView';
+import { ServerTreeView } from 'sql/workbench/parts/objectExplorer/browser/serverTreeView';
 import { ConnectionManagementService } from 'sql/platform/connection/common/connectionManagementService';
 
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';

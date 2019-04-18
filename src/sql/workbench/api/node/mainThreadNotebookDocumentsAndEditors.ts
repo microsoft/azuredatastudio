@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import * as azdata from 'azdata';
 import * as path from 'path';
@@ -29,12 +28,9 @@ import { ICellModel, NotebookContentChange, INotebookModel } from 'sql/workbench
 import { NotebookChangeType, CellTypes } from 'sql/workbench/parts/notebook/models/contracts';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
-import { notebookModeId } from 'sql/common/constants';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { viewColumnToEditorGroup } from 'vs/workbench/api/common/shared/editor';
-import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
-import { getCurrentGlobalConnection } from 'sql/workbench/common/taskUtilities';
+import { notebookModeId } from 'sql/parts/common/customInputConverter';
 
 class MainThreadNotebookEditor extends Disposable {
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
@@ -316,9 +312,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IEditorService private _editorService: IEditorService,
 		@IEditorGroupsService private _editorGroupService: IEditorGroupsService,
-		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService
+		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService
 	) {
 		super();
 		if (extHostContext) {
@@ -409,12 +403,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		let input = this._instantiationService.createInstance(NotebookInput, path.basename(uri.fsPath), uri, fileInput);
 		input.isTrusted = isUntitled;
 		input.defaultKernel = options.defaultKernel;
-		if (options.connectionProfile) {
-			input.connectionProfile = new ConnectionProfile(this._capabilitiesService, options.connectionProfile);
-		} else {
-			let connectionProfile = getCurrentGlobalConnection(this._objectExplorerService, this._connectionManagementService, this._editorService);
-			input.connectionProfile = new ConnectionProfile(this._capabilitiesService, connectionProfile);
-		}
+		input.connectionProfile = new ConnectionProfile(this._capabilitiesService, options.connectionProfile);
 		if (isUntitled) {
 			let untitledModel = await input.textInput.resolve();
 			untitledModel.load();

@@ -9,7 +9,7 @@ import { Event } from 'vs/base/common/event';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
-import { SingleConnectionManagementService } from 'sql/services/common/commonServiceInterface.service';
+import { SingleConnectionManagementService } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 
 export enum Conditional {
 	'equals',

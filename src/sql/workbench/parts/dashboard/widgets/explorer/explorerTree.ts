@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
 
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { MetadataType, IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { SingleConnectionManagementService } from 'sql/services/common/commonServiceInterface.service';
+import { SingleConnectionManagementService } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 import {
 	NewQueryAction, ScriptSelectAction, EditDataAction, ScriptCreateAction, ScriptExecuteAction, ScriptAlterAction,
 	BackupAction, ManageActionContext, BaseActionContext, ManageAction, RestoreAction

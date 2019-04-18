@@ -11,7 +11,7 @@ import { Component, Inject, forwardRef, ViewChild, OnInit, ElementRef } from '@a
 
 /* SQL imports */
 import { DashboardWidget, IDashboardWidget, WidgetConfig, WIDGET_CONFIG } from 'sql/workbench/parts/dashboard/common/dashboardWidget';
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 import { TaskRegistry } from 'sql/platform/tasks/common/tasks';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 

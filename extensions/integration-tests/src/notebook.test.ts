@@ -11,8 +11,8 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { context } from './testContext';
 import { sqlNotebookContent, writeNotebookToFile, sqlKernelMetadata, getFileName, pySparkNotebookContent, pySpark3KernelMetadata, pythonKernelMetadata, sqlNotebookMultipleCellsContent } from './notebook.util';
-import { getBdcServer } from './testConfig';
-import { connectToServer, getConfigValue, EnvironmentVariable_PYTHON_PATH } from './utils';
+import { getBdcServer, getConfigValue, EnvironmentVariable_PYTHON_PATH } from './testConfig';
+import { connectToServer } from './utils';
 import * as fs from 'fs';
 
 if (context.RunTest) {
@@ -71,7 +71,7 @@ if (context.RunTest) {
 			await verifyClearAllOutputs(notebook);
 		});
 
-		if (process.env.RUN_PYTHON3_TEST === '1') {
+		if (process.env['RUN_PYTHON3_TEST'] === '1') {
 			test('Python3 notebook test', async function () {
 				let notebook = await openNotebook(pySparkNotebookContent, pythonKernelMetadata, this.test.title);
 				let cellOutputs = notebook.document.cells[0].contents.outputs;
@@ -86,7 +86,7 @@ if (context.RunTest) {
 			});
 		}
 
-		if (process.env.RUN_PYSPARK_TEST === '1') {
+		if (process.env['RUN_PYSPARK_TEST'] === '1') {
 			test('PySpark3 notebook test', async function () {
 				let notebook = await openNotebook(pySparkNotebookContent, pySpark3KernelMetadata, this.test.title);
 				let cellOutputs = notebook.document.cells[0].contents.outputs;

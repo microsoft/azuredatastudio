@@ -117,7 +117,7 @@ exports.load = function (modulePaths, resultCallback, options) {
 		'ansi_up',
 		'pretty-data',
 		'html-query-plan',
-		'ng2-charts/ng2-charts',
+		'ng2-charts',
 		'rxjs/Observable',
 		'rxjs/Subject',
 		'rxjs/Observer',

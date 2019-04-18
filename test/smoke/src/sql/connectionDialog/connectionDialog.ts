@@ -9,7 +9,7 @@ import { TestServerProfile, AuthenticationType } from '../testConfig';
 
 const CONNECTION_DIALOG_TITLE = 'Connection';
 const CONNECTION_DIALOG_SELECTOR: string = '.modal-dialog .modal-content .modal-body .connection-dialog';
-const CONNECTION_DETAIL_CONTROL_SELECTOR: string = '.connection-type .connection-table .connection-input';
+const CONNECTION_DETAIL_CONTROL_SELECTOR: string = '.connection-provider-info .connection-table .connection-input';
 
 const SERVER_INPUT_ARIA_LABEL = 'Server';
 const USERNAME_INPUT_ARIA_LABEL = 'User name';
@@ -46,6 +46,6 @@ export class ConnectionDialog {
 	}
 
 	private async selectAuthType(authType: string) {
-		await this.code.waitAndClick(`.context-view.bottom.left .monaco-select-box-dropdown-container .select-box-dropdown-list-container .monaco-list .monaco-scrollable-element .monaco-list-rows div[aria-label="${authType}"][class*="monaco-list-row"]`);
+		await this.code.waitAndClick(`.context-view.bottom.left .monaco-select-box-dropdown-container .select-box-dropdown-list-container .monaco-list .monaco-scrollable-element .monaco-list-rows .monaco-list-row div[aria-label="${authType}"][class*="option-text"]`);
 	}
 }

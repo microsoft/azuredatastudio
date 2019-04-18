@@ -12,7 +12,7 @@ import { NgModuleRef } from '@angular/core';
 import { IModalDialogStyles } from 'sql/workbench/browser/modal/modal';
 import { DialogTab } from 'sql/platform/dialog/dialogTypes';
 import { TabbedPanel, IPanelTab, IPanelView } from 'sql/base/browser/ui/panel/panel';
-import { bootstrapAngular } from 'sql/services/bootstrap/bootstrapService';
+import { bootstrapAngular } from 'sql/platform/bootstrap/node/bootstrapService';
 import { DialogModule } from 'sql/platform/dialog/dialog.module';
 import { DialogComponentParams, LayoutRequestParams } from 'sql/platform/dialog/dialogContainer.component';
 

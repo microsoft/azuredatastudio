@@ -20,7 +20,6 @@ import { ICellModelOptions, IModelFactory, FutureInternal, CellExecutionState } 
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
-import { MssqlProviderId } from 'sql/common/constants';
 import { Schemas } from 'vs/base/common/network';
 let modelId = 0;
 
@@ -390,8 +389,8 @@ export class CellModel implements ICellModel {
 						let endpoint = this.getKnoxEndpoint(model.activeConnection);
 						let host = endpoint && endpoint.ipAddress ? endpoint.ipAddress : model.activeConnection.serverName;
 						let html = result.data['text/html'];
-						html =this.rewriteUrlUsingRegex(/(https?:\/\/mssql-master.*\/proxy)(.*)/g, html, host);
-						html =this.rewriteUrlUsingRegex(/(https?:\/\/master.*master-svc.*\/proxy)(.*)/g, html, host);
+						html = this.rewriteUrlUsingRegex(/(https?:\/\/mssql-master.*\/proxy)(.*)/g, html, host);
+						html = this.rewriteUrlUsingRegex(/(https?:\/\/master.*master-svc.*\/proxy)(.*)/g, html, host);
 						(<nb.IDisplayResult>output).data['text/html'] = html;
 					}
 				}
@@ -485,7 +484,7 @@ export class CellModel implements ICellModel {
 	// TODO: this will be refactored out into the notebooks extension as a contribution point
 	private getKnoxEndpoint(activeConnection: IConnectionProfile): notebookUtils.IEndpoint {
 		let endpoint;
-		if (this._connectionManagementService && activeConnection && activeConnection.providerName === MssqlProviderId) {
+		if (this._connectionManagementService && activeConnection && activeConnection.providerName === 'mssql') {
 			let serverInfo: ServerInfo = this._connectionManagementService.getServerInfo(activeConnection.id);
 			if (serverInfo && serverInfo.options && serverInfo.options['clusterEndpoints']) {
 				let endpoints: notebookUtils.IEndpoint[] = serverInfo.options['clusterEndpoints'];

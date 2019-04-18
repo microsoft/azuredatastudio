@@ -43,7 +43,7 @@ import { ILabelService } from 'vs/platform/label/common/label';
 import { dirname } from 'vs/base/common/resources';
 
 import { ITreeItem, ITreeView } from 'sql/workbench/common/views';
-import { IOEShimService } from 'sql/parts/objectExplorer/common/objectExplorerViewTreeShim';
+import { IOEShimService } from 'sql/workbench/parts/objectExplorer/common/objectExplorerViewTreeShim';
 import { equalsIgnoreCase } from 'vs/base/common/strings';
 import { NodeContextKey } from 'sql/workbench/parts/dataExplorer/common/nodeContext';
 

@@ -15,8 +15,9 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
+import * as DOM from 'vs/base/browser/dom';
 
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 import { CellView } from 'sql/workbench/parts/notebook/cellViews/interfaces';
 import { ICellModel } from 'sql/workbench/parts/notebook/models/modelInterfaces';
 import { ISanitizer, defaultSanitizer } from 'sql/workbench/parts/notebook/outputs/sanitizer';
@@ -24,6 +25,7 @@ import { NotebookModel } from 'sql/workbench/parts/notebook/models/notebookModel
 import { CellToggleMoreActions } from 'sql/workbench/parts/notebook/cellToggleMoreActions';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
+const USER_SELECT_CLASS ='actionselect';
 
 @Component({
 	selector: TEXT_SELECTOR,
@@ -112,6 +114,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			if (propName === 'activeCellId') {
 				let changedProp = changes[propName];
 				this._activeCellId = changedProp.currentValue;
+				this.toggleUserSelect(this.isActive());
 				// If the activeCellId is undefined (i.e. in an active cell update), don't unnecessarily set editMode to false;
 				// it will be set to true in a subsequent call to toggleEditMode()
 				if (changedProp.previousValue !== undefined) {
@@ -199,6 +202,17 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		}
 		else {
 			this.toggleMoreActionsButton(false);
+		}
+	}
+
+	private toggleUserSelect(userSelect: boolean): void {
+		if (!this.output) {
+			return;
+		}
+		if (userSelect) {
+			DOM.addClass(this.output.nativeElement, USER_SELECT_CLASS);
+		} else {
+			DOM.removeClass(this.output.nativeElement, USER_SELECT_CLASS);
 		}
 	}
 

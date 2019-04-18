@@ -26,7 +26,8 @@ const mockAccount: azdata.Account = {
 	displayInfo: {
 		displayName: 'mock_account@test.com',
 		accountType: 'Microsoft',
-		contextualDisplayName: 'test'
+		contextualDisplayName: 'test',
+		userId: 'test@email.com'
 	},
 	properties: undefined,
 	isStale: false

@@ -58,6 +58,7 @@ export default class TableComponent extends ComponentBase implements IComponent,
 						field: col.value,
 						width: col.width,
 						cssClass: col.cssClass,
+						headerCssClass: col.headerCssClass,
 						toolTip: col.toolTip
 					};
 				} else {

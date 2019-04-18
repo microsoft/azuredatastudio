@@ -5,7 +5,7 @@
 
 'use strict';
 import { OptionsDialog } from 'sql/workbench/browser/modal/optionsDialog';
-import { AdvancedPropertiesController } from 'sql/parts/connection/connectionDialog/advancedPropertiesController';
+import { AdvancedPropertiesController } from 'sql/workbench/parts/connection/browser/advancedPropertiesController';
 import { ContextKeyServiceStub } from 'sqltest/stubs/contextKeyServiceStub';
 import * as azdata from 'azdata';
 import * as TypeMoq from 'typemoq';

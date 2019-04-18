@@ -38,16 +38,17 @@
 	"commit": "9ca6200018fc206d67a47229f991901a8a453781",
 	"date": "2017-12-15T12:00:00.000Z",
 	"recommendedExtensions": [
+		"Microsoft.admin-pack",
 		"Microsoft.admin-tool-ext-win",
 		"Microsoft.agent",
+		"Microsoft.azuredatastudio-postgresql",
+		"Microsoft.dacpac",
 		"Microsoft.import",
+		"Microsoft.powershell",
 		"Microsoft.profiler",
-		"Microsoft.server-report",
 		"Microsoft.sql-vnext",
-		"Microsoft.whoisactive",
 		"Redgate.sql-search",
-		"IDERA.sqldm-performance-insights",
-		"Microsoft.admin-pack"
+		"IDERA.sqldm-performance-insights"
 	],
 	"extensionsGallery": {
 		"serviceUrl": "https://sqlopsextensions.blob.core.windows.net/marketplace/v1/extensionsGallery.json"

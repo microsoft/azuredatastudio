@@ -13,10 +13,10 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
 import { DashboardInput } from './dashboardInput';
 import { DashboardModule } from './dashboard.module';
-import { bootstrapAngular } from 'sql/services/bootstrap/bootstrapService';
-import { IDashboardComponentParams } from 'sql/services/bootstrap/bootstrapParams';
+import { bootstrapAngular } from 'sql/platform/bootstrap/node/bootstrapService';
+import { IDashboardComponentParams } from 'sql/platform/bootstrap/node/bootstrapParams';
 import { DASHBOARD_SELECTOR } from 'sql/workbench/parts/dashboard/dashboard.component';
-import { ConnectionContextKey } from 'sql/parts/connection/common/connectionContextKey';
+import { ConnectionContextKey } from 'sql/workbench/parts/connection/common/connectionContextKey';
 import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
