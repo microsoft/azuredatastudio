@@ -11,7 +11,7 @@ export default class ProgressIndicator {
 
 	constructor() {
 		this._statusBarItem = window.createStatusBarItem(StatusBarAlignment.Left);
-	   }
+	}
 
 	private _tasks: string[] = [];
 	public beginTask(task: string): void {

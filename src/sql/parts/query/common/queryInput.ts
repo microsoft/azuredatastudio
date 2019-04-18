@@ -173,7 +173,7 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 			let profile = this._connectionManagementService.getConnectionProfile(this.uri);
 			let title = '';
 			if (this._description && this._description !== '') {
-			    title = this._description + ' ';
+				title = this._description + ' ';
 			}
 			if (profile) {
 				if (profile.userName) {
@@ -184,7 +184,7 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 			} else {
 				title += localize('disconnected', 'disconnected');
 			}
-			return this._sql.getName() + (longForm ?  (' - ' + title) : ` - ${trimTitle(title)}`);
+			return this._sql.getName() + (longForm ? (' - ' + title) : ` - ${trimTitle(title)}`);
 		} else {
 			return this._sql.getName();
 		}

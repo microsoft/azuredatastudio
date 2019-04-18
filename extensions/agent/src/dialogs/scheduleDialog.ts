@@ -69,7 +69,7 @@ export class ScheduleDialog {
 				let data: any[][] = [];
 				for (let i = 0; i < this.model.schedules.length; ++i) {
 					let schedule = this.model.schedules[i];
-					data[i] = [ schedule.name ];
+					data[i] = [schedule.name];
 				}
 				this.schedulesTable.data = data;
 			}

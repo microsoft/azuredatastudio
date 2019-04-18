@@ -660,7 +660,7 @@ export class EditorGroup extends Disposable {
 				// {{SQL CARBON EDIT}}
 				// don't serialize unmodified unitited files
 				if (e instanceof UntitledEditorInput && !e.isDirty()
-						&& !this.configurationService.getValue<boolean>('sql.promptToSaveGeneratedFiles')) {
+					&& !this.configurationService.getValue<boolean>('sql.promptToSaveGeneratedFiles')) {
 					return;
 				}
 				// {{SQL CARBON EDIT}} - End

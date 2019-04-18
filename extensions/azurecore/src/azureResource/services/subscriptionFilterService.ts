@@ -12,7 +12,7 @@ import { azureResource } from '../azure-resource';
 import { IAzureResourceSubscriptionFilterService, IAzureResourceCacheService } from '../interfaces';
 
 interface AzureResourceSelectedSubscriptionsCache {
-	selectedSubscriptions: { [accountId: string]: azureResource.AzureResourceSubscription[]};
+	selectedSubscriptions: { [accountId: string]: azureResource.AzureResourceSubscription[] };
 }
 
 export class AzureResourceSubscriptionFilterService implements IAzureResourceSubscriptionFilterService {
@@ -36,7 +36,7 @@ export class AzureResourceSubscriptionFilterService implements IAzureResourceSub
 	}
 
 	public async saveSelectedSubscriptions(account: Account, selectedSubscriptions: azureResource.AzureResourceSubscription[]): Promise<void> {
-		let selectedSubscriptionsCache: { [accountId: string]: azureResource.AzureResourceSubscription[]} = {};
+		let selectedSubscriptionsCache: { [accountId: string]: azureResource.AzureResourceSubscription[] } = {};
 
 		const cache = this._cacheService.get<AzureResourceSelectedSubscriptionsCache>(this._cacheKey);
 		if (cache) {

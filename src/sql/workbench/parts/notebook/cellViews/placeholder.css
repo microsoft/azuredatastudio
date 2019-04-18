@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
- placeholder-cell-component {
+placeholder-cell-component {
 	height: 50px;
 	width: 100%;
 	display: block;
@@ -12,7 +12,7 @@
 
 placeholder-cell-component .text {
 	display: flex;
-    align-items: center;
+	align-items: center;
 	justify-content: center;
 	height: 50px;
 	-webkit-margin-before: 0em;
