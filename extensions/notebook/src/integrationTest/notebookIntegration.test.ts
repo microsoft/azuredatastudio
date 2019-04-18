@@ -35,7 +35,7 @@ describe('Notebook Extension Python Installation', function () {
 		jupyterController = notebookExtension.exports.getJupyterController() as JupyterController;
 
 		console.log('Start Jupyter Installation');
-		await jupyterController.jupyterInstallation.startInstallProcess(false, pythonInstallDir);
+		await jupyterController.jupyterInstallation.startInstallProcess(false, { installPath: pythonInstallDir, existingPython: false });
 		installComplete = true;
 		console.log('Jupyter Installation is done');
 	});
