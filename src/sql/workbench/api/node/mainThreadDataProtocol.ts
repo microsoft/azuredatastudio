@@ -26,6 +26,7 @@ import { ISerializationService } from 'sql/platform/serialization/common/seriali
 import { IFileBrowserService } from 'sql/platform/fileBrowser/common/interfaces';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { IDacFxService } from 'sql/platform/dacfx/common/dacFxService';
+import { ISchemaCompareService } from 'sql/platform/schemaCompare/common/schemaCompareService';
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 
 /**
@@ -57,6 +58,7 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 		@ISerializationService private _serializationService: ISerializationService,
 		@IFileBrowserService private _fileBrowserService: IFileBrowserService,
 		@IDacFxService private _dacFxService: IDacFxService,
+		@ISchemaCompareService private _schemaCompareService: ISchemaCompareService,
 	) {
 		if (extHostContext) {
 			this._proxy = extHostContext.getProxy(SqlExtHostContext.ExtHostDataProtocol);
@@ -447,6 +449,20 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			},
 			generateDeployPlan(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.GenerateDeployPlanResult> {
 				return self._proxy.$generateDeployPlan(handle, packageFilePath, databaseName, ownerUri, taskExecutionMode);
+			}
+		});
+
+		return undefined;
+	}
+
+	public $registerSchemaCompareServicesProvider(providerId: string, handle: number): Promise<any> {
+		const self = this;
+		this._schemaCompareService.registerProvider(providerId, <azdata.SchemaCompareServicesProvider>{
+			schemaCompare(sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.SchemaCompareResult> {
+				return self._proxy.$schemaCompare(handle, sourceEndpointInfo, targetEndpointInfo, taskExecutionMode);
+			},
+			schemaCompareGenerateScript(operationId: string, targetDatabaseName: string, scriptFilePath: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
+				return self._proxy.$schemaCompareGenerateScript(handle, operationId, targetDatabaseName, scriptFilePath, taskExecutionMode);
 			}
 		});
 

@@ -434,3 +434,26 @@ export namespace RemoveServerGroupRequest {
 	export const type = new RequestType<RemoveServerGroupParams, boolean, void, void>('cms/removeCmsServerGroup');
 }
 // ------------------------------- <CMS> ----------------------------------------
+
+// ------------------------------- <Schema Compare> -----------------------------
+export interface SchemaCompareParams {
+	sourceEndpointInfo: azdata.SchemaCompareEndpointInfo;
+	targetEndpointInfo: azdata.SchemaCompareEndpointInfo;
+	taskExecutionMode: TaskExecutionMode;
+}
+
+ export interface SchemaCompareGenerateScriptParams {
+	operationId: string;
+	targetDatabaseName: string;
+	scriptFilePath: string;
+	taskExecutionMode: TaskExecutionMode;
+}
+
+export namespace SchemaCompareRequest {
+	export const type = new RequestType<SchemaCompareParams, azdata.SchemaCompareResult, void, void>('schemaCompare/compare');
+}
+
+ export namespace SchemaCompareGenerateScriptRequest {
+	export const type = new RequestType<SchemaCompareGenerateScriptParams, azdata.ResultStatus, void, void>('schemaCompare/generateScript');
+}
+// ------------------------------- <Schema Compare> -----------------------------

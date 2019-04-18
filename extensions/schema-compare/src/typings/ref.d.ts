@@ -3,17 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-.center-align
-{
-	text-align: center;
-}
-
-.align-with-header
-{
-	padding-left:3px !important;
-}
-
-.no-borders
-{
-	border: none !important
-}
+/// <reference path='../../../../src/vs/vscode.d.ts'/>
+/// <reference path='../../../../src/sql/azdata.d.ts'/>
+/// <reference path='../../../../src/sql/azdata.proposed.d.ts'/>
+/// <reference types='@types/node'/>
