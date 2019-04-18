@@ -52,7 +52,7 @@ const nodeModules = [
 	'rxjs/Observable',
 	'rxjs/Subject',
 	'rxjs/Observer',
-	'ng2-charts/ng2-charts']
+	'ng2-charts']
 	.concat(Object.keys(product.dependencies || {}))
 	.concat(_.uniq(productionDependencies.map(d => d.name)))
 	.concat(baseModules);
@@ -75,9 +75,10 @@ const vscodeResources = [
 	'out-build/bootstrap-window.js',
 	'out-build/paths.js',
 	'out-build/vs/**/*.{svg,png,cur,html}',
+	'!out-build/vs/code/browser/**/*.html',
 	'out-build/vs/base/common/performance.js',
 	'out-build/vs/base/node/languagePacks.js',
-	'out-build/vs/base/node/{stdForkStart.js,terminateProcess.sh,cpuUsage.sh}',
+	'out-build/vs/base/node/{stdForkStart.js,terminateProcess.sh,cpuUsage.sh,ps.sh}',
 	'out-build/vs/base/browser/ui/octiconLabel/octicons/**',
 	'out-build/vs/workbench/browser/media/*-theme.css',
 	'out-build/vs/workbench/contrib/debug/**/*.json',
@@ -89,8 +90,6 @@ const vscodeResources = [
 	'out-build/vs/workbench/contrib/welcome/walkThrough/**/*.md',
 	'out-build/vs/workbench/services/files/**/*.exe',
 	'out-build/vs/workbench/services/files/**/*.md',
-	'out-build/vs/workbench/services/files2/**/*.exe',
-	'out-build/vs/workbench/services/files2/**/*.md',
 	'out-build/vs/code/electron-browser/workbench/**',
 	'out-build/vs/code/electron-browser/sharedProcess/sharedProcess.js',
 	'out-build/vs/code/electron-browser/issue/issueReporter.js',
@@ -106,10 +105,8 @@ const vscodeResources = [
 	'out-build/sql/workbench/parts/dashboard/**/*.html',
 	'out-build/sql/parts/disasterRecovery/**/*.html',
 	'out-build/sql/parts/common/modal/media/**',
-	'out-build/sql/parts/grid/load/lib/**',
-	'out-build/sql/parts/grid/load/loadJquery.js',
-	'out-build/sql/parts/grid/media/**',
-	'out-build/sql/parts/grid/views/**/*.html',
+	'out-build/sql/workbench/parts/grid/media/**',
+	'out-build/sql/workbench/parts/grid/views/**/*.html',
 	'out-build/sql/parts/tasks/**/*.html',
 	'out-build/sql/parts/taskHistory/viewlet/media/**',
 	'out-build/sql/parts/jobManagement/common/media/*.svg',
@@ -431,6 +428,7 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 				.pipe(replace('@@VERSION@@', version))
 				.pipe(replace('@@COMMIT@@', commit))
 				.pipe(replace('@@APPNAME@@', product.applicationName))
+				.pipe(replace('@@QUALITY@@', quality))
 				.pipe(rename(function (f) { f.basename = product.applicationName; f.extname = ''; })));
 
 			result = es.merge(result, gulp.src('resources/win32/VisualElementsManifest.xml', { base: 'resources/win32' })

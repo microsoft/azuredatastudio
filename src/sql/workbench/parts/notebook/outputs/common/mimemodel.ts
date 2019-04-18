@@ -41,7 +41,7 @@ export class MimeModel implements IRenderMime.IMimeModel {
 	}
 
 	get themeService(): IThemeService {
-	 	return this._themeService;
+		return this._themeService;
 	}
 
 	/**

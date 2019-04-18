@@ -29,7 +29,6 @@ export class RemoteUserConfiguration extends Disposable {
 	private readonly _cachedConfiguration: CachedUserConfiguration;
 	private readonly _configurationFileService: IConfigurationFileService;
 	private _userConfiguration: UserConfiguration | CachedUserConfiguration;
-	private _userConfigurationDisposable: IDisposable = Disposable.None;
 
 	private readonly _onDidChangeConfiguration: Emitter<ConfigurationModel> = this._register(new Emitter<ConfigurationModel>());
 	public readonly onDidChangeConfiguration: Event<ConfigurationModel> = this._onDidChangeConfiguration.event;
@@ -43,13 +42,14 @@ export class RemoteUserConfiguration extends Disposable {
 		super();
 		this._configurationFileService = configurationFileService;
 		this._userConfiguration = this._cachedConfiguration = new CachedUserConfiguration(remoteAuthority, configurationCache);
-		remoteAgentService.getEnvironment().then(environment => {
+		remoteAgentService.getEnvironment().then(async environment => {
 			if (environment) {
+				const userConfiguration = this._register(new UserConfiguration(environment.settingsPath, MACHINE_SCOPES, this._configurationFileService));
+				this._register(userConfiguration.onDidChangeConfiguration(configurationModel => this.onDidUserConfigurationChange(configurationModel)));
+				const configurationModel = await userConfiguration.initialize();
 				this._userConfiguration.dispose();
-				this._userConfigurationDisposable.dispose();
-				this._userConfiguration = this._register(new UserConfiguration(environment.settingsPath, MACHINE_SCOPES, this._configurationFileService));
-				this._userConfigurationDisposable = this._register(this._userConfiguration.onDidChangeConfiguration(configurationModel => this.onDidUserConfigurationChange(configurationModel)));
-				this._userConfiguration.initialize().then(configurationModel => this.onDidUserConfigurationChange(configurationModel));
+				this._userConfiguration = userConfiguration;
+				this.onDidUserConfigurationChange(configurationModel);
 			}
 		});
 	}
@@ -133,7 +133,7 @@ export class UserConfiguration extends Disposable {
 
 	async reload(): Promise<ConfigurationModel> {
 		try {
-			const content = await this.configurationFileService.resolveContent(this.configurationResource);
+			const content = await this.configurationFileService.readFile(this.configurationResource);
 			this.parser.parseContent(content);
 			return this.parser.configurationModel;
 		} catch (e) {
@@ -379,7 +379,7 @@ class FileServiceBasedWorkspaceConfiguration extends Disposable implements IWork
 		}
 		let contents = '';
 		try {
-			contents = await this.configurationFileService.resolveContent(this._workspaceIdentifier.configPath);
+			contents = await this.configurationFileService.readFile(this._workspaceIdentifier.configPath);
 		} catch (error) {
 			const exists = await this.configurationFileService.exists(this._workspaceIdentifier.configPath);
 			if (exists) {
@@ -547,7 +547,7 @@ class FileServiceBasedFolderConfiguration extends Disposable implements IFolderC
 	async loadConfiguration(): Promise<ConfigurationModel> {
 		const configurationContents = await Promise.all(this.configurationResources.map(async resource => {
 			try {
-				return await this.configurationFileService.resolveContent(resource);
+				return await this.configurationFileService.readFile(resource);
 			} catch (error) {
 				const exists = await this.configurationFileService.exists(resource);
 				if (exists) {

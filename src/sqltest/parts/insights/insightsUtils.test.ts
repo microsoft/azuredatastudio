@@ -12,7 +12,7 @@ import * as path from 'vs/base/common/path';
 import * as pfs from 'vs/base/node/pfs';
 
 import { getRandomTestPath } from 'vs/base/test/node/testUtils';
-import { Workspace, toWorkspaceFolders } from 'vs/platform/workspace/common/workspace';
+import { Workspace, toWorkspaceFolder } from 'vs/platform/workspace/common/workspace';
 import { ConfigurationResolverService } from 'vs/workbench/services/configurationResolver/browser/configurationResolverService';
 import { TestContextService } from 'vs/workbench/test/workbenchTestServices';
 import { IExtensionHostDebugParams, IDebugParams, ParsedArgs } from 'vs/platform/environment/common/environment';
@@ -113,7 +113,7 @@ suite('Insights Utils tests', function () {
 		const contextService = new TestContextService(
 			new Workspace(
 				'TestWorkspace',
-				toWorkspaceFolders([{ path: queryFileDir }])
+				[toWorkspaceFolder(URI.file(queryFileDir))]
 			));
 		const configurationResolverService = new ConfigurationResolverService(
 			undefined,
@@ -133,8 +133,8 @@ suite('Insights Utils tests', function () {
 		const contextService = new TestContextService(
 			new Workspace(
 				'TestWorkspace',
-				toWorkspaceFolders([{ path: os.tmpdir() }])
-			));
+				[toWorkspaceFolder(URI.file(os.tmpdir()))])
+		);
 		const configurationResolverService = new ConfigurationResolverService(
 			undefined,
 			new TestEnvironmentService({}),
@@ -194,7 +194,7 @@ suite('Insights Utils tests', function () {
 
 	test('resolveQueryFilePath resolves path correctly with env var and non-empty workspace', async () => {
 		const contextService = new TestContextService(
-			new Workspace('TestWorkspace', toWorkspaceFolders([{ path: os.tmpdir() }])));
+			new Workspace('TestWorkspace', [toWorkspaceFolder(URI.file(os.tmpdir()))]));
 
 		// Create mock window service with env variable containing test folder for resolution
 		const configurationResolverService = new ConfigurationResolverService(

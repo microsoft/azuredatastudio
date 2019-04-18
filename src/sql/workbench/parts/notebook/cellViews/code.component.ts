@@ -7,7 +7,7 @@ import 'vs/css!./code';
 import { OnInit, Component, Input, Inject, ElementRef, ViewChild, Output, EventEmitter, OnChanges, SimpleChange, forwardRef, ChangeDetectorRef } from '@angular/core';
 
 import { AngularDisposable } from 'sql/base/node/lifecycle';
-import { QueryTextEditor } from 'sql/parts/modelComponents/queryTextEditor';
+import { QueryTextEditor } from 'sql/workbench/electron-browser/modelComponents/queryTextEditor';
 import { CellToggleMoreActions } from 'sql/workbench/parts/notebook/cellToggleMoreActions';
 import { ICellModel, notebookConstants } from 'sql/workbench/parts/notebook/models/modelInterfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';

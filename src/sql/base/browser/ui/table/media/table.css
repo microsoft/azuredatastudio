@@ -99,7 +99,7 @@
 	width: 200px;
 }
 
-label {
+.monaco-table label {
 	display: block;
 	margin-bottom: 5px;
 }
@@ -155,4 +155,9 @@ label {
 
 .hc-black .slick-header-menu > input.input {
 	color: #000000;
+}
+
+.vs-dark .slick-header-menu,
+.hc-black .slick-header-menu {
+	color: #FFFFFF;
 }

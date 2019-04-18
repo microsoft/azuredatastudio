@@ -254,7 +254,7 @@ class Extension implements IExtension {
 		}
 
 		if (this.local && this.local.readmeUrl) {
-			return this.fileService.resolveContent(this.local.readmeUrl, { encoding: 'utf8' }).then(content => content.value);
+			return this.fileService.readFile(this.local.readmeUrl).then(content => content.value.toString());
 		}
 
 		if (this.type === ExtensionType.System) {
@@ -297,7 +297,7 @@ ${this.description}
 			return Promise.reject(new Error('not available'));
 		}
 
-		return this.fileService.resolveContent(changelogUrl, { encoding: 'utf8' }).then(content => content.value);
+		return this.fileService.readFile(changelogUrl).then(content => content.value.toString());
 	}
 
 	get dependencies(): string[] {
@@ -700,7 +700,7 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 	}
 
 	private fromGallery(gallery: IGalleryExtension, maliciousExtensionSet: Set<string>): IExtension {
-		Promise.all([this.localExtensions.syncLocalWithGalleryExtension(gallery, maliciousExtensionSet), this.remoteExtensions ? this.localExtensions.syncLocalWithGalleryExtension(gallery, maliciousExtensionSet) : Promise.resolve(false)])
+		Promise.all([this.localExtensions.syncLocalWithGalleryExtension(gallery, maliciousExtensionSet), this.remoteExtensions ? this.remoteExtensions.syncLocalWithGalleryExtension(gallery, maliciousExtensionSet) : Promise.resolve(false)])
 			.then(result => {
 				if (result[0] || result[1]) {
 					this.eventuallyAutoUpdateExtensions();

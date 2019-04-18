@@ -5,11 +5,11 @@
 
 import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
-import { EditDataInput } from 'sql/parts/editData/common/editDataInput';
+import { EditDataInput } from 'sql/workbench/parts/editData/common/editDataInput';
 import { IConnectableInput, IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IQueryEditorService, IQueryEditorOptions } from 'sql/workbench/services/queryEditor/common/queryEditorService';
-import { QueryPlanInput } from 'sql/parts/queryPlan/queryPlanInput';
-import { sqlModeId, untitledFilePrefix, getSupportedInputResource } from 'sql/parts/common/customInputConverter';
+import { QueryPlanInput } from 'sql/workbench/parts/queryPlan/common/queryPlanInput';
+import { sqlModeId, untitledFilePrefix, getSupportedInputResource } from 'sql/workbench/common/customInputConverter';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 
 import { IMode } from 'vs/editor/common/modes';
@@ -24,7 +24,7 @@ import paths = require('vs/base/common/extpath');
 import { isLinux } from 'vs/base/common/platform';
 import { Schemas } from 'vs/base/common/network';
 import { INotificationService } from 'vs/platform/notification/common/notification';
-import { EditDataResultsInput } from 'sql/parts/editData/common/editDataResultsInput';
+import { EditDataResultsInput } from 'sql/workbench/parts/editData/common/editDataResultsInput';
 import { IEditorInput, IEditor } from 'vs/workbench/common/editor';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { ILanguageSelection } from 'vs/editor/common/services/modeService';

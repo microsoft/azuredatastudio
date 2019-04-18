@@ -11,7 +11,7 @@ import { MainThreadBackgroundTaskManagement, TaskStatus } from 'sql/workbench/ap
 import { ExtHostBackgroundTaskManagementShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { ITaskService } from 'sql/platform/taskHistory/common/taskService';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
-import { TaskNode } from 'sql/parts/taskHistory/common/taskNode';
+import { TaskNode } from 'sql/workbench/parts/taskHistory/common/taskNode';
 import { Emitter } from 'vs/base/common/event';
 
 

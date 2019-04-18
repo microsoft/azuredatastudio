@@ -90,7 +90,13 @@ const indentationFilter = [
 	'!**/Dockerfile.*',
 	'!**/*.Dockerfile',
 	'!**/*.dockerfile',
-	'!extensions/markdown-language-features/media/*.js'
+	'!extensions/markdown-language-features/media/*.js',
+	// {{SQL CARBON EDIT}}
+	'!**/*.xlf',
+	'!**/*.docx',
+	'!**/*.sql',
+	'!extensions/mssql/sqltoolsservice/**',
+	'!extensions/import/flatfileimportservice/**',
 ];
 
 const copyrightFilter = [
@@ -123,8 +129,33 @@ const copyrightFilter = [
 	// {{SQL CARBON EDIT}}
 	'!extensions/notebook/src/intellisense/text.ts',
 	'!extensions/mssql/src/objectExplorerNodeProvider/webhdfs.ts',
+	'!src/sql/workbench/parts/notebook/outputs/tableRenderers.ts',
+	'!src/sql/workbench/parts/notebook/outputs/common/url.ts',
+	'!src/sql/workbench/parts/notebook/outputs/common/renderMimeInterfaces.ts',
+	'!src/sql/workbench/parts/notebook/outputs/common/outputProcessor.ts',
+	'!src/sql/workbench/parts/notebook/outputs/common/mimemodel.ts',
+	'!src/sql/workbench/parts/notebook/cellViews/media/output.css',
+	'!src/sql/base/browser/ui/table/plugins/rowSelectionModel.plugin.ts',
+	'!src/sql/base/browser/ui/table/plugins/rowDetailView.ts',
+	'!src/sql/base/browser/ui/table/plugins/headerFilter.plugin.ts',
 	'!src/sql/base/browser/ui/table/plugins/checkboxSelectColumn.plugin.ts',
-	'!src/sql/base/browser/ui/table/plugins/headerFilter.plugin.ts'
+	'!src/sql/base/browser/ui/table/plugins/cellSelectionModel.plugin.ts',
+	'!src/sql/base/browser/ui/table/plugins/autoSizeColumns.plugin.ts',
+	'!src/sql/workbench/parts/notebook/outputs/sanitizer.ts',
+	'!src/sql/workbench/parts/notebook/outputs/renderers.ts',
+	'!src/sql/workbench/parts/notebook/outputs/registry.ts',
+	'!src/sql/workbench/parts/notebook/outputs/factories.ts',
+	'!src/sql/workbench/parts/notebook/models/nbformat.ts',
+	'!extensions/markdown-language-features/media/tomorrow.css',
+	'!src/sql/workbench/electron-browser/modelComponents/media/highlight.css',
+	'!src/sql/parts/modelComponents/highlight.css',
+	'!extensions/mssql/sqltoolsservice/**',
+	'!extensions/import/flatfileimportservice/**',
+	'!extensions/notebook/src/prompts/**',
+	'!extensions/mssql/src/prompts/**',
+	'!extensions/notebook/resources/jupyter_config/**',
+	'!**/*.gif',
+	'!**/*.xlf'
 ];
 
 const eslintFilter = [

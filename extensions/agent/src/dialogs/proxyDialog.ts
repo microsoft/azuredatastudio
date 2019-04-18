@@ -84,7 +84,7 @@ export class ProxyDialog extends AgentDialog<ProxyData>  {
 		this.generalTab.registerContent(async view => {
 
 			this.proxyNameTextBox = view.modelBuilder.inputBox()
-				.withProperties({width: 420})
+				.withProperties({ width: 420 })
 				.component();
 
 			this.credentialNameDropDown = view.modelBuilder.dropDown()

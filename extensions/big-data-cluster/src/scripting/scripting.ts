@@ -11,16 +11,16 @@ import mkdirp = require('mkdirp');
 import { Kubectl, baseKubectlPath } from '../kubectl/kubectl';
 import { KubectlContext } from '../kubectl/kubectlUtils';
 
- export interface Scriptable {
-		getScriptProperties(): Promise<ScriptingDictionary<string>>;
-		getTargetKubectlContext() : KubectlContext;
- }
+export interface Scriptable {
+	getScriptProperties(): Promise<ScriptingDictionary<string>>;
+	getTargetKubectlContext(): KubectlContext;
+}
 
- export interface ScriptingDictionary<V> {
+export interface ScriptingDictionary<V> {
 	[name: string]: V;
 }
 
-const deployFilePrefix : string = 'mssql-bdc-deploy';
+const deployFilePrefix: string = 'mssql-bdc-deploy';
 export class ScriptGenerator {
 
 	private _shell: Shell;
@@ -33,7 +33,7 @@ export class ScriptGenerator {
 		this._kubectlPath = baseKubectlPath(this._kubectl.getContext());
 	}
 
-	public async generateDeploymentScript(scriptable: Scriptable) : Promise<void> {
+	public async generateDeploymentScript(scriptable: Scriptable): Promise<void> {
 		let targetClusterName = scriptable.getTargetKubectlContext().clusterName;
 		let targetContextName = scriptable.getTargetKubectlContext().contextName;
 
@@ -67,7 +67,7 @@ export class ScriptGenerator {
 }
 
 const handleError = (err: NodeJS.ErrnoException) => {
-    if (err) {
-        vscode.window.showErrorMessage(err.message);
-    }
+	if (err) {
+		vscode.window.showErrorMessage(err.message);
+	}
 };

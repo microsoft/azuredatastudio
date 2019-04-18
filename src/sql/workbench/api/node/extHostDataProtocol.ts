@@ -167,6 +167,12 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return rt;
 	}
 
+	$registerSchemaCompareServiceProvider(provider: azdata.SchemaCompareServicesProvider): vscode.Disposable {
+		let rt = this.registerProvider(provider, DataProviderType.SchemaCompareServicesProvider);
+		this._proxy.$registerSchemaCompareServicesProvider(provider.providerId, provider.handle);
+		return rt;
+	}
+
 	// Capabilities Discovery handlers
 	$getServerCapabilities(handle: number, client: azdata.DataProtocolClientCapabilities): Thenable<azdata.DataProtocolServerCapabilities> {
 		return this._resolveProvider<azdata.CapabilitiesProvider>(handle).getServerCapabilities(client);

@@ -15,6 +15,7 @@ import { IWindowsService, IOpenSettings, IURIToOpen } from 'vs/platform/windows/
 import { IDownloadService } from 'vs/platform/download/common/download';
 import { IWorkspacesService, hasWorkspaceFileExtension } from 'vs/platform/workspaces/common/workspaces';
 import { IRecent } from 'vs/platform/history/common/history';
+import { Schemas } from 'vs/base/common/network';
 
 // -----------------------------------------------------------------
 // The following commands are registered on both sides separately.
@@ -47,11 +48,11 @@ export class OpenFolderAPICommand {
 			arg = { forceNewWindow: arg };
 		}
 		if (!uri) {
-			return executor.executeCommand('_files.pickFolderAndOpen', arg.forceNewWindow);
+			return executor.executeCommand('_files.pickFolderAndOpen', { forceNewWindow: arg.forceNewWindow });
 		}
 		const options: IOpenSettings = { forceNewWindow: arg.forceNewWindow, noRecentEntry: arg.noRecentEntry };
 		uri = URI.revive(uri);
-		const uriToOpen: IURIToOpen = hasWorkspaceFileExtension(uri.path) ? { workspaceUri: uri } : { folderUri: uri };
+		const uriToOpen: IURIToOpen = (hasWorkspaceFileExtension(uri.path) || uri.scheme === Schemas.untitled) ? { workspaceUri: uri } : { folderUri: uri };
 		return executor.executeCommand('_files.windowOpen', [uriToOpen], options);
 	}
 }
@@ -143,6 +144,13 @@ export class RemoveFromRecentlyOpenedAPICommand {
 	}
 }
 CommandsRegistry.registerCommand(RemoveFromRecentlyOpenedAPICommand.ID, adjustHandler(RemoveFromRecentlyOpenedAPICommand.execute));
+
+export class OpenIssueReporter {
+	public static ID = 'vscode.openIssueReporter';
+	public static execute(executor: ICommandsExecutor, extensionId: string): Promise<void> {
+		return executor.executeCommand('workbench.action.openIssueReporter', [extensionId]);
+	}
+}
 
 interface RecentEntry {
 	uri: URI;
