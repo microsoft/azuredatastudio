@@ -41,25 +41,25 @@ import { DashboardModelViewContainer } from 'sql/workbench/parts/dashboard/conta
 import { DashboardErrorContainer } from 'sql/workbench/parts/dashboard/containers/dashboardErrorContainer.component';
 import { DashboardNavSection } from 'sql/workbench/parts/dashboard/containers/dashboardNavSection.component';
 import { WidgetContent } from 'sql/workbench/parts/dashboard/contents/widgetContent.component';
-import { ModelViewContent } from 'sql/parts/modelComponents/modelViewContent.component';
-import { ModelComponentWrapper } from 'sql/parts/modelComponents/modelComponentWrapper.component';
+import { ModelViewContent } from 'sql/workbench/electron-browser/modelComponents/modelViewContent.component';
+import { ModelComponentWrapper } from 'sql/workbench/electron-browser/modelComponents/modelComponentWrapper.component';
 import { WebviewContent } from 'sql/workbench/parts/dashboard/contents/webviewContent.component';
 import { BreadcrumbComponent } from 'sql/base/browser/ui/breadcrumb/breadcrumb.component';
 import { IBreadcrumbService } from 'sql/base/browser/ui/breadcrumb/interfaces';
 import { DashboardHomeContainer } from 'sql/workbench/parts/dashboard/containers/dashboardHomeContainer.component';
 import { ControlHostContent } from 'sql/workbench/parts/dashboard/contents/controlHostContent.component';
 import { DashboardControlHostContainer } from 'sql/workbench/parts/dashboard/containers/dashboardControlHostContainer.component';
-import { JobsViewComponent } from 'sql/parts/jobManagement/views/jobsView.component';
-import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
-import { AlertsViewComponent } from 'sql/parts/jobManagement/views/alertsView.component';
-import { JobHistoryComponent } from 'sql/parts/jobManagement/views/jobHistory.component';
-import { OperatorsViewComponent } from 'sql/parts/jobManagement/views/operatorsView.component';
-import { ProxiesViewComponent } from 'sql/parts/jobManagement/views/proxiesView.component';
+import { JobsViewComponent } from 'sql/workbench/parts/jobManagement/electron-browser/jobsView.component';
+import { AgentViewComponent } from 'sql/workbench/parts/jobManagement/electron-browser/agentView.component';
+import { AlertsViewComponent } from 'sql/workbench/parts/jobManagement/electron-browser/alertsView.component';
+import { JobHistoryComponent } from 'sql/workbench/parts/jobManagement/electron-browser/jobHistory.component';
+import { OperatorsViewComponent } from 'sql/workbench/parts/jobManagement/electron-browser/operatorsView.component';
+import { ProxiesViewComponent } from 'sql/workbench/parts/jobManagement/electron-browser/proxiesView.component';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox.component';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox.component';
 import { EditableDropDown } from 'sql/base/browser/ui/editableDropdown/editableDropdown.component';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox.component';
-import LoadingSpinner from 'sql/parts/modelComponents/loadingSpinner.component';
+import LoadingSpinner from 'sql/workbench/electron-browser/modelComponents/loadingSpinner.component';
 
 const baseComponents = [DashboardHomeContainer, DashboardComponent, DashboardWidgetWrapper, DashboardWebviewContainer,
 	DashboardWidgetContainer, DashboardGridContainer, DashboardErrorContainer, DashboardNavSection, ModelViewContent, WebviewContent, WidgetContent,
@@ -84,7 +84,7 @@ import { ExplorerWidget } from 'sql/workbench/parts/dashboard/widgets/explorer/e
 import { TasksWidget } from 'sql/workbench/parts/dashboard/widgets/tasks/tasksWidget.component';
 import { InsightsWidget } from 'sql/workbench/parts/dashboard/widgets/insights/insightsWidget.component';
 import { WebviewWidget } from 'sql/workbench/parts/dashboard/widgets/webview/webviewWidget.component';
-import { JobStepsViewComponent } from 'sql/parts/jobManagement/views/jobStepsView.component';
+import { JobStepsViewComponent } from 'sql/workbench/parts/jobManagement/electron-browser/jobStepsView.component';
 import { IInstantiationService, _util } from 'vs/platform/instantiation/common/instantiation';
 
 const widgetComponents = [
