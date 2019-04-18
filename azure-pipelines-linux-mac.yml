@@ -24,7 +24,7 @@ steps:
 
 - script: |
     yarn
-  displayName:  'Install'
+  displayName: 'Install'
 
 - script: |
     yarn gulp electron-x64
@@ -42,7 +42,7 @@ steps:
     yarn strict-null-check
   displayName: 'Run Strict Null Check'
 
--script: |
+- script: |
     yarn compile
   displayName: 'Compile'
 
