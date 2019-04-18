@@ -27,15 +27,15 @@ text-cell-component table {
 	margin-right: auto;
 	margin-bottom: 1em;
 	display: table-row;
- }
+}
 
- text-cell-component thead {
+text-cell-component thead {
 	vertical-align: bottom;
- }
+}
 
- text-cell-component td,
- text-cell-component th,
- text-cell-component tr {
+text-cell-component td,
+text-cell-component th,
+text-cell-component tr {
 	text-align: left;
 	vertical-align: middle;
 	padding: 0.5em 0.5em;
@@ -43,8 +43,8 @@ text-cell-component table {
 	white-space: normal;
 	max-width: none;
 	border: none;
- }
+}
 
- text-cell-component th {
+text-cell-component th {
 	font-weight: bold;
- }
+}
