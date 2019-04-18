@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import { Disposable } from 'vs/base/common/lifecycle';
 import { isString } from 'vs/base/common/types';
 
@@ -228,7 +226,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 		idNames.sort();
 
 		let idValues: string[] = [];
-		for (var index = 0; index < idNames.length; index++) {
+		for (let index = 0; index < idNames.length; index++) {
 			let value = this.options[idNames[index]];
 			value = value ? value : '';
 			idValues.push(`${idNames[index]}${ProviderConnectionInfo.nameValueSeparator}${value}`);

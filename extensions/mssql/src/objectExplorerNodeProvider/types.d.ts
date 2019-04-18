@@ -10,7 +10,6 @@ import * as azdata from 'azdata';
  * A tree node in the object explorer tree
  *
  * @export
- * @interface ITreeNode
  */
 export interface ITreeNode {
 	getNodeInfo(): azdata.NodeInfo;
@@ -22,7 +21,6 @@ export interface ITreeNode {
  * can be queried
  *
  * @export
- * @interface IFileNode
  * @extends {ITreeNode}
  */
 export interface IFileNode extends ITreeNode {

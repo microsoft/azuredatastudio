@@ -72,7 +72,7 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 
 	abstract setLayout(layout: any): void;
 
-	getHtml(): any{
+	getHtml(): any {
 		return this._el.nativeElement;
 	}
 

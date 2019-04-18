@@ -74,7 +74,7 @@ export class AccountPickerListRenderer implements IListRenderer<azdata.Account, 
 		if (account.displayInfo.userId && account.displayInfo.displayName) {
 			templateData.displayName.innerText = account.displayInfo.displayName + ' (' + account.displayInfo.userId + ')';
 		} else {
-			templateData.displayName.innerText = account.displayInfo.displayName ;
+			templateData.displayName.innerText = account.displayInfo.displayName;
 		}
 
 		if (account.isStale) {

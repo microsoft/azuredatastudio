@@ -5,28 +5,28 @@
  *--------------------------------------------------------------------------------------------*/
 -->
 <div class="jobhistory-heading-container">
- <h1 class="job-heading">Jobs | {{this._agentJobInfo?.name}} </h1>
- <div class="icon in-progress" *ngIf="showProgressWheel()"></div>
+	<h1 class="job-heading">Jobs | {{this._agentJobInfo?.name}} </h1>
+	<div class="icon in-progress" *ngIf="showProgressWheel()"></div>
 </div>
 
- <!-- Back -->
- <div class="all-jobs">
+<!-- Back -->
+<div class="all-jobs">
 	<div class="back-button-icon" (click)="goToJobs()"></div>All Jobs
- </div>
+</div>
 
 <!-- Actions -->
 <div #actionbarContainer class="agent-actionbar-container"></div>
 
 <!-- Overview  -->
- <div class="overview-container">
-   <div class="overview-tab" (click)='toggleCollapse()' tabindex="0">
-	 <input id="accordion" type="checkbox">
-	 <label for="accordion">
-		<div class="resultsViewCollapsible collapsed" (click)='toggleCollapse()'></div>
-		 Overview
-	</label>
-	 <div class="accordion-content">
-		<table align='left'>
+<div class="overview-container">
+	<div class="overview-tab" (click)='toggleCollapse()' tabindex="0">
+		<input id="accordion" type="checkbox">
+		<label for="accordion">
+			<div class="resultsViewCollapsible collapsed" (click)='toggleCollapse()'></div>
+			Overview
+		</label>
+		<div class="accordion-content">
+			<table align='left'>
 				<tr>
 					<td id='col1'>
 						Category:
@@ -69,9 +69,9 @@
 						{{this._agentJobInfo?.nextRun}}
 					</td>
 				</tr>
-		</table>
-	 </div>
-   </div>
+			</table>
+		</div>
+	</div>
 </div>
 
 <!-- Job History details -->

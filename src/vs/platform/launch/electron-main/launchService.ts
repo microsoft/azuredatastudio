@@ -247,8 +247,7 @@ export class LaunchService implements ILaunchService {
 
 		// {{SQL CARBON EDIT}}
 		// give the first used window a chance to process the other command line arguments
-		if (args['reuse-window'] && usedWindows.length > 0 && usedWindows[0])
-		{
+		if (args['reuse-window'] && usedWindows.length > 0 && usedWindows[0]) {
 			let window = usedWindows[0];
 			usedWindows[0].ready().then(() => window.send('ads:processCommandLine', args));
 		}

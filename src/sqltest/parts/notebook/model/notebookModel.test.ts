@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as should from 'should';
 import * as TypeMoq from 'typemoq';
 import { nb } from 'azdata';
@@ -14,7 +12,6 @@ import { TestNotificationService } from 'vs/platform/notification/test/common/te
 import { URI } from 'vs/base/common/uri';
 
 import { LocalContentManager } from 'sql/workbench/services/notebook/node/localContentManager';
-import * as testUtils from '../../../utils/testUtils';
 import { NotebookManagerStub } from '../common';
 import { NotebookModel } from 'sql/workbench/parts/notebook/models/notebookModel';
 import { ModelFactory } from 'sql/workbench/parts/notebook/models/modelFactory';
@@ -201,7 +198,7 @@ suite('notebook model', function (): void {
 	// 	should(sessionFired).be.false();
 	// });
 
-	test('Should not be in error state if client session initialization succeeds', async function(): Promise<void> {
+	test('Should not be in error state if client session initialization succeeds', async function (): Promise<void> {
 		let mockContentManager = TypeMoq.Mock.ofType(LocalContentManager);
 		mockContentManager.setup(c => c.getNotebookContents(TypeMoq.It.isAny())).returns(() => Promise.resolve(expectedNotebookContentOneCell));
 		notebookManagers[0].contentManager = mockContentManager.object;
@@ -218,7 +215,7 @@ suite('notebook model', function (): void {
 		sessionReady.resolve();
 		let actualSession: IClientSession = undefined;
 
-		let options: INotebookModelOptions = Object.assign({}, defaultModelOptions, <Partial<INotebookModelOptions>> {
+		let options: INotebookModelOptions = Object.assign({}, defaultModelOptions, <Partial<INotebookModelOptions>>{
 			factory: mockModelFactory.object
 		});
 		let model = new NotebookModel(options, undefined);
@@ -238,7 +235,7 @@ suite('notebook model', function (): void {
 		should(model.clientSession).equal(mockClientSession.object);
 	});
 
-	test('Should sanitize kernel display name when IP is included', async function(): Promise<void> {
+	test('Should sanitize kernel display name when IP is included', async function (): Promise<void> {
 		let model = new NotebookModel(defaultModelOptions);
 		let displayName = 'PySpark (1.1.1.1)';
 		let sanitizedDisplayName = model.sanitizeDisplayName(displayName);

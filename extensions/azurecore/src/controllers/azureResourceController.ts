@@ -13,7 +13,8 @@ import {
 	IAzureResourceAccountService,
 	IAzureResourceSubscriptionService,
 	IAzureResourceSubscriptionFilterService,
-	IAzureResourceTenantService } from '../azureResource/interfaces';
+	IAzureResourceTenantService
+} from '../azureResource/interfaces';
 import { AzureResourceServiceNames } from '../azureResource/constants';
 import { AzureResourceTreeProvider } from '../azureResource/tree/treeProvider';
 import { registerAzureResourceCommands } from '../azureResource/commands';

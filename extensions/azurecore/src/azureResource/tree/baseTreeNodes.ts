@@ -44,8 +44,8 @@ export abstract class AzureResourceContainerTreeNodeBase extends AzureResourceTr
 	}
 
 	protected setCacheKey(id: string): void {
-        this._cacheKey = this._cacheService.generateKey(id);
-    }
+		this._cacheKey = this._cacheService.generateKey(id);
+	}
 
 	protected updateCache<T>(cache: T): void {
 		this._cacheService.update<T>(this._cacheKey, cache);

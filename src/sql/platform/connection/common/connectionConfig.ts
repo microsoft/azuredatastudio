@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
@@ -69,7 +68,7 @@ export class ConnectionConfig implements IConnectionConfig {
 				let newProfile = ConnectionProfile.convertToProfileStore(this._capabilitiesService, connectionProfile);
 
 				// Remove the profile if already set
-				var sameProfileInList = profiles.find(value => {
+				let sameProfileInList = profiles.find(value => {
 					let providerConnectionProfile = ConnectionProfile.createFromStoredProfile(value, this._capabilitiesService);
 					return providerConnectionProfile.matches(connectionProfile);
 				});
@@ -100,7 +99,6 @@ export class ConnectionConfig implements IConnectionConfig {
 
 	/**
 	 *Returns group id
-	 * @param groupName
 	 */
 	public addGroupFromProfile(profile: IConnectionProfile): Promise<string> {
 		if (profile.groupId && profile.groupId !== Utils.defaultGroupId) {
@@ -116,7 +114,6 @@ export class ConnectionConfig implements IConnectionConfig {
 
 	/**
 	 *Returns group id
-	 * @param groupName
 	 */
 	public addGroup(profileGroup: IConnectionProfileGroup): Promise<string> {
 		if (profileGroup.id) {
@@ -159,13 +156,12 @@ export class ConnectionConfig implements IConnectionConfig {
 
 	/**
 	 * Replace duplicate ids with new ones. Sets id for the profiles without id
-	 * @param profiles
 	 */
 	private fixConnectionIds(profiles: IConnectionProfileStore[]): boolean {
 		let idsCache: { [label: string]: boolean } = {};
 		let changed: boolean = false;
-		for (var index = 0; index < profiles.length; index++) {
-			var profile = profiles[index];
+		for (let index = 0; index < profiles.length; index++) {
+			let profile = profiles[index];
 			if (!profile.id) {
 				profile.id = generateUuid();
 				changed = true;

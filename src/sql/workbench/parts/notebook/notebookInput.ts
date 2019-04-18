@@ -252,11 +252,11 @@ export class NotebookInput extends EditorInput {
 		return this.resource;
 	}
 
-	public get untitledEditorModel() : UntitledEditorModel {
+	public get untitledEditorModel(): UntitledEditorModel {
 		return this._untitledEditorModel;
 	}
 
-	public set untitledEditorModel(value : UntitledEditorModel) {
+	public set untitledEditorModel(value: UntitledEditorModel) {
 		this._untitledEditorModel = value;
 	}
 

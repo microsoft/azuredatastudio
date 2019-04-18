@@ -25,7 +25,7 @@ export class AdvancedPropertiesController {
 
 	public showDialog(providerOptions: azdata.ConnectionOption[], container: HTMLElement, options: { [name: string]: any }): void {
 		this._options = options;
-		var serviceOptions = providerOptions.map(option => AdvancedPropertiesController.connectionOptionToServiceOption(option));
+		let serviceOptions = providerOptions.map(option => AdvancedPropertiesController.connectionOptionToServiceOption(option));
 		this.advancedDialog.open(serviceOptions, this._options);
 	}
 

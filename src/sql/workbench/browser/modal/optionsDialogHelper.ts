@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as DialogHelper from './dialogHelper';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
@@ -69,7 +67,7 @@ export function createOptionElement(option: azdata.ServiceOption, rowContainer: 
 }
 
 export function getOptionValueAndCategoryValues(option: azdata.ServiceOption, options: { [optionName: string]: any }, possibleInputs: string[]): any {
-	var optionValue = option.defaultValue;
+	let optionValue = option.defaultValue;
 	if (options[option.name]) {
 		// if the value type is boolean, the option value can be either boolean or string
 		if (option.valueType === ServiceOptionType.boolean) {
@@ -106,10 +104,10 @@ export function getOptionValueAndCategoryValues(option: azdata.ServiceOption, op
 export function validateInputs(optionsMap: { [optionName: string]: IOptionElement }): boolean {
 	let isValid = true;
 	let isFocused = false;
-	for (var optionName in optionsMap) {
-		var optionElement: IOptionElement = optionsMap[optionName];
-		var widget = optionElement.optionWidget;
-		var isInputBox = (optionElement.option.valueType === ServiceOptionType.string ||
+	for (let optionName in optionsMap) {
+		let optionElement: IOptionElement = optionsMap[optionName];
+		let widget = optionElement.optionWidget;
+		let isInputBox = (optionElement.option.valueType === ServiceOptionType.string ||
 			optionElement.option.valueType === ServiceOptionType.password ||
 			optionElement.option.valueType === ServiceOptionType.number);
 
@@ -127,8 +125,8 @@ export function validateInputs(optionsMap: { [optionName: string]: IOptionElemen
 }
 
 export function updateOptions(options: { [optionName: string]: any }, optionsMap: { [optionName: string]: IOptionElement }): void {
-	for (var optionName in optionsMap) {
-		var optionElement: IOptionElement = optionsMap[optionName];
+	for (let optionName in optionsMap) {
+		let optionElement: IOptionElement = optionsMap[optionName];
 		if (optionElement.optionWidget.value !== options[optionName]) {
 			if (!optionElement.optionWidget.value && options[optionName]) {
 				delete options[optionName];
@@ -149,9 +147,9 @@ export let trueInputValue: string = 'True';
 export let falseInputValue: string = 'False';
 
 export function findElement(container: HTMLElement, className: string): HTMLElement {
-	var elementBuilder = container;
+	let elementBuilder = container;
 	while (elementBuilder) {
-		var htmlElement = elementBuilder;
+		let htmlElement = elementBuilder;
 		if (htmlElement.className.startsWith(className)) {
 			break;
 		}
@@ -161,9 +159,9 @@ export function findElement(container: HTMLElement, className: string): HTMLElem
 }
 
 export function groupOptionsByCategory(options: azdata.ServiceOption[]): { [category: string]: azdata.ServiceOption[] } {
-	var connectionOptionsMap: { [category: string]: azdata.ServiceOption[] } = {};
+	let connectionOptionsMap: { [category: string]: azdata.ServiceOption[] } = {};
 	options.forEach(option => {
-		var groupName = option.groupName;
+		let groupName = option.groupName;
 		if (groupName === null || groupName === undefined) {
 			groupName = 'General';
 		}

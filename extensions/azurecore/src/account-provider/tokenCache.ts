@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as adal from 'adal-node';
 import * as azdata from 'azdata';
 import * as crypto from 'crypto';
@@ -34,8 +32,8 @@ export default class TokenCache implements adal.TokenCache {
 				.then(cache => self.addToCache(cache, entries))
 				.then(updatedCache => self.writeCache(updatedCache))
 				.then(
-				() => callback(null, false),
-				(err) => callback(err, true)
+					() => callback(null, false),
+					(err) => callback(err, true)
 				);
 		});
 	}
@@ -70,8 +68,8 @@ export default class TokenCache implements adal.TokenCache {
 					);
 				})
 				.then(
-				results => callback(null, results),
-				(err) => callback(err, null)
+					results => callback(null, results),
+					(err) => callback(err, null)
 				);
 		});
 	}
@@ -79,7 +77,7 @@ export default class TokenCache implements adal.TokenCache {
 	/**
 	 * Wrapper to make callback-based find method into a thenable method
 	 * @param query Partial object to use to look up tokens. Ideally should be partial of adal.TokenResponse
-	 * @returns {Thenable<any[]>} Promise to return the matching adal.TokenResponse objects.
+	 * @returns Promise to return the matching adal.TokenResponse objects.
 	 *     Rejected if an error was sent in the callback
 	 */
 	public findThenable(query: any): Thenable<any[]> {
@@ -104,16 +102,16 @@ export default class TokenCache implements adal.TokenCache {
 				.then(cache => self.removeFromCache(cache, entries))
 				.then(updatedCache => self.writeCache(updatedCache))
 				.then(
-				() => callback(null, null),
-				(err) => callback(err, null)
+					() => callback(null, null),
+					(err) => callback(err, null)
 				);
 		});
 	}
 
 	/**
 	 * Wrapper to make callback-based remove method into a thenable method
-	 * @param {TokenResponse[]} entries Array of entries to remove from the token cache
-	 * @returns {Thenable<void>} Promise to remove the given tokens from the token cache
+	 * @param entries Array of entries to remove from the token cache
+	 * @returns Promise to remove the given tokens from the token cache
 	 *     Rejected if an error was sent in the callback
 	 */
 	public removeThenable(entries: adal.TokenResponse[]): Thenable<void> {
@@ -186,8 +184,8 @@ export default class TokenCache implements adal.TokenCache {
 					if (splitValues.length === 2 && splitValues[0] && splitValues[1]) {
 						try {
 							return <EncryptionParams>{
-								key: new Buffer(splitValues[0], 'hex'),
-								initializationVector: new Buffer(splitValues[1], 'hex')
+								key: Buffer.from(splitValues[0], 'hex'),
+								initializationVector: Buffer.from(splitValues[1], 'hex')
 							};
 						} catch (e) {
 							// Swallow the error and fall through to generate new params

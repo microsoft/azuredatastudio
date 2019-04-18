@@ -67,8 +67,7 @@ export class TestEditorInput extends EditorInput implements IFileEditorInput {
 	}
 }
 */
-suite('Editor service', () => {
-/*
+suite('Editor service', () => {/*
 	function registerTestEditorInput(): void {
 		Registry.as<IEditorRegistry>(Extensions.Editors).registerEditor(new EditorDescriptor(TestEditorControl, 'MyTestEditorForEditorService', 'My Test Editor For Next Editor Service'), new SyncDescriptor(TestEditorInput));
 	}
@@ -598,6 +597,5 @@ suite('Editor service', () => {
 
 		let failingEditor = await service.openEditor(failingInput);
 		assert.ok(!failingEditor);
-	});
-	*/
+	});*/
 });

@@ -266,9 +266,7 @@ export class RunQueryShortcutAction extends Action {
 	 * Runs one of the optionally registered query shortcuts. This will lookup the shortcut's stored procedure
 	 * reference from the settings, and if found will execute it plus any
 	 *
-	 * @param {QueryEditor} editor
-	 * @param {number} shortcutIndex which shortcut should be run?
-	 * @memberof RunQueryShortcutAction
+	 * @param shortcutIndex which shortcut should be run?
 	 */
 	public runQueryShortcut(editor: QueryEditor, shortcutIndex: number): Thenable<void> {
 		if (!editor) {

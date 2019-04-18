@@ -121,7 +121,7 @@ export class QueryEditor extends BaseEditor {
 	// PROPERTIES //////////////////////////////////////////////////////////
 	/**
 	 * Returns the URI of this editor if it is connected.
-	 * @returns {string} URI of the editor if connected, undefined otherwise
+	 * @returns URI of the editor if connected, undefined otherwise
 	 */
 	public get connectedUri(): string {
 		return this._connectionManagementService.isConnected(this.uri)
@@ -131,7 +131,7 @@ export class QueryEditor extends BaseEditor {
 
 	/**
 	 * Returns the URI of this editor if an input is associated with it
-	 * @return {string} URI of this if input is associated, undefined otherwise
+	 * @return URI of this if input is associated, undefined otherwise
 	 */
 	get uri(): string {
 		let input: QueryInput = <QueryInput>this.input;
