@@ -64,7 +64,6 @@ const indentationFilter = [
 
 	// except multiple specific files
 	'!**/package.json',
-	'!**/package-lock.json',
 	'!**/yarn.lock',
 	'!**/yarn-error.log',
 
