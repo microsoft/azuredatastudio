@@ -30,7 +30,7 @@ import { CancellationTokenSource } from 'vs/base/common/cancellation';
 @Component({
 	template: `
 	<div *ngIf="_title">
-		<div style="width: 100%; height:100%; padding-left:3px !important; background: #F4F4F4; border: 1px solid #BFBDBD;">
+		<div class="modelview-diff-editor-title" style="width: 100%; height:100%; padding-left:3px !important; border: 1px solid #BFBDBD;">
 			{{_title}}
 		</div>
 	</div>`,
@@ -71,6 +71,7 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 	private _createEditor(): void {
 		this._instantiationService = this._instantiationService.createChild(new ServiceCollection([IProgressService, new SimpleProgressService()]));
 		this._editor = this._instantiationService.createInstance(TextDiffEditor);
+		this._editor.reverseColoring();
 		this._editor.create(this._el.nativeElement);
 		this._editor.setVisible(true);
 		let uri1 = this.createUri('source');

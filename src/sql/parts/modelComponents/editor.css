@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
- modelview-editor-component {
+modelview-editor-component {
 	height: 100%;
 	width : 100%;
 	display: block;
@@ -13,4 +13,12 @@ modelview-diff-editor-component {
 	height: 100%;
 	width : 100%;
 	display: block;
+}
+
+.vs-dark modelview-diff-editor-title {
+	background: #444444;
+}
+
+modelview-diff-editor-title {
+	background: #f4f4f4;
 }

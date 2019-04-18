@@ -300,7 +300,8 @@ const sqlBuiltInExtensions = [
 	'profiler',
 	'admin-pack',
 	'big-data-cluster',
-	'dacpac'
+	'dacpac',
+	'schema-compare'
 ];
 // {{SQL CARBON EDIT}} - End
 
