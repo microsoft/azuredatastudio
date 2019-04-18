@@ -28,21 +28,21 @@
 }
 
 .vs .modelview-group-header-collapsible.expanded {
-	background-image: url("../../media/icons/expanded.svg");
+	background-image: url("expanded.svg");
 }
 
 .vs-dark .modelview-group-header-collapsible.expanded,
 .hc-black .modelview-group-header-collapsible.expanded {
-	background-image: url("../../media/icons/expanded_inverse.svg");
+	background-image: url("expanded_inverse.svg");
 }
 
 .vs .modelview-group-header-collapsible.collapsed {
-	background-image: url("../../media/icons/collapsed.svg");
+	background-image: url("collapsed.svg");
 }
 
 .vs-dark .modelview-group-header-collapsible.collapsed,
 .hc-black .modelview-group-header-collapsible.collapsed {
-	background-image: url("../../media/icons/collapsed_inverse.svg");
+	background-image: url("collapsed_inverse.svg");
 }
 
 .modelview-group-cell {

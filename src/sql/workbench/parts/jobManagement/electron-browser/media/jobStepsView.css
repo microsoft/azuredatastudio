@@ -4,12 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 .steps-tree .list-row .status-icon.step-passed {
-	content: url("../common/media/success_complete.svg");
+	content: url("success_complete.svg");
 	height: 100%;
 }
 
 .steps-tree .list-row .status-icon.step-failed {
-	content: url("../common/media/failed.svg");
+	content: url("failed.svg");
 	height: 100%;
 }
 
@@ -67,11 +67,11 @@
 
 .vs-dark .steps-header > .steps-icon,
 .hc-black .steps-header > .steps-icon {
-	content: url("../common/media/step_inverse.svg");
+	content: url("step_inverse.svg");
 }
 
 .steps-header > .steps-icon {
-	content: url("../common/media/step.svg");
+	content: url("step.svg");
 }
 
 jobstepsview-component {
