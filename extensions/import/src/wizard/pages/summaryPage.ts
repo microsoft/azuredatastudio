@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 
@@ -133,7 +131,6 @@ export class SummaryPage extends ImportPage {
 
 	/**
 	 * Gets the connection string to send to the middleware
-	 * @returns {Promise<string>}
 	 */
 	private async getConnectionString(): Promise<string> {
 		let options = this.model.server.options;

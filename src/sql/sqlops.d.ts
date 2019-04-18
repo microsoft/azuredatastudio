@@ -39,6 +39,7 @@ declare module 'sqlops' {
 
 		export function registerDacFxServicesProvider(provider: DacFxServicesProvider): vscode.Disposable;
 
+
 		/**
 		 * An [event](#Event) which fires when the specific flavor of a language used in DMP
 		 * connections has changed. And example is for a SQL connection, the flavor changes
@@ -53,8 +54,8 @@ declare module 'sqlops' {
 	export namespace credentials {
 		/**
 		 * Register a credential provider to handle credential requests.
-		 * @param {CredentialProvider} provider The provider to register
-		 * @return {Disposable} Handle to the provider for disposal
+		 * @param provider The provider to register
+		 * @return Handle to the provider for disposal
 		 */
 		export function registerProvider(provider: CredentialProvider): vscode.Disposable;
 
@@ -62,8 +63,8 @@ declare module 'sqlops' {
 		 * Retrieves a provider from the extension host if one has been registered. Any credentials
 		 * accessed with the returned provider will have the namespaceId appended to credential ID
 		 * to prevent extensions from trampling over each others' credentials.
-		 * @param {string} namespaceId ID that will be appended to credential IDs.
-		 * @return {Thenable<CredentialProvider>} Promise that returns the namespaced provider
+		 * @param namespaceId ID that will be appended to credential IDs.
+		 * @return Promise that returns the namespaced provider
 		 */
 		export function getProvider(namespaceId: string): Thenable<CredentialProvider>;
 	}
@@ -96,14 +97,14 @@ declare module 'sqlops' {
 
 		/**
 		 * Get the credentials for an active connection
-		 * @param {string} connectionId The id of the connection
-		 * @returns {{ [name: string]: string}} A dictionary containing the credentials as they would be included in the connection's options dictionary
+		 * @param connectionId The id of the connection
+		 * @returns A dictionary containing the credentials as they would be included in the connection's options dictionary
 		 */
 		export function getCredentials(connectionId: string): Thenable<{ [name: string]: string }>;
 
 		/**
 		 * Get ServerInfo for a connectionId
-		 * @param {string} connectionId The id of the connection
+		 * @param connectionId The id of the connection
 		 * @returns ServerInfo
 		 */
 		export function getServerInfo(connectionId: string): Thenable<ServerInfo>;
@@ -132,35 +133,35 @@ declare module 'sqlops' {
 		 * Get an Object Explorer node corresponding to the given connection and path. If no path
 		 * is given, it returns the top-level node for the given connection. If there is no node at
 		 * the given path, it returns undefined.
-		 * @param {string} connectionId The id of the connection that the node exists on
-		 * @param {string?} nodePath The path of the node to get
-		 * @returns {ObjectExplorerNode} The node corresponding to the given connection and path,
+		 * @param connectionId The id of the connection that the node exists on
+		 * @param nodePath The path of the node to get
+		 * @returns The node corresponding to the given connection and path,
 		 * or undefined if no such node exists.
 		*/
 		export function getNode(connectionId: string, nodePath?: string): Thenable<ObjectExplorerNode>;
 
 		/**
 		 * Get all active Object Explorer connection nodes
-		 * @returns {ObjectExplorerNode[]} The Object Explorer nodes for each saved connection
+		 * @returns The Object Explorer nodes for each saved connection
 		*/
 		export function getActiveConnectionNodes(): Thenable<ObjectExplorerNode[]>;
 
 		/**
 		 * Find Object Explorer nodes that match the given information
-		 * @param {string} connectionId The id of the connection that the node exists on
-		 * @param {string} type The type of the object to retrieve
-		 * @param {string} schema The schema of the object, if applicable
-		 * @param {string} name The name of the object
-		 * @param {string} database The database the object exists under, if applicable
-		 * @param {string[]} parentObjectNames A list of names of parent objects in the tree, ordered from highest to lowest level
+		 * @param connectionId The id of the connection that the node exists on
+		 * @param type The type of the object to retrieve
+		 * @param schema The schema of the object, if applicable
+		 * @param name The name of the object
+		 * @param database The database the object exists under, if applicable
+		 * @param parentObjectNames A list of names of parent objects in the tree, ordered from highest to lowest level
 		 * (for example when searching for a table's column, provide the name of its parent table for this argument)
 		 */
 		export function findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames: string[]): Thenable<ObjectExplorerNode[]>;
 
 		/**
 		 * Get connectionProfile from sessionId
-		 * *@param {string} sessionId The id of the session that the node exists on
-		 * @returns {IConnectionProfile} The IConnecitonProfile for the session
+		 * @param sessionId The id of the session that the node exists on
+		 * @returns The IConnecitonProfile for the session
 		 */
 		export function getSessionConnectionProfile(sessionId: string): Thenable<IConnectionProfile>;
 
@@ -1324,6 +1325,7 @@ declare module 'sqlops' {
 		generateDeployPlan(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<GenerateDeployPlanResult>;
 	}
 
+
 	// Security service interfaces ------------------------------------------------------------------------
 	export interface CredentialInfo {
 		id: number;
@@ -1716,7 +1718,6 @@ declare module 'sqlops' {
 	export namespace window {
 		/**
 		 * @deprecated this method has been deprecated and will be removed in a future release, please use sqlops.window.createWebViewDialog instead.
-		 * @param title
 		 */
 		export function createDialog(
 			title: string

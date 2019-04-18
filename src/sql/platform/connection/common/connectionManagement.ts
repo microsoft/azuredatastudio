@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { Event } from 'vs/base/common/event';
 import * as azdata from 'azdata';
@@ -221,18 +219,15 @@ export interface IConnectionManagementService {
 	 * Sends a notification that the language flavor for a given URI has changed.
 	 * For SQL, this would be the specific SQL implementation being used.
 	 *
-	 * @param {string} uri the URI of the resource whose language has changed
-	 * @param {string} language the base language
-	 * @param {string} flavor the specific language flavor that's been set
-	 *
-	 * @memberof IConnectionManagementService
+	 * @param uri the URI of the resource whose language has changed
+	 * @param language the base language
+	 * @param flavor the specific language flavor that's been set
 	 */
 	doChangeLanguageFlavor(uri: string, language: string, flavor: string): void;
 
 	/**
 	 * Ensures that a default language flavor is set for a URI, if none has already been defined.
-	 * @param {string} uri document identifier
-	 * @memberof ConnectionManagementService
+	 * @param uri document identifier
 	 */
 	ensureDefaultLanguageFlavor(uri: string): void;
 
@@ -243,22 +238,22 @@ export interface IConnectionManagementService {
 
 	/**
 	 * Get a copy of the connection profile with its passwords removed
-	 * @param {IConnectionProfile} profile The connection profile to remove passwords from
-	 * @returns {IConnectionProfile} A copy of the connection profile with passwords removed
+	 * @param profile The connection profile to remove passwords from
+	 * @returns A copy of the connection profile with passwords removed
 	 */
 	removeConnectionProfileCredentials(profile: IConnectionProfile): IConnectionProfile;
 
 	/**
 	 * Get the credentials for a connected connection profile, as they would appear in the options dictionary
-	 * @param {string} profileId The id of the connection profile to get the password for
-	 * @returns {{ [name: string]: string }} A dictionary containing the credentials as they would be included
+	 * @param profileId The id of the connection profile to get the password for
+	 * @returns A dictionary containing the credentials as they would be included
 	 * in the connection profile's options dictionary, or undefined if the profile is not connected
 	 */
 	getActiveConnectionCredentials(profileId: string): { [name: string]: string };
 
 	/**
 	 * Get the ServerInfo for a connected connection profile
-	 * @param {string} profileId The id of the connection profile to get the password for
+	 * @param profileId The id of the connection profile to get the password for
 	 * @returns ServerInfo
 	 */
 	getServerInfo(profileId: string): azdata.ServerInfo;

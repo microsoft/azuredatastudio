@@ -370,7 +370,7 @@ export abstract class GridParentComponent {
 	}
 
 	protected _keybindingFor(action: IAction): ResolvedKeybinding {
-		var [kb] = this.keybindingService.lookupKeybindings(action.id);
+		let [kb] = this.keybindingService.lookupKeybindings(action.id);
 		return kb;
 	}
 
@@ -407,8 +407,6 @@ export abstract class GridParentComponent {
 	/**
 	 * Returns a function that selects all elements of a grid. This needs to
 	 * return a function in order to capture the scope for this component
-	 * @private
-	 * @returns {(gridIndex: number) => void}
 	 *
 	 * @memberOf QueryComponent
 	 */
@@ -558,11 +556,6 @@ export abstract class GridParentComponent {
 	/**
 	 * Called by keyEvent method to give child classes a chance to
 	 * handle key events.
-	 *
-	 * @protected
-	 * @abstract
-	 * @param {StandardKeyboardEvent} e
-	 * @returns {boolean}
 	 *
 	 * @memberOf GridParentComponent
 	 */

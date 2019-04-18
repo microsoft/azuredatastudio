@@ -3,17 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 
 /**
  * Wrapper class to act as a facade over VSCode and Data APIs and allow us to test / mock callbacks into
  * this API from our code
- *
- * @export
- * @class ApiWrapper
  */
 export class ApiWrapper {
 	public createOutputChannel(name: string): vscode.OutputChannel {

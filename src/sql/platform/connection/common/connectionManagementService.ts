@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
@@ -691,8 +690,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	/**
 	 * Returns a formatted URI in case the database field is empty for the original
 	 * URI, which happens when the connected database is master or the default database
-	 * @param uri
-	 * @param connectionProfile
 	 */
 	public getFormattedUri(uri: string, connectionProfile: IConnectionProfile): string {
 		if (this._connectionStatusManager.isDefaultTypeUri(uri)) {
@@ -706,11 +703,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * Sends a notification that the language flavor for a given URI has changed.
 	 * For SQL, this would be the specific SQL implementation being used.
 	 *
-	 * @param {string} uri the URI of the resource whose language has changed
-	 * @param {string} language the base language
-	 * @param {string} flavor the specific language flavor that's been set
+	 * @param uri the URI of the resource whose language has changed
+	 * @param language the base language
+	 * @param flavor the specific language flavor that's been set
 	 * @throws {Error} if the provider is not in the list of registered providers
-	 * @memberof ConnectionManagementService
 	 */
 	public doChangeLanguageFlavor(uri: string, language: string, provider: string): void {
 		if (this._providers.has(provider)) {
@@ -726,8 +722,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 	/**
 	 * Ensures that a default language flavor is set for a URI, if none has already been defined.
-	 * @param {string} uri document identifier
-	 * @memberof ConnectionManagementService
+	 * @param uri document identifier
 	 */
 	public ensureDefaultLanguageFlavor(uri: string): void {
 		if (!this.getProviderIdFromUri(uri)) {
@@ -956,7 +951,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return new Promise<boolean>((resolve, reject) => {
 			// If the URI is connected, disconnect it and the editor
 			if (self.isConnected(owner.uri)) {
-				var connection = self.getConnectionProfile(owner.uri);
+				let connection = self.getConnectionProfile(owner.uri);
 				owner.onDisconnect();
 				resolve(self.doDisconnect(owner.uri, connection));
 

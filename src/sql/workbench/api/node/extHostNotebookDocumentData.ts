@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import * as azdata from 'azdata';
 
@@ -91,7 +90,7 @@ export class ExtHostNotebookDocumentData implements IDisposable {
 	}
 
 	private _validateIndex(index: number): number {
-		if (typeof(index) !== 'number') {
+		if (typeof (index) !== 'number') {
 			throw new Error('Invalid argument');
 		}
 

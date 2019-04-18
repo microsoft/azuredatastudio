@@ -28,7 +28,7 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 	private readonly GeneralTabText: string = localize('jobStepDialog.general', 'General');
 	private readonly AdvancedTabText: string = localize('jobStepDialog.advanced', 'Advanced');
 	private readonly OpenCommandText: string = localize('jobStepDialog.open', 'Open...');
-	private readonly ParseCommandText: string = localize('jobStepDialog.parse','Parse');
+	private readonly ParseCommandText: string = localize('jobStepDialog.parse', 'Parse');
 	private readonly SuccessfulParseText: string = localize('jobStepDialog.successParse', 'The command was successfully parsed.');
 	private readonly FailureParseText: string = localize('jobStepDialog.failParse', 'The command failed.');
 	private readonly BlankStepNameErrorText: string = localize('jobStepDialog.blankStepName', 'The step name cannot be left blank');
@@ -124,15 +124,15 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 		viaJobDialog: boolean = false
 	) {
 		super(ownerUri,
-			jobStepInfo ?  JobStepData.convertToJobStepData(jobStepInfo, jobModel) : new JobStepData(ownerUri, jobModel, viaJobDialog),
-			jobStepInfo ?  JobStepDialog.EditDialogTitle : JobStepDialog.NewDialogTitle);
+			jobStepInfo ? JobStepData.convertToJobStepData(jobStepInfo, jobModel) : new JobStepData(ownerUri, jobModel, viaJobDialog),
+			jobStepInfo ? JobStepDialog.EditDialogTitle : JobStepDialog.NewDialogTitle);
 		this.stepId = jobStepInfo ?
-						jobStepInfo.id : jobModel.jobSteps ?
-						jobModel.jobSteps.length + 1 : 1;
+			jobStepInfo.id : jobModel.jobSteps ?
+				jobModel.jobSteps.length + 1 : 1;
 		this.isEdit = jobStepInfo ? true : false;
 		this.model.dialogMode = this.isEdit ? AgentDialogMode.EDIT : AgentDialogMode.CREATE;
 		this.jobModel = jobModel;
-		this.jobName = this.jobName ?  this.jobName : this.jobModel.name;
+		this.jobName = this.jobName ? this.jobName : this.jobModel.name;
 		this.server = server;
 		this.dialogName = this.isEdit ? this.EditStepDialog : this.NewStepDialog;
 	}
@@ -164,7 +164,7 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 			if (this.commandTextBox.value) {
 				queryProvider.parseSyntax(this.ownerUri, this.commandTextBox.value).then(result => {
 					if (result && result.parseable) {
-						this.dialog.message = { text: this.SuccessfulParseText, level: 2};
+						this.dialog.message = { text: this.SuccessfulParseText, level: 2 };
 					} else if (result && !result.parseable) {
 						this.dialog.message = { text: this.FailureParseText };
 					}
@@ -246,7 +246,7 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 					}).component();
 			this.typeDropdown.onValueChanged((type) => {
 				switch (type.selected) {
-					case(this.TSQLScript):
+					case (this.TSQLScript):
 						this.runAsDropdown.value = '';
 						this.runAsDropdown.values = [''];
 						this.runAsDropdown.enabled = false;
@@ -256,7 +256,7 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 						this.processExitCodeBox.value = '';
 						this.processExitCodeBox.enabled = false;
 						break;
-					case(this.Powershell):
+					case (this.Powershell):
 						this.runAsDropdown.value = this.AgentServiceAccount;
 						this.runAsDropdown.values = [this.runAsDropdown.value];
 						this.runAsDropdown.enabled = true;
@@ -266,7 +266,7 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 						this.processExitCodeBox.value = '';
 						this.processExitCodeBox.enabled = false;
 						break;
-					case(this.CmdExec):
+					case (this.CmdExec):
 						this.databaseDropdown.enabled = false;
 						this.databaseDropdown.values = [''];
 						this.databaseDropdown.value = '';
@@ -397,13 +397,13 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 
 		let retryAttemptsContainer = view.modelBuilder.formContainer()
 			.withFormItems(
-			[{
-				component: this.retryAttemptsBox,
-				title: this.RetryAttemptsLabel
-			}], {
-				horizontal: false,
-				componentWidth: '100%'
-			})
+				[{
+					component: this.retryAttemptsBox,
+					title: this.RetryAttemptsLabel
+				}], {
+					horizontal: false,
+					componentWidth: '100%'
+				})
 			.component();
 
 		let retryIntervalContainer = view.modelBuilder.formContainer()
@@ -411,7 +411,7 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 				[{
 					component: this.retryIntervalBox,
 					title: this.RetryIntervalLabel
-					}], {
+				}], {
 					horizontal: false
 				})
 			.component();
@@ -427,13 +427,13 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 		let fileBrowserTitle = this.FileBrowserDialogTitle + `${this.server}`;
 		this.fileBrowserDialog = azdata.window.createModelViewDialog(fileBrowserTitle);
 		let fileBrowserTab = azdata.window.createTab('File Browser');
-		this.fileBrowserDialog.content =  [fileBrowserTab];
+		this.fileBrowserDialog.content = [fileBrowserTab];
 		fileBrowserTab.registerContent(async (view) => {
 			this.fileBrowserTree = view.modelBuilder.fileBrowserTree()
 				.withProperties({ ownerUri: this.ownerUri, width: 420, height: 700 })
 				.component();
 			this.selectedPathTextBox = view.modelBuilder.inputBox()
-				.withProperties({ inputType: 'text'})
+				.withProperties({ inputType: 'text' })
 				.component();
 			this.fileBrowserTree.onDidChange((args) => {
 				this.selectedPathTextBox.value = args.fullPath;
@@ -462,7 +462,7 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 					component: this.fileBrowserNameBox,
 					title: this.FileNameLabelString
 				}
-			]).component();
+				]).component();
 			view.initializeModel(fileBrowserContainer);
 		});
 		this.fileBrowserDialog.okButton.onClick(() => {

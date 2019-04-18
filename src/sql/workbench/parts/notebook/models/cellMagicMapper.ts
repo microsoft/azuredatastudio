@@ -1,16 +1,13 @@
-
 /*---------------------------------------------------------------------------------------------
-*  Copyright (c) Microsoft Corporation. All rights reserved.
-*  Licensed under the Source EULA. See License.txt in the project root for license information.
-*--------------------------------------------------------------------------------------------*/
-
-'use strict';
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
 import { ICellMagicMapper, ILanguageMagic } from 'sql/workbench/parts/notebook/models/modelInterfaces';
 
 const defaultKernel = '*';
 export class CellMagicMapper implements ICellMagicMapper {
-	private kernelToMagicMap = new Map<string,ILanguageMagic[]>();
+	private kernelToMagicMap = new Map<string, ILanguageMagic[]>();
 
 	constructor(languageMagics: ILanguageMagic[]) {
 		if (languageMagics) {

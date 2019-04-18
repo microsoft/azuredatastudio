@@ -33,7 +33,7 @@ import { Parts, IWorkbenchLayoutService } from 'vs/workbench/services/layout/bro
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 
 // {{SQL CARBON EDIT}}
-import { convertEditorInput } from 'sql/parts/common/customInputConverter';
+import { convertEditorInput } from 'sql/workbench/common/customInputConverter';
 
 
 interface IEditorPartUIState {

@@ -2,8 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-///
-'use strict';
 
 import * as nls from 'vscode-nls';
 import * as path from 'path';
@@ -12,8 +10,7 @@ import * as vscode from 'vscode';
 import { IConfig, ServerProvider } from 'service-downloader';
 import { Telemetry } from './telemetry';
 import * as utils from './utils';
-import { ChildProcess, exec, ExecException } from 'child_process';
-import { stringify } from 'querystring';
+import { ChildProcess, exec } from 'child_process';
 
 const baseConfig = require('./config.json');
 const localize = nls.loadMessageBundle();
@@ -116,9 +113,9 @@ function launchSsmsDialog(action: string, connectionProfile: azdata.IConnectionP
 	let args = buildSsmsMinCommandArgs(params);
 
 	// This will be an async call since we pass in the callback
-	var proc: ChildProcess = exec(
-	   /*command*/`"${exePath}" ${args}`,
-	   /*options*/undefined,
+	let proc: ChildProcess = exec(
+		/*command*/`"${exePath}" ${args}`,
+		/*options*/undefined,
 		(execException, stdout, stderr) => {
 			// Process has exited so remove from map of running processes
 			runningProcesses.delete(proc.pid);

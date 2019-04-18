@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as nls from 'vs/nls';
@@ -10,7 +10,7 @@ import { Client } from 'vs/base/parts/ipc/common/ipc.net';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { connectRemoteAgentManagement, IConnectionOptions, IWebSocketFactory, PersistenConnectionEvent } from 'vs/platform/remote/common/remoteAgentConnection';
 import { IRemoteAgentConnection, IRemoteAgentService } from 'vs/workbench/services/remote/common/remoteAgentService';
-import { IRemoteAuthorityResolverService } from 'vs/platform/remote/common/remoteAuthorityResolver';
+import { IRemoteAuthorityResolverService, RemoteAuthorityResolverError } from 'vs/platform/remote/common/remoteAuthorityResolver';
 import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
 import { RemoteAgentConnectionContext, IRemoteAgentEnvironment } from 'vs/platform/remote/common/remoteAgentEnvironment';
 import { IWorkbenchContribution, IWorkbenchContributionsRegistry, Extensions } from 'vs/workbench/common/contributions';
@@ -138,7 +138,11 @@ class RemoteConnectionFailureNotificationContribution implements IWorkbenchContr
 	) {
 		// Let's cover the case where connecting to fetch the remote extension info fails
 		remoteAgentService.getEnvironment(true)
-			.then(undefined, err => notificationService.error(nls.localize('connectionError', "Failed to connect to the remote extension host server (Error: {0})", err ? err.message : '')));
+			.then(undefined, err => {
+				if (!RemoteAuthorityResolverError.isHandledNotAvailable(err)) {
+					notificationService.error(nls.localize('connectionError', "Failed to connect to the remote extension host server (Error: {0})", err ? err.message : ''));
+				}
+			});
 	}
 
 }

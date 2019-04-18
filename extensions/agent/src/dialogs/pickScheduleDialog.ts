@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
- 'use strict';
+'use strict';
 import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
@@ -20,8 +20,8 @@ export class PickScheduleDialog {
 	private readonly CancelButtonText: string = localize('pickSchedule.cancel', 'Cancel');
 	private readonly SchedulesLabelText: string = localize('pickSchedule.availableSchedules', 'Available Schedules:');
 	public static readonly ScheduleNameLabelText: string = localize('pickSchedule.scheduleName', 'Name');
-	public static readonly SchedulesIDText: string = localize('pickSchedule.scheduleID','ID');
-	public static readonly ScheduleDescription: string = localize('pickSchedule.description','Description');
+	public static readonly SchedulesIDText: string = localize('pickSchedule.scheduleID', 'ID');
+	public static readonly ScheduleDescription: string = localize('pickSchedule.description', 'Description');
 
 
 	// UI Components
@@ -74,7 +74,7 @@ export class PickScheduleDialog {
 				let data: any[][] = [];
 				for (let i = 0; i < this.model.schedules.length; ++i) {
 					let schedule = this.model.schedules[i];
-					data[i] = [ schedule.id, schedule.name, schedule.description ];
+					data[i] = [schedule.id, schedule.name, schedule.description];
 				}
 				this.schedulesTable.data = data;
 			}

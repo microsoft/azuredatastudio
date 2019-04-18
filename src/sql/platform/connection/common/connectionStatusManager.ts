@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
@@ -16,7 +15,7 @@ export class ConnectionStatusManager {
 
 	private _connections: { [id: string]: ConnectionManagementInfo };
 
-	constructor( @ICapabilitiesService private _capabilitiesService: ICapabilitiesService) {
+	constructor(@ICapabilitiesService private _capabilitiesService: ICapabilitiesService) {
 		this._connections = {};
 	}
 

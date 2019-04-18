@@ -23,7 +23,7 @@ export interface IQueryEditorService {
 	_serviceBrand: any;
 
 	// Creates new untitled document for SQL queries and opens it in a new editor tab
-	newSqlEditor(sqlContent?: string, connectionProviderName?: string, isDirty?: boolean, objectName?:string ): Promise<IConnectableInput>;
+	newSqlEditor(sqlContent?: string, connectionProviderName?: string, isDirty?: boolean, objectName?: string): Promise<IConnectableInput>;
 
 	// Creates a new query plan document
 	newQueryPlanEditor(xmlShowPlan: string): Promise<any>;
@@ -34,9 +34,8 @@ export interface IQueryEditorService {
 	/**
 	 * Handles updating of SQL files on a save as event. These need special consideration
 	 * due to query results and other information being tied to the URI of the file
-	 * @param {URI} oldResource URI of the file before the save as was completed
-	 * @param {URI} newResource URI of the file after the save as operation was completed
-	 * @memberof IQueryEditorService
+	 * @param oldResource URI of the file before the save as was completed
+	 * @param newResource URI of the file after the save as operation was completed
 	 */
 	onSaveAsCompleted(oldResource: URI, newResource: URI): void;
 }
