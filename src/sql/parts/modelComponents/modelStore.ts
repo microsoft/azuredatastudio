@@ -1,20 +1,11 @@
-
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
-import { Registry } from 'vs/platform/registry/common/platform';
-
-import * as azdata from 'azdata';
 import { IModelStore, IComponentDescriptor, IComponent } from './interfaces';
-import { Extensions, IComponentRegistry } from 'sql/platform/dashboard/common/modelComponentRegistry';
 import { Deferred } from 'sql/base/common/promise';
 import { entries } from 'sql/base/common/objects';
-
-const componentRegistry = <IComponentRegistry>Registry.as(Extensions.ComponentContribution);
-
 
 class ComponentDescriptor implements IComponentDescriptor {
 	constructor(public readonly id: string, public readonly type: string) {

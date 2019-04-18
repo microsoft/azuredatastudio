@@ -27,8 +27,8 @@ function matches(item: any, clauses: ProfilerFilterClause[]): boolean {
 				let expectedValueString: string = expectedValue === undefined ? undefined : expectedValue.toLocaleLowerCase();
 				let actualValueDate = new Date(actualValue).valueOf();
 				let expectedValueDate = new Date(expectedValue).valueOf();
-				let actualValueNumber = new Number(actualValue).valueOf();
-				let expectedValueNumber = new Number(expectedValue).valueOf();
+				let actualValueNumber = Number(actualValue).valueOf();
+				let expectedValueNumber = Number(expectedValue).valueOf();
 
 				if (isValidNumber(actualValue) && isValidNumber(expectedValue)) {
 					actualValue = actualValueNumber;
@@ -79,7 +79,7 @@ function matches(item: any, clauses: ProfilerFilterClause[]): boolean {
 						match = !actualValueString || !actualValueString.startsWith(expectedValueString);
 						break;
 					default:
-						throw `Not a valid operator: ${clause.operator}`;
+						throw new Error(`Not a valid operator: ${clause.operator}`);
 				}
 			}
 
@@ -93,7 +93,7 @@ function matches(item: any, clauses: ProfilerFilterClause[]): boolean {
 }
 
 function isValidNumber(value: string): boolean {
-	let num = new Number(value);
+	let num = Number(value);
 	return value !== undefined && !isNaN(num.valueOf()) && value.replace(' ', '') !== '';
 }
 

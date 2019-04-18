@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-// {{SQL CARBON EDIT}}
-/*
 import * as path from 'vs/base/common/path';
 import { Schemas } from 'vs/base/common/network';
 import { URI, UriComponents } from 'vs/base/common/uri';
@@ -672,7 +670,7 @@ export class ExtHostDebugService implements ExtHostDebugServiceShape {
 				type: 'implementation',
 				implementation: x.implementation
 			};
-		} else */ /* {{SQL CARBON EDIT}} {
+		} else */ {
 			throw new Error('convertToDto unexpected type');
 		}
 	}
@@ -1050,6 +1048,3 @@ class DirectDebugAdapter extends AbstractDebugAdapter implements IDapTransport {
 		throw new Error('Method not implemented.');
 	}
 }
-
-// {{SQL CARBON EDIT}}
-*/

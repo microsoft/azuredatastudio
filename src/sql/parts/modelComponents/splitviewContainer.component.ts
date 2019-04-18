@@ -5,15 +5,14 @@
 import 'vs/css!./flexContainer';
 
 import {
-	Component, Input, Inject, ChangeDetectorRef, forwardRef, ComponentFactoryResolver,
-	ViewChild, ViewChildren, ElementRef, Injector, OnDestroy, QueryList,
+	Component, Input, Inject, ChangeDetectorRef, forwardRef, ElementRef, OnDestroy,
 } from '@angular/core';
 
 import { IComponent, IComponentDescriptor, IModelStore } from 'sql/parts/modelComponents/interfaces';
 import { FlexItemLayout, SplitViewLayout } from 'azdata';
 import { FlexItem } from './flexContainer.component';
 import { ContainerBase, ComponentBase } from 'sql/parts/modelComponents/componentBase';
-import { Event, Emitter } from 'vs/base/common/event';
+import { Event } from 'vs/base/common/event';
 import { SplitView, Orientation, Sizing, IView } from 'vs/base/browser/ui/splitview/splitview';
 
 class SplitPane implements IView {
@@ -91,7 +90,7 @@ export default class SplitViewContainer extends ContainerBase<FlexItemLayout> im
 		let basicView: SplitPane = new SplitPane();
 		basicView.orientation = orientation;
 		basicView.element = c.getHtml(),
-		basicView.component = c;
+			basicView.component = c;
 		basicView.minimumSize = 50;
 		basicView.maximumSize = Number.MAX_VALUE;
 		return basicView;
@@ -113,7 +112,7 @@ export default class SplitViewContainer extends ContainerBase<FlexItemLayout> im
 
 		if (this._componentWrappers) {
 			this._componentWrappers.forEach(item => {
-				var component = item.modelStore.getComponent(item.descriptor.id);
+				let component = item.modelStore.getComponent(item.descriptor.id);
 				item.modelStore.validate(component).then(value => {
 					if (value === true) {
 						let view = this.GetCorrespondingView(component, this._orientation);

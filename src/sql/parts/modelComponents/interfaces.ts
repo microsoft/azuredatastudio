@@ -12,7 +12,6 @@ import { IDisposable } from 'vs/base/common/lifecycle';
  * An instance of a model-backed component. This will be a UI element
  *
  * @export
- * @interface IComponent
  */
 export interface IComponent extends IDisposable {
 	descriptor: IComponentDescriptor;
@@ -44,7 +43,6 @@ export interface IComponentConfig {
  * world to the frontend UI;
  *
  * @export
- * @interface IComponentDescriptor
  */
 export interface IComponentDescriptor {
 	/**
@@ -91,9 +89,8 @@ export interface IModelStore {
 	 * Runs on a component immediately if the component exists, or runs on
 	 * registration of the component otherwise
 	 *
-	 * @param {string} componentId unique identifier of the component
-	 * @param {(component: IComponent) => void} action some action to perform
-	 * @memberof IModelStore
+	 * @param componentId unique identifier of the component
+	 * @param action some action to perform
 	 */
 	eventuallyRunOnComponent<T>(componentId: string, action: (component: IComponent) => T): Promise<T>;
 	/**

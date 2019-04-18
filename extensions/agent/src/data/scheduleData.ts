@@ -14,7 +14,7 @@ export class ScheduleData implements IAgentDialogData {
 	public schedules: azdata.AgentJobScheduleInfo[];
 	public selectedSchedule: azdata.AgentJobScheduleInfo;
 
-	constructor(ownerUri:string) {
+	constructor(ownerUri: string) {
 		this.ownerUri = ownerUri;
 	}
 

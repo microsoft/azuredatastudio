@@ -45,7 +45,7 @@ export abstract class TreeNode {
 		if (children) {
 			for (let child of children) {
 				if (filter && filter(child)) {
-					let childNode =  await this.findNode(child, condition, filter, expandIfNeeded);
+					let childNode = await this.findNode(child, condition, filter, expandIfNeeded);
 					if (childNode) {
 						return childNode;
 					}

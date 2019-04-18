@@ -41,7 +41,7 @@ export class RefreshAction extends Action {
 		this._tree = tree;
 	}
 	public run(): Promise<boolean> {
-		var treeNode: TreeNode;
+		let treeNode: TreeNode;
 		if (this.element instanceof ConnectionProfile) {
 			let connection: ConnectionProfile = this.element;
 			if (this._connectionManagementService.isConnected(undefined, connection)) {

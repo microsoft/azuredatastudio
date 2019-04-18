@@ -396,14 +396,14 @@ export class ResultSerializer {
 
 		this._editorService.openEditor(input, { pinned: true })
 			.then(
-			(success) => {
-			},
-			(error: any) => {
-				this._notificationService.notify({
-					severity: Severity.Error,
-					message: error
-				});
-			}
+				(success) => {
+				},
+				(error: any) => {
+					this._notificationService.notify({
+						severity: Severity.Error,
+						message: error
+					});
+				}
 			);
 	}
 }

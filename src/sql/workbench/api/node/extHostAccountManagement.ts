@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as azdata from 'azdata';
 import { Disposable } from 'vs/workbench/api/common/extHostTypes';
 import {
@@ -143,7 +141,7 @@ export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 
 	/**
 	 * This method is for testing only, it is not exposed via the shape.
-	 * @return {number} Number of providers that are currently registered
+	 * @return Number of providers that are currently registered
 	 */
 	public getProviderCount(): number {
 		return Object.keys(this._providers).length;

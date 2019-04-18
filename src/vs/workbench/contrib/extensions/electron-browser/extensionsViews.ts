@@ -415,7 +415,7 @@ export class ExtensionsListView extends ViewletPanel {
 			return this.getAllRecommendationsModel(query, options, token);
 		} else if (ExtensionsListView.isRecommendedExtensionsQuery(query.value)) {
 			return this.getRecommendationsModel(query, options, token);
-		// {{SQL CARBON EDIT}}
+			// {{SQL CARBON EDIT}}
 		} else if (ExtensionsListView.isAllMarketplaceExtensionsQuery(query.value)) {
 			return this.getAllMarketplaceModel(query, options, token);
 		}

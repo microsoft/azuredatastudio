@@ -23,7 +23,7 @@ const msgSampleCodeDataFrame = localize('msgSampleCodeDataFrame', "This sample c
 const noNotebookVisible = localize('noNotebookVisible', "No notebook editor is active");
 
 let controller: JupyterController;
-type ChooseCellType = { label: string, id: CellType};
+type ChooseCellType = { label: string, id: CellType };
 
 export async function activate(extensionContext: vscode.ExtensionContext): Promise<IExtensionApi> {
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.new', (context?: azdata.ConnectedContext) => {

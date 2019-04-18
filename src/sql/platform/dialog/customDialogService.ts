@@ -3,12 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
-import { OptionsDialog } from 'sql/workbench/browser/modal/optionsDialog';
 import { DialogModal } from 'sql/platform/dialog/dialogModal';
 import { WizardModal } from 'sql/platform/dialog/wizardModal';
-import { Dialog, Wizard, DialogTab } from 'sql/platform/dialog/dialogTypes';
+import { Dialog, Wizard } from 'sql/platform/dialog/dialogTypes';
 import { IModalOptions } from 'sql/workbench/browser/modal/modal';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
@@ -19,7 +16,7 @@ export class CustomDialogService {
 	private _dialogModals = new Map<Dialog, DialogModal>();
 	private _wizardModals = new Map<Wizard, WizardModal>();
 
-	constructor( @IInstantiationService private _instantiationService: IInstantiationService) { }
+	constructor(@IInstantiationService private _instantiationService: IInstantiationService) { }
 
 	public showDialog(dialog: Dialog, dialogName?: string, options?: IModalOptions): void {
 		let name = dialogName ? dialogName : 'CustomDialog';

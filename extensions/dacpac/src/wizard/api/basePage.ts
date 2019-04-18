@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import * as azdata from 'azdata';
 import { DacFxDataModel } from './models';
@@ -15,19 +14,16 @@ export abstract class BasePage {
 
 	/**
 	 * This method constructs all the elements of the page.
-	 * @returns {Promise<boolean>}
 	 */
 	public async abstract start(): Promise<boolean>;
 
 	/**
 	 * This method is called when the user is entering the page.
-	 * @returns {Promise<boolean>}
 	 */
 	public async abstract onPageEnter(): Promise<boolean>;
 
 	/**
 	 * This method is called when the user is leaving the page.
-	 * @returns {Promise<boolean>}
 	 */
 	async onPageLeave(): Promise<boolean> {
 		return true;
@@ -35,7 +31,6 @@ export abstract class BasePage {
 
 	/**
 	 * Override this method to cleanup what you don't need cached in the page.
-	 * @returns {Promise<boolean>}
 	 */
 	public async cleanup(): Promise<boolean> {
 		return true;
@@ -136,4 +131,3 @@ export abstract class BasePage {
 		return;
 	}
 }
-

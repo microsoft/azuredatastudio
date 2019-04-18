@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as azdata from 'azdata';
 import * as platform from 'vs/platform/registry/common/platform';
 import * as statusbar from 'vs/workbench/browser/parts/statusbar/statusbar';
@@ -88,7 +86,7 @@ export class AccountManagementService implements IAccountManagementService {
 	/**
 	 * Called from an account provider (via extension host -> main thread interop) when an
 	 * account's properties have been updated (usually when the account goes stale).
-	 * @param {Account} updatedAccount Account with the updated properties
+	 * @param updatedAccount Account with the updated properties
 	 */
 	public accountUpdated(updatedAccount: azdata.Account): Thenable<void> {
 		let self = this;
@@ -123,8 +121,8 @@ export class AccountManagementService implements IAccountManagementService {
 
 	/**
 	 * Asks the requested provider to prompt for an account
-	 * @param {string} providerId ID of the provider to ask to prompt for an account
-	 * @return {Thenable<Account>} Promise to return an account
+	 * @param providerId ID of the provider to ask to prompt for an account
+	 * @return Promise to return an account
 	 */
 	public addAccount(providerId: string): Thenable<void> {
 		let self = this;
@@ -155,8 +153,8 @@ export class AccountManagementService implements IAccountManagementService {
 
 	/**
 	 * Asks the requested provider to refresh an account
-	 * @param {Account} account account to refresh
-	 * @return {Thenable<Account>} Promise to return an account
+	 * @param account account to refresh
+	 * @return Promise to return an account
 	 */
 	public refreshAccount(account: azdata.Account): Thenable<azdata.Account> {
 		let self = this;
@@ -187,7 +185,7 @@ export class AccountManagementService implements IAccountManagementService {
 
 	/**
 	 * Retrieves metadata of all providers that have been registered
-	 * @returns {Thenable<AccountProviderMetadata[]>} Registered account providers
+	 * @returns Registered account providers
 	 */
 	public getAccountProviderMetadata(): Thenable<azdata.AccountProviderMetadata[]> {
 		return Promise.resolve(Object.values(this._providers).map(provider => provider.metadata));
@@ -195,8 +193,8 @@ export class AccountManagementService implements IAccountManagementService {
 
 	/**
 	 * Retrieves the accounts that belong to a specific provider
-	 * @param {string} providerId ID of the provider the returned accounts belong to
-	 * @returns {Thenable<Account[]>} Promise to return a list of accounts
+	 * @param providerId ID of the provider the returned accounts belong to
+	 * @returns Promise to return a list of accounts
 	 */
 	public getAccountsForProvider(providerId: string): Thenable<azdata.Account[]> {
 		let self = this;
@@ -214,9 +212,9 @@ export class AccountManagementService implements IAccountManagementService {
 
 	/**
 	 * Generates a security token by asking the account's provider
-	 * @param {Account} account Account to generate security token for
-	 * @param {azdata.AzureResource} resource The resource to get the security token for
-	 * @return {Thenable<{}>} Promise to return the security token
+	 * @param account Account to generate security token for
+	 * @param resource The resource to get the security token for
+	 * @return Promise to return the security token
 	 */
 	public getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Thenable<{}> {
 		return this.doWithProvider(account.key.providerId, provider => {
@@ -226,8 +224,8 @@ export class AccountManagementService implements IAccountManagementService {
 
 	/**
 	 * Removes an account from the account store and clears sensitive data in the provider
-	 * @param {AccountKey} accountKey Key for the account to remove
-	 * @returns {Thenable<void>} Promise with result of account removal, true if account was
+	 * @param accountKey Key for the account to remove
+	 * @returns Promise with result of account removal, true if account was
 	 *                           removed, false otherwise.
 	 */
 	public removeAccount(accountKey: azdata.AccountKey): Thenable<boolean> {
@@ -263,7 +261,7 @@ export class AccountManagementService implements IAccountManagementService {
 	// UI METHODS //////////////////////////////////////////////////////////
 	/**
 	 * Opens the account list dialog
-	 * @return {TPromise<any>}	Promise that finishes when the account list dialog opens
+	 * @return Promise that finishes when the account list dialog opens
 	 */
 	public openAccountListDialog(): Thenable<void> {
 		let self = this;
@@ -285,7 +283,7 @@ export class AccountManagementService implements IAccountManagementService {
 
 	/**
 	 * Begin auto OAuth device code open add account dialog
-	 * @return {TPromise<any>}	Promise that finishes when the account list dialog opens
+	 * @return Promise that finishes when the account list dialog opens
 	 */
 	public beginAutoOAuthDeviceCode(providerId: string, title: string, message: string, userCode: string, uri: string): Thenable<void> {
 		let self = this;
@@ -325,8 +323,8 @@ export class AccountManagementService implements IAccountManagementService {
 	// SERVICE MANAGEMENT METHODS //////////////////////////////////////////
 	/**
 	 * Called by main thread to register an account provider from extension
-	 * @param {azdata.AccountProviderMetadata} providerMetadata Metadata of the provider that is being registered
-	 * @param {azdata.AccountProvider} provider References to the methods of the provider
+	 * @param providerMetadata Metadata of the provider that is being registered
+	 * @param provider References to the methods of the provider
 	 */
 	public registerProvider(providerMetadata: azdata.AccountProviderMetadata, provider: azdata.AccountProvider): Thenable<void> {
 		let self = this;

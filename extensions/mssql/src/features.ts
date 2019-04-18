@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import { SqlOpsDataClient, SqlOpsFeature } from 'dataprotocol-client';
 import { ClientCapabilities, StaticFeature, RPCMessageType, ServerCapabilities } from 'vscode-languageclient';
@@ -12,7 +11,6 @@ import * as contracts from './contracts';
 import * as azdata from 'azdata';
 import * as Utils from './utils';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
-import { ConnectParams } from 'dataprotocol-client/lib/protocol';
 
 export class TelemetryFeature implements StaticFeature {
 
@@ -170,7 +168,7 @@ export class SchemaCompareServicesFeature extends SqlOpsFeature<undefined> {
 		let self = this;
 
 		let schemaCompare = (sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.SchemaCompareResult> => {
-			let params: contracts.SchemaCompareParams = {sourceEndpointInfo: sourceEndpointInfo, targetEndpointInfo: targetEndpointInfo, taskExecutionMode: taskExecutionMode};
+			let params: contracts.SchemaCompareParams = { sourceEndpointInfo: sourceEndpointInfo, targetEndpointInfo: targetEndpointInfo, taskExecutionMode: taskExecutionMode };
 			return client.sendRequest(contracts.SchemaCompareRequest.type, params).then(
 				r => {
 					return r;
@@ -182,8 +180,8 @@ export class SchemaCompareServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
- 		let schemaCompareGenerateScript = (operationId: string, targetDatabaseName: string, scriptFilePath: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> => {
-			let params: contracts.SchemaCompareGenerateScriptParams = {operationId: operationId, targetDatabaseName: targetDatabaseName, scriptFilePath: scriptFilePath, taskExecutionMode: taskExecutionMode};
+		let schemaCompareGenerateScript = (operationId: string, targetDatabaseName: string, scriptFilePath: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> => {
+			let params: contracts.SchemaCompareGenerateScriptParams = { operationId: operationId, targetDatabaseName: targetDatabaseName, scriptFilePath: scriptFilePath, taskExecutionMode: taskExecutionMode };
 			return client.sendRequest(contracts.SchemaCompareGenerateScriptRequest.type, params).then(
 				r => {
 					return r;
