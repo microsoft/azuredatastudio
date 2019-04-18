@@ -19,6 +19,7 @@ import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
 
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
+import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 
 @Component({
 	selector: 'modelview-dropdown',
@@ -42,7 +43,8 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IContextViewService) private contextViewService: IContextViewService,
-		@Inject(forwardRef(() => ElementRef)) el: ElementRef
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
+		@Inject(ILayoutService) private readonly layoutService: ILayoutService
 	) {
 		super(changeRef, el);
 	}
@@ -61,7 +63,7 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 				ariaLabel: '',
 				actionLabel: ''
 			};
-			this._editableDropdown = new Dropdown(this._editableDropDownContainer.nativeElement, this.contextViewService, this.themeService,
+			this._editableDropdown = new Dropdown(this._editableDropDownContainer.nativeElement, this.contextViewService, this.layoutService,
 				dropdownOptions);
 
 			this._register(this._editableDropdown);
@@ -112,6 +114,7 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 				this._editableDropdown.value = this.getSelectedValue();
 			}
 			this._editableDropdown.enabled = this.enabled;
+			this._editableDropdown.fireOnTextChange = this.fireOnTextChange;
 		} else {
 			this._selectBox.setOptions(this.getValues());
 			this._selectBox.selectWithOptionName(this.getSelectedValue());
@@ -168,6 +171,10 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 
 	private get editable(): boolean {
 		return this.getPropertyOrDefault<azdata.DropDownProperties, boolean>((props) => props.editable, false);
+	}
+
+	private get fireOnTextChange(): boolean {
+		return this.getPropertyOrDefault<azdata.DropDownProperties, boolean>((props) => props.fireOnTextChange, false);
 	}
 
 	public getEditableDisplay(): string {

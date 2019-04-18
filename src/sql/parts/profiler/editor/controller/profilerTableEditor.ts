@@ -12,7 +12,6 @@ import { IProfilerStateChangedEvent } from 'sql/parts/profiler/editor/profilerSt
 import { FindWidget, ITableController, IConfigurationChangedEvent, ACTION_IDS } from './profilerFindWidget';
 import { ProfilerFindNext, ProfilerFindPrevious } from 'sql/parts/profiler/contrib/profilerActions';
 
-import { TPromise } from 'vs/base/common/winjs.base';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
@@ -26,10 +25,10 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Dimension } from 'vs/base/browser/dom';
-import { textFormatter } from 'sql/parts/grid/services/sharedServices';
+import { textFormatter, slickGridDataItemColumnValueExtractor } from 'sql/base/browser/ui/table/formatters';
 import { PROFILER_MAX_MATCHES } from 'sql/parts/profiler/editor/controller/profilerFindWidget';
 import { IStorageService } from 'vs/platform/storage/common/storage';
-import { IStatusbarService, StatusbarAlignment, IStatusbarEntry } from 'vs/platform/statusbar/common/statusbar';
+import { IStatusbarService, StatusbarAlignment } from 'vs/platform/statusbar/common/statusbar';
 import { localize } from 'vs/nls';
 
 export interface ProfilerTableViewState {
@@ -81,15 +80,15 @@ export class ProfilerTableEditor extends BaseEditor implements IProfilerControll
 		parent.appendChild(this._overlay);
 
 		this._profilerTable = new Table(parent, {
-			sorter: {
-				sort: (args) => {
-					let input = this.input as ProfilerInput;
-					if (input && input.data) {
-						input.data.sort(args);
-					}
+			sorter: (args) => {
+				let input = this.input as ProfilerInput;
+				if (input && input.data) {
+					input.data.sort(args);
 				}
 			}
-		});
+		}, {
+				dataItemColumnValueExtractor: slickGridDataItemColumnValueExtractor
+			});
 		this._profilerTable.setSelectionModel(new RowSelectionModel());
 		attachTableStyler(this._profilerTable, this._themeService);
 
@@ -106,7 +105,7 @@ export class ProfilerTableEditor extends BaseEditor implements IProfilerControll
 		);
 	}
 
-	public setInput(input: ProfilerInput): TPromise<void> {
+	public setInput(input: ProfilerInput): Promise<void> {
 		this._showStatusBarItem = true;
 		this._input = input;
 
@@ -153,7 +152,7 @@ export class ProfilerTableEditor extends BaseEditor implements IProfilerControll
 		this._input.onDispose(() => {
 			this._disposeStatusbarItem();
 		});
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 
 	public toggleSearch(): void {

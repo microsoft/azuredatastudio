@@ -11,7 +11,7 @@ import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 import {
 	JobStepsViewController, JobStepsViewDataSource, JobStepsViewFilter,
 	JobStepsViewRenderer, JobStepsViewModel
@@ -24,7 +24,7 @@ import { IContextMenuService } from 'vs/platform/contextview/browser/contextView
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import * as TelemetryKeys from 'sql/common/telemetryKeys';
+import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
 
 export const JOBSTEPSVIEW_SELECTOR: string = 'jobstepsview-component';
 
@@ -55,15 +55,14 @@ export class JobStepsViewComponent extends JobManagementView implements OnInit, 
 		@Inject(IDashboardService) dashboardService: IDashboardService,
 		@Inject(ITelemetryService) private _telemetryService: ITelemetryService
 	) {
-		super(commonService, dashboardService, contextMenuService, keybindingService, instantiationService);
+		super(commonService, dashboardService, contextMenuService, keybindingService, instantiationService, undefined);
 	}
 
 	ngAfterContentChecked() {
-		$('.steps-tree .step-column-heading').closest('.monaco-tree-row').addClass('step-column-row');
+		jQuery('.steps-tree .step-column-heading').closest('.monaco-tree-row').addClass('step-column-row');
 		this.layout();
-		this._tree.setInput(new JobStepsViewModel());
 		this._tree.onDidScroll(() => {
-			$('.steps-tree .step-column-heading').closest('.monaco-tree-row').addClass('step-column-row');
+			jQuery('.steps-tree .step-column-heading').closest('.monaco-tree-row').addClass('step-column-row');
 		});
 		this._treeController.onClick = (tree, element, event, origin = 'mouse') => {
 			const payload = { origin: origin };
@@ -81,12 +80,12 @@ export class JobStepsViewComponent extends JobManagementView implements OnInit, 
 				tree.setFocus(element, payload);
 				tree.setSelection([element], payload);
 			}
-			$('.steps-tree .step-column-heading').closest('.monaco-tree-row').addClass('step-column-row');
+			jQuery('.steps-tree .step-column-heading').closest('.monaco-tree-row').addClass('step-column-row');
 			return true;
 		};
 		this._treeController.onKeyDown = (tree, event) => {
 			this._treeController.onKeyDownWrapper(tree, event);
-			$('.steps-tree .step-column-heading').closest('.monaco-tree-row').addClass('step-column-row');
+			jQuery('.steps-tree .step-column-heading').closest('.monaco-tree-row').addClass('step-column-row');
 			return true;
 		};
 		this._tree.onDidFocus(() => {
@@ -94,6 +93,7 @@ export class JobStepsViewComponent extends JobManagementView implements OnInit, 
 			let element = this._tree.getFocus();
 			this._tree.select(element);
 		});
+		this._tree.setInput(new JobStepsViewModel());
 	}
 
 	ngOnInit() {
@@ -118,4 +118,3 @@ export class JobStepsViewComponent extends JobManagementView implements OnInit, 
 		}
 	}
 }
-

@@ -60,7 +60,7 @@ function initLoader(opts) {
 			'@angular/platform-browser-dynamic',
 			'@angular/router',
 			'angular2-grid',
-			'ng2-charts/ng2-charts',
+			'ng2-charts',
 			'rxjs/add/observable/of',
 			'rxjs/Observable',
 			'rxjs/Subject',
@@ -94,7 +94,7 @@ function createCoverageReport(opts) {
 			return resolve(undefined);
 		}
 
-		const exclude = /\b((winjs\.base)|(marked)|(raw\.marked)|(nls)|(css))\.js$/;
+		const exclude = /\b((marked)|(raw\.marked)|(nls)|(css))\.js$/;
 		const remappedCoverage = i_remap(global.__coverage__, { exclude: exclude }).getFinalCoverage();
 
 		// The remapped coverage comes out with broken paths

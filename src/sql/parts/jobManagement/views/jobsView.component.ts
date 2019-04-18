@@ -3,14 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!sql/parts/grid/media/slickColorTheme';
-import 'vs/css!sql/parts/grid/media/flexbox';
-import 'vs/css!sql/parts/grid/media/styles';
-import 'vs/css!sql/parts/grid/media/slick.grid';
-import 'vs/css!sql/parts/grid/media/slickGrid';
+import 'vs/css!sql/workbench/parts/grid/media/flexbox';
+import 'vs/css!sql/workbench/parts/grid/media/styles';
 import 'vs/css!../common/media/jobs';
 import 'vs/css!sql/media/icons/common-icons';
-import 'vs/css!sql/base/browser/ui/table/media/table';
 
 import * as azdata from 'azdata';
 import * as nls from 'vs/nls';
@@ -21,16 +17,15 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
 import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowdetailview';
 import { JobCacheObject } from 'sql/platform/jobManagement/common/jobManagementService';
-import { EditJobAction, DeleteJobAction, NewJobAction } from 'sql/platform/jobManagement/common/jobActions';
+import { EditJobAction, DeleteJobAction, NewJobAction, IJobActionInfo } from 'sql/platform/jobManagement/common/jobActions';
 import { JobManagementUtilities } from 'sql/platform/jobManagement/common/jobManagementUtilities';
 import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
-import { JobManagementView } from 'sql/parts/jobManagement/views/jobManagementView';
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { JobManagementView, JobActionContext } from 'sql/parts/jobManagement/views/jobManagementView';
+import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { IAction } from 'vs/base/common/actions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardService';
@@ -38,7 +33,7 @@ import { escape } from 'sql/base/common/strings';
 import { IWorkbenchThemeService, IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { tableBackground, cellBackground, cellBorderColor } from 'sql/platform/theme/common/colors';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import * as TelemetryKeys from 'sql/common/telemetryKeys';
+import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
 
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
 export const ROW_HEIGHT: number = 45;
@@ -100,7 +95,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		@Inject(forwardRef(() => CommonServiceInterface)) commonService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
-		@Inject(forwardRef(() => AgentViewComponent)) private _agentViewComponent: AgentViewComponent,
+		@Inject(forwardRef(() => AgentViewComponent)) _agentViewComponent: AgentViewComponent,
 		@Inject(IJobManagementService) private _jobManagementService: IJobManagementService,
 		@Inject(IWorkbenchThemeService) private _themeService: IWorkbenchThemeService,
 		@Inject(ICommandService) private _commandService: ICommandService,
@@ -110,7 +105,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		@Inject(IDashboardService) _dashboardService: IDashboardService,
 		@Inject(ITelemetryService) private _telemetryService: ITelemetryService
 	) {
-		super(commonService, _dashboardService, contextMenuService, keybindingService, instantiationService);
+		super(commonService, _dashboardService, contextMenuService, keybindingService, instantiationService, _agentViewComponent);
 		let jobCacheObjectMap = this._jobManagementService.jobCacheObjectMap;
 		let jobCache = jobCacheObjectMap[this._serverName];
 		if (jobCache) {
@@ -135,8 +130,8 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 	}
 
 	public layout() {
-		let jobsViewToolbar = $('jobsview-component .agent-actionbar-container').get(0);
-		let statusBar = $('.part.statusbar').get(0);
+		let jobsViewToolbar = jQuery('jobsview-component .agent-actionbar-container').get(0);
+		let statusBar = jQuery('.part.statusbar').get(0);
 		if (jobsViewToolbar && statusBar) {
 			let toolbarBottom = jobsViewToolbar.getBoundingClientRect().bottom + ACTIONBAR_PADDING;
 			let statusTop = statusBar.getBoundingClientRect().top;
@@ -182,8 +177,8 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		columns.unshift(this.rowDetail.getColumnDefinition());
 		let filterPlugin = new HeaderFilter({}, this._themeService);
 		this.filterPlugin = filterPlugin;
-		$(this._gridEl.nativeElement).empty();
-		$(this.actionBarContainer.nativeElement).empty();
+		jQuery(this._gridEl.nativeElement).empty();
+		jQuery(this.actionBarContainer.nativeElement).empty();
 		this.initActionBar();
 		this._table = new Table(this._gridEl.nativeElement, { columns }, options);
 		this._table.grid.setData(this.dataView, true);
@@ -193,7 +188,6 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 			self._agentViewComponent.agentJobInfo = job;
 			self._agentViewComponent.showHistory = true;
 		});
-
 		this._register(this._table.onContextMenu(e => {
 			self.openContextMenu(e);
 		}));
@@ -355,7 +349,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 
 		this.expandJobs(start);
 		// tooltip for job name
-		$('.jobview-jobnamerow').hover(e => {
+		jQuery('.jobview-jobnamerow').hover(e => {
 			let currentTarget = e.currentTarget;
 			currentTarget.title = currentTarget.innerText;
 		});
@@ -364,9 +358,9 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		this._table.grid.onColumnsResized.subscribe((e, data: any) => {
 			let nameWidth: number = data.grid.getColumns()[1].width;
 			// adjust job name when resized
-			$('#jobsDiv .jobview-grid .slick-cell.l1.r1 .jobview-jobnametext').css('width', `${nameWidth - 10}px`);
+			jQuery('#jobsDiv .jobview-grid .slick-cell.l1.r1 .jobview-jobnametext').css('width', `${nameWidth - 10}px`);
 			// adjust error message when resized
-			$('#jobsDiv .jobview-grid .slick-cell.l1.r1.error-row .jobview-jobnametext').css('width', '100%');
+			jQuery('#jobsDiv .jobview-grid .slick-cell.l1.r1.error-row .jobview-jobnametext').css('width', '100%');
 
 			// generate job charts again
 			self.jobs.forEach(job => {
@@ -378,11 +372,11 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 			});
 		});
 
-		$('#jobsDiv .jobview-grid .monaco-table .slick-viewport .grid-canvas .ui-widget-content.slick-row').hover((e1) =>
+		jQuery('#jobsDiv .jobview-grid .monaco-table .slick-viewport .grid-canvas .ui-widget-content.slick-row').hover((e1) =>
 			this.highlightErrorRows(e1), (e2) => this.hightlightNonErrorRows(e2));
 
 		this._table.grid.onScroll.subscribe((e) => {
-			$('#jobsDiv .jobview-grid .monaco-table .slick-viewport .grid-canvas .ui-widget-content.slick-row').hover((e1) =>
+			jQuery('#jobsDiv .jobview-grid .monaco-table .slick-viewport .grid-canvas .ui-widget-content.slick-row').hover((e1) =>
 				this.highlightErrorRows(e1), (e2) => this.hightlightNonErrorRows(e2));
 		});
 
@@ -395,15 +389,15 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 	private highlightErrorRows(e) {
 		// highlight the error row as well if a failing job row is hovered
 		if (e.currentTarget.children.item(0).classList.contains('job-with-error')) {
-			let target = $(e.currentTarget);
-			let targetChildren = $(e.currentTarget.children);
+			let target = jQuery(e.currentTarget);
+			let targetChildren = jQuery(e.currentTarget.children);
 			let siblings = target.nextAll().toArray();
 			let top = parseInt(target.css('top'), 10);
 			for (let i = 0; i < siblings.length; i++) {
 				let sibling = siblings[i];
-				let siblingTop = parseInt($(sibling).css('top'), 10);
+				let siblingTop = parseInt(jQuery(sibling).css('top'), 10);
 				if (siblingTop === top + ROW_HEIGHT) {
-					$(sibling.children).addClass('hovered');
+					jQuery(sibling.children).addClass('hovered');
 					sibling.onmouseenter = (e) => {
 						targetChildren.addClass('hovered');
 					};
@@ -419,14 +413,14 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 	private hightlightNonErrorRows(e) {
 		// switch back to original background
 		if (e.currentTarget.children.item(0).classList.contains('job-with-error')) {
-			let target = $(e.currentTarget);
+			let target = jQuery(e.currentTarget);
 			let siblings = target.nextAll().toArray();
 			let top = parseInt(target.css('top'), 10);
 			for (let i = 0; i < siblings.length; i++) {
 				let sibling = siblings[i];
-				let siblingTop = parseInt($(sibling).css('top'), 10);
+				let siblingTop = parseInt(jQuery(sibling).css('top'), 10);
 				if (siblingTop === top + ROW_HEIGHT) {
-					$(sibling.children).removeClass('hovered');
+					jQuery(sibling.children).removeClass('hovered');
 					break;
 				}
 			}
@@ -624,7 +618,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		let chartHeights = this.getChartHeights(jobHistories);
 		let runCharts = [];
 		for (let i = 0; i < chartHeights.length; i++) {
-			let runGraph = $(`table#${jobId}.jobprevruns > tbody > tr > td > div.bar${i}`);
+			let runGraph = jQuery(`table.jobprevruns#${jobId} > tbody > tr > td > div.bar${i}`);
 			if (runGraph.length > 0) {
 				runGraph.css('height', chartHeights[i]);
 				let bgColor = jobHistories[i].runStatus === 0 ? 'red' : 'green';
@@ -668,7 +662,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		// if the durations are all 0 secs, show minimal chart
 		// instead of nothing
 		if (zeroDurationJobCount === jobHistories.length) {
-			return ['5px', '5px', '5px', '5px', '5px'];
+			return Array(jobHistories.length).fill('5px');
 		} else {
 			return chartHeights;
 		}
@@ -844,9 +838,9 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		let bgColor = theme.getColor(tableBackground);
 		let cellColor = theme.getColor(cellBackground);
 		let borderColor = theme.getColor(cellBorderColor);
-		let headerColumns = $('#agentViewDiv .slick-header-column');
-		let cells = $('.grid-canvas .ui-widget-content.slick-row .slick-cell');
-		let cellDetails = $('#jobsDiv .dynamic-cell-detail');
+		let headerColumns = jQuery('#agentViewDiv .slick-header-column');
+		let cells = jQuery('.grid-canvas .ui-widget-content.slick-row .slick-cell');
+		let cellDetails = jQuery('#jobsDiv .dynamic-cell-detail');
 		headerColumns.toArray().forEach(col => {
 			col.style.background = bgColor.toString();
 		});
@@ -859,9 +853,13 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		});
 	}
 
-	protected getTableActions(): IAction[] {
+	protected getTableActions(targetObject: JobActionContext): IAction[] {
 		let actions: IAction[] = [];
-		actions.push(this._instantiationService.createInstance(EditJobAction));
+		let editAction = this._instantiationService.createInstance(EditJobAction);
+		if (!targetObject.canEdit) {
+			editAction.enabled = false;
+		}
+		actions.push(editAction);
 		actions.push(this._instantiationService.createInstance(DeleteJobAction));
 		return actions;
 	}
@@ -900,7 +898,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		return result;
 	}
 
-	protected getCurrentTableObject(rowIndex: number): any {
+	protected getCurrentTableObject(rowIndex: number): JobActionContext {
 		let data = this._table.grid.getData();
 		if (!data || rowIndex >= data.getLength()) {
 			return undefined;
@@ -920,32 +918,34 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 			return job.jobId === jobId;
 		});
 
-		// add steps
-		if (this.jobSteps && this.jobSteps[jobId]) {
-			let steps = this.jobSteps[jobId];
-			job[0].jobSteps = steps;
-		}
+		if (job && job.length > 0) {
+			// add steps
+			if (this.jobSteps && this.jobSteps[jobId]) {
+				let steps = this.jobSteps[jobId];
+				job[0].jobSteps = steps;
+			}
 
-		// add schedules
-		if (this.jobSchedules && this.jobSchedules[jobId]) {
-			let schedules = this.jobSchedules[jobId];
-			job[0].jobSchedules = schedules;
-		}
+			// add schedules
+			if (this.jobSchedules && this.jobSchedules[jobId]) {
+				let schedules = this.jobSchedules[jobId];
+				job[0].jobSchedules = schedules;
+			}
+			// add alerts
+			if (this.jobAlerts && this.jobAlerts[jobId]) {
+				let alerts = this.jobAlerts[jobId];
+				job[0].alerts = alerts;
+			}
 
-		// add alerts
-		if (this.jobAlerts && this.jobAlerts[jobId]) {
-			let alerts = this.jobAlerts[jobId];
-			job[0].alerts = alerts;
+			if (job[0].jobSteps && job[0].jobSchedules && job[0].alerts) {
+				return { job: job[0], canEdit: true };
+			}
+			return { job: job[0], canEdit: false };
 		}
-		return job && job.length > 0 ? job[0] : undefined;
+		return undefined;
 	}
 
-	public openCreateJobDialog() {
+	public async openCreateJobDialog() {
 		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
-		this._commandService.executeCommand('agent.openJobDialog', ownerUri);
-	}
-
-	public refreshJobs() {
-		this._agentViewComponent.refresh = true;
+		await this._commandService.executeCommand('agent.openJobDialog', ownerUri);
 	}
 }

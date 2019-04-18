@@ -5,7 +5,6 @@
 
 import 'vs/css!sql/parts/query/editor/media/queryEditor';
 
-import { TPromise } from 'vs/base/common/winjs.base';
 import * as strings from 'vs/base/common/strings';
 import * as DOM from 'vs/base/browser/dom';
 import * as nls from 'vs/nls';
@@ -22,7 +21,6 @@ import { EditDataInput } from 'sql/parts/editData/common/editDataInput';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import * as queryContext from 'sql/parts/query/common/queryContext';
 import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
-import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IActionItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { Action } from 'vs/base/common/actions';
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
@@ -34,12 +32,12 @@ import { TextResourceEditor } from 'vs/workbench/browser/parts/editor/textResour
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
-import { IEditorGroup } from 'vs/workbench/services/group/common/editorGroupsService';
 import { IFlexibleSash, HorizontalFlexibleSash } from 'sql/parts/query/views/flexibleSash';
 import { EditDataResultsEditor } from 'sql/parts/editData/editor/editDataResultsEditor';
 import { EditDataResultsInput } from 'sql/parts/editData/common/editDataResultsInput';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
+import { IEditorGroup } from 'vs/workbench/services/editor/common/editorGroupsService';
 
 /**
  * Editor that hosts an action bar and a resultSetInput for an edit data session
@@ -81,7 +79,6 @@ export class EditDataEditor extends BaseEditor {
 		@IThemeService themeService: IThemeService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IEditorService private _editorService: IEditorService,
-		@IContextMenuService private _contextMenuService: IContextMenuService,
 		@IQueryModelService private _queryModelService: IQueryModelService,
 		@IEditorDescriptorService private _editorDescriptorService: IEditorDescriptorService,
 		@IContextKeyService contextKeyService: IContextKeyService,
@@ -221,7 +218,7 @@ export class EditDataEditor extends BaseEditor {
 	/**
 	 * Sets the input data for this editor.
 	 */
-	public setInput(newInput: EditDataInput, options?: EditorOptions): Thenable<void> {
+	public setInput(newInput: EditDataInput, options?: EditorOptions): Promise<void> {
 		let oldInput = <EditDataInput>this.input;
 		if (!newInput.setup) {
 			this._initialized = false;
@@ -259,16 +256,16 @@ export class EditDataEditor extends BaseEditor {
 	}
 
 	// PRIVATE METHODS ////////////////////////////////////////////////////////////
-	private _createEditor(editorInput: EditorInput, container: HTMLElement): TPromise<BaseEditor> {
+	private _createEditor(editorInput: EditorInput, container: HTMLElement): Promise<BaseEditor> {
 		const descriptor = this._editorDescriptorService.getEditor(editorInput);
 		if (!descriptor) {
-			return TPromise.wrapError(new Error(strings.format('Can not find a registered editor for the input {0}', editorInput)));
+			return Promise.reject(new Error(strings.format('Can not find a registered editor for the input {0}', editorInput)));
 		}
 
 		let editor = descriptor.instantiate(this._instantiationService);
 		editor.create(container);
 		editor.setVisible(this.isVisible(), editor.group);
-		return TPromise.as(editor);
+		return Promise.resolve(editor);
 	}
 
 	/**
@@ -320,7 +317,7 @@ export class EditDataEditor extends BaseEditor {
 	private _createTaskbar(parentElement: HTMLElement): void {
 		// Create QueryTaskbar
 		this._taskbarContainer = DOM.append(parentElement, DOM.$('div'));
-		this._taskbar = new Taskbar(this._taskbarContainer, this._contextMenuService, {
+		this._taskbar = new Taskbar(this._taskbarContainer, {
 			actionItemProvider: (action: Action) => this._getChangeMaxRowsAction(action)
 		});
 
@@ -489,7 +486,7 @@ export class EditDataEditor extends BaseEditor {
 	}
 
 	private _getTaskBarHeight(): number {
-		let taskBarElement = this._taskbar.getContainer().getHTMLElement();
+		let taskBarElement = this._taskbar.getContainer();
 		return DOM.getContentHeight(taskBarElement);
 	}
 
@@ -518,7 +515,7 @@ export class EditDataEditor extends BaseEditor {
 	/**
 	 * Sets input for the results editor after it has been created.
 	 */
-	private _onResultsEditorCreated(resultsEditor: EditDataResultsEditor, resultsInput: EditDataResultsInput, options: EditorOptions): TPromise<void> {
+	private _onResultsEditorCreated(resultsEditor: EditDataResultsEditor, resultsInput: EditDataResultsInput, options: EditorOptions): Promise<void> {
 		this._resultsEditor = resultsEditor;
 		return this._resultsEditor.setInput(resultsInput, options);
 	}
@@ -546,22 +543,22 @@ export class EditDataEditor extends BaseEditor {
 	 * - Opened for the first time
 	 * - Opened with a new EditDataInput
 	 */
-	private _setNewInput(newInput: EditDataInput, options?: EditorOptions): TPromise<any> {
+	private _setNewInput(newInput: EditDataInput, options?: EditorOptions): Promise<any> {
 
 		// Promises that will ensure proper ordering of editor creation logic
-		let createEditors: () => TPromise<any>;
-		let onEditorsCreated: (result) => TPromise<any>;
+		let createEditors: () => Promise<any>;
+		let onEditorsCreated: (result) => Promise<any>;
 
 		// If both editors exist, create joined promises - one for each editor
 		if (this._isResultsEditorVisible()) {
 			createEditors = () => {
-				return TPromise.join([
+				return Promise.all([
 					this._createEditor(<EditDataResultsInput>newInput.results, this._resultsEditorContainer),
 					this._createEditor(<UntitledEditorInput>newInput.sql, this._sqlEditorContainer)
 				]);
 			};
 			onEditorsCreated = (result: IEditor[]) => {
-				return TPromise.join([
+				return Promise.all([
 					this._onResultsEditorCreated(<EditDataResultsEditor>result[0], newInput.results, options),
 					this._onSqlEditorCreated(<TextResourceEditor>result[1], newInput.sql, options)
 				]);
@@ -573,16 +570,16 @@ export class EditDataEditor extends BaseEditor {
 				return this._createEditor(<UntitledEditorInput>newInput.sql, this._sqlEditorContainer);
 			};
 			onEditorsCreated = (result: TextResourceEditor) => {
-				return TPromise.join([
+				return Promise.all([
 					this._onSqlEditorCreated(result, newInput.sql, options)
 				]);
 			};
 		}
 
 		// Create a promise to re render the layout after the editor creation logic
-		let doLayout: () => TPromise<any> = () => {
+		let doLayout: () => Promise<any> = () => {
 			this._doLayout();
-			return TPromise.as(undefined);
+			return Promise.resolve(undefined);
 		};
 
 		// Run all three steps synchronously
@@ -632,7 +629,7 @@ export class EditDataEditor extends BaseEditor {
 	 * Handles setting input for this editor. If this new input does not match the old input (e.g. a new file
 	 * has been opened with the same editor, or we are opening the editor for the first time).
 	 */
-	private _updateInput(oldInput: EditDataInput, newInput: EditDataInput, options?: EditorOptions): TPromise<void> {
+	private _updateInput(oldInput: EditDataInput, newInput: EditDataInput, options?: EditorOptions): Promise<void> {
 		if (this._sqlEditor) {
 			this._sqlEditor.clearInput();
 		}

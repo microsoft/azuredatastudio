@@ -5,8 +5,7 @@
 'use strict';
 
 import { nb, IConnectionProfile } from 'azdata';
-import * as vsExtTypes from 'vs/workbench/api/node/extHostTypes';
-import { ShellQuotingOptions } from 'vscode';
+import * as vsExtTypes from 'vs/workbench/api/common/extHostTypes';
 
 // SQL added extension host types
 export enum ServiceOptionType {
@@ -168,7 +167,7 @@ export enum ModelComponentTypes {
 	Editor,
 	DiffEditor,
 	Dom,
-	Hyperlink,
+	Hyperlink
 }
 
 export interface IComponentShape {
@@ -293,7 +292,8 @@ export enum DataProviderType {
 	AgentServicesProvider = 'AgentServicesProvider',
 	CapabilitiesProvider = 'CapabilitiesProvider',
 	DacFxServicesProvider = 'DacFxServicesProvider',
-	ObjectExplorerNodeProvider = 'ObjectExplorerNodeProvider',
+	SchemaCompareServicesProvider = 'SchemaCompareServicesProvider',
+	ObjectExplorerNodeProvider = 'ObjectExplorerNodeProvider'
 }
 
 export enum DeclarativeDataType {
@@ -466,6 +466,7 @@ export interface INotebookKernelDetails {
 	readonly id: string;
 	readonly name: string;
 	readonly supportsIntellisense: boolean;
+	readonly requiresConnection: boolean;
 	readonly info?: any;
 }
 
@@ -554,12 +555,12 @@ export enum SchemaUpdateAction {
 	Add = 2
 }
 
-export enum SchemaDifferenceType {
+ export enum SchemaDifferenceType {
 	Object = 0,
 	Property = 1
 }
 
-export enum SchemaCompareEndpointType {
+ export enum SchemaCompareEndpointType {
 	database = 0,
 	dacpac = 1
 }

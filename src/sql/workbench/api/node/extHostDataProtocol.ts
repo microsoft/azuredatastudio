@@ -7,11 +7,10 @@
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import { Event, Emitter } from 'vs/base/common/event';
-import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
-import { Disposable } from 'vs/workbench/api/node/extHostTypes';
+import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
+import { Disposable } from 'vs/workbench/api/common/extHostTypes';
 import { SqlMainContext, MainThreadDataProtocolShape, ExtHostDataProtocolShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { DataProviderType } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { TPromise } from 'vs/base/common/winjs.base';
 
 export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
@@ -168,6 +167,12 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return rt;
 	}
 
+	$registerSchemaCompareServiceProvider(provider: azdata.SchemaCompareServicesProvider): vscode.Disposable {
+		let rt = this.registerProvider(provider, DataProviderType.SchemaCompareServicesProvider);
+		this._proxy.$registerSchemaCompareServicesProvider(provider.providerId, provider.handle);
+		return rt;
+	}
+
 	// Capabilities Discovery handlers
 	$getServerCapabilities(handle: number, client: azdata.DataProtocolClientCapabilities): Thenable<azdata.DataProtocolServerCapabilities> {
 		return this._resolveProvider<azdata.CapabilitiesProvider>(handle).getServerCapabilities(client);
@@ -203,7 +208,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		if (provider.buildConnectionInfo) {
 			return provider.buildConnectionInfo(connectionString);
 		} else {
-			return TPromise.as(undefined);
+			return Promise.resolve(undefined);
 		}
 	}
 

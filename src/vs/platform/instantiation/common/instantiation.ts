@@ -95,7 +95,7 @@ export interface IInstantiationService {
 	/**
 	 *
 	 */
-	invokeFunction<R, TS extends any[]=[]>(fn: (accessor: ServicesAccessor, ...args: TS) => R, ...args: TS): R;
+	invokeFunction<R, TS extends any[] = []>(fn: (accessor: ServicesAccessor, ...args: TS) => R, ...args: TS): R;
 
 	/**
 	 * Creates a child of this service which inherts all current services
@@ -128,7 +128,7 @@ function storeServiceDependency(id: Function, target: Function, index: number, o
 export function createDecorator<T>(serviceId: string): { (...args: any[]): void; type: T; } {
 
 	if (_util.serviceIds.has(serviceId)) {
-		return _util.serviceIds.get(serviceId);
+		return _util.serviceIds.get(serviceId)!;
 	}
 
 	const id = <any>function (target: Function, key: string, index: number): any {

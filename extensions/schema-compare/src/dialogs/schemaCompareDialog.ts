@@ -11,22 +11,20 @@ import * as os from 'os';
 import { SchemaCompareResult } from '../schemaCompareResult';
 
 const localize = nls.loadMessageBundle();
+const CompareButtonText: string = localize('schemaCompareDialog.Compare', 'Compare');
+const CancelButtonText: string = localize('schemaCompareDialog.Cancel', 'Cancel');
+const SourceTextBoxLabel: string = localize('schemaCompareDialog.SourceLabel', 'Source File');
+const TargetTextBoxLabel: string = localize('schemaCompareDialog.TargetLabel', 'Target File');
+const DacpacRadioButtonLabel: string = localize('schemaCompare.dacpacRadioButtonLabel', 'Data-tier Application File (.dacpac)');
+const DatabaseRadioButtonLabel: string = localize('schemaCompare.databaseButtonLabel', 'Database');
+const SourceRadioButtonsLabel: string = localize('schemaCompare.sourceButtonsLabel', 'Source Type');
+const TargetRadioButtonsLabel: string = localize('schemaCompare.targetButtonsLabel', 'Target Type');
+const NoActiveConnectionsLabel: string = localize('schemaCompare.NoActiveConnectionsText', 'No active connections');
+const SchemaCompareLabel: string = localize('schemaCompare.dialogTitle', 'Schema Compare');
 
 export class SchemaCompareDialog {
-
-	private static readonly CompareButtonText: string = localize('schemaCompareDialog.Compare', 'Compare');
-	private static readonly CancelButtonText: string = localize('schemaCompareDialog.Cancel', 'Cancel');
-	private static readonly GeneralTabText: string = localize('schemaCompareDialog.General', 'General');
-	private static readonly SourceTextBoxLabel: string = localize('schemaCompareDialog.SourceLabel', 'Source File');
-	private static readonly TargetTextBoxLabel: string = localize('schemaCompareDialog.TargetLabel', 'Target File');
-	private static readonly DacpacRadioButtonLabel: string = localize('schemaCompare.dacpacRadioButtonLabel', 'Dacpac');
-	private static readonly DatabaseRadioButtonLabel: string = localize('schemaCompare.databaseButtonLabel', 'Database');
-	private static readonly SourceRadioButtonsLabel: string = localize('schemaCompare.sourceButtonsLabel', 'Source Type');
-	private static readonly TargetRadioButtonsLabel: string = localize('schemaCompare.targetButtonsLabel', 'Target Type');
-	private static readonly NoActiveConnectionsLabel: string = localize('schemaCompare.NoActiveConnectionsText', 'No active connections');
-
-	public dialog: azdata.window.modelviewdialog.Dialog;
-	private generalTab: azdata.window.modelviewdialog.DialogTab;
+	public dialog: azdata.window.Dialog;
+	private schemaCompareTab: azdata.window.DialogTab;
 	private sourceDacpacComponent: azdata.FormComponent;
 	private sourceTextBox: azdata.InputBoxComponent;
 	private sourceFileButton: azdata.ButtonComponent;
@@ -49,36 +47,33 @@ export class SchemaCompareDialog {
 	private database: string;
 	public dialogName: string;
 
-	constructor(public ownerUri?: string) {
+	protected initializeDialog(): void {
+		this.schemaCompareTab = azdata.window.createTab(SchemaCompareLabel);
+		this.initializeSchemaCompareTab();
+		this.dialog.content = [this.schemaCompareTab];
 	}
 
-	protected async initializeDialog() {
-		this.generalTab = azdata.window.modelviewdialog.createTab(SchemaCompareDialog.GeneralTabText);
-		this.initializeGeneralTab();
-		this.dialog.content = [this.generalTab];
-	}
-
-	public async openDialog(p: any, dialogName?: string) {
+	public openDialog(p: any, dialogName?: string): void {
 		let profile = p ? <azdata.IConnectionProfile>p.connectionProfile : undefined;
 		if (profile) {
 			this.database = profile.databaseName;
 		}
 
 		let event = dialogName ? dialogName : null;
-		this.dialog = azdata.window.modelviewdialog.createDialog(localize('schemaCompare.dialogTitle', 'Schema Compare'), event);
+		this.dialog = azdata.window.createModelViewDialog(SchemaCompareLabel, event);
 
-		await this.initializeDialog();
+		this.initializeDialog();
 
-		this.dialog.okButton.label = SchemaCompareDialog.CompareButtonText;
+		this.dialog.okButton.label = CompareButtonText;
 		this.dialog.okButton.onClick(async () => await this.execute());
 
-		this.dialog.cancelButton.label = SchemaCompareDialog.CancelButtonText;
+		this.dialog.cancelButton.label = CancelButtonText;
 		this.dialog.cancelButton.onClick(async () => await this.cancel());
 
-		azdata.window.modelviewdialog.openDialog(this.dialog);
+		azdata.window.openDialog(this.dialog);
 	}
 
-	protected async execute() {
+	protected async execute(): Promise<void> {
 		let sourceName: string;
 		let targetName: string;
 
@@ -125,22 +120,20 @@ export class SchemaCompareDialog {
 		}
 
 		let schemaCompareResult = new SchemaCompareResult(sourceName, targetName, sourceEndpointInfo, targetEndpointInfo);
-		await schemaCompareResult.initializeDialog();
-		await schemaCompareResult.start();
+		schemaCompareResult.start();
 	}
 
-	protected async cancel() {
+	protected async cancel(): Promise<void> {
 	}
 
-	private initializeGeneralTab() {
-		this.generalTab.registerContent(async view => {
-
+	private initializeSchemaCompareTab(): void {
+		this.schemaCompareTab.registerContent(async view => {
 			this.sourceTextBox = view.modelBuilder.inputBox().withProperties({
-				width: 275,
+				width: 275
 			}).component();
 
 			this.targetTextBox = view.modelBuilder.inputBox().withProperties({
-				width: 275,
+				width: 275
 			}).component();
 
 			this.sourceServerComponent = await this.createSourceServerDropdown(view);
@@ -161,12 +154,14 @@ export class SchemaCompareDialog {
 
 			this.sourceDacpacComponent = await this.createFileBrowser(view, false);
 			this.targetDacpacComponent = await this.createFileBrowser(view, true);
+
 			let sourceRadioButtons = await this.createSourceRadiobuttons(view);
 			let targetRadioButtons = await this.createTargetRadiobuttons(view);
 
 			this.sourceNoActiveConnectionsText = await this.createNoActiveConnectionsText(view);
 			this.targetNoActiveConnectionsText = await this.createNoActiveConnectionsText(view);
 
+			// if schema compare was launched from a db context menu, set that db as the source
 			if (this.database) {
 				this.formBuilder = view.modelBuilder.formContainer()
 					.withFormItems([
@@ -232,7 +227,7 @@ export class SchemaCompareDialog {
 
 		return {
 			component: currentTextbox,
-			title: isTarget ? SchemaCompareDialog.TargetTextBoxLabel : SchemaCompareDialog.SourceTextBoxLabel,
+			title: isTarget ? TargetTextBoxLabel : SourceTextBoxLabel,
 			actions: [currentButton]
 		};
 	}
@@ -241,15 +236,16 @@ export class SchemaCompareDialog {
 		let dacpacRadioButton = view.modelBuilder.radioButton()
 			.withProperties({
 				name: 'source',
-				label: SchemaCompareDialog.DacpacRadioButtonLabel,
+				label: DacpacRadioButtonLabel
 			}).component();
 
 		let databaseRadioButton = view.modelBuilder.radioButton()
 			.withProperties({
 				name: 'source',
-				label: SchemaCompareDialog.DatabaseRadioButtonLabel,
+				label: DatabaseRadioButtonLabel
 			}).component();
 
+		// show dacpac file browser
 		dacpacRadioButton.onDidClick(() => {
 			this.sourceIsDacpac = true;
 			this.formBuilder.removeFormItem(this.sourceNoActiveConnectionsText);
@@ -258,6 +254,7 @@ export class SchemaCompareDialog {
 			this.formBuilder.insertFormItem(this.sourceDacpacComponent, 1, { horizontal: true });
 		});
 
+		// show server and db dropdowns or 'No active connections' text
 		databaseRadioButton.onDidClick(() => {
 			this.sourceIsDacpac = false;
 			if ((this.sourceServerDropdown.value as ConnectionDropdownValue)) {
@@ -283,7 +280,7 @@ export class SchemaCompareDialog {
 
 		return {
 			component: flexRadioButtonsModel,
-			title: SchemaCompareDialog.SourceRadioButtonsLabel
+			title: SourceRadioButtonsLabel
 		};
 	}
 
@@ -291,15 +288,16 @@ export class SchemaCompareDialog {
 		let dacpacRadioButton = view.modelBuilder.radioButton()
 			.withProperties({
 				name: 'target',
-				label: SchemaCompareDialog.DacpacRadioButtonLabel,
+				label: DacpacRadioButtonLabel
 			}).component();
 
 		let databaseRadioButton = view.modelBuilder.radioButton()
 			.withProperties({
 				name: 'target',
-				label: SchemaCompareDialog.DatabaseRadioButtonLabel,
+				label: DatabaseRadioButtonLabel
 			}).component();
 
+		// show dacpac file browser
 		dacpacRadioButton.onDidClick(() => {
 			this.targetIsDacpac = true;
 			this.formBuilder.removeFormItem(this.targetNoActiveConnectionsText);
@@ -308,6 +306,7 @@ export class SchemaCompareDialog {
 			this.formBuilder.addFormItem(this.targetDacpacComponent, { horizontal: true });
 		});
 
+		// show server and db dropdowns or 'No active connections' text
 		databaseRadioButton.onDidClick(() => {
 			this.targetIsDacpac = false;
 			this.formBuilder.removeFormItem(this.targetDacpacComponent);
@@ -328,7 +327,7 @@ export class SchemaCompareDialog {
 
 		return {
 			component: flexRadioButtonsModel,
-			title: SchemaCompareDialog.TargetRadioButtonsLabel
+			title: TargetRadioButtonsLabel
 		};
 	}
 
@@ -356,9 +355,8 @@ export class SchemaCompareDialog {
 		};
 	}
 
-	protected async populateServerDropdown(isTarget: boolean) {
+	protected async populateServerDropdown(isTarget: boolean): Promise<void> {
 		let currentDropdown = isTarget ? this.targetServerDropdown : this.sourceServerDropdown;
-
 		let values = await this.getServerValues();
 
 		currentDropdown.updateProperties({
@@ -366,7 +364,7 @@ export class SchemaCompareDialog {
 		});
 	}
 
-	protected async getServerValues(): Promise<{ connection, displayName, name }[]> {
+	protected async getServerValues(): Promise<{ connection: azdata.connection.Connection, displayName: string, name: string }[]> {
 		let cons = await azdata.connection.getActiveConnections();
 		// This user has no active connections
 		if (!cons || cons.length === 0) {
@@ -415,7 +413,7 @@ export class SchemaCompareDialog {
 		};
 	}
 
-	protected async populateDatabaseDropdown(connectionId: string, isTarget: boolean) {
+	protected async populateDatabaseDropdown(connectionId: string, isTarget: boolean): Promise<void> {
 		let currentDropdown = isTarget ? this.targetDatabaseDropdown : this.sourceDatabaseDropdown;
 		currentDropdown.updateProperties({ values: [] });
 
@@ -430,6 +428,7 @@ export class SchemaCompareDialog {
 		let count = -1;
 		let values = (await azdata.connection.listDatabases(connectionId)).map(db => {
 			count++;
+			// if schema compare was launched from a db context menu, set that db at the top of the dropdown
 			if (this.database && db === this.database) {
 				idx = count;
 			}
@@ -449,7 +448,7 @@ export class SchemaCompareDialog {
 	}
 
 	protected async createNoActiveConnectionsText(view: azdata.ModelView): Promise<azdata.FormComponent> {
-		let noActiveConnectionsText = view.modelBuilder.text().withProperties({ value: SchemaCompareDialog.NoActiveConnectionsLabel }).component();
+		let noActiveConnectionsText = view.modelBuilder.text().withProperties({ value: NoActiveConnectionsLabel }).component();
 
 		return {
 			component: noActiveConnectionsText,

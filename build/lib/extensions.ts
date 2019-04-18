@@ -17,7 +17,8 @@ import remote = require('gulp-remote-src');
 const vzip = require('gulp-vinyl-zip');
 import filter = require('gulp-filter');
 import rename = require('gulp-rename');
-const util = require('gulp-util');
+import * as fancyLog from 'fancy-log';
+import * as ansiColors from 'ansi-colors';
 const buffer = require('gulp-buffer');
 import json = require('gulp-json-editor');
 const webpack = require('webpack');
@@ -155,7 +156,7 @@ function fromLocalWebpack(extensionPath: string, sourceMappingURLBase: string | 
 		const webpackStreams = webpackConfigLocations.map(webpackConfigPath => () => {
 
 			const webpackDone = (err: any, stats: any) => {
-				util.log(`Bundled extension: ${util.colors.yellow(path.join(path.basename(extensionPath), path.relative(extensionPath, webpackConfigPath)))}...`);
+				fancyLog(`Bundled extension: ${ansiColors.yellow(path.join(path.basename(extensionPath), path.relative(extensionPath, webpackConfigPath)))}...`);
 				if (err) {
 					result.emit('error', err);
 				}
@@ -249,7 +250,7 @@ export function fromMarketplace(extensionName: string, version: string, metadata
 	const [publisher, name] = extensionName.split('.');
 	const url = `https://marketplace.visualstudio.com/_apis/public/gallery/publishers/${publisher}/vsextensions/${name}/${version}/vspackage`;
 
-	util.log('Downloading extension:', util.colors.yellow(`${extensionName}@${version}`), '...');
+	fancyLog('Downloading extension:', ansiColors.yellow(`${extensionName}@${version}`), '...');
 
 	const options = {
 		base: url,
@@ -282,6 +283,7 @@ interface IPackageExtensionsOptions {
 const excludedExtensions = [
 	'vscode-api-tests',
 	'vscode-colorize-tests',
+	'vscode-test-resolver',
 	'ms-vscode.node-debug',
 	'ms-vscode.node-debug2',
 	// {{SQL CARBON EDIT}}
@@ -292,13 +294,15 @@ const excludedExtensions = [
 const sqlBuiltInExtensions = [
 	// Add SQL built-in extensions here.
 	// the extension will be excluded from SQLOps package and will have separate vsix packages
+	'admin-tool-ext-win',
 	'agent',
 	'import',
 	'profiler',
 	'admin-pack',
-	'big-data-cluster'
+	'big-data-cluster',
+	'dacpac',
+	'schema-compare'
 ];
-var azureExtensions = ['azurecore', 'mssql'];
 // {{SQL CARBON EDIT}} - End
 
 interface IBuiltInExtension {
@@ -347,8 +351,7 @@ export function packageExtensionsStream(optsIn?: IPackageExtensionsOptions): Nod
 		.filter(({ name }) => opts.desiredExtensions ? opts.desiredExtensions.indexOf(name) >= 0 : true)
 		.filter(({ name }) => builtInExtensions.every(b => b.name !== name))
 		// {{SQL CARBON EDIT}}
-		.filter(({ name }) => sqlBuiltInExtensions.indexOf(name) === -1)
-		.filter(({ name }) => azureExtensions.indexOf(name) === -1);
+		.filter(({ name }) => sqlBuiltInExtensions.indexOf(name) === -1);
 
 	const localExtensions = () => sequence([...localExtensionDescriptions.map(extension => () => {
 		return fromLocal(extension.path, opts.sourceMappingURLBase)

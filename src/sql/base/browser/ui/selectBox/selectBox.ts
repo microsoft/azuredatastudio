@@ -3,15 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import 'vs/css!./media/selectBox';
 
-import { SelectBox as vsSelectBox, ISelectBoxStyles as vsISelectBoxStyles, ISelectBoxOptions } from 'vs/base/browser/ui/selectBox/selectBox';
+import { SelectBox as vsSelectBox, ISelectBoxStyles as vsISelectBoxStyles, ISelectBoxOptions, ISelectOptionItem } from 'vs/base/browser/ui/selectBox/selectBox';
 import { Color } from 'vs/base/common/color';
 import { IContextViewProvider, AnchorAlignment } from 'vs/base/browser/ui/contextview/contextview';
 import * as dom from 'vs/base/browser/dom';
 import { RenderOptions, renderFormattedText, renderText } from 'vs/base/browser/htmlContentRenderer';
-import { IMessage, MessageType, defaultOpts } from 'vs/base/browser/ui/inputbox/inputBox';
+import { IMessage, MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import aria = require('vs/base/browser/ui/aria/aria');
 import nls = require('vs/nls');
 
@@ -22,40 +21,51 @@ export interface ISelectBoxStyles extends vsISelectBoxStyles {
 	disabledSelectForeground?: Color;
 	inputValidationInfoBorder?: Color;
 	inputValidationInfoBackground?: Color;
+	inputinputValidationInfoForeground?: Color;
 	inputValidationWarningBorder?: Color;
 	inputValidationWarningBackground?: Color;
+	inputValidationWarningForeground?: Color;
 	inputValidationErrorBorder?: Color;
 	inputValidationErrorBackground?: Color;
+	inputValidationErrorForeground?: Color;
 }
 
 export class SelectBox extends vsSelectBox {
-	private _optionsDictionary;
+	private _optionsDictionary: Map<string, number>;
 	private _dialogOptions: string[];
 	private _selectedOption: string;
-	private _selectBoxOptions: ISelectBoxOptions;
-	private enabledSelectBackground: Color;
-	private enabledSelectForeground: Color;
-	private enabledSelectBorder: Color;
-	private disabledSelectBackground: Color;
-	private disabledSelectForeground: Color;
-	private disabledSelectBorder: Color;
+	private _selectBoxOptions?: ISelectBoxOptions;
+	private enabledSelectBackground?: Color;
+	private enabledSelectForeground?: Color;
+	private enabledSelectBorder?: Color;
+	private disabledSelectBackground?: Color;
+	private disabledSelectForeground?: Color;
+	private disabledSelectBorder?: Color;
 	private contextViewProvider: IContextViewProvider;
-	private message: IMessage;
-	private inputValidationInfoBorder: Color;
-	private inputValidationInfoBackground: Color;
-	private inputValidationWarningBorder: Color;
-	private inputValidationWarningBackground: Color;
-	private inputValidationErrorBorder: Color;
-	private inputValidationErrorBackground: Color;
+	private message?: IMessage;
+
+	private inputValidationInfoBorder?: Color;
+	private inputValidationInfoBackground?: Color;
+	private inputValidationInfoForeground?: Color;
+	private inputValidationWarningBorder?: Color;
+	private inputValidationWarningBackground?: Color;
+	private inputValidationWarningForeground?: Color;
+	private inputValidationErrorBorder?: Color;
+	private inputValidationErrorBackground?: Color;
+	private inputValidationErrorForeground?: Color;
+
 	private element: HTMLElement;
 
 	constructor(options: string[], selectedOption: string, contextViewProvider: IContextViewProvider, container?: HTMLElement, selectBoxOptions?: ISelectBoxOptions) {
-		super(options, 0, contextViewProvider, undefined, selectBoxOptions);
-		this._optionsDictionary = new Array();
-		for (var i = 0; i < options.length; i++) {
-			this._optionsDictionary[options[i]] = i;
+		super(options.map(option => { return { text: option }; }), 0, contextViewProvider, undefined, selectBoxOptions);
+		this._optionsDictionary = new Map<string, number>();
+		for (let i = 0; i < options.length; i++) {
+			this._optionsDictionary.set(options[i], i);
 		}
-		super.select(this._optionsDictionary[selectedOption]);
+		const option = this._optionsDictionary.get(selectedOption);
+		if (option) {
+			super.select(option);
+		}
 		this._selectedOption = selectedOption;
 		this._dialogOptions = options;
 		this._register(this.onDidSelect(newInput => {
@@ -66,8 +76,8 @@ export class SelectBox extends vsSelectBox {
 		this.enabledSelectForeground = this.selectForeground;
 		this.enabledSelectBorder = this.selectBorder;
 		this.disabledSelectBackground = Color.transparent;
-		this.disabledSelectForeground = null;
-		this.disabledSelectBorder = null;
+		this.disabledSelectForeground = undefined;
+		this.disabledSelectBorder = undefined;
 		this.contextViewProvider = contextViewProvider;
 		if (container) {
 			this.element = dom.append(container, $('.monaco-selectbox.idle'));
@@ -77,7 +87,7 @@ export class SelectBox extends vsSelectBox {
 		this.selectElement.setAttribute('role', 'combobox');
 
 		this._selectBoxOptions = selectBoxOptions;
-		var focusTracker = dom.trackFocus(this.selectElement);
+		let focusTracker = dom.trackFocus(this.selectElement);
 		this._register(focusTracker);
 		this._register(focusTracker.onDidBlur(() => this._hideMessage()));
 		this._register(focusTracker.onDidFocus(() => this._showMessage()));
@@ -92,16 +102,20 @@ export class SelectBox extends vsSelectBox {
 		this.disabledSelectForeground = styles.disabledSelectForeground;
 		this.inputValidationInfoBorder = styles.inputValidationInfoBorder;
 		this.inputValidationInfoBackground = styles.inputValidationInfoBackground;
+		this.inputValidationInfoForeground = styles.inputinputValidationInfoForeground;
 		this.inputValidationWarningBorder = styles.inputValidationWarningBorder;
 		this.inputValidationWarningBackground = styles.inputValidationWarningBackground;
+		this.inputValidationWarningForeground = styles.inputValidationWarningForeground;
 		this.inputValidationErrorBorder = styles.inputValidationErrorBorder;
 		this.inputValidationErrorBackground = styles.inputValidationErrorBackground;
+		this.inputValidationErrorForeground = styles.inputValidationErrorForeground;
 		this.applyStyles();
 	}
 
 	public selectWithOptionName(optionName: string): void {
-		if (this._optionsDictionary[optionName]) {
-			this.select(this._optionsDictionary[optionName]);
+		const option = this._optionsDictionary.get(optionName);
+		if (option) {
+			this.select(option);
 		} else {
 			this.select(0);
 		}
@@ -114,13 +128,19 @@ export class SelectBox extends vsSelectBox {
 		}
 	}
 
-	public setOptions(options: string[], selected?: number, disabled?: number): void {
-		this._optionsDictionary = [];
-		for (var i = 0; i < options.length; i++) {
-			this._optionsDictionary[options[i]] = i;
+	public setOptions(options: string[] | ISelectOptionItem[], selected?: number): void {
+		let stringOptions: string[];
+		if (options.length > 0 && typeof options[0] !== 'string') {
+			stringOptions = (options as ISelectOptionItem[]).map(option => option.text);
+		} else {
+			stringOptions = options as string[];
 		}
-		this._dialogOptions = options;
-		super.setOptions(options, selected, disabled);
+		this._optionsDictionary = new Map<string, number>();
+		for (let i = 0; i < stringOptions.length; i++) {
+			this._optionsDictionary.set(stringOptions[i], i);
+		}
+		this._dialogOptions = stringOptions;
+		super.setOptions(stringOptions.map(option => { return { text: option }; }), selected);
 	}
 
 	public get value(): string {
@@ -154,11 +174,13 @@ export class SelectBox extends vsSelectBox {
 	public showMessage(message: IMessage): void {
 		this.message = message;
 
-		dom.removeClass(this.element, 'idle');
-		dom.removeClass(this.element, 'info');
-		dom.removeClass(this.element, 'warning');
-		dom.removeClass(this.element, 'error');
-		dom.addClass(this.element, this.classForType(message.type));
+		if (this.element) {
+			dom.removeClass(this.element, 'idle');
+			dom.removeClass(this.element, 'info');
+			dom.removeClass(this.element, 'warning');
+			dom.removeClass(this.element, 'error');
+			dom.addClass(this.element, this.classForType(message.type));
+		}
 
 		// ARIA Support
 		let alertText: string;
@@ -179,6 +201,7 @@ export class SelectBox extends vsSelectBox {
 
 	public _showMessage(): void {
 		if (this.message && this.contextViewProvider && this.element) {
+			const message = this.message;
 			let div: HTMLElement;
 			let layout = () => div.style.width = dom.getTotalWidth(this.selectElement) + 'px';
 
@@ -194,12 +217,12 @@ export class SelectBox extends vsSelectBox {
 						className: 'monaco-inputbox-message'
 					};
 
-					let spanElement: HTMLElement = (this.message.formatContent
-						? renderFormattedText(this.message.content, renderOptions)
-						: renderText(this.message.content, renderOptions)) as any;
-					dom.addClass(spanElement, this.classForType(this.message.type));
+					let spanElement: HTMLElement = (message.formatContent
+						? renderFormattedText(message.content, renderOptions)
+						: renderText(message.content, renderOptions)) as any;
+					dom.addClass(spanElement, this.classForType(message.type));
 
-					const styles = this.stylesForType(this.message.type);
+					const styles = this.stylesForType(message.type);
 					spanElement.style.backgroundColor = styles.background ? styles.background.toString() : null;
 					spanElement.style.border = styles.border ? `1px solid ${styles.border}` : null;
 
@@ -213,8 +236,6 @@ export class SelectBox extends vsSelectBox {
 	}
 
 	public hideMessage(): void {
-		this.message = null;
-
 		dom.removeClass(this.element, 'info');
 		dom.removeClass(this.element, 'warning');
 		dom.removeClass(this.element, 'error');
@@ -222,15 +243,17 @@ export class SelectBox extends vsSelectBox {
 
 		this._hideMessage();
 		this.applyStyles();
+
+		this.message = undefined;
 	}
 
 	private _hideMessage(): void {
-		if (this.contextViewProvider) {
+		if (this.message && this.contextViewProvider) {
 			this.contextViewProvider.hideContextView();
 		}
 	}
 
-	private classForType(type: MessageType): string {
+	private classForType(type: MessageType | undefined): string {
 		switch (type) {
 			case MessageType.INFO: return 'info';
 			case MessageType.WARNING: return 'warning';
@@ -238,11 +261,11 @@ export class SelectBox extends vsSelectBox {
 		}
 	}
 
-	private stylesForType(type: MessageType): { border: Color; background: Color } {
+	private stylesForType(type: MessageType | undefined): { border: Color | undefined; background: Color | undefined; foreground: Color | undefined } {
 		switch (type) {
-			case MessageType.INFO: return { border: this.inputValidationInfoBorder, background: this.inputValidationInfoBackground };
-			case MessageType.WARNING: return { border: this.inputValidationWarningBorder, background: this.inputValidationWarningBackground };
-			default: return { border: this.inputValidationErrorBorder, background: this.inputValidationErrorBackground };
+			case MessageType.INFO: return { border: this.inputValidationInfoBorder, background: this.inputValidationInfoBackground, foreground: this.inputValidationInfoForeground };
+			case MessageType.WARNING: return { border: this.inputValidationWarningBorder, background: this.inputValidationWarningBackground, foreground: this.inputValidationWarningForeground };
+			default: return { border: this.inputValidationErrorBorder, background: this.inputValidationErrorBackground, foreground: this.inputValidationErrorForeground };
 		}
 	}
 

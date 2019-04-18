@@ -2,31 +2,29 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
+
 import 'vs/css!sql/parts/profiler/media/profiler';
 
 import { Modal } from 'sql/workbench/browser/modal/modal';
 import { attachModalDialogStyler } from 'sql/platform/theme/common/styler';
 import { ProfilerInput } from 'sql/parts/profiler/editor/profilerInput';
-import * as TelemetryKeys from 'sql/common/telemetryKeys';
+import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
+import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
-import { IPartService } from 'vs/workbench/services/part/common/partService';
 import * as nls from 'vs/nls';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { Builder } from 'sql/base/browser/builder';
 import { SelectBox } from 'vs/base/browser/ui/selectBox/selectBox';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import * as DOM from 'vs/base/browser/dom';
 import { IDataSource, ITree, IRenderer } from 'vs/base/parts/tree/browser/tree';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { Event, Emitter } from 'vs/base/common/event';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
+import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 
 class EventItem {
 
@@ -210,8 +208,8 @@ class TreeRenderer implements IRenderer {
 	}
 
 	renderTemplate(tree: ITree, templateId: string, container: HTMLElement): RenderTemplate {
-		let data = Object.create(null);
-		let row = document.createElement('div');
+		const data = Object.create(null);
+		const row = document.createElement('div');
 		row.className = 'tree-row';
 		DOM.append(container, row);
 		data.toDispose = [];
@@ -272,25 +270,25 @@ class TreeDataSource implements IDataSource {
 		}
 	}
 
-	getChildren(tree: ITree, element: any): TPromise<Array<any>> {
+	getChildren(tree: ITree, element: any): Promise<Array<any>> {
 		if (element instanceof EventItem) {
-			return TPromise.as(element.getChildren());
+			return Promise.resolve(element.getChildren());
 		} else if (element instanceof SessionItem) {
-			return TPromise.as(element.getChildren());
+			return Promise.resolve(element.getChildren());
 		} else {
-			return TPromise.as(null);
+			return Promise.resolve(null);
 		}
 	}
 
-	getParent(tree: ITree, element: any): TPromise<any> {
+	getParent(tree: ITree, element: any): Promise<any> {
 		if (element instanceof ColumnItem) {
-			return TPromise.as(element.parent);
+			return Promise.resolve(element.parent);
 		} else if (element instanceof EventItem) {
-			return TPromise.as(element.parent);
+			return Promise.resolve(element.parent);
 		} else if (element instanceof ColumnSortedColumnItem) {
-			return TPromise.as(element.parent);
+			return Promise.resolve(element.parent);
 		} else {
-			return TPromise.as(null);
+			return Promise.resolve(null);
 		}
 	}
 
@@ -302,25 +300,23 @@ class TreeDataSource implements IDataSource {
 export class ProfilerColumnEditorDialog extends Modal {
 
 	private _selectBox: SelectBox;
-	private _selectedValue: number = 0;
 	private readonly _options = [
-		nls.localize('eventSort', "Sort by event"),
-		nls.localize('nameColumn', "Sort by column")
+		{ text: nls.localize('eventSort', "Sort by event") },
+		{ text: nls.localize('nameColumn', "Sort by column") }
 	];
 	private _tree: Tree;
-	private _input: ProfilerInput;
 	private _element: SessionItem;
 	private _treeContainer: HTMLElement;
 
 	constructor(
-		@IPartService _partService: IPartService,
+		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
 		@IThemeService themeService: IThemeService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IContextViewService private _contextViewService: IContextViewService,
 		@IClipboardService clipboardService: IClipboardService
 	) {
-		super(nls.localize('profilerColumnDialog.profiler', 'Profiler'), TelemetryKeys.Profiler, _partService, telemetryService, clipboardService, themeService, contextKeyService);
+		super(nls.localize('profilerColumnDialog.profiler', 'Profiler'), TelemetryKeys.Profiler, telemetryService, layoutService, clipboardService, themeService, contextKeyService);
 	}
 
 	public render(): void {
@@ -331,29 +327,22 @@ export class ProfilerColumnEditorDialog extends Modal {
 	}
 
 	protected renderBody(container: HTMLElement): void {
-		let builder = new Builder(container);
-		builder.div({}, b => {
-			this._selectBox = new SelectBox(this._options, 0, this._contextViewService);
-			this._selectBox.render(b.getHTMLElement());
-			this._register(this._selectBox.onDidSelect(e => {
-				this._selectedValue = e.index;
-				this._element.changeSort(e.index === 0 ? 'event' : 'column');
-				this._tree.refresh(this._element, true);
-			}));
-		});
-
-		builder.div({ 'class': 'profiler-column-tree' }, b => {
-			this._treeContainer = b.getHTMLElement();
-			let renderer = new TreeRenderer();
-			this._tree = new Tree(this._treeContainer, { dataSource: new TreeDataSource(), renderer });
-			this._register(renderer.onSelectedChange(e => this._tree.refresh(e, true)));
-			this._register(attachListStyler(this._tree, this._themeService));
-		});
+		const body = DOM.append(container, DOM.$(''));
+		this._selectBox = new SelectBox(this._options, 0, this._contextViewService);
+		this._selectBox.render(body);
+		this._register(this._selectBox.onDidSelect(e => {
+			this._element.changeSort(e.index === 0 ? 'event' : 'column');
+			this._tree.refresh(this._element, true);
+		}));
+		this._treeContainer = DOM.append(body, DOM.$('.profiler-column-tree'));
+		const renderer = new TreeRenderer();
+		this._tree = new Tree(this._treeContainer, { dataSource: new TreeDataSource(), renderer });
+		this._register(renderer.onSelectedChange(e => this._tree.refresh(e, true)));
+		this._register(attachListStyler(this._tree, this._themeService));
 	}
 
 	public open(input: ProfilerInput): void {
 		super.show();
-		this._input = input;
 		this._updateList();
 	}
 

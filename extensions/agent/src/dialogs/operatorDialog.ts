@@ -97,20 +97,18 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 		this.generalTab.registerContent(async view => {
 
 			this.nameTextBox = view.modelBuilder.inputBox().component();
-
-			this.enabledCheckBox = view.modelBuilder.checkBox()
-				.withProperties({
-					label: OperatorDialog.EnabledCheckboxLabel
-				}).component();
-			this.enabledCheckBox.checked = true;
+			this.nameTextBox.value = this.model.name;
 			this.emailNameTextBox = view.modelBuilder.inputBox().component();
+			this.emailNameTextBox.value = this.model.emailAddress;
 
 			this.pagerEmailNameTextBox = view.modelBuilder.inputBox().component();
+			this.pagerEmailNameTextBox.value = this.model.pagerAddress;
 
 			this.enabledCheckBox = view.modelBuilder.checkBox()
 				.withProperties({
 					label: OperatorDialog.EnabledCheckboxLabel
 				}).component();
+			this.enabledCheckBox.checked = this.model.enabled;
 
 			this.pagerMondayCheckBox = view.modelBuilder.checkBox()
 				.withProperties({
@@ -367,7 +365,6 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 					}] ,
 					title: OperatorDialog.PagerDutyScheduleLabel
 				}]).withLayout({ width: '100%' }).component();
-
 			await view.initializeModel(formModel);
 		});
 	}

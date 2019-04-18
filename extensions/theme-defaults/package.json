@@ -14,5 +14,12 @@
 				"path": "./themes/hc_black.json"
 			}
 		]
-	}
+	},
+	"iconThemes": [
+		{
+			"id": "vs-minimal",
+			"label": "Minimal (Azure Data Studio)",
+			"path": "./fileicons/vs_minimal-icon-theme.json"
+		}
+	]
 }

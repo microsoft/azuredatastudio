@@ -16,10 +16,30 @@ const PortInputWidth = '100px';
 const RestoreDefaultValuesText = localize('bdc-create.RestoreDefaultValuesText', 'Restore Default Values');
 
 export class SettingsPage extends WizardPageBase<CreateClusterWizard> {
+	private acceptEulaCheckbox: azdata.CheckBoxComponent;
+
 	constructor(wizard: CreateClusterWizard) {
 		super(localize('bdc-create.settingsPageTitle', 'Settings'),
 			localize('bdc-create.settingsPageDescription', 'Configure the settings required for deploying SQL Server big data cluster'),
 			wizard);
+	}
+
+	public onEnter(): void {
+		this.wizard.wizardObject.registerNavigationValidator((e) => {
+			if (e.lastPage > e.newPage) {
+				this.wizard.wizardObject.message = null;
+				return true;
+			}
+			if (!this.acceptEulaCheckbox.checked) {
+				this.wizard.wizardObject.message = {
+					text: localize('bdc-create.EulaNotAccepted', 'You need to accept the terms of services and privacy policy in order to proceed'),
+					level: azdata.window.MessageLevel.Error
+				};
+			} else {
+				this.wizard.wizardObject.message = null;
+			}
+			return this.acceptEulaCheckbox.checked;
+		});
 	}
 
 	protected initialize(view: azdata.ModelView): Thenable<void> {
@@ -37,6 +57,14 @@ export class SettingsPage extends WizardPageBase<CreateClusterWizard> {
 			let formBuilder = view.modelBuilder.formContainer();
 
 			// User settings
+			let clusterNameInput = this.createInputWithLabel(view, {
+				label: localize('bdc-create.ClusterName', 'Cluster name'),
+				inputWidth: UserNameInputWidth,
+				isRequiredField: true
+			}, (input) => {
+				this.wizard.model.clusterName = input.value;
+			});
+
 			let adminUserNameInput = this.createInputWithLabel(view, {
 				label: localize('bdc-create.AdminUsernameText', 'Admin username'),
 				isRequiredField: true,
@@ -106,14 +134,14 @@ export class SettingsPage extends WizardPageBase<CreateClusterWizard> {
 				label: RestoreDefaultValuesText,
 				width: 200
 			}).component();
-			restorePortSettingsButton.onDidClick(() => {
+			this.wizard.registerDisposable(restorePortSettingsButton.onDidClick(() => {
 				sqlPortInput.input.value = clusterPorts.sql;
 				knoxPortInput.input.value = clusterPorts.knox;
 				controllerPortInput.input.value = clusterPorts.controller;
 				proxyPortInput.input.value = clusterPorts.proxy;
 				grafanaPortInput.input.value = clusterPorts.grafana;
 				kibanaPortInput.input.value = clusterPorts.kibana;
-			});
+			}));
 
 			// Container Registry Settings
 			const registryUserNamePasswordHintText = localize('bdc-create.RegistryUserNamePasswordHintText', 'only required for private registries');
@@ -166,44 +194,43 @@ export class SettingsPage extends WizardPageBase<CreateClusterWizard> {
 				label: RestoreDefaultValuesText,
 				width: 200
 			}).component();
-			restoreContainerSettingsButton.onDidClick(() => {
+			this.wizard.registerDisposable(restoreContainerSettingsButton.onDidClick(() => {
 				registryInput.input.value = containerRegistryInfo.registry;
 				repositoryInput.input.value = containerRegistryInfo.repository;
 				imageTagInput.input.value = containerRegistryInfo.imageTag;
-			});
+			}));
 
-			let basicSettingsGroup = view.modelBuilder.groupContainer().withItems([adminUserNameInput.row, adminPasswordInput.row]).withLayout({ header: localize('bdc-create.BasicSettingsText', 'Basic Settings'), collapsible: true }).component();
+			let basicSettingsGroup = view.modelBuilder.groupContainer().withItems([clusterNameInput.row, adminUserNameInput.row, adminPasswordInput.row]).withLayout({ header: localize('bdc-create.BasicSettingsText', 'Basic Settings'), collapsible: true }).component();
 			let containerSettingsGroup = view.modelBuilder.groupContainer().withItems([registryInput.row, repositoryInput.row, imageTagInput.row, registryUserNameInput.row, registryPasswordInput.row, restoreContainerSettingsButton]).withLayout({ header: localize('bdc-create.ContainerRegistrySettings', 'Container Registry Settings'), collapsible: true }).component();
 			let portSettingsGroup = view.modelBuilder.groupContainer().withItems([sqlPortInput.row, knoxPortInput.row, controllerPortInput.row, proxyPortInput.row, grafanaPortInput.row, kibanaPortInput.row, restorePortSettingsButton]).withLayout({ header: localize('bdc-create.PortSettings', 'Port Settings (Optional)'), collapsible: true, collapsed: true }).component();
 
-			let acceptEulaCheckbox = view.modelBuilder.checkBox().component();
-			acceptEulaCheckbox.checked = false;
+			this.acceptEulaCheckbox = view.modelBuilder.checkBox().component();
+			this.acceptEulaCheckbox.checked = false;
 
 			let eulaLink: azdata.LinkArea = {
-				text: localize('bdc-create.LicenseAgreementText', 'License Agreement'),
-				url: 'https://docs.microsoft.com/en-us/sql/getting-started/about-the-sql-server-license-terms?view=sql-server-2014'
+				text: localize('bdc-create.LicenseTerms', 'license terms'),
+				url: 'https://go.microsoft.com/fwlink/?LinkId=2002534'
 			};
 			let privacyPolicyLink: azdata.LinkArea = {
-				text: localize('bdc-create.PrivacyPolicyText', 'Privacy Policy'),
-				url: 'https://privacy.microsoft.com/en-us/privacystatement'
+				text: localize('bdc-create.PrivacyPolicyText', 'privacy policy'),
+				url: 'https://go.microsoft.com/fwlink/?LinkId=853010'
 			};
 
 			let checkboxText = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 				value: localize({
 					key: 'bdc-create.AcceptTermsText',
-					comment: ['{0} is the place holder for License Agreement, {1} is the place holder for Privacy Policy']
+					comment: ['{0} is the place holder for license terms, {1} is the place holder for privacy policy']
 				}, 'I accept the {0} and {1}.'),
 				links: [eulaLink, privacyPolicyLink]
 			}).component();
 
-			let eulaContainer = this.createRow(view, [acceptEulaCheckbox, checkboxText]);
+			let eulaContainer = this.createRow(view, [this.acceptEulaCheckbox, checkboxText]);
 
 			let form = formBuilder.withFormItems([
 				{
 					title: '',
 					component: eulaContainer
-				},
-				{
+				}, {
 					title: '',
 					component: basicSettingsGroup
 				}, {
@@ -234,9 +261,9 @@ export class SettingsPage extends WizardPageBase<CreateClusterWizard> {
 		input.width = options.inputWidth;
 		text.width = '150px';
 		input.placeHolder = options.placeHolder;
-		input.onTextChanged(() => {
+		this.wizard.registerDisposable(input.onTextChanged(() => {
 			textChangedHandler(input);
-		});
+		}));
 		input.value = options.initialValue;
 		let row = this.createRow(view, [text, input]);
 		return {

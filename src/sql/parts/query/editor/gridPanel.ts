@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import * as pretty from 'pretty-data';
 
@@ -13,17 +12,16 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { ScrollableSplitView, IView } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
 import { MouseWheelSupport } from 'sql/base/browser/ui/table/plugins/mousewheelTableScroll.plugin';
 import { AutoColumnSize } from 'sql/base/browser/ui/table/plugins/autoSizeColumns.plugin';
-import { SaveFormat } from 'sql/parts/grid/common/interfaces';
+import { SaveFormat } from 'sql/workbench/parts/grid/common/interfaces';
 import { IGridActionContext, SaveResultAction, CopyResultAction, SelectAllGridAction, MaximizeTableAction, RestoreTableAction, ChartDataAction } from 'sql/parts/query/editor/actions';
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
 import { RowNumberColumn } from 'sql/base/browser/ui/table/plugins/rowNumberColumn.plugin';
 import { escape } from 'sql/base/common/strings';
-import { hyperLinkFormatter, textFormatter } from 'sql/parts/grid/services/sharedServices';
+import { hyperLinkFormatter, textFormatter } from 'sql/base/browser/ui/table/formatters';
 import { CopyKeybind } from 'sql/base/browser/ui/table/plugins/copyKeybind.plugin';
 import { AdditionalKeyBindings } from 'sql/base/browser/ui/table/plugins/additionalKeyBindings.plugin';
 import { ITableStyles, ITableMouseEvent } from 'sql/base/browser/ui/table/interfaces';
 import { warn } from 'sql/base/common/log';
-import { $ } from 'sql/base/browser/builder';
 
 import * as azdata from 'azdata';
 
@@ -38,7 +36,6 @@ import { range } from 'vs/base/common/arrays';
 import { Orientation } from 'vs/base/browser/ui/splitview/splitview';
 import { Disposable, IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { generateUuid } from 'vs/base/common/uuid';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { Separator, ActionBar, ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { isInDOM } from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -202,6 +199,10 @@ export class GridPanel extends ViewletPanel {
 		if (this.state && this.state.scrollPosition) {
 			this.splitView.setScrollPosition(this.state.scrollPosition);
 		}
+	}
+
+	public resetScrollPosition(): void {
+		this.splitView.setScrollPosition(this.state.scrollPosition);
 	}
 
 	private onResultSet(resultSet: azdata.ResultSetSummary | azdata.ResultSetSummary[]) {
@@ -406,13 +407,15 @@ class GridTable<T> extends Disposable implements IView {
 	private scrolled = false;
 	private visible = false;
 
+	private rowHeight: number;
+
 	public get resultSet(): azdata.ResultSetSummary {
 		return this._resultSet;
 	}
 
 	// this handles if the row count is small, like 4-5 rows
 	private get maxSize(): number {
-		return ((this.resultSet.rowCount) * ROW_HEIGHT) + HEADER_HEIGHT + ESTIMATED_SCROLL_BAR_HEIGHT;
+		return ((this.resultSet.rowCount) * this.rowHeight) + HEADER_HEIGHT + ESTIMATED_SCROLL_BAR_HEIGHT;
 	}
 
 	constructor(
@@ -426,6 +429,8 @@ class GridTable<T> extends Disposable implements IView {
 		@IConfigurationService private configurationService: IConfigurationService
 	) {
 		super();
+		let config = this.configurationService.getValue<{ rowHeight: number }>('resultsGrid');
+		this.rowHeight = config && config.rowHeight ? config.rowHeight : ROW_HEIGHT;
 		this.state = state;
 		this.container.style.width = '100%';
 		this.container.style.height = '100%';
@@ -468,7 +473,7 @@ class GridTable<T> extends Disposable implements IView {
 			50,
 			index => this.placeholdGenerator(index),
 			0,
-			() => TPromise.as([])
+			() => Promise.resolve([])
 		);
 		this.dataProvider.dataRows = collection;
 		this.table.updateRowCount();
@@ -487,7 +492,7 @@ class GridTable<T> extends Disposable implements IView {
 			50,
 			index => this.placeholdGenerator(index),
 			0,
-			() => TPromise.as([])
+			() => Promise.resolve([])
 		);
 		collection.setCollectionChangedCallback((startIndex, count) => {
 			this.renderGridDataRowsRange(startIndex, count);
@@ -499,7 +504,7 @@ class GridTable<T> extends Disposable implements IView {
 		});
 		this.columns.unshift(this.rowNumberColumn.getColumnDefinition());
 		let tableOptions: Slick.GridOptions<T> = {
-			rowHeight: ROW_HEIGHT,
+			rowHeight: this.rowHeight,
 			showRowNumber: true,
 			forceFitColumns: false,
 			defaultColumnWidth: 120
@@ -508,7 +513,7 @@ class GridTable<T> extends Disposable implements IView {
 		this.table = this._register(new Table(tableContainer, { dataProvider: this.dataProvider, columns: this.columns }, tableOptions));
 		this.table.setSelectionModel(this.selectionModel);
 		this.table.registerPlugin(new MouseWheelSupport());
-		this.table.registerPlugin(new AutoColumnSize({ autoSizeOnRender: !this.state.columnSizes && this.configurationService.getValue('resultsGrid.autoSizeColumns') }));
+		this.table.registerPlugin(new AutoColumnSize({ autoSizeOnRender: !this.state.columnSizes && this.configurationService.getValue('resultsGrid.autoSizeColumns'), maxWidth: this.configurationService.getValue<number>('resultsGrid.maxColumnWidth') }));
 		this.table.registerPlugin(copyHandler);
 		this.table.registerPlugin(this.rowNumberColumn);
 		this.table.registerPlugin(new AdditionalKeyBindings());
@@ -653,7 +658,7 @@ class GridTable<T> extends Disposable implements IView {
 			this.dataProvider.length = resultSet.rowCount;
 			this.table.updateRowCount();
 		}
-		this._onDidChange.fire();
+		this._onDidChange.fire(undefined);
 	}
 
 	private generateContext(cell?: Slick.Cell): IGridActionContext {
@@ -806,7 +811,7 @@ class GridTable<T> extends Disposable implements IView {
 	}
 
 	public dispose() {
-		$(this.container).destroy();
+		this.container.remove();
 		this.table.dispose();
 		this.actionBar.dispose();
 		super.dispose();

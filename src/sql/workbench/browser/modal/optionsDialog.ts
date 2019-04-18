@@ -16,7 +16,6 @@ import { ScrollableSplitView } from 'sql/base/browser/ui/scrollableSplitview/scr
 
 import * as azdata from 'azdata';
 
-import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { Event, Emitter } from 'vs/base/common/event';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { IContextViewService, IContextMenuService } from 'vs/platform/contextview/browser/contextView';
@@ -27,13 +26,14 @@ import { IWorkbenchThemeService, IColorTheme } from 'vs/workbench/services/theme
 import { contrastBorder } from 'vs/platform/theme/common/colorRegistry';
 import * as styler from 'vs/platform/theme/common/styler';
 import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
-import { Builder, $ } from 'sql/base/browser/builder';
 import { Widget } from 'vs/base/browser/ui/widget';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IViewletPanelOptions, ViewletPanel } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
+import { append, $ } from 'vs/base/browser/dom';
 
 export class CategoryView extends ViewletPanel {
 
@@ -68,9 +68,9 @@ export interface IOptionsDialogOptions extends IModalOptions {
 export class OptionsDialog extends Modal {
 	private _body: HTMLElement;
 	private _optionGroups: HTMLElement;
-	private _dividerBuilder: Builder;
-	private _optionTitle: Builder;
-	private _optionDescription: Builder;
+	private _dividerBuilder: HTMLElement;
+	private _optionTitle: HTMLElement;
+	private _optionDescription: HTMLElement;
 	private _optionElements: { [optionName: string]: OptionsDialogHelper.IOptionElement } = {};
 	private _optionValues: { [optionName: string]: string };
 	private _optionRowSize = 31;
@@ -87,8 +87,8 @@ export class OptionsDialog extends Modal {
 	constructor(
 		title: string,
 		name: string,
-		private options: IOptionsDialogOptions,
-		@IPartService partService: IPartService,
+		options: IOptionsDialogOptions,
+		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
 		@IWorkbenchThemeService private _workbenchThemeService: IWorkbenchThemeService,
 		@IContextViewService private _contextViewService: IContextViewService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
@@ -96,7 +96,7 @@ export class OptionsDialog extends Modal {
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IClipboardService clipboardService: IClipboardService
 	) {
-		super(title, name, partService, telemetryService, clipboardService, _workbenchThemeService, contextKeyService, options);
+		super(title, name, telemetryService, layoutService, clipboardService, _workbenchThemeService, contextKeyService, options);
 	}
 
 	public render() {
@@ -116,23 +116,17 @@ export class OptionsDialog extends Modal {
 	}
 
 	protected renderBody(container: HTMLElement) {
-		new Builder(container).div({ class: 'optionsDialog-options' }, (bodyBuilder) => {
-			this._body = bodyBuilder.getHTMLElement();
-		});
+		this._body = append(container, $('div.optionsDialog-options'));
 
-		let builder = new Builder(this._body);
-		builder.div({}, (dividerContainer) => {
-			this._dividerBuilder = dividerContainer;
-		});
+		this._dividerBuilder = append(this._body, $('div'));
 
-		builder.div({ class: 'optionsDialog-description' }, (descriptionContainer) => {
-			descriptionContainer.div({ class: 'modal-title' }, (optionTitle) => {
-				this._optionTitle = optionTitle;
-			});
-			descriptionContainer.div({ class: 'optionsDialog-description-content' }, (optionDescription) => {
-				this._optionDescription = optionDescription;
-			});
-		});
+		this._optionGroups = append(this._body, $('div.optionsDialog-options-groups.monaco-panel-view'));
+		this.splitview = new ScrollableSplitView(this._optionGroups, { enableResizing: false, scrollDebounce: 0 });
+
+		const descriptionContainer = append(this._body, $('div.optionsDialog-description'));
+
+		this._optionTitle = append(descriptionContainer, $('div.modal-title'));
+		this._optionDescription = append(descriptionContainer, $('div.optionsDialog-description-content'));
 	}
 
 	// Update theming that is specific to options dialog flyout body
@@ -140,19 +134,19 @@ export class OptionsDialog extends Modal {
 		let borderColor = theme.getColor(contrastBorder);
 		let border = borderColor ? borderColor.toString() : null;
 		if (this._dividerBuilder) {
-			this._dividerBuilder.style('border-top-width', border ? '1px' : null);
-			this._dividerBuilder.style('border-top-style', border ? 'solid' : null);
-			this._dividerBuilder.style('border-top-color', border);
+			this._dividerBuilder.style.borderTopWidth = border ? '1px' : null;
+			this._dividerBuilder.style.borderTopStyle = border ? 'solid' : null;
+			this._dividerBuilder.style.borderTopColor = border;
 		}
 	}
 
 	private onOptionLinkClicked(optionName: string): void {
 		let option = this._optionElements[optionName].option;
-		this._optionTitle.text(option.displayName);
-		this._optionDescription.text(option.description);
+		this._optionTitle.innerText = option.displayName;
+		this._optionDescription.innerText = option.description;
 	}
 
-	private fillInOptions(container: Builder, options: azdata.ServiceOption[]): void {
+	private fillInOptions(container: HTMLElement, options: azdata.ServiceOption[]): void {
 		for (let i = 0; i < options.length; i++) {
 			let option: azdata.ServiceOption = options[i];
 			let rowContainer = DialogHelper.appendRow(container, option.displayName, 'optionsDialog-label', 'optionsDialog-input');
@@ -176,6 +170,10 @@ export class OptionsDialog extends Modal {
 					this._register(styler.attachInputBoxStyler(<InputBox>widget, this._themeService));
 			}
 		}
+	}
+
+	private get options(): IOptionsDialogOptions {
+		return this._modalOptions as IOptionsDialogOptions;
 	}
 
 	public get optionValues(): { [name: string]: any } {
@@ -213,7 +211,6 @@ export class OptionsDialog extends Modal {
 	}
 
 	public close() {
-		this._optionGroups.remove();
 		this.dispose();
 		this.hide();
 		this._onCloseEvent.fire();
@@ -222,21 +219,15 @@ export class OptionsDialog extends Modal {
 	public open(options: azdata.ServiceOption[], optionValues: { [name: string]: any }) {
 		this._optionValues = optionValues;
 		let firstOption: string;
-		let containerGroup: Builder;
-		let optionsContentBuilder: Builder = $().div({ class: 'optionsDialog-options-groups monaco-panel-view' }, (container) => {
-			containerGroup = container;
-			this._optionGroups = container.getHTMLElement();
-		});
-		this.splitview = new ScrollableSplitView(containerGroup.getHTMLElement(), { enableResizing: false, scrollDebounce: 0 });
+		this.splitview.clear();
 		let categoryMap = OptionsDialogHelper.groupOptionsByCategory(options);
 		for (let category in categoryMap) {
 			let serviceOptions: azdata.ServiceOption[] = categoryMap[category];
-			let bodyContainer = $().element('table', { class: 'optionsDialog-table' }, (tableContainer: Builder) => {
-				this.fillInOptions(tableContainer, serviceOptions);
-			});
+			let bodyContainer = $('table.optionsDialog-table');
+			this.fillInOptions(bodyContainer, serviceOptions);
 
 			let viewSize = this._optionCategoryPadding + serviceOptions.length * this._optionRowSize;
-			let categoryView = this._instantiationService.createInstance(CategoryView, bodyContainer.getHTMLElement(), viewSize, { title: category, ariaHeaderLabel: category, id: category });
+			let categoryView = this._instantiationService.createInstance(CategoryView, bodyContainer, viewSize, { title: category, ariaHeaderLabel: category, id: category });
 			this.splitview.addView(categoryView, viewSize);
 			categoryView.render();
 			attachPanelStyler(categoryView, this._themeService);
@@ -248,8 +239,6 @@ export class OptionsDialog extends Modal {
 		if (this.height) {
 			this.splitview.layout(this.height - 120);
 		}
-		let body = new Builder(this._body);
-		body.append(optionsContentBuilder.getHTMLElement(), 0);
 		this.show();
 		let firstOptionWidget = this._optionElements[firstOption].optionWidget;
 		this.registerStyling();

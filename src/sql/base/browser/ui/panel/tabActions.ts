@@ -2,9 +2,9 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
 import { Action } from 'vs/base/common/actions';
 import * as nls from 'vs/nls';
-import { TPromise } from 'vs/base/common/winjs.base';
 
 export class CloseTabAction extends Action {
 	private static readonly ID = 'closeTab';
@@ -18,12 +18,12 @@ export class CloseTabAction extends Action {
 		super(CloseTabAction.ID, CloseTabAction.LABEL, CloseTabAction.ICON);
 	}
 
-	run(): TPromise<boolean> {
+	run(): Promise<boolean> {
 		try {
 			this.closeFn.apply(this.context);
-			return TPromise.as(true);
+			return Promise.resolve(true);
 		} catch (e) {
-			return TPromise.as(false);
+			return Promise.resolve(false);
 		}
 	}
 }

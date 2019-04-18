@@ -36,10 +36,6 @@ export class SchemaCompareResult {
 
 		this.editor = azdata.workspace.createModelViewEditor(localize('schemaCompare.Title', 'Schema Compare'), { retainContextWhenHidden: true, supportsSave: true });
 
-	}
-
-	public async initializeDialog()
-	{
 		this.editor.registerContent(async view => {
 			this.differencesTable = view.modelBuilder.table().withProperties({
 				data: [],
@@ -47,8 +43,8 @@ export class SchemaCompareResult {
 			}).component();
 
 			this.diffEditor = view.modelBuilder.diffeditor().withProperties({
-				contentLeft: '\n',
-				contentRight: '\n',
+				contentLeft: os.EOL,
+				contentRight: os.EOL,
 				height: 500,
 				title: localize('schemaCompare.ObjectDefinitionsTitle', 'Object Definitions')
 			}).component();
@@ -70,12 +66,14 @@ export class SchemaCompareResult {
 			this.createSwitchButton(view);
 			this.createCompareButton(view);
 			this.createGenerateScriptButton(view);
+			this.resetButtons();
 
 			let toolBar = view.modelBuilder.toolbarContainer();
 			toolBar.addToolbarItems([{
 				component: this.compareButton
 			}, {
-				component: this.generateScriptButton
+				component: this.generateScriptButton,
+				toolbarSeparatorAfter: true
 			},
 			{
 				component: this.switchButton
@@ -96,9 +94,9 @@ export class SchemaCompareResult {
 			this.sourceNameComponent = view.modelBuilder.table().withProperties({
 				columns: [
 					{
-						value: this.sourceName,
+						value: sourceName,
 						headerCssClass: 'no-borders',
-						toolTip: this.sourceName
+						toolTip: sourceName
 					},
 				]
 			}).component();
@@ -106,9 +104,9 @@ export class SchemaCompareResult {
 			this.targetNameComponent = view.modelBuilder.table().withProperties({
 				columns: [
 					{
-						value: this.targetName,
+						value: targetName,
 						headerCssClass: 'no-borders',
-						toolTip: this.targetName
+						toolTip: targetName
 					},
 				]
 			}).component();
@@ -128,7 +126,7 @@ export class SchemaCompareResult {
 			this.flexModel.addItem(toolBar.component(), { flex: 'none' });
 			this.flexModel.addItem(sourceTargetLabels, { flex: 'none' });
 			this.flexModel.addItem(this.sourceTargetFlexLayout, { flex: 'none' });
-			this.flexModel.addItem(this.loader, { CSSStyles: { 'margin-top': '2em' } });
+			this.flexModel.addItem(this.loader, { CSSStyles: { 'margin-top': '30px' } });
 			this.flexModel.setLayout({
 				flexFlow: 'column',
 				height: '100%'
@@ -136,21 +134,14 @@ export class SchemaCompareResult {
 
 			await view.initializeModel(this.flexModel);
 		});
-
-		await this.editor.openEditor();
 	}
 
-	public async start() {
-		await this.execute();
+	public start(): void {
+		this.editor.openEditor();
+		this.execute();
 	}
 
-	// Added for testing
-	public getComparisonResult(): azdata.SchemaCompareResult
-	{
-		return this.comparisonResult;
-	}
-
-	private async execute() {
+	private async execute(): Promise<void> {
 		let service = await SchemaCompareResult.getService('MSSQL');
 		this.comparisonResult = await service.schemaCompare(this.sourceEndpointInfo, this.targetEndpointInfo, azdata.TaskExecutionMode.execute);
 		if (!this.comparisonResult || !this.comparisonResult.success) {
@@ -159,6 +150,7 @@ export class SchemaCompareResult {
 		}
 
 		let data = this.getAllDifferences(this.comparisonResult.differences);
+
 		this.differencesTable.updateProperties({
 			data: data,
 			columns: [
@@ -195,13 +187,15 @@ export class SchemaCompareResult {
 		this.switchButton.enabled = true;
 		this.compareButton.enabled = true;
 
-		// only enable generate script button if the target is a db
-		if (this.targetEndpointInfo.endpointType === azdata.SchemaCompareEndpointType.database) {
-			this.toggleGenerateScriptButton(true);
-		}
-
 		if (this.comparisonResult.differences.length > 0) {
 			this.flexModel.addItem(this.splitView);
+
+			// only enable generate script button if the target is a db
+			if (this.targetEndpointInfo.endpointType === azdata.SchemaCompareEndpointType.database) {
+				this.generateScriptButton.enabled = true;
+			} else {
+				this.generateScriptButton.title = localize('schemaCompare.generateScriptButtonDisabledTitle', 'Generate script is enabled when the target is a database');
+			}
 		} else {
 			this.flexModel.addItem(this.noDifferencesLabel, { CSSStyles: { 'margin': 'auto' } });
 		}
@@ -216,7 +210,8 @@ export class SchemaCompareResult {
 
 				this.diffEditor.updateProperties({
 					contentLeft: sourceText,
-					contentRight: targetText
+					contentRight: targetText,
+					title: localize('schemaCompare.ObjectDefinitionsTitle', 'Object Definitions')
 				});
 			}
 		});
@@ -251,28 +246,26 @@ export class SchemaCompareResult {
 		return script;
 	}
 
-	private reExecute() {
+	private reExecute(): void {
 		this.flexModel.removeItem(this.splitView);
 		this.flexModel.removeItem(this.noDifferencesLabel);
-		this.flexModel.addItem(this.loader, { CSSStyles: { 'margin-top': '2em' } });
+		this.flexModel.addItem(this.loader, { CSSStyles: { 'margin-top': '30px' } });
 		this.diffEditor.updateProperties({
-			contentLeft: '\n',
-			contentRight: '\n'
+			contentLeft: os.EOL,
+			contentRight: os.EOL
 		});
 		this.differencesTable.selectedRows = null;
-		this.compareButton.enabled = false;
-		this.switchButton.enabled = false;
-		this.toggleGenerateScriptButton(false);
+		this.resetButtons();
 		this.execute();
 	}
 
-	private createCompareButton(view: azdata.ModelView) {
-		let runIcon = path.join(__dirname, '.', 'media', 'compare.svg');
-
+	private createCompareButton(view: azdata.ModelView): void {
 		this.compareButton = view.modelBuilder.button().withProperties({
 			label: localize('schemaCompare.compareButton', 'Compare'),
-			iconPath: runIcon,
-			enabled: false,
+			iconPath: {
+				light: path.join(__dirname, 'media', 'compare.svg'),
+				dark: path.join(__dirname, 'media', 'compare-inverse.svg')
+			},
 			title: localize('schemaCompare.compareButtonTitle', 'Compare')
 		}).component();
 
@@ -281,19 +274,19 @@ export class SchemaCompareResult {
 		});
 	}
 
-	private createGenerateScriptButton(view: azdata.ModelView) {
-		let fileIcon = path.join(__dirname, '.', 'media', 'generate-script.svg');
-
+	private createGenerateScriptButton(view: azdata.ModelView): void {
 		this.generateScriptButton = view.modelBuilder.button().withProperties({
 			label: localize('schemaCompare.generateScriptButton', 'Generate script'),
-			iconPath: fileIcon
+			iconPath: {
+				light : path.join(__dirname, 'media', 'generate-script.svg'),
+				dark: path.join(__dirname, 'media', 'generate-script-inverse.svg')
+			},
 		}).component();
-		this.toggleGenerateScriptButton(false);
 
 		this.generateScriptButton.onDidClick(async (click) => {
 			// get file path
 			let now = new Date();
-			let datetime = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate() + '-' + now.getHours() + '-' + now.getMinutes();
+			let datetime = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate() + '-' + now.getHours() + '-' + now.getMinutes() + '-' + now.getSeconds();
 			let defaultFilePath = path.join(os.homedir(), this.targetName + '_Update_' + datetime + '.sql');
 			let fileUri = await vscode.window.showSaveDialog(
 				{
@@ -313,23 +306,28 @@ export class SchemaCompareResult {
 			let result = await service.schemaCompareGenerateScript(this.comparisonResult.operationId, this.targetEndpointInfo.databaseName, fileUri.fsPath, azdata.TaskExecutionMode.execute);
 			if (!result || !result.success) {
 				vscode.window.showErrorMessage(
-					localize('schemaCompare.generateScriptErrorMessage', "Generate script failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
+					localize('schemaCompare.generateScriptErrorMessage', "Generate script failed: '{0}'", (result && result.errorMessage) ? result.errorMessage : 'Unknown'));
 			}
 		});
 	}
 
-	private toggleGenerateScriptButton(enable: boolean) {
-		this.generateScriptButton.enabled = enable ? true : false;
-		this.generateScriptButton.title = enable ? localize('schemaCompare.generateScriptEnabledButton', 'Generate script to deploy changes to target') : localize('schemaCompare.generateScriptButtonDisabledTitle', 'Generate script is enabled when the target is a database');
+	private resetButtons(): void {
+		this.compareButton.enabled = false;
+		this.switchButton.enabled = false;
+		this.generateScriptButton.enabled = false;
+		this.generateScriptButton.title = localize('schemaCompare.generateScriptEnabledButton', 'Generate script to deploy changes to target');
 	}
 
-	private createSwitchButton(view: azdata.ModelView) {
-		let swapIcon = path.join(__dirname, '.', 'media', 'switch-directions.svg');
+	private createSwitchButton(view: azdata.ModelView): void {
+		let swapIcon = path.join(__dirname, 'media', 'switch-directions.svg');
 
 		this.switchButton = view.modelBuilder.button().withProperties({
 			label: localize('schemaCompare.switchDirectionButton', 'Switch direction'),
-			iconPath: swapIcon,
-			enabled: false
+			iconPath: {
+				light : path.join(__dirname, 'media', 'switch-directions.svg'),
+				dark: path.join(__dirname, 'media', 'switch-directions-inverse.svg')
+			},
+			title: localize('schemaCompare.switchButtonTitle', 'Switch source and target')
 		}).component();
 
 		this.switchButton.onDidClick(async (click) => {
@@ -361,8 +359,8 @@ export class SchemaCompareResult {
 		});
 	}
 
-	private static async getService(providerName: string): Promise<azdata.DacFxServicesProvider> {
-		let service = await azdata.dataprotocol.getProvider<azdata.DacFxServicesProvider>(providerName, azdata.DataProviderType.DacFxServicesProvider);
+	private static async getService(providerName: string): Promise<azdata.SchemaCompareServicesProvider> {
+		let service = azdata.dataprotocol.getProvider<azdata.SchemaCompareServicesProvider>(providerName, azdata.DataProviderType.SchemaCompareServicesProvider);
 		return service;
 	}
 }

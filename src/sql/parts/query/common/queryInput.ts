@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { TPromise } from 'vs/base/common/winjs.base';
 import { localize } from 'vs/nls';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { Event, Emitter } from 'vs/base/common/event';
@@ -144,10 +143,11 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 	public showQueryResultsEditor(): void { this._showQueryResultsEditor.fire(); }
 	public updateSelection(selection: ISelectionData): void { this._updateSelection.fire(selection); }
 	public getTypeId(): string { return QueryInput.ID; }
+	// Description is shown beside the tab name in the combobox of open editors
 	public getDescription(): string { return this._description; }
 	public supportsSplitEditor(): boolean { return false; }
 	public getModeId(): string { return QueryInput.SCHEMA; }
-	public revert(): TPromise<boolean> { return this._sql.revert(); }
+	public revert(): Promise<boolean> { return this._sql.revert(); }
 
 	public matches(otherInput: any): boolean {
 		if (otherInput instanceof QueryInput) {
@@ -160,32 +160,39 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 	// Forwarding resource functions to the inline sql file editor
 	public get onDidModelChangeContent(): Event<void> { return this._sql.onDidModelChangeContent; }
 	public get onDidModelChangeEncoding(): Event<void> { return this._sql.onDidModelChangeEncoding; }
-	public resolve(refresh?: boolean): TPromise<EditorModel> { return this._sql.resolve(); }
-	public save(): TPromise<boolean> { return this._sql.save(); }
+	public resolve(refresh?: boolean): Promise<EditorModel> { return this._sql.resolve(); }
+	public save(): Promise<boolean> { return this._sql.save(); }
 	public isDirty(): boolean { return this._sql.isDirty(); }
-	public confirmSave(): TPromise<ConfirmResult> { return this._sql.confirmSave(); }
+	public confirmSave(): Promise<ConfirmResult> { return this._sql.confirmSave(); }
 	public getResource(): URI { return this._sql.getResource(); }
 	public getEncoding(): string { return this._sql.getEncoding(); }
 	public suggestFileName(): string { return this._sql.suggestFileName(); }
 
-	public getName(): string {
+	public getName(longForm?: boolean): string {
 		if (this._configurationService.getValue('sql.showConnectionInfoInTitle')) {
 			let profile = this._connectionManagementService.getConnectionProfile(this.uri);
 			let title = '';
+			if (this._description && this._description !== '') {
+			    title = this._description + ' ';
+			}
 			if (profile) {
 				if (profile.userName) {
-					title = `${profile.serverName}.${profile.databaseName} (${profile.userName})`;
+					title += `${profile.serverName}.${profile.databaseName} (${profile.userName})`;
 				} else {
-					title = `${profile.serverName}.${profile.databaseName} (${profile.authenticationType})`;
+					title += `${profile.serverName}.${profile.databaseName} (${profile.authenticationType})`;
 				}
 			} else {
-				title = localize('disconnected', 'disconnected');
+				title += localize('disconnected', 'disconnected');
 			}
-
-			return this._sql.getName() + ` - ${trimTitle(title)}`;
+			return this._sql.getName() + (longForm ?  (' - ' + title) : ` - ${trimTitle(title)}`);
 		} else {
 			return this._sql.getName();
 		}
+	}
+
+	// Called to get the tooltip of the tab
+	public getTitle() {
+		return this.getName(true);
 	}
 
 	public get hasAssociatedFilePath(): boolean { return this._sql.hasAssociatedFilePath; }

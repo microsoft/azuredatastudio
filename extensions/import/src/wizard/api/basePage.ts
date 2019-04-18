@@ -5,12 +5,12 @@
 'use strict';
 
 import * as azdata from 'azdata';
-import { BaseDataModel } from './models';
+import { ImportDataModel } from './models';
 
 export abstract class BasePage {
 
 	protected readonly wizardPage: azdata.window.WizardPage;
-	protected readonly model: BaseDataModel;
+	protected readonly model: ImportDataModel;
 	protected readonly view: azdata.ModelView;
 
 	/**

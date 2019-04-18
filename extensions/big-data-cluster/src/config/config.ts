@@ -7,9 +7,9 @@ import * as vscode from 'vscode';
 import { Host } from '../kubectl/host';
 import { Shell, Platform } from '../utility/shell';
 
-const EXTENSION_CONFIG_KEY = "mssql-bdc";
-const KUBECONFIG_PATH_KEY = "mssql-bdc.kubeconfig";
-const KNOWN_KUBECONFIGS_KEY = "mssql-bdc.knownKubeconfigs";
+const EXTENSION_CONFIG_KEY = 'mssql-bdc';
+const KUBECONFIG_PATH_KEY = 'mssql-bdc.kubeconfig';
+const KNOWN_KUBECONFIGS_KEY = 'mssql-bdc.knownKubeconfigs';
 
 export async function addPathToConfig(configKey: string, value: string): Promise<void> {
     await setConfigValue(configKey, value);

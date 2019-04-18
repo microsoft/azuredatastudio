@@ -2,6 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
 import 'vs/css!sql/media/icons/common-icons';
 import 'vs/css!./media/breadcrumb';
 
@@ -30,7 +31,7 @@ import { IDisposable } from 'vs/base/common/lifecycle';
 				`
 })
 export class BreadcrumbComponent implements OnInit, OnDestroy {
-	private menuItems: MenuItem[] = [];
+	protected menuItems: MenuItem[] = []; // used by angular template
 	private disposables: Array<IDisposable> = new Array();
 
 	constructor(

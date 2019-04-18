@@ -5,7 +5,7 @@
 
 import { Registry } from 'vs/platform/registry/common/platform';
 import * as nls from 'vs/nls';
-import { URI } from 'vs/base/common/uri';
+import { URI, UriComponents } from 'vs/base/common/uri';
 import { Action, IAction } from 'vs/base/common/actions';
 import { IEditorQuickOpenEntry, IQuickOpenRegistry, Extensions as QuickOpenExtensions, QuickOpenHandlerDescriptor } from 'vs/workbench/browser/quickopen';
 import { StatusbarItemDescriptor, IStatusbarRegistry, Extensions as StatusExtensions } from 'vs/workbench/browser/parts/statusbar/statusbar';
@@ -50,6 +50,9 @@ import { AllEditorsPicker, ActiveEditorGroupPicker } from 'vs/workbench/browser/
 import { Schemas } from 'vs/base/common/network';
 import { registerEditorContribution } from 'vs/editor/browser/editorExtensions';
 import { OpenWorkspaceButtonContribution } from 'vs/workbench/browser/parts/editor/editorWidgets';
+import { ZoomStatusbarItem } from 'vs/workbench/browser/parts/editor/resourceViewer';
+import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
+import { toLocalResource } from 'vs/base/common/resources';
 
 // Register String Editor
 Registry.as<IEditorRegistry>(EditorExtensions.Editors).registerEditor(
@@ -102,7 +105,7 @@ Registry.as<IEditorRegistry>(EditorExtensions.Editors).registerEditor(
 interface ISerializedUntitledEditorInput {
 	resource: string;
 	resourceJSON: object;
-	modeId: string;
+	modeId: string | null;
 	encoding: string;
 }
 
@@ -110,24 +113,25 @@ interface ISerializedUntitledEditorInput {
 class UntitledEditorInputFactory implements IEditorInputFactory {
 
 	constructor(
-		@ITextFileService private textFileService: ITextFileService
+		@ITextFileService private readonly textFileService: ITextFileService,
+		@IWorkbenchEnvironmentService private readonly environmentService: IWorkbenchEnvironmentService
 	) { }
 
-	serialize(editorInput: EditorInput): string {
+	serialize(editorInput: EditorInput): string | undefined {
 		if (!this.textFileService.isHotExitEnabled) {
-			return null; // never restore untitled unless hot exit is enabled
+			return undefined; // never restore untitled unless hot exit is enabled
 		}
 
 		const untitledEditorInput = <UntitledEditorInput>editorInput;
 
-		// {{SQL CARBON EDIT}}
+		// {{SQL CARBON EDIT}} @todo anthonydresser 4/12/19 investigate
 		if (!untitledEditorInput.getResource()) {
-			return null;
+			return undefined;
 		}
 
 		let resource = untitledEditorInput.getResource();
 		if (untitledEditorInput.hasAssociatedFilePath) {
-			resource = resource.with({ scheme: Schemas.file }); // untitled with associated file path use the file schema
+			resource = toLocalResource(resource, this.environmentService.configuration.remoteAuthority); // untitled with associated file path use the local schema
 		}
 
 		const serialized: ISerializedUntitledEditorInput = {
@@ -143,8 +147,8 @@ class UntitledEditorInputFactory implements IEditorInputFactory {
 	deserialize(instantiationService: IInstantiationService, serializedEditorInput: string): UntitledEditorInput {
 		return instantiationService.invokeFunction<UntitledEditorInput>(accessor => {
 			const deserialized: ISerializedUntitledEditorInput = JSON.parse(serializedEditorInput);
-			const resource = !!deserialized.resourceJSON ? URI.revive(deserialized.resourceJSON) : URI.parse(deserialized.resource);
-			const filePath = resource.scheme === Schemas.file ? resource.fsPath : void 0;
+			const resource = !!deserialized.resourceJSON ? URI.revive(<UriComponents>deserialized.resourceJSON) : URI.parse(deserialized.resource);
+			const filePath = resource.scheme === Schemas.untitled ? undefined : resource.scheme === Schemas.file ? resource.fsPath : resource.path;
 			const language = deserialized.modeId;
 			const encoding = deserialized.encoding;
 
@@ -169,7 +173,7 @@ interface ISerializedSideBySideEditorInput {
 // Register Side by Side Editor Input Factory
 class SideBySideEditorInputFactory implements IEditorInputFactory {
 
-	serialize(editorInput: EditorInput): string {
+	serialize(editorInput: EditorInput): string | undefined {
 		const input = <SideBySideEditorInput>editorInput;
 
 		if (input.details && input.master) {
@@ -194,10 +198,10 @@ class SideBySideEditorInputFactory implements IEditorInputFactory {
 			}
 		}
 
-		return null;
+		return undefined;
 	}
 
-	deserialize(instantiationService: IInstantiationService, serializedEditorInput: string): EditorInput {
+	deserialize(instantiationService: IInstantiationService, serializedEditorInput: string): EditorInput | undefined {
 		const deserialized: ISerializedSideBySideEditorInput = JSON.parse(serializedEditorInput);
 
 		const registry = Registry.as<IEditorInputFactoryRegistry>(EditorInputExtensions.EditorInputFactories);
@@ -213,7 +217,7 @@ class SideBySideEditorInputFactory implements IEditorInputFactory {
 			}
 		}
 
-		return null;
+		return undefined;
 	}
 }
 
@@ -226,6 +230,9 @@ registerEditorContribution(OpenWorkspaceButtonContribution);
 const statusBar = Registry.as<IStatusbarRegistry>(StatusExtensions.Statusbar);
 statusBar.registerStatusbarItem(new StatusbarItemDescriptor(EditorStatus, StatusbarAlignment.RIGHT, 100 /* towards the left of the right hand side */));
 
+// Register Zoom Status
+statusBar.registerStatusbarItem(new StatusbarItemDescriptor(ZoomStatusbarItem, StatusbarAlignment.RIGHT, 101 /* to the left of editor status (100) */));
+
 // Register Status Actions
 const registry = Registry.as<IWorkbenchActionRegistry>(ActionExtensions.WorkbenchActions);
 registry.registerWorkbenchAction(new SyncActionDescriptor(ChangeModeAction, ChangeModeAction.ID, ChangeModeAction.LABEL, { primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_K, KeyCode.KEY_M) }), 'Change Language Mode');
@@ -235,7 +242,7 @@ registry.registerWorkbenchAction(new SyncActionDescriptor(ChangeEncodingAction, 
 export class QuickOpenActionContributor extends ActionBarContributor {
 	private openToSideActionInstance: OpenToSideFromQuickOpenAction;
 
-	constructor(@IInstantiationService private instantiationService: IInstantiationService) {
+	constructor(@IInstantiationService private readonly instantiationService: IInstantiationService) {
 		super();
 	}
 
@@ -262,7 +269,7 @@ export class QuickOpenActionContributor extends ActionBarContributor {
 		return actions;
 	}
 
-	private getEntry(context: any): IEditorQuickOpenEntry {
+	private getEntry(context: any): IEditorQuickOpenEntry | null {
 		if (!context || !context.element) {
 			return null;
 		}
@@ -745,7 +752,7 @@ MenuRegistry.appendMenuItem(MenuId.MenubarLayoutMenu, {
 
 // Forward/Back
 MenuRegistry.appendMenuItem(MenuId.MenubarGoMenu, {
-	group: '1_fwd_back',
+	group: '1_history_nav',
 	command: {
 		id: 'workbench.action.navigateBack',
 		title: nls.localize({ key: 'miBack', comment: ['&& denotes a mnemonic'] }, "&&Back"),
@@ -755,13 +762,23 @@ MenuRegistry.appendMenuItem(MenuId.MenubarGoMenu, {
 });
 
 MenuRegistry.appendMenuItem(MenuId.MenubarGoMenu, {
-	group: '1_fwd_back',
+	group: '1_history_nav',
 	command: {
 		id: 'workbench.action.navigateForward',
 		title: nls.localize({ key: 'miForward', comment: ['&& denotes a mnemonic'] }, "&&Forward"),
 		precondition: ContextKeyExpr.has('canNavigateForward')
 	},
 	order: 2
+});
+
+MenuRegistry.appendMenuItem(MenuId.MenubarGoMenu, {
+	group: '1_history_nav',
+	command: {
+		id: 'workbench.action.navigateToLastEditLocation',
+		title: nls.localize({ key: 'miLastEditLocation', comment: ['&& denotes a mnemonic'] }, "&&Last Edit Location"),
+		precondition: ContextKeyExpr.has('canNavigateToLastEditLocation')
+	},
+	order: 3
 });
 
 // Switch Editor
@@ -802,7 +819,7 @@ MenuRegistry.appendMenuItem(MenuId.MenubarSwitchEditorMenu, {
 });
 
 MenuRegistry.appendMenuItem(MenuId.MenubarGoMenu, {
-	group: '2_switch',
+	group: '2_editor_nav',
 	title: nls.localize({ key: 'miSwitchEditor', comment: ['&& denotes a mnemonic'] }, "Switch &&Editor"),
 	submenu: MenuId.MenubarSwitchEditorMenu,
 	order: 1
@@ -909,7 +926,7 @@ MenuRegistry.appendMenuItem(MenuId.MenubarSwitchGroupMenu, {
 });
 
 MenuRegistry.appendMenuItem(MenuId.MenubarGoMenu, {
-	group: '2_switch',
+	group: '2_editor_nav',
 	title: nls.localize({ key: 'miSwitchGroup', comment: ['&& denotes a mnemonic'] }, "Switch &&Group"),
 	submenu: MenuId.MenubarSwitchGroupMenu,
 	order: 2

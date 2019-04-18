@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { Type } from '@angular/core';
-import { IInsightsConfig, IInsightsView } from 'sql/parts/dashboard/widgets/insights/interfaces';
+import { IInsightsConfig, IInsightsView } from 'sql/workbench/parts/dashboard/widgets/insights/interfaces';
 
 import * as platform from 'vs/platform/registry/common/platform';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';

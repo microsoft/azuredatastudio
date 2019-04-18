@@ -1,78 +1,69 @@
 {
-  "name": "import",
-  "displayName": "SQL Server Import",
-  "description": "SQL Server Import for Azure Data Studio supports importing CSV or JSON files into SQL Server.",
-  "version": "0.6.1",
-  "publisher": "Microsoft",
-  "preview": true,
-  "engines": {
-    "vscode": "^1.25.0",
-    "sqlops": "*"
-  },
-  "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/import/Microsoft_SQL_Server_Import_Extension_and_Tools_Import_Flat_File_Preview.docx",
-  "icon": "images/sqlserver.png",
-  "aiKey": "AIF-5574968e-856d-40d2-af67-c89a14e76412",
-  "activationEvents": [
-    "*"
-  ],
-  "main": "./out/main",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Microsoft/azuredatastudio.git"
-  },
-  "extensionDependencies": [
-    "Microsoft.mssql"
-  ],
-  "contributes": {
-    "commands": [
-      {
-        "command": "flatFileImport.start",
-        "title": "Import wizard",
-        "category": "Flat File Import",
-        "icon": {
-          "light": "./images/light_icon.svg",
-          "dark": "./images/dark_icon.svg"
-        }
-      },
-      {
-        "command": "dacFx.start",
-        "title": "Data-tier Application Wizard",
-        "category": "Data-tier Application",
-        "icon": {
-          "light": "./images/light_icon.svg",
-          "dark": "./images/dark_icon.svg"
-        }
-      }
-    ],
-    "keybindings": [
-      {
-        "command": "flatFileImport.start",
-        "key": "ctrl+i",
-        "mac": "ctrl+i"
-      }
-    ],
-    "menus": {
-      "objectExplorer/item/context": [
-        {
-          "command": "flatFileImport.start",
-          "when": "connectionProvider == MSSQL && nodeType && nodeType == Database",
-          "group": "import"
-        },
-        {
-          "command": "dacFx.start",
-          "when": "connectionProvider == MSSQL && nodeType && nodeType == Database",
-          "group": "export"
-        }
-      ]
-    }
-  },
-  "dependencies": {
-    "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#0.2.15",
-    "htmlparser2": "^3.10.1",
-    "opener": "^1.4.3",
-    "service-downloader": "github:anthonydresser/service-downloader#0.1.5",
-    "vscode-extension-telemetry": "0.0.18",
-    "vscode-nls": "^3.2.1"
-  },
-  "devDependencies": {}
+	"name": "import",
+	"displayName": "SQL Server Import",
+	"description": "SQL Server Import for Azure Data Studio supports importing CSV or JSON files into SQL Server.",
+	"version": "0.7.0",
+	"publisher": "Microsoft",
+	"preview": true,
+	"engines": {
+		"vscode": "^1.25.0",
+		"azdata": "*"
+	},
+	"license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/import/Microsoft_SQL_Server_Import_Extension_and_Tools_Import_Flat_File_Preview.docx",
+	"icon": "images/sqlserver.png",
+	"aiKey": "AIF-5574968e-856d-40d2-af67-c89a14e76412",
+	"activationEvents": [
+		"*"
+	],
+	"main": "./out/main",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Microsoft/azuredatastudio.git"
+	},
+	"extensionDependencies": [
+		"Microsoft.mssql"
+	],
+	"contributes": {
+		"commands": [
+			{
+				"command": "flatFileImport.start",
+				"title": "Import wizard",
+				"category": "Flat File Import",
+				"icon": {
+					"light": "./images/light_icon.svg",
+					"dark": "./images/dark_icon.svg"
+				}
+			}
+		],
+		"keybindings": [
+			{
+				"command": "flatFileImport.start",
+				"key": "ctrl+i",
+				"mac": "ctrl+i"
+			}
+		],
+		"menus": {
+			"objectExplorer/item/context": [
+				{
+					"command": "flatFileImport.start",
+					"when": "connectionProvider == MSSQL && nodeType && nodeType == Database",
+					"group": "import"
+				}
+			]
+		}
+	},
+	"dependencies": {
+		"dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#0.2.15",
+		"htmlparser2": "^3.10.1",
+		"opener": "^1.4.3",
+		"service-downloader": "github:anthonydresser/service-downloader#0.1.5",
+		"vscode-extension-telemetry": "0.0.18",
+		"vscode-nls": "^3.2.1"
+	},
+	"devDependencies": {},
+	"__metadata": {
+		"id": "23",
+		"publisherDisplayName": "Microsoft",
+		"publisherId": "Microsoft"
+	}
 }

@@ -8,10 +8,9 @@ import {
 	ViewChild, ViewChildren, ElementRef, Injector, OnDestroy, QueryList
 } from '@angular/core';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as DOM from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { ITextModel } from 'vs/editor/common/model';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { URI } from 'vs/base/common/uri';
 import { Schemas } from 'vs/base/common/network';
@@ -20,29 +19,21 @@ import { IModelService } from 'vs/editor/common/services/modelService';
 
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
-import { QueryTextEditor } from 'sql/parts/modelComponents/queryTextEditor';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
 import { SimpleProgressService } from 'vs/editor/standalone/browser/simpleServices';
 import { IProgressService } from 'vs/platform/progress/common/progress';
-import { ITextDiffEditor, IResourceDiffInput, EditorModel, ITextEditorModel } from 'vs/workbench/common/editor';
 import { TextDiffEditor } from 'vs/workbench/browser/parts/editor/textDiffEditor';
 import { DiffEditorInput } from 'vs/workbench/common/editor/diffEditorInput';
-import {DiffEditorModel} from 'vs/workbench/common/editor/diffEditorModel';
-import { TextDiffEditorModel} from 'vs/workbench/common/editor/textDiffEditorModel';
-import {IEditorModel} from 'vs/platform/editor/common/editor';
-
-import { Uri } from 'vscode';
-import { BaseTextEditorModel } from 'vs/workbench/common/editor/textEditorModel';
+import { TextDiffEditorModel } from 'vs/workbench/common/editor/textDiffEditorModel';
 import { CancellationTokenSource } from 'vs/base/common/cancellation';
 
 @Component({
 	template: `
 	<div *ngIf="_title">
-		<div style="width: 100%; height:100%; padding-left:3px !important; background: #F4F4F4; border: 1px solid #BFBDBD;">
+		<div class="modelview-diff-editor-title" style="width: 100%; height:100%; padding-left:3px !important; border: 1px solid #BFBDBD;">
 			{{_title}}
 		</div>
-	</div>
-`,
+	</div>`,
 	selector: 'modelview-diff-editor-component'
 })
 export default class DiffEditorComponent extends ComponentBase implements IComponent, OnDestroy {
@@ -58,6 +49,7 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 	private _minimumHeight: number;
 	private _instancetiationService: IInstantiationService;
 	protected _title: string;
+
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
@@ -69,7 +61,6 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 	}
 
 	ngOnInit(): void {
-		// this._title = 'Object Definitions';
 		this.baseInit();
 		this._createEditor();
 		this._register(DOM.addDisposableListener(window, DOM.EventType.RESIZE, e => {
@@ -80,18 +71,20 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 	private _createEditor(): void {
 		this._instantiationService = this._instantiationService.createChild(new ServiceCollection([IProgressService, new SimpleProgressService()]));
 		this._editor = this._instantiationService.createInstance(TextDiffEditor);
-
 		this._editor.reverseColoring();
 		this._editor.create(this._el.nativeElement);
 		this._editor.setVisible(true);
-		let uri1 = this.createUri('1');
-		let uri2 = this.createUri('2');
-		let cancell = new CancellationTokenSource();
+		let uri1 = this.createUri('source');
+		this.editorUriLeft = uri1.toString();
+		let uri2 = this.createUri('target');
+		this.editorUriRight = uri2.toString();
 
-		let editorinput1 =	this._instantiationService.createInstance(UntitledEditorInput, uri1, false, 'plaintext', '', '');
-		let editorinput2 =	this._instantiationService.createInstance(UntitledEditorInput, uri2, false, 'plaintext', '', '');
+		let cancellationTokenSource = new CancellationTokenSource();
+		let editorinput1 = this._instantiationService.createInstance(UntitledEditorInput, uri1, false, 'plaintext', '', '');
+		let editorinput2 = this._instantiationService.createInstance(UntitledEditorInput, uri2, false, 'plaintext', '', '');
 		this._editorInput = this._instantiationService.createInstance(DiffEditorInput, 'MyEditor', 'My description', editorinput1, editorinput2, true);
-		this._editor.setInput(this._editorInput, undefined, cancell.token);
+		this._editor.setInput(this._editorInput, undefined, cancellationTokenSource.token);
+
 
 		this._editorInput.resolve().then(model => {
 			this._editorModel = model as TextDiffEditorModel;
@@ -105,7 +98,7 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 		this._register(this._editorModel);
 	}
 
-	private createUri(input:string): URI {
+	private createUri(input: string): URI {
 		let uri = URI.from({ scheme: Schemas.untitled, path: `${this.descriptor.type}-${this.descriptor.id}-${input}` });
 		return uri;
 	}
@@ -142,6 +135,15 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 		}
 	}
 
+	private updateLanguageMode() {
+		if (this._editorModel && this._editor) {
+			this._languageMode = this.languageMode;
+			let languageSelection = this._modeService.create(this._languageMode);
+			this._modelService.setMode(this._editorModel.originalModel.textEditorModel, languageSelection);
+			this._modelService.setMode(this._editorModel.modifiedModel.textEditorModel, languageSelection);
+		}
+	}
+
 	/// IComponent implementation
 	public setLayout(layout: any): void {
 		// TODO allow configuring the look and feel
@@ -153,10 +155,8 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 			this.updateModel();
 		}
 		if (this.languageMode !== this._languageMode) {
-			//this.updateLanguageMode();
+			this.updateLanguageMode();
 		}
-		// TODO : what is editor URI used for?
-		//this.editorUri = this._uri;
 		this._isAutoResizable = this.isAutoResizable;
 		this._minimumHeight = this.minimumHeight;
 		this._title = this.title;
@@ -166,58 +166,66 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 
 	// CSS-bound properties
 	public get contentLeft(): string {
-		return this.getPropertyOrDefault<sqlops.EditorProperties, string>((props) => props.contentLeft, undefined);
+		return this.getPropertyOrDefault<azdata.EditorProperties, string>((props) => props.contentLeft, undefined);
 	}
 
 	public set contentLeft(newValue: string) {
-		this.setPropertyFromUI<sqlops.EditorProperties, string>((properties, contentLeft) => { properties.contentLeft = contentLeft; }, newValue);
+		this.setPropertyFromUI<azdata.EditorProperties, string>((properties, contentLeft) => { properties.contentLeft = contentLeft; }, newValue);
 	}
 
 	public get contentRight(): string {
-		return this.getPropertyOrDefault<sqlops.EditorProperties, string>((props) => props.contentRight, undefined);
+		return this.getPropertyOrDefault<azdata.EditorProperties, string>((props) => props.contentRight, undefined);
 	}
 
 	public set contentRight(newValue: string) {
-		this.setPropertyFromUI<sqlops.EditorProperties, string>((properties, contentRight) => { properties.contentRight = contentRight; }, newValue);
+		this.setPropertyFromUI<azdata.EditorProperties, string>((properties, contentRight) => { properties.contentRight = contentRight; }, newValue);
 	}
 
 	public get languageMode(): string {
-		return this.getPropertyOrDefault<sqlops.EditorProperties, string>((props) => props.languageMode, undefined);
+		return this.getPropertyOrDefault<azdata.EditorProperties, string>((props) => props.languageMode, undefined);
 	}
 
 	public set languageMode(newValue: string) {
-		this.setPropertyFromUI<sqlops.EditorProperties, string>((properties, languageMode) => { properties.languageMode = languageMode; }, newValue);
+		this.setPropertyFromUI<azdata.EditorProperties, string>((properties, languageMode) => { properties.languageMode = languageMode; }, newValue);
 	}
 
 	public get isAutoResizable(): boolean {
-		return this.getPropertyOrDefault<sqlops.EditorProperties, boolean>((props) => props.isAutoResizable, false);
+		return this.getPropertyOrDefault<azdata.EditorProperties, boolean>((props) => props.isAutoResizable, false);
 	}
 
 	public set isAutoResizable(newValue: boolean) {
-		this.setPropertyFromUI<sqlops.EditorProperties, boolean>((properties, isAutoResizable) => { properties.isAutoResizable = isAutoResizable; }, newValue);
+		this.setPropertyFromUI<azdata.EditorProperties, boolean>((properties, isAutoResizable) => { properties.isAutoResizable = isAutoResizable; }, newValue);
 	}
 
 	public get minimumHeight(): number {
-		return this.getPropertyOrDefault<sqlops.EditorProperties, number>((props) => props.minimumHeight, this._editor.minimumHeight);
+		return this.getPropertyOrDefault<azdata.EditorProperties, number>((props) => props.minimumHeight, this._editor.minimumHeight);
 	}
 
 	public set minimumHeight(newValue: number) {
-		this.setPropertyFromUI<sqlops.EditorProperties, number>((properties, minimumHeight) => { properties.minimumHeight = minimumHeight; }, newValue);
+		this.setPropertyFromUI<azdata.EditorProperties, number>((properties, minimumHeight) => { properties.minimumHeight = minimumHeight; }, newValue);
 	}
 
-	public get editorUri(): string {
-		return this.getPropertyOrDefault<sqlops.EditorProperties, string>((props) => props.editorUri, '');
+	public get editorUriLeft(): string {
+		return this.getPropertyOrDefault<azdata.EditorProperties, string>((props) => props.editorUriLeft, '');
 	}
 
-	public set editorUri(newValue: string) {
-		this.setPropertyFromUI<sqlops.EditorProperties, string>((properties, editorUri) => { properties.editorUri = editorUri; }, newValue);
+	public set editorUriLeft(newValue: string) {
+		this.setPropertyFromUI<azdata.EditorProperties, string>((properties, editorUriLeft) => { properties.editorUriLeft = editorUriLeft; }, newValue);
+	}
+
+	public get editorUriRight(): string {
+		return this.getPropertyOrDefault<azdata.EditorProperties, string>((props) => props.editorUriRight, '');
+	}
+
+	public set editorUriRight(newValue: string) {
+		this.setPropertyFromUI<azdata.EditorProperties, string>((properties, editorUriRight) => { properties.editorUriRight = editorUriRight; }, newValue);
 	}
 
 	public get title(): string {
-		return this.getPropertyOrDefault<sqlops.EditorProperties, string>((props) => props.title, undefined);
+		return this.getPropertyOrDefault<azdata.EditorProperties, string>((props) => props.title, undefined);
 	}
 
 	public set title(newValue: string) {
-		this.setPropertyFromUI<sqlops.EditorProperties, string>((properties, title) => { properties.title = title; }, newValue);
+		this.setPropertyFromUI<azdata.EditorProperties, string>((properties, title) => { properties.title = title; }, newValue);
 	}
 }

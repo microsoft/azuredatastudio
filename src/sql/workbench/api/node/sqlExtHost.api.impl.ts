@@ -5,13 +5,8 @@
 'use strict';
 
 import * as extHostApi from 'vs/workbench/api/node/extHost.api.impl';
-import { TrieMap } from 'sql/base/common/map';
-import { TPromise } from 'vs/base/common/winjs.base';
-import { IInitData, IExtHostContext, IMainContext } from 'vs/workbench/api/node/extHost.protocol';
+import { IInitData, IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { ExtHostExtensionService } from 'vs/workbench/api/node/extHostExtensionService';
-import { IExtensionDescription } from 'vs/workbench/services/extensions/common/extensions';
-import { realpath } from 'fs';
-import * as extHostTypes from 'vs/workbench/api/node/extHostTypes';
 import { URI } from 'vs/base/common/uri';
 
 import * as azdata from 'azdata';
@@ -24,8 +19,6 @@ import { ExtHostDataProtocol } from 'sql/workbench/api/node/extHostDataProtocol'
 import { ExtHostSerializationProvider } from 'sql/workbench/api/node/extHostSerializationProvider';
 import { ExtHostResourceProvider } from 'sql/workbench/api/node/extHostResourceProvider';
 import * as sqlExtHostTypes from 'sql/workbench/api/common/sqlExtHostTypes';
-import { ExtHostWorkspace } from 'vs/workbench/api/node/extHostWorkspace';
-import { ExtHostConfiguration } from 'vs/workbench/api/node/extHostConfiguration';
 import { ExtHostModalDialogs } from 'sql/workbench/api/node/extHostModalDialog';
 import { ExtHostTasks } from 'sql/workbench/api/node/extHostTasks';
 import { ExtHostDashboardWebviews } from 'sql/workbench/api/node/extHostDashboardWebview';
@@ -33,19 +26,25 @@ import { ExtHostModelView } from 'sql/workbench/api/node/extHostModelView';
 import { ExtHostConnectionManagement } from 'sql/workbench/api/node/extHostConnectionManagement';
 import { ExtHostDashboard } from 'sql/workbench/api/node/extHostDashboard';
 import { ExtHostObjectExplorer } from 'sql/workbench/api/node/extHostObjectExplorer';
-import { ExtHostLogService } from 'vs/workbench/api/node/extHostLogService';
+import { ExtHostLogService } from 'vs/workbench/api/common/extHostLogService';
 import { ExtHostModelViewDialog } from 'sql/workbench/api/node/extHostModelViewDialog';
 import { ExtHostModelViewTreeViews } from 'sql/workbench/api/node/extHostModelViewTree';
 import { ExtHostQueryEditor } from 'sql/workbench/api/node/extHostQueryEditor';
 import { ExtHostBackgroundTaskManagement } from './extHostBackgroundTaskManagement';
 import { ExtHostNotebook } from 'sql/workbench/api/node/extHostNotebook';
 import { ExtHostNotebookDocumentsAndEditors } from 'sql/workbench/api/node/extHostNotebookDocumentsAndEditors';
-import { ExtHostStorage } from 'vs/workbench/api/node/extHostStorage';
-import { ExtensionDescriptionRegistry } from 'vs/workbench/services/extensions/node/extensionDescriptionRegistry';
+import { ExtensionDescriptionRegistry } from 'vs/workbench/services/extensions/common/extensionDescriptionRegistry';
 import { ExtHostExtensionManagement } from 'sql/workbench/api/node/extHostExtensionManagement';
+import { ExtensionIdentifier, IExtensionDescription } from 'vs/platform/extensions/common/extensions';
+import { TernarySearchTree } from 'vs/base/common/map';
+import { ExtHostWorkspace } from 'vs/workbench/api/common/extHostWorkspace';
+import { ExtHostConfiguration, ExtHostConfigProvider } from 'vs/workbench/api/common/extHostConfiguration';
+import { ExtHostStorage } from 'vs/workbench/api/common/extHostStorage';
+import * as extHostTypes from 'vs/workbench/api/common/extHostTypes';
+import { ISchemeTransformer } from 'vs/workbench/api/common/extHostLanguageFeatures';
 
 export interface ISqlExtensionApiFactory {
-	vsCodeFactory(extension: IExtensionDescription, registry: ExtensionDescriptionRegistry): typeof vscode;
+	vsCodeFactory(extension: IExtensionDescription, registry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): typeof vscode;
 	sqlopsFactory(extension: IExtensionDescription): typeof sqlops;
 	azdataFactory(extension: IExtensionDescription): typeof azdata;
 }
@@ -60,9 +59,11 @@ export function createApiFactory(
 	extHostConfiguration: ExtHostConfiguration,
 	extensionService: ExtHostExtensionService,
 	logService: ExtHostLogService,
-	extHostStorage: ExtHostStorage
+	extHostStorage: ExtHostStorage,
+	schemeTransformer: ISchemeTransformer | null,
+	outputChannelName: string
 ): ISqlExtensionApiFactory {
-	let vsCodeFactory = extHostApi.createApiFactory(initData, rpcProtocol, extHostWorkspace, extHostConfiguration, extensionService, logService, extHostStorage);
+	let vsCodeFactory = extHostApi.createApiFactory(initData, rpcProtocol, extHostWorkspace, extHostConfiguration, extensionService, logService, extHostStorage, schemeTransformer, outputChannelName);
 
 	// Addressable instances
 	const extHostAccountManagement = rpcProtocol.set(SqlExtHostContext.ExtHostAccountManagement, new ExtHostAccountManagement(rpcProtocol));
@@ -353,6 +354,10 @@ export function createApiFactory(
 				return extHostDataProvider.$registerDacFxServiceProvider(provider);
 			};
 
+			let registerSchemaCompareServicesProvider = (provider: azdata.SchemaCompareServicesProvider): vscode.Disposable => {
+				return extHostDataProvider.$registerSchemaCompareServiceProvider(provider);
+			};
+
 			// namespace: dataprotocol
 			const dataprotocol: typeof azdata.dataprotocol = {
 				registerBackupProvider,
@@ -370,6 +375,7 @@ export function createApiFactory(
 				registerAgentServicesProvider,
 				registerCapabilitiesServiceProvider,
 				registerDacFxServicesProvider,
+				registerSchemaCompareServicesProvider,
 				onDidChangeLanguageFlavor(listener: (e: azdata.DidChangeLanguageFlavorParams) => any, thisArgs?: any, disposables?: extHostTypes.Disposable[]) {
 					return extHostDataProvider.onDidChangeLanguageFlavor(listener, thisArgs, disposables);
 				},
@@ -381,44 +387,7 @@ export function createApiFactory(
 				}
 			};
 
-			const modelViewDialog: typeof azdata.window.modelviewdialog = {
-				createDialog(title: string, dialogName?: string): azdata.window.modelviewdialog.Dialog {
-					console.warn('the method azdata.window.modelviewdialog.createDialog has been deprecated, replace it with azdata.window.createModelViewDialog');
-					return extHostModelViewDialog.createDialog(title, dialogName, extension);
-				},
-				createTab(title: string): azdata.window.modelviewdialog.DialogTab {
-					console.warn('the method azdata.window.modelviewdialog.createTab has been deprecated, replace it with azdata.window.createTab');
-					return extHostModelViewDialog.createTab(title, extension);
-				},
-				createButton(label: string): azdata.window.modelviewdialog.Button {
-					console.warn('the method azdata.window.modelviewdialog.createButton has been deprecated, replace it with azdata.window.createButton');
-					return extHostModelViewDialog.createButton(label);
-				},
-				openDialog(dialog: azdata.window.modelviewdialog.Dialog) {
-					console.warn('the method azdata.window.modelviewdialog.openDialog has been deprecated, replace it with azdata.window.openDialog');
-					return extHostModelViewDialog.openDialog(dialog);
-				},
-				closeDialog(dialog: azdata.window.modelviewdialog.Dialog) {
-					console.warn('the method azdata.window.modelviewdialog.closeDialog has been deprecated, replace it with azdata.window.closeDialog');
-					return extHostModelViewDialog.closeDialog(dialog);
-				},
-				createWizardPage(title: string): azdata.window.modelviewdialog.WizardPage {
-					console.warn('the method azdata.window.modelviewdialog.createWizardPage has been deprecated, replace it with azdata.window.createWizardPage');
-					return extHostModelViewDialog.createWizardPage(title);
-				},
-				createWizard(title: string): azdata.window.modelviewdialog.Wizard {
-					console.warn('the method azdata.window.modelviewdialog.createWizard has been deprecated, replace it with azdata.window.createWizard');
-					return extHostModelViewDialog.createWizard(title);
-				},
-				MessageLevel: sqlExtHostTypes.MessageLevel
-			};
-
 			const window: typeof azdata.window = {
-				createDialog(name: string) {
-					console.warn('the method azdata.window.createDialog has been deprecated, replace it with azdata.window.createWebViewDialog');
-					return extHostModalDialogs.createDialog(name);
-				},
-				modelviewdialog: modelViewDialog,
 				createWebViewDialog(name: string) {
 					return extHostModalDialogs.createDialog(name);
 				},
@@ -477,13 +446,20 @@ export function createApiFactory(
 
 			// namespace: queryeditor
 			const queryEditor: typeof azdata.queryeditor = {
-
 				connect(fileUri: string, connectionId: string): Thenable<void> {
 					return extHostQueryEditor.$connect(fileUri, connectionId);
 				},
 
-				runQuery(fileUri: string): void {
+				runQuery(fileUri: string, options?: Map<string, string>): void {
 					extHostQueryEditor.$runQuery(fileUri);
+				},
+
+				registerQueryEventListener(listener: azdata.queryeditor.QueryEventListener): void {
+					extHostQueryEditor.$registerQueryInfoListener('MSSQL', listener);
+				},
+
+				getQueryDocument(fileUri: string): azdata.queryeditor.QueryDocument {
+					return undefined;
 				}
 			};
 
@@ -566,30 +542,6 @@ export function createApiFactory(
 
 		// "sqlops" namespace provided for back-compat only, add new interfaces to "azdata"
 		sqlopsFactory: function (extension: IExtensionDescription): typeof sqlops {
-			// namespace: accounts
-			const accounts: typeof sqlops.accounts = {
-				registerAccountProvider(providerMetadata: sqlops.AccountProviderMetadata, provider: sqlops.AccountProvider): vscode.Disposable {
-					return extHostAccountManagement.$registerAccountProvider(providerMetadata, provider);
-				},
-				beginAutoOAuthDeviceCode(providerId: string, title: string, message: string, userCode: string, uri: string): Thenable<void> {
-					return extHostAccountManagement.$beginAutoOAuthDeviceCode(providerId, title, message, userCode, uri);
-				},
-				endAutoOAuthDeviceCode(): void {
-					return extHostAccountManagement.$endAutoOAuthDeviceCode();
-				},
-				accountUpdated(updatedAccount: sqlops.Account): void {
-					return extHostAccountManagement.$accountUpdated(updatedAccount);
-				},
-				getAllAccounts(): Thenable<sqlops.Account[]> {
-					return extHostAccountManagement.$getAllAccounts();
-				},
-				getSecurityToken(account: sqlops.Account, resource?: sqlops.AzureResource): Thenable<{}> {
-					return extHostAccountManagement.$getSecurityToken(account, resource);
-				},
-				onDidChangeAccounts(listener: (e: sqlops.DidChangeAccountsParams) => void, thisArgs?: any, disposables?: extHostTypes.Disposable[]) {
-					return extHostAccountManagement.onDidChangeAccounts(listener, thisArgs, disposables);
-				}
-			};
 
 			// namespace: connection
 			const connection: typeof sqlops.connection = {
@@ -658,12 +610,6 @@ export function createApiFactory(
 				},
 			};
 
-			// namespace: serialization
-			const resources: typeof sqlops.resources = {
-				registerResourceProvider(providerMetadata: sqlops.ResourceProviderMetadata, provider: sqlops.ResourceProvider): vscode.Disposable {
-					return extHostResourceProvider.$registerResourceProvider(providerMetadata, provider);
-				}
-			};
 
 			let registerConnectionProvider = (provider: sqlops.ConnectionProvider): vscode.Disposable => {
 				// Connection callbacks
@@ -812,17 +758,10 @@ export function createApiFactory(
 				return extHostDataProvider.$registerAdminServicesProvider(provider);
 			};
 
-			let registerAgentServicesProvider = (provider: sqlops.AgentServicesProvider): vscode.Disposable => {
-				provider.registerOnUpdated(() => {
-					extHostDataProvider.$onJobDataUpdated(provider.handle);
-				});
-
-				return extHostDataProvider.$registerAgentServiceProvider(provider);
-			};
-
 			let registerDacFxServicesProvider = (provider: sqlops.DacFxServicesProvider): vscode.Disposable => {
 				return extHostDataProvider.$registerDacFxServiceProvider(provider);
 			};
+
 
 			// namespace: dataprotocol
 			const dataprotocol: typeof sqlops.dataprotocol = {
@@ -838,7 +777,6 @@ export function createApiFactory(
 				registerTaskServicesProvider,
 				registerQueryProvider,
 				registerAdminServicesProvider,
-				registerAgentServicesProvider,
 				registerCapabilitiesServiceProvider,
 				registerDacFxServicesProvider,
 				onDidChangeLanguageFlavor(listener: (e: sqlops.DidChangeLanguageFlavorParams) => any, thisArgs?: any, disposables?: extHostTypes.Disposable[]) {
@@ -854,31 +792,31 @@ export function createApiFactory(
 
 			const modelViewDialog: typeof sqlops.window.modelviewdialog = {
 				createDialog(title: string, dialogName?: string): sqlops.window.modelviewdialog.Dialog {
-					console.warn('the method sqlops.window.modelviewdialog.createDialog has been deprecated, replace it with sqlops.window.createModelViewDialog');
+					console.warn('the method sqlops.window.modelviewdialog.createDialog has been deprecated, replace it with azdata.window.createModelViewDialog');
 					return extHostModelViewDialog.createDialog(title, dialogName, extension);
 				},
 				createTab(title: string): sqlops.window.modelviewdialog.DialogTab {
-					console.warn('the method sqlops.window.modelviewdialog.createTab has been deprecated, replace it with sqlops.window.createTab');
+					console.warn('the method sqlops.window.modelviewdialog.createTab has been deprecated, replace it with azdata.window.createTab');
 					return extHostModelViewDialog.createTab(title, extension);
 				},
 				createButton(label: string): sqlops.window.modelviewdialog.Button {
-					console.warn('the method sqlops.window.modelviewdialog.createButton has been deprecated, replace it with sqlops.window.createButton');
+					console.warn('the method sqlops.window.modelviewdialog.createButton has been deprecated, replace it with azdata.window.createButton');
 					return extHostModelViewDialog.createButton(label);
 				},
 				openDialog(dialog: sqlops.window.modelviewdialog.Dialog) {
-					console.warn('the method sqlops.window.modelviewdialog.openDialog has been deprecated, replace it with sqlops.window.openDialog');
-					return extHostModelViewDialog.openDialog(dialog);
+					console.warn('the method sqlops.window.modelviewdialog.openDialog has been deprecated, replace it with azdata.window.openDialog');
+					return extHostModelViewDialog.openDialog(dialog as azdata.window.Dialog);
 				},
 				closeDialog(dialog: sqlops.window.modelviewdialog.Dialog) {
-					console.warn('the method sqlops.window.modelviewdialog.closeDialog has been deprecated, replace it with sqlops.window.closeDialog');
-					return extHostModelViewDialog.closeDialog(dialog);
+					console.warn('the method sqlops.window.modelviewdialog.closeDialog has been deprecated, replace it with azdata.window.closeDialog');
+					return extHostModelViewDialog.closeDialog(dialog as azdata.window.Dialog);
 				},
 				createWizardPage(title: string): sqlops.window.modelviewdialog.WizardPage {
-					console.warn('the method sqlops.window.modelviewdialog.createWizardPage has been deprecated, replace it with sqlops.window.createWizardPage');
+					console.warn('the method sqlops.window.modelviewdialog.createWizardPage has been deprecated, replace it with azdata.window.createWizardPage');
 					return extHostModelViewDialog.createWizardPage(title);
 				},
 				createWizard(title: string): sqlops.window.modelviewdialog.Wizard {
-					console.warn('the method sqlops.window.modelviewdialog.createWizard has been deprecated, replace it with sqlops.window.createWizard');
+					console.warn('the method sqlops.window.modelviewdialog.createWizard has been deprecated, replace it with azdata.window.createWizard');
 					return extHostModelViewDialog.createWizard(title);
 				},
 				MessageLevel: sqlExtHostTypes.MessageLevel
@@ -886,7 +824,7 @@ export function createApiFactory(
 
 			const window: typeof sqlops.window = {
 				createDialog(name: string) {
-					console.warn('the method sqlops.window.createDialog has been deprecated, replace it with sqlops.window.createWebViewDialog');
+					console.warn('the method sqlops.window.createDialog has been deprecated, replace it with azdata.window.createWebViewDialog');
 					return extHostModalDialogs.createDialog(name);
 				},
 				modelviewdialog: modelViewDialog,
@@ -903,10 +841,10 @@ export function createApiFactory(
 					return extHostModelViewDialog.createButton(label);
 				},
 				openDialog(dialog: sqlops.window.Dialog) {
-					return extHostModelViewDialog.openDialog(dialog);
+					return extHostModelViewDialog.openDialog(dialog as azdata.window.Dialog);
 				},
 				closeDialog(dialog: sqlops.window.Dialog) {
-					return extHostModelViewDialog.closeDialog(dialog);
+					return extHostModelViewDialog.closeDialog(dialog as azdata.window.Dialog);
 				},
 				createWizardPage(title: string): sqlops.window.WizardPage {
 					return extHostModelViewDialog.createWizardPage(title);
@@ -990,11 +928,9 @@ export function createApiFactory(
 			};
 
 			return {
-				accounts,
 				connection,
 				credentials,
 				objectexplorer: objectExplorer,
-				resources,
 				serialization,
 				dataprotocol,
 				DataProviderType: sqlExtHostTypes.DataProviderType,
@@ -1006,14 +942,6 @@ export function createApiFactory(
 				TaskStatus: sqlExtHostTypes.TaskStatus,
 				TaskExecutionMode: sqlExtHostTypes.TaskExecutionMode,
 				ScriptOperation: sqlExtHostTypes.ScriptOperation,
-				WeekDays: sqlExtHostTypes.WeekDays,
-				NotifyMethods: sqlExtHostTypes.NotifyMethods,
-				JobCompletionActionCondition: sqlExtHostTypes.JobCompletionActionCondition,
-				JobExecutionStatus: sqlExtHostTypes.JobExecutionStatus,
-				AlertType: sqlExtHostTypes.AlertType,
-				FrequencyTypes: sqlExtHostTypes.FrequencyTypes,
-				FrequencySubDayTypes: sqlExtHostTypes.FrequencySubDayTypes,
-				FrequencyRelativeIntervals: sqlExtHostTypes.FrequencyRelativeIntervals,
 				window,
 				tasks,
 				dashboard,
@@ -1037,34 +965,11 @@ export function createApiFactory(
 	};
 }
 
-export function initializeExtensionApi(extensionService: ExtHostExtensionService, apiFactory: ISqlExtensionApiFactory, extensionRegistry: ExtensionDescriptionRegistry): TPromise<void> {
-	return createExtensionPathIndex(extensionService, extensionRegistry).then(trie => defineAPI(apiFactory, trie, extensionRegistry));
+export function initializeExtensionApi(extensionService: ExtHostExtensionService, apiFactory: ISqlExtensionApiFactory, extensionRegistry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): Promise<void> {
+	return extensionService.getExtensionPathIndex().then(trie => defineAPI(apiFactory, trie, extensionRegistry, configProvider));
 }
 
-function createExtensionPathIndex(extensionService: ExtHostExtensionService, extensionRegistry: ExtensionDescriptionRegistry): Promise<TrieMap<IExtensionDescription>> {
-
-	// create trie to enable fast 'filename -> extension id' look up
-	const trie = new TrieMap<IExtensionDescription>(TrieMap.PathSplitter);
-	const extensions = extensionRegistry.getAllExtensionDescriptions().map(ext => {
-		if (!ext.main) {
-			return undefined;
-		}
-		return new Promise((resolve, reject) => {
-			realpath(ext.extensionLocation.fsPath, (err, path) => {
-				if (err) {
-					reject(err);
-				} else {
-					trie.insert(path, ext);
-					resolve(void 0);
-				}
-			});
-		});
-	});
-
-	return Promise.all(extensions).then(() => trie);
-}
-
-function defineAPI(factory: ISqlExtensionApiFactory, extensionPaths: TrieMap<IExtensionDescription>, extensionRegistry: ExtensionDescriptionRegistry): void {
+function defineAPI(factory: ISqlExtensionApiFactory, extensionPaths: TernarySearchTree<IExtensionDescription>, extensionRegistry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): void {
 	type ApiImpl = typeof vscode | typeof azdata | typeof sqlops;
 
 	// each extension is meant to get its own api implementation
@@ -1085,10 +990,10 @@ function defineAPI(factory: ISqlExtensionApiFactory, extensionPaths: TrieMap<IEx
 		// get extension id from filename and api for extension
 		const ext = extensionPaths.findSubstr(URI.file(parent.filename).fsPath);
 		if (ext) {
-			let apiImpl = apiMap.get(ext.id);
+			let apiImpl = apiMap.get(ext.identifier.value);
 			if (!apiImpl) {
 				apiImpl = createApi(ext);
-				apiMap.set(ext.id, apiImpl);
+				apiMap.set(ext.identifier.value, apiImpl);
 			}
 			return apiImpl;
 		}
@@ -1108,14 +1013,14 @@ function defineAPI(factory: ISqlExtensionApiFactory, extensionPaths: TrieMap<IEx
 	// TODO look into de-duplicating this code
 	node_module._load = function load(request, parent, isMain) {
 		if (request === 'vscode') {
-			return getModuleFactory(extApiImpl, (ext) => factory.vsCodeFactory(ext, extensionRegistry),
+			return getModuleFactory(extApiImpl, (ext) => factory.vsCodeFactory(ext, extensionRegistry, configProvider),
 				defaultApiImpl,
 				(impl) => defaultApiImpl = <typeof vscode>impl,
 				parent);
 		} else if (request === 'azdata') {
 			return getModuleFactory(azDataExtApiImpl,
 				(ext) => factory.azdataFactory(ext),
-				defaultDataApiImpl,
+				defaultAzDataApiImpl,
 				(impl) => defaultAzDataApiImpl = <typeof azdata>impl,
 				parent);
 		} else if (request === 'sqlops') {
@@ -1133,7 +1038,7 @@ function defineAPI(factory: ISqlExtensionApiFactory, extensionPaths: TrieMap<IEx
 
 
 const nullExtensionDescription: IExtensionDescription = {
-	id: 'nullExtensionDescription',
+	identifier: new ExtensionIdentifier('nullExtensionDescription'),
 	name: 'Null Extension Description',
 	publisher: 'vscode',
 	activationEvents: undefined,

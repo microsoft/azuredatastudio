@@ -12,7 +12,7 @@ export class HeaderFilter {
 	public onFilterApplied = new Slick.Event();
 	public onCommand = new Slick.Event();
 
-	private grid;
+	private grid: Slick.Grid<any>;
 	private handler = new Slick.EventHandler();
 	private defaults = {
 		filterImage: 'src/sql/media/icons/filter.svg',
@@ -20,7 +20,7 @@ export class HeaderFilter {
 		sortDescImage: 'sort-desc.gif'
 	};
 
-	private $menu: JQuery<HTMLElement>;
+	private $menu?: JQuery<HTMLElement>;
 	private options: any;
 	private okButton: Button;
 	private clearButton: Button;
@@ -41,14 +41,14 @@ export class HeaderFilter {
 			.subscribe(this.grid.onKeyDown, (e) => this.handleKeyDown);
 		this.grid.setColumns(this.grid.getColumns());
 
-		$(document.body).bind('mousedown', this.handleBodyMouseDown);
-		$(document.body).bind('keydown', this.handleKeyDown);
+		jQuery(document.body).bind('mousedown', this.handleBodyMouseDown);
+		jQuery(document.body).bind('keydown', this.handleKeyDown);
 	}
 
 	public destroy() {
 		this.handler.unsubscribeAll();
-		$(document.body).unbind('mousedown', this.handleBodyMouseDown);
-		$(document.body).unbind('keydown', this.handleKeyDown);
+		jQuery(document.body).unbind('mousedown', this.handleBodyMouseDown);
+		jQuery(document.body).unbind('keydown', this.handleKeyDown);
 	}
 
 	private handleKeyDown = (e) => {
@@ -60,7 +60,7 @@ export class HeaderFilter {
 	}
 
 	private handleBodyMouseDown = (e) => {
-		if (this.$menu && this.$menu[0] !== e.target && !$.contains(this.$menu[0], e.target)) {
+		if (this.$menu && this.$menu[0] !== e.target && !jQuery.contains(this.$menu[0], e.target)) {
 			this.hideMenu();
 			e.preventDefault();
 			e.stopPropagation();
@@ -70,16 +70,16 @@ export class HeaderFilter {
 	private hideMenu() {
 		if (this.$menu) {
 			this.$menu.remove();
-			this.$menu = null;
+			this.$menu = undefined;
 		}
 	}
 
 	private handleHeaderCellRendered(e, args) {
-		let column = args.column;
+		const column = args.column;
 		if (column.id === '_detail_selector') {
 			return;
 		}
-		let $el = $('<div></div>')
+		const $el = jQuery('<div></div>')
 			.addClass('slick-header-menubutton')
 			.data('column', column);
 
@@ -87,19 +87,19 @@ export class HeaderFilter {
 	}
 
 	private handleBeforeHeaderCellDestroy(e, args) {
-		$(args.node)
+		jQuery(args.node)
 			.find('.slick-header-menubutton')
 			.remove();
 	}
 
 	private addMenuItem(menu, columnDef, title, command, image) {
-		let $item = $('<div class="slick-header-menuitem">')
+		const $item = jQuery('<div class="slick-header-menuitem">')
 			.data('command', command)
 			.data('column', columnDef)
 			.bind('click', (e) => this.handleMenuItemClick(e, command, columnDef))
 			.appendTo(menu);
 
-		let $icon = $('<div class="slick-header-menuicon">')
+		const $icon = jQuery('<div class="slick-header-menuicon">')
 			.appendTo($item);
 
 		if (title === 'Sort Ascending') {
@@ -108,17 +108,17 @@ export class HeaderFilter {
 			$icon.get(0).className += ' descending';
 		}
 
-		$('<span class="slick-header-menucontent">')
+		jQuery('<span class="slick-header-menucontent">')
 			.text(title)
 			.appendTo($item);
 	}
 
 	private addMenuInput(menu, columnDef) {
 		const self = this;
-		$('<input class="input" placeholder="Search" style="margin-top: 5px; width: 206px">')
+		jQuery('<input class="input" placeholder="Search" style="margin-top: 5px; width: 206px">')
 			.data('column', columnDef)
 			.bind('keyup', (e) => {
-				let filterVals = this.getFilterValuesByInput($(e.target));
+				const filterVals = this.getFilterValuesByInput(jQuery(e.target));
 				self.updateFilterInputs(menu, columnDef, filterVals);
 			})
 			.appendTo(menu);
@@ -132,22 +132,22 @@ export class HeaderFilter {
 		this.workingFilters = columnDef.filterValues.slice(0);
 
 		for (let i = 0; i < filterItems.length; i++) {
-			let filtered = _.contains(this.workingFilters, filterItems[i]);
+			const filtered = _.contains(this.workingFilters, filterItems[i]);
 
 			filterOptions += '<label><input type="checkbox" value="' + i + '"'
 				+ (filtered ? ' checked="checked"' : '')
 				+ '/>' + filterItems[i] + '</label>';
 		}
-		let $filter = menu.find('.filter');
-		$filter.empty().append($(filterOptions));
+		const $filter = menu.find('.filter');
+		$filter.empty().append(jQuery(filterOptions));
 
-		$(':checkbox', $filter).bind('click', (e) => {
-			this.workingFilters = this.changeWorkingFilter(filterItems, this.workingFilters, $(e.target));
+		jQuery(':checkbox', $filter).bind('click', (e) => {
+			this.workingFilters = this.changeWorkingFilter(filterItems, this.workingFilters, jQuery(e.target));
 		});
 	}
 
 	private showFilter(e) {
-		let $menuButton = $(e.target);
+		const $menuButton = jQuery(e.target);
 		this.columnDef = $menuButton.data('column');
 
 		this.columnDef.filterValues = this.columnDef.filterValues || [];
@@ -167,7 +167,7 @@ export class HeaderFilter {
 		}
 
 		if (!this.$menu) {
-			this.$menu = $('<div class="slick-header-menu">').appendTo(document.body);
+			this.$menu = jQuery('<div class="slick-header-menu">').appendTo(document.body);
 		}
 
 		this.$menu.empty();
@@ -179,22 +179,22 @@ export class HeaderFilter {
 		let filterOptions = '<label><input type="checkbox" value="-1" />(Select All)</label>';
 
 		for (let i = 0; i < filterItems.length; i++) {
-			let filtered = _.contains(this.workingFilters, filterItems[i]);
+			const filtered = _.contains(this.workingFilters, filterItems[i]);
 			if (filterItems[i] && filterItems[i].indexOf('Error:') < 0) {
 				filterOptions += '<label><input type="checkbox" value="' + i + '"'
 					+ (filtered ? ' checked="checked"' : '')
 					+ '/>' + escape(filterItems[i]) + '</label>';
 			}
 		}
-		let $filter = $('<div class="filter">')
-			.append($(filterOptions))
+		const $filter = jQuery('<div class="filter">')
+			.append(jQuery(filterOptions))
 			.appendTo(this.$menu);
 
 		this.okButton = new Button(this.$menu.get(0));
 		this.okButton.label = 'OK';
 		this.okButton.title = 'OK';
 		this.okButton.element.id = 'filter-ok-button';
-		let okElement = $('#filter-ok-button');
+		const okElement = jQuery('#filter-ok-button');
 		okElement.bind('click', (ev) => {
 			this.columnDef.filterValues = this.workingFilters.splice(0);
 			this.setButtonImage($menuButton, this.columnDef.filterValues.length > 0);
@@ -205,7 +205,7 @@ export class HeaderFilter {
 		this.clearButton.label = 'Clear';
 		this.clearButton.title = 'Clear';
 		this.clearButton.element.id = 'filter-clear-button';
-		let clearElement = $('#filter-clear-button');
+		const clearElement = jQuery('#filter-clear-button');
 		clearElement.bind('click', (ev) => {
 			this.columnDef.filterValues.length = 0;
 			this.setButtonImage($menuButton, false);
@@ -216,23 +216,23 @@ export class HeaderFilter {
 		this.cancelButton.label = 'Cancel';
 		this.cancelButton.title = 'Cancel';
 		this.cancelButton.element.id = 'filter-cancel-button';
-		let cancelElement = $('#filter-cancel-button');
+		const cancelElement = jQuery('#filter-cancel-button');
 		cancelElement.bind('click', () => this.hideMenu());
 		attachButtonStyler(this.okButton, this._themeService);
 		attachButtonStyler(this.clearButton, this._themeService);
 		attachButtonStyler(this.cancelButton, this._themeService);
 
-		$(':checkbox', $filter).bind('click', (e) => {
-			this.workingFilters = this.changeWorkingFilter(filterItems, this.workingFilters, $(e.target));
+		jQuery(':checkbox', $filter).bind('click', (e) => {
+			this.workingFilters = this.changeWorkingFilter(filterItems, this.workingFilters, jQuery(e.target));
 		});
 
-		let offset = $(e.target).offset();
-		let left = offset.left - this.$menu.width() + $(e.target).width() - 8;
+		const offset = jQuery(e.target).offset();
+		const left = offset.left - this.$menu.width() + jQuery(e.target).width() - 8;
 
-		let menutop = offset.top + $(e.target).height();
+		let menutop = offset.top + jQuery(e.target).height();
 
-		if (menutop + offset.top > $(window).height()) {
-			menutop -= (this.$menu.height() + $(e.target).height() + 8);
+		if (menutop + offset.top > jQuery(window).height()) {
+			menutop -= (this.$menu.height() + jQuery(e.target).height() + 8);
 		}
 		this.$menu.css('top', menutop)
 			.css('left', (left > 0 ? left : 0));
@@ -243,24 +243,24 @@ export class HeaderFilter {
 	}
 
 	private changeWorkingFilter(filterItems, workingFilters, $checkbox) {
-		let value = $checkbox.val();
-		let $filter = $checkbox.parent().parent();
+		const value = $checkbox.val();
+		const $filter = $checkbox.parent().parent();
 
 		if ($checkbox.val() < 0) {
 			// Select All
 			if ($checkbox.prop('checked')) {
-				$(':checkbox', $filter).prop('checked', true);
+				jQuery(':checkbox', $filter).prop('checked', true);
 				workingFilters = filterItems.slice(0);
 			} else {
-				$(':checkbox', $filter).prop('checked', false);
+				jQuery(':checkbox', $filter).prop('checked', false);
 				workingFilters.length = 0;
 			}
 		} else {
-			let index = _.indexOf(workingFilters, filterItems[value]);
+			const index = _.indexOf(workingFilters, filterItems[value]);
 
 			if ($checkbox.prop('checked') && index < 0) {
 				workingFilters.push(filterItems[value]);
-				let nextRow = filterItems[(parseInt(value) + 1).toString()];
+				const nextRow = filterItems[(parseInt(value) + 1).toString()];
 				if (nextRow && nextRow.indexOf('Error:') >= 0) {
 					workingFilters.push(nextRow);
 				}
@@ -276,11 +276,11 @@ export class HeaderFilter {
 	}
 
 	private setButtonImage($el, filtered) {
-		let element: HTMLElement = $el.get(0);
+		const element: HTMLElement = $el.get(0);
 		if (filtered) {
 			element.className += ' filtered';
 		} else {
-			let classList = element.classList;
+			const classList = element.classList;
 			if (classList.contains('filtered')) {
 				classList.remove('filtered');
 			}
@@ -296,9 +296,9 @@ export class HeaderFilter {
 	}
 
 	private getFilterValues(dataView, column) {
-		let seen = [];
+		const seen: Array<any> = [];
 		for (let i = 0; i < dataView.getLength(); i++) {
-			let value = dataView.getItem(i)[column.field];
+			const value = dataView.getItem(i)[column.field];
 
 			if (!_.contains(seen, value)) {
 				seen.push(value);
@@ -308,18 +308,18 @@ export class HeaderFilter {
 	}
 
 	private getFilterValuesByInput($input) {
-		let column = $input.data('column'),
+		const column = $input.data('column'),
 			filter = $input.val(),
 			dataView = this.grid.getData(),
-			seen = [];
+			seen: Array<any> = [];
 
 		for (let i = 0; i < dataView.getLength(); i++) {
-			let value = dataView.getItem(i)[column.field];
+			const value = dataView.getItem(i)[column.field];
 
 			if (filter.length > 0) {
-				let itemValue = !value ? '' : value;
-				let lowercaseFilter = filter.toString().toLowerCase();
-				let lowercaseVal = itemValue.toString().toLowerCase();
+				const itemValue = !value ? '' : value;
+				const lowercaseFilter = filter.toString().toLowerCase();
+				const lowercaseVal = itemValue.toString().toLowerCase();
 				if (!_.contains(seen, value) && lowercaseVal.indexOf(lowercaseFilter) > -1) {
 					seen.push(value);
 				}
@@ -335,9 +335,9 @@ export class HeaderFilter {
 	}
 
 	private getAllFilterValues(data, column) {
-		let seen = [];
+		const seen: Array<any> = [];
 		for (let i = 0; i < data.length; i++) {
-			let value = data[i][column.field];
+			const value = data[i][column.field];
 
 			if (!_.contains(seen, value)) {
 				seen.push(value);

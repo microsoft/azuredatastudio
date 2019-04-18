@@ -51,8 +51,8 @@ module.exports = function withDefaults(/**@type WebpackConfig*/extConfig) {
 		},
 		externals: {
 			'vscode': 'commonjs vscode', // ignored because it doesn't exist
-
-			// "vscode-extension-telemetry": 'commonjs vscode-extension-telemetry', // commonly used
+			'azdata': 'commonjs azdata',
+			'sqlops': 'commonjs sqlops'
 		},
 		output: {
 			// all output goes into `dist`.

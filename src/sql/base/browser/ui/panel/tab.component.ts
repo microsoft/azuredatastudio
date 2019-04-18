@@ -2,6 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
 import { Component, Input, ContentChild, OnDestroy, TemplateRef, ChangeDetectorRef, forwardRef, Inject } from '@angular/core';
 
 import { Action } from 'vs/base/common/actions';
@@ -21,7 +22,7 @@ export abstract class TabChild extends Disposable {
 })
 export class TabComponent implements OnDestroy {
 	private _child: TabChild;
-	@ContentChild(TemplateRef) templateRef;
+	@ContentChild(TemplateRef) templateRef: TemplateRef<any>;
 	@Input() public title: string;
 	@Input() public canClose: boolean;
 	@Input() public actions: Array<Action>;
@@ -32,8 +33,7 @@ export class TabComponent implements OnDestroy {
 	private rendered = false;
 	private destroyed: boolean = false;
 
-
-	@ContentChild(TabChild) private set child(tab: TabChild) {
+	@ContentChild(TabChild) public set child(tab: TabChild) {
 		this._child = tab;
 		if (this.active && this._child) {
 			this._child.layout();

@@ -21,7 +21,7 @@ export interface ITableStyles extends IListStyles {
 }
 
 export interface ITableSorter<T> {
-	sort(args: Slick.OnSortEventArgs<T>);
+	(args: Slick.OnSortEventArgs<T>): void;
 }
 
 export interface ITableConfiguration<T> {

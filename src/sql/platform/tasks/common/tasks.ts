@@ -2,10 +2,10 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 import * as types from 'vs/base/common/types';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { ILocalizedString, MenuRegistry, ICommandAction } from 'vs/platform/actions/common/actions';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IDisposable } from 'vs/base/common/lifecycle';
@@ -65,7 +65,7 @@ export abstract class Task {
 		return TaskRegistry.registerTask(this.toITask());
 	}
 
-	public abstract runTask(accessor: ServicesAccessor, profile: IConnectionProfile, args: any): void | TPromise<void>;
+	public abstract runTask(accessor: ServicesAccessor, profile: IConnectionProfile, args: any): void | Promise<void>;
 }
 
 export interface ITaskHandlerDescription {

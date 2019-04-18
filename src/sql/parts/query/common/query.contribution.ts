@@ -3,18 +3,18 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import 'vs/css!sql/media/overwriteVsIcons';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { EditorDescriptor, IEditorRegistry, Extensions as EditorExtensions } from 'vs/workbench/browser/editor';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { IWorkbenchActionRegistry, Extensions } from 'vs/workbench/common/actions';
 import { IConfigurationRegistry, Extensions as ConfigExtensions } from 'vs/platform/configuration/common/configurationRegistry';
-import { SyncActionDescriptor } from 'vs/platform/actions/common/actions';
+import { SyncActionDescriptor, MenuId, MenuRegistry } from 'vs/platform/actions/common/actions';
 import { KeyMod, KeyCode, KeyChord } from 'vs/base/common/keyCodes';
 import { KeybindingsRegistry, KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
-import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
+import { ContextKeyExpr, ContextKeyEqualsExpr } from 'vs/platform/contextkey/common/contextkey';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { isMacintosh } from 'vs/base/common/platform';
 
 import { QueryEditor } from 'sql/parts/query/editor/queryEditor';
 import { QueryResultsEditor } from 'sql/parts/query/editor/queryResultsEditor';
@@ -27,10 +27,10 @@ import {
 	RunQueryKeyboardAction, RunCurrentQueryKeyboardAction, CancelQueryKeyboardAction, RefreshIntellisenseKeyboardAction, ToggleQueryResultsKeyboardAction,
 	RunQueryShortcutAction, RunCurrentQueryWithActualPlanKeyboardAction, FocusOnCurrentQueryKeyboardAction, ParseSyntaxAction
 } from 'sql/parts/query/execution/keyboardQueryActions';
-import * as gridActions from 'sql/parts/grid/views/gridActions';
-import * as gridCommands from 'sql/parts/grid/views/gridCommands';
-import { QueryPlanEditor } from 'sql/parts/queryPlan/queryPlanEditor';
-import { QueryPlanInput } from 'sql/parts/queryPlan/queryPlanInput';
+import * as gridActions from 'sql/workbench/parts/grid/views/gridActions';
+import * as gridCommands from 'sql/workbench/parts/grid/views/gridCommands';
+import { QueryPlanEditor } from 'sql/workbench/parts/queryPlan/electron-browser/queryPlanEditor';
+import { QueryPlanInput } from 'sql/workbench/parts/queryPlan/common/queryPlanInput';
 import * as Constants from 'sql/parts/query/common/constants';
 import { localize } from 'vs/nls';
 import { EditDataResultsEditor } from 'sql/parts/editData/editor/editDataResultsEditor';
@@ -105,6 +105,17 @@ actionRegistry.registerWorkbenchAction(
 	),
 	RunQueryKeyboardAction.LABEL
 );
+
+// Touch Bar
+if (isMacintosh) {
+	// Only show Run Query if the active editor is a query editor.
+	MenuRegistry.appendMenuItem(MenuId.TouchBarContext, {
+		command: { id: RunQueryKeyboardAction.ID, title: RunQueryKeyboardAction.LABEL },
+		group: 'query',
+		when: new ContextKeyEqualsExpr('activeEditor', 'workbench.editor.queryEditor')
+	});
+}
+
 
 actionRegistry.registerWorkbenchAction(
 	new SyncActionDescriptor(

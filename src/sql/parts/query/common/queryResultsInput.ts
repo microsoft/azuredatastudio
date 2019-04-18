@@ -6,16 +6,15 @@
 'use strict';
 
 import { localize } from 'vs/nls';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { EditorInput } from 'vs/workbench/common/editor';
 import { Emitter } from 'vs/base/common/event';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 import { GridPanelState } from 'sql/parts/query/editor/gridPanel';
 import { MessagePanelState } from 'sql/parts/query/editor/messagePanel';
-import { QueryPlanState } from 'sql/parts/queryPlan/queryPlan';
+import { QueryPlanState } from 'sql/workbench/parts/queryPlan/electron-browser/queryPlan';
 import { ChartState } from 'sql/parts/query/editor/charting/chartView';
-import { TopOperationsState } from 'sql/parts/queryPlan/topOperations';
+import { TopOperationsState } from 'sql/workbench/parts/queryPlan/browser/topOperations';
 
 export class ResultsViewState {
 	public gridPanelState: GridPanelState = new GridPanelState();
@@ -95,8 +94,8 @@ export class QueryResultsInput extends EditorInput {
 		return false;
 	}
 
-	resolve(refresh?: boolean): TPromise<any> {
-		return TPromise.as(null);
+	resolve(refresh?: boolean): Promise<any> {
+		return Promise.resolve(null);
 	}
 
 	supportsSplitEditor(): boolean {

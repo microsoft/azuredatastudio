@@ -7,6 +7,8 @@
 import { NotificationType, RequestType } from 'vscode-languageclient';
 import { ITelemetryEventProperties, ITelemetryEventMeasures } from './telemetry';
 import * as azdata from 'azdata';
+import { ConnectParams } from 'dataprotocol-client/lib/protocol';
+import { ListRegisteredServersResult } from './api/mssqlapis';
 
 // ------------------------------- < Telemetry Sent Event > ------------------------------------
 
@@ -346,19 +348,6 @@ export interface GenerateDeployPlanParams {
 	taskExecutionMode: TaskExecutionMode;
 }
 
-export interface SchemaCompareParams {
-	sourceEndpointInfo: azdata.SchemaCompareEndpointInfo;
-	targetEndpointInfo: azdata.SchemaCompareEndpointInfo;
-	taskExecutionMode: TaskExecutionMode;
-}
-
-export interface SchemaCompareGenerateScriptParams {
-	operationId: string;
-	targetDatabaseName: string;
-	scriptFilePath: string;
-	taskExecutionMode: TaskExecutionMode;
-}
-
 export namespace ExportRequest {
 	export const type = new RequestType<ExportParams, azdata.DacFxResult, void, void>('dacfx/export');
 }
@@ -382,12 +371,89 @@ export namespace GenerateDeployScriptRequest {
 export namespace GenerateDeployPlanRequest {
 	export const type = new RequestType<GenerateDeployPlanParams, azdata.GenerateDeployPlanResult, void, void>('dacfx/generateDeployPlan');
 }
+// ------------------------------- < DacFx > ------------------------------------
+
+// ------------------------------- <CMS> ----------------------------------------
+
+
+export interface CreateCentralManagementServerParams {
+    registeredServerName: string;
+    registeredServerDescription : string;
+    connectParams: ConnectParams;
+}
+
+export interface ListRegisteredServersParams extends RegisteredServerParamsBase {
+        // same as base
+}
+
+export interface AddRegisteredServerParams extends RegisteredServerParamsBase {
+    registeredServerName: string;
+    registeredServerDescription : string;
+    registeredServerConnectionDetails: azdata.ConnectionInfo;
+}
+
+export interface RemoveRegisteredServerParams extends RegisteredServerParamsBase {
+    registeredServerName: string;
+}
+
+export interface AddServerGroupParams extends RegisteredServerParamsBase {
+    groupName: string;
+	groupDescription: string;
+}
+
+export interface RemoveServerGroupParams extends RegisteredServerParamsBase {
+    groupName: string;
+}
+
+export interface RegisteredServerParamsBase {
+    parentOwnerUri: string;
+    relativePath: string;
+}
+
+export namespace CreateCentralManagementServerRequest {
+	export const type = new RequestType<CreateCentralManagementServerParams, ListRegisteredServersResult, void, void>('cms/createCms');
+}
+
+export namespace ListRegisteredServersRequest {
+	export const type = new RequestType<ListRegisteredServersParams, ListRegisteredServersResult, void, void>('cms/listRegisteredServers');
+}
+
+export namespace AddRegisteredServerRequest {
+	export const type = new RequestType<AddRegisteredServerParams, boolean, void, void>('cms/addRegisteredServer');
+}
+
+export namespace RemoveRegisteredServerRequest {
+	export const type = new RequestType<RemoveRegisteredServerParams, boolean, void, void>('cms/removeRegisteredServer');
+}
+
+export namespace AddServerGroupRequest {
+	export const type = new RequestType<AddServerGroupParams, boolean, void, void>('cms/addCmsServerGroup');
+}
+
+export namespace RemoveServerGroupRequest {
+	export const type = new RequestType<RemoveServerGroupParams, boolean, void, void>('cms/removeCmsServerGroup');
+}
+// ------------------------------- <CMS> ----------------------------------------
+
+// ------------------------------- <Schema Compare> -----------------------------
+export interface SchemaCompareParams {
+	sourceEndpointInfo: azdata.SchemaCompareEndpointInfo;
+	targetEndpointInfo: azdata.SchemaCompareEndpointInfo;
+	taskExecutionMode: TaskExecutionMode;
+}
+
+ export interface SchemaCompareGenerateScriptParams {
+	operationId: string;
+	targetDatabaseName: string;
+	scriptFilePath: string;
+	taskExecutionMode: TaskExecutionMode;
+}
 
 export namespace SchemaCompareRequest {
 	export const type = new RequestType<SchemaCompareParams, azdata.SchemaCompareResult, void, void>('schemaCompare/compare');
 }
 
-export namespace SchemaCompareGenerateScriptRequest {
-	export const type = new RequestType<SchemaCompareGenerateScriptParams, azdata.DacFxResult, void, void>('schemaCompare/generateScript');
+ export namespace SchemaCompareGenerateScriptRequest {
+	export const type = new RequestType<SchemaCompareGenerateScriptParams, azdata.ResultStatus, void, void>('schemaCompare/generateScript');
 }
-// ------------------------------- < DacFx > ------------------------------------
+// ------------------------------- <Schema Compare> -----------------------------

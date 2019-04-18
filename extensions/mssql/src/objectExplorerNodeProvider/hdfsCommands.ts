@@ -98,7 +98,8 @@ export class UploadFilesCommand extends ProgressCommand {
 				}
 			}
 		} catch (err) {
-			this.apiWrapper.showErrorMessage(localize('uploadError', 'Error uploading files: {0}', utils.getErrorMessage(err)));
+			this.apiWrapper.showErrorMessage(
+				localize('uploadError', 'Error uploading files: {0}', utils.getErrorMessage(err, true)));
 		}
 	}
 
@@ -156,7 +157,8 @@ export class MkDirCommand extends ProgressCommand {
 				}
 			}
 		} catch (err) {
-			this.apiWrapper.showErrorMessage(localize('uploadError', 'Error uploading files: {0}', utils.getErrorMessage(err)));
+			this.apiWrapper.showErrorMessage(
+				localize('mkDirError', 'Error on making directory: {0}', utils.getErrorMessage(err, true)));
 		}
 	}
 
@@ -213,7 +215,8 @@ export class DeleteFilesCommand extends Command {
 				this.apiWrapper.showErrorMessage(LocalizedConstants.msgMissingNodeContext);
 			}
 		} catch (err) {
-			this.apiWrapper.showErrorMessage(localize('deleteError', 'Error deleting files {0}', utils.getErrorMessage(err)));
+			this.apiWrapper.showErrorMessage(
+				localize('deleteError', 'Error on deleting files: {0}', utils.getErrorMessage(err, true)));
 		}
 	}
 
@@ -273,7 +276,8 @@ export class SaveFileCommand extends ProgressCommand {
 				this.apiWrapper.showErrorMessage(LocalizedConstants.msgMissingNodeContext);
 			}
 		} catch (err) {
-			this.apiWrapper.showErrorMessage(localize('saveError', 'Error saving file: {0}', utils.getErrorMessage(err)));
+			this.apiWrapper.showErrorMessage(
+				localize('saveError', 'Error on saving file: {0}', utils.getErrorMessage(err, true)));
 		}
 	}
 
@@ -301,11 +305,20 @@ export class PreviewFileCommand extends ProgressCommand {
 				await this.executeWithProgress(
 					async (cancelToken: vscode.CancellationTokenSource) => {
 						let contents = await fileNode.getFileContentsAsString(PreviewFileCommand.DefaultMaxSize);
-						let doc = await this.openTextDocument(fspath.basename(fileNode.hdfsPath));
-						let editor = await this.apiWrapper.showTextDocument(doc, vscode.ViewColumn.Active, false);
-						await editor.edit(edit => {
-							edit.insert(new vscode.Position(0, 0), contents);
-						});
+						let fileName: string = fspath.basename(fileNode.hdfsPath);
+						if (fspath.extname(fileName) !== '.ipynb') {
+							let doc = await this.openTextDocument(fileName);
+							let editor = await this.apiWrapper.showTextDocument(doc, vscode.ViewColumn.Active, false);
+							await editor.edit(edit => {
+								edit.insert(new vscode.Position(0, 0), contents);
+							});
+						} else {
+							let connectionProfile: azdata.IConnectionProfile = undefined;
+							if (context.type === constants.ObjectExplorerService) {
+								connectionProfile = context.explorerContext.connectionProfile;
+							}
+							await this.showNotebookDocument(fileName, connectionProfile, contents);
+						}
 					},
 					localize('previewing', 'Generating preview'),
 					false);
@@ -313,8 +326,21 @@ export class PreviewFileCommand extends ProgressCommand {
 				this.apiWrapper.showErrorMessage(LocalizedConstants.msgMissingNodeContext);
 			}
 		} catch (err) {
-			this.apiWrapper.showErrorMessage(localize('previewError', 'Error previewing file: {0}', utils.getErrorMessage(err)));
+			this.apiWrapper.showErrorMessage(
+				localize('previewError', 'Error on previewing file: {0}', utils.getErrorMessage(err, true)));
 		}
+	}
+
+	private async showNotebookDocument(fileName: string, connectionProfile?: azdata.IConnectionProfile,
+		initialContent?: string
+	): Promise<azdata.nb.NotebookEditor> {
+		let docUri: vscode.Uri = getSaveableUri(this.apiWrapper, fileName, true)
+			.with({ scheme: constants.UNTITLED_SCHEMA });
+		return await azdata.nb.showNotebookDocument(docUri, {
+			connectionProfile: connectionProfile,
+			preview: false,
+			initialContent: initialContent
+		});
 	}
 
 	private async openTextDocument(fileName: string): Promise<vscode.TextDocument> {
@@ -357,7 +383,8 @@ export class CopyPathCommand extends Command {
 				this.apiWrapper.showErrorMessage(LocalizedConstants.msgMissingNodeContext);
 			}
 		} catch (err) {
-			this.apiWrapper.showErrorMessage(localize('copyPathError', 'Error copying path: {0}', utils.getErrorMessage(err)));
+			this.apiWrapper.showErrorMessage(
+				localize('copyPathError', 'Error on copying path: {0}', utils.getErrorMessage(err, true)));
 		}
 	}
 }

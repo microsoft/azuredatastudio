@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import { Button as vsButton, IButtonOptions, IButtonStyles as vsIButtonStyles } from 'vs/base/browser/ui/button/button';
 import * as DOM from 'vs/base/browser/dom';
 import { Color } from 'vs/base/common/color';
@@ -13,11 +12,10 @@ export interface IButtonStyles extends vsIButtonStyles {
 }
 
 export class Button extends vsButton {
-	private buttonFocusOutline: Color;
+	private buttonFocusOutline?: Color;
 
 	constructor(container: HTMLElement, options?: IButtonOptions) {
 		super(container, options);
-		this.buttonFocusOutline = null;
 
 		this._register(DOM.addDisposableListener(this.element, DOM.EventType.FOCUS, () => {
 			this.element.style.outlineColor = this.buttonFocusOutline ? this.buttonFocusOutline.toString() : null;

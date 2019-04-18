@@ -15,9 +15,9 @@ import { ProfilerTableEditor, ProfilerTableViewState } from './controller/profil
 import * as Actions from 'sql/parts/profiler/contrib/profilerActions';
 import { CONTEXT_PROFILER_EDITOR, PROFILER_TABLE_COMMAND_SEARCH } from './interfaces';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
-import { textFormatter } from 'sql/parts/grid/services/sharedServices';
+import { textFormatter, slickGridDataItemColumnValueExtractor } from 'sql/base/browser/ui/table/formatters';
 import { ProfilerResourceEditor } from './profilerResourceEditor';
-import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
+import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { ITextModel } from 'vs/editor/common/model';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
@@ -35,13 +35,11 @@ import { CommonFindController, FindStartFocusAction } from 'vs/editor/contrib/fi
 import * as types from 'vs/base/common/types';
 import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
 import { DARK, HIGH_CONTRAST } from 'vs/platform/theme/common/themeService';
-import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { IView, SplitView, Sizing } from 'vs/base/browser/ui/splitview/splitview';
 import * as DOM from 'vs/base/browser/dom';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { EditorOptions } from 'vs/workbench/common/editor';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IWorkbenchThemeService, VS_DARK_THEME, VS_HC_THEME } from 'vs/workbench/services/themes/common/workbenchThemeService';
@@ -92,7 +90,7 @@ class BasicView implements IView {
 				this.previousSize = this.size;
 				this._minimumSize = this.options.headersize;
 				this._maximumSize = this.options.headersize;
-				this._onDidChange.fire();
+				this._onDidChange.fire(undefined);
 			} else {
 				this._maximumSize = this._defaultMaximumSize;
 				this._minimumSize = this._defaultMinimumSize;
@@ -153,7 +151,6 @@ export class ProfilerEditor extends BaseEditor {
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IWorkbenchThemeService themeService: IWorkbenchThemeService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IContextMenuService private _contextMenuService: IContextMenuService,
 		@IModelService private _modelService: IModelService,
 		@IProfilerService private _profilerService: IProfilerService,
 		@IContextKeyService private _contextKeyService: IContextKeyService,
@@ -209,7 +206,7 @@ export class ProfilerEditor extends BaseEditor {
 		this._header = document.createElement('div');
 		this._header.className = 'profiler-header';
 		this._container.appendChild(this._header);
-		this._actionBar = new Taskbar(this._header, this._contextMenuService);
+		this._actionBar = new Taskbar(this._header);
 		this._startAction = this._instantiationService.createInstance(Actions.ProfilerStart, Actions.ProfilerStart.ID, Actions.ProfilerStart.LABEL);
 		this._startAction.enabled = false;
 		this._createAction = this._instantiationService.createInstance(Actions.ProfilerCreate, Actions.ProfilerCreate.ID, Actions.ProfilerCreate.LABEL);
@@ -367,7 +364,10 @@ export class ProfilerEditor extends BaseEditor {
 					formatter: textFormatter
 				}
 			]
-		}, { forceFitColumns: true });
+		}, {
+				forceFitColumns: true,
+				dataItemColumnValueExtractor: slickGridDataItemColumnValueExtractor
+			});
 
 		this._detailTableData.onRowCountChange(() => {
 			this._detailTable.updateRowCount();
@@ -407,7 +407,7 @@ export class ProfilerEditor extends BaseEditor {
 		return this._input as ProfilerInput;
 	}
 
-	public setInput(input: ProfilerInput, options?: EditorOptions): Thenable<void> {
+	public setInput(input: ProfilerInput, options?: EditorOptions): Promise<void> {
 		let savedViewState = this._savedTableViewStates.get(input);
 
 		this._profilerEditorContextKey.set(true);
@@ -415,7 +415,7 @@ export class ProfilerEditor extends BaseEditor {
 			if (savedViewState) {
 				this._profilerTableEditor.restoreViewState(savedViewState);
 			}
-			return TPromise.as(null);
+			return Promise.resolve(null);
 		}
 
 		return super.setInput(input, options, CancellationToken.None).then(() => {

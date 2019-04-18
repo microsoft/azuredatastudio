@@ -6,7 +6,7 @@
     "publisher": "demo",
     "engines": {
         "vscode": "^1.26.0",
-        "sqlops": "*"
+        "azdata": "*"
     },
     "categories": [
         "Other"

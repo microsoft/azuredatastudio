@@ -5,9 +5,7 @@
 
 import * as DOM from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { Builder } from 'sql/base/browser/builder';
 import { EditorOptions } from 'vs/workbench/common/editor';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { getZoomLevel } from 'vs/base/browser/browser';
 import { Configuration } from 'vs/editor/browser/config/configuration';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -17,11 +15,11 @@ import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import * as types from 'vs/base/common/types';
 
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
-import { bootstrapAngular } from 'sql/services/bootstrap/bootstrapService';
+import { bootstrapAngular } from 'sql/platform/bootstrap/node/bootstrapService';
 import { BareResultsGridInfo } from 'sql/parts/query/editor/queryResultsEditor';
-import { IEditDataComponentParams } from 'sql/services/bootstrap/bootstrapParams';
-import { EditDataModule } from 'sql/parts/grid/views/editData/editData.module';
-import { EDITDATA_SELECTOR } from 'sql/parts/grid/views/editData/editData.component';
+import { IEditDataComponentParams } from 'sql/platform/bootstrap/node/bootstrapParams';
+import { EditDataModule } from 'sql/workbench/parts/grid/views/editData/editData.module';
+import { EDITDATA_SELECTOR } from 'sql/workbench/parts/grid/views/editData/editData.component';
 import { EditDataResultsInput } from 'sql/parts/editData/common/editDataResultsInput';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
@@ -65,13 +63,13 @@ export class EditDataResultsEditor extends BaseEditor {
 	public layout(dimension: DOM.Dimension): void {
 	}
 
-	public setInput(input: EditDataResultsInput, options: EditorOptions): TPromise<void> {
+	public setInput(input: EditDataResultsInput, options: EditorOptions): Promise<void> {
 		super.setInput(input, options, CancellationToken.None);
 		this._applySettings();
 		if (!input.hasBootstrapped) {
 			this._bootstrapAngular();
 		}
-		return TPromise.wrap<void>(null);
+		return Promise.resolve<void>(null);
 	}
 
 	private _applySettings() {

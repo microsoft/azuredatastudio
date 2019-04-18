@@ -11,6 +11,7 @@ import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import { AppContext } from './appContext';
 import { SqlClusterConnection } from './objectExplorerNodeProvider/connection';
 import { ICommandObjectExplorerContext } from './objectExplorerNodeProvider/command';
+import { IEndpoint } from './utils';
 import { MssqlObjectExplorerNodeProvider } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
 
 
@@ -78,7 +79,11 @@ async function createSqlClusterConnInfo(sqlConnInfo: azdata.IConnectionProfile |
 	let endpoints: IEndpoint[] = serverInfo.options[constants.clusterEndpointsProperty];
 	if (!endpoints || endpoints.length === 0) { return undefined; }
 
-	let index = endpoints.findIndex(ep => ep.serviceName === constants.hadoopKnoxEndpointName);
+	let index = endpoints.findIndex(ep => {
+		let serviceName: string = ep.serviceName.toLowerCase();
+		return serviceName === constants.hadoopEndpointNameKnox.toLowerCase() ||
+			serviceName === constants.hadoopEndpointNameGateway.toLowerCase();
+	});
 	if (index < 0) { return undefined; }
 
 	let credentials = await azdata.connection.getCredentials(connectionId);
@@ -116,12 +121,6 @@ function connToConnectionParam(connection: azdata.connection.Connection): Connec
 		}
 	);
 	return <ConnectionParam>result;
-}
-
-interface IEndpoint {
-	serviceName: string;
-	ipAddress: string;
-	port: number;
 }
 
 class ConnectionParam implements azdata.connection.Connection, azdata.IConnectionProfile, azdata.ConnectionInfo

@@ -6,13 +6,14 @@
 'use strict';
 
 import { nb } from 'azdata';
+import * as vscode from 'vscode';
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { INotebookManager, SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/common/notebookService';
+import { SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/common/notebookService';
 import { LocalContentManager } from 'sql/workbench/services/notebook/node/localContentManager';
 import { SqlSessionManager } from 'sql/workbench/services/notebook/sql/sqlSessionManager';
 
-export class SqlNotebookManager implements INotebookManager {
+export class SqlNotebookManager implements nb.NotebookProvider {
 	private _contentManager: nb.ContentManager;
 	private _sessionManager: nb.SessionManager;
 
@@ -35,5 +36,17 @@ export class SqlNotebookManager implements INotebookManager {
 
 	public get sessionManager(): nb.SessionManager {
 		return this._sessionManager;
+	}
+
+	getNotebookManager(notebookUri: vscode.Uri): Thenable<nb.NotebookManager> {
+		throw new Error('Method not implemented.');
+	}
+
+	handleNotebookClosed(notebookUri: vscode.Uri): void {
+		throw new Error('Method not implemented.');
+	}
+
+	public get standardKernels(): nb.IStandardKernel[] {
+		return [];
 	}
 }

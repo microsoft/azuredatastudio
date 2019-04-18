@@ -9,7 +9,7 @@ import {
 	ElementRef, OnInit, ChangeDetectorRef, ReflectiveInjector, Injector, ComponentRef
 } from '@angular/core';
 
-import { ComponentHostDirective } from 'sql/parts/dashboard/common/componentHost.directive';
+import { ComponentHostDirective } from 'sql/workbench/parts/dashboard/common/componentHost.directive';
 import { error } from 'sql/base/common/log';
 import { AngularDisposable } from 'sql/base/node/lifecycle';
 import { IComponent, IComponentConfig, IComponentDescriptor, IModelStore, COMPONENT_CONFIG } from './interfaces';
@@ -21,7 +21,7 @@ import * as themeColors from 'vs/workbench/common/theme';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { memoize } from 'vs/base/common/decorators';
 import { generateUuid } from 'vs/base/common/uuid';
-import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
+import { IBootstrapParams } from 'sql/platform/bootstrap/node/bootstrapService';
 import { Event } from 'vs/base/common/event';
 import { LayoutRequestParams } from 'sql/platform/dialog/dialogContainer.component';
 

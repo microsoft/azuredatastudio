@@ -8,7 +8,6 @@
 /*
 import Severity from 'vs/base/common/severity';
 import { IConfirmation, IMessageService, IMessageWithAction, IConfirmationResult } from 'vs/platform/message/common/message';
-import { TPromise } from 'vs/base/common/winjs.base';
 
 export class MessageServiceStub implements IMessageService {
 	_serviceBrand: any;
@@ -35,7 +34,7 @@ export class MessageServiceStub implements IMessageService {
 	}
 
 
-	confirmWithCheckbox(confirmation: IConfirmation): TPromise<IConfirmationResult> {
+	confirmWithCheckbox(confirmation: IConfirmation): Promise<IConfirmationResult> {
 		return undefined;
 	}
 }

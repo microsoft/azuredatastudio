@@ -8,7 +8,7 @@ import * as os from 'os';
 import { nb, QueryExecuteSubsetResult, IDbColumn, BatchSummary, IResultMessage, ResultSetSummary } from 'azdata';
 import { localize } from 'vs/nls';
 import * as strings from 'vs/base/common/strings';
-import { FutureInternal, ILanguageMagic } from 'sql/parts/notebook/models/modelInterfaces';
+import { FutureInternal, ILanguageMagic, notebookConstants } from 'sql/workbench/parts/notebook/models/modelInterfaces';
 import QueryRunner, { EventType } from 'sql/platform/query/common/queryRunner';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -21,20 +21,14 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { escape } from 'sql/base/common/strings';
 import { elapsedTimeLabel } from 'sql/parts/query/common/localizedConstants';
-import * as notebookUtils from 'sql/parts/notebook/notebookUtils';
+import * as notebookUtils from 'sql/workbench/parts/notebook/notebookUtils';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 
-export const sqlKernel: string = localize('sqlKernel', 'SQL');
 export const sqlKernelError: string = localize("sqlKernelError", "SQL kernel error");
 export const MAX_ROWS = 5000;
 export const NotebookConfigSectionName = 'notebook';
 export const MaxTableRowsConfigName = 'maxTableRows';
-
-const sqlKernelSpec: nb.IKernelSpec = ({
-	name: sqlKernel,
-	language: 'sql',
-	display_name: sqlKernel
-});
 
 const languageMagics: ILanguageMagic[] = [{
 	language: 'Python',
@@ -65,8 +59,8 @@ export class SqlSessionManager implements nb.SessionManager {
 
 	public get specs(): nb.IAllKernels {
 		let allKernels: nb.IAllKernels = {
-			defaultKernel: sqlKernel,
-			kernels: [sqlKernelSpec]
+			defaultKernel: notebookConstants.sqlKernel,
+			kernels: [notebookConstants.sqlKernelSpec]
 		};
 		return allKernels;
 	}
@@ -145,6 +139,7 @@ export class SqlSession implements nb.ISession {
 class SqlKernel extends Disposable implements nb.IKernel {
 	private _queryRunner: QueryRunner;
 	private _currentConnection: IConnectionProfile;
+	private _currentConnectionProfile: ConnectionProfile;
 	static kernelId: number = 0;
 
 	private _id: string;
@@ -153,6 +148,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 	private _magicToExecutorMap = new Map<string, ExternalScriptMagic>();
 
 	constructor(@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
+		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
 		@IConfigurationService private _configurationService: IConfigurationService
@@ -176,10 +172,14 @@ class SqlKernel extends Disposable implements nb.IKernel {
 	}
 
 	public get name(): string {
-		return sqlKernel;
+		return notebookConstants.sqlKernel;
 	}
 
 	public get supportsIntellisense(): boolean {
+		return true;
+	}
+
+	public get requiresConnection(): boolean {
 		return true;
 	}
 
@@ -213,11 +213,12 @@ class SqlKernel extends Disposable implements nb.IKernel {
 
 	public set connection(conn: IConnectionProfile) {
 		this._currentConnection = conn;
+		this._currentConnectionProfile = new ConnectionProfile(this._capabilitiesService, this._currentConnection);
 		this._queryRunner = undefined;
 	}
 
 	getSpec(): Thenable<nb.IKernelSpec> {
-		return Promise.resolve(sqlKernelSpec);
+		return Promise.resolve(notebookConstants.sqlKernelSpec);
 	}
 
 	requestExecute(content: nb.IExecuteRequest, disposeOnDone?: boolean): nb.IFuture {
@@ -231,10 +232,10 @@ class SqlKernel extends Disposable implements nb.IKernel {
 				this._future.handleDone();
 			}
 			this._queryRunner.runQuery(code);
-		} else if (this._currentConnection) {
-			let connectionUri = Utils.generateUri(this._currentConnection, 'notebook');
+		} else if (this._currentConnection && this._currentConnectionProfile) {
+			let connectionUri = Utils.generateUri(this._currentConnectionProfile, 'notebook');
 			this._queryRunner = this._instantiationService.createInstance(QueryRunner, connectionUri);
-			this._connectionManagementService.connect(this._currentConnection, connectionUri).then((result) => {
+			this._connectionManagementService.connect(this._currentConnectionProfile, connectionUri).then((result) => {
 				this.addQueryEventListeners(this._queryRunner);
 				this._queryRunner.runQuery(code);
 			});
@@ -249,7 +250,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 		this._future = new SQLFuture(this._queryRunner, count, this._configurationService);
 		if (!canRun) {
 			// Complete early
-			this._future.handleDone(new Error(localize('connectionRequired', 'A connection must be chosen to run notebook cells')));
+			this._future.handleDone(new Error(localize('connectionRequired', "A connection must be chosen to run notebook cells")));
 		}
 
 		// TODO should we  cleanup old future? I don't think we need to
@@ -319,7 +320,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	private doneHandler: nb.MessageHandler<nb.IShellMessage>;
 	private doneDeferred = new Deferred<nb.IShellMessage>();
 	private configuredMaxRows: number = MAX_ROWS;
-
+	private _outputAddedPromises: Promise<void>[] = [];
 	constructor(private _queryRunner: QueryRunner, private _executionCount: number | undefined, private configurationService: IConfigurationService) {
 		super();
 		let config = configurationService.getValue(NotebookConfigSectionName);
@@ -348,6 +349,16 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	}
 
 	public handleDone(err?: Error): void {
+		this.handleDoneAsync(err);
+		// TODO we should reject where some failure happened?
+	}
+
+	private async handleDoneAsync(err?: Error): Promise<void> {
+		// must wait on all outstanding output updates to complete
+		if (this._outputAddedPromises && this._outputAddedPromises.length > 0) {
+			// Do not care about error handling as this is handled elsewhere
+			await Promise.all(this._outputAddedPromises).catch((err) => undefined);
+		}
 		let msg: nb.IExecuteReplyMsg = {
 			channel: 'shell',
 			type: 'execute_reply',
@@ -364,7 +375,6 @@ export class SQLFuture extends Disposable implements FutureInternal {
 			this.doneHandler.handle(msg);
 		}
 		this.doneDeferred.resolve(msg);
-		// TODO we should reject where some failure happened?
 	}
 
 	sendInputReply(content: nb.IInputReply): void {
@@ -398,7 +408,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	public handleBatchEnd(batch: BatchSummary): void {
 		if (this.ioHandler) {
 			this.handleMessage(strings.format(elapsedTimeLabel, batch.executionElapsed));
-			this.processResultSets(batch);
+			this._outputAddedPromises.push(this.processResultSets(batch));
 		}
 	}
 
@@ -406,6 +416,9 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		try {
 			for (let resultSet of batch.resultSetSummaries) {
 				let rowCount = resultSet.rowCount > this.configuredMaxRows ? this.configuredMaxRows : resultSet.rowCount;
+				if (rowCount === this.configuredMaxRows) {
+					this.handleMessage(localize('sqlMaxRowsDisplayed', "Displaying Top {0} rows.", rowCount));
+				}
 				await this.sendResultSetAsIOPub(rowCount, resultSet);
 			}
 		} catch (err) {

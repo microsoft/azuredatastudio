@@ -15,13 +15,13 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { ResourceViewerContext, ResourceViewer } from 'vs/workbench/browser/parts/editor/resourceViewer';
 import { URI } from 'vs/base/common/uri';
 import { Dimension, size, clearNode } from 'vs/base/browser/dom';
-import { IFileService } from 'vs/platform/files/common/files';
+import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { dispose } from 'vs/base/common/lifecycle';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 
 export interface IOpenCallbacks {
-	openInternal: (input: EditorInput, options: EditorOptions) => Thenable<void>;
+	openInternal: (input: EditorInput, options: EditorOptions) => Promise<void>;
 	openExternal: (uri: URI) => void;
 }
 
@@ -37,17 +37,17 @@ export abstract class BaseBinaryResourceEditor extends BaseEditor {
 	get onDidOpenInPlace(): Event<void> { return this._onDidOpenInPlace.event; }
 
 	private callbacks: IOpenCallbacks;
-	private metadata: string;
+	private metadata: string | undefined;
 	private binaryContainer: HTMLElement;
 	private scrollbar: DomScrollableElement;
-	private resourceViewerContext: ResourceViewerContext;
+	private resourceViewerContext: ResourceViewerContext | undefined;
 
 	constructor(
 		id: string,
 		callbacks: IOpenCallbacks,
 		telemetryService: ITelemetryService,
 		themeService: IThemeService,
-		@IFileService private readonly _fileService: IFileService,
+		@ITextFileService private readonly textFileService: ITextFileService,
 		@IStorageService storageService: IStorageService
 	) {
 		super(id, telemetryService, themeService, storageService);
@@ -55,7 +55,7 @@ export abstract class BaseBinaryResourceEditor extends BaseEditor {
 		this.callbacks = callbacks;
 	}
 
-	getTitle(): string {
+	getTitle() {
 		return this.input ? this.input.getName() : nls.localize('binaryEditor', "Binary Viewer");
 	}
 
@@ -72,13 +72,13 @@ export abstract class BaseBinaryResourceEditor extends BaseEditor {
 		parent.appendChild(this.scrollbar.getDomNode());
 	}
 
-	setInput(input: EditorInput, options: EditorOptions, token: CancellationToken): Thenable<void> {
+	setInput(input: EditorInput, options: EditorOptions, token: CancellationToken): Promise<void> {
 		return super.setInput(input, options, token).then(() => {
 			return input.resolve().then(model => {
 
 				// Check for cancellation
 				if (token.isCancellationRequested) {
-					return void 0;
+					return undefined;
 				}
 
 				// Assert Model instance
@@ -89,7 +89,7 @@ export abstract class BaseBinaryResourceEditor extends BaseEditor {
 				// Render Input
 				this.resourceViewerContext = ResourceViewer.show(
 					{ name: model.getName(), resource: model.getResource(), size: model.getSize(), etag: model.getETag(), mime: model.getMime() },
-					this._fileService,
+					this.textFileService,
 					this.binaryContainer,
 					this.scrollbar,
 					resource => this.handleOpenInternalCallback(input, options),
@@ -97,7 +97,7 @@ export abstract class BaseBinaryResourceEditor extends BaseEditor {
 					meta => this.handleMetadataChanged(meta)
 				);
 
-				return void 0;
+				return undefined;
 			});
 		});
 	}
@@ -110,24 +110,25 @@ export abstract class BaseBinaryResourceEditor extends BaseEditor {
 		});
 	}
 
-	private handleMetadataChanged(meta: string): void {
+	private handleMetadataChanged(meta: string | undefined): void {
 		this.metadata = meta;
 
 		this._onMetadataChanged.fire();
 	}
 
-	getMetadata(): string {
+	getMetadata(): string | undefined {
 		return this.metadata;
 	}
 
 	clearInput(): void {
 
 		// Clear Meta
-		this.handleMetadataChanged(null);
+		this.handleMetadataChanged(undefined);
 
 		// Clear Resource Viewer
 		clearNode(this.binaryContainer);
-		this.resourceViewerContext = dispose(this.resourceViewerContext);
+		dispose(this.resourceViewerContext);
+		this.resourceViewerContext = undefined;
 
 		super.clearInput();
 	}
@@ -149,7 +150,8 @@ export abstract class BaseBinaryResourceEditor extends BaseEditor {
 	dispose(): void {
 		this.binaryContainer.remove();
 
-		this.resourceViewerContext = dispose(this.resourceViewerContext);
+		dispose(this.resourceViewerContext);
+		this.resourceViewerContext = undefined;
 
 		super.dispose();
 	}

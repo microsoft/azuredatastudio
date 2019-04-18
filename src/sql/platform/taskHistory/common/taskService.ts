@@ -5,14 +5,13 @@
 
 'use strict';
 import * as azdata from 'azdata';
-import { TaskNode, TaskStatus, TaskExecutionMode } from 'sql/parts/taskHistory/common/taskNode';
+import { TaskNode, TaskStatus, TaskExecutionMode } from 'sql/workbench/parts/taskHistory/common/taskNode';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { Event, Emitter } from 'vs/base/common/event';
 import { ILifecycleService } from 'vs/platform/lifecycle/common/lifecycle';
 import { localize } from 'vs/nls';
 import Severity from 'vs/base/common/severity';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 
@@ -125,7 +124,7 @@ export class TaskService implements ITaskService {
 	}
 
 	private cancelAllTasks(): Thenable<void> {
-		return new TPromise<void>((resolve, reject) => {
+		return new Promise<void>((resolve, reject) => {
 			let promises = this._taskQueue.children.map(task => {
 				if (task.status === TaskStatus.InProgress || task.status === TaskStatus.NotStarted) {
 					return this.cancelTask(task.providerName, task.id);
@@ -151,14 +150,14 @@ export class TaskService implements ITaskService {
 		this._onAddNewTask.fire(task);
 	}
 
-	public beforeShutdown(): TPromise<boolean> {
+	public beforeShutdown(): Promise<boolean> {
 		const message = localize('InProgressWarning', '1 or more tasks are in progress. Are you sure you want to quit?');
 		const options = [
 			localize('taskService.yes', "Yes"),
 			localize('taskService.no', "No")
 		];
 
-		return new TPromise<boolean>((resolve, reject) => {
+		return new Promise<boolean>((resolve, reject) => {
 			let numOfInprogressTasks = this.getNumberOfInProgressTasks();
 			if (numOfInprogressTasks > 0) {
 				this.dialogService.show(Severity.Warning, message, options).then(choice => {

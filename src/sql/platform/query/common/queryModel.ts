@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import QueryRunner from 'sql/platform/query/common/queryRunner';
-import { DataService } from 'sql/parts/grid/services/dataService';
+import { DataService } from 'sql/workbench/parts/grid/services/dataService';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { Event } from 'vs/base/common/event';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
@@ -16,13 +16,26 @@ import {
 	EditSubsetResult,
 	EditCreateRowResult,
 	EditRevertCellResult,
-	ExecutionPlanOptions
+	ExecutionPlanOptions,
+	queryeditor
 } from 'azdata';
 import { QueryInfo } from 'sql/platform/query/common/queryModelService';
 
 export const SERVICE_ID = 'queryModelService';
 
 export const IQueryModelService = createDecorator<IQueryModelService>(SERVICE_ID);
+
+export interface IQueryPlanInfo {
+	providerId: string;
+	fileUri: string;
+	planXml: string;
+}
+
+export interface IQueryEvent {
+	type: queryeditor.QueryEvent;
+	uri: string;
+	params?: any;
+}
 
 /**
  * Interface for the logic of handling running queries and grid interactions for all URIs.
@@ -56,7 +69,7 @@ export interface IQueryModelService {
 
 	onRunQueryStart: Event<string>;
 	onRunQueryComplete: Event<string>;
-
+	onQueryEvent: Event<IQueryEvent>;
 
 	// Edit Data Functions
 	initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number, queryString: string): void;

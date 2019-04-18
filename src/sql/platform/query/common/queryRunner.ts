@@ -3,15 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as azdata from 'azdata';
 
 import * as Constants from 'sql/parts/query/common/constants';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
 import * as Utils from 'sql/platform/connection/common/utils';
-import { SaveFormat } from 'sql/parts/grid/common/interfaces';
+import { SaveFormat } from 'sql/workbench/parts/grid/common/interfaces';
 import { Deferred } from 'sql/base/common/promise';
 
 import Severity from 'vs/base/common/severity';
@@ -24,8 +22,8 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { Emitter, Event } from 'vs/base/common/event';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ResultSerializer } from 'sql/platform/node/resultSerializer';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IQueryPlanInfo } from 'sql/platform/query/common/queryModel';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 import { URI } from 'vs/base/common/uri';
 
@@ -42,7 +40,8 @@ export const enum EventType {
 	BATCH_START = 'batchStart',
 	BATCH_COMPLETE = 'batchComplete',
 	RESULT_SET = 'resultSet',
-	EDIT_SESSION_READY = 'editSessionReady'
+	EDIT_SESSION_READY = 'editSessionReady',
+	QUERY_PLAN_AVAILABLE = 'queryPlanAvailable'
 }
 
 export interface IEventType {
@@ -53,6 +52,7 @@ export interface IEventType {
 	batchComplete: azdata.BatchSummary;
 	resultSet: azdata.ResultSetSummary;
 	editSessionReady: IEditSessionReadyEvent;
+	queryPlanAvailable: IQueryPlanInfo;
 }
 
 export interface IGridMessage extends azdata.IResultMessage {
@@ -72,6 +72,7 @@ export default class QueryRunner extends Disposable {
 	private _batchSets: azdata.BatchSummary[] = [];
 	private _messages: azdata.IResultMessage[] = [];
 	private _eventEmitter = new EventEmitter();
+	private registered = false;
 
 	private _isQueryPlan: boolean;
 	public get isQueryPlan(): boolean { return this._isQueryPlan; }
@@ -186,7 +187,7 @@ export default class QueryRunner extends Disposable {
 	private doRunQuery(input: azdata.ISelectionData, runCurrentStatement: boolean, runOptions?: azdata.ExecutionPlanOptions): Thenable<void>;
 	private doRunQuery(input, runCurrentStatement: boolean, runOptions?: azdata.ExecutionPlanOptions): Thenable<void> {
 		if (this.isExecuting) {
-			return TPromise.as(undefined);
+			return Promise.resolve(undefined);
 		}
 		this._planXml = new Deferred<string>();
 		this._batchSets = [];
@@ -207,6 +208,8 @@ export default class QueryRunner extends Disposable {
 				this._isQueryPlan = false;
 			}
 
+			this._onQueryStart.fire();
+
 			// Send the request to execute the query
 			return runCurrentStatement
 				? this._queryManagementService.runQueryStatement(this.uri, input.startLine, input.startColumn).then(() => this.handleSuccessRunQueryResult(), e => this.handleFailureRunQueryResult(e))
@@ -226,9 +229,11 @@ export default class QueryRunner extends Disposable {
 		// this isn't exact, but its the best we can do
 		this._queryStartTime = new Date();
 		// The query has started, so lets fire up the result pane
-		this._onQueryStart.fire();
 		this._eventEmitter.emit(EventType.START);
-		this._queryManagementService.registerRunner(this, this.uri);
+		if (!this.registered) {
+			this.registered = true;
+			this._queryManagementService.registerRunner(this, this.uri);
+		}
 	}
 
 	private handleFailureRunQueryResult(error: any) {
@@ -359,7 +364,11 @@ export default class QueryRunner extends Disposable {
 				// check if this result has show plan, this needs work, it won't work for any other provider
 				let hasShowPlan = !!result.resultSetSummary.columnInfo.find(e => e.columnName === 'Microsoft SQL Server 2005 XML Showplan');
 				if (hasShowPlan) {
-					this.getQueryRows(0, 1, result.resultSetSummary.batchId, result.resultSetSummary.id).then(e => this._planXml.resolve(e.resultSubset.rows[0][0].displayValue));
+					this.getQueryRows(0, 1, result.resultSetSummary.batchId, result.resultSetSummary.id).then(e => {
+						if (e.resultSubset.rows) {
+							this._planXml.resolve(e.resultSubset.rows[0][0].displayValue);
+						}
+					});
 				}
 			}
 			// we will just ignore the set if we already have it
@@ -383,7 +392,20 @@ export default class QueryRunner extends Disposable {
 				// check if this result has show plan, this needs work, it won't work for any other provider
 				let hasShowPlan = !!result.resultSetSummary.columnInfo.find(e => e.columnName === 'Microsoft SQL Server 2005 XML Showplan');
 				if (hasShowPlan) {
-					this.getQueryRows(0, 1, result.resultSetSummary.batchId, result.resultSetSummary.id).then(e => this._planXml.resolve(e.resultSubset.rows[0][0].displayValue));
+					this.getQueryRows(0, 1, result.resultSetSummary.batchId, result.resultSetSummary.id).then(e => {
+						if (e.resultSubset.rows) {
+							let planXmlString = e.resultSubset.rows[0][0].displayValue;
+							this._planXml.resolve(e.resultSubset.rows[0][0].displayValue);
+							// fire query plan available event if execution is completed
+							if (result.resultSetSummary.complete) {
+								this._eventEmitter.emit(EventType.QUERY_PLAN_AVAILABLE, {
+									providerId: 'MSSQL',
+									fileUri: result.ownerUri,
+									planXml: planXmlString
+								});
+							}
+						}
+					});
 				}
 			}
 			if (batchSet) {

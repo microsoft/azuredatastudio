@@ -6,16 +6,15 @@
 'use strict';
 
 import { Graph } from './graphInsight';
-import { IInsightData } from 'sql/parts/dashboard/widgets/insights/interfaces';
-import { DataDirection, ChartType, DataType } from 'sql/parts/dashboard/widgets/insights/views/charts/interfaces';
+import { IInsightData } from 'sql/workbench/parts/dashboard/widgets/insights/interfaces';
+import { DataDirection, ChartType } from 'sql/workbench/parts/dashboard/widgets/insights/views/charts/interfaces';
 import { ImageInsight } from './imageInsight';
 import { TableInsight } from './tableInsight';
 import { IInsightOptions, IInsight, InsightType, IInsightCtor } from './interfaces';
 import { CountInsight } from './countInsight';
 
-import { Builder } from 'sql/base/browser/builder';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { Dimension } from 'vs/base/browser/dom';
+import { Dimension, clearNode } from 'vs/base/browser/dom';
 import { deepClone } from 'vs/base/common/objects';
 
 const defaultOptions: IInsightOptions = {
@@ -75,7 +74,7 @@ export class Insight {
 			this.insight.dispose();
 		}
 
-		new Builder(this.container).empty();
+		clearNode(this.container);
 
 		let ctor = this.findctor(this.options.type);
 

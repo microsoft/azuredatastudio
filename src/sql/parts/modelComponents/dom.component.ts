@@ -5,17 +5,16 @@
 import 'vs/css!./dom';
 import 'vs/css!./highlight';
 import 'vs/css!./markdown';
+
 import {
-	Component, Input, Inject, ChangeDetectorRef, forwardRef, ComponentFactoryResolver,
-	ViewChild, ViewChildren, ElementRef, Injector, OnDestroy, QueryList
+	Component, Input, Inject, ChangeDetectorRef, forwardRef, ElementRef, OnDestroy
 } from '@angular/core';
 
 import * as azdata from 'azdata';
 import * as DOM from 'vs/base/browser/dom';
-import { $, Builder } from 'sql/base/browser/builder';
 
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
-import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
+import { IComponent, IComponentDescriptor, IModelStore } from 'sql/parts/modelComponents/interfaces';
 
 @Component({
 	template: '',
@@ -25,8 +24,8 @@ export default class DomComponent extends ComponentBase implements IComponent, O
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 	private _renderedHtml: string;
-	private _rootElement: Builder;
-	private _bodyElement: Builder;
+	private _rootElement: HTMLElement;
+	private _bodyElement: HTMLElement;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
@@ -48,8 +47,8 @@ export default class DomComponent extends ComponentBase implements IComponent, O
 	}
 
 	private createDomElement() {
-		this._rootElement = new Builder(this._el.nativeElement);
-		this._bodyElement = $('.dom-body');
+		this._rootElement = this._el.nativeElement;
+		this._bodyElement = DOM.$('.dom-body');
 		this._rootElement.append(this._bodyElement);
 	}
 
@@ -57,14 +56,14 @@ export default class DomComponent extends ComponentBase implements IComponent, O
 	private setHtml(): void {
 		if (this.html) {
 			this._renderedHtml = this.html;
-			this._bodyElement.innerHtml(this._renderedHtml);
+			this._bodyElement.innerHTML = this._renderedHtml;
 		}
 	}
 
 	/// IComponent implementation
 	public layout(): void {
 		super.layout();
-		let element = <HTMLElement>this._el.nativeElement;
+		const element = <HTMLElement>this._el.nativeElement;
 		element.style.width = this.getWidth();
 		element.style.height = this.getHeight();
 	}

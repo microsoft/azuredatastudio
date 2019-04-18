@@ -5,12 +5,10 @@
 
 import * as tree from 'vs/base/parts/tree/browser/tree';
 import * as TreeDefaults from 'vs/base/parts/tree/browser/treeDefaults';
-import { Promise, TPromise } from 'vs/base/common/winjs.base';
 import { generateUuid } from 'vs/base/common/uuid';
 import * as DOM from 'vs/base/browser/dom';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { $ } from 'sql/base/browser/builder';
 
 export interface Template {
 	label: HTMLElement;
@@ -26,18 +24,22 @@ export class DropdownModel {
 }
 
 export class DropdownRenderer implements tree.IRenderer {
-	public getHeight(tree: tree.ITree, element: Resource): number {
+	public getHeight(): number {
 		return 22;
 	}
 
-	public getTemplateId(tree: tree.ITree, element: Resource): string {
+	public getTemplateId(): string {
 		return '';
 	}
 
 	public renderTemplate(tree: tree.ITree, templateId: string, container: HTMLElement): Template {
-		const row = $('div.list-row').style('height', '22px').style('padding-left', '5px').getHTMLElement();
+		const row = DOM.$('div.list-row');
+		row.style.height = '22px';
+		row.style.paddingLeft = '5px';
 		DOM.append(container, row);
-		const label = $('span.label').style('margin', 'auto').style('vertical-align', 'middle').getHTMLElement();
+		const label = DOM.$('span.label');
+		label.style.margin = 'auto';
+		label.style.verticalAlign = 'middle';
 		DOM.append(row, label);
 
 		return { label, row };
@@ -74,17 +76,17 @@ export class DropdownDataSource implements tree.IDataSource {
 
 	public getChildren(tree: tree.ITree, element: Resource | DropdownModel): Promise<any> {
 		if (element instanceof DropdownModel) {
-			return TPromise.as(this.options);
+			return Promise.resolve(this.options);
 		} else {
-			return TPromise.as(undefined);
+			return Promise.resolve(undefined);
 		}
 	}
 
 	public getParent(tree: tree.ITree, element: Resource | DropdownModel): Promise<any> {
 		if (element instanceof DropdownModel) {
-			return TPromise.as(undefined);
+			return Promise.resolve(undefined);
 		} else {
-			return TPromise.as(new DropdownModel());
+			return Promise.resolve(new DropdownModel());
 		}
 	}
 }
@@ -92,7 +94,7 @@ export class DropdownDataSource implements tree.IDataSource {
 export class DropdownFilter extends TreeDefaults.DefaultFilter {
 	public filterString: string;
 
-	public isVisible(tree: tree.ITree, element: Resource): boolean {
+	public isVisible(tree: tree.ITree | undefined, element: Resource): boolean {
 		return element.value.toLowerCase().includes(this.filterString.toLowerCase());
 	}
 }

@@ -36,7 +36,7 @@ export class CellRangeSelector<T> implements ICellRangeSelector<T> {
 	private handler = new Slick.EventHandler();
 	private decorator: ICellRangeDecorator;
 	private canvas: HTMLCanvasElement;
-	private currentlySelectedRange: { start: Slick.Cell, end: Slick.Cell };
+	private currentlySelectedRange: { start: Slick.Cell, end?: Slick.Cell };
 
 	public onBeforeCellRangeSelected = new Slick.Event<Slick.Cell>();
 	public onCellRangeSelected = new Slick.Event<{ range: Slick.Range }>();
@@ -87,13 +87,13 @@ export class CellRangeSelector<T> implements ICellRangeSelector<T> {
 			return;
 		}
 
-		this.canvas.classList.add(this.options.dragClass);
+		this.canvas.classList.add(this.options.dragClass!);
 
 		this.grid.setActiveCell(cell.row, cell.cell);
 
 		let start = this.grid.getCellFromPoint(
-			dd.startX - $(this.canvas).offset().left,
-			dd.startY - $(this.canvas).offset().top);
+			dd.startX - jQuery(this.canvas).offset().left,
+			dd.startY - jQuery(this.canvas).offset().top);
 
 		dd.range = { start: start, end: undefined };
 		this.currentlySelectedRange = dd.range;
@@ -108,8 +108,8 @@ export class CellRangeSelector<T> implements ICellRangeSelector<T> {
 		e.stopImmediatePropagation();
 
 		let end = this.grid.getCellFromPoint(
-			e.pageX - $(this.canvas).offset().left,
-			e.pageY - $(this.canvas).offset().top);
+			e.pageX - jQuery(this.canvas).offset().left,
+			e.pageY - jQuery(this.canvas).offset().top);
 
 		if (!this.grid.canCellBeSelected(end.row, end.cell)) {
 			return;
@@ -125,7 +125,7 @@ export class CellRangeSelector<T> implements ICellRangeSelector<T> {
 			return;
 		}
 
-		this.canvas.classList.remove(this.options.dragClass);
+		this.canvas.classList.remove(this.options.dragClass!);
 		this.dragging = false;
 		e.stopImmediatePropagation();
 		this.decorator.hide();

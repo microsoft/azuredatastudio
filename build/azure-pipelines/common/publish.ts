@@ -6,7 +6,6 @@
 'use strict';
 
 import * as fs from 'fs';
-import { execSync } from 'child_process';
 import { Readable } from 'stream';
 import * as crypto from 'crypto';
 import * as azure from 'azure-storage';
@@ -66,8 +65,7 @@ interface Asset {
 	platform: string;
 	type: string;
 	url: string;
-	// {{SQL CARBON EDIT}}
-	mooncakeUrl: string | undefined;
+	mooncakeUrl?: string;
 	hash: string;
 	sha256hash: string;
 	size: number;
@@ -154,9 +152,13 @@ async function publish(commit: string, quality: string, platform: string, type: 
 
 	const queuedBy = process.env['BUILD_QUEUEDBY']!;
 	const sourceBranch = process.env['BUILD_SOURCEBRANCH']!;
-	const isReleased = quality === 'insider'
-		&& /^master$|^refs\/heads\/master$/.test(sourceBranch)
-		&& /Project Collection Service Accounts|Microsoft.VisualStudio.Services.TFS/.test(queuedBy);
+	const isReleased = (
+		// Insiders: nightly build from master
+		(quality === 'insider' && /^master$|^refs\/heads\/master$/.test(sourceBranch) && /Project Collection Service Accounts|Microsoft.VisualStudio.Services.TFS/.test(queuedBy)) ||
+
+		// Exploration: any build from electron-4.0.x branch
+		(quality === 'exploration' && /^electron-4.0.x$|^refs\/heads\/electron-4.0.x$/.test(sourceBranch))
+	);
 
 	console.log('Publishing...');
 	console.log('Quality:', quality);
@@ -186,56 +188,18 @@ async function publish(commit: string, quality: string, platform: string, type: 
 	const blobService = azure.createBlobService(storageAccount, process.env['AZURE_STORAGE_ACCESS_KEY_2']!)
 		.withFilter(new azure.ExponentialRetryPolicyFilter(20));
 
-	// {{SQL CARBON EDIT}}
 	await assertContainer(blobService, quality);
 
 	const blobExists = await doesAssetExist(blobService, quality, blobName);
 
-	const promises = [];
-
-	if (!blobExists) {
-		promises.push(uploadBlob(blobService, quality, blobName, file));
-	}
-
-	// {{SQL CARBON EDIT}}
-	if (process.env['MOONCAKE_STORAGE_ACCESS_KEY']) {
-		const mooncakeBlobService = azure.createBlobService(storageAccount, process.env['MOONCAKE_STORAGE_ACCESS_KEY']!, `${storageAccount}.blob.core.chinacloudapi.cn`)
-			.withFilter(new azure.ExponentialRetryPolicyFilter(20));
-
-		// mooncake is fussy and far away, this is needed!
-		mooncakeBlobService.defaultClientRequestTimeoutInMs = 10 * 60 * 1000;
-
-		await Promise.all([
-			assertContainer(blobService, quality),
-			assertContainer(mooncakeBlobService, quality)
-		]);
-
-		const [blobExists, moooncakeBlobExists] = await Promise.all([
-			doesAssetExist(blobService, quality, blobName),
-			doesAssetExist(mooncakeBlobService, quality, blobName)
-		]);
-
-		const promises: Array<Promise<void>> = [];
-
-		if (!blobExists) {
-			promises.push(uploadBlob(blobService, quality, blobName, file));
-		}
-
-		if (!moooncakeBlobExists) {
-			promises.push(uploadBlob(mooncakeBlobService, quality, blobName, file));
-		}
-	} else {
-		console.log('Skipping Mooncake publishing.');
-	}
-
-	if (promises.length === 0) {
+	if (blobExists) {
 		console.log(`Blob ${quality}, ${blobName} already exists, not publishing again.`);
 		return;
 	}
 
 	console.log('Uploading blobs to Azure storage...');
 
-	await Promise.all(promises);
+	await uploadBlob(blobService, quality, blobName, file);
 
 	console.log('Blobs successfully uploaded.');
 
@@ -247,8 +211,6 @@ async function publish(commit: string, quality: string, platform: string, type: 
 		platform: platform,
 		type: type,
 		url: `${process.env['AZURE_CDN_URL']}/${quality}/${blobName}`,
-		// {{SQL CARBON EDIT}}
-		mooncakeUrl: process.env['MOONCAKE_CDN_URL'] ? `${process.env['MOONCAKE_CDN_URL']}/${quality}/${blobName}` : undefined,
 		hash: sha1hash,
 		sha256hash,
 		size
@@ -289,15 +251,18 @@ function main(): void {
 		return;
 	}
 
+	const commit = process.env['BUILD_SOURCEVERSION'];
+
+	if (!commit) {
+		console.warn('Skipping publish due to missing BUILD_SOURCEVERSION');
+		return;
+	}
+
 	const opts = minimist<PublishOptions>(process.argv.slice(2), {
 		boolean: ['upload-only']
 	});
 
-	// {{SQL CARBON EDIT}}
-	let [quality, platform, type, name, version, _isUpdate, file, commit] = opts._;
-	if (!commit) {
-		commit = execSync('git rev-parse HEAD', { encoding: 'utf8' }).trim();
-	}
+	const [quality, platform, type, name, version, _isUpdate, file] = opts._;
 
 	publish(commit, quality, platform, type, name, version, _isUpdate, file, opts).catch(err => {
 		console.error(err);

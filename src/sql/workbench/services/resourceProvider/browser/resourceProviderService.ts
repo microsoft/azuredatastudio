@@ -3,18 +3,17 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IResourceProviderService, IHandleFirewallRuleResult } from 'sql/workbench/services/resourceProvider/common/resourceProviderService';
-import * as Constants from 'sql/common/constants';
-import * as TelemetryKeys from 'sql/common/telemetryKeys';
-import * as TelemetryUtils from 'sql/common/telemetryUtilities';
-import { FirewallRuleDialogController } from 'sql/parts/accountManagement/firewallRuleDialog/firewallRuleDialogController';
+import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
+import * as TelemetryUtils from 'sql/platform/telemetry/telemetryUtilities';
+import { FirewallRuleDialogController } from 'sql/platform/accounts/browser/firewallRuleDialogController';
 
 import * as azdata from 'azdata';
+import { invalidProvider } from 'sql/base/common/errors';
 
 export class ResourceProviderService implements IResourceProviderService {
 
@@ -46,7 +45,7 @@ export class ResourceProviderService implements IResourceProviderService {
 	 */
 	public createFirewallRule(selectedAccount: azdata.Account, firewallruleInfo: azdata.FirewallRuleInfo, resourceProviderId: string): Promise<azdata.CreateFirewallRuleResponse> {
 		return new Promise<azdata.CreateFirewallRuleResponse>((resolve, reject) => {
-			let provider = this._providers[resourceProviderId];
+			const provider = this._providers[resourceProviderId];
 			if (provider) {
 				TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.FirewallRuleRequested, { provider: resourceProviderId });
 				provider.createFirewallRule(selectedAccount, firewallruleInfo).then(result => {
@@ -55,7 +54,7 @@ export class ResourceProviderService implements IResourceProviderService {
 					reject(error);
 				});
 			} else {
-				reject(Constants.InvalidProvider);
+				reject(invalidProvider());
 			}
 		});
 	}
@@ -77,8 +76,8 @@ export class ResourceProviderService implements IResourceProviderService {
 								handleFirewallRuleResult = { canHandleFirewallRule: response.result, ipAddress: response.ipAddress, resourceProviderId: key };
 							}
 						},
-						() => { /* Swallow failures at getting accounts, we'll just hide that provider */
-						}));
+							() => { /* Swallow failures at getting accounts, we'll just hide that provider */
+							}));
 				}
 			}
 

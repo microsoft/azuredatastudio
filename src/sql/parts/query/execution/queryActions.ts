@@ -5,15 +5,14 @@
 
 import 'vs/css!sql/parts/query/editor/media/queryActions';
 import * as nls from 'vs/nls';
-import { Builder, $ } from 'sql/base/browser/builder';
-import { Dropdown } from 'sql/base/browser/ui/editableDropdown/dropdown';
 import { Action, IActionItem, IActionRunner } from 'vs/base/common/actions';
-import { EventEmitter } from 'sql/base/common/eventEmitter';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { attachEditableDropdownStyler, attachSelectBoxStyler } from 'sql/platform/theme/common/styler';
+import { INotificationService } from 'vs/platform/notification/common/notification';
+import Severity from 'vs/base/common/severity';
+import { append, $ } from 'vs/base/browser/dom';
 
 import { ISelectionData } from 'azdata';
 import {
@@ -25,10 +24,11 @@ import {
 } from 'sql/platform/connection/common/connectionManagement';
 import { QueryEditor } from 'sql/parts/query/editor/queryEditor';
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
-import { INotificationService } from 'vs/platform/notification/common/notification';
-import Severity from 'vs/base/common/severity';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { attachEditableDropdownStyler, attachSelectBoxStyler } from 'sql/platform/theme/common/styler';
+import { EventEmitter } from 'sql/base/common/eventEmitter';
+import { Dropdown } from 'sql/base/browser/ui/editableDropdown/dropdown';
+import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 
 /**
  * Action class that query-based Actions will extend. This base class automatically handles activating and
@@ -52,7 +52,7 @@ export abstract class QueryTaskbarAction extends Action {
 	/**
 	 * This method is executed when the button is clicked.
 	 */
-	public abstract run(): TPromise<void>;
+	public abstract run(): Promise<void>;
 
 	protected updateCssClass(enabledClass: string): void {
 		// set the class, useful on change of label or icon
@@ -115,7 +115,7 @@ export class RunQueryAction extends QueryTaskbarAction {
 		this.label = nls.localize('runQueryLabel', 'Run');
 	}
 
-	public run(): TPromise<void> {
+	public run(): Promise<void> {
 		if (!this.editor.isSelectionEmpty()) {
 			if (this.isConnected(this.editor)) {
 				// If we are already connected, run the query
@@ -126,10 +126,10 @@ export class RunQueryAction extends QueryTaskbarAction {
 				this.connectEditor(this.editor, RunQueryOnConnectionMode.executeQuery, this.editor.getSelection());
 			}
 		}
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 
-	public runCurrent(): TPromise<void> {
+	public runCurrent(): Promise<void> {
 		if (!this.editor.isSelectionEmpty()) {
 			if (this.isConnected(this.editor)) {
 				// If we are already connected, run the query
@@ -140,7 +140,7 @@ export class RunQueryAction extends QueryTaskbarAction {
 				this.connectEditor(this.editor, RunQueryOnConnectionMode.executeCurrentQuery, this.editor.getSelection(false));
 			}
 		}
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 
 	public runQuery(editor: QueryEditor, runCurrentStatement: boolean = false) {
@@ -186,11 +186,11 @@ export class CancelQueryAction extends QueryTaskbarAction {
 		this.label = nls.localize('cancelQueryLabel', 'Cancel');
 	}
 
-	public run(): TPromise<void> {
+	public run(): Promise<void> {
 		if (this.isConnected(this.editor)) {
 			this._queryModelService.cancelQuery(this.editor.currentQueryInput.uri);
 		}
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 }
 
@@ -211,7 +211,7 @@ export class EstimatedQueryPlanAction extends QueryTaskbarAction {
 		this.label = nls.localize('estimatedQueryPlan', 'Explain');
 	}
 
-	public run(): TPromise<void> {
+	public run(): Promise<void> {
 		if (!this.editor.isSelectionEmpty()) {
 			if (this.isConnected(this.editor)) {
 				// If we are already connected, run the query
@@ -222,7 +222,7 @@ export class EstimatedQueryPlanAction extends QueryTaskbarAction {
 				this.connectEditor(this.editor, RunQueryOnConnectionMode.estimatedQueryPlan, this.editor.getSelection());
 			}
 		}
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 
 	public runQuery(editor: QueryEditor) {
@@ -251,7 +251,7 @@ export class ActualQueryPlanAction extends QueryTaskbarAction {
 		this.label = nls.localize('actualQueryPlan', "Actual");
 	}
 
-	public run(): TPromise<void> {
+	public run(): Promise<void> {
 		if (!this.editor.isSelectionEmpty()) {
 			if (this.isConnected(this.editor)) {
 				// If we are already connected, run the query
@@ -262,7 +262,7 @@ export class ActualQueryPlanAction extends QueryTaskbarAction {
 				this.connectEditor(this.editor, RunQueryOnConnectionMode.actualQueryPlan, this.editor.getSelection());
 			}
 		}
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 
 	public runQuery(editor: QueryEditor) {
@@ -298,11 +298,11 @@ export class DisconnectDatabaseAction extends QueryTaskbarAction {
 		this.label = nls.localize('disconnectDatabaseLabel', 'Disconnect');
 	}
 
-	public run(): TPromise<void> {
+	public run(): Promise<void> {
 		// Call disconnectEditor regardless of the connection state and let the ConnectionManagementService
 		// determine if we need to disconnect, cancel an in-progress conneciton, or do nothing
 		this._connectionManagementService.disconnectEditor(this.editor.currentQueryInput);
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 }
 
@@ -336,9 +336,9 @@ export class ConnectDatabaseAction extends QueryTaskbarAction {
 		this.label = label;
 	}
 
-	public run(): TPromise<void> {
+	public run(): Promise<void> {
 		this.connectEditor(this.editor);
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 }
 
@@ -391,7 +391,7 @@ export class ToggleConnectDatabaseAction extends QueryTaskbarAction {
 		}
 	}
 
-	public run(): TPromise<void> {
+	public run(): Promise<void> {
 		if (this.connected) {
 			// Call disconnectEditor regardless of the connection state and let the ConnectionManagementService
 			// determine if we need to disconnect, cancel an in-progress connection, or do nothing
@@ -399,7 +399,7 @@ export class ToggleConnectDatabaseAction extends QueryTaskbarAction {
 		} else {
 			this.connectEditor(this.editor);
 		}
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 }
 
@@ -420,8 +420,8 @@ export class ListDatabasesAction extends QueryTaskbarAction {
 		this.class = ListDatabasesAction.EnabledClass;
 	}
 
-	public run(): TPromise<void> {
-		return TPromise.as(null);
+	public run(): Promise<void> {
+		return Promise.resolve(null);
 	}
 }
 
@@ -437,7 +437,7 @@ export class ListDatabasesActionItem extends EventEmitter implements IActionItem
 	private _context: any;
 	private _currentDatabaseName: string;
 	private _isConnected: boolean;
-	private $databaseListDropdown: Builder;
+	private _databaseListDropdown: HTMLElement;
 	private _dropdown: Dropdown;
 	private _databaseSelectBox: SelectBox;
 	private _isInAccessibilityMode: boolean;
@@ -446,26 +446,25 @@ export class ListDatabasesActionItem extends EventEmitter implements IActionItem
 	// CONSTRUCTOR /////////////////////////////////////////////////////////
 	constructor(
 		private _editor: QueryEditor,
-		private _action: ListDatabasesAction,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@INotificationService private _notificationService: INotificationService,
 		@IContextViewService contextViewProvider: IContextViewService,
-		@IThemeService themeService: IThemeService,
-		@IConfigurationService private readonly _configurationService: IConfigurationService
+		@IConfigurationService private readonly _configurationService: IConfigurationService,
+		@ILayoutService layoutService: ILayoutService
 	) {
 		super();
 		this._toDispose = [];
-		this.$databaseListDropdown = $('.databaseListDropdown');
+		this._databaseListDropdown = $('.databaseListDropdown');
 		this._isInAccessibilityMode = this._configurationService.getValue('editor.accessibilitySupport') === 'on';
 
 		if (this._isInAccessibilityMode) {
 			this._databaseSelectBox = new SelectBox([this._selectDatabaseString], this._selectDatabaseString, contextViewProvider, undefined, { ariaLabel: this._selectDatabaseString });
-			this._databaseSelectBox.render(this.$databaseListDropdown.getHTMLElement());
+			this._databaseSelectBox.render(this._databaseListDropdown);
 			this._databaseSelectBox.onDidSelect(e => { this.databaseSelected(e.selected); });
 			this._databaseSelectBox.disable();
 
 		} else {
-			this._dropdown = new Dropdown(this.$databaseListDropdown.getHTMLElement(), contextViewProvider, themeService, {
+			this._dropdown = new Dropdown(this._databaseListDropdown, contextViewProvider, layoutService, {
 				strictSelection: true,
 				placeholder: this._selectDatabaseString,
 				ariaLabel: this._selectDatabaseString,
@@ -482,7 +481,7 @@ export class ListDatabasesActionItem extends EventEmitter implements IActionItem
 
 	// PUBLIC METHODS //////////////////////////////////////////////////////
 	public render(container: HTMLElement): void {
-		this.$databaseListDropdown.appendTo(container);
+		append(container, this._databaseListDropdown);
 	}
 
 	public style(styles) {

@@ -6,7 +6,7 @@
 	"publisher": "Microsoft",
 	"engines": {
 		"vscode": "*",
-		"sqlops": "*"
+		"azdata": "*"
 	},
 	"main": "./out/extension",
 	"activationEvents": [
@@ -57,7 +57,12 @@
 			},
 			{
 				"command": "notebook.command.runactivecell",
-				"title": "%notebook.command.runactivecell%"
+				"title": "%notebook.command.runactivecell%",
+				"icon": "resources/dark/touchbar_run_cell.png"
+			},
+			{
+				"command": "notebook.command.runallcells",
+				"title": "%notebook.command.runallcells%"
 			},
 			{
 				"command": "notebook.command.addcode",
@@ -66,6 +71,11 @@
 			{
 				"command": "notebook.command.addtext",
 				"title": "%notebook.command.addtext%"
+			},
+			{
+				"command": "notebook.command.addcell",
+				"title": "%notebook.command.addcell%",
+				"icon": "resources/dark/touchbar_add_cell.png"
 			},
 			{
 				"command": "jupyter.cmd.analyzeNotebook",
@@ -114,21 +124,20 @@
 		],
 		"languages": [
 			{
-				"id": "jupyter-notebook",
+				"id": "notebook",
 				"extensions": [
 					".ipynb"
 				],
 				"aliases": [
-					"Jupyter Notebook",
-					"IPython Notebook",
-					"ipy"
+					"Notebook"
 				]
 			}
 		],
 		"menus": {
 			"commandPalette": [
 				{
-					"command": "notebook.command.analyzeNotebook"
+					"command": "notebook.command.analyzeNotebook",
+					"when": "false"
 				},
 				{
 					"command": "notebook.command.new"
@@ -141,12 +150,20 @@
 					"when": "notebookEditorVisible"
 				},
 				{
+					"command": "notebook.command.runallcells",
+					"when": "notebookEditorVisible"
+				},
+				{
 					"command": "notebook.command.addcode",
 					"when": "notebookEditorVisible"
 				},
 				{
 					"command": "notebook.command.addtext",
 					"when": "notebookEditorVisible"
+				},
+				{
+					"command": "notebook.command.addcell",
+					"when": "false"
 				},
 				{
 					"command": "jupyter.task.newNotebook",
@@ -167,6 +184,18 @@
 				{
 					"command": "jupyter.cmd.installPackages",
 					"when": "false"
+				}
+			],
+			"touchBar": [
+				{
+					"command": "notebook.command.runactivecell",
+					"when": "activeEditor == workbench.editor.notebookEditor",
+					"group": "1_notebook@1"
+				},
+				{
+					"command": "notebook.command.addcell",
+					"when": "activeEditor == workbench.editor.notebookEditor",
+					"group": "1_notebook@2"
 				}
 			],
 			"objectExplorer/item/context": [
@@ -206,17 +235,22 @@
 			{
 				"command": "notebook.command.runactivecell",
 				"key": "F5",
-				"when": "notebookEditorVisible"
+				"when": "activeEditor == workbench.editor.notebookEditor"
+			},
+			{
+				"command": "notebook.command.runallcells",
+				"key": "Ctrl+Shift+F5",
+				"when": "activeEditor == workbench.editor.notebookEditor"
 			},
 			{
 				"command": "notebook.command.addcode",
 				"key": "Ctrl+Shift+C",
-				"when": "notebookEditorVisible"
+				"when": "activeEditor == workbench.editor.notebookEditor"
 			},
 			{
 				"command": "notebook.command.addtext",
 				"key": "Ctrl+Shift+T",
-				"when": "notebookEditorVisible"
+				"when": "activeEditor == workbench.editor.notebookEditor"
 			}
 		],
 		"notebook.languagemagics": [
@@ -252,36 +286,41 @@
 			],
 			"standardKernels": [
 				{
-					"name": "Python 3",
+					"name": "pyspark3kernel",
+					"displayName": "PySpark3",
+					"connectionProviderIds": [
+						"HADOOP_KNOX",
+						"MSSQL"
+					]
+				},
+				{
+					"name": "pysparkkernel",
+					"displayName": "PySpark",
+					"connectionProviderIds": [
+						"HADOOP_KNOX",
+						"MSSQL"
+					]
+				},
+				{
+					"name": "sparkkernel",
+					"displayName": "Spark | Scala",
+					"connectionProviderIds": [
+						"HADOOP_KNOX",
+						"MSSQL"
+					]
+				},
+				{
+					"name": "sparkrkernel",
+					"displayName": "Spark | R",
+					"connectionProviderIds": [
+						"HADOOP_KNOX",
+						"MSSQL"
+					]
+				},
+				{
+					"name": "python3",
+					"displayName": "Python 3",
 					"connectionProviderIds": []
-				},
-				{
-					"name": "PySpark",
-					"connectionProviderIds": [
-						"HADOOP_KNOX",
-						"MSSQL"
-					]
-				},
-				{
-					"name": "PySpark3",
-					"connectionProviderIds": [
-						"HADOOP_KNOX",
-						"MSSQL"
-					]
-				},
-				{
-					"name": "Spark | R",
-					"connectionProviderIds": [
-						"HADOOP_KNOX",
-						"MSSQL"
-					]
-				},
-				{
-					"name": "Spark | Scala",
-					"connectionProviderIds": [
-						"HADOOP_KNOX",
-						"MSSQL"
-					]
 				}
 			]
 		}
@@ -293,7 +332,6 @@
 		"figures": "^2.0.0",
 		"fs-extra": "^5.0.0",
 		"node-fetch": "^2.3.0",
-		"process-nextick-args": "^2.0.0",
 		"request": "^2.88.0",
 		"temp-write": "^3.4.0",
 		"vscode-languageclient": "^5.3.0-next.1",

@@ -2,11 +2,11 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
 import { Observable } from 'rxjs/Observable';
 import { Observer } from 'rxjs/Observer';
 
 import { Event, Emitter } from 'vs/base/common/event';
-import { TPromise } from 'vs/base/common/winjs.base';
 import * as types from 'vs/base/common/types';
 import { compare as stringCompare } from 'vs/base/common/strings';
 
@@ -17,22 +17,27 @@ export interface IFindPosition {
 	row: number;
 }
 
-function defaultSort<T>(args: Slick.OnSortEventArgs<T>, data: Array<T>): Array<T> {
-	let field = args.sortCol.field;
-	let sign = args.sortAsc ? 1 : -1;
-	let comparer: (a, b) => number;
+function defaultSort<T extends { [key: string]: any }>(args: Slick.OnSortEventArgs<T>, data: Array<T>): Array<T> {
+	if (!args.sortCol || !args.sortCol.field) {
+		return data;
+	}
+	const field = args.sortCol.field;
+	const sign = args.sortAsc ? 1 : -1;
+	let comparer: (a: T, b: T) => number;
 	if (types.isString(data[0][field])) {
 		if (Number(data[0][field]) !== NaN) {
-			comparer = (a: number, b: number) => {
+			comparer = (a: T, b: T) => {
 				let anum = Number(a[field]);
 				let bnum = Number(b[field]);
 				return anum === bnum ? 0 : anum > bnum ? 1 : -1;
 			};
 		} else {
-			comparer = stringCompare;
+			comparer = (a: T, b: T) => {
+				return stringCompare(a[field], b[field]);
+			};
 		}
 	} else {
-		comparer = (a: number, b: number) => {
+		comparer = (a: T, b: T) => {
 			return a[field] === b[field] ? 0 : (a[field] > b[field] ? 1 : -1);
 		};
 	}
@@ -45,7 +50,7 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 	//Used when filtering is enabled, _allData holds the complete set of data.
 	private _allData: Array<T>;
 	private _findArray: Array<IFindPosition>;
-	private _findObs: Observable<IFindPosition>;
+	private _findObs: Observable<IFindPosition> | undefined;
 	private _findIndex: number;
 	private _filterEnabled: boolean;
 
@@ -58,11 +63,14 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 	private _onFilterStateChange = new Emitter<void>();
 	get onFilterStateChange(): Event<void> { return this._onFilterStateChange.event; }
 
+	private _filterFn: (data: Array<T>) => Array<T>;
+	private _sortFn: (args: Slick.OnSortEventArgs<T>, data: Array<T>) => Array<T>;
+
 	constructor(
 		data?: Array<T>,
 		private _findFn?: (val: T, exp: string) => Array<number>,
-		private _sortFn?: (args: Slick.OnSortEventArgs<T>, data: Array<T>) => Array<T>,
-		private _filterFn?: (data: Array<T>) => Array<T>
+		_sortFn?: (args: Slick.OnSortEventArgs<T>, data: Array<T>) => Array<T>,
+		_filterFn?: (data: Array<T>) => Array<T>
 	) {
 		if (data) {
 			this._data = data;
@@ -70,13 +78,9 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 			this._data = new Array<T>();
 		}
 
-		if (!_sortFn) {
-			this._sortFn = defaultSort;
-		}
+		this._sortFn = _sortFn ? _sortFn : defaultSort;
 
-		if (!_filterFn) {
-			this._filterFn = (dataToFilter) => dataToFilter;
-		}
+		this._filterFn = _filterFn ? _filterFn : (dataToFilter) => dataToFilter;
 		this._filterEnabled = false;
 	}
 
@@ -120,9 +124,9 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 		return this.filterEnabled ? this._allData.length : this._data.length;
 	}
 
-	push(items: Array<T>);
-	push(item: T);
-	push(input: T | Array<T>) {
+	push(items: Array<T>): void;
+	push(item: T): void;
+	push(input: T | Array<T>): void {
 		let inputArray = new Array();
 		if (Array.isArray(input)) {
 			inputArray.push(...input);
@@ -153,7 +157,7 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 
 	find(exp: string, maxMatches: number = 0): Thenable<IFindPosition> {
 		if (!this._findFn) {
-			return TPromise.wrapError(new Error('no find function provided'));
+			return Promise.reject(new Error('no find function provided'));
 		}
 		this._findArray = new Array<IFindPosition>();
 		this._findIndex = 0;
@@ -162,7 +166,7 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 			this._findObs = Observable.create((observer: Observer<IFindPosition>) => {
 				for (let i = 0; i < this._data.length; i++) {
 					let item = this._data[i];
-					let result = this._findFn(item, exp);
+					let result = this._findFn!(item, exp);
 					if (result) {
 						result.forEach(pos => {
 							let index = { col: pos, row: i };
@@ -176,11 +180,11 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 					}
 				}
 			});
-			return this._findObs.take(1).toPromise().then(() => {
+			return this._findObs!.take(1).toPromise().then(() => {
 				return this._findArray[this._findIndex];
 			});
 		} else {
-			return TPromise.wrapError(new Error('no expression'));
+			return Promise.reject(new Error('no expression'));
 		}
 	}
 
@@ -198,9 +202,9 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 			} else {
 				++this._findIndex;
 			}
-			return TPromise.as(this._findArray[this._findIndex]);
+			return Promise.resolve(this._findArray[this._findIndex]);
 		} else {
-			return TPromise.wrapError(new Error('no search running'));
+			return Promise.reject(new Error('no search running'));
 		}
 	}
 
@@ -211,17 +215,17 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 			} else {
 				--this._findIndex;
 			}
-			return TPromise.as(this._findArray[this._findIndex]);
+			return Promise.resolve(this._findArray[this._findIndex]);
 		} else {
-			return TPromise.wrapError(new Error('no search running'));
+			return Promise.reject(new Error('no search running'));
 		}
 	}
 
 	get currentFindPosition(): Thenable<IFindPosition> {
 		if (this._findArray && this._findArray.length !== 0) {
-			return TPromise.as(this._findArray[this._findIndex]);
+			return Promise.resolve(this._findArray[this._findIndex]);
 		} else {
-			return TPromise.wrapError(new Error('no search running'));
+			return Promise.reject(new Error('no search running'));
 		}
 	}
 
@@ -235,9 +239,9 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 	}
 
 	dispose() {
-		this._data = undefined;
-		this._allData = undefined;
-		this._findArray = undefined;
+		this._data = [];
+		this._allData = [];
+		this._findArray = [];
 		this._findObs = undefined;
 	}
 }

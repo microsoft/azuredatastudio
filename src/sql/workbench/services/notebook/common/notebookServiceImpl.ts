@@ -11,11 +11,11 @@ import { URI } from 'vs/base/common/uri';
 import { Registry } from 'vs/platform/registry/common/platform';
 
 import {
-	INotebookService, INotebookManager, INotebookProvider, DEFAULT_NOTEBOOK_PROVIDER,
+	INotebookService, INotebookManager, INotebookProvider,
 	DEFAULT_NOTEBOOK_FILETYPE, INotebookEditor, SQL_NOTEBOOK_PROVIDER, OVERRIDE_EDITOR_THEMING_SETTING
 } from 'sql/workbench/services/notebook/common/notebookService';
-import { RenderMimeRegistry } from 'sql/parts/notebook/outputs/registry';
-import { standardRendererFactories } from 'sql/parts/notebook/outputs/factories';
+import { RenderMimeRegistry } from 'sql/workbench/parts/notebook/outputs/registry';
+import { standardRendererFactories } from 'sql/workbench/parts/notebook/outputs/factories';
 import { Extensions, INotebookProviderRegistry, NotebookProviderRegistration } from 'sql/workbench/services/notebook/common/notebookRegistry';
 import { Emitter, Event } from 'vs/base/common/event';
 import { Memento } from 'vs/workbench/common/memento';
@@ -23,20 +23,20 @@ import { IStorageService, StorageScope } from 'vs/platform/storage/common/storag
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { IExtensionManagementService, IExtensionIdentifier } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
-import { getIdFromLocalExtensionId } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 import { Deferred } from 'sql/base/common/promise';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { NotebookEditorVisibleContext } from 'sql/workbench/services/notebook/common/notebookContext';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { NotebookEditor } from 'sql/parts/notebook/notebookEditor';
-import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
+import { NotebookEditor } from 'sql/workbench/parts/notebook/notebookEditor';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { registerNotebookThemes } from 'sql/parts/notebook/notebookStyles';
+import { registerNotebookThemes } from 'sql/workbench/parts/notebook/notebookStyles';
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
-import { ILanguageMagic, notebookConstants } from 'sql/parts/notebook/models/modelInterfaces';
+import { ILanguageMagic, notebookConstants } from 'sql/workbench/parts/notebook/models/modelInterfaces';
+import { ILifecycleService } from 'vs/platform/lifecycle/common/lifecycle';
 import { SqlNotebookProvider } from 'sql/workbench/services/notebook/sql/sqlNotebookProvider';
+import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
+import { keys } from 'vs/base/common/map';
 
 export interface NotebookProviderProperties {
 	provider: string;
@@ -95,24 +95,34 @@ export class NotebookService extends Disposable implements INotebookService {
 	private _overrideEditorThemeSetting: boolean;
 
 	constructor(
+		@ILifecycleService lifecycleService: ILifecycleService,
 		@IStorageService private _storageService: IStorageService,
-		@IExtensionService extensionService: IExtensionService,
+		@IExtensionService private _extensionService: IExtensionService,
 		@IExtensionManagementService extensionManagementService: IExtensionManagementService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IContextKeyService private _contextKeyService: IContextKeyService,
 		@IEditorService private readonly _editorService: IEditorService,
 		@IEditorGroupsService private readonly _editorGroupsService: IEditorGroupsService,
 		@IConfigurationService private readonly _configurationService: IConfigurationService,
-		@IThemeService private readonly _themeService: IThemeService,
 		@IQueryManagementService private readonly _queryManagementService
 	) {
 		super();
 		this._memento = new Memento('notebookProviders', this._storageService);
 		this._register(notebookRegistry.onNewRegistration(this.updateRegisteredProviders, this));
 		this.registerBuiltInProvider();
+		// If a provider has been already registered, the onNewRegistration event will not have a listener attached yet
+		// So, explicitly updating registered providers here.
+		if (notebookRegistry.providers.length > 0) {
+			notebookRegistry.providers.forEach(p => {
+				// Don't need to re-register SQL_NOTEBOOK_PROVIDER
+				if (p.provider !== SQL_NOTEBOOK_PROVIDER) {
+					this.updateRegisteredProviders({id: p.provider, registration: p});
+				}
+			});
+		}
 
-		if (extensionService) {
-			extensionService.whenInstalledExtensionsRegistered().then(() => {
+		if (this._extensionService) {
+			this._extensionService.whenInstalledExtensionsRegistered().then(() => {
 				this.cleanupProviders();
 
 				// If providers have already registered by this point, add them now (since onHandlerAdded will never fire)
@@ -126,8 +136,10 @@ export class NotebookService extends Disposable implements INotebookService {
 			});
 		}
 		if (extensionManagementService) {
-			this._register(extensionManagementService.onDidUninstallExtension(({ identifier }) => this.removeContributedProvidersFromCache(identifier, extensionService)));
+			this._register(extensionManagementService.onDidUninstallExtension(({ identifier }) => this.removeContributedProvidersFromCache(identifier, this._extensionService)));
 		}
+
+		lifecycleService.onWillShutdown(() => this.shutdown());
 		this.hookContextKeyListeners();
 		this.hookNotebookThemesAndConfigListener();
 	}
@@ -175,6 +187,7 @@ export class NotebookService extends Disposable implements INotebookService {
 			if (provider) {
 				this._providerToStandardKernels.set(notebookConstants.SQL, [{
 					name: notebookConstants.SQL,
+					displayName: notebookConstants.SQL,
 					connectionProviderIds: sqlConnectionTypes
 				}]);
 			}
@@ -269,7 +282,7 @@ export class NotebookService extends Disposable implements INotebookService {
 	}
 
 	getSupportedFileExtensions(): string[] {
-		return Array.from(this._fileToProviders.keys());
+		return Array.from(keys(this._fileToProviders));
 	}
 
 	getProvidersForFileType(fileType: string): string[] {
@@ -283,7 +296,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		return this._providerToStandardKernels.get(provider.toUpperCase());
 	}
 
-	public shutdown(): void {
+	private shutdown(): void {
 		this._managersMap.forEach(manager => {
 			manager.forEach(m => {
 				if (m.serverManager) {
@@ -391,15 +404,21 @@ export class NotebookService extends Disposable implements INotebookService {
 		// Try get from actual provider, waiting on its registration
 		if (providerDescriptor) {
 			if (!providerDescriptor.instance) {
+				// Await extension registration before awaiting provider registration
+				try {
+					await this._extensionService.whenInstalledExtensionsRegistered;
+				} catch (error) {
+					console.error(error);
+				}
 				instance = await this.waitOnProviderAvailability(providerDescriptor);
 			} else {
 				instance = providerDescriptor.instance;
 			}
 		}
 
-		// Fall back to default if this failed
+		// Fall back to default (SQL) if this failed
 		if (!instance) {
-			providerDescriptor = this._providers.get(DEFAULT_NOTEBOOK_PROVIDER);
+			providerDescriptor = this._providers.get(SQL_NOTEBOOK_PROVIDER);
 			instance = providerDescriptor ? providerDescriptor.instance : undefined;
 		}
 
@@ -411,8 +430,8 @@ export class NotebookService extends Disposable implements INotebookService {
 	}
 
 	private waitOnProviderAvailability(providerDescriptor: ProviderDescriptor, timeout?: number): Promise<INotebookProvider> {
-		// Wait up to 10 seconds for the provider to be registered
-		timeout = timeout || 10000;
+		// Wait up to 30 seconds for the provider to be registered
+		timeout = timeout || 30000;
 		let promises: Promise<INotebookProvider>[] = [
 			providerDescriptor.instanceReady,
 			new Promise<INotebookProvider>((resolve, reject) => setTimeout(() => resolve(), timeout))
@@ -451,15 +470,14 @@ export class NotebookService extends Disposable implements INotebookService {
 		notebookRegistry.registerNotebookProvider({
 			provider: sqlProvider.providerId,
 			fileExtensions: DEFAULT_NOTEBOOK_FILETYPE,
-			standardKernels: { name: 'SQL', connectionProviderIds: ['MSSQL'] }
+			standardKernels: { name: notebookConstants.SQL, displayName: notebookConstants.SQL, connectionProviderIds: [notebookConstants.SQL_CONNECTION_PROVIDER] }
 		});
 	}
 
 	private removeContributedProvidersFromCache(identifier: IExtensionIdentifier, extensionService: IExtensionService) {
 		const notebookProvider = 'notebookProvider';
-		let extensionid = getIdFromLocalExtensionId(identifier.id);
 		extensionService.getExtensions().then(i => {
-			let extension = i.find(c => c.id === extensionid);
+			let extension = i.find(c => c.identifier.value.toLowerCase() === identifier.id.toLowerCase());
 			if (extension && extension.contributes
 				&& extension.contributes[notebookProvider]
 				&& extension.contributes[notebookProvider].providerId) {

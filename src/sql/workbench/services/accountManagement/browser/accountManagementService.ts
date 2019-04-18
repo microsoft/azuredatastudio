@@ -16,12 +16,12 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import { Memento } from 'vs/workbench/common/memento';
 
-import AccountStore from 'sql/platform/accountManagement/common/accountStore';
-import { AccountDialogController } from 'sql/parts/accountManagement/accountDialog/accountDialogController';
-import { AutoOAuthDialogController } from 'sql/parts/accountManagement/autoOAuthDialog/autoOAuthDialogController';
-import { AccountListStatusbarItem } from 'sql/parts/accountManagement/accountListStatusbar/accountListStatusbarItem';
-import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/platform/accountManagement/common/eventTypes';
-import { IAccountManagementService } from 'sql/platform/accountManagement/common/interfaces';
+import AccountStore from 'sql/platform/accounts/common/accountStore';
+import { AccountDialogController } from 'sql/platform/accounts/browser/accountDialogController';
+import { AutoOAuthDialogController } from 'sql/platform/accounts/browser/autoOAuthDialogController';
+import { AccountListStatusbarItem } from 'sql/platform/accounts/browser/accountListStatusbarItem';
+import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/platform/accounts/common/eventTypes';
+import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 import { Deferred } from 'sql/base/common/promise';
 
 export class AccountManagementService implements IAccountManagementService {
@@ -51,7 +51,7 @@ export class AccountManagementService implements IAccountManagementService {
 		private _mementoObj: object,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IStorageService private _storageService: IStorageService,
-		@IClipboardService private _clipboardService: IClipboardService,
+		@IClipboardService private _clipboardService: IClipboardService
 	) {
 		// Create the account store
 		if (!this._mementoObj) {
@@ -64,6 +64,8 @@ export class AccountManagementService implements IAccountManagementService {
 		this._addAccountProviderEmitter = new Emitter<AccountProviderAddedEventParams>();
 		this._removeAccountProviderEmitter = new Emitter<azdata.AccountProviderMetadata>();
 		this._updateAccountListEmitter = new Emitter<UpdateAccountListEventParams>();
+
+		_storageService.onWillSaveState(() => this.shutdown());
 
 		// Register status bar item
 		let statusbarDescriptor = new statusbar.StatusbarItemDescriptor(
@@ -115,7 +117,7 @@ export class AccountManagementService implements IAccountManagementService {
 			reason => {
 				console.warn(`Account update handler encountered error: ${reason}`);
 			}
-			);
+		);
 
 	}
 
@@ -306,8 +308,8 @@ export class AccountManagementService implements IAccountManagementService {
 	public cancelAutoOAuthDeviceCode(providerId: string): void {
 		this.doWithProvider(providerId, provider => provider.provider.autoOAuthCancelled())
 			.then(	// Swallow errors
-			null,
-			err => { console.warn(`Error when cancelling auto OAuth: ${err}`); }
+				null,
+				err => { console.warn(`Error when cancelling auto OAuth: ${err}`); }
 			)
 			.then(() => this.autoOAuthDialogController.closeAutoOAuthDialog());
 	}
@@ -367,7 +369,7 @@ export class AccountManagementService implements IAccountManagementService {
 	/**
 	 * Handler for when shutdown of the application occurs. Writes out the memento.
 	 */
-	public shutdown(): void {
+	private shutdown(): void {
 		if (this._mementoContext) {
 			this._mementoContext.saveMemento();
 		}

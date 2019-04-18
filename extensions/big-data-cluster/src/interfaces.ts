@@ -50,8 +50,11 @@ export interface ContainerRegistryInfo {
 }
 
 export interface TargetClusterTypeInfo {
+	enabled: boolean;
 	type: TargetClusterType;
 	name: string;
+	fullName: string;
+	description: string;
 	iconPath: {
 		dark: string,
 		light: string
@@ -61,6 +64,7 @@ export interface TargetClusterTypeInfo {
 export interface ToolInfo {
 	name: string;
 	description: string;
+	version: string;
 	status: ToolInstallationStatus;
 }
 
@@ -72,9 +76,49 @@ export enum ToolInstallationStatus {
 }
 
 export enum ClusterType {
-    Unknown = 0,
-    AKS,
+	Unknown = 0,
+	AKS,
 	Minikube,
 	Kubernetes,
-    Other
+	Other
+}
+
+export interface ClusterProfile {
+	name: string;
+	sqlServerMasterConfiguration: SQLServerMasterConfiguration;
+	computePoolConfiguration: PoolConfiguration;
+	dataPoolConfiguration: PoolConfiguration;
+	storagePoolConfiguration: PoolConfiguration;
+	sparkPoolConfiguration: PoolConfiguration;
+}
+
+export interface PoolConfiguration {
+	type: ClusterPoolType;
+	scale: number;
+	maxScale?: number;
+	hardwareLabel?: string;
+}
+
+export interface SQLServerMasterConfiguration extends PoolConfiguration {
+	engineOnly: boolean;
+}
+
+export enum ClusterPoolType {
+	SQL,
+	Compute,
+	Data,
+	Storage,
+	Spark
+}
+
+export interface ClusterResourceSummary {
+	hardwareLabels: HardwareLabel[];
+}
+
+export interface HardwareLabel {
+	name: string;
+	totalNodes: number;
+	totalCores: number;
+	totalMemoryInGB: number;
+	totalDisks: number;
 }

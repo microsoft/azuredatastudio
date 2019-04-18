@@ -1,7 +1,7 @@
 steps:
 - task: NodeTool@0
   inputs:
-    versionSpec: '8.9'
+    versionSpec: '10.15.1'
   displayName: 'Install Node.js'
 
 - script: |
@@ -26,5 +26,9 @@ steps:
   condition: succeededOrFailed()
 
 - script: |
-    yarn run tslint
+    yarn tslint
   displayName: 'Run TSLint'
+
+- script: |
+    yarn strict-null-check
+  displayName: 'Run Strict Null Check'

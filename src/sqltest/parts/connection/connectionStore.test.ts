@@ -14,10 +14,8 @@ import { ConnectionStore } from 'sql/platform/connection/common/connectionStore'
 import { CredentialsService } from 'sql/platform/credentials/common/credentialsService';
 import * as assert from 'assert';
 import { Memento } from 'vs/workbench/common/memento';
-import { CapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import * as azdata from 'azdata';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { Emitter } from 'vs/base/common/event';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { CapabilitiesTestService } from '../../stubs/capabilitiesTestService';
@@ -25,8 +23,6 @@ import { ConnectionProviderProperties } from 'sql/workbench/parts/connection/com
 
 suite('SQL ConnectionStore tests', () => {
 	let defaultNamedProfile: IConnectionProfile;
-	let defaultUnnamedProfile: IConnectionProfile;
-	let profileForProvider2: IConnectionProfile;
 	let context: TypeMoq.Mock<Memento>;
 	let credentialStore: TypeMoq.Mock<CredentialsService>;
 	let connectionConfig: TypeMoq.Mock<ConnectionConfig>;
@@ -58,42 +54,6 @@ suite('SQL ConnectionStore tests', () => {
 			id: undefined
 		});
 
-		defaultUnnamedProfile = Object.assign({}, {
-			connectionName: 'new name',
-			serverName: 'unnamedServer',
-			databaseName: undefined,
-			authenticationType: 'SqlLogin',
-			userName: 'aUser',
-			password: 'asdf!@#$',
-			savePassword: true,
-			groupId: '',
-			groupFullName: '',
-			getOptionsKey: undefined,
-			matches: undefined,
-			providerName: 'MSSQL',
-			options: {},
-			saveProfile: true,
-			id: undefined
-		});
-
-		profileForProvider2 = Object.assign({}, {
-			connectionName: 'new name',
-			serverName: 'unnamedServer',
-			databaseName: undefined,
-			authenticationType: 'SqlLogin',
-			userName: 'aUser',
-			password: 'asdf!@#$',
-			savePassword: true,
-			groupId: '',
-			groupFullName: '',
-			getOptionsKey: undefined,
-			matches: undefined,
-			providerName: 'MSSQL',
-			options: {},
-			saveProfile: true,
-			id: undefined
-		});
-
 		storageServiceMock = TypeMoq.Mock.ofType(StorageTestService);
 
 		let momento = new Memento('ConnectionManagement', storageServiceMock.object);
@@ -111,12 +71,6 @@ suite('SQL ConnectionStore tests', () => {
 		workspaceConfigurationServiceMock = TypeMoq.Mock.ofType(WorkspaceConfigurationTestService);
 		workspaceConfigurationServiceMock.setup(x => x.getValue(Constants.sqlConfigSectionName))
 			.returns(() => configResult);
-
-		let extensionManagementServiceMock = {
-			getInstalled: () => {
-				return Promise.resolve([]);
-			}
-		};
 
 		capabilitiesService = new CapabilitiesTestService();
 		let connectionProvider: azdata.ConnectionOption[] = [
@@ -227,7 +181,7 @@ suite('SQL ConnectionStore tests', () => {
 		defaultNamedConnectionProfile = new ConnectionProfile(capabilitiesService, defaultNamedProfile);
 	});
 
-	test('addActiveConnection should limit recent connection saves to the MaxRecentConnections amount', (done) => {
+	test('addActiveConnection should limit recent connection saves to the MaxRecentConnections amount', async () => {
 		// Given 5 is the max # creds
 		let numCreds = 6;
 
@@ -237,74 +191,83 @@ suite('SQL ConnectionStore tests', () => {
 
 		// When saving 4 connections
 		// Expect all of them to be saved even if size is limited to 3
-		let connectionStore = new ConnectionStore(storageServiceMock.object, context.object, undefined, workspaceConfigurationServiceMock.object,
+		let connectionStore = new ConnectionStore(context.object, workspaceConfigurationServiceMock.object,
 			credentialStore.object, capabilitiesService, connectionConfig.object);
-		let promise = Promise.resolve<void>();
 		for (let i = 0; i < numCreds; i++) {
 			let cred = Object.assign({}, defaultNamedProfile, { serverName: defaultNamedProfile.serverName + i });
 			let connectionProfile = new ConnectionProfile(capabilitiesService, cred);
-			promise = promise.then(() => {
-				return connectionStore.addActiveConnection(connectionProfile);
-			}).then(() => {
-				let current = connectionStore.getRecentlyUsedConnections();
-				if (i >= maxRecent) {
-					assert.equal(current.length, maxRecent, `expect only top ${maxRecent} creds to be saved`);
-				} else {
-					assert.equal(current.length, i + 1, `expect all credentials to be saved ${current.length}|${i + 1} `);
-				}
-				assert.equal(current[0].serverName, cred.serverName, 'Expect most recently saved item to be first in list');
-				assert.ok(!current[0].password);
-			});
+			await connectionStore.addActiveConnection(connectionProfile, true);
+
+			let current = connectionStore.getRecentlyUsedConnections();
+			if (i >= maxRecent) {
+				assert.equal(current.length, maxRecent, `expect only top ${maxRecent} creds to be saved to MRU`);
+			} else {
+				assert.equal(current.length, i + 1, `expect all credentials to be saved to MRU ${current.length}|${i + 1} `);
+			}
+			assert.equal(current[0].serverName, cred.serverName, 'Expect most recently saved item to be first in list');
+			assert.ok(!current[0].password);
 		}
-		promise.then(() => {
-			credentialStore.verify(x => x.saveCredential(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.exactly(numCreds));
-			let recentConnections = connectionStore.getActiveConnections();
-			assert.equal(numCreds, recentConnections.length, `expect number of active connection ${numCreds}|${recentConnections.length} `);
-			done();
-		}, err => {
-			// Must call done here so test indicates it's finished if errors occur
-			done(err);
-		});
+		credentialStore.verify(x => x.saveCredential(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.exactly(numCreds));
+		let recentConnections = connectionStore.getActiveConnections();
+		assert.equal(numCreds, recentConnections.length, `expect number of active connection ${numCreds}|${recentConnections.length} `);
+	});
+
+	test('addActiveConnection with addToMru as false should not add any recent connections', async () => {
+		// setup memento for MRU to return a list we have access to
+		credentialStore.setup(x => x.saveCredential(TypeMoq.It.isAny(), TypeMoq.It.isAny()))
+			.returns(() => Promise.resolve(true));
+
+		const numCreds = 3;
+		let connectionStore = new ConnectionStore(context.object, workspaceConfigurationServiceMock.object,
+			credentialStore.object, capabilitiesService, connectionConfig.object);
+		connectionStore.clearActiveConnections();
+		connectionStore.clearRecentlyUsed();
+
+		for (let i = 0; i < 3; i++) {
+			let cred = Object.assign({}, defaultNamedProfile, { serverName: defaultNamedProfile.serverName + i });
+			let connectionProfile = new ConnectionProfile(capabilitiesService, cred);
+			await connectionStore.addActiveConnection(connectionProfile, false);
+
+			let recentConnections = connectionStore.getRecentlyUsedConnections();
+			let activeConnections = connectionStore.getActiveConnections();
+			assert.equal(recentConnections.length, 0, `expect no entries to be saved to MRU`);
+			assert.equal(activeConnections.length, i + 1, `expect all credentials to be saved to activeConnections ${activeConnections.length}|${i + 1} `);
+		}
+		credentialStore.verify(x => x.saveCredential(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.exactly(numCreds));
 	});
 
 	test('getRecentlyUsedConnections should return connection for given provider', () => {
-		let connectionStore = new ConnectionStore(storageServiceMock.object, context.object, undefined, workspaceConfigurationServiceMock.object,
+		let connectionStore = new ConnectionStore(context.object, workspaceConfigurationServiceMock.object,
 			credentialStore.object, capabilitiesService, connectionConfig.object);
 		let connections = connectionStore.getRecentlyUsedConnections(['Provider2']);
 		assert.notEqual(connections, undefined);
 		assert.equal(connections.every(c => c.providerName === 'Provider2'), true);
 	});
 
-	test('addActiveConnection should add same connection exactly once', (done) => {
+	test('addActiveConnection should add same connection exactly once', async () => {
 		// setup memento for MRU to return a list we have access to
 		credentialStore.setup(x => x.saveCredential(TypeMoq.It.isAny(), TypeMoq.It.isAny()))
 			.returns(() => Promise.resolve(true));
 
 		// Given we save the same connection twice
 		// Then expect the only 1 instance of that connection to be listed in the MRU
-		let connectionStore = new ConnectionStore(storageServiceMock.object, context.object, undefined, workspaceConfigurationServiceMock.object,
+		let connectionStore = new ConnectionStore(context.object, workspaceConfigurationServiceMock.object,
 			credentialStore.object, capabilitiesService, connectionConfig.object);
 		connectionStore.clearActiveConnections();
 		connectionStore.clearRecentlyUsed();
-		let promise = Promise.resolve();
 		let cred = Object.assign({}, defaultNamedProfile, { serverName: defaultNamedProfile.serverName + 1 });
 		let connectionProfile = new ConnectionProfile(capabilitiesService, cred);
-		promise = promise.then(() => {
-			return connectionStore.addActiveConnection(defaultNamedConnectionProfile);
-		}).then(() => {
-			return connectionStore.addActiveConnection(connectionProfile);
-		}).then(() => {
-			return connectionStore.addActiveConnection(connectionProfile);
-		}).then(() => {
-			let current = connectionStore.getRecentlyUsedConnections();
-			assert.equal(current.length, 2, 'expect 2 unique credentials to have been added');
-			assert.equal(current[0].serverName, cred.serverName, 'Expect most recently saved item to be first in list');
-			assert.ok(!current[0].password);
-		}).then(() => done(), err => done(err));
+		await connectionStore.addActiveConnection(defaultNamedConnectionProfile, true);
+		await connectionStore.addActiveConnection(connectionProfile, true);
+		await connectionStore.addActiveConnection(connectionProfile, true);
+
+		let recentConnections = connectionStore.getRecentlyUsedConnections();
+		assert.equal(recentConnections.length, 2, 'expect 2 unique credentials to have been added');
+		assert.equal(recentConnections[0].serverName, cred.serverName, 'Expect most recently saved item to be first in list');
+		assert.ok(!recentConnections[0].password);
 	});
 
-	test('addActiveConnection should save password to credential store', (done) => {
-
+	test('addActiveConnection should save password to credential store', async () => {
 		// Setup credential store to capture credentials sent to it
 		let capturedCreds: any;
 		credentialStore.setup(x => x.saveCredential(TypeMoq.It.isAny(), TypeMoq.It.isAny()))
@@ -317,10 +280,11 @@ suite('SQL ConnectionStore tests', () => {
 			.returns(() => Promise.resolve(true));
 
 		// Given we save 1 connection with password and multiple other connections without
-		let connectionStore = new ConnectionStore(storageServiceMock.object, context.object, undefined, workspaceConfigurationServiceMock.object,
+		let connectionStore = new ConnectionStore(context.object, workspaceConfigurationServiceMock.object,
 			credentialStore.object, capabilitiesService, connectionConfig.object);
 		connectionStore.clearActiveConnections();
 		connectionStore.clearRecentlyUsed();
+
 		let integratedCred = Object.assign({}, defaultNamedProfile, {
 			serverName: defaultNamedProfile.serverName + 'Integrated',
 			authenticationType: 'Integrated',
@@ -334,45 +298,44 @@ suite('SQL ConnectionStore tests', () => {
 		let connectionProfile = new ConnectionProfile(capabilitiesService, defaultNamedProfile);
 
 		let expectedCredCount = 0;
-		let promise = Promise.resolve();
-		promise = promise.then(() => {
-			expectedCredCount++;
-			return connectionStore.addActiveConnection(connectionProfile);
-		}).then(() => {
-			let current = connectionStore.getRecentlyUsedConnections();
-			// Then verify that since its password based we save the password
-			credentialStore.verify(x => x.saveCredential(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
-			assert.strictEqual(capturedCreds.password, defaultNamedProfile.password);
-			let credId: string = capturedCreds.credentialId;
-			assert.ok(credId.includes(ConnectionStore.CRED_PROFILE_USER), 'Expect credential to be marked as an Profile cred');
-			assert.ok(!current[0].password);
-		}).then(() => {
-			// When add integrated auth connection
-			expectedCredCount++;
-			let integratedCredConnectionProfile = new ConnectionProfile(capabilitiesService, integratedCred);
-			return connectionStore.addActiveConnection(integratedCredConnectionProfile);
-		}).then(() => {
-			let current = connectionStore.getRecentlyUsedConnections();
-			// then expect no to have credential store called, but MRU count upped to 2
-			credentialStore.verify(x => x.saveCredential(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
-			assert.equal(current.length, expectedCredCount, `expect ${expectedCredCount} unique credentials to have been added`);
-		}).then(() => {
-			// When add connection without password
-			expectedCredCount++;
-			let noPwdCredConnectionProfile = new ConnectionProfile(capabilitiesService, noPwdCred);
-			return connectionStore.addActiveConnection(noPwdCredConnectionProfile);
-		}).then(() => {
-			let current = connectionStore.getRecentlyUsedConnections();
-			// then expect no to have credential store called, but MRU count upped to 3
-			credentialStore.verify(x => x.saveCredential(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
-			assert.equal(current.length, expectedCredCount, `expect ${expectedCredCount} unique credentials to have been added`);
-		}).then(() => done(), err => done(err));
+		expectedCredCount++;
+		// Connection with stored password
+		await connectionStore.addActiveConnection(connectionProfile, true);
+		let recentConnections = connectionStore.getActiveConnections();
+
+		// Then verify that saveCredential was called and correctly stored the password
+		credentialStore.verify(x => x.saveCredential(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
+		assert.strictEqual(capturedCreds.password, defaultNamedProfile.password);
+		let credId: string = capturedCreds.credentialId;
+		assert.ok(credId.includes(ConnectionStore.CRED_PROFILE_USER), 'Expect credential to be marked as an Profile cred');
+		assert.ok(!recentConnections[0].password);
+
+		// Integrated auth
+		expectedCredCount++;
+		let integratedCredConnectionProfile = new ConnectionProfile(capabilitiesService, integratedCred);
+		await connectionStore.addActiveConnection(integratedCredConnectionProfile, true);
+
+		recentConnections = connectionStore.getActiveConnections();
+		// We shouldn't see an increase in the calls to saveCredential, but the MRU should be increased
+		credentialStore.verify(x => x.saveCredential(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
+		assert.equal(recentConnections.length, expectedCredCount, `expect ${expectedCredCount} unique credentials to have been added`);
+
+		// Connection with blank (no) password
+		expectedCredCount++;
+		let noPwdCredConnectionProfile = new ConnectionProfile(capabilitiesService, noPwdCred);
+		await connectionStore.addActiveConnection(noPwdCredConnectionProfile, true);
+
+		recentConnections = connectionStore.getActiveConnections();
+		// We shouldn't see an increase in the calls to saveCredential, but the MRU should be increased
+		credentialStore.verify(x => x.saveCredential(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
+		assert.equal(recentConnections.length, expectedCredCount, `expect ${expectedCredCount} unique credentials to have been added`);
+
 	});
 
 	test('can clear connections list', (done) => {
 		connectionConfig.setup(x => x.getConnections(TypeMoq.It.isAny())).returns(() => []);
 
-		let connectionStore = new ConnectionStore(storageServiceMock.object, context.object, undefined, workspaceConfigurationServiceMock.object,
+		let connectionStore = new ConnectionStore(context.object, workspaceConfigurationServiceMock.object,
 			credentialStore.object, capabilitiesService, connectionConfig.object);
 
 		// When we clear the connections list and get the list of available connection items
@@ -390,7 +353,7 @@ suite('SQL ConnectionStore tests', () => {
 
 	test('isPasswordRequired should return true for MSSQL SqlLogin', () => {
 
-		let connectionStore = new ConnectionStore(storageServiceMock.object, context.object, undefined, workspaceConfigurationServiceMock.object,
+		let connectionStore = new ConnectionStore(context.object, workspaceConfigurationServiceMock.object,
 			credentialStore.object, capabilitiesService, connectionConfig.object);
 
 		let expected: boolean = true;
@@ -400,7 +363,7 @@ suite('SQL ConnectionStore tests', () => {
 	});
 
 	test('isPasswordRequired should return true for MSSQL SqlLogin for connection profile object', () => {
-		let connectionStore = new ConnectionStore(storageServiceMock.object, context.object, undefined, workspaceConfigurationServiceMock.object,
+		let connectionStore = new ConnectionStore(context.object, workspaceConfigurationServiceMock.object,
 			credentialStore.object, capabilitiesService, connectionConfig.object);
 		let connectionProfile = new ConnectionProfile(capabilitiesService, defaultNamedProfile);
 		let expected: boolean = true;
@@ -425,7 +388,7 @@ suite('SQL ConnectionStore tests', () => {
 
 		capabilitiesService.capabilities[providerName] = { connection: providerCapabilities };
 
-		let connectionStore = new ConnectionStore(storageServiceMock.object, context.object, undefined, workspaceConfigurationServiceMock.object,
+		let connectionStore = new ConnectionStore(context.object, workspaceConfigurationServiceMock.object,
 			credentialStore.object, capabilitiesService, connectionConfig.object);
 		let connectionProfile: IConnectionProfile = Object.assign({}, defaultNamedProfile, { providerName: providerName });
 		let expected: boolean = false;
@@ -442,7 +405,7 @@ suite('SQL ConnectionStore tests', () => {
 		connectionConfig.setup(x => x.addConnection(TypeMoq.It.isAny())).returns(() => Promise.resolve(savedConnection));
 		credentialStore.setup(x => x.saveCredential(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(true));
 
-		let connectionStore = new ConnectionStore(storageServiceMock.object, context.object, undefined, workspaceConfigurationServiceMock.object,
+		let connectionStore = new ConnectionStore(context.object, workspaceConfigurationServiceMock.object,
 			credentialStore.object, capabilitiesService, connectionConfig.object);
 
 		connectionStore.saveProfile(connectionProfile).then(profile => {
@@ -459,7 +422,7 @@ suite('SQL ConnectionStore tests', () => {
 	});
 
 	test('addConnectionToMemento should not add duplicate items', () => {
-		let connectionStore = new ConnectionStore(storageServiceMock.object, context.object, undefined, workspaceConfigurationServiceMock.object,
+		let connectionStore = new ConnectionStore(context.object, workspaceConfigurationServiceMock.object,
 			credentialStore.object, capabilitiesService, connectionConfig.object);
 		let mementoKey = 'RECENT_CONNECTIONS2';
 		connectionStore.clearFromMemento(mementoKey);
@@ -501,7 +464,7 @@ suite('SQL ConnectionStore tests', () => {
 	});
 
 	test('getGroupFromId returns undefined when there is no group with the given ID', () => {
-		let connectionStore = new ConnectionStore(storageServiceMock.object, context.object, undefined, workspaceConfigurationServiceMock.object,
+		let connectionStore = new ConnectionStore(context.object, workspaceConfigurationServiceMock.object,
 			credentialStore.object, capabilitiesService, connectionConfig.object);
 		let group = connectionStore.getGroupFromId('invalidId');
 		assert.equal(group, undefined, 'Returned group was not undefined when there was no group with the given ID');
@@ -517,7 +480,7 @@ suite('SQL ConnectionStore tests', () => {
 		groups.push(parentGroup, childGroup);
 		let newConnectionConfig = TypeMoq.Mock.ofType(ConnectionConfig);
 		newConnectionConfig.setup(x => x.getAllGroups()).returns(() => groups);
-		let connectionStore = new ConnectionStore(storageServiceMock.object, context.object, undefined, workspaceConfigurationServiceMock.object,
+		let connectionStore = new ConnectionStore(context.object, workspaceConfigurationServiceMock.object,
 			credentialStore.object, capabilitiesService, newConnectionConfig.object);
 
 		// If I look up the parent group using its ID, then I get back the correct group
@@ -530,7 +493,7 @@ suite('SQL ConnectionStore tests', () => {
 	});
 
 	test('getProfileWithoutPassword can return the profile without credentials in the password property or options dictionary', () => {
-		let connectionStore = new ConnectionStore(storageServiceMock.object, context.object, undefined, workspaceConfigurationServiceMock.object,
+		let connectionStore = new ConnectionStore(context.object, workspaceConfigurationServiceMock.object,
 			credentialStore.object, capabilitiesService, connectionConfig.object);
 		let profile = Object.assign({}, defaultNamedProfile);
 		profile.options['password'] = profile.password;

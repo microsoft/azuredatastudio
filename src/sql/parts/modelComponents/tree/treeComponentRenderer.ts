@@ -16,6 +16,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { ITreeComponentItem } from 'sql/workbench/common/views';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { TreeViewDataProvider } from './treeViewDataProvider';
+import { URI } from 'vs/base/common/uri';
 
 export enum TreeCheckboxState {
 	Intermediate = 0,
@@ -144,7 +145,10 @@ export class TreeComponentRenderer extends Disposable implements IRenderer {
 	 */
 	public renderElement(tree: ITree, element: ITreeComponentItem, templateId: string, templateData: TreeDataTemplate): void {
 		const icon = this.themeService.getTheme().type === LIGHT ? element.icon : element.iconDark;
-		templateData.icon.style.backgroundImage = icon ? `url('${icon}')` : '';
+		const iconUri = icon ? URI.revive(icon) : null;
+		templateData.icon.style.backgroundImage = iconUri ? `url('${iconUri.toString(true)}')` : '';
+		templateData.icon.style.backgroundRepeat = 'no-repeat';
+		templateData.icon.style.backgroundPosition = 'center';
 		dom.toggleClass(templateData.icon, 'model-view-tree-node-item-icon', !!icon);
 		if (element) {
 			element.onCheckedChanged = (checked: boolean) => {

@@ -10,9 +10,9 @@ import * as vscode from 'vscode';
 import { Event, Emitter } from 'vs/base/common/event';
 import { dispose } from 'vs/base/common/lifecycle';
 import { URI, UriComponents } from 'vs/base/common/uri';
-import { Disposable } from 'vs/workbench/api/node/extHostTypes';
-import * as typeConverters from 'vs/workbench/api/node/extHostTypeConverters';
-import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
+import { Disposable } from 'vs/workbench/api/common/extHostTypes';
+import * as typeConverters from 'vs/workbench/api/common/extHostTypeConverters';
+import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { ok } from 'vs/base/common/assert';
 
 import {
@@ -109,7 +109,7 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 					this._mainContext.getProxy(SqlMainContext.MainThreadNotebookDocumentsAndEditors),
 					data.id,
 					documentData,
-					typeConverters.ViewColumn.to(data.editorPosition)
+					typeof data.editorPosition === 'number' ? typeConverters.ViewColumn.to(data.editorPosition) : undefined
 				);
 				this._editors.set(data.id, editor);
 			}
@@ -167,8 +167,15 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 			options.preview = showOptions.preview;
 			options.position = showOptions.viewColumn;
 			options.providerId = showOptions.providerId;
-			options.connectionId = showOptions.connectionId;
+			options.connectionProfile = showOptions.connectionProfile;
 			options.defaultKernel = showOptions.defaultKernel;
+			if (showOptions.initialContent) {
+				if (typeof (showOptions.initialContent) !== 'string') {
+					options.initialContent = JSON.stringify(showOptions.initialContent);
+				} else {
+					options.initialContent = showOptions.initialContent;
+				}
+			}
 		}
 		let id = await this._proxy.$tryShowNotebookDocument(uri, options);
 		let editor = this.getEditor(id);

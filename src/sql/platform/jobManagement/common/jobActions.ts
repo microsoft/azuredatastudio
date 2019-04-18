@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { TPromise } from 'vs/base/common/winjs.base';
 import { Action } from 'vs/base/common/actions';
 import * as nls from 'vs/nls';
 import * as azdata from 'azdata';
@@ -18,8 +17,9 @@ import { OperatorsViewComponent } from 'sql/parts/jobManagement/views/operatorsV
 import { ProxiesViewComponent } from 'sql/parts/jobManagement/views/proxiesView.component';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import * as TelemetryKeys from 'sql/common/telemetryKeys';
+import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
+import { JobManagementView } from 'sql/parts/jobManagement/views/jobManagementView';
 
 export const successLabel: string = nls.localize('jobaction.successLabel', 'Success');
 export const errorLabel: string = nls.localize('jobaction.faillabel', 'Error');
@@ -30,10 +30,9 @@ export enum JobActions {
 }
 
 export class IJobActionInfo {
-	ownerUri: string;
-	targetObject: any;
-	jobHistoryComponent?: JobHistoryComponent;
-	jobViewComponent?: JobsViewComponent;
+	ownerUri?: string;
+	targetObject?: any;
+	component: JobManagementView;
 }
 
 // Job actions
@@ -47,10 +46,12 @@ export class JobsRefreshAction extends Action {
 		super(JobsRefreshAction.ID, JobsRefreshAction.LABEL, 'refreshIcon');
 	}
 
-	public run(context: IJobActionInfo): TPromise<boolean> {
-		return new TPromise<boolean>((resolve, reject) => {
+	public run(context: IJobActionInfo): Promise<boolean> {
+		return new Promise<boolean>((resolve, reject) => {
 			if (context) {
-				context.jobHistoryComponent.refreshJobs();
+				if (context.component) {
+					context.component.refreshJobs();
+				}
 				resolve(true);
 			} else {
 				reject(false);
@@ -68,10 +69,11 @@ export class NewJobAction extends Action {
 		super(NewJobAction.ID, NewJobAction.LABEL, 'newStepIcon');
 	}
 
-	public run(context: JobsViewComponent): TPromise<boolean> {
-		return new TPromise<boolean>((resolve, reject) => {
+	public run(context: IJobActionInfo): Promise<boolean> {
+		let component = context.component as JobsViewComponent;
+		return new Promise<boolean>(async (resolve, reject) => {
 			try {
-				context.openCreateJobDialog();
+				await component.openCreateJobDialog();
 				resolve(true);
 			} catch (e) {
 				reject(e);
@@ -94,16 +96,16 @@ export class RunJobAction extends Action {
 		super(RunJobAction.ID, RunJobAction.LABEL, 'start');
 	}
 
-	public run(context: IJobActionInfo): TPromise<boolean> {
+	public run(context: IJobActionInfo): Promise<boolean> {
 		let jobName = context.targetObject.name;
 		let ownerUri = context.ownerUri;
 		let refreshAction = this.instantationService.createInstance(JobsRefreshAction);
 		this.telemetryService.publicLog(TelemetryKeys.RunAgentJob);
-		return new TPromise<boolean>((resolve, reject) => {
+		return new Promise<boolean>((resolve, reject) => {
 			this.jobManagementService.jobAction(ownerUri, jobName, JobActions.Run).then(result => {
 				if (result.success) {
 					var startMsg = nls.localize('jobSuccessfullyStarted', ': The job was successfully started.');
-					this.notificationService.info(jobName+startMsg);
+					this.notificationService.info(jobName + startMsg);
 					refreshAction.run(context);
 					resolve(true);
 				} else {
@@ -129,17 +131,17 @@ export class StopJobAction extends Action {
 		super(StopJobAction.ID, StopJobAction.LABEL, 'stop');
 	}
 
-	public run(context: IJobActionInfo): TPromise<boolean> {
+	public run(context: IJobActionInfo): Promise<boolean> {
 		let jobName = context.targetObject.name;
 		let ownerUri = context.ownerUri;
 		let refreshAction = this.instantationService.createInstance(JobsRefreshAction);
 		this.telemetryService.publicLog(TelemetryKeys.StopAgentJob);
-		return new TPromise<boolean>((resolve, reject) => {
+		return new Promise<boolean>((resolve, reject) => {
 			this.jobManagementService.jobAction(ownerUri, jobName, JobActions.Stop).then(result => {
 				if (result.success) {
 					refreshAction.run(context);
 					var stopMsg = nls.localize('jobSuccessfullyStopped', ': The job was successfully stopped.');
-					this.notificationService.info(jobName+stopMsg);
+					this.notificationService.info(jobName + stopMsg);
 					resolve(true);
 				} else {
 					this.errorMessageService.showDialog(Severity.Error, 'Error', result.errorMessage);
@@ -160,12 +162,12 @@ export class EditJobAction extends Action {
 		super(EditJobAction.ID, EditJobAction.LABEL, 'edit');
 	}
 
-	public run(actionInfo: IJobActionInfo): TPromise<boolean> {
+	public run(actionInfo: IJobActionInfo): Promise<boolean> {
 		this._commandService.executeCommand(
 			'agent.openJobDialog',
 			actionInfo.ownerUri,
-			actionInfo.targetObject);
-		return TPromise.as(true);
+			actionInfo.targetObject.job);
+		return Promise.resolve(true);
 	}
 }
 
@@ -182,9 +184,9 @@ export class DeleteJobAction extends Action {
 		super(DeleteJobAction.ID, DeleteJobAction.LABEL);
 	}
 
-	public run(actionInfo: IJobActionInfo): TPromise<boolean> {
+	public run(actionInfo: IJobActionInfo): Promise<boolean> {
 		let self = this;
-		let job = actionInfo.targetObject as azdata.AgentJobInfo;
+		let job = actionInfo.targetObject.job as azdata.AgentJobInfo;
 		self._notificationService.prompt(
 			Severity.Info,
 			nls.localize('jobaction.deleteJobConfirm', "Are you sure you'd like to delete the job '{0}'?", job.name),
@@ -192,7 +194,7 @@ export class DeleteJobAction extends Action {
 				label: DeleteJobAction.LABEL,
 				run: () => {
 					this._telemetryService.publicLog(TelemetryKeys.DeleteAgentJob);
-					self._jobService.deleteJob(actionInfo.ownerUri, actionInfo.targetObject).then(result => {
+					self._jobService.deleteJob(actionInfo.ownerUri, actionInfo.targetObject.job).then(result => {
 						if (!result || !result.success) {
 							let errorMessage = nls.localize("jobaction.failedToDeleteJob", "Could not delete job '{0}'.\nError: {1}",
 								job.name, result.errorMessage ? result.errorMessage : 'Unknown error');
@@ -208,7 +210,7 @@ export class DeleteJobAction extends Action {
 				run: () => { }
 			}]
 		);
-		return TPromise.as(true);
+		return Promise.resolve(true);
 	}
 }
 
@@ -224,11 +226,11 @@ export class NewStepAction extends Action {
 		super(NewStepAction.ID, NewStepAction.LABEL, 'newStepIcon');
 	}
 
-	public run(context: JobHistoryComponent): TPromise<boolean> {
+	public run(context: JobHistoryComponent): Promise<boolean> {
 		let ownerUri = context.ownerUri;
 		let server = context.serverName;
 		let jobInfo = context.agentJobInfo;
-		return new TPromise<boolean>((resolve, reject) => {
+		return new Promise<boolean>((resolve, reject) => {
 			resolve(this._commandService.executeCommand('agent.openNewStepDialog', ownerUri, server, jobInfo, null));
 		});
 	}
@@ -248,7 +250,7 @@ export class DeleteStepAction extends Action {
 		super(DeleteStepAction.ID, DeleteStepAction.LABEL);
 	}
 
-	public run(actionInfo: IJobActionInfo): TPromise<boolean> {
+	public run(actionInfo: IJobActionInfo): Promise<boolean> {
 		let self = this;
 		let step = actionInfo.targetObject as azdata.AgentJobStepInfo;
 		let refreshAction = this.instantationService.createInstance(JobsRefreshAction);
@@ -276,7 +278,7 @@ export class DeleteStepAction extends Action {
 				run: () => { }
 			}]
 		);
-		return TPromise.as(true);
+		return Promise.resolve(true);
 	}
 }
 
@@ -292,10 +294,11 @@ export class NewAlertAction extends Action {
 		super(NewAlertAction.ID, NewAlertAction.LABEL, 'newStepIcon');
 	}
 
-	public run(context: AlertsViewComponent): TPromise<boolean> {
-		return new TPromise<boolean>((resolve, reject) => {
+	public run(context: IJobActionInfo): Promise<boolean> {
+		let component = context.component as AlertsViewComponent;
+		return new Promise<boolean>((resolve, reject) => {
 			try {
-				context.openCreateAlertDialog();
+				component.openCreateAlertDialog();
 				resolve(true);
 			} catch (e) {
 				reject(e);
@@ -314,12 +317,13 @@ export class EditAlertAction extends Action {
 		super(EditAlertAction.ID, EditAlertAction.LABEL);
 	}
 
-	public run(actionInfo: IJobActionInfo): TPromise<boolean> {
+	public run(actionInfo: IJobActionInfo): Promise<boolean> {
 		this._commandService.executeCommand(
 			'agent.openAlertDialog',
 			actionInfo.ownerUri,
-			actionInfo.targetObject);
-		return TPromise.as(true);
+			actionInfo.targetObject.jobInfo,
+			actionInfo.targetObject.alertInfo);
+		return Promise.resolve(true);
 	}
 }
 
@@ -337,9 +341,9 @@ export class DeleteAlertAction extends Action {
 		super(DeleteAlertAction.ID, DeleteAlertAction.LABEL);
 	}
 
-	public run(actionInfo: IJobActionInfo): TPromise<boolean> {
+	public run(actionInfo: IJobActionInfo): Promise<boolean> {
 		let self = this;
-		let alert = actionInfo.targetObject as azdata.AgentAlertInfo;
+		let alert = actionInfo.targetObject.alertInfo as azdata.AgentAlertInfo;
 		self._notificationService.prompt(
 			Severity.Info,
 			nls.localize('jobaction.deleteAlertConfirm', "Are you sure you'd like to delete the alert '{0}'?", alert.name),
@@ -347,7 +351,7 @@ export class DeleteAlertAction extends Action {
 				label: DeleteAlertAction.LABEL,
 				run: () => {
 					this._telemetryService.publicLog(TelemetryKeys.DeleteAgentAlert);
-					self._jobService.deleteAlert(actionInfo.ownerUri, actionInfo.targetObject).then(result => {
+					self._jobService.deleteAlert(actionInfo.ownerUri, alert).then(result => {
 						if (!result || !result.success) {
 							let errorMessage = nls.localize("jobaction.failedToDeleteAlert", "Could not delete alert '{0}'.\nError: {1}",
 								alert.name, result.errorMessage ? result.errorMessage : 'Unknown error');
@@ -363,7 +367,7 @@ export class DeleteAlertAction extends Action {
 				run: () => { }
 			}]
 		);
-		return TPromise.as(true);
+		return Promise.resolve(true);
 	}
 }
 
@@ -378,10 +382,11 @@ export class NewOperatorAction extends Action {
 		super(NewOperatorAction.ID, NewOperatorAction.LABEL, 'newStepIcon');
 	}
 
-	public run(context: OperatorsViewComponent): TPromise<boolean> {
-		return new TPromise<boolean>((resolve, reject) => {
+	public run(context: IJobActionInfo): Promise<boolean> {
+		let component = context.component as OperatorsViewComponent;
+		return new Promise<boolean>((resolve, reject) => {
 			try {
-				context.openCreateOperatorDialog();
+				component.openCreateOperatorDialog();
 				resolve(true);
 			} catch (e) {
 				reject(e);
@@ -400,12 +405,12 @@ export class EditOperatorAction extends Action {
 		super(EditOperatorAction.ID, EditOperatorAction.LABEL);
 	}
 
-	public run(actionInfo: IJobActionInfo): TPromise<boolean> {
+	public run(actionInfo: IJobActionInfo): Promise<boolean> {
 		this._commandService.executeCommand(
 			'agent.openOperatorDialog',
 			actionInfo.ownerUri,
 			actionInfo.targetObject);
-		return TPromise.as(true);
+		return Promise.resolve(true);
 	}
 }
 
@@ -422,7 +427,7 @@ export class DeleteOperatorAction extends Action {
 		super(DeleteOperatorAction.ID, DeleteOperatorAction.LABEL);
 	}
 
-	public run(actionInfo: IJobActionInfo): TPromise<boolean> {
+	public run(actionInfo: IJobActionInfo): Promise<boolean> {
 		const self = this;
 		let operator = actionInfo.targetObject as azdata.AgentOperatorInfo;
 		self._notificationService.prompt(
@@ -448,7 +453,7 @@ export class DeleteOperatorAction extends Action {
 				run: () => { }
 			}]
 		);
-		return TPromise.as(true);
+		return Promise.resolve(true);
 	}
 }
 
@@ -464,10 +469,11 @@ export class NewProxyAction extends Action {
 		super(NewProxyAction.ID, NewProxyAction.LABEL, 'newStepIcon');
 	}
 
-	public run(context: ProxiesViewComponent): TPromise<boolean> {
-		return new TPromise<boolean>((resolve, reject) => {
+	public run(context: IJobActionInfo): Promise<boolean> {
+		let component = context.component as ProxiesViewComponent;
+		return new Promise<boolean>((resolve, reject) => {
 			try {
-				context.openCreateProxyDialog();
+				component.openCreateProxyDialog();
 				resolve(true);
 			} catch (e) {
 				reject(e);
@@ -481,17 +487,25 @@ export class EditProxyAction extends Action {
 	public static LABEL = nls.localize('jobaction.editProxy', "Edit Proxy");
 
 	constructor(
-		@ICommandService private _commandService: ICommandService
+		@ICommandService private _commandService: ICommandService,
+		@IJobManagementService private _jobManagementService: IJobManagementService
 	) {
 		super(EditProxyAction.ID, EditProxyAction.LABEL);
 	}
 
-	public run(actionInfo: IJobActionInfo): TPromise<boolean> {
-		this._commandService.executeCommand(
-			'agent.openProxyDialog',
-			actionInfo.ownerUri,
-			actionInfo.targetObject);
-		return TPromise.as(true);
+	public run(actionInfo: IJobActionInfo): Promise<boolean> {
+		return Promise.resolve(this._jobManagementService.getCredentials(actionInfo.ownerUri).then((result) => {
+			if (result && result.credentials) {
+				this._commandService.executeCommand(
+					'agent.openProxyDialog',
+					actionInfo.ownerUri,
+					actionInfo.targetObject,
+					result.credentials);
+				return true;
+			} else {
+				return false;
+			}
+		}));
 	}
 }
 
@@ -508,7 +522,7 @@ export class DeleteProxyAction extends Action {
 		super(DeleteProxyAction.ID, DeleteProxyAction.LABEL);
 	}
 
-	public run(actionInfo: IJobActionInfo): TPromise<boolean> {
+	public run(actionInfo: IJobActionInfo): Promise<boolean> {
 		let self = this;
 		let proxy = actionInfo.targetObject as azdata.AgentProxyInfo;
 		self._notificationService.prompt(
@@ -522,7 +536,7 @@ export class DeleteProxyAction extends Action {
 						if (!result || !result.success) {
 							let errorMessage = nls.localize("jobaction.failedToDeleteProxy", "Could not delete proxy '{0}'.\nError: {1}",
 								proxy.accountName, result.errorMessage ? result.errorMessage : 'Unknown error');
-								self._errorMessageService.showDialog(Severity.Error, errorLabel, errorMessage);
+							self._errorMessageService.showDialog(Severity.Error, errorLabel, errorMessage);
 						} else {
 							let successMessage = nls.localize('jobaction.deletedProxy', 'The proxy was deleted successfully');
 							self._notificationService.info(successMessage);
@@ -534,6 +548,6 @@ export class DeleteProxyAction extends Action {
 				run: () => { }
 			}]
 		);
-		return TPromise.as(true);
+		return Promise.resolve(true);
 	}
 }

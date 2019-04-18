@@ -14,14 +14,37 @@ import * as pfs from 'vs/base/node/pfs';
 import { URI } from 'vs/base/common/uri';
 import { localize } from 'vs/nls';
 
-import { JSONObject } from 'sql/parts/notebook/models/jsonext';
-import { OutputTypes } from 'sql/parts/notebook/models/contracts';
-import { nbversion } from 'sql/parts/notebook/notebookConstants';
-import { nbformat } from 'sql/parts/notebook/models/nbformat';
+import { JSONObject } from 'sql/workbench/parts/notebook/models/jsonext';
+import { OutputTypes } from 'sql/workbench/parts/notebook/models/contracts';
+import { nbversion } from 'sql/workbench/parts/notebook/notebookConstants';
+import { nbformat } from 'sql/workbench/parts/notebook/models/nbformat';
 
 type MimeBundle = { [key: string]: string | string[] | undefined };
 
 export class LocalContentManager implements nb.ContentManager {
+
+	public async loadFromContentString(contentString: string): Promise<nb.INotebookContents> {
+		let contents: JSONObject = json.parse(contentString);
+
+		if (contents) {
+			if (contents.nbformat === 4) {
+				return v4.readNotebook(<any>contents);
+			} else if (contents.nbformat === 3) {
+				return v3.readNotebook(<any>contents);
+			}
+			if (contents.nbformat) {
+				throw new TypeError(localize('nbformatNotRecognized', 'nbformat v{0}.{1} not recognized', contents.nbformat as any, contents.nbformat_minor as any));
+			}
+		} else if (contentString === '' || contentString === undefined) {
+			// Empty?
+			return v4.createEmptyNotebook();
+		}
+
+		// else, fallthrough condition
+		throw new TypeError(localize('nbNotSupported', 'This file does not have a valid notebook format'));
+
+	}
+
 	public async getNotebookContents(notebookUri: URI): Promise<nb.INotebookContents> {
 		if (!notebookUri) {
 			return undefined;

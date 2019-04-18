@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IInsight, IInsightOptions, InsightType } from './interfaces';
-import { IInsightData } from 'sql/parts/dashboard/widgets/insights/interfaces';
+import { IInsightData } from 'sql/workbench/parts/dashboard/widgets/insights/interfaces';
 
 import { $ } from 'vs/base/browser/dom';
 import { mixin } from 'vs/base/common/objects';
@@ -67,6 +67,6 @@ export class ImageInsight implements IInsight {
 			hexVal = hexVal.slice(2);
 		}
 		// should be able to be replaced with new Buffer(hexVal, 'hex').toString('base64')
-		return btoa(String.fromCharCode.apply(null, hexVal.replace(/\r|\n/g, '').replace(/([\da-fA-F]{2}) ?/g, '0x$1 ').replace(/ +$/, '').split(' ')));
+		return btoa(String.fromCharCode.apply(null, hexVal.replace(/\r|\n/g, '').replace(/([\da-fA-F]{2}) ?/g, '0x$1 ').replace(/ +$/, '').split(' ').map(v => Number(v))));
 	}
 }

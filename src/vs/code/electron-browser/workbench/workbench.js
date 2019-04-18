@@ -19,6 +19,10 @@ process['lazyEnv'] = getLazyEnv();
 /* eslint-disable */
 
 // SQL global imports
+const jQuery = require('jquery');
+const $ = jQuery;
+require('slickgrid/lib/jquery.event.drag-2.3.0');
+require('slickgrid/lib/jquery-ui-1.9.2');
 const _ = require('underscore')._;
 require('slickgrid/slick.core');
 const Slick = window.Slick;
@@ -42,7 +46,7 @@ bootstrapWindow.load([
 			perf.mark('main/startup');
 
 			// @ts-ignore
-			return require('vs/workbench/electron-browser/main').startup(configuration);
+			return require('vs/workbench/electron-browser/main').main(configuration);
 		});
 	}, {
 		removeDeveloperKeybindingsAfterLoad: true,
@@ -50,14 +54,13 @@ bootstrapWindow.load([
 			showPartsSplash(windowConfig);
 		},
 		beforeLoaderConfig: function (windowConfig, loaderConfig) {
-			loaderConfig.recordStats = !!windowConfig.performance;
+			loaderConfig.recordStats = !!windowConfig['prof-modules'];
 			if (loaderConfig.nodeCachedData) {
 				const onNodeCachedData = window['MonacoEnvironment'].onNodeCachedData = [];
 				loaderConfig.nodeCachedData.onData = function () {
 					onNodeCachedData.push(arguments);
 				};
 			}
-
 		},
 		beforeRequire: function () {
 			perf.mark('willLoadWorkbenchMain');
@@ -65,24 +68,25 @@ bootstrapWindow.load([
 	});
 
 /**
- * @param {object} configuration
+ * // configuration: IWindowConfiguration
+ * @param {{
+ *	partsSplashPath?: string,
+ *	highContrast?: boolean,
+ *	extensionDevelopmentPath?: string | string[],
+ *	folderUri?: object,
+ *	workspace?: object
+ * }} configuration
  */
 function showPartsSplash(configuration) {
 	perf.mark('willShowPartsSplash');
 
 	let data;
-	try {
-		if (!process.env['VSCODE_TEST_STORAGE_MIGRATION']) {
-			// TODO@Ben remove me after a while
-			perf.mark('willReadLocalStorage');
-			let raw = window.localStorage.getItem('storage://global/parts-splash-data');
-			perf.mark('didReadLocalStorage');
-			data = JSON.parse(raw);
-		} else {
-			data = JSON.parse(configuration.partsSplashData);
+	if (typeof configuration.partsSplashPath === 'string') {
+		try {
+			data = JSON.parse(require('fs').readFileSync(configuration.partsSplashPath, 'utf8'));
+		} catch (e) {
+			// ignore
 		}
-	} catch (e) {
-		// ignore
 	}
 
 	// high contrast mode has been turned on from the outside, e.g OS -> ignore stored colors and layouts
