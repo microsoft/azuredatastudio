@@ -21,8 +21,7 @@ import { Deferred } from '../common/promise';
 import { ConfigurePythonDialog } from '../dialog/configurePythonDialog';
 
 const localize = nls.loadMessageBundle();
-const msgPythonInstallationProgress = localize('msgPythonInstallationProgress', 'Python installation is in progress');
-const msgPythonInstallationComplete = localize('msgPythonInstallationComplete', 'Python installation is complete');
+const msgInstallPkgProgress = localize('msgInstallPkgProgress', 'Notebook dependencies installation is in progress');
 const msgPythonDownloadComplete = localize('msgPythonDownloadComplete', 'Python download is complete');
 const msgPythonDownloadError = localize('msgPythonDownloadError', 'Error while downloading python setup');
 const msgPythonDownloadPending = localize('msgPythonDownloadPending', 'Downloading python package');
@@ -74,16 +73,18 @@ export default class JupyterServerInstallation {
 		if (!fs.existsSync(this._pythonExecutable) || this._forceInstall) {
 			window.showInformationMessage(msgInstallPkgStart);
 			this.outputChannel.show(true);
-			this.outputChannel.appendLine(msgPythonInstallationProgress);
-			backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonInstallationProgress);
+			this.outputChannel.appendLine(msgInstallPkgProgress);
+			backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgInstallPkgProgress);
+
 			await this.installPythonPackage(backgroundOperation);
-			backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonDownloadComplete);
 			this.outputChannel.appendLine(msgPythonDownloadComplete);
+			backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonDownloadComplete);
 
 			// Install jupyter on Windows because local python is not bundled with jupyter unlike linux and MacOS.
 			await this.installJupyterProsePackage();
 			await this.installSparkMagic();
-			this.outputChannel.appendLine(msgPythonInstallationComplete);
+
+			this.outputChannel.appendLine(msgInstallPkgFinish);
 			backgroundOperation.updateStatus(azdata.TaskStatus.Succeeded, msgInstallPkgFinish);
 			window.showInformationMessage(msgInstallPkgFinish);
 		}
