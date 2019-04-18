@@ -160,7 +160,7 @@ export class ConfigurePythonDialog {
 			}
 
 			if (useExistingPython) {
-				let exePath = path.join(pythonLocation, process.platform === constants.winPlatform ? 'python.exe' : 'bin/python3');
+				let exePath = JupyterServerInstallation.getPythonExePath(pythonLocation, true);
 				let pythonExists = fs.existsSync(exePath);
 				if (!pythonExists) {
 					this.showErrorMessage(this.PythonNotFoundMsg);
