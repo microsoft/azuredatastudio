@@ -110,7 +110,7 @@ input#accordion:checked ~ .accordion-content {
 }
 
 .all-jobs > .back-button-icon {
-	content: url('../common/media/back.svg');
+	content: url('back.svg');
 	width: 20px;
 	margin-right: 10px;
 	float: left;
@@ -121,25 +121,25 @@ input#accordion:checked ~ .accordion-content {
 
 .vs-dark.monaco-shell .all-jobs >.back-button-icon,
 .hc-black.monaco-shell .all-jobs >.back-button-icon {
-	content: url('../common/media/back_inverse.svg');
+	content: url('back_inverse.svg');
 }
 
 .vs .action-label.icon.newStepIcon {
-	background-image: url('../common/media/new.svg');
+	background-image: url('new.svg');
 }
 
 .vs-dark .action-label.icon.newStepIcon,
 .hc-black .action-label.icon.newStepIcon {
-	background-image: url('../common/media/new_inverse.svg');
+	background-image: url('new_inverse.svg');
 }
 
 jobhistory-component .hc-black .icon.edit,
 jobhistory-component .vs-dark .icon.edit {
-	background-image: url('../../../media/icons/edit_inverse.svg');
+	background-image: url('edit_inverse.svg');
 }
 
 jobhistory-component .vs .icon.edit {
-	background-image: url('../../../media/icons/edit.svg');
+	background-image: url('edit.svg');
 }
 
 jobhistory-component .actions-container .icon.edit {
