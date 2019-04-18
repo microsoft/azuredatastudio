@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import {
 	IConnectionManagementService,
 	ConnectionType, INewConnectionParams, IConnectionCompletionOptions, IConnectionResult
@@ -302,7 +300,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 
 	private handleFillInConnectionInputs(connectionInfo: IConnectionProfile): void {
 		this._connectionManagementService.addSavedPassword(connectionInfo).then(connectionWithPassword => {
-			var model = this.createModel(connectionWithPassword);
+			let model = this.createModel(connectionWithPassword);
 			this._model = model;
 			this.uiController.fillInConnectionInputs(model);
 		});

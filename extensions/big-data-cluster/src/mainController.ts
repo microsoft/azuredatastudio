@@ -12,7 +12,7 @@ import { Kubectl } from './kubectl/kubectl';
  */
 export class MainController {
 	protected _context: vscode.ExtensionContext;
-	protected _kubectl : Kubectl;
+	protected _kubectl: Kubectl;
 
 	public constructor(context: vscode.ExtensionContext, kubectl: Kubectl) {
 		this._context = context;

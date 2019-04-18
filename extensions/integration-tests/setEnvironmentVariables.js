@@ -1,3 +1,7 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 const path = require('path');
 const os = require('os');
 const fs = require('fs');
@@ -104,6 +108,8 @@ const ENVAR_STANDALONE_SERVER = 'STANDALONE_SQL';
 const ENVAR_STANDALONE_SERVER_USERNAME = 'STANDALONE_SQL_USERNAME';
 const ENVAR_STANDALONE_SERVER_PASSWORD = 'STANDALONE_SQL_PWD';
 const ENVAR_PYTHON_INSTALL_PATH = 'PYTHON_TEST_PATH';
+const ENVAR_RUN_PYTHON3_TEST = 'RUN_PYTHON3_TEST';
+const ENVAR_RUN_PYSPARK_TEST = 'RUN_PYSPARK_TEST';
 
 // Mapping between AKV secret and the environment variable names
 const SecretEnVarMapping = [];
@@ -119,6 +125,8 @@ SecretEnVarMapping.push([SECRET_STANDALONE_SERVER_USERNAME, ENVAR_STANDALONE_SER
 
 // Set the values that are not stored in AKV here
 process.env[ENVAR_PYTHON_INSTALL_PATH] = NOTEBOOK_PYTHON_INSTALL_PATH;
+process.env[ENVAR_RUN_PYTHON3_TEST] = '1';
+process.env[ENVAR_RUN_PYSPARK_TEST] = '0';
 
 const promises = [];
 

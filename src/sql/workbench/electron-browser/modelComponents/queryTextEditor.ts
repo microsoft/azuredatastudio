@@ -104,7 +104,7 @@ export class QueryTextEditor extends BaseTextEditor {
 		return nls.localize('queryTextEditorAriaLabel', 'modelview code editor for view model.');
 	}
 
-	public layout(dimension?: DOM.Dimension){
+	public layout(dimension?: DOM.Dimension) {
 		if (dimension) {
 			this._dimension = dimension;
 		}
@@ -175,11 +175,11 @@ export class QueryTextEditor extends BaseTextEditor {
 		this.setHeight(editorHeightUsingMinHeight);
 	}
 
-	public setMinimumHeight(height: number) : void {
+	public setMinimumHeight(height: number): void {
 		this._minHeight = height;
 	}
 
-	public setMaximumHeight(height: number) : void {
+	public setMaximumHeight(height: number): void {
 		this._maxHeight = height;
 	}
 

@@ -345,7 +345,7 @@ export class ErrorNode extends TreeNode {
 	public static create(message: string, parent: TreeNode, errorCode?: number): ErrorNode {
 		let node = new ErrorNode(message);
 		node.parent = parent;
-		if(errorCode){
+		if (errorCode) {
 			node.errorStatusCode = errorCode;
 		}
 		return node;

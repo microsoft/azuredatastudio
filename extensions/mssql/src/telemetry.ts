@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import * as vscode from 'vscode';
 import * as opener from 'opener';
 import TelemetryReporter from 'vscode-extension-telemetry';
@@ -138,7 +137,6 @@ export class Telemetry {
 
 /**
  * Handle Language Service client errors
- * @class LanguageClientErrorHandler
  */
 export class LanguageClientErrorHandler implements ErrorHandler {
 
@@ -160,11 +158,6 @@ export class LanguageClientErrorHandler implements ErrorHandler {
 	/**
 	 * Callback for language service client error
 	 *
-	 * @param {Error} error
-	 * @param {Message} message
-	 * @param {number} count
-	 * @returns {ErrorAction}
-	 *
 	 * @memberOf LanguageClientErrorHandler
 	 */
 	error(error: Error, message: Message, count: number): ErrorAction {
@@ -177,8 +170,6 @@ export class LanguageClientErrorHandler implements ErrorHandler {
 
 	/**
 	 * Callback for language service client closed
-	 *
-	 * @returns {CloseAction}
 	 *
 	 * @memberOf LanguageClientErrorHandler
 	 */

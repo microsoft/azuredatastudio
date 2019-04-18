@@ -104,7 +104,7 @@ export class RunJobAction extends Action {
 		return new Promise<boolean>((resolve, reject) => {
 			this.jobManagementService.jobAction(ownerUri, jobName, JobActions.Run).then(result => {
 				if (result.success) {
-					var startMsg = nls.localize('jobSuccessfullyStarted', ': The job was successfully started.');
+					let startMsg = nls.localize('jobSuccessfullyStarted', ': The job was successfully started.');
 					this.notificationService.info(jobName + startMsg);
 					refreshAction.run(context);
 					resolve(true);
@@ -140,7 +140,7 @@ export class StopJobAction extends Action {
 			this.jobManagementService.jobAction(ownerUri, jobName, JobActions.Stop).then(result => {
 				if (result.success) {
 					refreshAction.run(context);
-					var stopMsg = nls.localize('jobSuccessfullyStopped', ': The job was successfully stopped.');
+					let stopMsg = nls.localize('jobSuccessfullyStopped', ': The job was successfully stopped.');
 					this.notificationService.info(jobName + stopMsg);
 					resolve(true);
 				} else {

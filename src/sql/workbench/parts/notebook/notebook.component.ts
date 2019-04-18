@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------------------------
-*  Copyright (c) Microsoft Corporation. All rights reserved.
-*  Licensed under the Source EULA. See License.txt in the project root for license information.
-*--------------------------------------------------------------------------------------------*/
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
 import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnDestroy } from '@angular/core';
 
@@ -185,7 +185,9 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			cell.trustedMode = isTrusted;
 		});
 		//Updates dirty state
-		this._notebookParams.input && this._notebookParams.input.updateModel();
+		if (this._notebookParams.input) {
+			this._notebookParams.input.updateModel();
+		}
 		this.detectChanges();
 	}
 

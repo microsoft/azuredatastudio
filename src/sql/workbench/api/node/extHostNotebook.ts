@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
@@ -99,7 +98,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 				};
 				return details;
 			} catch (error) {
-				throw typeof(error) === 'string' ? new Error(error) : error;
+				throw typeof (error) === 'string' ? new Error(error) : error;
 			}
 		});
 	}
@@ -231,7 +230,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 	}
 
 	private findManagerForUri(uriString: string): NotebookManagerAdapter {
-		for(let manager of this.getAdapters(NotebookManagerAdapter)) {
+		for (let manager of this.getAdapters(NotebookManagerAdapter)) {
 			if (manager.uriString === uriString) {
 				return manager;
 			}
@@ -279,7 +278,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 			let value = await callback(manager);
 			return value;
 		} catch (error) {
-			throw typeof(error) === 'string' ? new Error(error) : error;
+			throw typeof (error) === 'string' ? new Error(error) : error;
 		}
 	}
 

@@ -21,9 +21,9 @@ export class AzureResourceDatabaseServerService implements IAzureResourceDatabas
 
 		svrs.forEach((svr) => databaseServers.push({
 			name: svr.name,
-			 fullName: svr.fullyQualifiedDomainName,
-			 loginName: svr.administratorLogin,
-			 defaultDatabaseName: 'master'
+			fullName: svr.fullyQualifiedDomainName,
+			loginName: svr.administratorLogin,
+			defaultDatabaseName: 'master'
 		}));
 
 		return databaseServers;

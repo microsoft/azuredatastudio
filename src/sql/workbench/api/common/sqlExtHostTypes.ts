@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import { nb, IConnectionProfile } from 'azdata';
 import * as vsExtTypes from 'vs/workbench/api/common/extHostTypes';
@@ -292,6 +291,7 @@ export enum DataProviderType {
 	AgentServicesProvider = 'AgentServicesProvider',
 	CapabilitiesProvider = 'CapabilitiesProvider',
 	DacFxServicesProvider = 'DacFxServicesProvider',
+	SchemaCompareServicesProvider = 'SchemaCompareServicesProvider',
 	ObjectExplorerNodeProvider = 'ObjectExplorerNodeProvider'
 }
 
@@ -546,4 +546,20 @@ export class ConnectionProfile {
 		// create from options
 		return undefined;
 	}
+}
+
+export enum SchemaUpdateAction {
+	Delete = 0,
+	Change = 1,
+	Add = 2
+}
+
+export enum SchemaDifferenceType {
+	Object = 0,
+	Property = 1
+}
+
+export enum SchemaCompareEndpointType {
+	database = 0,
+	dacpac = 1
 }

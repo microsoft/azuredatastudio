@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as Constants from 'sql/platform/connection/common/constants';
 import * as ConnInfo from 'sql/platform/connection/common/connectionInfo';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
@@ -24,7 +22,6 @@ const MAX_CONNECTIONS_DEFAULT = 25;
  * Manages the connections list including saved profiles and the most recently used connections
  *
  * @export
- * @class ConnectionStore
  */
 export class ConnectionStore {
 	private _memento: any;
@@ -65,10 +62,9 @@ export class ConnectionStore {
 	/**
 	 * Creates a formatted credential usable for uniquely identifying a SQL Connection.
 	 * This string can be decoded but is not optimized for this.
-	 * @static
-	 * @param {IConnectionProfile} connectionProfile connection profile - require
-	 * @param {string} itemType type of the item (MRU or Profile) - optional
-	 * @returns {string} formatted string with server, DB and username
+	 * @param connectionProfile connection profile - require
+	 * @param itemType type of the item (MRU or Profile) - optional
+	 * @returns formatted string with server, DB and username
 	 */
 	public formatCredentialId(connectionProfile: IConnectionProfile, itemType?: string): string {
 		let connectionProfileInstance: ConnectionProfile = ConnectionProfile.fromIConnectionProfile(
@@ -120,9 +116,9 @@ export class ConnectionStore {
 						}
 						resolve({ profile: credentialsItem, savedCred: !!savedCred });
 					},
-					reason => {
-						reject(reason);
-					});
+						reason => {
+							reject(reason);
+						});
 			} else {
 				// No need to look up the password
 				resolve({ profile: credentialsItem, savedCred: credentialsItem.savePassword });
@@ -134,9 +130,9 @@ export class ConnectionStore {
 	 * Saves a connection profile to the user settings.
 	 * Password values are stored to a separate credential store if the "savePassword" option is true
 	 *
-	 * @param {IConnectionProfile} profile the profile to save
-	 * @param {forceWritePlaintextPassword} whether the plaintext password should be written to the settings file
-	 * @returns {Promise<IConnectionProfile>} a Promise that returns the original profile, for help in chaining calls
+	 * @param profile the profile to save
+	 * @param whether the plaintext password should be written to the settings file
+	 * @returns a Promise that returns the original profile, for help in chaining calls
 	 */
 	public saveProfile(profile: IConnectionProfile, forceWritePlaintextPassword?: boolean): Promise<IConnectionProfile> {
 		const self = this;
@@ -172,8 +168,8 @@ export class ConnectionStore {
 	/**
 	 * Saves a connection profile group to the user settings.
 	 *
-	 * @param {IConnectionProfileGroup} profile the profile group to save
-	 * @returns {Promise<string>} a Promise that returns the id of connection group
+	 * @param profile the profile group to save
+	 * @returns a Promise that returns the id of connection group
 	 */
 	public saveProfileGroup(profile: IConnectionProfileGroup): Promise<string> {
 		const self = this;
@@ -205,7 +201,7 @@ export class ConnectionStore {
 	 * Gets the list of recently used connections. These will not include the password - a separate call to
 	 * {addSavedPassword} is needed to fill that before connecting
 	 *
-	 * @returns {azdata.ConnectionInfo} the array of connections, empty if none are found
+	 * @returns the array of connections, empty if none are found
 	 */
 	public getRecentlyUsedConnections(providers?: string[]): ConnectionProfile[] {
 		let configValues: IConnectionProfile[] = this._memento[Constants.recentConnections];
@@ -245,7 +241,7 @@ export class ConnectionStore {
 	 * Gets the list of active connections. These will not include the password - a separate call to
 	 * {addSavedPassword} is needed to fill that before connecting
 	 *
-	 * @returns {azdata.ConnectionInfo} the array of connections, empty if none are found
+	 * @returns the array of connections, empty if none are found
 	 */
 	public getActiveConnections(): ConnectionProfile[] {
 		let configValues: IConnectionProfile[] = this._memento[Constants.activeConnections];
@@ -272,9 +268,9 @@ export class ConnectionStore {
 	 * Connection is only added if there are no other connections with the same connection ID in the list.
 	 * Password values are stored to a separate credential store if the "savePassword" option is true
 	 *
-	 * @param {IConnectionCredentials} conn the connection to add
-	 * @param {boolean} addToMru Whether to add this connection to the MRU
-	 * @returns {Promise<void>} a Promise that returns when the connection was saved
+	 * @param conn the connection to add
+	 * @param addToMru Whether to add this connection to the MRU
+	 * @returns a Promise that returns when the connection was saved
 	 */
 	public async addActiveConnection(conn: IConnectionProfile, addToMru: boolean): Promise<void> {
 		if (addToMru) {
@@ -459,7 +455,7 @@ export class ConnectionStore {
 				this.addGroupFullNameToMap(group.id, connectionGroup.fullName);
 				if (connections) {
 					let connectionsForGroup = connections.filter(conn => conn.groupId === connectionGroup.id);
-					var conns = [];
+					let conns = [];
 					connectionsForGroup.forEach((conn) => {
 						conn.groupFullName = connectionGroup.fullName;
 						conns.push(conn);

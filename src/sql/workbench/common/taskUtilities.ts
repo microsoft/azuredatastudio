@@ -309,9 +309,6 @@ export function openInsight(query: IInsightsConfig, profile: IConnectionProfile,
  * is focused or there is no such editor, in which case it comes from the OE selection. Returns
  * undefined when there is no such connection.
  *
- * @param objectExplorerService
- * @param connectionManagementService
- * @param workbenchEditorService
  * @param topLevelOnly If true, only return top-level (i.e. connected) Object Explorer connections instead of database connections when appropriate
 */
 export function getCurrentGlobalConnection(objectExplorerService: IObjectExplorerService, connectionManagementService: IConnectionManagementService, workbenchEditorService: IEditorService, topLevelOnly: boolean = false): IConnectionProfile {

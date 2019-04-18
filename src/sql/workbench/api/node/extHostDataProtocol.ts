@@ -167,6 +167,12 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return rt;
 	}
 
+	$registerSchemaCompareServiceProvider(provider: azdata.SchemaCompareServicesProvider): vscode.Disposable {
+		let rt = this.registerProvider(provider, DataProviderType.SchemaCompareServicesProvider);
+		this._proxy.$registerSchemaCompareServicesProvider(provider.providerId, provider.handle);
+		return rt;
+	}
+
 	// Capabilities Discovery handlers
 	$getServerCapabilities(handle: number, client: azdata.DataProtocolClientCapabilities): Thenable<azdata.DataProtocolServerCapabilities> {
 		return this._resolveProvider<azdata.CapabilitiesProvider>(handle).getServerCapabilities(client);
@@ -352,11 +358,11 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	}
 
 	public $expandObjectExplorerNode(handle: number, nodeInfo: azdata.ExpandNodeInfo): Thenable<boolean> {
-		return this._resolveProvider<azdata.ObjectExplorerProviderBase> (handle).expandNode(nodeInfo);
+		return this._resolveProvider<azdata.ObjectExplorerProviderBase>(handle).expandNode(nodeInfo);
 	}
 
 	public $refreshObjectExplorerNode(handle: number, nodeInfo: azdata.ExpandNodeInfo): Thenable<boolean> {
-		return this._resolveProvider<azdata.ObjectExplorerProviderBase> (handle).refreshNode(nodeInfo);
+		return this._resolveProvider<azdata.ObjectExplorerProviderBase>(handle).refreshNode(nodeInfo);
 	}
 
 	public $closeObjectExplorerSession(handle: number, closeSessionInfo: azdata.ObjectExplorerCloseSessionInfo): Thenable<azdata.ObjectExplorerCloseSessionResponse> {

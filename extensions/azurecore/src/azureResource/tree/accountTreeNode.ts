@@ -46,7 +46,7 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 
 			if (this._isClearingCache) {
 				try {
-				    const tokens = await this.appContext.apiWrapper.getSecurityToken(this.account, AzureResource.ResourceManagement);
+					const tokens = await this.appContext.apiWrapper.getSecurityToken(this.account, AzureResource.ResourceManagement);
 
 					for (const tenant of this.account.properties.tenants) {
 						const token = tokens[tenant.id].token;

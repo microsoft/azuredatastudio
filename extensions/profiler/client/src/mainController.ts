@@ -22,9 +22,9 @@ export class MainController {
 		this._context = context;
 	}
 
-    /**
-     * Deactivates the extension
-     */
+	/**
+	 * Deactivates the extension
+	 */
 	public deactivate(): void {
 	}
 

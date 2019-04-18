@@ -188,7 +188,7 @@ export class RestoreViewModel {
 	*/
 	public updateOptionWithPlanDetail(planDetails: { [key: string]: azdata.RestorePlanDetailInfo }): void {
 		if (planDetails) {
-			for (var key in planDetails) {
+			for (let key in planDetails) {
 				let optionElement = this._optionsMap[key];
 				if (optionElement) {
 					let planDetailInfo = planDetails[key];
@@ -218,7 +218,7 @@ export class RestoreViewModel {
 				this.defaultBackupFolder = configInfo['defaultBackupFolder'];
 			}
 
-			for (var key in configInfo) {
+			for (let key in configInfo) {
 				let optionElement = this._optionsMap[key];
 				if (optionElement) {
 					let planDetailInfo = configInfo[key];
@@ -257,7 +257,7 @@ export class RestoreViewModel {
 		this.updateLastBackupTaken('');
 		this.databaseList = [];
 		this.selectedBackupSets = null;
-		for (var key in this._optionsMap) {
+		for (let key in this._optionsMap) {
 			this._optionsMap[key].defaultValue = this.getDisplayValue(this._optionsMap[key].optionMetadata, this._optionsMap[key].optionMetadata.defaultValue);
 			this._optionsMap[key].currentValue = this._optionsMap[key].defaultValue;
 			this._onSetRestoreOption.fire({ optionName: key, value: this._optionsMap[key].defaultValue, isReadOnly: false });

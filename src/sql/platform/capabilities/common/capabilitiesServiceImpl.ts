@@ -143,7 +143,6 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 
 	/**
 	 * Register the capabilities provider and query the provider for its capabilities
-	 * @param provider
 	 */
 	public registerProvider(provider: azdata.CapabilitiesProvider): void {
 		// request the capabilities from server

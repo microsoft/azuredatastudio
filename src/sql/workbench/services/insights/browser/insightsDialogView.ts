@@ -403,7 +403,6 @@ export class InsightsDialogView extends Modal {
 
 	/**
 	 * Creates the context that should be passed to the action passed on the selected element for the top table
-	 * @param element
 	 */
 	private topInsightContext(element: ListResource): IConnectionProfile {
 		let database = this._insight.actions.database || this._connectionProfile.databaseName;
@@ -451,7 +450,6 @@ export class InsightsDialogView extends Modal {
 
 	/**
 	 * Creates the context that should be passed to the action passed on the selected element for the bottom table
-	 * @param element
 	 */
 	private bottomInsightContext(element: ListResource, cell: Slick.Cell): IInsightDialogActionContext {
 

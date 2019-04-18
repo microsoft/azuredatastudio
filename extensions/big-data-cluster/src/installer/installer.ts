@@ -16,57 +16,57 @@ import { Errorable, failed } from '../interfaces';
 import { addPathToConfig, toolPathBaseKey } from '../config/config';
 
 export async function installKubectl(shell: Shell): Promise<Errorable<null>> {
-    const tool = 'kubectl';
-    const binFile = (shell.isUnix()) ? 'kubectl' : 'kubectl.exe';
-    const os = platformUrlString(shell.platform());
+	const tool = 'kubectl';
+	const binFile = (shell.isUnix()) ? 'kubectl' : 'kubectl.exe';
+	const os = platformUrlString(shell.platform());
 
-    const version = await getStableKubectlVersion();
-    if (failed(version)) {
-        return { succeeded: false, error: version.error };
-    }
+	const version = await getStableKubectlVersion();
+	if (failed(version)) {
+		return { succeeded: false, error: version.error };
+	}
 
-    const installFolder = getInstallFolder(shell, tool);
-    mkdirp.sync(installFolder);
+	const installFolder = getInstallFolder(shell, tool);
+	mkdirp.sync(installFolder);
 
-    const kubectlUrl = `https://storage.googleapis.com/kubernetes-release/release/${version.result.trim()}/bin/${os}/amd64/${binFile}`;
-    const downloadFile = path.join(installFolder, binFile);
-    const downloadResult = await download.to(kubectlUrl, downloadFile);
-    if (failed(downloadResult)) {
-        return { succeeded: false, error: [localize('downloadKubectlFailed', 'Failed to download kubectl: {0}', downloadResult.error[0])] };
-    }
+	const kubectlUrl = `https://storage.googleapis.com/kubernetes-release/release/${version.result.trim()}/bin/${os}/amd64/${binFile}`;
+	const downloadFile = path.join(installFolder, binFile);
+	const downloadResult = await download.to(kubectlUrl, downloadFile);
+	if (failed(downloadResult)) {
+		return { succeeded: false, error: [localize('downloadKubectlFailed', 'Failed to download kubectl: {0}', downloadResult.error[0])] };
+	}
 
-    if (shell.isUnix()) {
-        fs.chmodSync(downloadFile, '0777');
-    }
+	if (shell.isUnix()) {
+		fs.chmodSync(downloadFile, '0777');
+	}
 
-    await addPathToConfig(toolPathBaseKey(tool), downloadFile);
-    return { succeeded: true, result: null };
+	await addPathToConfig(toolPathBaseKey(tool), downloadFile);
+	return { succeeded: true, result: null };
 }
 
 async function getStableKubectlVersion(): Promise<Errorable<string>> {
-    const downloadResult = await download.toTempFile('https://storage.googleapis.com/kubernetes-release/release/stable.txt');
-    if (failed(downloadResult)) {
-        return { succeeded: false, error: [localize('kubectlVersionCheckFailed', 'Failed to establish kubectl stable version: {0}', downloadResult.error[0])] };
-    }
-    const version = fs.readFileSync(downloadResult.result, 'utf-8');
-    fs.unlinkSync(downloadResult.result);
-    return { succeeded: true, result: version };
+	const downloadResult = await download.toTempFile('https://storage.googleapis.com/kubernetes-release/release/stable.txt');
+	if (failed(downloadResult)) {
+		return { succeeded: false, error: [localize('kubectlVersionCheckFailed', 'Failed to establish kubectl stable version: {0}', downloadResult.error[0])] };
+	}
+	const version = fs.readFileSync(downloadResult.result, 'utf-8');
+	fs.unlinkSync(downloadResult.result);
+	return { succeeded: true, result: version };
 }
 
 export function getInstallFolder(shell: Shell, tool: string): string {
-    return path.join(shell.home(), `.mssql-bdc/tools/${tool}`);
+	return path.join(shell.home(), `.mssql-bdc/tools/${tool}`);
 }
 
 function platformUrlString(platform: Platform, supported?: Platform[]): string | null {
-    if (supported && supported.indexOf(platform) < 0) {
-        return null;
-    }
-    switch (platform) {
-        case Platform.Windows: return 'windows';
-        case Platform.MacOS: return 'darwin';
-        case Platform.Linux: return 'linux';
-        default: return null;
-    }
+	if (supported && supported.indexOf(platform) < 0) {
+		return null;
+	}
+	switch (platform) {
+		case Platform.Windows: return 'windows';
+		case Platform.MacOS: return 'darwin';
+		case Platform.Linux: return 'linux';
+		default: return null;
+	}
 }
 
 

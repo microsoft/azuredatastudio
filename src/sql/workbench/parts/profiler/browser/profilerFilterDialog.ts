@@ -262,7 +262,7 @@ export class ProfilerFilterDialog extends Modal {
 			case NotStartsWith:
 				return ProfilerFilterClauseOperator.NotStartsWith;
 			default:
-				throw `Not a valid operator: ${operator}`;
+				throw new Error(`Not a valid operator: ${operator}`);
 		}
 	}
 
@@ -293,7 +293,7 @@ export class ProfilerFilterDialog extends Modal {
 			case ProfilerFilterClauseOperator.NotStartsWith:
 				return NotStartsWith;
 			default:
-				throw `Not a valid operator: ${operator}`;
+				throw new Error(`Not a valid operator: ${operator}`);
 		}
 	}
 }

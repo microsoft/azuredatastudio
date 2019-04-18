@@ -1,12 +1,9 @@
-
 /*---------------------------------------------------------------------------------------------
-*  Copyright (c) Microsoft Corporation. All rights reserved.
-*  Licensed under the Source EULA. See License.txt in the project root for license information.
-*--------------------------------------------------------------------------------------------*/
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
 // This code is based on @jupyterlab/packages/apputils/src/clientsession.tsx
-
-'use strict';
 
 import { nb } from 'azdata';
 import { Event } from 'vs/base/common/event';
@@ -417,9 +414,6 @@ export interface NotebookContentChange {
 	cellIndex?: number;
 	/**
 	 * Optional value indicating if the notebook is in a dirty or clean state after this change
-	 *
-	 * @type {boolean}
-	 * @memberof NotebookContentChange
 	 */
 	isDirty?: boolean;
 }

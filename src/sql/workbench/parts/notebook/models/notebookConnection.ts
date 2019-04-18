@@ -1,10 +1,7 @@
-
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
-'use strict';
 
 import { localize } from 'vs/nls';
 
@@ -22,7 +19,6 @@ export namespace constants {
  * Long term this should be refactored to an extension contribution
  *
  * @export
- * @class NotebookConnection
  */
 export class NotebookConnection {
 	private _host: string;

@@ -77,14 +77,14 @@ export class AzureAccountProviderService implements vscode.Disposable {
 
 		return Promise.all(promises)
 			.then(
-			() => {
-				let message = localize('clearTokenCacheSuccess', 'Token cache successfully cleared');
-				vscode.window.showInformationMessage(`${constants.extensionName}: ${message}`);
-			},
-			err => {
-				let message = localize('clearTokenCacheFailure', 'Failed to clear token cache');
-				vscode.window.showErrorMessage(`${constants.extensionName}: ${message}: ${err}`);
-			});
+				() => {
+					let message = localize('clearTokenCacheSuccess', 'Token cache successfully cleared');
+					vscode.window.showInformationMessage(`${constants.extensionName}: ${message}`);
+				},
+				err => {
+					let message = localize('clearTokenCacheFailure', 'Failed to clear token cache');
+					vscode.window.showErrorMessage(`${constants.extensionName}: ${message}: ${err}`);
+				});
 	}
 
 	private onDidChangeConfiguration(): void {

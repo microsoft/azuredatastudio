@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import * as vscode from 'vscode';
 import * as path from 'path';
@@ -224,7 +222,6 @@ export class PerNotebookServerInstance implements IServerInstance {
 	/**
 	 * Starts a Jupyter instance using the provided a start command. Server is determined to have
 	 * started when the log message with URL to connect to is emitted.
-	 * @returns {Promise<void>}
 	 */
 	protected async startInternal(): Promise<void> {
 		if (this.isStarted) {

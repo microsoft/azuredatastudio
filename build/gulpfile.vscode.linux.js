@@ -27,7 +27,7 @@ function getDebPackageArch(arch) {
 }
 
 function prepareDebPackage(arch) {
-  // {{SQL CARBON EDIT}}
+	// {{SQL CARBON EDIT}}
 	const binaryDir = '../azuredatastudio-linux-' + arch;
 	const debArch = getDebPackageArch(arch);
 	const destination = '.build/linux/deb/' + debArch + '/' + product.applicationName + '-' + debArch;

@@ -22,7 +22,7 @@ export class ProxyData implements IAgentDialogData {
 	credentialId: number;
 	isEnabled: boolean;
 
-	constructor(ownerUri:string, proxyInfo: azdata.AgentProxyInfo) {
+	constructor(ownerUri: string, proxyInfo: azdata.AgentProxyInfo) {
 		this.ownerUri = ownerUri;
 
 		if (proxyInfo) {
@@ -48,7 +48,7 @@ export class ProxyData implements IAgentDialogData {
 					localize('proxyData.saveSucessMessage', "Proxy '{0}' updated successfully", proxyInfo.accountName));
 			} else {
 				vscode.window.showInformationMessage(
-					localize('proxyData.newJobSuccessMessage',"Proxy '{0}' created successfully", proxyInfo.accountName));
+					localize('proxyData.newJobSuccessMessage', "Proxy '{0}' created successfully", proxyInfo.accountName));
 			}
 
 		}

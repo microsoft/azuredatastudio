@@ -195,6 +195,7 @@ import { IAdminService, AdminService } from 'sql/workbench/services/admin/common
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
 import { JobManagementService } from 'sql/platform/jobManagement/common/jobManagementService';
 import { IDacFxService, DacFxService } from 'sql/platform/dacfx/common/dacFxService';
+import { ISchemaCompareService, SchemaCompareService } from 'sql/platform/schemaCompare/common/schemaCompareService';
 import { IBackupService } from 'sql/platform/backup/common/backupService';
 import { BackupService } from 'sql/platform/backup/common/backupServiceImp';
 import { IBackupUiService } from 'sql/workbench/services/backup/common/backupUiService';
@@ -269,6 +270,7 @@ registerSingleton(INotebookService, NotebookService);
 registerSingleton(IAccountPickerService, AccountPickerService);
 registerSingleton(IProfilerService, ProfilerService);
 registerSingleton(IDacFxService, DacFxService);
+registerSingleton(ISchemaCompareService, SchemaCompareService);
 // {{SQL CARBON EDIT}} - End
 
 //#region --- workbench parts

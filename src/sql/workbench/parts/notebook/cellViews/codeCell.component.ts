@@ -1,9 +1,9 @@
 /*---------------------------------------------------------------------------------------------
-*  Copyright (c) Microsoft Corporation. All rights reserved.
-*  Licensed under the Source EULA. See License.txt in the project root for license information.
-*--------------------------------------------------------------------------------------------*/
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
-import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild, SimpleChange, OnChanges, AfterViewInit } from '@angular/core';
+import { OnInit, Component, Input, Inject, forwardRef, ChangeDetectorRef, SimpleChange, OnChanges } from '@angular/core';
 import { CellView } from 'sql/workbench/parts/notebook/cellViews/interfaces';
 import { ICellModel } from 'sql/workbench/parts/notebook/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/parts/notebook/models/notebookModel';

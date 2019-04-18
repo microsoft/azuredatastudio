@@ -14,3 +14,11 @@ modelview-diff-editor-component {
 	width : 100%;
 	display: block;
 }
+
+.vs-dark modelview-diff-editor-title {
+	background: #444444;
+}
+
+modelview-diff-editor-title {
+	background: #f4f4f4;
+}
