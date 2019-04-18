@@ -14,7 +14,6 @@ import { attachEditableDropdownStyler } from 'sql/platform/theme/common/styler';
 
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 
 @Component({
 	selector: 'editable-select-box',
@@ -34,8 +33,7 @@ export class EditableDropDown extends AngularDisposable implements OnInit, OnCha
 	constructor(
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
 		@Inject(IThemeService) private themeService: IThemeService,
-		@Inject(IContextViewService) private contextViewService: IContextViewService,
-		@Inject(ILayoutService) private layoutService: ILayoutService
+		@Inject(IContextViewService) private contextViewService: IContextViewService
 	) {
 		super();
 	}
@@ -49,7 +47,7 @@ export class EditableDropDown extends AngularDisposable implements OnInit, OnCha
 			ariaLabel: '',
 			actionLabel: ''
 		};
-		this._selectbox = new Dropdown(this._el.nativeElement, this.contextViewService, this.layoutService, dropdownOptions);
+		this._selectbox = new Dropdown(this._el.nativeElement, this.contextViewService, dropdownOptions);
 		this._selectbox.values = this.options;
 		this._selectbox.value = this.selectedOption;
 

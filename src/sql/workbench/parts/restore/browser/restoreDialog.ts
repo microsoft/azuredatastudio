@@ -211,7 +211,7 @@ export class RestoreDialog extends Modal {
 		// Get the bootstrap params and perform the bootstrap
 		dropdownContainer.style.width = '100%';
 
-		this._databaseDropdown = new Dropdown(dropdownContainer, this._contextViewService, this.layoutService,
+		this._databaseDropdown = new Dropdown(dropdownContainer, this._contextViewService,
 			{
 				strictSelection: false,
 				ariaLabel: LocalizedStrings.TARGETDATABASE,
