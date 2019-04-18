@@ -1,0 +1,19 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.tree-component-node-tile {
+	display: flex;
+}
+
+.tree-component-node-tile .model-view-tree-node-item-icon {
+	width: 17px;
+	height: 17px;
+	flex-shrink: 0;
+}
+
+.tree-component-node-tile .model-view-tree-node-item-label {
+	overflow: hidden;
+	text-overflow: ellipsis;
+}

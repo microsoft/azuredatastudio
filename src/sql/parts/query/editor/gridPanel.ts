@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import * as pretty from 'pretty-data';
 
@@ -13,17 +12,16 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { ScrollableSplitView, IView } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
 import { MouseWheelSupport } from 'sql/base/browser/ui/table/plugins/mousewheelTableScroll.plugin';
 import { AutoColumnSize } from 'sql/base/browser/ui/table/plugins/autoSizeColumns.plugin';
-import { SaveFormat } from 'sql/parts/grid/common/interfaces';
+import { SaveFormat } from 'sql/workbench/parts/grid/common/interfaces';
 import { IGridActionContext, SaveResultAction, CopyResultAction, SelectAllGridAction, MaximizeTableAction, RestoreTableAction, ChartDataAction } from 'sql/parts/query/editor/actions';
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
 import { RowNumberColumn } from 'sql/base/browser/ui/table/plugins/rowNumberColumn.plugin';
 import { escape } from 'sql/base/common/strings';
-import { hyperLinkFormatter, textFormatter } from 'sql/parts/grid/services/sharedServices';
+import { hyperLinkFormatter, textFormatter } from 'sql/base/browser/ui/table/formatters';
 import { CopyKeybind } from 'sql/base/browser/ui/table/plugins/copyKeybind.plugin';
 import { AdditionalKeyBindings } from 'sql/base/browser/ui/table/plugins/additionalKeyBindings.plugin';
 import { ITableStyles, ITableMouseEvent } from 'sql/base/browser/ui/table/interfaces';
 import { warn } from 'sql/base/common/log';
-import { $ } from 'sql/base/browser/builder';
 
 import * as azdata from 'azdata';
 
@@ -203,7 +201,7 @@ export class GridPanel extends ViewletPanel {
 		}
 	}
 
-	public resetScrollPosition() : void {
+	public resetScrollPosition(): void {
 		this.splitView.setScrollPosition(this.state.scrollPosition);
 	}
 
@@ -813,7 +811,7 @@ class GridTable<T> extends Disposable implements IView {
 	}
 
 	public dispose() {
-		$(this.container).destroy();
+		this.container.remove();
 		this.table.dispose();
 		this.actionBar.dispose();
 		super.dispose();

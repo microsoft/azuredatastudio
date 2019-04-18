@@ -33,7 +33,7 @@ import { Parts, IWorkbenchLayoutService } from 'vs/workbench/services/layout/bro
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 
 // {{SQL CARBON EDIT}}
-import { convertEditorInput } from 'sql/parts/common/customInputConverter';
+import { convertEditorInput } from 'sql/workbench/common/customInputConverter';
 
 
 interface IEditorPartUIState {
@@ -229,6 +229,10 @@ export class EditorPart extends Part implements IEditorGroupsService, IEditorGro
 
 	get whenRestored(): Promise<void> {
 		return this._whenRestored;
+	}
+
+	get willRestoreEditors(): boolean {
+		return !!this.workspaceMemento[EditorPart.EDITOR_PART_UI_STATE_STORAGE_KEY];
 	}
 
 	getGroups(order = GroupsOrder.CREATION_TIME): IEditorGroupView[] {

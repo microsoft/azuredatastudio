@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as pfs from 'vs/base/node/pfs';
@@ -51,9 +51,9 @@ export class ConfigurationFileService extends Disposable implements IConfigurati
 		return this._fileServiceBasedConfigurationFileService ? this._fileServiceBasedConfigurationFileService.exists(resource) : pfs.exists(resource.fsPath);
 	}
 
-	async resolveContent(resource: URI): Promise<string> {
+	async readFile(resource: URI): Promise<string> {
 		if (this._fileServiceBasedConfigurationFileService) {
-			return this._fileServiceBasedConfigurationFileService.resolveContent(resource);
+			return this._fileServiceBasedConfigurationFileService.readFile(resource);
 		} else {
 			const contents = await pfs.readFile(resource.fsPath);
 			return contents.toString();

@@ -207,7 +207,7 @@ export interface ITree {
 	 */
 	clearFocus(eventPayload?: any): void;
 
-	// {{SQL CARBON EDIT}} @todo anthonydresser we need to refactor our code to not need these methods
+	// {{SQL CARBON EDIT}} @todo anthonydresser 4/12/19 we need to refactor our code to not need these methods
 	/**
 	 * Adds the trait to elements.
 	 */
@@ -475,7 +475,7 @@ export interface IDragOverReaction {
 	autoExpand?: boolean;
 }
 
-// {{SQL CARBON EDIT}} @todo anthonydresser refactor to not need this
+// {{SQL CARBON EDIT}} @todo anthonydresser 4/12/19 refactor to not need this
 export const DRAG_OVER_REJECT: IDragOverReaction = { accept: false };
 export const DRAG_OVER_ACCEPT: IDragOverReaction = { accept: true };
 export const DRAG_OVER_ACCEPT_BUBBLE_UP: IDragOverReaction = { accept: true, bubble: DragOverBubble.BUBBLE_UP };

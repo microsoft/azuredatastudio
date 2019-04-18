@@ -3,9 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import * as azdata from 'azdata';
-import { TaskNode, TaskStatus, TaskExecutionMode } from 'sql/parts/taskHistory/common/taskNode';
+import { TaskNode, TaskStatus, TaskExecutionMode } from 'sql/workbench/parts/taskHistory/common/taskNode';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { Event, Emitter } from 'vs/base/common/event';
@@ -192,7 +191,7 @@ export class TaskService implements ITaskService {
 	}
 
 	public handleTaskComplete(eventArgs: TaskStatusChangeArgs): void {
-		var task = this.getTaskInQueue(eventArgs.taskId);
+		let task = this.getTaskInQueue(eventArgs.taskId);
 		if (task) {
 			task.status = eventArgs.status;
 			if (eventArgs.message) {
@@ -240,7 +239,7 @@ export class TaskService implements ITaskService {
 
 	public getNumberOfInProgressTasks(): number {
 		if (this._taskQueue.hasChildren) {
-			var inProgressTasks = this._taskQueue.children.filter(x => x.status === TaskStatus.InProgress);
+			let inProgressTasks = this._taskQueue.children.filter(x => x.status === TaskStatus.InProgress);
 			return inProgressTasks ? inProgressTasks.length : 0;
 		}
 		return 0;

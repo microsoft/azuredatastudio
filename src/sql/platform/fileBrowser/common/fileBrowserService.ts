@@ -3,20 +3,18 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as azdata from 'azdata';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { FileBrowserTree } from 'sql/workbench/services/fileBrowser/common/fileBrowserTree';
 import { FileNode } from 'sql/workbench/services/fileBrowser/common/fileNode';
 import { IFileBrowserService } from 'sql/platform/fileBrowser/common/interfaces';
-import * as Constants from 'sql/common/constants';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 
 import { Event, Emitter } from 'vs/base/common/event';
 import Severity from 'vs/base/common/severity';
 import { localize } from 'vs/nls';
 import * as strings from 'vs/base/common/strings';
+import { invalidProvider } from 'sql/base/common/errors';
 
 export class FileBrowserService implements IFileBrowserService {
 	public _serviceBrand: any;
@@ -28,7 +26,7 @@ export class FileBrowserService implements IFileBrowserService {
 	private _expandResolveMap: { [key: string]: any } = {};
 	static fileNodeId: number = 0;
 
-	constructor( @IConnectionManagementService private _connectionService: IConnectionManagementService,
+	constructor(@IConnectionManagementService private _connectionService: IConnectionManagementService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService) {
 	}
 
@@ -50,7 +48,7 @@ export class FileBrowserService implements IFileBrowserService {
 
 	public openFileBrowser(ownerUri: string, expandPath: string, fileFilters: string[], changeFilter: boolean): Thenable<boolean> {
 		return new Promise<boolean>((resolve, reject) => {
-			let provider = this.getProvider(ownerUri);
+			const provider = this.getProvider(ownerUri);
 			if (provider) {
 				provider.openFileBrowser(ownerUri, expandPath, fileFilters, changeFilter).then(result => {
 					resolve(result);
@@ -58,7 +56,7 @@ export class FileBrowserService implements IFileBrowserService {
 					reject(error);
 				});
 			} else {
-				reject(Constants.InvalidProvider);
+				reject(invalidProvider());
 			}
 		});
 	}
@@ -69,7 +67,7 @@ export class FileBrowserService implements IFileBrowserService {
 			&& fileBrowserOpenedParams.fileTree.rootNode
 			&& fileBrowserOpenedParams.fileTree.selectedNode
 		) {
-			var fileTree = this.convertFileTree(null, fileBrowserOpenedParams.fileTree.rootNode, fileBrowserOpenedParams.fileTree.selectedNode.fullPath, fileBrowserOpenedParams.ownerUri);
+			let fileTree = this.convertFileTree(null, fileBrowserOpenedParams.fileTree.rootNode, fileBrowserOpenedParams.fileTree.selectedNode.fullPath, fileBrowserOpenedParams.ownerUri);
 			this._onAddFileTree.fire({ rootNode: fileTree.rootNode, selectedNode: fileTree.selectedNode, expandedNodes: fileTree.expandedNodes });
 		} else {
 			let genericErrorMessage = localize('fileBrowserErrorMessage', 'An error occured while loading the file browser.');
@@ -83,27 +81,27 @@ export class FileBrowserService implements IFileBrowserService {
 		this._pathToFileNodeMap[fileNode.fullPath] = fileNode;
 		let self = this;
 		return new Promise<FileNode[]>((resolve, reject) => {
-			let provider = this.getProvider(fileNode.ownerUri);
+			const provider = this.getProvider(fileNode.ownerUri);
 			if (provider) {
 				provider.expandFolderNode(fileNode.ownerUri, fileNode.fullPath).then(result => {
-					var mapKey = self.generateResolveMapKey(fileNode.ownerUri, fileNode.fullPath);
+					let mapKey = self.generateResolveMapKey(fileNode.ownerUri, fileNode.fullPath);
 					self._expandResolveMap[mapKey] = resolve;
 				}, error => {
 					reject(error);
 				});
 			} else {
-				reject(Constants.InvalidProvider);
+				reject(invalidProvider());
 			}
 		});
 	}
 
 	public onFolderNodeExpanded(handle: number, fileBrowserExpandedParams: azdata.FileBrowserExpandedParams) {
-		var mapKey = this.generateResolveMapKey(fileBrowserExpandedParams.ownerUri, fileBrowserExpandedParams.expandPath);
-		var expandResolve = this._expandResolveMap[mapKey];
+		let mapKey = this.generateResolveMapKey(fileBrowserExpandedParams.ownerUri, fileBrowserExpandedParams.expandPath);
+		let expandResolve = this._expandResolveMap[mapKey];
 		if (expandResolve) {
 			if (fileBrowserExpandedParams.succeeded === true) {
 				// get the expanded folder node
-				var expandedNode = this._pathToFileNodeMap[fileBrowserExpandedParams.expandPath];
+				let expandedNode = this._pathToFileNodeMap[fileBrowserExpandedParams.expandPath];
 				if (expandedNode) {
 					if (fileBrowserExpandedParams.children && fileBrowserExpandedParams.children.length > 0) {
 						expandedNode.children = this.convertChildren(expandedNode, fileBrowserExpandedParams.children, fileBrowserExpandedParams.ownerUri);
@@ -121,7 +119,7 @@ export class FileBrowserService implements IFileBrowserService {
 
 	public validateFilePaths(ownerUri: string, serviceType: string, selectedFiles: string[]): Thenable<boolean> {
 		return new Promise<boolean>((resolve, reject) => {
-			let provider = this.getProvider(ownerUri);
+			const provider = this.getProvider(ownerUri);
 			if (provider) {
 				provider.validateFilePaths(ownerUri, serviceType, selectedFiles).then(result => {
 					resolve(result);
@@ -129,7 +127,7 @@ export class FileBrowserService implements IFileBrowserService {
 					reject(error);
 				});
 			} else {
-				reject(Constants.InvalidProvider);
+				reject(invalidProvider());
 			}
 		});
 	}
@@ -160,9 +158,9 @@ export class FileBrowserService implements IFileBrowserService {
 
 	private convertFileTree(parentNode: FileNode, fileTreeNode: azdata.FileTreeNode, expandPath: string, ownerUri: string): FileBrowserTree {
 		FileBrowserService.fileNodeId += 1;
-		var expandedNodes: FileNode[] = [];
-		var selectedNode: FileNode;
-		var fileNode = new FileNode(FileBrowserService.fileNodeId.toString(),
+		let expandedNodes: FileNode[] = [];
+		let selectedNode: FileNode;
+		let fileNode = new FileNode(FileBrowserService.fileNodeId.toString(),
 			fileTreeNode.name,
 			fileTreeNode.fullPath,
 			fileTreeNode.isFile,
@@ -176,9 +174,9 @@ export class FileBrowserService implements IFileBrowserService {
 		}
 
 		if (fileTreeNode.children) {
-			var convertedChildren = [];
-			for (var i = 0; i < fileTreeNode.children.length; i++) {
-				var convertedFileTree: FileBrowserTree = this.convertFileTree(fileNode, fileTreeNode.children[i], expandPath, ownerUri);
+			let convertedChildren = [];
+			for (let i = 0; i < fileTreeNode.children.length; i++) {
+				let convertedFileTree: FileBrowserTree = this.convertFileTree(fileNode, fileTreeNode.children[i], expandPath, ownerUri);
 				convertedChildren.push(convertedFileTree.rootNode);
 
 				if (convertedFileTree.expandedNodes.length > 0) {
@@ -208,11 +206,11 @@ export class FileBrowserService implements IFileBrowserService {
 	}
 
 	private convertChildren(expandedNode: FileNode, childrenToConvert: azdata.FileTreeNode[], ownerUri: string): FileNode[] {
-		var childrenNodes = [];
+		let childrenNodes = [];
 
-		for (var i = 0; i < childrenToConvert.length; i++) {
+		for (let i = 0; i < childrenToConvert.length; i++) {
 			FileBrowserService.fileNodeId += 1;
-			var childNode = new FileNode(FileBrowserService.fileNodeId.toString(),
+			let childNode = new FileNode(FileBrowserService.fileNodeId.toString(),
 				childrenToConvert[i].name,
 				childrenToConvert[i].fullPath,
 				childrenToConvert[i].isFile,

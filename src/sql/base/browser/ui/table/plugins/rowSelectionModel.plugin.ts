@@ -31,7 +31,7 @@ export class RowSelectionModel<T extends Slick.SlickData> implements Slick.Selec
 	}
 
 	private rangesToRows(ranges: Slick.Range[]): number[] {
-		let rows = [];
+		const rows: Array<number> = [];
 		for (let i = 0; i < ranges.length; i++) {
 			for (let j = ranges[i].fromRow; j <= ranges[i].toRow; j++) {
 				rows.push(j);
@@ -41,8 +41,8 @@ export class RowSelectionModel<T extends Slick.SlickData> implements Slick.Selec
 	}
 
 	private rowsToRanges(rows: number[]): Slick.Range[] {
-		let ranges = [];
-		let lastCell = this._grid.getColumns().length - 1;
+		const ranges: Array<Slick.Range> = [];
+		const lastCell = this._grid.getColumns().length - 1;
 		for (let i = 0; i < rows.length; i++) {
 			ranges.push(new Slick.Range(rows[i], 0, rows[i], lastCell));
 		}
@@ -69,7 +69,7 @@ export class RowSelectionModel<T extends Slick.SlickData> implements Slick.Selec
 	}
 
 	private getRowsRange(from: number, to: number): number[] {
-		let i, rows = [];
+		let i: number, rows: Array<number> = [];
 		for (i = from; i <= to; i++) {
 			rows.push(i);
 		}
@@ -86,7 +86,7 @@ export class RowSelectionModel<T extends Slick.SlickData> implements Slick.Selec
 	}
 
 	private handleKeyDown(e: KeyboardEvent): void {
-		let activeRow = this._grid.getActiveCell();
+		const activeRow = this._grid.getActiveCell();
 		if (activeRow && e.shiftKey && !e.ctrlKey && !e.altKey && !e.metaKey && (e.which === 38 || e.which === 40)) {
 			let selectedRows = this.getSelectedRows();
 			selectedRows.sort((x, y) => x - y);
@@ -106,8 +106,8 @@ export class RowSelectionModel<T extends Slick.SlickData> implements Slick.Selec
 			}
 
 			if (active >= 0 && active < this._grid.getDataLength()) {
-				this._grid.scrollRowIntoView(active, undefined);
-				let tempRanges = this.rowsToRanges(this.getRowsRange(top, bottom));
+				this._grid.scrollRowIntoView(active);
+				const tempRanges = this.rowsToRanges(this.getRowsRange(top, bottom));
 				this.setSelectedRanges(tempRanges);
 			}
 
@@ -117,7 +117,7 @@ export class RowSelectionModel<T extends Slick.SlickData> implements Slick.Selec
 	}
 
 	private handleClick(e: KeyboardEvent): boolean {
-		let cell = this._grid.getCellFromEvent(e);
+		const cell = this._grid.getCellFromEvent(e);
 		if (!cell || !this._grid.canCellBeActive(cell.row, cell.cell)) {
 			return false;
 		}
@@ -128,7 +128,7 @@ export class RowSelectionModel<T extends Slick.SlickData> implements Slick.Selec
 		}
 
 		let selection = this.rangesToRows(this._ranges);
-		let idx = jQuery.inArray(cell.row, selection);
+		const idx = jQuery.inArray(cell.row, selection);
 
 		if (idx === -1 && (e.ctrlKey || e.metaKey)) {
 			selection.push(cell.row);
@@ -137,20 +137,22 @@ export class RowSelectionModel<T extends Slick.SlickData> implements Slick.Selec
 			selection = selection.filter(o => o !== cell.row);
 			this._grid.setActiveCell(cell.row, cell.cell);
 		} else if (selection.length && e.shiftKey) {
-			let last = selection.pop();
-			let from = Math.min(cell.row, last);
-			let to = Math.max(cell.row, last);
-			selection = [];
-			for (let i = from; i <= to; i++) {
-				if (i !== last) {
-					selection.push(i);
+			const last = selection.pop();
+			if (last) {
+				const from = Math.min(cell.row, last);
+				const to = Math.max(cell.row, last);
+				selection = [];
+				for (let i = from; i <= to; i++) {
+					if (i !== last) {
+						selection.push(i);
+					}
 				}
+				selection.push(last);
 			}
-			selection.push(last);
 			this._grid.setActiveCell(cell.row, cell.cell);
 		}
 
-		let tempRanges = this.rowsToRanges(selection);
+		const tempRanges = this.rowsToRanges(selection);
 		this.setSelectedRanges(tempRanges);
 		e.stopImmediatePropagation();
 

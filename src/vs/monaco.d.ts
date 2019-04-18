@@ -171,8 +171,11 @@ declare namespace monaco {
 		 * @param skipEncoding Do not encode the result, default is `false`
 		 */
 		toString(skipEncoding?: boolean): string;
-		toJSON(): object;
-		static revive(data: UriComponents | any): Uri;
+		toJSON(): UriComponents;
+		static revive(data: UriComponents | Uri): Uri;
+		static revive(data: UriComponents | Uri | undefined): Uri | undefined;
+		static revive(data: UriComponents | Uri | null): Uri | null;
+		static revive(data: UriComponents | Uri | undefined | null): Uri | undefined | null;
 	}
 
 	export interface UriComponents {
@@ -3080,6 +3083,10 @@ declare namespace monaco.editor {
 		 * Defaults to false.
 		 */
 		originalEditable?: boolean;
+		/**
+		 * Adding option to reverse coloring in diff editor
+		 */
+		reverse?: boolean;
 	}
 
 	export enum RenderMinimap {

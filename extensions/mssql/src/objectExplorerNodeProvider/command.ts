@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
@@ -74,7 +73,9 @@ export abstract class Command extends vscode.Disposable {
 	}
 
 	dispose(): void {
-		this.disposable && this.disposable.dispose();
+		if (this.disposable) {
+			this.disposable.dispose();
+		}
 	}
 
 	protected get apiWrapper(): ApiWrapper {
@@ -180,7 +181,12 @@ export function registerSearchServerCommand(appContext: AppContext): void {
 		vscode.window.showInputBox({
 			placeHolder: localize('mssql.searchServers', 'Search Server Names')
 		}).then((stringSearch) => {
-			vscode.commands.executeCommand('registeredServers.searchServer', (stringSearch));
+			if (stringSearch) {
+				vscode.commands.executeCommand('registeredServers.searchServer', (stringSearch));
+			}
 		});
+	});
+	appContext.apiWrapper.registerCommand('mssql.clearSearchServerResult', () => {
+		vscode.commands.executeCommand('registeredServers.clearSearchServerResult');
 	});
 }

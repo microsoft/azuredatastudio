@@ -13,8 +13,8 @@ import * as nls from 'vs/nls';
 import { MenuId, MenuRegistry, SyncActionDescriptor } from 'vs/platform/actions/common/actions';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
-import { WorkbenchStateContext, IsRemoteContext } from 'vs/workbench/common/contextkeys';
-import { IEnvironmentService } from 'vs/platform/environment/common/environment';
+import { WorkbenchStateContext, RemoteAuthorityContext } from 'vs/workbench/common/contextkeys';
+import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
@@ -40,7 +40,6 @@ import { DefaultPreferencesEditorInput, KeybindingsEditorInput, PreferencesEdito
 import { ExplorerRootContext, ExplorerFolderContext } from 'vs/workbench/contrib/files/common/files';
 import { ILabelService } from 'vs/platform/label/common/label';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
-import { IWindowService } from 'vs/platform/windows/common/windows';
 import { REMOTE_HOST_SCHEME } from 'vs/platform/remote/common/remoteHosts';
 
 registerSingleton(IPreferencesSearchService, PreferencesSearchService, true);
@@ -218,8 +217,8 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	weight: KeybindingWeight.WorkbenchContrib,
 	when: null,
 	primary: KeyMod.CtrlCmd | KeyCode.US_COMMA,
-	handler: (accessor, args: any) => {
-		accessor.get(IPreferencesService).openSettings();
+	handler: (accessor, args: string | undefined) => {
+		accessor.get(IPreferencesService).openSettings(undefined, typeof args === 'string' ? args : undefined);
 	}
 });
 
@@ -232,19 +231,6 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 		const control = accessor.get(IEditorService).activeControl as IKeybindingsEditor;
 		if (control && control instanceof KeybindingsEditor) {
 			control.defineKeybinding(control.activeKeybindingEntry!);
-		}
-	}
-});
-
-KeybindingsRegistry.registerCommandAndKeybindingRule({
-	id: KEYBINDINGS_EDITOR_COMMAND_DEFINE_WHEN,
-	weight: KeybindingWeight.WorkbenchContrib,
-	when: ContextKeyExpr.and(CONTEXT_KEYBINDINGS_EDITOR, CONTEXT_KEYBINDING_FOCUS),
-	primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_K, KeyMod.CtrlCmd | KeyCode.KEY_E),
-	handler: (accessor, args: any) => {
-		const control = accessor.get(IEditorService).activeControl as IKeybindingsEditor;
-		if (control && control instanceof KeybindingsEditor && control.activeKeybindingEntry!.keybindingItem.keybinding) {
-			control.defineWhenExpression(control.activeKeybindingEntry!);
 		}
 	}
 });
@@ -387,12 +373,11 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 class PreferencesActionsContribution extends Disposable implements IWorkbenchContribution {
 
 	constructor(
-		@IEnvironmentService environmentService: IEnvironmentService,
+		@IWorkbenchEnvironmentService environmentService: IWorkbenchEnvironmentService,
 		@IPreferencesService private readonly preferencesService: IPreferencesService,
 		@IWorkspaceContextService private readonly workpsaceContextService: IWorkspaceContextService,
 		@ILabelService labelService: ILabelService,
 		@IExtensionService extensionService: IExtensionService,
-		@IWindowService windowService: IWindowService
 	) {
 		super();
 		MenuRegistry.appendMenuItem(MenuId.EditorTitle, {
@@ -431,7 +416,7 @@ class PreferencesActionsContribution extends Disposable implements IWorkbenchCon
 
 		extensionService.whenInstalledExtensionsRegistered()
 			.then(() => {
-				const remoteAuthority = windowService.getConfiguration().remoteAuthority;
+				const remoteAuthority = environmentService.configuration.remoteAuthority;
 				const hostLabel = labelService.getHostLabel(REMOTE_HOST_SCHEME, remoteAuthority) || remoteAuthority;
 				const label = nls.localize('openRemoteSettings', "Open User Settings ({0})", hostLabel);
 				CommandsRegistry.registerCommand(OpenRemoteSettingsAction.ID, serviceAccessor => {
@@ -443,7 +428,7 @@ class PreferencesActionsContribution extends Disposable implements IWorkbenchCon
 						title: { value: label, original: `Preferences: Open User Settings (${hostLabel})` },
 						category: nls.localize('preferencesCategory', "Preferences")
 					},
-					when: IsRemoteContext
+					when: RemoteAuthorityContext.notEqualsTo('')
 				});
 			});
 	}

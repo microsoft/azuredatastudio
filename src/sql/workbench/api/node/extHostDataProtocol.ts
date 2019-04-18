@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
-import { Disposable } from 'vs/workbench/api/node/extHostTypes';
+import { Disposable } from 'vs/workbench/api/common/extHostTypes';
 import { SqlMainContext, MainThreadDataProtocolShape, ExtHostDataProtocolShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { DataProviderType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
@@ -164,6 +164,12 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	$registerDacFxServiceProvider(provider: azdata.DacFxServicesProvider): vscode.Disposable {
 		let rt = this.registerProvider(provider, DataProviderType.DacFxServicesProvider);
 		this._proxy.$registerDacFxServicesProvider(provider.providerId, provider.handle);
+		return rt;
+	}
+
+	$registerSchemaCompareServiceProvider(provider: azdata.SchemaCompareServicesProvider): vscode.Disposable {
+		let rt = this.registerProvider(provider, DataProviderType.SchemaCompareServicesProvider);
+		this._proxy.$registerSchemaCompareServicesProvider(provider.providerId, provider.handle);
 		return rt;
 	}
 
@@ -352,11 +358,11 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	}
 
 	public $expandObjectExplorerNode(handle: number, nodeInfo: azdata.ExpandNodeInfo): Thenable<boolean> {
-		return this._resolveProvider<azdata.ObjectExplorerProviderBase> (handle).expandNode(nodeInfo);
+		return this._resolveProvider<azdata.ObjectExplorerProviderBase>(handle).expandNode(nodeInfo);
 	}
 
 	public $refreshObjectExplorerNode(handle: number, nodeInfo: azdata.ExpandNodeInfo): Thenable<boolean> {
-		return this._resolveProvider<azdata.ObjectExplorerProviderBase> (handle).refreshNode(nodeInfo);
+		return this._resolveProvider<azdata.ObjectExplorerProviderBase>(handle).refreshNode(nodeInfo);
 	}
 
 	public $closeObjectExplorerSession(handle: number, closeSessionInfo: azdata.ObjectExplorerCloseSessionInfo): Thenable<azdata.ObjectExplorerCloseSessionResponse> {

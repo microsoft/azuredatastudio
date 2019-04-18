@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import 'vs/css!./media/sqlConnection';
 
 import { Button } from 'sql/base/browser/ui/button/button';
@@ -112,12 +110,12 @@ export class ConnectionWidget {
 		this._callbacks = callbacks;
 		this._toDispose = [];
 		this._optionsMaps = {};
-		for (var i = 0; i < options.length; i++) {
-			var option = options[i];
+		for (let i = 0; i < options.length; i++) {
+			let option = options[i];
 			this._optionsMaps[option.specialValueType] = option;
 		}
 
-		var authTypeOption = this._optionsMaps[ConnectionOptionSpecialType.authType];
+		let authTypeOption = this._optionsMaps[ConnectionOptionSpecialType.authType];
 		if (authTypeOption) {
 			if (OS === OperatingSystem.Windows) {
 				authTypeOption.defaultValue = this.getAuthTypeDisplayName(AuthenticationType.Integrated);
@@ -253,9 +251,9 @@ export class ConnectionWidget {
 		// Registered Server Description
 		let serverDescriptionOption = this._optionsMaps['serverDescription'];
 		if (serverDescriptionOption && isCMSDialog) {
-			serverDescriptionOption.displayName = localize('serverDescription','Server Description (optional)');
+			serverDescriptionOption.displayName = localize('serverDescription', 'Server Description (optional)');
 			let serverDescriptionBuilder = DialogHelper.appendRow(this._tableContainer, serverDescriptionOption.displayName, 'connection-label', 'connection-input', 'server-description-input');
-			this._serverDescriptionInputBox = new InputBox(serverDescriptionBuilder, this._contextViewService, {type: 'textarea', flexibleHeight: true});
+			this._serverDescriptionInputBox = new InputBox(serverDescriptionBuilder, this._contextViewService, { type: 'textarea', flexibleHeight: true });
 			this._serverDescriptionInputBox.setHeight('75px');
 		}
 
@@ -600,7 +598,7 @@ export class ConnectionWidget {
 			}
 
 			if (connectionInfo.authenticationType !== null && connectionInfo.authenticationType !== undefined) {
-				var authTypeDisplayName = this.getAuthTypeDisplayName(connectionInfo.authenticationType);
+				let authTypeDisplayName = this.getAuthTypeDisplayName(connectionInfo.authenticationType);
 				this._authTypeSelectBox.selectWithOptionName(authTypeDisplayName);
 			}
 
@@ -636,8 +634,8 @@ export class ConnectionWidget {
 	}
 
 	private getAuthTypeDisplayName(authTypeName: string) {
-		var displayName: string;
-		var authTypeOption = this._optionsMaps[ConnectionOptionSpecialType.authType];
+		let displayName: string;
+		let authTypeOption = this._optionsMaps[ConnectionOptionSpecialType.authType];
 
 		if (authTypeOption) {
 			authTypeOption.categoryValues.forEach(c => {
@@ -650,8 +648,8 @@ export class ConnectionWidget {
 	}
 
 	private getAuthTypeName(authTypeDisplayName: string) {
-		var authTypeName: string;
-		var authTypeOption = this._optionsMaps[ConnectionOptionSpecialType.authType];
+		let authTypeName: string;
+		let authTypeOption = this._optionsMaps[ConnectionOptionSpecialType.authType];
 		authTypeOption.categoryValues.forEach(c => {
 			if (c.displayName === authTypeDisplayName) {
 				authTypeName = c.name;

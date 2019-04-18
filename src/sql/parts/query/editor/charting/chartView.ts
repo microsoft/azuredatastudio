@@ -20,7 +20,7 @@ import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { ChartType } from 'sql/workbench/parts/dashboard/widgets/insights/views/charts/interfaces';
 import { Registry } from 'vs/platform/registry/common/platform';
 import * as DOM from 'vs/base/browser/dom';
-import { SelectBox } from 'vs/base/browser/ui/selectBox/selectBox';
+import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
 import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
@@ -209,8 +209,13 @@ export class ChartView extends Disposable implements IPanelView {
 	}
 
 	private buildOptions() {
-		dispose(this.optionDisposables);
-		this.optionDisposables = [];
+		// The first element in the disposables list is for the chart type: the master dropdown that controls other option controls.
+		// whiling rebuilding the options we should not dispose it, otherwise it would react to the theme change event
+		if (this.optionDisposables.length > 1) {
+			dispose(this.optionDisposables.slice(1));
+			this.optionDisposables.splice(1);
+		}
+
 		this.optionMap = {
 			'type': this.optionMap['type']
 		};
@@ -282,7 +287,7 @@ export class ChartView extends Disposable implements IPanelView {
 				};
 				break;
 			case ControlType.combo:
-				let dropdown = new SelectBox(option.displayableOptions || option.options, 0, this._contextViewService);
+				let dropdown = new SelectBox(option.displayableOptions || option.options, undefined, this._contextViewService);
 				dropdown.select(option.options.indexOf(value));
 				dropdown.render(optionContainer);
 				dropdown.onDidSelect(e => {

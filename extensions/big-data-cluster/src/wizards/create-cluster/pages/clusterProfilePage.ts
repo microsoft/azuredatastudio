@@ -2,10 +2,8 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import * as azdata from 'azdata';
-import * as vscode from 'vscode';
 import { WizardPageBase } from '../../wizardPageBase';
 import { CreateClusterWizard } from '../createClusterWizard';
 import * as nls from 'vscode-nls';
@@ -347,7 +345,7 @@ export class ClusterProfilePage extends WizardPageBase<CreateClusterWizard> {
 			case ClusterPoolType.Spark:
 				return localize('bdc-create.SparkPoolDisplayName', 'Spark pool');
 			default:
-				throw 'unknown pool type';
+				throw new Error('unknown pool type');
 		}
 	}
 
@@ -364,7 +362,7 @@ export class ClusterProfilePage extends WizardPageBase<CreateClusterWizard> {
 			case ClusterPoolType.Spark:
 				return localize('bdc-create.SparkPoolDescription', 'TODO: Add description');
 			default:
-				throw 'unknown pool type';
+				throw new Error('unknown pool type');
 		}
 	}
 

@@ -1,0 +1,51 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.modelview-group-container {
+	display: table;
+	padding: 5px 10px 5px 10px;
+	box-sizing: border-box;
+}
+
+.modelview-group-row {
+	display: table-row;
+}
+
+.modelview-group-header-collapsible,
+.modelview-group-header {
+	padding-bottom: 5px;
+	font-size: 14px;
+}
+
+.modelview-group-header-collapsible {
+	padding-left: 20px;
+	background-position: 2px 2px;
+	background-size: 16px 16px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+.vs .modelview-group-header-collapsible.expanded {
+	background-image: url("expanded.svg");
+}
+
+.vs-dark .modelview-group-header-collapsible.expanded,
+.hc-black .modelview-group-header-collapsible.expanded {
+	background-image: url("expanded_inverse.svg");
+}
+
+.vs .modelview-group-header-collapsible.collapsed {
+	background-image: url("collapsed.svg");
+}
+
+.vs-dark .modelview-group-header-collapsible.collapsed,
+.hc-black .modelview-group-header-collapsible.collapsed {
+	background-image: url("collapsed_inverse.svg");
+}
+
+.modelview-group-cell {
+	padding-bottom: 5px;
+	display: table-cell;
+}

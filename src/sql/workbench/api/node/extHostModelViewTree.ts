@@ -8,10 +8,10 @@ import { localize } from 'vs/nls';
 import * as vscode from 'vscode';
 import { SqlMainContext, ExtHostModelViewTreeViewsShape, MainThreadModelViewShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { ITreeComponentItem } from 'sql/workbench/common/views';
-import { CommandsConverter } from 'vs/workbench/api/node/extHostCommands';
+import { CommandsConverter } from 'vs/workbench/api/common/extHostCommands';
 import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import * as azdata from 'azdata';
-import * as  vsTreeExt from 'vs/workbench/api/node/extHostTreeViews';
+import * as  vsTreeExt from 'vs/workbench/api/common/extHostTreeViews';
 import { Emitter } from 'vs/base/common/event';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 
@@ -99,15 +99,15 @@ export class ExtHostTreeView<T> extends vsTreeExt.ExtHostTreeView<T> {
 			console.error(`No tree item with id \'${parentHandle}\' found.`);
 		}
 
-		this._onNodeCheckedChanged.fire({element: parentElement, checked: checked});
+		this._onNodeCheckedChanged.fire({ element: parentElement, checked: checked });
 	}
 
 	onNodeSelectedChanged(parentHandles?: vsTreeExt.TreeItemHandle[]): void {
 		if (parentHandles) {
 			let nodes = parentHandles.map(parentHandle => {
-				return  parentHandle ? this.getExtensionElement(parentHandle) : void 0;
+				return parentHandle ? this.getExtensionElement(parentHandle) : void 0;
 			});
-			this._onChangeSelection.fire({ selection: nodes});
+			this._onChangeSelection.fire({ selection: nodes });
 		}
 	}
 

@@ -7,7 +7,7 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { EditorOptions } from 'vs/workbench/common/editor';
 import * as DOM from 'vs/base/browser/dom';
-import { bootstrapAngular } from 'sql/services/bootstrap/bootstrapService';
+import { bootstrapAngular } from 'sql/platform/bootstrap/node/bootstrapService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 import { CancellationToken } from 'vs/base/common/cancellation';
@@ -16,7 +16,6 @@ import { NotebookModule } from 'sql/workbench/parts/notebook/notebook.module';
 import { NOTEBOOK_SELECTOR } from 'sql/workbench/parts/notebook/notebook.component';
 import { INotebookParams } from 'sql/workbench/services/notebook/common/notebookService';
 import { IStorageService } from 'vs/platform/storage/common/storage';
-import { $ } from 'sql/base/browser/builder';
 
 export class NotebookEditor extends BaseEditor {
 
@@ -67,7 +66,7 @@ export class NotebookEditor extends BaseEditor {
 
 		super.setInput(input, options, CancellationToken.None);
 
-		$(parentElement).clearChildren();
+		DOM.clearNode(parentElement);
 
 		if (!input.hasBootstrapped) {
 			let container = DOM.$<HTMLElement>('.notebookEditor');
@@ -104,4 +103,3 @@ export class NotebookEditor extends BaseEditor {
 		);
 	}
 }
-

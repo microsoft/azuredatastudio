@@ -16,7 +16,7 @@ import { coalesce } from 'vs/base/common/arrays';
 // {{SQL CARBON EDIT}}
 import { QueryInput } from 'sql/parts/query/common/queryInput';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
-import * as CustomInputConverter from 'sql/parts/common/customInputConverter';
+import * as CustomInputConverter from 'sql/workbench/common/customInputConverter';
 import { NotebookInput } from 'sql/workbench/parts/notebook/notebookInput';
 
 const EditorOpenPositioning = {
@@ -660,7 +660,7 @@ export class EditorGroup extends Disposable {
 				// {{SQL CARBON EDIT}}
 				// don't serialize unmodified unitited files
 				if (e instanceof UntitledEditorInput && !e.isDirty()
-						&& !this.configurationService.getValue<boolean>('sql.promptToSaveGeneratedFiles')) {
+					&& !this.configurationService.getValue<boolean>('sql.promptToSaveGeneratedFiles')) {
 					return;
 				}
 				// {{SQL CARBON EDIT}} - End

@@ -2,13 +2,12 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { SqlMainContext, MainThreadCredentialManagementShape, ExtHostCredentialManagementShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import { Disposable } from 'vs/workbench/api/node/extHostTypes';
+import { Disposable } from 'vs/workbench/api/common/extHostTypes';
 
 class CredentialAdapter {
 	public provider: azdata.CredentialProvider;
@@ -93,7 +92,7 @@ export class ExtHostCredentialManagement extends ExtHostCredentialManagementShap
 
 	/**
 	 * Helper method for tests. Not exposed via shape.
-	 * @return {number} Number of providers registered
+	 * @return Number of providers registered
 	 */
 	public getProviderCount(): number {
 		return Object.keys(this._adapter).length;

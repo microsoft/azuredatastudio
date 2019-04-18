@@ -12,7 +12,7 @@ export class HeaderFilter {
 	public onFilterApplied = new Slick.Event();
 	public onCommand = new Slick.Event();
 
-	private grid;
+	private grid: Slick.Grid<any>;
 	private handler = new Slick.EventHandler();
 	private defaults = {
 		filterImage: 'src/sql/media/icons/filter.svg',
@@ -20,7 +20,7 @@ export class HeaderFilter {
 		sortDescImage: 'sort-desc.gif'
 	};
 
-	private $menu: JQuery<HTMLElement>;
+	private $menu?: JQuery<HTMLElement>;
 	private options: any;
 	private okButton: Button;
 	private clearButton: Button;
@@ -70,16 +70,16 @@ export class HeaderFilter {
 	private hideMenu() {
 		if (this.$menu) {
 			this.$menu.remove();
-			this.$menu = null;
+			this.$menu = undefined;
 		}
 	}
 
 	private handleHeaderCellRendered(e, args) {
-		let column = args.column;
+		const column = args.column;
 		if (column.id === '_detail_selector') {
 			return;
 		}
-		let $el = jQuery('<div></div>')
+		const $el = jQuery('<div></div>')
 			.addClass('slick-header-menubutton')
 			.data('column', column);
 
@@ -93,13 +93,13 @@ export class HeaderFilter {
 	}
 
 	private addMenuItem(menu, columnDef, title, command, image) {
-		let $item = jQuery('<div class="slick-header-menuitem">')
+		const $item = jQuery('<div class="slick-header-menuitem">')
 			.data('command', command)
 			.data('column', columnDef)
 			.bind('click', (e) => this.handleMenuItemClick(e, command, columnDef))
 			.appendTo(menu);
 
-		let $icon = jQuery('<div class="slick-header-menuicon">')
+		const $icon = jQuery('<div class="slick-header-menuicon">')
 			.appendTo($item);
 
 		if (title === 'Sort Ascending') {
@@ -118,7 +118,7 @@ export class HeaderFilter {
 		jQuery('<input class="input" placeholder="Search" style="margin-top: 5px; width: 206px">')
 			.data('column', columnDef)
 			.bind('keyup', (e) => {
-				let filterVals = this.getFilterValuesByInput(jQuery(e.target));
+				const filterVals = this.getFilterValuesByInput(jQuery(e.target));
 				self.updateFilterInputs(menu, columnDef, filterVals);
 			})
 			.appendTo(menu);
@@ -132,13 +132,13 @@ export class HeaderFilter {
 		this.workingFilters = columnDef.filterValues.slice(0);
 
 		for (let i = 0; i < filterItems.length; i++) {
-			let filtered = _.contains(this.workingFilters, filterItems[i]);
+			const filtered = _.contains(this.workingFilters, filterItems[i]);
 
 			filterOptions += '<label><input type="checkbox" value="' + i + '"'
 				+ (filtered ? ' checked="checked"' : '')
 				+ '/>' + filterItems[i] + '</label>';
 		}
-		let $filter = menu.find('.filter');
+		const $filter = menu.find('.filter');
 		$filter.empty().append(jQuery(filterOptions));
 
 		jQuery(':checkbox', $filter).bind('click', (e) => {
@@ -147,7 +147,7 @@ export class HeaderFilter {
 	}
 
 	private showFilter(e) {
-		let $menuButton = jQuery(e.target);
+		const $menuButton = jQuery(e.target);
 		this.columnDef = $menuButton.data('column');
 
 		this.columnDef.filterValues = this.columnDef.filterValues || [];
@@ -179,14 +179,14 @@ export class HeaderFilter {
 		let filterOptions = '<label><input type="checkbox" value="-1" />(Select All)</label>';
 
 		for (let i = 0; i < filterItems.length; i++) {
-			let filtered = _.contains(this.workingFilters, filterItems[i]);
+			const filtered = _.contains(this.workingFilters, filterItems[i]);
 			if (filterItems[i] && filterItems[i].indexOf('Error:') < 0) {
 				filterOptions += '<label><input type="checkbox" value="' + i + '"'
 					+ (filtered ? ' checked="checked"' : '')
 					+ '/>' + escape(filterItems[i]) + '</label>';
 			}
 		}
-		let $filter = jQuery('<div class="filter">')
+		const $filter = jQuery('<div class="filter">')
 			.append(jQuery(filterOptions))
 			.appendTo(this.$menu);
 
@@ -194,7 +194,7 @@ export class HeaderFilter {
 		this.okButton.label = 'OK';
 		this.okButton.title = 'OK';
 		this.okButton.element.id = 'filter-ok-button';
-		let okElement = jQuery('#filter-ok-button');
+		const okElement = jQuery('#filter-ok-button');
 		okElement.bind('click', (ev) => {
 			this.columnDef.filterValues = this.workingFilters.splice(0);
 			this.setButtonImage($menuButton, this.columnDef.filterValues.length > 0);
@@ -205,7 +205,7 @@ export class HeaderFilter {
 		this.clearButton.label = 'Clear';
 		this.clearButton.title = 'Clear';
 		this.clearButton.element.id = 'filter-clear-button';
-		let clearElement = jQuery('#filter-clear-button');
+		const clearElement = jQuery('#filter-clear-button');
 		clearElement.bind('click', (ev) => {
 			this.columnDef.filterValues.length = 0;
 			this.setButtonImage($menuButton, false);
@@ -216,7 +216,7 @@ export class HeaderFilter {
 		this.cancelButton.label = 'Cancel';
 		this.cancelButton.title = 'Cancel';
 		this.cancelButton.element.id = 'filter-cancel-button';
-		let cancelElement = jQuery('#filter-cancel-button');
+		const cancelElement = jQuery('#filter-cancel-button');
 		cancelElement.bind('click', () => this.hideMenu());
 		attachButtonStyler(this.okButton, this._themeService);
 		attachButtonStyler(this.clearButton, this._themeService);
@@ -226,8 +226,8 @@ export class HeaderFilter {
 			this.workingFilters = this.changeWorkingFilter(filterItems, this.workingFilters, jQuery(e.target));
 		});
 
-		let offset = jQuery(e.target).offset();
-		let left = offset.left - this.$menu.width() + jQuery(e.target).width() - 8;
+		const offset = jQuery(e.target).offset();
+		const left = offset.left - this.$menu.width() + jQuery(e.target).width() - 8;
 
 		let menutop = offset.top + jQuery(e.target).height();
 
@@ -243,8 +243,8 @@ export class HeaderFilter {
 	}
 
 	private changeWorkingFilter(filterItems, workingFilters, $checkbox) {
-		let value = $checkbox.val();
-		let $filter = $checkbox.parent().parent();
+		const value = $checkbox.val();
+		const $filter = $checkbox.parent().parent();
 
 		if ($checkbox.val() < 0) {
 			// Select All
@@ -256,11 +256,11 @@ export class HeaderFilter {
 				workingFilters.length = 0;
 			}
 		} else {
-			let index = _.indexOf(workingFilters, filterItems[value]);
+			const index = _.indexOf(workingFilters, filterItems[value]);
 
 			if ($checkbox.prop('checked') && index < 0) {
 				workingFilters.push(filterItems[value]);
-				let nextRow = filterItems[(parseInt(value) + 1).toString()];
+				const nextRow = filterItems[(parseInt(value) + 1).toString()];
 				if (nextRow && nextRow.indexOf('Error:') >= 0) {
 					workingFilters.push(nextRow);
 				}
@@ -276,11 +276,11 @@ export class HeaderFilter {
 	}
 
 	private setButtonImage($el, filtered) {
-		let element: HTMLElement = $el.get(0);
+		const element: HTMLElement = $el.get(0);
 		if (filtered) {
 			element.className += ' filtered';
 		} else {
-			let classList = element.classList;
+			const classList = element.classList;
 			if (classList.contains('filtered')) {
 				classList.remove('filtered');
 			}
@@ -296,9 +296,9 @@ export class HeaderFilter {
 	}
 
 	private getFilterValues(dataView, column) {
-		let seen = [];
+		const seen: Array<any> = [];
 		for (let i = 0; i < dataView.getLength(); i++) {
-			let value = dataView.getItem(i)[column.field];
+			const value = dataView.getItem(i)[column.field];
 
 			if (!_.contains(seen, value)) {
 				seen.push(value);
@@ -308,18 +308,18 @@ export class HeaderFilter {
 	}
 
 	private getFilterValuesByInput($input) {
-		let column = $input.data('column'),
+		const column = $input.data('column'),
 			filter = $input.val(),
 			dataView = this.grid.getData(),
-			seen = [];
+			seen: Array<any> = [];
 
 		for (let i = 0; i < dataView.getLength(); i++) {
-			let value = dataView.getItem(i)[column.field];
+			const value = dataView.getItem(i)[column.field];
 
 			if (filter.length > 0) {
-				let itemValue = !value ? '' : value;
-				let lowercaseFilter = filter.toString().toLowerCase();
-				let lowercaseVal = itemValue.toString().toLowerCase();
+				const itemValue = !value ? '' : value;
+				const lowercaseFilter = filter.toString().toLowerCase();
+				const lowercaseVal = itemValue.toString().toLowerCase();
 				if (!_.contains(seen, value) && lowercaseVal.indexOf(lowercaseFilter) > -1) {
 					seen.push(value);
 				}
@@ -335,9 +335,9 @@ export class HeaderFilter {
 	}
 
 	private getAllFilterValues(data, column) {
-		let seen = [];
+		const seen: Array<any> = [];
 		for (let i = 0; i < data.length; i++) {
-			let value = data[i][column.field];
+			const value = data[i][column.field];
 
 			if (!_.contains(seen, value)) {
 				seen.push(value);

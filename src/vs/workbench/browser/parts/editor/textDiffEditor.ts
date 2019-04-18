@@ -15,13 +15,12 @@ import { DiffEditorInput } from 'vs/workbench/common/editor/diffEditorInput';
 import { DiffNavigator } from 'vs/editor/browser/widget/diffNavigator';
 import { DiffEditorWidget } from 'vs/editor/browser/widget/diffEditorWidget';
 import { TextDiffEditorModel } from 'vs/workbench/common/editor/textDiffEditorModel';
-import { FileOperationError, FileOperationResult } from 'vs/platform/files/common/files';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ITextResourceConfigurationService } from 'vs/editor/common/services/resourceConfiguration';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
+import { ITextFileService, TextFileOperationError, TextFileOperationResult } from 'vs/workbench/services/textfile/common/textfiles';
 import { ScrollType, IDiffEditorViewState, IDiffEditorModel } from 'vs/editor/common/editorCommon';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { Registry } from 'vs/platform/registry/common/platform';
@@ -42,6 +41,8 @@ export class TextDiffEditor extends BaseTextEditor implements ITextDiffEditor {
 
 	private diffNavigator: DiffNavigator;
 	private diffNavigatorDisposables: IDisposable[] = [];
+	// {{SQL CARBON EDIT}}
+	private reverseColor: boolean;
 
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -69,7 +70,17 @@ export class TextDiffEditor extends BaseTextEditor implements ITextDiffEditor {
 		return nls.localize('textDiffEditor', "Text Diff Editor");
 	}
 
+	// {{SQL CARBON EDIT}}
+	reverseColoring(): void {
+		this.reverseColor = true;
+	}
+
 	createEditorControl(parent: HTMLElement, configuration: ICodeEditorOptions): IDiffEditor {
+		// {{SQL CARBON EDIT}}
+		if (this.reverseColor) {
+			(configuration as IDiffEditorOptions).reverse = true;
+		}
+
 		return this.instantiationService.createInstance(DiffEditorWidget, parent, configuration);
 	}
 
@@ -230,10 +241,11 @@ export class TextDiffEditor extends BaseTextEditor implements ITextDiffEditor {
 	private isFileBinaryError(error: Error | Error[]): boolean {
 		if (types.isArray(error)) {
 			const errors = <Error[]>error;
+
 			return errors.some(e => this.isFileBinaryError(e));
 		}
 
-		return (<FileOperationError>error).fileOperationResult === FileOperationResult.FILE_IS_BINARY;
+		return (<TextFileOperationError>error).textFileOperationResult === TextFileOperationResult.FILE_IS_BINARY;
 	}
 
 	clearInput(): void {

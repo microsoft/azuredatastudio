@@ -5,9 +5,9 @@
 
 import * as nls from 'vs/nls';
 import { URI } from 'vs/base/common/uri';
-// {{SQL CARBON EDIT}} - Import EditorInput
-import { toResource, IEditorCommandsContext, EditorInput, SideBySideEditor } from 'vs/workbench/common/editor';
-import { IWindowsService, IWindowService, IURIToOpen, IOpenSettings, INewWindowOptions } from 'vs/platform/windows/common/windows';
+// {{SQL CARBON EDIT}} import EditorInput
+import { toResource, IEditorCommandsContext, SideBySideEditor, EditorInput } from 'vs/workbench/common/editor';
+import { IWindowsService, IWindowService, IURIToOpen, IOpenSettings, INewWindowOptions, isWorkspaceToOpen } from 'vs/platform/windows/common/windows';
 import { ServicesAccessor, IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
@@ -35,13 +35,15 @@ import { getMultiSelectedEditorContexts } from 'vs/workbench/browser/parts/edito
 import { Schemas } from 'vs/base/common/network';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { EditorContextKeys } from 'vs/editor/common/editorContextKeys';
-// {{SQL CARBON EDIT}} - Import EditorInput
 import { IEditorService, SIDE_GROUP, IResourceEditorReplacement } from 'vs/workbench/services/editor/common/editorService';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { ILabelService } from 'vs/platform/label/common/label';
 import { onUnexpectedError } from 'vs/base/common/errors';
-import { basename } from 'vs/base/common/resources';
+import { basename, toLocalResource, joinPath } from 'vs/base/common/resources';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
+import { IEnvironmentService } from 'vs/platform/environment/common/environment';
+import { UNTITLED_WORKSPACE_NAME } from 'vs/platform/workspaces/common/workspaces';
 
 // {{SQL CARBON EDIT}}
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
@@ -85,6 +87,19 @@ export const REMOVE_ROOT_FOLDER_LABEL = nls.localize('removeFolderFromWorkspace'
 export const openWindowCommand = (accessor: ServicesAccessor, urisToOpen: IURIToOpen[], options?: IOpenSettings) => {
 	if (Array.isArray(urisToOpen)) {
 		const windowService = accessor.get(IWindowService);
+		const environmentService = accessor.get(IEnvironmentService);
+
+		// rewrite untitled: workspace URIs to the absolute path on disk
+		urisToOpen = urisToOpen.map(uriToOpen => {
+			if (isWorkspaceToOpen(uriToOpen) && uriToOpen.workspaceUri.scheme === Schemas.untitled) {
+				return {
+					workspaceUri: joinPath(environmentService.untitledWorkspacesHome, uriToOpen.workspaceUri.path, UNTITLED_WORKSPACE_NAME)
+				};
+			}
+
+			return uriToOpen;
+		});
+
 		windowService.openWindow(urisToOpen, options);
 	}
 };
@@ -104,7 +119,8 @@ function save(
 	untitledEditorService: IUntitledEditorService,
 	textFileService: ITextFileService,
 	editorGroupService: IEditorGroupsService,
-	queryEditorService: IQueryEditorService
+	queryEditorService: IQueryEditorService,
+	environmentService: IWorkbenchEnvironmentService
 ): Promise<any> {
 
 	function ensureForcedSave(options?: ISaveOptions): ISaveOptions {
@@ -146,9 +162,9 @@ function save(
 			// Special case: an untitled file with associated path gets saved directly unless "saveAs" is true
 			let savePromise: Promise<URI | undefined>;
 			if (!isSaveAs && resource.scheme === Schemas.untitled && untitledEditorService.hasAssociatedFilePath(resource)) {
-				savePromise = textFileService.save(resource, options).then((result) => {
+				savePromise = textFileService.save(resource, options).then(result => {
 					if (result) {
-						return resource.with({ scheme: Schemas.file });
+						return toLocalResource(resource, environmentService.configuration.remoteAuthority);
 					}
 
 					return undefined;
@@ -165,7 +181,7 @@ function save(
 				savePromise = textFileService.saveAs(resource, undefined, options);
 			}
 
-			return savePromise.then((target) => {
+			return savePromise.then(target => {
 				if (!target || target.toString() === resource.toString()) {
 					return false; // save canceled or same resource used
 				}
@@ -238,7 +254,7 @@ function saveAll(saveAllArguments: any, editorService: IEditorService, untitledE
 	});
 
 	// Save all
-	return textFileService.saveAll(saveAllArguments).then((result) => {
+	return textFileService.saveAll(saveAllArguments).then(result => {
 		groupIdToUntitledResourceInput.forEach((inputs, groupId) => {
 			// {{SQL CARBON EDIT}}
 			// Update untitled resources to the saved ones, so we open the proper files
@@ -325,6 +341,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 		const instantiationService = accessor.get(IInstantiationService);
 		const textModelService = accessor.get(ITextModelService);
 		const editorService = accessor.get(IEditorService);
+		const fileService = accessor.get(IFileService);
 
 		// Register provider at first as needed
 		let registerEditorListener = false;
@@ -336,9 +353,9 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 			providerDisposables.push(textModelService.registerTextModelContentProvider(COMPARE_WITH_SAVED_SCHEMA, provider));
 		}
 
-		// Open editor (only files supported)
+		// Open editor (only resources that can be handled by file service are supported)
 		const uri = getResourceForCommand(resource, accessor.get(IListService), editorService);
-		if (uri && uri.scheme === Schemas.file /* only files on disk supported for now */) {
+		if (uri && fileService.canHandleResource(uri)) {
 			const name = basename(uri);
 			const editorLabel = nls.localize('modifiedLabel', "{0} (on disk) ↔ {1}", name, name);
 
@@ -542,7 +559,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 		}
 
 		// {{SQL CARBON EDIT}}
-		return save(resource, true, undefined, editorService, accessor.get(IFileService), accessor.get(IUntitledEditorService), accessor.get(ITextFileService), accessor.get(IEditorGroupsService), accessor.get(IQueryEditorService));
+		return save(resource, true, undefined, editorService, accessor.get(IFileService), accessor.get(IUntitledEditorService), accessor.get(ITextFileService), accessor.get(IEditorGroupsService), accessor.get(IQueryEditorService), accessor.get(IWorkbenchEnvironmentService));
 	}
 });
 
@@ -558,7 +575,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 		if (resources.length === 1) {
 			// If only one resource is selected explictly call save since the behavior is a bit different than save all #41841
 			// {{SQL CARBON EDIT}}
-			return save(resources[0], false, undefined, editorService, accessor.get(IFileService), accessor.get(IUntitledEditorService), accessor.get(ITextFileService), accessor.get(IEditorGroupsService), accessor.get(IQueryEditorService));
+			return save(resources[0], false, undefined, editorService, accessor.get(IFileService), accessor.get(IUntitledEditorService), accessor.get(ITextFileService), accessor.get(IEditorGroupsService), accessor.get(IQueryEditorService), accessor.get(IWorkbenchEnvironmentService));
 		}
 		return saveAll(resources, editorService, accessor.get(IUntitledEditorService), accessor.get(ITextFileService), accessor.get(IEditorGroupsService));
 	}
@@ -576,7 +593,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 		const resource = toResource(editorService.activeEditor, { supportSideBySide: SideBySideEditor.MASTER });
 		if (resource) {
 			// {{SQL CARBON EDIT}}
-			return save(resource, false, { skipSaveParticipants: true }, editorService, accessor.get(IFileService), accessor.get(IUntitledEditorService), accessor.get(ITextFileService), accessor.get(IEditorGroupsService), accessor.get(IQueryEditorService));
+			return save(resource, false, { skipSaveParticipants: true }, editorService, accessor.get(IFileService), accessor.get(IUntitledEditorService), accessor.get(ITextFileService), accessor.get(IEditorGroupsService), accessor.get(IQueryEditorService), accessor.get(IWorkbenchEnvironmentService));
 		}
 
 		return undefined;

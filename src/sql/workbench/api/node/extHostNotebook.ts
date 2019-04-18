@@ -2,13 +2,12 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 
 import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
-import { Disposable } from 'vs/workbench/api/node/extHostTypes';
+import { Disposable } from 'vs/workbench/api/common/extHostTypes';
 import { localize } from 'vs/nls';
 import { URI, UriComponents } from 'vs/base/common/uri';
 
@@ -99,7 +98,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 				};
 				return details;
 			} catch (error) {
-				throw typeof(error) === 'string' ? new Error(error) : error;
+				throw typeof (error) === 'string' ? new Error(error) : error;
 			}
 		});
 	}
@@ -111,7 +110,8 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 			id: kernel.id,
 			info: kernel.info,
 			name: kernel.name,
-			supportsIntellisense: kernel.supportsIntellisense
+			supportsIntellisense: kernel.supportsIntellisense,
+			requiresConnection: kernel.requiresConnection
 		};
 		return kernelDetails;
 	}
@@ -230,7 +230,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 	}
 
 	private findManagerForUri(uriString: string): NotebookManagerAdapter {
-		for(let manager of this.getAdapters(NotebookManagerAdapter)) {
+		for (let manager of this.getAdapters(NotebookManagerAdapter)) {
 			if (manager.uriString === uriString) {
 				return manager;
 			}
@@ -278,7 +278,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 			let value = await callback(manager);
 			return value;
 		} catch (error) {
-			throw typeof(error) === 'string' ? new Error(error) : error;
+			throw typeof (error) === 'string' ? new Error(error) : error;
 		}
 	}
 

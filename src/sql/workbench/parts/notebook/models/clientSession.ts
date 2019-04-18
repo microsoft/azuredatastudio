@@ -1,12 +1,9 @@
-
 /*---------------------------------------------------------------------------------------------
-*  Copyright (c) Microsoft Corporation. All rights reserved.
-*  Licensed under the Source EULA. See License.txt in the project root for license information.
-*--------------------------------------------------------------------------------------------*/
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
 // This code is based on @jupyterlab/packages/apputils/src/clientsession.tsx
-
-'use strict';
 
 import { nb } from 'azdata';
 import { URI } from 'vs/base/common/uri';
@@ -274,7 +271,6 @@ export class ClientSession implements IClientSession {
 
 	/**
 	 * Helper method to either call ChangeKernel on current session, or start a new session
-	 * @param options
 	 */
 	private async doChangeKernel(options: nb.IKernelSpec): Promise<nb.IKernel> {
 		let kernel: nb.IKernel;

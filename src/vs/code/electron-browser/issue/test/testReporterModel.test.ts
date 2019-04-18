@@ -58,7 +58,7 @@ Extensions: none
 			}
 		});
 		assert.equal(issueReporterModel.serialize(),
-		// {{SQL CARBON EDIT}}
+			// {{SQL CARBON EDIT}}
 			`
 Issue Type: <b>Bug</b>
 

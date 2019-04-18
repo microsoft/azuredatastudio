@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-import * as azdata from 'azdata';
 import {
 	IConnectionManagementService,
 	ConnectionType, INewConnectionParams, IConnectionCompletionOptions, IConnectionResult
@@ -305,7 +303,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 
 	private handleFillInConnectionInputs(connectionInfo: IConnectionProfile): void {
 		this._connectionManagementService.addSavedPassword(connectionInfo).then(connectionWithPassword => {
-			var model = this.createModel(connectionWithPassword);
+			let model = this.createModel(connectionWithPassword);
 			this._model = model;
 			this.uiController.fillInConnectionInputs(model);
 		});
@@ -421,7 +419,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		// if provider changed
 		if ((this._previousProviderType !== this._currentProviderType) ||
 			// or if currentProvider not set correctly yet
-		 	!(this._currentProviderType === Constants.cmsProviderDisplayName && params.providers && params.providers.length > 1)) {
+			!(this._currentProviderType === Constants.cmsProviderDisplayName && params.providers && params.providers.length > 1)) {
 			this._previousProviderType = undefined;
 			this._connectionDialog.updateProvider(this._providerNameToDisplayNameMap[this.getDefaultProviderName()]);
 		} else {

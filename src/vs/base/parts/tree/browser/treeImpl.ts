@@ -276,7 +276,7 @@ export class Tree implements _.ITree {
 		this.model.setFocus(null, eventPayload);
 	}
 
-	// {{SQL CARBON EDIT}} @todo anthonydresser we need to refactor our code to not need these methods
+	// {{SQL CARBON EDIT}} @todo anthonydresser 4/12/19 we need to refactor our code to not need these methods
 	public addTraits(trait: string, elements: any[]): void {
 		this.model.addTraits(trait, elements);
 	}

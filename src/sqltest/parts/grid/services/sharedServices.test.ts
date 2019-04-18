@@ -3,10 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-import * as azdata from 'azdata';
 import * as assert from 'assert';
-import * as SharedServices from 'sql/parts/grid/services/sharedServices';
+import * as SharedServices from 'sql/base/browser/ui/table/formatters';
 
 const testText = '<div>test text</div>';
 

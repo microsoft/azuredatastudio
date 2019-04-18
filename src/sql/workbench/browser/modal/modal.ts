@@ -16,8 +16,8 @@ import { IContextKeyService, RawContextKey, IContextKey } from 'vs/platform/cont
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 
 import { Button } from 'sql/base/browser/ui/button/button';
-import * as TelemetryUtils from 'sql/common/telemetryUtilities';
-import * as TelemetryKeys from 'sql/common/telemetryKeys';
+import * as TelemetryUtils from 'sql/platform/telemetry/telemetryUtilities';
+import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
 import { localize } from 'vs/nls';
 import { MessageLevel } from 'sql/workbench/api/common/sqlExtHostTypes';
 import * as os from 'os';
@@ -136,7 +136,6 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * Constructor for modal
 	 * @param _title Title of the modal, if undefined, the title section is not rendered
 	 * @param _name Name of the modal, used for telemetry
-	 * @param _partService
 	 * @param options Modal options
 	 */
 	constructor(
@@ -474,7 +473,6 @@ export abstract class Modal extends Disposable implements IThemable {
 
 	/**
 	 * Set the title of the modal
-	 * @param title
 	 */
 	protected set title(title: string) {
 		if (this._title !== undefined) {
@@ -488,7 +486,6 @@ export abstract class Modal extends Disposable implements IThemable {
 
 	/**
 	 * Set the icon title class name
-	 * @param iconClassName
 	 */
 	protected set titleIconClassName(iconClassName: string) {
 		if (this._modalTitleIcon) {

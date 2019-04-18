@@ -1,13 +1,13 @@
 /*---------------------------------------------------------------------------------------------
-*  Copyright (c) Microsoft Corporation. All rights reserved.
-*  Licensed under the Source EULA. See License.txt in the project root for license information.
-*--------------------------------------------------------------------------------------------*/
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
 'use strict';
 
 import 'vs/css!./media/wizardNavigation';
 import { Component, Inject, forwardRef, ElementRef, AfterViewInit, ChangeDetectorRef, ViewChild } from '@angular/core';
-import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
+import { IBootstrapParams } from 'sql/platform/bootstrap/node/bootstrapService';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Wizard } from './dialogTypes';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';

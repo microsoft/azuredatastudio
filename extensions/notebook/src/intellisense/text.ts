@@ -31,9 +31,9 @@ export function jsIndexToCharIndex(jsIdx: number, text: string): number {
 	for (let i = 0; i + 1 < text.length && i < jsIdx; i++) {
 		let charCode = text.charCodeAt(i);
 		// check for surrogate pair
-		if (charCode >= 0xd800 && charCode <= 0xdbff) {
+		if (charCode >= 0xD800 && charCode <= 0xDBFF) {
 			let nextCharCode = text.charCodeAt(i + 1);
-			if (nextCharCode >= 0xdc00 && nextCharCode <= 0xdfff) {
+			if (nextCharCode >= 0xDC00 && nextCharCode <= 0xDFFF) {
 				charIdx--;
 				i++;
 			}
@@ -60,9 +60,9 @@ export function charCountToJsCountDiff(text: string): number {
 	for (let i = 0; i + 1 < text.length; i++) {
 		let charCode = text.charCodeAt(i);
 		// check for surrogate pair
-		if (charCode >= 0xd800 && charCode <= 0xdbff) {
+		if (charCode >= 0xD800 && charCode <= 0xDBFF) {
 			let nextCharCode = text.charCodeAt(i + 1);
-			if (nextCharCode >= 0xdc00 && nextCharCode <= 0xdfff) {
+			if (nextCharCode >= 0xDC00 && nextCharCode <= 0xDFFF) {
 				diff++;
 				i++;
 			}

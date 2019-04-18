@@ -3,9 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-// {{SQL CARBON EDIT}}
-/*
-
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { URI as uri } from 'vs/base/common/uri';
 import { IDebugService, IConfig, IDebugConfigurationProvider, IBreakpoint, IFunctionBreakpoint, IBreakpointData, ITerminalSettings, IDebugAdapter, IDebugAdapterDescriptorFactory, IDebugSession, IDebugAdapterFactory, IDebugAdapterTrackerFactory } from 'vs/workbench/contrib/debug/common/debug';
@@ -352,9 +349,6 @@ export class MainThreadDebugService implements MainThreadDebugServiceShape, IDeb
 /**
  * DebugAdapter that communicates via extension protocol with another debug adapter.
  */
-
-// {{SQL CARBON EDIT}}
-/*
 class ExtensionHostDebugAdapter extends AbstractDebugAdapter {
 
 	constructor(private readonly _ds: MainThreadDebugService, private _handle: number, private _proxy: ExtHostDebugServiceShape, private _session: IDebugSession) {
@@ -381,5 +375,3 @@ class ExtensionHostDebugAdapter extends AbstractDebugAdapter {
 		return Promise.resolve(this._proxy.$stopDASession(this._handle));
 	}
 }
-// {{SQL CARBON EDIT}}
-*/

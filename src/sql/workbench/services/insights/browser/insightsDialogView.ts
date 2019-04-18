@@ -11,7 +11,7 @@ import { IInsightsConfigDetails } from 'sql/workbench/parts/dashboard/widgets/in
 import { attachButtonStyler, attachModalDialogStyler, attachTableStyler, attachPanelStyler } from 'sql/platform/theme/common/styler';
 import { TaskRegistry } from 'sql/platform/tasks/common/tasks';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import * as TelemetryKeys from 'sql/common/telemetryKeys';
+import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
 import { IInsightsDialogModel, ListResource, IInsightDialogActionContext, insertValueRegex } from 'sql/workbench/services/insights/common/insightsDialogService';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
@@ -403,7 +403,6 @@ export class InsightsDialogView extends Modal {
 
 	/**
 	 * Creates the context that should be passed to the action passed on the selected element for the top table
-	 * @param element
 	 */
 	private topInsightContext(element: ListResource): IConnectionProfile {
 		let database = this._insight.actions.database || this._connectionProfile.databaseName;
@@ -451,7 +450,6 @@ export class InsightsDialogView extends Modal {
 
 	/**
 	 * Creates the context that should be passed to the action passed on the selected element for the bottom table
-	 * @param element
 	 */
 	private bottomInsightContext(element: ListResource, cell: Slick.Cell): IInsightDialogActionContext {
 

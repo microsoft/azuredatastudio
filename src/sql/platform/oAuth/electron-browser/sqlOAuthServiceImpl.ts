@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as electron from 'electron';
 import { ISqlOAuthService } from 'sql/platform/oAuth/common/sqlOAuthService';
 
@@ -18,10 +16,10 @@ export class SqlOAuthService implements ISqlOAuthService {
 
 	/**
 	 * Sends request to main thread to handle OAuth request
-	 * @param {string} eventId Unique ID of the request to return upon completion
-	 * @param {string} url URL to load to do OAuth
-	 * @param {boolean} silent Whether or not to show the OAuth window
-	 * @return {Thenable<string>} Promise to return an authorization code
+	 * @param eventId Unique ID of the request to return upon completion
+	 * @param url URL to load to do OAuth
+	 * @param silent Whether or not to show the OAuth window
+	 * @return Promise to return an authorization code
 	 */
 	performOAuthAuthorization(eventId: string, url: string, silent: boolean): void {
 		// Setup the args and send the IPC call
@@ -37,7 +35,7 @@ export class SqlOAuthService implements ISqlOAuthService {
 
 	/**
 	 * Registers a handler for the oauth-reply event on the IPC channel
-	 * @param {(event, args) => void} handler Handler to call when the event is triggered
+	 * @param handler Handler to call when the event is triggered
 	 */
 	registerOAuthCallback(handler: (event, args) => void): void {
 		electron.ipcRenderer.on('oauth-reply', handler);

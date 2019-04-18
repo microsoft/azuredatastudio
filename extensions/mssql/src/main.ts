@@ -21,7 +21,7 @@ import { CredentialStore } from './credentialstore/credentialstore';
 import { AzureResourceProvider } from './resourceProvider/resourceProvider';
 import * as Utils from './utils';
 import { Telemetry, LanguageClientErrorHandler } from './telemetry';
-import { TelemetryFeature, AgentServicesFeature, DacFxServicesFeature } from './features';
+import { TelemetryFeature, AgentServicesFeature, DacFxServicesFeature, SchemaCompareServicesFeature } from './features';
 import { AppContext } from './appContext';
 import { ApiWrapper } from './apiWrapper';
 import { UploadFilesCommand, MkDirCommand, SaveFileCommand, PreviewFileCommand, CopyPathCommand, DeleteFilesCommand } from './objectExplorerNodeProvider/hdfsCommands';
@@ -77,6 +77,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 			TelemetryFeature,
 			AgentServicesFeature,
 			DacFxServicesFeature,
+			SchemaCompareServicesFeature
 		],
 		outputChannel: new CustomOutputChannel()
 	};

@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import { QueryResultsInput, ResultsViewState } from 'sql/parts/query/common/queryResultsInput';
 import { TabbedPanel, IPanelTab, IPanelView } from 'sql/base/browser/ui/panel/panel';
@@ -11,8 +10,8 @@ import QueryRunner from 'sql/platform/query/common/queryRunner';
 import { MessagePanel } from './messagePanel';
 import { GridPanel } from './gridPanel';
 import { ChartTab } from './charting/chartTab';
-import { QueryPlanTab } from 'sql/parts/queryPlan/queryPlan';
-import { TopOperationsTab } from 'sql/parts/queryPlan/topOperations';
+import { QueryPlanTab } from 'sql/workbench/parts/queryPlan/electron-browser/queryPlan';
+import { TopOperationsTab } from 'sql/workbench/parts/queryPlan/browser/topOperations';
 import { QueryModelViewTab } from 'sql/parts/query/modelViewTab/queryModelViewTab';
 
 import * as nls from 'vs/nls';
@@ -55,7 +54,7 @@ class ResultsView extends Disposable implements IPanelView {
 				if (this.state && this.state.gridPanelSize) {
 					panelSize = this.state.gridPanelSize;
 				} else if (this.currentDimension) {
-					panelSize = Math.round(this.currentDimension.height * .7);
+					panelSize = Math.round(this.currentDimension.height * 0.7);
 				} else {
 					panelSize = 200;
 					this.needsGridResize = true;
@@ -68,7 +67,7 @@ class ResultsView extends Disposable implements IPanelView {
 			if (this.state && this.state.gridPanelSize) {
 				panelSize = this.state.gridPanelSize;
 			} else if (this.currentDimension) {
-				panelSize = Math.round(this.currentDimension.height * .7);
+				panelSize = Math.round(this.currentDimension.height * 0.7);
 			} else {
 				panelSize = 200;
 				this.needsGridResize = true;
@@ -108,7 +107,7 @@ class ResultsView extends Disposable implements IPanelView {
 		}
 		this.currentDimension = dimension;
 		if (this.needsGridResize) {
-			this.panelViewlet.resizePanel(this.gridPanel, this.state.gridPanelSize || Math.round(this.currentDimension.height * .7));
+			this.panelViewlet.resizePanel(this.gridPanel, this.state.gridPanelSize || Math.round(this.currentDimension.height * 0.7));
 			// we have the right scroll position saved as part of gridPanel state, use this to re-position scrollbar
 			this.gridPanel.resetScrollPosition();
 		}

@@ -7,7 +7,7 @@ import 'vs/css!./dashboardGridContainer';
 
 import { Component, Inject, Input, forwardRef, ElementRef, ViewChildren, QueryList, OnDestroy, ChangeDetectorRef } from '@angular/core';
 
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 import { TabConfig, WidgetConfig } from 'sql/workbench/parts/dashboard/common/dashboardWidget';
 import { DashboardWidgetWrapper } from 'sql/workbench/parts/dashboard/contents/dashboardWidgetWrapper.component';
 import { DashboardTab } from 'sql/workbench/parts/dashboard/common/interfaces';

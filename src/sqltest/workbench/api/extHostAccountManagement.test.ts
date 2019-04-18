@@ -54,6 +54,7 @@ suite('ExtHostAccountManagement', () => {
 			properties: {},
 			displayInfo: {
 				displayName: 'Test Account',
+				userId: 'user@email.com',
 				contextualDisplayName: 'Test Kind Of Account',
 				accountType: 'test'
 			},
@@ -272,7 +273,8 @@ suite('ExtHostAccountManagement', () => {
 			displayInfo: {
 				contextualDisplayName: 'Microsoft Account',
 				accountType: 'microsoft',
-				displayName: 'Azure Account 1'
+				displayName: 'Azure Account 1',
+				userId: 'user@email.com'
 			},
 			properties: [],
 			isStale: false
@@ -285,7 +287,8 @@ suite('ExtHostAccountManagement', () => {
 			displayInfo: {
 				contextualDisplayName: 'Work/School Account',
 				accountType: 'microsoft',
-				displayName: 'Azure Account 2'
+				displayName: 'Azure Account 2',
+				userId: 'user@email.com'
 			},
 			properties: [],
 			isStale: false
@@ -347,7 +350,8 @@ suite('ExtHostAccountManagement', () => {
 			displayInfo: {
 				contextualDisplayName: 'Microsoft Account',
 				accountType: 'microsoft',
-				displayName: 'Azure Account 1'
+				displayName: 'Azure Account 1',
+				userId: 'user@email.com'
 			},
 			properties: [],
 			isStale: false
@@ -385,7 +389,8 @@ suite('ExtHostAccountManagement', () => {
 			displayInfo: {
 				contextualDisplayName: 'Microsoft Account',
 				accountType: 'microsoft',
-				displayName: 'Azure Account 1'
+				displayName: 'Azure Account 1',
+				userId: 'user@email.com'
 			},
 			properties: [],
 			isStale: false
@@ -409,7 +414,8 @@ suite('ExtHostAccountManagement', () => {
 			displayInfo: {
 				contextualDisplayName: 'Work/School Account',
 				accountType: 'microsoft',
-				displayName: 'Azure Account 2'
+				displayName: 'Azure Account 2',
+				userId: 'user@email.com'
 			},
 			properties: [],
 			isStale: false

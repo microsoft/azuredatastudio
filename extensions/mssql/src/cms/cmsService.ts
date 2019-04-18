@@ -20,9 +20,9 @@ export class CmsService {
 		this.appContext.registerService<CmsService>(constants.CmsService, this);
 	}
 
-	 createCmsServer(name: string, description:string, connectiondetails: azdata.ConnectionInfo, ownerUri: string): Thenable<ListRegisteredServersResult> {
+	createCmsServer(name: string, description: string, connectiondetails: azdata.ConnectionInfo, ownerUri: string): Thenable<ListRegisteredServersResult> {
 		let connectparams: ConnectParams = { ownerUri: ownerUri, connection: connectiondetails };
-		let cmsparams: contracts.CreateCentralManagementServerParams = { registeredServerName: name, registeredServerDescription: description, connectParams: connectparams};
+		let cmsparams: contracts.CreateCentralManagementServerParams = { registeredServerName: name, registeredServerDescription: description, connectParams: connectparams };
 
 		return this.client.sendRequest(contracts.CreateCentralManagementServerRequest.type, cmsparams).then(
 			r => {
@@ -35,7 +35,7 @@ export class CmsService {
 		);
 	}
 
-	 getRegisteredServers(ownerUri: string, relativePath: string): Thenable<ListRegisteredServersResult>  {
+	getRegisteredServers(ownerUri: string, relativePath: string): Thenable<ListRegisteredServersResult> {
 		let params: contracts.ListRegisteredServersParams = { parentOwnerUri: ownerUri, relativePath: relativePath };
 		return this.client.sendRequest(contracts.ListRegisteredServersRequest.type, params).then(
 			r => {
@@ -48,7 +48,7 @@ export class CmsService {
 		);
 	}
 
-	 addRegisteredServer (ownerUri: string, relativePath: string, registeredServerName: string, registeredServerDescription:string, connectionDetails:azdata.ConnectionInfo): Thenable<boolean> {
+	addRegisteredServer(ownerUri: string, relativePath: string, registeredServerName: string, registeredServerDescription: string, connectionDetails: azdata.ConnectionInfo): Thenable<boolean> {
 		let params: contracts.AddRegisteredServerParams = { parentOwnerUri: ownerUri, relativePath: relativePath, registeredServerName: registeredServerName, registeredServerDescription: registeredServerDescription, registeredServerConnectionDetails: connectionDetails };
 		return this.client.sendRequest(contracts.AddRegisteredServerRequest.type, params).then(
 			r => {
@@ -61,7 +61,7 @@ export class CmsService {
 		);
 	}
 
-	 removeRegisteredServer (ownerUri: string, relativePath: string, registeredServerName: string): Thenable<boolean> {
+	removeRegisteredServer(ownerUri: string, relativePath: string, registeredServerName: string): Thenable<boolean> {
 		let params: contracts.RemoveRegisteredServerParams = { parentOwnerUri: ownerUri, relativePath: relativePath, registeredServerName: registeredServerName };
 		return this.client.sendRequest(contracts.RemoveRegisteredServerRequest.type, params).then(
 			r => {
@@ -74,7 +74,7 @@ export class CmsService {
 		);
 	}
 
-	 addServerGroup (ownerUri: string, relativePath: string, groupName: string, groupDescription:string): Thenable<boolean> {
+	addServerGroup(ownerUri: string, relativePath: string, groupName: string, groupDescription: string): Thenable<boolean> {
 		let params: contracts.AddServerGroupParams = { parentOwnerUri: ownerUri, relativePath: relativePath, groupName: groupName, groupDescription: groupDescription };
 		return this.client.sendRequest(contracts.AddServerGroupRequest.type, params).then(
 			r => {
@@ -87,7 +87,7 @@ export class CmsService {
 		);
 	}
 
-	 removeServerGroup (ownerUri: string, relativePath: string, groupName: string): Thenable<boolean>  {
+	removeServerGroup(ownerUri: string, relativePath: string, groupName: string): Thenable<boolean> {
 		let params: contracts.RemoveServerGroupParams = { parentOwnerUri: ownerUri, relativePath: relativePath, groupName: groupName };
 		return this.client.sendRequest(contracts.RemoveServerGroupRequest.type, params).then(
 			r => {

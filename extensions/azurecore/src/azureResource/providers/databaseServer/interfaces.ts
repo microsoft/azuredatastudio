@@ -5,7 +5,7 @@
 
 'use strict';
 
-import { ServiceClientCredentials }  from 'ms-rest';
+import { ServiceClientCredentials } from 'ms-rest';
 
 import { azureResource } from '../../azure-resource';
 import { AzureResourceDatabaseServer } from './models';

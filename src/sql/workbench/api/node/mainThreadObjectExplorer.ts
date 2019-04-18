@@ -15,7 +15,7 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { dispose, IDisposable } from 'vs/base/common/lifecycle';
-import { TreeItemCollapsibleState } from 'sql/parts/objectExplorer/common/treeNode';
+import { TreeItemCollapsibleState } from 'sql/workbench/parts/objectExplorer/common/treeNode';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadObjectExplorer)
 export class MainThreadObjectExplorer implements MainThreadObjectExplorerShape {

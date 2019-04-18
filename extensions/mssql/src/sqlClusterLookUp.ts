@@ -17,7 +17,7 @@ import { MssqlObjectExplorerNodeProvider } from './objectExplorerNodeProvider/ob
 
 export function findSqlClusterConnection(
 	obj: ICommandObjectExplorerContext | azdata.IConnectionProfile,
-	appContext: AppContext) : SqlClusterConnection  {
+	appContext: AppContext): SqlClusterConnection {
 
 	if (!obj || !appContext) { return undefined; }
 
@@ -45,7 +45,7 @@ function findSqlClusterConnectionBySqlConnProfile(sqlConnProfile: azdata.IConnec
 	let sqlClusterSession = sqlOeNodeProvider.findSqlClusterSessionBySqlConnProfile(sqlConnProfile);
 	if (!sqlClusterSession) { return undefined; }
 
-	return  sqlClusterSession.sqlClusterConnection;
+	return sqlClusterSession.sqlClusterConnection;
 }
 
 export async function getSqlClusterConnection(
@@ -79,7 +79,11 @@ async function createSqlClusterConnInfo(sqlConnInfo: azdata.IConnectionProfile |
 	let endpoints: IEndpoint[] = serverInfo.options[constants.clusterEndpointsProperty];
 	if (!endpoints || endpoints.length === 0) { return undefined; }
 
-	let index = endpoints.findIndex(ep => ep.serviceName === constants.hadoopKnoxEndpointName);
+	let index = endpoints.findIndex(ep => {
+		let serviceName: string = ep.serviceName.toLowerCase();
+		return serviceName === constants.hadoopEndpointNameKnox.toLowerCase() ||
+			serviceName === constants.hadoopEndpointNameGateway.toLowerCase();
+	});
 	if (index < 0) { return undefined; }
 
 	let credentials = await azdata.connection.getCredentials(connectionId);
@@ -119,8 +123,7 @@ function connToConnectionParam(connection: azdata.connection.Connection): Connec
 	return <ConnectionParam>result;
 }
 
-class ConnectionParam implements azdata.connection.Connection, azdata.IConnectionProfile, azdata.ConnectionInfo
-{
+class ConnectionParam implements azdata.connection.Connection, azdata.IConnectionProfile, azdata.ConnectionInfo {
 	public connectionName: string;
 	public serverName: string;
 	public databaseName: string;

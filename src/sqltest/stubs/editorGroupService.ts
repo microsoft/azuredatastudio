@@ -15,6 +15,7 @@ import { IDimension } from 'vs/editor/common/editorCommon';
 import { IDisposable } from 'vs/base/common/lifecycle';
 
 export class EditorGroupTestService implements IEditorGroupsService {
+	willRestoreEditors: boolean;
 	dimension: IDimension;
 	whenRestored: Promise<void>;
 	centerLayout(active: boolean): void {
@@ -141,7 +142,7 @@ export class EditorGroupTestService implements IEditorGroupsService {
 	/**
 	 * Keyboard focus the editor group at the provided position.
 	 */
-    public focusGroup(group: EditorGroup): void;
+	public focusGroup(group: EditorGroup): void;
 	public focusGroup(position: Position): void;
 	public focusGroup(arg1: any) {
 		return;

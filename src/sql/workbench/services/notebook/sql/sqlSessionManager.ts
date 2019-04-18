@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import * as os from 'os';
 import { nb, QueryExecuteSubsetResult, IDbColumn, BatchSummary, IResultMessage, ResultSetSummary } from 'azdata';
@@ -176,6 +175,10 @@ class SqlKernel extends Disposable implements nb.IKernel {
 	}
 
 	public get supportsIntellisense(): boolean {
+		return true;
+	}
+
+	public get requiresConnection(): boolean {
 		return true;
 	}
 
@@ -428,7 +431,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		if (rowCount > 0) {
 			subsetResult = await this._queryRunner.getQueryRows(0, rowCount, resultSet.batchId, resultSet.id);
 		} else {
-			subsetResult = { message: '', resultSubset: { rowCount: 0, rows: [] }};
+			subsetResult = { message: '', resultSubset: { rowCount: 0, rows: [] } };
 		}
 		let msg: nb.IIOPubMessage = {
 			channel: 'iopub',

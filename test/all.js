@@ -48,7 +48,7 @@ function main() {
 		console.error(e.stack || e);
 	});
 
-  // {{SQL CARBON EDIT}}
+	// {{SQL CARBON EDIT}}
 	var loaderConfig = {
 		nodeRequire: require,
 		nodeMain: __filename,
@@ -71,7 +71,7 @@ function main() {
 			'@angular/platform-browser-dynamic',
 			'@angular/router',
 			'angular2-grid',
-			'ng2-charts/ng2-charts',
+			'ng2-charts',
 			'rxjs/add/observable/of',
 			'rxjs/Observable',
 			'rxjs/Subject',
@@ -87,7 +87,7 @@ function main() {
 		loaderConfig.nodeInstrumenter = function (contents, source) {
 			seenSources[source] = true;
 
-      // {{SQL CARBON EDIT}}
+			// {{SQL CARBON EDIT}}
 			if (minimatch(source, SQL_TEST_GLOB)) {
 				return contents;
 			}
@@ -162,7 +162,7 @@ function main() {
 			for (var entryKey in remappedCoverage) {
 				var entry = remappedCoverage[entryKey];
 				entry.path = fixPath(entry.path);
-        // {{SQL CARBON EDIT}}
+				// {{SQL CARBON EDIT}}
 				if (!entry.path.includes('\\vs\\') && !entry.path.includes('/vs/')) {
 					finalCoverage[fixPath(entryKey)] = entry;
 				}
@@ -179,7 +179,7 @@ function main() {
 				coveragePath += '-single';
 				reportTypes = ['lcovonly'];
 			} else {
-        // {{SQL CARBON EDIT}}
+				// {{SQL CARBON EDIT}}
 				reportTypes = ['json', 'lcov', 'html', 'cobertura'];
 			}
 			var reporter = new istanbul.Reporter(null, coveragePath);
@@ -199,7 +199,7 @@ function main() {
 	global.Node = global.window.Node;
 	global.navigator = global.window.navigator;
 	global.XMLHttpRequest = global.window.XMLHttpRequest;
-  // {{SQL CARBON EDIT}}
+	// {{SQL CARBON EDIT}}
 	global.Event = global.window.Event;
 
 	require('reflect-metadata');
@@ -306,14 +306,14 @@ function main() {
 				}
 			});
 		});
-    // {{SQL CARBON EDIT}}
+	// {{SQL CARBON EDIT}}
 		*/
 
 		// replace the default unexpected error handler to be useful during tests
 		loader(['vs/base/common/errors'], function (errors) {
 			errors.setUnexpectedErrorHandler(function (err) {
 				let stack = (err && err.stack) || (new Error().stack);
-        // {{SQL CARBON EDIT}}
+				// {{SQL CARBON EDIT}}
 				//unexpectedErrors.push((err && err.message ? err.message : err) + '\n' + stack);
 			});
 
