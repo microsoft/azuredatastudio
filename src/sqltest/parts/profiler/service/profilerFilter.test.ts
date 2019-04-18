@@ -6,7 +6,7 @@
 'use strict';
 
 import * as assert from 'assert';
-import { FilterData } from 'sql/parts/profiler/service/profilerFilter';
+import { FilterData } from 'sql/workbench/services/profiler/common/profilerFilter';
 import { ProfilerFilterClauseOperator, ProfilerFilter } from 'sql/workbench/services/profiler/common/interfaces';
 
 const property1 = 'property1';

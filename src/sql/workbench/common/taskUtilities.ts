@@ -13,7 +13,7 @@ import {
 } from 'sql/platform/connection/common/connectionManagement';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { IScriptingService } from 'sql/platform/scripting/common/scriptingService';
-import { EditDataInput } from 'sql/parts/editData/common/editDataInput';
+import { EditDataInput } from 'sql/workbench/parts/editData/common/editDataInput';
 import { IRestoreDialogController } from 'sql/platform/restore/common/restoreService';
 import { IInsightsConfig } from 'sql/workbench/parts/dashboard/widgets/insights/interfaces';
 import { IInsightsDialogService } from 'sql/workbench/services/insights/common/insightsDialogService';
@@ -21,7 +21,7 @@ import { ConnectionManagementInfo } from 'sql/platform/connection/common/connect
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
 import { DashboardInput } from 'sql/workbench/parts/dashboard/dashboardInput';
-import { ProfilerInput } from 'sql/parts/profiler/editor/profilerInput';
+import { ProfilerInput } from 'sql/workbench/parts/profiler/browser/profilerInput';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { IBackupUiService } from 'sql/workbench/services/backup/common/backupUiService';
 
