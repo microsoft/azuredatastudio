@@ -68,6 +68,7 @@ export interface IStaticWorkspaceData {
 	id: string;
 	name: string;
 	configuration?: UriComponents | null;
+	isUntitled?: boolean | null;
 }
 
 export interface IWorkspaceData extends IStaticWorkspaceData {
