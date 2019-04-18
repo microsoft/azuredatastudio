@@ -23,6 +23,7 @@ import { ConfigurePythonDialog } from '../dialog/configurePythonDialog';
 const localize = nls.loadMessageBundle();
 const msgPythonInstallationProgress = localize('msgPythonInstallationProgress', 'Python installation is in progress');
 const msgPythonInstallationComplete = localize('msgPythonInstallationComplete', 'Python installation is complete');
+const msgPythonDownloadComplete = localize('msgPythonDownloadComplete', 'Python download is complete');
 const msgPythonDownloadError = localize('msgPythonDownloadError', 'Error while downloading python setup');
 const msgPythonDownloadPending = localize('msgPythonDownloadPending', 'Downloading python package');
 const msgPythonUnpackPending = localize('msgPythonUnpackPending', 'Unpacking python package');
@@ -76,12 +77,13 @@ export default class JupyterServerInstallation {
 			this.outputChannel.appendLine(msgPythonInstallationProgress);
 			backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonInstallationProgress);
 			await this.installPythonPackage(backgroundOperation);
-			backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonInstallationComplete);
-			this.outputChannel.appendLine(msgPythonInstallationComplete);
+			backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonDownloadComplete);
+			this.outputChannel.appendLine(msgPythonDownloadComplete);
 
 			// Install jupyter on Windows because local python is not bundled with jupyter unlike linux and MacOS.
 			await this.installJupyterProsePackage();
 			await this.installSparkMagic();
+			this.outputChannel.appendLine(msgPythonInstallationComplete);
 			backgroundOperation.updateStatus(azdata.TaskStatus.Succeeded, msgInstallPkgFinish);
 			window.showInformationMessage(msgInstallPkgFinish);
 		}
