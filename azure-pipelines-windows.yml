@@ -36,3 +36,12 @@ steps:
   inputs:
     testResultsFiles: 'test-results.xml'
   condition: succeededOrFailed()
+
+- script: |
+    .\scripts\test.bat --coverage
+  displayName: 'Code Coverage'
+
+- task: PublishTestResults@2
+  inputs:
+    testResultsFiles: '.\.build\cobertura-coverage.xml'
+  condition: succeededOrFailed()
