@@ -46,8 +46,8 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 
 	/**
 	 * Clears all tokens that belong to the given account from the token cache
-	 * @param {"data".AccountKey} accountKey Key identifying the account to delete tokens for
-	 * @returns {Thenable<void>} Promise to clear requested tokens from the token cache
+	 * @param accountKey Key identifying the account to delete tokens for
+	 * @returns Promise to clear requested tokens from the token cache
 	 */
 	public clear(accountKey: azdata.AccountKey): Thenable<void> {
 		return this.doIfInitialized(() => this.clearAccountTokens(accountKey));
@@ -55,7 +55,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 
 	/**
 	 * Clears the entire token cache. Invoked by command palette action.
-	 * @returns {Thenable<void>} Promise to clear the token cache
+	 * @returns Promise to clear the token cache
 	 */
 	public clearTokenCache(): Thenable<void> {
 		return this._tokenCache.clear();
@@ -84,13 +84,13 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 			// NOTE: Based on ADAL implementation, getting tokens should use the refresh token if necessary
 			let task = this.getAccessTokens(account, azdata.AzureResource.ResourceManagement)
 				.then(
-				() => {
-					return account;
-				},
-				() => {
-					account.isStale = true;
-					return account;
-				}
+					() => {
+						return account;
+					},
+					() => {
+						account.isStale = true;
+						return account;
+					}
 				);
 			rehydrationTasks.push(task);
 		}
@@ -313,10 +313,10 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 	 * Retrieves a token for the given user ID for the specific tenant ID. If the token can, it
 	 * will be retrieved from the cache as per the ADAL API. AFAIK, the ADAL API will also utilize
 	 * the refresh token if there aren't any unexpired tokens to use.
-	 * @param {string} userId ID of the user to get a token for
-	 * @param {string} tenantId Tenant to get the token for
-	 * @param {string} resourceId ID of the resource the token will be good for
-	 * @returns {Thenable<TokenResponse>} Promise to return a token. Rejected if retrieving the token fails.
+	 * @param userId ID of the user to get a token for
+	 * @param tenantId Tenant to get the token for
+	 * @param resourceId ID of the resource the token will be good for
+	 * @returns Promise to return a token. Rejected if retrieving the token fails.
 	 */
 	private getToken(userId: string, tenantId: string, resourceId: string): Thenable<adal.TokenResponse> {
 		let self = this;
@@ -338,9 +338,9 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 
 	/**
 	 * Performs a web request using the provided bearer token
-	 * @param {TokenResponse} accessToken Bearer token for accessing the provided URI
-	 * @param {string} uri URI to access
-	 * @returns {Thenable<any>} Promise to return the deserialized body of the request. Rejected if error occurred.
+	 * @param accessToken Bearer token for accessing the provided URI
+	 * @param uri URI to access
+	 * @returns Promise to return the deserialized body of the request. Rejected if error occurred.
 	 */
 	private makeWebRequest(accessToken: adal.TokenResponse, uri: string): Thenable<any> {
 		return new Promise<any>((resolve, reject) => {

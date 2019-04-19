@@ -73,7 +73,9 @@ export abstract class Command extends vscode.Disposable {
 	}
 
 	dispose(): void {
-		this.disposable && this.disposable.dispose();
+		if (this.disposable) {
+			this.disposable.dispose();
+		}
 	}
 
 	protected get apiWrapper(): ApiWrapper {

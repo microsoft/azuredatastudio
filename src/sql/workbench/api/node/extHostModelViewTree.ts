@@ -99,15 +99,15 @@ export class ExtHostTreeView<T> extends vsTreeExt.ExtHostTreeView<T> {
 			console.error(`No tree item with id \'${parentHandle}\' found.`);
 		}
 
-		this._onNodeCheckedChanged.fire({element: parentElement, checked: checked});
+		this._onNodeCheckedChanged.fire({ element: parentElement, checked: checked });
 	}
 
 	onNodeSelectedChanged(parentHandles?: vsTreeExt.TreeItemHandle[]): void {
 		if (parentHandles) {
 			let nodes = parentHandles.map(parentHandle => {
-				return  parentHandle ? this.getExtensionElement(parentHandle) : void 0;
+				return parentHandle ? this.getExtensionElement(parentHandle) : void 0;
 			});
-			this._onChangeSelection.fire({ selection: nodes});
+			this._onChangeSelection.fire({ selection: nodes });
 		}
 	}
 

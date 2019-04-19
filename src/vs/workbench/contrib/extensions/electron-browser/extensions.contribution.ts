@@ -252,11 +252,6 @@ Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration)
 				scope: ConfigurationScope.APPLICATION,
 				default: ExtensionsPolicy.allowAll
 			},
-			'extensions.showInstalledExtensionsByDefault': {
-				type: 'boolean',
-				description: localize('extensions.showInstalledExtensionsByDefault', "When enabled, extensions view shows installed extensions view by default."),
-				default: false
-			}
 		}
 	});
 

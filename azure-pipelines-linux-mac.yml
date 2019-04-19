@@ -24,12 +24,27 @@ steps:
 
 - script: |
     yarn
-  displayName:  'Install'
+  displayName: 'Install'
 
 - script: |
-    node_modules/.bin/gulp electron
-    node_modules/.bin/gulp compile --max_old_space_size=4096
-  displayName: 'Scripts'
+    yarn gulp electron-x64
+  displayName: Download Electron
+
+- script: |
+    yarn gulp hygiene
+  displayName: Run Hygiene Checks
+
+- script: |
+    yarn tslint
+  displayName: 'Run TSLint'
+
+- script: |
+    yarn strict-null-check
+  displayName: 'Run Strict Null Check'
+
+- script: |
+    yarn compile
+  displayName: 'Compile'
 
 - script: |
     DISPLAY=:10 ./scripts/test.sh --reporter mocha-junit-reporter
@@ -39,11 +54,3 @@ steps:
   inputs:
     testResultsFiles: '**/test-results.xml'
   condition: succeededOrFailed()
-
-- script: |
-    yarn tslint
-  displayName: 'Run TSLint'
-
-- script: |
-    yarn strict-null-check
-  displayName: 'Run Strict Null Check'

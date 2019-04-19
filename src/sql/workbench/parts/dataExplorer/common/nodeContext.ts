@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ConnectionContextKey } from 'sql/workbench/parts/connection/common/connectionContextKey';
-import { IOEShimService } from 'sql/parts/objectExplorer/common/objectExplorerViewTreeShim';
+import { IOEShimService } from 'sql/workbench/parts/objectExplorer/common/objectExplorerViewTreeShim';
 import { ITreeItem } from 'sql/workbench/common/views';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IContextKey, IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';

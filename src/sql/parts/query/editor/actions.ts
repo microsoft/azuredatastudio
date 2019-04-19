@@ -1,10 +1,7 @@
-
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
-'use strict';
 
 import { Action } from 'vs/base/common/actions';
 import { localize } from 'vs/nls';
@@ -13,7 +10,7 @@ import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 
 import QueryRunner from 'sql/platform/query/common/queryRunner';
-import { SaveFormat } from 'sql/parts/grid/common/interfaces';
+import { SaveFormat } from 'sql/workbench/parts/grid/common/interfaces';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { GridTableState } from 'sql/parts/query/editor/gridPanel';
 import { QueryEditor } from './queryEditor';
@@ -150,8 +147,7 @@ export class CopyAllMessagesAction extends Action {
 
 	constructor(
 		private tree: ITree,
-		@IClipboardService private clipboardService: IClipboardService)
-	{
+		@IClipboardService private clipboardService: IClipboardService) {
 		super(CopyAllMessagesAction.ID, CopyAllMessagesAction.LABEL);
 	}
 

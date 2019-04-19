@@ -111,7 +111,7 @@ export function getOSPlatform(): Platform {
 }
 
 export function getOSPlatformId(): string {
-	var platformId = undefined;
+	let platformId = undefined;
 	switch (process.platform) {
 		case 'win32':
 			platformId = 'win-x64';

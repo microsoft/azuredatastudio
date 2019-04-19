@@ -107,7 +107,7 @@ export class Dropdown extends Disposable {
 		super();
 		this._contextView = new ContextView(layoutService.container);
 		this._options = opt || Object.create(null);
-		mixin(this._options, defaults, false) as IDropdownOptions;
+		mixin(this._options, defaults, false);
 		this._el = DOM.append(container, DOM.$('.monaco-dropdown'));
 		this._el.style.width = '100%';
 

@@ -30,7 +30,7 @@ import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { withNullAsUndefined, withUndefinedAsNull } from 'vs/base/common/types';
 
 //{{SQL CARBON EDIT}}
-import { convertEditorInput, getFileMode } from 'sql/parts/common/customInputConverter';
+import { convertEditorInput, getFileMode } from 'sql/workbench/common/customInputConverter';
 //{{SQL CARBON EDIT}} - End
 
 type ICachedEditorInput = ResourceEditorInput | IFileEditorInput | DataUriEditorInput;
@@ -533,7 +533,7 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 		if (!untitledInput.resource || typeof untitledInput.filePath === 'string' || (untitledInput.resource instanceof URI && untitledInput.resource.scheme === Schemas.untitled)) {
 			// {{SQL CARBON EDIT}}
 
-			let modeId: string = untitledInput.language ? untitledInput.language : getFileMode( this.instantiationService, untitledInput.resource);
+			let modeId: string = untitledInput.language ? untitledInput.language : getFileMode(this.instantiationService, untitledInput.resource);
 			return convertEditorInput(this.untitledEditorService.createOrGet(
 				untitledInput.filePath ? URI.file(untitledInput.filePath) : untitledInput.resource,
 				modeId,

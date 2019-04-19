@@ -5,22 +5,24 @@
 COMMIT="@@COMMIT@@"
 APP_NAME="@@APPNAME@@"
 QUALITY="@@QUALITY@@"
-
-set -e
+NAME="@@NAME@@"
 
 if grep -qi Microsoft /proc/version; then
 	# in a wsl shell
 	WIN_CODE_CMD=$(wslpath -w "$(dirname "$(realpath "$0")")/$APP_NAME.cmd")
-
-	WSL_EXT_ID="ms-vscode.remote-wsl"
-	WSL_EXT_WLOC=$(cmd.exe /c "$WIN_CODE_CMD" --locate-extension $WSL_EXT_ID)
-	if ! [ -z "$WSL_EXT_WLOC" ]; then
-		# replace \r\n with \n in WSL_EXT_WLOC, get linux path for
-		WSL_CODE=$(wslpath -u "${WSL_EXT_WLOC%%[[:cntrl:]]}")/scripts/wslCode.sh
-		$WSL_CODE $COMMIT $QUALITY "$WIN_CODE_CMD" "$APP_NAME" "$@"
-		exit $?
+	if ! [ -z "$WIN_CODE_CMD" ]; then
+		WSL_EXT_ID="ms-vscode.remote-wsl"
+		WSL_EXT_WLOC=$(cmd.exe /c "$WIN_CODE_CMD" --locate-extension $WSL_EXT_ID)
+		if ! [ -z "$WSL_EXT_WLOC" ]; then
+			# replace \r\n with \n in WSL_EXT_WLOC, get linux path for
+			WSL_CODE=$(wslpath -u "${WSL_EXT_WLOC%%[[:cntrl:]]}")/scripts/wslCode.sh
+			"$WSL_CODE" $COMMIT $QUALITY "$WIN_CODE_CMD" "$APP_NAME" "$@"
+			exit $?
+		fi
 	fi
 fi
+
+VSCODE_PATH="$(dirname "$(dirname "$(realpath "$0")")")"
 
 if [ -x "$(command -v cygpath)" ]; then
 	CLI=$(cygpath -m "$VSCODE_PATH/resources/app/out/cli.js")

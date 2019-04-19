@@ -153,7 +153,7 @@ export class HdfsFileSource implements IFileSource {
 					reject(error);
 				} else {
 					let hdfsFiles: IFile[] = files.map(file => {
-						let hdfsFile = <IHdfsFileStatus> file;
+						let hdfsFile = <IHdfsFileStatus>file;
 						return new File(File.createPath(path, hdfsFile.pathSuffix), hdfsFile.type === 'DIRECTORY');
 					});
 					resolve(hdfsFiles);
@@ -195,9 +195,9 @@ export class HdfsFileSource implements IFileSource {
 					error = <HdfsError>err;
 					if (error.message.includes('Stream exceeded specified max')) {
 						// We have data > maxbytes, show we're truncating
-						let previewNote: string = '#################################################################################################################### \r\n'+
-						'########################### '+ localize('maxSizeNotice', "NOTICE: This file has been truncated at {0} for preview. ", bytes(maxBytes)) + '############################### \r\n' +
-						'#################################################################################################################### \r\n';
+						let previewNote: string = '#################################################################################################################### \r\n' +
+							'########################### ' + localize('maxSizeNotice', "NOTICE: This file has been truncated at {0} for preview. ", bytes(maxBytes)) + '############################### \r\n' +
+							'#################################################################################################################### \r\n';
 						data.splice(0, 0, Buffer.from(previewNote, 'utf-8'));
 						vscode.window.showWarningMessage(localize('maxSizeReached', "The file has been truncated at {0} for preview.", bytes(maxBytes)));
 						resolve(Buffer.concat(data));
@@ -236,15 +236,15 @@ export class HdfsFileSource implements IFileSource {
 					lineReader.close();
 				}
 			})
-			.on('error', (err) => {
-				error = <HdfsError>err;
-				reject(error);
-			})
-			.on('close', () => {
-				if (!error) {
-					resolve(Buffer.from(lineData.join(os.EOL)));
-				}
-			});
+				.on('error', (err) => {
+					error = <HdfsError>err;
+					reject(error);
+				})
+				.on('close', () => {
+					if (!error) {
+						resolve(Buffer.from(lineData.join(os.EOL)));
+					}
+				});
 		});
 	}
 

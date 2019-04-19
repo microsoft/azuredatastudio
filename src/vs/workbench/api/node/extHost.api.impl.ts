@@ -116,7 +116,7 @@ export function createApiFactory(
 	const extHostFileSystem = rpcProtocol.set(ExtHostContext.ExtHostFileSystem, new ExtHostFileSystem(rpcProtocol, extHostLanguageFeatures));
 	const extHostFileSystemEvent = rpcProtocol.set(ExtHostContext.ExtHostFileSystemEventService, new ExtHostFileSystemEventService(rpcProtocol, extHostDocumentsAndEditors));
 	const extHostQuickOpen = rpcProtocol.set(ExtHostContext.ExtHostQuickOpen, new ExtHostQuickOpen(rpcProtocol, extHostWorkspace, extHostCommands));
-	const extHostTerminalService = rpcProtocol.set(ExtHostContext.ExtHostTerminalService, new ExtHostTerminalService(rpcProtocol, extHostConfiguration, extHostLogService));
+	const extHostTerminalService = rpcProtocol.set(ExtHostContext.ExtHostTerminalService, new ExtHostTerminalService(rpcProtocol, extHostConfiguration, extHostWorkspace, extHostDocumentsAndEditors, extHostLogService));
 	// {{SQL CARBON EDIT}}
 	// const extHostDebugService = rpcProtocol.set(ExtHostContext.ExtHostDebugService, new ExtHostDebugService(rpcProtocol, extHostWorkspace, extensionService, extHostDocumentsAndEditors, extHostConfiguration, extHostTerminalService, extHostCommands));
 	const extHostSCM = rpcProtocol.set(ExtHostContext.ExtHostSCM, new ExtHostSCM(rpcProtocol, extHostCommands, extHostLogService));
@@ -142,7 +142,8 @@ export function createApiFactory(
 	}
 
 	// Check that no named customers are missing
-	const expected: ProxyIdentifier<any>[] = values(ExtHostContext);
+	// {{SQL CARBON EDIT}} filter out the services we don't expose
+	const expected: ProxyIdentifier<any>[] = values(ExtHostContext).filter(v => v !== ExtHostContext.ExtHostDebugService);
 	rpcProtocol.assertRegistered(expected);
 
 	// Other instances
@@ -257,7 +258,7 @@ export function createApiFactory(
 				return extHostClipboard;
 			},
 			openExternal(uri: URI) {
-				return extHostWindow.openUri(uri);
+				return extHostWindow.openUri(uri, { allowTunneling: !!initData.remoteAuthority });
 			}
 		});
 
@@ -539,6 +540,12 @@ export function createApiFactory(
 			set name(value) {
 				throw errors.readonly();
 			},
+			get workspaceFile() {
+				return extHostWorkspace.workspaceFile;
+			},
+			set workspaceFile(value) {
+				throw errors.readonly();
+			},
 			updateWorkspaceFolders: (index, deleteCount, ...workspaceFoldersToAdd) => {
 				return extHostWorkspace.updateWorkspaceFolders(extension, index, deleteCount || 0, ...workspaceFoldersToAdd);
 			},
@@ -814,6 +821,7 @@ export function createApiFactory(
 			Range: extHostTypes.Range,
 			RelativePattern: extHostTypes.RelativePattern,
 			ResolvedAuthority: extHostTypes.ResolvedAuthority,
+			RemoteAuthorityResolverError: extHostTypes.RemoteAuthorityResolverError,
 			Selection: extHostTypes.Selection,
 			SelectionRange: extHostTypes.SelectionRange,
 			ShellExecution: extHostTypes.ShellExecution,

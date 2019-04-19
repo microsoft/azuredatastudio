@@ -106,10 +106,10 @@ suite('SQL ConnectionManagementService tests', () => {
 			c => c.serverName === connectionProfile.serverName))).returns(() => Promise.resolve({ profile: connectionProfile, savedCred: true }));
 		connectionStore.setup(x => x.addSavedPassword(TypeMoq.It.is<IConnectionProfile>(
 			c => c.serverName === connectionProfileWithEmptySavedPassword.serverName))).returns(
-			() => Promise.resolve({ profile: connectionProfileWithEmptySavedPassword, savedCred: true }));
+				() => Promise.resolve({ profile: connectionProfileWithEmptySavedPassword, savedCred: true }));
 		connectionStore.setup(x => x.addSavedPassword(TypeMoq.It.is<IConnectionProfile>(
 			c => c.serverName === connectionProfileWithEmptyUnsavedPassword.serverName))).returns(
-			() => Promise.resolve({ profile: connectionProfileWithEmptyUnsavedPassword, savedCred: false }));
+				() => Promise.resolve({ profile: connectionProfileWithEmptyUnsavedPassword, savedCred: false }));
 		connectionStore.setup(x => x.isPasswordRequired(TypeMoq.It.isAny())).returns(() => true);
 		connectionStore.setup(x => x.getConnectionProfileGroups(false, undefined)).returns(() => [root]);
 

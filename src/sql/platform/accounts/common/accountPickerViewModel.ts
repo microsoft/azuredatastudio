@@ -33,7 +33,7 @@ export class AccountPickerViewModel {
 	// PUBLIC METHODS //////////////////////////////////////////////////////
 	/**
 	 * Loads an initial list of accounts from the account management service
-	 * @return {Thenable<Account[]>} Promise to return the list of accounts
+	 * @return Promise to return the list of accounts
 	 */
 	public initialize(): Thenable<azdata.Account[]> {
 		// Load a baseline of the accounts for the provider

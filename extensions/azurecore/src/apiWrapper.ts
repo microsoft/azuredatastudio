@@ -13,7 +13,6 @@ import * as constants from './constants';
  * this API from our code
  *
  * @export
- * @class ApiWrapper
  */
 export class ApiWrapper {
 	// Data APIs

@@ -7,7 +7,7 @@ import 'vs/css!./media/messagePanel';
 import { IMessagesActionContext, CopyMessagesAction, CopyAllMessagesAction } from './actions';
 import QueryRunner from 'sql/platform/query/common/queryRunner';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
-import { IExpandableTree } from 'sql/parts/objectExplorer/viewlet/treeUpdateUtils';
+import { IExpandableTree } from 'sql/workbench/parts/objectExplorer/browser/treeUpdateUtils';
 
 import { IResultMessage, ISelectionData } from 'azdata';
 

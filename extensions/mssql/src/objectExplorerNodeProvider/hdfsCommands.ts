@@ -7,7 +7,6 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as fs from 'fs';
 import * as fspath from 'path';
-import * as clipboardy from 'clipboardy';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
@@ -374,7 +373,7 @@ export class CopyPathCommand extends Command {
 			let node = await getNode<HdfsFileSourceNode>(context, this.appContext);
 			if (node) {
 				let path = node.hdfsPath;
-				clipboardy.writeSync(path);
+				vscode.env.clipboard.writeText(path);
 			} else {
 				this.apiWrapper.showErrorMessage(LocalizedConstants.msgMissingNodeContext);
 			}

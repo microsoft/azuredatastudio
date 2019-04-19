@@ -222,7 +222,6 @@ export class PerNotebookServerInstance implements IServerInstance {
 	/**
 	 * Starts a Jupyter instance using the provided a start command. Server is determined to have
 	 * started when the log message with URL to connect to is emitted.
-	 * @returns {Promise<void>}
 	 */
 	protected async startInternal(): Promise<void> {
 		if (this.isStarted) {

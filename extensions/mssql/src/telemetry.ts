@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import * as opener from 'opener';
 import TelemetryReporter from 'vscode-extension-telemetry';
 import { PlatformInformation } from 'service-downloader/out/platform';
 import { ErrorAction, ErrorHandler, Message, CloseAction } from 'vscode-languageclient';
@@ -137,7 +136,6 @@ export class Telemetry {
 
 /**
  * Handle Language Service client errors
- * @class LanguageClientErrorHandler
  */
 export class LanguageClientErrorHandler implements ErrorHandler {
 
@@ -151,18 +149,13 @@ export class LanguageClientErrorHandler implements ErrorHandler {
 			Constants.serviceCrashMessage,
 			Constants.serviceCrashButton).then(action => {
 				if (action && action === Constants.serviceCrashButton) {
-					opener(Constants.serviceCrashLink);
+					vscode.env.openExternal(vscode.Uri.parse(Constants.serviceCrashLink));
 				}
 			});
 	}
 
 	/**
 	 * Callback for language service client error
-	 *
-	 * @param {Error} error
-	 * @param {Message} message
-	 * @param {number} count
-	 * @returns {ErrorAction}
 	 *
 	 * @memberOf LanguageClientErrorHandler
 	 */
@@ -176,8 +169,6 @@ export class LanguageClientErrorHandler implements ErrorHandler {
 
 	/**
 	 * Callback for language service client closed
-	 *
-	 * @returns {CloseAction}
 	 *
 	 * @memberOf LanguageClientErrorHandler
 	 */

@@ -34,8 +34,9 @@ export function resolveCommonProperties(commit: string | undefined, version: str
 	result['common.nodePlatform'] = process.platform;
 	// __GDPR__COMMON__ "common.nodeArch" : { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" }
 	result['common.nodeArch'] = process.arch;
-
+	// __GDPR__COMMON__ "common.product" : { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" }
 	// {{SQL CARBON EDIT}}
+	result['common.product'] = product.nameShort || 'desktop';
 	result['common.application.name'] = product.nameLong;
 
 	// dynamic properties which value differs on each call

@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import * as azdata from 'azdata';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 import { ICapabilitiesService, ProviderFeatures } from 'sql/platform/capabilities/common/capabilitiesService';
@@ -120,7 +119,6 @@ export class CapabilitiesTestService implements ICapabilitiesService {
 
 	/**
 	 * Register the capabilities provider and query the provider for its capabilities
-	 * @param provider
 	 */
 	public registerProvider(provider: azdata.CapabilitiesProvider): void {
 	}
@@ -145,4 +143,3 @@ export class CapabilitiesTestService implements ICapabilitiesService {
 	private _onCapabilitiesRegistered = new Emitter<ProviderFeatures>();
 	public readonly onCapabilitiesRegistered = this._onCapabilitiesRegistered.event;
 }
-

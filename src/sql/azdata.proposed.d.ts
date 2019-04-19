@@ -44,6 +44,8 @@ declare module 'azdata' {
 
 		export function registerDacFxServicesProvider(provider: DacFxServicesProvider): vscode.Disposable;
 
+		export function registerSchemaCompareServicesProvider(provider: SchemaCompareServicesProvider): vscode.Disposable;
+
 		/**
 		 * An [event](#Event) which fires when the specific flavor of a language used in DMP
 		 * connections has changed. And example is for a SQL connection, the flavor changes
@@ -58,8 +60,8 @@ declare module 'azdata' {
 	export namespace credentials {
 		/**
 		 * Register a credential provider to handle credential requests.
-		 * @param {CredentialProvider} provider The provider to register
-		 * @return {Disposable} Handle to the provider for disposal
+		 * @param provider The provider to register
+		 * @return Handle to the provider for disposal
 		 */
 		export function registerProvider(provider: CredentialProvider): vscode.Disposable;
 
@@ -67,8 +69,8 @@ declare module 'azdata' {
 		 * Retrieves a provider from the extension host if one has been registered. Any credentials
 		 * accessed with the returned provider will have the namespaceId appended to credential ID
 		 * to prevent extensions from trampling over each others' credentials.
-		 * @param {string} namespaceId ID that will be appended to credential IDs.
-		 * @return {Thenable<CredentialProvider>} Promise that returns the namespaced provider
+		 * @param namespaceId ID that will be appended to credential IDs.
+		 * @return Promise that returns the namespaced provider
 		 */
 		export function getProvider(namespaceId: string): Thenable<CredentialProvider>;
 	}
@@ -96,14 +98,14 @@ declare module 'azdata' {
 
 		/**
 		 * Get the credentials for an active connection
-		 * @param {string} connectionId The id of the connection
-		 * @returns {{ [name: string]: string}} A dictionary containing the credentials as they would be included in the connection's options dictionary
+		 * @param connectionId The id of the connection
+		 * @returns A dictionary containing the credentials as they would be included in the connection's options dictionary
 		 */
 		export function getCredentials(connectionId: string): Thenable<{ [name: string]: string }>;
 
 		/**
 		 * Get ServerInfo for a connectionId
-		 * @param {string} connectionId The id of the connection
+		 * @param connectionId The id of the connection
 		 * @returns ServerInfo
 		 */
 		export function getServerInfo(connectionId: string): Thenable<ServerInfo>;
@@ -132,35 +134,35 @@ declare module 'azdata' {
 		 * Get an Object Explorer node corresponding to the given connection and path. If no path
 		 * is given, it returns the top-level node for the given connection. If there is no node at
 		 * the given path, it returns undefined.
-		 * @param {string} connectionId The id of the connection that the node exists on
-		 * @param {string?} nodePath The path of the node to get
-		 * @returns {ObjectExplorerNode} The node corresponding to the given connection and path,
+		 * @param connectionId The id of the connection that the node exists on
+		 * @param nodePath The path of the node to get
+		 * @returns The node corresponding to the given connection and path,
 		 * or undefined if no such node exists.
 		*/
 		export function getNode(connectionId: string, nodePath?: string): Thenable<ObjectExplorerNode>;
 
 		/**
 		 * Get all active Object Explorer connection nodes
-		 * @returns {ObjectExplorerNode[]} The Object Explorer nodes for each saved connection
+		 * @returns The Object Explorer nodes for each saved connection
 		*/
 		export function getActiveConnectionNodes(): Thenable<ObjectExplorerNode[]>;
 
 		/**
 		 * Find Object Explorer nodes that match the given information
-		 * @param {string} connectionId The id of the connection that the node exists on
-		 * @param {string} type The type of the object to retrieve
-		 * @param {string} schema The schema of the object, if applicable
-		 * @param {string} name The name of the object
-		 * @param {string} database The database the object exists under, if applicable
-		 * @param {string[]} parentObjectNames A list of names of parent objects in the tree, ordered from highest to lowest level
+		 * @param connectionId The id of the connection that the node exists on
+		 * @param type The type of the object to retrieve
+		 * @param schema The schema of the object, if applicable
+		 * @param name The name of the object
+		 * @param database The database the object exists under, if applicable
+		 * @param parentObjectNames A list of names of parent objects in the tree, ordered from highest to lowest level
 		 * (for example when searching for a table's column, provide the name of its parent table for this argument)
 		 */
 		export function findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames: string[]): Thenable<ObjectExplorerNode[]>;
 
 		/**
 		 * Get connectionProfile from sessionId
-		 * *@param {string} sessionId The id of the session that the node exists on
-		 * @returns {IConnectionProfile} The IConnecitonProfile for the session
+		 * @param sessionId The id of the session that the node exists on
+		 * @returns The IConnecitonProfile for the session
 		 */
 		export function getSessionConnectionProfile(sessionId: string): Thenable<IConnectionProfile>;
 
@@ -1699,6 +1701,51 @@ declare module 'azdata' {
 		generateDeployPlan(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<GenerateDeployPlanResult>;
 	}
 
+	// Schema Compare interfaces  -----------------------------------------------------------------------
+	export interface SchemaCompareResult extends ResultStatus {
+		operationId: string;
+		areEqual: boolean;
+		differences: DiffEntry[];
+	}
+
+	export interface DiffEntry {
+		updateAction: SchemaUpdateAction;
+		differenceType: SchemaDifferenceType;
+		name: string;
+		sourceValue: string;
+		targetValue: string;
+		parent: DiffEntry;
+		children: DiffEntry[];
+		sourceScript: string;
+		targetScript: string;
+	}
+
+	export enum SchemaUpdateAction {
+		Delete = 0,
+		Change = 1,
+		Add = 2
+	}
+
+	export enum SchemaDifferenceType {
+		Object = 0,
+		Property = 1
+	}
+	export enum SchemaCompareEndpointType {
+		database = 0,
+		dacpac = 1
+	}
+	export interface SchemaCompareEndpointInfo {
+		endpointType: SchemaCompareEndpointType;
+		packageFilePath: string;
+		databaseName: string;
+		ownerUri: string;
+	}
+
+	export interface SchemaCompareServicesProvider extends DataProvider {
+		schemaCompare(sourceEndpointInfo: SchemaCompareEndpointInfo, targetEndpointInfo: SchemaCompareEndpointInfo, taskExecutionMode: TaskExecutionMode): Thenable<SchemaCompareResult>;
+		schemaCompareGenerateScript(operationId: string, targetDatabaseName: string, scriptFilePath: string, taskExecutionMode: TaskExecutionMode): Thenable<ResultStatus>;
+	}
+
 	// Security service interfaces ------------------------------------------------------------------------
 	export interface CredentialInfo {
 		id: number;
@@ -2000,11 +2047,7 @@ declare module 'azdata' {
 		 * Launches a flyout dialog that will display the information on how to complete device
 		 * code OAuth login to the user. Only one flyout can be opened at once and each must be closed
 		 * by calling {@link endAutoOAuthDeviceCode}.
-		 * @param {string} providerId	ID of the provider that's requesting the flyout be opened
-		 * @param {string} title
-		 * @param {string} message
-		 * @param {string} userCode
-		 * @param {string} uri
+		 * @param providerId	ID of the provider that's requesting the flyout be opened
 		 */
 		export function beginAutoOAuthDeviceCode(providerId: string, title: string, message: string, userCode: string, uri: string): Thenable<void>;
 
@@ -2016,21 +2059,21 @@ declare module 'azdata' {
 		/**
 		 * Notifies the account management service that an account has updated (usually due to the
 		 * account going stale).
-		 * @param {Account} updatedAccount Account object with updated properties
+		 * @param updatedAccount Account object with updated properties
 		 */
 		export function accountUpdated(updatedAccount: Account): void;
 
 		/**
 		 * Gets all added accounts.
-		 * @returns {Thenable<Account>} Promise to return the accounts
+		 * @returns Promise to return the accounts
 		 */
 		export function getAllAccounts(): Thenable<Account[]>;
 
 		/**
 		 * Generates a security token by asking the account's provider
-		 * @param {Account} account Account to generate security token for (defaults to
+		 * @param account Account to generate security token for (defaults to
 		 * AzureResource.ResourceManagement if not given)
-		 * @return {Thenable<{}>} Promise to return the security token
+		 * @return Promise to return the security token
 		 */
 		export function getSecurityToken(account: Account, resource?: AzureResource): Thenable<{}>;
 
@@ -2164,16 +2207,16 @@ declare module 'azdata' {
 	export interface AccountProvider {
 		/**
 		 * Initializes the account provider with the accounts restored from the memento,
-		 * @param {Account[]} storedAccounts Accounts restored from the memento
-		 * @return {Thenable<Account[]>} Account objects after being rehydrated (if necessary)
+		 * @param storedAccounts Accounts restored from the memento
+		 * @return Account objects after being rehydrated (if necessary)
 		 */
 		initialize(storedAccounts: Account[]): Thenable<Account[]>;
 
 		/**
 		 * Generates a security token for the provided account
-		 * @param {Account} account The account to generate a security token for
-		 * @param {AzureResource} resource The resource to get the token for
-		 * @return {Thenable<{}>} Promise to return a security token object
+		 * @param account The account to generate a security token for
+		 * @param resource The resource to get the token for
+		 * @return Promise to return a security token object
 		 */
 		getSecurityToken(account: Account, resource: AzureResource): Thenable<{}>;
 
@@ -2397,7 +2440,6 @@ declare module 'azdata' {
 	/**
 	 * Supports defining a model that can be instantiated as a view in the UI
 	 * @export
-	 * @interface ModelBuilder
 	 */
 	export interface ModelBuilder {
 		navContainer(): ContainerBuilder<NavContainer, any, any>;
@@ -2507,7 +2549,7 @@ declare module 'azdata' {
 		 * Creates a collection of child components and adds them all to this container
 		 *
 		 * @param formComponents the definitions
-		 * @param {*} [itemLayout] Optional layout for the child items
+		 * @param [itemLayout] Optional layout for the child items
 		 */
 		addFormItems(formComponents: Array<FormComponent | FormComponentGroup>, itemLayout?: FormItemLayout): void;
 
@@ -2515,7 +2557,7 @@ declare module 'azdata' {
 		 * Creates a child component and adds it to this container.
 		 *
 		 * @param formComponent the component to be added
-		 * @param {*} [itemLayout] Optional layout for this child item
+		 * @param [itemLayout] Optional layout for this child item
 		 */
 		addFormItem(formComponent: FormComponent | FormComponentGroup, itemLayout?: FormItemLayout): void;
 
@@ -2529,7 +2571,6 @@ declare module 'azdata' {
 
 		/**
 		 * Removes a from item from the from
-		 * @param formComponent
 		 */
 		removeFormItem(formComponent: FormComponent | FormComponentGroup): boolean;
 	}
@@ -2540,18 +2581,16 @@ declare module 'azdata' {
 		/**
 		 * Sends any updated properties of the component to the UI
 		 *
-		 * @returns {Thenable<void>} Thenable that completes once the update
+		 * @returns Thenable that completes once the update
 		 * has been applied in the UI
-		 * @memberof Component
 		 */
 		updateProperties(properties: { [key: string]: any }): Thenable<void>;
 
 		/**
 		 * Sends an updated property of the component to the UI
 		 *
-		 * @returns {Thenable<void>} Thenable that completes once the update
+		 * @returns Thenable that completes once the update
 		 * has been applied in the UI
-		 * @memberof Component
 		 */
 		updateProperty(key: string, value: any): Thenable<void>;
 
@@ -2618,7 +2657,7 @@ declare module 'azdata' {
 		 * Creates a collection of child components and adds them all to this container
 		 *
 		 * @param itemConfigs the definitions
-		 * @param {*} [itemLayout] Optional layout for the child items
+		 * @param [itemLayout] Optional layout for the child items
 		 */
 		addItems(itemConfigs: Array<Component>, itemLayout?: TItemLayout): void;
 
@@ -2626,8 +2665,8 @@ declare module 'azdata' {
 		 * Creates a child component and adds it to this container.
 		 * Adding component to multiple containers is not supported
 		 *
-		 * @param {Component} component the component to be added
-		 * @param {*} [itemLayout] Optional layout for this child item
+		 * @param component the component to be added
+		 * @param [itemLayout] Optional layout for this child item
 		 */
 		addItem(component: Component, itemLayout?: TItemLayout): void;
 
@@ -2636,7 +2675,7 @@ declare module 'azdata' {
 		 * Adding component to multiple containers is not supported
 		 * @param component the component to be added
 		 * @param index the index to insert the component to
-		 * @param {*} [itemLayout] Optional layout for this child item
+		 * @param [itemLayout] Optional layout for this child item
 		 */
 		insertItem(component: Component, index: number, itemLayout?: TItemLayout): void;
 
@@ -2649,7 +2688,7 @@ declare module 'azdata' {
 		/**
 		 * Defines the layout for this container
 		 *
-		 * @param {TLayout} layout object
+		 * @param layout object
 		 */
 		setLayout(layout: TLayout): void;
 	}
@@ -2787,8 +2826,8 @@ declare module 'azdata' {
 
 	export interface DivContainer extends Container<DivLayout, DivItemLayout>, DivContainerProperties {
 		/**
- 		 * An event called when the div is clicked
- 		 */
+		 * An event called when the div is clicked
+		 */
 		onDidClick: vscode.Event<any>;
 	}
 
@@ -2916,6 +2955,7 @@ declare module 'azdata' {
 		value: string;
 		width?: number;
 		cssClass?: string;
+		headerCssClass?: string;
 		toolTip?: string;
 	}
 
@@ -3323,9 +3363,8 @@ declare module 'azdata' {
 
 	export namespace window {
 		/**
- 		 * creates a web view dialog
- 		 * @param title
- 		 */
+		 * creates a web view dialog
+		 */
 		export function createWebViewDialog(title: string): ModalDialog;
 
 		/**
@@ -3688,14 +3727,14 @@ declare module 'azdata' {
 
 		/**
 		 * Make connection for the query editor
-		 * @param {string} fileUri file URI for the query editor
-		 * @param {string} connectionId connection ID
+		 * @param fileUri file URI for the query editor
+		 * @param connectionId connection ID
 		 */
 		export function connect(fileUri: string, connectionId: string): Thenable<void>;
 
 		/**
 		 * Run query if it is a query editor and it is already opened.
-		 * @param {string} fileUri file URI for the query editor
+		 * @param fileUri file URI for the query editor
 		 */
 		export function runQuery(fileUri: string, options?: Map<string, string>): void;
 
@@ -3704,7 +3743,7 @@ declare module 'azdata' {
 		 */
 		export function registerQueryEventListener(listener: queryeditor.QueryEventListener): void;
 
-		export function getQueryDocument(fileUri: string): queryeditor.QueryDocument
+		export function getQueryDocument(fileUri: string): queryeditor.QueryDocument;
 	}
 
 	/**
@@ -3764,6 +3803,7 @@ declare module 'azdata' {
 		AgentServicesProvider = 'AgentServicesProvider',
 		CapabilitiesProvider = 'CapabilitiesProvider',
 		DacFxServicesProvider = 'DacFxServicesProvider',
+		SchemaCompareServicesProvider = 'SchemaCompareServicesProvider',
 		ObjectExplorerNodeProvider = 'ObjectExplorerNodeProvider',
 	}
 
@@ -3895,8 +3935,8 @@ declare module 'azdata' {
 	export namespace connection {
 		/**
 		 * List the databases that can be accessed from the given connection
-		 * @param {string} connectionId The ID of the connection
-		 * @returns {string[]} An list of names of databases
+		 * @param connectionId The ID of the connection
+		 * @returns An list of names of databases
 		 */
 		export function listDatabases(connectionId: string): Thenable<string[]>;
 
@@ -3911,7 +3951,6 @@ declare module 'azdata' {
 		/**
 		 * Opens the connection dialog, calls the callback with the result. If connection was successful
 		 * returns the connection otherwise returns undefined
-		 * @param callback
 		 */
 		export function openConnectionDialog(providers?: string[], initialConnectionProfile?: IConnectionProfile, connectionCompletionOptions?: IConnectionCompletionOptions): Thenable<connection.Connection>;
 
@@ -3925,8 +3964,6 @@ declare module 'azdata' {
 	export namespace nb {
 		/**
 		 * All notebook documents currently known to the system.
-		 *
-		 * @readonly
 		 */
 		export let notebookDocuments: NotebookDocument[];
 

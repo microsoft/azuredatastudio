@@ -18,12 +18,12 @@
 
 	"tab.bigDataClusterDescription": "Tasks and information about your SQL Server Big Data Cluster",
 	"title.bigDataCluster": "SQL Server Big Data Cluster",
-    "title.submitSparkJob": "Submit Spark Job",
-    "title.newSparkJob": "New Spark Job",
-    "title.openSparkHistory": "View Spark History",
-    "title.openYarnHistory": "View Yarn History",
-    "title.tasks": "Tasks",
-    "title.installPackages": "Install Packages",
+	"title.submitSparkJob": "Submit Spark Job",
+	"title.newSparkJob": "New Spark Job",
+	"title.openSparkHistory": "View Spark History",
+	"title.openYarnHistory": "View Yarn History",
+	"title.tasks": "Tasks",
+	"title.installPackages": "Install Packages",
 	"title.configurePython": "Configure Python for Notebooks",
 
 	"title.searchServers": "Search: Servers",

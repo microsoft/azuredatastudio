@@ -29,7 +29,7 @@ export class OperatorData implements IAgentDialogData {
 	weekdayPagerStartTime: string;
 	weekdayPagerEndTime: string;
 
-	constructor(ownerUri:string, operatorInfo: azdata.AgentOperatorInfo) {
+	constructor(ownerUri: string, operatorInfo: azdata.AgentOperatorInfo) {
 		this.ownerUri = ownerUri;
 		if (operatorInfo) {
 			this.dialogMode = AgentDialogMode.EDIT;
@@ -58,7 +58,7 @@ export class OperatorData implements IAgentDialogData {
 
 	public async save() {
 		let agentService = await AgentUtils.getAgentService();
-		let result = await agentService.createOperator(this.ownerUri,  this.toAgentOperatorInfo());
+		let result = await agentService.createOperator(this.ownerUri, this.toAgentOperatorInfo());
 		if (!result || !result.success) {
 			// TODO handle error here
 		}

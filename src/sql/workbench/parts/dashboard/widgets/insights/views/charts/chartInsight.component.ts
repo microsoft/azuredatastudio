@@ -293,7 +293,7 @@ function isValidData(data: IInsightData): boolean {
 Chart.pluginService.register({
 	beforeDraw: function (chart) {
 		if (chart.config.options.viewArea && chart.config.options.viewArea.backgroundColor) {
-			var ctx = chart.chart.ctx;
+			let ctx = chart.chart.ctx;
 			ctx.fillStyle = chart.config.options.viewArea.backgroundColor;
 			ctx.fillRect(0, 0, chart.chart.width, chart.chart.height);
 		}

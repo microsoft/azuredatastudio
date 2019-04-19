@@ -354,6 +354,10 @@ export function createApiFactory(
 				return extHostDataProvider.$registerDacFxServiceProvider(provider);
 			};
 
+			let registerSchemaCompareServicesProvider = (provider: azdata.SchemaCompareServicesProvider): vscode.Disposable => {
+				return extHostDataProvider.$registerSchemaCompareServiceProvider(provider);
+			};
+
 			// namespace: dataprotocol
 			const dataprotocol: typeof azdata.dataprotocol = {
 				registerBackupProvider,
@@ -371,6 +375,7 @@ export function createApiFactory(
 				registerAgentServicesProvider,
 				registerCapabilitiesServiceProvider,
 				registerDacFxServicesProvider,
+				registerSchemaCompareServicesProvider,
 				onDidChangeLanguageFlavor(listener: (e: azdata.DidChangeLanguageFlavorParams) => any, thisArgs?: any, disposables?: extHostTypes.Disposable[]) {
 					return extHostDataProvider.onDidChangeLanguageFlavor(listener, thisArgs, disposables);
 				},
@@ -528,7 +533,10 @@ export function createApiFactory(
 				nb: nb,
 				AzureResource: sqlExtHostTypes.AzureResource,
 				TreeItem: sqlExtHostTypes.TreeItem,
-				extensions: extensions
+				extensions: extensions,
+				SchemaUpdateAction: sqlExtHostTypes.SchemaUpdateAction,
+				SchemaDifferenceType: sqlExtHostTypes.SchemaDifferenceType,
+				SchemaCompareEndpointType: sqlExtHostTypes.SchemaCompareEndpointType
 			};
 		},
 
@@ -750,17 +758,10 @@ export function createApiFactory(
 				return extHostDataProvider.$registerAdminServicesProvider(provider);
 			};
 
-			let registerAgentServicesProvider = (provider: sqlops.AgentServicesProvider): vscode.Disposable => {
-				provider.registerOnUpdated(() => {
-					extHostDataProvider.$onJobDataUpdated(provider.handle);
-				});
-
-				return extHostDataProvider.$registerAgentServiceProvider(provider);
-			};
-
 			let registerDacFxServicesProvider = (provider: sqlops.DacFxServicesProvider): vscode.Disposable => {
 				return extHostDataProvider.$registerDacFxServiceProvider(provider);
 			};
+
 
 			// namespace: dataprotocol
 			const dataprotocol: typeof sqlops.dataprotocol = {
@@ -776,7 +777,6 @@ export function createApiFactory(
 				registerTaskServicesProvider,
 				registerQueryProvider,
 				registerAdminServicesProvider,
-				registerAgentServicesProvider,
 				registerCapabilitiesServiceProvider,
 				registerDacFxServicesProvider,
 				onDidChangeLanguageFlavor(listener: (e: sqlops.DidChangeLanguageFlavorParams) => any, thisArgs?: any, disposables?: extHostTypes.Disposable[]) {
@@ -942,14 +942,6 @@ export function createApiFactory(
 				TaskStatus: sqlExtHostTypes.TaskStatus,
 				TaskExecutionMode: sqlExtHostTypes.TaskExecutionMode,
 				ScriptOperation: sqlExtHostTypes.ScriptOperation,
-				WeekDays: sqlExtHostTypes.WeekDays,
-				NotifyMethods: sqlExtHostTypes.NotifyMethods,
-				JobCompletionActionCondition: sqlExtHostTypes.JobCompletionActionCondition,
-				JobExecutionStatus: sqlExtHostTypes.JobExecutionStatus,
-				AlertType: sqlExtHostTypes.AlertType,
-				FrequencyTypes: sqlExtHostTypes.FrequencyTypes,
-				FrequencySubDayTypes: sqlExtHostTypes.FrequencySubDayTypes,
-				FrequencyRelativeIntervals: sqlExtHostTypes.FrequencyRelativeIntervals,
 				window,
 				tasks,
 				dashboard,

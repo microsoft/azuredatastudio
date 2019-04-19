@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { TernarySearchTree } from 'vs/base/common/map';
@@ -202,9 +202,9 @@ export class OpenNodeModuleFactory implements INodeModuleFactory {
 				return this.callOriginal(target, options);
 			}
 			if (uri.scheme === 'http' || uri.scheme === 'https') {
-				return mainThreadWindow.$openUri(uri);
+				return mainThreadWindow.$openUri(uri, { allowTunneling: true });
 			} else if (uri.scheme === 'mailto') {
-				return mainThreadWindow.$openUri(uri);
+				return mainThreadWindow.$openUri(uri, {});
 			}
 			return this.callOriginal(target, options);
 		};

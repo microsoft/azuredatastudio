@@ -9,7 +9,7 @@ import 'mocha';
 import * as vscode from 'vscode';
 import { context } from './testContext';
 import assert = require('assert');
-import { getConfigValue, EnvironmentVariable_BDC_SERVER, EnvironmentVariable_BDC_USERNAME, EnvironmentVariable_BDC_PASSWORD, EnvironmentVariable_AZURE_PASSWORD, EnvironmentVariable_AZURE_SERVER, EnvironmentVariable_AZURE_USERNAME, EnvironmentVariable_STANDALONE_PASSWORD, EnvironmentVariable_STANDALONE_SERVER, EnvironmentVariable_STANDALONE_USERNAME, EnvironmentVariable_PYTHON_PATH } from './utils';
+import { getConfigValue, EnvironmentVariable_BDC_SERVER, EnvironmentVariable_BDC_USERNAME, EnvironmentVariable_BDC_PASSWORD, EnvironmentVariable_AZURE_PASSWORD, EnvironmentVariable_AZURE_SERVER, EnvironmentVariable_AZURE_USERNAME, EnvironmentVariable_STANDALONE_PASSWORD, EnvironmentVariable_STANDALONE_SERVER, EnvironmentVariable_STANDALONE_USERNAME, EnvironmentVariable_PYTHON_PATH } from './testConfig';
 
 assert(getConfigValue(EnvironmentVariable_BDC_SERVER) !== undefined &&
 	getConfigValue(EnvironmentVariable_BDC_USERNAME) !== undefined &&

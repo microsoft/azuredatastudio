@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import 'vs/css!sql/media/overwriteVsIcons';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { EditorDescriptor, IEditorRegistry, Extensions as EditorExtensions } from 'vs/workbench/browser/editor';
@@ -22,20 +21,20 @@ import { QueryResultsEditor } from 'sql/parts/query/editor/queryResultsEditor';
 import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
 import * as queryContext from 'sql/parts/query/common/queryContext';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
-import { EditDataEditor } from 'sql/parts/editData/editor/editDataEditor';
-import { EditDataInput } from 'sql/parts/editData/common/editDataInput';
+import { EditDataEditor } from 'sql/workbench/parts/editData/browser/editDataEditor';
+import { EditDataInput } from 'sql/workbench/parts/editData/common/editDataInput';
 import {
 	RunQueryKeyboardAction, RunCurrentQueryKeyboardAction, CancelQueryKeyboardAction, RefreshIntellisenseKeyboardAction, ToggleQueryResultsKeyboardAction,
 	RunQueryShortcutAction, RunCurrentQueryWithActualPlanKeyboardAction, FocusOnCurrentQueryKeyboardAction, ParseSyntaxAction
 } from 'sql/parts/query/execution/keyboardQueryActions';
-import * as gridActions from 'sql/parts/grid/views/gridActions';
-import * as gridCommands from 'sql/parts/grid/views/gridCommands';
-import { QueryPlanEditor } from 'sql/parts/queryPlan/queryPlanEditor';
-import { QueryPlanInput } from 'sql/parts/queryPlan/queryPlanInput';
+import * as gridActions from 'sql/workbench/parts/grid/views/gridActions';
+import * as gridCommands from 'sql/workbench/parts/grid/views/gridCommands';
+import { QueryPlanEditor } from 'sql/workbench/parts/queryPlan/electron-browser/queryPlanEditor';
+import { QueryPlanInput } from 'sql/workbench/parts/queryPlan/common/queryPlanInput';
 import * as Constants from 'sql/parts/query/common/constants';
 import { localize } from 'vs/nls';
-import { EditDataResultsEditor } from 'sql/parts/editData/editor/editDataResultsEditor';
-import { EditDataResultsInput } from 'sql/parts/editData/common/editDataResultsInput';
+import { EditDataResultsEditor } from 'sql/workbench/parts/editData/browser/editDataResultsEditor';
+import { EditDataResultsInput } from 'sql/workbench/parts/editData/common/editDataResultsInput';
 
 const gridCommandsWeightBonus = 100; // give our commands a little bit more weight over other default list/tree commands
 

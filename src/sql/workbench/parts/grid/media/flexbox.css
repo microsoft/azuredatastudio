@@ -1,0 +1,76 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.fullsize {
+	height: 100%;
+	width: 100%;
+}
+
+/* vertical box styles */
+.vertBox {
+	display: flex;
+	flex-flow: column;
+}
+
+.vertBox .boxRow.header {
+	flex: 0 0 auto;
+}
+
+.vertBox .boxRow.content {
+	flex: 1 1 0;
+}
+
+.edgesPadding {
+	padding-left: 10px;
+	padding-right: 10px;
+	padding-top: 10px;
+}
+
+.messagesTopSpacing {
+	height: 5px;
+}
+
+.results {
+	flex: 100 1 0;
+}
+
+.scrollable {
+	overflow: auto;
+}
+
+.maxHeight {
+	max-height: fit-content;
+}
+
+.minHeight {
+	min-height: fit-content;
+}
+
+/* horizontal box style */
+.horzBox {
+	display: flex;
+	flex-flow: row;
+}
+
+.horzBox .boxCol.content {
+	flex: 1 1 1%;
+	overflow: auto;
+	max-width: fit-content;
+}
+
+.hidden {
+	display: none !important;
+}
+
+/* testing
+
+.vertBox {
+	border: 1px solid green;
+}
+
+.horzBox {
+	border: 1px solid red;
+}
+*/

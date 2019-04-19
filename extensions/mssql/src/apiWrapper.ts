@@ -11,7 +11,6 @@ import * as azdata from 'azdata';
  * this API from our code
  *
  * @export
- * @class ApiWrapper
  */
 export class ApiWrapper {
 	// Data APIs

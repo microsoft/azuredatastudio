@@ -13,7 +13,6 @@ declare module 'sqlops' {
 	/**
 	 * Supports defining a model that can be instantiated as a view in the UI
 	 * @export
-	 * @interface ModelBuilder
 	 */
 	export interface ModelBuilder {
 		navContainer(): ContainerBuilder<NavContainer, any, any>;
@@ -117,7 +116,7 @@ declare module 'sqlops' {
 		 * Creates a collection of child components and adds them all to this container
 		 *
 		 * @param formComponents the definitions
-		 * @param {*} [itemLayout] Optional layout for the child items
+		 * @param [itemLayout] Optional layout for the child items
 		 */
 		addFormItems(formComponents: Array<FormComponent | FormComponentGroup>, itemLayout?: FormItemLayout): void;
 
@@ -125,7 +124,7 @@ declare module 'sqlops' {
 		 * Creates a child component and adds it to this container.
 		 *
 		 * @param formComponent the component to be added
-		 * @param {*} [itemLayout] Optional layout for this child item
+		 * @param [itemLayout] Optional layout for this child item
 		 */
 		addFormItem(formComponent: FormComponent | FormComponentGroup, itemLayout?: FormItemLayout): void;
 
@@ -139,7 +138,6 @@ declare module 'sqlops' {
 
 		/**
 		 * Removes a from item from the from
-		 * @param formComponent
 		 */
 		removeFormItem(formComponent: FormComponent | FormComponentGroup): boolean;
 	}
@@ -150,18 +148,16 @@ declare module 'sqlops' {
 		/**
 		 * Sends any updated properties of the component to the UI
 		 *
-		 * @returns {Thenable<void>} Thenable that completes once the update
+		 * @returns henable that completes once the update
 		 * has been applied in the UI
-		 * @memberof Component
 		 */
 		updateProperties(properties: { [key: string]: any }): Thenable<void>;
 
 		/**
 		 * Sends an updated property of the component to the UI
 		 *
-		 * @returns {Thenable<void>} Thenable that completes once the update
+		 * @returns Thenable that completes once the update
 		 * has been applied in the UI
-		 * @memberof Component
 		 */
 		updateProperty(key: string, value: any): Thenable<void>;
 
@@ -227,7 +223,7 @@ declare module 'sqlops' {
 		 * Creates a collection of child components and adds them all to this container
 		 *
 		 * @param itemConfigs the definitions
-		 * @param {*} [itemLayout] Optional layout for the child items
+		 * @param [itemLayout] Optional layout for the child items
 		 */
 		addItems(itemConfigs: Array<Component>, itemLayout?: TItemLayout): void;
 
@@ -235,8 +231,8 @@ declare module 'sqlops' {
 		 * Creates a child component and adds it to this container.
 		 * Adding component to multiple containers is not supported
 		 *
-		 * @param {Component} component the component to be added
-		 * @param {*} [itemLayout] Optional layout for this child item
+		 * @param component the component to be added
+		 * @param [itemLayout] Optional layout for this child item
 		 */
 		addItem(component: Component, itemLayout?: TItemLayout): void;
 
@@ -245,7 +241,7 @@ declare module 'sqlops' {
 		 * Adding component to multiple containers is not supported
 		 * @param component the component to be added
 		 * @param index the index to insert the component to
-		 * @param {*} [itemLayout] Optional layout for this child item
+		 * @param [itemLayout] Optional layout for this child item
 		 */
 		insertItem(component: Component, index: number, itemLayout?: TItemLayout): void;
 
@@ -258,7 +254,7 @@ declare module 'sqlops' {
 		/**
 		 * Defines the layout for this container
 		 *
-		 * @param {TLayout} layout object
+		 * @param layout object
 		 */
 		setLayout(layout: TLayout): void;
 	}
@@ -1193,9 +1189,8 @@ declare module 'sqlops' {
 		}
 
 		/**
- 		 * creates a web view dialog
- 		 * @param title
- 		 */
+		 * creates a web view dialog
+		 */
 		export function createWebViewDialog(title: string): ModalDialog;
 
 		/**
@@ -1533,14 +1528,14 @@ declare module 'sqlops' {
 
 		/**
 		 * Make connection for the query editor
-		 * @param {string} fileUri file URI for the query editor
-		 * @param {string} connectionId connection ID
+		 * @param fileUri file URI for the query editor
+		 * @param connectionId connection ID
 		 */
 		export function connect(fileUri: string, connectionId: string): Thenable<void>;
 
 		/**
 		 * Run query if it is a query editor and it is already opened.
-		 * @param {string} fileUri file URI for the query editor
+		 * @param fileUri file URI for the query editor
 		 */
 		export function runQuery(fileUri: string): void;
 	}
@@ -1602,6 +1597,7 @@ declare module 'sqlops' {
 		AgentServicesProvider = 'AgentServicesProvider',
 		CapabilitiesProvider = 'CapabilitiesProvider',
 		DacFxServicesProvider = 'DacFxServicesProvider',
+		SchemaCompareServicesProvider = 'SchemaCompareServicesProvider',
 		ObjectExplorerNodeProvider = 'ObjectExplorerNodeProvider'
 	}
 
@@ -1722,8 +1718,8 @@ declare module 'sqlops' {
 	export namespace connection {
 		/**
 		 * List the databases that can be accessed from the given connection
-		 * @param {string} connectionId The ID of the connection
-		 * @returns {string[]} An list of names of databases
+		 * @param connectionId The ID of the connection
+		 * @returns An list of names of databases
 		 */
 		export function listDatabases(connectionId: string): Thenable<string[]>;
 
@@ -1738,7 +1734,6 @@ declare module 'sqlops' {
 		/**
 		 * Opens the connection dialog, calls the callback with the result. If connection was successful
 		 * returns the connection otherwise returns undefined
-		 * @param callback
 		 */
 		export function openConnectionDialog(providers?: string[], initialConnectionProfile?: IConnectionProfile, connectionCompletionOptions?: IConnectionCompletionOptions): Thenable<connection.Connection>;
 
@@ -1753,7 +1748,6 @@ declare module 'sqlops' {
 		/**
 		 * All notebook documents currently known to the system.
 		 *
-		 * @readonly
 		 */
 		export let notebookDocuments: NotebookDocument[];
 
