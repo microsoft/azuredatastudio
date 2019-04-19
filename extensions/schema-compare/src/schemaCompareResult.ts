@@ -73,10 +73,10 @@ export class SchemaCompareResult {
 			toolBar.addToolbarItems([{
 				component: this.compareButton
 			}, {
-				component: this.generateScriptButton,
-				toolbarSeparatorAfter: true
+				component: this.generateScriptButton
 			}, {
-				component: this.applyButton
+				component: this.applyButton,
+				toolbarSeparatorAfter: true
 			}, {
 				component: this.switchButton
 			}]);
@@ -195,6 +195,7 @@ export class SchemaCompareResult {
 			// only enable generate script button if the target is a db
 			if (this.targetEndpointInfo.endpointType === azdata.SchemaCompareEndpointType.database) {
 				this.generateScriptButton.enabled = true;
+				this.applyButton.enabled = true;
 			} else {
 				this.generateScriptButton.title = localize('schemaCompare.generateScriptButtonDisabledTitle', 'Generate script is enabled when the target is a database');
 				this.applyButton.title = localize('schemaCompare.applyButtonDisabledTitle', 'Apply is enabled when the target is a database');
