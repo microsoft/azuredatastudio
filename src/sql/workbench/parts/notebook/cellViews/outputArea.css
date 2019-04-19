@@ -18,5 +18,5 @@ output-area-component .notebook-output {
 
 .output-userselect pre{
 	white-space: pre-wrap;
-    word-wrap: break-word;
+	word-wrap: break-word;
 }

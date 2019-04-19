@@ -1,4 +1,7 @@
-'use strict';
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
 import * as childProcess from 'child_process';
 import * as fs from 'fs-extra';
@@ -108,7 +111,7 @@ export function getOSPlatform(): Platform {
 }
 
 export function getOSPlatformId(): string {
-	var platformId = undefined;
+	let platformId = undefined;
 	switch (process.platform) {
 		case 'win32':
 			platformId = 'win-x64';

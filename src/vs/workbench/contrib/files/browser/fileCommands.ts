@@ -5,9 +5,9 @@
 
 import * as nls from 'vs/nls';
 import { URI } from 'vs/base/common/uri';
-// {{SQL CARBON EDIT}} - Import EditorInput
-import { toResource, IEditorCommandsContext, EditorInput, SideBySideEditor } from 'vs/workbench/common/editor';
-import { IWindowsService, IWindowService, IURIToOpen, IOpenSettings, INewWindowOptions } from 'vs/platform/windows/common/windows';
+// {{SQL CARBON EDIT}} import EditorInput
+import { toResource, IEditorCommandsContext, SideBySideEditor, EditorInput } from 'vs/workbench/common/editor';
+import { IWindowsService, IWindowService, IURIToOpen, IOpenSettings, INewWindowOptions, isWorkspaceToOpen } from 'vs/platform/windows/common/windows';
 import { ServicesAccessor, IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
@@ -35,14 +35,15 @@ import { getMultiSelectedEditorContexts } from 'vs/workbench/browser/parts/edito
 import { Schemas } from 'vs/base/common/network';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { EditorContextKeys } from 'vs/editor/common/editorContextKeys';
-// {{SQL CARBON EDIT}} - Import EditorInput
 import { IEditorService, SIDE_GROUP, IResourceEditorReplacement } from 'vs/workbench/services/editor/common/editorService';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { ILabelService } from 'vs/platform/label/common/label';
 import { onUnexpectedError } from 'vs/base/common/errors';
-import { basename, toLocalResource } from 'vs/base/common/resources';
+import { basename, toLocalResource, joinPath } from 'vs/base/common/resources';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
+import { IEnvironmentService } from 'vs/platform/environment/common/environment';
+import { UNTITLED_WORKSPACE_NAME } from 'vs/platform/workspaces/common/workspaces';
 
 // {{SQL CARBON EDIT}}
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
@@ -86,6 +87,19 @@ export const REMOVE_ROOT_FOLDER_LABEL = nls.localize('removeFolderFromWorkspace'
 export const openWindowCommand = (accessor: ServicesAccessor, urisToOpen: IURIToOpen[], options?: IOpenSettings) => {
 	if (Array.isArray(urisToOpen)) {
 		const windowService = accessor.get(IWindowService);
+		const environmentService = accessor.get(IEnvironmentService);
+
+		// rewrite untitled: workspace URIs to the absolute path on disk
+		urisToOpen = urisToOpen.map(uriToOpen => {
+			if (isWorkspaceToOpen(uriToOpen) && uriToOpen.workspaceUri.scheme === Schemas.untitled) {
+				return {
+					workspaceUri: joinPath(environmentService.untitledWorkspacesHome, uriToOpen.workspaceUri.path, UNTITLED_WORKSPACE_NAME)
+				};
+			}
+
+			return uriToOpen;
+		});
+
 		windowService.openWindow(urisToOpen, options);
 	}
 };

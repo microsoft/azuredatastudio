@@ -41,7 +41,7 @@ import { IListContextMenuEvent } from 'vs/base/browser/ui/list/list';
 import { createErrorWithActions } from 'vs/base/common/errorsWithActions';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IAction } from 'vs/base/common/actions';
-import { ExtensionType, ExtensionIdentifier, IExtensionDescription } from 'vs/platform/extensions/common/extensions';
+import { ExtensionType, ExtensionIdentifier, IExtensionDescription, isLanguagePackExtension } from 'vs/platform/extensions/common/extensions';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import product from 'vs/platform/product/node/product';
 import { CancelablePromise, createCancelablePromise } from 'vs/base/common/async';
@@ -343,6 +343,11 @@ export class ExtensionsListView extends ViewletPanel {
 					if ((isE1Running && isE2Running) || (!isE1Running && !isE2Running)) {
 						return e1.displayName.localeCompare(e2.displayName);
 					}
+					const isE1LanguagePackExtension = e1.local && isLanguagePackExtension(e1.local.manifest);
+					const isE2LanguagePackExtension = e2.local && isLanguagePackExtension(e2.local.manifest);
+					if ((isE1Running && isE2LanguagePackExtension) || (isE2Running && isE1LanguagePackExtension)) {
+						return e1.displayName.localeCompare(e2.displayName);
+					}
 					return isE1Running ? -1 : 1;
 				});
 			}
@@ -410,7 +415,7 @@ export class ExtensionsListView extends ViewletPanel {
 			return this.getAllRecommendationsModel(query, options, token);
 		} else if (ExtensionsListView.isRecommendedExtensionsQuery(query.value)) {
 			return this.getRecommendationsModel(query, options, token);
-		// {{SQL CARBON EDIT}}
+			// {{SQL CARBON EDIT}}
 		} else if (ExtensionsListView.isAllMarketplaceExtensionsQuery(query.value)) {
 			return this.getAllMarketplaceModel(query, options, token);
 		}

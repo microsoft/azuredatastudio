@@ -6,9 +6,9 @@
 'use strict';
 
 import * as assert from 'assert';
-import { ComponentBase, ContainerBase, ItemDescriptor } from 'sql/parts/modelComponents/componentBase';
-import { IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
-import { ModelStore } from 'sql/parts/modelComponents/modelStore';
+import { ComponentBase, ContainerBase, ItemDescriptor } from 'sql/workbench/electron-browser/modelComponents/componentBase';
+import { IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/workbench/electron-browser/modelComponents/interfaces';
+import { ModelStore } from 'sql/workbench/electron-browser/modelComponents/modelStore';
 import { ChangeDetectorRef } from '@angular/core';
 
 

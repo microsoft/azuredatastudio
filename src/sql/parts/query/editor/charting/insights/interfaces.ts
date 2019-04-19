@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import { Dimension } from 'vs/base/browser/dom';
 
 import { IInsightData } from 'sql/workbench/parts/dashboard/widgets/insights/interfaces';
@@ -35,7 +34,7 @@ export interface IInsight {
 }
 
 export interface IInsightCtor {
-	new (container: HTMLElement, options: IInsightOptions, ...services: { _serviceBrand: any; }[]): IInsight;
+	new(container: HTMLElement, options: IInsightOptions, ...services: { _serviceBrand: any; }[]): IInsight;
 	readonly types: Array<InsightType | ChartType>;
 }
 

@@ -17,7 +17,7 @@ export class InsightsDialogService implements IInsightsDialogService {
 	private _insightsDialogView: InsightsDialogView;
 	private _insightsDialogModel: IInsightsDialogModel;
 
-	constructor( @IInstantiationService private _instantiationService: IInstantiationService) { }
+	constructor(@IInstantiationService private _instantiationService: IInstantiationService) { }
 
 	// query string
 	public show(input: IInsightsConfig, connectionProfile: IConnectionProfile): void {

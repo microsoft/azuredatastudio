@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as assert from 'assert';
 import { TestRPCProtocol } from 'vs/workbench/test/electron-browser/api/testRPCProtocol';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
@@ -116,18 +114,18 @@ suite('ExtHostCredentialManagement', () => {
 		// Then: I should get an error
 		extHost.$getCredentialProvider(undefined)
 			.then(
-			() => { done('Provider was returned from undefined'); },
-			() => { /* Swallow error, this is success path */ }
+				() => { done('Provider was returned from undefined'); },
+				() => { /* Swallow error, this is success path */ }
 			)
 			.then(() => { return extHost.$getCredentialProvider(null); })
 			.then(
-			() => { done('Provider was returned from null'); },
-			() => { /* Swallow error, this is success path */ }
+				() => { done('Provider was returned from null'); },
+				() => { /* Swallow error, this is success path */ }
 			)
 			.then(() => { return extHost.$getCredentialProvider(''); })
 			.then(
-			() => { done('Provider was returned from \'\''); },
-			() => { done(); }
+				() => { done('Provider was returned from \'\''); },
+				() => { done(); }
 			);
 	});
 });

@@ -62,14 +62,14 @@ export class AlertDialog extends AgentDialog<AlertData> {
 	private static readonly AlertSeverity025Label: string = localize('alertDialog.Severity025', '025 - Fatal Error');
 	private static readonly AllDatabases: string = localize('alertDialog.AllDatabases', '<all databases>');
 
-	private static readonly AlertTypes: string[]  = [
+	private static readonly AlertTypes: string[] = [
 		AlertData.AlertTypeSqlServerEventString,
 		// Disabled until next release
 		// AlertData.AlertTypePerformanceConditionString,
 		// AlertData.AlertTypeWmiEventString
 	];
 
-	private static readonly AlertSeverities: string[]  = [
+	private static readonly AlertSeverities: string[] = [
 		AlertDialog.AlertSeverity001Label,
 		AlertDialog.AlertSeverity002Label,
 		AlertDialog.AlertSeverity003Label,
@@ -100,21 +100,21 @@ export class AlertDialog extends AgentDialog<AlertData> {
 	// Response tab strings
 	private static readonly ExecuteJobCheckBoxLabel: string = localize('alertDialog.ExecuteJob', 'Execute Job');
 	private static readonly ExecuteJobTextBoxLabel: string = localize('alertDialog.ExecuteJobName', 'Job Name');
-	private static readonly NotifyOperatorsTextBoxLabel: string =  localize('alertDialog.NotifyOperators', 'Notify Operators');
-	private static readonly NewJobButtonLabel: string =  localize('alertDialog.NewJob', 'New Job');
-	private static readonly OperatorListLabel: string =  localize('alertDialog.OperatorList', 'Operator List');
-	private static readonly OperatorNameColumnLabel: string =  localize('alertDialog.OperatorName', 'Operator');
-	private static readonly OperatorEmailColumnLabel: string =  localize('alertDialog.OperatorEmail', 'E-mail');
-	private static readonly OperatorPagerColumnLabel: string =  localize('alertDialog.OperatorPager', 'Pager');
-	private static readonly NewOperatorButtonLabel: string =  localize('alertDialog.NewOperator', 'New Operator');
+	private static readonly NotifyOperatorsTextBoxLabel: string = localize('alertDialog.NotifyOperators', 'Notify Operators');
+	private static readonly NewJobButtonLabel: string = localize('alertDialog.NewJob', 'New Job');
+	private static readonly OperatorListLabel: string = localize('alertDialog.OperatorList', 'Operator List');
+	private static readonly OperatorNameColumnLabel: string = localize('alertDialog.OperatorName', 'Operator');
+	private static readonly OperatorEmailColumnLabel: string = localize('alertDialog.OperatorEmail', 'E-mail');
+	private static readonly OperatorPagerColumnLabel: string = localize('alertDialog.OperatorPager', 'Pager');
+	private static readonly NewOperatorButtonLabel: string = localize('alertDialog.NewOperator', 'New Operator');
 
 	// Options tab strings
-	private static readonly IncludeErrorInEmailCheckBoxLabel: string =  localize('alertDialog.IncludeErrorInEmail', 'Include alert error text in e-mail');
-	private static readonly IncludeErrorInPagerCheckBoxLabel: string =  localize('alertDialog.IncludeErrorInPager', 'Include alert error text in pager');
-	private static readonly AdditionalMessageTextBoxLabel: string =  localize('alertDialog.AdditionalNotification', 'Additional notification message to send');
-	private static readonly DelayBetweenResponsesTextBoxLabel: string =  localize('alertDialog.DelayBetweenResponse', 'Delay between responses');
-	private static readonly DelayMinutesTextBoxLabel: string =  localize('alertDialog.DelayMinutes', 'Delay Minutes');
-	private static readonly DelaySecondsTextBoxLabel: string =  localize('alertDialog.DelaySeconds', 'Delay Seconds');
+	private static readonly IncludeErrorInEmailCheckBoxLabel: string = localize('alertDialog.IncludeErrorInEmail', 'Include alert error text in e-mail');
+	private static readonly IncludeErrorInPagerCheckBoxLabel: string = localize('alertDialog.IncludeErrorInPager', 'Include alert error text in pager');
+	private static readonly AdditionalMessageTextBoxLabel: string = localize('alertDialog.AdditionalNotification', 'Additional notification message to send');
+	private static readonly DelayBetweenResponsesTextBoxLabel: string = localize('alertDialog.DelayBetweenResponse', 'Delay between responses');
+	private static readonly DelayMinutesTextBoxLabel: string = localize('alertDialog.DelayMinutes', 'Delay Minutes');
+	private static readonly DelaySecondsTextBoxLabel: string = localize('alertDialog.DelaySeconds', 'Delay Seconds');
 
 	// Event Name strings
 	private readonly NewAlertDialog = 'NewAlertDialogOpen';
@@ -315,7 +315,7 @@ export class AlertDialog extends AgentDialog<AlertData> {
 					}],
 					title: AlertDialog.EventAlertText
 				}
-			]).withLayout({ width: '100%' }).component();
+				]).withLayout({ width: '100%' }).component();
 
 			await view.initializeModel(formModel);
 
@@ -332,7 +332,7 @@ export class AlertDialog extends AgentDialog<AlertData> {
 
 			if (this.model.severity > 0) {
 				this.severityRadioButton.checked = true;
-				this.severityDropDown.value = this.severityDropDown.values[this.model.severity-1];
+				this.severityDropDown.value = this.severityDropDown.values[this.model.severity - 1];
 			}
 
 			if (this.model.databaseName) {
@@ -356,9 +356,9 @@ export class AlertDialog extends AgentDialog<AlertData> {
 				.component();
 			this.executeJobTextBox.enabled = false;
 			this.newJobButton = view.modelBuilder.button().withProperties({
-					label: AlertDialog.NewJobButtonLabel,
-					width: 80
-				}).component();
+				label: AlertDialog.NewJobButtonLabel,
+				width: 80
+			}).component();
 			this.newJobButton.enabled = false;
 			this.newJobButton.onDidClick(() => {
 				let jobDialog = new JobDialog(this.ownerUri);
@@ -382,7 +382,7 @@ export class AlertDialog extends AgentDialog<AlertData> {
 				}, {
 					component: this.newJobButton,
 					title: AlertDialog.NewJobButtonLabel
-				}], { componentWidth: '100%'}).component();
+				}], { componentWidth: '100%' }).component();
 
 			let previewTag = view.modelBuilder.text()
 				.withProperties({
@@ -409,9 +409,9 @@ export class AlertDialog extends AgentDialog<AlertData> {
 				}).component();
 
 			this.newOperatorButton = view.modelBuilder.button().withProperties({
-					label: AlertDialog.NewOperatorButtonLabel,
-					width: 80
-				}).component();
+				label: AlertDialog.NewOperatorButtonLabel,
+				width: 80
+			}).component();
 
 			this.operatorsTable.enabled = false;
 			this.newOperatorButton.enabled = false;
@@ -438,7 +438,7 @@ export class AlertDialog extends AgentDialog<AlertData> {
 				}, {
 					component: this.newOperatorButton,
 					title: ''
-				}], { componentWidth: '100%'}).component();
+				}], { componentWidth: '100%' }).component();
 
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems([{
@@ -548,7 +548,7 @@ export class AlertDialog extends AgentDialog<AlertData> {
 		} else {
 			this.model.eventDescriptionKeyword = '';
 		}
-		let minutes  = this.delayMinutesTextBox.value ? +this.delayMinutesTextBox.value : 0;
+		let minutes = this.delayMinutesTextBox.value ? +this.delayMinutesTextBox.value : 0;
 		let seconds = this.delaySecondsTextBox.value ? +this.delaySecondsTextBox : 0;
 		this.model.delayBetweenResponses = minutes + seconds;
 

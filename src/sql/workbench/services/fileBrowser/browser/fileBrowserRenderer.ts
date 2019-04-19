@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import { FileNode } from 'sql/workbench/services/fileBrowser/common/fileNode';
 import { ITree, IRenderer } from 'vs/base/parts/tree/browser/tree';
 import { FileKind } from 'vs/platform/files/common/files';
@@ -61,8 +60,8 @@ export class FileBrowserRenderer implements IRenderer {
 			templateData.label.element.style.display = 'flex';
 			const extraClasses = ['explorer-item'];
 
-			var fileuri = URI.file(element.fullPath);
-			var filekind;
+			let fileuri = URI.file(element.fullPath);
+			let filekind;
 			if (element.parent === null) {
 				filekind = FileKind.ROOT_FOLDER;
 			} else if (element.isFile === false) {

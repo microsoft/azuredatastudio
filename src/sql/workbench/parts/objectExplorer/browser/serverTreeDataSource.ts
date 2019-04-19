@@ -67,7 +67,7 @@ export class ServerTreeDataSource implements IDataSource {
 			} else if (element instanceof ConnectionProfileGroup) {
 				resolve((<ConnectionProfileGroup>element).getChildren());
 			} else if (element instanceof TreeNode) {
-				var node = element;
+				let node = element;
 				if (node.children) {
 					resolve(node.children);
 				} else {

@@ -109,7 +109,7 @@ export class RecentConnectionTreeController extends DefaultController {
 	}
 
 	public showContextMenu(tree: ITree, element: any, event: any): boolean {
-		var actionContext: any;
+		let actionContext: any;
 
 		if (element instanceof ConnectionProfile) {
 			actionContext = new RecentConnectionsActionsContext();

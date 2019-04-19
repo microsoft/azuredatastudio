@@ -231,14 +231,14 @@ export class ExtensionManagementService extends Disposable implements IExtension
 								// {{SQL CARBON EDIT}}
 								// Until there's a gallery for SQL Ops Studio, skip retrieving the metadata from the gallery
 								return this.installExtension({ zipPath, identifierWithVersion, metadata: null }, type, token)
-								.then(
-									local => {
-										this.reportTelemetry(this.getTelemetryEvent(InstallOperation.Install), getLocalExtensionTelemetryData(local), new Date().getTime() - startTime, void 0);
-										this._onDidInstallExtension.fire({ identifier, zipPath, local, operation: InstallOperation.Install });
-										return identifier;
-									},
-									error => { this._onDidInstallExtension.fire({ identifier, zipPath, error, operation: InstallOperation.Install }); return Promise.reject(error); }
-								);
+									.then(
+										local => {
+											this.reportTelemetry(this.getTelemetryEvent(InstallOperation.Install), getLocalExtensionTelemetryData(local), new Date().getTime() - startTime, void 0);
+											this._onDidInstallExtension.fire({ identifier, zipPath, local, operation: InstallOperation.Install });
+											return identifier;
+										},
+										error => { this._onDidInstallExtension.fire({ identifier, zipPath, error, operation: InstallOperation.Install }); return Promise.reject(error); }
+									);
 								// return this.getMetadata(getGalleryExtensionId(manifest.publisher, manifest.name))
 								// 	.then(
 								// 		metadata => this.installFromZipPath(identifierWithVersion, zipPath, metadata, type, operation, token),
