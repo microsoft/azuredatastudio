@@ -210,7 +210,7 @@ export default class JupyterServerInstallation {
 		// Update python paths and properties to reference user's local python.
 		let pythonBinPathSuffix = process.platform === constants.winPlatform ? '' : 'bin';
 
-		this._pythonExecutable = JupyterServerInstallation.getPythonExePath(this._pythonInstallationPath);
+		this._pythonExecutable = JupyterServerInstallation.getPythonExePath(this._pythonInstallationPath, this._usingExistingPython);
 		this.pythonBinPath = path.join(pythonSourcePath, pythonBinPathSuffix);
 
 		// Store paths to python libraries required to run jupyter.
@@ -238,7 +238,7 @@ export default class JupyterServerInstallation {
 	}
 
 	private isPythonRunning(pythonInstallPath: string): Promise<boolean> {
-		let pythonExePath = JupyterServerInstallation.getPythonExePath(pythonInstallPath);
+		let pythonExePath = JupyterServerInstallation.getPythonExePath(pythonInstallPath, this._usingExistingPython);
 		return new Promise<boolean>(resolve => {
 			fs.open(pythonExePath, 'r+', (err, fd) => {
 				if (!err) {
@@ -329,7 +329,7 @@ export default class JupyterServerInstallation {
 		let installJupyterCommand: string;
 		if (process.platform === constants.winPlatform || this._usingExistingPython) {
 			let requirements = path.join(this._pythonPackageDir, 'requirements.txt');
-			installJupyterCommand = `"${this._pythonExecutable}" -m pip install --no-index -r "${requirements}" --find-links "${this._pythonPackageDir}" --no-warn-script-location`;
+			installJupyterCommand = `"${path.join(this.pythonBinPath, 'pip')}" install --no-index -r "${requirements}" --find-links "${this._pythonPackageDir}" --no-warn-script-location`;
 		}
 
 		if (installJupyterCommand) {
@@ -346,7 +346,7 @@ export default class JupyterServerInstallation {
 		let installSparkMagic: string;
 		if (process.platform === constants.winPlatform || this._usingExistingPython) {
 			let sparkWheel = path.join(this._pythonPackageDir, `sparkmagic-${constants.sparkMagicVersion}-py3-none-any.whl`);
-			installSparkMagic = `"${this._pythonExecutable}" -m pip install --no-index "${sparkWheel}" --find-links "${this._pythonPackageDir}" --no-warn-script-location`;
+			installSparkMagic = `"${path.join(this.pythonBinPath, 'pip')}" install --no-index "${sparkWheel}" --find-links "${this._pythonPackageDir}" --no-warn-script-location`;
 		}
 
 		if (installSparkMagic) {
@@ -427,10 +427,10 @@ export default class JupyterServerInstallation {
 			pythonBinPathSuffix);
 	}
 
-	public static getPythonExePath(pythonInstallPath: string, useExistingInstall?: boolean): string {
+	public static getPythonExePath(pythonInstallPath: string, useExistingInstall: boolean): string {
 		return path.join(
 			pythonInstallPath,
-			!!useExistingInstall ? '' : constants.pythonBundleVersion,
+			useExistingInstall ? '' : constants.pythonBundleVersion,
 			process.platform === constants.winPlatform ? 'python.exe' : 'bin/python3');
 	}
 }
