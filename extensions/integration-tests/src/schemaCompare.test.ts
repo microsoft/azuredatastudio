@@ -14,7 +14,7 @@ import assert = require('assert');
 if (context.RunTest) {
 	suite('Schema compare integration test suite', () => {
 		test('Schema compare tests', async function () {
-			let service = await azdata.dataprotocol.getProvider<azdata.DacFxServicesProvider>('MSSQL', azdata.DataProviderType.DacFxServicesProvider);
+			let service = await azdata.dataprotocol.getProvider<azdata.SchemaCompareServicesProvider>('MSSQL', azdata.DataProviderType.SchemaCompareServicesProvider);
 			let source : azdata.SchemaCompareEndpointInfo = {
 				endpointType: azdata.SchemaCompareEndpointType.dacpac,
 				packageFilePath: utils.combinePath(__dirname, 'testData/Database1.dacpac'),
@@ -33,6 +33,9 @@ if (context.RunTest) {
 			assert(schemaCompareResult.errorMessage === null, `Expected: there should be no error. Actual Error message: "${schemaCompareResult.errorMessage}"`);
 			assert(schemaCompareResult.success === true, `Expected: success in schema compare, Actual: Failre`);
 			assert(schemaCompareResult.differences.length === 4, `Expected: 4 differences. Actual differences: "${schemaCompareResult.differences.length}"`);
+
+			let status = await service.schemaCompareGenerateScript(schemaCompareResult.operationId, 'testDb', utils.combinePath(__dirname, 'script.sql'), azdata.TaskExecutionMode.execute);
+			assert(status.success === true, `Expected: success true Actual: "${status.success}"`);
 		});
 	});
 }

@@ -136,9 +136,14 @@ export class SchemaCompareResult {
 		});
 	}
 
-	public start(): void {
+	public async start(): Promise<void> {
 		this.editor.openEditor();
-		this.execute();
+		await this.execute();
+	}
+
+	// Test Only
+	getComparisonResult(): azdata.SchemaCompareResult {
+		return this.comparisonResult;
 	}
 
 	private async execute(): Promise<void> {

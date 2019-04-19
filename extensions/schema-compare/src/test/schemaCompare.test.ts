@@ -13,7 +13,7 @@ import 'mocha';
 import { SchemaCompareDialog } from './../dialogs/schemaCompareDialog';
 import { SchemaCompareResult } from './../schemaCompareResult';
 import { AssertionError } from 'assert';
-import { DacFxTestService } from './testDacFxService';
+import { SchemaCompareTestService } from './testDacFxService';
 
 let mockDacFxServiceProvider: TypeMoq.IMock<azdata.DacFxServicesProvider>;
 
@@ -55,7 +55,7 @@ const mockTargetEndpoint: azdata.SchemaCompareEndpointInfo = {
 describe('SchemaCompareDialog.openDialog', function(): void {
 	it('Should be correct when created.', async function(): Promise<void> {
 		let dialog = new SchemaCompareDialog();
-		await dialog.openDialog(mockConnectionProfile);
+		dialog.openDialog(mockConnectionProfile);
 
 		should(dialog.dialog.title).equal('Schema Compare');
 		should(dialog.dialog.okButton.label).equal('Compare');
@@ -65,13 +65,12 @@ describe('SchemaCompareDialog.openDialog', function(): void {
 
 describe('SchemaCompareResult.start', function(): void {
 	it('Should be correct when created.', async function(): Promise<void> {
-		let dacfx = new DacFxTestService();
-		azdata.dataprotocol.registerDacFxServicesProvider(dacfx);
+		let sc = new SchemaCompareTestService();
+		azdata.dataprotocol.registerSchemaCompareServicesProvider(sc);
 
 		let result = new SchemaCompareResult(mocksource, mocktarget, mockSourceEndpoint, mockTargetEndpoint);
-		await result.initializeDialog();
 		await result.start();
-		let comparisionResult = result.getComparisonResult();
+		let comparisionResult: azdata.SchemaCompareResult = result.getComparisonResult();
 
 		should(comparisionResult.operationId).equal('test operation id');
 		should(comparisionResult.success).equal(true);

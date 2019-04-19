@@ -133,32 +133,6 @@ export class DacFxServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let schemaCompare = (sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.SchemaCompareResult> => {
-			let params: contracts.SchemaCompareParams = {sourceEndpointInfo: sourceEndpointInfo, targetEndpointInfo: targetEndpointInfo, taskExecutionMode: taskExecutionMode};
-			return client.sendRequest(contracts.SchemaCompareRequest.type, params).then(
-				r => {
-					return r;
-				},
-				e => {
-					client.logFailedRequest(contracts.SchemaCompareRequest.type, e);
-					return Promise.resolve(undefined);
-				}
-			);
-		};
-
-		let schemaCompareGenerateScript = (operationId: string, targetDatabaseName: string, scriptFilePath: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> => {
-			let params: contracts.SchemaCompareGenerateScriptParams = {operationId: operationId, targetDatabaseName: targetDatabaseName, scriptFilePath: scriptFilePath, taskExecutionMode: taskExecutionMode};
-			return client.sendRequest(contracts.SchemaCompareGenerateScriptRequest.type, params).then(
-				r => {
-					return r;
-				},
-				e => {
-					client.logFailedRequest(contracts.SchemaCompareGenerateScriptRequest.type, e);
-					return Promise.resolve(undefined);
-				}
-			);
-		};
-
 		return azdata.dataprotocol.registerDacFxServicesProvider({
 			providerId: client.providerId,
 			exportBacpac,
@@ -166,9 +140,7 @@ export class DacFxServicesFeature extends SqlOpsFeature<undefined> {
 			extractDacpac,
 			deployDacpac,
 			generateDeployScript,
-			generateDeployPlan,
-			schemaCompare,
-			schemaCompareGenerateScript
+			generateDeployPlan
 		});
 	}
 }
