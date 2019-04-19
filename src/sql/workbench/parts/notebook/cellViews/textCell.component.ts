@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./textCell';
 
-import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild, OnChanges, SimpleChange } from '@angular/core';
+import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild, OnChanges, SimpleChange, HostListener } from '@angular/core';
 import * as path from 'path';
 
 import { localize } from 'vs/nls';
@@ -50,6 +50,15 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			// Only make a change if we're not active, since this has priority
 			this.updateMoreActions();
 		}
+	}
+
+	@HostListener('document:keydown.escape', ['$event'])
+	handleKeyboardEvent() {
+		if (this.isEditMode) {
+			this.toggleEditMode(false);
+		}
+		this.cellModel.active = false;
+		this._model.activeCell = undefined;
 	}
 
 	private _content: string;
