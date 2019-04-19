@@ -150,6 +150,20 @@ export class Dropdown extends Disposable {
 					}
 					e.stopPropagation();
 					break;
+				case KeyCode.Escape:
+					if (this._treeContainer.parentElement) {
+						this._input.validate();
+						this._onBlur.fire();
+						this.contextViewService.hideContextView();
+						e.stopPropagation();
+					}
+					break;
+				case KeyCode.Tab:
+					this._input.validate();
+					this._onBlur.fire();
+					this.contextViewService.hideContextView();
+					e.stopPropagation();
+					break;
 				case KeyCode.DownArrow:
 					if (!this._treeContainer.parentElement) {
 						this._showList();
@@ -207,7 +221,13 @@ export class Dropdown extends Disposable {
 				render: container => {
 					DOM.append(container, this._treeContainer);
 					this._layoutTree();
-					return { dispose: () => { } };
+					return {
+						dispose: () => {
+							// when we dispose we want to remove treecontainer so that it doesn't have a parent
+							// we often use the presense of a parent to detect if the tree is being shown
+							this._treeContainer.remove();
+						}
+					};
 				},
 				onDOMEvent: e => {
 					if (!DOM.isAncestor((<HTMLElement>e.srcElement), this._el) && !DOM.isAncestor((<HTMLElement>e.srcElement), this._treeContainer)) {
@@ -263,6 +283,7 @@ export class Dropdown extends Disposable {
 
 	public blur() {
 		this._input.blur();
+		this.contextViewService.hideContextView();
 	}
 
 	style(style: IListStyles & IInputBoxStyles & IDropdownStyles) {
