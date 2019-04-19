@@ -16,3 +16,35 @@ text-cell-component .notebook-preview {
 .notebook-preview.actionselect {
 	user-select: text;
 }
+
+text-cell-component table {
+	border-collapse: collapse;
+	border-spacing: 0;
+	border: none;
+	font-size: 12px;
+	table-layout: auto;
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 1em;
+	display: table-row;
+}
+
+text-cell-component thead {
+	vertical-align: bottom;
+}
+
+text-cell-component td,
+text-cell-component th,
+text-cell-component tr {
+	text-align: left;
+	vertical-align: middle;
+	padding: 0.5em 0.5em;
+	line-height: normal;
+	white-space: normal;
+	max-width: none;
+	border: none;
+}
+
+text-cell-component th {
+	font-weight: bold;
+}
