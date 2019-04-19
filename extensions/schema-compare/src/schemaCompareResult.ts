@@ -22,6 +22,7 @@ export class SchemaCompareResult {
 	private switchButton: azdata.ButtonComponent;
 	private compareButton: azdata.ButtonComponent;
 	private generateScriptButton: azdata.ButtonComponent;
+	private applyButton: azdata.ButtonComponent;
 	private SchemaCompareActionMap: Map<Number, string>;
 	private comparisonResult: azdata.SchemaCompareResult;
 	private sourceNameComponent: azdata.TableComponent;
@@ -65,6 +66,7 @@ export class SchemaCompareResult {
 			this.createSwitchButton(view);
 			this.createCompareButton(view);
 			this.createGenerateScriptButton(view);
+			this.createApplyButton(view);
 			this.resetButtons();
 
 			let toolBar = view.modelBuilder.toolbarContainer();
@@ -73,8 +75,9 @@ export class SchemaCompareResult {
 			}, {
 				component: this.generateScriptButton,
 				toolbarSeparatorAfter: true
-			},
-			{
+			}, {
+				component: this.applyButton
+			}, {
 				component: this.switchButton
 			}]);
 
@@ -194,6 +197,7 @@ export class SchemaCompareResult {
 				this.generateScriptButton.enabled = true;
 			} else {
 				this.generateScriptButton.title = localize('schemaCompare.generateScriptButtonDisabledTitle', 'Generate script is enabled when the target is a database');
+				this.applyButton.title = localize('schemaCompare.applyButtonDisabledTitle', 'Apply is enabled when the target is a database');
 			}
 		} else {
 			this.flexModel.addItem(this.noDifferencesLabel, { CSSStyles: { 'margin': 'auto' } });
@@ -310,11 +314,33 @@ export class SchemaCompareResult {
 		});
 	}
 
+	private createApplyButton(view: azdata.ModelView) {
+
+		this.applyButton = view.modelBuilder.button().withProperties({
+			label: localize('schemaCompare.updateButton', 'Apply'),
+			iconPath: {
+				light: path.join(__dirname, 'media', 'start.svg'),
+				dark: path.join(__dirname, 'media', 'start-inverse.svg')
+			},
+		}).component();
+
+		this.applyButton.onDidClick(async (click) => {
+			let service = await SchemaCompareResult.getService('MSSQL');
+			let result = await service.schemaComparePublishChanges(this.comparisonResult.operationId, this.targetEndpointInfo.serverName, this.targetEndpointInfo.databaseName, azdata.TaskExecutionMode.execute);
+			if (!result || !result.success) {
+				vscode.window.showErrorMessage(
+					localize('schemaCompare.updateErrorMessage', "Schema Compare Apply failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
+			}
+		});
+	}
+
 	private resetButtons(): void {
 		this.compareButton.enabled = false;
 		this.switchButton.enabled = false;
 		this.generateScriptButton.enabled = false;
+		this.applyButton.enabled = false;
 		this.generateScriptButton.title = localize('schemaCompare.generateScriptEnabledButton', 'Generate script to deploy changes to target');
+		this.applyButton.title = localize('schemaCompare.applyButtonEnabledTitle', 'Apply changes to target');
 	}
 
 	private createSwitchButton(view: azdata.ModelView): void {

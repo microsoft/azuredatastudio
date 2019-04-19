@@ -82,6 +82,7 @@ export class SchemaCompareDialog {
 			sourceName = this.sourceTextBox.value;
 			sourceEndpointInfo = {
 				endpointType: azdata.SchemaCompareEndpointType.dacpac,
+				serverName: '',
 				databaseName: '',
 				ownerUri: '',
 				packageFilePath: this.sourceTextBox.value
@@ -92,6 +93,7 @@ export class SchemaCompareDialog {
 
 			sourceEndpointInfo = {
 				endpointType: azdata.SchemaCompareEndpointType.database,
+				serverName: (this.sourceServerDropdown.value as ConnectionDropdownValue).name,
 				databaseName: (<azdata.CategoryValue>this.sourceDatabaseDropdown.value).name,
 				ownerUri: ownerUri,
 				packageFilePath: ''
@@ -103,6 +105,7 @@ export class SchemaCompareDialog {
 			targetName = this.targetTextBox.value;
 			targetEndpointInfo = {
 				endpointType: azdata.SchemaCompareEndpointType.dacpac,
+				serverName: '',
 				databaseName: '',
 				ownerUri: '',
 				packageFilePath: this.targetTextBox.value
@@ -113,6 +116,7 @@ export class SchemaCompareDialog {
 
 			targetEndpointInfo = {
 				endpointType: azdata.SchemaCompareEndpointType.database,
+				serverName: (this.targetServerDropdown.value as ConnectionDropdownValue).name,
 				databaseName: (<azdata.CategoryValue>this.targetDatabaseDropdown.value).name,
 				ownerUri: ownerUri,
 				packageFilePath: ''

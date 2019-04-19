@@ -462,6 +462,9 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			},
 			schemaCompareGenerateScript(operationId: string, targetDatabaseName: string, scriptFilePath: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
 				return self._proxy.$schemaCompareGenerateScript(handle, operationId, targetDatabaseName, scriptFilePath, taskExecutionMode);
+			},
+			schemaComparePublishChanges(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
+				return self._proxy.$schemaComparePublishChanges(handle, operationId, targetServerName, targetDatabaseName, taskExecutionMode);
 			}
 		});
 
