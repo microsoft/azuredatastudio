@@ -34,5 +34,18 @@ export async function connectToServer(server: TestServerProfile, timeout: number
 }
 
 export async function ensureConnectionViewOpened() {
-	await vscode.commands.executeCommand('dataExplorer.servers.focus');
+	await vscode.commands.executeCommand('workbench.view.dataExplorer');
+}
+
+export function combinePath(basePath: string, relativePath: string) {
+	let separator = '/';
+	if (isWindows()) {
+		relativePath = relativePath.replace(/\//g, '\\');
+		separator = '\\';
+	}
+	return basePath + separator + relativePath;
+}
+
+function isWindows(): boolean {
+	return (process.platform === 'win32');
 }

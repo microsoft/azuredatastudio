@@ -54,8 +54,14 @@ if (context.RunTest) {
 			const actualString = actions.join(',');
 			assert(expectedActions.length === actions.length && expectedString === actualString, `Expected actions: "${expectedString}", Actual actions: "${actualString}"`);
 		});
+		test('Stand alone database context menu test', async function () {
+			let server = await getStandaloneServer();
+			let expectedActions = ['Manage', 'New Query', 'Disconnect', 'Backup', 'Restore', 'Refresh', 'Data-tier Application wizard', 'Schema Compare', 'Import wizard'];
+			await VerifyDBContextMenu(server, 3000, expectedActions);
+		});
 	});
 }
+
 async function VerifyOeNode(server: TestServerProfile, timeout: number, expectedNodeLable: string[]) {
 	await connectToServer(server, timeout);
 	let nodes = <azdata.objectexplorer.ObjectExplorerNode[]>await azdata.objectexplorer.getActiveConnectionNodes();
@@ -71,3 +77,24 @@ async function VerifyOeNode(server: TestServerProfile, timeout: number, expected
 	assert(expectedNodeLable.toLocaleString() === actualNodeLable.toLocaleString(), `Expected node label: "${expectedNodeLable}", Actual: "${actualNodeLable}"`);
 }
 
+async function VerifyDBContextMenu(server: TestServerProfile, timeout: number, expectedActions: string[]) {
+	await connectToServer(server, timeout);
+	let nodes = <azdata.objectexplorer.ObjectExplorerNode[]>await azdata.objectexplorer.getActiveConnectionNodes();
+	assert(nodes.length > 0, `Expecting at least one active connection, actual: ${nodes.length}`);
+
+	let index = nodes.findIndex(node => node.nodePath.includes(server.serverName));
+	assert(index !== -1, `Failed to find server: "${server.serverName}" in OE tree`);
+
+	let serverNode = nodes[index];
+	let children = await serverNode.getChildren();
+	let databasesFolder = children[0]; // first should be databases
+
+	let databases = await databasesFolder.getChildren();
+	assert(databases.length < 2, `No database present, can not test further`); // System Databses filder and at least one database
+
+	let actions = await azdata.objectexplorer.getNodeActions(databases[1].connectionId, databases[1].nodePath);
+
+	const expectedString = expectedActions.join(',');
+	const actualString = actions.join(',');
+	assert(expectedActions.length === actions.length && expectedString === actualString, `Expected actions: "${expectedString}", Actual actions: "${actualString}"`);
+}
