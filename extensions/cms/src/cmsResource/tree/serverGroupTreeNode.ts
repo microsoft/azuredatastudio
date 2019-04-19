@@ -88,7 +88,7 @@ export class ServerGroupTreeNode extends CmsResourceTreeNodeBase {
 		item.iconPath = {
 			dark: this.appContext.extensionContext.asAbsolutePath('resources/light/folder.svg'),
 			light: this.appContext.extensionContext.asAbsolutePath('resources/light/folder.svg')
-		}
+		};
 		return item;
 	}
 
