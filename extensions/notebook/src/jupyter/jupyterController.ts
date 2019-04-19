@@ -116,7 +116,7 @@ export class JupyterController implements vscode.Disposable {
 
 	private async handleOpenNotebookTask(profile: azdata.IConnectionProfile): Promise<void> {
 		let notebookFileTypeName = localize('notebookFileType', 'Notebooks');
-		let filter: {[key: string]: Array<string>} = {};
+		let filter: { [key: string]: Array<string> } = {};
 		filter[notebookFileTypeName] = ['ipynb'];
 		let uris = await this.apiWrapper.showOpenDialog({
 			filters: filter,
