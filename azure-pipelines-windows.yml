@@ -43,5 +43,5 @@ steps:
 
 - task: PublishTestResults@2
   inputs:
-    testResultsFiles: '.\.build\cobertura-coverage.xml'
+    testResultsFiles: '.\.build\coverage\cobertura-coverage.xml'
   condition: succeededOrFailed()
