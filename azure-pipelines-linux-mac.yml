@@ -47,7 +47,7 @@ steps:
   displayName: 'Compile'
 
 - script: |
-    .\scripts\test.bat --coverage
+    .\scripts\test.sh --coverage
   displayName: 'Code Coverage'
 
 - task: PublishCodeCoverageResults@1
