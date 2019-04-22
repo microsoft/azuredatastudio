@@ -33,6 +33,27 @@ export async function connectToServer(server: TestServerProfile, timeout: number
 	await new Promise(c => setTimeout(c, timeout));
 }
 
+export async function connectToServerReturnResult(server: TestServerProfile, timeout: number = 3000): Promise<azdata.ConnectionResult> {
+	let connectionProfile: azdata.IConnectionProfile = {
+		serverName: server.serverName,
+		databaseName: server.database,
+		authenticationType: server.authenticationTypeName,
+		providerName: server.providerName,
+		connectionName: '',
+		userName: server.userName,
+		password: server.password,
+		savePassword: false,
+		groupFullName: undefined,
+		saveProfile: true,
+		id: undefined,
+		groupId: undefined,
+		options: {}
+	};
+	let result = <azdata.ConnectionResult>await azdata.connection.connect(connectionProfile);
+	assert(result.connected, `Failed to connect to "${connectionProfile.serverName}", error code: ${result.errorCode}, error message: ${result.errorMessage}`);
+	return result;
+}
+
 export async function ensureConnectionViewOpened() {
 	await vscode.commands.executeCommand('workbench.view.dataExplorer');
 }
@@ -44,6 +65,10 @@ export function combinePath(basePath: string, relativePath: string) {
 		separator = '\\';
 	}
 	return basePath + separator + relativePath;
+}
+
+export async function sleep(ms: number): Promise<{}> {
+	return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 function isWindows(): boolean {
