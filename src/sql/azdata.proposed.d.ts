@@ -3705,7 +3705,7 @@ declare module 'azdata' {
 			| 'executionPlan';
 
 		export interface QueryEventListener {
-			onQueryEvent(type: QueryEvent, document: queryeditor.QueryDocument, args: any);
+			onQueryEvent(type: QueryEvent, document: queryeditor.QueryDocument, args: any): void;
 		}
 
 		// new extensibility interfaces
