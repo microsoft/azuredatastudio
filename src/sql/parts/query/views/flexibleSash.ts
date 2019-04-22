@@ -162,7 +162,7 @@ export class VerticalFlexibleSash extends Disposable implements IVerticalSashLay
  */
 export class HorizontalFlexibleSash extends Disposable implements IHorizontalSashLayoutProvider, IFlexibleSash {
 
-	private static initialRatio: number = 0.3;
+	private static initialRatio: number = 0.4;
 	private sash: Sash;
 	private ratio: number;
 	private startPosition: number;
