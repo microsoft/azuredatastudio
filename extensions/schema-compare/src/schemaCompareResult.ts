@@ -325,8 +325,6 @@ export class SchemaCompareResult {
 	}
 
 	private createOptionsButton(view: azdata.ModelView) {
-		let fileIcon = path.join(__dirname, '.', 'media', 'options.svg');
-
 		this.optionsButton = view.modelBuilder.button().withProperties({
 			label: localize('schemaCompare.optionsButton', 'Options'),
 			iconPath: {
