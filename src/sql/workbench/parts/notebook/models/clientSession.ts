@@ -309,9 +309,6 @@ export class ClientSession implements IClientSession {
 		if (this._session && this._session.id) {
 			await this.notebookManager.sessionManager.shutdown(this._session.id);
 		}
-		if (this.notebookManager.serverManager && this.notebookManager.serverManager.isStarted) {
-			await this.notebookManager.serverManager.stopServer();
-		}
 	}
 
 	/**
