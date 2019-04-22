@@ -329,7 +329,7 @@ export default class JupyterServerInstallation {
 		let installJupyterCommand: string;
 		if (process.platform === constants.winPlatform || this._usingExistingPython) {
 			let requirements = path.join(this._pythonPackageDir, 'requirements.txt');
-			installJupyterCommand = `"${this._pythonExecutable}" -m pip install -v --no-index -r "${requirements}" --find-links "${this._pythonPackageDir}" --no-warn-script-location`;
+			installJupyterCommand = `"${this._pythonExecutable}" -m pip install --no-index -r "${requirements}" --find-links "${this._pythonPackageDir}" --no-warn-script-location`;
 		}
 
 		if (installJupyterCommand) {
@@ -346,7 +346,7 @@ export default class JupyterServerInstallation {
 		let installSparkMagic: string;
 		if (process.platform === constants.winPlatform || this._usingExistingPython) {
 			let sparkWheel = path.join(this._pythonPackageDir, `sparkmagic-${constants.sparkMagicVersion}-py3-none-any.whl`);
-			installSparkMagic = `"${this._pythonExecutable}" -m pip install -v --no-index "${sparkWheel}" --find-links "${this._pythonPackageDir}" --no-warn-script-location`;
+			installSparkMagic = `"${this._pythonExecutable}" -m pip install --no-index "${sparkWheel}" --find-links "${this._pythonPackageDir}" --no-warn-script-location`;
 		}
 
 		if (installSparkMagic) {
