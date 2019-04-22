@@ -55,7 +55,7 @@ export async function connectToServerReturnResult(server: TestServerProfile, tim
 }
 
 export async function ensureConnectionViewOpened() {
-	await vscode.commands.executeCommand('workbench.view.dataExplorer');
+	await vscode.commands.executeCommand('dataExplorer.servers.focus');
 }
 
 export function combinePath(basePath: string, relativePath: string) {

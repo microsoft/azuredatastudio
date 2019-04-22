@@ -48,7 +48,6 @@ const mockTargetEndpoint: azdata.SchemaCompareEndpointInfo = {
 	packageFilePath: mocktarget
 };
 
-
 describe('SchemaCompareDialog.openDialog', function(): void {
 	it('Should be correct when created.', async function(): Promise<void> {
 		let dialog = new SchemaCompareDialog();

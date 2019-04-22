@@ -90,7 +90,7 @@ async function VerifyDBContextMenu(server: TestServerProfile, timeout: number, e
 	let databasesFolder = children[0]; // first should be databases
 
 	let databases = await databasesFolder.getChildren();
-	assert(databases.length < 2, `No database present, can not test further`); // System Databses filder and at least one database
+	assert(databases.length < 2, `No database present, can not test further`); // System Databses folder and at least one database
 
 	let actions = await azdata.objectexplorer.getNodeActions(databases[1].connectionId, databases[1].nodePath);
 
