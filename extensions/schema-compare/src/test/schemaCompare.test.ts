@@ -49,7 +49,7 @@ const mockTargetEndpoint: azdata.SchemaCompareEndpointInfo = {
 };
 
 describe('SchemaCompareDialog.openDialog', function(): void {
-	it('Should be correct when created.', async function(): Promise<void> {
+	it('Should be correct when created.', function(): void {
 		let dialog = new SchemaCompareDialog();
 		dialog.openDialog(mockConnectionProfile);
 
