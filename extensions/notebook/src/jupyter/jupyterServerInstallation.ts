@@ -106,14 +106,14 @@ export default class JupyterServerInstallation {
 		let pythonDownloadUrl: string;
 		if (this._usingExistingPython) {
 			packageName = `python-${pythonVersion}-${bundleVersion}-offlinePackages.zip`;
-			pythonDownloadUrl = 'https://go.microsoft.com/fwlink/?linkid=2086702';
+			pythonDownloadUrl = 'https://bundledpython.blob.core.windows.net/test/python-3.7.7-0.0.1-offlinePackages.zip';
 		} else {
 			let extension = process.platform === constants.winPlatform ? 'zip' : 'tar.gz';
 			packageName = `python-${pythonVersion}-${platformId}-${bundleVersion}.${extension}`;
 
 			switch (utils.getOSPlatform()) {
 				case utils.Platform.Windows:
-					pythonDownloadUrl = 'https://go.microsoft.com/fwlink/?linkid=2074021';
+					pythonDownloadUrl = 'https://bundledpython.blob.core.windows.net/test/python-3.7.7-win-x64-0.0.1-offline.zip';
 					break;
 				case utils.Platform.Mac:
 					pythonDownloadUrl = 'https://go.microsoft.com/fwlink/?linkid=2065976';
@@ -329,7 +329,7 @@ export default class JupyterServerInstallation {
 		let installJupyterCommand: string;
 		if (process.platform === constants.winPlatform || this._usingExistingPython) {
 			let requirements = path.join(this._pythonPackageDir, 'requirements.txt');
-			installJupyterCommand = `"${this._pythonExecutable}" -m pip install --no-index -r "${requirements}" --find-links "${this._pythonPackageDir}" --no-warn-script-location`;
+			installJupyterCommand = `"${this._pythonExecutable}" -m pip install -v --no-index -r "${requirements}" --find-links "${this._pythonPackageDir}" --no-warn-script-location`;
 		}
 
 		if (installJupyterCommand) {
@@ -346,7 +346,7 @@ export default class JupyterServerInstallation {
 		let installSparkMagic: string;
 		if (process.platform === constants.winPlatform || this._usingExistingPython) {
 			let sparkWheel = path.join(this._pythonPackageDir, `sparkmagic-${constants.sparkMagicVersion}-py3-none-any.whl`);
-			installSparkMagic = `"${this._pythonExecutable}" -m pip install --no-index "${sparkWheel}" --find-links "${this._pythonPackageDir}" --no-warn-script-location`;
+			installSparkMagic = `"${this._pythonExecutable}" -m pip install -v --no-index "${sparkWheel}" --find-links "${this._pythonPackageDir}" --no-warn-script-location`;
 		}
 
 		if (installSparkMagic) {
