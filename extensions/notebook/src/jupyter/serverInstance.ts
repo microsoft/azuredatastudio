@@ -86,6 +86,7 @@ export class ServerInstanceUtils {
 			try {
 				process.kill(childProcess.pid, 'SIGKILL');
 			} catch (error) {
+				console.log(error);
 				// All is fine.
 			}
 		}, 5000);
