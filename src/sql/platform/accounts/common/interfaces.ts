@@ -50,21 +50,21 @@ export enum AzureResource {
 export interface IAccountStore {
 	/**
 	 * Adds the provided account if the account doesn't exist. Updates the account if it already exists
-	 * @param {Account} account Account to add/update
-	 * @return {Thenable<AccountAdditionResult>} Results of the add/update operation
+	 * @param account Account to add/update
+	 * @return Results of the add/update operation
 	 */
 	addOrUpdate(account: azdata.Account): Thenable<AccountAdditionResult>;
 
 	/**
 	 * Retrieves all accounts, filtered by provider ID
-	 * @param {string} providerId ID of the provider to filter by
-	 * @return {Thenable<Account[]>} Promise to return all accounts that belong to the provided provider
+	 * @param providerId ID of the provider to filter by
+	 * @return Promise to return all accounts that belong to the provided provider
 	 */
 	getAccountsByProvider(providerId: string): Thenable<azdata.Account[]>;
 
 	/**
 	 * Retrieves all accounts in the store. Returns empty array if store is not initialized
-	 * @return {Thenable<Account[]>} Promise to return all accounts
+	 * @return Promise to return all accounts
 	 */
 	getAllAccounts(): Thenable<azdata.Account[]>;
 

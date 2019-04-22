@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { ExtHostQueryEditorShape, SqlMainContext, MainThreadQueryEditorShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
@@ -31,7 +30,7 @@ class ExtHostQueryDocument implements azdata.queryeditor.QueryDocument {
 	}
 }
 
-export class ExtHostQueryEditor implements ExtHostQueryEditorShape  {
+export class ExtHostQueryEditor implements ExtHostQueryEditorShape {
 
 	private _proxy: MainThreadQueryEditorShape;
 	private _nextListenerHandle: number = 0;
@@ -57,7 +56,7 @@ export class ExtHostQueryEditor implements ExtHostQueryEditorShape  {
 		this._nextListenerHandle++;
 	}
 
-	public $onQueryEvent(handle: number, fileUri:string, event: IQueryEvent): void {
+	public $onQueryEvent(handle: number, fileUri: string, event: IQueryEvent): void {
 		let listener: azdata.queryeditor.QueryEventListener = this._queryListeners[handle];
 		if (listener) {
 			let planXml = event.params ? event.params.planXml : undefined;

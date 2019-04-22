@@ -1,0 +1,110 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.steps-tree .list-row .status-icon.step-passed {
+	content: url("success_complete.svg");
+	height: 100%;
+}
+
+.steps-tree .list-row .status-icon.step-failed {
+	content: url("failed.svg");
+	height: 100%;
+}
+
+.steps-tree .list-row .label {
+	padding-left: 10px;
+	display: flex;
+	text-align: center;
+	vertical-align: middle;
+	user-select: initial;
+}
+
+.steps-tree .list-row {
+	display: inline-flex;
+	height: 20px
+}
+
+.step-columns {
+	padding-left: 50px;
+	padding-top: 10px;
+}
+
+.steps-tree .tree-id-col {
+	padding-left: 10px;
+	white-space: normal;
+	text-align: left;
+	width: 60px;
+}
+
+.steps-tree .tree-name-col  {
+	padding-right: 10px;
+	white-space: normal;
+	text-align: left;
+	width: 300px;
+}
+
+.steps-tree .tree-message-col {
+	padding-right: 10px;
+	white-space: normal;
+	text-align: left;
+	width: 700px;
+}
+
+.steps-tree .step-column-heading {
+	font-weight: bold;
+	text-align: center;
+	height: 40px;
+}
+
+.steps-header > .steps-icon {
+	height: 25px;
+	padding-right: 10px;
+	display: inline;
+	vertical-align: middle;
+}
+
+.vs-dark .steps-header > .steps-icon,
+.hc-black .steps-header > .steps-icon {
+	content: url("step_inverse.svg");
+}
+
+.steps-header > .steps-icon {
+	content: url("step.svg");
+}
+
+jobstepsview-component {
+	display: flex;
+	flex-direction: column;
+	position: absolute;
+	height: 100%;
+	width: 100%;
+}
+
+jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row {
+	width: 99.2%;
+}
+
+.vs-dark jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row.step-column-row,
+.vs-dark jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row.step-column-row.focused,
+.vs-dark jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row.step-column-row.selected,
+.vs-dark jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row.step-column-row.focused.selected {
+	background: #444444 !important;
+}
+
+.hc-black jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row.step-column-row,
+.hc-black jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row.step-column-row.selected,
+.hc-black jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row.step-column-row.focused,
+.hc-black jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row.step-column-row.focused.selected {
+	background: none !important;
+}
+
+jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row.step-column-row,
+jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row.step-column-row.focused,
+jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row.step-column-row.selected,
+jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row.step-column-row.focused.selected {
+	background: #dcdcdc !important;
+	cursor: none;
+	padding-left: 0px;
+}

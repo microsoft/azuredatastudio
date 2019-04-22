@@ -9,13 +9,13 @@ Azure Data Studio is a data management tool that enables you to work with SQL Se
 
 Platform | Link
 -- | --
-Windows User Installer | https://go.microsoft.com/fwlink/?linkid=2083322
-Windows System Installer | https://go.microsoft.com/fwlink/?linkid=2083323
-Windows ZIP | https://go.microsoft.com/fwlink/?linkid=2083324
-macOS ZIP | https://go.microsoft.com/fwlink/?linkid=2083325
-Linux TAR.GZ | https://go.microsoft.com/fwlink/?linkid=2083424
-Linux RPM | https://go.microsoft.com/fwlink/?linkid=2083326
-Linux DEB | https://go.microsoft.com/fwlink/?linkid=2083327
+Windows User Installer | https://go.microsoft.com/fwlink/?linkid=2087316
+Windows System Installer | https://go.microsoft.com/fwlink/?linkid=2087317
+Windows ZIP | https://go.microsoft.com/fwlink/?linkid=2087318
+macOS ZIP | https://go.microsoft.com/fwlink/?linkid=2087170
+Linux TAR.GZ | https://go.microsoft.com/fwlink/?linkid=2087414
+Linux RPM | https://go.microsoft.com/fwlink/?linkid=2087171
+Linux DEB | https://go.microsoft.com/fwlink/?linkid=2087415
 
 Go to our [download page](https://aka.ms/azuredatastudio) for more specific instructions.
 
@@ -68,6 +68,7 @@ The [Microsoft Enterprise and Developer Privacy Statement](https://privacy.micro
 ## Contributions and "Thank You"
 We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
 
+* yamatoya for `fix the format (#4899)`
 * GeoffYoung for `Fix sqlDropColumn description #4422`
 * AlexFsmn for `Added context menu for DBs in explorer view to backup & restore db. #2277`
 * sadedil for `Missing feature request: Save as XML #3729`

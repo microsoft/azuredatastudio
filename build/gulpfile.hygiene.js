@@ -90,7 +90,13 @@ const indentationFilter = [
 	'!**/Dockerfile.*',
 	'!**/*.Dockerfile',
 	'!**/*.dockerfile',
-	'!extensions/markdown-language-features/media/*.js'
+	'!extensions/markdown-language-features/media/*.js',
+	// {{SQL CARBON EDIT}}
+	'!**/*.xlf',
+	'!**/*.docx',
+	'!**/*.sql',
+	'!extensions/mssql/sqltoolsservice/**',
+	'!extensions/import/flatfileimportservice/**',
 ];
 
 const copyrightFilter = [
@@ -119,7 +125,37 @@ const copyrightFilter = [
 	'!resources/completions/**',
 	'!extensions/markdown-language-features/media/highlight.css',
 	'!extensions/html-language-features/server/src/modes/typescript/*',
-	'!extensions/*/server/bin/*'
+	'!extensions/*/server/bin/*',
+	// {{SQL CARBON EDIT}}
+	'!extensions/notebook/src/intellisense/text.ts',
+	'!extensions/mssql/src/objectExplorerNodeProvider/webhdfs.ts',
+	'!src/sql/workbench/parts/notebook/outputs/tableRenderers.ts',
+	'!src/sql/workbench/parts/notebook/outputs/common/url.ts',
+	'!src/sql/workbench/parts/notebook/outputs/common/renderMimeInterfaces.ts',
+	'!src/sql/workbench/parts/notebook/outputs/common/outputProcessor.ts',
+	'!src/sql/workbench/parts/notebook/outputs/common/mimemodel.ts',
+	'!src/sql/workbench/parts/notebook/cellViews/media/output.css',
+	'!src/sql/base/browser/ui/table/plugins/rowSelectionModel.plugin.ts',
+	'!src/sql/base/browser/ui/table/plugins/rowDetailView.ts',
+	'!src/sql/base/browser/ui/table/plugins/headerFilter.plugin.ts',
+	'!src/sql/base/browser/ui/table/plugins/checkboxSelectColumn.plugin.ts',
+	'!src/sql/base/browser/ui/table/plugins/cellSelectionModel.plugin.ts',
+	'!src/sql/base/browser/ui/table/plugins/autoSizeColumns.plugin.ts',
+	'!src/sql/workbench/parts/notebook/outputs/sanitizer.ts',
+	'!src/sql/workbench/parts/notebook/outputs/renderers.ts',
+	'!src/sql/workbench/parts/notebook/outputs/registry.ts',
+	'!src/sql/workbench/parts/notebook/outputs/factories.ts',
+	'!src/sql/workbench/parts/notebook/models/nbformat.ts',
+	'!extensions/markdown-language-features/media/tomorrow.css',
+	'!src/sql/workbench/electron-browser/modelComponents/media/highlight.css',
+	'!src/sql/parts/modelComponents/highlight.css',
+	'!extensions/mssql/sqltoolsservice/**',
+	'!extensions/import/flatfileimportservice/**',
+	'!extensions/notebook/src/prompts/**',
+	'!extensions/mssql/src/prompts/**',
+	'!extensions/notebook/resources/jupyter_config/**',
+	'!**/*.gif',
+	'!**/*.xlf'
 ];
 
 const eslintFilter = [
@@ -165,8 +201,7 @@ gulp.task('eslint', () => {
 });
 
 gulp.task('tslint', () => {
-  // {{SQL CARBON EDIT}}
-	const options = { emitError: false };
+	const options = { emitError: true };
 
 	return vfs.src(all, { base: '.', follow: true, allowEmpty: true })
 		.pipe(filter(tslintFilter))
@@ -264,9 +299,8 @@ function hygiene(some) {
 		.pipe(filter(f => !f.stat.isDirectory()))
 		.pipe(filter(indentationFilter))
 		.pipe(indentation)
-		.pipe(filter(copyrightFilter));
-    // {{SQL CARBON EDIT}}
-		// .pipe(copyrights);
+		.pipe(filter(copyrightFilter))
+		.pipe(copyrights);
 
 	const typescript = result
 		.pipe(filter(tslintFilter))
@@ -276,15 +310,38 @@ function hygiene(some) {
 	const javascript = result
 		.pipe(filter(eslintFilter))
 		.pipe(gulpeslint('src/.eslintrc'))
-		.pipe(gulpeslint.formatEach('compact'));
-    // {{SQL CARBON EDIT}}
-		// .pipe(gulpeslint.failAfterError());
+		.pipe(gulpeslint.formatEach('compact'))
+		.pipe(gulpeslint.failAfterError());
 
 	let count = 0;
 	return es.merge(typescript, javascript)
 		.pipe(es.through(function (data) {
-       // {{SQL CARBON EDIT}}
-       this.emit('end');
+			count++;
+			if (process.env['TRAVIS'] && count % 10 === 0) {
+				process.stdout.write('.');
+			}
+			this.emit('data', data);
+		}, function () {
+			process.stdout.write('\n');
+
+			const tslintResult = tsLinter.getResult();
+			if (tslintResult.failures.length > 0) {
+				for (const failure of tslintResult.failures) {
+					const name = failure.getFileName();
+					const position = failure.getStartPosition();
+					const line = position.getLineAndCharacter().line;
+					const character = position.getLineAndCharacter().character;
+
+					console.error(`${name}:${line + 1}:${character + 1}:${failure.getFailure()}`);
+				}
+				errorCount += tslintResult.failures.length;
+			}
+
+			if (errorCount > 0) {
+				this.emit('error', 'Hygiene failed with ' + errorCount + ' errors. Check \'build/gulpfile.hygiene.js\'.');
+			} else {
+				this.emit('end');
+			}
 		}));
 }
 

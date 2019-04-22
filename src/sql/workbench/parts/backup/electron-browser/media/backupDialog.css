@@ -1,0 +1,72 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.backup-path-list {
+	overflow-x: auto;
+}
+
+.backup-path-table {
+	border: 0px;
+	border-collapse: collapse;
+	border-spacing: 0px;
+}
+
+.backup-path-button {
+	width: 22px;
+}
+
+.backup-dialog {
+	height: 100%
+}
+
+.backup-dialog .advanced-main-header {
+	padding-top: 20px;
+}
+
+.backup-dialog .advanced-header {
+	padding-top: 15px;
+	font-size: 14px;
+}
+
+.backup-dialog input[type="checkbox"] {
+	margin-left: 0px;
+}
+
+.backup-dialog input[type="radio"] {
+	margin-top: -2px;
+	vertical-align: middle;
+}
+
+.backup-dialog .indent {
+	margin-left: 7px;
+}
+
+.backup-dialog .radio-indent {
+	margin-left: 2px;
+}
+
+.backup-dialog .option {
+	width: 100%;
+	padding-bottom: 7px;
+}
+
+.backup-dialog .option.check {
+	display: flex;
+	padding-bottom: 4px;
+}
+
+.backup-dialog .check {
+	display: flex;
+}
+
+.backup-dialog .icon.warning {
+	width: 15px;
+	height: 15px;
+	float: left;
+}
+
+.backup-dialog .warning-message{
+	padding-left: 20px;
+}

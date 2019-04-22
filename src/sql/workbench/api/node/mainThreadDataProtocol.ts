@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import {
@@ -255,7 +254,7 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 
 	public $registerObjectExplorerNodeProvider(providerId: string, supportedProviderId: string, group: string, handle: number): Promise<any> {
 		const self = this;
-		this._objectExplorerService.registerNodeProvider(<azdata.ObjectExplorerNodeProvider> {
+		this._objectExplorerService.registerNodeProvider(<azdata.ObjectExplorerNodeProvider>{
 			supportedProviderId: supportedProviderId,
 			providerId: providerId,
 			group: group,

@@ -22,57 +22,57 @@ const localize = nls.loadMessageBundle();
  * The main controller class that initializes the extension
  */
 export class MainController {
-    protected _context: vscode.ExtensionContext;
+	protected _context: vscode.ExtensionContext;
 
-    // PUBLIC METHODS //////////////////////////////////////////////////////
-    public constructor(context: vscode.ExtensionContext) {
-        this._context = context;
-    }
+	// PUBLIC METHODS //////////////////////////////////////////////////////
+	public constructor(context: vscode.ExtensionContext) {
+		this._context = context;
+	}
 
-    public static showNotYetImplemented(): void {
-        vscode.window.showInformationMessage(
-            localize('mainController.notImplemented', "This feature is under development.  Check-out the latest insiders build if you'd like to try out the most recent changes!"));
-    }
+	public static showNotYetImplemented(): void {
+		vscode.window.showInformationMessage(
+			localize('mainController.notImplemented', "This feature is under development.  Check-out the latest insiders build if you'd like to try out the most recent changes!"));
+	}
 
-    /**
-     * Activates the extension
-     */
-    public activate(): void {
-        vscode.commands.registerCommand('agent.openJobDialog', async (ownerUri: string, jobInfo: azdata.AgentJobInfo) => {
-            let dialog = new JobDialog(ownerUri, jobInfo);
-            dialog.dialogName ? await dialog.openDialog(dialog.dialogName) : await dialog.openDialog();
-        });
-        vscode.commands.registerCommand('agent.openNewStepDialog', (ownerUri: string, server: string, jobInfo: azdata.AgentJobInfo, jobStepInfo: azdata.AgentJobStepInfo) => {
-            AgentUtils.getAgentService().then(async(agentService) => {
-                let jobData: JobData = new JobData(ownerUri, jobInfo, agentService);
-                let dialog = new JobStepDialog(ownerUri, server, jobData, jobStepInfo, false);
-                dialog.dialogName ? await dialog.openDialog(dialog.dialogName) : await dialog.openDialog();
-            });
-        });
-        vscode.commands.registerCommand('agent.openPickScheduleDialog', async (ownerUri: string, jobName: string) => {
-            let dialog = new PickScheduleDialog(ownerUri, jobName);
-            await dialog.showDialog();
-        });
-        vscode.commands.registerCommand('agent.openAlertDialog', (ownerUri: string, jobInfo: azdata.AgentJobInfo, alertInfo: azdata.AgentAlertInfo) => {
-            AgentUtils.getAgentService().then(async (agentService) => {
-                let jobData: JobData = new JobData(ownerUri, jobInfo, agentService);
-                let dialog = new AlertDialog(ownerUri, jobData, alertInfo, false);
-                dialog.dialogName ? await dialog.openDialog(dialog.dialogName) : await dialog.openDialog();
-            });
-        });
-        vscode.commands.registerCommand('agent.openOperatorDialog', async (ownerUri: string, operatorInfo: azdata.AgentOperatorInfo) => {
-            let dialog = new OperatorDialog(ownerUri, operatorInfo);
-            dialog.dialogName ? await dialog.openDialog(dialog.dialogName) : await dialog.openDialog();
-        });
-        vscode.commands.registerCommand('agent.openProxyDialog', async (ownerUri: string, proxyInfo: azdata.AgentProxyInfo, credentials: azdata.CredentialInfo[]) => {
-            let dialog = new ProxyDialog(ownerUri, proxyInfo, credentials);
-            dialog.dialogName ? await dialog.openDialog(dialog.dialogName) : await dialog.openDialog();
-        });
-    }
+	/**
+	 * Activates the extension
+	 */
+	public activate(): void {
+		vscode.commands.registerCommand('agent.openJobDialog', async (ownerUri: string, jobInfo: azdata.AgentJobInfo) => {
+			let dialog = new JobDialog(ownerUri, jobInfo);
+			dialog.dialogName ? await dialog.openDialog(dialog.dialogName) : await dialog.openDialog();
+		});
+		vscode.commands.registerCommand('agent.openNewStepDialog', (ownerUri: string, server: string, jobInfo: azdata.AgentJobInfo, jobStepInfo: azdata.AgentJobStepInfo) => {
+			AgentUtils.getAgentService().then(async (agentService) => {
+				let jobData: JobData = new JobData(ownerUri, jobInfo, agentService);
+				let dialog = new JobStepDialog(ownerUri, server, jobData, jobStepInfo, false);
+				dialog.dialogName ? await dialog.openDialog(dialog.dialogName) : await dialog.openDialog();
+			});
+		});
+		vscode.commands.registerCommand('agent.openPickScheduleDialog', async (ownerUri: string, jobName: string) => {
+			let dialog = new PickScheduleDialog(ownerUri, jobName);
+			await dialog.showDialog();
+		});
+		vscode.commands.registerCommand('agent.openAlertDialog', (ownerUri: string, jobInfo: azdata.AgentJobInfo, alertInfo: azdata.AgentAlertInfo) => {
+			AgentUtils.getAgentService().then(async (agentService) => {
+				let jobData: JobData = new JobData(ownerUri, jobInfo, agentService);
+				let dialog = new AlertDialog(ownerUri, jobData, alertInfo, false);
+				dialog.dialogName ? await dialog.openDialog(dialog.dialogName) : await dialog.openDialog();
+			});
+		});
+		vscode.commands.registerCommand('agent.openOperatorDialog', async (ownerUri: string, operatorInfo: azdata.AgentOperatorInfo) => {
+			let dialog = new OperatorDialog(ownerUri, operatorInfo);
+			dialog.dialogName ? await dialog.openDialog(dialog.dialogName) : await dialog.openDialog();
+		});
+		vscode.commands.registerCommand('agent.openProxyDialog', async (ownerUri: string, proxyInfo: azdata.AgentProxyInfo, credentials: azdata.CredentialInfo[]) => {
+			let dialog = new ProxyDialog(ownerUri, proxyInfo, credentials);
+			dialog.dialogName ? await dialog.openDialog(dialog.dialogName) : await dialog.openDialog();
+		});
+	}
 
-    /**
-     * Deactivates the extension
-     */
-    public deactivate(): void {
-    }
+	/**
+	 * Deactivates the extension
+	 */
+	public deactivate(): void {
+	}
 }

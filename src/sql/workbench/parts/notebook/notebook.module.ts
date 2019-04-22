@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------------------------
-*  Copyright (c) Microsoft Corporation. All rights reserved.
-*  Licensed under the Source EULA. See License.txt in the project root for license information.
-*--------------------------------------------------------------------------------------------*/
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
 'use strict';
 
@@ -27,7 +27,7 @@ import { TextCellComponent } from 'sql/workbench/parts/notebook/cellViews/textCe
 import { OutputAreaComponent } from 'sql/workbench/parts/notebook/cellViews/outputArea.component';
 import { OutputComponent } from 'sql/workbench/parts/notebook/cellViews/output.component';
 import { PlaceholderCellComponent } from 'sql/workbench/parts/notebook/cellViews/placeholderCell.component';
-import LoadingSpinner from 'sql/parts/modelComponents/loadingSpinner.component';
+import LoadingSpinner from 'sql/workbench/electron-browser/modelComponents/loadingSpinner.component';
 
 export const NotebookModule = (params, selector: string, instantiationService: IInstantiationService): any => {
 	@NgModule({

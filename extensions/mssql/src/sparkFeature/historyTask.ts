@@ -18,9 +18,8 @@ export class OpenSparkYarnHistoryTask {
 	async execute(sqlConnProfile: azdata.IConnectionProfile, isSpark: boolean): Promise<void> {
 		try {
 			let sqlClusterConnection = SqlClusterLookUp.findSqlClusterConnection(sqlConnProfile, this.appContext);
-			if (!sqlClusterConnection)
-			{
-				let name = isSpark? 'Spark' : 'Yarn';
+			if (!sqlClusterConnection) {
+				let name = isSpark ? 'Spark' : 'Yarn';
 				this.appContext.apiWrapper.showErrorMessage(`Please connect to the Spark cluster before View ${name} History.`);
 				return;
 			}

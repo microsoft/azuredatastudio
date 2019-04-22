@@ -68,7 +68,7 @@ export abstract class TreeNode implements ITreeNode {
 		if (children) {
 			for (let child of children) {
 				if (filter && filter(child)) {
-					let childNode =  await this.findNode(child, condition, filter, expandIfNeeded);
+					let childNode = await this.findNode(child, condition, filter, expandIfNeeded);
 					if (childNode) {
 						return childNode;
 					}
@@ -78,7 +78,7 @@ export abstract class TreeNode implements ITreeNode {
 		return undefined;
 	}
 
-	public updateFileSource(connection: SqlClusterConnection): void{
+	public updateFileSource(connection: SqlClusterConnection): void {
 		this.fileSource = connection.createHdfsFileSource();
 	}
 	/**

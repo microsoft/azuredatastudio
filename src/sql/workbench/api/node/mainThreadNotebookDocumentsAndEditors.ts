@@ -30,7 +30,7 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { viewColumnToEditorGroup } from 'vs/workbench/api/common/shared/editor';
-import { notebookModeId } from 'sql/parts/common/customInputConverter';
+import { notebookModeId } from 'sql/workbench/common/customInputConverter';
 
 class MainThreadNotebookEditor extends Disposable {
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();

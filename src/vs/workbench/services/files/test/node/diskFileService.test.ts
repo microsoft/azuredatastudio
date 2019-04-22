@@ -1382,6 +1382,10 @@ suite('Disk File Service', () => {
 	});
 
 	test('watch - file - multiple writes', done => {
+		if (isWindows) {
+			return done(); // not happy
+		}
+
 		const toWatch = URI.file(join(testDir, 'index-watch1.html'));
 		writeFileSync(toWatch.fsPath, 'Init');
 
@@ -1488,6 +1492,10 @@ suite('Disk File Service', () => {
 	});
 
 	test('watch - folder (non recursive) - delete folder', done => {
+		if (isWindows) {
+			return done(); // not happy
+		}
+
 		const watchDir = URI.file(join(testDir, 'watch7'));
 		mkdirSync(watchDir.fsPath);
 

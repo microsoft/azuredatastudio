@@ -68,7 +68,7 @@ export class ServerTreeController extends treedefaults.DefaultController {
 
 		tree.setFocus(element);
 
-		var actionContext: any;
+		let actionContext: any;
 		if (element instanceof TreeNode) {
 			let context = new ObjectExplorerActionsContext();
 			context.nodeInfo = element.toNodeInfo();
