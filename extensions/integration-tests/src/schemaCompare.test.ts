@@ -10,8 +10,7 @@ import * as azdata from 'azdata';
 import * as utils from './utils';
 import { context } from './testContext';
 import assert = require('assert');
-import { TestServerProfile, getStandaloneServer } from './testConfig';
-
+import { getStandaloneServer } from './testConfig';
 
 if (context.RunTest) {
 	suite('Schema compare integration test suite', () => {

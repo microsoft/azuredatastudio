@@ -133,16 +133,16 @@ export class SchemaCompareResult {
 
 			await view.initializeModel(this.flexModel);
 		});
+		this.editor.openEditor();
 	}
 
 	public async start(): Promise<void> {
-		this.editor.openEditor();
 		await this.execute();
 	}
 
 	// Test Only
-	getEditor(): azdata.workspace.ModelViewEditor {
-		return this.editor;
+	getComparisionResult(): azdata.SchemaCompareResult {
+		return this.comparisonResult;
 	}
 
 	private async execute(): Promise<void> {

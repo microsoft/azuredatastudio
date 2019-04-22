@@ -12,10 +12,7 @@ import * as azdata from 'azdata';
 import 'mocha';
 import { SchemaCompareDialog } from './../dialogs/schemaCompareDialog';
 import { SchemaCompareResult } from './../schemaCompareResult';
-import { AssertionError } from 'assert';
 import { SchemaCompareTestService } from './testSchemaCompareService';
-
-let mockDacFxServiceProvider: TypeMoq.IMock<azdata.DacFxServicesProvider>;
 
 // Mock test data
 const mockConnectionProfile: azdata.IConnectionProfile = {
@@ -69,6 +66,11 @@ describe('SchemaCompareResult.start', function(): void {
 		azdata.dataprotocol.registerSchemaCompareServicesProvider(sc);
 
 		let result = new SchemaCompareResult(mocksource, mocktarget, mockSourceEndpoint, mockTargetEndpoint);
-		should(result.getEditor().valid).equal(true);
+		let promise = new Promise(resolve => setTimeout(resolve, 3000)); // to ensure comparision result view is initialized
+		await promise;
+		await result.start();
+
+		should(result.getComparisionResult().success).equal(true);
+		should(result.getComparisionResult().operationId).equal(sc.testOperationId);
 	});
 });
