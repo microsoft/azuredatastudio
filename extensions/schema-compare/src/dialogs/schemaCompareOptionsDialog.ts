@@ -37,7 +37,7 @@ export class SchemaCompareOptionsDialog {
 	private static readonly IgnoreFullTextCatalogFilePath: string = localize('SchemaCompare.IgnoreFullTextCatalogFilePath', 'Ignore Full Text Catalog FilePath');
 	private static readonly IgnoreWhitespace: string = localize('SchemaCompare.IgnoreWhitespace', 'Ignore Whitespace');
 	private static readonly IgnoreWithNocheckOnForeignKeys: string = localize('SchemaCompare.IgnoreWithNocheckOnForeignKeys', 'Ignore With Nocheck On ForeignKeys');
-	private static readonly VerifyCollationCompatibility: string = localize('SchemaCompare.VerifyCollationCompatibility', 'Verify CollationCompatibility');
+	private static readonly VerifyCollationCompatibility: string = localize('SchemaCompare.VerifyCollationCompatibility', 'Verify Collation Compatibility');
 	private static readonly UnmodifiableObjectWarnings: string = localize('SchemaCompare.UnmodifiableObjectWarnings', 'Unmodifiable Object Warnings');
 	private static readonly TreatVerificationErrorsAsWarnings: string = localize('SchemaCompare.TreatVerificationErrorsAsWarnings', 'Treat Verification Errors As Warnings');
 	private static readonly ScriptRefreshModule: string = localize('SchemaCompare.ScriptRefreshModule', 'Script Refresh Module');
@@ -50,7 +50,7 @@ export class SchemaCompareOptionsDialog {
 	private static readonly RunDeploymentPlanExecutors: string = localize('SchemaCompare.RunDeploymentPlanExecutors', 'Run Deployment Plan Executors');
 	private static readonly RegisterDataTierApplication: string = localize('SchemaCompare.RegisterDataTierApplication', 'Register DataTier Application');
 	private static readonly PopulateFilesOnFileGroups: string = localize('SchemaCompare.PopulateFilesOnFileGroups', 'Populate Files On File Groups');
-	private static readonly NoAlterStatementsToChangeClrTypes: string = localize('SchemaCompare.NoAlterStatementsToChangeClrTypes', 'No Alter Statements To ChangeClrTypes');
+	private static readonly NoAlterStatementsToChangeClrTypes: string = localize('SchemaCompare.NoAlterStatementsToChangeClrTypes', 'No Alter Statements To Change Clr Types');
 	private static readonly IncludeTransactionalScripts: string = localize('SchemaCompare.IncludeTransactionalScripts', 'Include Transactional Scripts');
 	private static readonly IncludeCompositeObjects: string = localize('SchemaCompare.IncludeCompositeObjects', 'Include Composite Objects');
 	private static readonly AllowUnsafeRowLevelSecurityDataMovement: string = localize('SchemaCompare.AllowUnsafeRowLevelSecurityDataMovement', 'Allow Unsafe Row Level Security Data Movement');
@@ -95,38 +95,38 @@ export class SchemaCompareOptionsDialog {
 	private static readonly IgnoreColumnOrder: string = localize('SchemaCompare.IgnoreColumnOrder', 'Ignore Column Order');
 
 	private static readonly Aggregates: string = localize('SchemaCompare.Aggregates', 'Aggregates');
-	private static readonly ApplicationRoles: string = localize('SchemaCompare.ApplicationRoles', 'ApplicationRoles');
+	private static readonly ApplicationRoles: string = localize('SchemaCompare.ApplicationRoles', 'Application Roles');
 	private static readonly Assemblies: string = localize('SchemaCompare.Assemblies', 'Assemblies');
-	private static readonly AssemblyFiles: string = localize('SchemaCompare.AssemblyFiles', 'AssemblyFiles');
-	private static readonly AsymmetricKeys: string = localize('SchemaCompare.AsymmetricKeys', 'AsymmetricKeys');
-	private static readonly BrokerPriorities: string = localize('SchemaCompare.BrokerPriorities', 'BrokerPriorities');
+	private static readonly AssemblyFiles: string = localize('SchemaCompare.AssemblyFiles', 'Assembly Files');
+	private static readonly AsymmetricKeys: string = localize('SchemaCompare.AsymmetricKeys', 'Asymmetric Keys');
+	private static readonly BrokerPriorities: string = localize('SchemaCompare.BrokerPriorities', 'Broker Priorities');
 	private static readonly Certificates: string = localize('SchemaCompare.Certificates', 'Certificates');
-	private static readonly ColumnEncryptionKeys: string = localize('SchemaCompare.ColumnEncryptionKeys', 'ColumnEncryptionKeys');
-	private static readonly ColumnMasterKeys: string = localize('SchemaCompare.ColumnMasterKeys', 'ColumnMasterKeys');
+	private static readonly ColumnEncryptionKeys: string = localize('SchemaCompare.ColumnEncryptionKeys', 'Column Encryption Keys');
+	private static readonly ColumnMasterKeys: string = localize('SchemaCompare.ColumnMasterKeys', 'Column Master Keys');
 	private static readonly Contracts: string = localize('SchemaCompare.Contracts', 'Contracts');
-	private static readonly DatabaseOptions: string = localize('SchemaCompare.DatabaseOptions', 'DatabaseOptions');
-	private static readonly DatabaseRoles: string = localize('SchemaCompare.DatabaseRoles', 'DatabaseRoles');
+	private static readonly DatabaseOptions: string = localize('SchemaCompare.DatabaseOptions', 'Database Options');
+	private static readonly DatabaseRoles: string = localize('SchemaCompare.DatabaseRoles', 'Database Roles');
 	private static readonly DatabaseTriggers: string = localize('SchemaCompare.DatabaseTriggers', 'DatabaseTriggers');
 	private static readonly Defaults: string = localize('SchemaCompare.Defaults', 'Defaults');
-	private static readonly ExtendedProperties: string = localize('SchemaCompare.ExtendedProperties', 'ExtendedProperties');
-	private static readonly ExternalDataSources: string = localize('SchemaCompare.ExternalDataSources', 'ExternalDataSources');
-	private static readonly ExternalFileFormats: string = localize('SchemaCompare.ExternalFileFormats', 'ExternalFileFormats');
-	private static readonly ExternalTables: string = localize('SchemaCompare.ExternalTables', 'ExternalTables');
+	private static readonly ExtendedProperties: string = localize('SchemaCompare.ExtendedProperties', 'Extended Properties');
+	private static readonly ExternalDataSources: string = localize('SchemaCompare.ExternalDataSources', 'External Data Sources');
+	private static readonly ExternalFileFormats: string = localize('SchemaCompare.ExternalFileFormats', 'External File Formats');
+	private static readonly ExternalTables: string = localize('SchemaCompare.ExternalTables', 'External Tables');
 	private static readonly Filegroups: string = localize('SchemaCompare.Filegroups', 'Filegroups');
-	private static readonly FileTables: string = localize('SchemaCompare.FileTables', 'FileTables');
-	private static readonly FullTextCatalogs: string = localize('SchemaCompare.FullTextCatalogs', 'FullTextCatalogs');
-	private static readonly FullTextStoplists: string = localize('SchemaCompare.FullTextStoplists', 'FullTextStoplists');
-	private static readonly MessageTypes: string = localize('SchemaCompare.MessageTypes', 'MessageTypes');
-	private static readonly PartitionFunctions: string = localize('SchemaCompare.PartitionFunctions', 'PartitionFunctions');
-	private static readonly PartitionSchemes: string = localize('SchemaCompare.PartitionSchemes', 'PartitionSchemes');
+	private static readonly FileTables: string = localize('SchemaCompare.FileTables', 'File Tables');
+	private static readonly FullTextCatalogs: string = localize('SchemaCompare.FullTextCatalogs', 'Full Text Catalogs');
+	private static readonly FullTextStoplists: string = localize('SchemaCompare.FullTextStoplists', 'Full Text Stoplists');
+	private static readonly MessageTypes: string = localize('SchemaCompare.MessageTypes', 'Message Types');
+	private static readonly PartitionFunctions: string = localize('SchemaCompare.PartitionFunctions', 'Partition Functions');
+	private static readonly PartitionSchemes: string = localize('SchemaCompare.PartitionSchemes', 'Partition Schemes');
 	private static readonly Permissions: string = localize('SchemaCompare.Permissions', 'Permissions');
 	private static readonly Queues: string = localize('SchemaCompare.Queues', 'Queues');
-	private static readonly RemoteServiceBindings: string = localize('SchemaCompare.RemoteServiceBindings', 'RemoteServiceBindings');
-	private static readonly RoleMembership: string = localize('SchemaCompare.RoleMembership', 'RoleMembership');
+	private static readonly RemoteServiceBindings: string = localize('SchemaCompare.RemoteServiceBindings', 'Remote Service Bindings');
+	private static readonly RoleMembership: string = localize('SchemaCompare.RoleMembership', 'Role Membership');
 	private static readonly Rules: string = localize('SchemaCompare.Rules', 'Rules');
-	private static readonly ScalarValuedFunctions: string = localize('SchemaCompare.ScalarValuedFunctions', 'ScalarValuedFunctions');
-	private static readonly SearchPropertyLists: string = localize('SchemaCompare.SearchPropertyLists', 'SearchPropertyLists');
-	private static readonly SecurityPolicies: string = localize('SchemaCompare.SecurityPolicies', 'SecurityPolicies');
+	private static readonly ScalarValuedFunctions: string = localize('SchemaCompare.ScalarValuedFunctions', 'Scalar Valued Functions');
+	private static readonly SearchPropertyLists: string = localize('SchemaCompare.SearchPropertyLists', 'Search Property Lists');
+	private static readonly SecurityPolicies: string = localize('SchemaCompare.SecurityPolicies', 'Security Policies');
 	private static readonly Sequences: string = localize('SchemaCompare.Sequences', 'Sequences');
 	private static readonly Services: string = localize('SchemaCompare.Services', 'Services');
 	private static readonly Signatures: string = localize('SchemaCompare.Signatures', 'Signatures');
@@ -134,32 +134,32 @@ export class SchemaCompareOptionsDialog {
 	private static readonly SymmetricKeys: string = localize('SchemaCompare.SymmetricKeys', 'SymmetricKeys');
 	private static readonly Synonyms: string = localize('SchemaCompare.Synonyms', 'Synonyms');
 	private static readonly Tables: string = localize('SchemaCompare.Tables', 'Tables');
-	private static readonly TableValuedFunctions: string = localize('SchemaCompare.TableValuedFunctions', 'TableValuedFunctions');
-	private static readonly UserDefinedDataTypes: string = localize('SchemaCompare.UserDefinedDataTypes', 'UserDefinedDataTypes');
-	private static readonly UserDefinedTableTypes: string = localize('SchemaCompare.UserDefinedTableTypes', 'UserDefinedTableTypes');
-	private static readonly ClrUserDefinedTypes: string = localize('SchemaCompare.ClrUserDefinedTypes', 'ClrUserDefinedTypes');
+	private static readonly TableValuedFunctions: string = localize('SchemaCompare.TableValuedFunctions', 'Table Valued Functions');
+	private static readonly UserDefinedDataTypes: string = localize('SchemaCompare.UserDefinedDataTypes', 'User Defined Data Types');
+	private static readonly UserDefinedTableTypes: string = localize('SchemaCompare.UserDefinedTableTypes', 'User Defined Table Types');
+	private static readonly ClrUserDefinedTypes: string = localize('SchemaCompare.ClrUserDefinedTypes', 'Clr User Defined Types');
 	private static readonly Users: string = localize('SchemaCompare.Users', 'Users');
 	private static readonly Views: string = localize('SchemaCompare.Views', 'Views');
-	private static readonly XmlSchemaCollections: string = localize('SchemaCompare.XmlSchemaCollections', 'XmlSchemaCollections');
+	private static readonly XmlSchemaCollections: string = localize('SchemaCompare.XmlSchemaCollections', 'Xml Schema Collections');
 	private static readonly Audits: string = localize('SchemaCompare.Audits', 'Audits');
 	private static readonly Credentials: string = localize('SchemaCompare.Credentials', 'Credentials');
-	private static readonly CryptographicProviders: string = localize('SchemaCompare.CryptographicProviders', 'CryptographicProviders');
-	private static readonly DatabaseAuditSpecifications: string = localize('SchemaCompare.DatabaseAuditSpecifications', 'DatabaseAuditSpecifications');
-	private static readonly DatabaseEncryptionKeys: string = localize('SchemaCompare.DatabaseEncryptionKeys', 'DatabaseEncryptionKeys');
-	private static readonly DatabaseScopedCredentials: string = localize('SchemaCompare.DatabaseScopedCredentials', 'DatabaseScopedCredentials');
+	private static readonly CryptographicProviders: string = localize('SchemaCompare.CryptographicProviders', 'Cryptographic Providers');
+	private static readonly DatabaseAuditSpecifications: string = localize('SchemaCompare.DatabaseAuditSpecifications', 'Database Audit Specifications');
+	private static readonly DatabaseEncryptionKeys: string = localize('SchemaCompare.DatabaseEncryptionKeys', 'Database Encryption Keys');
+	private static readonly DatabaseScopedCredentials: string = localize('SchemaCompare.DatabaseScopedCredentials', 'Database Scoped Credentials');
 	private static readonly Endpoints: string = localize('SchemaCompare.Endpoints', 'Endpoints');
-	private static readonly ErrorMessages: string = localize('SchemaCompare.ErrorMessages', 'ErrorMessages');
-	private static readonly EventNotifications: string = localize('SchemaCompare.EventNotifications', 'EventNotifications');
-	private static readonly EventSessions: string = localize('SchemaCompare.EventSessions', 'EventSessions');
-	private static readonly LinkedServerLogins: string = localize('SchemaCompare.LinkedServerLogins', 'LinkedServerLogins');
-	private static readonly LinkedServers: string = localize('SchemaCompare.LinkedServers', 'LinkedServers');
+	private static readonly ErrorMessages: string = localize('SchemaCompare.ErrorMessages', 'Error Messages');
+	private static readonly EventNotifications: string = localize('SchemaCompare.EventNotifications', 'Event Notifications');
+	private static readonly EventSessions: string = localize('SchemaCompare.EventSessions', 'Event Sessions');
+	private static readonly LinkedServerLogins: string = localize('SchemaCompare.LinkedServerLogins', 'Linked Server Logins');
+	private static readonly LinkedServers: string = localize('SchemaCompare.LinkedServers', 'Linked Servers');
 	private static readonly Logins: string = localize('SchemaCompare.Logins', 'Logins');
-	private static readonly MasterKeys: string = localize('SchemaCompare.MasterKeys', 'MasterKeys');
+	private static readonly MasterKeys: string = localize('SchemaCompare.MasterKeys', 'Master Keys');
 	private static readonly Routes: string = localize('SchemaCompare.Routes', 'Routes');
-	private static readonly ServerAuditSpecifications: string = localize('SchemaCompare.ServerAuditSpecifications', 'ServerAuditSpecifications');
-	private static readonly ServerRoleMembership: string = localize('SchemaCompare.ServerRoleMembership', 'ServerRoleMembership');
-	private static readonly ServerRoles: string = localize('SchemaCompare.ServerRoles', 'ServerRoles');
-	private static readonly ServerTriggers: string = localize('SchemaCompare.ServerTriggers', 'ServerTriggers');
+	private static readonly ServerAuditSpecifications: string = localize('SchemaCompare.ServerAuditSpecifications', 'Server Audit Specifications');
+	private static readonly ServerRoleMembership: string = localize('SchemaCompare.ServerRoleMembership', 'Server Role Membership');
+	private static readonly ServerRoles: string = localize('SchemaCompare.ServerRoles', 'Server Roles');
+	private static readonly ServerTriggers: string = localize('SchemaCompare.ServerTriggers', 'Server Triggers');
 
 	private static readonly descriptionIgnoreTableOptions: string = localize('SchemaCompare.Description.IgnoreTableOptions', 'Specifies whether differences in the table options will be ignored or updated when you publish to a database.');
 	private static readonly descriptionIgnoreSemicolonBetweenStatements: string = localize('SchemaCompare.Description.IgnoreSemicolonBetweenStatements', 'Specifies whether differences in the semi-colons between T-SQL statements will be ignored or updated when you publish to a database.');
@@ -329,7 +329,7 @@ export class SchemaCompareOptionsDialog {
 		SchemaCompareOptionsDialog.DropPermissionsNotInSource,
 		SchemaCompareOptionsDialog.DropObjectsNotInSource,
 		SchemaCompareOptionsDialog.IgnoreColumnOrder,
-	];
+	].sort();
 
 	private objectTypeLabels: string[] = [
 		SchemaCompareOptionsDialog.Aggregates,
@@ -398,7 +398,7 @@ export class SchemaCompareOptionsDialog {
 		SchemaCompareOptionsDialog.ServerRoleMembership,
 		SchemaCompareOptionsDialog.ServerRoles,
 		SchemaCompareOptionsDialog.ServerTriggers
-	];
+	].sort();
 
 	constructor(defaultOptions: azdata.DeploymentOptions) {
 		this.deploymentOptions = defaultOptions;
