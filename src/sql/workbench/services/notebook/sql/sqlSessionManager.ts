@@ -103,8 +103,7 @@ export class SqlSession implements nb.ISession {
 	}
 
 	constructor(private options: nb.ISessionOptions, private _instantiationService: IInstantiationService) {
-		this._kernel = this._instantiationService.createInstance(SqlKernel);
-		this._kernel.path = options.path;
+		this._kernel = this._instantiationService.createInstance(SqlKernel, options.path);
 	}
 
 	public get canChangeKernels(): boolean {
@@ -161,13 +160,13 @@ class SqlKernel extends Disposable implements nb.IKernel {
 	private _future: SQLFuture;
 	private _executionCount: number = 0;
 	private _magicToExecutorMap = new Map<string, ExternalScriptMagic>();
-	private _path: string;
 
-	constructor(@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
+	constructor(private _path: string,
+		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
-		@IConfigurationService private _configurationService: IConfigurationService
+		@IConfigurationService private _configurationService: IConfigurationService,
 	) {
 		super();
 		this.initMagics();
@@ -225,10 +224,6 @@ class SqlKernel extends Disposable implements nb.IKernel {
 		};
 
 		return info;
-	}
-
-	public set path(value: string) {
-		this._path = value;
 	}
 
 	public set connection(conn: IConnectionProfile) {
