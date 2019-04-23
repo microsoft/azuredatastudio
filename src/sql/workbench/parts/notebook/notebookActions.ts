@@ -170,19 +170,19 @@ export abstract class MultiStateAction<T> extends Action {
 	}
 
 	private updateLabelAndIcon() {
+		let keyboardShortcut: string;
 		try {
 			// If a keyboard shortcut exists for the command id passed in, append that to the label
-			let keyboardShortcut: string;
 			if (this.states.commandId !== '') {
 				let binding = this._keybindingService.lookupKeybinding(this.states.commandId);
 				keyboardShortcut = binding ? binding.getLabel() : undefined;
 			}
-			this.label = this.states.label;
-			this.tooltip = keyboardShortcut ? this.states.tooltip + ` (${keyboardShortcut})` : this.states.tooltip;
-			this.class = this.states.classes;
 		} catch (error) {
 			console.log(error);
 		}
+		this.label = this.states.label;
+		this.tooltip = keyboardShortcut ? this.states.tooltip + ` (${keyboardShortcut})` : this.states.tooltip;
+		this.class = this.states.classes;
 	}
 
 	protected updateState(state: T): void {
