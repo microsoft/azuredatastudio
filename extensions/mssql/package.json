@@ -413,6 +413,15 @@
                   "mssqlCluster.livy.task.openYarnHistory"
                 ]
               }
+            },
+            {
+              "name": "Data Services",
+              "row": 0,
+              "col": 1,
+              "widget": {
+                "explorer-widget": {
+                }
+              }
             }
           ]
         }
