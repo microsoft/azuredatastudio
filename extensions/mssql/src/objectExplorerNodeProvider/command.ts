@@ -126,7 +126,7 @@ export abstract class Command extends vscode.Disposable {
 
 export abstract class ProgressCommand extends Command {
 	static progressId = 0;
-	constructor(private command: string, protected prompter: IPrompter, appContext: AppContext) {
+	constructor(command: string, protected prompter: IPrompter, appContext: AppContext) {
 		super(command, appContext);
 	}
 

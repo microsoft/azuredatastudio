@@ -10,7 +10,6 @@ import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
 import * as url from 'url';
 import {
-	Arguments,
 	AzureAccount,
 	AzureAccountProviderMetadata,
 	AzureAccountSecurityTokenCollection,
@@ -27,17 +26,12 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 	private static AadCommonTenant: string = 'common';
 
 	// MEMBER VARIABLES ////////////////////////////////////////////////////
-	private _args: Arguments;
 	private _autoOAuthCancelled: boolean;
 	private _commonAuthorityUrl: string;
 	private _inProgressAutoOAuth: InProgressAutoOAuth;
 	private _isInitialized: boolean;
 
 	constructor(private _metadata: AzureAccountProviderMetadata, private _tokenCache: TokenCache) {
-		this._args = {
-			host: this._metadata.settings.host,
-			clientId: this._metadata.settings.clientId
-		};
 		this._autoOAuthCancelled = false;
 		this._inProgressAutoOAuth = null;
 		this._isInitialized = false;
@@ -361,7 +355,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 			};
 
 			// Setup the callback to resolve/reject this promise
-			let callback = (error, response, body: { error: any; value: any; }) => {
+			const callback: request.RequestCallback = (error, response, body: { error: any; value: any; }) => {
 				if (error || body.error) {
 					reject(error || JSON.stringify(body.error));
 				} else {

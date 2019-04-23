@@ -3,11 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as should from 'should';
 import * as TypeMoq from 'typemoq';
-import * as vscode from 'vscode';
 import * as stream from 'stream';
 import { ChildProcess } from 'child_process';
 import 'mocha';
@@ -73,8 +70,8 @@ describe('Jupyter server instance', function (): void {
 	it('Should have URI info after start', async function (): Promise<void> {
 		// Given startup will succeed
 		let process = setupSpawn({
-			sdtout: (listener) => undefined,
-			stderr: (listener) => listener(successMessage)
+			sdtout: (listener: (msg: string) => void) => { },
+			stderr: (listener: (msg: string) => void) => listener(successMessage)
 		});
 		mockUtils.setup(u => u.spawn(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()))
 			.returns(() => <ChildProcess>process.object);
@@ -103,9 +100,9 @@ describe('Jupyter server instance', function (): void {
 	it('Should throw if error before startup', async function (): Promise<void> {
 		let error = 'myerr';
 		let process = setupSpawn({
-			sdtout: (listener) => undefined,
-			stderr: (listener) => listener(successMessage),
-			error: (listener) => setTimeout(() => listener(new Error(error)), 10)
+			sdtout: (listener: (msg: string) => void) => { },
+			stderr: (listener: (msg: string) => void) => listener(successMessage),
+			error: (listener: (msg: string | Error) => void) => setTimeout(() => listener(new Error(error)), 10)
 		});
 		mockUtils.setup(u => u.spawn(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()))
 			.returns(() => <ChildProcess>process.object);
@@ -117,7 +114,7 @@ describe('Jupyter server instance', function (): void {
 	it('Should throw if exit before startup', async function (): Promise<void> {
 		let code = -1234;
 		let process = setupSpawn({
-			exit: (listener) => listener(code)
+			exit: (listener: (msg: string | number) => void) => listener(code)
 		});
 		mockUtils.setup(u => u.spawn(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()))
 			.returns(() => <ChildProcess>process.object);
@@ -130,8 +127,8 @@ describe('Jupyter server instance', function (): void {
 	it('Should call stop with correct port on close', async function (): Promise<void> {
 		// Given startup will succeed
 		let process = setupSpawn({
-			sdtout: (listener) => undefined,
-			stderr: (listener) => listener(successMessage)
+			sdtout: (listener: (msg: string) => void) => { },
+			stderr: (listener: (msg: string) => void) => listener(successMessage)
 		});
 		mockUtils.setup(u => u.spawn(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()))
 			.returns(() => <ChildProcess>process.object);
@@ -159,8 +156,8 @@ describe('Jupyter server instance', function (): void {
 		mockUtils.setup(u => u.copy(TypeMoq.It.isAnyString(), TypeMoq.It.isAnyString())).returns(() => Promise.resolve());
 
 		let process = setupSpawn({
-			sdtout: (listener) => undefined,
-			stderr: (listener) => listener(successMessage)
+			sdtout: (listener: (msg: string) => void) => { },
+			stderr: (listener: (msg: string) => void) => listener(successMessage)
 		});
 		mockUtils.setup(u => u.spawn(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()))
 			.returns(() => <ChildProcess>process.object);

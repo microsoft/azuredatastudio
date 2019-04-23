@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as fs from 'fs';
@@ -14,13 +12,12 @@ const localize = nls.loadMessageBundle();
 
 import { ApiWrapper } from '../apiWrapper';
 import { Command, ICommandViewContext, ProgressCommand, ICommandObjectExplorerContext } from './command';
-import { IHdfsOptions, HdfsFileSource, File, IFile, joinHdfsPath, FileSourceFactory } from './fileSources';
-import { HdfsProvider, FolderNode, FileNode, HdfsFileSourceNode } from './hdfsProvider';
+import { File, IFile, joinHdfsPath } from './fileSources';
+import { FolderNode, FileNode, HdfsFileSourceNode } from './hdfsProvider';
 import { IPrompter, IQuestion, QuestionTypes } from '../prompts/question';
 import * as constants from '../constants';
 import * as LocalizedConstants from '../localizedConstants';
 import * as utils from '../utils';
-import { SqlClusterConnection } from './connection';
 import { AppContext } from '../appContext';
 import { TreeNode } from './treeNodes';
 import { MssqlObjectExplorerNodeProvider } from './objectExplorerNodeProvider';
@@ -171,7 +168,6 @@ export class MkDirCommand extends ProgressCommand {
 	}
 
 	private async mkDir(fileName, folderNode: FolderNode, cancelToken: vscode.CancellationTokenSource): Promise<void> {
-		let subFolder = await folderNode.mkdir(fileName);
 	}
 }
 
