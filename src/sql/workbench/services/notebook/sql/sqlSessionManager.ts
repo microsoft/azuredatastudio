@@ -45,13 +45,9 @@ export interface SQLData {
 }
 
 export class SqlSessionManager implements nb.SessionManager {
-	private _session: nb.ISession;
+	private static _sessions: nb.ISession[] = [];
 
 	constructor(private _instantiationService: IInstantiationService) { }
-
-	public get id(): string {
-		return this._session.id;
-	}
 
 	public get isReady(): boolean {
 		return true;
@@ -70,14 +66,24 @@ export class SqlSessionManager implements nb.SessionManager {
 	}
 
 	startNew(options: nb.ISessionOptions): Thenable<nb.ISession> {
-		this._session = new SqlSession(options, this._instantiationService);
-		return Promise.resolve(this._session);
+		let sqlSession = new SqlSession(options, this._instantiationService);
+		let index = SqlSessionManager._sessions.findIndex(session => session.path === options.path);
+		if (index > -1) {
+			SqlSessionManager._sessions.splice(index);
+		}
+		SqlSessionManager._sessions.push(sqlSession);
+		return Promise.resolve(sqlSession);
 	}
 
 	shutdown(id: string): Thenable<void> {
-		if (this._session.kernel) {
-			let sqlKernel = this._session.kernel as SqlKernel;
-			return sqlKernel.disconnect();
+		let index = SqlSessionManager._sessions.findIndex(session => session.id === id);
+		if (index > -1) {
+			let sessionManager = SqlSessionManager._sessions[index];
+			SqlSessionManager._sessions.splice(index);
+			if (sessionManager && sessionManager.kernel) {
+				let sqlKernel = sessionManager.kernel as SqlKernel;
+				return sqlKernel.disconnect();
+			}
 		}
 		return Promise.resolve();
 	}
@@ -98,7 +104,7 @@ export class SqlSession implements nb.ISession {
 
 	constructor(private options: nb.ISessionOptions, private _instantiationService: IInstantiationService) {
 		this._kernel = this._instantiationService.createInstance(SqlKernel);
-		this._kernel.path = this.path;
+		this._kernel.path = options.path;
 	}
 
 	public get canChangeKernels(): boolean {
@@ -106,7 +112,7 @@ export class SqlSession implements nb.ISession {
 	}
 
 	public get id(): string {
-		return this.options.kernelId || this._kernel.id;
+		return this.options.kernelId || this.kernel ? this._kernel.id : '';
 	}
 
 	public get path(): string {
