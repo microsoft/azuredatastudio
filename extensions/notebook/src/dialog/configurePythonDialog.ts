@@ -160,7 +160,7 @@ export class ConfigurePythonDialog {
 			}
 
 			if (useExistingPython) {
-				let exePath = JupyterServerInstallation.getPythonExePath(pythonLocation, true);
+				let exePath = JupyterServerInstallation.getPythonExePath(pythonLocation, true).pythonPath;
 				let pythonExists = fs.existsSync(exePath);
 				if (!pythonExists) {
 					this.showErrorMessage(this.PythonNotFoundMsg);
