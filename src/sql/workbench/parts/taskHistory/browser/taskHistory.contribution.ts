@@ -17,7 +17,7 @@ import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
 import { PanelRegistry, Extensions as PanelExtensions, PanelDescriptor } from 'vs/workbench/browser/panel';
 import { TASKS_PANEL_ID } from 'sql/workbench/parts/taskHistory/common/tasks';
 import { IPanelService } from 'vs/workbench/services/panel/common/panelService';
-import { ToggleTasksAction, AddTestTask } from 'sql/workbench/parts/taskHistory/browser/taskActions';
+import { ToggleTasksAction } from 'sql/workbench/parts/taskHistory/browser/taskActions';
 
 export class StatusUpdater implements ext.IWorkbenchContribution {
 	static ID = 'data.taskhistory.statusUpdater';
@@ -60,6 +60,17 @@ export class StatusUpdater implements ext.IWorkbenchContribution {
 	}
 }
 
+const registry = Registry.as<IWorkbenchActionRegistry>(ActionExtensions.WorkbenchActions);
+registry.registerWorkbenchAction(
+	new SyncActionDescriptor(
+		ToggleTasksAction,
+		ToggleTasksAction.ID,
+		ToggleTasksAction.LABEL,
+		{ primary: KeyMod.CtrlCmd | KeyCode.KEY_T }),
+	'View: Show Task History',
+	localize('viewCategory', "View")
+);
+
 // Register Output Panel
 Registry.as<PanelRegistry>(PanelExtensions.Panels).registerPanel(new PanelDescriptor(
 	TasksPanel,
@@ -72,26 +83,6 @@ Registry.as<PanelRegistry>(PanelExtensions.Panels).registerPanel(new PanelDescri
 
 // Register StatusUpdater
 (<ext.IWorkbenchContributionsRegistry>Registry.as(ext.Extensions.Workbench)).registerWorkbenchContribution(StatusUpdater, LifecyclePhase.Restored);
-
-const registry = Registry.as<IWorkbenchActionRegistry>(ActionExtensions.WorkbenchActions);
-registry.registerWorkbenchAction(
-	new SyncActionDescriptor(
-		ToggleTasksAction,
-		ToggleTasksAction.ID,
-		ToggleTasksAction.LABEL,
-		{ primary: KeyMod.CtrlCmd | KeyCode.KEY_T }),
-	'View: Show Task History',
-	localize('viewCategory', "View")
-);
-
-registry.registerWorkbenchAction(
-	new SyncActionDescriptor(
-		AddTestTask,
-		AddTestTask.ID,
-		AddTestTask.LABEL,
-		{ primary: KeyMod.CtrlCmd | KeyCode.KEY_T }),
-	'Add Test Task'
-);
 
 MenuRegistry.appendMenuItem(MenuId.MenubarViewMenu, {
 	group: '3_views',
