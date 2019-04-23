@@ -80,9 +80,11 @@ export default class JupyterServerInstallation {
 			this.outputChannel.appendLine(msgInstallPkgProgress);
 			backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgInstallPkgProgress);
 
-			await this.installPythonPackage(backgroundOperation);
-			this.outputChannel.appendLine(msgPythonDownloadComplete);
-			backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonDownloadComplete);
+			if (!this._usingConda) {
+				await this.installPythonPackage(backgroundOperation);
+				this.outputChannel.appendLine(msgPythonDownloadComplete);
+				backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonDownloadComplete);
+			}
 
 			// Install jupyter on Windows because local python is not bundled with jupyter unlike linux and MacOS.
 			if (this._usingConda) {

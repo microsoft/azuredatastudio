@@ -7,9 +7,7 @@ import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
 import * as fs from 'fs';
-import * as path from 'path';
 import * as utils from '../common/utils';
-import * as constants from '../common/constants';
 
 import JupyterServerInstallation from '../jupyter/jupyterServerInstallation';
 import { ApiWrapper } from '../common/apiWrapper';
