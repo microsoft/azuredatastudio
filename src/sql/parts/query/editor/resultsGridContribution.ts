@@ -24,6 +24,7 @@ const resultsGridConfiguration: IConfigurationNode = {
 	properties: {
 		'resultsGrid.fontFamily': {
 			type: 'string',
+			default: EDITOR_FONT_DEFAULTS.fontFamily,
 			description: nls.localize('fontFamily', "Controls the font family.")
 		},
 		'resultsGrid.fontWeight': {
