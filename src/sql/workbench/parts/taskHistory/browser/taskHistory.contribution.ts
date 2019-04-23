@@ -3,24 +3,21 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!sql/media/actionBarLabel';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { localize } from 'vs/nls';
 import { SyncActionDescriptor, MenuRegistry, MenuId } from 'vs/platform/actions/common/actions';
-import { ViewletRegistry, Extensions as ViewletExtensions, ViewletDescriptor } from 'vs/workbench/browser/viewlet';
 import { IWorkbenchActionRegistry, Extensions as ActionExtensions } from 'vs/workbench/common/actions';
-import { IViewlet } from 'vs/workbench/common/viewlet';
-import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { Extensions, IConfigurationRegistry } from 'vs/platform/configuration/common/configurationRegistry';
-import { VIEWLET_ID, TaskHistoryViewlet } from 'sql/workbench/parts/taskHistory/browser/taskHistoryViewlet';
+import { TasksPanel } from 'sql/workbench/parts/taskHistory/browser/tasksPanel';
 import * as lifecycle from 'vs/base/common/lifecycle';
 import * as ext from 'vs/workbench/common/contributions';
 import { ITaskService } from 'sql/platform/taskHistory/common/taskService';
 import { IActivityService, NumberBadge } from 'vs/workbench/services/activity/common/activity';
 import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
-import { ToggleViewletAction } from 'vs/workbench/browser/parts/activitybar/activitybarActions';
-import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
+import { PanelRegistry, Extensions as PanelExtensions, PanelDescriptor } from 'vs/workbench/browser/panel';
+import { TASKS_PANEL_ID } from 'sql/workbench/parts/taskHistory/common/tasks';
+import { IPanelService } from 'vs/workbench/services/panel/common/panelService';
+import { ToggleTasksAction, AddTestTask } from 'sql/workbench/parts/taskHistory/browser/taskActions';
 
 export class StatusUpdater implements ext.IWorkbenchContribution {
 	static ID = 'data.taskhistory.statusUpdater';
@@ -29,35 +26,28 @@ export class StatusUpdater implements ext.IWorkbenchContribution {
 	private toDispose: lifecycle.IDisposable[];
 
 	constructor(
-		@IActivityService private activityBarService: IActivityService,
-		@ITaskService private _taskService: ITaskService,
-		@IViewletService private _viewletService: IViewletService
+		@IActivityService private readonly activityBarService: IActivityService,
+		@ITaskService private readonly taskService: ITaskService,
+		@IPanelService private readonly panelService: IPanelService
 	) {
 		this.toDispose = [];
 
-		this.toDispose.push(this._taskService.onAddNewTask(args => {
-			this.showTasksViewlet();
+		this.toDispose.push(this.taskService.onAddNewTask(args => {
+			this.panelService.openPanel(TASKS_PANEL_ID, true);
 			this.onServiceChange();
 		}));
 
-		this.toDispose.push(this._taskService.onTaskComplete(task => {
+		this.toDispose.push(this.taskService.onTaskComplete(task => {
 			this.onServiceChange();
 		}));
 
-	}
-
-	private showTasksViewlet(): void {
-		let activeViewlet: IViewlet = this._viewletService.getActiveViewlet();
-		if (!activeViewlet || activeViewlet.getId() !== VIEWLET_ID) {
-			this._viewletService.openViewlet(VIEWLET_ID, true);
-		}
 	}
 
 	private onServiceChange(): void {
 		lifecycle.dispose(this.badgeHandle);
-		let numOfInProgressTask: number = this._taskService.getNumberOfInProgressTasks();
+		let numOfInProgressTask: number = this.taskService.getNumberOfInProgressTasks();
 		let badge: NumberBadge = new NumberBadge(numOfInProgressTask, n => localize('inProgressTasksChangesBadge', "{0} in progress tasks", n));
-		this.badgeHandle = this.activityBarService.showActivity(VIEWLET_ID, badge, 'taskhistory-viewlet-label');
+		this.badgeHandle = this.activityBarService.showActivity(TASKS_PANEL_ID, badge, 'taskhistory-viewlet-label');
 	}
 
 	public getId(): string {
@@ -70,32 +60,15 @@ export class StatusUpdater implements ext.IWorkbenchContribution {
 	}
 }
 
-
-// Viewlet Action
-export class TaskHistoryViewletAction extends ToggleViewletAction {
-	public static ID = VIEWLET_ID;
-	public static LABEL = localize({ key: 'showTaskHistory', comment: ['Show Task History'] }, 'Show Task History');
-
-	constructor(
-		id: string,
-		label: string,
-		@IViewletService viewletService: IViewletService,
-		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService
-	) {
-		super(viewletDescriptor, layoutService, viewletService);
-	}
-}
-
-// Viewlet
-const viewletDescriptor = new ViewletDescriptor(
-	TaskHistoryViewlet,
-	VIEWLET_ID,
-	'Task History',
-	'taskHistoryViewlet',
-	1
-);
-
-Registry.as<ViewletRegistry>(ViewletExtensions.Viewlets).registerViewlet(viewletDescriptor);
+// Register Output Panel
+Registry.as<PanelRegistry>(PanelExtensions.Panels).registerPanel(new PanelDescriptor(
+	TasksPanel,
+	TASKS_PANEL_ID,
+	localize('tasks', "Tasks"),
+	'output',
+	20,
+	ToggleTasksAction.ID
+));
 
 // Register StatusUpdater
 (<ext.IWorkbenchContributionsRegistry>Registry.as(ext.Extensions.Workbench)).registerWorkbenchContribution(StatusUpdater, LifecyclePhase.Restored);
@@ -103,31 +76,27 @@ Registry.as<ViewletRegistry>(ViewletExtensions.Viewlets).registerViewlet(viewlet
 const registry = Registry.as<IWorkbenchActionRegistry>(ActionExtensions.WorkbenchActions);
 registry.registerWorkbenchAction(
 	new SyncActionDescriptor(
-		TaskHistoryViewletAction,
-		TaskHistoryViewletAction.ID,
-		TaskHistoryViewletAction.LABEL,
+		ToggleTasksAction,
+		ToggleTasksAction.ID,
+		ToggleTasksAction.LABEL,
 		{ primary: KeyMod.CtrlCmd | KeyCode.KEY_T }),
 	'View: Show Task History',
-	localize('taskHistory.view', "View")
+	localize('viewCategory', "View")
 );
 
-let configurationRegistry = <IConfigurationRegistry>Registry.as(Extensions.Configuration);
-configurationRegistry.registerConfiguration({
-	'id': 'taskHistory',
-	'title': localize('taskHistory', 'Task History'),
-	'type': 'object',
-	'properties': {
-		'datasource.task': {
-			'description': localize('datasource.task', 'Operation Task Status'),
-			'type': 'array'
-		}
-	}
-});
+registry.registerWorkbenchAction(
+	new SyncActionDescriptor(
+		AddTestTask,
+		AddTestTask.ID,
+		AddTestTask.LABEL,
+		{ primary: KeyMod.CtrlCmd | KeyCode.KEY_T }),
+	'Add Test Task'
+);
 
 MenuRegistry.appendMenuItem(MenuId.MenubarViewMenu, {
 	group: '3_views',
 	command: {
-		id: VIEWLET_ID,
+		id: TASKS_PANEL_ID,
 		title: localize({ key: 'miViewTasks', comment: ['&& denotes a mnemonic'] }, "&&Tasks")
 	},
 	order: 2
