@@ -12,7 +12,6 @@ import QueryRunner, { EventType } from 'sql/platform/query/common/queryRunner';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import Severity from 'vs/base/common/severity';
-import * as Utils from 'sql/platform/connection/common/utils';
 import { Deferred } from 'sql/base/common/promise';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
@@ -46,7 +45,13 @@ export interface SQLData {
 }
 
 export class SqlSessionManager implements nb.SessionManager {
+	private _session: nb.ISession;
+
 	constructor(private _instantiationService: IInstantiationService) { }
+
+	public get id(): string {
+		return this._session.id;
+	}
 
 	public get isReady(): boolean {
 		return true;
@@ -65,11 +70,15 @@ export class SqlSessionManager implements nb.SessionManager {
 	}
 
 	startNew(options: nb.ISessionOptions): Thenable<nb.ISession> {
-		let session = new SqlSession(options, this._instantiationService);
-		return Promise.resolve(session);
+		this._session = new SqlSession(options, this._instantiationService);
+		return Promise.resolve(this._session);
 	}
 
 	shutdown(id: string): Thenable<void> {
+		if (this._session.kernel) {
+			let sqlKernel = this._session.kernel as SqlKernel;
+			return sqlKernel.disconnect();
+		}
 		return Promise.resolve();
 	}
 }
@@ -89,6 +98,7 @@ export class SqlSession implements nb.ISession {
 
 	constructor(private options: nb.ISessionOptions, private _instantiationService: IInstantiationService) {
 		this._kernel = this._instantiationService.createInstance(SqlKernel);
+		this._kernel.path = this.path;
 	}
 
 	public get canChangeKernels(): boolean {
@@ -96,7 +106,7 @@ export class SqlSession implements nb.ISession {
 	}
 
 	public get id(): string {
-		return this.options.kernelId || '';
+		return this.options.kernelId || this._kernel.id;
 	}
 
 	public get path(): string {
@@ -145,6 +155,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 	private _future: SQLFuture;
 	private _executionCount: number = 0;
 	private _magicToExecutorMap = new Map<string, ExternalScriptMagic>();
+	private _path: string;
 
 	constructor(@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
@@ -210,6 +221,10 @@ class SqlKernel extends Disposable implements nb.IKernel {
 		return info;
 	}
 
+	public set path(value: string) {
+		this._path = value;
+	}
+
 	public set connection(conn: IConnectionProfile) {
 		this._currentConnection = conn;
 		this._currentConnectionProfile = new ConnectionProfile(this._capabilitiesService, this._currentConnection);
@@ -232,9 +247,8 @@ class SqlKernel extends Disposable implements nb.IKernel {
 			}
 			this._queryRunner.runQuery(code);
 		} else if (this._currentConnection && this._currentConnectionProfile) {
-			let connectionUri = Utils.generateUri(this._currentConnectionProfile, 'notebook');
-			this._queryRunner = this._instantiationService.createInstance(QueryRunner, connectionUri);
-			this._connectionManagementService.connect(this._currentConnectionProfile, connectionUri).then((result) => {
+			this._queryRunner = this._instantiationService.createInstance(QueryRunner, this._path);
+			this._connectionManagementService.connect(this._currentConnectionProfile, this._path).then((result) => {
 				this.addQueryEventListeners(this._queryRunner);
 				this._queryRunner.runQuery(code);
 			});
@@ -310,6 +324,13 @@ class SqlKernel extends Disposable implements nb.IKernel {
 			this._future.handleDone();
 		}
 		// TODO issue #2746 should ideally show a warning inside the dialog if have no data
+	}
+
+	public async disconnect(): Promise<void> {
+		if (this._path) {
+			await this._connectionManagementService.disconnect(this._path);
+		}
+		return;
 	}
 }
 
