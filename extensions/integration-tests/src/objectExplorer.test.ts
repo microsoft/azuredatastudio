@@ -9,7 +9,7 @@ import 'mocha';
 import * as azdata from 'azdata';
 import { context } from './testContext';
 import { getBdcServer, TestServerProfile, getAzureServer, getStandaloneServer } from './testConfig';
-import { connectToServer } from './utils';
+import { connectToServer, createDB, deleteDB } from './utils';
 import assert = require('assert');
 
 if (context.RunTest) {
@@ -56,7 +56,7 @@ if (context.RunTest) {
 		});
 		test('Stand alone database context menu test', async function () {
 			let server = await getStandaloneServer();
-			let expectedActions = ['Manage', 'New Query', 'Disconnect', 'Backup', 'Restore', 'Refresh', 'Data-tier Application wizard', 'Schema Compare', 'Import wizard'];
+			let expectedActions = ['Manage', 'New Query', 'Backup', 'Restore', 'Refresh', 'Data-tier Application wizard', 'Schema Compare', 'Import wizard'];
 			await VerifyDBContextMenu(server, 3000, expectedActions);
 		});
 	});
@@ -78,23 +78,31 @@ async function VerifyOeNode(server: TestServerProfile, timeout: number, expected
 }
 
 async function VerifyDBContextMenu(server: TestServerProfile, timeout: number, expectedActions: string[]) {
-	await connectToServer(server, timeout);
+
+	await connectToServer(server, 3000);
+
 	let nodes = <azdata.objectexplorer.ObjectExplorerNode[]>await azdata.objectexplorer.getActiveConnectionNodes();
 	assert(nodes.length > 0, `Expecting at least one active connection, actual: ${nodes.length}`);
 
 	let index = nodes.findIndex(node => node.nodePath.includes(server.serverName));
 	assert(index !== -1, `Failed to find server: "${server.serverName}" in OE tree`);
 
+	let ownerUri = await azdata.connection.getUriForConnection(nodes[index].connectionId);
+	let dbName: string = 'TestDB_' + new Date().getTime().toString();
+	await createDB(dbName, ownerUri);
+
 	let serverNode = nodes[index];
 	let children = await serverNode.getChildren();
 	let databasesFolder = children[0]; // first should be databases
 
 	let databases = await databasesFolder.getChildren();
-	assert(databases.length < 2, `No database present, can not test further`); // System Databses folder and at least one database
+	assert(databases.length > 2, `No database present, can not test further`); // System Databses folder and at least one database
 
 	let actions = await azdata.objectexplorer.getNodeActions(databases[1].connectionId, databases[1].nodePath);
 
 	const expectedString = expectedActions.join(',');
 	const actualString = actions.join(',');
 	assert(expectedActions.length === actions.length && expectedString === actualString, `Expected actions: "${expectedString}", Actual actions: "${actualString}"`);
+
+	await deleteDB(dbName, ownerUri);
 }
