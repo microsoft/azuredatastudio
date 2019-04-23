@@ -6,7 +6,7 @@ import 'vs/css!./notebook';
 
 import { registerThemingParticipant, ITheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
 import { SIDE_BAR_BACKGROUND, SIDE_BAR_SECTION_HEADER_BACKGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND } from 'vs/workbench/common/theme';
-import { activeContrastBorder, contrastBorder, buttonBackground, textLinkForeground, editorBackground } from 'vs/platform/theme/common/colorRegistry';
+import { activeContrastBorder, contrastBorder, buttonBackground, textLinkForeground } from 'vs/platform/theme/common/colorRegistry';
 import { IDisposable } from 'vscode-xterm';
 import { editorLineHighlight, editorLineHighlightBorder } from 'vs/editor/common/view/editorColorRegistry';
 
@@ -182,6 +182,16 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean): IDi
 				text-decoration: none;
 				font-weight: bold;
 				color: ${linkForeground};
+			}
+			`);
+		}
+
+		// Styling for tables in notebooks
+		const borderColor = theme.getColor(SIDE_BAR_BACKGROUND);
+		if (borderColor) {
+			collector.addRule(`
+			.notebookEditor text-cell-component tbody tr:nth-child(odd) {
+				background: ${borderColor};
 			}
 			`);
 		}

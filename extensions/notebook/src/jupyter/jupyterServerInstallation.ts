@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as nls from 'vscode-nls';
@@ -21,20 +19,21 @@ import { Deferred } from '../common/promise';
 import { ConfigurePythonDialog } from '../dialog/configurePythonDialog';
 
 const localize = nls.loadMessageBundle();
-const msgPythonInstallationProgress = localize('msgPythonInstallationProgress', 'Python installation is in progress');
-const msgPythonInstallationComplete = localize('msgPythonInstallationComplete', 'Python installation is complete');
-const msgPythonDownloadError = localize('msgPythonDownloadError', 'Error while downloading python setup');
-const msgPythonDownloadPending = localize('msgPythonDownloadPending', 'Downloading python package');
-const msgPythonUnpackPending = localize('msgPythonUnpackPending', 'Unpacking python package');
-const msgPythonDirectoryError = localize('msgPythonDirectoryError', 'Error while creating python installation directory');
-const msgPythonUnpackError = localize('msgPythonUnpackError', 'Error while unpacking python bundle');
-const msgTaskName = localize('msgTaskName', 'Installing Notebook dependencies');
-const msgInstallPkgStart = localize('msgInstallPkgStart', 'Installing Notebook dependencies, see Tasks view for more information');
-const msgInstallPkgFinish = localize('msgInstallPkgFinish', 'Notebook dependencies installation is complete');
-const msgPythonRunningError = localize('msgPythonRunningError', 'Cannot overwrite existing Python installation while python is running.');
-const msgPendingInstallError = localize('msgPendingInstallError', 'Another Python installation is currently in progress.');
-function msgDependenciesInstallationFailed(errorMessage: string): string { return localize('msgDependenciesInstallationFailed', 'Installing Notebook dependencies failed with error: {0}', errorMessage); }
-function msgDownloadPython(platform: string, pythonDownloadUrl: string): string { return localize('msgDownloadPython', 'Downloading local python for platform: {0} to {1}', platform, pythonDownloadUrl); }
+const msgInstallPkgProgress = localize('msgInstallPkgProgress', "Notebook dependencies installation is in progress");
+const msgPythonDownloadComplete = localize('msgPythonDownloadComplete', "Python download is complete");
+const msgPythonDownloadError = localize('msgPythonDownloadError', "Error while downloading python setup");
+const msgPythonDownloadPending = localize('msgPythonDownloadPending', "Downloading python package");
+const msgPythonUnpackPending = localize('msgPythonUnpackPending', "Unpacking python package");
+const msgPythonDirectoryError = localize('msgPythonDirectoryError', "Error while creating python installation directory");
+const msgPythonUnpackError = localize('msgPythonUnpackError', "Error while unpacking python bundle");
+const msgTaskName = localize('msgTaskName', "Installing Notebook dependencies");
+const msgInstallPkgStart = localize('msgInstallPkgStart', "Installing Notebook dependencies, see Tasks view for more information");
+const msgInstallPkgFinish = localize('msgInstallPkgFinish', "Notebook dependencies installation is complete");
+const msgPythonRunningError = localize('msgPythonRunningError', "Cannot overwrite existing Python installation while python is running.");
+const msgPendingInstallError = localize('msgPendingInstallError', "Another Python installation is currently in progress.");
+const msgSkipPythonInstall = localize('msgSkipPythonInstall', "Python already exists at the specific location. Skipping install.");
+function msgDependenciesInstallationFailed(errorMessage: string): string { return localize('msgDependenciesInstallationFailed', "Installing Notebook dependencies failed with error: {0}", errorMessage); }
+function msgDownloadPython(platform: string, pythonDownloadUrl: string): string { return localize('msgDownloadPython', "Downloading local python for platform: {0} to {1}", platform, pythonDownloadUrl); }
 
 export default class JupyterServerInstallation {
 	/**
@@ -73,15 +72,18 @@ export default class JupyterServerInstallation {
 		if (!fs.existsSync(this._pythonExecutable) || this._forceInstall) {
 			window.showInformationMessage(msgInstallPkgStart);
 			this.outputChannel.show(true);
-			this.outputChannel.appendLine(msgPythonInstallationProgress);
-			backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonInstallationProgress);
+			this.outputChannel.appendLine(msgInstallPkgProgress);
+			backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgInstallPkgProgress);
+
 			await this.installPythonPackage(backgroundOperation);
-			backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonInstallationComplete);
-			this.outputChannel.appendLine(msgPythonInstallationComplete);
+			this.outputChannel.appendLine(msgPythonDownloadComplete);
+			backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonDownloadComplete);
 
 			// Install jupyter on Windows because local python is not bundled with jupyter unlike linux and MacOS.
 			await this.installJupyterProsePackage();
 			await this.installSparkMagic();
+
+			this.outputChannel.appendLine(msgInstallPkgFinish);
 			backgroundOperation.updateStatus(azdata.TaskStatus.Succeeded, msgInstallPkgFinish);
 			window.showInformationMessage(msgInstallPkgFinish);
 		}
@@ -98,7 +100,7 @@ export default class JupyterServerInstallation {
 			.replace('#bundleversion', bundleVersion)
 			.replace('#extension', process.platform === constants.winPlatform ? 'zip' : 'tar.gz');
 
-		let pythonDownloadUrl = undefined;
+		let pythonDownloadUrl: string = undefined;
 		switch (utils.getOSPlatform()) {
 			case utils.Platform.Windows:
 				pythonDownloadUrl = 'https://go.microsoft.com/fwlink/?linkid=2074021';
@@ -113,9 +115,7 @@ export default class JupyterServerInstallation {
 		}
 
 		let pythonPackagePathLocal = this._pythonInstallationPath + '/' + packageName;
-		let self = undefined;
 		return new Promise((resolve, reject) => {
-			self = this;
 			backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgDownloadPython(platformId, pythonDownloadUrl));
 			fs.mkdirs(this._pythonInstallationPath, (err) => {
 				if (err) {
@@ -165,7 +165,7 @@ export default class JupyterServerInstallation {
 								reject(err);
 							}
 						}
-						decompress(pythonPackagePathLocal, self._pythonInstallationPath).then(files => {
+						decompress(pythonPackagePathLocal, this._pythonInstallationPath).then(files => {
 							//Delete zip/tar file
 							fs.unlink(pythonPackagePathLocal, (err) => {
 								if (err) {
@@ -295,6 +295,8 @@ export default class JupyterServerInstallation {
 			// so update it here
 			await updateConfig();
 			installReady.resolve();
+			this._installInProgress = false;
+			this.apiWrapper.showInfoMessage(msgSkipPythonInstall);
 		}
 		return installReady.promise;
 	}
@@ -304,7 +306,7 @@ export default class JupyterServerInstallation {
 	 */
 	public async promptForPythonInstall(): Promise<void> {
 		if (!JupyterServerInstallation.isPythonInstalled(this.apiWrapper)) {
-			let pythonDialog = new ConfigurePythonDialog(this.apiWrapper, this.outputChannel, this);
+			let pythonDialog = new ConfigurePythonDialog(this.apiWrapper, this);
 			return pythonDialog.showDialog(true);
 		}
 	}
@@ -314,9 +316,9 @@ export default class JupyterServerInstallation {
 			let requirements = path.join(this._pythonPackageDir, 'requirements.txt');
 			let installJupyterCommand = `"${this._pythonExecutable}" -m pip install --no-index -r "${requirements}" --find-links "${this._pythonPackageDir}" --no-warn-script-location`;
 			this.outputChannel.show(true);
-			this.outputChannel.appendLine(localize('msgInstallStart', 'Installing required packages to run Notebooks...'));
+			this.outputChannel.appendLine(localize('msgInstallStart', "Installing required packages to run Notebooks..."));
 			await utils.executeStreamedCommand(installJupyterCommand, this.outputChannel);
-			this.outputChannel.appendLine(localize('msgJupyterInstallDone', '... Jupyter installation complete.'));
+			this.outputChannel.appendLine(localize('msgJupyterInstallDone', "... Jupyter installation complete."));
 		} else {
 			return Promise.resolve();
 		}
@@ -327,7 +329,7 @@ export default class JupyterServerInstallation {
 			let sparkWheel = path.join(this._pythonPackageDir, `sparkmagic-${constants.sparkMagicVersion}-py3-none-any.whl`);
 			let installSparkMagic = `"${this._pythonExecutable}" -m pip install --no-index "${sparkWheel}" --find-links "${this._pythonPackageDir}" --no-warn-script-location`;
 			this.outputChannel.show(true);
-			this.outputChannel.appendLine(localize('msgInstallingSpark', 'Installing SparkMagic...'));
+			this.outputChannel.appendLine(localize('msgInstallingSpark', "Installing SparkMagic..."));
 			await utils.executeStreamedCommand(installSparkMagic, this.outputChannel);
 		} else {
 			return Promise.resolve();

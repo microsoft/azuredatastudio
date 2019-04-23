@@ -13,7 +13,7 @@ export const htmlRendererFactory: IRenderMime.IRendererFactory = {
 	safe: true,
 	mimeTypes: ['text/html'],
 	defaultRank: 50,
-   createRenderer: options => new widgets.RenderedHTML(options)
+	createRenderer: options => new widgets.RenderedHTML(options)
 };
 
 /**

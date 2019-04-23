@@ -49,7 +49,7 @@ suite('Data Explorer Viewlet', () => {
 		let oldCount = Platform.Registry.as<ViewletRegistry>(Extensions.Viewlets).getViewlets().length;
 		let d = new ViewletDescriptor(DataExplorerTestViewlet, 'dataExplorer-test-id', 'name');
 		Platform.Registry.as<ViewletRegistry>(Extensions.Viewlets).registerViewlet(d);
-		let retrieved =  Platform.Registry.as<ViewletRegistry>(Extensions.Viewlets).getViewlet('dataExplorer-test-id');
+		let retrieved = Platform.Registry.as<ViewletRegistry>(Extensions.Viewlets).getViewlet('dataExplorer-test-id');
 		assert(d === retrieved);
 		let newCount = Platform.Registry.as<ViewletRegistry>(Extensions.Viewlets).getViewlets().length;
 		assert.equal(oldCount + 1, newCount);

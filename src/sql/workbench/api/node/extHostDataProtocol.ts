@@ -358,11 +358,11 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	}
 
 	public $expandObjectExplorerNode(handle: number, nodeInfo: azdata.ExpandNodeInfo): Thenable<boolean> {
-		return this._resolveProvider<azdata.ObjectExplorerProviderBase> (handle).expandNode(nodeInfo);
+		return this._resolveProvider<azdata.ObjectExplorerProviderBase>(handle).expandNode(nodeInfo);
 	}
 
 	public $refreshObjectExplorerNode(handle: number, nodeInfo: azdata.ExpandNodeInfo): Thenable<boolean> {
-		return this._resolveProvider<azdata.ObjectExplorerProviderBase> (handle).refreshNode(nodeInfo);
+		return this._resolveProvider<azdata.ObjectExplorerProviderBase>(handle).refreshNode(nodeInfo);
 	}
 
 	public $closeObjectExplorerSession(handle: number, closeSessionInfo: azdata.ObjectExplorerCloseSessionInfo): Thenable<azdata.ObjectExplorerCloseSessionResponse> {

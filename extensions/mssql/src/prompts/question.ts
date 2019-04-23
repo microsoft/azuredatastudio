@@ -1,5 +1,7 @@
-
-'use strict';
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
 import vscode = require('vscode');
 
@@ -56,7 +58,7 @@ export interface IPrompter {
 	/**
 	 * Prompts for multiple questions
 	 *
-	 * @returns {[questionId: string]: T} Map of question IDs to results, or undefined if
+	 * @returns Map of question IDs to results, or undefined if
 	 * the user canceled the question session
 	 */
 	prompt<T>(questions: IQuestion[], ignoreFocusOut?: boolean): Promise<{ [questionId: string]: any }>;

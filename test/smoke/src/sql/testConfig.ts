@@ -41,8 +41,8 @@ export enum EngineType {
 	BigDataCluster
 }
 
-var connectionProviderMapping = {};
-var authenticationTypeMapping = {};
+let connectionProviderMapping = {};
+let authenticationTypeMapping = {};
 connectionProviderMapping[ConnectionProvider.SQLServer] = { name: 'MSSQL', displayName: 'Microsoft SQL Server' };
 
 authenticationTypeMapping[AuthenticationType.SqlLogin] = { name: 'SqlLogin', displayName: 'SQL Login' };
@@ -80,7 +80,7 @@ export class TestServerProfile {
 	public get engineType(): EngineType { return this._profile.engineType; }
 }
 
-var TestingServers: TestServerProfile[] = [
+let TestingServers: TestServerProfile[] = [
 	new TestServerProfile(
 		{
 			serverName: getConfigValue(EnvironmentVariable_STANDALONE_SERVER),
@@ -121,7 +121,7 @@ function getEnumMappingEntry(mapping: any, enumValue: any): INameDisplayNamePair
 	if (entry) {
 		return entry;
 	} else {
-		throw `Unknown enum type: ${enumValue.toString()}`;
+		throw new Error(`Unknown enum type: ${enumValue.toString()}`);
 	}
 }
 

@@ -13,11 +13,6 @@ import { IEditorInput } from 'vs/workbench/common/editor';
 /**
  * Gets the 'sql' configuration section for use in looking up settings. Note that configs under
  * 'mssql' or other sections are not available from this.
- *
- * @export
- * @param {IWorkspaceConfigurationService} workspaceConfigService
- * @param {string} sectionName
- * @returns {*}
  */
 export function getSqlConfigSection(workspaceConfigService: IConfigurationService, sectionName: string): any {
 	let config = workspaceConfigService.getValue(ConnectionConstants.sqlConfigSectionName);

@@ -1,9 +1,8 @@
-
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
+
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { SqlMainContext, MainThreadDashboardShape, ExtHostDashboardShape, SqlExtHostContext } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
@@ -15,14 +14,14 @@ export class MainThreadDashboard implements MainThreadDashboardShape {
 
 	constructor(
 		context: IExtHostContext,
-		@IDashboardService private _dashboardService: IDashboardService
+		@IDashboardService dashboardService: IDashboardService
 	) {
 		this._proxy = context.getProxy(SqlExtHostContext.ExtHostDashboard);
-		_dashboardService.onDidChangeToDashboard(e => {
+		dashboardService.onDidChangeToDashboard(e => {
 			this._proxy.$onDidChangeToDashboard(e);
 		});
 
-		_dashboardService.onDidOpenDashboard(e => {
+		dashboardService.onDidOpenDashboard(e => {
 			this._proxy.$onDidOpenDashboard(e);
 		});
 	}

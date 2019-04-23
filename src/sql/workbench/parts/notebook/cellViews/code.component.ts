@@ -1,13 +1,13 @@
 /*---------------------------------------------------------------------------------------------
-*  Copyright (c) Microsoft Corporation. All rights reserved.
-*  Licensed under the Source EULA. See License.txt in the project root for license information.
-*--------------------------------------------------------------------------------------------*/
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./code';
 
 import { OnInit, Component, Input, Inject, ElementRef, ViewChild, Output, EventEmitter, OnChanges, SimpleChange, forwardRef, ChangeDetectorRef } from '@angular/core';
 
 import { AngularDisposable } from 'sql/base/node/lifecycle';
-import { QueryTextEditor } from 'sql/parts/modelComponents/queryTextEditor';
+import { QueryTextEditor } from 'sql/workbench/electron-browser/modelComponents/queryTextEditor';
 import { CellToggleMoreActions } from 'sql/workbench/parts/notebook/cellToggleMoreActions';
 import { ICellModel, notebookConstants } from 'sql/workbench/parts/notebook/models/modelInterfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
@@ -160,7 +160,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 			&& this.cellModel.cellUri;
 	}
 
-	private get destroyed(): boolean{
+	private get destroyed(): boolean {
 		return !!(this._changeRef['destroyed']);
 	}
 

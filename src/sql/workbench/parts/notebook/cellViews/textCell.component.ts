@@ -1,10 +1,10 @@
 /*---------------------------------------------------------------------------------------------
-*  Copyright (c) Microsoft Corporation. All rights reserved.
-*  Licensed under the Source EULA. See License.txt in the project root for license information.
-*--------------------------------------------------------------------------------------------*/
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./textCell';
 
-import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild, OnChanges, SimpleChange } from '@angular/core';
+import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild, OnChanges, SimpleChange, HostListener } from '@angular/core';
 import * as path from 'path';
 
 import { localize } from 'vs/nls';
@@ -25,7 +25,7 @@ import { NotebookModel } from 'sql/workbench/parts/notebook/models/notebookModel
 import { CellToggleMoreActions } from 'sql/workbench/parts/notebook/cellToggleMoreActions';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
-const USER_SELECT_CLASS ='actionselect';
+const USER_SELECT_CLASS = 'actionselect';
 
 @Component({
 	selector: TEXT_SELECTOR,
@@ -50,6 +50,15 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			// Only make a change if we're not active, since this has priority
 			this.updateMoreActions();
 		}
+	}
+
+	@HostListener('document:keydown.escape', ['$event'])
+	handleKeyboardEvent() {
+		if (this.isEditMode) {
+			this.toggleEditMode(false);
+		}
+		this.cellModel.active = false;
+		this._model.activeCell = undefined;
 	}
 
 	private _content: string;
@@ -165,7 +174,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			// If the asset is in the same folder or a subfolder, replace 'vscode-resource:' with 'file:', so the image is visible
 			if (!path.relative(path.dirname(this.cellModel.notebookModel.notebookUri.fsPath), filePath).includes('..')) {
 				// ok to change from vscode-resource: to file:
-				htmlContent = htmlContent.replace('vscode-resource:'+ filePath, 'file:' + filePath);
+				htmlContent = htmlContent.replace('vscode-resource:' + filePath, 'file:' + filePath);
 			}
 			htmlContentCopy = htmlContentCopy.slice(pathEndIndex);
 		}
@@ -190,7 +199,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	public toggleEditMode(editMode?: boolean): void {
-		this.isEditMode = editMode !== undefined? editMode : !this.isEditMode;
+		this.isEditMode = editMode !== undefined ? editMode : !this.isEditMode;
 		this.updateMoreActions();
 		this.updatePreview();
 		this._changeRef.detectChanges();

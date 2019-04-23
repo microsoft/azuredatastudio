@@ -8,18 +8,18 @@ import * as nls from 'vs/nls';
 import * as azdata from 'azdata';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
-import { JobHistoryComponent } from 'sql/parts/jobManagement/views/jobHistory.component';
+import { JobHistoryComponent } from 'sql/workbench/parts/jobManagement/electron-browser/jobHistory.component';
 import { IJobManagementService } from '../common/interfaces';
 import { ICommandService } from 'vs/platform/commands/common/commands';
-import { JobsViewComponent } from 'sql/parts/jobManagement/views/jobsView.component';
-import { AlertsViewComponent } from 'sql/parts/jobManagement/views/alertsView.component';
-import { OperatorsViewComponent } from 'sql/parts/jobManagement/views/operatorsView.component';
-import { ProxiesViewComponent } from 'sql/parts/jobManagement/views/proxiesView.component';
+import { JobsViewComponent } from 'sql/workbench/parts/jobManagement/electron-browser/jobsView.component';
+import { AlertsViewComponent } from 'sql/workbench/parts/jobManagement/electron-browser/alertsView.component';
+import { OperatorsViewComponent } from 'sql/workbench/parts/jobManagement/electron-browser/operatorsView.component';
+import { ProxiesViewComponent } from 'sql/workbench/parts/jobManagement/electron-browser/proxiesView.component';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
-import { JobManagementView } from 'sql/parts/jobManagement/views/jobManagementView';
+import { JobManagementView } from 'sql/workbench/parts/jobManagement/electron-browser/jobManagementView';
 
 export const successLabel: string = nls.localize('jobaction.successLabel', 'Success');
 export const errorLabel: string = nls.localize('jobaction.faillabel', 'Error');
@@ -104,7 +104,7 @@ export class RunJobAction extends Action {
 		return new Promise<boolean>((resolve, reject) => {
 			this.jobManagementService.jobAction(ownerUri, jobName, JobActions.Run).then(result => {
 				if (result.success) {
-					var startMsg = nls.localize('jobSuccessfullyStarted', ': The job was successfully started.');
+					let startMsg = nls.localize('jobSuccessfullyStarted', ': The job was successfully started.');
 					this.notificationService.info(jobName + startMsg);
 					refreshAction.run(context);
 					resolve(true);
@@ -140,7 +140,7 @@ export class StopJobAction extends Action {
 			this.jobManagementService.jobAction(ownerUri, jobName, JobActions.Stop).then(result => {
 				if (result.success) {
 					refreshAction.run(context);
-					var stopMsg = nls.localize('jobSuccessfullyStopped', ': The job was successfully stopped.');
+					let stopMsg = nls.localize('jobSuccessfullyStopped', ': The job was successfully stopped.');
 					this.notificationService.info(jobName + stopMsg);
 					resolve(true);
 				} else {

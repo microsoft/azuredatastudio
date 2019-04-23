@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
@@ -39,7 +37,7 @@ export class MetadataService implements IMetadataService {
 
 	private _providers: { [handle: string]: azdata.MetadataProvider; } = Object.create(null);
 
-	constructor( @IConnectionManagementService private _connectionService: IConnectionManagementService) {
+	constructor(@IConnectionManagementService private _connectionService: IConnectionManagementService) {
 	}
 
 	public getMetadata(connectionUri: string): Thenable<azdata.ProviderMetadata> {

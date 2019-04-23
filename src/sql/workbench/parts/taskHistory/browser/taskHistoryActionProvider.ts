@@ -43,7 +43,7 @@ export class TaskHistoryActionProvider extends ContributableActionProvider {
 	 * Return actions for history task
 	 */
 	public getTaskHistoryActions(tree: ITree, element: TaskNode): IAction[] {
-		var actions = [];
+		let actions = [];
 
 		// get actions for tasks in progress
 		if (element.status === TaskStatus.InProgress && element.isCancelable) {

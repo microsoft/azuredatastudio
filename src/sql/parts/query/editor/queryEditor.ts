@@ -60,7 +60,7 @@ export class QueryEditor extends BaseEditor {
 	private readonly _tabHeight: number = 35;
 
 	// The minimum width/height of the editors hosted in the QueryEditor
-	private readonly _minEditorSize: number = 220;
+	private readonly _minEditorSize: number = 100;
 
 	private _sash: IFlexibleSash;
 	private _editorTopOffset: number;
@@ -121,7 +121,7 @@ export class QueryEditor extends BaseEditor {
 	// PROPERTIES //////////////////////////////////////////////////////////
 	/**
 	 * Returns the URI of this editor if it is connected.
-	 * @returns {string} URI of the editor if connected, undefined otherwise
+	 * @returns URI of the editor if connected, undefined otherwise
 	 */
 	public get connectedUri(): string {
 		return this._connectionManagementService.isConnected(this.uri)
@@ -131,7 +131,7 @@ export class QueryEditor extends BaseEditor {
 
 	/**
 	 * Returns the URI of this editor if an input is associated with it
-	 * @return {string} URI of this if input is associated, undefined otherwise
+	 * @return URI of this if input is associated, undefined otherwise
 	 */
 	get uri(): string {
 		let input: QueryInput = <QueryInput>this.input;

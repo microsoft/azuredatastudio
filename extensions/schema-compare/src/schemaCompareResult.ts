@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
@@ -278,7 +277,7 @@ export class SchemaCompareResult {
 		this.generateScriptButton = view.modelBuilder.button().withProperties({
 			label: localize('schemaCompare.generateScriptButton', 'Generate script'),
 			iconPath: {
-				light : path.join(__dirname, 'media', 'generate-script.svg'),
+				light: path.join(__dirname, 'media', 'generate-script.svg'),
 				dark: path.join(__dirname, 'media', 'generate-script-inverse.svg')
 			},
 		}).component();
@@ -324,7 +323,7 @@ export class SchemaCompareResult {
 		this.switchButton = view.modelBuilder.button().withProperties({
 			label: localize('schemaCompare.switchDirectionButton', 'Switch direction'),
 			iconPath: {
-				light : path.join(__dirname, 'media', 'switch-directions.svg'),
+				light: path.join(__dirname, 'media', 'switch-directions.svg'),
 				dark: path.join(__dirname, 'media', 'switch-directions-inverse.svg')
 			},
 			title: localize('schemaCompare.switchButtonTitle', 'Switch source and target')

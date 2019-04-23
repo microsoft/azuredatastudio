@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as fspath from 'path';
@@ -12,9 +10,8 @@ import * as fs from 'fs';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
-import { ApiWrapper } from '../apiWrapper';
 import * as Constants from '../constants';
-import { IFileSource, IHdfsOptions, HdfsFileSource, IFile, File, FileSourceFactory } from './fileSources';
+import { IFileSource, IHdfsOptions, IFile, File, FileSourceFactory } from './fileSources';
 import { CancelableStream } from './cancelableStream';
 import { TreeNode } from './treeNodes';
 import * as utils from '../utils';
@@ -38,7 +35,7 @@ export class HdfsProvider implements vscode.TreeDataProvider<TreeNode>, ITreeCha
 	private _onDidChangeTreeData = new vscode.EventEmitter<TreeNode>();
 	private context: TreeDataContext;
 
-	constructor(extensionContext: vscode.ExtensionContext, private vscodeApi: ApiWrapper) {
+	constructor(extensionContext: vscode.ExtensionContext) {
 		this.connections = [];
 		this.context = new TreeDataContext(extensionContext, this);
 	}
@@ -345,7 +342,7 @@ export class ErrorNode extends TreeNode {
 	public static create(message: string, parent: TreeNode, errorCode?: number): ErrorNode {
 		let node = new ErrorNode(message);
 		node.parent = parent;
-		if(errorCode){
+		if (errorCode) {
 			node.errorStatusCode = errorCode;
 		}
 		return node;

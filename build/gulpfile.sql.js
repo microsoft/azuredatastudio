@@ -28,7 +28,6 @@ const formatFiles = (some) => {
 				console.info('ran formatting on file ' + file.path + ' result: ' + result.message);
 				if (result.error) {
 					console.error(result.message);
-					errorCount++;
 				}
 				cb(null, file);
 
@@ -40,7 +39,7 @@ const formatFiles = (some) => {
 			.pipe(filter(f => !f.stat.isDirectory()))
 			.pipe(formatting);
 
-}
+};
 
 const formatStagedFiles = () => {
 	const cp = require('child_process');
@@ -81,4 +80,4 @@ const formatStagedFiles = () => {
 				process.exit(1);
 			});
 		});
-}
+};

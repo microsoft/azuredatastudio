@@ -48,12 +48,12 @@
 	background-repeat: no-repeat;
 	background-position: 0% 50%;
 	padding-left: 15px;
- }
+}
 
- .carbon-taskbar .action-item-label {
+.carbon-taskbar .action-item-label {
 	display: flex;
 	padding-right: 5px;
- }
+}
 
 .listDatabasesSelectBox {
 	padding-left: 2px;
@@ -64,7 +64,7 @@
 .configuration.select-container .select-box {
 	margin-top: 4px;
 	margin-top: 3px;
- }
+}
 
 .taskbarSeparator {
 	width: 1px;
