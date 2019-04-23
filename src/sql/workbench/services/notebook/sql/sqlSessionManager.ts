@@ -166,7 +166,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
-		@IConfigurationService private _configurationService: IConfigurationService,
+		@IConfigurationService private _configurationService: IConfigurationService
 	) {
 		super();
 		this.initMagics();
