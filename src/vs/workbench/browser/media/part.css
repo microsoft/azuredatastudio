@@ -76,7 +76,8 @@
 }
 
 .monaco-workbench .part > .content {
-	font-size: 13px;
+	/* {{SQL CARBON EDIT}} */
+	font-size: 12px;
 }
 
 .monaco-workbench .part > .content > .monaco-progress-container,
