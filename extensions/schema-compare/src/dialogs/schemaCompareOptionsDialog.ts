@@ -445,15 +445,15 @@ export class SchemaCompareOptionsDialog {
 				}).component();
 
 			this.descriptionHeading = view.modelBuilder.table().withProperties({
-					columns: [
-						{
-							value: 'Option Description',
-							headerCssClass: 'no-borders',
-							toolTip: 'Option Description'
-						},
-					],
-					height: 30
-				}).component();
+				columns: [
+					{
+						value: 'Option Description',
+						headerCssClass: 'no-borders',
+						toolTip: 'Option Description'
+					},
+				],
+				height: 30
+			}).component();
 
 			this.descriptionText = view.modelBuilder.text().withProperties({
 				value: ' ',
@@ -466,12 +466,12 @@ export class SchemaCompareOptionsDialog {
 			});
 
 			let uberOptionsFlexBuilder = view.modelBuilder.flexContainer()
-			.withLayout({
-				flexFlow: 'column',
-			}).component();
+				.withLayout({
+					flexFlow: 'column',
+				}).component();
 
 			uberOptionsFlexBuilder.addItem(this.optionsFlexBuilder, { CSSStyles: { 'overflow': 'scroll' } });
-			uberOptionsFlexBuilder.addItem(this.descriptionHeading, { CSSStyles: { 'font-weight': 'bold'}});
+			uberOptionsFlexBuilder.addItem(this.descriptionHeading, { CSSStyles: { 'font-weight': 'bold' } });
 			uberOptionsFlexBuilder.addItem(this.descriptionText, { CSSStyles: { 'padding': '4px' } });
 			await view.initializeModel(uberOptionsFlexBuilder);
 		});
@@ -484,7 +484,7 @@ export class SchemaCompareOptionsDialog {
 				.withLayout({
 					flexFlow: 'column',
 					height: 900
-			 }).component();
+				}).component();
 
 			this.GetObjectTypesCheckBoxes(view);
 			this.objectTypesCheckBoxes.forEach(b => {
@@ -492,11 +492,11 @@ export class SchemaCompareOptionsDialog {
 			});
 
 			let uberOptionsFlexBuilder = view.modelBuilder.flexContainer()
-			.withLayout({
-				flexFlow: 'column',
-			}).component();
+				.withLayout({
+					flexFlow: 'column',
+				}).component();
 
-			uberOptionsFlexBuilder.addItem(this.objectTypesFlexBuilder, { CSSStyles: { 'overflow': 'scroll'}});
+			uberOptionsFlexBuilder.addItem(this.objectTypesFlexBuilder, { CSSStyles: { 'overflow': 'scroll' } });
 
 			await view.initializeModel(uberOptionsFlexBuilder);
 		});
@@ -1480,7 +1480,7 @@ export class SchemaCompareOptionsDialog {
 		}
 	}
 
-	private GetDescription(label: string): string{
+	private GetDescription(label: string): string {
 		switch (label) {
 			case SchemaCompareOptionsDialog.IgnoreTableOptions:
 				return SchemaCompareOptionsDialog.descriptionIgnoreTableOptions;

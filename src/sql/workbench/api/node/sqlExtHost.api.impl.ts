@@ -961,7 +961,7 @@ export function createApiFactory(
 			};
 		}
 	};
-} 
+}
 
 export function initializeExtensionApi(extensionService: ExtHostExtensionService, apiFactory: ISqlExtensionApiFactory, extensionRegistry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): Promise<void> {
 	return extensionService.getExtensionPathIndex().then(trie => defineAPI(apiFactory, trie, extensionRegistry, configProvider));
