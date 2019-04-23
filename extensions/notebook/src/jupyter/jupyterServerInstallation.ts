@@ -381,7 +381,7 @@ export default class JupyterServerInstallation {
 
 	private getCondaExePath(): string {
 		return path.join(this._pythonInstallationPath,
-			process.platform === constants.winPlatform ? 'Scripts/conda.bat' : 'bin/conda');
+			process.platform === constants.winPlatform ? 'Scripts\\conda.exe' : 'bin/conda');
 	}
 
 	private checkCondaExists(): boolean {
