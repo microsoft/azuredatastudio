@@ -855,7 +855,7 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 		}
 
 		return this.installWithProgress(async () => {
-			// {{SQL CARBON EDIT}}
+			// {{SQL CARBON EDIT}} remove extensionservice install from gallery
 			if (extensionPolicy === ExtensionsPolicy.allowMicrosoft) {
 				if (extension.publisherDisplayName === 'Microsoft') {
 					await this.downloadOrBrowse(extension).then(() => this.checkAndEnableDisabledDependencies(gallery.identifier));
@@ -916,7 +916,8 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 					return Promise.reject(new Error(nls.localize('incompatible', "Unable to install extension '{0}' with version '{1}' as it is not compatible with Azure Data Studio.", extension.gallery!.identifier.id, version)));
 				}
 				return this.installWithProgress(async () => {
-					await this.extensionService.installFromGallery(gallery);
+					const extensionService = extension.server ? extension.server.extensionManagementService : this.extensionService;
+					await extensionService.installFromGallery(gallery);
 					if (extension.latestVersion !== version) {
 						this.ignoreAutoUpdate(new ExtensionIdentifierWithVersion(gallery.identifier, version));
 					}
