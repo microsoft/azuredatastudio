@@ -60,7 +60,7 @@ export class QueryEditor extends BaseEditor {
 	private readonly _tabHeight: number = 35;
 
 	// The minimum width/height of the editors hosted in the QueryEditor
-	private readonly _minEditorSize: number = 220;
+	private readonly _minEditorSize: number = 100;
 
 	private _sash: IFlexibleSash;
 	private _editorTopOffset: number;

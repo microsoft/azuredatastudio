@@ -9,7 +9,7 @@ import { IContextMenuService } from 'vs/platform/contextview/browser/contextView
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IMouseEvent } from 'vs/base/browser/mouseEvent';
 import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { TaskHistoryActionProvider } from 'sql/workbench/parts/taskHistory/browser/taskHistoryActionProvider';
+import { TaskHistoryActionProvider } from 'sql/workbench/parts/tasks/browser/tasksActionProvider';
 
 /**
  * Extends the tree controller to handle clicks on the tree elements
