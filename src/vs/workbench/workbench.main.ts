@@ -439,7 +439,7 @@ import 'vs/workbench/contrib/issue/electron-browser/issue.contribution';
 
 // {{SQL CARBON EDIT}}
 // SQL
-import 'sql/workbench/parts/taskHistory/browser/taskHistory.contribution';
+import 'sql/workbench/parts/tasks/browser/tasks.contribution';
 
 // data explorer
 import 'sql/workbench/parts/dataExplorer/browser/dataExplorer.contribution';
