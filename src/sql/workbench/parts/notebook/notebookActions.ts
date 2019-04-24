@@ -22,6 +22,7 @@ import { noKernel } from 'sql/workbench/services/notebook/common/sessionManager'
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { NotebookModel } from 'sql/workbench/parts/notebook/models/notebookModel';
 import { generateUri } from 'sql/platform/connection/common/utils';
+import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 
 const msgLoading = localize('loading', "Loading kernels...");
 const msgChanging = localize('changing', "Changing kernel...");
@@ -107,6 +108,7 @@ export interface IActionStateData {
 	label?: string;
 	tooltip?: string;
 	hideIcon?: boolean;
+	commandId?: string;
 }
 
 export class IMultiStateData<T> {
@@ -149,6 +151,10 @@ export class IMultiStateData<T> {
 		return this.getStateValueOrDefault<string>((data) => data.tooltip, '');
 	}
 
+	public get commandId(): string {
+		return this.getStateValueOrDefault<string>((data) => data.commandId, '');
+	}
+
 	private getStateValueOrDefault<U>(getter: (data: IActionStateData) => U, defaultVal?: U): U {
 		let data = this._stateMap.get(this._state);
 		return data ? getter(data) : defaultVal;
@@ -158,14 +164,24 @@ export class IMultiStateData<T> {
 
 export abstract class MultiStateAction<T> extends Action {
 
-	constructor(id: string, protected states: IMultiStateData<T>) {
+	constructor(id: string, protected states: IMultiStateData<T>, private _keybindingService: IKeybindingService) {
 		super(id, '');
 		this.updateLabelAndIcon();
 	}
 
 	private updateLabelAndIcon() {
+		let keyboardShortcut: string;
+		try {
+			// If a keyboard shortcut exists for the command id passed in, append that to the label
+			if (this.states.commandId !== '') {
+				let binding = this._keybindingService.lookupKeybinding(this.states.commandId);
+				keyboardShortcut = binding ? binding.getLabel() : undefined;
+			}
+		} catch (error) {
+			console.log(error);
+		}
 		this.label = this.states.label;
-		this.tooltip = this.states.tooltip;
+		this.tooltip = keyboardShortcut ? this.states.tooltip + ` (${keyboardShortcut})` : this.states.tooltip;
 		this.class = this.states.classes;
 	}
 
