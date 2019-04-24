@@ -105,7 +105,7 @@ export class ApiWrapper {
 		return vscode.workspace.getConfiguration('cms');
 	}
 
-	public async setConfiguration(value: any) {
+	public async setConfiguration(value: any): Promise<void> {
 		await vscode.workspace.getConfiguration('cms').update('cmsServers', value, true);
 	}
 
@@ -203,7 +203,8 @@ export class ApiWrapper {
 		});
 	}
 
-	public async createCmsServer(connection: azdata.connection.Connection, name: string, description: string) {
+	public async createCmsServer(connection: azdata.connection.Connection,
+		name: string, description: string): Promise<mssql.ListRegisteredServersResult> {
 		let provider = await this.getCmsService();
 		connection.providerName = connection.providerName === 'MSSQL-CMS' ? 'MSSQL' : connection.providerName;
 		let ownerUri = await azdata.connection.getUriForConnection(connection.connectionId);
@@ -233,7 +234,7 @@ export class ApiWrapper {
 		}
 	}
 
-	public cacheRegisteredCmsServer(name: string, description: string, ownerUri: string, connection: azdata.connection.Connection) {
+	public cacheRegisteredCmsServer(name: string, description: string, ownerUri: string, connection: azdata.connection.Connection): void {
 		if (!this._registeredCmsServers) {
 			this._registeredCmsServers = [];
 		}
@@ -246,9 +247,10 @@ export class ApiWrapper {
 		this._registeredCmsServers.push(cmsServerNode);
 	}
 
-	public async addRegisteredServer(relativePath: string, ownerUri: string, parentServerName?: string) {
+	public async addRegisteredServer(relativePath: string, ownerUri: string,
+		parentServerName?: string): Promise<any> {
 		let provider = await this.getCmsService();
-		return this.openConnectionDialog(['MSSQL'], undefined, undefined).then((connection) => {
+		return this.openConnectionDialog(['MSSQL-CMS'], undefined, undefined).then((connection) => {
 			if (connection && connection.options) {
 				if (connection.options.server === parentServerName) {
 					// error out for same server registration
@@ -268,21 +270,21 @@ export class ApiWrapper {
 		});
 	}
 
-	public async removeRegisteredServer(registeredServerName: string, relativePath: string, ownerUri: string) {
+	public async removeRegisteredServer(registeredServerName: string, relativePath: string, ownerUri: string): Promise<boolean> {
 		let provider = await this.getCmsService();
 		return provider.removeRegisteredServer(ownerUri, relativePath, registeredServerName).then((result) => {
 			return result;
 		});
 	}
 
-	public async addServerGroup(groupName: string, groupDescription: string, relativePath: string, ownerUri: string) {
+	public async addServerGroup(groupName: string, groupDescription: string, relativePath: string, ownerUri: string): Promise<boolean> {
 		let provider = await this.getCmsService();
 		return provider.addServerGroup(ownerUri, relativePath, groupName, groupDescription).then((result) => {
 			return result;
 		});
 	}
 
-	public async removeServerGroup(groupName: string, relativePath: string, ownerUri: string) {
+	public async removeServerGroup(groupName: string, relativePath: string, ownerUri: string): Promise<boolean> {
 		let provider = await this.getCmsService();
 		return provider.removeServerGroup(ownerUri, relativePath, groupName).then((result) => {
 			return result;

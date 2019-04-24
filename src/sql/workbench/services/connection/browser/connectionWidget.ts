@@ -815,6 +815,10 @@ export class ConnectionWidget {
 			if (this.authType === AuthenticationType.AzureMFA) {
 				model.azureTenantId = this._azureTenantId;
 			}
+			if (this._serverDescriptionInputBox) {
+				model.options.registeredServerDescription = this._serverDescriptionInputBox.value;
+				model.options.registeredServerName = this._connectionNameInputBox.value;
+			}
 		}
 		return validInputs;
 	}

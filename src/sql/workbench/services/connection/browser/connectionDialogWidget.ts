@@ -95,7 +95,7 @@ export class ConnectionDialogWidget extends Modal {
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IContextMenuService private _contextMenuService: IContextMenuService,
 		@IContextViewService private _contextViewService: IContextViewService,
-		@IClipboardService clipboardService: IClipboardService,
+		@IClipboardService clipboardService: IClipboardService
 	) {
 		super(localize('connection', "Connection"), TelemetryKeys.Connection, telemetryService, layoutService, clipboardService, themeService, contextKeyService, { hasSpinner: true, hasErrors: true });
 	}
