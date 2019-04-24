@@ -404,7 +404,7 @@ declare module 'azdata' {
 		/**
 		 * options for all new server properties.
 		 */
-		options: {};
+		options: { [key: string]: any };
 	}
 
 	export interface DataProvider {
@@ -4443,7 +4443,7 @@ declare module 'azdata' {
 			 * Mime bundle expected to contain mime type -> contents mappings.
 			 * This is dynamic and is controlled by kernels, so cannot be more specific
 			 */
-			data: {};
+			data: { [key: string]: any };
 			/**
 			 * Optional metadata, also a mime bundle
 			 */

@@ -246,8 +246,8 @@ export class PerNotebookServerInstance implements IServerInstance {
 			this.childProcess = this.spawnJupyterProcess(install, startCommand);
 			let stdErrLog: string = '';
 			// Add listeners for the process exiting prematurely
-			let onErrorBeforeStartup = (err) => reject(err);
-			let onExitBeforeStart = (err) => {
+			let onErrorBeforeStartup = (err: any) => reject(err);
+			let onExitBeforeStart = (err: any) => {
 				if (!this.isStarted) {
 					reject(localize('notebookStartProcessExitPremature', 'Notebook process exited prematurely with error: {0}, StdErr Output: {1}', err, stdErrLog));
 				}
@@ -372,7 +372,7 @@ export class PerNotebookServerInstance implements IServerInstance {
 	}
 
 	private getEnvWithConfigPaths(env: {}): any {
-		let newEnv = Object.assign({}, env);
+		let newEnv: { [key: string]: string } = Object.assign({}, env);
 		newEnv['JUPYTER_CONFIG_DIR'] = this.instanceConfigRoot;
 		newEnv['JUPYTER_PATH'] = this.instanceDataRoot;
 		return newEnv;
