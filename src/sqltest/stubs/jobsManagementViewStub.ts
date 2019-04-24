@@ -2,14 +2,19 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-body, html {
-	margin: 0px;
-	height: 100%;
-	width: 100%;
-}
 
-.splash-modal {
-	background-image: url("splash.png");
-	background-repeat: no-repeat;
-	background-size: 100% 100%;
+/**
+ * Class to test Job Management Views
+ */
+export class TestJobManagementView {
+
+	refreshJobs() { return undefined; }
+
+	openCreateJobDialog() { return undefined; }
+
+	openCreateAlertDialog() { return undefined; }
+
+	openCreateOperatorDialog() { return undefined; }
+
+	openCreateProxyDialog() { return undefined; }
 }

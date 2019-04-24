@@ -51,7 +51,6 @@ export class DacFxServicesFeature extends SqlOpsFeature<undefined> {
 
 	protected registerProvider(options: undefined): Disposable {
 		const client = this._client;
-		let self = this;
 
 		let exportBacpac = (databaseName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> => {
 			let params: contracts.ExportParams = { databaseName: databaseName, packageFilePath: packageFilePath, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
@@ -165,7 +164,6 @@ export class SchemaCompareServicesFeature extends SqlOpsFeature<undefined> {
 
 	protected registerProvider(options: undefined): Disposable {
 		const client = this._client;
-		let self = this;
 
 		let schemaCompare = (sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.SchemaCompareResult> => {
 			let params: contracts.SchemaCompareParams = { sourceEndpointInfo: sourceEndpointInfo, targetEndpointInfo: targetEndpointInfo, taskExecutionMode: taskExecutionMode };

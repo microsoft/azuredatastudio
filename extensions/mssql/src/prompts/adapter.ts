@@ -1,10 +1,7 @@
-'use strict';
-
 // This code is originally from https://github.com/DonJayamanne/bowerVSCode
 // License: https://github.com/DonJayamanne/bowerVSCode/blob/master/LICENSE
 
-import {window, OutputChannel } from 'vscode';
-import * as nodeUtil from 'util';
+import { window, OutputChannel } from 'vscode';
 import PromptFactory from './factory';
 import EscapeException from '../escapeException';
 import { IQuestion, IPrompter, IPromptCallback } from './question';
@@ -13,8 +10,6 @@ import { IQuestion, IPrompter, IPromptCallback } from './question';
 export default class CodeAdapter implements IPrompter {
 
 	private outChannel: OutputChannel;
-	private outBuffer: string = '';
-	private messageLevelFormatters = {};
 	constructor() {
 		// TODO Decide whether output channel logging should be saved here?
 		this.outChannel = window.createOutputChannel('test');
@@ -24,13 +19,7 @@ export default class CodeAdapter implements IPrompter {
 	public logError(message: any): void {
 		let line = `error: ${message.message}\n    Code - ${message.code}`;
 
-		this.outBuffer += `${line}\n`;
 		this.outChannel.appendLine(line);
-	}
-
-	private formatMessage(message: any): string {
-		const prefix = `${message.level}: (${message.id}) `;
-		return `${prefix}${message.message}`;
 	}
 
 	public clearLog(): void {
@@ -58,19 +47,20 @@ export default class CodeAdapter implements IPrompter {
 
 	public promptSingle<T>(question: IQuestion, ignoreFocusOut?: boolean): Promise<T> {
 		let questions: IQuestion[] = [question];
-		return this.prompt(questions, ignoreFocusOut).then( (answers: {[key: string]: T})  => {
+		return this.prompt(questions, ignoreFocusOut).then((answers: { [key: string]: T }) => {
 			if (answers) {
 				let response: T = answers[question.name];
 				return response || undefined;
 			}
+			return undefined;
 		});
 	}
 
-	public prompt<T>(questions: IQuestion[], ignoreFocusOut?: boolean): Promise<{[key: string]: T}> {
-		let answers: {[key: string]: T} = {};
+	public prompt<T>(questions: IQuestion[], ignoreFocusOut?: boolean): Promise<{ [key: string]: T }> {
+		let answers: { [key: string]: T } = {};
 
 		// Collapse multiple questions into a set of prompt steps
-		let promptResult: Promise<{[key: string]: T}> = questions.reduce((promise: Promise<{[key: string]: T}>, question: IQuestion) => {
+		let promptResult: Promise<{ [key: string]: T }> = questions.reduce((promise: Promise<{ [key: string]: T }>, question: IQuestion) => {
 			this.fixQuestion(question);
 
 			return promise.then(() => {

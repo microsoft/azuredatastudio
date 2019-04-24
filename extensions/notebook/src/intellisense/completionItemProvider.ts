@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import { nb } from 'azdata';
 
 import * as vscode from 'vscode';
@@ -54,7 +52,7 @@ export class NotebookCompletionItemProvider implements vscode.CompletionItemProv
 				if (sessions && sessions.length > 0) {
 					let session = sessions.find(session => session.path === info.notebook.uri.path);
 					if (!session) {
-						return;
+						return undefined;
 					}
 					return session.kernel;
 				}
@@ -63,6 +61,7 @@ export class NotebookCompletionItemProvider implements vscode.CompletionItemProv
 			// If an exception occurs, swallow it currently
 			return undefined;
 		}
+		return undefined;
 	}
 
 	private findMatchingCell(document: vscode.TextDocument, allDocuments: nb.NotebookDocument[]): INewIntellisenseInfo {

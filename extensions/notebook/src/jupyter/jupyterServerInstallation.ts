@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as nls from 'vscode-nls';
@@ -33,6 +31,7 @@ const msgInstallPkgStart = localize('msgInstallPkgStart', "Installing Notebook d
 const msgInstallPkgFinish = localize('msgInstallPkgFinish', "Notebook dependencies installation is complete");
 const msgPythonRunningError = localize('msgPythonRunningError', "Cannot overwrite existing Python installation while python is running.");
 const msgPendingInstallError = localize('msgPendingInstallError', "Another Python installation is currently in progress.");
+const msgSkipPythonInstall = localize('msgSkipPythonInstall', "Python already exists at the specific location. Skipping install.");
 function msgDependenciesInstallationFailed(errorMessage: string): string { return localize('msgDependenciesInstallationFailed', "Installing Notebook dependencies failed with error: {0}", errorMessage); }
 function msgDownloadPython(platform: string, pythonDownloadUrl: string): string { return localize('msgDownloadPython', "Downloading local python for platform: {0} to {1}", platform, pythonDownloadUrl); }
 
@@ -101,7 +100,7 @@ export default class JupyterServerInstallation {
 			.replace('#bundleversion', bundleVersion)
 			.replace('#extension', process.platform === constants.winPlatform ? 'zip' : 'tar.gz');
 
-		let pythonDownloadUrl = undefined;
+		let pythonDownloadUrl: string = undefined;
 		switch (utils.getOSPlatform()) {
 			case utils.Platform.Windows:
 				pythonDownloadUrl = 'https://go.microsoft.com/fwlink/?linkid=2074021';
@@ -116,9 +115,7 @@ export default class JupyterServerInstallation {
 		}
 
 		let pythonPackagePathLocal = this._pythonInstallationPath + '/' + packageName;
-		let self = undefined;
 		return new Promise((resolve, reject) => {
-			self = this;
 			backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgDownloadPython(platformId, pythonDownloadUrl));
 			fs.mkdirs(this._pythonInstallationPath, (err) => {
 				if (err) {
@@ -168,7 +165,7 @@ export default class JupyterServerInstallation {
 								reject(err);
 							}
 						}
-						decompress(pythonPackagePathLocal, self._pythonInstallationPath).then(files => {
+						decompress(pythonPackagePathLocal, this._pythonInstallationPath).then(files => {
 							//Delete zip/tar file
 							fs.unlink(pythonPackagePathLocal, (err) => {
 								if (err) {
@@ -298,6 +295,8 @@ export default class JupyterServerInstallation {
 			// so update it here
 			await updateConfig();
 			installReady.resolve();
+			this._installInProgress = false;
+			this.apiWrapper.showInfoMessage(msgSkipPythonInstall);
 		}
 		return installReady.promise;
 	}
@@ -307,7 +306,7 @@ export default class JupyterServerInstallation {
 	 */
 	public async promptForPythonInstall(): Promise<void> {
 		if (!JupyterServerInstallation.isPythonInstalled(this.apiWrapper)) {
-			let pythonDialog = new ConfigurePythonDialog(this.apiWrapper, this.outputChannel, this);
+			let pythonDialog = new ConfigurePythonDialog(this.apiWrapper, this);
 			return pythonDialog.showDialog(true);
 		}
 	}
