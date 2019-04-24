@@ -76,7 +76,7 @@ export class ServerInstanceUtils {
 		return spawn(command, args, options);
 	}
 
-	public checkProcessDied(childProcess: ChildProcess): void {
+	public ensureProcessEnded(childProcess: ChildProcess): void {
 		if (!childProcess) {
 			return;
 		}
@@ -163,7 +163,7 @@ export class PerNotebookServerInstance implements IServerInstance {
 			this.notify(this.options.install, localize('serverStopError', 'Error stopping Notebook Server: {0}', utils.getErrorMessage(error)));
 		} finally {
 			this._isStarted = false;
-			this.utils.checkProcessDied(this.childProcess);
+			this.utils.ensureProcessEnded(this.childProcess);
 			this.handleConnectionClosed();
 		}
 	}
