@@ -136,7 +136,7 @@ export default class TokenCache implements adal.TokenCache {
 			&& entry1.resource === entry2.resource;
 	}
 
-	private static findByPartial(entry: adal.TokenResponse, query: object): boolean {
+	private static findByPartial(entry: adal.TokenResponse, query: { [key: string]: any }): boolean {
 		for (let key in query) {
 			if (entry[key] === undefined || entry[key] !== query[key]) {
 				return false;

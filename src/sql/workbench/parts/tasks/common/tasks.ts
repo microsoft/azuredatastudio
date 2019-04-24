@@ -2,14 +2,8 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-body, html {
-	margin: 0px;
-	height: 100%;
-	width: 100%;
-}
 
-.splash-modal {
-	background-image: url("splash.png");
-	background-repeat: no-repeat;
-	background-size: 100% 100%;
-}
+/**
+ * Tasks panel id
+ */
+export const TASKS_PANEL_ID = 'workbench.panel.tasks';
