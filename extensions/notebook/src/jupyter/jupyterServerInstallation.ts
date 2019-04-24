@@ -51,6 +51,7 @@ export default class JupyterServerInstallation {
 	private _pythonExecutable: string;
 	private _pythonPackageDir: string;
 	private _usingExistingPython: boolean;
+	private _usingConda: boolean;
 
 	// Allows dependencies to be installed even if an existing installation is already present
 	private _forceInstall: boolean;
@@ -64,6 +65,7 @@ export default class JupyterServerInstallation {
 		this.apiWrapper = apiWrapper;
 		this._pythonInstallationPath = pythonInstallationPath || JupyterServerInstallation.getPythonInstallPath(this.apiWrapper);
 		this._forceInstall = false;
+		this._usingConda = false;
 		this._installInProgress = false;
 		this._usingExistingPython = JupyterServerInstallation.getExistingPythonSetting(this.apiWrapper);
 
@@ -78,13 +80,19 @@ export default class JupyterServerInstallation {
 			this.outputChannel.appendLine(msgInstallPkgProgress);
 			backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgInstallPkgProgress);
 
-			await this.installPythonPackage(backgroundOperation);
-			this.outputChannel.appendLine(msgPythonDownloadComplete);
-			backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonDownloadComplete);
+			if (!this._usingConda) {
+				await this.installPythonPackage(backgroundOperation);
+				this.outputChannel.appendLine(msgPythonDownloadComplete);
+				backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonDownloadComplete);
+			}
 
 			// Install jupyter on Windows because local python is not bundled with jupyter unlike linux and MacOS.
-			await this.installJupyterProsePackage();
-			await this.installSparkMagic();
+			if (this._usingConda) {
+				await this.installCondaPackages();
+			} else {
+				await this.installJupyterProsePackage();
+				await this.installSparkMagic();
+			}
 
 			fs.remove(this._pythonPackageDir, (err: Error) => {
 				if (err) {
@@ -106,14 +114,14 @@ export default class JupyterServerInstallation {
 		let pythonDownloadUrl: string;
 		if (this._usingExistingPython) {
 			packageName = `python-${pythonVersion}-${bundleVersion}-offlinePackages.zip`;
-			pythonDownloadUrl = 'https://bundledpython.blob.core.windows.net/test/python-3.7.7-0.0.1-offlinePackages.zip';
+			pythonDownloadUrl = 'https://go.microsoft.com/fwlink/?linkid=2086702';
 		} else {
 			let extension = process.platform === constants.winPlatform ? 'zip' : 'tar.gz';
 			packageName = `python-${pythonVersion}-${platformId}-${bundleVersion}.${extension}`;
 
 			switch (utils.getOSPlatform()) {
 				case utils.Platform.Windows:
-					pythonDownloadUrl = 'https://bundledpython.blob.core.windows.net/test/python-3.7.7-win-x64-0.0.1-offline.zip';
+					pythonDownloadUrl = 'https://go.microsoft.com/fwlink/?linkid=2074021';
 					break;
 				case utils.Platform.Mac:
 					pythonDownloadUrl = 'https://go.microsoft.com/fwlink/?linkid=2065976';
@@ -212,6 +220,8 @@ export default class JupyterServerInstallation {
 
 		this._pythonExecutable = JupyterServerInstallation.getPythonExePath(this._pythonInstallationPath, this._usingExistingPython);
 		this.pythonBinPath = path.join(pythonSourcePath, pythonBinPathSuffix);
+
+		this._usingConda = this.checkCondaExists();
 
 		// Store paths to python libraries required to run jupyter.
 		this.pythonEnvVarPath = process.env['PATH'];
@@ -356,8 +366,31 @@ export default class JupyterServerInstallation {
 		}
 	}
 
+	private async installCondaPackages(): Promise<void> {
+		let condaExePath = this.getCondaExePath();
+		let installCommand = `"${condaExePath}" install -y jupyter pandas`; // Sparkmagic not supported for windows
+		this.outputChannel.show(true);
+		this.outputChannel.appendLine(localize('msgInstallStart', "Installing required packages to run Notebooks..."));
+		await utils.executeStreamedCommand(installCommand, this.outputChannel);
+		this.outputChannel.appendLine(localize('msgJupyterInstallDone', "... Jupyter installation complete."));
+	}
+
 	public get pythonExecutable(): string {
 		return this._pythonExecutable;
+	}
+
+	private getCondaExePath(): string {
+		return path.join(this._pythonInstallationPath,
+			process.platform === constants.winPlatform ? 'condabin\\conda.bat' : 'bin/conda');
+	}
+
+	private checkCondaExists(): boolean {
+		if (!this._usingExistingPython) {
+			return false;
+		}
+
+		let condaExePath = this.getCondaExePath();
+		return fs.existsSync(condaExePath);
 	}
 
 	/**
