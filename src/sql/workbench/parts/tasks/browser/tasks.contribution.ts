@@ -8,16 +8,16 @@ import { localize } from 'vs/nls';
 import { SyncActionDescriptor, MenuRegistry, MenuId } from 'vs/platform/actions/common/actions';
 import { IWorkbenchActionRegistry, Extensions as ActionExtensions } from 'vs/workbench/common/actions';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { TasksPanel } from 'sql/workbench/parts/taskHistory/browser/tasksPanel';
+import { TasksPanel } from 'sql/workbench/parts/tasks/browser/tasksPanel';
 import * as lifecycle from 'vs/base/common/lifecycle';
 import * as ext from 'vs/workbench/common/contributions';
-import { ITaskService } from 'sql/platform/taskHistory/common/taskService';
+import { ITaskService } from 'sql/platform/tasks/common/tasksService';
 import { IActivityService, NumberBadge } from 'vs/workbench/services/activity/common/activity';
 import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
 import { PanelRegistry, Extensions as PanelExtensions, PanelDescriptor } from 'vs/workbench/browser/panel';
-import { TASKS_PANEL_ID } from 'sql/workbench/parts/taskHistory/common/tasks';
+import { TASKS_PANEL_ID } from 'sql/workbench/parts/tasks/common/tasks';
 import { IPanelService } from 'vs/workbench/services/panel/common/panelService';
-import { ToggleTasksAction } from 'sql/workbench/parts/taskHistory/browser/taskActions';
+import { ToggleTasksAction } from 'sql/workbench/parts/tasks/browser/tasksActions';
 
 export class StatusUpdater implements ext.IWorkbenchContribution {
 	static ID = 'data.taskhistory.statusUpdater';

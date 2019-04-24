@@ -7,7 +7,7 @@ import { localize } from 'vs/nls';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { IPanelService } from 'vs/workbench/services/panel/common/panelService';
 import { TogglePanelAction } from 'vs/workbench/browser/panel';
-import { TASKS_PANEL_ID } from 'sql/workbench/parts/taskHistory/common/tasks';
+import { TASKS_PANEL_ID } from 'sql/workbench/parts/tasks/common/tasks';
 
 export class ToggleTasksAction extends TogglePanelAction {
 

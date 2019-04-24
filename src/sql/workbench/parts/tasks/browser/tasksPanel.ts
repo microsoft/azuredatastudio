@@ -3,15 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!./media/taskHistoryViewlet';
-import { toggleClass, Dimension } from 'vs/base/browser/dom';
+import 'vs/css!./media/tasksPanel';
+import { Dimension } from 'vs/base/browser/dom';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { TaskHistoryView } from 'sql/workbench/parts/taskHistory/browser/taskHistoryView';
+import { TaskHistoryView } from 'sql/workbench/parts/tasks/browser/tasksView';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { Panel } from 'vs/workbench/browser/panel';
-import { TASKS_PANEL_ID } from 'sql/workbench/parts/taskHistory/common/tasks';
+import { TASKS_PANEL_ID } from 'sql/workbench/parts/tasks/common/tasks';
 
 export class TasksPanel extends Panel {
 
