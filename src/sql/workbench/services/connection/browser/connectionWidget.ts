@@ -15,7 +15,7 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import * as Constants from 'sql/platform/connection/common/constants';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
-import { Dropdown } from 'sql/base/browser/ui/editableDropdown/dropdown';
+import { Dropdown } from 'sql/base/parts/editableDropdown/browser/dropdown';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
@@ -222,7 +222,7 @@ export class ConnectionWidget {
 		let databaseOption = this._optionsMaps[ConnectionOptionSpecialType.databaseName];
 		let databaseName = DialogHelper.appendRow(this._tableContainer, databaseOption.displayName, 'connection-label', 'connection-input');
 
-		this._databaseNameInputBox = new Dropdown(databaseName, this._contextViewService, this._layoutService, {
+		this._databaseNameInputBox = new Dropdown(databaseName, this._contextViewService, {
 			values: [this._defaultDatabaseName, this._loadingDatabaseName],
 			strictSelection: false,
 			placeholder: this._defaultDatabaseName,
