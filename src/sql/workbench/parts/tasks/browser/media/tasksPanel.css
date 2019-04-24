@@ -12,8 +12,8 @@
 	overflow: hidden;
 }
 
-/* task title and description */
-.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .task-group > .task-details > .title {
+/* task label and description */
+.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .task-group > .task-details > .label {
 	text-overflow: ellipsis;
 	overflow: hidden;
 	font-weight: 700;
