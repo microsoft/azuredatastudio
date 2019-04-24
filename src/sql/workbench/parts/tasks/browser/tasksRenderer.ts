@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ITree, IRenderer } from 'vs/base/parts/tree/browser/tree';
-import { TaskNode, TaskStatus } from 'sql/workbench/parts/taskHistory/common/taskNode';
+import { TaskNode, TaskStatus } from 'sql/platform/tasks/common/tasksNode';
 import * as dom from 'vs/base/browser/dom';
 import { localize } from 'vs/nls';
 import * as Utils from 'sql/platform/connection/common/utils';
@@ -14,7 +14,7 @@ const $ = dom.$;
 export interface ITaskHistoryTemplateData {
 	root: HTMLElement;
 	icon: HTMLElement;
-	title: HTMLSpanElement;
+	label: HTMLSpanElement;
 	description: HTMLSpanElement;
 	time: HTMLSpanElement;
 }
@@ -55,10 +55,10 @@ export class TaskHistoryRenderer implements IRenderer {
 		const taskTemplate: ITaskHistoryTemplateData = Object.create(null);
 		taskTemplate.root = dom.append(container, $('.task-group'));
 		taskTemplate.icon = dom.append(taskTemplate.root, $('img.task-icon'));
-		let titleContainer = dom.append(taskTemplate.root, $('div.task-details'));
-		taskTemplate.title = dom.append(titleContainer, $('div.title'));
-		taskTemplate.description = dom.append(titleContainer, $('div.description'));
-		taskTemplate.time = dom.append(titleContainer, $('div.time'));
+		let labelContainer = dom.append(taskTemplate.root, $('div.task-details'));
+		taskTemplate.label = dom.append(labelContainer, $('div.label'));
+		taskTemplate.description = dom.append(labelContainer, $('div.description'));
+		taskTemplate.time = dom.append(labelContainer, $('div.time'));
 		return taskTemplate;
 	}
 
@@ -103,8 +103,8 @@ export class TaskHistoryRenderer implements IRenderer {
 			templateData.icon.title = taskStatus;
 
 			// Determine the task title and set hover text equal to that
-			templateData.title.textContent = taskNode.taskName + ' ' + taskStatus;
-			templateData.title.title = templateData.title.textContent;
+			templateData.label.textContent = taskNode.taskName + ' ' + taskStatus;
+			templateData.label.title = templateData.label.textContent;
 
 			// Determine the target name and set hover text equal to that
 			let description = taskNode.serverName;
