@@ -448,11 +448,22 @@ export interface SchemaCompareGenerateScriptParams {
 	taskExecutionMode: TaskExecutionMode;
 }
 
+export interface SchemaComparePublishChangesParams {
+	operationId: string;
+	targetServerName: string;
+	targetDatabaseName: string;
+	taskExecutionMode: TaskExecutionMode;
+}
+
 export namespace SchemaCompareRequest {
 	export const type = new RequestType<SchemaCompareParams, azdata.SchemaCompareResult, void, void>('schemaCompare/compare');
 }
 
 export namespace SchemaCompareGenerateScriptRequest {
 	export const type = new RequestType<SchemaCompareGenerateScriptParams, azdata.ResultStatus, void, void>('schemaCompare/generateScript');
+}
+
+export namespace SchemaComparePublishChangesRequest {
+	export const type = new RequestType<SchemaComparePublishChangesParams, azdata.ResultStatus, void, void>('schemaCompare/publish');
 }
 // ------------------------------- <Schema Compare> -----------------------------
