@@ -19,6 +19,7 @@ export interface ISchemaCompareService {
 	registerProvider(providerId: string, provider: azdata.SchemaCompareServicesProvider): void;
 	schemaCompare(sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, deploymentOptions: azdata.DeploymentOptions): void;
 	schemaCompareGenerateScript(operationId: string, targetDatabaseName: string, scriptFilePath: string, taskExecutionMode: azdata.TaskExecutionMode): void;
+	schemaCompareIncludeExcludeNode(operationId: string, diffEntry: azdata.DiffEntry, includeRequest: boolean, taskExecutionMode: azdata.TaskExecutionMode): void;
 }
 
 export class SchemaCompareService implements ISchemaCompareService {
@@ -46,6 +47,12 @@ export class SchemaCompareService implements ISchemaCompareService {
 	schemaCompareGetDefaultOptions(): Thenable<azdata.SchemaCompareOptionsResult> {
 		return this._runAction('', (runner) => {
 			return runner.schemaCompareGetDefaultOptions();
+		});
+	}
+
+	schemaCompareIncludeExcludeNode(operationId: string, diffEntry: azdata.DiffEntry, includeRequest: boolean, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
+		return this._runAction('', (runner) => {
+			return runner.schemaCompareIncludeExcludeNode(operationId, diffEntry, includeRequest, taskExecutionMode);
 		});
 	}
 

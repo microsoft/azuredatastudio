@@ -465,6 +465,9 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			},
 			schemaCompareGetDefaultOptions(): Thenable<azdata.SchemaCompareOptionsResult> {
 				return self._proxy.$schemaCompareGetDefaultOptions(handle);
+			},
+			schemaCompareIncludeExcludeNode(operationId: string, diffEntry: azdata.DiffEntry, includeRequest: boolean, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
+				return self._proxy.$schemaCompareIncludeExcludeNode(handle, operationId, diffEntry, includeRequest, taskExecutionMode);
 			}
 		});
 

@@ -453,6 +453,13 @@ export interface SchemaCompareGetOptionsParams {
 
 }
 
+export interface SchemaCompareNodeParams {
+	operationId: string;
+	diffEntry: azdata.DiffEntry;
+	includeRequest: boolean;
+	taskExecutionMode: TaskExecutionMode;
+}
+
 export namespace SchemaCompareRequest {
 	export const type = new RequestType<SchemaCompareParams, azdata.SchemaCompareResult, void, void>('schemaCompare/compare');
 }
@@ -464,4 +471,9 @@ export namespace SchemaCompareGenerateScriptRequest {
 export namespace SchemaCompareGetDefaultOptionsRequest {
 	export const type = new RequestType<SchemaCompareGetOptionsParams, azdata.SchemaCompareOptionsResult, void, void>('schemaCompare/getDefaultOptions');
 }
+
+export namespace SchemaCompareIncludeNodeRequest {
+	export const type = new RequestType<SchemaCompareNodeParams, azdata.ResultStatus, void, void>('schemaCompare/includeNode');
+}
+
 // ------------------------------- <Schema Compare> -----------------------------

@@ -147,7 +147,8 @@ export class SchemaCompareServicesFeature extends SqlOpsFeature<undefined> {
 	private static readonly messageTypes: RPCMessageType[] = [
 		contracts.SchemaCompareRequest.type,
 		contracts.SchemaCompareGenerateScriptRequest.type,
-		contracts.SchemaCompareGetDefaultOptionsRequest.type
+		contracts.SchemaCompareGetDefaultOptionsRequest.type,
+		//		contracts.SchemaCompareIncludeNodeRequest.type
 	];
 
 	constructor(client: SqlOpsDataClient) {
@@ -207,12 +208,25 @@ export class SchemaCompareServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
+		let schemaCompareIncludeExcludeNode = (operationId: string, diffEntry: azdata.DiffEntry, includeRequest: boolean, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> => {
+			let params: contracts.SchemaCompareNodeParams = { operationId: operationId, diffEntry, includeRequest, taskExecutionMode: taskExecutionMode };
+			return client.sendRequest(contracts.SchemaCompareIncludeNodeRequest.type, params).then(
+				r => {
+					return r;
+				},
+				e => {
+					client.logFailedRequest(contracts.SchemaCompareIncludeNodeRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
 
 		return azdata.dataprotocol.registerSchemaCompareServicesProvider({
 			providerId: client.providerId,
 			schemaCompare,
 			schemaCompareGenerateScript,
-			schemaCompareGetDefaultOptions
+			schemaCompareGetDefaultOptions,
+			schemaCompareIncludeExcludeNode
 		});
 	}
 }

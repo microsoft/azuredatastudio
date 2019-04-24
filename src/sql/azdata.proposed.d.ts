@@ -1916,6 +1916,7 @@ declare module 'azdata' {
 		schemaCompare(sourceEndpointInfo: SchemaCompareEndpointInfo, targetEndpointInfo: SchemaCompareEndpointInfo, taskExecutionMode: TaskExecutionMode, deploymentOptions: DeploymentOptions): Thenable<SchemaCompareResult>;
 		schemaCompareGenerateScript(operationId: string, targetDatabaseName: string, scriptFilePath: string, taskExecutionMode: TaskExecutionMode): Thenable<ResultStatus>;
 		schemaCompareGetDefaultOptions(): Thenable<SchemaCompareOptionsResult>;
+		schemaCompareIncludeExcludeNode(operationId: string, diffEntry: DiffEntry, IncludeRequest: boolean, taskExecutionMode: TaskExecutionMode): Thenable<ResultStatus>;
 	}
 
 	// Security service interfaces ------------------------------------------------------------------------
