@@ -51,3 +51,4 @@ export const EnvironmentVariable_AZURE_SERVER: string = 'AZURE_SQL';
 export const EnvironmentVariable_AZURE_USERNAME: string = 'AZURE_SQL_USERNAME';
 export const EnvironmentVariable_AZURE_PASSWORD: string = 'AZURE_SQL_PWD';
 export const EnvironmentVariable_PYTHON_PATH: string = 'PYTHON_TEST_PATH';
+
