@@ -1755,159 +1755,167 @@ declare module 'azdata' {
 		taskExecutionMode: TaskExecutionMode;
 	}
 
+	export interface SchemaCompareGetOptionsParams {
+	}
+
+	export interface SchemaCompareOptionsResult extends ResultStatus {
+		defaultDeploymentOptions: DeploymentOptions;
+	}
+
 	export interface DeploymentOptions {
-		IgnoreTableOptions: boolean;
-		IgnoreSemicolonBetweenStatements: boolean;
-		IgnoreRouteLifetime: boolean;
-		IgnoreRoleMembership: boolean;
-		IgnoreQuotedIdentifiers: boolean;
-		IgnorePermissions: boolean;
-		IgnorePartitionSchemes: boolean;
-		IgnoreObjectPlacementOnPartitionScheme: boolean;
-		IgnoreNotForReplication: boolean;
-		IgnoreLoginSids: boolean;
-		IgnoreLockHintsOnIndexes: boolean;
-		IgnoreKeywordCasing: boolean;
-		IgnoreIndexPadding: boolean;
-		IgnoreIndexOptions: boolean;
-		IgnoreIncrement: boolean;
-		IgnoreIdentitySeed: boolean;
-		IgnoreUserSettingsObjects: boolean;
-		IgnoreFullTextCatalogFilePath: boolean;
-		IgnoreWhitespace: boolean;
-		IgnoreWithNocheckOnForeignKeys: boolean;
-		VerifyCollationCompatibility: boolean;
-		UnmodifiableObjectWarnings: boolean;
-		TreatVerificationErrorsAsWarnings: boolean;
-		ScriptRefreshModule: boolean;
-		ScriptNewConstraintValidation: boolean;
-		ScriptFileSize: boolean;
-		ScriptDeployStateChecks: boolean;
-		ScriptDatabaseOptions: boolean;
-		ScriptDatabaseCompatibility: boolean;
-		ScriptDatabaseCollation: boolean;
-		RunDeploymentPlanExecutors: boolean;
-		RegisterDataTierApplication: boolean;
-		PopulateFilesOnFileGroups: boolean;
-		NoAlterStatementsToChangeClrTypes: boolean;
-		IncludeTransactionalScripts: boolean;
-		IncludeCompositeObjects: boolean;
-		AllowUnsafeRowLevelSecurityDataMovement: boolean;
-		IgnoreWithNocheckOnCheckConstraints: boolean;
-		IgnoreFillFactor: boolean;
-		IgnoreFileSize: boolean;
-		IgnoreFilegroupPlacement: boolean;
-		DoNotAlterReplicatedObjects: boolean;
-		DoNotAlterChangeDataCaptureObjects: boolean;
-		DisableAndReenableDdlTriggers: boolean;
-		DeployDatabaseInSingleUserMode: boolean;
-		CreateNewDatabase: boolean;
-		CompareUsingTargetCollation: boolean;
-		CommentOutSetVarDeclarations: boolean;
-		BlockWhenDriftDetected: boolean;
-		BlockOnPossibleDataLoss: boolean;
-		BackupDatabaseBeforeChanges: boolean;
-		AllowIncompatiblePlatform: boolean;
-		AllowDropBlockingAssemblies: boolean;
-		DropConstraintsNotInSource: boolean;
-		DropDmlTriggersNotInSource: boolean;
-		DropExtendedPropertiesNotInSource: boolean;
-		DropIndexesNotInSource: boolean;
-		IgnoreFileAndLogFilePath: boolean;
-		IgnoreExtendedProperties: boolean;
-		IgnoreDmlTriggerState: boolean;
-		IgnoreDmlTriggerOrder: boolean;
-		IgnoreDefaultSchema: boolean;
-		IgnoreDdlTriggerState: boolean;
-		IgnoreDdlTriggerOrder: boolean;
-		IgnoreCryptographicProviderFilePath: boolean;
-		VerifyDeployment: boolean;
-		IgnoreComments: boolean;
-		IgnoreColumnCollation: boolean;
-		IgnoreAuthorizer: boolean;
-		IgnoreAnsiNulls: boolean;
-		GenerateSmartDefaults: boolean;
-		DropStatisticsNotInSource: boolean;
-		DropRoleMembersNotInSource: boolean;
-		DropPermissionsNotInSource: boolean;
-		DropObjectsNotInSource: boolean;
-		IgnoreColumnOrder: boolean;
-		DoNotDropObjectTypes: SchemaObjectType[];
-		ExcludeObjectTypes: SchemaObjectType[];
+		ignoreTableOptions: boolean;
+		ignoreSemicolonBetweenStatements: boolean;
+		ignoreRouteLifetime: boolean;
+		ignoreRoleMembership: boolean;
+		ignoreQuotedIdentifiers: boolean;
+		ignorePermissions: boolean;
+		ignorePartitionSchemes: boolean;
+		ignoreObjectPlacementOnPartitionScheme: boolean;
+		ignoreNotForReplication: boolean;
+		ignoreLoginSids: boolean;
+		ignoreLockHintsOnIndexes: boolean;
+		ignoreKeywordCasing: boolean;
+		ignoreIndexPadding: boolean;
+		ignoreIndexOptions: boolean;
+		ignoreIncrement: boolean;
+		ignoreIdentitySeed: boolean;
+		ignoreUserSettingsObjects: boolean;
+		ignoreFullTextCatalogFilePath: boolean;
+		ignoreWhitespace: boolean;
+		ignoreWithNocheckOnForeignKeys: boolean;
+		verifyCollationCompatibility: boolean;
+		unmodifiableObjectWarnings: boolean;
+		treatVerificationErrorsAsWarnings: boolean;
+		scriptRefreshModule: boolean;
+		scriptNewConstraintValidation: boolean;
+		scriptFileSize: boolean;
+		scriptDeployStateChecks: boolean;
+		scriptDatabaseOptions: boolean;
+		scriptDatabaseCompatibility: boolean;
+		scriptDatabaseCollation: boolean;
+		runDeploymentPlanExecutors: boolean;
+		registerDataTierApplication: boolean;
+		populateFilesOnFileGroups: boolean;
+		noAlterStatementsToChangeClrTypes: boolean;
+		includeTransactionalScripts: boolean;
+		includeCompositeObjects: boolean;
+		allowUnsafeRowLevelSecurityDataMovement: boolean;
+		ignoreWithNocheckOnCheckConstraints: boolean;
+		ignoreFillFactor: boolean;
+		ignoreFileSize: boolean;
+		ignoreFilegroupPlacement: boolean;
+		doNotAlterReplicatedObjects: boolean;
+		doNotAlterChangeDataCaptureObjects: boolean;
+		disableAndReenableDdlTriggers: boolean;
+		deployDatabaseInSingleUserMode: boolean;
+		createNewDatabase: boolean;
+		compareUsingTargetCollation: boolean;
+		commentOutSetVarDeclarations: boolean;
+		blockWhenDriftDetected: boolean;
+		blockOnPossibleDataLoss: boolean;
+		backupDatabaseBeforeChanges: boolean;
+		allowIncompatiblePlatform: boolean;
+		allowDropBlockingAssemblies: boolean;
+		dropConstraintsNotInSource: boolean;
+		dropDmlTriggersNotInSource: boolean;
+		dropExtendedPropertiesNotInSource: boolean;
+		dropIndexesNotInSource: boolean;
+		ignoreFileAndLogFilePath: boolean;
+		ignoreExtendedProperties: boolean;
+		ignoreDmlTriggerState: boolean;
+		ignoreDmlTriggerOrder: boolean;
+		ignoreDefaultSchema: boolean;
+		ignoreDdlTriggerState: boolean;
+		ignoreDdlTriggerOrder: boolean;
+		ignoreCryptographicProviderFilePath: boolean;
+		verifyDeployment: boolean;
+		ignoreComments: boolean;
+		ignoreColumnCollation: boolean;
+		ignoreAuthorizer: boolean;
+		ignoreAnsiNulls: boolean;
+		generateSmartDefaults: boolean;
+		dropStatisticsNotInSource: boolean;
+		dropRoleMembersNotInSource: boolean;
+		dropPermissionsNotInSource: boolean;
+		dropObjectsNotInSource: boolean;
+		ignoreColumnOrder: boolean;
+		doNotDropObjectTypes: SchemaObjectType[];
+		excludeObjectTypes: SchemaObjectType[];
 	}
 
 	export enum SchemaObjectType {
-		Aggregates = 0,
-		ApplicationRoles = 1,
-		Assemblies = 2,
-		AssemblyFiles = 3,
-		AsymmetricKeys = 4,
-		BrokerPriorities = 5,
-		Certificates = 6,
-		ColumnEncryptionKeys = 7,
-		ColumnMasterKeys = 8,
-		Contracts = 9,
-		DatabaseOptions = 10,
-		DatabaseRoles = 11,
-		DatabaseTriggers = 12,
-		Defaults = 13,
-		ExtendedProperties = 14,
-		ExternalDataSources = 15,
-		ExternalFileFormats = 16,
-		ExternalTables = 17,
-		Filegroups = 18,
-		FileTables = 19,
-		FullTextCatalogs = 20,
-		FullTextStoplists = 21,
-		MessageTypes = 22,
-		PartitionFunctions = 23,
-		PartitionSchemes = 24,
-		Permissions = 25,
-		Queues = 26,
-		RemoteServiceBindings = 27,
-		RoleMembership = 28,
-		Rules = 29,
-		ScalarValuedFunctions = 30,
-		SearchPropertyLists = 31,
-		SecurityPolicies = 32,
-		Sequences = 33,
-		Services = 34,
-		Signatures = 35,
-		StoredProcedures = 36,
-		SymmetricKeys = 37,
-		Synonyms = 38,
-		Tables = 39,
-		TableValuedFunctions = 40,
-		UserDefinedDataTypes = 41,
-		UserDefinedTableTypes = 42,
-		ClrUserDefinedTypes = 43,
-		Users = 44,
-		Views = 45,
-		XmlSchemaCollections = 46,
-		Audits = 47,
-		Credentials = 48,
-		CryptographicProviders = 49,
-		DatabaseAuditSpecifications = 50,
-		DatabaseEncryptionKeys = 51,
-		DatabaseScopedCredentials = 52,
-		Endpoints = 53,
-		ErrorMessages = 54,
-		EventNotifications = 55,
-		EventSessions = 56,
-		LinkedServerLogins = 57,
-		LinkedServers = 58,
-		Logins = 59,
-		MasterKeys = 60,
-		Routes = 61,
-		ServerAuditSpecifications = 62,
-		ServerRoleMembership = 63,
-		ServerRoles = 64,
-		ServerTriggers = 65
+		aggregates = 0,
+		applicationRoles = 1,
+		assemblies = 2,
+		assemblyFiles = 3,
+		asymmetricKeys = 4,
+		brokerPriorities = 5,
+		certificates = 6,
+		columnEncryptionKeys = 7,
+		columnMasterKeys = 8,
+		contracts = 9,
+		databaseOptions = 10,
+		databaseRoles = 11,
+		databaseTriggers = 12,
+		defaults = 13,
+		extendedProperties = 14,
+		externalDataSources = 15,
+		externalFileFormats = 16,
+		externalTables = 17,
+		filegroups = 18,
+		fileTables = 19,
+		fullTextCatalogs = 20,
+		fullTextStoplists = 21,
+		messageTypes = 22,
+		partitionFunctions = 23,
+		partitionSchemes = 24,
+		permissions = 25,
+		queues = 26,
+		remoteServiceBindings = 27,
+		roleMembership = 28,
+		rules = 29,
+		scalarValuedFunctions = 30,
+		searchPropertyLists = 31,
+		securityPolicies = 32,
+		sequences = 33,
+		services = 34,
+		signatures = 35,
+		storedProcedures = 36,
+		symmetricKeys = 37,
+		synonyms = 38,
+		tables = 39,
+		tableValuedFunctions = 40,
+		userDefinedDataTypes = 41,
+		userDefinedTableTypes = 42,
+		clrUserDefinedTypes = 43,
+		users = 44,
+		views = 45,
+		xmlSchemaCollections = 46,
+		audits = 47,
+		credentials = 48,
+		cryptographicProviders = 49,
+		databaseAuditSpecifications = 50,
+		databaseEncryptionKeys = 51,
+		databaseScopedCredentials = 52,
+		endpoints = 53,
+		errorMessages = 54,
+		eventNotifications = 55,
+		eventSessions = 56,
+		linkedServerLogins = 57,
+		linkedServers = 58,
+		logins = 59,
+		masterKeys = 60,
+		routes = 61,
+		serverAuditSpecifications = 62,
+		serverRoleMembership = 63,
+		serverRoles = 64,
+		serverTriggers = 65
 	}
 
 	export interface SchemaCompareServicesProvider extends DataProvider {
 		schemaCompare(sourceEndpointInfo: SchemaCompareEndpointInfo, targetEndpointInfo: SchemaCompareEndpointInfo, taskExecutionMode: TaskExecutionMode, deploymentOptions: DeploymentOptions): Thenable<SchemaCompareResult>;
 		schemaCompareGenerateScript(operationId: string, targetDatabaseName: string, scriptFilePath: string, taskExecutionMode: TaskExecutionMode): Thenable<ResultStatus>;
+		schemaCompareGetDefaultOptions(): Thenable<SchemaCompareOptionsResult>;
 	}
 
 	// Security service interfaces ------------------------------------------------------------------------

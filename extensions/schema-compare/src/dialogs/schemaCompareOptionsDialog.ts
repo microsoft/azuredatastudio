@@ -537,232 +537,232 @@ export class SchemaCompareOptionsDialog {
 	private SetSchemaCompareOptionUtil(label: string, value: boolean) {
 		switch (label) {
 			case SchemaCompareOptionsDialog.IgnoreTableOptions:
-				this.deploymentOptions.IgnoreTableOptions = value;
+				this.deploymentOptions.ignoreTableOptions = value;
 				break;
 			case SchemaCompareOptionsDialog.IgnoreSemicolonBetweenStatements:
-				this.deploymentOptions.IgnoreSemicolonBetweenStatements = value;
+				this.deploymentOptions.ignoreSemicolonBetweenStatements = value;
 				break;
 			case SchemaCompareOptionsDialog.IgnoreRouteLifetime:
-				this.deploymentOptions.IgnoreRouteLifetime = value;
+				this.deploymentOptions.ignoreRouteLifetime = value;
 				break;
 			case SchemaCompareOptionsDialog.IgnoreRoleMembership:
-				this.deploymentOptions.IgnoreRoleMembership = value;
+				this.deploymentOptions.ignoreRoleMembership = value;
 				break;
 			case SchemaCompareOptionsDialog.IgnoreQuotedIdentifiers:
-				this.deploymentOptions.IgnoreQuotedIdentifiers = value;
+				this.deploymentOptions.ignoreQuotedIdentifiers = value;
 				break;
 			case SchemaCompareOptionsDialog.IgnorePermissions:
-				this.deploymentOptions.IgnorePermissions = value;
+				this.deploymentOptions.ignorePermissions = value;
 				break;
 			case SchemaCompareOptionsDialog.IgnorePartitionSchemes:
-				this.deploymentOptions.IgnorePartitionSchemes = value;
+				this.deploymentOptions.ignorePartitionSchemes = value;
 				break;
 			case SchemaCompareOptionsDialog.IgnoreObjectPlacementOnPartitionScheme:
-				this.deploymentOptions.IgnoreObjectPlacementOnPartitionScheme = value;
+				this.deploymentOptions.ignoreObjectPlacementOnPartitionScheme = value;
 				break;
 			case SchemaCompareOptionsDialog.IgnoreNotForReplication:
-				this.deploymentOptions.IgnoreNotForReplication = value;
+				this.deploymentOptions.ignoreNotForReplication = value;
 				break;
 			case SchemaCompareOptionsDialog.IgnoreLoginSids:
-				this.deploymentOptions.IgnoreLoginSids = value;
+				this.deploymentOptions.ignoreLoginSids = value;
 				break;
 			case SchemaCompareOptionsDialog.IgnoreLockHintsOnIndexes:
-				this.deploymentOptions.IgnoreLockHintsOnIndexes = value;
+				this.deploymentOptions.ignoreLockHintsOnIndexes = value;
 				break;
 			case SchemaCompareOptionsDialog.IgnoreKeywordCasing:
-				this.deploymentOptions.IgnoreKeywordCasing = value;
+				this.deploymentOptions.ignoreKeywordCasing = value;
 				break;
 			case SchemaCompareOptionsDialog.IgnoreIndexPadding:
-				this.deploymentOptions.IgnoreIndexPadding = value;
+				this.deploymentOptions.ignoreIndexPadding = value;
 				break;
 			case SchemaCompareOptionsDialog.IgnoreIndexOptions:
-				this.deploymentOptions.IgnoreIndexOptions = value;
+				this.deploymentOptions.ignoreIndexOptions = value;
 				break;
 			case SchemaCompareOptionsDialog.IgnoreIncrement:
-				this.deploymentOptions.IgnoreIncrement = value;
+				this.deploymentOptions.ignoreIncrement = value;
 				break;
 			case SchemaCompareOptionsDialog.IgnoreIdentitySeed:
-				this.deploymentOptions.IgnoreIdentitySeed = value;
+				this.deploymentOptions.ignoreIdentitySeed = value;
 				break;
 			case SchemaCompareOptionsDialog.IgnoreUserSettingsObjects:
-				this.deploymentOptions.IgnoreUserSettingsObjects = value;
+				this.deploymentOptions.ignoreUserSettingsObjects = value;
 				break;
 			case SchemaCompareOptionsDialog.IgnoreFullTextCatalogFilePath:
-				this.deploymentOptions.IgnoreFullTextCatalogFilePath = value;
+				this.deploymentOptions.ignoreFullTextCatalogFilePath = value;
 				break;
 			case SchemaCompareOptionsDialog.IgnoreWhitespace:
-				this.deploymentOptions.IgnoreWhitespace = value;
+				this.deploymentOptions.ignoreWhitespace = value;
 				break;
 			case SchemaCompareOptionsDialog.IgnoreWithNocheckOnForeignKeys:
-				this.deploymentOptions.IgnoreWithNocheckOnForeignKeys = value;
+				this.deploymentOptions.ignoreWithNocheckOnForeignKeys = value;
 				break;
 			case SchemaCompareOptionsDialog.VerifyCollationCompatibility:
-				this.deploymentOptions.VerifyCollationCompatibility = value;
+				this.deploymentOptions.verifyCollationCompatibility = value;
 				break;
 			case SchemaCompareOptionsDialog.UnmodifiableObjectWarnings:
-				this.deploymentOptions.UnmodifiableObjectWarnings = value;
+				this.deploymentOptions.unmodifiableObjectWarnings = value;
 				break;
 			case SchemaCompareOptionsDialog.TreatVerificationErrorsAsWarnings:
-				this.deploymentOptions.TreatVerificationErrorsAsWarnings = value;
+				this.deploymentOptions.treatVerificationErrorsAsWarnings = value;
 				break;
 			case SchemaCompareOptionsDialog.ScriptRefreshModule:
-				this.deploymentOptions.ScriptRefreshModule = value;
+				this.deploymentOptions.scriptRefreshModule = value;
 				break;
 			case SchemaCompareOptionsDialog.ScriptNewConstraintValidation:
-				this.deploymentOptions.ScriptNewConstraintValidation = value;
+				this.deploymentOptions.scriptNewConstraintValidation = value;
 				break;
 			case SchemaCompareOptionsDialog.ScriptFileSize:
-				this.deploymentOptions.ScriptFileSize = value;
+				this.deploymentOptions.scriptFileSize = value;
 				break;
 			case SchemaCompareOptionsDialog.ScriptDeployStateChecks:
-				this.deploymentOptions.ScriptDeployStateChecks = value;
+				this.deploymentOptions.scriptDeployStateChecks = value;
 				break;
 			case SchemaCompareOptionsDialog.ScriptDatabaseOptions:
-				this.deploymentOptions.ScriptDatabaseOptions = value;
+				this.deploymentOptions.scriptDatabaseOptions = value;
 				break;
 			case SchemaCompareOptionsDialog.ScriptDatabaseCompatibility:
-				this.deploymentOptions.ScriptDatabaseCompatibility = value;
+				this.deploymentOptions.scriptDatabaseCompatibility = value;
 				break;
 			case SchemaCompareOptionsDialog.ScriptDatabaseCollation:
-				this.deploymentOptions.ScriptDatabaseCollation = value;
+				this.deploymentOptions.scriptDatabaseCollation = value;
 				break;
 			case SchemaCompareOptionsDialog.RunDeploymentPlanExecutors:
-				this.deploymentOptions.RunDeploymentPlanExecutors = value;
+				this.deploymentOptions.runDeploymentPlanExecutors = value;
 				break;
 			case SchemaCompareOptionsDialog.RegisterDataTierApplication:
-				this.deploymentOptions.RegisterDataTierApplication = value;
+				this.deploymentOptions.registerDataTierApplication = value;
 				break;
 			case SchemaCompareOptionsDialog.PopulateFilesOnFileGroups:
-				this.deploymentOptions.PopulateFilesOnFileGroups = value;
+				this.deploymentOptions.populateFilesOnFileGroups = value;
 				break;
 			case SchemaCompareOptionsDialog.NoAlterStatementsToChangeClrTypes:
-				this.deploymentOptions.NoAlterStatementsToChangeClrTypes = value;
+				this.deploymentOptions.noAlterStatementsToChangeClrTypes = value;
 				break;
 			case SchemaCompareOptionsDialog.IncludeTransactionalScripts:
-				this.deploymentOptions.IncludeTransactionalScripts = value;
+				this.deploymentOptions.includeTransactionalScripts = value;
 				break;
 			case SchemaCompareOptionsDialog.IncludeCompositeObjects:
-				this.deploymentOptions.IncludeCompositeObjects = value;
+				this.deploymentOptions.includeCompositeObjects = value;
 				break;
 			case SchemaCompareOptionsDialog.AllowUnsafeRowLevelSecurityDataMovement:
-				this.deploymentOptions.AllowUnsafeRowLevelSecurityDataMovement = value;
+				this.deploymentOptions.allowUnsafeRowLevelSecurityDataMovement = value;
 				break;
 			case SchemaCompareOptionsDialog.IgnoreWithNocheckOnCheckConstraints:
-				this.deploymentOptions.IgnoreWithNocheckOnCheckConstraints = value;
+				this.deploymentOptions.ignoreWithNocheckOnCheckConstraints = value;
 				break;
 			case SchemaCompareOptionsDialog.IgnoreFillFactor:
-				this.deploymentOptions.IgnoreFillFactor = value;
+				this.deploymentOptions.ignoreFillFactor = value;
 				break;
 			case SchemaCompareOptionsDialog.IgnoreFileSize:
-				this.deploymentOptions.IgnoreFileSize = value;
+				this.deploymentOptions.ignoreFileSize = value;
 				break;
 			case SchemaCompareOptionsDialog.IgnoreFilegroupPlacement:
-				this.deploymentOptions.IgnoreFilegroupPlacement = value;
+				this.deploymentOptions.ignoreFilegroupPlacement = value;
 				break;
 			case SchemaCompareOptionsDialog.DoNotAlterReplicatedObjects:
-				this.deploymentOptions.DoNotAlterReplicatedObjects = value;
+				this.deploymentOptions.doNotAlterReplicatedObjects = value;
 				break;
 			case SchemaCompareOptionsDialog.DoNotAlterChangeDataCaptureObjects:
-				this.deploymentOptions.DoNotAlterChangeDataCaptureObjects = value;
+				this.deploymentOptions.doNotAlterChangeDataCaptureObjects = value;
 				break;
 			case SchemaCompareOptionsDialog.DisableAndReenableDdlTriggers:
-				this.deploymentOptions.DisableAndReenableDdlTriggers = value;
+				this.deploymentOptions.disableAndReenableDdlTriggers = value;
 				break;
 			case SchemaCompareOptionsDialog.DeployDatabaseInSingleUserMode:
-				this.deploymentOptions.DeployDatabaseInSingleUserMode = value;
+				this.deploymentOptions.deployDatabaseInSingleUserMode = value;
 				break;
 			case SchemaCompareOptionsDialog.CreateNewDatabase:
-				this.deploymentOptions.CreateNewDatabase = value;
+				this.deploymentOptions.createNewDatabase = value;
 				break;
 			case SchemaCompareOptionsDialog.CompareUsingTargetCollation:
-				this.deploymentOptions.CompareUsingTargetCollation = value;
+				this.deploymentOptions.compareUsingTargetCollation = value;
 				break;
 			case SchemaCompareOptionsDialog.CommentOutSetVarDeclarations:
-				this.deploymentOptions.CommentOutSetVarDeclarations = value;
+				this.deploymentOptions.commentOutSetVarDeclarations = value;
 				break;
 			case SchemaCompareOptionsDialog.BlockWhenDriftDetected:
-				this.deploymentOptions.BlockWhenDriftDetected = value;
+				this.deploymentOptions.blockWhenDriftDetected = value;
 				break;
 			case SchemaCompareOptionsDialog.BlockOnPossibleDataLoss:
-				this.deploymentOptions.BlockOnPossibleDataLoss = value;
+				this.deploymentOptions.blockOnPossibleDataLoss = value;
 				break;
 			case SchemaCompareOptionsDialog.BackupDatabaseBeforeChanges:
-				this.deploymentOptions.BackupDatabaseBeforeChanges = value;
+				this.deploymentOptions.backupDatabaseBeforeChanges = value;
 				break;
 			case SchemaCompareOptionsDialog.AllowIncompatiblePlatform:
-				this.deploymentOptions.AllowIncompatiblePlatform = value;
+				this.deploymentOptions.allowIncompatiblePlatform = value;
 				break;
 			case SchemaCompareOptionsDialog.AllowDropBlockingAssemblies:
-				this.deploymentOptions.AllowDropBlockingAssemblies = value;
+				this.deploymentOptions.allowDropBlockingAssemblies = value;
 				break;
 			case SchemaCompareOptionsDialog.DropConstraintsNotInSource:
-				this.deploymentOptions.DropConstraintsNotInSource = value;
+				this.deploymentOptions.dropConstraintsNotInSource = value;
 				break;
 			case SchemaCompareOptionsDialog.DropDmlTriggersNotInSource:
-				this.deploymentOptions.DropDmlTriggersNotInSource = value;
+				this.deploymentOptions.dropDmlTriggersNotInSource = value;
 				break;
 			case SchemaCompareOptionsDialog.DropExtendedPropertiesNotInSource:
-				this.deploymentOptions.DropExtendedPropertiesNotInSource = value;
+				this.deploymentOptions.dropExtendedPropertiesNotInSource = value;
 				break;
 			case SchemaCompareOptionsDialog.DropIndexesNotInSource:
-				this.deploymentOptions.DropIndexesNotInSource = value;
+				this.deploymentOptions.dropIndexesNotInSource = value;
 				break;
 			case SchemaCompareOptionsDialog.IgnoreFileAndLogFilePath:
-				this.deploymentOptions.IgnoreFileAndLogFilePath = value;
+				this.deploymentOptions.ignoreFileAndLogFilePath = value;
 				break;
 			case SchemaCompareOptionsDialog.IgnoreExtendedProperties:
-				this.deploymentOptions.IgnoreExtendedProperties = value;
+				this.deploymentOptions.ignoreExtendedProperties = value;
 				break;
 			case SchemaCompareOptionsDialog.IgnoreDmlTriggerState:
-				this.deploymentOptions.IgnoreDmlTriggerState = value;
+				this.deploymentOptions.ignoreDmlTriggerState = value;
 				break;
 			case SchemaCompareOptionsDialog.IgnoreDmlTriggerOrder:
-				this.deploymentOptions.IgnoreDmlTriggerOrder = value;
+				this.deploymentOptions.ignoreDmlTriggerOrder = value;
 				break;
 			case SchemaCompareOptionsDialog.IgnoreDefaultSchema:
-				this.deploymentOptions.IgnoreDefaultSchema = value;
+				this.deploymentOptions.ignoreDefaultSchema = value;
 				break;
 			case SchemaCompareOptionsDialog.IgnoreDdlTriggerState:
-				this.deploymentOptions.IgnoreDdlTriggerState = value;
+				this.deploymentOptions.ignoreDdlTriggerState = value;
 				break;
 			case SchemaCompareOptionsDialog.IgnoreDdlTriggerOrder:
-				this.deploymentOptions.IgnoreDdlTriggerOrder = value;
+				this.deploymentOptions.ignoreDdlTriggerOrder = value;
 				break;
 			case SchemaCompareOptionsDialog.IgnoreCryptographicProviderFilePath:
-				this.deploymentOptions.IgnoreCryptographicProviderFilePath = value;
+				this.deploymentOptions.ignoreCryptographicProviderFilePath = value;
 				break;
 			case SchemaCompareOptionsDialog.VerifyDeployment:
-				this.deploymentOptions.VerifyDeployment = value;
+				this.deploymentOptions.verifyDeployment = value;
 				break;
 			case SchemaCompareOptionsDialog.IgnoreComments:
-				this.deploymentOptions.IgnoreComments = value;
+				this.deploymentOptions.ignoreComments = value;
 				break;
 			case SchemaCompareOptionsDialog.IgnoreColumnCollation:
-				this.deploymentOptions.IgnoreColumnCollation = value;
+				this.deploymentOptions.ignoreColumnCollation = value;
 				break;
 			case SchemaCompareOptionsDialog.IgnoreAuthorizer:
-				this.deploymentOptions.IgnoreAuthorizer = value;
+				this.deploymentOptions.ignoreAuthorizer = value;
 				break;
 			case SchemaCompareOptionsDialog.IgnoreAnsiNulls:
-				this.deploymentOptions.IgnoreAnsiNulls = value;
+				this.deploymentOptions.ignoreAnsiNulls = value;
 				break;
 			case SchemaCompareOptionsDialog.GenerateSmartDefaults:
-				this.deploymentOptions.GenerateSmartDefaults = value;
+				this.deploymentOptions.generateSmartDefaults = value;
 				break;
 			case SchemaCompareOptionsDialog.DropStatisticsNotInSource:
-				this.deploymentOptions.DropStatisticsNotInSource = value;
+				this.deploymentOptions.dropStatisticsNotInSource = value;
 				break;
 			case SchemaCompareOptionsDialog.DropRoleMembersNotInSource:
-				this.deploymentOptions.DropRoleMembersNotInSource = value;
+				this.deploymentOptions.dropRoleMembersNotInSource = value;
 				break;
 			case SchemaCompareOptionsDialog.DropPermissionsNotInSource:
-				this.deploymentOptions.DropPermissionsNotInSource = value;
+				this.deploymentOptions.dropPermissionsNotInSource = value;
 				break;
 			case SchemaCompareOptionsDialog.DropObjectsNotInSource:
-				this.deploymentOptions.DropObjectsNotInSource = value;
+				this.deploymentOptions.dropObjectsNotInSource = value;
 				break;
 			case SchemaCompareOptionsDialog.IgnoreColumnOrder:
-				this.deploymentOptions.IgnoreColumnOrder = value;
+				this.deploymentOptions.ignoreColumnOrder = value;
 				break;
 		}
 	}
@@ -770,232 +770,232 @@ export class SchemaCompareOptionsDialog {
 	private GetSchemaCompareOptionUtil(label): boolean {
 		switch (label) {
 			case SchemaCompareOptionsDialog.IgnoreTableOptions:
-				return this.deploymentOptions.IgnoreTableOptions;
+				return this.deploymentOptions.ignoreTableOptions;
 
 			case SchemaCompareOptionsDialog.IgnoreSemicolonBetweenStatements:
-				return this.deploymentOptions.IgnoreSemicolonBetweenStatements;
+				return this.deploymentOptions.ignoreSemicolonBetweenStatements;
 
 			case SchemaCompareOptionsDialog.IgnoreRouteLifetime:
-				return this.deploymentOptions.IgnoreRouteLifetime;
+				return this.deploymentOptions.ignoreRouteLifetime;
 
 			case SchemaCompareOptionsDialog.IgnoreRoleMembership:
-				return this.deploymentOptions.IgnoreRoleMembership;
+				return this.deploymentOptions.ignoreRoleMembership;
 
 			case SchemaCompareOptionsDialog.IgnoreQuotedIdentifiers:
-				return this.deploymentOptions.IgnoreQuotedIdentifiers;
+				return this.deploymentOptions.ignoreQuotedIdentifiers;
 
 			case SchemaCompareOptionsDialog.IgnorePermissions:
-				return this.deploymentOptions.IgnorePermissions;
+				return this.deploymentOptions.ignorePermissions;
 
 			case SchemaCompareOptionsDialog.IgnorePartitionSchemes:
-				return this.deploymentOptions.IgnorePartitionSchemes;
+				return this.deploymentOptions.ignorePartitionSchemes;
 
 			case SchemaCompareOptionsDialog.IgnoreObjectPlacementOnPartitionScheme:
-				return this.deploymentOptions.IgnoreObjectPlacementOnPartitionScheme;
+				return this.deploymentOptions.ignoreObjectPlacementOnPartitionScheme;
 
 			case SchemaCompareOptionsDialog.IgnoreNotForReplication:
-				return this.deploymentOptions.IgnoreNotForReplication;
+				return this.deploymentOptions.ignoreNotForReplication;
 
 			case SchemaCompareOptionsDialog.IgnoreLoginSids:
-				return this.deploymentOptions.IgnoreLoginSids;
+				return this.deploymentOptions.ignoreLoginSids;
 
 			case SchemaCompareOptionsDialog.IgnoreLockHintsOnIndexes:
-				return this.deploymentOptions.IgnoreLockHintsOnIndexes;
+				return this.deploymentOptions.ignoreLockHintsOnIndexes;
 
 			case SchemaCompareOptionsDialog.IgnoreKeywordCasing:
-				return this.deploymentOptions.IgnoreKeywordCasing;
+				return this.deploymentOptions.ignoreKeywordCasing;
 
 			case SchemaCompareOptionsDialog.IgnoreIndexPadding:
-				return this.deploymentOptions.IgnoreIndexPadding;
+				return this.deploymentOptions.ignoreIndexPadding;
 
 			case SchemaCompareOptionsDialog.IgnoreIndexOptions:
-				return this.deploymentOptions.IgnoreIndexOptions;
+				return this.deploymentOptions.ignoreIndexOptions;
 
 			case SchemaCompareOptionsDialog.IgnoreIncrement:
-				return this.deploymentOptions.IgnoreIncrement;
+				return this.deploymentOptions.ignoreIncrement;
 
 			case SchemaCompareOptionsDialog.IgnoreIdentitySeed:
-				return this.deploymentOptions.IgnoreIdentitySeed;
+				return this.deploymentOptions.ignoreIdentitySeed;
 
 			case SchemaCompareOptionsDialog.IgnoreUserSettingsObjects:
-				return this.deploymentOptions.IgnoreUserSettingsObjects;
+				return this.deploymentOptions.ignoreUserSettingsObjects;
 
 			case SchemaCompareOptionsDialog.IgnoreFullTextCatalogFilePath:
-				return this.deploymentOptions.IgnoreFullTextCatalogFilePath;
+				return this.deploymentOptions.ignoreFullTextCatalogFilePath;
 
 			case SchemaCompareOptionsDialog.IgnoreWhitespace:
-				return this.deploymentOptions.IgnoreWhitespace;
+				return this.deploymentOptions.ignoreWhitespace;
 
 			case SchemaCompareOptionsDialog.IgnoreWithNocheckOnForeignKeys:
-				return this.deploymentOptions.IgnoreWithNocheckOnForeignKeys;
+				return this.deploymentOptions.ignoreWithNocheckOnForeignKeys;
 
 			case SchemaCompareOptionsDialog.VerifyCollationCompatibility:
-				return this.deploymentOptions.VerifyCollationCompatibility;
+				return this.deploymentOptions.verifyCollationCompatibility;
 
 			case SchemaCompareOptionsDialog.UnmodifiableObjectWarnings:
-				return this.deploymentOptions.UnmodifiableObjectWarnings;
+				return this.deploymentOptions.unmodifiableObjectWarnings;
 
 			case SchemaCompareOptionsDialog.TreatVerificationErrorsAsWarnings:
-				return this.deploymentOptions.TreatVerificationErrorsAsWarnings;
+				return this.deploymentOptions.treatVerificationErrorsAsWarnings;
 
 			case SchemaCompareOptionsDialog.ScriptRefreshModule:
-				return this.deploymentOptions.ScriptRefreshModule;
+				return this.deploymentOptions.scriptRefreshModule;
 
 			case SchemaCompareOptionsDialog.ScriptNewConstraintValidation:
-				return this.deploymentOptions.ScriptNewConstraintValidation;
+				return this.deploymentOptions.scriptNewConstraintValidation;
 
 			case SchemaCompareOptionsDialog.ScriptFileSize:
-				return this.deploymentOptions.ScriptFileSize;
+				return this.deploymentOptions.scriptFileSize;
 
 			case SchemaCompareOptionsDialog.ScriptDeployStateChecks:
-				return this.deploymentOptions.ScriptDeployStateChecks;
+				return this.deploymentOptions.scriptDeployStateChecks;
 
 			case SchemaCompareOptionsDialog.ScriptDatabaseOptions:
-				return this.deploymentOptions.ScriptDatabaseOptions;
+				return this.deploymentOptions.scriptDatabaseOptions;
 
 			case SchemaCompareOptionsDialog.ScriptDatabaseCompatibility:
-				return this.deploymentOptions.ScriptDatabaseCompatibility;
+				return this.deploymentOptions.scriptDatabaseCompatibility;
 
 			case SchemaCompareOptionsDialog.ScriptDatabaseCollation:
-				return this.deploymentOptions.ScriptDatabaseCollation;
+				return this.deploymentOptions.scriptDatabaseCollation;
 
 			case SchemaCompareOptionsDialog.RunDeploymentPlanExecutors:
-				return this.deploymentOptions.RunDeploymentPlanExecutors;
+				return this.deploymentOptions.runDeploymentPlanExecutors;
 
 			case SchemaCompareOptionsDialog.RegisterDataTierApplication:
-				return this.deploymentOptions.RegisterDataTierApplication;
+				return this.deploymentOptions.registerDataTierApplication;
 
 			case SchemaCompareOptionsDialog.PopulateFilesOnFileGroups:
-				return this.deploymentOptions.PopulateFilesOnFileGroups;
+				return this.deploymentOptions.populateFilesOnFileGroups;
 
 			case SchemaCompareOptionsDialog.NoAlterStatementsToChangeClrTypes:
-				return this.deploymentOptions.NoAlterStatementsToChangeClrTypes;
+				return this.deploymentOptions.noAlterStatementsToChangeClrTypes;
 
 			case SchemaCompareOptionsDialog.IncludeTransactionalScripts:
-				return this.deploymentOptions.IncludeTransactionalScripts;
+				return this.deploymentOptions.includeTransactionalScripts;
 
 			case SchemaCompareOptionsDialog.IncludeCompositeObjects:
-				return this.deploymentOptions.IncludeCompositeObjects;
+				return this.deploymentOptions.includeCompositeObjects;
 
 			case SchemaCompareOptionsDialog.AllowUnsafeRowLevelSecurityDataMovement:
-				return this.deploymentOptions.AllowUnsafeRowLevelSecurityDataMovement;
+				return this.deploymentOptions.allowUnsafeRowLevelSecurityDataMovement;
 
 			case SchemaCompareOptionsDialog.IgnoreWithNocheckOnCheckConstraints:
-				return this.deploymentOptions.IgnoreWithNocheckOnCheckConstraints;
+				return this.deploymentOptions.ignoreWithNocheckOnCheckConstraints;
 
 			case SchemaCompareOptionsDialog.IgnoreFillFactor:
-				return this.deploymentOptions.IgnoreFillFactor;
+				return this.deploymentOptions.ignoreFillFactor;
 
 			case SchemaCompareOptionsDialog.IgnoreFileSize:
-				return this.deploymentOptions.IgnoreFileSize;
+				return this.deploymentOptions.ignoreFileSize;
 
 			case SchemaCompareOptionsDialog.IgnoreFilegroupPlacement:
-				return this.deploymentOptions.IgnoreFilegroupPlacement;
+				return this.deploymentOptions.ignoreFilegroupPlacement;
 
 			case SchemaCompareOptionsDialog.DoNotAlterReplicatedObjects:
-				return this.deploymentOptions.DoNotAlterReplicatedObjects;
+				return this.deploymentOptions.doNotAlterReplicatedObjects;
 
 			case SchemaCompareOptionsDialog.DoNotAlterChangeDataCaptureObjects:
-				return this.deploymentOptions.DoNotAlterChangeDataCaptureObjects;
+				return this.deploymentOptions.doNotAlterChangeDataCaptureObjects;
 
 			case SchemaCompareOptionsDialog.DisableAndReenableDdlTriggers:
-				return this.deploymentOptions.DisableAndReenableDdlTriggers;
+				return this.deploymentOptions.disableAndReenableDdlTriggers;
 
 			case SchemaCompareOptionsDialog.DeployDatabaseInSingleUserMode:
-				return this.deploymentOptions.DeployDatabaseInSingleUserMode;
+				return this.deploymentOptions.deployDatabaseInSingleUserMode;
 
 			case SchemaCompareOptionsDialog.CreateNewDatabase:
-				return this.deploymentOptions.CreateNewDatabase;
+				return this.deploymentOptions.createNewDatabase;
 
 			case SchemaCompareOptionsDialog.CompareUsingTargetCollation:
-				return this.deploymentOptions.CompareUsingTargetCollation;
+				return this.deploymentOptions.compareUsingTargetCollation;
 
 			case SchemaCompareOptionsDialog.CommentOutSetVarDeclarations:
-				return this.deploymentOptions.CommentOutSetVarDeclarations;
+				return this.deploymentOptions.commentOutSetVarDeclarations;
 
 			case SchemaCompareOptionsDialog.BlockWhenDriftDetected:
-				return this.deploymentOptions.BlockWhenDriftDetected;
+				return this.deploymentOptions.blockWhenDriftDetected;
 
 			case SchemaCompareOptionsDialog.BlockOnPossibleDataLoss:
-				return this.deploymentOptions.BlockOnPossibleDataLoss;
+				return this.deploymentOptions.blockOnPossibleDataLoss;
 
 			case SchemaCompareOptionsDialog.BackupDatabaseBeforeChanges:
-				return this.deploymentOptions.BackupDatabaseBeforeChanges;
+				return this.deploymentOptions.backupDatabaseBeforeChanges;
 
 			case SchemaCompareOptionsDialog.AllowIncompatiblePlatform:
-				return this.deploymentOptions.AllowIncompatiblePlatform;
+				return this.deploymentOptions.allowIncompatiblePlatform;
 
 			case SchemaCompareOptionsDialog.AllowDropBlockingAssemblies:
-				return this.deploymentOptions.AllowDropBlockingAssemblies;
+				return this.deploymentOptions.allowDropBlockingAssemblies;
 
 			case SchemaCompareOptionsDialog.DropConstraintsNotInSource:
-				return this.deploymentOptions.DropConstraintsNotInSource;
+				return this.deploymentOptions.dropConstraintsNotInSource;
 
 			case SchemaCompareOptionsDialog.DropDmlTriggersNotInSource:
-				return this.deploymentOptions.DropDmlTriggersNotInSource;
+				return this.deploymentOptions.dropDmlTriggersNotInSource;
 
 			case SchemaCompareOptionsDialog.DropExtendedPropertiesNotInSource:
-				return this.deploymentOptions.DropExtendedPropertiesNotInSource;
+				return this.deploymentOptions.dropExtendedPropertiesNotInSource;
 
 			case SchemaCompareOptionsDialog.DropIndexesNotInSource:
-				return this.deploymentOptions.DropIndexesNotInSource;
+				return this.deploymentOptions.dropIndexesNotInSource;
 
 			case SchemaCompareOptionsDialog.IgnoreFileAndLogFilePath:
-				return this.deploymentOptions.IgnoreFileAndLogFilePath;
+				return this.deploymentOptions.ignoreFileAndLogFilePath;
 
 			case SchemaCompareOptionsDialog.IgnoreExtendedProperties:
-				return this.deploymentOptions.IgnoreExtendedProperties;
+				return this.deploymentOptions.ignoreExtendedProperties;
 
 			case SchemaCompareOptionsDialog.IgnoreDmlTriggerState:
-				return this.deploymentOptions.IgnoreDmlTriggerState;
+				return this.deploymentOptions.ignoreDmlTriggerState;
 
 			case SchemaCompareOptionsDialog.IgnoreDmlTriggerOrder:
-				return this.deploymentOptions.IgnoreDmlTriggerOrder;
+				return this.deploymentOptions.ignoreDmlTriggerOrder;
 
 			case SchemaCompareOptionsDialog.IgnoreDefaultSchema:
-				return this.deploymentOptions.IgnoreDefaultSchema;
+				return this.deploymentOptions.ignoreDefaultSchema;
 
 			case SchemaCompareOptionsDialog.IgnoreDdlTriggerState:
-				return this.deploymentOptions.IgnoreDdlTriggerState;
+				return this.deploymentOptions.ignoreDdlTriggerState;
 
 			case SchemaCompareOptionsDialog.IgnoreDdlTriggerOrder:
-				return this.deploymentOptions.IgnoreDdlTriggerOrder;
+				return this.deploymentOptions.ignoreDdlTriggerOrder;
 
 			case SchemaCompareOptionsDialog.IgnoreCryptographicProviderFilePath:
-				return this.deploymentOptions.IgnoreCryptographicProviderFilePath;
+				return this.deploymentOptions.ignoreCryptographicProviderFilePath;
 
 			case SchemaCompareOptionsDialog.VerifyDeployment:
-				return this.deploymentOptions.VerifyDeployment;
+				return this.deploymentOptions.verifyDeployment;
 
 			case SchemaCompareOptionsDialog.IgnoreComments:
-				return this.deploymentOptions.IgnoreComments;
+				return this.deploymentOptions.ignoreComments;
 
 			case SchemaCompareOptionsDialog.IgnoreColumnCollation:
-				return this.deploymentOptions.IgnoreColumnCollation;
+				return this.deploymentOptions.ignoreColumnCollation;
 
 			case SchemaCompareOptionsDialog.IgnoreAuthorizer:
-				return this.deploymentOptions.IgnoreAuthorizer;
+				return this.deploymentOptions.ignoreAuthorizer;
 
 			case SchemaCompareOptionsDialog.IgnoreAnsiNulls:
-				return this.deploymentOptions.IgnoreAnsiNulls;
+				return this.deploymentOptions.ignoreAnsiNulls;
 
 			case SchemaCompareOptionsDialog.GenerateSmartDefaults:
-				return this.deploymentOptions.GenerateSmartDefaults;
+				return this.deploymentOptions.generateSmartDefaults;
 
 			case SchemaCompareOptionsDialog.DropStatisticsNotInSource:
-				return this.deploymentOptions.DropStatisticsNotInSource;
+				return this.deploymentOptions.dropStatisticsNotInSource;
 
 			case SchemaCompareOptionsDialog.DropRoleMembersNotInSource:
-				return this.deploymentOptions.DropRoleMembersNotInSource;
+				return this.deploymentOptions.dropRoleMembersNotInSource;
 
 			case SchemaCompareOptionsDialog.DropPermissionsNotInSource:
-				return this.deploymentOptions.DropPermissionsNotInSource;
+				return this.deploymentOptions.dropPermissionsNotInSource;
 
 			case SchemaCompareOptionsDialog.DropObjectsNotInSource:
-				return this.deploymentOptions.DropObjectsNotInSource;
+				return this.deploymentOptions.dropObjectsNotInSource;
 
 			case SchemaCompareOptionsDialog.IgnoreColumnOrder:
-				return this.deploymentOptions.IgnoreColumnOrder;
+				return this.deploymentOptions.ignoreColumnOrder;
 		}
 		return false;
 	}
@@ -1004,143 +1004,143 @@ export class SchemaCompareOptionsDialog {
 		this.objectTypesCheckBoxes.forEach(box => {
 			this.SetSchemaCompareIncludedObjectsUtil(box.label, box.checked);
 		});
-		this.deploymentOptions.ExcludeObjectTypes = this.excludedObjectTypes;
+		this.deploymentOptions.excludeObjectTypes = this.excludedObjectTypes;
 	}
 
 	private GetSchemaCompareIncludedObjectsUtil(label): boolean {
 		switch (label) {
 			case SchemaCompareOptionsDialog.Aggregates:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.Aggregates)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.aggregates)) ? false : true;
 			case SchemaCompareOptionsDialog.ApplicationRoles:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.ApplicationRoles)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.applicationRoles)) ? false : true;
 			case SchemaCompareOptionsDialog.Assemblies:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.Assemblies)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.assemblies)) ? false : true;
 			case SchemaCompareOptionsDialog.AssemblyFiles:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.AssemblyFiles)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.assemblyFiles)) ? false : true;
 			case SchemaCompareOptionsDialog.AsymmetricKeys:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.AsymmetricKeys)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.asymmetricKeys)) ? false : true;
 			case SchemaCompareOptionsDialog.BrokerPriorities:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.BrokerPriorities)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.brokerPriorities)) ? false : true;
 			case SchemaCompareOptionsDialog.Certificates:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.Certificates)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.certificates)) ? false : true;
 			case SchemaCompareOptionsDialog.ColumnEncryptionKeys:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.ColumnEncryptionKeys)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.columnEncryptionKeys)) ? false : true;
 			case SchemaCompareOptionsDialog.ColumnMasterKeys:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.ColumnMasterKeys)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.columnMasterKeys)) ? false : true;
 			case SchemaCompareOptionsDialog.Contracts:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.Contracts)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.contracts)) ? false : true;
 			case SchemaCompareOptionsDialog.DatabaseOptions:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.DatabaseOptions)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.databaseOptions)) ? false : true;
 			case SchemaCompareOptionsDialog.DatabaseRoles:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.DatabaseRoles)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.databaseRoles)) ? false : true;
 			case SchemaCompareOptionsDialog.DatabaseTriggers:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.DatabaseTriggers)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.databaseTriggers)) ? false : true;
 			case SchemaCompareOptionsDialog.Defaults:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.Defaults)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.defaults)) ? false : true;
 			case SchemaCompareOptionsDialog.ExtendedProperties:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.ExtendedProperties)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.extendedProperties)) ? false : true;
 			case SchemaCompareOptionsDialog.ExternalDataSources:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.ExternalDataSources)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.externalDataSources)) ? false : true;
 			case SchemaCompareOptionsDialog.ExternalFileFormats:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.ExternalFileFormats)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.externalFileFormats)) ? false : true;
 			case SchemaCompareOptionsDialog.ExternalTables:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.ExternalTables)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.externalTables)) ? false : true;
 			case SchemaCompareOptionsDialog.Filegroups:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.Filegroups)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.filegroups)) ? false : true;
 			case SchemaCompareOptionsDialog.FileTables:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.FileTables)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.fileTables)) ? false : true;
 			case SchemaCompareOptionsDialog.FullTextCatalogs:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.FullTextCatalogs)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.fullTextCatalogs)) ? false : true;
 			case SchemaCompareOptionsDialog.FullTextStoplists:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.FullTextStoplists)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.fullTextStoplists)) ? false : true;
 			case SchemaCompareOptionsDialog.MessageTypes:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.MessageTypes)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.messageTypes)) ? false : true;
 			case SchemaCompareOptionsDialog.PartitionFunctions:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.PartitionFunctions)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.partitionFunctions)) ? false : true;
 			case SchemaCompareOptionsDialog.PartitionSchemes:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.PartitionSchemes)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.partitionSchemes)) ? false : true;
 			case SchemaCompareOptionsDialog.Permissions:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.Permissions)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.permissions)) ? false : true;
 			case SchemaCompareOptionsDialog.Queues:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.Queues)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.queues)) ? false : true;
 			case SchemaCompareOptionsDialog.RemoteServiceBindings:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.RemoteServiceBindings)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.remoteServiceBindings)) ? false : true;
 			case SchemaCompareOptionsDialog.RoleMembership:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.RoleMembership)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.roleMembership)) ? false : true;
 			case SchemaCompareOptionsDialog.Rules:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.Rules)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.rules)) ? false : true;
 			case SchemaCompareOptionsDialog.ScalarValuedFunctions:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.ScalarValuedFunctions)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.scalarValuedFunctions)) ? false : true;
 			case SchemaCompareOptionsDialog.SearchPropertyLists:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.SearchPropertyLists)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.searchPropertyLists)) ? false : true;
 			case SchemaCompareOptionsDialog.SecurityPolicies:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.SecurityPolicies)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.securityPolicies)) ? false : true;
 			case SchemaCompareOptionsDialog.Sequences:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.Sequences)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.sequences)) ? false : true;
 			case SchemaCompareOptionsDialog.Services:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.Services)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.services)) ? false : true;
 			case SchemaCompareOptionsDialog.Signatures:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.Signatures)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.signatures)) ? false : true;
 			case SchemaCompareOptionsDialog.StoredProcedures:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.StoredProcedures)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.storedProcedures)) ? false : true;
 			case SchemaCompareOptionsDialog.SymmetricKeys:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.SymmetricKeys)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.symmetricKeys)) ? false : true;
 			case SchemaCompareOptionsDialog.Synonyms:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.Synonyms)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.synonyms)) ? false : true;
 			case SchemaCompareOptionsDialog.Tables:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.Tables)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.tables)) ? false : true;
 			case SchemaCompareOptionsDialog.TableValuedFunctions:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.TableValuedFunctions)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.tableValuedFunctions)) ? false : true;
 			case SchemaCompareOptionsDialog.UserDefinedDataTypes:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.UserDefinedDataTypes)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.userDefinedDataTypes)) ? false : true;
 			case SchemaCompareOptionsDialog.UserDefinedTableTypes:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.UserDefinedTableTypes)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.userDefinedTableTypes)) ? false : true;
 			case SchemaCompareOptionsDialog.ClrUserDefinedTypes:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.ClrUserDefinedTypes)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.clrUserDefinedTypes)) ? false : true;
 			case SchemaCompareOptionsDialog.Users:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.Users)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.users)) ? false : true;
 			case SchemaCompareOptionsDialog.Views:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.Views)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.views)) ? false : true;
 			case SchemaCompareOptionsDialog.XmlSchemaCollections:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.XmlSchemaCollections)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.xmlSchemaCollections)) ? false : true;
 			case SchemaCompareOptionsDialog.Audits:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.Audits)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.audits)) ? false : true;
 			case SchemaCompareOptionsDialog.Credentials:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.Credentials)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.credentials)) ? false : true;
 			case SchemaCompareOptionsDialog.CryptographicProviders:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.CryptographicProviders)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.cryptographicProviders)) ? false : true;
 			case SchemaCompareOptionsDialog.DatabaseAuditSpecifications:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.DatabaseAuditSpecifications)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.databaseAuditSpecifications)) ? false : true;
 			case SchemaCompareOptionsDialog.DatabaseEncryptionKeys:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.DatabaseEncryptionKeys)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.databaseEncryptionKeys)) ? false : true;
 			case SchemaCompareOptionsDialog.DatabaseScopedCredentials:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.DatabaseScopedCredentials)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.databaseScopedCredentials)) ? false : true;
 			case SchemaCompareOptionsDialog.Endpoints:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.Endpoints)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.endpoints)) ? false : true;
 			case SchemaCompareOptionsDialog.ErrorMessages:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.ErrorMessages)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.errorMessages)) ? false : true;
 			case SchemaCompareOptionsDialog.EventNotifications:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.EventNotifications)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.eventNotifications)) ? false : true;
 			case SchemaCompareOptionsDialog.EventSessions:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.EventSessions)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.eventSessions)) ? false : true;
 			case SchemaCompareOptionsDialog.LinkedServerLogins:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.LinkedServerLogins)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.linkedServerLogins)) ? false : true;
 			case SchemaCompareOptionsDialog.LinkedServers:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.LinkedServers)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.linkedServers)) ? false : true;
 			case SchemaCompareOptionsDialog.Logins:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.Logins)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.logins)) ? false : true;
 			case SchemaCompareOptionsDialog.MasterKeys:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.MasterKeys)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.masterKeys)) ? false : true;
 			case SchemaCompareOptionsDialog.Routes:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.Routes)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.routes)) ? false : true;
 			case SchemaCompareOptionsDialog.ServerAuditSpecifications:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.ServerAuditSpecifications)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.serverAuditSpecifications)) ? false : true;
 			case SchemaCompareOptionsDialog.ServerRoleMembership:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.ServerRoleMembership)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.serverRoleMembership)) ? false : true;
 			case SchemaCompareOptionsDialog.ServerRoles:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.ServerRoles)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.serverRoles)) ? false : true;
 			case SchemaCompareOptionsDialog.ServerTriggers:
-				return (this.deploymentOptions.ExcludeObjectTypes.find(x => x === azdata.SchemaObjectType.ServerTriggers)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.serverTriggers)) ? false : true;
 		}
 		return false;
 	}
@@ -1149,332 +1149,332 @@ export class SchemaCompareOptionsDialog {
 		switch (label) {
 			case SchemaCompareOptionsDialog.Aggregates:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.Aggregates);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.aggregates);
 				}
 				return;
 			case SchemaCompareOptionsDialog.ApplicationRoles:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.ApplicationRoles);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.applicationRoles);
 				}
 				return;
 			case SchemaCompareOptionsDialog.Assemblies:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.Assemblies);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.assemblies);
 				}
 				return;
 			case SchemaCompareOptionsDialog.AssemblyFiles:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.AssemblyFiles);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.assemblyFiles);
 				}
 				return;
 			case SchemaCompareOptionsDialog.AsymmetricKeys:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.AsymmetricKeys);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.asymmetricKeys);
 				}
 				return;
 			case SchemaCompareOptionsDialog.BrokerPriorities:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.BrokerPriorities);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.brokerPriorities);
 				}
 				return;
 			case SchemaCompareOptionsDialog.Certificates:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.Certificates);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.certificates);
 				}
 				return;
 			case SchemaCompareOptionsDialog.ColumnEncryptionKeys:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.ColumnEncryptionKeys);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.columnEncryptionKeys);
 				}
 				return;
 			case SchemaCompareOptionsDialog.ColumnMasterKeys:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.ColumnMasterKeys);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.columnMasterKeys);
 				}
 				return;
 			case SchemaCompareOptionsDialog.Contracts:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.Contracts);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.contracts);
 				}
 				return;
 			case SchemaCompareOptionsDialog.DatabaseOptions:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.DatabaseOptions);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.databaseOptions);
 				}
 				return;
 			case SchemaCompareOptionsDialog.DatabaseRoles:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.DatabaseRoles);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.databaseRoles);
 				}
 				return;
 			case SchemaCompareOptionsDialog.DatabaseTriggers:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.DatabaseTriggers);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.databaseTriggers);
 				}
 				return;
 			case SchemaCompareOptionsDialog.Defaults:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.Defaults);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.defaults);
 				}
 				return;
 			case SchemaCompareOptionsDialog.ExtendedProperties:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.ExtendedProperties);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.extendedProperties);
 				}
 				return;
 			case SchemaCompareOptionsDialog.ExternalDataSources:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.ExternalDataSources);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.externalDataSources);
 				}
 				return;
 			case SchemaCompareOptionsDialog.ExternalFileFormats:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.ExternalFileFormats);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.externalFileFormats);
 				}
 				return;
 			case SchemaCompareOptionsDialog.ExternalTables:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.ExternalTables);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.externalTables);
 				}
 				return;
 			case SchemaCompareOptionsDialog.Filegroups:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.Filegroups);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.filegroups);
 				}
 				return;
 			case SchemaCompareOptionsDialog.FileTables:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.FileTables);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.fileTables);
 				}
 				return;
 			case SchemaCompareOptionsDialog.FullTextCatalogs:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.FullTextCatalogs);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.fullTextCatalogs);
 				}
 				return;
 			case SchemaCompareOptionsDialog.FullTextStoplists:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.FullTextStoplists);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.fullTextStoplists);
 				}
 				return;
 			case SchemaCompareOptionsDialog.MessageTypes:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.MessageTypes);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.messageTypes);
 				}
 				return;
 			case SchemaCompareOptionsDialog.PartitionFunctions:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.PartitionFunctions);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.partitionFunctions);
 				}
 				return;
 			case SchemaCompareOptionsDialog.PartitionSchemes:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.PartitionSchemes);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.partitionSchemes);
 				}
 				return;
 			case SchemaCompareOptionsDialog.Permissions:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.Permissions);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.permissions);
 				}
 				return;
 			case SchemaCompareOptionsDialog.Queues:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.Queues);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.queues);
 				}
 				return;
 			case SchemaCompareOptionsDialog.RemoteServiceBindings:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.RemoteServiceBindings);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.remoteServiceBindings);
 				}
 				return;
 			case SchemaCompareOptionsDialog.RoleMembership:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.RoleMembership);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.roleMembership);
 				}
 				return;
 			case SchemaCompareOptionsDialog.Rules:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.Rules);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.rules);
 				}
 				return;
 			case SchemaCompareOptionsDialog.ScalarValuedFunctions:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.ScalarValuedFunctions);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.scalarValuedFunctions);
 				}
 				return;
 			case SchemaCompareOptionsDialog.SearchPropertyLists:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.SearchPropertyLists);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.searchPropertyLists);
 				}
 				return;
 			case SchemaCompareOptionsDialog.SecurityPolicies:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.SecurityPolicies);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.securityPolicies);
 				}
 				return;
 			case SchemaCompareOptionsDialog.Sequences:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.Sequences);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.sequences);
 				}
 				return;
 			case SchemaCompareOptionsDialog.Services:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.Services);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.services);
 				}
 				return;
 			case SchemaCompareOptionsDialog.Signatures:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.Signatures);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.signatures);
 				}
 				return;
 			case SchemaCompareOptionsDialog.StoredProcedures:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.StoredProcedures);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.storedProcedures);
 				}
 				return;
 			case SchemaCompareOptionsDialog.SymmetricKeys:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.SymmetricKeys);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.symmetricKeys);
 				}
 				return;
 			case SchemaCompareOptionsDialog.Synonyms:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.Synonyms);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.synonyms);
 				}
 				return;
 			case SchemaCompareOptionsDialog.Tables:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.Tables);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.tables);
 				}
 				return;
 			case SchemaCompareOptionsDialog.TableValuedFunctions:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.TableValuedFunctions);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.tableValuedFunctions);
 				}
 				return;
 			case SchemaCompareOptionsDialog.UserDefinedDataTypes:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.UserDefinedDataTypes);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.userDefinedDataTypes);
 				}
 				return;
 			case SchemaCompareOptionsDialog.UserDefinedTableTypes:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.UserDefinedTableTypes);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.userDefinedTableTypes);
 				}
 				return;
 			case SchemaCompareOptionsDialog.ClrUserDefinedTypes:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.ClrUserDefinedTypes);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.clrUserDefinedTypes);
 				}
 				return;
 			case SchemaCompareOptionsDialog.Users:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.Users);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.users);
 				}
 				return;
 			case SchemaCompareOptionsDialog.Views:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.Views);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.views);
 				}
 				return;
 			case SchemaCompareOptionsDialog.XmlSchemaCollections:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.XmlSchemaCollections);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.xmlSchemaCollections);
 				}
 				return;
 			case SchemaCompareOptionsDialog.Audits:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.Audits);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.audits);
 				}
 				return;
 			case SchemaCompareOptionsDialog.Credentials:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.Credentials);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.credentials);
 				}
 				return;
 			case SchemaCompareOptionsDialog.CryptographicProviders:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.CryptographicProviders);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.cryptographicProviders);
 				}
 				return;
 			case SchemaCompareOptionsDialog.DatabaseAuditSpecifications:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.DatabaseAuditSpecifications);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.databaseAuditSpecifications);
 				}
 				return;
 			case SchemaCompareOptionsDialog.DatabaseEncryptionKeys:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.DatabaseEncryptionKeys);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.databaseEncryptionKeys);
 				}
 				return;
 			case SchemaCompareOptionsDialog.DatabaseScopedCredentials:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.DatabaseScopedCredentials);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.databaseScopedCredentials);
 				}
 				return;
 			case SchemaCompareOptionsDialog.Endpoints:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.Endpoints);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.endpoints);
 				}
 				return;
 			case SchemaCompareOptionsDialog.ErrorMessages:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.ErrorMessages);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.errorMessages);
 				}
 				return;
 			case SchemaCompareOptionsDialog.EventNotifications:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.EventNotifications);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.eventNotifications);
 				}
 				return;
 			case SchemaCompareOptionsDialog.EventSessions:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.EventSessions);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.eventSessions);
 				}
 				return;
 			case SchemaCompareOptionsDialog.LinkedServerLogins:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.LinkedServerLogins);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.linkedServerLogins);
 				}
 				return;
 			case SchemaCompareOptionsDialog.LinkedServers:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.LinkedServers);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.linkedServers);
 				}
 				return;
 			case SchemaCompareOptionsDialog.Logins:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.Logins);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.logins);
 				}
 				return;
 			case SchemaCompareOptionsDialog.MasterKeys:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.MasterKeys);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.masterKeys);
 				}
 				return;
 			case SchemaCompareOptionsDialog.Routes:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.Routes);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.routes);
 				}
 				return;
 			case SchemaCompareOptionsDialog.ServerAuditSpecifications:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.ServerAuditSpecifications);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.serverAuditSpecifications);
 				}
 				return;
 			case SchemaCompareOptionsDialog.ServerRoleMembership:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.ServerRoleMembership);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.serverRoleMembership);
 				}
 				return;
 			case SchemaCompareOptionsDialog.ServerRoles:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.ServerRoles);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.serverRoles);
 				}
 				return;
 			case SchemaCompareOptionsDialog.ServerTriggers:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.ServerTriggers);
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.serverTriggers);
 				}
 				return;
 		}

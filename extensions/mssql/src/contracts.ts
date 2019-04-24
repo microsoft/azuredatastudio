@@ -449,11 +449,19 @@ export interface SchemaCompareGenerateScriptParams {
 	taskExecutionMode: TaskExecutionMode;
 }
 
+export interface SchemaCompareGetOptionsParams {
+
+}
+
 export namespace SchemaCompareRequest {
 	export const type = new RequestType<SchemaCompareParams, azdata.SchemaCompareResult, void, void>('schemaCompare/compare');
 }
 
 export namespace SchemaCompareGenerateScriptRequest {
 	export const type = new RequestType<SchemaCompareGenerateScriptParams, azdata.ResultStatus, void, void>('schemaCompare/generateScript');
+}
+
+export namespace SchemaCompareGetDefaultOptionsRequest {
+	export const type = new RequestType<SchemaCompareGetOptionsParams, azdata.SchemaCompareOptionsResult, void, void>('schemaCompare/getDefaultOptions');
 }
 // ------------------------------- <Schema Compare> -----------------------------

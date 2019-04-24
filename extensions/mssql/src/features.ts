@@ -146,7 +146,8 @@ export class DacFxServicesFeature extends SqlOpsFeature<undefined> {
 export class SchemaCompareServicesFeature extends SqlOpsFeature<undefined> {
 	private static readonly messageTypes: RPCMessageType[] = [
 		contracts.SchemaCompareRequest.type,
-		contracts.SchemaCompareGenerateScriptRequest.type
+		contracts.SchemaCompareGenerateScriptRequest.type,
+		contracts.SchemaCompareGetDefaultOptionsRequest.type
 	];
 
 	constructor(client: SqlOpsDataClient) {
@@ -180,7 +181,7 @@ export class SchemaCompareServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let schemaCompareGenerateScript = (operationId: string, targetDatabaseName: string, scriptFilePath: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> => {
+		let schemaCompareGenerateScript = (operationId: string, targetDatabaseName: string, scriptFilePath: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> => {
 			let params: contracts.SchemaCompareGenerateScriptParams = { operationId: operationId, targetDatabaseName: targetDatabaseName, scriptFilePath: scriptFilePath, taskExecutionMode: taskExecutionMode };
 			return client.sendRequest(contracts.SchemaCompareGenerateScriptRequest.type, params).then(
 				r => {
@@ -193,10 +194,25 @@ export class SchemaCompareServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
+		let schemaCompareGetDefaultOptions = (): Thenable<azdata.SchemaCompareOptionsResult> => {
+			let params: contracts.SchemaCompareGetOptionsParams = {};
+			return client.sendRequest(contracts.SchemaCompareGetDefaultOptionsRequest.type, params).then(
+				r => {
+					return r;
+				},
+				e => {
+					client.logFailedRequest(contracts.SchemaCompareGetDefaultOptionsRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+
 		return azdata.dataprotocol.registerSchemaCompareServicesProvider({
 			providerId: client.providerId,
 			schemaCompare,
-			schemaCompareGenerateScript
+			schemaCompareGenerateScript,
+			schemaCompareGetDefaultOptions
 		});
 	}
 }

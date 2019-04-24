@@ -43,6 +43,12 @@ export class SchemaCompareService implements ISchemaCompareService {
 		});
 	}
 
+	schemaCompareGetDefaultOptions(): Thenable<azdata.SchemaCompareOptionsResult> {
+		return this._runAction('', (runner) => {
+			return runner.schemaCompareGetDefaultOptions();
+		});
+	}
+
 	private _runAction<T>(uri: string, action: (handler: azdata.SchemaCompareServicesProvider) => Thenable<T>): Thenable<T> {
 		let providerId: string = this._connectionService.getProviderIdFromUri(uri);
 
