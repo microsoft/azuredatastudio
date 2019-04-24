@@ -11,8 +11,8 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { context } from './testContext';
 import { sqlNotebookContent, writeNotebookToFile, sqlKernelMetadata, getFileName, pySparkNotebookContent, pySpark3KernelMetadata, pythonKernelMetadata, sqlNotebookMultipleCellsContent } from './notebook.util';
-import { getBdcServer } from './testConfig';
-import { connectToServer, getConfigValue, EnvironmentVariable_PYTHON_PATH } from './utils';
+import { getBdcServer, getConfigValue, EnvironmentVariable_PYTHON_PATH } from './testConfig';
+import { connectToServer } from './utils';
 import * as fs from 'fs';
 import { runWhenCodeLoad } from './fmkUtils';
 import { stressify } from './stressutils';
@@ -38,7 +38,7 @@ if (context.RunTest) {
 			await this.NbTester.ClearAllOutputsSqlNb(this.test.title);
 		});
 
-		if (process.env.RUN_PYTHON3_TEST === '1') {
+		if (process.env['RUN_PYTHON3_TEST'] === '1') {
 			test('Python3 notebook test', async function () {
 				await this.NbTester.Python3NbTest(this.test.title);
 			});
@@ -48,7 +48,7 @@ if (context.RunTest) {
 			});
 		}
 
-		if (process.env.RUN_PYSPARK_TEST === '1') {
+		if (process.env['RUN_PYSPARK_TEST'] === '1') {
 			test('PySpark3 notebook test', async function () {
 				await this.NbTester.PySpark3NbTest(this.test.title);
 			});

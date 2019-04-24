@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import * as os from 'os';
 import { nb, QueryExecuteSubsetResult, IDbColumn, BatchSummary, IResultMessage, ResultSetSummary } from 'azdata';
@@ -13,7 +12,6 @@ import QueryRunner, { EventType } from 'sql/platform/query/common/queryRunner';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import Severity from 'vs/base/common/severity';
-import * as Utils from 'sql/platform/connection/common/utils';
 import { Deferred } from 'sql/base/common/promise';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
@@ -47,6 +45,8 @@ export interface SQLData {
 }
 
 export class SqlSessionManager implements nb.SessionManager {
+	private static _sessions: nb.ISession[] = [];
+
 	constructor(private _instantiationService: IInstantiationService) { }
 
 	public get isReady(): boolean {
@@ -66,11 +66,25 @@ export class SqlSessionManager implements nb.SessionManager {
 	}
 
 	startNew(options: nb.ISessionOptions): Thenable<nb.ISession> {
-		let session = new SqlSession(options, this._instantiationService);
-		return Promise.resolve(session);
+		let sqlSession = new SqlSession(options, this._instantiationService);
+		let index = SqlSessionManager._sessions.findIndex(session => session.path === options.path);
+		if (index > -1) {
+			SqlSessionManager._sessions.splice(index);
+		}
+		SqlSessionManager._sessions.push(sqlSession);
+		return Promise.resolve(sqlSession);
 	}
 
 	shutdown(id: string): Thenable<void> {
+		let index = SqlSessionManager._sessions.findIndex(session => session.id === id);
+		if (index > -1) {
+			let sessionManager = SqlSessionManager._sessions[index];
+			SqlSessionManager._sessions.splice(index);
+			if (sessionManager && sessionManager.kernel) {
+				let sqlKernel = sessionManager.kernel as SqlKernel;
+				return sqlKernel.disconnect();
+			}
+		}
 		return Promise.resolve();
 	}
 }
@@ -89,7 +103,7 @@ export class SqlSession implements nb.ISession {
 	}
 
 	constructor(private options: nb.ISessionOptions, private _instantiationService: IInstantiationService) {
-		this._kernel = this._instantiationService.createInstance(SqlKernel);
+		this._kernel = this._instantiationService.createInstance(SqlKernel, options.path);
 	}
 
 	public get canChangeKernels(): boolean {
@@ -97,7 +111,7 @@ export class SqlSession implements nb.ISession {
 	}
 
 	public get id(): string {
-		return this.options.kernelId || '';
+		return this.options.kernelId || this.kernel ? this._kernel.id : '';
 	}
 
 	public get path(): string {
@@ -147,7 +161,8 @@ class SqlKernel extends Disposable implements nb.IKernel {
 	private _executionCount: number = 0;
 	private _magicToExecutorMap = new Map<string, ExternalScriptMagic>();
 
-	constructor(@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
+	constructor(private _path: string,
+		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
@@ -233,9 +248,8 @@ class SqlKernel extends Disposable implements nb.IKernel {
 			}
 			this._queryRunner.runQuery(code);
 		} else if (this._currentConnection && this._currentConnectionProfile) {
-			let connectionUri = Utils.generateUri(this._currentConnectionProfile, 'notebook');
-			this._queryRunner = this._instantiationService.createInstance(QueryRunner, connectionUri);
-			this._connectionManagementService.connect(this._currentConnectionProfile, connectionUri).then((result) => {
+			this._queryRunner = this._instantiationService.createInstance(QueryRunner, this._path);
+			this._connectionManagementService.connect(this._currentConnectionProfile, this._path).then((result) => {
 				this.addQueryEventListeners(this._queryRunner);
 				this._queryRunner.runQuery(code);
 			});
@@ -311,6 +325,19 @@ class SqlKernel extends Disposable implements nb.IKernel {
 			this._future.handleDone();
 		}
 		// TODO issue #2746 should ideally show a warning inside the dialog if have no data
+	}
+
+	public async disconnect(): Promise<void> {
+		if (this._path) {
+			if (this._connectionManagementService.isConnected(this._path)) {
+				try {
+					await this._connectionManagementService.disconnect(this._path);
+				} catch (err) {
+					console.log(err);
+				}
+			}
+		}
+		return;
 	}
 }
 
@@ -432,7 +459,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		if (rowCount > 0) {
 			subsetResult = await this._queryRunner.getQueryRows(0, rowCount, resultSet.batchId, resultSet.id);
 		} else {
-			subsetResult = { message: '', resultSubset: { rowCount: 0, rows: [] }};
+			subsetResult = { message: '', resultSubset: { rowCount: 0, rows: [] } };
 		}
 		let msg: nb.IIOPubMessage = {
 			channel: 'iopub',

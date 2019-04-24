@@ -8,18 +8,18 @@ import * as nls from 'vs/nls';
 import * as azdata from 'azdata';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
-import { JobHistoryComponent } from 'sql/parts/jobManagement/views/jobHistory.component';
+import { JobHistoryComponent } from 'sql/workbench/parts/jobManagement/electron-browser/jobHistory.component';
 import { IJobManagementService } from '../common/interfaces';
 import { ICommandService } from 'vs/platform/commands/common/commands';
-import { JobsViewComponent } from 'sql/parts/jobManagement/views/jobsView.component';
-import { AlertsViewComponent } from 'sql/parts/jobManagement/views/alertsView.component';
-import { OperatorsViewComponent } from 'sql/parts/jobManagement/views/operatorsView.component';
-import { ProxiesViewComponent } from 'sql/parts/jobManagement/views/proxiesView.component';
+import { JobsViewComponent } from 'sql/workbench/parts/jobManagement/electron-browser/jobsView.component';
+import { AlertsViewComponent } from 'sql/workbench/parts/jobManagement/electron-browser/alertsView.component';
+import { OperatorsViewComponent } from 'sql/workbench/parts/jobManagement/electron-browser/operatorsView.component';
+import { ProxiesViewComponent } from 'sql/workbench/parts/jobManagement/electron-browser/proxiesView.component';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
-import { JobManagementView } from 'sql/parts/jobManagement/views/jobManagementView';
+import { JobManagementView } from 'sql/workbench/parts/jobManagement/electron-browser/jobManagementView';
 
 export const successLabel: string = nls.localize('jobaction.successLabel', 'Success');
 export const errorLabel: string = nls.localize('jobaction.faillabel', 'Error');
@@ -30,8 +30,8 @@ export enum JobActions {
 }
 
 export class IJobActionInfo {
-	ownerUri: string;
-	targetObject: any;
+	ownerUri?: string;
+	targetObject?: any;
 	component: JobManagementView;
 }
 
@@ -69,10 +69,11 @@ export class NewJobAction extends Action {
 		super(NewJobAction.ID, NewJobAction.LABEL, 'newStepIcon');
 	}
 
-	public run(context: JobsViewComponent): Promise<boolean> {
+	public run(context: IJobActionInfo): Promise<boolean> {
+		let component = context.component as JobsViewComponent;
 		return new Promise<boolean>(async (resolve, reject) => {
 			try {
-				await context.openCreateJobDialog();
+				await component.openCreateJobDialog();
 				resolve(true);
 			} catch (e) {
 				reject(e);
@@ -103,7 +104,7 @@ export class RunJobAction extends Action {
 		return new Promise<boolean>((resolve, reject) => {
 			this.jobManagementService.jobAction(ownerUri, jobName, JobActions.Run).then(result => {
 				if (result.success) {
-					var startMsg = nls.localize('jobSuccessfullyStarted', ': The job was successfully started.');
+					let startMsg = nls.localize('jobSuccessfullyStarted', ': The job was successfully started.');
 					this.notificationService.info(jobName + startMsg);
 					refreshAction.run(context);
 					resolve(true);
@@ -139,7 +140,7 @@ export class StopJobAction extends Action {
 			this.jobManagementService.jobAction(ownerUri, jobName, JobActions.Stop).then(result => {
 				if (result.success) {
 					refreshAction.run(context);
-					var stopMsg = nls.localize('jobSuccessfullyStopped', ': The job was successfully stopped.');
+					let stopMsg = nls.localize('jobSuccessfullyStopped', ': The job was successfully stopped.');
 					this.notificationService.info(jobName + stopMsg);
 					resolve(true);
 				} else {
@@ -293,10 +294,11 @@ export class NewAlertAction extends Action {
 		super(NewAlertAction.ID, NewAlertAction.LABEL, 'newStepIcon');
 	}
 
-	public run(context: AlertsViewComponent): Promise<boolean> {
+	public run(context: IJobActionInfo): Promise<boolean> {
+		let component = context.component as AlertsViewComponent;
 		return new Promise<boolean>((resolve, reject) => {
 			try {
-				context.openCreateAlertDialog();
+				component.openCreateAlertDialog();
 				resolve(true);
 			} catch (e) {
 				reject(e);
@@ -380,10 +382,11 @@ export class NewOperatorAction extends Action {
 		super(NewOperatorAction.ID, NewOperatorAction.LABEL, 'newStepIcon');
 	}
 
-	public run(context: OperatorsViewComponent): Promise<boolean> {
+	public run(context: IJobActionInfo): Promise<boolean> {
+		let component = context.component as OperatorsViewComponent;
 		return new Promise<boolean>((resolve, reject) => {
 			try {
-				context.openCreateOperatorDialog();
+				component.openCreateOperatorDialog();
 				resolve(true);
 			} catch (e) {
 				reject(e);
@@ -466,10 +469,11 @@ export class NewProxyAction extends Action {
 		super(NewProxyAction.ID, NewProxyAction.LABEL, 'newStepIcon');
 	}
 
-	public run(context: ProxiesViewComponent): Promise<boolean> {
+	public run(context: IJobActionInfo): Promise<boolean> {
+		let component = context.component as ProxiesViewComponent;
 		return new Promise<boolean>((resolve, reject) => {
 			try {
-				context.openCreateProxyDialog();
+				component.openCreateProxyDialog();
 				resolve(true);
 			} catch (e) {
 				reject(e);

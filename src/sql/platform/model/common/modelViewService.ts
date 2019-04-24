@@ -6,7 +6,7 @@
 'use strict';
 import * as azdata from 'azdata';
 import { IItemConfig, IComponentShape } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { IComponentEventArgs } from 'sql/parts/modelComponents/interfaces';
+import { IComponentEventArgs } from 'sql/workbench/electron-browser/modelComponents/interfaces';
 import { Event } from 'vs/base/common/event';
 
 export interface IView {

@@ -5,8 +5,6 @@
 
 // Note: the code in the v3 and v4 namespaces has been adapted (with significant changes) from https://github.com/nteract/nteract/tree/master/packages/commutable
 
-'use strict';
-
 import { nb } from 'azdata';
 
 import * as json from 'vs/base/common/json';
@@ -347,7 +345,7 @@ namespace v3 {
 		pdf: 'application/pdf'
 	};
 	type MimeTypeKey = keyof typeof VALID_MIMETYPES;
-	type MimePayload = {[P in MimeTypeKey]?: nb.MultilineString };
+	type MimePayload = { [P in MimeTypeKey]?: nb.MultilineString };
 
 	interface MimeOutput<T extends string = string> extends MimePayload {
 		output_type: T;

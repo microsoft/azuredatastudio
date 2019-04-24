@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import * as OptionsDialogHelper from 'sql/workbench/browser/modal/optionsDialogHelper';
 import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
 import * as azdata from 'azdata';
@@ -13,18 +12,18 @@ import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { $ } from 'vs/base/browser/dom';
 
 suite('Advanced options helper tests', () => {
-	var possibleInputs: string[];
+	let possibleInputs: string[];
 	let options: { [name: string]: any };
-	var categoryOption: azdata.ServiceOption;
-	var booleanOption: azdata.ServiceOption;
-	var numberOption: azdata.ServiceOption;
-	var stringOption: azdata.ServiceOption;
-	var defaultGroupOption: azdata.ServiceOption;
-	var isValid: boolean;
-	var inputValue: string;
-	var inputBox: TypeMoq.Mock<InputBox>;
+	let categoryOption: azdata.ServiceOption;
+	let booleanOption: azdata.ServiceOption;
+	let numberOption: azdata.ServiceOption;
+	let stringOption: azdata.ServiceOption;
+	let defaultGroupOption: azdata.ServiceOption;
+	let isValid: boolean;
+	let inputValue: string;
+	let inputBox: TypeMoq.Mock<InputBox>;
 
-	var optionsMap: { [optionName: string]: OptionsDialogHelper.IOptionElement };
+	let optionsMap: { [optionName: string]: OptionsDialogHelper.IOptionElement };
 
 	setup(() => {
 		options = {};
@@ -108,7 +107,7 @@ suite('Advanced options helper tests', () => {
 		categoryOption.defaultValue = 'ReadWrite';
 		categoryOption.isRequired = false;
 		possibleInputs = [];
-		var optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(categoryOption, options, possibleInputs);
+		let optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(categoryOption, options, possibleInputs);
 		assert.equal(optionValue, 'ReadWrite');
 		assert.equal(possibleInputs.length, 3);
 		assert.equal(possibleInputs[0], '');
@@ -120,7 +119,7 @@ suite('Advanced options helper tests', () => {
 		categoryOption.defaultValue = 'ReadWrite';
 		categoryOption.isRequired = true;
 		possibleInputs = [];
-		var optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(categoryOption, options, possibleInputs);
+		let optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(categoryOption, options, possibleInputs);
 		assert.equal(optionValue, 'ReadWrite');
 		assert.equal(possibleInputs.length, 2);
 		assert.equal(possibleInputs[0], 'ReadWrite');
@@ -131,7 +130,7 @@ suite('Advanced options helper tests', () => {
 		categoryOption.defaultValue = null;
 		categoryOption.isRequired = false;
 		possibleInputs = [];
-		var optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(categoryOption, options, possibleInputs);
+		let optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(categoryOption, options, possibleInputs);
 		assert.equal(optionValue, '');
 		assert.equal(possibleInputs.length, 3);
 		assert.equal(possibleInputs[0], '');
@@ -143,7 +142,7 @@ suite('Advanced options helper tests', () => {
 		categoryOption.defaultValue = null;
 		categoryOption.isRequired = true;
 		possibleInputs = [];
-		var optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(categoryOption, options, possibleInputs);
+		let optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(categoryOption, options, possibleInputs);
 		assert.equal(optionValue, 'ReadWrite');
 		assert.equal(possibleInputs.length, 2);
 		assert.equal(possibleInputs[0], 'ReadWrite');
@@ -155,7 +154,7 @@ suite('Advanced options helper tests', () => {
 		categoryOption.isRequired = false;
 		possibleInputs = [];
 		options['applicationIntent'] = 'ReadOnly';
-		var optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(categoryOption, options, possibleInputs);
+		let optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(categoryOption, options, possibleInputs);
 		assert.equal(optionValue, 'ReadOnly');
 		assert.equal(possibleInputs.length, 3);
 		assert.equal(possibleInputs[0], '');
@@ -168,7 +167,7 @@ suite('Advanced options helper tests', () => {
 		categoryOption.isRequired = true;
 		possibleInputs = [];
 		options['applicationIntent'] = 'ReadOnly';
-		var optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(categoryOption, options, possibleInputs);
+		let optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(categoryOption, options, possibleInputs);
 		assert.equal(optionValue, 'ReadOnly');
 		assert.equal(possibleInputs.length, 2);
 		assert.equal(possibleInputs[0], 'ReadWrite');
@@ -179,7 +178,7 @@ suite('Advanced options helper tests', () => {
 		booleanOption.defaultValue = 'False';
 		booleanOption.isRequired = false;
 		possibleInputs = [];
-		var optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(booleanOption, options, possibleInputs);
+		let optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(booleanOption, options, possibleInputs);
 		assert.equal(optionValue, 'False');
 		assert.equal(possibleInputs.length, 3);
 		assert.equal(possibleInputs[0], '');
@@ -191,7 +190,7 @@ suite('Advanced options helper tests', () => {
 		booleanOption.defaultValue = 'False';
 		booleanOption.isRequired = true;
 		possibleInputs = [];
-		var optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(booleanOption, options, possibleInputs);
+		let optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(booleanOption, options, possibleInputs);
 		assert.equal(optionValue, 'False');
 		assert.equal(possibleInputs.length, 2);
 		assert.equal(possibleInputs[0], 'True');
@@ -202,7 +201,7 @@ suite('Advanced options helper tests', () => {
 		booleanOption.defaultValue = null;
 		booleanOption.isRequired = false;
 		possibleInputs = [];
-		var optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(booleanOption, options, possibleInputs);
+		let optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(booleanOption, options, possibleInputs);
 		assert.equal(optionValue, '');
 		assert.equal(possibleInputs.length, 3);
 		assert.equal(possibleInputs[0], '');
@@ -214,7 +213,7 @@ suite('Advanced options helper tests', () => {
 		booleanOption.defaultValue = null;
 		booleanOption.isRequired = true;
 		possibleInputs = [];
-		var optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(booleanOption, options, possibleInputs);
+		let optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(booleanOption, options, possibleInputs);
 		assert.equal(optionValue, 'True');
 		assert.equal(possibleInputs.length, 2);
 		assert.equal(possibleInputs[0], 'True');
@@ -226,7 +225,7 @@ suite('Advanced options helper tests', () => {
 		booleanOption.isRequired = false;
 		possibleInputs = [];
 		options['asynchronousProcessing'] = true;
-		var optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(booleanOption, options, possibleInputs);
+		let optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(booleanOption, options, possibleInputs);
 		assert.equal(optionValue, 'True');
 		assert.equal(possibleInputs.length, 3);
 		assert.equal(possibleInputs[0], '');
@@ -239,7 +238,7 @@ suite('Advanced options helper tests', () => {
 		booleanOption.isRequired = true;
 		possibleInputs = [];
 		options['asynchronousProcessing'] = 'False';
-		var optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(booleanOption, options, possibleInputs);
+		let optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(booleanOption, options, possibleInputs);
 		assert.equal(optionValue, 'False');
 		assert.equal(possibleInputs.length, 2);
 		assert.equal(possibleInputs[0], 'True');
@@ -250,7 +249,7 @@ suite('Advanced options helper tests', () => {
 		numberOption.defaultValue = '15';
 		numberOption.isRequired = true;
 		possibleInputs = [];
-		var optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(numberOption, options, possibleInputs);
+		let optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(numberOption, options, possibleInputs);
 		assert.equal(optionValue, '15');
 	});
 
@@ -259,7 +258,7 @@ suite('Advanced options helper tests', () => {
 		numberOption.isRequired = false;
 		possibleInputs = [];
 		options['connectTimeout'] = '45';
-		var optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(numberOption, options, possibleInputs);
+		let optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(numberOption, options, possibleInputs);
 		assert.equal(optionValue, '45');
 	});
 
@@ -267,7 +266,7 @@ suite('Advanced options helper tests', () => {
 		stringOption.defaultValue = 'Japanese';
 		stringOption.isRequired = true;
 		possibleInputs = [];
-		var optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(stringOption, options, possibleInputs);
+		let optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(stringOption, options, possibleInputs);
 		assert.equal(optionValue, 'Japanese');
 	});
 
@@ -276,7 +275,7 @@ suite('Advanced options helper tests', () => {
 		stringOption.isRequired = false;
 		possibleInputs = [];
 		options['currentLanguage'] = 'Spanish';
-		var optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(stringOption, options, possibleInputs);
+		let optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(stringOption, options, possibleInputs);
 		assert.equal(optionValue, 'Spanish');
 	});
 
@@ -291,7 +290,7 @@ suite('Advanced options helper tests', () => {
 			optionValue: null
 		};
 
-		var error = OptionsDialogHelper.validateInputs(optionsMap);
+		let error = OptionsDialogHelper.validateInputs(optionsMap);
 		assert.equal(error, true);
 	});
 
@@ -306,7 +305,7 @@ suite('Advanced options helper tests', () => {
 			optionValue: null
 		};
 
-		var error = OptionsDialogHelper.validateInputs(optionsMap);
+		let error = OptionsDialogHelper.validateInputs(optionsMap);
 		assert.equal(error, true);
 	});
 
@@ -320,7 +319,7 @@ suite('Advanced options helper tests', () => {
 			option: numberOption,
 			optionValue: null
 		};
-		var error = OptionsDialogHelper.validateInputs(optionsMap);
+		let error = OptionsDialogHelper.validateInputs(optionsMap);
 		assert.equal(error, true);
 	});
 
@@ -335,7 +334,7 @@ suite('Advanced options helper tests', () => {
 			optionValue: null
 		};
 
-		var error = OptionsDialogHelper.validateInputs(optionsMap);
+		let error = OptionsDialogHelper.validateInputs(optionsMap);
 		assert.equal(error, false);
 	});
 
@@ -350,7 +349,7 @@ suite('Advanced options helper tests', () => {
 			optionValue: null
 		};
 
-		var error = OptionsDialogHelper.validateInputs(optionsMap);
+		let error = OptionsDialogHelper.validateInputs(optionsMap);
 		assert.equal(error, false);
 	});
 

@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
+
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import { normalize, join } from 'path';
@@ -12,10 +12,10 @@ const TEST_SETUP_COMPLETED_TEXT: string = 'Test Setup Completed';
 const EXTENSION_LOADED_TEXT: string = 'Test Extension Loaded';
 const ALL_EXTENSION_LOADED_TEXT: string = 'All Extensions Loaded';
 
-var statusBarItemTimer: NodeJS.Timer;
+let statusBarItemTimer: NodeJS.Timer;
 
 export function activate(context: vscode.ExtensionContext) {
-	var statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
+	let statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
 	vscode.commands.registerCommand('test.setupIntegrationTest', async () => {
 		let extensionInstallersFolder = normalize(join(__dirname, '../extensionInstallers'));
 		let installers = fs.readdirSync(extensionInstallersFolder);

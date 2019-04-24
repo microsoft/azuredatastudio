@@ -12,8 +12,8 @@ export enum SuiteType {
 	Unknown = ''
 }
 
-function toCapitalizedCase(inputString: string) : string {
-   return inputString.toLowerCase().replace(/^.|\s\S/g, (a: string) => a.toUpperCase());
+function toCapitalizedCase(inputString: string): string {
+	return inputString.toLowerCase().replace(/^.|\s\S/g, (a: string) => a.toUpperCase());
 }
 
 let suite: SuiteType = SuiteType.Unknown;
@@ -30,14 +30,14 @@ export function getSuiteType() {
 }
 
 // decorator function to run some code at decorator load time before other code is evaluated.
-export function runWhenCodeLoad (func:Function, ...args) {
+export function runWhenCodeLoad(func: Function, ...args) {
 	// invoke the 'func' method with given args and then return a decorator function that does not modify th method for which it is called
 	//
 
 	//console.log(`Decorator runWhenCodeLoad called for function: ${JSON.stringify(func)} with args: (${args.join(',')})`);
 	//
 	func.apply(null, args);
-	return function(memberClass: any, memberName: string, memberDescriptor: PropertyDescriptor) {
+	return function (memberClass: any, memberName: string, memberDescriptor: PropertyDescriptor) {
 		return memberDescriptor;
 	};
 }

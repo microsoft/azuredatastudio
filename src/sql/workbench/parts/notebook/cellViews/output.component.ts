@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------------------------
-*  Copyright (c) Microsoft Corporation. All rights reserved.
-*  Licensed under the Source EULA. See License.txt in the project root for license information.
-*--------------------------------------------------------------------------------------------*/
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./code';
 import 'vs/css!./media/output';
 
@@ -17,7 +17,7 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import * as DOM from 'vs/base/browser/dom';
 
 export const OUTPUT_SELECTOR: string = 'output-component';
-const USER_SELECT_CLASS ='actionselect';
+const USER_SELECT_CLASS = 'actionselect';
 
 @Component({
 	selector: OUTPUT_SELECTOR,

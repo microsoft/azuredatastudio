@@ -97,7 +97,7 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements azd
 	}
 
 	private hasExpansionError(children: TreeNode[]): boolean {
-		if(children.find(c => c.errorStatusCode > 0)){
+		if (children.find(c => c.errorStatusCode > 0)) {
 			return true;
 		}
 		return false;

@@ -16,8 +16,7 @@ import { AzureResourceResourceTreeNode } from '../../resourceTreeNode';
 
 export function registerAzureResourceDatabaseCommands(appContext: AppContext): void {
 	appContext.apiWrapper.registerCommand('azure.resource.connectsqldb', async (node?: TreeNode) => {
-		if (!node)
-		{
+		if (!node) {
 			return;
 		}
 

@@ -165,7 +165,8 @@
 	},
 	"devDependencies": {
 		"@types/mocha": "^5.2.5",
-		"@types/node": "^8.10.25",
+		"@types/node": "^10.12.12",
+		"@types/request": "^2.48.1",
 		"mocha": "^5.2.0",
 		"should": "^13.2.1",
 		"typemoq": "^2.1.0"

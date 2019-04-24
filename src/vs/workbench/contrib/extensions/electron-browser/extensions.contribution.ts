@@ -251,7 +251,7 @@ Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration)
 				description: localize('extensionsPolicy', "Sets the security policy for downloading extensions."),
 				scope: ConfigurationScope.APPLICATION,
 				default: ExtensionsPolicy.allowAll
-			}
+			},
 		}
 	});
 

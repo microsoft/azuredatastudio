@@ -7,7 +7,10 @@ The integration-tests suite is based on the extension testing feature provided b
 * extensionInstallers folder: Copy the VISX installers for the extensions we would like to run the tests with.
 * src folder: This is where the test file for features should be added, name the file like this: feature.test.ts. e.g. objectExplorer.test.ts
 
-ADS will be launched using new temp folders: extension folder and data folder so that your local dev environment won't be changed.
+## UI automation testing
+The UI automation test cases should be added under $root/test/smoke/src/sql folder. Each feature should create its own folder and add 2 files, one for accessing the feature and the other for the test cases. For example: objectExplorer.ts and objectExplorer.test.ts. only tested on Windows for now.
+
+For both Smoke test and Integration test, ADS will be launched using new temp folders: extension folder and data folder so that your local dev environment won't be changed.
 
 ## How to run the test
 1. In the build pipeline:
@@ -20,15 +23,8 @@ The integration test suite has been added to ADS windows pipeline to run the tes
 		2. Git-Bash on Windows: node setEnvironmentVariables.js BashWin
 	3. Follow the instructions in the window: you will be prompted to login to azure portal.
 	4. A new window will be opened based on your selection and the new window will have the required environment variables set.
-	5. In the new window navigate to the scripts folder and run sql-test-integration.bat or sql-test-integration.sh based on your environment.
-
-## UI automation testing
-The UI automation test cases should be added under $root/test/smoke/src/sql folder. Each feature should create its own folder and add 2 files, one for accessing the feature and the other for the test cases. For example: objectExplorer.ts and objectExplorer.test.ts. only tested on Windows for now.
-
-## How to run the test
-1. In the build pipeline:
-The smoke test suite has been added to ADS windows pipeline to run the test and report the results, you can find the test results under the test tab.
-
-2. Local environment
-navigate to test/smoke folder and run: node test/index.js
-You can also run UI automation from VSCode by selecting the launch option: Launch Smoke Test.
+	5. Run the Test:
+		1. For Integration Test: in the new window navigate to the scripts folder and run sql-test-integration.bat or sql-test-integration.sh based on your environment.
+		2. Smoke Test can be launched in 2 ways:
+			1. In the new window navigate to the test/smoke folder and run: node smoke/index.js
+			2. Or, In a VSCode window opened by step above, open AzureDataStudio folder and then select the 'Launch Smoke Test' option.

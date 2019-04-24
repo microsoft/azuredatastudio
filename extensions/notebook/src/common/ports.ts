@@ -4,8 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 // This code is originally from https://github.com/Microsoft/vscode/blob/master/src/vs/base/node/ports.ts
 
-'use strict';
-
 import * as net from 'net';
 
 export class StrictPortFindOptions {
@@ -36,11 +34,11 @@ export async function strictFindFreePort(options: StrictPortFindOptions): Promis
 /**
  * Get a random integer between `min` and `max`.
  *
- * @param {number} min - min number
- * @param {number} max - max number
- * @return {number} a random integer
+ * @param min - min number
+ * @param max - max number
+ * @return a random integer
  */
-function getRandomInt(min, max): number {
+function getRandomInt(min: number, max: number): number {
 	return Math.floor(Math.random() * (max - min + 1) + min);
 }
 

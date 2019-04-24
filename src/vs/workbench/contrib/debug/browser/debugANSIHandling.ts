@@ -250,7 +250,7 @@ export function appendStylizedStringToContainer(
 export function calcANSI8bitColor(colorNumber: number): RGBA | undefined {
 	if (colorNumber % 1 !== 0) {
 		// Should be integer
-		// {{SQL CARBON EDIT}} @todo anthonydresser this is necessary because we don't use strict null checks
+		// {{SQL CARBON EDIT}} @todo anthonydresser 4/12/19 this is necessary because we don't use strict null checks
 		return undefined;
 	} if (colorNumber >= 16 && colorNumber <= 231) {
 		// Converts to one of 216 RGB colors
@@ -275,7 +275,7 @@ export function calcANSI8bitColor(colorNumber: number): RGBA | undefined {
 		const colorLevel: number = Math.round(colorNumber / 23 * 255);
 		return new RGBA(colorLevel, colorLevel, colorLevel);
 	} else {
-		// {{SQL CARBON EDIT}} @todo anthonydresser this is necessary because we don't use strict null checks
+		// {{SQL CARBON EDIT}} @todo anthonydresser 4/12/19 this is necessary because we don't use strict null checks
 		return undefined;
 	}
 }

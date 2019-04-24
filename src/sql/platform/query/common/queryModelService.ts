@@ -5,11 +5,11 @@
 
 'use strict';
 
-import * as GridContentEvents from 'sql/parts/grid/common/gridContentEvents';
+import * as GridContentEvents from 'sql/workbench/parts/grid/common/gridContentEvents';
 import * as LocalizedConstants from 'sql/parts/query/common/localizedConstants';
 import QueryRunner, { EventType as QREvents } from 'sql/platform/query/common/queryRunner';
-import { DataService } from 'sql/parts/grid/services/dataService';
-import { IQueryModelService, IQueryPlanInfo, IQueryEvent } from 'sql/platform/query/common/queryModel';
+import { DataService } from 'sql/workbench/parts/grid/services/dataService';
+import { IQueryModelService, IQueryEvent } from 'sql/platform/query/common/queryModel';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
 import { QueryStatusbarItem } from 'sql/parts/query/execution/queryStatus';
 import { SqlFlavorStatusbarItem } from 'sql/parts/query/common/flavorStatus';

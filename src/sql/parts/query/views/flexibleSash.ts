@@ -3,13 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import { Dimension } from 'vs/base/browser/dom';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { Event, Emitter } from 'vs/base/common/event';
-import { IHorizontalSashLayoutProvider, IVerticalSashLayoutProvider,
-	ISashEvent, Orientation, Sash } from 'vs/base/browser/ui/sash/sash';
+import {
+	IHorizontalSashLayoutProvider, IVerticalSashLayoutProvider,
+	ISashEvent, Orientation, Sash
+} from 'vs/base/browser/ui/sash/sash';
 // There is no need to import the sash CSS - 'vs/base/browser/ui/sash/sash' already includes it
 
 /**
@@ -162,6 +162,7 @@ export class VerticalFlexibleSash extends Disposable implements IVerticalSashLay
  */
 export class HorizontalFlexibleSash extends Disposable implements IHorizontalSashLayoutProvider, IFlexibleSash {
 
+	private static initialRatio: number = 0.4;
 	private sash: Sash;
 	private ratio: number;
 	private startPosition: number;
@@ -174,7 +175,7 @@ export class HorizontalFlexibleSash extends Disposable implements IHorizontalSas
 
 	constructor(container: HTMLElement, private minHeight: number) {
 		super();
-		this.ratio = 0.5;
+		this.ratio = HorizontalFlexibleSash.initialRatio;
 		this.left = 0;
 		this.sash = new Sash(container, this, { orientation: Orientation.HORIZONTAL });
 
@@ -240,7 +241,7 @@ export class HorizontalFlexibleSash extends Disposable implements IHorizontalSas
 	}
 
 	private onSashReset(): void {
-		this.ratio = 0.5;
+		this.ratio = HorizontalFlexibleSash.initialRatio;
 		this._onPositionChange.fire(this.position);
 		this.sash.layout();
 	}
@@ -253,7 +254,7 @@ export class HorizontalFlexibleSash extends Disposable implements IHorizontalSas
 		let sashPosition = Math.floor((sashRatio || 0.5) * contentHeight);
 		let midPoint = Math.floor(0.5 * contentHeight);
 
-		if (contentHeight > this.minHeight * 2) {
+		if (contentHeight > this.minHeight * 4) {
 			if (sashPosition < this.minHeight) {
 				sashPosition = this.minHeight;
 			}

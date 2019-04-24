@@ -9,21 +9,12 @@ steps:
   displayName: 'Yarn Install'
 
 - script: |
-    .\node_modules\.bin\gulp electron
+    yarn gulp electron-x64
   displayName: 'Electron'
 
 - script: |
-    npm run compile
-  displayName: 'Compile'
-
-- script: |
-    .\scripts\test.bat --reporter mocha-junit-reporter
-  displayName: 'Test'
-
-- task: PublishTestResults@2
-  inputs:
-    testResultsFiles: 'test-results.xml'
-  condition: succeededOrFailed()
+    yarn gulp hygiene
+  displayName: Run Hygiene Checks
 
 - script: |
     yarn tslint
@@ -32,3 +23,22 @@ steps:
 - script: |
     yarn strict-null-check
   displayName: 'Run Strict Null Check'
+
+- script: |
+    yarn compile
+  displayName: 'Compile'
+
+- script: |
+    .\scripts\test.bat --reporter mocha-junit-reporter --coverage
+  displayName: 'Test'
+
+- task: PublishTestResults@2
+  inputs:
+    testResultsFiles: 'test-results.xml'
+  condition: succeededOrFailed()
+
+- task: PublishCodeCoverageResults@1
+  inputs:
+    codeCoverageTool: 'cobertura'
+    summaryFileLocation: $(System.DefaultWorkingDirectory)\.build\coverage\cobertura-coverage.xml
+    reportDirectory: $(System.DefaultWorkingDirectory)\.build\coverage\lcov-report

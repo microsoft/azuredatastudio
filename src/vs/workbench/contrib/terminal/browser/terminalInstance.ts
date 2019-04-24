@@ -443,6 +443,8 @@ export class TerminalInstance implements ITerminalInstance {
 				}
 				this._linkHandler = this._instantiationService.createInstance(TerminalLinkHandler, this._xterm, platform.platform, this._processManager);
 			});
+		} else if (this.shellLaunchConfig.isRendererOnly) {
+			this._linkHandler = this._instantiationService.createInstance(TerminalLinkHandler, this._xterm, undefined, undefined);
 		}
 		this._xterm.on('focus', () => this._onFocus.fire(this));
 
@@ -600,6 +602,9 @@ export class TerminalInstance implements ITerminalInstance {
 						});
 					}
 				});
+			} else if (this._shellLaunchConfig.isRendererOnly) {
+				this._widgetManager = new TerminalWidgetManager(this._wrapperElement);
+				this._linkHandler.setWidgetManager(this._widgetManager);
 			}
 
 			const computedStyle = window.getComputedStyle(this._container);
@@ -681,8 +686,7 @@ export class TerminalInstance implements ITerminalInstance {
 	}
 
 	public hasSelection(): boolean {
-		// {{SQL CARBON EDIT}}
-		return this._xterm && this._xterm.hasSelection ? this._xterm.hasSelection() : false;
+		return this._xterm && this._xterm.hasSelection();
 	}
 
 	public copySelection(): void {

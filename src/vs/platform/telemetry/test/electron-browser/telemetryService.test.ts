@@ -225,10 +225,10 @@ suite('TelemetryService', () => {
 	// 	let origErrorHandler = Errors.errorHandler.getUnexpectedErrorHandler();
 	// 	Errors.setUnexpectedErrorHandler(() => { });
 
-		// try {
-		// 	let testAppender = new TestTelemetryAppender();
-		// 	let service = new JoinableTelemetryService({ appender: testAppender }, undefined!);
-		// 	const errorTelemetry = new ErrorTelemetry(service);
+	// try {
+	// 	let testAppender = new TestTelemetryAppender();
+	// 	let service = new JoinableTelemetryService({ appender: testAppender }, undefined!);
+	// 	const errorTelemetry = new ErrorTelemetry(service);
 
 
 	// 		let e: any = new Error('This is a test.');
@@ -237,13 +237,13 @@ suite('TelemetryService', () => {
 	// 			e.stack = 'blah';
 	// 		}
 
-			// Errors.onUnexpectedError(e);
-			// this.clock.tick(ErrorTelemetry.ERROR_FLUSH_TIMEOUT);
-			// await service.join();
+	// Errors.onUnexpectedError(e);
+	// this.clock.tick(ErrorTelemetry.ERROR_FLUSH_TIMEOUT);
+	// await service.join();
 
-			// assert.equal(testAppender.getEventsCount(), 1);
-			// assert.equal(testAppender.events[0].eventName, 'UnhandledError');
-			// assert.equal(testAppender.events[0].data.msg, 'This is a test.');
+	// assert.equal(testAppender.getEventsCount(), 1);
+	// assert.equal(testAppender.events[0].eventName, 'UnhandledError');
+	// assert.equal(testAppender.events[0].data.msg, 'This is a test.');
 
 	// 		errorTelemetry.dispose();
 	// 		service.dispose();

@@ -13,7 +13,7 @@ import { MainThreadModelViewDialogShape, SqlMainContext, ExtHostModelViewDialogS
 import { Dialog, DialogTab, DialogButton, WizardPage, Wizard } from 'sql/platform/dialog/dialogTypes';
 import { CustomDialogService } from 'sql/platform/dialog/customDialogService';
 import { IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails, IModelViewWizardPageDetails, IModelViewWizardDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { ModelViewInput, ModelViewInputModel, ModeViewSaveHandler } from 'sql/parts/modelComponents/modelEditor/modelViewInput';
+import { ModelViewInput, ModelViewInputModel, ModeViewSaveHandler } from 'sql/workbench/electron-browser/modelComponents/modelViewInput';
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';

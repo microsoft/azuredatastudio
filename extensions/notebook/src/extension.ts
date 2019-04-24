@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as os from 'os';
@@ -23,7 +21,7 @@ const msgSampleCodeDataFrame = localize('msgSampleCodeDataFrame', "This sample c
 const noNotebookVisible = localize('noNotebookVisible', "No notebook editor is active");
 
 let controller: JupyterController;
-type ChooseCellType = { label: string, id: CellType};
+type ChooseCellType = { label: string, id: CellType };
 
 export async function activate(extensionContext: vscode.ExtensionContext): Promise<IExtensionApi> {
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.new', (context?: azdata.ConnectedContext) => {
@@ -38,6 +36,9 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	}));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.runactivecell', () => {
 		runActiveCell();
+	}));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.runallcells', () => {
+		runAllCells();
 	}));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.addcell', async () => {
 		let cellType: CellType;
@@ -121,7 +122,7 @@ function findNextUntitledEditorName(): string {
 
 async function openNotebook(): Promise<void> {
 	try {
-		let filter = {};
+		let filter: { [key: string]: Array<string> } = {};
 		// TODO support querying valid notebook file types
 		filter[localize('notebookFiles', "Notebooks")] = ['ipynb'];
 		let file = await vscode.window.showOpenDialog({
@@ -141,6 +142,19 @@ async function runActiveCell(): Promise<void> {
 		let notebook = azdata.nb.activeNotebookEditor;
 		if (notebook) {
 			await notebook.runCell();
+		} else {
+			throw new Error(noNotebookVisible);
+		}
+	} catch (err) {
+		vscode.window.showErrorMessage(err);
+	}
+}
+
+async function runAllCells(): Promise<void> {
+	try {
+		let notebook = azdata.nb.activeNotebookEditor;
+		if (notebook) {
+			await notebook.runAllCells();
 		} else {
 			throw new Error(noNotebookVisible);
 		}

@@ -1,9 +1,7 @@
 /*---------------------------------------------------------------------------------------------
-*  Copyright (c) Microsoft Corporation. All rights reserved.
-*  Licensed under the Source EULA. See License.txt in the project root for license information.
-*--------------------------------------------------------------------------------------------*/
-
-import { nb } from 'azdata';
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
 import { Action } from 'vs/base/common/actions';
 import { localize } from 'vs/nls';
@@ -15,12 +13,13 @@ import { NotebookModel } from 'sql/workbench/parts/notebook/models/notebookModel
 import { getErrorMessage } from 'sql/workbench/parts/notebook/notebookUtils';
 import { ICellModel, CellExecutionState } from 'sql/workbench/parts/notebook/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { MultiStateAction, IMultiStateData, IActionStateData } from 'sql/workbench/parts/notebook/notebookActions';
+import { MultiStateAction, IMultiStateData } from 'sql/workbench/parts/notebook/notebookActions';
+import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 
 let notebookMoreActionMsg = localize('notebook.failed', "Please select active cell and try again");
 const emptyExecutionCountLabel = '[ ]';
 
-function hasModelAndCell(context: CellContext, notificationService: INotificationService): boolean  {
+function hasModelAndCell(context: CellContext, notificationService: INotificationService): boolean {
 	if (!context || !context.model) {
 		return false;
 	}
@@ -69,13 +68,14 @@ export class RunCellAction extends MultiStateAction<CellExecutionState> {
 	private _executionChangedDisposable: IDisposable;
 	private _context: CellContext;
 	constructor(context: CellContext, @INotificationService private notificationService: INotificationService,
-		@IConnectionManagementService private connectionManagementService: IConnectionManagementService) {
+		@IConnectionManagementService private connectionManagementService: IConnectionManagementService,
+		@IKeybindingService private keybindingService: IKeybindingService) {
 		super(RunCellAction.ID, new IMultiStateData<CellExecutionState>([
-			{ key: CellExecutionState.Hidden, value: { label: emptyExecutionCountLabel, className: '', tooltip: '', hideIcon: true }},
-			{ key: CellExecutionState.Stopped, value: { label: '', className: 'toolbarIconRun', tooltip: localize('runCell', 'Run cell') }},
-			{ key: CellExecutionState.Running, value: { label: '', className: 'toolbarIconStop', tooltip: localize('stopCell', 'Cancel execution') }},
-			{ key: CellExecutionState.Error, value: { label: '', className: 'toolbarIconRunError', tooltip: localize('errorRunCell', 'Error on last run. Click to run again') }},
-		], CellExecutionState.Hidden ));
+			{ key: CellExecutionState.Hidden, value: { label: emptyExecutionCountLabel, className: '', tooltip: '', hideIcon: true } },
+			{ key: CellExecutionState.Stopped, value: { label: '', className: 'toolbarIconRun', tooltip: localize('runCell', "Run cell"), commandId: 'notebook.command.runactivecell' } },
+			{ key: CellExecutionState.Running, value: { label: '', className: 'toolbarIconStop', tooltip: localize('stopCell', "Cancel execution") } },
+			{ key: CellExecutionState.Error, value: { label: '', className: 'toolbarIconRunError', tooltip: localize('errorRunCell', "Error on last run. Click to run again") } },
+		], CellExecutionState.Hidden), keybindingService);
 		this.ensureContextIsUpdated(context);
 	}
 

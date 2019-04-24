@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as childProcess from 'child_process';
 import * as fs from 'fs-extra';
 import * as nls from 'vscode-nls';
@@ -12,12 +10,11 @@ import * as path from 'path';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as which from 'which';
-import * as Constants from '../constants';
 
 const localize = nls.loadMessageBundle();
 
 export function getDropdownValue(dropdownValue: string | azdata.CategoryValue): string {
-	if (typeof(dropdownValue) === 'string') {
+	if (typeof (dropdownValue) === 'string') {
 		return <string>dropdownValue;
 	} else {
 		return dropdownValue ? (<azdata.CategoryValue>dropdownValue).name : undefined;
@@ -170,7 +167,7 @@ export function getOSPlatform(): Platform {
 }
 
 export function getOSPlatformId(): string {
-	var platformId = undefined;
+	let platformId = undefined;
 	switch (process.platform) {
 		case 'win32':
 			platformId = 'win-x64';

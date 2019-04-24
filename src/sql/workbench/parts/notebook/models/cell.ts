@@ -1,10 +1,7 @@
-
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
-'use strict';
 
 import { nb, ServerInfo } from 'azdata';
 
@@ -190,6 +187,14 @@ export class CellModel implements ICellModel {
 
 	public async runCell(notificationService?: INotificationService, connectionManagementService?: IConnectionManagementService): Promise<boolean> {
 		try {
+			if (!this.active && this !== this.notebookModel.activeCell) {
+				if (this.notebookModel.activeCell) {
+					this.notebookModel.activeCell.active = false;
+				}
+				this.active = true;
+				this.notebookModel.activeCell = this;
+			}
+
 			if (connectionManagementService) {
 				this._connectionManagementService = connectionManagementService;
 			}

@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import { NotificationType, RequestType } from 'vscode-languageclient';
 import { ITelemetryEventProperties, ITelemetryEventMeasures } from './telemetry';
@@ -377,37 +376,37 @@ export namespace GenerateDeployPlanRequest {
 
 
 export interface CreateCentralManagementServerParams {
-    registeredServerName: string;
-    registeredServerDescription : string;
-    connectParams: ConnectParams;
+	registeredServerName: string;
+	registeredServerDescription: string;
+	connectParams: ConnectParams;
 }
 
 export interface ListRegisteredServersParams extends RegisteredServerParamsBase {
-        // same as base
+	// same as base
 }
 
 export interface AddRegisteredServerParams extends RegisteredServerParamsBase {
-    registeredServerName: string;
-    registeredServerDescription : string;
-    registeredServerConnectionDetails: azdata.ConnectionInfo;
+	registeredServerName: string;
+	registeredServerDescription: string;
+	registeredServerConnectionDetails: azdata.ConnectionInfo;
 }
 
 export interface RemoveRegisteredServerParams extends RegisteredServerParamsBase {
-    registeredServerName: string;
+	registeredServerName: string;
 }
 
 export interface AddServerGroupParams extends RegisteredServerParamsBase {
-    groupName: string;
+	groupName: string;
 	groupDescription: string;
 }
 
 export interface RemoveServerGroupParams extends RegisteredServerParamsBase {
-    groupName: string;
+	groupName: string;
 }
 
 export interface RegisteredServerParamsBase {
-    parentOwnerUri: string;
-    relativePath: string;
+	parentOwnerUri: string;
+	relativePath: string;
 }
 
 export namespace CreateCentralManagementServerRequest {
@@ -434,3 +433,26 @@ export namespace RemoveServerGroupRequest {
 	export const type = new RequestType<RemoveServerGroupParams, boolean, void, void>('cms/removeCmsServerGroup');
 }
 // ------------------------------- <CMS> ----------------------------------------
+
+// ------------------------------- <Schema Compare> -----------------------------
+export interface SchemaCompareParams {
+	sourceEndpointInfo: azdata.SchemaCompareEndpointInfo;
+	targetEndpointInfo: azdata.SchemaCompareEndpointInfo;
+	taskExecutionMode: TaskExecutionMode;
+}
+
+export interface SchemaCompareGenerateScriptParams {
+	operationId: string;
+	targetDatabaseName: string;
+	scriptFilePath: string;
+	taskExecutionMode: TaskExecutionMode;
+}
+
+export namespace SchemaCompareRequest {
+	export const type = new RequestType<SchemaCompareParams, azdata.SchemaCompareResult, void, void>('schemaCompare/compare');
+}
+
+export namespace SchemaCompareGenerateScriptRequest {
+	export const type = new RequestType<SchemaCompareGenerateScriptParams, azdata.ResultStatus, void, void>('schemaCompare/generateScript');
+}
+// ------------------------------- <Schema Compare> -----------------------------

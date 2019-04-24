@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConnectionProfileGroup, ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
@@ -13,7 +11,6 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
  * Interface for a configuration file that stores connection profiles.
  *
  * @export
- * @interface IConnectionConfig
  */
 export interface IConnectionConfig {
 	addConnection(profile: IConnectionProfile): Promise<IConnectionProfile>;

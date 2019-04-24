@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------------------------
-*  Copyright (c) Microsoft Corporation. All rights reserved.
-*  Licensed under the Source EULA. See License.txt in the project root for license information.
-*--------------------------------------------------------------------------------------------*/
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
 import { ElementRef } from '@angular/core';
 
@@ -19,7 +19,7 @@ import { ToggleMoreWidgetAction } from 'sql/workbench/parts/dashboard/common/act
 import { CellTypes, CellType } from 'sql/workbench/parts/notebook/models/contracts';
 import { CellModel } from 'sql/workbench/parts/notebook/models/cell';
 
-export const HIDDEN_CLASS ='actionhidden';
+export const HIDDEN_CLASS = 'actionhidden';
 
 export class CellToggleMoreActions {
 	private _actions: CellActionBase[] = [];
@@ -29,16 +29,16 @@ export class CellToggleMoreActions {
 		@IInstantiationService private instantiationService: IInstantiationService) {
 		this._actions.push(
 			instantiationService.createInstance(DeleteCellAction, 'delete', localize('delete', 'Delete')),
-			instantiationService.createInstance(AddCellFromContextAction,'codeBefore', localize('codeBefore', 'Insert Code before'), CellTypes.Code, false),
-			instantiationService.createInstance(AddCellFromContextAction, 'codeAfter', localize('codeAfter', 'Insert Code after'), CellTypes.Code, true),
-			instantiationService.createInstance(AddCellFromContextAction, 'markdownBefore', localize('markdownBefore', 'Insert Text before'), CellTypes.Markdown, false),
-			instantiationService.createInstance(AddCellFromContextAction, 'markdownAfter', localize('markdownAfter', 'Insert Text after'), CellTypes.Markdown, true),
-			instantiationService.createInstance(ClearCellOutputAction, 'clear', localize('clear', 'Clear output'))
+			instantiationService.createInstance(AddCellFromContextAction, 'codeBefore', localize('codeBefore', 'Insert Code Before'), CellTypes.Code, false),
+			instantiationService.createInstance(AddCellFromContextAction, 'codeAfter', localize('codeAfter', 'Insert Code After'), CellTypes.Code, true),
+			instantiationService.createInstance(AddCellFromContextAction, 'markdownBefore', localize('markdownBefore', 'Insert Text Before'), CellTypes.Markdown, false),
+			instantiationService.createInstance(AddCellFromContextAction, 'markdownAfter', localize('markdownAfter', 'Insert Text After'), CellTypes.Markdown, true),
+			instantiationService.createInstance(ClearCellOutputAction, 'clear', localize('clear', 'Clear Output'))
 		);
 	}
 
 	public onInit(elementRef: ElementRef, model: NotebookModel, cellModel: ICellModel) {
-		let context = new CellContext(model,cellModel);
+		let context = new CellContext(model, cellModel);
 		this._moreActionsElement = <HTMLElement>elementRef.nativeElement;
 		if (this._moreActionsElement.childNodes.length > 0) {
 			this._moreActionsElement.removeChild(this._moreActionsElement.childNodes[0]);

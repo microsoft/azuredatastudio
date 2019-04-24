@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as should from 'should';
 import * as TypeMoq from 'typemoq';
 import * as azdata from 'azdata';
@@ -50,7 +48,8 @@ const mockAccount: azdata.Account = {
 	displayInfo: {
 		displayName: 'mock_account@test.com',
 		accountType: 'Microsoft',
-		contextualDisplayName: 'test'
+		contextualDisplayName: 'test',
+		userId: 'test@email.com'
 	},
 	properties: {
 		tenants: [
@@ -76,7 +75,7 @@ const mockSubscriptions = [mockSubscription1, mockSubscription2];
 
 const mockFilteredSubscriptions = [mockSubscription1];
 
-const mockTokens = {};
+const mockTokens: { [key: string]: any } = {};
 mockTokens[mockTenantId] = {
 	token: 'mock_token',
 	tokenType: 'Bearer'
@@ -86,7 +85,7 @@ const mockCredential = new TokenCredentials(mockTokens[mockTenantId].token, mock
 
 let mockSubscriptionCache: azureResource.AzureResourceSubscription[] = [];
 
-describe('AzureResourceAccountTreeNode.info', function(): void {
+describe('AzureResourceAccountTreeNode.info', function (): void {
 	beforeEach(() => {
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 		mockApiWrapper = TypeMoq.Mock.ofType<ApiWrapper>();
@@ -112,7 +111,7 @@ describe('AzureResourceAccountTreeNode.info', function(): void {
 		mockTenantService.setup((o) => o.getTenantId(TypeMoq.It.isAny())).returns(() => Promise.resolve(mockTenantId));
 	});
 
-	it('Should be correct when created.', async function(): Promise<void> {
+	it('Should be correct when created.', async function (): Promise<void> {
 		const accountTreeNode = new AzureResourceAccountTreeNode(mockAccount, mockAppContext, mockTreeChangeHandler.object);
 
 		const accountTreeNodeId = `account_${mockAccount.key.accountId}`;
@@ -133,7 +132,7 @@ describe('AzureResourceAccountTreeNode.info', function(): void {
 		should(nodeInfo.iconType).equal(AzureResourceItemType.account);
 	});
 
-	it('Should be correct when there are subscriptions listed.', async function(): Promise<void> {
+	it('Should be correct when there are subscriptions listed.', async function (): Promise<void> {
 		mockSubscriptionService.setup((o) => o.getSubscriptions(mockAccount, mockCredential)).returns(() => Promise.resolve(mockSubscriptions));
 		mockSubscriptionFilterService.setup((o) => o.getSelectedSubscriptions(mockAccount)).returns(() => Promise.resolve(undefined));
 
@@ -153,7 +152,7 @@ describe('AzureResourceAccountTreeNode.info', function(): void {
 		should(nodeInfo.label).equal(accountTreeNodeLabel);
 	});
 
-	it('Should be correct when there are subscriptions filtered.', async function(): Promise<void> {
+	it('Should be correct when there are subscriptions filtered.', async function (): Promise<void> {
 		mockSubscriptionService.setup((o) => o.getSubscriptions(mockAccount, mockCredential)).returns(() => Promise.resolve(mockSubscriptions));
 		mockSubscriptionFilterService.setup((o) => o.getSelectedSubscriptions(mockAccount)).returns(() => Promise.resolve(mockFilteredSubscriptions));
 
@@ -174,7 +173,7 @@ describe('AzureResourceAccountTreeNode.info', function(): void {
 	});
 });
 
-describe('AzureResourceAccountTreeNode.getChildren', function(): void {
+describe('AzureResourceAccountTreeNode.getChildren', function (): void {
 	beforeEach(() => {
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 		mockApiWrapper = TypeMoq.Mock.ofType<ApiWrapper>();
@@ -200,7 +199,7 @@ describe('AzureResourceAccountTreeNode.getChildren', function(): void {
 		mockTenantService.setup((o) => o.getTenantId(TypeMoq.It.isAny())).returns(() => Promise.resolve(mockTenantId));
 	});
 
-	it('Should load subscriptions from scratch and update cache when it is clearing cache.', async function(): Promise<void> {
+	it('Should load subscriptions from scratch and update cache when it is clearing cache.', async function (): Promise<void> {
 		mockSubscriptionService.setup((o) => o.getSubscriptions(mockAccount, mockCredential)).returns(() => Promise.resolve(mockSubscriptions));
 		mockSubscriptionFilterService.setup((o) => o.getSelectedSubscriptions(mockAccount)).returns(() => Promise.resolve([]));
 
@@ -234,7 +233,7 @@ describe('AzureResourceAccountTreeNode.getChildren', function(): void {
 		}
 	});
 
-	it('Should load subscriptions from cache when it is not clearing cache.', async function(): Promise<void> {
+	it('Should load subscriptions from cache when it is not clearing cache.', async function (): Promise<void> {
 		mockSubscriptionService.setup((o) => o.getSubscriptions(mockAccount, mockCredential)).returns(() => Promise.resolve(mockSubscriptions));
 		mockSubscriptionFilterService.setup((o) => o.getSelectedSubscriptions(mockAccount)).returns(() => Promise.resolve(undefined));
 
@@ -255,7 +254,7 @@ describe('AzureResourceAccountTreeNode.getChildren', function(): void {
 		}
 	});
 
-	it('Should handle when there is no subscriptions.', async function(): Promise<void> {
+	it('Should handle when there is no subscriptions.', async function (): Promise<void> {
 		mockSubscriptionService.setup((o) => o.getSubscriptions(mockAccount, mockCredential)).returns(() => Promise.resolve(undefined));
 
 		const accountTreeNode = new AzureResourceAccountTreeNode(mockAccount, mockAppContext, mockTreeChangeHandler.object);
@@ -271,7 +270,7 @@ describe('AzureResourceAccountTreeNode.getChildren', function(): void {
 		should(children[0].getNodeInfo().label).equal('No Subscriptions found.');
 	});
 
-	it('Should honor subscription filtering.', async function(): Promise<void> {
+	it('Should honor subscription filtering.', async function (): Promise<void> {
 		mockSubscriptionService.setup((o) => o.getSubscriptions(mockAccount, mockCredential)).returns(() => Promise.resolve(mockSubscriptions));
 		mockSubscriptionFilterService.setup((o) => o.getSelectedSubscriptions(mockAccount)).returns(() => Promise.resolve(mockFilteredSubscriptions));
 
@@ -289,7 +288,7 @@ describe('AzureResourceAccountTreeNode.getChildren', function(): void {
 		}
 	});
 
-	it('Should handle errors.', async function(): Promise<void> {
+	it('Should handle errors.', async function (): Promise<void> {
 		mockSubscriptionService.setup((o) => o.getSubscriptions(mockAccount, mockCredential)).returns(() => Promise.resolve(mockSubscriptions));
 
 		const mockError = 'Test error';
@@ -313,7 +312,7 @@ describe('AzureResourceAccountTreeNode.getChildren', function(): void {
 	});
 });
 
-describe('AzureResourceAccountTreeNode.clearCache', function() : void {
+describe('AzureResourceAccountTreeNode.clearCache', function (): void {
 	beforeEach(() => {
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 		mockApiWrapper = TypeMoq.Mock.ofType<ApiWrapper>();
@@ -339,7 +338,7 @@ describe('AzureResourceAccountTreeNode.clearCache', function() : void {
 		mockTenantService.setup((o) => o.getTenantId(TypeMoq.It.isAny())).returns(() => Promise.resolve(mockTenantId));
 	});
 
-	it('Should clear cache.', async function(): Promise<void> {
+	it('Should clear cache.', async function (): Promise<void> {
 		const accountTreeNode = new AzureResourceAccountTreeNode(mockAccount, mockAppContext, mockTreeChangeHandler.object);
 		accountTreeNode.clearCache();
 		should(accountTreeNode.isClearingCache).true();

@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import 'vs/css!sql/media/icons/common-icons';
 import 'vs/css!./media/newDashboardTabDialog';
 
@@ -27,7 +25,6 @@ import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
 import { NewDashboardTabViewModel, IDashboardUITab } from 'sql/workbench/services/dashboard/common/newDashboardTabViewModel';
 import { IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
-import { Orientation } from 'vs/base/browser/ui/sash/sash';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 
 class ExtensionListDelegate implements IListVirtualDelegate<IDashboardUITab> {
@@ -67,7 +64,7 @@ class ExtensionListRenderer implements IListRenderer<IDashboardUITab, ExtensionL
 		const tableTemplate: ExtensionListTemplate = Object.create(null);
 		tableTemplate.root = DOM.append(container, DOM.$('div.list-row.extensionTab-list'));
 		tableTemplate.icon = DOM.append(tableTemplate.root, DOM.$('div.icon'));
-		var titleContainer = DOM.append(tableTemplate.root, DOM.$('div.extension-details'));
+		let titleContainer = DOM.append(tableTemplate.root, DOM.$('div.extension-details'));
 		tableTemplate.title = DOM.append(titleContainer, DOM.$('div.title'));
 		tableTemplate.description = DOM.append(titleContainer, DOM.$('div.description'));
 		tableTemplate.publisher = DOM.append(titleContainer, DOM.$('div.publisher'));
@@ -96,7 +93,7 @@ class ExtensionListRenderer implements IListRenderer<IDashboardUITab, ExtensionL
 export class NewDashboardTabDialog extends Modal {
 	public static EXTENSIONLIST_HEIGHT = 101;
 
-	// MEMBER VARIABLES ////////////////////////////////////////////////////
+	// MEMBER letIABLES ////////////////////////////////////////////////////
 	private _addNewTabButton: Button;
 	private _cancelButton: Button;
 	private _extensionList: List<IDashboardUITab>;

@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import * as vscode from 'vscode';
 import * as path from 'path';
@@ -224,7 +222,6 @@ export class PerNotebookServerInstance implements IServerInstance {
 	/**
 	 * Starts a Jupyter instance using the provided a start command. Server is determined to have
 	 * started when the log message with URL to connect to is emitted.
-	 * @returns {Promise<void>}
 	 */
 	protected async startInternal(): Promise<void> {
 		if (this.isStarted) {
@@ -249,8 +246,8 @@ export class PerNotebookServerInstance implements IServerInstance {
 			this.childProcess = this.spawnJupyterProcess(install, startCommand);
 			let stdErrLog: string = '';
 			// Add listeners for the process exiting prematurely
-			let onErrorBeforeStartup = (err) => reject(err);
-			let onExitBeforeStart = (err) => {
+			let onErrorBeforeStartup = (err: any) => reject(err);
+			let onExitBeforeStart = (err: any) => {
 				if (!this.isStarted) {
 					reject(localize('notebookStartProcessExitPremature', 'Notebook process exited prematurely with error: {0}, StdErr Output: {1}', err, stdErrLog));
 				}
@@ -375,7 +372,7 @@ export class PerNotebookServerInstance implements IServerInstance {
 	}
 
 	private getEnvWithConfigPaths(env: {}): any {
-		let newEnv = Object.assign({}, env);
+		let newEnv: { [key: string]: string } = Object.assign({}, env);
 		newEnv['JUPYTER_CONFIG_DIR'] = this.instanceConfigRoot;
 		newEnv['JUPYTER_PATH'] = this.instanceDataRoot;
 		return newEnv;

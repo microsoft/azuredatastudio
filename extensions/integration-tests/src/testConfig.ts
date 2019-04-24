@@ -1,5 +1,3 @@
-import { getConfigValue, EnvironmentVariable_STANDALONE_SERVER, EnvironmentVariable_STANDALONE_USERNAME, EnvironmentVariable_STANDALONE_PASSWORD, EnvironmentVariable_AZURE_SERVER, EnvironmentVariable_AZURE_USERNAME, EnvironmentVariable_AZURE_PASSWORD, EnvironmentVariable_BDC_SERVER, EnvironmentVariable_BDC_USERNAME, EnvironmentVariable_BDC_PASSWORD } from './utils';
-
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
@@ -20,6 +18,7 @@ interface ITestServerProfile {
 	database: string;
 	provider: ConnectionProvider;
 	version: string;
+	engineType: EngineType;
 }
 
 interface INameDisplayNamePair {
@@ -36,12 +35,34 @@ export enum ConnectionProvider {
 	SQLServer
 }
 
-var connectionProviderMapping = {};
-var authenticationTypeMapping = {};
+export enum EngineType {
+	Standalone,
+	Azure,
+	BigDataCluster
+}
+
+let connectionProviderMapping = {};
+let authenticationTypeMapping = {};
 connectionProviderMapping[ConnectionProvider.SQLServer] = { name: 'MSSQL', displayName: 'Microsoft SQL Server' };
 
 authenticationTypeMapping[AuthenticationType.SqlLogin] = { name: 'SqlLogin', displayName: 'SQL Login' };
 authenticationTypeMapping[AuthenticationType.Windows] = { name: 'Integrated', displayName: 'Windows Authentication' };
+
+export function getConfigValue(name: string): string {
+	let configValue = process.env[name];
+	return configValue ? configValue.toString() : '';
+}
+
+export const EnvironmentVariable_BDC_SERVER: string = 'BDC_BACKEND_HOSTNAME';
+export const EnvironmentVariable_BDC_USERNAME: string = 'BDC_BACKEND_USERNAME';
+export const EnvironmentVariable_BDC_PASSWORD: string = 'BDC_BACKEND_PWD';
+export const EnvironmentVariable_STANDALONE_SERVER: string = 'STANDALONE_SQL';
+export const EnvironmentVariable_STANDALONE_USERNAME: string = 'STANDALONE_SQL_USERNAME';
+export const EnvironmentVariable_STANDALONE_PASSWORD: string = 'STANDALONE_SQL_PWD';
+export const EnvironmentVariable_AZURE_SERVER: string = 'AZURE_SQL';
+export const EnvironmentVariable_AZURE_USERNAME: string = 'AZURE_SQL_USERNAME';
+export const EnvironmentVariable_AZURE_PASSWORD: string = 'AZURE_SQL_PWD';
+export const EnvironmentVariable_PYTHON_PATH: string = 'PYTHON_TEST_PATH';
 
 export class TestServerProfile {
 	constructor(private _profile: ITestServerProfile) { }
@@ -56,9 +77,10 @@ export class TestServerProfile {
 	public get authenticationType(): AuthenticationType { return this._profile.authenticationType; }
 	public get authenticationTypeName(): string { return getEnumMappingEntry(authenticationTypeMapping, this.authenticationType).name; }
 	public get authenticationTypeDisplayName(): string { return getEnumMappingEntry(authenticationTypeMapping, this.authenticationType).displayName; }
+	public get engineType(): EngineType { return this._profile.engineType; }
 }
 
-var TestingServers: TestServerProfile[] = [
+let TestingServers: TestServerProfile[] = [
 	new TestServerProfile(
 		{
 			serverName: getConfigValue(EnvironmentVariable_STANDALONE_SERVER),
@@ -67,7 +89,8 @@ var TestingServers: TestServerProfile[] = [
 			authenticationType: AuthenticationType.SqlLogin,
 			database: 'master',
 			provider: ConnectionProvider.SQLServer,
-			version: '2017'
+			version: '2017',
+			engineType: EngineType.Standalone
 		}),
 	new TestServerProfile(
 		{
@@ -77,7 +100,8 @@ var TestingServers: TestServerProfile[] = [
 			authenticationType: AuthenticationType.SqlLogin,
 			database: 'master',
 			provider: ConnectionProvider.SQLServer,
-			version: '2012'
+			version: '2012',
+			engineType: EngineType.Azure
 		}),
 	new TestServerProfile(
 		{
@@ -87,7 +111,8 @@ var TestingServers: TestServerProfile[] = [
 			authenticationType: AuthenticationType.SqlLogin,
 			database: 'master',
 			provider: ConnectionProvider.SQLServer,
-			version: '2019'
+			version: '2019',
+			engineType: EngineType.BigDataCluster
 		})
 ];
 
@@ -96,28 +121,23 @@ function getEnumMappingEntry(mapping: any, enumValue: any): INameDisplayNamePair
 	if (entry) {
 		return entry;
 	} else {
-		throw `Unknown enum type: ${enumValue.toString()}`;
+		throw new Error(`Unknown enum type: ${enumValue.toString()}`);
 	}
-}
-
-export async function getDefaultTestingServer(): Promise<TestServerProfile> {
-	let servers = await getTestingServers();
-	return servers[0];
 }
 
 export async function getAzureServer(): Promise<TestServerProfile> {
 	let servers = await getTestingServers();
-	return servers.filter(s => s.version === '2012')[0];
+	return servers.filter(s => s.engineType === EngineType.Azure)[0];
 }
 
 export async function getStandaloneServer(): Promise<TestServerProfile> {
 	let servers = await getTestingServers();
-	return servers.filter(s => s.version === '2017')[0];
+	return servers.filter(s => s.version === '2017' && s.engineType === EngineType.Standalone)[0];
 }
 
 export async function getBdcServer(): Promise<TestServerProfile> {
 	let servers = await getTestingServers();
-	return servers.filter(s => s.version === '2019')[0];
+	return servers.filter(s => s.version === '2019' && s.engineType === EngineType.BigDataCluster)[0];
 }
 
 export async function getTestingServers(): Promise<TestServerProfile[]> {
