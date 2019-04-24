@@ -329,7 +329,13 @@ class SqlKernel extends Disposable implements nb.IKernel {
 
 	public async disconnect(): Promise<void> {
 		if (this._path) {
-			await this._connectionManagementService.disconnect(this._path);
+			if (this._connectionManagementService.isConnected(this._path)) {
+				try {
+					await this._connectionManagementService.disconnect(this._path);
+				} catch (err) {
+					console.log(err);
+				}
+			}
 		}
 		return;
 	}
