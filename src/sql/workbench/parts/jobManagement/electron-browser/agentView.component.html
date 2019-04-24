@@ -1,0 +1,45 @@
+<!--
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+-->
+<div id="agentViewDiv" class="fullsize">
+	<panel class="dashboard-panel" [options]="panelOpt">
+		<tab [title]="jobsComponentTitle" class="fullsize" [identifier]="jobsTabIdentifier"
+			[iconClass]="jobsIconClass">
+			<ng-template>
+				<div id="jobsDiv" class="fullsize" *ngIf="showHistory === false">
+					<jobsview-component></jobsview-component>
+				</div>
+				<div id="historyDiv" class="fullsize" *ngIf="showHistory === true">
+					<jobhistory-component></jobhistory-component>
+				</div>
+			</ng-template>
+		</tab>
+		<tab [title]="alertsComponentTitle" class="fullsize" [identifier]="alertsTabIdentifier"
+			[iconClass]="alertsIconClass">
+			<ng-template>
+				<div id="alertsDiv" class="fullsize">
+					<jobalertsview-component></jobalertsview-component>
+				</div>
+			</ng-template>
+		</tab>
+		<tab [title]="operatorsComponentTitle" class="fullsize" [identifier]="operatorsTabIdentifier"
+			[iconClass]="operatorsIconClass">
+			<ng-template>
+				<div id="operatorsDiv" class="fullsize">
+					<joboperatorsview-component></joboperatorsview-component>
+				</div>
+			</ng-template>
+		</tab>
+		<tab [title]="proxiesComponentTitle" class="fullsize" [identifier]="proxiesTabIdentifier"
+			[iconClass]="proxiesIconClass">
+			<ng-template>
+				<div id="proxiesDiv" class="fullsize">
+					<jobproxiesview-component></jobproxiesview-component>
+				</div>
+			</ng-template>
+		</tab>
+	</panel>
+</div>

@@ -1,0 +1,10 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+modelview-button a.monaco-button.monaco-text-button.icon {
+	background-repeat: no-repeat;
+	background-position: 0% 50%;
+	background-size: contain;
+}

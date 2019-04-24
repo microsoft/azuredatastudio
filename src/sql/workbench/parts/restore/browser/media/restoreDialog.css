@@ -1,0 +1,77 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.restore-dialog {
+	padding: 15px
+}
+
+.restore-panel .tabbedPanel {
+	border-top-color: transparent;
+}
+
+.modal .restore-dialog .dialog-label.header {
+	font-size: 15px;
+}
+
+.modal .restore-dialog .new-section {
+	padding-bottom: 50px;
+}
+
+.modal .restore-dialog .sub-section {
+	padding-left: 15px;
+	padding-right: 15px;
+}
+
+.modal .restore-dialog .dialog-input-section {
+	display: flex;
+	padding-left: 15px;
+	padding-right: 15px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+
+.modal .restore-dialog .dialog-input-section .dialog-label {
+	flex: 0 0 100px;
+	align-self: center;
+}
+
+.modal .restore-dialog .dialog-input-section .dialog-input {
+	flex: 1 1 auto;
+}
+
+.modal .restore-dialog .file-browser {
+	width: 30px;
+}
+
+.modal .restore-dialog .file-browser .monaco-button {
+	height: 100%;
+}
+
+.modal .restore-dialog .restore-plan-section {
+	width: 100%;
+}
+
+.modal .restore-dialog .restore-list {
+	width: 100%;
+	height: 500px;
+	margin-bottom: 15px;
+	overflow: hidden;
+	box-sizing: border-box;
+}
+
+.modal .restore-dialog .restore-list .backup-table-content .restore-data {
+	white-space: nowrap;
+	padding: 5px;
+}
+
+.modal .restore-dialog .more-options-button {
+	width: 100%;
+	display: flex;
+	flex-direction: row-reverse;
+}
+
+.modal .restore-dialog .more-options-button a.monaco-button.monaco-text-button {
+	margin-right: 15px;
+}

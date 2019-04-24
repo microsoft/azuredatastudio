@@ -1,0 +1,73 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.modelview-toolbar-container {
+	display: flex;
+	justify-content: flex-start;
+	line-height: 1.4em;
+	white-space: nowrap;
+	flex-wrap: wrap;
+}
+
+.modelview-toolbar-container.toolbar-horizontal {
+	flex-direction: row;
+	border-bottom-width: .5px;
+	border-bottom-style: solid;
+	box-sizing: border-box;
+	border-bottom-color: rgba(128, 128, 128, 0.35);
+}
+
+.modelview-toolbar-container.toolbar-vertical {
+	flex-direction: column;
+}
+
+.modelview-toolbar-container .modelview-toolbar-item {
+	flex: 0 0;
+	flex-direction: row;
+	display: flex;
+	padding-left: 10px;
+}
+
+.modelview-toolbar-container.toolbar-vertical .modelview-toolbar-item {
+	flex: 0 0;
+	flex-direction: row;
+	display: flex;
+	padding-left: 0px;
+}
+
+.modelview-toolbar-container .modelview-toolbar-title {
+	padding: 4px;
+	font-size: 13px;
+	cursor: pointer;
+}
+
+.modelview-toolbar-container .modelview-toolbar-component select,
+.modelview-toolbar-container .modelview-toolbar-component .monaco-inputbox {
+	width: 200px;
+	height: 25px;
+}
+
+.modelview-toolbar-container .modelview-toolbar-component modelview-button .monaco-text-button.icon {
+	padding-left: 15px;
+	background-size: 11px;
+	margin-right: 0.3em;
+}
+
+/* Vertical button handling */
+.modelview-toolbar-container.toolbar-vertical  .modelview-toolbar-component modelview-button .monaco-text-button.icon {
+	padding: 20px 16px 20px 16px;
+	background-size: 20px;
+	margin-right: 0.3em;
+	background-position: 50% 50%;
+
+}
+
+.modelview-toolbar-container .modelview-toolbar-component modelview-button .monaco-text-button.active {
+	-ms-transform: scale(1.272019649, 1.272019649); /* 1.272019649 = √φ */
+	-webkit-transform: scale(1.272019649, 1.272019649);
+	-moz-transform: scale(1.272019649, 1.272019649);
+	-o-transform: scale(1.272019649, 1.272019649);
+	transform: scale(1.272019649, 1.272019649);
+}
