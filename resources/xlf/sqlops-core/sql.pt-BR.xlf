@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file original="src/sql/workbench/services/connection/browser/connectionDialogService" source-language="en" target-language="pt-BR" datatype="plaintext">
     <body>
@@ -106,11 +106,11 @@
   </file>
   <file original="src/sql/platform/jobManagement/common/jobManagementService" source-language="en" target-language="pt-BR" datatype="plaintext">
     <body>
-      <trans-unit id="providerIdNotValidError_jobManagementService">
+      <trans-unit id="providerIdNotValidError">
         <source xml:lang="en">Connection is required in order to interact with JobManagementService</source>
         <target state="translated">A conexão é necessária para interagir com JobManagementService</target>
       </trans-unit>
-      <trans-unit id="noHandlerRegistered_jobManagementService">
+      <trans-unit id="noHandlerRegistered">
         <source xml:lang="en">No Handler Registered</source>
         <target state="translated">Nenhum manipulador registrado</target>
       </trans-unit>
@@ -142,11 +142,11 @@
   </file>
   <file original="src/sql/platform/dacfx/common/dacFxService" source-language="en" target-language="pt-BR" datatype="plaintext">
     <body>
-      <trans-unit id="providerIdNotValidError_dacFxService">
+      <trans-unit id="providerIdNotValidError">
         <source xml:lang="en">Connection is required in order to interact with DacFxService</source>
         <target state="translated">Uma conexão é necessária para interagir com DacFxService</target>
       </trans-unit>
-      <trans-unit id="noHandlerRegistered_dacFxService">
+      <trans-unit id="noHandlerRegistered">
         <source xml:lang="en">No Handler Registered</source>
         <target state="translated">Nenhum manipulador registrado</target>
       </trans-unit>
@@ -209,7 +209,7 @@
       </trans-unit>
       <trans-unit id="miViewTasks">
         <source xml:lang="en">&amp;&amp;Tasks</source>
-        <target state="translated">&&Tarefas</target>
+        <target state="translated">&amp;&amp;Tarefas</target>
         <note>&amp;&amp; denotes a mnemonic</note>
       </trans-unit>
     </body>
@@ -312,7 +312,7 @@
         <source xml:lang="en">New Query</source>
         <target state="translated">Nova consulta</target>
       </trans-unit>
-      <trans-unit id="manage_nodeActions.contribution">
+      <trans-unit id="manage">
         <source xml:lang="en">Manage</source>
         <target state="translated">Gerenciar</target>
       </trans-unit>
@@ -332,7 +332,7 @@
   </file>
   <file original="src/sql/workbench/parts/connection/electron-browser/connectionViewlet" source-language="en" target-language="pt-BR" datatype="plaintext">
     <body>
-      <trans-unit id="Search server names_connectionViewlet">
+      <trans-unit id="Search server names">
         <source xml:lang="en">Search server names</source>
         <target state="translated">Nomes de servidores de pesquisa</target>
       </trans-unit>
@@ -736,11 +736,11 @@
         <source xml:lang="en">property `icon` can be omitted or must be either a string or a literal like `{dark, light}`</source>
         <target state="translated">Propriedade 'ícone' pode ser omitida ou deve ser uma sequência de caracteres ou um literal como '{escuro, luz}'</target>
       </trans-unit>
-      <trans-unit id="navSection.missingTitle_error">
+      <trans-unit id="navSection.missingTitle">
         <source xml:lang="en">No title in nav section specified for extension.</source>
         <target state="translated">Nenhum título na seção NAV especificado para extensão.</target>
       </trans-unit>
-      <trans-unit id="navSection.missingContainer_error">
+      <trans-unit id="navSection.missingContainer">
         <source xml:lang="en">No container in nav section specified for extension.</source>
         <target state="translated">Nenhum container especificado na seção nav para a extensão</target>
       </trans-unit>
@@ -748,7 +748,7 @@
         <source xml:lang="en">Exactly 1 dashboard container must be defined per space.</source>
         <target state="translated">Exatamente 1 contêiner do Dashboard deve ser definido por espaço.</target>
       </trans-unit>
-      <trans-unit id="navSection.invalidContainer_error">
+      <trans-unit id="navSection.invalidContainer">
         <source xml:lang="en">NAV_SECTION within NAV_SECTION is an invalid container for extension.</source>
         <target state="translated">NAV_SECTION dentro NAV_SECTION é um contêiner inválido para a extensão.</target>
       </trans-unit>
@@ -1613,7 +1613,7 @@
   </file>
   <file original="src/sql/workbench/parts/dataExplorer/browser/connectionViewletPanel" source-language="en" target-language="pt-BR" datatype="plaintext">
     <body>
-      <trans-unit id="Search server names_connectionViewletPanel">
+      <trans-unit id="Search server names">
         <source xml:lang="en">Search server names</source>
         <target state="translated">Nomes de servidores de pesquisa</target>
       </trans-unit>
@@ -1709,7 +1709,7 @@
         <source xml:lang="en">No</source>
         <target state="translated">Não</target>
       </trans-unit>
-      <trans-unit id="delete_connectionActions">
+      <trans-unit id="delete">
         <source xml:lang="en">Delete</source>
         <target state="translated">Excluir</target>
       </trans-unit>
@@ -1789,35 +1789,35 @@
   </file>
   <file original="src/sql/parts/grid/views/gridActions" source-language="en" target-language="pt-BR" datatype="plaintext">
     <body>
-      <trans-unit id="saveAsCsv_gridActions">
+      <trans-unit id="saveAsCsv">
         <source xml:lang="en">Save As CSV</source>
         <target state="translated">Salve como CSV</target>
       </trans-unit>
-      <trans-unit id="saveAsJson_gridActions">
+      <trans-unit id="saveAsJson">
         <source xml:lang="en">Save As JSON</source>
         <target state="translated">Salvar como JSON</target>
       </trans-unit>
-      <trans-unit id="saveAsExcel_gridActions">
+      <trans-unit id="saveAsExcel">
         <source xml:lang="en">Save As Excel</source>
         <target state="translated">Salvar como Excel</target>
       </trans-unit>
-      <trans-unit id="saveAsXml_gridActions">
+      <trans-unit id="saveAsXml">
         <source xml:lang="en">Save As XML</source>
         <target state="translated">Salvar como XML</target>
       </trans-unit>
-      <trans-unit id="copySelection_gridActions">
+      <trans-unit id="copySelection">
         <source xml:lang="en">Copy</source>
         <target state="translated">Copiar</target>
       </trans-unit>
-      <trans-unit id="copyWithHeaders_gridActions">
+      <trans-unit id="copyWithHeaders">
         <source xml:lang="en">Copy With Headers</source>
         <target state="translated">Copie com cabeçalhos</target>
       </trans-unit>
-      <trans-unit id="selectAll_gridActions">
+      <trans-unit id="selectAll">
         <source xml:lang="en">Select All</source>
         <target state="translated">Selecionar tudo</target>
       </trans-unit>
-      <trans-unit id="copyMessages_gridActions">
+      <trans-unit id="copyMessages">
         <source xml:lang="en">Copy</source>
         <target state="translated">Copiar</target>
       </trans-unit>
@@ -1881,7 +1881,7 @@
         <source xml:lang="en">Select View:</source>
         <target state="translated">Selecione a Exibição:</target>
       </trans-unit>
-      <trans-unit id="text_profilerEditor">
+      <trans-unit id="text">
         <source xml:lang="en">Text</source>
         <target state="translated">Texto</target>
       </trans-unit>
@@ -1993,7 +1993,7 @@
         <source xml:lang="en">You must enable preview features in order to use restore</source>
         <target state="translated">Você precisa habilitar recursos em versão prévia para poder utilizar a restauração</target>
       </trans-unit>
-      <trans-unit id="manage_actions">
+      <trans-unit id="manage">
         <source xml:lang="en">Manage</source>
         <target state="translated">Gerenciar</target>
       </trans-unit>
@@ -2023,7 +2023,7 @@
       </trans-unit>
       <trans-unit id="miGettingStarted">
         <source xml:lang="en">Getting &amp;&amp;Started</source>
-        <target state="translated">Introdução</target>
+        <target state="translated">&amp;&amp;Introdução</target>
         <note>&amp;&amp; denotes a mnemonic</note>
       </trans-unit>
     </body>
@@ -2234,7 +2234,7 @@
   </file>
   <file original="src/sql/parts/modelComponents/loadingComponent.component" source-language="en" target-language="pt-BR" datatype="plaintext">
     <body>
-      <trans-unit id="loadingMessage_loadingComponent.component">
+      <trans-unit id="loadingMessage">
         <source xml:lang="en">Loading</source>
         <target state="translated">Carregando</target>
       </trans-unit>
@@ -3020,7 +3020,7 @@
         <source xml:lang="en">Code</source>
         <target state="translated">Código</target>
       </trans-unit>
-      <trans-unit id="text_notebook.component">
+      <trans-unit id="text">
         <source xml:lang="en">Text</source>
         <target state="translated">Texto</target>
       </trans-unit>
@@ -3344,7 +3344,7 @@
   </file>
   <file original="src/sql/parts/modelComponents/componentBase" source-language="en" target-language="pt-BR" datatype="plaintext">
     <body>
-      <trans-unit id="invalidIndex_componentBase">
+      <trans-unit id="invalidIndex">
         <source xml:lang="en">The index is invalid.</source>
         <target state="translated">O índice é inválido.</target>
       </trans-unit>
@@ -3420,7 +3420,7 @@
   </file>
   <file original="src/sql/parts/objectExplorer/viewlet/serverTreeRenderer" source-language="en" target-language="pt-BR" datatype="plaintext">
     <body>
-      <trans-unit id="loading_serverTreeRenderer">
+      <trans-unit id="loading">
         <source xml:lang="en">Loading...</source>
         <target state="translated">Carregando...</target>
       </trans-unit>
@@ -3428,35 +3428,35 @@
   </file>
   <file original="src/sql/parts/query/editor/actions" source-language="en" target-language="pt-BR" datatype="plaintext">
     <body>
-      <trans-unit id="saveAsCsv_actions">
+      <trans-unit id="saveAsCsv">
         <source xml:lang="en">Save As CSV</source>
         <target state="translated">Salve como CSV</target>
       </trans-unit>
-      <trans-unit id="saveAsJson_actions">
+      <trans-unit id="saveAsJson">
         <source xml:lang="en">Save As JSON</source>
         <target state="translated">Salvar como JSON</target>
       </trans-unit>
-      <trans-unit id="saveAsExcel_actions">
+      <trans-unit id="saveAsExcel">
         <source xml:lang="en">Save As Excel</source>
         <target state="translated">Salvar como Excel</target>
       </trans-unit>
-      <trans-unit id="saveAsXml_actions">
+      <trans-unit id="saveAsXml">
         <source xml:lang="en">Save As XML</source>
         <target state="translated">Salvar como XML</target>
       </trans-unit>
-      <trans-unit id="copySelection_actions">
+      <trans-unit id="copySelection">
         <source xml:lang="en">Copy</source>
         <target state="translated">Copiar</target>
       </trans-unit>
-      <trans-unit id="copyWithHeaders_actions">
+      <trans-unit id="copyWithHeaders">
         <source xml:lang="en">Copy With Headers</source>
         <target state="translated">Copie com cabeçalhos</target>
       </trans-unit>
-      <trans-unit id="selectAll_actions">
+      <trans-unit id="selectAll">
         <source xml:lang="en">Select All</source>
         <target state="translated">Selecionar tudo</target>
       </trans-unit>
-      <trans-unit id="copyMessages_actions">
+      <trans-unit id="copyMessages">
         <source xml:lang="en">Copy</source>
         <target state="translated">Copiar</target>
       </trans-unit>
@@ -3640,7 +3640,7 @@
   </file>
   <file original="src/sql/parts/notebook/notebookActions" source-language="en" target-language="pt-BR" datatype="plaintext">
     <body>
-      <trans-unit id="loading_notebookActions">
+      <trans-unit id="loading">
         <source xml:lang="en">Loading kernels...</source>
         <target state="translated">Carregando kernels...</target>
       </trans-unit>
@@ -3664,11 +3664,11 @@
         <source xml:lang="en">Add new connection</source>
         <target state="translated">Adicionar nova conexão</target>
       </trans-unit>
-      <trans-unit id="selectConnection_notebookActions">
+      <trans-unit id="selectConnection">
         <source xml:lang="en">Select connection</source>
         <target state="translated">Selecione a conexão</target>
       </trans-unit>
-      <trans-unit id="localhost_notebookActions">
+      <trans-unit id="localhost">
         <source xml:lang="en">localhost</source>
         <target state="translated">localhost</target>
       </trans-unit>
@@ -3684,7 +3684,7 @@
         <source xml:lang="en">Notebook is already trusted.</source>
         <target state="translated">O notebook já é confiável.</target>
       </trans-unit>
-      <trans-unit id="noKernel_notebookActions">
+      <trans-unit id="noKernel">
         <source xml:lang="en">No Kernel</source>
         <target state="translated">Nenhum Kernel</target>
       </trans-unit>
@@ -3720,7 +3720,7 @@
   </file>
   <file original="src/sql/parts/modelComponents/loadingSpinner.component" source-language="en" target-language="pt-BR" datatype="plaintext">
     <body>
-      <trans-unit id="loadingMessage_loadingSpinner.component">
+      <trans-unit id="loadingMessage">
         <source xml:lang="en">Loading</source>
         <target state="translated">Carregando</target>
       </trans-unit>
@@ -3796,7 +3796,7 @@
   </file>
   <file original="src/sql/parts/dashboard/containers/dashboardErrorContainer.component" source-language="en" target-language="pt-BR" datatype="plaintext">
     <body>
-      <trans-unit id="dashboardNavSection_loadTabError">
+      <trans-unit id="dashboardNavSection">
         <source xml:lang="en">The "{0}" section has invalid content. Please contact extension owner.</source>
         <target state="translated">A seção "{0}" tem conteúdo inválido. Entre em contato com o proprietário da extensão.</target>
       </trans-unit>
@@ -4120,7 +4120,7 @@
         <source xml:lang="en">Unkown component type. Must use ModelBuilder to create objects</source>
         <target state="translated">Tipo de componente desconhecido. Deve usar ModelBuilder para criar objetos</target>
       </trans-unit>
-      <trans-unit id="invalidIndex_extHostModelView">
+      <trans-unit id="invalidIndex">
         <source xml:lang="en">The index is invalid.</source>
         <target state="translated">O índice é inválido.</target>
       </trans-unit>
@@ -4200,11 +4200,11 @@
   </file>
   <file original="src/sql/parts/notebook/models/notebookContexts" source-language="en" target-language="pt-BR" datatype="plaintext">
     <body>
-      <trans-unit id="selectConnection_notebookContexts">
+      <trans-unit id="selectConnection">
         <source xml:lang="en">Select connection</source>
         <target state="translated">Selecione a conexão</target>
       </trans-unit>
-      <trans-unit id="localhost_notebookContexts">
+      <trans-unit id="localhost">
         <source xml:lang="en">localhost</source>
         <target state="translated">localhost</target>
       </trans-unit>
@@ -4252,7 +4252,7 @@
   </file>
   <file original="src/sql/workbench/services/notebook/common/sessionManager" source-language="en" target-language="pt-BR" datatype="plaintext">
     <body>
-      <trans-unit id="noKernel_sessionManager">
+      <trans-unit id="noKernel">
         <source xml:lang="en">No Kernel</source>
         <target state="translated">Nenhum Kernel</target>
       </trans-unit>
@@ -4268,7 +4268,7 @@
   </file>
   <file original="src/sql/parts/notebook/cellToggleMoreActions" source-language="en" target-language="pt-BR" datatype="plaintext">
     <body>
-      <trans-unit id="delete_cellToggleMoreActions">
+      <trans-unit id="delete">
         <source xml:lang="en">Delete</source>
         <target state="translated">Excluir</target>
       </trans-unit>
