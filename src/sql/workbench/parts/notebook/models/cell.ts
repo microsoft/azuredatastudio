@@ -493,7 +493,7 @@ export class CellModel implements ICellModel {
 	// TODO: this will be refactored out into the notebooks extension as a contribution point
 	private getKnoxEndpoint(activeConnection: IConnectionProfile): notebookUtils.IEndpoint {
 		let endpoint;
-		if (this._connectionManagementService && activeConnection && activeConnection.providerName === notebookConstants.SQL_CONNECTION_PROVIDER) {
+		if (this._connectionManagementService && activeConnection && activeConnection.providerName.toLowerCase() === notebookConstants.SQL_CONNECTION_PROVIDER.toLowerCase()) {
 			let serverInfo: ServerInfo = this._connectionManagementService.getServerInfo(activeConnection.id);
 			if (serverInfo && serverInfo.options && serverInfo.options['clusterEndpoints']) {
 				let endpoints: notebookUtils.IEndpoint[] = serverInfo.options['clusterEndpoints'];
