@@ -1741,23 +1741,6 @@ declare module 'azdata' {
 		ownerUri: string;
 	}
 
-	export interface SchemaCompareParams {
-		sourceEndpointInfo: SchemaCompareEndpointInfo;
-		targetEndpointInfo: SchemaCompareEndpointInfo;
-		taskExecutionMode: TaskExecutionMode;
-		deploymentOptions: DeploymentOptions;
-	}
-
-	export interface SchemaCompareGenerateScriptParams {
-		operationId: string;
-		targetDatabaseName: string;
-		scriptFilePath: string;
-		taskExecutionMode: TaskExecutionMode;
-	}
-
-	export interface SchemaCompareGetOptionsParams {
-	}
-
 	export interface SchemaCompareOptionsResult extends ResultStatus {
 		defaultDeploymentOptions: DeploymentOptions;
 	}

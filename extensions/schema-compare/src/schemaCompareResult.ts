@@ -404,6 +404,7 @@ export class SchemaCompareResult {
 				light: path.join(__dirname, 'media', 'options.svg'),
 				dark: path.join(__dirname, 'media', 'options_reverse.svg')
 			},
+			title: localize('schemaCompare.optionsButtonTitle', 'Options')
 		}).component();
 
 		this.optionsButton.onDidClick(async (click) => {
