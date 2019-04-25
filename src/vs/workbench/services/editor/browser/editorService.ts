@@ -530,16 +530,11 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 
 		// Untitled file support
 		const untitledInput = <IUntitledResourceInput>input;
-		if (!untitledInput.resource || typeof untitledInput.filePath === 'string' || (untitledInput.resource instanceof URI && untitledInput.resource.scheme === Schemas.untitled)) {
+		if (untitledInput.forceUntitled || !untitledInput.resource || (untitledInput.resource && untitledInput.resource.scheme === Schemas.untitled)) {
 			// {{SQL CARBON EDIT}}
 
 			let modeId: string = untitledInput.language ? untitledInput.language : getFileMode(this.instantiationService, untitledInput.resource);
-			return convertEditorInput(this.untitledEditorService.createOrGet(
-				untitledInput.filePath ? URI.file(untitledInput.filePath) : untitledInput.resource,
-				modeId,
-				untitledInput.contents,
-				untitledInput.encoding
-			), undefined, this.instantiationService);
+			return convertEditorInput(this.untitledEditorService.createOrGet(untitledInput.resource, modeId, untitledInput.contents, untitledInput.encoding), undefined, this.instantiationService);
 		}
 
 		// Resource Editor Support
