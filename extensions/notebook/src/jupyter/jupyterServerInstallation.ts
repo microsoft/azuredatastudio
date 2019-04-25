@@ -226,6 +226,7 @@ export default class JupyterServerInstallation {
 		this.pythonEnvVarPath = process.env['PATH'];
 
 		let delimiter = path.delimiter;
+		this.pythonEnvVarPath = this.pythonBinPath + delimiter + this.pythonEnvVarPath;
 		if (process.platform === constants.winPlatform) {
 			let pythonScriptsPath = path.join(pythonSourcePath, 'Scripts');
 			this.pythonEnvVarPath = pythonScriptsPath + delimiter + this.pythonEnvVarPath;
@@ -240,7 +241,6 @@ export default class JupyterServerInstallation {
 				].join(delimiter);
 			}
 		}
-		this.pythonEnvVarPath = this.pythonBinPath + delimiter + this.pythonEnvVarPath;
 
 		// Delete existing Python variables in ADS to prevent conflict with other installs
 		delete process.env['PYTHONPATH'];
@@ -251,7 +251,6 @@ export default class JupyterServerInstallation {
 		let env = Object.assign({}, process.env);
 		delete env['Path']; // Delete extra 'Path' variable for Windows, just in case.
 		env['PATH'] = this.pythonEnvVarPath;
-		process.env['PATH'] = this.pythonEnvVarPath;
 		this.execOptions = {
 			env: env
 		};
@@ -355,7 +354,7 @@ export default class JupyterServerInstallation {
 		if (installJupyterCommand) {
 			this.outputChannel.show(true);
 			this.outputChannel.appendLine(localize('msgInstallStart', "Installing required packages to run Notebooks..."));
-			await utils.executeStreamedCommand(installJupyterCommand, this.outputChannel);
+			await this.executeCommand(installJupyterCommand);
 			this.outputChannel.appendLine(localize('msgJupyterInstallDone', "... Jupyter installation complete."));
 		} else {
 			return Promise.resolve();
@@ -372,7 +371,7 @@ export default class JupyterServerInstallation {
 		if (installSparkMagic) {
 			this.outputChannel.show(true);
 			this.outputChannel.appendLine(localize('msgInstallingSpark', "Installing SparkMagic..."));
-			await utils.executeStreamedCommand(installSparkMagic, this.outputChannel);
+			await this.executeCommand(installSparkMagic);
 		}
 	}
 
@@ -381,10 +380,10 @@ export default class JupyterServerInstallation {
 		this.outputChannel.appendLine(localize('msgInstallStart', "Installing required packages to run Notebooks..."));
 
 		let installCommand = `"${this._pythonExecutable}" -m pip install jupyter pandas`;
-		await utils.executeStreamedCommand(installCommand, this.outputChannel);
+		await this.executeCommand(installCommand);
 
 		installCommand = `"${this._pythonExecutable}" -m pip install prose-codeaccelerator==1.3.0 --extra-index-url https://prose-python-packages.azurewebsites.net`;
-		await utils.executeStreamedCommand(installCommand, this.outputChannel);
+		await this.executeCommand(installCommand);
 
 		this.outputChannel.appendLine(localize('msgJupyterInstallDone', "... Jupyter installation complete."));
 	}
@@ -394,12 +393,16 @@ export default class JupyterServerInstallation {
 		this.outputChannel.appendLine(localize('msgInstallStart', "Installing required packages to run Notebooks..."));
 
 		let installCommand = `"${this.getCondaExePath()}" install -y jupyter pandas`;
-		await utils.executeStreamedCommand(installCommand, this.outputChannel);
+		await this.executeCommand(installCommand);
 
 		installCommand = `"${this._pythonExecutable}" -m pip install prose-codeaccelerator==1.3.0 --extra-index-url https://prose-python-packages.azurewebsites.net`;
-		await utils.executeStreamedCommand(installCommand, this.outputChannel);
+		await this.executeCommand(installCommand);
 
 		this.outputChannel.appendLine(localize('msgJupyterInstallDone', "... Jupyter installation complete."));
+	}
+
+	private async executeCommand(command: string): Promise<void> {
+		await utils.executeStreamedCommand(command, { env: this.execOptions.env }, this.outputChannel);
 	}
 
 	public get pythonExecutable(): string {
