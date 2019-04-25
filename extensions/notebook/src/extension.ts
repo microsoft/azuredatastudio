@@ -133,7 +133,7 @@ async function openNotebook(): Promise<void> {
 			vscode.window.showTextDocument(doc);
 		}
 	} catch (err) {
-		vscode.window.showErrorMessage(err);
+		vscode.window.showErrorMessage(err.message);
 	}
 }
 
@@ -146,7 +146,7 @@ async function runActiveCell(): Promise<void> {
 			throw new Error(noNotebookVisible);
 		}
 	} catch (err) {
-		vscode.window.showErrorMessage(err);
+		vscode.window.showErrorMessage(err.message);
 	}
 }
 
@@ -159,7 +159,7 @@ async function runAllCells(): Promise<void> {
 			throw new Error(noNotebookVisible);
 		}
 	} catch (err) {
-		vscode.window.showErrorMessage(err);
+		vscode.window.showErrorMessage(err.message);
 	}
 }
 
@@ -178,7 +178,7 @@ async function addCell(cellType: azdata.nb.CellType): Promise<void> {
 			throw new Error(noNotebookVisible);
 		}
 	} catch (err) {
-		vscode.window.showErrorMessage(err);
+		vscode.window.showErrorMessage(err.message);
 	}
 }
 
