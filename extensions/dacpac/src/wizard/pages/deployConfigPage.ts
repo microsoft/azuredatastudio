@@ -67,13 +67,12 @@ export class DeployConfigPage extends DacFxConfigPage {
 		this.createFileBrowserParts();
 
 		this.fileButton.onDidClick(async (click) => {
-			let rootPath = vscode.workspace.rootPath ? vscode.workspace.rootPath : os.homedir();
 			let fileUris = await vscode.window.showOpenDialog(
 				{
 					canSelectFiles: true,
 					canSelectFolders: false,
 					canSelectMany: false,
-					defaultUri: vscode.Uri.file(rootPath),
+					defaultUri: vscode.Uri.file(this.getRootPath()),
 					openLabel: localize('dacFxDeploy.openFile', 'Open'),
 					filters: {
 						'dacpac Files': ['dacpac'],

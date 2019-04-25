@@ -147,10 +147,17 @@ export abstract class DacFxConfigPage extends BasePage {
 	}
 
 	protected generateFilePath(): string {
+		return path.join(this.getRootPath(), this.model.database + '-' + this.getDateTime() + this.fileExtension);
+	}
+
+	protected getDateTime(): string {
 		let now = new Date();
-		let datetime = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate() + '-' + now.getHours() + '-' + now.getMinutes();
-		let rootPath = vscode.workspace.rootPath ? vscode.workspace.rootPath : os.homedir();
-		return path.join(rootPath, this.model.database + '-' + datetime + this.fileExtension);
+		return now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate() + '-' + now.getHours() + '-' + now.getMinutes();
+	}
+
+	protected getRootPath(): string {
+		// return rootpath of opened folder in file explorer if one is open, otherwise default to user home directory
+		return vscode.workspace.rootPath ? vscode.workspace.rootPath : os.homedir();
 	}
 }
 
