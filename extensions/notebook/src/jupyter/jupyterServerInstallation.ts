@@ -367,11 +367,18 @@ export default class JupyterServerInstallation {
 	}
 
 	private async installCondaPackages(): Promise<void> {
-		let condaExePath = this.getCondaExePath();
-		let installCommand = `"${condaExePath}" install -y jupyter pandas`; // Sparkmagic not supported for windows
+		if (process.platform === constants.winPlatform) {
+			throw new Error('Using an existing Anaconda installation is not currently supported on Windows.');
+		}
 		this.outputChannel.show(true);
 		this.outputChannel.appendLine(localize('msgInstallStart', "Installing required packages to run Notebooks..."));
+
+		let installCommand = `"${this.getCondaExePath()}" install -y jupyter pandas sparkmagic`;
 		await utils.executeStreamedCommand(installCommand, this.outputChannel);
+
+		installCommand = `"${this._pythonExecutable}" -m pip install prose-codeaccelerator==1.3.0 --extra-index-url https://prose-python-packages.azurewebsites.net`;
+		await utils.executeStreamedCommand(installCommand, this.outputChannel);
+
 		this.outputChannel.appendLine(localize('msgJupyterInstallDone', "... Jupyter installation complete."));
 	}
 
