@@ -13,6 +13,7 @@ import { AppContext } from './common/appContext';
 import { ApiWrapper } from './common/apiWrapper';
 import { IExtensionApi } from './types';
 import { CellType } from './contracts/content';
+import { getErrorMessage } from './common/utils';
 
 const localize = nls.loadMessageBundle();
 
@@ -221,8 +222,4 @@ export function deactivate() {
 	if (controller) {
 		controller.deactivate();
 	}
-}
-
-export function getErrorMessage(error: Error | string): string {
-	return (error instanceof Error) ? error.message : error;
 }
