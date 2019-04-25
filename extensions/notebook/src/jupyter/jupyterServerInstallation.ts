@@ -386,6 +386,24 @@ export default class JupyterServerInstallation {
 		return this._pythonExecutable;
 	}
 
+	public getNotebookStartCmd(notebookDirectory: string, port: string, token: string): string {
+		if (this._usingConda) {
+			let jupyterExe = path.join(this._pythonInstallationPath, 'bin', 'jupyter');
+			return `"${jupyterExe}" notebook --no-browser --notebook-dir "${notebookDirectory}" --port=${port} --NotebookApp.token=${token}`;
+		} else {
+			return `"${this._pythonExecutable}" -m jupyter notebook --no-browser --notebook-dir "${notebookDirectory}" --port=${port} --NotebookApp.token=${token}`;
+		}
+	}
+
+	public getNotebookStopCmd(port: string): string {
+		if (this._usingConda) {
+			let jupyterExe = path.join(this._pythonInstallationPath, 'bin', 'jupyter');
+			return `"${jupyterExe}" notebook stop ${port}`;
+		} else {
+			return `"${this._pythonExecutable}" -m jupyter notebook stop ${port}`;
+		}
+	}
+
 	private getCondaExePath(): string {
 		return path.join(this._pythonInstallationPath,
 			process.platform === constants.winPlatform ? 'condabin\\conda.bat' : 'bin/conda');
