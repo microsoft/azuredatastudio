@@ -162,7 +162,7 @@ export class SchemaCompareResult {
 					width: 50
 				},
 				{
-					value: localize('schemaCompare.sourceNameColumn', 'Target Name'),
+					value: localize('schemaCompare.sourceNameColumn', 'Source Name'),
 					cssClass: 'align-with-header',
 					width: 90
 				},
@@ -172,7 +172,7 @@ export class SchemaCompareResult {
 					width: 30
 				},
 				{
-					value: localize('schemaCompare.targetNameColumn', 'Source Name'),
+					value: localize('schemaCompare.targetNameColumn', 'Target Name'),
 					cssClass: 'align-with-header',
 					width: 150
 				}]
