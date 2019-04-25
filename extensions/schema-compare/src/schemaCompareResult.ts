@@ -68,7 +68,7 @@ export class SchemaCompareResult {
 
 			this.includeComponent = view.modelBuilder.table().withProperties({
 				data: [],
-				height: 30
+				height: 28,
 			}).component();
 
 			this.diffEditor = view.modelBuilder.diffeditor().withProperties({
@@ -225,8 +225,8 @@ export class SchemaCompareResult {
 
 		this.checkboxList.clearItems();
 		this.checkboxList.addItem(this.includeComponent);
-		this.checkBoxes.forEach(box => this.checkboxList.addItem(box, { CSSStyles: { 'height': '25px' } }));
-		this.diffViewTopPane.addItem(this.checkboxList, { CSSStyles: { 'margin-left': '8px', 'width': '4%' } });
+		this.checkBoxes.forEach(box => this.checkboxList.addItem(box, { CSSStyles: { 'height': '24px', 'border-bottom': '1px #BDBDBD solid', 'border-right': '1px #BDBDBD dotted' } }));
+		this.diffViewTopPane.addItem(this.checkboxList, { CSSStyles: { 'margin-left': '10px', 'width': '4%' } });
 		this.diffViewTopPane.addItem(this.differencesTable, { CSSStyles: { 'width': '96%' } });
 
 		this.splitView.addItem(this.diffViewTopPane);
