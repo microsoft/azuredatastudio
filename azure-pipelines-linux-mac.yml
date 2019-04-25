@@ -49,8 +49,21 @@ steps:
 - script: |
     DISPLAY=:10 ./scripts/test.sh --reporter mocha-junit-reporter
   displayName: 'Tests'
+  condition: eq(variables['Agent.OS'], 'Linux')
+
+- script: |
+    DISPLAY=:10 ./scripts/test.sh --reporter mocha-junit-reporter --coverage
+  displayName: 'Tests'
+  condition: ne(variables['Agent.OS'], 'Linux')
 
 - task: PublishTestResults@2
   inputs:
     testResultsFiles: '**/test-results.xml'
   condition: succeededOrFailed()
+
+- task: PublishCodeCoverageResults@1
+  inputs:
+    codeCoverageTool: 'cobertura'
+    summaryFileLocation: $(System.DefaultWorkingDirectory)/.build/coverage/cobertura-coverage.xml
+    reportDirectory: $(System.DefaultWorkingDirectory)/.build/coverage/lcov-reports
+  condition: ne(variables['Agent.OS'], 'Linux')

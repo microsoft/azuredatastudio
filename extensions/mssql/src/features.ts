@@ -51,7 +51,6 @@ export class DacFxServicesFeature extends SqlOpsFeature<undefined> {
 
 	protected registerProvider(options: undefined): Disposable {
 		const client = this._client;
-		let self = this;
 
 		let exportBacpac = (databaseName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> => {
 			let params: contracts.ExportParams = { databaseName: databaseName, packageFilePath: packageFilePath, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
@@ -148,7 +147,7 @@ export class SchemaCompareServicesFeature extends SqlOpsFeature<undefined> {
 		contracts.SchemaCompareRequest.type,
 		contracts.SchemaCompareGenerateScriptRequest.type,
 		contracts.SchemaCompareGetDefaultOptionsRequest.type,
-		//		contracts.SchemaCompareIncludeNodeRequest.type
+		contracts.SchemaCompareIncludeExcludeNodeRequest.type
 	];
 
 	constructor(client: SqlOpsDataClient) {
@@ -167,7 +166,6 @@ export class SchemaCompareServicesFeature extends SqlOpsFeature<undefined> {
 
 	protected registerProvider(options: undefined): Disposable {
 		const client = this._client;
-		let self = this;
 
 		let schemaCompare = (sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, deploymentOptions: azdata.DeploymentOptions): Thenable<azdata.SchemaCompareResult> => {
 			let params: contracts.SchemaCompareParams = { sourceEndpointInfo: sourceEndpointInfo, targetEndpointInfo: targetEndpointInfo, taskExecutionMode: taskExecutionMode, deploymentOptions: deploymentOptions };
@@ -195,6 +193,19 @@ export class SchemaCompareServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
+		let schemaComparePublishChanges = (operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> => {
+			let params: contracts.SchemaComparePublishChangesParams = { operationId: operationId, targetServerName: targetServerName, targetDatabaseName: targetDatabaseName, taskExecutionMode: taskExecutionMode };
+			return client.sendRequest(contracts.SchemaComparePublishChangesRequest.type, params).then(
+				r => {
+					return r;
+				},
+				e => {
+					client.logFailedRequest(contracts.SchemaComparePublishChangesRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
 		let schemaCompareGetDefaultOptions = (): Thenable<azdata.SchemaCompareOptionsResult> => {
 			let params: contracts.SchemaCompareGetOptionsParams = {};
 			return client.sendRequest(contracts.SchemaCompareGetDefaultOptionsRequest.type, params).then(
@@ -210,12 +221,12 @@ export class SchemaCompareServicesFeature extends SqlOpsFeature<undefined> {
 
 		let schemaCompareIncludeExcludeNode = (operationId: string, diffEntry: azdata.DiffEntry, includeRequest: boolean, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> => {
 			let params: contracts.SchemaCompareNodeParams = { operationId: operationId, diffEntry, includeRequest, taskExecutionMode: taskExecutionMode };
-			return client.sendRequest(contracts.SchemaCompareIncludeNodeRequest.type, params).then(
+			return client.sendRequest(contracts.SchemaCompareIncludeExcludeNodeRequest.type, params).then(
 				r => {
 					return r;
 				},
 				e => {
-					client.logFailedRequest(contracts.SchemaCompareIncludeNodeRequest.type, e);
+					client.logFailedRequest(contracts.SchemaCompareIncludeExcludeNodeRequest.type, e);
 					return Promise.resolve(undefined);
 				}
 			);
@@ -225,6 +236,7 @@ export class SchemaCompareServicesFeature extends SqlOpsFeature<undefined> {
 			providerId: client.providerId,
 			schemaCompare,
 			schemaCompareGenerateScript,
+			schemaComparePublishChanges,
 			schemaCompareGetDefaultOptions,
 			schemaCompareIncludeExcludeNode
 		});

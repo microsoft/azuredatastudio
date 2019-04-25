@@ -183,7 +183,7 @@ import { ICredentialsService, CredentialsService } from 'sql/platform/credential
 import { ISerializationService, SerializationService } from 'sql/platform/serialization/common/serializationService';
 import { IMetadataService, MetadataService } from 'sql/platform/metadata/common/metadataService';
 import { IObjectExplorerService, ObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
-import { ITaskService, TaskService } from 'sql/platform/taskHistory/common/taskService';
+import { ITaskService, TaskService } from 'sql/platform/tasks/common/tasksService';
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import { QueryModelService } from 'sql/platform/query/common/queryModelService';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
@@ -439,8 +439,7 @@ import 'vs/workbench/contrib/issue/electron-browser/issue.contribution';
 
 // {{SQL CARBON EDIT}}
 // SQL
-import 'sql/workbench/parts/taskHistory/browser/taskHistory.contribution';
-import 'sql/workbench/parts/taskHistory/browser/taskHistoryViewlet';
+import 'sql/workbench/parts/tasks/browser/tasks.contribution';
 
 // data explorer
 import 'sql/workbench/parts/dataExplorer/browser/dataExplorer.contribution';

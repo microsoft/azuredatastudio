@@ -7,8 +7,8 @@ import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { ContributableActionProvider } from 'vs/workbench/browser/actions';
 import { IAction } from 'vs/base/common/actions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { TaskNode, TaskStatus, TaskExecutionMode } from 'sql/workbench/parts/taskHistory/common/taskNode';
-import { CancelAction, ScriptAction } from 'sql/workbench/parts/taskHistory/common/taskAction';
+import { TaskNode, TaskStatus, TaskExecutionMode } from 'sql/platform/tasks/common/tasksNode';
+import { CancelAction, ScriptAction } from 'sql/workbench/parts/tasks/common/tasksAction';
 
 /**
  *  Provides actions for the history tasks
