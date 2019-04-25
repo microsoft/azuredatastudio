@@ -208,12 +208,13 @@ export class SchemaCompareDialog {
 		let currentButton = isTarget ? this.targetFileButton : this.sourceFileButton;
 
 		currentButton.onDidClick(async (click) => {
+			let rootPath = vscode.workspace.rootPath ? vscode.workspace.rootPath : os.homedir();
 			let fileUris = await vscode.window.showOpenDialog(
 				{
 					canSelectFiles: true,
 					canSelectFolders: false,
 					canSelectMany: false,
-					defaultUri: vscode.Uri.file(os.homedir()),
+					defaultUri: vscode.Uri.file(rootPath),
 					openLabel: localize('schemaCompare.openFile', 'Open'),
 					filters: {
 						'dacpac Files': ['dacpac'],

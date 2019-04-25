@@ -57,12 +57,13 @@ export class ImportConfigPage extends DacFxConfigPage {
 		this.createFileBrowserParts();
 
 		this.fileButton.onDidClick(async (click) => {
+			let rootPath = vscode.workspace.rootPath ? vscode.workspace.rootPath : os.homedir();
 			let fileUris = await vscode.window.showOpenDialog(
 				{
 					canSelectFiles: true,
 					canSelectFolders: false,
 					canSelectMany: false,
-					defaultUri: vscode.Uri.file(os.homedir()),
+					defaultUri: vscode.Uri.file(rootPath),
 					openLabel: localize('dacFxImport.openFile', 'Open'),
 					filters: {
 						'bacpac Files': ['bacpac'],

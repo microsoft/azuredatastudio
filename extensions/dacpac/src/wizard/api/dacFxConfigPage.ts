@@ -6,6 +6,7 @@
 
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
+import * as vscode from 'vscode';
 import * as os from 'os';
 import * as path from 'path';
 import { DataTierApplicationWizard } from '../dataTierApplicationWizard';
@@ -148,7 +149,8 @@ export abstract class DacFxConfigPage extends BasePage {
 	protected generateFilePath(): string {
 		let now = new Date();
 		let datetime = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate() + '-' + now.getHours() + '-' + now.getMinutes();
-		return path.join(os.homedir(), this.model.database + '-' + datetime + this.fileExtension);
+		let rootPath = vscode.workspace.rootPath ? vscode.workspace.rootPath : os.homedir();
+		return path.join(rootPath, this.model.database + '-' + datetime + this.fileExtension);
 	}
 }
 

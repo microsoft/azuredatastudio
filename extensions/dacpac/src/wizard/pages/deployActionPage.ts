@@ -169,7 +169,8 @@ export class DeployActionPage extends DacFxConfigPage {
 	private setDefaultScriptFilePath(): void {
 		let now = new Date();
 		let datetime = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate() + '-' + now.getHours() + '-' + now.getMinutes();
-		this.fileTextBox.value = path.join(os.homedir(), this.model.database + '_UpgradeDACScript_' + datetime + '.sql');
+		let rootPath = vscode.workspace.rootPath ? vscode.workspace.rootPath : os.homedir();
+		this.fileTextBox.value = path.join(rootPath, this.model.database + '_UpgradeDACScript_' + datetime + '.sql');
 		this.model.scriptFilePath = this.fileTextBox.value;
 	}
 
