@@ -20,7 +20,7 @@ export interface StressOptions {
 
 // This simulates a sleep where the thread is suspended for a given number of milliseconds before resuming
 //
-export function sleep(ms:number) {
+export function sleep(ms: number) {
 	return (async () => {
 		return await new Promise((undefined) => setTimeout(undefined, ms));
 	})();
@@ -42,7 +42,7 @@ class Stress {
 	// threshold of individual test passes to declare the stress test passed. This is a fraction within 1.
 	passThreshold?: number = 0.95;
 
-	constructor({ runtime = process.env.StressRunTime, dop = process.env.StressDop, iterations = process.env.StressIterations, passThreshold = process.env.StressPassThreshold }: StressOptions) {
+	constructor({ runtime = parseInt(process.env.StressRuntime), dop = parseInt(process.env.StressDop), iterations = parseInt(process.env.StressIterations), passThreshold = parseFloat(process.env.StressPassThreshold) }: StressOptions) {
 		//console.log (`runtime=${runtime}, dop=${dop}, iterations=${iterations}, passThreshold=${passThreshold}`);
 		//console.log (`this.runtime=${this.runtime}, this.dop=${this.dop}, this.iterations=${this.iterations}, this.passThreshold=${this.passThreshold}`);
 		this.runtime = this.nullCoalesce(runtime, this.runtime);
@@ -69,10 +69,10 @@ class Stress {
 		let fails = [];
 		let errors = [];
 
-		let pendingPromises:Promise<void>[] = [];
+		let pendingPromises: Promise<void>[] = [];
 		console.log(`Running Stress on ${functionName}(${args.join(',')}) with runtime=${runtime}, dop=${dop}, iterations=${iterations}, passThreshold=${passThreshold}`);
 		//console.log (`runtime=${runtime}, dop=${dop}, iterations=${iterations}, passThreshold=${passThreshold}`);
-		const IterativeLoop = async (tNo:number) => {
+		const IterativeLoop = async (tNo: number) => {
 			for (let iNo = 0; iNo < iterations; iNo++) {
 				console.log(`starting tNo=${tNo}:iNo=${iNo} instance`);
 				try {
@@ -93,7 +93,7 @@ class Stress {
 
 		// Invoke the iterative loop defined above in parallel without awaiting each individually
 		//
-		for (let tNo=0; tNo < dop; tNo++) {
+		for (let tNo = 0; tNo < dop; tNo++) {
 			pendingPromises.push(IterativeLoop(tNo));
 		}
 
@@ -103,8 +103,8 @@ class Stress {
 		// TODO what if the above Promise.all exits out due to rejection of one of the promises. Need to handle that case.
 		//
 		let total = noPasses + errors.length + fails.length;
-		assert(noPasses >= passThreshold * total, `Call Stressified: ${functionName}(${args.join(',')}) failed with a pass percent of ${passThreshold*100}`);
-		return {noPasses, fails, errors};
+		assert(noPasses >= passThreshold * total, `Call Stressified: ${functionName}(${args.join(',')}) failed with a pass percent of ${passThreshold * 100}`);
+		return { noPasses, fails, errors };
 	}
 }
 
@@ -112,31 +112,30 @@ class Stress {
 // Using the descriptor factory allows us pass parameters to the discriptor itself separately from the arguments of the
 // function being modified.
 //
-export function stressify ({ runtime, dop, iterations, passThreshold }: StressOptions = null) {
+export function stressify({ runtime, dop, iterations, passThreshold }: StressOptions = null) {
 	// return the function that does the job of stressifying a test class method with descriptor @stressify
 	//
 	console.log(`stressifyFactory called runtime=${runtime}, dop=${dop}, iter=${iterations}, passThreshold=${passThreshold}`);
 	const stress = new Stress({});
-	return function(memberClass: any, memberName: string, memberDescriptor: PropertyDescriptor) {
+	return function (memberClass: any, memberName: string, memberDescriptor: PropertyDescriptor) {
 		// stressify the target function pointed to by the descriptor.value only if
 		// SuiteType is stress
 		//
 		const suiteType = getSuiteType();
 		console.log(`Stressified Decorator called for: ${memberName} and suiteType=${suiteType}`);
-		if (suiteType === SuiteType.Stress)
-		{
+		if (suiteType === SuiteType.Stress) {
 			// save a reference to the original method
 			// this way we keep the values currently in the
 			// descriptor and don't overwrite what another
 			// decorator might have done to the descriptor.
 			console.log(`Stressifying ${memberName} since env variable SuiteType is set to ${SuiteType.Stress}`);
-			const originalMethod : Function = memberDescriptor.value;
+			const originalMethod: Function = memberDescriptor.value;
 			//editing the descriptor/value parameter
-			memberDescriptor.value =  async function (...args: any[]) {
+			memberDescriptor.value = async function (...args: any[]) {
 				// note usage of originalMethod here
 				console.log(`this=${JSON.stringify(this)}`);
-				var result = await stress.Run(originalMethod, this, memberName, args, {runtime, dop, iterations, passThreshold});
-				var r = JSON.stringify(result);
+				const result = await stress.Run(originalMethod, this, memberName, args, { runtime, dop, iterations, passThreshold });
+				const r = JSON.stringify(result);
 				console.log(`Call Stressified: ${memberName}(${args.join(',')}) => ${r}`);
 				return result;
 			};

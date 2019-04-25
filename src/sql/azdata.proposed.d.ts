@@ -1737,10 +1737,7 @@ declare module 'azdata' {
 	export interface SchemaCompareEndpointInfo {
 		endpointType: SchemaCompareEndpointType;
 		packageFilePath: string;
-<<<<<<< HEAD
-=======
 		serverName: string;
->>>>>>> d63f07d29aba89cf2484b5f6c927af17f7c15e47
 		databaseName: string;
 		ownerUri: string;
 	}
@@ -1748,10 +1745,7 @@ declare module 'azdata' {
 	export interface SchemaCompareServicesProvider extends DataProvider {
 		schemaCompare(sourceEndpointInfo: SchemaCompareEndpointInfo, targetEndpointInfo: SchemaCompareEndpointInfo, taskExecutionMode: TaskExecutionMode): Thenable<SchemaCompareResult>;
 		schemaCompareGenerateScript(operationId: string, targetDatabaseName: string, scriptFilePath: string, taskExecutionMode: TaskExecutionMode): Thenable<ResultStatus>;
-<<<<<<< HEAD
-=======
 		schemaComparePublishChanges(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: TaskExecutionMode): Thenable<ResultStatus>;
->>>>>>> d63f07d29aba89cf2484b5f6c927af17f7c15e47
 	}
 
 	// Security service interfaces ------------------------------------------------------------------------

@@ -448,8 +448,6 @@ export interface SchemaCompareGenerateScriptParams {
 	taskExecutionMode: TaskExecutionMode;
 }
 
-<<<<<<< HEAD
-=======
 export interface SchemaComparePublishChangesParams {
 	operationId: string;
 	targetServerName: string;
@@ -457,7 +455,6 @@ export interface SchemaComparePublishChangesParams {
 	taskExecutionMode: TaskExecutionMode;
 }
 
->>>>>>> d63f07d29aba89cf2484b5f6c927af17f7c15e47
 export namespace SchemaCompareRequest {
 	export const type = new RequestType<SchemaCompareParams, azdata.SchemaCompareResult, void, void>('schemaCompare/compare');
 }
@@ -465,11 +462,8 @@ export namespace SchemaCompareRequest {
 export namespace SchemaCompareGenerateScriptRequest {
 	export const type = new RequestType<SchemaCompareGenerateScriptParams, azdata.ResultStatus, void, void>('schemaCompare/generateScript');
 }
-<<<<<<< HEAD
-=======
 
 export namespace SchemaComparePublishChangesRequest {
 	export const type = new RequestType<SchemaComparePublishChangesParams, azdata.ResultStatus, void, void>('schemaCompare/publish');
 }
->>>>>>> d63f07d29aba89cf2484b5f6c927af17f7c15e47
 // ------------------------------- <Schema Compare> -----------------------------

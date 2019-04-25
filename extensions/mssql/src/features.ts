@@ -178,11 +178,7 @@ export class SchemaCompareServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-<<<<<<< HEAD
-		let schemaCompareGenerateScript = (operationId: string, targetDatabaseName: string, scriptFilePath: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> => {
-=======
 		let schemaCompareGenerateScript = (operationId: string, targetDatabaseName: string, scriptFilePath: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> => {
->>>>>>> d63f07d29aba89cf2484b5f6c927af17f7c15e47
 			let params: contracts.SchemaCompareGenerateScriptParams = { operationId: operationId, targetDatabaseName: targetDatabaseName, scriptFilePath: scriptFilePath, taskExecutionMode: taskExecutionMode };
 			return client.sendRequest(contracts.SchemaCompareGenerateScriptRequest.type, params).then(
 				r => {
@@ -195,12 +191,6 @@ export class SchemaCompareServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-<<<<<<< HEAD
-		return azdata.dataprotocol.registerSchemaCompareServicesProvider({
-			providerId: client.providerId,
-			schemaCompare,
-			schemaCompareGenerateScript
-=======
 		let schemaComparePublishChanges = (operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> => {
 			let params: contracts.SchemaComparePublishChangesParams = { operationId: operationId, targetServerName: targetServerName, targetDatabaseName: targetDatabaseName, taskExecutionMode: taskExecutionMode };
 			return client.sendRequest(contracts.SchemaComparePublishChangesRequest.type, params).then(
@@ -219,7 +209,6 @@ export class SchemaCompareServicesFeature extends SqlOpsFeature<undefined> {
 			schemaCompare,
 			schemaCompareGenerateScript,
 			schemaComparePublishChanges
->>>>>>> d63f07d29aba89cf2484b5f6c927af17f7c15e47
 		});
 	}
 }
