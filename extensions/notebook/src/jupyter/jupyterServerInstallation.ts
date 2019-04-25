@@ -84,9 +84,10 @@ export default class JupyterServerInstallation {
 			this.outputChannel.appendLine(msgPythonDownloadComplete);
 			backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonDownloadComplete);
 
-			// Install jupyter on Windows because local python is not bundled with jupyter unlike linux and MacOS.
 			if (this._usingConda) {
 				await this.installCondaPackages();
+			} else if (this._usingExistingPython) {
+				await this.installPipPackages();
 			} else {
 				await this.installJupyterProsePackage();
 			}
@@ -346,7 +347,7 @@ export default class JupyterServerInstallation {
 
 	private async installJupyterProsePackage(): Promise<void> {
 		let installJupyterCommand: string;
-		if (process.platform === constants.winPlatform || this._usingExistingPython) {
+		if (process.platform === constants.winPlatform) {
 			let requirements = path.join(this._pythonPackageDir, 'requirements.txt');
 			installJupyterCommand = `"${this._pythonExecutable}" -m pip install --no-index -r "${requirements}" --find-links "${this._pythonPackageDir}" --no-warn-script-location`;
 		}
@@ -373,6 +374,19 @@ export default class JupyterServerInstallation {
 			this.outputChannel.appendLine(localize('msgInstallingSpark', "Installing SparkMagic..."));
 			await utils.executeStreamedCommand(installSparkMagic, this.outputChannel);
 		}
+	}
+
+	private async installPipPackages(): Promise<void> {
+		this.outputChannel.show(true);
+		this.outputChannel.appendLine(localize('msgInstallStart', "Installing required packages to run Notebooks..."));
+
+		let installCommand = `"${this._pythonExecutable}" -m pip install jupyter pandas`;
+		await utils.executeStreamedCommand(installCommand, this.outputChannel);
+
+		installCommand = `"${this._pythonExecutable}" -m pip install prose-codeaccelerator==1.3.0 --extra-index-url https://prose-python-packages.azurewebsites.net`;
+		await utils.executeStreamedCommand(installCommand, this.outputChannel);
+
+		this.outputChannel.appendLine(localize('msgJupyterInstallDone', "... Jupyter installation complete."));
 	}
 
 	private async installCondaPackages(): Promise<void> {
