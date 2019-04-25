@@ -250,7 +250,26 @@ export class ApiWrapper {
 	public async addRegisteredServer(relativePath: string, ownerUri: string,
 		parentServerName?: string): Promise<any> {
 		let provider = await this.getCmsService();
-		return this.openConnectionDialog(['MSSQL-CMS'], undefined, undefined).then((connection) => {
+		// Initial profile to disallow SQL Login without
+		// changing provider.
+		let initialProfile: azdata.IConnectionProfile = {
+			connectionName: undefined,
+			serverName: undefined,
+			databaseName: undefined,
+			userName: undefined,
+			password: undefined,
+			authenticationType: undefined,
+			savePassword: undefined,
+			groupFullName: undefined,
+			groupId: undefined,
+			providerName: undefined,
+			saveProfile: undefined,
+			id: undefined,
+			options: {
+				authTypeChanged: true
+			}
+		};
+		return this.openConnectionDialog(['MSSQL-CMS'], initialProfile, undefined).then((connection) => {
 			if (connection && connection.options) {
 				if (connection.options.server === parentServerName) {
 					// error out for same server registration

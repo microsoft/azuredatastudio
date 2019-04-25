@@ -29,6 +29,7 @@ import { trim } from 'vs/base/common/strings';
 import { localize } from 'vs/nls';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
+import { CmsConnectionController } from 'sql/workbench/services/connection/browser/cmsConnectionController';
 
 export interface IConnectionValidateResult {
 	isValid: boolean;
@@ -44,7 +45,7 @@ export interface IConnectionComponentCallbacks {
 }
 
 export interface IConnectionComponentController {
-	showUiComponent(container: HTMLElement): void;
+	showUiComponent(container: HTMLElement, didChange?: boolean): void;
 	initDialog(providers: string[], model: IConnectionProfile): void;
 	validateConnection(): IConnectionValidateResult;
 	fillInConnectionInputs(connectionInfo: IConnectionProfile): void;
@@ -276,9 +277,21 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		// Set the model name, initialize the controller if needed, and return the controller
 		this._model.providerName = providerName;
 		if (!this._connectionControllerMap[providerName]) {
-			this._connectionControllerMap[providerName] = this._instantiationService.createInstance(ConnectionController, this._container, this._connectionManagementService, this._capabilitiesService.getCapabilities(providerName).connection, {
-				onSetConnectButton: (enable: boolean) => this.handleSetConnectButtonEnable(enable)
-			}, providerName);
+			if (providerName === Constants.cmsProviderName) {
+				this._connectionControllerMap[providerName] =
+					this._instantiationService.createInstance(CmsConnectionController,
+						this._container, this._connectionManagementService,
+						this._capabilitiesService.getCapabilities(providerName).connection, {
+							onSetConnectButton: (enable: boolean) => this.handleSetConnectButtonEnable(enable)
+						}, providerName, this._inputModel ? this._inputModel.options.authTypeChanged : false);
+			} else {
+				this._connectionControllerMap[providerName] =
+					this._instantiationService.createInstance(ConnectionController,
+						this._container, this._connectionManagementService,
+						this._capabilitiesService.getCapabilities(providerName).connection, {
+							onSetConnectButton: (enable: boolean) => this.handleSetConnectButtonEnable(enable)
+						}, providerName);
+			}
 		}
 		return this._connectionControllerMap[providerName];
 	}
@@ -294,7 +307,12 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		this._model.providerName = this.getCurrentProviderName();
 
 		this._model = new ConnectionProfile(this._capabilitiesService, this._model);
-		this.uiController.showUiComponent(input.container);
+		if (this._inputModel && this._inputModel.options) {
+			this.uiController.showUiComponent(input.container,
+				this._inputModel.options.authTypeChanged);
+		} else {
+			this.uiController.showUiComponent(input.container);
+		}
 	}
 
 	private handleInitDialog() {
