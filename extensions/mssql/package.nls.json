@@ -115,7 +115,10 @@
 	"mssql.connectionOptions.failoverPartner.displayName": "Failover partner",
 	"mssql.connectionOptions.failoverPartner.description": "The name or network address of the instance of SQL Server that acts as a failover partner",
 	"mssql.connectionOptions.multiSubnetFailover.displayName": "Multi subnet failover",
-	"mssql.connectionOptions.failoverPartner.displayName": "Failover partner",
-	"mssql.connectionOptions.failoverPartner.description": "The name or network address of the instance of SQL Server that acts as a failover partner",
-
+	"mssql.connectionOptions.multipleActiveResultSets.displayName": "Multiple active result sets",
+	"mssql.connectionOptions.multipleActiveResultSets.description": "When true, multiple result sets can be returned and read from one connection",
+	"mssql.connectionOptions.packetSize.displayName": "Packet size",
+	"mssql.connectionOptions.packetSize.description": "Size in bytes of the network packets used to communicate with an instance of SQL Server",
+	"mssql.connectionOptions.typeSystemVersion.displayName": "Type system version",
+	"mssql.connectionOptions.typeSystemVersion.description": "Indicates which server type system then provider will expose through the DataReader"
 }
