@@ -80,19 +80,17 @@ export default class JupyterServerInstallation {
 			this.outputChannel.appendLine(msgInstallPkgProgress);
 			backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgInstallPkgProgress);
 
-			if (!this._usingConda) {
-				await this.installPythonPackage(backgroundOperation);
-				this.outputChannel.appendLine(msgPythonDownloadComplete);
-				backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonDownloadComplete);
-			}
+			await this.installPythonPackage(backgroundOperation);
+			this.outputChannel.appendLine(msgPythonDownloadComplete);
+			backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonDownloadComplete);
 
 			// Install jupyter on Windows because local python is not bundled with jupyter unlike linux and MacOS.
 			if (this._usingConda) {
 				await this.installCondaPackages();
 			} else {
 				await this.installJupyterProsePackage();
-				await this.installSparkMagic();
 			}
+			await this.installSparkMagic();
 
 			fs.remove(this._pythonPackageDir, (err: Error) => {
 				if (err) {
@@ -230,6 +228,16 @@ export default class JupyterServerInstallation {
 		if (process.platform === constants.winPlatform) {
 			let pythonScriptsPath = path.join(pythonSourcePath, 'Scripts');
 			this.pythonEnvVarPath = pythonScriptsPath + delimiter + this.pythonEnvVarPath;
+
+			if (this._usingConda) {
+				this.pythonEnvVarPath = [
+					path.join(pythonSourcePath, 'Library', 'mingw-w64', 'bin'),
+					path.join(pythonSourcePath, 'Library', 'usr', 'bin'),
+					path.join(pythonSourcePath, 'Library', 'bin'),
+					path.join(pythonSourcePath, 'condabin'),
+					this.pythonEnvVarPath
+				].join(delimiter);
+			}
 		}
 		this.pythonEnvVarPath = this.pythonBinPath + delimiter + this.pythonEnvVarPath;
 
@@ -242,6 +250,7 @@ export default class JupyterServerInstallation {
 		let env = Object.assign({}, process.env);
 		delete env['Path']; // Delete extra 'Path' variable for Windows, just in case.
 		env['PATH'] = this.pythonEnvVarPath;
+		process.env['PATH'] = this.pythonEnvVarPath;
 		this.execOptions = {
 			env: env
 		};
@@ -367,13 +376,10 @@ export default class JupyterServerInstallation {
 	}
 
 	private async installCondaPackages(): Promise<void> {
-		if (process.platform === constants.winPlatform) {
-			throw new Error('Using an existing Anaconda installation is not currently supported on Windows.');
-		}
 		this.outputChannel.show(true);
 		this.outputChannel.appendLine(localize('msgInstallStart', "Installing required packages to run Notebooks..."));
 
-		let installCommand = `"${this.getCondaExePath()}" install -y jupyter pandas sparkmagic`;
+		let installCommand = `"${this.getCondaExePath()}" install -y jupyter pandas`;
 		await utils.executeStreamedCommand(installCommand, this.outputChannel);
 
 		installCommand = `"${this._pythonExecutable}" -m pip install prose-codeaccelerator==1.3.0 --extra-index-url https://prose-python-packages.azurewebsites.net`;
