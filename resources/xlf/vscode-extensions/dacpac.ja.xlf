@@ -2,7 +2,7 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file original="extensions/dacpac/out/wizard/pages/selectOperationpage" source-language="en" target-language="ja" datatype="plaintext">
     <body>
-      <trans-unit id="dacFx.deployRadioButtonLabel_selectOperationpage">
+      <trans-unit id="dacFx.deployRadioButtonLabel">
         <source xml:lang="en">Deploy a data-tier application .dacpac file to an instance of SQL Server [Deploy Dacpac]</source>
         <target state="translated">データ層アプリケーションの .dacpac ファイルを SQL Server インスタンスに展開します [Dacpac の展開]</target>
       </trans-unit>
@@ -114,7 +114,7 @@
   </file>
   <file original="extensions/dacpac/out/wizard/pages/deployConfigPage" source-language="en" target-language="ja" datatype="plaintext">
     <body>
-      <trans-unit id="dacFx.databaseNameTextBox_deployConfigPage">
+      <trans-unit id="dacFx.databaseNameTextBox">
         <source xml:lang="en">Database Name</source>
         <target state="translated">データベース名</target>
       </trans-unit>
@@ -150,7 +150,7 @@
   </file>
   <file original="extensions/dacpac/out/wizard/pages/deployActionPage" source-language="en" target-language="ja" datatype="plaintext">
     <body>
-      <trans-unit id="dacFx.deployRadioButtonLabel_deployActionPage">
+      <trans-unit id="dacFx.deployRadioButtonLabel">
         <source xml:lang="en">Deploy</source>
         <target state="translated">展開</target>
       </trans-unit>
@@ -234,7 +234,7 @@
         <source xml:lang="en">Source Server</source>
         <target state="translated">ソース サーバー</target>
       </trans-unit>
-      <trans-unit id="dacFx.databaseNameTextBox_dacFxConfigPage">
+      <trans-unit id="dacFx.databaseNameTextBox">
         <source xml:lang="en">Target Database</source>
         <target state="translated">ターゲット データベース</target>
       </trans-unit>

@@ -1,511 +1,537 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/big-data-cluster/out/wizards/create-cluster/pages/summaryPage" source-language="en" target-language="ja" datatype="plaintext"><body>
-    <trans-unit id="bdc-create.summaryPageTitle">
-      <source xml:lang="en">Summary</source>
-      <target state="translated">概要</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.TargetClusterTypeText">
-      <source xml:lang="en">Cluster type</source>
-      <target state="translated">クラスターの種類</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.ClusterContextText">
-      <source xml:lang="en">Cluster context</source>
-      <target state="translated">クラスター コンテキスト</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.ClusterNameText">
-      <source xml:lang="en">Cluster name</source>
-      <target state="translated">クラスター名</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.ClusterAdminUsernameText">
-      <source xml:lang="en">Cluster Admin username</source>
-      <target state="translated">クラスター管理者ユーザー名</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.AcceptEulaText">
-      <source xml:lang="en">Accept license agreement</source>
-      <target state="translated">使用許諾契約書に同意します</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.DeploymentProfileText">
-      <source xml:lang="en">Deployment profile</source>
-      <target state="translated">展開プロファイル</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.SqlServerMasterScaleText">
-      <source xml:lang="en">SQL Server master scale</source>
-      <target state="translated">SQL Server マスターのスケール</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.ComputePoolScaleText">
-      <source xml:lang="en">Compute pool scale</source>
-      <target state="translated">コンピューティング プールのスケール</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.DataPoolScaleText">
-      <source xml:lang="en">Data pool scale</source>
-      <target state="translated">データ プールのスケール</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.StoragePoolScaleText">
-      <source xml:lang="en">Storage pool scale</source>
-      <target state="translated">記憶域プールのスケール</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.SparkPoolScaleText">
-      <source xml:lang="en">Spark pool scale</source>
-      <target state="translated">スパーク プールのスケール</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.TargetClusterGroupTitle">
-      <source xml:lang="en">TARGET CLUSTER</source>
-      <target state="translated">ターゲット クラスター</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.BigDataClusterGroupTitle">
-      <source xml:lang="en">SQL SERVER BIG DATA CLUSTER</source>
-      <target state="translated">SQL Server のビッグ データ クラスター</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.YesText">
-      <source xml:lang="en">Yes</source>
-      <target state="translated">はい</target>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/big-data-cluster/out/wizards/create-cluster/pages/settingsPage" source-language="en" target-language="ja" datatype="plaintext"><body>
-    <trans-unit id="bdc-create.RestoreDefaultValuesText">
-      <source xml:lang="en">Restore Default Values</source>
-      <target state="translated">既定値に戻す</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.settingsPageTitle">
-      <source xml:lang="en">Settings</source>
-      <target state="translated">設定</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.settingsPageDescription">
-      <source xml:lang="en">Configure the settings required for deploying SQL Server big data cluster</source>
-      <target state="translated">SQL Server のビッグ データ クラスターを展開するために必要な設定を構成します</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.EulaNotAccepted">
-      <source xml:lang="en">You need to accept the terms of services and privacy policy in order to proceed</source>
-      <target state="translated">続行するにはサービス利用規約とプライバシー ポリシーに同意する必要があります</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.ClusterName">
-      <source xml:lang="en">Cluster name</source>
-      <target state="translated">クラスター名</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.AdminUsernameText">
-      <source xml:lang="en">Admin username</source>
-      <target state="translated">管理者ユーザー名</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.AdminUserPasswordText">
-      <source xml:lang="en">Password</source>
-      <target state="translated">パスワード</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.SQLPortText">
-      <source xml:lang="en">SQL Server master</source>
-      <target state="translated">SQL Server マスター</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.KnoxPortText">
-      <source xml:lang="en">Knox</source>
-      <target state="translated">Knox</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.ControllerPortText">
-      <source xml:lang="en">Controller</source>
-      <target state="translated">コントローラー</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.ProxyPortText">
-      <source xml:lang="en">Proxy</source>
-      <target state="translated">プロキシ</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.GrafanaPortText">
-      <source xml:lang="en">Grafana dashboard</source>
-      <target state="translated">Grafana ダッシュボード</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.KibanaPortText">
-      <source xml:lang="en">Kibana dashboard</source>
-      <target state="translated">Kibana ダッシュボード</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.RegistryUserNamePasswordHintText">
-      <source xml:lang="en">only required for private registries</source>
-      <target state="translated">プライベート レジストリの場合のみ必須</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.RegistryText">
-      <source xml:lang="en">Registry</source>
-      <target state="translated">レジストリ</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.RepositoryText">
-      <source xml:lang="en">Repository</source>
-      <target state="translated">リポジトリ</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.ImageTagText">
-      <source xml:lang="en">Image tag</source>
-      <target state="translated">イメージ タグ</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.RegistryUserNameText">
-      <source xml:lang="en">Username</source>
-      <target state="translated">ユーザー名</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.RegistryPasswordText">
-      <source xml:lang="en">Password</source>
-      <target state="translated">パスワード</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.BasicSettingsText">
-      <source xml:lang="en">Basic Settings</source>
-      <target state="translated">基本的な設定</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.ContainerRegistrySettings">
-      <source xml:lang="en">Container Registry Settings</source>
-      <target state="translated">コンテナー レジストリの設定</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.PortSettings">
-      <source xml:lang="en">Port Settings (Optional)</source>
-      <target state="translated">ポートの設定 (省略可能)</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.LicenseTerms">
-      <source xml:lang="en">license terms</source>
-      <target state="translated">ライセンス条項</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.PrivacyPolicyText">
-      <source xml:lang="en">privacy policy</source>
-      <target state="translated">プライバシー ポリシー</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.AcceptTermsText">
-      <source xml:lang="en">I accept the {0} and {1}.</source>
-      <target state="translated">{0} および {1} に同意します。</target>
-      <note>{0} is the place holder for license terms, {1} is the place holder for privacy policy</note>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/big-data-cluster/out/wizards/create-cluster/pages/selectTargetClusterTypePage" source-language="en" target-language="ja" datatype="plaintext"><body>
-    <trans-unit id="bdc-create.InstallToolsText">
-      <source xml:lang="en">Install Tools</source>
-      <target state="translated">ツールのインストール</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.InstallingButtonText">
-      <source xml:lang="en">Installing...</source>
-      <target state="translated">インストールしています...</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.selectTargetClusterTypePageTitle">
-      <source xml:lang="en">What is your target cluster environment?</source>
-      <target state="translated">ターゲット クラスター環境は何ですか。</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.selectTargetClusterTypePageDescription">
-      <source xml:lang="en">Choose the target environment and then install the required tools for it.</source>
-      <target state="translated">ターゲット環境を選択し、その環境に必要なツールをインストールします。</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.RefreshToolsButtonText">
-      <source xml:lang="en">Refresh Status</source>
-      <target state="translated">状態の更新</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.toolNameColumnHeader">
-      <source xml:lang="en">Tool</source>
-      <target state="translated">ツール</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.toolDescriptionColumnHeader">
-      <source xml:lang="en">Description</source>
-      <target state="translated">説明</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.toolVersionColumnHeader">
-      <source xml:lang="en">Version</source>
-      <target state="translated">バージョン</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.toolStatusColumnHeader">
-      <source xml:lang="en">Status</source>
-      <target state="translated">状態</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.PickTargetEnvironmentText">
-      <source xml:lang="en">Pick target environment</source>
-      <target state="translated">ターゲット環境の選択</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.ToolsRefreshingText">
-      <source xml:lang="en">Please wait while the required tools status is being refreshed.</source>
-      <target state="translated">必要なツールの状態が更新されるまでお待ちください。</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.TargetClusterTypeNotSelectedText">
-      <source xml:lang="en">Please select a target cluster type.</source>
-      <target state="translated">ターゲット クラスターの種類を選択してください。</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.MissingToolsText">
-      <source xml:lang="en">Please install the required tools.</source>
-      <target state="translated">必要なツールをインストールしてください。</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.ComingSoonText">
-      <source xml:lang="en">(Coming Soon)</source>
-      <target state="translated">(近日公開予定)</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.RequiredToolsText">
-      <source xml:lang="en">Required tools</source>
-      <target state="translated">必要なツール</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.InstalledText">
-      <source xml:lang="en">Installed</source>
-      <target state="translated">インストール済み</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.NotInstalledText">
-      <source xml:lang="en">Not Installed</source>
-      <target state="translated">インストールされていません</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.InstallingText">
-      <source xml:lang="en">Installing...</source>
-      <target state="translated">インストールしています...</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.FailedToInstallText">
-      <source xml:lang="en">Install Failed</source>
-      <target state="translated">インストールに失敗しました</target>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/big-data-cluster/out/wizards/create-cluster/pages/selectExistingClusterPage" source-language="en" target-language="ja" datatype="plaintext"><body>
-    <trans-unit id="bdc-create.selectTargetClusterPageTitle">
-      <source xml:lang="en">Where do you want to deploy this SQL Server big data cluster?</source>
-      <target state="translated">この SQL Server のビッグ データ クラスターをどこに展開しますか?</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.selectTargetClusterPageDescription">
-      <source xml:lang="en">Select the kubeconfig file and then select a cluster context from the list</source>
-      <target state="translated">Kubeconfig ファイルを選択し、リストからクラスター コンテキストを選択します</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.ClusterContextNotSelectedMessage">
-      <source xml:lang="en">Please select a cluster context.</source>
-      <target state="translated">クラスター コンテキストを選択してください。</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.kubeConfigFileLabelText">
-      <source xml:lang="en">Kube config file path</source>
-      <target state="translated">Kube 構成のファイル パス</target>
-    </trans-unit>
-    <trans-unit id="bdc-browseText">
-      <source xml:lang="en">Browse</source>
-      <target state="translated">参照</target>
-    </trans-unit>
-    <trans-unit id="bdc-clusterContextsLabelText">
-      <source xml:lang="en">Cluster Contexts</source>
-      <target state="translated">クラスター コンテキスト</target>
-    </trans-unit>
-    <trans-unit id="bdc-errorLoadingClustersText">
-      <source xml:lang="en">No cluster information is found in the config file or an error ocurred while loading the config file</source>
-      <target state="translated">構成ファイルにクラスター情報が見つからないか、構成ファイルの読み込み中にエラーが発生しました</target>
-    </trans-unit>
-    <trans-unit id="bdc-selectKubeConfigFileText">
-      <source xml:lang="en">Select</source>
-      <target state="translated">選択</target>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/big-data-cluster/out/wizards/create-cluster/pages/clusterProfilePage" source-language="en" target-language="ja" datatype="plaintext"><body>
-    <trans-unit id="bdc-create.clusterProfilePageTitle">
-      <source xml:lang="en">Select a cluster profile</source>
-      <target state="translated">クラスター プロファイルを選択します</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.clusterProfilePageDescription">
-      <source xml:lang="en">Select your requirement and we will provide you a pre-defined default scaling. You can later go to cluster configuration and customize it.</source>
-      <target state="translated">要件を選択します。事前定義された既定のスケーリングが提供されます。後ほどクラスター構成に移動し、カスタマイズできます。</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.TargetClusterOverview">
-      <source xml:lang="en">Target cluster scale overview</source>
-      <target state="translated">ターゲット クラスターのスケール概要</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.clusterProfileLabel">
-      <source xml:lang="en">Deployment profile</source>
-      <target state="translated">展開プロファイル</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.HardwareProfileText">
-      <source xml:lang="en">Hardware profile</source>
-      <target state="translated">ハードウェア プロファイル</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.HardwareLabelColumnName">
-      <source xml:lang="en">Label</source>
-      <target state="translated">ラベル</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.TotalNodesColumnName">
-      <source xml:lang="en">Nodes</source>
-      <target state="translated">ノード</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.TotalCoresColumnName">
-      <source xml:lang="en">Cores</source>
-      <target state="translated">コア</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.TotalMemoryColumnName">
-      <source xml:lang="en">Memory</source>
-      <target state="translated">メモリ</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.TotalDisksColumnName">
-      <source xml:lang="en">Disks</source>
-      <target state="translated">ディスク</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.ScaleLabel">
-      <source xml:lang="en">Scale</source>
-      <target state="translated">小数点以下桁数</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.HardwareProfileLabel">
-      <source xml:lang="en">Hardware profile label</source>
-      <target state="translated">ハードウェア プロファイルのラベル</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.FeatureSetLabel">
-      <source xml:lang="en">Feature set</source>
-      <target state="translated">機能セット</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.EngineOnlyText">
-      <source xml:lang="en">Engine only</source>
-      <target state="translated">エンジンのみ</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.EngineWithFeaturesText">
-      <source xml:lang="en">Engine with optional features</source>
-      <target state="translated">オプション機能が含まれるエンジン</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.SQLServerMasterDisplayName">
-      <source xml:lang="en">SQL Server master</source>
-      <target state="translated">SQL Server マスター</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.ComputePoolDisplayName">
-      <source xml:lang="en">Compute pool</source>
-      <target state="translated">コンピューティング プール</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.DataPoolDisplayName">
-      <source xml:lang="en">Data pool</source>
-      <target state="translated">データ プール</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.StoragePoolDisplayName">
-      <source xml:lang="en">Storage pool</source>
-      <target state="translated">記憶域プール</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.SparkPoolDisplayName">
-      <source xml:lang="en">Spark pool</source>
-      <target state="translated">スパーク プール</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.SQLServerMasterDescription">
-      <source xml:lang="en">The SQL Server instance provides an externally accessible TDS endpoint for the cluster</source>
-      <target state="translated">SQL Server インスタンスには、クラスター用の外部アクセス可能な TDS エンドポイントが備わっています</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.ComputePoolDescription">
-      <source xml:lang="en">TODO: Add description</source>
-      <target state="translated">TODO: 説明を追加します</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.DataPoolDescription">
-      <source xml:lang="en">TODO: Add description</source>
-      <target state="translated">TODO: 説明を追加します</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.StoragePoolDescription">
-      <source xml:lang="en">TODO: Add description</source>
-      <target state="translated">TODO: 説明を追加します</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.SparkPoolDescription">
-      <source xml:lang="en">TODO: Add description</source>
-      <target state="translated">TODO: 説明を追加します</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.poolLabelTemplate">
-      <source xml:lang="en">{0} ({1})</source>
-      <target state="translated">{0} ({1})</target>
-      <note>{0} is the pool name, {1} is the scale number</note>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/big-data-cluster/out/wizards/create-cluster/createClusterWizard" source-language="en" target-language="ja" datatype="plaintext"><body>
-    <trans-unit id="bdc-create.wizardTitle">
-      <source xml:lang="en">Create a big data cluster</source>
-      <target state="translated">ビッグ データ クラスターを作成します</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.generateScriptsButtonText">
-      <source xml:lang="en">Generate Scripts</source>
-      <target state="translated">スクリプトの生成</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.createClusterButtonText">
-      <source xml:lang="en">Create</source>
-      <target state="translated">作成</target>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/big-data-cluster/out/wizards/create-cluster/createClusterModel" source-language="en" target-language="ja" datatype="plaintext"><body>
-    <trans-unit id="bdc-create.AKSClusterCardText">
-      <source xml:lang="en">New AKS Cluster</source>
-      <target state="translated">新しい AKS クラスター</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.AKSClusterFullName">
-      <source xml:lang="en">New Azure Kubernetes Service cluster</source>
-      <target state="translated">新しい Azure Kubernetes Service クラスター</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.AKSClusterDescription">
-      <source xml:lang="en">This option configures new Azure Kubernetes Service (AKS) for SQL Server big data cluster deployments. AKS makes it simple to create, configure and manage a cluster of virutal machines that are preconfigured with a Kubernetes cluster to run containerized applications.</source>
-      <target state="translated">このオプションは、SQL Server のビッグ データ クラスター展開用の新しい Azure Kubernetes Service (AKS) を構成します。AKS を使用すると、コンテナー化されたアプリケーションを実行するための、Kubernetes クラスターで事前構成された仮想マシンのクラスターを簡単に作成、構成、管理できます。</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.ExistingClusterCardText">
-      <source xml:lang="en">Existing Cluster</source>
-      <target state="translated">既存のクラスター</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.ExistingClusterFullName">
-      <source xml:lang="en">Existing Kubernetes cluster</source>
-      <target state="translated">既存の Kubernetes クラスター</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.ExistingClusterDescription">
-      <source xml:lang="en">This option assumes you already have a Kubernetes cluster installed, Once a prerequisite check is done, ensure the correct cluster context is selected.</source>
-      <target state="translated">このオプションは、既に Kubernetes クラスターがインストールされていることが前提です。前提条件の確認が済んだら、適切なクラスター コンテキストを選択してください。</target>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/big-data-cluster/out/kubectl/sqlServerBigDataClusterChannel" source-language="en" target-language="ja" datatype="plaintext"><body>
-    <trans-unit id="bigDataClusterOutputChannel">
-      <source xml:lang="en">SQL Server big data cluster</source>
-      <target state="translated">SQL Server のビッグ データ クラスター</target>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/big-data-cluster/out/kubectl/kubectlUtils" source-language="en" target-language="ja" datatype="plaintext"><body>
-    <trans-unit id="runKubectlFailed">
-      <source xml:lang="en">Unable to run kubectl</source>
-      <target state="translated">Kubectl を実行できません</target>
-    </trans-unit>
-    <trans-unit id="setClusterFailed">
-      <source xml:lang="en">Failed to set '{0}' as current cluster: {1}</source>
-      <target state="translated">'{0}' を現在のクラスターとして設定できませんでした: {1}</target>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/big-data-cluster/out/kubectl/kubectl" source-language="en" target-language="ja" datatype="plaintext"><body>
-    <trans-unit id="binaryNotFound">
-      <source xml:lang="en">Could not find {0} binary. {1}</source>
-      <target state="translated">{0} バイナリが見つかりませんでした。{1}</target>
-    </trans-unit>
-    <trans-unit id="binaryNotInstalled">
-      <source xml:lang="en">{0} is not installed. {1}</source>
-      <target state="translated">{0} がインストールされていません。{1}</target>
-    </trans-unit>
-    <trans-unit id="kubernetesRequired">
-      <source xml:lang="en"> SQL Server Big data cluster requires kubernetes.</source>
-      <target state="translated">SQL Server のビッグ データ クラスターには kubernetes が必要です。</target>
-    </trans-unit>
-    <trans-unit id="cannotExecuteCmd">
-      <source xml:lang="en"> Cannot execute command.</source>
-      <target state="translated">コマンドを実行できません。</target>
-    </trans-unit>
-    <trans-unit id="kubectlVersionIncompatible">
-      <source xml:lang="en">kubectl version ${0} may be incompatible with cluster Kubernetes version {1}</source>
-      <target state="translated">kubectl バージョン ${0} がクラスター Kubernetes バージョン {1} と互換性がない可能性があります</target>
-    </trans-unit>
-    <trans-unit id="cannotRunCommand">
-      <source xml:lang="en">Unable to run command ({0})</source>
-      <target state="translated">コマンド ({0}) を実行できません</target>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/big-data-cluster/out/kubectl/binutil" source-language="en" target-language="ja" datatype="plaintext"><body>
-    <trans-unit id="installDependenciesAction">
-      <source xml:lang="en">Install dependencies</source>
-      <target state="translated">依存関係をインストールします</target>
-    </trans-unit>
-    <trans-unit id="learnMoreAction">
-      <source xml:lang="en">Learn more</source>
-      <target state="translated">詳細を表示</target>
-    </trans-unit>
-    <trans-unit id="moreInfoMsg">
-      <source xml:lang="en">Add {0} directory to path, or set "mssql-bdc.{0}-path" config to {0} binary.</source>
-      <target state="translated">{0} ディレクトリをパスに追加するか、"mssql-bdc.{0}-path" 構成を {0} バイナリに設定します。</target>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/big-data-cluster/out/installer/installer" source-language="en" target-language="ja" datatype="plaintext"><body>
-    <trans-unit id="downloadKubectlFailed">
-      <source xml:lang="en">Failed to download kubectl: {0}</source>
-      <target state="translated">Kubectl をダウンロードできませんでした: {0}</target>
-    </trans-unit>
-    <trans-unit id="kubectlVersionCheckFailed">
-      <source xml:lang="en">Failed to establish kubectl stable version: {0}</source>
-      <target state="translated">kubectl 安定版を設定できませんでした: {0}</target>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/big-data-cluster/out/main" source-language="en" target-language="ja" datatype="plaintext"><body>
-    <trans-unit id="done">
-      <source xml:lang="en">Done</source>
-      <target state="translated">完了</target>
-    </trans-unit>
-    <trans-unit id="dependencyInstalled">
-      <source xml:lang="en">{0} already installed...</source>
-      <target state="translated">{0} は既にインストールされています...</target>
-    </trans-unit>
-    <trans-unit id="installingDependency">
-      <source xml:lang="en">Installing {0}...</source>
-      <target state="translated">{0} をインストールしています...</target>
-    </trans-unit>
-    <trans-unit id="installingDependencyFailed">
-      <source xml:lang="en">Unable to install {0}: {1}</source>
-      <target state="translated">{0} をインストールできませんでした: {1}</target>
-    </trans-unit>
-  </body></file>
+  <file original="extensions/big-data-cluster/out/wizards/create-cluster/pages/summaryPage" source-language="en" target-language="ja" datatype="plaintext">
+    <body>
+      <trans-unit id="bdc-create.summaryPageTitle">
+        <source xml:lang="en">Summary</source>
+        <target state="translated">概要</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.TargetClusterTypeText">
+        <source xml:lang="en">Cluster type</source>
+        <target state="translated">クラスターの種類</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ClusterContextText">
+        <source xml:lang="en">Cluster context</source>
+        <target state="translated">クラスター コンテキスト</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ClusterNameText">
+        <source xml:lang="en">Cluster name</source>
+        <target state="translated">クラスター名</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ClusterAdminUsernameText">
+        <source xml:lang="en">Cluster Admin username</source>
+        <target state="translated">クラスター管理者ユーザー名</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.AcceptEulaText">
+        <source xml:lang="en">Accept license agreement</source>
+        <target state="translated">使用許諾契約書に同意します</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.DeploymentProfileText">
+        <source xml:lang="en">Deployment profile</source>
+        <target state="translated">展開プロファイル</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.SqlServerMasterScaleText">
+        <source xml:lang="en">SQL Server master scale</source>
+        <target state="translated">SQL Server マスターのスケール</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ComputePoolScaleText">
+        <source xml:lang="en">Compute pool scale</source>
+        <target state="translated">コンピューティング プールのスケール</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.DataPoolScaleText">
+        <source xml:lang="en">Data pool scale</source>
+        <target state="translated">データ プールのスケール</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.StoragePoolScaleText">
+        <source xml:lang="en">Storage pool scale</source>
+        <target state="translated">記憶域プールのスケール</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.SparkPoolScaleText">
+        <source xml:lang="en">Spark pool scale</source>
+        <target state="translated">スパーク プールのスケール</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.TargetClusterGroupTitle">
+        <source xml:lang="en">TARGET CLUSTER</source>
+        <target state="translated">ターゲット クラスター</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.BigDataClusterGroupTitle">
+        <source xml:lang="en">SQL SERVER BIG DATA CLUSTER</source>
+        <target state="translated">SQL Server のビッグ データ クラスター</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.YesText">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">はい</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/big-data-cluster/out/wizards/create-cluster/pages/settingsPage" source-language="en" target-language="ja" datatype="plaintext">
+    <body>
+      <trans-unit id="bdc-create.RestoreDefaultValuesText">
+        <source xml:lang="en">Restore Default Values</source>
+        <target state="translated">既定値に戻す</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.settingsPageTitle">
+        <source xml:lang="en">Settings</source>
+        <target state="translated">設定</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.settingsPageDescription">
+        <source xml:lang="en">Configure the settings required for deploying SQL Server big data cluster</source>
+        <target state="translated">SQL Server のビッグ データ クラスターを展開するために必要な設定を構成します</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.EulaNotAccepted">
+        <source xml:lang="en">You need to accept the terms of services and privacy policy in order to proceed</source>
+        <target state="translated">続行するにはサービス利用規約とプライバシー ポリシーに同意する必要があります</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ClusterName">
+        <source xml:lang="en">Cluster name</source>
+        <target state="translated">クラスター名</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.AdminUsernameText">
+        <source xml:lang="en">Admin username</source>
+        <target state="translated">管理者ユーザー名</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.AdminUserPasswordText">
+        <source xml:lang="en">Password</source>
+        <target state="translated">パスワード</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.SQLPortText">
+        <source xml:lang="en">SQL Server master</source>
+        <target state="translated">SQL Server マスター</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.KnoxPortText">
+        <source xml:lang="en">Knox</source>
+        <target state="translated">Knox</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ControllerPortText">
+        <source xml:lang="en">Controller</source>
+        <target state="translated">コントローラー</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ProxyPortText">
+        <source xml:lang="en">Proxy</source>
+        <target state="translated">プロキシ</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.GrafanaPortText">
+        <source xml:lang="en">Grafana dashboard</source>
+        <target state="translated">Grafana ダッシュボード</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.KibanaPortText">
+        <source xml:lang="en">Kibana dashboard</source>
+        <target state="translated">Kibana ダッシュボード</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.RegistryUserNamePasswordHintText">
+        <source xml:lang="en">only required for private registries</source>
+        <target state="translated">プライベート レジストリの場合のみ必須</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.RegistryText">
+        <source xml:lang="en">Registry</source>
+        <target state="translated">レジストリ</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.RepositoryText">
+        <source xml:lang="en">Repository</source>
+        <target state="translated">リポジトリ</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ImageTagText">
+        <source xml:lang="en">Image tag</source>
+        <target state="translated">イメージ タグ</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.RegistryUserNameText">
+        <source xml:lang="en">Username</source>
+        <target state="translated">ユーザー名</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.RegistryPasswordText">
+        <source xml:lang="en">Password</source>
+        <target state="translated">パスワード</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.BasicSettingsText">
+        <source xml:lang="en">Basic Settings</source>
+        <target state="translated">基本的な設定</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ContainerRegistrySettings">
+        <source xml:lang="en">Container Registry Settings</source>
+        <target state="translated">コンテナー レジストリの設定</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.PortSettings">
+        <source xml:lang="en">Port Settings (Optional)</source>
+        <target state="translated">ポートの設定 (省略可能)</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.LicenseTerms">
+        <source xml:lang="en">license terms</source>
+        <target state="translated">ライセンス条項</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.PrivacyPolicyText">
+        <source xml:lang="en">privacy policy</source>
+        <target state="translated">プライバシー ポリシー</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.AcceptTermsText">
+        <source xml:lang="en">I accept the {0} and {1}.</source>
+        <target state="translated">{0} および {1} に同意します。</target>
+        <note>{0} is the place holder for license terms, {1} is the place holder for privacy policy</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/big-data-cluster/out/wizards/create-cluster/pages/selectTargetClusterTypePage" source-language="en" target-language="ja" datatype="plaintext">
+    <body>
+      <trans-unit id="bdc-create.InstallToolsText">
+        <source xml:lang="en">Install Tools</source>
+        <target state="translated">ツールのインストール</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.InstallingButtonText">
+        <source xml:lang="en">Installing...</source>
+        <target state="translated">インストールしています...</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.selectTargetClusterTypePageTitle">
+        <source xml:lang="en">What is your target cluster environment?</source>
+        <target state="translated">ターゲット クラスター環境は何ですか。</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.selectTargetClusterTypePageDescription">
+        <source xml:lang="en">Choose the target environment and then install the required tools for it.</source>
+        <target state="translated">ターゲット環境を選択し、その環境に必要なツールをインストールします。</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.RefreshToolsButtonText">
+        <source xml:lang="en">Refresh Status</source>
+        <target state="translated">状態の更新</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.toolNameColumnHeader">
+        <source xml:lang="en">Tool</source>
+        <target state="translated">ツール</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.toolDescriptionColumnHeader">
+        <source xml:lang="en">Description</source>
+        <target state="translated">説明</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.toolVersionColumnHeader">
+        <source xml:lang="en">Version</source>
+        <target state="translated">バージョン</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.toolStatusColumnHeader">
+        <source xml:lang="en">Status</source>
+        <target state="translated">状態</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.PickTargetEnvironmentText">
+        <source xml:lang="en">Pick target environment</source>
+        <target state="translated">ターゲット環境の選択</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ToolsRefreshingText">
+        <source xml:lang="en">Please wait while the required tools status is being refreshed.</source>
+        <target state="translated">必要なツールの状態が更新されるまでお待ちください。</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.TargetClusterTypeNotSelectedText">
+        <source xml:lang="en">Please select a target cluster type.</source>
+        <target state="translated">ターゲット クラスターの種類を選択してください。</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.MissingToolsText">
+        <source xml:lang="en">Please install the required tools.</source>
+        <target state="translated">必要なツールをインストールしてください。</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ComingSoonText">
+        <source xml:lang="en">(Coming Soon)</source>
+        <target state="translated">(近日公開予定)</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.RequiredToolsText">
+        <source xml:lang="en">Required tools</source>
+        <target state="translated">必要なツール</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.InstalledText">
+        <source xml:lang="en">Installed</source>
+        <target state="translated">インストール済み</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.NotInstalledText">
+        <source xml:lang="en">Not Installed</source>
+        <target state="translated">インストールされていません</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.InstallingText">
+        <source xml:lang="en">Installing...</source>
+        <target state="translated">インストールしています...</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.FailedToInstallText">
+        <source xml:lang="en">Install Failed</source>
+        <target state="translated">インストールに失敗しました</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/big-data-cluster/out/wizards/create-cluster/pages/selectExistingClusterPage" source-language="en" target-language="ja" datatype="plaintext">
+    <body>
+      <trans-unit id="bdc-create.selectTargetClusterPageTitle">
+        <source xml:lang="en">Where do you want to deploy this SQL Server big data cluster?</source>
+        <target state="translated">この SQL Server のビッグ データ クラスターをどこに展開しますか?</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.selectTargetClusterPageDescription">
+        <source xml:lang="en">Select the kubeconfig file and then select a cluster context from the list</source>
+        <target state="translated">Kubeconfig ファイルを選択し、リストからクラスター コンテキストを選択します</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ClusterContextNotSelectedMessage">
+        <source xml:lang="en">Please select a cluster context.</source>
+        <target state="translated">クラスター コンテキストを選択してください。</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.kubeConfigFileLabelText">
+        <source xml:lang="en">Kube config file path</source>
+        <target state="translated">Kube 構成のファイル パス</target>
+      </trans-unit>
+      <trans-unit id="bdc-browseText">
+        <source xml:lang="en">Browse</source>
+        <target state="translated">参照</target>
+      </trans-unit>
+      <trans-unit id="bdc-clusterContextsLabelText">
+        <source xml:lang="en">Cluster Contexts</source>
+        <target state="translated">クラスター コンテキスト</target>
+      </trans-unit>
+      <trans-unit id="bdc-errorLoadingClustersText">
+        <source xml:lang="en">No cluster information is found in the config file or an error ocurred while loading the config file</source>
+        <target state="translated">構成ファイルにクラスター情報が見つからないか、構成ファイルの読み込み中にエラーが発生しました</target>
+      </trans-unit>
+      <trans-unit id="bdc-selectKubeConfigFileText">
+        <source xml:lang="en">Select</source>
+        <target state="translated">選択</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/big-data-cluster/out/wizards/create-cluster/pages/clusterProfilePage" source-language="en" target-language="ja" datatype="plaintext">
+    <body>
+      <trans-unit id="bdc-create.clusterProfilePageTitle">
+        <source xml:lang="en">Select a cluster profile</source>
+        <target state="translated">クラスター プロファイルを選択します</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.clusterProfilePageDescription">
+        <source xml:lang="en">Select your requirement and we will provide you a pre-defined default scaling. You can later go to cluster configuration and customize it.</source>
+        <target state="translated">要件を選択します。事前定義された既定のスケーリングが提供されます。後ほどクラスター構成に移動し、カスタマイズできます。</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.TargetClusterOverview">
+        <source xml:lang="en">Target cluster scale overview</source>
+        <target state="translated">ターゲット クラスターのスケール概要</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.clusterProfileLabel">
+        <source xml:lang="en">Deployment profile</source>
+        <target state="translated">展開プロファイル</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.HardwareProfileText">
+        <source xml:lang="en">Hardware profile</source>
+        <target state="translated">ハードウェア プロファイル</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.HardwareLabelColumnName">
+        <source xml:lang="en">Label</source>
+        <target state="translated">ラベル</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.TotalNodesColumnName">
+        <source xml:lang="en">Nodes</source>
+        <target state="translated">ノード</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.TotalCoresColumnName">
+        <source xml:lang="en">Cores</source>
+        <target state="translated">コア</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.TotalMemoryColumnName">
+        <source xml:lang="en">Memory</source>
+        <target state="translated">メモリ</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.TotalDisksColumnName">
+        <source xml:lang="en">Disks</source>
+        <target state="translated">ディスク</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ScaleLabel">
+        <source xml:lang="en">Scale</source>
+        <target state="translated">小数点以下桁数</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.HardwareProfileLabel">
+        <source xml:lang="en">Hardware profile label</source>
+        <target state="translated">ハードウェア プロファイルのラベル</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.FeatureSetLabel">
+        <source xml:lang="en">Feature set</source>
+        <target state="translated">機能セット</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.EngineOnlyText">
+        <source xml:lang="en">Engine only</source>
+        <target state="translated">エンジンのみ</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.EngineWithFeaturesText">
+        <source xml:lang="en">Engine with optional features</source>
+        <target state="translated">オプション機能が含まれるエンジン</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.SQLServerMasterDisplayName">
+        <source xml:lang="en">SQL Server master</source>
+        <target state="translated">SQL Server マスター</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ComputePoolDisplayName">
+        <source xml:lang="en">Compute pool</source>
+        <target state="translated">コンピューティング プール</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.DataPoolDisplayName">
+        <source xml:lang="en">Data pool</source>
+        <target state="translated">データ プール</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.StoragePoolDisplayName">
+        <source xml:lang="en">Storage pool</source>
+        <target state="translated">記憶域プール</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.SparkPoolDisplayName">
+        <source xml:lang="en">Spark pool</source>
+        <target state="translated">スパーク プール</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.SQLServerMasterDescription">
+        <source xml:lang="en">The SQL Server instance provides an externally accessible TDS endpoint for the cluster</source>
+        <target state="translated">SQL Server インスタンスには、クラスター用の外部アクセス可能な TDS エンドポイントが備わっています</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ComputePoolDescription">
+        <source xml:lang="en">TODO: Add description</source>
+        <target state="translated">TODO: 説明を追加します</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.DataPoolDescription">
+        <source xml:lang="en">TODO: Add description</source>
+        <target state="translated">TODO: 説明を追加します</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.StoragePoolDescription">
+        <source xml:lang="en">TODO: Add description</source>
+        <target state="translated">TODO: 説明を追加します</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.SparkPoolDescription">
+        <source xml:lang="en">TODO: Add description</source>
+        <target state="translated">TODO: 説明を追加します</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.poolLabelTemplate">
+        <source xml:lang="en">{0} ({1})</source>
+        <target state="translated">{0} ({1})</target>
+        <note>{0} is the pool name, {1} is the scale number</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/big-data-cluster/out/wizards/create-cluster/createClusterWizard" source-language="en" target-language="ja" datatype="plaintext">
+    <body>
+      <trans-unit id="bdc-create.wizardTitle">
+        <source xml:lang="en">Create a big data cluster</source>
+        <target state="translated">ビッグ データ クラスターを作成します</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.generateScriptsButtonText">
+        <source xml:lang="en">Generate Scripts</source>
+        <target state="translated">スクリプトの生成</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.createClusterButtonText">
+        <source xml:lang="en">Create</source>
+        <target state="translated">作成</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/big-data-cluster/out/wizards/create-cluster/createClusterModel" source-language="en" target-language="ja" datatype="plaintext">
+    <body>
+      <trans-unit id="bdc-create.AKSClusterCardText">
+        <source xml:lang="en">New AKS Cluster</source>
+        <target state="translated">新しい AKS クラスター</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.AKSClusterFullName">
+        <source xml:lang="en">New Azure Kubernetes Service cluster</source>
+        <target state="translated">新しい Azure Kubernetes Service クラスター</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.AKSClusterDescription">
+        <source xml:lang="en">This option configures new Azure Kubernetes Service (AKS) for SQL Server big data cluster deployments. AKS makes it simple to create, configure and manage a cluster of virutal machines that are preconfigured with a Kubernetes cluster to run containerized applications.</source>
+        <target state="translated">このオプションは、SQL Server のビッグ データ クラスター展開用の新しい Azure Kubernetes Service (AKS) を構成します。AKS を使用すると、コンテナー化されたアプリケーションを実行するための、Kubernetes クラスターで事前構成された仮想マシンのクラスターを簡単に作成、構成、管理できます。</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ExistingClusterCardText">
+        <source xml:lang="en">Existing Cluster</source>
+        <target state="translated">既存のクラスター</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ExistingClusterFullName">
+        <source xml:lang="en">Existing Kubernetes cluster</source>
+        <target state="translated">既存の Kubernetes クラスター</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ExistingClusterDescription">
+        <source xml:lang="en">This option assumes you already have a Kubernetes cluster installed, Once a prerequisite check is done, ensure the correct cluster context is selected.</source>
+        <target state="translated">このオプションは、既に Kubernetes クラスターがインストールされていることが前提です。前提条件の確認が済んだら、適切なクラスター コンテキストを選択してください。</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/big-data-cluster/out/kubectl/sqlServerBigDataClusterChannel" source-language="en" target-language="ja" datatype="plaintext">
+    <body>
+      <trans-unit id="bigDataClusterOutputChannel">
+        <source xml:lang="en">SQL Server big data cluster</source>
+        <target state="translated">SQL Server のビッグ データ クラスター</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/big-data-cluster/out/kubectl/kubectlUtils" source-language="en" target-language="ja" datatype="plaintext">
+    <body>
+      <trans-unit id="runKubectlFailed">
+        <source xml:lang="en">Unable to run kubectl</source>
+        <target state="translated">Kubectl を実行できません</target>
+      </trans-unit>
+      <trans-unit id="setClusterFailed">
+        <source xml:lang="en">Failed to set '{0}' as current cluster: {1}</source>
+        <target state="translated">'{0}' を現在のクラスターとして設定できませんでした: {1}</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/big-data-cluster/out/kubectl/kubectl" source-language="en" target-language="ja" datatype="plaintext">
+    <body>
+      <trans-unit id="binaryNotFound">
+        <source xml:lang="en">Could not find {0} binary. {1}</source>
+        <target state="translated">{0} バイナリが見つかりませんでした。{1}</target>
+      </trans-unit>
+      <trans-unit id="binaryNotInstalled">
+        <source xml:lang="en">{0} is not installed. {1}</source>
+        <target state="translated">{0} がインストールされていません。{1}</target>
+      </trans-unit>
+      <trans-unit id="kubernetesRequired">
+        <source xml:lang="en"> SQL Server Big data cluster requires kubernetes.</source>
+        <target state="translated">SQL Server のビッグ データ クラスターには kubernetes が必要です。</target>
+      </trans-unit>
+      <trans-unit id="cannotExecuteCmd">
+        <source xml:lang="en"> Cannot execute command.</source>
+        <target state="translated">コマンドを実行できません。</target>
+      </trans-unit>
+      <trans-unit id="kubectlVersionIncompatible">
+        <source xml:lang="en">kubectl version ${0} may be incompatible with cluster Kubernetes version {1}</source>
+        <target state="translated">kubectl バージョン ${0} がクラスター Kubernetes バージョン {1} と互換性がない可能性があります</target>
+      </trans-unit>
+      <trans-unit id="cannotRunCommand">
+        <source xml:lang="en">Unable to run command ({0})</source>
+        <target state="translated">コマンド ({0}) を実行できません</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/big-data-cluster/out/kubectl/binutil" source-language="en" target-language="ja" datatype="plaintext">
+    <body>
+      <trans-unit id="installDependenciesAction">
+        <source xml:lang="en">Install dependencies</source>
+        <target state="translated">依存関係をインストールします</target>
+      </trans-unit>
+      <trans-unit id="learnMoreAction">
+        <source xml:lang="en">Learn more</source>
+        <target state="translated">詳細を表示</target>
+      </trans-unit>
+      <trans-unit id="moreInfoMsg">
+        <source xml:lang="en">Add {0} directory to path, or set "mssql-bdc.{0}-path" config to {0} binary.</source>
+        <target state="translated">{0} ディレクトリをパスに追加するか、"mssql-bdc.{0}-path" 構成を {0} バイナリに設定します。</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/big-data-cluster/out/installer/installer" source-language="en" target-language="ja" datatype="plaintext">
+    <body>
+      <trans-unit id="downloadKubectlFailed">
+        <source xml:lang="en">Failed to download kubectl: {0}</source>
+        <target state="translated">Kubectl をダウンロードできませんでした: {0}</target>
+      </trans-unit>
+      <trans-unit id="kubectlVersionCheckFailed">
+        <source xml:lang="en">Failed to establish kubectl stable version: {0}</source>
+        <target state="translated">kubectl 安定版を設定できませんでした: {0}</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/big-data-cluster/out/main" source-language="en" target-language="ja" datatype="plaintext">
+    <body>
+      <trans-unit id="done">
+        <source xml:lang="en">Done</source>
+        <target state="translated">完了</target>
+      </trans-unit>
+      <trans-unit id="dependencyInstalled">
+        <source xml:lang="en">{0} already installed...</source>
+        <target state="translated">{0} は既にインストールされています...</target>
+      </trans-unit>
+      <trans-unit id="installingDependency">
+        <source xml:lang="en">Installing {0}...</source>
+        <target state="translated">{0} をインストールしています...</target>
+      </trans-unit>
+      <trans-unit id="installingDependencyFailed">
+        <source xml:lang="en">Unable to install {0}: {1}</source>
+        <target state="translated">{0} をインストールできませんでした: {1}</target>
+      </trans-unit>
+    </body>
+  </file>
 </xliff>

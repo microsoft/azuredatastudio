@@ -106,11 +106,11 @@
   </file>
   <file original="src/sql/platform/jobManagement/common/jobManagementService" source-language="en" target-language="zh-Hans" datatype="plaintext">
     <body>
-      <trans-unit id="providerIdNotValidError_jobManagementService">
+      <trans-unit id="providerIdNotValidError">
         <source xml:lang="en">Connection is required in order to interact with JobManagementService</source>
         <target state="translated">需要连接才能与 JobManagementService 交互</target>
       </trans-unit>
-      <trans-unit id="noHandlerRegistered_jobManagementService">
+      <trans-unit id="noHandlerRegistered">
         <source xml:lang="en">No Handler Registered</source>
         <target state="translated">未注册处理程序</target>
       </trans-unit>
@@ -142,11 +142,11 @@
   </file>
   <file original="src/sql/platform/dacfx/common/dacFxService" source-language="en" target-language="zh-Hans" datatype="plaintext">
     <body>
-      <trans-unit id="providerIdNotValidError_dacFxService">
+      <trans-unit id="providerIdNotValidError">
         <source xml:lang="en">Connection is required in order to interact with DacFxService</source>
         <target state="translated">必须连接才能与 DacFxService 进行交互</target>
       </trans-unit>
-      <trans-unit id="noHandlerRegistered_dacFxService">
+      <trans-unit id="noHandlerRegistered">
         <source xml:lang="en">No Handler Registered</source>
         <target state="translated">未注册处理程序</target>
       </trans-unit>
@@ -312,7 +312,7 @@
         <source xml:lang="en">New Query</source>
         <target state="translated">新建查询</target>
       </trans-unit>
-      <trans-unit id="manage_nodeActions.contribution">
+      <trans-unit id="manage">
         <source xml:lang="en">Manage</source>
         <target state="translated">管理</target>
       </trans-unit>
@@ -332,7 +332,7 @@
   </file>
   <file original="src/sql/workbench/parts/connection/electron-browser/connectionViewlet" source-language="en" target-language="zh-Hans" datatype="plaintext">
     <body>
-      <trans-unit id="Search server names_connectionViewlet">
+      <trans-unit id="Search server names">
         <source xml:lang="en">Search server names</source>
         <target state="translated">搜索服务器名称</target>
       </trans-unit>
@@ -736,11 +736,11 @@
         <source xml:lang="en">property `icon` can be omitted or must be either a string or a literal like `{dark, light}`</source>
         <target state="translated">属性 "icon" 可省略或者必须是字符串或文字，如 "{dark, light}"</target>
       </trans-unit>
-      <trans-unit id="navSection.missingTitle_error">
+      <trans-unit id="navSection.missingTitle">
         <source xml:lang="en">No title in nav section specified for extension.</source>
         <target state="translated">未在“导航”部分中为扩展指定标题。</target>
       </trans-unit>
-      <trans-unit id="navSection.missingContainer_error">
+      <trans-unit id="navSection.missingContainer">
         <source xml:lang="en">No container in nav section specified for extension.</source>
         <target state="translated">未在“导航”部分中为扩展指定标题。</target>
       </trans-unit>
@@ -748,7 +748,7 @@
         <source xml:lang="en">Exactly 1 dashboard container must be defined per space.</source>
         <target state="translated">每个空间只能定义 1 个仪表板容器。</target>
       </trans-unit>
-      <trans-unit id="navSection.invalidContainer_error">
+      <trans-unit id="navSection.invalidContainer">
         <source xml:lang="en">NAV_SECTION within NAV_SECTION is an invalid container for extension.</source>
         <target state="translated">NAV_SECTION 内的 NAV_SECTION 是一个无效的扩展容器。</target>
       </trans-unit>
@@ -1613,7 +1613,7 @@
   </file>
   <file original="src/sql/workbench/parts/dataExplorer/browser/connectionViewletPanel" source-language="en" target-language="zh-Hans" datatype="plaintext">
     <body>
-      <trans-unit id="Search server names_connectionViewletPanel">
+      <trans-unit id="Search server names">
         <source xml:lang="en">Search server names</source>
         <target state="translated">搜索服务器名称</target>
       </trans-unit>
@@ -1709,7 +1709,7 @@
         <source xml:lang="en">No</source>
         <target state="translated">否</target>
       </trans-unit>
-      <trans-unit id="delete_connectionActions">
+      <trans-unit id="delete">
         <source xml:lang="en">Delete</source>
         <target state="translated">删除</target>
       </trans-unit>
@@ -1789,35 +1789,35 @@
   </file>
   <file original="src/sql/parts/grid/views/gridActions" source-language="en" target-language="zh-Hans" datatype="plaintext">
     <body>
-      <trans-unit id="saveAsCsv_gridActions">
+      <trans-unit id="saveAsCsv">
         <source xml:lang="en">Save As CSV</source>
         <target state="translated">另存为 CSV</target>
       </trans-unit>
-      <trans-unit id="saveAsJson_gridActions">
+      <trans-unit id="saveAsJson">
         <source xml:lang="en">Save As JSON</source>
         <target state="translated">另存为 JSON</target>
       </trans-unit>
-      <trans-unit id="saveAsExcel_gridActions">
+      <trans-unit id="saveAsExcel">
         <source xml:lang="en">Save As Excel</source>
         <target state="translated">另存为 Excel</target>
       </trans-unit>
-      <trans-unit id="saveAsXml_gridActions">
+      <trans-unit id="saveAsXml">
         <source xml:lang="en">Save As XML</source>
         <target state="translated">另存为 XML</target>
       </trans-unit>
-      <trans-unit id="copySelection_gridActions">
+      <trans-unit id="copySelection">
         <source xml:lang="en">Copy</source>
         <target state="translated">复制</target>
       </trans-unit>
-      <trans-unit id="copyWithHeaders_gridActions">
+      <trans-unit id="copyWithHeaders">
         <source xml:lang="en">Copy With Headers</source>
         <target state="translated">连同标题一起复制</target>
       </trans-unit>
-      <trans-unit id="selectAll_gridActions">
+      <trans-unit id="selectAll">
         <source xml:lang="en">Select All</source>
         <target state="translated">选择全部</target>
       </trans-unit>
-      <trans-unit id="copyMessages_gridActions">
+      <trans-unit id="copyMessages">
         <source xml:lang="en">Copy</source>
         <target state="translated">复制</target>
       </trans-unit>
@@ -1881,7 +1881,7 @@
         <source xml:lang="en">Select View:</source>
         <target state="translated">选择视图:</target>
       </trans-unit>
-      <trans-unit id="text_profilerEditor">
+      <trans-unit id="text">
         <source xml:lang="en">Text</source>
         <target state="translated">文本</target>
       </trans-unit>
@@ -1923,7 +1923,7 @@
       </trans-unit>
       <trans-unit id="colorMapDescription">
         <source xml:lang="en">Maps "column name" -&gt; color. for example add "column1": red to ensure this column uses a red color </source>
-        <target state="translated">映射“列名”->“颜色”。例如，添加 "column1": 红色以确保该列使用红色</target>
+        <target state="translated">映射“列名”-&gt;“颜色”。例如，添加 "column1": 红色以确保该列使用红色</target>
       </trans-unit>
       <trans-unit id="legendDescription">
         <source xml:lang="en">Indicates preferred position and visibility of the chart legend. These are the column names from your query, and map to the label of each chart entry</source>
@@ -1993,7 +1993,7 @@
         <source xml:lang="en">You must enable preview features in order to use restore</source>
         <target state="translated">必须启用预览功能才能使用还原</target>
       </trans-unit>
-      <trans-unit id="manage_actions">
+      <trans-unit id="manage">
         <source xml:lang="en">Manage</source>
         <target state="translated">管理</target>
       </trans-unit>
@@ -2234,7 +2234,7 @@
   </file>
   <file original="src/sql/parts/modelComponents/loadingComponent.component" source-language="en" target-language="zh-Hans" datatype="plaintext">
     <body>
-      <trans-unit id="loadingMessage_loadingComponent.component">
+      <trans-unit id="loadingMessage">
         <source xml:lang="en">Loading</source>
         <target state="translated">正在加载</target>
       </trans-unit>
@@ -3021,7 +3021,7 @@
         <source xml:lang="en">Code</source>
         <target state="translated">代码</target>
       </trans-unit>
-      <trans-unit id="text_notebook.component">
+      <trans-unit id="text">
         <source xml:lang="en">Text</source>
         <target state="translated">文本</target>
       </trans-unit>
@@ -3345,7 +3345,7 @@
   </file>
   <file original="src/sql/parts/modelComponents/componentBase" source-language="en" target-language="zh-Hans" datatype="plaintext">
     <body>
-      <trans-unit id="invalidIndex_componentBase">
+      <trans-unit id="invalidIndex">
         <source xml:lang="en">The index is invalid.</source>
         <target state="translated">索引无效。</target>
       </trans-unit>
@@ -3421,7 +3421,7 @@
   </file>
   <file original="src/sql/parts/objectExplorer/viewlet/serverTreeRenderer" source-language="en" target-language="zh-Hans" datatype="plaintext">
     <body>
-      <trans-unit id="loading_serverTreeRenderer">
+      <trans-unit id="loading">
         <source xml:lang="en">Loading...</source>
         <target state="translated">正在加载...</target>
       </trans-unit>
@@ -3429,35 +3429,35 @@
   </file>
   <file original="src/sql/parts/query/editor/actions" source-language="en" target-language="zh-Hans" datatype="plaintext">
     <body>
-      <trans-unit id="saveAsCsv_actions">
+      <trans-unit id="saveAsCsv">
         <source xml:lang="en">Save As CSV</source>
         <target state="translated">另存为 CSV</target>
       </trans-unit>
-      <trans-unit id="saveAsJson_actions">
+      <trans-unit id="saveAsJson">
         <source xml:lang="en">Save As JSON</source>
         <target state="translated">另存为 JSON</target>
       </trans-unit>
-      <trans-unit id="saveAsExcel_actions">
+      <trans-unit id="saveAsExcel">
         <source xml:lang="en">Save As Excel</source>
         <target state="translated">另存为 Excel</target>
       </trans-unit>
-      <trans-unit id="saveAsXml_actions">
+      <trans-unit id="saveAsXml">
         <source xml:lang="en">Save As XML</source>
         <target state="translated">另存为 XML</target>
       </trans-unit>
-      <trans-unit id="copySelection_actions">
+      <trans-unit id="copySelection">
         <source xml:lang="en">Copy</source>
         <target state="translated">复制</target>
       </trans-unit>
-      <trans-unit id="copyWithHeaders_actions">
+      <trans-unit id="copyWithHeaders">
         <source xml:lang="en">Copy With Headers</source>
         <target state="translated">连同标题一起复制</target>
       </trans-unit>
-      <trans-unit id="selectAll_actions">
+      <trans-unit id="selectAll">
         <source xml:lang="en">Select All</source>
         <target state="translated">选择全部</target>
       </trans-unit>
-      <trans-unit id="copyMessages_actions">
+      <trans-unit id="copyMessages">
         <source xml:lang="en">Copy</source>
         <target state="translated">复制</target>
       </trans-unit>
@@ -3641,7 +3641,7 @@
   </file>
   <file original="src/sql/parts/notebook/notebookActions" source-language="en" target-language="zh-Hans" datatype="plaintext">
     <body>
-      <trans-unit id="loading_notebookActions">
+      <trans-unit id="loading">
         <source xml:lang="en">Loading kernels...</source>
         <target state="translated">正在加载内核中…</target>
       </trans-unit>
@@ -3665,11 +3665,11 @@
         <source xml:lang="en">Add new connection</source>
         <target state="translated">添加新连接</target>
       </trans-unit>
-      <trans-unit id="selectConnection_notebookActions">
+      <trans-unit id="selectConnection">
         <source xml:lang="en">Select connection</source>
         <target state="translated">选择连接</target>
       </trans-unit>
-      <trans-unit id="localhost_notebookActions">
+      <trans-unit id="localhost">
         <source xml:lang="en">localhost</source>
         <target state="translated">localhost</target>
       </trans-unit>
@@ -3685,7 +3685,7 @@
         <source xml:lang="en">Notebook is already trusted.</source>
         <target state="translated">笔记本已受信任。</target>
       </trans-unit>
-      <trans-unit id="noKernel_notebookActions">
+      <trans-unit id="noKernel">
         <source xml:lang="en">No Kernel</source>
         <target state="translated">无内核</target>
       </trans-unit>
@@ -3721,7 +3721,7 @@
   </file>
   <file original="src/sql/parts/modelComponents/loadingSpinner.component" source-language="en" target-language="zh-Hans" datatype="plaintext">
     <body>
-      <trans-unit id="loadingMessage_loadingSpinner.component">
+      <trans-unit id="loadingMessage">
         <source xml:lang="en">Loading</source>
         <target state="translated">正在加载</target>
       </trans-unit>
@@ -3797,7 +3797,7 @@
   </file>
   <file original="src/sql/parts/dashboard/containers/dashboardErrorContainer.component" source-language="en" target-language="zh-Hans" datatype="plaintext">
     <body>
-      <trans-unit id="dashboardNavSection_loadTabError">
+      <trans-unit id="dashboardNavSection">
         <source xml:lang="en">The "{0}" section has invalid content. Please contact extension owner.</source>
         <target state="translated">“{0}”部分具有无效内容。请与扩展所有者联系。</target>
       </trans-unit>
@@ -4121,7 +4121,7 @@
         <source xml:lang="en">Unkown component type. Must use ModelBuilder to create objects</source>
         <target state="translated">组件类型未知。必须使用 ModelBuilder 来创建对象</target>
       </trans-unit>
-      <trans-unit id="invalidIndex_extHostModelView">
+      <trans-unit id="invalidIndex">
         <source xml:lang="en">The index is invalid.</source>
         <target state="translated">索引无效。</target>
       </trans-unit>
@@ -4201,11 +4201,11 @@
   </file>
   <file original="src/sql/parts/notebook/models/notebookContexts" source-language="en" target-language="zh-Hans" datatype="plaintext">
     <body>
-      <trans-unit id="selectConnection_notebookContexts">
+      <trans-unit id="selectConnection">
         <source xml:lang="en">Select connection</source>
         <target state="translated">选择连接</target>
       </trans-unit>
-      <trans-unit id="localhost_notebookContexts">
+      <trans-unit id="localhost">
         <source xml:lang="en">localhost</source>
         <target state="translated">本地 主机</target>
       </trans-unit>
@@ -4253,7 +4253,7 @@
   </file>
   <file original="src/sql/workbench/services/notebook/common/sessionManager" source-language="en" target-language="zh-Hans" datatype="plaintext">
     <body>
-      <trans-unit id="noKernel_sessionManager">
+      <trans-unit id="noKernel">
         <source xml:lang="en">No Kernel</source>
         <target state="translated">无内核</target>
       </trans-unit>
@@ -4269,7 +4269,7 @@
   </file>
   <file original="src/sql/parts/notebook/cellToggleMoreActions" source-language="en" target-language="zh-Hans" datatype="plaintext">
     <body>
-      <trans-unit id="delete_cellToggleMoreActions">
+      <trans-unit id="delete">
         <source xml:lang="en">Delete</source>
         <target state="translated">删除</target>
       </trans-unit>

@@ -1,8 +1,8 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file original="extensions/dacpac/out/wizard/pages/selectOperationpage" source-language="en" target-language="it" datatype="plaintext">
     <body>
-      <trans-unit id="dacFx.deployRadioButtonLabel_selectOperationpage">
+      <trans-unit id="dacFx.deployRadioButtonLabel">
         <source xml:lang="en">Deploy a data-tier application .dacpac file to an instance of SQL Server [Deploy Dacpac]</source>
         <target state="translated">Distribuisci un file con estensione dacpac dell'applicazione livello dati in un'istanza di SQL Server [Distribuisci DACPAC]</target>
       </trans-unit>
@@ -114,7 +114,7 @@
   </file>
   <file original="extensions/dacpac/out/wizard/pages/deployConfigPage" source-language="en" target-language="it" datatype="plaintext">
     <body>
-      <trans-unit id="dacFx.databaseNameTextBox_deployConfigPage">
+      <trans-unit id="dacFx.databaseNameTextBox">
         <source xml:lang="en">Database Name</source>
         <target state="translated">Nome del database</target>
       </trans-unit>
@@ -150,7 +150,7 @@
   </file>
   <file original="extensions/dacpac/out/wizard/pages/deployActionPage" source-language="en" target-language="it" datatype="plaintext">
     <body>
-      <trans-unit id="dacFx.deployRadioButtonLabel_deployActionPage">
+      <trans-unit id="dacFx.deployRadioButtonLabel">
         <source xml:lang="en">Deploy</source>
         <target state="translated">Distribuzione</target>
       </trans-unit>
@@ -234,7 +234,7 @@
         <source xml:lang="en">Source Server</source>
         <target state="translated">Server di origine</target>
       </trans-unit>
-      <trans-unit id="dacFx.databaseNameTextBox_dacFxConfigPage">
+      <trans-unit id="dacFx.databaseNameTextBox">
         <source xml:lang="en">Target Database</source>
         <target state="translated">Database di destinazione</target>
       </trans-unit>

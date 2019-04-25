@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
@@ -13,7 +12,7 @@ const localize = nls.loadMessageBundle();
 
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
 import { IConfig, ServerProvider, Events } from 'service-downloader';
-import { ServerOptions, TransportKind, LanguageClient } from 'vscode-languageclient';
+import { ServerOptions, TransportKind } from 'vscode-languageclient';
 
 import * as Constants from './constants';
 import ContextProvider from './contextProvider';
@@ -37,7 +36,6 @@ import { registerSearchServerCommand } from './objectExplorerNodeProvider/comman
 const baseConfig = require('./config.json');
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
 const statusView = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
-const jupyterNotebookProviderId = 'jupyter';
 const msgSampleCodeDataFrame = localize('msgSampleCodeDataFrame', 'This sample code loads the file into a data frame and shows the first 10 results.');
 
 
@@ -47,7 +45,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 
 	if (!supported) {
 		vscode.window.showErrorMessage('Unsupported platform');
-		return;
+		return undefined;
 	}
 
 	let config: IConfig = JSON.parse(JSON.stringify(baseConfig));

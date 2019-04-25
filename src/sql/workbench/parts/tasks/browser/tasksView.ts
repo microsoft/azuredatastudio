@@ -15,12 +15,12 @@ import { DefaultFilter, DefaultDragAndDrop, DefaultAccessibilityProvider } from 
 import { localize } from 'vs/nls';
 import { hide, $, append } from 'vs/base/browser/dom';
 
-import { TaskHistoryRenderer } from 'sql/workbench/parts/taskHistory/browser/taskHistoryRenderer';
-import { TaskHistoryDataSource } from 'sql/workbench/parts/taskHistory/browser/taskHistoryDataSource';
-import { TaskHistoryController } from 'sql/workbench/parts/taskHistory/browser/taskHistoryController';
-import { TaskHistoryActionProvider } from 'sql/workbench/parts/taskHistory/browser/taskHistoryActionProvider';
-import { ITaskService } from 'sql/platform/taskHistory/common/taskService';
-import { TaskNode, TaskStatus } from 'sql/workbench/parts/taskHistory/common/taskNode';
+import { TaskHistoryRenderer } from 'sql/workbench/parts/tasks/browser/tasksRenderer';
+import { TaskHistoryDataSource } from 'sql/workbench/parts/tasks/browser/tasksDataSource';
+import { TaskHistoryController } from 'sql/workbench/parts/tasks/browser/tasksController';
+import { TaskHistoryActionProvider } from 'sql/workbench/parts/tasks/browser/tasksActionProvider';
+import { ITaskService } from 'sql/platform/tasks/common/tasksService';
+import { TaskNode, TaskStatus } from 'sql/platform/tasks/common/tasksNode';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { IExpandableTree } from 'sql/workbench/parts/objectExplorer/browser/treeUpdateUtils';
 
