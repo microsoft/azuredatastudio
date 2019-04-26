@@ -46,7 +46,7 @@ import { ILabelService } from 'vs/platform/label/common/label';
 
 // {{SQL CARBON EDIT}} -- Display the editor's tab color
 import { ICommandService } from 'vs/platform/commands/common/commands';
-import * as QueryConstants from 'sql/parts/query/common/constants';
+import * as QueryConstants from 'sql/workbench/parts/query/common/constants';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import { GlobalNewUntitledFileAction } from 'vs/workbench/contrib/files/browser/fileActions';
 // {{SQL CARBON EDIT}} -- End
