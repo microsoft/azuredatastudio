@@ -18,6 +18,7 @@ import { attachListBoxStyler } from 'sql/platform/theme/common/styler';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { KeyCode } from 'vs/base/common/keyCodes';
 
 @Component({
 	selector: 'modelview-listBox',
@@ -48,7 +49,25 @@ export default class ListBoxComponent extends ComponentBase implements IComponen
 
 	ngAfterViewInit(): void {
 		if (this._inputContainer) {
-			this._input = new ListBox([], this.contextViewService, this.clipboardService);
+			this._input = new ListBox([], this.contextViewService);
+			this._input.onKeyDown(e => {
+				if (this._input.selectedOptions.length > 0) {
+					const key = e.keyCode;
+					const ctrlOrCmd = e.ctrlKey || e.metaKey;
+
+					if (ctrlOrCmd && key === KeyCode.KEY_C) {
+						let textToCopy = this._input.selectedOptions[0];
+						for (let i = 1; i < this._input.selectedOptions.length; i++) {
+							textToCopy = textToCopy + ', ' + this._input.selectedOptions[i];
+						}
+
+						// Copy to clipboard
+						this.clipboardService.writeText(textToCopy);
+
+						e.stopPropagation();
+					}
+				}
+			});
 			this._input.render(this._inputContainer.nativeElement);
 
 			this._register(this._input);
