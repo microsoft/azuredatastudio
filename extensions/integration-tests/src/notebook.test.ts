@@ -20,8 +20,8 @@ if (context.RunTest) {
 		setup(function () {
 			this.NbTester = new NotebooksTester(this.currentTest.title);
 		});
-		teardown(function () {
-			this.NbTester.Cleanup(this.currentTest.title);
+		teardown(async function () {
+			await this.NbTester.Cleanup(this.currentTest.title);
 		});
 
 		test('Sql NB test', async function () {
@@ -66,6 +66,7 @@ class NotebooksTester {
 				fs.unlinkSync(fileName);
 				console.log(`"${fileName}" is deleted.`);
 			}
+			await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
 		}
 		catch (err) {
 			console.log(err);
