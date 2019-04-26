@@ -9,9 +9,14 @@
 		"lib": [
 			"es2015"
 		],
-		"sourceMap": true
+		"sourceMap": true,
+		"baseUrl" : "../../src",
+		"paths": {
+			"azdata" : ["sql/azdata"]
+		}
 	},
 	"include": [
-		"src/**/*"
+		"src/**/*",
+		"test/**/*"
 	]
 }
