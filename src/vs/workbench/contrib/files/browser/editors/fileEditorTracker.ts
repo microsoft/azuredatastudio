@@ -30,7 +30,7 @@ import { onUnexpectedError } from 'vs/base/common/errors';
 import { withNullAsUndefined } from 'vs/base/common/types';
 
 // {{SQL CARBON EDIT}}
-import { QueryInput } from 'sql/parts/query/common/queryInput';
+import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
 
 export class FileEditorTracker extends Disposable implements IWorkbenchContribution {
 
