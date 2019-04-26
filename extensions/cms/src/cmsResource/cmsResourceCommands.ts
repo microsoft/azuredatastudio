@@ -39,6 +39,8 @@ export function registerCMSServerCommand(appContext: AppContext, tree: CmsResour
 					// recent connection list
 					connection.options.groupId = null;
 					let registeredCmsServerDescription = connection.options.registeredServerDescription;
+					// remove server description from connection uri
+					connection.options.registeredCmsServerDescription = null;
 					let ownerUri = await azdata.connection.getUriForConnection(connection.connectionId);
 					appContext.apiWrapper.cacheRegisteredCmsServer(registeredCmsServerName, registeredCmsServerDescription, ownerUri, connection);
 					tree.notifyNodeChanged(undefined);

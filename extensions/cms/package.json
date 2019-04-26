@@ -25,7 +25,7 @@
 		},
 		"connectionProvider": {
 			"providerId": "MSSQL-CMS",
-			"displayName": "%mssql.provider.displayName%",
+			"displayName": "Microsoft SQL Server- CMS",
 			"connectionOptions": [
 				{
 					"specialValueType": "connectionName",
