@@ -12,7 +12,7 @@ import { INotificationService, INotificationActions } from 'vs/platform/notifica
 import Severity from 'vs/base/common/severity';
 import { IDialogService, IConfirmation, IConfirmationResult } from 'vs/platform/dialogs/common/dialogs';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { QueryInput } from 'sql/parts/query/common/queryInput';
+import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
 import { EditDataInput } from 'sql/workbench/parts/editData/common/editDataInput';
 import { DashboardInput } from 'sql/workbench/parts/dashboard/dashboardInput';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
