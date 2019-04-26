@@ -91,7 +91,8 @@ export default class JupyterServerInstallation {
 			} else {
 				await this.installJupyterProsePackage();
 			}
-			await this.installSparkMagic();
+			let doOnlineInstall = this._usingExistingPython;
+			await this.installSparkMagic(doOnlineInstall);
 
 			fs.remove(this._pythonPackageDir, (err: Error) => {
 				if (err) {
@@ -361,11 +362,15 @@ export default class JupyterServerInstallation {
 		}
 	}
 
-	private async installSparkMagic(): Promise<void> {
+	private async installSparkMagic(onlineInstall: boolean): Promise<void> {
 		let installSparkMagic: string;
 		if (process.platform === constants.winPlatform || this._usingExistingPython) {
 			let sparkWheel = path.join(this._pythonPackageDir, `sparkmagic-${constants.sparkMagicVersion}-py3-none-any.whl`);
-			installSparkMagic = `"${this._pythonExecutable}" -m pip install --no-index "${sparkWheel}" --find-links "${this._pythonPackageDir}" --no-warn-script-location`;
+			if (onlineInstall) {
+				installSparkMagic = `"${this._pythonExecutable}" -m pip install "${sparkWheel}" --no-warn-script-location`;
+			} else {
+				installSparkMagic = `"${this._pythonExecutable}" -m pip install --no-index "${sparkWheel}" --find-links "${this._pythonPackageDir}" --no-warn-script-location`;
+			}
 		}
 
 		if (installSparkMagic) {
@@ -411,7 +416,7 @@ export default class JupyterServerInstallation {
 
 	private getCondaExePath(): string {
 		return path.join(this._pythonInstallationPath,
-			process.platform === constants.winPlatform ? 'condabin\\conda.bat' : 'bin/conda');
+			process.platform === constants.winPlatform ? 'Scripts\\conda.exe' : 'bin/conda');
 	}
 
 	private checkCondaExists(): boolean {
