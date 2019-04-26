@@ -3,18 +3,16 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as GridContentEvents from 'sql/workbench/parts/grid/common/gridContentEvents';
-import * as LocalizedConstants from 'sql/parts/query/common/localizedConstants';
+import * as LocalizedConstants from 'sql/workbench/parts/query/common/localizedConstants';
 import QueryRunner, { EventType as QREvents } from 'sql/platform/query/common/queryRunner';
 import { DataService } from 'sql/workbench/parts/grid/services/dataService';
 import { IQueryModelService, IQueryEvent } from 'sql/platform/query/common/queryModel';
-import { QueryInput } from 'sql/parts/query/common/queryInput';
-import { QueryStatusbarItem } from 'sql/parts/query/execution/queryStatus';
-import { SqlFlavorStatusbarItem } from 'sql/parts/query/common/flavorStatus';
-import { RowCountStatusBarItem } from 'sql/parts/query/common/rowCountStatus';
-import { TimeElapsedStatusBarItem } from 'sql/parts/query/common/timeElapsedStatus';
+import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
+import { QueryStatusbarItem } from 'sql/workbench/parts/query/browser/queryStatus';
+import { SqlFlavorStatusbarItem } from 'sql/workbench/parts/query/browser/flavorStatus';
+import { RowCountStatusBarItem } from 'sql/workbench/parts/query/browser/rowCountStatus';
+import { TimeElapsedStatusBarItem } from 'sql/workbench/parts/query/browser/timeElapsedStatus';
 
 import * as azdata from 'azdata';
 

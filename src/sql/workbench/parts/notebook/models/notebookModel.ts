@@ -777,7 +777,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			}
 			await this.shutdownActiveSession();
 		} catch (err) {
-			this.notifyError(localize('shutdownError', "An error occurred when closing the notebook: {0}", notebookUtils.getErrorMessage(err)));
+			console.log('An error occurred when closing the notebook: {0}', notebookUtils.getErrorMessage(err));
 		}
 	}
 
