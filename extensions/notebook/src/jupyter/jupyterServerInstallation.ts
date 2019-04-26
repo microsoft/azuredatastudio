@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as nls from 'vscode-nls';
@@ -102,7 +100,7 @@ export default class JupyterServerInstallation {
 			.replace('#bundleversion', bundleVersion)
 			.replace('#extension', process.platform === constants.winPlatform ? 'zip' : 'tar.gz');
 
-		let pythonDownloadUrl = undefined;
+		let pythonDownloadUrl: string = undefined;
 		switch (utils.getOSPlatform()) {
 			case utils.Platform.Windows:
 				pythonDownloadUrl = 'https://go.microsoft.com/fwlink/?linkid=2074021';
@@ -117,9 +115,7 @@ export default class JupyterServerInstallation {
 		}
 
 		let pythonPackagePathLocal = this._pythonInstallationPath + '/' + packageName;
-		let self = undefined;
 		return new Promise((resolve, reject) => {
-			self = this;
 			backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgDownloadPython(platformId, pythonDownloadUrl));
 			fs.mkdirs(this._pythonInstallationPath, (err) => {
 				if (err) {
@@ -169,7 +165,7 @@ export default class JupyterServerInstallation {
 								reject(err);
 							}
 						}
-						decompress(pythonPackagePathLocal, self._pythonInstallationPath).then(files => {
+						decompress(pythonPackagePathLocal, this._pythonInstallationPath).then(files => {
 							//Delete zip/tar file
 							fs.unlink(pythonPackagePathLocal, (err) => {
 								if (err) {
@@ -310,7 +306,7 @@ export default class JupyterServerInstallation {
 	 */
 	public async promptForPythonInstall(): Promise<void> {
 		if (!JupyterServerInstallation.isPythonInstalled(this.apiWrapper)) {
-			let pythonDialog = new ConfigurePythonDialog(this.apiWrapper, this.outputChannel, this);
+			let pythonDialog = new ConfigurePythonDialog(this.apiWrapper, this);
 			return pythonDialog.showDialog(true);
 		}
 	}

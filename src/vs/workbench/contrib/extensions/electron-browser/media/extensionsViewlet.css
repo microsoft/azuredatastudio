@@ -113,6 +113,10 @@
 	text-align: center;
 }
 
+.extensions-viewlet > .extensions .monaco-list-row > .extension > .icon-container .extension-remote-badge > .octicon {
+	vertical-align: middle
+}
+
 .extensions-viewlet > .extensions .monaco-list-row > .extension > .details > .header-container > .header > .extension-remote-badge-container {
 	margin-left: 6px;
 }
@@ -123,11 +127,13 @@
 	line-height: 14px;
 	border-radius: 20px;
 	text-align: center;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .extensions-viewlet > .extensions .monaco-list-row > .extension > .details > .header-container > .header .extension-remote-badge > .octicon {
-	font-size: 13px;
-	vertical-align: middle;
+	font-size: 12px;
 }
 
 .extensions-viewlet.narrow > .extensions .extension > .icon-container,
@@ -222,6 +228,14 @@
 
 .extensions-viewlet > .extensions .extension > .details > .footer > .monaco-action-bar > .actions-container {
 	flex-wrap: wrap-reverse;
+}
+
+.extensions-viewlet > .extensions .extension > .details > .footer > .monaco-action-bar > .actions-container .extension-action {
+	max-width: 150px;
+}
+
+.extensions-viewlet.narrow > .extensions .extension > .details > .footer > .monaco-action-bar > .actions-container .extension-action {
+	max-width: 100px;
 }
 
 .extensions-viewlet > .extensions .extension > .details > .footer > .monaco-action-bar .action-label {
