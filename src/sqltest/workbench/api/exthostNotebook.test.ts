@@ -111,10 +111,10 @@ suite('ExtHostNotebook Tests', () => {
 
 		});
 
-		test('Should call unregister on disposing', () => {
+		test('Should not call unregister on disposing', () => {
 			let disposable = extHostNotebook.registerNotebookProvider(notebookProviderMock.object);
 			disposable.dispose();
-			mockProxy.verify(p => p.$unregisterNotebookProvider(TypeMoq.It.isValue(savedHandle)), TypeMoq.Times.once());
+			mockProxy.verify(p => p.$unregisterNotebookProvider(TypeMoq.It.isValue(savedHandle)), TypeMoq.Times.never());
 		});
 	});
 });
