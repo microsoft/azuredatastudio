@@ -8,6 +8,7 @@ import { IOEShimService } from 'sql/workbench/parts/objectExplorer/common/object
 import { ITreeItem } from 'sql/workbench/common/views';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IContextKey, IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
+import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
 
 export interface INodeContextValue {
 	node: ITreeItem;
@@ -31,7 +32,8 @@ export class NodeContextKey extends Disposable implements IContextKey<INodeConte
 
 	constructor(
 		@IContextKeyService contextKeyService: IContextKeyService,
-		@IOEShimService private oeService: IOEShimService
+		@IOEShimService private oeService: IOEShimService,
+		@IQueryManagementService queryManagementService: IQueryManagementService
 	) {
 		super();
 
@@ -40,7 +42,7 @@ export class NodeContextKey extends Disposable implements IContextKey<INodeConte
 		this._viewIdKey = NodeContextKey.ViewId.bindTo(contextKeyService);
 		this._viewItemKey = NodeContextKey.ViewItem.bindTo(contextKeyService);
 		this._nodeContextKey = NodeContextKey.Node.bindTo(contextKeyService);
-		this._connectionContextKey = new ConnectionContextKey(contextKeyService);
+		this._connectionContextKey = new ConnectionContextKey(contextKeyService, queryManagementService);
 	}
 
 	set(value: INodeContextValue) {
