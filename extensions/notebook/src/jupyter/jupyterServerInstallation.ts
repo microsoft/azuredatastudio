@@ -362,11 +362,11 @@ export default class JupyterServerInstallation {
 		}
 	}
 
-	private async installSparkMagic(onlineInstall: boolean): Promise<void> {
+	private async installSparkMagic(doOnlineInstall: boolean): Promise<void> {
 		let installSparkMagic: string;
 		if (process.platform === constants.winPlatform || this._usingExistingPython) {
 			let sparkWheel = path.join(this._pythonPackageDir, `sparkmagic-${constants.sparkMagicVersion}-py3-none-any.whl`);
-			if (onlineInstall) {
+			if (doOnlineInstall) {
 				installSparkMagic = `"${this._pythonExecutable}" -m pip install "${sparkWheel}" --no-warn-script-location`;
 			} else {
 				installSparkMagic = `"${this._pythonExecutable}" -m pip install --no-index "${sparkWheel}" --find-links "${this._pythonPackageDir}" --no-warn-script-location`;
