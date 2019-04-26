@@ -1,0 +1,15 @@
+{
+    "version": "0.0.13",
+    "open_new_column" : "no",
+    "engine_configurations": [
+        {
+            "cscope" : {
+                "paths" : [
+                    "${workspaceRoot}"
+                ],
+                "build_command" : "",
+                "database_path" : "${workspaceRoot}/.vscode/cscope"
+            }
+        }
+    ]
+}
