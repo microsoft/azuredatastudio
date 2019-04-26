@@ -4954,6 +4954,10 @@ declare module 'azdata' {
 		 */
 		export interface IStdinMessage extends IMessage {
 			channel: 'stdin';
+			content: {
+				prompt: string;
+				password: boolean;
+			};
 		}
 
 		/**
