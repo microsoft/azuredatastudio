@@ -443,8 +443,10 @@ export class CellModel implements ICellModel {
 			try {
 				await this._stdInHandler.handle(msg);
 			} catch (err) {
-				// TODO should we error out in this case somehow? E.g. send Ctrl+C?
-				this.future.sendInputReply({ value: '' });
+				if (this.future) {
+					// TODO should we error out in this case somehow? E.g. send Ctrl+C?
+					this.future.sendInputReply({ value: '' });
+				}
 			}
 		};
 		return handler();
