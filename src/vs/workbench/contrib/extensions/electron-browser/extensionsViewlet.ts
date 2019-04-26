@@ -55,6 +55,9 @@ import { ExtensionType } from 'vs/platform/extensions/common/extensions';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { ViewContainerViewlet } from 'vs/workbench/browser/parts/views/viewsViewlet';
 import { RemoteAuthorityContext } from 'vs/workbench/common/contextkeys';
+import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
+import { REMOTE_HOST_SCHEME } from 'vs/platform/remote/common/remoteHosts';
+import { ILabelService } from 'vs/platform/label/common/label';
 
 interface SearchInputEvent extends Event {
 	target: HTMLInputElement;
@@ -91,7 +94,9 @@ const viewIdNameMappings: { [id: string]: string } = {
 export class ExtensionsViewletViewsContribution implements IWorkbenchContribution {
 
 	constructor(
-		@IExtensionManagementServerService private readonly extensionManagementServerService: IExtensionManagementServerService
+		@IExtensionManagementServerService private readonly extensionManagementServerService: IExtensionManagementServerService,
+		@ILabelService private readonly labelService: ILabelService,
+		@IWorkbenchEnvironmentService private readonly workbenchEnvironmentService: IWorkbenchEnvironmentService
 	) {
 		this.registerViews();
 	}
@@ -180,22 +185,32 @@ export class ExtensionsViewletViewsContribution implements IWorkbenchContributio
 	*/
 
 	private createExtensionsViewDescriptorsForServer(server: IExtensionManagementServer): IViewDescriptor[] {
+		const getViewName = (viewTitle: string, server: IExtensionManagementServer): string => {
+			const serverLabel = this.workbenchEnvironmentService.configuration.remoteAuthority === server.authority ? this.labelService.getHostLabel(REMOTE_HOST_SCHEME, server.authority) || server.label : server.label;
+			if (viewTitle && this.workbenchEnvironmentService.configuration.remoteAuthority) {
+				return `${serverLabel} - ${viewTitle}`;
+			}
+			return viewTitle ? viewTitle : serverLabel;
+		};
+		const getInstalledViewName = (): string => getViewName(localize('installed', "Installed"), server);
+		const getOutdatedViewName = (): string => getViewName(localize('outdated', "Outdated"), server);
+		const onDidChangeServerLabel: EventOf<void> = this.workbenchEnvironmentService.configuration.remoteAuthority ? EventOf.map(this.labelService.onDidChangeFormatters, () => undefined) : EventOf.None;
 		return [{
 			id: `extensions.${server.authority}.installed`,
-			name: localize('installed', "Installed"),
-			ctorDescriptor: { ctor: ServerExtensionsView, arguments: [server] },
+			get name() { return getInstalledViewName(); },
+			ctorDescriptor: { ctor: ServerExtensionsView, arguments: [server, EventOf.map<void, string>(onDidChangeServerLabel, () => getInstalledViewName())] },
 			when: ContextKeyExpr.and(ContextKeyExpr.has('searchInstalledExtensions')),
 			weight: 100
 		}, {
 			id: `extensions.${server.authority}.outdated`,
-			name: localize('outdated', "Outdated"),
-			ctorDescriptor: { ctor: ServerExtensionsView, arguments: [server] },
+			get name() { return getOutdatedViewName(); },
+			ctorDescriptor: { ctor: ServerExtensionsView, arguments: [server, EventOf.map<void, string>(onDidChangeServerLabel, () => getOutdatedViewName())] },
 			when: ContextKeyExpr.and(ContextKeyExpr.has('searchOutdatedExtensions')),
 			weight: 100
 		}, {
 			id: `extensions.${server.authority}.default`,
-			name: localize('installed', "Installed"),
-			ctorDescriptor: { ctor: ServerExtensionsView, arguments: [server] },
+			get name() { return getInstalledViewName(); },
+			ctorDescriptor: { ctor: ServerExtensionsView, arguments: [server, EventOf.map<void, string>(onDidChangeServerLabel, () => getInstalledViewName())] },
 			when: ContextKeyExpr.and(ContextKeyExpr.has('defaultExtensionViews'), ContextKeyExpr.has('hasInstalledExtensions'), RemoteAuthorityContext.notEqualsTo('')),
 			weight: 40,
 			order: 1
@@ -228,7 +243,6 @@ export class ExtensionsViewletViewsContribution implements IWorkbenchContributio
 			ctorDescriptor: { ctor: RecommendedExtensionsView },
 			when: ContextKeyExpr.has('recommendedExtensions'),
 			weight: 50,
-			canToggleVisibility: true,
 			order: 2
 		};
 	}
@@ -243,7 +257,6 @@ export class ExtensionsViewletViewsContribution implements IWorkbenchContributio
 			ctorDescriptor: { ctor: WorkspaceRecommendedExtensionsView },
 			when: ContextKeyExpr.and(ContextKeyExpr.has('recommendedExtensions'), ContextKeyExpr.has('nonEmptyWorkspace')),
 			weight: 50,
-			canToggleVisibility: true,
 			order: 1
 		};
 	}
@@ -256,7 +269,6 @@ export class ExtensionsViewletViewsContribution implements IWorkbenchContributio
 			ctorDescriptor: { ctor: EnabledExtensionsView },
 			when: ContextKeyExpr.and(ContextKeyExpr.has('searchEnabledExtensions')),
 			weight: 40,
-			canToggleVisibility: true,
 			order: 1
 		};
 	}
@@ -269,7 +281,6 @@ export class ExtensionsViewletViewsContribution implements IWorkbenchContributio
 			ctorDescriptor: { ctor: DisabledExtensionsView },
 			when: ContextKeyExpr.and(ContextKeyExpr.has('searchDisabledExtensions')),
 			weight: 10,
-			canToggleVisibility: true,
 			order: 3,
 			collapsed: true
 		};
@@ -282,8 +293,7 @@ export class ExtensionsViewletViewsContribution implements IWorkbenchContributio
 			name: viewIdNameMappings[id],
 			ctorDescriptor: { ctor: BuiltInExtensionsView },
 			when: ContextKeyExpr.has('searchBuiltInExtensions'),
-			weight: 100,
-			canToggleVisibility: true
+			weight: 100
 		};
 	}
 
@@ -294,8 +304,7 @@ export class ExtensionsViewletViewsContribution implements IWorkbenchContributio
 			name: viewIdNameMappings[id],
 			ctorDescriptor: { ctor: BuiltInThemesExtensionsView },
 			when: ContextKeyExpr.has('searchBuiltInExtensions'),
-			weight: 100,
-			canToggleVisibility: true
+			weight: 100
 		};
 	}
 
@@ -306,8 +315,7 @@ export class ExtensionsViewletViewsContribution implements IWorkbenchContributio
 			name: viewIdNameMappings[id],
 			ctorDescriptor: { ctor: BuiltInBasicsExtensionsView },
 			when: ContextKeyExpr.has('searchBuiltInExtensions'),
-			weight: 100,
-			canToggleVisibility: true
+			weight: 100
 		};
 	}
 }
