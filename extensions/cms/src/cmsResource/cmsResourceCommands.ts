@@ -16,9 +16,9 @@ import { CmsResourceTreeNode } from './tree/cmsResourceTreeNode';
 
 const localize = nls.loadMessageBundle();
 
-export function registerCMSServerCommand(appContext: AppContext, tree: CmsResourceTreeProvider): void {
+export function registerCmsServerCommand(appContext: AppContext, tree: CmsResourceTreeProvider): void {
 	// Create a CMS Server
-	appContext.apiWrapper.registerCommand('cms.resource.registerCMSServer', async (node?: TreeNode) => {
+	appContext.apiWrapper.registerCommand('cms.resource.registerCmsServer', async (node?: TreeNode) => {
 		if (node && !(node instanceof CmsResourceEmptyTreeNode)) {
 			return;
 		}
@@ -55,9 +55,9 @@ export function registerCMSServerCommand(appContext: AppContext, tree: CmsResour
 	});
 }
 
-export function deleteCMSServerCommand(appContext: AppContext, tree: CmsResourceTreeProvider): void {
+export function deleteCmsServerCommand(appContext: AppContext, tree: CmsResourceTreeProvider): void {
 	// Delete a CMS Server
-	appContext.apiWrapper.registerCommand('cms.resource.deleteCMSServer', async (node?: TreeNode) => {
+	appContext.apiWrapper.registerCommand('cms.resource.deleteCmsServer', async (node?: TreeNode) => {
 		if (!(node instanceof CmsResourceTreeNode)) {
 			return;
 		}

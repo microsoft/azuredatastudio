@@ -19,9 +19,9 @@ export class CmsResourceEmptyTreeNode extends TreeNode {
 	}
 
 	public getTreeItem(): TreeItem | Promise<TreeItem> {
-		let item = new TreeItem(CmsResourceEmptyTreeNode.registerServerLabel, TreeItemCollapsibleState.None);
+		let item = new TreeItem(CmsResourceEmptyTreeNode.addCmsServerLabel, TreeItemCollapsibleState.None);
 		item.command = {
-			title: CmsResourceEmptyTreeNode.registerServerLabel,
+			title: CmsResourceEmptyTreeNode.addCmsServerLabel,
 			command: 'cms.resource.registerCMSServer',
 			arguments: [this]
 		};
@@ -31,7 +31,7 @@ export class CmsResourceEmptyTreeNode extends TreeNode {
 
 	public getNodeInfo(): NodeInfo {
 		return {
-			label: CmsResourceEmptyTreeNode.registerServerLabel,
+			label: CmsResourceEmptyTreeNode.addCmsServerLabel,
 			isLeaf: true,
 			errorMessage: undefined,
 			metadata: undefined,
@@ -47,5 +47,5 @@ export class CmsResourceEmptyTreeNode extends TreeNode {
 		return 'message_cmsTreeNode';
 	}
 
-	private static readonly registerServerLabel = localize('cms.resource.tree.CMSTreeNode.registerServerLabel', 'Add Central Management Server...');
+	private static readonly addCmsServerLabel = localize('cms.resource.tree.CMSTreeNode.addCmsServerLabel', 'Add Central Management Server...');
 }

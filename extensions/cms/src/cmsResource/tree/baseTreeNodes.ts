@@ -36,7 +36,7 @@ export abstract class CmsResourceTreeNodeBase extends TreeNode {
 	}
 }
 
-export interface CmsResourceNodeInfo {
+export interface ICmsResourceNodeInfo {
 	name: string;
 	description: string;
 	ownerUri: string;

@@ -9,7 +9,7 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as mssql from '../../mssql/src/api/mssqlapis';
 import * as Utils from './cmsResource/utils';
-import { CmsResourceNodeInfo } from './cmsResource/tree/baseTreeNodes';
+import { ICmsResourceNodeInfo } from './cmsResource/tree/baseTreeNodes';
 
 const localize = nls.loadMessageBundle();
 
@@ -23,7 +23,7 @@ const localize = nls.loadMessageBundle();
 export class ApiWrapper {
 
 	private _cmsService: mssql.CmsService;
-	private _registeredCmsServers: CmsResourceNodeInfo[];
+	private _registeredCmsServers: ICmsResourceNodeInfo[];
 
 	// Data APIs
 	public registerConnectionProvider(provider: azdata.ConnectionProvider): vscode.Disposable {
@@ -238,7 +238,7 @@ export class ApiWrapper {
 		if (!this._registeredCmsServers) {
 			this._registeredCmsServers = [];
 		}
-		let cmsServerNode: CmsResourceNodeInfo = {
+		let cmsServerNode: ICmsResourceNodeInfo = {
 			name: name,
 			description: description,
 			ownerUri: ownerUri,
@@ -312,7 +312,7 @@ export class ApiWrapper {
 
 	// Getters
 
-	public get registeredCmsServers(): CmsResourceNodeInfo[] {
+	public get registeredCmsServers(): ICmsResourceNodeInfo[] {
 		return this._registeredCmsServers;
 	}
 

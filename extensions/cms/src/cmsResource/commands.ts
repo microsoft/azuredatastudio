@@ -6,12 +6,16 @@
 'use strict';
 import { AppContext } from '../appContext';
 import { CmsResourceTreeProvider } from './tree/treeProvider';
-import { registerCMSServerCommand, deleteCMSServerCommand, addRegisteredServerCommand, deleteRegisteredServerCommand, deleteServerGroupCommand, addServerGroupCommand, refreshCommand } from './cmsResourceCommands';
+import {
+	registerCmsServerCommand, deleteCmsServerCommand,
+	addRegisteredServerCommand, deleteRegisteredServerCommand,
+	deleteServerGroupCommand, addServerGroupCommand, refreshCommand
+} from './cmsResourceCommands';
 
 export function registerCmsResourceCommands(appContext: AppContext, tree: CmsResourceTreeProvider): void {
 
-	registerCMSServerCommand(appContext, tree);
-	deleteCMSServerCommand(appContext, tree);
+	registerCmsServerCommand(appContext, tree);
+	deleteCmsServerCommand(appContext, tree);
 	addRegisteredServerCommand(appContext, tree);
 	deleteRegisteredServerCommand(appContext, tree);
 	addServerGroupCommand(appContext, tree);
