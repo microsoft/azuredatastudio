@@ -5,7 +5,11 @@
 
 import * as GridContentEvents from 'sql/workbench/parts/grid/common/gridContentEvents';
 import * as LocalizedConstants from 'sql/workbench/parts/query/common/localizedConstants';
+<<<<<<< HEAD
 import QueryRunner from 'sql/platform/query/common/queryRunner';
+=======
+import QueryRunner, { EventType as QREvents } from 'sql/platform/query/common/queryRunner';
+>>>>>>> Last of the layering (#5187)
 import { DataService } from 'sql/workbench/parts/grid/services/dataService';
 import { IQueryModelService, IQueryEvent } from 'sql/platform/query/common/queryModel';
 import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
