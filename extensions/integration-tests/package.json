@@ -31,8 +31,7 @@
         }
       }
     },
-    "commands": [
-      {
+    "commands": [{
         "command": "test.setupIntegrationTest",
         "title": "Setup Integration Test",
         "category": "Test"

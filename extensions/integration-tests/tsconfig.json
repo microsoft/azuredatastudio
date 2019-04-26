@@ -9,9 +9,9 @@
 			"es2015"
 		],
 		"sourceMap": true,
-		"baseUrl" : "../../src",
+		"baseUrl": "../../src",
 		"paths": {
-			"azdata" : ["sql/azdata"]
+			"azdata": ["sql/azdata"]
 		}
 	},
 	"include": [

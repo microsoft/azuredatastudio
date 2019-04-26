@@ -1,24 +1,27 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 'use strict';
 import 'mocha';
 import { runOnCodeLoad } from '../src/fmkUtils';
-import { stressify, sleep, bear} from '../src/stressutils'; //, bear, sleep
+import { stressify, sleep, bear } from '../src/stressutils'; //, bear, sleep
 import assert = require('assert');
 
 class StressifyTester {
-	static dop:number = 5;
-	static iter:number = 4;
+	static dop: number = 5;
+	static iter: number = 4;
 
-	i:number = 0;
+	i: number = 0;
 	@runOnCodeLoad(StressifyTester.prototype.setup)
-	setup()
-	{
+	setup() {
 		process.env.SuiteType = 'Stress';
 		console.log(`environment variable SuiteType set to ${process.env.SuiteType}`);
 	}
 
-	@stressify({dop:StressifyTester.dop, iterations:StressifyTester.iter})
-	async basicTest(arg:string)
-	{
+	@stressify({ dop: StressifyTester.dop, iterations: StressifyTester.iter })
+	async basicTest(arg: string) {
 		bear();	// yield to other operations.
 		await sleep(50); // sleep for 100 ms without spinning
 		//console.log(`basicTest() called for i=${this.i}`);

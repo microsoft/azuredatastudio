@@ -18,7 +18,7 @@ export interface StressOptions {
 	passThreshold?: number;
 }
 
-const DefaultStressOptions: StressOptions = { runtime:120, dop: 4, iterations: 10, passThreshold: 0.95};
+const DefaultStressOptions: StressOptions = { runtime: 120, dop: 4, iterations: 10, passThreshold: 0.95 };
 // This simulates a sleep where the thread is suspended for a given number of milliseconds before resuming
 //
 export function sleep(ms: number) {
@@ -46,11 +46,11 @@ class Stress {
 	constructor({ runtime = parseInt(process.env.StressRunTime), dop = parseInt(process.env.StressDop), iterations = parseInt(process.env.StressIterations), passThreshold = parseFloat(process.env.StressPassThreshold) }: StressOptions = DefaultStressOptions) {
 		//console.log (`runtime=${runtime}, dop=${dop}, iterations=${iterations}, passThreshold=${passThreshold}`);
 		//console.log (`this.runtime=${this.runtime}, this.dop=${this.dop}, this.iterations=${this.iterations}, this.passThreshold=${this.passThreshold}`);
-		let x:number;
+		let x: number;
 		x = this.nullCoalesce(runtime, this.runtime); this.runtime = x;
 		x = this.nullCoalesce(dop, this.dop); this.dop = x;
 		x = this.nullCoalesce(iterations, this.iterations); this.iterations = x;
-		x= this.nullCoalesce(passThreshold, this.passThreshold); this.passThreshold = x;
+		x = this.nullCoalesce(passThreshold, this.passThreshold); this.passThreshold = x;
 		//console.log (`this.runtime=${this.runtime}, this.dop=${this.dop}, this.iterations=${this.iterations}, this.passThreshold=${this.passThreshold}`);
 	}
 

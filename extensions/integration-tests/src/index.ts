@@ -9,17 +9,18 @@ import { getSuiteType, SuiteType } from './fmkUtils';
 const path = require('path');
 const testRunner = require('vscode/lib/testrunner');
 
+const suite = getSuiteType();
+
 const options: any = {
 	ui: 'tdd',
 	useColors: true,
 	timeout: 600000 	// 600 seconds
 };
 
-const suite = getSuiteType();
-if (suite === SuiteType.Stress)
-{
+if (suite === SuiteType.Stress) {
 	options.timeout = 7200000;	// 2 hours
 }
+
 if (process.env.BUILD_ARTIFACTSTAGINGDIRECTORY) {
 	console.log(`environment variable BUILD_ARTIFACTSTAGINGDIRECTORY is set to ${process.env.BUILD_ARTIFACTSTAGINGDIRECTORY} so configuring multiple reporters for test results.\n For this to work the ${process.env.BUILD_ARTIFACTSTAGINGDIRECTORY} must be fully qualified directory and must exist`);
 	options.reporter = 'mocha-multi-reporters';

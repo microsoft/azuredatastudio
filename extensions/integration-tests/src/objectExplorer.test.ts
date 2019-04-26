@@ -32,7 +32,7 @@ if (context.RunTest) {
 
 class ObjectExplorerTester {
 
-	@stressify({dop:1})
+	@stressify({ dop: 1 })
 	async ContextMenuTest() {
 		let server = await getAzureServer();
 		await connectToServer(server, 3000);

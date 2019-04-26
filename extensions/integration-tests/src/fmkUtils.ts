@@ -19,11 +19,14 @@ function toCapitalizedCase(inputString: string): string {
 let suite: SuiteType = SuiteType.Unknown;
 export function getSuiteType() {
 	if (suite === SuiteType.Unknown) {
-		if (process.env.SuiteType) {
+		if (process.env.SuiteType && process.env.SuiteType in SuiteType) {
 			let suiteType: string = toCapitalizedCase(process.env.SuiteType);
 			if (suiteType in SuiteType) {
 				suite = SuiteType[suiteType];
 			}
+		}
+		else {
+			suite = SuiteType.Integration;
 		}
 	}
 	return suite;
@@ -36,7 +39,7 @@ export function runOnCodeLoad(func: Function, ...args) {
 
 	//console.log(`Decorator runWhenCodeLoad called for function: ${JSON.stringify(func)} with args: (${args.join(',')})`);
 	//
-	func.apply(null, args);
+	func.apply(this, args);
 	return function (memberClass: any, memberName: string, memberDescriptor: PropertyDescriptor) {
 		return memberDescriptor;
 	};

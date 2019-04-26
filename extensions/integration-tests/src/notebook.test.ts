@@ -55,8 +55,7 @@ if (context.RunTest) {
 }
 
 class NotebooksTester {
-	setup()
-	{
+	setup() {
 		console.log(`environment variable SuiteType set to ${process.env.SuiteType}`);
 	}
 
