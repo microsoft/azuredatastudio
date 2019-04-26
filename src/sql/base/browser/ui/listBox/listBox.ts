@@ -7,11 +7,10 @@ import { SelectBox, ISelectBoxStyles, ISelectOptionItem } from 'vs/base/browser/
 import { Color } from 'vs/base/common/color';
 import { IMessage, MessageType, defaultOpts } from 'vs/base/browser/ui/inputbox/inputBox';
 import * as dom from 'vs/base/browser/dom';
-import { KeyCode } from 'vs/base/common/keyCodes';
-import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { IContextViewProvider, AnchorAlignment } from 'vs/base/browser/ui/contextview/contextview';
 import { RenderOptions, renderFormattedText, renderText } from 'vs/base/browser/htmlContentRenderer';
-import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { Emitter } from 'vs/base/common/event';
 
 const $ = dom.$;
 
@@ -49,10 +48,12 @@ export class ListBox extends SelectBox {
 	private contextViewProvider: IContextViewProvider;
 	private isValid: boolean;
 
+	private _onKeyDown = new Emitter<StandardKeyboardEvent>();
+	public readonly onKeyDown = this._onKeyDown.event;
+
 	constructor(
 		options: ISelectOptionItem[],
-		contextViewProvider: IContextViewProvider,
-		private _clipboardService: IClipboardService) {
+		contextViewProvider: IContextViewProvider) {
 
 		super(options, 0, contextViewProvider);
 		this.contextViewProvider = contextViewProvider;
@@ -64,7 +65,7 @@ export class ListBox extends SelectBox {
 		this.selectElement.style['width'] = 'inherit';
 		this.selectElement.style['min-width'] = '100%';
 
-		this._register(dom.addStandardDisposableListener(this.selectElement, dom.EventType.KEY_DOWN, e => this.onKeyDown(e)));
+		this._register(dom.addStandardDisposableListener(this.selectElement, dom.EventType.KEY_DOWN, (e: StandardKeyboardEvent) => this._onKeyDown.fire(e)));
 
 		this.enabledSelectBackground = this.selectBackground;
 		this.enabledSelectForeground = this.selectForeground;
@@ -144,26 +145,6 @@ export class ListBox extends SelectBox {
 
 	public add(option: string): void {
 		this.selectElement.add(this.createOption(option));
-	}
-
-	// Allow copy to clipboard
-	public onKeyDown(event: IKeyboardEvent): void {
-		if (this.selectedOptions.length > 0) {
-			let key = event.keyCode;
-			let ctrlOrCmd = event.ctrlKey || event.metaKey;
-
-			if (ctrlOrCmd && key === KeyCode.KEY_C) {
-				let textToCopy = this.selectedOptions[0];
-				for (let i = 1; i < this.selectedOptions.length; i++) {
-					textToCopy = textToCopy + ', ' + this.selectedOptions[i];
-				}
-
-				// Copy to clipboard
-				this._clipboardService.writeText(textToCopy);
-
-				event.stopPropagation();
-			}
-		}
 	}
 
 	public enable(): void {
