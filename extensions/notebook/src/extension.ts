@@ -13,6 +13,7 @@ import { AppContext } from './common/appContext';
 import { ApiWrapper } from './common/apiWrapper';
 import { IExtensionApi } from './types';
 import { CellType } from './contracts/content';
+import { getErrorMessage } from './common/utils';
 
 const localize = nls.loadMessageBundle();
 
@@ -133,7 +134,7 @@ async function openNotebook(): Promise<void> {
 			vscode.window.showTextDocument(doc);
 		}
 	} catch (err) {
-		vscode.window.showErrorMessage(err);
+		vscode.window.showErrorMessage(getErrorMessage(err));
 	}
 }
 
@@ -146,7 +147,7 @@ async function runActiveCell(): Promise<void> {
 			throw new Error(noNotebookVisible);
 		}
 	} catch (err) {
-		vscode.window.showErrorMessage(err);
+		vscode.window.showErrorMessage(getErrorMessage(err));
 	}
 }
 
@@ -159,7 +160,7 @@ async function runAllCells(): Promise<void> {
 			throw new Error(noNotebookVisible);
 		}
 	} catch (err) {
-		vscode.window.showErrorMessage(err);
+		vscode.window.showErrorMessage(getErrorMessage(err));
 	}
 }
 
@@ -178,7 +179,7 @@ async function addCell(cellType: azdata.nb.CellType): Promise<void> {
 			throw new Error(noNotebookVisible);
 		}
 	} catch (err) {
-		vscode.window.showErrorMessage(err);
+		vscode.window.showErrorMessage(getErrorMessage(err));
 	}
 }
 
