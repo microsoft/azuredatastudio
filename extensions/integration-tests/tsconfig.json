@@ -1,5 +1,6 @@
 {
 	"compilerOptions": {
+		"experimentalDecorators": true,
 		"module": "commonjs",
 		"target": "ES5",
 		"outDir": "out",
@@ -7,9 +8,14 @@
 		"lib": [
 			"es2015"
 		],
-		"sourceMap": true
+		"sourceMap": true,
+		"baseUrl" : "../../src",
+		"paths": {
+			"azdata" : ["sql/azdata"]
+		}
 	},
 	"include": [
-		"src/**/*"
+		"src/**/*",
+		"test/**/*"
 	]
 }

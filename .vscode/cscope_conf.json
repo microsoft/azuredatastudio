@@ -1,0 +1,13 @@
+{
+    "version": "0.0.5",
+    "open_new_column" : "no",
+    "engine_configurations": [
+        {
+            "cscope" : {
+                "paths" : [
+                    "${workspaceRoot}"
+                ]
+            }
+        }
+    ]
+}
