@@ -1,4 +1,5 @@
 .DS_Store
+.vscode/cscope_conf.json
 npm-debug.log
 Thumbs.db
 node_modules/
