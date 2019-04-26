@@ -62,7 +62,7 @@ export class ImportConfigPage extends DacFxConfigPage {
 					canSelectFiles: true,
 					canSelectFolders: false,
 					canSelectMany: false,
-					defaultUri: vscode.Uri.file(os.homedir()),
+					defaultUri: vscode.Uri.file(this.getRootPath()),
 					openLabel: localize('dacFxImport.openFile', 'Open'),
 					filters: {
 						'bacpac Files': ['bacpac'],

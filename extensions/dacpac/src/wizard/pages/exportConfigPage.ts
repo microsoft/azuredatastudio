@@ -65,7 +65,7 @@ export class ExportConfigPage extends DacFxConfigPage {
 		this.createFileBrowserParts();
 
 		// default filepath
-		this.fileTextBox.value = this.generateFilePath();
+		this.fileTextBox.value = this.generateFilePathFromDatabaseAndTimestamp();
 		this.model.filePath = this.fileTextBox.value;
 
 		this.fileButton.onDidClick(async (click) => {
