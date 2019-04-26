@@ -19,7 +19,8 @@ export interface StressOptions {
 }
 
 const DefaultStressOptions: StressOptions = { runtime: 120, dop: 4, iterations: 10, passThreshold: 0.95 };
-// This simulates a sleep where the thread is suspended for a given number of milliseconds before resuming
+
+// This simulates a sleep where the thread is suspended without spinning for a given number of milliseconds before resuming
 //
 export function sleep(ms: number) {
 	return (async () => {

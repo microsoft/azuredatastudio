@@ -20,6 +20,7 @@ if (context.RunTest) {
 		setup(function () {
 			this.NbTester = new NotebooksTester(this.currentTest.title);
 		});
+
 		teardown(async function () {
 			await this.NbTester.Cleanup(this.currentTest.title);
 		});
@@ -59,7 +60,7 @@ class NotebooksTester {
 		console.log(`environment variable SuiteType set to ${process.env.SuiteType}`);
 	}
 
-	Cleanup(testName: string) {
+	async Cleanup(testName: string) {
 		try {
 			let fileName = getFileName(testName);
 			if (fs.existsSync(fileName)) {
