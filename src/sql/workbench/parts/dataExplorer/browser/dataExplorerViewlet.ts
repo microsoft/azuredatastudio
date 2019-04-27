@@ -8,7 +8,7 @@
 import { localize } from 'vs/nls';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
-import { IAction } from 'vs/base/common/actions';
+import { IAction, Action } from 'vs/base/common/actions';
 import { IViewlet } from 'vs/workbench/common/viewlet';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { append, $, addClass, toggleClass, Dimension } from 'vs/base/browser/dom';
@@ -28,6 +28,8 @@ import { Extensions as ViewContainerExtensions, IViewDescriptor, IViewsRegistry 
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { Registry } from 'vs/platform/registry/common/platform';
+import { ICommandService, CommandsRegistry } from 'vs/platform/commands/common/commands';
+import { DataExplorerActionRegistry } from 'sql/workbench/parts/dataExplorer/browser/dataExplorerActionRegistry';
 
 export class DataExplorerViewletViewsContribution implements IWorkbenchContribution {
 
@@ -57,7 +59,6 @@ export class DataExplorerViewlet extends ViewContainerViewlet {
 	private root: HTMLElement;
 
 	private dataSourcesBox: HTMLElement;
-	private primaryActions: IAction[];
 	private disposables: IDisposable[] = [];
 
 	constructor(
@@ -70,7 +71,8 @@ export class DataExplorerViewlet extends ViewContainerViewlet {
 		@IWorkspaceContextService contextService: IWorkspaceContextService,
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IExtensionService extensionService: IExtensionService,
-		@IConfigurationService configurationService: IConfigurationService
+		@IConfigurationService configurationService: IConfigurationService,
+		@ICommandService private commandService: ICommandService
 	) {
 		super(VIEWLET_ID, `${VIEWLET_ID}.state`, true, configurationService, layoutService, telemetryService, storageService, instantiationService, themeService, contextMenuService, extensionService, contextService);
 	}
@@ -101,14 +103,27 @@ export class DataExplorerViewlet extends ViewContainerViewlet {
 	}
 
 	getActions(): IAction[] {
-		if (!this.primaryActions) {
-			this.primaryActions = [];
-		}
-		return [];
+		return this.getRegisteredActions(true);
 	}
 
 	getSecondaryActions(): IAction[] {
-		return [];
+		return this.getRegisteredActions(false);
+	}
+
+	private getRegisteredActions(isPrimary: boolean) {
+		let actions = [];
+		DataExplorerActionRegistry.getActions().forEach(actionDesc => {
+			if (actionDesc.isPrimary !== isPrimary) {
+				return;
+			}
+			let action = new Action(actionDesc.commandId, actionDesc.label, actionDesc.cssClass, true, () => {
+				return this.commandService.executeCommand(actionDesc.commandId);
+
+			});
+
+			actions.push(action);
+		});
+		return actions;
 	}
 
 	protected onDidAddViews(added: IAddedViewDescriptorRef[]): ViewletPanel[] {

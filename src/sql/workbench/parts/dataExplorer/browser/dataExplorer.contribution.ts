@@ -18,6 +18,12 @@ import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
+import { IJSONSchema } from 'vs/base/common/jsonSchema';
+import { ExtensionsRegistry } from 'vs/workbench/services/extensions/common/extensionsRegistry';
+import { DataExplorerActionRegistry } from 'sql/workbench/parts/dataExplorer/browser/dataExplorerActionRegistry';
+import { createCSSRule } from 'vs/base/browser/dom';
+import * as path from 'path';
+import { URI } from 'vs/base/common/uri';
 
 // Viewlet Action
 export class OpenDataExplorerViewletAction extends ShowViewletAction {
@@ -88,3 +94,71 @@ configurationRegistry.registerConfiguration({
 		}
 	}
 });
+
+export interface IDataExplorerActionContribution {
+	commandId: string;
+	label: string;
+	icon: {
+		light: string;
+		dark: string;
+	};
+	isPrimary: boolean;
+}
+
+const DataExplorerActionSchema: IJSONSchema = {
+	type: 'object',
+	properties: {
+		commandId: {
+			type: 'string',
+			description: localize('azdata.extension.contributes.dataExplorer.action.commandId', "Id for the command that will be executed")
+		},
+		label: {
+			type: 'string',
+			description: localize('azdata.extension.contributes.dataExplorer.action.label', "Display name for the action")
+		},
+		icon: {
+			type: 'object',
+			description: localize('azdata.extension.contributes.dataExplorer.action.icon', "Icon for the action")
+		},
+		isPrimary: {
+			type: 'boolean',
+			description: localize('azdata.extension.contributes.dataExplorer.action.title', "Indicates whether the action is a primary action")
+		}
+	}
+};
+
+ExtensionsRegistry.registerExtensionPoint<IDataExplorerActionContribution | IDataExplorerActionContribution[]>({ extensionPoint: 'dataExplorer.actions', jsonSchema: DataExplorerActionSchema }).setHandler(extensions => {
+	let idx = 0;
+	extensions.forEach(extension => {
+		function handleAction(action: IDataExplorerActionContribution) {
+			try {
+				if (action && action.commandId && action.label && action.icon && action.icon.dark && action.icon.light) {
+					let iconClass = `dataExplorerActionIcon-${idx}`;
+					const light = path.join(extension.description.extensionLocation.fsPath, action.icon.light);
+					const dark = path.join(extension.description.extensionLocation.fsPath, action.icon.dark);
+					createCSSRule(`.icon.${iconClass}`, `background-image: url("${URI.file(light).toString()}")`);
+					createCSSRule(`.vs-dark .icon.${iconClass}, .hc-black .icon.${iconClass}`, `background-image: url("${URI.file(dark).toString()}")`);
+					DataExplorerActionRegistry.registerAction({
+						commandId: action.commandId,
+						cssClass: iconClass,
+						label: action.label,
+						isPrimary: action.isPrimary
+					});
+					idx++;
+				}
+			}
+			catch (err) {
+				console.error(`An error occured while loading an data explorer action in extension ${extension.description.name}: ${err}`);
+			}
+		}
+
+		if (Array.isArray<IDataExplorerActionContribution>(extension.value)) {
+			for (const action of extension.value) {
+				handleAction(action);
+			}
+		} else {
+			handleAction(extension.value);
+		}
+	});
+});
+

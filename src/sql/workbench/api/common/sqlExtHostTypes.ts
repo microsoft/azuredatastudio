@@ -199,6 +199,7 @@ export interface IComponentEventArgs {
 
 export interface IModelViewDialogDetails {
 	title: string;
+	isWide: boolean;
 	content: string | number[];
 	okButton: number;
 	cancelButton: number;

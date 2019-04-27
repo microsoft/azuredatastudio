@@ -1,0 +1,55 @@
+{
+  "name": "resource-deployment",
+  "displayName": "Azure Data Resource Deployment",
+  "description": "Azure Data Resource Deployment",
+  "version": "0.0.1",
+  "publisher": "Microsoft",
+  "preview": true,
+  "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt",
+  "icon": "images/sqlserver.png",
+  "aiKey": "AIF-5574968e-856d-40d2-af67-c89a14e76412",
+  "engines": {
+    "vscode": "*",
+    "azdata": "^1.6.0"
+  },
+  "activationEvents": [
+    "onCommand:azdata.resource.create"
+  ],
+  "main": "./out/main",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Microsoft/azuredatastudio.git"
+  },
+  "extensionDependencies": [
+    "Microsoft.mssql"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "azdata.resource.create",
+        "title": "%create-resource-command-name%",
+        "category": "%create-resource-command-category%"
+      }
+    ],
+    "dataExplorer.actions":[
+      {
+        "commandId": "azdata.resource.create",
+        "label": "%create-resource-command-name%",
+        "isPrimary": true,
+        "icon": {
+          "light": "images/new.svg",
+          "dark": "images/new_inverse.svg"
+        }
+      }
+    ]
+  },
+  "dependencies": {
+    "vscode-nls": "^3.2.1",
+    "download": "^6.2.5",
+    "shelljs": "^0.8.3"
+  },
+  "devDependencies": {
+    "mocha-junit-reporter": "^1.17.0",
+    "mocha-multi-reporters": "^1.1.7"
+  }
+}
