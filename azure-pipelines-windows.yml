@@ -29,10 +29,16 @@ steps:
   displayName: 'Compile'
 
 - script: |
-    .\scripts\test.bat --reporter mocha-junit-reporter
+    .\scripts\test.bat --reporter mocha-junit-reporter --coverage
   displayName: 'Test'
 
 - task: PublishTestResults@2
   inputs:
     testResultsFiles: 'test-results.xml'
   condition: succeededOrFailed()
+
+- task: PublishCodeCoverageResults@1
+  inputs:
+    codeCoverageTool: 'cobertura'
+    summaryFileLocation: $(System.DefaultWorkingDirectory)\.build\coverage\cobertura-coverage.xml
+    reportDirectory: $(System.DefaultWorkingDirectory)\.build\coverage\lcov-report

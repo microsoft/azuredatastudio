@@ -404,7 +404,7 @@ declare module 'azdata' {
 		/**
 		 * options for all new server properties.
 		 */
-		options: {};
+		options: { [key: string]: any };
 	}
 
 	export interface DataProvider {
@@ -1737,6 +1737,7 @@ declare module 'azdata' {
 	export interface SchemaCompareEndpointInfo {
 		endpointType: SchemaCompareEndpointType;
 		packageFilePath: string;
+		serverName: string;
 		databaseName: string;
 		ownerUri: string;
 	}
@@ -1744,6 +1745,7 @@ declare module 'azdata' {
 	export interface SchemaCompareServicesProvider extends DataProvider {
 		schemaCompare(sourceEndpointInfo: SchemaCompareEndpointInfo, targetEndpointInfo: SchemaCompareEndpointInfo, taskExecutionMode: TaskExecutionMode): Thenable<SchemaCompareResult>;
 		schemaCompareGenerateScript(operationId: string, targetDatabaseName: string, scriptFilePath: string, taskExecutionMode: TaskExecutionMode): Thenable<ResultStatus>;
+		schemaComparePublishChanges(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: TaskExecutionMode): Thenable<ResultStatus>;
 	}
 
 	// Security service interfaces ------------------------------------------------------------------------
@@ -4443,7 +4445,7 @@ declare module 'azdata' {
 			 * Mime bundle expected to contain mime type -> contents mappings.
 			 * This is dynamic and is controlled by kernels, so cannot be more specific
 			 */
-			data: {};
+			data: { [key: string]: any };
 			/**
 			 * Optional metadata, also a mime bundle
 			 */

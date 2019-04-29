@@ -1,511 +1,537 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/big-data-cluster/out/wizards/create-cluster/pages/summaryPage" source-language="en" target-language="ru" datatype="plaintext"><body>
-    <trans-unit id="bdc-create.summaryPageTitle">
-      <source xml:lang="en">Summary</source>
-      <target state="translated">Сводка</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.TargetClusterTypeText">
-      <source xml:lang="en">Cluster type</source>
-      <target state="translated">Тип кластера</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.ClusterContextText">
-      <source xml:lang="en">Cluster context</source>
-      <target state="translated">Контекст кластера</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.ClusterNameText">
-      <source xml:lang="en">Cluster name</source>
-      <target state="translated">Имя кластера</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.ClusterAdminUsernameText">
-      <source xml:lang="en">Cluster Admin username</source>
-      <target state="translated">Имя пользователя для администратора кластера</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.AcceptEulaText">
-      <source xml:lang="en">Accept license agreement</source>
-      <target state="translated">Примите лицензионное соглашение</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.DeploymentProfileText">
-      <source xml:lang="en">Deployment profile</source>
-      <target state="translated">Профиль развертывания</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.SqlServerMasterScaleText">
-      <source xml:lang="en">SQL Server master scale</source>
-      <target state="translated">Масштабирование базы данных master SQL Server</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.ComputePoolScaleText">
-      <source xml:lang="en">Compute pool scale</source>
-      <target state="translated">Масштабирование пула вычислительных ресурсов</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.DataPoolScaleText">
-      <source xml:lang="en">Data pool scale</source>
-      <target state="translated">Масштабирование пула данных</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.StoragePoolScaleText">
-      <source xml:lang="en">Storage pool scale</source>
-      <target state="translated">Масштабирование пула носителей</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.SparkPoolScaleText">
-      <source xml:lang="en">Spark pool scale</source>
-      <target state="translated">Масштабирование пула Spark</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.TargetClusterGroupTitle">
-      <source xml:lang="en">TARGET CLUSTER</source>
-      <target state="translated">ЦЕЛЕВОЙ КЛАСТЕР</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.BigDataClusterGroupTitle">
-      <source xml:lang="en">SQL SERVER BIG DATA CLUSTER</source>
-      <target state="translated">КЛАСТЕР БОЛЬШИХ ДАННЫХ SQL SERVER</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.YesText">
-      <source xml:lang="en">Yes</source>
-      <target state="translated">Да</target>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/big-data-cluster/out/wizards/create-cluster/pages/settingsPage" source-language="en" target-language="ru" datatype="plaintext"><body>
-    <trans-unit id="bdc-create.RestoreDefaultValuesText">
-      <source xml:lang="en">Restore Default Values</source>
-      <target state="translated">Восстановить значения по умолчанию</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.settingsPageTitle">
-      <source xml:lang="en">Settings</source>
-      <target state="translated">Параметры</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.settingsPageDescription">
-      <source xml:lang="en">Configure the settings required for deploying SQL Server big data cluster</source>
-      <target state="translated">Настройте параметры, необходимые для развертывания кластера больших данных SQL Server</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.EulaNotAccepted">
-      <source xml:lang="en">You need to accept the terms of services and privacy policy in order to proceed</source>
-      <target state="translated">Для продолжения вам нужно принять условия обслуживания и политику конфиденциальности</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.ClusterName">
-      <source xml:lang="en">Cluster name</source>
-      <target state="translated">Имя кластера</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.AdminUsernameText">
-      <source xml:lang="en">Admin username</source>
-      <target state="translated">Имя пользователя администратора</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.AdminUserPasswordText">
-      <source xml:lang="en">Password</source>
-      <target state="translated">Пароль</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.SQLPortText">
-      <source xml:lang="en">SQL Server master</source>
-      <target state="translated">База данных master SQL Server</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.KnoxPortText">
-      <source xml:lang="en">Knox</source>
-      <target state="translated">KNOX</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.ControllerPortText">
-      <source xml:lang="en">Controller</source>
-      <target state="translated">Контроллер</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.ProxyPortText">
-      <source xml:lang="en">Proxy</source>
-      <target state="translated">Прокси-сервер</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.GrafanaPortText">
-      <source xml:lang="en">Grafana dashboard</source>
-      <target state="translated">Панель мониторинга Grafana</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.KibanaPortText">
-      <source xml:lang="en">Kibana dashboard</source>
-      <target state="translated">Панель мониторинга Kibana</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.RegistryUserNamePasswordHintText">
-      <source xml:lang="en">only required for private registries</source>
-      <target state="translated">требуется только для частных реестров</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.RegistryText">
-      <source xml:lang="en">Registry</source>
-      <target state="translated">Реестр</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.RepositoryText">
-      <source xml:lang="en">Repository</source>
-      <target state="translated">Репозиторий</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.ImageTagText">
-      <source xml:lang="en">Image tag</source>
-      <target state="translated">Тег изображения</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.RegistryUserNameText">
-      <source xml:lang="en">Username</source>
-      <target state="translated">Имя пользователя</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.RegistryPasswordText">
-      <source xml:lang="en">Password</source>
-      <target state="translated">Пароль</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.BasicSettingsText">
-      <source xml:lang="en">Basic Settings</source>
-      <target state="translated">Основные параметры</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.ContainerRegistrySettings">
-      <source xml:lang="en">Container Registry Settings</source>
-      <target state="translated">Параметры реестра контейнеров</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.PortSettings">
-      <source xml:lang="en">Port Settings (Optional)</source>
-      <target state="translated">Параметры порта (необязательно)</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.LicenseTerms">
-      <source xml:lang="en">license terms</source>
-      <target state="translated">условия лицензионного соглашения</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.PrivacyPolicyText">
-      <source xml:lang="en">privacy policy</source>
-      <target state="translated">Политика конфиденциальности</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.AcceptTermsText">
-      <source xml:lang="en">I accept the {0} and {1}.</source>
-      <target state="translated">Я принимаю {0} и {1}.</target>
-      <note>{0} is the place holder for license terms, {1} is the place holder for privacy policy</note>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/big-data-cluster/out/wizards/create-cluster/pages/selectTargetClusterTypePage" source-language="en" target-language="ru" datatype="plaintext"><body>
-    <trans-unit id="bdc-create.InstallToolsText">
-      <source xml:lang="en">Install Tools</source>
-      <target state="translated">Установить средства</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.InstallingButtonText">
-      <source xml:lang="en">Installing...</source>
-      <target state="translated">Установка...</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.selectTargetClusterTypePageTitle">
-      <source xml:lang="en">What is your target cluster environment?</source>
-      <target state="translated">Что является вашей целевой средой кластера?</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.selectTargetClusterTypePageDescription">
-      <source xml:lang="en">Choose the target environment and then install the required tools for it.</source>
-      <target state="translated">Выберите целевую среду и установите для нее необходимые средства.</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.RefreshToolsButtonText">
-      <source xml:lang="en">Refresh Status</source>
-      <target state="translated">Обновить состояние</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.toolNameColumnHeader">
-      <source xml:lang="en">Tool</source>
-      <target state="translated">Инструмент</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.toolDescriptionColumnHeader">
-      <source xml:lang="en">Description</source>
-      <target state="translated">Описание</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.toolVersionColumnHeader">
-      <source xml:lang="en">Version</source>
-      <target state="translated">Версия</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.toolStatusColumnHeader">
-      <source xml:lang="en">Status</source>
-      <target state="translated">Статус</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.PickTargetEnvironmentText">
-      <source xml:lang="en">Pick target environment</source>
-      <target state="translated">Выберите целевую среду</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.ToolsRefreshingText">
-      <source xml:lang="en">Please wait while the required tools status is being refreshed.</source>
-      <target state="translated">Подождите, пока обновляется состояние необходимых средств.</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.TargetClusterTypeNotSelectedText">
-      <source xml:lang="en">Please select a target cluster type.</source>
-      <target state="translated">Выберите тип целевого кластера.</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.MissingToolsText">
-      <source xml:lang="en">Please install the required tools.</source>
-      <target state="translated">Установите необходимые инструменты.</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.ComingSoonText">
-      <source xml:lang="en">(Coming Soon)</source>
-      <target state="translated">(Скоро)</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.RequiredToolsText">
-      <source xml:lang="en">Required tools</source>
-      <target state="translated">Необходимые инструменты</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.InstalledText">
-      <source xml:lang="en">Installed</source>
-      <target state="translated">УСТАНОВЛЕН</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.NotInstalledText">
-      <source xml:lang="en">Not Installed</source>
-      <target state="translated">Не установлено</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.InstallingText">
-      <source xml:lang="en">Installing...</source>
-      <target state="translated">Установка...</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.FailedToInstallText">
-      <source xml:lang="en">Install Failed</source>
-      <target state="translated">Сбой установки</target>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/big-data-cluster/out/wizards/create-cluster/pages/selectExistingClusterPage" source-language="en" target-language="ru" datatype="plaintext"><body>
-    <trans-unit id="bdc-create.selectTargetClusterPageTitle">
-      <source xml:lang="en">Where do you want to deploy this SQL Server big data cluster?</source>
-      <target state="translated">Где вы хотите развернуть этот кластер больших данных SQL Server?</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.selectTargetClusterPageDescription">
-      <source xml:lang="en">Select the kubeconfig file and then select a cluster context from the list</source>
-      <target state="translated">Выберите файл kubeconfig и затем выберите контекст кластера в списке</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.ClusterContextNotSelectedMessage">
-      <source xml:lang="en">Please select a cluster context.</source>
-      <target state="translated">Выберите контекст кластера.</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.kubeConfigFileLabelText">
-      <source xml:lang="en">Kube config file path</source>
-      <target state="translated">Путь к файлу kube config</target>
-    </trans-unit>
-    <trans-unit id="bdc-browseText">
-      <source xml:lang="en">Browse</source>
-      <target state="translated">Обзор</target>
-    </trans-unit>
-    <trans-unit id="bdc-clusterContextsLabelText">
-      <source xml:lang="en">Cluster Contexts</source>
-      <target state="translated">Контексты кластера</target>
-    </trans-unit>
-    <trans-unit id="bdc-errorLoadingClustersText">
-      <source xml:lang="en">No cluster information is found in the config file or an error ocurred while loading the config file</source>
-      <target state="translated">Не найдены сведения о кластере в файле конфигурации, либо при загрузке этого файла произошла ошибка</target>
-    </trans-unit>
-    <trans-unit id="bdc-selectKubeConfigFileText">
-      <source xml:lang="en">Select</source>
-      <target state="translated">Выбрать</target>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/big-data-cluster/out/wizards/create-cluster/pages/clusterProfilePage" source-language="en" target-language="ru" datatype="plaintext"><body>
-    <trans-unit id="bdc-create.clusterProfilePageTitle">
-      <source xml:lang="en">Select a cluster profile</source>
-      <target state="translated">Выберите профиль кластера</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.clusterProfilePageDescription">
-      <source xml:lang="en">Select your requirement and we will provide you a pre-defined default scaling. You can later go to cluster configuration and customize it.</source>
-      <target state="translated">Выберите требование, и мы предоставим предопределенное масштабирование по умолчанию. Позднее вы можете перейти в конфигурацию кластера и настроить его.</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.TargetClusterOverview">
-      <source xml:lang="en">Target cluster scale overview</source>
-      <target state="translated">Обзор масштабирования целевого кластера</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.clusterProfileLabel">
-      <source xml:lang="en">Deployment profile</source>
-      <target state="translated">Профиль развертывания</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.HardwareProfileText">
-      <source xml:lang="en">Hardware profile</source>
-      <target state="translated">Профиль оборудования</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.HardwareLabelColumnName">
-      <source xml:lang="en">Label</source>
-      <target state="translated">Этикетка</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.TotalNodesColumnName">
-      <source xml:lang="en">Nodes</source>
-      <target state="translated">Узлы</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.TotalCoresColumnName">
-      <source xml:lang="en">Cores</source>
-      <target state="translated">Ядра</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.TotalMemoryColumnName">
-      <source xml:lang="en">Memory</source>
-      <target state="translated">Память</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.TotalDisksColumnName">
-      <source xml:lang="en">Disks</source>
-      <target state="translated">Диски</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.ScaleLabel">
-      <source xml:lang="en">Scale</source>
-      <target state="translated">Масштаб</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.HardwareProfileLabel">
-      <source xml:lang="en">Hardware profile label</source>
-      <target state="translated">Метка профиля оборудования</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.FeatureSetLabel">
-      <source xml:lang="en">Feature set</source>
-      <target state="translated">Набор компонентов</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.EngineOnlyText">
-      <source xml:lang="en">Engine only</source>
-      <target state="translated">Только подсистема</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.EngineWithFeaturesText">
-      <source xml:lang="en">Engine with optional features</source>
-      <target state="translated">Подсистема с дополнительными компонентами</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.SQLServerMasterDisplayName">
-      <source xml:lang="en">SQL Server master</source>
-      <target state="translated">База данных master SQL Server</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.ComputePoolDisplayName">
-      <source xml:lang="en">Compute pool</source>
-      <target state="translated">Пул вычислительных ресурсов</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.DataPoolDisplayName">
-      <source xml:lang="en">Data pool</source>
-      <target state="translated">Пул данных</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.StoragePoolDisplayName">
-      <source xml:lang="en">Storage pool</source>
-      <target state="translated">Пул носителей</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.SparkPoolDisplayName">
-      <source xml:lang="en">Spark pool</source>
-      <target state="translated">Пул Spark</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.SQLServerMasterDescription">
-      <source xml:lang="en">The SQL Server instance provides an externally accessible TDS endpoint for the cluster</source>
-      <target state="translated">Экземпляр SQL Server предоставляет доступную извне конечную точку TDS для кластера</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.ComputePoolDescription">
-      <source xml:lang="en">TODO: Add description</source>
-      <target state="translated">TODO: добавление описания</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.DataPoolDescription">
-      <source xml:lang="en">TODO: Add description</source>
-      <target state="translated">TODO: добавление описания</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.StoragePoolDescription">
-      <source xml:lang="en">TODO: Add description</source>
-      <target state="translated">TODO: добавление описания</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.SparkPoolDescription">
-      <source xml:lang="en">TODO: Add description</source>
-      <target state="translated">TODO: добавление описания</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.poolLabelTemplate">
-      <source xml:lang="en">{0} ({1})</source>
-      <target state="translated">{0} ({1})</target>
-      <note>{0} is the pool name, {1} is the scale number</note>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/big-data-cluster/out/wizards/create-cluster/createClusterWizard" source-language="en" target-language="ru" datatype="plaintext"><body>
-    <trans-unit id="bdc-create.wizardTitle">
-      <source xml:lang="en">Create a big data cluster</source>
-      <target state="translated">Создайте кластер больших данных</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.generateScriptsButtonText">
-      <source xml:lang="en">Generate Scripts</source>
-      <target state="translated">Создать сценарии</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.createClusterButtonText">
-      <source xml:lang="en">Create</source>
-      <target state="translated">Создать</target>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/big-data-cluster/out/wizards/create-cluster/createClusterModel" source-language="en" target-language="ru" datatype="plaintext"><body>
-    <trans-unit id="bdc-create.AKSClusterCardText">
-      <source xml:lang="en">New AKS Cluster</source>
-      <target state="translated">Новый кластер AKS</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.AKSClusterFullName">
-      <source xml:lang="en">New Azure Kubernetes Service cluster</source>
-      <target state="translated">Новый кластер Службы Azure Kubernetes</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.AKSClusterDescription">
-      <source xml:lang="en">This option configures new Azure Kubernetes Service (AKS) for SQL Server big data cluster deployments. AKS makes it simple to create, configure and manage a cluster of virutal machines that are preconfigured with a Kubernetes cluster to run containerized applications.</source>
-      <target state="translated">Этот параметр настраивает новую службу Azure Kubernetes (AKS) для развертываний кластера больших данных SQL Server. AKS упрощает создание, настройку и использование кластера виртуальных машин, для которых предварительно настроен кластер Kubernetes для запуска контейнерных приложений.</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.ExistingClusterCardText">
-      <source xml:lang="en">Existing Cluster</source>
-      <target state="translated">Существующий кластер</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.ExistingClusterFullName">
-      <source xml:lang="en">Existing Kubernetes cluster</source>
-      <target state="translated">Существующий кластер Kubernetes</target>
-    </trans-unit>
-    <trans-unit id="bdc-create.ExistingClusterDescription">
-      <source xml:lang="en">This option assumes you already have a Kubernetes cluster installed, Once a prerequisite check is done, ensure the correct cluster context is selected.</source>
-      <target state="translated">Этот параметр предполагает, что вы уже установили кластер Kubernetes. После проверки предварительных требований выберите правильный контекст кластера.</target>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/big-data-cluster/out/kubectl/sqlServerBigDataClusterChannel" source-language="en" target-language="ru" datatype="plaintext"><body>
-    <trans-unit id="bigDataClusterOutputChannel">
-      <source xml:lang="en">SQL Server big data cluster</source>
-      <target state="translated">Кластер больших данных SQL Server</target>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/big-data-cluster/out/kubectl/kubectlUtils" source-language="en" target-language="ru" datatype="plaintext"><body>
-    <trans-unit id="runKubectlFailed">
-      <source xml:lang="en">Unable to run kubectl</source>
-      <target state="translated">Не удалось запустить kubectl</target>
-    </trans-unit>
-    <trans-unit id="setClusterFailed">
-      <source xml:lang="en">Failed to set '{0}' as current cluster: {1}</source>
-      <target state="translated">Не удалось установить "{0}" в качестве текущего кластера: {1}</target>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/big-data-cluster/out/kubectl/kubectl" source-language="en" target-language="ru" datatype="plaintext"><body>
-    <trans-unit id="binaryNotFound">
-      <source xml:lang="en">Could not find {0} binary. {1}</source>
-      <target state="translated">Не удалось найти двоичный объект {0}. {1}</target>
-    </trans-unit>
-    <trans-unit id="binaryNotInstalled">
-      <source xml:lang="en">{0} is not installed. {1}</source>
-      <target state="translated">{0} не установлен. {1}</target>
-    </trans-unit>
-    <trans-unit id="kubernetesRequired">
-      <source xml:lang="en"> SQL Server Big data cluster requires kubernetes.</source>
-      <target state="translated">Кластеру больших данных SQL Server требуется Kubernetes.</target>
-    </trans-unit>
-    <trans-unit id="cannotExecuteCmd">
-      <source xml:lang="en"> Cannot execute command.</source>
-      <target state="translated"> Не удается выполнить команду.</target>
-    </trans-unit>
-    <trans-unit id="kubectlVersionIncompatible">
-      <source xml:lang="en">kubectl version ${0} may be incompatible with cluster Kubernetes version {1}</source>
-      <target state="translated">Версия kubectl ${0} может быть несовместима с версией кластера Kubernetes {1}</target>
-    </trans-unit>
-    <trans-unit id="cannotRunCommand">
-      <source xml:lang="en">Unable to run command ({0})</source>
-      <target state="translated">Не удалось выполнить команду ({0})</target>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/big-data-cluster/out/kubectl/binutil" source-language="en" target-language="ru" datatype="plaintext"><body>
-    <trans-unit id="installDependenciesAction">
-      <source xml:lang="en">Install dependencies</source>
-      <target state="translated">Установить зависимости</target>
-    </trans-unit>
-    <trans-unit id="learnMoreAction">
-      <source xml:lang="en">Learn more</source>
-      <target state="translated">Дополнительные сведения</target>
-    </trans-unit>
-    <trans-unit id="moreInfoMsg">
-      <source xml:lang="en">Add {0} directory to path, or set "mssql-bdc.{0}-path" config to {0} binary.</source>
-      <target state="translated">Добавьте каталог {0} в путь или задайте для конфигурации "mssql-bdc.{0}-path" двоичный объект {0}.</target>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/big-data-cluster/out/installer/installer" source-language="en" target-language="ru" datatype="plaintext"><body>
-    <trans-unit id="downloadKubectlFailed">
-      <source xml:lang="en">Failed to download kubectl: {0}</source>
-      <target state="translated">Не удалось скачать kubectl: {0}</target>
-    </trans-unit>
-    <trans-unit id="kubectlVersionCheckFailed">
-      <source xml:lang="en">Failed to establish kubectl stable version: {0}</source>
-      <target state="translated">Не удалось установить стабильную версию kubectl: {0}</target>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/big-data-cluster/out/main" source-language="en" target-language="ru" datatype="plaintext"><body>
-    <trans-unit id="done">
-      <source xml:lang="en">Done</source>
-      <target state="translated">Договорились</target>
-    </trans-unit>
-    <trans-unit id="dependencyInstalled">
-      <source xml:lang="en">{0} already installed...</source>
-      <target state="translated">{0} уже установлен...</target>
-    </trans-unit>
-    <trans-unit id="installingDependency">
-      <source xml:lang="en">Installing {0}...</source>
-      <target state="translated">Идет установка {0}...</target>
-    </trans-unit>
-    <trans-unit id="installingDependencyFailed">
-      <source xml:lang="en">Unable to install {0}: {1}</source>
-      <target state="translated">Не удалось установить {0}: {1}</target>
-    </trans-unit>
-  </body></file>
+  <file original="extensions/big-data-cluster/out/wizards/create-cluster/pages/summaryPage" source-language="en" target-language="ru" datatype="plaintext">
+    <body>
+      <trans-unit id="bdc-create.summaryPageTitle">
+        <source xml:lang="en">Summary</source>
+        <target state="translated">Сводка</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.TargetClusterTypeText">
+        <source xml:lang="en">Cluster type</source>
+        <target state="translated">Тип кластера</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ClusterContextText">
+        <source xml:lang="en">Cluster context</source>
+        <target state="translated">Контекст кластера</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ClusterNameText">
+        <source xml:lang="en">Cluster name</source>
+        <target state="translated">Имя кластера</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ClusterAdminUsernameText">
+        <source xml:lang="en">Cluster Admin username</source>
+        <target state="translated">Имя пользователя для администратора кластера</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.AcceptEulaText">
+        <source xml:lang="en">Accept license agreement</source>
+        <target state="translated">Примите лицензионное соглашение</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.DeploymentProfileText">
+        <source xml:lang="en">Deployment profile</source>
+        <target state="translated">Профиль развертывания</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.SqlServerMasterScaleText">
+        <source xml:lang="en">SQL Server master scale</source>
+        <target state="translated">Масштабирование базы данных master SQL Server</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ComputePoolScaleText">
+        <source xml:lang="en">Compute pool scale</source>
+        <target state="translated">Масштабирование пула вычислительных ресурсов</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.DataPoolScaleText">
+        <source xml:lang="en">Data pool scale</source>
+        <target state="translated">Масштабирование пула данных</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.StoragePoolScaleText">
+        <source xml:lang="en">Storage pool scale</source>
+        <target state="translated">Масштабирование пула носителей</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.SparkPoolScaleText">
+        <source xml:lang="en">Spark pool scale</source>
+        <target state="translated">Масштабирование пула Spark</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.TargetClusterGroupTitle">
+        <source xml:lang="en">TARGET CLUSTER</source>
+        <target state="translated">ЦЕЛЕВОЙ КЛАСТЕР</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.BigDataClusterGroupTitle">
+        <source xml:lang="en">SQL SERVER BIG DATA CLUSTER</source>
+        <target state="translated">КЛАСТЕР БОЛЬШИХ ДАННЫХ SQL SERVER</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.YesText">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">Да</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/big-data-cluster/out/wizards/create-cluster/pages/settingsPage" source-language="en" target-language="ru" datatype="plaintext">
+    <body>
+      <trans-unit id="bdc-create.RestoreDefaultValuesText">
+        <source xml:lang="en">Restore Default Values</source>
+        <target state="translated">Восстановить значения по умолчанию</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.settingsPageTitle">
+        <source xml:lang="en">Settings</source>
+        <target state="translated">Параметры</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.settingsPageDescription">
+        <source xml:lang="en">Configure the settings required for deploying SQL Server big data cluster</source>
+        <target state="translated">Настройте параметры, необходимые для развертывания кластера больших данных SQL Server</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.EulaNotAccepted">
+        <source xml:lang="en">You need to accept the terms of services and privacy policy in order to proceed</source>
+        <target state="translated">Для продолжения вам нужно принять условия обслуживания и политику конфиденциальности</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ClusterName">
+        <source xml:lang="en">Cluster name</source>
+        <target state="translated">Имя кластера</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.AdminUsernameText">
+        <source xml:lang="en">Admin username</source>
+        <target state="translated">Имя пользователя администратора</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.AdminUserPasswordText">
+        <source xml:lang="en">Password</source>
+        <target state="translated">Пароль</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.SQLPortText">
+        <source xml:lang="en">SQL Server master</source>
+        <target state="translated">База данных master SQL Server</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.KnoxPortText">
+        <source xml:lang="en">Knox</source>
+        <target state="translated">KNOX</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ControllerPortText">
+        <source xml:lang="en">Controller</source>
+        <target state="translated">Контроллер</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ProxyPortText">
+        <source xml:lang="en">Proxy</source>
+        <target state="translated">Прокси-сервер</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.GrafanaPortText">
+        <source xml:lang="en">Grafana dashboard</source>
+        <target state="translated">Панель мониторинга Grafana</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.KibanaPortText">
+        <source xml:lang="en">Kibana dashboard</source>
+        <target state="translated">Панель мониторинга Kibana</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.RegistryUserNamePasswordHintText">
+        <source xml:lang="en">only required for private registries</source>
+        <target state="translated">требуется только для частных реестров</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.RegistryText">
+        <source xml:lang="en">Registry</source>
+        <target state="translated">Реестр</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.RepositoryText">
+        <source xml:lang="en">Repository</source>
+        <target state="translated">Репозиторий</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ImageTagText">
+        <source xml:lang="en">Image tag</source>
+        <target state="translated">Тег изображения</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.RegistryUserNameText">
+        <source xml:lang="en">Username</source>
+        <target state="translated">Имя пользователя</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.RegistryPasswordText">
+        <source xml:lang="en">Password</source>
+        <target state="translated">Пароль</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.BasicSettingsText">
+        <source xml:lang="en">Basic Settings</source>
+        <target state="translated">Основные параметры</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ContainerRegistrySettings">
+        <source xml:lang="en">Container Registry Settings</source>
+        <target state="translated">Параметры реестра контейнеров</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.PortSettings">
+        <source xml:lang="en">Port Settings (Optional)</source>
+        <target state="translated">Параметры порта (необязательно)</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.LicenseTerms">
+        <source xml:lang="en">license terms</source>
+        <target state="translated">условия лицензионного соглашения</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.PrivacyPolicyText">
+        <source xml:lang="en">privacy policy</source>
+        <target state="translated">Политика конфиденциальности</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.AcceptTermsText">
+        <source xml:lang="en">I accept the {0} and {1}.</source>
+        <target state="translated">Я принимаю {0} и {1}.</target>
+        <note>{0} is the place holder for license terms, {1} is the place holder for privacy policy</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/big-data-cluster/out/wizards/create-cluster/pages/selectTargetClusterTypePage" source-language="en" target-language="ru" datatype="plaintext">
+    <body>
+      <trans-unit id="bdc-create.InstallToolsText">
+        <source xml:lang="en">Install Tools</source>
+        <target state="translated">Установить средства</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.InstallingButtonText">
+        <source xml:lang="en">Installing...</source>
+        <target state="translated">Установка...</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.selectTargetClusterTypePageTitle">
+        <source xml:lang="en">What is your target cluster environment?</source>
+        <target state="translated">Что является вашей целевой средой кластера?</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.selectTargetClusterTypePageDescription">
+        <source xml:lang="en">Choose the target environment and then install the required tools for it.</source>
+        <target state="translated">Выберите целевую среду и установите для нее необходимые средства.</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.RefreshToolsButtonText">
+        <source xml:lang="en">Refresh Status</source>
+        <target state="translated">Обновить состояние</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.toolNameColumnHeader">
+        <source xml:lang="en">Tool</source>
+        <target state="translated">Инструмент</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.toolDescriptionColumnHeader">
+        <source xml:lang="en">Description</source>
+        <target state="translated">Описание</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.toolVersionColumnHeader">
+        <source xml:lang="en">Version</source>
+        <target state="translated">Версия</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.toolStatusColumnHeader">
+        <source xml:lang="en">Status</source>
+        <target state="translated">Статус</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.PickTargetEnvironmentText">
+        <source xml:lang="en">Pick target environment</source>
+        <target state="translated">Выберите целевую среду</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ToolsRefreshingText">
+        <source xml:lang="en">Please wait while the required tools status is being refreshed.</source>
+        <target state="translated">Подождите, пока обновляется состояние необходимых средств.</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.TargetClusterTypeNotSelectedText">
+        <source xml:lang="en">Please select a target cluster type.</source>
+        <target state="translated">Выберите тип целевого кластера.</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.MissingToolsText">
+        <source xml:lang="en">Please install the required tools.</source>
+        <target state="translated">Установите необходимые инструменты.</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ComingSoonText">
+        <source xml:lang="en">(Coming Soon)</source>
+        <target state="translated">(Скоро)</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.RequiredToolsText">
+        <source xml:lang="en">Required tools</source>
+        <target state="translated">Необходимые инструменты</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.InstalledText">
+        <source xml:lang="en">Installed</source>
+        <target state="translated">УСТАНОВЛЕН</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.NotInstalledText">
+        <source xml:lang="en">Not Installed</source>
+        <target state="translated">Не установлено</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.InstallingText">
+        <source xml:lang="en">Installing...</source>
+        <target state="translated">Установка...</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.FailedToInstallText">
+        <source xml:lang="en">Install Failed</source>
+        <target state="translated">Сбой установки</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/big-data-cluster/out/wizards/create-cluster/pages/selectExistingClusterPage" source-language="en" target-language="ru" datatype="plaintext">
+    <body>
+      <trans-unit id="bdc-create.selectTargetClusterPageTitle">
+        <source xml:lang="en">Where do you want to deploy this SQL Server big data cluster?</source>
+        <target state="translated">Где вы хотите развернуть этот кластер больших данных SQL Server?</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.selectTargetClusterPageDescription">
+        <source xml:lang="en">Select the kubeconfig file and then select a cluster context from the list</source>
+        <target state="translated">Выберите файл kubeconfig и затем выберите контекст кластера в списке</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ClusterContextNotSelectedMessage">
+        <source xml:lang="en">Please select a cluster context.</source>
+        <target state="translated">Выберите контекст кластера.</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.kubeConfigFileLabelText">
+        <source xml:lang="en">Kube config file path</source>
+        <target state="translated">Путь к файлу kube config</target>
+      </trans-unit>
+      <trans-unit id="bdc-browseText">
+        <source xml:lang="en">Browse</source>
+        <target state="translated">Обзор</target>
+      </trans-unit>
+      <trans-unit id="bdc-clusterContextsLabelText">
+        <source xml:lang="en">Cluster Contexts</source>
+        <target state="translated">Контексты кластера</target>
+      </trans-unit>
+      <trans-unit id="bdc-errorLoadingClustersText">
+        <source xml:lang="en">No cluster information is found in the config file or an error ocurred while loading the config file</source>
+        <target state="translated">Не найдены сведения о кластере в файле конфигурации, либо при загрузке этого файла произошла ошибка</target>
+      </trans-unit>
+      <trans-unit id="bdc-selectKubeConfigFileText">
+        <source xml:lang="en">Select</source>
+        <target state="translated">Выбрать</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/big-data-cluster/out/wizards/create-cluster/pages/clusterProfilePage" source-language="en" target-language="ru" datatype="plaintext">
+    <body>
+      <trans-unit id="bdc-create.clusterProfilePageTitle">
+        <source xml:lang="en">Select a cluster profile</source>
+        <target state="translated">Выберите профиль кластера</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.clusterProfilePageDescription">
+        <source xml:lang="en">Select your requirement and we will provide you a pre-defined default scaling. You can later go to cluster configuration and customize it.</source>
+        <target state="translated">Выберите требование, и мы предоставим предопределенное масштабирование по умолчанию. Позднее вы можете перейти в конфигурацию кластера и настроить его.</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.TargetClusterOverview">
+        <source xml:lang="en">Target cluster scale overview</source>
+        <target state="translated">Обзор масштабирования целевого кластера</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.clusterProfileLabel">
+        <source xml:lang="en">Deployment profile</source>
+        <target state="translated">Профиль развертывания</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.HardwareProfileText">
+        <source xml:lang="en">Hardware profile</source>
+        <target state="translated">Профиль оборудования</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.HardwareLabelColumnName">
+        <source xml:lang="en">Label</source>
+        <target state="translated">Этикетка</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.TotalNodesColumnName">
+        <source xml:lang="en">Nodes</source>
+        <target state="translated">Узлы</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.TotalCoresColumnName">
+        <source xml:lang="en">Cores</source>
+        <target state="translated">Ядра</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.TotalMemoryColumnName">
+        <source xml:lang="en">Memory</source>
+        <target state="translated">Память</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.TotalDisksColumnName">
+        <source xml:lang="en">Disks</source>
+        <target state="translated">Диски</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ScaleLabel">
+        <source xml:lang="en">Scale</source>
+        <target state="translated">Масштаб</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.HardwareProfileLabel">
+        <source xml:lang="en">Hardware profile label</source>
+        <target state="translated">Метка профиля оборудования</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.FeatureSetLabel">
+        <source xml:lang="en">Feature set</source>
+        <target state="translated">Набор компонентов</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.EngineOnlyText">
+        <source xml:lang="en">Engine only</source>
+        <target state="translated">Только подсистема</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.EngineWithFeaturesText">
+        <source xml:lang="en">Engine with optional features</source>
+        <target state="translated">Подсистема с дополнительными компонентами</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.SQLServerMasterDisplayName">
+        <source xml:lang="en">SQL Server master</source>
+        <target state="translated">База данных master SQL Server</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ComputePoolDisplayName">
+        <source xml:lang="en">Compute pool</source>
+        <target state="translated">Пул вычислительных ресурсов</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.DataPoolDisplayName">
+        <source xml:lang="en">Data pool</source>
+        <target state="translated">Пул данных</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.StoragePoolDisplayName">
+        <source xml:lang="en">Storage pool</source>
+        <target state="translated">Пул носителей</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.SparkPoolDisplayName">
+        <source xml:lang="en">Spark pool</source>
+        <target state="translated">Пул Spark</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.SQLServerMasterDescription">
+        <source xml:lang="en">The SQL Server instance provides an externally accessible TDS endpoint for the cluster</source>
+        <target state="translated">Экземпляр SQL Server предоставляет доступную извне конечную точку TDS для кластера</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ComputePoolDescription">
+        <source xml:lang="en">TODO: Add description</source>
+        <target state="translated">TODO: добавление описания</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.DataPoolDescription">
+        <source xml:lang="en">TODO: Add description</source>
+        <target state="translated">TODO: добавление описания</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.StoragePoolDescription">
+        <source xml:lang="en">TODO: Add description</source>
+        <target state="translated">TODO: добавление описания</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.SparkPoolDescription">
+        <source xml:lang="en">TODO: Add description</source>
+        <target state="translated">TODO: добавление описания</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.poolLabelTemplate">
+        <source xml:lang="en">{0} ({1})</source>
+        <target state="translated">{0} ({1})</target>
+        <note>{0} is the pool name, {1} is the scale number</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/big-data-cluster/out/wizards/create-cluster/createClusterWizard" source-language="en" target-language="ru" datatype="plaintext">
+    <body>
+      <trans-unit id="bdc-create.wizardTitle">
+        <source xml:lang="en">Create a big data cluster</source>
+        <target state="translated">Создайте кластер больших данных</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.generateScriptsButtonText">
+        <source xml:lang="en">Generate Scripts</source>
+        <target state="translated">Создать сценарии</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.createClusterButtonText">
+        <source xml:lang="en">Create</source>
+        <target state="translated">Создать</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/big-data-cluster/out/wizards/create-cluster/createClusterModel" source-language="en" target-language="ru" datatype="plaintext">
+    <body>
+      <trans-unit id="bdc-create.AKSClusterCardText">
+        <source xml:lang="en">New AKS Cluster</source>
+        <target state="translated">Новый кластер AKS</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.AKSClusterFullName">
+        <source xml:lang="en">New Azure Kubernetes Service cluster</source>
+        <target state="translated">Новый кластер Службы Azure Kubernetes</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.AKSClusterDescription">
+        <source xml:lang="en">This option configures new Azure Kubernetes Service (AKS) for SQL Server big data cluster deployments. AKS makes it simple to create, configure and manage a cluster of virutal machines that are preconfigured with a Kubernetes cluster to run containerized applications.</source>
+        <target state="translated">Этот параметр настраивает новую службу Azure Kubernetes (AKS) для развертываний кластера больших данных SQL Server. AKS упрощает создание, настройку и использование кластера виртуальных машин, для которых предварительно настроен кластер Kubernetes для запуска контейнерных приложений.</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ExistingClusterCardText">
+        <source xml:lang="en">Existing Cluster</source>
+        <target state="translated">Существующий кластер</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ExistingClusterFullName">
+        <source xml:lang="en">Existing Kubernetes cluster</source>
+        <target state="translated">Существующий кластер Kubernetes</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ExistingClusterDescription">
+        <source xml:lang="en">This option assumes you already have a Kubernetes cluster installed, Once a prerequisite check is done, ensure the correct cluster context is selected.</source>
+        <target state="translated">Этот параметр предполагает, что вы уже установили кластер Kubernetes. После проверки предварительных требований выберите правильный контекст кластера.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/big-data-cluster/out/kubectl/sqlServerBigDataClusterChannel" source-language="en" target-language="ru" datatype="plaintext">
+    <body>
+      <trans-unit id="bigDataClusterOutputChannel">
+        <source xml:lang="en">SQL Server big data cluster</source>
+        <target state="translated">Кластер больших данных SQL Server</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/big-data-cluster/out/kubectl/kubectlUtils" source-language="en" target-language="ru" datatype="plaintext">
+    <body>
+      <trans-unit id="runKubectlFailed">
+        <source xml:lang="en">Unable to run kubectl</source>
+        <target state="translated">Не удалось запустить kubectl</target>
+      </trans-unit>
+      <trans-unit id="setClusterFailed">
+        <source xml:lang="en">Failed to set '{0}' as current cluster: {1}</source>
+        <target state="translated">Не удалось установить "{0}" в качестве текущего кластера: {1}</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/big-data-cluster/out/kubectl/kubectl" source-language="en" target-language="ru" datatype="plaintext">
+    <body>
+      <trans-unit id="binaryNotFound">
+        <source xml:lang="en">Could not find {0} binary. {1}</source>
+        <target state="translated">Не удалось найти двоичный объект {0}. {1}</target>
+      </trans-unit>
+      <trans-unit id="binaryNotInstalled">
+        <source xml:lang="en">{0} is not installed. {1}</source>
+        <target state="translated">{0} не установлен. {1}</target>
+      </trans-unit>
+      <trans-unit id="kubernetesRequired">
+        <source xml:lang="en"> SQL Server Big data cluster requires kubernetes.</source>
+        <target state="translated">Кластеру больших данных SQL Server требуется Kubernetes.</target>
+      </trans-unit>
+      <trans-unit id="cannotExecuteCmd">
+        <source xml:lang="en"> Cannot execute command.</source>
+        <target state="translated"> Не удается выполнить команду.</target>
+      </trans-unit>
+      <trans-unit id="kubectlVersionIncompatible">
+        <source xml:lang="en">kubectl version ${0} may be incompatible with cluster Kubernetes version {1}</source>
+        <target state="translated">Версия kubectl ${0} может быть несовместима с версией кластера Kubernetes {1}</target>
+      </trans-unit>
+      <trans-unit id="cannotRunCommand">
+        <source xml:lang="en">Unable to run command ({0})</source>
+        <target state="translated">Не удалось выполнить команду ({0})</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/big-data-cluster/out/kubectl/binutil" source-language="en" target-language="ru" datatype="plaintext">
+    <body>
+      <trans-unit id="installDependenciesAction">
+        <source xml:lang="en">Install dependencies</source>
+        <target state="translated">Установить зависимости</target>
+      </trans-unit>
+      <trans-unit id="learnMoreAction">
+        <source xml:lang="en">Learn more</source>
+        <target state="translated">Дополнительные сведения</target>
+      </trans-unit>
+      <trans-unit id="moreInfoMsg">
+        <source xml:lang="en">Add {0} directory to path, or set "mssql-bdc.{0}-path" config to {0} binary.</source>
+        <target state="translated">Добавьте каталог {0} в путь или задайте для конфигурации "mssql-bdc.{0}-path" двоичный объект {0}.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/big-data-cluster/out/installer/installer" source-language="en" target-language="ru" datatype="plaintext">
+    <body>
+      <trans-unit id="downloadKubectlFailed">
+        <source xml:lang="en">Failed to download kubectl: {0}</source>
+        <target state="translated">Не удалось скачать kubectl: {0}</target>
+      </trans-unit>
+      <trans-unit id="kubectlVersionCheckFailed">
+        <source xml:lang="en">Failed to establish kubectl stable version: {0}</source>
+        <target state="translated">Не удалось установить стабильную версию kubectl: {0}</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/big-data-cluster/out/main" source-language="en" target-language="ru" datatype="plaintext">
+    <body>
+      <trans-unit id="done">
+        <source xml:lang="en">Done</source>
+        <target state="translated">Договорились</target>
+      </trans-unit>
+      <trans-unit id="dependencyInstalled">
+        <source xml:lang="en">{0} already installed...</source>
+        <target state="translated">{0} уже установлен...</target>
+      </trans-unit>
+      <trans-unit id="installingDependency">
+        <source xml:lang="en">Installing {0}...</source>
+        <target state="translated">Идет установка {0}...</target>
+      </trans-unit>
+      <trans-unit id="installingDependencyFailed">
+        <source xml:lang="en">Unable to install {0}: {1}</source>
+        <target state="translated">Не удалось установить {0}: {1}</target>
+      </trans-unit>
+    </body>
+  </file>
 </xliff>

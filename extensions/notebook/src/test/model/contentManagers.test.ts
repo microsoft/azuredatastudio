@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as vscode from 'vscode';
 import * as should from 'should';
 import * as TypeMoq from 'typemoq';
@@ -33,7 +31,6 @@ let expectedNotebookContent: INotebook = {
 	nbformat: 5,
 	nbformat_minor: 0
 };
-let notebookContentString = JSON.stringify(expectedNotebookContent);
 
 function verifyMatchesExpectedNotebook(notebook: nb.INotebookContents): void {
 	should(notebook.cells).have.length(1, 'Expected 1 cell');

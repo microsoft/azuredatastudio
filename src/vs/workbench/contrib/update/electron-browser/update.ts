@@ -73,11 +73,14 @@ export abstract class AbstractShowReleaseNotesAction extends Action {
 
 		this.enabled = false;
 
-		return showReleaseNotes(this.instantiationService, this.version)
-			.then(undefined, () => {
-				const action = this.instantiationService.createInstance(OpenLatestReleaseNotesInBrowserAction);
-				return action.run().then(() => false);
-			});
+		// {{SQL CARBON EDIT}}
+		// return showReleaseNotes(this.instantiationService, this.version)
+		// .then(undefined, () => {
+		// 	const action = this.instantiationService.createInstance(OpenLatestReleaseNotesInBrowserAction);
+		// 	return action.run().then(() => false);
+		// });
+		const action = this.instantiationService.createInstance(OpenLatestReleaseNotesInBrowserAction);
+		return action.run().then(() => true);
 	}
 }
 

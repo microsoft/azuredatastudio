@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import { TreeItem, TreeItemCollapsibleState } from 'vscode';
 import { Account, NodeInfo, AzureResource } from 'azdata';
 import { TokenCredentials } from 'ms-rest';

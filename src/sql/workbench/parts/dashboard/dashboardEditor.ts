@@ -23,6 +23,7 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
+import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
 
 export class DashboardEditor extends BaseEditor {
 
@@ -37,7 +38,8 @@ export class DashboardEditor extends BaseEditor {
 		@IContextKeyService private _contextKeyService: IContextKeyService,
 		@IDashboardService private _dashboardService: IDashboardService,
 		@IConnectionManagementService private _connMan: IConnectionManagementService,
-		@IStorageService storageService: IStorageService
+		@IStorageService storageService: IStorageService,
+		@IQueryManagementService private queryManagementService: IQueryManagementService
 	) {
 		super(DashboardEditor.ID, telemetryService, themeService, storageService);
 	}
@@ -112,7 +114,7 @@ export class DashboardEditor extends BaseEditor {
 		const serverInfo = this._connMan.getConnectionInfo(this.input.uri).serverInfo;
 		this._dashboardService.changeToDashboard({ profile, serverInfo });
 		const scopedContextService = this._contextKeyService.createScoped(input.container);
-		const connectionContextKey = new ConnectionContextKey(scopedContextService);
+		const connectionContextKey = new ConnectionContextKey(scopedContextService, this.queryManagementService);
 		connectionContextKey.set(input.connectionProfile);
 
 		const params: IDashboardComponentParams = {

@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!sql/parts/query/editor/media/queryEditor';
 import * as DOM from 'vs/base/browser/dom';
 import { EditorOptions } from 'vs/workbench/common/editor';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
@@ -12,10 +11,6 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { QueryPlanInput } from 'sql/workbench/parts/queryPlan/common/queryPlanInput';
 import { QueryPlanModule } from 'sql/workbench/parts/queryPlan/electron-browser/queryPlan.module';
-import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { IMetadataService } from 'sql/platform/metadata/common/metadataService';
-import { IScriptingService } from 'sql/platform/scripting/common/scriptingService';
-import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { bootstrapAngular } from 'sql/platform/bootstrap/node/bootstrapService';
 import { IQueryPlanParams } from 'sql/platform/bootstrap/node/bootstrapParams';
 import { QUERYPLAN_SELECTOR } from 'sql/workbench/parts/queryPlan/electron-browser/queryPlan.component';
@@ -30,11 +25,7 @@ export class QueryPlanEditor extends BaseEditor {
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IThemeService themeService: IThemeService,
 		@IInstantiationService private instantiationService: IInstantiationService,
-		@IConnectionManagementService private _connectionService: IConnectionManagementService,
-		@IMetadataService private _metadataService: IMetadataService,
-		@IScriptingService private _scriptingService: IScriptingService,
-		@IQueryEditorService private _queryEditorService: IQueryEditorService,
-		@IStorageService private storageService: IStorageService
+		@IStorageService storageService: IStorageService
 	) {
 		super(QueryPlanEditor.ID, telemetryService, themeService, storageService);
 	}
