@@ -136,6 +136,7 @@ export class CommandLineService implements ICommandLineProcessing {
 		}
 	}
 
+	// If an open and connectable query editor exists for the given URI, attach it to the connection profile
 	private async processFile(uriString: string, profile: IConnectionProfile, warnOnConnectFailure: boolean): Promise<void> {
 		let activeEditor = this._editorService.editors.filter(v => v.getResource().toString() === uriString).pop();
 		if (activeEditor) {
