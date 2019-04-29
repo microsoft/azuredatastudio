@@ -18,7 +18,6 @@ import { entries } from 'sql/base/common/objects';
 import { Deferred } from 'sql/base/common/promise';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
-
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as platform from 'vs/base/common/platform';
 import Severity from 'vs/base/common/severity';
@@ -30,6 +29,7 @@ import { trim } from 'vs/base/common/strings';
 import { localize } from 'vs/nls';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
+import { CmsConnectionController } from 'sql/workbench/services/connection/browser/cmsConnectionController';
 
 export interface IConnectionValidateResult {
 	isValid: boolean;
@@ -45,7 +45,7 @@ export interface IConnectionComponentCallbacks {
 }
 
 export interface IConnectionComponentController {
-	showUiComponent(container: HTMLElement): void;
+	showUiComponent(container: HTMLElement, didChange?: boolean): void;
 	initDialog(providers: string[], model: IConnectionProfile): void;
 	validateConnection(): IConnectionValidateResult;
 	fillInConnectionInputs(connectionInfo: IConnectionProfile): void;
@@ -69,9 +69,11 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	private _providerNameToDisplayNameMap: { [providerDisplayName: string]: string } = {};
 	private _providerTypes: string[] = [];
 	private _currentProviderType: string = 'Microsoft SQL Server';
+	private _previousProviderType: string = undefined;
 	private _connecting: boolean = false;
 	private _connectionErrorTitle = localize('connectionError', 'Connection error');
 	private _dialogDeferredPromise: Deferred<IConnectionProfile>;
+	private _toDispose = [];
 
 	/**
 	 * This is used to work around the interconnectedness of this code
@@ -123,7 +125,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	/**
 	 * Gets the default provider with the following actions
 	 * 	1. Checks if master provider(map) has data
-	 * 	2. If so, filters provider paramter against master map
+	 * 	2. If so, filters provider parameter against master map
 	 * 	3. Fetches the result array and extracts the first element
 	 * 	4. If none of the above data exists, returns 'MSSQL'
 	 * @returns: Default provider as string
@@ -169,13 +171,15 @@ export class ConnectionDialogService implements IConnectionDialogService {
 				profile.serverName = trim(profile.serverName);
 
 				// append the port to the server name for SQL Server connections
-				if (this.getCurrentProviderName() === Constants.mssqlProviderName) {
+				if (this.getCurrentProviderName() === Constants.mssqlProviderName ||
+					this.getCurrentProviderName() === Constants.cmsProviderName) {
 					let portPropertyName: string = 'port';
 					let portOption: string = profile.options[portPropertyName];
 					if (portOption && portOption.indexOf(',') === -1) {
 						profile.serverName = profile.serverName + ',' + portOption;
 					}
 					profile.options[portPropertyName] = undefined;
+					profile.providerName = Constants.mssqlProviderName;
 				}
 
 				// Disable password prompt during reconnect if connected with an empty password
@@ -273,9 +277,21 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		// Set the model name, initialize the controller if needed, and return the controller
 		this._model.providerName = providerName;
 		if (!this._connectionControllerMap[providerName]) {
-			this._connectionControllerMap[providerName] = this._instantiationService.createInstance(ConnectionController, this._container, this._connectionManagementService, this._capabilitiesService.getCapabilities(providerName).connection, {
-				onSetConnectButton: (enable: boolean) => this.handleSetConnectButtonEnable(enable)
-			}, providerName);
+			if (providerName === Constants.cmsProviderName) {
+				this._connectionControllerMap[providerName] =
+					this._instantiationService.createInstance(CmsConnectionController,
+						this._container, this._connectionManagementService,
+						this._capabilitiesService.getCapabilities(providerName).connection, {
+							onSetConnectButton: (enable: boolean) => this.handleSetConnectButtonEnable(enable)
+						}, providerName, this._inputModel ? this._inputModel.options.authTypeChanged : false);
+			} else {
+				this._connectionControllerMap[providerName] =
+					this._instantiationService.createInstance(ConnectionController,
+						this._container, this._connectionManagementService,
+						this._capabilitiesService.getCapabilities(providerName).connection, {
+							onSetConnectButton: (enable: boolean) => this.handleSetConnectButtonEnable(enable)
+						}, providerName);
+			}
 		}
 		return this._connectionControllerMap[providerName];
 	}
@@ -291,7 +307,12 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		this._model.providerName = this.getCurrentProviderName();
 
 		this._model = new ConnectionProfile(this._capabilitiesService, this._model);
-		this.uiController.showUiComponent(input.container);
+		if (this._inputModel && this._inputModel.options) {
+			this.uiController.showUiComponent(input.container,
+				this._inputModel.options.authTypeChanged);
+		} else {
+			this.uiController.showUiComponent(input.container);
+		}
 	}
 
 	private handleInitDialog() {
@@ -373,11 +394,11 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		params?: INewConnectionParams,
 		model?: IConnectionProfile,
 		connectionResult?: IConnectionResult): Thenable<void> {
+
 		this._connectionManagementService = connectionManagementService;
 
 		this._params = params;
 		this._inputModel = model;
-
 		return new Promise<void>((resolve, reject) => {
 			this.updateModelServerCapabilities(model);
 			// If connecting from a query editor set "save connection" to false
@@ -403,15 +424,26 @@ export class ConnectionDialogService implements IConnectionDialogService {
 				this._connectionDialog.databaseDropdownExpanded = this.uiController.databaseDropdownExpanded;
 				this.handleOnCancel(this._connectionDialog.newConnectionParams);
 			});
-			this._connectionDialog.onConnect((profile) => this.handleOnConnect(this._connectionDialog.newConnectionParams, profile));
+			this._connectionDialog.onConnect((profile) => {
+				this.handleOnConnect(this._connectionDialog.newConnectionParams, profile);
+			});
 			this._connectionDialog.onShowUiComponent((input) => this.handleShowUiComponent(input));
 			this._connectionDialog.onInitDialog(() => this.handleInitDialog());
 			this._connectionDialog.onFillinConnectionInputs((input) => this.handleFillInConnectionInputs(input));
 			this._connectionDialog.onResetConnection(() => this.handleProviderOnResetConnection());
 			this._connectionDialog.render();
+			this._previousProviderType = this._currentProviderType;
 		}
 		this._connectionDialog.newConnectionParams = params;
-
+		// if provider changed
+		if ((this._previousProviderType !== this._currentProviderType) ||
+			// or if currentProvider not set correctly yet
+			!(this._currentProviderType === Constants.cmsProviderDisplayName && params.providers && params.providers.length > 1)) {
+			this._previousProviderType = undefined;
+			this._connectionDialog.updateProvider(this._providerNameToDisplayNameMap[this.getDefaultProviderName()]);
+		} else {
+			this._connectionDialog.newConnectionParams = params;
+		}
 		return new Promise<void>(() => {
 			this._connectionDialog.open(this._connectionManagementService.getRecentConnections(params.providers).length > 0);
 			this.uiController.focusOnOpen();
