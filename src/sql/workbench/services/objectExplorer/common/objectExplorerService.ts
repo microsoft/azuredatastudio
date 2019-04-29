@@ -229,6 +229,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	public onSessionCreated(handle: number, session: azdata.ObjectExplorerSession): void {
 		if (session.success) {
 			this.handleSessionCreated(session);
+		} else if (session.errorMessage) {
+			error(session.errorMessage);
 		}
 	}
 
@@ -239,7 +241,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			if (this._sessions[session.sessionId]) {
 				connection = this._sessions[session.sessionId].connection;
 
-				if (session && session.success && session.rootNode) {
+				if (session.success && session.rootNode) {
 					let server = this.toTreeNode(session.rootNode, null);
 					server.connection = connection;
 					server.session = session;
