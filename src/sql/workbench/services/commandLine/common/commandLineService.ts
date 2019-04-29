@@ -148,7 +148,7 @@ export class CommandLineService implements ICommandLineProcessing {
 					saveTheConnection: false,
 					showDashboard: false,
 					showConnectionDialogOnError: warnOnConnectFailure,
-					showFirewallRuleOnError: true
+					showFirewallRuleOnError: warnOnConnectFailure
 				};
 				if (this._statusBarService) {
 					this._statusBarService.setStatusMessage(localize('connectingQueryLabel', 'Connecting query file'), 2500);
