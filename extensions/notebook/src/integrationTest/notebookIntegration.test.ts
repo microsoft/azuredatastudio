@@ -6,10 +6,13 @@
 import * as should from 'should';
 import * as vscode from 'vscode';
 import * as assert from 'assert';
+import * as path from 'path';
 import 'mocha';
 
 import { JupyterController } from '../jupyter/jupyterController';
 import JupyterServerInstallation from '../jupyter/jupyterServerInstallation';
+import { pythonBundleVersion } from '../common/constants';
+import { executeStreamedCommand } from '../common/utils';
 
 describe('Notebook Extension Python Installation', function () {
 	this.timeout(600000);
@@ -44,6 +47,24 @@ describe('Notebook Extension Python Installation', function () {
 		should(installComplete).be.true('Python setup did not complete.');
 		let jupyterPath = JupyterServerInstallation.getPythonInstallPath(jupyterController.jupyterInstallation.apiWrapper);
 		console.log(`Expected python path: '${pythonInstallDir}'; actual: '${jupyterPath}'`);
-		should(JupyterServerInstallation.getPythonInstallPath(jupyterController.jupyterInstallation.apiWrapper)).be.equal(pythonInstallDir);
+		should(jupyterPath).be.equal(pythonInstallDir);
+	});
+
+	it('Use Existing Python Installation', async function () {
+		should(installComplete).be.true('Python setup did not complete.');
+
+		console.log('Uninstalling existing pip dependencies');
+		let install = jupyterController.jupyterInstallation;
+		let pythonExe = JupyterServerInstallation.getPythonExePath(pythonInstallDir, false);
+		let command = `"${pythonExe}" -m pip uninstall -y jupyter pandas sparkmagic prose-codeaccelerator`;
+		await executeStreamedCommand(command, { env: install.execOptions.env }, install.outputChannel);
+		console.log('Uninstalling existing pip dependencies is done');
+
+		console.log('Start Existing Python Installation');
+		let existingPythonPath = path.join(pythonInstallDir, pythonBundleVersion);
+		await install.startInstallProcess(false, { installPath: existingPythonPath, existingPython: true });
+		console.log('Existing Python Installation is done');
+
+
 	});
 });
