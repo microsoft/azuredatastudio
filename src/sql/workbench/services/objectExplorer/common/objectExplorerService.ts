@@ -226,8 +226,10 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	/**
 	 * Gets called when session is created
 	 */
-	public onSessionCreated(handle: number, session: azdata.ObjectExplorerSession): void {
-		this.handleSessionCreated(session);
+	public onSessionCreated(handle: number, session: azdata.ObjectExplorerSession) {
+		if (session.success) {
+			this.handleSessionCreated(session);
+		}
 	}
 
 	private async handleSessionCreated(session: azdata.ObjectExplorerSession): Promise<void> {
