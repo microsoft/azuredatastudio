@@ -64,7 +64,5 @@ describe('Notebook Extension Python Installation', function () {
 		let existingPythonPath = path.join(pythonInstallDir, pythonBundleVersion);
 		await install.startInstallProcess(false, { installPath: existingPythonPath, existingPython: true });
 		console.log('Existing Python Installation is done');
-
-
 	});
 });
