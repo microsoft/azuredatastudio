@@ -41,7 +41,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { defaultInsertColor, defaultRemoveColor, diffBorder, diffInserted, diffInsertedOutline, diffRemoved, diffRemovedOutline, scrollbarShadow } from 'vs/platform/theme/common/colorRegistry';
 import { ITheme, IThemeService, getThemeTypeSelector, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 // {{SQL CARBON EDIT}}
-import { reverseLineChanges } from 'sql/editor/browser/DiffEditorHelper';
+import { reverseLineChanges } from 'sql/editor/browser/diffEditorHelper';
 
 interface IEditorDiffDecorations {
 	decorations: IModelDeltaDecoration[];

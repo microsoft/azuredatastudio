@@ -16,7 +16,7 @@ import * as types from 'vs/base/common/types';
 
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import { bootstrapAngular } from 'sql/platform/bootstrap/node/bootstrapService';
-import { BareResultsGridInfo } from 'sql/parts/query/editor/queryResultsEditor';
+import { BareResultsGridInfo } from 'sql/workbench/parts/query/browser/queryResultsEditor';
 import { IEditDataComponentParams } from 'sql/platform/bootstrap/node/bootstrapParams';
 import { EditDataModule } from 'sql/workbench/parts/grid/views/editData/editData.module';
 import { EDITDATA_SELECTOR } from 'sql/workbench/parts/grid/views/editData/editData.component';

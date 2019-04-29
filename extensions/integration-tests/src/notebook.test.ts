@@ -20,7 +20,7 @@ if (context.RunTest) {
 		setup(function () {
 			console.log(`Start "${this.currentTest.title}"`);
 		});
-		teardown(function () {
+		teardown(async function () {
 			let testName = this.currentTest.title;
 			try {
 				let fileName = getFileName(testName);
@@ -28,6 +28,7 @@ if (context.RunTest) {
 					fs.unlinkSync(fileName);
 					console.log(`"${fileName}" is deleted.`);
 				}
+				await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
 			}
 			catch (err) {
 				console.log(err);
