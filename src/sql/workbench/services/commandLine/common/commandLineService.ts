@@ -25,9 +25,7 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IStatusbarService } from 'vs/platform/statusbar/common/statusbar';
 import { localize } from 'vs/nls';
-import { QueryEditor } from 'sql/parts/query/editor/queryEditor';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
-import { asArray } from 'vs/base/common/arrays';
 import { URI } from 'vs/base/common/uri';
 
 export class CommandLineService implements ICommandLineProcessing {
