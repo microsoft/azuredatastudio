@@ -2,6 +2,7 @@
 	"cms.displayName": "CMS",
 	"cms.description": "Central Management Servers",
 	"cms.title": "Central Management Servers",
+	"cms.connectionProvider.displayName": "Microsoft SQL Server - CMS",
 	"cms.resource.explorer.title": "Central Management Servers",
 	"cms.resource.refreshServerGroup.title": "Refresh Server Group",
 	"cms.resource.refreshCmsServer.title": "Refresh Central Management Server",

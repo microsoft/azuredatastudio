@@ -3,6 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { localize } from 'vs/nls';
+
 // constants
 export const sqlConfigSectionName = 'sql';
 export const outputChannelName = 'MSSQL';
@@ -37,4 +39,4 @@ export const azureMFA = 'AzureMFA';
 
 /* CMS constants */
 export const cmsProviderName = 'MSSQL-CMS';
-export const cmsProviderDisplayName = 'Microsoft SQL Server (CMS)';
+export const cmsProviderDisplayName = localize('constants.cmsProviderDisplayName', 'Microsoft SQL Server (CMS)');
