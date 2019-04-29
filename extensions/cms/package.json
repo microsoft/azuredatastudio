@@ -16,7 +16,7 @@
 	"contributes": {
 		"configuration": {
 			"type": "object",
-			"title": "Central Management Servers",
+			"title": "%cms.title%",
 			"properties": {
 				"cms.cmsServers": {
 					"type": "object"
@@ -25,7 +25,7 @@
 		},
 		"connectionProvider": {
 			"providerId": "MSSQL-CMS",
-			"displayName": "Microsoft SQL Server- CMS",
+			"displayName": "Microsoft SQL Server - CMS",
 			"connectionOptions": [
 				{
 					"specialValueType": "connectionName",
@@ -81,15 +81,15 @@
 					"objectType": null,
 					"categoryValues": [
 						{
-							"displayName": "SQL Login",
+							"displayName": "%cms.connectionOptions.authType.categoryValues.sqlLogin%",
 							"name": "SqlLogin"
 						},
 						{
-							"displayName": "Windows Authentication",
+							"displayName": "%cms.connectionOptions.authType.categoryValues.integrated%",
 							"name": "Integrated"
 						},
 						{
-							"displayName": "Azure Active Directory - Universal with MFA support",
+							"displayName": "%cms.connectionOptions.authType.categoryValues.azureMFA%",
 							"name": "AzureMFA"
 						}
 					],
