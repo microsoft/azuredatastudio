@@ -62,8 +62,8 @@ if (context.RunTest) {
 	});
 }
 
-async function VerifyOeNode(server: TestServerProfile, timeout: number, expectedNodeLable: string[]) {
-	await connectToServer(server, timeout);
+async function VerifyOeNode(server: TestServerProfile, timeoutinMS: number, expectedNodeLable: string[]) {
+	await connectToServer(server, timeoutinMS);
 	let nodes = <azdata.objectexplorer.ObjectExplorerNode[]>await azdata.objectexplorer.getActiveConnectionNodes();
 	assert(nodes.length > 0, `Expecting at least one active connection, actual: ${nodes.length}`);
 
@@ -77,9 +77,9 @@ async function VerifyOeNode(server: TestServerProfile, timeout: number, expected
 	assert(expectedNodeLable.toLocaleString() === actualNodeLable.toLocaleString(), `Expected node label: "${expectedNodeLable}", Actual: "${actualNodeLable}"`);
 }
 
-async function VerifyDBContextMenu(server: TestServerProfile, timeout: number, expectedActions: string[]) {
+async function VerifyDBContextMenu(server: TestServerProfile, timeoutinMS: number, expectedActions: string[]) {
 
-	await connectToServer(server, 3000);
+	await connectToServer(server, timeoutinMS);
 
 	let nodes = <azdata.objectexplorer.ObjectExplorerNode[]>await azdata.objectexplorer.getActiveConnectionNodes();
 	assert(nodes.length > 0, `Expecting at least one active connection, actual: ${nodes.length}`);
@@ -88,21 +88,26 @@ async function VerifyDBContextMenu(server: TestServerProfile, timeout: number, e
 	assert(index !== -1, `Failed to find server: "${server.serverName}" in OE tree`);
 
 	let ownerUri = await azdata.connection.getUriForConnection(nodes[index].connectionId);
-	let dbName: string = 'TestDB_' + new Date().getTime().toString();
-	await createDB(dbName, ownerUri);
+	let dbName: string = 'ads_test_VerifyDBContextMenu_' + new Date().getTime().toString();
+	try {
+		await createDB(dbName, ownerUri);
 
-	let serverNode = nodes[index];
-	let children = await serverNode.getChildren();
-	let databasesFolder = children[0]; // first should be databases
+		let serverNode = nodes[index];
+		let children = await serverNode.getChildren();
 
-	let databases = await databasesFolder.getChildren();
-	assert(databases.length > 2, `No database present, can not test further`); // System Databses folder and at least one database
+		assert(children[0].label.toLocaleLowerCase === 'Databases'.toLocaleLowerCase, `Expected Databases node. Actual ${children[0].label}`);
+		let databasesFolder = children[0];
 
-	let actions = await azdata.objectexplorer.getNodeActions(databases[1].connectionId, databases[1].nodePath);
+		let databases = await databasesFolder.getChildren();
+		assert(databases.length > 2, `No database present, can not test further`); // System Databses folder and at least one database
 
-	const expectedString = expectedActions.join(',');
-	const actualString = actions.join(',');
-	assert(expectedActions.length === actions.length && expectedString === actualString, `Expected actions: "${expectedString}", Actual actions: "${actualString}"`);
+		let actions = await azdata.objectexplorer.getNodeActions(databases[1].connectionId, databases[1].nodePath);
 
-	await deleteDB(dbName, ownerUri);
+		const expectedString = expectedActions.join(',');
+		const actualString = actions.join(',');
+		assert(expectedActions.length === actions.length && expectedString === actualString, `Expected actions: "${expectedString}", Actual actions: "${actualString}"`);
+	}
+	finally {
+		await deleteDB(dbName, ownerUri);
+	}
 }

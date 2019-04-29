@@ -65,6 +65,8 @@ export async function deleteDB(dbName: string, ownerUri: string): Promise<void> 
 			SELECT ERROR_MESSAGE() AS ErrorMessage;
 		END CATCH`;
 
-	let dbcreatedResult = await queryProvider.runQueryAndReturn(ownerUri, query);
-	assert(dbcreatedResult.columnInfo[0].columnName !== 'ErrorMessage', 'DB deletion threw error');
+	let result = await queryProvider.runQueryAndReturn(ownerUri, query);
+	if (result.columnInfo[0].columnName === 'ErrorMessage') {
+		console.error(`Could not delete database: ${result}`);
+	}
 }

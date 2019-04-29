@@ -141,7 +141,7 @@ export class SchemaCompareResult {
 	}
 
 	// Test Only
-	getComparisionResult(): azdata.SchemaCompareResult {
+	public getComparisionResult(): azdata.SchemaCompareResult {
 		return this.comparisonResult;
 	}
 
