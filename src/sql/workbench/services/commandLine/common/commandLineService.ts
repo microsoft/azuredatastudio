@@ -69,7 +69,7 @@ export class CommandLineService implements ICommandLineProcessing {
 	// We base our logic on the combination of (server, command) values.
 	// (serverName, commandName) => Connect object explorer and execute the command, passing the connection profile to the command. Do not load query editor.
 	// (null, commandName) => Launch the command with a null connection. If the command implementation needs a connection, it will need to create it.
-	// (serverName, null) => Connect object explorer and open a new query editor
+	// (serverName, null) => Connect object explorer and open a new query editor if no file names are passed. If file names are passed, connect their editors to the server.
 	// (null, null) => Prompt for a connection unless there are registered servers
 	public async processCommandLine(args: ParsedArgs): Promise<void> {
 		let profile: IConnectionProfile = undefined;
