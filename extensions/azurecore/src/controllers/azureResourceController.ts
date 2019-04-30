@@ -3,17 +3,16 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import ControllerBase from './controllerBase';
-import { DidChangeAccountsParams } from 'azdata';
+import { DidChangeAccountsParams, Account } from 'azdata';
 
 import {
 	IAzureResourceCacheService,
 	IAzureResourceAccountService,
 	IAzureResourceSubscriptionService,
 	IAzureResourceSubscriptionFilterService,
-	IAzureResourceTenantService } from '../azureResource/interfaces';
+	IAzureResourceTenantService
+} from '../azureResource/interfaces';
 import { AzureResourceServiceNames } from '../azureResource/constants';
 import { AzureResourceTreeProvider } from '../azureResource/tree/treeProvider';
 import { registerAzureResourceCommands } from '../azureResource/commands';
@@ -38,7 +37,7 @@ export default class AzureResourceController extends ControllerBase {
 		const azureResourceTree = new AzureResourceTreeProvider(this.appContext);
 		this.extensionContext.subscriptions.push(this.apiWrapper.registerTreeDataProvider('azureResourceExplorer', azureResourceTree));
 
-		let previousAccounts = undefined;
+		let previousAccounts: Array<Account> = undefined;
 		this.appContext.getService<IAzureResourceAccountService>(AzureResourceServiceNames.accountService).onDidChangeAccounts((e: DidChangeAccountsParams) => {
 			// the onDidChangeAccounts event will trigger in many cases where the accounts didn't actually change
 			// the notifyNodeChanged event triggers a refresh which triggers a getChildren which can trigger this callback

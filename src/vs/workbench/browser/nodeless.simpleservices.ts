@@ -5,8 +5,7 @@
 
 import { URI } from 'vs/base/common/uri';
 import { IBackupFileService } from 'vs/workbench/services/backup/common/backup';
-import { ITextSnapshot } from 'vs/platform/files/common/files';
-import { ITextBufferFactory } from 'vs/editor/common/model';
+import { ITextBufferFactory, ITextSnapshot } from 'vs/editor/common/model';
 import { createTextBufferFactoryFromSnapshot } from 'vs/editor/common/model/textModel';
 import { keys, ResourceMap } from 'vs/base/common/map';
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
@@ -52,7 +51,7 @@ import { ExportData } from 'vs/base/common/performance';
 import { IRecentlyOpened, IRecent } from 'vs/platform/history/common/history';
 import { ISerializableCommandAction } from 'vs/platform/actions/common/actions';
 import { IWorkspaceEditingService } from 'vs/workbench/services/workspace/common/workspaceEditing';
-import { IWorkspaceContextService, Workspace, toWorkspaceFolders, IWorkspaceFolder, WorkbenchState, IWorkspace } from 'vs/platform/workspace/common/workspace';
+import { IWorkspaceContextService, Workspace, toWorkspaceFolder, IWorkspaceFolder, WorkbenchState, IWorkspace } from 'vs/platform/workspace/common/workspace';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -61,7 +60,7 @@ import { ITunnelService } from 'vs/platform/remote/common/tunnel';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
 
 export const workspaceResource = URI.from({
-	scheme: 'vscode-remote',
+	scheme: Schemas.vscodeRemote,
 	authority: document.location.host,
 	path: (<any>self).USER_HOME_DIR || '/'
 });
@@ -821,6 +820,9 @@ export class SimpleTelemetryService implements ITelemetryService {
 		return Promise.resolve(undefined);
 	}
 
+	setEnabled(value: boolean): void {
+	}
+
 	getTelemetryInfo(): Promise<ITelemetryInfo> {
 		return Promise.resolve({
 			instanceId: 'someValue.instanceId',
@@ -951,8 +953,7 @@ export class SimpleWindowConfiguration implements IWindowConfiguration {
 	perfWindowLoadTime?: number;
 	perfEntries: ExportData;
 
-	filesToOpen?: IPath[];
-	filesToCreate?: IPath[];
+	filesToOpenOrCreate?: IPath[];
 	filesToDiff?: IPath[];
 	filesToWait?: IPathsToWaitFor;
 	termProgram?: string;
@@ -1363,10 +1364,7 @@ export class SimpleWorkspaceService implements IWorkspaceContextService {
 	readonly onDidChangeWorkbenchState = Event.None;
 
 	constructor() {
-		this.workspace = new Workspace(
-			workspaceResource.toString(),
-			toWorkspaceFolders([{ uri: workspaceResource.toString() }])
-		);
+		this.workspace = new Workspace(workspaceResource.toString(), [toWorkspaceFolder(workspaceResource)]);
 	}
 
 	getFolders(): IWorkspaceFolder[] {

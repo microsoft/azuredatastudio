@@ -6,7 +6,7 @@
 'use strict';
 import * as azdata from 'azdata';
 import * as assert from 'assert';
-import { RestoreViewModel } from 'sql/parts/disasterRecovery/restore/restoreViewModel';
+import { RestoreViewModel } from 'sql/workbench/parts/restore/browser/restoreViewModel';
 import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 suite('Restore Dialog view model tests', () => {

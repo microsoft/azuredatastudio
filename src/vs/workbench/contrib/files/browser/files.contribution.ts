@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { URI } from 'vs/base/common/uri';
+import { URI, UriComponents } from 'vs/base/common/uri';
 import { ViewletRegistry, Extensions as ViewletExtensions, ViewletDescriptor, ShowViewletAction } from 'vs/workbench/browser/viewlet';
 import * as nls from 'vs/nls';
 import { sep } from 'vs/base/common/path';
@@ -13,7 +13,7 @@ import { IConfigurationRegistry, Extensions as ConfigurationExtensions, Configur
 import { IWorkbenchActionRegistry, Extensions as ActionExtensions } from 'vs/workbench/common/actions';
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions, IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { IEditorInputFactory, EditorInput, IFileEditorInput, IEditorInputFactoryRegistry, Extensions as EditorInputExtensions } from 'vs/workbench/common/editor';
-import { AutoSaveConfiguration, HotExitConfiguration, SUPPORTED_ENCODINGS } from 'vs/platform/files/common/files';
+import { AutoSaveConfiguration, HotExitConfiguration } from 'vs/platform/files/common/files';
 import { VIEWLET_ID, SortOrderConfiguration, FILE_EDITOR_INPUT_ID, IExplorerService } from 'vs/workbench/contrib/files/common/files';
 import { FileEditorTracker } from 'vs/workbench/contrib/files/browser/editors/fileEditorTracker';
 import { SaveErrorHandler } from 'vs/workbench/contrib/files/browser/saveErrorHandler';
@@ -37,6 +37,8 @@ import { ILabelService } from 'vs/platform/label/common/label';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { ExplorerService } from 'vs/workbench/contrib/files/common/explorerService';
+import { SUPPORTED_ENCODINGS } from 'vs/workbench/services/textfile/common/textfiles';
+import { Schemas } from 'vs/base/common/network';
 
 // Viewlet Action
 export class OpenExplorerViewletAction extends ShowViewletAction {
@@ -58,7 +60,7 @@ class FileUriLabelContribution implements IWorkbenchContribution {
 
 	constructor(@ILabelService labelService: ILabelService) {
 		labelService.registerFormatter({
-			scheme: 'file',
+			scheme: Schemas.file,
 			formatting: {
 				label: '${authority}${path}',
 				separator: sep,
@@ -159,7 +161,7 @@ class FileEditorInputFactory implements IEditorInputFactory {
 	public deserialize(instantiationService: IInstantiationService, serializedEditorInput: string): FileEditorInput {
 		return instantiationService.invokeFunction<FileEditorInput>(accessor => {
 			const fileInput: ISerializedFileInput = JSON.parse(serializedEditorInput);
-			const resource = !!fileInput.resourceJSON ? URI.revive(fileInput.resourceJSON) : URI.parse(fileInput.resource);
+			const resource = !!fileInput.resourceJSON ? URI.revive(<UriComponents>fileInput.resourceJSON) : URI.parse(fileInput.resource);
 			const encoding = fileInput.encoding;
 
 			return accessor.get(IEditorService).createInput({ resource, encoding, forceFile: true }) as FileEditorInput;
@@ -306,6 +308,7 @@ configurationRegistry.registerConfiguration({
 		},
 		'files.hotExit': {
 			'type': 'string',
+			'scope': ConfigurationScope.APPLICATION,
 			'enum': [HotExitConfiguration.OFF, HotExitConfiguration.ON_EXIT, HotExitConfiguration.ON_EXIT_AND_WINDOW_CLOSE],
 			'default': HotExitConfiguration.ON_EXIT,
 			'markdownEnumDescriptions': [

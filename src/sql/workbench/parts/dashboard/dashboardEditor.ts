@@ -13,16 +13,17 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
 import { DashboardInput } from './dashboardInput';
 import { DashboardModule } from './dashboard.module';
-import { bootstrapAngular } from 'sql/services/bootstrap/bootstrapService';
-import { IDashboardComponentParams } from 'sql/services/bootstrap/bootstrapParams';
+import { bootstrapAngular } from 'sql/platform/bootstrap/node/bootstrapService';
+import { IDashboardComponentParams } from 'sql/platform/bootstrap/node/bootstrapParams';
 import { DASHBOARD_SELECTOR } from 'sql/workbench/parts/dashboard/dashboard.component';
-import { ConnectionContextKey } from 'sql/parts/connection/common/connectionContextKey';
+import { ConnectionContextKey } from 'sql/workbench/parts/connection/common/connectionContextKey';
 import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
+import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
 
 export class DashboardEditor extends BaseEditor {
 
@@ -37,7 +38,8 @@ export class DashboardEditor extends BaseEditor {
 		@IContextKeyService private _contextKeyService: IContextKeyService,
 		@IDashboardService private _dashboardService: IDashboardService,
 		@IConnectionManagementService private _connMan: IConnectionManagementService,
-		@IStorageService storageService: IStorageService
+		@IStorageService storageService: IStorageService,
+		@IQueryManagementService private queryManagementService: IQueryManagementService
 	) {
 		super(DashboardEditor.ID, telemetryService, themeService, storageService);
 	}
@@ -112,7 +114,7 @@ export class DashboardEditor extends BaseEditor {
 		const serverInfo = this._connMan.getConnectionInfo(this.input.uri).serverInfo;
 		this._dashboardService.changeToDashboard({ profile, serverInfo });
 		const scopedContextService = this._contextKeyService.createScoped(input.container);
-		const connectionContextKey = new ConnectionContextKey(scopedContextService);
+		const connectionContextKey = new ConnectionContextKey(scopedContextService, this.queryManagementService);
 		connectionContextKey.set(input.connectionProfile);
 
 		const params: IDashboardComponentParams = {

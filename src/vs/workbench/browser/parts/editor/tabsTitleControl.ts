@@ -42,10 +42,11 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { BreadcrumbsControl } from 'vs/workbench/browser/parts/editor/breadcrumbsControl';
 import { IFileService } from 'vs/platform/files/common/files';
 import { withNullAsUndefined } from 'vs/base/common/types';
+import { ILabelService } from 'vs/platform/label/common/label';
 
 // {{SQL CARBON EDIT}} -- Display the editor's tab color
 import { ICommandService } from 'vs/platform/commands/common/commands';
-import * as QueryConstants from 'sql/parts/query/common/constants';
+import * as QueryConstants from 'sql/workbench/parts/query/common/constants';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import { GlobalNewUntitledFileAction } from 'vs/workbench/contrib/files/browser/fileActions';
 // {{SQL CARBON EDIT}} -- End
@@ -94,8 +95,9 @@ export class TabsTitleControl extends TitleControl {
 		// {{SQL CARBON EDIT}} -- Display the editor's tab color
 		@ICommandService private commandService: ICommandService,
 		// {{SQL CARBON EDIT}} -- End
+		@ILabelService labelService: ILabelService
 	) {
-		super(parent, accessor, group, contextMenuService, instantiationService, contextKeyService, keybindingService, telemetryService, notificationService, menuService, quickOpenService, themeService, extensionService, configurationService, fileService);
+		super(parent, accessor, group, contextMenuService, instantiationService, contextKeyService, keybindingService, telemetryService, notificationService, menuService, quickOpenService, themeService, extensionService, configurationService, fileService, labelService);
 	}
 
 	protected create(parent: HTMLElement): void {
@@ -368,6 +370,12 @@ export class TabsTitleControl extends TitleControl {
 	}
 
 	updateEditorLabel(editor: IEditorInput): void {
+
+		// Update all labels to account for changes to tab labels
+		this.updateEditorLabels();
+	}
+
+	updateEditorLabels(): void {
 
 		// A change to a label requires to recompute all labels
 		this.computeTabLabels();

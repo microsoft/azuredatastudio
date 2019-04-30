@@ -3,17 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as interfaces from 'sql/platform/connection/common/interfaces';
 
 /**
  * Sets sensible defaults for key connection properties, especially
  * if connection to Azure
  *
- * @export connectionInfo/fixupConnectionCredentials
- * @param {interfaces.IConnectionCredentials} connCreds connection to be fixed up
- * @returns {interfaces.IConnectionCredentials} the updated connection
+ * @param connCreds connection to be fixed up
+ * @returns the updated connection
  */
 export function fixupConnectionCredentials(connCreds: interfaces.IConnectionProfile): interfaces.IConnectionProfile {
 	if (!connCreds.serverName) {

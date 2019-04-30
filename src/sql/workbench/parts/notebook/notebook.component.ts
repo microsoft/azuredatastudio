@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------------------------
-*  Copyright (c) Microsoft Corporation. All rights reserved.
-*  Licensed under the Source EULA. See License.txt in the project root for license information.
-*--------------------------------------------------------------------------------------------*/
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
 import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnDestroy } from '@angular/core';
 
@@ -25,7 +25,7 @@ import { CellTypes, CellType } from 'sql/workbench/parts/notebook/models/contrac
 import { ICellModel, IModelFactory, INotebookModel, NotebookContentChange } from 'sql/workbench/parts/notebook/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { INotebookService, INotebookParams, INotebookManager, INotebookEditor, DEFAULT_NOTEBOOK_PROVIDER, SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/common/notebookService';
-import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
+import { IBootstrapParams } from 'sql/platform/bootstrap/node/bootstrapService';
 import { NotebookModel } from 'sql/workbench/parts/notebook/models/notebookModel';
 import { ModelFactory } from 'sql/workbench/parts/notebook/models/modelFactory';
 import * as notebookUtils from 'sql/workbench/parts/notebook/notebookUtils';
@@ -185,7 +185,9 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			cell.trustedMode = isTrusted;
 		});
 		//Updates dirty state
-		this._notebookParams.input && this._notebookParams.input.updateModel();
+		if (this._notebookParams.input) {
+			this._notebookParams.input.updateModel();
+		}
 		this.detectChanges();
 	}
 
@@ -222,7 +224,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		try {
 			await this.setNotebookManager();
 			await this.loadModel();
-			this.setLoading(false);
 			this._modelReadyDeferred.resolve(this._model);
 		} catch (error) {
 			this.setViewInErrorState(localize('displayFailed', 'Could not display contents: {0}', notebookUtils.getErrorMessage(error)));
@@ -260,6 +261,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		model.contentChanged((change) => this.handleContentChanged(change));
 		model.onProviderIdChange((provider) => this.handleProviderIdChanged(provider));
 		this._model = this._register(model);
+		this.setLoading(false);
 		this.updateToolbarComponents(this._model.trustedMode);
 		this._modelRegisteredDeferred.resolve(this._model);
 		await model.startSession(this.model.notebookManager, undefined, true);
@@ -478,6 +480,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		await this.modelReady;
 		let uriString = cell.cellUri.toString();
 		if (this._model.cells.findIndex(c => c.cellUri.toString() === uriString) > -1) {
+			this.selectCell(cell);
 			return cell.runCell(this.notificationService, this.connectionManagementService);
 		} else {
 			return Promise.reject(new Error(localize('cellNotFound', 'cell with URI {0} was not found in this model', uriString)));

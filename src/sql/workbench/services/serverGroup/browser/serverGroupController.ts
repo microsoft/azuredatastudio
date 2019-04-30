@@ -8,12 +8,12 @@ import Severity from 'vs/base/common/severity';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
-import { SERVER_GROUP_CONFIG, SERVER_GROUP_COLORS_CONFIG } from 'sql/parts/objectExplorer/serverGroupDialog/serverGroup.contribution';
+import { SERVER_GROUP_CONFIG, SERVER_GROUP_COLORS_CONFIG } from 'sql/workbench/parts/objectExplorer/common/serverGroup.contribution';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { IServerGroupController, IServerGroupDialogCallbacks } from 'sql/platform/serverGroup/common/serverGroupController';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { ServerGroupDialog } from 'sql/parts/objectExplorer/serverGroupDialog/serverGroupDialog';
-import { ServerGroupViewModel } from 'sql/parts/objectExplorer/serverGroupDialog/serverGroupViewModel';
+import { ServerGroupDialog } from 'sql/workbench/parts/objectExplorer/browser/serverGroupDialog';
+import { ServerGroupViewModel } from 'sql/workbench/parts/objectExplorer/common/serverGroupViewModel';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 
 export class ServerGroupController implements IServerGroupController {

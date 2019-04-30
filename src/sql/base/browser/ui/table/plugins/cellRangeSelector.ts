@@ -1,3 +1,8 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { mixin } from 'vs/base/common/objects';
 
 const defaultOptions: ICellRangeSelectorOptions = {
@@ -36,7 +41,7 @@ export class CellRangeSelector<T> implements ICellRangeSelector<T> {
 	private handler = new Slick.EventHandler();
 	private decorator: ICellRangeDecorator;
 	private canvas: HTMLCanvasElement;
-	private currentlySelectedRange: { start: Slick.Cell, end: Slick.Cell };
+	private currentlySelectedRange: { start: Slick.Cell, end?: Slick.Cell };
 
 	public onBeforeCellRangeSelected = new Slick.Event<Slick.Cell>();
 	public onCellRangeSelected = new Slick.Event<{ range: Slick.Range }>();
@@ -87,7 +92,7 @@ export class CellRangeSelector<T> implements ICellRangeSelector<T> {
 			return;
 		}
 
-		this.canvas.classList.add(this.options.dragClass);
+		this.canvas.classList.add(this.options.dragClass!);
 
 		this.grid.setActiveCell(cell.row, cell.cell);
 
@@ -125,7 +130,7 @@ export class CellRangeSelector<T> implements ICellRangeSelector<T> {
 			return;
 		}
 
-		this.canvas.classList.remove(this.options.dragClass);
+		this.canvas.classList.remove(this.options.dragClass!);
 		this.dragging = false;
 		e.stopImmediatePropagation();
 		this.decorator.hide();

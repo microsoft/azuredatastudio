@@ -6,21 +6,12 @@
 'use strict';
 
 const gulp = require('gulp');
-const json = require('gulp-json-editor');
-const buffer = require('gulp-buffer');
-const filter = require('gulp-filter');
-const es = require('event-stream');
-const vfs = require('vinyl-fs');
-const pkg = require('../package.json');
-const cp = require('child_process');
-const fancyLog = require('fancy-log');
-const ansiColors = require('ansi-colors');
 
 // {{SQL CARBON EDIT}}
 const jeditor = require('gulp-json-editor');
 
 gulp.task('mixin', function () {
-  // {{SQL CARBON EDIT}}
+	// {{SQL CARBON EDIT}}
 	const updateUrl = process.env['SQLOPS_UPDATEURL'];
 	if (!updateUrl) {
 		console.log('Missing SQLOPS_UPDATEURL, skipping mixin');

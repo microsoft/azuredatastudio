@@ -4,12 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as ConnectionConstants from 'sql/platform/connection/common/constants';
-import * as Constants from 'sql/parts/query/common/constants';
-import * as LocalizedConstants from 'sql/parts/query/common/localizedConstants';
+import * as Constants from 'sql/workbench/parts/query/common/constants';
+import * as LocalizedConstants from 'sql/workbench/parts/query/common/localizedConstants';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import { SaveResultsRequestParams } from 'azdata';
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
-import { ISaveRequest, SaveFormat } from 'sql/parts/grid/common/interfaces';
+import { ISaveRequest, SaveFormat } from 'sql/workbench/parts/grid/common/interfaces';
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
@@ -396,14 +396,14 @@ export class ResultSerializer {
 
 		this._editorService.openEditor(input, { pinned: true })
 			.then(
-			(success) => {
-			},
-			(error: any) => {
-				this._notificationService.notify({
-					severity: Severity.Error,
-					message: error
-				});
-			}
+				(success) => {
+				},
+				(error: any) => {
+					this._notificationService.notify({
+						severity: Severity.Error,
+						message: error
+					});
+				}
 			);
 	}
 }

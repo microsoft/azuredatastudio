@@ -1,5 +1,3 @@
-'use strict';
-
 // This code is originally from https://github.com/DonJayamanne/bowerVSCode
 // License: https://github.com/DonJayamanne/bowerVSCode/blob/master/LICENSE
 
@@ -39,7 +37,7 @@ export default class ExpandPrompt extends Prompt {
 			});
 	}
 	private renderNameValueChoice(choices: INameValueChoice[]): any {
-		const choiceMap = this._question.choices.reduce((result, choice) => {
+		const choiceMap = this._question.choices.reduce((result: any, choice: any) => {
 			result[choice.name] = choice.value;
 			return result;
 		}, {});

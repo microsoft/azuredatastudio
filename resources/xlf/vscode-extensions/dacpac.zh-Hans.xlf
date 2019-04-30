@@ -1,0 +1,331 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/dacpac/out/wizard/pages/selectOperationpage" source-language="en" target-language="zh-Hans" datatype="plaintext">
+    <body>
+      <trans-unit id="dacFx.deployRadioButtonLabel">
+        <source xml:lang="en">Deploy a data-tier application .dacpac file to an instance of SQL Server [Deploy Dacpac]</source>
+        <target state="translated">将数据层应用程序 .dacpac 文件部署到 SQL Server 的实例 [部署 Dacpac]</target>
+      </trans-unit>
+      <trans-unit id="dacFx.extractRadioButtonLabel">
+        <source xml:lang="en">Extract a data-tier application from an instance of SQL Server to a .dacpac file [Extract Dacpac]</source>
+        <target state="translated">将数据层应用程序从 SQL Server 实例提取到 .dacpac 文件 [提取 Dacpac]</target>
+      </trans-unit>
+      <trans-unit id="dacFx.importRadioButtonLabel">
+        <source xml:lang="en">Create a database from a .bacpac file [Import Bacpac]</source>
+        <target state="translated">基于 .bacpac 文件创建数据库 [导入 Bacpac]</target>
+      </trans-unit>
+      <trans-unit id="dacFx.exportRadioButtonLabel">
+        <source xml:lang="en">Export the schema and data from a database to the logical .bacpac file format [Export Bacpac]</source>
+        <target state="translated">将架构和数据从数据库导出到逻辑 .bacpac 文件格式 [导出 Bacpac]</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/dacpac/out/wizard/pages/importConfigPage" source-language="en" target-language="zh-Hans" datatype="plaintext">
+    <body>
+      <trans-unit id="dacFxImport.openFile">
+        <source xml:lang="en">Open</source>
+        <target state="translated">打开</target>
+      </trans-unit>
+      <trans-unit id="dacFxImport.fileTextboxTitle">
+        <source xml:lang="en">File Location</source>
+        <target state="translated">文件位置</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/dacpac/out/wizard/pages/extractConfigPage" source-language="en" target-language="zh-Hans" datatype="plaintext">
+    <body>
+      <trans-unit id="dacfxExtract.saveFile">
+        <source xml:lang="en">Save</source>
+        <target state="translated">保存</target>
+      </trans-unit>
+      <trans-unit id="dacFxExtract.fileTextboxTitle">
+        <source xml:lang="en">File Location</source>
+        <target state="translated">文件位置</target>
+      </trans-unit>
+      <trans-unit id="dacFxExtract.versionTextboxTitle">
+        <source xml:lang="en">Version (use x.x.x.x where x is a number)</source>
+        <target state="translated">版本(采用 x.x.x.x 格式，x 表示数字)</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/dacpac/out/wizard/pages/exportConfigPage" source-language="en" target-language="zh-Hans" datatype="plaintext">
+    <body>
+      <trans-unit id="dacfxExport.saveFile">
+        <source xml:lang="en">Save</source>
+        <target state="translated">保存</target>
+      </trans-unit>
+      <trans-unit id="dacFxExport.fileTextboxTitle">
+        <source xml:lang="en">File Location</source>
+        <target state="translated">文件位置</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/dacpac/out/wizard/pages/deployPlanPage" source-language="en" target-language="zh-Hans" datatype="plaintext">
+    <body>
+      <trans-unit id="dacfx.dataLossTextWithCount">
+        <source xml:lang="en">{0} of the deploy actions listed may result in data loss. Please ensure you have a backup or snapshot available in the event of an issue with the deployment.</source>
+        <target state="translated">列出的部署操作的 {0} 可能会导致数据丢失。请确保在部署出现问题的情况下，你有备份或快照可用。</target>
+      </trans-unit>
+      <trans-unit id="dacFx.dataLossCheckbox">
+        <source xml:lang="en">Proceed despite possible data loss</source>
+        <target state="translated">尽管可能会丢失数据，仍要继续</target>
+      </trans-unit>
+      <trans-unit id="dacfx.noDataLossText">
+        <source xml:lang="en">No data loss will occur from the listed deploy actions.</source>
+        <target state="translated">列出的部署操作不会导致数据丢失。</target>
+      </trans-unit>
+      <trans-unit id="dacfx.dataLossText">
+        <source xml:lang="en">The deploy actions may result in data loss. Please ensure you have a backup or snapshot available in the event of an issue with the deployment.</source>
+        <target state="translated">部署操作可能会导致数据丢失。请确保在部署出现问题的情况下，你有备份或快照可用。</target>
+      </trans-unit>
+      <trans-unit id="dacfx.operationColumn">
+        <source xml:lang="en">Operation</source>
+        <target state="translated">操作</target>
+      </trans-unit>
+      <trans-unit id="dacfx.operationTooltip">
+        <source xml:lang="en">Operation(Create, Alter, Delete) that will occur during deployment</source>
+        <target state="translated">部署过程中将发生的操作(创建、更改、删除)</target>
+      </trans-unit>
+      <trans-unit id="dacfx.typeColumn">
+        <source xml:lang="en">Type</source>
+        <target state="translated">类型</target>
+      </trans-unit>
+      <trans-unit id="dacfx.typeTooltip">
+        <source xml:lang="en">Type of object that will be affected by deployment</source>
+        <target state="translated">将受部署影响的对象类型</target>
+      </trans-unit>
+      <trans-unit id="dacfx.objectColumn">
+        <source xml:lang="en">Object</source>
+        <target state="translated">对象</target>
+      </trans-unit>
+      <trans-unit id="dacfx.objecTooltip">
+        <source xml:lang="en">Name of object that will be affected by deployment</source>
+        <target state="translated">将受部署影响的对象的名称</target>
+      </trans-unit>
+      <trans-unit id="dacfx.dataLossColumn">
+        <source xml:lang="en">Data Loss</source>
+        <target state="translated">数据丢失</target>
+      </trans-unit>
+      <trans-unit id="dacfx.dataLossTooltip">
+        <source xml:lang="en">Operations that may result in data loss are marked with a warning sign</source>
+        <target state="translated">将对可能导致数据丢失的操作标记警告符号</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/dacpac/out/wizard/pages/deployConfigPage" source-language="en" target-language="zh-Hans" datatype="plaintext">
+    <body>
+      <trans-unit id="dacFx.databaseNameTextBox">
+        <source xml:lang="en">Database Name</source>
+        <target state="translated">数据库名称</target>
+      </trans-unit>
+      <trans-unit id="dacFx.databaseNameDropdown">
+        <source xml:lang="en">Database Name</source>
+        <target state="translated">数据库名称</target>
+      </trans-unit>
+      <trans-unit id="dacFxDeploy.openFile">
+        <source xml:lang="en">Open</source>
+        <target state="translated">打开</target>
+      </trans-unit>
+      <trans-unit id="dacFxDeploy.fileTextboxTitle">
+        <source xml:lang="en">File Location</source>
+        <target state="translated">文件位置</target>
+      </trans-unit>
+      <trans-unit id="dacFx.upgradeRadioButtonLabel">
+        <source xml:lang="en">Upgrade Existing Database</source>
+        <target state="translated">升级现有数据库</target>
+      </trans-unit>
+      <trans-unit id="dacFx.newRadioButtonLabel">
+        <source xml:lang="en">New Database</source>
+        <target state="translated">新数据库</target>
+      </trans-unit>
+      <trans-unit id="dacFx.targetDatabaseRadioButtonsTitle">
+        <source xml:lang="en">Target Database</source>
+        <target state="translated">目标数据库</target>
+      </trans-unit>
+      <trans-unit id="dacFx.targetDatabaseDropdownTitle">
+        <source xml:lang="en">Database Name</source>
+        <target state="translated">数据库名称</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/dacpac/out/wizard/pages/deployActionPage" source-language="en" target-language="zh-Hans" datatype="plaintext">
+    <body>
+      <trans-unit id="dacFx.deployRadioButtonLabel">
+        <source xml:lang="en">Deploy</source>
+        <target state="translated">部署</target>
+      </trans-unit>
+      <trans-unit id="dacFx.deployScriptRadioButtonLabel">
+        <source xml:lang="en">Generate Deployment Script and Deploy</source>
+        <target state="translated">生成部署脚本并进行部署</target>
+      </trans-unit>
+      <trans-unit id="dacFx.scriptRadioButtonLabel">
+        <source xml:lang="en">Generate Deployment Script</source>
+        <target state="translated">生成部署脚本</target>
+      </trans-unit>
+      <trans-unit id="dacfxDeployScript.saveFile">
+        <source xml:lang="en">Save</source>
+        <target state="translated">保存</target>
+      </trans-unit>
+      <trans-unit id="dacfx.generatedScriptLocation">
+        <source xml:lang="en">Deployment Script Location</source>
+        <target state="translated">部署脚本位置</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/dacpac/out/wizard/pages/dacFxSummaryPage" source-language="en" target-language="zh-Hans" datatype="plaintext">
+    <body>
+      <trans-unit id="dacfx.targetServerName">
+        <source xml:lang="en">Target Server</source>
+        <target state="translated">目标服务器</target>
+      </trans-unit>
+      <trans-unit id="dacfx.targetDatabaseName">
+        <source xml:lang="en">Target Database</source>
+        <target state="translated">目标数据库</target>
+      </trans-unit>
+      <trans-unit id="dacfx.sourceServerName">
+        <source xml:lang="en">Source Server</source>
+        <target state="translated">源服务器</target>
+      </trans-unit>
+      <trans-unit id="dacfx.sourceDatabaseName">
+        <source xml:lang="en">Source Database</source>
+        <target state="translated">源数据库</target>
+      </trans-unit>
+      <trans-unit id="dacfx.fileLocation">
+        <source xml:lang="en">File Location</source>
+        <target state="translated">文件位置</target>
+      </trans-unit>
+      <trans-unit id="dacfx.scriptLocation">
+        <source xml:lang="en">Deployment Script Location</source>
+        <target state="translated">部署脚本位置</target>
+      </trans-unit>
+      <trans-unit id="dacfx.action">
+        <source xml:lang="en">Action</source>
+        <target state="translated">操作</target>
+      </trans-unit>
+      <trans-unit id="dacfx.deploy">
+        <source xml:lang="en">Deploy</source>
+        <target state="translated">部署</target>
+      </trans-unit>
+      <trans-unit id="dacfx.generateScript">
+        <source xml:lang="en">Generate Deployment Script</source>
+        <target state="translated">生成部署脚本</target>
+      </trans-unit>
+      <trans-unit id="dacfxExtract.version">
+        <source xml:lang="en">Version</source>
+        <target state="translated">版本</target>
+      </trans-unit>
+      <trans-unit id="dacfx.settingColumn">
+        <source xml:lang="en">Setting</source>
+        <target state="translated">设置</target>
+      </trans-unit>
+      <trans-unit id="dacfx.valueColumn">
+        <source xml:lang="en">Value</source>
+        <target state="translated">值</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/dacpac/out/wizard/api/dacFxConfigPage" source-language="en" target-language="zh-Hans" datatype="plaintext">
+    <body>
+      <trans-unit id="dacFx.targetServerDropdownTitle">
+        <source xml:lang="en">Target Server</source>
+        <target state="translated">目标服务器</target>
+      </trans-unit>
+      <trans-unit id="dacFx.sourceServerDropdownTitle">
+        <source xml:lang="en">Source Server</source>
+        <target state="translated">源服务器</target>
+      </trans-unit>
+      <trans-unit id="dacFx.databaseNameTextBox">
+        <source xml:lang="en">Target Database</source>
+        <target state="translated">目标数据库</target>
+      </trans-unit>
+      <trans-unit id="dacFx.sourceDatabaseDropdownTitle">
+        <source xml:lang="en">Source Database</source>
+        <target state="translated">源数据库</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/dacpac/out/wizard/dataTierApplicationWizard" source-language="en" target-language="zh-Hans" datatype="plaintext">
+    <body>
+      <trans-unit id="dacfx.needConnection">
+        <source xml:lang="en">Please connect to a server before using this wizard.</source>
+        <target state="translated">请在使用此向导之前连接到服务器。</target>
+      </trans-unit>
+      <trans-unit id="dacFx.selectOperationPageName">
+        <source xml:lang="en">Select an Operation</source>
+        <target state="translated">选择操作</target>
+      </trans-unit>
+      <trans-unit id="dacFx.deployConfigPageName">
+        <source xml:lang="en">Select Deploy Dacpac Settings</source>
+        <target state="translated">选择“部署 Dacpac 设置”</target>
+      </trans-unit>
+      <trans-unit id="dacFx.deployPlanPage">
+        <source xml:lang="en">Review the deploy plan</source>
+        <target state="translated">查看部署计划</target>
+      </trans-unit>
+      <trans-unit id="dacFx.deployActionPageName">
+        <source xml:lang="en">Select Action</source>
+        <target state="translated">选择操作</target>
+      </trans-unit>
+      <trans-unit id="dacFx.summaryPageName">
+        <source xml:lang="en">Summary</source>
+        <target state="translated">摘要</target>
+      </trans-unit>
+      <trans-unit id="dacFx.extractConfigPageName">
+        <source xml:lang="en">Select Extract Dacpac Settings</source>
+        <target state="translated">选择“提取 Dacpac 设置”</target>
+      </trans-unit>
+      <trans-unit id="dacFx.importConfigPageName">
+        <source xml:lang="en">Select Import Bacpac Settings</source>
+        <target state="translated">选择“导入 Bacpac 设置”</target>
+      </trans-unit>
+      <trans-unit id="dacFx.exportConfigPageName">
+        <source xml:lang="en">Select Export Bacpac Settings</source>
+        <target state="translated">选择“导出 Bacpac 设置”</target>
+      </trans-unit>
+      <trans-unit id="dacFx.deployButton">
+        <source xml:lang="en">Deploy</source>
+        <target state="translated">部署</target>
+      </trans-unit>
+      <trans-unit id="dacFx.extractButton">
+        <source xml:lang="en">Extract</source>
+        <target state="translated">提取</target>
+      </trans-unit>
+      <trans-unit id="dacFx.importButton">
+        <source xml:lang="en">Import</source>
+        <target state="translated">导入</target>
+      </trans-unit>
+      <trans-unit id="dacFx.exportButton">
+        <source xml:lang="en">Export</source>
+        <target state="translated">导出</target>
+      </trans-unit>
+      <trans-unit id="dacFx.generateScriptButton">
+        <source xml:lang="en">Generate Script</source>
+        <target state="translated">生成脚本</target>
+      </trans-unit>
+      <trans-unit id="alertData.deployErrorMessage">
+        <source xml:lang="en">Deploy failed '{0}'</source>
+        <target state="translated">部署失败的“{0}”</target>
+      </trans-unit>
+      <trans-unit id="alertData.extractErrorMessage">
+        <source xml:lang="en">Extract failed '{0}'</source>
+        <target state="translated">提取失败的“{0}”</target>
+      </trans-unit>
+      <trans-unit id="alertData.exportErrorMessage">
+        <source xml:lang="en">Export failed '{0}'</source>
+        <target state="translated">导出失败的“{0}”</target>
+      </trans-unit>
+      <trans-unit id="alertData.importErrorMessage">
+        <source xml:lang="en">Import failed '{0}'</source>
+        <target state="translated">导入失败的“{0}”</target>
+      </trans-unit>
+      <trans-unit id="dacfx.scriptGeneratingMessage">
+        <source xml:lang="en">You can view the status of script generation in the Task History once the wizard is closed</source>
+        <target state="translated">向导关闭后，可在“任务历史记录”中查看脚本生成的状态</target>
+      </trans-unit>
+      <trans-unit id="alertData.deployPlanErrorMessage">
+        <source xml:lang="en">Generating deploy plan failed '{0}'</source>
+        <target state="translated">部署计划生成失败“{0}”</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

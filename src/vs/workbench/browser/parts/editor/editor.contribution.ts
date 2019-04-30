@@ -5,7 +5,7 @@
 
 import { Registry } from 'vs/platform/registry/common/platform';
 import * as nls from 'vs/nls';
-import { URI } from 'vs/base/common/uri';
+import { URI, UriComponents } from 'vs/base/common/uri';
 import { Action, IAction } from 'vs/base/common/actions';
 import { IEditorQuickOpenEntry, IQuickOpenRegistry, Extensions as QuickOpenExtensions, QuickOpenHandlerDescriptor } from 'vs/workbench/browser/quickopen';
 import { StatusbarItemDescriptor, IStatusbarRegistry, Extensions as StatusExtensions } from 'vs/workbench/browser/parts/statusbar/statusbar';
@@ -47,7 +47,6 @@ import { KeybindingsRegistry, KeybindingWeight } from 'vs/platform/keybinding/co
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { isMacintosh } from 'vs/base/common/platform';
 import { AllEditorsPicker, ActiveEditorGroupPicker } from 'vs/workbench/browser/parts/editor/editorPicker';
-import { Schemas } from 'vs/base/common/network';
 import { registerEditorContribution } from 'vs/editor/browser/editorExtensions';
 import { OpenWorkspaceButtonContribution } from 'vs/workbench/browser/parts/editor/editorWidgets';
 import { ZoomStatusbarItem } from 'vs/workbench/browser/parts/editor/resourceViewer';
@@ -124,7 +123,7 @@ class UntitledEditorInputFactory implements IEditorInputFactory {
 
 		const untitledEditorInput = <UntitledEditorInput>editorInput;
 
-		// {{SQL CARBON EDIT}}
+		// {{SQL CARBON EDIT}} @todo anthonydresser 4/12/19 investigate
 		if (!untitledEditorInput.getResource()) {
 			return undefined;
 		}
@@ -147,12 +146,11 @@ class UntitledEditorInputFactory implements IEditorInputFactory {
 	deserialize(instantiationService: IInstantiationService, serializedEditorInput: string): UntitledEditorInput {
 		return instantiationService.invokeFunction<UntitledEditorInput>(accessor => {
 			const deserialized: ISerializedUntitledEditorInput = JSON.parse(serializedEditorInput);
-			const resource = !!deserialized.resourceJSON ? URI.revive(deserialized.resourceJSON) : URI.parse(deserialized.resource);
-			const filePath = resource.scheme === Schemas.untitled ? undefined : resource.scheme === Schemas.file ? resource.fsPath : resource.path;
+			const resource = !!deserialized.resourceJSON ? URI.revive(<UriComponents>deserialized.resourceJSON) : URI.parse(deserialized.resource);
 			const language = deserialized.modeId;
 			const encoding = deserialized.encoding;
 
-			return accessor.get(IEditorService).createInput({ resource, filePath, language, encoding }) as UntitledEditorInput;
+			return accessor.get(IEditorService).createInput({ resource, language, encoding, forceUntitled: true }) as UntitledEditorInput;
 		});
 	}
 }

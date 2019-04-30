@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as types from 'vs/base/common/types';
@@ -13,19 +12,19 @@ import * as azdata from 'azdata';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IRestoreService, IRestoreDialogController, TaskExecutionMode } from 'sql/platform/restore/common/restoreService';
 import { OptionsDialog } from 'sql/workbench/browser/modal/optionsDialog';
-import { RestoreDialog } from 'sql/parts/disasterRecovery/restore/restoreDialog';
+import { RestoreDialog } from 'sql/workbench/parts/restore/browser/restoreDialog';
 import * as ConnectionConstants from 'sql/platform/connection/common/constants';
 import { MssqlRestoreInfo } from 'sql/platform/restore/common/mssqlRestoreInfo';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ProviderConnectionInfo } from 'sql/platform/connection/common/providerConnectionInfo';
 import * as Utils from 'sql/platform/connection/common/utils';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
-import { ITaskService } from 'sql/platform/taskHistory/common/taskService';
-import { TaskStatus, TaskNode } from 'sql/parts/taskHistory/common/taskNode';
-import * as Constants from 'sql/common/constants';
-import * as TelemetryKeys from 'sql/common/telemetryKeys';
-import * as TelemetryUtils from 'sql/common/telemetryUtilities';
+import { ITaskService } from 'sql/platform/tasks/common/tasksService';
+import { TaskStatus, TaskNode } from 'sql/platform/tasks/common/tasksNode';
+import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
+import * as TelemetryUtils from 'sql/platform/telemetry/telemetryUtilities';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { invalidProvider } from 'sql/base/common/errors';
 
 export class RestoreService implements IRestoreService {
 
@@ -43,7 +42,7 @@ export class RestoreService implements IRestoreService {
 	 */
 	getRestoreConfigInfo(connectionUri: string): Thenable<azdata.RestoreConfigInfo> {
 		return new Promise<azdata.RestoreConfigInfo>((resolve, reject) => {
-			let providerResult = this.getProvider(connectionUri);
+			const providerResult = this.getProvider(connectionUri);
 			if (providerResult) {
 				providerResult.provider.getRestoreConfigInfo(connectionUri).then(result => {
 					resolve(result);
@@ -51,7 +50,7 @@ export class RestoreService implements IRestoreService {
 					reject(error);
 				});
 			} else {
-				reject(Constants.InvalidProvider);
+				reject(invalidProvider());
 			}
 		});
 	}
@@ -61,7 +60,7 @@ export class RestoreService implements IRestoreService {
 	 */
 	restore(connectionUri: string, restoreInfo: azdata.RestoreInfo): Thenable<azdata.RestoreResponse> {
 		return new Promise<azdata.RestoreResponse>((resolve, reject) => {
-			let providerResult = this.getProvider(connectionUri);
+			const providerResult = this.getProvider(connectionUri);
 			if (providerResult) {
 				TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.RestoreRequested, { provider: providerResult.providerName });
 				providerResult.provider.restore(connectionUri, restoreInfo).then(result => {
@@ -70,7 +69,7 @@ export class RestoreService implements IRestoreService {
 					reject(error);
 				});
 			} else {
-				reject(Constants.InvalidProvider);
+				reject(invalidProvider);
 			}
 		});
 	}
@@ -89,7 +88,7 @@ export class RestoreService implements IRestoreService {
 	 */
 	getRestorePlan(connectionUri: string, restoreInfo: azdata.RestoreInfo): Thenable<azdata.RestorePlanResponse> {
 		return new Promise<azdata.RestorePlanResponse>((resolve, reject) => {
-			let providerResult = this.getProvider(connectionUri);
+			const providerResult = this.getProvider(connectionUri);
 			if (providerResult) {
 				providerResult.provider.getRestorePlan(connectionUri, restoreInfo).then(result => {
 					resolve(result);
@@ -97,7 +96,7 @@ export class RestoreService implements IRestoreService {
 					reject(error);
 				});
 			} else {
-				reject(Constants.InvalidProvider);
+				reject(invalidProvider);
 
 			}
 		});
@@ -108,7 +107,7 @@ export class RestoreService implements IRestoreService {
 	 */
 	cancelRestorePlan(connectionUri: string, restoreInfo: azdata.RestoreInfo): Thenable<boolean> {
 		return new Promise<boolean>((resolve, reject) => {
-			let providerResult = this.getProvider(connectionUri);
+			const providerResult = this.getProvider(connectionUri);
 			if (providerResult) {
 				providerResult.provider.cancelRestorePlan(connectionUri, restoreInfo).then(result => {
 					resolve(result);
@@ -116,7 +115,7 @@ export class RestoreService implements IRestoreService {
 					reject(error);
 				});
 			} else {
-				reject(Constants.InvalidProvider);
+				reject(invalidProvider);
 
 			}
 		});

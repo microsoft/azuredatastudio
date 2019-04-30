@@ -1,12 +1,13 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { Client, PersistentProtocol, ISocket } from 'vs/base/parts/ipc/common/ipc.net';
 import { generateUuid } from 'vs/base/common/uuid';
 import { RemoteAgentConnectionContext } from 'vs/platform/remote/common/remoteAgentEnvironment';
 import { Disposable } from 'vs/base/common/lifecycle';
+import { Emitter } from 'vs/base/common/event';
 
 export const enum ConnectionType {
 	Management = 1,
@@ -147,7 +148,37 @@ export async function connectRemoteAgentTunnel(options: IConnectionOptions, tunn
 	return protocol;
 }
 
+export const enum PersistenConnectionEventType {
+	ConnectionLost,
+	ReconnectionWait,
+	ReconnectionRunning,
+	ReconnectionPermanentFailure,
+	ConnectionGain
+}
+export class ConnectionLostEvent {
+	public readonly type = PersistenConnectionEventType.ConnectionLost;
+}
+export class ReconnectionWaitEvent {
+	public readonly type = PersistenConnectionEventType.ReconnectionWait;
+	constructor(
+		public readonly durationSeconds: number
+	) { }
+}
+export class ReconnectionRunningEvent {
+	public readonly type = PersistenConnectionEventType.ReconnectionRunning;
+}
+export class ConnectionGainEvent {
+	public readonly type = PersistenConnectionEventType.ConnectionGain;
+}
+export class ReconnectionPermanentFailureEvent {
+	public readonly type = PersistenConnectionEventType.ReconnectionPermanentFailure;
+}
+export type PersistenConnectionEvent = ConnectionLostEvent | ReconnectionWaitEvent | ReconnectionRunningEvent | ConnectionGainEvent | ReconnectionPermanentFailureEvent;
+
 abstract class PersistentConnection extends Disposable {
+
+	private readonly _onDidStateChange = this._register(new Emitter<PersistenConnectionEvent>());
+	public readonly onDidStateChange = this._onDidStateChange.event;
 
 	protected readonly _options: IConnectionOptions;
 	public readonly reconnectionToken: string;

@@ -1214,12 +1214,23 @@ export interface Command {
 /**
  * @internal
  */
+export interface CommentThreadTemplate {
+	label: string;
+	acceptInputCommand?: Command;
+	additionalCommands?: Command[];
+	deleteCommand?: Command;
+}
+
+/**
+ * @internal
+ */
 export interface CommentInfo {
 	extensionId?: string;
 	threads: CommentThread[];
 	commentingRanges?: (IRange[] | CommentingRanges);
 	reply?: Command;
 	draftMode?: DraftMode;
+	template?: CommentThreadTemplate;
 }
 
 /**
@@ -1288,6 +1299,7 @@ export interface CommentThread2 {
 	onDidChangeRange: Event<IRange>;
 	onDidChangeLabel: Event<string>;
 	onDidChangeCollasibleState: Event<CommentThreadCollapsibleState | undefined>;
+	isDisposed: boolean;
 }
 
 /**
@@ -1297,8 +1309,7 @@ export interface CommentThread2 {
 export interface CommentingRanges {
 	readonly resource: URI;
 	ranges: IRange[];
-	newCommentThreadCommand?: Command;
-	newCommentThreadCallback?: (uri: UriComponents, range: IRange) => Promise<void>;
+	newCommentThreadCallback?: (uri: UriComponents, range: IRange) => Promise<CommentThread | undefined>;
 }
 
 /**
@@ -1312,6 +1323,7 @@ export interface CommentThread {
 	comments: Comment[] | undefined;
 	collapsibleState?: CommentThreadCollapsibleState;
 	reply?: Command;
+	isDisposed?: boolean;
 }
 
 /**
@@ -1411,11 +1423,19 @@ export interface WorkspaceCommentProvider {
 /**
  * @internal
  */
+export interface IWebviewPortMapping {
+	webviewPort: number;
+	extensionHostPort: number;
+}
+
+/**
+ * @internal
+ */
 export interface IWebviewOptions {
 	readonly enableScripts?: boolean;
 	readonly enableCommandUris?: boolean;
 	readonly localResourceRoots?: ReadonlyArray<URI>;
-	readonly portMapping?: ReadonlyArray<{ port: number, resolvedPort: number }>;
+	readonly portMapping?: ReadonlyArray<IWebviewPortMapping>;
 }
 
 /**

@@ -61,6 +61,10 @@
 				"icon": "resources/dark/touchbar_run_cell.png"
 			},
 			{
+				"command": "notebook.command.runallcells",
+				"title": "%notebook.command.runallcells%"
+			},
+			{
 				"command": "notebook.command.addcode",
 				"title": "%notebook.command.addcode%"
 			},
@@ -146,6 +150,10 @@
 					"when": "notebookEditorVisible"
 				},
 				{
+					"command": "notebook.command.runallcells",
+					"when": "notebookEditorVisible"
+				},
+				{
 					"command": "notebook.command.addcode",
 					"when": "notebookEditorVisible"
 				},
@@ -193,7 +201,7 @@
 			"objectExplorer/item/context": [
 				{
 					"command": "notebook.command.new",
-					"when": "connectionProvider == MSSQL && nodeType == Server",
+					"when": "isQueryProvider && nodeType == Server",
 					"group": "1root@1"
 				},
 				{
@@ -227,6 +235,11 @@
 			{
 				"command": "notebook.command.runactivecell",
 				"key": "F5",
+				"when": "activeEditor == workbench.editor.notebookEditor"
+			},
+			{
+				"command": "notebook.command.runallcells",
+				"key": "Ctrl+Shift+F5",
 				"when": "activeEditor == workbench.editor.notebookEditor"
 			},
 			{
@@ -325,8 +338,12 @@
 		"vscode-nls": "^4.0.0"
 	},
 	"devDependencies": {
+		"@types/decompress": "^4.2.3",
+		"@types/fs-extra": "^5.0.0",
 		"@types/mocha": "^5.2.5",
 		"@types/node": "^11.9.3",
+		"@types/request": "^2.48.1",
+		"@types/temp-write": "^3.3.0",
 		"assert": "^1.4.1",
 		"mocha": "^5.2.0",
 		"mocha-junit-reporter": "^1.17.0",

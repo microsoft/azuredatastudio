@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import * as vscode from 'vscode';
 import * as path from 'path';
@@ -78,19 +76,20 @@ export class ServerInstanceUtils {
 		return spawn(command, args, options);
 	}
 
-	public checkProcessDied(childProcess: ChildProcess): void {
+	public ensureProcessEnded(childProcess: ChildProcess): void {
 		if (!childProcess) {
 			return;
 		}
-		// Wait 10 seconds and then force kill. Jupyter stop is slow so this seems a reasonable time limit
+		// Wait 5 seconds and then force kill. Jupyter stop is slow so this seems a reasonable time limit
 		setTimeout(() => {
 			// Test if the process is still alive. Throws an exception if not
 			try {
-				process.kill(childProcess.pid, <any>0);
+				process.kill(childProcess.pid, 'SIGKILL');
 			} catch (error) {
+				console.log(error);
 				// All is fine.
 			}
-		}, 10000);
+		}, 5000);
 	}
 }
 
@@ -158,13 +157,14 @@ export class PerNotebookServerInstance implements IServerInstance {
 				let install = this.options.install;
 				let stopCommand = `"${install.pythonExecutable}" -m jupyter notebook stop ${this._port}`;
 				await this.utils.executeBufferedCommand(stopCommand, install.execOptions, install.outputChannel);
-				this._isStarted = false;
-				this.utils.checkProcessDied(this.childProcess);
-				this.handleConnectionClosed();
 			}
 		} catch (error) {
 			// For now, we don't care as this is non-critical
 			this.notify(this.options.install, localize('serverStopError', 'Error stopping Notebook Server: {0}', utils.getErrorMessage(error)));
+		} finally {
+			this._isStarted = false;
+			this.utils.ensureProcessEnded(this.childProcess);
+			this.handleConnectionClosed();
 		}
 	}
 
@@ -224,7 +224,6 @@ export class PerNotebookServerInstance implements IServerInstance {
 	/**
 	 * Starts a Jupyter instance using the provided a start command. Server is determined to have
 	 * started when the log message with URL to connect to is emitted.
-	 * @returns {Promise<void>}
 	 */
 	protected async startInternal(): Promise<void> {
 		if (this.isStarted) {
@@ -249,8 +248,8 @@ export class PerNotebookServerInstance implements IServerInstance {
 			this.childProcess = this.spawnJupyterProcess(install, startCommand);
 			let stdErrLog: string = '';
 			// Add listeners for the process exiting prematurely
-			let onErrorBeforeStartup = (err) => reject(err);
-			let onExitBeforeStart = (err) => {
+			let onErrorBeforeStartup = (err: any) => reject(err);
+			let onExitBeforeStart = (err: any) => {
 				if (!this.isStarted) {
 					reject(localize('notebookStartProcessExitPremature', 'Notebook process exited prematurely with error: {0}, StdErr Output: {1}', err, stdErrLog));
 				}
@@ -292,6 +291,8 @@ export class PerNotebookServerInstance implements IServerInstance {
 
 		this.childProcess.addListener('error', this.handleConnectionError);
 		this.childProcess.addListener('exit', this.handleConnectionClosed);
+
+		process.addListener('exit', this.stop);
 
 		// TODO #897 covers serializing stdout and stderr to a location where we can read from so that user can see if they run into trouble
 	}
@@ -366,16 +367,17 @@ export class PerNotebookServerInstance implements IServerInstance {
 		env['MSHOST_ENVIRONMENT'] = 'ADSClient-' + vscode.version;
 
 		// Start the notebook process
-		let options = {
+		let options: SpawnOptions = {
 			shell: true,
-			env: env
+			env: env,
+			detached: false
 		};
 		let childProcess = this.utils.spawn(startCommand, [], options);
 		return childProcess;
 	}
 
 	private getEnvWithConfigPaths(env: {}): any {
-		let newEnv = Object.assign({}, env);
+		let newEnv: { [key: string]: string } = Object.assign({}, env);
 		newEnv['JUPYTER_CONFIG_DIR'] = this.instanceConfigRoot;
 		newEnv['JUPYTER_PATH'] = this.instanceDataRoot;
 		return newEnv;

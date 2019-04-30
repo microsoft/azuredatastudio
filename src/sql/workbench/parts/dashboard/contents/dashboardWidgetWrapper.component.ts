@@ -25,7 +25,7 @@ import { TasksWidget } from 'sql/workbench/parts/dashboard/widgets/tasks/tasksWi
 import { InsightsWidget } from 'sql/workbench/parts/dashboard/widgets/insights/insightsWidget.component';
 import { WebviewWidget } from 'sql/workbench/parts/dashboard/widgets/webview/webviewWidget.component';
 
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 
 import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as colors from 'vs/platform/theme/common/colorRegistry';
@@ -197,11 +197,6 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 	/**
 	 * Attempts to get the selector for a given key, and if none is defined tries
 	 * to load it from the widget registry and configure as needed
-	 *
-	 * @private
-	 * @param {string} key
-	 * @returns {Type<IDashboardWidget>}
-	 * @memberof DashboardWidgetWrapper
 	 */
 	private getOrCreateSelector(key: string): Type<IDashboardWidget> {
 		let selector = componentMap[key];

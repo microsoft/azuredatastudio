@@ -2,13 +2,13 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
+
 import * as azdata from 'azdata';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import {ConnectionProfileGroup} from 'sql/platform/connection/common/connectionProfileGroup';
+import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { equalsIgnoreCase } from 'vs/base/common/strings';
 import { ICommandLineProcessing } from 'sql/workbench/services/commandLine/common/commandLine';
-import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionType, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IEnvironmentService, ParsedArgs } from 'vs/platform/environment/common/environment';
 import * as Constants from 'sql/platform/connection/common/constants';
@@ -20,11 +20,13 @@ import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/co
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { warn } from 'sql/base/common/log';
-import { ipcRenderer as ipc} from 'electron';
+import { ipcRenderer as ipc } from 'electron';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IStatusbarService, StatusbarAlignment } from 'vs/platform/statusbar/common/statusbar';
+import { IStatusbarService } from 'vs/platform/statusbar/common/statusbar';
 import { localize } from 'vs/nls';
+import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
+import { URI } from 'vs/base/common/uri';
 
 export class CommandLineService implements ICommandLineProcessing {
 	public _serviceBrand: any;
@@ -32,7 +34,7 @@ export class CommandLineService implements ICommandLineProcessing {
 	constructor(
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@IEnvironmentService private _environmentService: IEnvironmentService,
+		@IEnvironmentService environmentService: IEnvironmentService,
 		@IQueryEditorService private _queryEditorService: IQueryEditorService,
 		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
 		@IEditorService private _editorService: IEditorService,
@@ -41,16 +43,15 @@ export class CommandLineService implements ICommandLineProcessing {
 		@IStatusbarService private _statusBarService: IStatusbarService
 	) {
 		if (ipc) {
-		    ipc.on('ads:processCommandLine', (event: any, args: ParsedArgs) => this.onLaunched(args));
+			ipc.on('ads:processCommandLine', (event: any, args: ParsedArgs) => this.onLaunched(args));
 		}
 		// we only get the ipc from main during window reuse
-		if (_environmentService) {
-		    this.onLaunched(_environmentService.args);
+		if (environmentService) {
+			this.onLaunched(environmentService.args);
 		}
 	}
 
-	private onLaunched(args: ParsedArgs)
-	{
+	private onLaunched(args: ParsedArgs) {
 		const registry = platform.Registry.as<IConnectionProviderRegistry>(ConnectionProviderExtensions.ConnectionProviderContributions);
 		let sqlProvider = registry.getProperties(Constants.mssqlProviderName);
 		// We can't connect to object explorer until the MSSQL connection provider is registered
@@ -68,7 +69,7 @@ export class CommandLineService implements ICommandLineProcessing {
 	// We base our logic on the combination of (server, command) values.
 	// (serverName, commandName) => Connect object explorer and execute the command, passing the connection profile to the command. Do not load query editor.
 	// (null, commandName) => Launch the command with a null connection. If the command implementation needs a connection, it will need to create it.
-	// (serverName, null) => Connect object explorer and open a new query editor
+	// (serverName, null) => Connect object explorer and open a new query editor if no file names are passed. If file names are passed, connect their editors to the server.
 	// (null, null) => Prompt for a connection unless there are registered servers
 	public async processCommandLine(args: ParsedArgs): Promise<void> {
 		let profile: IConnectionProfile = undefined;
@@ -81,7 +82,7 @@ export class CommandLineService implements ICommandLineProcessing {
 			if (args.server) {
 				profile = this.readProfileFromArgs(args);
 			}
-	    }
+		}
 		let showConnectDialogOnStartup: boolean = this._configurationService.getValue('workbench.showConnectDialogOnStartup');
 		if (showConnectDialogOnStartup && !commandName && !profile && !this._connectionManagementService.hasRegisteredServers()) {
 			// prompt the user for a new connection on startup if no profiles are registered
@@ -90,9 +91,8 @@ export class CommandLineService implements ICommandLineProcessing {
 		}
 		let connectedContext: azdata.ConnectedContext = undefined;
 		if (profile) {
-			if (this._statusBarService)
-			{
-				this._statusBarService.setStatusMessage(localize('connectingLabel','Connecting:')  + profile.serverName, 2500);
+			if (this._statusBarService) {
+				this._statusBarService.setStatusMessage(localize('connectingLabel', 'Connecting:') + profile.serverName, 2500);
 			}
 			try {
 				await this._connectionManagementService.connectIfNotConnected(profile, 'connection', true);
@@ -105,27 +105,54 @@ export class CommandLineService implements ICommandLineProcessing {
 			}
 		}
 		if (commandName) {
-			if (this._statusBarService)
-			{
-				this._statusBarService.setStatusMessage(localize('runningCommandLabel','Running command:') + commandName, 2500);
+			if (this._statusBarService) {
+				this._statusBarService.setStatusMessage(localize('runningCommandLabel', 'Running command:') + commandName, 2500);
 			}
 			await this._commandService.executeCommand(commandName, connectedContext);
 		} else if (profile) {
-			if (this._statusBarService)
-			{
-				this._statusBarService.setStatusMessage(localize('openingNewQueryLabel','Opening new query:') + profile.serverName, 2500);
+			// If we were given a file and it was opened with the sql editor,
+			// we want to connect the given profile to to it.
+			// If more than one file was passed, only show the connection dialog error on one of them.
+			if (args._ && args._.length > 0) {
+				await args._.forEach((f, i) => this.processFile(URI.file(f).toString(), profile, i === 0));
 			}
-			// Default to showing new query
-			try {
-				await TaskUtilities.newQuery(profile,
-					this._connectionManagementService,
-					this._queryEditorService,
-					this._objectExplorerService,
-					this._editorService);
-			} catch (error) {
-				warn('unable to open query editor ' + error);
-				// Note: we are intentionally swallowing this error.
-				// In part this is to accommodate unit testing where we don't want to set up the query stack
+			else {
+				// Default to showing new query
+				if (this._statusBarService) {
+					this._statusBarService.setStatusMessage(localize('openingNewQueryLabel', 'Opening new query:') + profile.serverName, 2500);
+				}
+				try {
+					await TaskUtilities.newQuery(profile,
+						this._connectionManagementService,
+						this._queryEditorService,
+						this._objectExplorerService,
+						this._editorService);
+				} catch (error) {
+					warn('unable to open query editor ' + error);
+					// Note: we are intentionally swallowing this error.
+					// In part this is to accommodate unit testing where we don't want to set up the query stack
+				}
+			}
+		}
+	}
+
+	// If an open and connectable query editor exists for the given URI, attach it to the connection profile
+	private async processFile(uriString: string, profile: IConnectionProfile, warnOnConnectFailure: boolean): Promise<void> {
+		let activeEditor = this._editorService.editors.filter(v => v.getResource().toString() === uriString).pop();
+		if (activeEditor) {
+			let queryInput = activeEditor as QueryInput;
+			if (queryInput && queryInput.connectEnabled) {
+				let options: IConnectionCompletionOptions = {
+					params: { connectionType: ConnectionType.editor, runQueryOnCompletion: RunQueryOnConnectionMode.none, input: queryInput },
+					saveTheConnection: false,
+					showDashboard: false,
+					showConnectionDialogOnError: warnOnConnectFailure,
+					showFirewallRuleOnError: warnOnConnectFailure
+				};
+				if (this._statusBarService) {
+					this._statusBarService.setStatusMessage(localize('connectingQueryLabel', 'Connecting query file'), 2500);
+				}
+				await this._connectionManagementService.connect(profile, uriString, options);
 			}
 		}
 	}
@@ -146,29 +173,26 @@ export class CommandLineService implements ICommandLineProcessing {
 		return this._connectionManagementService ? this.tryMatchSavedProfile(profile) : profile;
 	}
 
-	private tryMatchSavedProfile(profile: ConnectionProfile)
-	{
+	private tryMatchSavedProfile(profile: ConnectionProfile) {
 		let match: ConnectionProfile = undefined;
 		// If we can find a saved mssql provider connection that matches the args, use it
 		let groups = this._connectionManagementService.getConnectionGroups([Constants.mssqlProviderName]);
-		if (groups && groups.length > 0)
-		{
+		if (groups && groups.length > 0) {
 			let rootGroup = groups[0];
 			let connections = ConnectionProfileGroup.getConnectionsInGroup(rootGroup);
-			match = connections.find((c) => this.matchProfile(profile, c)) ;
+			match = connections.find((c) => this.matchProfile(profile, c));
 		}
 		return match ? match : profile;
 	}
 
 	// determines if the 2 profiles are a functional match
 	// profile1 is the profile generated from command line parameters
-	private matchProfile(profile1: ConnectionProfile, profile2: ConnectionProfile): boolean
-	{
-		return equalsIgnoreCase(profile1.serverName,profile2.serverName)
-		&& equalsIgnoreCase(profile1.providerName, profile2.providerName)
-		// case sensitive servers can have 2 databases whose name differs only in case
-		&& profile1.databaseName === profile2.databaseName
-		&& equalsIgnoreCase(profile1.userName, profile2.userName)
-		&& profile1.authenticationType === profile2.authenticationType;
+	private matchProfile(profile1: ConnectionProfile, profile2: ConnectionProfile): boolean {
+		return equalsIgnoreCase(profile1.serverName, profile2.serverName)
+			&& equalsIgnoreCase(profile1.providerName, profile2.providerName)
+			// case sensitive servers can have 2 databases whose name differs only in case
+			&& profile1.databaseName === profile2.databaseName
+			&& equalsIgnoreCase(profile1.userName, profile2.userName)
+			&& profile1.authenticationType === profile2.authenticationType;
 	}
 }

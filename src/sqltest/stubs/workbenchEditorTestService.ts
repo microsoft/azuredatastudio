@@ -5,7 +5,7 @@
 'use strict';
 import { IEditorService, SIDE_GROUP_TYPE, ACTIVE_GROUP_TYPE, IResourceEditor, IResourceEditorReplacement, IOpenEditorOverrideHandler } from 'vs/workbench/services/editor/common/editorService';
 import { ServiceIdentifier, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
-import { IEditorOptions, IResourceInput, ITextEditorOptions  } from 'vs/platform/editor/common/editor';
+import { IEditorOptions, IResourceInput, ITextEditorOptions } from 'vs/platform/editor/common/editor';
 import { IEditor, IEditorInput, IResourceDiffInput, IResourceSideBySideInput, GroupIdentifier, ITextEditor, IUntitledResourceInput, ITextDiffEditor, ITextSideBySideEditor, IEditorInputWithOptions } from 'vs/workbench/common/editor';
 import { Event } from 'vs/base/common/event';
 import { Position } from 'vs/editor/common/core/position';
@@ -49,7 +49,7 @@ export class WorkbenchEditorTestService implements IEditorService {
 	public openEditor(editor: IResourceInput | IUntitledResourceInput, group?: IEditorGroup | GroupIdentifier | SIDE_GROUP_TYPE | ACTIVE_GROUP_TYPE): Promise<ITextEditor>;
 	public openEditor(editor: IResourceDiffInput, group?: IEditorGroup | GroupIdentifier | SIDE_GROUP_TYPE | ACTIVE_GROUP_TYPE): Promise<ITextDiffEditor>;
 	public openEditor(editor: IResourceSideBySideInput, group?: IEditorGroup | GroupIdentifier | SIDE_GROUP_TYPE | ACTIVE_GROUP_TYPE): Promise<ITextSideBySideEditor>;
-	public openEditor(input: any, arg2?: any, arg3?: any): Promise<IEditor>  {
+	public openEditor(input: any, arg2?: any, arg3?: any): Promise<IEditor> {
 		return undefined;
 	}
 

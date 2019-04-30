@@ -38,7 +38,8 @@ const mockAccount1: azdata.Account = {
 	displayInfo: {
 		displayName: 'mock_account_1@test.com',
 		accountType: 'Microsoft',
-		contextualDisplayName: 'test'
+		contextualDisplayName: 'test',
+		userId: 'test@email.com'
 	},
 	properties: undefined,
 	isStale: false
@@ -51,7 +52,8 @@ const mockAccount2: azdata.Account = {
 	displayInfo: {
 		displayName: 'mock_account_2@test.com',
 		accountType: 'Microsoft',
-		contextualDisplayName: 'test'
+		contextualDisplayName: 'test',
+		userId: 'test@email.com'
 	},
 	properties: undefined,
 	isStale: false

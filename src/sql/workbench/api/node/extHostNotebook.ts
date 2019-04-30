@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
@@ -51,7 +50,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		let manager = this.findManagerForUri(uriString);
 		if (manager) {
 			manager.provider.handleNotebookClosed(uri);
-			// Note: deliberately not removing handle.
+			this._adapters.delete(manager.handle);
 		}
 	}
 
@@ -99,7 +98,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 				};
 				return details;
 			} catch (error) {
-				throw typeof(error) === 'string' ? new Error(error) : error;
+				throw typeof (error) === 'string' ? new Error(error) : error;
 			}
 		});
 	}
@@ -231,7 +230,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 	}
 
 	private findManagerForUri(uriString: string): NotebookManagerAdapter {
-		for(let manager of this.getAdapters(NotebookManagerAdapter)) {
+		for (let manager of this.getAdapters(NotebookManagerAdapter)) {
 			if (manager.uriString === uriString) {
 				return manager;
 			}
@@ -250,7 +249,6 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 	private _createDisposable(handle: number): Disposable {
 		return new Disposable(() => {
 			this._adapters.delete(handle);
-			this._proxy.$unregisterNotebookProvider(handle);
 		});
 	}
 
@@ -279,7 +277,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 			let value = await callback(manager);
 			return value;
 		} catch (error) {
-			throw typeof(error) === 'string' ? new Error(error) : error;
+			throw typeof (error) === 'string' ? new Error(error) : error;
 		}
 	}
 

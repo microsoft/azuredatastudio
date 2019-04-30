@@ -2,10 +2,9 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
-import { NodeType } from 'sql/parts/objectExplorer/common/nodeType';
-import { TreeNode, TreeItemCollapsibleState } from 'sql/parts/objectExplorer/common/treeNode';
+import { NodeType } from 'sql/workbench/parts/objectExplorer/common/nodeType';
+import { TreeNode, TreeItemCollapsibleState } from 'sql/workbench/parts/objectExplorer/common/treeNode';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
@@ -14,11 +13,11 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Event, Emitter } from 'vs/base/common/event';
 import * as azdata from 'azdata';
 import * as nls from 'vs/nls';
-import * as TelemetryKeys from 'sql/common/telemetryKeys';
-import * as TelemetryUtils from 'sql/common/telemetryUtilities';
+import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
+import * as TelemetryUtils from 'sql/platform/telemetry/telemetryUtilities';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { warn, error } from 'sql/base/common/log';
-import { ServerTreeView } from 'sql/parts/objectExplorer/viewlet/serverTreeView';
+import { ServerTreeView } from 'sql/workbench/parts/objectExplorer/browser/serverTreeView';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import * as Utils from 'sql/platform/connection/common/utils';
 import { entries } from 'sql/base/common/objects';
@@ -190,8 +189,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 	public deleteObjectExplorerNode(connection: IConnectionProfile): Thenable<void> {
 		let self = this;
-		var connectionUri = connection.id;
-		var nodeTree = this._activeObjectExplorerNodes[connectionUri];
+		let connectionUri = connection.id;
+		let nodeTree = this._activeObjectExplorerNodes[connectionUri];
 		if (nodeTree) {
 			return self.closeSession(connection.providerName, nodeTree.getSession()).then(() => {
 				delete self._activeObjectExplorerNodes[connectionUri];
@@ -228,7 +227,13 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	 * Gets called when session is created
 	 */
 	public onSessionCreated(handle: number, session: azdata.ObjectExplorerSession): void {
-		this.handleSessionCreated(session);
+		if (session && session.success) {
+			this.handleSessionCreated(session);
+		} else {
+			let errorMessage = session && session.errorMessage ? session.errorMessage :
+				nls.localize('OeSessionFailedError', 'Failed to create Object Explorer session');
+			error(errorMessage);
+		}
 	}
 
 	private async handleSessionCreated(session: azdata.ObjectExplorerSession): Promise<void> {
@@ -238,7 +243,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			if (this._sessions[session.sessionId]) {
 				connection = this._sessions[session.sessionId].connection;
 
-				if (session && session.success && session.rootNode) {
+				if (session.success && session.rootNode) {
 					let server = this.toTreeNode(session.rootNode, null);
 					server.connection = connection;
 					server.session = session;

@@ -1084,7 +1084,7 @@ interface UnderscoreStatic {
 	* @param array The array to split
 	* @param count The maximum size of the inner arrays.
 	*/
-	chunk<T>(array: _.Collection<T>, count: number): (_.Collection<T>)[]
+	chunk<T>(array: _.Collection<T>, count: number): (_.Collection<T>)[];
 
 	/*************
 	 * Functions *
@@ -3668,7 +3668,7 @@ interface UnderscoreStatic {
 	* @param context `this` object in `iterator`, optional.
 	*/
 	findKey<T>(obj: _.Dictionary<T>, predicate: _.ObjectIterator<T, boolean>, context? : any): string;
-	
+
 	/**
 	* Return a copy of the object, filtered to only have values for the whitelisted keys
 	* (or array of valid keys).
@@ -4748,7 +4748,7 @@ interface Underscore<T> {
 	* Wrapped type `object`.
 	* @see _.extend
 	**/
-	findKey(predicate: _.ObjectIterator<any, boolean>, context? : any): any
+	findKey(predicate: _.ObjectIterator<any, boolean>, context? : any): any;
 
 	/**
 	* Wrapped type `object`.
@@ -5708,7 +5708,7 @@ interface _Chain<T> {
 	* Wrapped type `object`.
 	* @see _.extend
 	**/
-	findKey(predicate: _.ObjectIterator<any, boolean>, context? : any): _Chain<T>
+	findKey(predicate: _.ObjectIterator<any, boolean>, context? : any): _Chain<T>;
 
 	/**
 	* Wrapped type `object`.

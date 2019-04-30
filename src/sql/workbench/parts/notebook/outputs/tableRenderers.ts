@@ -5,7 +5,7 @@
 
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import { Table } from 'sql/base/browser/ui/table/table';
-import { textFormatter } from 'sql/parts/grid/services/sharedServices';
+import { textFormatter } from 'sql/base/browser/ui/table/formatters';
 import { RowNumberColumn } from 'sql/base/browser/ui/table/plugins/rowNumberColumn.plugin';
 import { escape } from 'sql/base/common/strings';
 import { IDataResource } from 'sql/workbench/services/notebook/sql/sqlSessionManager';
@@ -14,6 +14,7 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { MouseWheelSupport } from 'sql/base/browser/ui/table/plugins/mousewheelTableScroll.plugin';
 import { AutoColumnSize } from 'sql/base/browser/ui/table/plugins/autoSizeColumns.plugin';
 import { AdditionalKeyBindings } from 'sql/base/browser/ui/table/plugins/additionalKeyBindings.plugin';
+import { RESULTS_GRID_DEFAULTS } from 'sql/workbench/parts/query/browser/queryResultsEditor';
 
 /**
  * Render DataResource as a grid into a host node.
@@ -39,7 +40,6 @@ export function renderDataResource(
 	let tableContainer = document.createElement('div');
 	tableContainer.className = 'notebook-cellTable';
 
-	const ROW_HEIGHT = 29;
 	const BOTTOM_PADDING_AND_SCROLLBAR = 14;
 	let tableResultsData = new TableDataView();
 	let columns: string[] = sourceObject.schema.fields.map(val => val.name);
@@ -57,7 +57,7 @@ export function renderDataResource(
 	let detailTable = new Table(tableContainer, {
 		dataProvider: tableResultsData, columns: columnsTransformed
 	}, {
-			rowHeight: ROW_HEIGHT,
+			rowHeight: RESULTS_GRID_DEFAULTS.rowHeight,
 			forceFitColumns: false,
 			defaultColumnWidth: 120
 		});
@@ -67,7 +67,7 @@ export function renderDataResource(
 	detailTable.registerPlugin(new AdditionalKeyBindings());
 	let numRows = detailTable.grid.getDataLength();
 	// Need to include column headers and scrollbar, so that's why 1 needs to be added
-	let rowsHeight = (numRows + 1) * ROW_HEIGHT + BOTTOM_PADDING_AND_SCROLLBAR;
+	let rowsHeight = (numRows + 1) * RESULTS_GRID_DEFAULTS.rowHeight + BOTTOM_PADDING_AND_SCROLLBAR;
 	// if no rows are in the grid, set height to 100% of the container's height
 	if (numRows === 0) {
 		tableContainer.style.height = '100%';
@@ -86,30 +86,30 @@ export function renderDataResource(
 
 // SlickGrid requires columns and data to be in a very specific format; this code was adapted from tableInsight.component.ts
 function transformData(rows: any[], columns: Slick.Column<any>[]): { [key: string]: string }[] {
-    return rows.map(row => {
-        let dataWithSchema = {};
-        Object.keys(row).forEach((val, index) => {
+	return rows.map(row => {
+		let dataWithSchema = {};
+		Object.keys(row).forEach((val, index) => {
 			let displayValue = String(Object.values(row)[index]);
 			// Since the columns[0] represents the row number, start at 1
-            dataWithSchema[columns[index + 1].field] = {
-                displayValue: displayValue,
-                ariaLabel: escape(displayValue),
-                isNull: false
-            };
-        });
-        return dataWithSchema;
-    });
+			dataWithSchema[columns[index + 1].field] = {
+				displayValue: displayValue,
+				ariaLabel: escape(displayValue),
+				isNull: false
+			};
+		});
+		return dataWithSchema;
+	});
 }
 
 function transformColumns(columns: string[]): Slick.Column<any>[] {
-    return columns.map((col, index) => {
-        return <Slick.Column<any>>{
-            name: col,
-            id: col,
-            field: index.toString(),
-            formatter: textFormatter
-        };
-    });
+	return columns.map((col, index) => {
+		return <Slick.Column<any>>{
+			name: col,
+			id: col,
+			field: index.toString(),
+			formatter: textFormatter
+		};
+	});
 }
 
 /**

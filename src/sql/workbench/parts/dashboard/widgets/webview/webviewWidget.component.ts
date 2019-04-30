@@ -11,14 +11,12 @@ import { memoize } from 'vs/base/common/decorators';
 
 import { DashboardWidget, IDashboardWidget, WidgetConfig, WIDGET_CONFIG } from 'sql/workbench/parts/dashboard/common/dashboardWidget';
 import { DashboardServiceInterface } from 'sql/workbench/parts/dashboard/services/dashboardServiceInterface.service';
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 import { IDashboardWebview, IDashboardViewService } from 'sql/platform/dashboard/common/dashboardViewService';
 
 import * as azdata from 'azdata';
-import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { WebviewElement } from 'vs/workbench/contrib/webview/electron-browser/webviewElement';
-import { IWorkbenchLayoutService, Parts } from 'vs/workbench/services/layout/browser/layoutService';
 
 interface IWebviewWidgetConfig {
 	id: string;
@@ -43,8 +41,6 @@ export class WebviewWidget extends DashboardWidget implements IDashboardWidget, 
 		@Inject(forwardRef(() => CommonServiceInterface)) private _dashboardService: DashboardServiceInterface,
 		@Inject(WIDGET_CONFIG) protected _config: WidgetConfig,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
-		@Inject(IWorkbenchLayoutService) private layoutService: IWorkbenchLayoutService,
-		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IDashboardViewService) private dashboardViewService: IDashboardViewService,
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
 	) {
@@ -113,7 +109,6 @@ export class WebviewWidget extends DashboardWidget implements IDashboardWidget, 
 		this._onMessageDisposable = this._webview.onMessage(e => {
 			this._onMessage.fire(e);
 		});
-		this._webview.style(this.themeService.getTheme());
 		if (this._html) {
 			this._webview.contents = this._html;
 		}

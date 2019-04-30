@@ -28,7 +28,7 @@ import { IExtensionsWorkbenchService, IExtensionsViewlet, VIEWLET_ID, IExtension
 import { RatingsWidget, InstallCountWidget, RemoteBadgeWidget } from 'vs/workbench/contrib/extensions/electron-browser/extensionsWidgets';
 import { EditorOptions } from 'vs/workbench/common/editor';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
-import { CombinedInstallAction, UpdateAction, ExtensionEditorDropDownAction, ReloadAction, MaliciousStatusLabelAction, IgnoreExtensionRecommendationAction, UndoIgnoreExtensionRecommendationAction, EnableDropDownAction, DisableDropDownAction, StatusLabelAction, SetFileIconThemeAction, SetColorThemeAction, RemoteInstallAction, SystemDisabledLabelAction, SystemDisabledWarningAction } from 'vs/workbench/contrib/extensions/electron-browser/extensionsActions';
+import { CombinedInstallAction, UpdateAction, ExtensionEditorDropDownAction, ReloadAction, MaliciousStatusLabelAction, IgnoreExtensionRecommendationAction, UndoIgnoreExtensionRecommendationAction, EnableDropDownAction, DisableDropDownAction, StatusLabelAction, SetFileIconThemeAction, SetColorThemeAction, RemoteInstallAction, DisabledLabelAction, SystemDisabledWarningAction, LocalInstallAction } from 'vs/workbench/contrib/extensions/electron-browser/extensionsActions';
 import { WebviewElement } from 'vs/workbench/contrib/webview/electron-browser/webviewElement';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { DomScrollableElement } from 'vs/base/browser/ui/scrollbar/scrollableElement';
@@ -53,7 +53,7 @@ import { isUndefined, withUndefinedAsNull } from 'vs/base/common/types';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 
 // {{SQL CARBON EDIT}}
-import { renderDashboardContributions } from 'sql/parts/extensions/sqlExtensionsHelper';
+import { renderDashboardContributions } from 'sql/workbench/parts/extensions/browser/contributionRenders';
 // {{SQL CARBON EDIT}} - End
 
 function renderBody(body: string): string {
@@ -300,7 +300,7 @@ export class ExtensionEditor extends BaseEditor {
 		this.extensionManifest = new Cache(() => createCancelablePromise(token => extension.getManifest(token)));
 		this.extensionDependencies = new Cache(() => createCancelablePromise(token => this.extensionsWorkbenchService.loadDependencies(extension, token)));
 
-		const remoteBadge = this.instantiationService.createInstance(RemoteBadgeWidget, this.iconContainer);
+		const remoteBadge = this.instantiationService.createInstance(RemoteBadgeWidget, this.iconContainer, true);
 		const onError = Event.once(domEvent(this.icon, 'error'));
 		onError(() => this.icon.src = extension.iconUrlFallback, null, this.transientDisposables);
 		this.icon.src = extension.iconUrl;
@@ -393,9 +393,10 @@ export class ExtensionEditor extends BaseEditor {
 			this.instantiationService.createInstance(EnableDropDownAction),
 			this.instantiationService.createInstance(DisableDropDownAction, runningExtensions),
 			this.instantiationService.createInstance(RemoteInstallAction),
+			this.instantiationService.createInstance(LocalInstallAction),
 			combinedInstallAction,
 			systemDisabledWarningAction,
-			this.instantiationService.createInstance(SystemDisabledLabelAction, systemDisabledWarningAction),
+			this.instantiationService.createInstance(DisabledLabelAction, systemDisabledWarningAction),
 			this.instantiationService.createInstance(MaliciousStatusLabelAction, true),
 		];
 		const extensionContainers: ExtensionContainers = this.instantiationService.createInstance(ExtensionContainers, [...actions, ...widgets]);
@@ -623,9 +624,9 @@ export class ExtensionEditor extends BaseEditor {
 					renderDashboardContributions(content, manifest, layout)
 				];
 
-				const isEmpty = !renders.reduce((v, r) => r || v, false);
 				scrollableContent.scanDomNode();
 
+				const isEmpty = !renders.some(x => x);
 				if (isEmpty) {
 					append(content, $('p.nocontent')).textContent = localize('noContributions', "No Contributions");
 					append(this.content, content);

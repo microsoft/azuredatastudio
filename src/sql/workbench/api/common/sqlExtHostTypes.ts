@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import { nb, IConnectionProfile } from 'azdata';
 import * as vsExtTypes from 'vs/workbench/api/common/extHostTypes';
@@ -292,6 +291,7 @@ export enum DataProviderType {
 	AgentServicesProvider = 'AgentServicesProvider',
 	CapabilitiesProvider = 'CapabilitiesProvider',
 	DacFxServicesProvider = 'DacFxServicesProvider',
+	SchemaCompareServicesProvider = 'SchemaCompareServicesProvider',
 	ObjectExplorerNodeProvider = 'ObjectExplorerNodeProvider'
 }
 
@@ -546,4 +546,89 @@ export class ConnectionProfile {
 		// create from options
 		return undefined;
 	}
+}
+
+export enum SchemaUpdateAction {
+	Delete = 0,
+	Change = 1,
+	Add = 2
+}
+
+export enum SchemaDifferenceType {
+	Object = 0,
+	Property = 1
+}
+
+export enum SchemaCompareEndpointType {
+	Database = 0,
+	Dacpac = 1
+}
+
+export enum SchemaObjectType {
+	Aggregates = 0,
+	ApplicationRoles = 1,
+	Assemblies = 2,
+	AssemblyFiles = 3,
+	AsymmetricKeys = 4,
+	BrokerPriorities = 5,
+	Certificates = 6,
+	ColumnEncryptionKeys = 7,
+	ColumnMasterKeys = 8,
+	Contracts = 9,
+	DatabaseOptions = 10,
+	DatabaseRoles = 11,
+	DatabaseTriggers = 12,
+	Defaults = 13,
+	ExtendedProperties = 14,
+	ExternalDataSources = 15,
+	ExternalFileFormats = 16,
+	ExternalTables = 17,
+	Filegroups = 18,
+	FileTables = 19,
+	FullTextCatalogs = 20,
+	FullTextStoplists = 21,
+	MessageTypes = 22,
+	PartitionFunctions = 23,
+	PartitionSchemes = 24,
+	Permissions = 25,
+	Queues = 26,
+	RemoteServiceBindings = 27,
+	RoleMembership = 28,
+	Rules = 29,
+	ScalarValuedFunctions = 30,
+	SearchPropertyLists = 31,
+	SecurityPolicies = 32,
+	Sequences = 33,
+	Services = 34,
+	Signatures = 35,
+	StoredProcedures = 36,
+	SymmetricKeys = 37,
+	Synonyms = 38,
+	Tables = 39,
+	TableValuedFunctions = 40,
+	UserDefinedDataTypes = 41,
+	UserDefinedTableTypes = 42,
+	ClrUserDefinedTypes = 43,
+	Users = 44,
+	Views = 45,
+	XmlSchemaCollections = 46,
+	Audits = 47,
+	Credentials = 48,
+	CryptographicProviders = 49,
+	DatabaseAuditSpecifications = 50,
+	DatabaseEncryptionKeys = 51,
+	DatabaseScopedCredentials = 52,
+	Endpoints = 53,
+	ErrorMessages = 54,
+	EventNotifications = 55,
+	EventSessions = 56,
+	LinkedServerLogins = 57,
+	LinkedServers = 58,
+	Logins = 59,
+	MasterKeys = 60,
+	Routes = 61,
+	ServerAuditSpecifications = 62,
+	ServerRoleMembership = 63,
+	ServerRoles = 64,
+	ServerTriggers = 65
 }

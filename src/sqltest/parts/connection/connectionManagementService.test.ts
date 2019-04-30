@@ -96,8 +96,9 @@ suite('SQL ConnectionManagementService tests', () => {
 
 		connectionDialogService.setup(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), undefined)).returns(() => Promise.resolve(none));
 		connectionDialogService.setup(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), undefined, undefined)).returns(() => Promise.resolve(none));
+		connectionDialogService.setup(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), undefined)).returns(() => Promise.resolve(none));
+		connectionDialogService.setup(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), undefined, undefined)).returns(() => Promise.resolve(none));
 		connectionDialogService.setup(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(none));
-		connectionDialogService.setup(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), undefined, TypeMoq.It.isAny())).returns(() => Promise.resolve(none));
 
 		connectionStore.setup(x => x.addActiveConnection(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve());
 		connectionStore.setup(x => x.saveProfile(TypeMoq.It.isAny())).returns(() => Promise.resolve(connectionProfile));
@@ -106,10 +107,10 @@ suite('SQL ConnectionManagementService tests', () => {
 			c => c.serverName === connectionProfile.serverName))).returns(() => Promise.resolve({ profile: connectionProfile, savedCred: true }));
 		connectionStore.setup(x => x.addSavedPassword(TypeMoq.It.is<IConnectionProfile>(
 			c => c.serverName === connectionProfileWithEmptySavedPassword.serverName))).returns(
-			() => Promise.resolve({ profile: connectionProfileWithEmptySavedPassword, savedCred: true }));
+				() => Promise.resolve({ profile: connectionProfileWithEmptySavedPassword, savedCred: true }));
 		connectionStore.setup(x => x.addSavedPassword(TypeMoq.It.is<IConnectionProfile>(
 			c => c.serverName === connectionProfileWithEmptyUnsavedPassword.serverName))).returns(
-			() => Promise.resolve({ profile: connectionProfileWithEmptyUnsavedPassword, savedCred: false }));
+				() => Promise.resolve({ profile: connectionProfileWithEmptyUnsavedPassword, savedCred: false }));
 		connectionStore.setup(x => x.isPasswordRequired(TypeMoq.It.isAny())).returns(() => true);
 		connectionStore.setup(x => x.getConnectionProfileGroups(false, undefined)).returns(() => [root]);
 
