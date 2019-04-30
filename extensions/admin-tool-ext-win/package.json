@@ -1,7 +1,7 @@
 {
 	"name": "admin-tool-ext-win",
-	"displayName": "%adminToolExtWin.displayName",
-	"description": "%adminToolExtWin.description",
+	"displayName": "%adminToolExtWin.displayName%",
+	"description": "%adminToolExtWin.description%",
 	"version": "0.0.1",
 	"publisher": "Microsoft",
 	"preview": true,
