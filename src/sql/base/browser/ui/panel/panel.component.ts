@@ -8,8 +8,6 @@ import {
 	Input, EventEmitter, Output, ViewChild, ElementRef
 } from '@angular/core';
 
-import './panelStyles';
-
 import { TabComponent } from './tab.component';
 import { ScrollableDirective } from 'sql/base/browser/ui/scrollable/scrollable.directive';
 import { subscriptionToDisposable } from 'sql/base/node/lifecycle';
