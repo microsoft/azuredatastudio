@@ -13,11 +13,8 @@ import * as Constants from 'sql/platform/connection/common/constants';
 import { ParsedArgs } from 'vs/platform/environment/common/environment';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { CapabilitiesTestService } from 'sqltest/stubs/capabilitiesTestService';
-import { QueryEditorService } from 'sql/workbench/services/queryEditor/browser/queryEditorService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { ObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionType } from 'sql/platform/connection/common/connectionManagement';
-import { ConnectionStore } from 'sql/platform/connection/common/connectionStore';
 import { TestConnectionManagementService } from 'sqltest/stubs/connectionManagementService.test';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { TestCommandService } from 'vs/editor/test/browser/editorTestServices';
@@ -95,15 +92,9 @@ class TestParsedArgs implements ParsedArgs {
 suite('commandLineService tests', () => {
 
 	let capabilitiesService: CapabilitiesTestService;
-	let commandLineService: CommandLineService;
-	let queryEditorService: TypeMoq.Mock<QueryEditorService>;
-	let editorService: TypeMoq.Mock<IEditorService>;
-	let objectExplorerService: TypeMoq.Mock<ObjectExplorerService>;
-	let connectionStore: TypeMoq.Mock<ConnectionStore>;
 
 	setup(() => {
 		capabilitiesService = new CapabilitiesTestService();
-		connectionStore = TypeMoq.Mock.ofType(ConnectionStore);
 	});
 
 	function getCommandLineService(connectionManagementService: IConnectionManagementService,
