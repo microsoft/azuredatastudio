@@ -447,6 +447,7 @@ export interface ICellModel {
 	readonly executionState: CellExecutionState;
 	readonly notebookModel: NotebookModel;
 	setFuture(future: FutureInternal): void;
+	setStdInHandler(handler: nb.MessageHandler<nb.IStdinMessage>): void;
 	runCell(notificationService?: INotificationService, connectionManagementService?: IConnectionManagementService): Promise<boolean>;
 	setOverrideLanguage(language: string);
 	equals(cellModel: ICellModel): boolean;

@@ -26,6 +26,7 @@ import { CodeCellComponent } from 'sql/workbench/parts/notebook/cellViews/codeCe
 import { TextCellComponent } from 'sql/workbench/parts/notebook/cellViews/textCell.component';
 import { OutputAreaComponent } from 'sql/workbench/parts/notebook/cellViews/outputArea.component';
 import { OutputComponent } from 'sql/workbench/parts/notebook/cellViews/output.component';
+import { StdInComponent } from 'sql/workbench/parts/notebook/cellViews/stdin.component';
 import { PlaceholderCellComponent } from 'sql/workbench/parts/notebook/cellViews/placeholderCell.component';
 import LoadingSpinner from 'sql/workbench/electron-browser/modelComponents/loadingSpinner.component';
 
@@ -44,7 +45,8 @@ export const NotebookModule = (params, selector: string, instantiationService: I
 			NotebookComponent,
 			ComponentHostDirective,
 			OutputAreaComponent,
-			OutputComponent
+			OutputComponent,
+			StdInComponent
 		],
 		entryComponents: [NotebookComponent],
 		imports: [
