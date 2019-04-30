@@ -7,11 +7,17 @@ import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as os from 'os';
+import { SchemaCompareOptionsDialog } from './dialogs/schemaCompareOptionsDialog';
 import * as path from 'path';
 const localize = nls.loadMessageBundle();
 
 export class SchemaCompareResult {
 	private differencesTable: azdata.TableComponent;
+	private diffViewTopPane: azdata.FlexContainer;
+	private includeComponent: azdata.TableComponent;
+	private checkboxList: azdata.FlexContainer;
+	private checkBoxes: azdata.CheckBoxComponent[] = [];
+	private lastCheckBoxes: azdata.CheckBoxComponent[] = [];
 	private loader: azdata.LoadingComponent;
 	private editor: azdata.workspace.ModelViewEditor;
 	private diffEditor: azdata.DiffEditorComponent;
@@ -21,12 +27,17 @@ export class SchemaCompareResult {
 	private sourceTargetFlexLayout: azdata.FlexContainer;
 	private switchButton: azdata.ButtonComponent;
 	private compareButton: azdata.ButtonComponent;
+	private optionsButton: azdata.ButtonComponent;
 	private generateScriptButton: azdata.ButtonComponent;
 	private applyButton: azdata.ButtonComponent;
 	private SchemaCompareActionMap: Map<Number, string>;
 	private comparisonResult: azdata.SchemaCompareResult;
+	private lastComparisonResult: azdata.SchemaCompareResult;
 	private sourceNameComponent: azdata.TableComponent;
 	private targetNameComponent: azdata.TableComponent;
+	private deploymentOptions: azdata.DeploymentOptions;
+	private schemaCompareOptionDialog: SchemaCompareOptionsDialog;
+	private viewModel: azdata.ModelView;
 
 	constructor(private sourceName: string, private targetName: string, private sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, private targetEndpointInfo: azdata.SchemaCompareEndpointInfo) {
 		this.SchemaCompareActionMap = new Map<Number, string>();
@@ -35,11 +46,30 @@ export class SchemaCompareResult {
 		this.SchemaCompareActionMap[azdata.SchemaUpdateAction.Add] = localize('schemaCompare.addAction', 'Add');
 
 		this.editor = azdata.workspace.createModelViewEditor(localize('schemaCompare.Title', 'Schema Compare'), { retainContextWhenHidden: true, supportsSave: true });
+		this.GetDefaultDeploymentOptions();
 
 		this.editor.registerContent(async view => {
+
+			this.viewModel = view;
 			this.differencesTable = view.modelBuilder.table().withProperties({
 				data: [],
-				height: 300,
+				height: 300
+			}).component();
+
+			this.diffViewTopPane = view.modelBuilder.flexContainer().withLayout({
+				flexFlow: 'row'
+			}).withProperties({
+				alignItems: 'stretch',
+				horizontal: true
+			}).component();
+
+			this.checkboxList = view.modelBuilder.flexContainer().withLayout({
+				flexFlow: 'column'
+			}).component();
+
+			this.includeComponent = view.modelBuilder.table().withProperties({
+				data: [],
+				height: 28,
 			}).component();
 
 			this.diffEditor = view.modelBuilder.diffeditor().withProperties({
@@ -67,6 +97,7 @@ export class SchemaCompareResult {
 			this.createCompareButton(view);
 			this.createGenerateScriptButton(view);
 			this.createApplyButton(view);
+			this.createOptionsButton(view);
 			this.resetButtons();
 
 			let toolBar = view.modelBuilder.toolbarContainer();
@@ -75,7 +106,9 @@ export class SchemaCompareResult {
 			}, {
 				component: this.generateScriptButton
 			}, {
-				component: this.applyButton,
+				component: this.applyButton
+			}, {
+				component: this.optionsButton,
 				toolbarSeparatorAfter: true
 			}, {
 				component: this.switchButton
@@ -144,8 +177,13 @@ export class SchemaCompareResult {
 	}
 
 	private async execute(): Promise<void> {
+		if (this.schemaCompareOptionDialog && this.schemaCompareOptionDialog.deploymentOptions) {
+			// take updates if any
+			this.deploymentOptions = this.schemaCompareOptionDialog.deploymentOptions;
+		}
+
 		let service = await SchemaCompareResult.getService('MSSQL');
-		this.comparisonResult = await service.schemaCompare(this.sourceEndpointInfo, this.targetEndpointInfo, azdata.TaskExecutionMode.execute);
+		this.comparisonResult = await service.schemaCompare(this.sourceEndpointInfo, this.targetEndpointInfo, azdata.TaskExecutionMode.execute, this.deploymentOptions);
 		if (!this.comparisonResult || !this.comparisonResult.success) {
 			vscode.window.showErrorMessage(localize('schemaCompare.compareErrorMessage', "Schema Compare failed: {0}", this.comparisonResult.errorMessage ? this.comparisonResult.errorMessage : 'Unknown'));
 			return;
@@ -178,7 +216,24 @@ export class SchemaCompareResult {
 				}]
 		});
 
-		this.splitView.addItem(this.differencesTable);
+		this.includeComponent.updateProperties({
+			data: [],
+			columns: [
+				{
+					value: localize('schemaCompare.Include', 'Include'),
+					cssClass: 'center-align',
+					width: 25
+				}
+			]
+		});
+
+		this.checkboxList.clearItems();
+		this.checkboxList.addItem(this.includeComponent);
+		this.checkBoxes.forEach(box => this.checkboxList.addItem(box, { CSSStyles: { 'height': '24px', 'border-bottom': '1px #BDBDBD solid', 'border-right': '1px #BDBDBD dotted' } }));
+		this.diffViewTopPane.addItem(this.checkboxList, { CSSStyles: { 'margin-left': '10px', 'width': '4%' } });
+		this.diffViewTopPane.addItem(this.differencesTable, { CSSStyles: { 'width': '96%' } });
+
+		this.splitView.addItem(this.diffViewTopPane);
 		this.splitView.addItem(this.diffEditor);
 		this.splitView.setLayout({
 			orientation: 'vertical',
@@ -188,6 +243,7 @@ export class SchemaCompareResult {
 		this.flexModel.removeItem(this.loader);
 		this.switchButton.enabled = true;
 		this.compareButton.enabled = true;
+		this.optionsButton.enabled = true;
 
 		if (this.comparisonResult.differences.length > 0) {
 			this.flexModel.addItem(this.splitView);
@@ -223,10 +279,34 @@ export class SchemaCompareResult {
 
 	private getAllDifferences(differences: azdata.DiffEntry[]): string[][] {
 		let data = [];
+		this.checkBoxes = [];
 		if (differences) {
 			differences.forEach(difference => {
 				if (difference.differenceType === azdata.SchemaDifferenceType.Object) {
 					if (difference.sourceValue !== null || difference.targetValue !== null) {
+						let checkbox: azdata.CheckBoxComponent = this.viewModel.modelBuilder.checkBox().withProperties({
+							checked: this.populateFromState(difference)
+						}).component();
+
+						checkbox.onChanged(async () => {
+							if (checkbox.checked) {
+								let service = await SchemaCompareResult.getService('MSSQL');
+								let result = await service.schemaCompareIncludeExcludeNode(this.comparisonResult.operationId, difference, true, azdata.TaskExecutionMode.execute);
+								if (!result || !result.success) {
+									vscode.window.showErrorMessage(
+										localize('schemaCompare.includeNodeErrorMessage', "Include Node failed. Reason: '{0}'", (result && result.errorMessage) ? result.errorMessage : 'Unknown'));
+								}
+							}
+							else {
+								let service = await SchemaCompareResult.getService('MSSQL');
+								let result = await service.schemaCompareIncludeExcludeNode(this.comparisonResult.operationId, difference, false, azdata.TaskExecutionMode.execute);
+								if (!result || !result.success) {
+									vscode.window.showErrorMessage(
+										localize('schemaCompare.excludeNodeErrorMessage', "Exclude Node failed. Reason: '{0}'", (result && result.errorMessage) ? result.errorMessage : 'Unknown'));
+								}
+							}
+						});
+						this.checkBoxes.push(checkbox);
 						data.push([difference.name, difference.sourceValue, this.SchemaCompareActionMap[difference.updateAction], difference.targetValue]);
 					}
 				}
@@ -250,6 +330,18 @@ export class SchemaCompareResult {
 		return script;
 	}
 
+	private populateFromState(diffEntry: azdata.DiffEntry): boolean {
+		if (!this.lastComparisonResult || !this.lastCheckBoxes) {
+			return true;
+		}
+		let lastIndex = this.lastComparisonResult.differences.findIndex(x => x.sourceValue === diffEntry.sourceValue && x.targetValue === diffEntry.targetValue && x.name === diffEntry.name);
+		if (lastIndex === -1 || lastIndex >= this.lastCheckBoxes.length) {
+			// couldnt find the change or the check box corresponsing to it
+			return true;
+		}
+		return this.lastCheckBoxes[lastIndex].checked;
+	}
+
 	private reExecute(): void {
 		this.flexModel.removeItem(this.splitView);
 		this.flexModel.removeItem(this.noDifferencesLabel);
@@ -260,6 +352,10 @@ export class SchemaCompareResult {
 		});
 		this.differencesTable.selectedRows = null;
 		this.resetButtons();
+
+		this.lastCheckBoxes = this.checkBoxes;
+		this.lastComparisonResult = this.comparisonResult; //To populate state related UX
+
 		this.execute();
 	}
 
@@ -316,6 +412,27 @@ export class SchemaCompareResult {
 		});
 	}
 
+	private createOptionsButton(view: azdata.ModelView) {
+		this.optionsButton = view.modelBuilder.button().withProperties({
+			label: localize('schemaCompare.optionsButton', 'Options'),
+			iconPath: {
+				light: path.join(__dirname, 'media', 'options.svg'),
+				dark: path.join(__dirname, 'media', 'options_reverse.svg')
+			},
+			title: localize('schemaCompare.optionsButtonTitle', 'Options')
+		}).component();
+
+		this.optionsButton.onDidClick(async (click) => {
+			//restore options from last time
+			if (this.schemaCompareOptionDialog && this.schemaCompareOptionDialog.deploymentOptions) {
+				this.deploymentOptions = this.schemaCompareOptionDialog.deploymentOptions;
+			}
+			// create fresh every time
+			this.schemaCompareOptionDialog = new SchemaCompareOptionsDialog(this.deploymentOptions);
+			await this.schemaCompareOptionDialog.openDialog();
+		});
+	}
+
 	private createApplyButton(view: azdata.ModelView) {
 
 		this.applyButton = view.modelBuilder.button().withProperties({
@@ -338,6 +455,7 @@ export class SchemaCompareResult {
 
 	private resetButtons(): void {
 		this.compareButton.enabled = false;
+		this.optionsButton.enabled = false;
 		this.switchButton.enabled = false;
 		this.generateScriptButton.enabled = false;
 		this.applyButton.enabled = false;
@@ -389,5 +507,12 @@ export class SchemaCompareResult {
 	private static async getService(providerName: string): Promise<azdata.SchemaCompareServicesProvider> {
 		let service = azdata.dataprotocol.getProvider<azdata.SchemaCompareServicesProvider>(providerName, azdata.DataProviderType.SchemaCompareServicesProvider);
 		return service;
+	}
+
+	private async GetDefaultDeploymentOptions(): Promise<void> {
+		// Same as dacfx default options
+		let service = await SchemaCompareResult.getService('MSSQL');
+		let result = await service.schemaCompareGetDefaultOptions();
+		this.deploymentOptions = result.defaultDeploymentOptions;
 	}
 }

@@ -20,7 +20,6 @@ if (context.RunTest) {
 		setup(function () {
 			this.NbTester = new NotebooksTester(this.currentTest.title);
 		});
-
 		teardown(async function () {
 			await this.NbTester.Cleanup(this.currentTest.title);
 		});
