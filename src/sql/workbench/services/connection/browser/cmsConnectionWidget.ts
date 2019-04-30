@@ -51,7 +51,7 @@ export class CmsConnectionWidget extends ConnectionWidget {
 		@IConfigurationService _configurationService: IConfigurationService,
 		@IAccountManagementService _accountManagementService: IAccountManagementService
 	) {
-		super(options, callbacks, providerName, _themeService, _contextViewService, _layoutService, _connectionManagementService, _capabilitiesService,
+		super(options, callbacks, providerName, _themeService, _contextViewService, _connectionManagementService, _capabilitiesService,
 			_clipboardService, _configurationService, _accountManagementService);
 		let authTypeOption = this._optionsMaps[ConnectionOptionSpecialType.authType];
 		if (authTypeOption) {
