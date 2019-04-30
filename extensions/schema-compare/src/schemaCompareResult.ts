@@ -7,6 +7,7 @@ import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as os from 'os';
+import { SchemaCompareOptionsDialog } from './dialogs/schemaCompareOptionsDialog';
 import * as path from 'path';
 const localize = nls.loadMessageBundle();
 
@@ -21,12 +22,15 @@ export class SchemaCompareResult {
 	private sourceTargetFlexLayout: azdata.FlexContainer;
 	private switchButton: azdata.ButtonComponent;
 	private compareButton: azdata.ButtonComponent;
+	private optionsButton: azdata.ButtonComponent;
 	private generateScriptButton: azdata.ButtonComponent;
 	private applyButton: azdata.ButtonComponent;
 	private SchemaCompareActionMap: Map<Number, string>;
 	private comparisonResult: azdata.SchemaCompareResult;
 	private sourceNameComponent: azdata.TableComponent;
 	private targetNameComponent: azdata.TableComponent;
+	private deploymentOptions: azdata.DeploymentOptions;
+	private schemaCompareOptionDialog: SchemaCompareOptionsDialog;
 
 	constructor(private sourceName: string, private targetName: string, private sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, private targetEndpointInfo: azdata.SchemaCompareEndpointInfo) {
 		this.SchemaCompareActionMap = new Map<Number, string>();
@@ -35,11 +39,13 @@ export class SchemaCompareResult {
 		this.SchemaCompareActionMap[azdata.SchemaUpdateAction.Add] = localize('schemaCompare.addAction', 'Add');
 
 		this.editor = azdata.workspace.createModelViewEditor(localize('schemaCompare.Title', 'Schema Compare'), { retainContextWhenHidden: true, supportsSave: true });
+		this.GetDefaultDeploymentOptions();
 
 		this.editor.registerContent(async view => {
+
 			this.differencesTable = view.modelBuilder.table().withProperties({
 				data: [],
-				height: 300,
+				height: 300
 			}).component();
 
 			this.diffEditor = view.modelBuilder.diffeditor().withProperties({
@@ -67,6 +73,7 @@ export class SchemaCompareResult {
 			this.createCompareButton(view);
 			this.createGenerateScriptButton(view);
 			this.createApplyButton(view);
+			this.createOptionsButton(view);
 			this.resetButtons();
 
 			let toolBar = view.modelBuilder.toolbarContainer();
@@ -75,7 +82,9 @@ export class SchemaCompareResult {
 			}, {
 				component: this.generateScriptButton
 			}, {
-				component: this.applyButton,
+				component: this.applyButton
+			}, {
+				component: this.optionsButton,
 				toolbarSeparatorAfter: true
 			}, {
 				component: this.switchButton
@@ -144,8 +153,13 @@ export class SchemaCompareResult {
 	}
 
 	private async execute(): Promise<void> {
+		if (this.schemaCompareOptionDialog && this.schemaCompareOptionDialog.deploymentOptions) {
+			// take updates if any
+			this.deploymentOptions = this.schemaCompareOptionDialog.deploymentOptions;
+		}
+
 		let service = await SchemaCompareResult.getService('MSSQL');
-		this.comparisonResult = await service.schemaCompare(this.sourceEndpointInfo, this.targetEndpointInfo, azdata.TaskExecutionMode.execute);
+		this.comparisonResult = await service.schemaCompare(this.sourceEndpointInfo, this.targetEndpointInfo, azdata.TaskExecutionMode.execute, this.deploymentOptions);
 		if (!this.comparisonResult || !this.comparisonResult.success) {
 			vscode.window.showErrorMessage(localize('schemaCompare.compareErrorMessage', "Schema Compare failed: {0}", this.comparisonResult.errorMessage ? this.comparisonResult.errorMessage : 'Unknown'));
 			return;
@@ -188,12 +202,13 @@ export class SchemaCompareResult {
 		this.flexModel.removeItem(this.loader);
 		this.switchButton.enabled = true;
 		this.compareButton.enabled = true;
+		this.optionsButton.enabled = true;
 
 		if (this.comparisonResult.differences.length > 0) {
 			this.flexModel.addItem(this.splitView);
 
 			// only enable generate script button if the target is a db
-			if (this.targetEndpointInfo.endpointType === azdata.SchemaCompareEndpointType.database) {
+			if (this.targetEndpointInfo.endpointType === azdata.SchemaCompareEndpointType.Database) {
 				this.generateScriptButton.enabled = true;
 				this.applyButton.enabled = true;
 			} else {
@@ -316,6 +331,27 @@ export class SchemaCompareResult {
 		});
 	}
 
+	private createOptionsButton(view: azdata.ModelView) {
+		this.optionsButton = view.modelBuilder.button().withProperties({
+			label: localize('schemaCompare.optionsButton', 'Options'),
+			iconPath: {
+				light: path.join(__dirname, 'media', 'options.svg'),
+				dark: path.join(__dirname, 'media', 'options-inverse.svg')
+			},
+			title: localize('schemaCompare.optionsButtonTitle', 'Options')
+		}).component();
+
+		this.optionsButton.onDidClick(async (click) => {
+			//restore options from last time
+			if (this.schemaCompareOptionDialog && this.schemaCompareOptionDialog.deploymentOptions) {
+				this.deploymentOptions = this.schemaCompareOptionDialog.deploymentOptions;
+			}
+			// create fresh every time
+			this.schemaCompareOptionDialog = new SchemaCompareOptionsDialog(this.deploymentOptions);
+			await this.schemaCompareOptionDialog.openDialog();
+		});
+	}
+
 	private createApplyButton(view: azdata.ModelView) {
 
 		this.applyButton = view.modelBuilder.button().withProperties({
@@ -338,6 +374,7 @@ export class SchemaCompareResult {
 
 	private resetButtons(): void {
 		this.compareButton.enabled = false;
+		this.optionsButton.enabled = false;
 		this.switchButton.enabled = false;
 		this.generateScriptButton.enabled = false;
 		this.applyButton.enabled = false;
@@ -389,5 +426,12 @@ export class SchemaCompareResult {
 	private static async getService(providerName: string): Promise<azdata.SchemaCompareServicesProvider> {
 		let service = azdata.dataprotocol.getProvider<azdata.SchemaCompareServicesProvider>(providerName, azdata.DataProviderType.SchemaCompareServicesProvider);
 		return service;
+	}
+
+	private async GetDefaultDeploymentOptions(): Promise<void> {
+		// Same as dacfx default options
+		let service = await SchemaCompareResult.getService('MSSQL');
+		let result = await service.schemaCompareGetDefaultOptions();
+		this.deploymentOptions = result.defaultDeploymentOptions;
 	}
 }

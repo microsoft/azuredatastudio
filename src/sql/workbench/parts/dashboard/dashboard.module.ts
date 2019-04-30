@@ -57,7 +57,7 @@ import { OperatorsViewComponent } from 'sql/workbench/parts/jobManagement/electr
 import { ProxiesViewComponent } from 'sql/workbench/parts/jobManagement/electron-browser/proxiesView.component';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox.component';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox.component';
-import { EditableDropDown } from 'sql/base/browser/ui/editableDropdown/editableDropdown.component';
+import { EditableDropDown } from 'sql/platform/electron-browser/editableDropdown/editableDropdown.component';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox.component';
 import LoadingSpinner from 'sql/workbench/electron-browser/modelComponents/loadingSpinner.component';
 
