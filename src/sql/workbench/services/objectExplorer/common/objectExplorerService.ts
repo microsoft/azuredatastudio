@@ -227,10 +227,12 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	 * Gets called when session is created
 	 */
 	public onSessionCreated(handle: number, session: azdata.ObjectExplorerSession): void {
-		if (session.success) {
+		if (session && session.success) {
 			this.handleSessionCreated(session);
-		} else if (session.errorMessage) {
-			error(session.errorMessage);
+		} else {
+			let errorMessage = session && session.errorMessage ? session.errorMessage :
+				nls.localize('OeSessionFailedError', 'Failed to create Object Explorer session');
+			error(errorMessage);
 		}
 	}
 
