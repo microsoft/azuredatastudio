@@ -1534,6 +1534,63 @@
 					],
 					"statistics": [],
 					"flags": "preview"
+				},
+				{
+					"extensionId": "39",
+					"extensionName": "azuredatastudio-managed-instancee",
+					"displayName": "Managed Instance dashboard",
+					"shortDescription": "Display Managed Instance properties, state, and health information",
+					"publisher": {
+						"displayName": "Jovan Popovic",
+						"publisherId": "jocapc",
+						"publisherName": "jocapc"
+					},
+					"versions": [
+						{
+							"version": "0.1.1",
+							"lastUpdated": "4/30/2019",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+									"source": "https://github.com/JocaPC/AzureDataStudio-Managed-Instance/blob/master/versions/managed-instance-dashboard-0.1.1.vsix?raw=true"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/JocaPC/AzureDataStudio-Managed-Instance/master/images/ManagedInstanceLogo.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/JocaPC/AzureDataStudio-Managed-Instance/master/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/JocaPC/AzureDataStudio-Managed-Instance/master/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": ">=0.32.1"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/JocaPC/AzureDataStudio-Managed-Instance"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": "preview"
 				}
 			],
 			"resultMetadata": [
