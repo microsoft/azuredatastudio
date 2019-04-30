@@ -1,3 +1,4 @@
 {
-	"adminToolExtWin.launchSsmsServerPropertiesDialog": "Properties"
+	"adminToolExtWin.propertiesMenuItem": "Properties",
+	"adminToolExtWin.launchGswMenuItem": "Generate Scripts..."
 }
