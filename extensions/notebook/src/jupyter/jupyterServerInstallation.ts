@@ -110,21 +110,21 @@ export default class JupyterServerInstallation {
 		let pythonDownloadUrl: string;
 		if (this._usingExistingPython) {
 			packageName = `python-${pythonVersion}-${bundleVersion}-offlinePackages.zip`;
-			pythonDownloadUrl = 'https://go.microsoft.com/fwlink/?linkid=2086702';
+			pythonDownloadUrl = constants.pythonOfflinePipPackagesUrl;
 		} else {
 			let extension = process.platform === constants.winPlatform ? 'zip' : 'tar.gz';
 			packageName = `python-${pythonVersion}-${platformId}-${bundleVersion}.${extension}`;
 
 			switch (utils.getOSPlatform()) {
 				case utils.Platform.Windows:
-					pythonDownloadUrl = 'https://go.microsoft.com/fwlink/?linkid=2074021';
+					pythonDownloadUrl = constants.pythonWindowsInstallUrl;
 					break;
 				case utils.Platform.Mac:
-					pythonDownloadUrl = 'https://go.microsoft.com/fwlink/?linkid=2065976';
+					pythonDownloadUrl = constants.pythonMacInstallUrl;
 					break;
 				default:
 					// Default to linux
-					pythonDownloadUrl = 'https://go.microsoft.com/fwlink/?linkid=2065975';
+					pythonDownloadUrl = constants.pythonLinuxInstallUrl;
 					break;
 			}
 		}
