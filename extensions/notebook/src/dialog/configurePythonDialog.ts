@@ -103,16 +103,16 @@ export class ConfigurePythonDialog {
 					title: localize('configurePython.installationType', "Installation Type")
 				}, {
 					component: this.existingInstallButton,
-					title: undefined
+					title: ''
 				}, {
 					component: this.pythonLocationTextBox,
 					title: this.LocationTextBoxTitle
 				}, {
 					component: this.browseButton,
-					title: undefined
+					title: ''
 				}, {
 					component: noteWrapper,
-					title: undefined
+					title: ''
 				}]).component();
 
 			await view.initializeModel(formModel);
