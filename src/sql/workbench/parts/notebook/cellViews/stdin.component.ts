@@ -4,15 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./stdin';
+
 import {
 	Component, Input, Inject, ChangeDetectorRef, forwardRef,
-	ViewChild, ElementRef, AfterViewInit
+	ViewChild, ElementRef, AfterViewInit, HostListener
 } from '@angular/core';
 import { nb } from 'azdata';
 import { localize } from 'vs/nls';
-
-import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
-import { attachInputBoxStyler } from 'sql/platform/theme/common/styler';
 
 import { IInputOptions } from 'vs/base/browser/ui/inputbox/inputBox';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
@@ -20,8 +18,10 @@ import { IContextViewService } from 'vs/platform/contextview/browser/contextView
 import { inputBackground, inputBorder } from 'vs/platform/theme/common/colorRegistry';
 import { StandardKeyboardEvent, IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
+
+import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
+import { attachInputBoxStyler } from 'sql/platform/theme/common/styler';
 import { AngularDisposable } from 'sql/base/node/lifecycle';
-import * as DOM from 'vs/base/browser/dom';
 import { Deferred } from 'sql/base/common/promise';
 import { ICellModel, CellExecutionState } from 'sql/workbench/parts/notebook/models/modelInterfaces';
 
@@ -51,10 +51,6 @@ export class StdInComponent extends AngularDisposable implements AfterViewInit {
 		super();
 	}
 
-	ngOnInit(): void {
-
-	}
-
 	ngAfterViewInit(): void {
 		let inputOptions: IInputOptions = {
 			placeholder: '',
@@ -72,10 +68,12 @@ export class StdInComponent extends AngularDisposable implements AfterViewInit {
 		if (this.cellModel) {
 			this._register(this.cellModel.onExecutionStateChange((status) => this.handleExecutionChange(status)));
 		}
-		this.onkeydown(this._input.inputElement, (e) => this.handleKeyboardInput(e));
 		this._input.focus();
 	}
-	private handleKeyboardInput(e: IKeyboardEvent): void {
+
+	@HostListener('document:keydown', ['$event'])
+	public handleKeyboardInput(event: KeyboardEvent): void {
+		let e = new StandardKeyboardEvent(event);
 		switch (e.keyCode) {
 			case KeyCode.Enter:
 				// Indi
@@ -102,16 +100,11 @@ export class StdInComponent extends AngularDisposable implements AfterViewInit {
 		}
 	}
 
-
-	private onkeydown(domNode: HTMLElement, listener: (e: IKeyboardEvent) => void): void {
-		this._register(DOM.addDisposableListener(domNode, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => listener(new StandardKeyboardEvent(e))));
-	}
-
 	private get prompt(): string {
 		if (this.stdIn && this.stdIn.content && this.stdIn.content.prompt) {
 			return this.stdIn.content.prompt;
 		}
-		return localize('stdInLabel', 'StdIn:');
+		return localize('stdInLabel', "StdIn:");
 	}
 
 	private get password(): boolean {
