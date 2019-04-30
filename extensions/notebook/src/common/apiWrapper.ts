@@ -44,6 +44,10 @@ export class ApiWrapper {
 		return vscode.window.showErrorMessage(message, ...items);
 	}
 
+	public showInfoMessage(message: string, ...items: string[]): Thenable<string | undefined> {
+		return vscode.window.showInformationMessage(message, ...items);
+	}
+
 	public showOpenDialog(options: vscode.OpenDialogOptions): Thenable<vscode.Uri[] | undefined> {
 		return vscode.window.showOpenDialog(options);
 	}

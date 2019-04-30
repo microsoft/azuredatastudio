@@ -72,7 +72,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 					canSelectFiles: true,
 					canSelectFolders: false,
 					canSelectMany: false,
-					defaultUri: vscode.Uri.file(os.homedir()),
+					defaultUri: vscode.Uri.file(this.getRootPath()),
 					openLabel: localize('dacFxDeploy.openFile', 'Open'),
 					filters: {
 						'dacpac Files': ['dacpac'],

@@ -9,7 +9,7 @@ import { OnInit, Component, Input, Inject, ElementRef, ViewChild, Output, EventE
 import { AngularDisposable } from 'sql/base/node/lifecycle';
 import { QueryTextEditor } from 'sql/workbench/electron-browser/modelComponents/queryTextEditor';
 import { CellToggleMoreActions } from 'sql/workbench/parts/notebook/cellToggleMoreActions';
-import { ICellModel, notebookConstants } from 'sql/workbench/parts/notebook/models/modelInterfaces';
+import { ICellModel, notebookConstants, CellExecutionState } from 'sql/workbench/parts/notebook/models/modelInterfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { RunCellAction, CellContext } from 'sql/workbench/parts/notebook/cellViews/codeActions';
 import { NotebookModel } from 'sql/workbench/parts/notebook/models/notebookModel';
@@ -229,6 +229,11 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 			}
 		}));
 		this._register(this.model.layoutChanged(() => this._layoutEmitter.fire(), this));
+		this._register(this.cellModel.onExecutionStateChange(event => {
+			if (event === CellExecutionState.Running) {
+				this.setFocusAndScroll();
+			}
+		}));
 		this.layout();
 	}
 
@@ -249,7 +254,6 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		this._actionBar.setContent([
 			{ action: runCellAction }
 		]);
-
 		this._cellToggleMoreActions.onInit(this.moreActionsElementRef, this.model, this.cellModel);
 	}
 

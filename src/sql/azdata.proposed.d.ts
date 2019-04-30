@@ -404,7 +404,7 @@ declare module 'azdata' {
 		/**
 		 * options for all new server properties.
 		 */
-		options: {};
+		options: { [key: string]: any };
 	}
 
 	export interface DataProvider {
@@ -1737,13 +1737,171 @@ declare module 'azdata' {
 	export interface SchemaCompareEndpointInfo {
 		endpointType: SchemaCompareEndpointType;
 		packageFilePath: string;
+		serverName: string;
 		databaseName: string;
 		ownerUri: string;
 	}
 
+	export interface SchemaCompareOptionsResult extends ResultStatus {
+		defaultDeploymentOptions: DeploymentOptions;
+	}
+
+	export interface DeploymentOptions {
+		ignoreTableOptions: boolean;
+		ignoreSemicolonBetweenStatements: boolean;
+		ignoreRouteLifetime: boolean;
+		ignoreRoleMembership: boolean;
+		ignoreQuotedIdentifiers: boolean;
+		ignorePermissions: boolean;
+		ignorePartitionSchemes: boolean;
+		ignoreObjectPlacementOnPartitionScheme: boolean;
+		ignoreNotForReplication: boolean;
+		ignoreLoginSids: boolean;
+		ignoreLockHintsOnIndexes: boolean;
+		ignoreKeywordCasing: boolean;
+		ignoreIndexPadding: boolean;
+		ignoreIndexOptions: boolean;
+		ignoreIncrement: boolean;
+		ignoreIdentitySeed: boolean;
+		ignoreUserSettingsObjects: boolean;
+		ignoreFullTextCatalogFilePath: boolean;
+		ignoreWhitespace: boolean;
+		ignoreWithNocheckOnForeignKeys: boolean;
+		verifyCollationCompatibility: boolean;
+		unmodifiableObjectWarnings: boolean;
+		treatVerificationErrorsAsWarnings: boolean;
+		scriptRefreshModule: boolean;
+		scriptNewConstraintValidation: boolean;
+		scriptFileSize: boolean;
+		scriptDeployStateChecks: boolean;
+		scriptDatabaseOptions: boolean;
+		scriptDatabaseCompatibility: boolean;
+		scriptDatabaseCollation: boolean;
+		runDeploymentPlanExecutors: boolean;
+		registerDataTierApplication: boolean;
+		populateFilesOnFileGroups: boolean;
+		noAlterStatementsToChangeClrTypes: boolean;
+		includeTransactionalScripts: boolean;
+		includeCompositeObjects: boolean;
+		allowUnsafeRowLevelSecurityDataMovement: boolean;
+		ignoreWithNocheckOnCheckConstraints: boolean;
+		ignoreFillFactor: boolean;
+		ignoreFileSize: boolean;
+		ignoreFilegroupPlacement: boolean;
+		doNotAlterReplicatedObjects: boolean;
+		doNotAlterChangeDataCaptureObjects: boolean;
+		disableAndReenableDdlTriggers: boolean;
+		deployDatabaseInSingleUserMode: boolean;
+		createNewDatabase: boolean;
+		compareUsingTargetCollation: boolean;
+		commentOutSetVarDeclarations: boolean;
+		blockWhenDriftDetected: boolean;
+		blockOnPossibleDataLoss: boolean;
+		backupDatabaseBeforeChanges: boolean;
+		allowIncompatiblePlatform: boolean;
+		allowDropBlockingAssemblies: boolean;
+		dropConstraintsNotInSource: boolean;
+		dropDmlTriggersNotInSource: boolean;
+		dropExtendedPropertiesNotInSource: boolean;
+		dropIndexesNotInSource: boolean;
+		ignoreFileAndLogFilePath: boolean;
+		ignoreExtendedProperties: boolean;
+		ignoreDmlTriggerState: boolean;
+		ignoreDmlTriggerOrder: boolean;
+		ignoreDefaultSchema: boolean;
+		ignoreDdlTriggerState: boolean;
+		ignoreDdlTriggerOrder: boolean;
+		ignoreCryptographicProviderFilePath: boolean;
+		verifyDeployment: boolean;
+		ignoreComments: boolean;
+		ignoreColumnCollation: boolean;
+		ignoreAuthorizer: boolean;
+		ignoreAnsiNulls: boolean;
+		generateSmartDefaults: boolean;
+		dropStatisticsNotInSource: boolean;
+		dropRoleMembersNotInSource: boolean;
+		dropPermissionsNotInSource: boolean;
+		dropObjectsNotInSource: boolean;
+		ignoreColumnOrder: boolean;
+		doNotDropObjectTypes: SchemaObjectType[];
+		excludeObjectTypes: SchemaObjectType[];
+	}
+
+	export enum SchemaObjectType {
+		aggregates = 0,
+		applicationRoles = 1,
+		assemblies = 2,
+		assemblyFiles = 3,
+		asymmetricKeys = 4,
+		brokerPriorities = 5,
+		certificates = 6,
+		columnEncryptionKeys = 7,
+		columnMasterKeys = 8,
+		contracts = 9,
+		databaseOptions = 10,
+		databaseRoles = 11,
+		databaseTriggers = 12,
+		defaults = 13,
+		extendedProperties = 14,
+		externalDataSources = 15,
+		externalFileFormats = 16,
+		externalTables = 17,
+		filegroups = 18,
+		fileTables = 19,
+		fullTextCatalogs = 20,
+		fullTextStoplists = 21,
+		messageTypes = 22,
+		partitionFunctions = 23,
+		partitionSchemes = 24,
+		permissions = 25,
+		queues = 26,
+		remoteServiceBindings = 27,
+		roleMembership = 28,
+		rules = 29,
+		scalarValuedFunctions = 30,
+		searchPropertyLists = 31,
+		securityPolicies = 32,
+		sequences = 33,
+		services = 34,
+		signatures = 35,
+		storedProcedures = 36,
+		symmetricKeys = 37,
+		synonyms = 38,
+		tables = 39,
+		tableValuedFunctions = 40,
+		userDefinedDataTypes = 41,
+		userDefinedTableTypes = 42,
+		clrUserDefinedTypes = 43,
+		users = 44,
+		views = 45,
+		xmlSchemaCollections = 46,
+		audits = 47,
+		credentials = 48,
+		cryptographicProviders = 49,
+		databaseAuditSpecifications = 50,
+		databaseEncryptionKeys = 51,
+		databaseScopedCredentials = 52,
+		endpoints = 53,
+		errorMessages = 54,
+		eventNotifications = 55,
+		eventSessions = 56,
+		linkedServerLogins = 57,
+		linkedServers = 58,
+		logins = 59,
+		masterKeys = 60,
+		routes = 61,
+		serverAuditSpecifications = 62,
+		serverRoleMembership = 63,
+		serverRoles = 64,
+		serverTriggers = 65
+	}
+
 	export interface SchemaCompareServicesProvider extends DataProvider {
-		schemaCompare(sourceEndpointInfo: SchemaCompareEndpointInfo, targetEndpointInfo: SchemaCompareEndpointInfo, taskExecutionMode: TaskExecutionMode): Thenable<SchemaCompareResult>;
+		schemaCompare(sourceEndpointInfo: SchemaCompareEndpointInfo, targetEndpointInfo: SchemaCompareEndpointInfo, taskExecutionMode: TaskExecutionMode, deploymentOptions: DeploymentOptions): Thenable<SchemaCompareResult>;
 		schemaCompareGenerateScript(operationId: string, targetDatabaseName: string, scriptFilePath: string, taskExecutionMode: TaskExecutionMode): Thenable<ResultStatus>;
+		schemaComparePublishChanges(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: TaskExecutionMode): Thenable<ResultStatus>;
+		schemaCompareGetDefaultOptions(): Thenable<SchemaCompareOptionsResult>;
+		schemaCompareIncludeExcludeNode(operationId: string, diffEntry: DiffEntry, IncludeRequest: boolean, taskExecutionMode: TaskExecutionMode): Thenable<ResultStatus>;
 	}
 
 	// Security service interfaces ------------------------------------------------------------------------
@@ -3705,7 +3863,7 @@ declare module 'azdata' {
 			| 'executionPlan';
 
 		export interface QueryEventListener {
-			onQueryEvent(type: QueryEvent, document: queryeditor.QueryDocument, args: any);
+			onQueryEvent(type: QueryEvent, document: queryeditor.QueryDocument, args: any): void;
 		}
 
 		// new extensibility interfaces
@@ -3958,7 +4116,7 @@ declare module 'azdata' {
 		 * Opens the connection and add it to object explorer and opens the dashboard and returns the ConnectionResult
 		 * @param connectionProfile connection profile
 		 */
-		export function connect(connectionProfile: IConnectionProfile): Thenable<ConnectionResult>;
+		export function connect(connectionProfile: IConnectionProfile, saveConnection?: boolean, showDashboard?: boolean): Thenable<ConnectionResult>;
 	}
 
 	export namespace nb {
@@ -4443,7 +4601,7 @@ declare module 'azdata' {
 			 * Mime bundle expected to contain mime type -> contents mappings.
 			 * This is dynamic and is controlled by kernels, so cannot be more specific
 			 */
-			data: {};
+			data: { [key: string]: any };
 			/**
 			 * Optional metadata, also a mime bundle
 			 */

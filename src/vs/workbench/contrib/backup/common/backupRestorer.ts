@@ -11,6 +11,8 @@ import { IResourceInput } from 'vs/platform/editor/common/editor';
 import { Schemas } from 'vs/base/common/network';
 import { ILifecycleService, LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
 import { IUntitledResourceInput } from 'vs/workbench/common/editor';
+import { toLocalResource } from 'vs/base/common/resources';
+import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
 
 export class BackupRestorer implements IWorkbenchContribution {
 
@@ -21,7 +23,8 @@ export class BackupRestorer implements IWorkbenchContribution {
 	constructor(
 		@IEditorService private readonly editorService: IEditorService,
 		@IBackupFileService private readonly backupFileService: IBackupFileService,
-		@ILifecycleService private readonly lifecycleService: ILifecycleService
+		@ILifecycleService private readonly lifecycleService: ILifecycleService,
+		@IWorkbenchEnvironmentService private readonly environmentService: IWorkbenchEnvironmentService
 	) {
 		this.restoreBackups();
 	}
@@ -79,7 +82,7 @@ export class BackupRestorer implements IWorkbenchContribution {
 		if (resource.scheme === Schemas.untitled
 			&& !BackupRestorer.UNTITLED_REGEX.test(resource.fsPath)
 			&& !BackupRestorer.SQLQUERY_REGEX.test(resource.fsPath)) {
-			return { filePath: resource.fsPath, options };
+			return { resource: toLocalResource(resource, this.environmentService.configuration.remoteAuthority), options, forceUntitled: true };
 		}
 
 		return { resource, options };

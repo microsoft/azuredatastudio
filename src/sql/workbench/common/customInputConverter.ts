@@ -8,8 +8,8 @@ import { IInstantiationService, ServiceIdentifier } from 'vs/platform/instantiat
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { URI } from 'vs/base/common/uri';
 
-import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
-import { QueryInput } from 'sql/parts/query/common/queryInput';
+import { QueryResultsInput } from 'sql/workbench/parts/query/common/queryResultsInput';
+import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
 import { IQueryEditorOptions } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { QueryPlanInput } from 'sql/workbench/parts/queryPlan/common/queryPlanInput';
 import { NotebookInput } from 'sql/workbench/parts/notebook/notebookInput';

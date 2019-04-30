@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as ConnectionConstants from 'sql/platform/connection/common/constants';
-import * as Constants from 'sql/parts/query/common/constants';
-import * as LocalizedConstants from 'sql/parts/query/common/localizedConstants';
+import * as Constants from 'sql/workbench/parts/query/common/constants';
+import * as LocalizedConstants from 'sql/workbench/parts/query/common/localizedConstants';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import { SaveResultsRequestParams } from 'azdata';
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';

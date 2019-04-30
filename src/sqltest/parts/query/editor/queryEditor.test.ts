@@ -12,13 +12,13 @@ import * as DOM from 'vs/base/browser/dom';
 import { Memento } from 'vs/workbench/common/memento';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 
-import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
-import { QueryEditor } from 'sql/parts/query/editor/queryEditor';
+import { QueryResultsInput } from 'sql/workbench/parts/query/common/queryResultsInput';
+import { QueryEditor } from 'sql/workbench/parts/query/browser/queryEditor';
 import { QueryModelService } from 'sql/platform/query/common/queryModelService';
-import { QueryInput } from 'sql/parts/query/common/queryInput';
+import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
 import { INewConnectionParams, ConnectionType, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionManagementService } from 'sql/platform/connection/common/connectionManagementService';
-import { RunQueryAction, ListDatabasesActionItem } from 'sql/parts/query/execution/queryActions';
+import { RunQueryAction, ListDatabasesActionItem } from 'sql/workbench/parts/query/browser/queryActions';
 import { EditorDescriptorService } from 'sql/workbench/services/queryEditor/common/editorDescriptorService';
 
 import { TestThemeService } from 'sqltest/stubs/themeTestService';

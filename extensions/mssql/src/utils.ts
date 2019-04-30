@@ -112,6 +112,7 @@ export function getPackageInfo(packageJson: any): IPackageInfo {
 			aiKey: packageJson.aiKey
 		};
 	}
+	return undefined;
 }
 
 export function generateUserId(): Promise<string> {

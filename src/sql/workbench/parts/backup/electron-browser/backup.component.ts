@@ -270,11 +270,10 @@ export class BackupComponent {
 
 		// Set backup path list
 		this.pathListBox = new ListBox([], this.contextViewService);
-
 		this.pathListBox.onKeyDown(e => {
 			if (this.pathListBox.selectedOptions.length > 0) {
-				let key = e.keyCode;
-				let ctrlOrCmd = e.ctrlKey || e.metaKey;
+				const key = e.keyCode;
+				const ctrlOrCmd = e.ctrlKey || e.metaKey;
 
 				if (ctrlOrCmd && key === KeyCode.KEY_C) {
 					let textToCopy = this.pathListBox.selectedOptions[0];

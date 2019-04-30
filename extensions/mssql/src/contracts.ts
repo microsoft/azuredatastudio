@@ -439,12 +439,31 @@ export interface SchemaCompareParams {
 	sourceEndpointInfo: azdata.SchemaCompareEndpointInfo;
 	targetEndpointInfo: azdata.SchemaCompareEndpointInfo;
 	taskExecutionMode: TaskExecutionMode;
+	deploymentOptions: azdata.DeploymentOptions;
 }
 
 export interface SchemaCompareGenerateScriptParams {
 	operationId: string;
 	targetDatabaseName: string;
 	scriptFilePath: string;
+	taskExecutionMode: TaskExecutionMode;
+}
+
+export interface SchemaComparePublishChangesParams {
+	operationId: string;
+	targetServerName: string;
+	targetDatabaseName: string;
+	taskExecutionMode: TaskExecutionMode;
+}
+
+export interface SchemaCompareGetOptionsParams {
+
+}
+
+export interface SchemaCompareNodeParams {
+	operationId: string;
+	diffEntry: azdata.DiffEntry;
+	includeRequest: boolean;
 	taskExecutionMode: TaskExecutionMode;
 }
 
@@ -455,4 +474,17 @@ export namespace SchemaCompareRequest {
 export namespace SchemaCompareGenerateScriptRequest {
 	export const type = new RequestType<SchemaCompareGenerateScriptParams, azdata.ResultStatus, void, void>('schemaCompare/generateScript');
 }
+
+export namespace SchemaComparePublishChangesRequest {
+	export const type = new RequestType<SchemaComparePublishChangesParams, azdata.ResultStatus, void, void>('schemaCompare/publish');
+}
+
+export namespace SchemaCompareGetDefaultOptionsRequest {
+	export const type = new RequestType<SchemaCompareGetOptionsParams, azdata.SchemaCompareOptionsResult, void, void>('schemaCompare/getDefaultOptions');
+}
+
+export namespace SchemaCompareIncludeExcludeNodeRequest {
+	export const type = new RequestType<SchemaCompareNodeParams, azdata.ResultStatus, void, void>('schemaCompare/includeExcludeNode');
+}
+
 // ------------------------------- <Schema Compare> -----------------------------

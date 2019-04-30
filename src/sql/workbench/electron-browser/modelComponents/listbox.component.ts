@@ -52,8 +52,8 @@ export default class ListBoxComponent extends ComponentBase implements IComponen
 			this._input = new ListBox([], this.contextViewService);
 			this._input.onKeyDown(e => {
 				if (this._input.selectedOptions.length > 0) {
-					let key = e.keyCode;
-					let ctrlOrCmd = e.ctrlKey || e.metaKey;
+					const key = e.keyCode;
+					const ctrlOrCmd = e.ctrlKey || e.metaKey;
 
 					if (ctrlOrCmd && key === KeyCode.KEY_C) {
 						let textToCopy = this._input.selectedOptions[0];

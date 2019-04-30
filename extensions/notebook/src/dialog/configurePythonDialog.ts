@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
@@ -34,7 +32,7 @@ export class ConfigurePythonDialog {
 
 	private _setupComplete: Deferred<void>;
 
-	constructor(private apiWrapper: ApiWrapper, private outputChannel: vscode.OutputChannel, private jupyterInstallation: JupyterServerInstallation) {
+	constructor(private apiWrapper: ApiWrapper, private jupyterInstallation: JupyterServerInstallation) {
 		this._setupComplete = new Deferred<void>();
 	}
 

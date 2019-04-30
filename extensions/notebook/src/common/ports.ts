@@ -38,7 +38,7 @@ export async function strictFindFreePort(options: StrictPortFindOptions): Promis
  * @param max - max number
  * @return a random integer
  */
-function getRandomInt(min, max): number {
+function getRandomInt(min: number, max: number): number {
 	return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
