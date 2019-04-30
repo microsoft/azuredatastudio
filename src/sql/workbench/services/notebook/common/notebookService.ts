@@ -63,8 +63,6 @@ export interface INotebookService {
 
 	addNotebookEditor(editor: INotebookEditor): void;
 
-	//closeNotebookEditor(editor: INotebookEditor): void;
-
 	removeNotebookEditor(editor: INotebookEditor): void;
 
 	listNotebookEditors(): INotebookEditor[];

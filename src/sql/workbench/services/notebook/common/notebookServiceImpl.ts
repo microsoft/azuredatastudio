@@ -347,11 +347,6 @@ export class NotebookService extends Disposable implements INotebookService {
 		this._onNotebookEditorAdd.fire(editor);
 	}
 
-	// closeNotebookEditor(editor: INotebookEditor): void {
-	// 	editor.group.closeEditor(editor.notebookParams.input);
-	// 	this.removeNotebookEditor(editor);
-	// }
-
 	removeNotebookEditor(editor: INotebookEditor): void {
 		if (this._editors.delete(editor.id)) {
 			this._onNotebookEditorRemove.fire(editor);
