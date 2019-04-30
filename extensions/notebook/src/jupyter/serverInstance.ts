@@ -80,7 +80,7 @@ export class ServerInstanceUtils {
 		if (!childProcess) {
 			return;
 		}
-		// Wait 3 seconds and then force kill. Jupyter stop is slow so this seems a reasonable time limit
+		// Wait 5 seconds and then force kill. Jupyter stop is slow so this seems a reasonable time limit
 		setTimeout(() => {
 			// Test if the process is still alive. Throws an exception if not
 			try {
@@ -90,7 +90,7 @@ export class ServerInstanceUtils {
 					console.log(error);
 				}
 			}
-		}, 3000);
+		}, 5000);
 	}
 }
 
