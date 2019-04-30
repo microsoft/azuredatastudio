@@ -153,14 +153,22 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				this._content = this.cellModel.source;
 			}
 
-			this._commandService.executeCommand<string>('notebook.showPreview', this.cellModel.notebookModel.notebookUri, this._content, this.cellModel.trustedMode).then((htmlcontent) => {
+			this._commandService.executeCommand<string>('notebook.showPreview', this.cellModel.notebookModel.notebookUri, this._content).then((htmlcontent) => {
 				htmlcontent = this.convertVscodeResourceToFileInSubDirectories(htmlcontent);
+				htmlcontent = this.sanitizeContent(htmlcontent);
 				let outputElement = <HTMLElement>this.output.nativeElement;
 				outputElement.innerHTML = htmlcontent;
 			});
 		}
 	}
 
+	//Sanitizes the content based on trusted mode of Cell Model
+	private sanitizeContent(content: string): string {
+		if (this.cellModel && !this.cellModel.trustedMode) {
+			content = this.sanitizer.sanitize(content);
+		}
+		return content;
+	}
 	// Only replace vscode-resource with file when in the same (or a sub) directory
 	// This matches Jupyter Notebook viewer behavior
 	private convertVscodeResourceToFileInSubDirectories(htmlContent: string): string {

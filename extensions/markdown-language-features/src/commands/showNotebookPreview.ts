@@ -14,7 +14,7 @@ export class ShowNotebookPreview implements Command {
 		private readonly engine: MarkdownEngine
 	) { }
 
-	public async execute(document: vscode.Uri, textContent: string, trusted: boolean): Promise<string> {
-		return this.engine.renderText(document, textContent, trusted);
+	public async execute(document: vscode.Uri, textContent: string): Promise<string> {
+		return this.engine.renderText(document, textContent);
 	}
 }
