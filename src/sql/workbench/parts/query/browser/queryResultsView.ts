@@ -20,6 +20,8 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import * as DOM from 'vs/base/browser/dom';
 import { Event } from 'vs/base/common/event';
 import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
+import { attachTabbedPanelStyler } from 'sql/platform/theme/common/styler';
+import { IThemeService } from 'vs/platform/theme/common/themeService';
 
 class ResultsView extends Disposable implements IPanelView {
 	private panelViewlet: PanelViewlet;
@@ -182,7 +184,8 @@ export class QueryResultsView extends Disposable {
 	constructor(
 		container: HTMLElement,
 		@IInstantiationService private instantiationService: IInstantiationService,
-		@IQueryModelService private queryModelService: IQueryModelService
+		@IQueryModelService private queryModelService: IQueryModelService,
+		@IThemeService themeService: IThemeService
 	) {
 		super();
 		this.resultsTab = this._register(new ResultsTab(instantiationService));
@@ -190,6 +193,8 @@ export class QueryResultsView extends Disposable {
 		this._panelView = this._register(new TabbedPanel(container, { showHeaderWhenSingleView: false }));
 		this.qpTab = this._register(new QueryPlanTab());
 		this.topOperationsTab = this._register(new TopOperationsTab(instantiationService));
+
+		attachTabbedPanelStyler(this._panelView, themeService);
 
 		this._panelView.pushTab(this.resultsTab);
 		this._register(this._panelView.onTabChange(e => {

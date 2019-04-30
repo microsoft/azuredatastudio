@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./media/connectionDialog';
 import { Button } from 'sql/base/browser/ui/button/button';
-import { attachModalDialogStyler, attachButtonStyler } from 'sql/platform/theme/common/styler';
+import { attachModalDialogStyler, attachButtonStyler, attachTabbedPanelStyler } from 'sql/platform/theme/common/styler';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Modal } from 'sql/workbench/browser/modal/modal';
@@ -153,6 +153,7 @@ export class ConnectionDialogWidget extends Modal {
 		DOM.hide(this._savedConnection);
 
 		this._panel = new TabbedPanel(this._body);
+		attachTabbedPanelStyler(this._panel, this._themeService);
 		this._recentConnectionTabId = this._panel.pushTab({
 			identifier: 'recent_connection',
 			title: localize('recentConnectionTitle', "Recent Connections"),

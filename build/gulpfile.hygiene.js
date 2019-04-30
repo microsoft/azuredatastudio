@@ -134,7 +134,7 @@ const copyrightFilter = [
 	'!src/sql/workbench/parts/notebook/outputs/common/renderMimeInterfaces.ts',
 	'!src/sql/workbench/parts/notebook/outputs/common/outputProcessor.ts',
 	'!src/sql/workbench/parts/notebook/outputs/common/mimemodel.ts',
-	'!src/sql/workbench/parts/notebook/cellViews/media/output.css',
+	'!src/sql/workbench/parts/notebook/cellViews/media/*.css',
 	'!src/sql/base/browser/ui/table/plugins/rowSelectionModel.plugin.ts',
 	'!src/sql/base/browser/ui/table/plugins/rowDetailView.ts',
 	'!src/sql/base/browser/ui/table/plugins/headerFilter.plugin.ts',

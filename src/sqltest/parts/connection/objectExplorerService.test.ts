@@ -33,7 +33,7 @@ suite('SQL Object Explorer Service tests', () => {
 	let objectExplorerExpandInfoRefresh: NodeExpandInfoWithProviderId;
 	let sessionId = '1234';
 	let failedSessionId = '12345';
-	let numberOfFailedSession: number = 0;
+	let numberOfSuccessfulSessions: number = 0;
 	let serverTreeView: TypeMoq.Mock<ServerTreeView>;
 	const providerId = 'MSSQL';
 
@@ -286,8 +286,8 @@ suite('SQL Object Explorer Service tests', () => {
 		sqlOEProvider.setup(x => x.closeSession(TypeMoq.It.isAny())).returns(() => Promise.resolve(objectExplorerCloseSessionResponse));
 
 		objectExplorerService.onUpdateObjectExplorerNodes(args => {
-			if (args && args.errorMessage !== undefined) {
-				numberOfFailedSession++;
+			if (args && args.errorMessage === undefined) {
+				numberOfSuccessfulSessions++;
 			}
 		});
 
@@ -320,11 +320,11 @@ suite('SQL Object Explorer Service tests', () => {
 		objectExplorerService.createNewSession('MSSQL', connectionToFail).then(session => {
 			assert.equal(session !== null || session !== undefined, true);
 			assert.equal(session.sessionId, failedSessionId);
-			let currentNumberOfFailedSession = numberOfFailedSession;
+			let currentNumberOfSuccessfulSessions = numberOfSuccessfulSessions;
 			objectExplorerService.onSessionCreated(1, objectExplorerFailedSession);
 			let node = objectExplorerService.getObjectExplorerNode(connection);
 			assert.equal(node, undefined);
-			assert.equal(currentNumberOfFailedSession + 1, numberOfFailedSession);
+			assert.equal(currentNumberOfSuccessfulSessions, numberOfSuccessfulSessions);
 			done();
 		}, err => {
 			// Must call done here so test indicates it's finished if errors occur
