@@ -16,6 +16,7 @@ import { ModelFactory } from 'sql/workbench/parts/notebook/models/modelFactory';
 import { NotebookModelStub } from '../common';
 import { EmptyFuture } from 'sql/workbench/services/notebook/common/sessionManager';
 import { ICellModel } from 'sql/workbench/parts/notebook/models/modelInterfaces';
+import { Deferred } from 'sql/base/common/promise';
 
 suite('Cell Model', function (): void {
 	let factory = new ModelFactory();
@@ -185,6 +186,19 @@ suite('Cell Model', function (): void {
 	suite('Model Future handling', function (): void {
 		let future: TypeMoq.Mock<EmptyFuture>;
 		let cell: ICellModel;
+		const stdInDefaultMessage: nb.IStdinMessage = {
+			channel: 'stdin',
+			type: 'stdin',
+			parent_header: undefined,
+			metadata: undefined,
+			header: <nb.IHeader>{
+				msg_type: 'stream'
+			},
+			content: {
+				prompt: 'Prompt',
+				password: false
+			}
+		};
 		setup(() => {
 			future = TypeMoq.Mock.ofType(EmptyFuture);
 			cell = factory.createCell({
@@ -239,8 +253,72 @@ suite('Cell Model', function (): void {
 			message.header.msg_type = 'display_data';
 			onIopub.handle(message);
 			should(outputs[1].output_type).equal('display_data');
+		});
 
-			// ... TODO: And when I sent a reply I expect it to be processed.
+		test('stdin should return void if no handler registered', async () => {
+			// Given stdIn does not have a request handler setup
+			let onStdIn: nb.MessageHandler<nb.IStdinMessage>;
+			future.setup(f => f.setStdInHandler(TypeMoq.It.isAny())).callback((handler) => onStdIn = handler);
+
+			// When I set it on the cell
+			cell.setFuture(future.object);
+
+			// Then I expect stdIn to have been hooked up
+			should(onStdIn).not.be.undefined();
+			// ... And when I send a stdIn request message
+			let result = onStdIn.handle(stdInDefaultMessage);
+			// Then I expect the promise to resolve
+			await result;
+			future.verify(f => f.sendInputReply(TypeMoq.It.isAny()), TypeMoq.Times.never());
+		});
+
+		test('stdin should wait on handler if handler registered', async () => {
+			// Given stdIn has a handler set up
+			let onStdIn: nb.MessageHandler<nb.IStdinMessage>;
+			future.setup(f => f.setStdInHandler(TypeMoq.It.isAny())).callback((handler) => onStdIn = handler);
+
+			let deferred = new Deferred<void>();
+			let stdInMessage: nb.IStdinMessage = undefined;
+			cell.setStdInHandler({
+				handle: (msg: nb.IStdinMessage) => {
+					stdInMessage = msg;
+					return deferred.promise;
+				}
+			});
+
+			// When I send a stdIn request message
+			cell.setFuture(future.object);
+			let result = onStdIn.handle(stdInDefaultMessage);
+			deferred.resolve();
+			// Then I expect promise to resolve since it should wait on upstream handling
+			await result;
+			// And I expect message to have been passed upstream and no message sent from the cell
+			should(stdInMessage).not.be.undefined();
+			should(stdInMessage.content.prompt).equal(stdInDefaultMessage.content.prompt);
+			should(stdInMessage.content.password).equal(stdInDefaultMessage.content.password);
+			future.verify(f => f.sendInputReply(TypeMoq.It.isAny()), TypeMoq.Times.never());
+		});
+		test('stdin should send default response if there is upstream error', async () => {
+			// Given stdIn has a handler set up
+			let onStdIn: nb.MessageHandler<nb.IStdinMessage>;
+			future.setup(f => f.setStdInHandler(TypeMoq.It.isAny())).callback((handler) => onStdIn = handler);
+
+			let deferred = new Deferred<void>();
+			let stdInMessage: nb.IStdinMessage = undefined;
+			cell.setStdInHandler({
+				handle: (msg: nb.IStdinMessage) => {
+					stdInMessage = msg;
+					return deferred.promise;
+				}
+			});
+
+			// When I send a stdIn request message
+			cell.setFuture(future.object);
+			let result = onStdIn.handle(stdInDefaultMessage);
+			deferred.reject('Something went wrong');
+			// Then I expect promise to resolve since it should wait on upstream handling
+			await result;
+			future.verify(f => f.sendInputReply(TypeMoq.It.isAny()), TypeMoq.Times.once());
 		});
 
 		test('should delete transient tag while handling incoming messages', async () => {

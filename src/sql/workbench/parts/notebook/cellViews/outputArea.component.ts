@@ -22,8 +22,6 @@ export class OutputAreaComponent extends AngularDisposable implements OnInit {
 
 	private _activeCellId: string;
 
-	private readonly _minimumHeight = 30;
-
 	constructor(
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef
