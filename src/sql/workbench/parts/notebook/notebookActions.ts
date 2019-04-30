@@ -27,10 +27,10 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 const msgLoading = localize('loading', "Loading kernels...");
 const msgChanging = localize('changing', "Changing kernel...");
 const kernelLabel: string = localize('Kernel', "Kernel: ");
-const attachToLabel: string = localize('AttachTo', "Attach to: ");
+const attachToLabel: string = localize('AttachTo', "Attach To: ");
 const msgLoadingContexts = localize('loadingContexts', "Loading contexts...");
-const msgAddNewConnection = localize('addNewConnection', "Add new connection");
-const msgSelectConnection = localize('selectConnection', "Select connection");
+const msgAddNewConnection = localize('addNewConnection', "Add New Connection");
+const msgSelectConnection = localize('selectConnection', "Select Connection");
 const msgLocalHost = localize('localhost', "localhost");
 const HIDE_ICON_CLASS = ' hideIcon';
 
