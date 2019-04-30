@@ -14,7 +14,7 @@ import { ResourceMap } from 'vs/base/common/map';
 import { coalesce } from 'vs/base/common/arrays';
 
 // {{SQL CARBON EDIT}}
-import { QueryInput } from 'sql/parts/query/common/queryInput';
+import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import * as CustomInputConverter from 'sql/workbench/common/customInputConverter';
 import { NotebookInput } from 'sql/workbench/parts/notebook/notebookInput';

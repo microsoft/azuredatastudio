@@ -201,7 +201,7 @@
 			"objectExplorer/item/context": [
 				{
 					"command": "notebook.command.new",
-					"when": "connectionProvider == MSSQL && nodeType == Server",
+					"when": "isQueryProvider && nodeType == Server",
 					"group": "1root@1"
 				},
 				{
