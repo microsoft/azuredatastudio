@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 
-import * as Constants from 'sql/parts/query/common/constants';
+import * as Constants from 'sql/workbench/parts/query/common/constants';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
 import * as Utils from 'sql/platform/connection/common/utils';

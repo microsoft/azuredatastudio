@@ -3,9 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./media/connectionDialog';
-
 import { Button } from 'sql/base/browser/ui/button/button';
-import { attachModalDialogStyler, attachButtonStyler } from 'sql/platform/theme/common/styler';
+import { attachModalDialogStyler, attachButtonStyler, attachTabbedPanelStyler } from 'sql/platform/theme/common/styler';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Modal } from 'sql/workbench/browser/modal/modal';
@@ -19,7 +18,7 @@ import { RecentConnectionTreeController, RecentConnectionActionsProvider } from 
 import { SavedConnectionTreeController } from 'sql/workbench/parts/connection/browser/savedConnectionTreeController';
 import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
 import { ClearRecentConnectionsAction } from 'sql/workbench/parts/connection/common/connectionActions';
-
+import * as Constants from 'sql/platform/connection/common/constants';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { contrastBorder } from 'vs/platform/theme/common/colorRegistry';
 import { Event, Emitter } from 'vs/base/common/event';
@@ -77,8 +76,8 @@ export class ConnectionDialogWidget extends Modal {
 	public onShowUiComponent: Event<OnShowUIResponse> = this._onShowUiComponent.event;
 
 	private _onFillinConnectionInputs = new Emitter<IConnectionProfile>();
-	public onFillinConnectionInputs: Event<IConnectionProfile> = this._onFillinConnectionInputs.event;
 
+	public onFillinConnectionInputs: Event<IConnectionProfile> = this._onFillinConnectionInputs.event;
 	private _onResetConnection = new Emitter<void>();
 	public onResetConnection: Event<void> = this._onResetConnection.event;
 
@@ -120,6 +119,8 @@ export class ConnectionDialogWidget extends Modal {
 			if (validProviderNames && validProviderNames.length > 0) {
 				filteredProviderTypes = filteredProviderTypes.filter(x => validProviderNames.find(v => this.providerNameToDisplayNameMap[v] === x) !== undefined);
 			}
+		} else {
+			filteredProviderTypes = filteredProviderTypes.filter(x => x !== Constants.cmsProviderDisplayName);
 		}
 		this._providerTypeSelectBox.setOptions(filteredProviderTypes);
 	}
@@ -152,6 +153,7 @@ export class ConnectionDialogWidget extends Modal {
 		DOM.hide(this._savedConnection);
 
 		this._panel = new TabbedPanel(this._body);
+		attachTabbedPanelStyler(this._panel, this._themeService);
 		this._recentConnectionTabId = this._panel.pushTab({
 			identifier: 'recent_connection',
 			title: localize('recentConnectionTitle', "Recent Connections"),
@@ -438,6 +440,10 @@ export class ConnectionDialogWidget extends Modal {
 		this._providerTypeSelectBox.selectWithOptionName(displayName);
 
 		this.onProviderTypeSelected(displayName);
+	}
+
+	public dispose(): void {
+		this._toDispose.forEach(obj => obj.dispose());
 	}
 
 	public set databaseDropdownExpanded(val: boolean) {

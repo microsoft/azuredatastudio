@@ -50,7 +50,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		let manager = this.findManagerForUri(uriString);
 		if (manager) {
 			manager.provider.handleNotebookClosed(uri);
-			// Note: deliberately not removing handle.
+			this._adapters.delete(manager.handle);
 		}
 	}
 
@@ -117,6 +117,10 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 	}
 
 	$shutdownSession(managerHandle: number, sessionId: string): Thenable<void> {
+		// If manager handle has already been removed, don't try to access it again when shutting down
+		if (this._adapters.get(managerHandle) === undefined) {
+			return undefined;
+		}
 		return this._withSessionManager(managerHandle, async (sessionManager) => {
 			return sessionManager.shutdown(sessionId);
 		});
@@ -249,7 +253,6 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 	private _createDisposable(handle: number): Disposable {
 		return new Disposable(() => {
 			this._adapters.delete(handle);
-			this._proxy.$unregisterNotebookProvider(handle);
 		});
 	}
 

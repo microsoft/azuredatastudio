@@ -119,7 +119,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 		Telemetry.sendTelemetryEvent('ServiceInitializingFailed');
 		vscode.window.showErrorMessage('Failed to start Sql tools service');
 	});
-
 	registerSearchServerCommand(appContext);
 	let contextProvider = new ContextProvider();
 	context.subscriptions.push(contextProvider);

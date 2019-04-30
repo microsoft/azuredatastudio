@@ -9,7 +9,7 @@ import * as objects from 'vs/base/common/objects';
 import { IFileService, IFileStat, FileKind } from 'vs/platform/files/common/files';
 import { IQuickInputService, IQuickPickItem, IQuickPick } from 'vs/platform/quickinput/common/quickInput';
 import { URI } from 'vs/base/common/uri';
-import { isWindows } from 'vs/base/common/platform';
+import { isWindows, OperatingSystem } from 'vs/base/common/platform';
 import { ISaveDialogOptions, IOpenDialogOptions, IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { REMOTE_HOST_SCHEME } from 'vs/platform/remote/common/remoteHosts';
 import { ILabelService } from 'vs/platform/label/common/label';
@@ -26,6 +26,7 @@ import { RemoteFileDialogContext } from 'vs/workbench/common/contextkeys';
 import { equalsIgnoreCase, format } from 'vs/base/common/strings';
 import { OpenLocalFileAction, OpenLocalFileFolderAction, OpenLocalFolderAction } from 'vs/workbench/browser/actions/workspaceActions';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
+import { IRemoteAgentEnvironment } from 'vs/platform/remote/common/remoteAgentEnvironment';
 
 interface FileQuickPickItem extends IQuickPickItem {
 	uri: URI;
@@ -40,7 +41,8 @@ enum UpdateResult {
 }
 
 // Reference: https://en.wikipedia.org/wiki/Filename
-const INVALID_FILE_CHARS = isWindows ? /[\\/:\*\?"<>\|]/g : /[\\/]/g;
+const WINDOWS_INVALID_FILE_CHARS = /[\\/:\*\?"<>\|]/g;
+const UNIX_INVALID_FILE_CHARS = /[\\/]/g;
 const WINDOWS_FORBIDDEN_NAMES = /^(con|prn|aux|clock\$|nul|lpt[0-9]|com[0-9])$/i;
 
 export class RemoteFileDialog {
@@ -60,6 +62,7 @@ export class RemoteFileDialog {
 	private activeItem: FileQuickPickItem;
 	private userHome: URI;
 	private badPath: string | undefined;
+	private remoteAgentEnvironment: IRemoteAgentEnvironment | null;
 
 	constructor(
 		@IFileService private readonly fileService: IFileService,
@@ -136,9 +139,16 @@ export class RemoteFileDialog {
 		return defaultUri ? defaultUri.scheme : (available ? available[0] : Schemas.file);
 	}
 
+	private async getRemoteAgentEnvironment(): Promise<IRemoteAgentEnvironment | null> {
+		if (this.remoteAgentEnvironment === undefined) {
+			this.remoteAgentEnvironment = await this.remoteAgentService.getEnvironment();
+		}
+		return this.remoteAgentEnvironment;
+	}
+
 	private async getUserHome(): Promise<URI> {
 		if (this.scheme !== Schemas.file) {
-			const env = await this.remoteAgentService.getEnvironment();
+			const env = await this.getRemoteAgentEnvironment();
 			if (env) {
 				return env.userHome;
 			}
@@ -264,22 +274,26 @@ export class RemoteFileDialog {
 			});
 
 			this.filePickBox.onDidChangeValue(async value => {
-				// onDidChangeValue can also be triggered by the auto complete, so if it looks like the auto complete, don't do anything
-				if (this.isChangeFromUser()) {
-					// If the user has just entered more bad path, don't change anything
-					if (!equalsIgnoreCase(value, this.constructFullUserPath()) && !this.isBadSubpath(value)) {
-						this.filePickBox.validationMessage = undefined;
-						const valueUri = this.remoteUriFrom(this.trimTrailingSlash(this.filePickBox.value));
-						let updated: UpdateResult = UpdateResult.NotUpdated;
-						if (!resources.isEqual(this.remoteUriFrom(this.trimTrailingSlash(this.pathFromUri(this.currentFolder))), valueUri, true)) {
-							updated = await this.tryUpdateItems(value, this.remoteUriFrom(this.filePickBox.value));
+				try {
+					// onDidChangeValue can also be triggered by the auto complete, so if it looks like the auto complete, don't do anything
+					if (this.isChangeFromUser()) {
+						// If the user has just entered more bad path, don't change anything
+						if (!equalsIgnoreCase(value, this.constructFullUserPath()) && !this.isBadSubpath(value)) {
+							this.filePickBox.validationMessage = undefined;
+							const valueUri = this.remoteUriFrom(this.trimTrailingSlash(this.filePickBox.value));
+							let updated: UpdateResult = UpdateResult.NotUpdated;
+							if (!resources.isEqual(this.remoteUriFrom(this.trimTrailingSlash(this.pathFromUri(this.currentFolder))), valueUri, true)) {
+								updated = await this.tryUpdateItems(value, this.remoteUriFrom(this.filePickBox.value));
+							}
+							if (updated === UpdateResult.NotUpdated) {
+								this.setActiveItems(value);
+							}
+						} else {
+							this.filePickBox.activeItems = [];
 						}
-						if (updated === UpdateResult.NotUpdated) {
-							this.setActiveItems(value);
-						}
-					} else {
-						this.filePickBox.activeItems = [];
 					}
+				} catch {
+					// Since any text can be entered in the input box, there is potential for error causing input. If this happens, do nothing.
 				}
 			});
 			this.filePickBox.onDidHide(() => {
@@ -291,7 +305,7 @@ export class RemoteFileDialog {
 
 			this.filePickBox.show();
 			this.contextKey.set(true);
-			await this.updateItems(homedir, this.trailing);
+			await this.updateItems(homedir, false, this.trailing);
 			if (this.trailing) {
 				this.filePickBox.valueSelection = [this.filePickBox.value.length - this.trailing.length, this.filePickBox.value.length - ext.length];
 			} else {
@@ -321,12 +335,13 @@ export class RemoteFileDialog {
 		this.filePickBox.busy = true;
 		let resolveValue: URI | undefined;
 		let navigateValue: URI | undefined;
-		const trimmedPickBoxValue = ((this.filePickBox.value.length > 1) && this.endsWithSlash(this.filePickBox.value)) ? this.filePickBox.value.substr(0, this.filePickBox.value.length - 1) : this.filePickBox.value;
-		const inputUri = this.remoteUriFrom(trimmedPickBoxValue);
-		const inputUriDirname = resources.dirname(inputUri);
+		let inputUri: URI | undefined;
+		let inputUriDirname: URI | undefined;
 		let stat: IFileStat | undefined;
 		let statDirname: IFileStat | undefined;
 		try {
+			inputUri = resources.removeTrailingPathSeparator(this.remoteUriFrom(this.filePickBox.value));
+			inputUriDirname = resources.dirname(inputUri);
 			statDirname = await this.fileService.resolve(inputUriDirname);
 			stat = await this.fileService.resolve(inputUri);
 		} catch (e) {
@@ -353,17 +368,18 @@ export class RemoteFileDialog {
 			}
 		}
 
-		if (resolveValue) {
-			resolveValue = this.addPostfix(resolveValue);
+
+		if (navigateValue) {
+			// Try to navigate into the folder.
+			await this.updateItems(navigateValue, true, this.trailing);
+		} else {
+			if (resolveValue) {
+				resolveValue = this.addPostfix(resolveValue);
+			}
 			if (await this.validate(resolveValue)) {
 				this.filePickBox.busy = false;
 				return resolveValue;
 			}
-		} else if (navigateValue) {
-			// Try to navigate into the folder.
-			await this.updateItems(navigateValue, this.trailing);
-		} else {
-			// validation error. Path does not exist.
 		}
 		this.filePickBox.busy = false;
 		return undefined;
@@ -373,8 +389,12 @@ export class RemoteFileDialog {
 		if (this.filePickBox.busy) {
 			this.badPath = undefined;
 			return UpdateResult.Updating;
-		} else if (value[value.length - 1] === '~') {
-			await this.updateItems(this.userHome);
+		} else if ((value.length > 0) && ((value[value.length - 1] === '~') || (value[0] === '~'))) {
+			let newDir = this.userHome;
+			if ((value[0] === '~') && (value.length > 1)) {
+				newDir = resources.joinPath(newDir, value.substring(1));
+			}
+			await this.updateItems(newDir, true);
 			return UpdateResult.Updated;
 		} else if (this.endsWithSlash(value) || (!resources.isEqual(this.currentFolder, resources.dirname(valueUri), true) && resources.isEqualOrParent(this.currentFolder, resources.dirname(valueUri), true))) {
 			let stat: IFileStat | undefined;
@@ -403,7 +423,7 @@ export class RemoteFileDialog {
 						// do nothing
 					}
 					if (statWithoutTrailing && statWithoutTrailing.isDirectory && (resources.basename(valueUri) !== '.')) {
-						await this.updateItems(inputUriDirname, resources.basename(valueUri));
+						await this.updateItems(inputUriDirname, false, resources.basename(valueUri));
 						this.badPath = undefined;
 						return UpdateResult.Updated;
 					}
@@ -449,7 +469,7 @@ export class RemoteFileDialog {
 			this.autoCompletePathSegment = '';
 			return false;
 		}
-		const itemBasename = quickPickItem.label;
+		const itemBasename = this.trimTrailingSlash(quickPickItem.label);
 		// Either force the autocomplete, or the old value should be one smaller than the new value and match the new value.
 		if (itemBasename === '..') {
 			// Don't match on the up directory item ever.
@@ -501,17 +521,15 @@ export class RemoteFileDialog {
 			// Make sure that the suffix is added. If the user deleted it, we automatically add it here
 			let hasExt: boolean = false;
 			const currentExt = resources.extname(uri).substr(1);
-			if (currentExt !== '') {
-				for (let i = 0; i < this.options.filters.length; i++) {
-					for (let j = 0; j < this.options.filters[i].extensions.length; j++) {
-						if ((this.options.filters[i].extensions[j] === '*') || (this.options.filters[i].extensions[j] === currentExt)) {
-							hasExt = true;
-							break;
-						}
-					}
-					if (hasExt) {
+			for (let i = 0; i < this.options.filters.length; i++) {
+				for (let j = 0; j < this.options.filters[i].extensions.length; j++) {
+					if ((this.options.filters[i].extensions[j] === '*') || (this.options.filters[i].extensions[j] === currentExt)) {
+						hasExt = true;
 						break;
 					}
+				}
+				if (hasExt) {
+					break;
 				}
 			}
 			if (!hasExt) {
@@ -563,7 +581,12 @@ export class RemoteFileDialog {
 		});
 	}
 
-	private async validate(uri: URI): Promise<boolean> {
+	private async validate(uri: URI | undefined): Promise<boolean> {
+		if (uri === undefined) {
+			this.filePickBox.validationMessage = nls.localize('remoteFileDialog.invalidPath', 'Please enter a valid path.');
+			return Promise.resolve(false);
+		}
+
 		let stat: IFileStat | undefined;
 		let statDirname: IFileStat | undefined;
 		try {
@@ -583,7 +606,7 @@ export class RemoteFileDialog {
 				// Show a yes/no prompt
 				const message = nls.localize('remoteFileDialog.validateExisting', '{0} already exists. Are you sure you want to overwrite it?', resources.basename(uri));
 				return this.yesNoPrompt(uri, message);
-			} else if (!this.isValidBaseName(resources.basename(uri))) {
+			} else if (!(await this.isValidBaseName(resources.basename(uri)))) {
 				// Filename not allowed
 				this.filePickBox.validationMessage = nls.localize('remoteFileDialog.validateBadFilename', 'Please enter a valid file name.');
 				return Promise.resolve(false);
@@ -610,7 +633,7 @@ export class RemoteFileDialog {
 		return Promise.resolve(true);
 	}
 
-	private async updateItems(newFolder: URI, trailing?: string) {
+	private async updateItems(newFolder: URI, force: boolean = false, trailing?: string) {
 		this.filePickBox.busy = true;
 		this.userEnteredPathSegment = trailing ? trailing : '';
 		this.autoCompletePathSegment = '';
@@ -628,13 +651,18 @@ export class RemoteFileDialog {
 				if (!equalsIgnoreCase(this.filePickBox.value.substring(0, newValue.length), newValue)) {
 					this.filePickBox.valueSelection = [0, this.filePickBox.value.length];
 					this.insertText(newValue, newValue);
-				} else if (equalsIgnoreCase(this.pathFromUri(resources.dirname(oldFolder), true), newFolderPath)) {
-					// This is the case where the user went up one dir. We need to make sure that we remove the final dir.
+				} else if (force || equalsIgnoreCase(this.pathFromUri(resources.dirname(oldFolder), true), newFolderPath)) {
+					// This is the case where the user went up one dir or is clicking on dirs. We need to make sure that we remove the final dir.
 					this.filePickBox.valueSelection = [newFolderPath.length, this.filePickBox.value.length];
 					this.insertText(newValue, '');
 				}
 			}
-			this.filePickBox.valueSelection = [this.filePickBox.value.length, this.filePickBox.value.length];
+			if (force && trailing) {
+				// Keep the cursor position in front of the save as name.
+				this.filePickBox.valueSelection = [this.filePickBox.value.length - trailing.length, this.filePickBox.value.length - trailing.length];
+			} else {
+				this.filePickBox.valueSelection = [this.filePickBox.value.length, this.filePickBox.value.length];
+			}
 			this.filePickBox.busy = false;
 		});
 	}
@@ -662,17 +690,28 @@ export class RemoteFileDialog {
 		}
 	}
 
-	private isValidBaseName(name: string): boolean {
+	private async isWindowsOS(): Promise<boolean> {
+		let isWindowsOS = isWindows;
+		const env = await this.getRemoteAgentEnvironment();
+		if (env) {
+			isWindowsOS = env.os === OperatingSystem.Windows;
+		}
+		return isWindowsOS;
+	}
+
+	private async isValidBaseName(name: string): Promise<boolean> {
 		if (!name || name.length === 0 || /^\s+$/.test(name)) {
 			return false; // require a name that is not just whitespace
 		}
 
+		const isWindowsOS = await this.isWindowsOS();
+		const INVALID_FILE_CHARS = isWindowsOS ? WINDOWS_INVALID_FILE_CHARS : UNIX_INVALID_FILE_CHARS;
 		INVALID_FILE_CHARS.lastIndex = 0; // the holy grail of software development
 		if (INVALID_FILE_CHARS.test(name)) {
 			return false; // check for certain invalid file characters
 		}
 
-		if (isWindows && WINDOWS_FORBIDDEN_NAMES.test(name)) {
+		if (isWindowsOS && WINDOWS_FORBIDDEN_NAMES.test(name)) {
 			return false; // check for certain invalid file names
 		}
 
@@ -680,11 +719,11 @@ export class RemoteFileDialog {
 			return false; // check for reserved values
 		}
 
-		if (isWindows && name[name.length - 1] === '.') {
+		if (isWindowsOS && name[name.length - 1] === '.') {
 			return false; // Windows: file cannot end with a "."
 		}
 
-		if (isWindows && name.length !== name.trim().length) {
+		if (isWindowsOS && name.length !== name.trim().length) {
 			return false; // Windows: file cannot end with a whitespace
 		}
 

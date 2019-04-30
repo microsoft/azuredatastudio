@@ -18,7 +18,7 @@ import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMess
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { escape } from 'sql/base/common/strings';
-import { elapsedTimeLabel } from 'sql/parts/query/common/localizedConstants';
+import { elapsedTimeLabel } from 'sql/workbench/parts/query/common/localizedConstants';
 import * as notebookUtils from 'sql/workbench/parts/notebook/notebookUtils';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';

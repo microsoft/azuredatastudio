@@ -124,7 +124,7 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 
 	private getContextKeyService(context: ObjectExplorerContext): IContextKeyService {
 		let scopedContextService = this._contextKeyService.createScoped();
-		let connectionContextKey = new ConnectionContextKey(scopedContextService);
+		let connectionContextKey = new ConnectionContextKey(scopedContextService, this._queryManagementService);
 		let connectionProfile = context && context.profile;
 		connectionContextKey.set(connectionProfile);
 		let serverInfoContextKey = new ServerInfoContextKey(scopedContextService);

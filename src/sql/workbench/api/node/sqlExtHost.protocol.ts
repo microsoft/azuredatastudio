@@ -457,7 +457,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Schema compare
 	 */
-	$schemaCompare(handle: number, sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.SchemaCompareResult> { throw ni(); }
+	$schemaCompare(handle: number, sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, schemaComapareOptions: azdata.DeploymentOptions): Thenable<azdata.SchemaCompareResult> { throw ni(); }
 
 	/**
 	 * Schema compare generate script
@@ -468,6 +468,17 @@ export abstract class ExtHostDataProtocolShape {
 	 * Schema compare publish changes
 	 */
 	$schemaComparePublishChanges(handle: number, operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.SchemaCompareResult> { throw ni(); }
+
+	/**
+	 * Schema compare get default options
+	 */
+	$schemaCompareGetDefaultOptions(handle: number): Thenable<azdata.SchemaCompareOptionsResult> { throw ni(); }
+
+
+	/**
+	 * Schema comapre Include node
+	 */
+	$schemaCompareIncludeExcludeNode(handle: number, operationId: string, diffEntry: azdata.DiffEntry, includeRequest: boolean, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> { throw ni(); }
 }
 
 /**
@@ -577,7 +588,7 @@ export interface MainThreadConnectionManagementShape extends IDisposable {
 	$listDatabases(connectionId: string): Thenable<string[]>;
 	$getConnectionString(connectionId: string, includePassword: boolean): Thenable<string>;
 	$getUriForConnection(connectionId: string): Thenable<string>;
-	$connect(connectionProfile: azdata.IConnectionProfile): Thenable<azdata.ConnectionResult>;
+	$connect(connectionProfile: azdata.IConnectionProfile, saveConnection: boolean, showDashboard: boolean): Thenable<azdata.ConnectionResult>;
 }
 
 export interface MainThreadCredentialManagementShape extends IDisposable {

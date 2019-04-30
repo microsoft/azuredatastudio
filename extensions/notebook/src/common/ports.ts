@@ -7,7 +7,7 @@
 import * as net from 'net';
 
 export class StrictPortFindOptions {
-	constructor(public startPort: number, public minPort: number, public maxport: number) {
+	constructor(public minPort: number, public maxport: number) {
 	}
 	public maxRetriesPerStartPort: number = 5;
 	public totalRetryLoops: number = 10;
@@ -21,7 +21,7 @@ export class StrictPortFindOptions {
  */
 export async function strictFindFreePort(options: StrictPortFindOptions): Promise<number> {
 	let totalRetries = options.totalRetryLoops;
-	let startPort = options.startPort;
+	let startPort = getRandomInt(options.minPort, options.maxport);
 	let port = await findFreePort(startPort, options.maxRetriesPerStartPort, options.timeout);
 	while (port === 0 && totalRetries > 0) {
 		startPort = getRandomInt(options.minPort, options.maxport);

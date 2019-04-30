@@ -76,19 +76,21 @@ export class ServerInstanceUtils {
 		return spawn(command, args, options);
 	}
 
-	public checkProcessDied(childProcess: ChildProcess): void {
+	public ensureProcessEnded(childProcess: ChildProcess): void {
 		if (!childProcess) {
 			return;
 		}
-		// Wait 10 seconds and then force kill. Jupyter stop is slow so this seems a reasonable time limit
+		// Wait 5 seconds and then force kill. Jupyter stop is slow so this seems a reasonable time limit
 		setTimeout(() => {
 			// Test if the process is still alive. Throws an exception if not
 			try {
-				process.kill(childProcess.pid, <any>0);
+				process.kill(childProcess.pid, 'SIGKILL');
 			} catch (error) {
-				// All is fine.
+				if (!error || !error.code || (typeof error.code === 'string' && error.code !== 'ESRCH')) {
+					console.log(error);
+				}
 			}
-		}, 10000);
+		}, 5000);
 	}
 }
 
@@ -156,13 +158,14 @@ export class PerNotebookServerInstance implements IServerInstance {
 				let install = this.options.install;
 				let stopCommand = `"${install.pythonExecutable}" -m jupyter notebook stop ${this._port}`;
 				await this.utils.executeBufferedCommand(stopCommand, install.execOptions, install.outputChannel);
-				this._isStarted = false;
-				this.utils.checkProcessDied(this.childProcess);
-				this.handleConnectionClosed();
 			}
 		} catch (error) {
 			// For now, we don't care as this is non-critical
 			this.notify(this.options.install, localize('serverStopError', 'Error stopping Notebook Server: {0}', utils.getErrorMessage(error)));
+		} finally {
+			this._isStarted = false;
+			this.utils.ensureProcessEnded(this.childProcess);
+			this.handleConnectionClosed();
 		}
 	}
 
@@ -228,8 +231,8 @@ export class PerNotebookServerInstance implements IServerInstance {
 			return;
 		}
 		let notebookDirectory = this.getNotebookDirectory();
-		// Find a port in a given range. If run into trouble, got up 100 in range and search inside a larger range
-		let port = await ports.strictFindFreePort(new ports.StrictPortFindOptions(defaultPort, defaultPort + 100, defaultPort + 1000));
+		// Find a port in a given range. If run into trouble, try another port inside the given range
+		let port = await ports.strictFindFreePort(new ports.StrictPortFindOptions(defaultPort, defaultPort + 1000));
 		let token = await notebookUtils.getRandomToken();
 		this._uri = vscode.Uri.parse(`http://localhost:${port}/?token=${token}`);
 		this._port = port.toString();
@@ -289,6 +292,8 @@ export class PerNotebookServerInstance implements IServerInstance {
 
 		this.childProcess.addListener('error', this.handleConnectionError);
 		this.childProcess.addListener('exit', this.handleConnectionClosed);
+
+		process.addListener('exit', this.stop);
 
 		// TODO #897 covers serializing stdout and stderr to a location where we can read from so that user can see if they run into trouble
 	}
@@ -363,9 +368,10 @@ export class PerNotebookServerInstance implements IServerInstance {
 		env['MSHOST_ENVIRONMENT'] = 'ADSClient-' + vscode.version;
 
 		// Start the notebook process
-		let options = {
+		let options: SpawnOptions = {
 			shell: true,
-			env: env
+			env: env,
+			detached: false
 		};
 		let childProcess = this.utils.spawn(startCommand, [], options);
 		return childProcess;

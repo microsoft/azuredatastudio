@@ -12,7 +12,7 @@ import { localize } from 'vs/nls';
 import * as notebookUtils from '../notebookUtils';
 import { CellTypes, CellType, NotebookChangeType } from 'sql/workbench/parts/notebook/models/contracts';
 import { NotebookModel } from 'sql/workbench/parts/notebook/models/notebookModel';
-import { ICellModel } from 'sql/workbench/parts/notebook/models/modelInterfaces';
+import { ICellModel, notebookConstants } from 'sql/workbench/parts/notebook/models/modelInterfaces';
 import { ICellModelOptions, IModelFactory, FutureInternal, CellExecutionState } from './modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
@@ -385,6 +385,9 @@ export class CellModel implements ICellModel {
 	}
 
 	private rewriteOutputUrls(output: nb.ICellOutput): nb.ICellOutput {
+		const driverLog = '/gateway/default/yarn/container';
+		const yarnUi = '/gateway/default/yarn/proxy';
+		const defaultPort = ':30433';
 		// Only rewrite if this is coming back during execution, not when loading from disk.
 		// A good approximation is that the model has a future (needed for execution)
 		if (this.future) {
@@ -395,9 +398,10 @@ export class CellModel implements ICellModel {
 					if (model.activeConnection) {
 						let endpoint = this.getKnoxEndpoint(model.activeConnection);
 						let host = endpoint && endpoint.ipAddress ? endpoint.ipAddress : model.activeConnection.serverName;
+						let port = endpoint && endpoint.port ? ':' + endpoint.port.toString() : defaultPort;
 						let html = result.data['text/html'];
-						html = this.rewriteUrlUsingRegex(/(https?:\/\/mssql-master.*\/proxy)(.*)/g, html, host);
-						html = this.rewriteUrlUsingRegex(/(https?:\/\/master.*master-svc.*\/proxy)(.*)/g, html, host);
+						html = this.rewriteUrlUsingRegex(/(https?:\/\/master.*\/proxy)(.*)/g, html, host, port, yarnUi);
+						html = this.rewriteUrlUsingRegex(/(https?:\/\/storage.*\/containerlogs)(.*)/g, html, host, port, driverLog);
 						(<nb.IDisplayResult>output).data['text/html'] = html;
 					}
 				}
@@ -407,11 +411,11 @@ export class CellModel implements ICellModel {
 		return output;
 	}
 
-	private rewriteUrlUsingRegex(regex: RegExp, html: string, host: string): string {
+	private rewriteUrlUsingRegex(regex: RegExp, html: string, host: string, port: string, target: string): string {
 		return html.replace(regex, function (a, b, c) {
 			let ret = '';
 			if (b !== '') {
-				ret = 'https://' + host + ':30443/gateway/default/yarn/proxy';
+				ret = 'https://' + host + port + target;
 			}
 			if (c !== '') {
 				ret = ret + c;
@@ -518,7 +522,7 @@ export class CellModel implements ICellModel {
 	// TODO: this will be refactored out into the notebooks extension as a contribution point
 	private getKnoxEndpoint(activeConnection: IConnectionProfile): notebookUtils.IEndpoint {
 		let endpoint;
-		if (this._connectionManagementService && activeConnection && activeConnection.providerName === 'mssql') {
+		if (this._connectionManagementService && activeConnection && activeConnection.providerName.toLowerCase() === notebookConstants.SQL_CONNECTION_PROVIDER.toLowerCase()) {
 			let serverInfo: ServerInfo = this._connectionManagementService.getServerInfo(activeConnection.id);
 			if (serverInfo && serverInfo.options && serverInfo.options['clusterEndpoints']) {
 				let endpoints: notebookUtils.IEndpoint[] = serverInfo.options['clusterEndpoints'];

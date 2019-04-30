@@ -112,7 +112,7 @@ export class DialogModal extends Modal {
 		const body = append(container, $('div.dialogModal-body'));
 
 		this._dialogPane = new DialogPane(this._dialog.title, this._dialog.content,
-			valid => this._dialog.notifyValidityChanged(valid), this._instantiationService, false);
+			valid => this._dialog.notifyValidityChanged(valid), this._instantiationService, this._themeService, false);
 		this._dialogPane.createBody(body);
 	}
 

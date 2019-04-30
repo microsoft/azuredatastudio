@@ -13,6 +13,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { DialogPane } from 'sql/platform/dialog/dialogPane';
 import { Emitter, Event } from 'vs/base/common/event';
 import { IWorkbenchLayoutService, Parts } from 'vs/workbench/services/layout/browser/layoutService';
+import { IThemeService } from 'vs/platform/theme/common/themeService';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
 
@@ -56,7 +57,8 @@ export class ModelViewInput extends EditorInput {
 	constructor(private _title: string, private _model: ModelViewInputModel,
 		private _options: azdata.ModelViewEditorOptions,
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IWorkbenchLayoutService private readonly layoutService: IWorkbenchLayoutService
+		@IWorkbenchLayoutService private readonly layoutService: IWorkbenchLayoutService,
+		@IThemeService private readonly themeService: IThemeService
 	) {
 		super();
 		this._model.onDidChangeDirty(() => this._onDidChangeDirty.fire());
@@ -107,7 +109,7 @@ export class ModelViewInput extends EditorInput {
 
 	private createDialogPane(): void {
 		this._dialogPaneContainer = DOM.$('div.model-view-container');
-		this._dialogPane = new DialogPane(this.title, this.modelViewId, () => undefined, this._instantiationService, false);
+		this._dialogPane = new DialogPane(this.title, this.modelViewId, () => undefined, this._instantiationService, this.themeService, false);
 		this._dialogPane.createBody(this._dialogPaneContainer);
 	}
 
