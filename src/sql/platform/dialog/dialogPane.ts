@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import 'vs/css!./media/dialogModal';
 
 import { NgModuleRef } from '@angular/core';

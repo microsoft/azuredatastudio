@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as assert from 'assert';
 import { Dialog, DialogTab } from 'sql/platform/dialog/dialogTypes';
 import { DialogPane } from 'sql/platform/dialog/dialogPane';
@@ -42,7 +40,8 @@ suite('Dialog Pane Tests', () => {
 			bootstrapCalls++;
 		});
 		dialog.content = modelViewId;
-		let dialogPane = new DialogPane(dialog.title, dialog.content, () => undefined, undefined, undefined, false);
+		const themeService = new TestThemeService();
+		let dialogPane = new DialogPane(dialog.title, dialog.content, () => undefined, undefined, themeService, false);
 		dialogPane.createBody(container);
 		assert.equal(bootstrapCalls, 1);
 	});
@@ -56,7 +55,8 @@ suite('Dialog Pane Tests', () => {
 			bootstrapCalls++;
 		});
 		dialog.content = [new DialogTab('', modelViewId)];
-		let dialogPane = new DialogPane(dialog.title, dialog.content, () => undefined, undefined, undefined, false);
+		const themeService = new TestThemeService();
+		let dialogPane = new DialogPane(dialog.title, dialog.content, () => undefined, undefined, themeService, false);
 		dialogPane.createBody(container);
 		assert.equal(bootstrapCalls, 1);
 	});
@@ -69,11 +69,10 @@ suite('Dialog Pane Tests', () => {
 			validationCallbacks.push(params.validityChangedCallback);
 		});
 
-		const themeService = new TestThemeService();
-
 		let modelViewId1 = 'test_content_1';
 		let modelViewId2 = 'test_content_2';
 		dialog.content = [new DialogTab('tab1', modelViewId1), new DialogTab('tab2', modelViewId2)];
+		const themeService = new TestThemeService();
 		let dialogPane = new DialogPane(dialog.title, dialog.content, valid => dialog.notifyValidityChanged(valid), undefined, themeService, false);
 		dialogPane.createBody(container);
 
