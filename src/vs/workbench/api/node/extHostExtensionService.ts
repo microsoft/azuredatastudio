@@ -409,7 +409,20 @@ export class ExtHostExtensionService implements ExtHostExtensionServiceShape {
 	// -- eager activation
 
 	// Handle "eager" activation extensions
-	private _handleEagerExtensions(): Promise<void> {
+	private async _handleEagerExtensions(): Promise<void> {
+		// {{SQL CARBON EDIT}} - load MSSQL extension first so it doesn't get delayed by other extensions
+		try {
+			await this._activateById(new ExtensionIdentifier('microsoft.mssql'), new ExtensionActivatedByEvent(true, `Load MSSQL extension first on startup`));
+		} catch (err) {
+			console.error(err);
+		}
+
+		return this._defaultHandleEagerExtensions();
+	}
+
+
+	// Handle "eager" activation extensions
+	private _defaultHandleEagerExtensions(): Promise<void> {
 		this._activateByEvent('*', true).then(undefined, (err) => {
 			console.error(err);
 		});
