@@ -5,20 +5,15 @@
 
 import 'vs/css!./media/sqlConnection';
 
-import { Button } from 'sql/base/browser/ui/button/button';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
-import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import * as DialogHelper from 'sql/workbench/browser/modal/dialogHelper';
 import { IConnectionComponentCallbacks } from 'sql/workbench/services/connection/browser/connectionDialogService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import * as Constants from 'sql/platform/connection/common/constants';
-import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
-import { Dropdown } from 'sql/base/browser/ui/editableDropdown/dropdown';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import * as styler from 'sql/platform/theme/common/styler';
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 
