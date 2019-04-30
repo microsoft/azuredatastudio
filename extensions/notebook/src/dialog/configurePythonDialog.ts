@@ -166,7 +166,7 @@ export class ConfigurePythonDialog {
 				}
 			}
 		} catch (err) {
-			this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
+			this.showErrorMessage(utils.getErrorMessage(err));
 			return false;
 		}
 
