@@ -253,7 +253,7 @@ ${params.urn ? ' -u "' + backEscapeDoubleQuotes(params.urn) + '"' : ''}`;
  */
 export async function buildUrn(serverName: string, node: azdata.objectexplorer.ObjectExplorerNode): Promise<string> {
 	let urnNodes: string[] = [];
-	while (node !== undefined) {
+	while (node) {
 		// Server is special since it's a connection node - always add it as the root
 		if (node.nodeType === 'Server') {
 			break;
