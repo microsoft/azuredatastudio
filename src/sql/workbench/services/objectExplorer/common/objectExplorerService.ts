@@ -227,7 +227,13 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	 * Gets called when session is created
 	 */
 	public onSessionCreated(handle: number, session: azdata.ObjectExplorerSession): void {
-		this.handleSessionCreated(session);
+		if (session && session.success) {
+			this.handleSessionCreated(session);
+		} else {
+			let errorMessage = session && session.errorMessage ? session.errorMessage :
+				nls.localize('OeSessionFailedError', 'Failed to create Object Explorer session');
+			error(errorMessage);
+		}
 	}
 
 	private async handleSessionCreated(session: azdata.ObjectExplorerSession): Promise<void> {
@@ -237,7 +243,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			if (this._sessions[session.sessionId]) {
 				connection = this._sessions[session.sessionId].connection;
 
-				if (session && session.success && session.rootNode) {
+				if (session.success && session.rootNode) {
 					let server = this.toTreeNode(session.rootNode, null);
 					server.connection = connection;
 					server.session = session;
