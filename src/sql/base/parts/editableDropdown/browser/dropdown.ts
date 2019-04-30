@@ -136,11 +136,12 @@ export class Dropdown extends Disposable {
 			this._showList();
 		}));
 
-		this._register(DOM.addDisposableListener(this._input.inputElement, DOM.EventType.BLUR, () => {
+		const inputTracker = this._register(DOM.trackFocus(this._input.inputElement));
+		inputTracker.onDidBlur(() => {
 			if (!this._tree.isDOMFocused()) {
 				this._onBlur.fire();
 			}
-		}));
+		});
 
 		this._register(DOM.addStandardDisposableListener(this._input.inputElement, DOM.EventType.KEY_DOWN, (e: StandardKeyboardEvent) => {
 			switch (e.keyCode) {
@@ -183,6 +184,14 @@ export class Dropdown extends Disposable {
 			controller: this._controller
 		}, { paddingOnRow: false, indentPixels: 0, twistiePixels: 0 });
 
+		const treeTracker = this._register(DOM.trackFocus(this._tree.getHTMLElement()));
+
+		treeTracker.onDidBlur(() => {
+			if (!this._input.hasFocus()) {
+				this._onBlur.fire();
+			}
+		});
+
 		this.values = this._options.values;
 
 		this._controller.onSelectionChange(e => {
@@ -208,6 +217,10 @@ export class Dropdown extends Disposable {
 			}
 		});
 
+		this.onBlur(() => {
+			this.contextViewService.hideContextView();
+		});
+
 		this._register(this._tree);
 		this._register(this._input);
 	}
@@ -228,12 +241,6 @@ export class Dropdown extends Disposable {
 							this._treeContainer.remove();
 						}
 					};
-				},
-				onDOMEvent: e => {
-					if (!DOM.isAncestor((<HTMLElement>e.srcElement), this._el) && !DOM.isAncestor((<HTMLElement>e.srcElement), this._treeContainer)) {
-						this._input.validate();
-						this._onBlur.fire();
-					}
 				}
 			});
 		}
