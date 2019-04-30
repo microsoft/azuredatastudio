@@ -80,16 +80,17 @@ export class ServerInstanceUtils {
 		if (!childProcess) {
 			return;
 		}
-		// Wait 5 seconds and then force kill. Jupyter stop is slow so this seems a reasonable time limit
+		// Wait 3 seconds and then force kill. Jupyter stop is slow so this seems a reasonable time limit
 		setTimeout(() => {
 			// Test if the process is still alive. Throws an exception if not
 			try {
 				process.kill(childProcess.pid, 'SIGKILL');
 			} catch (error) {
-				console.log(error);
-				// All is fine.
+				if (!error || !error.code || (typeof error.code === 'string' && error.code !== 'ESRCH')) {
+					console.log(error);
+				}
 			}
-		}, 5000);
+		}, 3000);
 	}
 }
 
@@ -230,8 +231,8 @@ export class PerNotebookServerInstance implements IServerInstance {
 			return;
 		}
 		let notebookDirectory = this.getNotebookDirectory();
-		// Find a port in a given range. If run into trouble, got up 100 in range and search inside a larger range
-		let port = await ports.strictFindFreePort(new ports.StrictPortFindOptions(defaultPort, defaultPort + 100, defaultPort + 1000));
+		// Find a port in a given range. If run into trouble, try another port inside the given range
+		let port = await ports.strictFindFreePort(new ports.StrictPortFindOptions(defaultPort, defaultPort + 1000));
 		let token = await notebookUtils.getRandomToken();
 		this._uri = vscode.Uri.parse(`http://localhost:${port}/?token=${token}`);
 		this._port = port.toString();
