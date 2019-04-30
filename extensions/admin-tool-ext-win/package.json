@@ -55,7 +55,7 @@
 				},
 				{
 					"command": "adminToolExtWin.launchSsmsMinPropertiesDialog",
-					"when": "isWindows && connectionProvider == MSSQL && nodeType && nodeType =~ /Server|Database|Table|Column|Index|Statistic|View|ServerLevelLogin|ServerLevelServerRole|ServerLevelCredential|ServerLevelServerAudit|ServerLevelServerAuditSpecification|StoredProcedure|ScalarValuedFunction|TableValuedFunction|AggregateFunction|Synonym|Assembly|UserDefinedDataType|UserDefinedType|UserDefinedTableType|Sequence|User|DatabaseRole|ApplicationRole|Schema|SecurityPolicy|SecurityPolicie|ServerLevelLinkedServer/",
+					"when": "isWindows && connectionProvider == MSSQL && nodeType && nodeType =~ /^(Server|Database|Table|Column|Index|Statistic|View|ServerLevelLogin|ServerLevelServerRole|ServerLevelCredential|ServerLevelServerAudit|ServerLevelServerAuditSpecification|StoredProcedure|ScalarValuedFunction|TableValuedFunction|AggregateFunction|Synonym|Assembly|UserDefinedDataType|UserDefinedType|UserDefinedTableType|Sequence|User|DatabaseRole|ApplicationRole|Schema|SecurityPolicy|ServerLevelLinkedServer)$/",
 					"group": "z-AdminToolExt@2"
 				}
 			]
