@@ -9,7 +9,7 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import { IProfilerService, IProfilerViewTemplate } from 'sql/workbench/services/profiler/common/interfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
-import { attachTableStyler } from 'sql/platform/theme/common/styler';
+import { attachTableStyler, attachTabbedPanelStyler } from 'sql/platform/theme/common/styler';
 import { IProfilerStateChangedEvent } from 'sql/workbench/parts/profiler/common/profilerState';
 import { ProfilerTableEditor, ProfilerTableViewState } from 'sql/workbench/parts/profiler/browser/profilerTableEditor';
 import * as Actions from 'sql/workbench/parts/profiler/browser/profilerActions';
@@ -335,6 +335,7 @@ export class ProfilerEditor extends BaseEditor {
 		let tabbedPanelContainer = document.createElement('div');
 		tabbedPanelContainer.className = 'profiler-tabbedPane';
 		this._tabbedPanel = new TabbedPanel(tabbedPanelContainer);
+		attachTabbedPanelStyler(this._tabbedPanel, this.themeService);
 		this._tabbedPanel.pushTab({
 			identifier: 'editor',
 			title: nls.localize('text', "Text"),
