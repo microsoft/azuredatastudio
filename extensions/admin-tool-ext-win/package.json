@@ -1,7 +1,7 @@
 {
 	"name": "admin-tool-ext-win",
-	"displayName": "Database Admin Tool Extensions for Windows",
-	"description": "Adds additional Windows-specific functionality to Azure Data Studio",
+	"displayName": "%adminToolExtWin.displayName",
+	"description": "%adminToolExtWin.description",
 	"version": "0.0.1",
 	"publisher": "Microsoft",
 	"preview": true,
