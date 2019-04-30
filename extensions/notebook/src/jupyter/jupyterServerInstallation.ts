@@ -89,7 +89,7 @@ export default class JupyterServerInstallation {
 			} else if (this._usingExistingPython) {
 				await this.installPipPackages();
 			} else {
-				await this.installJupyterProsePackage();
+				await this.installOfflinePipPackages();
 			}
 			let doOnlineInstall = this._usingExistingPython;
 			await this.installSparkMagic(doOnlineInstall);
@@ -345,7 +345,7 @@ export default class JupyterServerInstallation {
 		}
 	}
 
-	private async installJupyterProsePackage(): Promise<void> {
+	private async installOfflinePipPackages(): Promise<void> {
 		let installJupyterCommand: string;
 		if (process.platform === constants.winPlatform) {
 			let requirements = path.join(this._pythonPackageDir, 'requirements.txt');
