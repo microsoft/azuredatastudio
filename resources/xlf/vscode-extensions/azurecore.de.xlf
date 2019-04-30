@@ -1,0 +1,203 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/azurecore/package" source-language="en" target-language="de" datatype="plaintext">
+    <body>
+      <trans-unit id="azure.displayName">
+        <source xml:lang="en">Azure (Core)</source>
+        <target state="translated">Azure (Core)</target>
+      </trans-unit>
+      <trans-unit id="azure.description">
+        <source xml:lang="en">Browse and work with Azure resources</source>
+        <target state="translated">Durchsuchen und Arbeiten mit Azure-Ressourcen</target>
+      </trans-unit>
+      <trans-unit id="azure.title">
+        <source xml:lang="en">Azure</source>
+        <target state="translated">Azure</target>
+      </trans-unit>
+      <trans-unit id="azure.resource.config.title">
+        <source xml:lang="en">Azure Resource Configuration</source>
+        <target state="translated">Konfiguration von Azure-Ressourcen</target>
+      </trans-unit>
+      <trans-unit id="azure.resource.config.filter.description">
+        <source xml:lang="en">The resource filter, each element is an account id, a subscription id and name separated by a slash</source>
+        <target state="translated">Der Ressourcenfilter, jedes Element in Form einer Konto-ID, eine Abonnement-ID und ein Name (durch Schrägstriche getrennt)</target>
+      </trans-unit>
+      <trans-unit id="azure.resource.explorer.title">
+        <source xml:lang="en">Azure</source>
+        <target state="translated">Azure</target>
+      </trans-unit>
+      <trans-unit id="azure.resource.refreshall.title">
+        <source xml:lang="en">Refresh All</source>
+        <target state="translated">Alle aktualisieren</target>
+      </trans-unit>
+      <trans-unit id="azure.resource.refresh.title">
+        <source xml:lang="en">Refresh</source>
+        <target state="translated">Aktualisieren</target>
+      </trans-unit>
+      <trans-unit id="azure.resource.signin.title">
+        <source xml:lang="en">Sign In</source>
+        <target state="translated">anmelden</target>
+      </trans-unit>
+      <trans-unit id="azure.resource.selectsubscriptions.title">
+        <source xml:lang="en">Select Subscriptions</source>
+        <target state="translated">Abonnements auswählen</target>
+      </trans-unit>
+      <trans-unit id="azure.resource.connectsqlserver.title">
+        <source xml:lang="en">Connect</source>
+        <target state="translated">Verbinden</target>
+      </trans-unit>
+      <trans-unit id="azure.resource.connectsqldb.title">
+        <source xml:lang="en">Connect</source>
+        <target state="translated">Verbinden</target>
+      </trans-unit>
+      <trans-unit id="accounts.clearTokenCache">
+        <source xml:lang="en">Clear Azure Account Token Cache</source>
+        <target state="translated">Tokencache für Azure-Konto löschen</target>
+      </trans-unit>
+      <trans-unit id="config.enablePublicCloudDescription">
+        <source xml:lang="en">Should Azure public cloud integration be enabled</source>
+        <target state="translated">Legt fest, ob die Integration der öffentlichen Azure-Cloud aktiviert werden soll</target>
+      </trans-unit>
+      <trans-unit id="config.enableUsGovCloudDescription">
+        <source xml:lang="en">Should US Government Azure cloud (Fairfax) integration be enabled</source>
+        <target state="translated">Legt fest, ob die Integration der Azure-Cloud für die US-Regierung (Fairfax) aktiviert werden soll</target>
+      </trans-unit>
+      <trans-unit id="config.enableChinaCloudDescription">
+        <source xml:lang="en">Should Azure China integration be enabled</source>
+        <target state="translated">Legt fest, ob die Integration von Azure China aktiviert werden soll</target>
+      </trans-unit>
+      <trans-unit id="config.enableGermanyCloudDescription">
+        <source xml:lang="en">Should Azure Germany integration be enabled</source>
+        <target state="translated">Legt fest, ob die Integration von Azure Deutschland aktiviert werden soll</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/out/azureResource/providers/databaseServer/databaseServerTreeDataProvider" source-language="en" target-language="de" datatype="plaintext">
+    <body>
+      <trans-unit id="azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainerLabel">
+        <source xml:lang="en">SQL Servers</source>
+        <target state="translated">Server mit SQL Server</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/out/azureResource/providers/database/databaseTreeDataProvider" source-language="en" target-language="de" datatype="plaintext">
+    <body>
+      <trans-unit id="azure.resource.providers.database.treeDataProvider.databaseContainerLabel">
+        <source xml:lang="en">SQL Databases</source>
+        <target state="translated">SQL-Datenbanken</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/out/azureResource/tree/treeProvider" source-language="en" target-language="de" datatype="plaintext">
+    <body>
+      <trans-unit id="azure.resource.tree.treeProvider.loadingLabel">
+        <source xml:lang="en">Loading ...</source>
+        <target state="translated">Wird geladen...</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/out/azureResource/tree/subscriptionTreeNode" source-language="en" target-language="de" datatype="plaintext">
+    <body>
+      <trans-unit id="azure.resource.tree.subscriptionTreeNode.noResourcesLabel">
+        <source xml:lang="en">No Resources found.</source>
+        <target state="translated">Keine Ressourcen gefunden.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/out/azureResource/tree/accountTreeNode" source-language="en" target-language="de" datatype="plaintext">
+    <body>
+      <trans-unit id="azure.resource.tree.accountTreeNode.credentialError">
+        <source xml:lang="en">Failed to get credential for account {0}. Please refresh the account.</source>
+        <target state="translated">Fehler beim Abrufen von Anmeldeinformationen für das Konto {0}. Bitte aktualisieren Sie das Konto.</target>
+      </trans-unit>
+      <trans-unit id="azure.resource.tree.accountTreeNode.noSubscriptionsLabel">
+        <source xml:lang="en">No Subscriptions found.</source>
+        <target state="translated">Keine Abonnements gefunden.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/out/azureResource/tree/accountNotSignedInTreeNode" source-language="en" target-language="de" datatype="plaintext">
+    <body>
+      <trans-unit id="azure.resource.tree.accountNotSignedInTreeNode.signInLabel">
+        <source xml:lang="en">Sign in to Azure...</source>
+        <target state="translated">Bei Azure anmelden...</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/out/azureResource/utils" source-language="en" target-language="de" datatype="plaintext">
+    <body>
+      <trans-unit id="azure.resource.error">
+        <source xml:lang="en">Error: {0}</source>
+        <target state="translated">Fehler: {0}</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/out/azureResource/resourceTreeNode" source-language="en" target-language="de" datatype="plaintext">
+    <body>
+      <trans-unit id="azure.resource.resourceTreeNode.noResourcesLabel">
+        <source xml:lang="en">No Resources found.</source>
+        <target state="translated">Keine Ressourcen gefunden.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/out/azureResource/commands" source-language="en" target-language="de" datatype="plaintext">
+    <body>
+      <trans-unit id="azure.resource.selectsubscriptions.credentialError">
+        <source xml:lang="en">Failed to get credential for account {0}. Please refresh the account.</source>
+        <target state="translated">Fehler beim Abrufen von Anmeldeinformationen für das Konto {0}. Bitte aktualisieren Sie das Konto.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/out/account-provider/providerSettings" source-language="en" target-language="de" datatype="plaintext">
+    <body>
+      <trans-unit id="publicCloudDisplayName">
+        <source xml:lang="en">Azure</source>
+        <target state="translated">Azure</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/out/account-provider/azureAccountProviderService" source-language="en" target-language="de" datatype="plaintext">
+    <body>
+      <trans-unit id="clearTokenCacheSuccess">
+        <source xml:lang="en">Token cache successfully cleared</source>
+        <target state="translated">Tokencache erfolgreich gelöscht</target>
+      </trans-unit>
+      <trans-unit id="clearTokenCacheFailure">
+        <source xml:lang="en">Failed to clear token cache</source>
+        <target state="translated">Fehler beim Löschen des Tokencache</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/out/account-provider/azureAccountProvider" source-language="en" target-language="de" datatype="plaintext">
+    <body>
+      <trans-unit id="accountProviderNotInitialized">
+        <source xml:lang="en">Account provider not initialized, cannot perform action</source>
+        <target state="translated">Der Kontoanbieter wurde nicht initialisiert. Die Aktion kann nicht ausgeführt werden.</target>
+      </trans-unit>
+      <trans-unit id="addAccount">
+        <source xml:lang="en">Add {0} account</source>
+        <target state="translated">{0}-Konto hinzufügen</target>
+      </trans-unit>
+      <trans-unit id="refreshAccount">
+        <source xml:lang="en">Refresh {0} account</source>
+        <target state="translated">{0}-Konto aktualisieren</target>
+      </trans-unit>
+      <trans-unit id="azureWorkAccountDisplayName">
+        <source xml:lang="en">Work or school account</source>
+        <target state="translated">Geschäfts-, Schul- oder Unikonto</target>
+      </trans-unit>
+      <trans-unit id="microsoftAccountDisplayName">
+        <source xml:lang="en">Microsoft Account</source>
+        <target state="translated">Microsoft-Konto</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/out/constants" source-language="en" target-language="de" datatype="plaintext">
+    <body>
+      <trans-unit id="extensionName">
+        <source xml:lang="en">Azure Accounts</source>
+        <target state="translated">Azure-Konten</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

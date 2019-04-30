@@ -9,7 +9,7 @@ import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionType, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
-import { QueryEditor } from 'sql/parts/query/editor/queryEditor';
+import { QueryEditor } from 'sql/workbench/parts/query/browser/queryEditor';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { dispose, IDisposable } from 'vs/base/common/lifecycle';
 import { IQueryModelService, IQueryEvent } from 'sql/platform/query/common/queryModel';

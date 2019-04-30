@@ -652,6 +652,7 @@ import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/electron-brow
 				'type': 'boolean',
 				'default': true,
 				'description': nls.localize('autoDetectHighContrast', "If enabled, will automatically change to high contrast theme if Windows is using a high contrast theme, and to dark theme when switching away from a Windows high contrast theme."),
+				'scope': ConfigurationScope.APPLICATION,
 				'included': isWindows
 			},
 			'window.doubleClickIconToClose': {
@@ -678,6 +679,7 @@ import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/electron-brow
 				'type': 'boolean',
 				'default': true,
 				'description': nls.localize('window.nativeFullScreen', "Controls if native full-screen should be used on macOS. Disable this option to prevent macOS from creating a new space when going full-screen."),
+				'scope': ConfigurationScope.APPLICATION,
 				'included': isMacintosh
 			},
 			'window.clickThroughInactive': {

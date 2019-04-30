@@ -75,7 +75,10 @@ margin-bottom: 2px;
 /* OE and connection element group */
 .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .connection-tile,
 .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .object-element-group {
-	padding: 5px;
+	padding-left: 5px;
+	padding-right: 5px;
+	padding-top: 3px;
+	padding-bottom: 3px;
 	overflow: hidden;
 }
 

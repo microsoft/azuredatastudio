@@ -10,7 +10,6 @@ import * as path from 'path';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as which from 'which';
-import * as Constants from '../constants';
 
 const localize = nls.loadMessageBundle();
 

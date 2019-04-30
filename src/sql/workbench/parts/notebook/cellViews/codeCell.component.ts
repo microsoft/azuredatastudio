@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { OnInit, Component, Input, Inject, forwardRef, ChangeDetectorRef, SimpleChange, OnChanges } from '@angular/core';
+import { OnInit, Component, Input, Inject, forwardRef, ChangeDetectorRef, SimpleChange, OnChanges, HostListener } from '@angular/core';
 import { CellView } from 'sql/workbench/parts/notebook/cellViews/interfaces';
 import { ICellModel } from 'sql/workbench/parts/notebook/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/parts/notebook/models/notebookModel';
@@ -23,6 +23,12 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 	}
 	@Input() set activeCellId(value: string) {
 		this._activeCellId = value;
+	}
+
+	@HostListener('document:keydown.escape', ['$event'])
+	handleKeyboardEvent() {
+		this.cellModel.active = false;
+		this._model.activeCell = undefined;
 	}
 
 	private _model: NotebookModel;

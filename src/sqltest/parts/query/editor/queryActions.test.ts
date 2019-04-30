@@ -19,9 +19,9 @@ import { ConnectionDialogService } from 'sql/workbench/services/connection/brows
 import {
 	RunQueryAction, CancelQueryAction, ListDatabasesActionItem,
 	DisconnectDatabaseAction, ConnectDatabaseAction, QueryTaskbarAction
-} from 'sql/parts/query/execution/queryActions';
-import { QueryInput } from 'sql/parts/query/common/queryInput';
-import { QueryEditor } from 'sql/parts/query/editor/queryEditor';
+} from 'sql/workbench/parts/query/browser/queryActions';
+import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
+import { QueryEditor } from 'sql/workbench/parts/query/browser/queryEditor';
 import { QueryModelService } from 'sql/platform/query/common/queryModelService';
 import { ConnectionManagementService } from 'sql/platform/connection/common/connectionManagementService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
@@ -144,7 +144,7 @@ suite('SQL QueryAction Tests', () => {
 		assert.equal(calledRunQueryOnInput, false, 'run should not call runQuery');
 		testQueryInput.verify(x => x.runQuery(undefined), TypeMoq.Times.never());
 
-		// and the conneciton dialog should open with the correct parameter details
+		// and the connection dialog should open with the correct parameter details
 		assert.equal(countCalledShowDialog, 1, 'run should call showDialog');
 		assert.equal(connectionParams.connectionType, ConnectionType.editor, 'connectionType should be queryEditor');
 		assert.equal(connectionParams.runQueryOnCompletion, RunQueryOnConnectionMode.executeQuery, 'runQueryOnCompletion should be true`');
@@ -158,6 +158,7 @@ suite('SQL QueryAction Tests', () => {
 		//runQuery should be run, and the conneciton dialog should not open
 		assert.equal(calledRunQueryOnInput, true, 'run should call runQuery');
 		testQueryInput.verify(x => x.runQuery(undefined), TypeMoq.Times.once());
+
 		assert.equal(countCalledShowDialog, 1, 'run should not call showDialog');
 		done();
 	});
@@ -442,7 +443,7 @@ suite('SQL QueryAction Tests', () => {
 		isConnected = false;
 		queryAction.run();
 
-		// The conneciton dialog should open with the params set as below
+		// The connection dialog should open with the params set as below
 		assert.equal(calledShowDialog, 1, 'showDialog should be called when URI is connected');
 		assert.equal(connectionParams.connectionType, ConnectionType.editor, 'connectionType should be queryEditor');
 		assert.equal(connectionParams.runQueryOnCompletion, false, 'runQueryOnCompletion should be false`');

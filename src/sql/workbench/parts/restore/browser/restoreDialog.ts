@@ -37,7 +37,7 @@ import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
 import * as BackupConstants from 'sql/workbench/parts/backup/common/constants';
 import { RestoreViewModel, RestoreOptionParam, SouceDatabaseNamesParam } from 'sql/workbench/parts/restore/browser/restoreViewModel';
 import * as FileValidationConstants from 'sql/workbench/services/fileBrowser/common/fileValidationServiceConstants';
-import { Dropdown } from 'sql/base/browser/ui/editableDropdown/dropdown';
+import { Dropdown } from 'sql/base/parts/editableDropdown/browser/dropdown';
 import { TabbedPanel, PanelTabIdentifier } from 'sql/base/browser/ui/panel/panel';
 import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
@@ -211,7 +211,7 @@ export class RestoreDialog extends Modal {
 		// Get the bootstrap params and perform the bootstrap
 		dropdownContainer.style.width = '100%';
 
-		this._databaseDropdown = new Dropdown(dropdownContainer, this._contextViewService, this.layoutService,
+		this._databaseDropdown = new Dropdown(dropdownContainer, this._contextViewService,
 			{
 				strictSelection: false,
 				ariaLabel: LocalizedStrings.TARGETDATABASE,
