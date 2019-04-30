@@ -252,8 +252,13 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 					]
 				});
 				this.notificationService.error(errorWithAction);
-				if (this.editorService.activeEditor === this.notebookParams.input) {
-					await this.commandService.executeCommand('workbench.action.closeActiveEditor');
+
+				let editors = this.editorService.visibleControls;
+				for (let editor of editors) {
+					if (editor && editor.input.getResource() === this._notebookParams.input.notebookUri) {
+						await editor.group.closeEditor(this._notebookParams.input, { preserveFocus: true });
+						break;
+					}
 				}
 			} else {
 				this.setViewInErrorState(localize('displayFailed', 'Could not display contents: {0}', notebookUtils.getErrorMessage(error)));
