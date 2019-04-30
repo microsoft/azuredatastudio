@@ -9,7 +9,9 @@ import * as vscode from 'vscode';
 import * as os from 'os';
 import { SchemaCompareOptionsDialog } from './dialogs/schemaCompareOptionsDialog';
 import * as path from 'path';
+
 const localize = nls.loadMessageBundle();
+const diffEditorTitle = localize('schemaCompare.ObjectDefinitionsTitle', 'Object Definitions');
 
 export class SchemaCompareResult {
 	private differencesTable: azdata.TableComponent;
@@ -52,7 +54,7 @@ export class SchemaCompareResult {
 				contentLeft: os.EOL,
 				contentRight: os.EOL,
 				height: 500,
-				title: localize('schemaCompare.ObjectDefinitionsTitle', 'Object Definitions')
+				title: diffEditorTitle
 			}).component();
 
 			this.splitView = view.modelBuilder.splitViewContainer().component();
@@ -230,7 +232,7 @@ export class SchemaCompareResult {
 				this.diffEditor.updateProperties({
 					contentLeft: sourceText,
 					contentRight: targetText,
-					title: localize('schemaCompare.ObjectDefinitionsTitle', 'Object Definitions')
+					title: diffEditorTitle
 				});
 			}
 		});
@@ -271,8 +273,10 @@ export class SchemaCompareResult {
 		this.flexModel.addItem(this.loader, { CSSStyles: { 'margin-top': '30px' } });
 		this.diffEditor.updateProperties({
 			contentLeft: os.EOL,
-			contentRight: os.EOL
+			contentRight: os.EOL,
+			title: diffEditorTitle
 		});
+
 		this.differencesTable.selectedRows = null;
 		this.resetButtons();
 		this.execute();
@@ -383,8 +387,6 @@ export class SchemaCompareResult {
 	}
 
 	private createSwitchButton(view: azdata.ModelView): void {
-		let swapIcon = path.join(__dirname, 'media', 'switch-directions.svg');
-
 		this.switchButton = view.modelBuilder.button().withProperties({
 			label: localize('schemaCompare.switchDirectionButton', 'Switch direction'),
 			iconPath: {
