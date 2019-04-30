@@ -249,7 +249,7 @@ export class SchemaCompareResult {
 			this.flexModel.addItem(this.splitView);
 
 			// only enable generate script button if the target is a db
-			if (this.targetEndpointInfo.endpointType === azdata.SchemaCompareEndpointType.database) {
+			if (this.targetEndpointInfo.endpointType === azdata.SchemaCompareEndpointType.Database) {
 				this.generateScriptButton.enabled = true;
 				this.applyButton.enabled = true;
 			} else {

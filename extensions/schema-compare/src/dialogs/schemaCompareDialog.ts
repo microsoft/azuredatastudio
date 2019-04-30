@@ -81,7 +81,7 @@ export class SchemaCompareDialog {
 		if (this.sourceIsDacpac) {
 			sourceName = this.sourceTextBox.value;
 			sourceEndpointInfo = {
-				endpointType: azdata.SchemaCompareEndpointType.dacpac,
+				endpointType: azdata.SchemaCompareEndpointType.Dacpac,
 				serverName: '',
 				databaseName: '',
 				ownerUri: '',
@@ -92,7 +92,7 @@ export class SchemaCompareDialog {
 			let ownerUri = await azdata.connection.getUriForConnection((this.sourceServerDropdown.value as ConnectionDropdownValue).connection.connectionId);
 
 			sourceEndpointInfo = {
-				endpointType: azdata.SchemaCompareEndpointType.database,
+				endpointType: azdata.SchemaCompareEndpointType.Database,
 				serverName: (this.sourceServerDropdown.value as ConnectionDropdownValue).name,
 				databaseName: (<azdata.CategoryValue>this.sourceDatabaseDropdown.value).name,
 				ownerUri: ownerUri,
@@ -104,7 +104,7 @@ export class SchemaCompareDialog {
 		if (this.targetIsDacpac) {
 			targetName = this.targetTextBox.value;
 			targetEndpointInfo = {
-				endpointType: azdata.SchemaCompareEndpointType.dacpac,
+				endpointType: azdata.SchemaCompareEndpointType.Dacpac,
 				serverName: '',
 				databaseName: '',
 				ownerUri: '',
@@ -115,7 +115,7 @@ export class SchemaCompareDialog {
 			let ownerUri = await azdata.connection.getUriForConnection((this.targetServerDropdown.value as ConnectionDropdownValue).connection.connectionId);
 
 			targetEndpointInfo = {
-				endpointType: azdata.SchemaCompareEndpointType.database,
+				endpointType: azdata.SchemaCompareEndpointType.Database,
 				serverName: (this.targetServerDropdown.value as ConnectionDropdownValue).name,
 				databaseName: (<azdata.CategoryValue>this.targetDatabaseDropdown.value).name,
 				ownerUri: ownerUri,
