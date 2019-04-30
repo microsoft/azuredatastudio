@@ -3,6 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./textCell';
+import 'vs/css!./media/markdown';
+import 'vs/css!./media/highlight';
 
 import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild, OnChanges, SimpleChange, HostListener } from '@angular/core';
 import * as path from 'path';
@@ -62,6 +64,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	private _content: string;
+	private _lastTrustedMode: boolean;
 	private isEditMode: boolean;
 	private _sanitizer: ISanitizer;
 	private _model: NotebookModel;
@@ -140,27 +143,22 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	 * Sanitizes the data to be shown in markdown cell
 	 */
 	private updatePreview() {
-		if (this._content !== this.cellModel.source || this.cellModel.source.length === 0) {
+		let trustedChanged = this.cellModel && this._lastTrustedMode !== this.cellModel.trustedMode;
+		let contentChanged = this._content !== this.cellModel.source || this.cellModel.source.length === 0;
+		if (trustedChanged || contentChanged) {
+			this._lastTrustedMode = this.cellModel.trustedMode;
 			if (!this.cellModel.source && !this.isEditMode) {
 				this._content = localize('doubleClickEdit', 'Double-click to edit');
 			} else {
-				this._content = this.sanitizeContent(this.cellModel.source);
+				this._content = this.cellModel.source;
 			}
 
-			this._commandService.executeCommand<string>('notebook.showPreview', this.cellModel.notebookModel.notebookUri, this._content).then((htmlcontent) => {
+			this._commandService.executeCommand<string>('notebook.showPreview', this.cellModel.notebookModel.notebookUri, this._content, this.cellModel.trustedMode).then((htmlcontent) => {
 				htmlcontent = this.convertVscodeResourceToFileInSubDirectories(htmlcontent);
 				let outputElement = <HTMLElement>this.output.nativeElement;
 				outputElement.innerHTML = htmlcontent;
 			});
 		}
-	}
-
-	//Sanitizes the content based on trusted mode of Cell Model
-	private sanitizeContent(content: string): string {
-		if (this.cellModel && !this.cellModel.trustedMode) {
-			content = this.sanitizer.sanitize(content);
-		}
-		return content;
 	}
 
 	// Only replace vscode-resource with file when in the same (or a sub) directory

@@ -1,0 +1,182 @@
+/*
+https://raw.githubusercontent.com/isagalaev/highlight.js/master/src/styles/vs2015.css
+*/
+/*
+ * Visual Studio 2015 dark style
+ * Author: Nicolas LLOBERA <nllobera@gmail.com>
+ */
+
+
+text-cell-component .hljs-keyword,
+text-cell-component .hljs-literal,
+text-cell-component .hljs-symbol,
+text-cell-component .hljs-name {
+	color: #569CD6;
+}
+text-cell-component .hljs-link {
+	color: #569CD6;
+	text-decoration: underline;
+}
+
+text-cell-component .hljs-built_in,
+text-cell-component .hljs-type {
+	color: #4EC9B0;
+}
+
+text-cell-component .hljs-number,
+text-cell-component .hljs-class {
+	color: #B8D7A3;
+}
+
+text-cell-component .hljs-string,
+text-cell-component .hljs-meta-string {
+	color: #D69D85;
+}
+
+text-cell-component .hljs-regexp,
+text-cell-component .hljs-template-tag {
+	color: #9A5334;
+}
+
+text-cell-component .hljs-subst,
+text-cell-component .hljs-function,
+text-cell-component .hljs-title,
+text-cell-component .hljs-params,
+text-cell-component .hljs-formula {
+	color: #DCDCDC;
+}
+
+text-cell-component .hljs-comment,
+text-cell-component .hljs-quote {
+	color: #57A64A;
+	font-style: italic;
+}
+
+text-cell-component .hljs-doctag {
+	color: #608B4E;
+}
+
+text-cell-component .hljs-meta,
+text-cell-component .hljs-meta-keyword,
+text-cell-component .hljs-tag {
+	color: #9B9B9B;
+}
+
+text-cell-component .hljs-variable,
+text-cell-component .hljs-template-variable {
+	color: #BD63C5;
+}
+
+text-cell-component .hljs-attr,
+text-cell-component .hljs-attribute,
+text-cell-component .hljs-builtin-name {
+	color: #9CDCFE;
+}
+
+text-cell-component .hljs-section {
+	color: gold;
+}
+
+text-cell-component .hljs-emphasis {
+	font-style: italic;
+}
+
+text-cell-component .hljs-strong {
+	font-weight: bold;
+}
+
+/*.hljs-code {
+	font-family:'Monospace';
+}*/
+
+text-cell-component .hljs-bullet,
+text-cell-component .hljs-selector-tag,
+text-cell-component .hljs-selector-id,
+text-cell-component .hljs-selector-class,
+text-cell-component .hljs-selector-attr,
+text-cell-component .hljs-selector-pseudo {
+	color: #D7BA7D;
+}
+
+text-cell-component .hljs-addition {
+	background-color: var(--vscode-diffEditor-insertedTextBackground, rgba(155, 185, 85, 0.2));
+	color: rgb(155, 185, 85);
+	display: inline-block;
+	width: 100%;
+}
+
+text-cell-component .hljs-deletion {
+	background: var(--vscode-diffEditor-removedTextBackground, rgba(255, 0, 0, 0.2));
+	color: rgb(255, 0, 0);
+	display: inline-block;
+	width: 100%;
+}
+
+
+/*
+From https://raw.githubusercontent.com/isagalaev/highlight.js/master/src/styles/vs.css
+*/
+/*
+
+Visual Studio-like style based on original C# coloring by Jason Diamond <jason@diamond.name>
+
+*/
+
+text-cell-component .hljs-function,
+text-cell-component .hljs-params {
+	color: inherit;
+}
+
+text-cell-component .hljs-comment,
+text-cell-component .hljs-quote,
+text-cell-component .hljs-variable {
+	color: #008000;
+}
+
+text-cell-component .hljs-keyword,
+text-cell-component .hljs-selector-tag,
+text-cell-component .hljs-built_in,
+text-cell-component .hljs-name,
+text-cell-component .hljs-tag {
+	color: #00f;
+}
+
+text-cell-component .hljs-string,
+text-cell-component .hljs-title,
+text-cell-component .hljs-section,
+text-cell-component .hljs-attribute,
+text-cell-component .hljs-literal,
+text-cell-component .hljs-template-tag,
+text-cell-component .hljs-template-variable,
+text-cell-component .hljs-type {
+	color: #a31515;
+}
+
+text-cell-component .hljs-selector-attr,
+text-cell-component .hljs-selector-pseudo,
+text-cell-component .hljs-meta {
+	color: #2b91af;
+}
+
+text-cell-component .hljs-doctag {
+	color: #808080;
+}
+
+text-cell-component .hljs-attr {
+	color: #f00;
+}
+
+text-cell-component .hljs-symbol,
+text-cell-component .hljs-bullet,
+text-cell-component .hljs-link {
+	color: #00b0e8;
+}
+
+
+text-cell-component .hljs-emphasis {
+	font-style: italic;
+}
+
+text-cell-component .hljs-strong {
+	font-weight: bold;
+}

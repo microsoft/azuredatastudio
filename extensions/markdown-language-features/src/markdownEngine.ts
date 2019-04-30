@@ -68,6 +68,9 @@ export class MarkdownEngine {
 		contributionProvider.onContributionsChanged(() => {
 			// Markdown plugin contributions may have changed
 			this.md = undefined;
+			// {{SQL CARBON EDIT}} - Add trusted/untrusted markdown support
+			this.untrustedMd = undefined;
+			// {{SQL CARBON EDIT}} - End
 		});
 	}
 
@@ -138,12 +141,66 @@ export class MarkdownEngine {
 	}
 
 	// {{SQL CARBON EDIT}} - Add renderText method
-	public async renderText(document: vscode.Uri, text: string): Promise<string> {
+	private untrustedMd: Promise<MarkdownIt> | undefined = undefined;
+	public async renderText(document: vscode.Uri, text: string, trusted: boolean): Promise<string> {
 		const config = this.getConfig(document);
-		const engine = await this.getEngine(config);
+		let enginePromise = trusted ? this.getEngine(config) : this.getUntrustedEngine(config);
+		const engine = await enginePromise;
 		this.currentDocument = document;
 		return engine.render(text, config);
 	}
+
+	// Copy of the getEngine code, duplicated to minimize the SQL edits to this file.
+	// Has same logic but changes the html option to false
+	private async getUntrustedEngine(config: MarkdownItConfig): Promise<MarkdownIt> {
+		if (!this.untrustedMd) {
+			this.untrustedMd = import('markdown-it').then(async markdownIt => {
+				let options = await getMarkdownOptions(() => md);
+				options.html = false;
+				let md: MarkdownIt = markdownIt(options);
+
+				for (const plugin of this.contributionProvider.contributions.markdownItPlugins.values()) {
+					try {
+						md = (await plugin)(md);
+					} catch {
+						// noop
+					}
+				}
+
+				const frontMatterPlugin = require('markdown-it-front-matter');
+				// Extract rules from front matter plugin and apply at a lower precedence
+				let fontMatterRule: any;
+				frontMatterPlugin({
+					block: {
+						ruler: {
+							before: (_id: any, _id2: any, rule: any) => { fontMatterRule = rule; }
+						}
+					}
+				}, () => { /* noop */ });
+
+				md.block.ruler.before('fence', 'front_matter', fontMatterRule, {
+					alt: ['paragraph', 'reference', 'blockquote', 'list']
+				});
+
+				for (const renderName of ['paragraph_open', 'heading_open', 'image', 'code_block', 'fence', 'blockquote_open', 'list_item_open']) {
+					this.addLineNumberRenderer(md, renderName);
+				}
+
+				this.addImageStabilizer(md);
+				this.addFencedRenderer(md);
+
+				this.addLinkNormalizer(md);
+				this.addLinkValidator(md);
+				this.addNamedHeaders(md);
+				return md;
+			});
+		}
+
+		const md = await this.untrustedMd!;
+		md.set(config);
+		return md;
+	}
+
 	// {{SQL CARBON EDIT}} - End
 
 	public async render(document: SkinnyTextDocument): Promise<string> {
