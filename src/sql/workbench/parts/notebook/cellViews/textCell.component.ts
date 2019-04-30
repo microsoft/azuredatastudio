@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./textCell';
 
-import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild, OnChanges, SimpleChange, HostListener } from '@angular/core';
+import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild, OnChanges, SimpleChange, HostListener, AfterContentInit } from '@angular/core';
 import * as path from 'path';
 
 import { localize } from 'vs/nls';
@@ -16,6 +16,9 @@ import { Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import * as DOM from 'vs/base/browser/dom';
+import { onUnexpectedError } from 'vs/base/common/errors';
+import { IMouseEvent } from 'vs/base/browser/mouseEvent';
+import product from 'vs/platform/product/node/product';
 
 import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 import { CellView } from 'sql/workbench/parts/notebook/cellViews/interfaces';
@@ -26,12 +29,13 @@ import { CellToggleMoreActions } from 'sql/workbench/parts/notebook/cellToggleMo
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';
+const knownSchemes = new Set(['http', 'https', 'file', 'mailto', 'data', `${product.urlProtocol}`, 'azuredatastudio', 'azuredatastudio-insiders', 'vscode', 'vscode-insiders', 'vscode-resource']);
 
 @Component({
 	selector: TEXT_SELECTOR,
 	templateUrl: decodeURI(require.toUrl('./textCell.component.html'))
 })
-export class TextCellComponent extends CellView implements OnInit, OnChanges {
+export class TextCellComponent extends CellView implements OnInit, AfterContentInit, OnChanges {
 	@ViewChild('preview', { read: ElementRef }) private output: ElementRef;
 	@ViewChild('moreactions', { read: ElementRef }) private moreActionsElementRef: ElementRef;
 	@Input() cellModel: ICellModel;
@@ -117,6 +121,54 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			this.updatePreview();
 		}));
 	}
+
+	ngAfterContentInit(): void {
+		if (this.output) {
+			let element: HTMLElement = this.output.nativeElement;
+			this._register(DOM.addStandardDisposableListener(element, 'click', event => {
+				// Note: this logic is taken from the VSCode handling of links in markdown
+				// Untrusted cells will not support commands or raw HTML tags
+				// Finally, we should consider supporting relative paths - created #5238 to track
+				let target: HTMLElement | null = event.target;
+				if (target.tagName !== 'A') {
+					target = target.parentElement;
+					if (!target || target.tagName !== 'A') {
+						return;
+					}
+				}
+				try {
+					const href = target['href'];
+					if (href) {
+						this.handleLink(href, event);
+					}
+				} catch (err) {
+					onUnexpectedError(err);
+				} finally {
+					event.preventDefault();
+				}
+			}));
+		}
+	}
+
+	private handleLink(content: string, event?: IMouseEvent): void {
+		let uri: URI | undefined;
+		try {
+			uri = URI.parse(content);
+		} catch {
+			// ignore
+		}
+		if (uri && this.openerService && this.isSupportedLink(uri)) {
+			this.openerService.open(uri).catch(onUnexpectedError);
+		}
+	}
+
+	private isSupportedLink(link: URI): boolean {
+		if (knownSchemes.has(link.scheme)) {
+			return true;
+		}
+		return !!this.model.trustedMode && link.scheme === 'command';
+	}
+
 
 	ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
 		for (let propName in changes) {
