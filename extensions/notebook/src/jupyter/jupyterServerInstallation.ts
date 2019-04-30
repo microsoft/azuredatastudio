@@ -36,10 +36,6 @@ function msgDependenciesInstallationFailed(errorMessage: string): string { retur
 function msgDownloadPython(platform: string, pythonDownloadUrl: string): string { return localize('msgDownloadPython', "Downloading local python for platform: {0} to {1}", platform, pythonDownloadUrl); }
 
 export default class JupyterServerInstallation {
-	/**
-	 * Path to the folder where all configuration sets will be stored. Should always be:
-	 * %extension_path%/jupyter_config
-	 */
 	public apiWrapper: ApiWrapper;
 	public extensionPath: string;
 	public pythonBinPath: string;
@@ -384,7 +380,7 @@ export default class JupyterServerInstallation {
 		this.outputChannel.show(true);
 		this.outputChannel.appendLine(localize('msgInstallStart', "Installing required packages to run Notebooks..."));
 
-		let installCommand = `"${this._pythonExecutable}" -m pip install jupyter pandas`;
+		let installCommand = `"${this._pythonExecutable}" -m pip install jupyter==1.0.0 pandas==0.24.2`;
 		await this.executeCommand(installCommand);
 
 		installCommand = `"${this._pythonExecutable}" -m pip install prose-codeaccelerator==1.3.0 --extra-index-url https://prose-python-packages.azurewebsites.net`;
@@ -397,7 +393,7 @@ export default class JupyterServerInstallation {
 		this.outputChannel.show(true);
 		this.outputChannel.appendLine(localize('msgInstallStart', "Installing required packages to run Notebooks..."));
 
-		let installCommand = `"${this.getCondaExePath()}" install -y jupyter pandas`;
+		let installCommand = `"${this.getCondaExePath()}" install -y jupyter==1.0.0 pandas==0.24.2`;
 		await this.executeCommand(installCommand);
 
 		installCommand = `"${this._pythonExecutable}" -m pip install prose-codeaccelerator==1.3.0 --extra-index-url https://prose-python-packages.azurewebsites.net`;
