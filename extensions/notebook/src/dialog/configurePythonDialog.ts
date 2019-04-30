@@ -18,15 +18,15 @@ const localize = nls.loadMessageBundle();
 export class ConfigurePythonDialog {
 	private dialog: azdata.window.Dialog;
 
-	private readonly DialogTitle = localize('configurePython.dialogName', 'Configure Python for Notebooks');
-	private readonly InstallButtonText = localize('configurePython.okButtonText', 'Install');
-	private readonly CancelButtonText = localize('configurePython.cancelButtonText', 'Cancel');
-	private readonly BrowseButtonText = localize('configurePython.browseButtonText', 'Change location');
-	private readonly LocationTextBoxTitle = localize('configurePython.locationTextBoxText', 'Python Install Location');
-	private readonly SelectFileLabel = localize('configurePython.selectFileLabel', 'Select');
-	private readonly InstallationNote = localize('configurePython.installNote', 'This installation will take some time. It is recommended to not close the application until the installation is complete.');
-	private readonly InvalidLocationMsg = localize('configurePython.invalidLocationMsg', 'The specified install location is invalid.');
-	private readonly PythonNotFoundMsg = localize('configurePython.pythonNotFoundMsg', 'No python installation was found at the specified location.');
+	private readonly DialogTitle = localize('configurePython.dialogName', "Configure Python for Notebooks");
+	private readonly InstallButtonText = localize('configurePython.okButtonText', "Install");
+	private readonly CancelButtonText = localize('configurePython.cancelButtonText', "Cancel");
+	private readonly BrowseButtonText = localize('configurePython.browseButtonText', "Change location");
+	private readonly LocationTextBoxTitle = localize('configurePython.locationTextBoxText', "Python Install Location");
+	private readonly SelectFileLabel = localize('configurePython.selectFileLabel', "Select");
+	private readonly InstallationNote = localize('configurePython.installNote', "This installation will take some time. It is recommended to not close the application until the installation is complete.");
+	private readonly InvalidLocationMsg = localize('configurePython.invalidLocationMsg', "The specified install location is invalid.");
+	private readonly PythonNotFoundMsg = localize('configurePython.pythonNotFoundMsg', "No python installation was found at the specified location.");
 
 	private pythonLocationTextBox: azdata.InputBoxComponent;
 	private browseButton: azdata.ButtonComponent;
@@ -53,7 +53,7 @@ export class ConfigurePythonDialog {
 		this.dialog.cancelButton.label = this.CancelButtonText;
 		this.dialog.cancelButton.onClick(() => {
 			if (rejectOnCancel) {
-				this._setupComplete.reject(localize('configurePython.pythonInstallDeclined', 'Python installation was declined.'));
+				this._setupComplete.reject(localize('configurePython.pythonInstallDeclined', "Python installation was declined."));
 			} else {
 				this._setupComplete.resolve();
 			}
@@ -100,7 +100,7 @@ export class ConfigurePythonDialog {
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems([{
 					component: this.newInstallButton,
-					title: localize('configurePython.installationType', 'Installation Type')
+					title: localize('configurePython.installationType', "Installation Type")
 				}, {
 					component: this.existingInstallButton,
 					title: undefined
@@ -125,7 +125,7 @@ export class ConfigurePythonDialog {
 		this.newInstallButton = modelBuilder.radioButton()
 			.withProperties<azdata.RadioButtonProperties>({
 				name: buttonGroup,
-				label: localize('configurePython.newInstall', 'New Python installation'),
+				label: localize('configurePython.newInstall', "New Python installation"),
 				checked: !useExistingPython
 			}).component();
 		this.newInstallButton.onDidClick(() => {
@@ -135,7 +135,7 @@ export class ConfigurePythonDialog {
 		this.existingInstallButton = modelBuilder.radioButton()
 			.withProperties<azdata.RadioButtonProperties>({
 				name: buttonGroup,
-				label: localize('configurePython.existingInstall', 'Use existing Python installation'),
+				label: localize('configurePython.existingInstall', "Use existing Python installation"),
 				checked: useExistingPython
 			}).component();
 		this.existingInstallButton.onDidClick(() => {
