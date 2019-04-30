@@ -1,0 +1,182 @@
+/*
+https://raw.githubusercontent.com/isagalaev/highlight.js/master/src/styles/vs2015.css
+*/
+/*
+ * Visual Studio 2015 dark style
+ * Author: Nicolas LLOBERA <nllobera@gmail.com>
+ */
+
+
+.notebook-preview .hljs-keyword,
+.notebook-preview .hljs-literal,
+.notebook-preview .hljs-symbol,
+.notebook-preview .hljs-name {
+	color: #569CD6;
+}
+.notebook-preview .hljs-link {
+	color: #569CD6;
+	text-decoration: underline;
+}
+
+.notebook-preview .hljs-built_in,
+.notebook-preview .hljs-type {
+	color: #4EC9B0;
+}
+
+.notebook-preview .hljs-number,
+.notebook-preview .hljs-class {
+	color: #B8D7A3;
+}
+
+.notebook-preview .hljs-string,
+.notebook-preview .hljs-meta-string {
+	color: #D69D85;
+}
+
+.notebook-preview .hljs-regexp,
+.notebook-preview .hljs-template-tag {
+	color: #9A5334;
+}
+
+.notebook-preview .hljs-subst,
+.notebook-preview .hljs-function,
+.notebook-preview .hljs-title,
+.notebook-preview .hljs-params,
+.notebook-preview .hljs-formula {
+	color: #DCDCDC;
+}
+
+.notebook-preview .hljs-comment,
+.notebook-preview .hljs-quote {
+	color: #57A64A;
+	font-style: italic;
+}
+
+.notebook-preview .hljs-doctag {
+	color: #608B4E;
+}
+
+.notebook-preview .hljs-meta,
+.notebook-preview .hljs-meta-keyword,
+.notebook-preview .hljs-tag {
+	color: #9B9B9B;
+}
+
+.notebook-preview .hljs-variable,
+.notebook-preview .hljs-template-variable {
+	color: #BD63C5;
+}
+
+.notebook-preview .hljs-attr,
+.notebook-preview .hljs-attribute,
+.notebook-preview .hljs-builtin-name {
+	color: #9CDCFE;
+}
+
+.notebook-preview .hljs-section {
+	color: gold;
+}
+
+.notebook-preview .hljs-emphasis {
+	font-style: italic;
+}
+
+.notebook-preview .hljs-strong {
+	font-weight: bold;
+}
+
+/*.hljs-code {
+	font-family:'Monospace';
+}*/
+
+.notebook-preview .hljs-bullet,
+.notebook-preview .hljs-selector-tag,
+.notebook-preview .hljs-selector-id,
+.notebook-preview .hljs-selector-class,
+.notebook-preview .hljs-selector-attr,
+.notebook-preview .hljs-selector-pseudo {
+	color: #D7BA7D;
+}
+
+.notebook-preview .hljs-addition {
+	background-color: var(--vscode-diffEditor-insertedTextBackground, rgba(155, 185, 85, 0.2));
+	color: rgb(155, 185, 85);
+	display: inline-block;
+	width: 100%;
+}
+
+.notebook-preview .hljs-deletion {
+	background: var(--vscode-diffEditor-removedTextBackground, rgba(255, 0, 0, 0.2));
+	color: rgb(255, 0, 0);
+	display: inline-block;
+	width: 100%;
+}
+
+
+/*
+From https://raw.githubusercontent.com/isagalaev/highlight.js/master/src/styles/vs.css
+*/
+/*
+
+Visual Studio-like style based on original C# coloring by Jason Diamond <jason@diamond.name>
+
+*/
+
+.notebook-preview .hljs-function,
+.notebook-preview .hljs-params {
+	color: inherit;
+}
+
+.notebook-preview .hljs-comment,
+.notebook-preview .hljs-quote,
+.notebook-preview .hljs-variable {
+	color: #008000;
+}
+
+.notebook-preview .hljs-keyword,
+.notebook-preview .hljs-selector-tag,
+.notebook-preview .hljs-built_in,
+.notebook-preview .hljs-name,
+.notebook-preview .hljs-tag {
+	color: #00f;
+}
+
+.notebook-preview .hljs-string,
+.notebook-preview .hljs-title,
+.notebook-preview .hljs-section,
+.notebook-preview .hljs-attribute,
+.notebook-preview .hljs-literal,
+.notebook-preview .hljs-template-tag,
+.notebook-preview .hljs-template-variable,
+.notebook-preview .hljs-type {
+	color: #a31515;
+}
+
+.notebook-preview .hljs-selector-attr,
+.notebook-preview .hljs-selector-pseudo,
+.notebook-preview .hljs-meta {
+	color: #2b91af;
+}
+
+.notebook-preview .hljs-doctag {
+	color: #808080;
+}
+
+.notebook-preview .hljs-attr {
+	color: #f00;
+}
+
+.notebook-preview .hljs-symbol,
+.notebook-preview .hljs-bullet,
+.notebook-preview .hljs-link {
+	color: #00b0e8;
+}
+
+
+.notebook-preview .hljs-emphasis {
+	font-style: italic;
+}
+
+.notebook-preview .hljs-strong {
+	font-weight: bold;
+}

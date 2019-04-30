@@ -3,6 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./textCell';
+import 'vs/css!./media/markdown';
+import 'vs/css!./media/highlight';
 
 import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild, OnChanges, SimpleChange, HostListener, AfterContentInit } from '@angular/core';
 import * as path from 'path';
@@ -66,6 +68,7 @@ export class TextCellComponent extends CellView implements OnInit, AfterContentI
 	}
 
 	private _content: string;
+	private _lastTrustedMode: boolean;
 	private isEditMode: boolean;
 	private _sanitizer: ISanitizer;
 	private _model: NotebookModel;
@@ -192,15 +195,19 @@ export class TextCellComponent extends CellView implements OnInit, AfterContentI
 	 * Sanitizes the data to be shown in markdown cell
 	 */
 	private updatePreview() {
-		if (this._content !== this.cellModel.source || this.cellModel.source.length === 0) {
+		let trustedChanged = this.cellModel && this._lastTrustedMode !== this.cellModel.trustedMode;
+		let contentChanged = this._content !== this.cellModel.source || this.cellModel.source.length === 0;
+		if (trustedChanged || contentChanged) {
+			this._lastTrustedMode = this.cellModel.trustedMode;
 			if (!this.cellModel.source && !this.isEditMode) {
 				this._content = localize('doubleClickEdit', 'Double-click to edit');
 			} else {
-				this._content = this.sanitizeContent(this.cellModel.source);
+				this._content = this.cellModel.source;
 			}
 
 			this._commandService.executeCommand<string>('notebook.showPreview', this.cellModel.notebookModel.notebookUri, this._content).then((htmlcontent) => {
 				htmlcontent = this.convertVscodeResourceToFileInSubDirectories(htmlcontent);
+				htmlcontent = this.sanitizeContent(htmlcontent);
 				let outputElement = <HTMLElement>this.output.nativeElement;
 				outputElement.innerHTML = htmlcontent;
 			});
@@ -214,7 +221,6 @@ export class TextCellComponent extends CellView implements OnInit, AfterContentI
 		}
 		return content;
 	}
-
 	// Only replace vscode-resource with file when in the same (or a sub) directory
 	// This matches Jupyter Notebook viewer behavior
 	private convertVscodeResourceToFileInSubDirectories(htmlContent: string): string {
