@@ -8,7 +8,7 @@ import 'vs/css!./media/dropdownList';
 import { ToggleDropdownAction } from './actions';
 import { DropdownDataSource, DropdownFilter, DropdownModel, DropdownRenderer, DropdownController } from './dropdownTree';
 
-import { IContextViewProvider, ContextView } from 'vs/base/browser/ui/contextview/contextview';
+import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
 import { mixin } from 'vs/base/common/objects';
 import { InputBox, IInputBoxStyles } from 'sql/base/browser/ui/inputBox/inputBox';
 import { IMessage, MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
@@ -21,7 +21,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
-import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
+import { ITree } from 'vs/base/parts/tree/browser/tree';
 
 export interface IDropdownOptions extends IDropdownStyles {
 	/**
@@ -78,11 +78,9 @@ export class Dropdown extends Disposable {
 	private _inputContainer: HTMLElement;
 	private _treeContainer: HTMLElement;
 	private _input: InputBox;
-	private _tree: Tree;
+	private _tree: ITree;
 	private _options: IDropdownOptions;
 	private _toggleAction: ToggleDropdownAction;
-	// we have to create our own contextview since otherwise inputbox will override ours
-	private _contextView: ContextView;
 	private _dataSource = new DropdownDataSource();
 	private _filter = new DropdownFilter();
 	private _renderer = new DropdownRenderer();
@@ -100,12 +98,10 @@ export class Dropdown extends Disposable {
 
 	constructor(
 		container: HTMLElement,
-		contextViewService: IContextViewProvider,
-		readonly layoutService: ILayoutService,
+		private readonly contextViewService: IContextViewProvider,
 		opt?: IDropdownOptions
 	) {
 		super();
-		this._contextView = new ContextView(layoutService.container);
 		this._options = opt || Object.create(null);
 		mixin(this._options, defaults, false);
 		this._el = DOM.append(container, DOM.$('.monaco-dropdown'));
@@ -124,7 +120,7 @@ export class Dropdown extends Disposable {
 		this._input = new InputBox(this._inputContainer, contextViewService, {
 			validationOptions: {
 				// @SQLTODO
-				//showMessage: false,
+				// showMessage: false,
 				validation: v => this._inputValidator(v)
 			},
 			placeholder: this._options.placeholder,
@@ -140,21 +136,18 @@ export class Dropdown extends Disposable {
 			this._showList();
 		}));
 
-		this._register(DOM.addDisposableListener(this._input.inputElement, DOM.EventType.BLUR, () => {
+		const inputTracker = this._register(DOM.trackFocus(this._input.inputElement));
+		inputTracker.onDidBlur(() => {
 			if (!this._tree.isDOMFocused()) {
 				this._onBlur.fire();
 			}
-		}));
+		});
 
 		this._register(DOM.addStandardDisposableListener(this._input.inputElement, DOM.EventType.KEY_DOWN, (e: StandardKeyboardEvent) => {
 			switch (e.keyCode) {
 				case KeyCode.Enter:
-					if (this._contextView.isVisible()) {
-						if (this._input.validate()) {
-							this._onValueChange.fire(this._input.value);
-						}
-					} else {
-						this._showList();
+					if (this._input.validate()) {
+						this._onValueChange.fire(this._input.value);
 					}
 					e.stopPropagation();
 					break;
@@ -162,14 +155,14 @@ export class Dropdown extends Disposable {
 					if (this._treeContainer.parentElement) {
 						this._input.validate();
 						this._onBlur.fire();
-						this._contextView.hide();
+						this.contextViewService.hideContextView();
 						e.stopPropagation();
 					}
 					break;
 				case KeyCode.Tab:
 					this._input.validate();
 					this._onBlur.fire();
-					this._contextView.hide();
+					this.contextViewService.hideContextView();
 					e.stopPropagation();
 					break;
 				case KeyCode.DownArrow:
@@ -191,18 +184,26 @@ export class Dropdown extends Disposable {
 			controller: this._controller
 		}, { paddingOnRow: false, indentPixels: 0, twistiePixels: 0 });
 
+		const treeTracker = this._register(DOM.trackFocus(this._tree.getHTMLElement()));
+
+		treeTracker.onDidBlur(() => {
+			if (!this._input.hasFocus()) {
+				this._onBlur.fire();
+			}
+		});
+
 		this.values = this._options.values;
 
 		this._controller.onSelectionChange(e => {
 			this.value = e.value;
 			this._onValueChange.fire(e.value);
 			this._input.focus();
-			this._contextView.hide();
+			this.contextViewService.hideContextView();
 		});
 
 		this._controller.onDropdownEscape(() => {
 			this._input.focus();
-			this._contextView.hide();
+			this.contextViewService.hideContextView();
 		});
 
 		this._input.onDidChange(e => {
@@ -216,29 +217,30 @@ export class Dropdown extends Disposable {
 			}
 		});
 
-		this._register(this._contextView);
+		this.onBlur(() => {
+			this.contextViewService.hideContextView();
+		});
+
 		this._register(this._tree);
 		this._register(this._input);
-		this._register(this._contextView);
 	}
 
 	private _showList(): void {
 		if (this._input.isEnabled) {
 			this._onFocus.fire();
 			this._filter.filterString = '';
-			this._contextView.show({
+			this.contextViewService.showContextView({
 				getAnchor: () => this._inputContainer,
 				render: container => {
 					DOM.append(container, this._treeContainer);
 					this._layoutTree();
-					return { dispose: () => { } };
-				},
-				onDOMEvent: e => {
-					if (!DOM.isAncestor((<HTMLElement>e.srcElement), this._el) && !DOM.isAncestor((<HTMLElement>e.srcElement), this._treeContainer)) {
-						this._input.validate();
-						this._onBlur.fire();
-						this._contextView.hide();
-					}
+					return {
+						dispose: () => {
+							// when we dispose we want to remove treecontainer so that it doesn't have a parent
+							// we often use the presense of a parent to detect if the tree is being shown
+							this._treeContainer.remove();
+						}
+					};
 				}
 			});
 		}
@@ -288,7 +290,7 @@ export class Dropdown extends Disposable {
 
 	public blur() {
 		this._input.blur();
-		this._contextView.hide();
+		this.contextViewService.hideContextView();
 	}
 
 	style(style: IListStyles & IInputBoxStyles & IDropdownStyles) {
