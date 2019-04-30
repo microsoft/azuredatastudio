@@ -214,7 +214,7 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean): IDi
 		let preformatForeground = theme.getColor(textPreformatForeground);
 		if (preformatForeground) {
 			collector.addRule(`
-			code {
+			.notebook-preview code {
 				color: ${preformatForeground};
 			}
 			`);
@@ -225,7 +225,7 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean): IDi
 		let blockQuoteBorder = theme.getColor(textBlockQuoteBorder);
 		if (preformatForeground) {
 			collector.addRule(`
-			blockquote {
+			.notebookEditor blockquote {
 				background: ${blockQuoteBackground};
 				border-color: ${blockQuoteBorder};
 			}

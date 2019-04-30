@@ -7,81 +7,81 @@ https://raw.githubusercontent.com/isagalaev/highlight.js/master/src/styles/vs201
  */
 
 
-text-cell-component .hljs-keyword,
-text-cell-component .hljs-literal,
-text-cell-component .hljs-symbol,
-text-cell-component .hljs-name {
+.notebook-preview .hljs-keyword,
+.notebook-preview .hljs-literal,
+.notebook-preview .hljs-symbol,
+.notebook-preview .hljs-name {
 	color: #569CD6;
 }
-text-cell-component .hljs-link {
+.notebook-preview .hljs-link {
 	color: #569CD6;
 	text-decoration: underline;
 }
 
-text-cell-component .hljs-built_in,
-text-cell-component .hljs-type {
+.notebook-preview .hljs-built_in,
+.notebook-preview .hljs-type {
 	color: #4EC9B0;
 }
 
-text-cell-component .hljs-number,
-text-cell-component .hljs-class {
+.notebook-preview .hljs-number,
+.notebook-preview .hljs-class {
 	color: #B8D7A3;
 }
 
-text-cell-component .hljs-string,
-text-cell-component .hljs-meta-string {
+.notebook-preview .hljs-string,
+.notebook-preview .hljs-meta-string {
 	color: #D69D85;
 }
 
-text-cell-component .hljs-regexp,
-text-cell-component .hljs-template-tag {
+.notebook-preview .hljs-regexp,
+.notebook-preview .hljs-template-tag {
 	color: #9A5334;
 }
 
-text-cell-component .hljs-subst,
-text-cell-component .hljs-function,
-text-cell-component .hljs-title,
-text-cell-component .hljs-params,
-text-cell-component .hljs-formula {
+.notebook-preview .hljs-subst,
+.notebook-preview .hljs-function,
+.notebook-preview .hljs-title,
+.notebook-preview .hljs-params,
+.notebook-preview .hljs-formula {
 	color: #DCDCDC;
 }
 
-text-cell-component .hljs-comment,
-text-cell-component .hljs-quote {
+.notebook-preview .hljs-comment,
+.notebook-preview .hljs-quote {
 	color: #57A64A;
 	font-style: italic;
 }
 
-text-cell-component .hljs-doctag {
+.notebook-preview .hljs-doctag {
 	color: #608B4E;
 }
 
-text-cell-component .hljs-meta,
-text-cell-component .hljs-meta-keyword,
-text-cell-component .hljs-tag {
+.notebook-preview .hljs-meta,
+.notebook-preview .hljs-meta-keyword,
+.notebook-preview .hljs-tag {
 	color: #9B9B9B;
 }
 
-text-cell-component .hljs-variable,
-text-cell-component .hljs-template-variable {
+.notebook-preview .hljs-variable,
+.notebook-preview .hljs-template-variable {
 	color: #BD63C5;
 }
 
-text-cell-component .hljs-attr,
-text-cell-component .hljs-attribute,
-text-cell-component .hljs-builtin-name {
+.notebook-preview .hljs-attr,
+.notebook-preview .hljs-attribute,
+.notebook-preview .hljs-builtin-name {
 	color: #9CDCFE;
 }
 
-text-cell-component .hljs-section {
+.notebook-preview .hljs-section {
 	color: gold;
 }
 
-text-cell-component .hljs-emphasis {
+.notebook-preview .hljs-emphasis {
 	font-style: italic;
 }
 
-text-cell-component .hljs-strong {
+.notebook-preview .hljs-strong {
 	font-weight: bold;
 }
 
@@ -89,23 +89,23 @@ text-cell-component .hljs-strong {
 	font-family:'Monospace';
 }*/
 
-text-cell-component .hljs-bullet,
-text-cell-component .hljs-selector-tag,
-text-cell-component .hljs-selector-id,
-text-cell-component .hljs-selector-class,
-text-cell-component .hljs-selector-attr,
-text-cell-component .hljs-selector-pseudo {
+.notebook-preview .hljs-bullet,
+.notebook-preview .hljs-selector-tag,
+.notebook-preview .hljs-selector-id,
+.notebook-preview .hljs-selector-class,
+.notebook-preview .hljs-selector-attr,
+.notebook-preview .hljs-selector-pseudo {
 	color: #D7BA7D;
 }
 
-text-cell-component .hljs-addition {
+.notebook-preview .hljs-addition {
 	background-color: var(--vscode-diffEditor-insertedTextBackground, rgba(155, 185, 85, 0.2));
 	color: rgb(155, 185, 85);
 	display: inline-block;
 	width: 100%;
 }
 
-text-cell-component .hljs-deletion {
+.notebook-preview .hljs-deletion {
 	background: var(--vscode-diffEditor-removedTextBackground, rgba(255, 0, 0, 0.2));
 	color: rgb(255, 0, 0);
 	display: inline-block;
@@ -122,61 +122,61 @@ Visual Studio-like style based on original C# coloring by Jason Diamond <jason@d
 
 */
 
-text-cell-component .hljs-function,
-text-cell-component .hljs-params {
+.notebook-preview .hljs-function,
+.notebook-preview .hljs-params {
 	color: inherit;
 }
 
-text-cell-component .hljs-comment,
-text-cell-component .hljs-quote,
-text-cell-component .hljs-variable {
+.notebook-preview .hljs-comment,
+.notebook-preview .hljs-quote,
+.notebook-preview .hljs-variable {
 	color: #008000;
 }
 
-text-cell-component .hljs-keyword,
-text-cell-component .hljs-selector-tag,
-text-cell-component .hljs-built_in,
-text-cell-component .hljs-name,
-text-cell-component .hljs-tag {
+.notebook-preview .hljs-keyword,
+.notebook-preview .hljs-selector-tag,
+.notebook-preview .hljs-built_in,
+.notebook-preview .hljs-name,
+.notebook-preview .hljs-tag {
 	color: #00f;
 }
 
-text-cell-component .hljs-string,
-text-cell-component .hljs-title,
-text-cell-component .hljs-section,
-text-cell-component .hljs-attribute,
-text-cell-component .hljs-literal,
-text-cell-component .hljs-template-tag,
-text-cell-component .hljs-template-variable,
-text-cell-component .hljs-type {
+.notebook-preview .hljs-string,
+.notebook-preview .hljs-title,
+.notebook-preview .hljs-section,
+.notebook-preview .hljs-attribute,
+.notebook-preview .hljs-literal,
+.notebook-preview .hljs-template-tag,
+.notebook-preview .hljs-template-variable,
+.notebook-preview .hljs-type {
 	color: #a31515;
 }
 
-text-cell-component .hljs-selector-attr,
-text-cell-component .hljs-selector-pseudo,
-text-cell-component .hljs-meta {
+.notebook-preview .hljs-selector-attr,
+.notebook-preview .hljs-selector-pseudo,
+.notebook-preview .hljs-meta {
 	color: #2b91af;
 }
 
-text-cell-component .hljs-doctag {
+.notebook-preview .hljs-doctag {
 	color: #808080;
 }
 
-text-cell-component .hljs-attr {
+.notebook-preview .hljs-attr {
 	color: #f00;
 }
 
-text-cell-component .hljs-symbol,
-text-cell-component .hljs-bullet,
-text-cell-component .hljs-link {
+.notebook-preview .hljs-symbol,
+.notebook-preview .hljs-bullet,
+.notebook-preview .hljs-link {
 	color: #00b0e8;
 }
 
 
-text-cell-component .hljs-emphasis {
+.notebook-preview .hljs-emphasis {
 	font-style: italic;
 }
 
-text-cell-component .hljs-strong {
+.notebook-preview .hljs-strong {
 	font-weight: bold;
 }
