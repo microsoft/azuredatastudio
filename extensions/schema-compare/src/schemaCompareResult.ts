@@ -417,7 +417,7 @@ export class SchemaCompareResult {
 			label: localize('schemaCompare.optionsButton', 'Options'),
 			iconPath: {
 				light: path.join(__dirname, 'media', 'options.svg'),
-				dark: path.join(__dirname, 'media', 'options_reverse.svg')
+				dark: path.join(__dirname, 'media', 'options-inverse.svg')
 			},
 			title: localize('schemaCompare.optionsButtonTitle', 'Options')
 		}).component();
