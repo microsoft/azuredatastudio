@@ -100,18 +100,9 @@ if (context.RunTest) {
 
 				let scriptFile: string = path.join(__dirname, 'schemaCompare_DBtoDB_TestScript' + now.getTime().toString() + '.sql');
 				let status = await schemaCompareService.schemaCompareGenerateScript(schemaCompareResult.operationId, dummyDBName, scriptFile, azdata.TaskExecutionMode.execute);
-
-				// wait for script generataion because it might take very long time
-				//let task = await azdata.dataprotocol.getProvider<azdata.TaskServicesProvider>('MSSQL', azdata.DataProviderType.TaskServicesProvider);
-				//let activetasks = await task.getAllTasks({listActiveTasksOnly: true});
-				//let generateScript = activetasks.tasks.find(x => x.name === 'Generate Script');
-				//while (generateScript && generateScript.status === azdata.TaskStatus.InProgress)
-				//{
-				//	await utils.sleep(5000);
-				//	activetasks = await task.getAllTasks({listActiveTasksOnly: true});
-				//	generateScript = activetasks.tasks.find(x => x.name === 'Generate Script');
-				//}
-
+				
+				// TODO : add wait for tasks to complete
+				// script generation might take too long and the 'success' status does not mean that script is created.
 				await assertScriptGenerationResult(status, scriptFile);
 			}
 			finally {
