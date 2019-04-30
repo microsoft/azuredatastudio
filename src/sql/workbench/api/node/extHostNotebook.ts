@@ -117,6 +117,10 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 	}
 
 	$shutdownSession(managerHandle: number, sessionId: string): Thenable<void> {
+		// If manager handle has already been removed, don't try to access it again when shutting down
+		if (this._adapters.get(managerHandle) === undefined) {
+			return undefined;
+		}
 		return this._withSessionManager(managerHandle, async (sessionManager) => {
 			return sessionManager.shutdown(sessionId);
 		});
