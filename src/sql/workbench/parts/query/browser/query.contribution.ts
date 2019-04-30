@@ -461,12 +461,12 @@ let registryProperties = {
 		'description': localize('mssql.query.xactAbortOn', 'Enable SET XACT_ABORT ON option')
 	},
 	'mssql.query.transactionIsolationLevel': {
-		'type': 'string',
+		'enum': ['READ COMMITTED', 'READ UNCOMMITTED', 'REPEATABLE READ', 'SERIALIZABLE'],
 		'default': 'READ COMMITTED',
 		'description': localize('mssql.query.transactionIsolationLevel', 'Enable SET TRANSACTION ISOLATION LEVEL option')
 	},
 	'mssql.query.deadlockPriority': {
-		'type': 'string',
+		'enum': ['Normal', 'Low'],
 		'default': 'Normal',
 		'description': localize('mssql.query.deadlockPriority', 'Enable SET DEADLOCK_PRIORITY option')
 	},
