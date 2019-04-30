@@ -19,21 +19,21 @@ import { ConnectionWidget } from 'sql/workbench/services/connection/browser/conn
 export class ConnectionController implements IConnectionComponentController {
 	private _container: HTMLElement;
 	private _connectionManagementService: IConnectionManagementService;
-	private _callback: IConnectionComponentCallbacks;
-	private _connectionWidget: ConnectionWidget;
 	private _advancedController: AdvancedPropertiesController;
 	private _model: IConnectionProfile;
-	private _providerOptions: azdata.ConnectionOption[];
 	private _providerName: string;
+	protected _callback: IConnectionComponentCallbacks;
+	protected _connectionWidget: ConnectionWidget;
+	protected _providerOptions: azdata.ConnectionOption[];
 	/* key: uri, value : list of databases */
-	private _databaseCache = new Map<string, string[]>();
+	protected _databaseCache = new Map<string, string[]>();
 
 	constructor(container: HTMLElement,
 		connectionManagementService: IConnectionManagementService,
 		connectionProperties: ConnectionProviderProperties,
 		callback: IConnectionComponentCallbacks,
 		providerName: string,
-		@IInstantiationService private _instantiationService: IInstantiationService) {
+		@IInstantiationService protected _instantiationService: IInstantiationService) {
 		this._container = container;
 		this._connectionManagementService = connectionManagementService;
 		this._callback = callback;
@@ -53,7 +53,7 @@ export class ConnectionController implements IConnectionComponentController {
 		this._providerName = providerName;
 	}
 
-	private onFetchDatabases(serverName: string, authenticationType: string, userName?: string, password?: string): Promise<string[]> {
+	protected onFetchDatabases(serverName: string, authenticationType: string, userName?: string, password?: string): Promise<string[]> {
 		let tempProfile = this._model;
 		tempProfile.serverName = serverName;
 		tempProfile.authenticationType = authenticationType;
@@ -90,14 +90,14 @@ export class ConnectionController implements IConnectionComponentController {
 		});
 	}
 
-	private onCreateNewServerGroup(): void {
+	protected onCreateNewServerGroup(): void {
 		this._connectionManagementService.showCreateServerGroupDialog({
 			onAddGroup: (groupName) => this._connectionWidget.updateServerGroup(this.getAllServerGroups(), groupName),
 			onClose: () => this._connectionWidget.focusOnServerGroup()
 		});
 	}
 
-	private handleonSetAzureTimeOut(): void {
+	protected handleonSetAzureTimeOut(): void {
 		let timeoutPropertyName = 'connectTimeout';
 		let timeoutOption = this._model.options[timeoutPropertyName];
 		if (timeoutOption === undefined || timeoutOption === null) {
@@ -105,7 +105,7 @@ export class ConnectionController implements IConnectionComponentController {
 		}
 	}
 
-	private handleOnAdvancedProperties(): void {
+	protected handleOnAdvancedProperties(): void {
 		if (!this._advancedController) {
 			this._advancedController = this._instantiationService.createInstance(AdvancedPropertiesController, () => this._connectionWidget.focusOnAdvancedButton());
 		}
