@@ -10,7 +10,7 @@ import * as assert from 'assert';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { context } from './testContext';
-import { sqlNotebookContent, writeNotebookToFile, sqlKernelMetadata, getFileName, pySparkNotebookContent, pySpark3KernelMetadata, pythonKernelMetadata, sqlNotebookMultipleCellsContent } from './notebook.util';
+import { sqlNotebookContent, writeNotebookToFile, sqlKernelMetadata, getFileName, pySparkNotebookContent, pySpark3KernelMetadata, pythonKernelMetadata, sqlNotebookMultipleCellsContent, sqlKernelSpec, pythonKernelSpec } from './notebook.util';
 import { getBdcServer, getConfigValue, EnvironmentVariable_PYTHON_PATH } from './testConfig';
 import { connectToServer } from './utils';
 import * as fs from 'fs';
@@ -23,12 +23,12 @@ if (context.RunTest) {
 		teardown(async function () {
 			let testName = this.currentTest.title;
 			try {
+				await vscode.commands.executeCommand('workbench.action.revertAndCloseActiveEditor');
 				let fileName = getFileName(testName);
 				if (fs.existsSync(fileName)) {
 					fs.unlinkSync(fileName);
 					console.log(`"${fileName}" is deleted.`);
 				}
-				await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
 			}
 			catch (err) {
 				console.log(err);
@@ -84,6 +84,20 @@ if (context.RunTest) {
 			test('Clear all outputs - Python3 notebook ', async function () {
 				let notebook = await openNotebook(pySparkNotebookContent, pythonKernelMetadata, this.test.title);
 				await verifyClearAllOutputs(notebook);
+			});
+
+			test('Python3 notebook change kernel to SQL and back', async function () {
+				let notebook = await openNotebook(pySparkNotebookContent, pythonKernelMetadata, this.test.title);
+				assert(notebook.document.providerId === 'jupyter', `Expected providerId to be jupyter, Actual: ${notebook.document.providerId}`);
+				assert(notebook.document.kernelSpec.name === 'python3', `Expected second kernel name: python3, Actual: ${notebook.document.kernelSpec.name}`);
+
+				let kernelChanged = await notebook.changeKernel(sqlKernelSpec);
+				assert(notebook.document.providerId === 'SQL', `Expected providerId to be SQL, Actual: ${notebook.document.providerId}`);
+				assert(kernelChanged && notebook.document.kernelSpec.name === 'SQL', `Expected first kernel name: SQL, Actual: ${notebook.document.kernelSpec.name}`);
+
+				kernelChanged = await notebook.changeKernel(pythonKernelSpec);
+				assert(notebook.document.providerId === 'jupyter', `Expected providerId to be jupyter, Actual: ${notebook.document.providerId}`);
+				assert(kernelChanged && notebook.document.kernelSpec.name === 'python3', `Expected second kernel name: python3, Actual: ${notebook.document.kernelSpec.name}`);
 			});
 		}
 

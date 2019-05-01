@@ -264,8 +264,9 @@ export class ClientSession implements IClientSession {
 	private async updateCachedKernelSpec(): Promise<void> {
 		this._cachedKernelSpec = undefined;
 		let kernel = this.kernel;
+		await kernel.ready;
 		if (kernel && kernel.isReady) {
-			this._cachedKernelSpec = await this.kernel.getSpec();
+			this._cachedKernelSpec = await kernel.getSpec();
 		}
 	}
 

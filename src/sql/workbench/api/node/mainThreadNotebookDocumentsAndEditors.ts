@@ -36,7 +36,8 @@ import { localize } from 'vs/nls';
 class MainThreadNotebookEditor extends Disposable {
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
 	public readonly contentChanged: Event<NotebookContentChange> = this._contentChangedEmitter.event;
-	private _providerInfo: IProviderInfo;
+	private _providerId: string = '';
+	private _providers: string[] = [];
 
 	constructor(public readonly editor: INotebookEditor) {
 		super();
@@ -48,9 +49,15 @@ class MainThreadNotebookEditor extends Disposable {
 				};
 				this._contentChangedEmitter.fire(changeEvent);
 			}));
+			this._register(model.onProviderIdChange((e) => {
+				this._providerId = e;
+			}));
+			if (this._providerId !== model.providerId) {
+				this._providerId = model.providerId;
+			}
 		});
 		editor.notebookParams.providerInfo.then(info => {
-			this._providerInfo = info;
+			this._providers = info.providers;
 		});
 	}
 
@@ -67,11 +74,11 @@ class MainThreadNotebookEditor extends Disposable {
 	}
 
 	public get providerId(): string {
-		return this._providerInfo ? this._providerInfo.providerId : undefined;
+		return this._providerId;
 	}
 
 	public get providers(): string[] {
-		return this._providerInfo ? this._providerInfo.providers : [];
+		return this._providers;
 	}
 
 	public get cells(): ICellModel[] {
@@ -385,6 +392,14 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		return editor.clearAllOutputs();
 	}
 
+	$changeKernel(id: string, kernel: azdata.nb.IKernelSpec): Promise<boolean> {
+		let editor = this.getEditor(id);
+		if (!editor) {
+			return Promise.reject(disposed(`TextEditor(${id})`));
+		}
+		return this.doChangeKernel(editor, kernel.display_name);
+	}
+
 	//#endregion
 
 	private async doOpenEditor(resource: UriComponents, options: INotebookShowOptions): Promise<string> {
@@ -591,5 +606,14 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 			});
 		}
 		return notebookCells;
+	}
+
+	private async doChangeKernel(editor: MainThreadNotebookEditor, displayName: string): Promise<boolean> {
+		editor.model.changeKernel(displayName);
+		return new Promise(function (resolve) {
+			editor.model.kernelChanged(() => {
+				resolve(true);
+			});
+		});
 	}
 }
