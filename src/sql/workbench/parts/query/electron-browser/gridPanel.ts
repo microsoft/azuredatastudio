@@ -297,13 +297,18 @@ export class GridPanel extends ViewletPanel {
 			tables.push(table);
 		}
 
-		// possible to need a sort?
+		this.tables = this.tables.concat(tables);
+
+		// turn-off special-case process when only a single table is being displayed
+		if (this.tables.length > 1) {
+			for (let i = 0; i < this.tables.length; ++i) {
+				this.tables[i].isOnlyTable = false;
+			}
+		}
 
 		if (isUndefinedOrNull(this.maximizedGrid)) {
 			this.splitView.addViews(tables, tables.map(i => i.minimumSize), this.splitView.length);
 		}
-
-		this.tables = this.tables.concat(tables);
 	}
 
 	public clear() {
@@ -403,6 +408,8 @@ class GridTable<T> extends Disposable implements IView {
 	private visible = false;
 
 	private rowHeight: number;
+
+	public isOnlyTable: boolean = true;
 
 	public get resultSet(): azdata.ResultSetSummary {
 		return this._resultSet;
@@ -713,7 +720,8 @@ class GridTable<T> extends Disposable implements IView {
 
 	public get minimumSize(): number {
 		// clamp between ensuring we can show the actionbar, while also making sure we don't take too much space
-		return Math.max(Math.min(this.maxSize, MIN_GRID_HEIGHT), ACTIONBAR_HEIGHT + BOTTOM_PADDING);
+		// if there is only one table then allow a minimum size of ROW_HEIGHT
+		return this.isOnlyTable ? ROW_HEIGHT : Math.max(Math.min(this.maxSize, MIN_GRID_HEIGHT), ACTIONBAR_HEIGHT + BOTTOM_PADDING);
 	}
 
 	public get maximumSize(): number {
