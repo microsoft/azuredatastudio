@@ -8,7 +8,6 @@ import * as types from 'vs/base/common/types';
 import { compare as stringCompare } from 'vs/base/common/strings';
 
 import { IDisposableDataProvider } from 'sql/base/browser/ui/table/interfaces';
-import { Result } from 'electron';
 
 export interface IFindPosition {
 	col: number;
