@@ -242,13 +242,6 @@ export class Dropdown extends Disposable {
 							this._treeContainer.remove();
 						}
 					};
-				},
-				onDOMEvent: e => {
-					if (!DOM.isAncestor((<HTMLElement>e.target), this._el) && !DOM.isAncestor((<HTMLElement>e.target), this._treeContainer)) {
-						this._input.validate();
-						this._onBlur.fire();
-						this.contextViewService.hideContextView();
-					}
 				}
 			});
 		}
@@ -280,6 +273,7 @@ export class Dropdown extends Disposable {
 			this._treeContainer.style.width = DOM.getContentWidth(this._inputContainer) - 2 + 'px';
 			this._tree.layout(parseInt(this._treeContainer.style.height));
 			this._tree.setInput(new DropdownModel());
+			this._input.validate();
 		}
 	}
 
