@@ -74,6 +74,7 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 			this._data = new Array<T>();
 		}
 
+		// @todo @anthonydresser 5/1/19 theres a lot we could do by just accepting a regex as a exp rather than accepting a full find function
 		this._sortFn = _sortFn ? _sortFn : defaultSort;
 
 		this._filterFn = _filterFn ? _filterFn : (dataToFilter) => dataToFilter;
