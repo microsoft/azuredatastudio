@@ -3,12 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as assert from 'assert';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 
-suite('TableDataView Tests', () => {
+suite('TableDataView', () => {
 	test('Data can be filtered and filter can be cleared', () => {
 		const rowCount = 10;
 		const columnCount = 5;
@@ -76,6 +74,77 @@ suite('TableDataView Tests', () => {
 
 		obj.clearFilter();
 		verify(2, rowCount + additionalRowCount + additionalRowCount, rowCount + additionalRowCount + additionalRowCount, 4, 'calling clearFilter() multiple times', false);
+	});
+
+	test('Search can find items', async () => {
+		const rowCount = 10;
+		const columnCount = 5;
+		const originalData = populateData(rowCount, columnCount);
+
+		const searchFn = (val: { [x: string]: string }, exp: string): Array<number> => {
+			const ret = new Array<number>();
+			for (let i = 0; i < columnCount; i++) {
+				const colVal = val[getColumnName(i)];
+				if (colVal && colVal.toLocaleLowerCase().includes(exp.toLocaleLowerCase())) {
+					ret.push(i);
+				}
+			}
+			return ret;
+		};
+
+		const dataView = new TableDataView(originalData, searchFn);
+
+		let findValue = await dataView.find('row 2');
+		assert.deepEqual(findValue, { row: 2, col: 0 });
+		findValue = await dataView.findNext();
+		assert.deepEqual(findValue, { row: 2, col: 1 });
+		findValue = await dataView.findNext();
+		assert.deepEqual(findValue, { row: 2, col: 2 });
+		findValue = await dataView.findNext();
+		assert.deepEqual(findValue, { row: 2, col: 3 });
+		findValue = await dataView.findNext();
+		assert.deepEqual(findValue, { row: 2, col: 4 });
+		// find will loop around once it reaches the end
+		findValue = await dataView.findNext();
+		assert.deepEqual(findValue, { row: 2, col: 0 });
+	});
+
+	test('Search fails correctly', async () => {
+		const rowCount = 10;
+		const columnCount = 5;
+		const originalData = populateData(rowCount, columnCount);
+
+		const searchFn = (val: { [x: string]: string }, exp: string): Array<number> => {
+			const ret = new Array<number>();
+			for (let i = 0; i < columnCount; i++) {
+				const colVal = val[getColumnName(i)];
+				if (colVal && colVal.toLocaleLowerCase().includes(exp.toLocaleLowerCase())) {
+					ret.push(i);
+				}
+			}
+			return ret;
+		};
+
+		const dataView = new TableDataView(originalData, searchFn);
+
+		try {
+			// we haven't started a search so we should throw
+			await dataView.findNext();
+			assert.fail();
+		} catch (e) {
+
+		}
+
+		await dataView.find('row 2');
+		dataView.clearFind();
+
+		try {
+			// we cleared the search and haven't started a new search so we should throw
+			await dataView.findNext();
+			assert.fail();
+		} catch (e) {
+
+		}
 	});
 });
 
