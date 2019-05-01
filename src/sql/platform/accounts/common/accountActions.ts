@@ -87,7 +87,7 @@ export class RemoveAccountAction extends Action {
 		};
 
 		return this._dialogService.confirm(confirm).then(result => {
-			if (!result) {
+			if (!result || !result.confirmed) {
 				return Promise.resolve(false);
 			} else {
 				return Promise.resolve(this._accountManagementService.removeAccount(this._account.key)).catch(err => {
