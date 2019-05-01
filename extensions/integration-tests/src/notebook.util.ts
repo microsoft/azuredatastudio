@@ -118,6 +118,11 @@ export const pySpark3KernelMetadata = {
 	}
 };
 
+export const pySpark3KernelSpec = {
+	name: 'pyspark3',
+	display_name: 'PySpark3'
+};
+
 export const sqlKernelMetadata = {
 	'kernelspec': {
 		'name': 'SQL',

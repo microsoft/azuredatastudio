@@ -440,10 +440,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				}
 			}
 			this._onClientSessionReady.fire(clientSession);
-			this._kernelChangedEmitter.fire({
-				oldValue: undefined,
-				newValue: clientSession.kernel
-			});
 		}
 	}
 
