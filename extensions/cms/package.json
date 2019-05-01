@@ -548,16 +548,16 @@
 				}
 			},
 			{
-				"command": "cms.resource.registerCMSServer",
-				"title": "%cms.resource.registerCMSServer.title%",
+				"command": "cms.resource.registerCmsServer",
+				"title": "%cms.resource.registerCmsServer.title%",
 				"icon": {
 					"light": "resources/light/add.svg",
 					"dark": "resources/dark/add_inverse.svg"
 				}
 			},
 			{
-				"command": "cms.resource.deleteCMSServer",
-				"title": "%cms.resource.deleteCMSServer.title%"
+				"command": "cms.resource.deleteCmsServer",
+				"title": "%cms.resource.deleteCmsServer.title%"
 			}
 		],
 		"dataExplorer": {
@@ -571,7 +571,7 @@
 		"menus": {
 			"view/title": [
 				{
-					"command": "cms.resource.registerCMSServer",
+					"command": "cms.resource.registerCmsServer",
 					"when": "view == cmsResourceExplorer",
 					"group": "navigation"
 				}
@@ -618,7 +618,7 @@
 					"group": "navigation@10"
 				},
 				{
-					"command": "cms.resource.deleteCMSServer",
+					"command": "cms.resource.deleteCmsServer",
 					"when": "viewItem == cms.resource.itemType.cmsNodeContainer",
 					"group": "navigation@10"
 				}
