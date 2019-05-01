@@ -10,7 +10,7 @@ import { Action } from 'vs/base/common/actions';
 
 import { error } from 'sql/base/common/log';
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
-import { IDialogService, IConfirmation } from 'vs/platform/dialogs/common/dialogs';
+import { IDialogService, IConfirmation, IConfirmationResult } from 'vs/platform/dialogs/common/dialogs';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
 
@@ -86,8 +86,8 @@ export class RemoveAccountAction extends Action {
 			type: 'question'
 		};
 
-		return this._dialogService.confirm(confirm).then(result => {
-			if (!result) {
+		return this._dialogService.confirm(confirm).then((result: IConfirmationResult) => {
+			if (!result || !result.confirmed) {
 				return Promise.resolve(false);
 			} else {
 				return Promise.resolve(this._accountManagementService.removeAccount(this._account.key)).catch(err => {
