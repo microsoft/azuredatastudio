@@ -219,6 +219,7 @@ export class Dropdown extends Disposable {
 
 		this.onBlur(() => {
 			this.contextViewService.hideContextView();
+			this._input.validate();
 		});
 
 		this._register(this._tree);
@@ -241,6 +242,13 @@ export class Dropdown extends Disposable {
 							this._treeContainer.remove();
 						}
 					};
+				},
+				onDOMEvent: e => {
+					if (!DOM.isAncestor((<HTMLElement>e.target), this._el) && !DOM.isAncestor((<HTMLElement>e.target), this._treeContainer)) {
+						this._input.validate();
+						this._onBlur.fire();
+						this.contextViewService.hideContextView();
+					}
 				}
 			});
 		}
@@ -272,7 +280,6 @@ export class Dropdown extends Disposable {
 			this._treeContainer.style.width = DOM.getContentWidth(this._inputContainer) - 2 + 'px';
 			this._tree.layout(parseInt(this._treeContainer.style.height));
 			this._tree.setInput(new DropdownModel());
-			this._input.validate();
 		}
 	}
 
@@ -301,7 +308,7 @@ export class Dropdown extends Disposable {
 	}
 
 	private _inputValidator(value: string): IMessage | null {
-		if (this._dataSource.options && !this._dataSource.options.find(i => i.value === value)) {
+		if (!this._input.hasFocus() && !this._tree.isDOMFocused() &&  this._dataSource.options && !this._dataSource.options.find(i => i.value === value)) {
 			if (this._options.strictSelection && this._options.errorMessage) {
 				return {
 					content: this._options.errorMessage,
