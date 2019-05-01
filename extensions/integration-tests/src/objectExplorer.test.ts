@@ -45,7 +45,7 @@ if (context.RunTest) {
 			let expectedActions;
 
 			if (process.platform === 'win32') {
-				expectedActions = ['Manage', 'New Query', 'Disconnect', 'Delete Connection', 'Refresh', 'New Notebook', 'Properties', 'Launch Profiler'];
+				expectedActions = ['Manage', 'New Query', 'Disconnect', 'Delete Connection', 'Refresh', 'New Notebook', 'Launch Profiler', 'Properties'];
 			} else {
 				expectedActions = ['Manage', 'New Query', 'Disconnect', 'Delete Connection', 'Refresh', 'New Notebook', 'Launch Profiler'];
 			}
@@ -56,7 +56,7 @@ if (context.RunTest) {
 		});
 	});
 }
-async function VerifyOeNode(server: TestServerProfile, timeout: number, expectedNodeLable: string[]) {
+async function VerifyOeNode(server: TestServerProfile, timeout: number, expectedNodeLabel: string[]) {
 	await connectToServer(server, timeout);
 	let nodes = <azdata.objectexplorer.ObjectExplorerNode[]>await azdata.objectexplorer.getActiveConnectionNodes();
 	assert(nodes.length > 0, `Expecting at least one active connection, actual: ${nodes.length}`);
@@ -65,9 +65,9 @@ async function VerifyOeNode(server: TestServerProfile, timeout: number, expected
 	assert(index !== -1, `Failed to find server: "${server.serverName}" in OE tree`);
 	let actualNodeLable = [];
 	let childeren = await nodes[index].getChildren();
-	assert(childeren.length === expectedNodeLable.length, `Expecting node count: ${expectedNodeLable.length}, Actual: ${childeren.length}`);
+	assert(childeren.length === expectedNodeLabel.length, `Expecting node count: ${expectedNodeLabel.length}, Actual: ${childeren.length}`);
 
 	childeren.forEach(c => actualNodeLable.push(c.label));
-	assert(expectedNodeLable.toLocaleString() === actualNodeLable.toLocaleString(), `Expected node label: "${expectedNodeLable}", Actual: "${actualNodeLable}"`);
+	assert(expectedNodeLabel.toLocaleString() === actualNodeLable.toLocaleString(), `Expected node label: "${expectedNodeLabel}", Actual: "${actualNodeLable}"`);
 }
 
