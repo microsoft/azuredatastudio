@@ -146,6 +146,33 @@ suite('TableDataView', () => {
 
 		}
 	});
+
+	test('Search respects max finds', async () => {
+		const rowCount = 10;
+		const columnCount = 5;
+		const originalData = populateData(rowCount, columnCount);
+
+		const searchFn = (val: { [x: string]: string }, exp: string): Array<number> => {
+			const ret = new Array<number>();
+			for (let i = 0; i < columnCount; i++) {
+				const colVal = val[getColumnName(i)];
+				if (colVal && colVal.toLocaleLowerCase().includes(exp.toLocaleLowerCase())) {
+					ret.push(i);
+				}
+			}
+			return ret;
+		};
+
+		const dataView = new TableDataView(originalData, searchFn);
+
+		let findValue = await dataView.find('row 2', 2);
+		assert.deepEqual(findValue, { row: 2, col: 0 });
+		findValue = await dataView.findNext();
+		assert.deepEqual(findValue, { row: 2, col: 1 });
+		// find will loop around once it reaches the end
+		findValue = await dataView.findNext();
+		assert.deepEqual(findValue, { row: 2, col: 0 });
+	});
 });
 
 function populateData(row: number, column: number): any[] {

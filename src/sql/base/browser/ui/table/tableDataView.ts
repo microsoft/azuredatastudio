@@ -8,6 +8,7 @@ import * as types from 'vs/base/common/types';
 import { compare as stringCompare } from 'vs/base/common/strings';
 
 import { IDisposableDataProvider } from 'sql/base/browser/ui/table/interfaces';
+import { Result } from 'electron';
 
 export interface IFindPosition {
 	col: number;
@@ -176,15 +177,22 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 		for (let i = 0; i < this._data.length; i++) {
 			const item = this._data[i];
 			const result = this._findFn!(item, exp);
+			let breakout = false;
 			if (result) {
-				result.forEach(pos => {
+				for (let j = 0; j < result.length; j++) {
+					const pos = result[j];
 					const index = { col: pos, row: i };
 					this._findArray.push(index);
 					this._onFindCountChange.fire(this._findArray.length);
-				});
-				if (maxMatches > 0 && this._findArray.length > maxMatches) {
-					break;
+					if (maxMatches > 0 && this._findArray.length > maxMatches) {
+						breakout = true;
+						break;
+					}
 				}
+			}
+
+			if (breakout) {
+				break;
 			}
 		}
 	}
