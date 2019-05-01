@@ -97,11 +97,8 @@ export class CmsConnectionWidget extends ConnectionWidget {
 		let newAuthTypes = authTypeOption.categoryValues;
 		if (authTypeChanged) {
 			newAuthTypes = authTypeOption.categoryValues.filter((option) => option.name !== AuthenticationType.SqlLogin);
-		}
-		if (this._authTypeSelectBox) {
+			authTypeOption.defaultValue = AuthenticationType.Integrated;
 			this._authTypeSelectBox.setOptions(newAuthTypes.map(c => c.displayName));
-		} else {
-			this._authTypeSelectBox = new SelectBox(newAuthTypes.map(c => c.displayName), authTypeOption.defaultValue, this._contextViewService, undefined, { ariaLabel: authTypeOption.displayName });
 		}
 	}
 
