@@ -63,11 +63,11 @@ async function VerifyOeNode(server: TestServerProfile, timeout: number, expected
 
 	let index = nodes.findIndex(node => node.nodePath.includes(server.serverName));
 	assert(index !== -1, `Failed to find server: "${server.serverName}" in OE tree`);
-	let actualNodeLable = [];
-	let childeren = await nodes[index].getChildren();
-	assert(childeren.length === expectedNodeLabel.length, `Expecting node count: ${expectedNodeLabel.length}, Actual: ${childeren.length}`);
+	let actualNodeLabel = [];
+	let children = await nodes[index].getChildren();
+	assert(children.length === expectedNodeLabel.length, `Expecting node count: ${expectedNodeLabel.length}, Actual: ${children.length}`);
 
-	childeren.forEach(c => actualNodeLable.push(c.label));
-	assert(expectedNodeLabel.toLocaleString() === actualNodeLable.toLocaleString(), `Expected node label: "${expectedNodeLabel}", Actual: "${actualNodeLable}"`);
+	children.forEach(c => actualNodeLabel.push(c.label));
+	assert(expectedNodeLabel.toLocaleString() === actualNodeLabel.toLocaleString(), `Expected node label: "${expectedNodeLabel}", Actual: "${actualNodeLabel}"`);
 }
 
