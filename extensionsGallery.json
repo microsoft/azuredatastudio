@@ -1553,7 +1553,7 @@
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
-									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+									"assetType": "Microsoft.SQLOps.DownloadPage",
 									"source": "https://github.com/JocaPC/AzureDataStudio-Managed-Instance/blob/master/versions/managed-instance-dashboard-0.1.1.vsix?raw=true"
 								},
 								{
