@@ -111,7 +111,7 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 		return connection;
 	}
 
-	public $connect(connectionProfile: IConnectionProfile, saveConnection: boolean = false, showDashboard: boolean = false): Thenable<azdata.ConnectionResult> {
+	public $connect(connectionProfile: IConnectionProfile, saveConnection: boolean = true, showDashboard: boolean = true): Thenable<azdata.ConnectionResult> {
 		let profile = new ConnectionProfile(this._capabilitiesService, connectionProfile);
 		profile.id = generateUuid();
 		return this._connectionManagementService.connectAndSaveProfile(profile, undefined, {
