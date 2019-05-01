@@ -22,7 +22,7 @@ export class CmsResourceEmptyTreeNode extends TreeNode {
 		let item = new TreeItem(CmsResourceEmptyTreeNode.addCmsServerLabel, TreeItemCollapsibleState.None);
 		item.command = {
 			title: CmsResourceEmptyTreeNode.addCmsServerLabel,
-			command: 'cms.resource.registerCMSServer',
+			command: 'cms.resource.registerCmsServer',
 			arguments: [this]
 		};
 		item.contextValue = CmsResourceItemType.cmsEmptyNodeContainer;
@@ -47,5 +47,5 @@ export class CmsResourceEmptyTreeNode extends TreeNode {
 		return 'message_cmsTreeNode';
 	}
 
-	private static readonly addCmsServerLabel = localize('cms.resource.tree.CMSTreeNode.addCmsServerLabel', 'Add Central Management Server...');
+	private static readonly addCmsServerLabel = localize('cms.resource.tree.CmsTreeNode.addCmsServerLabel', 'Add Central Management Server...');
 }
