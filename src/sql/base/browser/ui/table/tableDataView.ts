@@ -184,7 +184,7 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 					const index = { col: pos, row: i };
 					this._findArray.push(index);
 					this._onFindCountChange.fire(this._findArray.length);
-					if (maxMatches > 0 && this._findArray.length > maxMatches) {
+					if (maxMatches > 0 && this._findArray.length === maxMatches) {
 						breakout = true;
 						break;
 					}
