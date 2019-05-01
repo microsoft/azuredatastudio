@@ -103,11 +103,11 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 			});
 	}
 
-	public prompt(): Thenable<AzureAccount> {
+	public prompt(): Thenable<AzureAccount | azdata.PromptFailedResult> {
 		return this.doIfInitialized(() => this.signIn(true));
 	}
 
-	public refresh(account: AzureAccount): Thenable<AzureAccount> {
+	public refresh(account: AzureAccount): Thenable<AzureAccount | azdata.PromptFailedResult> {
 		return this.doIfInitialized(() => this.signIn(false));
 	}
 
@@ -228,7 +228,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 		});
 	}
 
-	private getDeviceLoginToken(oAuth: InProgressAutoOAuth, isAddAccount: boolean): Thenable<adal.TokenResponse> {
+	private getDeviceLoginToken(oAuth: InProgressAutoOAuth, isAddAccount: boolean): Thenable<adal.TokenResponse | azdata.PromptFailedResult> {
 		let self = this;
 
 		// 1) Open the auto OAuth dialog
@@ -239,14 +239,15 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 			localize('refreshAccount', 'Refresh {0} account', self._metadata.displayName);
 		return azdata.accounts.beginAutoOAuthDeviceCode(self._metadata.id, title, oAuth.userCodeInfo.message, oAuth.userCodeInfo.userCode, oAuth.userCodeInfo.verificationUrl)
 			.then(() => {
-				return new Promise<adal.TokenResponse>((resolve, reject) => {
+				return new Promise<adal.TokenResponse | azdata.PromptFailedResult>((resolve, reject) => {
 					let context = oAuth.context;
 					context.acquireTokenWithDeviceCode(self._metadata.settings.signInResourceId, self._metadata.settings.clientId, oAuth.userCodeInfo,
 						(err, response) => {
 							if (err) {
 								if (self._autoOAuthCancelled) {
+									let result: azdata.PromptFailedResult = { canceled: true };
 									// Auto OAuth was cancelled by the user, indicate this with the error we return
-									reject(<azdata.UserCancelledSignInError>{ userCancelledSignIn: true });
+									resolve(result);
 								} else {
 									// Auto OAuth failed for some other reason
 									azdata.accounts.endAutoOAuthDeviceCode();
@@ -368,7 +369,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 		});
 	}
 
-	private signIn(isAddAccount: boolean): Thenable<AzureAccount> {
+	private signIn(isAddAccount: boolean): Thenable<AzureAccount | azdata.PromptFailedResult> {
 		let self = this;
 
 		// 1) Get the user code for this login
