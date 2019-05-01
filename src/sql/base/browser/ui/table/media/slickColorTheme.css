@@ -148,7 +148,7 @@
 
 .vs ::-webkit-scrollbar {
 	width: 14px;
-	height: 10px;
+	height: 12px;
 }
 .vs ::-webkit-scrollbar-thumb {
 	background: hsla(0,0%,47%,.4);
