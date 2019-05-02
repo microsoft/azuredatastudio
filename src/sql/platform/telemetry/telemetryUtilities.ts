@@ -22,10 +22,11 @@ export interface IConnectionTelemetryData extends ITelemetryData {
  */
 export function addTelemetry(
 	telemetryService: ITelemetryService,
+	logService: ILogService,
 	telemetryEventName: string,
 	data?: IConnectionTelemetryData,
-	connection?: IConnectionProfile,
-	logService?: ILogService): Promise<void> {
+	connection?: IConnectionProfile
+): Promise<void> {
 	return new Promise<void>(resolve => {
 		try {
 			let telData: ITelemetryData = data === undefined ? {} : data;

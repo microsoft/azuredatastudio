@@ -349,7 +349,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		return new Promise<azdata.ObjectExplorerExpandInfo>((resolve, reject) => {
 			let provider = this._providers[providerId];
 			if (provider) {
-				TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.ObjectExplorerExpand, { refresh: 0, provider: providerId });
+				TelemetryUtils.addTelemetry(this._telemetryService, this.logService, TelemetryKeys.ObjectExplorerExpand, { refresh: 0, provider: providerId });
 				this.expandOrRefreshNode(providerId, session, nodePath).then(result => {
 					resolve(result);
 				}, error => {
@@ -487,7 +487,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	public refreshNode(providerId: string, session: azdata.ObjectExplorerSession, nodePath: string): Thenable<azdata.ObjectExplorerExpandInfo> {
 		let provider = this._providers[providerId];
 		if (provider) {
-			TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.ObjectExplorerExpand, { refresh: 1, provider: providerId });
+			TelemetryUtils.addTelemetry(this._telemetryService, this.logService, TelemetryKeys.ObjectExplorerExpand, { refresh: 1, provider: providerId });
 			return this.expandOrRefreshNode(providerId, session, nodePath, true);
 		}
 		return Promise.resolve(undefined);

@@ -629,7 +629,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	public saveProfileGroup(profile: IConnectionProfileGroup): Promise<string> {
-		TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.AddServerGroup);
+		TelemetryUtils.addTelemetry(this._telemetryService, this.logService, TelemetryKeys.AddServerGroup);
 		return new Promise<string>((resolve, reject) => {
 			this._connectionStore.saveProfileGroup(profile).then(groupId => {
 				this._onAddConnectionProfile.fire(undefined);
@@ -858,7 +858,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	private addTelemetryForConnection(connection: ConnectionManagementInfo): void {
-		TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.DatabaseConnected, {
+		TelemetryUtils.addTelemetry(this._telemetryService, this.logService, TelemetryKeys.DatabaseConnected, {
 			connectionType: connection.serverInfo ? (connection.serverInfo.isCloud ? 'Azure' : 'Standalone') : '',
 			provider: connection.connectionProfile.providerName,
 			serverVersion: connection.serverInfo ? connection.serverInfo.serverVersion : '',
@@ -870,7 +870,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	private addTelemetryForConnectionDisconnected(connection: IConnectionProfile): void {
-		TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.DatabaseDisconnected, {
+		TelemetryUtils.addTelemetry(this._telemetryService, this.logService, TelemetryKeys.DatabaseDisconnected, {
 			provider: connection.providerName
 		});
 	}
@@ -915,13 +915,13 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	public changeGroupIdForConnectionGroup(source: ConnectionProfileGroup, target: ConnectionProfileGroup): Promise<void> {
-		TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.MoveServerConnection);
+		TelemetryUtils.addTelemetry(this._telemetryService, this.logService, TelemetryKeys.MoveServerConnection);
 		return this._connectionStore.changeGroupIdForConnectionGroup(source, target);
 	}
 
 	public changeGroupIdForConnection(source: ConnectionProfile, targetGroupId: string): Promise<void> {
 		let id = Utils.generateUri(source);
-		TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.MoveServerGroup);
+		TelemetryUtils.addTelemetry(this._telemetryService, this.logService, TelemetryKeys.MoveServerGroup);
 		return this._connectionStore.changeGroupIdForConnection(source, targetGroupId).then(result => {
 			if (id && targetGroupId) {
 				source.groupId = targetGroupId;
@@ -1205,7 +1205,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 */
 	public deleteConnection(connection: ConnectionProfile): Promise<boolean> {
 
-		TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.DeleteConnection, {}, connection);
+		TelemetryUtils.addTelemetry(this._telemetryService, this.logService, TelemetryKeys.DeleteConnection, {}, connection);
 		// Disconnect if connected
 		let uri = Utils.generateUri(connection);
 		if (this.isConnected(uri) || this.isConnecting(uri)) {
@@ -1243,7 +1243,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * Disconnects a connection before removing from config. If disconnect fails, settings is not modified.
 	 */
 	public deleteConnectionGroup(group: ConnectionProfileGroup): Promise<boolean> {
-		TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.DeleteServerGroup);
+		TelemetryUtils.addTelemetry(this._telemetryService, this.logService, TelemetryKeys.DeleteServerGroup);
 		// Get all connections for this group
 		let connections = ConnectionProfileGroup.getConnectionsInGroup(group);
 
