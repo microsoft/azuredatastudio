@@ -237,35 +237,37 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			this._modelReadyDeferred.resolve(this._model);
 			this.notebookService.addNotebookEditor(this);
 		} catch (error) {
-			// Offer to create a file from the error if we have a file not found and the name is valid
-			if ((<FileOperationError>error).fileOperationResult === FileOperationResult.FILE_NOT_FOUND && isValidBasename(basename(this.notebookParams.notebookUri))) {
-				let errorWithAction = createErrorWithActions(toErrorMessage(error), {
-					actions: [
-						new Action('workbench.files.action.createMissingFile', localize('createFile', "Create File"), undefined, true, () => {
-							return this.textFileService.create(this.notebookParams.notebookUri).then(() => this.editorService.openEditor({
-								resource: this.notebookParams.notebookUri,
-								options: {
-									pinned: true // new file gets pinned by default
-								}
-							}));
-						})
-					]
-				});
-				this.notificationService.error(errorWithAction);
+			if (error) {
+				// Offer to create a file from the error if we have a file not found and the name is valid
+				if ((<FileOperationError>error).fileOperationResult === FileOperationResult.FILE_NOT_FOUND && isValidBasename(basename(this.notebookParams.notebookUri))) {
+					let errorWithAction = createErrorWithActions(toErrorMessage(error), {
+						actions: [
+							new Action('workbench.files.action.createMissingFile', localize('createFile', "Create File"), undefined, true, () => {
+								return this.textFileService.create(this.notebookParams.notebookUri).then(() => this.editorService.openEditor({
+									resource: this.notebookParams.notebookUri,
+									options: {
+										pinned: true // new file gets pinned by default
+									}
+								}));
+							})
+						]
+					});
+					this.notificationService.error(errorWithAction);
 
-				let editors = this.editorService.visibleControls;
-				for (let editor of editors) {
-					if (editor && editor.input.getResource() === this._notebookParams.input.notebookUri) {
-						await editor.group.closeEditor(this._notebookParams.input, { preserveFocus: true });
-						break;
+					let editors = this.editorService.visibleControls;
+					for (let editor of editors) {
+						if (editor && editor.input.getResource() === this._notebookParams.input.notebookUri) {
+							await editor.group.closeEditor(this._notebookParams.input, { preserveFocus: true });
+							break;
+						}
 					}
-				}
-			} else {
-				this.setViewInErrorState(localize('displayFailed', 'Could not display contents: {0}', notebookUtils.getErrorMessage(error)));
-				this.setLoading(false);
-				this._modelReadyDeferred.reject(error);
+				} else {
+					this.setViewInErrorState(localize('displayFailed', 'Could not display contents: {0}', notebookUtils.getErrorMessage(error)));
+					this.setLoading(false);
+					this._modelReadyDeferred.reject(error);
 
-				this.notebookService.addNotebookEditor(this);
+					this.notebookService.addNotebookEditor(this);
+				}
 			}
 		}
 	}
