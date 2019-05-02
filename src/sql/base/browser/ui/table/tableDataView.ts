@@ -74,6 +74,7 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 			this._data = new Array<T>();
 		}
 
+		// @todo @anthonydresser 5/1/19 theres a lot we could do by just accepting a regex as a exp rather than accepting a full find function
 		this._sortFn = _sortFn ? _sortFn : defaultSort;
 
 		this._filterFn = _filterFn ? _filterFn : (dataToFilter) => dataToFilter;
@@ -159,12 +160,12 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 		this._findIndex = 0;
 		this._onFindCountChange.fire(this._findArray.length);
 		if (exp) {
-			this._startSearch(exp, maxMatches);
 			return new Promise<IFindPosition>((resolve) => {
 				const disp = this.onFindCountChange(e => {
-					resolve(this._findArray[e]);
+					resolve(this._findArray[e - 1]);
 					disp.dispose();
 				});
+				this._startSearch(exp, maxMatches);
 			});
 		} else {
 			return Promise.reject(new Error('no expression'));
@@ -175,15 +176,22 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 		for (let i = 0; i < this._data.length; i++) {
 			const item = this._data[i];
 			const result = this._findFn!(item, exp);
+			let breakout = false;
 			if (result) {
-				result.forEach(pos => {
+				for (let j = 0; j < result.length; j++) {
+					const pos = result[j];
 					const index = { col: pos, row: i };
 					this._findArray.push(index);
 					this._onFindCountChange.fire(this._findArray.length);
-				});
-				if (maxMatches > 0 && this._findArray.length > maxMatches) {
-					break;
+					if (maxMatches > 0 && this._findArray.length === maxMatches) {
+						breakout = true;
+						break;
+					}
 				}
+			}
+
+			if (breakout) {
+				break;
 			}
 		}
 	}

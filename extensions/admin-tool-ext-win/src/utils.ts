@@ -40,3 +40,21 @@ export function getConfiguration(extensionName?: string, resource?: vscode.Uri |
 	}
 	return vscode.workspace.getConfiguration(extensionName, resource as vscode.Uri);
 }
+
+/**
+ * Escapes all single-quotes (') by prefixing them with another single quote ('')
+ * ' => ''
+ * @param value The string to escape
+ */
+export function doubleEscapeSingleQuotes(value: string): string {
+	return value.replace(/'/g, '\'\'');
+}
+
+/**
+ * Escape all double-quotes (") by prefixing them with a \
+ *  " => \"
+ * @param value The string to escape
+ */
+export function backEscapeDoubleQuotes(value: string): string {
+	return value.replace(/"/g, '\\"');
+}
