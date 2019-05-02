@@ -68,7 +68,7 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 
 	private nullCheckEqualsIgnoreCase(a: string, b: string) {
 		let bothNull: boolean = !a && !b;
-		return bothNull || equalsIgnoreCase(a, b);
+		return bothNull ? bothNull : equalsIgnoreCase(a, b);
 	}
 
 	public generateNewId() {
