@@ -377,19 +377,14 @@ export class SchemaCompareDialog {
 		}
 
 		let values = cons.map(c => {
-			let db = c.options.databaseDisplayName;
 			let usr = c.options.user;
 			let srv = c.options.server;
 
-			if (!db) {
-				db = '<default>';
-			}
-
 			if (!usr) {
-				usr = 'default';
+				usr = localize('schemaCompareDialog.defaultUser', 'default');
 			}
 
-			let finalName = `${srv}, ${db} (${usr})`;
+			let finalName = `${srv} (${usr})`;
 			return {
 				connection: c,
 				displayName: finalName,
