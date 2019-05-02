@@ -35,6 +35,9 @@
 				"messageIndex": 1
 			}
 		],
+		// {{SQL CARBON EDIT}} @anthonydresser for the most part these rules should be the same as vscode with some changes
+		// anything that references **/vs/** should references **/{vs,sql}/** instead
+		// @angular/* and rxjs/* are added to browser and electron-browser restrictions since * doesn't cover them
 		"import-patterns": [
 			true,
 			// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
