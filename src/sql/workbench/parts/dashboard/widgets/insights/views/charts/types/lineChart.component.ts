@@ -3,11 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { mixin } from 'vs/base/common/objects';
+import { mixin, deepClone } from 'vs/base/common/objects';
 
 import BarChart, { IBarChartConfig } from './barChart.component';
 import { memoize, unmemoize } from 'sql/base/common/decorators';
-import { clone } from 'sql/base/common/objects';
 import { ChartType, DataType, defaultChartConfig, IDataSet, IPointDataSet } from 'sql/workbench/parts/dashboard/widgets/insights/views/charts/interfaces';
 import { ChangeDetectorRef, Inject, forwardRef, ElementRef } from '@angular/core';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
@@ -17,7 +16,7 @@ export interface ILineConfig extends IBarChartConfig {
 	dataType?: DataType;
 }
 
-const defaultLineConfig = mixin(clone(defaultChartConfig), { dataType: 'number' }) as ILineConfig;
+const defaultLineConfig = mixin(deepClone(defaultChartConfig), { dataType: 'number' }) as ILineConfig;
 
 export default class LineChart extends BarChart {
 	protected readonly chartType: ChartType = ChartType.Line;

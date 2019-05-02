@@ -4,15 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import LineChart, { ILineConfig } from './lineChart.component';
-import { clone } from 'sql/base/common/objects';
 import { ChartType, defaultChartConfig } from 'sql/workbench/parts/dashboard/widgets/insights/views/charts/interfaces';
 
-import { mixin } from 'vs/base/common/objects';
+import { mixin, deepClone } from 'vs/base/common/objects';
 import { ChangeDetectorRef, Inject, forwardRef, ElementRef } from '@angular/core';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 
-const defaultScatterConfig = mixin(clone(defaultChartConfig), { dataType: 'point', dataDirection: 'horizontal' }) as ILineConfig;
+const defaultScatterConfig = mixin(deepClone(defaultChartConfig), { dataType: 'point', dataDirection: 'horizontal' }) as ILineConfig;
 
 export default class ScatterChart extends LineChart {
 	protected readonly chartType: ChartType = ChartType.Scatter;

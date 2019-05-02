@@ -3,10 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import { ITelemetryService, ITelemetryData } from 'vs/platform/telemetry/common/telemetry';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { warn } from 'sql/base/common/log';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export interface IConnectionTelemetryData extends ITelemetryData {
 	provider?: string;
@@ -25,7 +24,8 @@ export function addTelemetry(
 	telemetryService: ITelemetryService,
 	telemetryEventName: string,
 	data?: IConnectionTelemetryData,
-	connection?: IConnectionProfile): Promise<void> {
+	connection?: IConnectionProfile,
+	logService?: ILogService): Promise<void> {
 	return new Promise<void>(resolve => {
 		try {
 			let telData: ITelemetryData = data === undefined ? {} : data;
@@ -43,14 +43,18 @@ export function addTelemetry(
 				telemetryService.publicLog(telemetryEventName, telData).then(() => {
 					resolve();
 				}, telemetryServiceError => {
-					warn(`Failed to add telemetry. error: ${telemetryServiceError}`);
+					if (logService) {
+						logService.warn(`Failed to add telemetry. error: ${telemetryServiceError}`);
+					}
 					resolve();
 				});
 			} else {
 				resolve();
 			}
 		} catch (error) {
-			warn(`Failed to add telemetry. error: ${error}`);
+			if (logService) {
+				logService.warn(`Failed to add telemetry. error: ${error}`);
+			}
 			resolve();
 		}
 	});

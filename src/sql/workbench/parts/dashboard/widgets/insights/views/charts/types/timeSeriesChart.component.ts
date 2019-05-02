@@ -4,16 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 
 import LineChart, { ILineConfig } from './lineChart.component';
-import { clone } from 'sql/base/common/objects';
 import { ChartType, defaultChartConfig, IPointDataSet } from 'sql/workbench/parts/dashboard/widgets/insights/views/charts/interfaces';
 
-import { mixin } from 'vs/base/common/objects';
+import { mixin, deepClone } from 'vs/base/common/objects';
 import { Color } from 'vs/base/common/color';
 import { ChangeDetectorRef, Inject, forwardRef, ElementRef } from '@angular/core';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 
-const defaultTimeSeriesConfig = mixin(clone(defaultChartConfig), { dataType: 'point', dataDirection: 'horizontal' }) as ILineConfig;
+const defaultTimeSeriesConfig = mixin(deepClone(defaultChartConfig), { dataType: 'point', dataDirection: 'horizontal' }) as ILineConfig;
 
 export default class TimeSeriesChart extends LineChart {
 	protected _defaultConfig = defaultTimeSeriesConfig;

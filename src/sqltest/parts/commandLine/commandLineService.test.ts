@@ -112,6 +112,7 @@ suite('commandLineService tests', () => {
 			editorService,
 			commandService,
 			configurationService,
+			undefined,
 			undefined
 		);
 		return service;

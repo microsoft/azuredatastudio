@@ -1,7 +1,8 @@
 // Adapted from https://github.com/naresh-n/slickgrid-column-data-autosize/blob/master/src/slick.autocolumnsize.js
 
-import { mixin, clone } from 'sql/base/common/objects';
+import { mixin } from 'sql/base/common/objects';
 import { isInDOM } from 'vs/base/browser/dom';
+import { deepClone } from 'vs/base/common/objects';
 
 export interface IAutoColumnSizeOptions extends Slick.PluginOptions {
 	maxWidth?: number;
@@ -71,7 +72,7 @@ export class AutoColumnSize<T> implements Slick.Plugin<T> {
 		if (headerColumnsQuery && headerColumnsQuery.length) {
 			let headerColumns = headerColumnsQuery[0];
 			let origCols = this._grid.getColumns();
-			let allColumns = clone(origCols);
+			let allColumns = deepClone(origCols);
 			allColumns.forEach((col, index) => {
 				col.formatter = origCols[index].formatter;
 				col.asyncPostRender = origCols[index].asyncPostRender;
@@ -117,7 +118,7 @@ export class AutoColumnSize<T> implements Slick.Plugin<T> {
 		let headerWidth = this.getElementWidth(headerEl[0]);
 		let colIndex = this._grid.getColumnIndex(columnDef.id!);
 		let origCols = this._grid.getColumns();
-		let allColumns = clone(origCols);
+		let allColumns = deepClone(origCols);
 		allColumns.forEach((col, index) => {
 			col.formatter = origCols[index].formatter;
 			col.asyncPostRender = origCols[index].asyncPostRender;
