@@ -21,7 +21,7 @@ function toStdInMessage(msgImpl: KernelMessage.IStdinMessage): nb.IStdinMessage 
 	return {
 		channel: msgImpl.channel,
 		type: msgImpl.channel,
-		content: msgImpl.content,
+		content: <any>msgImpl.content,
 		header: msgImpl.header,
 		parent_header: msgImpl.parent_header,
 		metadata: msgImpl.metadata

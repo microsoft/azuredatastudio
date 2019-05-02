@@ -383,10 +383,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._actionBar = new Taskbar(taskbar, { actionItemProvider: action => this.actionItemProvider(action as Action) });
 		this._actionBar.context = this;
 		this._actionBar.setContent([
-			{ element: kernelContainer },
-			{ element: attachToContainer },
 			{ action: addCodeCellButton },
 			{ action: addTextCellButton },
+			{ element: kernelContainer },
+			{ element: attachToContainer },
 			{ action: this._trustedAction },
 			{ action: this._runAllCellsAction },
 			{ action: clearResultsButton }

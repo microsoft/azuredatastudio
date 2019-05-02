@@ -1,0 +1,231 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.notebook-preview {
+	font-size: 14px;
+	line-height: 22px;
+	word-wrap: break-word;
+}
+
+.notebook-preview #code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+.notebook-preview #code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+
+.notebook-preview .scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+.notebook-preview .showEditorSelection .code-line {
+	position: relative;
+}
+
+.notebook-preview .showEditorSelection .code-active-line:before,
+.notebook-preview .showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+.notebook-preview .showEditorSelection li.code-active-line:before,
+.notebook-preview .showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.notebook-preview .showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.notebook-preview .showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.notebook-preview .showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vs-dark .notebook-preview .showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vs-dark .notebook-preview .showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vs-dark .notebook-preview .showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.hc-black .notebook-preview .showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.hc-black .notebook-preview .showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.hc-black .notebook-preview .showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.notebook-preview img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+.notebookEditor a {
+	text-decoration: none;
+}
+
+.notebookEditor a:hover {
+	text-decoration: underline;
+}
+
+.notebook-preview a:focus,
+.notebook-preview input:focus,
+.notebook-preview select:focus,
+.notebook-preview textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+.notebook-preview hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+.notebook-preview h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+.notebook-preview h1, .notebook-preview h2, .notebook-preview h3 {
+	font-weight: normal;
+}
+
+.notebook-preview h1 code,
+.notebook-preview h2 code,
+.notebook-preview h3 code,
+.notebook-preview h4 code,
+.notebook-preview h5 code,
+.notebook-preview h6 code {
+	font-size: inherit;
+	line-height: auto;
+}
+
+.notebook-preview table {
+	border-collapse: collapse;
+}
+
+.notebook-preview table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+.notebook-preview table > thead > tr > th,
+.notebook-preview table > thead > tr > td,
+.notebook-preview table > tbody > tr > th,
+.notebook-preview .notebook-preview table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+.notebook-preview table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+.notebook-preview blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+.notebook-preview code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 12px;
+	line-height: 19px;
+}
+
+.notebook-preview pre {
+	white-space: pre-wrap;
+}
+
+.notebook-preview .mac code {
+	font-size: 12px;
+	line-height: 18px;
+}
+
+.notebook-preview pre:not(.hljs),
+.notebook-preview pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+/** Theming */
+
+.notebook-preview pre code {
+	color: var(--vscode-editor-foreground);
+}
+
+
+.notebook-preview  pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vs-dark .notebook-preview  pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.hc-black .notebook-preview pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.hc-black .notebook-preview h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.notebook-preview table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vs-dark .notebook-preview table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.notebook-preview h1,
+.notebook-preview hr,
+.notebook-preview table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vs-dark .notebook-preview h1,
+.vs-dark .notebook-preview hr,
+.vs-dark .notebook-preview table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}

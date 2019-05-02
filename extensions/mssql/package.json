@@ -473,15 +473,15 @@
           "objectType": null,
           "categoryValues": [
             {
-              "displayName": "SQL Login",
+              "displayName": "%mssql.connectionOptions.authType.categoryValues.sqlLogin%",
               "name": "SqlLogin"
             },
             {
-              "displayName": "Windows Authentication",
+              "displayName": "%mssql.connectionOptions.authType.categoryValues.integrated%",
               "name": "Integrated"
             },
             {
-              "displayName": "Azure Active Directory - Universal with MFA support",
+              "displayName": "%mssql.connectionOptions.authType.categoryValues.azureMFA%",
               "name": "AzureMFA"
             }
           ],
@@ -561,7 +561,7 @@
           "description": "%mssql.connectionOptions.connectTimeout.description%",
           "groupName": "Initialization",
           "valueType": "number",
-          "defaultValue": "15",
+          "defaultValue": "30",
           "objectType": null,
           "categoryValues": null,
           "isRequired": false,

@@ -536,7 +536,8 @@ export function createApiFactory(
 				extensions: extensions,
 				SchemaUpdateAction: sqlExtHostTypes.SchemaUpdateAction,
 				SchemaDifferenceType: sqlExtHostTypes.SchemaDifferenceType,
-				SchemaCompareEndpointType: sqlExtHostTypes.SchemaCompareEndpointType
+				SchemaCompareEndpointType: sqlExtHostTypes.SchemaCompareEndpointType,
+				SchemaObjectType: sqlExtHostTypes.SchemaObjectType
 			};
 		},
 
@@ -569,8 +570,8 @@ export function createApiFactory(
 				getUriForConnection(connectionId: string): Thenable<string> {
 					return extHostConnectionManagement.$getUriForConnection(connectionId);
 				},
-				connect(connectionProfile: sqlops.IConnectionProfile): Thenable<sqlops.ConnectionResult> {
-					return extHostConnectionManagement.$connect(connectionProfile);
+				connect(connectionProfile: sqlops.IConnectionProfile, saveConnection: boolean, showDashboard: boolean): Thenable<sqlops.ConnectionResult> {
+					return extHostConnectionManagement.$connect(connectionProfile, saveConnection, showDashboard);
 				}
 			};
 
@@ -956,7 +957,7 @@ export function createApiFactory(
 				nb: nb,
 				AzureResource: sqlExtHostTypes.AzureResource,
 				extensions: extensions,
-				TreeItem: sqlExtHostTypes.TreeItem,
+				TreeItem: sqlExtHostTypes.TreeItem
 			};
 		}
 	};

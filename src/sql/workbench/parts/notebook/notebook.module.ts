@@ -16,7 +16,7 @@ import { IBootstrapParams, ISelector, providerIterator } from 'sql/platform/boot
 import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox.component';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox.component';
-import { EditableDropDown } from 'sql/base/browser/ui/editableDropdown/editableDropdown.component';
+import { EditableDropDown } from 'sql/platform/electron-browser/editableDropdown/editableDropdown.component';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox.component';
 import { NotebookComponent } from 'sql/workbench/parts/notebook/notebook.component';
 
@@ -26,6 +26,7 @@ import { CodeCellComponent } from 'sql/workbench/parts/notebook/cellViews/codeCe
 import { TextCellComponent } from 'sql/workbench/parts/notebook/cellViews/textCell.component';
 import { OutputAreaComponent } from 'sql/workbench/parts/notebook/cellViews/outputArea.component';
 import { OutputComponent } from 'sql/workbench/parts/notebook/cellViews/output.component';
+import { StdInComponent } from 'sql/workbench/parts/notebook/cellViews/stdin.component';
 import { PlaceholderCellComponent } from 'sql/workbench/parts/notebook/cellViews/placeholderCell.component';
 import LoadingSpinner from 'sql/workbench/electron-browser/modelComponents/loadingSpinner.component';
 
@@ -44,7 +45,8 @@ export const NotebookModule = (params, selector: string, instantiationService: I
 			NotebookComponent,
 			ComponentHostDirective,
 			OutputAreaComponent,
-			OutputComponent
+			OutputComponent,
+			StdInComponent
 		],
 		entryComponents: [NotebookComponent],
 		imports: [

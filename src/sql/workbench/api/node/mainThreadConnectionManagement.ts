@@ -61,7 +61,8 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 	}
 
 	public async $openConnectionDialog(providers: string[], initialConnectionProfile?: IConnectionProfile, connectionCompletionOptions?: azdata.IConnectionCompletionOptions): Promise<azdata.connection.Connection> {
-		let connectionProfile = await this._connectionDialogService.openDialogAndWait(this._connectionManagementService, { connectionType: 1, providers: providers }, initialConnectionProfile);
+		let connectionProfile = await this._connectionDialogService.openDialogAndWait(this._connectionManagementService,
+			{ connectionType: 1, providers: providers }, initialConnectionProfile, undefined);
 		const connection = connectionProfile ? {
 			connectionId: connectionProfile.id,
 			options: connectionProfile.options,
@@ -110,12 +111,12 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 		return connection;
 	}
 
-	public $connect(connectionProfile: IConnectionProfile): Thenable<azdata.ConnectionResult> {
+	public $connect(connectionProfile: IConnectionProfile, saveConnection: boolean = true, showDashboard: boolean = true): Thenable<azdata.ConnectionResult> {
 		let profile = new ConnectionProfile(this._capabilitiesService, connectionProfile);
 		profile.id = generateUuid();
 		return this._connectionManagementService.connectAndSaveProfile(profile, undefined, {
-			saveTheConnection: true,
-			showDashboard: true,
+			saveTheConnection: saveConnection,
+			showDashboard: showDashboard,
 			params: undefined,
 			showConnectionDialogOnError: true,
 			showFirewallRuleOnError: true

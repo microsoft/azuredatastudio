@@ -32,12 +32,12 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import * as DialogHelper from 'sql/workbench/browser/modal/dialogHelper';
 import { Modal } from 'sql/workbench/browser/modal/modal';
-import { attachButtonStyler, attachModalDialogStyler, attachTableStyler, attachInputBoxStyler, attachSelectBoxStyler, attachEditableDropdownStyler, attachCheckboxStyler } from 'sql/platform/theme/common/styler';
+import { attachButtonStyler, attachModalDialogStyler, attachTableStyler, attachInputBoxStyler, attachSelectBoxStyler, attachEditableDropdownStyler, attachCheckboxStyler, attachTabbedPanelStyler } from 'sql/platform/theme/common/styler';
 import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
 import * as BackupConstants from 'sql/workbench/parts/backup/common/constants';
 import { RestoreViewModel, RestoreOptionParam, SouceDatabaseNamesParam } from 'sql/workbench/parts/restore/browser/restoreViewModel';
 import * as FileValidationConstants from 'sql/workbench/services/fileBrowser/common/fileValidationServiceConstants';
-import { Dropdown } from 'sql/base/browser/ui/editableDropdown/dropdown';
+import { Dropdown } from 'sql/base/parts/editableDropdown/browser/dropdown';
 import { TabbedPanel, PanelTabIdentifier } from 'sql/base/browser/ui/panel/panel';
 import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
@@ -211,7 +211,7 @@ export class RestoreDialog extends Modal {
 		// Get the bootstrap params and perform the bootstrap
 		dropdownContainer.style.width = '100%';
 
-		this._databaseDropdown = new Dropdown(dropdownContainer, this._contextViewService, this.layoutService,
+		this._databaseDropdown = new Dropdown(dropdownContainer, this._contextViewService,
 			{
 				strictSelection: false,
 				ariaLabel: LocalizedStrings.TARGETDATABASE,
@@ -326,6 +326,7 @@ export class RestoreDialog extends Modal {
 		const restorePanel = DOM.$('.restore-panel');
 		container.appendChild(restorePanel);
 		this._panel = new TabbedPanel(restorePanel);
+		attachTabbedPanelStyler(this._panel, this._themeService);
 		this._generalTabId = this._panel.pushTab({
 			identifier: 'general',
 			title: localize('generalTitle', 'General'),

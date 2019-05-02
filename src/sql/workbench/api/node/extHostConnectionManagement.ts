@@ -61,7 +61,7 @@ export class ExtHostConnectionManagement extends ExtHostConnectionManagementShap
 		return this._proxy.$getUriForConnection(connectionId);
 	}
 
-	public $connect(connectionProfile: azdata.IConnectionProfile): Thenable<azdata.ConnectionResult> {
-		return this._proxy.$connect(connectionProfile);
+	public $connect(connectionProfile: azdata.IConnectionProfile, saveConnection: boolean = true, showDashboard: boolean = true): Thenable<azdata.ConnectionResult> {
+		return this._proxy.$connect(connectionProfile, saveConnection, showDashboard);
 	}
 }
