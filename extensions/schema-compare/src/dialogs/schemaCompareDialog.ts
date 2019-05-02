@@ -46,6 +46,7 @@ export class SchemaCompareDialog {
 	private targetIsDacpac: boolean;
 	private database: string;
 	public dialogName: string;
+	private connection: azdata.connection.ConnectionProfile;
 
 	protected initializeDialog(): void {
 		this.schemaCompareTab = azdata.window.createTab(SchemaCompareLabel);
@@ -53,11 +54,12 @@ export class SchemaCompareDialog {
 		this.dialog.content = [this.schemaCompareTab];
 	}
 
-	public openDialog(p: any, dialogName?: string): void {
+	public async openDialog(p: any, dialogName?: string): Promise<void> {
 		let profile = p ? <azdata.IConnectionProfile>p.connectionProfile : undefined;
 		if (profile) {
 			this.database = profile.databaseName;
 		}
+		this.connection = await azdata.connection.getCurrentConnection();
 
 		let event = dialogName ? dialogName : null;
 		this.dialog = azdata.window.createModelViewDialog(SchemaCompareLabel, event);
@@ -376,7 +378,17 @@ export class SchemaCompareDialog {
 			return undefined;
 		}
 
+		let count = -1;
+		let idx = -1;
 		let values = cons.map(c => {
+			count++;
+			if (idx === -1) {
+				if (this.connection && c.connectionId === this.connection.connectionId) {
+					idx = count;
+				}
+			}
+
+			let db = c.options.databaseDisplayName;
 			let usr = c.options.user;
 			let srv = c.options.server;
 
@@ -391,6 +403,12 @@ export class SchemaCompareDialog {
 				name: srv
 			};
 		});
+
+		if (idx >= 0) {
+			let tmp = values[0];
+			values[0] = values[idx];
+			values[idx] = tmp;
+		}
 
 		return values;
 	}
