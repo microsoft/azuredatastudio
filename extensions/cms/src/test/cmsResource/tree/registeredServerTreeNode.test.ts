@@ -50,13 +50,13 @@ describe('RegisteredServerTreeNode.info', function(): void {
 
 		const treeItem = await treeNode.getTreeItem();
 		should(treeItem.label).equal(label);
-		should(treeItem.contextValue).equal(CmsResourceItemType.serverGroup);
+		should(treeItem.contextValue).equal(CmsResourceItemType.registeredServer);
 		should(treeItem.collapsibleState).equal(vscode.TreeItemCollapsibleState.Collapsed);
 		should(treeItem.command).undefined();
 
 		const nodeInfo = treeNode.getNodeInfo();
 		should(nodeInfo.isLeaf).false();
 		should(nodeInfo.label).equal(label);
-		should(nodeInfo.nodeType).equal(CmsResourceItemType.serverGroup);
+		should(nodeInfo.nodeType).equal(CmsResourceItemType.registeredServer);
 	});
 });
