@@ -175,8 +175,7 @@ export class QueryResultsView extends Disposable {
 		container: HTMLElement,
 		@IThemeService themeService: IThemeService,
 		@IInstantiationService private instantiationService: IInstantiationService,
-		@IQueryModelService private queryModelService: IQueryModelService,
-		@IThemeService themeService: IThemeService
+		@IQueryModelService private queryModelService: IQueryModelService
 	) {
 		super();
 		this.resultsTab = this._register(new ResultsTab(instantiationService));
