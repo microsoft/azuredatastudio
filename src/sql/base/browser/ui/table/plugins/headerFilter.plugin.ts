@@ -192,8 +192,8 @@ export class HeaderFilter {
 			.appendTo(this.$menu);
 
 		this.okButton = new Button(this.$menu.get(0));
-		this.okButton.label = 'OK';
-		this.okButton.title = 'OK';
+		this.okButton.label = localize('headerFilter.ok', "OK");
+		this.okButton.title = localize('headerFilter.ok', "OK");
 		this.okButton.element.id = 'filter-ok-button';
 		const okElement = jQuery('#filter-ok-button');
 		okElement.bind('click', (ev) => {
@@ -203,8 +203,8 @@ export class HeaderFilter {
 		});
 
 		this.clearButton = new Button(this.$menu.get(0));
-		this.clearButton.label = 'Clear';
-		this.clearButton.title = 'Clear';
+		this.clearButton.label = localize('headerFilter.clear', "Clear");
+		this.clearButton.title = localize('headerFilter.clear', "Clear");
 		this.clearButton.element.id = 'filter-clear-button';
 		const clearElement = jQuery('#filter-clear-button');
 		clearElement.bind('click', (ev) => {
