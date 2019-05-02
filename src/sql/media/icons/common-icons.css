@@ -105,16 +105,16 @@
 .vs .icon.canceled,
 .vs-dark .icon.canceled,
 .hc-black .icon.canceled {
-	content: url("status_cancelled.svg");
+	background-image: url("status_cancelled.svg");
 }
 
 .vs .icon.in-progress {
-	content: url("loading.svg");
+	background-image: url("loading.svg");
 }
 
 .vs-dark .icon.in-progress,
 .hc-black .icon.in-progress {
-	content: url("loading_inverse.svg");
+	background-image: url("loading_inverse.svg");
 }
 
 .vs .icon.scriptToClipboard,

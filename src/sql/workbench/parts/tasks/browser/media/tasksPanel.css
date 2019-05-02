@@ -46,10 +46,10 @@
 }
 
 .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .task-group > .task-icon.not-started {
-	content: url('status_queuedtask.svg');
+	background-image: url('status_queuedtask.svg');
 }
 
 .vs-dark .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .task-group > .task-icon.not-started,
 .hc-black .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .task-group > .task-icon.not-started {
-	content: url('status_queuedtask_inverse.svg');
+	background-image: url('status_queuedtask_inverse.svg');
 }
