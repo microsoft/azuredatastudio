@@ -95,7 +95,9 @@ export class CmsConnectionWidget extends ConnectionWidget {
 		super.addAuthenticationTypeOption();
 		let authTypeOption = this._optionsMaps[ConnectionOptionSpecialType.authType];
 		let newAuthTypes = authTypeOption.categoryValues;
+		// True when opening a CMS dialog to add a registered server
 		if (authTypeChanged) {
+			// Need to filter out SQL Login because registered servers don't support it
 			newAuthTypes = authTypeOption.categoryValues.filter((option) => option.name !== AuthenticationType.SqlLogin);
 			authTypeOption.defaultValue = AuthenticationType.Integrated;
 			this._authTypeSelectBox.setOptions(newAuthTypes.map(c => c.displayName));
