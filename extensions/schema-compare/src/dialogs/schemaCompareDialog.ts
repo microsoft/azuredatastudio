@@ -381,7 +381,7 @@ export class SchemaCompareDialog {
 			let srv = c.options.server;
 
 			if (!usr) {
-				usr = 'default';
+				usr = localize('schemaCompareDialog.defaultUser', 'default');
 			}
 
 			let finalName = `${srv} (${usr})`;
