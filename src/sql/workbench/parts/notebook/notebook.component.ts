@@ -41,6 +41,14 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { CellMagicMapper } from 'sql/workbench/parts/notebook/models/cellMagicMapper';
 import { IExtensionsViewlet, VIEWLET_ID } from 'vs/workbench/contrib/extensions/common/extensions';
 import { CellModel } from 'sql/workbench/parts/notebook/models/cell';
+import { ICommandService } from 'vs/platform/commands/common/commands';
+import { FileOperationError, FileOperationResult } from 'vs/platform/files/common/files';
+import { isValidBasename } from 'vs/base/common/extpath';
+import { basename } from 'vs/base/common/resources';
+import { createErrorWithActions, isErrorWithActions } from 'vs/base/common/errorsWithActions';
+import { toErrorMessage } from 'vs/base/common/errorMessage';
+import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
+
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 
@@ -84,7 +92,9 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		@Inject(IMenuService) private menuService: IMenuService,
 		@Inject(IKeybindingService) private keybindingService: IKeybindingService,
 		@Inject(IViewletService) private viewletService: IViewletService,
-		@Inject(ICapabilitiesService) private capabilitiesService: ICapabilitiesService
+		@Inject(ICapabilitiesService) private capabilitiesService: ICapabilitiesService,
+		@Inject(ICommandService) private commandService: ICommandService,
+		@Inject(ITextFileService) private textFileService: ITextFileService
 	) {
 		super();
 		this.updateProfile();
@@ -225,13 +235,40 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			await this.setNotebookManager();
 			await this.loadModel();
 			this._modelReadyDeferred.resolve(this._model);
-		} catch (error) {
-			this.setViewInErrorState(localize('displayFailed', 'Could not display contents: {0}', notebookUtils.getErrorMessage(error)));
-			this.setLoading(false);
-			this._modelReadyDeferred.reject(error);
-		} finally {
-			// Always add the editor for now to close loop, even if loading contents failed
 			this.notebookService.addNotebookEditor(this);
+		} catch (error) {
+			if (error) {
+				// Offer to create a file from the error if we have a file not found and the name is valid
+				if ((<FileOperationError>error).fileOperationResult === FileOperationResult.FILE_NOT_FOUND && isValidBasename(basename(this.notebookParams.notebookUri))) {
+					let errorWithAction = createErrorWithActions(toErrorMessage(error), {
+						actions: [
+							new Action('workbench.files.action.createMissingFile', localize('createFile', "Create File"), undefined, true, () => {
+								return this.textFileService.create(this.notebookParams.notebookUri).then(() => this.editorService.openEditor({
+									resource: this.notebookParams.notebookUri,
+									options: {
+										pinned: true // new file gets pinned by default
+									}
+								}));
+							})
+						]
+					});
+					this.notificationService.error(errorWithAction);
+
+					let editors = this.editorService.visibleControls;
+					for (let editor of editors) {
+						if (editor && editor.input.getResource() === this._notebookParams.input.notebookUri) {
+							await editor.group.closeEditor(this._notebookParams.input, { preserveFocus: true });
+							break;
+						}
+					}
+				} else {
+					this.setViewInErrorState(localize('displayFailed', 'Could not display contents: {0}', notebookUtils.getErrorMessage(error)));
+					this.setLoading(false);
+					this._modelReadyDeferred.reject(error);
+
+					this.notebookService.addNotebookEditor(this);
+				}
+			}
 		}
 	}
 
