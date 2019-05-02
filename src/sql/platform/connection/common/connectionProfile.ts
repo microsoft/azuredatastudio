@@ -58,12 +58,17 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 	public matches(other: interfaces.IConnectionProfile): boolean {
 		return other
 			&& this.providerName === other.providerName
-			&& equalsIgnoreCase(this.serverName, other.serverName)
-			&& equalsIgnoreCase(this.databaseName, other.databaseName)
-			&& equalsIgnoreCase(this.userName, other.userName)
-			&& equalsIgnoreCase(this.options['databaseDisplayName'], other.options['databaseDisplayName'])
+			&& this.nullCheckEqualsIgnoreCase(this.serverName, other.serverName)
+			&& this.nullCheckEqualsIgnoreCase(this.databaseName, other.databaseName)
+			&& this.nullCheckEqualsIgnoreCase(this.userName, other.userName)
+			&& this.nullCheckEqualsIgnoreCase(this.options['databaseDisplayName'], other.options['databaseDisplayName'])
 			&& this.authenticationType === other.authenticationType
 			&& this.groupId === other.groupId;
+	}
+
+	private nullCheckEqualsIgnoreCase(a: string, b: string) {
+		let bothNull: boolean = !a && !b;
+		return bothNull ? bothNull : equalsIgnoreCase(a, b);
 	}
 
 	public generateNewId() {
