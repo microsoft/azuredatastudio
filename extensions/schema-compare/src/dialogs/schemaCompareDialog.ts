@@ -24,6 +24,7 @@ const SchemaCompareLabel: string = localize('schemaCompare.dialogTitle', 'Schema
 
 export class SchemaCompareDialog {
 	public dialog: azdata.window.Dialog;
+	public dialogName: string;
 	private schemaCompareTab: azdata.window.DialogTab;
 	private sourceDacpacComponent: azdata.FormComponent;
 	private sourceTextBox: azdata.InputBoxComponent;
@@ -45,8 +46,7 @@ export class SchemaCompareDialog {
 	private sourceIsDacpac: boolean;
 	private targetIsDacpac: boolean;
 	private database: string;
-	public dialogName: string;
-	private connection: azdata.connection.ConnectionProfile;
+	private connectionId: string;
 
 	protected initializeDialog(): void {
 		this.schemaCompareTab = azdata.window.createTab(SchemaCompareLabel);
@@ -58,8 +58,13 @@ export class SchemaCompareDialog {
 		let profile = p ? <azdata.IConnectionProfile>p.connectionProfile : undefined;
 		if (profile) {
 			this.database = profile.databaseName;
+			this.connectionId = profile.id;
+		} else {
+			let connection = await azdata.connection.getCurrentConnection();
+			if (connection) {
+				this.connectionId = connection.connectionId;
+			}
 		}
-		this.connection = await azdata.connection.getCurrentConnection();
 
 		let event = dialogName ? dialogName : null;
 		this.dialog = azdata.window.createModelViewDialog(SchemaCompareLabel, event);
@@ -382,10 +387,9 @@ export class SchemaCompareDialog {
 		let idx = -1;
 		let values = cons.map(c => {
 			count++;
-			if (idx === -1) {
-				if (this.connection && c.connectionId === this.connection.connectionId) {
-					idx = count;
-				}
+
+			if (c.connectionId === this.connectionId) {
+				idx = count;
 			}
 
 			let db = c.options.databaseDisplayName;
