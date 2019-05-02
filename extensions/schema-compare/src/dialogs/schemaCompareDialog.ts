@@ -54,8 +54,8 @@ export class SchemaCompareDialog {
 		this.dialog.content = [this.schemaCompareTab];
 	}
 
-	public async openDialog(p: any, dialogName?: string): Promise<void> {
-		let profile = p ? <azdata.IConnectionProfile>p.connectionProfile : undefined;
+	public async openDialog(context: azdata.ObjectExplorerContext, dialogName?: string): Promise<void> {
+		let profile = context ? context.connectionProfile : undefined;
 		if (profile) {
 			this.database = profile.databaseName;
 			this.connectionId = profile.id;
