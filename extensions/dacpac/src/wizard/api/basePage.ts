@@ -72,7 +72,7 @@ export abstract class BasePage {
 			let srv = c.options.server;
 
 			if (!db) {
-				usr = localize('basePage.defaultDb', '<default>');
+				db = localize('basePage.defaultDb', '<default>');
 			}
 
 			if (!usr) {
