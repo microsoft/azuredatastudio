@@ -11,15 +11,17 @@ import * as os from 'os';
 import { SchemaCompareResult } from '../schemaCompareResult';
 
 const localize = nls.loadMessageBundle();
-const CompareButtonText: string = localize('schemaCompareDialog.Compare', 'Compare');
-const CancelButtonText: string = localize('schemaCompareDialog.Cancel', 'Cancel');
-const SourceTextBoxLabel: string = localize('schemaCompareDialog.SourceLabel', 'Source File');
-const TargetTextBoxLabel: string = localize('schemaCompareDialog.TargetLabel', 'Target File');
+const CompareButtonText: string = localize('schemaCompareDialog.compare', 'Compare');
+const CancelButtonText: string = localize('schemaCompareDialog.cancel', 'Cancel');
+const SourceTitle: string = localize('schemaCompareDialog.SourceTitle', 'Source');
+const TargetTitle: string = localize('schemaCompareDialog.TargetTitle', 'Target');
+const FileTextBoxLabel: string = localize('schemaCompareDialog.fileTextBoxLabel', 'File');
 const DacpacRadioButtonLabel: string = localize('schemaCompare.dacpacRadioButtonLabel', 'Data-tier Application File (.dacpac)');
 const DatabaseRadioButtonLabel: string = localize('schemaCompare.databaseButtonLabel', 'Database');
-const SourceRadioButtonsLabel: string = localize('schemaCompare.sourceButtonsLabel', 'Source Type');
-const TargetRadioButtonsLabel: string = localize('schemaCompare.targetButtonsLabel', 'Target Type');
-const NoActiveConnectionsLabel: string = localize('schemaCompare.NoActiveConnectionsText', 'No active connections');
+const RadioButtonsLabel: string = localize('schemaCompare.radioButtonsLabel', 'Type');
+const ServerDropdownLabel: string = localize('schemaCompareDialog.serverDropdownTitle', 'Server');
+const DatabaseDropdownLabel: string = localize('schemaCompareDialog.databaseDropdownTitle', 'Database');
+const NoActiveConnectionsLabel: string = localize('schemaCompare.noActiveConnectionsText', 'No active connections');
 const SchemaCompareLabel: string = localize('schemaCompare.dialogTitle', 'Schema Compare');
 
 export class SchemaCompareDialog {
@@ -169,21 +171,39 @@ export class SchemaCompareDialog {
 			if (this.database) {
 				this.formBuilder = view.modelBuilder.formContainer()
 					.withFormItems([
-						sourceRadioButtons,
-						this.sourceServerComponent,
-						this.sourceDatabaseComponent,
-						targetRadioButtons,
-						this.targetDacpacComponent
+						{
+							title: SourceTitle,
+							components: [
+								sourceRadioButtons,
+								this.sourceServerComponent,
+								this.sourceDatabaseComponent
+							]
+						}, {
+							title: TargetTitle,
+							components: [
+								targetRadioButtons,
+								this.targetDacpacComponent
+							]
+						}
 					], {
 							horizontal: true
 						});
 			} else {
 				this.formBuilder = view.modelBuilder.formContainer()
 					.withFormItems([
-						sourceRadioButtons,
-						this.sourceDacpacComponent,
-						targetRadioButtons,
-						this.targetDacpacComponent
+						{
+							title: SourceTitle,
+							components: [
+								sourceRadioButtons,
+								this.sourceDacpacComponent,
+							]
+						}, {
+							title: TargetTitle,
+							components: [
+								targetRadioButtons,
+								this.targetDacpacComponent
+							]
+						}
 					], {
 							horizontal: true
 						});
@@ -232,7 +252,7 @@ export class SchemaCompareDialog {
 
 		return {
 			component: currentTextbox,
-			title: isTarget ? TargetTextBoxLabel : SourceTextBoxLabel,
+			title: FileTextBoxLabel,
 			actions: [currentButton]
 		};
 	}
@@ -285,7 +305,7 @@ export class SchemaCompareDialog {
 
 		return {
 			component: flexRadioButtonsModel,
-			title: SourceRadioButtonsLabel
+			title: RadioButtonsLabel
 		};
 	}
 
@@ -332,7 +352,7 @@ export class SchemaCompareDialog {
 
 		return {
 			component: flexRadioButtonsModel,
-			title: TargetRadioButtonsLabel
+			title: RadioButtonsLabel
 		};
 	}
 
@@ -344,7 +364,7 @@ export class SchemaCompareDialog {
 
 		return {
 			component: this.sourceServerDropdown,
-			title: localize('schemaCompare.sourceServerDropdownTitle', 'Source Server')
+			title: ServerDropdownLabel
 		};
 	}
 
@@ -356,7 +376,7 @@ export class SchemaCompareDialog {
 
 		return {
 			component: this.targetServerDropdown,
-			title: localize('schemaCompare.targetServerDropdownTitle', 'Target Server')
+			title: ServerDropdownLabel
 		};
 	}
 
@@ -405,7 +425,7 @@ export class SchemaCompareDialog {
 
 		return {
 			component: this.sourceDatabaseDropdown,
-			title: localize('schemaCompare.sourceDatabaseDropdownTitle', 'Source Database')
+			title: DatabaseDropdownLabel
 		};
 	}
 
@@ -414,7 +434,7 @@ export class SchemaCompareDialog {
 
 		return {
 			component: this.targetDatabaseDropdown,
-			title: localize('schemaCompare.targetDatabaseDropdownTitle', 'Target Database')
+			title: DatabaseDropdownLabel
 		};
 	}
 
