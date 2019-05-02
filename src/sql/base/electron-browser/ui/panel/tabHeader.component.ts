@@ -14,7 +14,7 @@ import * as DOM from 'vs/base/browser/dom';
 import { Disposable } from 'vs/base/common/lifecycle';
 
 import { TabComponent } from './tab.component';
-import { CloseTabAction } from '../../../browser/ui/panel/tabActions';
+import { CloseTabAction } from 'sql/base/browser/ui/panel/tabActions';
 
 @Component({
 	selector: 'tab-header',
