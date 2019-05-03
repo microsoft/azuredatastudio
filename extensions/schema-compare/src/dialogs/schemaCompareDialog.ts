@@ -54,8 +54,8 @@ export class SchemaCompareDialog {
 		this.dialog.content = [this.schemaCompareTab];
 	}
 
-	public async openDialog(context: azdata.ObjectExplorerContext, dialogName?: string): Promise<void> {
-		let profile = context ? context.connectionProfile : undefined;
+	public async openDialog(context: any, dialogName?: string): Promise<void> {
+		let profile = context ? <azdata.IConnectionProfile>context.connectionProfile : undefined;
 		if (profile) {
 			this.database = profile.databaseName;
 			this.connectionId = profile.id;
@@ -63,6 +63,7 @@ export class SchemaCompareDialog {
 			let connection = await azdata.connection.getCurrentConnection();
 			if (connection) {
 				this.connectionId = connection.connectionId;
+				this.database = undefined;
 			}
 		}
 
@@ -408,7 +409,8 @@ export class SchemaCompareDialog {
 			};
 		});
 
-		if (idx >= 0) {
+		// move server of current connection to the top of the list so it is the default
+		if (idx >= 1) {
 			let tmp = values[0];
 			values[0] = values[idx];
 			values[idx] = tmp;
