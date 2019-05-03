@@ -11,6 +11,8 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 import * as azdata from 'azdata';
 import { Event, Emitter } from 'vs/base/common/event';
+import { isUndefinedOrNull } from 'vs/base/common/types';
+import { ConnectionProviderProperties } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
 
 // Test stubs for commonly used objects
 
@@ -271,6 +273,10 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 	}
 
 	getConnectionProfileById(profileId: string): IConnectionProfile {
+		return undefined;
+	}
+
+	getProviderProperties(providerName: string): ConnectionProviderProperties {
 		return undefined;
 	}
 }

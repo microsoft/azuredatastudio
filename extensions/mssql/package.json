@@ -418,6 +418,29 @@
     "connectionProvider": {
       "providerId": "MSSQL",
       "displayName": "%mssql.provider.displayName%",
+      "iconPath": [
+        {
+          "when": "isCloud == false && isBigDataCluster == false",
+          "path": {
+            "light": "resources/light/sql_stand_alone.svg",
+            "dark": "resources/dark/default_server_inverse.svg"
+          }
+        },
+        {
+          "when": "isCloud == true",
+          "path": {
+            "light": "resources/light/azureDB.svg",
+            "dark": "resources/dark/azureDB_inverse.svg"
+          }
+        },
+        {
+          "when": "isBigDataCluster == true",
+          "path": {
+            "light": "resources/light/sql_bigdata_cluster.svg",
+            "dark": "resources/dark/sql_bigdata_cluster_inverse.svg"
+          }
+        }
+      ],
       "connectionOptions": [
         {
           "specialValueType": "connectionName",

@@ -11,6 +11,8 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { deepClone } from 'vs/base/common/objects';
 
 import * as azdata from 'azdata';
+import * as path from 'path';
+import { URI } from 'vs/base/common/uri';
 
 export interface ConnectionProviderProperties {
 	providerId: string;
@@ -123,6 +125,7 @@ ExtensionsRegistry.registerExtensionPoint<ConnectionProviderProperties | Connect
 
 	for (let extension of extensions) {
 		const { value } = extension;
+		resolveIconPath(extension);
 		if (Array.isArray<ConnectionProviderProperties>(value)) {
 			for (let command of value) {
 				handleCommand(command, extension);
@@ -132,3 +135,29 @@ ExtensionsRegistry.registerExtensionPoint<ConnectionProviderProperties | Connect
 		}
 	}
 });
+
+function resolveIconPath(extension: IExtensionPointUser<any>): void {
+	if (!extension) { return undefined; }
+	let iconPath = extension.value['iconPath'];
+	if (!iconPath) { return undefined; }
+	let baseDir = extension.description.extensionLocation.fsPath;
+	if (Array.isArray(iconPath)) {
+		for (let e of iconPath) {
+			e.path = {
+				light: URI.file(path.join(baseDir, e.path.light)),
+				dark: URI.file(path.join(baseDir, e.path.dark))
+			};
+		}
+	}
+	else if (typeof iconPath === 'string') {
+		iconPath = {
+			light: URI.file(path.join(baseDir, iconPath)),
+			dark: URI.file(path.join(baseDir, iconPath))
+		};
+	} else {
+		iconPath = {
+			light: URI.file(path.join(baseDir, iconPath.light)),
+			dark: URI.file(path.join(baseDir, iconPath.dark))
+		};
+	}
+}
