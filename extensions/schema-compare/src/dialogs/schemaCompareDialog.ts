@@ -278,17 +278,17 @@ export class SchemaCompareDialog {
 			this.formBuilder.removeFormItem(this.sourceNoActiveConnectionsText);
 			this.formBuilder.removeFormItem(this.sourceServerComponent);
 			this.formBuilder.removeFormItem(this.sourceDatabaseComponent);
-			this.formBuilder.insertFormItem(this.sourceDacpacComponent, 1, { horizontal: true, titleFontSize: 12 });
+			this.formBuilder.insertFormItem(this.sourceDacpacComponent, 2, { horizontal: true, titleFontSize: 12 });
 		});
 
 		// show server and db dropdowns or 'No active connections' text
 		databaseRadioButton.onDidClick(() => {
 			this.sourceIsDacpac = false;
 			if ((this.sourceServerDropdown.value as ConnectionDropdownValue)) {
-				this.formBuilder.insertFormItem(this.sourceServerComponent, 1, { horizontal: true, componentWidth: 300, titleFontSize: 12 });
-				this.formBuilder.insertFormItem(this.sourceDatabaseComponent, 2, { horizontal: true, componentWidth: 300, titleFontSize: 12 });
+				this.formBuilder.insertFormItem(this.sourceServerComponent, 2, { horizontal: true, componentWidth: 300, titleFontSize: 12 });
+				this.formBuilder.insertFormItem(this.sourceDatabaseComponent, 3, { horizontal: true, componentWidth: 300, titleFontSize: 12 });
 			} else {
-				this.formBuilder.insertFormItem(this.sourceNoActiveConnectionsText, 1, { horizontal: true, titleFontSize: 12 });
+				this.formBuilder.insertFormItem(this.sourceNoActiveConnectionsText, 2, { horizontal: true, titleFontSize: 12 });
 			}
 			this.formBuilder.removeFormItem(this.sourceDacpacComponent);
 		});
