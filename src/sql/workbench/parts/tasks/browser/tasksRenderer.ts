@@ -66,7 +66,7 @@ export class TaskHistoryRenderer implements IRenderer {
 	public renderElement(tree: ITree, element: TaskNode, templateId: string, templateData: ITaskHistoryTemplateData): void {
 		let taskStatus;
 		if (element) {
-			templateData.icon.className = 'icon task-icon';
+			templateData.icon.className = 'task-icon';
 			switch (element.status) {
 				case TaskStatus.Succeeded:
 					dom.addClass(templateData.icon, TaskHistoryRenderer.SUCCESS_CLASS);

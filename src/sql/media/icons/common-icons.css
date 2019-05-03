@@ -99,22 +99,22 @@
 .vs .icon.success,
 .vs-dark .icon.success,
 .hc-black .icon.success {
-	background-image: url("status_success.svg");
+	content: url("status_success.svg");
 }
 
 .vs .icon.canceled,
 .vs-dark .icon.canceled,
 .hc-black .icon.canceled {
-	background-image: url("status_cancelled.svg");
+	content: url("status_cancelled.svg");
 }
 
 .vs .icon.in-progress {
-	background-image: url("loading.svg");
+	content: url("loading.svg");
 }
 
 .vs-dark .icon.in-progress,
 .hc-black .icon.in-progress {
-	background-image: url("loading_inverse.svg");
+	content: url("loading_inverse.svg");
 }
 
 .vs .icon.scriptToClipboard,
