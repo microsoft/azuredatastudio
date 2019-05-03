@@ -9,8 +9,8 @@ import { Component, Inject, Input, forwardRef, ViewChild, ElementRef, ViewChildr
 
 import { CommonServiceInterface, SingleConnectionManagementService } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 import { WidgetConfig, TabConfig, NavSectionConfig } from 'sql/workbench/parts/dashboard/common/dashboardWidget';
-import { PanelComponent, IPanelOptions, NavigationBarLayout } from 'sql/base/browser/ui/panel/panel.component';
-import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
+import { PanelComponent, IPanelOptions, NavigationBarLayout } from 'sql/base/electron-browser/ui/panel/panel.component';
+import { TabChild } from 'sql/base/electron-browser/ui/panel/tab.component';
 import { DashboardTab, IConfigModifierCollection } from 'sql/workbench/parts/dashboard/common/interfaces';
 import { WIDGETS_CONTAINER } from 'sql/workbench/parts/dashboard/containers/dashboardWidgetContainer.contribution';
 import { GRID_CONTAINER } from 'sql/workbench/parts/dashboard/containers/dashboardGridContainer.contribution';

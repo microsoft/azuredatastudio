@@ -173,14 +173,15 @@ export class QueryResultsView extends Disposable {
 
 	constructor(
 		container: HTMLElement,
+		@IThemeService themeService: IThemeService,
 		@IInstantiationService private instantiationService: IInstantiationService,
-		@IQueryModelService private queryModelService: IQueryModelService,
-		@IThemeService themeService: IThemeService
+		@IQueryModelService private queryModelService: IQueryModelService
 	) {
 		super();
 		this.resultsTab = this._register(new ResultsTab(instantiationService));
 		this.chartTab = this._register(new ChartTab(instantiationService));
 		this._panelView = this._register(new TabbedPanel(container, { showHeaderWhenSingleView: false }));
+		attachTabbedPanelStyler(this._panelView, themeService);
 		this.qpTab = this._register(new QueryPlanTab());
 		this.topOperationsTab = this._register(new TopOperationsTab(instantiationService));
 

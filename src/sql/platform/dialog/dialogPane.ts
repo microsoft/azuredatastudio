@@ -40,7 +40,7 @@ export class DialogPane extends Disposable implements IThemable {
 		private _content: string | DialogTab[],
 		private _validityChangedCallback: (valid: boolean) => void,
 		private _instantiationService: IInstantiationService,
-		private themeService: IThemeService,
+		private _themeService: IThemeService,
 		public displayPageTitle: boolean,
 		public description?: string,
 	) {
@@ -54,7 +54,7 @@ export class DialogPane extends Disposable implements IThemable {
 			this.initializeModelViewContainer(this._body, modelViewId);
 		} else {
 			this._tabbedPanel = new TabbedPanel(this._body);
-			attachTabbedPanelStyler(this._tabbedPanel, this.themeService);
+			attachTabbedPanelStyler(this._tabbedPanel, this._themeService);
 			this._content.forEach((tab, tabIndex) => {
 				if (this._selectedTabIndex === tabIndex) {
 					this._selectedTabContent = tab.content;

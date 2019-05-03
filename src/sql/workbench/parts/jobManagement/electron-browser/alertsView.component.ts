@@ -9,7 +9,7 @@ import * as dom from 'vs/base/browser/dom';
 import * as nls from 'vs/nls';
 import * as azdata from 'azdata';
 import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnInit, OnDestroy } from '@angular/core';
-import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
+import { TabChild } from 'sql/base/electron-browser/ui/panel/tab.component';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/workbench/parts/jobManagement/electron-browser/agentView.component';
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
