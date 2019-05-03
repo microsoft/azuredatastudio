@@ -34,6 +34,7 @@ import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardServi
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
+import { DataService } from 'sql/workbench/parts/grid/services/dataService';
 
 export const DASHBOARD_SELECTOR: string = 'jobhistory-component';
 
@@ -247,8 +248,13 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 
 	private buildHistoryTree(self: any, jobHistories: azdata.AgentJobHistoryInfo[]) {
 		self._treeController.jobHistories = jobHistories;
-		let jobHistoryRows = this._treeController.jobHistories.map(job => self.convertToJobHistoryRow(job));
-		self._treeDataSource.data = jobHistoryRows;
+		let jobHistoryRows: JobHistoryRow[] = this._treeController.jobHistories.map(job => self.convertToJobHistoryRow(job));
+		let sortedRows = jobHistoryRows.sort((row1, row2) => {
+			let date1 = new Date(row1.runDate).getTime();
+			let date2 = new Date(row2.runDate).getTime();
+			return date2 - date1;
+		});
+		self._treeDataSource.data = sortedRows;
 		self._tree.setInput(new JobHistoryModel());
 		self.agentJobHistoryInfo = self._treeController.jobHistories[0];
 		if (self.agentJobHistoryInfo) {
