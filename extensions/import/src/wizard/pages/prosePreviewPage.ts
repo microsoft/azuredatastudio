@@ -24,6 +24,7 @@ export class ProsePreviewPage extends ImportPage {
 	private loading: azdata.LoadingComponent;
 	private form: azdata.FormContainer;
 	private refresh: azdata.ButtonComponent;
+	private resultTextComponent: azdata.TextComponent;
 	private isSuccess: boolean;
 
 	public constructor(instance: FlatFileWizard, wizardPage: azdata.window.WizardPage, model: ImportDataModel, view: azdata.ModelView, provider: FlatFileProvider) {
@@ -43,11 +44,19 @@ export class ProsePreviewPage extends ImportPage {
 
 		this.loading = this.view.modelBuilder.loadingComponent().component();
 
+		this.resultTextComponent = this.view.modelBuilder.text()
+			.withProperties({
+				value: this.isSuccess ? this.successTitle : this.failureTitle
+			}).component();
 
 		this.form = this.view.modelBuilder.formContainer().withFormItems([
 			{
+				component: this.resultTextComponent,
+				title: ''
+			},
+			{
 				component: this.table,
-				title: this.isSuccess ? this.successTitle : this.failureTitle,
+				title: '',
 				actions: [this.refresh]
 			}
 		]).component();
@@ -67,13 +76,15 @@ export class ProsePreviewPage extends ImportPage {
 			await this.populateTable(this.model.proseDataPreview, this.model.proseColumns.map(c => c.columnName));
 			this.isSuccess = true;
 			if (this.form) {
-				await this.form.updateProperties({
-					title: this.isSuccess ? this.successTitle : this.failureTitle
-				});
+				this.resultTextComponent.value = this.successTitle;
 			}
 			return true;
 		} else {
+			await this.populateTable([], []);
 			this.isSuccess = false;
+			if (this.form) {
+				this.resultTextComponent.value = this.failureTitle;
+			}
 			return false;
 		}
 	}
@@ -108,6 +119,7 @@ export class ProsePreviewPage extends ImportPage {
 			fileType: this.model.fileType
 		}).then((result) => {
 			if (result) {
+				this.model.proseDataPreview = null;
 				if (result.dataPreview) {
 					this.model.proseDataPreview = result.dataPreview;
 				}
