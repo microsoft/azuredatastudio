@@ -12,7 +12,7 @@ import { TabConfig, WidgetConfig } from 'sql/workbench/parts/dashboard/common/da
 import { DashboardWidgetWrapper } from 'sql/workbench/parts/dashboard/contents/dashboardWidgetWrapper.component';
 import { DashboardTab } from 'sql/workbench/parts/dashboard/common/interfaces';
 import { WebviewContent } from 'sql/workbench/parts/dashboard/contents/webviewContent.component';
-import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
+import { TabChild } from 'sql/base/electron-browser/ui/panel/tab.component';
 
 import { Event, Emitter } from 'vs/base/common/event';
 

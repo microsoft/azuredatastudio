@@ -14,7 +14,7 @@ import { AgentViewComponent } from 'sql/workbench/parts/jobManagement/electron-b
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
 import { EditProxyAction, DeleteProxyAction, NewProxyAction } from 'sql/platform/jobManagement/common/jobActions';
 import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
-import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
+import { TabChild } from 'sql/base/electron-browser/ui/panel/tab.component';
 import { JobManagementView } from 'sql/workbench/parts/jobManagement/electron-browser/jobManagementView';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';

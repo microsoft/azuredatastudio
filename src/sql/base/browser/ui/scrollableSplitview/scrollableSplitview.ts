@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!./scrollableSplitview';
+import 'vs/css!./media/scrollableSplitview';
 import { HeightMap, IView as HeightIView, IViewItem as HeightIViewItem } from './heightMap';
 
 import { IDisposable, combinedDisposable, toDisposable } from 'vs/base/common/lifecycle';
