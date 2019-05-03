@@ -92,7 +92,7 @@ export class CmsConnectionWidget extends ConnectionWidget {
 	}
 
 	protected addAuthenticationTypeOption(authTypeChanged: boolean = false): void {
-		super.addAuthenticationTypeOption();
+		super.addAuthenticationTypeOption(authTypeChanged);
 		let authTypeOption = this._optionsMaps[ConnectionOptionSpecialType.authType];
 		let newAuthTypes = authTypeOption.categoryValues;
 		// True when opening a CMS dialog to add a registered server
