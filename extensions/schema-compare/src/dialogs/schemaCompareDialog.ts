@@ -11,7 +11,7 @@ import * as os from 'os';
 import { SchemaCompareResult } from '../schemaCompareResult';
 
 const localize = nls.loadMessageBundle();
-const CompareButtonText: string = localize('schemaCompareDialog.Compare', 'Compare');
+const OkButtonText: string = localize('schemaCompareDialog.Ok', 'Ok');
 const CancelButtonText: string = localize('schemaCompareDialog.Cancel', 'Cancel');
 const SourceTextBoxLabel: string = localize('schemaCompareDialog.SourceLabel', 'Source File');
 const TargetTextBoxLabel: string = localize('schemaCompareDialog.TargetLabel', 'Target File');
@@ -64,7 +64,7 @@ export class SchemaCompareDialog {
 
 		this.initializeDialog();
 
-		this.dialog.okButton.label = CompareButtonText;
+		this.dialog.okButton.label = OkButtonText;
 		this.dialog.okButton.onClick(async () => await this.execute());
 
 		this.dialog.cancelButton.label = CancelButtonText;
