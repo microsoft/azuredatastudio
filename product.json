@@ -42,6 +42,7 @@
 		"Microsoft.admin-tool-ext-win",
 		"Microsoft.agent",
 		"Microsoft.azuredatastudio-postgresql",
+		"Microsoft.cms",
 		"Microsoft.dacpac",
 		"Microsoft.import",
 		"Microsoft.powershell",
