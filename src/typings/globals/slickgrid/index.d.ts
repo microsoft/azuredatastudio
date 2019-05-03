@@ -663,6 +663,11 @@ declare namespace Slick {
 		*
 		**/
 		topPanelHeight?: number;
+
+		/**
+		 * Page grid when navigating
+		 */
+		emulatePagingWhenScrolling?: boolean;
 	}
 
 	export interface DataProvider<T extends SlickData> {
