@@ -26,6 +26,7 @@ const SchemaCompareLabel: string = localize('schemaCompare.dialogTitle', 'Schema
 
 export class SchemaCompareDialog {
 	public dialog: azdata.window.Dialog;
+	public dialogName: string;
 	private schemaCompareTab: azdata.window.DialogTab;
 	private sourceDacpacComponent: azdata.FormComponent;
 	private sourceTextBox: azdata.InputBoxComponent;
@@ -47,7 +48,7 @@ export class SchemaCompareDialog {
 	private sourceIsDacpac: boolean;
 	private targetIsDacpac: boolean;
 	private database: string;
-	public dialogName: string;
+	private connectionId: string;
 
 	protected initializeDialog(): void {
 		this.schemaCompareTab = azdata.window.createTab(SchemaCompareLabel);
@@ -55,10 +56,17 @@ export class SchemaCompareDialog {
 		this.dialog.content = [this.schemaCompareTab];
 	}
 
-	public openDialog(p: any, dialogName?: string): void {
-		let profile = p ? <azdata.IConnectionProfile>p.connectionProfile : undefined;
+	public async openDialog(context: any, dialogName?: string): Promise<void> {
+		let profile = context ? <azdata.IConnectionProfile>context.connectionProfile : undefined;
 		if (profile) {
 			this.database = profile.databaseName;
+			this.connectionId = profile.id;
+		} else {
+			let connection = await azdata.connection.getCurrentConnection();
+			if (connection) {
+				this.connectionId = connection.connectionId;
+				this.database = undefined;
+			}
 		}
 
 		let event = dialogName ? dialogName : null;
@@ -396,7 +404,16 @@ export class SchemaCompareDialog {
 			return undefined;
 		}
 
+		let count = -1;
+		let idx = -1;
 		let values = cons.map(c => {
+			count++;
+
+			if (c.connectionId === this.connectionId) {
+				idx = count;
+			}
+
+			let db = c.options.databaseDisplayName;
 			let usr = c.options.user;
 			let srv = c.options.server;
 
@@ -411,6 +428,13 @@ export class SchemaCompareDialog {
 				name: srv
 			};
 		});
+
+		// move server of current connection to the top of the list so it is the default
+		if (idx >= 1) {
+			let tmp = values[0];
+			values[0] = values[idx];
+			values[idx] = tmp;
+		}
 
 		return values;
 	}
