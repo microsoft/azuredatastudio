@@ -61,7 +61,6 @@ export interface LaunchSsmsDialogParams {
 	server: string;
 	database?: string;
 	user?: string;
-	password?: string;
 	useAad?: boolean;
 	urn?: string;
 }
@@ -129,7 +128,7 @@ function registerCommands(context: vscode.ExtensionContext): void {
  */
 async function handleLaunchSsmsMinPropertiesDialogCommand(connectionContext?: azdata.ObjectExplorerContext): Promise<void> {
 	if (!connectionContext) {
-		console.error('No ConnectionContext provided for handleLaunchSsmsMinPropertiesDialogCommand');
+		vscode.window.showErrorMessage(localize('adminToolExtWin.noConnectionContextForProp', 'No ConnectionContext provided for handleLaunchSsmsMinPropertiesDialogCommand'));
 		return;
 	}
 
@@ -141,7 +140,7 @@ async function handleLaunchSsmsMinPropertiesDialogCommand(connectionContext?: az
 		nodeType = connectionContext.nodeInfo.nodeType;
 	}
 	else {
-		console.error(`Could not determine NodeType for handleLaunchSsmsMinPropertiesDialogCommand with context ${connectionContext}`);
+		vscode.window.showErrorMessage(localize('adminToolExtWin.noOeNode', 'Could not determine NodeType for handleLaunchSsmsMinPropertiesDialogCommand with context {0}', JSON.stringify(connectionContext)));
 		return;
 	}
 
@@ -155,6 +154,10 @@ async function handleLaunchSsmsMinPropertiesDialogCommand(connectionContext?: az
  * @param connectionId The connection context from the command
  */
 async function handleLaunchSsmsMinGswDialogCommand(connectionContext?: azdata.ObjectExplorerContext): Promise<void> {
+	if (!connectionContext) {
+		vscode.window.showErrorMessage(localize('adminToolExtWin.noConnectionContextForGsw', 'No ConnectionContext provided for handleLaunchSsmsMinPropertiesDialogCommand'));
+	}
+
 	launchSsmsDialog(
 		'GenerateScripts',
 		connectionContext);
@@ -173,7 +176,24 @@ async function launchSsmsDialog(action: string, connectionContext: azdata.Object
 	}
 
 	if (!connectionContext.connectionProfile) {
-		console.error(`No ConnectionProfile provided from connectionContext : ${connectionContext}`);
+		vscode.window.showErrorMessage(localize('adminToolExtWin.noConnectionProfile', 'No connectionProfile provided from connectionContext : {0}', JSON.stringify(connectionContext)));
+		return;
+	}
+
+	// Currently Azure isn't supported by the SSMS server properties dialog
+	const serverInfo = await azdata.connection.getServerInfo(connectionContext.connectionProfile.id);
+	if (serverInfo && serverInfo.isCloud) {
+		vscode.window.showErrorMessage(localize('adminToolExtWin.invalidEngineType', 'This option is not currently available for this engine type.'));
+		return;
+	}
+
+	// Note - this is a temporary fix for the issue that currently the connection API doesn't allow retrieving credentials for a disconnected
+	// node. So until that's fixed we'll prevent users from attempting to launch SsmsMin on a disconnected node.
+	// We also aren't able to hide the menu item on disconnected nodes because we currently don't have a contextKey for the connected status
+	// of a node.
+	const activeConnections = await azdata.connection.getActiveConnections();
+	if (!activeConnections.some(conn => conn.connectionId === connectionContext.connectionProfile.id)) {
+		vscode.window.showErrorMessage(localize('adminToolExtWin.notConnected', 'This option requires a connected node - please connect and try again.'));
 		return;
 	}
 
@@ -186,24 +206,30 @@ async function launchSsmsDialog(action: string, connectionContext: azdata.Object
 		oeNode = await azdata.objectexplorer.getNode(connectionContext.connectionProfile.id, connectionContext.nodeInfo.nodePath);
 	}
 	else {
-		console.error(`Could not determine Object Explorer node from connectionContext : ${connectionContext}`);
+		vscode.window.showErrorMessage(localize('adminToolExtWin.noOENode', 'Could not determine Object Explorer node from connectionContext : {0}', JSON.stringify(connectionContext)));
 		return;
 	}
 
 	let urn: string = await buildUrn(connectionContext.connectionProfile.serverName, oeNode);
+	let password: string = connectionContext.connectionProfile.password;
 
-	Telemetry.sendTelemetryEvent('LaunchSsmsDialog', { 'action': action });
+	if (!password || password === '') {
+		let creds = await azdata.connection.getCredentials(connectionContext.connectionProfile.id);
+		password = creds[azdata.ConnectionOptionSpecialType.password];
+	}
 
 	let params: LaunchSsmsDialogParams = {
 		action: action,
 		server: connectionContext.connectionProfile.serverName,
 		database: connectionContext.connectionProfile.databaseName,
-		password: connectionContext.connectionProfile.password,
 		user: connectionContext.connectionProfile.userName,
 		useAad: connectionContext.connectionProfile.authenticationType === 'AzureMFA',
 		urn: urn
 	};
+
 	let args = buildSsmsMinCommandArgs(params);
+
+	Telemetry.sendTelemetryEvent('LaunchSsmsDialog', { 'action': action });
 
 	// This will be an async call since we pass in the callback
 	let proc: ChildProcess = exec(
@@ -218,13 +244,15 @@ async function launchSsmsDialog(action: string, connectionContext: azdata.Object
 			});
 			let err = stderr.toString();
 			if (err !== '') {
-				console.warn(`Error calling SsmsMin with args '${args}' - ${err}`);
+				vscode.window.showErrorMessage(localize(
+					'adminToolExtWin.ssmsMinError',
+					'Error calling SsmsMin with args \'{0}\' - {1}', args, err));
 			}
 		});
 
 	// If we're not using AAD the tool prompts for a password on stdin
 	if (params.useAad !== true) {
-		proc.stdin.end(params.password ? params.password : '');
+		proc.stdin.end(password ? password : '');
 	}
 
 	// Save the process into our map so we can make sure to stop them if we exit before shutting down
