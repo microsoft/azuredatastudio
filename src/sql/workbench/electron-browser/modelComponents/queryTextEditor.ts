@@ -132,8 +132,8 @@ export class QueryTextEditor extends BaseTextEditor {
 
 	public setHeightToScrollHeight(configChanged?: boolean): void {
 		let editorWidget = this.getControl() as ICodeEditor;
-		if (!this._config) {
-			this._config = new Configuration(true, undefined, editorWidget.getDomNode(), this.accessibilityService);
+		this._config = new Configuration(true, undefined, editorWidget.getDomNode(), this.accessibilityService);
+		if (!this._scrollbarHeight) {
 			this._scrollbarHeight = this._config.editor.viewInfo.scrollbar.horizontalScrollbarSize;
 		}
 		let editorWidgetModel = editorWidget.getModel();
@@ -157,7 +157,8 @@ export class QueryTextEditor extends BaseTextEditor {
 			for (let line = 1; line <= lineCount; line++) {
 				// 4 columns is equivalent to the viewport column width and the edge of the editor
 				if (editorWidgetModel.getLineMaxColumn(line) >= this._config.editor.layoutInfo.viewportColumn + 4) {
-					numberWrappedLines += Math.ceil(editorWidgetModel.getLineMaxColumn(line) / this._config.editor.layoutInfo.viewportColumn);
+					// Subtract 1 because the first line should not count as a wrapped line
+					numberWrappedLines += Math.ceil(editorWidgetModel.getLineMaxColumn(line) / this._config.editor.layoutInfo.viewportColumn) - 1;
 				}
 			}
 		} else {

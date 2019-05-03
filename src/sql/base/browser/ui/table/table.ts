@@ -23,7 +23,8 @@ import { range } from 'vs/base/common/arrays';
 function getDefaultOptions<T>(): Slick.GridOptions<T> {
 	return <Slick.GridOptions<T>>{
 		syncColumnCellResize: true,
-		enableColumnReorder: false
+		enableColumnReorder: false,
+		emulatePagingWhenScrolling: false
 	};
 }
 
