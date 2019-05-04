@@ -18,7 +18,7 @@ import * as fs from 'fs';
 if (context.RunTest) {
 	suite('Notebook integration test suite', function () {
 		setup(function () {
-			this.NbTester = new NotebooksTester(this.currentTest.title);
+			this.NbTester = new NotebookTester(this.currentTest.title);
 		});
 		teardown(async function () {
 			await this.NbTester.Cleanup(this.currentTest.title);
@@ -54,7 +54,7 @@ if (context.RunTest) {
 	});
 }
 
-class NotebooksTester {
+class NotebookTester {
 	setup() {
 		console.log(`environment variable SuiteType set to ${process.env.SuiteType}`);
 	}
