@@ -177,9 +177,9 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		this.overrideCellFn = (rowNumber, columnId, value?, data?): string => {
 			let returnVal = '';
 			if (Services.DBCellValue.isDBCellValue(value)) {
-				returnVal = value.displayValue;
+				returnVal = value.displayValue.replace(/(\r\n|\n|\r)/g, '');
 			} else if (typeof value === 'string') {
-				returnVal = value;
+				returnVal = value.replace(/(\r\n|\n|\r)/g, '');
 			}
 			return returnVal;
 		};
