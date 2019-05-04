@@ -10,7 +10,7 @@ import { Component, Inject, Input, forwardRef, ViewChild, OnDestroy, ChangeDetec
 import { TabConfig, WidgetConfig } from 'sql/workbench/parts/dashboard/common/dashboardWidget';
 import { DashboardTab } from 'sql/workbench/parts/dashboard/common/interfaces';
 import { WidgetContent } from 'sql/workbench/parts/dashboard/contents/widgetContent.component';
-import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
+import { TabChild } from 'sql/base/electron-browser/ui/panel/tab.component';
 
 import { Event, Emitter } from 'vs/base/common/event';
 

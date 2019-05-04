@@ -28,7 +28,6 @@ import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { attachEditableDropdownStyler, attachSelectBoxStyler } from 'sql/platform/theme/common/styler';
 import { EventEmitter } from 'sql/base/common/eventEmitter';
 import { Dropdown } from 'sql/base/parts/editableDropdown/browser/dropdown';
-import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 
 /**
  * Action class that query-based Actions will extend. This base class automatically handles activating and
@@ -449,8 +448,7 @@ export class ListDatabasesActionItem extends EventEmitter implements IActionItem
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@INotificationService private _notificationService: INotificationService,
 		@IContextViewService contextViewProvider: IContextViewService,
-		@IConfigurationService private readonly _configurationService: IConfigurationService,
-		@ILayoutService layoutService: ILayoutService
+		@IConfigurationService private readonly _configurationService: IConfigurationService
 	) {
 		super();
 		this._toDispose = [];

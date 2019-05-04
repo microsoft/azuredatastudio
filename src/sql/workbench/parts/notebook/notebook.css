@@ -49,48 +49,48 @@
 }
 
 .notebookEditor .notebook-button.icon-add{
-	background-image: url("./media/light/add_blue.svg");
+	background-image: url("./media/light/add.svg");
 }
 
 .vs-dark .notebookEditor .notebook-button.icon-add,
 .hc-black .notebookEditor .notebook-button.icon-add{
-	background-image: url("./media/dark/add_blue_inverse.svg");
+	background-image: url("./media/dark/add_inverse.svg");
 }
 
 .notebookEditor .notebook-button.icon-run-cells{
-	background-image: url("./media/light/run_cells_blue.svg");
+	background-image: url("./media/light/run_cells.svg");
 }
 
 .vs-dark .notebookEditor .notebook-button.icon-run-cells,
 .hc-black .notebookEditor .notebook-button.icon-run-cells{
-	background-image: url("./media/dark/run_cells_blue_inverse.svg");
+	background-image: url("./media/dark/run_cells_inverse.svg");
 }
 
 .notebookEditor .notebook-button.icon-trusted{
-	background-image: url("./media/light/trusted_blue.svg");
+	background-image: url("./media/light/trusted.svg");
 }
 
 .vs-dark .notebookEditor .notebook-button.icon-trusted,
 .hc-black .notebookEditor .notebook-button.icon-trusted{
-	background-image: url("./media/dark/trusted_blue_inverse.svg");
+	background-image: url("./media/dark/trusted_inverse.svg");
 }
 
 .notebookEditor .notebook-button.icon-notTrusted{
-	background-image: url("./media/light/nottrusted_blue.svg");
+	background-image: url("./media/light/nottrusted.svg");
 }
 
 .vs-dark .notebookEditor .notebook-button.icon-notTrusted,
 .hc-black .notebookEditor .notebook-button.icon-notTrusted{
-	background-image: url("./media/dark/nottrusted_blue_inverse.svg");
+	background-image: url("./media/dark/nottrusted_inverse.svg");
 }
 
 .notebookEditor .notebook-button.icon-clear-results{
-	background-image: url("./media/light/clear_results_blue.svg");
+	background-image: url("./media/light/clear_results.svg");
 }
 
 .vs-dark .notebookEditor .notebook-button.icon-clear-results,
 .hc-black .notebookEditor .notebook-button.icon-clear-results{
-	background-image: url("./media/dark/clear_results_blue_inverse.svg");
+	background-image: url("./media/dark/clear_results_inverse.svg");
 }
 
 .moreActions .action-label.icon.toggle-more {

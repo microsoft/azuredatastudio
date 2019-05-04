@@ -12,7 +12,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { DashboardTab } from 'sql/workbench/parts/dashboard/common/interfaces';
 import { TabConfig } from 'sql/workbench/parts/dashboard/common/dashboardWidget';
 import { ControlHostContent } from 'sql/workbench/parts/dashboard/contents/controlHostContent.component';
-import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
+import { TabChild } from 'sql/base/electron-browser/ui/panel/tab.component';
 
 @Component({
 	selector: 'dashboard-controlhost-container',

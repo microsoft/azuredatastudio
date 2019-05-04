@@ -10,7 +10,7 @@ import { TabComponent } from './tab.component';
 import { TabHeaderComponent } from './tabHeader.component';
 import { PanelComponent } from './panel.component';
 
-import { ScrollableModule } from 'sql/base/browser/ui/scrollable/scrollable.module';
+import { ScrollableModule } from 'sql/base/electron-browser/ui/scrollable/scrollable.module';
 
 @NgModule({
 	imports: [CommonModule, ScrollableModule],

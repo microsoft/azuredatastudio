@@ -11,7 +11,6 @@ import 'vs/css!./media/slickGrid';
 import { TableDataView } from './tableDataView';
 import { IDisposableDataProvider, ITableSorter, ITableMouseEvent, ITableConfiguration, ITableStyles } from 'sql/base/browser/ui/table/interfaces';
 
-import { IThemable } from 'vs/platform/theme/common/styler';
 import * as DOM from 'vs/base/browser/dom';
 import { mixin } from 'vs/base/common/objects';
 import { IDisposable } from 'vs/base/common/lifecycle';
@@ -24,11 +23,12 @@ import { range } from 'vs/base/common/arrays';
 function getDefaultOptions<T>(): Slick.GridOptions<T> {
 	return <Slick.GridOptions<T>>{
 		syncColumnCellResize: true,
-		enableColumnReorder: false
+		enableColumnReorder: false,
+		emulatePagingWhenScrolling: false
 	};
 }
 
-export class Table<T extends Slick.SlickData> extends Widget implements IThemable, IDisposable {
+export class Table<T extends Slick.SlickData> extends Widget implements IDisposable {
 	private styleElement: HTMLStyleElement;
 	private idPrefix: string;
 

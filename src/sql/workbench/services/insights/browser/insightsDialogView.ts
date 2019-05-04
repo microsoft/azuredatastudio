@@ -229,10 +229,8 @@ export class InsightsDialogView extends Modal {
 
 				this._bottomTableData.clear();
 				this._bottomTableData.push(resourceArray);
-				if (bottomTableView.isExpanded()) {
-					bottomTableView.setExpanded(false);
-					bottomTableView.setExpanded(true);
-				}
+				this._bottomTable.grid.invalidateAllRows();
+				this._bottomTable.grid.render();
 				this._enableTaskButtons(true);
 			} else {
 				this._enableTaskButtons(false);
