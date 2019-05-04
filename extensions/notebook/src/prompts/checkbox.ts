@@ -1,5 +1,3 @@
-'use strict';
-
 // This code is originally from https://github.com/DonJayamanne/bowerVSCode
 // License: https://github.com/DonJayamanne/bowerVSCode/blob/master/LICENSE
 
@@ -16,7 +14,7 @@ export default class CheckboxPrompt extends Prompt {
 	}
 
 	public render(): any {
-		let choices = this._question.choices.reduce((result, choice) => {
+		let choices = this._question.choices.reduce((result: any, choice: any) => {
 			let choiceName = choice.name || choice;
 			result[`${choice.checked === true ? figures.radioOn : figures.radioOff} ${choiceName}`] = choice;
 			return result;
@@ -40,7 +38,7 @@ export default class CheckboxPrompt extends Prompt {
 					return this.render();
 				}
 
-				return this._question.choices.reduce((result2, choice) => {
+				return this._question.choices.reduce((result2: any, choice: any) => {
 					if (choice.checked === true) {
 						result2.push(choice.value);
 					}

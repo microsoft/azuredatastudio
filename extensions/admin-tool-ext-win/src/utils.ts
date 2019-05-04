@@ -7,19 +7,19 @@
 import * as vscode from 'vscode';
 
 export interface IPackageInfo {
-    name: string;
-    version: string;
-    aiKey: string;
+	name: string;
+	version: string;
+	aiKey: string;
 }
 
 export function getPackageInfo(packageJson: any): IPackageInfo {
-    if (packageJson) {
-        return {
-            name: packageJson.name,
-            version: packageJson.version,
-            aiKey: packageJson.aiKey
-        };
-    }
+	if (packageJson) {
+		return {
+			name: packageJson.name,
+			version: packageJson.version,
+			aiKey: packageJson.aiKey
+		};
+	}
 }
 
 /**
@@ -28,15 +28,33 @@ export function getPackageInfo(packageJson: any): IPackageInfo {
  * @param resource The optional URI, as a URI object or a string, to use to get resource-scoped configurations
  */
 export function getConfiguration(extensionName?: string, resource?: vscode.Uri | string): vscode.WorkspaceConfiguration {
-    if (typeof resource === 'string') {
-        try {
-            resource = this.parseUri(resource);
-        } catch (e) {
-            resource = undefined;
-        }
-    } else if (!resource) {
-        // Fix to avoid adding lots of errors to debug console. Expects a valid resource or null, not undefined
-        resource = null;
-    }
-    return vscode.workspace.getConfiguration(extensionName, resource as vscode.Uri);
+	if (typeof resource === 'string') {
+		try {
+			resource = this.parseUri(resource);
+		} catch (e) {
+			resource = undefined;
+		}
+	} else if (!resource) {
+		// Fix to avoid adding lots of errors to debug console. Expects a valid resource or null, not undefined
+		resource = null;
+	}
+	return vscode.workspace.getConfiguration(extensionName, resource as vscode.Uri);
+}
+
+/**
+ * Escapes all single-quotes (') by prefixing them with another single quote ('')
+ * ' => ''
+ * @param value The string to escape
+ */
+export function doubleEscapeSingleQuotes(value: string): string {
+	return value.replace(/'/g, '\'\'');
+}
+
+/**
+ * Escape all double-quotes (") by prefixing them with a \
+ *  " => \"
+ * @param value The string to escape
+ */
+export function backEscapeDoubleQuotes(value: string): string {
+	return value.replace(/"/g, '\\"');
 }

@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------------------------
-*  Copyright (c) Microsoft Corporation. All rights reserved.
-*  Licensed under the Source EULA. See License.txt in the project root for license information.
-*--------------------------------------------------------------------------------------------*/
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./code';
 import 'vs/css!./outputArea';
 import { OnInit, Component, Input, Inject, ElementRef, ViewChild, forwardRef, ChangeDetectorRef } from '@angular/core';
@@ -21,8 +21,6 @@ export class OutputAreaComponent extends AngularDisposable implements OnInit {
 	@Input() cellModel: ICellModel;
 
 	private _activeCellId: string;
-
-	private readonly _minimumHeight = 30;
 
 	constructor(
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,

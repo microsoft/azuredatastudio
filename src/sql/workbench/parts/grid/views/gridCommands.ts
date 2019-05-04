@@ -5,8 +5,8 @@
 
 import * as GridContentEvents from 'sql/workbench/parts/grid/common/gridContentEvents';
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
-import { QueryEditor } from 'sql/parts/query/editor/queryEditor';
-import { EditDataEditor } from 'sql/parts/editData/editor/editDataEditor';
+import { QueryEditor } from 'sql/workbench/parts/query/browser/queryEditor';
+import { EditDataEditor } from 'sql/workbench/parts/editData/browser/editDataEditor';
 
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';

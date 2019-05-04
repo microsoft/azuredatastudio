@@ -72,6 +72,10 @@ declare module 'vscode' {
 
 	//#region Alex - resolvers
 
+	export interface RemoteAuthorityResolverContext {
+		resolveAttempt: number;
+	}
+
 	export class ResolvedAuthority {
 		readonly host: string;
 		readonly port: number;
@@ -79,8 +83,15 @@ declare module 'vscode' {
 		constructor(host: string, port: number);
 	}
 
+	export class RemoteAuthorityResolverError extends Error {
+		static NotAvailable(message?: string, handled?: boolean): RemoteAuthorityResolverError;
+		static TemporarilyNotAvailable(message?: string): RemoteAuthorityResolverError;
+
+		constructor(message?: string);
+	}
+
 	export interface RemoteAuthorityResolver {
-		resolve(authority: string): ResolvedAuthority | Thenable<ResolvedAuthority>;
+		resolve(authority: string, context: RemoteAuthorityResolverContext): ResolvedAuthority | Thenable<ResolvedAuthority>;
 	}
 
 	export interface ResourceLabelFormatter {
@@ -724,111 +735,16 @@ declare module 'vscode' {
 		inDraftMode?: boolean;
 	}
 
-	export enum CommentThreadCollapsibleState {
-		/**
-		 * Determines an item is collapsed
-		 */
-		Collapsed = 0,
-		/**
-		 * Determines an item is expanded
-		 */
-		Expanded = 1
-	}
-
-	/**
-	 * A collection of comments representing a conversation at a particular range in a document.
-	 */
-	export interface CommentThread {
-		/**
-		 * A unique identifier of the comment thread.
-		 */
-		threadId: string;
-
-		/**
-		 * The uri of the document the thread has been created on.
-		 */
-		resource: Uri;
-
-		/**
-		 * The range the comment thread is located within the document. The thread icon will be shown
-		 * at the first line of the range.
-		 */
-		range: Range;
-
-		/**
-		 * The human-readable label describing the [Comment Thread](#CommentThread)
-		 */
-		label?: string;
-
-		/**
-		 * The ordered comments of the thread.
-		 */
-		comments: Comment[];
-
-		/**
-		 * Optional accept input command
-		 *
-		 * `acceptInputCommand` is the default action rendered on Comment Widget, which is always placed rightmost.
-		 * This command will be invoked when users the user accepts the value in the comment editor.
-		 * This command will disabled when the comment editor is empty.
-		 */
-		acceptInputCommand?: Command;
-
-		/**
-		 * Optional additonal commands.
-		 *
-		 * `additionalCommands` are the secondary actions rendered on Comment Widget.
-		 */
-		additionalCommands?: Command[];
-
-		/**
-		 * Whether the thread should be collapsed or expanded when opening the document.
-		 * Defaults to Collapsed.
-		 */
-		collapsibleState?: CommentThreadCollapsibleState;
-
-		/**
-		 * The command to be executed when users try to delete the comment thread. Currently, this is only called
-		 * when the user collapses a comment thread that has no comments in it.
-		 */
-		deleteCommand?: Command;
-
-		/**
-		 * Dispose this comment thread.
-		 * Once disposed, the comment thread will be removed from visible text editors and Comments Panel.
-		 */
-		dispose?(): void;
-	}
-
 	/**
 	 * A comment is displayed within the editor or the Comments Panel, depending on how it is provided.
 	 */
-	export interface Comment {
+	export class CommentLegacy extends Comment {
 		/**
 		 * The id of the comment
+		 *
+		 * @deprecated Use Id instead
 		 */
 		readonly commentId: string;
-
-		/**
-		 * The text of the comment
-		 */
-		readonly body: MarkdownString;
-
-		/**
-		 * Optional label describing the [Comment](#Comment)
-		 * Label will be rendered next to userName if exists.
-		 */
-		readonly label?: string;
-
-		/**
-		 * The display name of the user who created the comment
-		 */
-		readonly userName: string;
-
-		/**
-		 * The icon path for the user who created the comment
-		 */
-		readonly userIconPath?: Uri;
 
 		/**
 		 * @deprecated Use userIconPath instead. The avatar src of the user who created the comment
@@ -860,21 +776,6 @@ declare module 'vscode' {
 		 * The command to be executed if the comment is selected in the Comments Panel
 		 */
 		command?: Command;
-
-		/**
-		 * The command to be executed if the comment is selected in the Comments Panel
-		 */
-		readonly selectCommand?: Command;
-
-		/**
-		 * The command to be executed when users try to save the edits to the comment
-		 */
-		readonly editCommand?: Command;
-
-		/**
-		 * The command to be executed when users try to delete the comment
-		 */
-		readonly deleteCommand?: Command;
 
 		/**
 		 * Deprecated
@@ -914,6 +815,7 @@ declare module 'vscode' {
 
 	/**
 	 * Comment Reactions
+	 * Stay in proposed.
 	 */
 	interface CommentReaction {
 		readonly label?: string;
@@ -986,73 +888,29 @@ declare module 'vscode' {
 	}
 
 	/**
-	 * The comment input box in Comment Widget.
+	 * Stay in proposed
 	 */
-	export interface CommentInputBox {
-		/**
-		 * Setter and getter for the contents of the comment input box.
-		 */
-		value: string;
-	}
-
 	export interface CommentReactionProvider {
 		availableReactions: CommentReaction[];
 		toggleReaction?(document: TextDocument, comment: Comment, reaction: CommentReaction): Promise<void>;
 	}
 
-	export interface CommentingRangeProvider {
-		/**
-		 * Provide a list of ranges which allow new comment threads creation or null for a given document
-		 */
-		provideCommentingRanges(document: TextDocument, token: CancellationToken): ProviderResult<Range[]>;
 
+	export interface CommentController {
 		/**
-		 * The method `createEmptyCommentThread` is called when users attempt to create new comment thread from the gutter or command palette.
-		 * Extensions still need to call `createCommentThread` inside this call when appropriate.
+		 * Optional reaction provider
+		 * Stay in proposed.
 		 */
-		createEmptyCommentThread(document: TextDocument, range: Range): ProviderResult<void>;
+		reactionProvider?: CommentReactionProvider;
 	}
 
 	export interface CommentController {
 		/**
-		 * The id of this comment controller.
+		 * The active [comment thread](#CommentThread) or `undefined`. The `activeCommentThread` is the comment thread of
+		 * the comment widget that currently has focus. It's `undefined` when the focus is not in any comment thread widget, or
+		 * the comment widget created from [comment thread template](#CommentThreadTemplate).
 		 */
-		readonly id: string;
-
-		/**
-		 * The human-readable label of this comment controller.
-		 */
-		readonly label: string;
-
-		/**
-		 * The active (focused) [comment input box](#CommentInputBox).
-		 */
-		readonly inputBox?: CommentInputBox;
-
-		/**
-		 * Create a [CommentThread](#CommentThread)
-		 */
-		createCommentThread(id: string, resource: Uri, range: Range, comments: Comment[]): CommentThread;
-
-		/**
-		 * Optional commenting range provider.
-		 * Provide a list [ranges](#Range) which support commenting to any given resource uri.
-		 */
-		commentingRangeProvider?: CommentingRangeProvider;
-
-		/**
-		 * Optional reaction provider
-		 */
-		reactionProvider?: CommentReactionProvider;
-
-		/**
-		 * Dispose this comment controller.
-		 */
-		dispose(): void;
-	}
-
-	namespace comment {
-		export function createCommentController(id: string, label: string): CommentController;
+		readonly activeCommentThread: CommentThread | undefined;
 	}
 
 	namespace workspace {
@@ -1360,4 +1218,43 @@ declare module 'vscode' {
 		group?: string;
 	}
 	//#endregion
+
+	//#region Workspace URI Ben
+
+	export namespace workspace {
+
+		/**
+		 * The location of the workspace file, for example:
+		 *
+		 * `file:///Users/name/Development/myProject.code-workspace`
+		 *
+		 * or
+		 *
+		 * `untitled:1555503116870`
+		 *
+		 * for a workspace that is untitled and not yet saved.
+		 *
+		 * Depending on the workspace that is opened, the value will be:
+		 *  * `undefined` when no workspace or  a single folder is opened
+		 *  * the path of the workspace file as `Uri` otherwise. if the workspace
+		 * is untitled, the returned URI will use the `untitled:` scheme
+		 *
+		 * The location can e.g. be used with the `vscode.openFolder` command to
+		 * open the workspace again after it has been closed.
+		 *
+		 * **Example:**
+		 * ```typescript
+		 * vscode.commands.executeCommand('vscode.openFolder', uriOfWorkspace);
+		 * ```
+		 *
+		 * **Note:** it is not advised to use `workspace.workspaceFile` to write
+		 * configuration data into the file. You can use `workspace.getConfiguration().update()`
+		 * for that purpose which will work both when a single folder is opened as
+		 * well as an untitled or saved workspace.
+		 */
+		export const workspaceFile: Uri | undefined;
+	}
+
+	//#endregion
+
 }

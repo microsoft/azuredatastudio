@@ -3,9 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Observable } from 'rxjs/Observable';
-import { Observer } from 'rxjs/Observer';
-
 import { Event, Emitter } from 'vs/base/common/event';
 import * as types from 'vs/base/common/types';
 import { compare as stringCompare } from 'vs/base/common/strings';
@@ -50,7 +47,6 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 	//Used when filtering is enabled, _allData holds the complete set of data.
 	private _allData: Array<T>;
 	private _findArray: Array<IFindPosition>;
-	private _findObs: Observable<IFindPosition> | undefined;
 	private _findIndex: number;
 	private _filterEnabled: boolean;
 
@@ -78,6 +74,7 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 			this._data = new Array<T>();
 		}
 
+		// @todo @anthonydresser 5/1/19 theres a lot we could do by just accepting a regex as a exp rather than accepting a full find function
 		this._sortFn = _sortFn ? _sortFn : defaultSort;
 
 		this._filterFn = _filterFn ? _filterFn : (dataToFilter) => dataToFilter;
@@ -155,7 +152,7 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 		this._onRowCountChange.fire(this.getLength());
 	}
 
-	find(exp: string, maxMatches: number = 0): Thenable<IFindPosition> {
+	find(exp: string, maxMatches?: number): Promise<IFindPosition> {
 		if (!this._findFn) {
 			return Promise.reject(new Error('no find function provided'));
 		}
@@ -163,35 +160,45 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 		this._findIndex = 0;
 		this._onFindCountChange.fire(this._findArray.length);
 		if (exp) {
-			this._findObs = Observable.create((observer: Observer<IFindPosition>) => {
-				for (let i = 0; i < this._data.length; i++) {
-					let item = this._data[i];
-					let result = this._findFn!(item, exp);
-					if (result) {
-						result.forEach(pos => {
-							let index = { col: pos, row: i };
-							this._findArray.push(index);
-							observer.next(index);
-							this._onFindCountChange.fire(this._findArray.length);
-						});
-						if (maxMatches > 0 && this._findArray.length > maxMatches) {
-							break;
-						}
-					}
-				}
-			});
-			return this._findObs!.take(1).toPromise().then(() => {
-				return this._findArray[this._findIndex];
+			return new Promise<IFindPosition>((resolve) => {
+				const disp = this.onFindCountChange(e => {
+					resolve(this._findArray[e - 1]);
+					disp.dispose();
+				});
+				this._startSearch(exp, maxMatches);
 			});
 		} else {
 			return Promise.reject(new Error('no expression'));
 		}
 	}
 
+	private _startSearch(exp: string, maxMatches: number = 0): void {
+		for (let i = 0; i < this._data.length; i++) {
+			const item = this._data[i];
+			const result = this._findFn!(item, exp);
+			let breakout = false;
+			if (result) {
+				for (let j = 0; j < result.length; j++) {
+					const pos = result[j];
+					const index = { col: pos, row: i };
+					this._findArray.push(index);
+					this._onFindCountChange.fire(this._findArray.length);
+					if (maxMatches > 0 && this._findArray.length === maxMatches) {
+						breakout = true;
+						break;
+					}
+				}
+			}
+
+			if (breakout) {
+				break;
+			}
+		}
+	}
+
 	clearFind() {
 		this._findArray = new Array<IFindPosition>();
 		this._findIndex = 0;
-		this._findObs = undefined;
 		this._onFindCountChange.fire(this._findArray.length);
 	}
 
@@ -242,6 +249,5 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 		this._data = [];
 		this._allData = [];
 		this._findArray = [];
-		this._findObs = undefined;
 	}
 }

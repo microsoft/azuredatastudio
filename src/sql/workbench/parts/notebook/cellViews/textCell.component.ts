@@ -1,10 +1,12 @@
 /*---------------------------------------------------------------------------------------------
-*  Copyright (c) Microsoft Corporation. All rights reserved.
-*  Licensed under the Source EULA. See License.txt in the project root for license information.
-*--------------------------------------------------------------------------------------------*/
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./textCell';
+import 'vs/css!./media/markdown';
+import 'vs/css!./media/highlight';
 
-import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild, OnChanges, SimpleChange } from '@angular/core';
+import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild, OnChanges, SimpleChange, HostListener, AfterContentInit } from '@angular/core';
 import * as path from 'path';
 
 import { localize } from 'vs/nls';
@@ -16,6 +18,9 @@ import { Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import * as DOM from 'vs/base/browser/dom';
+import { onUnexpectedError } from 'vs/base/common/errors';
+import { IMouseEvent } from 'vs/base/browser/mouseEvent';
+import product from 'vs/platform/product/node/product';
 
 import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 import { CellView } from 'sql/workbench/parts/notebook/cellViews/interfaces';
@@ -25,13 +30,14 @@ import { NotebookModel } from 'sql/workbench/parts/notebook/models/notebookModel
 import { CellToggleMoreActions } from 'sql/workbench/parts/notebook/cellToggleMoreActions';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
-const USER_SELECT_CLASS ='actionselect';
+const USER_SELECT_CLASS = 'actionselect';
+const knownSchemes = new Set(['http', 'https', 'file', 'mailto', 'data', `${product.urlProtocol}`, 'azuredatastudio', 'azuredatastudio-insiders', 'vscode', 'vscode-insiders', 'vscode-resource']);
 
 @Component({
 	selector: TEXT_SELECTOR,
 	templateUrl: decodeURI(require.toUrl('./textCell.component.html'))
 })
-export class TextCellComponent extends CellView implements OnInit, OnChanges {
+export class TextCellComponent extends CellView implements OnInit, AfterContentInit, OnChanges {
 	@ViewChild('preview', { read: ElementRef }) private output: ElementRef;
 	@ViewChild('moreactions', { read: ElementRef }) private moreActionsElementRef: ElementRef;
 	@Input() cellModel: ICellModel;
@@ -52,7 +58,17 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		}
 	}
 
+	@HostListener('document:keydown.escape', ['$event'])
+	handleKeyboardEvent() {
+		if (this.isEditMode) {
+			this.toggleEditMode(false);
+		}
+		this.cellModel.active = false;
+		this._model.activeCell = undefined;
+	}
+
 	private _content: string;
+	private _lastTrustedMode: boolean;
 	private isEditMode: boolean;
 	private _sanitizer: ISanitizer;
 	private _model: NotebookModel;
@@ -109,6 +125,54 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		}));
 	}
 
+	ngAfterContentInit(): void {
+		if (this.output) {
+			let element: HTMLElement = this.output.nativeElement;
+			this._register(DOM.addStandardDisposableListener(element, 'click', event => {
+				// Note: this logic is taken from the VSCode handling of links in markdown
+				// Untrusted cells will not support commands or raw HTML tags
+				// Finally, we should consider supporting relative paths - created #5238 to track
+				let target: HTMLElement | null = event.target;
+				if (target.tagName !== 'A') {
+					target = target.parentElement;
+					if (!target || target.tagName !== 'A') {
+						return;
+					}
+				}
+				try {
+					const href = target['href'];
+					if (href) {
+						this.handleLink(href, event);
+					}
+				} catch (err) {
+					onUnexpectedError(err);
+				} finally {
+					event.preventDefault();
+				}
+			}));
+		}
+	}
+
+	private handleLink(content: string, event?: IMouseEvent): void {
+		let uri: URI | undefined;
+		try {
+			uri = URI.parse(content);
+		} catch {
+			// ignore
+		}
+		if (uri && this.openerService && this.isSupportedLink(uri)) {
+			this.openerService.open(uri).catch(onUnexpectedError);
+		}
+	}
+
+	private isSupportedLink(link: URI): boolean {
+		if (knownSchemes.has(link.scheme)) {
+			return true;
+		}
+		return !!this.model.trustedMode && link.scheme === 'command';
+	}
+
+
 	ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
 		for (let propName in changes) {
 			if (propName === 'activeCellId') {
@@ -131,15 +195,19 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	 * Sanitizes the data to be shown in markdown cell
 	 */
 	private updatePreview() {
-		if (this._content !== this.cellModel.source || this.cellModel.source.length === 0) {
+		let trustedChanged = this.cellModel && this._lastTrustedMode !== this.cellModel.trustedMode;
+		let contentChanged = this._content !== this.cellModel.source || this.cellModel.source.length === 0;
+		if (trustedChanged || contentChanged) {
+			this._lastTrustedMode = this.cellModel.trustedMode;
 			if (!this.cellModel.source && !this.isEditMode) {
 				this._content = localize('doubleClickEdit', 'Double-click to edit');
 			} else {
-				this._content = this.sanitizeContent(this.cellModel.source);
+				this._content = this.cellModel.source;
 			}
 
 			this._commandService.executeCommand<string>('notebook.showPreview', this.cellModel.notebookModel.notebookUri, this._content).then((htmlcontent) => {
 				htmlcontent = this.convertVscodeResourceToFileInSubDirectories(htmlcontent);
+				htmlcontent = this.sanitizeContent(htmlcontent);
 				let outputElement = <HTMLElement>this.output.nativeElement;
 				outputElement.innerHTML = htmlcontent;
 			});
@@ -153,7 +221,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		}
 		return content;
 	}
-
 	// Only replace vscode-resource with file when in the same (or a sub) directory
 	// This matches Jupyter Notebook viewer behavior
 	private convertVscodeResourceToFileInSubDirectories(htmlContent: string): string {
@@ -165,7 +232,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			// If the asset is in the same folder or a subfolder, replace 'vscode-resource:' with 'file:', so the image is visible
 			if (!path.relative(path.dirname(this.cellModel.notebookModel.notebookUri.fsPath), filePath).includes('..')) {
 				// ok to change from vscode-resource: to file:
-				htmlContent = htmlContent.replace('vscode-resource:'+ filePath, 'file:' + filePath);
+				htmlContent = htmlContent.replace('vscode-resource:' + filePath, 'file:' + filePath);
 			}
 			htmlContentCopy = htmlContentCopy.slice(pathEndIndex);
 		}
@@ -190,7 +257,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	public toggleEditMode(editMode?: boolean): void {
-		this.isEditMode = editMode !== undefined? editMode : !this.isEditMode;
+		this.isEditMode = editMode !== undefined ? editMode : !this.isEditMode;
 		this.updateMoreActions();
 		this.updatePreview();
 		this._changeRef.detectChanges();

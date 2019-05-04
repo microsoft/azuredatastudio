@@ -3,14 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
 import * as constants from '../constants';
-import { IFileSource, IHdfsOptions, IRequestParams, FileSourceFactory } from './fileSources';
+import { IFileSource, IHdfsOptions, FileSourceFactory } from './fileSources';
 
 export class SqlClusterConnection {
 	private _connection: azdata.connection.Connection;
@@ -69,8 +67,8 @@ export class SqlClusterConnection {
 		return FileSourceFactory.instance.createHdfsFileSource(options);
 	}
 
-	public updatePassword(password : string): void{
-		if(password){
+	public updatePassword(password: string): void {
+		if (password) {
 			this._password = password;
 		}
 	}

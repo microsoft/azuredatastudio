@@ -1,6 +1,6 @@
 {
   "name": "azuredatastudio",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "distro": "8c3e97e3425cc9814496472ab73e076de2ba99ee",
   "author": {
     "name": "Microsoft Corporation"
@@ -50,7 +50,7 @@
     "http-proxy-agent": "^2.1.0",
     "https-proxy-agent": "^2.2.1",
     "iconv-lite": "0.4.23",
-    "jquery": "3.1.0",
+    "jquery": "3.4.0",
     "jschardet": "1.6.0",
     "keytar": "4.2.1",
     "minimist": "1.2.0",
@@ -158,7 +158,7 @@
     "tslint": "^5.11.0",
     "tslint-microsoft-contrib": "^6.0.0",
     "typemoq": "^0.3.2",
-    "typescript": "3.4.1",
+    "typescript": "3.4.5",
     "typescript-formatter": "7.1.0",
     "typescript-tslint-plugin": "^0.0.7",
     "uglify-es": "^3.0.18",

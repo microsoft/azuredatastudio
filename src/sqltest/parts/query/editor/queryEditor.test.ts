@@ -12,13 +12,13 @@ import * as DOM from 'vs/base/browser/dom';
 import { Memento } from 'vs/workbench/common/memento';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 
-import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
-import { QueryEditor } from 'sql/parts/query/editor/queryEditor';
+import { QueryResultsInput } from 'sql/workbench/parts/query/common/queryResultsInput';
+import { QueryEditor } from 'sql/workbench/parts/query/browser/queryEditor';
 import { QueryModelService } from 'sql/platform/query/common/queryModelService';
-import { QueryInput } from 'sql/parts/query/common/queryInput';
+import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
 import { INewConnectionParams, ConnectionType, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionManagementService } from 'sql/platform/connection/common/connectionManagementService';
-import { RunQueryAction, ListDatabasesActionItem } from 'sql/parts/query/execution/queryActions';
+import { RunQueryAction, ListDatabasesActionItem } from 'sql/workbench/parts/query/browser/queryActions';
 import { EditorDescriptorService } from 'sql/workbench/services/queryEditor/common/editorDescriptorService';
 
 import { TestThemeService } from 'sqltest/stubs/themeTestService';
@@ -81,7 +81,7 @@ suite('SQL QueryEditor Tests', () => {
 		instantiationService.setup(x => x.createInstance(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((classDef, editor, action) => {
 			if (classDef.ID) {
 				if (classDef.ID === 'listDatabaseQueryActionItem') {
-					return new ListDatabasesActionItem(editor, connectionManagementService.object, undefined, undefined, configurationService.object, undefined);
+					return new ListDatabasesActionItem(editor, connectionManagementService.object, undefined, undefined, configurationService.object);
 				}
 			}
 			// Default
@@ -317,7 +317,7 @@ suite('SQL QueryEditor Tests', () => {
 			queryActionInstantiationService.setup(x => x.createInstance(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()))
 				.returns((definition, editor, action, selectBox) => {
 					if (definition.ID === 'listDatabaseQueryActionItem') {
-						let item = new ListDatabasesActionItem(editor, queryConnectionService.object, undefined, undefined, configurationService.object, undefined);
+						let item = new ListDatabasesActionItem(editor, queryConnectionService.object, undefined, undefined, configurationService.object);
 						return item;
 					}
 					// Default

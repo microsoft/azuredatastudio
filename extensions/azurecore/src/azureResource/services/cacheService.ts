@@ -17,10 +17,10 @@ export class AzureResourceCacheService implements IAzureResourceCacheService {
 	}
 
 	public generateKey(id: string): string {
-        return `${AzureResourceCacheService.cacheKeyPrefix}.${id}`;
-    }
+		return `${AzureResourceCacheService.cacheKeyPrefix}.${id}`;
+	}
 
-    public get<T>(key: string): T | undefined {
+	public get<T>(key: string): T | undefined {
 		return this._context.workspaceState.get(key);
 	}
 

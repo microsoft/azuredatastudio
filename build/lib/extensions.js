@@ -253,7 +253,9 @@ const sqlBuiltInExtensions = [
     'profiler',
     'admin-pack',
     'big-data-cluster',
-    'dacpac'
+    'dacpac',
+    'schema-compare',
+    'cms'
 ];
 const builtInExtensions = require('../builtInExtensions.json');
 /**

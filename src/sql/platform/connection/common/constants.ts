@@ -3,22 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { localize } from 'vs/nls';
+
 // constants
 export const sqlConfigSectionName = 'sql';
 export const outputChannelName = 'MSSQL';
 
-export const connectionsArrayName = 'datasource.connections';
-export const connectionGroupsArrayName = 'datasource.connectionGroups';
-
-/**Unsaved connections Id */
-export const unsavedGroupId = 'unsaved';
-
 /* Memento constants */
-export const activeConnections = 'ACTIVE_CONNECTIONS';
-export const recentConnections = 'RECENT_CONNECTIONS';
 export const capabilitiesOptions = 'OPTIONS_METADATA';
-
-export const configMaxRecentConnections = 'maxRecentConnections';
 
 export const mssqlProviderName = 'MSSQL';
 export const anyProviderName = '*';
@@ -34,3 +26,9 @@ export const passwordChars = '***************';
 export const sqlLogin = 'SqlLogin';
 export const integrated = 'Integrated';
 export const azureMFA = 'AzureMFA';
+
+/* CMS constants */
+export const cmsProviderName = 'MSSQL-CMS';
+export const cmsProviderDisplayName = localize('constants.cmsProviderDisplayName', 'Microsoft SQL Server - CMS');
+
+export const UNSAVED_GROUP_ID = 'unsaved';

@@ -30,7 +30,8 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { viewColumnToEditorGroup } from 'vs/workbench/api/common/shared/editor';
-import { notebookModeId } from 'sql/parts/common/customInputConverter';
+import { notebookModeId } from 'sql/workbench/common/customInputConverter';
+import { localize } from 'vs/nls';
 
 class MainThreadNotebookEditor extends Disposable {
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
@@ -360,12 +361,9 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		} else {
 			// Use the active cell in this case, or 1st cell if there's none active
 			cell = editor.model.activeCell;
-			if (!cell) {
-				cell = editor.cells.find(c => c.cellType === CellTypes.Code);
-			}
 		}
-		if (!cell) {
-			return Promise.reject(disposed(`Could not find cell for this Notebook`));
+		if (!cell || (cell && cell.cellType !== CellTypes.Code)) {
+			return Promise.reject(new Error(localize('runActiveCell', "F5 shortcut key requires a code cell to be selected. Please select a code cell to run.")));
 		}
 
 		return editor.runCell(cell);

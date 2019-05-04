@@ -2585,7 +2585,9 @@ export const EDITOR_FONT_DEFAULTS = {
 	),
 	fontWeight: 'normal',
 	fontSize: (
-		platform.isMacintosh ? 12 : 14
+		// {{SQL CARBON EDIT}} - change default font size
+		//platform.isMacintosh ? 12 : 14
+		12
 	),
 	lineHeight: 0,
 	letterSpacing: 0,

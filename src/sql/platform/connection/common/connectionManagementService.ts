@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
@@ -17,7 +16,6 @@ import { ConnectionManagementInfo } from 'sql/platform/connection/common/connect
 import * as Utils from 'sql/platform/connection/common/utils';
 import * as Constants from 'sql/platform/connection/common/constants';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { ICredentialsService } from 'sql/platform/credentials/common/credentialsService';
 import * as ConnectionContracts from 'sql/workbench/parts/connection/common/connection';
 import { ConnectionStatusManager } from 'sql/platform/connection/common/connectionStatusManager';
 import { DashboardInput } from 'sql/workbench/parts/dashboard/dashboardInput';
@@ -28,7 +26,7 @@ import * as TelemetryUtils from 'sql/platform/telemetry/telemetryUtilities';
 import { warn } from 'sql/base/common/log';
 import { IResourceProviderService } from 'sql/workbench/services/resourceProvider/common/resourceProviderService';
 import { IAngularEventingService, AngularEventType } from 'sql/platform/angularEventing/common/angularEventingService';
-import * as QueryConstants from 'sql/parts/query/common/constants';
+import * as QueryConstants from 'sql/workbench/parts/query/common/constants';
 import { Deferred } from 'sql/base/common/promise';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { values, entries } from 'sql/base/common/objects';
@@ -44,9 +42,7 @@ import { Disposable } from 'vs/base/common/lifecycle';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorService, ACTIVE_GROUP } from 'vs/workbench/services/editor/common/editorService';
 import * as platform from 'vs/platform/registry/common/platform';
-import { Memento } from 'vs/workbench/common/memento';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { Event, Emitter } from 'vs/base/common/event';
 import { EditorPart } from 'vs/workbench/browser/parts/editor/editorPart';
@@ -77,16 +73,13 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	private _connectionGlobalStatus = new ConnectionGlobalStatus(this._statusBarService);
 
 	constructor(
-		private _connectionMemento: Memento,
 		private _connectionStore: ConnectionStore,
-		@IStorageService _storageService: IStorageService,
 		@IConnectionDialogService private _connectionDialogService: IConnectionDialogService,
 		@IServerGroupController private _serverGroupController: IServerGroupController,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IEditorService private _editorService: IEditorService,
 		@ITelemetryService private _telemetryService: ITelemetryService,
 		@IConfigurationService private _configurationService: IConfigurationService,
-		@ICredentialsService private _credentialsService: ICredentialsService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@IQuickInputService private _quickInputService: IQuickInputService,
 		@IEditorGroupsService private _editorGroupService: IEditorGroupsService,
@@ -97,13 +90,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	) {
 		super();
 
-		// _connectionMemento and _connectionStore are in constructor to enable this class to be more testable
-		if (!this._connectionMemento) {
-			this._connectionMemento = new Memento('ConnectionManagement', _storageService);
-		}
 		if (!this._connectionStore) {
-			this._connectionStore = new ConnectionStore(this._connectionMemento,
-				this._configurationService, this._credentialsService, this._capabilitiesService);
+			this._connectionStore = _instantiationService.createInstance(ConnectionStore);
 		}
 
 		// Register Statusbar item
@@ -135,7 +123,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		this.onConnectionChanged(() => this.refreshEditorTitles());
 		this.onConnect(() => this.refreshEditorTitles());
 		this.onDisconnect(() => this.refreshEditorTitles());
-		_storageService.onWillSaveState(() => this.shutdown());
 	}
 
 	public providerRegistered(providerId: string): boolean {
@@ -624,11 +611,11 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	public clearRecentConnection(connectionProfile: IConnectionProfile): void {
-		this._connectionStore.removeConnectionToMemento(connectionProfile, Constants.recentConnections);
+		this._connectionStore.removeRecentConnection(connectionProfile);
 	}
 
 	public getActiveConnections(providers?: string[]): ConnectionProfile[] {
-		return this._connectionStatusManager.getActiveConnectionProfiles();
+		return this._connectionStatusManager.getActiveConnectionProfiles(providers);
 	}
 
 	public getConnectionUriFromId(connectionId: string): string {
@@ -703,8 +690,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	/**
 	 * Returns a formatted URI in case the database field is empty for the original
 	 * URI, which happens when the connected database is master or the default database
-	 * @param uri
-	 * @param connectionProfile
 	 */
 	public getFormattedUri(uri: string, connectionProfile: IConnectionProfile): string {
 		if (this._connectionStatusManager.isDefaultTypeUri(uri)) {
@@ -718,11 +703,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * Sends a notification that the language flavor for a given URI has changed.
 	 * For SQL, this would be the specific SQL implementation being used.
 	 *
-	 * @param {string} uri the URI of the resource whose language has changed
-	 * @param {string} language the base language
-	 * @param {string} flavor the specific language flavor that's been set
+	 * @param uri the URI of the resource whose language has changed
+	 * @param language the base language
+	 * @param flavor the specific language flavor that's been set
 	 * @throws {Error} if the provider is not in the list of registered providers
-	 * @memberof ConnectionManagementService
 	 */
 	public doChangeLanguageFlavor(uri: string, language: string, provider: string): void {
 		if (this._providers.has(provider)) {
@@ -738,8 +722,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 	/**
 	 * Ensures that a default language flavor is set for a URI, if none has already been defined.
-	 * @param {string} uri document identifier
-	 * @memberof ConnectionManagementService
+	 * @param uri document identifier
 	 */
 	public ensureDefaultLanguageFlavor(uri: string): void {
 		if (!this.getProviderIdFromUri(uri)) {
@@ -861,8 +844,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * Add a connection to the active connections list.
 	 */
 	private tryAddActiveConnection(connectionManagementInfo: ConnectionManagementInfo, newConnection: IConnectionProfile, addToMru: boolean): void {
-		if (newConnection) {
-			this._connectionStore.addActiveConnection(newConnection, addToMru)
+		if (newConnection && addToMru) {
+			this._connectionStore.addRecentConnection(newConnection)
 				.then(() => {
 					connectionManagementInfo.connectHandler(true);
 				}, err => {
@@ -930,11 +913,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	public onIntelliSenseCacheComplete(handle: number, connectionUri: string): void {
 	}
 
-	private shutdown(): void {
-		this._connectionStore.clearActiveConnections();
-		this._connectionMemento.saveMemento();
-	}
-
 	public changeGroupIdForConnectionGroup(source: ConnectionProfileGroup, target: ConnectionProfileGroup): Promise<void> {
 		TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.MoveServerConnection);
 		return this._connectionStore.changeGroupIdForConnectionGroup(source, target);
@@ -973,7 +951,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return new Promise<boolean>((resolve, reject) => {
 			// If the URI is connected, disconnect it and the editor
 			if (self.isConnected(owner.uri)) {
-				var connection = self.getConnectionProfile(owner.uri);
+				let connection = self.getConnectionProfile(owner.uri);
 				owner.onDisconnect();
 				resolve(self.doDisconnect(owner.uri, connection));
 
@@ -1096,7 +1074,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			this.doDisconnect(uri, profile).then(result => {
 				if (result) {
 					this.addTelemetryForConnectionDisconnected(input);
-					this._connectionStore.removeActiveConnection(input);
 					this._connectionStatusManager.removeConnection(uri);
 					resolve();
 				} else {

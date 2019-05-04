@@ -3,17 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as azdata from 'azdata';
 import { Mock, It, Times } from 'typemoq';
 import { MainThreadBackgroundTaskManagement, TaskStatus } from 'sql/workbench/api/node/mainThreadBackgroundTaskManagement';
 import { ExtHostBackgroundTaskManagementShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
-import { ITaskService } from 'sql/platform/taskHistory/common/taskService';
+import { ITaskService } from 'sql/platform/tasks/common/tasksService';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
-import { TaskNode } from 'sql/parts/taskHistory/common/taskNode';
+import { TaskNode } from 'sql/platform/tasks/common/tasksNode';
 import { Emitter } from 'vs/base/common/event';
-
 
 suite('MainThreadBackgroundTaskManagement Tests', () => {
 	let mainThreadBackgroundTaskManagement: MainThreadBackgroundTaskManagement;

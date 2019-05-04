@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import {
@@ -20,12 +19,13 @@ import { IAdminService } from 'sql/workbench/services/admin/common/adminService'
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
 import { IBackupService } from 'sql/platform/backup/common/backupService';
 import { IRestoreService } from 'sql/platform/restore/common/restoreService';
-import { ITaskService } from 'sql/platform/taskHistory/common/taskService';
+import { ITaskService } from 'sql/platform/tasks/common/tasksService';
 import { IProfilerService } from 'sql/workbench/services/profiler/common/interfaces';
 import { ISerializationService } from 'sql/platform/serialization/common/serializationService';
 import { IFileBrowserService } from 'sql/platform/fileBrowser/common/interfaces';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { IDacFxService } from 'sql/platform/dacfx/common/dacFxService';
+import { ISchemaCompareService } from 'sql/platform/schemaCompare/common/schemaCompareService';
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 
 /**
@@ -57,6 +57,7 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 		@ISerializationService private _serializationService: ISerializationService,
 		@IFileBrowserService private _fileBrowserService: IFileBrowserService,
 		@IDacFxService private _dacFxService: IDacFxService,
+		@ISchemaCompareService private _schemaCompareService: ISchemaCompareService,
 	) {
 		if (extHostContext) {
 			this._proxy = extHostContext.getProxy(SqlExtHostContext.ExtHostDataProtocol);
@@ -253,7 +254,7 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 
 	public $registerObjectExplorerNodeProvider(providerId: string, supportedProviderId: string, group: string, handle: number): Promise<any> {
 		const self = this;
-		this._objectExplorerService.registerNodeProvider(<azdata.ObjectExplorerNodeProvider> {
+		this._objectExplorerService.registerNodeProvider(<azdata.ObjectExplorerNodeProvider>{
 			supportedProviderId: supportedProviderId,
 			providerId: providerId,
 			group: group,
@@ -447,6 +448,29 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			},
 			generateDeployPlan(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.GenerateDeployPlanResult> {
 				return self._proxy.$generateDeployPlan(handle, packageFilePath, databaseName, ownerUri, taskExecutionMode);
+			}
+		});
+
+		return undefined;
+	}
+
+	public $registerSchemaCompareServicesProvider(providerId: string, handle: number): Promise<any> {
+		const self = this;
+		this._schemaCompareService.registerProvider(providerId, <azdata.SchemaCompareServicesProvider>{
+			schemaCompare(sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, schemaComapareOptions: azdata.DeploymentOptions): Thenable<azdata.SchemaCompareResult> {
+				return self._proxy.$schemaCompare(handle, sourceEndpointInfo, targetEndpointInfo, taskExecutionMode, schemaComapareOptions);
+			},
+			schemaCompareGenerateScript(operationId: string, targetDatabaseName: string, scriptFilePath: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
+				return self._proxy.$schemaCompareGenerateScript(handle, operationId, targetDatabaseName, scriptFilePath, taskExecutionMode);
+			},
+			schemaComparePublishChanges(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
+				return self._proxy.$schemaComparePublishChanges(handle, operationId, targetServerName, targetDatabaseName, taskExecutionMode);
+			},
+			schemaCompareGetDefaultOptions(): Thenable<azdata.SchemaCompareOptionsResult> {
+				return self._proxy.$schemaCompareGetDefaultOptions(handle);
+			},
+			schemaCompareIncludeExcludeNode(operationId: string, diffEntry: azdata.DiffEntry, includeRequest: boolean, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
+				return self._proxy.$schemaCompareIncludeExcludeNode(handle, operationId, diffEntry, includeRequest, taskExecutionMode);
 			}
 		});
 

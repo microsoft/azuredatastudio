@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as should from 'should';
 import * as TypeMoq from 'typemoq';
 import * as azdata from 'azdata';
@@ -59,7 +57,7 @@ const mockResourceRootNode: azureResource.IAzureResourceNode = {
 	}
 };
 
-const mockTokens = {};
+const mockTokens: { [key: string]: any } = {};
 mockTokens[mockTenantId] = {
 	token: 'mock_token',
 	tokenType: 'Bearer'
@@ -80,14 +78,14 @@ const mockDatabaseServers: AzureResourceDatabaseServer[] = [
 	}
 ];
 
-describe('AzureResourceDatabaseServerTreeDataProvider.info', function(): void {
+describe('AzureResourceDatabaseServerTreeDataProvider.info', function (): void {
 	beforeEach(() => {
 		mockDatabaseServerService = TypeMoq.Mock.ofType<IAzureResourceDatabaseServerService>();
 		mockApiWrapper = TypeMoq.Mock.ofType<ApiWrapper>();
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 	});
 
-	it('Should be correct when created.', async function(): Promise<void> {
+	it('Should be correct when created.', async function (): Promise<void> {
 		const treeDataProvider = new AzureResourceDatabaseServerTreeDataProvider(mockDatabaseServerService.object, mockApiWrapper.object, mockExtensionContext.object);
 
 		const treeItem = await treeDataProvider.getTreeItem(mockResourceRootNode);
@@ -98,7 +96,7 @@ describe('AzureResourceDatabaseServerTreeDataProvider.info', function(): void {
 	});
 });
 
-describe('AzureResourceDatabaseServerTreeDataProvider.getChildren', function(): void {
+describe('AzureResourceDatabaseServerTreeDataProvider.getChildren', function (): void {
 	beforeEach(() => {
 		mockDatabaseServerService = TypeMoq.Mock.ofType<IAzureResourceDatabaseServerService>();
 		mockApiWrapper = TypeMoq.Mock.ofType<ApiWrapper>();
@@ -109,7 +107,7 @@ describe('AzureResourceDatabaseServerTreeDataProvider.getChildren', function(): 
 		mockExtensionContext.setup((o) => o.asAbsolutePath(TypeMoq.It.isAnyString())).returns(() => TypeMoq.It.isAnyString());
 	});
 
-	it('Should return container node when element is undefined.', async function(): Promise<void> {
+	it('Should return container node when element is undefined.', async function (): Promise<void> {
 		const treeDataProvider = new AzureResourceDatabaseServerTreeDataProvider(mockDatabaseServerService.object, mockApiWrapper.object, mockExtensionContext.object);
 
 		const children = await treeDataProvider.getChildren();
@@ -127,7 +125,7 @@ describe('AzureResourceDatabaseServerTreeDataProvider.getChildren', function(): 
 		should(child.treeItem.contextValue).equal('azure.resource.itemType.databaseServerContainer');
 	});
 
-	it('Should return resource nodes when it is container node.', async function(): Promise<void> {
+	it('Should return resource nodes when it is container node.', async function (): Promise<void> {
 		const treeDataProvider = new AzureResourceDatabaseServerTreeDataProvider(mockDatabaseServerService.object, mockApiWrapper.object, mockExtensionContext.object);
 
 		const children = await treeDataProvider.getChildren(mockResourceRootNode);

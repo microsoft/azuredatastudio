@@ -86,7 +86,7 @@ export class AzureResourceSubscriptionTreeNode extends AzureResourceContainerTre
 	}
 
 	public get nodePathValue(): string {
-        return this._id;
+		return this._id;
 	}
 
 	private _id: string = undefined;

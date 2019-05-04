@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------------------------
-*  Copyright (c) Microsoft Corporation. All rights reserved.
-*  Licensed under the Source EULA. See License.txt in the project root for license information.
-*--------------------------------------------------------------------------------------------*/
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
 import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnDestroy } from '@angular/core';
 
@@ -41,6 +41,14 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { CellMagicMapper } from 'sql/workbench/parts/notebook/models/cellMagicMapper';
 import { IExtensionsViewlet, VIEWLET_ID } from 'vs/workbench/contrib/extensions/common/extensions';
 import { CellModel } from 'sql/workbench/parts/notebook/models/cell';
+import { ICommandService } from 'vs/platform/commands/common/commands';
+import { FileOperationError, FileOperationResult } from 'vs/platform/files/common/files';
+import { isValidBasename } from 'vs/base/common/extpath';
+import { basename } from 'vs/base/common/resources';
+import { createErrorWithActions, isErrorWithActions } from 'vs/base/common/errorsWithActions';
+import { toErrorMessage } from 'vs/base/common/errorMessage';
+import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
+
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 
@@ -84,7 +92,9 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		@Inject(IMenuService) private menuService: IMenuService,
 		@Inject(IKeybindingService) private keybindingService: IKeybindingService,
 		@Inject(IViewletService) private viewletService: IViewletService,
-		@Inject(ICapabilitiesService) private capabilitiesService: ICapabilitiesService
+		@Inject(ICapabilitiesService) private capabilitiesService: ICapabilitiesService,
+		@Inject(ICommandService) private commandService: ICommandService,
+		@Inject(ITextFileService) private textFileService: ITextFileService
 	) {
 		super();
 		this.updateProfile();
@@ -185,7 +195,9 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			cell.trustedMode = isTrusted;
 		});
 		//Updates dirty state
-		this._notebookParams.input && this._notebookParams.input.updateModel();
+		if (this._notebookParams.input) {
+			this._notebookParams.input.updateModel();
+		}
 		this.detectChanges();
 	}
 
@@ -222,15 +234,41 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		try {
 			await this.setNotebookManager();
 			await this.loadModel();
-			this.setLoading(false);
 			this._modelReadyDeferred.resolve(this._model);
-		} catch (error) {
-			this.setViewInErrorState(localize('displayFailed', 'Could not display contents: {0}', notebookUtils.getErrorMessage(error)));
-			this.setLoading(false);
-			this._modelReadyDeferred.reject(error);
-		} finally {
-			// Always add the editor for now to close loop, even if loading contents failed
 			this.notebookService.addNotebookEditor(this);
+		} catch (error) {
+			if (error) {
+				// Offer to create a file from the error if we have a file not found and the name is valid
+				if ((<FileOperationError>error).fileOperationResult === FileOperationResult.FILE_NOT_FOUND && isValidBasename(basename(this.notebookParams.notebookUri))) {
+					let errorWithAction = createErrorWithActions(toErrorMessage(error), {
+						actions: [
+							new Action('workbench.files.action.createMissingFile', localize('createFile', "Create File"), undefined, true, () => {
+								return this.textFileService.create(this.notebookParams.notebookUri).then(() => this.editorService.openEditor({
+									resource: this.notebookParams.notebookUri,
+									options: {
+										pinned: true // new file gets pinned by default
+									}
+								}));
+							})
+						]
+					});
+					this.notificationService.error(errorWithAction);
+
+					let editors = this.editorService.visibleControls;
+					for (let editor of editors) {
+						if (editor && editor.input.getResource() === this._notebookParams.input.notebookUri) {
+							await editor.group.closeEditor(this._notebookParams.input, { preserveFocus: true });
+							break;
+						}
+					}
+				} else {
+					this.setViewInErrorState(localize('displayFailed', 'Could not display contents: {0}', notebookUtils.getErrorMessage(error)));
+					this.setLoading(false);
+					this._modelReadyDeferred.reject(error);
+
+					this.notebookService.addNotebookEditor(this);
+				}
+			}
 		}
 	}
 
@@ -260,6 +298,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		model.contentChanged((change) => this.handleContentChanged(change));
 		model.onProviderIdChange((provider) => this.handleProviderIdChanged(provider));
 		this._model = this._register(model);
+		this.setLoading(false);
 		this.updateToolbarComponents(this._model.trustedMode);
 		this._modelRegisteredDeferred.resolve(this._model);
 		await model.startSession(this.model.notebookManager, undefined, true);
@@ -381,10 +420,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._actionBar = new Taskbar(taskbar, { actionItemProvider: action => this.actionItemProvider(action as Action) });
 		this._actionBar.context = this;
 		this._actionBar.setContent([
-			{ element: kernelContainer },
-			{ element: attachToContainer },
 			{ action: addCodeCellButton },
 			{ action: addTextCellButton },
+			{ element: kernelContainer },
+			{ element: attachToContainer },
 			{ action: this._trustedAction },
 			{ action: this._runAllCellsAction },
 			{ action: clearResultsButton }
@@ -478,6 +517,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		await this.modelReady;
 		let uriString = cell.cellUri.toString();
 		if (this._model.cells.findIndex(c => c.cellUri.toString() === uriString) > -1) {
+			this.selectCell(cell);
 			return cell.runCell(this.notificationService, this.connectionManagementService);
 		} else {
 			return Promise.reject(new Error(localize('cellNotFound', 'cell with URI {0} was not found in this model', uriString)));

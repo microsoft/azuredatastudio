@@ -13,6 +13,7 @@ import { URI } from 'vs/base/common/uri';
 import { generateUuid } from 'vs/base/common/uuid';
 import * as vscode from 'vscode';
 import { FileSystemProviderErrorCode, markAsFileSystemProviderError } from 'vs/platform/files/common/files';
+import { RemoteAuthorityResolverErrorCode } from 'vs/platform/remote/common/remoteAuthorityResolver';
 
 function es5ClassCompat(target: Function): any {
 	///@ts-ignore
@@ -442,6 +443,35 @@ export class ResolvedAuthority {
 		}
 		this.host = host;
 		this.port = Math.round(port);
+	}
+}
+
+export class RemoteAuthorityResolverError extends Error {
+
+	static NotAvailable(message?: string, handled?: boolean): RemoteAuthorityResolverError {
+		return new RemoteAuthorityResolverError(message, RemoteAuthorityResolverErrorCode.NotAvailable, handled);
+	}
+
+	static TemporarilyNotAvailable(message?: string): RemoteAuthorityResolverError {
+		return new RemoteAuthorityResolverError(message, RemoteAuthorityResolverErrorCode.TemporarilyNotAvailable);
+	}
+
+	public readonly _message: string | undefined;
+	public readonly _code: RemoteAuthorityResolverErrorCode;
+	public readonly _detail: any;
+
+	constructor(message?: string, code: RemoteAuthorityResolverErrorCode = RemoteAuthorityResolverErrorCode.Unknown, detail?: any) {
+		super(message);
+
+		this._message = message;
+		this._code = code;
+		this._detail = detail;
+
+		// workaround when extending builtin objects and when compiling to ES5, see:
+		// https://github.com/Microsoft/TypeScript-wiki/blob/master/Breaking-Changes.md#extending-built-ins-like-error-array-and-map-may-no-longer-work
+		if (typeof (<any>Object).setPrototypeOf === 'function') {
+			(<any>Object).setPrototypeOf(this, RemoteAuthorityResolverError.prototype);
+		}
 	}
 }
 
@@ -2257,6 +2287,61 @@ export enum FoldingRangeKind {
 
 //#endregion
 
+//#region Comment
+@es5ClassCompat
+export class Comment {
+	id: string;
+	body: MarkdownString;
+	userName: string;
+	label?: string;
+	userIconPath?: URI;
+	selectCommand?: vscode.Command;
+	editCommand?: vscode.Command;
+	deleteCommand?: vscode.Command;
+
+	/**
+	 * The id of the comment
+	 *
+	 * @deprecated Use Id instead
+	 */
+	commentId: string;
+
+	/**
+	 * @deprecated Use userIconPath instead. The avatar src of the user who created the comment
+	 */
+	gravatar?: string;
+
+	/**
+	 * @deprecated, use editCommand
+	 */
+	canEdit?: boolean;
+
+	/**
+	 * @deprecated, use deleteCommand
+	 */
+	canDelete?: boolean;
+
+	/**
+	 * @deprecated
+	 */
+	command?: vscode.Command;
+
+	/**
+	 * @deprecated
+	 */
+	isDraft?: boolean;
+
+	/**
+	 * Proposed Comment Reaction
+	 */
+	commentReactions?: vscode.CommentReaction[];
+
+	constructor(id: string, body: MarkdownString, userName: string) {
+		this.id = id;
+		this.body = body;
+		this.userName = userName;
+	}
+}
 
 export enum CommentThreadCollapsibleState {
 	/**
@@ -2268,6 +2353,7 @@ export enum CommentThreadCollapsibleState {
 	 */
 	Expanded = 1
 }
+//#endregion
 
 @es5ClassCompat
 export class QuickInputButtons {

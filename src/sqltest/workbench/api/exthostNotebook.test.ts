@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
@@ -24,7 +23,7 @@ suite('ExtHostNotebook Tests', () => {
 	let notebookUri: URI;
 	let notebookProviderMock: TypeMoq.Mock<NotebookProviderStub>;
 	setup(() => {
-		mockProxy = TypeMoq.Mock.ofInstance(<MainThreadNotebookShape> {
+		mockProxy = TypeMoq.Mock.ofInstance(<MainThreadNotebookShape>{
 			$registerNotebookProvider: (providerId, handle) => undefined,
 			$unregisterNotebookProvider: (handle) => undefined,
 			dispose: () => undefined
@@ -106,23 +105,23 @@ suite('ExtHostNotebook Tests', () => {
 			extHostNotebook.registerNotebookProvider(notebookProviderMock.object);
 			mockProxy.verify(p =>
 				p.$registerNotebookProvider(TypeMoq.It.isValue(notebookProviderMock.object.providerId),
-				TypeMoq.It.isAnyNumber()), TypeMoq.Times.once());
-				// It shouldn't unregister until requested
-				mockProxy.verify(p => p.$unregisterNotebookProvider(TypeMoq.It.isValue(savedHandle)), TypeMoq.Times.never());
+					TypeMoq.It.isAnyNumber()), TypeMoq.Times.once());
+			// It shouldn't unregister until requested
+			mockProxy.verify(p => p.$unregisterNotebookProvider(TypeMoq.It.isValue(savedHandle)), TypeMoq.Times.never());
 
 		});
 
-		test('Should call unregister on disposing', () => {
+		test('Should not call unregister on disposing', () => {
 			let disposable = extHostNotebook.registerNotebookProvider(notebookProviderMock.object);
 			disposable.dispose();
-			mockProxy.verify(p => p.$unregisterNotebookProvider(TypeMoq.It.isValue(savedHandle)), TypeMoq.Times.once());
+			mockProxy.verify(p => p.$unregisterNotebookProvider(TypeMoq.It.isValue(savedHandle)), TypeMoq.Times.never());
 		});
 	});
 });
 
 class NotebookProviderStub implements azdata.nb.NotebookProvider {
 	providerId: string = 'TestProvider';
-	standardKernels: azdata.nb.IStandardKernel[] = [{name: 'fakeKernel', displayName: 'fakeKernel', connectionProviderIds: ['MSSQL']}];
+	standardKernels: azdata.nb.IStandardKernel[] = [{ name: 'fakeKernel', displayName: 'fakeKernel', connectionProviderIds: ['MSSQL'] }];
 
 	getNotebookManager(notebookUri: vscode.Uri): Thenable<azdata.nb.NotebookManager> {
 		throw new Error('Method not implemented.');

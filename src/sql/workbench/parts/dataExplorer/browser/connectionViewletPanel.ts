@@ -18,11 +18,11 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { ViewletPanel, IViewletPanelOptions } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { IAction } from 'vs/base/common/actions';
-import { ServerTreeView } from 'sql/parts/objectExplorer/viewlet/serverTreeView';
+import { ServerTreeView } from 'sql/workbench/parts/objectExplorer/browser/serverTreeView';
 import {
 	ActiveConnectionsFilterAction,
 	AddServerAction, AddServerGroupAction
-} from 'sql/parts/objectExplorer/viewlet/connectionTreeAction';
+} from 'sql/workbench/parts/objectExplorer/browser/connectionTreeAction';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { IExtensionsWorkbenchService } from 'vs/workbench/contrib/extensions/common/extensions';
 
@@ -56,10 +56,12 @@ export class ConnectionViewletPanel extends ViewletPanel {
 		this._addServerGroupAction = this.instantiationService.createInstance(AddServerGroupAction,
 			AddServerGroupAction.ID,
 			AddServerGroupAction.LABEL);
-		this._serverTreeView = this.instantiationService.createInstance(ServerTreeView);
+		this._serverTreeView = this.objectExplorerService.getServerTreeView();
+		if (!this._serverTreeView) {
+			this._serverTreeView = this.instantiationService.createInstance(ServerTreeView);
+			this.objectExplorerService.registerServerTreeView(this._serverTreeView);
+		}
 		this._activeConnectionsFilterAction = this._serverTreeView.activeConnectionsFilterAction;
-
-		this.objectExplorerService.registerServerTreeView(this._serverTreeView);
 	}
 
 	protected renderHeader(container: HTMLElement): void {
@@ -127,9 +129,8 @@ export class ConnectionViewletPanel extends ViewletPanel {
 	}
 
 	dispose(): void {
-		this._serverTreeView.dispose();
-		super.dispose();
 		this.disposables = dispose(this.disposables);
+		super.dispose();
 	}
 
 	focus(): void {

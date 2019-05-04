@@ -1,8 +1,6 @@
 // This code is originally from https://github.com/harrisiirak/webhdfs
 // License: https://github.com/harrisiirak/webhdfs/blob/master/LICENSE
 
-'use strict';
-
 import * as url from 'url';
 import * as fs from 'fs';
 import * as querystring from 'querystring';
@@ -53,10 +51,8 @@ export class WebHDFS {
 	/**
 	 * Generate WebHDFS REST API endpoint URL for given operation
 	 *
-	 * @param {string} operation WebHDFS operation name
-	 * @param {string} path
-	 * @param {object} params
-	 * @returns {string} WebHDFS REST API endpoint URL
+	 * @param operation WebHDFS operation name
+	 * @returns WebHDFS REST API endpoint URL
 	 */
 	private getOperationEndpoint(operation: string, path: string, params?: object): string {
 		let endpoint = this._url;
@@ -73,8 +69,8 @@ export class WebHDFS {
 	/**
 	 * Gets localized status message for given status code
 	 *
-	 * @param {number} statusCode Http status code
-	 * @returns {string} status message
+	 * @param statusCode Http status code
+	 * @returns status message
 	 */
 	private toStatusMessage(statusCode: number): string {
 		let statusMessage: string = undefined;
@@ -93,9 +89,9 @@ export class WebHDFS {
 	/**
 	 * Gets status message from response
 	 *
-	 * @param {request.Response} response response object
-	 * @param {boolean} strict If set true then RemoteException must be present in the body
-	 * @returns {string} Error message interpreted by status code
+	 * @param response response object
+	 * @param strict If set true then RemoteException must be present in the body
+	 * @returns Error message interpreted by status code
 	 */
 	private getStatusMessage(response: request.Response): string {
 		if (!response) { return undefined; }
@@ -107,8 +103,8 @@ export class WebHDFS {
 	/**
 	 * Gets remote exception message from response body
 	 *
-	 * @param {any} responseBody response body
-	 * @returns {string} Error message interpreted by status code
+	 * @param responseBody response body
+	 * @returns Error message interpreted by status code
 	 */
 	private getRemoteExceptionMessage(responseBody: any): string {
 		if (!responseBody) { return undefined; }
@@ -128,10 +124,10 @@ export class WebHDFS {
 	/**
 	 * Generates error message descriptive as much as possible
 	 *
-	 * @param {string} statusMessage status message
-	 * @param {string} [remoteExceptionMessage] remote exception message
-	 * @param {any} [error] error
-	 * @returns {string} error message
+	 * @param statusMessage status message
+	 * @param [remoteExceptionMessage] remote exception message
+	 * @param [error] error
+	 * @returns error message
 	 */
 	private getErrorMessage(statusMessage: string, remoteExceptionMessage?: string, error?: any): string {
 		statusMessage = statusMessage === '' ? undefined : statusMessage;
@@ -140,16 +136,16 @@ export class WebHDFS {
 		return statusMessage && remoteExceptionMessage ?
 			`${statusMessage} (${remoteExceptionMessage})` :
 			statusMessage || remoteExceptionMessage || messageFromError ||
-				localize('webhdfs.unknownError', 'Unknown Error');
+			localize('webhdfs.unknownError', 'Unknown Error');
 	}
 
 	/**
 	 * Parse error state from response and return valid Error object
 	 *
-	 * @param {request.Response} response response object
-	 * @param {any} [responseBody] response body
-	 * @param {any} [error] error
-	 * @returns {HdfsError} HdfsError object
+	 * @param response response object
+	 * @param [responseBody] response body
+	 * @param [error] error
+	 * @returns HdfsError object
 	 */
 	private parseError(response: request.Response, responseBody?: any, error?: any): HdfsError {
 		let statusMessage: string = this.getStatusMessage(response);
@@ -165,8 +161,8 @@ export class WebHDFS {
 	/**
 	 * Check if response is redirect
 	 *
-	 * @param {request.Response} response response object
-	 * @returns {boolean} if response is redirect
+	 * @param response response object
+	 * @returns if response is redirect
 	 */
 	private isRedirect(response: request.Response): boolean {
 		return [301, 307].indexOf(response.statusCode) !== -1 &&
@@ -176,8 +172,8 @@ export class WebHDFS {
 	/**
 	 * Check if response is successful
 	 *
-	 * @param {request.Response} response response object
-	 * @returns {boolean} if response is successful
+	 * @param response response object
+	 * @returns if response is successful
 	 */
 	private isSuccess(response: request.Response): boolean {
 		return [200, 201].indexOf(response.statusCode) !== -1;
@@ -186,8 +182,8 @@ export class WebHDFS {
 	/**
 	 * Check if response is error
 	 *
-	 * @param {request.Response} response response object
-	 * @returns {boolean} if response is error
+	 * @param response response object
+	 * @returns if response is error
 	 */
 	private isError(response: request.Response): boolean {
 		return [400, 401, 402, 403, 404, 500].indexOf(response.statusCode) !== -1;
@@ -196,10 +192,8 @@ export class WebHDFS {
 	/**
 	 * Send a request to WebHDFS REST API
 	 *
-	 * @param {string} method HTTP method
-	 * @param {string} url
-	 * @param {object} opts Options for request
-	 * @param {(error: HdfsError, response: request.Response) => void} callback
+	 * @param method HTTP method
+	 * @param opts Options for request
 	 * @returns void
 	 */
 	private sendRequest(method: string, url: string, opts: object,
@@ -234,10 +228,6 @@ export class WebHDFS {
 
 	/**
 	 * Change file permissions
-	 *
-	 * @param {string} path
-	 * @param {string} mode
-	 * @param {(error: HdfsError) => void} callback
 	 * @returns void
 	 */
 	public chmod(path: string, mode: string, callback: (error: HdfsError) => void): void {
@@ -253,10 +243,8 @@ export class WebHDFS {
 	/**
 	 * Change file owner
 	 *
-	 * @param {string} path
-	 * @param {string} userId User name
-	 * @param {string} groupId Group name
-	 * @param {(error: HdfsError) => void} callback
+	 * @param userId User name
+	 * @param groupId Group name
 	 * @returns void
 	 */
 	public chown(path: string, userId: string, groupId: string, callback: (error: HdfsError) => void): void {
@@ -279,8 +267,6 @@ export class WebHDFS {
 	/**
 	 * Read directory contents
 	 *
-	 * @param {string} path
-	 * @param {(error: HdfsError, files: any[]) => void)} callback
 	 * @returns void
 	 */
 	public readdir(path: string, callback: (error: HdfsError, files: any[]) => void): void {
@@ -305,10 +291,6 @@ export class WebHDFS {
 
 	/**
 	 * Make new directory
-	 *
-	 * @param {string} path
-	 * @param {string} [permission=0755]
-	 * @param {(error: HdfsError) => void} callback
 	 * @returns void
 	 */
 	public mkdir(path: string, permission: string = '0755', callback: (error: HdfsError) => void): void {
@@ -327,10 +309,6 @@ export class WebHDFS {
 
 	/**
 	 * Rename path
-	 *
-	 * @param {string} path
-	 * @param {string} destination
-	 * @param {(error: HdfsError) => void} callback
 	 * @returns void
 	 */
 	public rename(path: string, destination: string, callback: (error: HdfsError) => void): void {
@@ -350,9 +328,6 @@ export class WebHDFS {
 
 	/**
 	 * Get file status for given path
-	 *
-	 * @param {string} path
-	 * @param {(error: HdfsError, fileStatus: any) => void} callback
 	 * @returns void
 	 */
 	public stat(path: string, callback: (error: HdfsError, fileStatus: any) => void): void {
@@ -376,8 +351,6 @@ export class WebHDFS {
 	 * Wraps stat method
 	 *
 	 * @see WebHDFS.stat
-	 * @param {string} path
-	 * @param {(error: HdfsError, exists: boolean) => void} callback
 	 * @returns void
 	 */
 	public exists(path: string, callback: (error: HdfsError, exists: boolean) => void): void {
@@ -392,12 +365,7 @@ export class WebHDFS {
 	/**
 	 * Write data to the file
 	 *
-	 * @param {string} path
-	 * @param {string | Buffer} data
-	 * @param {boolean} append If set to true then append data to the file
-	 * @param {object} opts
-	 * @param {(error: HdfsError) => void} callback
-	 * @returns {fs.WriteStream}
+	 * @param append If set to true then append data to the file
 	 */
 	public writeFile(path: string, data: string | Buffer, append: boolean, opts: object,
 		callback: (error: HdfsError) => void): fs.WriteStream {
@@ -427,11 +395,6 @@ export class WebHDFS {
 	 * Append data to the file
 	 *
 	 * @see writeFile
-	 * @param {string} path
-	 * @param {string | Buffer} data
-	 * @param {object} opts
-	 * @param {(error: HdfsError) => void} callback
-	 * @returns {fs.WriteStream}
 	 */
 	public appendFile(path: string, data: string | Buffer, opts: object, callback: (error: HdfsError) => void): fs.WriteStream {
 		return this.writeFile(path, data, true, opts, callback);
@@ -442,8 +405,6 @@ export class WebHDFS {
 	 *
 	 * @fires Request#data
 	 * @fires WebHDFS#finish
-	 * @param {path} path
-	 * @param {(error: HdfsError, buffer: Buffer) => void} callback
 	 * @returns void
 	 */
 	public readFile(path: string, callback: (error: HdfsError, buffer: Buffer) => void): void {
@@ -475,10 +436,7 @@ export class WebHDFS {
 	 * Create writable stream for given path
 	 *
 	 * @fires WebHDFS#finish
-	 * @param {string} path
-	 * @param {boolean} [append] If set to true then append data to the file
-	 * @param {object} [opts]
-	 * @returns {fs.WriteStream}
+	 * @param [append] If set to true then append data to the file
 	 *
 	 * @example
 	 * let hdfs = WebHDFS.createClient();
@@ -593,9 +551,6 @@ export class WebHDFS {
 	 *
 	 * @fires Request#data
 	 * @fires WebHDFS#finish
-	 * @param {string} path
-	 * @param {object} [opts]
-	 * @returns {fs.ReadStream}
 	 *
 	 * @example
 	 * let hdfs = WebHDFS.createClient();
@@ -677,10 +632,6 @@ export class WebHDFS {
 	/**
 	 * Create symbolic link to the destination path
 	 *
-	 * @param {string} src
-	 * @param {string} destination
-	 * @param {boolean} [createParent=false]
-	 * @param {(error: HdfsError) => void} callback
 	 * @returns void
 	 */
 	public symlink(src: string, destination: string, createParent: boolean = false, callback: (error: HdfsError) => void): void {
@@ -702,9 +653,6 @@ export class WebHDFS {
 	/**
 	 * Unlink path
 	 *
-	 * @param {string} path
-	 * @param {boolean} [recursive=false]
-	 * @param {(error: any) => void} callback
 	 * @returns void
 	 */
 	public unlink(path: string, recursive: boolean = false, callback: (error: HdfsError) => void): void {
@@ -720,9 +668,6 @@ export class WebHDFS {
 
 	/**
 	 * @alias WebHDFS.unlink
-	 * @param {string} path
-	 * @param {boolean} [recursive=false]
-	 * @param {(error: any) => void} callback
 	 * @returns void
 	 */
 	public rmdir(path: string, recursive: boolean = false, callback: (error: HdfsError) => void): void {

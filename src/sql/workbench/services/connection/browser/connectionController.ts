@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IConnectionComponentCallbacks, IConnectionComponentController, IConnectionValidateResult } from 'sql/workbench/services/connection/browser/connectionDialogService';
 import { AdvancedPropertiesController } from 'sql/workbench/parts/connection/browser/advancedPropertiesController';
@@ -21,26 +19,26 @@ import { ConnectionWidget } from 'sql/workbench/services/connection/browser/conn
 export class ConnectionController implements IConnectionComponentController {
 	private _container: HTMLElement;
 	private _connectionManagementService: IConnectionManagementService;
-	private _callback: IConnectionComponentCallbacks;
-	private _connectionWidget: ConnectionWidget;
 	private _advancedController: AdvancedPropertiesController;
 	private _model: IConnectionProfile;
-	private _providerOptions: azdata.ConnectionOption[];
 	private _providerName: string;
+	protected _callback: IConnectionComponentCallbacks;
+	protected _connectionWidget: ConnectionWidget;
+	protected _providerOptions: azdata.ConnectionOption[];
 	/* key: uri, value : list of databases */
-	private _databaseCache = new Map<string, string[]>();
+	protected _databaseCache = new Map<string, string[]>();
 
 	constructor(container: HTMLElement,
 		connectionManagementService: IConnectionManagementService,
 		connectionProperties: ConnectionProviderProperties,
 		callback: IConnectionComponentCallbacks,
 		providerName: string,
-		@IInstantiationService private _instantiationService: IInstantiationService) {
+		@IInstantiationService protected _instantiationService: IInstantiationService) {
 		this._container = container;
 		this._connectionManagementService = connectionManagementService;
 		this._callback = callback;
 		this._providerOptions = connectionProperties.connectionOptions;
-		var specialOptions = this._providerOptions.filter(
+		let specialOptions = this._providerOptions.filter(
 			(property) => (property.specialValueType !== null && property.specialValueType !== undefined));
 		this._connectionWidget = this._instantiationService.createInstance(ConnectionWidget, specialOptions, {
 			onSetConnectButton: (enable: boolean) => this._callback.onSetConnectButton(enable),
@@ -55,7 +53,7 @@ export class ConnectionController implements IConnectionComponentController {
 		this._providerName = providerName;
 	}
 
-	private onFetchDatabases(serverName: string, authenticationType: string, userName?: string, password?: string): Promise<string[]> {
+	protected onFetchDatabases(serverName: string, authenticationType: string, userName?: string, password?: string): Promise<string[]> {
 		let tempProfile = this._model;
 		tempProfile.serverName = serverName;
 		tempProfile.authenticationType = authenticationType;
@@ -92,26 +90,26 @@ export class ConnectionController implements IConnectionComponentController {
 		});
 	}
 
-	private onCreateNewServerGroup(): void {
+	protected onCreateNewServerGroup(): void {
 		this._connectionManagementService.showCreateServerGroupDialog({
 			onAddGroup: (groupName) => this._connectionWidget.updateServerGroup(this.getAllServerGroups(), groupName),
 			onClose: () => this._connectionWidget.focusOnServerGroup()
 		});
 	}
 
-	private handleonSetAzureTimeOut(): void {
-		var timeoutPropertyName = 'connectTimeout';
-		var timeoutOption = this._model.options[timeoutPropertyName];
+	protected handleonSetAzureTimeOut(): void {
+		let timeoutPropertyName = 'connectTimeout';
+		let timeoutOption = this._model.options[timeoutPropertyName];
 		if (timeoutOption === undefined || timeoutOption === null) {
 			this._model.options[timeoutPropertyName] = 30;
 		}
 	}
 
-	private handleOnAdvancedProperties(): void {
+	protected handleOnAdvancedProperties(): void {
 		if (!this._advancedController) {
 			this._advancedController = this._instantiationService.createInstance(AdvancedPropertiesController, () => this._connectionWidget.focusOnAdvancedButton());
 		}
-		var advancedOption = this._providerOptions.filter(
+		let advancedOption = this._providerOptions.filter(
 			(property) => (property.specialValueType === undefined || property.specialValueType === null));
 		this._advancedController.showDialog(advancedOption, this._container, this._model.options);
 	}
@@ -133,8 +131,8 @@ export class ConnectionController implements IConnectionComponentController {
 	}
 
 	private getAllServerGroups(providers?: string[]): IConnectionProfileGroup[] {
-		var connectionGroupRoot = this._connectionManagementService.getConnectionGroups(providers);
-		var connectionGroupNames: IConnectionProfileGroup[] = [];
+		let connectionGroupRoot = this._connectionManagementService.getConnectionGroups(providers);
+		let connectionGroupNames: IConnectionProfileGroup[] = [];
 		if (connectionGroupRoot && connectionGroupRoot.length > 0) {
 			this.getServerGroupHelper(connectionGroupRoot[0], connectionGroupNames);
 		}

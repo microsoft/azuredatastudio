@@ -228,10 +228,8 @@ export class InsightsDialogView extends Modal {
 
 				this._bottomTableData.clear();
 				this._bottomTableData.push(resourceArray);
-				if (bottomTableView.isExpanded()) {
-					bottomTableView.setExpanded(false);
-					bottomTableView.setExpanded(true);
-				}
+				this._bottomTable.grid.invalidateAllRows();
+				this._bottomTable.grid.render();
 				this._enableTaskButtons(true);
 			} else {
 				this._enableTaskButtons(false);
@@ -403,7 +401,6 @@ export class InsightsDialogView extends Modal {
 
 	/**
 	 * Creates the context that should be passed to the action passed on the selected element for the top table
-	 * @param element
 	 */
 	private topInsightContext(element: ListResource): IConnectionProfile {
 		let database = this._insight.actions.database || this._connectionProfile.databaseName;
@@ -451,7 +448,6 @@ export class InsightsDialogView extends Modal {
 
 	/**
 	 * Creates the context that should be passed to the action passed on the selected element for the bottom table
-	 * @param element
 	 */
 	private bottomInsightContext(element: ListResource, cell: Slick.Cell): IInsightDialogActionContext {
 

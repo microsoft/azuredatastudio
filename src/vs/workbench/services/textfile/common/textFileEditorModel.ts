@@ -12,11 +12,11 @@ import { URI } from 'vs/base/common/uri';
 import { isUndefinedOrNull, withUndefinedAsNull } from 'vs/base/common/types';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
-import { ITextFileService, IAutoSaveConfiguration, ModelState, ITextFileEditorModel, ISaveOptions, ISaveErrorHandler, ISaveParticipant, StateChange, SaveReason, IRawTextContent, ILoadOptions, LoadReason, IResolvedTextFileEditorModel } from 'vs/workbench/services/textfile/common/textfiles';
+import { ITextFileService, IAutoSaveConfiguration, ModelState, ITextFileEditorModel, ISaveOptions, ISaveErrorHandler, ISaveParticipant, StateChange, SaveReason, ITextFileStreamContent, ILoadOptions, LoadReason, IResolvedTextFileEditorModel } from 'vs/workbench/services/textfile/common/textfiles';
 import { EncodingMode } from 'vs/workbench/common/editor';
 import { BaseTextEditorModel } from 'vs/workbench/common/editor/textEditorModel';
 import { IBackupFileService } from 'vs/workbench/services/backup/common/backup';
-import { IFileService, FileOperationError, FileOperationResult, CONTENT_CHANGE_EVENT_BUFFER_DELAY, FileChangesEvent, FileChangeType, IFileStatWithMetadata, etag } from 'vs/platform/files/common/files';
+import { IFileService, FileOperationError, FileOperationResult, CONTENT_CHANGE_EVENT_BUFFER_DELAY, FileChangesEvent, FileChangeType, IFileStatWithMetadata, ETAG_DISABLED } from 'vs/platform/files/common/files';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IModeService, ILanguageSelection } from 'vs/editor/common/services/modeService';
 import { IModelService } from 'vs/editor/common/services/modelService';
@@ -31,6 +31,7 @@ import { IDisposable, toDisposable } from 'vs/base/common/lifecycle';
 import { ILogService } from 'vs/platform/log/common/log';
 import { isEqual, isEqualOrParent, extname, basename } from 'vs/base/common/resources';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { Schemas } from 'vs/base/common/network';
 
 /**
  * The text file editor model listens to changes to its underlying code editor model and saves these changes through the file service back to the disk.
@@ -55,25 +56,34 @@ export class TextFileEditorModel extends BaseTextEditorModel implements ITextFil
 	get onDidStateChange(): Event<StateChange> { return this._onDidStateChange.event; }
 
 	private resource: URI;
+
 	private contentEncoding: string; 			// encoding as reported from disk
 	private preferredEncoding: string;			// encoding as chosen by the user
-	private dirty: boolean;
+
 	private versionId: number;
 	private bufferSavedVersionId: number;
-	private lastResolvedDiskStat: IFileStatWithMetadata;
 	private blockModelContentChange: boolean;
+
+	private createTextEditorModelPromise: Promise<TextFileEditorModel> | null;
+
+	private lastResolvedDiskStat: IFileStatWithMetadata;
+
 	private autoSaveAfterMillies?: number;
 	private autoSaveAfterMilliesEnabled: boolean;
 	private autoSaveDisposable?: IDisposable;
+
+	private saveSequentializer: SaveSequentializer;
+	private lastSaveAttemptTime: number;
+
 	private contentChangeEventScheduler: RunOnceScheduler;
 	private orphanedChangeEventScheduler: RunOnceScheduler;
-	private saveSequentializer: SaveSequentializer;
-	private disposed: boolean;
-	private lastSaveAttemptTime: number;
-	private createTextEditorModelPromise: Promise<TextFileEditorModel> | null;
+
+	private dirty: boolean;
 	private inConflictMode: boolean;
 	private inOrphanMode: boolean;
 	private inErrorMode: boolean;
+
+	private disposed: boolean;
 
 	constructor(
 		resource: URI,
@@ -266,14 +276,14 @@ export class TextFileEditorModel extends BaseTextEditorModel implements ITextFil
 
 		// If we have a backup, continue loading with it
 		if (!!backup) {
-			const content: IRawTextContent = {
+			const content: ITextFileStreamContent = {
 				resource: this.resource,
 				name: basename(this.resource),
 				mtime: Date.now(),
 				size: 0,
-				etag: etag(Date.now(), 0),
-				value: createTextBufferFactory(''), /* will be filled later from backup */
-				encoding: this.fileService.encoding.getWriteEncoding(this.resource, this.preferredEncoding).encoding,
+				etag: ETAG_DISABLED, // always allow to save content restored from a backup (see https://github.com/Microsoft/vscode/issues/72343)
+				value: createTextBufferFactory(''), // will be filled later from backup
+				encoding: this.textFileService.encoding.getPreferredWriteEncoding(this.resource, this.preferredEncoding).encoding,
 				isReadonly: false
 			};
 
@@ -291,7 +301,7 @@ export class TextFileEditorModel extends BaseTextEditorModel implements ITextFil
 		// Decide on etag
 		let etag: string | undefined;
 		if (forceReadFromDisk) {
-			etag = undefined; // reset ETag if we enforce to read from disk
+			etag = ETAG_DISABLED; // disable ETag if we enforce to read from disk
 		} else if (this.lastResolvedDiskStat) {
 			etag = this.lastResolvedDiskStat.etag; // otherwise respect etag to support caching
 		}
@@ -306,7 +316,7 @@ export class TextFileEditorModel extends BaseTextEditorModel implements ITextFil
 
 		// Resolve Content
 		try {
-			const content = await this.textFileService.resolve(this.resource, { acceptTextOnly: !allowBinary, etag, encoding: this.preferredEncoding });
+			const content = await this.textFileService.readStream(this.resource, { acceptTextOnly: !allowBinary, etag, encoding: this.preferredEncoding });
 
 			// Clear orphaned state when loading was successful
 			this.setOrphaned(false);
@@ -346,34 +356,33 @@ export class TextFileEditorModel extends BaseTextEditorModel implements ITextFil
 		}
 	}
 
-	private loadWithContent(content: IRawTextContent, options?: ILoadOptions, backup?: URI): Promise<TextFileEditorModel> {
-		return this.doLoadWithContent(content, backup).then(model => {
+	private async loadWithContent(content: ITextFileStreamContent, options?: ILoadOptions, backup?: URI): Promise<TextFileEditorModel> {
+		const model = await this.doLoadWithContent(content, backup);
 
-			// Telemetry: We log the fileGet telemetry event after the model has been loaded to ensure a good mimetype
-			const settingsType = this.getTypeIfSettings();
-			if (settingsType) {
-				/* __GDPR__
-					"settingsRead" : {
-						"settingsType": { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
-					}
-				*/
-				this.telemetryService.publicLog('settingsRead', { settingsType }); // Do not log read to user settings.json and .vscode folder as a fileGet event as it ruins our JSON usage data
-			} else {
-				/* __GDPR__
-					"fileGet" : {
-						"${include}": [
-							"${FileTelemetryData}"
-						]
-					}
-				*/
-				this.telemetryService.publicLog('fileGet', this.getTelemetryData(options && options.reason ? options.reason : LoadReason.OTHER));
-			}
+		// Telemetry: We log the fileGet telemetry event after the model has been loaded to ensure a good mimetype
+		const settingsType = this.getTypeIfSettings();
+		if (settingsType) {
+			/* __GDPR__
+				"settingsRead" : {
+					"settingsType": { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
+				}
+			*/
+			this.telemetryService.publicLog('settingsRead', { settingsType }); // Do not log read to user settings.json and .vscode folder as a fileGet event as it ruins our JSON usage data
+		} else {
+			/* __GDPR__
+				"fileGet" : {
+					"${include}": [
+						"${FileTelemetryData}"
+					]
+				}
+			*/
+			this.telemetryService.publicLog('fileGet', this.getTelemetryData(options && options.reason ? options.reason : LoadReason.OTHER));
+		}
 
-			return model;
-		});
+		return model;
 	}
 
-	private doLoadWithContent(content: IRawTextContent, backup?: URI): Promise<TextFileEditorModel> {
+	private doLoadWithContent(content: ITextFileStreamContent, backup?: URI): Promise<TextFileEditorModel> {
 		this.logService.trace('load() - resolved content', this.resource);
 
 		// Update our resolved disk stat model
@@ -755,10 +764,6 @@ export class TextFileEditorModel extends BaseTextEditorModel implements ITextFil
 					this.telemetryService.publicLog('filePUT', this.getTelemetryData(options.reason));
 				}
 			}, error => {
-				if (!error) {
-					error = new Error('Unknown Save Error'); // TODO@remote we should never get null as error (https://github.com/Microsoft/vscode/issues/55051)
-				}
-
 				this.logService.error(`doSave(${versionId}) - exit - resulted in a save error: ${error.toString()}`, this.resource);
 
 				// Flag as error state in the model
@@ -822,10 +827,11 @@ export class TextFileEditorModel extends BaseTextEditorModel implements ITextFil
 	private getTelemetryData(reason: number | undefined): object {
 		const ext = extname(this.resource);
 		const fileName = basename(this.resource);
+		const path = this.resource.scheme === Schemas.file ? this.resource.fsPath : this.resource.path;
 		const telemetryData = {
-			mimeType: guessMimeTypes(this.resource.fsPath).join(', '),
+			mimeType: guessMimeTypes(path).join(', '),
 			ext,
-			path: hash(this.resource.fsPath),
+			path: hash(path),
 			reason
 		};
 

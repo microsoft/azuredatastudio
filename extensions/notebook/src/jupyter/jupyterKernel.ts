@@ -1,10 +1,7 @@
-
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
-'use strict';
 
 import { nb } from 'azdata';
 import { Kernel, KernelMessage } from '@jupyterlab/services';
@@ -24,7 +21,7 @@ function toStdInMessage(msgImpl: KernelMessage.IStdinMessage): nb.IStdinMessage 
 	return {
 		channel: msgImpl.channel,
 		type: msgImpl.channel,
-		content: msgImpl.content,
+		content: <any>msgImpl.content,
 		header: msgImpl.header,
 		parent_header: msgImpl.parent_header,
 		metadata: msgImpl.metadata

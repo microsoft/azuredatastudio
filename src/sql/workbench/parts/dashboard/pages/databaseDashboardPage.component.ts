@@ -7,7 +7,7 @@ import { OnInit, Inject, forwardRef, ChangeDetectorRef, ElementRef } from '@angu
 
 import { DashboardPage } from 'sql/workbench/parts/dashboard/common/dashboardPage.component';
 import { BreadcrumbClass } from 'sql/workbench/parts/dashboard/services/breadcrumb.service';
-import { IBreadcrumbService } from 'sql/base/browser/ui/breadcrumb/interfaces';
+import { IBreadcrumbService } from 'sql/base/electron-browser/ui/breadcrumb/interfaces';
 import { DashboardServiceInterface } from 'sql/workbench/parts/dashboard/services/dashboardServiceInterface.service';
 import { WidgetConfig } from 'sql/workbench/parts/dashboard/common/dashboardWidget';
 import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';

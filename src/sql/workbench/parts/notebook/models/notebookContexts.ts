@@ -20,7 +20,7 @@ export class NotebookContexts {
 		let defaultConnection: ConnectionProfile = <any>{
 			providerName: NotebookContexts.MSSQL_PROVIDER,
 			id: '-1',
-			serverName: localize('selectConnection', 'Select connection')
+			serverName: localize('selectConnection', 'Select Connection')
 		};
 
 		return {
@@ -109,7 +109,7 @@ export class NotebookContexts {
 			let newConnection = <ConnectionProfile><any>{
 				providerName: 'SQL',
 				id: '-2',
-				serverName: localize('addConnection', 'Add new connection')
+				serverName: localize('addConnection', 'Add New Connection')
 			};
 			activeConnections.push(newConnection);
 		}

@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import {
 	createMainContextProxyIdentifier as createMainId,
@@ -18,7 +17,7 @@ import * as vscode from 'vscode';
 import { ITreeComponentItem } from 'sql/workbench/common/views';
 import { ITaskHandlerDescription } from 'sql/platform/tasks/common/tasks';
 import {
-	IItemConfig, ModelComponentTypes, IComponentShape, IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails,
+	IItemConfig, IComponentShape, IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails,
 	IModelViewWizardDetails, IModelViewWizardPageDetails, INotebookManagerDetails, INotebookSessionDetails, INotebookKernelDetails, INotebookFutureDetails, FutureMessageType, INotebookFutureDone, ISingleNotebookEditOperation
 } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { EditorViewColumn } from 'vs/workbench/api/common/shared/editor';
@@ -455,6 +454,31 @@ export abstract class ExtHostDataProtocolShape {
 	 */
 	$generateDeployPlan(handle: number, packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.GenerateDeployPlanResult> { throw ni(); }
 
+	/**
+	 * Schema compare
+	 */
+	$schemaCompare(handle: number, sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, schemaComapareOptions: azdata.DeploymentOptions): Thenable<azdata.SchemaCompareResult> { throw ni(); }
+
+	/**
+	 * Schema compare generate script
+	 */
+	$schemaCompareGenerateScript(handle: number, operationId: string, targetDatabaseName: string, scriptFilePath: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> { throw ni(); }
+
+	/**
+	 * Schema compare publish changes
+	 */
+	$schemaComparePublishChanges(handle: number, operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.SchemaCompareResult> { throw ni(); }
+
+	/**
+	 * Schema compare get default options
+	 */
+	$schemaCompareGetDefaultOptions(handle: number): Thenable<azdata.SchemaCompareOptionsResult> { throw ni(); }
+
+
+	/**
+	 * Schema comapre Include node
+	 */
+	$schemaCompareIncludeExcludeNode(handle: number, operationId: string, diffEntry: azdata.DiffEntry, includeRequest: boolean, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> { throw ni(); }
 }
 
 /**
@@ -524,6 +548,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$registerAdminServicesProvider(providerId: string, handle: number): Promise<any>;
 	$registerAgentServicesProvider(providerId: string, handle: number): Promise<any>;
 	$registerDacFxServicesProvider(providerId: string, handle: number): Promise<any>;
+	$registerSchemaCompareServicesProvider(providerId: string, handle: number): Promise<any>;
 	$unregisterProvider(handle: number): Promise<any>;
 	$onConnectionComplete(handle: number, connectionInfoSummary: azdata.ConnectionInfoSummary): void;
 	$onIntelliSenseCacheComplete(handle: number, connectionUri: string): void;
@@ -563,7 +588,7 @@ export interface MainThreadConnectionManagementShape extends IDisposable {
 	$listDatabases(connectionId: string): Thenable<string[]>;
 	$getConnectionString(connectionId: string, includePassword: boolean): Thenable<string>;
 	$getUriForConnection(connectionId: string): Thenable<string>;
-	$connect(connectionProfile: azdata.IConnectionProfile): Thenable<azdata.ConnectionResult>;
+	$connect(connectionProfile: azdata.IConnectionProfile, saveConnection: boolean, showDashboard: boolean): Thenable<azdata.ConnectionResult>;
 }
 
 export interface MainThreadCredentialManagementShape extends IDisposable {
@@ -758,7 +783,7 @@ export interface MainThreadModelViewDialogShape extends IDisposable {
 	$setDirty(handle: number, isDirty: boolean): void;
 }
 export interface ExtHostQueryEditorShape {
-	$onQueryEvent(handle: number, fileUri:string, event: IQueryEvent): void;
+	$onQueryEvent(handle: number, fileUri: string, event: IQueryEvent): void;
 }
 
 export interface MainThreadQueryEditorShape extends IDisposable {
@@ -772,9 +797,7 @@ export interface ExtHostNotebookShape {
 
 	/**
 	 * Looks up a notebook manager for a given notebook URI
-	 * @param {number} providerHandle
-	 * @param {vscode.Uri} notebookUri
-	 * @returns {Thenable<string>} handle of the manager to be used when sending
+	 * @returns handle of the manager to be used when sending
 	 */
 	$getNotebookManager(providerHandle: number, notebookUri: UriComponents): Thenable<INotebookManagerDetails>;
 	$handleNotebookClosed(notebookUri: UriComponents): void;

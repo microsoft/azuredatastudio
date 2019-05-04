@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 
-import * as Constants from 'sql/parts/query/common/constants';
+import * as Constants from 'sql/workbench/parts/query/common/constants';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
 import * as Utils from 'sql/platform/connection/common/utils';
@@ -343,7 +343,7 @@ export default class QueryRunner extends Disposable {
 			let resultSet = result.resultSetSummary;
 			let batchSet: azdata.BatchSummary;
 			if (!resultSet.batchId) {
-				// Missing the batchId. In this case, default to always using the first batch in the list
+				// Missing the batchId or processing batchId==0. In this case, default to always using the first batch in the list
 				// or create one in the case the DMP extension didn't obey the contract perfectly
 				if (this._batchSets.length > 0) {
 					batchSet = this._batchSets[0];

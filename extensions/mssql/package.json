@@ -20,23 +20,20 @@
   "dependencies": {
     "buffer-stream-reader": "^0.1.1",
     "bytes": "^3.1.0",
-    "clipboardy": "^1.2.3",
     "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#0.2.16",
     "error-ex": "^1.3.2",
-    "find-remove": "1.2.1",
     "figures": "^2.0.0",
+    "find-remove": "1.2.1",
     "fs-extra": "^3.0.1",
-    "opener": "^1.4.3",
     "request": "^2.88.0",
     "request-promise": "^4.2.2",
-    "service-downloader": "github:anthonydresser/service-downloader#0.1.5",
+    "service-downloader": "github:anthonydresser/service-downloader#0.1.6",
     "stream-meter": "^1.0.4",
     "uri-js": "^4.2.2",
     "vscode-extension-telemetry": "0.1.0",
     "vscode-languageclient": "^3.5.1",
     "vscode-nls": "^4.0.0"
   },
-  "devDependencies": {},
   "contributes": {
     "commands": [
       {
@@ -131,21 +128,21 @@
     ],
     "configuration": {
       "type": "object",
-      "title": "MSSQL configuration",
+      "title": "%mssql.configuration.title%",
       "properties": {
         "mssql.query.displayBitAsNumber": {
           "type": "boolean",
           "default": true,
-          "description": "Should BIT columns be displayed as numbers (1 or 0)? If false, BIT columns will be displayed as 'true' or 'false'"
+          "description": "%mssql.query.displayBitAsNumber%"
         },
         "mssql.format.alignColumnDefinitionsInColumns": {
           "type": "boolean",
-          "description": "Should column definitions be aligned?",
+          "description": "%mssql.format.alignColumnDefinitionsInColumns%",
           "default": false
         },
         "mssql.format.datatypeCasing": {
           "type": "string",
-          "description": "Should data types be formatted as UPPERCASE, lowercase, or none (not formatted)",
+          "description": "%mssql.format.datatypeCasing%",
           "default": "none",
           "enum": [
             "none",
@@ -155,7 +152,7 @@
         },
         "mssql.format.keywordCasing": {
           "type": "string",
-          "description": "Should keywords be formatted as UPPERCASE, lowercase, or none (not formatted)",
+          "description": "%mssql.format.keywordCasing%",
           "default": "none",
           "enum": [
             "none",
@@ -165,22 +162,22 @@
         },
         "mssql.format.placeCommasBeforeNextStatement": {
           "type": "boolean",
-          "description": "should commas be placed at the beginning of each statement in a list e.g. ', mycolumn2' instead of at the end e.g. 'mycolumn1,'",
+          "description": "%mssql.format.placeCommasBeforeNextStatement%",
           "default": false
         },
         "mssql.format.placeSelectStatementReferencesOnNewLine": {
           "type": "boolean",
-          "description": "Should references to objects in a select statements be split into separate lines? E.g. for 'SELECT C1, C2 FROM T1' both C1 and C2 will be on separate lines",
+          "description": "%mssql.format.placeSelectStatementReferencesOnNewLine%",
           "default": false
         },
         "mssql.logDebugInfo": {
           "type": "boolean",
           "default": false,
-          "description": "[Optional] Log debug output to the console (View -> Output) and then select appropriate output channel from the dropdown"
+          "description": "%mssql.logDebugInfo%"
         },
         "mssql.tracingLevel": {
           "type": "string",
-          "description": "[Optional] Log level for backend services. Azure Data Studio generates a file name every time it starts and if the file already exists the logs entries are appended to that file. For cleanup of old log files see logRetentionMinutes and logFilesRemovalLimit settings. The default tracingLevel does not log much. Changing verbosity could lead to extensive logging and disk space requirements for the logs. Error includes Critical, Warning includes Error, Information includes Warning and Verbose includes Information",
+          "description": "%mssql.tracingLevel%",
           "default": "Critical",
           "enum": [
             "All",
@@ -195,16 +192,16 @@
         "mssql.logRetentionMinutes": {
           "type": "number",
           "default": 10080,
-          "description": "Number of minutes to retain log files for backend services. Default is 1 week."
+          "description": "%mssql.logRetentionMinutes%"
         },
         "mssql.logFilesRemovalLimit": {
           "type": "number",
           "default": 100,
-          "description": "Maximum number of old files to remove upon startup that have expired mssql.logRetentionMinutes. Files that do not get cleaned up due to this limitation get cleaned up next time Azure Data Studio starts up."
+          "description": "%mssql.logFilesRemovalLimit%"
         },
         "ignorePlatformWarning": {
           "type": "boolean",
-          "description": "[Optional] Do not show unsupported platform warnings",
+          "description": "%ignorePlatformWarning%",
           "default": false
         }
       }
@@ -307,47 +304,47 @@
           },
           "databaseProperties": [
             {
-              "displayName": "Recovery Model",
+              "displayName": "%onprem.databaseProperties.recoveryModel%",
               "value": "recoveryModel"
             },
             {
-              "displayName": "Last Database Backup",
+              "displayName": "%onprem.databaseProperties.lastBackupDate%",
               "value": "lastBackupDate",
               "ignore": [
                 "1/1/0001 12:00:00 AM"
               ]
             },
             {
-              "displayName": "Last Log Backup",
+              "displayName": "%onprem.databaseProperties.lastLogBackupDate%",
               "value": "lastLogBackupDate",
               "ignore": [
                 "1/1/0001 12:00:00 AM"
               ]
             },
             {
-              "displayName": "Compatibility Level",
+              "displayName": "%onprem.databaseProperties.compatibilityLevel%",
               "value": "compatibilityLevel"
             },
             {
-              "displayName": "Owner",
+              "displayName": "%onprem.databaseProperties.owner%",
               "value": "owner"
             }
           ],
           "serverProperties": [
             {
-              "displayName": "Version",
+              "displayName": "%onprem.serverProperties.serverVersion%",
               "value": "serverVersion"
             },
             {
-              "displayName": "Edition",
+              "displayName": "%onprem.serverProperties.serverEdition%",
               "value": "serverEdition"
             },
             {
-              "displayName": "Computer Name",
+              "displayName": "%onprem.serverProperties.machineName%",
               "value": "machineName"
             },
             {
-              "displayName": "OS Version",
+              "displayName": "%onprem.serverProperties.osVersion%",
               "value": "osVersion"
             }
           ]
@@ -361,29 +358,29 @@
           },
           "databaseProperties": [
             {
-              "displayName": "Edition",
+              "displayName": "%cloud.databaseProperties.azureEdition%",
               "value": "azureEdition"
             },
             {
-              "displayName": "Pricing Tier",
+              "displayName": "%cloud.databaseProperties.serviceLevelObjective%",
               "value": "serviceLevelObjective"
             },
             {
-              "displayName": "Compatibility Level",
+              "displayName": "%cloud.databaseProperties.compatibilityLevel%",
               "value": "compatibilityLevel"
             },
             {
-              "displayName": "Owner",
+              "displayName": "%cloud.databaseProperties.owner%",
               "value": "owner"
             }
           ],
           "serverProperties": [
             {
-              "displayName": "Version",
+              "displayName": "%cloud.serverProperties.serverVersion%",
               "value": "serverVersion"
             },
             {
-              "displayName": "Type",
+              "displayName": "%cloud.serverProperties.serverEdition%",
               "value": "serverEdition"
             }
           ]
@@ -420,14 +417,14 @@
     ],
     "connectionProvider": {
       "providerId": "MSSQL",
-      "displayName": "Microsoft SQL Server",
+      "displayName": "%mssql.provider.displayName%",
       "connectionOptions": [
         {
           "specialValueType": "connectionName",
           "isIdentity": true,
           "name": "connectionName",
-          "displayName": "Name (optional)",
-          "description": "Custom name of the connection",
+          "displayName": "%mssql.connectionOptions.connectionName.displayName%",
+          "description": "%mssql.connectionOptions.connectionName.description%",
           "groupName": "Source",
           "valueType": "string",
           "defaultValue": null,
@@ -440,8 +437,8 @@
           "specialValueType": "serverName",
           "isIdentity": true,
           "name": "server",
-          "displayName": "Server",
-          "description": "Name of the SQL Server instance",
+          "displayName": "%mssql.connectionOptions.serverName.displayName%",
+          "description": "%mssql.connectionOptions.serverName.description%",
           "groupName": "Source",
           "valueType": "string",
           "defaultValue": null,
@@ -454,8 +451,8 @@
           "specialValueType": "databaseName",
           "isIdentity": true,
           "name": "database",
-          "displayName": "Database",
-          "description": "The name of the initial catalog or database int the data source",
+          "displayName": "%mssql.connectionOptions.databaseName.displayName%",
+          "description": "%mssql.connectionOptions.databaseName.description%",
           "groupName": "Source",
           "valueType": "string",
           "defaultValue": null,
@@ -468,23 +465,23 @@
           "specialValueType": "authType",
           "isIdentity": true,
           "name": "authenticationType",
-          "displayName": "Authentication type",
-          "description": "Specifies the method of authenticating with SQL Server",
+          "displayName": "%mssql.connectionOptions.authType.displayName%",
+          "description": "%mssql.connectionOptions.authType.description%",
           "groupName": "Security",
           "valueType": "category",
           "defaultValue": null,
           "objectType": null,
           "categoryValues": [
             {
-              "displayName": "SQL Login",
+              "displayName": "%mssql.connectionOptions.authType.categoryValues.sqlLogin%",
               "name": "SqlLogin"
             },
             {
-              "displayName": "Windows Authentication",
+              "displayName": "%mssql.connectionOptions.authType.categoryValues.integrated%",
               "name": "Integrated"
             },
             {
-              "displayName": "Azure Active Directory - Universal with MFA support",
+              "displayName": "%mssql.connectionOptions.authType.categoryValues.azureMFA%",
               "name": "AzureMFA"
             }
           ],
@@ -495,8 +492,8 @@
           "specialValueType": "userName",
           "isIdentity": true,
           "name": "user",
-          "displayName": "User name",
-          "description": "Indicates the user ID to be used when connecting to the data source",
+          "displayName": "%mssql.connectionOptions.userName.displayName%",
+          "description": "%mssql.connectionOptions.userName.description%",
           "groupName": "Security",
           "valueType": "string",
           "defaultValue": null,
@@ -509,8 +506,8 @@
           "specialValueType": "password",
           "isIdentity": true,
           "name": "password",
-          "displayName": "Password",
-          "description": "Indicates the password to be used when connecting to the data source",
+          "displayName": "%mssql.connectionOptions.password.displayName%",
+          "description": "%mssql.connectionOptions.password.description%",
           "groupName": "Security",
           "valueType": "password",
           "defaultValue": null,
@@ -523,8 +520,8 @@
           "specialValueType": null,
           "isIdentity": false,
           "name": "applicationIntent",
-          "displayName": "Application intent",
-          "description": "Declares the application workload type when connecting to a server",
+          "displayName": "%mssql.connectionOptions.applicationIntent.displayName%",
+          "description": "%mssql.connectionOptions.applicationIntent.description%",
           "groupName": "Initialization",
           "valueType": "category",
           "defaultValue": null,
@@ -546,8 +543,8 @@
           "specialValueType": null,
           "isIdentity": false,
           "name": "asynchronousProcessing",
-          "displayName": "Asynchronous processing",
-          "description": "When true, enables usage of the Asynchronous functionality in the .Net Framework Data Provider",
+          "displayName": "%mssql.connectionOptions.asynchronousProcessing.displayName%",
+          "description": "%mssql.connectionOptions.asynchronousProcessing.description%",
           "groupName": "Initialization",
           "valueType": "boolean",
           "defaultValue": null,
@@ -560,11 +557,11 @@
           "specialValueType": null,
           "isIdentity": false,
           "name": "connectTimeout",
-          "displayName": "Connect timeout",
-          "description": "The length of time (in seconds) to wait for a connection to the server before terminating the attempt and generating an error",
+          "displayName": "%mssql.connectionOptions.connectTimeout.displayName%",
+          "description": "%mssql.connectionOptions.connectTimeout.description%",
           "groupName": "Initialization",
           "valueType": "number",
-          "defaultValue": "15",
+          "defaultValue": "30",
           "objectType": null,
           "categoryValues": null,
           "isRequired": false,
@@ -574,8 +571,8 @@
           "specialValueType": null,
           "isIdentity": false,
           "name": "currentLanguage",
-          "displayName": "Current language",
-          "description": "The SQL Server language record name",
+          "displayName": "%mssql.connectionOptions.currentLanguage.displayName%",
+          "description": "%mssql.connectionOptions.currentLanguage.description%",
           "groupName": "Initialization",
           "valueType": "string",
           "defaultValue": null,
@@ -588,8 +585,8 @@
           "specialValueType": null,
           "isIdentity": false,
           "name": "columnEncryptionSetting",
-          "displayName": "Column encryption",
-          "description": "Default column encryption setting for all the commands on the connection",
+          "displayName": "%mssql.connectionOptions.columnEncryptionSetting.displayName%",
+          "description": "%mssql.connectionOptions.columnEncryptionSetting.description%",
           "groupName": "Security",
           "valueType": "category",
           "defaultValue": null,
@@ -611,8 +608,8 @@
           "specialValueType": null,
           "isIdentity": false,
           "name": "encrypt",
-          "displayName": "Encrypt",
-          "description": "When true, SQL Server uses SSL encryption for all data sent between the client and server if the servers has a certificate installed",
+          "displayName": "%mssql.connectionOptions.encrypt.displayName%",
+          "description": "%mssql.connectionOptions.encrypt.description%",
           "groupName": "Security",
           "valueType": "boolean",
           "defaultValue": null,
@@ -625,8 +622,8 @@
           "specialValueType": null,
           "isIdentity": false,
           "name": "persistSecurityInfo",
-          "displayName": "Persist security info",
-          "description": "When false, security-sensitive information, such as the password, is not returned as part of the connection",
+          "displayName": "%mssql.connectionOptions.persistSecurityInfo.displayName%",
+          "description": "%mssql.connectionOptions.persistSecurityInfo.description%",
           "groupName": "Security",
           "valueType": "boolean",
           "defaultValue": null,
@@ -639,8 +636,8 @@
           "specialValueType": null,
           "isIdentity": false,
           "name": "trustServerCertificate",
-          "displayName": "Trust server certificate",
-          "description": "When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate",
+          "displayName": "%mssql.connectionOptions.trustServerCertificate.displayName%",
+          "description": "%mssql.connectionOptions.trustServerCertificate.description%",
           "groupName": "Security",
           "valueType": "boolean",
           "defaultValue": null,
@@ -653,8 +650,8 @@
           "specialValueType": null,
           "isIdentity": false,
           "name": "attachedDBFileName",
-          "displayName": "Attached DB file name",
-          "description": "The name of the primary file, including the full path name, of an attachable database",
+          "displayName": "%mssql.connectionOptions.attachedDBFileName.displayName%",
+          "description": "%mssql.connectionOptions.attachedDBFileName.description%",
           "groupName": "Source",
           "valueType": "string",
           "defaultValue": null,
@@ -667,8 +664,8 @@
           "specialValueType": null,
           "isIdentity": false,
           "name": "contextConnection",
-          "displayName": "Context connection",
-          "description": "When true, indicates the connection should be from the SQL server context. Available only when running in the SQL Server process",
+          "displayName": "%mssql.connectionOptions.contextConnection.displayName%",
+          "description": "%mssql.connectionOptions.contextConnection.description%",
           "groupName": "Source",
           "valueType": "boolean",
           "defaultValue": null,
@@ -681,7 +678,7 @@
           "specialValueType": null,
           "isIdentity": false,
           "name": "port",
-          "displayName": "Port",
+          "displayName": "%mssql.connectionOptions.port.displayName%",
           "description": null,
           "groupName": null,
           "valueType": "number",
@@ -695,8 +692,8 @@
           "specialValueType": null,
           "isIdentity": false,
           "name": "connectRetryCount",
-          "displayName": "Connect retry count",
-          "description": "Number of attempts to restore connection",
+          "displayName": "%mssql.connectionOptions.connectRetryCount.displayName%",
+          "description": "%mssql.connectionOptions.connectRetryCount.description%",
           "groupName": "Connection Resiliency",
           "valueType": "number",
           "defaultValue": "1",
@@ -709,8 +706,8 @@
           "specialValueType": null,
           "isIdentity": false,
           "name": "connectRetryInterval",
-          "displayName": "Connect retry interval",
-          "description": "Delay between attempts to restore connection",
+          "displayName": "%mssql.connectionOptions.connectRetryInterval.displayName%",
+          "description": "%mssql.connectionOptions.connectRetryInterval.description%",
           "groupName": "Connection Resiliency",
           "valueType": "number",
           "defaultValue": "10",
@@ -723,8 +720,8 @@
           "specialValueType": "appName",
           "isIdentity": false,
           "name": "applicationName",
-          "displayName": "Application name",
-          "description": "The name of the application",
+          "displayName": "%mssql.connectionOptions.applicationName.displayName%",
+          "description": "%mssql.connectionOptions.applicationName.description%",
           "groupName": "Context",
           "valueType": "string",
           "defaultValue": null,
@@ -737,8 +734,8 @@
           "specialValueType": null,
           "isIdentity": false,
           "name": "workstationId",
-          "displayName": "Workstation Id",
-          "description": "The name of the workstation connecting to SQL Server",
+          "displayName": "%mssql.connectionOptions.workstationId.displayName%",
+          "description": "%mssql.connectionOptions.workstationId.description%",
           "groupName": "Context",
           "valueType": "string",
           "defaultValue": null,
@@ -751,8 +748,8 @@
           "specialValueType": null,
           "isIdentity": false,
           "name": "pooling",
-          "displayName": "Pooling",
-          "description": "When true, the connection object is drawn from the appropriate pool, or if necessary, is created and added to the appropriate pool",
+          "displayName": "%mssql.connectionOptions.pooling.displayName%",
+          "description": "%mssql.connectionOptions.pooling.description%",
           "groupName": "Pooling",
           "valueType": "boolean",
           "defaultValue": null,
@@ -765,8 +762,8 @@
           "specialValueType": null,
           "isIdentity": false,
           "name": "maxPoolSize",
-          "displayName": "Max pool size",
-          "description": "The maximum number of connections allowed in the pool",
+          "displayName": "%mssql.connectionOptions.maxPoolSize.displayName%",
+          "description": "%mssql.connectionOptions.maxPoolSize.description%",
           "groupName": "Pooling",
           "valueType": "number",
           "defaultValue": null,
@@ -779,8 +776,8 @@
           "specialValueType": null,
           "isIdentity": false,
           "name": "minPoolSize",
-          "displayName": "Min pool size",
-          "description": "The minimum number of connections allowed in the pool",
+          "displayName": "%mssql.connectionOptions.minPoolSize.displayName%",
+          "description": "%mssql.connectionOptions.minPoolSize.description%",
           "groupName": "Pooling",
           "valueType": "number",
           "defaultValue": null,
@@ -793,8 +790,8 @@
           "specialValueType": null,
           "isIdentity": false,
           "name": "loadBalanceTimeout",
-          "displayName": "Load balance timeout",
-          "description": "The minimum amount of time (in seconds) for this connection to live in the pool before being destroyed",
+          "displayName": "%mssql.connectionOptions.loadBalanceTimeout.displayName%",
+          "description": "%mssql.connectionOptions.loadBalanceTimeout.description%",
           "groupName": "Pooling",
           "valueType": "number",
           "defaultValue": null,
@@ -807,8 +804,8 @@
           "specialValueType": null,
           "isIdentity": false,
           "name": "replication",
-          "displayName": "Replication",
-          "description": "Used by SQL Server in Replication",
+          "displayName": "%mssql.connectionOptions.replication.displayName%",
+          "description": "%mssql.connectionOptions.replication.description%",
           "groupName": "Replication",
           "valueType": "boolean",
           "defaultValue": null,
@@ -821,7 +818,7 @@
           "specialValueType": null,
           "isIdentity": false,
           "name": "attachDbFilename",
-          "displayName": "Attach DB filename",
+          "displayName": "%mssql.connectionOptions.attachDbFilename.displayName%",
           "description": null,
           "groupName": null,
           "valueType": "string",
@@ -835,8 +832,8 @@
           "specialValueType": null,
           "isIdentity": false,
           "name": "failoverPartner",
-          "displayName": "Failover partner",
-          "description": "The name or network address of the instance of SQL Server that acts as a failover partner",
+          "displayName": "%mssql.connectionOptions.failoverPartner.displayName%",
+          "description": "%mssql.connectionOptions.failoverPartner.description%",
           "groupName": " Source",
           "valueType": "string",
           "defaultValue": null,
@@ -849,7 +846,7 @@
           "specialValueType": null,
           "isIdentity": false,
           "name": "multiSubnetFailover",
-          "displayName": "Multi subnet failover",
+          "displayName": "%mssql.connectionOptions.multiSubnetFailover.displayName%",
           "description": null,
           "groupName": null,
           "valueType": "boolean",
@@ -863,8 +860,8 @@
           "specialValueType": null,
           "isIdentity": false,
           "name": "multipleActiveResultSets",
-          "displayName": "Multiple active result sets",
-          "description": "When true, multiple result sets can be returned and read from one connection",
+          "displayName": "%mssql.connectionOptions.multipleActiveResultSets.displayName%",
+          "description": "%mssql.connectionOptions.multipleActiveResultSets.description%",
           "groupName": "Advanced",
           "valueType": "boolean",
           "defaultValue": null,
@@ -877,8 +874,8 @@
           "specialValueType": null,
           "isIdentity": false,
           "name": "packetSize",
-          "displayName": "Packet size",
-          "description": "Size in bytes of the network packets used to communicate with an instance of SQL Server",
+          "displayName": "%mssql.connectionOptions.packetSize.displayName%",
+          "description": "%mssql.connectionOptions.packetSize.description%",
           "groupName": "Advanced",
           "valueType": "number",
           "defaultValue": null,
@@ -891,8 +888,8 @@
           "specialValueType": null,
           "isIdentity": false,
           "name": "typeSystemVersion",
-          "displayName": "Type system version",
-          "description": "Indicates which server type system then provider will expose through the DataReader",
+          "displayName": "%mssql.connectionOptions.typeSystemVersion.displayName%",
+          "description": "%mssql.connectionOptions.typeSystemVersion.description%",
           "groupName": "Advanced",
           "valueType": "string",
           "defaultValue": null,

@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------------------------
-*  Copyright (c) Microsoft Corporation. All rights reserved.
-*  Licensed under the Source EULA. See License.txt in the project root for license information.
-*--------------------------------------------------------------------------------------------*/
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./controlHostContent';
 
@@ -13,7 +13,7 @@ import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServic
 
 import * as azdata from 'azdata';
 import { memoize } from 'vs/base/common/decorators';
-import { AgentViewComponent } from '../../../../parts/jobManagement/agent/agentView.component';
+import { AgentViewComponent } from '../../jobManagement/electron-browser/agentView.component';
 
 @Component({
 	templateUrl: decodeURI(require.toUrl('sql/workbench/parts/dashboard/contents/controlHostContent.component.html')),

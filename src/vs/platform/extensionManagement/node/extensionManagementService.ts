@@ -218,7 +218,8 @@ export class ExtensionManagementService extends Disposable implements IExtension
 								if (existing) {
 									operation = InstallOperation.Update;
 									if (identifierWithVersion.equals(new ExtensionIdentifierWithVersion(existing.identifier, existing.manifest.version))) {
-										return this.removeExtension(existing, 'existing').then(null, e => Promise.reject(new Error(nls.localize('restartCode', "Please restart VS Code before reinstalling {0}.", manifest.displayName || manifest.name))));
+										// {{SQL CARBON EDIT}} - Update VS Code product name
+										return this.removeExtension(existing, 'existing').then(null, e => Promise.reject(new Error(nls.localize('restartCode', "Please restart Azure Data Studio before reinstalling {0}.", manifest.displayName || manifest.name))));
 									} else if (semver.gt(existing.manifest.version, manifest.version)) {
 										return this.uninstall(existing, true);
 									}
@@ -231,14 +232,14 @@ export class ExtensionManagementService extends Disposable implements IExtension
 								// {{SQL CARBON EDIT}}
 								// Until there's a gallery for SQL Ops Studio, skip retrieving the metadata from the gallery
 								return this.installExtension({ zipPath, identifierWithVersion, metadata: null }, type, token)
-								.then(
-									local => {
-										this.reportTelemetry(this.getTelemetryEvent(InstallOperation.Install), getLocalExtensionTelemetryData(local), new Date().getTime() - startTime, void 0);
-										this._onDidInstallExtension.fire({ identifier, zipPath, local, operation: InstallOperation.Install });
-										return identifier;
-									},
-									error => { this._onDidInstallExtension.fire({ identifier, zipPath, error, operation: InstallOperation.Install }); return Promise.reject(error); }
-								);
+									.then(
+										local => {
+											this.reportTelemetry(this.getTelemetryEvent(InstallOperation.Install), getLocalExtensionTelemetryData(local), new Date().getTime() - startTime, void 0);
+											this._onDidInstallExtension.fire({ identifier, zipPath, local, operation: InstallOperation.Install });
+											return identifier;
+										},
+										error => { this._onDidInstallExtension.fire({ identifier, zipPath, error, operation: InstallOperation.Install }); return Promise.reject(error); }
+									);
 								// return this.getMetadata(getGalleryExtensionId(manifest.publisher, manifest.name))
 								// 	.then(
 								// 		metadata => this.installFromZipPath(identifierWithVersion, zipPath, metadata, type, operation, token),
@@ -360,13 +361,6 @@ export class ExtensionManagementService extends Disposable implements IExtension
 
 		if (!compatibleExtension) {
 			return Promise.reject(new ExtensionManagementError(nls.localize('notFoundCompatibleDependency', "Unable to install because, the extension '{0}' compatible with current version '{1}' of VS Code is not found.", extension.identifier.id, pkg.version), INSTALL_ERROR_INCOMPATIBLE));
-		}
-
-		if (this.remote) {
-			const manifest = await this.galleryService.getManifest(extension, CancellationToken.None);
-			if (manifest && isUIExtension(manifest, [], this.configurationService) && !isLanguagePackExtension(manifest)) {
-				return Promise.reject(new Error(nls.localize('notSupportedUIExtension', "Can't install extension {0} since UI Extensions are not supported", extension.identifier.id)));
-			}
 		}
 
 		return compatibleExtension;

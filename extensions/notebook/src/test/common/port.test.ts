@@ -1,4 +1,3 @@
-
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
@@ -40,7 +39,7 @@ describe('Ports', () => {
 		this.timeout(1000 * 10); // higher timeout for this test
 
 		// get an initial freeport >= 7000
-		let options = new ports.StrictPortFindOptions(7000, 7100, 7200);
+		let options = new ports.StrictPortFindOptions(7000, 7200);
 		options.timeout = 300000;
 		ports.strictFindFreePort(options).then(initialPort => {
 			assert.ok(initialPort >= 7000);
@@ -50,7 +49,7 @@ describe('Ports', () => {
 			server.listen(initialPort, undefined, undefined, () => {
 
 				// once listening, find another free port and assert that the port is different from the opened one
-				options.startPort = initialPort;
+				options.minPort = initialPort;
 				options.maxRetriesPerStartPort = 1;
 				options.totalRetryLoops = 50;
 				ports.strictFindFreePort(options).then(freePort => {

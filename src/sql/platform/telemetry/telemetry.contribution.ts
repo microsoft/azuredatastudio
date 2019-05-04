@@ -41,7 +41,7 @@ export class SqlTelemetryContribution extends Disposable implements IWorkbenchCo
 
 
 		/* send monthly uses once the user launches on a day that's in a month
-		   after the last time we sent a monthly usage count */
+		after the last time we sent a monthly usage count */
 		const monthlyUseCount: number = storageService.getNumber('telemetry.monthlyUseCount', StorageScope.GLOBAL, 0);
 		if (this.didMonthChange(monthlyLastUseDate)) {
 			telemetryService.publicLog('telemetry.monthlyUse', { monthlyFirstUse: true });
@@ -136,9 +136,9 @@ export class SqlTelemetryContribution extends Disposable implements IWorkbenchCo
 }
 
 /**
- Growth Metrics
- Active here means opened app atleast 1 time in a month
- */
+ * Growth Metrics
+ * Active here means opened app atleast 1 time in a month
+*/
 export enum UserGrowthType {
 	// first time opening app
 	NewUser = 1,
