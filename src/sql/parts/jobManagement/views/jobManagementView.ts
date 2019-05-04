@@ -28,6 +28,7 @@ export abstract class JobManagementView extends TabChild implements AfterContent
 	protected _table: Table<any>;
 	protected _actionBar: Taskbar;
 	protected _serverName: string;
+	protected _isDialogOpen: boolean = false;
 	public contextAction: any;
 
 	@ViewChild('actionbarContainer') protected actionBarContainer: ElementRef;
