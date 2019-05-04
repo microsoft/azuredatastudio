@@ -42,15 +42,15 @@
 			{
 				"id": "microsoft",
 				"icon": {
-					"light": "./out/account-provider/media/microsoft_account_light.svg",
-					"dark": "./out/account-provider/media/microsoft_account_dark.svg"
+					"light": "./resources/light/microsoft_account_light.svg",
+					"dark": "./resources/dark/microsoft_account_dark.svg"
 				}
 			},
 			{
 				"id": "work_school",
 				"icon": {
-					"light": "./out/account-provider/media/work_school_account_light.svg",
-					"dark": "./out/account-provider/media/work_school_account_dark.svg"
+					"light": "./resources/light/work_school_account_light.svg",
+					"dark": "./resources/dark/work_school_account_dark.svg"
 				}
 			}
 		],
