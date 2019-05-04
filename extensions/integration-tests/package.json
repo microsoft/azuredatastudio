@@ -44,7 +44,7 @@
     ]
   },
   "scripts": {
-    "fmktest": "mocha -r ts-node/register --watch-extensions tsx,ts -u tdd test/**/*.test.ts",
+    "fmktest": "mocha -r ts-node/register --color --watch-extensions tsx,ts -u tdd test/**/*.test.ts",
     "vscode:prepublish": "node ../../node_modules/gulp/bin/gulp.js --gulpfile ../../build/gulpfile.extensions.js compile-extension:vscode-colorize-tests ./tsconfig.json",
     "postinstall": "node ./node_modules/vscode/bin/install"
   },

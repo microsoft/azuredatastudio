@@ -4,6 +4,7 @@
 		"moduleResolution": "node",
 		"noImplicitAny": false,
 		"target": "es5",
+		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
 		"noImplicitReturns": true,
 		"noUnusedLocals": false,

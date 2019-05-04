@@ -1,7 +1,6 @@
 {
 	"version": "0.1.0",
-	"configurations": [
-		{
+	"configurations": [{
 			"type": "node",
 			"request": "launch",
 			"name": "Gulp Build",
@@ -180,9 +179,26 @@
 			"webRoot": "${workspaceFolder}",
 			"timeout": 45000
 		},
-	],
-	"compounds": [
 		{
+			"name": "Debug fmkTest ts-node current File",
+			"type": "node",
+			"request": "launch",
+			"program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
+			"env": { "TS_NODE_PROJECT": "${workspaceRoot}/extensions/integration-tests/test/tsconfig.json" },
+			"args": [
+				"-r", "ts-node/register",
+				"-u", "tdd",
+                "--timeout", "999999",
+                "--colors", "--recursive",
+				"${relativeFile}"
+			],
+            "internalConsoleOptions": "openOnSessionStart",
+			"cwd": "${workspaceRoot}",
+			"console": "integratedTerminal",
+			"protocol": "inspector"
+		},
+	],
+	"compounds": [{
 			"name": "Debug Unit Tests",
 			"configurations": [
 				"Attach to azuredatastudio",

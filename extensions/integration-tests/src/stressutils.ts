@@ -2,15 +2,59 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
-/*
-	This contains all the definitions for Stress decorators and the utility functions and definitions thereof
+/**
+ * This module contains all the definitions for Stress decorators and the utility functions and definitions thereof
 */
+import { Min, Max, IsInt, validateSync, validate } from 'class-validator';
 import 'mocha';
 import { AssertionError } from 'assert';
 import { getSuiteType, SuiteType } from './fmkUtils';
 import assert = require('assert');
+import { isString } from 'util';
 
+
+/**
+ * Subclass of Error to wrap any Error objects caught during Stress Execution.
+ */
+export class StressError extends Error {
+	inner: Error | any;
+	static code: string = 'ERR_STRESS';
+
+	constructor(error?: any) {
+		super();
+		//Object.setPrototypeOf(this, StressError);
+		this.name = StressError.code;
+		this.inner = error;
+		if (error instanceof Error) {
+			this.message = error.message;
+			this.stack = error.stack;
+		} else if (error instanceof String) {
+			this.message = error.valueOf();
+			try {
+				throw new Error();
+			} catch (e) {
+				this.stack = e.stack;
+			}
+		} else if (isString(error)) {
+			this.message = error;
+			try {
+				throw new Error();
+			} catch (e) {
+				this.stack = e.stack;
+			}
+		} else {
+			this.message = 'unknown stress error';
+		}
+	}
+}
+
+/**
+ * Defines an interface to specify the stress options for stress tests.
+ * @param runtime - the number of minutes for which the stress runs. Once this 'runtime' expires stress is terminated even if we have not exceeded {@link iterations} count yet. NYI. This is here for future use to allow really long running stress tests. Default value is provided by environment variable: StressRuntime and if undefined then by {@link DefaultStressOptions}.
+ * @param dop - the number of parallel instances of the decorated method to run. Default value is provided by environment variable: StressDop and if undefined then by {@link DefaultStressOptions}.
+ * @param iterations - the number of iterations to run in each parallel invocation for the decorated method. {@link runtime} can limit the number of iterations actually run. Default value is provided by environment variable: StressIterations and if undefined then by {@link DefaultStressOptions}.
+ * @param passThreshold - the fractional number of all invocations of the decorated method that must pass to declared the stress invocation of that method to be declared passed. Range: 0.0-1.0. Default value is provided by environment variable: StressPassThreshold and if undefined then by {@link DefaultStressOptions}.
+ */
 export interface StressOptions {
 	runtime?: number;
 	dop?: number;
@@ -18,33 +62,75 @@ export interface StressOptions {
 	passThreshold?: number;
 }
 
-const DefaultStressOptions: StressOptions = { runtime: 120, dop: 4, iterations: 10, passThreshold: 0.95 };
+/**
+ * The default values for StressOptions.
+ */
+export const DefaultStressOptions: StressOptions = { runtime: 120, dop: 4, iterations: 10, passThreshold: 0.95 };
 
-// This simulates a sleep where the thread is suspended without spinning for a given number of milliseconds before resuming
-//
-export function sleep(ms: number) {
-	return (async () => {
+/**
+ * Defines the shape of stress result object
+ */
+export interface StressResult {
+	numPasses: number;
+	fails: Error[];
+	errors: Error[];
+}
+
+
+/**
+* This simulates a sleep where the thread is suspended without spinning for a given number of milliseconds before resuming
+*/
+export async function sleep(ms: number) {
+	return await (async () => {
 		return await new Promise((undefined) => setTimeout(undefined, ms));
 	})();
 }
 
-// This is just a synonym for sleep(0). This has the affect of yielding to other operations.
-//
-export function bear() {
-	return sleep(0);
+/**
+* This is just a synonym for sleep(0). This has the affect of yielding to other operations.
+*/
+export async function bear() {
+	return await sleep(0);
 }
 
+/**
+ * A class with methods that help to implement the stressify decorator.
+ * Keeping the core logic of stressification in one place as well as allowing this code to use
+ * other decorators if needed.
+ */
 class Stress {
 	// number of iterations.
-	iterations?: number;
-	// seconds
-	runtime?: number;
-	// degree of parallelism
-	dop?: number;
-	// threshold of individual test passes to declare the stress test passed. This is a fraction within 1.
-	passThreshold?: number;
+	@IsInt()
+	@Min(0)
+	@Max(1000000)
+	iterations?: number = DefaultStressOptions.iterations;
 
-	constructor({ runtime = parseInt(process.env.StressRunTime), dop = parseInt(process.env.StressDop), iterations = parseInt(process.env.StressIterations), passThreshold = parseFloat(process.env.StressPassThreshold) }: StressOptions = DefaultStressOptions) {
+	// seconds
+	@IsInt()
+	@Min(0)
+	@Max(72000)
+	runtime?: number = DefaultStressOptions.runtime;
+
+	// degree of parallelism
+	@IsInt()
+	@Min(1)
+	@Max(20)
+	dop?: number = DefaultStressOptions.dop;
+
+	// threshold for fractional number of individual test passes fo total executed to declare the stress test passed. This is a fraction between 0 and 1.
+	@Min(0)
+	@Max(1)
+	passThreshold?: number = DefaultStressOptions.passThreshold;
+
+	/**
+	 * Constructor allows for construction with a bunch of optional parameters
+	 *
+	 * @param runtime - see {@link StressOptions}.
+	 * @param dop - see {@link StressOptions}.
+	 * @param iterations - see {@link StressOptions}.
+	 * @param passThreshold - see {@link StressOptions}.
+	 */
+	constructor({ runtime = parseInt(process.env.StressRuntime), dop = parseInt(process.env.StressDop), iterations = parseInt(process.env.StressIterations), passThreshold = parseFloat(process.env.StressPassThreshold) }: StressOptions = DefaultStressOptions) {
 		//console.log (`runtime=${runtime}, dop=${dop}, iterations=${iterations}, passThreshold=${passThreshold}`);
 		//console.log (`this.runtime=${this.runtime}, this.dop=${this.dop}, this.iterations=${this.iterations}, this.passThreshold=${this.passThreshold}`);
 		let x: number;
@@ -52,19 +138,55 @@ class Stress {
 		x = this.nullCoalesce(dop, this.dop); this.dop = x;
 		x = this.nullCoalesce(iterations, this.iterations); this.iterations = x;
 		x = this.nullCoalesce(passThreshold, this.passThreshold); this.passThreshold = x;
+
+		// validate this object
+		//
+		validateSync(this).map((error) => { throw error; });
+		validate(this).then(errors => {
+			if (errors.length > 0) {
+				errors.map(error => { throw error; });
+				console.log(`validation error in stress object: ${JSON.stringify(errors)}`);
+				throw errors;
+			}
+		}).catch(fatalErrors => {
+			if (fatalErrors.length > 0) {
+				fatalErrors.map(error => { throw error; });
+				console.log(`fatal error while validating stress object: ${JSON.stringify(fatalErrors)}`);
+				throw fatalErrors;
+			}
+		});
+
 		//console.log (`this.runtime=${this.runtime}, this.dop=${this.dop}, this.iterations=${this.iterations}, this.passThreshold=${this.passThreshold}`);
 	}
 
 	private nullCoalesce(value: number, defaultValue: number): number {
 		//console.log (`nullCoalesce called with value:${value}, defaultValue:${defaultValue}`);
-		const retVal = (value === undefined || value === null || value === NaN) ? defaultValue : value;
+		const retVal = (value === null || value === undefined || isNaN(value)) ? defaultValue : value;
 		//console.log (`nullCoalesce will return:${retVal}`);
 		return retVal;
 	}
 
-	async Run(originalMethod: any, originalObject: any, functionName: string, args: any[], { runtime, dop, iterations, passThreshold }: StressOptions = DefaultStressOptions) {
-		// TODO validation of parameter bounds for runtime, dop, iterations and passThreshold
-		// TODO support for cutting of the iterator is runtime has exceeded needs to be implemented.
+	/**
+	 *
+	 * @param originalMethod - The reference to the originalMethod that is being stressfied.The name of this method is {@link functionName}
+	 * @param originalObject - The reference to the object on which the {@link originalMethod} is invoked.
+	 * @param functionName - The name of the originalMethod that is being stressfied.
+	 * @param args - The invocation argument for the {@link originalMethod}
+	 * @param runtime - The desconstructed {@link StressOptions} parameter. see {@link StressOptions} for details.
+	 * @param dop - The desconstructed {@link StressOptions} parameter. see {@link StressOptions} for details.
+	 * @param iterations - The desconstructed {@link StressOptions} parameter. see {@link StressOptions} for details.
+	 * @param passThreshold - The desconstructed {@link StressOptions} parameter. see {@link StressOptions} for details.
+	 *
+	 * @returns - {@link StressResult}.
+	 */
+	async Run(
+		originalMethod: any,
+		originalObject: any,
+		functionName: string,
+		args: any[],
+		{ runtime, dop, iterations, passThreshold }: StressOptions = DefaultStressOptions
+	): Promise<StressResult> {
+		// TODO support for cutting of the iterator if runtime has exceeded needs to be implemented.
 		//
 		//console.log (`runtime=${runtime}, dop=${dop}, iterations=${iterations}, passThreshold=${passThreshold}`);
 		runtime = this.nullCoalesce(runtime, this.runtime);
@@ -76,7 +198,7 @@ class Stress {
 		let errors = [];
 
 		let pendingPromises: Promise<void>[] = [];
-		console.log(`Running Stress on ${functionName}('${args.join('\',\'')}') with runtime=${runtime}, dop=${dop}, iterations=${iterations}, passThreshold=${passThreshold}`);
+		console.log(`Running Stress on ${functionName} or ${JSON.stringify(originalMethod.prototype)} with args: ('${args.join('\',\'')}') with runtime=${runtime}, dop=${dop}, iterations=${iterations}, passThreshold=${passThreshold}`);
 		//console.log (`runtime=${runtime}, dop=${dop}, iterations=${iterations}, passThreshold=${passThreshold}`);
 		const IterativeLoop = async (tNo: number) => {
 			for (let iNo = 0; iNo < iterations; iNo++) {
@@ -86,14 +208,16 @@ class Stress {
 					//console.log(`originalObject=${JSON.stringify(originalObject)}`);
 					await originalMethod.apply(originalObject, args);
 					console.log(`tNo=${tNo}:iNo=${iNo} instance passed`);
+					numPasses++;
 				}
 				catch (err) {
 					// If failures can result in errors of other types apart from AssertionError then we need to augument here
 					//
-					err instanceof AssertionError ? fails.push(err) : errors.push(err);
+					err instanceof AssertionError
+						? fails.push(err)
+						: errors.push(new StressError(err));
 					console.log(`tNo=${tNo}:iNo=${iNo} instance failed/errored with error: ${err}`);
 				}
-				numPasses++;
 			}
 		};
 
@@ -104,9 +228,10 @@ class Stress {
 		}
 
 		// Now await all of the Promises for each of the above invocation.
+		//
 		await Promise.all(pendingPromises);
 
-		// TODO what if the above Promise.all exits out due to rejection of one of the promises. Need to handle that case.
+		// TODO what if the above Promise.all exits out due to rejection of one of the promises. Kindly note, that due to the try/catch swallowing and collecting all errors, I currently do not expect this case to happen, but perhaps some defensive code like throwing if that does ever happen is not a bad idea.
 		//
 		let total = numPasses + errors.length + fails.length;
 		assert(numPasses >= passThreshold * total, `Call Stressified: ${functionName}(${args.join(',')}) failed with a pass percent of ${passThreshold * 100}`);
@@ -114,15 +239,25 @@ class Stress {
 	}
 }
 
-const stresser = new Stress();
-// Decorator Factory to return the Method Descriptor function that will stressify any test class method.
-// Using the descriptor factory allows us pass parameters to the discriptor itself separately from the arguments of the
-// function being modified.
+// the singleton Stress object.
 //
+const stresser = new Stress();
+
+/**
+ * Decorator Factory to return the Method Descriptor function that will stressify any test class method.
+		* Using the descriptor factory allows us pass options to the discriptor itself separately from the arguments
+		* of the function being modified.
+ * @param runtime - The desconstructed {@link StressOptions} option. see {@link StressOptions} for details.
+ * @param dop - The desconstructed {@link StressOptions} option. see {@link StressOptions} for details.
+ * @param iterations - The desconstructed {@link StressOptions} option. see {@link StressOptions} for details.
+ * @param passThreshold - The desconstructed {@link StressOptions} option. see {@link StressOptions} for details.
+ */
 export function stressify({ runtime, dop, iterations, passThreshold }: StressOptions = DefaultStressOptions) {
 	// return the function that does the job of stressifying a test class method with decorator @stressify
 	//
-	console.log(`stressifyFactory called runtime=${runtime}, dop=${dop}, iter=${iterations}, passThreshold=${passThreshold}`);
+	console.log(`stressify FactoryDecorator called with runtime=${runtime}, dop=${dop}, iter=${iterations}, passThreshold=${passThreshold}`);
+
+	// The actual decorator function that modifies the original target method pointed to by the memberDiscriptor
 	return function (memberClass: any, memberName: string, memberDescriptor: PropertyDescriptor) {
 		// stressify the target function pointed to by the descriptor.value only if
 		// SuiteType is stress
@@ -139,8 +274,9 @@ export function stressify({ runtime, dop, iterations, passThreshold }: StressOpt
 			//editing the descriptor/value parameter
 			memberDescriptor.value = async function (...args: any[]) {
 				// note usage of originalMethod here
-				//console.log(`this=${JSON.stringify(this)} of type ${typeof this}`);
-				const result = await stresser.Run(originalMethod, this, memberName, args, { runtime, dop, iterations, passThreshold });
+				//
+				assert(stresser !== null && stresser !== undefined, 'stresser object must be defined');
+				const result: StressResult = await stresser.Run(originalMethod, this, memberName, args, { runtime, dop, iterations, passThreshold });
 				console.log(`Stressified: ${memberName}(${args.join(',')}) returned: ${JSON.stringify(result)}`);
 				return result;
 			};
