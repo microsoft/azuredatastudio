@@ -41,6 +41,7 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { CellMagicMapper } from 'sql/workbench/parts/notebook/models/cellMagicMapper';
 import { IExtensionsViewlet, VIEWLET_ID } from 'vs/workbench/contrib/extensions/common/extensions';
 import { CellModel } from 'sql/workbench/parts/notebook/models/cell';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 
@@ -84,7 +85,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		@Inject(IMenuService) private menuService: IMenuService,
 		@Inject(IKeybindingService) private keybindingService: IKeybindingService,
 		@Inject(IViewletService) private viewletService: IViewletService,
-		@Inject(ICapabilitiesService) private capabilitiesService: ICapabilitiesService
+		@Inject(ICapabilitiesService) private capabilitiesService: ICapabilitiesService,
+		@Inject(ILogService) private readonly logService: ILogService
 	) {
 		super();
 		this.updateProfile();
@@ -255,7 +257,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			defaultKernel: this._notebookParams.input.defaultKernel,
 			layoutChanged: this._notebookParams.input.layoutChanged,
 			capabilitiesService: this.capabilitiesService
-		}, false, this.profile);
+		}, this.profile, this.logService);
 		model.onError((errInfo: INotification) => this.handleModelError(errInfo));
 		await model.requestModelLoad(this._notebookParams.isTrusted);
 		model.contentChanged((change) => this.handleContentChanged(change));
@@ -363,7 +365,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 		let attachToContainer = document.createElement('div');
 		let attachToDropdown = new AttachToDropdown(attachToContainer, this.contextViewService, this.modelReady,
-			this.connectionManagementService, this.connectionDialogService, this.notificationService, this.capabilitiesService);
+			this.connectionManagementService, this.connectionDialogService, this.notificationService, this.capabilitiesService, this.logService);
 		attachToDropdown.render(attachToContainer);
 		attachSelectBoxStyler(attachToDropdown, this.themeService);
 

@@ -32,6 +32,7 @@ import { OVERRIDE_EDITOR_THEMING_SETTING } from 'sql/workbench/services/notebook
 import * as notebookUtils from 'sql/workbench/parts/notebook/notebookUtils';
 import { UntitledEditorModel } from 'vs/workbench/common/editor/untitledEditorModel';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export const CODE_SELECTOR: string = 'code-component';
 const MARKDOWN_CLASS = 'markdown';
@@ -102,7 +103,8 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		@Inject(IModelService) private _modelService: IModelService,
 		@Inject(IModeService) private _modeService: IModeService,
 		@Inject(IConfigurationService) private _configurationService: IConfigurationService,
-		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef
+		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
+		@Inject(ILogService) private readonly logService: ILogService
 	) {
 		super();
 		this._cellToggleMoreActions = this._instantiationService.createInstance(CellToggleMoreActions);
@@ -141,9 +143,9 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 			let cellUri = this.cellModel.cellUri.toString();
 			let connectionService = this.connectionService;
 			if (!shouldConnect && connectionService && connectionService.isConnected(cellUri)) {
-				connectionService.disconnect(cellUri).catch(e => console.log(e));
+				connectionService.disconnect(cellUri).catch(e => this.logService.error(e));
 			} else if (shouldConnect && this._model.activeConnection && this._model.activeConnection.id !== '-1') {
-				connectionService.connect(this._model.activeConnection, cellUri).catch(e => console.log(e));
+				connectionService.connect(this._model.activeConnection, cellUri).catch(e => this.logService.error(e));
 			}
 		}
 	}
