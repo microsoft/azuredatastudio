@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import 'vs/css!./media/dialogModal';
 import { Component, ViewChild, Inject, forwardRef, ElementRef, AfterViewInit } from '@angular/core';
 import { ModelViewContent } from 'sql/workbench/electron-browser/modelComponents/modelViewContent.component';

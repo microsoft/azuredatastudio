@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as azdata from 'azdata';
 import { FileBrowserTree } from 'sql/workbench/services/fileBrowser/common/fileBrowserTree';
 import { FileNode } from 'sql/workbench/services/fileBrowser/common/fileNode';

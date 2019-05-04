@@ -92,11 +92,10 @@ const indentationFilter = [
 	'!**/*.dockerfile',
 	'!extensions/markdown-language-features/media/*.js',
 	// {{SQL CARBON EDIT}}
-	'!**/*.xlf',
-	'!**/*.docx',
-	'!**/*.sql',
+	'!**/*.{xlf,docx,sql,vsix}',
 	'!extensions/mssql/sqltoolsservice/**',
 	'!extensions/import/flatfileimportservice/**',
+	'!extensions/admin-tool-ext-win/ssmsmin/**'
 ];
 
 const copyrightFilter = [
@@ -184,6 +183,10 @@ const tslintFilter = [
 	'!extensions/html-language-features/server/lib/jquery.d.ts'
 ];
 
+const useStrictFilter = [
+	'src/**/*.ts'
+];
+
 // {{SQL CARBON EDIT}}
 const copyrightHeaderLines = [
 	'/*---------------------------------------------------------------------------------------------',
@@ -234,8 +237,8 @@ function hygiene(some) {
 	});
 
 	const copyrights = es.through(function (file) {
-		const lines = file.__lines;
 
+		const lines = file.__lines;
 		for (let i = 0; i < copyrightHeaderLines.length; i++) {
 			if (lines[i] !== copyrightHeaderLines[i]) {
 				console.error(file.relative + ': Missing or bad copyright statement');
@@ -246,6 +249,21 @@ function hygiene(some) {
 
 		this.emit('data', file);
 	});
+
+	// {{SQL CARBON EDIT}}
+	// Check for unnecessary 'use strict' lines. These are automatically added by the alwaysStrict compiler option so don't need to be added manually
+	const useStrict = es.through(function (file) {
+		const lines = file.__lines;
+		lines.forEach((line, i) =>  {
+			if (/\s*'use\s*strict\s*'/.test(line)) {
+				console.error(file.relative + '(' + (i + 1) + ',1): Unnecessary \'use strict\' - this is already added by the compiler');
+				errorCount++;
+			}
+		});
+
+		this.emit('data', file);
+	});
+	// {{SQL CARBON EDIT}} END
 
 	const formatting = es.map(function (file, cb) {
 		tsfmt.processString(file.path, file.contents.toString('utf8'), {
@@ -302,6 +320,12 @@ function hygiene(some) {
 		.pipe(filter(copyrightFilter))
 		.pipe(copyrights);
 
+	// {{SQL CARBON EDIT}}
+	const useStrictResult = result
+		.pipe(filter(useStrictFilter))
+		.pipe(useStrict);
+	// {{SQL CARBON EDIT}} END
+
 	const typescript = result
 		.pipe(filter(tslintFilter))
 		.pipe(formatting)
@@ -314,7 +338,8 @@ function hygiene(some) {
 		.pipe(gulpeslint.failAfterError());
 
 	let count = 0;
-	return es.merge(typescript, javascript)
+	// {{SQL CARBON EDIT}}
+	return es.merge(useStrictResult, typescript, javascript)
 		.pipe(es.through(function (data) {
 			count++;
 			if (process.env['TRAVIS'] && count % 10 === 0) {
