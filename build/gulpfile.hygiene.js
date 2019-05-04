@@ -183,8 +183,9 @@ const tslintFilter = [
 	'!extensions/html-language-features/server/lib/jquery.d.ts'
 ];
 
+// {{SQL CARBON EDIT}}
 const useStrictFilter = [
-	'src/**/*.ts'
+	'src/**'
 ];
 
 // {{SQL CARBON EDIT}}
@@ -320,16 +321,13 @@ function hygiene(some) {
 		.pipe(filter(copyrightFilter))
 		.pipe(copyrights);
 
-	// {{SQL CARBON EDIT}}
-	const useStrictResult = result
-		.pipe(filter(useStrictFilter))
-		.pipe(useStrict);
-	// {{SQL CARBON EDIT}} END
-
 	const typescript = result
 		.pipe(filter(tslintFilter))
 		.pipe(formatting)
-		.pipe(tsl);
+		.pipe(tsl)
+		// {{SQL CARBON EDIT}}
+		.pipe(filter(useStrictFilter))
+		.pipe(useStrict);
 
 	const javascript = result
 		.pipe(filter(eslintFilter))
@@ -338,8 +336,7 @@ function hygiene(some) {
 		.pipe(gulpeslint.failAfterError());
 
 	let count = 0;
-	// {{SQL CARBON EDIT}}
-	return es.merge(useStrictResult, typescript, javascript)
+	return es.merge(typescript, javascript)
 		.pipe(es.through(function (data) {
 			count++;
 			if (process.env['TRAVIS'] && count % 10 === 0) {
