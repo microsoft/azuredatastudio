@@ -67,7 +67,7 @@ registry.registerWorkbenchAction(
 		ToggleTasksAction.ID,
 		ToggleTasksAction.LABEL,
 		{ primary: KeyMod.CtrlCmd | KeyCode.KEY_T }),
-	'View: Toggle Views',
+	'View: Toggle Tasks',
 	localize('viewCategory', "View")
 );
 
