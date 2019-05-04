@@ -45,8 +45,7 @@ class ObjectExplorerTester {
 		let expectedActions;
 		if (process.platform === 'win32') {
 			expectedActions = ['Manage', 'New Query', 'Disconnect', 'Delete Connection', 'Refresh', 'New Notebook', 'Properties', 'Launch Profiler'];
-		}
-		else {
+		} else {
 			expectedActions = ['Manage', 'New Query', 'Disconnect', 'Delete Connection', 'Refresh', 'New Notebook', 'Launch Profiler'];
 		}
 		const expectedString = expectedActions.join(',');
