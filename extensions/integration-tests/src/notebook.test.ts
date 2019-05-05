@@ -21,34 +21,34 @@ if (context.RunTest) {
 			this.NbTester = new NotebookTester(this.currentTest.title);
 		});
 		teardown(async function () {
-			await this.NbTester.Cleanup(this.currentTest.title);
+			await this.NbTester.cleanup(this.currentTest.title);
 		});
 
 		test('Sql NB test', async function () {
-			await this.NbTester.SqlNbTest(this.test.title);
+			await this.NbTester.sqlNbTest(this.test.title);
 		});
 
 		test('Sql NB multiple cells test', async function () {
-			await this.NbTester.SqlNbMultipleCellsTest(this.test.title);
+			await this.NbTester.sqlNbMultipleCellsTest(this.test.title);
 		});
 
 		test('Clear all outputs - SQL notebook ', async function () {
-			await this.NbTester.ClearAllOutputsSqlNb(this.test.title);
+			await this.NbTester.clearAllOutputsSqlNb(this.test.title);
 		});
 
 		if (process.env['RUN_PYTHON3_TEST'] === '1') {
 			test('Python3 notebook test', async function () {
-				await this.NbTester.Python3NbTest(this.test.title);
+				await this.NbTester.python3NbTest(this.test.title);
 			});
 
 			test('Clear all outputs - Python3 notebook ', async function () {
-				await this.NbTester.ClearAllOutputsPython3Nb(this.test.title);
+				await this.NbTester.clearAllOutputsPython3Nb(this.test.title);
 			});
 		}
 
 		if (process.env['RUN_PYSPARK_TEST'] === '1') {
 			test('PySpark3 notebook test', async function () {
-				await this.NbTester.PySpark3NbTest(this.test.title);
+				await this.NbTester.pySpark3NbTest(this.test.title);
 			});
 		}
 	});
@@ -56,7 +56,7 @@ if (context.RunTest) {
 
 class NotebookTester {
 	setup() {
-		console.log(`environment variable SuiteType set to ${process.env.SuiteType}`);
+		console.log(`environment variable SuiteType is set to ${process.env.SuiteType}`);
 	}
 
 	async cleanup(testName: string) {
@@ -93,7 +93,7 @@ class NotebookTester {
 		assert(actualOutput2[0] === '1', `Expected result: 1, Actual: '${actualOutput2[0]}'`);
 	}
 
-	async ClearAllOutputsSqlNb(testName: string) {
+	async clearAllOutputsSqlNb(testName: string) {
 		let notebook = await this.openNotebook(sqlNotebookContent, sqlKernelMetadata, testName);
 		await this.verifyClearAllOutputs(notebook);
 	}
