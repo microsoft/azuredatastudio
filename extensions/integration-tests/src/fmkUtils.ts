@@ -12,7 +12,7 @@ export enum SuiteType {
 	Integration = 'Integration',
 	Perf = 'Perf',
 	Stress = 'Stress',
-	Unknown = ''
+	// Unknown = ''
 }
 
 /**
@@ -26,14 +26,14 @@ function toCapitalizedCase(inputString: string): string {
 	return inputString;
 }
 
-let suite: SuiteType = SuiteType.Unknown;
+let suite: SuiteType = null;
 
 /**
  * gets the suiteType as defined by the environment variable {@link SuiteType}
  * @returns - returns a value of type {@link SuiteType}
  */
 export function getSuiteType(): SuiteType {
-	if (suite === SuiteType.Unknown) {
+	if (suite === null) {
 		let suiteType: string = toCapitalizedCase(process.env.SuiteType);
 		if (suiteType in SuiteType) {
 			suite = SuiteType[suiteType];

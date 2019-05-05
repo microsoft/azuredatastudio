@@ -5,7 +5,7 @@
 
 'use strict';
 import 'mocha';
-import { runOnCodeLoad } from '../src/fmkUtils';
+import { runOnCodeLoad, getSuiteType, SuiteType } from '../src/fmkUtils';
 import { stressify, sleep, bear, StressResult } from '../src/stressutils';
 import assert = require('assert');
 
@@ -21,6 +21,57 @@ class StressifyTester {
 	setup() {
 		process.env.SuiteType = 'Stress';
 		console.log(`environment variable SuiteType set to ${process.env.SuiteType}`);
+	}
+
+	randomString(length: number = 8): string {
+		// ~~ is double bitwise not operator which is a faster substitute for Math.floor() for positive numbers. Techinically ~~ just removes everything to the right of decimal point.
+		//
+		return [...Array(length)].map(i => (~~(Math.random() * 36)).toString(36)).join('');
+	}
+
+	envVariableTests() {
+		let origSuiteType: string = process.env.SuiteType;
+
+		const tests = [
+			{
+				'testDescription': `env SuiteType set to undefined should default to ${SuiteType.Integration}`,
+				'envSuiteType': undefined,
+				'expected': SuiteType.Integration
+			},
+			{
+				'testMessage': `env SuiteType set to empty string should default to ${SuiteType.Integration}`,
+				'envSuiteType': '',
+				'expected': SuiteType.Integration
+			},
+			{
+				'testDescription': `env SuiteType set to null should default to ${SuiteType.Integration}`,
+				'envSuiteType': null,
+				'expected': SuiteType.Integration
+			},
+			{
+				'testDescription': `env SuiteType set to random string which is not ${SuiteType.Stress} or ${SuiteType.Perf} should default to ${SuiteType.Integration}`,
+				'envSuiteType': `${this.randomString()}`,
+				'expected': SuiteType.Integration
+			},
+			{
+				'testDescription': `env SuiteType set to ${SuiteType.Stress} string should default to ${SuiteType.Integration}`,
+				'envSuiteType': 'sTreSS',
+				'expected': SuiteType.Stress
+			},
+			{
+				'testDescription': `env SuiteType set to ${SuiteType.Stress} string should default to ${SuiteType.Integration}`,
+				'envSuiteType': 'PErf',
+				'expected': SuiteType.Perf
+			},
+		];
+		delete process.env.SuiteType;
+		assert.equal(getSuiteType(), SuiteType.Integration, `When env SuiteType is not set/present then SuiteType is set to ${SuiteType.Integration}`);
+		tests.map(test => {
+			process.env.SuiteType = test.envSuiteType;
+			assert.equal(getSuiteType(), test.expected, test.testMessage);
+		});
+
+		process.env.SuiteType = origSuiteType;
 	}
 
 	@stressify({ dop: StressifyTester.dop, iterations: StressifyTester.iter })
