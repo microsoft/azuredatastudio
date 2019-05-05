@@ -38,6 +38,7 @@ export class CellModel implements ICellModel {
 	private _cellUri: URI;
 	public id: string;
 	private _connectionManagementService: IConnectionManagementService;
+	private _stdInHandler: nb.MessageHandler<nb.IStdinMessage>;
 
 	constructor(private factory: IModelFactory, cellData?: nb.ICellContents, private _options?: ICellModelOptions) {
 		this.id = `${modelId++}`;
@@ -305,6 +306,7 @@ export class CellModel implements ICellModel {
 		this._future = future;
 		future.setReplyHandler({ handle: (msg) => this.handleReply(msg) });
 		future.setIOPubHandler({ handle: (msg) => this.handleIOPub(msg) });
+		future.setStdInHandler({ handle: (msg) => this.handleSdtIn(msg) });
 	}
 
 	public clearOutputs(): void {
@@ -425,6 +427,33 @@ export class CellModel implements ICellModel {
 	private getDisplayId(msg: nb.IIOPubMessage): string | undefined {
 		let transient = (msg.content.transient || {});
 		return transient['display_id'] as string;
+	}
+
+	public setStdInHandler(handler: nb.MessageHandler<nb.IStdinMessage>): void {
+		this._stdInHandler = handler;
+	}
+
+	/**
+	 * StdIn requires user interaction, so this is deferred to upstream UI
+	 * components. If one is registered the cell will call and wait on it, if not
+	 * it will immediately return to unblock error handling
+	 */
+	private handleSdtIn(msg: nb.IStdinMessage): void | Thenable<void> {
+		let handler = async () => {
+			if (!this._stdInHandler) {
+				// No-op
+				return;
+			}
+			try {
+				await this._stdInHandler.handle(msg);
+			} catch (err) {
+				if (this.future) {
+					// TODO should we error out in this case somehow? E.g. send Ctrl+C?
+					this.future.sendInputReply({ value: '' });
+				}
+			}
+		};
+		return handler();
 	}
 
 	public toJSON(): nb.ICellContents {

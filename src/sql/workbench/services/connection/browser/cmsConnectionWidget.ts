@@ -5,20 +5,15 @@
 
 import 'vs/css!./media/sqlConnection';
 
-import { Button } from 'sql/base/browser/ui/button/button';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
-import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import * as DialogHelper from 'sql/workbench/browser/modal/dialogHelper';
 import { IConnectionComponentCallbacks } from 'sql/workbench/services/connection/browser/connectionDialogService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import * as Constants from 'sql/platform/connection/common/constants';
-import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
-import { Dropdown } from 'sql/base/browser/ui/editableDropdown/dropdown';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import * as styler from 'sql/platform/theme/common/styler';
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 
@@ -56,7 +51,7 @@ export class CmsConnectionWidget extends ConnectionWidget {
 		@IConfigurationService _configurationService: IConfigurationService,
 		@IAccountManagementService _accountManagementService: IAccountManagementService
 	) {
-		super(options, callbacks, providerName, _themeService, _contextViewService, _layoutService, _connectionManagementService, _capabilitiesService,
+		super(options, callbacks, providerName, _themeService, _contextViewService, _connectionManagementService, _capabilitiesService,
 			_clipboardService, _configurationService, _accountManagementService);
 		let authTypeOption = this._optionsMaps[ConnectionOptionSpecialType.authType];
 		if (authTypeOption) {
@@ -97,16 +92,15 @@ export class CmsConnectionWidget extends ConnectionWidget {
 	}
 
 	protected addAuthenticationTypeOption(authTypeChanged: boolean = false): void {
-		super.addAuthenticationTypeOption();
+		super.addAuthenticationTypeOption(authTypeChanged);
 		let authTypeOption = this._optionsMaps[ConnectionOptionSpecialType.authType];
 		let newAuthTypes = authTypeOption.categoryValues;
+		// True when opening a CMS dialog to add a registered server
 		if (authTypeChanged) {
+			// Need to filter out SQL Login because registered servers don't support it
 			newAuthTypes = authTypeOption.categoryValues.filter((option) => option.name !== AuthenticationType.SqlLogin);
-		}
-		if (this._authTypeSelectBox) {
+			authTypeOption.defaultValue = AuthenticationType.Integrated;
 			this._authTypeSelectBox.setOptions(newAuthTypes.map(c => c.displayName));
-		} else {
-			this._authTypeSelectBox = new SelectBox(newAuthTypes.map(c => c.displayName), authTypeOption.defaultValue, this._contextViewService, undefined, { ariaLabel: authTypeOption.displayName });
 		}
 	}
 

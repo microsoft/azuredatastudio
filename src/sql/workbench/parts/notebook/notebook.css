@@ -24,6 +24,7 @@
 .notebookEditor .actionbar-container .monaco-action-bar > ul.actions-container {
 	padding-top: 4px;
 	padding-bottom: 4px;
+	min-height: 21px;
 }
 
 .notebookEditor .actions-container .action-item .notebook-button {
@@ -35,12 +36,16 @@
 	padding-left: 18px;
 	background-size: 13px;
 	margin-right: 20px;
-	font-size: 11px;
+	font-size: 13px;
+	height: 21px;
 }
 
 .notebookEditor .labelOnLeftContainer {
 	min-width: 100px;
 	margin-right: 20px;
+	font-size: 13px;
+	text-align: center;
+	vertical-align: bottom;
 }
 
 .notebookEditor .notebook-button.icon-add{

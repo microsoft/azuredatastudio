@@ -73,19 +73,19 @@ class ObjectExplorerTester {
 		await this.VerifyOeNode(server, 6000, expectedNodeLabel);
 	}
 
-	async VerifyOeNode(server: TestServerProfile, timeout: number, expectedNodeLable: string[]) {
-		await connectToServer(server, timeout);
-		let nodes = <azdata.objectexplorer.ObjectExplorerNode[]>await azdata.objectexplorer.getActiveConnectionNodes();
-		assert(nodes.length > 0, `Expecting at least one active connection, actual: ${nodes.length}`);
+  async function VerifyOeNode(server: TestServerProfile, timeout: number, expectedNodeLabel: string[]) {
+    await connectToServer(server, timeout);
+    let nodes = <azdata.objectexplorer.ObjectExplorerNode[]>await azdata.objectexplorer.getActiveConnectionNodes();
+    assert(nodes.length > 0, `Expecting at least one active connection, actual: ${nodes.length}`);
 
-		let index = nodes.findIndex(node => node.nodePath.includes(server.serverName));
-		assert(index !== -1, `Failed to find server: "${server.serverName}" in OE tree`);
-		let actualNodeLable = [];
-		let childeren = await nodes[index].getChildren();
-		assert(childeren.length === expectedNodeLable.length, `Expecting node count: ${expectedNodeLable.length}, Actual: ${childeren.length}`);
+    let index = nodes.findIndex(node => node.nodePath.includes(server.serverName));
+    assert(index !== -1, `Failed to find server: "${server.serverName}" in OE tree`);
+    let actualNodeLabel = [];
+    let children = await nodes[index].getChildren();
+    assert(children.length === expectedNodeLabel.length, `Expecting node count: ${expectedNodeLabel.length}, Actual: ${children.length}`);
 
-		childeren.forEach(c => actualNodeLable.push(c.label));
-		assert(expectedNodeLable.toLocaleString() === actualNodeLable.toLocaleString(), `Expected node label: "${expectedNodeLable}", Actual: "${actualNodeLable}"`);
-	}
+    children.forEach(c => actualNodeLabel.push(c.label));
+    assert(expectedNodeLabel.toLocaleString() === actualNodeLabel.toLocaleString(), `Expected node label: "${expectedNodeLabel}", Actual: "${actualNodeLabel}"`);
+  }
 }
 

@@ -8,46 +8,69 @@
 }
 
 .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .task-group {
-	padding: 5px;
-	overflow: hidden;
+	line-height: 22px;
+	display: flex;
 }
 
 /* task label and description */
-.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .task-group > .task-details > .label {
+.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .task-group > .label {
 	text-overflow: ellipsis;
 	overflow: hidden;
-	font-weight: 700;
+	font-weight: bold;
 }
 
 /* style for server name | database name */
-.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .task-group > .task-details > .description {
+.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .task-group > .description {
 	text-overflow: ellipsis;
 	overflow: hidden;
-	padding-left: 25px
+	padding-left: 12px
 }
 
 /* style for timing */
-.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .task-group > .task-details > .time {
-	padding-left: 25px;
+.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .task-group > .time {
+	padding-left: 12px;
 	opacity: .6;
-	font-size: 80%;
 	text-overflow: ellipsis;
-	overflow: hidden;
+	font-style: italic
 }
 
 /* task icon status */
 .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .task-group > .task-icon {
-	float: left;
-	height: 16px;
-	width: 16px;
-	padding-right: 10px;
+	background-size: 16px;
+	background-position: left center;
+	background-repeat: no-repeat;
+	padding-right: 6px;
+	width: 22px;
+	height: 22px;
+	display: inline-block;
 }
 
 .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .task-group > .task-icon.not-started {
-	content: url('status_queuedtask.svg');
+	background-image: url('status_queuedtask.svg');
 }
 
 .vs-dark .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .task-group > .task-icon.not-started,
 .hc-black .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .task-group > .task-icon.not-started {
-	content: url('status_queuedtask_inverse.svg');
+	background-image: url('status_queuedtask_inverse.svg');
+}
+
+.vs .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .task-group > .task-icon.in-progress {
+	background-image: url("loading.svg");
+}
+
+.vs-dark .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .task-group > .task-icon.in-progress,
+.hc-black .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .task-group > .task-icon.in-progress {
+	background-image: url("loading_inverse.svg");
+}
+
+.vs .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .task-group > .task-icon.success,
+.vs-dark .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .task-group > .task-icon.success,
+.hc-black .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .task-group > .task-icon.success {
+	background-image: url("status_success.svg");
+}
+
+.vs .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .task-group > .task-icon.canceled,
+.vs-dark .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .task-group > .task-icon.canceled,
+.hc-black .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .task-group > .task-icon.canceled {
+	background-image: url("status_cancelled.svg");
 }

@@ -7,9 +7,9 @@ import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectio
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ITree, IDragAndDrop, IDragOverReaction, DRAG_OVER_ACCEPT_BUBBLE_DOWN, DRAG_OVER_REJECT } from 'vs/base/parts/tree/browser/tree';
-import * as Constants from 'sql/platform/connection/common/constants';
 import { DragMouseEvent } from 'vs/base/browser/mouseEvent';
 import { TreeUpdateUtils } from 'sql/workbench/parts/objectExplorer/browser/treeUpdateUtils';
+import { UNSAVED_GROUP_ID } from 'sql/platform/connection/common/constants';
 import { IDragAndDropData } from 'vs/base/browser/dnd';
 
 /**
@@ -141,7 +141,7 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 
 		let isDropToItself = source && targetConnectionProfileGroup && (source instanceof ConnectionProfileGroup) && source.name === targetConnectionProfileGroup.name;
 		let isDropToSameLevel = oldParent && oldParent.equals(targetConnectionProfileGroup);
-		let isUnsavedDrag = source && (source instanceof ConnectionProfileGroup) && (source.id === Constants.unsavedGroupId);
+		let isUnsavedDrag = source && (source instanceof ConnectionProfileGroup) && (source.id === UNSAVED_GROUP_ID);
 		return (!isDropToSameLevel && !isDropToItself && !isUnsavedDrag);
 	}
 }

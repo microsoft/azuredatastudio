@@ -11,8 +11,8 @@ import { IContextViewProvider, AnchorAlignment } from 'vs/base/browser/ui/contex
 import * as dom from 'vs/base/browser/dom';
 import { RenderOptions, renderFormattedText, renderText } from 'vs/base/browser/htmlContentRenderer';
 import { IMessage, MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
-import aria = require('vs/base/browser/ui/aria/aria');
-import nls = require('vs/nls');
+import * as aria from 'vs/base/browser/ui/aria/aria';
+import * as nls from 'vs/nls';
 
 const $ = dom.$;
 

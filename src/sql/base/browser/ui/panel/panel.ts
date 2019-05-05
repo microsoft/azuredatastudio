@@ -3,17 +3,23 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IThemable } from 'vs/platform/theme/common/styler';
+import 'vs/css!./media/panel';
+
 import { Event, Emitter } from 'vs/base/common/event';
 import * as DOM from 'vs/base/browser/dom';
 import { IAction } from 'vs/base/common/actions';
 import { IActionOptions, ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
-import './panelStyles';
 import { Disposable, IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { Color } from 'vs/base/common/color';
 
-export interface IPanelStyles {
+export interface ITabbedPanelStyles {
+	titleActiveForeground?: Color;
+	titleActiveBorder?: Color;
+	titleInactiveForeground?: Color;
+	focusBorder?: Color;
+	outline?: Color;
 }
 
 export interface IPanelOptions {
@@ -45,7 +51,7 @@ const defaultOptions: IPanelOptions = {
 
 export type PanelTabIdentifier = string;
 
-export class TabbedPanel extends Disposable implements IThemable {
+export class TabbedPanel extends Disposable {
 	private _tabMap = new Map<PanelTabIdentifier, IInternalPanelTab>();
 	private _shownTabId?: PanelTabIdentifier;
 	public readonly headersize = 35;
@@ -57,6 +63,7 @@ export class TabbedPanel extends Disposable implements IThemable {
 	private _currentDimensions: DOM.Dimension;
 	private _collapsed = false;
 	private _headerVisible: boolean;
+	private _styleElement: HTMLStyleElement;
 
 	private _onTabChange = new Emitter<PanelTabIdentifier>();
 	public onTabChange: Event<PanelTabIdentifier> = this._onTabChange.event;
@@ -66,6 +73,7 @@ export class TabbedPanel extends Disposable implements IThemable {
 	constructor(container: HTMLElement, private options: IPanelOptions = defaultOptions) {
 		super();
 		this.parent = DOM.$('.tabbedPanel');
+		this._styleElement = DOM.createStyleSheet(this.parent);
 		container.appendChild(this.parent);
 		this.header = DOM.$('.composite.title');
 		this.tabList = DOM.$('.tabList');
@@ -92,6 +100,7 @@ export class TabbedPanel extends Disposable implements IThemable {
 		this.tabList.remove();
 		this.body.remove();
 		this.parent.remove();
+		this._styleElement.remove();
 	}
 
 	public contains(tab: IPanelTab): boolean {
@@ -216,8 +225,60 @@ export class TabbedPanel extends Disposable implements IThemable {
 		}
 	}
 
-	public style(styles: IPanelStyles): void {
+	public style(styles: ITabbedPanelStyles): void {
+		const content: string[] = [];
 
+		if (styles.titleActiveForeground && styles.titleActiveBorder) {
+			content.push(`
+			.tabbedPanel > .title .tabList .tab:hover .tabLabel,
+			.tabbedPanel > .title .tabList .tab .tabLabel.active {
+				color: ${styles.titleActiveForeground};
+				border-bottom-color: ${styles.titleActiveBorder};
+				border-bottom-width: 2px;
+			}
+
+			.tabbedPanel > .title .tabList .tab-header.active {
+				outline: none;
+			}`);
+		}
+
+		if (styles.titleInactiveForeground) {
+			content.push(`
+			.tabbedPanel > .title .tabList .tab .tabLabel {
+				color: ${styles.titleInactiveForeground};
+			}`);
+		}
+
+		if (styles.focusBorder && styles.titleActiveForeground) {
+			content.push(`
+			.tabbedPanel > .title .tabList .tab .tabLabel:focus {
+				color: ${styles.titleActiveForeground};
+				border-bottom-color: ${styles.focusBorder} !important;
+				border-bottom: 1px solid;
+				outline: none;
+			}`);
+		}
+
+		if (styles.outline) {
+			content.push(`
+			.tabbedPanel > .title .tabList .tab-header.active,
+			.tabbedPanel > .title .tabList .tab-header:hover {
+				outline-color: ${styles.outline};
+				outline-width: 1px;
+				outline-style: solid;
+				padding-bottom: 0;
+				outline-offset: -5px;
+			}
+
+			.tabbedPanel > .title .tabList .tab-header:hover:not(.active) {
+				outline-style: dashed;
+			}`);
+		}
+
+		const newStyles = content.join('\n');
+		if (newStyles !== this._styleElement.innerHTML) {
+			this._styleElement.innerHTML = newStyles;
+		}
 	}
 
 	public layout(dimension: DOM.Dimension): void {

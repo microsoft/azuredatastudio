@@ -8,7 +8,6 @@ import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { ExtHostObjectExplorerShape, SqlMainContext, MainThreadObjectExplorerShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { entries } from 'sql/base/common/objects';
 
 export class ExtHostObjectExplorer implements ExtHostObjectExplorerShape {
 
@@ -41,7 +40,7 @@ export class ExtHostObjectExplorer implements ExtHostObjectExplorerShape {
 	}
 }
 
-class ExtHostObjectExplorerNode implements azdata.objectexplorer.ObjectExplorerNode {
+export class ExtHostObjectExplorerNode implements azdata.objectexplorer.ObjectExplorerNode {
 	public connectionId: string;
 	public nodePath: string;
 	public nodeType: string;
@@ -74,11 +73,21 @@ class ExtHostObjectExplorerNode implements azdata.objectexplorer.ObjectExplorerN
 	}
 
 	getParent(): Thenable<azdata.objectexplorer.ObjectExplorerNode> {
-		let parentPathEndIndex = this.nodePath.lastIndexOf('/');
-		if (parentPathEndIndex === -1) {
-			return Promise.resolve(undefined);
+		// Object nodes have a name like <schema>.<name> in the nodePath - we can't use label because
+		// that may have additional display information appended to it. Items without metadata are nodes
+		// such as folders that don't correspond to actual objects and so just use the label
+		let nodePathName = this.metadata ?
+			`${this.metadata.schema ? this.metadata.schema + '.' : ''}${this.metadata.name}` :
+			this.label;
+
+		// -1 to remove the / as well
+		let parentPathEndIndex: number = this.nodePath.lastIndexOf(nodePathName) - 1;
+		if (parentPathEndIndex < 0) {
+			// At root node
+			Promise.resolve(undefined);
 		}
-		return this._proxy.$getNode(this.connectionId, this.nodePath.slice(0, parentPathEndIndex)).then(nodeInfo => nodeInfo ? new ExtHostObjectExplorerNode(nodeInfo, this.connectionId, this._proxy) : undefined);
+		return this._proxy.$getNode(this.connectionId, this.nodePath.slice(0, parentPathEndIndex)).then(
+			nodeInfo => nodeInfo ? new ExtHostObjectExplorerNode(nodeInfo, this.connectionId, this._proxy) : undefined);
 	}
 
 	refresh(): Thenable<void> {

@@ -4,7 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as nls from 'vscode-nls';
 import { DacFxDataModel } from './models';
+
+const localize = nls.loadMessageBundle();
 
 export abstract class BasePage {
 
@@ -69,11 +72,11 @@ export abstract class BasePage {
 			let srv = c.options.server;
 
 			if (!db) {
-				db = '<default>';
+				db = localize('basePage.defaultDb', '<default>');
 			}
 
 			if (!usr) {
-				usr = 'default';
+				usr = localize('basePage.defaultUser', 'default');
 			}
 
 			let finalName = `${srv}, ${db} (${usr})`;

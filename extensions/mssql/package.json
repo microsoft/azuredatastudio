@@ -561,7 +561,7 @@
           "description": "%mssql.connectionOptions.connectTimeout.description%",
           "groupName": "Initialization",
           "valueType": "number",
-          "defaultValue": "15",
+          "defaultValue": "30",
           "objectType": null,
           "categoryValues": null,
           "isRequired": false,

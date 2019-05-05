@@ -20,10 +20,10 @@ import { ModelComponentWrapper } from 'sql/workbench/electron-browser/modelCompo
 import { ComponentHostDirective } from 'sql/workbench/parts/dashboard/common/componentHost.directive';
 import { IBootstrapParams, ISelector, providerIterator } from 'sql/platform/bootstrap/node/bootstrapService';
 import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
-import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox.component';
-import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox.component';
-import { EditableDropDown } from 'sql/base/browser/ui/editableDropdown/editableDropdown.component';
-import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox.component';
+import { EditableDropDown } from 'sql/platform/electron-browser/editableDropdown/editableDropdown.component';
+import { Checkbox } from 'sql/base/electron-browser/ui/checkbox/checkbox.component';
+import { SelectBox } from 'sql/platform/ui/electron-browser/selectBox/selectBox.component';
+import { InputBox } from 'sql/base/electron-browser/ui/inputBox/inputBox.component';
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Registry } from 'vs/platform/registry/common/platform';

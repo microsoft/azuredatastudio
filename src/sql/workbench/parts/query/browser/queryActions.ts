@@ -27,8 +27,7 @@ import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { attachEditableDropdownStyler, attachSelectBoxStyler } from 'sql/platform/theme/common/styler';
 import { EventEmitter } from 'sql/base/common/eventEmitter';
-import { Dropdown } from 'sql/base/browser/ui/editableDropdown/dropdown';
-import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
+import { Dropdown } from 'sql/base/parts/editableDropdown/browser/dropdown';
 
 /**
  * Action class that query-based Actions will extend. This base class automatically handles activating and
@@ -449,8 +448,7 @@ export class ListDatabasesActionItem extends EventEmitter implements IActionItem
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@INotificationService private _notificationService: INotificationService,
 		@IContextViewService contextViewProvider: IContextViewService,
-		@IConfigurationService private readonly _configurationService: IConfigurationService,
-		@ILayoutService layoutService: ILayoutService
+		@IConfigurationService private readonly _configurationService: IConfigurationService
 	) {
 		super();
 		this._toDispose = [];
@@ -464,7 +462,7 @@ export class ListDatabasesActionItem extends EventEmitter implements IActionItem
 			this._databaseSelectBox.disable();
 
 		} else {
-			this._dropdown = new Dropdown(this._databaseListDropdown, contextViewProvider, layoutService, {
+			this._dropdown = new Dropdown(this._databaseListDropdown, contextViewProvider, {
 				strictSelection: true,
 				placeholder: this._selectDatabaseString,
 				ariaLabel: this._selectDatabaseString,

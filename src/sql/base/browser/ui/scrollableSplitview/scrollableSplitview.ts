@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!./scrollableSplitview';
+import 'vs/css!./media/scrollableSplitview';
 import { HeightMap, IView as HeightIView, IViewItem as HeightIViewItem } from './heightMap';
 
 import { IDisposable, combinedDisposable, toDisposable } from 'vs/base/common/lifecycle';
@@ -611,9 +611,9 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 		} else {
 			item.size = size;
 			this.updateSize(item.view.id!, size);
-			let top = item.top + item.size;
-			for (let i = index + 1; i < this.viewItems.length; i++) {
-				let currentItem = this.viewItems[i];
+			let top: number = 0;
+			for (let i = 0; i < this.viewItems.length; i++) {
+				let currentItem: IViewItem = this.viewItems[i];
 				this.updateTop(currentItem.view.id!, top);
 				top += currentItem.size;
 			}
