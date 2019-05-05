@@ -98,7 +98,6 @@ export class ExtHostModalDialogs implements ExtHostModalDialogsShape {
 	createDialog(
 		title: string
 	): azdata.ModalDialog {
-		console.log(title);
 		const handle = ExtHostModalDialogs._handlePool++;
 		this._proxy.$createDialog(handle);
 

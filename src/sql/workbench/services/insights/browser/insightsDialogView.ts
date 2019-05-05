@@ -15,7 +15,6 @@ import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
 import { IInsightsDialogModel, ListResource, IInsightDialogActionContext, insertValueRegex } from 'sql/workbench/services/insights/common/insightsDialogService';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
-import { error } from 'sql/base/common/log';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { CopyInsightDialogSelectionAction } from 'sql/workbench/services/insights/common/insightDialogActions';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
@@ -40,7 +39,8 @@ import { SplitView, Orientation, Sizing } from 'vs/base/browser/ui/splitview/spl
 import { ViewletPanel, IViewletPanelOptions } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
+import { ILogService } from 'vs/platform/log/common/log';
+import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 
 const labelDisplay = nls.localize("insights.item", "Item");
 const valueDisplay = nls.localize("insights.value", "Value");
@@ -156,17 +156,18 @@ export class InsightsDialogView extends Modal {
 
 	constructor(
 		private _model: IInsightsDialogModel,
-		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IThemeService themeService: IThemeService,
-		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
-		@IContextMenuService private _contextMenuService: IContextMenuService,
+		@IClipboardService clipboardService: IClipboardService,
+		@ILayoutService layoutService: ILayoutService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
-		@ICommandService private _commandService: ICommandService,
-		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
-		@IClipboardService clipboardService: IClipboardService
+		@ILogService logService: ILogService,
+		@IInstantiationService private readonly _instantiationService: IInstantiationService,
+		@IContextMenuService private readonly _contextMenuService: IContextMenuService,
+		@ICommandService private readonly _commandService: ICommandService,
+		@ICapabilitiesService private readonly _capabilitiesService: ICapabilitiesService
 	) {
-		super(nls.localize("InsightsDialogTitle", "Insights"), TelemetryKeys.Insights, telemetryService, layoutService, clipboardService, themeService, contextKeyService);
+		super(nls.localize("InsightsDialogTitle", "Insights"), TelemetryKeys.Insights, telemetryService, layoutService, clipboardService, themeService, logService, contextKeyService);
 		this._model.onDataChange(e => this.build());
 	}
 
@@ -411,7 +412,7 @@ export class InsightsDialogView extends Modal {
 		if (match && match.length > 0) {
 			let index = this._model.columns.indexOf(match[1]);
 			if (index === -1) {
-				error('Could not find column', match[1]);
+				this.logService.error('Could not find column', match[1]);
 			} else {
 				database = database.replace(match[0], element.data[index]);
 			}
@@ -421,7 +422,7 @@ export class InsightsDialogView extends Modal {
 		if (match && match.length > 0) {
 			let index = this._model.columns.indexOf(match[1]);
 			if (index === -1) {
-				error('Could not find column', match[1]);
+				this.logService.error('Could not find column', match[1]);
 			} else {
 				server = server.replace(match[0], element.data[index]);
 			}
@@ -431,7 +432,7 @@ export class InsightsDialogView extends Modal {
 		if (match && match.length > 0) {
 			let index = this._model.columns.indexOf(match[1]);
 			if (index === -1) {
-				error('Could not find column', match[1]);
+				this.logService.error('Could not find column', match[1]);
 			} else {
 				user = user.replace(match[0], element.data[index]);
 			}

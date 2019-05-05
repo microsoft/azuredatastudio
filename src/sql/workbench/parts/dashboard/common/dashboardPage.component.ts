@@ -36,6 +36,7 @@ import Severity from 'vs/base/common/severity';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { ILogService } from 'vs/platform/log/common/log';
 
 const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.DashboardContributions);
 
@@ -97,7 +98,8 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
 		@Inject(INotificationService) private notificationService: INotificationService,
 		@Inject(IAngularEventingService) private angularEventingService: IAngularEventingService,
-		@Inject(IConfigurationService) private configurationService: IConfigurationService
+		@Inject(IConfigurationService) private configurationService: IConfigurationService,
+		@Inject(ILogService) private logService: ILogService
 	) {
 		super();
 	}
@@ -261,7 +263,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	}
 
 	private initTabComponents(value: IDashboardTab): { id: string; title: string; container: object; alwaysShow: boolean; } {
-		const containerResult = dashboardHelper.getDashboardContainer(value.container);
+		const containerResult = dashboardHelper.getDashboardContainer(value.container, this.logService);
 		if (!containerResult.result) {
 			return { id: value.id, title: value.title, container: { 'error-container': undefined }, alwaysShow: value.alwaysShow };
 		}
