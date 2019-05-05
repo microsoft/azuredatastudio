@@ -16,16 +16,16 @@ import { stressify } from './stressutils';
 if (context.RunTest) {
 	suite('Object Explorer integration suite', () => {
 		test('BDC instance node label test', async function () {
-			await (new ObjectExplorerTester()).BdcNodeLabelTest();
+			await (new ObjectExplorerTester()).bdcNodeLabelTest();
 		});
 		test('Standard alone instance node label test', async function () {
-			await (new ObjectExplorerTester()).StandaloneNodeLabelTest();
+			await (new ObjectExplorerTester()).standaloneNodeLabelTest();
 		});
 		test('Azure SQL DB instance node label test', async function () {
-			await (new ObjectExplorerTester()).AzureDbNodeLabelTest();
+			await (new ObjectExplorerTester()).azureDbNodeLabelTest();
 		});
 		test('context menu test', async function () {
-			await (new ObjectExplorerTester()).ContextMenuTest();
+			await (new ObjectExplorerTester()).contextMenuTest();
 		});
 	});
 }
@@ -33,7 +33,7 @@ if (context.RunTest) {
 class ObjectExplorerTester {
 
 	@stressify({ dop: 1 })
-	async ContextMenuTest() {
+	async contextMenuTest() {
 		let server = await getAzureServer();
 		await connectToServer(server, 3000);
 		let nodes = <azdata.objectexplorer.ObjectExplorerNode[]>await azdata.objectexplorer.getActiveConnectionNodes();
@@ -53,30 +53,30 @@ class ObjectExplorerTester {
 		assert(expectedActions.length === actions.length && expectedString === actualString, `Expected actions: "${expectedString}", Actual actions: "${actualString}"`);
 	}
 
-	async AzureDbNodeLabelTest() {
+	async azureDbNodeLabelTest() {
 		const expectedNodeLabel = ['Databases', 'Security'];
 		let server = await getAzureServer();
-		await this.VerifyOeNode(server, 3000, expectedNodeLabel);
+		await this.verifyOeNode(server, 3000, expectedNodeLabel);
 	}
 
-	async StandaloneNodeLabelTest() {
+	async standaloneNodeLabelTest() {
 		if (process.platform === 'win32') {
 			const expectedNodeLabel = ['Databases', 'Security', 'Server Objects'];
 			let server = await getStandaloneServer();
-			await this.VerifyOeNode(server, 3000, expectedNodeLabel);
+			await this.verifyOeNode(server, 3000, expectedNodeLabel);
 		}
 	}
 
-	async BdcNodeLabelTest() {
+	async bdcNodeLabelTest() {
 		const expectedNodeLabel = ['Databases', 'Security', 'Server Objects', 'Data Services'];
 		let server = await getBdcServer();
-		await this.VerifyOeNode(server, 6000, expectedNodeLabel);
+		await this.verifyOeNode(server, 6000, expectedNodeLabel);
 	}
 
-  async function VerifyOeNode(server: TestServerProfile, timeout: number, expectedNodeLabel: string[]) {
-    await connectToServer(server, timeout);
-    let nodes = <azdata.objectexplorer.ObjectExplorerNode[]>await azdata.objectexplorer.getActiveConnectionNodes();
-    assert(nodes.length > 0, `Expecting at least one active connection, actual: ${nodes.length}`);
+	async verifyOeNode(server: TestServerProfile, timeout: number, expectedNodeLabel: string[]) {
+		await connectToServer(server, timeout);
+		let nodes = <azdata.objectexplorer.ObjectExplorerNode[]>await azdata.objectexplorer.getActiveConnectionNodes();
+		assert(nodes.length > 0, `Expecting at least one active connection, actual: ${nodes.length}`);
 
     let index = nodes.findIndex(node => node.nodePath.includes(server.serverName));
     assert(index !== -1, `Failed to find server: "${server.serverName}" in OE tree`);

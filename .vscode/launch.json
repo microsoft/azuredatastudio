@@ -1,6 +1,7 @@
 {
 	"version": "0.1.0",
-	"configurations": [{
+	"configurations": [
+		{
 			"type": "node",
 			"request": "launch",
 			"name": "Gulp Build",

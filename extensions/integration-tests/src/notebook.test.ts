@@ -59,7 +59,7 @@ class NotebookTester {
 		console.log(`environment variable SuiteType set to ${process.env.SuiteType}`);
 	}
 
-	async Cleanup(testName: string) {
+	async cleanup(testName: string) {
 		try {
 			let fileName = getFileName(testName);
 			if (fs.existsSync(fileName)) {
@@ -80,7 +80,7 @@ class NotebookTester {
 		console.log(`Start "${testName}"`);
 	}
 
-	async SqlNbTest(testName: string) {
+	async sqlNbTest(testName: string) {
 		let notebook = await this.openNotebook(sqlNotebookContent, sqlKernelMetadata, testName);
 		const expectedOutput0 = '(1 row affected)';
 		let cellOutputs = notebook.document.cells[0].contents.outputs;
@@ -98,19 +98,19 @@ class NotebookTester {
 		await this.verifyClearAllOutputs(notebook);
 	}
 
-	async PySpark3NbTest(testName: string) {
+	async pySpark3NbTest(testName: string) {
 		let notebook = await this.openNotebook(pySparkNotebookContent, pySpark3KernelMetadata, testName);
 		let cellOutputs = notebook.document.cells[0].contents.outputs;
 		let sparkResult = (<azdata.nb.IStreamResult>cellOutputs[3]).text;
 		assert(sparkResult === '2', `Expected spark result: 2, Actual: ${sparkResult}`);
 	}
 
-	async ClearAllOutputsPython3Nb(testName: string) {
+	async clearAllOutputsPython3Nb(testName: string) {
 		let notebook = await this.openNotebook(pySparkNotebookContent, pythonKernelMetadata, testName);
 		await this.verifyClearAllOutputs(notebook);
 	}
 
-	async Python3NbTest(testName: string) {
+	async python3NbTest(testName: string) {
 		let notebook = await this.openNotebook(pySparkNotebookContent, pythonKernelMetadata, testName);
 		let cellOutputs = notebook.document.cells[0].contents.outputs;
 		console.log('Got cell outputs');
@@ -118,7 +118,7 @@ class NotebookTester {
 		assert(result === '2', `Expected python result: 2, Actual: ${result}`);
 	}
 
-	async SqlNbMultipleCellsTest(testName: string) {
+	async sqlNbMultipleCellsTest(testName: string) {
 		let notebook = await this.openNotebook(sqlNotebookMultipleCellsContent, sqlKernelMetadata, testName, true);
 		const expectedOutput0 = '(1 row affected)';
 		for (let i = 0; i < 3; i++) {

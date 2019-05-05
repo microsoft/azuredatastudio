@@ -180,7 +180,7 @@ class Stress {
 	 * @returns - {@link StressResult}.
 	 */
 	async Run(
-		originalMethod: any,
+		originalMethod: Function,
 		originalObject: any,
 		functionName: string,
 		args: any[],
@@ -200,14 +200,14 @@ class Stress {
 		let pendingPromises: Promise<void>[] = [];
 		console.log(`Running Stress on ${functionName} or ${JSON.stringify(originalMethod.prototype)} with args: ('${args.join('\',\'')}') with runtime=${runtime}, dop=${dop}, iterations=${iterations}, passThreshold=${passThreshold}`);
 		//console.log (`runtime=${runtime}, dop=${dop}, iterations=${iterations}, passThreshold=${passThreshold}`);
-		const IterativeLoop = async (tNo: number) => {
-			for (let iNo = 0; iNo < iterations; iNo++) {
-				console.log(`starting tNo=${tNo}:iNo=${iNo} instance`);
+		const IterativeLoop = async (t: number) => {
+			for (let i = 0; i < iterations; i++) {
+				console.log(`starting thread number=${t}:iteration number=${i} instance`);
 				try {
 					//console.log(`this=${JSON.stringify(this)}`);
 					//console.log(`originalObject=${JSON.stringify(originalObject)}`);
 					await originalMethod.apply(originalObject, args);
-					console.log(`tNo=${tNo}:iNo=${iNo} instance passed`);
+					console.log(`thread number=${t}:iteration number=${i} instance passed`);
 					numPasses++;
 				}
 				catch (err) {
@@ -216,15 +216,15 @@ class Stress {
 					err instanceof AssertionError
 						? fails.push(err)
 						: errors.push(new StressError(err));
-					console.log(`tNo=${tNo}:iNo=${iNo} instance failed/errored with error: ${err}`);
+					console.log(`thread number=${t}:iteration number=${i} instance failed/errored with error: ${err}`);
 				}
 			}
 		};
 
 		// Invoke the iterative loop defined above in parallel without awaiting each individually
 		//
-		for (let tNo = 0; tNo < dop; tNo++) {
-			pendingPromises.push(IterativeLoop(tNo));
+		for (let t = 0; t < dop; t++) {
+			pendingPromises.push(IterativeLoop(t));
 		}
 
 		// Now await all of the Promises for each of the above invocation.
@@ -252,13 +252,13 @@ const stresser = new Stress();
  * @param iterations - The desconstructed {@link StressOptions} option. see {@link StressOptions} for details.
  * @param passThreshold - The desconstructed {@link StressOptions} option. see {@link StressOptions} for details.
  */
-export function stressify({ runtime, dop, iterations, passThreshold }: StressOptions = DefaultStressOptions) {
+export function stressify({ runtime, dop, iterations, passThreshold }: StressOptions = DefaultStressOptions): (memberClass: any, memberName: string, memberDescriptor: PropertyDescriptor) => PropertyDescriptor {
 	// return the function that does the job of stressifying a test class method with decorator @stressify
 	//
 	console.log(`stressify FactoryDecorator called with runtime=${runtime}, dop=${dop}, iter=${iterations}, passThreshold=${passThreshold}`);
 
 	// The actual decorator function that modifies the original target method pointed to by the memberDiscriptor
-	return function (memberClass: any, memberName: string, memberDescriptor: PropertyDescriptor) {
+	return function (memberClass: any, memberName: string, memberDescriptor: PropertyDescriptor): PropertyDescriptor {
 		// stressify the target function pointed to by the descriptor.value only if
 		// SuiteType is stress
 		//
@@ -272,7 +272,7 @@ export function stressify({ runtime, dop, iterations, passThreshold }: StressOpt
 			console.log(`Stressifying ${memberName} since env variable SuiteType is set to ${SuiteType.Stress}`);
 			const originalMethod: Function = memberDescriptor.value;
 			//editing the descriptor/value parameter
-			memberDescriptor.value = async function (...args: any[]) {
+			memberDescriptor.value = async function (...args: any[]): Promise<StressResult> {
 				// note usage of originalMethod here
 				//
 				assert(stresser !== null && stresser !== undefined, 'stresser object must be defined');
