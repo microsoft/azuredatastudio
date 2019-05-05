@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Component, Input, Inject, ChangeDetectorRef, forwardRef, ElementRef, ViewChild } from '@angular/core';
+import { Component, Input, Inject, ChangeDetectorRef, forwardRef, ViewChild } from '@angular/core';
 import { BaseChartDirective } from 'ng2-charts';
 
 import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
@@ -16,9 +16,10 @@ import { LegendPosition, ChartType, defaultChartConfig, IChartConfig, IDataSet, 
 import * as colors from 'vs/platform/theme/common/colorRegistry';
 import * as types from 'vs/base/common/types';
 import { Disposable } from 'vs/base/common/lifecycle';
-import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as nls from 'vs/nls';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
+import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
+import { ILogService } from 'vs/platform/log/common/log';
 
 declare const Chart: any;
 
@@ -52,16 +53,16 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
-		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
-		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
-		@Inject(ITelemetryService) private telemetryService: ITelemetryService
+		@Inject(IThemeService) private themeService: IThemeService,
+		@Inject(ITelemetryService) private telemetryService: ITelemetryService,
+		@Inject(ILogService) private readonly logService: ILogService
 	) {
 		super();
 	}
 
 	init() {
-		this._register(this.themeService.onDidColorThemeChange(e => this.updateTheme(e)));
-		this.updateTheme(this.themeService.getColorTheme());
+		this._register(this.themeService.onThemeChange(e => this.updateTheme(e)));
+		this.updateTheme(this.themeService.getTheme());
 		// Note: must use a boolean to not render the canvas until all properties such as the labels and chart type are set.
 		// This is because chart.js doesn't auto-update anything other than dataset when re-rendering so defaults are used
 		// hence it's easier to not render until ready
@@ -75,7 +76,7 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 			this._hasError = true;
 			this._changeRef.detectChanges();
 		}
-		TelemetryUtils.addTelemetry(this.telemetryService, TelemetryKeys.ChartCreated, { type: this.chartType });
+		TelemetryUtils.addTelemetry(this.telemetryService, this.logService, TelemetryKeys.ChartCreated, { type: this.chartType });
 	}
 
 	/**
@@ -93,7 +94,7 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 		return this._options;
 	}
 
-	protected updateTheme(e: IColorTheme): void {
+	protected updateTheme(e: ITheme): void {
 		const foregroundColor = e.getColor(colors.editorForeground);
 		const foreground = foregroundColor ? foregroundColor.toString() : null;
 		const backgroundColor = e.getColor(colors.editorBackground);

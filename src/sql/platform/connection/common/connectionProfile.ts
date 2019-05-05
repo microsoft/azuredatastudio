@@ -3,17 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import * as azdata from 'azdata';
 import { ProviderConnectionInfo } from 'sql/platform/connection/common/providerConnectionInfo';
 import * as interfaces from 'sql/platform/connection/common/interfaces';
 import { equalsIgnoreCase } from 'vs/base/common/strings';
 import { generateUuid } from 'vs/base/common/uuid';
-import * as objects from 'sql/base/common/objects';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { isString } from 'vs/base/common/types';
+import { deepClone } from 'vs/base/common/objects';
 
 // Concrete implementation of the IConnectionProfile interface
 
@@ -217,7 +215,7 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 		connectionInfo.options = profile.options;
 
 		// append group ID and original display name to build unique OE session ID
-		connectionInfo.options = objects.clone(profile.options);
+		connectionInfo.options = deepClone(profile.options);
 		connectionInfo.options['groupId'] = connectionInfo.groupId;
 		connectionInfo.options['databaseDisplayName'] = connectionInfo.databaseName;
 
