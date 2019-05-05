@@ -10,6 +10,7 @@ import * as TelemetryUtils from 'sql/platform/telemetry/telemetryUtilities';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IBackupService, TaskExecutionMode } from 'sql/platform/backup/common/backupService';
 import { invalidProvider } from 'sql/base/common/errors';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export class BackupService implements IBackupService {
 
@@ -18,7 +19,8 @@ export class BackupService implements IBackupService {
 
 	constructor(
 		@IConnectionManagementService private _connectionService: IConnectionManagementService,
-		@ITelemetryService private _telemetryService: ITelemetryService
+		@ITelemetryService private _telemetryService: ITelemetryService,
+		@ILogService private logService: ILogService
 	) {
 	}
 
@@ -43,7 +45,7 @@ export class BackupService implements IBackupService {
 		return new Promise<azdata.BackupResponse>((resolve, reject) => {
 			const providerResult = this.getProvider(connectionUri);
 			if (providerResult) {
-				TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.BackupCreated, { provider: providerResult.providerName });
+				TelemetryUtils.addTelemetry(this._telemetryService, this.logService, TelemetryKeys.BackupCreated, { provider: providerResult.providerName });
 				providerResult.provider.backup(connectionUri, backupInfo, taskExecutionMode).then(result => {
 					resolve(result);
 				}, error => {

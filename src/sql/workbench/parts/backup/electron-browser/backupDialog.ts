@@ -16,8 +16,9 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { bootstrapAngular } from 'sql/platform/bootstrap/node/bootstrapService';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
-import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { append, $ } from 'vs/base/browser/dom';
+import { ILogService } from 'vs/platform/log/common/log';
+import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 
 export class BackupDialog extends Modal {
 	private _body: HTMLElement;
@@ -26,13 +27,14 @@ export class BackupDialog extends Modal {
 
 	constructor(
 		@IThemeService themeService: IThemeService,
-		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
+		@ILayoutService layoutService: ILayoutService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IClipboardService clipboardService: IClipboardService
+		@IClipboardService clipboardService: IClipboardService,
+		@ILogService logService: ILogService
 	) {
-		super('', TelemetryKeys.Backup, telemetryService, layoutService, clipboardService, themeService, contextKeyService, { isAngular: true, hasErrors: true });
+		super('', TelemetryKeys.Backup, telemetryService, layoutService, clipboardService, themeService, logService, contextKeyService, { isAngular: true, hasErrors: true });
 	}
 
 	protected renderBody(container: HTMLElement) {

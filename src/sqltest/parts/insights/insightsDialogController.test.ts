@@ -50,6 +50,7 @@ suite('Insights Dialog Controller Tests', () => {
 			instMoq.object,
 			connMoq.object,
 			undefined,
+			undefined,
 			undefined
 		);
 
