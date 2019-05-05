@@ -1564,11 +1564,6 @@ clap@^1.0.9:
   dependencies:
     chalk "^1.1.3"
 
-class-transformer@^0.1.8:
-  version "0.1.10"
-  resolved "https://registry.yarnpkg.com/class-transformer/-/class-transformer-0.1.10.tgz#350f168ebb4c1f87edb18b98dd973681fc20fff7"
-  integrity sha512-QiNdUxEvTBiUtc0KiapGVHhgaqGQVEhOfL9UEBnb9xRfcwmDJT5ijIDwcwJUTwXaT/kGvZZB4JCGsiuR5adX6g==
-
 class-utils@^0.3.5:
   version "0.3.6"
   resolved "https://registry.yarnpkg.com/class-utils/-/class-utils-0.3.6.tgz#f93369ae8b9a7ce02fd41faad0ca83033190c463"
@@ -1579,13 +1574,6 @@ class-utils@^0.3.5:
     isobject "^3.0.0"
     static-extend "^0.1.1"
 
-class-validator@^0.7.3:
-  version "0.7.3"
-  resolved "https://registry.yarnpkg.com/class-validator/-/class-validator-0.7.3.tgz#3c2821b8cf35fd8d5f4fcb8063bc57fb50049e7e"
-  integrity sha512-aRRlS1WlQ+52aHlmDCDX5dLwtpbg9is7i9yYhzQosTAVs86nX0Um8hb7ChTwMn7jfpyxxjAZpBrlrAc2tqNpYA==
-  dependencies:
-    validator "^7.0.0"
-
 class-validator@^0.9.1:
   version "0.9.1"
   resolved "https://registry.yarnpkg.com/class-validator/-/class-validator-0.9.1.tgz#d60e58c5d14abca0a41bce38cf792ad4c46d1531"
@@ -1593,11 +1581,6 @@ class-validator@^0.9.1:
   dependencies:
     google-libphonenumber "^3.1.6"
     validator "10.4.0"
-
-class-validators@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/class-validators/-/class-validators-1.0.1.tgz#7e8224f19a109356613d71544008c4350aba4a3b"
-  integrity sha512-eZq3QmGore9AjzSifMv1K2UwLvNl/cKowp0mQDiYt3CdSnVw+70g1kcHO47s+4VD/T9dVi/MgtrZmXtFndL3vQ==
 
 clean-css@3.4.6:
   version "3.4.6"
@@ -7691,11 +7674,6 @@ reduce-function-call@^1.0.1:
   dependencies:
     balanced-match "^0.4.2"
 
-reflect-metadata@^0.1.12:
-  version "0.1.13"
-  resolved "https://registry.yarnpkg.com/reflect-metadata/-/reflect-metadata-0.1.13.tgz#67ae3ca57c972a2aa1642b10fe363fe32d49dc08"
-  integrity sha512-Ts1Y/anZELhSsjMcU605fU9RE4Oi3p5ORujwbIKXfWa+0Zxs510Qrmrce5/Jowq3cHSZSJqBjypxmHarc+vEWg==
-
 reflect-metadata@^0.1.8:
   version "0.1.12"
   resolved "https://registry.yarnpkg.com/reflect-metadata/-/reflect-metadata-0.1.12.tgz#311bf0c6b63cd782f228a81abe146a2bfa9c56f2"
@@ -9318,15 +9296,6 @@ typescript-formatter@7.1.0:
     commandpost "^1.0.0"
     editorconfig "^0.15.0"
 
-typescript-param-validator@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/typescript-param-validator/-/typescript-param-validator-1.1.0.tgz#df67c705a9dcddf26eb90fe3d03c0b8f3a94a69f"
-  integrity sha512-DQlhfSQfoLpr+wZHhJQJfHXCibKIoJrwd1oJnBNeINve0L9tXeVwWP105ReqGPfSDYwmxUnhWz5e7BcLP5FcUg==
-  dependencies:
-    class-transformer "^0.1.8"
-    class-validator "^0.7.3"
-    reflect-metadata "^0.1.12"
-
 typescript-tslint-plugin@^0.0.7:
   version "0.0.7"
   resolved "https://registry.yarnpkg.com/typescript-tslint-plugin/-/typescript-tslint-plugin-0.0.7.tgz#675c26a54b0156aec404abc264d0a87642151d5a"
@@ -9627,11 +9596,6 @@ validator@10.4.0:
   version "10.4.0"
   resolved "https://registry.yarnpkg.com/validator/-/validator-10.4.0.tgz#ee99a44afb3bb5ed350a159f056ca72a204cfc3c"
   integrity sha512-Q/wBy3LB1uOyssgNlXSRmaf22NxjvDNZM2MtIQ4jaEOAB61xsh1TQxsq1CgzUMBV1lDrVMogIh8GjG1DYW0zLg==
-
-validator@^7.0.0:
-  version "7.2.0"
-  resolved "https://registry.yarnpkg.com/validator/-/validator-7.2.0.tgz#a63dcbaba51d4350bf8df20988e0d5a54d711791"
-  integrity sha512-c8NGTUYeBEcUIGeMppmNVKHE7wwfm3mYbNZxV+c5mlv9fDHI7Ad3p07qfNrn/CvpdkK2k61fOLRO2sTEhgQXmg==
 
 validator@~9.4.1:
   version "9.4.1"
