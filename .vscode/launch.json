@@ -199,7 +199,8 @@
 			"protocol": "inspector"
 		},
 	],
-	"compounds": [{
+	"compounds": [
+		{
 			"name": "Debug Unit Tests",
 			"configurations": [
 				"Attach to azuredatastudio",
