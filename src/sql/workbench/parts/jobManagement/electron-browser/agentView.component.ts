@@ -8,7 +8,7 @@ import 'vs/css!./media/jobs';
 import * as nls from 'vs/nls';
 import { Component, Inject, forwardRef, ChangeDetectorRef, ViewChild, Injectable } from '@angular/core';
 import { AgentJobInfo } from 'azdata';
-import { PanelComponent, IPanelOptions, NavigationBarLayout } from 'sql/base/browser/ui/panel/panel.component';
+import { PanelComponent, IPanelOptions, NavigationBarLayout } from 'sql/base/electron-browser/ui/panel/panel.component';
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
 import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardService';
 

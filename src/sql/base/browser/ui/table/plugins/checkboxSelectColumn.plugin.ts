@@ -1,7 +1,5 @@
 // Adopted and converted to typescript from https://github.com/6pac/SlickGrid/blob/master/plugins/slick.checkboxselectcolumn.js
 
-import 'vs/css!vs/base/browser/ui/checkbox/checkbox';
-
 import { mixin } from 'vs/base/common/objects';
 import * as nls from 'vs/nls';
 import { ICheckboxStyles } from 'vs/base/browser/ui/checkbox/checkbox';

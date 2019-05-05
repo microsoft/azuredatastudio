@@ -8,7 +8,7 @@ import { createDecorator } from 'vs/platform/instantiation/common/instantiation'
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ScriptOperation } from 'sql/workbench/common/taskUtilities';
 import * as azdata from 'azdata';
-import { error } from 'sql/base/common/log';
+import { ILogService } from 'vs/platform/log/common/log';
 export const SERVICE_ID = 'scriptingService';
 
 export const IScriptingService = createDecorator<IScriptingService>(SERVICE_ID);
@@ -48,7 +48,10 @@ export class ScriptingService implements IScriptingService {
 	private _providers: { [handle: string]: azdata.ScriptingProvider; } = Object.create(null);
 
 	private failedScriptingOperations: { [operationId: string]: azdata.ScriptingCompleteResult } = {};
-	constructor(@IConnectionManagementService private _connectionService: IConnectionManagementService) { }
+	constructor(
+		@IConnectionManagementService private _connectionService: IConnectionManagementService,
+		@ILogService private readonly logService: ILogService
+	) { }
 
 	/**
 	 * Call the service for scripting based on provider and scripting operation
@@ -70,7 +73,7 @@ export class ScriptingService implements IScriptingService {
 	 */
 	public onScriptingComplete(handle: number, scriptingCompleteResult: azdata.ScriptingCompleteResult): void {
 		if (scriptingCompleteResult && scriptingCompleteResult.hasError && scriptingCompleteResult.errorMessage) {
-			error(`Scripting failed. error: ${scriptingCompleteResult.errorMessage}`);
+			this.logService.error(`Scripting failed. error: ${scriptingCompleteResult.errorMessage}`);
 			if (scriptingCompleteResult.operationId) {
 				this.failedScriptingOperations[scriptingCompleteResult.operationId] = scriptingCompleteResult;
 			}

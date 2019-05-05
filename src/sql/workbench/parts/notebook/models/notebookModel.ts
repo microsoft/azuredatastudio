@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import { nb, connection } from 'azdata';
 
 import { localize } from 'vs/nls';
@@ -24,6 +22,7 @@ import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHos
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { uriPrefixes } from 'sql/platform/connection/common/utils';
 import { keys } from 'vs/base/common/map';
+import { ILogService } from 'vs/platform/log/common/log';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -74,7 +73,11 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _clientSessionListeners: IDisposable[] = [];
 	private _connectionUrisToDispose: string[] = [];
 
-	constructor(private _notebookOptions: INotebookModelOptions, startSessionImmediately?: boolean, public connectionProfile?: IConnectionProfile) {
+	constructor(
+		private _notebookOptions: INotebookModelOptions,
+		public connectionProfile: IConnectionProfile | undefined,
+		@ILogService private readonly logService: ILogService
+	) {
 		super();
 		if (!_notebookOptions || !_notebookOptions.notebookUri || !_notebookOptions.notebookManagers) {
 			throw new Error('path or notebook service not defined');
@@ -588,7 +591,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 						await this.updateKernelInfoOnKernelChange(kernel);
 					} catch (err2) {
 						// TODO should we handle this in any way?
-						console.log(`doChangeKernel: ignoring error ${notebookUtils.getErrorMessage(err2)}`);
+						this.logService.error(`doChangeKernel: ignoring error ${notebookUtils.getErrorMessage(err2)}`);
 					}
 				}
 			}
@@ -777,7 +780,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			}
 			await this.shutdownActiveSession();
 		} catch (err) {
-			console.log('An error occurred when closing the notebook: {0}', notebookUtils.getErrorMessage(err));
+			this.logService.error('An error occurred when closing the notebook: {0}', notebookUtils.getErrorMessage(err));
 		}
 	}
 
@@ -895,14 +898,14 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private async disconnectNotebookConnection(conn: ConnectionProfile): Promise<void> {
 		if (this.notebookOptions.connectionService.getConnectionUri(conn).includes(uriPrefixes.notebook)) {
 			let uri = this._notebookOptions.connectionService.getConnectionUri(conn);
-			await this.notebookOptions.connectionService.disconnect(uri).catch(e => console.log(e));
+			await this.notebookOptions.connectionService.disconnect(uri).catch(e => this.logService.error(e));
 		}
 	}
 
 	// Disconnect any connections that were added through the "Add new connection" functionality in the Attach To dropdown
 	private async disconnectAttachToConnections(): Promise<void> {
 		notebookUtils.asyncForEach(this._connectionUrisToDispose, async conn => {
-			await this.notebookOptions.connectionService.disconnect(conn).catch(e => console.log(e));
+			await this.notebookOptions.connectionService.disconnect(conn).catch(e => this.logService.error(e));
 		});
 		this._connectionUrisToDispose = [];
 	}

@@ -138,11 +138,11 @@ export class SchemaCompareResult {
 			}).component();
 
 			this.startText = view.modelBuilder.text().withProperties({
-				value: localize('schemaCompare.startText', 'Press Compare to start Schema Comparison')
+				value: localize('schemaCompare.startText', 'Press Compare to start Schema Comparison.')
 			}).component();
 
 			this.noDifferencesLabel = view.modelBuilder.text().withProperties({
-				value: localize('schemaCompare.noDifferences', 'No schema differences were found')
+				value: localize('schemaCompare.noDifferences', 'No schema differences were found.')
 			}).component();
 
 			this.flexModel = view.modelBuilder.flexContainer().component();

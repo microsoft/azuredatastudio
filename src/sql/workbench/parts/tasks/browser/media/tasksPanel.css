@@ -46,10 +46,31 @@
 }
 
 .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .task-group > .task-icon.not-started {
-	content: url('status_queuedtask.svg');
+	background-image: url('status_queuedtask.svg');
 }
 
 .vs-dark .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .task-group > .task-icon.not-started,
 .hc-black .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .task-group > .task-icon.not-started {
-	content: url('status_queuedtask_inverse.svg');
+	background-image: url('status_queuedtask_inverse.svg');
+}
+
+.vs .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .task-group > .task-icon.in-progress {
+	background-image: url("loading.svg");
+}
+
+.vs-dark .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .task-group > .task-icon.in-progress,
+.hc-black .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .task-group > .task-icon.in-progress {
+	background-image: url("loading_inverse.svg");
+}
+
+.vs .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .task-group > .task-icon.success,
+.vs-dark .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .task-group > .task-icon.success,
+.hc-black .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .task-group > .task-icon.success {
+	background-image: url("status_success.svg");
+}
+
+.vs .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .task-group > .task-icon.canceled,
+.vs-dark .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .task-group > .task-icon.canceled,
+.hc-black .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .task-group > .task-icon.canceled {
+	background-image: url("status_cancelled.svg");
 }
