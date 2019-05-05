@@ -134,11 +134,11 @@ export class SchemaCompareResult {
 
 			this.loader = view.modelBuilder.loadingComponent().component();
 			this.waitText = view.modelBuilder.text().withProperties({
-				value: localize('schemaCompare.WaitText', 'Initializing Comparision. This might take a moment.')
+				value: localize('schemaCompare.waitText', 'Initializing Comparison. This might take a moment.')
 			}).component();
 
 			this.startText = view.modelBuilder.text().withProperties({
-				value: localize('schemaCompare.StartText', 'Press Compare to start Schema Comparision')
+				value: localize('schemaCompare.startText', 'Press Compare to start Schema Comparison')
 			}).component();
 
 			this.noDifferencesLabel = view.modelBuilder.text().withProperties({
@@ -278,7 +278,7 @@ export class SchemaCompareResult {
 		return script;
 	}
 
-	private reExecute(): void {
+	private startCompare(): void {
 		this.flexModel.removeItem(this.splitView);
 		this.flexModel.removeItem(this.noDifferencesLabel);
 		this.flexModel.removeItem(this.startText);
@@ -306,7 +306,7 @@ export class SchemaCompareResult {
 		}).component();
 
 		this.compareButton.onDidClick(async (click) => {
-			this.reExecute();
+			this.startCompare();
 		});
 	}
 
@@ -389,8 +389,8 @@ export class SchemaCompareResult {
 		});
 	}
 
-	private resetButtons(beforeComparestart: boolean): void {
-		if (beforeComparestart) {
+	private resetButtons(beforeCompareStart: boolean): void {
+		if (beforeCompareStart) {
 			this.compareButton.enabled = true;
 			this.optionsButton.enabled = true;
 			this.switchButton.enabled = true;
@@ -441,7 +441,7 @@ export class SchemaCompareResult {
 				]
 			});
 
-			this.reExecute();
+			this.startCompare();
 		});
 	}
 
