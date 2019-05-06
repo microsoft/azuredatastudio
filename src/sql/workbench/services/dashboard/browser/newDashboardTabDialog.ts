@@ -30,7 +30,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 
 class ExtensionListDelegate implements IListVirtualDelegate<IDashboardUITab> {
 
-	private static HEIGHT = 101;
+	private static readonly HEIGHT = 101;
 
 	public getHeight(element: IDashboardUITab): number {
 		return ExtensionListDelegate.HEIGHT;
