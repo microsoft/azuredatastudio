@@ -26,7 +26,6 @@ import { QueryEditor } from 'sql/workbench/parts/query/browser/queryEditor';
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { attachEditableDropdownStyler, attachSelectBoxStyler } from 'sql/platform/theme/common/styler';
-import { EventEmitter } from 'sql/base/common/eventEmitter';
 import { Dropdown } from 'sql/base/parts/editableDropdown/browser/dropdown';
 
 /**
@@ -428,7 +427,7 @@ export class ListDatabasesAction extends QueryTaskbarAction {
  * Action item that handles the dropdown (combobox) that lists the available databases.
  * Based off StartDebugActionItem.
  */
-export class ListDatabasesActionItem extends EventEmitter implements IActionItem {
+export class ListDatabasesActionItem implements IActionItem {
 	public static ID = 'listDatabaseQueryActionItem';
 
 	public actionRunner: IActionRunner;
@@ -450,7 +449,6 @@ export class ListDatabasesActionItem extends EventEmitter implements IActionItem
 		@IContextViewService contextViewProvider: IContextViewService,
 		@IConfigurationService private readonly _configurationService: IConfigurationService
 	) {
-		super();
 		this._toDispose = [];
 		this._databaseListDropdown = $('.databaseListDropdown');
 		this._isInAccessibilityMode = this._configurationService.getValue('editor.accessibilitySupport') === 'on';

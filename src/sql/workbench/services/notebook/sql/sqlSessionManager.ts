@@ -8,7 +8,7 @@ import { nb, QueryExecuteSubsetResult, IDbColumn, BatchSummary, IResultMessage, 
 import { localize } from 'vs/nls';
 import * as strings from 'vs/base/common/strings';
 import { FutureInternal, ILanguageMagic, notebookConstants } from 'sql/workbench/parts/notebook/models/modelInterfaces';
-import QueryRunner, { EventType } from 'sql/platform/query/common/queryRunner';
+import QueryRunner from 'sql/platform/query/common/queryRunner';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import Severity from 'vs/base/common/severity';
@@ -304,18 +304,18 @@ class SqlKernel extends Disposable implements nb.IKernel {
 	}
 
 	private addQueryEventListeners(queryRunner: QueryRunner): void {
-		this._register(queryRunner.addListener(EventType.COMPLETE, () => {
+		this._register(queryRunner.onQueryEnd(() => {
 			this.queryComplete().catch(error => {
 				this._errorMessageService.showDialog(Severity.Error, sqlKernelError, error);
 			});
 		}));
-		this._register(queryRunner.addListener(EventType.MESSAGE, message => {
+		this._register(queryRunner.onMessage(message => {
 			// TODO handle showing a messages output (should be updated with all messages, only changing 1 output in total)
 			if (this._future) {
 				this._future.handleMessage(message);
 			}
 		}));
-		this._register(queryRunner.addListener(EventType.BATCH_COMPLETE, batch => {
+		this._register(queryRunner.onBatchEnd(batch => {
 			if (this._future) {
 				this._future.handleBatchEnd(batch);
 			}
