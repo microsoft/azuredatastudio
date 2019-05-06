@@ -30,13 +30,10 @@ import { ILogService } from 'vs/platform/log/common/log';
 
 class ExtensionListDelegate implements IListVirtualDelegate<IDashboardUITab> {
 
-	constructor(
-		private _height: number
-	) {
-	}
+	private static HEIGHT = 101;
 
 	public getHeight(element: IDashboardUITab): number {
-		return this._height;
+		return ExtensionListDelegate.HEIGHT;
 	}
 
 	public getTemplateId(element: IDashboardUITab): string {
@@ -92,7 +89,6 @@ class ExtensionListRenderer implements IListRenderer<IDashboardUITab, ExtensionL
 }
 
 export class NewDashboardTabDialog extends Modal {
-	public static EXTENSIONLIST_HEIGHT = 101;
 
 	// MEMBER letIABLES ////////////////////////////////////////////////////
 	private _addNewTabButton: Button;
@@ -168,7 +164,7 @@ export class NewDashboardTabDialog extends Modal {
 	private createExtensionList(container: HTMLElement) {
 		// Create a fixed list view for the extensions
 		let extensionTabViewContainer = DOM.$('.extensionTab-view');
-		let delegate = new ExtensionListDelegate(NewDashboardTabDialog.EXTENSIONLIST_HEIGHT);
+		let delegate = new ExtensionListDelegate();
 		let extensionTabRenderer = new ExtensionListRenderer();
 		this._extensionList = new List<IDashboardUITab>(extensionTabViewContainer, delegate, [extensionTabRenderer]);
 
