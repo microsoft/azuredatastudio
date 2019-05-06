@@ -163,9 +163,4 @@ export class ProsePreviewPage extends ImportPage {
 	private async emptyTable() {
 		this.table.updateProperties([]);
 	}
-
-	public isSuccessful(): boolean {
-		return this.isSuccess ? this.isSuccess : false;
-	}
-
 }
