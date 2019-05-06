@@ -287,7 +287,7 @@ export class TextCellComponent extends CellView implements OnInit, AfterContentI
 		this.toggleEditMode(this.isActive());
 
 		if (this.output && this.output.nativeElement) {
-			(<HTMLElement>this.output.nativeElement).scrollTo();
+			(<HTMLElement>this.output.nativeElement).scrollTo({ behavior: 'smooth' });
 		}
 	}
 
