@@ -21,7 +21,6 @@ import { hyperLinkFormatter, textFormatter } from 'sql/base/browser/ui/table/for
 import { CopyKeybind } from 'sql/base/browser/ui/table/plugins/copyKeybind.plugin';
 import { AdditionalKeyBindings } from 'sql/base/browser/ui/table/plugins/additionalKeyBindings.plugin';
 import { ITableStyles, ITableMouseEvent } from 'sql/base/browser/ui/table/interfaces';
-import { warn } from 'sql/base/common/log';
 
 import * as azdata from 'azdata';
 
@@ -43,6 +42,7 @@ import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/un
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IAction } from 'vs/base/common/actions';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
+import { ILogService } from 'vs/platform/log/common/log';
 
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
@@ -134,7 +134,8 @@ export class GridPanel extends ViewletPanel {
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@IThemeService private themeService: IThemeService,
-		@IInstantiationService private instantiationService: IInstantiationService
+		@IInstantiationService private instantiationService: IInstantiationService,
+		@ILogService private logService: ILogService
 	) {
 		super(options, keybindingService, contextMenuService, configurationService);
 		this.splitView = new ScrollableSplitView(this.container, { enableResizing: false, verticalScrollbarVisibility: ScrollbarVisibility.Visible });
@@ -257,7 +258,7 @@ export class GridPanel extends ViewletPanel {
 				if (table) {
 					table.updateResult(set);
 				} else {
-					warn('Got result set update request for non-existant table');
+					this.logService.warn('Got result set update request for non-existant table');
 				}
 			}
 			sizeChanges();

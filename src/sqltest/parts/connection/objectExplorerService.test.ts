@@ -18,6 +18,7 @@ import { ServerTreeView } from 'sql/workbench/parts/objectExplorer/browser/serve
 import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { Event, Emitter } from 'vs/base/common/event';
 import { CapabilitiesTestService } from 'sqltest/stubs/capabilitiesTestService';
+import { TestLogService } from 'vs/workbench/test/workbenchTestServices';
 
 suite('SQL Object Explorer Service tests', () => {
 	let sqlOEProvider: TypeMoq.Mock<ObjectExplorerProviderTestService>;
@@ -269,7 +270,8 @@ suite('SQL Object Explorer Service tests', () => {
 			}
 		};
 
-		objectExplorerService = new ObjectExplorerService(connectionManagementService.object, undefined, capabilitiesService);
+		const logService = new TestLogService();
+		objectExplorerService = new ObjectExplorerService(connectionManagementService.object, undefined, capabilitiesService, logService);
 		objectExplorerService.registerProvider('MSSQL', sqlOEProvider.object);
 		sqlOEProvider.setup(x => x.createNewSession(TypeMoq.It.is<azdata.ConnectionInfo>(x => x.options['serverName'] === connection.serverName))).returns(() => new Promise<any>((resolve) => {
 			resolve(response);

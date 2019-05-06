@@ -22,6 +22,7 @@ import { elapsedTimeLabel } from 'sql/workbench/parts/query/common/localizedCons
 import * as notebookUtils from 'sql/workbench/parts/notebook/notebookUtils';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export const sqlKernelError: string = localize("sqlKernelError", "SQL kernel error");
 export const MAX_ROWS = 5000;
@@ -166,7 +167,8 @@ class SqlKernel extends Disposable implements nb.IKernel {
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
-		@IConfigurationService private _configurationService: IConfigurationService
+		@IConfigurationService private _configurationService: IConfigurationService,
+		@ILogService private readonly logService: ILogService
 	) {
 		super();
 		this.initMagics();
@@ -261,7 +263,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 		// TODO verify this is "canonical" behavior
 		let count = canRun ? ++this._executionCount : undefined;
 
-		this._future = new SQLFuture(this._queryRunner, count, this._configurationService);
+		this._future = new SQLFuture(this._queryRunner, count, this._configurationService, this.logService);
 		if (!canRun) {
 			// Complete early
 			this._future.handleDone(new Error(localize('connectionRequired', "A connection must be chosen to run notebook cells")));
@@ -333,7 +335,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 				try {
 					await this._connectionManagementService.disconnect(this._path);
 				} catch (err) {
-					console.log(err);
+					this.logService.error(err);
 				}
 			}
 		}
@@ -348,7 +350,12 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	private doneDeferred = new Deferred<nb.IShellMessage>();
 	private configuredMaxRows: number = MAX_ROWS;
 	private _outputAddedPromises: Promise<void>[] = [];
-	constructor(private _queryRunner: QueryRunner, private _executionCount: number | undefined, private configurationService: IConfigurationService) {
+	constructor(
+		private _queryRunner: QueryRunner,
+		private _executionCount: number | undefined,
+		configurationService: IConfigurationService,
+		private readonly logService: ILogService
+	) {
 		super();
 		let config = configurationService.getValue(NotebookConfigSectionName);
 		if (config) {
@@ -450,7 +457,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 			}
 		} catch (err) {
 			// TODO should we output this somewhere else?
-			console.log(`Error outputting result sets from Notebook query: ${err}`);
+			this.logService.error(`Error outputting result sets from Notebook query: ${err}`);
 		}
 	}
 

@@ -14,6 +14,7 @@ import { FirewallRuleDialogController } from 'sql/platform/accounts/browser/fire
 
 import * as azdata from 'azdata';
 import { invalidProvider } from 'sql/base/common/errors';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export class ResourceProviderService implements IResourceProviderService {
 
@@ -24,6 +25,7 @@ export class ResourceProviderService implements IResourceProviderService {
 	constructor(
 		@ITelemetryService private _telemetryService: ITelemetryService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
+		@ILogService private readonly logService: ILogService
 	) {
 	}
 
@@ -47,7 +49,7 @@ export class ResourceProviderService implements IResourceProviderService {
 		return new Promise<azdata.CreateFirewallRuleResponse>((resolve, reject) => {
 			const provider = this._providers[resourceProviderId];
 			if (provider) {
-				TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.FirewallRuleRequested, { provider: resourceProviderId });
+				TelemetryUtils.addTelemetry(this._telemetryService, this.logService, TelemetryKeys.FirewallRuleRequested, { provider: resourceProviderId });
 				provider.createFirewallRule(selectedAccount, firewallruleInfo).then(result => {
 					resolve(result);
 				}, error => {

@@ -9,7 +9,6 @@ import { IInsightsConfigDetails } from 'sql/workbench/parts/dashboard/widgets/in
 import QueryRunner from 'sql/platform/query/common/queryRunner';
 import * as Utils from 'sql/platform/connection/common/utils';
 import { IInsightsDialogModel } from 'sql/workbench/services/insights/common/insightsDialogService';
-import { error } from 'sql/base/common/log';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { resolveQueryFilePath } from '../common/insightsUtils';
 
@@ -23,6 +22,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IConfigurationResolverService } from 'vs/workbench/services/configurationResolver/common/configurationResolver';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export class InsightsDialogController {
 	private _queryRunner: QueryRunner;
@@ -38,7 +38,8 @@ export class InsightsDialogController {
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IWorkspaceContextService private _workspaceContextService: IWorkspaceContextService,
-		@IConfigurationResolverService private _configurationResolverService: IConfigurationResolverService
+		@IConfigurationResolverService private _configurationResolverService: IConfigurationResolverService,
+		@ILogService private logService: ILogService
 	) { }
 
 	public async update(input: IInsightsConfigDetails, connectionProfile: IConnectionProfile): Promise<void> {
@@ -87,7 +88,7 @@ export class InsightsDialogController {
 					});
 				}
 			} else {
-				error('Error reading details Query: ', input);
+				this.logService.error('Error reading details Query: ', input);
 				this._notificationService.notify({
 					severity: Severity.Error,
 					message: nls.localize("insightsConfigError", "There was an error parsing the insight config; could not find query array/string or queryfile")

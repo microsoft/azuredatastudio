@@ -67,7 +67,7 @@ registry.registerWorkbenchAction(
 		ToggleTasksAction.ID,
 		ToggleTasksAction.LABEL,
 		{ primary: KeyMod.CtrlCmd | KeyCode.KEY_T }),
-	'View: Show Task History',
+	'View: Toggle Tasks',
 	localize('viewCategory', "View")
 );
 
@@ -87,7 +87,7 @@ Registry.as<PanelRegistry>(PanelExtensions.Panels).registerPanel(new PanelDescri
 MenuRegistry.appendMenuItem(MenuId.MenubarViewMenu, {
 	group: '4_panels',
 	command: {
-		id: TASKS_PANEL_ID,
+		id: ToggleTasksAction.ID,
 		title: localize({ key: 'miViewTasks', comment: ['&& denotes a mnemonic'] }, "&&Tasks")
 	},
 	order: 2

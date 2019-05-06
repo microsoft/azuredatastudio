@@ -23,6 +23,7 @@ import { IConnectionDialogService } from 'sql/workbench/services/connection/comm
 import { NotebookModel } from 'sql/workbench/parts/notebook/models/notebookModel';
 import { generateUri } from 'sql/platform/connection/common/utils';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
+import { ILogService } from 'vs/platform/log/common/log';
 
 const msgLoading = localize('loading', "Loading kernels...");
 const msgChanging = localize('changing', "Changing kernel...");
@@ -164,7 +165,11 @@ export class IMultiStateData<T> {
 
 export abstract class MultiStateAction<T> extends Action {
 
-	constructor(id: string, protected states: IMultiStateData<T>, private _keybindingService: IKeybindingService) {
+	constructor(
+		id: string,
+		protected states: IMultiStateData<T>,
+		private _keybindingService: IKeybindingService,
+		private readonly logService: ILogService) {
 		super(id, '');
 		this.updateLabelAndIcon();
 	}
@@ -178,7 +183,7 @@ export abstract class MultiStateAction<T> extends Action {
 				keyboardShortcut = binding ? binding.getLabel() : undefined;
 			}
 		} catch (error) {
-			console.log(error);
+			this.logService.error(error);
 		}
 		this.label = this.states.label;
 		this.tooltip = keyboardShortcut ? this.states.tooltip + ` (${keyboardShortcut})` : this.states.tooltip;
@@ -313,11 +318,14 @@ export class KernelsDropdown extends SelectBox {
 export class AttachToDropdown extends SelectBox {
 	private model: NotebookModel;
 
-	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, modelReady: Promise<INotebookModel>,
+	constructor(
+		container: HTMLElement, contextViewProvider: IContextViewProvider, modelReady: Promise<INotebookModel>,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IConnectionDialogService private _connectionDialogService: IConnectionDialogService,
 		@INotificationService private _notificationService: INotificationService,
-		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService) {
+		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
+		@ILogService private readonly logService: ILogService
+	) {
 		super([msgLoadingContexts], msgLoadingContexts, contextViewProvider, container, { labelText: attachToLabel, labelOnTop: false } as ISelectBoxOptionsWithLabel);
 		if (modelReady) {
 			modelReady
@@ -366,7 +374,7 @@ export class AttachToDropdown extends SelectBox {
 					this.openConnectionDialog(true);
 				}
 			}).catch(err =>
-				console.log(err));
+				this.logService.error(err));
 		}
 		model.onValidConnectionSelected(validConnection => {
 			this.handleContextsChanged(!validConnection);

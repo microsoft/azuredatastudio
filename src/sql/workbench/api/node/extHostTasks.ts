@@ -74,12 +74,6 @@ export class ExtHostTasks implements ExtHostTasksShape {
 			let result = callback.apply(thisArg, args);
 			return Promise.resolve(result);
 		} catch (err) {
-			// console.log(err);
-			// try {
-			// 	console.log(toErrorMessage(err));
-			// } catch (err) {
-			// 	//
-			// }
 			return Promise.reject(new Error(`Running the contributed task:'${id}' failed.`));
 		}
 	}

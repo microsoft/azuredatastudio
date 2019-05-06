@@ -24,6 +24,7 @@ import * as os from 'os';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { isUndefinedOrNull } from 'vs/base/common/types';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export const MODAL_SHOWING_KEY = 'modalShowing';
 export const MODAL_SHOWING_CONTEXT = new RawContextKey<Array<string>>(MODAL_SHOWING_KEY, []);
@@ -145,6 +146,7 @@ export abstract class Modal extends Disposable implements IThemable {
 		protected layoutService: ILayoutService,
 		protected _clipboardService: IClipboardService,
 		protected _themeService: IThemeService,
+		protected logService: ILogService,
 		_contextKeyService: IContextKeyService,
 		options?: IModalOptions
 	) {
@@ -352,7 +354,7 @@ export abstract class Modal extends Disposable implements IThemable {
 		});
 
 		this.layout(DOM.getTotalHeight(this._modalBodySection));
-		TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.ModalDialogOpened, { name: this._name });
+		TelemetryUtils.addTelemetry(this._telemetryService, this.logService, TelemetryKeys.ModalDialogOpened, { name: this._name });
 	}
 
 	/**
@@ -371,7 +373,7 @@ export abstract class Modal extends Disposable implements IThemable {
 		}
 		this._keydownListener.dispose();
 		this._resizeListener.dispose();
-		TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.ModalDialogClosed, { name: this._name });
+		TelemetryUtils.addTelemetry(this._telemetryService, this.logService, TelemetryKeys.ModalDialogClosed, { name: this._name });
 	}
 
 	/**
