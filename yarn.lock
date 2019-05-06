@@ -1579,6 +1579,13 @@ class-utils@^0.3.5:
     isobject "^3.0.0"
     static-extend "^0.1.1"
 
+class-validator@^0.7.3:
+  version "0.7.3"
+  resolved "https://registry.yarnpkg.com/class-validator/-/class-validator-0.7.3.tgz#3c2821b8cf35fd8d5f4fcb8063bc57fb50049e7e"
+  integrity sha512-aRRlS1WlQ+52aHlmDCDX5dLwtpbg9is7i9yYhzQosTAVs86nX0Um8hb7ChTwMn7jfpyxxjAZpBrlrAc2tqNpYA==
+  dependencies:
+    validator "^7.0.0"
+
 class-validator@^0.9.1:
   version "0.9.1"
   resolved "https://registry.yarnpkg.com/class-validator/-/class-validator-0.9.1.tgz#d60e58c5d14abca0a41bce38cf792ad4c46d1531"
@@ -9606,10 +9613,20 @@ validate-npm-package-license@^3.0.1:
     spdx-correct "~1.0.0"
     spdx-expression-parse "~1.0.0"
 
+validator.js@^2.0.3:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/validator.js/-/validator.js-2.0.3.tgz#3f4d8ae50673f7fbd5539abd66a1338d879f5ef4"
+  integrity sha1-P02K5QZz9/vVU5q9ZqEzjYefXvQ=
+
 validator@10.4.0:
   version "10.4.0"
   resolved "https://registry.yarnpkg.com/validator/-/validator-10.4.0.tgz#ee99a44afb3bb5ed350a159f056ca72a204cfc3c"
   integrity sha512-Q/wBy3LB1uOyssgNlXSRmaf22NxjvDNZM2MtIQ4jaEOAB61xsh1TQxsq1CgzUMBV1lDrVMogIh8GjG1DYW0zLg==
+
+validator@^7.0.0:
+  version "7.2.0"
+  resolved "https://registry.yarnpkg.com/validator/-/validator-7.2.0.tgz#a63dcbaba51d4350bf8df20988e0d5a54d711791"
+  integrity sha512-c8NGTUYeBEcUIGeMppmNVKHE7wwfm3mYbNZxV+c5mlv9fDHI7Ad3p07qfNrn/CvpdkK2k61fOLRO2sTEhgQXmg==
 
 validator@~9.4.1:
   version "9.4.1"
