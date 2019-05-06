@@ -154,7 +154,7 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 			this.getEndpoints();
 		}
 
-		// iterate over properties and display them
+		// iterate over endpoint properties and display them
 		this.properties = [];
 		for (let i = 0; i < this.endpoints.length; i++) {
 			const endpoint = this.endpoints[i];
@@ -175,17 +175,18 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 	private getEndpoints() {
 		const endpointArray = this._connection.serverInfo.options[EndpointConstants.clusterEndpoints.toString()];
 
+		// TO DO: Once the endpoints data is moved to DMV, update this logic to replace hardcoded values
+		// with the data from DMV.
 		if (endpointArray && endpointArray.length > 0) {
 			// iterate over endpoints and display them
 			this.endpoints = [];
 			for (let i = 0; i < endpointArray.length; i++) {
 				const ep = endpointArray[i];
 				const assignProperty = {};
-				let epHyperlink = 'https://' + ep.ipAddress + ':' + ep.port;
 				assignProperty['serviceName'] = ep.serviceName;
 				assignProperty['ipAddress'] = ep.ipAddress;
 				assignProperty['port'] = ep.port;
-				assignProperty['hyperlink'] = this.isHyperlink(ep.serviceName) ? epHyperlink : ep.ipAddress + ':' + ep.port;
+				assignProperty['hyperlink'] = ep.ipAddress + ':' + ep.port;
 				this.endpoints.push(<Endpoint>assignProperty);
 			}
 
@@ -194,7 +195,6 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 			if (!endpointArray.find(e => e.serviceName.toLowerCase().indexOf('metrics') > -1)) {
 				this.endpoints.push(this.addCustomeEndpoint(managementProxyEp, 'Grafana Dashboard', '/grafana'));
 			}
-
 			if (!endpointArray.find(e => e.serviceName.toLowerCase().indexOf('log') > -1)) {
 				this.endpoints.push(this.addCustomeEndpoint(managementProxyEp, 'Kibana Dashboard', '/kibana'));
 			}
@@ -204,7 +204,6 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 			if (!endpointArray.find(e => e.serviceName.toLowerCase().indexOf('spark') > -1)) {
 				this.endpoints.push(this.addCustomeEndpoint(gatewayEndpoint, 'Spark History', '/gateway/default/sparkhistory'));
 			}
-
 			if (!endpointArray.find(e => e.serviceName.toLowerCase().indexOf('log') > -1)) {
 				this.endpoints.push(this.addCustomeEndpoint(gatewayEndpoint, 'Yarn History', '/gateway/default/yarn'));
 			}
