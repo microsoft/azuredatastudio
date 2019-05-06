@@ -6,7 +6,7 @@
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IInsightsConfigDetails } from 'sql/workbench/parts/dashboard/widgets/insights/interfaces';
-import QueryRunner, { EventType as QREvents } from 'sql/platform/query/common/queryRunner';
+import QueryRunner from 'sql/platform/query/common/queryRunner';
 import * as Utils from 'sql/platform/connection/common/utils';
 import { IInsightsDialogModel } from 'sql/workbench/services/insights/common/insightsDialogService';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
@@ -141,12 +141,12 @@ export class InsightsDialogController {
 	}
 
 	private addQueryEventListeners(queryRunner: QueryRunner): void {
-		queryRunner.addListener(QREvents.COMPLETE, () => {
+		queryRunner.onQueryEnd(() => {
 			this.queryComplete().catch(error => {
 				this._errorMessageService.showDialog(Severity.Error, nls.localize("insightsError", "Insights error"), error);
 			});
 		});
-		queryRunner.addListener(QREvents.MESSAGE, message => {
+		queryRunner.onMessage(message => {
 			if (message.isError) {
 				this._errorMessageService.showDialog(Severity.Error, nls.localize("insightsError", "Insights error"), message.message);
 			}
