@@ -19,10 +19,6 @@ import * as actions from 'sql/workbench/parts/grid/views/gridActions';
 import * as Services from 'sql/base/browser/ui/table/formatters';
 import * as GridContentEvents from 'sql/workbench/parts/grid/common/gridContentEvents';
 import { ResultsVisibleContext, ResultsGridFocussedContext, ResultsMessagesFocussedContext, QueryEditorVisibleContext } from 'sql/workbench/parts/query/common/queryContext';
-<<<<<<< HEAD
-=======
-import { error } from 'sql/base/common/log';
->>>>>>> Last of the layering (#5187)
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
 
