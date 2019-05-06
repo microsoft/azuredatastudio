@@ -112,7 +112,7 @@ export class ProsePreviewPage extends ImportPage {
 	}
 
 	private async handleProse(): Promise<boolean> {
-		return await this.provider.sendPROSEDiscoveryRequest({
+		return this.provider.sendPROSEDiscoveryRequest({
 			filePath: this.model.filePath,
 			tableName: this.model.table,
 			schemaName: this.model.schema,
