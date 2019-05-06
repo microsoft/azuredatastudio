@@ -60,7 +60,7 @@ suite('Firewall rule dialog controller tests', () => {
 			.returns(() => mockFirewallRuleViewModel.object);
 
 		// Create a mock account picker
-		let firewallRuleDialog = new FirewallRuleDialog(null, null, null, instantiationService.object, null, null, new ContextKeyServiceStub(), null, null);
+		let firewallRuleDialog = new FirewallRuleDialog(null, null, null, instantiationService.object, null, null, new ContextKeyServiceStub(), null, null, undefined);
 		mockFirewallRuleDialog = TypeMoq.Mock.ofInstance(firewallRuleDialog);
 
 		let mockEvent = new Emitter<any>();

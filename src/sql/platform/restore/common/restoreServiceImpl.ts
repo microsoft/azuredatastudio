@@ -25,6 +25,7 @@ import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
 import * as TelemetryUtils from 'sql/platform/telemetry/telemetryUtilities';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { invalidProvider } from 'sql/base/common/errors';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export class RestoreService implements IRestoreService {
 
@@ -33,7 +34,8 @@ export class RestoreService implements IRestoreService {
 
 	constructor(
 		@IConnectionManagementService private _connectionService: IConnectionManagementService,
-		@ITelemetryService private _telemetryService: ITelemetryService
+		@ITelemetryService private _telemetryService: ITelemetryService,
+		@ILogService private logService: ILogService
 	) {
 	}
 
@@ -62,7 +64,7 @@ export class RestoreService implements IRestoreService {
 		return new Promise<azdata.RestoreResponse>((resolve, reject) => {
 			const providerResult = this.getProvider(connectionUri);
 			if (providerResult) {
-				TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.RestoreRequested, { provider: providerResult.providerName });
+				TelemetryUtils.addTelemetry(this._telemetryService, this.logService, TelemetryKeys.RestoreRequested, { provider: providerResult.providerName });
 				providerResult.provider.restore(connectionUri, restoreInfo).then(result => {
 					resolve(result);
 				}, error => {

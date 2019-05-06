@@ -30,8 +30,8 @@ export abstract class ExtHostAccountManagementShape {
 	$clear(handle: number, accountKey: azdata.AccountKey): Thenable<void> { throw ni(); }
 	$getSecurityToken(account: azdata.Account, resource?: azdata.AzureResource): Thenable<{}> { throw ni(); }
 	$initialize(handle: number, restoredAccounts: azdata.Account[]): Thenable<azdata.Account[]> { throw ni(); }
-	$prompt(handle: number): Thenable<azdata.Account> { throw ni(); }
-	$refresh(handle: number, account: azdata.Account): Thenable<azdata.Account> { throw ni(); }
+	$prompt(handle: number): Thenable<azdata.Account | azdata.PromptFailedResult> { throw ni(); }
+	$refresh(handle: number, account: azdata.Account): Thenable<azdata.Account | azdata.PromptFailedResult> { throw ni(); }
 	$accountsChanged(handle: number, accounts: azdata.Account[]): Thenable<void> { throw ni(); }
 }
 
