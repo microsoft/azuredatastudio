@@ -177,10 +177,12 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 
 		this.overrideCellFn = (rowNumber, columnId, value?, data?): string => {
 			let returnVal = '';
+			// replace the line breaks with space since the edit text control cannot
+			// render line breaks and strips them, updating the value.
 			if (Services.DBCellValue.isDBCellValue(value)) {
-				returnVal = value.displayValue;
+				returnVal = this.spacefyLinebreaks(value.displayValue);
 			} else if (typeof value === 'string') {
-				returnVal = value;
+				returnVal = this.spacefyLinebreaks(value);
 			}
 			return returnVal;
 		};
@@ -404,6 +406,13 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	 */
 	onScroll(scrollTop): void {
 		this.refreshGrid();
+	}
+
+	/**
+	 * Replace the line breaks with space.
+	 */
+	private spacefyLinebreaks(inputStr: string): string {
+		return inputStr.replace(/(\r\n|\n|\r)/g, ' ');
 	}
 
 	private refreshGrid(): Thenable<void> {
