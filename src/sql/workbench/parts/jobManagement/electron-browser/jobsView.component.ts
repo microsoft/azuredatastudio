@@ -173,7 +173,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		});
 		this.rowDetail = rowDetail;
 		columns.unshift(this.rowDetail.getColumnDefinition());
-		let filterPlugin = new HeaderFilter({});
+		let filterPlugin = new HeaderFilter({}, this._themeService);
 		this.filterPlugin = filterPlugin;
 		jQuery(this._gridEl.nativeElement).empty();
 		jQuery(this.actionBarContainer.nativeElement).empty();

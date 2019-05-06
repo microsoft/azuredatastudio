@@ -4,9 +4,10 @@
 import { mixin } from 'vs/base/common/objects';
 import { IButtonStyles } from 'vs/base/browser/ui/button/button';
 import { localize } from 'vs/nls';
-
+import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { escape } from 'sql/base/common/strings';
+import { IThemeService } from 'vs/platform/theme/common/themeService';
 
 export class HeaderFilter {
 
@@ -29,7 +30,10 @@ export class HeaderFilter {
 	private workingFilters: any;
 	private columnDef: any;
 
-	constructor(options: any) {
+	constructor(
+		options: any,
+		@IThemeService private _themeService: IThemeService
+	) {
 		this.options = mixin(options, this.defaults, false);
 	}
 
@@ -219,6 +223,10 @@ export class HeaderFilter {
 		this.cancelButton.element.id = 'filter-cancel-button';
 		const cancelElement = jQuery('#filter-cancel-button');
 		cancelElement.bind('click', () => this.hideMenu());
+
+		attachButtonStyler(this.okButton, this._themeService);
+		attachButtonStyler(this.clearButton, this._themeService);
+		attachButtonStyler(this.cancelButton, this._themeService);
 
 		jQuery(':checkbox', $filter).bind('click', (e) => {
 			this.workingFilters = this.changeWorkingFilter(filterItems, this.workingFilters, jQuery(e.target));
