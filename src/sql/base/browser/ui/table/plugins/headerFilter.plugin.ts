@@ -28,6 +28,7 @@ export class HeaderFilter {
 	private cancelButton: Button;
 	private workingFilters: any;
 	private columnDef: any;
+	private buttonStyles: IButtonStyles;
 
 	constructor(options: any) {
 		this.options = mixin(options, this.defaults, false);
@@ -220,6 +221,8 @@ export class HeaderFilter {
 		const cancelElement = jQuery('#filter-cancel-button');
 		cancelElement.bind('click', () => this.hideMenu());
 
+		this.applyStyles();
+
 		jQuery(':checkbox', $filter).bind('click', (e) => {
 			this.workingFilters = this.changeWorkingFilter(filterItems, this.workingFilters, jQuery(e.target));
 		});
@@ -237,9 +240,25 @@ export class HeaderFilter {
 	}
 
 	public style(styles: IButtonStyles): void {
-		this.okButton.style(styles);
-		this.clearButton.style(styles);
-		this.cancelButton.style(styles);
+		this.buttonStyles = styles;
+		this.applyStyles();
+	}
+
+	private applyStyles() {
+		if (this.buttonStyles) {
+			const styles = this.buttonStyles;
+			if (this.okButton) {
+				this.okButton.style(styles);
+			}
+
+			if (this.clearButton) {
+				this.clearButton.style(styles);
+			}
+
+			if (this.cancelButton) {
+				this.cancelButton.style(styles);
+			}
+		}
 	}
 
 	private columnsResized() {
