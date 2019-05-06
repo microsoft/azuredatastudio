@@ -24,10 +24,6 @@ import { InputBox } from 'sql/base/electron-browser/ui/inputBox/inputBox.compone
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Registry } from 'vs/platform/registry/common/platform';
-<<<<<<< HEAD:src/sql/workbench/parts/query/modelViewTab/queryModelViewTab.module.ts
-=======
-import { QueryModelViewTabContainer } from 'sql/workbench/parts/query/modelViewTab/queryModelViewTabContainer.component';
->>>>>>> Last of the layering (#5187):src/sql/workbench/parts/query/modelViewTab/queryModelViewTab.module.ts
 
 export const QueryModelViewTabModule = (params, selector: string, instantiationService: IInstantiationService): any => {
 
