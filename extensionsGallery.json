@@ -1439,14 +1439,14 @@
                     },
                     "versions": [
                         {
-                            "version": "0.0.1",
+                            "version": "0.0.2",
                             "lastUpdated": "04/06/2019",
                             "assetUri": "",
                             "fallbackAssetUri": "fallbackAssetUri",
                             "files": [
                                 {
                                     "assetType": "Microsoft.SQLOps.DownloadPage",
-                                    "source": "https://github.com/joserocha/azdatastudio-material-palenight-theme/releases/tag/0.0.1"
+                                    "source": "https://github.com/joserocha/azdatastudio-material-palenight-theme/releases/tag/0.0.2"
                                 },
                                 {
                                     "assetType": "Microsoft.VisualStudio.Services.Links.Source",
@@ -1458,15 +1458,15 @@
                                 },
                                 {
                                     "assetType": "Microsoft.VisualStudio.Services.Content.Details",
-                                "source": "https://raw.githubusercontent.com/joserocha/azdatastudio-material-palenight-theme/master/README.md>"
+                                "source": "https://raw.githubusercontent.com/joserocha/azdatastudio-material-palenight-theme/master/README.md"
                                 },
                                 {
                                     "assetType": "Microsoft.VisualStudio.Code.Manifest",
-                                    "source": "https://raw.githubusercontent.com/joserocha/azdatastudio-material-palenight-theme/master/package.json>"
+                                    "source": "https://raw.githubusercontent.com/joserocha/azdatastudio-material-palenight-theme/master/package.json"
                                 },
                                 {
                                     "assetType": "Microsoft.VisualStudio.Services.Content.License",
-                                    "source": "https://raw.githubusercontent.com/joserocha/azdatastudio-material-palenight-theme/master/LICENSE.txt>"
+                                    "source": "https://raw.githubusercontent.com/joserocha/azdatastudio-material-palenight-theme/master/License.txt"
                                 }
                             ],
                             "properties": [
