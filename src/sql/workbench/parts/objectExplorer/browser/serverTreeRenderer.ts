@@ -188,7 +188,7 @@ export class ServerTreeRenderer implements IRenderer {
 			if (!scopedContextService) { return undefined; }
 			for (const e of pathConfig) {
 				let when = ContextKeyExpr.deserialize(e.when);
-				if (scopedContextService.contextMatchesRules(when)) {
+				if (!when || scopedContextService.contextMatchesRules(when)) {
 					iconPath = e.path;
 					break;
 				}

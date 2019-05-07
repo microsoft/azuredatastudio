@@ -68,6 +68,47 @@ const ConnectionProviderContrib: IJSONSchema = {
 			type: 'string',
 			description: localize('schema.displayName', "Display Name for the provider")
 		},
+		iconPath: {
+			description: localize('schema.iconPath', 'Icon path for the server type'),
+			oneOf: [
+				{
+					type: 'array',
+					items: {
+						type: 'object',
+						properties: {
+							when: {
+								type: 'string',
+							},
+							path: {
+								type: 'object',
+								properties: {
+									light: {
+										type: 'string',
+									},
+									dark: {
+										type: 'string',
+									}
+								}
+							}
+						}
+					}
+				},
+				{
+					type: 'object',
+					properties: {
+						light: {
+							type: 'string',
+						},
+						dark: {
+							type: 'string',
+						}
+					}
+				},
+				{
+					type: 'string'
+				}
+			]
+		},
 		connectionOptions: {
 			type: 'array',
 			description: localize('schema.connectionOptions', "Options for connection"),
