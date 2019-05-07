@@ -83,6 +83,7 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 	private _connection: ConnectionManagementInfo;
 	private _databaseInfo: DatabaseInfo;
 	private _clipped: boolean;
+	private _loading: boolean = true;
 	private properties: Array<DisplayProperty>;
 	private _hasInit = false;
 	private endpoints: Array<Endpoint>;
@@ -114,6 +115,7 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 	private init(): void {
 		this._connection = this._bootstrap.connectionManagementService.connectionInfo;
 		this._register(toDisposableSubscription(this._bootstrap.adminService.databaseInfo.subscribe(data => {
+			this._loading = true;
 			this._databaseInfo = data;
 			this._changeRef.detectChanges();
 			this.parseConfig();
@@ -146,7 +148,7 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 		else {
 			this.parseProperties(null);
 		}
-
+		this._loading = false;
 	}
 
 	private parseEndpoints() {
