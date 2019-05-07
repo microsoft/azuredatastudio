@@ -237,8 +237,8 @@ export class SchemaCompareResult {
 		this.differencesTable.onRowSelected(() => {
 			let difference = this.comparisonResult.differences[this.differencesTable.selectedRows[0]];
 			if (difference !== undefined) {
-				sourceText = difference.sourceScript === null ? '\n' : this.getAggregatedScript(difference, true);
-				targetText = difference.targetScript === null ? '\n' : this.getAggregatedScript(difference, false);
+				sourceText = this.getFormattedScript(difference, true);
+				targetText = this.getFormattedScript(difference, false);
 
 				this.diffEditor.updateProperties({
 					contentLeft: sourceText,
@@ -264,18 +264,44 @@ export class SchemaCompareResult {
 		return data;
 	}
 
+	private getFormattedScript(diffEntry: azdata.DiffEntry, getSourceScript: boolean): string {
+		let script = '';
+		if (getSourceScript) {
+			script = diffEntry.sourceScript === null ? '\n' : this.getAggregatedScript(diffEntry, getSourceScript);
+		} else {
+			script = diffEntry.targetScript === null ? '\n' : this.getAggregatedScript(diffEntry, getSourceScript);
+		}
+
+		// add new lines after 'GO's
+		script = script.replace(new RegExp('GO', 'g'), 'GO\n');
+
+		// the script needs to end with \n\n otherwise it shows as a difference even if there isn't anything
+		if (!script.endsWith('\n\n') && script !== '\n') {
+			script += script.endsWith('\n') ? '\n' : '\n\n';
+		}
+
+		return script;
+	}
+
 	private getAggregatedScript(diffEntry: azdata.DiffEntry, getSourceScript: boolean): string {
 		let script = '';
 		if (diffEntry !== null) {
 			script += getSourceScript ? diffEntry.sourceScript : diffEntry.targetScript;
+			if (this.isValidScript(script)) {
+				script = script.trim() + '\nGO';
+			}
 			diffEntry.children.forEach(child => {
-				let childScript = this.getAggregatedScript(child, getSourceScript);
-				if (childScript !== 'null') {
-					script += childScript;
+				let childScript = (this.getAggregatedScript(child, getSourceScript)).trim();
+				if (this.isValidScript(childScript)) {
+					script += '\n' + childScript;
 				}
 			});
 		}
 		return script;
+	}
+
+	private isValidScript(script: string): boolean {
+		return script && script !== 'null';
 	}
 
 	private startCompare(): void {
