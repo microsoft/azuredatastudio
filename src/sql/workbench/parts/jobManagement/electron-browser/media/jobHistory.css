@@ -179,7 +179,7 @@ table.step-list tr.step-row td {
 }
 
 .history-details {
-	height: 100%;
+	flex: 1 1 auto;
 	display: flex;
 }
 
@@ -259,6 +259,8 @@ table.step-list tr.step-row td {
 jobhistory-component {
 	display: flex;
 	flex-direction: column;
+	height: 100%;
+	width: 100%;
 }
 
 jobhistory-component > .jobhistory-heading-container {
