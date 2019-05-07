@@ -47,6 +47,7 @@
 
 .extension-view .extensionTab-view .list-row.extensionTab-list .extension-details .title {
 	font-size: 15px;
+	line-height: 1.4em;
 	font-weight: 700;
 	white-space: nowrap;
 	text-overflow: ellipsis;
@@ -56,6 +57,7 @@
 
 .extension-view .extensionTab-view .list-row.extensionTab-list .extension-details .description {
 	font-size: 13px;
+	line-height: 1.4em;
 	overflow: hidden;
 	white-space: pre-wrap;
 	text-overflow: ellipsis;
@@ -63,6 +65,7 @@
 
 .extension-view .extensionTab-view .list-row.extensionTab-list .extension-details .publisher {
 	font-size: 90%;
+	line-height: 1.4em;
 	padding-right: 6px;
 	opacity: .6;
 	font-weight: 600;
