@@ -47,6 +47,7 @@
 		"Microsoft.import",
 		"Microsoft.powershell",
 		"Microsoft.profiler",
+		"Microsoft.schema-compare",
 		"Microsoft.sql-vnext",
 		"Redgate.sql-search",
 		"IDERA.sqldm-performance-insights"
