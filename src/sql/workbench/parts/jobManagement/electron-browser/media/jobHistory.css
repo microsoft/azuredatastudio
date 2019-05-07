@@ -179,7 +179,7 @@ table.step-list tr.step-row td {
 }
 
 .history-details {
-	flex: 1 1 auto;
+	height: 100%;
 	display: flex;
 }
 
