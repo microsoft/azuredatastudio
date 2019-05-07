@@ -136,7 +136,6 @@ export class ProsePreviewPage extends ImportPage {
 					return true;
 				}
 			}
-			this.isSuccess = false;
 			return false;
 		});
 	}
