@@ -5,11 +5,11 @@
 
 import 'vs/css!./media/messagePanel';
 import { IMessagesActionContext, CopyMessagesAction, CopyAllMessagesAction } from './actions';
-import QueryRunner from 'sql/platform/query/common/queryRunner';
+import QueryRunner, { IQueryMessage } from 'sql/platform/query/common/queryRunner';
 import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
 import { IExpandableTree } from 'sql/workbench/parts/objectExplorer/browser/treeUpdateUtils';
 
-import { IResultMessage, ISelectionData } from 'azdata';
+import { ISelectionData } from 'azdata';
 
 import { ViewletPanel, IViewletPanelOptions } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { IDataSource, ITree, IRenderer, ContextMenuEvent } from 'vs/base/parts/tree/browser/tree';
@@ -31,7 +31,7 @@ import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { $ } from 'vs/base/browser/dom';
 
-export interface IResultMessageIntern extends IResultMessage {
+export interface IResultMessageIntern extends IQueryMessage {
 	id?: string;
 }
 
@@ -77,7 +77,7 @@ export class MessagePanelState {
 }
 
 export class MessagePanel extends ViewletPanel {
-	private messageLineCountMap = new Map<IResultMessage, number>();
+	private messageLineCountMap = new Map<IQueryMessage, number>();
 	private ds = new MessageDataSource();
 	private renderer = new MessageRenderer(this.messageLineCountMap);
 	private model = new Model();
@@ -203,7 +203,7 @@ export class MessagePanel extends ViewletPanel {
 		this.onMessage(runner.messages);
 	}
 
-	private onMessage(message: IResultMessage | IResultMessage[]) {
+	private onMessage(message: IQueryMessage | IQueryMessage[]) {
 		let hasError = false;
 		let lines: number;
 		if (isArray(message)) {
@@ -237,7 +237,7 @@ export class MessagePanel extends ViewletPanel {
 		}
 	}
 
-	private countMessageLines(resultMessage: IResultMessage): number {
+	private countMessageLines(resultMessage: IQueryMessage): number {
 		let lines = resultMessage.message.split('\n').length;
 		this.messageLineCountMap.set(resultMessage, lines);
 		return lines;
@@ -307,10 +307,10 @@ class MessageDataSource implements IDataSource {
 }
 
 class MessageRenderer implements IRenderer {
-	constructor(private messageLineCountMap: Map<IResultMessage, number>) {
+	constructor(private messageLineCountMap: Map<IQueryMessage, number>) {
 	}
 
-	getHeight(tree: ITree, element: any): number {
+	getHeight(tree: ITree, element: IQueryMessage): number {
 		const lineHeight = 22;
 		if (this.messageLineCountMap.has(element)) {
 			return lineHeight * this.messageLineCountMap.get(element);
@@ -318,7 +318,7 @@ class MessageRenderer implements IRenderer {
 		return lineHeight;
 	}
 
-	getTemplateId(tree: ITree, element: any): string {
+	getTemplateId(tree: ITree, element: IQueryMessage): string {
 		if (element instanceof Model) {
 			return TemplateIds.MODEL;
 		} else if (element.selection) {
@@ -355,7 +355,7 @@ class MessageRenderer implements IRenderer {
 		}
 	}
 
-	renderElement(tree: ITree, element: IResultMessage, templateId: string, templateData: IMessageTemplate | IBatchTemplate): void {
+	renderElement(tree: ITree, element: IQueryMessage, templateId: string, templateData: IMessageTemplate | IBatchTemplate): void {
 		if (templateId === TemplateIds.MESSAGE || templateId === TemplateIds.ERROR) {
 			let data: IMessageTemplate = templateData;
 			data.message.innerText = element.message;
