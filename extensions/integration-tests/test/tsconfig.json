@@ -8,18 +8,12 @@
 		"lib": [
 			"es2015"
 		],
-		"sourceMap": true,
-		"baseUrl": "../../../src",
-		"paths": {
-			"azdata": ["sql/azdata"]
-		}
+		"sourceMap": true
 	},
 	"include": [
 		"**/*.test.ts"
 	],
 	"exclude": [
-		"../../../../node_modules",
-		"../../../node_modules",
-		"../../../node_modules"
+		"node_modules"
 	]
 }
