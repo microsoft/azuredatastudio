@@ -26,6 +26,7 @@ import { ServerGroupViewModel } from 'sql/workbench/parts/objectExplorer/common/
 import { attachButtonStyler, attachModalDialogStyler } from 'sql/platform/theme/common/styler';
 import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export class ServerGroupDialog extends Modal {
 	private _addServerButton: Button;
@@ -53,9 +54,10 @@ export class ServerGroupDialog extends Modal {
 		@IContextViewService private _contextViewService: IContextViewService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
-		@IClipboardService clipboardService: IClipboardService
+		@IClipboardService clipboardService: IClipboardService,
+		@ILogService logService: ILogService
 	) {
-		super(localize('ServerGroupsDialogTitle', 'Server Groups'), TelemetryKeys.ServerGroups, telemetryService, layoutService, clipboardService, themeService, contextKeyService);
+		super(localize('ServerGroupsDialogTitle', 'Server Groups'), TelemetryKeys.ServerGroups, telemetryService, layoutService, clipboardService, themeService, logService, contextKeyService);
 	}
 
 	public render() {

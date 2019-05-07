@@ -3,8 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!sql/media/icons/common-icons';
-import 'vs/css!./tabHeader';
+import 'vs/css!./media/tabHeader';
 
 import { Component, AfterContentInit, OnDestroy, Input, Output, ElementRef, ViewChild, EventEmitter } from '@angular/core';
 
@@ -15,7 +14,7 @@ import * as DOM from 'vs/base/browser/dom';
 import { Disposable } from 'vs/base/common/lifecycle';
 
 import { TabComponent } from './tab.component';
-import { CloseTabAction } from './tabActions';
+import { CloseTabAction } from 'sql/base/browser/ui/panel/tabActions';
 
 @Component({
 	selector: 'tab-header',

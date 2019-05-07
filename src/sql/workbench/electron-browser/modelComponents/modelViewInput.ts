@@ -65,7 +65,6 @@ export class ModelViewInput extends EditorInput {
 		this._container = document.createElement('div');
 		this._container.id = `modelView-${_model.modelViewId}`;
 		this.layoutService.getContainer(Parts.EDITOR_PART).appendChild(this._container);
-
 	}
 
 	public get title(): string {

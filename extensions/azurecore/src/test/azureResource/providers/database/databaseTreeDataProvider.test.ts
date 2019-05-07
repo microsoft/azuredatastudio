@@ -142,7 +142,7 @@ describe('AzureResourceDatabaseTreeDataProvider.getChildren', function (): void 
 			should(child.tenantId).equal(mockTenantId);
 			should(child.treeItem.id).equal(`databaseServer_${database.serverFullName}.database_${database.name}`);
 			should(child.treeItem.label).equal(`${database.name} (${database.serverName})`);
-			should(child.treeItem.collapsibleState).equal(vscode.TreeItemCollapsibleState.None);
+			should(child.treeItem.collapsibleState).equal(vscode.TreeItemCollapsibleState.Collapsed);
 			should(child.treeItem.contextValue).equal(AzureResourceItemType.database);
 		}
 	});

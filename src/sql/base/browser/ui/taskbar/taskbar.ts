@@ -5,7 +5,6 @@
 
 import 'vs/css!./media/taskbar';
 import 'vs/css!./media/icons';
-import 'vs/css!sql/media/icons/common-icons';
 
 import { ActionBar } from './actionbar';
 
