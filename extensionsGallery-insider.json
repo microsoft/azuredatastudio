@@ -14,14 +14,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.38.0",
-							"lastUpdated": "4/18/2019",
+							"version": "0.39.0",
+							"lastUpdated": "5/8/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/agent/agent-0.38.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/agent/agent-0.39.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -474,14 +474,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.7.0",
-							"lastUpdated": "3/15/2019",
+							"version": "0.8.0",
+							"lastUpdated": "5/8/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/profiler/profiler-0.7.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/profiler/profiler-0.8.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -702,14 +702,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.7.0",
-							"lastUpdated": "3/14/2019",
+							"version": "0.8.0",
+							"lastUpdated": "5/8/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/import/import-0.7.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/import/import-0.8.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
