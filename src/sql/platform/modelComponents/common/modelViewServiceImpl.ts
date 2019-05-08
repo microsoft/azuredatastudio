@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import { IModelViewService } from 'sql/platform/modelComponents/common/modelViewService';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IModelView } from 'sql/platform/model/common/modelViewService';

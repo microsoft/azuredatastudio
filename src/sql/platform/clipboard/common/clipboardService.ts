@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import { IClipboardService as vsIClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
