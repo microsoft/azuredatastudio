@@ -53,7 +53,7 @@ describe('Ports', () => {
 				options.maxRetriesPerStartPort = 1;
 				options.totalRetryLoops = 50;
 				ports.strictFindFreePort(options).then(freePort => {
-					assert.ok(freePort >= 7100 && freePort !== initialPort);
+					assert(freePort !== initialPort, `Expected freePort !== initialPort, Actual: ${freePort}`);
 					server.close();
 
 					done();
