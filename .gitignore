@@ -20,4 +20,5 @@ coverage/
 test_data/
 test-results/
 yarn-error.log
-**/package.json.bak
+**/*.json.bak
+**/*.ts.bak
