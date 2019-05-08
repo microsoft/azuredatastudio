@@ -759,8 +759,8 @@
 					},
 					"versions": [
 						{
-							"version": "0.12.1",
-							"lastUpdated": "4/17/2019",
+							"version": "0.13.0",
+							"lastUpdated": "5/7/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
@@ -774,15 +774,15 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://go.microsoft.com/fwlink/?linkid=2087446"
+									"source": "https://go.microsoft.com/fwlink/?linkid=2092121"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://go.microsoft.com/fwlink/?linkid=2087445"
+									"source": "https://go.microsoft.com/fwlink/?linkid=2092120"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://go.microsoft.com/fwlink/?linkid=2087444"
+									"source": "https://go.microsoft.com/fwlink/?linkid=2092119"
 								}
 							],
 							"properties": [
@@ -1268,14 +1268,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.1.0",
-							"lastUpdated": "3/15/2019",
+							"version": "0.2.0",
+							"lastUpdated": "5/7/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/dacpac/dacpac-0.1.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/dacpac/dacpac-0.2.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -1479,6 +1479,67 @@
                     "flags": "preview"
 				},
 				{
+					"extensionId": "37",
+					"extensionName": "schema-compare",
+					"displayName": "SQL Server Schema Compare",
+					"shortDescription": "Schema Compare tool for dacpac and databases",
+					"publisher": {
+						"displayName": "Microsoft",
+						"publisherId": "Microsoft",
+						"publisherName": "Microsoft"
+					},
+					"versions": [
+						{
+							"version": "0.2.0",
+							"lastUpdated": "5/7/2019",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/schema-compare/schema-compare-0.2.0.vsix"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/Microsoft/vscode-mssql/master/images/sqlserver.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/schema-compare/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/schema-compare/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": ">=0.32.1"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": ">=1.6.0"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/Microsoft/azuredatastudio"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": "preview"
+				},
+				{
 					"extensionId": "38",
 					"extensionName": "azdata-sanddance",
 					"displayName": "SandDance for Azure Data Studio",
@@ -1595,7 +1656,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 28
+							"count": 29
 						}
 					]
 				}
