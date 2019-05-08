@@ -759,8 +759,8 @@
 					},
 					"versions": [
 						{
-							"version": "0.12.1",
-							"lastUpdated": "4/17/2019",
+							"version": "0.13.0",
+							"lastUpdated": "5/7/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
@@ -774,15 +774,15 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://go.microsoft.com/fwlink/?linkid=2087446"
+									"source": "https://go.microsoft.com/fwlink/?linkid=2092121"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://go.microsoft.com/fwlink/?linkid=2087445"
+									"source": "https://go.microsoft.com/fwlink/?linkid=2092120"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://go.microsoft.com/fwlink/?linkid=2087444"
+									"source": "https://go.microsoft.com/fwlink/?linkid=2092119"
 								}
 							],
 							"properties": [
