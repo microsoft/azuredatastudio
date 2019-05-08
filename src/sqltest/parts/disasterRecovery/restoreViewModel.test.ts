@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import * as azdata from 'azdata';
 import * as assert from 'assert';
 import { RestoreViewModel } from 'sql/workbench/parts/restore/browser/restoreViewModel';
