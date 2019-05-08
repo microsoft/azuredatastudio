@@ -11,14 +11,21 @@ import { ImportDataModel } from '../api/models';
 import { ImportPage } from '../api/importPage';
 import { FlatFileProvider } from '../../services/contracts';
 import { FlatFileWizard } from '../flatFileWizard';
+import { PerformanceObserver } from 'perf_hooks';
 
 const localize = nls.loadMessageBundle();
 
 export class ProsePreviewPage extends ImportPage {
+
+	private readonly successTitle: string = localize('flatFileImport.prosePreviewMessage', 'This operation analyzed the input file structure to generate the preview below for up to the first 50 rows.');
+	private readonly failureTitle: string = localize('flatFileImport.prosePreviewMessageFail', 'This operation was unsuccessful. Please try a different input file.');
+
 	private table: azdata.TableComponent;
 	private loading: azdata.LoadingComponent;
 	private form: azdata.FormContainer;
 	private refresh: azdata.ButtonComponent;
+	private resultTextComponent: azdata.TextComponent;
+	private isSuccess: boolean;
 
 	public constructor(instance: FlatFileWizard, wizardPage: azdata.window.WizardPage, model: ImportDataModel, view: azdata.ModelView, provider: FlatFileProvider) {
 		super(instance, wizardPage, model, view, provider);
@@ -32,15 +39,24 @@ export class ProsePreviewPage extends ImportPage {
 		}).component();
 
 		this.refresh.onDidClick(async () => {
-			this.onPageEnter();
+			await this.onPageEnter();
 		});
 
 		this.loading = this.view.modelBuilder.loadingComponent().component();
 
+		this.resultTextComponent = this.view.modelBuilder.text()
+			.withProperties({
+				value: this.isSuccess ? this.successTitle : this.failureTitle
+			}).component();
+
 		this.form = this.view.modelBuilder.formContainer().withFormItems([
 			{
+				component: this.resultTextComponent,
+				title: ''
+			},
+			{
 				component: this.table,
-				title: localize('flatFileImport.prosePreviewMessage', 'This operation analyzed the input file structure to generate the preview below for up to the first 50 rows.'),
+				title: '',
 				actions: [this.refresh]
 			}
 		]).component();
@@ -54,11 +70,23 @@ export class ProsePreviewPage extends ImportPage {
 
 	async onPageEnter(): Promise<boolean> {
 		this.loading.loading = true;
-		await this.handleProse();
-		await this.populateTable(this.model.proseDataPreview, this.model.proseColumns.map(c => c.columnName));
+		let proseResult = await this.handleProse();
 		this.loading.loading = false;
-
-		return true;
+		if (proseResult) {
+			await this.populateTable(this.model.proseDataPreview, this.model.proseColumns.map(c => c.columnName));
+			this.isSuccess = true;
+			if (this.form) {
+				this.resultTextComponent.value = this.successTitle;
+			}
+			return true;
+		} else {
+			await this.populateTable([], []);
+			this.isSuccess = false;
+			if (this.form) {
+				this.resultTextComponent.value = this.failureTitle;
+			}
+			return false;
+		}
 	}
 
 	async onPageLeave(): Promise<boolean> {
@@ -73,27 +101,42 @@ export class ProsePreviewPage extends ImportPage {
 
 	public setupNavigationValidator() {
 		this.instance.registerNavigationValidator((info) => {
+			if (info) {
+				// Prose Preview to Modify Columns
+				if (info.lastPage === 1 && info.newPage === 2) {
+					return !this.loading.loading && this.table.data && this.table.data.length > 0;
+				}
+			}
 			return !this.loading.loading;
 		});
 	}
 
-	private async handleProse() {
-		await this.provider.sendPROSEDiscoveryRequest({
+	private async handleProse(): Promise<boolean> {
+		return this.provider.sendPROSEDiscoveryRequest({
 			filePath: this.model.filePath,
 			tableName: this.model.table,
 			schemaName: this.model.schema,
 			fileType: this.model.fileType
 		}).then((result) => {
-			this.model.proseDataPreview = result.dataPreview;
-			this.model.proseColumns = [];
-			result.columnInfo.forEach((column) => {
-				this.model.proseColumns.push({
-					columnName: column.name,
-					dataType: column.sqlType,
-					primaryKey: false,
-					nullable: column.isNullable
-				});
-			});
+			if (result) {
+				this.model.proseDataPreview = null;
+				if (result.dataPreview) {
+					this.model.proseDataPreview = result.dataPreview;
+				}
+				this.model.proseColumns = [];
+				if (result.columnInfo) {
+					result.columnInfo.forEach((column) => {
+						this.model.proseColumns.push({
+							columnName: column.name,
+							dataType: column.sqlType,
+							primaryKey: false,
+							nullable: column.isNullable
+						});
+					});
+					return true;
+				}
+			}
+			return false;
 		});
 	}
 
@@ -119,5 +162,4 @@ export class ProsePreviewPage extends ImportPage {
 	private async emptyTable() {
 		this.table.updateProperties([]);
 	}
-
 }
