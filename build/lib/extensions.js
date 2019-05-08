@@ -254,7 +254,8 @@ const sqlBuiltInExtensions = [
     'admin-pack',
     'big-data-cluster',
     'dacpac',
-    'schema-compare'
+    'schema-compare',
+    'resource-deployment'
 ];
 const builtInExtensions = require('../builtInExtensions.json');
 /**

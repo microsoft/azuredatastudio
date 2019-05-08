@@ -13,7 +13,7 @@
     "azdata": "^1.6.0"
   },
   "activationEvents": [
-    "onCommand:azdata.resource.create"
+    "*"
   ],
   "main": "./out/main",
   "repository": {
