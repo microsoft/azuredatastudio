@@ -19,7 +19,6 @@ import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ICommandService } from 'vs/platform/commands/common/commands';
-import { warn } from 'sql/base/common/log';
 import { ipcRenderer as ipc } from 'electron';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -27,6 +26,7 @@ import { IStatusbarService } from 'vs/platform/statusbar/common/statusbar';
 import { localize } from 'vs/nls';
 import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
 import { URI } from 'vs/base/common/uri';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export class CommandLineService implements ICommandLineProcessing {
 	public _serviceBrand: any;
@@ -40,7 +40,8 @@ export class CommandLineService implements ICommandLineProcessing {
 		@IEditorService private _editorService: IEditorService,
 		@ICommandService private _commandService: ICommandService,
 		@IConfigurationService private _configurationService: IConfigurationService,
-		@IStatusbarService private _statusBarService: IStatusbarService
+		@IStatusbarService private _statusBarService: IStatusbarService,
+		@ILogService private logService: ILogService
 	) {
 		if (ipc) {
 			ipc.on('ads:processCommandLine', (event: any, args: ParsedArgs) => this.onLaunched(args));
@@ -56,11 +57,11 @@ export class CommandLineService implements ICommandLineProcessing {
 		let sqlProvider = registry.getProperties(Constants.mssqlProviderName);
 		// We can't connect to object explorer until the MSSQL connection provider is registered
 		if (sqlProvider) {
-			this.processCommandLine(args).catch(reason => { warn('processCommandLine failed: ' + reason); });
+			this.processCommandLine(args).catch(reason => { this.logService.warn('processCommandLine failed: ' + reason); });
 		} else {
 			registry.onNewProvider(e => {
 				if (e.id === Constants.mssqlProviderName) {
-					this.processCommandLine(args).catch(reason => { warn('processCommandLine failed: ' + reason); });
+					this.processCommandLine(args).catch(reason => { this.logService.warn('processCommandLine failed: ' + reason); });
 				}
 			});
 		}
@@ -101,7 +102,7 @@ export class CommandLineService implements ICommandLineProcessing {
 				let updatedProfile = this._connectionManagementService.getConnectionProfileById(profile.id);
 				connectedContext = { connectionProfile: new ConnectionProfile(this._capabilitiesService, updatedProfile).toIConnectionProfile() };
 			} catch (err) {
-				warn('Failed to connect due to error' + err.message);
+				this.logService.warn('Failed to connect due to error' + err.message);
 			}
 		}
 		if (commandName) {
@@ -128,7 +129,7 @@ export class CommandLineService implements ICommandLineProcessing {
 						this._objectExplorerService,
 						this._editorService);
 				} catch (error) {
-					warn('unable to open query editor ' + error);
+					this.logService.warn('unable to open query editor ' + error);
 					// Note: we are intentionally swallowing this error.
 					// In part this is to accommodate unit testing where we don't want to set up the query stack
 				}

@@ -14,7 +14,6 @@ import {
 import { ComponentHostDirective } from 'sql/workbench/parts/dashboard/common/componentHost.directive';
 import { WidgetConfig, WIDGET_CONFIG, IDashboardWidget } from 'sql/workbench/parts/dashboard/common/dashboardWidget';
 import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/common/insightRegistry';
-import { error } from 'sql/base/common/log';
 import { RefreshWidgetAction, ToggleMoreWidgetAction, DeleteWidgetAction, CollapseWidgetAction } from 'sql/workbench/parts/dashboard/common/actions';
 import { AngularDisposable } from 'sql/base/node/lifecycle';
 
@@ -36,6 +35,7 @@ import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { memoize } from 'vs/base/common/decorators';
 import { generateUuid } from 'vs/base/common/uuid';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { ILogService } from 'vs/platform/log/common/log';
 
 const componentMap: { [x: string]: Type<IDashboardWidget> } = {
 	'properties-widget': PropertiesWidgetComponent,
@@ -92,7 +92,8 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeref: ChangeDetectorRef,
 		@Inject(forwardRef(() => Injector)) private _injector: Injector,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
-		@Inject(IInstantiationService) private instantiationService: IInstantiationService
+		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
+		@Inject(ILogService) private logService: ILogService
 	) {
 		super();
 	}
@@ -146,13 +147,13 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 
 	private loadWidget(): void {
 		if (Object.keys(this._config.widget).length !== 1) {
-			error('Exactly 1 widget must be defined per space');
+			this.logService.error('Exactly 1 widget must be defined per space');
 			return;
 		}
 		const key = Object.keys(this._config.widget)[0];
 		const selector = this.getOrCreateSelector(key);
 		if (selector === undefined) {
-			error('Could not find selector', key);
+			this.logService.error('Could not find selector', key);
 			return;
 		}
 
@@ -183,7 +184,7 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 				this._changeref.detectChanges();
 			}
 		} catch (e) {
-			error('Error rendering widget', key, e);
+			this.logService.error('Error rendering widget', key, e);
 			return;
 		}
 		const el = <HTMLElement>componentRef.location.nativeElement;

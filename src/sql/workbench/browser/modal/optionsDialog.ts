@@ -20,7 +20,6 @@ import { IContextViewService, IContextMenuService } from 'vs/platform/contextvie
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { localize } from 'vs/nls';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { IWorkbenchThemeService, IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { contrastBorder } from 'vs/platform/theme/common/colorRegistry';
 import * as styler from 'vs/platform/theme/common/styler';
 import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
@@ -30,8 +29,10 @@ import { IViewletPanelOptions, ViewletPanel } from 'vs/workbench/browser/parts/v
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { append, $ } from 'vs/base/browser/dom';
+import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
+import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export class CategoryView extends ViewletPanel {
 
@@ -86,15 +87,16 @@ export class OptionsDialog extends Modal {
 		title: string,
 		name: string,
 		options: IOptionsDialogOptions,
-		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
-		@IWorkbenchThemeService private _workbenchThemeService: IWorkbenchThemeService,
+		@ILayoutService layoutService: ILayoutService,
+		@IThemeService themeService: IThemeService,
 		@IContextViewService private _contextViewService: IContextViewService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
-		@IClipboardService clipboardService: IClipboardService
+		@IClipboardService clipboardService: IClipboardService,
+		@ILogService logService: ILogService
 	) {
-		super(title, name, telemetryService, layoutService, clipboardService, _workbenchThemeService, contextKeyService, options);
+		super(title, name, telemetryService, layoutService, clipboardService, themeService, logService, contextKeyService, options);
 	}
 
 	public render() {
@@ -109,8 +111,8 @@ export class OptionsDialog extends Modal {
 		// Theme styler
 		attachButtonStyler(okButton, this._themeService);
 		attachButtonStyler(closeButton, this._themeService);
-		this._register(this._workbenchThemeService.onDidColorThemeChange(e => this.updateTheme(e)));
-		this.updateTheme(this._workbenchThemeService.getColorTheme());
+		this._register(this._themeService.onThemeChange(e => this.updateTheme(e)));
+		this.updateTheme(this._themeService.getTheme());
 	}
 
 	protected renderBody(container: HTMLElement) {
@@ -128,7 +130,7 @@ export class OptionsDialog extends Modal {
 	}
 
 	// Update theming that is specific to options dialog flyout body
-	private updateTheme(theme: IColorTheme): void {
+	private updateTheme(theme: ITheme): void {
 		let borderColor = theme.getColor(contrastBorder);
 		let border = borderColor ? borderColor.toString() : null;
 		if (this._dividerBuilder) {

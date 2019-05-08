@@ -19,7 +19,6 @@ import * as actions from 'sql/workbench/parts/grid/views/gridActions';
 import * as Services from 'sql/base/browser/ui/table/formatters';
 import * as GridContentEvents from 'sql/workbench/parts/grid/common/gridContentEvents';
 import { ResultsVisibleContext, ResultsGridFocussedContext, ResultsMessagesFocussedContext, QueryEditorVisibleContext } from 'sql/workbench/parts/query/common/queryContext';
-import { error } from 'sql/base/common/log';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
 
@@ -32,6 +31,7 @@ import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export abstract class GridParentComponent {
 	// CONSTANTS
@@ -95,7 +95,8 @@ export abstract class GridParentComponent {
 		protected contextKeyService: IContextKeyService,
 		protected configurationService: IConfigurationService,
 		protected clipboardService: IClipboardService,
-		protected queryEditorService: IQueryEditorService
+		protected queryEditorService: IQueryEditorService,
+		protected logService: ILogService
 	) {
 		this.toDispose = [];
 	}
@@ -160,7 +161,7 @@ export abstract class GridParentComponent {
 					self.goToNextGrid();
 					break;
 				default:
-					error('Unexpected grid content event type "' + type + '" sent');
+					this.logService.error('Unexpected grid content event type "' + type + '" sent');
 					break;
 			}
 		});

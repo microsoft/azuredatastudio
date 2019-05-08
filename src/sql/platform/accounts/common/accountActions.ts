@@ -8,11 +8,11 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { localize } from 'vs/nls';
 import { Action } from 'vs/base/common/actions';
 
-import { error } from 'sql/base/common/log';
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 import { IDialogService, IConfirmation, IConfirmationResult } from 'vs/platform/dialogs/common/dialogs';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
+import { ILogService } from 'vs/platform/log/common/log';
 
 /**
  * Actions to add a new account
@@ -34,7 +34,8 @@ export class AddAccountAction extends Action {
 
 	constructor(
 		private _providerId: string,
-		@IAccountManagementService private _accountManagementService: IAccountManagementService
+		@IAccountManagementService private _accountManagementService: IAccountManagementService,
+		@ILogService private readonly logService: ILogService
 	) {
 		super(AddAccountAction.ID, AddAccountAction.LABEL);
 		this.class = 'add-linked-account-action';
@@ -54,7 +55,7 @@ export class AddAccountAction extends Action {
 				this._addAccountCompleteEmitter.fire();
 				return true;
 			}, err => {
-				error(`Error while adding account: ${err}`);
+				this.logService.error(`Error while adding account: ${err}`);
 				this._addAccountErrorEmitter.fire(err);
 				this._addAccountCompleteEmitter.fire();
 			}));
@@ -132,7 +133,8 @@ export class RefreshAccountAction extends Action {
 	public account: azdata.Account;
 
 	constructor(
-		@IAccountManagementService private _accountManagementService: IAccountManagementService
+		@IAccountManagementService private _accountManagementService: IAccountManagementService,
+		@ILogService private readonly logService: ILogService
 	) {
 		super(RefreshAccountAction.ID, RefreshAccountAction.LABEL, 'refresh-account-action icon refresh');
 	}
@@ -141,7 +143,7 @@ export class RefreshAccountAction extends Action {
 			return Promise.resolve(this._accountManagementService.refreshAccount(this.account)
 				.then(() => true,
 					err => {
-						error(`Error while refreshing account: ${err}`);
+						this.logService.error(`Error while refreshing account: ${err}`);
 						return Promise.reject(err);
 					}
 				));

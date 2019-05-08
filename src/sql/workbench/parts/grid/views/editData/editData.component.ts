@@ -15,8 +15,6 @@ import * as Services from 'sql/base/browser/ui/table/formatters';
 import { IEditDataComponentParams } from 'sql/platform/bootstrap/node/bootstrapParams';
 import { GridParentComponent } from 'sql/workbench/parts/grid/views/gridParentComponent';
 import { EditDataGridActionProvider } from 'sql/workbench/parts/grid/views/editData/editDataGridActions';
-import { error } from 'sql/base/common/log';
-import { clone } from 'sql/base/common/objects';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { IBootstrapParams } from 'sql/platform/bootstrap/node/bootstrapService';
 import { RowNumberColumn } from 'sql/base/browser/ui/table/plugins/rowNumberColumn.plugin';
@@ -35,6 +33,8 @@ import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { EditUpdateCellResult } from 'azdata';
+import { ILogService } from 'vs/platform/log/common/log';
+import { deepClone } from 'vs/base/common/objects';
 export const EDITDATA_SELECTOR: string = 'editdata-component';
 
 @Component({
@@ -96,9 +96,10 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		@Inject(IContextKeyService) contextKeyService: IContextKeyService,
 		@Inject(IConfigurationService) configurationService: IConfigurationService,
 		@Inject(IClipboardService) clipboardService: IClipboardService,
-		@Inject(IQueryEditorService) queryEditorService: IQueryEditorService
+		@Inject(IQueryEditorService) queryEditorService: IQueryEditorService,
+		@Inject(ILogService) logService: ILogService
 	) {
-		super(el, cd, contextMenuService, keybindingService, contextKeyService, configurationService, clipboardService, queryEditorService);
+		super(el, cd, contextMenuService, keybindingService, contextKeyService, configurationService, clipboardService, queryEditorService, logService);
 		this._el.nativeElement.className = 'slickgridContainer';
 		this.dataService = params.dataService;
 		this.actionProvider = this.instantiationService.createInstance(EditDataGridActionProvider, this.dataService, this.onGridSelectAll(), this.onDeleteRow(), this.onRevertRow());
@@ -133,7 +134,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 					self.handleEditSessionReady(self, event);
 					break;
 				default:
-					error('Unexpected query event type "' + event.type + '" sent');
+					this.logService.error('Unexpected query event type "' + event.type + '" sent');
 					break;
 			}
 			self._cd.detectChanges();
@@ -176,10 +177,12 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 
 		this.overrideCellFn = (rowNumber, columnId, value?, data?): string => {
 			let returnVal = '';
+			// replace the line breaks with space since the edit text control cannot
+			// render line breaks and strips them, updating the value.
 			if (Services.DBCellValue.isDBCellValue(value)) {
-				returnVal = value.displayValue;
+				returnVal = this.spacefyLinebreaks(value.displayValue);
 			} else if (typeof value === 'string') {
-				returnVal = value;
+				returnVal = this.spacefyLinebreaks(value);
 			}
 			return returnVal;
 		};
@@ -381,7 +384,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		self.dataSet = dataSet;
 
 		// Create a dataSet to render without rows to reduce DOM size
-		let undefinedDataSet = clone(dataSet);
+		let undefinedDataSet = deepClone(dataSet);
 		undefinedDataSet.columnDefinitions = dataSet.columnDefinitions;
 		undefinedDataSet.dataRows = undefined;
 		undefinedDataSet.resized = new EventEmitter();
@@ -403,6 +406,13 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	 */
 	onScroll(scrollTop): void {
 		this.refreshGrid();
+	}
+
+	/**
+	 * Replace the line breaks with space.
+	 */
+	private spacefyLinebreaks(inputStr: string): string {
+		return inputStr.replace(/(\r\n|\n|\r)/g, ' ');
 	}
 
 	private refreshGrid(): Thenable<void> {

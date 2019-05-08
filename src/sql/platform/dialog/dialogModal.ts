@@ -22,6 +22,7 @@ import { DialogMessage } from '../../workbench/api/common/sqlExtHostTypes';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { append, $ } from 'vs/base/browser/dom';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export class DialogModal extends Modal {
 	private _dialogPane: DialogPane;
@@ -41,9 +42,10 @@ export class DialogModal extends Modal {
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IClipboardService clipboardService: IClipboardService,
+		@ILogService logService: ILogService,
 		@IInstantiationService private _instantiationService: IInstantiationService
 	) {
-		super(_dialog.title, name, telemetryService, layoutService, clipboardService, themeService, contextKeyService, options);
+		super(_dialog.title, name, telemetryService, layoutService, clipboardService, themeService, logService, contextKeyService, options);
 	}
 
 	public layout(): void {
