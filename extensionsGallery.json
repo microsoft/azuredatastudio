@@ -1427,56 +1427,62 @@
 					"statistics": [],
 					"flags": "preview"
 				},
-                {
-                    "extensionId": "36",
+				{
+					"extensionId": "36",
 					"extensionName": "palenight-theme-dataazurestudio-version",
-                    "displayName": "Palenight Theme",
-                    "shortDescription": "Palenight Theme - Azure Data Studio Version Theme (based on vscode version)",
-                    "publisher": {
-                        "displayName":"JoseRocha",
-                        "publisherId": "JoseRocha",
-                        "publisherName":"JoseRocha"
-                    },
-                    "versions": [
-                        {
-                            "version": "0.0.2",
-                            "lastUpdated": "04/06/2019",
-                            "assetUri": "",
-                            "fallbackAssetUri": "fallbackAssetUri",
-                            "files": [
-                                {
-                                    "assetType": "Microsoft.SQLOps.DownloadPage",
-                                    "source": "https://github.com/joserocha/azdatastudio-material-palenight-theme/releases/tag/0.0.2"
-                                },
-                                {
-                                    "assetType": "Microsoft.VisualStudio.Services.Links.Source",
-                                    "source": "https://github.com/joserocha/azdatastudio-material-palenight-theme/"
-                                },
-                                {
-                                    "assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-                                    "source": "https://raw.githubusercontent.com/joserocha/azdatastudio-material-palenight-theme/master/icon.png"
-                                },
-                                {
-                                    "assetType": "Microsoft.VisualStudio.Services.Content.Details",
-                                "source": "https://raw.githubusercontent.com/joserocha/azdatastudio-material-palenight-theme/master/README.md"
-                                },
-                                {
-                                    "assetType": "Microsoft.VisualStudio.Code.Manifest",
-                                    "source": "https://raw.githubusercontent.com/joserocha/azdatastudio-material-palenight-theme/master/package.json"
-                                },
-                                {
-                                    "assetType": "Microsoft.VisualStudio.Services.Content.License",
-                                    "source": "https://raw.githubusercontent.com/joserocha/azdatastudio-material-palenight-theme/master/License.txt"
-                                }
-                            ],
-                            "properties": [
-                                { "key": "Microsoft.VisualStudio.Code.ExtensionDependencies", "value":""},
-                                { "key": "Microsoft.VisualStudio.Code.Engine", "value":"*"}
-                            ]
-                        }
-                    ],
-                    "statistics": [],
-                    "flags": "preview"
+					"displayName": "Palenight Theme",
+					"shortDescription": "Palenight Theme - Azure Data Studio Version Theme (based on vscode version)",
+					"publisher": {
+						"displayName": "JoseRocha",
+						"publisherId": "JoseRocha",
+						"publisherName": "JoseRocha"
+					},
+					"versions": [
+						{
+							"version": "0.0.2",
+							"lastUpdated": "04/06/2019",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.SQLOps.DownloadPage",
+									"source": "https://github.com/joserocha/azdatastudio-material-palenight-theme/releases/tag/0.0.2"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Links.Source",
+									"source": "https://github.com/joserocha/azdatastudio-material-palenight-theme/"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/joserocha/azdatastudio-material-palenight-theme/master/icon.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/joserocha/azdatastudio-material-palenight-theme/master/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/joserocha/azdatastudio-material-palenight-theme/master/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/joserocha/azdatastudio-material-palenight-theme/master/License.txt"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": "preview"
 				},
 				{
 					"extensionId": "37",
@@ -1606,46 +1612,50 @@
 						"publisherId": "jocapc",
 						"publisherName": "jocapc"
 					},
-					"versions": [{
-						"version": "0.1.1",
-						"lastUpdated": "5/6/2019",
-						"assetUri": "",
-						"fallbackAssetUri": "fallbackAssetUri",
-						"files": [{
-								"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-								"source": "https://sqlopsextensions.blob.core.windows.net/extensions/managed-instance-dashboard/managed-instance-dashboard-0.1.1.vsix"
-							},
-							{
-								"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-								"source": "https://raw.githubusercontent.com/JocaPC/AzureDataStudio-Managed-Instance/master/images/ManagedInstanceLogo.png"
-							},
-							{
-								"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-								"source": "https://raw.githubusercontent.com/JocaPC/AzureDataStudio-Managed-Instance/master/README.md"
-							},
-							{
-								"assetType": "Microsoft.VisualStudio.Code.Manifest",
-								"source": "https://raw.githubusercontent.com/JocaPC/AzureDataStudio-Managed-Instance/master/package.json"
-							},
-							{
-								"assetType": "Microsoft.VisualStudio.Services.Content.License",
-								"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt"
-							}
-						],
-						"properties": [{
-								"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
-								"value": ""
-							},
-							{
-								"key": "Microsoft.VisualStudio.Code.Engine",
-								"value": ">=0.32.1"
-							},
-							{
-								"key": "Microsoft.VisualStudio.Services.Links.Source",
-								"value": "https://github.com/JocaPC/AzureDataStudio-Managed-Instance"
-							}
-						]
-					}],
+					"versions": [
+						{
+							"version": "0.1.1",
+							"lastUpdated": "5/6/2019",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/managed-instance-dashboard/managed-instance-dashboard-0.1.1.vsix"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/JocaPC/AzureDataStudio-Managed-Instance/master/images/ManagedInstanceLogo.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/JocaPC/AzureDataStudio-Managed-Instance/master/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/JocaPC/AzureDataStudio-Managed-Instance/master/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": ">=0.32.1"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/JocaPC/AzureDataStudio-Managed-Instance"
+								}
+							]
+						}
+					],
 					"statistics": [],
 					"flags": "preview"
 				}
