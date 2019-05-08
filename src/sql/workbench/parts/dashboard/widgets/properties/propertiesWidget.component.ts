@@ -41,7 +41,9 @@ export enum EndpointConstants {
 	clusterEndpoints = 'clusterEndpoints',
 	gateway = 'gateway',
 	hyperlink = 'hyperlink',
-	managementproxy = 'management-proxy'
+	managementproxy = 'management-proxy',
+	appproxy = 'app-proxy',
+	controller = 'controller'
 }
 
 export interface FlavorProperties {
@@ -136,7 +138,7 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 		this._changeRef.detectChanges();
 	}
 
-	private parseConfig() {
+	private parseConfig(): void {
 		// if config exists use that, otherwise use default
 		if (this._config.widget['properties-widget'] && this._config.widget['properties-widget'].properties) {
 			const config = <PropertiesConfig>this._config.widget['properties-widget'];
@@ -151,7 +153,7 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 		this._loading = false;
 	}
 
-	private parseEndpoints() {
+	private parseEndpoints(): void {
 		if (!this.endpoints || this.endpoints.length === 0) {
 			this.getEndpoints();
 		}
@@ -174,7 +176,7 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 		}
 	}
 
-	private getEndpoints() {
+	private getEndpoints(): void {
 		const endpointArray = this._connection.serverInfo.options[EndpointConstants.clusterEndpoints.toString()];
 
 		// TO DO: Once the endpoints data is moved to DMV, update this logic to replace hardcoded values
@@ -195,34 +197,29 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 			// add grafana and kibana endpoints from the management proxy endpoint
 			const managementProxyEp = endpointArray.find(e => e.serviceName === EndpointConstants.managementproxy.toString());
 			if (!endpointArray.find(e => e.serviceName.toLowerCase().indexOf('metrics') > -1)) {
-				this.endpoints.push(this.addCustomeEndpoint(managementProxyEp, 'Grafana Dashboard', '/grafana'));
+				this.endpoints.push(this.addCustomEndpoint(managementProxyEp, 'Grafana Dashboard', '/grafana'));
 			}
 			if (!endpointArray.find(e => e.serviceName.toLowerCase().indexOf('log') > -1)) {
-				this.endpoints.push(this.addCustomeEndpoint(managementProxyEp, 'Kibana Dashboard', '/kibana'));
+				this.endpoints.push(this.addCustomEndpoint(managementProxyEp, 'Kibana Dashboard', '/kibana'));
 			}
 
 			// add spark and yarn endpoints form the gateway endpoint
 			const gatewayEndpoint = endpointArray.find(e => e.serviceName === EndpointConstants.gateway.toString());
 			if (!endpointArray.find(e => e.serviceName.toLowerCase().indexOf('spark') > -1)) {
-				this.endpoints.push(this.addCustomeEndpoint(gatewayEndpoint, 'Spark History', '/gateway/default/sparkhistory'));
+				this.endpoints.push(this.addCustomEndpoint(gatewayEndpoint, 'Spark History', '/gateway/default/sparkhistory'));
 			}
 			if (!endpointArray.find(e => e.serviceName.toLowerCase().indexOf('log') > -1)) {
-				this.endpoints.push(this.addCustomeEndpoint(gatewayEndpoint, 'Yarn History', '/gateway/default/yarn'));
+				this.endpoints.push(this.addCustomEndpoint(gatewayEndpoint, 'Yarn History', '/gateway/default/yarn'));
 			}
 		}
 	}
 
 	private isHyperlink(serviceName: string): boolean {
-		if (serviceName.toLowerCase().indexOf('app-proxy') > -1 || serviceName.toLowerCase().indexOf('controller') > -1
-			|| serviceName.toLowerCase().indexOf('gateway') > -1 || serviceName.toLowerCase().indexOf('management-proxy') > -1) {
-			return false;
-		}
-		else {
-			return true;
-		}
+		return !(serviceName.toLowerCase().indexOf(EndpointConstants.appproxy.toString()) > -1 || serviceName.toLowerCase().indexOf(EndpointConstants.controller.toString()) > -1
+			|| serviceName.toLowerCase().indexOf(EndpointConstants.gateway.toString()) > -1 || serviceName.toLowerCase().indexOf(EndpointConstants.managementproxy.toString()) > -1);
 	}
 
-	private addCustomeEndpoint(parentEndpoint: IEndpoint, serviceName: string, serivceUrl: string): Endpoint {
+	private addCustomEndpoint(parentEndpoint: IEndpoint, serviceName: string, serivceUrl: string): Endpoint {
 		const endpoint = {};
 		if (parentEndpoint) {
 			endpoint['serviceName'] = serviceName;
@@ -236,11 +233,7 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 	private parseProperties(propertyArray: Array<Property>) {
 
 		const provider = this._config.provider;
-		// if config exists use that, otherwise use default
-		/* if (this._config.widget['properties-widget'] && this._config.widget['properties-widget'].properties) {
-			const config = <PropertiesConfig>this._config.widget['properties-widget'];
-			propertyArray = config.properties;
-		} else  */
+
 		if (!propertyArray || propertyArray.length === 0) {
 			const providerProperties = dashboardRegistry.getProperties(provider as string);
 
