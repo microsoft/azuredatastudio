@@ -45,6 +45,7 @@
     ]
   },
   "scripts": {
+    "fmktest": "mocha -r ts-node/register --color --watch-extensions tsx,ts -u tdd test/**/*.test.ts",
     "vscode:prepublish": "node ../../node_modules/gulp/bin/gulp.js --gulpfile ../../build/gulpfile.extensions.js compile-extension:vscode-colorize-tests ./tsconfig.json",
     "postinstall": "node ./node_modules/vscode/bin/install"
   },
@@ -53,8 +54,10 @@
     "@types/chai": "3.4.34",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",
-    "vscode": "1.1.5",
-    "chai": "3.5.0"
+    "vscode": "^1.1.5",
+    "chai": "^4.2.0",
+    "ts-node": "^8.1.0",
+    "class-validator": "^0.9.1"    
   },
   "dependencies": {
     "azure-keyvault": "^3.0.4",

@@ -3,6 +3,7 @@ npm-debug.log
 Thumbs.db
 node_modules/
 .build/
+.vscode/cscope_conf.json
 extensions/**/dist/
 out/
 out-build/
@@ -14,8 +15,11 @@ out-editor-min/
 out-monaco-editor-core/
 out-vscode/
 out-vscode-min/
-build/node_modules
+**/node_modules
 coverage/
 test_data/
 test-results/
 yarn-error.log
+**/*.json.bak
+**/*.ts.bak
+
