@@ -99,24 +99,17 @@ export class FlatFileWizard {
 
 		this.importAnotherFileButton.hidden = true;
 		this.wizard.customButtons = [this.importAnotherFileButton];
-
 		this.wizard.onPageChanged(async (event) => {
-			let idx = event.newPage;
-
-			let page = pages.get(idx);
-
-			if (page) {
-				page.setupNavigationValidator();
-				page.onPageEnter();
+			let newPageIdx = event.newPage;
+			let lastPageIdx = event.lastPage;
+			let newPage = pages.get(newPageIdx);
+			let lastPage = pages.get(lastPageIdx);
+			if (lastPage) {
+				await lastPage.onPageLeave();
 			}
-		});
-
-		this.wizard.onPageChanged(async (event) => {
-			let idx = event.lastPage;
-
-			let page = pages.get(idx);
-			if (page) {
-				page.onPageLeave();
+			if (newPage) {
+				newPage.setupNavigationValidator();
+				await newPage.onPageEnter();
 			}
 		});
 
