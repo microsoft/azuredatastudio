@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import { IStorageService, StorageScope, IWorkspaceStorageChangeEvent, IWillSaveStateEvent } from 'vs/platform/storage/common/storage';
 import { Event } from 'vs/base/common/event';

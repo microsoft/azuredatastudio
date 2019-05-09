@@ -23,6 +23,7 @@ import * as notebookUtils from 'sql/workbench/parts/notebook/notebookUtils';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ILogService } from 'vs/platform/log/common/log';
+import { isUndefinedOrNull } from 'vs/base/common/types';
 
 export const sqlKernelError: string = localize("sqlKernelError", "SQL kernel error");
 export const MAX_ROWS = 5000;
@@ -311,7 +312,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 		}));
 		this._register(queryRunner.onMessage(message => {
 			// TODO handle showing a messages output (should be updated with all messages, only changing 1 output in total)
-			if (this._future) {
+			if (this._future && isUndefinedOrNull(message.selection)) {
 				this._future.handleMessage(message);
 			}
 		}));
@@ -441,7 +442,6 @@ export class SQLFuture extends Disposable implements FutureInternal {
 
 	public handleBatchEnd(batch: BatchSummary): void {
 		if (this.ioHandler) {
-			this.handleMessage(strings.format(elapsedTimeLabel, batch.executionElapsed));
 			this._outputAddedPromises.push(this.processResultSets(batch));
 		}
 	}

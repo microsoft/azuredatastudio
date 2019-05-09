@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import { localize } from 'vs/nls';
 import * as azdata from 'azdata';
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';

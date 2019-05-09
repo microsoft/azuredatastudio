@@ -308,7 +308,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 	private setFocusAndScroll(): void {
 		if (this.cellModel.id === this._activeCellId) {
 			this._editor.focus();
-			this._editor.getContainer().scrollIntoView();
+			this._editor.getContainer().scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 		}
 	}
 

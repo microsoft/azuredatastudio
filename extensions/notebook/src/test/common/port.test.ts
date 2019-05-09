@@ -26,8 +26,8 @@ describe('Ports', () => {
 
 				// once listening, find another free port and assert that the port is different from the opened one
 				ports.findFreePort(7000, 50, 300000).then(freePort => {
-					assert.ok(freePort >= 7000 && freePort !== initialPort);
 					server.close();
+					assert.ok(freePort >= 7000 && freePort !== initialPort);
 
 					done();
 				}, err => done(err));
@@ -51,11 +51,10 @@ describe('Ports', () => {
 				// once listening, find another free port and assert that the port is different from the opened one
 				options.minPort = initialPort;
 				options.maxRetriesPerStartPort = 1;
-				options.totalRetryLoops = 50;
+				options.totalRetryLoops = 10;
 				ports.strictFindFreePort(options).then(freePort => {
-					assert.ok(freePort >= 7100 && freePort !== initialPort);
 					server.close();
-
+					assert(freePort !== initialPort, `Expected freePort !== initialPort, Actual: ${freePort}`);
 					done();
 				}, err => done(err));
 			});
