@@ -43,9 +43,11 @@ export function packageBuiltInExtensions() {
 		.filter(({ name }) => excludedExtensions.indexOf(name) === -1)
 		.filter(({ name }) => builtInExtensions.every(b => b.name !== name))
 		.filter(({ name }) => sqlBuiltInExtensions.indexOf(name) >= 0);
+	const visxDirectory = path.join(path.dirname(root), 'vsix');
+	fs.mkdirSync(visxDirectory);
 	sqlBuiltInLocalExtensionDescriptions.forEach(element => {
 		let pkgJson = JSON.parse(fs.readFileSync(path.join(element.path, 'package.json'), { encoding: 'utf8' }));
-		const packagePath = path.join(root, `${pkgJson.name}-${pkgJson.version}.vsix`);
+		const packagePath = path.join(visxDirectory, `${pkgJson.name}-${pkgJson.version}.vsix`);
 		console.info('Creating vsix for ' + element.path + ' result:' + packagePath);
 		vsce.createVSIX({
 			cwd: element.path,
