@@ -41,7 +41,8 @@ function packageBuiltInExtensions() {
         .filter(({ name }) => builtInExtensions.every(b => b.name !== name))
         .filter(({ name }) => sqlBuiltInExtensions.indexOf(name) >= 0);
     sqlBuiltInLocalExtensionDescriptions.forEach(element => {
-        const packagePath = path.join(path.dirname(root), element.name + '.vsix');
+        let pkgJson = JSON.parse(fs.readFileSync(path.join(element.path, 'package.json'), { encoding: 'utf8' }));
+        const packagePath = path.join(root, `${pkgJson.name}-${pkgJson.version}.vsix`);
         console.info('Creating vsix for ' + element.path + ' result:' + packagePath);
         vsce.createVSIX({
             cwd: element.path,
