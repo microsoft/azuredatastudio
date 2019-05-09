@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import { URI } from 'vs/base/common/uri';
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';

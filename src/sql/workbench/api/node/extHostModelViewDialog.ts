@@ -2,22 +2,16 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { Event, Emitter } from 'vs/base/common/event';
-import { deepClone } from 'vs/base/common/objects';
 import * as nls from 'vs/nls';
 import { generateUuid } from 'vs/base/common/uuid';
-import { URI } from 'vs/base/common/uri';
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 
 import { SqlMainContext, ExtHostModelViewDialogShape, MainThreadModelViewDialogShape, ExtHostModelViewShape, ExtHostBackgroundTaskManagementShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
-import { IItemConfig, ModelComponentTypes, IComponentShape } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { Inject } from '@angular/core';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 
 const DONE_LABEL = nls.localize('dialogDoneLabel', 'Done');
