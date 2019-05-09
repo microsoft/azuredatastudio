@@ -160,15 +160,15 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 
 		// iterate over endpoint properties and display them
 		this.properties = [];
-		for (let i = 0; i < this.endpoints.length; i++) {
-			const endpoint = this.endpoints[i];
-			const assignProperty = {};
-			let propertyObject = this.getValueOrDefault<string>(this.endpoints[i], EndpointConstants.hyperlink.toString(), '--' || '--');
+		for(const endpoint of this.endpoints) {
+			let propertyObject = this.getValueOrDefault<string>(endpoint, EndpointConstants.hyperlink.toString(), '--');
+			const assignProperty: DisplayProperty = {
+				displayName: endpoint.serviceName,
+				value: propertyObject,
+				hyperlink: this.isHyperlink(endpoint.serviceName)
+			};
 
-			assignProperty['displayName'] = endpoint.serviceName;
-			assignProperty['value'] = propertyObject;
-			assignProperty['hyperlink'] = this.isHyperlink(endpoint.serviceName);
-			this.properties.push(<DisplayProperty>assignProperty);
+			this.properties.push(assignProperty);
 		}
 
 		if (this._hasInit) {
@@ -184,14 +184,14 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 		if (endpointArray && endpointArray.length > 0) {
 			// iterate over endpoints and display them
 			this.endpoints = [];
-			for (let i = 0; i < endpointArray.length; i++) {
-				const ep = endpointArray[i];
-				const assignProperty = {};
-				assignProperty['serviceName'] = ep.serviceName;
-				assignProperty['ipAddress'] = ep.ipAddress;
-				assignProperty['port'] = ep.port;
-				assignProperty['hyperlink'] = ep.ipAddress + ':' + ep.port;
-				this.endpoints.push(<Endpoint>assignProperty);
+			for (const ep of endpointArray) {
+				const assignProperty: Endpoint = {
+					serviceName: ep.serviceName,
+					ipAddress: ep.ipAddress,
+					port: ep.port,
+					hyperlink: ep.ipAddress + ':' + ep.port
+				};
+				this.endpoints.push(assignProperty);
 			}
 
 			// add grafana and kibana endpoints from the management proxy endpoint
