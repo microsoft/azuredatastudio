@@ -131,7 +131,7 @@ export class QueryResultsEditor extends BaseEditor {
 		this.styleSheet.remove();
 		parent.appendChild(this.styleSheet);
 		if (!this.resultsView) {
-			this.resultsView = this._register(new QueryResultsView(parent, this._instantiationService, this._queryModelService));
+			this.resultsView = this._register(this._instantiationService.createInstance(QueryResultsView, parent));
 		}
 	}
 

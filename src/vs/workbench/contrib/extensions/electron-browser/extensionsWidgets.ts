@@ -13,7 +13,7 @@ import { IExtensionManagementServerService, IExtensionTipsService } from 'vs/pla
 import { ILabelService } from 'vs/platform/label/common/label';
 import { extensionButtonProminentBackground, extensionButtonProminentForeground, DisabledLabelAction, ReloadAction } from 'vs/workbench/contrib/extensions/electron-browser/extensionsActions';
 import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
-import { STATUS_BAR_HOST_NAME_BACKGROUND, STATUS_BAR_HOST_NAME_FOREGROUND } from 'vs/workbench/common/theme';
+import { EXTENSION_BADGE_REMOTE_BACKGROUND, EXTENSION_BADGE_REMOTE_FOREGROUND } from 'vs/workbench/common/theme';
 import { REMOTE_HOST_SCHEME } from 'vs/platform/remote/common/remoteHosts';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
 import { Emitter, Event } from 'vs/base/common/event';
@@ -168,7 +168,7 @@ export class TooltipWidget extends ExtensionWidget {
 		this.parent.removeAttribute('aria-label');
 		this.parent.title = this.getTooltip();
 		if (this.extension) {
-			this.parent.setAttribute('aria-label', localize('extension-arialabel', "{0}. {1} Press enter for extension details.", this.extension.displayName));
+			this.parent.setAttribute('aria-label', localize('extension-arialabel', "{0}. Press enter for extension details.", this.extension.displayName));
 		}
 	}
 
@@ -323,8 +323,8 @@ class RemoteBadge extends Disposable {
 			if (!this.element) {
 				return;
 			}
-			const bgColor = this.themeService.getTheme().getColor(STATUS_BAR_HOST_NAME_BACKGROUND);
-			const fgColor = this.themeService.getTheme().getColor(STATUS_BAR_HOST_NAME_FOREGROUND);
+			const bgColor = this.themeService.getTheme().getColor(EXTENSION_BADGE_REMOTE_BACKGROUND);
+			const fgColor = this.themeService.getTheme().getColor(EXTENSION_BADGE_REMOTE_FOREGROUND);
 			this.element.style.backgroundColor = bgColor ? bgColor.toString() : '';
 			this.element.style.color = fgColor ? fgColor.toString() : '';
 		};

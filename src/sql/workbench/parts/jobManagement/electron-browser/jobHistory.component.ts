@@ -28,7 +28,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { JobManagementView } from 'sql/workbench/parts/jobManagement/electron-browser/jobManagementView';
-import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
+import { TabChild } from 'sql/base/electron-browser/ui/panel/tab.component';
 import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardService';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';

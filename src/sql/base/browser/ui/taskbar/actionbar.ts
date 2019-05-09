@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!vs/base/browser/ui/actionbar/actionbar';
-
 import { IAction, IActionRunner, ActionRunner } from 'vs/base/common/actions';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
@@ -16,7 +14,7 @@ import * as lifecycle from 'vs/base/common/lifecycle';
 import * as DOM from 'vs/base/browser/dom';
 import * as types from 'vs/base/common/types';
 
-let defaultOptions: IActionBarOptions = {
+const defaultOptions: IActionBarOptions = {
 	orientation: ActionsOrientation.HORIZONTAL,
 	context: null
 };

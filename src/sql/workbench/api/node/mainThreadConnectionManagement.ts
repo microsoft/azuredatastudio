@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import { SqlExtHostContext, SqlMainContext, ExtHostConnectionManagementShape, MainThreadConnectionManagementShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import * as azdata from 'azdata';
@@ -111,7 +110,7 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 		return connection;
 	}
 
-	public $connect(connectionProfile: IConnectionProfile, saveConnection: boolean = false, showDashboard: boolean = false): Thenable<azdata.ConnectionResult> {
+	public $connect(connectionProfile: IConnectionProfile, saveConnection: boolean = true, showDashboard: boolean = true): Thenable<azdata.ConnectionResult> {
 		let profile = new ConnectionProfile(this._capabilitiesService, connectionProfile);
 		profile.id = generateUuid();
 		return this._connectionManagementService.connectAndSaveProfile(profile, undefined, {

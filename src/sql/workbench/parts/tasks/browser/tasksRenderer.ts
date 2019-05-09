@@ -25,8 +25,7 @@ export interface ITaskHistoryTemplateData {
  */
 export class TaskHistoryRenderer implements IRenderer {
 
-	public static readonly TASKOBJECT_HEIGHT = 65;
-	private static readonly ICON_CLASS = 'task-icon sql icon';
+	public static readonly TASKOBJECT_HEIGHT = 22;
 	private static readonly TASKOBJECT_TEMPLATE_ID = 'carbonTask';
 	private static readonly FAIL_CLASS = 'error';
 	private static readonly SUCCESS_CLASS = 'success';
@@ -54,48 +53,43 @@ export class TaskHistoryRenderer implements IRenderer {
 	public renderTemplate(tree: ITree, templateId: string, container: HTMLElement): any {
 		const taskTemplate: ITaskHistoryTemplateData = Object.create(null);
 		taskTemplate.root = dom.append(container, $('.task-group'));
-		taskTemplate.icon = dom.append(taskTemplate.root, $('img.task-icon'));
-		let labelContainer = dom.append(taskTemplate.root, $('div.task-details'));
-		taskTemplate.label = dom.append(labelContainer, $('div.label'));
-		taskTemplate.description = dom.append(labelContainer, $('div.description'));
-		taskTemplate.time = dom.append(labelContainer, $('div.time'));
+		taskTemplate.icon = dom.append(taskTemplate.root, $('.icon.task-icon'));
+		taskTemplate.label = dom.append(taskTemplate.root, $('.label'));
+		taskTemplate.description = dom.append(taskTemplate.root, $('.description'));
+		taskTemplate.time = dom.append(taskTemplate.root, $('.time'));
 		return taskTemplate;
 	}
 
 	/**
 	 * Render a element, given an object bag returned by the template
 	 */
-	public renderElement(tree: ITree, element: any, templateId: string, templateData: any): void {
-		this.renderTask(tree, element, templateData);
-	}
-
-	private renderTask(tree: ITree, taskNode: TaskNode, templateData: ITaskHistoryTemplateData): void {
+	public renderElement(tree: ITree, element: TaskNode, templateId: string, templateData: ITaskHistoryTemplateData): void {
 		let taskStatus;
-		if (taskNode) {
-			templateData.icon.className = TaskHistoryRenderer.ICON_CLASS;
-			switch (taskNode.status) {
+		if (element) {
+			templateData.icon.className = 'task-icon';
+			switch (element.status) {
 				case TaskStatus.Succeeded:
-					templateData.icon.classList.add(TaskHistoryRenderer.SUCCESS_CLASS);
+					dom.addClass(templateData.icon, TaskHistoryRenderer.SUCCESS_CLASS);
 					taskStatus = localize('succeeded', "succeeded");
 					break;
 				case TaskStatus.Failed:
-					templateData.icon.classList.add(TaskHistoryRenderer.FAIL_CLASS);
+					dom.addClass(templateData.icon, TaskHistoryRenderer.FAIL_CLASS);
 					taskStatus = localize('failed', "failed");
 					break;
 				case TaskStatus.InProgress:
-					templateData.icon.classList.add(TaskHistoryRenderer.INPROGRESS_CLASS);
+					dom.addClass(templateData.icon, TaskHistoryRenderer.INPROGRESS_CLASS);
 					taskStatus = localize('inProgress', "in progress");
 					break;
 				case TaskStatus.NotStarted:
-					templateData.icon.classList.add(TaskHistoryRenderer.NOTSTARTED_CLASS);
+					dom.addClass(templateData.icon, TaskHistoryRenderer.NOTSTARTED_CLASS);
 					taskStatus = localize('notStarted', "not started");
 					break;
 				case TaskStatus.Canceled:
-					templateData.icon.classList.add(TaskHistoryRenderer.CANCELED_CLASS);
+					dom.addClass(templateData.icon, TaskHistoryRenderer.CANCELED_CLASS);
 					taskStatus = localize('canceled', "canceled");
 					break;
 				case TaskStatus.Canceling:
-					templateData.icon.classList.add(TaskHistoryRenderer.INPROGRESS_CLASS);
+					dom.addClass(templateData.icon, TaskHistoryRenderer.INPROGRESS_CLASS);
 					taskStatus = localize('canceling', "canceling");
 					break;
 			}
@@ -103,21 +97,21 @@ export class TaskHistoryRenderer implements IRenderer {
 			templateData.icon.title = taskStatus;
 
 			// Determine the task title and set hover text equal to that
-			templateData.label.textContent = taskNode.taskName + ' ' + taskStatus;
+			templateData.label.textContent = element.taskName + ' ' + taskStatus;
 			templateData.label.title = templateData.label.textContent;
 
 			// Determine the target name and set hover text equal to that
-			let description = taskNode.serverName;
-			if (taskNode.databaseName) {
-				description += ' | ' + taskNode.databaseName;
+			let description = element.serverName;
+			if (element.databaseName) {
+				description += ' | ' + element.databaseName;
 			}
 			templateData.description.textContent = description;
 			templateData.description.title = templateData.description.textContent;
 
-			this.timer(taskNode, templateData);
+			this.timer(element, templateData);
 			let self = this;
 			setInterval(function () {
-				self.timer(taskNode, templateData);
+				self.timer(element, templateData);
 			}, 1000);
 		}
 	}

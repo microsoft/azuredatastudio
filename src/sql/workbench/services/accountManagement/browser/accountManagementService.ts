@@ -21,6 +21,7 @@ import { AccountListStatusbarItem } from 'sql/platform/accounts/browser/accountL
 import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/platform/accounts/common/eventTypes';
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 import { Deferred } from 'sql/base/common/promise';
+import { localize } from 'vs/nls';
 
 export class AccountManagementService implements IAccountManagementService {
 	// CONSTANTS ///////////////////////////////////////////////////////////
@@ -127,28 +128,27 @@ export class AccountManagementService implements IAccountManagementService {
 	public addAccount(providerId: string): Thenable<void> {
 		let self = this;
 
-		return this.doWithProvider(providerId, (provider) => {
-			return provider.provider.prompt()
-				.then(account => self._accountStore.addOrUpdate(account))
-				.then(result => {
-					if (result.accountAdded) {
-						// Add the account to the list
-						provider.accounts.push(result.changedAccount);
-					}
-					if (result.accountModified) {
-						self.spliceModifiedAccount(provider, result.changedAccount);
-					}
+		return this.doWithProvider(providerId, async (provider) => {
+			let account = await provider.provider.prompt();
+			if (self.isCanceledResult(account)) {
+				return;
+			}
 
-					self.fireAccountListUpdate(provider, result.accountAdded);
-				})
-				.then(null, err => {
-					// On error, check to see if the error is because the user cancelled. If so, just ignore
-					if (err && 'userCancelledSignIn' in err) {
-						return Promise.resolve();
-					}
-					return Promise.reject(err);
-				});
+			let result = await self._accountStore.addOrUpdate(account);
+			if (result.accountAdded) {
+				// Add the account to the list
+				provider.accounts.push(result.changedAccount);
+			}
+			if (result.accountModified) {
+				self.spliceModifiedAccount(provider, result.changedAccount);
+			}
+
+			self.fireAccountListUpdate(provider, result.accountAdded);
 		});
+	}
+
+	private isCanceledResult(result: azdata.Account | azdata.PromptFailedResult): result is azdata.PromptFailedResult {
+		return (<azdata.PromptFailedResult>result).canceled;
 	}
 
 	/**
@@ -159,27 +159,32 @@ export class AccountManagementService implements IAccountManagementService {
 	public refreshAccount(account: azdata.Account): Thenable<azdata.Account> {
 		let self = this;
 
-		return this.doWithProvider(account.key.providerId, (provider) => {
-			return provider.provider.refresh(account)
-				.then(account => self._accountStore.addOrUpdate(account))
-				.then(result => {
-					if (result.accountAdded) {
-						// Add the account to the list
-						provider.accounts.push(result.changedAccount);
-					}
-					if (result.accountModified) {
-						// Find the updated account and splice the updated on in
-						let indexToRemove: number = provider.accounts.findIndex(account => {
-							return account.key.accountId === result.changedAccount.key.accountId;
-						});
-						if (indexToRemove >= 0) {
-							provider.accounts.splice(indexToRemove, 1, result.changedAccount);
-						}
-					}
+		return this.doWithProvider(account.key.providerId, async (provider) => {
+			let refreshedAccount = await provider.provider.refresh(account);
+			if (self.isCanceledResult(refreshedAccount)) {
+				// Pattern here is to throw if this fails. Handled upstream.
+				throw new Error(localize('refreshFailed', 'Refresh account was canceled by the user'));
+			} else {
+				account = refreshedAccount;
+			}
 
-					self.fireAccountListUpdate(provider, result.accountAdded);
-					return result.changedAccount;
+			let result = await self._accountStore.addOrUpdate(account);
+			if (result.accountAdded) {
+				// Add the account to the list
+				provider.accounts.push(result.changedAccount);
+			}
+			if (result.accountModified) {
+				// Find the updated account and splice the updated on in
+				let indexToRemove: number = provider.accounts.findIndex(account => {
+					return account.key.accountId === result.changedAccount.key.accountId;
 				});
+				if (indexToRemove >= 0) {
+					provider.accounts.splice(indexToRemove, 1, result.changedAccount);
+				}
+			}
+
+			self.fireAccountListUpdate(provider, result.accountAdded);
+			return result.changedAccount;
 		});
 	}
 

@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import nls = require('vs/nls');
 import { Action } from 'vs/base/common/actions';
 import pkg from 'vs/platform/product/node/package';

@@ -21,7 +21,6 @@ import { hyperLinkFormatter, textFormatter } from 'sql/base/browser/ui/table/for
 import { CopyKeybind } from 'sql/base/browser/ui/table/plugins/copyKeybind.plugin';
 import { AdditionalKeyBindings } from 'sql/base/browser/ui/table/plugins/additionalKeyBindings.plugin';
 import { ITableStyles, ITableMouseEvent } from 'sql/base/browser/ui/table/interfaces';
-import { warn } from 'sql/base/common/log';
 
 import * as azdata from 'azdata';
 
@@ -43,6 +42,7 @@ import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/un
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IAction } from 'vs/base/common/actions';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
+import { ILogService } from 'vs/platform/log/common/log';
 
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
@@ -134,7 +134,8 @@ export class GridPanel extends ViewletPanel {
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@IThemeService private themeService: IThemeService,
-		@IInstantiationService private instantiationService: IInstantiationService
+		@IInstantiationService private instantiationService: IInstantiationService,
+		@ILogService private logService: ILogService
 	) {
 		super(options, keybindingService, contextMenuService, configurationService);
 		this.splitView = new ScrollableSplitView(this.container, { enableResizing: false, verticalScrollbarVisibility: ScrollbarVisibility.Visible });
@@ -257,7 +258,7 @@ export class GridPanel extends ViewletPanel {
 				if (table) {
 					table.updateResult(set);
 				} else {
-					warn('Got result set update request for non-existant table');
+					this.logService.warn('Got result set update request for non-existant table');
 				}
 			}
 			sizeChanges();
@@ -297,13 +298,18 @@ export class GridPanel extends ViewletPanel {
 			tables.push(table);
 		}
 
-		// possible to need a sort?
+		this.tables = this.tables.concat(tables);
+
+		// turn-off special-case process when only a single table is being displayed
+		if (this.tables.length > 1) {
+			for (let i = 0; i < this.tables.length; ++i) {
+				this.tables[i].isOnlyTable = false;
+			}
+		}
 
 		if (isUndefinedOrNull(this.maximizedGrid)) {
 			this.splitView.addViews(tables, tables.map(i => i.minimumSize), this.splitView.length);
 		}
-
-		this.tables = this.tables.concat(tables);
 	}
 
 	public clear() {
@@ -403,6 +409,8 @@ class GridTable<T> extends Disposable implements IView {
 	private visible = false;
 
 	private rowHeight: number;
+
+	public isOnlyTable: boolean = true;
 
 	public get resultSet(): azdata.ResultSetSummary {
 		return this._resultSet;
@@ -713,7 +721,8 @@ class GridTable<T> extends Disposable implements IView {
 
 	public get minimumSize(): number {
 		// clamp between ensuring we can show the actionbar, while also making sure we don't take too much space
-		return Math.max(Math.min(this.maxSize, MIN_GRID_HEIGHT), ACTIONBAR_HEIGHT + BOTTOM_PADDING);
+		// if there is only one table then allow a minimum size of ROW_HEIGHT
+		return this.isOnlyTable ? ROW_HEIGHT : Math.max(Math.min(this.maxSize, MIN_GRID_HEIGHT), ACTIONBAR_HEIGHT + BOTTOM_PADDING);
 	}
 
 	public get maximumSize(): number {

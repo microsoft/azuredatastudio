@@ -1,2 +1,3 @@
-client/src/**
-client/tsconfig.json
+src/**
+out/test/**
+tsconfig.json

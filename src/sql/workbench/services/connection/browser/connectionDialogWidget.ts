@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./media/connectionDialog';
 import { Button } from 'sql/base/browser/ui/button/button';
-import { attachModalDialogStyler, attachButtonStyler } from 'sql/platform/theme/common/styler';
+import { attachModalDialogStyler, attachButtonStyler, attachTabbedPanelStyler } from 'sql/platform/theme/common/styler';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Modal } from 'sql/workbench/browser/modal/modal';
@@ -36,6 +36,7 @@ import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export interface OnShowUIResponse {
 	selectedProviderType: string;
@@ -95,9 +96,10 @@ export class ConnectionDialogWidget extends Modal {
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IContextMenuService private _contextMenuService: IContextMenuService,
 		@IContextViewService private _contextViewService: IContextViewService,
-		@IClipboardService clipboardService: IClipboardService
+		@IClipboardService clipboardService: IClipboardService,
+		@ILayoutService logService: ILogService
 	) {
-		super(localize('connection', "Connection"), TelemetryKeys.Connection, telemetryService, layoutService, clipboardService, themeService, contextKeyService, { hasSpinner: true, hasErrors: true });
+		super(localize('connection', "Connection"), TelemetryKeys.Connection, telemetryService, layoutService, clipboardService, themeService, logService, contextKeyService, { hasSpinner: true, hasErrors: true });
 	}
 
 	/**
@@ -153,6 +155,7 @@ export class ConnectionDialogWidget extends Modal {
 		DOM.hide(this._savedConnection);
 
 		this._panel = new TabbedPanel(this._body);
+		attachTabbedPanelStyler(this._panel, this._themeService);
 		this._recentConnectionTabId = this._panel.pushTab({
 			identifier: 'recent_connection',
 			title: localize('recentConnectionTitle', "Recent Connections"),

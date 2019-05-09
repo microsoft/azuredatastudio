@@ -9,7 +9,7 @@ import * as azdata from 'azdata';
 import * as nls from 'vs/nls';
 import * as dom from 'vs/base/browser/dom';
 import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnInit, OnDestroy } from '@angular/core';
-import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
+import { TabChild } from 'sql/base/electron-browser/ui/panel/tab.component';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/workbench/parts/jobManagement/electron-browser/agentView.component';
 import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowDetailView';
@@ -31,6 +31,7 @@ import { IWorkbenchThemeService, IColorTheme } from 'vs/workbench/services/theme
 import { tableBackground, cellBackground, cellBorderColor } from 'sql/platform/theme/common/colors';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
+import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
 export const ROW_HEIGHT: number = 45;
@@ -172,7 +173,8 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		});
 		this.rowDetail = rowDetail;
 		columns.unshift(this.rowDetail.getColumnDefinition());
-		let filterPlugin = new HeaderFilter({}, this._themeService);
+		let filterPlugin = new HeaderFilter({});
+		this._register(attachButtonStyler(filterPlugin, this._themeService));
 		this.filterPlugin = filterPlugin;
 		jQuery(this._gridEl.nativeElement).empty();
 		jQuery(this.actionBarContainer.nativeElement).empty();

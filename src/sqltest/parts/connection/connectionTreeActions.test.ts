@@ -16,7 +16,6 @@ import { TestConnectionManagementService } from 'sqltest/stubs/connectionManagem
 import { ErrorMessageServiceStub } from 'sqltest/stubs/errorMessageServiceStub';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { ServerTreeView } from 'sql/workbench/parts/objectExplorer/browser/serverTreeView';
-import * as Constants from 'sql/platform/connection/common/constants';
 import * as  LocalizedConstants from 'sql/workbench/parts/connection/common/localizedConstants';
 import { ObjectExplorerService, ObjectExplorerNodeEventArgs } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { TreeNode } from 'sql/workbench/parts/objectExplorer/common/treeNode';
@@ -29,6 +28,7 @@ import { ObjectExplorerActionsContext, ManageConnectionAction } from 'sql/workbe
 import { IConnectionResult, IConnectionParams } from 'sql/platform/connection/common/connectionManagement';
 import { TreeSelectionHandler } from 'sql/workbench/parts/objectExplorer/browser/treeSelectionHandler';
 import { CapabilitiesTestService } from 'sqltest/stubs/capabilitiesTestService';
+import { UNSAVED_GROUP_ID } from 'sql/platform/connection/common/constants';
 import { $ } from 'vs/base/browser/dom';
 
 suite('SQL Connection Tree Action tests', () => {
@@ -326,7 +326,7 @@ suite('SQL Connection Tree Action tests', () => {
 			saveProfile: true,
 			id: 'testId'
 		});
-		connection.parent = new ConnectionProfileGroup(LocalizedConstants.unsavedGroupLabel, undefined, Constants.unsavedGroupId, undefined, undefined);
+		connection.parent = new ConnectionProfileGroup(LocalizedConstants.unsavedGroupLabel, undefined, UNSAVED_GROUP_ID, undefined, undefined);
 		let connectionAction: DeleteConnectionAction = new DeleteConnectionAction(DeleteConnectionAction.ID,
 			DeleteConnectionAction.DELETE_CONNECTION_LABEL,
 			connection,

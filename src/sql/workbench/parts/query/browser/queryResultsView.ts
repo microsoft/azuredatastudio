@@ -20,6 +20,8 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import * as DOM from 'vs/base/browser/dom';
 import { Event } from 'vs/base/common/event';
 import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
+import { attachTabbedPanelStyler } from 'sql/platform/theme/common/styler';
+import { IThemeService } from 'vs/platform/theme/common/themeService';
 
 class ResultsView extends Disposable implements IPanelView {
 	private panelViewlet: PanelViewlet;
@@ -27,7 +29,6 @@ class ResultsView extends Disposable implements IPanelView {
 	private messagePanel: MessagePanel;
 	private container = document.createElement('div');
 	private currentDimension: DOM.Dimension;
-	private needsGridResize = false;
 	private _state: ResultsViewState;
 
 	constructor(private instantiationService: IInstantiationService) {
@@ -50,37 +51,14 @@ class ResultsView extends Disposable implements IPanelView {
 				this.gridPanel.layout(0);
 			} else if (size > 0 && !this.gridPanel.isVisible()) {
 				this.gridPanel.setVisible(true);
-				let panelSize: number;
-				if (this.state && this.state.gridPanelSize) {
-					panelSize = this.state.gridPanelSize;
-				} else if (this.currentDimension) {
-					panelSize = Math.round(this.currentDimension.height * 0.7);
-				} else {
-					panelSize = 200;
-					this.needsGridResize = true;
+				this.panelViewlet.addPanels([{ panel: this.gridPanel, index: 0, size: 200 }]);
+			}
+			if (this.gridPanel.isVisible()) {
+				if (this.state.messagePanelSize) {
+					this.panelViewlet.resizePanel(this.messagePanel, this.state.messagePanelSize);
 				}
-				this.panelViewlet.addPanels([{ panel: this.gridPanel, index: 0, size: panelSize }]);
+				this.panelViewlet.resizePanel(this.gridPanel, this.getGridPanelSize());
 			}
-		});
-		let resizeList = Event.any(this.gridPanel.onDidChange, this.messagePanel.onDidChange)(() => {
-			let panelSize: number;
-			if (this.state && this.state.gridPanelSize) {
-				panelSize = this.state.gridPanelSize;
-			} else if (this.currentDimension) {
-				panelSize = Math.round(this.currentDimension.height * 0.7);
-			} else {
-				panelSize = 200;
-				this.needsGridResize = true;
-			}
-			if (this.state.messagePanelSize) {
-				this.panelViewlet.resizePanel(this.gridPanel, this.state.messagePanelSize);
-			}
-			this.panelViewlet.resizePanel(this.gridPanel, panelSize);
-		});
-		// once the user changes the sash we should stop trying to resize the grid
-		Event.once(this.panelViewlet.onDidSashChange)(e => {
-			this.needsGridResize = false;
-			resizeList.dispose();
 		});
 
 		this.panelViewlet.onDidSashChange(e => {
@@ -101,15 +79,19 @@ class ResultsView extends Disposable implements IPanelView {
 
 	layout(dimension: DOM.Dimension): void {
 		this.panelViewlet.layout(dimension);
-		// the grid won't be resize if the height has not changed so we need to do it manually
+		// the grid won't be resized if the height has not changed so we need to do it manually
 		if (this.currentDimension && dimension.height === this.currentDimension.height) {
 			this.gridPanel.layout(dimension.height);
 		}
 		this.currentDimension = dimension;
-		if (this.needsGridResize) {
-			this.panelViewlet.resizePanel(this.gridPanel, this.state.gridPanelSize || Math.round(this.currentDimension.height * 0.7));
-			// we have the right scroll position saved as part of gridPanel state, use this to re-position scrollbar
-			this.gridPanel.resetScrollPosition();
+
+		// resize the messages and grid panels
+		this.panelViewlet.resizePanel(this.gridPanel, this.getGridPanelSize());
+		// we have the right scroll position saved as part of gridPanel state, use this to re-position scrollbar
+		this.gridPanel.resetScrollPosition();
+
+		if (this.state.messagePanelSize) {
+			this.panelViewlet.resizePanel(this.messagePanel, this.state.messagePanelSize);
 		}
 	}
 
@@ -143,6 +125,16 @@ class ResultsView extends Disposable implements IPanelView {
 
 	public get state(): ResultsViewState {
 		return this._state;
+	}
+
+	private getGridPanelSize(): number {
+		if (this.state && this.state.gridPanelSize) {
+			return this.state.gridPanelSize;
+		} else if (this.currentDimension) {
+			return Math.round(Math.max(this.currentDimension.height * 0.7, this.currentDimension.height - 150));
+		} else {
+			return 200;
+		}
 	}
 }
 
@@ -181,6 +173,7 @@ export class QueryResultsView extends Disposable {
 
 	constructor(
 		container: HTMLElement,
+		@IThemeService themeService: IThemeService,
 		@IInstantiationService private instantiationService: IInstantiationService,
 		@IQueryModelService private queryModelService: IQueryModelService
 	) {
@@ -188,8 +181,11 @@ export class QueryResultsView extends Disposable {
 		this.resultsTab = this._register(new ResultsTab(instantiationService));
 		this.chartTab = this._register(new ChartTab(instantiationService));
 		this._panelView = this._register(new TabbedPanel(container, { showHeaderWhenSingleView: false }));
+		attachTabbedPanelStyler(this._panelView, themeService);
 		this.qpTab = this._register(new QueryPlanTab());
 		this.topOperationsTab = this._register(new TopOperationsTab(instantiationService));
+
+		attachTabbedPanelStyler(this._panelView, themeService);
 
 		this._panelView.pushTab(this.resultsTab);
 		this._register(this._panelView.onTabChange(e => {

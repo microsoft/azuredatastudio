@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import { nb } from 'azdata';
 import { localize } from 'vs/nls';
 import { URI } from 'vs/base/common/uri';

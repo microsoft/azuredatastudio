@@ -439,6 +439,7 @@ export interface SchemaCompareParams {
 	sourceEndpointInfo: azdata.SchemaCompareEndpointInfo;
 	targetEndpointInfo: azdata.SchemaCompareEndpointInfo;
 	taskExecutionMode: TaskExecutionMode;
+	deploymentOptions: azdata.DeploymentOptions;
 }
 
 export interface SchemaCompareGenerateScriptParams {
@@ -455,6 +456,17 @@ export interface SchemaComparePublishChangesParams {
 	taskExecutionMode: TaskExecutionMode;
 }
 
+export interface SchemaCompareGetOptionsParams {
+
+}
+
+export interface SchemaCompareNodeParams {
+	operationId: string;
+	diffEntry: azdata.DiffEntry;
+	includeRequest: boolean;
+	taskExecutionMode: TaskExecutionMode;
+}
+
 export namespace SchemaCompareRequest {
 	export const type = new RequestType<SchemaCompareParams, azdata.SchemaCompareResult, void, void>('schemaCompare/compare');
 }
@@ -466,4 +478,13 @@ export namespace SchemaCompareGenerateScriptRequest {
 export namespace SchemaComparePublishChangesRequest {
 	export const type = new RequestType<SchemaComparePublishChangesParams, azdata.ResultStatus, void, void>('schemaCompare/publish');
 }
+
+export namespace SchemaCompareGetDefaultOptionsRequest {
+	export const type = new RequestType<SchemaCompareGetOptionsParams, azdata.SchemaCompareOptionsResult, void, void>('schemaCompare/getDefaultOptions');
+}
+
+export namespace SchemaCompareIncludeExcludeNodeRequest {
+	export const type = new RequestType<SchemaCompareNodeParams, azdata.ResultStatus, void, void>('schemaCompare/includeExcludeNode');
+}
+
 // ------------------------------- <Schema Compare> -----------------------------

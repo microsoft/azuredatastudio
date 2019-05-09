@@ -9,7 +9,6 @@ import { JupyterController } from './jupyter/jupyterController';
  * The API provided by this extension.
  *
  * @export
- * @interface IExtensionApi
  */
 export interface IExtensionApi {
 	getJupyterController(): JupyterController;

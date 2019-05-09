@@ -16,7 +16,6 @@ import { ConnectionManagementInfo } from 'sql/platform/connection/common/connect
 import * as Utils from 'sql/platform/connection/common/utils';
 import * as Constants from 'sql/platform/connection/common/constants';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { ICredentialsService } from 'sql/platform/credentials/common/credentialsService';
 import * as ConnectionContracts from 'sql/workbench/parts/connection/common/connection';
 import { ConnectionStatusManager } from 'sql/platform/connection/common/connectionStatusManager';
 import { DashboardInput } from 'sql/workbench/parts/dashboard/dashboardInput';
@@ -24,7 +23,6 @@ import { ConnectionGlobalStatus } from 'sql/workbench/parts/connection/common/co
 import { ConnectionStatusbarItem } from 'sql/workbench/parts/connection/browser/connectionStatus';
 import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
 import * as TelemetryUtils from 'sql/platform/telemetry/telemetryUtilities';
-import { warn } from 'sql/base/common/log';
 import { IResourceProviderService } from 'sql/workbench/services/resourceProvider/common/resourceProviderService';
 import { IAngularEventingService, AngularEventType } from 'sql/platform/angularEventing/common/angularEventingService';
 import * as QueryConstants from 'sql/workbench/parts/query/common/constants';
@@ -43,9 +41,7 @@ import { Disposable } from 'vs/base/common/lifecycle';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorService, ACTIVE_GROUP } from 'vs/workbench/services/editor/common/editorService';
 import * as platform from 'vs/platform/registry/common/platform';
-import { Memento } from 'vs/workbench/common/memento';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { Event, Emitter } from 'vs/base/common/event';
 import { EditorPart } from 'vs/workbench/browser/parts/editor/editorPart';
@@ -55,6 +51,7 @@ import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export class ConnectionManagementService extends Disposable implements IConnectionManagementService {
 
@@ -76,33 +73,26 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	private _connectionGlobalStatus = new ConnectionGlobalStatus(this._statusBarService);
 
 	constructor(
-		private _connectionMemento: Memento,
 		private _connectionStore: ConnectionStore,
-		@IStorageService _storageService: IStorageService,
 		@IConnectionDialogService private _connectionDialogService: IConnectionDialogService,
 		@IServerGroupController private _serverGroupController: IServerGroupController,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IEditorService private _editorService: IEditorService,
 		@ITelemetryService private _telemetryService: ITelemetryService,
 		@IConfigurationService private _configurationService: IConfigurationService,
-		@ICredentialsService private _credentialsService: ICredentialsService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@IQuickInputService private _quickInputService: IQuickInputService,
 		@IEditorGroupsService private _editorGroupService: IEditorGroupsService,
 		@IStatusbarService private _statusBarService: IStatusbarService,
 		@IResourceProviderService private _resourceProviderService: IResourceProviderService,
 		@IAngularEventingService private _angularEventing: IAngularEventingService,
-		@IAccountManagementService private _accountManagementService: IAccountManagementService
+		@IAccountManagementService private _accountManagementService: IAccountManagementService,
+		@ILogService private logService: ILogService
 	) {
 		super();
 
-		// _connectionMemento and _connectionStore are in constructor to enable this class to be more testable
-		if (!this._connectionMemento) {
-			this._connectionMemento = new Memento('ConnectionManagement', _storageService);
-		}
 		if (!this._connectionStore) {
-			this._connectionStore = new ConnectionStore(this._connectionMemento,
-				this._configurationService, this._credentialsService, this._capabilitiesService);
+			this._connectionStore = _instantiationService.createInstance(ConnectionStore);
 		}
 
 		// Register Statusbar item
@@ -134,7 +124,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		this.onConnectionChanged(() => this.refreshEditorTitles());
 		this.onConnect(() => this.refreshEditorTitles());
 		this.onDisconnect(() => this.refreshEditorTitles());
-		_storageService.onWillSaveState(() => this.shutdown());
 	}
 
 	public providerRegistered(providerId: string): boolean {
@@ -204,7 +193,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			self._connectionDialogService.showDialog(self, params, model, connectionResult).then(() => {
 				resolve();
 			}, dialogError => {
-				warn('failed to open the connection dialog. error: ' + dialogError);
+				this.logService.warn('failed to open the connection dialog. error: ' + dialogError);
 				reject(dialogError);
 			});
 		});
@@ -363,7 +352,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 		if (uri !== input.uri) {
 			//TODO: this should never happen. If the input is already passed, it should have the uri
-			warn(`the given uri is different that the input uri. ${uri}|${input.uri}`);
+			this.logService.warn(`the given uri is different that the input uri. ${uri}|${input.uri}`);
 		}
 		return this.tryConnect(connection, input, options);
 	}
@@ -623,11 +612,11 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	public clearRecentConnection(connectionProfile: IConnectionProfile): void {
-		this._connectionStore.removeConnectionToMemento(connectionProfile, Constants.recentConnections);
+		this._connectionStore.removeRecentConnection(connectionProfile);
 	}
 
 	public getActiveConnections(providers?: string[]): ConnectionProfile[] {
-		return this._connectionStatusManager.getActiveConnectionProfiles();
+		return this._connectionStatusManager.getActiveConnectionProfiles(providers);
 	}
 
 	public getConnectionUriFromId(connectionId: string): string {
@@ -640,7 +629,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	public saveProfileGroup(profile: IConnectionProfileGroup): Promise<string> {
-		TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.AddServerGroup);
+		TelemetryUtils.addTelemetry(this._telemetryService, this.logService, TelemetryKeys.AddServerGroup);
 		return new Promise<string>((resolve, reject) => {
 			this._connectionStore.saveProfileGroup(profile).then(groupId => {
 				this._onAddConnectionProfile.fire(undefined);
@@ -856,8 +845,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * Add a connection to the active connections list.
 	 */
 	private tryAddActiveConnection(connectionManagementInfo: ConnectionManagementInfo, newConnection: IConnectionProfile, addToMru: boolean): void {
-		if (newConnection) {
-			this._connectionStore.addActiveConnection(newConnection, addToMru)
+		if (newConnection && addToMru) {
+			this._connectionStore.addRecentConnection(newConnection)
 				.then(() => {
 					connectionManagementInfo.connectHandler(true);
 				}, err => {
@@ -869,7 +858,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	private addTelemetryForConnection(connection: ConnectionManagementInfo): void {
-		TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.DatabaseConnected, {
+		TelemetryUtils.addTelemetry(this._telemetryService, this.logService, TelemetryKeys.DatabaseConnected, {
 			connectionType: connection.serverInfo ? (connection.serverInfo.isCloud ? 'Azure' : 'Standalone') : '',
 			provider: connection.connectionProfile.providerName,
 			serverVersion: connection.serverInfo ? connection.serverInfo.serverVersion : '',
@@ -881,7 +870,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	private addTelemetryForConnectionDisconnected(connection: IConnectionProfile): void {
-		TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.DatabaseDisconnected, {
+		TelemetryUtils.addTelemetry(this._telemetryService, this.logService, TelemetryKeys.DatabaseDisconnected, {
 			provider: connection.providerName
 		});
 	}
@@ -925,19 +914,14 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	public onIntelliSenseCacheComplete(handle: number, connectionUri: string): void {
 	}
 
-	private shutdown(): void {
-		this._connectionStore.clearActiveConnections();
-		this._connectionMemento.saveMemento();
-	}
-
 	public changeGroupIdForConnectionGroup(source: ConnectionProfileGroup, target: ConnectionProfileGroup): Promise<void> {
-		TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.MoveServerConnection);
+		TelemetryUtils.addTelemetry(this._telemetryService, this.logService, TelemetryKeys.MoveServerConnection);
 		return this._connectionStore.changeGroupIdForConnectionGroup(source, target);
 	}
 
 	public changeGroupIdForConnection(source: ConnectionProfile, targetGroupId: string): Promise<void> {
 		let id = Utils.generateUri(source);
-		TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.MoveServerGroup);
+		TelemetryUtils.addTelemetry(this._telemetryService, this.logService, TelemetryKeys.MoveServerGroup);
 		return this._connectionStore.changeGroupIdForConnection(source, targetGroupId).then(result => {
 			if (id && targetGroupId) {
 				source.groupId = targetGroupId;
@@ -1091,7 +1075,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			this.doDisconnect(uri, profile).then(result => {
 				if (result) {
 					this.addTelemetryForConnectionDisconnected(input);
-					this._connectionStore.removeActiveConnection(input);
 					this._connectionStatusManager.removeConnection(uri);
 					resolve();
 				} else {
@@ -1222,7 +1205,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 */
 	public deleteConnection(connection: ConnectionProfile): Promise<boolean> {
 
-		TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.DeleteConnection, {}, connection);
+		TelemetryUtils.addTelemetry(this._telemetryService, this.logService, TelemetryKeys.DeleteConnection, {}, connection);
 		// Disconnect if connected
 		let uri = Utils.generateUri(connection);
 		if (this.isConnected(uri) || this.isConnecting(uri)) {
@@ -1260,7 +1243,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * Disconnects a connection before removing from config. If disconnect fails, settings is not modified.
 	 */
 	public deleteConnectionGroup(group: ConnectionProfileGroup): Promise<boolean> {
-		TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.DeleteServerGroup);
+		TelemetryUtils.addTelemetry(this._telemetryService, this.logService, TelemetryKeys.DeleteServerGroup);
 		// Get all connections for this group
 		let connections = ConnectionProfileGroup.getConnectionsInGroup(group);
 
