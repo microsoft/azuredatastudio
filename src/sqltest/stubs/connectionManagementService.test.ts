@@ -37,6 +37,10 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 
 	}
 
+	registerIconProvider(providerId: string, provider: azdata.IconProvider): void {
+
+	}
+
 	showConnectionDialog(params?: INewConnectionParams, model?: IConnectionProfile, connectionResult?: IConnectionResult): Promise<void> {
 		return undefined;
 	}
@@ -277,6 +281,10 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 	}
 
 	getProviderProperties(providerName: string): ConnectionProviderProperties {
+		return undefined;
+	}
+
+	getConnectionIconId(connectionId: string): string {
 		return undefined;
 	}
 }

@@ -270,6 +270,10 @@ export function createApiFactory(
 				return extHostDataProvider.$registerObjectExplorerNodeProvider(provider);
 			};
 
+			let registerIconProvider = (provider: azdata.IconProvider): vscode.Disposable => {
+				return extHostDataProvider.$registerIconProvider(provider);
+			};
+
 			let registerTaskServicesProvider = (provider: azdata.TaskServicesProvider): vscode.Disposable => {
 				provider.registerOnTaskCreated((response: azdata.TaskInfo) => {
 					extHostDataProvider.$onTaskCreated(provider.handle, response);
@@ -366,6 +370,7 @@ export function createApiFactory(
 				registerMetadataProvider,
 				registerObjectExplorerProvider,
 				registerObjectExplorerNodeProvider,
+				registerIconProvider,
 				registerProfilerProvider,
 				registerRestoreProvider,
 				registerScriptingProvider,

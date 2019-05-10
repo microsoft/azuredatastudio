@@ -15,9 +15,7 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { TreeNode } from 'sql/workbench/parts/objectExplorer/common/treeNode';
 import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
 import { badgeRenderer, iconRenderer } from 'sql/workbench/parts/objectExplorer/browser/iconRenderer';
-import { ServerInfo } from 'sqlops';
 import { ContextKeyExpr, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { ServerInfoContextKey } from 'sql/workbench/parts/connection/common/serverInfoContextKey';
 import { URI } from 'vs/base/common/uri';
 
 export interface IConnectionTemplateData {
@@ -166,38 +164,36 @@ export class ServerTreeRenderer implements IRenderer {
 		templateData.root.title = treeNode.label;
 	}
 
-	private getContextKeyService(connection: ConnectionProfile): IContextKeyService {
-		if (!connection || !connection.id) { return undefined; }
-		let serverInfo: ServerInfo = this._connectionManagementService.getServerInfo(connection.id);
-		if (!serverInfo) { return undefined; }
-
-		let scopedContextService: IContextKeyService = this._contextKeyService.createScoped();
-		let serverInfoContextKey = new ServerInfoContextKey(scopedContextService);
-		serverInfoContextKey.set(serverInfo);
-		return scopedContextService;
-	}
-
 	private getIconPath(connection: ConnectionProfile): IconPath {
+		if (!connection) { return undefined; }
+
+		if (connection['iconPath']) {
+			return connection['iconPath'];
+		}
+
+		let iconId = this._connectionManagementService.getConnectionIconId(connection.id);
+		if (!iconId) { return undefined; }
+
 		let providerProperties = this._connectionManagementService.getProviderProperties(connection.providerName);
 		if (!providerProperties) { return undefined; }
 
 		let iconPath: IconPath = undefined;
-		let pathConfig: URI | IconPath | { when: string, path: IconPath }[] = providerProperties['iconPath'];
+		let pathConfig: URI | IconPath | { id: string, path: IconPath }[] = providerProperties['iconPath'];
 		if (Array.isArray(pathConfig)) {
-			let scopedContextService: IContextKeyService = this.getContextKeyService(connection);
-			if (!scopedContextService) { return undefined; }
 			for (const e of pathConfig) {
-				let when = ContextKeyExpr.deserialize(e.when);
-				if (!when || scopedContextService.contextMatchesRules(when)) {
+				if (!e.id || e.id === iconId) {
 					iconPath = e.path;
+					connection['iconPath'] = iconPath;
 					break;
 				}
 			}
 		} else if (pathConfig['light']) {
 			iconPath = pathConfig as IconPath;
+			connection['iconPath'] = iconPath;
 		} else {
 			let singlePath = pathConfig as URI;
 			iconPath = { light: singlePath, dark: singlePath };
+			connection['iconPath'] = iconPath;
 		}
 		return iconPath;
 	}
@@ -215,7 +211,7 @@ export class ServerTreeRenderer implements IRenderer {
 
 	private renderConnection(connection: ConnectionProfile, templateData: IConnectionTemplateData): void {
 		if (!this._isCompact) {
-			let iconPath = this.getIconPath(connection);
+			let iconPath: IconPath = this.getIconPath(connection);
 			if (this._connectionManagementService.isConnected(undefined, connection)) {
 				templateData.icon.classList.remove('disconnected');
 				templateData.icon.classList.add('connected');

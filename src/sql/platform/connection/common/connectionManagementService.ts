@@ -58,6 +58,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	_serviceBrand: any;
 
 	private _providers = new Map<string, { onReady: Thenable<azdata.ConnectionProvider>, properties: ConnectionProviderProperties }>();
+	private _iconProviders = new Map<string, azdata.IconProvider>();
+	private _connectionIconIdCache = new Map<string, string>();
 
 	private _uriToProvider: { [uri: string]: string; } = Object.create(null);
 
@@ -174,6 +176,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 		// we know this is a deferred promise because we made it
 		(this._providers.get(providerId).onReady as Deferred<azdata.ConnectionProvider>).resolve(provider);
+	}
+
+	public registerIconProvider(providerId: string, iconProvider: azdata.IconProvider): void {
+		this._iconProviders.set(providerId, iconProvider);
 	}
 
 	/**
@@ -543,10 +549,46 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		if (options.showDashboard) {
 			this.showDashboardForConnectionManagementInfo(connectionManagementInfo.connectionProfile);
 		}
+
+		let connectionProfile = connectionManagementInfo.connectionProfile;
 		this._onConnect.fire(<IConnectionParams>{
 			connectionUri: uri,
-			connectionProfile: connectionManagementInfo.connectionProfile
+			connectionProfile: connectionProfile
 		});
+
+		let iconProvider = this._iconProviders.get(connectionManagementInfo.providerId);
+		if (iconProvider) {
+			let serverInfo: azdata.ServerInfo = this.getServerInfo(connectionProfile.id);
+			let iConnectionProfile: azdata.IConnectionProfile = this.toIConnectionProfile(connectionProfile);
+			iconProvider.getConnectionIconId(iConnectionProfile, serverInfo).then(iconId => {
+				if (iconId) {
+					this._connectionIconIdCache.set(connectionProfile.id, iconId);
+				}
+			});
+		}
+	}
+
+	public getConnectionIconId(connectionId: string): string {
+		return this._connectionIconIdCache.get(connectionId);
+	}
+
+	private toIConnectionProfile(cf: ConnectionProfile): azdata.IConnectionProfile {
+		return <azdata.IConnectionProfile>{
+			connectionName: cf.connectionName,
+			serverName: cf.serverName,
+			databaseName: cf.databaseName,
+			userName: cf.userName,
+			password: cf.password,
+			authenticationType: cf.authenticationType,
+			savePassword: cf.savePassword,
+			groupFullName: cf.groupFullName,
+			groupId: cf.groupId,
+			providerName: cf.providerName,
+			saveProfile: cf.saveProfile,
+			id: cf.id,
+			azureTenantId: cf.azureTenantId,
+			options: cf.options
+		};
 	}
 
 	public showDashboard(connection: IConnectionProfile): Thenable<boolean> {

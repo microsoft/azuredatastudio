@@ -178,27 +178,37 @@ ExtensionsRegistry.registerExtensionPoint<ConnectionProviderProperties | Connect
 });
 
 function resolveIconPath(extension: IExtensionPointUser<any>): void {
-	if (!extension) { return undefined; }
-	let iconPath = extension.value['iconPath'];
-	if (!iconPath) { return undefined; }
-	let baseDir = extension.description.extensionLocation.fsPath;
-	if (Array.isArray(iconPath)) {
-		for (let e of iconPath) {
-			e.path = {
-				light: URI.file(path.join(baseDir, e.path.light)),
-				dark: URI.file(path.join(baseDir, e.path.dark))
+	if (!extension || !extension.value) { return undefined; }
+
+	let toAbsolutePath = (iconPath: any, baseDir: string) => {
+		if (!iconPath || !baseDir) { return; }
+		if (Array.isArray(iconPath)) {
+			for (let e of iconPath) {
+				e.path = {
+					light: URI.file(path.join(baseDir, e.path.light)),
+					dark: URI.file(path.join(baseDir, e.path.dark))
+				};
+			}
+		} else if (typeof iconPath === 'string') {
+			iconPath = {
+				light: URI.file(path.join(baseDir, iconPath)),
+				dark: URI.file(path.join(baseDir, iconPath))
+			};
+		} else {
+			iconPath = {
+				light: URI.file(path.join(baseDir, iconPath.light)),
+				dark: URI.file(path.join(baseDir, iconPath.dark))
 			};
 		}
-	}
-	else if (typeof iconPath === 'string') {
-		iconPath = {
-			light: URI.file(path.join(baseDir, iconPath)),
-			dark: URI.file(path.join(baseDir, iconPath))
-		};
+	};
+
+	let baseDir = extension.description.extensionLocation.fsPath;
+	let properties: ConnectionProviderProperties = extension.value;
+	if (Array.isArray<ConnectionProviderProperties>(properties)) {
+		for (let p of properties) {
+			toAbsolutePath(p['iconPath'], baseDir);
+		}
 	} else {
-		iconPath = {
-			light: URI.file(path.join(baseDir, iconPath.light)),
-			dark: URI.file(path.join(baseDir, iconPath.dark))
-		};
+		toAbsolutePath(properties['iconPath'], baseDir);
 	}
 }

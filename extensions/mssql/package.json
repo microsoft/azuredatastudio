@@ -420,23 +420,17 @@
       "displayName": "%mssql.provider.displayName%",
       "iconPath": [
         {
-          "when": "isCloud == true",
+          "id": "mssql:cloud",
           "path": {
             "light": "resources/light/azureDB.svg",
             "dark": "resources/dark/azureDB_inverse.svg"
           }
         },
         {
-          "when": "isBigDataCluster == true",
+          "id": "mssql:cluster",
           "path": {
             "light": "resources/light/sql_bigdata_cluster.svg",
             "dark": "resources/dark/sql_bigdata_cluster_inverse.svg"
-          }
-        },
-        {
-          "path": {
-            "light": "resources/light/sql_stand_alone.svg",
-            "dark": "resources/dark/sql_stand_alone_inverse.svg"
           }
         }
       ],

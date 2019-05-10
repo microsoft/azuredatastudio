@@ -183,6 +183,8 @@ export interface IConnectionManagementService {
 	 */
 	registerProvider(providerId: string, provider: azdata.ConnectionProvider): void;
 
+	registerIconProvider(providerId: string, provider: azdata.IconProvider): void;
+
 	editGroup(group: ConnectionProfileGroup): Promise<void>;
 
 	getConnectionProfile(fileUri: string): IConnectionProfile;
@@ -276,6 +278,8 @@ export interface IConnectionManagementService {
 	getConnectionProfileById(profileId: string): IConnectionProfile;
 
 	getProviderProperties(providerName: string): ConnectionProviderProperties;
+
+	getConnectionIconId(connectionId: string): string;
 }
 
 export enum RunQueryOnConnectionMode {
