@@ -1,2 +1,3 @@
-client/src/**
-client/tsconfig.json
+src/**
+tsconfig.json
+.gitignore

@@ -19,7 +19,6 @@ describe('buildSsmsMinCommandArgs Method Tests', () => {
 			server: 'myServer',
 			database: 'myDatabase',
 			user: 'user',
-			password: 'password',
 			useAad: false,
 			urn: 'Server\\Database\\Table'
 		};
@@ -33,7 +32,6 @@ describe('buildSsmsMinCommandArgs Method Tests', () => {
 			server: 'myServer',
 			database: 'myDatabase',
 			user: 'user',
-			password: 'password',
 			useAad: true,
 			urn: 'Server\\Database\\Table'
 		};
@@ -48,7 +46,6 @@ describe('buildSsmsMinCommandArgs Method Tests', () => {
 			server: 'myServer\'"/\\[]tricky',
 			database: 'myDatabase\'"/\\[]tricky',
 			user: 'user\'"/\\[]tricky',
-			password: 'password',
 			useAad: true,
 			urn: 'Server\\Database[\'myDatabase\'\'"/\\[]tricky\']\\Table["myTable\'""/\\[]tricky"]'
 		};

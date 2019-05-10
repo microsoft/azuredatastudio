@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import * as TypeMoq from 'typemoq';
 import { Emitter } from 'vs/base/common/event';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
@@ -38,7 +37,7 @@ suite('auto OAuth dialog controller tests', () => {
 		mockOnCloseEvent = new Emitter<void>();
 
 		// Create a mock auto OAuth dialog
-		let autoOAuthDialog = new AutoOAuthDialog(null, null, null, null, new ContextKeyServiceStub(), null);
+		let autoOAuthDialog = new AutoOAuthDialog(null, null, null, null, new ContextKeyServiceStub(), null, undefined);
 		mockAutoOAuthDialog = TypeMoq.Mock.ofInstance(autoOAuthDialog);
 
 		mockAutoOAuthDialog.setup(x => x.onCancel).returns(() => mockOnCancelEvent.event);

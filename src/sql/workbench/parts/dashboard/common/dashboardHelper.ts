@@ -9,7 +9,6 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import * as nls from 'vs/nls';
 import { ContextKeyExpr, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
-import { error } from 'sql/base/common/log';
 import { WidgetConfig } from 'sql/workbench/parts/dashboard/common/dashboardWidget';
 import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/common/insightRegistry';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
@@ -23,6 +22,7 @@ import { NAV_SECTION } from 'sql/workbench/parts/dashboard/containers/dashboardN
 import { IDashboardContainerRegistry, Extensions as DashboardContainerExtensions } from 'sql/platform/dashboard/common/dashboardContainerRegistry';
 import { SingleConnectionManagementService } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 import * as Constants from 'sql/platform/connection/common/constants';
+import { ILogService } from 'vs/platform/log/common/log';
 
 const dashboardcontainerRegistry = Registry.as<IDashboardContainerRegistry>(DashboardContainerExtensions.dashboardContainerContributions);
 const containerTypes = [
@@ -173,14 +173,14 @@ function hasCompatibleProvider(provider: string | string[], contextKeyService: I
  * Get registered container if it is specified as the key
  * @param container dashboard container
  */
-export function getDashboardContainer(container: object): { result: boolean, message: string, container: object } {
+export function getDashboardContainer(container: object, logService: ILogService): { result: boolean, message: string, container: object } {
 	const key = Object.keys(container)[0];
 	const containerTypeFound = containerTypes.find(c => (c === key));
 	if (!containerTypeFound) {
 		const dashboardContainer = dashboardcontainerRegistry.getRegisteredContainer(key);
 		if (!dashboardContainer) {
 			const errorMessage = nls.localize('unknownDashboardContainerError', '{0} is an unknown container.', key);
-			error(errorMessage);
+			logService.error(errorMessage);
 			return { result: false, message: errorMessage, container: undefined };
 		} else {
 			container = dashboardContainer.container;

@@ -5,6 +5,8 @@
 	"version": "0.1.0",
 	"publisher": "Microsoft",
 	"preview": true,
+	"license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt",
+	"icon": "images/sqlserver.png",
 	"engines": {
 		"vscode": "^1.25.0",
 		"sqlops": "*"
@@ -12,6 +14,10 @@
 	"activationEvents": [
 		"*"
 	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Microsoft/azuredatastudio.git"
+	},
 	"main": "./out/extension",
 	"contributes": {
 		"configuration": {

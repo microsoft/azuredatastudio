@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import { SqlMainContext, MainThreadModalDialogShape, ExtHostModalDialogsShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
@@ -98,7 +97,6 @@ export class ExtHostModalDialogs implements ExtHostModalDialogsShape {
 	createDialog(
 		title: string
 	): azdata.ModalDialog {
-		console.log(title);
 		const handle = ExtHostModalDialogs._handlePool++;
 		this._proxy.$createDialog(handle);
 

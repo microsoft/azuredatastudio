@@ -738,7 +738,17 @@ declare module 'vscode' {
 	/**
 	 * A comment is displayed within the editor or the Comments Panel, depending on how it is provided.
 	 */
-	export class CommentLegacy extends Comment {
+	export interface Comment {
+		/**
+		 * The display name of the user who created the comment
+		 */
+		readonly userName: string;
+
+		/**
+		 * The icon path for the user who created the comment
+		 */
+		readonly userIconPath?: Uri;
+
 		/**
 		 * The id of the comment
 		 *
@@ -781,6 +791,11 @@ declare module 'vscode' {
 		 * Deprecated
 		 */
 		isDraft?: boolean;
+
+		/**
+		 * The command to be executed when users try to delete the comment
+		 */
+		deleteCommand?: Command;
 
 		/**
 		 * Proposed Comment Reaction
@@ -893,6 +908,26 @@ declare module 'vscode' {
 	export interface CommentReactionProvider {
 		availableReactions: CommentReaction[];
 		toggleReaction?(document: TextDocument, comment: Comment, reaction: CommentReaction): Promise<void>;
+	}
+
+	export interface CommentThread {
+		/**
+		 * The uri of the document the thread has been created on.
+		 */
+		readonly resource: Uri;
+
+		/**
+		 * Optional additonal commands.
+		 *
+		 * `additionalCommands` are the secondary actions rendered on Comment Widget.
+		 */
+		additionalCommands?: Command[];
+
+		/**
+		 * The command to be executed when users try to delete the comment thread. Currently, this is only called
+		 * when the user collapses a comment thread that has no comments in it.
+		 */
+		deleteCommand?: Command;
 	}
 
 

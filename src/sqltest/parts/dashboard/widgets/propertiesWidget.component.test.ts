@@ -15,6 +15,7 @@ import { ConnectionManagementInfo } from 'sql/platform/connection/common/connect
 
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
+import { TestLogService } from 'vs/workbench/test/workbenchTestServices';
 
 class TestChangeDetectorRef extends ChangeDetectorRef {
 	reattach(): void {
@@ -96,11 +97,13 @@ suite('Dashboard Properties Widget Tests', () => {
 
 		dashboardService.setup(x => x.connectionManagementService).returns(() => singleConnectionService.object);
 
-		let consoleError = (message?: any, ...optionalParams: any[]): void => {
-			assert.fail('Called console Error unexpectedly');
+		const testLogService = new class extends TestLogService {
+			error() {
+				assert.fail('Called console Error unexpectedly');
+			}
 		};
 
-		let testComponent = new PropertiesWidgetComponent(dashboardService.object, new TestChangeDetectorRef(), undefined, widgetConfig, consoleError);
+		let testComponent = new PropertiesWidgetComponent(dashboardService.object, new TestChangeDetectorRef(), undefined, widgetConfig, testLogService);
 
 		// because config parsing is done async we need to put our asserts on the thread stack
 		setTimeout(() => {

@@ -99,7 +99,7 @@
 .vs .icon.success,
 .vs-dark .icon.success,
 .hc-black .icon.success {
-	background-image: url("status_success.svg");
+	content: url("status_success.svg");
 }
 
 .vs .icon.canceled,

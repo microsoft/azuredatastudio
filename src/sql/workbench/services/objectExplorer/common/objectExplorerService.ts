@@ -16,11 +16,11 @@ import * as nls from 'vs/nls';
 import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
 import * as TelemetryUtils from 'sql/platform/telemetry/telemetryUtilities';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { warn, error } from 'sql/base/common/log';
 import { ServerTreeView } from 'sql/workbench/parts/objectExplorer/browser/serverTreeView';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import * as Utils from 'sql/platform/connection/common/utils';
 import { entries } from 'sql/base/common/objects';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export const SERVICE_ID = 'ObjectExplorerService';
 
@@ -146,7 +146,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	constructor(
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@ITelemetryService private _telemetryService: ITelemetryService,
-		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService
+		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
+		@ILogService private logService: ILogService
 	) {
 		this._onUpdateObjectExplorerNodes = new Emitter<ObjectExplorerNodeEventArgs>();
 		this._activeObjectExplorerNodes = {};
@@ -206,7 +207,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	public onNodeExpanded(expandResponse: NodeExpandInfoWithProviderId) {
 
 		if (expandResponse.errorMessage) {
-			error(expandResponse.errorMessage);
+			this.logService.error(expandResponse.errorMessage);
 		}
 
 		let sessionStatus = this._sessions[expandResponse.sessionId];
@@ -219,7 +220,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			}
 		}
 		if (!foundSession) {
-			warn(`Cannot find node status for session: ${expandResponse.sessionId} and node path: ${expandResponse.nodePath}`);
+			this.logService.warn(`Cannot find node status for session: ${expandResponse.sessionId} and node path: ${expandResponse.nodePath}`);
 		}
 	}
 
@@ -232,7 +233,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		} else {
 			let errorMessage = session && session.errorMessage ? session.errorMessage :
 				nls.localize('OeSessionFailedError', 'Failed to create Object Explorer session');
-			error(errorMessage);
+			this.logService.error(errorMessage);
 		}
 	}
 
@@ -252,7 +253,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 				else {
 					errorMessage = session && session.errorMessage ? session.errorMessage :
 						nls.localize('OeSessionFailedError', 'Failed to create Object Explorer session');
-					error(errorMessage);
+					this.logService.error(errorMessage);
 				}
 				// Send on session created about the session to all node providers so they can prepare for node expansion
 				let nodeProviders = this._nodeProviders[connection.providerName];
@@ -262,12 +263,12 @@ export class ObjectExplorerService implements IObjectExplorerService {
 				}
 			}
 			else {
-				warn(`cannot find session ${session.sessionId}`);
+				this.logService.warn(`cannot find session ${session.sessionId}`);
 			}
 
 			this.sendUpdateNodeEvent(connection, errorMessage);
 		} catch (error) {
-			warn(`cannot handle the session ${session.sessionId} in all nodeProviders`);
+			this.logService.warn(`cannot handle the session ${session.sessionId} in all nodeProviders`);
 		}
 	}
 
@@ -290,7 +291,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 				}
 			}
 		} else {
-			warn(`Cannot find session ${session.sessionId}`);
+			this.logService.warn(`Cannot find session ${session.sessionId}`);
 		}
 	}
 
@@ -348,7 +349,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		return new Promise<azdata.ObjectExplorerExpandInfo>((resolve, reject) => {
 			let provider = this._providers[providerId];
 			if (provider) {
-				TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.ObjectExplorerExpand, { refresh: 0, provider: providerId });
+				TelemetryUtils.addTelemetry(this._telemetryService, this.logService, TelemetryKeys.ObjectExplorerExpand, { refresh: 0, provider: providerId });
 				this.expandOrRefreshNode(providerId, session, nodePath).then(result => {
 					resolve(result);
 				}, error => {
@@ -398,7 +399,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 						if (expandResult && expandResult.providerId) {
 							resultMap.set(expandResult.providerId, expandResult);
 						} else {
-							error('OE provider returns empty result or providerId');
+							this.logService.error('OE provider returns empty result or providerId');
 						}
 
 						// When get all responses from all providers, merge results
@@ -486,7 +487,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	public refreshNode(providerId: string, session: azdata.ObjectExplorerSession, nodePath: string): Thenable<azdata.ObjectExplorerExpandInfo> {
 		let provider = this._providers[providerId];
 		if (provider) {
-			TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.ObjectExplorerExpand, { refresh: 1, provider: providerId });
+			TelemetryUtils.addTelemetry(this._telemetryService, this.logService, TelemetryKeys.ObjectExplorerExpand, { refresh: 1, provider: providerId });
 			return this.expandOrRefreshNode(providerId, session, nodePath, true);
 		}
 		return Promise.resolve(undefined);

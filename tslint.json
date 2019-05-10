@@ -35,6 +35,111 @@
 				"messageIndex": 1
 			}
 		],
+		// {{SQL CARBON EDIT}} @anthonydresser for the most part these rules should be the same as vscode with some changes
+		// anything that references **/vs/** should references **/{vs,sql}/** instead
+		// @angular/* and rxjs/* are added to browser and electron-browser restrictions since * doesn't cover them
+		// to begin with the only import patterns we are enforcing is import patterns in */base/*
+		"import-patterns": [
+			true,
+			// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			// !!! Do not relax these rules !!!
+			// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			{
+				"target": "**/{vs,sql}/base/common/**",
+				"restrictions": [
+					"vs/nls",
+					"**/{vs,sql}/base/common/**"
+				]
+			},
+			{
+				"target": "**/{vs,sql}/base/test/common/**",
+				"restrictions": [
+					"assert",
+					"vs/nls",
+					"**/{vs,sql}/base/common/**",
+					"**/{vs,sql}/base/test/common/**"
+				]
+			},
+			{
+				"target": "**/{vs,sql}/base/browser/**",
+				"restrictions": [
+					"vs/nls",
+					"vs/css!./**/*",
+					"**/{vs,sql}/base/{common,browser}/**"
+				]
+			},
+			{
+				"target": "**/{vs,sql}/base/node/**",
+				"restrictions": [
+					"vs/nls",
+					"**/{vs,sql}/base/{common,browser,node}/**",
+					"*", // node modules
+					"@angular/*", // angular
+					"rxjs/*" // rxjs
+				]
+			},
+			{
+				// vs/base/test/browser contains tests for vs/base/browser
+				"target": "**/{vs,sql}/base/test/browser/**",
+				"restrictions": [
+					"assert",
+					"vs/nls",
+					"**/{vs,sql}/base/{common,browser}/**",
+					"**/{vs,sql}/base/test/{common,browser}/**"
+				]
+			},
+			{
+				"target": "**/{vs,sql}/base/parts/*/common/**",
+				"restrictions": [
+					"vs/nls",
+					"**/{vs,sql}/base/common/**",
+					"**/{vs,sql}/base/parts/*/common/**"
+				]
+			},
+			{
+				"target": "**/{vs,sql}/base/parts/*/browser/**",
+				"restrictions": [
+					"vs/nls",
+					"vs/css!./**/*",
+					"**/{vs,sql}/base/{common,browser}/**",
+					"**/{vs,sql}/base/parts/*/{common,browser}/**"
+				]
+			},
+			{
+				"target": "**/{vs,sql}/base/parts/*/node/**",
+				"restrictions": [
+					"vs/nls",
+					"**/{vs,sql}/base/{common,browser,node}/**",
+					"**/{vs,sql}/base/parts/*/{common,browser,node}/**",
+					"*", // node modules
+					"@angular/*", // angular
+					"rxjs/*" // rxjs
+				]
+			},
+			{
+				"target": "**/{vs,sql}/base/parts/*/electron-browser/**",
+				"restrictions": [
+					"vs/nls",
+					"vs/css!./**/*",
+					"**/{vs,sql}/base/{common,browser,node,electron-browser}/**",
+					"**/{vs,sql}/base/parts/*/{common,browser,node,electron-browser}/**",
+					"*", // node modules
+					"@angular/*", // angular
+					"rxjs/*" // rxjs
+				]
+			},
+			{
+				"target": "**/{vs,sql}/base/parts/*/electron-main/**",
+				"restrictions": [
+					"vs/nls",
+					"**/{vs,sql}/base/{common,browser,node,electron-main}/**",
+					"**/{vs,sql}/base/parts/*/{common,browser,node,electron-main}/**",
+					"*", // node modules
+					"@angular/*", // angular
+					"rxjs/*" // rxjs
+				]
+			}
+		],
 		// {{SQL CARBON EDIT}}
 		// remove import patterns and layering
 		"duplicate-imports": true,

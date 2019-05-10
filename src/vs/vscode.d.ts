@@ -8970,7 +8970,7 @@ declare module 'vscode' {
 		/**
 		 * The uri of the document the thread has been created on.
 		 */
-		readonly resource: Uri;
+		readonly uri: Uri;
 
 		/**
 		 * The range the comment thread is located within the document. The thread icon will be shown
@@ -9003,18 +9003,6 @@ declare module 'vscode' {
 		 */
 		acceptInputCommand?: Command;
 
-		/**
-		 * Optional additonal commands.
-		 *
-		 * `additionalCommands` are the secondary actions rendered on Comment Widget.
-		 */
-		additionalCommands?: Command[];
-
-		/**
-		 * The command to be executed when users try to delete the comment thread. Currently, this is only called
-		 * when the user collapses a comment thread that has no comments in it.
-		 */
-		deleteCommand?: Command;
 
 		/**
 		 * Dispose this comment thread.
@@ -9025,56 +9013,71 @@ declare module 'vscode' {
 	}
 
 	/**
+	 * Author information of a [comment](#Comment)
+	 */
+
+	export interface CommentAuthorInformation {
+		/**
+		 * The display name of the author of the comment
+		 */
+		name: string;
+
+		/**
+		 * The optional icon path for the author
+		 */
+		iconPath?: Uri;
+	}
+
+	/**
+	 * Author information of a [comment](#Comment)
+	 */
+
+	export interface CommentAuthorInformation {
+		/**
+		 * The display name of the author of the comment
+		 */
+		name: string;
+
+		/**
+		 * The optional icon path for the author
+		 */
+		iconPath?: Uri;
+	}
+
+	/**
 	 * A comment is displayed within the editor or the Comments Panel, depending on how it is provided.
 	 */
-	export class Comment {
+	export interface Comment {
 		/**
 		 * The id of the comment
 		 */
-		readonly id: string;
+		id: string;
 
 		/**
 		 * The human-readable comment body
 		 */
-		readonly body: MarkdownString;
+		body: MarkdownString;
 
 		/**
-		 * The display name of the user who created the comment
+		 * The author information of the comment
 		 */
-		readonly userName: string;
+		author: CommentAuthorInformation;
 
 		/**
 		 * Optional label describing the [Comment](#Comment)
-		 * Label will be rendered next to userName if exists.
+		 * Label will be rendered next to authorName if exists.
 		 */
-		readonly label?: string;
-
-		/**
-		 * The icon path for the user who created the comment
-		 */
-		readonly userIconPath?: Uri;
+		label?: string;
 
 		/**
 		 * The command to be executed if the comment is selected in the Comments Panel
 		 */
-		readonly selectCommand?: Command;
+		selectCommand?: Command;
 
 		/**
 		 * The command to be executed when users try to save the edits to the comment
 		 */
-		readonly editCommand?: Command;
-
-		/**
-		 * The command to be executed when users try to delete the comment
-		 */
-		readonly deleteCommand?: Command;
-
-		/**
-		 * @param id The id of the comment
-		 * @param body The human-readable comment body
-		 * @param userName The display name of the user who created the comment
-		 */
-		constructor(id: string, body: MarkdownString, userName: string);
+		editCommand?: Command;
 	}
 
 	/**
@@ -9189,7 +9192,7 @@ declare module 'vscode' {
 		 * @param range The range the comment thread is located within the document.
 		 * @param comments The ordered comments of the thread.
 		 */
-		createCommentThread(id: string, resource: Uri, range: Range, comments: Comment[]): CommentThread;
+		createCommentThread(id: string, uri: Uri, range: Range, comments: Comment[]): CommentThread;
 
 		/**
 		 * Dispose this comment controller.

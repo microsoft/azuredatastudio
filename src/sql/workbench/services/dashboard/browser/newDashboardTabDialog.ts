@@ -25,17 +25,15 @@ import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
 import { NewDashboardTabViewModel, IDashboardUITab } from 'sql/workbench/services/dashboard/common/newDashboardTabViewModel';
 import { IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
-import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
+import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
+import { ILogService } from 'vs/platform/log/common/log';
 
 class ExtensionListDelegate implements IListVirtualDelegate<IDashboardUITab> {
 
-	constructor(
-		private _height: number
-	) {
-	}
+	private static readonly HEIGHT = 101;
 
 	public getHeight(element: IDashboardUITab): number {
-		return this._height;
+		return ExtensionListDelegate.HEIGHT;
 	}
 
 	public getTemplateId(element: IDashboardUITab): string {
@@ -91,7 +89,6 @@ class ExtensionListRenderer implements IListRenderer<IDashboardUITab, ExtensionL
 }
 
 export class NewDashboardTabDialog extends Modal {
-	public static EXTENSIONLIST_HEIGHT = 101;
 
 	// MEMBER letIABLES ////////////////////////////////////////////////////
 	private _addNewTabButton: Button;
@@ -110,11 +107,12 @@ export class NewDashboardTabDialog extends Modal {
 	public get onCancel(): Event<void> { return this._onCancel.event; }
 
 	constructor(
-		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
+		@ILayoutService layoutService: ILayoutService,
 		@IThemeService themeService: IThemeService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
-		@IClipboardService clipboardService: IClipboardService
+		@IClipboardService clipboardService: IClipboardService,
+		@ILogService logService: ILogService
 	) {
 		super(
 			localize('newDashboardTab.openDashboardExtensions', 'Open dashboard extensions'),
@@ -123,6 +121,7 @@ export class NewDashboardTabDialog extends Modal {
 			layoutService,
 			clipboardService,
 			themeService,
+			logService,
 			contextKeyService,
 			{ hasSpinner: true }
 		);
@@ -165,7 +164,7 @@ export class NewDashboardTabDialog extends Modal {
 	private createExtensionList(container: HTMLElement) {
 		// Create a fixed list view for the extensions
 		let extensionTabViewContainer = DOM.$('.extensionTab-view');
-		let delegate = new ExtensionListDelegate(NewDashboardTabDialog.EXTENSIONLIST_HEIGHT);
+		let delegate = new ExtensionListDelegate();
 		let extensionTabRenderer = new ExtensionListRenderer();
 		this._extensionList = new List<IDashboardUITab>(extensionTabViewContainer, delegate, [extensionTabRenderer]);
 
