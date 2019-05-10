@@ -7,7 +7,7 @@
 	],
 	"includePid": false,
 	"reports": [
-		"json"
+		"cobertura"
 	],
 	"verbose": false,
 	"remapOptions": {
