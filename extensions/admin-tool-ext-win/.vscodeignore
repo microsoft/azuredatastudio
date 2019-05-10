@@ -1,5 +1,4 @@
 out/test/**
 src/**
-ssmsmin/**
 .gitignore
 tsconfig.json
