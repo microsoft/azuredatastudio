@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as assert from 'assert';
 import * as azdata from 'azdata';
 import { ConnectionStatusManager } from 'sql/platform/connection/common/connectionStatusManager';

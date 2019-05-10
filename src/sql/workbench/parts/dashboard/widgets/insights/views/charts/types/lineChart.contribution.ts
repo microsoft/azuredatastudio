@@ -3,8 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { mixin } from 'vs/base/common/objects';
-import { clone } from 'sql/base/common/objects';
+import { mixin, deepClone } from 'vs/base/common/objects';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import * as nls from 'vs/nls';
 
@@ -25,6 +24,6 @@ const properties: IJSONSchema = {
 	}
 };
 
-export const lineSchema = mixin(clone(barChartSchema), properties) as IJSONSchema;
+export const lineSchema = mixin(deepClone(barChartSchema), properties) as IJSONSchema;
 
 registerInsight('line', '', lineSchema, LineChart);

@@ -1,5 +1,18 @@
 # Change Log
 
+## Version 1.7.0
+* Release date: May 8, 2019
+* Release status: General Availability
+
+## What's new in this version
+* Announcing Schema Compare *Preview* extension
+* Tasks Panel UX improvement
+* Announcing new Welcome page
+* Resolved [bugs and issues](https://github.com/microsoft/azuredatastudio/milestone/31?closed=1).
+
+## Contributions and "thank you"
+We would like to thank all our users who raised issues.
+
 ## Version 1.6.0
 * Release date: April 18, 2019
 * Release status: General Availability

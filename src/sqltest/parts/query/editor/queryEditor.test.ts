@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { IEditorDescriptor } from 'vs/workbench/browser/editor';
 import { URI } from 'vs/base/common/uri';
@@ -81,7 +79,7 @@ suite('SQL QueryEditor Tests', () => {
 		instantiationService.setup(x => x.createInstance(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((classDef, editor, action) => {
 			if (classDef.ID) {
 				if (classDef.ID === 'listDatabaseQueryActionItem') {
-					return new ListDatabasesActionItem(editor, connectionManagementService.object, undefined, undefined, configurationService.object, undefined);
+					return new ListDatabasesActionItem(editor, connectionManagementService.object, undefined, undefined, configurationService.object);
 				}
 			}
 			// Default
@@ -317,7 +315,7 @@ suite('SQL QueryEditor Tests', () => {
 			queryActionInstantiationService.setup(x => x.createInstance(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()))
 				.returns((definition, editor, action, selectBox) => {
 					if (definition.ID === 'listDatabaseQueryActionItem') {
-						let item = new ListDatabasesActionItem(editor, queryConnectionService.object, undefined, undefined, configurationService.object, undefined);
+						let item = new ListDatabasesActionItem(editor, queryConnectionService.object, undefined, undefined, configurationService.object);
 						return item;
 					}
 					// Default

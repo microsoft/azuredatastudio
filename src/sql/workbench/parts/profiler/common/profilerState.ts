@@ -3,8 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { EventEmitter } from 'sql/base/common/eventEmitter';
 import { IDisposable } from 'vs/base/common/lifecycle';
+import { Emitter } from 'vs/base/common/event';
 
 export interface IProfilerStateChangedEvent {
 	isConnected?: boolean;
@@ -25,7 +25,6 @@ export interface INewProfilerState {
 }
 
 export class ProfilerState implements IDisposable {
-	private static _CHANGED_EVENT = 'changed';
 
 	private _isConnected: boolean;
 	private _isRunning: boolean;
@@ -33,7 +32,6 @@ export class ProfilerState implements IDisposable {
 	private _isStopped: boolean;
 	private _autoscroll: boolean;
 	private _isPanelCollapsed = true;
-	private _eventEmitter: EventEmitter;
 
 	public get isConnected(): boolean { return this._isConnected; }
 	public get isRunning(): boolean { return this._isRunning; }
@@ -42,16 +40,10 @@ export class ProfilerState implements IDisposable {
 	public get autoscroll(): boolean { return this._autoscroll; }
 	public get isPanelCollapsed(): boolean { return this._isPanelCollapsed; }
 
-	constructor() {
-		this._eventEmitter = new EventEmitter();
-	}
+	private readonly _onProfilerStateChange = new Emitter<IProfilerStateChangedEvent>();
+	public readonly onProfilerStateChange = this._onProfilerStateChange.event;
 
 	public dispose(): void {
-		this._eventEmitter.dispose();
-	}
-
-	public addChangeListener(listener: (e: IProfilerStateChangedEvent) => void): IDisposable {
-		return this._eventEmitter.addListener(ProfilerState._CHANGED_EVENT, listener);
 	}
 
 	public change(newState: INewProfilerState): void {
@@ -109,7 +101,7 @@ export class ProfilerState implements IDisposable {
 		}
 
 		if (somethingChanged) {
-			this._eventEmitter.emit(ProfilerState._CHANGED_EVENT, changeEvent);
+			this._onProfilerStateChange.fire(changeEvent);
 		}
 	}
 }

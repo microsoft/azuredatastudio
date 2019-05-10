@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as azdata from 'azdata';
 import { CredentialManagementEvents, ICredentialsService } from 'sql/platform/credentials/common/credentialsService';
 import { IDisposable } from 'vs/base/common/lifecycle';
@@ -36,15 +34,15 @@ export class CredentialsTestProvider implements azdata.CredentialProvider {
 export class CredentialsTestService implements ICredentialsService {
 	_serviceBrand: any;
 
-	saveCredential(credentialId: string, password: string): Thenable<boolean> {
+	saveCredential(credentialId: string, password: string): Promise<boolean> {
 		return undefined;
 	}
 
-	readCredential(credentialId: string): Thenable<azdata.Credential> {
+	readCredential(credentialId: string): Promise<azdata.Credential> {
 		return undefined;
 	}
 
-	deleteCredential(credentialId: string): Thenable<boolean> {
+	deleteCredential(credentialId: string): Promise<boolean> {
 		return undefined;
 	}
 

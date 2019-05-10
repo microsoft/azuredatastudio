@@ -9,7 +9,6 @@ import { DashboardWidget, IDashboardWidget, WidgetConfig, WIDGET_CONFIG } from '
 import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 import { toDisposableSubscription } from 'sql/base/node/rxjsUtils';
-import { error } from 'sql/base/common/log';
 import { IDashboardRegistry, Extensions as DashboardExtensions } from 'sql/platform/dashboard/common/dashboardRegistry';
 
 import { DatabaseInfo, ServerInfo } from 'azdata';
@@ -18,6 +17,7 @@ import { EventType, addDisposableListener } from 'vs/base/browser/dom';
 import * as types from 'vs/base/common/types';
 import * as nls from 'vs/nls';
 import { Registry } from 'vs/platform/registry/common/platform';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export interface PropertiesConfig {
 	properties: Array<Property>;
@@ -72,12 +72,9 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
 		@Inject(WIDGET_CONFIG) protected _config: WidgetConfig,
-		consoleError?: ((message?: any, ...optionalParams: any[]) => void)
+		@Inject(ILogService) private logService: ILogService
 	) {
 		super();
-		if (consoleError) {
-			this.consoleError = consoleError;
-		}
 		this.init();
 	}
 
@@ -127,7 +124,7 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 			const providerProperties = dashboardRegistry.getProperties(provider as string);
 
 			if (!providerProperties) {
-				this.consoleError('No property definitions found for provider', provider);
+				this.logService.error('No property definitions found for provider', provider);
 				return;
 			}
 
@@ -137,7 +134,7 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 			if (providerProperties.flavors.length === 1) {
 				flavor = providerProperties.flavors[0];
 			} else if (providerProperties.flavors.length === 0) {
-				this.consoleError('No flavor definitions found for "', provider,
+				this.logService.error('No flavor definitions found for "', provider,
 					'. If there are not multiple flavors of this provider, add one flavor without a condition');
 				return;
 			} else {
@@ -153,17 +150,17 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 						case '<=':
 							return condition <= item.condition.value;
 						default:
-							this.consoleError('Could not parse operator: "', item.condition.operator,
+							this.logService.error('Could not parse operator: "', item.condition.operator,
 								'" on item "', item, '"');
 							return false;
 					}
 				});
 
 				if (flavorArray.length === 0) {
-					this.consoleError('Could not determine flavor');
+					this.logService.error('Could not determine flavor');
 					return;
 				} else if (flavorArray.length > 1) {
-					this.consoleError('Multiple flavors matched correctly for this provider', provider);
+					this.logService.error('Multiple flavors matched correctly for this provider', provider);
 					return;
 				}
 
@@ -173,17 +170,17 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 			// determine what context we should be pulling from
 			if (this._config.context === 'database') {
 				if (!Array.isArray(flavor.databaseProperties)) {
-					this.consoleError('flavor', flavor.flavor, ' does not have a definition for database properties');
+					this.logService.error('flavor', flavor.flavor, ' does not have a definition for database properties');
 				}
 
 				if (!Array.isArray(flavor.serverProperties)) {
-					this.consoleError('flavor', flavor.flavor, ' does not have a definition for server properties');
+					this.logService.error('flavor', flavor.flavor, ' does not have a definition for server properties');
 				}
 
 				propertyArray = flavor.databaseProperties;
 			} else {
 				if (!Array.isArray(flavor.serverProperties)) {
-					this.consoleError('flavor', flavor.flavor, ' does not have a definition for server properties');
+					this.logService.error('flavor', flavor.flavor, ' does not have a definition for server properties');
 				}
 
 				propertyArray = flavor.serverProperties;
@@ -236,10 +233,5 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 			val = defaultVal;
 		}
 		return val;
-	}
-
-	// overwrittable console.error for testing
-	private consoleError(message?: any, ...optionalParams: any[]): void {
-		error(message, optionalParams);
 	}
 }

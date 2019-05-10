@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import * as extHostApi from 'vs/workbench/api/node/extHost.api.impl';
 import { IInitData, IMainContext } from 'vs/workbench/api/common/extHost.protocol';
@@ -536,7 +535,8 @@ export function createApiFactory(
 				extensions: extensions,
 				SchemaUpdateAction: sqlExtHostTypes.SchemaUpdateAction,
 				SchemaDifferenceType: sqlExtHostTypes.SchemaDifferenceType,
-				SchemaCompareEndpointType: sqlExtHostTypes.SchemaCompareEndpointType
+				SchemaCompareEndpointType: sqlExtHostTypes.SchemaCompareEndpointType,
+				SchemaObjectType: sqlExtHostTypes.SchemaObjectType
 			};
 		},
 
@@ -569,8 +569,8 @@ export function createApiFactory(
 				getUriForConnection(connectionId: string): Thenable<string> {
 					return extHostConnectionManagement.$getUriForConnection(connectionId);
 				},
-				connect(connectionProfile: sqlops.IConnectionProfile): Thenable<sqlops.ConnectionResult> {
-					return extHostConnectionManagement.$connect(connectionProfile);
+				connect(connectionProfile: sqlops.IConnectionProfile, saveConnection: boolean, showDashboard: boolean): Thenable<sqlops.ConnectionResult> {
+					return extHostConnectionManagement.$connect(connectionProfile, saveConnection, showDashboard);
 				}
 			};
 
@@ -956,7 +956,7 @@ export function createApiFactory(
 				nb: nb,
 				AzureResource: sqlExtHostTypes.AzureResource,
 				extensions: extensions,
-				TreeItem: sqlExtHostTypes.TreeItem,
+				TreeItem: sqlExtHostTypes.TreeItem
 			};
 		}
 	};

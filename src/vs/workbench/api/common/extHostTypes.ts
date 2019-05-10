@@ -2287,7 +2287,7 @@ export enum FoldingRangeKind {
 
 //#endregion
 
-
+//#region Comment
 export enum CommentThreadCollapsibleState {
 	/**
 	 * Determines an item is collapsed
@@ -2298,6 +2298,7 @@ export enum CommentThreadCollapsibleState {
 	 */
 	Expanded = 1
 }
+//#endregion
 
 @es5ClassCompat
 export class QuickInputButtons {

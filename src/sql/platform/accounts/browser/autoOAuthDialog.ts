@@ -21,7 +21,8 @@ import { attachModalDialogStyler, attachButtonStyler } from 'sql/platform/theme/
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
-import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
+import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export class AutoOAuthDialog extends Modal {
 	private _copyAndOpenButton: Button;
@@ -42,12 +43,13 @@ export class AutoOAuthDialog extends Modal {
 	public get onCloseEvent(): Event<void> { return this._onCloseEvent.event; }
 
 	constructor(
-		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
+		@ILayoutService layoutService: ILayoutService,
 		@IThemeService themeService: IThemeService,
 		@IContextViewService private _contextViewService: IContextViewService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
-		@IClipboardService clipboardService: IClipboardService
+		@IClipboardService clipboardService: IClipboardService,
+		@ILogService logService: ILogService
 	) {
 		super(
 			'',
@@ -56,6 +58,7 @@ export class AutoOAuthDialog extends Modal {
 			layoutService,
 			clipboardService,
 			themeService,
+			logService,
 			contextKeyService,
 			{
 				isFlyout: true,

@@ -53,7 +53,7 @@ export class TaskHistoryView {
 		if (taskNode && taskNode.hasChildren) {
 			hide(this._messages);
 		}
-		let noTaskMessage = localize('noTaskMessage', 'No task history to display. Try backup or restore task to view its execution status.');
+		let noTaskMessage = localize('noTaskMessage', 'No task history to display.');
 		append(this._messages, $('span')).innerText = noTaskMessage;
 
 		this._tree = this.createTaskHistoryTree(container, this._instantiationService);
