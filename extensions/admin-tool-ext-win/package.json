@@ -65,7 +65,6 @@
 		]
 	},
 	"dependencies": {
-		"service-downloader": "github:anthonydresser/service-downloader#0.1.5",
 		"vscode-extension-telemetry": "^0.0.15",
 		"vscode-nls": "^3.2.1"
 	},

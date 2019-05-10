@@ -1,7 +1,6 @@
 coverage/**
 out/test/**
 src/**
-ssmsmin/**
 .gitignore
 coverageConfig.json
 tsconfig.json

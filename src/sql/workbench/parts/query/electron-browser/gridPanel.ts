@@ -47,7 +47,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
 const MIN_GRID_HEIGHT_ROWS = 8;
-const ESTIMATED_SCROLL_BAR_HEIGHT = 10;
+const ESTIMATED_SCROLL_BAR_HEIGHT = 15;
 const BOTTOM_PADDING = 15;
 const ACTIONBAR_WIDTH = 36;
 
