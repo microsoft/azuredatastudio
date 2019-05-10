@@ -76,7 +76,7 @@ const ConnectionProviderContrib: IJSONSchema = {
 					items: {
 						type: 'object',
 						properties: {
-							when: {
+							id: {
 								type: 'string',
 							},
 							path: {
