@@ -12,6 +12,8 @@ import { doubleEscapeSingleQuotes, backEscapeDoubleQuotes } from './utils';
 import { ChildProcess, exec } from 'child_process';
 
 const localize = nls.loadMessageBundle();
+const ssmsMinVer = JSON.parse(JSON.stringify(require('./config.json'))).version;
+
 let exePath: string;
 const runningProcesses: Map<number, ChildProcess> = new Map<number, ChildProcess>();
 
@@ -66,7 +68,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 	// This is for Windows-specific support so do nothing on other platforms
 	if (process.platform === 'win32') {
 		Telemetry.sendTelemetryEvent('startup/ExtensionActivated');
-		exePath = path.join(context.extensionPath, 'ssmsmin', 'ssmsmin.exe');
+		exePath = path.join(context.extensionPath, 'ssmsmin', 'Windows', ssmsMinVer, 'ssmsmin.exe');
 		registerCommands(context);
 	}
 }
