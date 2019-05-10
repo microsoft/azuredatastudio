@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+  <file name="DdsShapes.dll" hashalg="SHA1">
+    <comClass clsid="{E7DEBE05-161A-4B09-A1B8-60737A067933}" tlbid="{9C6FBCB0-4F0D-4E77-B20D-FAAB8CC8A7C5}" description="TaskShape Class"></comClass>
+    <comClass clsid="{50862CC8-FA58-443F-8FA1-5335E364A085}" tlbid="{9C6FBCB0-4F0D-4E77-B20D-FAAB8CC8A7C5}" description="DragConectorSource Class"></comClass>
+    <comClass clsid="{48D71135-08ED-444D-8E18-3FC5E0BDD89B}" tlbid="{9C6FBCB0-4F0D-4E77-B20D-FAAB8CC8A7C5}" description="ExpandedGroupShape Class"></comClass>
+    <comClass clsid="{A6AECFFF-2983-4878-92C0-5757F6CF164E}" tlbid="{9C6FBCB0-4F0D-4E77-B20D-FAAB8CC8A7C5}" description="Icon Class"></comClass>
+    <comClass clsid="{9B33CB71-3CC8-4300-92C0-5DEF2A35AE0A}" tlbid="{9C6FBCB0-4F0D-4E77-B20D-FAAB8CC8A7C5}" description="DdsObjectManagedBridge Class" threadingModel="Apartment" progid="DdsShapes.DdsObjectManagedBridge">
+      <progid>DdsShapes.DdsObjectManagedBridge.3</progid>
+    </comClass>
+    <comClass clsid="{F1EE8385-44DF-41CD-BBDA-D7FF26BB1B47}" tlbid="{9C6FBCB0-4F0D-4E77-B20D-FAAB8CC8A7C5}" description="DdsContainerObjectManagedBridge Class" threadingModel="Apartment" progid="DdsShapes.DdsContainerObjectManagedBridge">
+      <progid>DdsShapes.DdsContainerObjectManagedBridge.3</progid>
+    </comClass>
+    <typelib tlbid="{9C6FBCB0-4F0D-4E77-B20D-FAAB8CC8A7C5}" version="1.0" helpdir="" flags="HASDISKIMAGE"></typelib>
+  </file>
+  <comInterfaceExternalProxyStub name="IControlImage" iid="{48DCC9F3-0F46-4570-9F6F-8FC5A070552D}" tlbid="{9C6FBCB0-4F0D-4E77-B20D-FAAB8CC8A7C5}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"></comInterfaceExternalProxyStub>
+  <comInterfaceExternalProxyStub name="ICompositeManager" iid="{0EA7CB3D-70C2-4445-87EA-582A10BB87EE}" tlbid="{9C6FBCB0-4F0D-4E77-B20D-FAAB8CC8A7C5}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"></comInterfaceExternalProxyStub>
+  <comInterfaceExternalProxyStub name="_ICompositeManagerEvents" iid="{106D4459-D61E-44EE-8C27-6BF6E1A32733}" tlbid="{9C6FBCB0-4F0D-4E77-B20D-FAAB8CC8A7C5}" proxyStubClsid32="{00020420-0000-0000-C000-000000000046}"></comInterfaceExternalProxyStub>
+  <comInterfaceExternalProxyStub name="_ITaskShapeEvents" iid="{498F7EAE-8932-4638-ABEA-B833C2684CA1}" tlbid="{9C6FBCB0-4F0D-4E77-B20D-FAAB8CC8A7C5}" proxyStubClsid32="{00020420-0000-0000-C000-000000000046}"></comInterfaceExternalProxyStub>
+  <comInterfaceExternalProxyStub name="ITaskShape" iid="{035AF972-E137-43A7-AB85-F6534221D716}" tlbid="{9C6FBCB0-4F0D-4E77-B20D-FAAB8CC8A7C5}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"></comInterfaceExternalProxyStub>
+  <comInterfaceExternalProxyStub name="IShapeRename" iid="{6EC6D4F6-AFCC-49AA-B34F-671E8640D696}" tlbid="{9C6FBCB0-4F0D-4E77-B20D-FAAB8CC8A7C5}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"></comInterfaceExternalProxyStub>
+  <comInterfaceExternalProxyStub name="_IDragConectorSourceEvents" iid="{F253776F-B84E-4310-B105-BC9EF2C634AA}" tlbid="{9C6FBCB0-4F0D-4E77-B20D-FAAB8CC8A7C5}" proxyStubClsid32="{00020420-0000-0000-C000-000000000046}"></comInterfaceExternalProxyStub>
+  <comInterfaceExternalProxyStub name="IDragConectorSource" iid="{16C226B7-4092-4E8A-A916-FA8546323FE1}" tlbid="{9C6FBCB0-4F0D-4E77-B20D-FAAB8CC8A7C5}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"></comInterfaceExternalProxyStub>
+  <comInterfaceExternalProxyStub name="_IExpandedGroupShapeEvents" iid="{128399FD-E7E0-4B54-9A88-D358A8BC2F03}" tlbid="{9C6FBCB0-4F0D-4E77-B20D-FAAB8CC8A7C5}" proxyStubClsid32="{00020420-0000-0000-C000-000000000046}"></comInterfaceExternalProxyStub>
+  <comInterfaceExternalProxyStub name="IExpandedGroupShape" iid="{B43347A5-A983-488E-8216-3285D8FFBA4B}" tlbid="{9C6FBCB0-4F0D-4E77-B20D-FAAB8CC8A7C5}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"></comInterfaceExternalProxyStub>
+  <comInterfaceExternalProxyStub name="IDTSContainer" iid="{AF62CF74-2EC1-43A2-9C98-EE62E353D326}" tlbid="{9C6FBCB0-4F0D-4E77-B20D-FAAB8CC8A7C5}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"></comInterfaceExternalProxyStub>
+  <comInterfaceExternalProxyStub name="_IIconEvents" iid="{AE57FD28-856B-4814-9DC1-208FD878B996}" tlbid="{9C6FBCB0-4F0D-4E77-B20D-FAAB8CC8A7C5}" proxyStubClsid32="{00020420-0000-0000-C000-000000000046}"></comInterfaceExternalProxyStub>
+  <comInterfaceExternalProxyStub name="IIcon" iid="{AAF52DD6-E0B7-40C2-95B6-32CA2DC629EE}" tlbid="{9C6FBCB0-4F0D-4E77-B20D-FAAB8CC8A7C5}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"></comInterfaceExternalProxyStub>
+  <comInterfaceExternalProxyStub name="IDdsObjectManagedBridgeBehaviorProvider" iid="{672A56EA-80DC-4FFE-83CD-6B08DF2271DE}" tlbid="{9C6FBCB0-4F0D-4E77-B20D-FAAB8CC8A7C5}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"></comInterfaceExternalProxyStub>
+  <comInterfaceExternalProxyStub name="IDdsObjectManagedBridge" iid="{63845952-A472-4234-ADC5-29073F855681}" tlbid="{9C6FBCB0-4F0D-4E77-B20D-FAAB8CC8A7C5}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"></comInterfaceExternalProxyStub>
+</assembly>
