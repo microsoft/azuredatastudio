@@ -13,6 +13,7 @@ import * as TelemetryUtils from 'sql/platform/telemetry/telemetryUtilities';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { Event, Emitter } from 'vs/base/common/event';
 import { keys } from 'vs/base/common/map';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export const SERVICE_ID = 'queryManagementService';
 
@@ -98,7 +99,8 @@ export class QueryManagementService implements IQueryManagementService {
 
 	constructor(
 		@IConnectionManagementService private _connectionService: IConnectionManagementService,
-		@ITelemetryService private _telemetryService: ITelemetryService
+		@ITelemetryService private _telemetryService: ITelemetryService,
+		@ILogService private logService: ILogService
 	) {
 	}
 
@@ -172,7 +174,7 @@ export class QueryManagementService implements IQueryManagementService {
 				displayActualQueryPlan: runOptions.displayActualQueryPlan
 			});
 		}
-		TelemetryUtils.addTelemetry(this._telemetryService, eventName, data);
+		TelemetryUtils.addTelemetry(this._telemetryService, this.logService, eventName, data);
 	}
 
 	private _runAction<T>(uri: string, action: (handler: IQueryRequestHandler) => Thenable<T>): Thenable<T> {

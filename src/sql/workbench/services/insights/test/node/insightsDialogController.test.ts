@@ -5,18 +5,18 @@
 
 import { InsightsDialogController } from 'sql/workbench/services/insights/node/insightsDialogController';
 import { InsightsDialogModel } from 'sql/workbench/services/insights/common/insightsDialogModel';
-import QueryRunner, { EventType } from 'sql/platform/query/common/queryRunner';
+import QueryRunner from 'sql/platform/query/common/queryRunner';
 import { ConnectionManagementService } from 'sql/platform/connection/common/connectionManagementService';
 import { IInsightsConfigDetails } from 'sql/workbench/parts/dashboard/widgets/insights/interfaces';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 
-import { IDbColumn, BatchSummary, QueryExecuteSubsetResult, ResultSetSubset } from 'azdata';
-import { EventEmitter } from 'sql/base/common/eventEmitter';
+import * as azdata from 'azdata';
 import { equal } from 'assert';
 import { Mock, MockBehavior, It } from 'typemoq';
 import { TestStorageService } from 'vs/workbench/test/workbenchTestServices';
+import { Emitter } from 'vs/base/common/event';
 
 const testData: string[][] = [
 	['1', '2', '3', '4'],
@@ -49,6 +49,7 @@ suite('Insights Dialog Controller Tests', () => {
 			undefined,
 			instMoq.object,
 			connMoq.object,
+			undefined,
 			undefined,
 			undefined
 		);
@@ -97,16 +98,17 @@ interface IPrimedQueryRunner {
 * Returns a mock of query runner than will recreate what a query runner does to return data
 */
 function getPrimedQueryRunner(data: string[][], columns: string[]): IPrimedQueryRunner {
-	let emitter = new EventEmitter();
-	let querymock = Mock.ofType(QueryRunner, MockBehavior.Strict);
-	querymock.setup(x => x.addListener(It.isAny(), It.isAny())).returns((event, func) => emitter.addListener(event, func));
+	const emitter = new Emitter<string>();
+	const querymock = Mock.ofType(QueryRunner, MockBehavior.Strict);
+	querymock.setup(x => x.onQueryEnd).returns(x => emitter.event);
+	querymock.setup(x => x.onMessage).returns(x => new Emitter<azdata.IResultMessage>().event);
 	querymock.setup(x => x.batchSets).returns(x => {
-		return <Array<BatchSummary>>[
+		return <Array<azdata.BatchSummary>>[
 			{
 				id: 0,
 				resultSetSummaries: [
 					{
-						columnInfo: <Array<IDbColumn>>columns.map(c => { return { columnName: c }; }),
+						columnInfo: <Array<azdata.IDbColumn>>columns.map(c => { return { columnName: c }; }),
 						id: 0,
 						rowCount: data.length
 					}
@@ -116,8 +118,8 @@ function getPrimedQueryRunner(data: string[][], columns: string[]): IPrimedQuery
 	});
 
 	querymock.setup(x => x.getQueryRows(It.isAnyNumber(), It.isAnyNumber(), It.isAnyNumber(), It.isAnyNumber()))
-		.returns(x => Promise.resolve(<QueryExecuteSubsetResult>{
-			resultSubset: <ResultSetSubset>{
+		.returns(x => Promise.resolve(<azdata.QueryExecuteSubsetResult>{
+			resultSubset: <azdata.ResultSetSubset>{
 				rowCount: data.length,
 				rows: data.map(r => r.map(c => { return { displayValue: c }; }))
 			}
@@ -125,8 +127,8 @@ function getPrimedQueryRunner(data: string[][], columns: string[]): IPrimedQuery
 
 	querymock.setup(x => x.runQuery(It.isAnyString())).returns(x => Promise.resolve());
 
-	let complete = () => {
-		emitter.emit(EventType.COMPLETE);
+	const complete = () => {
+		emitter.fire('time');
 	};
 
 	return {

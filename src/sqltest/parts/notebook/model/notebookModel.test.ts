@@ -24,7 +24,7 @@ import { Memento } from 'vs/workbench/common/memento';
 import { Emitter } from 'vs/base/common/event';
 import { CapabilitiesTestService } from 'sqltest/stubs/capabilitiesTestService';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { TestStorageService } from 'vs/workbench/test/workbenchTestServices';
+import { TestStorageService, TestLogService } from 'vs/workbench/test/workbenchTestServices';
 
 let expectedNotebookContent: nb.INotebookContents = {
 	cells: [{
@@ -129,9 +129,9 @@ suite('notebook model', function (): void {
 		let mockContentManager = TypeMoq.Mock.ofType(LocalContentManager);
 		mockContentManager.setup(c => c.getNotebookContents(TypeMoq.It.isAny())).returns(() => Promise.resolve(emptyNotebook));
 		notebookManagers[0].contentManager = mockContentManager.object;
-
+		const logService = new TestLogService();
 		// When I initialize the model
-		let model = new NotebookModel(defaultModelOptions);
+		let model = new NotebookModel(defaultModelOptions, undefined, logService);
 		await model.requestModelLoad();
 
 		// Then I expect to have 0 code cell as the contents
@@ -218,7 +218,8 @@ suite('notebook model', function (): void {
 		let options: INotebookModelOptions = Object.assign({}, defaultModelOptions, <Partial<INotebookModelOptions>>{
 			factory: mockModelFactory.object
 		});
-		let model = new NotebookModel(options, undefined);
+		const logService = new TestLogService();
+		let model = new NotebookModel(options, undefined, logService);
 		model.onClientSessionReady((session) => actualSession = session);
 		await model.requestModelLoad();
 		await model.startSession(notebookManagers[0]);
@@ -236,14 +237,16 @@ suite('notebook model', function (): void {
 	});
 
 	test('Should sanitize kernel display name when IP is included', async function (): Promise<void> {
-		let model = new NotebookModel(defaultModelOptions);
+		const logService = new TestLogService();
+		let model = new NotebookModel(defaultModelOptions, undefined, logService);
 		let displayName = 'PySpark (1.1.1.1)';
 		let sanitizedDisplayName = model.sanitizeDisplayName(displayName);
 		should(sanitizedDisplayName).equal('PySpark');
 	});
 
 	test('Should sanitize kernel display name properly when IP is not included', async function (): Promise<void> {
-		let model = new NotebookModel(defaultModelOptions);
+		const logService = new TestLogService();
+		let model = new NotebookModel(defaultModelOptions, undefined, logService);
 		let displayName = 'PySpark';
 		let sanitizedDisplayName = model.sanitizeDisplayName(displayName);
 		should(sanitizedDisplayName).equal('PySpark');

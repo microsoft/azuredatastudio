@@ -18,6 +18,7 @@ import * as dashboardHelper from 'sql/workbench/parts/dashboard/common/dashboard
 
 import { Event, Emitter } from 'vs/base/common/event';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { ILogService } from 'vs/platform/log/common/log';
 
 @Component({
 	selector: 'dashboard-nav-section',
@@ -53,7 +54,8 @@ export class DashboardNavSection extends DashboardTab implements OnDestroy, OnCh
 	@ViewChild(PanelComponent) private _panel: PanelComponent;
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) protected dashboardService: CommonServiceInterface,
-		@Inject(forwardRef(() => ChangeDetectorRef)) protected _cd: ChangeDetectorRef
+		@Inject(forwardRef(() => ChangeDetectorRef)) protected _cd: ChangeDetectorRef,
+		@Inject(ILogService) private logService: ILogService
 	) {
 		super();
 	}
@@ -91,7 +93,7 @@ export class DashboardNavSection extends DashboardTab implements OnDestroy, OnCh
 	private loadNewTabs(dashboardTabs: NavSectionConfig[]) {
 		if (dashboardTabs && dashboardTabs.length > 0) {
 			dashboardTabs.map(v => {
-				const containerResult = dashboardHelper.getDashboardContainer(v.container);
+				const containerResult = dashboardHelper.getDashboardContainer(v.container, this.logService);
 				if (!containerResult.result) {
 					return { id: v.id, title: v.title, container: { 'error-container': undefined } };
 				}

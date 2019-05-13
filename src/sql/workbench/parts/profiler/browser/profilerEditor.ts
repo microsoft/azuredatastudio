@@ -433,7 +433,7 @@ export class ProfilerEditor extends BaseEditor {
 			if (this._stateListener) {
 				this._stateListener.dispose();
 			}
-			this._stateListener = input.state.addChangeListener(e => this._onStateChange(e));
+			this._stateListener = input.state.onProfilerStateChange(e => this._onStateChange(e));
 			this._onStateChange({
 				isConnected: true,
 				isRunning: true,
