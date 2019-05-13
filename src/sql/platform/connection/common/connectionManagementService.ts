@@ -52,6 +52,7 @@ import { IConnectionDialogService } from 'sql/workbench/services/connection/comm
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ILogService } from 'vs/platform/log/common/log';
+import * as interfaces from './interfaces';
 
 export class ConnectionManagementService extends Disposable implements IConnectionManagementService {
 
@@ -559,8 +560,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		let iconProvider = this._iconProviders.get(connectionManagementInfo.providerId);
 		if (iconProvider) {
 			let serverInfo: azdata.ServerInfo = this.getServerInfo(connectionProfile.id);
-			let iConnectionProfile: azdata.IConnectionProfile = this.toIConnectionProfile(connectionProfile);
-			iconProvider.getConnectionIconId(iConnectionProfile, serverInfo).then(iconId => {
+			let profile: interfaces.IConnectionProfile = connectionProfile.toIConnectionProfile();
+			iconProvider.getConnectionIconId(profile, serverInfo).then(iconId => {
 				if (iconId) {
 					this._connectionIconIdCache.set(connectionProfile.id, iconId);
 				}
@@ -570,25 +571,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 	public getConnectionIconId(connectionId: string): string {
 		return this._connectionIconIdCache.get(connectionId);
-	}
-
-	private toIConnectionProfile(cf: ConnectionProfile): azdata.IConnectionProfile {
-		return <azdata.IConnectionProfile>{
-			connectionName: cf.connectionName,
-			serverName: cf.serverName,
-			databaseName: cf.databaseName,
-			userName: cf.userName,
-			password: cf.password,
-			authenticationType: cf.authenticationType,
-			savePassword: cf.savePassword,
-			groupFullName: cf.groupFullName,
-			groupId: cf.groupId,
-			providerName: cf.providerName,
-			saveProfile: cf.saveProfile,
-			id: cf.id,
-			azureTenantId: cf.azureTenantId,
-			options: cf.options
-		};
 	}
 
 	public showDashboard(connection: IConnectionProfile): Thenable<boolean> {
