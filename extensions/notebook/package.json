@@ -349,7 +349,7 @@
 		"mocha-junit-reporter": "^1.17.0",
 		"mocha-multi-reporters": "^1.1.7",
 		"typemoq": "^2.1.0",
-		"vscode": "1.1.5"
+		"vscodetestcover": "^1.0.2"
 	},
 	"enableProposedApi": true
 }

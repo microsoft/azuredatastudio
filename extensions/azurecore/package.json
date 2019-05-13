@@ -170,6 +170,6 @@
 		"mocha": "^5.2.0",
 		"should": "^13.2.1",
 		"typemoq": "^2.1.0",
-		"vscode": "1.1.26"
+		"vscodetestcover": "^1.0.2"
 	}
 }

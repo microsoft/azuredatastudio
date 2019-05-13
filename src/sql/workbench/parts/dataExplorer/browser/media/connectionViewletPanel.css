@@ -98,22 +98,13 @@ margin-bottom: 2px;
 	padding-right: 10px;
 }
 
-.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .connection-tile > .icon.server-page.connected {
-	background: url('connected_active_server.svg') center center no-repeat;
+.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .connection-tile > .icon.server-page {
+	background: url('default_server.svg') center center no-repeat;
 }
 
-.vs-dark .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .connection-tile > .icon.server-page.connected,
-.hc-black .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .connection-tile > .icon.server-page.connected{
-	background: url('connected_active_server_inverse.svg') center center no-repeat;
-}
-
-.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .connection-tile > .icon.server-page.disconnected {
-	background: url('disconnected_server.svg') center center no-repeat;
-}
-
-.vs-dark .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .connection-tile > .icon.server-page.disconnected,
-.hc-black .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .connection-tile > .icon.server-page.disconnected{
-	background: url('disconnected_server_inverse.svg') center center no-repeat;
+.vs-dark .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .connection-tile > .icon.server-page,
+.hc-black .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .connection-tile > .icon.server-page{
+	background: url('default_server_inverse.svg') center center no-repeat;
 }
 
 /* loading for OE node */
