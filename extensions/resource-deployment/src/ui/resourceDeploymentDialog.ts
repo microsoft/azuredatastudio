@@ -13,7 +13,7 @@ export class ResourceDeploymentDialog {
 	private dialogObject: azdata.window.Dialog;
 
 	constructor(private context: ExtensionContext) {
-		this.dialogObject = azdata.window.createModelViewDialog(localize('deploymentDialog.title', 'Create a resource'), 'resourceDeploymentDialog', true);
+		this.dialogObject = azdata.window.createModelViewDialog(localize('deploymentDialog.title', 'Install SQL Server'), 'resourceDeploymentDialog', true);
 	}
 
 	private initializeDialog() {

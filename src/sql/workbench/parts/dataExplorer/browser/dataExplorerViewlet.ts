@@ -101,27 +101,20 @@ export class DataExplorerViewlet extends ViewContainerViewlet {
 	}
 
 	getActions(): IAction[] {
-		return this.getRegisteredActions(true);
-	}
-
-	getSecondaryActions(): IAction[] {
-		return this.getRegisteredActions(false);
-	}
-
-	private getRegisteredActions(isPrimary: boolean) {
-		let actions = [];
-		DataExplorerActionRegistry.getActions().forEach(actionDesc => {
-			if (actionDesc.isPrimary !== isPrimary) {
-				return;
-			}
-			let action = new Action(actionDesc.commandId, actionDesc.label, actionDesc.cssClass, true, () => {
+		return DataExplorerActionRegistry.getActions(true).map(actionDesc => {
+			return new Action(actionDesc.commandId, actionDesc.label, actionDesc.cssClass, true, () => {
 				return this.commandService.executeCommand(actionDesc.commandId);
 
 			});
-
-			actions.push(action);
 		});
-		return actions;
+	}
+
+	getSecondaryActions(): IAction[] {
+		return DataExplorerActionRegistry.getActions(false).map(actionDesc => {
+			return new Action(actionDesc.commandId, actionDesc.label, undefined, true, () => {
+				return this.commandService.executeCommand(actionDesc.commandId);
+			});
+		});
 	}
 
 	protected onDidAddViews(added: IAddedViewDescriptorRef[]): ViewletPanel[] {

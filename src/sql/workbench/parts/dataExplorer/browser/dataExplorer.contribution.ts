@@ -96,9 +96,10 @@ configurationRegistry.registerConfiguration({
 });
 
 export interface IDataExplorerActionContribution {
+	category: string;
 	commandId: string;
 	label: string;
-	icon: {
+	icon?: {
 		light: string;
 		dark: string;
 	};
@@ -108,13 +109,17 @@ export interface IDataExplorerActionContribution {
 const DataExplorerActionSchema: IJSONSchema = {
 	type: 'object',
 	properties: {
+		category: {
+			type: 'string',
+			description: localize('azdata.extension.contributes.dataExplorer.action.category', "Category of the action used for grouping the actions")
+		},
 		commandId: {
 			type: 'string',
-			description: localize('azdata.extension.contributes.dataExplorer.action.commandId', "Id for the command that will be executed")
+			description: localize('azdata.extension.contributes.dataExplorer.action.commandId', "Id of the command that will be executed")
 		},
 		label: {
 			type: 'string',
-			description: localize('azdata.extension.contributes.dataExplorer.action.label', "Display name for the action")
+			description: localize('azdata.extension.contributes.dataExplorer.action.label', "Display name of the action")
 		},
 		icon: {
 			type: 'object',
@@ -122,29 +127,49 @@ const DataExplorerActionSchema: IJSONSchema = {
 		},
 		isPrimary: {
 			type: 'boolean',
-			description: localize('azdata.extension.contributes.dataExplorer.action.title', "Indicates whether the action is a primary action")
+			description: localize('azdata.extension.contributes.dataExplorer.action.isPrimary', "Indicates whether the action is a primary action")
 		}
 	}
 };
 
 ExtensionsRegistry.registerExtensionPoint<IDataExplorerActionContribution | IDataExplorerActionContribution[]>({ extensionPoint: 'dataExplorer.actions', jsonSchema: DataExplorerActionSchema }).setHandler(extensions => {
-	let idx = 0;
+	let primaryActionCount = 0;
 	extensions.forEach(extension => {
 		function handleAction(action: IDataExplorerActionContribution) {
 			try {
-				if (action && action.commandId && action.label && action.icon && action.icon.dark && action.icon.light) {
-					let iconClass = `dataExplorerActionIcon-${idx}`;
+				if (!action) {
+					log.error('an empty data explorer action is detected in extension: ' + extension.description.name);
+					return;
+				}
+				if (!(action.commandId && action.label)) {
+					log.error('a data explorer action without commandId or label is detected in extension:' + extension.description.name);
+					return;
+				}
+				if (action.isPrimary) {
+					if (!(action.icon && action.icon.dark && action.icon.light)) {
+						log.error(`a data explorer primary action without proper icon is detected in extension: ${extension.description.name}, commandId: ${action.commandId}`);
+						return;
+					}
+					let iconClass = `dataExplorerActionIcon-${primaryActionCount}`;
 					const light = path.join(extension.description.extensionLocation.fsPath, action.icon.light);
 					const dark = path.join(extension.description.extensionLocation.fsPath, action.icon.dark);
 					createCSSRule(`.icon.${iconClass}`, `background-image: url("${URI.file(light).toString()}")`);
 					createCSSRule(`.vs-dark .icon.${iconClass}, .hc-black .icon.${iconClass}`, `background-image: url("${URI.file(dark).toString()}")`);
 					DataExplorerActionRegistry.registerAction({
+						category: action.category,
 						commandId: action.commandId,
 						cssClass: iconClass,
 						label: action.label,
-						isPrimary: action.isPrimary
+						isPrimary: true
 					});
-					idx++;
+					primaryActionCount++;
+				} else {
+					DataExplorerActionRegistry.registerAction({
+						category: action.category,
+						commandId: action.commandId,
+						label: action.label,
+						isPrimary: false
+					});
 				}
 			}
 			catch (err) {
@@ -161,4 +186,3 @@ ExtensionsRegistry.registerExtensionPoint<IDataExplorerActionContribution | IDat
 		}
 	});
 });
-

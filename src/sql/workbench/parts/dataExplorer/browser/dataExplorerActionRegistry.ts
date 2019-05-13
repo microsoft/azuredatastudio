@@ -3,13 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
-import { IDataExplorerActionContribution } from 'sql/workbench/parts/dataExplorer/browser/dataExplorer.contribution';
-
 export interface IDataExplorerActionDescription {
+	category: string;
 	commandId: string;
-	cssClass: string;
+	cssClass?: string;
 	label: string;
 	isPrimary: boolean;
 }
@@ -21,7 +18,7 @@ export class DataExplorerActionRegistry {
 		this._actions.push(action);
 	}
 
-	public static getActions(): IDataExplorerActionDescription[] {
-		return this._actions;
+	public static getActions(primary: boolean): IDataExplorerActionDescription[] {
+		return this._actions.filter(action => primary === action.isPrimary);
 	}
 }

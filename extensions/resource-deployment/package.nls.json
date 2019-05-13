@@ -1,4 +1,7 @@
 {
-	"create-resource-command-name": "Create a resource",
-	"create-resource-command-category": "Data"
+	"deploy-sql-image-command-name": "Deploy SQL Server on Docker",
+	"deploy-sql-image-menu-item-text": "Deploy SQL Server on Docker...",
+	"deploy-sql-bdc-command-name": "Deploy SQL Server Big Data Cluster",
+	"deploy-sql-bdc-menu-item-text": "Deploy SQL Server Big Data Cluster...",
+	"deploy-resource-command-category": "Deployment"
 }

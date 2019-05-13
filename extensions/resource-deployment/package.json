@@ -13,7 +13,8 @@
     "azdata": "^1.6.0"
   },
   "activationEvents": [
-    "onCommand:azdata.resource.create"
+    "onCommand:azdata.resource.sql-image.deploy",
+    "onCommand:azdata.resource.sql-bdc.deploy"
   ],
   "main": "./out/main",
   "repository": {
@@ -26,20 +27,28 @@
   "contributes": {
     "commands": [
       {
-        "command": "azdata.resource.create",
-        "title": "%create-resource-command-name%",
-        "category": "%create-resource-command-category%"
+        "command": "azdata.resource.sql-image.deploy",
+        "title": "%deploy-sql-image-command-name%",
+        "category": "%deploy-resource-command-category%"
+      },
+      {
+        "command": "azdata.resource.sql-bdc.deploy",
+        "title": "%deploy-sql-bdc-command-name%",
+        "category": "%deploy-resource-command-category%"
       }
     ],
-    "dataExplorer.actions":[
+    "dataExplorer.actions": [
       {
-        "commandId": "azdata.resource.create",
-        "label": "%create-resource-command-name%",
-        "isPrimary": true,
-        "icon": {
-          "light": "images/new.svg",
-          "dark": "images/new_inverse.svg"
-        }
+        "commandId": "azdata.resource.sql-image.deploy",
+        "label": "%deploy-sql-image-menu-item-text%",
+        "category": "%deploy-resource-command-category%",
+        "isPrimary": false
+      },
+      {
+        "commandId": "azdata.resource.sql-bdc.deploy",
+        "label": "%deploy-sql-bdc-menu-item-text%",
+        "category": "%deploy-resource-command-category%",
+        "isPrimary": false
       }
     ]
   },
