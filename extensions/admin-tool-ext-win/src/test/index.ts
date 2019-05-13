@@ -4,19 +4,23 @@
  *--------------------------------------------------------------------------------------------*/
 
 const path = require('path');
-const testRunner = require('vscode/lib/testrunner');
+import * as testRunner from 'vscodetestcover';
 
 const suite = 'Database Admin Tool Extensions for Windows';
 
-const options: any = {
+const testOptions: any = {
 	ui: 'bdd',
 	useColors: true,
 	timeout: 600000
 };
 
+const coverageConfig: any = {
+	coverConfig: '../../coverageConfig.json'
+};
+
 if (process.env.BUILD_ARTIFACTSTAGINGDIRECTORY) {
-	options.reporter = 'mocha-multi-reporters';
-	options.reporterOptions = {
+	testOptions.reporter = 'mocha-multi-reporters';
+	testOptions.reporterOptions = {
 		reporterEnabled: 'spec, mocha-junit-reporter',
 		mochaJunitReporterReporterOptions: {
 			testsuitesTitle: `${suite} ${process.platform}`,
@@ -25,6 +29,6 @@ if (process.env.BUILD_ARTIFACTSTAGINGDIRECTORY) {
 	};
 }
 
-testRunner.configure(options);
+testRunner.configure(testOptions, coverageConfig);
 
 export = testRunner;
