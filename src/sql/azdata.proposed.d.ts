@@ -26,6 +26,8 @@ declare module 'azdata' {
 
 		export function registerObjectExplorerNodeProvider(provider: ObjectExplorerNodeProvider): vscode.Disposable;
 
+		export function registerIconProvider(provider: IconProvider): vscode.Disposable;
+
 		export function registerTaskServicesProvider(provider: TaskServicesProvider): vscode.Disposable;
 
 		export function registerFileBrowserProvider(provider: FileBrowserProvider): vscode.Disposable;
@@ -1226,6 +1228,10 @@ declare module 'azdata' {
 		handleSessionOpen(session: ObjectExplorerSession): Thenable<boolean>;
 
 		handleSessionClose(closeSessionInfo: ObjectExplorerCloseSessionInfo): void;
+	}
+
+	export interface IconProvider extends DataProvider {
+		getConnectionIconId(connection: IConnectionProfile, serverInfo: ServerInfo): Thenable<string>;
 	}
 
 	// Admin Services interfaces  -----------------------------------------------------------------------
@@ -3963,6 +3969,7 @@ declare module 'azdata' {
 		DacFxServicesProvider = 'DacFxServicesProvider',
 		SchemaCompareServicesProvider = 'SchemaCompareServicesProvider',
 		ObjectExplorerNodeProvider = 'ObjectExplorerNodeProvider',
+		IconProvider = 'IconProvider'
 	}
 
 	export namespace dataprotocol {
