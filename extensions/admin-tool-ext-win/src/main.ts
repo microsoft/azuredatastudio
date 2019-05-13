@@ -7,16 +7,15 @@ import * as nls from 'vscode-nls';
 import * as path from 'path';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { IConfig, ServerProvider } from 'service-downloader';
 import { Telemetry } from './telemetry';
-import { doubleEscapeSingleQuotes, backEscapeDoubleQuotes, getConfiguration } from './utils';
+import { doubleEscapeSingleQuotes, backEscapeDoubleQuotes } from './utils';
 import { ChildProcess, exec } from 'child_process';
 
-const baseConfig = require('./config.json');
 const localize = nls.loadMessageBundle();
-let exePath: string;
-let runningProcesses: Map<number, ChildProcess> = new Map<number, ChildProcess>();
+const ssmsMinVer = JSON.parse(JSON.stringify(require('./config.json'))).version;
 
+let exePath: string;
+const runningProcesses: Map<number, ChildProcess> = new Map<number, ChildProcess>();
 
 interface SmoMapping {
 	action: string;
@@ -69,38 +68,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 	// This is for Windows-specific support so do nothing on other platforms
 	if (process.platform === 'win32') {
 		Telemetry.sendTelemetryEvent('startup/ExtensionActivated');
-
-		let config: IConfig = JSON.parse(JSON.stringify(baseConfig));
-		config.installDirectory = path.join(context.extensionPath, config.installDirectory);
-		config.proxy = getConfiguration('http').get('proxy');
-		config.strictSSL = getConfiguration('http').get('proxyStrictSSL') || true;
-
-		const serverdownloader = new ServerProvider(config);
-		const installationStart = Date.now();
-
-		try {
-			let downloadedExePath = await serverdownloader.getOrDownloadServer();
-			const installationComplete = Date.now();
-
-			// Don't register the command if we couldn't find the EXE since it won't be able to do anything
-			if (downloadedExePath) {
-				exePath = downloadedExePath;
-			} else {
-				throw new Error('Could not find SsmsMin.exe after downloading');
-			}
-
-			// Register the commands now that we have the exePath to run the tool with
-			registerCommands(context);
-
-			Telemetry.sendTelemetryEvent('startup/ExtensionStarted', {
-				installationTime: String(installationComplete - installationStart),
-				beginningTimestamp: String(installationStart)
-			});
-		}
-		catch (err) {
-			Telemetry.sendTelemetryEvent('startup/ExtensionInitializationFailed');
-			console.error(`Error Initializing Admin Tool Extension for Windows - ${err}`);
-		}
+		exePath = path.join(context.extensionPath, 'ssmsmin', 'Windows', ssmsMinVer, 'ssmsmin.exe');
+		registerCommands(context);
 	}
 }
 
@@ -170,11 +139,6 @@ async function handleLaunchSsmsMinGswDialogCommand(connectionContext?: azdata.Ob
  * @param urn The URN to pass to SsmsMin
  */
 async function launchSsmsDialog(action: string, connectionContext: azdata.ObjectExplorerContext): Promise<void> {
-	if (!exePath) {
-		vscode.window.showErrorMessage(localize('adminToolExtWin.noExeError', 'Unable to find SsmsMin.exe.'));
-		return;
-	}
-
 	if (!connectionContext.connectionProfile) {
 		vscode.window.showErrorMessage(localize('adminToolExtWin.noConnectionProfile', 'No connectionProfile provided from connectionContext : {0}', JSON.stringify(connectionContext)));
 		return;
@@ -210,15 +174,15 @@ async function launchSsmsDialog(action: string, connectionContext: azdata.Object
 		return;
 	}
 
-	let urn: string = await buildUrn(connectionContext.connectionProfile.serverName, oeNode);
+	const urn: string = await buildUrn(connectionContext.connectionProfile.serverName, oeNode);
 	let password: string = connectionContext.connectionProfile.password;
 
 	if (!password || password === '') {
-		let creds = await azdata.connection.getCredentials(connectionContext.connectionProfile.id);
+		const creds = await azdata.connection.getCredentials(connectionContext.connectionProfile.id);
 		password = creds[azdata.ConnectionOptionSpecialType.password];
 	}
 
-	let params: LaunchSsmsDialogParams = {
+	const params: LaunchSsmsDialogParams = {
 		action: action,
 		server: connectionContext.connectionProfile.serverName,
 		database: connectionContext.connectionProfile.databaseName,
@@ -227,12 +191,11 @@ async function launchSsmsDialog(action: string, connectionContext: azdata.Object
 		urn: urn
 	};
 
-	let args = buildSsmsMinCommandArgs(params);
+	const args = buildSsmsMinCommandArgs(params);
 
 	Telemetry.sendTelemetryEvent('LaunchSsmsDialog', { 'action': action });
-
 	// This will be an async call since we pass in the callback
-	let proc: ChildProcess = exec(
+	const proc: ChildProcess = exec(
 		/*command*/ `"${exePath}" ${args}`,
 		/*options*/ undefined,
 		(execException, stdout, stderr) => {
@@ -288,7 +251,7 @@ export async function buildUrn(serverName: string, node: azdata.objectexplorer.O
 		}
 		else if (node.metadata && node.nodeType !== 'Folder') {
 			// SFC URN expects Name and Schema to be separate properties
-			let urnSegment = node.metadata.schema && node.metadata.schema !== '' ?
+			const urnSegment = node.metadata.schema && node.metadata.schema !== '' ?
 				`${nodeTypeToUrnNameMapping[node.nodeType].urnName}[@Name='${doubleEscapeSingleQuotes(node.metadata.name)}' and @Schema='${doubleEscapeSingleQuotes(node.metadata.schema)}']` :
 				`${nodeTypeToUrnNameMapping[node.nodeType].urnName}[@Name='${doubleEscapeSingleQuotes(node.metadata.name)}']`;
 			urnNodes = [urnSegment].concat(urnNodes);
