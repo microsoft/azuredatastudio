@@ -1,7 +1,7 @@
 {
   "name": "resource-deployment",
-  "displayName": "Azure Data Resource Deployment",
-  "description": "Azure Data Resource Deployment",
+  "displayName": "%extension-displayName%",
+  "description": "%extension-description%",
   "version": "0.0.1",
   "publisher": "Microsoft",
   "preview": true,
@@ -37,28 +37,20 @@
         "category": "%deploy-resource-command-category%"
       }
     ],
-    "dataExplorer.actions": [
-      {
-        "commandId": "azdata.resource.sql-image.deploy",
-        "label": "%deploy-sql-image-menu-item-text%",
-        "category": "%deploy-resource-command-category%",
-        "isPrimary": false
-      },
-      {
-        "commandId": "azdata.resource.sql-bdc.deploy",
-        "label": "%deploy-sql-bdc-menu-item-text%",
-        "category": "%deploy-resource-command-category%",
-        "isPrimary": false
-      }
-    ]
+    "menus": {
+      "dataExplorer/action": [
+        {
+          "command": "azdata.resource.sql-image.deploy",
+          "group": "secondary"
+        },
+        {
+          "command": "azdata.resource.sql-bdc.deploy",
+          "group": "secondary"
+        }
+      ]
+    }
   },
   "dependencies": {
-    "vscode-nls": "^3.2.1",
-    "download": "^6.2.5",
-    "shelljs": "^0.8.3"
-  },
-  "devDependencies": {
-    "mocha-junit-reporter": "^1.17.0",
-    "mocha-multi-reporters": "^1.1.7"
+    "vscode-nls": "^3.2.1"
   }
 }

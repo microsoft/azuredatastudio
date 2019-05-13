@@ -1,6 +1,6 @@
 # Resource Deployment Extension for Azure Data Studio
 
-Welcome to Resource Deployment Extension for Azure Data Studio!
+Welcome to the Resource Deployment Extension for Azure Data Studio! this extension provides a notebook-based experience to deploy SQL Server and other Azure Data services.
 
 ## Code of Conduct
 

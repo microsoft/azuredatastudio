@@ -9,11 +9,11 @@ import { ResourceDeploymentDialog } from './ui/resourceDeploymentDialog';
 
 export function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand('azdata.resource.sql-image.deploy', () => {
-		let dialog = new ResourceDeploymentDialog(context);
+		let dialog = new ResourceDeploymentDialog();
 		dialog.open();
 	});
 	vscode.commands.registerCommand('azdata.resource.sql-bdc.deploy', () => {
-		let dialog = new ResourceDeploymentDialog(context);
+		let dialog = new ResourceDeploymentDialog();
 		dialog.open();
 	});
 }

@@ -18,12 +18,6 @@ import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
-import { IJSONSchema } from 'vs/base/common/jsonSchema';
-import { ExtensionsRegistry } from 'vs/workbench/services/extensions/common/extensionsRegistry';
-import { DataExplorerActionRegistry } from 'sql/workbench/parts/dataExplorer/browser/dataExplorerActionRegistry';
-import { createCSSRule } from 'vs/base/browser/dom';
-import * as path from 'path';
-import { URI } from 'vs/base/common/uri';
 
 // Viewlet Action
 export class OpenDataExplorerViewletAction extends ShowViewletAction {
@@ -93,96 +87,4 @@ configurationRegistry.registerConfiguration({
 			'default': true
 		}
 	}
-});
-
-export interface IDataExplorerActionContribution {
-	category: string;
-	commandId: string;
-	label: string;
-	icon?: {
-		light: string;
-		dark: string;
-	};
-	isPrimary: boolean;
-}
-
-const DataExplorerActionSchema: IJSONSchema = {
-	type: 'object',
-	properties: {
-		category: {
-			type: 'string',
-			description: localize('azdata.extension.contributes.dataExplorer.action.category', "Category of the action used for grouping the actions")
-		},
-		commandId: {
-			type: 'string',
-			description: localize('azdata.extension.contributes.dataExplorer.action.commandId', "Id of the command that will be executed")
-		},
-		label: {
-			type: 'string',
-			description: localize('azdata.extension.contributes.dataExplorer.action.label', "Display name of the action")
-		},
-		icon: {
-			type: 'object',
-			description: localize('azdata.extension.contributes.dataExplorer.action.icon', "Icon for the action")
-		},
-		isPrimary: {
-			type: 'boolean',
-			description: localize('azdata.extension.contributes.dataExplorer.action.isPrimary', "Indicates whether the action is a primary action")
-		}
-	}
-};
-
-ExtensionsRegistry.registerExtensionPoint<IDataExplorerActionContribution | IDataExplorerActionContribution[]>({ extensionPoint: 'dataExplorer.actions', jsonSchema: DataExplorerActionSchema }).setHandler(extensions => {
-	let primaryActionCount = 0;
-	extensions.forEach(extension => {
-		function handleAction(action: IDataExplorerActionContribution) {
-			try {
-				if (!action) {
-					log.error('an empty data explorer action is detected in extension: ' + extension.description.name);
-					return;
-				}
-				if (!(action.commandId && action.label)) {
-					log.error('a data explorer action without commandId or label is detected in extension:' + extension.description.name);
-					return;
-				}
-				if (action.isPrimary) {
-					if (!(action.icon && action.icon.dark && action.icon.light)) {
-						log.error(`a data explorer primary action without proper icon is detected in extension: ${extension.description.name}, commandId: ${action.commandId}`);
-						return;
-					}
-					let iconClass = `dataExplorerActionIcon-${primaryActionCount}`;
-					const light = path.join(extension.description.extensionLocation.fsPath, action.icon.light);
-					const dark = path.join(extension.description.extensionLocation.fsPath, action.icon.dark);
-					createCSSRule(`.icon.${iconClass}`, `background-image: url("${URI.file(light).toString()}")`);
-					createCSSRule(`.vs-dark .icon.${iconClass}, .hc-black .icon.${iconClass}`, `background-image: url("${URI.file(dark).toString()}")`);
-					DataExplorerActionRegistry.registerAction({
-						category: action.category,
-						commandId: action.commandId,
-						cssClass: iconClass,
-						label: action.label,
-						isPrimary: true
-					});
-					primaryActionCount++;
-				} else {
-					DataExplorerActionRegistry.registerAction({
-						category: action.category,
-						commandId: action.commandId,
-						label: action.label,
-						isPrimary: false
-					});
-				}
-			}
-			catch (err) {
-				console.error(`An error occured while loading an data explorer action in extension ${extension.description.name}: ${err}`);
-			}
-		}
-
-		if (Array.isArray<IDataExplorerActionContribution>(extension.value)) {
-			for (const action of extension.value) {
-				handleAction(action);
-			}
-		} else {
-			handleAction(extension.value);
-		}
-	});
 });

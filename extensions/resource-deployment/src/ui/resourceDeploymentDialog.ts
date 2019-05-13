@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { ExtensionContext } from 'vscode';
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
@@ -12,7 +11,7 @@ const localize = nls.loadMessageBundle();
 export class ResourceDeploymentDialog {
 	private dialogObject: azdata.window.Dialog;
 
-	constructor(private context: ExtensionContext) {
+	constructor() {
 		this.dialogObject = azdata.window.createModelViewDialog(localize('deploymentDialog.title', 'Install SQL Server'), 'resourceDeploymentDialog', true);
 	}
 
