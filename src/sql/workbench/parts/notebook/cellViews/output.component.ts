@@ -45,7 +45,7 @@ export class OutputComponent extends AngularDisposable implements OnInit {
 	ngOnInit() {
 		this.renderOutput();
 		this._initialized = true;
-		this._register(Event.debounce(this.cellModel.notebookModel.layoutChanged, (l, e) => e, 250, /*leading=*/false)
+		this._register(Event.debounce(this.cellModel.notebookModel.layoutChanged, (l, e) => e, 50, /*leading=*/false)
 			(() => this.renderOutput()));
 	}
 
