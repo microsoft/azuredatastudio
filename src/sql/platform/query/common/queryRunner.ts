@@ -197,6 +197,8 @@ export default class QueryRunner extends Disposable {
 			this._isExecuting = true;
 			this._totalElapsedMilliseconds = 0;
 
+			this._onQueryStart.fire();
+
 			return this._queryManagementService.runQueryString(this.uri, input).then(() => this.handleSuccessRunQueryResult(), e => this.handleFailureRunQueryResult(e));
 		} else {
 			return Promise.reject('Unknown input');
