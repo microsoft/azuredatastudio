@@ -5,6 +5,7 @@
 
 import { SelectBox, ISelectBoxStyles, ISelectOptionItem } from 'vs/base/browser/ui/selectBox/selectBox';
 import { Color } from 'vs/base/common/color';
+import { isUndefinedOrNull } from 'vs/base/common/types';
 import { IMessage, MessageType, defaultOpts } from 'vs/base/browser/ui/inputbox/inputBox';
 import * as dom from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
@@ -70,7 +71,7 @@ export class ListBox extends SelectBox {
 		this._register(dom.addDisposableListener(this.selectElement, dom.EventType.CLICK, (e) => {
 			this.contextViewProvider.hideContextView();
 			let index = (<any>e.target).index;
-			if (index !== null && index !== undefined) {
+			if (!isUndefinedOrNull(index)) {
 				this.select(index);
 			}
 			this.selectElement.focus();
