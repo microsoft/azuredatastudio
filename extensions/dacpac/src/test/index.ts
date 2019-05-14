@@ -11,7 +11,7 @@ const suite = 'DacFx Tests';
 const testOptions: any = {
 	ui: 'bdd',
 	useColors: true,
-	timeout: 600000
+	timeout: 60000
 };
 
 const coverageConfig: any = {
