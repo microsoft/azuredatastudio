@@ -741,7 +741,7 @@ declare module 'azdata' {
 	}
 
 	export interface QueryExecutionOptions {
-		[name: string]: any;
+		options: Map<string, any>;
 	}
 
 	export interface QueryProvider extends DataProvider {
@@ -754,7 +754,7 @@ declare module 'azdata' {
 		getQueryRows(rowData: QueryExecuteSubsetParams): Thenable<QueryExecuteSubsetResult>;
 		disposeQuery(ownerUri: string): Thenable<void>;
 		saveResults(requestParams: SaveResultsRequestParams): Thenable<SaveResultRequestResult>;
-		setQueryOptions(ownerUri: string, options: QueryExecutionOptions): Thenable<void>;
+		setQueryExecutionOptions(ownerUri: string, options: QueryExecutionOptions): Thenable<void>;
 
 		// Notifications
 		registerOnQueryComplete(handler: (result: QueryExecuteCompleteNotificationResult) => any): void;
@@ -3889,11 +3889,8 @@ declare module 'azdata' {
 
 			uri: string;
 
-			// get the document's execution options
-			getOptions(): Map<string, string>;
-
 			// set the document's execution options
-			setOptions(options: Map<string, string>): void;
+			setExecutionOptions(options: QueryExecutionOptions): Thenable<void>;
 
 			// tab content is build using the modelview UI builder APIs
 			// probably should rename DialogTab class since it is useful outside dialogs
@@ -3918,7 +3915,10 @@ declare module 'azdata' {
 		 */
 		export function registerQueryEventListener(listener: queryeditor.QueryEventListener): void;
 
-		export function getQueryDocument(fileUri: string): queryeditor.QueryDocument;
+		/**
+		 * Get a QueryDocument object for a file URI
+		 */
+		export function getQueryDocument(fileUri: string): Thenable<queryeditor.QueryDocument>;
 	}
 
 	/**

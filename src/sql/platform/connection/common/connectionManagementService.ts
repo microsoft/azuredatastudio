@@ -760,6 +760,11 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		}
 	}
 
+	public getDefaultProviderId(): string {
+		let defaultProvider = WorkbenchUtils.getSqlConfigValue<string>(this._configurationService, Constants.defaultEngine);
+		return defaultProvider && this._providers.has(defaultProvider) ? defaultProvider : undefined;
+	}
+
 	private async fillInAzureTokenIfNeeded(connection: IConnectionProfile): Promise<boolean> {
 		if (connection.authenticationType !== Constants.azureMFA || connection.options['azureAccountToken']) {
 			return true;

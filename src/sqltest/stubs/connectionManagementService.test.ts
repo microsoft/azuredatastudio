@@ -287,4 +287,8 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 	getConnectionIconId(connectionId: string): string {
 		return undefined;
 	}
+
+	getDefaultProviderId(): string {
+		return undefined;
+	}
 }

@@ -260,6 +260,11 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return this._resolveProvider<azdata.QueryProvider>(handle).runQueryAndReturn(ownerUri, queryString);
 	}
 
+
+	$setQueryExecutionOptions(handle: number, ownerUri: string, options: azdata.QueryExecutionOptions): Thenable<void> {
+		return this._resolveProvider<azdata.QueryProvider>(handle).setQueryExecutionOptions(ownerUri, options);
+	}
+
 	$parseSyntax(handle: number, ownerUri: string, query: string): Thenable<azdata.SyntaxParseResult> {
 		return this._resolveProvider<azdata.QueryProvider>(handle).parseSyntax(ownerUri, query);
 	}

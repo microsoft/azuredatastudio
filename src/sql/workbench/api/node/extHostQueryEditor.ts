@@ -15,17 +15,11 @@ class ExtHostQueryDocument implements azdata.queryeditor.QueryDocument {
 		private _proxy: MainThreadQueryEditorShape) {
 	}
 
-	// get the document's execution options
-	getOptions(): Map<string, string> {
-		return undefined;
+	public setExecutionOptions(options: azdata.QueryExecutionOptions): Thenable<void> {
+		return this._proxy.$setQueryExecutionOptions(this.uri, options);
 	}
 
-	// set the document's execution optionsß
-	setOptions(options: Map<string, string>): void {
-
-	}
-
-	createQueryTab(tab: azdata.window.DialogTab): void {
+	public createQueryTab(tab: azdata.window.DialogTab): void {
 		this._proxy.$createQueryTab(this.uri, tab.title, tab.content);
 	}
 }
@@ -63,4 +57,11 @@ export class ExtHostQueryEditor implements ExtHostQueryEditorShape {
 			listener.onQueryEvent(event.type, new ExtHostQueryDocument('MSSQL', fileUri, this._proxy), planXml);
 		}
 	}
+
+	public $getQueryDocument(fileUri: string): Thenable<azdata.queryeditor.QueryDocument> {
+		return new Promise((resolve) => {
+			resolve(new ExtHostQueryDocument('MSSQL', fileUri, this._proxy));
+		});
+	}
+
 }

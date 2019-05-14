@@ -463,8 +463,8 @@ export function createApiFactory(
 					extHostQueryEditor.$registerQueryInfoListener('MSSQL', listener);
 				},
 
-				getQueryDocument(fileUri: string): azdata.queryeditor.QueryDocument {
-					return undefined;
+				getQueryDocument(fileUri: string): Thenable<azdata.queryeditor.QueryDocument> {
+					return extHostQueryEditor.$getQueryDocument(fileUri);
 				}
 			};
 
