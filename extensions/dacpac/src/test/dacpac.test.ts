@@ -34,6 +34,7 @@ describe('Sanitize database name for filename tests', function (): void {
 		should(isValidFilenameCharacter('<')).equal(isWindows ? false : true);
 		should(isValidFilenameCharacter('>')).equal(isWindows ? false : true);
 		should(isValidFilenameCharacter('|')).equal(isWindows ? false : true);
+		should(isValidFilenameCharacter('"')).equal(isWindows ? false : true);
 	});
 
 	it('Should sanitize database name for filename', async () => {
