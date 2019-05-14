@@ -50,6 +50,83 @@
       ]
     }
   },
+  "resourceTypes": [
+    {
+      "name": "sql-image",
+      "displayName": "SQL Server container image with Docker",
+      "options": [
+        {
+          "name": "version",
+          "displayName": "Version",
+          "values": [
+            {
+              "name": "sql2017",
+              "displayName": "SQL Server 2017"
+            },
+            {
+              "name": "sql2019",
+              "displayName": "SQL Server 2019"
+            }
+          ]
+        }
+      ],
+      "providers": [
+        {
+          "notebook": "./notebooks/sql2017-image-docker.ipynb",
+          "requiredTools": [
+            "docker"
+          ],
+          "when": "version=sql2017"
+        },
+        {
+          "notebook": "./notebooks/sql2019-image-docker.ipynb",
+          "requiredTools": [
+            "docker"
+          ],
+          "when": "version=sql2019"
+        }
+      ]
+    },
+    {
+      "name": "sql-bdc",
+      "displayName": "SQL Server Big Data Cluster",
+      "options": [
+        {
+          "name": "target",
+          "displayName": "Deployment target",
+          "values": [
+            {
+              "name": "aks",
+              "displayName": "New Azure Kubernetes Service Cluster"
+            },
+            {
+              "name": "existingCluster",
+              "displayName": "Existing Kubernetes Cluster"
+            }
+          ]
+        }
+      ],
+      "providers": [
+        {
+          "notebook": "./notebooks/sql2019-bdc-aks.ipynb",
+          "requiredTools": [
+            "kubectl",
+            "az-cli",
+            "mssqlctl"
+          ],
+          "when": "target=aks"
+        },
+        {
+          "notebook": "./notebooks/sql2019-bdc-existing-cluster.ipynb",
+          "requiredTools": [
+            "kubectl",
+            "mssqlctl"
+          ],
+          "when": "target=existingCluster"
+        }
+      ]
+    }
+  ],
   "dependencies": {
     "vscode-nls": "^3.2.1"
   }
