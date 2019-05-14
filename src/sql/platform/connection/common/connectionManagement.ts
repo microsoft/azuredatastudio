@@ -310,7 +310,8 @@ export interface IConnectableInput {
 
 export enum ConnectionType {
 	default = 0,
-	editor = 1
+	editor = 1,
+	extension
 }
 
 export enum MetadataType {

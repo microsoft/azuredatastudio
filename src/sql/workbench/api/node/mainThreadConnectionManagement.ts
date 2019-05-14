@@ -60,8 +60,12 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 	}
 
 	public async $openConnectionDialog(providers: string[], initialConnectionProfile?: IConnectionProfile, connectionCompletionOptions?: azdata.IConnectionCompletionOptions): Promise<azdata.connection.Connection> {
+		let connectionType: number = 1;
+		if (connectionCompletionOptions && connectionCompletionOptions.saveConnection !== undefined) {
+			connectionType = connectionCompletionOptions.saveConnection ? 1 : 2;
+		}
 		let connectionProfile = await this._connectionDialogService.openDialogAndWait(this._connectionManagementService,
-			{ connectionType: 1, providers: providers }, initialConnectionProfile, undefined);
+			{ connectionType: connectionType, providers: providers }, initialConnectionProfile, undefined);
 		const connection = connectionProfile ? {
 			connectionId: connectionProfile.id,
 			options: connectionProfile.options,
@@ -70,16 +74,16 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 
 		if (connectionCompletionOptions) {
 			// Somehow, connectionProfile.saveProfile is false even if initialConnectionProfile.saveProfile is true, reset the flag here.
-			connectionProfile.saveProfile = initialConnectionProfile.saveProfile;
-			await this._connectionManagementService.connectAndSaveProfile(connectionProfile, undefined, {
-				saveTheConnection: isUndefinedOrNull(connectionCompletionOptions.saveConnection) ? true : connectionCompletionOptions.saveConnection,
-				showDashboard: isUndefinedOrNull(connectionCompletionOptions.showDashboard) ? false : connectionCompletionOptions.showDashboard,
-				params: undefined,
-				showConnectionDialogOnError: isUndefinedOrNull(connectionCompletionOptions.showConnectionDialogOnError) ? true : connectionCompletionOptions.showConnectionDialogOnError,
-				showFirewallRuleOnError: isUndefinedOrNull(connectionCompletionOptions.showFirewallRuleOnError) ? true : connectionCompletionOptions.showFirewallRuleOnError
-			});
+			if (connectionCompletionOptions.saveConnection) {
+				await this._connectionManagementService.connectAndSaveProfile(connectionProfile, undefined, {
+					saveTheConnection: isUndefinedOrNull(connectionCompletionOptions.saveConnection) ? true : connectionCompletionOptions.saveConnection,
+					showDashboard: isUndefinedOrNull(connectionCompletionOptions.showDashboard) ? false : connectionCompletionOptions.showDashboard,
+					params: undefined,
+					showConnectionDialogOnError: isUndefinedOrNull(connectionCompletionOptions.showConnectionDialogOnError) ? true : connectionCompletionOptions.showConnectionDialogOnError,
+					showFirewallRuleOnError: isUndefinedOrNull(connectionCompletionOptions.showFirewallRuleOnError) ? true : connectionCompletionOptions.showFirewallRuleOnError
+				});
+			}
 		}
-
 		return connection;
 	}
 

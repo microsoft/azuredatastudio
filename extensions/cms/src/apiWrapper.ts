@@ -317,7 +317,7 @@ export class ApiWrapper {
 	}
 
 	public get connection(): Thenable<azdata.connection.Connection> {
-		return this.openConnectionDialog(['MSSQL-CMS'], undefined, undefined).then((connection) => {
+		return this.openConnectionDialog(['MSSQL-CMS'], undefined, { saveConnection: false }).then((connection) => {
 			if (connection) {
 				// remove group ID from connection if a user chose connection
 				// from the recent connections list

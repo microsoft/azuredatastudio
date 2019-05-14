@@ -235,14 +235,15 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			return Promise.resolve();
 		}
 		let fromEditor = params && params.connectionType === ConnectionType.editor;
+		let fromExtension = params && params.connectionType === ConnectionType.extension;
 		let uri: string = undefined;
 		if (fromEditor && params && params.input) {
 			uri = params.input.uri;
 		}
 		let options: IConnectionCompletionOptions = {
 			params: params,
-			saveTheConnection: true,
-			showDashboard: params && params.showDashboard !== undefined ? params.showDashboard : !fromEditor,
+			saveTheConnection: !fromExtension,
+			showDashboard: params && params.showDashboard !== undefined ? params.showDashboard : !fromEditor && !fromExtension,
 			showConnectionDialogOnError: false,
 			showFirewallRuleOnError: true
 		};
@@ -402,7 +403,8 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		return new Promise<void>((resolve, reject) => {
 			this.updateModelServerCapabilities(model);
 			// If connecting from a query editor set "save connection" to false
-			if (params && params.input && params.connectionType === ConnectionType.editor) {
+			if (params && params.input && params.connectionType === ConnectionType.editor ||
+				params.connectionType === ConnectionType.extension) {
 				this._model.saveProfile = false;
 			}
 
