@@ -6,8 +6,8 @@
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import { IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
-import { QueryEditorContextKeys } from 'sql/parts/query/editor/queryEditorContextKeys';
-import { QueryEditorState } from 'sql/parts/query/common/queryInput';
+import { QueryEditorContextKeys } from 'sql/workbench/parts/query/common/queryEditorContextKeys';
+import { QueryEditorState } from 'sql/workbench/parts/query/common/queryInput';
 
 export class QueryEditorContext extends Disposable {
 	private _isConnected: IContextKey<boolean>;

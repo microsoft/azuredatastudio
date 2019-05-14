@@ -44,8 +44,8 @@ export abstract class QueryTaskbarAction extends Action {
 	private _classes: string[];
 
 	constructor(
-		protected _connectionManagementService: IConnectionManagementService,
-		protected editor: QueryEditor,
+		protected readonly connectionManagementService: IConnectionManagementService,
+		protected readonly editor: QueryEditor,
 		id: string,
 		enabledClass: string
 	) {
@@ -85,7 +85,7 @@ export abstract class QueryTaskbarAction extends Action {
 		if (!editor || !editor.input) {
 			return false;
 		}
-		return this._connectionManagementService.isConnected(editor.input.uri);
+		return this.connectionManagementService.isConnected(editor.input.uri);
 	}
 
 	/**
@@ -99,7 +99,7 @@ export abstract class QueryTaskbarAction extends Action {
 			runQueryOnCompletion: runQueryOnCompletion ? runQueryOnCompletion : RunQueryOnConnectionMode.none,
 			querySelection: selection
 		};
-		this._connectionManagementService.showConnectionDialog(params);
+		this.connectionManagementService.showConnectionDialog(params);
 	}
 }
 
@@ -113,7 +113,7 @@ export class RunQueryAction extends QueryTaskbarAction {
 
 	constructor(
 		editor: QueryEditor,
-		@IQueryModelService protected _queryModelService: IQueryModelService,
+		@IQueryModelService protected readonly queryModelService: IQueryModelService,
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService
 	) {
 		super(connectionManagementService, editor, RunQueryAction.ID, RunQueryAction.EnabledClass);
@@ -183,7 +183,7 @@ export class CancelQueryAction extends QueryTaskbarAction {
 
 	constructor(
 		editor: QueryEditor,
-		@IQueryModelService private _queryModelService: IQueryModelService,
+		@IQueryModelService private readonly queryModelService: IQueryModelService,
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService
 	) {
 		super(connectionManagementService, editor, CancelQueryAction.ID, CancelQueryAction.EnabledClass);
@@ -193,7 +193,7 @@ export class CancelQueryAction extends QueryTaskbarAction {
 
 	public run(): Promise<void> {
 		if (this.isConnected(this.editor)) {
-			this._queryModelService.cancelQuery(this.editor.input.uri);
+			this.queryModelService.cancelQuery(this.editor.input.uri);
 		}
 		return Promise.resolve(null);
 	}
@@ -209,7 +209,6 @@ export class EstimatedQueryPlanAction extends QueryTaskbarAction {
 
 	constructor(
 		editor: QueryEditor,
-		@IQueryModelService private _queryModelService: IQueryModelService,
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService
 	) {
 		super(connectionManagementService, editor, EstimatedQueryPlanAction.ID, EstimatedQueryPlanAction.EnabledClass);
@@ -249,7 +248,6 @@ export class ActualQueryPlanAction extends QueryTaskbarAction {
 
 	constructor(
 		editor: QueryEditor,
-		@IQueryModelService private _queryModelService: IQueryModelService,
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService
 	) {
 		super(connectionManagementService, editor, ActualQueryPlanAction.ID, ActualQueryPlanAction.EnabledClass);
@@ -280,7 +278,7 @@ export class ActualQueryPlanAction extends QueryTaskbarAction {
 			if (!selection) {
 				selection = editor.getAllSelection();
 			}
-			editor.currentQueryInput.runQuery(selection, {
+			editor.input.runQuery(selection, {
 				displayActualQueryPlan: true
 			});
 		}
@@ -306,7 +304,7 @@ export class DisconnectDatabaseAction extends QueryTaskbarAction {
 	public run(): Promise<void> {
 		// Call disconnectEditor regardless of the connection state and let the ConnectionManagementService
 		// determine if we need to disconnect, cancel an in-progress conneciton, or do nothing
-		this._connectionManagementService.disconnectEditor(this.editor.currentQueryInput);
+		this.connectionManagementService.disconnectEditor(this.editor.input);
 		return Promise.resolve(null);
 	}
 }
@@ -400,7 +398,7 @@ export class ToggleConnectDatabaseAction extends QueryTaskbarAction {
 		if (this.connected) {
 			// Call disconnectEditor regardless of the connection state and let the ConnectionManagementService
 			// determine if we need to disconnect, cancel an in-progress connection, or do nothing
-			this._connectionManagementService.disconnectEditor(this.editor.currentQueryInput);
+			this.connectionManagementService.disconnectEditor(this.editor.input);
 		} else {
 			this.connectEditor(this.editor);
 		}
@@ -451,14 +449,14 @@ export class ListDatabasesActionItem implements IActionItem {
 	// CONSTRUCTOR /////////////////////////////////////////////////////////
 	constructor(
 		private _editor: QueryEditor,
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@INotificationService private _notificationService: INotificationService,
 		@IContextViewService contextViewProvider: IContextViewService,
-		@IConfigurationService private readonly _configurationService: IConfigurationService
+		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
+		@INotificationService private readonly notificationService: INotificationService,
+		@IConfigurationService private readonly configurationService: IConfigurationService
 	) {
 		this._toDispose = [];
 		this._databaseListDropdown = $('.databaseListDropdown');
-		this._isInAccessibilityMode = this._configurationService.getValue('editor.accessibilitySupport') === 'on';
+		this._isInAccessibilityMode = this.configurationService.getValue('editor.accessibilitySupport') === 'on';
 
 		if (this._isInAccessibilityMode) {
 			this._databaseSelectBox = new SelectBox([this._selectDatabaseString], this._selectDatabaseString, contextViewProvider, undefined, { ariaLabel: this._selectDatabaseString });
@@ -474,12 +472,11 @@ export class ListDatabasesActionItem implements IActionItem {
 				actionLabel: nls.localize('listDatabases.toggleDatabaseNameDropdown', 'Select Database Toggle Dropdown')
 			});
 			this._dropdown.onValueChange(s => this.databaseSelected(s));
-			this._toDispose.push(this._dropdown.onFocus(() => { self.onDropdownFocus(); }));
+			this._toDispose.push(this._dropdown.onFocus(() => this.onDropdownFocus()));
 		}
 
 		// Register event handlers
-		let self = this;
-		this._toDispose.push(this._connectionManagementService.onConnectionChanged(params => { self.onConnectionChanged(params); }));
+		this._toDispose.push(this.connectionManagementService.onConnectionChanged(params => this.onConnectionChanged(params)));
 	}
 
 	// PUBLIC METHODS //////////////////////////////////////////////////////
@@ -553,22 +550,22 @@ export class ListDatabasesActionItem implements IActionItem {
 
 	// PRIVATE HELPERS /////////////////////////////////////////////////////
 	private databaseSelected(dbName: string): void {
-		let uri = this._editor.connectedUri;
+		let uri = this._editor.input.uri;
 		if (!uri) {
 			return;
 		}
 
-		let profile = this._connectionManagementService.getConnectionProfile(uri);
+		let profile = this.connectionManagementService.getConnectionProfile(uri);
 		if (!profile) {
 			return;
 		}
 
-		this._connectionManagementService.changeDatabase(this._editor.uri, dbName)
+		this.connectionManagementService.changeDatabase(this._editor.input.uri, dbName)
 			.then(
 				result => {
 					if (!result) {
 						this.resetDatabaseName();
-						this._notificationService.notify({
+						this.notificationService.notify({
 							severity: Severity.Error,
 							message: nls.localize('changeDatabase.failed', "Failed to change database")
 						});
@@ -576,7 +573,7 @@ export class ListDatabasesActionItem implements IActionItem {
 				},
 				error => {
 					this.resetDatabaseName();
-					this._notificationService.notify({
+					this.notificationService.notify({
 						severity: Severity.Error,
 						message: nls.localize('changeDatabase.failedWithError', "Failed to change database {0}", error)
 					});
@@ -584,9 +581,9 @@ export class ListDatabasesActionItem implements IActionItem {
 	}
 
 	private getCurrentDatabaseName() {
-		let uri = this._editor.connectedUri;
+		let uri = this._editor.input.uri;
 		if (uri) {
-			let profile = this._connectionManagementService.getConnectionProfile(uri);
+			let profile = this.connectionManagementService.getConnectionProfile(uri);
 			if (profile) {
 				return profile.databaseName;
 			}
@@ -607,7 +604,7 @@ export class ListDatabasesActionItem implements IActionItem {
 			return;
 		}
 
-		let uri = this._editor.connectedUri;
+		let uri = this._editor.input.uri;
 		if (uri !== connParams.connectionUri) {
 			return;
 		}
@@ -616,14 +613,12 @@ export class ListDatabasesActionItem implements IActionItem {
 	}
 
 	private onDropdownFocus(): void {
-		let self = this;
-
-		let uri = self._editor.connectedUri;
+		let uri = this._editor.input.uri;
 		if (!uri) {
 			return;
 		}
 
-		self._connectionManagementService.listDatabases(uri)
+		this.connectionManagementService.listDatabases(uri)
 			.then(result => {
 				if (result && result.databaseNames) {
 					this._dropdown.values = result.databaseNames;
@@ -637,12 +632,11 @@ export class ListDatabasesActionItem implements IActionItem {
 
 		if (this._isInAccessibilityMode) {
 			this._databaseSelectBox.enable();
-			let self = this;
-			let uri = self._editor.connectedUri;
+			let uri = this._editor.input.uri;
 			if (!uri) {
 				return;
 			}
-			self._connectionManagementService.listDatabases(uri)
+			this.connectionManagementService.listDatabases(uri)
 				.then(result => {
 					if (result && result.databaseNames) {
 						this._databaseSelectBox.setOptions(result.databaseNames);
