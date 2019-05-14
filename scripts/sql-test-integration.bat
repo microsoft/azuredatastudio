@@ -4,8 +4,8 @@ pushd %~dp0\..
 
 set VSCODEUSERDATADIR=%TMP%\adsuser-%RANDOM%-%TIME:~6,5%
 set VSCODEEXTENSIONSDIR=%TMP%\adsext-%RANDOM%-%TIME:~6,5%
-echo %VSCODEUSERDATADIR%
-echo %VSCODEEXTENSIONSDIR%
+echo VSCODEUSERDATADIR=%VSCODEUSERDATADIR%
+echo VSCODEEXTENSIONSDIR=%VSCODEEXTENSIONSDIR%
 @echo OFF
 
 if "%SKIP_PYTHON_INSTALL_TEST%" == "1" (
@@ -16,7 +16,7 @@ if "%SKIP_PYTHON_INSTALL_TEST%" == "1" (
 	call .\scripts\code.bat --extensionDevelopmentPath=%~dp0\..\extensions\notebook --extensionTestsPath=%~dp0\..\extensions\notebook\out\integrationTest --user-data-dir=%VSCODEUSERDATADIR% --extensions-dir=%VSCODEEXTENSIONSDIR% --remote-debugging-port=9222
 )
 
-call .\scripts\code.bat --extensionDevelopmentPath=%~dp0\..\extensions\integration-tests --extensionTestsPath=%~dp0\..\extensions\integration-tests\out --user-data-dir=%VSCODEUSERDATADIR% --extensions-dir=%VSCODEEXTENSIONSDIR% --remote-debugging-port=9222
+call .\scripts\code.bat --extensionDevelopmentPath=%~dp0\..\extensions\integration-tests --extensionTestsPath=%~dp0\..\extensions\integration-tests\out\src --user-data-dir=%VSCODEUSERDATADIR% --extensions-dir=%VSCODEEXTENSIONSDIR% --remote-debugging-port=9222
 
 if %errorlevel% neq 0 exit /b %errorlevel%
 

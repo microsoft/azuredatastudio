@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import * as vscode from 'vscode';
 import { context } from './testContext';
-import { getSuiteType, SuiteType } from './fmkUtils';
+import { getSuiteType, SuiteType } from '../testfmks/src/utils';
 
 const path = require('path');
 const testRunner = require('vscode/lib/testrunner');

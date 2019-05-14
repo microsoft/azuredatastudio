@@ -13,8 +13,8 @@ else
 fi
 
 cd $ROOT
-echo $VSCODEUSERDATADIR
-echo $VSCODEEXTDIR
+echo VSCODEUSERDATADIR=$VSCODEUSERDATADIR
+echo VSCODEEXTDIR=$VSCODEEXTDIR
 
 if [[ "$SKIP_PYTHON_INSTALL_TEST" == "1" ]]; then
 	echo Skipping Python installation tests.
@@ -24,7 +24,7 @@ else
 	./scripts/code.sh --extensionDevelopmentPath=$ROOT/extensions/notebook --extensionTestsPath=$ROOT/extensions/notebook/out/integrationTest --user-data-dir=$VSCODEUSERDATADIR --extensions-dir=$VSCODEEXTDIR --remote-debugging-port=9222
 fi
 
-./scripts/code.sh --extensionDevelopmentPath=$ROOT/extensions/integration-tests --extensionTestsPath=$ROOT/extensions/integration-tests/out --user-data-dir=$VSCODEUSERDATADIR --extensions-dir=$VSCODEEXTDIR --remote-debugging-port=9222
+./scripts/code.sh --extensionDevelopmentPath=$ROOT/extensions/integration-tests --extensionTestsPath=$ROOT/extensions/integration-tests/out/src --user-data-dir=$VSCODEUSERDATADIR --extensions-dir=$VSCODEEXTDIR --remote-debugging-port=9222
 
 rm -r -f $VSCODEUSERDATADIR
 rm -r $VSCODEEXTDIR

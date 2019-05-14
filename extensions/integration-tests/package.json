@@ -11,7 +11,7 @@
   "activationEvents": [
     "*"
   ],
-  "main": "./out/main",
+  "main": "./out/src/main",
   "extensionDependencies": [
     "Microsoft.agent",
     "Microsoft.import",
@@ -45,22 +45,24 @@
     ]
   },
   "scripts": {
-    "fmktest": "mocha -r ts-node/register --color --watch-extensions tsx,ts -u tdd test/**/*.test.ts",
+    "fmkstest": "mocha -r ts-node/register --color --watch-extensions tsx,ts -u tdd testfmks/**/*.test.ts",
     "vscode:prepublish": "node ../../node_modules/gulp/bin/gulp.js --gulpfile ../../build/gulpfile.extensions.js compile-extension:vscode-colorize-tests ./tsconfig.json",
     "postinstall": "node ./node_modules/vscode/bin/install"
   },
   "devDependencies": {
-    "@types/node": "7.0.43",
     "@types/chai": "3.4.34",
+    "@types/node": "7.0.43",
+    "chai": "3.5.0",
+    "class-validator": "^0.9.1",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",
-    "vscode": "^1.1.5",
-    "chai": "^4.2.0",
     "ts-node": "^8.1.0",
-    "class-validator": "^0.9.1"    
+    "vscode": "1.1.5"
   },
   "dependencies": {
     "azure-keyvault": "^3.0.4",
-    "ms-rest-azure": "^2.6.0"
+    "debug": "^4.1.1",
+    "ms-rest-azure": "^2.6.0",
+    "supports-color": "^6.1.0"
   }
 }

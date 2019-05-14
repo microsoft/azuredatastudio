@@ -3,7 +3,7 @@ npm-debug.log
 Thumbs.db
 node_modules/
 .build/
-.vscode/cscope_conf.json
+**/cscope_conf.json
 extensions/**/dist/
 out/
 out-build/
@@ -22,4 +22,4 @@ test-results/
 yarn-error.log
 **/*.json.bak
 **/*.ts.bak
-
+.vscode/mocha.tree.json

@@ -2,7 +2,8 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
+const debug = require('debug')('testfmks:utils');
+const trace = require('debug')('testfmks:utils:trace');
 /**
  * Enumeration for various kinds of test suites that we support in our test system.
  */
@@ -12,7 +13,6 @@ export enum SuiteType {
 	Integration = 'Integration',
 	Perf = 'Perf',
 	Stress = 'Stress',
-	Unknown = ''
 }
 
 /**
@@ -20,27 +20,31 @@ export enum SuiteType {
  * @param inputString - the string to be converted to capitalized case
  */
 function toCapitalizedCase(inputString: string): string {
-	if ((null === inputString) && !(undefined === inputString)) {
+	if (null !== inputString && undefined !== inputString) {
 		return inputString.toLowerCase().replace(/^.|\s\S/g, (a: string) => a.toUpperCase());
 	}
 	return inputString;
 }
-
-let suite: SuiteType = SuiteType.Unknown;
 
 /**
  * gets the suiteType as defined by the environment variable {@link SuiteType}
  * @returns - returns a value of type {@link SuiteType}
  */
 export function getSuiteType(): SuiteType {
-	if (suite === SuiteType.Unknown) {
-		let suiteType: string = toCapitalizedCase(process.env.SuiteType);
-		if (suiteType in SuiteType) {
-			suite = SuiteType[suiteType];
-		} else {
-			suite = SuiteType.Integration;
-		}
+	let suite: SuiteType = null;
+	debug(`process.env.SuiteType at when getSuiteType was called is: ${process.env.SuiteType}`);
+	let suiteType: string = toCapitalizedCase(process.env.SuiteType);
+	trace(`Capitalized suiteType is ${process.env.SuiteType}`);
+	if (suiteType in SuiteType) {
+		trace(`${process.env.SuiteType} is in SuiteType enumeration: ${JSON.stringify(SuiteType)}`);
+		suite = SuiteType[suiteType];
+		trace(`so return value of suiteType was set to ${JSON.stringify(suite)}`);
+	} else {
+		trace(`${process.env.SuiteType} is not in SuiteType enumeration: ${JSON.stringify(SuiteType)}`);
+		suite = SuiteType.Integration;
+		trace(`so return value of suiteType was set to ${JSON.stringify(suite)}`);
 	}
+	debug(`return suiteType is:${JSON.stringify(suite)}`);
 	return suite;
 }
 
@@ -50,10 +54,9 @@ export function getSuiteType(): SuiteType {
  * @param args - the argument array to be passed as parameters to the {@link func}.
  */
 export function runOnCodeLoad(func: Function, ...args) {
-	console.log(`Decorator runOnCodeLoad called for function: ${JSON.stringify(func)} with args: (${args.join(',')})`);
-	//
 	func.apply(this, args);
 	return function (memberClass: any, memberName: string, memberDescriptor: PropertyDescriptor) {
+		trace(`Decorator runOnCodeLoad called for function: ${memberName}, on object: ${JSON.stringify(this)} with args: (${args.join(',')})`);
 		return memberDescriptor;
 	};
 }

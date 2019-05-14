@@ -12,7 +12,6 @@
 		"sourceMap": true
 	},
 	"include": [
-		"src/**/*",
-		"test/**/*"
+		"src/**/*"
 	]
 }
