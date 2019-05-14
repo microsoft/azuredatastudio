@@ -418,6 +418,22 @@
     "connectionProvider": {
       "providerId": "MSSQL",
       "displayName": "%mssql.provider.displayName%",
+      "iconPath": [
+        {
+          "id": "mssql:cloud",
+          "path": {
+            "light": "resources/light/azureDB.svg",
+            "dark": "resources/dark/azureDB_inverse.svg"
+          }
+        },
+        {
+          "id": "mssql:cluster",
+          "path": {
+            "light": "resources/light/sql_bigdata_cluster.svg",
+            "dark": "resources/dark/sql_bigdata_cluster_inverse.svg"
+          }
+        }
+      ],
       "connectionOptions": [
         {
           "specialValueType": "connectionName",

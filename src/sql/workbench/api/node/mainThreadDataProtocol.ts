@@ -278,6 +278,16 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 		return undefined;
 	}
 
+	public $registerIconProvider(providerId: string, handle: number): Promise<any> {
+		const self = this;
+		this._connectionManagementService.registerIconProvider(providerId, <azdata.IconProvider>{
+			getConnectionIconId(connection: azdata.IConnectionProfile, serverInfo: azdata.ServerInfo): Thenable<string> {
+				return self._proxy.$getConnectionIconId(handle, connection, serverInfo);
+			}
+		});
+		return undefined;
+	}
+
 	public $registerTaskServicesProvider(providerId: string, handle: number): Promise<any> {
 		const self = this;
 		this._taskService.registerProvider(providerId, <azdata.TaskServicesProvider>{

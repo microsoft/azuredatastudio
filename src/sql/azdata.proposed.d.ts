@@ -26,6 +26,8 @@ declare module 'azdata' {
 
 		export function registerObjectExplorerNodeProvider(provider: ObjectExplorerNodeProvider): vscode.Disposable;
 
+		export function registerIconProvider(provider: IconProvider): vscode.Disposable;
+
 		export function registerTaskServicesProvider(provider: TaskServicesProvider): vscode.Disposable;
 
 		export function registerFileBrowserProvider(provider: FileBrowserProvider): vscode.Disposable;
@@ -1231,6 +1233,10 @@ declare module 'azdata' {
 		handleSessionOpen(session: ObjectExplorerSession): Thenable<boolean>;
 
 		handleSessionClose(closeSessionInfo: ObjectExplorerCloseSessionInfo): void;
+	}
+
+	export interface IconProvider extends DataProvider {
+		getConnectionIconId(connection: IConnectionProfile, serverInfo: ServerInfo): Thenable<string>;
 	}
 
 	// Admin Services interfaces  -----------------------------------------------------------------------
@@ -3533,8 +3539,9 @@ declare module 'azdata' {
 		/**
 		 * Create a dialog with the given title
 		 * @param title The title of the dialog, displayed at the top
+		 * @param isWide Indicates whether the dialog is wide or normal
 		 */
-		export function createModelViewDialog(title: string, dialogName?: string): Dialog;
+		export function createModelViewDialog(title: string, dialogName?: string, isWide?: boolean): Dialog;
 
 		/**
 		 * Create a dialog tab which can be included as part of the content of a dialog
@@ -3618,6 +3625,11 @@ declare module 'azdata' {
 			 * The title of the dialog
 			 */
 			title: string;
+
+			/**
+			 * Indicates the width of the dialog
+			 */
+			isWide: boolean;
 
 			/**
 			 * The content of the dialog. If multiple tabs are given they will be displayed with tabs
@@ -3968,6 +3980,7 @@ declare module 'azdata' {
 		DacFxServicesProvider = 'DacFxServicesProvider',
 		SchemaCompareServicesProvider = 'SchemaCompareServicesProvider',
 		ObjectExplorerNodeProvider = 'ObjectExplorerNodeProvider',
+		IconProvider = 'IconProvider'
 	}
 
 	export namespace dataprotocol {
