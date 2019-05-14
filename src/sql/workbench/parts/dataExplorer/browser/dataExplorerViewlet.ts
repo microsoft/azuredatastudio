@@ -25,6 +25,8 @@ import { Extensions as ViewContainerExtensions, IViewDescriptor, IViewsRegistry 
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { Registry } from 'vs/platform/registry/common/platform';
+import { IMenuService, MenuId } from 'vs/platform/actions/common/actions';
+import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
 export class DataExplorerViewletViewsContribution implements IWorkbenchContribution {
 
@@ -54,7 +56,6 @@ export class DataExplorerViewlet extends ViewContainerViewlet {
 	private root: HTMLElement;
 
 	private dataSourcesBox: HTMLElement;
-	private primaryActions: IAction[];
 	private disposables: IDisposable[] = [];
 
 	constructor(
@@ -67,7 +68,9 @@ export class DataExplorerViewlet extends ViewContainerViewlet {
 		@IWorkspaceContextService contextService: IWorkspaceContextService,
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IExtensionService extensionService: IExtensionService,
-		@IConfigurationService configurationService: IConfigurationService
+		@IConfigurationService configurationService: IConfigurationService,
+		@IMenuService private menuService: IMenuService,
+		@IContextKeyService private contextKeyService: IContextKeyService
 	) {
 		super(VIEWLET_ID, `${VIEWLET_ID}.state`, true, configurationService, layoutService, telemetryService, storageService, instantiationService, themeService, contextMenuService, extensionService, contextService);
 	}
@@ -98,14 +101,18 @@ export class DataExplorerViewlet extends ViewContainerViewlet {
 	}
 
 	getActions(): IAction[] {
-		if (!this.primaryActions) {
-			this.primaryActions = [];
-		}
 		return [];
 	}
 
 	getSecondaryActions(): IAction[] {
-		return [];
+		let menu = this.menuService.createMenu(MenuId.DataExplorerAction, this.contextKeyService);
+		let actions = [];
+		menu.getActions({}).forEach(group => {
+			if (group[0] === 'secondary') {
+				actions.push(...group[1]);
+			}
+		});
+		return actions;
 	}
 
 	protected onDidAddViews(added: IAddedViewDescriptorRef[]): ViewletPanel[] {
