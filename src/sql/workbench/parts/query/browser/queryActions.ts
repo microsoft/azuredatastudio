@@ -13,6 +13,7 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
 import { append, $ } from 'vs/base/browser/dom';
+import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 
 import { ISelectionData } from 'azdata';
 import {
@@ -27,6 +28,12 @@ import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { attachEditableDropdownStyler, attachSelectBoxStyler } from 'sql/platform/theme/common/styler';
 import { Dropdown } from 'sql/base/parts/editableDropdown/browser/dropdown';
+import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
+
+export interface IQueryActionContext {
+	input: QueryInput;
+	editor: ICodeEditor;
+}
 
 /**
  * Action class that query-based Actions will extend. This base class automatically handles activating and
@@ -75,10 +82,10 @@ export abstract class QueryTaskbarAction extends Action {
 	 * Public for testing only.
 	 */
 	public isConnected(editor: QueryEditor): boolean {
-		if (!editor || !editor.currentQueryInput) {
+		if (!editor || !editor.input) {
 			return false;
 		}
-		return this._connectionManagementService.isConnected(editor.currentQueryInput.uri);
+		return this._connectionManagementService.isConnected(editor.input.uri);
 	}
 
 	/**
@@ -87,7 +94,7 @@ export abstract class QueryTaskbarAction extends Action {
 	 */
 	protected connectEditor(editor: QueryEditor, runQueryOnCompletion?: RunQueryOnConnectionMode, selection?: ISelectionData): void {
 		let params: INewConnectionParams = {
-			input: editor.currentQueryInput,
+			input: editor.input,
 			connectionType: ConnectionType.editor,
 			runQueryOnCompletion: runQueryOnCompletion ? runQueryOnCompletion : RunQueryOnConnectionMode.none,
 			querySelection: selection
@@ -151,11 +158,11 @@ export class RunQueryAction extends QueryTaskbarAction {
 			// otherwise, either run the statement or the script depending on parameter
 			let selection: ISelectionData = editor.getSelection(false);
 			if (runCurrentStatement && selection && this.isCursorPosition(selection)) {
-				editor.currentQueryInput.runQueryStatement(selection);
+				editor.input.runQueryStatement(selection);
 			} else {
 				// get the selection again this time with trimming
 				selection = editor.getSelection();
-				editor.currentQueryInput.runQuery(selection);
+				editor.input.runQuery(selection);
 			}
 		}
 	}
@@ -186,7 +193,7 @@ export class CancelQueryAction extends QueryTaskbarAction {
 
 	public run(): Promise<void> {
 		if (this.isConnected(this.editor)) {
-			this._queryModelService.cancelQuery(this.editor.currentQueryInput.uri);
+			this._queryModelService.cancelQuery(this.editor.input.uri);
 		}
 		return Promise.resolve(null);
 	}
@@ -229,7 +236,7 @@ export class EstimatedQueryPlanAction extends QueryTaskbarAction {
 		}
 
 		if (this.isConnected(editor)) {
-			editor.currentQueryInput.runQuery(editor.getSelection(), {
+			editor.input.runQuery(editor.getSelection(), {
 				displayEstimatedQueryPlan: true
 			});
 		}

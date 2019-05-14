@@ -24,10 +24,10 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 const singleQuote = '\'';
 
 function isConnected(editor: QueryEditor, connectionManagementService: IConnectionManagementService): boolean {
-	if (!editor || !editor.currentQueryInput) {
+	if (!editor || !editor.input) {
 		return false;
 	}
-	return connectionManagementService.isConnected(editor.currentQueryInput.uri);
+	return connectionManagementService.isConnected(editor.input.uri);
 }
 
 function runActionOnActiveQueryEditor(editorService: IEditorService, action: (QueryEditor) => void): void {
@@ -447,9 +447,9 @@ export class ParseSyntaxAction extends Action {
 	 * Public for testing only.
 	 */
 	private isConnected(editor: QueryEditor): boolean {
-		if (!editor || !editor.currentQueryInput) {
+		if (!editor || !editor.input) {
 			return false;
 		}
-		return this._connectionManagementService.isConnected(editor.currentQueryInput.uri);
+		return this._connectionManagementService.isConnected(editor.input.uri);
 	}
 }
