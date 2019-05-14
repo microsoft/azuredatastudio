@@ -738,6 +738,10 @@ declare module 'azdata' {
 		flavor: string;
 	}
 
+	export interface QueryExecutionOptions {
+		[name: string]: any;
+	}
+
 	export interface QueryProvider extends DataProvider {
 		cancelQuery(ownerUri: string): Thenable<QueryCancelResult>;
 		runQuery(ownerUri: string, selection: ISelectionData, runOptions?: ExecutionPlanOptions): Thenable<void>;
@@ -748,6 +752,7 @@ declare module 'azdata' {
 		getQueryRows(rowData: QueryExecuteSubsetParams): Thenable<QueryExecuteSubsetResult>;
 		disposeQuery(ownerUri: string): Thenable<void>;
 		saveResults(requestParams: SaveResultsRequestParams): Thenable<SaveResultRequestResult>;
+		setQueryOptions(ownerUri: string, options: QueryExecutionOptions): Thenable<void>;
 
 		// Notifications
 		registerOnQueryComplete(handler: (result: QueryExecuteCompleteNotificationResult) => any): void;
