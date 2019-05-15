@@ -142,7 +142,7 @@ class Stress {
 
 		// validate this object
 		//
-		//validateSync(this).map((error) => { throw error; });
+		validateSync(this).map((error) => { throw error; });
 		validate(this).then(errors => {
 			if (errors.length > 0) {
 				errors.map(error => { throw error; });

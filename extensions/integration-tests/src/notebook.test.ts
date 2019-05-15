@@ -21,10 +21,13 @@ const trace = require('debug')('testfmks:nb:trace');
 
 if (context.RunTest) {
 	suite('Notebook integration test suite', function () {
-		setup(function () {
+		setup(async function () {
 			sleep(20000);
 			trace(`environment variable SuiteType is set to ${process.env.SuiteType}`);
 			debug(`Start "${this.currentTest.title}"`);
+			let server = await getBdcServer();
+			assert(server && server.serverName, 'No server could be found');
+			await connectToServer(server, 6000);
 		});
 		teardown(async function () {
 			await (new NotebookTester()).cleanup(this.currentTest.title);
@@ -112,7 +115,7 @@ class NotebookTester {
 
 	@stressify({dop:1, iterations:1})
 	async sqlNbTest(title: string) {
-		let notebook = await this.openNotebook(sqlNotebookContent, sqlKernelMetadata, title+this.invocationCount++);
+		let notebook = await this.openNotebook(sqlNotebookContent, sqlKernelMetadata, title+this.invocationCount++, false, true);
 		const expectedOutput0 = '(1 row affected)';
 		let cellOutputs = notebook.document.cells[0].contents.outputs;
 		debug('Got cell outputs ---');
@@ -144,13 +147,15 @@ class NotebookTester {
 		}
 	}
 
-	async openNotebook(content: azdata.nb.INotebookContents, kernelMetadata: any, testName: string, runAllCells?: boolean): Promise<azdata.nb.NotebookEditor> {
+	async openNotebook(content: azdata.nb.INotebookContents, kernelMetadata: any, testName: string, runAllCells?: boolean, connectToDifferentServer?: boolean): Promise<azdata.nb.NotebookEditor> {
 		let notebookConfig = vscode.workspace.getConfiguration('notebook');
 		testName += this.invocationCount++;
 		notebookConfig.update('pythonPath', getConfigValue(EnvironmentVariable_PYTHON_PATH), 1);
-		let server = await getBdcServer();
-		assert(server && server.serverName, 'No server could be found in openNotebook');
-		await connectToServer(server, 6000);
+		if (!connectToDifferentServer) {
+			let server = await getBdcServer();
+			assert(server && server.serverName, 'No server could be found in openNotebook');
+			await connectToServer(server, 6000);
+		}
 		let notebookJson = Object.assign({}, content, { metadata: kernelMetadata });
 		let uri = writeNotebookToFile(notebookJson, testName);
 		debug(uri);
