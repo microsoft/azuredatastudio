@@ -52,9 +52,8 @@
     "@types/node": "7.0.43",
     "@types/chai": "3.4.34",
     "mocha-junit-reporter": "^1.17.0",
-	"mocha-multi-reporters": "^1.1.7",
-	"vscode":"^1.1.5",
-	"vscodetestcover": "^1.0.2",
+    "mocha-multi-reporters": "^1.1.7",
+    "vscode": "1.1.5",
     "chai": "3.5.0"
   },
   "dependencies": {
