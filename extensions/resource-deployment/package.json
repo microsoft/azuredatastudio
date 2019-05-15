@@ -79,14 +79,18 @@
         {
           "notebook": "./notebooks/sql2017-image-docker.ipynb",
           "requiredTools": [
-            "docker"
+            {
+              "name": "docker"
+            }
           ],
           "when": "version=sql2017"
         },
         {
           "notebook": "./notebooks/sql2019-image-docker.ipynb",
           "requiredTools": [
-            "docker"
+            {
+              "name": "docker"
+            }
           ],
           "when": "version=sql2019"
         }
@@ -120,17 +124,27 @@
         {
           "notebook": "./notebooks/sql2019-bdc-aks.ipynb",
           "requiredTools": [
-            "kubectl",
-            "azcli",
-            "mssqlctl"
+            {
+              "name": "kubectl"
+            },
+            {
+              "name": "azcli"
+            },
+            {
+              "name": "mssqlctl"
+            }
           ],
           "when": "target=aks"
         },
         {
           "notebook": "./notebooks/sql2019-bdc-existing-cluster.ipynb",
           "requiredTools": [
-            "kubectl",
-            "mssqlctl"
+            {
+              "name": "kubectl"
+            },
+            {
+              "name": "mssqlctl"
+            }
           ],
           "when": "target=existingCluster"
         }

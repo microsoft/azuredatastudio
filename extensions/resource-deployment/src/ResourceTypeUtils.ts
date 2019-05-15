@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { ResourceType, ResourceTypeOption } from './interfaces';
+import { ResourceType, ResourceTypeOption, DeploymentProvider } from './interfaces';
 import { ToolService } from './toolsService';
 
 /**
@@ -114,4 +114,31 @@ function validateNameDisplayName(obj: { name: string; displayName: string }, typ
 	if (!obj.displayName) {
 		errorMessages.push(`Display name of the ${type} is empty. ${positionInfo}`);
 	}
+}
+
+export function getProvider(resourceType: ResourceType, options: { option: string, value: string }[]): DeploymentProvider | undefined {
+	for (let i = 0; i < resourceType.providers.length; i++) {
+		const provider = resourceType.providers[i];
+
+		const expected = provider.when.replace(' ', '').split('&&').sort();
+		let actual: string[] = [];
+		options.forEach(option => {
+			actual.push(`${option.option}=${option.value}`);
+		});
+		actual = actual.sort();
+
+		if (actual.length === expected.length) {
+			let matches = true;
+			for (let j = 0; j < actual.length; j++) {
+				if (actual[j] !== expected[j]) {
+					matches = false;
+					break;
+				}
+			}
+			if (matches) {
+				return provider;
+			}
+		}
+	}
+	return undefined;
 }

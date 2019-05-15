@@ -77,13 +77,13 @@ class AzCLITool implements ITool {
 		return 'azcli';
 	}
 	description(): string {
-		return localize('resourceDeployment.AzCLIDescription', 'Azure CLI');
+		return localize('resourceDeployment.AzCLIDescription', 'Tool used for managing Azure services');
 	}
 	type(): ToolType {
 		return ToolType.AZCLI;
 	}
 	displayName(): string {
-		return localize('resourceDeployment.AzCLIDisplayName', 'Tool used for managing Azure services');
+		return localize('resourceDeployment.AzCLIDisplayName', 'Azure CLI');
 	}
 
 	isInstalled(versionExpression: string): Thenable<boolean> {
