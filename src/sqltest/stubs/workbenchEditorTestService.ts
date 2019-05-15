@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
+
 import { IEditorService, SIDE_GROUP_TYPE, ACTIVE_GROUP_TYPE, IResourceEditor, IResourceEditorReplacement, IOpenEditorOverrideHandler } from 'vs/workbench/services/editor/common/editorService';
 import { ServiceIdentifier, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorOptions, IResourceInput, ITextEditorOptions } from 'vs/platform/editor/common/editor';

@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
@@ -134,6 +133,12 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	$registerObjectExplorerNodeProvider(provider: azdata.ObjectExplorerNodeProvider): vscode.Disposable {
 		let rt = this.registerProvider(provider, DataProviderType.ObjectExplorerNodeProvider);
 		this._proxy.$registerObjectExplorerNodeProvider(provider.providerId, provider.supportedProviderId, provider.group, provider.handle);
+		return rt;
+	}
+
+	$registerIconProvider(provider: azdata.IconProvider): vscode.Disposable {
+		let rt = this.registerProvider(provider, DataProviderType.IconProvider);
+		this._proxy.$registerIconProvider(provider.providerId, provider.handle);
 		return rt;
 	}
 
@@ -329,6 +334,10 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
 	$onEditSessionReady(handle: number, ownerUri: string, success: boolean, message: string): void {
 		this._proxy.$onEditSessionReady(handle, ownerUri, success, message);
+	}
+
+	public $getConnectionIconId(handle: number, connection: azdata.IConnectionProfile, serverInfo: azdata.ServerInfo): Thenable<string> {
+		return this._resolveProvider<azdata.IconProvider>(handle).getConnectionIconId(connection, serverInfo);
 	}
 
 	// Metadata handlers

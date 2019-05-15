@@ -49,6 +49,7 @@ namespace schema {
 			case 'objectExplorer/item/context': return MenuId.ObjectExplorerItemContext;
 			case 'notebook/toolbar': return MenuId.NotebookToolbar;
 			case 'dataExplorer/context': return MenuId.DataExplorerContext;
+			case 'dataExplorer/action': return MenuId.DataExplorerAction;
 		}
 
 		return undefined;

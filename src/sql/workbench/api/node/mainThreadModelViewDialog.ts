@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
@@ -70,7 +69,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 
 	public $openDialog(handle: number, dialogName?: string): Thenable<void> {
 		let dialog = this.getDialog(handle);
-		dialogName ? this._dialogService.showDialog(dialog, dialogName) : this._dialogService.showDialog(dialog);
+		this._dialogService.showDialog(dialog, dialogName, { hasBackButton: false, isWide: dialog.isWide, hasErrors: true });
 		return Promise.resolve();
 	}
 
@@ -94,6 +93,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 		}
 
 		dialog.title = details.title;
+		dialog.isWide = details.isWide;
 		if (details.content && typeof details.content !== 'string') {
 			dialog.content = details.content.map(tabHandle => this.getTab(tabHandle));
 		} else {

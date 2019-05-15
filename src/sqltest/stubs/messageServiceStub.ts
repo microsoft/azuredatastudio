@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 /*
 import Severity from 'vs/base/common/severity';
 import { IConfirmation, IMessageService, IMessageWithAction, IConfirmationResult } from 'vs/platform/message/common/message';

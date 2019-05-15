@@ -32,8 +32,8 @@ export interface IEditSessionReadyEvent {
 	message: string;
 }
 
-export interface IGridMessage extends azdata.IResultMessage {
-	selection: azdata.ISelectionData;
+export interface IQueryMessage extends azdata.IResultMessage {
+	selection?: azdata.ISelectionData;
 }
 
 /*
@@ -47,7 +47,7 @@ export default class QueryRunner extends Disposable {
 	private _isExecuting: boolean = false;
 	private _hasCompleted: boolean = false;
 	private _batchSets: azdata.BatchSummary[] = [];
-	private _messages: azdata.IResultMessage[] = [];
+	private _messages: IQueryMessage[] = [];
 	private registered = false;
 
 	private _isQueryPlan: boolean;
@@ -55,8 +55,8 @@ export default class QueryRunner extends Disposable {
 	private _planXml = new Deferred<string>();
 	public get planXml(): Thenable<string> { return this._planXml.promise; }
 
-	private _onMessage = this._register(new Emitter<azdata.IResultMessage>());
-	public get onMessage(): Event<azdata.IResultMessage> { return this._onMessage.event; } // this is the only way typemoq can moq this... needs investigation @todo anthonydresser 5/2/2019
+	private _onMessage = this._register(new Emitter<IQueryMessage>());
+	public get onMessage(): Event<IQueryMessage> { return this._onMessage.event; } // this is the only way typemoq can moq this... needs investigation @todo anthonydresser 5/2/2019
 
 	private _onResultSet = this._register(new Emitter<azdata.ResultSetSummary>());
 	public readonly onResultSet = this._onResultSet.event;
@@ -122,7 +122,7 @@ export default class QueryRunner extends Disposable {
 	/**
 	 * For public use only, for private use, directly access the member
 	 */
-	public get messages(): azdata.IResultMessage[] {
+	public get messages(): IQueryMessage[] {
 		return this._messages.slice(0);
 	}
 
@@ -196,6 +196,8 @@ export default class QueryRunner extends Disposable {
 			// Update internal state to show that we're executing the query
 			this._isExecuting = true;
 			this._totalElapsedMilliseconds = 0;
+
+			this._onQueryStart.fire();
 
 			return this._queryManagementService.runQueryString(this.uri, input).then(() => this.handleSuccessRunQueryResult(), e => this.handleFailureRunQueryResult(e));
 		} else {
@@ -641,7 +643,7 @@ export default class QueryRunner extends Disposable {
 		// get config copyRemoveNewLine option from vscode config
 		let showBatchTime: boolean = WorkbenchUtils.getSqlConfigValue<boolean>(this._configurationService, Constants.configShowBatchTime);
 		if (showBatchTime) {
-			let message: azdata.IResultMessage = {
+			let message: IQueryMessage = {
 				batchId: batchId,
 				message: nls.localize('elapsedBatchTime', 'Batch execution time: {0}', executionTime),
 				time: undefined,
