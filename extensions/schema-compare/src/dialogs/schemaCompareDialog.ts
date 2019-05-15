@@ -416,7 +416,6 @@ export class SchemaCompareDialog {
 				idx = count;
 			}
 
-			let db = c.options.databaseDisplayName;
 			let usr = c.options.user;
 			let srv = c.options.server;
 
@@ -431,6 +430,14 @@ export class SchemaCompareDialog {
 				name: srv
 			};
 		});
+
+		values = values.reduce((uniqueValues, conn) => {
+			let exists = uniqueValues.find(x => x.displayName === conn.displayName);
+			if (!exists) {
+				uniqueValues.push(conn);
+			}
+			return uniqueValues;
+		}, []);
 
 		// move server of current connection to the top of the list so it is the default
 		if (idx >= 1) {
