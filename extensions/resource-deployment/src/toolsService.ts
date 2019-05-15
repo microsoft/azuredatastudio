@@ -202,17 +202,3 @@ export class ToolService {
 	}
 
 }
-
-export function getToolType(toolName: string): ToolType {
-	if (toolName) {
-		switch (toolName.toLowerCase()) {
-			case 'azcli': return ToolType.AZCLI;
-			case 'kubectl': return ToolType.KUBECTL;
-			case 'docker': return ToolType.Docker;
-			case 'python': return ToolType.Python;
-			case 'mssqlctl': return ToolType.MSSQLCTL;
-		}
-	}
-
-	return ToolType.Unknown;
-}
