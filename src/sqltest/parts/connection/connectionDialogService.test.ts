@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import { ConnectionDialogService } from 'sql/workbench/services/connection/browser/connectionDialogService';
 import { ConnectionDialogWidget } from 'sql/workbench/services/connection/browser/connectionDialogWidget';
 import { ConnectionManagementService } from 'sql/platform/connection/common/connectionManagementService';

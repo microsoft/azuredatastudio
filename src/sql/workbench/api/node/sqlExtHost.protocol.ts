@@ -102,6 +102,8 @@ export abstract class ExtHostDataProtocolShape {
 
 	$getServerCapabilities(handle: number, client: azdata.DataProtocolClientCapabilities): Thenable<azdata.DataProtocolServerCapabilities> { throw ni(); }
 
+	$getConnectionIconId(handle: number, connection: azdata.IConnectionProfile, serverInfo: azdata.ServerInfo): Thenable<string> { throw ni(); }
+
 	/**
 	 * Metadata service methods
 	 *
@@ -541,6 +543,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$registerProfilerProvider(providerId: string, handle: number): Promise<any>;
 	$registerObjectExplorerProvider(providerId: string, handle: number): Promise<any>;
 	$registerObjectExplorerNodeProvider(providerId: string, supportedProviderId: string, group: string, handle: number): Promise<any>;
+	$registerIconProvider(providerId: string, handle: number): Promise<any>;
 	$registerMetadataProvider(providerId: string, handle: number): Promise<any>;
 	$registerTaskServicesProvider(providerId: string, handle: number): Promise<any>;
 	$registerFileBrowserProvider(providerId: string, handle: number): Promise<any>;

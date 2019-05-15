@@ -11,6 +11,7 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 import { IServerGroupDialogCallbacks } from 'sql/platform/serverGroup/common/serverGroupController';
+import { ConnectionProviderProperties } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
 
 export const VIEWLET_ID = 'workbench.view.connections';
 
@@ -182,6 +183,8 @@ export interface IConnectionManagementService {
 	 */
 	registerProvider(providerId: string, provider: azdata.ConnectionProvider): void;
 
+	registerIconProvider(providerId: string, provider: azdata.IconProvider): void;
+
 	editGroup(group: ConnectionProfileGroup): Promise<void>;
 
 	getConnectionProfile(fileUri: string): IConnectionProfile;
@@ -273,6 +276,10 @@ export interface IConnectionManagementService {
 	 * Get connection profile by id
 	 */
 	getConnectionProfileById(profileId: string): IConnectionProfile;
+
+	getProviderProperties(providerName: string): ConnectionProviderProperties;
+
+	getConnectionIconId(connectionId: string): string;
 }
 
 export enum RunQueryOnConnectionMode {

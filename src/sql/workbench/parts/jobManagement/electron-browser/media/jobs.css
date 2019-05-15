@@ -15,12 +15,6 @@ jobsview-component {
 	display: block;
 }
 
-jobhistory-component {
-	height: 100%;
-	width : 100%;
-	display: block;
-}
-
 .job-heading-container {
 	height: 50px;
 	border-bottom: 3px solid #f4f4f4;

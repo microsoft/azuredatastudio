@@ -168,6 +168,7 @@ export class MkDirCommand extends ProgressCommand {
 	}
 
 	private async mkDir(fileName, folderNode: FolderNode, cancelToken: vscode.CancellationTokenSource): Promise<void> {
+		await folderNode.mkdir(fileName);
 	}
 }
 

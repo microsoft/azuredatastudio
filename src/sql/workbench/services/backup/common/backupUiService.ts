@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Event } from 'vs/base/common/event';
