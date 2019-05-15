@@ -95,11 +95,13 @@ export class SchemaCompareResult {
 			}]);
 
 			let sourceLabel = view.modelBuilder.text().withProperties({
-				value: localize('schemaCompare.sourceLabel', 'Source')
+				value: localize('schemaCompare.sourceLabel', 'Source'),
+				CSSStyles: { 'margin-bottom': '0px' }
 			}).component();
 
 			let targetLabel = view.modelBuilder.text().withProperties({
-				value: localize('schemaCompare.targetLabel', 'Target')
+				value: localize('schemaCompare.targetLabel', 'Target'),
+				CSSStyles: { 'margin-bottom': '0px' }
 			}).component();
 
 			let arrowLabel = view.modelBuilder.text().withProperties({
