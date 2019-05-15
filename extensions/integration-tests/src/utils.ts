@@ -47,7 +47,7 @@ export async function sleep(ms: number): Promise<{}> {
 	return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-export async function createDB(dbName: string, ownerUri: string): Promise<void> {
+export async function createDB(dbName: string, ownerUri: string, initialQuery?: string): Promise<void> {
 	let queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>('MSSQL', azdata.DataProviderType.QueryProvider);
 	let query = `BEGIN TRY
 			CREATE DATABASE ${dbName}
@@ -77,6 +77,11 @@ export async function deleteDB(dbName: string, ownerUri: string): Promise<void> 
 	await queryProvider.runQueryAndReturn(ownerUri, query);
 }
 
+export async function runQuery(query: string, ownerURi: string): Promise<azdata.SimpleExecuteResult> {
+	let queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>('MSSQL', azdata.DataProviderType.QueryProvider);
+	let result = await queryProvider.runQueryAndReturn(ownerURi, query);
+	return result;
+}
 export async function assertThrowsAsync(fn: () => Promise<any>, msg: string): Promise<void> {
 	let f = () => {
 		// Empty

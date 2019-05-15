@@ -156,7 +156,8 @@ const copyrightFilter = [
 	'!extensions/notebook/resources/jupyter_config/**',
 	'!**/*.gif',
 	'!**/*.xlf',
-	'!**/*.dacpac'
+	'!**/*.dacpac',
+	'!**/*.bacpac'
 ];
 
 const eslintFilter = [
