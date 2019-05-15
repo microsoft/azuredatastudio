@@ -53,7 +53,12 @@
   "resourceTypes": [
     {
       "name": "sql-image",
-      "displayName": "SQL Server container image with Docker",
+      "displayName": "SQL Server Image",
+      "description": "SQL Server container image on Docker",
+      "icon": {
+        "light": "./images/sql_server.svg",
+        "dark": "./images/sql_server_inverse.svg"
+      },
       "options": [
         {
           "name": "version",
@@ -89,7 +94,12 @@
     },
     {
       "name": "sql-bdc",
-      "displayName": "SQL Server Big Data Cluster",
+      "displayName": "Big Data Cluster",
+      "description": "Big Data Cluster",
+      "icon": {
+        "light": "./images/sql_bdc.svg",
+        "dark": "./images/sql_bdc_inverse.svg"
+      },
       "options": [
         {
           "name": "target",
@@ -111,7 +121,7 @@
           "notebook": "./notebooks/sql2019-bdc-aks.ipynb",
           "requiredTools": [
             "kubectl",
-            "az-cli",
+            "azcli",
             "mssqlctl"
           ],
           "when": "target=aks"

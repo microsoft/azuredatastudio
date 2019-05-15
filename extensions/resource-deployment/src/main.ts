@@ -6,25 +6,34 @@
 
 import vscode = require('vscode');
 import { ResourceDeploymentDialog } from './ui/resourceDeploymentDialog';
-import { ResourceTypeParser } from './resourceTypeParser';
-import { ResourceTypeValidator } from './resourceTypeValidator';
+import { getResourceTypes, validateResourceTypes } from './ResourceTypeUtils';
 
 export function activate(context: vscode.ExtensionContext) {
-	const resourceTypes = ResourceTypeParser.getResourceTypes();
-	const errorMessages = ResourceTypeValidator.validate(resourceTypes);
-	if (errorMessages.length !== 0) {
-		console.error('Error detected in the supported resource type configuration.');
-		errorMessages.forEach(message => console.error(message));
+	const resourceTypes = getResourceTypes();
+	const validationFailures = validateResourceTypes(resourceTypes);
+	if (validationFailures.length !== 0) {
+		const errorMessage = `Failed to load extension: ${context.extensionPath}, Error detected in the resource type definition in package.json, check debug console for details.`;
+		vscode.window.showErrorMessage(errorMessage);
+		validationFailures.forEach(message => console.error(message));
 		return;
 	}
 
+	const openDialog = (resourceTypeName: string) => {
+		const filtered = resourceTypes.filter(resourceType => resourceType.name === resourceTypeName);
+		if (filtered.length !== 1) {
+			vscode.window.showErrorMessage(`The resource type: ${resourceTypeName} is not defined`);
+		}
+		else {
+			let dialog = new ResourceDeploymentDialog(context, filtered[0]);
+			dialog.open();
+		}
+	};
+
 	vscode.commands.registerCommand('azdata.resource.sql-image.deploy', () => {
-		let dialog = new ResourceDeploymentDialog();
-		dialog.open();
+		openDialog('sql-image');
 	});
 	vscode.commands.registerCommand('azdata.resource.sql-bdc.deploy', () => {
-		let dialog = new ResourceDeploymentDialog();
-		dialog.open();
+		openDialog('sql-bdc');
 	});
 }
 
