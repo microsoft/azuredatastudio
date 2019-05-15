@@ -108,8 +108,8 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		// set base class elements
 		this._visibilityElement = this._tableContainer;
 		this._parentComponent = this._agentViewComponent;
-		this.initActionBar();
 		this._agentJobInfo = this._agentViewComponent.agentJobInfo;
+		this.initActionBar();
 		const self = this;
 		this._treeController.onClick = (tree, element, event, origin = 'mouse') => {
 			const payload = { origin: origin };
