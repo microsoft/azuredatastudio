@@ -276,14 +276,14 @@
 
 .vs-dark .resultsViewCollapsible:not(.collapsed),
 .hc-black .resultsViewCollapsible:not(.collapsed) {
-	background-image:url("../../../../../../sql/workbench/parts/grid/media/uncollapsedArrow_inverse.svg");
+	background-image:url("uncollapsedArrow_inverse.svg");
 	background-repeat:no-repeat;
 	background-position: 2px;
 }
 
 .vs-dark .resultsViewCollapsible,
 .hc-black .resultsViewCollapsible {
-	background-image: url("../../../../../../sql/workbench/parts/grid/media/collapsedArrow_inverse.svg");
+	background-image: url("collapsedArrow_inverse.svg");
 	background-repeat:no-repeat;
 	background-position: 2px;
 }
