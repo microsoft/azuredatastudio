@@ -167,6 +167,7 @@ class KUBECTLTool implements ITool {
 		throw new Error('Method not implemented.');
 	}
 }
+
 const SupportedTools = [new PythonTool(), new DockerTool(), new AzCLITool(), new MSSQLCTLTool(), new KUBECTLTool()];
 
 export class ToolService {
