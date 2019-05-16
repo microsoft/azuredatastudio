@@ -1608,20 +1608,20 @@
 					"displayName": "Managed Instance Dashboard",
 					"shortDescription": "Managed Instance Dashboard",
 					"publisher": {
-						"displayName": "jocapc",
-						"publisherId": "jocapc",
-						"publisherName": "jocapc"
+						"displayName": "Microsoft",
+						"publisherId": "Microsft",
+						"publisherName": "Microsoft"
 					},
 					"versions": [
 						{
-							"version": "0.1.1",
-							"lastUpdated": "5/6/2019",
+							"version": "0.3.0",
+							"lastUpdated": "5/16/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/managed-instance-dashboard/managed-instance-dashboard-0.1.1.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/managed-instance-dashboard/managed-instance-dashboard-0.3.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
