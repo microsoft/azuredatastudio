@@ -15,6 +15,7 @@ export class FileTelemetryService extends Disposable implements ITelemetryServic
 	_serviceBrand: undefined;
 	private _isFirst = true;
 	private _enabled: boolean;
+	private _fd: number;
 
 	constructor(private _outputFile: string) {
 		super();
@@ -26,9 +27,10 @@ export class FileTelemetryService extends Disposable implements ITelemetryServic
 		let telemetryData = JSON.stringify(Object.assign({ eventName: eventName, data: data }));
 		if (this._outputFile) {
 			if (this._isFirst) {
-				fs.open(this._outputFile, O_WRONLY | O_CREAT, (err, fr) => {
+				fs.open(this._outputFile, O_WRONLY | O_CREAT, (err, fd) => {
 					fs.writeFileSync(this._outputFile, telemetryData + '\n');
 					this._isFirst = false;
+					this._fd = fd;
 				});
 			} else {
 				fs.appendFileSync(this._outputFile, telemetryData + '\n');
@@ -52,4 +54,12 @@ export class FileTelemetryService extends Disposable implements ITelemetryServic
 
 		return new Promise<ITelemetryInfo>(resolve => resolve(telemetryInfo));
 	}
+
+	dispose() {
+		super.dispose();
+		if (this._fd) {
+			fs.closeSync(this._fd);
+		}
+	}
+
 }
