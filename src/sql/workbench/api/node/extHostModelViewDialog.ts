@@ -488,7 +488,7 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 	public $updateWizardPageInfo(handle: number, pageHandles: number[], currentPageIndex: number): void {
 		let callback = this._pageInfoChangedCallbacks.get(handle);
 		if (callback) {
-			let pages = pageHandles.map(pageHandle => this._objectsByHandle.get(handle) as azdata.window.WizardPage);
+			let pages = pageHandles.map(pageHandle => this._objectsByHandle.get(pageHandle) as azdata.window.WizardPage);
 			callback({
 				eventType: WizardPageInfoEventType.PageAddedOrRemoved,
 				pageChangeInfo: {

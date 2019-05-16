@@ -69,6 +69,6 @@
 		"vscode-nls": "^3.2.1"
 	},
 	"devDependencies": {
-		"vscodetestcover": "^1.0.2"
+		"vscode": "1.0.1"
 	}
 }
