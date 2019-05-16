@@ -100,9 +100,9 @@ suite('Stress Fmks unit tests', function () {
 
 	//Environment Variable Tests
 	//
-	test(`EnvVar Test:1:: env SuiteType is not set/present should default to ${SuiteType.Integration}`, async function() {
+	test(`EnvVar Test:1:: env SuiteType is not set/present should default to ${SuiteType.Integration}`, async function () {
 		delete process.env.SuiteType;
-		assert.equal(getSuiteType(), SuiteType.Integration, );
+		assert.equal(getSuiteType(), SuiteType.Integration);
 	});
 	envSuiteTypeTests.forEach(tst => {
 		test(tst.testDescription, async function () {

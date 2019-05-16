@@ -33,7 +33,7 @@ if (context.RunTest) {
 class ObjectExplorerTester {
 	private static IterationCount = 20;
 	private static ParallelCount = 1;
-	@stressify({dop:ObjectExplorerTester.ParallelCount, iterations:ObjectExplorerTester.IterationCount})
+	@stressify({ dop: ObjectExplorerTester.ParallelCount, iterations: ObjectExplorerTester.IterationCount })
 	async contextMenuTest() {
 		let server = await getAzureServer();
 		await connectToServer(server, 3000);
@@ -55,14 +55,14 @@ class ObjectExplorerTester {
 		assert(expectedActions.length === actions.length && expectedString === actualString, `Expected actions: "${expectedString}", Actual actions: "${actualString}"`);
 	}
 
-	@stressify({dop:ObjectExplorerTester.ParallelCount, iterations:ObjectExplorerTester.IterationCount})
+	@stressify({ dop: ObjectExplorerTester.ParallelCount, iterations: ObjectExplorerTester.IterationCount })
 	async azureDbNodeLabelTest() {
 		const expectedNodeLabel = ['Databases', 'Security'];
 		let server = await getAzureServer();
 		await this.VerifyOeNode(server, 3000, expectedNodeLabel);
 	}
 
-	@stressify({dop:ObjectExplorerTester.ParallelCount, iterations:ObjectExplorerTester.IterationCount})
+	@stressify({ dop: ObjectExplorerTester.ParallelCount, iterations: ObjectExplorerTester.IterationCount })
 	async standaloneNodeLabelTest() {
 		if (process.platform === 'win32') {
 			const expectedNodeLabel = ['Databases', 'Security', 'Server Objects'];
@@ -71,7 +71,7 @@ class ObjectExplorerTester {
 		}
 	}
 
-	@stressify({dop:ObjectExplorerTester.ParallelCount, iterations:ObjectExplorerTester.IterationCount})
+	@stressify({ dop: ObjectExplorerTester.ParallelCount, iterations: ObjectExplorerTester.IterationCount })
 	async bdcNodeLabelTest() {
 		const expectedNodeLabel = ['Databases', 'Security', 'Server Objects', 'Data Services'];
 		let server = await getBdcServer();

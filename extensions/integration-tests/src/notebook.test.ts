@@ -66,41 +66,41 @@ class NotebookTester {
 	private static IterationCount = 20;
 	private static ParallelCount = 1;
 
-	@stressify({dop:NotebookTester.ParallelCount, iterations:NotebookTester.IterationCount})
+	@stressify({ dop: NotebookTester.ParallelCount, iterations: NotebookTester.IterationCount })
 	async pySpark3NbTest(title: string) {
-		let notebook = await this.openNotebook(pySparkNotebookContent, pySpark3KernelMetadata, title+this.invocationCount++);
+		let notebook = await this.openNotebook(pySparkNotebookContent, pySpark3KernelMetadata, title + this.invocationCount++);
 		let cellOutputs = notebook.document.cells[0].contents.outputs;
 		let sparkResult = (<azdata.nb.IStreamResult>cellOutputs[3]).text;
 		assert(sparkResult === '2', `Expected spark result: 2, Actual: ${sparkResult}`);
 	}
 
-	@stressify({dop:NotebookTester.ParallelCount, iterations:NotebookTester.IterationCount})
+	@stressify({ dop: NotebookTester.ParallelCount, iterations: NotebookTester.IterationCount })
 	async python3ClearAllOutputs(title: string) {
-		let notebook = await this.openNotebook(pySparkNotebookContent, pythonKernelMetadata, title+this.invocationCount++);
+		let notebook = await this.openNotebook(pySparkNotebookContent, pythonKernelMetadata, title + this.invocationCount++);
 		await this.verifyClearAllOutputs(notebook);
 	}
 
-	@stressify({dop:NotebookTester.ParallelCount, iterations:NotebookTester.IterationCount})
+	@stressify({ dop: NotebookTester.ParallelCount, iterations: NotebookTester.IterationCount })
 	async python3NbTest(title: string) {
-		let notebook = await this.openNotebook(pySparkNotebookContent, pythonKernelMetadata, title+this.invocationCount++);
+		let notebook = await this.openNotebook(pySparkNotebookContent, pythonKernelMetadata, title + this.invocationCount++);
 		let cellOutputs = notebook.document.cells[0].contents.outputs;
 		console.log('Got cell outputs ---');
 		if (cellOutputs) {
-			cellOutputs.forEach(o => console.log(JSON.stringify(o,undefined,'\t')));
+			cellOutputs.forEach(o => console.log(JSON.stringify(o, undefined, '\t')));
 		}
 		let result = (<azdata.nb.IExecuteResult>cellOutputs[0]).data['text/plain'];
 		assert(result === '2', `Expected python result: 2, Actual: ${result}`);
 	}
 
-	@stressify({dop:NotebookTester.ParallelCount, iterations:NotebookTester.IterationCount})
+	@stressify({ dop: NotebookTester.ParallelCount, iterations: NotebookTester.IterationCount })
 	async sqlNbClearAllOutputs(title: string) {
-		let notebook = await this.openNotebook(sqlNotebookContent, sqlKernelMetadata, title+this.invocationCount++);
+		let notebook = await this.openNotebook(sqlNotebookContent, sqlKernelMetadata, title + this.invocationCount++);
 		await this.verifyClearAllOutputs(notebook);
 	}
 
-	@stressify({dop:NotebookTester.ParallelCount, iterations:NotebookTester.IterationCount})
+	@stressify({ dop: NotebookTester.ParallelCount, iterations: NotebookTester.IterationCount })
 	async sqlNbMultipleCellsTest(title: string) {
-		let notebook = await this.openNotebook(sqlNotebookMultipleCellsContent, sqlKernelMetadata, title+this.invocationCount++, true);
+		let notebook = await this.openNotebook(sqlNotebookMultipleCellsContent, sqlKernelMetadata, title + this.invocationCount++, true);
 		const expectedOutput0 = '(1 row affected)';
 		for (let i = 0; i < 3; i++) {
 			let cellOutputs = notebook.document.cells[i].contents.outputs;
@@ -118,9 +118,9 @@ class NotebookTester {
 		}
 	}
 
-	@stressify({dop:NotebookTester.ParallelCount, iterations:NotebookTester.IterationCount})
+	@stressify({ dop: NotebookTester.ParallelCount, iterations: NotebookTester.IterationCount })
 	async sqlNbTest(title: string) {
-		let notebook = await this.openNotebook(sqlNotebookContent, sqlKernelMetadata, title+this.invocationCount++, false, true);
+		let notebook = await this.openNotebook(sqlNotebookContent, sqlKernelMetadata, title + this.invocationCount++, false, true);
 		const expectedOutput0 = '(1 row affected)';
 		let cellOutputs = notebook.document.cells[0].contents.outputs;
 		console.log('Got cell outputs ---');
@@ -137,7 +137,7 @@ class NotebookTester {
 
 	async cleanup(testName: string) {
 		try {
-			let fileName = getFileName(testName+this.invocationCount++);
+			let fileName = getFileName(testName + this.invocationCount++);
 			if (fs.existsSync(fileName)) {
 				fs.unlinkSync(fileName);
 				console.log(`"${fileName}" is deleted.`);
