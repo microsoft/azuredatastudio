@@ -36,6 +36,7 @@ export interface IQueryManagementService {
 	getQueryRows(rowData: azdata.QueryExecuteSubsetParams): Thenable<azdata.QueryExecuteSubsetResult>;
 	disposeQuery(ownerUri: string): Thenable<void>;
 	saveResults(requestParams: azdata.SaveResultsRequestParams): Thenable<azdata.SaveResultRequestResult>;
+	setQueryExecutionOptions(uri: string, options: azdata.QueryExecutionOptions): Thenable<void>;
 
 	// Callbacks
 	onQueryComplete(result: azdata.QueryExecuteCompleteNotificationResult): void;
@@ -73,6 +74,7 @@ export interface IQueryRequestHandler {
 	getQueryRows(rowData: azdata.QueryExecuteSubsetParams): Thenable<azdata.QueryExecuteSubsetResult>;
 	disposeQuery(ownerUri: string): Thenable<void>;
 	saveResults(requestParams: azdata.SaveResultsRequestParams): Thenable<azdata.SaveResultRequestResult>;
+	setQueryExecutionOptions(ownerUri: string, options: azdata.QueryExecutionOptions): Thenable<void>;
 
 	// Edit Data actions
 	initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number, queryString: string): Thenable<void>;
@@ -177,8 +179,12 @@ export class QueryManagementService implements IQueryManagementService {
 		TelemetryUtils.addTelemetry(this._telemetryService, this.logService, eventName, data);
 	}
 
-	private _runAction<T>(uri: string, action: (handler: IQueryRequestHandler) => Thenable<T>): Thenable<T> {
+	private _runAction<T>(uri: string, action: (handler: IQueryRequestHandler) => Thenable<T>, fallBackToDefaultProvider: boolean = false): Thenable<T> {
 		let providerId: string = this._connectionService.getProviderIdFromUri(uri);
+
+		if (!providerId && fallBackToDefaultProvider) {
+			providerId = this._connectionService.getDefaultProviderId();
+		}
 
 		if (!providerId) {
 			return Promise.reject(new Error('Connection is required in order to interact with queries'));
@@ -235,6 +241,11 @@ export class QueryManagementService implements IQueryManagementService {
 		return this._runAction(ownerUri, (runner) => {
 			return runner.disposeQuery(ownerUri);
 		});
+	}
+	public setQueryExecutionOptions(ownerUri: string, options: azdata.QueryExecutionOptions): Thenable<void> {
+		return this._runAction(ownerUri, (runner) => {
+			return runner.setQueryExecutionOptions(ownerUri, options);
+		}, true);
 	}
 
 	public saveResults(requestParams: azdata.SaveResultsRequestParams): Thenable<azdata.SaveResultRequestResult> {
