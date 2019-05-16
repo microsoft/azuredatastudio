@@ -86,6 +86,7 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 	private _databaseInfo: DatabaseInfo;
 	private _clipped: boolean;
 	private _loading: boolean = true;
+	private _isVertical: boolean = false;
 	private properties: Array<DisplayProperty>;
 	private _hasInit = false;
 	private endpoints: Array<Endpoint>;
@@ -145,6 +146,7 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 			this.parseProperties(config.properties);
 		}
 		else if (this._config.widget['properties-widget'] && this._config.widget['properties-widget'].endpoints) {
+			this._isVertical = true;
 			this.parseEndpoints();
 		}
 		else {
@@ -160,7 +162,7 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 
 		// iterate over endpoint properties and display them
 		this.properties = [];
-		for(const endpoint of this.endpoints) {
+		for (const endpoint of this.endpoints) {
 			let propertyObject = this.getValueOrDefault<string>(endpoint, EndpointConstants.hyperlink.toString(), '--');
 			const assignProperty: DisplayProperty = {
 				displayName: endpoint.serviceName,

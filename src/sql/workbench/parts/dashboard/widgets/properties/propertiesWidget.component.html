@@ -8,11 +8,11 @@
 	<div [style.margin-right.px]="_clipped ? 30 : 0" [style.width]="_clipped ? 94 + '%' : '100%'" style="overflow: hidden">
 		<span #child style="white-space : nowrap; width: fit-content">
 			<ng-template ngFor let-item [ngForOf]="properties">
-				<span *ngIf="!endpoints" style="margin-left: 10px; display: inline-block;">
+				<span *ngIf="!_isVertical" style="margin-left: 10px; display: inline-block;">
 					<div style="font-size: 11px;">{{item.displayName}}</div>
 					<div>{{item.value}}</div>
 				</span>
-				<div class="flex-table-row" *ngIf="endpoints">
+				<div class="flex-table-row" *ngIf="_isVertical">
 					<span class="flex-table-cell">{{item.displayName}}</span>
 					<span *ngIf="item.hyperlink" class="flex-table-cell-destination"><a href="{{item.value}}" target="_blank">{{item.value}}</a></span>
 					<span *ngIf="!item.hyperlink" class="flex-table-cell-destination">{{item.value}}</span>
