@@ -237,8 +237,8 @@ export class SchemaCompareResult {
 		this.differencesTable.onRowSelected(() => {
 			let difference = this.comparisonResult.differences[this.differencesTable.selectedRows[0]];
 			if (difference !== undefined) {
-				sourceText = difference.sourceScript === null ? '\n' : this.getAggregatedScript(difference, true);
-				targetText = difference.targetScript === null ? '\n' : this.getAggregatedScript(difference, false);
+				sourceText = this.getFormattedScript(difference, true);
+				targetText = this.getFormattedScript(difference, false);
 
 				this.diffEditor.updateProperties({
 					contentLeft: sourceText,
@@ -264,15 +264,29 @@ export class SchemaCompareResult {
 		return data;
 	}
 
+	private getFormattedScript(diffEntry: azdata.DiffEntry, getSourceScript: boolean): string {
+		// if there is no entry, the script has to be \n because an empty string shows up as a difference but \n doesn't
+		if ((getSourceScript && diffEntry.sourceScript === null)
+			|| (!getSourceScript && diffEntry.targetScript === null)) {
+			return '\n';
+		}
+
+		let script = this.getAggregatedScript(diffEntry, getSourceScript);
+		return script;
+	}
+
 	private getAggregatedScript(diffEntry: azdata.DiffEntry, getSourceScript: boolean): string {
 		let script = '';
 		if (diffEntry !== null) {
-			script += getSourceScript ? diffEntry.sourceScript : diffEntry.targetScript;
+			let diffEntryScript = getSourceScript ? diffEntry.sourceScript : diffEntry.targetScript;
+			if (diffEntryScript) {
+				// add a blank line between each statement
+				script += diffEntryScript + '\n\n';
+			}
+
 			diffEntry.children.forEach(child => {
 				let childScript = this.getAggregatedScript(child, getSourceScript);
-				if (childScript !== 'null') {
-					script += childScript;
-				}
+				script += childScript;
 			});
 		}
 		return script;
