@@ -16,6 +16,7 @@ import { IStorageService } from 'vs/platform/storage/common/storage';
 import { resolveWorkbenchCommonProperties } from 'vs/platform/telemetry/node/workbenchCommonProperties';
 import { TelemetryService as BaseTelemetryService, ITelemetryServiceConfig } from 'vs/platform/telemetry/common/telemetryService';
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
+import { FileTelemetryService } from 'vs/platform/telemetry/common/fileTelemetryService';
 
 export class TelemetryService extends Disposable implements ITelemetryService {
 
@@ -33,7 +34,10 @@ export class TelemetryService extends Disposable implements ITelemetryService {
 	) {
 		super();
 
-		if (!environmentService.isExtensionDevelopment && !environmentService.args['disable-telemetry'] && !!productService.enableTelemetry) {
+		if (environmentService.args['perf-test']) {
+			let telemetryOutput = environmentService.args['telemetry-output'];
+			this.impl = this._register(new FileTelemetryService(telemetryOutput));
+		} else if (!environmentService.isExtensionDevelopment && !environmentService.args['disable-telemetry'] && !!productService.enableTelemetry) {
 			const channel = sharedProcessService.getChannel('telemetryAppender');
 			const config: ITelemetryServiceConfig = {
 				appender: combinedAppender(new TelemetryAppenderClient(channel), new LogAppender(logService)),

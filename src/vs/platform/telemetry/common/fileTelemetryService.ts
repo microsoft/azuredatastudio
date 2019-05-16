@@ -6,16 +6,19 @@
 import { ITelemetryService, ITelemetryInfo, ITelemetryData } from 'vs/platform/telemetry/common/telemetry';
 import * as fs from 'fs';
 import { O_CREAT, O_WRONLY } from 'constants';
+import { Disposable } from 'vs/base/common/lifecycle';
 
 /**
  * Write telemetry into a file for test purposes
  */
-export class FileTelemetryService implements ITelemetryService {
+export class FileTelemetryService extends Disposable implements ITelemetryService {
 	_serviceBrand: undefined;
 	private _isFirst = true;
 	private _enabled: boolean;
 
 	constructor(private _outputFile: string) {
+		super();
+
 		this._enabled = true;
 	}
 
@@ -39,6 +42,7 @@ export class FileTelemetryService implements ITelemetryService {
 	}
 
 	isOptedIn: true;
+
 	getTelemetryInfo(): Promise<ITelemetryInfo> {
 		let telemetryInfo: ITelemetryInfo = {
 			instanceId: 'someValue.instanceId',
@@ -46,6 +50,6 @@ export class FileTelemetryService implements ITelemetryService {
 			machineId: 'someValue.machineId'
 		};
 
-		return new Promise<ITelemetryInfo>(() => telemetryInfo);
+		return new Promise<ITelemetryInfo>(resolve => resolve(telemetryInfo));
 	}
 }
