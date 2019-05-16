@@ -65,11 +65,6 @@ describe('buildSsmsMinCommandArgs Method Tests', () => {
 	});
 });
 
-const azureServerName = 'my\'Server';
-const fullAzureServerName = `${azureServerName}.database.windows.net`;
-const escapedAzureServerName = doubleEscapeSingleQuotes(azureServerName);
-const serverName = 'My\'Server';
-const escapedServerName = doubleEscapeSingleQuotes(serverName);
 const dbName = 'My\'Db';
 const escapedDbName = doubleEscapeSingleQuotes(dbName);
 const dbSchema = 'db\'sch';
@@ -80,26 +75,22 @@ const tableSchema = 'tbl\'sch';
 const escapedTableSchema = doubleEscapeSingleQuotes(tableSchema);
 
 describe('buildUrn Method Tests', () => {
-	it('Azure Server Name is trimmed correctly', async function(): Promise<void> {
-		should(await buildUrn(fullAzureServerName, undefined)).equal(`Server[@Name=\'${escapedAzureServerName}\']`);
-	});
-
 	it('Urn should be correct with just server', async function (): Promise<void> {
-		should(await buildUrn(serverName, undefined)).equal(`Server[@Name=\'${escapedServerName}\']`);
+		should(await buildUrn(undefined)).equal('Server');
 	});
 
 	it('Urn should be correct with Server and only Databases folder', async function (): Promise<void> {
 		const leafNode: ExtHostObjectExplorerNodeStub =
 			new ExtHostObjectExplorerNodeStub('Databases', undefined, 'Folder', undefined);
-		should(await buildUrn(serverName, leafNode)).equal(`Server[@Name='${escapedServerName}']`);
+		should(await buildUrn(leafNode)).equal('Server');
 	});
 
 	it('Urn should be correct with Server and Database node', async function (): Promise<void> {
 		const leafNode: ExtHostObjectExplorerNodeStub =
 			new ExtHostObjectExplorerNodeStub('Databases', undefined, 'Folder', undefined)
 				.createChild(dbName, dbSchema, 'Database');
-		should(await buildUrn(serverName, leafNode)).equal(
-			`Server[@Name='${escapedServerName}']/Database[@Name='${escapedDbName}' and @Schema='${escapedDbSchema}']`);
+		should(await buildUrn(leafNode)).equal(
+			`Server/Database[@Name='${escapedDbName}' and @Schema='${escapedDbSchema}']`);
 	});
 
 	it('Urn should be correct with Multiple levels of Nodes', async function (): Promise<void> {
@@ -108,8 +99,8 @@ describe('buildUrn Method Tests', () => {
 				.createChild(dbName, dbSchema, 'Database')
 				.createChild('Tables', undefined, 'Folder')
 				.createChild(tableName, tableSchema, 'Table');
-		should(await buildUrn(serverName, rootNode)).equal(
-			`Server[@Name='${escapedServerName}']/Database[@Name='${escapedDbName}' and @Schema='${escapedDbSchema}']/Table[@Name='${escapedTableName}' and @Schema='${escapedTableSchema}']`);
+		should(await buildUrn(rootNode)).equal(
+			`Server/Database[@Name='${escapedDbName}' and @Schema='${escapedDbSchema}']/Table[@Name='${escapedTableName}' and @Schema='${escapedTableSchema}']`);
 	});
 });
 

@@ -10,7 +10,6 @@ import * as vscode from 'vscode';
 import { Telemetry } from './telemetry';
 import { doubleEscapeSingleQuotes, backEscapeDoubleQuotes } from './utils';
 import { ChildProcess, exec } from 'child_process';
-
 const localize = nls.loadMessageBundle();
 const ssmsMinVer = JSON.parse(JSON.stringify(require('./config.json'))).version;
 
@@ -70,6 +69,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 	// This is for Windows-specific support so do nothing on other platforms
 	if (process.platform === 'win32') {
 		statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
+
 		Telemetry.sendTelemetryEvent('startup/ExtensionActivated');
 		exePath = path.join(context.extensionPath, 'ssmsmin', 'Windows', ssmsMinVer, 'ssmsmin.exe');
 		registerCommands(context);
@@ -160,7 +160,7 @@ async function launchSsmsDialog(action: string, connectionContext: azdata.Object
 		return;
 	}
 
-	const urn: string = await buildUrn(connectionContext.connectionProfile.serverName, oeNode);
+	const urn: string = await buildUrn(oeNode);
 	let password: string = connectionContext.connectionProfile.password;
 
 	if (!password || password === '') {
@@ -180,7 +180,8 @@ async function launchSsmsDialog(action: string, connectionContext: azdata.Object
 	const args = buildSsmsMinCommandArgs(params);
 
 	Telemetry.sendTelemetryEvent('LaunchSsmsDialog', { 'action': action });
-	showStatusBarItem(localize('adminToolExtWin.launchingDialogStatus', 'Launching dialog...'));
+
+	vscode.window.setStatusBarMessage(localize('adminToolExtWin.launchingDialogStatus', 'Launching dialog...'), 3000);
 
 	// This will be an async call since we pass in the callback
 	const proc: ChildProcess = exec(
@@ -227,10 +228,9 @@ ${params.urn ? ' -u "' + backEscapeDoubleQuotes(params.urn) + '"' : ''}`;
 
 /**
  * Builds the URN string for a given ObjectExplorerNode in the form understood by SsmsMin
- * @param serverName The name of the Server to use for the Server segment
  * @param node The node to get the URN of
  */
-export async function buildUrn(serverName: string, node: azdata.objectexplorer.ObjectExplorerNode): Promise<string> {
+export async function buildUrn(node: azdata.objectexplorer.ObjectExplorerNode): Promise<string> {
 	let urnNodes: string[] = [];
 	while (node) {
 		// Server is special since it's a connection node - always add it as the root
@@ -247,16 +247,5 @@ export async function buildUrn(serverName: string, node: azdata.objectexplorer.O
 		node = await node.getParent();
 	}
 
-	serverName = /\.database\.windows\.net$/i.test(serverName) ? serverName.slice(0, serverName.length - 21) : serverName;
-	return [`Server[@Name='${doubleEscapeSingleQuotes(serverName)}']`].concat(urnNodes).join('/');
-}
-
-function showStatusBarItem(text: string) {
-	statusBarItem.text = text;
-	statusBarItem.tooltip = text;
-	statusBarItem.show();
-	clearTimeout(statusBarItemTimer);
-	statusBarItemTimer = setTimeout(function () {
-		statusBarItem.hide();
-	}, STATUS_BAR_ITEM_DISPLAY_TIME_MS);
+	return ['Server'].concat(urnNodes).join('/');
 }
