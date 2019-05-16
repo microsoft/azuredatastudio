@@ -3123,11 +3123,19 @@ declare module 'azdata' {
 		toolTip?: string;
 	}
 
+	export interface CheckBoxTableColumn {
+		title: string;
+		width?: number;
+		toolTip?: string;
+		defaultState?: boolean;
+	}
+
 	export interface TableComponentProperties extends ComponentProperties {
 		data: any[][];
 		columns: string[] | TableColumn[];
 		fontSize?: number | string;
 		selectedRows?: number[];
+		checkBoxColumn?: CheckBoxTableColumn;
 	}
 
 	export interface FileBrowserTreeProperties extends ComponentProperties {
@@ -3321,8 +3329,14 @@ declare module 'azdata' {
 		onRowSelected: vscode.Event<any>;
 	}
 
+	export interface IRowSelectionChangedArg {
+		checked: boolean;
+		row: number;
+	}
+
 	export interface TableComponent extends Component, TableComponentProperties {
 		onRowSelected: vscode.Event<any>;
+		onCheckBoxChanged?: vscode.Event<IRowSelectionChangedArg>;
 	}
 
 	export interface FileBrowserTreeComponent extends Component, FileBrowserTreeProperties {

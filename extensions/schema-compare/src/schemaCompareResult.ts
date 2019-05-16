@@ -35,6 +35,7 @@ export class SchemaCompareResult {
 	private targetNameComponent: azdata.TableComponent;
 	private deploymentOptions: azdata.DeploymentOptions;
 	private schemaCompareOptionDialog: SchemaCompareOptionsDialog;
+	private tablelistenersToDispose: vscode.Disposable[] = [];
 
 	constructor(private sourceName: string, private targetName: string, private sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, private targetEndpointInfo: azdata.SchemaCompareEndpointInfo) {
 		this.SchemaCompareActionMap = new Map<Number, string>();
@@ -201,7 +202,14 @@ export class SchemaCompareResult {
 					value: localize('schemaCompare.targetNameColumn', 'Target Name'),
 					cssClass: 'align-with-header',
 					width: 150
-				}]
+				}],
+			checkboxColumn:
+			{
+				title: localize('schemaCompare.includeColumnName', 'Include'),
+				width: 15,
+				toolTip: localize('schemaCompare.includeColumnName', 'Include'),
+				defaultState: true
+			}
 		});
 
 		this.splitView.addItem(this.differencesTable);
@@ -234,7 +242,7 @@ export class SchemaCompareResult {
 
 		let sourceText = '';
 		let targetText = '';
-		this.differencesTable.onRowSelected(() => {
+		this.tablelistenersToDispose.push(this.differencesTable.onRowSelected(() => {
 			let difference = this.comparisonResult.differences[this.differencesTable.selectedRows[0]];
 			if (difference !== undefined) {
 				sourceText = difference.sourceScript === null ? '\n' : this.getAggregatedScript(difference, true);
@@ -246,7 +254,11 @@ export class SchemaCompareResult {
 					title: diffEditorTitle
 				});
 			}
-		});
+		}));
+		this.tablelistenersToDispose.push(this.differencesTable.onCheckBoxChanged(async (rowState) => {
+			let diff = this.comparisonResult.differences[rowState.row];
+			await service.schemaCompareIncludeExcludeNode(this.comparisonResult.operationId, diff, rowState.checked, azdata.TaskExecutionMode.execute);
+		}));
 	}
 
 	private getAllDifferences(differences: azdata.DiffEntry[]): string[][] {
@@ -291,6 +303,9 @@ export class SchemaCompareResult {
 		});
 
 		this.differencesTable.selectedRows = null;
+		if (this.tablelistenersToDispose) {
+			this.tablelistenersToDispose.forEach(x => x.dispose());
+		}
 		this.resetButtons(false);
 		this.execute();
 	}

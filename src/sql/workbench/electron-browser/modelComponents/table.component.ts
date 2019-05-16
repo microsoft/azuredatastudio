@@ -20,6 +20,8 @@ import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { getContentHeight, getContentWidth, Dimension } from 'vs/base/browser/dom';
 import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
+import { CheckboxCustomActionColumn, IRowCheckboxChangedArg } from 'sql/base/browser/ui/table/plugins/checkboxCustomActionColumn.plugin';
+import { Emitter, Event as vsEvent } from 'vs/base/common/event';
 
 @Component({
 	selector: 'modelview-table',
@@ -33,6 +35,9 @@ export default class TableComponent extends ComponentBase implements IComponent,
 	private _table: Table<Slick.SlickData>;
 	private _tableData: TableDataView<Slick.SlickData>;
 	private _tableColumns;
+	private _checkboxSelectColumn: CheckboxCustomActionColumn<{}>;
+	private _onCheckBoxChanged = new Emitter<IRowCheckboxChangedArg>();
+	public readonly onCheckBoxChanged: vsEvent<IRowCheckboxChangedArg> = this._onCheckBoxChanged.event;
 
 	@ViewChild('table', { read: ElementRef }) private _inputContainer: ElementRef;
 	constructor(
@@ -166,8 +171,29 @@ export default class TableComponent extends ComponentBase implements IComponent,
 			this._table.setSelectedRows(this.selectedRows);
 		}
 
+		if (this.checkboxColumn) {
+			this.registerCheckboxPlugin(this.checkboxColumn.title, this.checkboxColumn.defaultState, this.checkboxColumn.width);
+		}
+
 		this.layoutTable();
 		this.validate();
+	}
+
+	private registerCheckboxPlugin(title: string, defaultChecked: boolean, width: number): void {
+		if (!this._checkboxSelectColumn) {
+			this._checkboxSelectColumn = new CheckboxCustomActionColumn({ title: title, toolTip: title, width: width, defaultChecked: defaultChecked });
+			this._register(this._checkboxSelectColumn.onChange((state) => {
+				this.fireEvent({
+					eventType: ComponentEventType.onCheckBoxChanged,
+					args: state,
+				});
+			}));
+		}
+
+		this._tableColumns.unshift(this._checkboxSelectColumn.getColumnDefinition());
+		this._table.columns = this._tableColumns;
+		this._table.registerPlugin(this._checkboxSelectColumn);
+		this._table.autosizeColumns();
 	}
 
 	// CSS-bound properties
@@ -198,5 +224,13 @@ export default class TableComponent extends ComponentBase implements IComponent,
 
 	public set selectedRows(newValue: number[]) {
 		this.setPropertyFromUI<azdata.TableComponentProperties, number[]>((props, value) => props.selectedRows = value, newValue);
+	}
+
+	public get checkboxColumn(): azdata.CheckBoxTableColumn {
+		return this.getPropertyOrDefault<azdata.TableComponentProperties, azdata.CheckBoxTableColumn>((props) => props.checkboxColumn, null);
+	}
+
+	public set checkboxColumn(newValue: azdata.CheckBoxTableColumn) {
+		this.setPropertyFromUI<azdata.TableComponentProperties, azdata.CheckBoxTableColumn>((props, value) => props.checkboxColumn = value, newValue);
 	}
 }

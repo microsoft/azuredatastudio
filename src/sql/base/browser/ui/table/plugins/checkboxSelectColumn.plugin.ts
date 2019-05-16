@@ -14,6 +14,7 @@ export interface ICheckboxSelectColumnOptions extends Slick.PluginOptions, IChec
 	toolTip?: string;
 	width?: number;
 	title?: string;
+	defaultChecked?: boolean;
 }
 
 const defaultOptions: ICheckboxSelectColumnOptions = {
