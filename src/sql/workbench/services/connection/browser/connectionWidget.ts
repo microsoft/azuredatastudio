@@ -34,7 +34,6 @@ import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import { endsWith, startsWith } from 'vs/base/common/strings';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 
 export class ConnectionWidget {
 	private _previousGroupOption: string;
@@ -98,7 +97,6 @@ export class ConnectionWidget {
 		providerName: string,
 		@IThemeService protected _themeService: IThemeService,
 		@IContextViewService protected _contextViewService: IContextViewService,
-		@ILayoutService private _layoutService: ILayoutService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@IClipboardService private _clipboardService: IClipboardService,

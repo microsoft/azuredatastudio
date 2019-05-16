@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import { INewDashboardTabDialogService } from 'sql/workbench/services/dashboard/common/newDashboardTabDialog';
 import { NewDashboardTabDialog } from 'sql/workbench/services/dashboard/browser/newDashboardTabDialog';
 import { IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';

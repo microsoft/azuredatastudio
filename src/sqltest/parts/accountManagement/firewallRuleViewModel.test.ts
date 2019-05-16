@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import * as assert from 'assert';
 import { FirewallRuleViewModel } from 'sql/platform/accounts/common/firewallRuleViewModel';
 

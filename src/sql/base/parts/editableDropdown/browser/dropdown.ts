@@ -219,6 +219,7 @@ export class Dropdown extends Disposable {
 
 		this.onBlur(() => {
 			this.contextViewService.hideContextView();
+			this._input.validate();
 		});
 
 		this._register(this._tree);
@@ -301,7 +302,7 @@ export class Dropdown extends Disposable {
 	}
 
 	private _inputValidator(value: string): IMessage | null {
-		if (this._dataSource.options && !this._dataSource.options.find(i => i.value === value)) {
+		if (!this._input.hasFocus() && !this._tree.isDOMFocused() && this._dataSource.options && !this._dataSource.options.find(i => i.value === value)) {
 			if (this._options.strictSelection && this._options.errorMessage) {
 				return {
 					content: this._options.errorMessage,

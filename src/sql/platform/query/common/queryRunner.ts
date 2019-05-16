@@ -11,19 +11,18 @@ import { IQueryManagementService } from 'sql/platform/query/common/queryManageme
 import * as Utils from 'sql/platform/connection/common/utils';
 import { SaveFormat } from 'sql/workbench/parts/grid/common/interfaces';
 import { Deferred } from 'sql/base/common/promise';
+import { IQueryPlanInfo } from 'sql/platform/query/common/queryModel';
+import { ResultSerializer } from 'sql/platform/node/resultSerializer';
 
 import Severity from 'vs/base/common/severity';
 import * as nls from 'vs/nls';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import * as types from 'vs/base/common/types';
-import { EventEmitter } from 'sql/base/common/eventEmitter';
-import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
+import { Disposable } from 'vs/base/common/lifecycle';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { Emitter, Event } from 'vs/base/common/event';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { ResultSerializer } from 'sql/platform/node/resultSerializer';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IQueryPlanInfo } from 'sql/platform/query/common/queryModel';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 import { URI } from 'vs/base/common/uri';
 
@@ -33,30 +32,8 @@ export interface IEditSessionReadyEvent {
 	message: string;
 }
 
-export const enum EventType {
-	START = 'start',
-	COMPLETE = 'complete',
-	MESSAGE = 'message',
-	BATCH_START = 'batchStart',
-	BATCH_COMPLETE = 'batchComplete',
-	RESULT_SET = 'resultSet',
-	EDIT_SESSION_READY = 'editSessionReady',
-	QUERY_PLAN_AVAILABLE = 'queryPlanAvailable'
-}
-
-export interface IEventType {
-	start: void;
-	complete: string;
-	message: azdata.IResultMessage;
-	batchStart: azdata.BatchSummary;
-	batchComplete: azdata.BatchSummary;
-	resultSet: azdata.ResultSetSummary;
-	editSessionReady: IEditSessionReadyEvent;
-	queryPlanAvailable: IQueryPlanInfo;
-}
-
-export interface IGridMessage extends azdata.IResultMessage {
-	selection: azdata.ISelectionData;
+export interface IQueryMessage extends azdata.IResultMessage {
+	selection?: azdata.ISelectionData;
 }
 
 /*
@@ -70,8 +47,7 @@ export default class QueryRunner extends Disposable {
 	private _isExecuting: boolean = false;
 	private _hasCompleted: boolean = false;
 	private _batchSets: azdata.BatchSummary[] = [];
-	private _messages: azdata.IResultMessage[] = [];
-	private _eventEmitter = new EventEmitter();
+	private _messages: IQueryMessage[] = [];
 	private registered = false;
 
 	private _isQueryPlan: boolean;
@@ -79,8 +55,8 @@ export default class QueryRunner extends Disposable {
 	private _planXml = new Deferred<string>();
 	public get planXml(): Thenable<string> { return this._planXml.promise; }
 
-	private _onMessage = this._register(new Emitter<azdata.IResultMessage>());
-	public readonly onMessage = this._onMessage.event;
+	private _onMessage = this._register(new Emitter<IQueryMessage>());
+	public get onMessage(): Event<IQueryMessage> { return this._onMessage.event; } // this is the only way typemoq can moq this... needs investigation @todo anthonydresser 5/2/2019
 
 	private _onResultSet = this._register(new Emitter<azdata.ResultSetSummary>());
 	public readonly onResultSet = this._onResultSet.event;
@@ -92,13 +68,19 @@ export default class QueryRunner extends Disposable {
 	public readonly onQueryStart: Event<void> = this._onQueryStart.event;
 
 	private _onQueryEnd = this._register(new Emitter<string>());
-	public readonly onQueryEnd: Event<string> = this._onQueryEnd.event;
+	public get onQueryEnd(): Event<string> { return this._onQueryEnd.event; }
 
 	private _onBatchStart = this._register(new Emitter<azdata.BatchSummary>());
 	public readonly onBatchStart: Event<azdata.BatchSummary> = this._onBatchStart.event;
 
 	private _onBatchEnd = this._register(new Emitter<azdata.BatchSummary>());
 	public readonly onBatchEnd: Event<azdata.BatchSummary> = this._onBatchEnd.event;
+
+	private _onEditSessionReady = this._register(new Emitter<IEditSessionReadyEvent>());
+	public readonly onEditSessionReady = this._onEditSessionReady.event;
+
+	private _onQueryPlanAvailable = this._register(new Emitter<IQueryPlanInfo>());
+	public readonly onQueryPlanAvailable = this._onQueryPlanAvailable.event;
 
 	private _queryStartTime: Date;
 	public get queryStartTime(): Date {
@@ -140,15 +122,11 @@ export default class QueryRunner extends Disposable {
 	/**
 	 * For public use only, for private use, directly access the member
 	 */
-	public get messages(): azdata.IResultMessage[] {
+	public get messages(): IQueryMessage[] {
 		return this._messages.slice(0);
 	}
 
 	// PUBLIC METHODS ======================================================
-
-	public addListener<K extends keyof IEventType>(event: K, f: (e: IEventType[K]) => void): IDisposable {
-		return this._eventEmitter.addListener(event, f);
-	}
 
 	/**
 	 * Cancels the running query, if there is one
@@ -219,6 +197,8 @@ export default class QueryRunner extends Disposable {
 			this._isExecuting = true;
 			this._totalElapsedMilliseconds = 0;
 
+			this._onQueryStart.fire();
+
 			return this._queryManagementService.runQueryString(this.uri, input).then(() => this.handleSuccessRunQueryResult(), e => this.handleFailureRunQueryResult(e));
 		} else {
 			return Promise.reject('Unknown input');
@@ -229,7 +209,6 @@ export default class QueryRunner extends Disposable {
 		// this isn't exact, but its the best we can do
 		this._queryStartTime = new Date();
 		// The query has started, so lets fire up the result pane
-		this._eventEmitter.emit(EventType.START);
 		if (!this.registered) {
 			this.registered = true;
 			this._queryManagementService.registerRunner(this, this.uri);
@@ -270,8 +249,6 @@ export default class QueryRunner extends Disposable {
 		});
 
 		let timeStamp = Utils.parseNumAsTimeString(this._totalElapsedMilliseconds);
-
-		this._eventEmitter.emit(EventType.COMPLETE, timeStamp);
 		// We're done with this query so shut down any waiting mechanisms
 
 		let message = {
@@ -311,7 +288,6 @@ export default class QueryRunner extends Disposable {
 			isError: false
 		};
 		this._messages.push(message);
-		this._eventEmitter.emit(EventType.BATCH_START, batch);
 		this._onMessage.fire(message);
 		this._onBatchStart.fire(batch);
 	}
@@ -331,7 +307,6 @@ export default class QueryRunner extends Disposable {
 			this.sendBatchTimeMessage(batch.id, Utils.parseNumAsTimeString(executionTime));
 		}
 
-		this._eventEmitter.emit(EventType.BATCH_COMPLETE, batch);
 		this._onBatchEnd.fire(batch);
 	}
 
@@ -343,7 +318,7 @@ export default class QueryRunner extends Disposable {
 			let resultSet = result.resultSetSummary;
 			let batchSet: azdata.BatchSummary;
 			if (!resultSet.batchId) {
-				// Missing the batchId. In this case, default to always using the first batch in the list
+				// Missing the batchId or processing batchId==0. In this case, default to always using the first batch in the list
 				// or create one in the case the DMP extension didn't obey the contract perfectly
 				if (this._batchSets.length > 0) {
 					batchSet = this._batchSets[0];
@@ -376,7 +351,6 @@ export default class QueryRunner extends Disposable {
 			if (batchSet && !batchSet.resultSetSummaries[resultSet.id]) {
 				// Store the result set in the batch and emit that a result set has completed
 				batchSet.resultSetSummaries[resultSet.id] = resultSet;
-				this._eventEmitter.emit(EventType.RESULT_SET, resultSet);
 				this._onResultSet.fire(resultSet);
 			}
 		}
@@ -398,7 +372,7 @@ export default class QueryRunner extends Disposable {
 							this._planXml.resolve(e.resultSubset.rows[0][0].displayValue);
 							// fire query plan available event if execution is completed
 							if (result.resultSetSummary.complete) {
-								this._eventEmitter.emit(EventType.QUERY_PLAN_AVAILABLE, {
+								this._onQueryPlanAvailable.fire({
 									providerId: 'MSSQL',
 									fileUri: result.ownerUri,
 									planXml: planXmlString
@@ -425,7 +399,6 @@ export default class QueryRunner extends Disposable {
 		this._messages.push(message);
 
 		// Send the message to the results pane
-		this._eventEmitter.emit(EventType.MESSAGE, message);
 		this._onMessage.fire(message);
 	}
 
@@ -461,7 +434,7 @@ export default class QueryRunner extends Disposable {
 
 		return this._queryManagementService.initializeEdit(ownerUri, schemaName, objectName, objectType, rowLimit, queryString).then(result => {
 			// The query has started, so lets fire up the result pane
-			this._eventEmitter.emit(EventType.START);
+			this._onQueryStart.fire();
 			this._queryManagementService.registerRunner(this, ownerUri);
 		}, error => {
 			// Attempting to launch the query failed, show the error message
@@ -511,7 +484,7 @@ export default class QueryRunner extends Disposable {
 	}
 
 	public handleEditSessionReady(ownerUri: string, success: boolean, message: string): void {
-		this._eventEmitter.emit(EventType.EDIT_SESSION_READY, { ownerUri, success, message });
+		this._onEditSessionReady.fire({ ownerUri, success, message });
 	}
 
 	public updateCell(ownerUri: string, rowId: number, columnId: number, newValue: string): Thenable<azdata.EditUpdateCellResult> {
@@ -670,7 +643,7 @@ export default class QueryRunner extends Disposable {
 		// get config copyRemoveNewLine option from vscode config
 		let showBatchTime: boolean = WorkbenchUtils.getSqlConfigValue<boolean>(this._configurationService, Constants.configShowBatchTime);
 		if (showBatchTime) {
-			let message: azdata.IResultMessage = {
+			let message: IQueryMessage = {
 				batchId: batchId,
 				message: nls.localize('elapsedBatchTime', 'Batch execution time: {0}', executionTime),
 				time: undefined,

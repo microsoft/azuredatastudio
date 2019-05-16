@@ -123,7 +123,7 @@ export class ProfilerTableEditor extends BaseEditor implements IProfilerControll
 		if (this._stateListener) {
 			this._stateListener.dispose();
 		}
-		this._stateListener = input.state.addChangeListener(e => this._onStateChange(e));
+		this._stateListener = input.state.onProfilerStateChange(e => this._onStateChange(e));
 		input.data.onRowCountChange(() => {
 			this._profilerTable.updateRowCount();
 			this._updateRowCountStatus();
@@ -141,7 +141,11 @@ export class ProfilerTableEditor extends BaseEditor implements IProfilerControll
 		this._findCountChangeListener = input.data.onFindCountChange(() => this._updateFinderMatchState());
 
 		this._profilerTable.setData(input.data);
-		this._profilerTable.columns = input.columns;
+		this._profilerTable.columns = input.columns.map(c => {
+			c.formatter = textFormatter;
+			return c;
+		});
+
 		this._profilerTable.autosizeColumns();
 		this._input.data.currentFindPosition.then(val => {
 			this._profilerTable.setActiveCell(val.row, val.col);

@@ -703,3 +703,25 @@ function installService() {
 gulp.task('install-sqltoolsservice', () => {
 	return installService();
 });
+
+function installSsmsMin() {
+	let config = require('../extensions/admin-tool-ext-win/src/config.json');
+	return platformInfo.getCurrent().then(p => {
+		let runtime = p.runtimeId;
+		// fix path since it won't be correct
+		config.installDirectory = path.join(__dirname, '..', 'extensions', 'admin-tool-ext-win', config.installDirectory);
+		var installer = new serviceDownloader(config);
+		let serviceInstallFolder = installer.getInstallDirectory(runtime);
+		console.log('Cleaning up the install folder: ' + serviceInstallFolder);
+		return del(serviceInstallFolder + '/*').then(() => {
+			console.log('Installing the service. Install folder: ' + serviceInstallFolder);
+			return installer.installService(runtime);
+		}, delError => {
+			console.log('failed to delete the install folder error: ' + delError);
+		});
+	});
+}
+
+gulp.task('install-ssmsmin', () => {
+	return installSsmsMin();
+});

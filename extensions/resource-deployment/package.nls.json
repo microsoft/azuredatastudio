@@ -1,0 +1,7 @@
+{
+	"extension-displayName":"Resource Deployment extension for Azure Data Studio",
+	"extension-description":"Provides a notebook-based experience to deploy SQL Server and other Azure Data Services",
+	"deploy-sql-image-command-name": "Deploy SQL Server on Docker…",
+	"deploy-sql-bdc-command-name": "Deploy SQL Server Big Data Cluster…",
+	"deploy-resource-command-category": "Resource Deployment"
+}

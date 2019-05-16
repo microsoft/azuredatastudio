@@ -12,10 +12,10 @@ import { DashboardServiceInterface } from 'sql/workbench/parts/dashboard/service
 import { CommonServiceInterface, SingleConnectionManagementService } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 import { WidgetConfig, TabConfig, TabSettingConfig } from 'sql/workbench/parts/dashboard/common/dashboardWidget';
 import { IPropertiesConfig } from 'sql/workbench/parts/dashboard/pages/serverDashboardPage.contribution';
-import { PanelComponent } from 'sql/base/browser/ui/panel/panel.component';
+import { PanelComponent } from 'sql/base/electron-browser/ui/panel/panel.component';
 import { IDashboardRegistry, Extensions as DashboardExtensions, IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
 import { PinUnpinTabAction, AddFeatureTabAction } from './actions';
-import { TabComponent, TabChild } from 'sql/base/browser/ui/panel/tab.component';
+import { TabComponent, TabChild } from 'sql/base/electron-browser/ui/panel/tab.component';
 import { AngularEventType, IAngularEventingService } from 'sql/platform/angularEventing/common/angularEventingService';
 import { DashboardTab, IConfigModifierCollection } from 'sql/workbench/parts/dashboard/common/interfaces';
 import * as dashboardHelper from 'sql/workbench/parts/dashboard/common/dashboardHelper';
@@ -36,6 +36,7 @@ import Severity from 'vs/base/common/severity';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { ILogService } from 'vs/platform/log/common/log';
 
 const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.DashboardContributions);
 
@@ -97,7 +98,8 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
 		@Inject(INotificationService) private notificationService: INotificationService,
 		@Inject(IAngularEventingService) private angularEventingService: IAngularEventingService,
-		@Inject(IConfigurationService) private configurationService: IConfigurationService
+		@Inject(IConfigurationService) private configurationService: IConfigurationService,
+		@Inject(ILogService) private logService: ILogService
 	) {
 		super();
 	}
@@ -261,7 +263,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	}
 
 	private initTabComponents(value: IDashboardTab): { id: string; title: string; container: object; alwaysShow: boolean; } {
-		const containerResult = dashboardHelper.getDashboardContainer(value.container);
+		const containerResult = dashboardHelper.getDashboardContainer(value.container, this.logService);
 		if (!containerResult.result) {
 			return { id: value.id, title: value.title, container: { 'error-container': undefined }, alwaysShow: value.alwaysShow };
 		}

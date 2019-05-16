@@ -103,16 +103,16 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 			});
 	}
 
-	public prompt(): Thenable<AzureAccount> {
+	public prompt(): Thenable<AzureAccount | azdata.PromptFailedResult> {
 		return this.doIfInitialized(() => this.signIn(true));
 	}
 
-	public refresh(account: AzureAccount): Thenable<AzureAccount> {
+	public refresh(account: AzureAccount): Thenable<AzureAccount | azdata.PromptFailedResult> {
 		return this.doIfInitialized(() => this.signIn(false));
 	}
 
 	// PRIVATE METHODS /////////////////////////////////////////////////////
-	private cancelAutoOAuth(): Thenable<void> {
+	private cancelAutoOAuth(): Promise<void> {
 		let self = this;
 
 		if (!this._inProgressAutoOAuth) {
@@ -137,23 +137,23 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 		return Promise.resolve();
 	}
 
-	private clearAccountTokens(accountKey: azdata.AccountKey): Thenable<void> {
+	private async clearAccountTokens(accountKey: azdata.AccountKey): Promise<void> {
 		// Put together a query to look up any tokens associated with the account key
 		let query = <adal.TokenResponse>{ userId: accountKey.accountId };
 
 		// 1) Look up the tokens associated with the query
 		// 2) Remove them
-		return this._tokenCache.findThenable(query)
-			.then(results => this._tokenCache.removeThenable(results));
+		let results = await this._tokenCache.findThenable(query);
+		this._tokenCache.removeThenable(results);
 	}
 
-	private doIfInitialized<T>(op: () => Thenable<T>): Thenable<T> {
+	private doIfInitialized<T>(op: () => Promise<T>): Promise<T> {
 		return this._isInitialized
 			? op()
 			: Promise.reject(localize('accountProviderNotInitialized', 'Account provider not initialized, cannot perform action'));
 	}
 
-	private getAccessTokens(account: AzureAccount, resource: azdata.AzureResource): Thenable<AzureAccountSecurityTokenCollection> {
+	private getAccessTokens(account: AzureAccount, resource: azdata.AzureResource): Promise<AzureAccountSecurityTokenCollection> {
 		let self = this;
 
 		const resourceIdMap = new Map<azdata.AzureResource, string>([
@@ -228,7 +228,7 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 		});
 	}
 
-	private getDeviceLoginToken(oAuth: InProgressAutoOAuth, isAddAccount: boolean): Thenable<adal.TokenResponse> {
+	private getDeviceLoginToken(oAuth: InProgressAutoOAuth, isAddAccount: boolean): Thenable<adal.TokenResponse | azdata.PromptFailedResult> {
 		let self = this;
 
 		// 1) Open the auto OAuth dialog
@@ -239,14 +239,15 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 			localize('refreshAccount', 'Refresh {0} account', self._metadata.displayName);
 		return azdata.accounts.beginAutoOAuthDeviceCode(self._metadata.id, title, oAuth.userCodeInfo.message, oAuth.userCodeInfo.userCode, oAuth.userCodeInfo.verificationUrl)
 			.then(() => {
-				return new Promise<adal.TokenResponse>((resolve, reject) => {
+				return new Promise<adal.TokenResponse | azdata.PromptFailedResult>((resolve, reject) => {
 					let context = oAuth.context;
 					context.acquireTokenWithDeviceCode(self._metadata.settings.signInResourceId, self._metadata.settings.clientId, oAuth.userCodeInfo,
 						(err, response) => {
 							if (err) {
 								if (self._autoOAuthCancelled) {
+									let result: azdata.PromptFailedResult = { canceled: true };
 									// Auto OAuth was cancelled by the user, indicate this with the error we return
-									reject(<azdata.UserCancelledSignInError>{ userCancelledSignIn: true });
+									resolve(result);
 								} else {
 									// Auto OAuth failed for some other reason
 									azdata.accounts.endAutoOAuthDeviceCode();
@@ -368,74 +369,73 @@ export class AzureAccountProvider implements azdata.AccountProvider {
 		});
 	}
 
-	private signIn(isAddAccount: boolean): Thenable<AzureAccount> {
-		let self = this;
+	private isPromptFailed(value: adal.TokenResponse | azdata.PromptFailedResult): value is azdata.PromptFailedResult {
+		return value && (<azdata.PromptFailedResult>value).canceled;
+	}
 
+	private async signIn(isAddAccount: boolean): Promise<AzureAccount | azdata.PromptFailedResult> {
 		// 1) Get the user code for this login
 		// 2) Get an access token from the device code
 		// 3) Get the list of tenants
 		// 4) Generate the AzureAccount object and return it
 		let tokenResponse: adal.TokenResponse = null;
-		return this.getDeviceLoginUserCode()
-			.then((result: InProgressAutoOAuth) => {
-				self._autoOAuthCancelled = false;
-				self._inProgressAutoOAuth = result;
-				return self.getDeviceLoginToken(self._inProgressAutoOAuth, isAddAccount);
-			})
-			.then((response: adal.TokenResponse) => {
-				tokenResponse = response;
-				self._autoOAuthCancelled = false;
-				self._inProgressAutoOAuth = null;
-				return self.getTenants(tokenResponse.userId, tokenResponse.userId);
-			})
-			.then((tenants: Tenant[]) => {
-				// Figure out where we're getting the identity from
-				let identityProvider = tokenResponse.identityProvider;
-				if (identityProvider) {
-					identityProvider = identityProvider.toLowerCase();
-				}
+		let result: InProgressAutoOAuth = await this.getDeviceLoginUserCode();
+		this._autoOAuthCancelled = false;
+		this._inProgressAutoOAuth = result;
+		let response: adal.TokenResponse | azdata.PromptFailedResult = await this.getDeviceLoginToken(this._inProgressAutoOAuth, isAddAccount);
+		if (this.isPromptFailed(response)) {
+			return response;
+		}
+		tokenResponse = response;
+		this._autoOAuthCancelled = false;
+		this._inProgressAutoOAuth = null;
+		let tenants: Tenant[] = await this.getTenants(tokenResponse.userId, tokenResponse.userId);
+		// Figure out where we're getting the identity from
+		let identityProvider = tokenResponse.identityProvider;
+		if (identityProvider) {
+			identityProvider = identityProvider.toLowerCase();
+		}
 
-				// Determine if this is a microsoft account
-				let msa = identityProvider && (
-					identityProvider.indexOf('live.com') !== -1 ||
-					identityProvider.indexOf('live-int.com') !== -1 ||
-					identityProvider.indexOf('f8cdef31-a31e-4b4a-93e4-5f571e91255a') !== -1 ||
-					identityProvider.indexOf('ea8a4392-515e-481f-879e-6571ff2a8a36') !== -1);
+		// Determine if this is a microsoft account
+		let msa = identityProvider && (
+			identityProvider.indexOf('live.com') !== -1 ||
+			identityProvider.indexOf('live-int.com') !== -1 ||
+			identityProvider.indexOf('f8cdef31-a31e-4b4a-93e4-5f571e91255a') !== -1 ||
+			identityProvider.indexOf('ea8a4392-515e-481f-879e-6571ff2a8a36') !== -1);
 
-				// Calculate the display name for the user
-				let displayName = (tokenResponse.givenName && tokenResponse.familyName)
-					? `${tokenResponse.givenName} ${tokenResponse.familyName}`
-					: tokenResponse.userId;
+		// Calculate the display name for the user
+		let displayName = (tokenResponse.givenName && tokenResponse.familyName)
+			? `${tokenResponse.givenName} ${tokenResponse.familyName}`
+			: tokenResponse.userId;
 
-				// Calculate the home tenant display name to use for the contextual display name
-				let contextualDisplayName = msa
-					? localize('microsoftAccountDisplayName', 'Microsoft Account')
-					: tenants[0].displayName;
+		// Calculate the home tenant display name to use for the contextual display name
+		let contextualDisplayName = msa
+			? localize('microsoftAccountDisplayName', 'Microsoft Account')
+			: tenants[0].displayName;
 
-				// Calculate the account type
-				let accountType = msa
-					? AzureAccountProvider.MicrosoftAccountType
-					: AzureAccountProvider.WorkSchoolAccountType;
+		// Calculate the account type
+		let accountType = msa
+			? AzureAccountProvider.MicrosoftAccountType
+			: AzureAccountProvider.WorkSchoolAccountType;
 
-				return <AzureAccount>{
-					key: {
-						providerId: self._metadata.id,
-						accountId: tokenResponse.userId
-					},
-					name: tokenResponse.userId,
-					displayInfo: {
-						accountType: accountType,
-						userId: tokenResponse.userId,
-						contextualDisplayName: contextualDisplayName,
-						displayName: displayName
-					},
-					properties: {
-						isMsAccount: msa,
-						tenants: tenants
-					},
-					isStale: false
-				};
-			});
+		return <AzureAccount>{
+			key: {
+				providerId: this._metadata.id,
+				accountId: tokenResponse.userId
+			},
+			name: tokenResponse.userId,
+			displayInfo: {
+				accountType: accountType,
+				userId: tokenResponse.userId,
+				contextualDisplayName: contextualDisplayName,
+				displayName: displayName
+			},
+			properties: {
+				isMsAccount: msa,
+				tenants: tenants
+			},
+			isStale: false
+		};
 	}
 }
 

@@ -30,8 +30,8 @@ export abstract class ExtHostAccountManagementShape {
 	$clear(handle: number, accountKey: azdata.AccountKey): Thenable<void> { throw ni(); }
 	$getSecurityToken(account: azdata.Account, resource?: azdata.AzureResource): Thenable<{}> { throw ni(); }
 	$initialize(handle: number, restoredAccounts: azdata.Account[]): Thenable<azdata.Account[]> { throw ni(); }
-	$prompt(handle: number): Thenable<azdata.Account> { throw ni(); }
-	$refresh(handle: number, account: azdata.Account): Thenable<azdata.Account> { throw ni(); }
+	$prompt(handle: number): Thenable<azdata.Account | azdata.PromptFailedResult> { throw ni(); }
+	$refresh(handle: number, account: azdata.Account): Thenable<azdata.Account | azdata.PromptFailedResult> { throw ni(); }
 	$accountsChanged(handle: number, accounts: azdata.Account[]): Thenable<void> { throw ni(); }
 }
 
@@ -101,6 +101,8 @@ export abstract class ExtHostDataProtocolShape {
 	$onIntelliSenseCacheComplete(handle: number, connectionUri: string): void { throw ni(); }
 
 	$getServerCapabilities(handle: number, client: azdata.DataProtocolClientCapabilities): Thenable<azdata.DataProtocolServerCapabilities> { throw ni(); }
+
+	$getConnectionIconId(handle: number, connection: azdata.IConnectionProfile, serverInfo: azdata.ServerInfo): Thenable<string> { throw ni(); }
 
 	/**
 	 * Metadata service methods
@@ -541,6 +543,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$registerProfilerProvider(providerId: string, handle: number): Promise<any>;
 	$registerObjectExplorerProvider(providerId: string, handle: number): Promise<any>;
 	$registerObjectExplorerNodeProvider(providerId: string, supportedProviderId: string, group: string, handle: number): Promise<any>;
+	$registerIconProvider(providerId: string, handle: number): Promise<any>;
 	$registerMetadataProvider(providerId: string, handle: number): Promise<any>;
 	$registerTaskServicesProvider(providerId: string, handle: number): Promise<any>;
 	$registerFileBrowserProvider(providerId: string, handle: number): Promise<any>;

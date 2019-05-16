@@ -7,6 +7,8 @@ The Schema Compare extension provides an easy to use experience to compare .dacp
 
 This experience is currently in its initial preview. Please report issues and feature requests [here.](https://github.com/microsoft/azuredatastudio/issues)
 
+![schemacompare0506](https://user-images.githubusercontent.com/30873802/57342709-fec27a00-70f4-11e9-979b-c933498d9034.gif)
+
  ### How do I start a Schema Comparison?
 * The main entry point for schema compare is to right click a database in the Object Explorer, and click **Schema Compare**.
 * The user can also launch the schema compare dialog from the command palette (Ctrl+Shift+P) by searching for **Schema Compare**

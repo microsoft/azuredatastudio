@@ -16,6 +16,8 @@ const diffEditorTitle = localize('schemaCompare.ObjectDefinitionsTitle', 'Object
 export class SchemaCompareResult {
 	private differencesTable: azdata.TableComponent;
 	private loader: azdata.LoadingComponent;
+	private startText: azdata.TextComponent;
+	private waitText: azdata.TextComponent;
 	private editor: azdata.workspace.ModelViewEditor;
 	private diffEditor: azdata.DiffEditorComponent;
 	private splitView: azdata.SplitViewContainer;
@@ -76,7 +78,7 @@ export class SchemaCompareResult {
 			this.createGenerateScriptButton(view);
 			this.createApplyButton(view);
 			this.createOptionsButton(view);
-			this.resetButtons();
+			this.resetButtons(true);
 
 			let toolBar = view.modelBuilder.toolbarContainer();
 			toolBar.addToolbarItems([{
@@ -131,15 +133,24 @@ export class SchemaCompareResult {
 			this.sourceTargetFlexLayout.addItem(this.targetNameComponent, { CSSStyles: { 'width': '45%', 'height': '25px', 'margin-top': '10px', 'margin-left': '15px' } });
 
 			this.loader = view.modelBuilder.loadingComponent().component();
+			this.waitText = view.modelBuilder.text().withProperties({
+				value: localize('schemaCompare.waitText', 'Initializing Comparison. This might take a moment.')
+			}).component();
+
+			this.startText = view.modelBuilder.text().withProperties({
+				value: localize('schemaCompare.startText', 'Press Compare to start Schema Comparison.')
+			}).component();
+
 			this.noDifferencesLabel = view.modelBuilder.text().withProperties({
-				value: localize('schemaCompare.noDifferences', 'No schema differences were found')
+				value: localize('schemaCompare.noDifferences', 'No schema differences were found.')
 			}).component();
 
 			this.flexModel = view.modelBuilder.flexContainer().component();
 			this.flexModel.addItem(toolBar.component(), { flex: 'none' });
 			this.flexModel.addItem(sourceTargetLabels, { flex: 'none' });
 			this.flexModel.addItem(this.sourceTargetFlexLayout, { flex: 'none' });
-			this.flexModel.addItem(this.loader, { CSSStyles: { 'margin-top': '30px' } });
+			this.flexModel.addItem(this.startText, { CSSStyles: { 'margin': 'auto' } });
+
 			this.flexModel.setLayout({
 				flexFlow: 'column',
 				height: '100%'
@@ -151,7 +162,6 @@ export class SchemaCompareResult {
 
 	public start(): void {
 		this.editor.openEditor();
-		this.execute();
 	}
 
 	private async execute(): Promise<void> {
@@ -202,6 +212,7 @@ export class SchemaCompareResult {
 		});
 
 		this.flexModel.removeItem(this.loader);
+		this.flexModel.removeItem(this.waitText);
 		this.switchButton.enabled = true;
 		this.compareButton.enabled = true;
 		this.optionsButton.enabled = true;
@@ -226,8 +237,8 @@ export class SchemaCompareResult {
 		this.differencesTable.onRowSelected(() => {
 			let difference = this.comparisonResult.differences[this.differencesTable.selectedRows[0]];
 			if (difference !== undefined) {
-				sourceText = difference.sourceScript === null ? '\n' : this.getAggregatedScript(difference, true);
-				targetText = difference.targetScript === null ? '\n' : this.getAggregatedScript(difference, false);
+				sourceText = this.getFormattedScript(difference, true);
+				targetText = this.getFormattedScript(difference, false);
 
 				this.diffEditor.updateProperties({
 					contentLeft: sourceText,
@@ -253,24 +264,40 @@ export class SchemaCompareResult {
 		return data;
 	}
 
+	private getFormattedScript(diffEntry: azdata.DiffEntry, getSourceScript: boolean): string {
+		// if there is no entry, the script has to be \n because an empty string shows up as a difference but \n doesn't
+		if ((getSourceScript && diffEntry.sourceScript === null)
+			|| (!getSourceScript && diffEntry.targetScript === null)) {
+			return '\n';
+		}
+
+		let script = this.getAggregatedScript(diffEntry, getSourceScript);
+		return script;
+	}
+
 	private getAggregatedScript(diffEntry: azdata.DiffEntry, getSourceScript: boolean): string {
 		let script = '';
 		if (diffEntry !== null) {
-			script += getSourceScript ? diffEntry.sourceScript : diffEntry.targetScript;
+			let diffEntryScript = getSourceScript ? diffEntry.sourceScript : diffEntry.targetScript;
+			if (diffEntryScript) {
+				// add a blank line between each statement
+				script += diffEntryScript + '\n\n';
+			}
+
 			diffEntry.children.forEach(child => {
 				let childScript = this.getAggregatedScript(child, getSourceScript);
-				if (childScript !== 'null') {
-					script += childScript;
-				}
+				script += childScript;
 			});
 		}
 		return script;
 	}
 
-	private reExecute(): void {
+	private startCompare(): void {
 		this.flexModel.removeItem(this.splitView);
 		this.flexModel.removeItem(this.noDifferencesLabel);
+		this.flexModel.removeItem(this.startText);
 		this.flexModel.addItem(this.loader, { CSSStyles: { 'margin-top': '30px' } });
+		this.flexModel.addItem(this.waitText, { CSSStyles: { 'margin-top': '30px', 'align-self': 'center' } });
 		this.diffEditor.updateProperties({
 			contentLeft: os.EOL,
 			contentRight: os.EOL,
@@ -278,7 +305,7 @@ export class SchemaCompareResult {
 		});
 
 		this.differencesTable.selectedRows = null;
-		this.resetButtons();
+		this.resetButtons(false);
 		this.execute();
 	}
 
@@ -293,7 +320,7 @@ export class SchemaCompareResult {
 		}).component();
 
 		this.compareButton.onDidClick(async (click) => {
-			this.reExecute();
+			this.startCompare();
 		});
 	}
 
@@ -376,10 +403,17 @@ export class SchemaCompareResult {
 		});
 	}
 
-	private resetButtons(): void {
-		this.compareButton.enabled = false;
-		this.optionsButton.enabled = false;
-		this.switchButton.enabled = false;
+	private resetButtons(beforeCompareStart: boolean): void {
+		if (beforeCompareStart) {
+			this.compareButton.enabled = true;
+			this.optionsButton.enabled = true;
+			this.switchButton.enabled = true;
+		}
+		else {
+			this.compareButton.enabled = false;
+			this.optionsButton.enabled = false;
+			this.switchButton.enabled = false;
+		}
 		this.generateScriptButton.enabled = false;
 		this.applyButton.enabled = false;
 		this.generateScriptButton.title = localize('schemaCompare.generateScriptEnabledButton', 'Generate script to deploy changes to target');
@@ -421,7 +455,7 @@ export class SchemaCompareResult {
 				]
 			});
 
-			this.reExecute();
+			this.startCompare();
 		});
 	}
 

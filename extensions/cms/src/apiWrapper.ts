@@ -273,7 +273,7 @@ export class ApiWrapper {
 			if (connection && connection.options) {
 				if (connection.options.server === parentServerName) {
 					// error out for same server registration
-					let errorText = localize('cms.errors.sameServerUnderCMS', 'You cannot add a shared registered server with the same name as the Configuration Server');
+					let errorText = localize('cms.errors.sameServerUnderCms', 'You cannot add a shared registered server with the same name as the Configuration Server');
 					this.showErrorMessage(errorText);
 					return;
 				} else {

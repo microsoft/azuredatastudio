@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as assert from 'assert';
 import * as azdata from 'azdata';
 import * as TypeMoq from 'typemoq';
@@ -608,13 +606,13 @@ function getFailingMockAccountProvider(cancel: boolean): TypeMoq.Mock<azdata.Acc
 	mockProvider.setup(x => x.prompt())
 		.returns(() => {
 			return cancel
-				? Promise.reject(<azdata.UserCancelledSignInError>{ userCancelledSignIn: true }).then()
+				? Promise.resolve(<azdata.PromptFailedResult>{ canceled: true }).then()
 				: Promise.reject(new Error()).then();
 		});
 	mockProvider.setup(x => x.refresh(TypeMoq.It.isAny()))
 		.returns(() => {
 			return cancel
-				? Promise.reject(<azdata.UserCancelledSignInError>{ userCancelledSignIn: true }).then()
+				? Promise.resolve(<azdata.PromptFailedResult>{ canceled: true }).then()
 				: Promise.reject(new Error()).then();
 		});
 	return mockProvider;

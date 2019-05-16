@@ -1,0 +1,56 @@
+{
+  "name": "resource-deployment",
+  "displayName": "%extension-displayName%",
+  "description": "%extension-description%",
+  "version": "0.0.1",
+  "publisher": "Microsoft",
+  "preview": true,
+  "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt",
+  "icon": "images/sqlserver.png",
+  "aiKey": "AIF-5574968e-856d-40d2-af67-c89a14e76412",
+  "engines": {
+    "vscode": "*",
+    "azdata": "^1.6.0"
+  },
+  "activationEvents": [
+    "onCommand:azdata.resource.sql-image.deploy",
+    "onCommand:azdata.resource.sql-bdc.deploy"
+  ],
+  "main": "./out/main",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Microsoft/azuredatastudio.git"
+  },
+  "extensionDependencies": [
+    "Microsoft.mssql"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "azdata.resource.sql-image.deploy",
+        "title": "%deploy-sql-image-command-name%",
+        "category": "%deploy-resource-command-category%"
+      },
+      {
+        "command": "azdata.resource.sql-bdc.deploy",
+        "title": "%deploy-sql-bdc-command-name%",
+        "category": "%deploy-resource-command-category%"
+      }
+    ],
+    "menus": {
+      "dataExplorer/action": [
+        {
+          "command": "azdata.resource.sql-image.deploy",
+          "group": "secondary"
+        },
+        {
+          "command": "azdata.resource.sql-bdc.deploy",
+          "group": "secondary"
+        }
+      ]
+    }
+  },
+  "dependencies": {
+    "vscode-nls": "^3.2.1"
+  }
+}
