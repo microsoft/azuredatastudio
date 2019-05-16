@@ -440,11 +440,6 @@ let registryProperties = {
 		'default': false,
 		'description': localize('mssql.query.arithAbort', 'Enable SET ARITHABORT option')
 	},
-	'mssql.query.showplanText': {
-		'type': 'boolean',
-		'default': false,
-		'description': localize('mssql.query.showplanText', 'Enable SET SHOWPLAN_TEXT option')
-	},
 	'mssql.query.statisticsTime': {
 		'type': 'boolean',
 		'default': false,
