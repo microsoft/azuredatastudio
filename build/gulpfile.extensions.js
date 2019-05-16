@@ -25,12 +25,6 @@ const _ = require('underscore');
 
 const extensionsPath = path.join(path.dirname(__dirname), 'extensions');
 
-/**Use of 'debug' allows one to emit console (error stream by default) on demand.
- *  By default nothing is emitted unless environment variable DEBUG is defined.
- * @see https://www.npmjs.com/package/debug
- */
-const trace = require('debug')(`gc:${path.basename(extensionsPath)}:trace`);
-
 const compilations = glob.sync('**/tsconfig.json', {
 	cwd: extensionsPath,
 	ignore: ['**/out/**', '**/node_modules/**']
@@ -41,15 +35,12 @@ const getBaseUrl = out => `https://ticino.blob.core.windows.net/sourcemaps/${com
 const tasks = compilations.map(function (tsconfigFile) {
 	const absolutePath = path.join(extensionsPath, tsconfigFile);
 	const relativeDirname = path.dirname(tsconfigFile);
-	const trace = require('debug')(`gc:${path.basename(extensionsPath)}:${relativeDirname}:trace`);
 
 	const tsconfig = require(absolutePath);
-	trace(`tsconfig=${JSON.stringify(tsconfig, undefined, '\t')}`);
 	const tsOptions = _.assign({}, tsconfig.extends ? require(path.join(extensionsPath, relativeDirname, tsconfig.extends)).compilerOptions : {}, tsconfig.compilerOptions);
-	tsOptions.verbose = tsOptions.verbose || false;
+	tsOptions.verbose = false;
 	tsOptions.sourceMap = true;
 	const outDir = tsOptions.outDir || 'out';
-	trace(`tsOptions=${JSON.stringify(tsOptions, undefined, '\t')}`);
 
 	const name = relativeDirname.replace(/\//g, '-');
 
@@ -58,8 +49,7 @@ const tasks = compilations.map(function (tsconfigFile) {
 	const src = path.join(srcBase, '**');
 	const out = path.join(root, outDir);
 	const baseUrl = getBaseUrl(out);
-	trace(`name=${name}\nroot=${root}\nsrcBase=${srcBase}\nout=${out}\nbaseUrl=${baseUrl}`);
-	let headerId, headerOut;
+		let headerId, headerOut;
 	let index = relativeDirname.indexOf('/');
 	if (index < 0) {
 		headerId = 'vscode.' + relativeDirname;
@@ -68,25 +58,18 @@ const tasks = compilations.map(function (tsconfigFile) {
 		headerId = 'vscode.' + relativeDirname.substr(0, index);
 		headerOut = path.join(`${relativeDirname.substr(index + 1)}`, outDir);
 	}
-	trace(`headerId=${headerId}\nheaderOut=${headerOut}`);
 
 	function createPipeline(build, emitError) {
 		const reporter = createReporter();
 
 		tsOptions.inlineSources = !!build;
 		tsOptions.base = path.dirname(absolutePath);
-		const trace = require('debug')(`gc:${path.basename(path.dirname(tsOptions.base))}/${path.basename(tsOptions.base)}:trace`);
-
-		trace(`tsOptions=${JSON.stringify(tsOptions, undefined, '\t')}`);
 
 		const compilation = tsb.create(tsOptions, null, null, err => reporter(err.toString()));
-		trace(`compilation=${JSON.stringify(compilation, undefined, '\t')}`);
 
 		return function () {
 			const input = es.through();
-			trace(`input=${JSON.stringify(input, undefined, '\t')}`);
 			const tsFilter = filter(['**/*.ts', '!**/lib/lib*.d.ts', '!**/node_modules/**'], { restore: true });
-			trace(`tsFilter=${JSON.stringify(tsFilter, undefined, '\t')}`);
 			const output = input
 				.pipe(plumber({
 					errorHandler: function (err) {
@@ -111,16 +94,13 @@ const tasks = compilations.map(function (tsconfigFile) {
 				// Filter out *.nls.json file. We needed them only to bundle meta data file.
 				.pipe(filter(['**', '!**/*.nls.json']))
 				.pipe(reporter.end(emitError));
-			trace(`output=${JSON.stringify(output, undefined, '\t')}`);
 			return es.duplex(input, output);
 		};
 	}
 
 	const srcOpts = { cwd: path.dirname(__dirname), base: srcBase };
-	trace(`srcOpts=${JSON.stringify(srcOpts, undefined, '\t')}`);
 
 	const cleanTask = task.define(`clean-extension-${name}`, util.rimraf(out));
-	trace(`cleanTask=${JSON.stringify(cleanTask, undefined, '\t')}`);
 
 	const compileTask = task.define(`compile-extension:${name}`, task.series(cleanTask, () => {
 		const pipeline = createPipeline(false, true);
@@ -130,7 +110,6 @@ const tasks = compilations.map(function (tsconfigFile) {
 			.pipe(pipeline())
 			.pipe(gulp.dest(out));
 	}));
-	trace(`compileTask=${JSON.stringify(compileTask, undefined, '\t')}`);
 
 	const watchTask = task.define(`watch-extension:${name}`, task.series(cleanTask, () => {
 		const pipeline = createPipeline(false);
@@ -141,7 +120,6 @@ const tasks = compilations.map(function (tsconfigFile) {
 			.pipe(util.incremental(pipeline, input))
 			.pipe(gulp.dest(out));
 	}));
-	trace(`watchTask=${JSON.stringify(watchTask, undefined, '\t')}`);
 
 	const compileBuildTask = task.define(`compile-build-extension-${name}`, task.series(cleanTask, () => {
 		const pipeline = createPipeline(true, true);
@@ -151,7 +129,6 @@ const tasks = compilations.map(function (tsconfigFile) {
 			.pipe(pipeline())
 			.pipe(gulp.dest(out));
 	}));
-	trace(`compileBuildTask=${JSON.stringify(compileBuildTask, undefined, '\t')}`);
 
 	// Tasks
 	gulp.task(compileTask);
@@ -165,15 +142,12 @@ const tasks = compilations.map(function (tsconfigFile) {
 });
 
 const compileExtensionsTask = task.define('compile-extensions', task.parallel(...tasks.map(t => t.compileTask)));
-trace(`compileExtensionsTask=${JSON.stringify(compileExtensionsTask, undefined, '\t')}`);
 gulp.task(compileExtensionsTask);
 exports.compileExtensionsTask = compileExtensionsTask;
 
 const watchExtensionsTask = task.define('watch-extensions', task.parallel(...tasks.map(t => t.watchTask)));
-trace(`watchExtensionsTask=${JSON.stringify(watchExtensionsTask, undefined, '\t')}`);
 gulp.task(watchExtensionsTask);
 exports.watchExtensionsTask = watchExtensionsTask;
 
 const compileExtensionsBuildTask = task.define('compile-extensions-build', task.parallel(...tasks.map(t => t.compileBuildTask)));
-trace(`compileExtensionsBuildTask=${JSON.stringify(compileExtensionsBuildTask, undefined, '\t')}`);
 exports.compileExtensionsBuildTask = compileExtensionsBuildTask;
