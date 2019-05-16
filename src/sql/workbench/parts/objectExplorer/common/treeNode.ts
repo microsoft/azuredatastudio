@@ -8,6 +8,7 @@ import { NodeType, SqlThemeIcon } from 'sql/workbench/parts/objectExplorer/commo
 import * as azdata from 'sqlops';
 
 import * as UUID from 'vs/base/common/uuid';
+import { URI } from 'vs/base/common/uri';
 
 export enum TreeItemCollapsibleState {
 	None = 0,
@@ -90,6 +91,8 @@ export class TreeNode {
 	public metadata: azdata.ObjectMetadata;
 
 	public iconType: string | SqlThemeIcon;
+
+	public iconPath: URI | { light: URI, dark: URI };
 
 	constructor(nodeTypeId: string, label: string, isAlwaysLeaf: boolean, nodePath: string,
 		nodeSubType: string, nodeStatus: string, parent: TreeNode, metadata: azdata.ObjectMetadata,

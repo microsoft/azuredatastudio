@@ -32,6 +32,7 @@ import { OpenSparkYarnHistoryTask } from './sparkFeature/historyTask';
 import { MssqlObjectExplorerNodeProvider, mssqlOutputChannel } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
 import { CmsService } from './cms/cmsService';
 import { registerSearchServerCommand } from './objectExplorerNodeProvider/command';
+import { MssqlIconProvider } from './iconProvider';
 
 const baseConfig = require('./config.json');
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
@@ -110,7 +111,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 
 		let nodeProvider = new MssqlObjectExplorerNodeProvider(prompter, appContext);
 		azdata.dataprotocol.registerObjectExplorerNodeProvider(nodeProvider);
-
+		let iconProvider = new MssqlIconProvider();
+		azdata.dataprotocol.registerIconProvider(iconProvider);
 		cmsService = new CmsService(appContext, languageClient);
 
 		activateSparkFeatures(appContext);

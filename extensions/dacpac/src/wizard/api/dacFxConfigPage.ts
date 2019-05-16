@@ -12,6 +12,7 @@ import * as path from 'path';
 import { DataTierApplicationWizard } from '../dataTierApplicationWizard';
 import { DacFxDataModel } from './models';
 import { BasePage } from './basePage';
+import { sanitizeStringForFilename } from './utils';
 
 const localize = nls.loadMessageBundle();
 
@@ -147,7 +148,7 @@ export abstract class DacFxConfigPage extends BasePage {
 	}
 
 	protected generateFilePathFromDatabaseAndTimestamp(): string {
-		return path.join(this.getRootPath(), this.model.database + '-' + this.getDateTime() + this.fileExtension);
+		return path.join(this.getRootPath(), sanitizeStringForFilename(this.model.database) + '-' + this.getDateTime() + this.fileExtension);
 	}
 
 	protected getDateTime(): string {

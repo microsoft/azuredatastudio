@@ -210,6 +210,7 @@ export class QueryManagementService implements IQueryManagementService {
 		});
 	}
 	public runQueryString(ownerUri: string, queryString: string): Thenable<void> {
+		this.addTelemetry(TelemetryKeys.RunQueryString, ownerUri);
 		return this._runAction(ownerUri, (runner) => {
 			return runner.runQueryString(ownerUri, queryString);
 		});

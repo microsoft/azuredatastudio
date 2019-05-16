@@ -1,2 +1,4 @@
+coverage/**
+coverageConfig.json
 src/**
 tsconfig.json

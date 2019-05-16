@@ -305,6 +305,7 @@ const sqlBuiltInExtensions = [
 	'big-data-cluster',
 	'dacpac',
 	'schema-compare',
+	'resource-deployment',
 	'cms'
 ];
 // {{SQL CARBON EDIT}} - End

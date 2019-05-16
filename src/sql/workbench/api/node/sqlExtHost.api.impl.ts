@@ -269,6 +269,10 @@ export function createApiFactory(
 				return extHostDataProvider.$registerObjectExplorerNodeProvider(provider);
 			};
 
+			let registerIconProvider = (provider: azdata.IconProvider): vscode.Disposable => {
+				return extHostDataProvider.$registerIconProvider(provider);
+			};
+
 			let registerTaskServicesProvider = (provider: azdata.TaskServicesProvider): vscode.Disposable => {
 				provider.registerOnTaskCreated((response: azdata.TaskInfo) => {
 					extHostDataProvider.$onTaskCreated(provider.handle, response);
@@ -365,6 +369,7 @@ export function createApiFactory(
 				registerMetadataProvider,
 				registerObjectExplorerProvider,
 				registerObjectExplorerNodeProvider,
+				registerIconProvider,
 				registerProfilerProvider,
 				registerRestoreProvider,
 				registerScriptingProvider,
@@ -390,8 +395,8 @@ export function createApiFactory(
 				createWebViewDialog(name: string) {
 					return extHostModalDialogs.createDialog(name);
 				},
-				createModelViewDialog(title: string, dialogName?: string): azdata.window.Dialog {
-					return extHostModelViewDialog.createDialog(title, dialogName, extension);
+				createModelViewDialog(title: string, dialogName?: string, isWide?: boolean): azdata.window.Dialog {
+					return extHostModelViewDialog.createDialog(title, dialogName, extension, !!isWide);
 				},
 				createTab(title: string): azdata.window.DialogTab {
 					return extHostModelViewDialog.createTab(title, extension);

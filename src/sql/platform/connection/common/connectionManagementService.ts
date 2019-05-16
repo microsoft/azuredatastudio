@@ -52,12 +52,15 @@ import { IConnectionDialogService } from 'sql/workbench/services/connection/comm
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ILogService } from 'vs/platform/log/common/log';
+import * as interfaces from './interfaces';
 
 export class ConnectionManagementService extends Disposable implements IConnectionManagementService {
 
 	_serviceBrand: any;
 
 	private _providers = new Map<string, { onReady: Thenable<azdata.ConnectionProvider>, properties: ConnectionProviderProperties }>();
+	private _iconProviders = new Map<string, azdata.IconProvider>();
+	private _connectionIconIdCache = new Map<string, string>();
 
 	private _uriToProvider: { [uri: string]: string; } = Object.create(null);
 
@@ -174,6 +177,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 		// we know this is a deferred promise because we made it
 		(this._providers.get(providerId).onReady as Deferred<azdata.ConnectionProvider>).resolve(provider);
+	}
+
+	public registerIconProvider(providerId: string, iconProvider: azdata.IconProvider): void {
+		this._iconProviders.set(providerId, iconProvider);
 	}
 
 	/**
@@ -543,10 +550,27 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		if (options.showDashboard) {
 			this.showDashboardForConnectionManagementInfo(connectionManagementInfo.connectionProfile);
 		}
+
+		let connectionProfile = connectionManagementInfo.connectionProfile;
 		this._onConnect.fire(<IConnectionParams>{
 			connectionUri: uri,
-			connectionProfile: connectionManagementInfo.connectionProfile
+			connectionProfile: connectionProfile
 		});
+
+		let iconProvider = this._iconProviders.get(connectionManagementInfo.providerId);
+		if (iconProvider) {
+			let serverInfo: azdata.ServerInfo = this.getServerInfo(connectionProfile.id);
+			let profile: interfaces.IConnectionProfile = connectionProfile.toIConnectionProfile();
+			iconProvider.getConnectionIconId(profile, serverInfo).then(iconId => {
+				if (iconId) {
+					this._connectionIconIdCache.set(connectionProfile.id, iconId);
+				}
+			});
+		}
+	}
+
+	public getConnectionIconId(connectionId: string): string {
+		return this._connectionIconIdCache.get(connectionId);
 	}
 
 	public showDashboard(connection: IConnectionProfile): Thenable<boolean> {
@@ -1391,5 +1415,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			});
 		}
 		return Promise.resolve(undefined);
+	}
+
+	public getProviderProperties(providerName: string): ConnectionProviderProperties {
+		let connectionProvider = this._providers.get(providerName);
+		return connectionProvider && connectionProvider.properties;
 	}
 }
