@@ -15,9 +15,7 @@ const ssmsMinVer = JSON.parse(JSON.stringify(require('./config.json'))).version;
 
 let exePath: string;
 const runningProcesses: Map<number, ChildProcess> = new Map<number, ChildProcess>();
-let statusBarItem: vscode.StatusBarItem;
-let statusBarItemTimer: NodeJS.Timer;
-const STATUS_BAR_ITEM_DISPLAY_TIME_MS: number = 2000;
+
 interface SmoMapping {
 	action: string;
 	urnName: string;
@@ -68,8 +66,6 @@ export interface LaunchSsmsDialogParams {
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
 	// This is for Windows-specific support so do nothing on other platforms
 	if (process.platform === 'win32') {
-		statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
-
 		Telemetry.sendTelemetryEvent('startup/ExtensionActivated');
 		exePath = path.join(context.extensionPath, 'ssmsmin', 'Windows', ssmsMinVer, 'ssmsmin.exe');
 		registerCommands(context);
