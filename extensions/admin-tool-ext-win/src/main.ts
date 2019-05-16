@@ -16,7 +16,9 @@ const ssmsMinVer = JSON.parse(JSON.stringify(require('./config.json'))).version;
 
 let exePath: string;
 const runningProcesses: Map<number, ChildProcess> = new Map<number, ChildProcess>();
-
+let statusBarItem: vscode.StatusBarItem;
+let statusBarItemTimer: NodeJS.Timer;
+const STATUS_BAR_ITEM_DISPLAY_TIME_MS: number = 2000;
 interface SmoMapping {
 	action: string;
 	urnName: string;
@@ -67,6 +69,7 @@ export interface LaunchSsmsDialogParams {
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
 	// This is for Windows-specific support so do nothing on other platforms
 	if (process.platform === 'win32') {
+		statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
 		Telemetry.sendTelemetryEvent('startup/ExtensionActivated');
 		exePath = path.join(context.extensionPath, 'ssmsmin', 'Windows', ssmsMinVer, 'ssmsmin.exe');
 		registerCommands(context);
@@ -144,23 +147,6 @@ async function launchSsmsDialog(action: string, connectionContext: azdata.Object
 		return;
 	}
 
-	// Currently Azure isn't supported by the SSMS server properties dialog
-	const serverInfo = await azdata.connection.getServerInfo(connectionContext.connectionProfile.id);
-	if (serverInfo && serverInfo.isCloud) {
-		vscode.window.showErrorMessage(localize('adminToolExtWin.invalidEngineType', 'This option is not currently available for this engine type.'));
-		return;
-	}
-
-	// Note - this is a temporary fix for the issue that currently the connection API doesn't allow retrieving credentials for a disconnected
-	// node. So until that's fixed we'll prevent users from attempting to launch SsmsMin on a disconnected node.
-	// We also aren't able to hide the menu item on disconnected nodes because we currently don't have a contextKey for the connected status
-	// of a node.
-	const activeConnections = await azdata.connection.getActiveConnections();
-	if (!activeConnections.some(conn => conn.connectionId === connectionContext.connectionProfile.id)) {
-		vscode.window.showErrorMessage(localize('adminToolExtWin.notConnected', 'This option requires a connected node - please connect and try again.'));
-		return;
-	}
-
 	let oeNode: azdata.objectexplorer.ObjectExplorerNode;
 	// Server node is a Connection node and so doesn't have the NodeInfo
 	if (connectionContext.isConnectionNode) {
@@ -194,6 +180,8 @@ async function launchSsmsDialog(action: string, connectionContext: azdata.Object
 	const args = buildSsmsMinCommandArgs(params);
 
 	Telemetry.sendTelemetryEvent('LaunchSsmsDialog', { 'action': action });
+	showStatusBarItem(localize('adminToolExtWin.launchingDialogStatus', 'Launching dialog...'));
+
 	// This will be an async call since we pass in the callback
 	const proc: ChildProcess = exec(
 		/*command*/ `"${exePath}" ${args}`,
@@ -232,7 +220,7 @@ export function buildSsmsMinCommandArgs(params: LaunchSsmsDialogParams): string 
 	return `${params.action ? '-a "' + backEscapeDoubleQuotes(params.action) + '"' : ''}\
 ${params.server ? ' -S "' + backEscapeDoubleQuotes(params.server) + '"' : ''}\
 ${params.database ? ' -D "' + backEscapeDoubleQuotes(params.database) + '"' : ''}\
-${params.useAad !== true && params.user ? ' -U "' + backEscapeDoubleQuotes(params.user) + '"' : ''}\
+${params.user ? ' -U "' + backEscapeDoubleQuotes(params.user) + '"' : ''}\
 ${params.useAad === true ? ' -G' : ''}\
 ${params.urn ? ' -u "' + backEscapeDoubleQuotes(params.urn) + '"' : ''}`;
 }
@@ -258,5 +246,17 @@ export async function buildUrn(serverName: string, node: azdata.objectexplorer.O
 		}
 		node = await node.getParent();
 	}
+
+	serverName = /\.database\.windows\.net$/i.test(serverName) ? serverName.slice(0, serverName.length - 21) : serverName;
 	return [`Server[@Name='${doubleEscapeSingleQuotes(serverName)}']`].concat(urnNodes).join('/');
+}
+
+function showStatusBarItem(text: string) {
+	statusBarItem.text = text;
+	statusBarItem.tooltip = text;
+	statusBarItem.show();
+	clearTimeout(statusBarItemTimer);
+	statusBarItemTimer = setTimeout(function () {
+		statusBarItem.hide();
+	}, STATUS_BAR_ITEM_DISPLAY_TIME_MS);
 }
