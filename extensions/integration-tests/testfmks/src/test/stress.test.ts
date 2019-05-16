@@ -110,18 +110,28 @@ suite('Stress Fmks unit tests', function () {
 		});
 	});
 
+	// TODO Parameter validation tests for Stress constructor and Stress.Ru()) method.
+	//
+	//
+
+
+	// Basic Positive test for canonical use case.
+	//
 	test('Basic Positive Test, ensures multiple threads and iterations gets performed as expected', async function () {
 		console.log('invoking basicTest()');
 		let retVal: StressResult = await this.Tester.basicTest();
 		console.log(`test basicTest done, total invocations=${this.Tester.t}`);
-		console.log(`test retVal is ${JSON.stringify(retVal)}`);
+		console.log(`test retVal is ${JSON.stringify(retVal, undefined, '\t')}`);
 		assert(retVal.numPasses === StressifyTester.dop * StressifyTester.iter, `total invocations should be ${StressifyTester.dop * StressifyTester.iter}`);
 	});
+
+	// Basic Positive test for canonical use case.
+	//
 	test('Verifies Pass, Fail, Error counts of stress execution', async function () {
 		console.log('invoking testStressStats()');
 		let retVal: StressResult = await this.Tester.testStressStats();
 		console.log(`test testStressStats done, total invocations=${this.Tester.t}`);
-		console.log(`test retVal is ${JSON.stringify(retVal)}`);
+		console.log(`test retVal is ${JSON.stringify(retVal, undefined, '\t')}`);
 		assert(retVal.numPasses + retVal.fails.length + retVal.errors.length === StressifyTester.dop * StressifyTester.iter, `total invocations should be ${StressifyTester.dop * StressifyTester.iter}`);
 		assert.equal(retVal.fails.length, this.Tester.f, `Number of failures does not match the expected`);
 		assert.equal(retVal.errors.length, this.Tester.e, `Number of errors does not match the expected`);
