@@ -119,12 +119,17 @@ export class ConnectionDialogWidget extends Modal {
 		if (this._newConnectionParams && this._newConnectionParams.providers) {
 			const validProviderNames = Object.keys(this.providerNameToDisplayNameMap).filter(x => this.includeProvider(x, this._newConnectionParams));
 			if (validProviderNames && validProviderNames.length > 0) {
-				filteredProviderTypes = filteredProviderTypes.filter(x => validProviderNames.find(v => this.providerNameToDisplayNameMap[v] === x) !== undefined);
+				filteredProviderTypes = filteredProviderTypes.filter(x => validProviderNames.find(
+					v => this.providerNameToDisplayNameMap[v] === x) !== undefined
+				);
 			}
 		} else {
-			filteredProviderTypes = filteredProviderTypes.filter(x => x !== Constants.cmsProviderDisplayName);
+			filteredProviderTypes = filteredProviderTypes.filter(x => x !== Constants.cmsProviderName);
 		}
-		this._providerTypeSelectBox.setOptions(filteredProviderTypes);
+		this._providerTypeSelectBox.setOptions(filteredProviderTypes.filter((providerType, index) =>
+			// Remove duplicate listings
+			filteredProviderTypes.indexOf(providerType) === index)
+		);
 	}
 
 	private includeProvider(providerName: string, params?: INewConnectionParams): Boolean {

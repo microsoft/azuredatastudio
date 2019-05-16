@@ -545,15 +545,6 @@
 				}
 			},
 			{
-				"command": "cms.resource.refreshCmsServer",
-				"title": "%cms.resource.refreshCmsServer.title%",
-				"when": "viewItem == cms.resource.itemType.cmsNodeContainer",
-				"icon": {
-					"light": "resources/light/refresh.svg",
-					"dark": "resources/dark/refresh_inverse.svg"
-				}
-			},
-			{
 				"command": "cms.resource.registerCmsServer",
 				"title": "%cms.resource.registerCmsServer.title%",
 				"icon": {
@@ -616,11 +607,6 @@
 				{
 					"command": "cms.resource.refreshServerGroup",
 					"when": "viewItem == cms.resource.itemType.serverGroup",
-					"group": "navigation@10"
-				},
-				{
-					"command": "cms.resource.refreshCmsServer",
-					"when": "viewItem == cms.resource.itemType.cmsNodeContainer",
 					"group": "navigation@10"
 				},
 				{
