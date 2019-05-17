@@ -35,7 +35,7 @@ export default class TableComponent extends ComponentBase implements IComponent,
 	private _table: Table<Slick.SlickData>;
 	private _tableData: TableDataView<Slick.SlickData>;
 	private _tableColumns;
-	private _checkboxSelectColumn: CheckboxCustomActionColumn<{}>;
+	private _checkboxColumns: CheckboxCustomActionColumn<{}>[] = [];
 	private _onCheckBoxChanged = new Emitter<IRowCheckboxChangedArg>();
 	public readonly onCheckBoxChanged: vsEvent<IRowCheckboxChangedArg> = this._onCheckBoxChanged.event;
 
@@ -55,9 +55,13 @@ export default class TableComponent extends ComponentBase implements IComponent,
 	transformColumns(columns: string[] | azdata.TableColumn[]): Slick.Column<any>[] {
 		let tableColumns: any[] = <any[]>columns;
 		if (tableColumns) {
-			return (<any[]>columns).map(col => {
-				if (col.value) {
-					return <Slick.Column<any>>{
+			let mycolumns: Slick.Column<any>[] = [];
+			(<any[]>columns).map(col => {
+				if (col.type && col.type === 1) {
+					this.createCheckBoxPlugin(col);
+				}
+				else if (col.value) {
+					mycolumns.push(<Slick.Column<any>>{
 						name: col.value,
 						id: col.value,
 						field: col.value,
@@ -65,15 +69,16 @@ export default class TableComponent extends ComponentBase implements IComponent,
 						cssClass: col.cssClass,
 						headerCssClass: col.headerCssClass,
 						toolTip: col.toolTip
-					};
+					});
 				} else {
-					return <Slick.Column<any>>{
+					mycolumns.push(<Slick.Column<any>>{
 						name: <string>col,
 						id: <string>col,
 						field: <string>col
-					};
+					});
 				}
 			});
+			return mycolumns;
 		} else {
 			return (<string[]>columns).map(col => {
 				return <Slick.Column<any>>{
@@ -84,6 +89,8 @@ export default class TableComponent extends ComponentBase implements IComponent,
 			});
 		}
 	}
+
+
 
 	public static transformData(rows: string[][], columns: any[]): { [key: string]: string }[] {
 		if (rows && columns) {
@@ -171,28 +178,48 @@ export default class TableComponent extends ComponentBase implements IComponent,
 			this._table.setSelectedRows(this.selectedRows);
 		}
 
-		if (this.checkboxColumn) {
-			this.registerCheckboxPlugin(this.checkboxColumn.title, this.checkboxColumn.defaultState, this.checkboxColumn.width);
+		for (let col in this._checkboxColumns) {
+			this.registerCheckboxPlugin(this._checkboxColumns[col]);
 		}
 
 		this.layoutTable();
 		this.validate();
 	}
 
-	private registerCheckboxPlugin(title: string, defaultChecked: boolean, width: number): void {
-		if (!this._checkboxSelectColumn) {
-			this._checkboxSelectColumn = new CheckboxCustomActionColumn({ title: title, toolTip: title, width: width, defaultChecked: defaultChecked });
-			this._register(this._checkboxSelectColumn.onChange((state) => {
+	private createCheckBoxPlugin(col: any) {
+		if (!this._checkboxColumns[col.value]) {
+			let name = col.value;
+			this._checkboxColumns[col.value] = new CheckboxCustomActionColumn({ title: name, toolTip: name, width: col.width });
+			this._register(this._checkboxColumns[col.value].onChange((state) => {
 				this.fireEvent({
 					eventType: ComponentEventType.onCheckBoxChanged,
-					args: state,
+					args: {
+						row: state.row,
+						column: state.column,
+						checked: state.checked,
+						name: name
+					}
 				});
 			}));
 		}
+	}
 
-		this._tableColumns.unshift(this._checkboxSelectColumn.getColumnDefinition());
+
+	private registerCheckboxPlugin(checkboxSelectColumn: CheckboxCustomActionColumn<{}>): void {
+		//title: string, defaultChecked: boolean, width: number): void {
+		//if (!this._checkboxSelectColumn) {
+		//	this._checkboxSelectColumn = new CheckboxCustomActionColumn({ title: title, toolTip: title, width: width, defaultChecked: defaultChecked });
+		//	this._register(this._checkboxSelectColumn.onChange((state) => {
+		//		this.fireEvent({
+		//			eventType: ComponentEventType.onCheckBoxChanged,
+		//			args: state,
+		//		});
+		//	}));
+		//}
+
+		this._tableColumns.unshift(checkboxSelectColumn.getColumnDefinition());
+		this._table.registerPlugin(checkboxSelectColumn);
 		this._table.columns = this._tableColumns;
-		this._table.registerPlugin(this._checkboxSelectColumn);
 		this._table.autosizeColumns();
 	}
 

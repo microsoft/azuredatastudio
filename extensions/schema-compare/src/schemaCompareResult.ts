@@ -36,6 +36,9 @@ export class SchemaCompareResult {
 	private deploymentOptions: azdata.DeploymentOptions;
 	private schemaCompareOptionDialog: SchemaCompareOptionsDialog;
 	private tablelistenersToDispose: vscode.Disposable[] = [];
+	private originalSourceExcludes = {};
+	private originalTargetExcludes = {};
+	private sourceTargetSwitched = false;
 
 	constructor(private sourceName: string, private targetName: string, private sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, private targetEndpointInfo: azdata.SchemaCompareEndpointInfo) {
 		this.SchemaCompareActionMap = new Map<Number, string>();
@@ -184,6 +187,12 @@ export class SchemaCompareResult {
 			data: data,
 			columns: [
 				{
+					value: localize('schemaCompare.includeColumnName', 'Include'),
+					cssClass: 'align-with-header',
+					width: 15,
+					type: azdata.ColumnType.checkBox
+				},
+				{
 					value: localize('schemaCompare.typeColumn', 'Type'),
 					cssClass: 'align-with-header',
 					width: 50
@@ -202,14 +211,8 @@ export class SchemaCompareResult {
 					value: localize('schemaCompare.targetNameColumn', 'Target Name'),
 					cssClass: 'align-with-header',
 					width: 150
-				}],
-			checkboxColumn:
-			{
-				title: localize('schemaCompare.includeColumnName', 'Include'),
-				width: 15,
-				toolTip: localize('schemaCompare.includeColumnName', 'Include'),
-				defaultState: true
-			}
+				}
+			],
 		});
 
 		this.splitView.addItem(this.differencesTable);
@@ -224,6 +227,16 @@ export class SchemaCompareResult {
 		this.switchButton.enabled = true;
 		this.compareButton.enabled = true;
 		this.optionsButton.enabled = true;
+
+		// explicitely exclude things that were excluded in previous iteration
+		let thingsToExclude = this.sourceTargetSwitched ? this.originalTargetExcludes : this.originalSourceExcludes;
+		if (thingsToExclude) {
+			for (let item in thingsToExclude) {
+				if (<azdata.DiffEntry>thingsToExclude[item]) {
+					service.schemaCompareIncludeExcludeNode(this.comparisonResult.operationId, thingsToExclude[item], false, azdata.TaskExecutionMode.execute);
+				}
+			}
+		}
 
 		if (this.comparisonResult.differences.length > 0) {
 			this.flexModel.addItem(this.splitView);
@@ -258,7 +271,46 @@ export class SchemaCompareResult {
 		this.tablelistenersToDispose.push(this.differencesTable.onCheckBoxChanged(async (rowState) => {
 			let diff = this.comparisonResult.differences[rowState.row];
 			await service.schemaCompareIncludeExcludeNode(this.comparisonResult.operationId, diff, rowState.checked, azdata.TaskExecutionMode.execute);
+			this.saveExcludeState(rowState);
 		}));
+	}
+
+	// saves state based on source if present then target (same as SSDT)
+	private saveExcludeState(rowState: azdata.IRowCheckboxChangedArg) {
+		if (rowState) {
+			let diff = this.comparisonResult.differences[rowState.row];
+			let key = diff.sourceValue ? diff.sourceValue : diff.targetValue;
+			if (key) {
+				if (!this.sourceTargetSwitched) {
+					delete this.originalSourceExcludes[key];
+					if (!rowState.checked) {
+						this.originalSourceExcludes[key] = diff;
+					}
+				}
+				else {
+					delete this.originalTargetExcludes[key];
+					if (!rowState.checked) {
+						this.originalTargetExcludes[key] = diff;
+					}
+				}
+			}
+		}
+	}
+
+	private shouldBeIncluded(diff: azdata.DiffEntry): boolean {
+		let key = diff.sourceValue ? diff.sourceValue : diff.targetValue;
+		if (key) {
+			if (this.sourceTargetSwitched === true && this.originalTargetExcludes[key]) {
+				this.originalTargetExcludes[key] = diff;
+				return false;
+			}
+			if (this.sourceTargetSwitched === false && this.originalSourceExcludes[key]) {
+				this.originalSourceExcludes[key] = diff;
+				return false;
+			}
+			return true;
+		}
+		return true;
 	}
 
 	private getAllDifferences(differences: azdata.DiffEntry[]): string[][] {
@@ -267,7 +319,8 @@ export class SchemaCompareResult {
 			differences.forEach(difference => {
 				if (difference.differenceType === azdata.SchemaDifferenceType.Object) {
 					if (difference.sourceValue !== null || difference.targetValue !== null) {
-						data.push([difference.name, difference.sourceValue, this.SchemaCompareActionMap[difference.updateAction], difference.targetValue]);
+						let state: boolean = this.shouldBeIncluded(difference);
+						data.push([state, difference.name, difference.sourceValue, this.SchemaCompareActionMap[difference.updateAction], difference.targetValue]);
 					}
 				}
 			});
@@ -456,6 +509,8 @@ export class SchemaCompareResult {
 				]
 			});
 
+			// toggle source target
+			this.sourceTargetSwitched = this.sourceTargetSwitched ? false : true;
 			this.startCompare();
 		});
 	}

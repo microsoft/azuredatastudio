@@ -18,6 +18,7 @@ const defaultOptions: ICheckboxSelectColumnOptions = {
 export interface IRowCheckboxChangedArg {
 	checked: boolean;
 	row: number;
+	column: number;
 }
 
 const checkboxTemplate = `
@@ -31,7 +32,6 @@ export class CheckboxCustomActionColumn<T> implements Slick.Plugin<T> {
 	private _grid: Slick.Grid<T>;
 	private _handler = new Slick.EventHandler();
 	private _selectedRowsLookup = {};
-	private _initialized: boolean = false;
 
 	private _onChange = new Emitter<IRowCheckboxChangedArg>();
 	public readonly onChange: vsEvent<IRowCheckboxChangedArg> = this._onChange.event;
@@ -62,22 +62,19 @@ export class CheckboxCustomActionColumn<T> implements Slick.Plugin<T> {
 				return;
 			}
 
-			this.toggleCheckBox(args.row);
+			this.toggleCheckBox(args.row, args.cell);
 			e.stopPropagation();
 			e.stopImmediatePropagation();
 		}
 	}
 
-	private toggleCheckBox(row: number): void {
-		// if its been toggled once that means selected rows is initialized
-		this._initialized = true;
-
+	private toggleCheckBox(row: number, col: number): void {
 		if (this._selectedRowsLookup[row]) {
-			this._onChange.fire({ checked: false, row: row });
 			delete this._selectedRowsLookup[row];
+			this._onChange.fire({ checked: false, row: row, column: col });
 		} else {
 			this._selectedRowsLookup[row] = true;
-			this._onChange.fire({ checked: true, row: row });
+			this._onChange.fire({ checked: true, row: row, column: col });
 		}
 	}
 
@@ -95,12 +92,16 @@ export class CheckboxCustomActionColumn<T> implements Slick.Plugin<T> {
 		};
 	}
 
+	// make sure that init is called before the formatter runs
 	private checkboxSelectionFormatter(row, cell, value, columnDef: Slick.Column<T>, dataContext): string {
-		if (this._options.defaultChecked && !this._initialized) {
+		let v = (this._grid) ? this._grid.getDataItem(row) : null;
+		if (v && v[this._options.title] === true) {
 			this._selectedRowsLookup[row] = true;
+			return strings.format(checkboxTemplate, 'checked');
 		}
-		return this._selectedRowsLookup[row]
-			? strings.format(checkboxTemplate, 'checked')
-			: strings.format(checkboxTemplate, '');
+		else {
+			delete this._selectedRowsLookup[row];
+			return strings.format(checkboxTemplate, '');
+		}
 	}
 }

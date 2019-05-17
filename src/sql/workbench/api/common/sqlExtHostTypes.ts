@@ -635,3 +635,9 @@ export enum SchemaObjectType {
 	ServerRoles = 64,
 	ServerTriggers = 65
 }
+
+export enum ColumnType {
+	text = 0,
+	checkBox = 1,
+	button = 2
+}

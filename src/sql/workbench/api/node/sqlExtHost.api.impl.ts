@@ -541,7 +541,8 @@ export function createApiFactory(
 				SchemaUpdateAction: sqlExtHostTypes.SchemaUpdateAction,
 				SchemaDifferenceType: sqlExtHostTypes.SchemaDifferenceType,
 				SchemaCompareEndpointType: sqlExtHostTypes.SchemaCompareEndpointType,
-				SchemaObjectType: sqlExtHostTypes.SchemaObjectType
+				SchemaObjectType: sqlExtHostTypes.SchemaObjectType,
+				ColumnType: sqlExtHostTypes.ColumnType,
 			};
 		},
 
