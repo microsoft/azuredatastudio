@@ -54,20 +54,6 @@ export function getSuiteType(): SuiteType {
 }
 
 /**
- * decorator function to run some code at decorator load time before other code is evaluated. Invoke the {@link func}method with given {@link args} and then return a decorator function that does not modify the method for which it is called
- * @param func - the {@link Function} to be invoked at load time.
- * @param args - the argument array to be passed as parameters to the {@link func}.
- */
-export function runOnCodeLoad(func: Function, ...args) {
-	func.apply(this, args);
-	return function (memberClass: any, memberName: string, memberDescriptor: PropertyDescriptor) {
-		trace(`Decorator runOnCodeLoad called for function: ${memberName}, on object: ${JSON.stringify(this)} with args: (${args.join(',')})`);
-		return memberDescriptor;
-	};
-}
-
-
-/**
  * returns a string in 'capitalized case' where first letter of every word is capital and all other letters are lowercase.
  * @param inputString - the string to be converted to capitalized case
  */

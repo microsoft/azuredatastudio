@@ -207,9 +207,7 @@ class Stress {
 
 		// Now await all of the Promises for each of the above invocation.
 		//
-		await Promise.all(pendingPromises).then(values => {
-			debug(`A stress thread finished with value: ${JSON.stringify(values, undefined, '\t')}`);
-		}).catch(fatalError => {
+		await Promise.all(pendingPromises).catch(fatalError => {
 			debug(`A fatal error was encountered running stress thread: ${JSON.stringify(fatalError, undefined, '\t')}`);
 			throw fatalError;
 		});

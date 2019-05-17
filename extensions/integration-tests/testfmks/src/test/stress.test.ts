@@ -5,9 +5,26 @@
 
 'use strict';
 import 'mocha';
-import { sleep, bear, runOnCodeLoad, getSuiteType, SuiteType } from '../utils';
+import { sleep, bear, getSuiteType, SuiteType } from '../utils';
 import { stressify, StressResult } from '../stress';
 import assert = require('assert');
+
+const debug = require('debug')('unittest:stress');
+const trace = require('debug')('unittest:stress:trace');
+
+/**
+ * decorator function to run some code at decorator load time before other code is evaluated. Invoke the {@link func} method with given {@link args}
+ * 		and then return a decorator function that does not modify the method for which it is called.
+ * @param func - the {@link Function} to be invoked at load time.
+ * @param args - the argument array to be passed as parameters to the {@link func}.
+ */
+function runOnCodeLoad(func: Function, ...args) {
+	func.apply(this, args);
+	return function (memberClass: any, memberName: string, memberDescriptor: PropertyDescriptor) {
+		trace(`Decorator runOnCodeLoad called for function: ${memberName}, on object: ${JSON.stringify(this)} with args: (${args.join(',')})`);
+		return memberDescriptor;
+	};
+}
 
 class StressifyTester {
 	static dop: number = 5;
@@ -20,11 +37,12 @@ class StressifyTester {
 	@runOnCodeLoad(StressifyTester.prototype.setEnvVariableSuiteType, 'Stress')
 	setEnvVariableSuiteType(suiteType: string) {
 		process.env.SuiteType = suiteType;
-		console.log(`environment variable SuiteType set to ${process.env.SuiteType}`);
+		debug(`environment variable SuiteType set to ${process.env.SuiteType}`);
 	}
 
 	static randomString(length: number = 8): string {
-		// ~~ is double bitwise not operator which is a faster substitute for Math.floor() for positive numbers. Techinically ~~ just removes everything to the right of decimal point.
+		// ~~ is double bitwise not operator which is a faster substitute for Math.floor() for positive numbers.
+		//	Techinically ~~ just removes everything to the right of decimal point.
 		//
 		return [...Array(length)].map(i => (~~(Math.random() * 36)).toString(36)).join('');
 	}
@@ -33,7 +51,10 @@ class StressifyTester {
 		let origSuiteType: string = process.env.SuiteType;
 		try {
 			process.env.SuiteType = tst.envSuiteType;
-			assert.equal(getSuiteType(), tst.expected);
+			trace(`setting env.SuiteType to: ${process.env.SuiteType}`);
+			const suiteType = getSuiteType();
+			trace(`suiteType evaluated to: ${suiteType} by getSuiteType() function`);
+			assert.equal(suiteType, tst.expected);
 		}
 		finally {
 			process.env.SuiteType = origSuiteType;
@@ -87,12 +108,12 @@ suite('Stress Fmks unit tests', function () {
 			'expected': SuiteType.Integration
 		},
 		{
-			'testDescription': `Test: EnvVar:5::env SuiteType set to ${SuiteType.Stress} string should default to ${SuiteType.Integration}`,
+			'testDescription': `EnvVar:5::env SuiteType set to ${SuiteType.Stress} string should default to ${SuiteType.Integration}`,
 			'envSuiteType': 'sTreSS', // Casing is mixed on purpose
 			'expected': SuiteType.Stress
 		},
 		{
-			'testDescription': `Test: EnvVar:6::env SuiteType set to ${SuiteType.Stress} string should default to ${SuiteType.Integration}`,
+			'testDescription': `EnvVar:6::env SuiteType set to ${SuiteType.Stress} string should default to ${SuiteType.Integration}`,
 			'envSuiteType': 'PErf', // Casing is mixed on purpose
 			'expected': SuiteType.Perf
 		},
@@ -118,20 +139,20 @@ suite('Stress Fmks unit tests', function () {
 	// Basic Positive test for canonical use case.
 	//
 	test('Basic Positive Test, ensures multiple threads and iterations gets performed as expected', async function () {
-		console.log('invoking basicTest()');
+		debug('invoking basicTest()');
 		let retVal: StressResult = await this.Tester.basicTest();
-		console.log(`test basicTest done, total invocations=${this.Tester.t}`);
-		console.log(`test retVal is ${JSON.stringify(retVal, undefined, '\t')}`);
+		debug(`test basicTest done, total invocations=${this.Tester.t}`);
+		debug(`test retVal is ${JSON.stringify(retVal, undefined, '\t')}`);
 		assert(retVal.numPasses === StressifyTester.dop * StressifyTester.iter, `total invocations should be ${StressifyTester.dop * StressifyTester.iter}`);
 	});
 
 	// Basic Positive test for canonical use case.
 	//
 	test('Verifies Pass, Fail, Error counts of stress execution', async function () {
-		console.log('invoking testStressStats()');
+		debug('invoking testStressStats()');
 		let retVal: StressResult = await this.Tester.testStressStats();
-		console.log(`test testStressStats done, total invocations=${this.Tester.t}`);
-		console.log(`test retVal is ${JSON.stringify(retVal, undefined, '\t')}`);
+		debug(`test testStressStats done, total invocations=${this.Tester.t}`);
+		debug(`test retVal is ${JSON.stringify(retVal, undefined, '\t')}`);
 		assert(retVal.numPasses + retVal.fails.length + retVal.errors.length === StressifyTester.dop * StressifyTester.iter, `total invocations should be ${StressifyTester.dop * StressifyTester.iter}`);
 		assert.equal(retVal.fails.length, this.Tester.f, `Number of failures does not match the expected`);
 		assert.equal(retVal.errors.length, this.Tester.e, `Number of errors does not match the expected`);
