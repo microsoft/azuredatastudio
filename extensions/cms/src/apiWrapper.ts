@@ -106,7 +106,7 @@ export class ApiWrapper {
 	}
 
 	public async setConfiguration(value: any): Promise<void> {
-		await vscode.workspace.getConfiguration('cms').update('cmsServers', value, true);
+		await vscode.workspace.getConfiguration('cms').update('servers', value, true);
 	}
 
 	/**
@@ -184,6 +184,10 @@ export class ApiWrapper {
 		return azdata.connection.openConnectionDialog(providers, initialConnectionProfile, connectionCompletionOptions);
 	}
 
+	public getConnectionString(connection: azdata.connection.Connection): Thenable<string> {
+		return azdata.connection.getConnectionString(connection.connectionId, false);
+	}
+
 	// CMS APIs
 	public async getCmsService(): Promise<mssql.CmsService> {
 		if (!this._cmsService) {
@@ -241,7 +245,6 @@ export class ApiWrapper {
 		let cmsServerNode: ICmsResourceNodeInfo = {
 			name: name,
 			description: description,
-			ownerUri: ownerUri,
 			connection: connection
 		};
 		this._registeredCmsServers.push(cmsServerNode);

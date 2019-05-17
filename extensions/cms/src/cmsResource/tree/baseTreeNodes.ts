@@ -39,6 +39,5 @@ export abstract class CmsResourceTreeNodeBase extends TreeNode {
 export interface ICmsResourceNodeInfo {
 	name: string;
 	description: string;
-	ownerUri: string;
 	connection: azdata.connection.Connection;
 }
