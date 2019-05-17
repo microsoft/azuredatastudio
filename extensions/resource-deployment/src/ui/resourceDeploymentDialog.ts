@@ -6,15 +6,17 @@
 
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
-import { getResourceTypes, getProvider } from '../ResourceTypeUtils';
-import { ExtensionContext, Disposable } from 'vscode';
-import { ResourceType } from '../interfaces';
-import { ToolService } from '../toolsService';
+import { IResourceTypeService, PackageJsonPath } from '../services/resourceTypeService';
+import * as vscode from 'vscode';
+import { ResourceType, DeploymentProvider, ToolInstallationStatus } from '../interfaces';
+import { IToolsService } from '../services/toolsService';
+import { INotebookService } from '../services/notebookService';
+
 const localize = nls.loadMessageBundle();
 
 export class ResourceDeploymentDialog {
 	private _selectedResourceType: ResourceType;
-	private _toDispose: Disposable[] = [];
+	private _toDispose: vscode.Disposable[] = [];
 	private _dialogObject: azdata.window.Dialog;
 	private _resourceTypeCards: azdata.CardComponent[] = [];
 	private _view!: azdata.ModelView;
@@ -24,19 +26,23 @@ export class ResourceDeploymentDialog {
 	private _cardResourceTypeMap: Map<string, azdata.CardComponent> = new Map();
 	private _optionDropDownMap: Map<string, azdata.DropDownComponent> = new Map();
 
-
-	constructor(private context: ExtensionContext, resourceType: ResourceType) {
+	constructor(private context: vscode.ExtensionContext,
+		private notebookService: INotebookService,
+		private toolsService: IToolsService,
+		private resourceTypeService: IResourceTypeService,
+		resourceType: ResourceType) {
 		this._selectedResourceType = resourceType;
 		this._dialogObject = azdata.window.createModelViewDialog(localize('deploymentDialog.title', 'Select a configuration'), 'resourceDeploymentDialog', true);
 		this._dialogObject.cancelButton.onClick(() => this.onCancel());
 		this._dialogObject.okButton.label = localize('deploymentDialog.OKButtonText', 'Select');
+		this._dialogObject.okButton.onClick(() => this.onComplete());
 	}
 
 	private initializeDialog() {
 		let tab = azdata.window.createTab('');
 		tab.registerContent((view: azdata.ModelView) => {
 			this._view = view;
-			getResourceTypes().forEach(resourceType => this.addCard(resourceType));
+			this.resourceTypeService.getResourceTypes(PackageJsonPath).forEach(resourceType => this.addCard(resourceType));
 			const cardsContainer = view.modelBuilder.flexContainer().withItems(this._resourceTypeCards, { flex: '0 0 auto', CSSStyles: { 'margin-bottom': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'left' }).component();
 			this._resourceDescriptionLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: this._selectedResourceType ? this._selectedResourceType.description : undefined }).component();
 			this._optionsContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
@@ -75,10 +81,10 @@ export class ResourceDeploymentDialog {
 						title: ''
 					}, {
 						component: this._optionsContainer,
-						title: localize('resourceDeployment.OptionsTitle', 'Options')
+						title: localize('deploymentDialog.OptionsTitle', 'Options')
 					}, {
 						component: this._toolsTable,
-						title: localize('resourceDeployment.RequiredToolsTitle', 'Required tools')
+						title: localize('deploymentDialog.RequiredToolsTitle', 'Required tools')
 					}
 				],
 				{
@@ -150,31 +156,56 @@ export class ResourceDeploymentDialog {
 				width: '300px'
 			}).component();
 
-			this._toDispose.push(optionSelectBox.onValueChanged(() => { this.updateToolStatus(); }));
+			this._toDispose.push(optionSelectBox.onValueChanged(() => { this.updateTools(); }));
 			this._optionDropDownMap.set(option.name, optionSelectBox);
 			const row = this._view.modelBuilder.flexContainer().withItems([optionLabel, optionSelectBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '20px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 			this._optionsContainer.addItem(row);
 		});
-		this.updateToolStatus();
+		this.updateTools();
 	}
 
-	private updateToolStatus(): void {
+	private updateTools(): void {
+		this.toolsService.getToolStatus(this.getCurrentProvider().requiredTools).then(toolStatus => {
+			let tableData = toolStatus.map(tool => {
+				return [tool.name, tool.description, tool.version, this.getToolStatusText(tool.status)];
+			});
+			this._toolsTable.data = tableData;
+		});
+	}
+
+	private getToolStatusText(status: ToolInstallationStatus): string {
+		switch (status) {
+			case ToolInstallationStatus.Installed:
+				return '✔️ ' + localize('deploymentDialog.InstalledText', 'Installed');
+			case ToolInstallationStatus.NotInstalled:
+				return '❌ ' + localize('deploymentDialog.NotInstalledText', 'Not Installed');
+			case ToolInstallationStatus.Installing:
+				return '⌛ ' + localize('deploymentDialog.InstallingText', 'Installing…');
+			case ToolInstallationStatus.FailedToInstall:
+				return '❌ ' + localize('deploymentDialog.FailedToInstallText', 'Install Failed');
+			default:
+				return 'unknown status';
+		}
+	}
+
+	private getCurrentProvider(): DeploymentProvider {
 		const options: { option: string, value: string }[] = [];
 
 		this._optionDropDownMap.forEach((selectBox, option) => {
 			let selectedValue: azdata.CategoryValue = selectBox.value as azdata.CategoryValue;
 			options.push({ option: option, value: selectedValue.name });
 		});
-		const provider = getProvider(this._selectedResourceType, options)!;
-		ToolService.getToolStatus(provider.requiredTools).then(toolStatus => {
-			let tableData = toolStatus.map(tool => {
-				return [tool.name, tool.description, tool.version, tool.status];
-			});
-			this._toolsTable.data = tableData;
-		});
+
+		return this._selectedResourceType.getProvider(options)!;
 	}
 
 	private onCancel(): void {
+		this.dispose();
+	}
+
+	private onComplete(): void {
+		const provider = this.getCurrentProvider();
+		this.notebookService.launchNotebook(provider.notebook);
 		this.dispose();
 	}
 

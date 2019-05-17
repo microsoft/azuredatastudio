@@ -55,6 +55,11 @@
       "name": "sql-image",
       "displayName": "SQL Server Image",
       "description": "SQL Server container image on Docker",
+      "platforms": [
+        "darwin",
+        "win32",
+        "linux"
+      ],
       "icon": {
         "light": "./images/sql_server.svg",
         "dark": "./images/sql_server_inverse.svg"
@@ -100,11 +105,30 @@
       "name": "sql-bdc",
       "displayName": "Big Data Cluster",
       "description": "Big Data Cluster",
+      "platforms": [
+        "darwin",
+        "linux",
+        "win32"
+      ],
       "icon": {
         "light": "./images/sql_bdc.svg",
         "dark": "./images/sql_bdc_inverse.svg"
       },
       "options": [
+        {
+          "name": "version",
+          "displayName": "Version",
+          "values": [
+            {
+              "name": "ctp2.5",
+              "displayName": "SQL Server 2019 Big Data Cluster CTP 2.5"
+            },
+            {
+              "name": "ctp3.0",
+              "displayName": "SQL Server 2019 Big Data Cluster CTP 3.0"
+            }
+          ]
+        },
         {
           "name": "target",
           "displayName": "Deployment target",
@@ -134,7 +158,7 @@
               "name": "mssqlctl"
             }
           ],
-          "when": "target=aks"
+          "when": "target=aks&&version=ctp2.5"
         },
         {
           "notebook": "./notebooks/sql2019-bdc-existing-cluster.ipynb",
@@ -146,12 +170,39 @@
               "name": "mssqlctl"
             }
           ],
-          "when": "target=existingCluster"
+          "when": "target=existingCluster&&version=ctp2.5"
+        },
+        {
+          "notebook": "./notebooks/sql2019-bdc-existing-cluster.ipynb",
+          "requiredTools": [
+            {
+              "name": "kubectl"
+            },
+            {
+              "name": "mssqlctl"
+            }
+          ],
+          "when": "target=existingCluster&&version=ctp3.0"
+        },
+        {
+          "notebook": "./notebooks/sql2019-bdc-existing-cluster.ipynb",
+          "requiredTools": [
+            {
+              "name": "kubectl"
+            },
+            {
+              "name": "mssqlctl"
+            }
+          ],
+          "when": "target=aks&&version=ctp3.0"
         }
       ]
     }
   ],
   "dependencies": {
     "vscode-nls": "^3.2.1"
+  },
+  "devDependencies": {
+    "vscodetestcover": "^1.0.2"
   }
 }

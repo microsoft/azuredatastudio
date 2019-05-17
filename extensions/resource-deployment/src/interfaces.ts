@@ -8,9 +8,11 @@ export interface ResourceType {
 	name: string;
 	displayName: string;
 	description: string;
+	platforms: string[];
 	icon: { light: string; dark: string };
 	options: ResourceTypeOption[];
 	providers: DeploymentProvider[];
+	getProvider(selectedOptions: { option: string, value: string }[]): DeploymentProvider | undefined;
 }
 
 export interface ResourceTypeOption {
@@ -25,12 +27,18 @@ export interface ResourceTypeOptionValue {
 }
 
 export interface DeploymentProvider {
-	notebook: string;
-	requiredTools: ToolRequirement[];
+	notebook: string | NotebookInfo;
+	requiredTools: ToolRequirementInfo[];
 	when: string;
 }
 
-export interface ToolRequirement {
+export interface NotebookInfo {
+	win32: string;
+	darwin: string;
+	linux: string;
+}
+
+export interface ToolRequirementInfo {
 	name: string;
 	version: string;
 }
@@ -49,15 +57,23 @@ export interface ToolStatusInfo {
 	name: string;
 	description: string;
 	version: string;
-	status: string;
+	status: ToolInstallationStatus;
 }
 
 export interface ITool {
-	name(): string;
-	displayName(): string;
-	description(): string;
-	type(): ToolType;
-	isInstalled(versionExpression: string): Thenable<boolean>;
-	supportAutoInstall(): boolean;
+	readonly name: string;
+	readonly displayName: string;
+	readonly description: string;
+	readonly type: ToolType;
+	readonly supportAutoInstall: boolean;
+
+	getInstallationStatus(versionExpression: string): Thenable<ToolInstallationStatus>;
 	install(version: string): Thenable<void>;
+}
+
+export enum ToolInstallationStatus {
+	NotInstalled,
+	Installed,
+	Installing,
+	FailedToInstall
 }

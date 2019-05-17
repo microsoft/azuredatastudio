@@ -6,11 +6,17 @@
 
 import vscode = require('vscode');
 import { ResourceDeploymentDialog } from './ui/resourceDeploymentDialog';
-import { getResourceTypes, validateResourceTypes } from './ResourceTypeUtils';
+import { ToolsService } from './services/toolsService';
+import { NotebookService } from './services/notebookService';
+import { ResourceTypeService, PackageJsonPath } from './services/resourceTypeService';
 
 export function activate(context: vscode.ExtensionContext) {
-	const resourceTypes = getResourceTypes();
-	const validationFailures = validateResourceTypes(resourceTypes);
+	const toolsService = new ToolsService();
+	const notebookService = new NotebookService();
+	const resourceTypeService = new ResourceTypeService(toolsService);
+
+	const resourceTypes = resourceTypeService.getResourceTypes(PackageJsonPath);
+	const validationFailures = resourceTypeService.validateResourceTypes(resourceTypes);
 	if (validationFailures.length !== 0) {
 		const errorMessage = `Failed to load extension: ${context.extensionPath}, Error detected in the resource type definition in package.json, check debug console for details.`;
 		vscode.window.showErrorMessage(errorMessage);
@@ -24,7 +30,7 @@ export function activate(context: vscode.ExtensionContext) {
 			vscode.window.showErrorMessage(`The resource type: ${resourceTypeName} is not defined`);
 		}
 		else {
-			let dialog = new ResourceDeploymentDialog(context, filtered[0]);
+			let dialog = new ResourceDeploymentDialog(context, notebookService, toolsService, resourceTypeService, filtered[0]);
 			dialog.open();
 		}
 	};
