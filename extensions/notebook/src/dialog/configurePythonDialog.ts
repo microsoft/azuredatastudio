@@ -18,17 +18,20 @@ const localize = nls.loadMessageBundle();
 export class ConfigurePythonDialog {
 	private dialog: azdata.window.Dialog;
 
-	private readonly DialogTitle = localize('configurePython.dialogName', 'Configure Python for Notebooks');
-	private readonly OkButtonText = localize('configurePython.okButtonText', 'Install');
-	private readonly CancelButtonText = localize('configurePython.cancelButtonText', 'Cancel');
-	private readonly BrowseButtonText = localize('configurePython.browseButtonText', 'Change location');
-	private readonly LocationTextBoxTitle = localize('configurePython.locationTextBoxText', 'Notebook dependencies will be installed in this location');
-	private readonly SelectFileLabel = localize('configurePython.selectFileLabel', 'Select');
-	private readonly InstallationNote = localize('configurePython.installNote', 'This installation will take some time. It is recommended to not close the application until the installation is complete.');
-	private readonly InvalidLocationMsg = localize('configurePython.invalidLocationMsg', 'The specified install location is invalid.');
+	private readonly DialogTitle = localize('configurePython.dialogName', "Configure Python for Notebooks");
+	private readonly InstallButtonText = localize('configurePython.okButtonText', "Install");
+	private readonly CancelButtonText = localize('configurePython.cancelButtonText', "Cancel");
+	private readonly BrowseButtonText = localize('configurePython.browseButtonText', "Change location");
+	private readonly LocationTextBoxTitle = localize('configurePython.locationTextBoxText', "Python Install Location");
+	private readonly SelectFileLabel = localize('configurePython.selectFileLabel', "Select");
+	private readonly InstallationNote = localize('configurePython.installNote', "This installation will take some time. It is recommended to not close the application until the installation is complete.");
+	private readonly InvalidLocationMsg = localize('configurePython.invalidLocationMsg', "The specified install location is invalid.");
+	private readonly PythonNotFoundMsg = localize('configurePython.pythonNotFoundMsg', "No python installation was found at the specified location.");
 
 	private pythonLocationTextBox: azdata.InputBoxComponent;
 	private browseButton: azdata.ButtonComponent;
+	private newInstallButton: azdata.RadioButtonComponent;
+	private existingInstallButton: azdata.RadioButtonComponent;
 
 	private _setupComplete: Deferred<void>;
 
@@ -46,11 +49,11 @@ export class ConfigurePythonDialog {
 
 		this.initializeContent();
 
-		this.dialog.okButton.label = this.OkButtonText;
+		this.dialog.okButton.label = this.InstallButtonText;
 		this.dialog.cancelButton.label = this.CancelButtonText;
 		this.dialog.cancelButton.onClick(() => {
 			if (rejectOnCancel) {
-				this._setupComplete.reject(localize('pythonInstallDeclined', 'Python installation was declined.'));
+				this._setupComplete.reject(localize('configurePython.pythonInstallDeclined', "Python installation was declined."));
 			} else {
 				this._setupComplete.resolve();
 			}
@@ -92,20 +95,51 @@ export class ConfigurePythonDialog {
 				}
 			});
 
+			this.createInstallRadioButtons(view.modelBuilder);
+
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems([{
+					component: this.newInstallButton,
+					title: localize('configurePython.installationType', "Installation Type")
+				}, {
+					component: this.existingInstallButton,
+					title: ''
+				}, {
 					component: this.pythonLocationTextBox,
 					title: this.LocationTextBoxTitle
 				}, {
 					component: this.browseButton,
-					title: undefined
+					title: ''
 				}, {
 					component: noteWrapper,
-					title: undefined
+					title: ''
 				}]).component();
 
-
 			await view.initializeModel(formModel);
+		});
+	}
+
+	private createInstallRadioButtons(modelBuilder: azdata.ModelBuilder): void {
+		let useExistingPython = JupyterServerInstallation.getExistingPythonSetting(this.apiWrapper);
+		let buttonGroup = 'installationType';
+		this.newInstallButton = modelBuilder.radioButton()
+			.withProperties<azdata.RadioButtonProperties>({
+				name: buttonGroup,
+				label: localize('configurePython.newInstall', "New Python installation"),
+				checked: !useExistingPython
+			}).component();
+		this.newInstallButton.onDidClick(() => {
+			this.existingInstallButton.checked = false;
+		});
+
+		this.existingInstallButton = modelBuilder.radioButton()
+			.withProperties<azdata.RadioButtonProperties>({
+				name: buttonGroup,
+				label: localize('configurePython.existingInstall', "Use existing Python installation"),
+				checked: useExistingPython
+			}).component();
+		this.existingInstallButton.onDidClick(() => {
+			this.newInstallButton.checked = false;
 		});
 	}
 
@@ -116,24 +150,35 @@ export class ConfigurePythonDialog {
 			return false;
 		}
 
+		let useExistingPython = !!this.existingInstallButton.checked;
 		try {
 			let isValid = await this.isFileValid(pythonLocation);
 			if (!isValid) {
 				return false;
 			}
+
+			if (useExistingPython) {
+				let exePath = JupyterServerInstallation.getPythonExePath(pythonLocation, true);
+				let pythonExists = fs.existsSync(exePath);
+				if (!pythonExists) {
+					this.showErrorMessage(this.PythonNotFoundMsg);
+					return false;
+				}
+			}
 		} catch (err) {
-			this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
+			this.showErrorMessage(utils.getErrorMessage(err));
 			return false;
 		}
 
 		// Don't wait on installation, since there's currently no Cancel functionality
-		this.jupyterInstallation.startInstallProcess(false, pythonLocation)
+		this.jupyterInstallation.startInstallProcess(false, { installPath: pythonLocation, existingPython: useExistingPython })
 			.then(() => {
 				this._setupComplete.resolve();
 			})
 			.catch(err => {
 				this._setupComplete.reject(utils.getErrorMessage(err));
 			});
+
 		return true;
 	}
 
