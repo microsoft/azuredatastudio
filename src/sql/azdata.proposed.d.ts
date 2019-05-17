@@ -3165,6 +3165,7 @@ declare module 'azdata' {
 	export interface TextComponentProperties {
 		value?: string;
 		links?: LinkArea[];
+		CSSStyles?: { [key: string]: string };
 	}
 
 	export interface LinkArea {
