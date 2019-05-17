@@ -23,6 +23,7 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { uriPrefixes } from 'sql/platform/connection/common/utils';
 import { keys } from 'vs/base/common/map';
 import { ILogService } from 'vs/platform/log/common/log';
+import { Deferred } from 'sql/base/common/promise';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -42,6 +43,7 @@ export class ErrorInfo {
 export class NotebookModel extends Disposable implements INotebookModel {
 	private _contextsChangedEmitter = new Emitter<void>();
 	private _contextsLoadingEmitter = new Emitter<void>();
+	private _contextAddingEmitter = new Emitter<void>();
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
 	private _kernelsChangedEmitter = new Emitter<nb.IKernelSpec>();
 	private _kernelChangedEmitter = new Emitter<nb.IKernelChangedArgs>();
@@ -72,6 +74,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _oldKernel: nb.IKernel;
 	private _clientSessionListeners: IDisposable[] = [];
 	private _connectionUrisToDispose: string[] = [];
+	public contextAddedDeferred = new Deferred<boolean>();
 
 	constructor(
 		private _notebookOptions: INotebookModelOptions,
@@ -144,6 +147,13 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this._contentChangedEmitter.event;
 	}
 
+	public get contextAddingEmitter(): Emitter<void> {
+		return this._contextAddingEmitter;
+	}
+
+	public get contextAdded(): Promise<boolean> {
+		return this.contextAddedDeferred.promise;
+	}
 
 	public get isSessionReady(): boolean {
 		return !!this._activeClientSession;
@@ -180,6 +190,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public get contextsLoading(): Event<void> {
 		return this._contextsLoadingEmitter.event;
+	}
+
+	public get contextAdding(): Event<void> {
+		return this._contextAddingEmitter.event;
 	}
 
 	public get cells(): ICellModel[] {
@@ -262,6 +276,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public get onValidConnectionSelected(): Event<boolean> {
 		return this._onValidConnectionSelected.event;
+	}
+
+	public resetContextAddedDeferred(): void {
+		this.contextAddedDeferred = new Deferred<boolean>();
 	}
 
 	public getApplicableConnectionProviderIds(kernelDisplayName: string): string[] {
