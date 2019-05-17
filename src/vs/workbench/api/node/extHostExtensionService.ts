@@ -629,7 +629,7 @@ export class ExtHostExtensionService implements ExtHostExtensionServiceShape {
 
 		const resolver = this._resolvers[authorityPrefix];
 		if (!resolver) {
-			throw new Error(`No resolver available for ${authorityPrefix}`);
+			throw new Error(`No remote extension installed to resolve ${authorityPrefix}.`);
 		}
 
 		try {
