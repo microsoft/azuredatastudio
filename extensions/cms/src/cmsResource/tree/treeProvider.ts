@@ -38,15 +38,15 @@ export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICms
 				let cachedServers = cmsConfig.servers ? cmsConfig.servers : [];
 				if (cachedServers && cachedServers.length > 0) {
 					let servers = [];
-					cachedServers.forEach((server) => {
+					cachedServers.forEach(async (server) => {
 						servers.push(new CmsResourceTreeNode(
 							server.name,
 							server.description,
-							server.ownerUri,
+							undefined,
 							server.connection,
 							this._appContext, this, null));
 						this.appContext.apiWrapper.cacheRegisteredCmsServer(server.name, server.description,
-							server.ownerUri, server.connection);
+							undefined, server.connection);
 					});
 					return servers;
 				}
@@ -63,14 +63,12 @@ export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICms
 			if (registeredCmsServers && registeredCmsServers.length > 0) {
 				this.isSystemInitialized = true;
 				// save the CMS Servers for future use
-				let toSaveCmsServers = [];
-				registeredCmsServers.forEach((server) => {
-					let toSaveServer = server;
-					toSaveServer.ownerUri = undefined,
-						toSaveServer.connection.options.password = '';
-					toSaveCmsServers.push(toSaveServer);
+				let toSaveCmsServers = JSON.parse(JSON.stringify(registeredCmsServers));
+				toSaveCmsServers.forEach((server) => {
+					server.ownerUri = undefined,
+						server.connection.options.password = '';
 				});
-				await this._appContext.apiWrapper.setConfiguration(registeredCmsServers);
+				await this._appContext.apiWrapper.setConfiguration(toSaveCmsServers);
 				return registeredCmsServers.map((server) => {
 					return new CmsResourceTreeNode(
 						server.name,

@@ -39,10 +39,13 @@ export class CmsResourceTreeNode extends CmsResourceTreeNodeBase {
 	public async getChildren(): Promise<TreeNode[]> {
 		try {
 			let nodes: TreeNode[] = [];
+			if (!this.ownerUri) {
+				this._ownerUri = await this.appContext.apiWrapper.getUriForConnection(this.connection);
+			}
 			return this.appContext.apiWrapper.createCmsServer(this.connection, this.name, this.description).then(async (result) => {
 				if (result) {
 					if (result.registeredServersList) {
-						result.registeredServersList.forEach((registeredServer) => {
+						result.registeredServersList.forEach(async (registeredServer) => {
 							nodes.push(new RegisteredServerTreeNode(
 								registeredServer.name,
 								registeredServer.description,
@@ -56,7 +59,7 @@ export class CmsResourceTreeNode extends CmsResourceTreeNodeBase {
 					if (result.registeredServerGroups) {
 						if (result.registeredServerGroups) {
 							this._serverGroupNodes = [];
-							result.registeredServerGroups.forEach((serverGroup) => {
+							result.registeredServerGroups.forEach(async (serverGroup) => {
 								let serverGroupNode = new ServerGroupTreeNode(
 									serverGroup.name,
 									serverGroup.description,
@@ -118,13 +121,6 @@ export class CmsResourceTreeNode extends CmsResourceTreeNodeBase {
 
 	public get serverGroupNodes(): ServerGroupTreeNode[] {
 		return this._serverGroupNodes;
-	}
-
-	public get ownerUri(): string {
-		if (!this._ownerUri) {
-			this.appContext.apiWrapper.getUriForConnection(this.connection).then((result) => this._ownerUri = result);
-		}
-		return this._ownerUri;
 	}
 
 	public static readonly noResourcesLabel = localize('cms.resource.cmsResourceTreeNode.noResourcesLabel', 'No resources found');

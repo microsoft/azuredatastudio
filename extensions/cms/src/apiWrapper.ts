@@ -186,11 +186,14 @@ export class ApiWrapper {
 	}
 
 	public async getUriForConnection(connection: azdata.connection.Connection): Promise<string> {
-		return azdata.connection.getUriForConnection(connection.connectionId).then((result) => {
-			if (result) {
-				return result;
-			}
-		});
+		let ownerUri = await azdata.connection.getUriForConnection(connection.connectionId);
+		if (!ownerUri) {
+			// Make a connection if it's not already connected
+			await azdata.connection.connect(Utils.toConnectionProfile(connection), false, false).then(async (result) => {
+				ownerUri = await azdata.connection.getUriForConnection(result.connectionId);
+			});
+		}
+		return ownerUri;
 	}
 
 	// CMS APIs
@@ -278,7 +281,7 @@ export class ApiWrapper {
 				authTypeChanged: true
 			}
 		};
-		return this.openConnectionDialog(['MSSQL-CMS'], initialProfile, undefined).then((connection) => {
+		return this.openConnectionDialog(['MSSQL-CMS'], initialProfile, { saveConnection: false }).then((connection) => {
 			if (connection && connection.options) {
 				if (connection.options.server === parentServerName) {
 					// error out for same server registration
