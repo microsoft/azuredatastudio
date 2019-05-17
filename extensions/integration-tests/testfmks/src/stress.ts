@@ -8,7 +8,7 @@
 import { Min, Max, IsInt, validate } from 'class-validator';
 import 'mocha';
 import { AssertionError } from 'assert';
-import { getSuiteType, SuiteType } from './utils';
+import { getSuiteType, SuiteType, bear } from './utils';
 import assert = require('assert');
 import { isString } from 'util';
 
@@ -51,12 +51,13 @@ export class StressError extends Error {
 
 /**
  * Defines an interface to specify the stress options for stress tests.
- * @param runtime - the number of seconds for which the stress runs. Once this 'runtime' expires stress is terminated even if we have not exceeded {@link iterations} count yet. Not Yet Implemented, so currently a no-op. This is here for future use to allow really long running stress tests. Default value is provided by environment variable: StressRuntime and if undefined then by {@link DefaultStressOptions}.
+ * @param runtime - the number of seconds (fractional values are allowed, least count is 1 millisecond) for which the stress runs. Once this 'runtime' expires stress is terminated even if we have not exceeded {@link iterations} count yet. Default value is provided by environment variable: StressRuntime and if undefined then by {@link DefaultStressOptions}.
  * @param dop - the number of parallel instances of the decorated method to run. Default value is provided by environment variable: StressDop and if undefined then by {@link DefaultStressOptions}.
  * @param iterations - the number of iterations to run in each parallel invocation for the decorated method. {@link runtime} can limit the number of iterations actually run. Default value is provided by environment variable: StressIterations and if undefined then by {@link DefaultStressOptions}.
  * @param passThreshold - the fractional number of all invocations of the decorated method that must pass to declared the stress invocation of that method to be declared passed. Range: 0.0-1.0. Default value is provided by environment variable: StressPassThreshold and if undefined then by {@link DefaultStressOptions}.
  */
-export interface StressOptions {
+
+export interface StressOptionsType {
 	runtime?: number;
 	dop?: number;
 	iterations?: number;
@@ -66,8 +67,34 @@ export interface StressOptions {
 /**
  * The default values for StressOptions.
  */
-export const DefaultStressOptions: StressOptions = { runtime: 7200, dop: 4, iterations: 50, passThreshold: 0.95 };
+export const DefaultStressOptions: StressOptionsType = { runtime: 7200, dop: 4, iterations: 50, passThreshold: 0.95 };
 
+/**
+ * Defines an implementation of StressOptionsType. The constructor of this implementation merges the
+ * {@link DefaultStressOptions} with the values defined by environment variable where corresponding environment variables are:
+ * 		StressRuntime - corresponds to {@link StressOptionsType.runtime}
+ *	 	StressDop - corresponds to {@link StressOptionsType.dop}
+ *	 	StressIterations - corresponds to {@link StressOptionsType.iterations}
+ *	 	StressPassThreshold - corresponds to {@link StressOptionsType.passThreshold}
+ * The environment variable where defined wins and precedes the value defined by {@link DefaultStressOptions}
+ */
+class StressOptions implements StressOptionsType {
+	public runtime?: number;
+	public dop?: number;
+	public iterations?: number;
+	public passThreshold?: number;
+
+	constructor(runtime = parseFloat(process.env.StressRuntime), dop = parseInt(process.env.StressDop), iterations = parseInt(process.env.StressIterations), passThreshold = parseFloat(process.env.StressPassThreshold)) {
+		this.runtime = nullCoalesce(runtime, DefaultStressOptions.runtime);
+		this.dop = nullCoalesce(dop, DefaultStressOptions.dop);
+		this.iterations = nullCoalesce(iterations, DefaultStressOptions.iterations);
+		this.passThreshold = nullCoalesce(passThreshold, DefaultStressOptions.passThreshold);
+		assert(this.runtime !== undefined && this.dop !== undefined && this.iterations !== undefined && this.passThreshold !== undefined);
+	}
+}
+
+
+const MergedStressOptions: StressOptionsType = new StressOptions();
 /**
  * Defines the shape of stress result object
  */
@@ -83,44 +110,44 @@ export interface StressResult {
  * other decorators if needed.
  */
 class Stress {
-	// number of iterations.
+	// Number of iterations.
 	@IsInt()
 	@Min(0)
 	@Max(1000000)
-	iterations?: number = DefaultStressOptions.iterations;
+	iterations?: number = MergedStressOptions.iterations;
 
-	// seconds
-	@IsInt()
+	// Seconds. Fractional values are allowed.
 	@Min(0)
 	@Max(72000)
-	runtime?: number = DefaultStressOptions.runtime;
+	runtime?: number = MergedStressOptions.runtime;
 
-	// degree of parallelism
+	// Degree of parallelism
 	@IsInt()
 	@Min(1)
 	@Max(20)
-	dop?: number = DefaultStressOptions.dop;
+	dop?: number = MergedStressOptions.dop;
 
-	// threshold for fractional number of individual test passes fo total executed to declare the stress test passed. This is a fraction between 0 and 1.
+	// Threshold for fractional number of individual test passes fo total executed to declare the stress test passed. This is a fraction between 0 and 1.
 	@Min(0)
 	@Max(1)
-	passThreshold?: number = DefaultStressOptions.passThreshold;
+	passThreshold?: number = MergedStressOptions.passThreshold;
 
 	/**
 	 * Constructor allows for construction with a bunch of optional parameters
 	 *
-	 * @param runtime - see {@link StressOptions}.
-	 * @param dop - see {@link StressOptions}.
-	 * @param iterations - see {@link StressOptions}.
-	 * @param passThreshold - see {@link StressOptions}.
+	 * @param runtime - see {@link StressOptionsType}.
+	 * @param dop - see {@link StressOptionsType}.
+	 * @param iterations - see {@link StressOptionsType}.
+	 * @param passThreshold - see {@link StressOptionsType}.
 	 */
-	constructor({ runtime = parseInt(process.env.StressRuntime), dop = parseInt(process.env.StressDop), iterations = parseInt(process.env.StressIterations), passThreshold = parseFloat(process.env.StressPassThreshold) }: StressOptions = DefaultStressOptions) {
-		trace(`parameters to Stress constructor: runtime=${runtime}, dop=${dop}, iterations=${iterations}, passThreshold=${passThreshold}`);
-		trace(`default properties of this Stress object: this.runtime=${this.runtime}, this.dop=${this.dop}, this.iterations=${this.iterations}, this.passThreshold=${this.passThreshold}`);
-		this.runtime = this.nullCoalesce(runtime, this.runtime);
-		this.dop = this.nullCoalesce(dop, this.dop);
-		this.iterations = this.nullCoalesce(iterations, this.iterations);
-		this.passThreshold = this.nullCoalesce(passThreshold, this.passThreshold);
+	constructor({ runtime = parseFloat(process.env.StressRuntime), dop = parseInt(process.env.StressDop), iterations = parseInt(process.env.StressIterations), passThreshold = parseFloat(process.env.StressPassThreshold) }: StressOptionsType = MergedStressOptions) {
+		const trace = require('debug')(`${logPrefix}:constructor:trace`);
+		trace(`parameters: runtime=${runtime}, dop=${dop}, iterations=${iterations}, passThreshold=${passThreshold}`);
+		trace(`default properties this stress object at beginning of constructor: this.runtime=${this.runtime}, this.dop=${this.dop}, this.iterations=${this.iterations}, this.passThreshold=${this.passThreshold}`);
+		this.runtime = nullCoalesce(runtime, this.runtime);
+		this.dop = nullCoalesce(dop, this.dop);
+		this.iterations = nullCoalesce(iterations, this.iterations);
+		this.passThreshold = nullCoalesce(passThreshold, this.passThreshold);
 
 		// validate this object
 		//
@@ -136,11 +163,7 @@ class Stress {
 			}
 		});
 
-		trace(`properties of Stress Object post full construction with given parameters are: this.runtime=${this.runtime}, this.dop=${this.dop}, this.iterations=${this.iterations}, this.passThreshold=${this.passThreshold}`);
-	}
-
-	private nullCoalesce(value: number, defaultValue: number): number {
-		return (value === null || value === undefined || isNaN(value)) ? defaultValue : value;
+		trace(`properties of this stress object post full construction with given parameters are: this.runtime=${this.runtime}, this.dop=${this.dop}, this.iterations=${this.iterations}, this.passThreshold=${this.passThreshold}`);
 	}
 
 	/**
@@ -161,16 +184,14 @@ class Stress {
 		originalObject: any,
 		functionName: string,
 		args: any[],
-		{ runtime, dop, iterations, passThreshold }: StressOptions = DefaultStressOptions
+		{ runtime, dop, iterations, passThreshold }: StressOptions = MergedStressOptions
 	): Promise<StressResult> {
-		// TODO support for cutting of the iterator if runtime has exceeded needs to be implemented.
-		//
 		trace(`run method called with parameters: originalMethod=${JSON.stringify(originalMethod, undefined, '\t')} originalObject=${JSON.stringify(originalObject, undefined, '\t')} functionName=${JSON.stringify(functionName, undefined, '\t')}  args=${JSON.stringify(args, undefined, '\t')}`);
 		trace(`run method called with StressOptions: runtime=${runtime}, dop=${dop}, iterations=${iterations}, passThreshold=${passThreshold}`);
-		runtime = this.nullCoalesce(runtime, this.runtime);
-		dop = this.nullCoalesce(dop, this.dop);
-		iterations = this.nullCoalesce(iterations, this.iterations);
-		passThreshold = this.nullCoalesce(passThreshold, this.passThreshold);
+		runtime = nullCoalesce(runtime, this.runtime);
+		dop = nullCoalesce(dop, this.dop);
+		iterations = nullCoalesce(iterations, this.iterations);
+		passThreshold = nullCoalesce(passThreshold, this.passThreshold);
 		let numPasses: number = 0;
 		let fails = [];
 		let errors = [];
@@ -178,6 +199,15 @@ class Stress {
 		let pendingPromises: Promise<void>[] = [];
 		const debug = require('debug')(`${logPrefix}:${functionName}`);
 		debug(`Running Stress on ${functionName} with args: ('${args.join('\',\'')}') with runtime=${runtime}, dop=${dop}, iterations=${iterations}, passThreshold=${passThreshold}`);
+		let timedOut: boolean = false;
+
+		// Setup a timer to set timedOut to true when this.runtime number of seconds have elapsed.
+		//
+		setTimeout(() => {
+			timedOut = true;
+			trace(`flagging time out. ${this.runtime} seconds are up`);
+		}, this.runtime * 1000);
+
 		const IterativeLoop = async (t: number) => {
 			const debug = require('debug')(`${logPrefix}:${functionName}:thread-${t}`);
 			for (let i = 0; i < iterations; i++) {
@@ -186,6 +216,11 @@ class Stress {
 					await originalMethod.apply(originalObject, args);
 					debug(`iteration number=${i} passed`);
 					numPasses++;
+					bear(); // bear (yield) to other threads so that timeout timer gets a chance to fire.
+					if (timedOut) {
+						debug(`timed out after ${i}th iteration, timeout of ${this.runtime} has expired `);
+						break; // break out of the loop
+					}
 				}
 				catch (err) {
 					// If failures can result in errors of other types apart from AssertionError then we will need to augument here
@@ -231,7 +266,7 @@ const stresser = new Stress();
  * @param iterations - The desconstructed {@link StressOptions} option. see {@link StressOptions} for details.
  * @param passThreshold - The desconstructed {@link StressOptions} option. see {@link StressOptions} for details.
  */
-export function stressify({ runtime, dop, iterations, passThreshold }: StressOptions = DefaultStressOptions): (memberClass: any, memberName: string, memberDescriptor: PropertyDescriptor) => PropertyDescriptor {
+export function stressify({ runtime, dop, iterations, passThreshold }: StressOptionsType = MergedStressOptions): (memberClass: any, memberName: string, memberDescriptor: PropertyDescriptor) => PropertyDescriptor {
 	// return the function that does the job of stressifying a test class method with decorator @stressify
 	//
 	debug(`stressify FactoryDecorator called with runtime=${runtime}, dop=${dop}, iter=${iterations}, passThreshold=${passThreshold}`);
@@ -265,4 +300,8 @@ export function stressify({ runtime, dop, iterations, passThreshold }: StressOpt
 		//
 		return memberDescriptor;
 	};
+}
+
+function nullCoalesce(value: number, defaultValue: number): number {
+	return (value === null || value === undefined || isNaN(value)) ? defaultValue : value;
 }
