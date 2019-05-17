@@ -173,6 +173,10 @@ export abstract class ExtHostDataProtocolShape {
 	 * Gets a subset of rows in a result set in order to display in the UI
 	 */
 	$getQueryRows(handle: number, rowData: azdata.QueryExecuteSubsetParams): Thenable<azdata.QueryExecuteSubsetResult> { throw ni(); }
+	/**
+	 * Sets the query execution options for a query editor document
+	 */
+	$setQueryExecutionOptions(handle: number, ownerUri: string, options: azdata.QueryExecutionOptions): Thenable<void> { throw ni(); }
 
 	/**
 	 * Disposes the cached information regarding a query
@@ -793,6 +797,7 @@ export interface MainThreadQueryEditorShape extends IDisposable {
 	$connect(fileUri: string, connectionId: string): Thenable<void>;
 	$runQuery(fileUri: string): void;
 	$createQueryTab(fileUri: string, title: string, content: string): void;
+	$setQueryExecutionOptions(fileUri: string, options: azdata.QueryExecutionOptions): Thenable<void>;
 	$registerQueryInfoListener(handle: number, providerId: string): void;
 }
 
