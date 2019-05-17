@@ -1,8 +1,6 @@
-coverage/**
 jupyter_config/**
 src/**
 out/**
-coverageConfig.json
 tsconfig.json
 extension.webpack.config.js
 yarn.lock

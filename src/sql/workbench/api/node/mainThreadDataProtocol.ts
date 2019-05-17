@@ -127,6 +127,9 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			getQueryRows(rowData: azdata.QueryExecuteSubsetParams): Thenable<azdata.QueryExecuteSubsetResult> {
 				return self._proxy.$getQueryRows(handle, rowData);
 			},
+			setQueryExecutionOptions(ownerUri: string, options: azdata.QueryExecutionOptions): Thenable<void> {
+				return self._proxy.$setQueryExecutionOptions(handle, ownerUri, options);
+			},
 			disposeQuery(ownerUri: string): Thenable<void> {
 				return self._proxy.$disposeQuery(handle, ownerUri);
 			},
