@@ -1,0 +1,25 @@
+{
+	"rules": {
+		"no-banned-terms": true,
+		"no-delete-expression": true,
+		"no-disable-auto-sanitization": true,
+		"no-document-domain": true,
+		"no-duplicate-parameter-names": true,
+		"no-eval": true,
+		"no-exec-script": true,
+		"no-function-constructor-with-string-args": true,
+		"no-octal-literal": true,
+		// The actual SDL list includes no-reserved-keywords currently but this has been deprecated
+		// in tslint-microsoft-contrib in favor of using the ban-keywords option below. So to avoid
+		// making many unnecessary changes we just use ban-keywords here instead
+		"no-reserved-keywords": false,
+		"variable-name": {
+			"options": [
+				"ban-keywords"
+			]
+		},
+		"no-string-based-set-immediate": true,
+		"no-string-based-set-interval": true,
+		"no-string-based-set-timeout": true
+	}
+}
