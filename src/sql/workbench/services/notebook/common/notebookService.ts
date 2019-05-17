@@ -68,6 +68,25 @@ export interface INotebookService {
 	getMimeRegistry(): RenderMimeRegistry;
 
 	renameNotebookEditor(oldUri: URI, newUri: URI, currentEditor: INotebookEditor): void;
+
+	/**
+	 * Checks if a notebook has previously been marked as trusted, and that
+	 * the notebook has not changed on disk since that time. If the notebook
+	 * is currently dirty in the app, the previous trusted state will be used even
+	 * if it's altered on disk since the version in our UI is based on previously trusted
+	 * content.
+	 * @param notebookUri the URI identifying a notebook
+	 * @param isDirty is the notebook marked as dirty in by the text model trackers?
+	 */
+	isNotebookTrustCached(notebookUri: URI, isDirty: boolean): Promise<boolean>;
+	/**
+	 * Serializes an impactful Notebook state change. This will result
+	 * in trusted state being serialized if needed, and notifications being
+	 * sent to listeners that can act on the point-in-time notebook state
+	 * @param notebookUri the URI identifying a notebook
+	 */
+	serializeNotebookStateChange(notebookUri: URI, changeType: SerializationStateChangeType): void;
+
 }
 
 export interface INotebookProvider {
@@ -91,7 +110,6 @@ export interface INotebookParams extends IBootstrapParams {
 	notebookUri: URI;
 	input: NotebookInput;
 	providerInfo: Promise<IProviderInfo>;
-	isTrusted: boolean;
 	profile?: IConnectionProfile;
 	modelFactory?: ModelFactory;
 }
@@ -109,4 +127,9 @@ export interface INotebookEditor {
 	runCell(cell: ICellModel): Promise<boolean>;
 	runAllCells(): Promise<boolean>;
 	clearAllOutputs(): Promise<boolean>;
+}
+
+export enum SerializationStateChangeType {
+	Saved,
+	Executed
 }
