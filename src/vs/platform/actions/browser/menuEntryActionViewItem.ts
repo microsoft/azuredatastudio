@@ -273,7 +273,7 @@ export class ContextAwareMenuEntryActionViewItem extends MenuEntryActionViewItem
 // Always show label for action items, instead of whether they don't have
 // an icon/CSS class. Useful for some toolbar scenarios in particular with
 // contributed actions from other extensions
-export class LabeledMenuItemActionItem extends MenuItemActionItem {
+export class LabeledMenuItemActionItem extends MenuEntryActionViewItem {
 	private _labeledItemClassDispose: IDisposable;
 
 	constructor(
@@ -301,13 +301,13 @@ export class LabeledMenuItemActionItem extends MenuItemActionItem {
 
 			const iconPathMapKey = item.iconLocation.dark.toString();
 
-			if (MenuItemActionItem.ICON_PATH_TO_CSS_RULES.has(iconPathMapKey)) {
-				iconClass = MenuItemActionItem.ICON_PATH_TO_CSS_RULES.get(iconPathMapKey);
+			if (MenuEntryActionViewItem.ICON_PATH_TO_CSS_RULES.has(iconPathMapKey)) {
+				iconClass = MenuEntryActionViewItem.ICON_PATH_TO_CSS_RULES.get(iconPathMapKey);
 			} else {
 				iconClass = ids.nextId();
 				createCSSRule(`.icon.${iconClass}`, `background-image: url("${(item.iconLocation.light || item.iconLocation.dark).toString()}")`);
 				createCSSRule(`.vs-dark .icon.${iconClass}, .hc-black .icon.${iconClass}`, `background-image: url("${item.iconLocation.dark.toString()}")`);
-				MenuItemActionItem.ICON_PATH_TO_CSS_RULES.set(iconPathMapKey, iconClass);
+				MenuEntryActionViewItem.ICON_PATH_TO_CSS_RULES.set(iconPathMapKey, iconClass);
 			}
 
 			addClasses(this.label, 'icon', iconClass, this._defaultCSSClassToAdd);
