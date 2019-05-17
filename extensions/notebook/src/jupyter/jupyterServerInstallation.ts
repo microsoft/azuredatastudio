@@ -393,7 +393,10 @@ export default class JupyterServerInstallation {
 		this.outputChannel.show(true);
 		this.outputChannel.appendLine(localize('msgInstallStart', "Installing required packages to run Notebooks..."));
 
-		let installCommand = `"${this.getCondaExePath()}" install -y jupyter==1.0.0 pandas==0.24.2 pykerberos==1.2.1`;
+		let installCommand = `"${this.getCondaExePath()}" install -y jupyter==1.0.0 pandas==0.24.2`;
+		if (process.platform !== constants.winPlatform) {
+			installCommand = `${installCommand} pykerberos==1.2.1`;
+		}
 		await this.executeCommand(installCommand);
 
 		installCommand = `"${this._pythonExecutable}" -m pip install prose-codeaccelerator==1.3.0 --extra-index-url https://prose-python-packages.azurewebsites.net`;
