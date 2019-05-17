@@ -49,6 +49,8 @@ import { IConnectionDialogService } from 'sql/workbench/services/connection/comm
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ILogService } from 'vs/platform/log/common/log';
 import * as interfaces from './interfaces';
+import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
+import { Memento } from 'vs/workbench/common/memento';
 
 export class ConnectionManagementService extends Disposable implements IConnectionManagementService {
 
@@ -56,7 +58,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 	private _providers = new Map<string, { onReady: Thenable<azdata.ConnectionProvider>, properties: ConnectionProviderProperties }>();
 	private _iconProviders = new Map<string, azdata.IconProvider>();
-	private _connectionIconIdCache = new Map<string, string>();
 
 	private _uriToProvider: { [uri: string]: string; } = Object.create(null);
 
@@ -70,6 +71,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	private _onConnectionChanged = new Emitter<IConnectionParams>();
 	private _onLanguageFlavorChanged = new Emitter<azdata.DidChangeLanguageFlavorParams>();
 	private _connectionGlobalStatus = new ConnectionGlobalStatus(this._statusBarService);
+
+	private _mementoContext: Memento;
+	private _mementoObj: any;
+	private static readonly CONNECTION_MEMENTO = 'ConnectionManagement';
 
 	constructor(
 		private _connectionStore: ConnectionStore,
@@ -85,12 +90,18 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		@IResourceProviderService private _resourceProviderService: IResourceProviderService,
 		@IAngularEventingService private _angularEventing: IAngularEventingService,
 		@IAccountManagementService private _accountManagementService: IAccountManagementService,
-		@ILogService private logService: ILogService
+		@ILogService private logService: ILogService,
+		@IStorageService private _storageService: IStorageService
 	) {
 		super();
 
 		if (!this._connectionStore) {
 			this._connectionStore = _instantiationService.createInstance(ConnectionStore);
+		}
+
+		if (this._storageService) {
+			this._mementoContext = new Memento(ConnectionManagementService.CONNECTION_MEMENTO, this._storageService);
+			this._mementoObj = this._mementoContext.getMemento(StorageScope.GLOBAL);
 		}
 
 		const registry = platform.Registry.as<IConnectionProviderRegistry>(ConnectionProviderExtensions.ConnectionProviderContributions);
@@ -551,15 +562,20 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			let serverInfo: azdata.ServerInfo = this.getServerInfo(connectionProfile.id);
 			let profile: interfaces.IConnectionProfile = connectionProfile.toIConnectionProfile();
 			iconProvider.getConnectionIconId(profile, serverInfo).then(iconId => {
-				if (iconId) {
-					this._connectionIconIdCache.set(connectionProfile.id, iconId);
+				if (iconId && this._mementoObj && this._mementoContext) {
+					if (!this._mementoObj.CONNECTION_ICON_ID) {
+						this._mementoObj.CONNECTION_ICON_ID = <any>{};
+					}
+					this._mementoObj.CONNECTION_ICON_ID[connectionProfile.id] = iconId;
+					this._mementoContext.saveMemento();
 				}
 			});
 		}
 	}
 
 	public getConnectionIconId(connectionId: string): string {
-		return this._connectionIconIdCache.get(connectionId);
+		if (!connectionId || !this._mementoObj || !this._mementoObj.CONNECTION_ICON_ID) { return undefined; }
+		return this._mementoObj.CONNECTION_ICON_ID[connectionId];
 	}
 
 	public showDashboard(connection: IConnectionProfile): Thenable<boolean> {
