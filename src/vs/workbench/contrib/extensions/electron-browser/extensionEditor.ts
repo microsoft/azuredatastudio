@@ -253,9 +253,9 @@ export class ExtensionEditor extends BaseEditor {
 		const extensionActions = append(details, $('.actions'));
 		this.extensionActionBar = new ActionBar(extensionActions, {
 			animated: false,
-			actionItemProvider: (action: Action) => {
+			actionViewItemProvider: (action: Action) => {
 				if (action instanceof ExtensionEditorDropDownAction) {
-					return action.createActionItem();
+					return action.createActionViewItem();
 				}
 				return undefined;
 			}
