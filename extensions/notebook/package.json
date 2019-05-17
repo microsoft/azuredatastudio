@@ -111,8 +111,8 @@
 				}
 			},
 			{
-				"command": "jupyter.cmd.installPackages",
-				"title": "%title.installPackages%",
+				"command": "jupyter.cmd.managePackages",
+				"title": "%title.managePackages%",
 				"icon": {
 					"dark": "resources/dark/manage_inverse.svg",
 					"light": "resources/light/manage.svg"
@@ -187,7 +187,7 @@
 					"when": "false"
 				},
 				{
-					"command": "jupyter.cmd.installPackages",
+					"command": "jupyter.cmd.managePackages",
 					"when": "false"
 				}
 			],
@@ -227,7 +227,7 @@
 			],
 			"notebook/toolbar": [
 				{
-					"command": "jupyter.cmd.installPackages",
+					"command": "jupyter.cmd.managePackages",
 					"when": "providerId == jupyter"
 				}
 			]

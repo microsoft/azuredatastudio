@@ -24,6 +24,7 @@ import { NotebookCompletionItemProvider } from '../intellisense/completionItemPr
 import { JupyterNotebookProvider } from './jupyterNotebookProvider';
 import { ConfigurePythonDialog } from '../dialog/configurePythonDialog';
 import CodeAdapter from '../prompts/adapter';
+import { ManagePackagesDialog } from '../dialog/managePackages/managePackagesDialog';
 
 let untitledCounter = 0;
 
@@ -73,7 +74,7 @@ export class JupyterController implements vscode.Disposable {
 		});
 
 		this.apiWrapper.registerCommand(constants.jupyterReinstallDependenciesCommand, () => { return this.handleDependenciesReinstallation(); });
-		this.apiWrapper.registerCommand(constants.jupyterInstallPackages, () => { return this.doManagePackages(); });
+		this.apiWrapper.registerCommand(constants.jupyterManagePackages, () => { return this.doManagePackages(); });
 		this.apiWrapper.registerCommand(constants.jupyterConfigurePython, () => { return this.doConfigurePython(this._jupyterInstallation); });
 
 		let supportedFileFilter: vscode.DocumentFilter[] = [
@@ -194,10 +195,8 @@ export class JupyterController implements vscode.Disposable {
 
 	public doManagePackages(): void {
 		try {
-			let terminal = this.apiWrapper.createTerminalWithOptions({ cwd: this.getPythonBinDir() });
-			terminal.show(true);
-			let shellType = this.apiWrapper.getConfiguration().get('terminal.integrated.shell.windows');
-			terminal.sendText(this.getTextToSendToTerminal(shellType), true);
+			let packagesDialog = new ManagePackagesDialog(this._jupyterInstallation);
+			packagesDialog.showDialog();
 		} catch (error) {
 			let message = utils.getErrorMessage(error);
 			this.apiWrapper.showErrorMessage(message);
@@ -223,10 +222,6 @@ export class JupyterController implements vscode.Disposable {
 		} else {
 			return localizedConstants.msgManagePackagesBash;
 		}
-	}
-
-	private getPythonBinDir(): string {
-		return JupyterServerInstallation.getPythonBinPath(this.apiWrapper);
 	}
 
 	public get jupyterInstallation() {
