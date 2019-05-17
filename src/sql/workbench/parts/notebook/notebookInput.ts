@@ -11,20 +11,21 @@ import * as resources from 'vs/base/common/resources';
 import * as azdata from 'azdata';
 
 import { IStandardKernelWithProvider, getProvidersForFileName, getStandardKernelsForProvider } from 'sql/workbench/parts/notebook/notebookUtils';
-import { INotebookService, DEFAULT_NOTEBOOK_PROVIDER, IProviderInfo } from 'sql/workbench/services/notebook/common/notebookService';
+import { INotebookService, DEFAULT_NOTEBOOK_PROVIDER, IProviderInfo, SerializationStateChangeType } from 'sql/workbench/services/notebook/common/notebookService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITextModelService } from 'vs/editor/common/services/resolverService';
-import { INotebookModel, IContentManager } from 'sql/workbench/parts/notebook/models/modelInterfaces';
+import { INotebookModel, IContentManager, NotebookContentChange } from 'sql/workbench/parts/notebook/models/modelInterfaces';
 import { TextFileEditorModel } from 'vs/workbench/services/textfile/common/textFileEditorModel';
 import { Range } from 'vs/editor/common/core/range';
 import { UntitledEditorModel } from 'vs/workbench/common/editor/untitledEditorModel';
 import { Schemas } from 'vs/base/common/network';
-import { ITextFileService, ISaveOptions } from 'vs/workbench/services/textfile/common/textfiles';
+import { ITextFileService, ISaveOptions, StateChange } from 'vs/workbench/services/textfile/common/textfiles';
 import { LocalContentManager } from 'sql/workbench/services/notebook/node/localContentManager';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { IDisposable } from 'vs/base/common/lifecycle';
+import { NotebookChangeType } from 'sql/workbench/parts/notebook/models/contracts';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
 
@@ -42,7 +43,7 @@ export class NotebookEditorModel extends EditorModel {
 				// Hook to content change events
 				notebook.modelReady.then(() => {
 					this._register(notebook.model.kernelChanged(e => this.updateModel()));
-					this._register(notebook.model.contentChanged(e => this.updateModel()));
+					this._register(notebook.model.contentChanged(e => this.updateModel(e)));
 				}, err => undefined);
 			}
 		}));
@@ -50,7 +51,12 @@ export class NotebookEditorModel extends EditorModel {
 		if (this.textEditorModel instanceof UntitledEditorModel) {
 			this._register(this.textEditorModel.onDidChangeDirty(e => this.setDirty(this.textEditorModel.isDirty())));
 		} else {
-			this._register(this.textEditorModel.onDidStateChange(e => this.setDirty(this.textEditorModel.isDirty())));
+			this._register(this.textEditorModel.onDidStateChange(change => {
+				this.setDirty(this.textEditorModel.isDirty());
+				if (change === StateChange.SAVED) {
+					this.sendNotebookSerializationStateChange();
+				}
+			}));
 		}
 		this.dirty = this.textEditorModel.isDirty();
 	}
@@ -86,18 +92,33 @@ export class NotebookEditorModel extends EditorModel {
 		}
 	}
 
-	public updateModel(): void {
-		let notebookModel = this.getNotebookModel();
-		if (notebookModel && this.textEditorModel && this.textEditorModel.textEditorModel) {
-			let content = JSON.stringify(notebookModel.toJSON(), undefined, '    ');
-			let model = this.textEditorModel.textEditorModel;
-			let endLine = model.getLineCount();
-			let endCol = model.getLineMaxColumn(endLine);
+	public updateModel(contentChange?: NotebookContentChange): void {
+		if (contentChange && contentChange.changeType === NotebookChangeType.TrustChanged) {
+			// This is a serializable change (in that we permanently cache trusted state, but
+			// ironically isn't cached in the JSON contents since trust doesn't persist across machines.
+			// Request serialization so trusted state is preserved but don't update the model
+			this.sendNotebookSerializationStateChange();
+		} else {
+			// For all other changes, update the backing model with the latest contents
+			let notebookModel = this.getNotebookModel();
+			if (notebookModel && this.textEditorModel && this.textEditorModel.textEditorModel) {
+				let content = JSON.stringify(notebookModel.toJSON(), undefined, '    ');
+				let model = this.textEditorModel.textEditorModel;
+				let endLine = model.getLineCount();
+				let endCol = model.getLineMaxColumn(endLine);
 
-			this.textEditorModel.textEditorModel.applyEdits([{
-				range: new Range(1, 1, endLine, endCol),
-				text: content
-			}]);
+				this.textEditorModel.textEditorModel.applyEdits([{
+					range: new Range(1, 1, endLine, endCol),
+					text: content
+				}]);
+			}
+		}
+	}
+
+	private sendNotebookSerializationStateChange() {
+		let notebookModel = this.getNotebookModel();
+		if (notebookModel) {
+			this.notebookService.serializeNotebookStateChange(this.notebookUri, SerializationStateChangeType.Saved);
 		}
 	}
 
@@ -125,7 +146,6 @@ export class NotebookInput extends EditorInput {
 	private _standardKernels: IStandardKernelWithProvider[];
 	private _connectionProfile: IConnectionProfile;
 	private _defaultKernel: azdata.nb.IKernelSpec;
-	private _isTrusted: boolean = false;
 	public hasBootstrapped = false;
 	// Holds the HTML content for the editor when the editor discards this input and loads another
 	private _parentContainer: HTMLElement;
@@ -189,13 +209,6 @@ export class NotebookInput extends EditorInput {
 			providerId: this._providerId ? this._providerId : DEFAULT_NOTEBOOK_PROVIDER,
 			providers: this._providers ? this._providers : [DEFAULT_NOTEBOOK_PROVIDER]
 		};
-	}
-	public get isTrusted(): boolean {
-		return this._isTrusted;
-	}
-
-	public set isTrusted(value: boolean) {
-		this._isTrusted = value;
 	}
 
 	public set connectionProfile(value: IConnectionProfile) {

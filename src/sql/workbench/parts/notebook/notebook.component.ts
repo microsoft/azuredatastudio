@@ -188,19 +188,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._model.addCell(cellType);
 	}
 
-	// Updates Notebook model's trust details
-	public updateModelTrustDetails(isTrusted: boolean) {
-		this._model.trustedMode = isTrusted;
-		this._model.cells.forEach(cell => {
-			cell.trustedMode = isTrusted;
-		});
-		//Updates dirty state
-		if (this._notebookParams.input) {
-			this._notebookParams.input.updateModel();
-		}
-		this.detectChanges();
-	}
-
 	public onKeyDown(event) {
 		switch (event.key) {
 			case 'ArrowDown':
@@ -294,7 +281,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			capabilitiesService: this.capabilitiesService
 		}, this.profile, this.logService);
 		model.onError((errInfo: INotification) => this.handleModelError(errInfo));
-		await model.requestModelLoad(this._notebookParams.isTrusted);
+		let trusted = await this.notebookService.isNotebookTrustCached(this._notebookParams.notebookUri, this.isDirty());
+		await model.requestModelLoad(trusted);
 		model.contentChanged((change) => this.handleContentChanged(change));
 		model.onProviderIdChange((provider) => this.handleProviderIdChanged(provider));
 		this._model = this._register(model);
