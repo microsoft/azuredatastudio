@@ -473,8 +473,8 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			schemaCompare(sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, schemaComapareOptions: azdata.DeploymentOptions): Thenable<azdata.SchemaCompareResult> {
 				return self._proxy.$schemaCompare(handle, sourceEndpointInfo, targetEndpointInfo, taskExecutionMode, schemaComapareOptions);
 			},
-			schemaCompareGenerateScript(operationId: string, targetDatabaseName: string, scriptFilePath: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
-				return self._proxy.$schemaCompareGenerateScript(handle, operationId, targetDatabaseName, scriptFilePath, taskExecutionMode);
+			schemaCompareGenerateScript(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
+				return self._proxy.$schemaCompareGenerateScript(handle, operationId, targetServerName, targetDatabaseName, taskExecutionMode);
 			},
 			schemaComparePublishChanges(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
 				return self._proxy.$schemaComparePublishChanges(handle, operationId, targetServerName, targetDatabaseName, taskExecutionMode);
