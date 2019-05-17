@@ -20,6 +20,4 @@ coverage/
 test_data/
 test-results/
 yarn-error.log
-**/*.json.bak
-**/*.ts.bak
 .vscode/mocha.tree.json

@@ -94,6 +94,7 @@ const tasks = compilations.map(function (tsconfigFile) {
 				// Filter out *.nls.json file. We needed them only to bundle meta data file.
 				.pipe(filter(['**', '!**/*.nls.json']))
 				.pipe(reporter.end(emitError));
+
 			return es.duplex(input, output);
 		};
 	}

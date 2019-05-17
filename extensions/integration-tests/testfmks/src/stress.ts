@@ -51,7 +51,7 @@ export class StressError extends Error {
 
 /**
  * Defines an interface to specify the stress options for stress tests.
- * @param runtime - the number of minutes for which the stress runs. Once this 'runtime' expires stress is terminated even if we have not exceeded {@link iterations} count yet. NYI. This is here for future use to allow really long running stress tests. Default value is provided by environment variable: StressRuntime and if undefined then by {@link DefaultStressOptions}.
+ * @param runtime - the number of seconds for which the stress runs. Once this 'runtime' expires stress is terminated even if we have not exceeded {@link iterations} count yet. Not Yet Implemented, so currently a no-op. This is here for future use to allow really long running stress tests. Default value is provided by environment variable: StressRuntime and if undefined then by {@link DefaultStressOptions}.
  * @param dop - the number of parallel instances of the decorated method to run. Default value is provided by environment variable: StressDop and if undefined then by {@link DefaultStressOptions}.
  * @param iterations - the number of iterations to run in each parallel invocation for the decorated method. {@link runtime} can limit the number of iterations actually run. Default value is provided by environment variable: StressIterations and if undefined then by {@link DefaultStressOptions}.
  * @param passThreshold - the fractional number of all invocations of the decorated method that must pass to declared the stress invocation of that method to be declared passed. Range: 0.0-1.0. Default value is provided by environment variable: StressPassThreshold and if undefined then by {@link DefaultStressOptions}.
@@ -66,7 +66,7 @@ export interface StressOptions {
 /**
  * The default values for StressOptions.
  */
-export const DefaultStressOptions: StressOptions = { runtime: 120, dop: 4, iterations: 10, passThreshold: 0.95 };
+export const DefaultStressOptions: StressOptions = { runtime: 7200, dop: 4, iterations: 50, passThreshold: 0.95 };
 
 /**
  * Defines the shape of stress result object
@@ -75,23 +75,6 @@ export interface StressResult {
 	numPasses: number;
 	fails: Error[];
 	errors: Error[];
-}
-
-
-/**
-* This simulates a sleep where the thread is suspended without spinning for a given number of milliseconds before resuming
-*/
-export async function sleep(ms: number) {
-	return await (async () => {
-		return await new Promise((undefined) => setTimeout(undefined, ms));
-	})();
-}
-
-/**
-* This is just a synonym for sleep(0). This has the affect of yielding to other operations.
-*/
-export async function bear() {
-	return await sleep(0);
 }
 
 /**
@@ -134,29 +117,26 @@ class Stress {
 	constructor({ runtime = parseInt(process.env.StressRuntime), dop = parseInt(process.env.StressDop), iterations = parseInt(process.env.StressIterations), passThreshold = parseFloat(process.env.StressPassThreshold) }: StressOptions = DefaultStressOptions) {
 		trace(`parameters to Stress constructor: runtime=${runtime}, dop=${dop}, iterations=${iterations}, passThreshold=${passThreshold}`);
 		trace(`default properties of this Stress object: this.runtime=${this.runtime}, this.dop=${this.dop}, this.iterations=${this.iterations}, this.passThreshold=${this.passThreshold}`);
-		let x: number;
-		x = this.nullCoalesce(runtime, this.runtime); this.runtime = x;
-		x = this.nullCoalesce(dop, this.dop); this.dop = x;
-		x = this.nullCoalesce(iterations, this.iterations); this.iterations = x;
-		x = this.nullCoalesce(passThreshold, this.passThreshold); this.passThreshold = x;
+		this.runtime = this.nullCoalesce(runtime, this.runtime);
+		this.dop = this.nullCoalesce(dop, this.dop);
+		this.iterations = this.nullCoalesce(iterations, this.iterations);
+		this.passThreshold = this.nullCoalesce(passThreshold, this.passThreshold);
 
 		// validate this object
 		//
 		validate(this).then(errors => {
 			if (errors.length > 0) {
-				errors.map(error => { throw error; });
 				debug(`validation error in stress object: ${JSON.stringify(errors, undefined, '\t')}`);
 				throw errors;
 			}
 		}).catch(fatalErrors => {
 			if (fatalErrors.length > 0) {
-				fatalErrors.map(error => { throw error; });
 				debug(`fatal error while validating stress object: ${JSON.stringify(fatalErrors, undefined, '\t')}`);
 				throw fatalErrors;
 			}
 		});
 
-		trace(`properties of Stress Object post full construction with given parameters: this.runtime=${this.runtime}, this.dop=${this.dop}, this.iterations=${this.iterations}, this.passThreshold=${this.passThreshold}`);
+		trace(`properties of Stress Object post full construction with given parameters are: this.runtime=${this.runtime}, this.dop=${this.dop}, this.iterations=${this.iterations}, this.passThreshold=${this.passThreshold}`);
 	}
 
 	private nullCoalesce(value: number, defaultValue: number): number {
@@ -226,9 +206,13 @@ class Stress {
 		}
 
 		// Now await all of the Promises for each of the above invocation.
-		// TODO what if the below Promise.all exits out due to rejection of one of the promises. Kindly note, that due to the try/catch swallowing and collecting all errors, I currently do not expect this case to happen, but perhaps some defensive code like throwing if that does ever happen is not a bad idea.
 		//
-		await Promise.all(pendingPromises);
+		await Promise.all(pendingPromises).then(values => {
+			debug(`A stress thread finished with value: ${JSON.stringify(values, undefined, '\t')}`);
+		}).catch(fatalError => {
+			debug(`A fatal error was encountered running stress thread: ${JSON.stringify(fatalError, undefined, '\t')}`);
+			throw fatalError;
+		});
 
 		let total = numPasses + errors.length + fails.length;
 		assert(numPasses >= passThreshold * total, `Call Stressified: ${functionName}(${args.join(',')}) failed with a expected pass percent of ${passThreshold * 100}, actual pass percent is: ${numPasses * 100 / total}`);
@@ -255,34 +239,31 @@ export function stressify({ runtime, dop, iterations, passThreshold }: StressOpt
 	debug(`stressify FactoryDecorator called with runtime=${runtime}, dop=${dop}, iter=${iterations}, passThreshold=${passThreshold}`);
 
 	// The actual decorator function that modifies the original target method pointed to by the memberDiscriptor
+	//
 	return function (memberClass: any, memberName: string, memberDescriptor: PropertyDescriptor): PropertyDescriptor {
-		// stressify the target function pointed to by the descriptor.value only if
-		// SuiteType is stress
+		// stressify the target function pointed to by the descriptor.value only if SuiteType is stress
 		//
 		const suiteType = getSuiteType();
 		debug(`Stressified Decorator called for: ${memberName} and suiteType=${suiteType}`);
 		if (suiteType === SuiteType.Stress) {
-			// save a reference to the original method
-			// this way we keep the values currently in the
-			// descriptor and don't overwrite what another
-			// decorator might have done to the descriptor.
 			debug(`Stressifying ${memberName} since env variable SuiteType is set to ${SuiteType.Stress}`);
+			// save a reference to the original method, this way we keep the values currently in the descriptor and not overwrite what another
+			// decorator might have done to this descriptor by return the original descriptor.
+			//
 			const originalMethod: Function = memberDescriptor.value;
-			//editing the descriptor/value parameter
+			//modifying the descriptor's value parameter to point to a new method which is the stressified version of the originalMethod
+			//
 			memberDescriptor.value = async function (...args: any[]): Promise<StressResult> {
 				// note usage of originalMethod here
 				//
-				assert(stresser !== null && stresser !== undefined, 'stresser object must be defined');
 				const result: StressResult = await stresser.run(originalMethod, this, memberName, args, { runtime, dop, iterations, passThreshold });
 				debug(`Stressified: ${memberName}(${args.join(',')}) returned: ${JSON.stringify(result, undefined, '\t')}`);
 				return result;
 			};
-			// return edited descriptor that has stressified the original method pointed to by this descriptor
-			//
-			return memberDescriptor;
 		}
 
 		// return the original discriptor unedited so that the method pointed to it remains the same as before
+		// the method pointed to by this descriptor was modifed to a stressified version of the origMethod if SuiteType was Stress.
 		//
 		return memberDescriptor;
 	};

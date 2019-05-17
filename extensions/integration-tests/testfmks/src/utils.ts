@@ -16,14 +16,19 @@ export enum SuiteType {
 }
 
 /**
- * returns a string in 'capitalized case' where first letter of every word is capital and all other letters are lowercase.
- * @param inputString - the string to be converted to capitalized case
- */
-function toCapitalizedCase(inputString: string): string {
-	if (null !== inputString && undefined !== inputString) {
-		return inputString.toLowerCase().replace(/^.|\s\S/g, (a: string) => a.toUpperCase());
-	}
-	return inputString;
+* This simulates a sleep where the thread is suspended without spinning for a given number of milliseconds before resuming
+*/
+export async function sleep(ms: number) {
+	return await (async () => {
+		return await new Promise((undefined) => setTimeout(undefined, ms));
+	})();
+}
+
+/**
+* This is just a synonym for sleep(0). This has the affect of yielding to other operations.
+*/
+export async function bear() {
+	return await sleep(0);
 }
 
 /**
@@ -59,4 +64,16 @@ export function runOnCodeLoad(func: Function, ...args) {
 		trace(`Decorator runOnCodeLoad called for function: ${memberName}, on object: ${JSON.stringify(this)} with args: (${args.join(',')})`);
 		return memberDescriptor;
 	};
+}
+
+
+/**
+ * returns a string in 'capitalized case' where first letter of every word is capital and all other letters are lowercase.
+ * @param inputString - the string to be converted to capitalized case
+ */
+function toCapitalizedCase(inputString: string): string {
+	if (null !== inputString && undefined !== inputString) {
+		return inputString.toLowerCase().replace(/^.|\s\S/g, (a: string) => a.toUpperCase());
+	}
+	return inputString;
 }

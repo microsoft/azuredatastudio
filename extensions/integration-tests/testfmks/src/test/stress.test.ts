@@ -5,8 +5,8 @@
 
 'use strict';
 import 'mocha';
-import { runOnCodeLoad, getSuiteType, SuiteType } from '../utils';
-import { stressify, sleep, bear, StressResult } from '../stress';
+import { sleep, bear, runOnCodeLoad, getSuiteType, SuiteType } from '../utils';
+import { stressify, StressResult } from '../stress';
 import assert = require('assert');
 
 class StressifyTester {

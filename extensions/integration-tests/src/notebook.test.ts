@@ -14,12 +14,11 @@ import { sqlNotebookContent, writeNotebookToFile, sqlKernelMetadata, getFileName
 import { getBdcServer, getConfigValue, EnvironmentVariable_PYTHON_PATH } from './testConfig';
 import { connectToServer } from './utils';
 import * as fs from 'fs';
-import { stressify, sleep } from '../testfmks/src/stress';
+import { stressify } from '../testfmks/src/stress';
 
 if (context.RunTest) {
 	suite('Notebook integration test suite', function () {
 		setup(async function () {
-			sleep(20000);
 			console.log(`environment variable SuiteType is set to ${process.env.SuiteType}`);
 			console.log(`Start "${this.currentTest.title}"`);
 			let server = await getBdcServer();
