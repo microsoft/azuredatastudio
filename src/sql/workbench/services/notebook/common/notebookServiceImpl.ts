@@ -38,6 +38,8 @@ import { keys } from 'vs/base/common/map';
 import { IFileService, IFileStatWithMetadata } from 'vs/platform/files/common/files';
 import { RunOnceScheduler } from 'vs/base/common/async';
 import { Schemas } from 'vs/base/common/network';
+import { ILogService } from 'vs/platform/log/common/log';
+import { toErrorMessage } from 'vs/base/common/errorMessage';
 
 export interface NotebookProviderProperties {
 	provider: string;
@@ -121,6 +123,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		@IEditorGroupsService private readonly _editorGroupsService: IEditorGroupsService,
 		@IConfigurationService private readonly _configurationService: IConfigurationService,
 		@IFileService private readonly _fileService: IFileService,
+		@ILogService private readonly _logService: ILogService,
 		@IQueryManagementService private readonly _queryManagementService
 	) {
 		super();
@@ -590,7 +593,9 @@ export class NotebookService extends Disposable implements INotebookService {
 				this._trustedNotebooksMemento.saveMemento();
 			}
 		} catch (err) {
-			// TODO Log
+			if (this._logService) {
+				this._logService.trace(`Failed to save trust state to cache: ${toErrorMessage(err)}`);
+			}
 		}
 	}
 }

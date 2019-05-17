@@ -23,7 +23,6 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { uriPrefixes } from 'sql/platform/connection/common/utils';
 import { keys } from 'vs/base/common/map';
 import { ILogService } from 'vs/platform/log/common/log';
-import { Schemas } from 'vs/base/common/network';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
