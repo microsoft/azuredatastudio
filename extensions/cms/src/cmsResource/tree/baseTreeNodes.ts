@@ -14,7 +14,7 @@ export abstract class CmsResourceTreeNodeBase extends TreeNode {
 	public constructor(
 		private _name: string,
 		private _description: string,
-		private _ownerUri: string,
+		protected _ownerUri: string,
 		public readonly appContext: AppContext,
 		public readonly treeChangeHandler: ICmsResourceTreeChangeHandler,
 		parent: TreeNode
@@ -39,5 +39,6 @@ export abstract class CmsResourceTreeNodeBase extends TreeNode {
 export interface ICmsResourceNodeInfo {
 	name: string;
 	description: string;
+	ownerUri: string;
 	connection: azdata.connection.Connection;
 }

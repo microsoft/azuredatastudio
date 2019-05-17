@@ -120,5 +120,12 @@ export class CmsResourceTreeNode extends CmsResourceTreeNodeBase {
 		return this._serverGroupNodes;
 	}
 
+	public get ownerUri(): string {
+		if (!this._ownerUri) {
+			this.appContext.apiWrapper.getUriForConnection(this.connection).then((result) => this._ownerUri = result);
+		}
+		return this._ownerUri;
+	}
+
 	public static readonly noResourcesLabel = localize('cms.resource.cmsResourceTreeNode.noResourcesLabel', 'No resources found');
 }

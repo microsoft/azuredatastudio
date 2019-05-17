@@ -10,6 +10,7 @@ import * as azdata from 'azdata';
 import * as mssql from '../../mssql/src/api/mssqlapis';
 import * as Utils from './cmsResource/utils';
 import { ICmsResourceNodeInfo } from './cmsResource/tree/baseTreeNodes';
+import { connect } from 'net';
 
 const localize = nls.loadMessageBundle();
 
@@ -184,8 +185,12 @@ export class ApiWrapper {
 		return azdata.connection.openConnectionDialog(providers, initialConnectionProfile, connectionCompletionOptions);
 	}
 
-	public getConnectionString(connection: azdata.connection.Connection): Thenable<string> {
-		return azdata.connection.getConnectionString(connection.connectionId, false);
+	public async getUriForConnection(connection: azdata.connection.Connection): Promise<string> {
+		return azdata.connection.getUriForConnection(connection.connectionId).then((result) => {
+			if (result) {
+				return result;
+			}
+		});
 	}
 
 	// CMS APIs
@@ -227,8 +232,8 @@ export class ApiWrapper {
 
 	public async deleteCmsServer(cmsServer: any) {
 		let config = this.getConfiguration();
-		if (config && config.cmsServers) {
-			let newServers = config.cmsServers.filter((cachedServer) => {
+		if (config && config.servers) {
+			let newServers = config.servers.filter((cachedServer) => {
 				return cachedServer.name !== cmsServer;
 			});
 			await this.setConfiguration(newServers);
@@ -245,7 +250,8 @@ export class ApiWrapper {
 		let cmsServerNode: ICmsResourceNodeInfo = {
 			name: name,
 			description: description,
-			connection: connection
+			connection: connection,
+			ownerUri: ownerUri
 		};
 		this._registeredCmsServers.push(cmsServerNode);
 	}
