@@ -82,7 +82,7 @@ export class NotebookEditorModel extends EditorModel {
 	 * UntitledEditor uses TextFileService to save data from UntitledEditorInput
 	 * Titled editor uses TextFileEditorModel to save existing notebook
 	*/
-	async save(options: ISaveOptions): Promise<boolean> {
+	save(options: ISaveOptions): Promise<boolean> {
 		if (this.textEditorModel instanceof TextFileEditorModel) {
 			this.textEditorModel.save(options);
 			return Promise.resolve(true);
