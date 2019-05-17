@@ -593,7 +593,7 @@ export class SideBySideEditorInput extends EditorInput {
 		return this.master.revert();
 	}
 
-	getTelemetryDescriptor(): object {
+	getTelemetryDescriptor(): { [key: string]: unknown } {
 		const descriptor = this.master.getTelemetryDescriptor();
 
 		return assign(descriptor, super.getTelemetryDescriptor());
