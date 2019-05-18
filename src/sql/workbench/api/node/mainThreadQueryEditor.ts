@@ -12,6 +12,7 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { dispose, IDisposable } from 'vs/base/common/lifecycle';
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import * as azdata from 'azdata';
+import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadQueryEditor)
 export class MainThreadQueryEditor implements MainThreadQueryEditorShape {
@@ -23,7 +24,8 @@ export class MainThreadQueryEditor implements MainThreadQueryEditorShape {
 		extHostContext: IExtHostContext,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IQueryModelService private _queryModelService: IQueryModelService,
-		@IEditorService private _editorService: IEditorService
+		@IEditorService private _editorService: IEditorService,
+		@IQueryManagementService private _queryManagementService: IQueryManagementService
 	) {
 		if (extHostContext) {
 			this._proxy = extHostContext.getProxy(SqlExtHostContext.ExtHostQueryEditor);
