@@ -399,7 +399,6 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		const fileInput = isUntitled ? this._untitledEditorService.createOrGet(uri, notebookModeId, options.initialContent) :
 			this._editorService.createInput({ resource: uri, language: notebookModeId });
 		let input = this._instantiationService.createInstance(NotebookInput, path.basename(uri.fsPath), uri, fileInput);
-		input.isTrusted = isUntitled;
 		input.defaultKernel = options.defaultKernel;
 		input.connectionProfile = new ConnectionProfile(this._capabilitiesService, options.connectionProfile);
 		if (isUntitled) {

@@ -26,6 +26,8 @@ declare module 'azdata' {
 
 		export function registerObjectExplorerNodeProvider(provider: ObjectExplorerNodeProvider): vscode.Disposable;
 
+		export function registerIconProvider(provider: IconProvider): vscode.Disposable;
+
 		export function registerTaskServicesProvider(provider: TaskServicesProvider): vscode.Disposable;
 
 		export function registerFileBrowserProvider(provider: FileBrowserProvider): vscode.Disposable;
@@ -738,6 +740,10 @@ declare module 'azdata' {
 		flavor: string;
 	}
 
+	export interface QueryExecutionOptions {
+		options: Map<string, any>;
+	}
+
 	export interface QueryProvider extends DataProvider {
 		cancelQuery(ownerUri: string): Thenable<QueryCancelResult>;
 		runQuery(ownerUri: string, selection: ISelectionData, runOptions?: ExecutionPlanOptions): Thenable<void>;
@@ -748,6 +754,7 @@ declare module 'azdata' {
 		getQueryRows(rowData: QueryExecuteSubsetParams): Thenable<QueryExecuteSubsetResult>;
 		disposeQuery(ownerUri: string): Thenable<void>;
 		saveResults(requestParams: SaveResultsRequestParams): Thenable<SaveResultRequestResult>;
+		setQueryExecutionOptions(ownerUri: string, options: QueryExecutionOptions): Thenable<void>;
 
 		// Notifications
 		registerOnQueryComplete(handler: (result: QueryExecuteCompleteNotificationResult) => any): void;
@@ -1226,6 +1233,10 @@ declare module 'azdata' {
 		handleSessionOpen(session: ObjectExplorerSession): Thenable<boolean>;
 
 		handleSessionClose(closeSessionInfo: ObjectExplorerCloseSessionInfo): void;
+	}
+
+	export interface IconProvider extends DataProvider {
+		getConnectionIconId(connection: IConnectionProfile, serverInfo: ServerInfo): Thenable<string>;
 	}
 
 	// Admin Services interfaces  -----------------------------------------------------------------------
@@ -3154,6 +3165,7 @@ declare module 'azdata' {
 	export interface TextComponentProperties {
 		value?: string;
 		links?: LinkArea[];
+		CSSStyles?: { [key: string]: string };
 	}
 
 	export interface LinkArea {
@@ -3528,8 +3540,9 @@ declare module 'azdata' {
 		/**
 		 * Create a dialog with the given title
 		 * @param title The title of the dialog, displayed at the top
+		 * @param isWide Indicates whether the dialog is wide or normal
 		 */
-		export function createModelViewDialog(title: string, dialogName?: string): Dialog;
+		export function createModelViewDialog(title: string, dialogName?: string, isWide?: boolean): Dialog;
 
 		/**
 		 * Create a dialog tab which can be included as part of the content of a dialog
@@ -3613,6 +3626,11 @@ declare module 'azdata' {
 			 * The title of the dialog
 			 */
 			title: string;
+
+			/**
+			 * Indicates the width of the dialog
+			 */
+			isWide: boolean;
 
 			/**
 			 * The content of the dialog. If multiple tabs are given they will be displayed with tabs
@@ -3872,11 +3890,8 @@ declare module 'azdata' {
 
 			uri: string;
 
-			// get the document's execution options
-			getOptions(): Map<string, string>;
-
 			// set the document's execution options
-			setOptions(options: Map<string, string>): void;
+			setExecutionOptions(options: Map<string, any>): Thenable<void>;
 
 			// tab content is build using the modelview UI builder APIs
 			// probably should rename DialogTab class since it is useful outside dialogs
@@ -3901,7 +3916,10 @@ declare module 'azdata' {
 		 */
 		export function registerQueryEventListener(listener: queryeditor.QueryEventListener): void;
 
-		export function getQueryDocument(fileUri: string): queryeditor.QueryDocument;
+		/**
+		 * Get a QueryDocument object for a file URI
+		 */
+		export function getQueryDocument(fileUri: string): Thenable<queryeditor.QueryDocument>;
 	}
 
 	/**
@@ -3963,6 +3981,7 @@ declare module 'azdata' {
 		DacFxServicesProvider = 'DacFxServicesProvider',
 		SchemaCompareServicesProvider = 'SchemaCompareServicesProvider',
 		ObjectExplorerNodeProvider = 'ObjectExplorerNodeProvider',
+		IconProvider = 'IconProvider'
 	}
 
 	export namespace dataprotocol {

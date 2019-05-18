@@ -10,7 +10,8 @@ import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionT
 import { QueryEditor } from 'sql/workbench/parts/query/browser/queryEditor';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { dispose, IDisposable } from 'vs/base/common/lifecycle';
-import { IQueryModelService, IQueryEvent } from 'sql/platform/query/common/queryModel';
+import { IQueryModelService } from 'sql/platform/query/common/queryModel';
+import * as azdata from 'azdata';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadQueryEditor)
 export class MainThreadQueryEditor implements MainThreadQueryEditorShape {
@@ -93,5 +94,9 @@ export class MainThreadQueryEditor implements MainThreadQueryEditorShape {
 				queryEditor.registerQueryModelViewTab(title, componentId);
 			}
 		}
+	}
+
+	public $setQueryExecutionOptions(fileUri: string, options: azdata.QueryExecutionOptions): Thenable<void> {
+		return this._queryManagementService.setQueryExecutionOptions(fileUri, options);
 	}
 }

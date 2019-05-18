@@ -11,6 +11,8 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { deepClone } from 'vs/base/common/objects';
 
 import * as azdata from 'azdata';
+import * as path from 'path';
+import { URI } from 'vs/base/common/uri';
 
 export interface ConnectionProviderProperties {
 	providerId: string;
@@ -65,6 +67,47 @@ const ConnectionProviderContrib: IJSONSchema = {
 		displayName: {
 			type: 'string',
 			description: localize('schema.displayName', "Display Name for the provider")
+		},
+		iconPath: {
+			description: localize('schema.iconPath', 'Icon path for the server type'),
+			oneOf: [
+				{
+					type: 'array',
+					items: {
+						type: 'object',
+						properties: {
+							id: {
+								type: 'string',
+							},
+							path: {
+								type: 'object',
+								properties: {
+									light: {
+										type: 'string',
+									},
+									dark: {
+										type: 'string',
+									}
+								}
+							}
+						}
+					}
+				},
+				{
+					type: 'object',
+					properties: {
+						light: {
+							type: 'string',
+						},
+						dark: {
+							type: 'string',
+						}
+					}
+				},
+				{
+					type: 'string'
+				}
+			]
 		},
 		connectionOptions: {
 			type: 'array',
@@ -123,6 +166,7 @@ ExtensionsRegistry.registerExtensionPoint<ConnectionProviderProperties | Connect
 
 	for (let extension of extensions) {
 		const { value } = extension;
+		resolveIconPath(extension);
 		if (Array.isArray<ConnectionProviderProperties>(value)) {
 			for (let command of value) {
 				handleCommand(command, extension);
@@ -132,3 +176,39 @@ ExtensionsRegistry.registerExtensionPoint<ConnectionProviderProperties | Connect
 		}
 	}
 });
+
+function resolveIconPath(extension: IExtensionPointUser<any>): void {
+	if (!extension || !extension.value) { return undefined; }
+
+	let toAbsolutePath = (iconPath: any, baseDir: string) => {
+		if (!iconPath || !baseDir) { return; }
+		if (Array.isArray(iconPath)) {
+			for (let e of iconPath) {
+				e.path = {
+					light: URI.file(path.join(baseDir, e.path.light)),
+					dark: URI.file(path.join(baseDir, e.path.dark))
+				};
+			}
+		} else if (typeof iconPath === 'string') {
+			iconPath = {
+				light: URI.file(path.join(baseDir, iconPath)),
+				dark: URI.file(path.join(baseDir, iconPath))
+			};
+		} else {
+			iconPath = {
+				light: URI.file(path.join(baseDir, iconPath.light)),
+				dark: URI.file(path.join(baseDir, iconPath.dark))
+			};
+		}
+	};
+
+	let baseDir = extension.description.extensionLocation.fsPath;
+	let properties: ConnectionProviderProperties = extension.value;
+	if (Array.isArray<ConnectionProviderProperties>(properties)) {
+		for (let p of properties) {
+			toAbsolutePath(p['iconPath'], baseDir);
+		}
+	} else {
+		toAbsolutePath(properties['iconPath'], baseDir);
+	}
+}

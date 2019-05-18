@@ -102,6 +102,8 @@ export abstract class ExtHostDataProtocolShape {
 
 	$getServerCapabilities(handle: number, client: azdata.DataProtocolClientCapabilities): Thenable<azdata.DataProtocolServerCapabilities> { throw ni(); }
 
+	$getConnectionIconId(handle: number, connection: azdata.IConnectionProfile, serverInfo: azdata.ServerInfo): Thenable<string> { throw ni(); }
+
 	/**
 	 * Metadata service methods
 	 *
@@ -171,6 +173,10 @@ export abstract class ExtHostDataProtocolShape {
 	 * Gets a subset of rows in a result set in order to display in the UI
 	 */
 	$getQueryRows(handle: number, rowData: azdata.QueryExecuteSubsetParams): Thenable<azdata.QueryExecuteSubsetResult> { throw ni(); }
+	/**
+	 * Sets the query execution options for a query editor document
+	 */
+	$setQueryExecutionOptions(handle: number, ownerUri: string, options: azdata.QueryExecutionOptions): Thenable<void> { throw ni(); }
 
 	/**
 	 * Disposes the cached information regarding a query
@@ -541,6 +547,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$registerProfilerProvider(providerId: string, handle: number): Promise<any>;
 	$registerObjectExplorerProvider(providerId: string, handle: number): Promise<any>;
 	$registerObjectExplorerNodeProvider(providerId: string, supportedProviderId: string, group: string, handle: number): Promise<any>;
+	$registerIconProvider(providerId: string, handle: number): Promise<any>;
 	$registerMetadataProvider(providerId: string, handle: number): Promise<any>;
 	$registerTaskServicesProvider(providerId: string, handle: number): Promise<any>;
 	$registerFileBrowserProvider(providerId: string, handle: number): Promise<any>;
@@ -790,6 +797,7 @@ export interface MainThreadQueryEditorShape extends IDisposable {
 	$connect(fileUri: string, connectionId: string): Thenable<void>;
 	$runQuery(fileUri: string): void;
 	$createQueryTab(fileUri: string, title: string, content: string): void;
+	$setQueryExecutionOptions(fileUri: string, options: azdata.QueryExecutionOptions): Thenable<void>;
 	$registerQueryInfoListener(handle: number, providerId: string): void;
 }
 

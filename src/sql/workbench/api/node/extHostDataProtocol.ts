@@ -136,6 +136,12 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return rt;
 	}
 
+	$registerIconProvider(provider: azdata.IconProvider): vscode.Disposable {
+		let rt = this.registerProvider(provider, DataProviderType.IconProvider);
+		this._proxy.$registerIconProvider(provider.providerId, provider.handle);
+		return rt;
+	}
+
 	$registerProfilerProvider(provider: azdata.ProfilerProvider): vscode.Disposable {
 		let rt = this.registerProvider(provider, DataProviderType.ProfilerProvider);
 		this._proxy.$registerProfilerProvider(provider.providerId, provider.handle);
@@ -254,6 +260,14 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return this._resolveProvider<azdata.QueryProvider>(handle).runQueryAndReturn(ownerUri, queryString);
 	}
 
+	$setQueryExecutionOptions(handle: number, ownerUri: string, options: azdata.QueryExecutionOptions): Thenable<void> {
+		if (this._resolveProvider<azdata.QueryProvider>(handle).setQueryExecutionOptions) {
+			return this._resolveProvider<azdata.QueryProvider>(handle).setQueryExecutionOptions(ownerUri, options);
+		} else {
+			return new Promise((r) => r());
+		}
+	}
+
 	$parseSyntax(handle: number, ownerUri: string, query: string): Thenable<azdata.SyntaxParseResult> {
 		return this._resolveProvider<azdata.QueryProvider>(handle).parseSyntax(ownerUri, query);
 	}
@@ -328,6 +342,10 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
 	$onEditSessionReady(handle: number, ownerUri: string, success: boolean, message: string): void {
 		this._proxy.$onEditSessionReady(handle, ownerUri, success, message);
+	}
+
+	public $getConnectionIconId(handle: number, connection: azdata.IConnectionProfile, serverInfo: azdata.ServerInfo): Thenable<string> {
+		return this._resolveProvider<azdata.IconProvider>(handle).getConnectionIconId(connection, serverInfo);
 	}
 
 	// Metadata handlers

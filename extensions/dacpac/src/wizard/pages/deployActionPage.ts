@@ -8,10 +8,10 @@ import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
 import * as path from 'path';
-import * as os from 'os';
 import { DacFxDataModel } from '../api/models';
 import { DataTierApplicationWizard, Operation } from '../dataTierApplicationWizard';
 import { DacFxConfigPage } from '../api/dacFxConfigPage';
+import { sanitizeStringForFilename } from '../api/utils';
 
 const localize = nls.loadMessageBundle();
 
@@ -167,7 +167,7 @@ export class DeployActionPage extends DacFxConfigPage {
 	}
 
 	private setDefaultScriptFilePath(): void {
-		this.fileTextBox.value = path.join(this.getRootPath(), this.model.database + '_UpgradeDACScript_' + this.getDateTime() + '.sql');
+		this.fileTextBox.value = path.join(this.getRootPath(), sanitizeStringForFilename(this.model.database) + '_UpgradeDACScript_' + this.getDateTime() + '.sql');
 		this.model.scriptFilePath = this.fileTextBox.value;
 	}
 
