@@ -19,7 +19,6 @@ import { QueryResultsInput } from 'sql/workbench/parts/query/common/queryResults
 import { QueryResultsView } from 'sql/workbench/parts/query/browser/queryResultsView';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
-import { Emitter } from 'vs/base/common/event';
 
 export const RESULTS_GRID_DEFAULTS = {
 	cellPadding: [5, 8, 4],
