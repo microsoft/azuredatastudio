@@ -6,9 +6,9 @@
 import { ToolRequirementInfo, ToolStatusInfo, ITool } from '../interfaces';
 import { PythonTool } from './tools/pythonTool';
 import { DockerTool } from './tools/dockerTool';
-import { AzCLITool } from './tools/azCLITool';
-import { MSSQLCTLTool } from './tools/mssqlctlTool';
-import { KUBECTLTool } from './tools/kubectlTool';
+import { AzCliTool } from './tools/azCliTool';
+import { MSSQLCtlTool } from './tools/mssqlCtlTool';
+import { KubeCtlTool } from './tools/kubeCtlTool';
 
 export interface IToolsService {
 	getToolStatus(toolRequirements: ToolRequirementInfo[]): Thenable<ToolStatusInfo[]>;
@@ -16,7 +16,7 @@ export interface IToolsService {
 }
 
 export class ToolsService implements IToolsService {
-	private static readonly SupportedTools: ITool[] = [new PythonTool(), new DockerTool(), new AzCLITool(), new MSSQLCTLTool(), new KUBECTLTool()];
+	private static readonly SupportedTools: ITool[] = [new PythonTool(), new DockerTool(), new AzCliTool(), new MSSQLCtlTool(), new KubeCtlTool()];
 
 	getToolStatus(toolRequirements: ToolRequirementInfo[]): Thenable<ToolStatusInfo[]> {
 		const toolStatusList: ToolStatusInfo[] = [];

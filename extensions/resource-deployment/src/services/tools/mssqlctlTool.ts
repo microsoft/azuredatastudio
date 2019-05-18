@@ -7,7 +7,7 @@ import { ToolType, ITool, ToolInstallationStatus } from '../../interfaces';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
-export class MSSQLCTLTool implements ITool {
+export class MSSQLCtlTool implements ITool {
 	get name(): string {
 		return 'mssqlctl';
 	}
@@ -17,7 +17,7 @@ export class MSSQLCTLTool implements ITool {
 	}
 
 	get type(): ToolType {
-		return ToolType.MSSQLCTL;
+		return ToolType.MSSQLCtl;
 	}
 
 	get displayName(): string {

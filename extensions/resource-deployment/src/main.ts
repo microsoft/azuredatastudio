@@ -8,17 +8,22 @@ import vscode = require('vscode');
 import { ResourceDeploymentDialog } from './ui/resourceDeploymentDialog';
 import { ToolsService } from './services/toolsService';
 import { NotebookService } from './services/notebookService';
-import { ResourceTypeService, PackageJsonPath } from './services/resourceTypeService';
+import { ResourceTypeService } from './services/resourceTypeService';
+import { PlatformService } from './services/platformService';
+import * as nls from 'vscode-nls';
+
+const localize = nls.loadMessageBundle();
 
 export function activate(context: vscode.ExtensionContext) {
+	const platformService = new PlatformService();
 	const toolsService = new ToolsService();
-	const notebookService = new NotebookService();
-	const resourceTypeService = new ResourceTypeService(toolsService);
+	const notebookService = new NotebookService(platformService);
+	const resourceTypeService = new ResourceTypeService(platformService, toolsService);
 
-	const resourceTypes = resourceTypeService.getResourceTypes(PackageJsonPath);
+	const resourceTypes = resourceTypeService.getResourceTypes();
 	const validationFailures = resourceTypeService.validateResourceTypes(resourceTypes);
 	if (validationFailures.length !== 0) {
-		const errorMessage = `Failed to load extension: ${context.extensionPath}, Error detected in the resource type definition in package.json, check debug console for details.`;
+		const errorMessage = localize('resourceDeployment.FailedToLoadExtension', 'Failed to load extension: {0}, Error detected in the resource type definition in package.json, check debug console for details.', context.extensionPath);
 		vscode.window.showErrorMessage(errorMessage);
 		validationFailures.forEach(message => console.error(message));
 		return;
@@ -27,7 +32,7 @@ export function activate(context: vscode.ExtensionContext) {
 	const openDialog = (resourceTypeName: string) => {
 		const filtered = resourceTypes.filter(resourceType => resourceType.name === resourceTypeName);
 		if (filtered.length !== 1) {
-			vscode.window.showErrorMessage(`The resource type: ${resourceTypeName} is not defined`);
+			vscode.window.showErrorMessage(localize('resourceDeployment.UnknownResourceType', 'The resource type: {0} is not defined', resourceTypeName));
 		}
 		else {
 			let dialog = new ResourceDeploymentDialog(context, notebookService, toolsService, resourceTypeService, filtered[0]);

@@ -53,8 +53,8 @@
   "resourceTypes": [
     {
       "name": "sql-image",
-      "displayName": "SQL Server Image",
-      "description": "SQL Server container image on Docker",
+      "displayName": "%resource-type-sql-image-display-name%",
+      "description": "%resource-type-sql-image-description%",
       "platforms": [
         "darwin",
         "win32",
@@ -67,22 +67,22 @@
       "options": [
         {
           "name": "version",
-          "displayName": "Version",
+          "displayName": "%version-display-name%",
           "values": [
             {
               "name": "sql2017",
-              "displayName": "SQL Server 2017"
+              "displayName": "%sql-2017-display-name%"
             },
             {
               "name": "sql2019",
-              "displayName": "SQL Server 2019"
+              "displayName": "%sql-2019-display-name%"
             }
           ]
         }
       ],
       "providers": [
         {
-          "notebook": "./notebooks/sql2017-image-docker.ipynb",
+          "notebook": "%sql-2017-docker-notebook%",
           "requiredTools": [
             {
               "name": "docker"
@@ -91,7 +91,7 @@
           "when": "version=sql2017"
         },
         {
-          "notebook": "./notebooks/sql2019-image-docker.ipynb",
+          "notebook": "%sql-2019-docker-notebook%",
           "requiredTools": [
             {
               "name": "docker"
@@ -103,8 +103,8 @@
     },
     {
       "name": "sql-bdc",
-      "displayName": "Big Data Cluster",
-      "description": "Big Data Cluster",
+      "displayName": "%resource-type-sql-bdc-display-name%",
+      "description": "%resource-type-sql-bdc-description%",
       "platforms": [
         "darwin",
         "linux",
@@ -117,36 +117,36 @@
       "options": [
         {
           "name": "version",
-          "displayName": "Version",
+          "displayName": "%version-display-name%",
           "values": [
             {
               "name": "ctp2.5",
-              "displayName": "SQL Server 2019 Big Data Cluster CTP 2.5"
+              "displayName": "%sql-2019ctp25-display-name%"
             },
             {
               "name": "ctp3.0",
-              "displayName": "SQL Server 2019 Big Data Cluster CTP 3.0"
+              "displayName": "%sql-2019ctp30-display-name%"
             }
           ]
         },
         {
           "name": "target",
-          "displayName": "Deployment target",
+          "displayName": "%bdc-deployment-target%",
           "values": [
             {
               "name": "aks",
-              "displayName": "New Azure Kubernetes Service Cluster"
+              "displayName": "%bdc-deployment-target-aks%"
             },
             {
               "name": "existingCluster",
-              "displayName": "Existing Kubernetes Cluster"
+              "displayName": "%bdc-deployment-target-existing-cluster%"
             }
           ]
         }
       ],
       "providers": [
         {
-          "notebook": "./notebooks/sql2019-bdc-aks.ipynb",
+          "notebook": "%bdc-ctp25-aks-notebook%",
           "requiredTools": [
             {
               "name": "kubectl"
@@ -161,7 +161,7 @@
           "when": "target=aks&&version=ctp2.5"
         },
         {
-          "notebook": "./notebooks/sql2019-bdc-existing-cluster.ipynb",
+          "notebook": "%bdc-ctp25-existing-cluster-notebook%",
           "requiredTools": [
             {
               "name": "kubectl"
@@ -173,7 +173,22 @@
           "when": "target=existingCluster&&version=ctp2.5"
         },
         {
-          "notebook": "./notebooks/sql2019-bdc-existing-cluster.ipynb",
+          "notebook": "%bdc-ctp30-aks-notebook%",
+          "requiredTools": [
+            {
+              "name": "kubectl"
+            },
+            {
+              "name": "azcli"
+            },
+            {
+              "name": "mssqlctl"
+            }
+          ],
+          "when": "target=aks&&version=ctp3.0"
+        },
+        {
+          "notebook": "%bdc-ctp30-existing-cluster-notebook%",
           "requiredTools": [
             {
               "name": "kubectl"
@@ -183,18 +198,6 @@
             }
           ],
           "when": "target=existingCluster&&version=ctp3.0"
-        },
-        {
-          "notebook": "./notebooks/sql2019-bdc-existing-cluster.ipynb",
-          "requiredTools": [
-            {
-              "name": "kubectl"
-            },
-            {
-              "name": "mssqlctl"
-            }
-          ],
-          "when": "target=aks&&version=ctp3.0"
         }
       ]
     }
@@ -203,6 +206,7 @@
     "vscode-nls": "^3.2.1"
   },
   "devDependencies": {
-    "vscodetestcover": "^1.0.2"
+    "typemoq": "^2.1.0",
+    "vscode": "^1.1.26"
   }
 }

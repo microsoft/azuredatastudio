@@ -7,7 +7,7 @@ import { ToolType, ITool, ToolInstallationStatus } from '../../interfaces';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
-export class AzCLITool implements ITool {
+export class AzCliTool implements ITool {
 	get name(): string {
 		return 'azcli';
 	}
@@ -17,7 +17,7 @@ export class AzCLITool implements ITool {
 	}
 
 	get type(): ToolType {
-		return ToolType.AZCLI;
+		return ToolType.AzCli;
 	}
 
 	get displayName(): string {

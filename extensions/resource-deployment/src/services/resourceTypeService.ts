@@ -6,39 +6,38 @@
 
 import { ResourceType, ResourceTypeOption, DeploymentProvider } from '../interfaces';
 import { IToolsService } from './toolsService';
-import * as fs from 'fs';
-import * as path from 'path';
+import * as vscode from 'vscode';
+import { IPlatformService } from './platformService';
 
 export interface IResourceTypeService {
-	getResourceTypes(jsonFilePath: string): ResourceType[];
+	getResourceTypes(filterByPlatform?: boolean): ResourceType[];
 	validateResourceTypes(resourceTypes: ResourceType[]): string[];
 }
 
-export const PackageJsonPath = path.join(__dirname, '../../package.json');
-
 export class ResourceTypeService implements IResourceTypeService {
-	constructor(private toolsService: IToolsService) { }
+	private _resourceTypes: ResourceType[] = [];
+
+	constructor(private platformService: IPlatformService, private toolsService: IToolsService) { }
 
 	/**
 	 * Get the supported resource types
-	 * @param jsonFilePath the path of the json file that contains the resourceTypes node.
 	 * @param filterByPlatform indicates whether to return the resource types supported on current platform.
 	 */
-	getResourceTypes(jsonFilePath: string, filterByPlatform: boolean = true): ResourceType[] {
-		if (!fs.existsSync(jsonFilePath)) {
-			throw new Error(`the file does not exist:${jsonFilePath}`);
+	getResourceTypes(filterByPlatform: boolean = true): ResourceType[] {
+		if (this._resourceTypes.length === 0) {
+			// If we load package.json directly using require(path) the contents won't be localized
+			this._resourceTypes = vscode.extensions.getExtension('microsoft.resource-deployment')!.packageJSON.resourceTypes as ResourceType[];
+			this._resourceTypes.forEach(resourceType => {
+				resourceType.getProvider = (selectedOptions) => { return this.getProvider(resourceType, selectedOptions); };
+			});
 		}
-		const json = require(jsonFilePath) as { resourceTypes: ResourceType[] };
-		let resourceTypes = json.resourceTypes;
 
+		let resourceTypes = this._resourceTypes;
 		if (filterByPlatform) {
-			resourceTypes = resourceTypes.filter(resourceType => resourceType.platforms.includes(process.platform));
+			resourceTypes = resourceTypes.filter(resourceType => resourceType.platforms.includes(this.platformService.platform()));
 		}
-		resourceTypes.forEach(resourceType => {
-			resourceType.getProvider = (selectedOptions) => { return this.getProvider(resourceType, selectedOptions); };
-		});
 
-		return json.resourceTypes;
+		return resourceTypes;
 	}
 
 	/**

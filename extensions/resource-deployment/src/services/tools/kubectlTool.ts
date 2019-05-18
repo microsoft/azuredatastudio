@@ -7,7 +7,7 @@ import { ToolType, ITool, ToolInstallationStatus } from '../../interfaces';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
-export class KUBECTLTool implements ITool {
+export class KubeCtlTool implements ITool {
 	get name(): string {
 		return 'kubectl';
 	}
@@ -17,7 +17,7 @@ export class KUBECTLTool implements ITool {
 	}
 
 	get type(): ToolType {
-		return ToolType.KUBECTL;
+		return ToolType.KubeCtl;
 	}
 
 	get displayName(): string {

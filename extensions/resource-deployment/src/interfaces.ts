@@ -45,11 +45,11 @@ export interface ToolRequirementInfo {
 
 export enum ToolType {
 	Unknown,
-	AZCLI,
-	KUBECTL,
+	AzCli,
+	KubeCtl,
 	Docker,
 	Python,
-	MSSQLCTL
+	MSSQLCtl
 }
 
 export interface ToolStatusInfo {

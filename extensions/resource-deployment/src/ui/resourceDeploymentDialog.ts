@@ -6,7 +6,7 @@
 
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
-import { IResourceTypeService, PackageJsonPath } from '../services/resourceTypeService';
+import { IResourceTypeService } from '../services/resourceTypeService';
 import * as vscode from 'vscode';
 import { ResourceType, DeploymentProvider, ToolInstallationStatus } from '../interfaces';
 import { IToolsService } from '../services/toolsService';
@@ -42,7 +42,7 @@ export class ResourceDeploymentDialog {
 		let tab = azdata.window.createTab('');
 		tab.registerContent((view: azdata.ModelView) => {
 			this._view = view;
-			this.resourceTypeService.getResourceTypes(PackageJsonPath).forEach(resourceType => this.addCard(resourceType));
+			this.resourceTypeService.getResourceTypes().forEach(resourceType => this.addCard(resourceType));
 			const cardsContainer = view.modelBuilder.flexContainer().withItems(this._resourceTypeCards, { flex: '0 0 auto', CSSStyles: { 'margin-bottom': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'left' }).component();
 			this._resourceDescriptionLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: this._selectedResourceType ? this._selectedResourceType.description : undefined }).component();
 			this._optionsContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
