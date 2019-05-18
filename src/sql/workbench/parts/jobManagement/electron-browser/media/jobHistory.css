@@ -119,8 +119,8 @@ input#accordion:checked ~ .accordion-content {
 	padding-bottom: 10px;
 }
 
-.vs-dark.monaco-shell .all-jobs >.back-button-icon,
-.hc-black.monaco-shell .all-jobs >.back-button-icon {
+.vs-dark .all-jobs >.back-button-icon,
+.hc-black .all-jobs >.back-button-icon {
 	content: url('back_inverse.svg');
 }
 

@@ -335,33 +335,7 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 
 		const deps = gulp.src(depsSrc, { base: '.', dot: true })
 			.pipe(filter(['**', '!**/package-lock.json']))
-			.pipe(util.cleanNodeModule('fsevents', ['binding.gyp', 'fsevents.cc', 'build/**', 'src/**', 'test/**'], ['**/*.node']))
-			.pipe(util.cleanNodeModule('vscode-sqlite3', ['binding.gyp', 'benchmark/**', 'cloudformation/**', 'deps/**', 'test/**', 'build/**', 'src/**'], ['build/Release/*.node']))
-			.pipe(util.cleanNodeModule('oniguruma', ['binding.gyp', 'build/**', 'src/**', 'deps/**'], ['build/Release/*.node', 'src/*.js']))
-			.pipe(util.cleanNodeModule('windows-mutex', ['binding.gyp', 'build/**', 'src/**'], ['**/*.node']))
-			.pipe(util.cleanNodeModule('native-keymap', ['binding.gyp', 'build/**', 'src/**', 'deps/**'], ['build/Release/*.node']))
-			.pipe(util.cleanNodeModule('native-is-elevated', ['binding.gyp', 'build/**', 'src/**', 'deps/**'], ['build/Release/*.node']))
-			.pipe(util.cleanNodeModule('native-watchdog', ['binding.gyp', 'build/**', 'src/**'], ['build/Release/*.node']))
-			.pipe(util.cleanNodeModule('spdlog', ['binding.gyp', 'build/**', 'deps/**', 'src/**', 'test/**'], ['build/Release/*.node']))
-			.pipe(util.cleanNodeModule('jschardet', ['dist/**']))
-			.pipe(util.cleanNodeModule('windows-foreground-love', ['binding.gyp', 'build/**', 'src/**'], ['**/*.node']))
-			.pipe(util.cleanNodeModule('windows-process-tree', ['binding.gyp', 'build/**', 'src/**'], ['**/*.node']))
-			.pipe(util.cleanNodeModule('gc-signals', ['binding.gyp', 'build/**', 'src/**', 'deps/**'], ['build/Release/*.node', 'src/index.js']))
-			.pipe(util.cleanNodeModule('keytar', ['binding.gyp', 'build/**', 'src/**', 'script/**', 'node_modules/**'], ['**/*.node']))
-			.pipe(util.cleanNodeModule('node-pty', ['binding.gyp', 'build/**', 'src/**', 'tools/**'], ['build/Release/*.exe', 'build/Release/*.dll', 'build/Release/*.node']))
-			// {{SQL CARBON EDIT}}
-			.pipe(util.cleanNodeModule('chart.js', ['node_modules/**'], undefined))
-			.pipe(util.cleanNodeModule('emmet', ['node_modules/**'], undefined))
-			.pipe(util.cleanNodeModule('pty.js', ['build/**'], ['build/Release/**']))
-			.pipe(util.cleanNodeModule('jquery-ui', ['external/**', 'demos/**'], undefined))
-			.pipe(util.cleanNodeModule('core-js', ['**/**'], undefined))
-			.pipe(util.cleanNodeModule('slickgrid', ['node_modules/**', 'examples/**'], undefined))
-			.pipe(util.cleanNodeModule('nsfw', ['binding.gyp', 'build/**', 'src/**', 'openpa/**', 'includes/**'], ['**/*.node', '**/*.a']))
-			.pipe(util.cleanNodeModule('vscode-nsfw', ['binding.gyp', 'build/**', 'src/**', 'openpa/**', 'includes/**'], ['build/Release/*.node', '**/*.a']))
-			// {{SQL CARBON EDIT}} - End
-			.pipe(util.cleanNodeModule('vsda', ['binding.gyp', 'README.md', 'build/**', '*.bat', '*.sh', '*.cpp', '*.h'], ['build/Release/vsda.node']))
-			.pipe(util.cleanNodeModule('vscode-windows-ca-certs', ['**/*'], ['package.json', '**/*.node']))
-			.pipe(util.cleanNodeModule('node-addon-api', ['**/*']))
+			.pipe(util.cleanNodeModules(path.join(__dirname, '.nativeignore')))
 			.pipe(createAsar(path.join(process.cwd(), 'node_modules'), ['**/*.node', '**/vscode-ripgrep/bin/*', '**/node-pty/build/Release/*'], 'app/node_modules.asar'));
 
 		// {{SQL CARBON EDIT}}
@@ -380,7 +354,7 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 		], { base: '.', dot: true });
 
 		let all = es.merge(
-			packageJsonStream,
+		packageJsonStream,
 			productJsonStream,
 			license,
 			api,
