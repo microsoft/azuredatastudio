@@ -311,7 +311,7 @@ suite('SQL QueryEditor Tests', () => {
 			let params: INewConnectionParams = { connectionType: ConnectionType.editor, runQueryOnCompletion: RunQueryOnConnectionMode.none };
 			queryInput.onConnectSuccess(params);
 			queryModelService.setup(x => x.isRunningQuery(TypeMoq.It.isAny())).returns(() => false);
-			assert.equal(queryInput.state.executing, true, 'runQueryAction button should be enabled');
+			assert.equal(queryInput.state.connected, true, 'runQueryAction button should be enabled');
 			done();
 		});
 		test('Test that we attempt to dispose query when the queryInput is disposed', (done) => {

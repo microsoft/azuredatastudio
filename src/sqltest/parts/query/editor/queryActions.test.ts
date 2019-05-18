@@ -30,7 +30,8 @@ import { ConfigurationService } from 'vs/platform/configuration/node/configurati
 
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
-import { TestStorageService } from 'vs/workbench/test/workbenchTestServices';
+import { TestStorageService, TestContextService } from 'vs/workbench/test/workbenchTestServices';
+import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
 
 let none: void;
 
@@ -48,9 +49,11 @@ suite('SQL QueryAction Tests', () => {
 		testQueryInput.setup(x => x.uri).returns(() => testUri);
 		testQueryInput.setup(x => x.runQuery(undefined)).callback(() => { calledRunQueryOnInput = true; });
 
+		const contextkeyservice = new MockContextKeyService();
+
 		// Setup a reusable mock QueryEditor
-		editor = TypeMoq.Mock.ofType(QueryEditor, TypeMoq.MockBehavior.Strict, undefined, new TestThemeService(), undefined, undefined, undefined, undefined,
-			undefined, undefined, undefined, new TestStorageService());
+		editor = TypeMoq.Mock.ofType(QueryEditor, TypeMoq.MockBehavior.Strict, undefined, new TestThemeService(), new TestStorageService(), contextkeyservice, undefined, undefined,
+			undefined);
 		editor.setup(x => x.input).returns(() => testQueryInput.object);
 
 		editor.setup(x => x.getSelection()).returns(() => undefined);
@@ -83,9 +86,11 @@ suite('SQL QueryAction Tests', () => {
 		let connectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Loose, {}, {}, new TestStorageService());
 		connectionManagementService.setup(x => x.isConnected(TypeMoq.It.isAnyString())).returns(() => isConnectedReturnValue);
 
-		// ... Create an editor
-		let editor = TypeMoq.Mock.ofType(QueryEditor, TypeMoq.MockBehavior.Loose, undefined, new TestThemeService(), undefined, undefined, undefined, undefined,
-			undefined, undefined, undefined, new TestStorageService());
+		const contextkeyservice = new MockContextKeyService();
+
+		// Setup a reusable mock QueryEditor
+		editor = TypeMoq.Mock.ofType(QueryEditor, TypeMoq.MockBehavior.Strict, undefined, new TestThemeService(), new TestStorageService(), contextkeyservice, undefined, undefined,
+			undefined);
 		editor.setup(x => x.input).returns(() => testQueryInput.object);
 
 		// If I create a QueryTaskbarAction and I pass a non-connected editor to _getConnectedQueryEditorUri
@@ -172,8 +177,11 @@ suite('SQL QueryAction Tests', () => {
 		queryInput.setup(x => x.runQuery(undefined)).callback(() => {
 			countCalledRunQuery++;
 		});
-		let queryEditor: TypeMoq.Mock<QueryEditor> = TypeMoq.Mock.ofType(QueryEditor, TypeMoq.MockBehavior.Strict, undefined, new TestThemeService(), undefined,
-			undefined, undefined, undefined, undefined, undefined, undefined, new TestStorageService());
+		const contextkeyservice = new MockContextKeyService();
+
+		// Setup a reusable mock QueryEditor
+		let queryEditor = TypeMoq.Mock.ofType(QueryEditor, TypeMoq.MockBehavior.Strict, undefined, new TestThemeService(), new TestStorageService(), contextkeyservice, undefined, undefined,
+			undefined);
 		queryEditor.setup(x => x.input).returns(() => queryInput.object);
 		queryEditor.setup(x => x.getSelection()).returns(() => undefined);
 		queryEditor.setup(x => x.getSelection(false)).returns(() => undefined);
@@ -237,10 +245,11 @@ suite('SQL QueryAction Tests', () => {
 			runQuerySelection = selection;
 			countCalledRunQuery++;
 		});
+		const contextkeyservice = new MockContextKeyService();
 
-		// ... Mock "getSelection" in QueryEditor
-		let queryEditor: TypeMoq.Mock<QueryEditor> = TypeMoq.Mock.ofType(QueryEditor, TypeMoq.MockBehavior.Loose, undefined, new TestThemeService(), undefined,
-			undefined, undefined, undefined, undefined, undefined, undefined, new TestStorageService());
+		// Setup a reusable mock QueryEditor
+		let queryEditor = TypeMoq.Mock.ofType(QueryEditor, TypeMoq.MockBehavior.Strict, undefined, new TestThemeService(), new TestStorageService(), contextkeyservice, undefined, undefined,
+			undefined);
 		queryEditor.setup(x => x.input).returns(() => queryInput.object);
 		queryEditor.setup(x => x.getSelection()).returns(() => {
 			return selectionToReturnInGetSelection;
