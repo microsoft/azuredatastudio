@@ -212,7 +212,7 @@ suite('SQL QueryAction Tests', () => {
 		done();
 	});
 
-	test('ISelectionData is properly passed when queries are run', (done) => {
+	test('ISelectionData is properly passed when queries are run', () => {
 
 		/// Setup Test ///
 
@@ -251,7 +251,11 @@ suite('SQL QueryAction Tests', () => {
 		let queryEditor = TypeMoq.Mock.ofType(QueryEditor, TypeMoq.MockBehavior.Strict, undefined, new TestThemeService(), new TestStorageService(), contextkeyservice, undefined, undefined,
 			undefined);
 		queryEditor.setup(x => x.input).returns(() => queryInput.object);
+		queryEditor.setup(x => x.isSelectionEmpty()).returns(() => false);
 		queryEditor.setup(x => x.getSelection()).returns(() => {
+			return selectionToReturnInGetSelection;
+		});
+		queryEditor.setup(x => x.getSelection(TypeMoq.It.isAny())).returns(() => {
 			return selectionToReturnInGetSelection;
 		});
 
@@ -312,8 +316,6 @@ suite('SQL QueryAction Tests', () => {
 		assert.equal(runQuerySelection.startColumn, selectionToReturnInGetSelection.startColumn, 'startColumn should match');
 		assert.equal(runQuerySelection.endLine, selectionToReturnInGetSelection.endLine, 'endLine should match');
 		assert.equal(runQuerySelection.endColumn, selectionToReturnInGetSelection.endColumn, 'endColumn should match');
-
-		done();
 	});
 
 	test('CancelQueryAction calls cancelQuery() only if URI is connected', (done) => {
