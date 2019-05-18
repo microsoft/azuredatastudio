@@ -13,6 +13,8 @@ import { NotebookEditor } from 'sql/workbench/parts/notebook/notebookEditor';
 import { NewNotebookAction } from 'sql/workbench/parts/notebook/notebookActions';
 import { KeyMod } from 'vs/editor/common/standalone/standaloneBase';
 import { KeyCode } from 'vs/base/common/keyCodes';
+import { IConfigurationRegistry, Extensions as ConfigExtensions } from 'vs/platform/configuration/common/configurationRegistry';
+import { localize } from 'vs/nls';
 
 // Model View editor registration
 const viewModelEditorDescriptor = new EditorDescriptor(
@@ -37,3 +39,16 @@ actionRegistry.registerWorkbenchAction(
 	),
 	NewNotebookAction.LABEL
 );
+const configurationRegistry = <IConfigurationRegistry>Registry.as(ConfigExtensions.Configuration);
+configurationRegistry.registerConfiguration({
+	'id': 'notebook',
+	'title': 'Notebook',
+	'type': 'object',
+	'properties': {
+		'notebook.useSimpleMarkdown': {
+			'type': 'boolean',
+			'default': false,
+			'description': localize('notebook.simplemarkdown', 'Use simple markdown viewer to render text cells.')
+		}
+	}
+});

@@ -282,7 +282,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return !ids ? [] : ids;
 	}
 
-	public async requestModelLoad(isTrusted: boolean = false): Promise<void> {
+	public async loadContents(isTrusted: boolean = false): Promise<void> {
 		try {
 			this._trustedMode = isTrusted;
 			let contents = null;
@@ -294,7 +294,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			// if cells already exist, create them with language info (if it is saved)
 			this._cells = [];
 			if (contents) {
-				this._defaultLanguageInfo = this.getDefaultLanguageInfo(contents);
+				this._defaultLanguageInfo = contents && contents.metadata && contents.metadata.language_info;
 				this._savedKernelInfo = this.getSavedKernelInfo(contents);
 				if (contents.cells && contents.cells.length > 0) {
 					this._cells = contents.cells.map(c => {
@@ -304,6 +304,14 @@ export class NotebookModel extends Disposable implements INotebookModel {
 					});
 				}
 			}
+		} catch (error) {
+			this._inErrorState = true;
+			throw error;
+		}
+	}
+	public async requestModelLoad(): Promise<void> {
+		try {
+			this._defaultLanguageInfo = this.getDefaultLanguageInfo();
 			this.setDefaultKernelAndProviderId();
 			this.trySetLanguageFromLangInfo();
 		} catch (error) {
@@ -715,8 +723,15 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	// Get default language if saved in notebook file
 	// Otherwise, default to python
-	private getDefaultLanguageInfo(notebook: nb.INotebookContents): nb.ILanguageInfo {
+	private old_getDefaultLanguageInfo(notebook: nb.INotebookContents): nb.ILanguageInfo {
 		return (notebook && notebook.metadata && notebook.metadata.language_info) ? notebook.metadata.language_info : {
+			name: this._providerId === SQL_NOTEBOOK_PROVIDER ? 'sql' : 'python',
+			version: '',
+			mimetype: this._providerId === SQL_NOTEBOOK_PROVIDER ? 'x-sql' : 'x-python'
+		};
+	}
+	private getDefaultLanguageInfo(): nb.ILanguageInfo {
+		return {
 			name: this._providerId === SQL_NOTEBOOK_PROVIDER ? 'sql' : 'python',
 			version: '',
 			mimetype: this._providerId === SQL_NOTEBOOK_PROVIDER ? 'x-sql' : 'x-python'

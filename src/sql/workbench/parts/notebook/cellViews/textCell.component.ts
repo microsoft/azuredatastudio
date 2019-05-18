@@ -24,9 +24,17 @@ import { ICellModel } from 'sql/workbench/parts/notebook/models/modelInterfaces'
 import { ISanitizer, defaultSanitizer } from 'sql/workbench/parts/notebook/outputs/sanitizer';
 import { NotebookModel } from 'sql/workbench/parts/notebook/models/notebookModel';
 import { CellToggleMoreActions } from 'sql/workbench/parts/notebook/cellToggleMoreActions';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { toDisposable, IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { RenderOptions, renderMarkdown } from 'vs/base/browser/htmlContentRenderer';
+import { IMarkdownString } from 'vs/base/common/htmlContent';
+import { IMarkdownRenderResult } from 'vs/editor/contrib/markdown/markdownRenderer';
+import { IOpenerService } from 'vs/platform/opener/common/opener';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';
+
 
 @Component({
 	selector: TEXT_SELECTOR,
@@ -72,17 +80,29 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	public readonly onDidClickLink = this._onDidClickLink.event;
 	private _cellToggleMoreActions: CellToggleMoreActions;
 	private _hover: boolean;
+	private markdownRenderer: MarkdownRenderer;
+	private markdownResult: IMarkdownRenderResult;
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrapService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
-		@Inject(ICommandService) private _commandService: ICommandService
+		@Inject(ICommandService) private _commandService: ICommandService,
+		@Inject(IOpenerService) private readonly openerService: IOpenerService,
+		@Inject(IConfigurationService) private configurationService: IConfigurationService,
+
 	) {
 		super();
 		this.isEditMode = true;
 		this._cellToggleMoreActions = this._instantiationService.createInstance(CellToggleMoreActions);
+		this.markdownRenderer = this._instantiationService.createInstance(MarkdownRenderer);
+		this._register(toDisposable(() => {
+			if (this.markdownResult) {
+				this.markdownResult.dispose();
+			}
+		}));
+
 	}
 
 	//Gets sanitizer from ISanitizer interface
@@ -141,7 +161,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	 * If content is empty and in non-edit mode, default it to 'Double-click to edit'
 	 * Sanitizes the data to be shown in markdown cell
 	 */
-	private updatePreview() {
+	private updatePreview(): void {
 		let trustedChanged = this.cellModel && this._lastTrustedMode !== this.cellModel.trustedMode;
 		let contentChanged = this._content !== this.cellModel.source || this.cellModel.source.length === 0;
 		if (trustedChanged || contentChanged) {
@@ -152,15 +172,36 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				this._content = this.cellModel.source;
 			}
 
-			this._commandService.executeCommand<string>('notebook.showPreview', this.cellModel.notebookModel.notebookUri, this._content).then((htmlcontent) => {
-				htmlcontent = this.convertVscodeResourceToFileInSubDirectories(htmlcontent);
-				htmlcontent = this.sanitizeContent(htmlcontent);
+			if (this.useSimpleMarkdown) {
+				let time0 = performance.now();
+				this.markdownResult = this.markdownRenderer.render({
+					isTrusted: this.cellModel.trustedMode,
+					value: this._content
+				});
 				let outputElement = <HTMLElement>this.output.nativeElement;
-				outputElement.innerHTML = htmlcontent;
-				this.setLoading(false);
-			});
+				DOM.clearNode(outputElement);
+				DOM.append(outputElement, this.markdownResult.element);
+				let elapsed = performance.now() - time0;
+				// console.log(`time to render simply is ${elapsed}ms`);
+			} else {
+				let time0 = performance.now();
+				this._commandService.executeCommand<string>('notebook.showPreview', this.cellModel.notebookModel.notebookUri, this._content).then((htmlcontent) => {
+					htmlcontent = this.convertVscodeResourceToFileInSubDirectories(htmlcontent);
+					htmlcontent = this.sanitizeContent(htmlcontent);
+					let outputElement = <HTMLElement>this.output.nativeElement;
+					outputElement.innerHTML = htmlcontent;
+					this.setLoading(false);
+					let elapsed = performance.now() - time0;
+					// console.log(`time to render over extension host is ${elapsed}ms`);
+				});
+			}
 		}
 	}
+
+	private get useSimpleMarkdown(): boolean {
+		return this.configurationService.getValue('notebook.useSimpleMarkdown');
+	}
+
 
 	//Sanitizes the content based on trusted mode of Cell Model
 	private sanitizeContent(content: string): string {
@@ -245,5 +286,41 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	protected toggleMoreActionsButton(isActiveOrHovered: boolean) {
 		this._cellToggleMoreActions.toggleVisible(!isActiveOrHovered);
+	}
+}
+
+class MarkdownRenderer {
+
+	constructor(
+		@IOpenerService private readonly _openerService: IOpenerService
+	) {
+	}
+
+	private getOptions(disposeables: IDisposable[]): RenderOptions {
+		return {
+			actionHandler: {
+				callback: (content) => {
+					let uri: URI | undefined;
+					try {
+						uri = URI.parse(content);
+					} catch {
+						// ignore
+					}
+					if (uri && this._openerService) {
+						this._openerService.open(uri).catch(onUnexpectedError);
+					}
+				},
+				disposeables
+			}
+		};
+	}
+
+	render(markdown: IMarkdownString): IMarkdownRenderResult {
+		let disposeables: IDisposable[] = [];
+		const element: HTMLElement = markdown ? renderMarkdown(markdown, this.getOptions(disposeables)) : document.createElement('span');
+		return {
+			element,
+			dispose: () => dispose(disposeables)
+		};
 	}
 }
