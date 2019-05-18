@@ -219,7 +219,6 @@ export class MenubarControl extends Disposable {
 
 	// TODO@sbatten remove after feb19
 	private notifyExistingLinuxUser(): void {
-		/*// {{SQL CARBON EDIT}} - Disable the custom titlebar recommendation
 		if (!isLinux) {
 			return;
 		}
@@ -246,7 +245,6 @@ export class MenubarControl extends Disposable {
 				}
 			}
 		]);
-		*/
 	}
 
 	private notifyUserOfCustomMenubarAccessibility(): void {

@@ -20,6 +20,7 @@ import * as ConnectionConstants from 'sql/platform/connection/common/constants';
 import { EditDataEditor } from 'sql/workbench/parts/editData/browser/editDataEditor';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
 
 const singleQuote = '\'';
 
@@ -73,7 +74,7 @@ export class FocusOnCurrentQueryKeyboardAction extends Action {
 	public run(): Promise<void> {
 		const editor = this._editorService.activeControl;
 		if (editor instanceof QueryEditor) {
-			queryEditor.focus();
+			editor.focus();
 		}
 		return Promise.resolve(null);
 	}
@@ -188,16 +189,17 @@ export class RefreshIntellisenseKeyboardAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		@IEditorService private _editorService: IEditorService
+		@IConnectionManagementService private connectionManagementService: IConnectionManagementService,
+		@IEditorService private editorService: IEditorService
 	) {
 		super(id, label);
 		this.enabled = true;
 	}
 
 	public run(): Promise<void> {
-		const editor = this._editorService.activeControl;
-		if (editor instanceof QueryEditor) {
-			editor.rebuildIntelliSenseCache();
+		const editor = this.editorService.activeEditor;
+		if (editor instanceof QueryInput) {
+			this.connectionManagementService.rebuildIntelliSenseCache(editor.uri);
 		}
 		return Promise.resolve(null);
 	}

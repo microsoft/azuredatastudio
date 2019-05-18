@@ -23,7 +23,7 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { assertThrowsAsync } from 'sqltest/utils/testUtils';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { TestEditorService, TestLogService } from 'vs/workbench/test/workbenchTestServices';
-import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
+import { QueryInput, QueryEditorState } from 'sql/workbench/parts/query/common/queryInput';
 import { URI } from 'vs/base/common/uri';
 import { ILogService } from 'vs/platform/log/common/log';
 
@@ -374,7 +374,9 @@ suite('commandLineService tests', () => {
 		const configurationService = getConfigurationServiceMock(true);
 		const queryInput: TypeMoq.Mock<QueryInput> = TypeMoq.Mock.ofType<QueryInput>(QueryInput);
 		let uri = URI.file(args._[0]);
-		queryInput.setup(q => q.connectEnabled).returns(() => 1 === 1).verifiable(TypeMoq.Times.once());
+		const queryState = new QueryEditorState();
+		queryState.connected = true;
+		queryInput.setup(q => q.state).returns(() => queryState);
 		queryInput.setup(q => q.getResource()).returns(() => uri).verifiable(TypeMoq.Times.once());
 		const editorService: TypeMoq.Mock<IEditorService> = TypeMoq.Mock.ofType<IEditorService>(TestEditorService, TypeMoq.MockBehavior.Strict);
 		editorService.setup(e => e.editors).returns(() => [queryInput.object]);

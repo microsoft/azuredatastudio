@@ -13,7 +13,6 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
 import { append, $ } from 'vs/base/browser/dom';
-import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 
 import { ISelectionData } from 'azdata';
 import {
@@ -28,12 +27,6 @@ import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { attachEditableDropdownStyler, attachSelectBoxStyler } from 'sql/platform/theme/common/styler';
 import { Dropdown } from 'sql/base/parts/editableDropdown/browser/dropdown';
-import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
-
-export interface IQueryActionContext {
-	input: QueryInput;
-	editor: ICodeEditor;
-}
 
 /**
  * Action class that query-based Actions will extend. This base class automatically handles activating and
@@ -355,22 +348,14 @@ export class ToggleConnectDatabaseAction extends QueryTaskbarAction {
 	public static DisconnectClass = 'disconnect';
 	public static ID = 'toggleConnectDatabaseAction';
 
-	private _connected: boolean;
-	private _connectLabel: string;
-	private _disconnectLabel: string;
+	private _connectLabel = nls.localize('connectDatabaseLabel', 'Connect');
+	private _disconnectLabel = nls.localize('disconnectDatabaseLabel', 'Disconnect');
 	constructor(
 		editor: QueryEditor,
-		isConnected: boolean,
+		private _connected: boolean,
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService
 	) {
-		let enabledClass: string;
-
-		super(connectionManagementService, editor, ToggleConnectDatabaseAction.ID, enabledClass);
-
-		this._connectLabel = nls.localize('connectDatabaseLabel', 'Connect');
-		this._disconnectLabel = nls.localize('disconnectDatabaseLabel', 'Disconnect');
-
-		this.connected = isConnected;
+		super(connectionManagementService, editor, ToggleConnectDatabaseAction.ID, undefined);
 	}
 
 	public get connected(): boolean {

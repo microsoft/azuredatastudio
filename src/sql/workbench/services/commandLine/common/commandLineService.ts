@@ -142,7 +142,7 @@ export class CommandLineService implements ICommandLineProcessing {
 		let activeEditor = this._editorService.editors.filter(v => v.getResource().toString() === uriString).pop();
 		if (activeEditor) {
 			let queryInput = activeEditor as QueryInput;
-			if (queryInput && queryInput.connectEnabled) {
+			if (queryInput && queryInput.state.connected) {
 				let options: IConnectionCompletionOptions = {
 					params: { connectionType: ConnectionType.editor, runQueryOnCompletion: RunQueryOnConnectionMode.none, input: queryInput },
 					saveTheConnection: false,

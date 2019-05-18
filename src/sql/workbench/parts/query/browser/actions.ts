@@ -205,12 +205,8 @@ export class ChartDataAction extends Action {
 	}
 
 	public run(context: IGridActionContext): Promise<boolean> {
-		let activeEditor = this.editorService.activeControl;
-		if (activeEditor instanceof QueryEditor) {
-			activeEditor.resultsEditor.chart({ batchId: context.batchId, resultId: context.resultId });
-			return Promise.resolve(true);
-		} else {
-			return Promise.resolve(false);
-		}
+		const activeEditor = this.editorService.activeControl as QueryEditor;
+		activeEditor.chart({ batchId: context.batchId, resultId: context.resultId });
+		return Promise.resolve(true);
 	}
 }

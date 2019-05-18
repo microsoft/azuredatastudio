@@ -22,12 +22,17 @@ import { IEditorGroup } from 'vs/workbench/services/editor/common/editorGroupsSe
 import { SplitView, Sizing } from 'vs/base/browser/ui/splitview/splitview';
 import { Event } from 'vs/base/common/event';
 import { dispose, IDisposable } from 'vs/base/common/lifecycle';
+import { ISelectionData } from 'azdata';
+import { Action, IActionItem } from 'vs/base/common/actions';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
-import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
+import { QueryInput, IQueryEditorStateChange } from 'sql/workbench/parts/query/common/queryInput';
 import { QueryResultsEditor } from 'sql/workbench/parts/query/browser/queryResultsEditor';
 import * as queryContext from 'sql/workbench/parts/query/common/queryContext';
-import { QueryEditorActionBar } from 'sql/workbench/parts/query/browser/queryEditorActionBar';
 import { QueryEditorContext } from 'sql/workbench/parts/query/common/queryEditorContext';
+import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
+import * as actions from 'sql/workbench/parts/query/browser/queryActions';
+import { IRange } from 'vs/editor/common/core/range';
 
 /**
  * Editor that hosts 2 sub-editors: A TextResourceEditor for SQL file editing, and a QueryResultsEditor
@@ -40,12 +45,13 @@ export class QueryEditor extends BaseEditor {
 	private dimension: DOM.Dimension = new DOM.Dimension(0, 0);
 
 	private resultsEditor: QueryResultsEditor;
+
 	private resultsEditorContainer: HTMLElement;
 	// could be untitled or resource editor
 	private textEditor: TextResourceEditor;
 	private textEditorContainer: HTMLElement;
 
-	private taskbar: QueryEditorActionBar;
+	private taskbar: Taskbar;
 	private splitview: SplitView;
 
 	private inputDisposables: IDisposable[] = [];
@@ -56,13 +62,24 @@ export class QueryEditor extends BaseEditor {
 
 	private queryEditorVisible: IContextKey<boolean>;
 
+	//actions
+	private _runQueryAction: actions.RunQueryAction;
+	private _cancelQueryAction: actions.CancelQueryAction;
+	private _toggleConnectDatabaseAction: actions.ToggleConnectDatabaseAction;
+	private _changeConnectionAction: actions.ConnectDatabaseAction;
+	private _listDatabasesAction: actions.ListDatabasesAction;
+	private _estimatedQueryPlanAction: actions.EstimatedQueryPlanAction;
+	private _actualQueryPlanAction: actions.ActualQueryPlanAction;
+	private _listDatabasesActionItem: actions.ListDatabasesActionItem;
+
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IThemeService themeService: IThemeService,
 		@IStorageService storageService: IStorageService,
 		@IContextKeyService private readonly contextKeyService: IContextKeyService,
 		@IEditorService private readonly editorService: IEditorService,
-		@IInstantiationService private readonly instantiationService: IInstantiationService
+		@IInstantiationService private readonly instantiationService: IInstantiationService,
+		@IConfigurationService private readonly configurationService: IConfigurationService
 	) {
 		super(QueryEditor.ID, telemetryService, themeService, storageService);
 
@@ -82,10 +99,8 @@ export class QueryEditor extends BaseEditor {
 
 		let splitviewContainer = DOM.$('.query-editor-view');
 
-		let taskbarContainer = DOM.$('.query-editor-taskbar');
-		this.taskbar = this._register(this.instantiationService.createInstance(QueryEditorActionBar, taskbarContainer));
+		this.createTaskbar(parent);
 
-		parent.appendChild(taskbarContainer);
 		parent.appendChild(splitviewContainer);
 
 		this.splitview = new SplitView(splitviewContainer, { orientation: Orientation.VERTICAL });
@@ -95,7 +110,6 @@ export class QueryEditor extends BaseEditor {
 		this.textEditorContainer = DOM.$('.text-editor-container');
 		this.textEditor = this._register(this.instantiationService.createInstance(TextResourceEditor));
 		this.textEditor.create(this.textEditorContainer);
-		this.taskbar.editor = this.getControl() as ICodeEditor;
 
 		this.splitview.addView({
 			element: this.textEditorContainer,
@@ -110,6 +124,114 @@ export class QueryEditor extends BaseEditor {
 		this.resultsEditor.create(this.resultsEditorContainer);
 	}
 
+	/**
+	 * Creates the query execution taskbar that appears at the top of the QueryEditor
+	 */
+	private createTaskbar(parentElement: HTMLElement): void {
+		// Create QueryTaskbar
+		let taskbarContainer = DOM.append(parentElement, DOM.$('div'));
+		this.taskbar = this._register(new Taskbar(taskbarContainer, {
+			actionItemProvider: (action: Action) => this._getActionItemForAction(action),
+		}));
+
+		// Create Actions for the toolbar
+		this._runQueryAction = this.instantiationService.createInstance(actions.RunQueryAction, this);
+		this._cancelQueryAction = this.instantiationService.createInstance(actions.CancelQueryAction, this);
+		this._toggleConnectDatabaseAction = this.instantiationService.createInstance(actions.ToggleConnectDatabaseAction, this, false);
+		this._changeConnectionAction = this.instantiationService.createInstance(actions.ConnectDatabaseAction, this, true);
+		this._listDatabasesAction = this.instantiationService.createInstance(actions.ListDatabasesAction, this);
+		this._estimatedQueryPlanAction = this.instantiationService.createInstance(actions.EstimatedQueryPlanAction, this);
+		this._actualQueryPlanAction = this.instantiationService.createInstance(actions.ActualQueryPlanAction, this);
+
+		this.setTaskbarContent();
+
+		this._toDispose.push(this.configurationService.onDidChangeConfiguration(e => {
+			if (e.affectedKeys.includes('workbench.enablePreviewFeatures')) {
+				this.setTaskbarContent();
+			}
+		}));
+	}
+
+	/**
+	 * Update the buttons on the taskbar to reflect the state of the current input.
+	 */
+	private updateState(stateChangeEvent: IQueryEditorStateChange): void {
+		if (stateChangeEvent.connectedChange) {
+			this._toggleConnectDatabaseAction.connected = this.input.state.connected;
+			this._changeConnectionAction.enabled = this.input.state.connected;
+			if (this.input.state.connected) {
+				this.listDatabasesActionItem.onConnected();
+			} else {
+				this.listDatabasesActionItem.onDisconnect();
+			}
+		}
+
+		if (stateChangeEvent.connectingChange) {
+			this._runQueryAction.enabled = !this.input.state.connecting;
+			this._estimatedQueryPlanAction.enabled = !this.input.state.connecting;
+
+		}
+
+		if (stateChangeEvent.executingChange) {
+			this._runQueryAction.enabled = !this.input.state.executing;
+			this._estimatedQueryPlanAction.enabled = !this.input.state.executing;
+			this._cancelQueryAction.enabled = this.input.state.executing;
+		}
+
+		if (stateChangeEvent.resultsVisibleChange) {
+			if (this.input.state.resultsVisible) {
+				this.addResultsEditor();
+			} else {
+				this.removeResultsEditor();
+			}
+		}
+	}
+
+	/**
+	 * Gets the IActionItem for the List Databases dropdown if provided the associated Action.
+	 * Otherwise returns null.
+	 */
+	private _getActionItemForAction(action: Action): IActionItem {
+		if (action.id === actions.ListDatabasesAction.ID) {
+			return this.listDatabasesActionItem;
+		}
+
+		return null;
+	}
+
+	private get listDatabasesActionItem(): actions.ListDatabasesActionItem {
+		if (!this._listDatabasesActionItem) {
+			this._listDatabasesActionItem = this.instantiationService.createInstance(actions.ListDatabasesActionItem, this);
+			this._register(this._listDatabasesActionItem.attachStyler(this.themeService));
+		}
+		return this._listDatabasesActionItem;
+	}
+
+	private setTaskbarContent(): void {
+		// Create HTML Elements for the taskbar
+		let separator = Taskbar.createTaskbarSeparator();
+
+		// Set the content in the order we desire
+		let content: ITaskbarContent[] = [
+			{ action: this._runQueryAction },
+			{ action: this._cancelQueryAction },
+			{ element: separator },
+			{ action: this._toggleConnectDatabaseAction },
+			{ action: this._changeConnectionAction },
+			{ action: this._listDatabasesAction },
+			{ element: separator },
+			{ action: this._estimatedQueryPlanAction }
+		];
+
+		// Remove the estimated query plan action if preview features are not enabled
+		let previewFeaturesEnabled = this.configurationService.getValue('workbench')['enablePreviewFeatures'];
+		if (!previewFeaturesEnabled) {
+			content = content.slice(0, -2);
+		}
+
+		this.taskbar.setContent(content);
+	}
+
 	public setInput(newInput: QueryInput, options: EditorOptions, token: CancellationToken): Promise<void> {
 		const oldInput = this.input;
 
@@ -119,24 +241,14 @@ export class QueryEditor extends BaseEditor {
 
 		return Promise.all([
 			super.setInput(newInput, options, token),
-			this.taskbar.setInput(newInput),
 			this.textEditor.setInput(newInput.sql, options, token),
 			this.resultsEditor.setInput(newInput.results, options)
 		]).then(() => {
 			dispose(this.inputDisposables);
 			this.inputDisposables = [];
 			this.contextKey.setState(this.input.state);
-			this.inputDisposables.push(this.input.state.onChange(c => {
-				if (c.executingChange && this.input.state.executing) {
-					this.addResultsEditor();
-					this.input.state.resultsVisible = true;
-				}
-			}));
-			if (this.input.state.resultsVisible) {
-				this.addResultsEditor();
-			} else {
-				this.removeResultsEditor();
-			}
+			this.inputDisposables.push(this.input.state.onChange(c => this.updateState(c)));
+			this.updateState({ connectingChange: true, connectedChange: true, executingChange: true, resultsVisibleChange: true });
 		});
 	}
 
@@ -248,5 +360,154 @@ export class QueryEditor extends BaseEditor {
 		let queryInput: QueryInput = <QueryInput>this.input;
 		queryInput.sql.close();
 		queryInput.results.close();
+	}
+
+	// helper functions
+
+	public isSelectionEmpty(): boolean {
+		if (this.textEditor && this.textEditor.getControl()) {
+			let control = this.textEditor.getControl();
+			let codeEditor: ICodeEditor = <ICodeEditor>control;
+
+			if (codeEditor) {
+				let value = codeEditor.getValue();
+				if (value !== undefined && value.length > 0) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Returns the underlying SQL editor's text selection in a 0-indexed format. Returns undefined if there
+	 * is no selected text.
+	 */
+	public getSelection(checkIfRange: boolean = true): ISelectionData {
+		if (this.textEditor && this.textEditor.getControl()) {
+			let vscodeSelection = this.textEditor.getControl().getSelection();
+
+			// If the selection is a range of characters rather than just a cursor position, return the range
+			let isRange: boolean =
+				!(vscodeSelection.getStartPosition().lineNumber === vscodeSelection.getEndPosition().lineNumber &&
+					vscodeSelection.getStartPosition().column === vscodeSelection.getEndPosition().column);
+			if (!checkIfRange || isRange) {
+				let sqlToolsServiceSelection: ISelectionData = {
+					startLine: vscodeSelection.getStartPosition().lineNumber - 1,
+					startColumn: vscodeSelection.getStartPosition().column - 1,
+					endLine: vscodeSelection.getEndPosition().lineNumber - 1,
+					endColumn: vscodeSelection.getEndPosition().column - 1,
+				};
+				return sqlToolsServiceSelection;
+			}
+		}
+
+		// Otherwise return undefined because there is no selected text
+		return undefined;
+	}
+
+	public getAllSelection(): ISelectionData {
+		if (this.textEditor && this.textEditor.getControl()) {
+			let control = this.textEditor.getControl();
+			let codeEditor: ICodeEditor = <ICodeEditor>control;
+			if (codeEditor) {
+				let model = codeEditor.getModel();
+				let totalLines = model.getLineCount();
+				let endColumn = model.getLineMaxColumn(totalLines);
+				let selection: ISelectionData = {
+					startLine: 0,
+					startColumn: 0,
+					endLine: totalLines - 1,
+					endColumn: endColumn - 1,
+				};
+				return selection;
+			}
+		}
+		return undefined;
+	}
+
+	public getAllText(): string {
+		if (this.textEditor && this.textEditor.getControl()) {
+			let control = this.textEditor.getControl();
+			let codeEditor: ICodeEditor = <ICodeEditor>control;
+			if (codeEditor) {
+				let value = codeEditor.getValue();
+				if (value !== undefined && value.length > 0) {
+					return value;
+				} else {
+					return '';
+				}
+			}
+		}
+		return undefined;
+	}
+
+	public getSelectionText(): string {
+		if (this.textEditor && this.textEditor.getControl()) {
+			let control = this.textEditor.getControl();
+			let codeEditor: ICodeEditor = <ICodeEditor>control;
+			let vscodeSelection = control.getSelection();
+
+			if (codeEditor && vscodeSelection) {
+				let model = codeEditor.getModel();
+				let value = model.getValueInRange(vscodeSelection);
+				if (value !== undefined && value.length > 0) {
+					return value;
+				}
+			}
+		}
+		return '';
+	}
+
+	/**
+	 * Calls the runCurrent method of this editor's RunQueryAction
+	 */
+	public runCurrentQuery(): void {
+		this._runQueryAction.runCurrent();
+	}
+
+	/**
+	 * Calls the runCurrentQueryWithActualPlan method of this editor's ActualQueryPlanAction
+	 */
+	public runCurrentQueryWithActualPlan(): void {
+		this._actualQueryPlanAction.run();
+	}
+
+	/**
+	 * Calls the run method of this editor's RunQueryAction
+	 */
+	public runQuery(): void {
+		this._runQueryAction.run();
+	}
+
+	/**
+	 * Calls the run method of this editor's CancelQueryAction
+	 */
+	public cancelQuery(): void {
+		this._cancelQueryAction.run();
+	}
+
+	public registerQueryModelViewTab(title: string, componentId: string): void {
+		this.resultsEditor.registerQueryModelViewTab(title, componentId);
+	}
+
+	public chart(dataId: { batchId: number, resultId: number }) {
+		this.resultsEditor.chart(dataId);
+	}
+
+	/**
+	 * Sets the text selection for the SQL editor based on the given ISelectionData.
+	 */
+	private _setSelection(selection: ISelectionData): void {
+		let rangeConversion: IRange = {
+			startLineNumber: selection.startLine + 1,
+			startColumn: selection.startColumn + 1,
+			endLineNumber: selection.endLine + 1,
+			endColumn: selection.endColumn + 1
+		};
+		let editor = this.textEditor.getControl();
+		editor.revealRange(rangeConversion);
+		editor.setSelection(rangeConversion);
+		editor.focus();
 	}
 }

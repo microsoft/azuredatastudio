@@ -5,7 +5,6 @@
 
 import { IInsightOptions, IInsight } from './interfaces';
 import { Graph } from './graphInsight';
-import { QueryEditor } from 'sql/workbench/parts/query/browser/queryEditor';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { IInsightsConfig } from 'sql/workbench/parts/dashboard/widgets/insights/interfaces';
 import { resolveCurrentDirectory, getRootPath } from 'sql/platform/node/pathUtilities';
@@ -20,6 +19,7 @@ import { URI } from 'vs/base/common/uri';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
 
 export interface IChartActionContext {
 	options: IInsightOptions;
@@ -87,10 +87,9 @@ export class CreateInsightAction extends Action {
 	}
 
 	private getActiveUriString(): string {
-		let editor = this.editorService.activeControl;
-		if (editor && editor instanceof QueryEditor) {
-			let queryEditor: QueryEditor = editor;
-			return queryEditor.uri;
+		let editor = this.editorService.activeEditor;
+		if (editor instanceof QueryInput) {
+			return editor.uri;
 		}
 		return undefined;
 	}
@@ -203,10 +202,9 @@ export class SaveImageAction extends Action {
 	}
 
 	private getActiveUriString(): string {
-		let editor = this.editorService.activeControl;
-		if (editor && editor instanceof QueryEditor) {
-			let queryEditor: QueryEditor = editor;
-			return queryEditor.uri;
+		let editor = this.editorService.activeEditor;
+		if (editor instanceof QueryInput) {
+			return editor.uri;
 		}
 		return undefined;
 	}

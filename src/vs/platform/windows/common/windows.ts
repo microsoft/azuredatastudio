@@ -300,16 +300,13 @@ export function getTitleBarStyle(configurationService: IConfigurationService, en
 			return 'native'; // simple fullscreen does not work well with custom title style (https://github.com/Microsoft/vscode/issues/63291)
 		}
 
-		// {{SQL CARBON EDIT}} - Always use native toolbar
-		// const style = configuration.titleBarStyle;
-		// if (style === 'native' || style === 'custom') {
-		// 	return style;
-		// }
+		const style = configuration.titleBarStyle;
+		if (style === 'native' || style === 'custom') {
+			return style;
+		}
 	}
 
-	// {{SQL CARBON EDIT}} - Always use native toolbar
-	return 'native';
-	// return isLinux ? 'native' : 'custom'; // default to custom on all macOS and Windows
+	return isLinux ? 'native' : 'custom'; // default to custom on all macOS and Windows
 }
 
 export const enum OpenContext {

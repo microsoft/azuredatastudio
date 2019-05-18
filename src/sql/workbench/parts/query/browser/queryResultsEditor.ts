@@ -16,10 +16,10 @@ import * as types from 'vs/base/common/types';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 import { QueryResultsInput } from 'sql/workbench/parts/query/common/queryResultsInput';
-import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import { QueryResultsView } from 'sql/workbench/parts/query/browser/queryResultsView';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
+import { Emitter } from 'vs/base/common/event';
 
 export const RESULTS_GRID_DEFAULTS = {
 	cellPadding: [5, 8, 4],
@@ -95,7 +95,6 @@ export class QueryResultsEditor extends BaseEditor {
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IThemeService themeService: IThemeService,
-		@IQueryModelService private _queryModelService: IQueryModelService,
 		@IConfigurationService private _configurationService: IConfigurationService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IStorageService storageService: IStorageService

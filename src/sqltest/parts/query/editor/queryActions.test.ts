@@ -30,7 +30,7 @@ import { ConfigurationService } from 'vs/platform/configuration/node/configurati
 
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
-import { TestStorageService, TestLayoutService } from 'vs/workbench/test/workbenchTestServices';
+import { TestStorageService } from 'vs/workbench/test/workbenchTestServices';
 
 let none: void;
 
@@ -51,9 +51,7 @@ suite('SQL QueryAction Tests', () => {
 		// Setup a reusable mock QueryEditor
 		editor = TypeMoq.Mock.ofType(QueryEditor, TypeMoq.MockBehavior.Strict, undefined, new TestThemeService(), undefined, undefined, undefined, undefined,
 			undefined, undefined, undefined, new TestStorageService());
-		editor.setup(x => x.connectedUri).returns(() => testUri);
-		editor.setup(x => x.currentQueryInput).returns(() => testQueryInput.object);
-		editor.setup(x => x.uri).returns(() => testUri);
+		editor.setup(x => x.input).returns(() => testQueryInput.object);
 
 		editor.setup(x => x.getSelection()).returns(() => undefined);
 		editor.setup(x => x.getSelection(false)).returns(() => undefined);
@@ -88,7 +86,7 @@ suite('SQL QueryAction Tests', () => {
 		// ... Create an editor
 		let editor = TypeMoq.Mock.ofType(QueryEditor, TypeMoq.MockBehavior.Loose, undefined, new TestThemeService(), undefined, undefined, undefined, undefined,
 			undefined, undefined, undefined, new TestStorageService());
-		editor.setup(x => x.currentQueryInput).returns(() => testQueryInput.object);
+		editor.setup(x => x.input).returns(() => testQueryInput.object);
 
 		// If I create a QueryTaskbarAction and I pass a non-connected editor to _getConnectedQueryEditorUri
 		let queryAction: QueryTaskbarAction = new RunQueryAction(undefined, undefined, connectionManagementService.object);
@@ -148,7 +146,7 @@ suite('SQL QueryAction Tests', () => {
 		assert.equal(connectionParams.connectionType, ConnectionType.editor, 'connectionType should be queryEditor');
 		assert.equal(connectionParams.runQueryOnCompletion, RunQueryOnConnectionMode.executeQuery, 'runQueryOnCompletion should be true`');
 		assert.equal(connectionParams.input.uri, testUri, 'URI should be set to the test URI');
-		assert.equal(connectionParams.input, editor.object.currentQueryInput, 'Editor should be set to the mock editor');
+		assert.equal(connectionParams.input, editor.object.input, 'Editor should be set to the mock editor');
 
 		// If I call run on RunQueryAction when I am connected
 		isConnected = true;
@@ -176,7 +174,7 @@ suite('SQL QueryAction Tests', () => {
 		});
 		let queryEditor: TypeMoq.Mock<QueryEditor> = TypeMoq.Mock.ofType(QueryEditor, TypeMoq.MockBehavior.Strict, undefined, new TestThemeService(), undefined,
 			undefined, undefined, undefined, undefined, undefined, undefined, new TestStorageService());
-		queryEditor.setup(x => x.currentQueryInput).returns(() => queryInput.object);
+		queryEditor.setup(x => x.input).returns(() => queryInput.object);
 		queryEditor.setup(x => x.getSelection()).returns(() => undefined);
 		queryEditor.setup(x => x.getSelection(false)).returns(() => undefined);
 		queryEditor.setup(x => x.isSelectionEmpty()).returns(() => isSelectionEmpty);
@@ -243,7 +241,7 @@ suite('SQL QueryAction Tests', () => {
 		// ... Mock "getSelection" in QueryEditor
 		let queryEditor: TypeMoq.Mock<QueryEditor> = TypeMoq.Mock.ofType(QueryEditor, TypeMoq.MockBehavior.Loose, undefined, new TestThemeService(), undefined,
 			undefined, undefined, undefined, undefined, undefined, undefined, new TestStorageService());
-		queryEditor.setup(x => x.currentQueryInput).returns(() => queryInput.object);
+		queryEditor.setup(x => x.input).returns(() => queryInput.object);
 		queryEditor.setup(x => x.getSelection()).returns(() => {
 			return selectionToReturnInGetSelection;
 		});
@@ -401,7 +399,7 @@ suite('SQL QueryAction Tests', () => {
 		assert.equal(connectionParams.connectionType, ConnectionType.editor, 'connectionType should be queryEditor');
 		assert.equal(connectionParams.runQueryOnCompletion, false, 'runQueryOnCompletion should be false`');
 		assert.equal(connectionParams.input.uri, testUri, 'URI should be set to the test URI');
-		assert.equal(connectionParams.input, editor.object.currentQueryInput, 'Editor should be set to the mock editor');
+		assert.equal(connectionParams.input, editor.object.input, 'Editor should be set to the mock editor');
 
 		// If I call run on ConnectDatabaseAction when I am connected
 		isConnected = true;
@@ -412,7 +410,7 @@ suite('SQL QueryAction Tests', () => {
 		assert.equal(connectionParams.connectionType, ConnectionType.editor, 'connectionType should be queryEditor');
 		assert.equal(connectionParams.runQueryOnCompletion, false, 'runQueryOnCompletion should be false`');
 		assert.equal(connectionParams.input.uri, testUri, 'URI should be set to the test URI');
-		assert.equal(connectionParams.input, editor.object.currentQueryInput, 'Editor should be set to the mock editor');
+		assert.equal(connectionParams.input, editor.object.input, 'Editor should be set to the mock editor');
 		done();
 	});
 
@@ -447,7 +445,7 @@ suite('SQL QueryAction Tests', () => {
 		assert.equal(connectionParams.connectionType, ConnectionType.editor, 'connectionType should be queryEditor');
 		assert.equal(connectionParams.runQueryOnCompletion, false, 'runQueryOnCompletion should be false`');
 		assert.equal(connectionParams.input.uri, testUri, 'URI should be set to the test URI');
-		assert.equal(connectionParams.input, editor.object.currentQueryInput, 'Editor should be set to the mock editor');
+		assert.equal(connectionParams.input, editor.object.input, 'Editor should be set to the mock editor');
 		// Then if I call run on ChangeConnectionAction when I am connected
 		isConnected = true;
 		queryAction.run();
@@ -457,7 +455,7 @@ suite('SQL QueryAction Tests', () => {
 		assert.equal(connectionParams.connectionType, ConnectionType.editor, 'connectionType should be queryEditor');
 		assert.equal(connectionParams.runQueryOnCompletion, false, 'runQueryOnCompletion should be false`');
 		assert.equal(connectionParams.input.uri, testUri, 'URI should be set to the test URI');
-		assert.equal(connectionParams.input, editor.object.currentQueryInput, 'Editor should be set to the mock editor');
+		assert.equal(connectionParams.input, editor.object.input, 'Editor should be set to the mock editor');
 		done();
 	});
 
@@ -476,7 +474,7 @@ suite('SQL QueryAction Tests', () => {
 		});
 
 		// If I query without having initialized anything, state should be clear
-		listItem = new ListDatabasesActionItem(editor.object, connectionManagementService.object, undefined, undefined, configurationService.object);
+		listItem = new ListDatabasesActionItem(editor.object, undefined, connectionManagementService.object, undefined, configurationService.object);
 
 		assert.equal(listItem.isEnabled(), false, 'do not expect dropdown enabled unless connected');
 		assert.equal(listItem.currentDatabaseName, undefined, 'do not expect dropdown to have entries unless connected');
@@ -511,7 +509,7 @@ suite('SQL QueryAction Tests', () => {
 		cms.setup(x => x.getConnectionProfile(TypeMoq.It.isAny())).returns(() => <IConnectionProfile>{ databaseName: databaseName });
 
 		// ... Create a database dropdown that has been connected
-		let listItem = new ListDatabasesActionItem(editor.object, cms.object, null, null, configurationService.object);
+		let listItem = new ListDatabasesActionItem(editor.object, undefined, cms.object, undefined, configurationService.object);
 		listItem.onConnected();
 
 		// If: I raise a connection changed event
@@ -535,7 +533,7 @@ suite('SQL QueryAction Tests', () => {
 		cms.setup(x => x.getConnectionProfile(TypeMoq.It.isAny())).returns(() => <IConnectionProfile>{ databaseName: databaseName });
 
 		// ... Create a database dropdown that has been connected
-		let listItem = new ListDatabasesActionItem(editor.object, cms.object, null, null, configurationService.object);
+		let listItem = new ListDatabasesActionItem(editor.object, undefined, cms.object, undefined, configurationService.object);
 		listItem.onConnected();
 
 		// If: I raise a connection changed event for the 'wrong' URI
@@ -562,14 +560,14 @@ suite('SQL QueryAction Tests', () => {
 		cms.setup(x => x.onConnectionChanged).returns(() => dbChangedEmitter.event);
 
 		// ... Create a database dropdown
-		let listItem = new ListDatabasesActionItem(editor.object, cms.object, null, null, configurationService.object);
+		let listItem = new ListDatabasesActionItem(editor.object, undefined, cms.object, undefined, configurationService.object);
 
 		// If: I raise a connection changed event
 		let eventParams = <IConnectionParams>{
 			connectionProfile: {
 				databaseName: 'foobarbaz'
 			},
-			connectionUri: editor.object.uri
+			connectionUri: editor.object.input.uri
 		};
 		dbChangedEmitter.fire(eventParams);
 
