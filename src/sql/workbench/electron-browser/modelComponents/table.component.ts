@@ -20,7 +20,7 @@ import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { getContentHeight, getContentWidth, Dimension } from 'vs/base/browser/dom';
 import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
-import { CheckboxCustomActionColumn, IRowCheckboxChangedArg } from 'sql/base/browser/ui/table/plugins/checkboxCustomActionColumn.plugin';
+import { CheckboxSelectColumn, IRowCheckboxChangedArg, ActionOnCheck } from 'sql/base/browser/ui/table/plugins/checkboxSelectColumn.plugin';
 import { Emitter, Event as vsEvent } from 'vs/base/common/event';
 
 @Component({
@@ -35,7 +35,7 @@ export default class TableComponent extends ComponentBase implements IComponent,
 	private _table: Table<Slick.SlickData>;
 	private _tableData: TableDataView<Slick.SlickData>;
 	private _tableColumns;
-	private _checkboxColumns: CheckboxCustomActionColumn<{}>[] = [];
+	private _checkboxColumns: CheckboxSelectColumn<{}>[] = [];
 	private _onCheckBoxChanged = new Emitter<IRowCheckboxChangedArg>();
 	public readonly onCheckBoxChanged: vsEvent<IRowCheckboxChangedArg> = this._onCheckBoxChanged.event;
 
@@ -56,9 +56,10 @@ export default class TableComponent extends ComponentBase implements IComponent,
 		let tableColumns: any[] = <any[]>columns;
 		if (tableColumns) {
 			let mycolumns: Slick.Column<any>[] = [];
+			let index: number = 0;
 			(<any[]>columns).map(col => {
 				if (col.type && col.type === 1) {
-					this.createCheckBoxPlugin(col);
+					this.createCheckBoxPlugin(col, index);
 				}
 				else if (col.value) {
 					mycolumns.push(<Slick.Column<any>>{
@@ -77,6 +78,7 @@ export default class TableComponent extends ComponentBase implements IComponent,
 						field: <string>col
 					});
 				}
+				index++;
 			});
 			return mycolumns;
 		} else {
@@ -186,10 +188,16 @@ export default class TableComponent extends ComponentBase implements IComponent,
 		this.validate();
 	}
 
-	private createCheckBoxPlugin(col: any) {
+	private createCheckBoxPlugin(col: any, index: number) {
 		if (!this._checkboxColumns[col.value]) {
-			let name = col.value;
-			this._checkboxColumns[col.value] = new CheckboxCustomActionColumn({ title: name, toolTip: name, width: col.width });
+			this._checkboxColumns[col.value] = new CheckboxSelectColumn({
+				title: col.value,
+				toolTip: col.toolTip,
+				width: col.width,
+				cssClass: col.cssClass,
+				actionOnCheck: ActionOnCheck.custom
+			}, index);
+
 			this._register(this._checkboxColumns[col.value].onChange((state) => {
 				this.fireEvent({
 					eventType: ComponentEventType.onCheckBoxChanged,
@@ -204,20 +212,8 @@ export default class TableComponent extends ComponentBase implements IComponent,
 		}
 	}
 
-
-	private registerCheckboxPlugin(checkboxSelectColumn: CheckboxCustomActionColumn<{}>): void {
-		//title: string, defaultChecked: boolean, width: number): void {
-		//if (!this._checkboxSelectColumn) {
-		//	this._checkboxSelectColumn = new CheckboxCustomActionColumn({ title: title, toolTip: title, width: width, defaultChecked: defaultChecked });
-		//	this._register(this._checkboxSelectColumn.onChange((state) => {
-		//		this.fireEvent({
-		//			eventType: ComponentEventType.onCheckBoxChanged,
-		//			args: state,
-		//		});
-		//	}));
-		//}
-
-		this._tableColumns.unshift(checkboxSelectColumn.getColumnDefinition());
+	private registerCheckboxPlugin(checkboxSelectColumn: CheckboxSelectColumn<{}>): void {
+		this._tableColumns.splice(checkboxSelectColumn.index, 0, checkboxSelectColumn.getColumnDefinition());
 		this._table.registerPlugin(checkboxSelectColumn);
 		this._table.columns = this._tableColumns;
 		this._table.autosizeColumns();
@@ -251,13 +247,5 @@ export default class TableComponent extends ComponentBase implements IComponent,
 
 	public set selectedRows(newValue: number[]) {
 		this.setPropertyFromUI<azdata.TableComponentProperties, number[]>((props, value) => props.selectedRows = value, newValue);
-	}
-
-	public get checkboxColumn(): azdata.CheckBoxTableColumn {
-		return this.getPropertyOrDefault<azdata.TableComponentProperties, azdata.CheckBoxTableColumn>((props) => props.checkboxColumn, null);
-	}
-
-	public set checkboxColumn(newValue: azdata.CheckBoxTableColumn) {
-		this.setPropertyFromUI<azdata.TableComponentProperties, azdata.CheckBoxTableColumn>((props, value) => props.checkboxColumn = value, newValue);
 	}
 }

@@ -3,6 +3,7 @@
 import { mixin } from 'vs/base/common/objects';
 import * as nls from 'vs/nls';
 import { ICheckboxStyles } from 'vs/base/browser/ui/checkbox/checkbox';
+import { Emitter, Event as vsEvent } from 'vs/base/common/event';
 import * as strings from 'vs/base/common/strings';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
@@ -14,7 +15,20 @@ export interface ICheckboxSelectColumnOptions extends Slick.PluginOptions, IChec
 	toolTip?: string;
 	width?: number;
 	title?: string;
-	defaultChecked?: boolean;
+	columnIndex?: number;
+	actionOnCheck?: ActionOnCheck;
+}
+
+// Actions expected on checkbox click
+export enum ActionOnCheck {
+	select = 0,
+	custom = 1
+}
+
+export interface IRowCheckboxChangedArg {
+	checked: boolean;
+	row: number;
+	column: number;
 }
 
 const defaultOptions: ICheckboxSelectColumnOptions = {
@@ -35,9 +49,16 @@ export class CheckboxSelectColumn<T> implements Slick.Plugin<T> {
 	private _grid: Slick.Grid<T>;
 	private _handler = new Slick.EventHandler();
 	private _selectedRowsLookup = {};
+	private _selectedCheckBoxLookup = {};
+	private _useState = false;
 
-	constructor(options?: ICheckboxSelectColumnOptions) {
+	private _onChange = new Emitter<IRowCheckboxChangedArg>();
+	public readonly onChange: vsEvent<IRowCheckboxChangedArg> = this._onChange.event;
+	public index: number;
+
+	constructor(options?: ICheckboxSelectColumnOptions, columnIndex?: number) {
 		this._options = mixin(options, defaultOptions, false);
+		this.index = columnIndex ? columnIndex : 0;
 	}
 
 	public init(grid: Slick.Grid<T>): void {
@@ -54,6 +75,11 @@ export class CheckboxSelectColumn<T> implements Slick.Plugin<T> {
 	}
 
 	private handleSelectedRowsChanged(e: Event, args: Slick.OnSelectedRowsChangedEventArgs<T>): void {
+		if (this.isCustomActionRequested()) {
+			// do not assume anything for column based on row selection
+			return;
+		}
+
 		const selectedRows = this._grid.getSelectedRows();
 		let lookup = {}, row, i;
 		for (i = 0; i < selectedRows.length; i++) {
@@ -88,7 +114,12 @@ export class CheckboxSelectColumn<T> implements Slick.Plugin<T> {
 			if (this._grid.getColumns()[args.cell].id === this._options.columnId) {
 				// if editing, try to commit
 				if (!this._grid.getEditorLock().isActive() || this._grid.getEditorLock().commitCurrentEdit()) {
-					this.toggleRowSelection(args.row);
+					if (this.isCustomActionRequested()) {
+						this.toggleCheckBox(args.row, args.cell, true);
+					}
+					else {
+						this.toggleRowSelection(args.row);
+					}
 				}
 				e.preventDefault();
 				e.stopImmediatePropagation();
@@ -98,7 +129,12 @@ export class CheckboxSelectColumn<T> implements Slick.Plugin<T> {
 			if (event.equals(KeyCode.Enter)) {
 				// clicking on a row select checkbox
 				if (this._grid.getColumns()[args.cell].id === this._options.columnId) {
-					this.toggleRowSelection(args.row);
+					if (this.isCustomActionRequested()) {
+						this.toggleCheckBox(args.row, args.cell, true);
+					}
+					else {
+						this.toggleRowSelection(args.row);
+					}
 					e.stopPropagation();
 					e.stopImmediatePropagation();
 				}
@@ -116,7 +152,12 @@ export class CheckboxSelectColumn<T> implements Slick.Plugin<T> {
 				return;
 			}
 
-			this.toggleRowSelection(args.row);
+			if (this.isCustomActionRequested()) {
+				this.toggleCheckBox(args.row, args.cell, false);
+			}
+			else {
+				this.toggleRowSelection(args.row);
+			}
 			e.stopPropagation();
 			e.stopImmediatePropagation();
 		}
@@ -127,6 +168,24 @@ export class CheckboxSelectColumn<T> implements Slick.Plugin<T> {
 			this._grid.setSelectedRows(this._grid.getSelectedRows().filter(n => n !== row));
 		} else {
 			this._grid.setSelectedRows(this._grid.getSelectedRows().concat(row));
+		}
+	}
+
+	private toggleCheckBox(row: number, col: number, reRender: boolean): void {
+		this._useState = true;
+
+		if (this._selectedCheckBoxLookup[row]) {
+			delete this._selectedCheckBoxLookup[row];
+			this._onChange.fire({ checked: false, row: row, column: col });
+		} else {
+			this._selectedCheckBoxLookup[row] = true;
+			this._onChange.fire({ checked: true, row: row, column: col });
+		}
+
+		if (reRender) {
+			// ensure that grid reflects the change
+			this._grid.invalidateRow(row);
+			this._grid.render();
 		}
 	}
 
@@ -170,8 +229,39 @@ export class CheckboxSelectColumn<T> implements Slick.Plugin<T> {
 	}
 
 	private checkboxSelectionFormatter(row, cell, value, columnDef: Slick.Column<T>, dataContext): string {
+		if (this.isCustomActionRequested()) {
+			return this.checkboxTemplateCustom(row);
+		}
+
 		return this._selectedRowsLookup[row]
 			? strings.format(checkboxTemplate, 'checked')
 			: strings.format(checkboxTemplate, '');
+	}
+
+	// Returns checkbox template based on data and state
+	// Note: make sure Init is called before using this._grid
+	checkboxTemplateCustom(row: number): string {
+
+		// use state after everything is initialized
+		if (this._useState) {
+			return this._selectedCheckBoxLookup[row]
+				? strings.format(checkboxTemplate, 'checked')
+				: strings.format(checkboxTemplate, '');
+		}
+
+		// use data for first time rendering
+		let v = (this._grid) ? this._grid.getDataItem(row) : null;
+		if (v && v[this._options.title] === true) {
+			this._selectedCheckBoxLookup[row] = true;
+			return strings.format(checkboxTemplate, 'checked');
+		}
+		else {
+			delete this._selectedCheckBoxLookup[row];
+			return strings.format(checkboxTemplate, '');
+		}
+	}
+
+	private isCustomActionRequested(): boolean {
+		return (this._options.actionOnCheck && this._options.actionOnCheck === ActionOnCheck.custom);
 	}
 }

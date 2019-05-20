@@ -187,28 +187,33 @@ export class SchemaCompareResult {
 			data: data,
 			columns: [
 				{
-					value: localize('schemaCompare.includeColumnName', 'Include'),
-					cssClass: 'align-with-header',
-					width: 15,
-					type: azdata.ColumnType.checkBox
-				},
-				{
 					value: localize('schemaCompare.typeColumn', 'Type'),
+					toolTip: localize('schemaCompare.typeColumn', 'Type'),
 					cssClass: 'align-with-header',
 					width: 50
 				},
 				{
 					value: localize('schemaCompare.sourceNameColumn', 'Source Name'),
+					toolTip: localize('schemaCompare.sourceNameColumn', 'Source Name'),
 					cssClass: 'align-with-header',
 					width: 90
 				},
 				{
+					value: localize('schemaCompare.includeColumnName', 'Include'),
+					toolTip: localize('schemaCompare.includeColumnName', 'Include'),
+					cssClass: 'align-with-header',
+					width: 60,
+					type: azdata.ColumnType.checkBox
+				},
+				{
 					value: localize('schemaCompare.actionColumn', 'Action'),
+					toolTip: localize('schemaCompare.actionColumn', 'Action'),
 					cssClass: 'align-with-header',
 					width: 30
 				},
 				{
 					value: localize('schemaCompare.targetNameColumn', 'Target Name'),
+					toolTip: localize('schemaCompare.targetNameColumn', 'Target Name'),
 					cssClass: 'align-with-header',
 					width: 150
 				}
@@ -320,7 +325,7 @@ export class SchemaCompareResult {
 				if (difference.differenceType === azdata.SchemaDifferenceType.Object) {
 					if (difference.sourceValue !== null || difference.targetValue !== null) {
 						let state: boolean = this.shouldBeIncluded(difference);
-						data.push([state, difference.name, difference.sourceValue, this.SchemaCompareActionMap[difference.updateAction], difference.targetValue]);
+						data.push([difference.name, difference.sourceValue, state, this.SchemaCompareActionMap[difference.updateAction], difference.targetValue]);
 					}
 				}
 			});

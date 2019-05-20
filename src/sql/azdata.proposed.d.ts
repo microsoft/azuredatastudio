@@ -3130,19 +3130,11 @@ declare module 'azdata' {
 		button = 2
 	}
 
-	export interface CheckBoxTableColumn {
-		title: string;
-		width?: number;
-		toolTip?: string;
-		defaultState?: boolean;
-	}
-
 	export interface TableComponentProperties extends ComponentProperties {
 		data: any[][];
 		columns: string[] | TableColumn[];
 		fontSize?: number | string;
 		selectedRows?: number[];
-		checkBoxColumn?: CheckBoxTableColumn;
 	}
 
 	export interface FileBrowserTreeProperties extends ComponentProperties {
