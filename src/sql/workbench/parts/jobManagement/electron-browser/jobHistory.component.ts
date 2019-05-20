@@ -182,7 +182,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 				self._showPreviousRuns = false;
 				self._showSteps = false;
 			}
-			this._actionBar.context = { targetObject: { canEdit: true, job: this._agentJobInfo }, ownerUri: this.ownerUri, jobHistoryComponent: this };
+			this._actionBar.context = { targetObject: { canEdit: true, job: this._agentJobInfo }, ownerUri: this.ownerUri, component: this };
 			this._editJobAction.enabled = true;
 			this._actionBar.setContent([
 				{ action: this._runJobAction },
