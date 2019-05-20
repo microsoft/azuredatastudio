@@ -7,7 +7,7 @@ import { SqlExtHostContext, SqlMainContext, ExtHostConnectionManagementShape, Ma
 import * as azdata from 'azdata';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
-import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { IConnectionManagementService, ConnectionType } from 'sql/platform/connection/common/connectionManagement';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
@@ -60,9 +60,9 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 	}
 
 	public async $openConnectionDialog(providers: string[], initialConnectionProfile?: IConnectionProfile, connectionCompletionOptions?: azdata.IConnectionCompletionOptions): Promise<azdata.connection.Connection> {
-		let connectionType: number = 1;
+		let connectionType = ConnectionType.editor;
 		if (connectionCompletionOptions && connectionCompletionOptions.saveConnection !== undefined) {
-			connectionType = connectionCompletionOptions.saveConnection ? 1 : 2;
+			connectionType = connectionCompletionOptions.saveConnection ? ConnectionType.editor : ConnectionType.extension;
 		}
 		let connectionProfile = await this._connectionDialogService.openDialogAndWait(this._connectionManagementService,
 			{ connectionType: connectionType, providers: providers }, initialConnectionProfile, undefined);
@@ -73,7 +73,6 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 		} : undefined;
 
 		if (connectionCompletionOptions) {
-			// Somehow, connectionProfile.saveProfile is false even if initialConnectionProfile.saveProfile is true, reset the flag here.
 			if (connectionCompletionOptions.saveConnection) {
 				await this._connectionManagementService.connectAndSaveProfile(connectionProfile, undefined, {
 					saveTheConnection: isUndefinedOrNull(connectionCompletionOptions.saveConnection) ? true : connectionCompletionOptions.saveConnection,

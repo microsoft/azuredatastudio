@@ -304,13 +304,16 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	private handleShowUiComponent(input: OnShowUIResponse) {
 		if (input.selectedProviderType) {
 			// If the call is for specific providers
+			let isParamProvider: boolean = false;
 			if (this._params && this._params.providers) {
 				this._params.providers.forEach((provider) => {
 					if (input.selectedProviderType === this._providerNameToDisplayNameMap[provider]) {
+						isParamProvider = true;
 						this._currentProviderType = provider;
 					}
 				});
-			} else {
+			}
+			if (!isParamProvider) {
 				this._currentProviderType = Object.keys(this._providerNameToDisplayNameMap).find((key) =>
 					this._providerNameToDisplayNameMap[key] === input.selectedProviderType
 				);
