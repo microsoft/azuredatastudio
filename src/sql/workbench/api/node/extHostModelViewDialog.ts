@@ -123,6 +123,7 @@ class DialogImpl extends ModelViewPanelImpl implements azdata.window.Dialog {
 	private _closeValidator: () => boolean | Thenable<boolean>;
 	private _operationHandler: BackgroundOperationHandler;
 	private _dialogName: string;
+	private _isWide: boolean;
 
 	constructor(extHostModelViewDialog: ExtHostModelViewDialog,
 		extHostModelView: ExtHostModelViewShape,
@@ -161,6 +162,14 @@ class DialogImpl extends ModelViewPanelImpl implements azdata.window.Dialog {
 
 	public set dialogName(value: string) {
 		this._dialogName = value;
+	}
+
+	public get isWide(): boolean {
+		return this._isWide;
+	}
+
+	public set isWide(value: boolean) {
+		this._isWide = value;
 	}
 
 	public registerCloseValidator(validator: () => boolean | Thenable<boolean>): void {
@@ -479,7 +488,7 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 	public $updateWizardPageInfo(handle: number, pageHandles: number[], currentPageIndex: number): void {
 		let callback = this._pageInfoChangedCallbacks.get(handle);
 		if (callback) {
-			let pages = pageHandles.map(pageHandle => this._objectsByHandle.get(handle) as azdata.window.WizardPage);
+			let pages = pageHandles.map(pageHandle => this._objectsByHandle.get(pageHandle) as azdata.window.WizardPage);
 			callback({
 				eventType: WizardPageInfoEventType.PageAddedOrRemoved,
 				pageChangeInfo: {
@@ -537,6 +546,7 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		this.updateButton(dialog.cancelButton);
 		this._proxy.$setDialogDetails(handle, {
 			title: dialog.title,
+			isWide: dialog.isWide,
 			okButton: this.getHandle(dialog.okButton),
 			cancelButton: this.getHandle(dialog.cancelButton),
 			content: dialog.content && typeof dialog.content !== 'string' ? dialog.content.map(tab => this.getHandle(tab)) : dialog.content as string,
@@ -567,12 +577,13 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		this._onClickCallbacks.set(handle, callback);
 	}
 
-	public createDialog(title: string, dialogName?: string, extension?: IExtensionDescription): azdata.window.Dialog {
+	public createDialog(title: string, dialogName?: string, extension?: IExtensionDescription, isWide?: boolean): azdata.window.Dialog {
 		let dialog = new DialogImpl(this, this._extHostModelView, this._extHostTaskManagement, extension);
 		if (dialogName) {
 			dialog.dialogName = dialogName;
 		}
 		dialog.title = title;
+		dialog.isWide = isWide;
 		dialog.handle = this.getHandle(dialog);
 		return dialog;
 	}

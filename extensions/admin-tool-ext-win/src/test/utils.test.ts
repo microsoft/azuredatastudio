@@ -36,8 +36,8 @@ describe('buildSsmsMinCommandArgs Method Tests', () => {
 			urn: 'Server\\Database\\Table'
 		};
 		const args = buildSsmsMinCommandArgs(params);
-		// User is omitted since UseAAD is true
-		should(args).equal('-a "myAction" -S "myServer" -D "myDatabase" -G -u "Server\\Database\\Table"');
+
+		should(args).equal('-a "myAction" -S "myServer" -D "myDatabase" -U "user" -G -u "Server\\Database\\Table"');
 	});
 
 	it('Should be built correctly and names escaped correctly', function (): void {
@@ -50,8 +50,8 @@ describe('buildSsmsMinCommandArgs Method Tests', () => {
 			urn: 'Server\\Database[\'myDatabase\'\'"/\\[]tricky\']\\Table["myTable\'""/\\[]tricky"]'
 		};
 		const args = buildSsmsMinCommandArgs(params);
-		// User is omitted since UseAAD is true
-		should(args).equal('-a "myAction\'\\"/\\[]tricky" -S "myServer\'\\"/\\[]tricky" -D "myDatabase\'\\"/\\[]tricky" -G -u "Server\\Database[\'myDatabase\'\'\\"/\\[]tricky\']\\Table[\\"myTable\'\\"\\"/\\[]tricky\\"]"');
+
+		should(args).equal('-a "myAction\'\\"/\\[]tricky" -S "myServer\'\\"/\\[]tricky" -D "myDatabase\'\\"/\\[]tricky" -U "user\'\\"/\\[]tricky" -G -u "Server\\Database[\'myDatabase\'\'\\"/\\[]tricky\']\\Table[\\"myTable\'\\"\\"/\\[]tricky\\"]"');
 	});
 
 	it('Should be built correctly with only action and server', function (): void {
@@ -65,8 +65,6 @@ describe('buildSsmsMinCommandArgs Method Tests', () => {
 	});
 });
 
-const serverName = 'My\'Server';
-const escapedServerName = doubleEscapeSingleQuotes(serverName);
 const dbName = 'My\'Db';
 const escapedDbName = doubleEscapeSingleQuotes(dbName);
 const dbSchema = 'db\'sch';
@@ -78,21 +76,21 @@ const escapedTableSchema = doubleEscapeSingleQuotes(tableSchema);
 
 describe('buildUrn Method Tests', () => {
 	it('Urn should be correct with just server', async function (): Promise<void> {
-		should(await buildUrn(serverName, undefined)).equal(`Server[@Name=\'${escapedServerName}\']`);
+		should(await buildUrn(undefined)).equal('Server');
 	});
 
 	it('Urn should be correct with Server and only Databases folder', async function (): Promise<void> {
 		const leafNode: ExtHostObjectExplorerNodeStub =
 			new ExtHostObjectExplorerNodeStub('Databases', undefined, 'Folder', undefined);
-		should(await buildUrn(serverName, leafNode)).equal(`Server[@Name='${escapedServerName}']`);
+		should(await buildUrn(leafNode)).equal('Server');
 	});
 
 	it('Urn should be correct with Server and Database node', async function (): Promise<void> {
 		const leafNode: ExtHostObjectExplorerNodeStub =
 			new ExtHostObjectExplorerNodeStub('Databases', undefined, 'Folder', undefined)
 				.createChild(dbName, dbSchema, 'Database');
-		should(await buildUrn(serverName, leafNode)).equal(
-			`Server[@Name='${escapedServerName}']/Database[@Name='${escapedDbName}' and @Schema='${escapedDbSchema}']`);
+		should(await buildUrn(leafNode)).equal(
+			`Server/Database[@Name='${escapedDbName}' and @Schema='${escapedDbSchema}']`);
 	});
 
 	it('Urn should be correct with Multiple levels of Nodes', async function (): Promise<void> {
@@ -101,8 +99,8 @@ describe('buildUrn Method Tests', () => {
 				.createChild(dbName, dbSchema, 'Database')
 				.createChild('Tables', undefined, 'Folder')
 				.createChild(tableName, tableSchema, 'Table');
-		should(await buildUrn(serverName, rootNode)).equal(
-			`Server[@Name='${escapedServerName}']/Database[@Name='${escapedDbName}' and @Schema='${escapedDbSchema}']/Table[@Name='${escapedTableName}' and @Schema='${escapedTableSchema}']`);
+		should(await buildUrn(rootNode)).equal(
+			`Server/Database[@Name='${escapedDbName}' and @Schema='${escapedDbSchema}']/Table[@Name='${escapedTableName}' and @Schema='${escapedTableSchema}']`);
 	});
 });
 

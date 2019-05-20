@@ -31,32 +31,64 @@ if (context.RunTest) {
 			let server = await getAzureServer();
 			await VerifyOeNode(server, 3000, expectedNodeLabel);
 		});
-		test('context menu test', async function () {
-			let server = await getAzureServer();
-			await connectToServer(server, 3000);
-			let nodes = <azdata.objectexplorer.ObjectExplorerNode[]>await azdata.objectexplorer.getActiveConnectionNodes();
-			assert(nodes.length > 0, `Expecting at least one active connection, actual: ${nodes.length}`);
 
-			let index = nodes.findIndex(node => node.nodePath.includes(server.serverName));
-			assert(index !== -1, `Failed to find server: "${server.serverName}" in OE tree`);
+		test('Standard SQL DB context menu test', async function () {
+			let server = await getStandaloneServer();
 
-			let node = nodes[index];
-			let actions = await azdata.objectexplorer.getNodeActions(node.connectionId, node.nodePath);
-			let expectedActions;
+			let expectedActions: string[];
 
+			// Properties comes from the admin-tool-ext-win extension which is for Windows only, so the item won't show up on non-Win32 platforms
 			if (process.platform === 'win32') {
 				expectedActions = ['Manage', 'New Query', 'Disconnect', 'Delete Connection', 'Refresh', 'New Notebook', 'Data-tier Application wizard', 'Launch Profiler', 'Properties'];
 			} else {
 				expectedActions = ['Manage', 'New Query', 'Disconnect', 'Delete Connection', 'Refresh', 'New Notebook', 'Data-tier Application wizard', 'Launch Profiler'];
 			}
 
-			const expectedString = expectedActions.join(',');
-			const actualString = actions.join(',');
-			assert(expectedActions.length === actions.length && expectedString === actualString, `Expected actions: "${expectedString}", Actual actions: "${actualString}"`);
+			await verifyContextMenu(server, expectedActions);
+		});
+
+		test('BDC instance context menu test', async function () {
+			let server = await getBdcServer();
+
+			let expectedActions: string[];
+
+			// Properties comes from the admin-tool-ext-win extension which is for Windows only, so the item won't show up on non-Win32 platforms
+			if (process.platform === 'win32') {
+				expectedActions = ['Manage', 'New Query', 'Disconnect', 'Delete Connection', 'Refresh', 'New Notebook', 'Data-tier Application wizard', 'Launch Profiler', 'Properties'];
+			} else {
+				expectedActions = ['Manage', 'New Query', 'Disconnect', 'Delete Connection', 'Refresh', 'New Notebook', 'Data-tier Application wizard', 'Launch Profiler'];
+			}
+
+			await verifyContextMenu(server, expectedActions);
+		});
+
+		test('Azure SQL DB context menu test', async function () {
+			const server = await getAzureServer();
+			// Azure DB doesn't have Properties node on server level
+			const expectedActions = ['Manage', 'New Query', 'Disconnect', 'Delete Connection', 'Refresh', 'New Notebook', 'Data-tier Application wizard', 'Launch Profiler'];
+
+			await verifyContextMenu(server, expectedActions);
 		});
 	});
 }
-async function VerifyOeNode(server: TestServerProfile, timeout: number, expectedNodeLabel: string[]) {
+
+async function verifyContextMenu(server: TestServerProfile, expectedActions: string[]): Promise<void> {
+	await connectToServer(server, 3000);
+	let nodes = <azdata.objectexplorer.ObjectExplorerNode[]>await azdata.objectexplorer.getActiveConnectionNodes();
+	assert(nodes.length > 0, `Expecting at least one active connection, actual: ${nodes.length}`);
+
+	let index = nodes.findIndex(node => node.nodePath.includes(server.serverName));
+	assert(index !== -1, `Failed to find server: "${server.serverName}" in OE tree`);
+
+	let node = nodes[index];
+	let actions = await azdata.objectexplorer.getNodeActions(node.connectionId, node.nodePath);
+
+	const expectedString = expectedActions.join(',');
+	const actualString = actions.join(',');
+	assert(expectedActions.length === actions.length && expectedString === actualString, `Expected actions: "${expectedString}", Actual actions: "${actualString}"`);
+}
+
+async function VerifyOeNode(server: TestServerProfile, timeout: number, expectedNodeLabel: string[]): Promise<void> {
 	await connectToServer(server, timeout);
 	let nodes = <azdata.objectexplorer.ObjectExplorerNode[]>await azdata.objectexplorer.getActiveConnectionNodes();
 	assert(nodes.length > 0, `Expecting at least one active connection, actual: ${nodes.length}`);

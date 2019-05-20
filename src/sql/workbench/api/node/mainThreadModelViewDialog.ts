@@ -69,7 +69,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 
 	public $openDialog(handle: number, dialogName?: string): Thenable<void> {
 		let dialog = this.getDialog(handle);
-		dialogName ? this._dialogService.showDialog(dialog, dialogName) : this._dialogService.showDialog(dialog);
+		this._dialogService.showDialog(dialog, dialogName, { hasBackButton: false, isWide: dialog.isWide, hasErrors: true });
 		return Promise.resolve();
 	}
 
@@ -93,6 +93,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 		}
 
 		dialog.title = details.title;
+		dialog.isWide = details.isWide;
 		if (details.content && typeof details.content !== 'string') {
 			dialog.content = details.content.map(tabHandle => this.getTab(tabHandle));
 		} else {

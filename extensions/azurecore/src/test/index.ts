@@ -4,24 +4,19 @@
  *--------------------------------------------------------------------------------------------*/
 
 const path = require('path');
-import * as testRunner from 'vscodetestcover';
+const testRunner = require('vscode/lib/testrunner');
 
 const suite = 'Integration Azure Tests';
 
-const testOptions: any = {
+const options: any = {
 	ui: 'bdd',
 	useColors: true,
 	timeout: 60000
 };
 
-// Coverage is currently disabled - the coverage runner isn't currently able to correctly parse es2018 javascript
-const coverageConfig: any = {
-	coverConfig: '../../coverageConfig.json'
-};
-
 if (process.env.BUILD_ARTIFACTSTAGINGDIRECTORY) {
-	testOptions.reporter = 'mocha-multi-reporters';
-	testOptions.reporterOptions = {
+	options.reporter = 'mocha-multi-reporters';
+	options.reporterOptions = {
 		reporterEnabled: 'spec, mocha-junit-reporter',
 		mochaJunitReporterReporterOptions: {
 			testsuitesTitle: `${suite} ${process.platform}`,
@@ -30,6 +25,6 @@ if (process.env.BUILD_ARTIFACTSTAGINGDIRECTORY) {
 	};
 }
 
-testRunner.configure(testOptions, coverageConfig);
+testRunner.configure(options);
 
 export = testRunner;

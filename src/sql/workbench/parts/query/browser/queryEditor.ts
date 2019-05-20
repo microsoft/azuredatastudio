@@ -23,7 +23,7 @@ import { TextResourceEditor } from 'vs/workbench/browser/parts/editor/textResour
 
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { IActionItem } from 'vs/base/browser/ui/actionbar/actionbar';
+import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { Action } from 'vs/base/common/actions';
 import { ISelectionData } from 'azdata';
 import { IDisposable } from 'vs/base/common/lifecycle';
@@ -463,7 +463,7 @@ export class QueryEditor extends BaseEditor {
 		// Create QueryTaskbar
 		this._taskbarContainer = DOM.append(parentElement, DOM.$('div'));
 		this._taskbar = new Taskbar(this._taskbarContainer, {
-			actionItemProvider: (action: Action) => this._getActionItemForAction(action),
+			actionViewItemProvider: (action: Action) => this._getActionItemForAction(action),
 		});
 
 		// Create Actions for the toolbar
@@ -513,7 +513,7 @@ export class QueryEditor extends BaseEditor {
 	 * Gets the IActionItem for the List Databases dropdown if provided the associated Action.
 	 * Otherwise returns null.
 	 */
-	private _getActionItemForAction(action: Action): IActionItem {
+	private _getActionItemForAction(action: Action): IActionViewItem {
 		if (action.id === ListDatabasesAction.ID) {
 			return this.listDatabasesActionItem;
 		}
