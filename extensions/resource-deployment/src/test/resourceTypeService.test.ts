@@ -20,14 +20,17 @@ suite('Resource Type Service Tests', function (): void {
 		const toolsService = new ToolsService();
 		const resourceTypeService = new ResourceTypeService(mockPlatformService.object, toolsService);
 		// index 0: platform name, index 1: number of expected resource types
-		const platforms: any[][] = [['win32', 2], ['darwin', 2], ['linux', 2]];
+		const platforms: { platform: string; resourceTypeCount: number }[] = [
+			{ platform: 'win32', resourceTypeCount: 2 },
+			{ platform: 'darwin', resourceTypeCount: 2 },
+			{ platform: 'linux', resourceTypeCount: 2 }];
 		const totalResourceTypeCount = 2;
 		platforms.forEach(platformInfo => {
 			mockPlatformService.reset();
-			mockPlatformService.setup(service => service.platform()).returns(() => platformInfo[0]);
+			mockPlatformService.setup(service => service.platform()).returns(() => platformInfo.platform);
 			mockPlatformService.setup(service => service.showErrorMessage(TypeMoq.It.isAnyString()));
 			const resourceTypes = resourceTypeService.getResourceTypes(true);
-			assert.equal(resourceTypes.length, platformInfo[1], `number of resource types for platform:${platformInfo[0]} does not meet expected value.`);
+			assert.equal(resourceTypes.length, platformInfo.resourceTypeCount, `number of resource types for platform:${platformInfo.resourceTypeCount} does not meet expected value.`);
 		});
 
 		const allResourceTypes = resourceTypeService.getResourceTypes(false);

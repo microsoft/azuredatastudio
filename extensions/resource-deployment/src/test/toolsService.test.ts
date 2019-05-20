@@ -15,11 +15,17 @@ suite('Tools Service Tests', function (): void {
 	test('run getToolByName with all known values', () => {
 		const toolsService = new ToolsService();
 
-		const tools = [['azcli', ToolType.AzCli], ['docker', ToolType.Docker], ['kubectl', ToolType.KubeCtl], ['mssqlctl', ToolType.MSSQLCtl], ['python', ToolType.Python]];
-		tools.forEach(pair => {
-			const tool = toolsService.getToolByName(pair[0] as string);
-			assert(!!tool, `The tool: ${pair[0]} is not recognized`);
-			assert.equal(tool!.type, pair[1], 'returned notebook name does not match expected value');
+		const tools: { name: string; type: ToolType }[] = [
+			{ name: 'azcli', type: ToolType.AzCli },
+			{ name: 'docker', type: ToolType.Docker },
+			{ name: 'kubectl', type: ToolType.KubeCtl },
+			{ name: 'mssqlctl', type: ToolType.MSSQLCtl },
+			{ name: 'python', type: ToolType.Python }];
+
+		tools.forEach(toolInfo => {
+			const tool = toolsService.getToolByName(toolInfo.name);
+			assert(!!tool, `The tool: ${toolInfo.name} is not recognized`);
+			assert.equal(tool!.type, toolInfo.type, 'returned notebook name does not match expected value');
 		});
 	});
 
