@@ -72,7 +72,7 @@ if (context.RunTest) {
 	});
 }
 
-async function verifyContextMenu(server: TestServerProfile, expectedActions: string[]) {
+async function verifyContextMenu(server: TestServerProfile, expectedActions: string[]): Promise<void> {
 	await connectToServer(server, 3000);
 	let nodes = <azdata.objectexplorer.ObjectExplorerNode[]>await azdata.objectexplorer.getActiveConnectionNodes();
 	assert(nodes.length > 0, `Expecting at least one active connection, actual: ${nodes.length}`);
@@ -88,7 +88,7 @@ async function verifyContextMenu(server: TestServerProfile, expectedActions: str
 	assert(expectedActions.length === actions.length && expectedString === actualString, `Expected actions: "${expectedString}", Actual actions: "${actualString}"`);
 }
 
-async function VerifyOeNode(server: TestServerProfile, timeout: number, expectedNodeLabel: string[]) {
+async function VerifyOeNode(server: TestServerProfile, timeout: number, expectedNodeLabel: string[]): Promise<void> {
 	await connectToServer(server, timeout);
 	let nodes = <azdata.objectexplorer.ObjectExplorerNode[]>await azdata.objectexplorer.getActiveConnectionNodes();
 	assert(nodes.length > 0, `Expecting at least one active connection, actual: ${nodes.length}`);
