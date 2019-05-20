@@ -45,9 +45,12 @@ describe('Notebook Extension Python Installation', function () {
 
 	it('Verify Python Installation', async function () {
 		should(installComplete).be.true('Python setup did not complete.');
-		let jupyterPath = JupyterServerInstallation.getPythonInstallPath(jupyterController.jupyterInstallation.apiWrapper);
+		let apiWrapper = jupyterController.jupyterInstallation.apiWrapper;
+		let jupyterPath = JupyterServerInstallation.getPythonInstallPath(apiWrapper);
+
 		console.log(`Expected python path: '${pythonInstallDir}'; actual: '${jupyterPath}'`);
 		should(jupyterPath).be.equal(pythonInstallDir);
+		should(JupyterServerInstallation.isPythonInstalled(apiWrapper)).be.true();
 	});
 
 	it('Use Existing Python Installation', async function () {
@@ -63,6 +66,12 @@ describe('Notebook Extension Python Installation', function () {
 		console.log('Start Existing Python Installation');
 		let existingPythonPath = path.join(pythonInstallDir, pythonBundleVersion);
 		await install.startInstallProcess(false, { installPath: existingPythonPath, existingPython: true });
+		should(JupyterServerInstallation.isPythonInstalled(install.apiWrapper)).be.true();
+
+		// Redo "new" install to restore original settings.
+		// The actual install should get skipped since it already exists.
+		await install.startInstallProcess(false, { installPath: pythonInstallDir, existingPython: false });
+		should(JupyterServerInstallation.isPythonInstalled(install.apiWrapper)).be.true();
 		console.log('Existing Python Installation is done');
 	});
 });
