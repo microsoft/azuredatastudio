@@ -182,7 +182,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				DOM.clearNode(outputElement);
 				DOM.append(outputElement, this.markdownResult.element);
 				let elapsed = performance.now() - time0;
-				// console.log(`time to render simply is ${elapsed}ms`);
+				console.log(`time to render simply is ${elapsed}ms`);
 			} else {
 				let time0 = performance.now();
 				this._commandService.executeCommand<string>('notebook.showPreview', this.cellModel.notebookModel.notebookUri, this._content).then((htmlcontent) => {
@@ -192,7 +192,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 					outputElement.innerHTML = htmlcontent;
 					this.setLoading(false);
 					let elapsed = performance.now() - time0;
-					// console.log(`time to render over extension host is ${elapsed}ms`);
+					console.log(`time to render over extension host is ${elapsed}ms`);
 				});
 			}
 		}
