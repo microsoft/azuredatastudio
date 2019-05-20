@@ -54,15 +54,13 @@ export function executeBufferedCommand(cmd: string, options: childProcess.ExecOp
 	});
 }
 
-export function executeStreamedCommand(cmd: string, options: childProcess.SpawnOptions, outputChannel?: vscode.OutputChannel): Thenable<void> {
+export function executeStreamedCommand(cmd: string, outputChannel?: vscode.OutputChannel): Thenable<void> {
 	return new Promise<void>((resolve, reject) => {
 		// Start the command
 		if (outputChannel) {
 			outputChannel.appendLine(`    > ${cmd}`);
 		}
-		options.shell = true;
-		options.detached = false;
-		let child = childProcess.spawn(cmd, [], options);
+		let child = childProcess.spawn(cmd, [], { shell: true, detached: false });
 
 		// Add listeners to resolve/reject the promise on exit
 		child.on('error', reject);
