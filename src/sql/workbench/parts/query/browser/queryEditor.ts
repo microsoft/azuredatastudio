@@ -29,7 +29,6 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { QueryInput, IQueryEditorStateChange } from 'sql/workbench/parts/query/common/queryInput';
 import { QueryResultsEditor } from 'sql/workbench/parts/query/browser/queryResultsEditor';
 import * as queryContext from 'sql/workbench/parts/query/common/queryContext';
-import { QueryEditorContext } from 'sql/workbench/parts/query/common/queryEditorContext';
 import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
 import * as actions from 'sql/workbench/parts/query/browser/queryActions';
 import { IRange } from 'vs/editor/common/core/range';
@@ -56,8 +55,6 @@ export class QueryEditor extends BaseEditor {
 
 	private inputDisposables: IDisposable[] = [];
 
-	private contextKey = new QueryEditorContext(this.contextKeyService);
-
 	private resultsVisible = false;
 
 	private queryEditorVisible: IContextKey<boolean>;
@@ -76,7 +73,7 @@ export class QueryEditor extends BaseEditor {
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IThemeService themeService: IThemeService,
 		@IStorageService storageService: IStorageService,
-		@IContextKeyService private readonly contextKeyService: IContextKeyService,
+		@IContextKeyService contextKeyService: IContextKeyService,
 		@IEditorService private readonly editorService: IEditorService,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@IConfigurationService private readonly configurationService: IConfigurationService
@@ -246,7 +243,6 @@ export class QueryEditor extends BaseEditor {
 		]).then(() => {
 			dispose(this.inputDisposables);
 			this.inputDisposables = [];
-			this.contextKey.setState(this.input.state);
 			this.inputDisposables.push(this.input.state.onChange(c => this.updateState(c)));
 			this.updateState({ connectingChange: true, connectedChange: true, executingChange: true, resultsVisibleChange: true });
 		});
