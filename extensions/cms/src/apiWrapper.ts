@@ -233,7 +233,7 @@ export class ApiWrapper {
 		});
 	}
 
-	public async deleteCmsServer(cmsServer: any) {
+	public async deleteCmsServer(cmsServer: any): Promise<void> {
 		let config = this.getConfiguration();
 		if (config && config.servers) {
 			let newServers = config.servers.filter((cachedServer) => {
@@ -260,7 +260,7 @@ export class ApiWrapper {
 	}
 
 	public async addRegisteredServer(relativePath: string, ownerUri: string,
-		parentServerName?: string): Promise<any> {
+		parentServerName?: string): Promise<boolean> {
 		let provider = await this.getCmsService();
 		// Initial profile to disallow SQL Login without
 		// changing provider.
@@ -281,20 +281,17 @@ export class ApiWrapper {
 				authTypeChanged: true
 			}
 		};
-		return this.openConnectionDialog(['MSSQL-CMS'], initialProfile, { saveConnection: false }).then((connection) => {
+		return this.openConnectionDialog(['MSSQL-CMS'], initialProfile, { saveConnection: false }).then(async (connection) => {
 			if (connection && connection.options) {
 				if (connection.options.server === parentServerName) {
 					// error out for same server registration
 					let errorText = localize('cms.errors.sameServerUnderCms', 'You cannot add a shared registered server with the same name as the Configuration Server');
 					this.showErrorMessage(errorText);
-					return;
+					return false;
 				} else {
-					return provider.addRegisteredServer(ownerUri, relativePath,
-						connection.options.registeredServerName, connection.options.registeredServerDescription, connection).then((result) => {
-							if (result) {
-								return connection.options.server;
-							}
-						});
+					let result = await provider.addRegisteredServer(ownerUri, relativePath,
+						connection.options.registeredServerName, connection.options.registeredServerDescription, connection);
+					return result;
 				}
 
 			}

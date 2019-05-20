@@ -4,6 +4,7 @@
 	"cms.title": "Central Management Servers",
 	"cms.connectionProvider.displayName": "Microsoft SQL Server",
 	"cms.resource.explorer.title": "Central Management Servers",
+	"cms.resource.refresh.title": "Refresh",
 	"cms.resource.refreshServerGroup.title": "Refresh Server Group",
 	"cms.resource.deleteRegisteredServer.title": "Delete Registered Server",
 	"cms.resource.addRegisteredServer.title": "New Server Registration...",

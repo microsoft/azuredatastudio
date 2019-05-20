@@ -536,9 +536,17 @@
 				"when": "viewItem == cms.resource.itemType.serverGroup"
 			},
 			{
-				"command": "cms.resource.refreshServerGroup",
-				"title": "%cms.resource.refreshServerGroup.title%",
+				"command": "cms.resource.refresh",
+				"title": "%cms.resource.refresh.title%",
 				"when": "viewItem == cms.resource.itemType.serverGroup",
+				"icon": {
+					"light": "resources/light/refresh.svg",
+					"dark": "resources/dark/refresh_inverse.svg"
+				}
+			},
+			{
+				"command": "cms.resource.refresh",
+				"title": "%cms.resource.refresh.title%",
 				"icon": {
 					"light": "resources/light/refresh.svg",
 					"dark": "resources/dark/refresh_inverse.svg"
@@ -605,8 +613,13 @@
 					"group": "navigation@10"
 				},
 				{
-					"command": "cms.resource.refreshServerGroup",
+					"command": "cms.resource.refresh",
 					"when": "viewItem == cms.resource.itemType.serverGroup",
+					"group": "navigation@10"
+				},
+				{
+					"command": "cms.resource.refresh",
+					"when": "viewItem == cms.resource.itemType.cmsNodeContainer",
 					"group": "navigation@10"
 				},
 				{

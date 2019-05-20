@@ -42,10 +42,10 @@ export class CmsResourceTreeNode extends CmsResourceTreeNodeBase {
 			if (!this.ownerUri) {
 				this._ownerUri = await this.appContext.apiWrapper.getUriForConnection(this.connection);
 			}
-			return this.appContext.apiWrapper.createCmsServer(this.connection, this.name, this.description).then(async (result) => {
+			return this.appContext.apiWrapper.createCmsServer(this.connection, this.name, this.description).then((result) => {
 				if (result) {
 					if (result.registeredServersList) {
-						result.registeredServersList.forEach(async (registeredServer) => {
+						result.registeredServersList.forEach((registeredServer) => {
 							nodes.push(new RegisteredServerTreeNode(
 								registeredServer.name,
 								registeredServer.description,
@@ -59,7 +59,7 @@ export class CmsResourceTreeNode extends CmsResourceTreeNodeBase {
 					if (result.registeredServerGroups) {
 						if (result.registeredServerGroups) {
 							this._serverGroupNodes = [];
-							result.registeredServerGroups.forEach(async (serverGroup) => {
+							result.registeredServerGroups.forEach((serverGroup) => {
 								let serverGroupNode = new ServerGroupTreeNode(
 									serverGroup.name,
 									serverGroup.description,
