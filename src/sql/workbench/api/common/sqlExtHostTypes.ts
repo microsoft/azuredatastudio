@@ -641,3 +641,8 @@ export enum ColumnType {
 	checkBox = 1,
 	button = 2
 }
+
+export enum ActionOnColumn {
+	default = 0,
+	custom = 1
+}

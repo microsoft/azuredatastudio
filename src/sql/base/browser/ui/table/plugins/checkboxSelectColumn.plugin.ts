@@ -21,7 +21,7 @@ export interface ICheckboxSelectColumnOptions extends Slick.PluginOptions, IChec
 
 // Actions expected on checkbox click
 export enum ActionOnCheck {
-	select = 0,
+	default = 0,
 	custom = 1
 }
 
@@ -77,6 +77,7 @@ export class CheckboxSelectColumn<T> implements Slick.Plugin<T> {
 	private handleSelectedRowsChanged(e: Event, args: Slick.OnSelectedRowsChangedEventArgs<T>): void {
 		if (this.isCustomActionRequested()) {
 			// do not assume anything for column based on row selection
+			// we can emit event here later if required.
 			return;
 		}
 
@@ -190,6 +191,11 @@ export class CheckboxSelectColumn<T> implements Slick.Plugin<T> {
 	}
 
 	private handleHeaderClick(e: Event, args: Slick.OnHeaderClickEventArgs<T>): void {
+		if (this.isCustomActionRequested()) {
+			// do not assume action for column based on header click.
+			// we can emit event here later if required.
+			return;
+		}
 		if (!this._options.title && args.column.id === this._options.columnId && jQuery(e.target!).is('input[type="checkbox"]')) {
 			// if editing, try to commit
 			if (this._grid.getEditorLock().isActive() && !this._grid.getEditorLock().commitCurrentEdit()) {
@@ -238,11 +244,8 @@ export class CheckboxSelectColumn<T> implements Slick.Plugin<T> {
 			: strings.format(checkboxTemplate, '');
 	}
 
-	// Returns checkbox template based on data and state
-	// Note: make sure Init is called before using this._grid
 	checkboxTemplateCustom(row: number): string {
-
-		// use state after everything is initialized
+		// use state after toggles
 		if (this._useState) {
 			return this._selectedCheckBoxLookup[row]
 				? strings.format(checkboxTemplate, 'checked')
@@ -250,6 +253,7 @@ export class CheckboxSelectColumn<T> implements Slick.Plugin<T> {
 		}
 
 		// use data for first time rendering
+		// note: make sure Init is called before using this._grid
 		let v = (this._grid) ? this._grid.getDataItem(row) : null;
 		if (v && v[this._options.title] === true) {
 			this._selectedCheckBoxLookup[row] = true;

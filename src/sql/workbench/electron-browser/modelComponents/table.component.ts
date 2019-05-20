@@ -189,13 +189,14 @@ export default class TableComponent extends ComponentBase implements IComponent,
 	}
 
 	private createCheckBoxPlugin(col: any, index: number) {
+		let name = col.value;
 		if (!this._checkboxColumns[col.value]) {
 			this._checkboxColumns[col.value] = new CheckboxSelectColumn({
 				title: col.value,
 				toolTip: col.toolTip,
 				width: col.width,
 				cssClass: col.cssClass,
-				actionOnCheck: ActionOnCheck.custom
+				actionOnCheck: col.actionOnColumn
 			}, index);
 
 			this._register(this._checkboxColumns[col.value].onChange((state) => {

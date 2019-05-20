@@ -3122,12 +3122,18 @@ declare module 'azdata' {
 		headerCssClass?: string;
 		toolTip?: string;
 		type?: ColumnType;
+		actionOnColumn?: ActionOnColumn;
 	}
 
 	export enum ColumnType {
 		text = 0,
 		checkBox = 1,
 		button = 2
+	}
+
+	export enum ActionOnColumn {
+		default = 0,
+		custom = 1
 	}
 
 	export interface TableComponentProperties extends ComponentProperties {

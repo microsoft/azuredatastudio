@@ -203,7 +203,8 @@ export class SchemaCompareResult {
 					toolTip: localize('schemaCompare.includeColumnName', 'Include'),
 					cssClass: 'align-with-header',
 					width: 60,
-					type: azdata.ColumnType.checkBox
+					type: azdata.ColumnType.checkBox,
+					actionOnColumn: azdata.ActionOnColumn.custom
 				},
 				{
 					value: localize('schemaCompare.actionColumn', 'Action'),
@@ -233,7 +234,7 @@ export class SchemaCompareResult {
 		this.compareButton.enabled = true;
 		this.optionsButton.enabled = true;
 
-		// explicitely exclude things that were excluded in previous iteration
+		// explicitly exclude things that were excluded in previous compare
 		let thingsToExclude = this.sourceTargetSwitched ? this.originalTargetExcludes : this.originalSourceExcludes;
 		if (thingsToExclude) {
 			for (let item in thingsToExclude) {
@@ -280,7 +281,7 @@ export class SchemaCompareResult {
 		}));
 	}
 
-	// saves state based on source if present then target (same as SSDT)
+	// save state based on source name if present otherwise target name (parity with SSDT)
 	private saveExcludeState(rowState: azdata.IRowCheckboxChangedArg) {
 		if (rowState) {
 			let diff = this.comparisonResult.differences[rowState.row];
@@ -302,7 +303,7 @@ export class SchemaCompareResult {
 		}
 	}
 
-	private shouldBeIncluded(diff: azdata.DiffEntry): boolean {
+	private shouldDiffBeIncluded(diff: azdata.DiffEntry): boolean {
 		let key = diff.sourceValue ? diff.sourceValue : diff.targetValue;
 		if (key) {
 			if (this.sourceTargetSwitched === true && this.originalTargetExcludes[key]) {
@@ -324,7 +325,7 @@ export class SchemaCompareResult {
 			differences.forEach(difference => {
 				if (difference.differenceType === azdata.SchemaDifferenceType.Object) {
 					if (difference.sourceValue !== null || difference.targetValue !== null) {
-						let state: boolean = this.shouldBeIncluded(difference);
+						let state: boolean = this.shouldDiffBeIncluded(difference);
 						data.push([difference.name, difference.sourceValue, state, this.SchemaCompareActionMap[difference.updateAction], difference.targetValue]);
 					}
 				}
@@ -514,7 +515,7 @@ export class SchemaCompareResult {
 				]
 			});
 
-			// toggle source target
+			// remember that source target have been toggled
 			this.sourceTargetSwitched = this.sourceTargetSwitched ? false : true;
 			this.startCompare();
 		});
