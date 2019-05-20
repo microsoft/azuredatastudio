@@ -23,7 +23,7 @@ import { SplitView, Sizing } from 'vs/base/browser/ui/splitview/splitview';
 import { Event } from 'vs/base/common/event';
 import { dispose, IDisposable } from 'vs/base/common/lifecycle';
 import { ISelectionData } from 'azdata';
-import { Action, IActionItem } from 'vs/base/common/actions';
+import { Action, IActionViewItem } from 'vs/base/common/actions';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 import { QueryInput, IQueryEditorStateChange } from 'sql/workbench/parts/query/common/queryInput';
@@ -131,7 +131,7 @@ export class QueryEditor extends BaseEditor {
 		// Create QueryTaskbar
 		let taskbarContainer = DOM.append(parentElement, DOM.$('div'));
 		this.taskbar = this._register(new Taskbar(taskbarContainer, {
-			actionItemProvider: (action: Action) => this._getActionItemForAction(action),
+			actionViewItemProvider: (action: Action) => this._getActionItemForAction(action),
 		}));
 
 		// Create Actions for the toolbar
@@ -191,7 +191,7 @@ export class QueryEditor extends BaseEditor {
 	 * Gets the IActionItem for the List Databases dropdown if provided the associated Action.
 	 * Otherwise returns null.
 	 */
-	private _getActionItemForAction(action: Action): IActionItem {
+	private _getActionItemForAction(action: Action): IActionViewItem {
 		if (action.id === actions.ListDatabasesAction.ID) {
 			return this.listDatabasesActionItem;
 		}

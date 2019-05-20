@@ -94,7 +94,7 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 	private setHtml(): void {
 		if (this._webview && this.html) {
 			this._renderedHtml = this.html;
-			this._webview.contents = this._renderedHtml;
+			this._webview.html = this._renderedHtml;
 			this._webview.layout();
 		}
 	}
