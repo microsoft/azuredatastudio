@@ -191,6 +191,8 @@ export interface IConnectionManagementService {
 
 	getConnectionInfo(fileUri: string): ConnectionManagementInfo;
 
+	getDefaultProviderId(): string;
+
 	/**
 	 * Cancels the connection
 	 */
