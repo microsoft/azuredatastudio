@@ -78,10 +78,10 @@ export class BackupRestorer implements IWorkbenchContribution {
 	private resolveInput(resource: URI, index: number, hasOpenedEditors: boolean): IResourceInput | IUntitledResourceInput {
 		const options = { pinned: true, preserveFocus: true, inactive: index > 0 || hasOpenedEditors };
 
-		// {{SQL CARBON EDIT}}
-		if (resource.scheme === Schemas.untitled
-			&& !BackupRestorer.UNTITLED_REGEX.test(resource.fsPath)
-			&& !BackupRestorer.SQLQUERY_REGEX.test(resource.fsPath)) {
+		// this is a (weak) strategy to find out if the untitled input had
+		// an associated file path or not by just looking at the path. and
+		// if so, we must ensure to restore the local resource it had.
+		if (resource.scheme === Schemas.untitled && !BackupRestorer.UNTITLED_REGEX.test(resource.path) && BackupRestorer.SQLQUERY_REGEX.test(resource.path)) { // {{SQL CARBON EDIT}} @anthonydresser add sql regex test
 			return { resource: toLocalResource(resource, this.environmentService.configuration.remoteAuthority), options, forceUntitled: true };
 		}
 
