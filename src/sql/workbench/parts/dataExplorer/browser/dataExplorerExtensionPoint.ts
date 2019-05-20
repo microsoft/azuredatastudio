@@ -15,7 +15,6 @@ import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { CustomTreeViewPanel } from 'vs/workbench/browser/parts/views/customView';
 import { coalesce } from 'vs/base/common/arrays';
 import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
-import { viewsContainersExtensionPoint } from 'vs/workbench/api/browser/viewsExtensionPoint';
 
 import { CustomTreeView } from 'sql/workbench/browser/parts/views/customView';
 
@@ -66,7 +65,7 @@ const dataExplorerContribution: IJSONSchema = {
 };
 
 
-const dataExplorerExtensionPoint: IExtensionPoint<{ [loc: string]: IUserFriendlyViewDescriptor[] }> = ExtensionsRegistry.registerExtensionPoint<{ [loc: string]: IUserFriendlyViewDescriptor[] }>({ extensionPoint: 'dataExplorer', deps: [viewsContainersExtensionPoint], jsonSchema: dataExplorerContribution });
+const dataExplorerExtensionPoint: IExtensionPoint<{ [loc: string]: IUserFriendlyViewDescriptor[] }> = ExtensionsRegistry.registerExtensionPoint<{ [loc: string]: IUserFriendlyViewDescriptor[] }>({ extensionPoint: 'dataExplorer', jsonSchema: dataExplorerContribution });
 
 class DataExplorerContainerExtensionHandler implements IWorkbenchContribution {
 

@@ -2187,7 +2187,6 @@ export class DebugAdapterServer implements vscode.DebugAdapterServer {
 	}
 }
 
-// {{SQL CARBON EDIT}}
 /*
 @es5ClassCompat
 export class DebugAdapterImplementation implements vscode.DebugAdapterImplementation {

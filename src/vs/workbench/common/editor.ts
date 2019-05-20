@@ -444,7 +444,7 @@ export abstract class EditorInput extends Disposable implements IEditorInput {
 	 * Subclasses can set this to false if it does not make sense to split the editor input.
 	 */
 	supportsSplitEditor(): boolean {
-		// {{SQL CARBON EDIT}}
+		// {{SQL CARBON EDIT}} @anthonydresser 05/19/2019 investigate
 		return false; // TODO reenable when multiple Angular components of the same type can be open simultaneously
 	}
 
@@ -473,7 +473,7 @@ export abstract class EditorInput extends Disposable implements IEditorInput {
 		super.dispose();
 	}
 
-	// {{SQL CARBON EDIT}}
+	// {{SQL CARBON EDIT}} @anthonydresser 05/19/2019 investigate
 	// Saving is not supported in the EditData query editor, so this can be overriden in its Input.
 	private _savingSupported: boolean = true;
 	public get savingSupported(): boolean {
