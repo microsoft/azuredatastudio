@@ -40,7 +40,6 @@ import { trim } from 'vs/base/common/strings';
 import { VSBuffer } from 'vs/base/common/buffer';
 import { ITextSnapshot } from 'vs/editor/common/model';
 import { ITextResourceConfigurationService } from 'vs/editor/common/services/resourceConfiguration';
-import { PLAINTEXT_MODE_ID } from 'vs/editor/common/modes/modesRegistry';
 
 /**
  * The workbench file service implementation implements the raw file service spec and adds additional methods on top.
@@ -239,44 +238,59 @@ export abstract class TextFileService extends Disposable implements ITextFileSer
 	private async doBackupAll(dirtyFileModels: ITextFileEditorModel[], untitledResources: URI[]): Promise<void> {
 
 		// Handle file resources first
-		await Promise.all(dirtyFileModels.map(model => model.backup()));
+		await Promise.all(dirtyFileModels.map(async model => {
+			const snapshot = model.createSnapshot();
+			if (snapshot) {
+				await this.backupFileService.backupResource(model.getResource(), snapshot, model.getVersionId());
+			}
+		}));
 
 		// Handle untitled resources
-		await Promise.all(untitledResources
+		const untitledModelPromises = untitledResources
 			.filter(untitled => this.untitledEditorService.exists(untitled))
-			.map(async untitled => (await this.untitledEditorService.loadOrCreate({ resource: untitled })).backup()));
+			.map(untitled => this.untitledEditorService.loadOrCreate({ resource: untitled }));
+
+		const untitledModels = await Promise.all(untitledModelPromises);
+
+		await Promise.all(untitledModels.map(async model => {
+			const snapshot = model.createSnapshot();
+			if (snapshot) {
+				await this.backupFileService.backupResource(model.getResource(), snapshot, model.getVersionId());
+			}
+		}));
 	}
 
-	private async confirmBeforeShutdown(): Promise<boolean> {
-		const confirm = await this.confirmSave();
+	private confirmBeforeShutdown(): boolean | Promise<boolean> {
+		return this.confirmSave().then(confirm => {
 
-		// Save
-		if (confirm === ConfirmResult.SAVE) {
-			const result = await this.saveAll(true /* includeUntitled */, { skipSaveParticipants: true });
+			// Save
+			if (confirm === ConfirmResult.SAVE) {
+				return this.saveAll(true /* includeUntitled */, { skipSaveParticipants: true }).then(result => {
+					if (result.results.some(r => !r.success)) {
+						return true; // veto if some saves failed
+					}
 
-			if (result.results.some(r => !r.success)) {
-				return true; // veto if some saves failed
+					return this.noVeto({ cleanUpBackups: true });
+				});
 			}
 
-			return this.noVeto({ cleanUpBackups: true });
-		}
+			// Don't Save
+			else if (confirm === ConfirmResult.DONT_SAVE) {
 
-		// Don't Save
-		else if (confirm === ConfirmResult.DONT_SAVE) {
+				// Make sure to revert untitled so that they do not restore
+				// see https://github.com/Microsoft/vscode/issues/29572
+				this.untitledEditorService.revertAll();
 
-			// Make sure to revert untitled so that they do not restore
-			// see https://github.com/Microsoft/vscode/issues/29572
-			this.untitledEditorService.revertAll();
+				return this.noVeto({ cleanUpBackups: true });
+			}
 
-			return this.noVeto({ cleanUpBackups: true });
-		}
+			// Cancel
+			else if (confirm === ConfirmResult.CANCEL) {
+				return true; // veto
+			}
 
-		// Cancel
-		else if (confirm === ConfirmResult.CANCEL) {
-			return true; // veto
-		}
-
-		return false;
+			return false;
+		});
 	}
 
 	private noVeto(options: { cleanUpBackups: boolean }): boolean | Promise<boolean> {
@@ -489,7 +503,10 @@ export abstract class TextFileService extends Disposable implements ITextFileSer
 				dirtyTargetModelUris.push(targetModelResource);
 
 				// Backup dirty source model to the target resource it will become later
-				await sourceModel.backup(targetModelResource);
+				const snapshot = sourceModel.createSnapshot();
+				if (snapshot) {
+					await this.backupFileService.backupResource(targetModelResource, snapshot, sourceModel.getVersionId());
+				}
 			}));
 		}
 
@@ -740,14 +757,14 @@ export abstract class TextFileService extends Disposable implements ITextFileSer
 	private getFileModels(arg1?: URI | URI[]): ITextFileEditorModel[] {
 		if (Array.isArray(arg1)) {
 			const models: ITextFileEditorModel[] = [];
-			arg1.forEach(resource => {
+			(<URI[]>arg1).forEach(resource => {
 				models.push(...this.getFileModels(resource));
 			});
 
 			return models;
 		}
 
-		return this._models.getAll(arg1);
+		return this._models.getAll(<URI>arg1);
 	}
 
 	private getDirtyFileModels(resources?: URI | URI[]): ITextFileEditorModel[] {
@@ -856,12 +873,17 @@ export abstract class TextFileService extends Disposable implements ITextFileSer
 
 			// take over encoding, mode and model value from source model
 			targetModel.updatePreferredEncoding(sourceModel.getEncoding());
-			if (sourceModel.isResolved() && targetModel.isResolved()) {
-				this.modelService.updateModel(targetModel.textEditorModel, createTextBufferFactoryFromSnapshot(sourceModel.createSnapshot()));
+			if (targetModel.textEditorModel) {
+				const snapshot = sourceModel.createSnapshot();
+				if (snapshot) {
+					this.modelService.updateModel(targetModel.textEditorModel, createTextBufferFactoryFromSnapshot(snapshot));
+				}
 
-				const mode = sourceModel.textEditorModel.getLanguageIdentifier();
-				if (mode.language !== PLAINTEXT_MODE_ID) {
-					targetModel.textEditorModel.setMode(mode); // only use if more specific than plain/text
+				if (sourceModel.textEditorModel) {
+					const language = sourceModel.textEditorModel.getLanguageIdentifier();
+					if (language.id > 1) {
+						targetModel.textEditorModel.setMode(language); // only use if more specific than plain/text
+					}
 				}
 			}
 

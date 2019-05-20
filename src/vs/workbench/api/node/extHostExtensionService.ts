@@ -36,7 +36,7 @@ import { VSBuffer } from 'vs/base/common/buffer';
 import { ISchemeTransformer } from 'vs/workbench/api/common/extHostLanguageFeatures';
 import { ExtensionMemento } from 'vs/workbench/api/common/extHostMemento';
 import { ExtensionStoragePaths } from 'vs/workbench/api/node/extHostStoragePaths';
-import { RemoteAuthorityResolverError, ExtensionExecutionContext } from 'vs/workbench/api/common/extHostTypes';
+import { RemoteAuthorityResolverError } from 'vs/workbench/api/common/extHostTypes';
 
 interface ITestRunner {
 	run(testsRoot: string, clb: (error: Error, failures?: number) => void): void;
@@ -367,8 +367,7 @@ export class ExtHostExtensionService implements ExtHostExtensionServiceShape {
 				storagePath: this._storagePath.workspaceValue(extensionDescription),
 				globalStoragePath: this._storagePath.globalValue(extensionDescription),
 				asAbsolutePath: (relativePath: string) => { return path.join(extensionDescription.extensionLocation.fsPath, relativePath); },
-				logPath: that._extHostLogService.getLogDirectory(extensionDescription.identifier),
-				executionContext: this._initData.remoteAuthority ? ExtensionExecutionContext.Remote : ExtensionExecutionContext.Local
+				logPath: that._extHostLogService.getLogDirectory(extensionDescription.identifier)
 			});
 		});
 	}
@@ -629,7 +628,7 @@ export class ExtHostExtensionService implements ExtHostExtensionServiceShape {
 
 		const resolver = this._resolvers[authorityPrefix];
 		if (!resolver) {
-			throw new Error(`No remote extension installed to resolve ${authorityPrefix}.`);
+			throw new Error(`No resolver available for ${authorityPrefix}`);
 		}
 
 		try {

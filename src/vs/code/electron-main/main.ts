@@ -55,7 +55,7 @@ function setupIPC(accessor: ServicesAccessor): Promise<Server> {
 					logService.trace('Sending some foreground love to the running instance:', processId);
 
 					try {
-						const { allowSetForegroundWindow } = require.__$__nodeRequire('windows-foreground-love');
+						const { allowSetForegroundWindow } = <any>require.__$__nodeRequire('windows-foreground-love');
 						allowSetForegroundWindow(processId);
 					} catch (e) {
 						// noop

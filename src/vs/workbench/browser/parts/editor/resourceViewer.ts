@@ -370,7 +370,7 @@ class InlineImageView {
 			dispose: () => combinedDisposable(disposables).dispose()
 		};
 
-		const cacheKey = `${descriptor.resource.toString()}:${descriptor.etag}`;
+		const cacheKey = descriptor.resource.toString();
 
 		let ctrlPressed = false;
 		let altPressed = false;
@@ -501,8 +501,8 @@ class InlineImageView {
 				return;
 			}
 
-			const isScrollWheelKeyPressed = platform.isMacintosh ? altPressed : ctrlPressed;
-			if (!isScrollWheelKeyPressed && !e.ctrlKey) { // pinching is reported as scroll wheel + ctrl
+			const isScrollWhellKeyPressed = platform.isMacintosh ? altPressed : ctrlPressed;
+			if (!isScrollWhellKeyPressed && !e.ctrlKey) { // pinching is reported as scroll wheel + ctrl
 				return;
 			}
 
@@ -513,8 +513,12 @@ class InlineImageView {
 				firstZoom();
 			}
 
-			let delta = e.deltaY > 0 ? 1 : -1;
+			let delta = e.deltaY < 0 ? 1 : -1;
 
+			// Pinching should increase the scale
+			if (e.ctrlKey && !isScrollWhellKeyPressed) {
+				delta *= -1;
+			}
 			updateScale(scale as number * (1 - delta * InlineImageView.SCALE_PINCH_FACTOR));
 		}));
 

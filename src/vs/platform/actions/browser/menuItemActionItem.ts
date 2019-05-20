@@ -5,7 +5,7 @@
 
 import { addClasses, createCSSRule, removeClasses } from 'vs/base/browser/dom';
 import { domEvent } from 'vs/base/browser/event';
-import { ActionViewItem, Separator } from 'vs/base/browser/ui/actionbar/actionbar';
+import { ActionItem, Separator } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IAction } from 'vs/base/common/actions';
 import { Emitter } from 'vs/base/common/event';
 import { IdGenerator } from 'vs/base/common/idGenerator';
@@ -114,16 +114,16 @@ export function fillInActions(groups: [string, Array<MenuItemAction | SubmenuIte
 }
 
 
-export function createActionViewItem(action: IAction, keybindingService: IKeybindingService, notificationService: INotificationService, contextMenuService: IContextMenuService): ActionViewItem | undefined {
+export function createActionItem(action: IAction, keybindingService: IKeybindingService, notificationService: INotificationService, contextMenuService: IContextMenuService): ActionItem | undefined {
 	if (action instanceof MenuItemAction) {
-		return new MenuEntryActionViewItem(action, keybindingService, notificationService, contextMenuService);
+		return new MenuItemActionItem(action, keybindingService, notificationService, contextMenuService);
 	}
 	return undefined;
 }
 
 const ids = new IdGenerator('menu-item-action-item-icon-');
 
-export class MenuEntryActionViewItem extends ActionViewItem {
+export class MenuItemActionItem extends ActionItem {
 
 	static readonly ICON_PATH_TO_CSS_RULES: Map<string /* path*/, string /* CSS rule */> = new Map<string, string>();
 
@@ -231,13 +231,13 @@ export class MenuEntryActionViewItem extends ActionViewItem {
 
 			const iconPathMapKey = item.iconLocation.dark.toString();
 
-			if (MenuEntryActionViewItem.ICON_PATH_TO_CSS_RULES.has(iconPathMapKey)) {
-				iconClass = MenuEntryActionViewItem.ICON_PATH_TO_CSS_RULES.get(iconPathMapKey)!;
+			if (MenuItemActionItem.ICON_PATH_TO_CSS_RULES.has(iconPathMapKey)) {
+				iconClass = MenuItemActionItem.ICON_PATH_TO_CSS_RULES.get(iconPathMapKey)!;
 			} else {
 				iconClass = ids.nextId();
 				createCSSRule(`.icon.${iconClass}`, `background-image: url("${(item.iconLocation.light || item.iconLocation.dark).toString()}")`);
 				createCSSRule(`.vs-dark .icon.${iconClass}, .hc-black .icon.${iconClass}`, `background-image: url("${item.iconLocation.dark.toString()}")`);
-				MenuEntryActionViewItem.ICON_PATH_TO_CSS_RULES.set(iconPathMapKey, iconClass);
+				MenuItemActionItem.ICON_PATH_TO_CSS_RULES.set(iconPathMapKey, iconClass);
 			}
 
 			addClasses(this.label, 'icon', iconClass);
@@ -255,10 +255,10 @@ export class MenuEntryActionViewItem extends ActionViewItem {
 	}
 }
 
-// Need to subclass MenuEntryActionViewItem in order to respect
+// Need to subclass MenuItemActionItem in order to respect
 // the action context coming from any action bar, without breaking
 // existing users
-export class ContextAwareMenuEntryActionViewItem extends MenuEntryActionViewItem {
+export class ContextAwareMenuItemActionItem extends MenuItemActionItem {
 
 	onClick(event: MouseEvent): void {
 		event.preventDefault();
@@ -273,7 +273,7 @@ export class ContextAwareMenuEntryActionViewItem extends MenuEntryActionViewItem
 // Always show label for action items, instead of whether they don't have
 // an icon/CSS class. Useful for some toolbar scenarios in particular with
 // contributed actions from other extensions
-export class LabeledMenuItemActionItem extends MenuEntryActionViewItem {
+export class LabeledMenuItemActionItem extends MenuItemActionItem {
 	private _labeledItemClassDispose: IDisposable;
 
 	constructor(
@@ -301,13 +301,13 @@ export class LabeledMenuItemActionItem extends MenuEntryActionViewItem {
 
 			const iconPathMapKey = item.iconLocation.dark.toString();
 
-			if (MenuEntryActionViewItem.ICON_PATH_TO_CSS_RULES.has(iconPathMapKey)) {
-				iconClass = MenuEntryActionViewItem.ICON_PATH_TO_CSS_RULES.get(iconPathMapKey);
+			if (MenuItemActionItem.ICON_PATH_TO_CSS_RULES.has(iconPathMapKey)) {
+				iconClass = MenuItemActionItem.ICON_PATH_TO_CSS_RULES.get(iconPathMapKey);
 			} else {
 				iconClass = ids.nextId();
 				createCSSRule(`.icon.${iconClass}`, `background-image: url("${(item.iconLocation.light || item.iconLocation.dark).toString()}")`);
 				createCSSRule(`.vs-dark .icon.${iconClass}, .hc-black .icon.${iconClass}`, `background-image: url("${item.iconLocation.dark.toString()}")`);
-				MenuEntryActionViewItem.ICON_PATH_TO_CSS_RULES.set(iconPathMapKey, iconClass);
+				MenuItemActionItem.ICON_PATH_TO_CSS_RULES.set(iconPathMapKey, iconClass);
 			}
 
 			addClasses(this.label, 'icon', iconClass, this._defaultCSSClassToAdd);

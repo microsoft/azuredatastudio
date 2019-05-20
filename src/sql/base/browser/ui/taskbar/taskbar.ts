@@ -43,8 +43,8 @@ export class Taskbar {
 		this.actionBar = new ActionBar(element, {
 			orientation: options.orientation,
 			ariaLabel: options.ariaLabel,
-			actionViewItemProvider: (action: Action) => {
-				return options.actionViewItemProvider ? options.actionViewItemProvider(action) : undefined;
+			actionItemProvider: (action: Action) => {
+				return options.actionItemProvider ? options.actionItemProvider(action) : undefined;
 			}
 		});
 	}

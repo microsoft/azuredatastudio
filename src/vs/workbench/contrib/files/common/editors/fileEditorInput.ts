@@ -24,11 +24,8 @@ import { ILabelService } from 'vs/platform/label/common/label';
  */
 export class FileEditorInput extends EditorInput implements IFileEditorInput {
 	private preferredEncoding: string;
-	private preferredMode: string;
-
 	private forceOpenAsBinary: boolean;
 	private forceOpenAsText: boolean;
-
 	private textModelReference: Promise<IReference<ITextEditorModel>> | null;
 	private name: string;
 
@@ -38,7 +35,6 @@ export class FileEditorInput extends EditorInput implements IFileEditorInput {
 	constructor(
 		private resource: URI,
 		preferredEncoding: string | undefined,
-		preferredMode: string | undefined,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@ITextFileService private readonly textFileService: ITextFileService,
 		@ITextModelService private readonly textModelResolverService: ITextModelService,
@@ -48,10 +44,6 @@ export class FileEditorInput extends EditorInput implements IFileEditorInput {
 
 		if (preferredEncoding) {
 			this.setPreferredEncoding(preferredEncoding);
-		}
-
-		if (preferredMode) {
-			this.setPreferredMode(preferredMode);
 		}
 
 		this.registerListeners();
@@ -97,7 +89,7 @@ export class FileEditorInput extends EditorInput implements IFileEditorInput {
 	}
 
 	setEncoding(encoding: string, mode: EncodingMode): void {
-		this.setPreferredEncoding(encoding);
+		this.preferredEncoding = encoding;
 
 		const textModel = this.textFileService.models.get(this.resource);
 		if (textModel) {
@@ -108,24 +100,6 @@ export class FileEditorInput extends EditorInput implements IFileEditorInput {
 	setPreferredEncoding(encoding: string): void {
 		this.preferredEncoding = encoding;
 		this.forceOpenAsText = true; // encoding is a good hint to open the file as text
-	}
-
-	getPreferredMode(): string | undefined {
-		return this.preferredMode;
-	}
-
-	setMode(mode: string): void {
-		this.setPreferredMode(mode);
-
-		const textModel = this.textFileService.models.get(this.resource);
-		if (textModel) {
-			textModel.setMode(mode);
-		}
-	}
-
-	setPreferredMode(mode: string): void {
-		this.preferredMode = mode;
-		this.forceOpenAsText = true; // mode is a good hint to open the file as text
 	}
 
 	setForceOpenAsText(): void {
@@ -219,7 +193,7 @@ export class FileEditorInput extends EditorInput implements IFileEditorInput {
 	private decorateLabel(label: string): string {
 		const model = this.textFileService.models.get(this.resource);
 		if (model && model.hasState(ModelState.ORPHAN)) {
-			return localize('orphanedFile', "{0} (deleted)", label);
+			return localize('orphanedFile', "{0} (deleted from disk)", label);
 		}
 
 		if (model && model.isReadonly()) {
@@ -277,7 +251,6 @@ export class FileEditorInput extends EditorInput implements IFileEditorInput {
 
 		// Resolve as text
 		return this.textFileService.models.loadOrCreate(this.resource, {
-			mode: this.preferredMode,
 			encoding: this.preferredEncoding,
 			reload: { async: true }, // trigger a reload of the model if it exists already but do not wait to show the model
 			allowBinary: this.forceOpenAsText,
