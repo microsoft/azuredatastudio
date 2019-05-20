@@ -439,6 +439,9 @@ export class SchemaCompareDialog {
 			return uniqueValues;
 		}, []);
 
+		// reverse list so that most recent connections show first
+		values.reverse();
+
 		// move server of current connection to the top of the list so it is the default
 		if (idx >= 1) {
 			let tmp = values[0];
