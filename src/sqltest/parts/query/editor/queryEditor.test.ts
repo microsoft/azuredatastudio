@@ -298,28 +298,29 @@ suite('SQL QueryEditor Tests', () => {
 			);
 		});
 
-		test('Taskbar buttons are set correctly upon standard load', (done) => {
+		test('Taskbar buttons are set correctly upon standard load', () => {
 			queryConnectionService.setup(x => x.isConnected(TypeMoq.It.isAny())).returns(() => false);
 			queryModelService.setup(x => x.isRunningQuery(TypeMoq.It.isAny())).returns(() => false);
 			// If I use the created QueryEditor with no changes since creation
 			// Buttons should be set as if disconnected
-			assert.equal(queryInput.state.connected, false, 'runQueryAction button should be enabled');
-			done();
+			assert.equal(queryInput.state.connected, false, 'query state should be not connected');
+			assert.equal(queryInput.state.executing, false, 'query state should be not executing');
+			assert.equal(queryInput.state.connecting, false, 'query state should be not connecting');
 		});
 
-		test('Taskbar buttons are set correctly upon connect', (done) => {
+		test('Taskbar buttons are set correctly upon connect', () => {
 			let params: INewConnectionParams = { connectionType: ConnectionType.editor, runQueryOnCompletion: RunQueryOnConnectionMode.none };
 			queryInput.onConnectSuccess(params);
 			queryModelService.setup(x => x.isRunningQuery(TypeMoq.It.isAny())).returns(() => false);
-			assert.equal(queryInput.state.connected, true, 'runQueryAction button should be enabled');
-			done();
+			assert.equal(queryInput.state.connected, true, 'query state should be not connected');
+			assert.equal(queryInput.state.executing, false, 'query state should be not executing');
+			assert.equal(queryInput.state.connecting, false, 'query state should be not connecting');
 		});
-		test('Test that we attempt to dispose query when the queryInput is disposed', (done) => {
+		test('Test that we attempt to dispose query when the queryInput is disposed', () => {
 			let queryResultsInput = new QueryResultsInput('testUri', configurationService.object);
 			queryInput['_results'] = queryResultsInput;
 			queryInput.close();
 			queryModelService.verify(x => x.disposeQuery(TypeMoq.It.isAnyString()), TypeMoq.Times.once());
-			done();
 		});
 	});
 });
