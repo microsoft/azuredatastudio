@@ -209,7 +209,10 @@ export class SchemaCompareDialog {
 							horizontal: true,
 							titleFontSize: titleFontSize
 						})
-					.withLayout({ width: '100%' });
+					.withLayout({
+						width: '100%',
+						padding: '10px 10px 0 30px'
+					});
 			} else {
 				this.formBuilder = <azdata.FormBuilder>view.modelBuilder.formContainer()
 					.withFormItems([
@@ -230,7 +233,10 @@ export class SchemaCompareDialog {
 							horizontal: true,
 							titleFontSize: titleFontSize
 						})
-					.withLayout({ width: '100%' });
+					.withLayout({
+						width: '100%',
+						padding: '10px 10px 0 30px'
+					});
 			}
 			let formModel = this.formBuilder.component();
 			await view.initializeModel(formModel);
