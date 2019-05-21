@@ -74,7 +74,7 @@ const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.Da
 export interface DisplayProperty {
 	displayName: string;
 	value: string;
-	hyperlink: boolean;
+	isHyperlink: boolean;
 }
 
 @Component({
@@ -167,7 +167,7 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 			const assignProperty: DisplayProperty = {
 				displayName: endpoint.serviceName,
 				value: propertyObject,
-				hyperlink: this.isHyperlink(endpoint.serviceName)
+				isHyperlink: this.isHyperlink(endpoint.serviceName)
 			};
 
 			this.properties.push(assignProperty);
@@ -332,7 +332,7 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 			}
 			assignProperty['displayName'] = property.displayName;
 			assignProperty['value'] = propertyObject;
-			assignProperty['hyperlink'] = false;
+			assignProperty['isHyperlink'] = false;
 			this.properties.push(<DisplayProperty>assignProperty);
 		}
 

@@ -14,8 +14,8 @@
 				</span>
 				<div class="flex-table-row" *ngIf="_isVertical">
 					<span class="flex-table-cell">{{item.displayName}}</span>
-					<span *ngIf="item.hyperlink" class="flex-table-cell-destination"><a href="{{item.value}}" target="_blank">{{item.value}}</a></span>
-					<span *ngIf="!item.hyperlink" class="flex-table-cell-destination">{{item.value}}</span>
+					<span *ngIf="item.isHyperlink" class="flex-table-cell-destination"><a href="{{item.value}}" target="_blank">{{item.value}}</a></span>
+					<span *ngIf="!item.isHyperlink" class="flex-table-cell-destination">{{item.value}}</span>
 				</div>
 			</ng-template>
 		</span>
