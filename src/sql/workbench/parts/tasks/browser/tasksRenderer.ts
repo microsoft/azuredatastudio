@@ -8,6 +8,8 @@ import { TaskNode, TaskStatus } from 'sql/platform/tasks/common/tasksNode';
 import * as dom from 'vs/base/browser/dom';
 import { localize } from 'vs/nls';
 import * as Utils from 'sql/platform/connection/common/utils';
+import { IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { IntervalTimer } from 'vs/base/common/async';
 
 const $ = dom.$;
 
@@ -17,6 +19,7 @@ export interface ITaskHistoryTemplateData {
 	label: HTMLSpanElement;
 	description: HTMLSpanElement;
 	time: HTMLSpanElement;
+	disposables: Array<IDisposable>;
 }
 
 /**
@@ -57,6 +60,7 @@ export class TaskHistoryRenderer implements IRenderer {
 		taskTemplate.label = dom.append(taskTemplate.root, $('.label'));
 		taskTemplate.description = dom.append(taskTemplate.root, $('.description'));
 		taskTemplate.time = dom.append(taskTemplate.root, $('.time'));
+		taskTemplate.disposables = [];
 		return taskTemplate;
 	}
 
@@ -109,14 +113,14 @@ export class TaskHistoryRenderer implements IRenderer {
 			templateData.description.title = templateData.description.textContent;
 
 			this.timer(element, templateData);
-			let self = this;
-			setInterval(function () {
-				self.timer(element, templateData);
-			}, 1000);
+
+			const timer = new IntervalTimer();
+			timer.cancelAndSet(() => this.timer(element, templateData), 500);
+			templateData.disposables.push(timer);
 		}
 	}
 
-	public timer(taskNode: TaskNode, templateData: ITaskHistoryTemplateData) {
+	private timer(taskNode: TaskNode, templateData: ITaskHistoryTemplateData): void {
 		let timeLabel = '';
 		if (taskNode.status === TaskStatus.Failed) {
 			timeLabel += taskNode.startTime + ' Error: ' + taskNode.message;
@@ -138,8 +142,7 @@ export class TaskHistoryRenderer implements IRenderer {
 		templateData.time.title = timeLabel;
 	}
 
-	public disposeTemplate(tree: ITree, templateId: string, templateData: any): void {
-		// no op
-		// InputBox disposed in wrapUp
+	public disposeTemplate(tree: ITree, templateId: string, templateData: ITaskHistoryTemplateData): void {
+		dispose(templateData.disposables);
 	}
 }
