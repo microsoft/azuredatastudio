@@ -299,11 +299,11 @@ export class HistoryMainService implements IHistoryMainService {
 						description = nls.localize('folderDesc', "{0} {1}", getBaseLabel(workspace), getPathLabel(dirname(workspace), this.environmentService));
 						args = `--folder-uri "${workspace.toString()}"`;
 					} else {
-						description = nls.localize('workspaceDesc', "{0} {1}", getBaseLabel(workspace.configPath), getPathLabel(dirname(workspace.configPath), this.environmentService));
+						description = nls.localize('codeWorkspace', "Code Workspace");
 						args = `--file-uri "${workspace.configPath.toString()}"`;
 					}
 
-					return {
+					return <Electron.JumpListItem>{
 						type: 'task',
 						title,
 						description,

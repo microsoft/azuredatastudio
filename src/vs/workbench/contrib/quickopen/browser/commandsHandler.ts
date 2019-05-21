@@ -192,7 +192,7 @@ class CommandPaletteEditorAction extends EditorAction {
 			id: ShowAllCommandsAction.ID,
 			label: nls.localize('showCommands.label', "Command Palette..."),
 			alias: 'Command Palette',
-			precondition: undefined,
+			precondition: null,
 			menuOpts: {
 				group: 'z_commands',
 				order: 1

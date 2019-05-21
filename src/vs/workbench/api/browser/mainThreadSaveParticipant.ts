@@ -295,18 +295,14 @@ class CodeActionOnSaveParticipant implements ISaveParticipant {
 		const codeActionsOnSave = Object.keys(setting)
 			.filter(x => setting[x]).map(x => new CodeActionKind(x))
 			.sort((a, b) => {
-				if (CodeActionKind.SourceFixAll.contains(a)) {
-					if (CodeActionKind.SourceFixAll.contains(b)) {
-						return 0;
-					}
-					return 1;
-				}
-				if (CodeActionKind.SourceFixAll.contains(b)) {
+				if (a.value === CodeActionKind.SourceFixAll.value) {
 					return -1;
+				}
+				if (b.value === CodeActionKind.SourceFixAll.value) {
+					return 1;
 				}
 				return 0;
 			});
-
 		if (!codeActionsOnSave.length) {
 			return undefined;
 		}
@@ -322,8 +318,11 @@ class CodeActionOnSaveParticipant implements ISaveParticipant {
 					reject(localize('codeActionsOnSave.didTimeout', "Aborted codeActionsOnSave after {0}ms", timeout));
 				}, timeout)),
 			this.applyOnSaveActions(model, codeActionsOnSave, tokenSource.token)
-		]).finally(() => {
+		]).then(() => {
 			tokenSource.cancel();
+		}, (e) => {
+			tokenSource.cancel();
+			return Promise.reject(e);
 		});
 	}
 

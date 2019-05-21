@@ -7,11 +7,11 @@ import 'vs/css!./media/debugViewlet';
 import * as nls from 'vs/nls';
 import { IAction } from 'vs/base/common/actions';
 import * as DOM from 'vs/base/browser/dom';
-import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
+import { IActionItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { ViewContainerViewlet } from 'vs/workbench/browser/parts/views/viewsViewlet';
 import { IDebugService, VIEWLET_ID, State, BREAKPOINTS_VIEW_ID, IDebugConfiguration, REPL_ID } from 'vs/workbench/contrib/debug/common/debug';
 import { StartAction, ConfigureAction, SelectAndStartAction, FocusSessionAction } from 'vs/workbench/contrib/debug/browser/debugActions';
-import { StartDebugActionViewItem, FocusSessionActionViewItem } from 'vs/workbench/contrib/debug/browser/debugActionViewItems';
+import { StartDebugActionItem, FocusSessionActionItem } from 'vs/workbench/contrib/debug/browser/debugActionItems';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { IProgressService, IProgressRunner } from 'vs/platform/progress/common/progress';
@@ -29,14 +29,14 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { ViewletPanel } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { IMenu, MenuId, IMenuService, MenuItemAction } from 'vs/platform/actions/common/actions';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { MenuEntryActionViewItem } from 'vs/platform/actions/browser/menuEntryActionViewItem';
+import { MenuItemActionItem } from 'vs/platform/actions/browser/menuItemActionItem';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { TogglePanelAction } from 'vs/workbench/browser/panel';
 import { IPanelService } from 'vs/workbench/services/panel/common/panelService';
 
 export class DebugViewlet extends ViewContainerViewlet {
 
-	private startDebugActionViewItem: StartDebugActionViewItem;
+	private startDebugActionItem: StartDebugActionItem;
 	private progressRunner: IProgressRunner;
 	private breakpointView: ViewletPanel;
 	private panelListeners = new Map<string, IDisposable>();
@@ -80,8 +80,8 @@ export class DebugViewlet extends ViewContainerViewlet {
 	focus(): void {
 		super.focus();
 
-		if (this.startDebugActionViewItem) {
-			this.startDebugActionViewItem.focus();
+		if (this.startDebugActionItem) {
+			this.startDebugActionItem.focus();
 		}
 	}
 
@@ -130,16 +130,16 @@ export class DebugViewlet extends ViewContainerViewlet {
 		return [this.selectAndStartAction, this.configureAction, this.toggleReplAction];
 	}
 
-	getActionViewItem(action: IAction): IActionViewItem | undefined {
+	getActionItem(action: IAction): IActionItem | undefined {
 		if (action.id === StartAction.ID) {
-			this.startDebugActionViewItem = this.instantiationService.createInstance(StartDebugActionViewItem, null, action);
-			return this.startDebugActionViewItem;
+			this.startDebugActionItem = this.instantiationService.createInstance(StartDebugActionItem, null, action);
+			return this.startDebugActionItem;
 		}
 		if (action.id === FocusSessionAction.ID) {
-			return new FocusSessionActionViewItem(action, this.debugService, this.themeService, this.contextViewService, this.configurationService);
+			return new FocusSessionActionItem(action, this.debugService, this.themeService, this.contextViewService, this.configurationService);
 		}
 		if (action instanceof MenuItemAction) {
-			return new MenuEntryActionViewItem(action, this.keybindingService, this.notificationService, this.contextMenuService);
+			return new MenuItemActionItem(action, this.keybindingService, this.notificationService, this.contextMenuService);
 		}
 
 		return undefined;

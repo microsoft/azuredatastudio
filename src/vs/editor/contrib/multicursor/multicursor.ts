@@ -34,7 +34,7 @@ export class InsertCursorAbove extends EditorAction {
 			id: 'editor.action.insertCursorAbove',
 			label: nls.localize('mutlicursor.insertAbove', "Add Cursor Above"),
 			alias: 'Add Cursor Above',
-			precondition: undefined,
+			precondition: null,
 			kbOpts: {
 				kbExpr: EditorContextKeys.editorTextFocus,
 				primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.UpArrow,
@@ -83,7 +83,7 @@ export class InsertCursorBelow extends EditorAction {
 			id: 'editor.action.insertCursorBelow',
 			label: nls.localize('mutlicursor.insertBelow', "Add Cursor Below"),
 			alias: 'Add Cursor Below',
-			precondition: undefined,
+			precondition: null,
 			kbOpts: {
 				kbExpr: EditorContextKeys.editorTextFocus,
 				primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.DownArrow,
@@ -132,7 +132,7 @@ class InsertCursorAtEndOfEachLineSelected extends EditorAction {
 			id: 'editor.action.insertCursorAtEndOfEachLineSelected',
 			label: nls.localize('mutlicursor.insertAtEndOfEachLineSelected', "Add Cursors to Line Ends"),
 			alias: 'Add Cursors to Line Ends',
-			precondition: undefined,
+			precondition: null,
 			kbOpts: {
 				kbExpr: EditorContextKeys.editorTextFocus,
 				primary: KeyMod.Shift | KeyMod.Alt | KeyCode.KEY_I,
@@ -184,7 +184,7 @@ class InsertCursorAtEndOfLineSelected extends EditorAction {
 			id: 'editor.action.addCursorsToBottom',
 			label: nls.localize('mutlicursor.addCursorsToBottom', "Add Cursors To Bottom"),
 			alias: 'Add Cursors To Bottom',
-			precondition: undefined
+			precondition: null
 		});
 	}
 
@@ -214,7 +214,7 @@ class InsertCursorAtTopOfLineSelected extends EditorAction {
 			id: 'editor.action.addCursorsToTop',
 			label: nls.localize('mutlicursor.addCursorsToTop', "Add Cursors To Top"),
 			alias: 'Add Cursors To Top',
-			precondition: undefined
+			precondition: null
 		});
 	}
 
@@ -650,7 +650,7 @@ export class AddSelectionToNextFindMatchAction extends MultiCursorSelectionContr
 			id: 'editor.action.addSelectionToNextFindMatch',
 			label: nls.localize('addSelectionToNextFindMatch', "Add Selection To Next Find Match"),
 			alias: 'Add Selection To Next Find Match',
-			precondition: undefined,
+			precondition: null,
 			kbOpts: {
 				kbExpr: EditorContextKeys.focus,
 				primary: KeyMod.CtrlCmd | KeyCode.KEY_D,
@@ -675,7 +675,7 @@ export class AddSelectionToPreviousFindMatchAction extends MultiCursorSelectionC
 			id: 'editor.action.addSelectionToPreviousFindMatch',
 			label: nls.localize('addSelectionToPreviousFindMatch', "Add Selection To Previous Find Match"),
 			alias: 'Add Selection To Previous Find Match',
-			precondition: undefined,
+			precondition: null,
 			menubarOpts: {
 				menuId: MenuId.MenubarSelectionMenu,
 				group: '3_multi',
@@ -695,7 +695,7 @@ export class MoveSelectionToNextFindMatchAction extends MultiCursorSelectionCont
 			id: 'editor.action.moveSelectionToNextFindMatch',
 			label: nls.localize('moveSelectionToNextFindMatch', "Move Last Selection To Next Find Match"),
 			alias: 'Move Last Selection To Next Find Match',
-			precondition: undefined,
+			precondition: null,
 			kbOpts: {
 				kbExpr: EditorContextKeys.focus,
 				primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_K, KeyMod.CtrlCmd | KeyCode.KEY_D),
@@ -714,7 +714,7 @@ export class MoveSelectionToPreviousFindMatchAction extends MultiCursorSelection
 			id: 'editor.action.moveSelectionToPreviousFindMatch',
 			label: nls.localize('moveSelectionToPreviousFindMatch', "Move Last Selection To Previous Find Match"),
 			alias: 'Move Last Selection To Previous Find Match',
-			precondition: undefined
+			precondition: null
 		});
 	}
 	protected _run(multiCursorController: MultiCursorSelectionController, findController: CommonFindController): void {
@@ -728,7 +728,7 @@ export class SelectHighlightsAction extends MultiCursorSelectionControllerAction
 			id: 'editor.action.selectHighlights',
 			label: nls.localize('selectAllOccurrencesOfFindMatch', "Select All Occurrences of Find Match"),
 			alias: 'Select All Occurrences of Find Match',
-			precondition: undefined,
+			precondition: null,
 			kbOpts: {
 				kbExpr: EditorContextKeys.focus,
 				primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_L,

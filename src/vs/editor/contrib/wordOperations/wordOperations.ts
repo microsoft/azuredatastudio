@@ -98,7 +98,7 @@ export class CursorWordStartLeft extends WordLeftCommand {
 			inSelectionMode: false,
 			wordNavigationType: WordNavigationType.WordStart,
 			id: 'cursorWordStartLeft',
-			precondition: undefined,
+			precondition: null,
 			kbOpts: {
 				kbExpr: EditorContextKeys.textInputFocus,
 				primary: KeyMod.CtrlCmd | KeyCode.LeftArrow,
@@ -115,7 +115,7 @@ export class CursorWordEndLeft extends WordLeftCommand {
 			inSelectionMode: false,
 			wordNavigationType: WordNavigationType.WordEnd,
 			id: 'cursorWordEndLeft',
-			precondition: undefined
+			precondition: null
 		});
 	}
 }
@@ -126,7 +126,7 @@ export class CursorWordLeft extends WordLeftCommand {
 			inSelectionMode: false,
 			wordNavigationType: WordNavigationType.WordStartFast,
 			id: 'cursorWordLeft',
-			precondition: undefined
+			precondition: null
 		});
 	}
 }
@@ -137,7 +137,7 @@ export class CursorWordStartLeftSelect extends WordLeftCommand {
 			inSelectionMode: true,
 			wordNavigationType: WordNavigationType.WordStart,
 			id: 'cursorWordStartLeftSelect',
-			precondition: undefined,
+			precondition: null,
 			kbOpts: {
 				kbExpr: EditorContextKeys.textInputFocus,
 				primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.LeftArrow,
@@ -154,7 +154,7 @@ export class CursorWordEndLeftSelect extends WordLeftCommand {
 			inSelectionMode: true,
 			wordNavigationType: WordNavigationType.WordEnd,
 			id: 'cursorWordEndLeftSelect',
-			precondition: undefined
+			precondition: null
 		});
 	}
 }
@@ -165,7 +165,7 @@ export class CursorWordLeftSelect extends WordLeftCommand {
 			inSelectionMode: true,
 			wordNavigationType: WordNavigationType.WordStart,
 			id: 'cursorWordLeftSelect',
-			precondition: undefined
+			precondition: null
 		});
 	}
 }
@@ -176,7 +176,7 @@ export class CursorWordStartRight extends WordRightCommand {
 			inSelectionMode: false,
 			wordNavigationType: WordNavigationType.WordStart,
 			id: 'cursorWordStartRight',
-			precondition: undefined
+			precondition: null
 		});
 	}
 }
@@ -187,7 +187,7 @@ export class CursorWordEndRight extends WordRightCommand {
 			inSelectionMode: false,
 			wordNavigationType: WordNavigationType.WordEnd,
 			id: 'cursorWordEndRight',
-			precondition: undefined,
+			precondition: null,
 			kbOpts: {
 				kbExpr: EditorContextKeys.textInputFocus,
 				primary: KeyMod.CtrlCmd | KeyCode.RightArrow,
@@ -204,7 +204,7 @@ export class CursorWordRight extends WordRightCommand {
 			inSelectionMode: false,
 			wordNavigationType: WordNavigationType.WordEnd,
 			id: 'cursorWordRight',
-			precondition: undefined
+			precondition: null
 		});
 	}
 }
@@ -215,7 +215,7 @@ export class CursorWordStartRightSelect extends WordRightCommand {
 			inSelectionMode: true,
 			wordNavigationType: WordNavigationType.WordStart,
 			id: 'cursorWordStartRightSelect',
-			precondition: undefined
+			precondition: null
 		});
 	}
 }
@@ -226,7 +226,7 @@ export class CursorWordEndRightSelect extends WordRightCommand {
 			inSelectionMode: true,
 			wordNavigationType: WordNavigationType.WordEnd,
 			id: 'cursorWordEndRightSelect',
-			precondition: undefined,
+			precondition: null,
 			kbOpts: {
 				kbExpr: EditorContextKeys.textInputFocus,
 				primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.RightArrow,
@@ -243,7 +243,7 @@ export class CursorWordRightSelect extends WordRightCommand {
 			inSelectionMode: true,
 			wordNavigationType: WordNavigationType.WordEnd,
 			id: 'cursorWordRightSelect',
-			precondition: undefined
+			precondition: null
 		});
 	}
 }

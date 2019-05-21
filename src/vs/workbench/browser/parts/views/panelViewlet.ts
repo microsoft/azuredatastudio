@@ -13,7 +13,7 @@ import { append, $, trackFocus, toggleClass, EventType, isAncestor, Dimension, a
 import { IDisposable, combinedDisposable } from 'vs/base/common/lifecycle';
 import { firstIndex } from 'vs/base/common/arrays';
 import { IAction, IActionRunner } from 'vs/base/common/actions';
-import { IActionViewItem, ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
+import { IActionItem, ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { prepareActions } from 'vs/workbench/browser/actions';
 import { Viewlet, ViewletRegistry, Extensions } from 'vs/workbench/browser/viewlet';
@@ -28,6 +28,7 @@ import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/la
 import { StandardMouseEvent } from 'vs/base/browser/mouseEvent';
 import { IView } from 'vs/workbench/common/views';
 import { IStorageService } from 'vs/platform/storage/common/storage';
+import { withNullAsUndefined } from 'vs/base/common/types';
 
 export interface IPanelColors extends IColorMapping {
 	dropBackground?: ColorIdentifier;
@@ -126,9 +127,9 @@ export abstract class ViewletPanel extends Panel implements IView {
 		const actions = append(container, $('.actions'));
 		this.toolbar = new ToolBar(actions, this.contextMenuService, {
 			orientation: ActionsOrientation.HORIZONTAL,
-			actionViewItemProvider: action => this.getActionViewItem(action),
+			actionItemProvider: action => this.getActionItem(action),
 			ariaLabel: nls.localize('viewToolbarAriaLabel', "{0} actions", this.title),
-			getKeyBinding: action => this.keybindingService.lookupKeybinding(action.id),
+			getKeyBinding: action => withNullAsUndefined(this.keybindingService.lookupKeybinding(action.id)),
 			actionRunner: this.actionRunner
 		});
 
@@ -179,7 +180,7 @@ export abstract class ViewletPanel extends Panel implements IView {
 		return [];
 	}
 
-	getActionViewItem(action: IAction): IActionViewItem | undefined {
+	getActionItem(action: IAction): IActionItem | undefined {
 		return undefined;
 	}
 
@@ -288,12 +289,12 @@ export class PanelViewlet extends Viewlet {
 		return [];
 	}
 
-	getActionViewItem(action: IAction): IActionViewItem | undefined {
+	getActionItem(action: IAction): IActionItem | undefined {
 		if (this.isSingleView()) {
-			return this.panelItems[0].panel.getActionViewItem(action);
+			return this.panelItems[0].panel.getActionItem(action);
 		}
 
-		return super.getActionViewItem(action);
+		return super.getActionItem(action);
 	}
 
 	focus(): void {

@@ -66,7 +66,10 @@ export class BackupModelTracker extends Disposable implements IWorkbenchContribu
 			if (!this.configuredAutoSaveAfterDelay) {
 				const model = this.textFileService.models.get(event.resource);
 				if (model) {
-					model.backup();
+					const snapshot = model.createSnapshot();
+					if (snapshot) {
+						this.backupFileService.backupResource(model.getResource(), snapshot, model.getVersionId());
+					}
 				}
 			}
 		}
@@ -74,7 +77,12 @@ export class BackupModelTracker extends Disposable implements IWorkbenchContribu
 
 	private onUntitledModelChanged(resource: Uri): void {
 		if (this.untitledEditorService.isDirty(resource)) {
-			this.untitledEditorService.loadOrCreate({ resource }).then(model => model.backup());
+			this.untitledEditorService.loadOrCreate({ resource }).then(model => {
+				const snapshot = model.createSnapshot();
+				if (snapshot) {
+					this.backupFileService.backupResource(resource, snapshot, model.getVersionId());
+				}
+			});
 		} else {
 			this.discardBackup(resource);
 		}

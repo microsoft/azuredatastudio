@@ -13,7 +13,7 @@ import { IPagedRenderer } from 'vs/base/browser/ui/list/listPaging';
 import { Event } from 'vs/base/common/event';
 import { domEvent } from 'vs/base/browser/event';
 import { IExtension, ExtensionContainers, ExtensionState, IExtensionsWorkbenchService } from 'vs/workbench/contrib/extensions/common/extensions';
-import { InstallAction, UpdateAction, ManageExtensionAction, ReloadAction, MaliciousStatusLabelAction, ExtensionActionViewItem, StatusLabelAction, RemoteInstallAction, SystemDisabledWarningAction, DisabledLabelAction, LocalInstallAction } from 'vs/workbench/contrib/extensions/electron-browser/extensionsActions';
+import { InstallAction, UpdateAction, ManageExtensionAction, ReloadAction, MaliciousStatusLabelAction, ExtensionActionItem, StatusLabelAction, RemoteInstallAction, SystemDisabledWarningAction, DisabledLabelAction, LocalInstallAction } from 'vs/workbench/contrib/extensions/electron-browser/extensionsActions';
 import { areSameExtensions } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 import { Label, RatingsWidget, InstallCountWidget, RecommendationWidget, RemoteBadgeWidget, TooltipWidget } from 'vs/workbench/contrib/extensions/electron-browser/extensionsWidgets';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
@@ -81,11 +81,11 @@ export class Renderer implements IPagedRenderer<IExtension, ITemplateData> {
 		const author = append(footer, $('.author.ellipsis'));
 		const actionbar = new ActionBar(footer, {
 			animated: false,
-			actionViewItemProvider: (action: Action) => {
+			actionItemProvider: (action: Action) => {
 				if (action.id === ManageExtensionAction.ID) {
-					return (<ManageExtensionAction>action).createActionViewItem();
+					return (<ManageExtensionAction>action).createActionItem();
 				}
-				return new ExtensionActionViewItem(null, action, actionOptions);
+				return new ExtensionActionItem(null, action, actionOptions);
 			}
 		});
 		actionbar.onDidRun(({ error }) => error && this.notificationService.error(error));
@@ -192,13 +192,13 @@ export class Renderer implements IPagedRenderer<IExtension, ITemplateData> {
 
 		this.extensionViewState.onFocus(e => {
 			if (areSameExtensions(extension.identifier, e.identifier)) {
-				data.actionbar.viewItems.forEach(item => (<ExtensionActionViewItem>item).setFocus(true));
+				data.actionbar.items.forEach(item => (<ExtensionActionItem>item).setFocus(true));
 			}
 		}, this, data.extensionDisposables);
 
 		this.extensionViewState.onBlur(e => {
 			if (areSameExtensions(extension.identifier, e.identifier)) {
-				data.actionbar.viewItems.forEach(item => (<ExtensionActionViewItem>item).setFocus(false));
+				data.actionbar.items.forEach(item => (<ExtensionActionItem>item).setFocus(false));
 			}
 		}, this, data.extensionDisposables);
 	}

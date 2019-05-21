@@ -101,20 +101,6 @@ suite('SettingsTree', () => {
 				category: 'Something Else',
 				label: 'Etc'
 			});
-
-		assert.deepEqual(
-			settingKeyToDisplayFormat('foo.1leading.number'),
-			{
-				category: 'Foo › 1leading',
-				label: 'Number'
-			});
-
-		assert.deepEqual(
-			settingKeyToDisplayFormat('foo.1Leading.number'),
-			{
-				category: 'Foo › 1 Leading',
-				label: 'Number'
-			});
 	});
 
 	test('parseQuery', () => {

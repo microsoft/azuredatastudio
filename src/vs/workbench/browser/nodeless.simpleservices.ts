@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { URI } from 'vs/base/common/uri';
-import { IBackupFileService, IResolvedBackup } from 'vs/workbench/services/backup/common/backup';
-import { ITextSnapshot } from 'vs/editor/common/model';
+import { IBackupFileService } from 'vs/workbench/services/backup/common/backup';
+import { ITextBufferFactory, ITextSnapshot } from 'vs/editor/common/model';
 import { createTextBufferFactoryFromSnapshot } from 'vs/editor/common/model/textModel';
 import { keys, ResourceMap } from 'vs/base/common/map';
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
@@ -58,11 +58,11 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { Color, RGBA } from 'vs/base/common/color';
 import { ITunnelService } from 'vs/platform/remote/common/tunnel';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
-import { IFileService } from 'vs/platform/files/common/files';
 
-export const workspaceResource = URI.file((<any>self).USER_HOME_DIR || '/').with({
+export const workspaceResource = URI.from({
 	scheme: Schemas.vscodeRemote,
-	authority: document.location.host
+	authority: document.location.host,
+	path: (<any>self).USER_HOME_DIR || '/'
 });
 
 //#region Backup File
@@ -86,20 +86,20 @@ export class SimpleBackupFileService implements IBackupFileService {
 		return Promise.resolve(undefined);
 	}
 
-	backupResource<T extends object>(resource: URI, content: ITextSnapshot, versionId?: number, meta?: T): Promise<void> {
+	backupResource(resource: URI, content: ITextSnapshot, versionId?: number): Promise<void> {
 		const backupResource = this.toBackupResource(resource);
 		this.backups.set(backupResource.toString(), content);
 
 		return Promise.resolve();
 	}
 
-	resolveBackupContent<T extends object>(backupResource: URI): Promise<IResolvedBackup<T>> {
+	resolveBackupContent(backupResource: URI): Promise<ITextBufferFactory | undefined> {
 		const snapshot = this.backups.get(backupResource.toString());
 		if (snapshot) {
-			return Promise.resolve({ value: createTextBufferFactoryFromSnapshot(snapshot) });
+			return Promise.resolve(createTextBufferFactoryFromSnapshot(snapshot));
 		}
 
-		return Promise.reject('Unexpected backup resource to resolve');
+		return Promise.resolve(undefined);
 	}
 
 	getWorkspaceFileBackups(): Promise<URI[]> {
@@ -234,14 +234,14 @@ export class SimpleWorkbenchEnvironmentService implements IWorkbenchEnvironmentS
 	args = { _: [] };
 	execPath: string;
 	cliPath: string;
-	appRoot: string = '/web/';
+	appRoot: string = '/nodeless/';
 	userHome: string;
 	userDataPath: string;
 	appNameLong: string;
 	appQuality?: string;
-	appSettingsHome: string = '/web/settings';
-	appSettingsPath: string = '/web/settings/settings.json';
-	appKeybindingsPath: string = '/web/settings/keybindings.json';
+	appSettingsHome: string = '/nodeless/settings';
+	appSettingsPath: string = '/nodeless/settings/settings.json';
+	appKeybindingsPath: string = '/nodeless/settings/keybindings.json';
 	machineSettingsHome: string;
 	machineSettingsPath: string;
 	settingsSearchBuildId?: number;
@@ -264,7 +264,7 @@ export class SimpleWorkbenchEnvironmentService implements IWorkbenchEnvironmentS
 	wait: boolean;
 	status: boolean;
 	log?: string;
-	logsPath: string = '/web/logs';
+	logsPath: string = '/nodeless/logs';
 	verbose: boolean;
 	skipGettingStarted: boolean;
 	skipReleaseNotes: boolean;
@@ -702,8 +702,7 @@ export class SimpleSearchService implements ISearchService {
 	constructor(
 		@IModelService private modelService: IModelService,
 		@IEditorService private editorService: IEditorService,
-		@IUntitledEditorService private untitledEditorService: IUntitledEditorService,
-		@IFileService private fileService: IFileService
+		@IUntitledEditorService private untitledEditorService: IUntitledEditorService
 	) {
 
 	}
@@ -733,8 +732,8 @@ export class SimpleSearchService implements ISearchService {
 		return Disposable.None;
 	}
 
-	private getLocalResults(query: ITextQuery): ResourceMap<IFileMatch | null> {
-		const localResults = new ResourceMap<IFileMatch | null>();
+	private getLocalResults(query: ITextQuery): ResourceMap<IFileMatch> {
+		const localResults = new ResourceMap<IFileMatch>();
 
 		if (query.type === QueryType.Text) {
 			const models = this.modelService.getModels();
@@ -755,8 +754,10 @@ export class SimpleSearchService implements ISearchService {
 					}
 				}
 
-				// Block walkthrough, webview, etc.
-				else if (!this.fileService.canHandleResource(resource)) {
+				// Don't support other resource schemes than files for now
+				// why is that? we should search for resources from other
+				// schemes
+				else if (resource.scheme !== Schemas.file) {
 					return;
 				}
 
@@ -765,7 +766,8 @@ export class SimpleSearchService implements ISearchService {
 				}
 
 				// Use editor API to find matches
-				const matches = model.findMatches(query.contentPattern.pattern, false, !!query.contentPattern.isRegExp, !!query.contentPattern.isCaseSensitive, query.contentPattern.isWordMatch ? query.contentPattern.wordSeparators! : null, false, query.maxResults);
+				// @ts-ignore
+				const matches = model.findMatches(query.contentPattern.pattern, false, query.contentPattern.isRegExp, query.contentPattern.isCaseSensitive, query.contentPattern.isWordMatch ? query.contentPattern.wordSeparators : null, false, query.maxResults);
 				if (matches.length) {
 					const fileMatch = new FileMatch(resource);
 					localResults.set(resource, fileMatch);
@@ -773,6 +775,7 @@ export class SimpleSearchService implements ISearchService {
 					const textSearchResults = editorMatchesToTextSearchResults(matches, model, query.previewOptions);
 					fileMatch.results = addContextToEditorMatches(textSearchResults, model, query);
 				} else {
+					// @ts-ignore
 					localResults.set(resource, null);
 				}
 			});
@@ -782,6 +785,13 @@ export class SimpleSearchService implements ISearchService {
 	}
 
 	private matches(resource: URI, query: ITextQuery): boolean {
+		// includes
+		if (query.includePattern) {
+			if (resource.scheme !== Schemas.file) {
+				return false; // if we match on file patterns, we have to ignore non file resources
+			}
+		}
+
 		return pathIncludedInQuery(query, resource.fsPath);
 	}
 }

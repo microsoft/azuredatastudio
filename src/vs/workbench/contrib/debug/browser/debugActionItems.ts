@@ -9,7 +9,7 @@ import { KeyCode } from 'vs/base/common/keyCodes';
 import * as dom from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { SelectBox, ISelectOptionItem } from 'vs/base/browser/ui/selectBox/selectBox';
-import { SelectActionViewItem, IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
+import { SelectActionItem, IActionItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IDebugService, IDebugSession, IDebugConfiguration } from 'vs/workbench/contrib/debug/common/debug';
@@ -23,7 +23,7 @@ import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 
 const $ = dom.$;
 
-export class StartDebugActionViewItem implements IActionViewItem {
+export class StartDebugActionItem implements IActionItem {
 
 	private static readonly SEPARATOR = '─────────';
 
@@ -171,7 +171,7 @@ export class StartDebugActionViewItem implements IActionViewItem {
 		if (this.options.length === 0) {
 			this.options.push({ label: nls.localize('noConfigurations', "No Configurations"), handler: () => false });
 		} else {
-			this.options.push({ label: StartDebugActionViewItem.SEPARATOR, handler: undefined });
+			this.options.push({ label: StartDebugActionItem.SEPARATOR, handler: undefined });
 		}
 
 		const disabledIdx = this.options.length - 1;
@@ -189,7 +189,7 @@ export class StartDebugActionViewItem implements IActionViewItem {
 	}
 }
 
-export class FocusSessionActionViewItem extends SelectActionViewItem {
+export class FocusSessionActionItem extends SelectActionItem {
 	constructor(
 		action: IAction,
 		@IDebugService protected readonly debugService: IDebugService,

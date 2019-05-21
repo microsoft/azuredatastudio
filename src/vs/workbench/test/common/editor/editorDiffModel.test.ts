@@ -35,7 +35,7 @@ suite('Workbench editor model', () => {
 		accessor = instantiationService.createInstance(ServiceAccessor);
 	});
 
-	test('TextDiffEditorModel', async () => {
+	test('TextDiffEditorModel', () => {
 		const dispose = accessor.textModelResolverService.registerTextModelContentProvider('test', {
 			provideTextContent: function (resource: URI): Promise<ITextModel> {
 				if (resource.scheme === 'test') {
@@ -48,26 +48,27 @@ suite('Workbench editor model', () => {
 			}
 		});
 
-		let input = instantiationService.createInstance(ResourceEditorInput, 'name', 'description', URI.from({ scheme: 'test', authority: null!, path: 'thePath' }), undefined);
-		let otherInput = instantiationService.createInstance(ResourceEditorInput, 'name2', 'description', URI.from({ scheme: 'test', authority: null!, path: 'thePath' }), undefined);
+		let input = instantiationService.createInstance(ResourceEditorInput, 'name', 'description', URI.from({ scheme: 'test', authority: null!, path: 'thePath' }));
+		let otherInput = instantiationService.createInstance(ResourceEditorInput, 'name2', 'description', URI.from({ scheme: 'test', authority: null!, path: 'thePath' }));
 		let diffInput = new DiffEditorInput('name', 'description', input, otherInput);
 
-		let model = await diffInput.resolve() as TextDiffEditorModel;
+		return diffInput.resolve().then((model: any) => {
+			assert(model);
+			assert(model instanceof TextDiffEditorModel);
 
-		assert(model);
-		assert(model instanceof TextDiffEditorModel);
+			let diffEditorModel = model.textDiffEditorModel;
+			assert(diffEditorModel.original);
+			assert(diffEditorModel.modified);
 
-		let diffEditorModel = model.textDiffEditorModel!;
-		assert(diffEditorModel.original);
-		assert(diffEditorModel.modified);
+			return diffInput.resolve().then((model: any) => {
+				assert(model.isResolved());
 
-		model = await diffInput.resolve() as TextDiffEditorModel;
-		assert(model.isResolved());
+				assert(diffEditorModel !== model.textDiffEditorModel);
+				diffInput.dispose();
+				assert(!model.textDiffEditorModel);
 
-		assert(diffEditorModel !== model.textDiffEditorModel);
-		diffInput.dispose();
-		assert(!model.textDiffEditorModel);
-
-		dispose.dispose();
+				dispose.dispose();
+			});
+		});
 	});
 });

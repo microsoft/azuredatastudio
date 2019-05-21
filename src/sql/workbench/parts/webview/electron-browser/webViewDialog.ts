@@ -121,7 +121,7 @@ export class WebViewDialog extends Modal {
 	}
 
 	private updateDialogBody(): void {
-		this._webview.html = this.html;
+		this._webview.contents = this.html;
 	}
 
 	/* espace key */
