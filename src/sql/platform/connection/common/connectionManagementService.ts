@@ -475,6 +475,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 						this._connectionStore.savePassword(connection).then(() => {
 							resolve(connectionResult);
 						});
+					} else {
+						resolve(connectionResult);
 					}
 				} else if (connectionResult && connectionResult.errorMessage) {
 					this.handleConnectionError(connection, uri, options, callbacks, connectionResult).then(result => {
