@@ -25,7 +25,7 @@ export enum ActionOnCheck {
 	customAction = 1
 }
 
-export interface IRowCheckboxChangedArg {
+export interface ICheckboxCellActionEventArgs {
 	checked: boolean;
 	row: number;
 	column: number;
@@ -52,8 +52,8 @@ export class CheckboxSelectColumn<T> implements Slick.Plugin<T> {
 	private _selectedCheckBoxLookup = {};
 	private _useState = false;
 
-	private _onChange = new Emitter<IRowCheckboxChangedArg>();
-	public readonly onChange: vsEvent<IRowCheckboxChangedArg> = this._onChange.event;
+	private _onChange = new Emitter<ICheckboxCellActionEventArgs>();
+	public readonly onChange: vsEvent<ICheckboxCellActionEventArgs> = this._onChange.event;
 	public index: number;
 
 	constructor(options?: ICheckboxSelectColumnOptions, columnIndex?: number) {

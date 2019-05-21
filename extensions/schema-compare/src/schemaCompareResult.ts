@@ -275,7 +275,7 @@ export class SchemaCompareResult {
 			}
 		}));
 		this.tablelistenersToDispose.push(this.differencesTable.onCellAction(async (rowState) => {
-			let checkboxState = <azdata.IRowCheckboxChangedArg>rowState;
+			let checkboxState = <azdata.ICheckboxCellActionEventArgs>rowState;
 			if (checkboxState) {
 				let diff = this.comparisonResult.differences[checkboxState.row];
 				await service.schemaCompareIncludeExcludeNode(this.comparisonResult.operationId, diff, checkboxState.checked, azdata.TaskExecutionMode.execute);
@@ -285,7 +285,7 @@ export class SchemaCompareResult {
 	}
 
 	// save state based on source name if present otherwise target name (parity with SSDT)
-	private saveExcludeState(rowState: azdata.IRowCheckboxChangedArg) {
+	private saveExcludeState(rowState: azdata.ICheckboxCellActionEventArgs) {
 		if (rowState) {
 			let diff = this.comparisonResult.differences[rowState.row];
 			let key = diff.sourceValue ? diff.sourceValue : diff.targetValue;

@@ -3341,7 +3341,7 @@ declare module 'azdata' {
 		onRowSelected: vscode.Event<any>;
 	}
 
-	export interface IRowCheckboxChangedArg extends ICellActionEventArgs {
+	export interface ICheckboxCellActionEventArgs extends ICellActionEventArgs {
 		checked: boolean;
 	}
 

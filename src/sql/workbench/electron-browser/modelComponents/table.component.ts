@@ -20,7 +20,7 @@ import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { getContentHeight, getContentWidth, Dimension } from 'vs/base/browser/dom';
 import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
-import { CheckboxSelectColumn, IRowCheckboxChangedArg, ActionOnCheck } from 'sql/base/browser/ui/table/plugins/checkboxSelectColumn.plugin';
+import { CheckboxSelectColumn, ICheckboxCellActionEventArgs, ActionOnCheck } from 'sql/base/browser/ui/table/plugins/checkboxSelectColumn.plugin';
 import { Emitter, Event as vsEvent } from 'vs/base/common/event';
 
 @Component({
@@ -36,8 +36,8 @@ export default class TableComponent extends ComponentBase implements IComponent,
 	private _tableData: TableDataView<Slick.SlickData>;
 	private _tableColumns;
 	private _checkboxColumns: CheckboxSelectColumn<{}>[] = [];
-	private _onCheckBoxChanged = new Emitter<IRowCheckboxChangedArg>();
-	public readonly onCheckBoxChanged: vsEvent<IRowCheckboxChangedArg> = this._onCheckBoxChanged.event;
+	private _onCheckBoxChanged = new Emitter<ICheckboxCellActionEventArgs>();
+	public readonly onCheckBoxChanged: vsEvent<ICheckboxCellActionEventArgs> = this._onCheckBoxChanged.event;
 
 	@ViewChild('table', { read: ElementRef }) private _inputContainer: ElementRef;
 	constructor(
