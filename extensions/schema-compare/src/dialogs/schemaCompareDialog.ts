@@ -9,6 +9,8 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as os from 'os';
 import { SchemaCompareResult } from '../schemaCompareResult';
+import { isNullOrUndefined } from 'util';
+import { existsSync } from 'fs';
 
 const localize = nls.loadMessageBundle();
 const OkButtonText: string = localize('schemaCompareDialog.ok', 'Ok');
@@ -76,6 +78,7 @@ export class SchemaCompareDialog {
 		this.initializeDialog();
 
 		this.dialog.okButton.label = OkButtonText;
+		this.dialog.okButton.enabled = false;
 		this.dialog.okButton.onClick(async () => await this.execute());
 
 		this.dialog.cancelButton.label = CancelButtonText;
@@ -147,9 +150,18 @@ export class SchemaCompareDialog {
 				width: 275
 			}).component();
 
+			this.sourceTextBox.onTextChanged((e) => {
+				this.dialog.okButton.enabled = this.ShouldEnableOkayButton();
+			});
+
 			this.targetTextBox = view.modelBuilder.inputBox().withProperties({
 				width: 275
 			}).component();
+
+			this.targetTextBox.onTextChanged(() => {
+				this.dialog.okButton.enabled = this.ShouldEnableOkayButton();
+			});
+
 
 			this.sourceServerComponent = await this.createSourceServerDropdown(view);
 			await this.populateServerDropdown(false);
@@ -288,6 +300,7 @@ export class SchemaCompareDialog {
 			this.formBuilder.removeFormItem(this.sourceServerComponent);
 			this.formBuilder.removeFormItem(this.sourceDatabaseComponent);
 			this.formBuilder.insertFormItem(this.sourceDacpacComponent, 2, { horizontal: true, titleFontSize: titleFontSize });
+			this.dialog.okButton.enabled = this.ShouldEnableOkayButton();
 		});
 
 		// show server and db dropdowns or 'No active connections' text
@@ -300,6 +313,7 @@ export class SchemaCompareDialog {
 				this.formBuilder.insertFormItem(this.sourceNoActiveConnectionsText, 2, { horizontal: true, titleFontSize: titleFontSize });
 			}
 			this.formBuilder.removeFormItem(this.sourceDacpacComponent);
+			this.dialog.okButton.enabled = this.ShouldEnableOkayButton();
 		});
 
 		if (this.database) {
@@ -340,6 +354,7 @@ export class SchemaCompareDialog {
 			this.formBuilder.removeFormItem(this.targetServerComponent);
 			this.formBuilder.removeFormItem(this.targetDatabaseComponent);
 			this.formBuilder.addFormItem(this.targetDacpacComponent, { horizontal: true, titleFontSize: titleFontSize });
+			this.dialog.okButton.enabled = this.ShouldEnableOkayButton();
 		});
 
 		// show server and db dropdowns or 'No active connections' text
@@ -352,6 +367,7 @@ export class SchemaCompareDialog {
 			} else {
 				this.formBuilder.addFormItem(this.targetNoActiveConnectionsText, { horizontal: true, titleFontSize: titleFontSize });
 			}
+			this.dialog.okButton.enabled = this.ShouldEnableOkayButton();
 		});
 
 		dacpacRadioButton.checked = true;
@@ -365,6 +381,17 @@ export class SchemaCompareDialog {
 			component: flexRadioButtonsModel,
 			title: RadioButtonsLabel
 		};
+	}
+
+	private ShouldEnableOkayButton(): boolean {
+		let sourcefilled = (this.sourceIsDacpac && !isNullOrUndefined(this.sourceTextBox.value)) && this.existsDacpac(this.sourceTextBox.value) || (!this.sourceIsDacpac && !isNullOrUndefined(this.sourceDatabaseDropdown.value));
+		let targetfilled = (this.targetIsDacpac && !isNullOrUndefined(this.targetTextBox.value)) && this.existsDacpac(this.targetTextBox.value) || (!this.targetIsDacpac && !isNullOrUndefined(this.targetDatabaseDropdown.value));
+
+		return sourcefilled && targetfilled;
+	}
+
+	private existsDacpac(filename: string): boolean {
+		return existsSync(filename) && (filename.toLocaleLowerCase().endsWith('.dacpac'));
 	}
 
 	protected async createSourceServerDropdown(view: azdata.ModelView): Promise<azdata.FormComponent> {
@@ -444,6 +471,9 @@ export class SchemaCompareDialog {
 
 	protected async createSourceDatabaseDropdown(view: azdata.ModelView): Promise<azdata.FormComponent> {
 		this.sourceDatabaseDropdown = view.modelBuilder.dropDown().component();
+		this.sourceDatabaseDropdown.onValueChanged(() => {
+			this.dialog.okButton.enabled = this.ShouldEnableOkayButton();
+		});
 
 		return {
 			component: this.sourceDatabaseDropdown,
@@ -453,6 +483,9 @@ export class SchemaCompareDialog {
 
 	protected async createTargetDatabaseDropdown(view: azdata.ModelView): Promise<azdata.FormComponent> {
 		this.targetDatabaseDropdown = view.modelBuilder.dropDown().component();
+		this.targetDatabaseDropdown.onValueChanged(() => {
+			this.dialog.okButton.enabled = this.ShouldEnableOkayButton();
+		});
 
 		return {
 			component: this.targetDatabaseDropdown,
