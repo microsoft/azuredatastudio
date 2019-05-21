@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { INewConnectionParams, IConnectionResult, IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { INewConnectionParams, IConnectionResult, IConnectionManagementService, IConnectionCompletionOptions } from 'sql/platform/connection/common/connectionManagement';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 
@@ -11,7 +11,7 @@ export class ConnectionDialogTestService implements IConnectionDialogService {
 	_serviceBrand: any;
 
 	public showDialog(connectionManagementService: IConnectionManagementService,
-		params: INewConnectionParams, model: IConnectionProfile, connectionResult?: IConnectionResult): Promise<void> {
+		params: INewConnectionParams, model: IConnectionProfile, connectionResult?: IConnectionResult, connectionOptions?: IConnectionCompletionOptions): Promise<void> {
 		let none: void;
 		return Promise.resolve(none);
 	}
