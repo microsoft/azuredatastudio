@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Action, IActionItem, IActionRunner } from 'vs/base/common/actions';
+import { Action, IActionViewItem, IActionRunner } from 'vs/base/common/actions';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
@@ -150,7 +150,7 @@ export class ChangeMaxRowsAction extends EditDataAction {
  * Action item that handles the dropdown (combobox) that lists the avaliable number of row selections
  * for an edit data session
  */
-export class ChangeMaxRowsActionItem implements IActionItem {
+export class ChangeMaxRowsActionItem implements IActionViewItem {
 
 	public actionRunner: IActionRunner;
 	public defaultRowCount: number;

@@ -303,7 +303,7 @@ export class QueryEditorService implements IQueryEditorService {
 			newEditorInput = queryInput;
 		} else {
 			let uriCopy: URI = URI.from({ scheme: uri.scheme, authority: uri.authority, path: uri.path, query: uri.query, fragment: uri.fragment });
-			newEditorInput = QueryEditorService.instantiationService.createInstance(FileEditorInput, uriCopy, undefined);
+			newEditorInput = QueryEditorService.instantiationService.createInstance(FileEditorInput, uriCopy, undefined, undefined);
 		}
 
 		return newEditorInput;

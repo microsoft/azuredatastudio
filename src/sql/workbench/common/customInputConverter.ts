@@ -181,7 +181,7 @@ function getNotebookFileExtensions(instantiationService: IInstantiationService):
 function hasNotebookFileMode(input: EditorInput): boolean {
 	if (input instanceof UntitledEditorInput) {
 		let untitledCast: UntitledEditorInput = <UntitledEditorInput>input;
-		return (untitledCast && untitledCast.getModeId() === notebookModeId);
+		return (untitledCast && untitledCast.getMode() === notebookModeId);
 	}
 	return false;
 }
@@ -200,7 +200,7 @@ function withService<TService, TResult>(instantiationService: IInstantiationServ
 function hasSqlFileMode(input: EditorInput): boolean {
 	if (input instanceof UntitledEditorInput) {
 		let untitledCast: UntitledEditorInput = <UntitledEditorInput>input;
-		return untitledCast && (untitledCast.getModeId() === undefined || untitledCast.getModeId() === sqlModeId);
+		return untitledCast && (untitledCast.getMode() === undefined || untitledCast.getMode() === sqlModeId);
 	}
 
 	return false;
