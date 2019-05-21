@@ -5,7 +5,6 @@
 
 import 'vs/css!./media/taskbar';
 import 'vs/css!./media/icons';
-import 'vs/css!sql/media/icons/common-icons';
 
 import { ActionBar } from './actionbar';
 
@@ -44,8 +43,8 @@ export class Taskbar {
 		this.actionBar = new ActionBar(element, {
 			orientation: options.orientation,
 			ariaLabel: options.ariaLabel,
-			actionItemProvider: (action: Action) => {
-				return options.actionItemProvider ? options.actionItemProvider(action) : undefined;
+			actionViewItemProvider: (action: Action) => {
+				return options.actionViewItemProvider ? options.actionViewItemProvider(action) : undefined;
 			}
 		});
 	}

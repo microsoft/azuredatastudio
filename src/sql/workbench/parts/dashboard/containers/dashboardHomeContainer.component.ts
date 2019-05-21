@@ -13,8 +13,8 @@ import { DashboardServiceInterface } from 'sql/workbench/parts/dashboard/service
 import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 import { AngularEventType, IAngularEventingService } from 'sql/platform/angularEventing/common/angularEventingService';
 import { DashboardWidgetWrapper } from 'sql/workbench/parts/dashboard/contents/dashboardWidgetWrapper.component';
-import { ScrollableDirective } from 'sql/base/browser/ui/scrollable/scrollable.directive';
-import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
+import { ScrollableDirective } from 'sql/base/electron-browser/ui/scrollable/scrollable.directive';
+import { TabChild } from 'sql/base/electron-browser/ui/panel/tab.component';
 
 import { ConfigurationTarget, IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ScrollbarVisibility } from 'vs/editor/common/standalone/standaloneEnums';

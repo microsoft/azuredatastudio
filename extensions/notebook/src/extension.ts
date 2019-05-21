@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as os from 'os';
@@ -15,6 +13,7 @@ import { AppContext } from './common/appContext';
 import { ApiWrapper } from './common/apiWrapper';
 import { IExtensionApi } from './types';
 import { CellType } from './contracts/content';
+import { getErrorMessage } from './common/utils';
 
 const localize = nls.loadMessageBundle();
 
@@ -124,7 +123,7 @@ function findNextUntitledEditorName(): string {
 
 async function openNotebook(): Promise<void> {
 	try {
-		let filter = {};
+		let filter: { [key: string]: Array<string> } = {};
 		// TODO support querying valid notebook file types
 		filter[localize('notebookFiles', "Notebooks")] = ['ipynb'];
 		let file = await vscode.window.showOpenDialog({
@@ -135,7 +134,7 @@ async function openNotebook(): Promise<void> {
 			vscode.window.showTextDocument(doc);
 		}
 	} catch (err) {
-		vscode.window.showErrorMessage(err);
+		vscode.window.showErrorMessage(getErrorMessage(err));
 	}
 }
 
@@ -148,7 +147,7 @@ async function runActiveCell(): Promise<void> {
 			throw new Error(noNotebookVisible);
 		}
 	} catch (err) {
-		vscode.window.showErrorMessage(err);
+		vscode.window.showErrorMessage(getErrorMessage(err));
 	}
 }
 
@@ -161,7 +160,7 @@ async function runAllCells(): Promise<void> {
 			throw new Error(noNotebookVisible);
 		}
 	} catch (err) {
-		vscode.window.showErrorMessage(err);
+		vscode.window.showErrorMessage(getErrorMessage(err));
 	}
 }
 
@@ -180,7 +179,7 @@ async function addCell(cellType: azdata.nb.CellType): Promise<void> {
 			throw new Error(noNotebookVisible);
 		}
 	} catch (err) {
-		vscode.window.showErrorMessage(err);
+		vscode.window.showErrorMessage(getErrorMessage(err));
 	}
 }
 

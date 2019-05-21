@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as azdata from 'azdata';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
@@ -17,8 +15,11 @@ export interface ISchemaCompareService {
 	_serviceBrand: any;
 
 	registerProvider(providerId: string, provider: azdata.SchemaCompareServicesProvider): void;
-	schemaCompare(sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode): void;
+	schemaCompare(sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, deploymentOptions: azdata.DeploymentOptions): void;
 	schemaCompareGenerateScript(operationId: string, targetDatabaseName: string, scriptFilePath: string, taskExecutionMode: azdata.TaskExecutionMode): void;
+	schemaComparePublishChanges(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): void;
+	schemaCompareGetDefaultOptions(): void;
+	schemaCompareIncludeExcludeNode(operationId: string, diffEntry: azdata.DiffEntry, includeRequest: boolean, taskExecutionMode: azdata.TaskExecutionMode): void;
 }
 
 export class SchemaCompareService implements ISchemaCompareService {
@@ -31,15 +32,33 @@ export class SchemaCompareService implements ISchemaCompareService {
 		this._providers[providerId] = provider;
 	}
 
-	schemaCompare(sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.SchemaCompareResult> {
+	schemaCompare(sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, deploymentOptions: azdata.DeploymentOptions): Thenable<azdata.SchemaCompareResult> {
 		return this._runAction(sourceEndpointInfo.ownerUri, (runner) => {
-			return runner.schemaCompare(sourceEndpointInfo, targetEndpointInfo, taskExecutionMode);
+			return runner.schemaCompare(sourceEndpointInfo, targetEndpointInfo, taskExecutionMode, deploymentOptions);
 		});
 	}
 
 	schemaCompareGenerateScript(operationId: string, targetDatabaseName: string, scriptFilePath: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
 		return this._runAction('', (runner) => {
 			return runner.schemaCompareGenerateScript(operationId, targetDatabaseName, scriptFilePath, taskExecutionMode);
+		});
+	}
+
+	schemaComparePublishChanges(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
+		return this._runAction('', (runner) => {
+			return runner.schemaComparePublishChanges(operationId, targetServerName, targetDatabaseName, taskExecutionMode);
+		});
+	}
+
+	schemaCompareGetDefaultOptions(): Thenable<azdata.SchemaCompareOptionsResult> {
+		return this._runAction('', (runner) => {
+			return runner.schemaCompareGetDefaultOptions();
+		});
+	}
+
+	schemaCompareIncludeExcludeNode(operationId: string, diffEntry: azdata.DiffEntry, includeRequest: boolean, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
+		return this._runAction('', (runner) => {
+			return runner.schemaCompareIncludeExcludeNode(operationId, diffEntry, includeRequest, taskExecutionMode);
 		});
 	}
 

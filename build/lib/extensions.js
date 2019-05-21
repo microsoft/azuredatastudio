@@ -40,8 +40,11 @@ function packageBuiltInExtensions() {
         .filter(({ name }) => excludedExtensions.indexOf(name) === -1)
         .filter(({ name }) => builtInExtensions.every(b => b.name !== name))
         .filter(({ name }) => sqlBuiltInExtensions.indexOf(name) >= 0);
+    const visxDirectory = path.join(path.dirname(root), 'vsix');
+    fs.mkdirSync(visxDirectory);
     sqlBuiltInLocalExtensionDescriptions.forEach(element => {
-        const packagePath = path.join(path.dirname(root), element.name + '.vsix');
+        let pkgJson = JSON.parse(fs.readFileSync(path.join(element.path, 'package.json'), { encoding: 'utf8' }));
+        const packagePath = path.join(visxDirectory, `${pkgJson.name}-${pkgJson.version}.vsix`);
         console.info('Creating vsix for ' + element.path + ' result:' + packagePath);
         vsce.createVSIX({
             cwd: element.path,
@@ -254,7 +257,9 @@ const sqlBuiltInExtensions = [
     'admin-pack',
     'big-data-cluster',
     'dacpac',
-    'schema-compare'
+    'schema-compare',
+    'resource-deployment',
+    'cms'
 ];
 const builtInExtensions = require('../builtInExtensions.json');
 /**
@@ -301,9 +306,7 @@ function packageExtensionsStream(optsIn) {
         ..._.flatten(extensionsProductionDependencies.map((d) => path.relative(root, d.path)).map((d) => [`${d}/**`, `!${d}/**/{test,tests}/**`])),
     ];
     const localExtensionDependencies = () => gulp.src(extensionDepsSrc, { base: '.', dot: true })
-        .pipe(filter(['**', '!**/package-lock.json']))
-        .pipe(util2.cleanNodeModule('account-provider-azure', ['node_modules/date-utils/doc/**', 'node_modules/adal_node/node_modules/**'], undefined))
-        .pipe(util2.cleanNodeModule('typescript', ['**/**'], undefined));
+        .pipe(filter(['**', '!**/package-lock.json']));
     // Original code commented out here
     // const localExtensionDependencies = () => gulp.src('extensions/node_modules/**', { base: '.' });
     // const marketplaceExtensions = () => es.merge(

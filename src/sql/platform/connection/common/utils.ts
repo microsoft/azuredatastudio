@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
@@ -136,5 +134,8 @@ export function findProfileInGroup(og: IConnectionProfile, groups: ConnectionPro
 }
 
 export function isMaster(profile: IConnectionProfile): boolean {
-	return profile.providerName.toLowerCase() === 'mssql' && profile.databaseName.toLowerCase() === 'master';
+	// TODO: the connection profile should have a property to indicate whether the connection is a server connection or database connection
+	// created issue to track the problem: https://github.com/Microsoft/azuredatastudio/issues/5193.
+	return (profile.providerName.toLowerCase() === 'mssql' && profile.databaseName.toLowerCase() === 'master')
+		|| (profile.providerName.toLowerCase() === 'pgsql' && profile.databaseName.toLowerCase() === 'postgres');
 }

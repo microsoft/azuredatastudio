@@ -1,0 +1,18 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+stdin-component {
+	display: flex;
+	flex-flow: row;
+	padding: 10px;
+	align-items: center;
+}
+
+stdin-component .prompt {
+	flex: 0 0 auto;
+}
+stdin-component .input {
+	flex: 1 1 auto;
+	padding-left: 10px;
+}

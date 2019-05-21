@@ -26,6 +26,8 @@ declare module 'azdata' {
 
 		export function registerObjectExplorerNodeProvider(provider: ObjectExplorerNodeProvider): vscode.Disposable;
 
+		export function registerIconProvider(provider: IconProvider): vscode.Disposable;
+
 		export function registerTaskServicesProvider(provider: TaskServicesProvider): vscode.Disposable;
 
 		export function registerFileBrowserProvider(provider: FileBrowserProvider): vscode.Disposable;
@@ -404,7 +406,7 @@ declare module 'azdata' {
 		/**
 		 * options for all new server properties.
 		 */
-		options: {};
+		options: { [key: string]: any };
 	}
 
 	export interface DataProvider {
@@ -738,6 +740,10 @@ declare module 'azdata' {
 		flavor: string;
 	}
 
+	export interface QueryExecutionOptions {
+		options: Map<string, any>;
+	}
+
 	export interface QueryProvider extends DataProvider {
 		cancelQuery(ownerUri: string): Thenable<QueryCancelResult>;
 		runQuery(ownerUri: string, selection: ISelectionData, runOptions?: ExecutionPlanOptions): Thenable<void>;
@@ -748,6 +754,7 @@ declare module 'azdata' {
 		getQueryRows(rowData: QueryExecuteSubsetParams): Thenable<QueryExecuteSubsetResult>;
 		disposeQuery(ownerUri: string): Thenable<void>;
 		saveResults(requestParams: SaveResultsRequestParams): Thenable<SaveResultRequestResult>;
+		setQueryExecutionOptions(ownerUri: string, options: QueryExecutionOptions): Thenable<void>;
 
 		// Notifications
 		registerOnQueryComplete(handler: (result: QueryExecuteCompleteNotificationResult) => any): void;
@@ -1226,6 +1233,10 @@ declare module 'azdata' {
 		handleSessionOpen(session: ObjectExplorerSession): Thenable<boolean>;
 
 		handleSessionClose(closeSessionInfo: ObjectExplorerCloseSessionInfo): void;
+	}
+
+	export interface IconProvider extends DataProvider {
+		getConnectionIconId(connection: IConnectionProfile, serverInfo: ServerInfo): Thenable<string>;
 	}
 
 	// Admin Services interfaces  -----------------------------------------------------------------------
@@ -1731,19 +1742,177 @@ declare module 'azdata' {
 		Property = 1
 	}
 	export enum SchemaCompareEndpointType {
-		database = 0,
-		dacpac = 1
+		Database = 0,
+		Dacpac = 1
 	}
 	export interface SchemaCompareEndpointInfo {
 		endpointType: SchemaCompareEndpointType;
 		packageFilePath: string;
+		serverName: string;
 		databaseName: string;
 		ownerUri: string;
 	}
 
+	export interface SchemaCompareOptionsResult extends ResultStatus {
+		defaultDeploymentOptions: DeploymentOptions;
+	}
+
+	export interface DeploymentOptions {
+		ignoreTableOptions: boolean;
+		ignoreSemicolonBetweenStatements: boolean;
+		ignoreRouteLifetime: boolean;
+		ignoreRoleMembership: boolean;
+		ignoreQuotedIdentifiers: boolean;
+		ignorePermissions: boolean;
+		ignorePartitionSchemes: boolean;
+		ignoreObjectPlacementOnPartitionScheme: boolean;
+		ignoreNotForReplication: boolean;
+		ignoreLoginSids: boolean;
+		ignoreLockHintsOnIndexes: boolean;
+		ignoreKeywordCasing: boolean;
+		ignoreIndexPadding: boolean;
+		ignoreIndexOptions: boolean;
+		ignoreIncrement: boolean;
+		ignoreIdentitySeed: boolean;
+		ignoreUserSettingsObjects: boolean;
+		ignoreFullTextCatalogFilePath: boolean;
+		ignoreWhitespace: boolean;
+		ignoreWithNocheckOnForeignKeys: boolean;
+		verifyCollationCompatibility: boolean;
+		unmodifiableObjectWarnings: boolean;
+		treatVerificationErrorsAsWarnings: boolean;
+		scriptRefreshModule: boolean;
+		scriptNewConstraintValidation: boolean;
+		scriptFileSize: boolean;
+		scriptDeployStateChecks: boolean;
+		scriptDatabaseOptions: boolean;
+		scriptDatabaseCompatibility: boolean;
+		scriptDatabaseCollation: boolean;
+		runDeploymentPlanExecutors: boolean;
+		registerDataTierApplication: boolean;
+		populateFilesOnFileGroups: boolean;
+		noAlterStatementsToChangeClrTypes: boolean;
+		includeTransactionalScripts: boolean;
+		includeCompositeObjects: boolean;
+		allowUnsafeRowLevelSecurityDataMovement: boolean;
+		ignoreWithNocheckOnCheckConstraints: boolean;
+		ignoreFillFactor: boolean;
+		ignoreFileSize: boolean;
+		ignoreFilegroupPlacement: boolean;
+		doNotAlterReplicatedObjects: boolean;
+		doNotAlterChangeDataCaptureObjects: boolean;
+		disableAndReenableDdlTriggers: boolean;
+		deployDatabaseInSingleUserMode: boolean;
+		createNewDatabase: boolean;
+		compareUsingTargetCollation: boolean;
+		commentOutSetVarDeclarations: boolean;
+		blockWhenDriftDetected: boolean;
+		blockOnPossibleDataLoss: boolean;
+		backupDatabaseBeforeChanges: boolean;
+		allowIncompatiblePlatform: boolean;
+		allowDropBlockingAssemblies: boolean;
+		dropConstraintsNotInSource: boolean;
+		dropDmlTriggersNotInSource: boolean;
+		dropExtendedPropertiesNotInSource: boolean;
+		dropIndexesNotInSource: boolean;
+		ignoreFileAndLogFilePath: boolean;
+		ignoreExtendedProperties: boolean;
+		ignoreDmlTriggerState: boolean;
+		ignoreDmlTriggerOrder: boolean;
+		ignoreDefaultSchema: boolean;
+		ignoreDdlTriggerState: boolean;
+		ignoreDdlTriggerOrder: boolean;
+		ignoreCryptographicProviderFilePath: boolean;
+		verifyDeployment: boolean;
+		ignoreComments: boolean;
+		ignoreColumnCollation: boolean;
+		ignoreAuthorizer: boolean;
+		ignoreAnsiNulls: boolean;
+		generateSmartDefaults: boolean;
+		dropStatisticsNotInSource: boolean;
+		dropRoleMembersNotInSource: boolean;
+		dropPermissionsNotInSource: boolean;
+		dropObjectsNotInSource: boolean;
+		ignoreColumnOrder: boolean;
+		doNotDropObjectTypes: SchemaObjectType[];
+		excludeObjectTypes: SchemaObjectType[];
+	}
+
+	export enum SchemaObjectType {
+		Aggregates = 0,
+		ApplicationRoles = 1,
+		Assemblies = 2,
+		AssemblyFiles = 3,
+		AsymmetricKeys = 4,
+		BrokerPriorities = 5,
+		Certificates = 6,
+		ColumnEncryptionKeys = 7,
+		ColumnMasterKeys = 8,
+		Contracts = 9,
+		DatabaseOptions = 10,
+		DatabaseRoles = 11,
+		DatabaseTriggers = 12,
+		Defaults = 13,
+		ExtendedProperties = 14,
+		ExternalDataSources = 15,
+		ExternalFileFormats = 16,
+		ExternalTables = 17,
+		Filegroups = 18,
+		FileTables = 19,
+		FullTextCatalogs = 20,
+		FullTextStoplists = 21,
+		MessageTypes = 22,
+		PartitionFunctions = 23,
+		PartitionSchemes = 24,
+		Permissions = 25,
+		Queues = 26,
+		RemoteServiceBindings = 27,
+		RoleMembership = 28,
+		Rules = 29,
+		ScalarValuedFunctions = 30,
+		SearchPropertyLists = 31,
+		SecurityPolicies = 32,
+		Sequences = 33,
+		Services = 34,
+		Signatures = 35,
+		StoredProcedures = 36,
+		SymmetricKeys = 37,
+		Synonyms = 38,
+		Tables = 39,
+		TableValuedFunctions = 40,
+		UserDefinedDataTypes = 41,
+		UserDefinedTableTypes = 42,
+		ClrUserDefinedTypes = 43,
+		Users = 44,
+		Views = 45,
+		XmlSchemaCollections = 46,
+		Audits = 47,
+		Credentials = 48,
+		CryptographicProviders = 49,
+		DatabaseAuditSpecifications = 50,
+		DatabaseEncryptionKeys = 51,
+		DatabaseScopedCredentials = 52,
+		Endpoints = 53,
+		ErrorMessages = 54,
+		EventNotifications = 55,
+		EventSessions = 56,
+		LinkedServerLogins = 57,
+		LinkedServers = 58,
+		Logins = 59,
+		MasterKeys = 60,
+		Routes = 61,
+		ServerAuditSpecifications = 62,
+		ServerRoleMembership = 63,
+		ServerRoles = 64,
+		ServerTriggers = 65
+	}
+
 	export interface SchemaCompareServicesProvider extends DataProvider {
-		schemaCompare(sourceEndpointInfo: SchemaCompareEndpointInfo, targetEndpointInfo: SchemaCompareEndpointInfo, taskExecutionMode: TaskExecutionMode): Thenable<SchemaCompareResult>;
+		schemaCompare(sourceEndpointInfo: SchemaCompareEndpointInfo, targetEndpointInfo: SchemaCompareEndpointInfo, taskExecutionMode: TaskExecutionMode, deploymentOptions: DeploymentOptions): Thenable<SchemaCompareResult>;
 		schemaCompareGenerateScript(operationId: string, targetDatabaseName: string, scriptFilePath: string, taskExecutionMode: TaskExecutionMode): Thenable<ResultStatus>;
+		schemaComparePublishChanges(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: TaskExecutionMode): Thenable<ResultStatus>;
+		schemaCompareGetDefaultOptions(): Thenable<SchemaCompareOptionsResult>;
+		schemaCompareIncludeExcludeNode(operationId: string, diffEntry: DiffEntry, IncludeRequest: boolean, taskExecutionMode: TaskExecutionMode): Thenable<ResultStatus>;
 	}
 
 	// Security service interfaces ------------------------------------------------------------------------
@@ -2169,11 +2338,11 @@ declare module 'azdata' {
 	 * AccountProvider.refresh or AccountProvider.prompt are rejected with this error, the error
 	 * will not be reported to the user.
 	 */
-	export interface UserCancelledSignInError extends Error {
+	export interface PromptFailedResult {
 		/**
 		 * Type guard for differentiating user cancelled sign in errors from other errors
 		 */
-		userCancelledSignIn: boolean;
+		canceled: boolean;
 	}
 
 	/**
@@ -2224,7 +2393,7 @@ declare module 'azdata' {
 		 * Prompts the user to enter account information.
 		 * Returns an error if the user canceled the operation.
 		 */
-		prompt(): Thenable<Account>;
+		prompt(): Thenable<Account | PromptFailedResult>;
 
 		/**
 		 * Refreshes a stale account.
@@ -2232,7 +2401,7 @@ declare module 'azdata' {
 		 * Otherwise, returns a new updated account instance.
 		 * @param account - An account.
 		 */
-		refresh(account: Account): Thenable<Account>;
+		refresh(account: Account): Thenable<Account | PromptFailedResult>;
 
 		/**
 		 * Clears sensitive information for an account. To be called when account is removed
@@ -2996,6 +3165,7 @@ declare module 'azdata' {
 	export interface TextComponentProperties {
 		value?: string;
 		links?: LinkArea[];
+		CSSStyles?: { [key: string]: string };
 	}
 
 	export interface LinkArea {
@@ -3370,8 +3540,9 @@ declare module 'azdata' {
 		/**
 		 * Create a dialog with the given title
 		 * @param title The title of the dialog, displayed at the top
+		 * @param isWide Indicates whether the dialog is wide or normal
 		 */
-		export function createModelViewDialog(title: string, dialogName?: string): Dialog;
+		export function createModelViewDialog(title: string, dialogName?: string, isWide?: boolean): Dialog;
 
 		/**
 		 * Create a dialog tab which can be included as part of the content of a dialog
@@ -3455,6 +3626,11 @@ declare module 'azdata' {
 			 * The title of the dialog
 			 */
 			title: string;
+
+			/**
+			 * Indicates the width of the dialog
+			 */
+			isWide: boolean;
 
 			/**
 			 * The content of the dialog. If multiple tabs are given they will be displayed with tabs
@@ -3714,11 +3890,8 @@ declare module 'azdata' {
 
 			uri: string;
 
-			// get the document's execution options
-			getOptions(): Map<string, string>;
-
 			// set the document's execution options
-			setOptions(options: Map<string, string>): void;
+			setExecutionOptions(options: Map<string, any>): Thenable<void>;
 
 			// tab content is build using the modelview UI builder APIs
 			// probably should rename DialogTab class since it is useful outside dialogs
@@ -3743,7 +3916,10 @@ declare module 'azdata' {
 		 */
 		export function registerQueryEventListener(listener: queryeditor.QueryEventListener): void;
 
-		export function getQueryDocument(fileUri: string): queryeditor.QueryDocument;
+		/**
+		 * Get a QueryDocument object for a file URI
+		 */
+		export function getQueryDocument(fileUri: string): Thenable<queryeditor.QueryDocument>;
 	}
 
 	/**
@@ -3805,6 +3981,7 @@ declare module 'azdata' {
 		DacFxServicesProvider = 'DacFxServicesProvider',
 		SchemaCompareServicesProvider = 'SchemaCompareServicesProvider',
 		ObjectExplorerNodeProvider = 'ObjectExplorerNodeProvider',
+		IconProvider = 'IconProvider'
 	}
 
 	export namespace dataprotocol {
@@ -3958,7 +4135,7 @@ declare module 'azdata' {
 		 * Opens the connection and add it to object explorer and opens the dashboard and returns the ConnectionResult
 		 * @param connectionProfile connection profile
 		 */
-		export function connect(connectionProfile: IConnectionProfile): Thenable<ConnectionResult>;
+		export function connect(connectionProfile: IConnectionProfile, saveConnection?: boolean, showDashboard?: boolean): Thenable<ConnectionResult>;
 	}
 
 	export namespace nb {
@@ -4443,7 +4620,7 @@ declare module 'azdata' {
 			 * Mime bundle expected to contain mime type -> contents mappings.
 			 * This is dynamic and is controlled by kernels, so cannot be more specific
 			 */
-			data: {};
+			data: { [key: string]: any };
 			/**
 			 * Optional metadata, also a mime bundle
 			 */
@@ -4952,6 +5129,10 @@ declare module 'azdata' {
 		 */
 		export interface IStdinMessage extends IMessage {
 			channel: 'stdin';
+			content: {
+				prompt: string;
+				password: boolean;
+			};
 		}
 
 		/**

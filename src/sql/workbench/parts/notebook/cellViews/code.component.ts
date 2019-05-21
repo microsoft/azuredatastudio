@@ -9,7 +9,7 @@ import { OnInit, Component, Input, Inject, ElementRef, ViewChild, Output, EventE
 import { AngularDisposable } from 'sql/base/node/lifecycle';
 import { QueryTextEditor } from 'sql/workbench/electron-browser/modelComponents/queryTextEditor';
 import { CellToggleMoreActions } from 'sql/workbench/parts/notebook/cellToggleMoreActions';
-import { ICellModel, notebookConstants } from 'sql/workbench/parts/notebook/models/modelInterfaces';
+import { ICellModel, notebookConstants, CellExecutionState } from 'sql/workbench/parts/notebook/models/modelInterfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { RunCellAction, CellContext } from 'sql/workbench/parts/notebook/cellViews/codeActions';
 import { NotebookModel } from 'sql/workbench/parts/notebook/models/notebookModel';
@@ -32,6 +32,7 @@ import { OVERRIDE_EDITOR_THEMING_SETTING } from 'sql/workbench/services/notebook
 import * as notebookUtils from 'sql/workbench/parts/notebook/notebookUtils';
 import { UntitledEditorModel } from 'vs/workbench/common/editor/untitledEditorModel';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export const CODE_SELECTOR: string = 'code-component';
 const MARKDOWN_CLASS = 'markdown';
@@ -102,7 +103,8 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		@Inject(IModelService) private _modelService: IModelService,
 		@Inject(IModeService) private _modeService: IModeService,
 		@Inject(IConfigurationService) private _configurationService: IConfigurationService,
-		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef
+		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
+		@Inject(ILogService) private readonly logService: ILogService
 	) {
 		super();
 		this._cellToggleMoreActions = this._instantiationService.createInstance(CellToggleMoreActions);
@@ -141,9 +143,9 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 			let cellUri = this.cellModel.cellUri.toString();
 			let connectionService = this.connectionService;
 			if (!shouldConnect && connectionService && connectionService.isConnected(cellUri)) {
-				connectionService.disconnect(cellUri).catch(e => console.log(e));
+				connectionService.disconnect(cellUri).catch(e => this.logService.error(e));
 			} else if (shouldConnect && this._model.activeConnection && this._model.activeConnection.id !== '-1') {
-				connectionService.connect(this._model.activeConnection, cellUri).catch(e => console.log(e));
+				connectionService.connect(this._model.activeConnection, cellUri).catch(e => this.logService.error(e));
 			}
 		}
 	}
@@ -229,6 +231,11 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 			}
 		}));
 		this._register(this.model.layoutChanged(() => this._layoutEmitter.fire(), this));
+		this._register(this.cellModel.onExecutionStateChange(event => {
+			if (event === CellExecutionState.Running) {
+				this.setFocusAndScroll();
+			}
+		}));
 		this.layout();
 	}
 
@@ -249,7 +256,6 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		this._actionBar.setContent([
 			{ action: runCellAction }
 		]);
-
 		this._cellToggleMoreActions.onInit(this.moreActionsElementRef, this.model, this.cellModel);
 	}
 
@@ -302,7 +308,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 	private setFocusAndScroll(): void {
 		if (this.cellModel.id === this._activeCellId) {
 			this._editor.focus();
-			this._editor.getContainer().scrollIntoView();
+			this._editor.getContainer().scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 		}
 	}
 

@@ -6,11 +6,13 @@
 
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
+import * as vscode from 'vscode';
 import * as os from 'os';
 import * as path from 'path';
 import { DataTierApplicationWizard } from '../dataTierApplicationWizard';
 import { DacFxDataModel } from './models';
 import { BasePage } from './basePage';
+import { sanitizeStringForFilename } from './utils';
 
 const localize = nls.loadMessageBundle();
 
@@ -101,7 +103,7 @@ export abstract class DacFxConfigPage extends BasePage {
 		// Handle database changes
 		this.databaseDropdown.onValueChanged(async () => {
 			this.model.database = (<azdata.CategoryValue>this.databaseDropdown.value).name;
-			this.fileTextBox.value = this.generateFilePath();
+			this.fileTextBox.value = this.generateFilePathFromDatabaseAndTimestamp();
 			this.model.filePath = this.fileTextBox.value;
 		});
 
@@ -124,7 +126,7 @@ export abstract class DacFxConfigPage extends BasePage {
 
 		let values = await this.getDatabaseValues();
 		this.model.database = values[0].name;
-		this.model.filePath = this.generateFilePath();
+		this.model.filePath = this.generateFilePathFromDatabaseAndTimestamp();
 		this.fileTextBox.value = this.model.filePath;
 
 		this.databaseDropdown.updateProperties({
@@ -145,10 +147,18 @@ export abstract class DacFxConfigPage extends BasePage {
 		}).component();
 	}
 
-	protected generateFilePath(): string {
+	protected generateFilePathFromDatabaseAndTimestamp(): string {
+		return path.join(this.getRootPath(), sanitizeStringForFilename(this.model.database) + '-' + this.getDateTime() + this.fileExtension);
+	}
+
+	protected getDateTime(): string {
 		let now = new Date();
-		let datetime = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate() + '-' + now.getHours() + '-' + now.getMinutes();
-		return path.join(os.homedir(), this.model.database + '-' + datetime + this.fileExtension);
+		return now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate() + '-' + now.getHours() + '-' + now.getMinutes();
+	}
+
+	protected getRootPath(): string {
+		// return rootpath of opened folder in file explorer if one is open, otherwise default to user home directory
+		return vscode.workspace.rootPath ? vscode.workspace.rootPath : os.homedir();
 	}
 }
 

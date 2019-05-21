@@ -58,6 +58,9 @@ export async function createDB(dbName: string, ownerUri: string): Promise<void> 
 export async function deleteDB(dbName: string, ownerUri: string): Promise<void> {
 	let queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>('MSSQL', azdata.DataProviderType.QueryProvider);
 	let query = `BEGIN TRY
+			ALTER DATABASE ${dbName}
+			SET OFFLINE
+			WITH ROLLBACK IMMEDIATE
 			DROP DATABASE ${dbName}
 			SELECT 1 AS NoError
 		END TRY
@@ -65,8 +68,5 @@ export async function deleteDB(dbName: string, ownerUri: string): Promise<void> 
 			SELECT ERROR_MESSAGE() AS ErrorMessage;
 		END CATCH`;
 
-	let result = await queryProvider.runQueryAndReturn(ownerUri, query);
-	if (result.columnInfo[0].columnName === 'ErrorMessage') {
-		console.error(`Could not delete database: ${result}`);
-	}
+	await queryProvider.runQueryAndReturn(ownerUri, query);
 }

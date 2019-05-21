@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!sql/parts/query/editor/media/queryEditor';
-
 import * as strings from 'vs/base/common/strings';
 import * as DOM from 'vs/base/browser/dom';
 import * as nls from 'vs/nls';
@@ -19,9 +17,9 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { EditDataInput } from 'sql/workbench/parts/editData/common/editDataInput';
 
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import * as queryContext from 'sql/parts/query/common/queryContext';
+import * as queryContext from 'sql/workbench/parts/query/common/queryContext';
 import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
-import { IActionItem } from 'vs/base/browser/ui/actionbar/actionbar';
+import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { Action } from 'vs/base/common/actions';
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import { IEditorDescriptorService } from 'sql/workbench/services/queryEditor/common/editorDescriptorService';
@@ -32,7 +30,7 @@ import { TextResourceEditor } from 'vs/workbench/browser/parts/editor/textResour
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
-import { IFlexibleSash, HorizontalFlexibleSash } from 'sql/parts/query/views/flexibleSash';
+import { IFlexibleSash, HorizontalFlexibleSash } from 'sql/workbench/parts/query/browser/flexibleSash';
 import { EditDataResultsEditor } from 'sql/workbench/parts/editData/browser/editDataResultsEditor';
 import { EditDataResultsInput } from 'sql/workbench/parts/editData/common/editDataResultsInput';
 import { CancellationToken } from 'vs/base/common/cancellation';
@@ -315,7 +313,7 @@ export class EditDataEditor extends BaseEditor {
 		// Create QueryTaskbar
 		this._taskbarContainer = DOM.append(parentElement, DOM.$('div'));
 		this._taskbar = new Taskbar(this._taskbarContainer, {
-			actionItemProvider: (action: Action) => this._getChangeMaxRowsAction(action)
+			actionViewItemProvider: (action: Action) => this._getChangeMaxRowsAction(action)
 		});
 
 		// Create Actions for the toolbar
@@ -346,7 +344,7 @@ export class EditDataEditor extends BaseEditor {
 	/**
 	 * Gets the IActionItem for the list of row number drop down
 	 */
-	private _getChangeMaxRowsAction(action: Action): IActionItem {
+	private _getChangeMaxRowsAction(action: Action): IActionViewItem {
 		let actionID = ChangeMaxRowsAction.ID;
 		if (action.id === actionID) {
 			if (!this._changeMaxRowsActionItem) {

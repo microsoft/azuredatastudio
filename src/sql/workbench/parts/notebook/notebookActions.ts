@@ -22,14 +22,16 @@ import { noKernel } from 'sql/workbench/services/notebook/common/sessionManager'
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { NotebookModel } from 'sql/workbench/parts/notebook/models/notebookModel';
 import { generateUri } from 'sql/platform/connection/common/utils';
+import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
+import { ILogService } from 'vs/platform/log/common/log';
 
 const msgLoading = localize('loading', "Loading kernels...");
 const msgChanging = localize('changing', "Changing kernel...");
 const kernelLabel: string = localize('Kernel', "Kernel: ");
-const attachToLabel: string = localize('AttachTo', "Attach to: ");
+const attachToLabel: string = localize('AttachTo', "Attach To: ");
 const msgLoadingContexts = localize('loadingContexts', "Loading contexts...");
-const msgAddNewConnection = localize('addNewConnection', "Add new connection");
-const msgSelectConnection = localize('selectConnection', "Select connection");
+const msgAddNewConnection = localize('addNewConnection', "Add New Connection");
+const msgSelectConnection = localize('selectConnection', "Select Connection");
 const msgLocalHost = localize('localhost', "localhost");
 const HIDE_ICON_CLASS = ' hideIcon';
 
@@ -107,6 +109,7 @@ export interface IActionStateData {
 	label?: string;
 	tooltip?: string;
 	hideIcon?: boolean;
+	commandId?: string;
 }
 
 export class IMultiStateData<T> {
@@ -149,6 +152,10 @@ export class IMultiStateData<T> {
 		return this.getStateValueOrDefault<string>((data) => data.tooltip, '');
 	}
 
+	public get commandId(): string {
+		return this.getStateValueOrDefault<string>((data) => data.commandId, '');
+	}
+
 	private getStateValueOrDefault<U>(getter: (data: IActionStateData) => U, defaultVal?: U): U {
 		let data = this._stateMap.get(this._state);
 		return data ? getter(data) : defaultVal;
@@ -158,14 +165,28 @@ export class IMultiStateData<T> {
 
 export abstract class MultiStateAction<T> extends Action {
 
-	constructor(id: string, protected states: IMultiStateData<T>) {
+	constructor(
+		id: string,
+		protected states: IMultiStateData<T>,
+		private _keybindingService: IKeybindingService,
+		private readonly logService: ILogService) {
 		super(id, '');
 		this.updateLabelAndIcon();
 	}
 
 	private updateLabelAndIcon() {
+		let keyboardShortcut: string;
+		try {
+			// If a keyboard shortcut exists for the command id passed in, append that to the label
+			if (this.states.commandId !== '') {
+				let binding = this._keybindingService.lookupKeybinding(this.states.commandId);
+				keyboardShortcut = binding ? binding.getLabel() : undefined;
+			}
+		} catch (error) {
+			this.logService.error(error);
+		}
 		this.label = this.states.label;
-		this.tooltip = this.states.tooltip;
+		this.tooltip = keyboardShortcut ? this.states.tooltip + ` (${keyboardShortcut})` : this.states.tooltip;
 		this.class = this.states.classes;
 	}
 
@@ -217,7 +238,7 @@ export class TrustedAction extends ToggleableAction {
 				}
 				else {
 					self.trusted = !self.trusted;
-					context.updateModelTrustDetails(self.trusted);
+					context.model.trustedMode = self.trusted;
 				}
 				resolve(true);
 			} catch (e) {
@@ -297,11 +318,14 @@ export class KernelsDropdown extends SelectBox {
 export class AttachToDropdown extends SelectBox {
 	private model: NotebookModel;
 
-	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, modelReady: Promise<INotebookModel>,
+	constructor(
+		container: HTMLElement, contextViewProvider: IContextViewProvider, modelReady: Promise<INotebookModel>,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IConnectionDialogService private _connectionDialogService: IConnectionDialogService,
 		@INotificationService private _notificationService: INotificationService,
-		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService) {
+		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
+		@ILogService private readonly logService: ILogService
+	) {
 		super([msgLoadingContexts], msgLoadingContexts, contextViewProvider, container, { labelText: attachToLabel, labelOnTop: false } as ISelectBoxOptionsWithLabel);
 		if (modelReady) {
 			modelReady
@@ -350,7 +374,7 @@ export class AttachToDropdown extends SelectBox {
 					this.openConnectionDialog(true);
 				}
 			}).catch(err =>
-				console.log(err));
+				this.logService.error(err));
 		}
 		model.onValidConnectionSelected(validConnection => {
 			this.handleContextsChanged(!validConnection);

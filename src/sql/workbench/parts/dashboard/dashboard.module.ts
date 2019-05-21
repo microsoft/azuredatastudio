@@ -44,8 +44,8 @@ import { WidgetContent } from 'sql/workbench/parts/dashboard/contents/widgetCont
 import { ModelViewContent } from 'sql/workbench/electron-browser/modelComponents/modelViewContent.component';
 import { ModelComponentWrapper } from 'sql/workbench/electron-browser/modelComponents/modelComponentWrapper.component';
 import { WebviewContent } from 'sql/workbench/parts/dashboard/contents/webviewContent.component';
-import { BreadcrumbComponent } from 'sql/base/browser/ui/breadcrumb/breadcrumb.component';
-import { IBreadcrumbService } from 'sql/base/browser/ui/breadcrumb/interfaces';
+import { BreadcrumbComponent } from 'sql/base/electron-browser/ui/breadcrumb/breadcrumb.component';
+import { IBreadcrumbService } from 'sql/base/electron-browser/ui/breadcrumb/interfaces';
 import { DashboardHomeContainer } from 'sql/workbench/parts/dashboard/containers/dashboardHomeContainer.component';
 import { ControlHostContent } from 'sql/workbench/parts/dashboard/contents/controlHostContent.component';
 import { DashboardControlHostContainer } from 'sql/workbench/parts/dashboard/containers/dashboardControlHostContainer.component';
@@ -55,11 +55,11 @@ import { AlertsViewComponent } from 'sql/workbench/parts/jobManagement/electron-
 import { JobHistoryComponent } from 'sql/workbench/parts/jobManagement/electron-browser/jobHistory.component';
 import { OperatorsViewComponent } from 'sql/workbench/parts/jobManagement/electron-browser/operatorsView.component';
 import { ProxiesViewComponent } from 'sql/workbench/parts/jobManagement/electron-browser/proxiesView.component';
-import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox.component';
-import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox.component';
-import { EditableDropDown } from 'sql/base/browser/ui/editableDropdown/editableDropdown.component';
-import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox.component';
 import LoadingSpinner from 'sql/workbench/electron-browser/modelComponents/loadingSpinner.component';
+import { Checkbox } from 'sql/base/electron-browser/ui/checkbox/checkbox.component';
+import { SelectBox } from 'sql/platform/ui/electron-browser/selectBox/selectBox.component';
+import { InputBox } from 'sql/base/electron-browser/ui/inputBox/inputBox.component';
+import { EditableDropDown } from 'sql/platform/electron-browser/editableDropdown/editableDropdown.component';
 
 const baseComponents = [DashboardHomeContainer, DashboardComponent, DashboardWidgetWrapper, DashboardWebviewContainer,
 	DashboardWidgetContainer, DashboardGridContainer, DashboardErrorContainer, DashboardNavSection, ModelViewContent, WebviewContent, WidgetContent,
@@ -68,9 +68,9 @@ const baseComponents = [DashboardHomeContainer, DashboardComponent, DashboardWid
 	DashboardModelViewContainer, ModelComponentWrapper, Checkbox, EditableDropDown, SelectBox, InputBox, LoadingSpinner];
 
 /* Panel */
-import { PanelModule } from 'sql/base/browser/ui/panel/panel.module';
+import { PanelModule } from 'sql/base/electron-browser/ui/panel/panel.module';
 
-import { ScrollableModule } from 'sql/base/browser/ui/scrollable/scrollable.module';
+import { ScrollableModule } from 'sql/base/electron-browser/ui/scrollable/scrollable.module';
 
 /* Pages */
 import { ServerDashboardPage } from 'sql/workbench/parts/dashboard/pages/serverDashboardPage.component';
@@ -86,6 +86,7 @@ import { InsightsWidget } from 'sql/workbench/parts/dashboard/widgets/insights/i
 import { WebviewWidget } from 'sql/workbench/parts/dashboard/widgets/webview/webviewWidget.component';
 import { JobStepsViewComponent } from 'sql/workbench/parts/jobManagement/electron-browser/jobStepsView.component';
 import { IInstantiationService, _util } from 'vs/platform/instantiation/common/instantiation';
+import { ILogService } from 'vs/platform/log/common/log';
 
 const widgetComponents = [
 	PropertiesWidgetComponent,
@@ -156,6 +157,7 @@ export const DashboardModule = (params, selector: string, instantiationService: 
 			@Inject(forwardRef(() => ComponentFactoryResolver)) private _resolver: ComponentFactoryResolver,
 			@Inject(forwardRef(() => Router)) private _router: Router,
 			@Inject(ITelemetryService) private telemetryService: ITelemetryService,
+			@Inject(ILogService) private readonly logService: ILogService,
 			@Inject(ISelector) private selector: string
 		) {
 		}
@@ -168,7 +170,7 @@ export const DashboardModule = (params, selector: string, instantiationService: 
 			this._router.events.subscribe(e => {
 				if (e instanceof NavigationEnd) {
 					this.navigations++;
-					TelemetryUtils.addTelemetry(this.telemetryService, TelemetryKeys.DashboardNavigated, {
+					TelemetryUtils.addTelemetry(this.telemetryService, this.logService, TelemetryKeys.DashboardNavigated, {
 						numberOfNavigations: this.navigations
 					});
 				}

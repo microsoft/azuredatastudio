@@ -2287,7 +2287,7 @@ export enum FoldingRangeKind {
 
 //#endregion
 
-
+//#region Comment
 export enum CommentThreadCollapsibleState {
 	/**
 	 * Determines an item is collapsed
@@ -2298,6 +2298,7 @@ export enum CommentThreadCollapsibleState {
 	 */
 	Expanded = 1
 }
+//#endregion
 
 @es5ClassCompat
 export class QuickInputButtons {
@@ -2305,4 +2306,9 @@ export class QuickInputButtons {
 	static readonly Back: vscode.QuickInputButton = { iconPath: 'back.svg' };
 
 	private constructor() { }
+}
+
+export enum ExtensionExecutionContext {
+	Local = 1,
+	Remote = 2
 }

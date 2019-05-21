@@ -22,23 +22,30 @@
 }
 
 .notebookEditor .actionbar-container .monaco-action-bar > ul.actions-container {
-	padding-top: 0px;
+	padding-top: 4px;
+	padding-bottom: 4px;
+	min-height: 21px;
 }
 
-.notebookEditor .notebook-button {
+.notebookEditor .actions-container .action-item .notebook-button {
 	display: inline-block;
 	width: 100%;
 	padding: 0px;
 	text-align: center;
 	cursor: pointer;
-	padding-left: 15px;
+	padding-left: 18px;
 	background-size: 13px;
-	margin-right: 0.3em;
+	margin-right: 20px;
 	font-size: 13px;
+	height: 21px;
 }
 
-.notebookEditor .monaco-select-box {
+.notebookEditor .labelOnLeftContainer {
 	min-width: 100px;
+	margin-right: 20px;
+	font-size: 13px;
+	text-align: center;
+	vertical-align: bottom;
 }
 
 .notebookEditor .notebook-button.icon-add{

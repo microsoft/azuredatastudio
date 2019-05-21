@@ -6,7 +6,7 @@ import 'vs/css!./notebook';
 
 import { registerThemingParticipant, ITheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
 import { SIDE_BAR_BACKGROUND, SIDE_BAR_SECTION_HEADER_BACKGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND } from 'vs/workbench/common/theme';
-import { activeContrastBorder, contrastBorder, buttonBackground, textLinkForeground } from 'vs/platform/theme/common/colorRegistry';
+import { activeContrastBorder, contrastBorder, buttonBackground, textLinkForeground, textLinkActiveForeground, textPreformatForeground, textBlockQuoteBackground, textBlockQuoteBorder } from 'vs/platform/theme/common/colorRegistry';
 import { IDisposable } from 'vscode-xterm';
 import { editorLineHighlight, editorLineHighlightBorder } from 'vs/editor/common/view/editorColorRegistry';
 
@@ -179,8 +179,6 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean): IDi
 		if (linkForeground) {
 			collector.addRule(`
 			.notebookEditor a:link {
-				text-decoration: none;
-				font-weight: bold;
 				color: ${linkForeground};
 			}
 			`);
@@ -192,6 +190,44 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean): IDi
 			collector.addRule(`
 			.notebookEditor text-cell-component tbody tr:nth-child(odd) {
 				background: ${borderColor};
+			}
+			`);
+		}
+
+		// Styling for markdown cells & links in notebooks.
+		// This matches the values used by default in all web views
+		if (linkForeground) {
+			collector.addRule(`
+			.notebookEditor a:link {
+				color: ${linkForeground};
+			}
+			`);
+		}
+		let activeForeground = theme.getColor(textLinkActiveForeground);
+		if (activeForeground) {
+			collector.addRule(`
+			.notebookEditor a:hover {
+				color: ${activeForeground};
+			}
+			`);
+		}
+		let preformatForeground = theme.getColor(textPreformatForeground);
+		if (preformatForeground) {
+			collector.addRule(`
+			.notebook-preview code {
+				color: ${preformatForeground};
+			}
+			`);
+		}
+
+
+		let blockQuoteBackground = theme.getColor(textBlockQuoteBackground);
+		let blockQuoteBorder = theme.getColor(textBlockQuoteBorder);
+		if (preformatForeground) {
+			collector.addRule(`
+			.notebookEditor blockquote {
+				background: ${blockQuoteBackground};
+				border-color: ${blockQuoteBorder};
 			}
 			`);
 		}

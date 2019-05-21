@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import { nb, ServerInfo, connection, IConnectionProfile } from 'azdata';
 import { Session, Kernel } from '@jupyterlab/services';
 import * as fs from 'fs-extra';
@@ -148,6 +146,7 @@ export class JupyterSessionManager implements nb.SessionManager {
 		if (this._sessionManager && !this._sessionManager.isDisposed) {
 			return this._sessionManager.shutdown(id);
 		}
+		return undefined;
 	}
 
 	public shutdownAll(): Promise<void> {
@@ -247,7 +246,6 @@ export class JupyterSession implements nb.ISession {
 					await this.getClusterEndpoint(connection.id, KNOX_ENDPOINT_KNOX) ||
 					await this.getClusterEndpoint(connection.id, KNOX_ENDPOINT_GATEWAY);
 				if (!clusterEndpoint) {
-					let kernelDisplayName: string = await this.getKernelDisplayName();
 					return Promise.reject(new Error(localize('connectionNotValid', 'Spark kernels require a connection to a SQL Server big data cluster master instance.')));
 				}
 				connection.options[KNOX_ENDPOINT_SERVER] = clusterEndpoint.ipAddress;
@@ -268,11 +266,6 @@ export class JupyterSession implements nb.ISession {
 			}, true);
 			await future.done;
 		}
-	}
-
-	private async getKernelDisplayName(): Promise<string> {
-		let spec = await this.kernel.getSpec();
-		return spec.display_name;
 	}
 
 	private isSparkKernel(kernelName: string): boolean {

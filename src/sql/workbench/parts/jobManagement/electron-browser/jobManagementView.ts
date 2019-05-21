@@ -15,7 +15,7 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { JobsRefreshAction, IJobActionInfo } from 'sql/platform/jobManagement/common/jobActions';
-import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
+import { TabChild } from 'sql/base/electron-browser/ui/panel/tab.component';
 import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardService';
 
 export abstract class JobManagementView extends TabChild implements AfterContentChecked {

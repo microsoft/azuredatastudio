@@ -6,7 +6,6 @@
 'use strict';
 import * as vscode from 'vscode';
 import TelemetryReporter from 'vscode-extension-telemetry';
-import { PlatformInformation } from 'service-downloader/out/platform';
 
 import * as Utils from './utils';
 
@@ -37,22 +36,7 @@ export function filterErrorPath(line: string): string {
 
 export class Telemetry {
 	private static reporter: TelemetryReporter;
-	private static userId: string;
-	private static platformInformation: PlatformInformation;
 	private static disabled: boolean;
-
-	public static getPlatformInformation(): Promise<PlatformInformation> {
-		if (this.platformInformation) {
-			return Promise.resolve(this.platformInformation);
-		} else {
-			return new Promise<PlatformInformation>(resolve => {
-				PlatformInformation.getCurrent().then(info => {
-					this.platformInformation = info;
-					resolve(this.platformInformation);
-				});
-			});
-		}
-	}
 
 	/**
 	 * Disable telemetry reporting
@@ -122,13 +106,7 @@ export class Telemetry {
 			properties = {};
 		}
 
-		// Augment the properties structure with additional common properties before sending
-		Promise.all([this.getPlatformInformation()]).then(() => {
-			properties['distribution'] = (this.platformInformation && this.platformInformation.distribution) ?
-				`${this.platformInformation.distribution.name}, ${this.platformInformation.distribution.version}` : '';
-
-			this.reporter.sendTelemetryEvent(eventName, properties, measures);
-		});
+		this.reporter.sendTelemetryEvent(eventName, properties, measures);
 	}
 }
 

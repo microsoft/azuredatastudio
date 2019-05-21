@@ -31,6 +31,7 @@ import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/un
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { viewColumnToEditorGroup } from 'vs/workbench/api/common/shared/editor';
 import { notebookModeId } from 'sql/workbench/common/customInputConverter';
+import { localize } from 'vs/nls';
 
 class MainThreadNotebookEditor extends Disposable {
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
@@ -360,12 +361,9 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		} else {
 			// Use the active cell in this case, or 1st cell if there's none active
 			cell = editor.model.activeCell;
-			if (!cell) {
-				cell = editor.cells.find(c => c.cellType === CellTypes.Code);
-			}
 		}
-		if (!cell) {
-			return Promise.reject(disposed(`Could not find cell for this Notebook`));
+		if (!cell || (cell && cell.cellType !== CellTypes.Code)) {
+			return Promise.reject(new Error(localize('runActiveCell', "F5 shortcut key requires a code cell to be selected. Please select a code cell to run.")));
 		}
 
 		return editor.runCell(cell);
@@ -399,9 +397,8 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		let isUntitled: boolean = uri.scheme === Schemas.untitled;
 
 		const fileInput = isUntitled ? this._untitledEditorService.createOrGet(uri, notebookModeId, options.initialContent) :
-			this._editorService.createInput({ resource: uri, language: notebookModeId });
+			this._editorService.createInput({ resource: uri, mode: notebookModeId });
 		let input = this._instantiationService.createInstance(NotebookInput, path.basename(uri.fsPath), uri, fileInput);
-		input.isTrusted = isUntitled;
 		input.defaultKernel = options.defaultKernel;
 		input.connectionProfile = new ConnectionProfile(this._capabilitiesService, options.connectionProfile);
 		if (isUntitled) {

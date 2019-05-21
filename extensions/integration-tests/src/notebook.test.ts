@@ -20,7 +20,7 @@ if (context.RunTest) {
 		setup(function () {
 			console.log(`Start "${this.currentTest.title}"`);
 		});
-		teardown(function () {
+		teardown(async function () {
 			let testName = this.currentTest.title;
 			try {
 				let fileName = getFileName(testName);
@@ -28,6 +28,7 @@ if (context.RunTest) {
 					fs.unlinkSync(fileName);
 					console.log(`"${fileName}" is deleted.`);
 				}
+				await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
 			}
 			catch (err) {
 				console.log(err);
@@ -41,7 +42,10 @@ if (context.RunTest) {
 			let notebook = await openNotebook(sqlNotebookContent, sqlKernelMetadata, this.test.title);
 			const expectedOutput0 = '(1 row affected)';
 			let cellOutputs = notebook.document.cells[0].contents.outputs;
-			console.log('Got cell outputs');
+			console.log('Got cell outputs ---');
+			if (cellOutputs) {
+				cellOutputs.forEach(o => console.log(o));
+			}
 			assert(cellOutputs.length === 3, `Expected length: 3, Actual: ${cellOutputs.length}`);
 			let actualOutput0 = (<azdata.nb.IDisplayData>cellOutputs[0]).data['text/html'];
 			console.log('Got first output');
@@ -55,7 +59,10 @@ if (context.RunTest) {
 			const expectedOutput0 = '(1 row affected)';
 			for (let i = 0; i < 3; i++) {
 				let cellOutputs = notebook.document.cells[i].contents.outputs;
-				console.log('Got cell outputs');
+				console.log(`Got cell outputs --- ${i}`);
+				if (cellOutputs) {
+					cellOutputs.forEach(o => console.log(o));
+				}
 				assert(cellOutputs.length === 3, `Expected length: 3, Actual: '${cellOutputs.length}'`);
 				let actualOutput0 = (<azdata.nb.IDisplayData>cellOutputs[0]).data['text/html'];
 				console.log('Got first output');
@@ -75,7 +82,10 @@ if (context.RunTest) {
 			test('Python3 notebook test', async function () {
 				let notebook = await openNotebook(pySparkNotebookContent, pythonKernelMetadata, this.test.title);
 				let cellOutputs = notebook.document.cells[0].contents.outputs;
-				console.log('Got cell outputs');
+				console.log('Got cell outputs ---');
+				if (cellOutputs) {
+					cellOutputs.forEach(o => console.log(o));
+				}
 				let result = (<azdata.nb.IExecuteResult>cellOutputs[0]).data['text/plain'];
 				assert(result === '2', `Expected python result: 2, Actual: ${result}`);
 			});

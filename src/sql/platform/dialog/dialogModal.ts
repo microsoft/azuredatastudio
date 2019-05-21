@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import 'vs/css!./media/dialogModal';
 import { Modal, IModalOptions } from 'sql/workbench/browser/modal/modal';
 import { attachModalDialogStyler } from 'sql/platform/theme/common/styler';
@@ -24,6 +22,7 @@ import { DialogMessage } from '../../workbench/api/common/sqlExtHostTypes';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { append, $ } from 'vs/base/browser/dom';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export class DialogModal extends Modal {
 	private _dialogPane: DialogPane;
@@ -43,9 +42,10 @@ export class DialogModal extends Modal {
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IClipboardService clipboardService: IClipboardService,
+		@ILogService logService: ILogService,
 		@IInstantiationService private _instantiationService: IInstantiationService
 	) {
-		super(_dialog.title, name, telemetryService, layoutService, clipboardService, themeService, contextKeyService, options);
+		super(_dialog.title, name, telemetryService, layoutService, clipboardService, themeService, logService, contextKeyService, options);
 	}
 
 	public layout(): void {
@@ -112,7 +112,7 @@ export class DialogModal extends Modal {
 		const body = append(container, $('div.dialogModal-body'));
 
 		this._dialogPane = new DialogPane(this._dialog.title, this._dialog.content,
-			valid => this._dialog.notifyValidityChanged(valid), this._instantiationService, false);
+			valid => this._dialog.notifyValidityChanged(valid), this._instantiationService, this._themeService, false);
 		this._dialogPane.createBody(body);
 	}
 

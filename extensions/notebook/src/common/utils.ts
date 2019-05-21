@@ -19,7 +19,7 @@ export function getLivyUrl(serverName: string, port: string): string {
 }
 
 export async function mkDir(dirPath: string, outputChannel?: vscode.OutputChannel): Promise<void> {
-	if (!await fs.exists(dirPath)) {
+	if (!await fs.pathExists(dirPath)) {
 		if (outputChannel) {
 			outputChannel.appendLine(localize('mkdirOutputMsg', '... Creating {0}', dirPath));
 		}
@@ -54,13 +54,15 @@ export function executeBufferedCommand(cmd: string, options: childProcess.ExecOp
 	});
 }
 
-export function executeStreamedCommand(cmd: string, outputChannel?: vscode.OutputChannel): Thenable<void> {
+export function executeStreamedCommand(cmd: string, options: childProcess.SpawnOptions, outputChannel?: vscode.OutputChannel): Thenable<void> {
 	return new Promise<void>((resolve, reject) => {
 		// Start the command
 		if (outputChannel) {
 			outputChannel.appendLine(`    > ${cmd}`);
 		}
-		let child = childProcess.spawn(cmd, [], { shell: true, detached: false });
+		options.shell = true;
+		options.detached = false;
+		let child = childProcess.spawn(cmd, [], options);
 
 		// Add listeners to resolve/reject the promise on exit
 		child.on('error', reject);

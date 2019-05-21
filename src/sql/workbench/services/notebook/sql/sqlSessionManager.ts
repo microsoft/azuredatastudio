@@ -8,21 +8,22 @@ import { nb, QueryExecuteSubsetResult, IDbColumn, BatchSummary, IResultMessage, 
 import { localize } from 'vs/nls';
 import * as strings from 'vs/base/common/strings';
 import { FutureInternal, ILanguageMagic, notebookConstants } from 'sql/workbench/parts/notebook/models/modelInterfaces';
-import QueryRunner, { EventType } from 'sql/platform/query/common/queryRunner';
+import QueryRunner from 'sql/platform/query/common/queryRunner';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import Severity from 'vs/base/common/severity';
-import * as Utils from 'sql/platform/connection/common/utils';
 import { Deferred } from 'sql/base/common/promise';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { escape } from 'sql/base/common/strings';
-import { elapsedTimeLabel } from 'sql/parts/query/common/localizedConstants';
+import { elapsedTimeLabel } from 'sql/workbench/parts/query/common/localizedConstants';
 import * as notebookUtils from 'sql/workbench/parts/notebook/notebookUtils';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { ILogService } from 'vs/platform/log/common/log';
+import { isUndefinedOrNull } from 'vs/base/common/types';
 
 export const sqlKernelError: string = localize("sqlKernelError", "SQL kernel error");
 export const MAX_ROWS = 5000;
@@ -46,6 +47,8 @@ export interface SQLData {
 }
 
 export class SqlSessionManager implements nb.SessionManager {
+	private static _sessions: nb.ISession[] = [];
+
 	constructor(private _instantiationService: IInstantiationService) { }
 
 	public get isReady(): boolean {
@@ -65,11 +68,25 @@ export class SqlSessionManager implements nb.SessionManager {
 	}
 
 	startNew(options: nb.ISessionOptions): Thenable<nb.ISession> {
-		let session = new SqlSession(options, this._instantiationService);
-		return Promise.resolve(session);
+		let sqlSession = new SqlSession(options, this._instantiationService);
+		let index = SqlSessionManager._sessions.findIndex(session => session.path === options.path);
+		if (index > -1) {
+			SqlSessionManager._sessions.splice(index);
+		}
+		SqlSessionManager._sessions.push(sqlSession);
+		return Promise.resolve(sqlSession);
 	}
 
 	shutdown(id: string): Thenable<void> {
+		let index = SqlSessionManager._sessions.findIndex(session => session.id === id);
+		if (index > -1) {
+			let sessionManager = SqlSessionManager._sessions[index];
+			SqlSessionManager._sessions.splice(index);
+			if (sessionManager && sessionManager.kernel) {
+				let sqlKernel = sessionManager.kernel as SqlKernel;
+				return sqlKernel.disconnect();
+			}
+		}
 		return Promise.resolve();
 	}
 }
@@ -88,7 +105,7 @@ export class SqlSession implements nb.ISession {
 	}
 
 	constructor(private options: nb.ISessionOptions, private _instantiationService: IInstantiationService) {
-		this._kernel = this._instantiationService.createInstance(SqlKernel);
+		this._kernel = this._instantiationService.createInstance(SqlKernel, options.path);
 	}
 
 	public get canChangeKernels(): boolean {
@@ -96,7 +113,7 @@ export class SqlSession implements nb.ISession {
 	}
 
 	public get id(): string {
-		return this.options.kernelId || '';
+		return this.options.kernelId || this.kernel ? this._kernel.id : '';
 	}
 
 	public get path(): string {
@@ -146,11 +163,13 @@ class SqlKernel extends Disposable implements nb.IKernel {
 	private _executionCount: number = 0;
 	private _magicToExecutorMap = new Map<string, ExternalScriptMagic>();
 
-	constructor(@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
+	constructor(private _path: string,
+		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
-		@IConfigurationService private _configurationService: IConfigurationService
+		@IConfigurationService private _configurationService: IConfigurationService,
+		@ILogService private readonly logService: ILogService
 	) {
 		super();
 		this.initMagics();
@@ -232,9 +251,8 @@ class SqlKernel extends Disposable implements nb.IKernel {
 			}
 			this._queryRunner.runQuery(code);
 		} else if (this._currentConnection && this._currentConnectionProfile) {
-			let connectionUri = Utils.generateUri(this._currentConnectionProfile, 'notebook');
-			this._queryRunner = this._instantiationService.createInstance(QueryRunner, connectionUri);
-			this._connectionManagementService.connect(this._currentConnectionProfile, connectionUri).then((result) => {
+			this._queryRunner = this._instantiationService.createInstance(QueryRunner, this._path);
+			this._connectionManagementService.connect(this._currentConnectionProfile, this._path).then((result) => {
 				this.addQueryEventListeners(this._queryRunner);
 				this._queryRunner.runQuery(code);
 			});
@@ -246,7 +264,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 		// TODO verify this is "canonical" behavior
 		let count = canRun ? ++this._executionCount : undefined;
 
-		this._future = new SQLFuture(this._queryRunner, count, this._configurationService);
+		this._future = new SQLFuture(this._queryRunner, count, this._configurationService, this.logService);
 		if (!canRun) {
 			// Complete early
 			this._future.handleDone(new Error(localize('connectionRequired', "A connection must be chosen to run notebook cells")));
@@ -287,18 +305,18 @@ class SqlKernel extends Disposable implements nb.IKernel {
 	}
 
 	private addQueryEventListeners(queryRunner: QueryRunner): void {
-		this._register(queryRunner.addListener(EventType.COMPLETE, () => {
+		this._register(queryRunner.onQueryEnd(() => {
 			this.queryComplete().catch(error => {
 				this._errorMessageService.showDialog(Severity.Error, sqlKernelError, error);
 			});
 		}));
-		this._register(queryRunner.addListener(EventType.MESSAGE, message => {
+		this._register(queryRunner.onMessage(message => {
 			// TODO handle showing a messages output (should be updated with all messages, only changing 1 output in total)
-			if (this._future) {
+			if (this._future && isUndefinedOrNull(message.selection)) {
 				this._future.handleMessage(message);
 			}
 		}));
-		this._register(queryRunner.addListener(EventType.BATCH_COMPLETE, batch => {
+		this._register(queryRunner.onBatchEnd(batch => {
 			if (this._future) {
 				this._future.handleBatchEnd(batch);
 			}
@@ -311,6 +329,19 @@ class SqlKernel extends Disposable implements nb.IKernel {
 		}
 		// TODO issue #2746 should ideally show a warning inside the dialog if have no data
 	}
+
+	public async disconnect(): Promise<void> {
+		if (this._path) {
+			if (this._connectionManagementService.isConnected(this._path)) {
+				try {
+					await this._connectionManagementService.disconnect(this._path);
+				} catch (err) {
+					this.logService.error(err);
+				}
+			}
+		}
+		return;
+	}
 }
 
 export class SQLFuture extends Disposable implements FutureInternal {
@@ -320,7 +351,12 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	private doneDeferred = new Deferred<nb.IShellMessage>();
 	private configuredMaxRows: number = MAX_ROWS;
 	private _outputAddedPromises: Promise<void>[] = [];
-	constructor(private _queryRunner: QueryRunner, private _executionCount: number | undefined, private configurationService: IConfigurationService) {
+	constructor(
+		private _queryRunner: QueryRunner,
+		private _executionCount: number | undefined,
+		configurationService: IConfigurationService,
+		private readonly logService: ILogService
+	) {
 		super();
 		let config = configurationService.getValue(NotebookConfigSectionName);
 		if (config) {
@@ -406,7 +442,6 @@ export class SQLFuture extends Disposable implements FutureInternal {
 
 	public handleBatchEnd(batch: BatchSummary): void {
 		if (this.ioHandler) {
-			this.handleMessage(strings.format(elapsedTimeLabel, batch.executionElapsed));
 			this._outputAddedPromises.push(this.processResultSets(batch));
 		}
 	}
@@ -422,7 +457,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 			}
 		} catch (err) {
 			// TODO should we output this somewhere else?
-			console.log(`Error outputting result sets from Notebook query: ${err}`);
+			this.logService.error(`Error outputting result sets from Notebook query: ${err}`);
 		}
 	}
 

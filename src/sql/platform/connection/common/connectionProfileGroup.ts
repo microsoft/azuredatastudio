@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 export interface IConnectionProfileGroup {
@@ -195,10 +193,10 @@ export class ConnectionProfileGroup implements IConnectionProfileGroup {
 
 	public static getConnectionsInGroup(group: ConnectionProfileGroup): ConnectionProfile[] {
 		let connections = [];
-		if (group.connections) {
+		if (group && group.connections) {
 			group.connections.forEach((con) => connections.push(con));
 		}
-		if (group.children) {
+		if (group && group.children) {
 			group.children.forEach((subgroup) => {
 				connections = connections.concat(this.getConnectionsInGroup(subgroup));
 			});

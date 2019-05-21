@@ -7,7 +7,7 @@ import { OnInit, Inject, forwardRef, ChangeDetectorRef, ElementRef } from '@angu
 
 import { DashboardPage } from 'sql/workbench/parts/dashboard/common/dashboardPage.component';
 import { BreadcrumbClass } from 'sql/workbench/parts/dashboard/services/breadcrumb.service';
-import { IBreadcrumbService } from 'sql/base/browser/ui/breadcrumb/interfaces';
+import { IBreadcrumbService } from 'sql/base/electron-browser/ui/breadcrumb/interfaces';
 import { WidgetConfig } from 'sql/workbench/parts/dashboard/common/dashboardWidget';
 import { DashboardServiceInterface } from 'sql/workbench/parts/dashboard/services/dashboardServiceInterface.service';
 import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
@@ -18,6 +18,7 @@ import * as nls from 'vs/nls';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export class ServerDashboardPage extends DashboardPage implements OnInit {
 	protected propertiesWidget: WidgetConfig = {
@@ -45,9 +46,10 @@ export class ServerDashboardPage extends DashboardPage implements OnInit {
 		@Inject(IInstantiationService) instantiationService: IInstantiationService,
 		@Inject(INotificationService) notificationService: INotificationService,
 		@Inject(IAngularEventingService) angularEventingService: IAngularEventingService,
-		@Inject(IConfigurationService) configurationService: IConfigurationService
+		@Inject(IConfigurationService) configurationService: IConfigurationService,
+		@Inject(ILogService) logService: ILogService
 	) {
-		super(dashboardService, el, _cd, instantiationService, notificationService, angularEventingService, configurationService);
+		super(dashboardService, el, _cd, instantiationService, notificationService, angularEventingService, configurationService, logService);
 
 		// special-case handling for MSSQL data provider
 		const connInfo = this.dashboardService.connectionManagementService.connectionInfo;

@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
+
 import 'vs/css!sql/media/icons/common-icons';
 
 import { WebViewDialog } from 'sql/workbench/parts/webview/electron-browser/webViewDialog';

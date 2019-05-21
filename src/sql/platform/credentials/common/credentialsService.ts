@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import * as azdata from 'azdata';
@@ -25,11 +23,11 @@ export const ICredentialsService = createDecorator<ICredentialsService>(SERVICE_
 export interface ICredentialsService {
 	_serviceBrand: any;
 
-	saveCredential(credentialId: string, password: string): Thenable<boolean>;
+	saveCredential(credentialId: string, password: string): Promise<boolean>;
 
-	readCredential(credentialId: string): Thenable<azdata.Credential>;
+	readCredential(credentialId: string): Promise<azdata.Credential>;
 
-	deleteCredential(credentialId: string): Thenable<boolean>;
+	deleteCredential(credentialId: string): Promise<boolean>;
 
 	addEventListener(handle: number, events: CredentialManagementEvents): IDisposable;
 }
@@ -62,15 +60,15 @@ export class CredentialsService implements ICredentialsService {
 		};
 	}
 
-	public saveCredential(credentialId: string, password: string): Thenable<boolean> {
+	public saveCredential(credentialId: string, password: string): Promise<boolean> {
 		return this._onServerEventsReady.promise.then(() => this._serverEvents[this._lastHandle].onSaveCredential(credentialId, password));
 	}
 
-	public readCredential(credentialId: string): Thenable<azdata.Credential> {
+	public readCredential(credentialId: string): Promise<azdata.Credential> {
 		return this._onServerEventsReady.promise.then(() => this._serverEvents[this._lastHandle].onReadCredential(credentialId));
 	}
 
-	public deleteCredential(credentialId: string): Thenable<boolean> {
+	public deleteCredential(credentialId: string): Promise<boolean> {
 		return this._onServerEventsReady.promise.then(() => this._serverEvents[this._lastHandle].onDeleteCredential(credentialId));
 	}
 

@@ -35,14 +35,16 @@ const mocksource: string = 'source.dacpac';
 const mocktarget: string = 'target.dacpac';
 
 const mockSourceEndpoint: azdata.SchemaCompareEndpointInfo = {
-	endpointType: azdata.SchemaCompareEndpointType.dacpac,
+	endpointType: azdata.SchemaCompareEndpointType.Dacpac,
+	serverName: '',
 	databaseName: '',
 	ownerUri: '',
 	packageFilePath: mocksource
 };
 
 const mockTargetEndpoint: azdata.SchemaCompareEndpointInfo = {
-	endpointType: azdata.SchemaCompareEndpointType.dacpac,
+	endpointType: azdata.SchemaCompareEndpointType.Dacpac,
+	serverName: '',
 	databaseName: '',
 	ownerUri: '',
 	packageFilePath: mocktarget

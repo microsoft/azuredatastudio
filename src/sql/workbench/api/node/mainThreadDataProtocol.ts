@@ -19,7 +19,7 @@ import { IAdminService } from 'sql/workbench/services/admin/common/adminService'
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
 import { IBackupService } from 'sql/platform/backup/common/backupService';
 import { IRestoreService } from 'sql/platform/restore/common/restoreService';
-import { ITaskService } from 'sql/platform/taskHistory/common/taskService';
+import { ITaskService } from 'sql/platform/tasks/common/tasksService';
 import { IProfilerService } from 'sql/workbench/services/profiler/common/interfaces';
 import { ISerializationService } from 'sql/platform/serialization/common/serializationService';
 import { IFileBrowserService } from 'sql/platform/fileBrowser/common/interfaces';
@@ -126,6 +126,9 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			},
 			getQueryRows(rowData: azdata.QueryExecuteSubsetParams): Thenable<azdata.QueryExecuteSubsetResult> {
 				return self._proxy.$getQueryRows(handle, rowData);
+			},
+			setQueryExecutionOptions(ownerUri: string, options: azdata.QueryExecutionOptions): Thenable<void> {
+				return self._proxy.$setQueryExecutionOptions(handle, ownerUri, options);
 			},
 			disposeQuery(ownerUri: string): Thenable<void> {
 				return self._proxy.$disposeQuery(handle, ownerUri);
@@ -275,6 +278,16 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			}
 		});
 
+		return undefined;
+	}
+
+	public $registerIconProvider(providerId: string, handle: number): Promise<any> {
+		const self = this;
+		this._connectionManagementService.registerIconProvider(providerId, <azdata.IconProvider>{
+			getConnectionIconId(connection: azdata.IConnectionProfile, serverInfo: azdata.ServerInfo): Thenable<string> {
+				return self._proxy.$getConnectionIconId(handle, connection, serverInfo);
+			}
+		});
 		return undefined;
 	}
 
@@ -457,11 +470,20 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 	public $registerSchemaCompareServicesProvider(providerId: string, handle: number): Promise<any> {
 		const self = this;
 		this._schemaCompareService.registerProvider(providerId, <azdata.SchemaCompareServicesProvider>{
-			schemaCompare(sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.SchemaCompareResult> {
-				return self._proxy.$schemaCompare(handle, sourceEndpointInfo, targetEndpointInfo, taskExecutionMode);
+			schemaCompare(sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, schemaComapareOptions: azdata.DeploymentOptions): Thenable<azdata.SchemaCompareResult> {
+				return self._proxy.$schemaCompare(handle, sourceEndpointInfo, targetEndpointInfo, taskExecutionMode, schemaComapareOptions);
 			},
 			schemaCompareGenerateScript(operationId: string, targetDatabaseName: string, scriptFilePath: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
 				return self._proxy.$schemaCompareGenerateScript(handle, operationId, targetDatabaseName, scriptFilePath, taskExecutionMode);
+			},
+			schemaComparePublishChanges(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
+				return self._proxy.$schemaComparePublishChanges(handle, operationId, targetServerName, targetDatabaseName, taskExecutionMode);
+			},
+			schemaCompareGetDefaultOptions(): Thenable<azdata.SchemaCompareOptionsResult> {
+				return self._proxy.$schemaCompareGetDefaultOptions(handle);
+			},
+			schemaCompareIncludeExcludeNode(operationId: string, diffEntry: azdata.DiffEntry, includeRequest: boolean, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
+				return self._proxy.$schemaCompareIncludeExcludeNode(handle, operationId, diffEntry, includeRequest, taskExecutionMode);
 			}
 		});
 

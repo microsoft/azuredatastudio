@@ -14,10 +14,9 @@ import { IContextMenuService, IContextViewService } from 'vs/platform/contextvie
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
 import { MenuId, IMenuService, MenuItemAction } from 'vs/platform/actions/common/actions';
-import { IAction, Action, IActionItem } from 'vs/base/common/actions';
+import { IAction, Action, IActionViewItem } from 'vs/base/common/actions';
 import { IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
-import { fillInActions, LabeledMenuItemActionItem } from 'vs/platform/actions/browser/menuItemActionItem';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 
 import { AngularDisposable } from 'sql/base/node/lifecycle';
@@ -41,6 +40,15 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { CellMagicMapper } from 'sql/workbench/parts/notebook/models/cellMagicMapper';
 import { IExtensionsViewlet, VIEWLET_ID } from 'vs/workbench/contrib/extensions/common/extensions';
 import { CellModel } from 'sql/workbench/parts/notebook/models/cell';
+import { FileOperationError, FileOperationResult } from 'vs/platform/files/common/files';
+import { isValidBasename } from 'vs/base/common/extpath';
+import { basename } from 'vs/base/common/resources';
+import { createErrorWithActions } from 'vs/base/common/errorsWithActions';
+import { toErrorMessage } from 'vs/base/common/errorMessage';
+import { ILogService } from 'vs/platform/log/common/log';
+import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
+import { LabeledMenuItemActionItem, fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
+
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 
@@ -84,7 +92,9 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		@Inject(IMenuService) private menuService: IMenuService,
 		@Inject(IKeybindingService) private keybindingService: IKeybindingService,
 		@Inject(IViewletService) private viewletService: IViewletService,
-		@Inject(ICapabilitiesService) private capabilitiesService: ICapabilitiesService
+		@Inject(ICapabilitiesService) private capabilitiesService: ICapabilitiesService,
+		@Inject(ITextFileService) private textFileService: ITextFileService,
+		@Inject(ILogService) private readonly logService: ILogService
 	) {
 		super();
 		this.updateProfile();
@@ -178,19 +188,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._model.addCell(cellType);
 	}
 
-	// Updates Notebook model's trust details
-	public updateModelTrustDetails(isTrusted: boolean) {
-		this._model.trustedMode = isTrusted;
-		this._model.cells.forEach(cell => {
-			cell.trustedMode = isTrusted;
-		});
-		//Updates dirty state
-		if (this._notebookParams.input) {
-			this._notebookParams.input.updateModel();
-		}
-		this.detectChanges();
-	}
-
 	public onKeyDown(event) {
 		switch (event.key) {
 			case 'ArrowDown':
@@ -225,13 +222,40 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			await this.setNotebookManager();
 			await this.loadModel();
 			this._modelReadyDeferred.resolve(this._model);
-		} catch (error) {
-			this.setViewInErrorState(localize('displayFailed', 'Could not display contents: {0}', notebookUtils.getErrorMessage(error)));
-			this.setLoading(false);
-			this._modelReadyDeferred.reject(error);
-		} finally {
-			// Always add the editor for now to close loop, even if loading contents failed
 			this.notebookService.addNotebookEditor(this);
+		} catch (error) {
+			if (error) {
+				// Offer to create a file from the error if we have a file not found and the name is valid
+				if ((<FileOperationError>error).fileOperationResult === FileOperationResult.FILE_NOT_FOUND && isValidBasename(basename(this.notebookParams.notebookUri))) {
+					let errorWithAction = createErrorWithActions(toErrorMessage(error), {
+						actions: [
+							new Action('workbench.files.action.createMissingFile', localize('createFile', "Create File"), undefined, true, () => {
+								return this.textFileService.create(this.notebookParams.notebookUri).then(() => this.editorService.openEditor({
+									resource: this.notebookParams.notebookUri,
+									options: {
+										pinned: true // new file gets pinned by default
+									}
+								}));
+							})
+						]
+					});
+					this.notificationService.error(errorWithAction);
+
+					let editors = this.editorService.visibleControls;
+					for (let editor of editors) {
+						if (editor && editor.input.getResource() === this._notebookParams.input.notebookUri) {
+							await editor.group.closeEditor(this._notebookParams.input, { preserveFocus: true });
+							break;
+						}
+					}
+				} else {
+					this.setViewInErrorState(localize('displayFailed', 'Could not display contents: {0}', notebookUtils.getErrorMessage(error)));
+					this.setLoading(false);
+					this._modelReadyDeferred.reject(error);
+
+					this.notebookService.addNotebookEditor(this);
+				}
+			}
 		}
 	}
 
@@ -255,9 +279,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			defaultKernel: this._notebookParams.input.defaultKernel,
 			layoutChanged: this._notebookParams.input.layoutChanged,
 			capabilitiesService: this.capabilitiesService
-		}, false, this.profile);
+		}, this.profile, this.logService);
 		model.onError((errInfo: INotification) => this.handleModelError(errInfo));
-		await model.requestModelLoad(this._notebookParams.isTrusted);
+		let trusted = await this.notebookService.isNotebookTrustCached(this._notebookParams.notebookUri, this.isDirty());
+		await model.requestModelLoad(trusted);
 		model.contentChanged((change) => this.handleContentChanged(change));
 		model.onProviderIdChange((provider) => this.handleProviderIdChanged(provider));
 		this._model = this._register(model);
@@ -363,7 +388,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 		let attachToContainer = document.createElement('div');
 		let attachToDropdown = new AttachToDropdown(attachToContainer, this.contextViewService, this.modelReady,
-			this.connectionManagementService, this.connectionDialogService, this.notificationService, this.capabilitiesService);
+			this.connectionManagementService, this.connectionDialogService, this.notificationService, this.capabilitiesService, this.logService);
 		attachToDropdown.render(attachToContainer);
 		attachSelectBoxStyler(attachToDropdown, this.themeService);
 
@@ -380,13 +405,13 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._trustedAction.enabled = false;
 
 		let taskbar = <HTMLElement>this.toolbar.nativeElement;
-		this._actionBar = new Taskbar(taskbar, { actionItemProvider: action => this.actionItemProvider(action as Action) });
+		this._actionBar = new Taskbar(taskbar, { actionViewItemProvider: action => this.actionItemProvider(action as Action) });
 		this._actionBar.context = this;
 		this._actionBar.setContent([
-			{ element: kernelContainer },
-			{ element: attachToContainer },
 			{ action: addCodeCellButton },
 			{ action: addTextCellButton },
+			{ element: kernelContainer },
+			{ element: attachToContainer },
 			{ action: this._trustedAction },
 			{ action: this._runAllCellsAction },
 			{ action: clearResultsButton }
@@ -394,7 +419,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	}
 
-	private actionItemProvider(action: Action): IActionItem {
+	private actionItemProvider(action: Action): IActionViewItem {
 		// Check extensions to create ActionItem; otherwise, return undefined
 		// This is similar behavior that exists in MenuItemActionItem
 		if (action instanceof MenuItemAction) {
@@ -480,6 +505,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		await this.modelReady;
 		let uriString = cell.cellUri.toString();
 		if (this._model.cells.findIndex(c => c.cellUri.toString() === uriString) > -1) {
+			this.selectCell(cell);
 			return cell.runCell(this.notificationService, this.connectionManagementService);
 		} else {
 			return Promise.reject(new Error(localize('cellNotFound', 'cell with URI {0} was not found in this model', uriString)));

@@ -121,11 +121,19 @@ export interface MainThreadCommandsShape extends IDisposable {
 	$getCommands(): Promise<string[]>;
 }
 
+export interface CommentThreadTemplate {
+	label: string;
+	acceptInputCommand?: modes.Command;
+	additionalCommands?: modes.Command[];
+	deleteCommand?: modes.Command;
+}
+
 export interface CommentProviderFeatures {
 	startDraftLabel?: string;
 	deleteDraftLabel?: string;
 	finishDraftLabel?: string;
 	reactionGroup?: modes.CommentReaction[];
+	commentThreadTemplate?: CommentThreadTemplate;
 }
 
 export interface MainThreadCommentsShape extends IDisposable {
@@ -1205,7 +1213,8 @@ export interface ExtHostProgressShape {
 export interface ExtHostCommentsShape {
 	$provideDocumentComments(handle: number, document: UriComponents): Promise<modes.CommentInfo | null>;
 	$createNewCommentThread(handle: number, document: UriComponents, range: IRange, text: string): Promise<modes.CommentThread | null>;
-	$onCommentWidgetInputChange(commentControllerHandle: number, input: string | undefined): Promise<number | undefined>;
+	$onCommentWidgetInputChange(commentControllerHandle: number, document: UriComponents, range: IRange, input: string | undefined): Promise<number | undefined>;
+	$onActiveCommentThreadChange(commentControllerHandle: number, threadHandle: number | undefined): Promise<number | undefined>;
 	$provideCommentingRanges(commentControllerHandle: number, uriComponents: UriComponents, token: CancellationToken): Promise<IRange[] | undefined>;
 	$provideReactionGroup(commentControllerHandle: number): Promise<modes.CommentReaction[] | undefined>;
 	$toggleReaction(commentControllerHandle: number, threadHandle: number, uri: UriComponents, comment: modes.Comment, reaction: modes.CommentReaction): Promise<void>;

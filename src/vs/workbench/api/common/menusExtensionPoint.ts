@@ -34,6 +34,7 @@ namespace schema {
 			case 'explorer/context': return MenuId.ExplorerContext;
 			case 'editor/title/context': return MenuId.EditorTitleContext;
 			case 'debug/callstack/context': return MenuId.DebugCallStackContext;
+			case 'debug/toolbar': return MenuId.DebugToolBar;
 			case 'debug/toolBar': return MenuId.DebugToolBar;
 			case 'menuBar/file': return MenuId.MenubarFileMenu;
 			case 'scm/title': return MenuId.SCMTitle;
@@ -48,6 +49,7 @@ namespace schema {
 			case 'objectExplorer/item/context': return MenuId.ObjectExplorerItemContext;
 			case 'notebook/toolbar': return MenuId.NotebookToolbar;
 			case 'dataExplorer/context': return MenuId.DataExplorerContext;
+			case 'dataExplorer/action': return MenuId.DataExplorerAction;
 		}
 
 		return undefined;

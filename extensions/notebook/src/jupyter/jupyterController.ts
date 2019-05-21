@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as path from 'path';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
@@ -118,8 +116,8 @@ export class JupyterController implements vscode.Disposable {
 
 	private async handleOpenNotebookTask(profile: azdata.IConnectionProfile): Promise<void> {
 		let notebookFileTypeName = localize('notebookFileType', 'Notebooks');
-		let filter = {};
-		filter[notebookFileTypeName] = 'ipynb';
+		let filter: { [key: string]: Array<string> } = {};
+		filter[notebookFileTypeName] = ['ipynb'];
 		let uris = await this.apiWrapper.showOpenDialog({
 			filters: filter,
 			canSelectFiles: true,
@@ -207,8 +205,8 @@ export class JupyterController implements vscode.Disposable {
 	}
 
 	public doConfigurePython(jupyterInstaller: JupyterServerInstallation): void {
-		let pythonDialog = new ConfigurePythonDialog(this.apiWrapper, this.outputChannel, jupyterInstaller);
-		pythonDialog.showDialog().catch(err => {
+		let pythonDialog = new ConfigurePythonDialog(this.apiWrapper, jupyterInstaller);
+		pythonDialog.showDialog().catch((err: any) => {
 			this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
 		});
 	}

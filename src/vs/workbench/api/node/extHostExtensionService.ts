@@ -36,7 +36,7 @@ import { VSBuffer } from 'vs/base/common/buffer';
 import { ISchemeTransformer } from 'vs/workbench/api/common/extHostLanguageFeatures';
 import { ExtensionMemento } from 'vs/workbench/api/common/extHostMemento';
 import { ExtensionStoragePaths } from 'vs/workbench/api/node/extHostStoragePaths';
-import { RemoteAuthorityResolverError } from 'vs/workbench/api/common/extHostTypes';
+import { RemoteAuthorityResolverError, ExtensionExecutionContext } from 'vs/workbench/api/common/extHostTypes';
 
 interface ITestRunner {
 	run(testsRoot: string, clb: (error: Error, failures?: number) => void): void;
@@ -367,7 +367,8 @@ export class ExtHostExtensionService implements ExtHostExtensionServiceShape {
 				storagePath: this._storagePath.workspaceValue(extensionDescription),
 				globalStoragePath: this._storagePath.globalValue(extensionDescription),
 				asAbsolutePath: (relativePath: string) => { return path.join(extensionDescription.extensionLocation.fsPath, relativePath); },
-				logPath: that._extHostLogService.getLogDirectory(extensionDescription.identifier)
+				logPath: that._extHostLogService.getLogDirectory(extensionDescription.identifier),
+				executionContext: this._initData.remoteAuthority ? ExtensionExecutionContext.Remote : ExtensionExecutionContext.Local
 			});
 		});
 	}
@@ -409,7 +410,20 @@ export class ExtHostExtensionService implements ExtHostExtensionServiceShape {
 	// -- eager activation
 
 	// Handle "eager" activation extensions
-	private _handleEagerExtensions(): Promise<void> {
+	private async _handleEagerExtensions(): Promise<void> {
+		// {{SQL CARBON EDIT}} - load MSSQL extension first so it doesn't get delayed by other extensions
+		try {
+			await this._activateById(new ExtensionIdentifier('microsoft.mssql'), new ExtensionActivatedByEvent(true, `Load MSSQL extension first on startup`));
+		} catch (err) {
+			console.error(err);
+		}
+
+		return this._defaultHandleEagerExtensions();
+	}
+
+
+	// Handle "eager" activation extensions
+	private _defaultHandleEagerExtensions(): Promise<void> {
 		this._activateByEvent('*', true).then(undefined, (err) => {
 			console.error(err);
 		});
@@ -615,7 +629,7 @@ export class ExtHostExtensionService implements ExtHostExtensionServiceShape {
 
 		const resolver = this._resolvers[authorityPrefix];
 		if (!resolver) {
-			throw new Error(`No resolver available for ${authorityPrefix}`);
+			throw new Error(`No remote extension installed to resolve ${authorityPrefix}.`);
 		}
 
 		try {

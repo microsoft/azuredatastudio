@@ -3,11 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Action, IActionItem, IActionRunner } from 'vs/base/common/actions';
+import { Action, IActionViewItem, IActionRunner } from 'vs/base/common/actions';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
-import { EventEmitter } from 'sql/base/common/eventEmitter';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { EditDataEditor } from 'sql/workbench/parts/editData/browser/editDataEditor';
 import * as nls from 'vs/nls';
@@ -151,7 +150,7 @@ export class ChangeMaxRowsAction extends EditDataAction {
  * Action item that handles the dropdown (combobox) that lists the avaliable number of row selections
  * for an edit data session
  */
-export class ChangeMaxRowsActionItem extends EventEmitter implements IActionItem {
+export class ChangeMaxRowsActionItem implements IActionViewItem {
 
 	public actionRunner: IActionRunner;
 	public defaultRowCount: number;
@@ -167,7 +166,6 @@ export class ChangeMaxRowsActionItem extends EventEmitter implements IActionItem
 		private _editor: EditDataEditor,
 		@IContextViewService contextViewService: IContextViewService,
 		@IThemeService private _themeService: IThemeService) {
-		super();
 		this._options = ['200', '1000', '10000'];
 		this._currentOptionsIndex = 0;
 		this.toDispose = [];

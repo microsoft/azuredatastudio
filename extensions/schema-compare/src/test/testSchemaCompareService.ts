@@ -9,6 +9,18 @@ export class SchemaCompareTestService implements azdata.SchemaCompareServicesPro
 
 	testOperationId: string = 'Test Operation Id';
 
+	schemaComparePublishChanges(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
+		throw new Error('Method not implemented.');
+	}
+
+	schemaCompareGetDefaultOptions(): Thenable<azdata.SchemaCompareOptionsResult> {
+		throw new Error('Method not implemented.');
+	}
+
+	schemaCompareIncludeExcludeNode(operationId: string, diffEntry: azdata.DiffEntry, IncludeRequest: boolean, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
+		throw new Error('Method not implemented.');
+	}
+
 	schemaCompare(sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.SchemaCompareResult> {
 		let result: azdata.SchemaCompareResult = {
 			operationId: this.testOperationId,

@@ -151,6 +151,11 @@ export const tocData: ITOCEntry = {
 					settings: ['terminal.*']
 				},
 				{
+					id: 'features/tasks',
+					label: localize('tasks', "Tasks"),
+					settings: ['tasks.*']
+				},
+				{
 					id: 'features/problems',
 					label: localize('problems', "Problems"),
 					settings: ['problems.*']
@@ -159,6 +164,11 @@ export const tocData: ITOCEntry = {
 					id: 'features/comments',
 					label: localize('comments', "Comments"),
 					settings: ['comments.*']
+				},
+				{
+					id: 'features/remote',
+					label: localize('remote', "Remote"),
+					settings: ['remote.*']
 				}
 			]
 		},

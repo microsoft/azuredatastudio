@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import * as azdata from 'azdata';
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
@@ -81,10 +80,10 @@ export class MainThreadAccountManagement implements MainThreadAccountManagementS
 			initialize(restoredAccounts: azdata.Account[]): Thenable<azdata.Account[]> {
 				return self._proxy.$initialize(handle, restoredAccounts);
 			},
-			prompt(): Thenable<azdata.Account> {
+			prompt(): Thenable<azdata.Account | azdata.PromptFailedResult> {
 				return self._proxy.$prompt(handle);
 			},
-			refresh(account: azdata.Account): Thenable<azdata.Account> {
+			refresh(account: azdata.Account): Thenable<azdata.Account | azdata.PromptFailedResult> {
 				return self._proxy.$refresh(handle, account);
 			}
 		};
