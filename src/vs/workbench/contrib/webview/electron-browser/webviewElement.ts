@@ -354,11 +354,6 @@ class WebviewKeyboardHandler extends Disposable {
 	}
 }
 
-interface WebviewContent {
-	readonly html: string;
-	readonly options: WebviewContentOptions;
-	readonly state: string | undefined;
-}
 
 export class WebviewElement extends Disposable implements Webview {
 	private _webview: Electron.WebviewTag;
@@ -366,8 +361,8 @@ export class WebviewElement extends Disposable implements Webview {
 
 	private _webviewFindWidget: WebviewFindWidget;
 	private _findStarted: boolean = false;
-	private content: WebviewContent;
-
+	private _contents: string = '';
+	private _state: string | undefined = undefined;
 	private _focused = false;
 
 	private readonly _onDidFocus = this._register(new Emitter<void>());
@@ -375,7 +370,7 @@ export class WebviewElement extends Disposable implements Webview {
 
 	constructor(
 		private readonly _options: WebviewOptions,
-		contentOptions: WebviewContentOptions,
+		private _contentOptions: WebviewContentOptions,
 		@IInstantiationService instantiationService: IInstantiationService,
 		@IThemeService themeService: IThemeService,
 		@IEnvironmentService environmentService: IEnvironmentService,
@@ -385,14 +380,9 @@ export class WebviewElement extends Disposable implements Webview {
 		@IConfigurationService private readonly _configurationService: IConfigurationService,
 	) {
 		super();
-		this.content = {
-			html: '',
-			options: contentOptions,
-			state: undefined
-		};
-
 		this._webview = document.createElement('webview');
 		this._webview.setAttribute('partition', `webview${Date.now()}`);
+
 		this._webview.setAttribute('webpreferences', 'contextIsolation=yes');
 
 		this._webview.style.flex = '0 1';
@@ -420,21 +410,21 @@ export class WebviewElement extends Disposable implements Webview {
 		this._register(new WebviewProtocolProvider(
 			this._webview,
 			this._options.extension ? this._options.extension.location : undefined,
-			() => (this.content.options.localResourceRoots || []),
+			() => (this._contentOptions.localResourceRoots || []),
 			environmentService,
 			textFileService));
 
 		this._register(new WebviewPortMappingProvider(
 			session,
 			_options.extension ? _options.extension.location : undefined,
-			() => (this.content.options.portMappings || []),
+			() => (this._contentOptions.portMappings || []),
 			tunnelService,
 			_options.extension ? _options.extension.id : undefined,
 			telemetryService
 		));
 
 		if (!this._options.allowSvgs) {
-			const svgBlocker = this._register(new SvgBlocker(session, this.content.options));
+			const svgBlocker = this._register(new SvgBlocker(session, this._contentOptions));
 			svgBlocker.onDidBlockSvg(() => this.onDidBlockSvg());
 		}
 
@@ -486,9 +476,8 @@ export class WebviewElement extends Disposable implements Webview {
 					return;
 
 				case 'do-update-state':
-					const state = event.args[0];
-					this.state = state;
-					this._onDidUpdateState.fire(state);
+					this._state = event.args[0];
+					this._onDidUpdateState.fire(this._state);
 					return;
 
 				case 'did-focus':
@@ -553,53 +542,42 @@ export class WebviewElement extends Disposable implements Webview {
 		this._send('initial-scroll-position', value);
 	}
 
-	public set state(state: string | undefined) {
-		this.content = {
-			html: this.content.html,
-			options: this.content.options,
-			state,
-		};
+	public set state(value: string | undefined) {
+		this._state = value;
 	}
 
-	public set options(options: WebviewContentOptions) {
-		if (areWebviewInputOptionsEqual(options, this.content.options)) {
+	public set options(value: WebviewContentOptions) {
+		if (this._contentOptions && areWebviewInputOptionsEqual(value, this._contentOptions)) {
 			return;
 		}
 
-		this.content = {
-			html: this.content.html,
-			options: options,
-			state: this.content.state,
-		};
-		this.doUpdateContent();
-	}
-
-	public set html(value: string) {
-		this.content = {
-			html: value,
-			options: this.content.options,
-			state: this.content.state,
-		};
-		this.doUpdateContent();
-	}
-
-	public update(html: string, options: WebviewContentOptions, retainContextWhenHidden: boolean) {
-		if (retainContextWhenHidden && html === this.content.html && areWebviewInputOptionsEqual(options, this.content.options)) {
-			return;
-		}
-		this.content = {
-			html: html,
-			options: options,
-			state: this.content.state,
-		};
-		this.doUpdateContent();
-	}
-
-	private doUpdateContent() {
+		this._contentOptions = value;
 		this._send('content', {
-			contents: this.content.html,
-			options: this.content.options,
-			state: this.content.state
+			contents: this._contents,
+			options: this._contentOptions,
+			state: this._state
+		});
+	}
+
+	public set contents(value: string) {
+		this._contents = value;
+		this._send('content', {
+			contents: value,
+			options: this._contentOptions,
+			state: this._state
+		});
+	}
+
+	public update(value: string, options: WebviewContentOptions, retainContextWhenHidden: boolean) {
+		if (retainContextWhenHidden && value === this._contents && this._contentOptions && areWebviewInputOptionsEqual(options, this._contentOptions)) {
+			return;
+		}
+		this._contents = value;
+		this._contentOptions = options;
+		this._send('content', {
+			contents: this._contents,
+			options: this._contentOptions,
+			state: this._state
 		});
 	}
 
@@ -641,6 +619,7 @@ export class WebviewElement extends Disposable implements Webview {
 			}
 			return colors;
 		}, {} as { [key: string]: string });
+
 
 		const styles = {
 			'vscode-font-family': '-apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif',
@@ -738,7 +717,7 @@ export class WebviewElement extends Disposable implements Webview {
 	}
 
 	public reload() {
-		this.doUpdateContent();
+		this.contents = this._contents;
 	}
 
 	public selectAll() {

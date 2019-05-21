@@ -21,7 +21,7 @@ export const IUntitledEditorService = createDecorator<IUntitledEditorService>('u
 
 export interface IModelLoadOrCreateOptions {
 	resource?: URI;
-	mode?: string;
+	modeId?: string;
 	initialValue?: string;
 	encoding?: string;
 	useResourcePath?: boolean;
@@ -29,7 +29,7 @@ export interface IModelLoadOrCreateOptions {
 
 export interface IUntitledEditorService {
 
-	_serviceBrand: ServiceIdentifier<IUntitledEditorService>;
+	_serviceBrand: any;
 
 	/**
 	 * Events for when untitled editors content changes (e.g. any keystroke).
@@ -84,7 +84,7 @@ export interface IUntitledEditorService {
 	 * It is valid to pass in a file resource. In that case the path will be used as identifier.
 	 * The use case is to be able to create a new file with a specific path with VSCode.
 	 */
-	createOrGet(resource?: URI, mode?: string, initialValue?: string, encoding?: string): UntitledEditorInput;
+	createOrGet(resource?: URI, modeId?: string, initialValue?: string, encoding?: string): UntitledEditorInput;
 
 	/**
 	 * Creates a new untitled model with the optional resource URI or returns an existing one
@@ -191,10 +191,10 @@ export class UntitledEditorService extends Disposable implements IUntitledEditor
 	}
 
 	loadOrCreate(options: IModelLoadOrCreateOptions = Object.create(null)): Promise<UntitledEditorModel> {
-		return this.createOrGet(options.resource, options.mode, options.initialValue, options.encoding, options.useResourcePath).resolve();
+		return this.createOrGet(options.resource, options.modeId, options.initialValue, options.encoding, options.useResourcePath).resolve();
 	}
 
-	createOrGet(resource?: URI, mode?: string, initialValue?: string, encoding?: string, hasAssociatedFilePath: boolean = false): UntitledEditorInput {
+	createOrGet(resource?: URI, modeId?: string, initialValue?: string, encoding?: string, hasAssociatedFilePath: boolean = false): UntitledEditorInput {
 		if (resource) {
 
 			// Massage resource if it comes with known file based resource
@@ -214,47 +214,44 @@ export class UntitledEditorService extends Disposable implements IUntitledEditor
 		}
 
 		// Create new otherwise
-		return this.doCreate(resource, hasAssociatedFilePath, mode, initialValue, encoding);
+		return this.doCreate(resource, hasAssociatedFilePath, modeId, initialValue, encoding);
 	}
 
-	private doCreate(resource?: URI, hasAssociatedFilePath?: boolean, mode?: string, initialValue?: string, encoding?: string): UntitledEditorInput {
-		let untitledResource: URI;
-		if (resource) {
-			untitledResource = resource;
-		} else {
+	private doCreate(resource?: URI, hasAssociatedFilePath?: boolean, modeId?: string, initialValue?: string, encoding?: string): UntitledEditorInput {
+		if (!resource) {
 
 			// Create new taking a resource URI that is not already taken
 			let counter = this.mapResourceToInput.size + 1;
 			do {
-				untitledResource = URI.from({ scheme: Schemas.untitled, path: `Untitled-${counter}` });
+				resource = URI.from({ scheme: Schemas.untitled, path: `Untitled-${counter}` });
 				counter++;
-			} while (this.mapResourceToInput.has(untitledResource));
+			} while (this.mapResourceToInput.has(resource));
 		}
 
 		// Look up default language from settings if any
-		if (!mode && !hasAssociatedFilePath) {
+		if (!modeId && !hasAssociatedFilePath) {
 			const configuration = this.configurationService.getValue<IFilesConfiguration>();
 			if (configuration.files && configuration.files.defaultLanguage) {
-				mode = configuration.files.defaultLanguage;
+				modeId = configuration.files.defaultLanguage;
 			}
 		}
 
-		const input = this.instantiationService.createInstance(UntitledEditorInput, untitledResource, hasAssociatedFilePath, mode, initialValue, encoding);
+		const input = this.instantiationService.createInstance(UntitledEditorInput, resource, hasAssociatedFilePath, modeId, initialValue, encoding);
 
 		const contentListener = input.onDidModelChangeContent(() => {
-			this._onDidChangeContent.fire(untitledResource);
+			this._onDidChangeContent.fire(resource!);
 		});
 
 		const dirtyListener = input.onDidChangeDirty(() => {
-			this._onDidChangeDirty.fire(untitledResource);
+			this._onDidChangeDirty.fire(resource!);
 		});
 
 		const encodingListener = input.onDidModelChangeEncoding(() => {
-			this._onDidChangeEncoding.fire(untitledResource);
+			this._onDidChangeEncoding.fire(resource!);
 		});
 
 		const disposeListener = input.onDispose(() => {
-			this._onDidDisposeModel.fire(untitledResource);
+			this._onDidDisposeModel.fire(resource!);
 		});
 
 		// Remove from cache on dispose
@@ -269,7 +266,7 @@ export class UntitledEditorService extends Disposable implements IUntitledEditor
 		});
 
 		// Add to cache
-		this.mapResourceToInput.set(untitledResource, input);
+		this.mapResourceToInput.set(resource, input);
 
 		return input;
 	}

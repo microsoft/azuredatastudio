@@ -119,7 +119,7 @@ export class CursorUndo extends EditorAction {
 			id: 'cursorUndo',
 			label: nls.localize('cursor.undo', "Soft Undo"),
 			alias: 'Soft Undo',
-			precondition: undefined,
+			precondition: null,
 			kbOpts: {
 				kbExpr: EditorContextKeys.textInputFocus,
 				primary: KeyMod.CtrlCmd | KeyCode.KEY_U,

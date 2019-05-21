@@ -44,7 +44,6 @@ export interface ToolRequirementInfo {
 }
 
 export enum ToolType {
-	Unknown,
 	AzCli,
 	KubeCtl,
 	Docker,

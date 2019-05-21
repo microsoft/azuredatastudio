@@ -59,7 +59,7 @@ abstract class ExecCommandAction extends EditorAction {
 class ExecCommandCutAction extends ExecCommandAction {
 
 	constructor() {
-		let kbOpts: ICommandKeybindingsOptions | undefined = {
+		let kbOpts: ICommandKeybindingsOptions | null = {
 			kbExpr: EditorContextKeys.textInputFocus,
 			primary: KeyMod.CtrlCmd | KeyCode.KEY_X,
 			win: { primary: KeyMod.CtrlCmd | KeyCode.KEY_X, secondary: [KeyMod.Shift | KeyCode.Delete] },
@@ -68,7 +68,7 @@ class ExecCommandCutAction extends ExecCommandAction {
 		// Do not bind cut keybindings in the browser,
 		// since browsers do that for us and it avoids security prompts
 		if (!platform.isNative) {
-			kbOpts = undefined;
+			kbOpts = null;
 		}
 		super('cut', {
 			id: 'editor.action.clipboardCutAction',
@@ -107,7 +107,7 @@ class ExecCommandCutAction extends ExecCommandAction {
 class ExecCommandCopyAction extends ExecCommandAction {
 
 	constructor() {
-		let kbOpts: ICommandKeybindingsOptions | undefined = {
+		let kbOpts: ICommandKeybindingsOptions | null = {
 			kbExpr: EditorContextKeys.textInputFocus,
 			primary: KeyMod.CtrlCmd | KeyCode.KEY_C,
 			win: { primary: KeyMod.CtrlCmd | KeyCode.KEY_C, secondary: [KeyMod.CtrlCmd | KeyCode.Insert] },
@@ -116,14 +116,14 @@ class ExecCommandCopyAction extends ExecCommandAction {
 		// Do not bind copy keybindings in the browser,
 		// since browsers do that for us and it avoids security prompts
 		if (!platform.isNative) {
-			kbOpts = undefined;
+			kbOpts = null;
 		}
 
 		super('copy', {
 			id: 'editor.action.clipboardCopyAction',
 			label: nls.localize('actions.clipboard.copyLabel', "Copy"),
 			alias: 'Copy',
-			precondition: undefined,
+			precondition: null,
 			kbOpts: kbOpts,
 			menuOpts: {
 				group: CLIPBOARD_CONTEXT_MENU_GROUP,
@@ -162,7 +162,7 @@ class ExecCommandCopyAction extends ExecCommandAction {
 class ExecCommandPasteAction extends ExecCommandAction {
 
 	constructor() {
-		let kbOpts: ICommandKeybindingsOptions | undefined = {
+		let kbOpts: ICommandKeybindingsOptions | null = {
 			kbExpr: EditorContextKeys.textInputFocus,
 			primary: KeyMod.CtrlCmd | KeyCode.KEY_V,
 			win: { primary: KeyMod.CtrlCmd | KeyCode.KEY_V, secondary: [KeyMod.Shift | KeyCode.Insert] },
@@ -171,7 +171,7 @@ class ExecCommandPasteAction extends ExecCommandAction {
 		// Do not bind paste keybindings in the browser,
 		// since browsers do that for us and it avoids security prompts
 		if (!platform.isNative) {
-			kbOpts = undefined;
+			kbOpts = null;
 		}
 
 		super('paste', {
@@ -201,7 +201,7 @@ class ExecCommandCopyWithSyntaxHighlightingAction extends ExecCommandAction {
 			id: 'editor.action.clipboardCopyWithSyntaxHighlightingAction',
 			label: nls.localize('actions.clipboard.copyWithSyntaxHighlightingLabel', "Copy With Syntax Highlighting"),
 			alias: 'Copy With Syntax Highlighting',
-			precondition: undefined,
+			precondition: null,
 			kbOpts: {
 				kbExpr: EditorContextKeys.textInputFocus,
 				primary: 0,

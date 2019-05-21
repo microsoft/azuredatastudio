@@ -449,7 +449,7 @@ export function toEditorQuickOpenEntry(element: any): IEditorQuickOpenEntry | nu
 
 	// QuickOpenEntryGroup
 	if (element instanceof QuickOpenEntryGroup) {
-		const group = element;
+		const group = <QuickOpenEntryGroup>element;
 		if (group.getEntry()) {
 			element = group.getEntry();
 		}

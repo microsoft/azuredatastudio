@@ -29,7 +29,7 @@ export interface IActionRunner extends IDisposable {
 	onDidBeforeRun: Event<IRunEvent>;
 }
 
-export interface IActionViewItem {
+export interface IActionItem {
 	actionRunner: IActionRunner;
 	setActionContext(context: any): void;
 	render(element: any /* HTMLElement */): void;

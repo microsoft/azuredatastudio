@@ -6,7 +6,7 @@
 import * as nls from 'vs/nls';
 import { Action } from 'vs/base/common/actions';
 import * as dom from 'vs/base/browser/dom';
-import { BaseActionViewItem, IBaseActionViewItemOptions, Separator } from 'vs/base/browser/ui/actionbar/actionbar';
+import { BaseActionItem, IBaseActionItemOptions, Separator } from 'vs/base/browser/ui/actionbar/actionbar';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { dispose, IDisposable, Disposable, toDisposable } from 'vs/base/common/lifecycle';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
@@ -118,16 +118,16 @@ export interface ICompositeBarColors {
 	dragAndDropBackground?: Color;
 }
 
-export interface IActivityActionViewItemOptions extends IBaseActionViewItemOptions {
+export interface IActivityActionItemOptions extends IBaseActionItemOptions {
 	icon?: boolean;
 	colors: (theme: ITheme) => ICompositeBarColors;
 }
 
-export class ActivityActionViewItem extends BaseActionViewItem {
+export class ActivityActionItem extends BaseActionItem {
 	protected container: HTMLElement;
 	protected label: HTMLElement;
 	protected badge: HTMLElement;
-	protected options: IActivityActionViewItemOptions;
+	protected options: IActivityActionItemOptions;
 
 	private badgeContent: HTMLElement;
 	private badgeDisposable: IDisposable = Disposable.None;
@@ -135,7 +135,7 @@ export class ActivityActionViewItem extends BaseActionViewItem {
 
 	constructor(
 		action: ActivityAction,
-		options: IActivityActionViewItemOptions,
+		options: IActivityActionItemOptions,
 		@IThemeService protected themeService: IThemeService
 	) {
 		super(null, action, options);
@@ -347,7 +347,7 @@ export class CompositeOverflowActivityAction extends ActivityAction {
 	}
 }
 
-export class CompositeOverflowActivityActionViewItem extends ActivityActionViewItem {
+export class CompositeOverflowActivityActionItem extends ActivityActionItem {
 	private actions: Action[];
 
 	constructor(
@@ -428,7 +428,7 @@ export class DraggedCompositeIdentifier {
 	}
 }
 
-export class CompositeActionViewItem extends ActivityActionViewItem {
+export class CompositeActionItem extends ActivityActionItem {
 
 	private static manageExtensionAction: ManageExtensionAction;
 
@@ -451,8 +451,8 @@ export class CompositeActionViewItem extends ActivityActionViewItem {
 
 		this.compositeTransfer = LocalSelectionTransfer.getInstance<DraggedCompositeIdentifier>();
 
-		if (!CompositeActionViewItem.manageExtensionAction) {
-			CompositeActionViewItem.manageExtensionAction = instantiationService.createInstance(ManageExtensionAction);
+		if (!CompositeActionItem.manageExtensionAction) {
+			CompositeActionItem.manageExtensionAction = instantiationService.createInstance(ManageExtensionAction);
 		}
 
 		this._register(compositeActivityAction.onDidChangeActivity(() => { this.compositeActivity = null; this.updateActivity(); }, this));
@@ -569,7 +569,7 @@ export class CompositeActionViewItem extends ActivityActionViewItem {
 		const actions: Action[] = [this.toggleCompositePinnedAction];
 		if ((<any>this.compositeActivityAction.activity).extensionId) {
 			actions.push(new Separator());
-			actions.push(CompositeActionViewItem.manageExtensionAction);
+			actions.push(CompositeActionItem.manageExtensionAction);
 		}
 
 		const isPinned = this.compositeBar.isPinned(this.activity.id);
