@@ -91,7 +91,6 @@ export class NotebookEditor extends BaseEditor {
 			notebookUri: input.notebookUri,
 			input: input,
 			providerInfo: input.getProviderInfo(),
-			isTrusted: input.isTrusted,
 			profile: input.connectionProfile
 		};
 		bootstrapAngular(this.instantiationService,

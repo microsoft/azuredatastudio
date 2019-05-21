@@ -2,7 +2,7 @@
 	"name": "dacpac",
 	"displayName": "SQL Server Dacpac",
 	"description": "SQL Server Dacpac for Azure Data Studio.",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"publisher": "Microsoft",
 	"preview": true,
 	"engines": {
@@ -37,6 +37,16 @@
 					"command": "dacFx.start",
 					"when": "connectionProvider == MSSQL && nodeType && nodeType == Database",
 					"group": "export"
+				},
+				{
+					"command": "dacFx.start",
+					"when": "connectionProvider == MSSQL && nodeType && nodeType == Server",
+					"group": "export"
+				},
+				{
+					"command": "dacFx.start",
+					"when": "connectionProvider == MSSQL && nodeType && nodeType == Folder && nodeLabel == 'Databases'",
+					"group": "export"
 				}
 			]
 		}
@@ -45,7 +55,12 @@
 		"htmlparser2": "^3.10.1",
 		"vscode-nls": "^3.2.1"
 	},
-	"devDependencies": {},
+	"devDependencies": {
+		"@types/mocha": "^5.2.5",
+		"mocha": "^5.2.0",
+		"should": "^13.2.1",
+		"vscodetestcover": "^1.0.2"
+	},
 	"__metadata": {
 		"id": "33",
 		"publisherDisplayName": "Microsoft",

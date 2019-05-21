@@ -31,7 +31,10 @@ import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { IEditor, IEditorMemento } from 'vs/workbench/common/editor';
 import { attachSuggestEnabledInputBoxStyler, SuggestEnabledInput } from 'vs/workbench/contrib/codeEditor/browser/suggestEnabledInput/suggestEnabledInput';
 import { SettingsTarget, SettingsTargetsWidget } from 'vs/workbench/contrib/preferences/browser/preferencesWidgets';
-import { commonlyUsedData, tocData } from 'vs/workbench/contrib/preferences/browser/settingsLayout';
+// {{SQL CARBON EDIT}}
+import { commonlyUsedData } from 'vs/workbench/contrib/preferences/browser/settingsLayout';
+import { tocData } from 'sql/workbench/contrib/preferences/browser/sqlSettingsLayout';
+// {{SQL CARBON EDIT}} END
 import { AbstractSettingRenderer, ISettingLinkClickEvent, ISettingOverrideClickEvent, resolveExtensionsSettings, resolveSettingsTree, SettingsTree, SettingTreeRenderers } from 'vs/workbench/contrib/preferences/browser/settingsTree';
 import { ISettingsEditorViewState, parseQuery, SearchResultIdx, SearchResultModel, SettingsTreeElement, SettingsTreeGroupChild, SettingsTreeGroupElement, SettingsTreeModel, SettingsTreeSettingElement } from 'vs/workbench/contrib/preferences/browser/settingsTreeModels';
 import { settingsTextInputBorder } from 'vs/workbench/contrib/preferences/browser/settingsWidgets';
@@ -1066,6 +1069,7 @@ export class SettingsEditor2 extends BaseEditor {
 			}
 
 			this.tocTree.setFocus([]);
+			this.viewState.filterToCategory = undefined;
 			this.tocTreeModel.currentSearchModel = this.searchResultModel;
 			this.onSearchModeToggled();
 
@@ -1207,6 +1211,7 @@ export class SettingsEditor2 extends BaseEditor {
 			}
 
 			this.tocTree.setFocus([]);
+			this.viewState.filterToCategory = undefined;
 			this.tocTree.expandAll();
 
 			this.renderTree(undefined, true);

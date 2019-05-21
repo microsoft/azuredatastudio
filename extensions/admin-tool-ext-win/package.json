@@ -55,7 +55,12 @@
 				},
 				{
 					"command": "adminToolExtWin.launchSsmsMinPropertiesDialog",
-					"when": "isWindows && connectionProvider == MSSQL && nodeType && nodeType =~ /^(Server|Database|Table|Column|Index|Statistic|View|ServerLevelLogin|ServerLevelServerRole|ServerLevelCredential|ServerLevelServerAudit|ServerLevelServerAuditSpecification|StoredProcedure|ScalarValuedFunction|TableValuedFunction|AggregateFunction|Synonym|Assembly|UserDefinedDataType|UserDefinedType|UserDefinedTableType|Sequence|User|DatabaseRole|ApplicationRole|Schema|SecurityPolicy|ServerLevelLinkedServer)$/",
+					"when": "isWindows && connectionProvider == MSSQL && serverInfo && !isCloud && nodeType && nodeType == Server",
+					"group": "z-AdminToolExt@2"
+				},
+				{
+					"command": "adminToolExtWin.launchSsmsMinPropertiesDialog",
+					"when": "isWindows && connectionProvider == MSSQL && serverInfo && nodeType && nodeType =~ /^(Database|Table|Column|Index|Statistic|View|ServerLevelLogin|ServerLevelServerRole|ServerLevelCredential|ServerLevelServerAudit|ServerLevelServerAuditSpecification|StoredProcedure|ScalarValuedFunction|TableValuedFunction|AggregateFunction|Synonym|Assembly|UserDefinedDataType|UserDefinedType|UserDefinedTableType|Sequence|User|DatabaseRole|ApplicationRole|Schema|SecurityPolicy|ServerLevelLinkedServer)$/",
 					"group": "z-AdminToolExt@2"
 				}
 			]
@@ -65,7 +70,6 @@
 		]
 	},
 	"dependencies": {
-		"service-downloader": "github:anthonydresser/service-downloader#0.1.5",
 		"vscode-extension-telemetry": "^0.0.15",
 		"vscode-nls": "^3.2.1"
 	},

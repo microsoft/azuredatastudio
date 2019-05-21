@@ -7,6 +7,7 @@ import 'vs/css!./media/output';
 
 import { OnInit, Component, Input, Inject, ElementRef, ViewChild, SimpleChange } from '@angular/core';
 import { AngularDisposable } from 'sql/base/node/lifecycle';
+import { Event } from 'vs/base/common/event';
 import { nb } from 'azdata';
 import { ICellModel } from 'sql/workbench/parts/notebook/models/modelInterfaces';
 import { INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
@@ -29,7 +30,6 @@ export class OutputComponent extends AngularDisposable implements OnInit {
 	@Input() cellModel: ICellModel;
 	private _trusted: boolean;
 	private _initialized: boolean = false;
-	private readonly _minimumHeight = 30;
 	private _activeCellId: string;
 	registry: RenderMimeRegistry;
 
@@ -45,9 +45,8 @@ export class OutputComponent extends AngularDisposable implements OnInit {
 	ngOnInit() {
 		this.renderOutput();
 		this._initialized = true;
-		this.cellModel.notebookModel.layoutChanged(() => {
-			this.renderOutput();
-		});
+		this._register(Event.debounce(this.cellModel.notebookModel.layoutChanged, (l, e) => e, 50, /*leading=*/false)
+			(() => this.renderOutput()));
 	}
 
 	ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
@@ -72,12 +71,10 @@ export class OutputComponent extends AngularDisposable implements OnInit {
 	}
 
 	private renderOutput() {
-		let node = this.outputElement.nativeElement;
-		let output = this.cellOutput;
-		let options = outputProcessor.getBundleOptions({ value: output, trusted: this.trustedMode });
+		let options = outputProcessor.getBundleOptions({ value: this.cellOutput, trusted: this.trustedMode });
 		options.themeService = this._themeService;
 		// TODO handle safe/unsafe mapping
-		this.createRenderedMimetype(options, node);
+		this.createRenderedMimetype(options, this.outputElement.nativeElement);
 	}
 
 	public layout(): void {

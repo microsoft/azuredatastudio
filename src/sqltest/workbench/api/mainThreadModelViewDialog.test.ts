@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as assert from 'assert';
 import { Mock, It, Times } from 'typemoq';
 import { MainThreadModelViewDialog } from 'sql/workbench/api/node/mainThreadModelViewDialog';
@@ -70,9 +68,11 @@ suite('MainThreadModelViewDialog Tests', () => {
 		mainThreadModelViewDialog = new MainThreadModelViewDialog(extHostContext, undefined, undefined, undefined);
 
 		// Set up the mock dialog service
-		mockDialogService = Mock.ofType(CustomDialogService, undefined, undefined);
+		mockDialogService = Mock.ofType(CustomDialogService, undefined);
 		openedDialog = undefined;
-		mockDialogService.setup(x => x.showDialog(It.isAny())).callback(dialog => openedDialog = dialog);
+		mockDialogService.setup(x => x.showDialog(It.isAny(), undefined, It.isAny())).callback((dialog) => {
+			openedDialog = dialog;
+		});
 		mockDialogService.setup(x => x.showWizard(It.isAny())).callback(wizard => {
 			openedWizard = wizard;
 			// The actual service will set the page to 0 when it opens the wizard
@@ -111,6 +111,7 @@ suite('MainThreadModelViewDialog Tests', () => {
 		};
 		dialogDetails = {
 			title: 'dialog1',
+			isWide: false,
 			content: [tab1Handle, tab2Handle],
 			okButton: okButtonHandle,
 			cancelButton: cancelButtonHandle,
@@ -185,7 +186,7 @@ suite('MainThreadModelViewDialog Tests', () => {
 		mainThreadModelViewDialog.$openDialog(dialogHandle);
 
 		// Then the opened dialog's content and buttons match what was set
-		mockDialogService.verify(x => x.showDialog(It.isAny()), Times.once());
+		mockDialogService.verify(x => x.showDialog(It.isAny(), undefined, It.isAny()), Times.once());
 		assert.notEqual(openedDialog, undefined);
 		assert.equal(openedDialog.title, dialogDetails.title);
 		assert.equal(openedDialog.okButton.label, okButtonDetails.label);

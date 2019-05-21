@@ -95,11 +95,13 @@ export class SchemaCompareResult {
 			}]);
 
 			let sourceLabel = view.modelBuilder.text().withProperties({
-				value: localize('schemaCompare.sourceLabel', 'Source')
+				value: localize('schemaCompare.sourceLabel', 'Source'),
+				CSSStyles: { 'margin-bottom': '0px' }
 			}).component();
 
 			let targetLabel = view.modelBuilder.text().withProperties({
-				value: localize('schemaCompare.targetLabel', 'Target')
+				value: localize('schemaCompare.targetLabel', 'Target'),
+				CSSStyles: { 'margin-bottom': '0px' }
 			}).component();
 
 			let arrowLabel = view.modelBuilder.text().withProperties({
@@ -158,10 +160,16 @@ export class SchemaCompareResult {
 
 			await view.initializeModel(this.flexModel);
 		});
+		this.editor.openEditor();
 	}
 
 	public start(): void {
 		this.editor.openEditor();
+	}
+
+	// only for test
+	public getComparisionResult(): azdata.SchemaCompareResult {
+		return this.comparisonResult;
 	}
 
 	private async execute(): Promise<void> {
@@ -237,8 +245,8 @@ export class SchemaCompareResult {
 		this.differencesTable.onRowSelected(() => {
 			let difference = this.comparisonResult.differences[this.differencesTable.selectedRows[0]];
 			if (difference !== undefined) {
-				sourceText = difference.sourceScript === null ? '\n' : this.getAggregatedScript(difference, true);
-				targetText = difference.targetScript === null ? '\n' : this.getAggregatedScript(difference, false);
+				sourceText = this.getFormattedScript(difference, true);
+				targetText = this.getFormattedScript(difference, false);
 
 				this.diffEditor.updateProperties({
 					contentLeft: sourceText,
@@ -264,15 +272,29 @@ export class SchemaCompareResult {
 		return data;
 	}
 
+	private getFormattedScript(diffEntry: azdata.DiffEntry, getSourceScript: boolean): string {
+		// if there is no entry, the script has to be \n because an empty string shows up as a difference but \n doesn't
+		if ((getSourceScript && diffEntry.sourceScript === null)
+			|| (!getSourceScript && diffEntry.targetScript === null)) {
+			return '\n';
+		}
+
+		let script = this.getAggregatedScript(diffEntry, getSourceScript);
+		return script;
+	}
+
 	private getAggregatedScript(diffEntry: azdata.DiffEntry, getSourceScript: boolean): string {
 		let script = '';
 		if (diffEntry !== null) {
-			script += getSourceScript ? diffEntry.sourceScript : diffEntry.targetScript;
+			let diffEntryScript = getSourceScript ? diffEntry.sourceScript : diffEntry.targetScript;
+			if (diffEntryScript) {
+				// add a blank line between each statement
+				script += diffEntryScript + '\n\n';
+			}
+
 			diffEntry.children.forEach(child => {
 				let childScript = this.getAggregatedScript(child, getSourceScript);
-				if (childScript !== 'null') {
-					script += childScript;
-				}
+				script += childScript;
 			});
 		}
 		return script;
@@ -320,27 +342,8 @@ export class SchemaCompareResult {
 		}).component();
 
 		this.generateScriptButton.onDidClick(async (click) => {
-			// get file path
-			let now = new Date();
-			let datetime = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate() + '-' + now.getHours() + '-' + now.getMinutes() + '-' + now.getSeconds();
-			let rootPath = vscode.workspace.rootPath ? vscode.workspace.rootPath : os.homedir();
-			let defaultFilePath = path.join(rootPath, this.targetName + '_Update_' + datetime + '.sql');
-			let fileUri = await vscode.window.showSaveDialog(
-				{
-					defaultUri: vscode.Uri.file(defaultFilePath),
-					saveLabel: localize('schemaCompare.saveFile', 'Save'),
-					filters: {
-						'SQL Files': ['sql'],
-					}
-				}
-			);
-
-			if (!fileUri) {
-				return;
-			}
-
 			let service = await SchemaCompareResult.getService('MSSQL');
-			let result = await service.schemaCompareGenerateScript(this.comparisonResult.operationId, this.targetEndpointInfo.databaseName, fileUri.fsPath, azdata.TaskExecutionMode.execute);
+			let result = await service.schemaCompareGenerateScript(this.comparisonResult.operationId, this.targetEndpointInfo.serverName, this.targetEndpointInfo.databaseName, azdata.TaskExecutionMode.script);
 			if (!result || !result.success) {
 				vscode.window.showErrorMessage(
 					localize('schemaCompare.generateScriptErrorMessage', "Generate script failed: '{0}'", (result && result.errorMessage) ? result.errorMessage : 'Unknown'));

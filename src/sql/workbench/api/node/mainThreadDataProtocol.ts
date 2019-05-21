@@ -127,6 +127,9 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			getQueryRows(rowData: azdata.QueryExecuteSubsetParams): Thenable<azdata.QueryExecuteSubsetResult> {
 				return self._proxy.$getQueryRows(handle, rowData);
 			},
+			setQueryExecutionOptions(ownerUri: string, options: azdata.QueryExecutionOptions): Thenable<void> {
+				return self._proxy.$setQueryExecutionOptions(handle, ownerUri, options);
+			},
 			disposeQuery(ownerUri: string): Thenable<void> {
 				return self._proxy.$disposeQuery(handle, ownerUri);
 			},
@@ -275,6 +278,16 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			}
 		});
 
+		return undefined;
+	}
+
+	public $registerIconProvider(providerId: string, handle: number): Promise<any> {
+		const self = this;
+		this._connectionManagementService.registerIconProvider(providerId, <azdata.IconProvider>{
+			getConnectionIconId(connection: azdata.IConnectionProfile, serverInfo: azdata.ServerInfo): Thenable<string> {
+				return self._proxy.$getConnectionIconId(handle, connection, serverInfo);
+			}
+		});
 		return undefined;
 	}
 
@@ -460,8 +473,8 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			schemaCompare(sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, schemaComapareOptions: azdata.DeploymentOptions): Thenable<azdata.SchemaCompareResult> {
 				return self._proxy.$schemaCompare(handle, sourceEndpointInfo, targetEndpointInfo, taskExecutionMode, schemaComapareOptions);
 			},
-			schemaCompareGenerateScript(operationId: string, targetDatabaseName: string, scriptFilePath: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
-				return self._proxy.$schemaCompareGenerateScript(handle, operationId, targetDatabaseName, scriptFilePath, taskExecutionMode);
+			schemaCompareGenerateScript(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
+				return self._proxy.$schemaCompareGenerateScript(handle, operationId, targetServerName, targetDatabaseName, taskExecutionMode);
 			},
 			schemaComparePublishChanges(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
 				return self._proxy.$schemaComparePublishChanges(handle, operationId, targetServerName, targetDatabaseName, taskExecutionMode);

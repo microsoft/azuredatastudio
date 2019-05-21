@@ -32,8 +32,8 @@ export interface IEditSessionReadyEvent {
 	message: string;
 }
 
-export interface IGridMessage extends azdata.IResultMessage {
-	selection: azdata.ISelectionData;
+export interface IQueryMessage extends azdata.IResultMessage {
+	selection?: azdata.ISelectionData;
 }
 
 /*
@@ -47,16 +47,16 @@ export default class QueryRunner extends Disposable {
 	private _isExecuting: boolean = false;
 	private _hasCompleted: boolean = false;
 	private _batchSets: azdata.BatchSummary[] = [];
-	private _messages: azdata.IResultMessage[] = [];
+	private _messages: IQueryMessage[] = [];
 	private registered = false;
 
-	private _isQueryPlan: boolean;
+	private _isQueryPlan: boolean = false;
 	public get isQueryPlan(): boolean { return this._isQueryPlan; }
 	private _planXml = new Deferred<string>();
 	public get planXml(): Thenable<string> { return this._planXml.promise; }
 
-	private _onMessage = this._register(new Emitter<azdata.IResultMessage>());
-	public get onMessage(): Event<azdata.IResultMessage> { return this._onMessage.event; } // this is the only way typemoq can moq this... needs investigation @todo anthonydresser 5/2/2019
+	private _onMessage = this._register(new Emitter<IQueryMessage>());
+	public get onMessage(): Event<IQueryMessage> { return this._onMessage.event; } // this is the only way typemoq can moq this... needs investigation @todo anthonydresser 5/2/2019
 
 	private _onResultSet = this._register(new Emitter<azdata.ResultSetSummary>());
 	public readonly onResultSet = this._onResultSet.event;
@@ -122,7 +122,7 @@ export default class QueryRunner extends Disposable {
 	/**
 	 * For public use only, for private use, directly access the member
 	 */
-	public get messages(): azdata.IResultMessage[] {
+	public get messages(): IQueryMessage[] {
 		return this._messages.slice(0);
 	}
 
@@ -180,12 +180,6 @@ export default class QueryRunner extends Disposable {
 			this._totalElapsedMilliseconds = 0;
 			// TODO issue #228 add statusview callbacks here
 
-			if (runOptions && (runOptions.displayActualQueryPlan || runOptions.displayEstimatedQueryPlan)) {
-				this._isQueryPlan = true;
-			} else {
-				this._isQueryPlan = false;
-			}
-
 			this._onQueryStart.fire();
 
 			// Send the request to execute the query
@@ -196,6 +190,8 @@ export default class QueryRunner extends Disposable {
 			// Update internal state to show that we're executing the query
 			this._isExecuting = true;
 			this._totalElapsedMilliseconds = 0;
+
+			this._onQueryStart.fire();
 
 			return this._queryManagementService.runQueryString(this.uri, input).then(() => this.handleSuccessRunQueryResult(), e => this.handleFailureRunQueryResult(e));
 		} else {
@@ -333,16 +329,15 @@ export default class QueryRunner extends Disposable {
 				batchSet = this._batchSets[resultSet.batchId];
 			}
 			// handle getting queryPlanxml if we need too
-			if (this.isQueryPlan) {
-				// check if this result has show plan, this needs work, it won't work for any other provider
-				let hasShowPlan = !!result.resultSetSummary.columnInfo.find(e => e.columnName === 'Microsoft SQL Server 2005 XML Showplan');
-				if (hasShowPlan) {
-					this.getQueryRows(0, 1, result.resultSetSummary.batchId, result.resultSetSummary.id).then(e => {
-						if (e.resultSubset.rows) {
-							this._planXml.resolve(e.resultSubset.rows[0][0].displayValue);
-						}
-					});
-				}
+			// check if this result has show plan, this needs work, it won't work for any other provider
+			let hasShowPlan = !!result.resultSetSummary.columnInfo.find(e => e.columnName === 'Microsoft SQL Server 2005 XML Showplan');
+			if (hasShowPlan) {
+				this._isQueryPlan = true;
+				this.getQueryRows(0, 1, result.resultSetSummary.batchId, result.resultSetSummary.id).then(e => {
+					if (e.resultSubset.rows) {
+						this._planXml.resolve(e.resultSubset.rows[0][0].displayValue);
+					}
+				});
 			}
 			// we will just ignore the set if we already have it
 			// ideally this should never happen
@@ -360,25 +355,24 @@ export default class QueryRunner extends Disposable {
 			let batchSet: azdata.BatchSummary;
 			batchSet = this._batchSets[resultSet.batchId];
 			// handle getting queryPlanxml if we need too
-			if (this.isQueryPlan) {
-				// check if this result has show plan, this needs work, it won't work for any other provider
-				let hasShowPlan = !!result.resultSetSummary.columnInfo.find(e => e.columnName === 'Microsoft SQL Server 2005 XML Showplan');
-				if (hasShowPlan) {
-					this.getQueryRows(0, 1, result.resultSetSummary.batchId, result.resultSetSummary.id).then(e => {
-						if (e.resultSubset.rows) {
-							let planXmlString = e.resultSubset.rows[0][0].displayValue;
-							this._planXml.resolve(e.resultSubset.rows[0][0].displayValue);
-							// fire query plan available event if execution is completed
-							if (result.resultSetSummary.complete) {
-								this._onQueryPlanAvailable.fire({
-									providerId: 'MSSQL',
-									fileUri: result.ownerUri,
-									planXml: planXmlString
-								});
-							}
+			// check if this result has show plan, this needs work, it won't work for any other provider
+			let hasShowPlan = !!result.resultSetSummary.columnInfo.find(e => e.columnName === 'Microsoft SQL Server 2005 XML Showplan');
+			if (hasShowPlan) {
+				this._isQueryPlan = true;
+				this.getQueryRows(0, 1, result.resultSetSummary.batchId, result.resultSetSummary.id).then(e => {
+					if (e.resultSubset.rows) {
+						let planXmlString = e.resultSubset.rows[0][0].displayValue;
+						this._planXml.resolve(e.resultSubset.rows[0][0].displayValue);
+						// fire query plan available event if execution is completed
+						if (result.resultSetSummary.complete) {
+							this._onQueryPlanAvailable.fire({
+								providerId: 'MSSQL',
+								fileUri: result.ownerUri,
+								planXml: planXmlString
+							});
 						}
-					});
-				}
+					}
+				});
 			}
 			if (batchSet) {
 				// Store the result set in the batch and emit that a result set has completed
@@ -641,7 +635,7 @@ export default class QueryRunner extends Disposable {
 		// get config copyRemoveNewLine option from vscode config
 		let showBatchTime: boolean = WorkbenchUtils.getSqlConfigValue<boolean>(this._configurationService, Constants.configShowBatchTime);
 		if (showBatchTime) {
-			let message: azdata.IResultMessage = {
+			let message: IQueryMessage = {
 				batchId: batchId,
 				message: nls.localize('elapsedBatchTime', 'Batch execution time: {0}', executionTime),
 				time: undefined,

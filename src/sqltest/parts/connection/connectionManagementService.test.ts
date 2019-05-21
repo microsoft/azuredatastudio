@@ -73,6 +73,7 @@ suite('SQL ConnectionManagementService tests', () => {
 
 	let connectionManagementService: ConnectionManagementService;
 	let configResult: { [key: string]: any } = {};
+	configResult['defaultEngine'] = 'MSSQL';
 	let handleFirewallRuleResult: IHandleFirewallRuleResult;
 	let resolveHandleFirewallRuleDialog: boolean;
 	let isFirewallRuleAdded: boolean;
@@ -314,6 +315,12 @@ suite('SQL ConnectionManagementService tests', () => {
 		}).catch(err => {
 			done(err);
 		});
+	});
+
+	test('getDefaultProviderId is MSSQL', done => {
+		let defaultProvider = connectionManagementService.getDefaultProviderId();
+		assert.equal(defaultProvider, 'MSSQL', `Default provider is not equal to MSSQL`);
+		done();
 	});
 
 	/* Andresse  10/5/17 commented this test out since it was only working before my changes by the chance of how Promises work

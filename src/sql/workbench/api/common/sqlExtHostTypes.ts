@@ -199,6 +199,7 @@ export interface IComponentEventArgs {
 
 export interface IModelViewDialogDetails {
 	title: string;
+	isWide: boolean;
 	content: string | number[];
 	okButton: number;
 	cancelButton: number;
@@ -292,7 +293,8 @@ export enum DataProviderType {
 	CapabilitiesProvider = 'CapabilitiesProvider',
 	DacFxServicesProvider = 'DacFxServicesProvider',
 	SchemaCompareServicesProvider = 'SchemaCompareServicesProvider',
-	ObjectExplorerNodeProvider = 'ObjectExplorerNodeProvider'
+	ObjectExplorerNodeProvider = 'ObjectExplorerNodeProvider',
+	IconProvider = 'IconProvider'
 }
 
 export enum DeclarativeDataType {

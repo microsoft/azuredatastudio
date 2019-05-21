@@ -115,7 +115,6 @@ export class TextCellComponent extends CellView implements OnInit, AfterContentI
 	}
 
 	ngOnInit() {
-		this.setLoading(false);
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
 		this._cellToggleMoreActions.onInit(this.moreActionsElementRef, this.model, this.cellModel);
@@ -123,6 +122,7 @@ export class TextCellComponent extends CellView implements OnInit, AfterContentI
 		this._register(this.cellModel.onOutputsChanged(e => {
 			this.updatePreview();
 		}));
+		this.setLoading(false);
 	}
 
 	ngAfterContentInit(): void {
