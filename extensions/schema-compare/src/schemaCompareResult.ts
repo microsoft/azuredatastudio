@@ -160,7 +160,6 @@ export class SchemaCompareResult {
 
 			await view.initializeModel(this.flexModel);
 		});
-		this.editor.openEditor();
 	}
 
 	public start(): void {
@@ -172,7 +171,7 @@ export class SchemaCompareResult {
 		return this.comparisonResult;
 	}
 
-	private async execute(): Promise<void> {
+	public async execute(): Promise<void> {
 		if (this.schemaCompareOptionDialog && this.schemaCompareOptionDialog.deploymentOptions) {
 			// take updates if any
 			this.deploymentOptions = this.schemaCompareOptionDialog.deploymentOptions;
@@ -226,7 +225,7 @@ export class SchemaCompareResult {
 		this.optionsButton.enabled = true;
 
 		if (this.comparisonResult.differences.length > 0) {
-			this.flexModel.addItem(this.splitView);
+			this.flexModel.addItem(this.splitView, { CSSStyles: { 'position': 'relative', 'overflow': 'auto' } });
 
 			// only enable generate script button if the target is a db
 			if (this.targetEndpointInfo.endpointType === azdata.SchemaCompareEndpointType.Database) {

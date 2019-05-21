@@ -72,7 +72,13 @@ if (context.RunTest) {
 
 		test('Stand alone database context menu test', async function () {
 			let server = await getStandaloneServer();
-			let expectedActions = ['Manage', 'New Query', 'Backup', 'Restore', 'Refresh', 'Data-tier Application wizard', 'Schema Compare', 'Import wizard', 'Generate Scripts...', 'Properties'];
+			let expectedActions: string[] = [];
+			if (process.platform === 'win32') {
+				expectedActions = ['Manage', 'New Query', 'Backup', 'Restore', 'Refresh', 'Data-tier Application wizard', 'Schema Compare', 'Import wizard', 'Generate Scripts...', 'Properties'];
+			}
+			else {
+				expectedActions = ['Manage', 'New Query', 'Backup', 'Restore', 'Refresh', 'Data-tier Application wizard', 'Schema Compare', 'Import wizard'];
+			}
 			await VerifyDBContextMenu(server, 3000, expectedActions);
 		});
 	});
