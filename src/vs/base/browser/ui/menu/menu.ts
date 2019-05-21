@@ -7,7 +7,7 @@ import 'vs/css!./menu';
 import * as nls from 'vs/nls';
 import * as strings from 'vs/base/common/strings';
 import { IActionRunner, IAction, Action } from 'vs/base/common/actions';
-import { ActionBar, IActionViewItemProvider, ActionsOrientation, Separator, ActionViewItem, IActionViewItemOptions, BaseActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
+import { ActionBar, IActionItemProvider, ActionsOrientation, Separator, ActionItem, IActionItemOptions, BaseActionItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { ResolvedKeybinding, KeyCode } from 'vs/base/common/keyCodes';
 import { addClass, EventType, EventHelper, EventLike, removeTabIndexAndUpdateFocus, isAncestor, hasClass, addDisposableListener, removeClass, append, $, addClasses, removeClasses } from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
@@ -39,7 +39,7 @@ export const MENU_ESCAPED_MNEMONIC_REGEX: RegExp = createMenuEscapedMnemonicRegE
 
 export interface IMenuOptions {
 	context?: any;
-	actionViewItemProvider?: IActionViewItemProvider;
+	actionItemProvider?: IActionItemProvider;
 	actionRunner?: IActionRunner;
 	getKeyBinding?: (action: IAction) => ResolvedKeybinding | undefined;
 	ariaLabel?: string;
@@ -70,7 +70,7 @@ interface ISubMenuData {
 }
 
 export class Menu extends ActionBar {
-	private mnemonics: Map<string, Array<BaseMenuActionViewItem>>;
+	private mnemonics: Map<string, Array<MenuActionItem>>;
 	private menuDisposables: IDisposable[];
 	private scrollableElement: DomScrollableElement;
 	private menuElement: HTMLElement;
@@ -88,7 +88,7 @@ export class Menu extends ActionBar {
 
 		super(menuElement, {
 			orientation: ActionsOrientation.VERTICAL,
-			actionViewItemProvider: action => this.doGetActionViewItem(action, options, parentData),
+			actionItemProvider: action => this.doGetActionItem(action, options, parentData),
 			context: options.context,
 			actionRunner: options.actionRunner,
 			ariaLabel: options.ariaLabel,
@@ -113,7 +113,7 @@ export class Menu extends ActionBar {
 					const actions = this.mnemonics.get(key)!;
 
 					if (actions.length === 1) {
-						if (actions[0] instanceof SubmenuMenuActionViewItem) {
+						if (actions[0] instanceof SubmenuActionItem) {
 							this.focusItemByElement(actions[0].container);
 						}
 
@@ -138,7 +138,7 @@ export class Menu extends ActionBar {
 				const event = new StandardKeyboardEvent(e);
 
 				if (event.equals(KeyCode.Home) || event.equals(KeyCode.PageUp)) {
-					this.focusedItem = this.viewItems.length - 1;
+					this.focusedItem = this.items.length - 1;
 					this.focusNext();
 					EventHelper.stop(e, true);
 				} else if (event.equals(KeyCode.End) || event.equals(KeyCode.PageDown)) {
@@ -189,7 +189,7 @@ export class Menu extends ActionBar {
 			parent: this
 		};
 
-		this.mnemonics = new Map<string, Array<BaseMenuActionViewItem>>();
+		this.mnemonics = new Map<string, Array<MenuActionItem>>();
 
 		this.push(actions, { icon: true, label: true, isMenu: true });
 
@@ -223,7 +223,7 @@ export class Menu extends ActionBar {
 		container.appendChild(this.scrollableElement.getDomNode());
 		this.scrollableElement.scanDomNode();
 
-		this.viewItems.filter(item => !(item instanceof MenuSeparatorActionViewItem)).forEach((item: BaseMenuActionViewItem, index: number, array: any[]) => {
+		this.items.filter(item => !(item instanceof MenuSeparatorActionItem)).forEach((item: MenuActionItem, index: number, array: any[]) => {
 			item.updatePositionInSet(index + 1, array.length);
 		});
 	}
@@ -241,9 +241,9 @@ export class Menu extends ActionBar {
 		this.domNode.style.backgroundColor = bgColor;
 		container.style.boxShadow = shadow;
 
-		if (this.viewItems) {
-			this.viewItems.forEach(item => {
-				if (item instanceof BaseMenuActionViewItem || item instanceof MenuSeparatorActionViewItem) {
+		if (this.items) {
+			this.items.forEach(item => {
+				if (item instanceof MenuActionItem || item instanceof MenuSeparatorActionItem) {
 					item.style(style);
 				}
 			});
@@ -263,12 +263,12 @@ export class Menu extends ActionBar {
 	}
 
 	trigger(index: number): void {
-		if (index <= this.viewItems.length && index >= 0) {
-			const item = this.viewItems[index];
-			if (item instanceof SubmenuMenuActionViewItem) {
+		if (index <= this.items.length && index >= 0) {
+			const item = this.items[index];
+			if (item instanceof SubmenuActionItem) {
 				super.focus(index);
 				item.open(true);
-			} else if (item instanceof BaseMenuActionViewItem) {
+			} else if (item instanceof MenuActionItem) {
 				super.run(item._action, item._context);
 			} else {
 				return;
@@ -295,27 +295,27 @@ export class Menu extends ActionBar {
 		}
 	}
 
-	private doGetActionViewItem(action: IAction, options: IMenuOptions, parentData: ISubMenuData): BaseActionViewItem {
+	private doGetActionItem(action: IAction, options: IMenuOptions, parentData: ISubMenuData): BaseActionItem {
 		if (action instanceof Separator) {
-			return new MenuSeparatorActionViewItem(options.context, action, { icon: true });
+			return new MenuSeparatorActionItem(options.context, action, { icon: true });
 		} else if (action instanceof SubmenuAction) {
-			const menuActionViewItem = new SubmenuMenuActionViewItem(action, action.entries, parentData, options);
+			const menuActionItem = new SubmenuActionItem(action, action.entries, parentData, options);
 
 			if (options.enableMnemonics) {
-				const mnemonic = menuActionViewItem.getMnemonic();
-				if (mnemonic && menuActionViewItem.isEnabled()) {
-					let actionViewItems: BaseMenuActionViewItem[] = [];
+				const mnemonic = menuActionItem.getMnemonic();
+				if (mnemonic && menuActionItem.isEnabled()) {
+					let actionItems: MenuActionItem[] = [];
 					if (this.mnemonics.has(mnemonic)) {
-						actionViewItems = this.mnemonics.get(mnemonic)!;
+						actionItems = this.mnemonics.get(mnemonic)!;
 					}
 
-					actionViewItems.push(menuActionViewItem);
+					actionItems.push(menuActionItem);
 
-					this.mnemonics.set(mnemonic, actionViewItems);
+					this.mnemonics.set(mnemonic, actionItems);
 				}
 			}
 
-			return menuActionViewItem;
+			return menuActionItem;
 		} else {
 			const menuItemOptions: IMenuItemOptions = { enableMnemonics: options.enableMnemonics };
 			if (options.getKeyBinding) {
@@ -329,32 +329,32 @@ export class Menu extends ActionBar {
 				}
 			}
 
-			const menuActionViewItem = new BaseMenuActionViewItem(options.context, action, menuItemOptions);
+			const menuActionItem = new MenuActionItem(options.context, action, menuItemOptions);
 
 			if (options.enableMnemonics) {
-				const mnemonic = menuActionViewItem.getMnemonic();
-				if (mnemonic && menuActionViewItem.isEnabled()) {
-					let actionViewItems: BaseMenuActionViewItem[] = [];
+				const mnemonic = menuActionItem.getMnemonic();
+				if (mnemonic && menuActionItem.isEnabled()) {
+					let actionItems: MenuActionItem[] = [];
 					if (this.mnemonics.has(mnemonic)) {
-						actionViewItems = this.mnemonics.get(mnemonic)!;
+						actionItems = this.mnemonics.get(mnemonic)!;
 					}
 
-					actionViewItems.push(menuActionViewItem);
+					actionItems.push(menuActionItem);
 
-					this.mnemonics.set(mnemonic, actionViewItems);
+					this.mnemonics.set(mnemonic, actionItems);
 				}
 			}
 
-			return menuActionViewItem;
+			return menuActionItem;
 		}
 	}
 }
 
-interface IMenuItemOptions extends IActionViewItemOptions {
+interface IMenuItemOptions extends IActionItemOptions {
 	enableMnemonics?: boolean;
 }
 
-class BaseMenuActionViewItem extends BaseActionViewItem {
+class MenuActionItem extends BaseActionItem {
 
 	public container: HTMLElement;
 
@@ -562,7 +562,7 @@ class BaseMenuActionViewItem extends BaseActionViewItem {
 	}
 }
 
-class SubmenuMenuActionViewItem extends BaseMenuActionViewItem {
+class SubmenuActionItem extends MenuActionItem {
 	private mysubmenu: Menu | null;
 	private submenuContainer: HTMLElement | undefined;
 	private submenuIndicator: HTMLElement;
@@ -778,7 +778,7 @@ class SubmenuMenuActionViewItem extends BaseMenuActionViewItem {
 	}
 }
 
-class MenuSeparatorActionViewItem extends ActionViewItem {
+class MenuSeparatorActionItem extends ActionItem {
 	style(style: IMenuStyles): void {
 		this.label.style.borderBottomColor = style.separatorColor ? `${style.separatorColor}` : null;
 	}

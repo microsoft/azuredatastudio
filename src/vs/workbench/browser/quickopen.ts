@@ -229,12 +229,12 @@ export interface IEditorQuickOpenEntry {
 	/**
 	 * The editor input used for this entry when opening.
 	 */
-	getInput(): IResourceInput | IEditorInput | undefined;
+	getInput(): IResourceInput | IEditorInput | null;
 
 	/**
 	 * The editor options used for this entry when opening.
 	 */
-	getOptions(): IEditorOptions | undefined;
+	getOptions(): IEditorOptions | null;
 }
 
 /**
@@ -250,12 +250,12 @@ export class EditorQuickOpenEntry extends QuickOpenEntry implements IEditorQuick
 		return this._editorService;
 	}
 
-	getInput(): IResourceInput | IEditorInput | undefined {
-		return undefined;
+	getInput(): IResourceInput | IEditorInput | null {
+		return null;
 	}
 
-	getOptions(): IEditorOptions | undefined {
-		return undefined;
+	getOptions(): IEditorOptions | null {
+		return null;
 	}
 
 	run(mode: Mode, context: IEntryRunContext): boolean {
@@ -301,12 +301,12 @@ export class EditorQuickOpenEntry extends QuickOpenEntry implements IEditorQuick
  */
 export class EditorQuickOpenEntryGroup extends QuickOpenEntryGroup implements IEditorQuickOpenEntry {
 
-	getInput(): IEditorInput | IResourceInput | undefined {
-		return undefined;
+	getInput(): IEditorInput | IResourceInput | null {
+		return null;
 	}
 
-	getOptions(): IEditorOptions | undefined {
-		return undefined;
+	getOptions(): IEditorOptions | null {
+		return null;
 	}
 }
 

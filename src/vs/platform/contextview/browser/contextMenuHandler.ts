@@ -73,7 +73,7 @@ export class ContextMenuHandler {
 				actionRunner.onDidBeforeRun(this.onActionRun, this, menuDisposables);
 				actionRunner.onDidRun(this.onDidActionRun, this, menuDisposables);
 				menu = new Menu(container, actions, {
-					actionViewItemProvider: delegate.getActionViewItem,
+					actionItemProvider: delegate.getActionItem,
 					context: delegate.getActionsContext ? delegate.getActionsContext() : null,
 					actionRunner,
 					getKeyBinding: delegate.getKeyBinding ? delegate.getKeyBinding : action => this.keybindingService.lookupKeybinding(action.id)

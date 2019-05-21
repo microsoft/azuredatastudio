@@ -6,7 +6,7 @@
 import 'vs/css!./dropdown';
 import { Gesture, EventType as GestureEventType } from 'vs/base/browser/touch';
 import { ActionRunner, IAction, IActionRunner } from 'vs/base/common/actions';
-import { BaseActionViewItem, IActionViewItemProvider } from 'vs/base/browser/ui/actionbar/actionbar';
+import { BaseActionItem, IActionItemProvider } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { IContextViewProvider, IAnchor, AnchorAlignment } from 'vs/base/browser/ui/contextview/contextview';
 import { IMenuOptions } from 'vs/base/browser/ui/menu/menu';
@@ -247,7 +247,7 @@ export class DropdownMenu extends BaseDropdown {
 			getAnchor: () => this.element,
 			getActions: () => this.actions,
 			getActionsContext: () => this.menuOptions ? this.menuOptions.context : null,
-			getActionViewItem: action => this.menuOptions && this.menuOptions.actionViewItemProvider ? this.menuOptions.actionViewItemProvider(action) : undefined,
+			getActionItem: action => this.menuOptions && this.menuOptions.actionItemProvider ? this.menuOptions.actionItemProvider(action) : undefined,
 			getKeyBinding: action => this.menuOptions && this.menuOptions.getKeyBinding ? this.menuOptions.getKeyBinding(action) : undefined,
 			getMenuClassName: () => this.menuClassName,
 			onHide: () => this.onHide(),
@@ -266,23 +266,23 @@ export class DropdownMenu extends BaseDropdown {
 	}
 }
 
-export class DropdownMenuActionViewItem extends BaseActionViewItem {
+export class DropdownMenuActionItem extends BaseActionItem {
 	private menuActionsOrProvider: any;
 	private dropdownMenu: DropdownMenu;
 	private contextMenuProvider: IContextMenuProvider;
-	private actionViewItemProvider?: IActionViewItemProvider;
+	private actionItemProvider?: IActionItemProvider;
 	private keybindings?: (action: IAction) => ResolvedKeybinding | undefined;
 	private clazz: string | undefined;
 	private anchorAlignmentProvider: (() => AnchorAlignment) | undefined;
 
-	constructor(action: IAction, menuActions: IAction[], contextMenuProvider: IContextMenuProvider, actionViewItemProvider: IActionViewItemProvider | undefined, actionRunner: IActionRunner, keybindings: ((action: IAction) => ResolvedKeybinding | undefined) | undefined, clazz: string | undefined, anchorAlignmentProvider?: () => AnchorAlignment);
-	constructor(action: IAction, actionProvider: IActionProvider, contextMenuProvider: IContextMenuProvider, actionViewItemProvider: IActionViewItemProvider | undefined, actionRunner: IActionRunner, keybindings: ((action: IAction) => ResolvedKeybinding) | undefined, clazz: string | undefined, anchorAlignmentProvider?: () => AnchorAlignment);
-	constructor(action: IAction, menuActionsOrProvider: any, contextMenuProvider: IContextMenuProvider, actionViewItemProvider: IActionViewItemProvider | undefined, actionRunner: IActionRunner, keybindings: ((action: IAction) => ResolvedKeybinding | undefined) | undefined, clazz: string | undefined, anchorAlignmentProvider?: () => AnchorAlignment) {
+	constructor(action: IAction, menuActions: IAction[], contextMenuProvider: IContextMenuProvider, actionItemProvider: IActionItemProvider | undefined, actionRunner: IActionRunner, keybindings: ((action: IAction) => ResolvedKeybinding | undefined) | undefined, clazz: string | undefined, anchorAlignmentProvider?: () => AnchorAlignment);
+	constructor(action: IAction, actionProvider: IActionProvider, contextMenuProvider: IContextMenuProvider, actionItemProvider: IActionItemProvider | undefined, actionRunner: IActionRunner, keybindings: ((action: IAction) => ResolvedKeybinding) | undefined, clazz: string | undefined, anchorAlignmentProvider?: () => AnchorAlignment);
+	constructor(action: IAction, menuActionsOrProvider: any, contextMenuProvider: IContextMenuProvider, actionItemProvider: IActionItemProvider | undefined, actionRunner: IActionRunner, keybindings: ((action: IAction) => ResolvedKeybinding | undefined) | undefined, clazz: string | undefined, anchorAlignmentProvider?: () => AnchorAlignment) {
 		super(null, action);
 
 		this.menuActionsOrProvider = menuActionsOrProvider;
 		this.contextMenuProvider = contextMenuProvider;
-		this.actionViewItemProvider = actionViewItemProvider;
+		this.actionItemProvider = actionItemProvider;
 		this.actionRunner = actionRunner;
 		this.keybindings = keybindings;
 		this.clazz = clazz;
@@ -319,7 +319,7 @@ export class DropdownMenuActionViewItem extends BaseActionViewItem {
 		this.dropdownMenu = this._register(new DropdownMenu(container, options));
 
 		this.dropdownMenu.menuOptions = {
-			actionViewItemProvider: this.actionViewItemProvider,
+			actionItemProvider: this.actionItemProvider,
 			actionRunner: this.actionRunner,
 			getKeyBinding: this.keybindings,
 			context: this._context

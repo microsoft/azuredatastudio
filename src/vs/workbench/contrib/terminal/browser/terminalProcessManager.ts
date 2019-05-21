@@ -169,7 +169,7 @@ export class TerminalProcessManager implements ITerminalProcessManager {
 
 	private _launchProcess(shellLaunchConfig: IShellLaunchConfig, cols: number, rows: number): ITerminalChildProcess {
 		if (!shellLaunchConfig.executable) {
-			this._configHelper.mergeDefaultShellPathAndArgs(shellLaunchConfig, this._terminalInstanceService.getDefaultShell(platform.platform));
+			this._configHelper.mergeDefaultShellPathAndArgs(shellLaunchConfig);
 		}
 
 		const activeWorkspaceRootUri = this._historyService.getLastActiveWorkspaceRoot(Schemas.file);
@@ -181,7 +181,8 @@ export class TerminalProcessManager implements ITerminalProcessManager {
 		const isWorkspaceShellAllowed = this._configHelper.checkWorkspaceShellPermissions();
 		const env = terminalEnvironment.createTerminalEnvironment(shellLaunchConfig, lastActiveWorkspace, envFromConfigValue, this._configurationResolverService, isWorkspaceShellAllowed, this._productService.version, this._configHelper.config.setLocaleVariables);
 
-		const useConpty = this._configHelper.config.windowsEnableConpty;
+		this._logService.debug(`Terminal process launching`, shellLaunchConfig, initialCwd, cols, rows, env);
+		const useConpty = (shellLaunchConfig.forceWinpty !== true) && this._configHelper.config.windowsEnableConpty;
 		return this._terminalInstanceService.createTerminalProcess(shellLaunchConfig, initialCwd, cols, rows, env, useConpty);
 	}
 

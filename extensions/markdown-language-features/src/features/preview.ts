@@ -60,18 +60,6 @@ interface PreviewStyleLoadErrorMessage extends WebviewMessage {
 	};
 }
 
-export class PreviewDocumentVersion {
-	public constructor(
-		public readonly resource: vscode.Uri,
-		public readonly version: number,
-	) { }
-
-	public equals(other: PreviewDocumentVersion): boolean {
-		return this.resource.fsPath === other.resource.fsPath
-			&& this.version === other.version;
-	}
-}
-
 export class MarkdownPreview extends Disposable {
 
 	public static viewType = 'markdown.preview';
@@ -83,7 +71,7 @@ export class MarkdownPreview extends Disposable {
 	private throttleTimer: any;
 	private line: number | undefined = undefined;
 	private firstUpdate = true;
-	private currentVersion?: PreviewDocumentVersion;
+	private currentVersion?: { resource: vscode.Uri, version: number };
 	private forceUpdate = false;
 	private isScrolling = false;
 	private _disposed: boolean = false;
@@ -401,8 +389,7 @@ export class MarkdownPreview extends Disposable {
 			return;
 		}
 
-		const pendingVersion = new PreviewDocumentVersion(resource, document.version);
-		if (!this.forceUpdate && this.currentVersion && this.currentVersion.equals(pendingVersion)) {
+		if (!this.forceUpdate && this.currentVersion && this.currentVersion.resource.fsPath === resource.fsPath && this.currentVersion.version === document.version) {
 			if (this.line) {
 				this.updateForView(resource, this.line);
 			}
@@ -410,14 +397,10 @@ export class MarkdownPreview extends Disposable {
 		}
 		this.forceUpdate = false;
 
-		this.currentVersion = pendingVersion;
+		this.currentVersion = { resource, version: document.version };
 		if (this._resource === resource) {
 			const content = await this._contentProvider.provideTextDocumentContent(document, this._previewConfigurations, this.line, this.state);
-			// Another call to `doUpdate` may have happened.
-			// Make sure we are still updating for the correct document
-			if (this.currentVersion && this.currentVersion.equals(pendingVersion)) {
-				this.setContent(content);
-			}
+			this.setContent(content);
 		}
 	}
 

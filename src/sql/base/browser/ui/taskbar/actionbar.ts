@@ -7,8 +7,8 @@ import { IAction, IActionRunner, ActionRunner } from 'vs/base/common/actions';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import {
-	IActionBarOptions, ActionsOrientation, IActionViewItem,
-	IActionOptions, ActionViewItem, BaseActionViewItem
+	IActionBarOptions, ActionsOrientation, IActionItem,
+	IActionOptions, ActionItem, BaseActionItem
 } from 'vs/base/browser/ui/actionbar/actionbar';
 import * as lifecycle from 'vs/base/common/lifecycle';
 import * as DOM from 'vs/base/browser/dom';
@@ -31,7 +31,7 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 	private _context: any;
 
 	// Items
-	private _items: IActionViewItem[];
+	private _items: IActionItem[];
 	private _focusedItem?: number;
 	private _focusTracker: DOM.IFocusTracker;
 
@@ -214,14 +214,14 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 			actionItemElement.className = 'action-item';
 			actionItemElement.setAttribute('role', 'presentation');
 
-			let item: IActionViewItem | undefined = undefined;
+			let item: IActionItem | undefined = undefined;
 
-			if (this._options.actionViewItemProvider) {
-				item = this._options.actionViewItemProvider(action);
+			if (this._options.actionItemProvider) {
+				item = this._options.actionItemProvider(action);
 			}
 
 			if (!item) {
-				item = new ActionViewItem(this.context, action, options);
+				item = new ActionItem(this.context, action, options);
 			}
 
 			item.actionRunner = this._actionRunner;
@@ -248,7 +248,7 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 
 	public clear(): void {
 		// Do not dispose action items if they were provided from outside
-		this._items = this._options.actionViewItemProvider ? [] : lifecycle.dispose(this._items);
+		this._items = this._options.actionItemProvider ? [] : lifecycle.dispose(this._items);
 		DOM.clearNode(this._actionsList);
 	}
 
@@ -274,7 +274,7 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 		}
 
 		let startIndex = this._focusedItem;
-		let item: IActionViewItem;
+		let item: IActionItem;
 
 		do {
 			this._focusedItem = (this._focusedItem + 1) % this._items.length;
@@ -294,7 +294,7 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 		}
 
 		let startIndex = this._focusedItem;
-		let item: IActionViewItem;
+		let item: IActionItem;
 
 		do {
 			this._focusedItem = this._focusedItem - 1;
@@ -343,7 +343,7 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 
 		// trigger action
 		let actionItem = this._items[this._focusedItem];
-		if (actionItem instanceof BaseActionViewItem) {
+		if (actionItem instanceof BaseActionItem) {
 			const context = (actionItem._context === null || actionItem._context === undefined) ? event : actionItem._context;
 			this.run(actionItem._action, context);
 		}

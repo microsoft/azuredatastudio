@@ -176,7 +176,6 @@ function showCodeActionsForEditorSelection(
 		return;
 	}
 
-	MessageController.get(editor).closeMessage();
 	const pos = editor.getPosition();
 	controller.triggerFromEditorSelection(filter, autoApply).then(codeActions => {
 		if (!codeActions || !codeActions.actions.length) {

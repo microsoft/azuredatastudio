@@ -248,7 +248,7 @@ export class SidebarPart extends CompositePart<Viewlet> implements IViewletServi
 				this.contextMenuService.showContextMenu({
 					getAnchor: () => anchor,
 					getActions: () => contextMenuActions,
-					getActionViewItem: action => this.actionViewItemProvider(action as Action),
+					getActionItem: action => this.actionItemProvider(action as Action),
 					actionRunner: activeViewlet.getActionRunner()
 				});
 			}

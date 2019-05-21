@@ -35,11 +35,11 @@ import { peekViewBorder, peekViewTitleBackground, peekViewTitleForeground, peekV
 import { EmbeddedDiffEditorWidget } from 'vs/editor/browser/widget/embeddedCodeEditorWidget';
 import { IDiffEditorOptions } from 'vs/editor/common/config/editorOptions';
 import { Action, IAction, ActionRunner } from 'vs/base/common/actions';
-import { IActionBarOptions, ActionsOrientation, IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
+import { IActionBarOptions, ActionsOrientation, IActionItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { basename } from 'vs/base/common/resources';
 import { MenuId, IMenuService, IMenu, MenuItemAction, MenuRegistry } from 'vs/platform/actions/common/actions';
-import { fillInActionBarActions, ContextAwareMenuEntryActionViewItem } from 'vs/platform/actions/browser/menuEntryActionViewItem';
+import { MenuItemActionItem, fillInActionBarActions } from 'vs/platform/actions/browser/menuItemActionItem';
 import { IChange, IEditorModel, ScrollType, IEditorContribution, IDiffEditorModel } from 'vs/editor/common/editorCommon';
 import { OverviewRulerLane, ITextModel, IModelDecorationOptions } from 'vs/editor/common/model';
 import { sortedDiff, firstIndex } from 'vs/base/common/arrays';
@@ -49,6 +49,21 @@ import { ISplice } from 'vs/base/common/sequence';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { createStyleSheet } from 'vs/base/browser/dom';
+
+// TODO@Joao
+// Need to subclass MenuItemActionItem in order to respect
+// the action context coming from any action bar, without breaking
+// existing users
+class DiffMenuItemActionItem extends MenuItemActionItem {
+
+	onClick(event: MouseEvent): void {
+		event.preventDefault();
+		event.stopPropagation();
+
+		this.actionRunner.run(this._commandAction, this._context)
+			.then(undefined, err => this._notificationService.error(err));
+	}
+}
 
 class DiffActionRunner extends ActionRunner {
 
@@ -274,17 +289,17 @@ class DirtyDiffWidget extends PeekViewWidget {
 
 		return {
 			actionRunner,
-			actionViewItemProvider: action => this.getActionViewItem(action),
+			actionItemProvider: action => this.getActionItem(action),
 			orientation: ActionsOrientation.HORIZONTAL_REVERSE
 		};
 	}
 
-	getActionViewItem(action: IAction): IActionViewItem | undefined {
+	getActionItem(action: IAction): IActionItem | undefined {
 		if (!(action instanceof MenuItemAction)) {
 			return undefined;
 		}
 
-		return new ContextAwareMenuEntryActionViewItem(action, this.keybindingService, this.notificationService, this.contextMenuService);
+		return new DiffMenuItemActionItem(action, this.keybindingService, this.notificationService, this.contextMenuService);
 	}
 
 	protected _fillBody(container: HTMLElement): void {
@@ -367,7 +382,7 @@ export class ShowPreviousChangeAction extends EditorAction {
 			id: 'editor.action.dirtydiff.previous',
 			label: nls.localize('show previous change', "Show Previous Change"),
 			alias: 'Show Previous Change',
-			precondition: undefined,
+			precondition: null,
 			kbOpts: { kbExpr: EditorContextKeys.editorTextFocus, primary: KeyMod.Shift | KeyMod.Alt | KeyCode.F3, weight: KeybindingWeight.EditorContrib }
 		});
 	}
@@ -401,7 +416,7 @@ export class ShowNextChangeAction extends EditorAction {
 			id: 'editor.action.dirtydiff.next',
 			label: nls.localize('show next change', "Show Next Change"),
 			alias: 'Show Next Change',
-			precondition: undefined,
+			precondition: null,
 			kbOpts: { kbExpr: EditorContextKeys.editorTextFocus, primary: KeyMod.Alt | KeyCode.F3, weight: KeybindingWeight.EditorContrib }
 		});
 	}
@@ -454,7 +469,7 @@ export class MoveToPreviousChangeAction extends EditorAction {
 			id: 'workbench.action.editor.previousChange',
 			label: nls.localize('move to previous change', "Move to Previous Change"),
 			alias: 'Move to Previous Change',
-			precondition: undefined,
+			precondition: null,
 			kbOpts: { kbExpr: EditorContextKeys.editorTextFocus, primary: KeyMod.Shift | KeyMod.Alt | KeyCode.F5, weight: KeybindingWeight.EditorContrib }
 		});
 	}
@@ -496,7 +511,7 @@ export class MoveToNextChangeAction extends EditorAction {
 			id: 'workbench.action.editor.nextChange',
 			label: nls.localize('move to next change', "Move to Next Change"),
 			alias: 'Move to Next Change',
-			precondition: undefined,
+			precondition: null,
 			kbOpts: { kbExpr: EditorContextKeys.editorTextFocus, primary: KeyMod.Alt | KeyCode.F5, weight: KeybindingWeight.EditorContrib }
 		});
 	}
