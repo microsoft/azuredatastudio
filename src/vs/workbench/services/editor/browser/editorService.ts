@@ -532,6 +532,8 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 		const untitledInput = <IUntitledResourceInput>input;
 		if (untitledInput.forceUntitled || !untitledInput.resource || (untitledInput.resource && untitledInput.resource.scheme === Schemas.untitled)) {
 			// {{SQL CARBON EDIT}}
+			// Need to get mode for QueryEditor and Notebook
+			let mode: string = untitledInput.mode ? untitledInput.mode : getFileMode(this.instantiationService, untitledInput.resource);
 			return convertEditorInput(this.untitledEditorService.createOrGet(untitledInput.resource, untitledInput.mode, untitledInput.contents, untitledInput.encoding), undefined, this.instantiationService);
 		}
 
