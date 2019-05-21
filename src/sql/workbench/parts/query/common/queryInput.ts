@@ -146,8 +146,11 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 	// Description is shown beside the tab name in the combobox of open editors
 	public getDescription(): string { return this._description; }
 	public supportsSplitEditor(): boolean { return false; }
-	public getModeId(): string { return QueryInput.SCHEMA; }
+	public getMode(): string { return QueryInput.SCHEMA; }
 	public revert(): Promise<boolean> { return this._sql.revert(); }
+	public setMode(mode: string) {
+		this._sql.setMode(mode);
+	}
 
 	public matches(otherInput: any): boolean {
 		if (otherInput instanceof QueryInput) {
