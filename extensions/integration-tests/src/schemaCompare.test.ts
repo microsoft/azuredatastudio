@@ -12,6 +12,7 @@ const path = require('path');
 import { context } from './testContext';
 import assert = require('assert');
 import { getStandaloneServer } from './testConfig';
+import { existsSync, unlinkSync } from 'fs';
 
 let schemaCompareService: azdata.SchemaCompareServicesProvider;
 let dacpac1: string = path.join(__dirname, 'testData/Database1.dacpac');
@@ -21,18 +22,18 @@ let dummyDBName: string = 'ads_schemaCompareDB'; // This is used as fill in name
 if (context.RunTest) {
 	suite('Schema compare integration test suite', () => {
 		suiteSetup(async function () {
-			let attemps: number = 20;
-			while (attemps > 0) {
+			let attempts: number = 20;
+			while (attempts > 0) {
 				schemaCompareService = await azdata.dataprotocol.getProvider<azdata.SchemaCompareServicesProvider>('MSSQL', azdata.DataProviderType.SchemaCompareServicesProvider);
 				if (schemaCompareService) {
 					break;
 				}
-				attemps--;
+				attempts--;
 				await utils.sleep(1000); // To ensure the providers are registered.
 			}
 			console.log(`Start schema compare tests`);
 		});
-		test('Schema compare dacpac to dacpac comparision and script generation', async function () {
+		test('Schema compare dacpac to dacpac comparison', async function () {
 			assert(schemaCompareService, 'Schema Compare Service Provider is not available');
 
 			let source: azdata.SchemaCompareEndpointInfo = {
@@ -54,7 +55,7 @@ if (context.RunTest) {
 			assertSchemaCompareResult(schemaCompareResult);
 		});
 
-		test('Schema compare database to database comparision and script generation', async function () {
+		test('Schema compare database to database comparison and script generation', async function () {
 
 			let server = await getStandaloneServer();
 			await utils.connectToServer(server, 300);
@@ -114,7 +115,7 @@ if (context.RunTest) {
 			}
 		});
 
-		test('Schema compare dacpac to database comparision and script generation', async function () {
+		test('Schema compare dacpac to database comparison and script generation', async function () {
 			let server = await getStandaloneServer();
 			await utils.connectToServer(server, 300);
 
@@ -173,6 +174,15 @@ export function assertSchemaCompareResult(schemaCompareResult: azdata.SchemaComp
 }
 
 export async function assertScriptGenerationResult(resultstatus: azdata.ResultStatus, filepath: string): Promise<void> {
+	// TODO add more validation
 	assert(resultstatus.success === true, `Expected: success true Actual: "${resultstatus.success}" Error Message: "${resultstatus.errorMessage}`);
-	// TODO : validate script based on new return params
+	let retry = 10; // file takes quite long time to get created
+	let exists = false;
+	while (retry > 0 && !exists) {
+		exists = existsSync(filepath);
+		await utils.sleep(2000);
+		retry--;
+	}
+	assert(exists, `script file ${filepath} is expected to be present`);
+	unlinkSync(filepath);
 }
