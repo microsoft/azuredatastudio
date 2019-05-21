@@ -57,11 +57,7 @@ export function convertEditorInput(input: EditorInput, options: IQueryEditorOpti
 		//Notebook
 		uri = getNotebookEditorUri(input, instantiationService);
 		if (uri) {
-			let fileName: string = 'untitled';
-			if (input) {
-				fileName = input.getName();
-			}
-			let notebookInput: NotebookInput = instantiationService.createInstance(NotebookInput, fileName, uri, input);
+			let notebookInput: NotebookInput = instantiationService.createInstance(NotebookInput, input.getName(), uri, input);
 			return notebookInput;
 		}
 	}

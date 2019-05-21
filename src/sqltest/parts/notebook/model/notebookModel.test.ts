@@ -15,9 +15,9 @@ import { LocalContentManager } from 'sql/workbench/services/notebook/node/localC
 import { NotebookManagerStub } from '../common';
 import { NotebookModel } from 'sql/workbench/parts/notebook/models/notebookModel';
 import { ModelFactory } from 'sql/workbench/parts/notebook/models/modelFactory';
-import { IClientSession, ICellModel, INotebookModelOptions } from 'sql/workbench/parts/notebook/models/modelInterfaces';
+import { IClientSession, ICellModel, INotebookModelOptions, NotebookContentChange } from 'sql/workbench/parts/notebook/models/modelInterfaces';
 import { ClientSession } from 'sql/workbench/parts/notebook/models/clientSession';
-import { CellTypes } from 'sql/workbench/parts/notebook/models/contracts';
+import { CellTypes, NotebookChangeType } from 'sql/workbench/parts/notebook/models/contracts';
 import { Deferred } from 'sql/base/common/promise';
 import { ConnectionManagementService } from 'sql/platform/connection/common/connectionManagementService';
 import { Memento } from 'vs/workbench/common/memento';
@@ -78,6 +78,7 @@ suite('notebook model', function (): void {
 	let memento: TypeMoq.Mock<Memento>;
 	let queryConnectionService: TypeMoq.Mock<ConnectionManagementService>;
 	let defaultModelOptions: INotebookModelOptions;
+	const logService = new TestLogService();
 	setup(() => {
 		sessionReady = new Deferred<void>();
 		notificationService = TypeMoq.Mock.ofType(TestNotificationService, TypeMoq.MockBehavior.Loose);
@@ -129,13 +130,27 @@ suite('notebook model', function (): void {
 		let mockContentManager = TypeMoq.Mock.ofType(LocalContentManager);
 		mockContentManager.setup(c => c.getNotebookContents(TypeMoq.It.isAny())).returns(() => Promise.resolve(emptyNotebook));
 		notebookManagers[0].contentManager = mockContentManager.object;
-		const logService = new TestLogService();
 		// When I initialize the model
 		let model = new NotebookModel(defaultModelOptions, undefined, logService);
 		await model.requestModelLoad();
 
 		// Then I expect to have 0 code cell as the contents
 		should(model.cells).have.length(0);
+		// And Trust should be false by default
+		should(model.trustedMode).be.false();
+	});
+
+	test('Should use trusted state set in model load', async function (): Promise<void> {
+		// Given a notebook
+		let mockContentManager = TypeMoq.Mock.ofType(LocalContentManager);
+		mockContentManager.setup(c => c.getNotebookContents(TypeMoq.It.isAny())).returns(() => Promise.resolve(expectedNotebookContent));
+		notebookManagers[0].contentManager = mockContentManager.object;
+		// When I initialize the model
+		let model = new NotebookModel(defaultModelOptions, undefined, logService);
+		await model.requestModelLoad(true);
+
+		// Then Trust should be true
+		should(model.trustedMode).be.true();
 	});
 
 	// test('Should throw if model load fails', async function(): Promise<void> {
@@ -218,7 +233,6 @@ suite('notebook model', function (): void {
 		let options: INotebookModelOptions = Object.assign({}, defaultModelOptions, <Partial<INotebookModelOptions>>{
 			factory: mockModelFactory.object
 		});
-		const logService = new TestLogService();
 		let model = new NotebookModel(options, undefined, logService);
 		model.onClientSessionReady((session) => actualSession = session);
 		await model.requestModelLoad();
@@ -237,7 +251,6 @@ suite('notebook model', function (): void {
 	});
 
 	test('Should sanitize kernel display name when IP is included', async function (): Promise<void> {
-		const logService = new TestLogService();
 		let model = new NotebookModel(defaultModelOptions, undefined, logService);
 		let displayName = 'PySpark (1.1.1.1)';
 		let sanitizedDisplayName = model.sanitizeDisplayName(displayName);
@@ -245,11 +258,29 @@ suite('notebook model', function (): void {
 	});
 
 	test('Should sanitize kernel display name properly when IP is not included', async function (): Promise<void> {
-		const logService = new TestLogService();
 		let model = new NotebookModel(defaultModelOptions, undefined, logService);
 		let displayName = 'PySpark';
 		let sanitizedDisplayName = model.sanitizeDisplayName(displayName);
 		should(sanitizedDisplayName).equal('PySpark');
+	});
+
+	test('Should notify on trust set', async function () {
+		// Given a notebook that's been loaded
+		let mockContentManager = TypeMoq.Mock.ofType(LocalContentManager);
+		mockContentManager.setup(c => c.getNotebookContents(TypeMoq.It.isAny())).returns(() => Promise.resolve(expectedNotebookContent));
+		notebookManagers[0].contentManager = mockContentManager.object;
+		let model = new NotebookModel(defaultModelOptions, undefined, logService);
+		await model.requestModelLoad(false);
+
+		let actualChanged: NotebookContentChange;
+		model.contentChanged((changed) => actualChanged = changed);
+		// When I change trusted state
+		model.trustedMode = true;
+
+		// Then content changed notification should be sent
+		should(model.trustedMode).be.true();
+		should(actualChanged).not.be.undefined();
+		should(actualChanged.changeType).equal(NotebookChangeType.TrustChanged);
 	});
 
 	function shouldHaveOneCell(model: NotebookModel): void {
