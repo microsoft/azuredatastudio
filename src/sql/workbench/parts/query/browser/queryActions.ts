@@ -5,7 +5,7 @@
 
 import 'vs/css!./media/queryActions';
 import * as nls from 'vs/nls';
-import { Action, IActionItem, IActionRunner } from 'vs/base/common/actions';
+import { Action, IActionViewItem, IActionRunner } from 'vs/base/common/actions';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -427,7 +427,7 @@ export class ListDatabasesAction extends QueryTaskbarAction {
  * Action item that handles the dropdown (combobox) that lists the available databases.
  * Based off StartDebugActionItem.
  */
-export class ListDatabasesActionItem implements IActionItem {
+export class ListDatabasesActionItem implements IActionViewItem {
 	public static ID = 'listDatabaseQueryActionItem';
 
 	public actionRunner: IActionRunner;
