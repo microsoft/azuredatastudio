@@ -532,7 +532,9 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 		const untitledInput = <IUntitledResourceInput>input;
 		if (untitledInput.forceUntitled || !untitledInput.resource || (untitledInput.resource && untitledInput.resource.scheme === Schemas.untitled)) {
 			// {{SQL CARBON EDIT}}
-			return convertEditorInput(this.untitledEditorService.createOrGet(untitledInput.resource, untitledInput.mode, untitledInput.contents, untitledInput.encoding), undefined, this.instantiationService);
+
+			let modeId: string = untitledInput.language ? untitledInput.language : getFileMode(this.instantiationService, untitledInput.resource);
+			return convertEditorInput(this.untitledEditorService.createOrGet(untitledInput.resource, modeId, untitledInput.contents, untitledInput.encoding), undefined, this.instantiationService);
 		}
 
 		// Resource Editor Support
@@ -544,14 +546,14 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 			}
 
 			// {{SQL CARBON EDIT}}
-			return convertEditorInput(this.createOrGet(resourceInput.resource, this.instantiationService, label, resourceInput.description, resourceInput.encoding, resourceInput.mode, resourceInput.forceFile) as EditorInput,
+			return convertEditorInput(this.createOrGet(resourceInput.resource, this.instantiationService, label, resourceInput.description, resourceInput.encoding, resourceInput.forceFile) as EditorInput,
 				undefined, this.instantiationService);
 		}
 
 		throw new Error('Unknown input type');
 	}
 
-	private createOrGet(resource: URI, instantiationService: IInstantiationService, label: string | undefined, description: string | undefined, encoding: string | undefined, mode: string | undefined, forceFile: boolean | undefined): ICachedEditorInput {
+	private createOrGet(resource: URI, instantiationService: IInstantiationService, label: string | undefined, description: string | undefined, encoding: string | undefined, forceFile: boolean | undefined): ICachedEditorInput {
 		if (EditorService.CACHE.has(resource)) {
 			const input = EditorService.CACHE.get(resource)!;
 			if (input instanceof ResourceEditorInput) {
@@ -562,17 +564,9 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 				if (description) {
 					input.setDescription(description);
 				}
-
-				if (mode) {
-					input.setPreferredMode(mode);
-				}
 			} else if (!(input instanceof DataUriEditorInput)) {
 				if (encoding) {
 					input.setPreferredEncoding(encoding);
-				}
-
-				if (mode) {
-					input.setPreferredMode(mode);
 				}
 			}
 
@@ -583,7 +577,7 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 
 		// File
 		if (forceFile /* fix for https://github.com/Microsoft/vscode/issues/48275 */ || this.fileService.canHandleResource(resource)) {
-			input = this.fileInputFactory.createFileInput(resource, encoding, mode, instantiationService);
+			input = this.fileInputFactory.createFileInput(resource, encoding, instantiationService);
 		}
 
 		// Data URI
@@ -593,12 +587,13 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 
 		// Resource
 		else {
-			input = instantiationService.createInstance(ResourceEditorInput, label, description, resource, mode);
+			input = instantiationService.createInstance(ResourceEditorInput, label, description, resource);
 		}
 
-		// Add to cache and remove when input gets disposed
 		EditorService.CACHE.set(resource, input);
-		Event.once(input.onDispose)(() => EditorService.CACHE.delete(resource));
+		Event.once(input.onDispose)(() => {
+			EditorService.CACHE.delete(resource);
+		});
 
 		return input;
 	}

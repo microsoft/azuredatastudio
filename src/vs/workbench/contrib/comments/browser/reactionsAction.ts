@@ -5,7 +5,7 @@
 
 import * as nls from 'vs/nls';
 import * as dom from 'vs/base/browser/dom';
-import { ActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
+import { ActionItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { Action, IAction } from 'vs/base/common/actions';
 import { URI, UriComponents } from 'vs/base/common/uri';
 
@@ -29,7 +29,7 @@ export class ToggleReactionsAction extends Action {
 		this._menuActions = actions;
 	}
 }
-export class ReactionActionViewItem extends ActionViewItem {
+export class ReactionActionItem extends ActionItem {
 	constructor(action: ReactionAction) {
 		super(null, action, {});
 	}

@@ -9,11 +9,6 @@ import { ITextBufferFactory, ITextSnapshot } from 'vs/editor/common/model';
 
 export const IBackupFileService = createDecorator<IBackupFileService>('backupFileService');
 
-export interface IResolvedBackup<T extends object> {
-	value: ITextBufferFactory;
-	meta?: T;
-}
-
 /**
  * A service that handles any I/O and state associated with the backup system.
  */
@@ -47,10 +42,8 @@ export interface IBackupFileService {
 	 * @param resource The resource to back up.
 	 * @param content The content of the resource as snapshot.
 	 * @param versionId The version id of the resource to backup.
-	 * @param meta The (optional) meta data of the resource to backup. This information
-	 * can be restored later when loading the backup again.
 	 */
-	backupResource<T extends object>(resource: URI, content: ITextSnapshot, versionId?: number, meta?: T): Promise<void>;
+	backupResource(resource: URI, content: ITextSnapshot, versionId?: number): Promise<void>;
 
 	/**
 	 * Gets a list of file backups for the current workspace.
@@ -62,10 +55,10 @@ export interface IBackupFileService {
 	/**
 	 * Resolves the backup for the given resource.
 	 *
-	 * @param resource The resource to get the backup for.
-	 * @return The backup file's backed up content and metadata if available.
+	 * @param value The contents from a backup resource as stream.
+	 * @return The backup file's backed up content as text buffer factory.
 	 */
-	resolveBackupContent<T extends object>(resource: URI): Promise<IResolvedBackup<T>>;
+	resolveBackupContent(backup: URI): Promise<ITextBufferFactory | undefined>;
 
 	/**
 	 * Discards the backup associated with a resource if it exists..

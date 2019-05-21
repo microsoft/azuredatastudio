@@ -11,7 +11,7 @@ import { IWindowsService, IWindowService, IURIToOpen, IOpenSettings, INewWindowO
 import { ServicesAccessor, IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
-import { ExplorerFocusCondition, TextFileContentProvider, VIEWLET_ID, IExplorerService } from 'vs/workbench/contrib/files/common/files';
+import { ExplorerFocusCondition, FileOnDiskContentProvider, VIEWLET_ID, IExplorerService, resourceToFileOnDisk } from 'vs/workbench/contrib/files/common/files';
 import { ExplorerViewlet } from 'vs/workbench/contrib/files/browser/explorerViewlet';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { ITextFileService, ISaveOptions } from 'vs/workbench/services/textfile/common/textfiles';
@@ -44,7 +44,6 @@ import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { UNTITLED_WORKSPACE_NAME } from 'vs/platform/workspaces/common/workspaces';
-import { withUndefinedAsNull } from 'vs/base/common/types';
 
 // {{SQL CARBON EDIT}}
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
@@ -349,7 +348,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 		if (providerDisposables.length === 0) {
 			registerEditorListener = true;
 
-			const provider = instantiationService.createInstance(TextFileContentProvider);
+			const provider = instantiationService.createInstance(FileOnDiskContentProvider);
 			providerDisposables.push(provider);
 			providerDisposables.push(textModelService.registerTextModelContentProvider(COMPARE_WITH_SAVED_SCHEMA, provider));
 		}
@@ -358,9 +357,9 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 		const uri = getResourceForCommand(resource, accessor.get(IListService), editorService);
 		if (uri && fileService.canHandleResource(uri)) {
 			const name = basename(uri);
-			const editorLabel = nls.localize('modifiedLabel', "{0} (in file) ↔ {1}", name, name);
+			const editorLabel = nls.localize('modifiedLabel', "{0} (on disk) ↔ {1}", name, name);
 
-			TextFileContentProvider.open(uri, COMPARE_WITH_SAVED_SCHEMA, editorLabel, editorService).then(() => {
+			editorService.openEditor({ leftResource: resourceToFileOnDisk(COMPARE_WITH_SAVED_SCHEMA, uri), rightResource: uri, label: editorLabel }).then(() => {
 
 				// Dispose once no more diff editor is opened with the scheme
 				if (registerEditorListener) {
@@ -379,7 +378,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	}
 });
 
-let globalResourceToCompare: URI | undefined;
+let globalResourceToCompare: URI | null;
 let resourceSelectedForCompareContext: IContextKey<boolean>;
 CommandsRegistry.registerCommand({
 	id: SELECT_FOR_COMPARE_COMMAND_ID,
@@ -554,9 +553,9 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 		const editorService = accessor.get(IEditorService);
 		let resource: URI | null = null;
 		if (resourceOrObject && 'from' in resourceOrObject && resourceOrObject.from === 'menu') {
-			resource = withUndefinedAsNull(toResource(editorService.activeEditor));
+			resource = toResource(editorService.activeEditor);
 		} else {
-			resource = withUndefinedAsNull(getResourceForCommand(resourceOrObject, accessor.get(IListService), editorService));
+			resource = getResourceForCommand(resourceOrObject, accessor.get(IListService), editorService);
 		}
 
 		// {{SQL CARBON EDIT}}

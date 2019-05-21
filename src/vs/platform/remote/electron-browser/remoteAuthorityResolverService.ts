@@ -40,10 +40,8 @@ export class RemoteAuthorityResolverService implements IRemoteAuthorityResolverS
 	}
 
 	clearResolvedAuthority(authority: string): void {
-		if (this._resolveAuthorityRequests[authority]) {
-			this._resolveAuthorityRequests[authority].reject(errors.canceled());
-			delete this._resolveAuthorityRequests[authority];
-		}
+		this._resolveAuthorityRequests[authority].reject(errors.canceled());
+		delete this._resolveAuthorityRequests[authority];
 	}
 
 	setResolvedAuthority(resolvedAuthority: ResolvedAuthority) {

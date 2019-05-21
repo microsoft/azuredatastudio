@@ -12,12 +12,12 @@ const path = require('path');
 import { context } from './testContext';
 import assert = require('assert');
 import { getStandaloneServer } from './testConfig';
-import { existsSync, unlinkSync } from 'fs';
 
 let schemaCompareService: azdata.SchemaCompareServicesProvider;
 let dacpac1: string = path.join(__dirname, 'testData/Database1.dacpac');
 let dacpac2: string = path.join(__dirname, 'testData/Database2.dacpac');
 let dummyDBName: string = 'ads_schemaCompareDB'; // This is used as fill in name and not created anywhere
+const SERVER_CONNECTION_TIMEOUT: number = 3000;
 
 if (context.RunTest) {
 	suite('Schema compare integration test suite', () => {
@@ -58,7 +58,7 @@ if (context.RunTest) {
 		test('Schema compare database to database comparison and script generation', async function () {
 
 			let server = await getStandaloneServer();
-			await utils.connectToServer(server, 300);
+			await utils.connectToServer(server, SERVER_CONNECTION_TIMEOUT);
 
 			let nodes = <azdata.objectexplorer.ObjectExplorerNode[]>await azdata.objectexplorer.getActiveConnectionNodes();
 			assert(nodes.length > 0, `Expecting at least one active connection, actual: ${nodes.length}`);
@@ -101,13 +101,11 @@ if (context.RunTest) {
 				let schemaCompareResult = await schemaCompareService.schemaCompare(source, target, azdata.TaskExecutionMode.execute, null);
 				assertSchemaCompareResult(schemaCompareResult);
 
-
-				let scriptFile: string = path.join(__dirname, 'schemaCompare_DBtoDB_TestScript' + now.getTime().toString() + '.sql');
-				let status = await schemaCompareService.schemaCompareGenerateScript(schemaCompareResult.operationId, dummyDBName, scriptFile, azdata.TaskExecutionMode.execute);
+				let status = await schemaCompareService.schemaCompareGenerateScript(schemaCompareResult.operationId, server.serverName, dummyDBName, azdata.TaskExecutionMode.script);
 
 				// TODO : add wait for tasks to complete
 				// script generation might take too long and the 'success' status does not mean that script is created.
-				await assertScriptGenerationResult(status, scriptFile);
+				await assertScriptGenerationResult(status);
 			}
 			finally {
 				await utils.deleteDB(sourceDB, ownerUri);
@@ -117,7 +115,7 @@ if (context.RunTest) {
 
 		test('Schema compare dacpac to database comparison and script generation', async function () {
 			let server = await getStandaloneServer();
-			await utils.connectToServer(server, 300);
+			await utils.connectToServer(server, SERVER_CONNECTION_TIMEOUT);
 
 			let nodes = <azdata.objectexplorer.ObjectExplorerNode[]>await azdata.objectexplorer.getActiveConnectionNodes();
 			assert(nodes.length > 0, `Expecting at least one active connection, actual: ${nodes.length}`);
@@ -155,9 +153,8 @@ if (context.RunTest) {
 				let schemaCompareResult = await schemaCompareService.schemaCompare(source, target, azdata.TaskExecutionMode.execute, null);
 				assertSchemaCompareResult(schemaCompareResult);
 
-				let scriptFile: string = path.join(__dirname, 'schemaCompare_DPtoDB_TestScript' + now.getTime().toString() + '.sql');
-				let status = await schemaCompareService.schemaCompareGenerateScript(schemaCompareResult.operationId, dummyDBName, scriptFile, azdata.TaskExecutionMode.execute);
-				await assertScriptGenerationResult(status, scriptFile);
+				let status = await schemaCompareService.schemaCompareGenerateScript(schemaCompareResult.operationId, server.serverName, dummyDBName, azdata.TaskExecutionMode.script);
+				await assertScriptGenerationResult(status);
 			}
 			finally {
 				await utils.deleteDB(targetDB, ownerUri);
@@ -173,16 +170,7 @@ export function assertSchemaCompareResult(schemaCompareResult: azdata.SchemaComp
 	assert(schemaCompareResult.differences.length === 4, `Expected: 4 differences. Actual differences: "${schemaCompareResult.differences.length}"`);
 }
 
-export async function assertScriptGenerationResult(resultstatus: azdata.ResultStatus, filepath: string): Promise<void> {
+export async function assertScriptGenerationResult(resultstatus: azdata.ResultStatus): Promise<void> {
 	// TODO add more validation
 	assert(resultstatus.success === true, `Expected: success true Actual: "${resultstatus.success}" Error Message: "${resultstatus.errorMessage}`);
-	let retry = 10; // file takes quite long time to get created
-	let exists = false;
-	while (retry > 0 && !exists) {
-		exists = existsSync(filepath);
-		await utils.sleep(2000);
-		retry--;
-	}
-	assert(exists, `script file ${filepath} is expected to be present`);
-	unlinkSync(filepath);
 }

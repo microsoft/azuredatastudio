@@ -32,7 +32,8 @@ export class SchemaCompareTestService implements azdata.SchemaCompareServicesPro
 
 		return Promise.resolve(result);
 	}
-	schemaCompareGenerateScript(operationId: string, targetDatabaseName: string, scriptFilePath: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> {
+
+	schemaCompareGenerateScript(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> {
 		return undefined;
 	}
 

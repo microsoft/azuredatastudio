@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-.modal {
+.monaco-shell .modal {
 	background-color: rgba(204, 204, 204, 0.6);
 	right: 0;
 	left: 0;
@@ -13,7 +13,7 @@
 	z-index: 500;
 }
 
-.modal:not(.flyout-dialog) .modal-dialog {
+.monaco-shell .modal:not(.flyout-dialog) .modal-dialog {
 	margin: auto;
 	width: 640px;
 	height: 480px;
@@ -32,7 +32,7 @@
 	height: 25px;
 }
 
-.modal.flyout-dialog .modal-dialog {
+.monaco-shell .modal.flyout-dialog .modal-dialog {
 	margin: auto auto auto auto;
 	height: 100%;
 	width: 500px;
@@ -40,13 +40,14 @@
 	position: absolute;
 	overflow-y: hidden;
 }
-.modal.flyout-dialog.wide .modal-dialog {
+
+.monaco-shell .modal.flyout-dialog.wide .modal-dialog {
 	width: 1200px;
 	max-width: 95%;
 	min-width: 400px;
 }
 
-.modal.flyout-dialog .modal-content {
+.monaco-shell .modal.flyout-dialog .modal-content {
 	height: 100%;
 	font-size: 11px;
 	display: flex;
@@ -65,10 +66,10 @@
 	margin-right: 10px;
 }
 
-.modal.flyout-dialog .modal-body,
-.modal.flyout-dialog .angular-modal-body,
+.monaco-shell .modal.flyout-dialog .modal-body,
+.monaco-shell .modal.flyout-dialog .angular-modal-body,
 /* Style for body and footer in modal dialog. This should be applied to dialog created with angular component. */
-.modal.flyout-dialog .modal-body-and-footer {
+.monaco-shell .modal.flyout-dialog .modal-body-and-footer {
 	flex: 1 1;
 	overflow: hidden;
 }
@@ -104,11 +105,11 @@
 	padding-left: 4px;
 }
 
-.vs-dark .modal.flyout-dialog .input {
+.vs-dark.monaco-shell .modal.flyout-dialog .input {
 	background-color: #3C3C3C;
 }
 
-.vs-dark .modal.flyout-dialog input:disabled {
+.vs-dark.monaco-shell .modal.flyout-dialog input:disabled {
 	background-color: #E1E1E1;
 	color:  #3C3C3C;
 }

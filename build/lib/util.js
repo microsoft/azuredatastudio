@@ -8,6 +8,7 @@ const es = require("event-stream");
 const debounce = require("debounce");
 const _filter = require("gulp-filter");
 const rename = require("gulp-rename");
+const _ = require("underscore");
 const path = require("path");
 const fs = require("fs");
 const _rimraf = require("rimraf");
@@ -99,18 +100,22 @@ function skipDirectories() {
     });
 }
 exports.skipDirectories = skipDirectories;
-function cleanNodeModules(rulePath) {
-    const rules = fs.readFileSync(rulePath, 'utf8')
-        .split(/\r?\n/g)
-        .map(line => line.trim())
-        .filter(line => line && !/^#/.test(line));
-    const excludes = rules.filter(line => !/^!/.test(line)).map(line => `!**/node_modules/${line}`);
-    const includes = rules.filter(line => /^!/.test(line)).map(line => `**/node_modules/${line.substr(1)}`);
+function cleanNodeModule(name, excludes, includes) {
+    const toGlob = (path) => '**/node_modules/' + name + (path ? '/' + path : '');
+    const negate = (str) => '!' + str;
+    const allFilter = _filter(toGlob('**'), { restore: true });
+    const globs = [toGlob('**')].concat(excludes.map(_.compose(negate, toGlob)));
     const input = es.through();
-    const output = es.merge(input.pipe(_filter(['**', ...excludes])), input.pipe(_filter(includes)));
+    const nodeModuleInput = input.pipe(allFilter);
+    let output = nodeModuleInput.pipe(_filter(globs));
+    if (includes) {
+        const includeGlobs = includes.map(toGlob);
+        output = es.merge(output, nodeModuleInput.pipe(_filter(includeGlobs)));
+    }
+    output = output.pipe(allFilter.restore);
     return es.duplex(input, output);
 }
-exports.cleanNodeModules = cleanNodeModules;
+exports.cleanNodeModule = cleanNodeModule;
 function loadSourcemaps() {
     const input = es.through();
     const output = input

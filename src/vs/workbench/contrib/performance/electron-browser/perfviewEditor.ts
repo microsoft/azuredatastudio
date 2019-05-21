@@ -52,7 +52,6 @@ export class PerfviewInput extends ResourceEditorInput {
 			localize('name', "Startup Performance"),
 			null,
 			PerfviewInput.Uri,
-			undefined,
 			textModelResolverService
 		);
 	}
