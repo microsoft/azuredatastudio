@@ -190,7 +190,7 @@ export enum ComponentEventType {
 	onMessage,
 	onSelectedRowChanged,
 	onComponentCreated,
-	onCheckBoxChanged,
+	onCellAction,
 }
 
 export interface IComponentEventArgs {
@@ -642,7 +642,7 @@ export enum ColumnType {
 	button = 2
 }
 
-export enum ActionOnColumn {
-	default = 0,
-	custom = 1
+export enum ActionOnCellCheckboxCheck {
+	selectRow = 0,
+	customAction = 1
 }

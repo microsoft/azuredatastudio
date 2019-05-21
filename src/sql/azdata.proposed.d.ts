@@ -3122,7 +3122,7 @@ declare module 'azdata' {
 		headerCssClass?: string;
 		toolTip?: string;
 		type?: ColumnType;
-		actionOnColumn?: ActionOnColumn;
+		options?: CheckboxColumnOption | TextColumnOption;
 	}
 
 	export enum ColumnType {
@@ -3131,9 +3131,16 @@ declare module 'azdata' {
 		button = 2
 	}
 
-	export enum ActionOnColumn {
-		default = 0,
-		custom = 1
+	export interface CheckboxColumnOption {
+		actionOnCheckbox: ActionOnCellCheckboxCheck;
+	}
+
+	export interface TextColumnOption {
+	}
+
+	export enum ActionOnCellCheckboxCheck {
+		selectRow = 0,
+		customAction = 1
 	}
 
 	export interface TableComponentProperties extends ComponentProperties {
@@ -3334,16 +3341,19 @@ declare module 'azdata' {
 		onRowSelected: vscode.Event<any>;
 	}
 
-	export interface IRowCheckboxChangedArg {
+	export interface IRowCheckboxChangedArg extends ICellActionEventArgs {
 		checked: boolean;
+	}
+
+	interface ICellActionEventArgs {
 		row: number;
 		column: number;
-		name: string;
+		columnName: number;
 	}
 
 	export interface TableComponent extends Component, TableComponentProperties {
 		onRowSelected: vscode.Event<any>;
-		onCheckBoxChanged?: vscode.Event<IRowCheckboxChangedArg>;
+		onCellAction?: vscode.Event<ICellActionEventArgs>;
 	}
 
 	export interface FileBrowserTreeComponent extends Component, FileBrowserTreeProperties {

@@ -21,8 +21,8 @@ export interface ICheckboxSelectColumnOptions extends Slick.PluginOptions, IChec
 
 // Actions expected on checkbox click
 export enum ActionOnCheck {
-	default = 0,
-	custom = 1
+	selectRow = 0,
+	customAction = 1
 }
 
 export interface IRowCheckboxChangedArg {
@@ -254,8 +254,8 @@ export class CheckboxSelectColumn<T> implements Slick.Plugin<T> {
 
 		// use data for first time rendering
 		// note: make sure Init is called before using this._grid
-		let v = (this._grid) ? this._grid.getDataItem(row) : null;
-		if (v && v[this._options.title] === true) {
+		let rowVal = (this._grid) ? this._grid.getDataItem(row) : null;
+		if (rowVal && this._options.title && rowVal[this._options.title] === true) {
 			this._selectedCheckBoxLookup[row] = true;
 			return strings.format(checkboxTemplate, 'checked');
 		}
@@ -266,6 +266,6 @@ export class CheckboxSelectColumn<T> implements Slick.Plugin<T> {
 	}
 
 	private isCustomActionRequested(): boolean {
-		return (this._options.actionOnCheck && this._options.actionOnCheck === ActionOnCheck.custom);
+		return (this._options.actionOnCheck === ActionOnCheck.customAction);
 	}
 }

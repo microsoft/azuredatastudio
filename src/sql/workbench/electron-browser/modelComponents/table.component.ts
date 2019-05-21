@@ -196,12 +196,12 @@ export default class TableComponent extends ComponentBase implements IComponent,
 				toolTip: col.toolTip,
 				width: col.width,
 				cssClass: col.cssClass,
-				actionOnCheck: col.actionOnColumn
+				actionOnCheck: col.options ? col.options.actionOnCheckbox : null
 			}, index);
 
 			this._register(this._checkboxColumns[col.value].onChange((state) => {
 				this.fireEvent({
-					eventType: ComponentEventType.onCheckBoxChanged,
+					eventType: ComponentEventType.onCellAction,
 					args: {
 						row: state.row,
 						column: state.column,

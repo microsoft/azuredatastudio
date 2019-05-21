@@ -1094,7 +1094,7 @@ class TableComponentWrapper extends ComponentWrapper implements azdata.TableComp
 		super(proxy, handle, ModelComponentTypes.Table, id);
 		this.properties = {};
 		this._emitterMap.set(ComponentEventType.onSelectedRowChanged, new Emitter<any>());
-		this._emitterMap.set(ComponentEventType.onCheckBoxChanged, new Emitter<any>());
+		this._emitterMap.set(ComponentEventType.onCellAction, new Emitter<any>());
 	}
 
 	public get data(): any[][] {
@@ -1131,8 +1131,8 @@ class TableComponentWrapper extends ComponentWrapper implements azdata.TableComp
 		return emitter && emitter.event;
 	}
 
-	public get onCheckBoxChanged(): vscode.Event<any> {
-		let emitter = this._emitterMap.get(ComponentEventType.onCheckBoxChanged);
+	public get onCellAction(): vscode.Event<any> {
+		let emitter = this._emitterMap.get(ComponentEventType.onCellAction);
 		return emitter && emitter.event;
 	}
 }

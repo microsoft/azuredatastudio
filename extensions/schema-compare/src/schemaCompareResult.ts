@@ -204,7 +204,7 @@ export class SchemaCompareResult {
 					cssClass: 'align-with-header',
 					width: 60,
 					type: azdata.ColumnType.checkBox,
-					actionOnColumn: azdata.ActionOnColumn.custom
+					options: { actionOnCheckbox: azdata.ActionOnCellCheckboxCheck.customAction }
 				},
 				{
 					value: localize('schemaCompare.actionColumn', 'Action'),
@@ -274,10 +274,13 @@ export class SchemaCompareResult {
 				});
 			}
 		}));
-		this.tablelistenersToDispose.push(this.differencesTable.onCheckBoxChanged(async (rowState) => {
-			let diff = this.comparisonResult.differences[rowState.row];
-			await service.schemaCompareIncludeExcludeNode(this.comparisonResult.operationId, diff, rowState.checked, azdata.TaskExecutionMode.execute);
-			this.saveExcludeState(rowState);
+		this.tablelistenersToDispose.push(this.differencesTable.onCellAction(async (rowState) => {
+			let checkboxState = <azdata.IRowCheckboxChangedArg>rowState;
+			if (checkboxState) {
+				let diff = this.comparisonResult.differences[checkboxState.row];
+				await service.schemaCompareIncludeExcludeNode(this.comparisonResult.operationId, diff, checkboxState.checked, azdata.TaskExecutionMode.execute);
+				this.saveExcludeState(checkboxState);
+			}
 		}));
 	}
 
