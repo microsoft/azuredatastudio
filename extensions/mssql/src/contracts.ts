@@ -444,8 +444,8 @@ export interface SchemaCompareParams {
 
 export interface SchemaCompareGenerateScriptParams {
 	operationId: string;
+	targetServerName: string;
 	targetDatabaseName: string;
-	scriptFilePath: string;
 	taskExecutionMode: TaskExecutionMode;
 }
 

@@ -8,6 +8,8 @@ import { ResourceType, ResourceTypeOption, DeploymentProvider } from '../interfa
 import { IToolsService } from './toolsService';
 import * as vscode from 'vscode';
 import { IPlatformService } from './platformService';
+import * as nls from 'vscode-nls';
+const localize = nls.loadMessageBundle();
 
 export interface IResourceTypeService {
 	getResourceTypes(filterByPlatform?: boolean): ResourceType[];
@@ -25,8 +27,18 @@ export class ResourceTypeService implements IResourceTypeService {
 	 */
 	getResourceTypes(filterByPlatform: boolean = true): ResourceType[] {
 		if (this._resourceTypes.length === 0) {
+			const pkgJson = require('../../package.json');
+			let extensionFullName: string;
+			if (pkgJson && pkgJson.name && pkgJson.publisher) {
+				extensionFullName = `${pkgJson.publisher}.${pkgJson.name}`;
+			} else {
+				const errorMessage = localize('resourceDeployment.extensionFullNameError', 'Could not find package.json or the name/publisher is not set');
+				this.platformService.showErrorMessage(errorMessage);
+				throw new Error(errorMessage);
+			}
+
 			// If we load package.json directly using require(path) the contents won't be localized
-			this._resourceTypes = vscode.extensions.getExtension('microsoft.resource-deployment')!.packageJSON.resourceTypes as ResourceType[];
+			this._resourceTypes = vscode.extensions.getExtension(extensionFullName)!.packageJSON.resourceTypes as ResourceType[];
 			this._resourceTypes.forEach(resourceType => {
 				resourceType.getProvider = (selectedOptions) => { return this.getProvider(resourceType, selectedOptions); };
 			});

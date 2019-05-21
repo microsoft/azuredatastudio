@@ -213,6 +213,7 @@ export class CellModel implements ICellModel {
 			if (this.future && this.future.inProgress) {
 				this.future.inProgress = false;
 				await kernel.interrupt();
+				this.sendNotification(notificationService, Severity.Info, localize('runCellCancelled', "Cell execution cancelled"));
 			} else {
 				// TODO update source based on editor component contents
 				if (kernel.requiresConnection && !this.notebookModel.activeConnection) {
