@@ -9,6 +9,7 @@ import 'mocha';
 import assert = require('assert');
 import { ToolsService } from '../services/toolsService';
 import { ToolType } from '../interfaces';
+import { isNumber } from 'util';
 
 suite('Tools Service Tests', function (): void {
 
@@ -21,6 +22,18 @@ suite('Tools Service Tests', function (): void {
 			{ name: 'kubectl', type: ToolType.KubeCtl },
 			{ name: 'mssqlctl', type: ToolType.MSSQLCtl },
 			{ name: 'python', type: ToolType.Python }];
+
+		const missingTypes: string[] = [];
+
+		// Make sure all the enum values are covered
+		for (const type in ToolType) {
+			if (isNumber(ToolType[type])) {
+				if (tools.findIndex(element => element.type === parseInt(ToolType[type])) === -1) {
+					missingTypes.push(type);
+				}
+			}
+		}
+		assert(missingTypes.length === 0, `the following enum values are not included in the test:${missingTypes.join(',')}`);
 
 		tools.forEach(toolInfo => {
 			const tool = toolsService.getToolByName(toolInfo.name);
