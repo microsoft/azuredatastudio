@@ -45,9 +45,9 @@ gulp.task('mixin', function () {
 	let darwinBundleIdentifier = product.darwinBundleIdentifier;
 
 	if (quality === 'insider') {
-		let dashSuffix =  '-insider';
-		let dotSuffix =  '.insider';
-		let displaySuffix = '- Insider';
+		let dashSuffix =  '-insiders';
+		let dotSuffix =  '.insiders';
+		let displaySuffix = ' - Insiders';
 
 		serviceUrl = `https://sqlopsextensions.blob.core.windows.net/marketplace/v1/extensionsGallery-${quality}.json`;
 		nameShort += dashSuffix;
