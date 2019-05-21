@@ -189,7 +189,7 @@ export class SchemaCompareDialog {
 
 			// if schema compare was launched from a db context menu, set that db as the source
 			if (this.database) {
-				this.formBuilder = view.modelBuilder.formContainer()
+				this.formBuilder = <azdata.FormBuilder>view.modelBuilder.formContainer()
 					.withFormItems([
 						{
 							title: SourceTitle,
@@ -208,9 +208,10 @@ export class SchemaCompareDialog {
 					], {
 							horizontal: true,
 							titleFontSize: titleFontSize
-						});
+						})
+					.withLayout({ width: '100%' });
 			} else {
-				this.formBuilder = view.modelBuilder.formContainer()
+				this.formBuilder = <azdata.FormBuilder>view.modelBuilder.formContainer()
 					.withFormItems([
 						{
 							title: SourceTitle,
@@ -228,7 +229,8 @@ export class SchemaCompareDialog {
 					], {
 							horizontal: true,
 							titleFontSize: titleFontSize
-						});
+						})
+					.withLayout({ width: '100%' });
 			}
 			let formModel = this.formBuilder.component();
 			await view.initializeModel(formModel);
@@ -306,8 +308,8 @@ export class SchemaCompareDialog {
 		databaseRadioButton.onDidClick(() => {
 			this.sourceIsDacpac = false;
 			if ((this.sourceServerDropdown.value as ConnectionDropdownValue)) {
-				this.formBuilder.insertFormItem(this.sourceServerComponent, 2, { horizontal: true, componentWidth: 300, titleFontSize: titleFontSize });
-				this.formBuilder.insertFormItem(this.sourceDatabaseComponent, 3, { horizontal: true, componentWidth: 300, titleFontSize: titleFontSize });
+				this.formBuilder.insertFormItem(this.sourceServerComponent, 2, { horizontal: true, titleFontSize: titleFontSize });
+				this.formBuilder.insertFormItem(this.sourceDatabaseComponent, 3, { horizontal: true, titleFontSize: titleFontSize });
 			} else {
 				this.formBuilder.insertFormItem(this.sourceNoActiveConnectionsText, 2, { horizontal: true, titleFontSize: titleFontSize });
 			}
@@ -361,8 +363,8 @@ export class SchemaCompareDialog {
 			this.targetIsDacpac = false;
 			this.formBuilder.removeFormItem(this.targetDacpacComponent);
 			if ((this.targetServerDropdown.value as ConnectionDropdownValue)) {
-				this.formBuilder.addFormItem(this.targetServerComponent, { horizontal: true, componentWidth: 300, titleFontSize: titleFontSize });
-				this.formBuilder.addFormItem(this.targetDatabaseComponent, { horizontal: true, componentWidth: 300, titleFontSize: titleFontSize });
+				this.formBuilder.addFormItem(this.targetServerComponent, { horizontal: true, titleFontSize: titleFontSize });
+				this.formBuilder.addFormItem(this.targetDatabaseComponent, { horizontal: true, titleFontSize: titleFontSize });
 			} else {
 				this.formBuilder.addFormItem(this.targetNoActiveConnectionsText, { horizontal: true, titleFontSize: titleFontSize });
 			}
