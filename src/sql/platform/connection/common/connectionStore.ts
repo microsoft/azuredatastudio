@@ -124,6 +124,10 @@ export class ConnectionStore {
 			});
 	}
 
+	public savePassword(profile: IConnectionProfile): Promise<boolean> {
+		return this.saveProfilePasswordIfNeeded(profile);
+	}
+
 	/**
 	 * Saves a connection profile group to the user settings.
 	 *

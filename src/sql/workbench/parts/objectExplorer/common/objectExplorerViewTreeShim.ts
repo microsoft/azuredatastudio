@@ -52,8 +52,8 @@ export class OEShimService extends Disposable implements IOEShimService {
 				await this.cm.connect(connProfile, undefined,
 					{ showConnectionDialogOnError: true, showFirewallRuleOnError: true, saveTheConnection: false, showDashboard: false, params: undefined },
 					{
-						onConnectSuccess: async e => {
-							let existingConnection = this.cm.findExistingConnection(connProfile);
+						onConnectSuccess: async (e, profile) => {
+							let existingConnection = this.cm.findExistingConnection(profile);
 							connProfile = new ConnectionProfile(this.capabilities, await this.cm.addSavedPassword(existingConnection));
 							resolve();
 						},

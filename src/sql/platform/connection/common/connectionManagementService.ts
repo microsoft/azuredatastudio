@@ -460,7 +460,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 					this.tryAddActiveConnection(connectionMgmtInfo, connection, options.saveTheConnection);
 
 					if (callbacks.onConnectSuccess) {
-						callbacks.onConnectSuccess(options.params);
+						callbacks.onConnectSuccess(options.params, connectionResult.connectionProfile);
 					}
 					if (options.saveTheConnection) {
 						this.saveToSettings(uri, connection).then(value => {
@@ -471,7 +471,11 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 						connection.saveProfile = false;
 						this.doActionsAfterConnectionComplete(uri, options);
 					}
-					resolve(connectionResult);
+					if (connection.savePassword) {
+						this._connectionStore.savePassword(connection).then(() => {
+							resolve(connectionResult);
+						});
+					}
 				} else if (connectionResult && connectionResult.errorMessage) {
 					this.handleConnectionError(connection, uri, options, callbacks, connectionResult).then(result => {
 						resolve(result);
