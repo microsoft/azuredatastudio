@@ -106,28 +106,28 @@ if (context.RunTest) {
 		}
 
 		test('scala language test', async function () {
-			let configLanguage = 'scala';
+			let language = 'scala';
 
-			languageTest(pySparkNotebookContent, pySpark3KernelMetadata, this.test.title, configLanguage, {
-				name: configLanguage,
+			languageTest(pySparkNotebookContent, pySpark3KernelMetadata, this.test.title, language, {
+				name: language,
 				version: '',
 				mimetype: ''
 			});
 		});
 
 		test('cplusplus language test', async function () {
-			let configLanguage = 'cplusplus';
-			languageTest(pySparkNotebookContent, pySpark3KernelMetadata, this.test.title, configLanguage, {
-				name: configLanguage,
+			let language = 'cplusplus';
+			languageTest(pySparkNotebookContent, pySpark3KernelMetadata, this.test.title, language, {
+				name: language,
 				version: '',
 				mimetype: ''
 			});
 		});
 
 		test('Empty language test', async function () {
-			let configLanguage = '';
-			languageTest(pySparkNotebookContent, pySpark3KernelMetadata, this.test.title, configLanguage, {
-				name: configLanguage,
+			let language = '';
+			languageTest(pySparkNotebookContent, pySpark3KernelMetadata, this.test.title, language, {
+				name: language,
 				version: '',
 				mimetype: 'x-scala'
 			});
@@ -135,7 +135,7 @@ if (context.RunTest) {
 	});
 }
 
-async function languageTest(content: azdata.nb.INotebookContents, kernelMetadata: any, testName: string, configLanguage: string, languageInfo?: any) {
+async function languageTest(content: azdata.nb.INotebookContents, kernelMetadata: any, testName: string, languageConfigured: string, languageInfo?: any) {
 	let notebookJson = Object.assign({}, content, { metadata: {kernelSpec: kernelMetadata, language_info: languageInfo }});
 	let uri = writeNotebookToFile(notebookJson, testName);
 	console.log(uri);
@@ -143,8 +143,8 @@ async function languageTest(content: azdata.nb.INotebookContents, kernelMetadata
 	console.log('Notebook is opened');
 
 	let language = notebook.document.cells[0].contents.metadata.language;
-	console.log('language: ' + language);
-	assert(language === configLanguage, `Expected cell language is: ${configLanguage}, Actual: ${language}`);
+	console.log('Language set in cell: ' + language);
+	assert(language === languageConfigured, `Expected cell language is: ${languageConfigured}, Actual: ${language}`);
 }
 
 async function openNotebook(content: azdata.nb.INotebookContents, kernelMetadata: any, testName: string, runAllCells?: boolean): Promise<azdata.nb.NotebookEditor> {
