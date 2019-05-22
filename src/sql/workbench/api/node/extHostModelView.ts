@@ -1094,6 +1094,7 @@ class TableComponentWrapper extends ComponentWrapper implements azdata.TableComp
 		super(proxy, handle, ModelComponentTypes.Table, id);
 		this.properties = {};
 		this._emitterMap.set(ComponentEventType.onSelectedRowChanged, new Emitter<any>());
+		this._emitterMap.set(ComponentEventType.onCellAction, new Emitter<any>());
 	}
 
 	public get data(): any[][] {
@@ -1127,6 +1128,11 @@ class TableComponentWrapper extends ComponentWrapper implements azdata.TableComp
 
 	public get onRowSelected(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onSelectedRowChanged);
+		return emitter && emitter.event;
+	}
+
+	public get onCellAction(): vscode.Event<any> {
+		let emitter = this._emitterMap.get(ComponentEventType.onCellAction);
 		return emitter && emitter.event;
 	}
 }
