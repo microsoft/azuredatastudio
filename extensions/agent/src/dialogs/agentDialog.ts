@@ -17,6 +17,7 @@ export abstract class AgentDialog<T extends IAgentDialogData> {
 	private static readonly CancelButtonText: string = localize('agentDialog.Cancel', 'Cancel');
 
 	protected _onSuccess: vscode.EventEmitter<T> = new vscode.EventEmitter<T>();
+	protected _isOpen: boolean = false;
 	public readonly onSuccess: vscode.Event<T> = this._onSuccess.event;
 	public dialog: azdata.window.Dialog;
 
@@ -35,29 +36,34 @@ export abstract class AgentDialog<T extends IAgentDialogData> {
 	protected abstract async initializeDialog(dialog: azdata.window.Dialog);
 
 	public async openDialog(dialogName?: string) {
-		let event = dialogName ? dialogName : null;
-		this.dialog = azdata.window.createModelViewDialog(this.title, event);
+		if (!this._isOpen) {
+			this._isOpen = true;
+			let event = dialogName ? dialogName : null;
+			this.dialog = azdata.window.createModelViewDialog(this.title, event);
 
-		await this.model.initialize();
+			await this.model.initialize();
 
-		await this.initializeDialog(this.dialog);
+			await this.initializeDialog(this.dialog);
 
-		this.dialog.okButton.label = AgentDialog.OkButtonText;
-		this.dialog.okButton.onClick(async () => await this.execute());
+			this.dialog.okButton.label = AgentDialog.OkButtonText;
+			this.dialog.okButton.onClick(async () => await this.execute());
 
-		this.dialog.cancelButton.label = AgentDialog.CancelButtonText;
-		this.dialog.cancelButton.onClick(async () => await this.cancel());
+			this.dialog.cancelButton.label = AgentDialog.CancelButtonText;
+			this.dialog.cancelButton.onClick(async () => await this.cancel());
 
-		azdata.window.openDialog(this.dialog);
+			azdata.window.openDialog(this.dialog);
+		}
 	}
 
 	protected async execute() {
 		this.updateModel();
 		await this.model.save();
+		this._isOpen = false;
 		this._onSuccess.fire(this.model);
 	}
 
 	protected async cancel() {
+		this._isOpen = false;
 	}
 
 	protected getActualConditionValue(checkbox: azdata.CheckBoxComponent, dropdown: azdata.DropDownComponent): azdata.JobCompletionActionCondition {
@@ -76,5 +82,9 @@ export abstract class AgentDialog<T extends IAgentDialogData> {
 				break;
 			}
 		}
+	}
+
+	public get isOpen(): boolean {
+		return this._isOpen;
 	}
 }
