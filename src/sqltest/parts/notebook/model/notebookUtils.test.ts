@@ -21,7 +21,7 @@ suite('notebookUtils', function (): void {
 		savePassword: true,
 		groupFullName: '',
 		groupId: '',
-		providerName: '',
+		providerName: 'MSSQL',
 		saveProfile: true,
 		id: '',
 		options: {},

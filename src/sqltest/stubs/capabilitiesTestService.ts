@@ -99,7 +99,6 @@ export class CapabilitiesTestService implements ICapabilitiesService {
 			connectionOptions: connectionProvider,
 		};
 		this.capabilities['MSSQL'] = { connection: msSQLCapabilities };
-
 	}
 
 	/**

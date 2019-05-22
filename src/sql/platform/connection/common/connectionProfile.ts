@@ -43,11 +43,13 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 			this.saveProfile = model.saveProfile;
 			this._id = model.id;
 			this.azureTenantId = model.azureTenantId;
-			const options = this.capabilitiesService.getCapabilities(model.providerName).connection.connectionOptions;
-			let appNameOption = options.find(option => option.specialValueType === ConnectionOptionSpecialType.appName);
-			if (appNameOption) {
-				let appNameKey = appNameOption.name;
-				this.options[appNameKey] = Constants.applicationName;
+			if (this.capabilitiesService) {
+				const options = this.capabilitiesService.getCapabilities(model.providerName).connection.connectionOptions;
+				let appNameOption = options.find(option => option.specialValueType === ConnectionOptionSpecialType.appName);
+				if (appNameOption) {
+					let appNameKey = appNameOption.name;
+					this.options[appNameKey] = Constants.applicationName;
+				}
 			}
 		} else {
 			//Default for a new connection
