@@ -651,7 +651,8 @@ class TreeRenderer implements IRenderer {
 		} else {
 			templateData.resourceLabel.element.setResource({ name: label, description }, { title, hideIcon: true, extraClasses: ['custom-view-tree-node-item-resourceLabel'], matches });
 		}
-
+		// clear out icons to prevent duplication from other templates
+		templateData.icon.className = '';
 		templateData.icon.style.backgroundImage = iconUrl ? `url('${iconUrl.toString(true)}')` : '';
 		DOM.toggleClass(templateData.icon, sqlIcon, !!sqlIcon);
 		DOM.toggleClass(templateData.icon, 'icon', !!sqlIcon);
