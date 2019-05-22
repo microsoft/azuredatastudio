@@ -122,11 +122,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 		this._register(this._onAddConnectionProfile);
 		this._register(this._onDeleteConnectionProfile);
-
-		// Refresh editor titles when connections start/end/change to ensure tabs are colored correctly
-		this.onConnectionChanged(() => this.refreshEditorTitles());
-		this.onConnect(() => this.refreshEditorTitles());
-		this.onDisconnect(() => this.refreshEditorTitles());
 	}
 
 	public providerRegistered(providerId: string): boolean {
@@ -1219,7 +1214,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	public editGroup(group: ConnectionProfileGroup): Promise<any> {
 		return new Promise<string>((resolve, reject) => {
 			this._connectionStore.editGroup(group).then(groupId => {
-				this.refreshEditorTitles();
 				this._onAddConnectionProfile.fire(undefined);
 				resolve(null);
 			}).catch(err => {
@@ -1337,12 +1331,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			return undefined;
 		}
 		return matchingGroup.color;
-	}
-
-	private refreshEditorTitles(): void {
-		if (this._editorGroupService instanceof EditorPart) {
-			this._editorGroupService.refreshEditorTitles();
-		}
 	}
 
 	public removeConnectionProfileCredentials(originalProfile: IConnectionProfile): IConnectionProfile {
