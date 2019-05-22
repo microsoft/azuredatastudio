@@ -488,7 +488,7 @@ export class SchemaCompareOptionsDialog {
 
 			uberOptionsFlexBuilder.addItem(this.optionsFlexBuilder, { CSSStyles: { 'overflow': 'scroll', 'height': '65vh' } });
 			uberOptionsFlexBuilder.addItem(this.descriptionHeading, { CSSStyles: { 'font-weight': 'bold', 'height': '30px' } });
-			uberOptionsFlexBuilder.addItem(this.descriptionText, { CSSStyles: { 'padding': '4px', 'overflow': 'auto', 'height': '10vh' } });
+			uberOptionsFlexBuilder.addItem(this.descriptionText, { CSSStyles: { 'padding': '4px', 'overflow': 'scroll', 'height': '10vh' } });
 			await view.initializeModel(uberOptionsFlexBuilder);
 		});
 	}
