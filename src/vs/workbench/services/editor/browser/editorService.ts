@@ -534,7 +534,7 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 			// {{SQL CARBON EDIT}}
 			// Need to get mode for QueryEditor and Notebook
 			let mode: string = untitledInput.mode ? untitledInput.mode : getFileMode(this.instantiationService, untitledInput.resource);
-			return convertEditorInput(this.untitledEditorService.createOrGet(untitledInput.resource, untitledInput.mode, untitledInput.contents, untitledInput.encoding), undefined, this.instantiationService);
+			return convertEditorInput(this.untitledEditorService.createOrGet(untitledInput.resource, mode, untitledInput.contents, untitledInput.encoding), undefined, this.instantiationService);
 		}
 
 		// Resource Editor Support
