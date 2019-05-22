@@ -441,6 +441,9 @@ export class SchemaCompareDialog {
 			return undefined;
 		}
 
+		// reverse list so that most recent connections are first
+		cons.reverse();
+
 		let count = -1;
 		let idx = -1;
 		let values = cons.map(c => {
@@ -465,6 +468,13 @@ export class SchemaCompareDialog {
 			};
 		});
 
+		// move server of current connection to the top of the list so it is the default
+		if (idx >= 1) {
+			let tmp = values[0];
+			values[0] = values[idx];
+			values[idx] = tmp;
+		}
+
 		values = values.reduce((uniqueValues, conn) => {
 			let exists = uniqueValues.find(x => x.displayName === conn.displayName);
 			if (!exists) {
@@ -472,16 +482,6 @@ export class SchemaCompareDialog {
 			}
 			return uniqueValues;
 		}, []);
-
-		// reverse list so that most recent connections show first
-		values.reverse();
-
-		// move server of current connection to the top of the list so it is the default
-		if (idx >= 1) {
-			let tmp = values[0];
-			values[0] = values[idx];
-			values[idx] = tmp;
-		}
 
 		return values;
 	}
