@@ -235,7 +235,7 @@ export class SchemaCompareResult {
 		this.optionsButton.enabled = true;
 
 		// explicitly exclude things that were excluded in previous compare
-		let thingsToExclude = this.sourceTargetSwitched ? this.originalTargetExcludes : this.originalSourceExcludes;
+		const thingsToExclude = this.sourceTargetSwitched ? this.originalTargetExcludes : this.originalSourceExcludes;
 		if (thingsToExclude) {
 			for (let item in thingsToExclude) {
 				if (<azdata.DiffEntry>thingsToExclude[item]) {
