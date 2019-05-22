@@ -72,6 +72,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _oldKernel: nb.IKernel;
 	private _clientSessionListeners: IDisposable[] = [];
 	private _connectionUrisToDispose: string[] = [];
+	public requestConnectionHandler: () => Promise<boolean>;
 
 	constructor(
 		private _notebookOptions: INotebookModelOptions,
@@ -299,6 +300,13 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			this._inErrorState = true;
 			throw error;
 		}
+	}
+
+	public async requestConnection(): Promise<boolean> {
+		if (this.requestConnectionHandler) {
+			return this.requestConnectionHandler();
+		}
+		return false;
 	}
 
 	public findCellIndex(cellModel: ICellModel): number {
