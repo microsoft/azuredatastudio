@@ -350,6 +350,7 @@ export class AttachToDropdown extends SelectBox {
 		this._register(this.model.contextsLoading(() => {
 			this.setOptions([msgLoadingContexts], 0);
 		}));
+		this.model.requestConnectionHandler = () => this.openConnectionDialog(true);
 		this.handleContextsChanged();
 	}
 
@@ -489,14 +490,14 @@ export class AttachToDropdown extends SelectBox {
 	 * Bind the server value to 'Attach To' drop down
 	 * Connected server is displayed at the top of drop down
 	 **/
-	public async openConnectionDialog(useProfile: boolean = false): Promise<void> {
+	public async openConnectionDialog(useProfile: boolean = false): Promise<boolean> {
 		try {
 			await this._connectionDialogService.openDialogAndWait(this._connectionManagementService, { connectionType: 1, providers: this.model.getApplicableConnectionProviderIds(this.model.clientSession.kernel.name) }, useProfile ? this.model.connectionProfile : undefined).then(connection => {
 				let attachToConnections = this.values;
 				if (!connection) {
 					this.loadAttachToDropdown(this.model, this.getKernelDisplayName());
 					this.doChangeContext(undefined, true);
-					return;
+					return Promise.resolve(false);
 				}
 				let connectionUri = this._connectionManagementService.getConnectionUri(connection);
 				let connectionProfile = new ConnectionProfile(this._capabilitiesService, connection);
@@ -505,7 +506,7 @@ export class AttachToDropdown extends SelectBox {
 				if (attachToConnections.some(val => val === connectedServer)) {
 					this.loadAttachToDropdown(this.model, this.getKernelDisplayName());
 					this.doChangeContext();
-					return;
+					return Promise.resolve(true);
 				}
 				else {
 					attachToConnections.unshift(connectedServer);
@@ -524,11 +525,14 @@ export class AttachToDropdown extends SelectBox {
 				this.model.addAttachToConnectionsToBeDisposed(connectionUri);
 				// Call doChangeContext to set the newly chosen connection in the model
 				this.doChangeContext(connectionProfile);
+				return Promise.resolve(true);
 			});
+			return Promise.resolve(true);
 		}
 		catch (error) {
 			const actions: INotificationActions = { primary: [] };
 			this._notificationService.notify({ severity: Severity.Error, message: getErrorMessage(error), actions });
+			return Promise.resolve(false);
 		}
 	}
 }
