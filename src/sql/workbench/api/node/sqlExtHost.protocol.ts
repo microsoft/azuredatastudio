@@ -468,7 +468,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Schema compare generate script
 	 */
-	$schemaCompareGenerateScript(handle: number, operationId: string, targetDatabaseName: string, scriptFilePath: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> { throw ni(); }
+	$schemaCompareGenerateScript(handle: number, operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> { throw ni(); }
 
 	/**
 	 * Schema compare publish changes

@@ -30,7 +30,7 @@ class LogOutputChannels extends Disposable implements IWorkbenchContribution {
 		outputChannelRegistry.registerChannel({ id: Constants.sharedLogChannelId, label: nls.localize('sharedLog', "Shared"), file: URI.file(join(environmentService.logsPath, `sharedprocess.log`)), log: true });
 		outputChannelRegistry.registerChannel({ id: Constants.rendererLogChannelId, label: nls.localize('rendererLog', "Window"), file: URI.file(join(environmentService.logsPath, `renderer${environmentService.configuration.windowId}.log`)), log: true });
 
-		// {{SQL CARBON EDIT}}
+		// {{SQL CARBON EDIT}} @anthonydresser 05/19/19 investigate, this should be in the extension
 		let toolsServiceLogFile: string = join(environmentService.logsPath, '..', '..', 'mssql', `sqltools_${Date.now()}.log`);
 		console.log(`SqlTools Log file is: ${toolsServiceLogFile}`);
 		outputChannelRegistry.registerChannel({ id: Constants.sqlToolsLogChannellId, label: nls.localize('sqlToolsLog', "Log (SqlTools)"), file: URI.file(toolsServiceLogFile), log: true });

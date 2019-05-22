@@ -23,11 +23,9 @@ const defaultOptions: ICheckboxSelectColumnOptions = {
 	width: 30
 };
 
-const checkboxTemplate = `
-							<div style="display: flex; align-items: center; flex-direction: column">
+const checkboxTemplate = `<div style="display: flex; align-items: center; flex-direction: column">
 								<input type="checkbox" {0}>
-							</div>
-`;
+							</div>`;
 
 export class CheckboxSelectColumn<T> implements Slick.Plugin<T> {
 	private _options: ICheckboxSelectColumnOptions;

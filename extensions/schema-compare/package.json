@@ -48,5 +48,12 @@
     "vscode-extension-telemetry": "0.0.18",
     "vscode-nls": "^3.2.1"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@types/mocha": "^5.2.5",
+		"@types/node": "^8.0.24",
+		"mocha": "^5.2.0",
+		"should": "^13.2.1",
+    "typemoq": "^2.1.0",
+		"vscode": "1.1.26"
+  }
 }

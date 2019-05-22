@@ -253,9 +253,9 @@ export class ExtensionEditor extends BaseEditor {
 		const extensionActions = append(details, $('.actions'));
 		this.extensionActionBar = new ActionBar(extensionActions, {
 			animated: false,
-			actionItemProvider: (action: Action) => {
+			actionViewItemProvider: (action: Action) => {
 				if (action instanceof ExtensionEditorDropDownAction) {
-					return action.createActionItem();
+					return action.createActionViewItem();
 				}
 				return undefined;
 			}
@@ -565,7 +565,7 @@ export class ExtensionEditor extends BaseEditor {
 				this.contentDisposables.push(webviewElement.onDidFocus(() => this.fireOnDidFocus()));
 				const removeLayoutParticipant = arrays.insert(this.layoutParticipants, webviewElement);
 				this.contentDisposables.push(toDisposable(removeLayoutParticipant));
-				webviewElement.contents = body;
+				webviewElement.html = body;
 
 				this.contentDisposables.push(webviewElement.onDidClickLink(link => {
 					if (!link) {

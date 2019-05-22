@@ -9,7 +9,7 @@ import 'mocha';
 import * as azdata from 'azdata';
 import { context } from './testContext';
 import { getBdcServer, TestServerProfile, getAzureServer, getStandaloneServer } from './testConfig';
-import { connectToServer } from './utils';
+import { connectToServer, createDB, deleteDB } from './utils';
 import assert = require('assert');
 
 if (context.RunTest) {
@@ -69,6 +69,18 @@ if (context.RunTest) {
 
 			await verifyContextMenu(server, expectedActions);
 		});
+
+		test('Stand alone database context menu test', async function () {
+			let server = await getStandaloneServer();
+			let expectedActions: string[] = [];
+			if (process.platform === 'win32') {
+				expectedActions = ['Manage', 'New Query', 'Backup', 'Restore', 'Refresh', 'Data-tier Application wizard', 'Schema Compare', 'Import wizard', 'Generate Scripts...', 'Properties'];
+			}
+			else {
+				expectedActions = ['Manage', 'New Query', 'Backup', 'Restore', 'Refresh', 'Data-tier Application wizard', 'Schema Compare', 'Import wizard'];
+			}
+			await VerifyDBContextMenu(server, 3000, expectedActions);
+		});
 	});
 }
 
@@ -83,7 +95,7 @@ async function verifyContextMenu(server: TestServerProfile, expectedActions: str
 	let node = nodes[index];
 	let actions = await azdata.objectexplorer.getNodeActions(node.connectionId, node.nodePath);
 
-	const expectedString = expectedActions.join(',');
+	let expectedString = expectedActions.join(',');
 	const actualString = actions.join(',');
 	assert(expectedActions.length === actions.length && expectedString === actualString, `Expected actions: "${expectedString}", Actual actions: "${actualString}"`);
 }
@@ -103,3 +115,37 @@ async function VerifyOeNode(server: TestServerProfile, timeout: number, expected
 	assert(expectedNodeLabel.toLocaleString() === actualNodeLabel.toLocaleString(), `Expected node label: "${expectedNodeLabel}", Actual: "${actualNodeLabel}"`);
 }
 
+async function VerifyDBContextMenu(server: TestServerProfile, timeoutinMS: number, expectedActions: string[]) {
+
+	await connectToServer(server, timeoutinMS);
+
+	let nodes = <azdata.objectexplorer.ObjectExplorerNode[]>await azdata.objectexplorer.getActiveConnectionNodes();
+	assert(nodes.length > 0, `Expecting at least one active connection, actual: ${nodes.length}`);
+
+	let index = nodes.findIndex(node => node.nodePath.includes(server.serverName));
+	assert(index !== -1, `Failed to find server: "${server.serverName}" in OE tree`);
+
+	let ownerUri = await azdata.connection.getUriForConnection(nodes[index].connectionId);
+	let dbName: string = 'ads_test_VerifyDBContextMenu_' + new Date().getTime().toString();
+	try {
+		await createDB(dbName, ownerUri);
+
+		let serverNode = nodes[index];
+		let children = await serverNode.getChildren();
+
+		assert(children[0].label.toLocaleLowerCase === 'Databases'.toLocaleLowerCase, `Expected Databases node. Actual ${children[0].label}`);
+		let databasesFolder = children[0];
+
+		let databases = await databasesFolder.getChildren();
+		assert(databases.length > 2, `No database present, can not test further`); // System Databses folder and at least one database
+
+		let actions = await azdata.objectexplorer.getNodeActions(databases[1].connectionId, databases[1].nodePath);
+
+		const expectedString = expectedActions.join(',');
+		const actualString = actions.join(',');
+		assert(expectedActions.length === actions.length && expectedString === actualString, `Expected actions: "${expectedString}", Actual actions: "${actualString}"`);
+	}
+	finally {
+		await deleteDB(dbName, ownerUri);
+	}
+}

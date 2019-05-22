@@ -1360,7 +1360,6 @@ class TaskService extends Disposable implements ITaskService {
 				this.modelService, this.configurationResolverService, this.telemetryService,
 				this.contextService, this._environmentService,
 				TaskService.OutputChannelId,
-				this.configurationService,
 				(workspaceFolder: IWorkspaceFolder) => {
 					if (!workspaceFolder) {
 						return undefined;
@@ -1974,7 +1973,7 @@ class TaskService extends Disposable implements ITaskService {
 	}
 
 	private showQuickPick(tasks: Promise<Task[]> | Task[], placeHolder: string, defaultEntry?: TaskQuickPickEntry, group: boolean = false, sort: boolean = false, selectedEntry?: TaskQuickPickEntry, additionalEntries?: TaskQuickPickEntry[]): Promise<TaskQuickPickEntry | undefined | null> {
-		let _createEntries = (): Promise<TaskQuickPickEntry[]> => {
+		let _createEntries = (): Promise<QuickPickInput<TaskQuickPickEntry>[]> => {
 			if (Array.isArray(tasks)) {
 				return Promise.resolve(this.createTaskQuickPickEntries(tasks, group, sort, selectedEntry));
 			} else {
@@ -1984,8 +1983,8 @@ class TaskService extends Disposable implements ITaskService {
 		return this.quickInputService.pick(_createEntries().then((entries) => {
 			if ((entries.length === 0) && defaultEntry) {
 				entries.push(defaultEntry);
-			}
-			else if (entries.length > 1 && additionalEntries && additionalEntries.length > 0) {
+			} else if (entries.length > 1 && additionalEntries && additionalEntries.length > 0) {
+				entries.push({ type: 'separator', label: '' });
 				entries.push(additionalEntries[0]);
 			}
 			return entries;
@@ -2013,7 +2012,7 @@ class TaskService extends Disposable implements ITaskService {
 			Severity.Info,
 			nls.localize('TaskService.ignoredFolder', 'The following workspace folders are ignored since they use task version 0.1.0: {0}', this.ignoredWorkspaceFolders.map(f => f.name).join(', ')),
 			[{
-				label: nls.localize('TaskService.notAgain', 'Don\'t Show Again'),
+				label: nls.localize('TaskService.notAgain', "Don't Show Again"),
 				isSecondary: true,
 				run: () => {
 					this.storageService.store(TaskService.IgnoreTask010DonotShowAgain_key, true, StorageScope.WORKSPACE);
@@ -2219,7 +2218,7 @@ class TaskService extends Disposable implements ITaskService {
 		}
 		let runQuickPick = (promise?: Promise<Task[]>) => {
 			this.showQuickPick(promise || this.getActiveTasks(),
-				nls.localize('TaskService.taskToTerminate', 'Select task to terminate'),
+				nls.localize('TaskService.taskToTerminate', 'Select a task to terminate'),
 				{
 					label: nls.localize('TaskService.noTaskRunning', 'No task is currently running'),
 					task: undefined
@@ -2227,7 +2226,7 @@ class TaskService extends Disposable implements ITaskService {
 				false, true,
 				undefined,
 				[{
-					label: nls.localize('TaskService.terminateAllRunningTasks', 'All running tasks'),
+					label: nls.localize('TaskService.terminateAllRunningTasks', 'All Running Tasks'),
 					id: 'terminateAll',
 					task: undefined
 				}]
@@ -2742,7 +2741,6 @@ let schema: IJSONSchema = {
 
 import schemaVersion1 from '../common/jsonSchema_v1';
 import schemaVersion2, { updateProblemMatchers } from '../common/jsonSchema_v2';
-import { IConfigurationRegistry, Extensions } from 'vs/platform/configuration/common/configurationRegistry';
 schema.definitions = {
 	...schemaVersion1.definitions,
 	...schemaVersion2.definitions,
@@ -2756,19 +2754,3 @@ ProblemMatcherRegistry.onMatcherChanged(() => {
 	updateProblemMatchers();
 	jsonRegistry.notifySchemaChanged(schemaId);
 });
-
-const configurationRegistry = Registry.as<IConfigurationRegistry>(Extensions.Configuration);
-configurationRegistry.registerConfiguration({
-	id: 'Tasks',
-	order: 100,
-	title: nls.localize('tasksConfigurationTitle', "Tasks"),
-	type: 'object',
-	properties: {
-		'tasks.terminal.windowsAllowConpty': {
-			markdownDescription: nls.localize('tasks.terminal.windowsAllowConpty', "Works in conjunction with the `#terminal.integrated.windowsEnableConpty#` setting. Both must be enabled for tasks to use conpty. Defaults to `false`."),
-			type: 'boolean',
-			default: false
-		}
-	}
-});
-
