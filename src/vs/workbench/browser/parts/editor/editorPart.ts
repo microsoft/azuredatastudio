@@ -32,10 +32,6 @@ import { onUnexpectedError } from 'vs/base/common/errors';
 import { Parts, IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 
-// {{SQL CARBON EDIT}}
-import { convertEditorInput } from 'sql/workbench/common/customInputConverter';
-
-
 interface IEditorPartUIState {
 	serializedGrid: ISerializedGrid;
 	activeGroup: GroupIdentifier;
@@ -977,11 +973,6 @@ export class EditorPart extends Part implements IEditorGroupsService, IEditorGro
 
 		// Event
 		this._onDidLayout.fire(dimension);
-	}
-
-	// {{SQL CARBON EDIT}} -- Allow editor titles to be refreshed to support tab coloring
-	public refreshEditorTitles(): void {
-		//this.editorGroupsControl.refreshTitles();
 	}
 
 	protected saveState(): void {
