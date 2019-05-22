@@ -107,6 +107,7 @@ if (context.RunTest) {
 	});
 }
 
+
 async function openNotebook(content: azdata.nb.INotebookContents, kernelMetadata: any, testName: string, runAllCells?: boolean): Promise<azdata.nb.NotebookEditor> {
 	let notebookConfig = vscode.workspace.getConfiguration('notebook');
 	notebookConfig.update('pythonPath', getConfigValue(EnvironmentVariable_PYTHON_PATH), 1);
