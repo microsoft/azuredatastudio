@@ -160,7 +160,6 @@ export class SchemaCompareResult {
 
 			await view.initializeModel(this.flexModel);
 		});
-		this.editor.openEditor();
 	}
 
 	public start(): void {
@@ -172,7 +171,7 @@ export class SchemaCompareResult {
 		return this.comparisonResult;
 	}
 
-	private async execute(): Promise<void> {
+	public async execute(): Promise<void> {
 		if (this.schemaCompareOptionDialog && this.schemaCompareOptionDialog.deploymentOptions) {
 			// take updates if any
 			this.deploymentOptions = this.schemaCompareOptionDialog.deploymentOptions;

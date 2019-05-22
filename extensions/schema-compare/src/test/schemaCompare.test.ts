@@ -6,8 +6,6 @@
 'use strict';
 
 import * as should from 'should';
-import * as TypeMoq from 'typemoq';
-import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import 'mocha';
 import { SchemaCompareDialog } from './../dialogs/schemaCompareDialog';
@@ -51,13 +49,13 @@ const mockTargetEndpoint: azdata.SchemaCompareEndpointInfo = {
 };
 
 describe('SchemaCompareDialog.openDialog', function(): void {
-	it('Should be correct when created.', function(): void {
+	it('Should be correct when created.', async function(): Promise<void> {
 		let dialog = new SchemaCompareDialog();
-		dialog.openDialog(mockConnectionProfile);
+		await dialog.openDialog(mockConnectionProfile);
 
 		should(dialog.dialog.title).equal('Schema Compare');
-		should(dialog.dialog.okButton.label).equal('Compare');
-		should(dialog.dialog.okButton.enabled).equal(true);
+		should(dialog.dialog.okButton.label).equal('Ok');
+		should(dialog.dialog.okButton.enabled).equal(false); // Should be false when open
 	});
 });
 
@@ -71,7 +69,10 @@ describe('SchemaCompareResult.start', function(): void {
 		await promise;
 		await result.start();
 
-		should(result.getComparisionResult().success).equal(true);
-		should(result.getComparisionResult().operationId).equal(sc.testOperationId);
+		should(result.getComparisionResult() === undefined);
+		await result.execute();
+
+		should(result.getComparisionResult() !== undefined);
+		should(result.getComparisionResult().operationId !== undefined);
 	});
 });
