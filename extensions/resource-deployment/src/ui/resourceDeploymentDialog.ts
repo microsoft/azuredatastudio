@@ -8,7 +8,7 @@ import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 import { IResourceTypeService } from '../services/resourceTypeService';
 import * as vscode from 'vscode';
-import { ResourceType, DeploymentProvider, ToolInstallationStatus } from '../interfaces';
+import { ResourceType, DeploymentProvider, ToolStatus } from '../interfaces';
 import { IToolsService } from '../services/toolsService';
 import { INotebookService } from '../services/notebookService';
 
@@ -165,23 +165,22 @@ export class ResourceDeploymentDialog {
 	}
 
 	private updateTools(): void {
-		this.toolsService.getToolStatus(this.getCurrentProvider().requiredTools).then(toolStatus => {
-			let tableData = toolStatus.map(tool => {
-				return [tool.name, tool.description, tool.version, this.getToolStatusText(tool.status)];
-			});
-			this._toolsTable.data = tableData;
+
+		let tableData = this.toolsService.getStatusForTools(this.getCurrentProvider().requiredTools).map(tool => {
+			return [tool.name, tool.description, tool.version, this.getToolStatusText(tool.status)];
 		});
+		this._toolsTable.data = tableData;
 	}
 
-	private getToolStatusText(status: ToolInstallationStatus): string {
+	private getToolStatusText(status: ToolStatus): string {
 		switch (status) {
-			case ToolInstallationStatus.Installed:
+			case ToolStatus.Installed:
 				return '✔️ ' + localize('deploymentDialog.InstalledText', 'Installed');
-			case ToolInstallationStatus.NotInstalled:
+			case ToolStatus.NotInstalled:
 				return '❌ ' + localize('deploymentDialog.NotInstalledText', 'Not Installed');
-			case ToolInstallationStatus.Installing:
+			case ToolStatus.Installing:
 				return '⌛ ' + localize('deploymentDialog.InstallingText', 'Installing…');
-			case ToolInstallationStatus.FailedToInstall:
+			case ToolStatus.FailedToInstall:
 				return '❌ ' + localize('deploymentDialog.FailedToInstallText', 'Install Failed');
 			default:
 				return 'unknown status';

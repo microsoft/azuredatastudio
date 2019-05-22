@@ -3,8 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
-import { ToolType, ITool, ToolInstallationStatus } from '../../interfaces';
+import { ToolType, ITool } from '../../interfaces';
 import * as nls from 'vscode-nls';
+import { SemVer } from 'semver';
 const localize = nls.loadMessageBundle();
 
 export class MSSQLCtlTool implements ITool {
@@ -24,16 +25,15 @@ export class MSSQLCtlTool implements ITool {
 		return localize('resourceDeployment.MSSQLCTLDisplayName', 'mssqlctl');
 	}
 
-	isInstalled(versionExpression: string): Thenable<boolean> {
-		let promise = new Promise<boolean>(resolve => {
-			setTimeout(() => {
-				resolve(true);
-			}, 500);
-		});
-		return promise;
+	get supportAutoInstall(): boolean {
+		return true;
 	}
 
-	get supportAutoInstall(): boolean {
+	get version(): SemVer {
+		return new SemVer('1.1.1');
+	}
+
+	get isInstalled(): boolean {
 		return true;
 	}
 
@@ -41,11 +41,9 @@ export class MSSQLCtlTool implements ITool {
 		throw new Error('Method not implemented.');
 	}
 
-	getInstallationStatus(versionExpression: string): Thenable<ToolInstallationStatus> {
-		let promise = new Promise<ToolInstallationStatus>(resolve => {
-			setTimeout(() => {
-				resolve(ToolInstallationStatus.Installed);
-			}, 500);
+	refresh(): Thenable<void> {
+		const promise = new Promise<void>((resolve) => {
+			resolve();
 		});
 		return promise;
 	}

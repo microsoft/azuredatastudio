@@ -3,50 +3,63 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
-import { ToolRequirementInfo, ToolStatusInfo, ITool } from '../interfaces';
+import { ToolRequirementInfo, ToolStatusInfo, ITool, ToolStatus } from '../interfaces';
 import { PythonTool } from './tools/pythonTool';
 import { DockerTool } from './tools/dockerTool';
 import { AzCliTool } from './tools/azCliTool';
 import { MSSQLCtlTool } from './tools/mssqlCtlTool';
 import { KubeCtlTool } from './tools/kubeCtlTool';
+import { SemVer } from 'semver';
+import { PlatformService } from './platformService';
 
 export interface IToolsService {
-	getToolStatus(toolRequirements: ToolRequirementInfo[]): Thenable<ToolStatusInfo[]>;
+	getStatusForTools(toolRequirements: ToolRequirementInfo[]): ToolStatusInfo[];
 	getToolByName(toolName: string): ITool | undefined;
+	refreshAllToolStatus(): Thenable<void>;
 }
 
 export class ToolsService implements IToolsService {
-	private static readonly SupportedTools: ITool[] = [new PythonTool(), new DockerTool(), new AzCliTool(), new MSSQLCtlTool(), new KubeCtlTool()];
+	constructor(private _platformService: PlatformService) {
+		this.SupportedTools = [new PythonTool(), new DockerTool(), new AzCliTool(), new MSSQLCtlTool(), new KubeCtlTool(this._platformService)];
+	}
 
-	getToolStatus(toolRequirements: ToolRequirementInfo[]): Thenable<ToolStatusInfo[]> {
-		const toolStatusList: ToolStatusInfo[] = [];
-		let promises = [];
-		for (let i = 0; i < toolRequirements.length; i++) {
-			const toolRequirement = toolRequirements[i];
-			const tool = this.getToolByName(toolRequirement.name);
-			if (tool !== undefined) {
-				promises.push(tool.getInstallationStatus(toolRequirement.version).then(installStatus => {
-					toolStatusList.push(<ToolStatusInfo>{
-						name: tool.displayName,
-						description: tool.description,
-						status: installStatus,
-						version: toolRequirement.version
-					});
-				}));
-			}
-		}
-		return Promise.all(promises).then(() => { return toolStatusList; });
+	private SupportedTools: ITool[];
+
+	getStatusForTools(toolRequirements: ToolRequirementInfo[]): ToolStatusInfo[] {
+		return toolRequirements.map(req => {
+			const tool = this.getToolByName(req.name)!;
+			return <ToolStatusInfo>{
+				name: tool.displayName,
+				description: tool.description,
+				status: this.getToolStatus(tool.version, req.version),
+				version: req.version,
+				versionRequirement: req.version
+			};
+		});
+	}
+
+	getToolStatus(version: SemVer | undefined, versionRequirement: string): ToolStatus {
+		return ToolStatus.Installed;
 	}
 
 	getToolByName(toolName: string): ITool | undefined {
 		if (toolName) {
-			for (let i = 0; i < ToolsService.SupportedTools.length; i++) {
-				if (toolName === ToolsService.SupportedTools[i].name) {
-					return ToolsService.SupportedTools[i];
+			for (let i = 0; i < this.SupportedTools.length; i++) {
+				if (toolName === this.SupportedTools[i].name) {
+					return this.SupportedTools[i];
 				}
 			}
 		}
 		return undefined;
 	}
 
+	refreshAllToolStatus(): Thenable<void> {
+		const promise = new Promise<void>(resolve => {
+			const promises = this.SupportedTools.map(tool => tool.refresh());
+			Promise.all(promises).then(() => {
+				resolve();
+			});
+		});
+		return promise;
+	}
 }

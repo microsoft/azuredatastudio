@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
+import { SemVer } from 'semver';
 
 export interface ResourceType {
 	name: string;
@@ -56,7 +57,8 @@ export interface ToolStatusInfo {
 	name: string;
 	description: string;
 	version: string;
-	status: ToolInstallationStatus;
+	versionRequirement: string;
+	status: ToolStatus;
 }
 
 export interface ITool {
@@ -65,12 +67,13 @@ export interface ITool {
 	readonly description: string;
 	readonly type: ToolType;
 	readonly supportAutoInstall: boolean;
-
-	getInstallationStatus(versionExpression: string): Thenable<ToolInstallationStatus>;
+	readonly version: SemVer | undefined;
+	readonly isInstalled: boolean;
 	install(version: string): Thenable<void>;
+	refresh(): Thenable<void>;
 }
 
-export enum ToolInstallationStatus {
+export enum ToolStatus {
 	NotInstalled,
 	Installed,
 	Installing,

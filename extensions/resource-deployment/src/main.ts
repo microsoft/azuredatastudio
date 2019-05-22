@@ -16,7 +16,7 @@ const localize = nls.loadMessageBundle();
 
 export function activate(context: vscode.ExtensionContext) {
 	const platformService = new PlatformService();
-	const toolsService = new ToolsService();
+	const toolsService = new ToolsService(platformService);
 	const notebookService = new NotebookService(platformService);
 	const resourceTypeService = new ResourceTypeService(platformService, toolsService);
 
@@ -28,8 +28,8 @@ export function activate(context: vscode.ExtensionContext) {
 		validationFailures.forEach(message => console.error(message));
 		return;
 	}
-
-	const openDialog = (resourceTypeName: string) => {
+	const openDialog = async (resourceTypeName: string) => {
+		await toolsService.refreshAllToolStatus();
 		const filtered = resourceTypes.filter(resourceType => resourceType.name === resourceTypeName);
 		if (filtered.length !== 1) {
 			vscode.window.showErrorMessage(localize('resourceDeployment.UnknownResourceType', 'The resource type: {0} is not defined', resourceTypeName));

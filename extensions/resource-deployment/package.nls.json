@@ -21,5 +21,7 @@
 	"bdc-ctp25-aks-notebook": "./notebooks/sql2019-ctp25-bdc-aks.ipynb",
 	"bdc-ctp25-existing-cluster-notebook": "./notebooks/sql2019-ctp25-bdc-existing-cluster.ipynb",
 	"bdc-ctp30-aks-notebook": "./notebooks/sql2019-ctp30-bdc-aks.ipynb",
-	"bdc-ctp30-existing-cluster-notebook": "./notebooks/sql2019-ctp30-bdc-existing-cluster.ipynb"
+	"bdc-ctp30-existing-cluster-notebook": "./notebooks/sql2019-ctp30-bdc-existing-cluster.ipynb",
+	"configuration.title": "Resource Deployment Configuration",
+	"kubectlPath.description": "Path of the kubectl tool"
 }
