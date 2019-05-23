@@ -3,12 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { QueryResultsInput, ResultsViewState } from 'sql/workbench/parts/query/common/queryResultsInput';
+import { QueryResultsInput } from 'sql/workbench/parts/query/common/queryResultsInput';
 import { TabbedPanel, IPanelTab, IPanelView } from 'sql/base/browser/ui/panel/panel';
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import QueryRunner from 'sql/platform/query/common/queryRunner';
 import { MessagePanel, MessagePanelState } from './messagePanel';
-import { GridPanel } from '../electron-browser/gridPanel';
+import { GridPanel, GridPanelState } from '../electron-browser/gridPanel';
 import { ChartTab } from '../../charts/browser/chartTab';
 import { QueryPlanTab } from 'sql/workbench/parts/queryPlan/electron-browser/queryPlan';
 import { TopOperationsTab } from 'sql/workbench/parts/queryPlan/browser/topOperations';
@@ -65,7 +65,7 @@ class MessagesView extends Disposable implements IPanelView {
 class ResultsView extends Disposable implements IPanelView {
 	private gridPanel: GridPanel;
 	private container = document.createElement('div');
-	private _state: ResultsViewState;
+	private _state: GridPanelState;
 
 	constructor(private instantiationService: IInstantiationService) {
 		super();
@@ -93,12 +93,12 @@ class ResultsView extends Disposable implements IPanelView {
 		this.gridPanel.queryRunner = runner;
 	}
 
-	public set state(val: ResultsViewState) {
+	public set state(val: GridPanelState) {
 		this._state = val;
-		this.gridPanel.state = val.gridPanelState;
+		this.gridPanel.state = val;
 	}
 
-	public get state(): ResultsViewState {
+	public get state(): GridPanelState {
 		return this._state;
 	}
 }
@@ -190,6 +190,7 @@ export class QueryResultsView extends Disposable {
 
 	private setQueryRunner(runner: QueryRunner) {
 		this.resultsTab.queryRunner = runner;
+		this.messagesTab.queryRunner = runner;
 		this.chartTab.queryRunner = runner;
 		this.runnerDisposables.push(runner.onQueryStart(e => {
 			this.hideChart();
@@ -246,7 +247,8 @@ export class QueryResultsView extends Disposable {
 		this._input = input;
 		dispose(this.runnerDisposables);
 		this.runnerDisposables = [];
-		this.resultsTab.view.state = this.input.state;
+		this.resultsTab.view.state = this.input.state.gridPanelState;
+		this.messagesTab.view.state = this.input.state.messagePanelState;
 		this.qpTab.view.state = this.input.state.queryPlanState;
 		this.topOperationsTab.view.state = this.input.state.topOperationsState;
 		this.chartTab.view.state = this.input.state.chartState;
@@ -268,6 +270,7 @@ export class QueryResultsView extends Disposable {
 	clearInput() {
 		this._input = undefined;
 		this.resultsTab.clear();
+		this.messagesTab.clear();
 		this.qpTab.clear();
 		this.topOperationsTab.clear();
 		this.chartTab.clear();
