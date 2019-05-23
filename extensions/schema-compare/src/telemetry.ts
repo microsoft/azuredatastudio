@@ -62,27 +62,11 @@ export class Telemetry {
 	}
 
 	/**
-	 * Send a telemetry event for an exception
-	 */
-	public static sendTelemetryEventForException(
-		err: any, methodName: string, extensionConfigName: string): void {
-		try {
-			let stackArray: string[];
-			let firstLine: string = '';
-			if (err !== undefined && err.stack !== undefined) {
-				stackArray = err.stack.split('\n');
-				if (stackArray !== undefined && stackArray.length >= 2) {
-					firstLine = stackArray[1]; // The first line is the error message and we don't want to send that telemetry event
-					firstLine = filterErrorPath(firstLine);
-				}
-			}
-
-			// Only adding the method name and the fist line of the stack trace. We don't add the error message because it might have PII
-			this.sendTelemetryEvent('Exception', { methodName: methodName, errorLine: firstLine });
-		} catch (telemetryErr) {
-			// If sending telemetry event fails ignore it so it won't break the extension
-			console.error('Failed to send telemetry event. error: ' + telemetryErr, extensionConfigName);
-		}
+		 * Send a telemetry event for a general error
+		 * @param err The error to log
+		 */
+	public static sendTelemetryEventForError(err: string, properties?: ITelemetryEventProperties): void {
+		this.sendTelemetryEvent('Error', { error: err, ...properties });
 	}
 
 	/**
@@ -106,7 +90,12 @@ export class Telemetry {
 			properties = {};
 		}
 
-		this.reporter.sendTelemetryEvent(eventName, properties, measures);
+		try {
+			this.reporter.sendTelemetryEvent(eventName, properties, measures);
+		} catch (telemetryErr) {
+			// If sending telemetry event fails ignore it so it won't break the extension
+			console.error('Failed to send telemetry event. error: ' + telemetryErr);
+		}
 	}
 }
 

@@ -19,3 +19,16 @@ export function getPackageInfo(packageJson: any): IPackageInfo {
 		};
 	}
 }
+
+/**
+ * Map an error message into a short name for the type of error.
+ * @param msg The error message to map
+ */
+export function getTelemetryErrorType(msg: string): string {
+	if (msg.indexOf('Object reference not set to an instance of an object') !== -1) {
+		return 'ObjectReferenceNotSet';
+	}
+	else {
+		return 'Other';
+	}
+}
