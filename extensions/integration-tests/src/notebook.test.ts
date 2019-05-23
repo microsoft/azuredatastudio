@@ -105,10 +105,10 @@ if (context.RunTest) {
 			});
 		}
 
+		/* After https://github.com/microsoft/azuredatastudio/issues/5598 is fixed, enable these tests.
 		test('scala language test', async function () {
 			let language = 'scala';
-
-			languageTest(pySparkNotebookContent, pySpark3KernelMetadata, this.test.title, language, {
+			await cellLanguageTest(notebookContentForCellLanguageTest, this.test.title, language, {
 				name: language,
 				version: '',
 				mimetype: ''
@@ -117,35 +117,39 @@ if (context.RunTest) {
 
 		test('cplusplus language test', async function () {
 			let language = 'cplusplus';
-			languageTest(pySparkNotebookContent, pySpark3KernelMetadata, this.test.title, language, {
+			await cellLanguageTest(notebookContentForCellLanguageTest, this.test.title, language, {
 				name: language,
 				version: '',
 				mimetype: ''
 			});
 		});
 
-		test('Empty language test', async function () {
+		test('empty language test', async function () {
 			let language = '';
-			languageTest(pySparkNotebookContent, pySpark3KernelMetadata, this.test.title, language, {
+			await cellLanguageTest(notebookContentForCellLanguageTest, this.test.title, language, {
 				name: language,
 				version: '',
 				mimetype: 'x-scala'
 			});
 		});
+		*/
 	});
 }
 
-async function languageTest(content: azdata.nb.INotebookContents, kernelMetadata: any, testName: string, languageConfigured: string, languageInfo?: any) {
-	let notebookJson = Object.assign({}, content, { metadata: {kernelSpec: kernelMetadata, language_info: languageInfo }});
+/*
+async function cellLanguageTest(content: azdata.nb.INotebookContents, testName: string, languageConfigured: string, languageInfo: any) {
+	let notebookJson = Object.assign({}, content, { metadata: {kernelSpec: emptyKernelMetadata, language_info: languageInfo }});
 	let uri = writeNotebookToFile(notebookJson, testName);
 	console.log(uri);
 	let notebook = await azdata.nb.showNotebookDocument(uri);
 	console.log('Notebook is opened');
+	await notebook.document.save(); // May be optional to do the language verification
 
 	let language = notebook.document.cells[0].contents.metadata.language;
 	console.log('Language set in cell: ' + language);
 	assert(language === languageConfigured, `Expected cell language is: ${languageConfigured}, Actual: ${language}`);
 }
+*/
 
 async function openNotebook(content: azdata.nb.INotebookContents, kernelMetadata: any, testName: string, runAllCells?: boolean): Promise<azdata.nb.NotebookEditor> {
 	let notebookConfig = vscode.workspace.getConfiguration('notebook');

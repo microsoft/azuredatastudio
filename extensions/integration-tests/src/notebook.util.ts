@@ -35,6 +35,22 @@ export const pySparkNotebookContent: azdata.nb.INotebookContents = {
 	nbformat_minor: 2
 };
 
+export const notebookContentForCellLanguageTest: azdata.nb.INotebookContents = {
+	cells: [{
+		cell_type: CellTypes.Code,
+		source: '1+1',
+		metadata: {},
+		execution_count: 1
+	}],
+	metadata: {
+		'kernelspec': {
+			'name': ''
+		},
+	},
+	nbformat: 4,
+	nbformat_minor: 2
+};
+
 export const pythonNotebookMultipleCellsContent: azdata.nb.INotebookContents = {
 	cells: [{
 		cell_type: CellTypes.Code,
@@ -129,6 +145,13 @@ export const pythonKernelMetadata = {
 	'kernelspec': {
 		'name': 'python3',
 		'display_name': 'Python 3'
+	}
+};
+
+export const emptyKernelMetadata = {
+	'kernelspec': {
+		'name': '',
+		'display_name': ''
 	}
 };
 
