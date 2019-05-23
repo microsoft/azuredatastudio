@@ -95,7 +95,8 @@ const indentationFilter = [
 	'!**/*.{xlf,docx,sql,vsix}',
 	'!extensions/mssql/sqltoolsservice/**',
 	'!extensions/import/flatfileimportservice/**',
-	'!extensions/admin-tool-ext-win/ssmsmin/**'
+	'!extensions/admin-tool-ext-win/ssmsmin/**',
+	'!extensions/resource-deployment/notebooks/**'
 ];
 
 const copyrightFilter = [
@@ -154,7 +155,8 @@ const copyrightFilter = [
 	'!extensions/mssql/src/prompts/**',
 	'!extensions/notebook/resources/jupyter_config/**',
 	'!**/*.gif',
-	'!**/*.xlf'
+	'!**/*.xlf',
+	'!**/*.dacpac'
 ];
 
 const eslintFilter = [
@@ -257,7 +259,7 @@ function hygiene(some) {
 		const lines = file.__lines;
 		// Only take the first 10 lines to reduce false positives- the compiler will throw an error if it's not the first non-comment line in a file
 		// (10 is used to account for copyright and extraneous newlines)
-		lines.slice(0,10).forEach((line, i) =>  {
+		lines.slice(0, 10).forEach((line, i) => {
 			if (/\s*'use\s*strict\s*'/.test(line)) {
 				console.error(file.relative + '(' + (i + 1) + ',1): Unnecessary \'use strict\' - this is already added by the compiler');
 				errorCount++;

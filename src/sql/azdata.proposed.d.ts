@@ -740,6 +740,10 @@ declare module 'azdata' {
 		flavor: string;
 	}
 
+	export interface QueryExecutionOptions {
+		options: Map<string, any>;
+	}
+
 	export interface QueryProvider extends DataProvider {
 		cancelQuery(ownerUri: string): Thenable<QueryCancelResult>;
 		runQuery(ownerUri: string, selection: ISelectionData, runOptions?: ExecutionPlanOptions): Thenable<void>;
@@ -750,6 +754,7 @@ declare module 'azdata' {
 		getQueryRows(rowData: QueryExecuteSubsetParams): Thenable<QueryExecuteSubsetResult>;
 		disposeQuery(ownerUri: string): Thenable<void>;
 		saveResults(requestParams: SaveResultsRequestParams): Thenable<SaveResultRequestResult>;
+		setQueryExecutionOptions(ownerUri: string, options: QueryExecutionOptions): Thenable<void>;
 
 		// Notifications
 		registerOnQueryComplete(handler: (result: QueryExecuteCompleteNotificationResult) => any): void;
@@ -1904,7 +1909,7 @@ declare module 'azdata' {
 
 	export interface SchemaCompareServicesProvider extends DataProvider {
 		schemaCompare(sourceEndpointInfo: SchemaCompareEndpointInfo, targetEndpointInfo: SchemaCompareEndpointInfo, taskExecutionMode: TaskExecutionMode, deploymentOptions: DeploymentOptions): Thenable<SchemaCompareResult>;
-		schemaCompareGenerateScript(operationId: string, targetDatabaseName: string, scriptFilePath: string, taskExecutionMode: TaskExecutionMode): Thenable<ResultStatus>;
+		schemaCompareGenerateScript(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: TaskExecutionMode): Thenable<ResultStatus>;
 		schemaComparePublishChanges(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: TaskExecutionMode): Thenable<ResultStatus>;
 		schemaCompareGetDefaultOptions(): Thenable<SchemaCompareOptionsResult>;
 		schemaCompareIncludeExcludeNode(operationId: string, diffEntry: DiffEntry, IncludeRequest: boolean, taskExecutionMode: TaskExecutionMode): Thenable<ResultStatus>;
@@ -3121,6 +3126,26 @@ declare module 'azdata' {
 		cssClass?: string;
 		headerCssClass?: string;
 		toolTip?: string;
+		type?: ColumnType;
+		options?: CheckboxColumnOption | TextColumnOption;
+	}
+
+	export enum ColumnType {
+		text = 0,
+		checkBox = 1,
+		button = 2
+	}
+
+	export interface CheckboxColumnOption {
+		actionOnCheckbox: ActionOnCellCheckboxCheck;
+	}
+
+	export interface TextColumnOption {
+	}
+
+	export enum ActionOnCellCheckboxCheck {
+		selectRow = 0,
+		customAction = 1
 	}
 
 	export interface TableComponentProperties extends ComponentProperties {
@@ -3160,6 +3185,7 @@ declare module 'azdata' {
 	export interface TextComponentProperties {
 		value?: string;
 		links?: LinkArea[];
+		CSSStyles?: { [key: string]: string };
 	}
 
 	export interface LinkArea {
@@ -3321,8 +3347,19 @@ declare module 'azdata' {
 		onRowSelected: vscode.Event<any>;
 	}
 
+	export interface ICheckboxCellActionEventArgs extends ICellActionEventArgs {
+		checked: boolean;
+	}
+
+	interface ICellActionEventArgs {
+		row: number;
+		column: number;
+		columnName: number;
+	}
+
 	export interface TableComponent extends Component, TableComponentProperties {
 		onRowSelected: vscode.Event<any>;
+		onCellAction?: vscode.Event<ICellActionEventArgs>;
 	}
 
 	export interface FileBrowserTreeComponent extends Component, FileBrowserTreeProperties {
@@ -3534,8 +3571,9 @@ declare module 'azdata' {
 		/**
 		 * Create a dialog with the given title
 		 * @param title The title of the dialog, displayed at the top
+		 * @param isWide Indicates whether the dialog is wide or normal
 		 */
-		export function createModelViewDialog(title: string, dialogName?: string): Dialog;
+		export function createModelViewDialog(title: string, dialogName?: string, isWide?: boolean): Dialog;
 
 		/**
 		 * Create a dialog tab which can be included as part of the content of a dialog
@@ -3619,6 +3657,11 @@ declare module 'azdata' {
 			 * The title of the dialog
 			 */
 			title: string;
+
+			/**
+			 * Indicates the width of the dialog
+			 */
+			isWide: boolean;
 
 			/**
 			 * The content of the dialog. If multiple tabs are given they will be displayed with tabs
@@ -3878,11 +3921,8 @@ declare module 'azdata' {
 
 			uri: string;
 
-			// get the document's execution options
-			getOptions(): Map<string, string>;
-
 			// set the document's execution options
-			setOptions(options: Map<string, string>): void;
+			setExecutionOptions(options: Map<string, any>): Thenable<void>;
 
 			// tab content is build using the modelview UI builder APIs
 			// probably should rename DialogTab class since it is useful outside dialogs
@@ -3907,7 +3947,10 @@ declare module 'azdata' {
 		 */
 		export function registerQueryEventListener(listener: queryeditor.QueryEventListener): void;
 
-		export function getQueryDocument(fileUri: string): queryeditor.QueryDocument;
+		/**
+		 * Get a QueryDocument object for a file URI
+		 */
+		export function getQueryDocument(fileUri: string): Thenable<queryeditor.QueryDocument>;
 	}
 
 	/**

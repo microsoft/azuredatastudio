@@ -55,7 +55,12 @@
 		"htmlparser2": "^3.10.1",
 		"vscode-nls": "^3.2.1"
 	},
-	"devDependencies": {},
+	"devDependencies": {
+		"@types/mocha": "^5.2.5",
+		"mocha": "^5.2.0",
+		"should": "^13.2.1",
+		"vscodetestcover": "^1.0.2"
+	},
 	"__metadata": {
 		"id": "33",
 		"publisherDisplayName": "Microsoft",

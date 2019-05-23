@@ -78,6 +78,7 @@ export class VirtualizedCollection<T extends Slick.SlickData> implements IObserv
 	private _bufferWindowBefore: DataWindow<T>;
 	private _window: DataWindow<T>;
 	private _bufferWindowAfter: DataWindow<T>;
+	private _lengthChanged = false;
 
 	private collectionChangedCallback: (startIndex: number, count: number) => void;
 
@@ -113,7 +114,10 @@ export class VirtualizedCollection<T extends Slick.SlickData> implements IObserv
 	}
 
 	setLength(length: number): void {
-		this.length = length;
+		if (this.length !== length) {
+			this._lengthChanged = true;
+			this.length = length;
+		}
 	}
 
 	public at(index: number): T {
@@ -126,8 +130,9 @@ export class VirtualizedCollection<T extends Slick.SlickData> implements IObserv
 		let currentData = this.getRangeFromCurrent(start, end);
 
 		// only shift window and make promise of refreshed data in following condition:
-		if (start < this._bufferWindowBefore.getStartIndex() || end > this._bufferWindowAfter.getEndIndex()) {
+		if (this._lengthChanged || start < this._bufferWindowBefore.getStartIndex() || end > this._bufferWindowAfter.getEndIndex()) {
 			// jump, reset
+			this._lengthChanged = false;
 			this.resetWindowsAroundIndex(start);
 		} else if (end <= this._bufferWindowBefore.getEndIndex()) {
 			// scroll up, shift up

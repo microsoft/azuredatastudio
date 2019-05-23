@@ -5,6 +5,7 @@
 
 import { SelectBox, ISelectBoxStyles, ISelectOptionItem } from 'vs/base/browser/ui/selectBox/selectBox';
 import { Color } from 'vs/base/common/color';
+import { isUndefinedOrNull } from 'vs/base/common/types';
 import { IMessage, MessageType, defaultOpts } from 'vs/base/browser/ui/inputbox/inputBox';
 import * as dom from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
@@ -52,7 +53,7 @@ export class ListBox extends SelectBox {
 	public readonly onKeyDown = this._onKeyDown.event;
 
 	constructor(
-		options: ISelectOptionItem[],
+		private options: ISelectOptionItem[],
 		contextViewProvider: IContextViewProvider) {
 
 		super(options, 0, contextViewProvider);
@@ -66,6 +67,15 @@ export class ListBox extends SelectBox {
 		this.selectElement.style['min-width'] = '100%';
 
 		this._register(dom.addStandardDisposableListener(this.selectElement, dom.EventType.KEY_DOWN, (e: StandardKeyboardEvent) => this._onKeyDown.fire(e)));
+
+		this._register(dom.addDisposableListener(this.selectElement, dom.EventType.CLICK, (e) => {
+			this.contextViewProvider.hideContextView();
+			let index = (<any>e.target).index;
+			if (!isUndefinedOrNull(index)) {
+				this.select(index);
+			}
+			this.selectElement.focus();
+		}));
 
 		this.enabledSelectBackground = this.selectBackground;
 		this.enabledSelectForeground = this.selectForeground;
@@ -140,11 +150,23 @@ export class ListBox extends SelectBox {
 
 		for (let i = 0; i < indexes.length; i++) {
 			this.selectElement.remove(indexes[i]);
+			this.options.splice(indexes[i], 1);
 		}
+		super.setOptions(this.options);
 	}
 
 	public add(option: string): void {
-		this.selectElement.add(this.createOption(option));
+		let optionObj = this.createOption(option);
+		this.selectElement.add(optionObj);
+
+		// make sure that base options are updated since that is used in selection not selectElement
+		this.options.push(optionObj);
+		super.setOptions(this.options);
+	}
+
+	public setOptions(options: ISelectOptionItem[], selected?: number): void {
+		this.options = options;
+		super.setOptions(options, selected);
 	}
 
 	public enable(): void {

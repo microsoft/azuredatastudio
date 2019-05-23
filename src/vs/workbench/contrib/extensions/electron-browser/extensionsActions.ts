@@ -10,7 +10,7 @@ import { Delayer } from 'vs/base/common/async';
 import * as DOM from 'vs/base/browser/dom';
 import { Event } from 'vs/base/common/event';
 import * as json from 'vs/base/common/json';
-import { ActionItem, Separator, IActionItemOptions } from 'vs/base/browser/ui/actionbar/actionbar';
+import { ActionViewItem, Separator, IActionViewItemOptions } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
 // {{SQL CARBON EDIT}}
@@ -650,15 +650,15 @@ export class UpdateAction extends ExtensionAction {
 	}
 }
 
-interface IExtensionActionItemOptions extends IActionItemOptions {
+interface IExtensionActionViewItemOptions extends IActionViewItemOptions {
 	tabOnlyOnFocus?: boolean;
 }
 
-export class ExtensionActionItem extends ActionItem {
+export class ExtensionActionViewItem extends ActionViewItem {
 
-	protected options: IExtensionActionItemOptions;
+	protected options: IExtensionActionViewItemOptions;
 
-	constructor(context: any, action: IAction, options: IExtensionActionItemOptions = {}) {
+	constructor(context: any, action: IAction, options: IExtensionActionViewItemOptions = {}) {
 		super(context, action, options);
 	}
 
@@ -701,15 +701,15 @@ export abstract class ExtensionDropDownAction extends ExtensionAction {
 		super(id, label, cssClass, enabled);
 	}
 
-	private _actionItem: DropDownMenuActionItem;
-	createActionItem(): DropDownMenuActionItem {
-		this._actionItem = this.instantiationService.createInstance(DropDownMenuActionItem, this, this.tabOnlyOnFocus);
-		return this._actionItem;
+	private _actionViewItem: DropDownMenuActionViewItem;
+	createActionViewItem(): DropDownMenuActionViewItem {
+		this._actionViewItem = this.instantiationService.createInstance(DropDownMenuActionViewItem, this, this.tabOnlyOnFocus);
+		return this._actionViewItem;
 	}
 
 	public run({ actionGroups, disposeActionsOnHide }: { actionGroups: IAction[][], disposeActionsOnHide: boolean }): Promise<any> {
-		if (this._actionItem) {
-			this._actionItem.showMenu(actionGroups, disposeActionsOnHide);
+		if (this._actionViewItem) {
+			this._actionViewItem.showMenu(actionGroups, disposeActionsOnHide);
 		}
 		return Promise.resolve();
 	}
@@ -720,7 +720,7 @@ export abstract class ExtensionDropDownAction extends ExtensionAction {
 	}
 }
 
-export class DropDownMenuActionItem extends ExtensionActionItem {
+export class DropDownMenuActionViewItem extends ExtensionActionViewItem {
 
 	private disposables: IDisposable[] = [];
 
@@ -1558,7 +1558,7 @@ export class InstallExtensionsAction extends OpenExtensionsViewletAction {
 export class ShowEnabledExtensionsAction extends Action {
 
 	static readonly ID = 'workbench.extensions.action.showEnabledExtensions';
-	static LABEL = localize('showEnabledExtensions', 'Show Enabled Extensions');
+	static LABEL = localize('showEnabledExtensions', "Show Enabled Extensions");
 
 	constructor(
 		id: string,

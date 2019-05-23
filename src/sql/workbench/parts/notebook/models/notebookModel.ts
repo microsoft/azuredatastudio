@@ -235,6 +235,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				c.trustedMode = this._trustedMode;
 			});
 		}
+		this._contentChangedEmitter.fire({
+			changeType: NotebookChangeType.TrustChanged
+		});
 	}
 
 	public get activeConnection(): IConnectionProfile {

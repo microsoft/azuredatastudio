@@ -122,11 +122,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 		this._register(this._onAddConnectionProfile);
 		this._register(this._onDeleteConnectionProfile);
-
-		// Refresh editor titles when connections start/end/change to ensure tabs are colored correctly
-		this.onConnectionChanged(() => this.refreshEditorTitles());
-		this.onConnect(() => this.refreshEditorTitles());
-		this.onDisconnect(() => this.refreshEditorTitles());
 	}
 
 	public providerRegistered(providerId: string): boolean {
@@ -188,7 +183,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * @param params Include the uri, type of connection
 	 * @param model the existing connection profile to create a new one from
 	 */
-	public showConnectionDialog(params?: INewConnectionParams, model?: IConnectionProfile, connectionResult?: IConnectionResult): Promise<void> {
+	public showConnectionDialog(params?: INewConnectionParams, options?: IConnectionCompletionOptions, model?: IConnectionProfile, connectionResult?: IConnectionResult): Promise<void> {
 		let self = this;
 		return new Promise<void>((resolve, reject) => {
 			if (!params) {
@@ -197,7 +192,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			if (!model && params.input && params.input.uri) {
 				model = this._connectionStatusManager.getConnectionProfile(params.input.uri);
 			}
-			self._connectionDialogService.showDialog(self, params, model, connectionResult).then(() => {
+			self._connectionDialogService.showDialog(self, params, model, connectionResult, options).then(() => {
 				resolve();
 			}, dialogError => {
 				this.logService.warn('failed to open the connection dialog. error: ' + dialogError);
@@ -322,7 +317,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 					runQueryOnCompletion: RunQueryOnConnectionMode.none,
 					showDashboard: options.showDashboard
 				};
-				this.showConnectionDialog(params, connection, connectionResult).then(() => {
+				this.showConnectionDialog(params, options, connection, connectionResult).then(() => {
 					resolve(connectionResult);
 				}).catch(err => {
 					reject(err);
@@ -460,7 +455,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 					this.tryAddActiveConnection(connectionMgmtInfo, connection, options.saveTheConnection);
 
 					if (callbacks.onConnectSuccess) {
-						callbacks.onConnectSuccess(options.params);
+						callbacks.onConnectSuccess(options.params, connectionResult.connectionProfile);
 					}
 					if (options.saveTheConnection) {
 						this.saveToSettings(uri, connection).then(value => {
@@ -471,7 +466,13 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 						connection.saveProfile = false;
 						this.doActionsAfterConnectionComplete(uri, options);
 					}
-					resolve(connectionResult);
+					if (connection.savePassword) {
+						this._connectionStore.savePassword(connection).then(() => {
+							resolve(connectionResult);
+						});
+					} else {
+						resolve(connectionResult);
+					}
 				} else if (connectionResult && connectionResult.errorMessage) {
 					this.handleConnectionError(connection, uri, options, callbacks, connectionResult).then(result => {
 						resolve(result);
@@ -758,6 +759,11 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				this.doChangeLanguageFlavor(uri, 'sql', defaultProvider);
 			}
 		}
+	}
+
+	public getDefaultProviderId(): string {
+		let defaultProvider = WorkbenchUtils.getSqlConfigValue<string>(this._configurationService, Constants.defaultEngine);
+		return defaultProvider && this._providers.has(defaultProvider) ? defaultProvider : undefined;
 	}
 
 	private async fillInAzureTokenIfNeeded(connection: IConnectionProfile): Promise<boolean> {
@@ -1214,7 +1220,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	public editGroup(group: ConnectionProfileGroup): Promise<any> {
 		return new Promise<string>((resolve, reject) => {
 			this._connectionStore.editGroup(group).then(groupId => {
-				this.refreshEditorTitles();
 				this._onAddConnectionProfile.fire(undefined);
 				resolve(null);
 			}).catch(err => {
@@ -1332,12 +1337,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			return undefined;
 		}
 		return matchingGroup.color;
-	}
-
-	private refreshEditorTitles(): void {
-		if (this._editorGroupService instanceof EditorPart) {
-			this._editorGroupService.refreshEditorTitles();
-		}
 	}
 
 	public removeConnectionProfileCredentials(originalProfile: IConnectionProfile): IConnectionProfile {

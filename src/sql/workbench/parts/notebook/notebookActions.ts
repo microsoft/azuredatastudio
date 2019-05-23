@@ -238,7 +238,7 @@ export class TrustedAction extends ToggleableAction {
 				}
 				else {
 					self.trusted = !self.trusted;
-					context.updateModelTrustDetails(self.trusted);
+					context.model.trustedMode = self.trusted;
 				}
 				resolve(true);
 			} catch (e) {

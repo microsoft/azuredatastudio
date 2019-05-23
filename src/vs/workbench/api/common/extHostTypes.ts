@@ -2187,7 +2187,6 @@ export class DebugAdapterServer implements vscode.DebugAdapterServer {
 	}
 }
 
-// {{SQL CARBON EDIT}}
 /*
 @es5ClassCompat
 export class DebugAdapterImplementation implements vscode.DebugAdapterImplementation {
@@ -2306,4 +2305,9 @@ export class QuickInputButtons {
 	static readonly Back: vscode.QuickInputButton = { iconPath: 'back.svg' };
 
 	private constructor() { }
+}
+
+export enum ExtensionExecutionContext {
+	Local = 1,
+	Remote = 2
 }

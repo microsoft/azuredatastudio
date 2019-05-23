@@ -48,12 +48,23 @@ export class OEShimService extends Disposable implements IOEShimService {
 		let connProfile = new ConnectionProfile(this.capabilities, node.payload);
 		connProfile.saveProfile = false;
 		if (this.cm.providerRegistered(providerId)) {
-			let userProfile = await this.cd.openDialogAndWait(this.cm, { connectionType: ConnectionType.default, showDashboard: false }, connProfile, undefined, false);
-			if (userProfile) {
-				connProfile = new ConnectionProfile(this.capabilities, userProfile);
-			} else {
-				return Promise.reject('User canceled');
-			}
+			await new Promise(async (resolve, reject) => {
+				await this.cm.connect(connProfile, undefined,
+					{ showConnectionDialogOnError: true, showFirewallRuleOnError: true, saveTheConnection: false, showDashboard: false, params: undefined },
+					{
+						onConnectSuccess: async (e, profile) => {
+							let existingConnection = this.cm.findExistingConnection(profile);
+							connProfile = new ConnectionProfile(this.capabilities, await this.cm.addSavedPassword(existingConnection));
+							resolve();
+						},
+						onConnectCanceled: () => {
+							reject('User canceled');
+						},
+						onConnectReject: undefined,
+						onConnectStart: undefined,
+						onDisconnect: undefined
+					});
+			});
 		}
 		let sessionResp = await this.oe.createNewSession(providerId, connProfile);
 		let disp = this.oe.onUpdateObjectExplorerNodes(e => {

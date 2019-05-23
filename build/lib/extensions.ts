@@ -305,6 +305,7 @@ const sqlBuiltInExtensions = [
 	'big-data-cluster',
 	'dacpac',
 	'schema-compare',
+	'resource-deployment',
 	'cms'
 ];
 // {{SQL CARBON EDIT}} - End
@@ -369,8 +370,6 @@ export function packageExtensionsStream(optsIn?: IPackageExtensionsOptions): Nod
 
 	const localExtensionDependencies = () => gulp.src(extensionDepsSrc, { base: '.', dot: true })
 		.pipe(filter(['**', '!**/package-lock.json']))
-		.pipe(util2.cleanNodeModule('account-provider-azure', ['node_modules/date-utils/doc/**', 'node_modules/adal_node/node_modules/**'], undefined))
-		.pipe(util2.cleanNodeModule('typescript', ['**/**'], undefined));
 
 	// Original code commented out here
 	// const localExtensionDependencies = () => gulp.src('extensions/node_modules/**', { base: '.' });

@@ -8,7 +8,6 @@ import { ContributableActionProvider } from 'vs/workbench/browser/actions';
 import { IAction } from 'vs/base/common/actions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { fillInActions } from 'vs/platform/actions/browser/menuItemActionItem';
 
 import {
 	DisconnectConnectionAction, AddServerAction,
@@ -31,6 +30,7 @@ import { TreeNodeContextKey } from 'sql/workbench/parts/objectExplorer/common/tr
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
 import { IScriptingService } from 'sql/platform/scripting/common/scriptingService';
 import { ServerInfoContextKey } from 'sql/workbench/parts/connection/common/serverInfoContextKey';
+import { fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 
 /**
  *  Provides actions for the server tree elements

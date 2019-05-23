@@ -13,6 +13,7 @@ const localize = nls.loadMessageBundle();
 export class SchemaCompareOptionsDialog {
 	private static readonly OkButtonText: string = localize('SchemaCompareOptionsDialog.Ok', 'Ok');
 	private static readonly CancelButtonText: string = localize('SchemaCompareOptionsDialog.Cancel', 'Cancel');
+	private static readonly ResetButtonText: string = localize('SchemaCompareOptionsDialog.Reset', 'Reset');
 	private static readonly OptionsLabel: string = localize('SchemaCompare.SchemaCompareOptionsDialogLabel', 'Schema Compare Options');
 	private static readonly GeneralOptionsLabel: string = localize('SchemaCompare.GeneralOptionsLabel', 'General Options');
 	private static readonly ObjectTypesOptionsLabel: string = localize('SchemaCompare.ObjectTypesOptionsLabel', 'Include Object Types');
@@ -424,6 +425,11 @@ export class SchemaCompareOptionsDialog {
 		this.dialog.cancelButton.label = SchemaCompareOptionsDialog.CancelButtonText;
 		this.dialog.cancelButton.onClick(async () => await this.cancel());
 
+		let resetButton = azdata.window.createButton(SchemaCompareOptionsDialog.ResetButtonText);
+		resetButton.onClick(async () => await this.reset());
+		this.dialog.customButtons = [];
+		this.dialog.customButtons.push(resetButton);
+
 		azdata.window.openDialog(this.dialog);
 	}
 
@@ -433,6 +439,19 @@ export class SchemaCompareOptionsDialog {
 	}
 
 	protected async cancel() {
+	}
+
+	private async reset() {
+		let service = await azdata.dataprotocol.getProvider<azdata.SchemaCompareServicesProvider>('MSSQL', azdata.DataProviderType.SchemaCompareServicesProvider);
+		let result = await service.schemaCompareGetDefaultOptions();
+		this.deploymentOptions = result.defaultDeploymentOptions;
+
+		this.generaloptionsCheckBoxes.forEach(option => {
+			option.checked = this.GetSchemaCompareOptionUtil(option.label);
+		});
+		this.objectTypesCheckBoxes.forEach(obj => {
+			obj.checked = this.GetSchemaCompareIncludedObjectsUtil(obj.label);
+		});
 	}
 
 	private async initializeSchemaCompareOptionsDialogTab() {

@@ -1,7 +1,5 @@
-coverage/**
 out/test/**
 src/**
 .gitignore
-coverageConfig.json
 tsconfig.json
 InstallSsmsMin.bat

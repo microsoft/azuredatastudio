@@ -14,7 +14,7 @@
 	background: url('check.svg') center center no-repeat;
 }
 
-.vs-dark.monaco-shell .custom-checkbox.sql-checkbox.checked {
+.vs-dark .custom-checkbox.sql-checkbox.checked {
 	background: url('check_inverse.svg') center center no-repeat;
 }
 

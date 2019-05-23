@@ -65,6 +65,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	private _connectionControllerMap: { [providerName: string]: IConnectionComponentController } = {};
 	private _model: ConnectionProfile;
 	private _params: INewConnectionParams;
+	private _options: IConnectionCompletionOptions;
 	private _inputModel: IConnectionProfile;
 	private _providerNameToDisplayNameMap: { [providerDisplayName: string]: string } = {};
 	private _providerTypes: string[] = [];
@@ -240,7 +241,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		if (fromEditor && params && params.input) {
 			uri = params.input.uri;
 		}
-		let options: IConnectionCompletionOptions = {
+		let options: IConnectionCompletionOptions = this._options || {
 			params: params,
 			saveTheConnection: !fromExtension,
 			showDashboard: params && params.showDashboard !== undefined ? params.showDashboard : !fromEditor && !fromExtension,
@@ -408,10 +409,12 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		connectionManagementService: IConnectionManagementService,
 		params?: INewConnectionParams,
 		model?: IConnectionProfile,
-		connectionResult?: IConnectionResult): Thenable<void> {
+		connectionResult?: IConnectionResult,
+		connectionOptions?: IConnectionCompletionOptions): Thenable<void> {
 
 		this._connectionManagementService = connectionManagementService;
 
+		this._options = connectionOptions;
 		this._params = params;
 		this._inputModel = model;
 		return new Promise<void>((resolve, reject) => {
