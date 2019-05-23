@@ -11,10 +11,8 @@ import { IExpandableTree } from 'sql/workbench/parts/objectExplorer/browser/tree
 
 import { ISelectionData } from 'azdata';
 
-import { ViewletPanel, IViewletPanelOptions } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { IDataSource, ITree, IRenderer, ContextMenuEvent } from 'vs/base/parts/tree/browser/tree';
 import { generateUuid } from 'vs/base/common/uuid';
-import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
@@ -25,11 +23,11 @@ import { OpenMode, ClickBehavior, ICancelableEvent, IControllerOptions } from 'v
 import { WorkbenchTreeController } from 'vs/platform/list/browser/listService';
 import { IMouseEvent } from 'vs/base/browser/mouseEvent';
 import { isArray, isUndefinedOrNull } from 'vs/base/common/types';
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
-import { $ } from 'vs/base/browser/dom';
+import { $, Dimension } from 'vs/base/browser/dom';
 
 export interface IResultMessageIntern extends IQueryMessage {
 	id?: string;
@@ -76,7 +74,7 @@ export class MessagePanelState {
 	}
 }
 
-export class MessagePanel extends ViewletPanel {
+export class MessagePanel extends Disposable {
 	private messageLineCountMap = new Map<IQueryMessage, number>();
 	private ds = new MessageDataSource();
 	private renderer = new MessageRenderer(this.messageLineCountMap);
@@ -90,34 +88,25 @@ export class MessagePanel extends ViewletPanel {
 	private tree: ITree;
 
 	constructor(
-		options: IViewletPanelOptions,
-		@IKeybindingService keybindingService: IKeybindingService,
-		@IContextMenuService contextMenuService: IContextMenuService,
-		@IConfigurationService configurationService: IConfigurationService,
-		@IThemeService private themeService: IThemeService,
 		@IInstantiationService instantiationService: IInstantiationService,
-		@IClipboardService private clipboardService: IClipboardService
+		@IThemeService private readonly themeService: IThemeService,
+		@IClipboardService private readonly clipboardService: IClipboardService,
+		@IContextMenuService private readonly contextMenuService: IContextMenuService
 	) {
-		super(options, keybindingService, contextMenuService, configurationService);
+		super();
 		this.controller = instantiationService.createInstance(MessageController, { openMode: OpenMode.SINGLE_CLICK, clickBehavior: ClickBehavior.ON_MOUSE_UP /* do not change, to preserve focus behaviour in input field */ });
 		this.controller.toFocusOnClick = this.model;
-		this.tree = new Tree(this.container, {
+		this.tree = this._register(new Tree(this.container, {
 			dataSource: this.ds,
 			renderer: this.renderer,
 			controller: this.controller
-		}, { keyboardSupport: false, horizontalScrollMode: ScrollbarVisibility.Auto });
-		this.disposables.push(this.tree);
+		}, { keyboardSupport: false, horizontalScrollMode: ScrollbarVisibility.Auto }));
 		this.tree.onDidScroll(e => {
 			// convert to old VS Code tree interface with expandable methods
 			let expandableTree: IExpandableTree = <IExpandableTree>this.tree;
 
 			if (this.state) {
 				this.state.scrollPosition = expandableTree.getScrollPosition();
-			}
-		});
-		this.onDidChange(e => {
-			if (this.state) {
-				this.state.collapsed = !this.isExpanded();
 			}
 		});
 		this.controller.onKeyDown = (tree, event) => {
@@ -171,20 +160,20 @@ export class MessagePanel extends ViewletPanel {
 		};
 	}
 
-	protected renderBody(container: HTMLElement): void {
+	public render(container: HTMLElement): void {
 		this.container.style.width = '100%';
 		this.container.style.height = '100%';
-		this.disposables.push(attachListStyler(this.tree, this.themeService));
+		this._register(attachListStyler(this.tree, this.themeService));
 		container.appendChild(this.container);
 		this.tree.setInput(this.model);
 	}
 
-	protected layoutBody(size: number): void {
+	public layout(size: Dimension): void {
 		// convert to old VS Code tree interface with expandable methods
 		let expandableTree: IExpandableTree = <IExpandableTree>this.tree;
 
 		const previousScrollPosition = expandableTree.getScrollPosition();
-		this.tree.layout(size);
+		this.tree.layout(size.height);
 		if (this.state && this.state.scrollPosition) {
 			expandableTree.setScrollPosition(this.state.scrollPosition);
 		} else {
@@ -204,20 +193,10 @@ export class MessagePanel extends ViewletPanel {
 	}
 
 	private onMessage(message: IQueryMessage | IQueryMessage[]) {
-		let hasError = false;
-		let lines: number;
 		if (isArray(message)) {
-			hasError = message.find(e => e.isError) ? true : false;
-			lines = message.reduce((currentTotal, resultMessage) => currentTotal + this.countMessageLines(resultMessage), 0);
 			this.model.messages.push(...message);
 		} else {
-			hasError = message.isError;
-			lines = this.countMessageLines(message);
 			this.model.messages.push(message);
-		}
-		this.maximumBodySize += lines * 22;
-		if (hasError) {
-			this.setExpanded(true);
 		}
 		// convert to old VS Code tree interface with expandable methods
 		let expandableTree: IExpandableTree = <IExpandableTree>this.tree;
@@ -237,12 +216,6 @@ export class MessagePanel extends ViewletPanel {
 		}
 	}
 
-	private countMessageLines(resultMessage: IQueryMessage): number {
-		let lines = resultMessage.message.split('\n').length;
-		this.messageLineCountMap.set(resultMessage, lines);
-		return lines;
-	}
-
 	private reset() {
 		this.model.messages = [];
 		this.model.totalExecuteMessage = undefined;
@@ -256,7 +229,6 @@ export class MessagePanel extends ViewletPanel {
 		if (this.state.scrollPosition) {
 			expandableTree.setScrollPosition(this.state.scrollPosition);
 		}
-		this.setExpanded(!this.state.collapsed);
 	}
 
 	public get state(): MessagePanelState {
