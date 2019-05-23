@@ -37,3 +37,25 @@ export function doubleEscapeSingleQuotes(value: string): string {
 export function backEscapeDoubleQuotes(value: string): string {
 	return value.replace(/"/g, '\\"');
 }
+
+/**
+ * Map an error message into a GDPR-Compliant short name for the type of error.
+ * @param msg The error message to map
+ */
+export function getTelemetryErrorType(msg: string): string {
+	if (msg.indexOf('is not recognized as an internal or external command') !== -1) {
+		return 'ExeNotFound';
+	}
+	else if (msg.indexOf('Unknown Action') !== -1) {
+		return 'UnknownAction';
+	}
+	else if (msg.indexOf('No Action Provided') !== -1) {
+		return 'NoActionProvided';
+	}
+	else if (msg.indexOf('Run exception') !== -1) {
+		return 'RunException';
+	}
+	else {
+		return 'Other';
+	}
+}

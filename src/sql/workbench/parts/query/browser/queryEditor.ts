@@ -100,8 +100,7 @@ export class QueryEditor extends BaseEditor {
 
 		parent.appendChild(splitviewContainer);
 
-		this.splitview = new SplitView(splitviewContainer, { orientation: Orientation.VERTICAL });
-		this._register(this.splitview);
+		this.splitview = this._register(new SplitView(splitviewContainer, { orientation: Orientation.VERTICAL }));
 		this._register(this.splitview.onDidSashReset(() => this.splitview.distributeViewSizes()));
 
 		this.textEditorContainer = DOM.$('.text-editor-container');
@@ -345,13 +344,6 @@ export class QueryEditor extends BaseEditor {
 		}
 	}
 
-	public dispose(): void {
-		this.textEditor.dispose();
-		this.resultsEditor.dispose();
-		this.splitview.dispose();
-		super.dispose();
-	}
-
 	public close(): void {
 		let queryInput: QueryInput = <QueryInput>this.input;
 		queryInput.sql.close();
@@ -489,21 +481,5 @@ export class QueryEditor extends BaseEditor {
 
 	public chart(dataId: { batchId: number, resultId: number }) {
 		this.resultsEditor.chart(dataId);
-	}
-
-	/**
-	 * Sets the text selection for the SQL editor based on the given ISelectionData.
-	 */
-	private _setSelection(selection: ISelectionData): void {
-		let rangeConversion: IRange = {
-			startLineNumber: selection.startLine + 1,
-			startColumn: selection.startColumn + 1,
-			endLineNumber: selection.endLine + 1,
-			endColumn: selection.endColumn + 1
-		};
-		let editor = this.textEditor.getControl();
-		editor.revealRange(rangeConversion);
-		editor.setSelection(rangeConversion);
-		editor.focus();
 	}
 }

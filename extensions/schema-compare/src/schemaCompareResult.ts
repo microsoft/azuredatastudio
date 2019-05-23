@@ -252,7 +252,7 @@ export class SchemaCompareResult {
 		}
 
 		if (this.comparisonResult.differences.length > 0) {
-			this.flexModel.addItem(this.splitView);
+			this.flexModel.addItem(this.splitView, { CSSStyles: { 'overflow': 'hidden' } });
 
 			// only enable generate script button if the target is a db
 			if (this.targetEndpointInfo.endpointType === azdata.SchemaCompareEndpointType.Database) {
