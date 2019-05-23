@@ -12,6 +12,8 @@ import { generateUuid } from 'vs/base/common/uuid';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { isString } from 'vs/base/common/types';
 import { deepClone } from 'vs/base/common/objects';
+import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import * as Constants from 'sql/platform/connection/common/constants';
 
 // Concrete implementation of the IConnectionProfile interface
 
@@ -41,6 +43,14 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 			this.saveProfile = model.saveProfile;
 			this._id = model.id;
 			this.azureTenantId = model.azureTenantId;
+			if (this.capabilitiesService) {
+				const options = this.capabilitiesService.getCapabilities(model.providerName).connection.connectionOptions;
+				let appNameOption = options.find(option => option.specialValueType === ConnectionOptionSpecialType.appName);
+				if (appNameOption) {
+					let appNameKey = appNameOption.name;
+					this.options[appNameKey] = Constants.applicationName;
+				}
+			}
 		} else {
 			//Default for a new connection
 			this.savePassword = false;
