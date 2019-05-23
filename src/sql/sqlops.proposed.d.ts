@@ -1584,14 +1584,20 @@ declare module 'sqlops' {
 
 	export enum DataProviderType {
 		ConnectionProvider = 'ConnectionProvider',
+		BackupProvider = 'BackupProvider',
+		RestoreProvider = 'RestoreProvider',
 		ScriptingProvider = 'ScriptingProvider',
 		ObjectExplorerProvider = 'ObjectExplorerProvider',
 		TaskServicesProvider = 'TaskServicesProvider',
 		FileBrowserProvider = 'FileBrowserProvider',
+		ProfilerProvider = 'ProfilerProvider',
 		MetadataProvider = 'MetadataProvider',
 		QueryProvider = 'QueryProvider',
 		AdminServicesProvider = 'AdminServicesProvider',
+		AgentServicesProvider = 'AgentServicesProvider',
 		CapabilitiesProvider = 'CapabilitiesProvider',
+		DacFxServicesProvider = 'DacFxServicesProvider',
+		SchemaCompareServicesProvider = 'SchemaCompareServicesProvider',
 		ObjectExplorerNodeProvider = 'ObjectExplorerNodeProvider',
 		IconProvider = 'IconProvider'
 	}

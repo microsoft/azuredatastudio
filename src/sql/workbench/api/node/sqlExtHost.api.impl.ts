@@ -882,7 +882,7 @@ export function createApiFactory(
 				objectexplorer: objectExplorer,
 				serialization,
 				dataprotocol,
-				DataProviderType: sqlops.DataProviderType,
+				DataProviderType: sqlExtHostTypes.DataProviderType,
 				DeclarativeDataType: sqlExtHostTypes.DeclarativeDataType,
 				ServiceOptionType: sqlExtHostTypes.ServiceOptionType,
 				ConnectionOptionSpecialType: sqlExtHostTypes.ConnectionOptionSpecialType,
