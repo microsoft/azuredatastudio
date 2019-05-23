@@ -97,16 +97,16 @@ export class RunJobAction extends Action {
 	}
 
 	public run(context: IJobActionInfo): Promise<boolean> {
-		let jobName = context.targetObject.name;
+		let jobName = context.targetObject.job.name;
 		let ownerUri = context.ownerUri;
 		let refreshAction = this.instantationService.createInstance(JobsRefreshAction);
 		this.telemetryService.publicLog(TelemetryKeys.RunAgentJob);
 		return new Promise<boolean>((resolve, reject) => {
-			this.jobManagementService.jobAction(ownerUri, jobName, JobActions.Run).then(result => {
+			this.jobManagementService.jobAction(ownerUri, jobName, JobActions.Run).then(async (result) => {
 				if (result.success) {
 					let startMsg = nls.localize('jobSuccessfullyStarted', ': The job was successfully started.');
 					this.notificationService.info(jobName + startMsg);
-					refreshAction.run(context);
+					await refreshAction.run(context);
 					resolve(true);
 				} else {
 					this.errorMessageService.showDialog(Severity.Error, errorLabel, result.errorMessage);
@@ -137,9 +137,9 @@ export class StopJobAction extends Action {
 		let refreshAction = this.instantationService.createInstance(JobsRefreshAction);
 		this.telemetryService.publicLog(TelemetryKeys.StopAgentJob);
 		return new Promise<boolean>((resolve, reject) => {
-			this.jobManagementService.jobAction(ownerUri, jobName, JobActions.Stop).then(result => {
+			this.jobManagementService.jobAction(ownerUri, jobName, JobActions.Stop).then(async (result) => {
 				if (result.success) {
-					refreshAction.run(context);
+					await refreshAction.run(context);
 					let stopMsg = nls.localize('jobSuccessfullyStopped', ': The job was successfully stopped.');
 					this.notificationService.info(jobName + stopMsg);
 					resolve(true);
@@ -261,12 +261,12 @@ export class DeleteStepAction extends Action {
 				label: DeleteStepAction.LABEL,
 				run: () => {
 					this._telemetryService.publicLog(TelemetryKeys.DeleteAgentJobStep);
-					self._jobService.deleteJobStep(actionInfo.ownerUri, actionInfo.targetObject).then(result => {
+					self._jobService.deleteJobStep(actionInfo.ownerUri, actionInfo.targetObject).then(async (result) => {
 						if (!result || !result.success) {
 							let errorMessage = nls.localize('jobaction.failedToDeleteStep', "Could not delete step '{0}'.\nError: {1}",
 								step.stepName, result.errorMessage ? result.errorMessage : 'Unknown error');
 							self._errorMessageService.showDialog(Severity.Error, errorLabel, errorMessage);
-							refreshAction.run(actionInfo);
+							await refreshAction.run(actionInfo);
 						} else {
 							let successMessage = nls.localize('jobaction.deletedStep', 'The job step was successfully deleted');
 							self._notificationService.info(successMessage);
