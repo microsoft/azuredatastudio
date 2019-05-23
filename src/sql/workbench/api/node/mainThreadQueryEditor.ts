@@ -10,9 +10,9 @@ import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionT
 import { QueryEditor } from 'sql/workbench/parts/query/browser/queryEditor';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { dispose, IDisposable } from 'vs/base/common/lifecycle';
-import { IQueryModelService, IQueryEvent } from 'sql/platform/query/common/queryModel';
-import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
+import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import * as azdata from 'azdata';
+import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadQueryEditor)
 export class MainThreadQueryEditor implements MainThreadQueryEditorShape {
@@ -23,9 +23,9 @@ export class MainThreadQueryEditor implements MainThreadQueryEditorShape {
 	constructor(
 		extHostContext: IExtHostContext,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@IQueryManagementService private _queryManagementService: IQueryManagementService,
 		@IQueryModelService private _queryModelService: IQueryModelService,
-		@IEditorService private _editorService: IEditorService
+		@IEditorService private _editorService: IEditorService,
+		@IQueryManagementService private _queryManagementService: IQueryManagementService
 	) {
 		if (extHostContext) {
 			this._proxy = extHostContext.getProxy(SqlExtHostContext.ExtHostQueryEditor);
