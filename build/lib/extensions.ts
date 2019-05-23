@@ -44,7 +44,12 @@ export function packageBuiltInExtensions() {
 		.filter(({ name }) => builtInExtensions.every(b => b.name !== name))
 		.filter(({ name }) => sqlBuiltInExtensions.indexOf(name) >= 0);
 	const visxDirectory = path.join(path.dirname(root), 'vsix');
-	fs.mkdirSync(visxDirectory);
+	try {
+		fs.mkdirSync(visxDirectory);
+	} catch (err) {
+		// don't fail the build if the output directory already exists
+		console.warn(err);
+	}
 	sqlBuiltInLocalExtensionDescriptions.forEach(element => {
 		let pkgJson = JSON.parse(fs.readFileSync(path.join(element.path, 'package.json'), { encoding: 'utf8' }));
 		const packagePath = path.join(visxDirectory, `${pkgJson.name}-${pkgJson.version}.vsix`);
