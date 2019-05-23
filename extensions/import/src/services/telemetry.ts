@@ -5,13 +5,11 @@
 
 import { ErrorAction, CloseAction } from 'vscode-languageclient';
 import TelemetryReporter from 'vscode-extension-telemetry';
-import { PlatformInformation } from 'service-downloader/out/platform';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
 import * as constants from '../constants';
-import * as serviceUtils from './serviceUtils';
 import { IMessage, ITelemetryEventProperties, ITelemetryEventMeasures } from './contracts';
 
 
@@ -90,38 +88,7 @@ export function FilterErrorPath(line: string): string {
 
 export class Telemetry {
 	private static reporter: TelemetryReporter;
-	private static userId: string;
-	private static platformInformation: PlatformInformation;
 	private static disabled: boolean;
-
-	// Get the unique ID for the current user of the extension
-	public static getUserId(): Promise<string> {
-		return new Promise<string>(resolve => {
-			// Generate the user id if it has not been created already
-			if (typeof this.userId === 'undefined') {
-				let id = serviceUtils.generateUserId();
-				id.then(newId => {
-					this.userId = newId;
-					resolve(this.userId);
-				});
-			} else {
-				resolve(this.userId);
-			}
-		});
-	}
-
-	public static getPlatformInformation(): Promise<PlatformInformation> {
-		if (this.platformInformation) {
-			return Promise.resolve(this.platformInformation);
-		} else {
-			return new Promise<PlatformInformation>(resolve => {
-				PlatformInformation.getCurrent().then(info => {
-					this.platformInformation = info;
-					resolve(this.platformInformation);
-				});
-			});
-		}
-	}
 
 	/**
 	 * Disable telemetry reporting

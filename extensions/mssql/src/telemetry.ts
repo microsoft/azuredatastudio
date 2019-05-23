@@ -5,7 +5,6 @@
 
 import * as vscode from 'vscode';
 import TelemetryReporter from 'vscode-extension-telemetry';
-import { PlatformInformation } from 'service-downloader/out/platform';
 import { ErrorAction, ErrorHandler, Message, CloseAction } from 'vscode-languageclient';
 
 import * as Utils from './utils';
@@ -39,21 +38,7 @@ export function FilterErrorPath(line: string): string {
 
 export class Telemetry {
 	private static reporter: TelemetryReporter;
-	private static platformInformation: PlatformInformation;
 	private static disabled: boolean;
-
-	public static getPlatformInformation(): Promise<PlatformInformation> {
-		if (this.platformInformation) {
-			return Promise.resolve(this.platformInformation);
-		} else {
-			return new Promise<PlatformInformation>(resolve => {
-				PlatformInformation.getCurrent().then(info => {
-					this.platformInformation = info;
-					resolve(this.platformInformation);
-				});
-			});
-		}
-	}
 
 	/**
 	 * Disable telemetry reporting
@@ -95,7 +80,6 @@ export class Telemetry {
 
 		// Only adding the method name and the fist line of the stack trace. We don't add the error message because it might have PII
 		this.sendTelemetryEvent('Exception', { methodName: methodName, errorLine: firstLine });
-		// Utils.logDebug('Unhandled Exception occurred. error: ' + err + ' method: ' + methodName, extensionConfigName);
 	}
 
 	/**
