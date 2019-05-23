@@ -1,10 +1,12 @@
 steps:
 - task: NodeTool@0
   inputs:
-    versionSpec: "10.15.1"
-- task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@2
-  inputs:
-    versionSpec: "1.10.1"
+    versionSpec: '10.15.1'
+  displayName: 'Install Node.js'
+
+- script: |
+    npm i -g yarn
+  displayName: 'preinstall'
 
 - script: |
     export CXX="g++-4.9" CC="gcc-4.9" DISPLAY=:10
