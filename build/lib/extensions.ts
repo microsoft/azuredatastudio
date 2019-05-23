@@ -45,7 +45,9 @@ export function packageBuiltInExtensions() {
 		.filter(({ name }) => sqlBuiltInExtensions.indexOf(name) >= 0);
 	const visxDirectory = path.join(path.dirname(root), 'vsix');
 	try {
-		fs.mkdirSync(visxDirectory);
+		if (!fs.existsSync(visxDirectory)) {
+			fs.mkdirSync(visxDirectory);
+		}
 	} catch (err) {
 		// don't fail the build if the output directory already exists
 		console.warn(err);
