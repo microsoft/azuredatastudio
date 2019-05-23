@@ -788,8 +788,12 @@ class GridTable<T> extends Disposable implements IView {
 
 	public dispose() {
 		this.container.remove();
-		this.table.dispose();
-		this.actionBar.dispose();
+		if (this.table) {
+			this.table.dispose();
+		}
+		if (this.actionBar) {
+			this.actionBar.dispose();
+		}
 		super.dispose();
 	}
 }

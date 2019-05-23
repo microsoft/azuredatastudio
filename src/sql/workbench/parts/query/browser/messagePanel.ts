@@ -28,6 +28,8 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { $, Dimension } from 'vs/base/browser/dom';
+import { QueryEditor } from 'sql/workbench/parts/query/browser/queryEditor';
+import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 
 export interface IResultMessageIntern extends IQueryMessage {
 	id?: string;
@@ -376,8 +378,10 @@ export class MessageController extends WorkbenchTreeController {
 		if (element.selection) {
 			let selection: ISelectionData = element.selection;
 			// this is a batch statement
-			let input = this.workbenchEditorService.activeEditor as QueryInput;
-			input.updateSelection(selection);
+			let editor = this.workbenchEditorService.activeControl as QueryEditor;
+			const codeEditor = <ICodeEditor>editor.getControl();
+			codeEditor.focus();
+			codeEditor.setSelection({ endColumn: selection.endColumn + 1, endLineNumber: selection.endLine + 1, startColumn: selection.startColumn + 1, startLineNumber: selection.startLine + 1 });
 		}
 
 		return true;

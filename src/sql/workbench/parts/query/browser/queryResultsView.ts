@@ -37,6 +37,8 @@ class MessagesView extends Disposable implements IPanelView {
 	}
 
 	layout(dimension: DOM.Dimension): void {
+		this.container.style.width = `${dimension.width}px`;
+		this.container.style.height = `${dimension.height}px`;
 		this.messagePanel.layout(dimension);
 	}
 
@@ -78,6 +80,8 @@ class ResultsView extends Disposable implements IPanelView {
 	}
 
 	layout(dimension: DOM.Dimension): void {
+		this.container.style.width = `${dimension.width}px`;
+		this.container.style.height = `${dimension.height}px`;
 		this.gridPanel.layout(dimension);
 	}
 
@@ -240,6 +244,8 @@ export class QueryResultsView extends Disposable {
 		}));
 		if (this.input.state.activeTab) {
 			this._panelView.showTab(this.input.state.activeTab);
+		} else {
+			this._panelView.showTab(this.resultsTab.identifier); // our default tab is the results view
 		}
 	}
 
