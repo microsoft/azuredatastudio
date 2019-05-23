@@ -13,10 +13,6 @@ declare module 'sqlops' {
 	export namespace dataprotocol {
 		export function registerConnectionProvider(provider: ConnectionProvider): vscode.Disposable;
 
-		export function registerBackupProvider(provider: BackupProvider): vscode.Disposable;
-
-		export function registerRestoreProvider(provider: RestoreProvider): vscode.Disposable;
-
 		export function registerScriptingProvider(provider: ScriptingProvider): vscode.Disposable;
 
 		export function registerObjectExplorerProvider(provider: ObjectExplorerProvider): vscode.Disposable;
@@ -27,8 +23,6 @@ declare module 'sqlops' {
 
 		export function registerFileBrowserProvider(provider: FileBrowserProvider): vscode.Disposable;
 
-		export function registerProfilerProvider(provider: ProfilerProvider): vscode.Disposable;
-
 		export function registerMetadataProvider(provider: MetadataProvider): vscode.Disposable;
 
 		export function registerQueryProvider(provider: QueryProvider): vscode.Disposable;
@@ -36,9 +30,6 @@ declare module 'sqlops' {
 		export function registerAdminServicesProvider(provider: AdminServicesProvider): vscode.Disposable;
 
 		export function registerCapabilitiesServiceProvider(provider: CapabilitiesProvider): vscode.Disposable;
-
-		export function registerDacFxServicesProvider(provider: DacFxServicesProvider): vscode.Disposable;
-
 
 		/**
 		 * An [event](#Event) which fires when the specific flavor of a language used in DMP
@@ -1261,71 +1252,6 @@ declare module 'sqlops' {
 		errorMessage: string;
 	}
 
-	// DacFx interfaces  -----------------------------------------------------------------------
-	export interface DacFxResult extends ResultStatus {
-		operationId: string;
-	}
-
-	export interface GenerateDeployPlanResult extends DacFxResult {
-		report: string;
-	}
-
-	export interface ExportParams {
-		databaseName: string;
-		packageFilePath: string;
-		ownerUri: string;
-		taskExecutionMode: TaskExecutionMode;
-	}
-
-	export interface ImportParams {
-		packageFilePath: string;
-		databaseName: string;
-		ownerUri: string;
-		taskExecutionMode: TaskExecutionMode;
-	}
-
-	export interface ExtractParams {
-		databaseName: string;
-		packageFilePath: string;
-		applicationName: string;
-		applicationVersion: string;
-		ownerUri: string;
-		taskExecutionMode: TaskExecutionMode;
-	}
-
-	export interface DeployParams {
-		packageFilePath: string;
-		databaseName: string;
-		upgradeExisting: boolean;
-		ownerUri: string;
-		taskExecutionMode: TaskExecutionMode;
-	}
-
-	export interface GenerateDeployScriptParams {
-		packageFilePath: string;
-		databaseName: string;
-		scriptFilePath: string;
-		ownerUri: string;
-		taskExecutionMode: TaskExecutionMode;
-	}
-
-	export interface GenerateDeployPlan {
-		packageFilePath: string;
-		databaseName: string;
-		ownerUri: string;
-		taskExecutionMode: TaskExecutionMode;
-	}
-
-	export interface DacFxServicesProvider extends DataProvider {
-		exportBacpac(databaseName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
-		importBacpac(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
-		extractDacpac(databaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
-		deployDacpac(packageFilePath: string, databaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
-		generateDeployScript(packageFilePath: string, databaseName: string, scriptFilePath: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
-		generateDeployPlan(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<GenerateDeployPlanResult>;
-	}
-
-
 	// Security service interfaces ------------------------------------------------------------------------
 	export interface CredentialInfo {
 		id: number;
@@ -1399,175 +1325,6 @@ declare module 'sqlops' {
 		registerOnTaskStatusChanged(handler: (response: TaskProgressInfo) => any): void;
 	}
 
-	// Disaster Recovery interfaces  -----------------------------------------------------------------------
-
-	export interface BackupConfigInfo {
-		recoveryModel: string;
-		defaultBackupFolder: string;
-		backupEncryptors: {};
-	}
-
-	export interface BackupResponse {
-		result: boolean;
-		taskId: number;
-	}
-
-	export interface BackupProvider extends DataProvider {
-		backup(connectionUri: string, backupInfo: { [key: string]: any }, taskExecutionMode: TaskExecutionMode): Thenable<BackupResponse>;
-		getBackupConfigInfo(connectionUri: string): Thenable<BackupConfigInfo>;
-	}
-
-	export interface RestoreProvider extends DataProvider {
-		getRestorePlan(connectionUri: string, restoreInfo: RestoreInfo): Thenable<RestorePlanResponse>;
-		cancelRestorePlan(connectionUri: string, restoreInfo: RestoreInfo): Thenable<boolean>;
-		restore(connectionUri: string, restoreInfo: RestoreInfo): Thenable<RestoreResponse>;
-		getRestoreConfigInfo(connectionUri: string): Thenable<RestoreConfigInfo>;
-	}
-
-	export interface RestoreInfo {
-		options: { [key: string]: any };
-		taskExecutionMode: TaskExecutionMode;
-	}
-
-	export interface RestoreDatabaseFileInfo {
-		fileType: string;
-
-		logicalFileName: string;
-
-		originalFileName: string;
-
-		restoreAsFileName: string;
-	}
-
-	export interface DatabaseFileInfo {
-		properties: LocalizedPropertyInfo[];
-		id: string;
-		isSelected: boolean;
-	}
-
-	export interface LocalizedPropertyInfo {
-		propertyName: string;
-		propertyValue: string;
-		propertyDisplayName: string;
-		propertyValueDisplayName: string;
-	}
-
-	export interface RestorePlanDetailInfo {
-		name: string;
-		currentValue: any;
-		isReadOnly: boolean;
-		isVisible: boolean;
-		defaultValue: any;
-	}
-
-	export interface RestorePlanResponse {
-		sessionId: string;
-		backupSetsToRestore: DatabaseFileInfo[];
-		canRestore: boolean;
-		errorMessage: string;
-		dbFiles: RestoreDatabaseFileInfo[];
-		databaseNamesFromBackupSets: string[];
-		planDetails: { [key: string]: RestorePlanDetailInfo };
-	}
-
-	export interface RestoreConfigInfo {
-		configInfo: { [key: string]: any };
-	}
-
-	export interface RestoreResponse {
-		result: boolean;
-		taskId: string;
-		errorMessage: string;
-	}
-
-	export interface ProfilerProvider extends DataProvider {
-		createSession(sessionId: string, sessionName: string, template: ProfilerSessionTemplate): Thenable<boolean>;
-		startSession(sessionId: string, sessionName: string): Thenable<boolean>;
-		stopSession(sessionId: string): Thenable<boolean>;
-		pauseSession(sessionId: string): Thenable<boolean>;
-		getXEventSessions(sessionId: string): Thenable<string[]>;
-		connectSession(sessionId: string): Thenable<boolean>;
-		disconnectSession(sessionId: string): Thenable<boolean>;
-
-		registerOnSessionEventsAvailable(handler: (response: ProfilerSessionEvents) => any): void;
-		registerOnSessionStopped(handler: (response: ProfilerSessionStoppedParams) => any): void;
-		registerOnProfilerSessionCreated(handler: (response: ProfilerSessionCreatedParams) => any): void;
-	}
-
-	export interface IProfilerTableRow {
-		/**
-		 * Name of the event; known issue this is not camel case, need to figure
-		 * out a better way to determine column id's from rendered column names
-		 */
-		EventClass: string;
-	}
-
-	export interface IProfilerMoreRowsNotificationParams {
-		uri: string;
-		rowCount: number;
-		data: IProfilerTableRow;
-	}
-
-	/**
-	 * Profiler Event
-	 */
-	export interface ProfilerEvent {
-		/**
-		 * Event class name
-		 */
-		name: string;
-
-		/**
-		 * Event timestamp
-		 */
-		timestamp: string;
-
-		/**
-		 * Event values
-		 */
-		values: {};
-	}
-
-	/**
-	 * Profiler Session Template
-	 */
-	export interface ProfilerSessionTemplate {
-		/**
-		 * Template name
-		 */
-		name: string;
-
-		/**
-		 * Default view for template
-		 */
-		defaultView: string;
-
-		/**
-		 * TSQL for creating a session
-		 */
-		createStatement: string;
-	}
-
-	export interface ProfilerSessionEvents {
-		sessionId: string;
-
-		events: ProfilerEvent[];
-
-		eventsLost: boolean;
-	}
-
-	export interface ProfilerSessionStoppedParams {
-
-		ownerUri: string;
-
-		sessionId: number;
-	}
-
-	export interface ProfilerSessionCreatedParams {
-		ownerUri: string;
-		sessionName: string;
-		templateName: string;
-	}
 
 	// File browser interfaces  -----------------------------------------------------------------------
 
