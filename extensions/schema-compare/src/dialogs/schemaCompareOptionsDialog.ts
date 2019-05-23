@@ -460,7 +460,6 @@ export class SchemaCompareOptionsDialog {
 			this.optionsFlexBuilder = view.modelBuilder.flexContainer()
 				.withLayout({
 					flexFlow: 'column',
-					height: 760,
 				}).component();
 
 			this.descriptionHeading = view.modelBuilder.table().withProperties({
@@ -470,13 +469,11 @@ export class SchemaCompareOptionsDialog {
 						headerCssClass: 'no-borders',
 						toolTip: 'Option Description'
 					},
-				],
-				height: 30
+				]
 			}).component();
 
 			this.descriptionText = view.modelBuilder.text().withProperties({
-				value: ' ',
-				height: 100
+				value: ' '
 			}).component();
 
 			this.GetGeneralOptionCheckBoxes(view);
@@ -489,9 +486,9 @@ export class SchemaCompareOptionsDialog {
 					flexFlow: 'column',
 				}).component();
 
-			uberOptionsFlexBuilder.addItem(this.optionsFlexBuilder, { CSSStyles: { 'overflow': 'scroll' } });
-			uberOptionsFlexBuilder.addItem(this.descriptionHeading, { CSSStyles: { 'font-weight': 'bold' } });
-			uberOptionsFlexBuilder.addItem(this.descriptionText, { CSSStyles: { 'padding': '4px' } });
+			uberOptionsFlexBuilder.addItem(this.optionsFlexBuilder, { CSSStyles: { 'overflow': 'scroll', 'height': '65vh' } });
+			uberOptionsFlexBuilder.addItem(this.descriptionHeading, { CSSStyles: { 'font-weight': 'bold', 'height': '30px' } });
+			uberOptionsFlexBuilder.addItem(this.descriptionText, { CSSStyles: { 'padding': '4px', 'overflow': 'scroll', 'height': '10vh' } });
 			await view.initializeModel(uberOptionsFlexBuilder);
 		});
 	}
