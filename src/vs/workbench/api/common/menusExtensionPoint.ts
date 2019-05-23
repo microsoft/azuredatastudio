@@ -21,6 +21,7 @@ namespace schema {
 	export interface IUserFriendlyMenuItem {
 		command: string;
 		alt?: string;
+		precondition?: string;
 		when?: string;
 		group?: string;
 	}
@@ -79,6 +80,10 @@ namespace schema {
 				collector.error(localize('optstring', "property `{0}` can be omitted or must be of type `string`", 'alt'));
 				return false;
 			}
+			if (item.precondition && typeof item.precondition !== 'string') {
+				collector.error(localize('optstring', "property `{0}` can be omitted or must be of type `string`", 'precondition'));
+				return false;
+			}
 			if (item.when && typeof item.when !== 'string') {
 				collector.error(localize('optstring', "property `{0}` can be omitted or must be of type `string`", 'when'));
 				return false;
@@ -103,6 +108,10 @@ namespace schema {
 				description: localize('vscode.extension.contributes.menuItem.alt', 'Identifier of an alternative command to execute. The command must be declared in the \'commands\'-section'),
 				type: 'string'
 			},
+			precondition: {
+				description: localize('vscode.extension.contributes.menuItem.precondition', 'Condition which must be true to enable this item'),
+				type: 'string'
+			},
 			when: {
 				description: localize('vscode.extension.contributes.menuItem.when', 'Condition which must be true to show this item'),
 				type: 'string'
@@ -114,7 +123,7 @@ namespace schema {
 		}
 	};
 
-	export const menusContribtion: IJSONSchema = {
+	export const menusContribution: IJSONSchema = {
 		description: localize('vscode.extension.contributes.menus', "Contributes menu items to the editor"),
 		type: 'object',
 		properties: {
@@ -354,7 +363,7 @@ let _menuRegistrations: IDisposable[] = [];
 
 ExtensionsRegistry.registerExtensionPoint<{ [loc: string]: schema.IUserFriendlyMenuItem[] }>({
 	extensionPoint: 'menus',
-	jsonSchema: schema.menusContribtion
+	jsonSchema: schema.menusContribution
 }).setHandler(extensions => {
 
 	// remove all previous menu registrations
@@ -404,6 +413,14 @@ ExtensionsRegistry.registerExtensionPoint<{ [loc: string]: schema.IUserFriendlyM
 					} else {
 						group = item.group;
 					}
+				}
+
+				if (item.precondition) {
+					command.precondition = ContextKeyExpr.deserialize(item.precondition);
+				}
+
+				if (alt && item.precondition) {
+					alt.precondition = command.precondition;
 				}
 
 				const registration = MenuRegistry.appendMenuItem(menu, {
