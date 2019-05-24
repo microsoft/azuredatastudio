@@ -251,7 +251,8 @@ function patchEnvironment(environmentService: IEnvironmentService): typeof proce
 	const instanceEnvironment: typeof process.env = {
 		VSCODE_IPC_HOOK: environmentService.mainIPCHandle,
 		VSCODE_NLS_CONFIG: process.env['VSCODE_NLS_CONFIG'],
-		// {{SQL CARBON EDIT}}
+		VSCODE_LOGS: process.env['VSCODE_LOGS'],
+		// {{SQL CARBON EDIT}} We keep VSCODE_LOGS to not break functionality for merged code
 		ADS_LOGS: process.env['ADS_LOGS']
 	};
 
