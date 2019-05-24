@@ -470,12 +470,12 @@ export class SchemaCompareOptionsDialog {
 						value: 'Option Description',
 						headerCssClass: 'no-borders',
 						toolTip: 'Option Description'
-					},
+					}
 				],
 			}).component();
 
 			this.descriptionText = view.modelBuilder.text().withProperties({
-				value: ' ',
+				value: ' '
 			}).component();
 
 

@@ -8,7 +8,7 @@ import * as path from 'path';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { Telemetry } from './telemetry';
-import { doubleEscapeSingleQuotes, backEscapeDoubleQuotes } from './utils';
+import { doubleEscapeSingleQuotes, backEscapeDoubleQuotes, getTelemetryErrorType } from './utils';
 import { ChildProcess, exec } from 'child_process';
 const localize = nls.loadMessageBundle();
 const ssmsMinVer = JSON.parse(JSON.stringify(require('./config.json'))).version;
@@ -66,7 +66,6 @@ export interface LaunchSsmsDialogParams {
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
 	// This is for Windows-specific support so do nothing on other platforms
 	if (process.platform === 'win32') {
-		Telemetry.sendTelemetryEvent('startup/ExtensionActivated');
 		exePath = path.join(context.extensionPath, 'ssmsmin', 'Windows', ssmsMinVer, 'ssmsmin.exe');
 		registerCommands(context);
 	}
@@ -76,7 +75,7 @@ export async function deactivate(): Promise<void> {
 	// If the extension is being deactivated we want to kill all processes that are still currently
 	// running otherwise they will continue to run as orphan processes. We use taskkill here in case
 	// they started off child processes of their own
-	runningProcesses.forEach(p => exec('taskkill /pid ' + p.pid + ' /T /F'));
+	runningProcesses.forEach(p => exec(`taskkill /pid ${p.pid} /T /F`));
 }
 
 /**
@@ -96,6 +95,7 @@ function registerCommands(context: vscode.ExtensionContext): void {
  */
 async function handleLaunchSsmsMinPropertiesDialogCommand(connectionContext?: azdata.ObjectExplorerContext): Promise<void> {
 	if (!connectionContext) {
+		Telemetry.sendTelemetryEventForError('NoConnectionContext', { action: 'Properties' });
 		vscode.window.showErrorMessage(localize('adminToolExtWin.noConnectionContextForProp', 'No ConnectionContext provided for handleLaunchSsmsMinPropertiesDialogCommand'));
 		return;
 	}
@@ -106,9 +106,9 @@ async function handleLaunchSsmsMinPropertiesDialogCommand(connectionContext?: az
 	}
 	else if (connectionContext.nodeInfo) {
 		nodeType = connectionContext.nodeInfo.nodeType;
-	}
-	else {
-		vscode.window.showErrorMessage(localize('adminToolExtWin.noOeNode', 'Could not determine NodeType for handleLaunchSsmsMinPropertiesDialogCommand with context {0}', JSON.stringify(connectionContext)));
+	} else {
+		Telemetry.sendTelemetryEventForError('NoOENode', { action: 'Properties' });
+		vscode.window.showErrorMessage(localize('adminToolExtWin.noOENode', 'Could not determine Object Explorer node from connectionContext : {0}', JSON.stringify(connectionContext)));
 		return;
 	}
 
@@ -122,12 +122,14 @@ async function handleLaunchSsmsMinPropertiesDialogCommand(connectionContext?: az
  * @param connectionId The connection context from the command
  */
 async function handleLaunchSsmsMinGswDialogCommand(connectionContext?: azdata.ObjectExplorerContext): Promise<void> {
+	const action = 'GenerateScripts';
 	if (!connectionContext) {
+		Telemetry.sendTelemetryEventForError('NoConnectionContext', { action: action });
 		vscode.window.showErrorMessage(localize('adminToolExtWin.noConnectionContextForGsw', 'No ConnectionContext provided for handleLaunchSsmsMinPropertiesDialogCommand'));
 	}
 
 	launchSsmsDialog(
-		'GenerateScripts',
+		action,
 		connectionContext);
 }
 
@@ -139,6 +141,7 @@ async function handleLaunchSsmsMinGswDialogCommand(connectionContext?: azdata.Ob
  */
 async function launchSsmsDialog(action: string, connectionContext: azdata.ObjectExplorerContext): Promise<void> {
 	if (!connectionContext.connectionProfile) {
+		Telemetry.sendTelemetryEventForError('NoConnectionProfile', { action: action });
 		vscode.window.showErrorMessage(localize('adminToolExtWin.noConnectionProfile', 'No connectionProfile provided from connectionContext : {0}', JSON.stringify(connectionContext)));
 		return;
 	}
@@ -152,6 +155,7 @@ async function launchSsmsDialog(action: string, connectionContext: azdata.Object
 		oeNode = await azdata.objectexplorer.getNode(connectionContext.connectionProfile.id, connectionContext.nodeInfo.nodePath);
 	}
 	else {
+		Telemetry.sendTelemetryEventForError('NoOENode', { action: action });
 		vscode.window.showErrorMessage(localize('adminToolExtWin.noOENode', 'Could not determine Object Explorer node from connectionContext : {0}', JSON.stringify(connectionContext)));
 		return;
 	}
@@ -175,7 +179,12 @@ async function launchSsmsDialog(action: string, connectionContext: azdata.Object
 
 	const args = buildSsmsMinCommandArgs(params);
 
-	Telemetry.sendTelemetryEvent('LaunchSsmsDialog', { 'action': action });
+	Telemetry.sendTelemetryEvent('LaunchSsmsDialog',
+		{
+			action: action,
+			nodeType: oeNode ? oeNode.nodeType : 'Server',
+			authType: connectionContext.connectionProfile.authenticationType
+		});
 
 	vscode.window.setStatusBarMessage(localize('adminToolExtWin.launchingDialogStatus', 'Launching dialog...'), 3000);
 
@@ -186,11 +195,12 @@ async function launchSsmsDialog(action: string, connectionContext: azdata.Object
 		(execException, stdout, stderr) => {
 			// Process has exited so remove from map of running processes
 			runningProcesses.delete(proc.pid);
+			const err = stderr.toString();
 			Telemetry.sendTelemetryEvent('LaunchSsmsDialogResult', {
-				'action': params.action,
-				'returnCode': execException && execException.code ? execException.code.toString() : '0'
+				action: params.action,
+				returnCode: execException && execException.code ? execException.code.toString() : '0',
+				errorType: getTelemetryErrorType(err)
 			});
-			let err = stderr.toString();
 			if (err !== '') {
 				vscode.window.showErrorMessage(localize(
 					'adminToolExtWin.ssmsMinError',
