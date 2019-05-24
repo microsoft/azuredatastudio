@@ -415,7 +415,7 @@ export class MainThreadCommentController {
 					let threadHandle = await this._proxy.$createNewCommentWidgetCallback(this.handle, uri, range, token);
 
 					// if (threadHandle !== undefined) { {{SQL CARBON EDIT}} @anthonydresser this never happens but throws error because of strict null checks
-						// return this.getKnownThread(threadHandle);
+					// return this.getKnownThread(threadHandle);
 					// }
 
 					return undefined; // {{SQL CARBON EDIT}} @anthonydresser revert back after strict-null-check
