@@ -41,11 +41,11 @@ export class DropdownList extends Dropdown {
 		if (action) {
 			this.button = new Button(_contentContainer);
 			this.button.label = action.label;
-			this.toDispose.push(DOM.addDisposableListener(this.button.element, DOM.EventType.CLICK, () => {
+			this._register(DOM.addDisposableListener(this.button.element, DOM.EventType.CLICK, () => {
 				action.run();
 				this.hide();
 			}));
-			this.toDispose.push(DOM.addDisposableListener(this.button.element, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
+			this._register(DOM.addDisposableListener(this.button.element, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
 				let event = new StandardKeyboardEvent(e);
 				if (event.equals(KeyCode.Enter)) {
 					e.stopPropagation();
@@ -75,7 +75,7 @@ export class DropdownList extends Dropdown {
 			}
 		}));
 
-		this.toDispose.push(this._list.onSelectionChange(() => {
+		this._register(this._list.onSelectionChange(() => {
 			// focus on the dropdown label then hide the dropdown list
 			this.element.focus();
 			this.hide();
