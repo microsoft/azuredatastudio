@@ -37,6 +37,11 @@ export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
 export const ROW_HEIGHT: number = 45;
 export const ACTIONBAR_PADDING: number = 10;
 
+interface IItem extends Slick.SlickData {
+	jobId?: string;
+	id: string;
+}
+
 @Component({
 	selector: JOBSVIEW_SELECTOR,
 	templateUrl: decodeURI(require.toUrl('./jobsView.component.html')),
@@ -71,7 +76,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 	];
 
 	private _jobCacheObject: JobCacheObject;
-	private rowDetail: RowDetailView;
+	private rowDetail: RowDetailView<IItem>;
 	private filterPlugin: any;
 	private dataView: any;
 	private _isCloud: boolean;
@@ -161,7 +166,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 
 		this.dataView = new Slick.Data.DataView({ inlineFilters: false });
 
-		let rowDetail = new RowDetailView({
+		let rowDetail = new RowDetailView<IItem>({
 			cssClass: '_detail_selector',
 			process: (job) => {
 				(<any>rowDetail).onAsyncResponse.notify({
@@ -169,11 +174,13 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 				}, undefined, this);
 			},
 			useRowClick: false,
-			panelRows: 1
+			panelRows: 1,
+			postTemplate: () => '', // I'm assuming these code paths are just never hit...
+			preTemplate: () => '',
 		});
 		this.rowDetail = rowDetail;
 		columns.unshift(this.rowDetail.getColumnDefinition());
-		let filterPlugin = new HeaderFilter({});
+		let filterPlugin = new HeaderFilter<{ inlineFilters: false }>();
 		this._register(attachButtonStyler(filterPlugin, this._themeService));
 		this.filterPlugin = filterPlugin;
 		jQuery(this._gridEl.nativeElement).empty();
@@ -337,7 +344,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		this.filterPlugin.onCommand.subscribe((e, args: any) => {
 			this.columnSort(args.column.name, args.command === 'sort-asc');
 		});
-		this._table.registerPlugin(<HeaderFilter>this.filterPlugin);
+		this._table.registerPlugin(this.filterPlugin);
 
 		this.dataView.beginUpdate();
 		this.dataView.setItems(jobViews);
@@ -900,7 +907,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 	}
 
 	protected getCurrentTableObject(rowIndex: number): JobActionContext {
-		let data = this._table.grid.getData();
+		let data = this._table.grid.getData() as Slick.DataProvider<IItem>;
 		if (!data || rowIndex >= data.getLength()) {
 			return undefined;
 		}

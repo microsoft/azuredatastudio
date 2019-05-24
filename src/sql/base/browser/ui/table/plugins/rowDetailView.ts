@@ -4,44 +4,79 @@ import { escape } from 'sql/base/common/strings';
 import { mixin } from 'vs/base/common/objects';
 import * as nls from 'vs/nls';
 
-export class RowDetailView {
+export interface IRowDetailViewOptions<T> {
+	columnId?: string;
+	cssClass?: string;
+	toolTip?: string;
+	width?: number;
+	panelRows: number;
+	useRowClick?: boolean;
+	loadOnce?: boolean;
+	preTemplate: (item: ExtendedItem<T>) => string;
+	process: (item: ExtendedItem<T>) => void;
+	postTemplate: (item: ExtendedItem<T>) => string;
+}
 
-	public onAsyncResponse = new Slick.Event<any>();
-	public onAsyncEndUpdate = new Slick.Event<any>();
-	public onAfterRowDetailToggle = new Slick.Event<any>();
-	public onBeforeRowDetailToggle = new Slick.Event<any>();
+const defaultOptions = {
+	columnId: '_detail_selector',
+	toolTip: '',
+	width: 30
+};
 
-	private _grid: any;
-	private _expandedRows: any = [];
+export interface IExtendedItem<T extends Slick.SlickData> {
+	_collapsed?: boolean;
+	_parent?: IExtendedItem<T> & T;
+	_detailContent?: string;
+	_detailViewLoaded?: boolean;
+	_sizePadding?: number;
+	id?: string;
+	_height?: number;
+	_isPadding?: boolean;
+	name?: string;
+	_child?: IExtendedItem<T>;
+	message?: string;
+}
+
+export type ExtendedItem<T extends Slick.SlickData> = T & IExtendedItem<T>;
+
+interface AugmentedDataView<T extends Slick.SlickData> extends Slick.Data.DataView<T> {
+	getItem(row: number): ExtendedItem<T>;
+	getItemByIdx(row: number): ExtendedItem<T>;
+}
+
+export class RowDetailView<T extends Slick.SlickData> {
+
+	public readonly onAsyncResponse = new Slick.Event<{ itemDetail: ExtendedItem<T>, detailView: string }>();
+	public readonly onAsyncEndUpdate = new Slick.Event<{ grid: Slick.Grid<T>, itemDetail: T }>();
+	public readonly onAfterRowDetailToggle = new Slick.Event<{ grid: Slick.Grid<T>, item: T }>();
+	public readonly onBeforeRowDetailToggle = new Slick.Event<{ grid: Slick.Grid<T>, item: T }>();
+
+	private _grid: Slick.Grid<T>;
+	private _expandedRows: Array<ExtendedItem<T>> = [];
 	private _handler = new Slick.EventHandler();
-	private _defaults: any = {
-		columnId: '_detail_selector',
-		cssClass: null,
-		toolTip: '',
-		width: 30
-	};
 
-	private _dataView: any;
-	private _options: any;
+	private _dataView: AugmentedDataView<T>;
+	private _options: IRowDetailViewOptions<T>;
 
-	constructor(options) {
-		this._options = mixin(options, this._defaults, false);
+	constructor(options: IRowDetailViewOptions<T>) {
+		this._options = options || Object.create(null);
+		mixin(this._options, defaultOptions, false);
 	}
 
-	public init(grid: any): void {
+	public init(grid: Slick.Grid<T>): void {
 		this._grid = grid;
-		this._dataView = this._grid.getData();
+		this._dataView = this._grid.getData() as AugmentedDataView<T>; // this is a bad assumption but the code is written with this assumption
 
 		// Update the minRowBuffer so that the view doesn't disappear when it's at top of screen + the original default 3
 		this._grid.getOptions().minRowBuffer = this._options.panelRows + 3;
 
 		this._handler
-			.subscribe(this._grid.onClick, (e, args) => this.handleClick(e, args))
-			.subscribe(this._grid.onSort, (e, args) => this.handleSort(e, args))
-			.subscribe(this._grid.onScroll, (e, args) => this.handleScroll(e, args));
+			.subscribe(this._grid.onClick, (e: MouseEvent, args: Slick.OnClickEventArgs<T>) => this.handleClick(e, args))
+			.subscribe(this._grid.onSort, () => this.handleSort())
+			.subscribe(this._grid.onScroll, () => this.handleScroll());
 
-		this._grid.getData().onRowCountChanged.subscribe(() => { this._grid.updateRowCount(); this._grid.render(); });
-		this._grid.getData().onRowsChanged.subscribe((e, a) => { this._grid.invalidateRows(a.rows); this._grid.render(); });
+		this._dataView.onRowCountChanged.subscribe(() => { this._grid.updateRowCount(); this._grid.render(); });
+		this._dataView.onRowsChanged.subscribe((e, a) => { this._grid.invalidateRows(a.rows); this._grid.render(); });
 
 		// subscribe to the onAsyncResponse so that the plugin knows when the user server side calls finished
 		this.subscribeToOnAsyncResponse();
@@ -55,17 +90,17 @@ export class RowDetailView {
 		this.onBeforeRowDetailToggle.unsubscribe();
 	}
 
-	public getOptions(options: any) {
+	public getOptions() {
 		return this._options;
 	}
 
-	public setOptions(options: any) {
+	public setOptions(options: IRowDetailViewOptions<T>) {
 		this._options = jQuery.extend(true, {}, this._options, options);
 	}
 
-	public handleClick(e: any, args: any): void {
+	public handleClick(e: MouseEvent, args: Slick.OnClickEventArgs<T>): void {
 		// clicking on a row select checkbox
-		if (this._options.useRowClick || this._grid.getColumns()[args.cell].id === this._options.columnId && jQuery(e.target).hasClass('detailView-toggle')) {
+		if (this._options.useRowClick || this._grid.getColumns()[args.cell].id === this._options.columnId && jQuery(e.target!).hasClass('detailView-toggle')) {
 			// if editing, try to commit
 			if (this._grid.getEditorLock().isActive() && !this._grid.getEditorLock().commitCurrentEdit()) {
 				e.preventDefault();
@@ -95,12 +130,12 @@ export class RowDetailView {
 	}
 
 	// Sort will just collapse all of the open items
-	public handleSort(e, args) {
+	public handleSort() {
 		this.collapseAll();
 	}
 
 	// If we scroll save detail views that go out of cache range
-	public handleScroll(e, args) {
+	public handleScroll() {
 
 		const range = this._grid.getRenderedRange();
 
@@ -136,10 +171,10 @@ export class RowDetailView {
 	}
 
 	// Toggle between showing and hiding a row
-	public toggleRowSelection(row) {
-		this._grid.getData().beginUpdate();
+	public toggleRowSelection(row: T) {
+		this._dataView.beginUpdate();
 		this.handleAccordionShowHide(row);
-		this._grid.getData().endUpdate();
+		this._dataView.endUpdate();
 	}
 
 	// Collapse all of the open items
@@ -150,7 +185,7 @@ export class RowDetailView {
 	}
 
 	// Saves the current state of the detail view
-	public saveDetailView(item) {
+	public saveDetailView(item: ExtendedItem<T>) {
 		const view = jQuery('#innerDetailView_' + item.id);
 		if (view) {
 			const html = jQuery('#innerDetailView_' + item.id).html();
@@ -161,7 +196,7 @@ export class RowDetailView {
 	}
 
 	// Colapse an Item so it is notlonger seen
-	public collapseItem(item) {
+	public collapseItem(item: ExtendedItem<T>) {
 
 		// Save the details on the collapse assuming onetime loading
 		if (this._options.loadOnce) {
@@ -169,11 +204,11 @@ export class RowDetailView {
 		}
 
 		item._collapsed = true;
-		for (let idx = 1; idx <= item._sizePadding; idx++) {
+		for (let idx = 1; idx <= item._sizePadding!; idx++) {
 			this._dataView.deleteItem(item.id + '.' + idx);
 		}
 		item._sizePadding = 0;
-		this._dataView.updateItem(item.id, item);
+		this._dataView.updateItem(item.id!, item);
 
 		// Remove the item from the expandedRows
 		this._expandedRows = this._expandedRows.filter((r) => {
@@ -182,7 +217,7 @@ export class RowDetailView {
 	}
 
 	// Expand a row given the dataview item that is to be expanded
-	public expandItem(item) {
+	public expandItem(item: ExtendedItem<T>) {
 		item._collapsed = false;
 		this._expandedRows.push(item);
 
@@ -197,16 +232,16 @@ export class RowDetailView {
 		} else {
 			this.onAsyncResponse.notify({
 				itemDetail: item,
-				detailView: item._detailContent
+				detailView: item._detailContent!
 			}, undefined, this);
 			this.applyTemplateNewLineHeight(item);
-			this._dataView.updateItem(item.id, item);
+			this._dataView.updateItem(item.id!, item);
 
 			return;
 		}
 
 		this.applyTemplateNewLineHeight(item);
-		this._dataView.updateItem(item.id, item);
+		this._dataView.updateItem(item.id!, item);
 
 		// async server call
 		this._options.process(item);
@@ -231,7 +266,7 @@ export class RowDetailView {
 
 			args.itemDetail._detailViewLoaded = true;
 
-			this._dataView.updateItem(args.itemDetail.id, args.itemDetail);
+			this._dataView.updateItem(args.itemDetail.id!, args.itemDetail);
 
 			// trigger an event once the post template is finished loading
 			this.onAsyncEndUpdate.notify({
@@ -241,7 +276,7 @@ export class RowDetailView {
 		});
 	}
 
-	public handleAccordionShowHide(item) {
+	public handleAccordionShowHide(item?: ExtendedItem<T>) {
 		if (item) {
 			if (!item._collapsed) {
 				this.collapseItem(item);
@@ -253,7 +288,7 @@ export class RowDetailView {
 
 	//////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////
-	public getPaddingItem(parent, offset) {
+	public getPaddingItem(parent: ExtendedItem<T>, offset: number | string) {
 		const item: any = {};
 
 		for (const prop in this._grid.getData()) {
@@ -265,18 +300,16 @@ export class RowDetailView {
 		item._collapsed = true;
 		item._isPadding = true;
 		item._parent = parent;
-		item._offset = offset;
 
 		return item;
 	}
 
-	public getErrorItem(parent, offset) {
-		const item: any = {};
+	public getErrorItem(parent: ExtendedItem<T>, offset: number | string) {
+		const item: ExtendedItem<T> = Object.create(null);
 		item.id = parent.id + '.' + offset;
 		item._collapsed = true;
 		item._isPadding = false;
 		item._parent = parent;
-		item._offset = offset;
 		item.name = parent.message ? parent.message : nls.localize('rowDetailView.loadError', 'Loading Error...');
 		parent._child = item;
 		return item;
@@ -285,17 +318,17 @@ export class RowDetailView {
 	//////////////////////////////////////////////////////////////
 	//create the detail ctr node. this belongs to the dev & can be custom-styled as per
 	//////////////////////////////////////////////////////////////
-	public applyTemplateNewLineHeight(item, showError = false) {
+	public applyTemplateNewLineHeight(item: ExtendedItem<T>, showError = false) {
 		// the height seems to be calculated by the template row count (how many line of items does the template have)
 		const rowCount = this._options.panelRows;
 
 		//calculate padding requirements based on detail-content..
 		//ie. worst-case: create an invisible dom node now &find it's height.
 		const lineHeight = 13; //we know cuz we wrote the custom css innit ;)
-		item._sizePadding = Math.ceil(((rowCount * 2) * lineHeight) / this._grid.getOptions().rowHeight);
-		item._height = (item._sizePadding * this._grid.getOptions().rowHeight);
+		item._sizePadding = Math.ceil(((rowCount * 2) * lineHeight) / this._grid.getOptions().rowHeight!);
+		item._height = (item._sizePadding * this._grid.getOptions().rowHeight!);
 
-		const idxParent = this._dataView.getIdxById(item.id);
+		const idxParent = this._dataView.getIdxById(item.id!);
 		for (let idx = 1; idx <= item._sizePadding; idx++) {
 			if (showError) {
 				this._dataView.insertItem(idxParent + idx, this.getErrorItem(item, 'error'));
@@ -305,7 +338,7 @@ export class RowDetailView {
 		}
 	}
 
-	public getColumnDefinition() {
+	public getColumnDefinition(): Slick.Column<T> {
 		return {
 			id: this._options.columnId,
 			name: '',
@@ -315,11 +348,11 @@ export class RowDetailView {
 			resizable: false,
 			sortable: false,
 			cssClass: this._options.cssClass,
-			formatter: (row, cell, value, columnDef, dataContext) => this.detailSelectionFormatter(row, cell, value, columnDef, dataContext)
+			formatter: (row, cell, value, columnDef, dataContext) => this.detailSelectionFormatter(row, cell, value, columnDef, dataContext as ExtendedItem<T>)
 		};
 	}
 
-	public detailSelectionFormatter(row, cell, value, columnDef, dataContext) {
+	public detailSelectionFormatter(row: number, cell: number, value: any, columnDef: Slick.Column<T>, dataContext: ExtendedItem<T>): string | undefined {
 
 		if (dataContext._collapsed === undefined) {
 			dataContext._collapsed = true;
@@ -327,7 +360,6 @@ export class RowDetailView {
 			dataContext._height = 0;	//the actual height in pixels of the detail field
 			dataContext._isPadding = false;
 			dataContext._parent = undefined;
-			dataContext._offset = 0;
 		}
 
 		if (dataContext._isPadding === true) {
@@ -336,7 +368,7 @@ export class RowDetailView {
 			return '<div class=\'detailView-toggle expand\'></div>';
 		} else {
 			const html: Array<string> = [];
-			const rowHeight = this._grid.getOptions().rowHeight;
+			const rowHeight = this._grid.getOptions().rowHeight!;
 			const bottomMargin = 5;
 
 			//V313HAX:
@@ -353,59 +385,12 @@ export class RowDetailView {
 			html.push(`<div id='cellDetailView_${dataContext.id}' class='dynamic-cell-detail' `);   //apply custom css to detail
 			html.push(`style=\'height:${dataContext._height}px;`); //set total height of padding
 			html.push(`top:${rowHeight}px'>`);             //shift detail below 1st row
-			html.push(`<div id='detailViewContainer_${dataContext.id}"'  class='detail-container' style='max-height:${(dataContext._height - rowHeight + bottomMargin)}px'>`); //sub ctr for custom styling
-			html.push(`<div id='innerDetailView_${dataContext.id}'>${escape(dataContext._detailContent)}</div></div>`);
+			html.push(`<div id='detailViewContainer_${dataContext.id}"'  class='detail-container' style='max-height:${(dataContext._height! - rowHeight + bottomMargin)}px'>`); //sub ctr for custom styling
+			html.push(`<div id='innerDetailView_${dataContext.id}'>${escape(dataContext._detailContent!)}</div></div>`);
 			//&omit a final closing detail container </div> that would come next
 
 			return html.join('');
 		}
-		return null;
-	}
-
-	public resizeDetailView(item) {
-		if (!item) {
-			return;
-		}
-
-		// Grad each of the dom items
-		const mainContainer = document.getElementById('detailViewContainer_' + item.id);
-		const cellItem = document.getElementById('cellDetailView_' + item.id);
-		const inner = document.getElementById('innerDetailView_' + item.id);
-
-		if (!mainContainer || !cellItem || !inner) {
-			return;
-		}
-
-		for (let idx = 1; idx <= item._sizePadding; idx++) {
-			this._dataView.deleteItem(item.id + '.' + idx);
-		}
-
-		const rowHeight = this._grid.getOptions().rowHeight; // height of a row
-		const lineHeight = 13; //we know cuz we wrote the custom css innit ;)
-
-		// Get the inner Item height as this will be the actual size
-		const itemHeight = inner.clientHeight;
-
-		// Now work out how many rows
-		const rowCount = Math.ceil(itemHeight / rowHeight) + 1;
-
-		item._sizePadding = Math.ceil(((rowCount * 2) * lineHeight) / rowHeight);
-		item._height = (item._sizePadding * rowHeight);
-
-		// If the padding is now more than the original minRowBuff we need to increase it
-		if (this._grid.getOptions().minRowBuffer < item._sizePadding) {
-			// Update the minRowBuffer so that the view doesn't disappear when it's at top of screen + the original default 3
-			this._grid.getOptions().minRowBuffer = item._sizePadding + 3;
-		}
-
-		mainContainer.setAttribute('style', `max-height: ${item._height}px`);
-		if (cellItem) {
-			cellItem.setAttribute('style', `height: ${item._height}px;top:${rowHeight}px`);
-		}
-
-		const idxParent = this._dataView.getIdxById(item.id);
-		for (let idx = 1; idx <= item._sizePadding; idx++) {
-			this._dataView.insertItem(idxParent + idx, this.getPaddingItem(item, idx));
-		}
+		return undefined;
 	}
 }

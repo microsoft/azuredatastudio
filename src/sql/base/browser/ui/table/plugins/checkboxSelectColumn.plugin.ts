@@ -8,6 +8,7 @@ import * as strings from 'vs/base/common/strings';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { range } from 'vs/base/common/arrays';
+import * as dict from 'vs/base/common/collections';
 
 export interface ICheckboxSelectColumnOptions extends Slick.PluginOptions, ICheckboxStyles {
 	columnId?: string;
@@ -42,11 +43,11 @@ const checkboxTemplate = `<div style="display: flex; align-items: center; flex-d
 								<input type="checkbox" {0}>
 							</div>`;
 
-export class CheckboxSelectColumn<T> implements Slick.Plugin<T> {
+export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Plugin<T> {
 	private _options: ICheckboxSelectColumnOptions;
 	private _grid: Slick.Grid<T>;
 	private _handler = new Slick.EventHandler();
-	private _selectedRowsLookup = {};
+	private _selectedRowsLookup: dict.INumberDictionary<boolean> = {};
 	private _selectedCheckBoxLookup = {};
 	private _useState = false;
 
@@ -62,10 +63,10 @@ export class CheckboxSelectColumn<T> implements Slick.Plugin<T> {
 	public init(grid: Slick.Grid<T>): void {
 		this._grid = grid;
 		this._handler
-			.subscribe(this._grid.onSelectedRowsChanged, (e, args) => this.handleSelectedRowsChanged(e, args))
-			.subscribe(this._grid.onClick, (e, args) => this.handleClick(e, args))
-			.subscribe(this._grid.onHeaderClick, (e, args) => this.handleHeaderClick(e, args))
-			.subscribe(this._grid.onKeyDown, (e, args) => this.handleKeyDown(e, args));
+			.subscribe(this._grid.onSelectedRowsChanged, (e: Event, args: Slick.OnSelectedRowsChangedEventArgs<T>) => this.handleSelectedRowsChanged(e, args))
+			.subscribe(this._grid.onClick, (e: MouseEvent, args: Slick.OnClickEventArgs<T>) => this.handleClick(e, args))
+			.subscribe(this._grid.onHeaderClick, (e: MouseEvent, args: Slick.OnHeaderClickEventArgs<T>) => this.handleHeaderClick(e, args))
+			.subscribe(this._grid.onKeyDown, (e: KeyboardEvent, args: Slick.OnKeyDownEventArgs<T>) => this.handleKeyDown(e, args));
 	}
 
 	public destroy(): void {
@@ -80,7 +81,7 @@ export class CheckboxSelectColumn<T> implements Slick.Plugin<T> {
 		}
 
 		const selectedRows = this._grid.getSelectedRows();
-		let lookup = {}, row, i;
+		let lookup: dict.INumberDictionary<boolean> = {}, row: number, i: number;
 		for (i = 0; i < selectedRows.length; i++) {
 			row = selectedRows[i];
 			lookup[row] = true;
@@ -89,9 +90,7 @@ export class CheckboxSelectColumn<T> implements Slick.Plugin<T> {
 				delete this._selectedRowsLookup[row];
 			}
 		}
-		for (i in this._selectedRowsLookup) {
-			this._grid.invalidateRow(i);
-		}
+		dict.forEach(this._selectedRowsLookup, (e) => this._grid.invalidateRow(e.key));
 		this._selectedRowsLookup = lookup;
 		this._grid.render();
 
@@ -228,11 +227,11 @@ export class CheckboxSelectColumn<T> implements Slick.Plugin<T> {
 			resizable: false,
 			sortable: false,
 			cssClass: this._options.cssClass,
-			formatter: (r, c, v, cd, dc) => this.checkboxSelectionFormatter(r, c, v, cd, dc)
+			formatter: (r, c, v, cd, dc) => this.checkboxSelectionFormatter(r, c, v, cd, dc as T)
 		};
 	}
 
-	private checkboxSelectionFormatter(row, cell, value, columnDef: Slick.Column<T>, dataContext): string {
+	private checkboxSelectionFormatter(row: number, cell: number, value: any, columnDef: Slick.Column<T>, dataContext: T): string {
 		if (this.isCustomActionRequested()) {
 			return this.checkboxTemplateCustom(row);
 		}
