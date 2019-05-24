@@ -12,6 +12,7 @@ import * as utils from '../common/utils';
 import JupyterServerInstallation from '../jupyter/jupyterServerInstallation';
 import { ApiWrapper } from '../common/apiWrapper';
 import { Deferred } from '../common/promise';
+import { PythonPathLookup, PythonPathInfo } from './pythonPathLookup';
 
 const localize = nls.loadMessageBundle();
 
@@ -28,15 +29,19 @@ export class ConfigurePythonDialog {
 	private readonly InvalidLocationMsg = localize('configurePython.invalidLocationMsg', "The specified install location is invalid.");
 	private readonly PythonNotFoundMsg = localize('configurePython.pythonNotFoundMsg', "No python installation was found at the specified location.");
 
-	private pythonLocationTextBox: azdata.InputBoxComponent;
+	private pythonLocationDropdown: azdata.DropDownComponent;
 	private browseButton: azdata.ButtonComponent;
 	private newInstallButton: azdata.RadioButtonComponent;
 	private existingInstallButton: azdata.RadioButtonComponent;
 
-	private _setupComplete: Deferred<void>;
+	private setupComplete: Deferred<void>;
+	private pythonPathsPromise: Promise<PythonPathInfo[]>;
+	private usingCustomPath: boolean;
 
 	constructor(private apiWrapper: ApiWrapper, private jupyterInstallation: JupyterServerInstallation) {
-		this._setupComplete = new Deferred<void>();
+		this.setupComplete = new Deferred<void>();
+		this.pythonPathsPromise = (new PythonPathLookup()).getSuggestions();
+		this.usingCustomPath = false;
 	}
 
 	/**
@@ -53,9 +58,9 @@ export class ConfigurePythonDialog {
 		this.dialog.cancelButton.label = this.CancelButtonText;
 		this.dialog.cancelButton.onClick(() => {
 			if (rejectOnCancel) {
-				this._setupComplete.reject(localize('configurePython.pythonInstallDeclined', "Python installation was declined."));
+				this.setupComplete.reject(localize('configurePython.pythonInstallDeclined', "Python installation was declined."));
 			} else {
-				this._setupComplete.resolve();
+				this.setupComplete.resolve();
 			}
 		});
 
@@ -63,14 +68,15 @@ export class ConfigurePythonDialog {
 
 		azdata.window.openDialog(this.dialog);
 
-		return this._setupComplete.promise;
+		return this.setupComplete.promise;
 	}
 
 	private initializeContent(): void {
 		this.dialog.registerContent(async view => {
-			this.pythonLocationTextBox = view.modelBuilder.inputBox()
-				.withProperties<azdata.InputBoxProperties>({
-					value: JupyterServerInstallation.getPythonInstallPath(this.apiWrapper),
+			this.pythonLocationDropdown = view.modelBuilder.dropDown()
+				.withProperties<azdata.DropDownProperties>({
+					value: undefined,
+					values: [],
 					width: '100%'
 				}).component();
 
@@ -95,7 +101,8 @@ export class ConfigurePythonDialog {
 				}
 			});
 
-			this.createInstallRadioButtons(view.modelBuilder);
+			let useExistingPython = JupyterServerInstallation.getExistingPythonSetting(this.apiWrapper);
+			this.createInstallRadioButtons(view.modelBuilder, useExistingPython);
 
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems([{
@@ -105,7 +112,7 @@ export class ConfigurePythonDialog {
 					component: this.existingInstallButton,
 					title: ''
 				}, {
-					component: this.pythonLocationTextBox,
+					component: this.pythonLocationDropdown,
 					title: this.LocationTextBoxTitle
 				}, {
 					component: this.browseButton,
@@ -116,11 +123,46 @@ export class ConfigurePythonDialog {
 				}]).component();
 
 			await view.initializeModel(formModel);
+
+			await this.updatePythonPathsDropdown(useExistingPython);
 		});
 	}
 
-	private createInstallRadioButtons(modelBuilder: azdata.ModelBuilder): void {
-		let useExistingPython = JupyterServerInstallation.getExistingPythonSetting(this.apiWrapper);
+	private async updatePythonPathsDropdown(useExistingPython: boolean): Promise<void> {
+		let pythonPaths: PythonPathInfo[];
+		let dropdownValues: azdata.CategoryValue[];
+		if (useExistingPython) {
+			pythonPaths = await this.pythonPathsPromise;
+			if (pythonPaths && pythonPaths.length > 0) {
+				dropdownValues = pythonPaths.map(path => {
+					return {
+						displayName: `${path.installDir} (${path.version})`,
+						name: path.installDir
+					};
+				});
+			} else {
+				dropdownValues = [{
+					displayName: 'No Python installs found.',
+					name: ''
+				}];
+			}
+		} else {
+			let defaultPath = JupyterServerInstallation.getPythonInstallPath(this.apiWrapper);
+			let defaultValue = {
+				displayName: `${defaultPath} (Default)`,
+				name: defaultPath
+			};
+			dropdownValues = [defaultValue];
+		}
+
+		this.usingCustomPath = false;
+		await this.pythonLocationDropdown.updateProperties({
+			value: dropdownValues[0],
+			values: dropdownValues
+		});
+	}
+
+	private createInstallRadioButtons(modelBuilder: azdata.ModelBuilder, useExistingPython: boolean): void {
 		let buttonGroup = 'installationType';
 		this.newInstallButton = modelBuilder.radioButton()
 			.withProperties<azdata.RadioButtonProperties>({
@@ -130,6 +172,10 @@ export class ConfigurePythonDialog {
 			}).component();
 		this.newInstallButton.onDidClick(() => {
 			this.existingInstallButton.checked = false;
+			this.updatePythonPathsDropdown(false)
+				.catch(err => {
+					this.showErrorMessage(utils.getErrorMessage(err));
+				});
 		});
 
 		this.existingInstallButton = modelBuilder.radioButton()
@@ -140,11 +186,15 @@ export class ConfigurePythonDialog {
 			}).component();
 		this.existingInstallButton.onDidClick(() => {
 			this.newInstallButton.checked = false;
+			this.updatePythonPathsDropdown(true)
+				.catch(err => {
+					this.showErrorMessage(utils.getErrorMessage(err));
+				});
 		});
 	}
 
 	private async handleInstall(): Promise<boolean> {
-		let pythonLocation = this.pythonLocationTextBox.value;
+		let pythonLocation = (this.pythonLocationDropdown.value as azdata.CategoryValue).name;
 		if (!pythonLocation || pythonLocation.length === 0) {
 			this.showErrorMessage(this.InvalidLocationMsg);
 			return false;
@@ -173,10 +223,10 @@ export class ConfigurePythonDialog {
 		// Don't wait on installation, since there's currently no Cancel functionality
 		this.jupyterInstallation.startInstallProcess(false, { installPath: pythonLocation, existingPython: useExistingPython })
 			.then(() => {
-				this._setupComplete.resolve();
+				this.setupComplete.resolve();
 			})
 			.catch(err => {
-				this._setupComplete.reject(utils.getErrorMessage(err));
+				this.setupComplete.reject(utils.getErrorMessage(err));
 			});
 
 		return true;
@@ -216,7 +266,24 @@ export class ConfigurePythonDialog {
 
 		let fileUris: vscode.Uri[] = await this.apiWrapper.showOpenDialog(options);
 		if (fileUris && fileUris[0]) {
-			this.pythonLocationTextBox.value = fileUris[0].fsPath;
+			let existingValues = <azdata.CategoryValue[]>this.pythonLocationDropdown.values;
+			let filePath = fileUris[0].fsPath;
+			let newValue = {
+				displayName: `${filePath} (Custom)`,
+				name: filePath
+			};
+
+			if (this.usingCustomPath) {
+				existingValues[0] = newValue;
+			} else {
+				existingValues.unshift(newValue);
+				this.usingCustomPath = true;
+			}
+
+			await this.pythonLocationDropdown.updateProperties({
+				value: existingValues[0],
+				values: existingValues
+			});
 		}
 	}
 
