@@ -20,7 +20,6 @@ import * as ConnectionContracts from 'sql/workbench/parts/connection/common/conn
 import { ConnectionStatusManager } from 'sql/platform/connection/common/connectionStatusManager';
 import { DashboardInput } from 'sql/workbench/parts/dashboard/dashboardInput';
 import { ConnectionGlobalStatus } from 'sql/workbench/parts/connection/common/connectionGlobalStatus';
-import { ConnectionStatusbarItem } from 'sql/workbench/parts/connection/browser/connectionStatus';
 import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
 import * as TelemetryUtils from 'sql/platform/telemetry/telemetryUtilities';
 import { IResourceProviderService } from 'sql/workbench/services/resourceProvider/common/resourceProviderService';
@@ -44,12 +43,9 @@ import * as platform from 'vs/platform/registry/common/platform';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { Event, Emitter } from 'vs/base/common/event';
-import { EditorPart } from 'vs/workbench/browser/parts/editor/editorPart';
-import * as statusbar from 'vs/workbench/browser/parts/statusbar/statusbar';
-import { IStatusbarService, StatusbarAlignment } from 'vs/platform/statusbar/common/statusbar';
+import { IStatusbarService } from 'vs/platform/statusbar/common/statusbar';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
-import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ILogService } from 'vs/platform/log/common/log';
 import * as interfaces from './interfaces';
@@ -85,7 +81,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		@IConfigurationService private _configurationService: IConfigurationService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@IQuickInputService private _quickInputService: IQuickInputService,
-		@IEditorGroupsService private _editorGroupService: IEditorGroupsService,
 		@IStatusbarService private _statusBarService: IStatusbarService,
 		@IResourceProviderService private _resourceProviderService: IResourceProviderService,
 		@IAngularEventingService private _angularEventing: IAngularEventingService,
@@ -97,13 +92,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		if (!this._connectionStore) {
 			this._connectionStore = _instantiationService.createInstance(ConnectionStore);
 		}
-
-		// Register Statusbar item
-		(<statusbar.IStatusbarRegistry>platform.Registry.as(statusbar.Extensions.Statusbar)).registerStatusbarItem(new statusbar.StatusbarItemDescriptor(
-			ConnectionStatusbarItem,
-			StatusbarAlignment.RIGHT,
-			100 /* High Priority */
-		));
 
 		const registry = platform.Registry.as<IConnectionProviderRegistry>(ConnectionProviderExtensions.ConnectionProviderContributions);
 
