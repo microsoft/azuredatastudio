@@ -471,7 +471,7 @@ export class SchemaCompareOptionsDialog {
 						headerCssClass: 'no-borders',
 						toolTip: 'Option Description'
 					}
-				],
+				]
 			}).component();
 
 			this.descriptionText = view.modelBuilder.text().withProperties({
@@ -480,7 +480,7 @@ export class SchemaCompareOptionsDialog {
 
 
 			this.optionsTable = view.modelBuilder.table().withProperties({
-				data: [],
+				data: []
 			}).component();
 
 			this.updateOptionsTable();
@@ -503,7 +503,7 @@ export class SchemaCompareOptionsDialog {
 
 			this.optionsFlexBuilder = view.modelBuilder.flexContainer()
 				.withLayout({
-					flexFlow: 'column',
+					flexFlow: 'column'
 				}).component();
 
 			this.optionsFlexBuilder.addItem(this.optionsTable, { CSSStyles: { 'overflow': 'scroll', 'height': '65vh' } });
@@ -518,11 +518,11 @@ export class SchemaCompareOptionsDialog {
 
 			this.objectTypesFlexBuilder = view.modelBuilder.flexContainer()
 				.withLayout({
-					flexFlow: 'column',
+					flexFlow: 'column'
 				}).component();
 
 			this.objectsTable = view.modelBuilder.table().withProperties({
-				data: [],
+				data: []
 			}).component();
 
 			this.updateObjectsTable();
@@ -566,7 +566,7 @@ export class SchemaCompareOptionsDialog {
 					cssClass: 'no-borders align-with-header',
 					width: 50
 				}
-			],
+			]
 		});
 	}
 
@@ -589,7 +589,7 @@ export class SchemaCompareOptionsDialog {
 					cssClass: 'no-borders align-with-header',
 					width: 50
 				}
-			],
+			]
 		});
 	}
 
