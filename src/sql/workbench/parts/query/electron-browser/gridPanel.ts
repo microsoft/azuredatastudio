@@ -58,7 +58,6 @@ const MIN_GRID_HEIGHT = (MIN_GRID_HEIGHT_ROWS * ROW_HEIGHT) + HEADER_HEIGHT + ES
 export class GridPanelState {
 	public tableStates: GridTableState[] = [];
 	public scrollPosition: number;
-	public collapsed = false;
 
 	dispose() {
 		dispose(this.tableStates);

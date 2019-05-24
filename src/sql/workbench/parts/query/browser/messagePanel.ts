@@ -6,7 +6,6 @@
 import 'vs/css!./media/messagePanel';
 import { IMessagesActionContext, CopyMessagesAction, CopyAllMessagesAction } from './actions';
 import QueryRunner, { IQueryMessage } from 'sql/platform/query/common/queryRunner';
-import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
 import { IExpandableTree } from 'sql/workbench/parts/objectExplorer/browser/treeUpdateUtils';
 
 import { ISelectionData } from 'azdata';
@@ -22,7 +21,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { OpenMode, ClickBehavior, ICancelableEvent, IControllerOptions } from 'vs/base/parts/tree/browser/treeDefaults';
 import { WorkbenchTreeController } from 'vs/platform/list/browser/listService';
 import { IMouseEvent } from 'vs/base/browser/mouseEvent';
-import { isArray, isUndefinedOrNull } from 'vs/base/common/types';
+import { isArray } from 'vs/base/common/types';
 import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
@@ -62,14 +61,6 @@ const TemplateIds = {
 
 export class MessagePanelState {
 	public scrollPosition: number;
-	public collapsed = false;
-
-	constructor(@IConfigurationService configurationService: IConfigurationService) {
-		let messagesOpenedSettings = configurationService.getValue<boolean>('sql.messagesDefaultOpen');
-		if (!isUndefinedOrNull(messagesOpenedSettings)) {
-			this.collapsed = !messagesOpenedSettings;
-		}
-	}
 
 	dispose() {
 
