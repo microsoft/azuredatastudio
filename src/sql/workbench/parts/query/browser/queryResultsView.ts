@@ -3,74 +3,33 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { QueryResultsInput, ResultsViewState } from 'sql/workbench/parts/query/common/queryResultsInput';
+import { QueryResultsInput } from 'sql/workbench/parts/query/common/queryResultsInput';
 import { TabbedPanel, IPanelTab, IPanelView } from 'sql/base/browser/ui/panel/panel';
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import QueryRunner from 'sql/platform/query/common/queryRunner';
-import { MessagePanel } from './messagePanel';
-import { GridPanel } from '../electron-browser/gridPanel';
-import { ChartTab } from '../../charts/browser/chartTab';
+import { MessagePanel, MessagePanelState } from 'sql/workbench/parts/query/browser/messagePanel';
+import { GridPanel, GridPanelState } from 'sql/workbench/parts/query/electron-browser/gridPanel';
+import { ChartTab } from 'sql/workbench/parts/charts/browser/chartTab';
 import { QueryPlanTab } from 'sql/workbench/parts/queryPlan/electron-browser/queryPlan';
 import { TopOperationsTab } from 'sql/workbench/parts/queryPlan/browser/topOperations';
 import { QueryModelViewTab } from 'sql/workbench/parts/query/modelViewTab/queryModelViewTab';
 
 import * as nls from 'vs/nls';
-import { PanelViewlet } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as DOM from 'vs/base/browser/dom';
-import { Event } from 'vs/base/common/event';
 import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
 import { attachTabbedPanelStyler } from 'sql/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 
-class ResultsView extends Disposable implements IPanelView {
-	private panelViewlet: PanelViewlet;
-	private gridPanel: GridPanel;
+class MessagesView extends Disposable implements IPanelView {
 	private messagePanel: MessagePanel;
 	private container = document.createElement('div');
-	private currentDimension: DOM.Dimension;
-	private _state: ResultsViewState;
+	private _state: MessagePanelState;
 
 	constructor(private instantiationService: IInstantiationService) {
 		super();
-		this.panelViewlet = this._register(this.instantiationService.createInstance(PanelViewlet, 'resultsView', { showHeaderInTitleWhenSingleView: false }));
-		this.gridPanel = this._register(this.instantiationService.createInstance(GridPanel, { title: nls.localize('gridPanel', 'Results'), id: 'gridPanel' }));
-		this.messagePanel = this._register(this.instantiationService.createInstance(MessagePanel, { title: nls.localize('messagePanel', 'Messages'), minimumBodySize: 0, id: 'messagePanel' }));
-		this.gridPanel.render();
-		this.messagePanel.render();
-		this.panelViewlet.create(this.container);
-		this.gridPanel.setVisible(false);
-		this.panelViewlet.addPanels([
-			{ panel: this.messagePanel, size: this.messagePanel.minimumSize, index: 1 }
-		]);
-		Event.any(this.gridPanel.onDidChange, this.messagePanel.onDidChange)(e => {
-			let size = this.gridPanel.maximumBodySize;
-			if (size < 1 && this.gridPanel.isVisible()) {
-				this.gridPanel.setVisible(false);
-				this.panelViewlet.removePanels([this.gridPanel]);
-				this.gridPanel.layout(0);
-			} else if (size > 0 && !this.gridPanel.isVisible()) {
-				this.gridPanel.setVisible(true);
-				this.panelViewlet.addPanels([{ panel: this.gridPanel, index: 0, size: 200 }]);
-			}
-			if (this.gridPanel.isVisible()) {
-				if (this.state.messagePanelSize) {
-					this.panelViewlet.resizePanel(this.messagePanel, this.state.messagePanelSize);
-				}
-				this.panelViewlet.resizePanel(this.gridPanel, this.getGridPanelSize());
-			}
-		});
-
-		this.panelViewlet.onDidSashChange(e => {
-			if (this.state) {
-				if (this.gridPanel.isExpanded()) {
-					this.state.gridPanelSize = this.panelViewlet.getPanelSize(this.gridPanel);
-				}
-				if (this.messagePanel.isExpanded()) {
-					this.state.messagePanelSize = this.panelViewlet.getPanelSize(this.messagePanel);
-				}
-			}
-		});
+		this.messagePanel = this._register(this.instantiationService.createInstance(MessagePanel));
+		this.messagePanel.render(this.container);
 	}
 
 	render(container: HTMLElement): void {
@@ -78,29 +37,12 @@ class ResultsView extends Disposable implements IPanelView {
 	}
 
 	layout(dimension: DOM.Dimension): void {
-		this.panelViewlet.layout(dimension);
-		// the grid won't be resized if the height has not changed so we need to do it manually
-		if (this.currentDimension && dimension.height === this.currentDimension.height) {
-			this.gridPanel.layout(dimension.height);
-		}
-		this.currentDimension = dimension;
-
-		// resize the messages and grid panels
-		this.panelViewlet.resizePanel(this.gridPanel, this.getGridPanelSize());
-		// we have the right scroll position saved as part of gridPanel state, use this to re-position scrollbar
-		this.gridPanel.resetScrollPosition();
-
-		if (this.state.messagePanelSize) {
-			this.panelViewlet.resizePanel(this.messagePanel, this.state.messagePanelSize);
-		}
-	}
-
-	dispose() {
-		super.dispose();
+		this.container.style.width = `${dimension.width}px`;
+		this.container.style.height = `${dimension.height}px`;
+		this.messagePanel.layout(dimension);
 	}
 
 	public clear() {
-		this.gridPanel.clear();
 		this.messagePanel.clear();
 	}
 
@@ -109,32 +51,59 @@ class ResultsView extends Disposable implements IPanelView {
 	}
 
 	public set queryRunner(runner: QueryRunner) {
-		this.gridPanel.queryRunner = runner;
 		this.messagePanel.queryRunner = runner;
 	}
 
-	public hideResultHeader() {
-		this.gridPanel.headerVisible = false;
-	}
-
-	public set state(val: ResultsViewState) {
+	public set state(val: MessagePanelState) {
 		this._state = val;
-		this.gridPanel.state = val.gridPanelState;
-		this.messagePanel.state = val.messagePanelState;
+		this.messagePanel.state = val;
 	}
 
-	public get state(): ResultsViewState {
+	public get state(): MessagePanelState {
 		return this._state;
 	}
+}
 
-	private getGridPanelSize(): number {
-		if (this.state && this.state.gridPanelSize) {
-			return this.state.gridPanelSize;
-		} else if (this.currentDimension) {
-			return Math.round(Math.max(this.currentDimension.height * 0.7, this.currentDimension.height - 150));
-		} else {
-			return 200;
-		}
+class ResultsView extends Disposable implements IPanelView {
+	private gridPanel: GridPanel;
+	private container = document.createElement('div');
+	private _state: GridPanelState;
+
+	constructor(private instantiationService: IInstantiationService) {
+		super();
+		this.gridPanel = this._register(this.instantiationService.createInstance(GridPanel));
+		this.gridPanel.render(this.container);
+	}
+
+	render(container: HTMLElement): void {
+		container.appendChild(this.container);
+	}
+
+	layout(dimension: DOM.Dimension): void {
+		this.container.style.width = `${dimension.width}px`;
+		this.container.style.height = `${dimension.height}px`;
+		this.gridPanel.layout(dimension);
+	}
+
+	public clear() {
+		this.gridPanel.clear();
+	}
+
+	remove(): void {
+		this.container.remove();
+	}
+
+	public set queryRunner(runner: QueryRunner) {
+		this.gridPanel.queryRunner = runner;
+	}
+
+	public set state(val: GridPanelState) {
+		this._state = val;
+		this.gridPanel.state = val;
+	}
+
+	public get state(): GridPanelState {
+		return this._state;
 	}
 }
 
@@ -160,10 +129,33 @@ class ResultsTab implements IPanelTab {
 	}
 }
 
+class MessagesTab implements IPanelTab {
+	public readonly title = nls.localize('messagesTabTitle', 'Messages');
+	public readonly identifier = 'messagesTab';
+	public readonly view: MessagesView;
+
+	constructor(instantiationService: IInstantiationService) {
+		this.view = new MessagesView(instantiationService);
+	}
+
+	public set queryRunner(runner: QueryRunner) {
+		this.view.queryRunner = runner;
+	}
+
+	public dispose() {
+		dispose(this.view);
+	}
+
+	public clear() {
+		this.view.clear();
+	}
+}
+
 export class QueryResultsView extends Disposable {
 	private _panelView: TabbedPanel;
 	private _input: QueryResultsInput;
 	private resultsTab: ResultsTab;
+	private messagesTab: MessagesTab;
 	private chartTab: ChartTab;
 	private qpTab: QueryPlanTab;
 	private topOperationsTab: TopOperationsTab;
@@ -179,6 +171,7 @@ export class QueryResultsView extends Disposable {
 	) {
 		super();
 		this.resultsTab = this._register(new ResultsTab(instantiationService));
+		this.messagesTab = this._register(new MessagesTab(instantiationService));
 		this.chartTab = this._register(new ChartTab(instantiationService));
 		this._panelView = this._register(new TabbedPanel(container, { showHeaderWhenSingleView: false }));
 		attachTabbedPanelStyler(this._panelView, themeService);
@@ -188,6 +181,7 @@ export class QueryResultsView extends Disposable {
 		attachTabbedPanelStyler(this._panelView, themeService);
 
 		this._panelView.pushTab(this.resultsTab);
+		this._panelView.pushTab(this.messagesTab);
 		this._register(this._panelView.onTabChange(e => {
 			if (this.input) {
 				this.input.state.activeTab = e;
@@ -200,6 +194,7 @@ export class QueryResultsView extends Disposable {
 
 	private setQueryRunner(runner: QueryRunner) {
 		this.resultsTab.queryRunner = runner;
+		this.messagesTab.queryRunner = runner;
 		this.chartTab.queryRunner = runner;
 		this.runnerDisposables.push(runner.onQueryStart(e => {
 			this.hideChart();
@@ -249,6 +244,8 @@ export class QueryResultsView extends Disposable {
 		}));
 		if (this.input.state.activeTab) {
 			this._panelView.showTab(this.input.state.activeTab);
+		} else {
+			this._panelView.showTab(this.resultsTab.identifier); // our default tab is the results view
 		}
 	}
 
@@ -256,7 +253,8 @@ export class QueryResultsView extends Disposable {
 		this._input = input;
 		dispose(this.runnerDisposables);
 		this.runnerDisposables = [];
-		this.resultsTab.view.state = this.input.state;
+		this.resultsTab.view.state = this.input.state.gridPanelState;
+		this.messagesTab.view.state = this.input.state.messagePanelState;
 		this.qpTab.view.state = this.input.state.queryPlanState;
 		this.topOperationsTab.view.state = this.input.state.topOperationsState;
 		this.chartTab.view.state = this.input.state.chartState;
@@ -278,6 +276,7 @@ export class QueryResultsView extends Disposable {
 	clearInput() {
 		this._input = undefined;
 		this.resultsTab.clear();
+		this.messagesTab.clear();
 		this.qpTab.clear();
 		this.topOperationsTab.clear();
 		this.chartTab.clear();
