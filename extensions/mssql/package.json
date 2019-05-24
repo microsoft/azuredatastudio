@@ -411,13 +411,13 @@
             },
             {
               "name": "%title.endpoints%",
-              "row": 0,
-              "col": 1,
+              "row": 1,
+              "col": 0,
               "rowspan": 1.5,
               "colspan": 2,
               "widget": {
-                "properties-widget": {"endpoints" : [
-                  ]
+                "modelview": {
+                  "id": "endpoints"
                 }
               }
             }

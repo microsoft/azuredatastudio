@@ -213,7 +213,9 @@ export async function getClusterEndpoint(profileId: string, serviceName: string)
 	let clusterEndpoint: IEndpoint = {
 		serviceName: endpoints[index].serviceName,
 		ipAddress: endpoints[index].ipAddress,
-		port: endpoints[index].port
+		port: endpoints[index].port,
+		isHyperlink: false,
+		hyperlink: null
 	};
 	return clusterEndpoint;
 }
@@ -222,6 +224,8 @@ export interface IEndpoint {
 	serviceName: string;
 	ipAddress: string;
 	port: number;
+	isHyperlink: boolean;
+	hyperlink: string;
 }
 
 export function isValidNumber(maybeNumber: any) {
