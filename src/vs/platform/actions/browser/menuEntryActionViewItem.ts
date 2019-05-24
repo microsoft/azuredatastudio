@@ -274,16 +274,16 @@ export class ContextAwareMenuEntryActionViewItem extends MenuEntryActionViewItem
 // an icon/CSS class. Useful for some toolbar scenarios in particular with
 // contributed actions from other extensions
 export class LabeledMenuItemActionItem extends MenuEntryActionViewItem {
-	private _labeledItemClassDispose: IDisposable;
+	private _labeledItemClassDispose?: IDisposable;
 
 	constructor(
 		public _action: MenuItemAction,
-		@IKeybindingService private readonly _labeledkeybindingService: IKeybindingService,
+		@IKeybindingService labeledkeybindingService: IKeybindingService,
+		@IContextMenuService labeledcontextMenuService: IContextMenuService,
 		@INotificationService protected _notificationService: INotificationService,
-		@IContextMenuService private readonly _labeledcontextMenuService: IContextMenuService,
 		private readonly _defaultCSSClassToAdd: string = ''
 	) {
-		super(_action, _labeledkeybindingService, _notificationService, _labeledcontextMenuService);
+		super(_action, labeledkeybindingService, _notificationService, labeledcontextMenuService);
 	}
 
 	updateLabel(): void {
@@ -302,7 +302,7 @@ export class LabeledMenuItemActionItem extends MenuEntryActionViewItem {
 			const iconPathMapKey = item.iconLocation.dark.toString();
 
 			if (MenuEntryActionViewItem.ICON_PATH_TO_CSS_RULES.has(iconPathMapKey)) {
-				iconClass = MenuEntryActionViewItem.ICON_PATH_TO_CSS_RULES.get(iconPathMapKey);
+				iconClass = MenuEntryActionViewItem.ICON_PATH_TO_CSS_RULES.get(iconPathMapKey)!;
 			} else {
 				iconClass = ids.nextId();
 				createCSSRule(`.icon.${iconClass}`, `background-image: url("${(item.iconLocation.light || item.iconLocation.dark).toString()}")`);
