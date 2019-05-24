@@ -211,7 +211,7 @@ export class FileDialogService implements IFileDialogService {
 			return URI.file(result);
 		}
 
-		return;
+		return undefined; // {{SQL CARBON EDIT}} @anthonydresser strict-null-check
 	}
 
 	async showOpenDialog(options: IOpenDialogOptions): Promise<URI[] | undefined> {
