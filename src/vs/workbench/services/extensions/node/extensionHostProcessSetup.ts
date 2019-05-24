@@ -134,8 +134,8 @@ function _createExtHostProtocol(): Promise<IMessagePassingProtocol> {
 		});
 
 	} else {
-
-		const pipeName = process.env.VSCODE_IPC_HOOK_EXTHOST!;
+		// {{SQL CARBON EDIT}}
+		const pipeName = process.env.ADS_IPC_HOOK_EXTHOST!;
 
 		return new Promise<IMessagePassingProtocol>((resolve, reject) => {
 

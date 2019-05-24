@@ -251,7 +251,8 @@ function patchEnvironment(environmentService: IEnvironmentService): typeof proce
 	const instanceEnvironment: typeof process.env = {
 		VSCODE_IPC_HOOK: environmentService.mainIPCHandle,
 		VSCODE_NLS_CONFIG: process.env['VSCODE_NLS_CONFIG'],
-		VSCODE_LOGS: process.env['VSCODE_LOGS']
+		// {{SQL CARBON EDIT}}
+		ADS_LOGS: process.env['ADS_LOGS']
 	};
 
 	if (process.env['VSCODE_PORTABLE']) {

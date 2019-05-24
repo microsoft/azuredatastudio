@@ -134,7 +134,8 @@ export class ExtensionHostProcessWorker implements IExtensionHostStarter {
 						AMD_ENTRYPOINT: 'vs/workbench/services/extensions/node/extensionHostProcess',
 						PIPE_LOGGING: 'true',
 						VERBOSE_LOGGING: true,
-						VSCODE_IPC_HOOK_EXTHOST: pipeName,
+						// {{SQL CARBON EDIT}}
+						ADS_IPC_HOOK_EXTHOST: pipeName,
 						VSCODE_HANDLES_UNCAUGHT_ERRORS: true,
 						VSCODE_LOG_STACK: !this._isExtensionDevTestFromCli && (this._isExtensionDevHost || !this._environmentService.isBuilt || product.quality !== 'stable' || this._environmentService.verbose),
 						VSCODE_LOG_LEVEL: this._environmentService.verbose ? 'trace' : this._environmentService.log
