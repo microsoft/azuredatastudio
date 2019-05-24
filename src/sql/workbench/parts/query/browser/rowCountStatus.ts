@@ -40,7 +40,7 @@ export class RowCountStatusBarItem implements IStatusbarItem {
 
 		this._showStatus();
 
-		return combinedDisposable(disposables);
+		return combinedDisposable(...disposables);
 	}
 
 	private _onEditorsChanged() {

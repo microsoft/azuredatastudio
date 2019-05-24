@@ -43,7 +43,7 @@ export class TimeElapsedStatusBarItem implements IStatusbarItem {
 
 		this._showStatus();
 
-		return combinedDisposable(disposables);
+		return combinedDisposable(...disposables);
 	}
 
 	private _onEditorsChanged() {

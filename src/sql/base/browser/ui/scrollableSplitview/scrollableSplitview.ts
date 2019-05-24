@@ -241,7 +241,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 				}
 				this.onRemoveItems(new ArrayIterator([item.view.id!]));
 			});
-			const disposable = combinedDisposable([onChangeDisposable, containerDisposable]);
+			const disposable = combinedDisposable(onChangeDisposable, containerDisposable);
 
 			const onAdd = view.onAdd ? () => view.onAdd!() : () => { };
 			const onRemove = view.onRemove ? () => view.onRemove!() : () => { };
@@ -292,7 +292,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 				const onEndDisposable = onEnd(this.onSashEnd, this);
 				const onDidResetDisposable = sash.onDidReset(() => this._onDidSashReset.fire(firstIndex(this.sashItems, item => item.sash === sash)));
 
-				const disposable = combinedDisposable([onStartDisposable, onChangeDisposable, onEndDisposable, onDidResetDisposable, sash]);
+				const disposable = combinedDisposable(onStartDisposable, onChangeDisposable, onEndDisposable, onDidResetDisposable, sash);
 				const sashItem: ISashItem = { sash, disposable };
 
 				this.sashItems.splice(currentIndex - 1, 0, sashItem);
@@ -344,7 +344,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 			}
 			this.onRemoveItems(new ArrayIterator([item.view.id!]));
 		});
-		const disposable = combinedDisposable([onChangeDisposable, containerDisposable]);
+		const disposable = combinedDisposable(onChangeDisposable, containerDisposable);
 
 		const onAdd = view.onAdd ? () => view.onAdd!() : () => { };
 		const onRemove = view.onRemove ? () => view.onRemove!() : () => { };
@@ -395,7 +395,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 			const onEndDisposable = onEnd(this.onSashEnd, this);
 			const onDidResetDisposable = sash.onDidReset(() => this._onDidSashReset.fire(firstIndex(this.sashItems, item => item.sash === sash)));
 
-			const disposable = combinedDisposable([onStartDisposable, onChangeDisposable, onEndDisposable, onDidResetDisposable, sash]);
+			const disposable = combinedDisposable(onStartDisposable, onChangeDisposable, onEndDisposable, onDidResetDisposable, sash);
 			const sashItem: ISashItem = { sash, disposable };
 
 			this.sashItems.splice(index - 1, 0, sashItem);
@@ -526,10 +526,10 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 		const index = firstIndex(this.sashItems, item => item.sash === sash);
 
 		// This way, we can press Alt while we resize a sash, macOS style!
-		const disposable = combinedDisposable([
+		const disposable = combinedDisposable(
 			domEvent(document.body, 'keydown')(e => resetSashDragState(this.sashDragState.current, e.altKey)),
 			domEvent(document.body, 'keyup')(() => resetSashDragState(this.sashDragState.current, false))
-		]);
+		);
 
 		const resetSashDragState = (start: number, alt: boolean) => {
 			const sizes = this.viewItems.map(i => i.size);
