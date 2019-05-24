@@ -45,6 +45,7 @@
 		"Microsoft.cms",
 		"Microsoft.dacpac",
 		"Microsoft.import",
+		"microsoft.managed-instance-dashboard",
 		"Microsoft.powershell",
 		"Microsoft.profiler",
 		"Microsoft.schema-compare",
