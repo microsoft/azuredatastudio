@@ -7,9 +7,9 @@ import { QueryResultsInput } from 'sql/workbench/parts/query/common/queryResults
 import { TabbedPanel, IPanelTab, IPanelView } from 'sql/base/browser/ui/panel/panel';
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import QueryRunner from 'sql/platform/query/common/queryRunner';
-import { MessagePanel, MessagePanelState } from './messagePanel';
-import { GridPanel, GridPanelState } from '../electron-browser/gridPanel';
-import { ChartTab } from '../../charts/browser/chartTab';
+import { MessagePanel, MessagePanelState } from 'sql/workbench/parts/query/browser/messagePanel';
+import { GridPanel, GridPanelState } from 'sql/workbench/parts/query/electron-browser/gridPanel';
+import { ChartTab } from 'sql/workbench/parts/charts/browser/chartTab';
 import { QueryPlanTab } from 'sql/workbench/parts/queryPlan/electron-browser/queryPlan';
 import { TopOperationsTab } from 'sql/workbench/parts/queryPlan/browser/topOperations';
 import { QueryModelViewTab } from 'sql/workbench/parts/query/modelViewTab/queryModelViewTab';
