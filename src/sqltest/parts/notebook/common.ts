@@ -99,6 +99,9 @@ export class NotebookModelStub implements INotebookModel {
 	toJSON(): nb.INotebookContents {
 		throw new Error('Method not implemented.');
 	}
+	serializationStateChanged(changeType: NotebookChangeType): void {
+		throw new Error('Method not implemented.');
+	}
 }
 
 export class NotebookManagerStub implements INotebookManager {

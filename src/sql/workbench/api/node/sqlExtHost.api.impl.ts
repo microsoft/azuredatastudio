@@ -496,7 +496,8 @@ export function createApiFactory(
 				registerNotebookProvider(provider: azdata.nb.NotebookProvider): vscode.Disposable {
 					return extHostNotebook.registerNotebookProvider(provider);
 				},
-				CellRange: sqlExtHostTypes.CellRange
+				CellRange: sqlExtHostTypes.CellRange,
+				NotebookChangeKind: sqlExtHostTypes.NotebookChangeKind
 			};
 
 			return {
@@ -924,7 +925,9 @@ export function createApiFactory(
 					return extHostNotebookDocumentsAndEditors.onDidOpenNotebookDocument;
 				},
 				get onDidChangeNotebookCell() {
-					return extHostNotebookDocumentsAndEditors.onDidChangeNotebookCell;
+					// Disabling this in sqlops namespace as it's erroring.
+					// There are currently no users of the sqlops version of this namespace shipping in the marketplace
+					return undefined;
 				},
 				showNotebookDocument(uri: vscode.Uri, showOptions: sqlops.nb.NotebookShowOptions) {
 					return extHostNotebookDocumentsAndEditors.showNotebookDocument(uri, showOptions);

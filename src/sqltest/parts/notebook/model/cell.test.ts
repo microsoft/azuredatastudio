@@ -15,9 +15,17 @@ import { NotebookModelStub } from '../common';
 import { EmptyFuture } from 'sql/workbench/services/notebook/common/sessionManager';
 import { ICellModel } from 'sql/workbench/parts/notebook/models/modelInterfaces';
 import { Deferred } from 'sql/base/common/promise';
+import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
+
+let instantiationService: IInstantiationService;
 
 suite('Cell Model', function (): void {
-	let factory = new ModelFactory();
+	let serviceCollection = new ServiceCollection();
+	instantiationService = new InstantiationService(serviceCollection, true);
+
+	let factory = new ModelFactory(instantiationService);
 	test('Should set default values if none defined', async function (): Promise<void> {
 		let cell = factory.createCell(undefined, undefined);
 		should(cell.cellType).equal(CellTypes.Code);

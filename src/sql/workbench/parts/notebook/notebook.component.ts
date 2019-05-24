@@ -345,7 +345,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	private get modelFactory(): IModelFactory {
 		if (!this._notebookParams.modelFactory) {
-			this._notebookParams.modelFactory = new ModelFactory();
+			this._notebookParams.modelFactory = new ModelFactory(this.instantiationService);
 		}
 		return this._notebookParams.modelFactory;
 	}

@@ -947,4 +947,13 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		this._contentChangedEmitter.fire(changeInfo);
 	}
 
+	serializationStateChanged(changeType: NotebookChangeType): void {
+		let changeInfo: NotebookContentChange = {
+			changeType: changeType,
+			cells: undefined
+		};
+
+		this._contentChangedEmitter.fire(changeInfo);
+	}
+
 }
