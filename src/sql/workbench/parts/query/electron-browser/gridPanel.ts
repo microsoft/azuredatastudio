@@ -24,19 +24,17 @@ import { ITableStyles, ITableMouseEvent } from 'sql/base/browser/ui/table/interf
 
 import * as azdata from 'azdata';
 
-import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { Emitter, Event } from 'vs/base/common/event';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { ViewletPanel, IViewletPanelOptions } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { range } from 'vs/base/common/arrays';
 import { Orientation } from 'vs/base/browser/ui/splitview/splitview';
 import { Disposable, IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { generateUuid } from 'vs/base/common/uuid';
 import { Separator, ActionBar, ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
-import { isInDOM } from 'vs/base/browser/dom';
+import { isInDOM, Dimension } from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
@@ -60,7 +58,6 @@ const MIN_GRID_HEIGHT = (MIN_GRID_HEIGHT_ROWS * ROW_HEIGHT) + HEADER_HEIGHT + ES
 export class GridPanelState {
 	public tableStates: GridTableState[] = [];
 	public scrollPosition: number;
-	public collapsed = false;
 
 	dispose() {
 		dispose(this.tableStates);
@@ -115,7 +112,7 @@ export class GridTableState extends Disposable {
 	}
 }
 
-export class GridPanel extends ViewletPanel {
+export class GridPanel {
 	private container = document.createElement('div');
 	private splitView: ScrollableSplitView;
 	private tables: GridTable<any>[] = [];
@@ -129,42 +126,33 @@ export class GridPanel extends ViewletPanel {
 	private _state: GridPanelState;
 
 	constructor(
-		options: IViewletPanelOptions,
-		@IKeybindingService keybindingService: IKeybindingService,
-		@IContextMenuService contextMenuService: IContextMenuService,
-		@IConfigurationService configurationService: IConfigurationService,
-		@IThemeService private themeService: IThemeService,
-		@IInstantiationService private instantiationService: IInstantiationService,
-		@ILogService private logService: ILogService
+		@IConfigurationService private readonly configurationService: IConfigurationService,
+		@IThemeService private readonly themeService: IThemeService,
+		@IInstantiationService private readonly instantiationService: IInstantiationService,
+		@ILogService private readonly logService: ILogService
 	) {
-		super(options, keybindingService, contextMenuService, configurationService);
 		this.splitView = new ScrollableSplitView(this.container, { enableResizing: false, verticalScrollbarVisibility: ScrollbarVisibility.Visible });
 		this.splitView.onScroll(e => {
 			if (this.state && this.splitView.length !== 0) {
 				this.state.scrollPosition = e;
 			}
 		});
-		this.onDidChange(e => {
-			if (this.state) {
-				this.state.collapsed = !this.isExpanded();
-			}
-		});
 	}
 
-	protected renderBody(container: HTMLElement): void {
+	public render(container: HTMLElement): void {
 		this.container.style.width = '100%';
 		this.container.style.height = '100%';
 
 		container.appendChild(this.container);
 	}
 
-	protected layoutBody(size: number): void {
-		this.splitView.layout(size);
+	public layout(size: Dimension): void {
+		this.splitView.layout(size.height);
 		// if the size hasn't change it won't layout our table so we have to do it manually
-		if (size === this.currentHeight) {
+		if (size.height === this.currentHeight) {
 			this.tables.map(e => e.layout());
 		}
-		this.currentHeight = size;
+		this.currentHeight = size.height;
 	}
 
 	public set queryRunner(runner: QueryRunner) {
@@ -188,9 +176,6 @@ export class GridPanel extends ViewletPanel {
 			}
 			return p;
 		}, []));
-		this.maximumBodySize = this.tables.reduce((p, c) => {
-			return p + c.maximumSize;
-		}, 0);
 
 		if (this.state && this.state.scrollPosition) {
 			this.splitView.setScrollPosition(this.state.scrollPosition);
@@ -212,10 +197,6 @@ export class GridPanel extends ViewletPanel {
 			this.tables.map(t => {
 				t.state.canBeMaximized = this.tables.length > 1;
 			});
-
-			this.maximumBodySize = this.tables.reduce((p, c) => {
-				return p + c.maximumSize;
-			}, 0);
 
 			if (this.state && this.state.scrollPosition) {
 				this.splitView.setScrollPosition(this.state.scrollPosition);
@@ -243,10 +224,6 @@ export class GridPanel extends ViewletPanel {
 		}
 
 		const sizeChanges = () => {
-			this.maximumBodySize = this.tables.reduce((p, c) => {
-				return p + c.maximumSize;
-			}, 0);
-
 			if (this.state && this.state.scrollPosition) {
 				this.splitView.setScrollPosition(this.state.scrollPosition);
 			}
@@ -325,10 +302,6 @@ export class GridPanel extends ViewletPanel {
 		this.tableDisposable = [];
 		this.tables = [];
 		this.maximizedGrid = undefined;
-
-		this.maximumBodySize = this.tables.reduce((p, c) => {
-			return p + c.maximumSize;
-		}, 0);
 	}
 
 	private maximizeTable(tableid: string): void {
@@ -367,7 +340,6 @@ export class GridPanel extends ViewletPanel {
 				t.state = state;
 			}
 		});
-		this.setExpanded(!this.state.collapsed);
 	}
 
 	public get state(): GridPanelState {
@@ -380,7 +352,6 @@ export class GridPanel extends ViewletPanel {
 		dispose(this.tables);
 		this.tableDisposable = undefined;
 		this.tables = undefined;
-		super.dispose();
 	}
 }
 
@@ -816,8 +787,12 @@ class GridTable<T> extends Disposable implements IView {
 
 	public dispose() {
 		this.container.remove();
-		this.table.dispose();
-		this.actionBar.dispose();
+		if (this.table) {
+			this.table.dispose();
+		}
+		if (this.actionBar) {
+			this.actionBar.dispose();
+		}
 		super.dispose();
 	}
 }

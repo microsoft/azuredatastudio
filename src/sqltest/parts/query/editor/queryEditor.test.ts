@@ -317,7 +317,7 @@ suite('SQL QueryEditor Tests', () => {
 			assert.equal(queryInput.state.connecting, false, 'query state should be not connecting');
 		});
 		test('Test that we attempt to dispose query when the queryInput is disposed', () => {
-			let queryResultsInput = new QueryResultsInput('testUri', configurationService.object);
+			let queryResultsInput = new QueryResultsInput('testUri');
 			queryInput['_results'] = queryResultsInput;
 			queryInput.close();
 			queryModelService.verify(x => x.disposeQuery(TypeMoq.It.isAnyString()), TypeMoq.Times.once());
