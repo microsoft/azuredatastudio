@@ -163,7 +163,8 @@ export class ConnectionDialogWidget extends Modal {
 				render: c => {
 					c.append(recentConnectionTab);
 				},
-				layout: () => { }
+				layout: () => { },
+				focus: () => this._recentConnectionTree.domFocus()
 			}
 		});
 
@@ -174,7 +175,8 @@ export class ConnectionDialogWidget extends Modal {
 				layout: () => { },
 				render: c => {
 					c.append(savedConnectionTab);
-				}
+				},
+				focus: () => this._savedConnectionTree.domFocus()
 			}
 		});
 

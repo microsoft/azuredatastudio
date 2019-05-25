@@ -336,7 +336,8 @@ export class RestoreDialog extends Modal {
 				render: c => {
 					DOM.append(c, generalTab);
 				},
-				layout: () => { }
+				layout: () => { },
+				focus: () => generalTab.focus()
 			}
 		});
 
@@ -347,7 +348,8 @@ export class RestoreDialog extends Modal {
 				layout: () => { },
 				render: c => {
 					c.appendChild(fileContentElement);
-				}
+				},
+				focus: () => fileContentElement.focus()
 			}
 		});
 
@@ -358,7 +360,8 @@ export class RestoreDialog extends Modal {
 				layout: () => { },
 				render: c => {
 					c.appendChild(optionsContentElement);
-				}
+				},
+				focus: () => optionsContentElement.focus()
 			}
 		});
 
