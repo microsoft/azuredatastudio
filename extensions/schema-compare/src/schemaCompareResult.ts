@@ -7,9 +7,10 @@ import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as os from 'os';
-import { SchemaCompareOptionsDialog } from './dialogs/schemaCompareOptionsDialog';
 import * as path from 'path';
-
+import { SchemaCompareOptionsDialog } from './dialogs/schemaCompareOptionsDialog';
+import { Telemetry } from './telemetry';
+import { getTelemetryErrorType } from './utils';
 const localize = nls.loadMessageBundle();
 const diffEditorTitle = localize('schemaCompare.ObjectDefinitionsTitle', 'Object Definitions');
 
@@ -180,13 +181,21 @@ export class SchemaCompareResult {
 			// take updates if any
 			this.deploymentOptions = this.schemaCompareOptionDialog.deploymentOptions;
 		}
-
+		Telemetry.sendTelemetryEvent('SchemaComparisonStarted');
 		let service = await SchemaCompareResult.getService('MSSQL');
 		this.comparisonResult = await service.schemaCompare(this.sourceEndpointInfo, this.targetEndpointInfo, azdata.TaskExecutionMode.execute, this.deploymentOptions);
 		if (!this.comparisonResult || !this.comparisonResult.success) {
+			Telemetry.sendTelemetryEventForError('SchemaComparisonFailed', {
+				'errorType': getTelemetryErrorType(this.comparisonResult.errorMessage),
+				'operationId': this.comparisonResult.operationId
+			});
 			vscode.window.showErrorMessage(localize('schemaCompare.compareErrorMessage', "Schema Compare failed: {0}", this.comparisonResult.errorMessage ? this.comparisonResult.errorMessage : 'Unknown'));
 			return;
 		}
+		Telemetry.sendTelemetryEvent('SchemaComparisonFinished', {
+			'endTime': Date.now().toString(),
+			'operationId': this.comparisonResult.operationId
+		});
 
 		let data = this.getAllDifferences(this.comparisonResult.differences);
 
@@ -418,12 +427,24 @@ export class SchemaCompareResult {
 		}).component();
 
 		this.generateScriptButton.onDidClick(async (click) => {
+			Telemetry.sendTelemetryEvent('SchemaCompareGenerateScriptStarted', {
+				'startTime:': Date.now().toString(),
+				'operationId': this.comparisonResult.operationId
+			});
 			let service = await SchemaCompareResult.getService('MSSQL');
 			let result = await service.schemaCompareGenerateScript(this.comparisonResult.operationId, this.targetEndpointInfo.serverName, this.targetEndpointInfo.databaseName, azdata.TaskExecutionMode.script);
 			if (!result || !result.success) {
+				Telemetry.sendTelemetryEvent('SchemaCompareGenerateScriptFailed', {
+					'errorType': getTelemetryErrorType(result.errorMessage),
+					'operationId': this.comparisonResult.operationId
+				});
 				vscode.window.showErrorMessage(
 					localize('schemaCompare.generateScriptErrorMessage', "Generate script failed: '{0}'", (result && result.errorMessage) ? result.errorMessage : 'Unknown'));
 			}
+			Telemetry.sendTelemetryEvent('SchemaCompareGenerateScriptEnded', {
+				'endTime:': Date.now().toString(),
+				'operationId': this.comparisonResult.operationId
+			});
 		});
 	}
 
@@ -438,6 +459,9 @@ export class SchemaCompareResult {
 		}).component();
 
 		this.optionsButton.onDidClick(async (click) => {
+			Telemetry.sendTelemetryEvent('SchemaCompareOptionsOpened', {
+				'operationId': this.comparisonResult.operationId
+			});
 			//restore options from last time
 			if (this.schemaCompareOptionDialog && this.schemaCompareOptionDialog.deploymentOptions) {
 				this.deploymentOptions = this.schemaCompareOptionDialog.deploymentOptions;
@@ -459,12 +483,24 @@ export class SchemaCompareResult {
 		}).component();
 
 		this.applyButton.onDidClick(async (click) => {
+			Telemetry.sendTelemetryEvent('SchemaCompareApplyStarted', {
+				'startTime': Date.now().toString(),
+				'operationId': this.comparisonResult.operationId
+			});
 			let service = await SchemaCompareResult.getService('MSSQL');
 			let result = await service.schemaComparePublishChanges(this.comparisonResult.operationId, this.targetEndpointInfo.serverName, this.targetEndpointInfo.databaseName, azdata.TaskExecutionMode.execute);
 			if (!result || !result.success) {
+				Telemetry.sendTelemetryEvent('SchemaCompareApplyFailed', {
+					'errorType': getTelemetryErrorType(result.errorMessage),
+					'operationId': this.comparisonResult.operationId
+				});
 				vscode.window.showErrorMessage(
 					localize('schemaCompare.updateErrorMessage', "Schema Compare Apply failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
 			}
+			Telemetry.sendTelemetryEvent('SchemaCompareApplyEnded', {
+				'endTime': Date.now().toString(),
+				'operationId': this.comparisonResult.operationId
+			});
 		});
 	}
 
@@ -496,6 +532,8 @@ export class SchemaCompareResult {
 		}).component();
 
 		this.switchButton.onDidClick(async (click) => {
+			Telemetry.sendTelemetryEvent('SchemaCompareSwitch');
+
 			// switch source and target
 			[this.sourceEndpointInfo, this.targetEndpointInfo] = [this.targetEndpointInfo, this.sourceEndpointInfo];
 			[this.sourceName, this.targetName] = [this.targetName, this.sourceName];
