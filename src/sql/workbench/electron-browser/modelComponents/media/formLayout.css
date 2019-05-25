@@ -33,7 +33,7 @@
 }
 
 .form-cell-title {
-	min-width: 129px; /* 129px + 5px padding right = 134px to match the connection pane label widths*/
+	width: 129px; /* 129px + 5px padding right = 134px to match the connection pane label widths*/
 }
 
 .form-component-container {
