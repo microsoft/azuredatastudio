@@ -266,8 +266,14 @@ export class EnvironmentService implements IEnvironmentService {
 			const key = toLocalISOString(new Date()).replace(/-|:|\.\d+Z$/g, '');
 			process.env['VSCODE_LOGS'] = path.join(this.userDataPath, 'logs', key);
 		}
+		// {{SQL CARBON EDIT}} Note we keep the VSCODE_LOGS var above in case merges come in that use that so we don't
+		//                     break functionality. ADS code should always use ADS_LOGS when referring to the log path
+		if (!process.env['ADS_LOGS']) {
+			const key = toLocalISOString(new Date()).replace(/-|:|\.\d+Z$/g, '');
+			process.env['ADS_LOGS'] = path.join(this.userDataPath, 'logs', key);
+		}
 
-		this.logsPath = process.env['VSCODE_LOGS']!;
+		this.logsPath = process.env['ADS_LOGS']!;
 	}
 }
 
