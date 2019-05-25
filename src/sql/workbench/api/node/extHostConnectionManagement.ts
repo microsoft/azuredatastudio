@@ -26,6 +26,10 @@ export class ExtHostConnectionManagement extends ExtHostConnectionManagementShap
 		return connection;
 	}
 
+	public $getConnections(activeConnectionsOnly?: boolean): Thenable<azdata.connection.ConnectionProfile[]> {
+		return this._proxy.$getConnections(activeConnectionsOnly);
+	}
+
 	// "sqlops" back-compat connection APIs
 	public $getActiveConnections(): Thenable<azdata.connection.Connection[]> {
 		return this._proxy.$getActiveConnections();

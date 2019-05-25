@@ -26,13 +26,21 @@ declare module 'azdata' {
 			groupId: string;
 			saveProfile: boolean;
 			azureTenantId?: string;
+			options: { [name: string]: any };
 
 			static createFrom(options: any[]): ConnectionProfile;
 		}
 
 		/**
 		 * Get the current connection based on the active editor or Object Explorer selection
-		*/
+		 */
 		export function getCurrentConnection(): Thenable<ConnectionProfile>;
+
+		/**
+		 * Get known connection profiles
+		 * @param activeConnectionsOnly Indicates whether only get the active connections, default value is false.
+		 * @returns array of connections
+		 */
+		export function getConnections(activeConnectionsOnly?: boolean): Thenable<ConnectionProfile[]>;
 	}
 }

@@ -43,6 +43,15 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 		this._toDispose = dispose(this._toDispose);
 	}
 
+	public $getConnections(activeConnectionsOnly?: boolean): Thenable<azdata.connection.ConnectionProfile[]> {
+		let connections = this._connectionManagementService.getActiveConnections();
+		if (activeConnectionsOnly === false) {
+			connections.push(...this._connectionManagementService.getRecentConnections());
+		}
+
+		return Promise.resolve(connections.map(profile => this.convertToConnectionProfile(profile)));
+	}
+
 	public $getActiveConnections(): Thenable<azdata.connection.Connection[]> {
 		return Promise.resolve(this._connectionManagementService.getActiveConnections().map(profile => this.convertConnection(profile)));
 	}
@@ -106,6 +115,30 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 			providerName: profile.providerName,
 			connectionId: profile.id,
 			options: profile.options
+		};
+		return connection;
+	}
+
+	private convertToConnectionProfile(profile: IConnectionProfile): azdata.connection.ConnectionProfile {
+		if (!profile) {
+			return undefined;
+		}
+
+		profile = this._connectionManagementService.removeConnectionProfileCredentials(profile);
+		let connection: azdata.connection.ConnectionProfile = {
+			providerId: profile.providerName,
+			connectionId: profile.id,
+			options: profile.options,
+			connectionName: profile.connectionName,
+			serverName: profile.serverName,
+			databaseName: profile.databaseName,
+			userName: profile.userName,
+			password: profile.password,
+			authenticationType: profile.authenticationType,
+			savePassword: profile.savePassword,
+			groupFullName: profile.groupFullName,
+			groupId: profile.groupId,
+			saveProfile: profile.saveProfile
 		};
 		return connection;
 	}
