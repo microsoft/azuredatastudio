@@ -45,8 +45,12 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 
 	public $getConnections(activeConnectionsOnly?: boolean): Thenable<azdata.connection.ConnectionProfile[]> {
 		let connections = this._connectionManagementService.getActiveConnections();
-		if (activeConnectionsOnly === false) {
-			connections.push(...this._connectionManagementService.getRecentConnections());
+		if (activeConnectionsOnly !== false) {
+			this._connectionManagementService.getRecentConnections().forEach(connection => {
+				if (connections.filter(activeConnection => activeConnection.id === connection.id).length === 0) {
+					connections.push(connection);
+				}
+			});
 		}
 
 		return Promise.resolve(connections.map(profile => this.convertToConnectionProfile(profile)));
