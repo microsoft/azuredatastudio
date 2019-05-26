@@ -411,8 +411,8 @@
             },
             {
               "name": "%title.endpoints%",
-              "row": 1,
-              "col": 0,
+              "row": 0,
+              "col": 2,
               "rowspan": 1.5,
               "colspan": 2,
               "widget": {

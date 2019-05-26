@@ -163,9 +163,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 				const endpointCell = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: endpointInfo.ipAddress + ':' + endpointInfo.port }).component();
 				endPointRow.addItem(endpointCell, { CSSStyles: { 'width': '70%' } });
 			}
-			container.addItem(endPointRow, { CSSStyles: { 'border-top': 'solid 1px #ccc', 'box-sizing': 'border-box' } });
+			container.addItem(endPointRow, { CSSStyles: { 'padding-left': '10px', 'border-top': 'solid 1px #ccc', 'box-sizing': 'border-box' } });
 		});
-		endpointsContainer.addItem(container, { CSSStyles: { 'padding': '10px', ' padding-top': '25px !important' } });
+		endpointsContainer.addItem(container, { CSSStyles: { 'padding-top': '25px' } });
 		await view.initializeModel(endpointsContainer);
 	});
 
