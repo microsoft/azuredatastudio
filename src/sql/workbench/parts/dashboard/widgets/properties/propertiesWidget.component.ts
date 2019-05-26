@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!./media/propertiesWidget';
-
 import { Component, Inject, forwardRef, ChangeDetectorRef, OnInit, ElementRef, ViewChild } from '@angular/core';
 
 import { DashboardWidget, IDashboardWidget, WidgetConfig, WIDGET_CONFIG } from 'sql/workbench/parts/dashboard/common/dashboardWidget';
@@ -20,30 +18,9 @@ import * as types from 'vs/base/common/types';
 import * as nls from 'vs/nls';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { ILogService } from 'vs/platform/log/common/log';
-import { IEndpoint } from 'sql/workbench/parts/notebook/notebookUtils';
 
 export interface PropertiesConfig {
 	properties: Array<Property>;
-}
-
-export interface EndpointsConfig {
-	endpoints: Array<IEndpoint>;
-}
-
-export interface Endpoint {
-	serviceName: string;
-	ipAddress: string;
-	port: number;
-	hyperlink: string;
-}
-
-export enum EndpointConstants {
-	clusterEndpoints = 'clusterEndpoints',
-	gateway = 'gateway',
-	hyperlink = 'hyperlink',
-	managementproxy = 'management-proxy',
-	appproxy = 'app-proxy',
-	controller = 'controller'
 }
 
 export interface FlavorProperties {
@@ -74,7 +51,6 @@ const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.Da
 export interface DisplayProperty {
 	displayName: string;
 	value: string;
-	isHyperlink: boolean;
 }
 
 @Component({
@@ -85,11 +61,8 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 	private _connection: ConnectionManagementInfo;
 	private _databaseInfo: DatabaseInfo;
 	private _clipped: boolean;
-	private _loading: boolean = true;
-	private _isVertical: boolean = false;
 	private properties: Array<DisplayProperty>;
 	private _hasInit = false;
-	private endpoints: Array<Endpoint>;
 
 	@ViewChild('child', { read: ElementRef }) private _child: ElementRef;
 	@ViewChild('parent', { read: ElementRef }) private _parent: ElementRef;
@@ -118,10 +91,9 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 	private init(): void {
 		this._connection = this._bootstrap.connectionManagementService.connectionInfo;
 		this._register(toDisposableSubscription(this._bootstrap.adminService.databaseInfo.subscribe(data => {
-			this._loading = true;
 			this._databaseInfo = data;
 			this._changeRef.detectChanges();
-			this.parseConfig();
+			this.parseProperties();
 			if (this._hasInit) {
 				this.handleClipping();
 			}
@@ -139,104 +111,16 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 		this._changeRef.detectChanges();
 	}
 
-	private parseConfig(): void {
+	private parseProperties() {
+		const provider = this._config.provider;
+
+		let propertyArray: Array<Property>;
+
 		// if config exists use that, otherwise use default
 		if (this._config.widget['properties-widget'] && this._config.widget['properties-widget'].properties) {
 			const config = <PropertiesConfig>this._config.widget['properties-widget'];
-			this.parseProperties(config.properties);
-		}
-		else if (this._config.widget['properties-widget'] && this._config.widget['properties-widget'].endpoints) {
-			this._isVertical = true;
-			this.parseEndpoints();
-		}
-		else {
-			this.parseProperties(null);
-		}
-		this._loading = false;
-	}
-
-	private parseEndpoints(): void {
-		if (!this.endpoints || this.endpoints.length === 0) {
-			this.getEndpoints();
-		}
-
-		// iterate over endpoint properties and display them
-		this.properties = [];
-		for (const endpoint of this.endpoints) {
-			let propertyObject = this.getValueOrDefault<string>(endpoint, EndpointConstants.hyperlink.toString(), '--');
-			const assignProperty: DisplayProperty = {
-				displayName: endpoint.serviceName,
-				value: propertyObject,
-				isHyperlink: this.isHyperlink(endpoint.serviceName)
-			};
-
-			this.properties.push(assignProperty);
-		}
-
-		if (this._hasInit) {
-			this._changeRef.detectChanges();
-		}
-	}
-
-	private getEndpoints(): void {
-		const endpointArray = this._connection.serverInfo.options[EndpointConstants.clusterEndpoints.toString()];
-
-		// TO DO: Once the endpoints data is moved to DMV, update this logic to replace hardcoded values
-		// with the data from DMV.
-		if (endpointArray && endpointArray.length > 0) {
-			// iterate over endpoints and display them
-			this.endpoints = [];
-			for (const ep of endpointArray) {
-				const assignProperty: Endpoint = {
-					serviceName: ep.serviceName,
-					ipAddress: ep.ipAddress,
-					port: ep.port,
-					hyperlink: ep.ipAddress + ':' + ep.port
-				};
-				this.endpoints.push(assignProperty);
-			}
-
-			// add grafana and kibana endpoints from the management proxy endpoint
-			const managementProxyEp = endpointArray.find(e => e.serviceName === EndpointConstants.managementproxy.toString());
-			if (!endpointArray.find(e => e.serviceName.toLowerCase().indexOf('metrics') > -1)) {
-				this.endpoints.push(this.addCustomEndpoint(managementProxyEp, 'Grafana Dashboard', '/grafana'));
-			}
-			if (!endpointArray.find(e => e.serviceName.toLowerCase().indexOf('log') > -1)) {
-				this.endpoints.push(this.addCustomEndpoint(managementProxyEp, 'Kibana Dashboard', '/kibana'));
-			}
-
-			// add spark and yarn endpoints form the gateway endpoint
-			const gatewayEndpoint = endpointArray.find(e => e.serviceName === EndpointConstants.gateway.toString());
-			if (!endpointArray.find(e => e.serviceName.toLowerCase().indexOf('spark') > -1)) {
-				this.endpoints.push(this.addCustomEndpoint(gatewayEndpoint, 'Spark History', '/gateway/default/sparkhistory'));
-			}
-			if (!endpointArray.find(e => e.serviceName.toLowerCase().indexOf('log') > -1)) {
-				this.endpoints.push(this.addCustomEndpoint(gatewayEndpoint, 'Yarn History', '/gateway/default/yarn'));
-			}
-		}
-	}
-
-	private isHyperlink(serviceName: string): boolean {
-		return !(serviceName.toLowerCase().indexOf(EndpointConstants.appproxy.toString()) > -1 || serviceName.toLowerCase().indexOf(EndpointConstants.controller.toString()) > -1
-			|| serviceName.toLowerCase().indexOf(EndpointConstants.gateway.toString()) > -1 || serviceName.toLowerCase().indexOf(EndpointConstants.managementproxy.toString()) > -1);
-	}
-
-	private addCustomEndpoint(parentEndpoint: IEndpoint, serviceName: string, serivceUrl: string): Endpoint {
-		const endpoint = {};
-		if (parentEndpoint) {
-			endpoint['serviceName'] = serviceName;
-			endpoint['ipAddress'] = parentEndpoint.ipAddress;
-			endpoint['port'] = parentEndpoint.port;
-			endpoint['hyperlink'] = 'https://' + parentEndpoint.ipAddress + ':' + parentEndpoint.port + serivceUrl;
-		}
-		return <Endpoint>endpoint;
-	}
-
-	private parseProperties(propertyArray: Array<Property>) {
-
-		const provider = this._config.provider;
-
-		if (!propertyArray || propertyArray.length === 0) {
+			propertyArray = config.properties;
+		} else {
 			const providerProperties = dashboardRegistry.getProperties(provider as string);
 
 			if (!providerProperties) {
@@ -332,7 +216,6 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 			}
 			assignProperty['displayName'] = property.displayName;
 			assignProperty['value'] = propertyObject;
-			assignProperty['isHyperlink'] = false;
 			this.properties.push(<DisplayProperty>assignProperty);
 		}
 

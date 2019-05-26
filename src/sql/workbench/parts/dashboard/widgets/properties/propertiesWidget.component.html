@@ -8,19 +8,13 @@
 	<div [style.margin-right.px]="_clipped ? 30 : 0" [style.width]="_clipped ? 94 + '%' : '100%'" style="overflow: hidden">
 		<span #child style="white-space : nowrap; width: fit-content">
 			<ng-template ngFor let-item [ngForOf]="properties">
-				<span *ngIf="!_isVertical" style="margin-left: 10px; display: inline-block;">
+				<span style="margin-left: 10px; display: inline-block;">
 					<div style="font-size: 11px;">{{item.displayName}}</div>
 					<div>{{item.value}}</div>
 				</span>
-				<div class="flex-table-row" *ngIf="_isVertical">
-					<span class="flex-table-cell">{{item.displayName}}</span>
-					<span *ngIf="item.isHyperlink" class="flex-table-cell-destination"><a href="{{item.value}}" target="_blank">{{item.value}}</a></span>
-					<span *ngIf="!item.isHyperlink" class="flex-table-cell-destination">{{item.value}}</span>
-				</div>
 			</ng-template>
 		</span>
 	</div>
-	<loading-spinner [loading]="_loading"></loading-spinner>
 	<span *ngIf="_clipped" style="position: absolute; right: 0; top: 0; padding-top: 5px; padding-right: 14px; z-index: 2">
 		...
 	</span>
