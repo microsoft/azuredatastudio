@@ -8,7 +8,7 @@ import * as LocalizedConstants from 'sql/workbench/parts/query/common/localizedC
 import QueryRunner from 'sql/platform/query/common/queryRunner';
 import { DataService } from 'sql/workbench/parts/grid/services/dataService';
 import { IQueryModelService, IQueryEvent } from 'sql/platform/query/common/queryModel';
-import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
+import { QueryEditorInput } from 'sql/workbench/parts/query/common/queryEditorInput';
 import { QueryStatusbarItem } from 'sql/workbench/parts/query/browser/queryStatus';
 import { SqlFlavorStatusbarItem } from 'sql/workbench/parts/query/browser/flavorStatus';
 import { RowCountStatusBarItem } from 'sql/workbench/parts/query/browser/rowCountStatus';
@@ -42,7 +42,7 @@ export class QueryInfo {
 	public dataService: DataService;
 	public queryEventQueue: QueryEvent[];
 	public selection: Array<azdata.ISelectionData>;
-	public queryInput: QueryInput;
+	public queryInput: QueryEditorInput;
 	public selectionSnippet: string;
 
 	// Notes if the angular components have obtained the DataService. If not, all messages sent
@@ -181,13 +181,6 @@ export class QueryModelService implements IQueryModelService {
 		this._queryInfoMap.get(uri).queryRunner.copyResults(selection, batchId, resultId, includeHeaders);
 	}
 
-	public setEditorSelection(uri: string, index: number): void {
-		let info: QueryInfo = this._queryInfoMap.get(uri);
-		if (info && info.queryInput) {
-			info.queryInput.updateSelection(info.selection[index]);
-		}
-	}
-
 	public showWarning(uri: string, message: string): void {
 	}
 
@@ -210,28 +203,28 @@ export class QueryModelService implements IQueryModelService {
 	/**
 	 * Run a query for the given URI with the given text selection
 	 */
-	public runQuery(uri: string, selection: azdata.ISelectionData, queryInput: QueryInput, runOptions?: azdata.ExecutionPlanOptions): void {
+	public runQuery(uri: string, selection: azdata.ISelectionData, queryInput: QueryEditorInput, runOptions?: azdata.ExecutionPlanOptions): void {
 		this.doRunQuery(uri, selection, queryInput, false, runOptions);
 	}
 
 	/**
 	 * Run the current SQL statement for the given URI
 	 */
-	public runQueryStatement(uri: string, selection: azdata.ISelectionData, queryInput: QueryInput): void {
+	public runQueryStatement(uri: string, selection: azdata.ISelectionData, queryInput: QueryEditorInput): void {
 		this.doRunQuery(uri, selection, queryInput, true);
 	}
 
 	/**
 	 * Run the current SQL statement for the given URI
 	 */
-	public runQueryString(uri: string, selection: string, queryInput: QueryInput): void {
+	public runQueryString(uri: string, selection: string, queryInput: QueryEditorInput): void {
 		this.doRunQuery(uri, selection, queryInput, true);
 	}
 
 	/**
 	 * Run Query implementation
 	 */
-	private doRunQuery(uri: string, selection: azdata.ISelectionData | string, queryInput: QueryInput,
+	private doRunQuery(uri: string, selection: azdata.ISelectionData | string, queryInput: QueryEditorInput,
 		runCurrentStatement: boolean, runOptions?: azdata.ExecutionPlanOptions): void {
 		// Reuse existing query runner if it exists
 		let queryRunner: QueryRunner;

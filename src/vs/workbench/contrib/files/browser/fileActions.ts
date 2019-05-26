@@ -151,18 +151,13 @@ export class GlobalNewUntitledFileAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		// {{SQL CARBON EDIT}} - Make editorService protected and add other services
-		@IEditorService protected readonly editorService: IEditorService,
-		@IQueryEditorService private queryEditorService: IQueryEditorService,
-		@IConnectionManagementService private connectionManagementService: IConnectionManagementService,
-		@IObjectExplorerService protected _objectExplorerService: IObjectExplorerService
+		@IEditorService private readonly editorService: IEditorService
 	) {
 		super(id, label);
 	}
 
 	public run(): Promise<any> {
-		// {{SQL CARBON EDIT}}
-		return TaskUtilities.newQuery(undefined, this.connectionManagementService, this.queryEditorService, this._objectExplorerService, this.editorService);
+		return this.editorService.openEditor({ options: { pinned: true } }); // untitled are always pinned
 	}
 }
 

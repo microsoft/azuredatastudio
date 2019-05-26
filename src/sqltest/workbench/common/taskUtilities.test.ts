@@ -13,7 +13,7 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { WorkbenchEditorTestService } from 'sqltest/stubs/workbenchEditorTestService';
 import { URI } from 'vs/base/common/uri';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
-import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
+import { TestUntitledQueryEditorInput } from 'sql/workbench/parts/query/test/testUntitledQueryInput';
 
 suite('TaskUtilities', function () {
 	test('getCurrentGlobalConnection returns the selected OE server if a server or one of its children is selected', () => {
@@ -75,8 +75,6 @@ suite('TaskUtilities', function () {
 
 		// Mock the workbench service to return the active tab connection
 		let tabConnectionUri = 'file://test_uri';
-		let editorInput = new UntitledEditorInput(URI.parse(tabConnectionUri), false, undefined, undefined, undefined, undefined, undefined, undefined);
-		let queryInput = new QueryInput(undefined, editorInput, undefined, undefined, undefined, undefined, undefined);
 		mockConnectionManagementService.setup(x => x.getConnectionProfile(tabConnectionUri)).returns(() => tabProfile);
 
 		// If I call getCurrentGlobalConnection, it should return the expected profile from the active tab

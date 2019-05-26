@@ -19,7 +19,7 @@ import { URI } from 'vs/base/common/uri';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
+import { QueryEditorInput } from 'sql/workbench/parts/query/common/queryEditorInput';
 
 export interface IChartActionContext {
 	options: IInsightOptions;
@@ -88,7 +88,7 @@ export class CreateInsightAction extends Action {
 
 	private getActiveUriString(): string {
 		let editor = this.editorService.activeEditor;
-		if (editor instanceof QueryInput) {
+		if (editor instanceof QueryEditorInput) {
 			return editor.uri;
 		}
 		return undefined;
@@ -203,7 +203,7 @@ export class SaveImageAction extends Action {
 
 	private getActiveUriString(): string {
 		let editor = this.editorService.activeEditor;
-		if (editor instanceof QueryInput) {
+		if (editor instanceof QueryEditorInput) {
 			return editor.uri;
 		}
 		return undefined;

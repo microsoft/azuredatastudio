@@ -62,9 +62,7 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 		// re-emit sql editor events through this editor if it exists
 		if (this._sql) {
 			this._toDispose.push(this._sql.onDidChangeDirty(() => this._onDidChangeDirty.fire()));
-			this._sql.disableSaving();
 		}
-		this.disableSaving();
 
 		//TODO determine is this is a table or a view
 		this._objectType = 'TABLE';

@@ -24,7 +24,7 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IStatusbarService } from 'vs/platform/statusbar/common/statusbar';
 import { localize } from 'vs/nls';
-import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
+import { QueryEditorInput } from 'sql/workbench/parts/query/common/queryEditorInput';
 import { URI } from 'vs/base/common/uri';
 import { ILogService } from 'vs/platform/log/common/log';
 
@@ -140,21 +140,18 @@ export class CommandLineService implements ICommandLineProcessing {
 	// If an open and connectable query editor exists for the given URI, attach it to the connection profile
 	private async processFile(uriString: string, profile: IConnectionProfile, warnOnConnectFailure: boolean): Promise<void> {
 		let activeEditor = this._editorService.editors.filter(v => v.getResource().toString() === uriString).pop();
-		if (activeEditor) {
-			let queryInput = activeEditor as QueryInput;
-			if (queryInput && queryInput.state.connected) {
-				let options: IConnectionCompletionOptions = {
-					params: { connectionType: ConnectionType.editor, runQueryOnCompletion: RunQueryOnConnectionMode.none, input: queryInput },
-					saveTheConnection: false,
-					showDashboard: false,
-					showConnectionDialogOnError: warnOnConnectFailure,
-					showFirewallRuleOnError: warnOnConnectFailure
-				};
-				if (this._statusBarService) {
-					this._statusBarService.setStatusMessage(localize('connectingQueryLabel', 'Connecting query file'), 2500);
-				}
-				await this._connectionManagementService.connect(profile, uriString, options);
+		if (activeEditor instanceof QueryEditorInput && activeEditor.state.connected) {
+			let options: IConnectionCompletionOptions = {
+				params: { connectionType: ConnectionType.editor, runQueryOnCompletion: RunQueryOnConnectionMode.none, input: activeEditor },
+				saveTheConnection: false,
+				showDashboard: false,
+				showConnectionDialogOnError: warnOnConnectFailure,
+				showFirewallRuleOnError: warnOnConnectFailure
+			};
+			if (this._statusBarService) {
+				this._statusBarService.setStatusMessage(localize('connectingQueryLabel', 'Connecting query file'), 2500);
 			}
+			await this._connectionManagementService.connect(profile, uriString, options);
 		}
 	}
 

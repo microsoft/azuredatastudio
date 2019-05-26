@@ -26,7 +26,7 @@ import { ISelectionData } from 'azdata';
 import { Action, IActionViewItem } from 'vs/base/common/actions';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
-import { QueryInput, IQueryEditorStateChange } from 'sql/workbench/parts/query/common/queryInput';
+import { QueryEditorInput, IQueryEditorStateChange } from 'sql/workbench/parts/query/common/queryEditorInput';
 import { QueryResultsEditor } from 'sql/workbench/parts/query/browser/queryResultsEditor';
 import * as queryContext from 'sql/workbench/parts/query/common/queryContext';
 import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
@@ -84,8 +84,8 @@ export class QueryEditor extends BaseEditor {
 	}
 
 	// PUBLIC METHODS ////////////////////////////////////////////////////////////
-	public get input(): QueryInput {
-		return this._input as QueryInput;
+	public get input(): QueryEditorInput {
+		return this._input as QueryEditorInput;
 	}
 
 	/**
@@ -228,7 +228,7 @@ export class QueryEditor extends BaseEditor {
 		this.taskbar.setContent(content);
 	}
 
-	public setInput(newInput: QueryInput, options: EditorOptions, token: CancellationToken): Promise<void> {
+	public setInput(newInput: QueryEditorInput, options: EditorOptions, token: CancellationToken): Promise<void> {
 		const oldInput = this.input;
 
 		if (newInput.matches(oldInput)) {
@@ -237,7 +237,7 @@ export class QueryEditor extends BaseEditor {
 
 		return Promise.all([
 			super.setInput(newInput, options, token),
-			this.textEditor.setInput(newInput.sql, options, token),
+			this.textEditor.setInput(newInput.text, options, token),
 			this.resultsEditor.setInput(newInput.results, options)
 		]).then(() => {
 			dispose(this.inputDisposables);
@@ -345,9 +345,8 @@ export class QueryEditor extends BaseEditor {
 	}
 
 	public close(): void {
-		let queryInput: QueryInput = <QueryInput>this.input;
-		queryInput.sql.close();
-		queryInput.results.close();
+		this.input.text.close();
+		this.input.results.close();
 	}
 
 	// helper functions

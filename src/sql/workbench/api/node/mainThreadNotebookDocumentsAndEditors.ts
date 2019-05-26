@@ -30,7 +30,6 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { viewColumnToEditorGroup } from 'vs/workbench/api/common/shared/editor';
-import { notebookModeId } from 'sql/workbench/common/customInputConverter';
 import { localize } from 'vs/nls';
 
 class MainThreadNotebookEditor extends Disposable {
@@ -396,8 +395,8 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		};
 		let isUntitled: boolean = uri.scheme === Schemas.untitled;
 
-		const fileInput = isUntitled ? this._untitledEditorService.createOrGet(uri, notebookModeId, options.initialContent) :
-			this._editorService.createInput({ resource: uri, mode: notebookModeId });
+		const fileInput = isUntitled ? this._untitledEditorService.createOrGet(uri, 'notebook', options.initialContent) :
+			this._editorService.createInput({ resource: uri, mode: 'notebook' });
 		let input = this._instantiationService.createInstance(NotebookInput, path.basename(uri.fsPath), uri, fileInput);
 		input.defaultKernel = options.defaultKernel;
 		input.connectionProfile = new ConnectionProfile(this._capabilitiesService, options.connectionProfile);

@@ -29,10 +29,6 @@ import { ILabelService } from 'vs/platform/label/common/label';
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { withNullAsUndefined, withUndefinedAsNull } from 'vs/base/common/types';
 
-//{{SQL CARBON EDIT}}
-import { convertEditorInput, getFileMode } from 'sql/workbench/common/customInputConverter';
-//{{SQL CARBON EDIT}} - End
-
 type ICachedEditorInput = ResourceEditorInput | IFileEditorInput | DataUriEditorInput;
 
 export class EditorService extends Disposable implements EditorServiceImpl {
@@ -533,10 +529,7 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 		// Untitled file support
 		const untitledInput = <IUntitledResourceInput>input;
 		if (untitledInput.forceUntitled || !untitledInput.resource || (untitledInput.resource && untitledInput.resource.scheme === Schemas.untitled)) {
-			// {{SQL CARBON EDIT}}
-			// Need to get mode for QueryEditor and Notebook
-			let mode: string = untitledInput.mode ? untitledInput.mode : getFileMode(this.instantiationService, untitledInput.resource);
-			return convertEditorInput(this.untitledEditorService.createOrGet(untitledInput.resource, mode, untitledInput.contents, untitledInput.encoding), undefined, this.instantiationService);
+			return this.untitledEditorService.createOrGet(untitledInput.resource, untitledInput.mode, untitledInput.contents, untitledInput.encoding);
 		}
 
 		// Resource Editor Support
@@ -547,9 +540,7 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 				label = basename(resourceInput.resource); // derive the label from the path (but not for data URIs)
 			}
 
-			// {{SQL CARBON EDIT}}
-			return convertEditorInput(this.createOrGet(resourceInput.resource, this.instantiationService, label, resourceInput.description, resourceInput.encoding, resourceInput.mode, resourceInput.forceFile) as EditorInput,
-				undefined, this.instantiationService);
+			return this.createOrGet(resourceInput.resource, this.instantiationService, label, resourceInput.description, resourceInput.encoding, resourceInput.mode, resourceInput.forceFile) as EditorInput;
 		}
 
 		throw new Error('Unknown input type');

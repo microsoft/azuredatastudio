@@ -20,7 +20,6 @@ import { QueryEditor } from 'sql/workbench/parts/query/browser/queryEditor';
 import { QueryResultsEditor } from 'sql/workbench/parts/query/browser/queryResultsEditor';
 import { QueryResultsInput } from 'sql/workbench/parts/query/common/queryResultsInput';
 import * as queryContext from 'sql/workbench/parts/query/common/queryContext';
-import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
 import { EditDataEditor } from 'sql/workbench/parts/editData/browser/editDataEditor';
 import { EditDataInput } from 'sql/workbench/parts/editData/common/editDataInput';
 import {
@@ -35,6 +34,13 @@ import * as Constants from 'sql/workbench/parts/query/common/constants';
 import { localize } from 'vs/nls';
 import { EditDataResultsEditor } from 'sql/workbench/parts/editData/browser/editDataResultsEditor';
 import { EditDataResultsInput } from 'sql/workbench/parts/editData/common/editDataResultsInput';
+import { IEditorInputFactoryRegistry, Extensions as EditorInputFactoryExtensions } from 'vs/workbench/common/editor';
+import { FileQueryEditorInputFactory, UntitledQueryEditorInputFactory } from 'sql/workbench/parts/query/common/queryInputFactory';
+import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } from 'vs/workbench/common/contributions';
+import { QueryContribution } from 'sql/workbench/parts/query/browser/queryContribution';
+import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
+import { FileQueryEditorInput } from 'sql/workbench/parts/query/common/fileQueryEditorInput';
+import { UntitledQueryEditorInput } from 'sql/workbench/parts/query/common/untitledQueryEditorInput';
 
 const gridCommandsWeightBonus = 100; // give our commands a little bit more weight over other default list/tree commands
 
@@ -42,26 +48,20 @@ export const QueryEditorVisibleCondition = ContextKeyExpr.has(queryContext.query
 export const ResultsGridFocusCondition = ContextKeyExpr.and(ContextKeyExpr.has(queryContext.resultsVisibleId), ContextKeyExpr.has(queryContext.resultsGridFocussedId));
 export const ResultsMessagesFocusCondition = ContextKeyExpr.and(ContextKeyExpr.has(queryContext.resultsVisibleId), ContextKeyExpr.has(queryContext.resultsMessagesFocussedId));
 
-// Editor
-const queryResultsEditorDescriptor = new EditorDescriptor(
-	QueryResultsEditor,
-	QueryResultsEditor.ID,
-	'QueryResults'
-);
+Registry.as<IEditorInputFactoryRegistry>(EditorInputFactoryExtensions.EditorInputFactories)
+	.registerEditorInputFactory(FileQueryEditorInput.ID, FileQueryEditorInputFactory);
+
+Registry.as<IEditorInputFactoryRegistry>(EditorInputFactoryExtensions.EditorInputFactories)
+	.registerEditorInputFactory(UntitledQueryEditorInput.ID, UntitledQueryEditorInputFactory);
 
 Registry.as<IEditorRegistry>(EditorExtensions.Editors)
-	.registerEditor(queryResultsEditorDescriptor, [new SyncDescriptor(QueryResultsInput)]);
-
-// Editor
-const queryEditorDescriptor = new EditorDescriptor(
-	QueryEditor,
-	QueryEditor.ID,
-	'Query'
-);
+	.registerEditor(new EditorDescriptor(QueryResultsEditor, QueryResultsEditor.ID, localize('queryResultsEditor.name', "Query Results")), [new SyncDescriptor(QueryResultsInput)]);
 
 Registry.as<IEditorRegistry>(EditorExtensions.Editors)
-	.registerEditor(queryEditorDescriptor, [new SyncDescriptor(QueryInput)]);
+	.registerEditor(new EditorDescriptor(QueryEditor, QueryEditor.ID, localize('queryEditor.name', "Query Editor")), [new SyncDescriptor(FileQueryEditorInput), new SyncDescriptor(UntitledQueryEditorInput)]);
 
+const workbenchContributionsRegistry = Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench);
+workbenchContributionsRegistry.registerWorkbenchContribution(QueryContribution, LifecyclePhase.Starting);
 // Query Plan editor registration
 
 const queryPlanEditorDescriptor = new EditorDescriptor(

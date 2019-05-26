@@ -19,7 +19,7 @@ import { IInsightsConfig } from 'sql/workbench/parts/dashboard/widgets/insights/
 import { IInsightsDialogService } from 'sql/workbench/services/insights/common/insightsDialogService';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
-import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
+import { QueryEditorInput } from 'sql/workbench/parts/query/common/queryEditorInput';
 import { DashboardInput } from 'sql/workbench/parts/dashboard/dashboardInput';
 import { ProfilerInput } from 'sql/workbench/parts/profiler/browser/profilerInput';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
@@ -331,7 +331,7 @@ export function getCurrentGlobalConnection(objectExplorerService: IObjectExplore
 
 	let activeInput = workbenchEditorService.activeEditor;
 	if (activeInput) {
-		if (activeInput instanceof QueryInput || activeInput instanceof EditDataInput || activeInput instanceof DashboardInput) {
+		if (activeInput instanceof QueryEditorInput || activeInput instanceof EditDataInput || activeInput instanceof DashboardInput) {
 			connection = connectionManagementService.getConnectionProfile(activeInput.uri);
 		}
 		else if (activeInput instanceof ProfilerInput) {

@@ -11,7 +11,6 @@ import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorIn
 
 import { QueryResultsInput } from 'sql/workbench/parts/query/common/queryResultsInput';
 import { QueryModelService } from 'sql/platform/query/common/queryModelService';
-import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
 import { INewConnectionParams, ConnectionType, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionManagementService } from 'sql/platform/connection/common/connectionManagementService';
 import { RunQueryAction, ListDatabasesActionItem } from 'sql/workbench/parts/query/browser/queryActions';
@@ -23,6 +22,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { ConfigurationService } from 'vs/platform/configuration/node/configurationService';
 import { TestStorageService } from 'vs/workbench/test/workbenchTestServices';
+import { UntitledQueryEditorInput } from 'sql/workbench/parts/query/common/untitledQueryEditorInput';
 
 suite('SQL QueryEditor Tests', () => {
 	let instantiationService: TypeMoq.Mock<InstantiationService>;
@@ -248,7 +248,7 @@ suite('SQL QueryEditor Tests', () => {
 		let queryActionInstantiationService: TypeMoq.Mock<InstantiationService>;
 		let queryConnectionService: TypeMoq.Mock<ConnectionManagementService>;
 		let queryModelService: TypeMoq.Mock<QueryModelService>;
-		let queryInput: QueryInput;
+		let queryInput: UntitledQueryEditorInput;
 		setup(() => {
 
 			// Mock ConnectionManagementService but don't set connected state
@@ -287,7 +287,7 @@ suite('SQL QueryEditor Tests', () => {
 			queryModelService = TypeMoq.Mock.ofType(QueryModelService, TypeMoq.MockBehavior.Loose, undefined, undefined);
 			queryModelService.callBase = true;
 			queryModelService.setup(x => x.disposeQuery(TypeMoq.It.isAny())).returns(() => void 0);
-			queryInput = new QueryInput(
+			queryInput = new UntitledQueryEditorInput(
 				'',
 				fileInput,
 				undefined,

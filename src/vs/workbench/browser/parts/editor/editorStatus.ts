@@ -51,9 +51,6 @@ import { INotificationHandle, INotificationService, Severity } from 'vs/platform
 import { Event } from 'vs/base/common/event';
 import { IAccessibilityService, AccessibilitySupport } from 'vs/platform/accessibility/common/accessibility';
 
-// {{SQL CARBON EDIT}}
-import { QueryEditorService } from 'sql/workbench/services/queryEditor/browser/queryEditorService';
-
 class SideBySideEditorEncodingSupport implements IEncodingSupport {
 	constructor(private master: IEncodingSupport, private details: IEncodingSupport) { }
 
@@ -1008,14 +1005,9 @@ export class ChangeModeAction extends Action {
 						languageSelection = this.modeService.createByLanguageName(pick.label);
 					}
 
-					// {{SQL CARBON EDIT}} @anthonydresser preform a check before we actuall set the mode
 					// Change mode
 					if (typeof languageSelection !== 'undefined') {
-						QueryEditorService.sqlLanguageModeCheck(textModel, languageSelection, activeEditor).then(newTextModel => {
-							if (newTextModel) {
-								modeSupport.setMode(languageSelection.languageIdentifier.language);
-							}
-						});
+						modeSupport.setMode(languageSelection.languageIdentifier.language);
 					}
 				}
 			}
