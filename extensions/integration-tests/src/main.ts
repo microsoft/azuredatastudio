@@ -20,7 +20,7 @@ let statusBarItemTimer: NodeJS.Timer;
 export function activate(context: vscode.ExtensionContext) {
 	let statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
 	vscode.commands.registerCommand('test.setupIntegrationTest', async () => {
-		let extensionInstallersFolder = normalize(join(__dirname, '../../extensionInstallers'));
+		let extensionInstallersFolder = normalize(join(__dirname, '../extensionInstallers'));
 		trace(`extensionInstallersFolder=${extensionInstallersFolder}`);
 		let installers = fs.readdirSync(extensionInstallersFolder);
 		for (let i = 0; i < installers.length; i++) {

@@ -14,7 +14,7 @@ import { sqlNotebookContent, writeNotebookToFile, sqlKernelMetadata, getFileName
 import { getBdcServer, getConfigValue, EnvironmentVariable_PYTHON_PATH } from './testConfig';
 import { connectToServer } from './utils';
 import * as fs from 'fs';
-import { stressify } from '../testfmks/src/stress';
+import { stressify } from 'azdata-test/stress';
 
 if (context.RunTest) {
 	suite('Notebook integration test suite', function () {
@@ -66,7 +66,7 @@ class NotebookTester {
 	private static ParallelCount = 1;
 
 	@stressify({ dop: NotebookTester.ParallelCount, iterations: NotebookTester.IterationCount })
-	async pySpark3NbTest(title: string) {
+	async pySpark3NbTest(title: string): Promise<void> {
 		let notebook = await this.openNotebook(pySparkNotebookContent, pySpark3KernelMetadata, title + this.invocationCount++);
 		let cellOutputs = notebook.document.cells[0].contents.outputs;
 		let sparkResult = (<azdata.nb.IStreamResult>cellOutputs[3]).text;
@@ -74,13 +74,13 @@ class NotebookTester {
 	}
 
 	@stressify({ dop: NotebookTester.ParallelCount, iterations: NotebookTester.IterationCount })
-	async python3ClearAllOutputs(title: string) {
+	async python3ClearAllOutputs(title: string): Promise<void> {
 		let notebook = await this.openNotebook(pySparkNotebookContent, pythonKernelMetadata, title + this.invocationCount++);
 		await this.verifyClearAllOutputs(notebook);
 	}
 
 	@stressify({ dop: NotebookTester.ParallelCount, iterations: NotebookTester.IterationCount })
-	async python3NbTest(title: string) {
+	async python3NbTest(title: string): Promise<void> {
 		let notebook = await this.openNotebook(pySparkNotebookContent, pythonKernelMetadata, title + this.invocationCount++);
 		let cellOutputs = notebook.document.cells[0].contents.outputs;
 		console.log('Got cell outputs ---');
@@ -92,13 +92,13 @@ class NotebookTester {
 	}
 
 	@stressify({ dop: NotebookTester.ParallelCount, iterations: NotebookTester.IterationCount })
-	async sqlNbClearAllOutputs(title: string) {
+	async sqlNbClearAllOutputs(title: string): Promise<void> {
 		let notebook = await this.openNotebook(sqlNotebookContent, sqlKernelMetadata, title + this.invocationCount++);
 		await this.verifyClearAllOutputs(notebook);
 	}
 
 	@stressify({ dop: NotebookTester.ParallelCount, iterations: NotebookTester.IterationCount })
-	async sqlNbMultipleCellsTest(title: string) {
+	async sqlNbMultipleCellsTest(title: string): Promise<void> {
 		let notebook = await this.openNotebook(sqlNotebookMultipleCellsContent, sqlKernelMetadata, title + this.invocationCount++, true);
 		const expectedOutput0 = '(1 row affected)';
 		for (let i = 0; i < 3; i++) {
@@ -118,7 +118,7 @@ class NotebookTester {
 	}
 
 	@stressify({ dop: NotebookTester.ParallelCount, iterations: NotebookTester.IterationCount })
-	async sqlNbTest(title: string) {
+	async sqlNbTest(title: string): Promise<void> {
 		let notebook = await this.openNotebook(sqlNotebookContent, sqlKernelMetadata, title + this.invocationCount++, false, true);
 		const expectedOutput0 = '(1 row affected)';
 		let cellOutputs = notebook.document.cells[0].contents.outputs;
@@ -134,7 +134,7 @@ class NotebookTester {
 		assert(actualOutput2[0] === '1', `Expected result: 1, Actual: '${actualOutput2[0]}'`);
 	}
 
-	async cleanup(testName: string) {
+	async cleanup(testName: string): Promise<void> {
 		try {
 			let fileName = getFileName(testName + this.invocationCount++);
 			if (fs.existsSync(fileName)) {
@@ -180,7 +180,7 @@ class NotebookTester {
 
 		return notebook;
 	}
-	async verifyClearAllOutputs(notebook: azdata.nb.NotebookEditor) {
+	async verifyClearAllOutputs(notebook: azdata.nb.NotebookEditor): Promise<void> {
 		let cellWithOutputs = notebook.document.cells.find(cell => cell.contents && cell.contents.outputs && cell.contents.outputs.length > 0);
 		assert(cellWithOutputs !== undefined, 'Could not find notebook cells with outputs');
 		console.log('Before clearing cell outputs');

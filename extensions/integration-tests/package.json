@@ -11,7 +11,7 @@
   "activationEvents": [
     "*"
   ],
-  "main": "./out/src/main",
+  "main": "./out/main",
   "extensionDependencies": [
     "Microsoft.agent",
     "Microsoft.import",
@@ -45,7 +45,6 @@
     ]
   },
   "scripts": {
-    "fmkstest": "mocha -r ts-node/register --color --watch-extensions tsx,ts -u tdd testfmks/**/*.test.ts",
     "vscode:prepublish": "node ../../node_modules/gulp/bin/gulp.js --gulpfile ../../build/gulpfile.extensions.js compile-extension:vscode-colorize-tests ./tsconfig.json",
     "postinstall": "node ./node_modules/vscode/bin/install"
   },
@@ -56,6 +55,7 @@
     "class-validator": "^0.9.1",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",
+    "azdata-test": "d:/src/azdata-test/dist",
     "ts-node": "^8.1.0",
     "vscode": "1.1.5"
   },

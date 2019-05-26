@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import * as vscode from 'vscode';
 import { context } from './testContext';
-import { getSuiteType, SuiteType } from '../testfmks/src/utils';
+import { getSuiteType, SuiteType } from 'azdata-test/utils';
 
 const path = require('path');
 const testRunner = require('vscode/lib/testrunner');

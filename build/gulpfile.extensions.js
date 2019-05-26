@@ -40,23 +40,23 @@ const tasks = compilations.map(function (tsconfigFile) {
 	const tsOptions = _.assign({}, tsconfig.extends ? require(path.join(extensionsPath, relativeDirname, tsconfig.extends)).compilerOptions : {}, tsconfig.compilerOptions);
 	tsOptions.verbose = false;
 	tsOptions.sourceMap = true;
-	const outDir = tsOptions.outDir || 'out';
 
 	const name = relativeDirname.replace(/\//g, '-');
 
 	const root = path.join('extensions', relativeDirname);
 	const srcBase = path.join(root, 'src');
 	const src = path.join(srcBase, '**');
-	const out = path.join(root, outDir);
+	const out = path.join(root, 'out');
 	const baseUrl = getBaseUrl(out);
-		let headerId, headerOut;
+
+	let headerId, headerOut;
 	let index = relativeDirname.indexOf('/');
 	if (index < 0) {
 		headerId = 'vscode.' + relativeDirname;
-		headerOut = outDir;
+		headerOut = 'out';
 	} else {
 		headerId = 'vscode.' + relativeDirname.substr(0, index);
-		headerOut = path.join(`${relativeDirname.substr(index + 1)}`, outDir);
+		headerOut = relativeDirname.substr(index + 1) + '/out';
 	}
 
 	function createPipeline(build, emitError) {
