@@ -40,7 +40,7 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 	}
 
 	public get text(): UntitledEditorInput {
-		return this._text as UntitledEditorInput;
+		return this.text as UntitledEditorInput;
 	}
 
 	public get hasAssociatedFilePath(): boolean {

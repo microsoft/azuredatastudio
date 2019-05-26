@@ -37,7 +37,7 @@ export class FileQueryEditorInput extends QueryEditorInput implements PublicPart
 	}
 
 	public get text(): FileEditorInput {
-		return this._text as FileEditorInput;
+		return this.text as FileEditorInput;
 	}
 
 	public getTypeId(): string {
