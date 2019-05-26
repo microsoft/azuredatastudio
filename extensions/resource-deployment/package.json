@@ -161,7 +161,8 @@
           "notebook": "%bdc-ctp25-aks-notebook%",
           "requiredTools": [
             {
-              "name": "kubectl"
+              "name": "kubectl",
+              "version": "^1.1.0"
             },
             {
               "name": "azcli"

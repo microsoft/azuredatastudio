@@ -23,6 +23,7 @@ export class ResourceDeploymentDialog {
 	private _resourceDescriptionLabel!: azdata.TextComponent;
 	private _optionsContainer!: azdata.FlexContainer;
 	private _toolsTable!: azdata.TableComponent;
+	private _toolsTableLoadingComponent!: azdata.LoadingComponent;
 	private _cardResourceTypeMap: Map<string, azdata.CardComponent> = new Map();
 	private _optionDropDownMap: Map<string, azdata.DropDownComponent> = new Map();
 
@@ -55,9 +56,13 @@ export class ResourceDeploymentDialog {
 				value: localize('deploymentDialog.toolDescriptionColumnHeader', 'Description'),
 				width: 500
 			};
-			const versionColumn: azdata.TableColumn = {
-				value: localize('deploymentDialog.toolVersionColumnHeader', 'Version'),
-				width: 200
+			const localVersionColumn: azdata.TableColumn = {
+				value: localize('deploymentDialog.toolInstalledVersionColumnHeader', 'Local Version'),
+				width: 100
+			};
+			const requiredVersionColumn: azdata.TableColumn = {
+				value: localize('deploymentDialog.toolRequiredVersionColumnHeader', 'Required Version'),
+				width: 100
 			};
 			const statusColumn: azdata.TableColumn = {
 				value: localize('deploymentDialog.toolStatusColumnHeader', 'Status'),
@@ -67,9 +72,12 @@ export class ResourceDeploymentDialog {
 			this._toolsTable = view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
 				height: 150,
 				data: [],
-				columns: [toolColumn, descriptionColumn, versionColumn, statusColumn],
+				columns: [toolColumn, descriptionColumn, localVersionColumn, requiredVersionColumn, statusColumn],
 				width: 1000
 			}).component();
+
+			this._toolsTableLoadingComponent = view.modelBuilder.loadingComponent().withItem(this._toolsTable).component();
+
 
 			const formBuilder = view.modelBuilder.formContainer().withFormItems(
 				[
@@ -83,7 +91,7 @@ export class ResourceDeploymentDialog {
 						component: this._optionsContainer,
 						title: localize('deploymentDialog.OptionsTitle', 'Options')
 					}, {
-						component: this._toolsTable,
+						component: this._toolsTableLoadingComponent,
 						title: localize('deploymentDialog.RequiredToolsTitle', 'Required tools')
 					}
 				],
@@ -166,10 +174,11 @@ export class ResourceDeploymentDialog {
 
 	private updateTools(): void {
 
-		let tableData = this.toolsService.getStatusForTools(this.getCurrentProvider().requiredTools).map(tool => {
-			return [tool.name, tool.description, tool.version, this.getToolStatusText(tool.status)];
+		this._toolsTableLoadingComponent.loading = true;
+		this.toolsService.getStatusForTools(this.getCurrentProvider().requiredTools).then(statusList => {
+			this._toolsTable.data = statusList.map(toolStatus => [toolStatus.name, toolStatus.description, toolStatus.version, toolStatus.versionRequirement, this.getToolStatusText(toolStatus.status)]);
+			this._toolsTableLoadingComponent.loading = false;
 		});
-		this._toolsTable.data = tableData;
 	}
 
 	private getToolStatusText(status: ToolStatus): string {

@@ -13,9 +13,8 @@ import { SemVer } from 'semver';
 import { PlatformService } from './platformService';
 
 export interface IToolsService {
-	getStatusForTools(toolRequirements: ToolRequirementInfo[]): ToolStatusInfo[];
+	getStatusForTools(toolRequirements: ToolRequirementInfo[]): Thenable<ToolStatusInfo[]>;
 	getToolByName(toolName: string): ITool | undefined;
-	refreshAllToolStatus(): Thenable<void>;
 }
 
 export class ToolsService implements IToolsService {
@@ -25,20 +24,28 @@ export class ToolsService implements IToolsService {
 
 	private SupportedTools: ITool[];
 
-	getStatusForTools(toolRequirements: ToolRequirementInfo[]): ToolStatusInfo[] {
-		return toolRequirements.map(req => {
-			const tool = this.getToolByName(req.name)!;
-			return <ToolStatusInfo>{
-				name: tool.displayName,
-				description: tool.description,
-				status: this.getToolStatus(tool.version, req.version),
-				version: req.version,
-				versionRequirement: req.version
-			};
+	getStatusForTools(toolRequirements: ToolRequirementInfo[]): Thenable<ToolStatusInfo[]> {
+		const promises: Thenable<void>[] = [];
+		toolRequirements.forEach(toolReq => {
+			const tool = this.getToolByName(toolReq.name)!;
+			promises.push(tool.refresh());
+		});
+
+		return Promise.all(promises).then(() => {
+			return toolRequirements.map(toolReq => {
+				const tool = this.getToolByName(toolReq.name)!;
+				return <ToolStatusInfo>{
+					name: tool.displayName,
+					description: tool.description,
+					status: this.calculateToolStatus(tool.version, toolReq.version),
+					version: tool.version ? tool.version.version : '',
+					versionRequirement: toolReq.version
+				};
+			});
 		});
 	}
 
-	getToolStatus(version: SemVer | undefined, versionRequirement: string): ToolStatus {
+	calculateToolStatus(version: SemVer | undefined, versionRequirement: string): ToolStatus {
 		return ToolStatus.Installed;
 	}
 
@@ -51,15 +58,5 @@ export class ToolsService implements IToolsService {
 			}
 		}
 		return undefined;
-	}
-
-	refreshAllToolStatus(): Thenable<void> {
-		const promise = new Promise<void>(resolve => {
-			const promises = this.SupportedTools.map(tool => tool.refresh());
-			Promise.all(promises).then(() => {
-				resolve();
-			});
-		});
-		return promise;
 	}
 }
