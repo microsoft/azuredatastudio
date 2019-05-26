@@ -106,7 +106,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 
 	constructor(
 		private _description: string,
-		protected _text: EditorInput,
+		private _text: EditorInput,
 		private _results: QueryResultsInput,
 		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
 		@IQueryModelService private readonly queryModelService: IQueryModelService,
