@@ -93,11 +93,12 @@ suite('SQL ConnectionManagementService tests', () => {
 		let root = new ConnectionProfileGroup(ConnectionProfileGroup.RootGroupName, undefined, ConnectionProfileGroup.RootGroupName, undefined, undefined);
 		root.connections = [ConnectionProfile.fromIConnectionProfile(capabilitiesService, connectionProfile)];
 
-		connectionDialogService.setup(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), undefined)).returns(() => Promise.resolve(none));
-		connectionDialogService.setup(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), undefined, undefined)).returns(() => Promise.resolve(none));
-		connectionDialogService.setup(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), undefined)).returns(() => Promise.resolve(none));
-		connectionDialogService.setup(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), undefined, undefined)).returns(() => Promise.resolve(none));
-		connectionDialogService.setup(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(none));
+		connectionDialogService.setup(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), undefined, undefined)).returns(() => Promise.resolve(none));
+		connectionDialogService.setup(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), undefined, TypeMoq.It.isAny())).returns(() => Promise.resolve(none));
+		connectionDialogService.setup(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), undefined, undefined, TypeMoq.It.isAny())).returns(() => Promise.resolve(none));
+		connectionDialogService.setup(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), undefined, undefined, undefined)).returns(() => Promise.resolve(none));
+		connectionDialogService.setup(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), undefined)).returns(() => Promise.resolve(none));
+		connectionDialogService.setup(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(none));
 
 		connectionStore.setup(x => x.addRecentConnection(TypeMoq.It.isAny())).returns(() => Promise.resolve());
 		connectionStore.setup(x => x.saveProfile(TypeMoq.It.isAny())).returns(() => Promise.resolve(connectionProfile));
@@ -112,6 +113,7 @@ suite('SQL ConnectionManagementService tests', () => {
 				() => Promise.resolve({ profile: connectionProfileWithEmptyUnsavedPassword, savedCred: false }));
 		connectionStore.setup(x => x.isPasswordRequired(TypeMoq.It.isAny())).returns(() => true);
 		connectionStore.setup(x => x.getConnectionProfileGroups(false, undefined)).returns(() => [root]);
+		connectionStore.setup(x => x.savePassword(TypeMoq.It.isAny())).returns(() => Promise.resolve(true));
 
 		mssqlConnectionProvider.setup(x => x.connect(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => undefined);
 
@@ -156,7 +158,6 @@ suite('SQL ConnectionManagementService tests', () => {
 			workspaceConfigurationServiceMock.object,
 			capabilitiesService,
 			undefined,
-			editorGroupService.object,
 			undefined,
 			resourceProviderStubMock.object,
 			undefined,
@@ -166,13 +167,14 @@ suite('SQL ConnectionManagementService tests', () => {
 		return connectionManagementService;
 	}
 
-	function verifyShowConnectionDialog(connectionProfile: IConnectionProfile, connectionType: ConnectionType, uri: string, connectionResult?: IConnectionResult, didShow: boolean = true): void {
+	function verifyShowConnectionDialog(connectionProfile: IConnectionProfile, connectionType: ConnectionType, uri: string, options: boolean, connectionResult?: IConnectionResult, didShow: boolean = true): void {
 		if (connectionProfile) {
 			connectionDialogService.verify(x => x.showDialog(
 				TypeMoq.It.isAny(),
 				TypeMoq.It.is<INewConnectionParams>(p => p.connectionType === connectionType && (uri === undefined || p.input.uri === uri)),
 				TypeMoq.It.is<IConnectionProfile>(c => c !== undefined && c.serverName === connectionProfile.serverName),
-				connectionResult ? TypeMoq.It.is<IConnectionResult>(r => r.errorMessage === connectionResult.errorMessage && r.callStack === connectionResult.callStack) : undefined),
+				connectionResult ? TypeMoq.It.is<IConnectionResult>(r => r.errorMessage === connectionResult.errorMessage && r.callStack === connectionResult.callStack) : undefined,
+				options ? TypeMoq.It.isAny() : undefined),
 				didShow ? TypeMoq.Times.once() : TypeMoq.Times.never());
 
 		} else {
@@ -180,7 +182,8 @@ suite('SQL ConnectionManagementService tests', () => {
 				TypeMoq.It.isAny(),
 				TypeMoq.It.is<INewConnectionParams>(p => p.connectionType === connectionType && ((uri === undefined && p.input === undefined) || p.input.uri === uri)),
 				undefined,
-				connectionResult ? TypeMoq.It.is<IConnectionResult>(r => r.errorMessage === connectionResult.errorMessage && r.callStack === connectionResult.callStack) : undefined),
+				connectionResult ? TypeMoq.It.is<IConnectionResult>(r => r.errorMessage === connectionResult.errorMessage && r.callStack === connectionResult.callStack) : undefined,
+				options ? TypeMoq.It.isAny() : undefined),
 				didShow ? TypeMoq.Times.once() : TypeMoq.Times.never());
 		}
 	}
@@ -243,7 +246,7 @@ suite('SQL ConnectionManagementService tests', () => {
 
 	test('showConnectionDialog should open the dialog with default type given no parameters', done => {
 		connectionManagementService.showConnectionDialog().then(() => {
-			verifyShowConnectionDialog(undefined, ConnectionType.default, undefined);
+			verifyShowConnectionDialog(undefined, ConnectionType.default, undefined, false);
 			done();
 		}).catch(err => {
 			done(err);
@@ -264,7 +267,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			runQueryOnCompletion: RunQueryOnConnectionMode.executeQuery
 		};
 		connectionManagementService.showConnectionDialog(params).then(() => {
-			verifyShowConnectionDialog(undefined, params.connectionType, params.input.uri);
+			verifyShowConnectionDialog(undefined, params.connectionType, params.input.uri, false);
 			done();
 		}).catch(err => {
 			done(err);
@@ -291,7 +294,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			assert.notEqual(saveConnection, undefined, `profile was not added to the connections`);
 			assert.equal(saveConnection.serverName, connectionProfile.serverName, `Server names are different`);
 			connectionManagementService.showConnectionDialog(params).then(() => {
-				verifyShowConnectionDialog(connectionProfile, params.connectionType, params.input.uri);
+				verifyShowConnectionDialog(connectionProfile, params.connectionType, params.input.uri, false);
 				done();
 			}).catch(err => {
 				done(err);
@@ -426,7 +429,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			assert.equal(result.connected, expectedConnection);
 			assert.equal(result.errorMessage, connectionResult.errorMessage);
 			verifyShowFirewallRuleDialog(connectionProfile, false);
-			verifyShowConnectionDialog(connectionProfile, ConnectionType.default, uri, connectionResult);
+			verifyShowConnectionDialog(connectionProfile, ConnectionType.default, uri, true, connectionResult);
 			done();
 		}).catch(err => {
 			done(err);
@@ -458,7 +461,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			assert.equal(result.connected, expectedConnection);
 			assert.equal(result.errorMessage, connectionResult.errorMessage);
 			verifyShowFirewallRuleDialog(connectionProfile, false);
-			verifyShowConnectionDialog(connectionProfile, ConnectionType.default, uri, connectionResult, false);
+			verifyShowConnectionDialog(connectionProfile, ConnectionType.default, uri, true, connectionResult, false);
 			done();
 		}).catch(err => {
 			done(err);
@@ -522,7 +525,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			assert.equal(result.connected, expectedConnection);
 			assert.equal(result.errorMessage, connectionResult.errorMessage);
 			verifyShowFirewallRuleDialog(connectionProfile, false);
-			verifyShowConnectionDialog(connectionProfile, ConnectionType.default, uri, connectionResult, false);
+			verifyShowConnectionDialog(connectionProfile, ConnectionType.default, uri, true, connectionResult, false);
 			done();
 		}).catch(err => {
 			done(err);
@@ -558,7 +561,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			assert.equal(result.connected, expectedConnection);
 			assert.equal(result.errorMessage, connectionResult.errorMessage);
 			verifyShowFirewallRuleDialog(connectionProfile, true);
-			verifyShowConnectionDialog(connectionProfile, ConnectionType.default, uri, connectionResult, true);
+			verifyShowConnectionDialog(connectionProfile, ConnectionType.default, uri, true, connectionResult, true);
 			done();
 		}).catch(err => {
 			done(err);
@@ -594,7 +597,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			assert.equal(result.connected, expectedConnection);
 			assert.equal(result.errorMessage, connectionResult.errorMessage);
 			verifyShowFirewallRuleDialog(connectionProfile, true);
-			verifyShowConnectionDialog(connectionProfile, ConnectionType.default, uri, connectionResult, false);
+			verifyShowConnectionDialog(connectionProfile, ConnectionType.default, uri, true, connectionResult, false);
 			done();
 		}).catch(err => {
 			done(err);
@@ -622,7 +625,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		connect(uri, options, false, connectionProfileWithEmptyUnsavedPassword).then(result => {
 			assert.equal(result.connected, expectedConnection);
 			assert.equal(result.errorMessage, connectionResult.errorMessage);
-			verifyShowConnectionDialog(connectionProfileWithEmptyUnsavedPassword, ConnectionType.default, uri, connectionResult);
+			verifyShowConnectionDialog(connectionProfileWithEmptyUnsavedPassword, ConnectionType.default, uri, true, connectionResult);
 			verifyShowFirewallRuleDialog(connectionProfile, false);
 			done();
 		}).catch(err => {
@@ -651,7 +654,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		connect(uri, options, false, connectionProfileWithEmptySavedPassword).then(result => {
 			assert.equal(result.connected, expectedConnection);
 			assert.equal(result.errorMessage, connectionResult.errorMessage);
-			verifyShowConnectionDialog(connectionProfileWithEmptySavedPassword, ConnectionType.default, uri, connectionResult, false);
+			verifyShowConnectionDialog(connectionProfileWithEmptySavedPassword, ConnectionType.default, uri, true, connectionResult, false);
 			done();
 		}).catch(err => {
 			done(err);
@@ -691,7 +694,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		connect(uri, options, false, connectionProfileWithEmptySavedPassword).then(result => {
 			assert.equal(result.connected, expectedConnection);
 			assert.equal(result.errorMessage, connectionResult.errorMessage);
-			verifyShowConnectionDialog(connectionProfileWithEmptySavedPassword, ConnectionType.editor, uri, connectionResult, false);
+			verifyShowConnectionDialog(connectionProfileWithEmptySavedPassword, ConnectionType.editor, uri, true, connectionResult, false);
 			done();
 		}).catch(err => {
 			done(err);

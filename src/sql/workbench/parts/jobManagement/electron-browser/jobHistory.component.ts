@@ -27,7 +27,7 @@ import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
-import { JobManagementView } from 'sql/workbench/parts/jobManagement/electron-browser/jobManagementView';
+import { JobManagementView, JobActionContext } from 'sql/workbench/parts/jobManagement/electron-browser/jobManagementView';
 import { TabChild } from 'sql/base/electron-browser/ui/panel/tab.component';
 import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardService';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
@@ -67,6 +67,12 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 	private _agentJobInfo: azdata.AgentJobInfo;
 	private _noJobsAvailable: boolean = false;
 
+	// Job Actions
+	private _editJobAction: EditJobAction;
+	private _runJobAction: RunJobAction;
+	private _stopJobAction: StopJobAction;
+	private _refreshAction: JobsRefreshAction;
+
 	private static readonly HEADING_HEIGHT: number = 24;
 
 	constructor(
@@ -102,9 +108,8 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		// set base class elements
 		this._visibilityElement = this._tableContainer;
 		this._parentComponent = this._agentViewComponent;
-
-		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
 		this._agentJobInfo = this._agentViewComponent.agentJobInfo;
+		this.initActionBar();
 		const self = this;
 		this._treeController.onClick = (tree, element, event, origin = 'mouse') => {
 			const payload = { origin: origin };
@@ -146,7 +151,6 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		this._register(attachListStyler(this._tree, this.themeService));
 		this._tree.layout(dom.getContentHeight(this._tableContainer.nativeElement));
 		this._telemetryService.publicLog(TelemetryKeys.JobHistoryView);
-		this.initActionBar();
 	}
 
 	private loadHistory() {
@@ -165,21 +169,29 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 				this._agentViewComponent.agentJobInfo.alerts = this._jobCacheObject.getJobAlerts(jobId);
 				this._agentJobInfo = this._agentViewComponent.agentJobInfo;
 				if (result.histories.length > 0) {
+					self._noJobsAvailable = false;
 					self._showPreviousRuns = true;
 					self.buildHistoryTree(self, result.histories);
-					if (self._agentViewComponent.showHistory) {
-						self._cd.detectChanges();
-					}
 				} else {
 					self._jobCacheObject.setJobHistory(self._agentViewComponent.jobId, result.histories);
+					self._noJobsAvailable = true;
 					self._showPreviousRuns = false;
 				}
 			} else {
+				self._noJobsAvailable = true;
 				self._showPreviousRuns = false;
 				self._showSteps = false;
-				if (self._agentViewComponent.showHistory) {
-					self._cd.detectChanges();
-				}
+			}
+			this._actionBar.context = { targetObject: { canEdit: true, job: this._agentJobInfo }, ownerUri: this.ownerUri, component: this };
+			this._editJobAction.enabled = true;
+			this._actionBar.setContent([
+				{ action: this._runJobAction },
+				{ action: this._stopJobAction },
+				{ action: this._refreshAction },
+				{ action: this._editJobAction }
+			]);
+			if (self._agentViewComponent.showHistory) {
+				self._cd.detectChanges();
 			}
 		});
 	}
@@ -234,8 +246,13 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 
 	private buildHistoryTree(self: any, jobHistories: azdata.AgentJobHistoryInfo[]) {
 		self._treeController.jobHistories = jobHistories;
-		let jobHistoryRows = this._treeController.jobHistories.map(job => self.convertToJobHistoryRow(job));
-		self._treeDataSource.data = jobHistoryRows;
+		let jobHistoryRows: JobHistoryRow[] = this._treeController.jobHistories.map(job => self.convertToJobHistoryRow(job));
+		let sortedRows = jobHistoryRows.sort((row1, row2) => {
+			let date1 = new Date(row1.runDate).getTime();
+			let date2 = new Date(row2.runDate).getTime();
+			return date2 - date1;
+		});
+		self._treeDataSource.data = sortedRows;
 		self._tree.setInput(new JobHistoryModel());
 		self.agentJobHistoryInfo = self._treeController.jobHistories[0];
 		if (self.agentJobHistoryInfo) {
@@ -294,23 +311,32 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		}
 
 		let jobHistories = this._jobCacheObject.jobHistories[this._agentViewComponent.jobId];
-		if (jobHistories && jobHistories.length > 0) {
-			const self = this;
-			if (this._jobCacheObject.prevJobID === this._agentViewComponent.jobId || jobHistories[0].jobId === this._agentViewComponent.jobId) {
-				this._showPreviousRuns = true;
-				this._agentViewComponent.agentJobInfo.jobSteps = this._jobCacheObject.getJobSteps(this._agentJobInfo.jobId);
-				this._agentViewComponent.agentJobInfo.jobSchedules = this._jobCacheObject.getJobSchedules(this._agentJobInfo.jobId);
-				this._agentViewComponent.agentJobInfo.alerts = this._jobCacheObject.getJobAlerts(this._agentJobInfo.jobId);
-				this._agentJobInfo = this._agentViewComponent.agentJobInfo;
-				this.buildHistoryTree(self, jobHistories);
-				this._actionBar.context = { targetObject: this._agentJobInfo, ownerUri: this.ownerUri, jobHistoryComponent: this };
-				this._cd.detectChanges();
+		if (jobHistories) {
+			if (jobHistories.length > 0) {
+				const self = this;
+				this._noJobsAvailable = false;
+				if (this._jobCacheObject.prevJobID === this._agentViewComponent.jobId || jobHistories[0].jobId === this._agentViewComponent.jobId) {
+					this._showPreviousRuns = true;
+					this._agentViewComponent.agentJobInfo.jobSteps = this._jobCacheObject.getJobSteps(this._agentJobInfo.jobId);
+					this._agentViewComponent.agentJobInfo.jobSchedules = this._jobCacheObject.getJobSchedules(this._agentJobInfo.jobId);
+					this._agentViewComponent.agentJobInfo.alerts = this._jobCacheObject.getJobAlerts(this._agentJobInfo.jobId);
+					this._agentJobInfo = this._agentViewComponent.agentJobInfo;
+					this.buildHistoryTree(self, jobHistories);
+				}
+			} else if (jobHistories.length === 0) {
+				this._showPreviousRuns = false;
+				this._showSteps = false;
+				this._noJobsAvailable = true;
 			}
-		} else if (jobHistories && jobHistories.length === 0) {
-			this._showPreviousRuns = false;
-			this._showSteps = false;
-			this._noJobsAvailable = true;
+			this._editJobAction.enabled = true;
+			this._actionBar.setContent([
+				{ action: this._runJobAction },
+				{ action: this._stopJobAction },
+				{ action: this._refreshAction },
+				{ action: this._editJobAction }
+			]);
 			this._cd.detectChanges();
+
 		} else {
 			this.loadHistory();
 		}
@@ -339,18 +365,20 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 	}
 
 	protected initActionBar() {
-		let runJobAction = this.instantiationService.createInstance(RunJobAction);
-		let stopJobAction = this.instantiationService.createInstance(StopJobAction);
-		let editJobAction = this.instantiationService.createInstance(EditJobAction);
-		let refreshAction = this.instantiationService.createInstance(JobsRefreshAction);
+		this._runJobAction = this.instantiationService.createInstance(RunJobAction);
+		this._stopJobAction = this.instantiationService.createInstance(StopJobAction);
+		this._editJobAction = this.instantiationService.createInstance(EditJobAction);
+		this._refreshAction = this.instantiationService.createInstance(JobsRefreshAction);
 		let taskbar = <HTMLElement>this.actionBarContainer.nativeElement;
 		this._actionBar = new Taskbar(taskbar);
-		this._actionBar.context = { targetObject: this._agentJobInfo, ownerUri: this.ownerUri, component: this };
+		this._editJobAction.enabled = !this.showProgressWheel();
+		let targetObject: JobActionContext = { canEdit: !this.showProgressWheel(), job: this._agentJobInfo };
+		this._actionBar.context = { targetObject: targetObject, ownerUri: this.ownerUri, component: this };
 		this._actionBar.setContent([
-			{ action: runJobAction },
-			{ action: stopJobAction },
-			{ action: refreshAction },
-			{ action: editJobAction }
+			{ action: this._runJobAction },
+			{ action: this._stopJobAction },
+			{ action: this._refreshAction },
+			{ action: this._editJobAction }
 		]);
 	}
 

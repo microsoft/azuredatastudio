@@ -60,7 +60,7 @@ export class WebviewWidget extends DashboardWidget implements IDashboardWidget, 
 	public setHtml(html: string): void {
 		this._html = html;
 		if (this._webview) {
-			this._webview.contents = html;
+			this._webview.html = html;
 			this._webview.layout();
 		}
 	}
@@ -110,7 +110,7 @@ export class WebviewWidget extends DashboardWidget implements IDashboardWidget, 
 			this._onMessage.fire(e);
 		});
 		if (this._html) {
-			this._webview.contents = this._html;
+			this._webview.html = this._html;
 		}
 		this._webview.layout();
 	}

@@ -329,7 +329,7 @@ function parseFormattedText(content: string): IFormatParseTree {
 		children: []
 	};
 
-	let actionItemIndex = 0;
+	let actionViewItemIndex = 0;
 	let current = root;
 	const stack: IFormatParseTree[] = [];
 	const stream = new StringStream(content);
@@ -359,8 +359,8 @@ function parseFormattedText(content: string): IFormatParseTree {
 				};
 
 				if (type === FormatType.Action) {
-					newCurrent.index = actionItemIndex;
-					actionItemIndex++;
+					newCurrent.index = actionViewItemIndex;
+					actionViewItemIndex++;
 				}
 
 				current.children!.push(newCurrent);

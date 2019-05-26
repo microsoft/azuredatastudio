@@ -370,7 +370,7 @@ class InlineImageView {
 			dispose: () => combinedDisposable(disposables).dispose()
 		};
 
-		const cacheKey = descriptor.resource.toString();
+		const cacheKey = `${descriptor.resource.toString()}:${descriptor.etag}`;
 
 		let ctrlPressed = false;
 		let altPressed = false;
@@ -501,8 +501,8 @@ class InlineImageView {
 				return;
 			}
 
-			const isScrollWhellKeyPressed = platform.isMacintosh ? altPressed : ctrlPressed;
-			if (!isScrollWhellKeyPressed && !e.ctrlKey) { // pinching is reported as scroll wheel + ctrl
+			const isScrollWheelKeyPressed = platform.isMacintosh ? altPressed : ctrlPressed;
+			if (!isScrollWheelKeyPressed && !e.ctrlKey) { // pinching is reported as scroll wheel + ctrl
 				return;
 			}
 
@@ -513,12 +513,8 @@ class InlineImageView {
 				firstZoom();
 			}
 
-			let delta = e.deltaY < 0 ? 1 : -1;
+			let delta = e.deltaY > 0 ? 1 : -1;
 
-			// Pinching should increase the scale
-			if (e.ctrlKey && !isScrollWhellKeyPressed) {
-				delta *= -1;
-			}
 			updateScale(scale as number * (1 - delta * InlineImageView.SCALE_PINCH_FACTOR));
 		}));
 
@@ -571,16 +567,15 @@ class InlineImageView {
 		return context;
 	}
 
-	private static imageSrc(descriptor: IResourceDescriptor, textFileService: ITextFileService): Promise<string> {
+	private static async imageSrc(descriptor: IResourceDescriptor, textFileService: ITextFileService): Promise<string> {
 		if (descriptor.resource.scheme === Schemas.data) {
 			return Promise.resolve(descriptor.resource.toString(true /* skip encoding */));
 		}
 
-		return textFileService.read(descriptor.resource, { encoding: 'base64' }).then(data => {
-			const mime = getMime(descriptor);
+		const data = await textFileService.read(descriptor.resource, { encoding: 'base64' });
+		const mime = getMime(descriptor);
 
-			return `data:${mime};base64,${data.value}`;
-		});
+		return `data:${mime};base64,${data.value}`;
 	}
 }
 

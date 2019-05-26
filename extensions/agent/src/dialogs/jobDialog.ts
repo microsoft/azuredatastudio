@@ -229,7 +229,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 						this.StepsTable_FailureColumnString
 					],
 					data: data,
-					height: 650
+					height: 500
 				}).component();
 
 			this.startStepDropdown = view.modelBuilder.dropDown().withProperties({ width: 180 }).component();

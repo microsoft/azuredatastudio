@@ -1225,8 +1225,14 @@ export class SettingsEditor2 extends BaseEditor {
 			return;
 		}
 
+		this.clearFilterLinkContainer.style.display = this.viewState.tagFilters && this.viewState.tagFilters.size > 0
+			? 'initial'
+			: 'none';
+
 		if (!this.searchResultModel) {
 			this.countElement.style.display = 'none';
+			DOM.removeClass(this.rootElement, 'no-results');
+			return;
 		}
 
 		if (this.tocTreeModel && this.tocTreeModel.settingsTreeRoot) {
@@ -1239,9 +1245,6 @@ export class SettingsEditor2 extends BaseEditor {
 
 			this.countElement.style.display = 'block';
 			DOM.toggleClass(this.rootElement, 'no-results', count === 0);
-			this.clearFilterLinkContainer.style.display = this.viewState.tagFilters && this.viewState.tagFilters.size > 0
-				? 'initial'
-				: 'none';
 		}
 	}
 

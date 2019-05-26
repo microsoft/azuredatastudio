@@ -68,7 +68,7 @@ export function getConfigTracingLevel(): string {
 }
 
 export function getDefaultLogDir(): string {
-	return path.join(process.env['VSCODE_LOGS'], '..', '..', 'mssql');
+	return path.join(process.env['ADS_LOGS'], '..', '..', 'mssql');
 }
 
 export function getDefaultLogFile(prefix: string, pid: number): string {

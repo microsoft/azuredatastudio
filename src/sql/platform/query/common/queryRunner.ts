@@ -212,6 +212,9 @@ export default class QueryRunner extends Disposable {
 	private handleFailureRunQueryResult(error: any) {
 		// Attempting to launch the query failed, show the error message
 		const eol = this.getEolString();
+		if (error instanceof Error) {
+			error = error.message;
+		}
 		let message = nls.localize('query.ExecutionFailedError', 'Execution failed due to an unexpected error: {0}\t{1}', eol, error);
 		this.handleMessage(<azdata.QueryExecuteMessageParams>{
 			ownerUri: this.uri,

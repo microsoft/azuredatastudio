@@ -155,7 +155,8 @@ const copyrightFilter = [
 	'!extensions/mssql/src/prompts/**',
 	'!extensions/notebook/resources/jupyter_config/**',
 	'!**/*.gif',
-	'!**/*.xlf'
+	'!**/*.xlf',
+	'!**/*.dacpac'
 ];
 
 const eslintFilter = [
