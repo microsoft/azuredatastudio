@@ -10,10 +10,10 @@ import { IStatusbarService, StatusbarAlignment, IStatusbarEntryAccessor } from '
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { localize } from 'vs/nls';
-import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
 import QueryRunner from 'sql/platform/query/common/queryRunner';
 import { parseNumAsTimeString } from 'sql/platform/connection/common/utils';
 import { Event } from 'vs/base/common/event';
+import { QueryEditorInput } from 'sql/workbench/parts/query/common/queryEditorInput';
 
 export class TimeElapsedStatusBarContributions extends Disposable implements IWorkbenchContribution {
 
@@ -56,7 +56,7 @@ export class TimeElapsedStatusBarContributions extends Disposable implements IWo
 		this.disposable.clear();
 		this.hide();
 		const activeInput = this.editorService.activeEditor;
-		if (activeInput && activeInput instanceof QueryInput && activeInput.uri) {
+		if (activeInput && activeInput instanceof QueryEditorInput && activeInput.uri) {
 			const uri = activeInput.uri;
 			const runner = this.queryModelService.getQueryRunner(uri);
 			if (runner) {
@@ -148,7 +148,7 @@ export class RowCountStatusBarContributions extends Disposable implements IWorkb
 		this.disposable.clear();
 		this.hide();
 		const activeInput = this.editorService.activeEditor;
-		if (activeInput && activeInput instanceof QueryInput && activeInput.uri) {
+		if (activeInput && activeInput instanceof QueryEditorInput && activeInput.uri) {
 			const uri = activeInput.uri;
 			const runner = this.queryModelService.getQueryRunner(uri);
 			if (runner) {
@@ -219,7 +219,7 @@ export class QueryStatusStatusBarContributions extends Disposable implements IWo
 		this.hide();
 		this.visisbleUri = undefined;
 		const activeInput = this.editorService.activeEditor;
-		if (activeInput && activeInput instanceof QueryInput && activeInput.uri) {
+		if (activeInput && activeInput instanceof QueryEditorInput && activeInput.uri) {
 			this.visisbleUri = activeInput.uri;
 			const runner = this.queryModelService.getQueryRunner(this.visisbleUri);
 			if (runner && runner.isExecuting) {

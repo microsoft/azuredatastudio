@@ -7,7 +7,7 @@ import QueryRunner from 'sql/platform/query/common/queryRunner';
 import { DataService } from 'sql/workbench/parts/grid/services/dataService';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { Event } from 'vs/base/common/event';
-import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
+import { QueryEditorInput } from 'sql/workbench/parts/query/common/queryEditorInput';
 import {
 	ISelectionData,
 	ResultSetSubset,
@@ -48,9 +48,9 @@ export interface IQueryModelService {
 	getConfig(): Promise<{ [key: string]: any }>;
 	getShortcuts(): Promise<any>;
 	getQueryRows(uri: string, rowStart: number, numberOfRows: number, batchId: number, resultId: number): Thenable<ResultSetSubset>;
-	runQuery(uri: string, selection: ISelectionData, queryInput: QueryInput, runOptions?: ExecutionPlanOptions): void;
-	runQueryStatement(uri: string, selection: ISelectionData, queryInput: QueryInput): void;
-	runQueryString(uri: string, selection: string, queryInput: QueryInput);
+	runQuery(uri: string, selection: ISelectionData, queryInput: QueryEditorInput, runOptions?: ExecutionPlanOptions): void;
+	runQueryStatement(uri: string, selection: ISelectionData, queryInput: QueryEditorInput): void;
+	runQueryString(uri: string, selection: string, queryInput: QueryEditorInput);
 	cancelQuery(input: QueryRunner | string): void;
 	disposeQuery(uri: string): void;
 	isRunningQuery(uri: string): boolean;
@@ -62,7 +62,6 @@ export interface IQueryModelService {
 	onAngularLoaded(uri: string): void;
 
 	copyResults(uri: string, selection: Slick.Range[], batchId: number, resultId: number, includeHeaders?: boolean): void;
-	setEditorSelection(uri: string, index: number): void;
 	showWarning(uri: string, message: string): void;
 	showError(uri: string, message: string): void;
 	showCommitError(error: string): void;

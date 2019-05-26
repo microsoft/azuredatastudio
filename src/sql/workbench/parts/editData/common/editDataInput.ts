@@ -6,7 +6,6 @@
 import { EditorInput, EditorModel, ConfirmResult, EncodingMode } from 'vs/workbench/common/editor';
 import { IConnectionManagementService, IConnectableInput, INewConnectionParams } from 'sql/platform/connection/common/connectionManagement';
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
-import { dispose } from 'vs/base/common/lifecycle';
 import { Event, Emitter } from 'vs/base/common/event';
 import { EditSessionReadyParams } from 'azdata';
 import { URI } from 'vs/base/common/uri';
@@ -61,9 +60,7 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 		// re-emit sql editor events through this editor if it exists
 		if (this._sql) {
 			this._register(this._sql.onDidChangeDirty(() => this._onDidChangeDirty.fire()));
-			this._sql.disableSaving();
 		}
-		this.disableSaving();
 
 		//TODO determine is this is a table or a view
 		this._objectType = 'TABLE';

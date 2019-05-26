@@ -135,11 +135,6 @@ function save(
 	}
 
 	if (resource && (fileService.canHandleResource(resource) || resource.scheme === Schemas.untitled)) {
-		// {{SQL CARBON EDIT}}
-		let editorInput = editorService.activeEditor;
-		if (editorInput instanceof EditorInput && !(<EditorInput>editorInput).savingSupported) {
-			return Promise.resolve(false);
-		}
 
 		// Save As (or Save untitled with associated path)
 		if (isSaveAs || resource.scheme === Schemas.untitled) {

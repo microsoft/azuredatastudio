@@ -19,7 +19,6 @@ import {
 	RunQueryAction, CancelQueryAction, ListDatabasesActionItem,
 	DisconnectDatabaseAction, ConnectDatabaseAction, QueryTaskbarAction
 } from 'sql/workbench/parts/query/browser/queryActions';
-import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
 import { QueryEditor } from 'sql/workbench/parts/query/browser/queryEditor';
 import { QueryModelService } from 'sql/platform/query/common/queryModelService';
 import { ConnectionManagementService } from 'sql/platform/connection/common/connectionManagementService';
@@ -29,8 +28,9 @@ import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
 import { TestStorageService, TestFileService } from 'vs/workbench/test/workbenchTestServices';
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
+import { UntitledQueryEditorInput } from 'sql/workbench/parts/query/common/untitledQueryEditorInput';
+import { ConfigurationService } from 'vs/platform/configuration/node/configurationService';
 import { TestThemeService } from 'vs/platform/theme/test/common/testThemeService';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 let none: void;
 
@@ -39,12 +39,12 @@ suite('SQL QueryAction Tests', () => {
 	let testUri: string = 'testURI';
 	let editor: TypeMoq.Mock<QueryEditor>;
 	let calledRunQueryOnInput: boolean = undefined;
-	let testQueryInput: TypeMoq.Mock<QueryInput>;
-	let configurationService: TypeMoq.Mock<IConfigurationService>;
+	let testQueryInput: TypeMoq.Mock<UntitledQueryEditorInput>;
+	let configurationService: TypeMoq.Mock<ConfigurationService>;
 
 	setup(() => {
 		// Setup a reusable mock QueryInput
-		testQueryInput = TypeMoq.Mock.ofType(QueryInput, TypeMoq.MockBehavior.Strict);
+		testQueryInput = TypeMoq.Mock.ofType(UntitledQueryEditorInput, TypeMoq.MockBehavior.Strict);
 		testQueryInput.setup(x => x.uri).returns(() => testUri);
 		testQueryInput.setup(x => x.runQuery(undefined)).callback(() => { calledRunQueryOnInput = true; });
 
@@ -170,8 +170,8 @@ suite('SQL QueryAction Tests', () => {
 		let countCalledRunQuery: number = 0;
 
 		// ... Mock "isSelectionEmpty" in QueryEditor
-		let queryInput: TypeMoq.Mock<QueryInput> = TypeMoq.Mock.ofType(QueryInput, TypeMoq.MockBehavior.Strict);
-		queryInput = TypeMoq.Mock.ofType(QueryInput, TypeMoq.MockBehavior.Strict);
+		let queryInput: TypeMoq.Mock<UntitledQueryEditorInput> = TypeMoq.Mock.ofType(UntitledQueryEditorInput, TypeMoq.MockBehavior.Strict);
+		queryInput = TypeMoq.Mock.ofType(UntitledQueryEditorInput, TypeMoq.MockBehavior.Strict);
 		queryInput.setup(x => x.uri).returns(() => testUri);
 		queryInput.setup(x => x.runQuery(undefined)).callback(() => {
 			countCalledRunQuery++;
@@ -234,7 +234,7 @@ suite('SQL QueryAction Tests', () => {
 			.returns(() => Promise.resolve(none));
 
 		// ... Mock "getSelection" in QueryEditor
-		let queryInput = TypeMoq.Mock.ofType(QueryInput, TypeMoq.MockBehavior.Loose);
+		let queryInput = TypeMoq.Mock.ofType(UntitledQueryEditorInput, TypeMoq.MockBehavior.Loose);
 		queryInput.setup(x => x.uri).returns(() => testUri);
 		queryInput.setup(x => x.runQuery(TypeMoq.It.isAny())).callback((selection: ISelectionData) => {
 			runQuerySelection = selection;

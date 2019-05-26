@@ -474,7 +474,7 @@ import 'sql/workbench/parts/connection/browser/connection.contribution';
 
 // query editor
 import 'sql/workbench/parts/query/browser/query.contribution';
-import 'sql/workbench/parts/query/common/resultsGridContribution';
+import 'sql/workbench/parts/query/common/resultsGrid.contribution';
 
 // edit data editor
 import 'sql/workbench/parts/editData/browser/editData.contribution';

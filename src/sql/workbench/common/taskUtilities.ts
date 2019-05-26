@@ -18,8 +18,7 @@ import { IRestoreDialogController } from 'sql/platform/restore/common/restoreSer
 import { IInsightsDialogService } from 'sql/workbench/services/insights/browser/insightsDialogService';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
-import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
-import { DashboardInput } from 'sql/workbench/parts/dashboard/common/dashboardInput';
+import { QueryEditorInput } from 'sql/workbench/parts/query/common/queryEditorInput';
 import { ProfilerInput } from 'sql/workbench/parts/profiler/browser/profilerInput';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { IBackupUiService } from 'sql/workbench/services/backup/common/backupUiService';
@@ -31,6 +30,7 @@ import * as nls from 'vs/nls';
 import * as path from 'vs/base/common/path';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IInsightsConfig } from 'sql/platform/dashboard/browser/insightRegistry';
+import { DashboardInput } from 'sql/workbench/parts/dashboard/common/dashboardInput';
 
 // map for the version of SQL Server (default is 140)
 const scriptCompatibilityOptionMap = {
@@ -331,7 +331,7 @@ export function getCurrentGlobalConnection(objectExplorerService: IObjectExplore
 
 	let activeInput = workbenchEditorService.activeEditor;
 	if (activeInput) {
-		if (activeInput instanceof QueryInput || activeInput instanceof EditDataInput || activeInput instanceof DashboardInput) {
+		if (activeInput instanceof QueryEditorInput || activeInput instanceof EditDataInput || activeInput instanceof DashboardInput) {
 			connection = connectionManagementService.getConnectionProfile(activeInput.uri);
 		}
 		else if (activeInput instanceof ProfilerInput) {

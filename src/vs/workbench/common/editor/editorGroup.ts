@@ -14,10 +14,7 @@ import { ResourceMap } from 'vs/base/common/map';
 import { coalesce } from 'vs/base/common/arrays';
 
 // {{SQL CARBON EDIT}}
-import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
-import * as CustomInputConverter from 'sql/workbench/common/customInputConverter';
-import { NotebookInput } from 'sql/workbench/parts/notebook/common/models/notebookInput';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import * as path from 'path';
 import * as os from 'os';
@@ -648,16 +645,7 @@ export class EditorGroup extends Disposable {
 		let serializableEditors: EditorInput[] = [];
 		let serializedEditors: ISerializedEditorInput[] = [];
 		let serializablePreviewIndex: number | undefined;
-		// {{SQL CARBON EDIT}}
-		const editors = this.editors.map(e => {
-			if (e instanceof QueryInput) {
-				return e.sql;
-			} else if (e instanceof NotebookInput) {
-				return e.textInput;
-			}
-			return e;
-		});
-		editors.forEach(e => {
+		this.editors.forEach(e => {
 			const factory = registry.getEditorInputFactory(e.getTypeId());
 			if (factory) {
 				// {{SQL CARBON EDIT}}
@@ -689,16 +677,7 @@ export class EditorGroup extends Disposable {
 			}
 		});
 
-		// {{SQL CARBON EDIT}}
-		let mru = this.mru.map(e => {
-			if (e instanceof QueryInput) {
-				return e.sql;
-			} else if (e instanceof NotebookInput) {
-				return e.textInput;
-			}
-			return e;
-		});
-		const serializableMru = mru.map(e => this.indexOf(e, serializableEditors)).filter(i => i >= 0);
+		const serializableMru = this.mru.map(e => this.indexOf(e, serializableEditors)).filter(i => i >= 0);
 
 		return {
 			id: this.id,
@@ -728,8 +707,7 @@ export class EditorGroup extends Disposable {
 					this.updateResourceMap(editor, false /* add */);
 				}
 
-				// {{SQL CARBON EDIT}}
-				return CustomInputConverter.convertEditorInput(editor, undefined, this.instantiationService);
+				return editor;
 			}
 
 			return null;
