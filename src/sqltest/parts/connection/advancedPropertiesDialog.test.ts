@@ -100,7 +100,7 @@ suite('Advanced properties dialog tests', () => {
 			isAdvancedDialogCalled = true;
 		});
 		advancedController.advancedDialog = advanceDialog.object;
-		advancedController.showDialog(providerOptions, $('div'), options);
+		advancedController.showDialog(providerOptions, options);
 		assert.equal(isAdvancedDialogCalled, true);
 	});
 });
