@@ -261,7 +261,8 @@ export function createApiFactory(
 			},
 			openExternal(uri: URI) {
 				return extHostWindow.openUri(uri, { allowTunneling: !!initData.remoteAuthority });
-			}
+			},
+			get remoteAuthority() { return initData.remoteAuthority || undefined; }
 		});
 
 		// namespace: extensions
