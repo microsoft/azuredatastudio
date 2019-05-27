@@ -22,9 +22,9 @@ import { localize } from 'vs/nls';
 import { MessageLevel } from 'sql/workbench/api/common/sqlExtHostTypes';
 import * as os from 'os';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { ILogService } from 'vs/platform/log/common/log';
+import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 
 export const MODAL_SHOWING_KEY = 'modalShowing';
 export const MODAL_SHOWING_CONTEXT = new RawContextKey<Array<string>>(MODAL_SHOWING_KEY, []);
@@ -143,7 +143,7 @@ export abstract class Modal extends Disposable implements IThemable {
 		private _title: string,
 		private _name: string,
 		private _telemetryService: ITelemetryService,
-		protected layoutService: ILayoutService,
+		protected layoutService: IWorkbenchLayoutService,
 		protected _clipboardService: IClipboardService,
 		protected _themeService: IThemeService,
 		protected logService: ILogService,
@@ -172,6 +172,8 @@ export abstract class Modal extends Disposable implements IThemable {
 		}
 
 		this._bodyContainer = DOM.$(`.${builderClass}`, { role: 'dialog', 'aria-label': this._title });
+		const top = this.layoutService.getTitleBarOffset();
+		this._bodyContainer.style.top = `${top}px`;
 		this._modalDialog = DOM.append(this._bodyContainer, DOM.$('.modal-dialog', { role: 'document' }));
 		const modalContent = DOM.append(this._modalDialog, DOM.$('.modal-content'));
 
