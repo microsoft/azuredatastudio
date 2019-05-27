@@ -171,9 +171,9 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	public matches(otherInput: any): boolean {
 		if (otherInput instanceof QueryEditorInput) {
 			return this._text.matches(otherInput._text);
+		} else {
+			return false;
 		}
-
-		return this._text.matches(otherInput);
 	}
 
 	// Forwarding resource functions to the inline sql file editor

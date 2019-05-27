@@ -50,6 +50,7 @@ import { timeout } from 'vs/base/common/async';
 import { INotificationHandle, INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { Event } from 'vs/base/common/event';
 import { IAccessibilityService, AccessibilitySupport } from 'vs/platform/accessibility/common/accessibility';
+import { setMode } from 'sql/workbench/browser/parts/editor/editorStatusModeSelect';
 
 class SideBySideEditorEncodingSupport implements IEncodingSupport {
 	constructor(private master: IEncodingSupport, private details: IEncodingSupport) { }
@@ -987,16 +988,16 @@ export class ChangeModeAction extends Action {
 			}
 
 			// Change mode for active editor
-			const activeEditor = this.editorService.activeControl; // {{SQL CARBON EDIT}} @anthonydresser change to activeControl from active editor
+			const activeEditor = this.editorService.activeEditor;
 			if (activeEditor) {
-				const modeSupport = toEditorWithModeSupport(activeEditor.input); // {{SQL CARBON EDIT}} @anthonydresser reference input rather than activeeditor directly
+				const modeSupport = toEditorWithModeSupport(activeEditor);
 				if (modeSupport) {
 
 					// Find mode
 					let languageSelection: ILanguageSelection | undefined;
 					if (pick === autoDetectMode) {
 						if (textModel) {
-							const resource = toResource(activeEditor.input, { supportSideBySide: SideBySideEditor.MASTER }); // {{SQL CARBON EDIT}} @anthonydresser reference input rather than activeeditor directly
+							const resource = toResource(activeEditor, { supportSideBySide: SideBySideEditor.MASTER });
 							if (resource) {
 								languageSelection = this.modeService.createByFilepathOrFirstLine(resource.fsPath, textModel.getLineContent(1));
 							}
@@ -1007,7 +1008,7 @@ export class ChangeModeAction extends Action {
 
 					// Change mode
 					if (typeof languageSelection !== 'undefined') {
-						modeSupport.setMode(languageSelection.languageIdentifier.language);
+						this.instantiationService.invokeFunction(setMode, modeSupport, activeEditor, languageSelection.languageIdentifier.language); // {{SQL CARBON EDIT}} @anthonydresser use custom mode set
 					}
 				}
 			}
