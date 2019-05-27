@@ -24,6 +24,9 @@ export class ResourceDeploymentDialog {
 	private _optionsContainer!: azdata.FlexContainer;
 	private _toolsTable!: azdata.TableComponent;
 	private _toolsTableLoadingComponent!: azdata.LoadingComponent;
+	private _installButton!: azdata.ButtonComponent;
+	private _refreshButton!: azdata.ButtonComponent;
+	private _configureButton!: azdata.ButtonComponent;
 	private _cardResourceTypeMap: Map<string, azdata.CardComponent> = new Map();
 	private _optionDropDownMap: Map<string, azdata.DropDownComponent> = new Map();
 
@@ -78,7 +81,30 @@ export class ResourceDeploymentDialog {
 
 			this._toolsTableLoadingComponent = view.modelBuilder.loadingComponent().withItem(this._toolsTable).component();
 
+			this._refreshButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+				label: localize('resourceDeployment.refreshButton', 'Refresh Tools'),
+				width: '150px'
+			}).component();
+			this._refreshButton.onDidClick(() => { this.updateTools(); });
 
+			this._configureButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+				label: localize('resourceDeployment.configureButton', 'Configure Path'),
+				width: '150px'
+			}).component();
+			this._configureButton.onDidClick(() => { });
+
+			this._installButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+				label: localize('resourceDeployment.installButton', 'Install Tools'),
+				width: '150px'
+			}).component();
+			this._installButton.onDidClick(() => { });
+
+			this._installButton.enabled = false;
+			this._configureButton.enabled = false;
+			this._refreshButton.enabled = false;
+
+			const buttonContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'row-reverse', width: '1000px' }).component();
+			buttonContainer.addItems([this._installButton, this._configureButton, this._refreshButton], { flex: '0 0 auto', CSSStyles: { 'margin-left': '5px' } });
 			const formBuilder = view.modelBuilder.formContainer().withFormItems(
 				[
 					{
@@ -93,6 +119,9 @@ export class ResourceDeploymentDialog {
 					}, {
 						component: this._toolsTableLoadingComponent,
 						title: localize('deploymentDialog.RequiredToolsTitle', 'Required tools')
+					}, {
+						component: buttonContainer,
+						title: ''
 					}
 				],
 				{
@@ -173,11 +202,17 @@ export class ResourceDeploymentDialog {
 	}
 
 	private updateTools(): void {
-
 		this._toolsTableLoadingComponent.loading = true;
+		this._installButton.enabled = false;
+		this._configureButton.enabled = false;
+		this._refreshButton.enabled = false;
 		this.toolsService.getStatusForTools(this.getCurrentProvider().requiredTools).then(statusList => {
+			this._toolsTable.height = 25 * (statusList.length + 1);
 			this._toolsTable.data = statusList.map(toolStatus => [toolStatus.name, toolStatus.description, toolStatus.version, toolStatus.versionRequirement, this.getToolStatusText(toolStatus.status)]);
 			this._toolsTableLoadingComponent.loading = false;
+			this._installButton.enabled = true;
+			this._configureButton.enabled = true;
+			this._refreshButton.enabled = true;
 		});
 	}
 

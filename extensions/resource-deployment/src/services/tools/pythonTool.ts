@@ -44,7 +44,7 @@ export class PythonTool implements ITool {
 
 	refresh(): Thenable<void> {
 		const promise = new Promise<void>((resolve) => {
-			resolve();
+			setTimeout(resolve, 500);
 		});
 		return promise;
 	}
