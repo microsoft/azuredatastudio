@@ -51,11 +51,11 @@
   "devDependencies": {
     "@types/chai": "3.4.34",
     "@types/node": "7.0.43",
+    "adstest": "github:ranasaria/adstest.git#0.0.2",
     "chai": "3.5.0",
     "class-validator": "^0.9.1",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",
-    "azdata-test": "d:/src/azdata-test/dist",
     "ts-node": "^8.1.0",
     "vscode": "1.1.5"
   },

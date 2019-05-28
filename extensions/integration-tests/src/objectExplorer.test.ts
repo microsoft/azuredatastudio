@@ -11,8 +11,7 @@ import { context } from './testContext';
 import { getBdcServer, TestServerProfile, getAzureServer, getStandaloneServer } from './testConfig';
 import { connectToServer } from './utils';
 import assert = require('assert');
-import { stressify } from 'azdata-test/stress';
-
+import { stressify } from 'adstest';
 
 if (context.RunTest) {
 	suite('Object Explorer integration suite', () => {

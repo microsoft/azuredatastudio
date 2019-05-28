@@ -14,7 +14,7 @@ import { sqlNotebookContent, writeNotebookToFile, sqlKernelMetadata, getFileName
 import { getBdcServer, getConfigValue, EnvironmentVariable_PYTHON_PATH } from './testConfig';
 import { connectToServer } from './utils';
 import * as fs from 'fs';
-import { stressify } from 'azdata-test/stress';
+import { stressify } from 'adstest';
 
 if (context.RunTest) {
 	suite('Notebook integration test suite', function () {
