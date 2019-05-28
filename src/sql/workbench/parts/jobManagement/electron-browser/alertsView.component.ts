@@ -195,10 +195,10 @@ export class AlertsViewComponent extends JobManagementView implements OnInit, On
 	}
 
 	protected getTableActions(targetObject: any): IAction[] {
-		let actions: IAction[] = [];
-		actions.push(this._instantiationService.createInstance(EditAlertAction));
-		actions.push(this._instantiationService.createInstance(DeleteAlertAction));
-		return actions;
+		return [
+			this._instantiationService.createInstance(EditAlertAction),
+			this._instantiationService.createInstance(DeleteAlertAction)
+		];
 	}
 
 	protected getCurrentTableObject(rowIndex: number): any {

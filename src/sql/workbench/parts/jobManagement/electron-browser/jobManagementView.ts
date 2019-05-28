@@ -17,6 +17,7 @@ import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { JobsRefreshAction, IJobActionInfo } from 'sql/platform/jobManagement/common/jobActions';
 import { TabChild } from 'sql/base/electron-browser/ui/panel/tab.component';
 import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardService';
+import { ITableMouseEvent } from 'sql/base/browser/ui/table/interfaces';
 
 export abstract class JobManagementView extends TabChild implements AfterContentChecked {
 	protected isVisible: boolean = false;
@@ -72,20 +73,26 @@ export abstract class JobManagementView extends TabChild implements AfterContent
 
 	abstract onFirstVisible();
 
-	protected openContextMenu(event): void {
-		let rowIndex = event.cell.row;
+	protected openContextMenu(event: ITableMouseEvent): void {
+		const rowIndex = event.cell.row;
 
-		let targetObject = this.getCurrentTableObject(rowIndex);
-		let actions = this.getTableActions(targetObject);
+		const targetObject = this.getCurrentTableObject(rowIndex);
+		const actions = this.getTableActions(targetObject);
 		if (actions) {
-			let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
-			let actionContext: IJobActionInfo = {
+			const ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
+			const actionContext: IJobActionInfo = {
 				ownerUri: ownerUri,
 				targetObject: targetObject,
 				component: this
 			};
 
-			let anchor = { x: event.pageX + 1, y: event.pageY };
+			let anchor: { x: number, y: number };
+			if (event.anchor instanceof HTMLElement) {
+				anchor = { x: event.anchor.getBoundingClientRect().left + 1, y: event.anchor.getBoundingClientRect().top };
+			} else {
+				anchor = { x: event.anchor.x + 1, y: event.anchor.y };
+			}
+
 			this._contextMenuService.showContextMenu({
 				getAnchor: () => anchor,
 				getActions: () => actions,
