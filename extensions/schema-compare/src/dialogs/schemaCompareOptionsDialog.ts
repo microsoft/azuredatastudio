@@ -7,6 +7,7 @@
 import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
+import { SchemaCompareResult } from '../schemaCompareResult';
 
 const localize = nls.loadMessageBundle();
 
@@ -14,6 +15,8 @@ export class SchemaCompareOptionsDialog {
 	private static readonly OkButtonText: string = localize('SchemaCompareOptionsDialog.Ok', 'Ok');
 	private static readonly CancelButtonText: string = localize('SchemaCompareOptionsDialog.Cancel', 'Cancel');
 	private static readonly ResetButtonText: string = localize('SchemaCompareOptionsDialog.Reset', 'Reset');
+	private static readonly CompareButtonText: string = localize('SchemaCompareOptionsDialog.Compare', 'Compare');
+	private static readonly OptionsChangedMessage: string = localize('schemaCompareOptions.recompareMessage', 'Options have changed. Press Compare to see the comparison.');
 	private static readonly OptionsLabel: string = localize('SchemaCompare.SchemaCompareOptionsDialogLabel', 'Schema Compare Options');
 	private static readonly GeneralOptionsLabel: string = localize('SchemaCompare.GeneralOptionsLabel', 'General Options');
 	private static readonly ObjectTypesOptionsLabel: string = localize('SchemaCompare.ObjectTypesOptionsLabel', 'Include Object Types');
@@ -406,7 +409,7 @@ export class SchemaCompareOptionsDialog {
 		SchemaCompareOptionsDialog.ServerTriggers
 	].sort();
 
-	constructor(defaultOptions: azdata.DeploymentOptions) {
+	constructor(defaultOptions: azdata.DeploymentOptions, private schemaComparison: SchemaCompareResult) {
 		this.deploymentOptions = defaultOptions;
 	}
 
@@ -442,7 +445,11 @@ export class SchemaCompareOptionsDialog {
 		this.SetDeploymentOptions();
 		this.SetObjectTypeOptions();
 		if (this.optionsChanged) {
-			vscode.window.showInformationMessage(localize('schemaCompareOptions.recompareMessage', 'Options have changed. Press Compare to see the comparison.'));
+			vscode.window.showWarningMessage(SchemaCompareOptionsDialog.OptionsChangedMessage, SchemaCompareOptionsDialog.CompareButtonText).then(async (result) => {
+				if (result === SchemaCompareOptionsDialog.CompareButtonText) {
+					this.schemaComparison.startCompare();
+				}
+			});
 		}
 		this.disposeListeners();
 	}

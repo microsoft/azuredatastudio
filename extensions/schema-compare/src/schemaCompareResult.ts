@@ -382,7 +382,7 @@ export class SchemaCompareResult {
 		return script;
 	}
 
-	private startCompare(): void {
+	public startCompare(): void {
 		this.flexModel.removeItem(this.splitView);
 		this.flexModel.removeItem(this.noDifferencesLabel);
 		this.flexModel.removeItem(this.startText);
@@ -467,7 +467,7 @@ export class SchemaCompareResult {
 				this.deploymentOptions = this.schemaCompareOptionDialog.deploymentOptions;
 			}
 			// create fresh every time
-			this.schemaCompareOptionDialog = new SchemaCompareOptionsDialog(this.deploymentOptions);
+			this.schemaCompareOptionDialog = new SchemaCompareOptionsDialog(this.deploymentOptions, this);
 			await this.schemaCompareOptionDialog.openDialog();
 		});
 	}
