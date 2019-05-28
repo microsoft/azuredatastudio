@@ -197,10 +197,10 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit,
 	}
 
 	protected getTableActions(): IAction[] {
-		let actions: IAction[] = [];
-		actions.push(this._instantiationService.createInstance(EditOperatorAction));
-		actions.push(this._instantiationService.createInstance(DeleteOperatorAction));
-		return actions;
+		return [
+			this._instantiationService.createInstance(EditOperatorAction),
+			this._instantiationService.createInstance(DeleteOperatorAction)
+		];
 	}
 
 	protected getCurrentTableObject(rowIndex: number): any {

@@ -18,7 +18,7 @@ import { bootstrapAngular } from 'sql/platform/bootstrap/node/bootstrapService';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { append, $ } from 'vs/base/browser/dom';
 import { ILogService } from 'vs/platform/log/common/log';
-import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
+import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 
 export class BackupDialog extends Modal {
 	private _body: HTMLElement;
@@ -27,7 +27,7 @@ export class BackupDialog extends Modal {
 
 	constructor(
 		@IThemeService themeService: IThemeService,
-		@ILayoutService layoutService: ILayoutService,
+		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IInstantiationService private _instantiationService: IInstantiationService,

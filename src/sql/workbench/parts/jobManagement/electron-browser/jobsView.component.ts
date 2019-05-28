@@ -862,14 +862,14 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 	}
 
 	protected getTableActions(targetObject: JobActionContext): IAction[] {
-		let actions: IAction[] = [];
-		let editAction = this._instantiationService.createInstance(EditJobAction);
+		const editAction = this._instantiationService.createInstance(EditJobAction);
 		if (!targetObject.canEdit) {
 			editAction.enabled = false;
 		}
-		actions.push(editAction);
-		actions.push(this._instantiationService.createInstance(DeleteJobAction));
-		return actions;
+		return [
+			editAction,
+			this._instantiationService.createInstance(DeleteJobAction)
+		];
 	}
 
 	protected convertStepsToStepInfos(steps: azdata.AgentJobStep[], job: azdata.AgentJobInfo): azdata.AgentJobStepInfo[] {

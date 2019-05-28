@@ -13,6 +13,7 @@ import * as dict from 'vs/base/common/collections';
 export interface ICheckboxSelectColumnOptions extends Slick.PluginOptions, ICheckboxStyles {
 	columnId?: string;
 	cssClass?: string;
+	headerCssClass?: string;
 	toolTip?: string;
 	width?: number;
 	title?: string;
@@ -35,6 +36,7 @@ export interface ICheckboxCellActionEventArgs {
 const defaultOptions: ICheckboxSelectColumnOptions = {
 	columnId: '_checkbox_selector',
 	cssClass: undefined,
+	headerCssClass: undefined,
 	toolTip: nls.localize('selectDeselectAll', 'Select/Deselect All'),
 	width: 30
 };
@@ -227,6 +229,7 @@ export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Pl
 			resizable: false,
 			sortable: false,
 			cssClass: this._options.cssClass,
+			headerCssClass: this._options.headerCssClass,
 			formatter: (r, c, v, cd, dc) => this.checkboxSelectionFormatter(r, c, v, cd, dc as T)
 		};
 	}

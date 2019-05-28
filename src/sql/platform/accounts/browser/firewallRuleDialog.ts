@@ -18,7 +18,6 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IWindowsService } from 'vs/platform/windows/common/windows';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
-import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 
 import * as azdata from 'azdata';
 import { Button } from 'sql/base/browser/ui/button/button';
@@ -29,6 +28,7 @@ import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { IAccountPickerService } from 'sql/platform/accounts/common/accountPicker';
 import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
 import { ILogService } from 'vs/platform/log/common/log';
+import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 
 // TODO: Make the help link 1) extensible (01/08/2018, https://github.com/Microsoft/azuredatastudio/issues/450)
 // in case that other non-Azure sign in is to be used
@@ -63,7 +63,7 @@ export class FirewallRuleDialog extends Modal {
 
 	constructor(
 		@IAccountPickerService private _accountPickerService: IAccountPickerService,
-		@ILayoutService layoutService: ILayoutService,
+		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
 		@IThemeService themeService: IThemeService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IContextViewService private _contextViewService: IContextViewService,

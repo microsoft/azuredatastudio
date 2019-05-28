@@ -85,7 +85,7 @@ export class ModelViewEditor extends BaseEditor {
 			const containerRect = modelViewContainer.parentElement.getBoundingClientRect();
 
 			modelViewContainer.style.position = 'absolute';
-			modelViewContainer.style.top = `${frameRect.top}px`;
+			modelViewContainer.style.top = `${frameRect.top - containerRect.top}px`;
 			modelViewContainer.style.left = `${frameRect.left - containerRect.left}px`;
 			modelViewContainer.style.width = `${frameRect.width}px`;
 			modelViewContainer.style.height = `${frameRect.height}px`;

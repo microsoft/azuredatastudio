@@ -14,7 +14,7 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/workbench/parts/jobManagement/electron-browser/agentView.component';
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
 import { EditAlertAction, DeleteAlertAction, NewAlertAction } from 'sql/platform/jobManagement/common/jobActions';
-import { JobManagementView } from 'sql/workbench/parts/jobManagement/electron-browser/jobManagementView';
+import { JobManagementView, JobActionContext } from 'sql/workbench/parts/jobManagement/electron-browser/jobManagementView';
 import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
@@ -197,11 +197,11 @@ export class AlertsViewComponent extends JobManagementView implements OnInit, On
 		this._table.resizeCanvas();
 	}
 
-	protected getTableActions(targetObject: any): IAction[] {
-		let actions: IAction[] = [];
-		actions.push(this._instantiationService.createInstance(EditAlertAction));
-		actions.push(this._instantiationService.createInstance(DeleteAlertAction));
-		return actions;
+	protected getTableActions(): IAction[] {
+		return [
+			this._instantiationService.createInstance(EditAlertAction),
+			this._instantiationService.createInstance(DeleteAlertAction)
+		];
 	}
 
 	protected getCurrentTableObject(rowIndex: number): any {

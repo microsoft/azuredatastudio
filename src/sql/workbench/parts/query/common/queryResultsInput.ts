@@ -6,7 +6,6 @@
 import { localize } from 'vs/nls';
 import { EditorInput } from 'vs/workbench/common/editor';
 import { Emitter } from 'vs/base/common/event';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 import { GridPanelState } from 'sql/workbench/parts/query/electron-browser/gridPanel';
 import { MessagePanelState } from 'sql/workbench/parts/query/browser/messagePanel';
@@ -16,18 +15,12 @@ import { TopOperationsState } from 'sql/workbench/parts/queryPlan/browser/topOpe
 
 export class ResultsViewState {
 	public gridPanelState: GridPanelState = new GridPanelState();
-	public messagePanelState: MessagePanelState = new MessagePanelState(this.configurationService);
+	public messagePanelState: MessagePanelState = new MessagePanelState();
 	public chartState: ChartState = new ChartState();
 	public queryPlanState: QueryPlanState = new QueryPlanState();
 	public topOperationsState = new TopOperationsState();
-	public gridPanelSize: number;
-	public messagePanelSize: number;
 	public activeTab: string;
 	public visibleTabs: Set<string> = new Set<string>();
-
-	constructor(@IConfigurationService private configurationService: IConfigurationService) {
-
-	}
 
 	dispose() {
 		this.gridPanelState.dispose();
@@ -56,15 +49,13 @@ export class QueryResultsInput extends EditorInput {
 	public readonly onRestoreViewStateEmitter = new Emitter<void>();
 	public readonly onSaveViewStateEmitter = new Emitter<void>();
 
-	private _state = new ResultsViewState(this.configurationService);
+	private _state = new ResultsViewState();
 
 	public get state(): ResultsViewState {
 		return this._state;
 	}
 
-	constructor(private _uri: string,
-		@IConfigurationService private configurationService: IConfigurationService
-	) {
+	constructor(private _uri: string) {
 		super();
 		this._visible = false;
 		this._hasBootstrapped = false;

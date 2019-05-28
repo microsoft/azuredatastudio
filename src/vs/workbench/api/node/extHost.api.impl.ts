@@ -681,6 +681,8 @@ export function createApiFactory(
 			}
 		};
 
+		const comments = comment;
+
 		// {{SQL CARBON EDIT}} -- no-op debug extensibility API
 		// namespace: debug
 		const debug: typeof vscode.debug = {
@@ -766,6 +768,7 @@ export function createApiFactory(
 			languages,
 			scm,
 			comment,
+			comments,
 			tasks,
 			window,
 			workspace,
@@ -781,6 +784,7 @@ export function createApiFactory(
 			ColorInformation: extHostTypes.ColorInformation,
 			ColorPresentation: extHostTypes.ColorPresentation,
 			CommentThreadCollapsibleState: extHostTypes.CommentThreadCollapsibleState,
+			CommentMode: extHostTypes.CommentMode,
 			CompletionItem: extHostTypes.CompletionItem,
 			CompletionItemKind: extHostTypes.CompletionItemKind,
 			CompletionList: extHostTypes.CompletionList,

@@ -20,8 +20,8 @@ import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService
 import { localize } from 'vs/nls';
 import { IAction } from 'vs/base/common/actions';
 import * as DOM from 'vs/base/browser/dom';
-import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { ILogService } from 'vs/platform/log/common/log';
+import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 
 const maxActions = 1;
 
@@ -44,7 +44,7 @@ export class ErrorMessageDialog extends Modal {
 	constructor(
 		@IThemeService themeService: IThemeService,
 		@IClipboardService clipboardService: IClipboardService,
-		@ILayoutService layoutService: ILayoutService,
+		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@ILogService logService: ILogService
