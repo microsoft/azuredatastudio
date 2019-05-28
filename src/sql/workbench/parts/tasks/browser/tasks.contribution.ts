@@ -18,8 +18,6 @@ import { PanelRegistry, Extensions as PanelExtensions, PanelDescriptor } from 'v
 import { TASKS_PANEL_ID } from 'sql/workbench/parts/tasks/common/tasks';
 import { IPanelService } from 'vs/workbench/services/panel/common/panelService';
 import { ToggleTasksAction } from 'sql/workbench/parts/tasks/browser/tasksActions';
-import { Action } from 'vs/base/common/actions';
-import { TaskStatus, TaskExecutionMode } from 'sql/platform/tasks/common/tasksNode';
 
 export class StatusUpdater implements ext.IWorkbenchContribution {
 	static ID = 'data.taskhistory.statusUpdater';
