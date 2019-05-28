@@ -256,6 +256,7 @@ export class SchemaCompareOptionsDialog {
 	private disposableListeners: vscode.Disposable[] = [];
 
 	private excludedObjectTypes: azdata.SchemaObjectType[] = [];
+	private optionsChanged: boolean = false;
 
 	private optionsLabels: string[] = [
 		SchemaCompareOptionsDialog.IgnoreTableOptions,
@@ -440,6 +441,10 @@ export class SchemaCompareOptionsDialog {
 	protected async execute() {
 		this.SetDeploymentOptions();
 		this.SetObjectTypeOptions();
+		if (this.optionsChanged) {
+			vscode.window.showInformationMessage(localize('schemaCompareOptions.recompareMessage', 'Options have changed. Press Compare to see the comparison.'));
+		}
+	}
 		this.disposeListeners();
 	}
 
@@ -451,6 +456,7 @@ export class SchemaCompareOptionsDialog {
 		let service = await azdata.dataprotocol.getProvider<azdata.SchemaCompareServicesProvider>('MSSQL', azdata.DataProviderType.SchemaCompareServicesProvider);
 		let result = await service.schemaCompareGetDefaultOptions();
 		this.deploymentOptions = result.defaultDeploymentOptions;
+		this.optionsChanged = true;
 
 		this.updateOptionsTable();
 		this.optionsFlexBuilder.removeItem(this.optionsTable);
