@@ -479,10 +479,7 @@ export class SchemaCompareOptionsDialog {
 			}).component();
 
 
-			this.optionsTable = view.modelBuilder.table().withProperties({
-				data: []
-			}).component();
-
+			this.optionsTable = view.modelBuilder.table().component();
 			this.updateOptionsTable();
 
 			this.disposableListeners.push(this.optionsTable.onRowSelected(async () => {
@@ -495,7 +492,7 @@ export class SchemaCompareOptionsDialog {
 
 			this.disposableListeners.push(this.optionsTable.onCellAction(async (rowState) => {
 				let checkboxState = <azdata.ICheckboxCellActionEventArgs>rowState;
-				if (checkboxState) {
+				if (checkboxState && checkboxState.row !== undefined) {
 					let label = this.optionsLabels[checkboxState.row];
 					this.optionsLookup[label] = checkboxState.checked;
 				}
@@ -521,15 +518,12 @@ export class SchemaCompareOptionsDialog {
 					flexFlow: 'column'
 				}).component();
 
-			this.objectsTable = view.modelBuilder.table().withProperties({
-				data: []
-			}).component();
-
+			this.objectsTable = view.modelBuilder.table().component();
 			this.updateObjectsTable();
 
 			this.disposableListeners.push(this.objectsTable.onCellAction(async (rowState) => {
 				let checkboxState = <azdata.ICheckboxCellActionEventArgs>rowState;
-				if (checkboxState) {
+				if (checkboxState && checkboxState.row !== undefined) {
 					let label = this.objectTypeLabels[checkboxState.row];
 					this.objectsLookup[label] = checkboxState.checked;
 				}
