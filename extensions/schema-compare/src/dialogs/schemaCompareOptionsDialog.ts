@@ -15,8 +15,9 @@ export class SchemaCompareOptionsDialog {
 	private static readonly OkButtonText: string = localize('SchemaCompareOptionsDialog.Ok', 'Ok');
 	private static readonly CancelButtonText: string = localize('SchemaCompareOptionsDialog.Cancel', 'Cancel');
 	private static readonly ResetButtonText: string = localize('SchemaCompareOptionsDialog.Reset', 'Reset');
-	private static readonly CompareButtonText: string = localize('SchemaCompareOptionsDialog.Compare', 'Compare');
-	private static readonly OptionsChangedMessage: string = localize('schemaCompareOptions.recompareMessage', 'Options have changed. Press Compare to see the comparison.');
+	private static readonly YesButtonText: string = localize('SchemaCompareOptionsDialog.Yes', 'Yes');
+	private static readonly NoButtonText: string = localize('SchemaCompareOptionsDialog.No', 'No');
+	private static readonly OptionsChangedMessage: string = localize('schemaCompareOptions.RecompareMessage', 'Options have changed. Recompare to see the comparison?');
 	private static readonly OptionsLabel: string = localize('SchemaCompare.SchemaCompareOptionsDialogLabel', 'Schema Compare Options');
 	private static readonly GeneralOptionsLabel: string = localize('SchemaCompare.GeneralOptionsLabel', 'General Options');
 	private static readonly ObjectTypesOptionsLabel: string = localize('SchemaCompare.ObjectTypesOptionsLabel', 'Include Object Types');
@@ -445,8 +446,8 @@ export class SchemaCompareOptionsDialog {
 		this.SetDeploymentOptions();
 		this.SetObjectTypeOptions();
 		if (this.optionsChanged) {
-			vscode.window.showWarningMessage(SchemaCompareOptionsDialog.OptionsChangedMessage, SchemaCompareOptionsDialog.CompareButtonText).then((result) => {
-				if (result === SchemaCompareOptionsDialog.CompareButtonText) {
+			vscode.window.showWarningMessage(SchemaCompareOptionsDialog.OptionsChangedMessage, SchemaCompareOptionsDialog.YesButtonText, SchemaCompareOptionsDialog.NoButtonText).then((result) => {
+				if (result === SchemaCompareOptionsDialog.YesButtonText) {
 					this.schemaComparison.startCompare();
 				}
 			});
