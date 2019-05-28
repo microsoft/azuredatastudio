@@ -19,7 +19,9 @@ export class WorkspaceConfigurationTestService implements IConfigurationService 
 		return Promise.resolve(null);
 	}
 
-	onDidChangeConfiguration: Event<IConfigurationChangeEvent>;
+	get onDidChangeConfiguration(): Event<IConfigurationChangeEvent> {
+		throw new Error('Method not implemented.');
+	}
 
 	getConfigurationData(): IConfigurationData { return undefined; }
 

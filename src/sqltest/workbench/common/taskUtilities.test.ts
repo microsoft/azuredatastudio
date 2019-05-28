@@ -11,9 +11,6 @@ import { TestConnectionManagementService } from 'sqltest/stubs/connectionManagem
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { WorkbenchEditorTestService } from 'sqltest/stubs/workbenchEditorTestService';
-import { URI } from 'vs/base/common/uri';
-import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
-import { TestUntitledQueryEditorInput } from 'sql/workbench/parts/query/test/testUntitledQueryInput';
 
 suite('TaskUtilities', function () {
 	test('getCurrentGlobalConnection returns the selected OE server if a server or one of its children is selected', () => {

@@ -23,10 +23,15 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { assertThrowsAsync } from 'sqltest/utils/testUtils';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { TestEditorService, TestLogService } from 'vs/workbench/test/workbenchTestServices';
-import { QueryEditorInput, QueryEditorState } from 'sql/workbench/parts/query/common/queryEditorInput';
+import { QueryEditorState } from 'sql/workbench/parts/query/common/queryEditorInput';
 import { URI } from 'vs/base/common/uri';
 import { ILogService } from 'vs/platform/log/common/log';
-import { TestUntitledQueryEditorInput } from 'sql/workbench/parts/query/test/testUntitledQueryInput';
+import { UntitledQueryEditorInput } from 'sql/workbench/parts/query/common/untitledQueryEditorInput';
+import { TestQueryModelService } from 'sql/platform/query/test/common/testQueryModelService';
+import { Event } from 'vs/base/common/event';
+import { IQueryModelService } from 'sql/platform/query/common/queryModel';
+import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
+import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 
 class TestParsedArgs implements ParsedArgs {
 	[arg: string]: any;
@@ -124,6 +129,7 @@ suite('commandLineService tests', () => {
 	function getConfigurationServiceMock(showConnectDialogOnStartup: boolean): TypeMoq.Mock<IConfigurationService> {
 		let configurationService = TypeMoq.Mock.ofType<IConfigurationService>(WorkspaceConfigurationTestService);
 		configurationService.setup((c) => c.getValue(TypeMoq.It.isAnyString())).returns((config: string) => showConnectDialogOnStartup);
+		configurationService.setup(c => c.onDidChangeConfiguration).returns(() => Event.None);
 		return configurationService;
 	}
 
@@ -372,23 +378,26 @@ suite('commandLineService tests', () => {
 				return Promise.resolve('unused');
 			}).verifiable(TypeMoq.Times.once());
 		connectionManagementService.setup(c => c.getConnectionProfileById(TypeMoq.It.isAnyString())).returns(() => originalProfile);
+		connectionManagementService.setup(c => c.onDisconnect).returns(() => Event.None);
+		connectionManagementService.setup(c => c.ensureDefaultLanguageFlavor(TypeMoq.It.isAny()));
 		const configurationService = getConfigurationServiceMock(true);
-		const queryInput: TypeMoq.Mock<TestUntitledQueryEditorInput> = TypeMoq.Mock.ofType<TestUntitledQueryEditorInput>(TestUntitledQueryEditorInput);
+		const querymodelService = TypeMoq.Mock.ofType<IQueryModelService>(TestQueryModelService, TypeMoq.MockBehavior.Strict);
+		querymodelService.setup(c => c.onRunQueryStart).returns(() => Event.None);
+		querymodelService.setup(c => c.onRunQueryComplete).returns(() => Event.None);
+		const instantiationService = new TestInstantiationService();
 		let uri = URI.file(args._[0]);
-		const queryState = new QueryEditorState();
-		queryState.connected = true;
-		queryInput.setup(q => q.state).returns(() => queryState);
-		queryInput.setup(q => q.getResource()).returns(() => uri).verifiable(TypeMoq.Times.once());
+		const untitledEditorInput = new UntitledEditorInput(uri, false, '', '', '', instantiationService, undefined, undefined);
+		const queryInput = new UntitledQueryEditorInput(undefined, untitledEditorInput, undefined, undefined, connectionManagementService.object, querymodelService.object, configurationService.object);
+		queryInput.state.connected = true;
 		const editorService: TypeMoq.Mock<IEditorService> = TypeMoq.Mock.ofType<IEditorService>(TestEditorService, TypeMoq.MockBehavior.Strict);
-		editorService.setup(e => e.editors).returns(() => [queryInput.object]);
+		editorService.setup(e => e.editors).returns(() => [queryInput]);
 		connectionManagementService.setup(c =>
 			c.connect(TypeMoq.It.is<ConnectionProfile>(p => p.serverName === 'myserver' && p.authenticationType === Constants.sqlLogin),
 				uri.toString(),
-				TypeMoq.It.is<IConnectionCompletionOptions>(i => i.params.input === queryInput.object && i.params.connectionType === ConnectionType.editor))
+				TypeMoq.It.is<IConnectionCompletionOptions>(i => i.params.input === queryInput && i.params.connectionType === ConnectionType.editor))
 		).verifiable(TypeMoq.Times.once());
 		let service = getCommandLineService(connectionManagementService.object, configurationService.object, capabilitiesService, undefined, editorService.object);
 		await service.processCommandLine(args);
-		queryInput.verifyAll();
 		connectionManagementService.verifyAll();
 	});
 });
