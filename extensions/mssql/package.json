@@ -390,7 +390,7 @@
     "dashboard.tabs": [
       {
         "id": "mssql-big-data-cluster",
-        "description": "tab.bigDataClusterDescription",
+        "description": "%tab.bigDataClusterDescription%",
         "provider": "MSSQL",
         "title": "%title.bigDataCluster%",
         "when": "connectionProvider == 'MSSQL' && mssql:iscluster",
