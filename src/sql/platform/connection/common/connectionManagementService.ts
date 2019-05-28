@@ -566,15 +566,19 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 					if (!this._mementoObj.CONNECTION_ICON_ID) {
 						this._mementoObj.CONNECTION_ICON_ID = <any>{};
 					}
-					this._mementoObj.CONNECTION_ICON_ID[connectionProfile.id] = iconId;
-					this._mementoContext.saveMemento();
+					if (this._mementoObj.CONNECTION_ICON_ID[connectionProfile.id] !== iconId) {
+						this._mementoObj.CONNECTION_ICON_ID[connectionProfile.id] = iconId;
+						this._mementoContext.saveMemento();
+					}
 				}
 			});
 		}
 	}
 
 	public getConnectionIconId(connectionId: string): string {
-		if (!connectionId || !this._mementoObj || !this._mementoObj.CONNECTION_ICON_ID) { return undefined; }
+		if (!connectionId || !this._mementoObj || !this._mementoObj.CONNECTION_ICON_ID) {
+			return undefined;
+		}
 		return this._mementoObj.CONNECTION_ICON_ID[connectionId];
 	}
 
