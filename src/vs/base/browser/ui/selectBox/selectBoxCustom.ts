@@ -288,8 +288,6 @@ export class SelectBoxList implements ISelectBoxDelegate, IListVirtualDelegate<I
 		}
 
 		this.selectElement.selectedIndex = this.selected;
-		// {{SQL CARBON EDIT}}
-		this.selectElement.title = this.options[this.selected] && this.options[this.selected].text ? this.options[this.selected].text : '';
 	}
 
 	public setAriaLabel(label: string): void {
