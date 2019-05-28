@@ -196,6 +196,7 @@ export default class TableComponent extends ComponentBase implements IComponent,
 				toolTip: col.toolTip,
 				width: col.width,
 				cssClass: col.cssClass,
+				headerCssClass: col.headerCssClass,
 				actionOnCheck: col.options ? col.options.actionOnCheckbox : null
 			}, index);
 
