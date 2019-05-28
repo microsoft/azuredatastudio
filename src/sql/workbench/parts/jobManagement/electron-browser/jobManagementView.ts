@@ -107,7 +107,7 @@ export abstract class JobManagementView extends TabChild implements AfterContent
 		return kb;
 	}
 
-	protected getTableActions(targetObject?: any): IAction[] {
+	protected getTableActions(targetObject?: JobActionContext): IAction[] {
 		return undefined;
 	}
 
