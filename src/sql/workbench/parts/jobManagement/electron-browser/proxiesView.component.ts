@@ -198,10 +198,10 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit, O
 	}
 
 	protected getTableActions(): IAction[] {
-		let actions: IAction[] = [];
-		actions.push(this._instantiationService.createInstance(EditProxyAction));
-		actions.push(this._instantiationService.createInstance(DeleteProxyAction));
-		return actions;
+		return [
+			this._instantiationService.createInstance(EditProxyAction),
+			this._instantiationService.createInstance(DeleteProxyAction)
+		];
 	}
 
 	protected getCurrentTableObject(rowIndex: number): any {
