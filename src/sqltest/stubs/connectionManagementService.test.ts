@@ -41,7 +41,7 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 
 	}
 
-	showConnectionDialog(params?: INewConnectionParams, model?: IConnectionProfile, connectionResult?: IConnectionResult): Promise<void> {
+	showConnectionDialog(params?: INewConnectionParams, options?: IConnectionCompletionOptions, model?: IConnectionProfile, connectionResult?: IConnectionResult): Promise<void> {
 		return undefined;
 	}
 
@@ -285,6 +285,10 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 	}
 
 	getConnectionIconId(connectionId: string): string {
+		return undefined;
+	}
+
+	getDefaultProviderId(): string {
 		return undefined;
 	}
 }

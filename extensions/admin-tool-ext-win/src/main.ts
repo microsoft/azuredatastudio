@@ -8,9 +8,8 @@ import * as path from 'path';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { Telemetry } from './telemetry';
-import { doubleEscapeSingleQuotes, backEscapeDoubleQuotes } from './utils';
+import { doubleEscapeSingleQuotes, backEscapeDoubleQuotes, getTelemetryErrorType } from './utils';
 import { ChildProcess, exec } from 'child_process';
-
 const localize = nls.loadMessageBundle();
 const ssmsMinVer = JSON.parse(JSON.stringify(require('./config.json'))).version;
 
@@ -67,7 +66,6 @@ export interface LaunchSsmsDialogParams {
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
 	// This is for Windows-specific support so do nothing on other platforms
 	if (process.platform === 'win32') {
-		Telemetry.sendTelemetryEvent('startup/ExtensionActivated');
 		exePath = path.join(context.extensionPath, 'ssmsmin', 'Windows', ssmsMinVer, 'ssmsmin.exe');
 		registerCommands(context);
 	}
@@ -77,7 +75,7 @@ export async function deactivate(): Promise<void> {
 	// If the extension is being deactivated we want to kill all processes that are still currently
 	// running otherwise they will continue to run as orphan processes. We use taskkill here in case
 	// they started off child processes of their own
-	runningProcesses.forEach(p => exec('taskkill /pid ' + p.pid + ' /T /F'));
+	runningProcesses.forEach(p => exec(`taskkill /pid ${p.pid} /T /F`));
 }
 
 /**
@@ -97,6 +95,7 @@ function registerCommands(context: vscode.ExtensionContext): void {
  */
 async function handleLaunchSsmsMinPropertiesDialogCommand(connectionContext?: azdata.ObjectExplorerContext): Promise<void> {
 	if (!connectionContext) {
+		Telemetry.sendTelemetryEventForError('NoConnectionContext', { action: 'Properties' });
 		vscode.window.showErrorMessage(localize('adminToolExtWin.noConnectionContextForProp', 'No ConnectionContext provided for handleLaunchSsmsMinPropertiesDialogCommand'));
 		return;
 	}
@@ -107,9 +106,9 @@ async function handleLaunchSsmsMinPropertiesDialogCommand(connectionContext?: az
 	}
 	else if (connectionContext.nodeInfo) {
 		nodeType = connectionContext.nodeInfo.nodeType;
-	}
-	else {
-		vscode.window.showErrorMessage(localize('adminToolExtWin.noOeNode', 'Could not determine NodeType for handleLaunchSsmsMinPropertiesDialogCommand with context {0}', JSON.stringify(connectionContext)));
+	} else {
+		Telemetry.sendTelemetryEventForError('NoOENode', { action: 'Properties' });
+		vscode.window.showErrorMessage(localize('adminToolExtWin.noOENode', 'Could not determine Object Explorer node from connectionContext : {0}', JSON.stringify(connectionContext)));
 		return;
 	}
 
@@ -123,12 +122,14 @@ async function handleLaunchSsmsMinPropertiesDialogCommand(connectionContext?: az
  * @param connectionId The connection context from the command
  */
 async function handleLaunchSsmsMinGswDialogCommand(connectionContext?: azdata.ObjectExplorerContext): Promise<void> {
+	const action = 'GenerateScripts';
 	if (!connectionContext) {
+		Telemetry.sendTelemetryEventForError('NoConnectionContext', { action: action });
 		vscode.window.showErrorMessage(localize('adminToolExtWin.noConnectionContextForGsw', 'No ConnectionContext provided for handleLaunchSsmsMinPropertiesDialogCommand'));
 	}
 
 	launchSsmsDialog(
-		'GenerateScripts',
+		action,
 		connectionContext);
 }
 
@@ -140,24 +141,8 @@ async function handleLaunchSsmsMinGswDialogCommand(connectionContext?: azdata.Ob
  */
 async function launchSsmsDialog(action: string, connectionContext: azdata.ObjectExplorerContext): Promise<void> {
 	if (!connectionContext.connectionProfile) {
+		Telemetry.sendTelemetryEventForError('NoConnectionProfile', { action: action });
 		vscode.window.showErrorMessage(localize('adminToolExtWin.noConnectionProfile', 'No connectionProfile provided from connectionContext : {0}', JSON.stringify(connectionContext)));
-		return;
-	}
-
-	// Currently Azure isn't supported by the SSMS server properties dialog
-	const serverInfo = await azdata.connection.getServerInfo(connectionContext.connectionProfile.id);
-	if (serverInfo && serverInfo.isCloud) {
-		vscode.window.showErrorMessage(localize('adminToolExtWin.invalidEngineType', 'This option is not currently available for this engine type.'));
-		return;
-	}
-
-	// Note - this is a temporary fix for the issue that currently the connection API doesn't allow retrieving credentials for a disconnected
-	// node. So until that's fixed we'll prevent users from attempting to launch SsmsMin on a disconnected node.
-	// We also aren't able to hide the menu item on disconnected nodes because we currently don't have a contextKey for the connected status
-	// of a node.
-	const activeConnections = await azdata.connection.getActiveConnections();
-	if (!activeConnections.some(conn => conn.connectionId === connectionContext.connectionProfile.id)) {
-		vscode.window.showErrorMessage(localize('adminToolExtWin.notConnected', 'This option requires a connected node - please connect and try again.'));
 		return;
 	}
 
@@ -170,11 +155,12 @@ async function launchSsmsDialog(action: string, connectionContext: azdata.Object
 		oeNode = await azdata.objectexplorer.getNode(connectionContext.connectionProfile.id, connectionContext.nodeInfo.nodePath);
 	}
 	else {
+		Telemetry.sendTelemetryEventForError('NoOENode', { action: action });
 		vscode.window.showErrorMessage(localize('adminToolExtWin.noOENode', 'Could not determine Object Explorer node from connectionContext : {0}', JSON.stringify(connectionContext)));
 		return;
 	}
 
-	const urn: string = await buildUrn(connectionContext.connectionProfile.serverName, oeNode);
+	const urn: string = await buildUrn(oeNode);
 	let password: string = connectionContext.connectionProfile.password;
 
 	if (!password || password === '') {
@@ -193,7 +179,15 @@ async function launchSsmsDialog(action: string, connectionContext: azdata.Object
 
 	const args = buildSsmsMinCommandArgs(params);
 
-	Telemetry.sendTelemetryEvent('LaunchSsmsDialog', { 'action': action });
+	Telemetry.sendTelemetryEvent('LaunchSsmsDialog',
+		{
+			action: action,
+			nodeType: oeNode ? oeNode.nodeType : 'Server',
+			authType: connectionContext.connectionProfile.authenticationType
+		});
+
+	vscode.window.setStatusBarMessage(localize('adminToolExtWin.launchingDialogStatus', 'Launching dialog...'), 3000);
+
 	// This will be an async call since we pass in the callback
 	const proc: ChildProcess = exec(
 		/*command*/ `"${exePath}" ${args}`,
@@ -201,11 +195,12 @@ async function launchSsmsDialog(action: string, connectionContext: azdata.Object
 		(execException, stdout, stderr) => {
 			// Process has exited so remove from map of running processes
 			runningProcesses.delete(proc.pid);
+			const err = stderr.toString();
 			Telemetry.sendTelemetryEvent('LaunchSsmsDialogResult', {
-				'action': params.action,
-				'returnCode': execException && execException.code ? execException.code.toString() : '0'
+				action: params.action,
+				returnCode: execException && execException.code ? execException.code.toString() : '0',
+				errorType: getTelemetryErrorType(err)
 			});
-			let err = stderr.toString();
 			if (err !== '') {
 				vscode.window.showErrorMessage(localize(
 					'adminToolExtWin.ssmsMinError',
@@ -232,17 +227,16 @@ export function buildSsmsMinCommandArgs(params: LaunchSsmsDialogParams): string 
 	return `${params.action ? '-a "' + backEscapeDoubleQuotes(params.action) + '"' : ''}\
 ${params.server ? ' -S "' + backEscapeDoubleQuotes(params.server) + '"' : ''}\
 ${params.database ? ' -D "' + backEscapeDoubleQuotes(params.database) + '"' : ''}\
-${params.useAad !== true && params.user ? ' -U "' + backEscapeDoubleQuotes(params.user) + '"' : ''}\
+${params.user ? ' -U "' + backEscapeDoubleQuotes(params.user) + '"' : ''}\
 ${params.useAad === true ? ' -G' : ''}\
 ${params.urn ? ' -u "' + backEscapeDoubleQuotes(params.urn) + '"' : ''}`;
 }
 
 /**
  * Builds the URN string for a given ObjectExplorerNode in the form understood by SsmsMin
- * @param serverName The name of the Server to use for the Server segment
  * @param node The node to get the URN of
  */
-export async function buildUrn(serverName: string, node: azdata.objectexplorer.ObjectExplorerNode): Promise<string> {
+export async function buildUrn(node: azdata.objectexplorer.ObjectExplorerNode): Promise<string> {
 	let urnNodes: string[] = [];
 	while (node) {
 		// Server is special since it's a connection node - always add it as the root
@@ -258,5 +252,6 @@ export async function buildUrn(serverName: string, node: azdata.objectexplorer.O
 		}
 		node = await node.getParent();
 	}
-	return [`Server[@Name='${doubleEscapeSingleQuotes(serverName)}']`].concat(urnNodes).join('/');
+
+	return ['Server'].concat(urnNodes).join('/');
 }

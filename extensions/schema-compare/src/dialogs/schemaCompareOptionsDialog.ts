@@ -249,8 +249,12 @@ export class SchemaCompareOptionsDialog {
 
 	private descriptionHeading: azdata.TableComponent;
 	private descriptionText: azdata.TextComponent;
-	private generaloptionsCheckBoxes: azdata.CheckBoxComponent[] = [];
-	private objectTypesCheckBoxes: azdata.CheckBoxComponent[] = [];
+	private optionsTable: azdata.TableComponent;
+	private objectsTable: azdata.TableComponent;
+	private optionsLookup = {};
+	private objectsLookup = {};
+	private disposableListeners: vscode.Disposable[] = [];
+
 	private excludedObjectTypes: azdata.SchemaObjectType[] = [];
 
 	private optionsLabels: string[] = [
@@ -436,9 +440,11 @@ export class SchemaCompareOptionsDialog {
 	protected async execute() {
 		this.SetDeploymentOptions();
 		this.SetObjectTypeOptions();
+		this.disposeListeners();
 	}
 
 	protected async cancel() {
+		this.disposeListeners();
 	}
 
 	private async reset() {
@@ -446,22 +452,17 @@ export class SchemaCompareOptionsDialog {
 		let result = await service.schemaCompareGetDefaultOptions();
 		this.deploymentOptions = result.defaultDeploymentOptions;
 
-		this.generaloptionsCheckBoxes.forEach(option => {
-			option.checked = this.GetSchemaCompareOptionUtil(option.label);
-		});
-		this.objectTypesCheckBoxes.forEach(obj => {
-			obj.checked = this.GetSchemaCompareIncludedObjectsUtil(obj.label);
-		});
+		this.updateOptionsTable();
+		this.optionsFlexBuilder.removeItem(this.optionsTable);
+		this.optionsFlexBuilder.insertItem(this.optionsTable, 0, { CSSStyles: { 'overflow': 'scroll', 'height': '65vh' } });
+
+		this.updateObjectsTable();
+		this.objectTypesFlexBuilder.removeItem(this.objectsTable);
+		this.objectTypesFlexBuilder.addItem(this.objectsTable, { CSSStyles: { 'overflow': 'scroll', 'height': '80vh' } });
 	}
 
 	private async initializeSchemaCompareOptionsDialogTab() {
 		this.generalOptionsTab.registerContent(async view => {
-
-			this.optionsFlexBuilder = view.modelBuilder.flexContainer()
-				.withLayout({
-					flexFlow: 'column',
-					height: 760,
-				}).component();
 
 			this.descriptionHeading = view.modelBuilder.table().withProperties({
 				columns: [
@@ -469,30 +470,43 @@ export class SchemaCompareOptionsDialog {
 						value: 'Option Description',
 						headerCssClass: 'no-borders',
 						toolTip: 'Option Description'
-					},
-				],
-				height: 30
+					}
+				]
 			}).component();
 
 			this.descriptionText = view.modelBuilder.text().withProperties({
-				value: ' ',
-				height: 100
+				value: ' '
 			}).component();
 
-			this.GetGeneralOptionCheckBoxes(view);
-			this.generaloptionsCheckBoxes.forEach(box => {
-				this.optionsFlexBuilder.addItem(box);
-			});
 
-			let uberOptionsFlexBuilder = view.modelBuilder.flexContainer()
+			this.optionsTable = view.modelBuilder.table().component();
+			this.updateOptionsTable();
+
+			this.disposableListeners.push(this.optionsTable.onRowSelected(async () => {
+				let row = this.optionsTable.selectedRows[0];
+				let label = this.optionsLabels[row];
+				this.descriptionText.updateProperties({
+					value: this.GetDescription(label)
+				});
+			}));
+
+			this.disposableListeners.push(this.optionsTable.onCellAction(async (rowState) => {
+				let checkboxState = <azdata.ICheckboxCellActionEventArgs>rowState;
+				if (checkboxState && checkboxState.row !== undefined) {
+					let label = this.optionsLabels[checkboxState.row];
+					this.optionsLookup[label] = checkboxState.checked;
+				}
+			}));
+
+			this.optionsFlexBuilder = view.modelBuilder.flexContainer()
 				.withLayout({
-					flexFlow: 'column',
+					flexFlow: 'column'
 				}).component();
 
-			uberOptionsFlexBuilder.addItem(this.optionsFlexBuilder, { CSSStyles: { 'overflow': 'scroll' } });
-			uberOptionsFlexBuilder.addItem(this.descriptionHeading, { CSSStyles: { 'font-weight': 'bold' } });
-			uberOptionsFlexBuilder.addItem(this.descriptionText, { CSSStyles: { 'padding': '4px' } });
-			await view.initializeModel(uberOptionsFlexBuilder);
+			this.optionsFlexBuilder.addItem(this.optionsTable, { CSSStyles: { 'overflow': 'scroll', 'height': '65vh' } });
+			this.optionsFlexBuilder.addItem(this.descriptionHeading, { CSSStyles: { 'font-weight': 'bold', 'height': '30px' } });
+			this.optionsFlexBuilder.addItem(this.descriptionText, { CSSStyles: { 'padding': '4px', 'margin-right': '10px', 'overflow': 'scroll', 'height': '10vh' } });
+			await view.initializeModel(this.optionsFlexBuilder);
 		});
 	}
 
@@ -501,56 +515,104 @@ export class SchemaCompareOptionsDialog {
 
 			this.objectTypesFlexBuilder = view.modelBuilder.flexContainer()
 				.withLayout({
-					flexFlow: 'column',
-					height: 900
+					flexFlow: 'column'
 				}).component();
 
-			this.GetObjectTypesCheckBoxes(view);
-			this.objectTypesCheckBoxes.forEach(b => {
-				this.objectTypesFlexBuilder.addItem(b);
-			});
+			this.objectsTable = view.modelBuilder.table().component();
+			this.updateObjectsTable();
 
-			let uberOptionsFlexBuilder = view.modelBuilder.flexContainer()
-				.withLayout({
-					flexFlow: 'column',
-				}).component();
+			this.disposableListeners.push(this.objectsTable.onCellAction(async (rowState) => {
+				let checkboxState = <azdata.ICheckboxCellActionEventArgs>rowState;
+				if (checkboxState && checkboxState.row !== undefined) {
+					let label = this.objectTypeLabels[checkboxState.row];
+					this.objectsLookup[label] = checkboxState.checked;
+				}
+			}));
 
-			uberOptionsFlexBuilder.addItem(this.objectTypesFlexBuilder, { CSSStyles: { 'overflow': 'scroll' } });
+			this.objectTypesFlexBuilder.addItem(this.objectsTable, { CSSStyles: { 'overflow': 'scroll', 'height': '80vh' } });
 
-			await view.initializeModel(uberOptionsFlexBuilder);
+			await view.initializeModel(this.objectTypesFlexBuilder);
 		});
 	}
 
-	private GetGeneralOptionCheckBoxes(view: azdata.ModelView) {
+	private disposeListeners(): void {
+		if (this.disposableListeners) {
+			this.disposableListeners.forEach(x => x.dispose());
+		}
+	}
+
+	private updateOptionsTable(): void {
+		let data = this.getOptionsData();
+		this.optionsTable.updateProperties({
+			data: data,
+			columns: [
+				{
+					value: 'Include',
+					type: azdata.ColumnType.checkBox,
+					options: { actionOnCheckbox: azdata.ActionOnCellCheckboxCheck.customAction },
+					headerCssClass: 'display-none',
+					cssClass: 'no-borders align-with-header',
+					width: 50
+				},
+				{
+					value: 'Option Name',
+					headerCssClass: 'display-none',
+					cssClass: 'no-borders align-with-header',
+					width: 50
+				}
+			]
+		});
+	}
+
+	private updateObjectsTable(): void {
+		let data = this.getObjectsData();
+		this.objectsTable.updateProperties({
+			data: data,
+			columns: [
+				{
+					value: 'Include',
+					type: azdata.ColumnType.checkBox,
+					options: { actionOnCheckbox: azdata.ActionOnCellCheckboxCheck.customAction },
+					headerCssClass: 'display-none',
+					cssClass: 'no-borders align-with-header',
+					width: 50
+				},
+				{
+					value: 'Option Name',
+					headerCssClass: 'display-none',
+					cssClass: 'no-borders align-with-header',
+					width: 50
+				}
+			]
+		});
+	}
+
+	private getOptionsData(): string[][] {
+		let data = [];
+		this.optionsLookup = {};
 		this.optionsLabels.forEach(l => {
-			let box: azdata.CheckBoxComponent = view.modelBuilder.checkBox().withProperties({
-				checked: this.GetSchemaCompareOptionUtil(l),
-				label: l,
-			}).component();
-
-			box.onChanged(() => {
-				this.descriptionText.updateProperties({
-					value: this.GetDescription(box.label)
-				});
-			});
-			this.generaloptionsCheckBoxes.push(box);
+			let checked: boolean = this.GetSchemaCompareOptionUtil(l);
+			data.push([checked, l]);
+			this.optionsLookup[l] = checked;
 		});
+		return data;
 	}
 
-	private GetObjectTypesCheckBoxes(view: azdata.ModelView) {
+	private getObjectsData(): string[][] {
+		let data = [];
+		this.objectsLookup = {};
 		this.objectTypeLabels.forEach(l => {
-			let box: azdata.CheckBoxComponent = view.modelBuilder.checkBox().withProperties({
-				checked: this.GetSchemaCompareIncludedObjectsUtil(l),
-				label: l
-			}).component();
-			this.objectTypesCheckBoxes.push(box);
+			let checked: boolean = this.GetSchemaCompareIncludedObjectsUtil(l);
+			data.push([checked, l]);
+			this.objectsLookup[l] = checked;
 		});
+		return data;
 	}
 
 	private SetDeploymentOptions() {
-		this.generaloptionsCheckBoxes.forEach(box => {
-			this.SetSchemaCompareOptionUtil(box.label, box.checked);
-		});
+		for (let option in this.optionsLookup) {
+			this.SetSchemaCompareOptionUtil(option, this.optionsLookup[option]);
+		}
 	}
 
 	private SetSchemaCompareOptionUtil(label: string, value: boolean) {
@@ -1020,9 +1082,9 @@ export class SchemaCompareOptionsDialog {
 	}
 
 	private SetObjectTypeOptions() {
-		this.objectTypesCheckBoxes.forEach(box => {
-			this.SetSchemaCompareIncludedObjectsUtil(box.label, box.checked);
-		});
+		for (let option in this.objectsLookup) {
+			this.SetSchemaCompareIncludedObjectsUtil(option, this.objectsLookup[option]);
+		}
 		this.deploymentOptions.excludeObjectTypes = this.excludedObjectTypes;
 	}
 

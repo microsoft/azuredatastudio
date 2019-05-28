@@ -214,4 +214,8 @@ suite('SQL ConnectionProfileInfo tests', () => {
 		assert.notEqual(newProfile.id, conn.id);
 		assert.equal(newProfile.databaseName, 'new db');
 	});
+
+	test('an empty connection profile does not cause issues', () => {
+		assert.doesNotThrow(() => new ConnectionProfile(capabilitiesService, {} as IConnectionProfile));
+	});
 });

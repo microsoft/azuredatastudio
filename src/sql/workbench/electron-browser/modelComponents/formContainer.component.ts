@@ -50,7 +50,7 @@ class FormItem {
 			<div class="form-row" *ngIf="isFormComponent(item)" [style.height]="getRowHeight(item)">
 
 					<ng-container *ngIf="isHorizontal(item)">
-						<div class="form-cell" [style.font-size]="getItemTitleFontSize(item)" [ngClass]="{'form-group-item': isInGroup(item)}">
+						<div *ngIf="hasItemTitle(item)" class="form-cell form-cell-title" [style.font-size]="getItemTitleFontSize(item)" [ngClass]="{'form-group-item': isInGroup(item)}">
 							{{getItemTitle(item)}}<span class="form-required" *ngIf="isItemRequired(item)">*</span>
 							<span class="icon help form-info" *ngIf="itemHasInfo(item)" [title]="getItemInfo(item)"></span>
 						</div>
@@ -173,6 +173,10 @@ export default class FormContainer extends ContainerBase<FormItemLayout> impleme
 	private getItemTitle(item: FormItem): string {
 		let itemConfig = item.config;
 		return itemConfig ? itemConfig.title : '';
+	}
+
+	private hasItemTitle(item: FormItem): boolean {
+		return this.getItemTitle(item) !== '';
 	}
 
 	private getItemTitleFontSize(item: FormItem): string {

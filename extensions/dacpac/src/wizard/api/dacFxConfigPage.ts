@@ -148,7 +148,7 @@ export abstract class DacFxConfigPage extends BasePage {
 	}
 
 	protected generateFilePathFromDatabaseAndTimestamp(): string {
-		return path.join(this.getRootPath(), sanitizeStringForFilename(this.model.database) + '-' + this.getDateTime() + this.fileExtension);
+		return this.model.database ? path.join(this.getRootPath(), sanitizeStringForFilename(this.model.database) + '-' + this.getDateTime() + this.fileExtension) : '';
 	}
 
 	protected getDateTime(): string {

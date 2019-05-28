@@ -17,7 +17,6 @@ import { localize } from 'vs/nls';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { mixin } from 'vs/base/common/objects';
 import * as strings from 'vs/base/common/strings';
-import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import * as DOM from 'vs/base/browser/dom';
 
 import * as azdata from 'azdata';
@@ -43,6 +42,7 @@ import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { IFileBrowserDialogController } from 'sql/workbench/services/fileBrowser/common/fileBrowserDialogController';
 import { ILogService } from 'vs/platform/log/common/log';
+import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 
 interface FileListElement {
 	logicalFileName: string;
@@ -129,7 +129,7 @@ export class RestoreDialog extends Modal {
 
 	constructor(
 		optionsMetadata: azdata.ServiceOption[],
-		@ILayoutService layoutService: ILayoutService,
+		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
 		@IThemeService themeService: IThemeService,
 		@IContextViewService private _contextViewService: IContextViewService,
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -336,7 +336,8 @@ export class RestoreDialog extends Modal {
 				render: c => {
 					DOM.append(c, generalTab);
 				},
-				layout: () => { }
+				layout: () => { },
+				focus: () => generalTab.focus()
 			}
 		});
 
@@ -347,7 +348,8 @@ export class RestoreDialog extends Modal {
 				layout: () => { },
 				render: c => {
 					c.appendChild(fileContentElement);
-				}
+				},
+				focus: () => fileContentElement.focus()
 			}
 		});
 
@@ -358,7 +360,8 @@ export class RestoreDialog extends Modal {
 				layout: () => { },
 				render: c => {
 					c.appendChild(optionsContentElement);
-				}
+				},
+				focus: () => optionsContentElement.focus()
 			}
 		});
 

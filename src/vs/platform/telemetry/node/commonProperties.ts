@@ -10,8 +10,9 @@ import { readFile } from 'vs/base/node/pfs';
 
 // {{SQL CARBON EDIT}}
 import product from 'vs/platform/product/node/product';
+const productObject = product;
 
-export function resolveCommonProperties(commit: string | undefined, version: string | undefined, machineId: string | undefined, installSourcePath: string): Promise<{ [name: string]: string | undefined; }> {
+export async function resolveCommonProperties(commit: string | undefined, version: string | undefined, machineId: string | undefined, installSourcePath: string, product?: string): Promise<{ [name: string]: string | undefined; }> {
 	const result: { [name: string]: string | undefined; } = Object.create(null);
 
 	// {{SQL CARBON EDIT}}
@@ -36,8 +37,8 @@ export function resolveCommonProperties(commit: string | undefined, version: str
 	result['common.nodeArch'] = process.arch;
 	// __GDPR__COMMON__ "common.product" : { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" }
 	// {{SQL CARBON EDIT}}
-	result['common.product'] = product.nameShort || 'desktop';
-	result['common.application.name'] = product.nameLong;
+	result['common.product'] = productObject.nameShort || 'desktop';
+	result['common.application.name'] = productObject.nameLong;
 
 	// dynamic properties which value differs on each call
 	let seq = 0;
@@ -65,13 +66,14 @@ export function resolveCommonProperties(commit: string | undefined, version: str
 		result['common.snap'] = 'true';
 	}
 
-	return readFile(installSourcePath, 'utf8').then(contents => {
+	try {
+		const contents = await readFile(installSourcePath, 'utf8');
 
 		// __GDPR__COMMON__ "common.source" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 		result['common.source'] = contents.slice(0, 30);
+	} catch (error) {
+		// ignore error
+	}
 
-		return result;
-	}, error => {
-		return result;
-	});
+	return result;
 }

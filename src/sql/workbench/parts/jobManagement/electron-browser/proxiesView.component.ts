@@ -198,10 +198,10 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit, O
 	}
 
 	protected getTableActions(): IAction[] {
-		let actions: IAction[] = [];
-		actions.push(this._instantiationService.createInstance(EditProxyAction));
-		actions.push(this._instantiationService.createInstance(DeleteProxyAction));
-		return actions;
+		return [
+			this._instantiationService.createInstance(EditProxyAction),
+			this._instantiationService.createInstance(DeleteProxyAction)
+		];
 	}
 
 	protected getCurrentTableObject(rowIndex: number): any {
@@ -221,9 +221,9 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit, O
 
 	public openCreateProxyDialog() {
 		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
-		this._jobManagementService.getCredentials(ownerUri).then((result) => {
+		this._jobManagementService.getCredentials(ownerUri).then(async (result) => {
 			if (result && result.credentials) {
-				this._commandService.executeCommand('agent.openProxyDialog', ownerUri, undefined, result.credentials);
+				await this._commandService.executeCommand('agent.openProxyDialog', ownerUri, undefined, result.credentials);
 			}
 		});
 	}

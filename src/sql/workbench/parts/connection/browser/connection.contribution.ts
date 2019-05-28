@@ -11,6 +11,17 @@ import { ClearRecentConnectionsAction, GetCurrentConnectionStringAction } from '
 import { IWorkbenchActionRegistry, Extensions } from 'vs/workbench/common/actions';
 import { SyncActionDescriptor } from 'vs/platform/actions/common/actions';
 import { localize } from 'vs/nls';
+import * as statusbar from 'vs/workbench/browser/parts/statusbar/statusbar';
+import { StatusbarAlignment } from 'vs/platform/statusbar/common/statusbar';
+import { ConnectionStatusbarItem } from 'sql/workbench/parts/connection/browser/connectionStatus';
+
+
+// Register Statusbar item
+(<statusbar.IStatusbarRegistry>Registry.as(statusbar.Extensions.Statusbar)).registerStatusbarItem(new statusbar.StatusbarItemDescriptor(
+	ConnectionStatusbarItem,
+	StatusbarAlignment.RIGHT,
+	100 /* High Priority */
+));
 
 // Connection Dashboard registration
 

@@ -7,11 +7,12 @@ import { SqlExtHostContext, SqlMainContext, ExtHostQueryEditorShape, MainThreadQ
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionType, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
-import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { QueryEditor } from 'sql/workbench/parts/query/browser/queryEditor';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { dispose, IDisposable } from 'vs/base/common/lifecycle';
-import { IQueryModelService, IQueryEvent } from 'sql/platform/query/common/queryModel';
+import { IQueryModelService } from 'sql/platform/query/common/queryModel';
+import * as azdata from 'azdata';
+import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadQueryEditor)
 export class MainThreadQueryEditor implements MainThreadQueryEditorShape {
@@ -22,9 +23,9 @@ export class MainThreadQueryEditor implements MainThreadQueryEditorShape {
 	constructor(
 		extHostContext: IExtHostContext,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@IQueryEditorService private _queryEditorService: IQueryEditorService,
 		@IQueryModelService private _queryModelService: IQueryModelService,
-		@IEditorService private _editorService: IEditorService
+		@IEditorService private _editorService: IEditorService,
+		@IQueryManagementService private _queryManagementService: IQueryManagementService
 	) {
 		if (extHostContext) {
 			this._proxy = extHostContext.getProxy(SqlExtHostContext.ExtHostQueryEditor);
@@ -95,5 +96,9 @@ export class MainThreadQueryEditor implements MainThreadQueryEditorShape {
 				queryEditor.registerQueryModelViewTab(title, componentId);
 			}
 		}
+	}
+
+	public $setQueryExecutionOptions(fileUri: string, options: azdata.QueryExecutionOptions): Thenable<void> {
+		return this._queryManagementService.setQueryExecutionOptions(fileUri, options);
 	}
 }

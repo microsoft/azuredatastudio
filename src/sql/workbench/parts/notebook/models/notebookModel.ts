@@ -16,7 +16,7 @@ import * as notebookUtils from '../notebookUtils';
 import { INotebookManager, SQL_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/common/notebookService';
 import { NotebookContexts } from 'sql/workbench/parts/notebook/models/notebookContexts';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { INotification, Severity } from 'vs/platform/notification/common/notification';
+import { INotification, Severity, INotificationService } from 'vs/platform/notification/common/notification';
 import { URI } from 'vs/base/common/uri';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
@@ -72,11 +72,13 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _oldKernel: nb.IKernel;
 	private _clientSessionListeners: IDisposable[] = [];
 	private _connectionUrisToDispose: string[] = [];
+	public requestConnectionHandler: () => Promise<boolean>;
 
 	constructor(
 		private _notebookOptions: INotebookModelOptions,
 		public connectionProfile: IConnectionProfile | undefined,
-		@ILogService private readonly logService: ILogService
+		@ILogService private readonly logService: ILogService,
+		@INotificationService private readonly notificationService: INotificationService
 	) {
 		super();
 		if (!_notebookOptions || !_notebookOptions.notebookUri || !_notebookOptions.notebookManagers) {
@@ -235,6 +237,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				c.trustedMode = this._trustedMode;
 			});
 		}
+		this._contentChangedEmitter.fire({
+			changeType: NotebookChangeType.TrustChanged
+		});
 	}
 
 	public get activeConnection(): IConnectionProfile {
@@ -296,6 +301,15 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			this._inErrorState = true;
 			throw error;
 		}
+	}
+
+	public async requestConnection(): Promise<boolean> {
+		if (this.requestConnectionHandler) {
+			return this.requestConnectionHandler();
+		} else if (this.notificationService) {
+			this.notificationService.notify({ severity: Severity.Error, message: localize('kernelRequiresConnection', "Please select a connection to run cells for this kernel") });
+		}
+		return false;
 	}
 
 	public findCellIndex(cellModel: ICellModel): number {

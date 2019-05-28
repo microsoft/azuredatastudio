@@ -294,11 +294,6 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 
 // Intellisense and other configuration options
 let registryProperties = {
-	'sql.messagesDefaultOpen': {
-		'type': 'boolean',
-		'description': localize('sql.messagesDefaultOpen', 'True for the messages pane to be open by default; false for closed'),
-		'default': true
-	},
 	'sql.saveAsCsv.includeHeaders': {
 		'type': 'boolean',
 		'description': localize('sql.saveAsCsv.includeHeaders', '[Optional] When true, column headers are included when saving results as CSV'),
@@ -404,6 +399,116 @@ let registryProperties = {
 		'type': 'boolean',
 		'default': false,
 		'description': localize('mssql.intelliSense.lowerCaseSuggestions', 'Should IntelliSense suggestions be lowercase')
+	},
+	'mssql.query.rowCount': {
+		'type': 'number',
+		'default': 0,
+		'description': localize('mssql.query.setRowCount', 'Maximum number of rows to return before the server stops processing your query.')
+	},
+	'mssql.query.textSize': {
+		'type': 'number',
+		'default': 2147483647,
+		'description': localize('mssql.query.textSize', 'Maximum size of text and ntext data returned from a SELECT statement')
+	},
+	'mssql.query.executionTimeout': {
+		'type': 'number',
+		'default': 0,
+		'description': localize('mssql.query.executionTimeout', 'An execution time-out of 0 indicates an unlimited wait (no time-out)')
+	},
+	'mssql.query.noCount': {
+		'type': 'boolean',
+		'default': false,
+		'description': localize('mssql.query.noCount', 'Enable SET NOCOUNT option')
+	},
+	'mssql.query.noExec': {
+		'type': 'boolean',
+		'default': false,
+		'description': localize('mssql.query.noExec', 'Enable SET NOEXEC option')
+	},
+	'mssql.query.parseOnly': {
+		'type': 'boolean',
+		'default': false,
+		'description': localize('mssql.query.parseOnly', 'Enable SET PARSEONLY option')
+	},
+	'mssql.query.arithAbort': {
+		'type': 'boolean',
+		'default': false,
+		'description': localize('mssql.query.arithAbort', 'Enable SET ARITHABORT option')
+	},
+	'mssql.query.statisticsTime': {
+		'type': 'boolean',
+		'default': false,
+		'description': localize('mssql.query.statisticsTime', 'Enable SET STATISTICS TIME option')
+	},
+	'mssql.query.statisticsIO': {
+		'type': 'boolean',
+		'default': false,
+		'description': localize('mssql.query.statisticsIO', 'Enable SET STATISTICS IO option')
+	},
+	'mssql.query.xactAbortOn': {
+		'type': 'boolean',
+		'default': false,
+		'description': localize('mssql.query.xactAbortOn', 'Enable SET XACT_ABORT ON option')
+	},
+	'mssql.query.transactionIsolationLevel': {
+		'enum': ['READ COMMITTED', 'READ UNCOMMITTED', 'REPEATABLE READ', 'SERIALIZABLE'],
+		'default': 'READ COMMITTED',
+		'description': localize('mssql.query.transactionIsolationLevel', 'Enable SET TRANSACTION ISOLATION LEVEL option')
+	},
+	'mssql.query.deadlockPriority': {
+		'enum': ['Normal', 'Low'],
+		'default': 'Normal',
+		'description': localize('mssql.query.deadlockPriority', 'Enable SET DEADLOCK_PRIORITY option')
+	},
+	'mssql.query.lockTimeout': {
+		'type': 'number',
+		'default': -1,
+		'description': localize('mssql.query.lockTimeout', 'Enable SET LOCK TIMEOUT option (in milliseconds)')
+	},
+	'mssql.query.queryGovernorCostLimit': {
+		'type': 'number',
+		'default': -1,
+		'description': localize('mssql.query.queryGovernorCostLimit', 'Enable SET QUERY_GOVERNOR_COST_LIMIT')
+	},
+	'mssql.query.ansiDefaults': {
+		'type': 'boolean',
+		'default': false,
+		'description': localize('mssql.query.ansiDefaults', 'Enable SET ANSI_DEFAULTS')
+	},
+	'mssql.query.quotedIdentifier': {
+		'type': 'boolean',
+		'default': true,
+		'description': localize('mssql.query.quotedIdentifier', 'Enable SET QUOTED_IDENTIFIER')
+	},
+	'mssql.query.ansiNullDefaultOn': {
+		'type': 'boolean',
+		'default': true,
+		'description': localize('mssql.query.ansiNullDefaultOn', 'Enable SET ANSI_NULL_DFLT_ON')
+	},
+	'mssql.query.implicitTransactions': {
+		'type': 'boolean',
+		'default': false,
+		'description': localize('mssql.query.implicitTransactions', 'Enable SET IMPLICIT_TRANSACTIONS')
+	},
+	'mssql.query.cursorCloseOnCommit': {
+		'type': 'boolean',
+		'default': false,
+		'description': localize('mssql.query.cursorCloseOnCommit', 'Enable SET CURSOR_CLOSE_ON_COMMIT')
+	},
+	'mssql.query.ansiPadding': {
+		'type': 'boolean',
+		'default': true,
+		'description': localize('mssql.query.ansiPadding', 'Enable SET ANSI_PADDING')
+	},
+	'mssql.query.ansiWarnings': {
+		'type': 'boolean',
+		'default': true,
+		'description': localize('mssql.query.ansiWarnings', 'Enable SET ANSI_WARNINGS')
+	},
+	'mssql.query.ansiNulls': {
+		'type': 'boolean',
+		'default': true,
+		'description': localize('mssql.query.ansiNulls', 'Enable SET ANSI_NULLS')
 	}
 };
 

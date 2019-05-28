@@ -44,7 +44,14 @@ export function packageBuiltInExtensions() {
 		.filter(({ name }) => builtInExtensions.every(b => b.name !== name))
 		.filter(({ name }) => sqlBuiltInExtensions.indexOf(name) >= 0);
 	const visxDirectory = path.join(path.dirname(root), 'vsix');
-	fs.mkdirSync(visxDirectory);
+	try {
+		if (!fs.existsSync(visxDirectory)) {
+			fs.mkdirSync(visxDirectory);
+		}
+	} catch (err) {
+		// don't fail the build if the output directory already exists
+		console.warn(err);
+	}
 	sqlBuiltInLocalExtensionDescriptions.forEach(element => {
 		let pkgJson = JSON.parse(fs.readFileSync(path.join(element.path, 'package.json'), { encoding: 'utf8' }));
 		const packagePath = path.join(visxDirectory, `${pkgJson.name}-${pkgJson.version}.vsix`);
@@ -370,8 +377,6 @@ export function packageExtensionsStream(optsIn?: IPackageExtensionsOptions): Nod
 
 	const localExtensionDependencies = () => gulp.src(extensionDepsSrc, { base: '.', dot: true })
 		.pipe(filter(['**', '!**/package-lock.json']))
-		.pipe(util2.cleanNodeModule('account-provider-azure', ['node_modules/date-utils/doc/**', 'node_modules/adal_node/node_modules/**'], undefined))
-		.pipe(util2.cleanNodeModule('typescript', ['**/**'], undefined));
 
 	// Original code commented out here
 	// const localExtensionDependencies = () => gulp.src('extensions/node_modules/**', { base: '.' });
