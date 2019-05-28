@@ -155,6 +155,10 @@ export class GridPanel {
 		this.currentHeight = size.height;
 	}
 
+	public focus(): void {
+		// will need to add logic to save the focused grid and focus that
+	}
+
 	public set queryRunner(runner: QueryRunner) {
 		dispose(this.queryRunnerDisposables);
 		this.reset();

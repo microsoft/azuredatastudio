@@ -110,7 +110,7 @@ export class QueryEditor extends BaseEditor {
 		this.splitview.addView({
 			element: this.textEditorContainer,
 			layout: size => this.textEditor.layout(new DOM.Dimension(this.dimension.width, size)),
-			minimumSize: 220,
+			minimumSize: 0,
 			maximumSize: Number.POSITIVE_INFINITY,
 			onDidChange: Event.None
 		}, Sizing.Distribute);
@@ -336,7 +336,7 @@ export class QueryEditor extends BaseEditor {
 			this.splitview.addView({
 				element: this.resultsEditorContainer,
 				layout: size => this.resultsEditor && this.resultsEditor.layout(new DOM.Dimension(this.dimension.width, size)),
-				minimumSize: 220,
+				minimumSize: 0,
 				maximumSize: Number.POSITIVE_INFINITY,
 				onDidChange: Event.None
 			}, Sizing.Distribute);

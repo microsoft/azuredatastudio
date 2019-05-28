@@ -94,6 +94,7 @@ export class MessagePanel extends Disposable {
 			renderer: this.renderer,
 			controller: this.controller
 		}, { keyboardSupport: false, horizontalScrollMode: ScrollbarVisibility.Auto }));
+		this.tree.setInput(this.model);
 		this.tree.onDidScroll(e => {
 			// convert to old VS Code tree interface with expandable methods
 			let expandableTree: IExpandableTree = <IExpandableTree>this.tree;
@@ -158,7 +159,6 @@ export class MessagePanel extends Disposable {
 		this.container.style.height = '100%';
 		this._register(attachListStyler(this.tree, this.themeService));
 		container.appendChild(this.container);
-		this.tree.setInput(this.model);
 	}
 
 	public layout(size: Dimension): void {
@@ -174,6 +174,11 @@ export class MessagePanel extends Disposable {
 				expandableTree.setScrollPosition(1);
 			}
 		}
+	}
+
+	public focus(): void {
+		this.tree.refresh();
+		this.tree.domFocus();
 	}
 
 	public set queryRunner(runner: QueryRunner) {
