@@ -32,6 +32,8 @@ import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/un
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { viewColumnToEditorGroup } from 'vs/workbench/api/common/shared/editor';
 import { localize } from 'vs/nls';
+import { UntitledNotebookInput } from 'sql/workbench/parts/notebook/common/models/untitledNotebookInput';
+import { FileNotebookInput } from 'sql/workbench/parts/notebook/common/models/fileNotebookInput';
 
 class MainThreadNotebookEditor extends Disposable {
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
@@ -452,11 +454,16 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 
 		const fileInput = isUntitled ? this._untitledEditorService.createOrGet(uri, 'notebook', options.initialContent) :
 			this._editorService.createInput({ resource: uri, mode: 'notebook' });
-		let input = this._instantiationService.createInstance(NotebookInput, path.basename(uri.fsPath), uri, fileInput);
+		let input: NotebookInput;
+		if (isUntitled) {
+			input = this._instantiationService.createInstance(UntitledNotebookInput, path.basename(uri.fsPath), uri, fileInput);
+		} else {
+			input = this._instantiationService.createInstance(FileNotebookInput, path.basename(uri.fsPath), uri, fileInput);
+		}
 		input.defaultKernel = options.defaultKernel;
 		input.connectionProfile = new ConnectionProfile(this._capabilitiesService, options.connectionProfile);
 		if (isUntitled) {
-			let untitledModel = await input.textInput.resolve();
+			let untitledModel = await (input as UntitledNotebookInput).textInput.resolve();
 			await untitledModel.load();
 			input.untitledEditorModel = untitledModel;
 			if (options.initialDirtyState === false) {
