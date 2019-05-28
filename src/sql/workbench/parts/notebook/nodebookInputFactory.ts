@@ -7,44 +7,41 @@ import { IEditorInputFactory, IEditorInputFactoryRegistry, Extensions as EditorI
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
-import { QueryResultsInput } from 'sql/workbench/parts/query/common/queryResultsInput';
 import { FILE_EDITOR_INPUT_ID } from 'vs/workbench/contrib/files/common/files';
-import { UntitledQueryEditorInput } from 'sql/workbench/parts/query/common/untitledQueryEditorInput';
-import { FileQueryEditorInput } from 'sql/workbench/parts/query/common/fileQueryEditorInput';
+import { FileNotebookInput } from 'sql/workbench/parts/notebook/fileNotebookInput';
+import { UntitledNotebookInput } from 'sql/workbench/parts/notebook/untitledNotebookInput';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 
 const editorInputFactoryRegistry = Registry.as<IEditorInputFactoryRegistry>(EditorInputExtensions.EditorInputFactories);
 
-export class FileQueryEditorInputFactory implements IEditorInputFactory {
-	serialize(editorInput: FileQueryEditorInput): string {
+export class FileNoteBookEditorInputFactory implements IEditorInputFactory {
+	serialize(editorInput: FileNotebookInput): string {
 		const factory = editorInputFactoryRegistry.getEditorInputFactory(FILE_EDITOR_INPUT_ID);
 		if (factory) {
-			return factory.serialize(editorInput.text); // serialize based on the underlying input
+			return factory.serialize(editorInput.textInput); // serialize based on the underlying input
 		}
 		return undefined;
 	}
 
-	deserialize(instantiationService: IInstantiationService, serializedEditorInput: string): FileQueryEditorInput | undefined {
+	deserialize(instantiationService: IInstantiationService, serializedEditorInput: string): FileNotebookInput | undefined {
 		const factory = editorInputFactoryRegistry.getEditorInputFactory(FILE_EDITOR_INPUT_ID);
 		const fileEditorInput = factory.deserialize(instantiationService, serializedEditorInput) as FileEditorInput;
-		const queryResultsInput = instantiationService.createInstance(QueryResultsInput, fileEditorInput.getResource().toString());
-		return instantiationService.createInstance(FileQueryEditorInput, '', fileEditorInput, queryResultsInput, undefined);
+		return instantiationService.createInstance(FileNotebookInput, fileEditorInput.getName(), fileEditorInput.getResource(), fileEditorInput);
 	}
 }
 
-export class UntitledQueryEditorInputFactory implements IEditorInputFactory {
-	serialize(editorInput: UntitledQueryEditorInput): string {
+export class UntitledNoteBookEditorInputFactory implements IEditorInputFactory {
+	serialize(editorInput: UntitledNotebookInput): string {
 		const factory = editorInputFactoryRegistry.getEditorInputFactory(UntitledEditorInput.ID);
 		if (factory) {
-			return factory.serialize(editorInput.text); // serialize based on the underlying input
+			return factory.serialize(editorInput.textInput); // serialize based on the underlying input
 		}
 		return undefined;
 	}
 
-	deserialize(instantiationService: IInstantiationService, serializedEditorInput: string): UntitledQueryEditorInput | undefined {
+	deserialize(instantiationService: IInstantiationService, serializedEditorInput: string): UntitledNotebookInput | undefined {
 		const factory = editorInputFactoryRegistry.getEditorInputFactory(UntitledEditorInput.ID);
 		const untitledEditorInput = factory.deserialize(instantiationService, serializedEditorInput) as UntitledEditorInput;
-		const queryResultsInput = instantiationService.createInstance(QueryResultsInput, untitledEditorInput.getResource().toString());
-		return instantiationService.createInstance(UntitledQueryEditorInput, '', untitledEditorInput, queryResultsInput, undefined);
+		return instantiationService.createInstance(UntitledNotebookInput, untitledEditorInput.getName(), untitledEditorInput.getResource(), untitledEditorInput);
 	}
 }

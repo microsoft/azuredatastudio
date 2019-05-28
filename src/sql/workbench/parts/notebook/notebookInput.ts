@@ -139,8 +139,7 @@ export class NotebookEditorModel extends EditorModel {
 	}
 }
 
-export class NotebookInput extends EditorInput {
-	public static ID: string = 'workbench.editorinputs.notebookInput';
+export abstract class NotebookInput extends EditorInput {
 	private _providerId: string;
 	private _providers: string[];
 	private _standardKernels: IStandardKernelWithProvider[];
@@ -158,7 +157,7 @@ export class NotebookInput extends EditorInput {
 
 	constructor(private _title: string,
 		private resource: URI,
-		private _textInput: UntitledEditorInput,
+		private _textInput: EditorInput,
 		@ITextModelService private textModelService: ITextModelService,
 		@IInstantiationService private instantiationService: IInstantiationService,
 		@INotebookService private notebookService: INotebookService,
@@ -173,7 +172,7 @@ export class NotebookInput extends EditorInput {
 		}
 	}
 
-	public get textInput(): UntitledEditorInput {
+	public get textInput(): EditorInput {
 		return this._textInput;
 	}
 
@@ -255,9 +254,7 @@ export class NotebookInput extends EditorInput {
 		this._layoutChanged.fire();
 	}
 
-	public getTypeId(): string {
-		return NotebookInput.ID;
-	}
+	public abstract getTypeId(): string;
 
 	getResource(): URI {
 		return this.resource;

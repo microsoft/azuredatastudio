@@ -7,7 +7,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { IEditorInput } from 'vs/workbench/common/editor';
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 
-export type InputCreator = (servicesAccessor: ServicesAccessor, activeEditor: IEditorInput) => IEditorInput;
+export type InputCreator = (servicesAccessor: ServicesAccessor, activeEditor: IEditorInput) => IEditorInput | undefined;
 export type BaseInputCreator = (activeEditor: IEditorInput) => IEditorInput;
 
 export interface ILanguageAssociationRegistry {

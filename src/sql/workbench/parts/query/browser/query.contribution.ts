@@ -41,6 +41,7 @@ import { UntitledQueryEditorInput } from 'sql/workbench/parts/query/common/untit
 import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/common/languageAssociation';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { QueryEditorInput } from 'sql/workbench/parts/query/common/queryEditorInput';
+import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 
 const gridCommandsWeightBonus = 100; // give our commands a little bit more weight over other default list/tree commands
 
@@ -60,8 +61,10 @@ Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.Language
 		const queryResultsInput = instantiationService.createInstance(QueryResultsInput, editor.getResource().toString());
 		if (editor instanceof FileEditorInput) {
 			return instantiationService.createInstance(FileQueryEditorInput, '', editor, queryResultsInput, undefined);
-		} else {
+		} else if (editor instanceof UntitledEditorInput) {
 			return instantiationService.createInstance(UntitledQueryEditorInput, '', editor, queryResultsInput, undefined);
+		} else {
+			return undefined;
 		}
 	}, (editor: QueryEditorInput) => editor.text, true);
 
