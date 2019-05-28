@@ -444,7 +444,6 @@ export class SchemaCompareOptionsDialog {
 		if (this.optionsChanged) {
 			vscode.window.showInformationMessage(localize('schemaCompareOptions.recompareMessage', 'Options have changed. Press Compare to see the comparison.'));
 		}
-	}
 		this.disposeListeners();
 	}
 
@@ -501,6 +500,7 @@ export class SchemaCompareOptionsDialog {
 				if (checkboxState && checkboxState.row !== undefined) {
 					let label = this.optionsLabels[checkboxState.row];
 					this.optionsLookup[label] = checkboxState.checked;
+					this.optionsChanged = true;
 				}
 			}));
 
@@ -532,6 +532,7 @@ export class SchemaCompareOptionsDialog {
 				if (checkboxState && checkboxState.row !== undefined) {
 					let label = this.objectTypeLabels[checkboxState.row];
 					this.objectsLookup[label] = checkboxState.checked;
+					this.optionsChanged = true;
 				}
 			}));
 
