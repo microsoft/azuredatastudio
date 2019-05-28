@@ -7,6 +7,7 @@
 import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
+import { SchemaCompareResult } from '../schemaCompareResult';
 
 const localize = nls.loadMessageBundle();
 
@@ -14,6 +15,9 @@ export class SchemaCompareOptionsDialog {
 	private static readonly OkButtonText: string = localize('SchemaCompareOptionsDialog.Ok', 'Ok');
 	private static readonly CancelButtonText: string = localize('SchemaCompareOptionsDialog.Cancel', 'Cancel');
 	private static readonly ResetButtonText: string = localize('SchemaCompareOptionsDialog.Reset', 'Reset');
+	private static readonly YesButtonText: string = localize('SchemaCompareOptionsDialog.Yes', 'Yes');
+	private static readonly NoButtonText: string = localize('SchemaCompareOptionsDialog.No', 'No');
+	private static readonly OptionsChangedMessage: string = localize('schemaCompareOptions.RecompareMessage', 'Options have changed. Recompare to see the comparison?');
 	private static readonly OptionsLabel: string = localize('SchemaCompare.SchemaCompareOptionsDialogLabel', 'Schema Compare Options');
 	private static readonly GeneralOptionsLabel: string = localize('SchemaCompare.GeneralOptionsLabel', 'General Options');
 	private static readonly ObjectTypesOptionsLabel: string = localize('SchemaCompare.ObjectTypesOptionsLabel', 'Include Object Types');
@@ -256,6 +260,7 @@ export class SchemaCompareOptionsDialog {
 	private disposableListeners: vscode.Disposable[] = [];
 
 	private excludedObjectTypes: azdata.SchemaObjectType[] = [];
+	private optionsChanged: boolean = false;
 
 	private optionsLabels: string[] = [
 		SchemaCompareOptionsDialog.IgnoreTableOptions,
@@ -405,7 +410,7 @@ export class SchemaCompareOptionsDialog {
 		SchemaCompareOptionsDialog.ServerTriggers
 	].sort();
 
-	constructor(defaultOptions: azdata.DeploymentOptions) {
+	constructor(defaultOptions: azdata.DeploymentOptions, private schemaComparison: SchemaCompareResult) {
 		this.deploymentOptions = defaultOptions;
 	}
 
@@ -440,6 +445,13 @@ export class SchemaCompareOptionsDialog {
 	protected async execute() {
 		this.SetDeploymentOptions();
 		this.SetObjectTypeOptions();
+		if (this.optionsChanged) {
+			vscode.window.showWarningMessage(SchemaCompareOptionsDialog.OptionsChangedMessage, SchemaCompareOptionsDialog.YesButtonText, SchemaCompareOptionsDialog.NoButtonText).then((result) => {
+				if (result === SchemaCompareOptionsDialog.YesButtonText) {
+					this.schemaComparison.startCompare();
+				}
+			});
+		}
 		this.disposeListeners();
 	}
 
@@ -451,6 +463,7 @@ export class SchemaCompareOptionsDialog {
 		let service = await azdata.dataprotocol.getProvider<azdata.SchemaCompareServicesProvider>('MSSQL', azdata.DataProviderType.SchemaCompareServicesProvider);
 		let result = await service.schemaCompareGetDefaultOptions();
 		this.deploymentOptions = result.defaultDeploymentOptions;
+		this.optionsChanged = true;
 
 		this.updateOptionsTable();
 		this.optionsFlexBuilder.removeItem(this.optionsTable);
@@ -495,6 +508,7 @@ export class SchemaCompareOptionsDialog {
 				if (checkboxState && checkboxState.row !== undefined) {
 					let label = this.optionsLabels[checkboxState.row];
 					this.optionsLookup[label] = checkboxState.checked;
+					this.optionsChanged = true;
 				}
 			}));
 
@@ -526,6 +540,7 @@ export class SchemaCompareOptionsDialog {
 				if (checkboxState && checkboxState.row !== undefined) {
 					let label = this.objectTypeLabels[checkboxState.row];
 					this.objectsLookup[label] = checkboxState.checked;
+					this.optionsChanged = true;
 				}
 			}));
 
