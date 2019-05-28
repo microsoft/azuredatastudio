@@ -45,6 +45,7 @@ export class ResourceDeploymentDialog {
 	private initializeDialog() {
 		let tab = azdata.window.createTab('');
 		tab.registerContent((view: azdata.ModelView) => {
+			const tableWidth = 1126;
 			this._view = view;
 			this.resourceTypeService.getResourceTypes().forEach(resourceType => this.addCard(resourceType));
 			const cardsContainer = view.modelBuilder.flexContainer().withItems(this._resourceTypeCards, { flex: '0 0 auto', CSSStyles: { 'margin-bottom': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'left' }).component();
@@ -76,35 +77,32 @@ export class ResourceDeploymentDialog {
 				height: 150,
 				data: [],
 				columns: [toolColumn, descriptionColumn, localVersionColumn, requiredVersionColumn, statusColumn],
-				width: 1000
+				width: tableWidth
 			}).component();
 
-			this._toolsTableLoadingComponent = view.modelBuilder.loadingComponent().withItem(this._toolsTable).component();
+			const toolsTableWrapper = view.modelBuilder.divContainer().withLayout({ width: tableWidth }).component();
+			toolsTableWrapper.addItem(this._toolsTable, { CSSStyles: { 'border-left': '1px solid silver' } });
 
-			this._refreshButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
-				label: localize('resourceDeployment.refreshButton', 'Refresh Tools'),
-				width: '150px'
-			}).component();
-			this._refreshButton.onDidClick(() => { this.updateTools(); });
+			this._toolsTableLoadingComponent = view.modelBuilder.loadingComponent().withItem(toolsTableWrapper).component();
 
-			this._configureButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
-				label: localize('resourceDeployment.configureButton', 'Configure Path'),
-				width: '150px'
-			}).component();
-			this._configureButton.onDidClick(() => { });
+			this._refreshButton = this.createButton(view, localize('resourceDeployment.refreshButton', 'Refresh Tools'), () => {
+				this.updateTools();
+			});
 
-			this._installButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
-				label: localize('resourceDeployment.installButton', 'Install Tools'),
-				width: '150px'
-			}).component();
-			this._installButton.onDidClick(() => { });
+			this._configureButton = this.createButton(view, localize('resourceDeployment.configureButton', 'Configure Path'), () => {
+				// TODO
+			});
+
+			this._installButton = this.createButton(view, localize('resourceDeployment.installButton', 'Install Tools'), () => {
+				// TODO
+			});
 
 			this._installButton.enabled = false;
 			this._configureButton.enabled = false;
 			this._refreshButton.enabled = false;
 
-			const buttonContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'row-reverse', width: '1000px' }).component();
-			buttonContainer.addItems([this._installButton, this._configureButton, this._refreshButton], { flex: '0 0 auto', CSSStyles: { 'margin-left': '5px' } });
+			const buttonContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'row', justifyContent: 'flex-end', width: tableWidth }).component();
+			buttonContainer.addItems([this._refreshButton, this._configureButton, this._installButton], { flex: '0 0 auto', CSSStyles: { 'margin-left': '5px' } });
 			const formBuilder = view.modelBuilder.formContainer().withFormItems(
 				[
 					{
@@ -207,7 +205,7 @@ export class ResourceDeploymentDialog {
 		this._configureButton.enabled = false;
 		this._refreshButton.enabled = false;
 		this.toolsService.getStatusForTools(this.getCurrentProvider().requiredTools).then(statusList => {
-			this._toolsTable.height = 25 * (statusList.length + 1);
+			this._toolsTable.height = 25 * statusList.length + 28; // header row height
 			this._toolsTable.data = statusList.map(toolStatus => [toolStatus.name, toolStatus.description, toolStatus.version, toolStatus.versionRequirement, this.getToolStatusText(toolStatus.status)]);
 			this._toolsTableLoadingComponent.loading = false;
 			this._installButton.enabled = true;
@@ -240,6 +238,17 @@ export class ResourceDeploymentDialog {
 		});
 
 		return this._selectedResourceType.getProvider(options)!;
+	}
+
+	private createButton(view: azdata.ModelView, text: string, handler: () => void): azdata.ButtonComponent {
+		const button = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+			label: text,
+			width: '150px'
+		}).component();
+		this._toDispose.push(button.onDidClick(() => {
+			handler();
+		}));
+		return button;
 	}
 
 	private onCancel(): void {
