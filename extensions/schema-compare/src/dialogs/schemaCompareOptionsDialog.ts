@@ -445,7 +445,7 @@ export class SchemaCompareOptionsDialog {
 		this.SetDeploymentOptions();
 		this.SetObjectTypeOptions();
 		if (this.optionsChanged) {
-			vscode.window.showWarningMessage(SchemaCompareOptionsDialog.OptionsChangedMessage, SchemaCompareOptionsDialog.CompareButtonText).then(async (result) => {
+			vscode.window.showWarningMessage(SchemaCompareOptionsDialog.OptionsChangedMessage, SchemaCompareOptionsDialog.CompareButtonText).then((result) => {
 				if (result === SchemaCompareOptionsDialog.CompareButtonText) {
 					this.schemaComparison.startCompare();
 				}
