@@ -94,29 +94,3 @@ MenuRegistry.appendMenuItem(MenuId.MenubarViewMenu, {
 	},
 	order: 2
 });
-
-class TestTaskAction extends Action {
-	private static count = 0;
-	constructor(
-		id: string,
-		label: string,
-		@ITaskService private taskService: ITaskService
-	) { super('test', 'testaction'); }
-
-	public run(): Promise<void> {
-		this.taskService.createNewTask({
-			databaseName: 'test dat' + testtaskaction.count++,
-			description: 'test desc' + testtaskaction.count++,
-			isCancelable: false,
-			name: 'test name' + testtaskaction.count++,
-			providerName: 'test provider' + testtaskaction.count++,
-			serverName: 'test service' + testtaskaction.count++,
-			status: TaskStatus.InProgress,
-			taskExecutionMode: TaskExecutionMode.execute,
-			taskId: 'id' + testtaskaction.count++
-		});
-		return Promise.resolve();
-	}
-}
-
-registry.registerWorkbenchAction(new SyncActionDescriptor(testtaskaction, 'test', 'test task'), 'create test task');
