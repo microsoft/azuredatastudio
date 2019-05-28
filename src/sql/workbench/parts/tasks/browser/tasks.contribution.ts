@@ -18,6 +18,8 @@ import { PanelRegistry, Extensions as PanelExtensions, PanelDescriptor } from 'v
 import { TASKS_PANEL_ID } from 'sql/workbench/parts/tasks/common/tasks';
 import { IPanelService } from 'vs/workbench/services/panel/common/panelService';
 import { ToggleTasksAction } from 'sql/workbench/parts/tasks/browser/tasksActions';
+import { Action } from 'vs/base/common/actions';
+import { TaskStatus, TaskExecutionMode } from 'sql/platform/tasks/common/tasksNode';
 
 export class StatusUpdater implements ext.IWorkbenchContribution {
 	static ID = 'data.taskhistory.statusUpdater';
@@ -92,3 +94,29 @@ MenuRegistry.appendMenuItem(MenuId.MenubarViewMenu, {
 	},
 	order: 2
 });
+
+class TestTaskAction extends Action {
+	private static count = 0;
+	constructor(
+		id: string,
+		label: string,
+		@ITaskService private taskService: ITaskService
+	) { super('test', 'testaction'); }
+
+	public run(): Promise<void> {
+		this.taskService.createNewTask({
+			databaseName: 'test dat' + testtaskaction.count++,
+			description: 'test desc' + testtaskaction.count++,
+			isCancelable: false,
+			name: 'test name' + testtaskaction.count++,
+			providerName: 'test provider' + testtaskaction.count++,
+			serverName: 'test service' + testtaskaction.count++,
+			status: TaskStatus.InProgress,
+			taskExecutionMode: TaskExecutionMode.execute,
+			taskId: 'id' + testtaskaction.count++
+		});
+		return Promise.resolve();
+	}
+}
+
+registry.registerWorkbenchAction(new SyncActionDescriptor(testtaskaction, 'test', 'test task'), 'create test task');

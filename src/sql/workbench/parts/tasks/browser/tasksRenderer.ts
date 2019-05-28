@@ -39,15 +39,15 @@ export class TaskHistoryRenderer implements IRenderer {
 	/**
 	 * Returns the element's height in the tree, in pixels.
 	 */
-	public getHeight(tree: ITree, element: any): number {
+	public getHeight(tree: ITree, element: TaskNode): number {
 		return TaskHistoryRenderer.TASKOBJECT_HEIGHT;
 	}
 
 	/**
 	 * Returns a template ID for a given element.
 	 */
-	public getTemplateId(tree: ITree, element: any): string {
-		return TaskHistoryRenderer.TASKOBJECT_TEMPLATE_ID;
+	public getTemplateId(tree: ITree, element: TaskNode): string {
+		return element.id;
 	}
 
 	/**
@@ -112,15 +112,15 @@ export class TaskHistoryRenderer implements IRenderer {
 			templateData.description.textContent = description;
 			templateData.description.title = templateData.description.textContent;
 
-			this.timer(element, templateData);
+			this.timer(element, templateData.time);
 
 			const timer = new IntervalTimer();
-			timer.cancelAndSet(() => this.timer(element, templateData), 500);
+			timer.cancelAndSet(() => this.timer(element, templateData.time), 500);
 			templateData.disposables.push(timer);
 		}
 	}
 
-	private timer(taskNode: TaskNode, templateData: ITaskHistoryTemplateData): void {
+	private timer(taskNode: TaskNode, element: HTMLElement): void {
 		let timeLabel = '';
 		if (taskNode.status === TaskStatus.Failed) {
 			timeLabel += taskNode.startTime + ' Error: ' + taskNode.message;
@@ -138,8 +138,8 @@ export class TaskHistoryRenderer implements IRenderer {
 				timeLabel += ' (' + Utils.parseNumAsTimeString(duration) + ')';
 			}
 		}
-		templateData.time.textContent = timeLabel;
-		templateData.time.title = timeLabel;
+		element.textContent = timeLabel;
+		element.title = timeLabel;
 	}
 
 	public disposeTemplate(tree: ITree, templateId: string, templateData: ITaskHistoryTemplateData): void {
