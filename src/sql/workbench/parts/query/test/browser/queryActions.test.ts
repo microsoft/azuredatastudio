@@ -34,8 +34,6 @@ import { URI } from 'vs/base/common/uri';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { TestConnectionManagementService } from 'sql/platform/connection/test/common/testConnectionManagementService';
 
-let none: void;
-
 suite('SQL QueryAction Tests', () => {
 
 	let testUri: string = 'testURI';
@@ -133,7 +131,7 @@ suite('SQL QueryAction Tests', () => {
 				connectionParams = params;
 				countCalledShowDialog++;
 			})
-			.returns(() => Promise.resolve(none));
+			.returns(() => Promise.resolve());
 
 		// ... Mock QueryModelService
 		let queryModelService = TypeMoq.Mock.ofType(QueryModelService, TypeMoq.MockBehavior.Loose);
@@ -265,7 +263,7 @@ suite('SQL QueryAction Tests', () => {
 				showDialogConnectionParams = params;
 				countCalledShowDialog++;
 			})
-			.returns(() => Promise.resolve(none));
+			.returns(() => Promise.resolve());
 
 		/// End Setup Test ///
 
@@ -394,7 +392,7 @@ suite('SQL QueryAction Tests', () => {
 				connectionParams = params;
 				countCalledShowDialog++;
 			})
-			.returns(() => Promise.resolve(none));
+			.returns(() => Promise.resolve());
 
 		// If I call run on ConnectDatabaseAction when I am not connected
 		let queryAction: ConnectDatabaseAction = new ConnectDatabaseAction(editor.object, false, connectionManagementService.object);
@@ -434,7 +432,7 @@ suite('SQL QueryAction Tests', () => {
 			.callback((params: INewConnectionParams) => {
 				calledShowDialog++;
 				connectionParams = params;
-			}).returns(() => Promise.resolve(none));
+			}).returns(() => Promise.resolve());
 
 		// If I call run on ChangeConnectionAction when I am not connected
 		queryAction = new ConnectDatabaseAction(editor.object, false, connectionManagementService.object);
