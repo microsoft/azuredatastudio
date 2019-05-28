@@ -1372,7 +1372,7 @@
 				},
 				{
 					"extensionId": "35",
-					"extensionName": "PowerShell",
+					"extensionName": "powershell",
 					"displayName": "PowerShell",
 					"shortDescription": "Develop PowerShell scripts in Azure Data Studio",
 					"publisher": {
@@ -1382,14 +1382,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.11.0",
-							"lastUpdated": "3/18/2019",
+							"version": "1.12.2",
+							"lastUpdated": "5/28/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/powershell/PowerShell-1.11.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/powershell/PowerShell-1.12.2.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
