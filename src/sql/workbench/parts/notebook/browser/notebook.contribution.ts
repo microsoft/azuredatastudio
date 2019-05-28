@@ -24,6 +24,8 @@ import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { URI } from 'vs/base/common/uri';
 import { IWorkspaceEditingService } from 'vs/workbench/services/workspace/common/workspaceEditing';
 import { IWindowService } from 'vs/platform/windows/common/windows';
+import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/common/languageAssociation';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 // Model View editor registration
 const viewModelEditorDescriptor = new EditorDescriptor(
@@ -35,8 +37,9 @@ const viewModelEditorDescriptor = new EditorDescriptor(
 Registry.as<IEditorRegistry>(EditorExtensions.Editors)
 	.registerEditor(viewModelEditorDescriptor, [new SyncDescriptor(NotebookInput)]);
 
+
 // Global Actions
-let actionRegistry = <IWorkbenchActionRegistry>Registry.as(Extensions.WorkbenchActions);
+const actionRegistry = <IWorkbenchActionRegistry>Registry.as(Extensions.WorkbenchActions);
 
 actionRegistry.registerWorkbenchAction(
 	new SyncActionDescriptor(
@@ -48,6 +51,12 @@ actionRegistry.registerWorkbenchAction(
 	),
 	NewNotebookAction.LABEL
 );
+
+Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations)
+	.registerLanguageAssociation('notebook', (accessor, editor) => {
+		const instantiationService = accessor.get(IInstantiationService);
+		return instantiationService.createInstance(NotebookInput, editor.getName(), editor.getResource(), editor);
+	}, (editor: NotebookInput) => editor.textInput);
 
 registerAction({
 	id: 'workbench.action.setWorkspaceAndOpen',

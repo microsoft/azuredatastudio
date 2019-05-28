@@ -37,6 +37,9 @@ import { IEditorInputFactoryRegistry, Extensions as EditorInputFactoryExtensions
 import { FileQueryEditorInput } from 'sql/workbench/parts/query/common/fileQueryEditorInput';
 import { FileQueryEditorInputFactory, UntitledQueryEditorInputFactory } from 'sql/workbench/parts/query/common/queryInputFactory';
 import { UntitledQueryEditorInput } from 'sql/workbench/parts/query/common/untitledQueryEditorInput';
+import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/common/languageAssociation';
+import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
+import { QueryEditorInput } from 'sql/workbench/parts/query/common/queryEditorInput';
 
 const gridCommandsWeightBonus = 100; // give our commands a little bit more weight over other default list/tree commands
 
@@ -49,6 +52,17 @@ Registry.as<IEditorInputFactoryRegistry>(EditorInputFactoryExtensions.EditorInpu
 
 Registry.as<IEditorInputFactoryRegistry>(EditorInputFactoryExtensions.EditorInputFactories)
 	.registerEditorInputFactory(UntitledQueryEditorInput.ID, UntitledQueryEditorInputFactory);
+
+Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations)
+	.registerLanguageAssociation('sql', (accessor, editor) => {
+		const instantiationService = accessor.get(IInstantiationService);
+		const queryResultsInput = instantiationService.createInstance(QueryResultsInput, editor.getResource().toString());
+		if (editor instanceof FileEditorInput) {
+			return instantiationService.createInstance(FileQueryEditorInput, '', editor, queryResultsInput, undefined);
+		} else {
+			return instantiationService.createInstance(UntitledQueryEditorInput, '', editor, queryResultsInput, undefined);
+		}
+	}, (editor: QueryEditorInput) => editor.text, true);
 
 Registry.as<IEditorRegistry>(EditorExtensions.Editors)
 	.registerEditor(new EditorDescriptor(QueryResultsEditor, QueryResultsEditor.ID, localize('queryResultsEditor.name', "Query Results")), [new SyncDescriptor(QueryResultsInput)]);

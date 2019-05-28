@@ -7,12 +7,13 @@ import { ServicesAccessor, IInstantiationService } from 'vs/platform/instantiati
 import { IModeSupport, IEditorInput } from 'vs/workbench/common/editor';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { getCodeEditor } from 'vs/editor/browser/editorBrowser';
-import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
-import { FileQueryEditorInput } from 'sql/workbench/parts/query/common/fileQueryEditorInput';
-import { QueryResultsInput } from 'sql/workbench/parts/query/common/queryResultsInput';
-import { UntitledQueryEditorInput } from 'sql/workbench/parts/query/common/untitledQueryEditorInput';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { localize } from 'vs/nls';
+import { Registry } from 'vs/platform/registry/common/platform';
+
+import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/common/languageAssociation';
+
+const languageAssociationRegistry = Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations);
 
 /**
  * Handles setting a mode from the editor status and converts inputs if necessary
@@ -23,37 +24,28 @@ export function setMode(accessor: ServicesAccessor, modeSupport: IModeSupport, a
 	const activeWidget = getCodeEditor(editorService.activeTextEditorWidget);
 	const activeControl = editorService.activeControl;
 	const textModel = activeWidget.getModel();
-	if (language === 'sql' && textModel.getLanguageIdentifier().language !== 'sql') {
-
-		if (activeEditor.isDirty()) {
+	const oldLanguage = textModel.getLanguageIdentifier().language;
+	if (language !== oldLanguage) {
+		const oldInputCreator = languageAssociationRegistry.getAssociations().filter(e => e.language === oldLanguage)[0];
+		const newInputCreator = languageAssociationRegistry.getAssociations().filter(e => e.language === language)[0];
+		if ((oldInputCreator || newInputCreator) && activeEditor.isDirty()) {
 			const notificationService = accessor.get(INotificationService);
-			notificationService.error(localize('languageChangeUnsupported', "Changing languages on unsaved files is unsupported"));
+			notificationService.error(localize('languageChangeUnsupported', "Changing editor types on unsaved files is unsupported"));
 			return;
 		}
-		// switching to sql
 		modeSupport.setMode(language);
-		if (activeEditor instanceof FileEditorInput) {
-			const queryResultsInput = instantiationService.createInstance(QueryResultsInput, activeEditor.getResource().toString());
-			const queryInput = instantiationService.createInstance(FileQueryEditorInput, '', activeEditor, queryResultsInput, undefined);
-			editorService.replaceEditors([{ editor: activeEditor, replacement: queryInput }], activeControl.group);
-		} else {
-			const queryResultsInput = instantiationService.createInstance(QueryResultsInput, activeEditor.getResource().toString());
-			const queryInput = instantiationService.createInstance(UntitledQueryEditorInput, '', activeEditor, queryResultsInput, undefined);
-			editorService.replaceEditors([{ editor: activeEditor, replacement: queryInput }], activeControl.group);
+		let input: IEditorInput;
+		if (oldInputCreator) {
+			input = oldInputCreator.baseInputCreator(activeEditor);
 		}
-	} else if (language !== 'sql' && textModel.getLanguageIdentifier().language === 'sql') {
 
-		if (activeEditor.isDirty()) {
-			const notificationService = accessor.get(INotificationService);
-			notificationService.error(localize('languageChangeUnsupported', "Changing languages on unsaved files is unsupported"));
-			return;
+		if (newInputCreator) {
+			const newInput = instantiationService.invokeFunction(newInputCreator.creator, input || activeEditor);
+			if (newInput) {
+				editorService.replaceEditors([{ editor: activeEditor, replacement: newInput }], activeControl.group);
+			}
+		} else if (oldInputCreator) {
+			editorService.replaceEditors([{ editor: activeEditor, replacement: input }], activeControl.group);
 		}
-		// switching from sql
-		modeSupport.setMode(language);
-		if (activeEditor instanceof FileQueryEditorInput || activeEditor instanceof UntitledQueryEditorInput) {
-			editorService.replaceEditors([{ editor: activeEditor, replacement: activeEditor.text }], activeControl.group);
-		}
-	} else {
-		modeSupport.setMode(language);
 	}
 }

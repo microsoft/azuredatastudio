@@ -462,6 +462,7 @@ import { IWorkspaceStatsService, WorkspaceStatsService } from 'vs/workbench/cont
 // {{SQL CARBON EDIT}}
 // SQL
 import 'sql/workbench/parts/tasks/browser/tasks.contribution';
+import 'sql/workbench/common/editorReplacer.contribution';
 
 // data explorer
 import 'sql/workbench/parts/dataExplorer/browser/dataExplorer.contribution';
