@@ -86,15 +86,8 @@ export abstract class JobManagementView extends TabChild implements AfterContent
 				component: this
 			};
 
-			let anchor: { x: number, y: number };
-			if (event.anchor instanceof HTMLElement) {
-				anchor = { x: event.anchor.getBoundingClientRect().left + 1, y: event.anchor.getBoundingClientRect().top };
-			} else {
-				anchor = { x: event.anchor.x + 1, y: event.anchor.y };
-			}
-
 			this._contextMenuService.showContextMenu({
-				getAnchor: () => anchor,
+				getAnchor: () => event.anchor,
 				getActions: () => actions,
 				getKeyBinding: (action) => this._keybindingFor(action),
 				getActionsContext: () => (actionContext)
