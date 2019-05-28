@@ -12,14 +12,14 @@ import { IEditorGroup } from 'vs/workbench/services/editor/common/editorGroupsSe
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { IModeService } from 'vs/editor/common/services/modeService';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
-import { isUndefined } from 'vs/base/common/types';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { Registry } from 'vs/platform/registry/common/platform';
 
-import { QueryResultsInput } from 'sql/workbench/parts/query/common/queryResultsInput';
-import { UntitledQueryEditorInput } from 'sql/workbench/parts/query/common/untitledQueryEditorInput';
-import { FileQueryEditorInput } from 'sql/workbench/parts/query/common/fileQueryEditorInput';
+import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/common/languageAssociation';
 
-export class QueryContribution implements IWorkbenchContribution {
+const languageAssociationRegistry = Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations);
+
+export class EditorReplacementContribution implements IWorkbenchContribution {
 	private editorOpeningListener: IDisposable;
 
 	constructor(
@@ -38,27 +38,39 @@ export class QueryContribution implements IWorkbenchContribution {
 			return undefined;
 		}
 
-		// this is the case when the file is on disk
-		if (editor instanceof FileEditorInput) {
-			let mode = editor.getPreferredMode();
-			if (!mode) { // in the case the input doesn't have a preferred mode set we will attempt to guess the mode from the file path
-				mode = this.modeService.getModeIdByFilepathOrFirstLine(editor.getResource().fsPath);
-			}
-			if (mode === 'sql') {
-				const queryResultsInput = this.instantiationService.createInstance(QueryResultsInput, editor.getResource().toString());
-				const queryInput = this.instantiationService.createInstance(FileQueryEditorInput, '', editor, queryResultsInput, undefined);
-				return { override: this.editorService.openEditor(queryInput, options, group) };
-			}
+		if (!(editor instanceof FileEditorInput) && !(editor instanceof UntitledEditorInput)) {
+			return undefined;
 		}
 
-		// this is untitled
-		if (editor instanceof UntitledEditorInput) {
-			const mode = editor.getMode();
-			if (isUndefined(mode) || mode === 'sql') {
-				editor.setMode('sql');
-				const queryResultsInput = this.instantiationService.createInstance(QueryResultsInput, editor.getResource().toString());
-				const queryInput = this.instantiationService.createInstance(UntitledQueryEditorInput, '', editor, queryResultsInput, undefined);
-				return { override: this.editorService.openEditor(queryInput, options, group) };
+		let language: string;
+		if (editor instanceof FileEditorInput) {
+			language = editor.getPreferredMode();
+		} else if (editor instanceof UntitledEditorInput) {
+			language = editor.getMode();
+		} else {
+			return undefined;
+		}
+
+		if (!language) { // in the case the input doesn't have a preferred mode set we will attempt to guess the mode from the file path
+			language = this.modeService.getModeIdByFilepathOrFirstLine(editor.getResource().fsPath);
+		}
+
+		if (!language) {
+			const defaultInputCreator = languageAssociationRegistry.getAssociations().filter(e => e.isDefault)[0];
+			if (defaultInputCreator) {
+				editor.setMode(defaultInputCreator.language);
+				const newInput = this.instantiationService.invokeFunction(defaultInputCreator.creator, editor);
+				if (newInput) {
+					return { override: this.editorService.openEditor(newInput, options, group) };
+				}
+			}
+		} else {
+			const inputCreator = languageAssociationRegistry.getAssociations().filter(e => e.language === language)[0];
+			if (inputCreator) {
+				const newInput = this.instantiationService.invokeFunction(inputCreator.creator, editor);
+				if (newInput) {
+					return { override: this.editorService.openEditor(newInput, options, group) };
+				}
 			}
 		}
 
