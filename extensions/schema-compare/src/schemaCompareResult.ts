@@ -13,6 +13,7 @@ import { Telemetry } from './telemetry';
 import { getTelemetryErrorType } from './utils';
 const localize = nls.loadMessageBundle();
 const diffEditorTitle = localize('schemaCompare.ObjectDefinitionsTitle', 'Object Definitions');
+const appliyConfirmation = localize('schemaCompare.ApplyConfirmation', 'Are you sure that you want to update the target?');
 
 export class SchemaCompareResult {
 	private differencesTable: azdata.TableComponent;
@@ -482,24 +483,31 @@ export class SchemaCompareResult {
 			},
 		}).component();
 
+		// need only yes button - since the modal dialog has a default cancel
+		const yesString = localize('schemaCompare.ApplyYes', 'Yes');
 		this.applyButton.onDidClick(async (click) => {
-			Telemetry.sendTelemetryEvent('SchemaCompareApplyStarted', {
-				'startTime': Date.now().toString(),
-				'operationId': this.comparisonResult.operationId
-			});
-			let service = await SchemaCompareResult.getService('MSSQL');
-			let result = await service.schemaComparePublishChanges(this.comparisonResult.operationId, this.targetEndpointInfo.serverName, this.targetEndpointInfo.databaseName, azdata.TaskExecutionMode.execute);
-			if (!result || !result.success) {
-				Telemetry.sendTelemetryEvent('SchemaCompareApplyFailed', {
-					'errorType': getTelemetryErrorType(result.errorMessage),
-					'operationId': this.comparisonResult.operationId
-				});
-				vscode.window.showErrorMessage(
-					localize('schemaCompare.updateErrorMessage', "Schema Compare Apply failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
-			}
-			Telemetry.sendTelemetryEvent('SchemaCompareApplyEnded', {
-				'endTime': Date.now().toString(),
-				'operationId': this.comparisonResult.operationId
+
+			vscode.window.showWarningMessage(appliyConfirmation, { modal: true }, yesString).then(async (result) => {
+				if (result === yesString) {
+					Telemetry.sendTelemetryEvent('SchemaCompareApplyStarted', {
+						'startTime': Date.now().toString(),
+						'operationId': this.comparisonResult.operationId
+					});
+					let service = await SchemaCompareResult.getService('MSSQL');
+					let result = await service.schemaComparePublishChanges(this.comparisonResult.operationId, this.targetEndpointInfo.serverName, this.targetEndpointInfo.databaseName, azdata.TaskExecutionMode.execute);
+					if (!result || !result.success) {
+						Telemetry.sendTelemetryEvent('SchemaCompareApplyFailed', {
+							'errorType': getTelemetryErrorType(result.errorMessage),
+							'operationId': this.comparisonResult.operationId
+						});
+						vscode.window.showErrorMessage(
+							localize('schemaCompare.updateErrorMessage', "Schema Compare Apply failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
+					}
+					Telemetry.sendTelemetryEvent('SchemaCompareApplyEnded', {
+						'endTime': Date.now().toString(),
+						'operationId': this.comparisonResult.operationId
+					});
+				}
 			});
 		});
 	}
