@@ -454,7 +454,7 @@ export class SchemaCompareOptionsDialog {
 
 		this.updateOptionsTable();
 		this.optionsFlexBuilder.removeItem(this.optionsTable);
-		this.optionsFlexBuilder.insertItem(this.optionsTable, 0, { CSSStyles: { 'overflow': 'scroll', 'height': '68vh' } });
+		this.optionsFlexBuilder.insertItem(this.optionsTable, 0, { CSSStyles: { 'overflow': 'scroll', 'height': '65vh' } });
 
 		this.updateObjectsTable();
 		this.objectTypesFlexBuilder.removeItem(this.objectsTable);
@@ -506,7 +506,7 @@ export class SchemaCompareOptionsDialog {
 					flexFlow: 'column'
 				}).component();
 
-			this.optionsFlexBuilder.addItem(this.optionsTable, { CSSStyles: { 'overflow': 'scroll', 'height': '68vh' } });
+			this.optionsFlexBuilder.addItem(this.optionsTable, { CSSStyles: { 'overflow': 'scroll', 'height': '65vh' } });
 			this.optionsFlexBuilder.addItem(this.descriptionHeading, { CSSStyles: { 'font-weight': 'bold', 'height': '30px' } });
 			this.optionsFlexBuilder.addItem(this.descriptionText, { CSSStyles: { 'padding': '4px', 'margin-right': '10px', 'overflow': 'scroll', 'height': '10vh' } });
 			await view.initializeModel(this.optionsFlexBuilder);
