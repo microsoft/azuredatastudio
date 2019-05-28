@@ -174,7 +174,7 @@ export class InstallAction extends ExtensionAction {
 	) {
 		super(`extensions.install`, InstallAction.INSTALL_LABEL, InstallAction.Class, false);
 		this.update();
-		this.disposables.push(this.labelService.onDidChangeFormatters(() => this.updateLabel(), this));
+		this.disposables.add(this.labelService.onDidChangeFormatters(() => this.updateLabel(), this));
 	}
 
 	update(): void {
@@ -311,7 +311,7 @@ export class RemoteInstallAction extends ExtensionAction {
 		@IProductService private readonly productService: IProductService,
 	) {
 		super(`extensions.remoteinstall`, RemoteInstallAction.INSTALL_LABEL, RemoteInstallAction.Class, false);
-		this.disposables.push(this.labelService.onDidChangeFormatters(() => this.updateLabel(), this));
+		this.disposables.add(this.labelService.onDidChangeFormatters(() => this.updateLabel(), this));
 		this.updateLabel();
 		this.update();
 	}
@@ -396,7 +396,7 @@ export class LocalInstallAction extends ExtensionAction {
 		@IProductService private readonly productService: IProductService,
 	) {
 		super(`extensions.localinstall`, LocalInstallAction.INSTALL_LABEL, LocalInstallAction.Class, false);
-		this.disposables.push(this.labelService.onDidChangeFormatters(() => this.updateLabel(), this));
+		this.disposables.add(this.labelService.onDidChangeFormatters(() => this.updateLabel(), this));
 		this.updateLabel();
 		this.update();
 	}
@@ -524,8 +524,8 @@ export class CombinedInstallAction extends ExtensionAction {
 	) {
 		super('extensions.combinedInstall', '', '', false);
 
-		this.installAction = this.disposables.push(instantiationService.createInstance(InstallAction));
-		this.uninstallAction = this.disposables.push(instantiationService.createInstance(UninstallAction));
+		this.installAction = this.disposables.add(instantiationService.createInstance(InstallAction));
+		this.uninstallAction = this.disposables.add(instantiationService.createInstance(UninstallAction));
 
 		this.update();
 	}
@@ -1224,7 +1224,7 @@ export class UpdateAllAction extends Action {
 	) {
 		super(id, label, '', false);
 
-		this.disposables.push(this.extensionsWorkbenchService.onChange(() => this.update()));
+		this.disposables.add(this.extensionsWorkbenchService.onChange(() => this.update()));
 		this.update();
 	}
 
@@ -1274,7 +1274,7 @@ export class ReloadAction extends ExtensionAction {
 		@IProductService private readonly productService: IProductService,
 	) {
 		super('extensions.reload', localize('reloadAction', "Reload"), ReloadAction.DisabledClass, false);
-		this.disposables.push(this.extensionService.onDidChangeExtensions(this.updateRunningExtensions, this));
+		this.disposables.add(this.extensionService.onDidChangeExtensions(this.updateRunningExtensions, this));
 		this.updateRunningExtensions();
 	}
 
@@ -1414,7 +1414,7 @@ export class SetColorThemeAction extends ExtensionAction {
 		@IConfigurationService private readonly configurationService: IConfigurationService
 	) {
 		super(`extensions.colorTheme`, localize('color theme', "Set Color Theme"), SetColorThemeAction.DisabledClass, false);
-		this.disposables.push(Event.any<any>(extensionService.onDidChangeExtensions, workbenchThemeService.onDidColorThemeChange)(() => this.update(), this));
+		this.disposables.add(Event.any<any>(extensionService.onDidChangeExtensions, workbenchThemeService.onDidColorThemeChange)(() => this.update(), this));
 		this.update();
 	}
 
@@ -1486,7 +1486,7 @@ export class SetFileIconThemeAction extends ExtensionAction {
 		@IConfigurationService private readonly configurationService: IConfigurationService
 	) {
 		super(`extensions.fileIconTheme`, localize('file icon theme', "Set File Icon Theme"), SetFileIconThemeAction.DisabledClass, false);
-		this.disposables.push(Event.any<any>(extensionService.onDidChangeExtensions, workbenchThemeService.onDidFileIconThemeChange)(() => this.update(), this));
+		this.disposables.add(Event.any<any>(extensionService.onDidChangeExtensions, workbenchThemeService.onDidFileIconThemeChange)(() => this.update(), this));
 		this.update();
 	}
 
@@ -1645,7 +1645,7 @@ export class ClearExtensionsInputAction extends Action {
 	) {
 		super(id, label, 'clear-extensions', true);
 		this.onSearchChange(value);
-		this.disposables.push(onSearchChange(this.onSearchChange, this));
+		this.disposables.add(onSearchChange(this.onSearchChange, this));
 	}
 
 	private onSearchChange(value: string): void {
@@ -2012,7 +2012,7 @@ export class ChangeSortAction extends Action {
 
 		this.query = Query.parse('');
 		this.enabled = false;
-		this.disposables.push(onSearchChange(this.onSearchChange, this));
+		this.disposables.add(onSearchChange(this.onSearchChange, this));
 	}
 
 	private onSearchChange(value: string): void {
@@ -2330,7 +2330,7 @@ export class ConfigureWorkspaceRecommendedExtensionsAction extends AbstractConfi
 		@ITextModelService textModelResolverService: ITextModelService
 	) {
 		super(id, label, contextService, fileService, textFileService, editorService, jsonEditingService, textModelResolverService);
-		this.disposables.push(this.contextService.onDidChangeWorkbenchState(() => this.update(), this));
+		this.disposables.add(this.contextService.onDidChangeWorkbenchState(() => this.update(), this));
 		this.update();
 	}
 
@@ -2373,7 +2373,7 @@ export class ConfigureWorkspaceFolderRecommendedExtensionsAction extends Abstrac
 		@ICommandService private readonly commandService: ICommandService
 	) {
 		super(id, label, contextService, fileService, textFileService, editorService, jsonEditingService, textModelResolverService);
-		this.disposables.push(this.contextService.onDidChangeWorkspaceFolders(() => this.update(), this));
+		this.disposables.add(this.contextService.onDidChangeWorkspaceFolders(() => this.update(), this));
 		this.update();
 	}
 
@@ -2694,8 +2694,8 @@ export class DisabledLabelAction extends ExtensionAction {
 		@IExtensionService private readonly extensionService: IExtensionService,
 	) {
 		super('extensions.disabledLabel', warningAction.tooltip, `${DisabledLabelAction.Class} hide`, false);
-		this.disposables.push(warningAction.onDidChange(() => this.update(), this));
-		this.disposables.push(this.extensionService.onDidChangeExtensions(this.updateRunningExtensions, this));
+		this.disposables.add(warningAction.onDidChange(() => this.update(), this));
+		this.disposables.add(this.extensionService.onDidChangeExtensions(this.updateRunningExtensions, this));
 		this.updateRunningExtensions();
 	}
 
@@ -2755,8 +2755,8 @@ export class SystemDisabledWarningAction extends ExtensionAction {
 		@IExtensionService private readonly extensionService: IExtensionService,
 	) {
 		super('extensions.install', '', `${SystemDisabledWarningAction.CLASS} hide`, false);
-		this.disposables.push(this.labelService.onDidChangeFormatters(() => this.update(), this));
-		this.disposables.push(this.extensionService.onDidChangeExtensions(this.updateRunningExtensions, this));
+		this.disposables.add(this.labelService.onDidChangeFormatters(() => this.update(), this));
+		this.disposables.add(this.extensionService.onDidChangeExtensions(this.updateRunningExtensions, this));
 		this.updateRunningExtensions();
 		this.update();
 	}
@@ -2848,7 +2848,7 @@ export class DisableAllAction extends Action {
 	) {
 		super(id, label);
 		this.update();
-		this.disposables.push(this.extensionsWorkbenchService.onChange(() => this.update()));
+		this.disposables.add(this.extensionsWorkbenchService.onChange(() => this.update()));
 	}
 
 	private update(): void {
@@ -2879,8 +2879,8 @@ export class DisableAllWorkpsaceAction extends Action {
 	) {
 		super(id, label);
 		this.update();
-		this.disposables.push(this.workspaceContextService.onDidChangeWorkbenchState(() => this.update(), this));
-		this.disposables.push(this.extensionsWorkbenchService.onChange(() => this.update(), this));
+		this.disposables.add(this.workspaceContextService.onDidChangeWorkbenchState(() => this.update(), this));
+		this.disposables.add(this.extensionsWorkbenchService.onChange(() => this.update(), this));
 	}
 
 	private update(): void {
@@ -2911,7 +2911,7 @@ export class EnableAllAction extends Action {
 	) {
 		super(id, label);
 		this.update();
-		this.disposables.push(this.extensionsWorkbenchService.onChange(() => this.update()));
+		this.disposables.add(this.extensionsWorkbenchService.onChange(() => this.update()));
 	}
 
 	private update(): void {
@@ -2943,8 +2943,8 @@ export class EnableAllWorkpsaceAction extends Action {
 	) {
 		super(id, label);
 		this.update();
-		this.disposables.push(this.extensionsWorkbenchService.onChange(() => this.update(), this));
-		this.disposables.push(this.workspaceContextService.onDidChangeWorkbenchState(() => this.update(), this));
+		this.disposables.add(this.extensionsWorkbenchService.onChange(() => this.update(), this));
+		this.disposables.add(this.workspaceContextService.onDidChangeWorkbenchState(() => this.update(), this));
 	}
 
 	private update(): void {
