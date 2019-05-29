@@ -333,13 +333,14 @@ export class QueryEditor extends BaseEditor {
 
 	private addResultsEditor() {
 		if (!this.resultsVisible) {
+			let initialViewSize = Math.round(Math.max(this.dimension.height * 0.7, this.dimension.height - 150));
 			this.splitview.addView({
 				element: this.resultsEditorContainer,
 				layout: size => this.resultsEditor && this.resultsEditor.layout(new DOM.Dimension(this.dimension.width, size)),
 				minimumSize: 0,
 				maximumSize: Number.POSITIVE_INFINITY,
 				onDidChange: Event.None
-			}, Sizing.Distribute);
+			}, initialViewSize);
 			this.resultsVisible = true;
 		}
 	}
