@@ -30,9 +30,9 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { append, $ } from 'vs/base/browser/dom';
-import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
 import { ILogService } from 'vs/platform/log/common/log';
+import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 
 export class CategoryView extends ViewletPanel {
 
@@ -87,7 +87,7 @@ export class OptionsDialog extends Modal {
 		title: string,
 		name: string,
 		options: IOptionsDialogOptions,
-		@ILayoutService layoutService: ILayoutService,
+		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
 		@IThemeService themeService: IThemeService,
 		@IContextViewService private _contextViewService: IContextViewService,
 		@IInstantiationService private _instantiationService: IInstantiationService,

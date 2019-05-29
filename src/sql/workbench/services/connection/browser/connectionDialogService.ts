@@ -60,11 +60,11 @@ export class ConnectionDialogService implements IConnectionDialogService {
 
 	_serviceBrand: any;
 
-	private _container: HTMLElement;
 	private _connectionDialog: ConnectionDialogWidget;
 	private _connectionControllerMap: { [providerDisplayName: string]: IConnectionComponentController } = {};
 	private _model: ConnectionProfile;
 	private _params: INewConnectionParams;
+	private _options: IConnectionCompletionOptions;
 	private _inputModel: IConnectionProfile;
 	private _providerNameToDisplayNameMap: { [providerDisplayName: string]: string } = {};
 	private _providerTypes: string[] = [];
@@ -239,7 +239,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		if (fromEditor && params && params.input) {
 			uri = params.input.uri;
 		}
-		let options: IConnectionCompletionOptions = {
+		let options: IConnectionCompletionOptions = this._options || {
 			params: params,
 			saveTheConnection: true,
 			showDashboard: params && params.showDashboard !== undefined ? params.showDashboard : !fromEditor,
@@ -280,14 +280,14 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			if (providerName === Constants.cmsProviderName) {
 				this._connectionControllerMap[providerName] =
 					this._instantiationService.createInstance(CmsConnectionController,
-						this._container, this._connectionManagementService,
+						this._connectionManagementService,
 						this._capabilitiesService.getCapabilities(providerName).connection, {
 							onSetConnectButton: (enable: boolean) => this.handleSetConnectButtonEnable(enable)
 						}, providerName, this._inputModel ? this._inputModel.options.authTypeChanged : false);
 			} else {
 				this._connectionControllerMap[providerName] =
 					this._instantiationService.createInstance(ConnectionController,
-						this._container, this._connectionManagementService,
+						this._connectionManagementService,
 						this._capabilitiesService.getCapabilities(providerName).connection, {
 							onSetConnectButton: (enable: boolean) => this.handleSetConnectButtonEnable(enable)
 						}, providerName);
@@ -393,10 +393,12 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		connectionManagementService: IConnectionManagementService,
 		params?: INewConnectionParams,
 		model?: IConnectionProfile,
-		connectionResult?: IConnectionResult): Thenable<void> {
+		connectionResult?: IConnectionResult,
+		connectionOptions?: IConnectionCompletionOptions): Thenable<void> {
 
 		this._connectionManagementService = connectionManagementService;
 
+		this._options = connectionOptions;
 		this._params = params;
 		this._inputModel = model;
 		return new Promise<void>((resolve, reject) => {
@@ -417,8 +419,6 @@ export class ConnectionDialogService implements IConnectionDialogService {
 
 	private doShowDialog(params: INewConnectionParams): Promise<void> {
 		if (!this._connectionDialog) {
-			let container = this.layoutService.getWorkbenchElement().parentElement;
-			this._container = container;
 			this._connectionDialog = this._instantiationService.createInstance(ConnectionDialogWidget, this._providerTypes, this._providerNameToDisplayNameMap[this._model.providerName], this._providerNameToDisplayNameMap);
 			this._connectionDialog.onCancel(() => {
 				this._connectionDialog.databaseDropdownExpanded = this.uiController.databaseDropdownExpanded;

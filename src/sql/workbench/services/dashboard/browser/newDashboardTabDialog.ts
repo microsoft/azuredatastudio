@@ -25,8 +25,8 @@ import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
 import { NewDashboardTabViewModel, IDashboardUITab } from 'sql/workbench/services/dashboard/common/newDashboardTabViewModel';
 import { IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
-import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { ILogService } from 'vs/platform/log/common/log';
+import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 
 class ExtensionListDelegate implements IListVirtualDelegate<IDashboardUITab> {
 
@@ -107,7 +107,7 @@ export class NewDashboardTabDialog extends Modal {
 	public get onCancel(): Event<void> { return this._onCancel.event; }
 
 	constructor(
-		@ILayoutService layoutService: ILayoutService,
+		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
 		@IThemeService themeService: IThemeService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,

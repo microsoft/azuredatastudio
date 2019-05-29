@@ -542,7 +542,9 @@ export function createApiFactory(
 				SchemaUpdateAction: sqlExtHostTypes.SchemaUpdateAction,
 				SchemaDifferenceType: sqlExtHostTypes.SchemaDifferenceType,
 				SchemaCompareEndpointType: sqlExtHostTypes.SchemaCompareEndpointType,
-				SchemaObjectType: sqlExtHostTypes.SchemaObjectType
+				SchemaObjectType: sqlExtHostTypes.SchemaObjectType,
+				ColumnType: sqlExtHostTypes.ColumnType,
+				ActionOnCellCheckboxCheck: sqlExtHostTypes.ActionOnCellCheckboxCheck,
 			};
 		},
 
@@ -728,30 +730,6 @@ export function createApiFactory(
 				return extHostDataProvider.$registerScriptingProvider(provider);
 			};
 
-			let registerProfilerProvider = (provider: sqlops.ProfilerProvider): vscode.Disposable => {
-				provider.registerOnSessionEventsAvailable((response: sqlops.ProfilerSessionEvents) => {
-					extHostDataProvider.$onSessionEventsAvailable(provider.handle, response);
-				});
-
-				provider.registerOnSessionStopped((response: sqlops.ProfilerSessionStoppedParams) => {
-					extHostDataProvider.$onSessionStopped(provider.handle, response);
-				});
-
-				provider.registerOnProfilerSessionCreated((response: sqlops.ProfilerSessionCreatedParams) => {
-					extHostDataProvider.$onProfilerSessionCreated(provider.handle, response);
-				});
-
-				return extHostDataProvider.$registerProfilerProvider(provider);
-			};
-
-			let registerBackupProvider = (provider: sqlops.BackupProvider): vscode.Disposable => {
-				return extHostDataProvider.$registerBackupProvider(provider);
-			};
-
-			let registerRestoreProvider = (provider: sqlops.RestoreProvider): vscode.Disposable => {
-				return extHostDataProvider.$registerRestoreProvider(provider);
-			};
-
 			let registerMetadataProvider = (provider: sqlops.MetadataProvider): vscode.Disposable => {
 				return extHostDataProvider.$registerMetadataProvider(provider);
 			};
@@ -764,27 +742,19 @@ export function createApiFactory(
 				return extHostDataProvider.$registerAdminServicesProvider(provider);
 			};
 
-			let registerDacFxServicesProvider = (provider: sqlops.DacFxServicesProvider): vscode.Disposable => {
-				return extHostDataProvider.$registerDacFxServiceProvider(provider);
-			};
-
 
 			// namespace: dataprotocol
 			const dataprotocol: typeof sqlops.dataprotocol = {
-				registerBackupProvider,
 				registerConnectionProvider,
 				registerFileBrowserProvider,
 				registerMetadataProvider,
 				registerObjectExplorerProvider,
 				registerObjectExplorerNodeProvider,
-				registerProfilerProvider,
-				registerRestoreProvider,
 				registerScriptingProvider,
 				registerTaskServicesProvider,
 				registerQueryProvider,
 				registerAdminServicesProvider,
 				registerCapabilitiesServiceProvider,
-				registerDacFxServicesProvider,
 				onDidChangeLanguageFlavor(listener: (e: sqlops.DidChangeLanguageFlavorParams) => any, thisArgs?: any, disposables?: extHostTypes.Disposable[]) {
 					return extHostDataProvider.onDidChangeLanguageFlavor(listener, thisArgs, disposables);
 				},
@@ -908,31 +878,6 @@ export function createApiFactory(
 				}
 			};
 
-			const nb = {
-				get notebookDocuments() {
-					return extHostNotebookDocumentsAndEditors.getAllDocuments().map(doc => doc.document);
-				},
-				get activeNotebookEditor() {
-					return extHostNotebookDocumentsAndEditors.getActiveEditor();
-				},
-				get visibleNotebookEditors() {
-					return extHostNotebookDocumentsAndEditors.getAllEditors();
-				},
-				get onDidOpenNotebookDocument() {
-					return extHostNotebookDocumentsAndEditors.onDidOpenNotebookDocument;
-				},
-				get onDidChangeNotebookCell() {
-					return extHostNotebookDocumentsAndEditors.onDidChangeNotebookCell;
-				},
-				showNotebookDocument(uri: vscode.Uri, showOptions: sqlops.nb.NotebookShowOptions) {
-					return extHostNotebookDocumentsAndEditors.showNotebookDocument(uri, showOptions);
-				},
-				registerNotebookProvider(provider: sqlops.nb.NotebookProvider): vscode.Disposable {
-					return extHostNotebook.registerNotebookProvider(provider);
-				},
-				CellRange: sqlExtHostTypes.CellRange
-			};
-
 			return {
 				connection,
 				credentials,
@@ -959,7 +904,6 @@ export function createApiFactory(
 				Orientation: sqlExtHostTypes.Orientation,
 				SqlThemeIcon: sqlExtHostTypes.SqlThemeIcon,
 				TreeComponentItem: sqlExtHostTypes.TreeComponentItem,
-				nb: nb,
 				AzureResource: sqlExtHostTypes.AzureResource,
 				extensions: extensions,
 				TreeItem: sqlExtHostTypes.TreeItem

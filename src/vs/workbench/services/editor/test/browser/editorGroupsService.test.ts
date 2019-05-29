@@ -24,10 +24,10 @@ export class TestEditorControl extends BaseEditor {
 
 	constructor(@ITelemetryService telemetryService: ITelemetryService) { super('MyFileEditorForEditorGroupService', NullTelemetryService, new TestThemeService(), new TestStorageService()); }
 
-	setInput(input: EditorInput, options: EditorOptions, token: CancellationToken): Promise<void> {
+	async setInput(input: EditorInput, options: EditorOptions, token: CancellationToken): Promise<void> {
 		super.setInput(input, options, token);
 
-		return input.resolve().then(() => undefined);
+		await input.resolve();
 	}
 
 	getId(): string { return 'MyFileEditorForEditorGroupService'; }
@@ -45,6 +45,8 @@ export class TestEditorInput extends EditorInput implements IFileEditorInput {
 	setEncoding(encoding: string) { }
 	getEncoding(): string { return null!; }
 	setPreferredEncoding(encoding: string) { }
+	setMode(mode: string) { }
+	setPreferredMode(mode: string) { }
 	getResource(): URI { return this.resource; }
 	setForceOpenAsBinary(): void { }
 }

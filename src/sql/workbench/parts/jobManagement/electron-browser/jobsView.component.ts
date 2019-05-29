@@ -605,9 +605,11 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 					let item = self.dataView.getItemById(job.jobId + '.error');
 					let noStepsMessage = nls.localize('jobsView.noSteps', 'No Steps available for this job.');
 					let errorMessage = lastJobHistory ? lastJobHistory.message : noStepsMessage;
-					item['name'] = nls.localize('jobsView.error', 'Error: ') + errorMessage;
-					self._agentViewComponent.setExpanded(job.jobId, item['name']);
-					self.dataView.updateItem(job.jobId + '.error', item);
+					if (item) {
+						item['name'] = nls.localize('jobsView.error', 'Error: ') + errorMessage;
+						self._agentViewComponent.setExpanded(job.jobId, item['name']);
+						self.dataView.updateItem(job.jobId + '.error', item);
+					}
 				}
 			}
 		}
@@ -853,14 +855,14 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 	}
 
 	protected getTableActions(targetObject: JobActionContext): IAction[] {
-		let actions: IAction[] = [];
-		let editAction = this._instantiationService.createInstance(EditJobAction);
+		const editAction = this._instantiationService.createInstance(EditJobAction);
 		if (!targetObject.canEdit) {
 			editAction.enabled = false;
 		}
-		actions.push(editAction);
-		actions.push(this._instantiationService.createInstance(DeleteJobAction));
-		return actions;
+		return [
+			editAction,
+			this._instantiationService.createInstance(DeleteJobAction)
+		];
 	}
 
 	protected convertStepsToStepInfos(steps: azdata.AgentJobStep[], job: azdata.AgentJobInfo): azdata.AgentJobStepInfo[] {

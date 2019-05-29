@@ -151,11 +151,6 @@ export const tocData: ITOCEntry = {
 					settings: ['terminal.*']
 				},
 				{
-					id: 'features/tasks',
-					label: localize('tasks', "Tasks"),
-					settings: ['tasks.*']
-				},
-				{
 					id: 'features/problems',
 					label: localize('problems', "Problems"),
 					settings: ['problems.*']
@@ -201,7 +196,7 @@ export const tocData: ITOCEntry = {
 	]
 };
 
-export const knownAcronyms = new Set();
+export const knownAcronyms = new Set<string>();
 [
 	'css',
 	'html',
@@ -214,3 +209,7 @@ export const knownAcronyms = new Set();
 	'id',
 	'php',
 ].forEach(str => knownAcronyms.add(str));
+
+export const knownTermMappings = new Map<string, string>();
+knownTermMappings.set('power shell', 'PowerShell');
+knownTermMappings.set('powershell', 'PowerShell');

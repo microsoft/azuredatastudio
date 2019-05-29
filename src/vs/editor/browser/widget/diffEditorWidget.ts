@@ -323,9 +323,9 @@ export class DiffEditorWidget extends Disposable implements editorBrowser.IDiffE
 		}
 
 		if (this._renderSideBySide) {
-			this._setStrategy(new DiffEdtorWidgetSideBySide(this._createDataSource(), this._enableSplitViewResizing));
+			this._setStrategy(new DiffEditorWidgetSideBySide(this._createDataSource(), this._enableSplitViewResizing));
 		} else {
-			this._setStrategy(new DiffEdtorWidgetInline(this._createDataSource(), this._enableSplitViewResizing));
+			this._setStrategy(new DiffEditorWidgetInline(this._createDataSource(), this._enableSplitViewResizing));
 		}
 
 		this._register(themeService.onThemeChange(t => {
@@ -597,9 +597,9 @@ export class DiffEditorWidget extends Disposable implements editorBrowser.IDiffE
 		// renderSideBySide
 		if (renderSideBySideChanged) {
 			if (this._renderSideBySide) {
-				this._setStrategy(new DiffEdtorWidgetSideBySide(this._createDataSource(), this._enableSplitViewResizing));
+				this._setStrategy(new DiffEditorWidgetSideBySide(this._createDataSource(), this._enableSplitViewResizing));
 			} else {
-				this._setStrategy(new DiffEdtorWidgetInline(this._createDataSource(), this._enableSplitViewResizing));
+				this._setStrategy(new DiffEditorWidgetInline(this._createDataSource(), this._enableSplitViewResizing));
 			}
 			// Update class name
 			this._containerDomElement.className = DiffEditorWidget._getClassName(this._themeService.getTheme(), this._renderSideBySide);
@@ -1547,7 +1547,7 @@ const DECORATIONS = {
 
 };
 
-class DiffEdtorWidgetSideBySide extends DiffEditorWidgetStyle implements IDiffEditorWidgetStyle, IVerticalSashLayoutProvider {
+class DiffEditorWidgetSideBySide extends DiffEditorWidgetStyle implements IDiffEditorWidgetStyle, IVerticalSashLayoutProvider {
 
 	static MINIMUM_EDITOR_WIDTH = 100;
 
@@ -1592,13 +1592,13 @@ class DiffEdtorWidgetSideBySide extends DiffEditorWidgetStyle implements IDiffEd
 
 		sashPosition = this._disableSash ? midPoint : sashPosition || midPoint;
 
-		if (contentWidth > DiffEdtorWidgetSideBySide.MINIMUM_EDITOR_WIDTH * 2) {
-			if (sashPosition < DiffEdtorWidgetSideBySide.MINIMUM_EDITOR_WIDTH) {
-				sashPosition = DiffEdtorWidgetSideBySide.MINIMUM_EDITOR_WIDTH;
+		if (contentWidth > DiffEditorWidgetSideBySide.MINIMUM_EDITOR_WIDTH * 2) {
+			if (sashPosition < DiffEditorWidgetSideBySide.MINIMUM_EDITOR_WIDTH) {
+				sashPosition = DiffEditorWidgetSideBySide.MINIMUM_EDITOR_WIDTH;
 			}
 
-			if (sashPosition > contentWidth - DiffEdtorWidgetSideBySide.MINIMUM_EDITOR_WIDTH) {
-				sashPosition = contentWidth - DiffEdtorWidgetSideBySide.MINIMUM_EDITOR_WIDTH;
+			if (sashPosition > contentWidth - DiffEditorWidgetSideBySide.MINIMUM_EDITOR_WIDTH) {
+				sashPosition = contentWidth - DiffEditorWidgetSideBySide.MINIMUM_EDITOR_WIDTH;
 			}
 		} else {
 			sashPosition = midPoint;
@@ -1807,7 +1807,7 @@ class SideBySideViewZonesComputer extends ViewZonesComputer {
 	}
 }
 
-class DiffEdtorWidgetInline extends DiffEditorWidgetStyle implements IDiffEditorWidgetStyle {
+class DiffEditorWidgetInline extends DiffEditorWidgetStyle implements IDiffEditorWidgetStyle {
 
 	private decorationsLeft: number;
 

@@ -1,13 +1,10 @@
 steps:
 - task: NodeTool@0
   inputs:
-    versionSpec: '8.x'
+    versionSpec: '10.15.1'
   displayName: 'Install Node.js'
 
 - script: |
-    git submodule update --init --recursive
-    nvm install 10.15.1
-    nvm use 10.15.1
     npm i -g yarn
   displayName: 'preinstall'
 

@@ -158,7 +158,7 @@ export class AddServerAction extends Action {
 			saveProfile: true,
 			id: element.id
 		};
-		this._connectionManagementService.showConnectionDialog(undefined, connection);
+		this._connectionManagementService.showConnectionDialog(undefined, undefined, connection);
 		return Promise.resolve(true);
 	}
 }

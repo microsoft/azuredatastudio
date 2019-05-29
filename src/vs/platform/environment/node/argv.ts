@@ -95,8 +95,6 @@ export const options: Option[] = [
 	{ id: 'trace-category-filter', type: 'string' },
 	{ id: 'trace-options', type: 'string' },
 	{ id: 'prof-code-loading', type: 'boolean' },
-	{ id: 'nodeless', type: 'boolean' }, // TODO@ben revisit electron5 nodeless support
-
 	// {{SQL CARBON EDIT}}
 	{ id: 'database', type: 'string', alias: 'D' },
 	{ id: 'server', type: 'string', alias: 'S' },

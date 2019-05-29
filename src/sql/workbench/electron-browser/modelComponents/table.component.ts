@@ -20,6 +20,8 @@ import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { getContentHeight, getContentWidth, Dimension } from 'vs/base/browser/dom';
 import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
+import { CheckboxSelectColumn, ICheckboxCellActionEventArgs, ActionOnCheck } from 'sql/base/browser/ui/table/plugins/checkboxSelectColumn.plugin';
+import { Emitter, Event as vsEvent } from 'vs/base/common/event';
 
 @Component({
 	selector: 'modelview-table',
@@ -33,6 +35,9 @@ export default class TableComponent extends ComponentBase implements IComponent,
 	private _table: Table<Slick.SlickData>;
 	private _tableData: TableDataView<Slick.SlickData>;
 	private _tableColumns;
+	private _checkboxColumns: CheckboxSelectColumn<{}>[] = [];
+	private _onCheckBoxChanged = new Emitter<ICheckboxCellActionEventArgs>();
+	public readonly onCheckBoxChanged: vsEvent<ICheckboxCellActionEventArgs> = this._onCheckBoxChanged.event;
 
 	@ViewChild('table', { read: ElementRef }) private _inputContainer: ElementRef;
 	constructor(
@@ -50,9 +55,14 @@ export default class TableComponent extends ComponentBase implements IComponent,
 	transformColumns(columns: string[] | azdata.TableColumn[]): Slick.Column<any>[] {
 		let tableColumns: any[] = <any[]>columns;
 		if (tableColumns) {
-			return (<any[]>columns).map(col => {
-				if (col.value) {
-					return <Slick.Column<any>>{
+			let mycolumns: Slick.Column<any>[] = [];
+			let index: number = 0;
+			(<any[]>columns).map(col => {
+				if (col.type && col.type === 1) {
+					this.createCheckBoxPlugin(col, index);
+				}
+				else if (col.value) {
+					mycolumns.push(<Slick.Column<any>>{
 						name: col.value,
 						id: col.value,
 						field: col.value,
@@ -60,15 +70,17 @@ export default class TableComponent extends ComponentBase implements IComponent,
 						cssClass: col.cssClass,
 						headerCssClass: col.headerCssClass,
 						toolTip: col.toolTip
-					};
+					});
 				} else {
-					return <Slick.Column<any>>{
+					mycolumns.push(<Slick.Column<any>>{
 						name: <string>col,
 						id: <string>col,
 						field: <string>col
-					};
+					});
 				}
+				index++;
 			});
+			return mycolumns;
 		} else {
 			return (<string[]>columns).map(col => {
 				return <Slick.Column<any>>{
@@ -79,6 +91,8 @@ export default class TableComponent extends ComponentBase implements IComponent,
 			});
 		}
 	}
+
+
 
 	public static transformData(rows: string[][], columns: any[]): { [key: string]: string }[] {
 		if (rows && columns) {
@@ -166,8 +180,45 @@ export default class TableComponent extends ComponentBase implements IComponent,
 			this._table.setSelectedRows(this.selectedRows);
 		}
 
+		for (let col in this._checkboxColumns) {
+			this.registerCheckboxPlugin(this._checkboxColumns[col]);
+		}
+
 		this.layoutTable();
 		this.validate();
+	}
+
+	private createCheckBoxPlugin(col: any, index: number) {
+		let name = col.value;
+		if (!this._checkboxColumns[col.value]) {
+			this._checkboxColumns[col.value] = new CheckboxSelectColumn({
+				title: col.value,
+				toolTip: col.toolTip,
+				width: col.width,
+				cssClass: col.cssClass,
+				headerCssClass: col.headerCssClass,
+				actionOnCheck: col.options ? col.options.actionOnCheckbox : null
+			}, index);
+
+			this._register(this._checkboxColumns[col.value].onChange((state) => {
+				this.fireEvent({
+					eventType: ComponentEventType.onCellAction,
+					args: {
+						row: state.row,
+						column: state.column,
+						checked: state.checked,
+						name: name
+					}
+				});
+			}));
+		}
+	}
+
+	private registerCheckboxPlugin(checkboxSelectColumn: CheckboxSelectColumn<{}>): void {
+		this._tableColumns.splice(checkboxSelectColumn.index, 0, checkboxSelectColumn.getColumnDefinition());
+		this._table.registerPlugin(checkboxSelectColumn);
+		this._table.columns = this._tableColumns;
+		this._table.autosizeColumns();
 	}
 
 	// CSS-bound properties

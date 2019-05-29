@@ -14,10 +14,9 @@ import { IContextMenuService, IContextViewService } from 'vs/platform/contextvie
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
 import { MenuId, IMenuService, MenuItemAction } from 'vs/platform/actions/common/actions';
-import { IAction, Action, IActionItem } from 'vs/base/common/actions';
+import { IAction, Action, IActionViewItem } from 'vs/base/common/actions';
 import { IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
-import { fillInActions, LabeledMenuItemActionItem } from 'vs/platform/actions/browser/menuItemActionItem';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 
 import { AngularDisposable } from 'sql/base/node/lifecycle';
@@ -48,6 +47,7 @@ import { createErrorWithActions } from 'vs/base/common/errorsWithActions';
 import { toErrorMessage } from 'vs/base/common/errorMessage';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
+import { LabeledMenuItemActionItem, fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
@@ -279,7 +279,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			defaultKernel: this._notebookParams.input.defaultKernel,
 			layoutChanged: this._notebookParams.input.layoutChanged,
 			capabilitiesService: this.capabilitiesService
-		}, this.profile, this.logService);
+		}, this.profile, this.logService, this.notificationService);
 		model.onError((errInfo: INotification) => this.handleModelError(errInfo));
 		let trusted = await this.notebookService.isNotebookTrustCached(this._notebookParams.notebookUri, this.isDirty());
 		await model.requestModelLoad(trusted);
@@ -405,7 +405,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._trustedAction.enabled = false;
 
 		let taskbar = <HTMLElement>this.toolbar.nativeElement;
-		this._actionBar = new Taskbar(taskbar, { actionItemProvider: action => this.actionItemProvider(action as Action) });
+		this._actionBar = new Taskbar(taskbar, { actionViewItemProvider: action => this.actionItemProvider(action as Action) });
 		this._actionBar.context = this;
 		this._actionBar.setContent([
 			{ action: addCodeCellButton },
@@ -419,7 +419,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	}
 
-	private actionItemProvider(action: Action): IActionItem {
+	private actionItemProvider(action: Action): IActionViewItem {
 		// Check extensions to create ActionItem; otherwise, return undefined
 		// This is similar behavior that exists in MenuItemActionItem
 		if (action instanceof MenuItemAction) {
