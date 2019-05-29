@@ -115,7 +115,7 @@ export class TaskHistoryRenderer implements IRenderer {
 			this.timer(element, templateData.time);
 
 			const timer = new IntervalTimer();
-			timer.cancelAndSet(() => this.timer(element, templateData.time), 500);
+			timer.cancelAndSet(() => this.timer(element, templateData.time), 1000);
 			templateData.disposables.push(timer);
 		}
 	}
