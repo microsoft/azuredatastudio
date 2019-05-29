@@ -156,7 +156,6 @@
     "should": "^13.2.3",
     "sinon": "^1.17.2",
     "source-map": "^0.4.4",
-    "supports-color": "^6.1.0",
     "temp-write": "^3.4.0",
     "ts-loader": "^4.4.2",
     "tslint": "^5.16.0",

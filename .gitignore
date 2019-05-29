@@ -24,4 +24,3 @@ coverage/
 test_data/
 test-results/
 yarn-error.log
-.vscode/mocha.tree.json
