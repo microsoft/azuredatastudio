@@ -19,7 +19,7 @@ import { IModelService } from 'vs/editor/common/services/modelService';
 import { ComponentBase } from 'sql/workbench/electron-browser/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore } from 'sql/workbench/electron-browser/modelComponents/interfaces';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
-import { SimpleProgressService } from 'vs/editor/standalone/browser/simpleServices';
+import { SimpleLocalProgressService } from 'vs/editor/standalone/browser/simpleServices';
 import { IProgressService } from 'vs/platform/progress/common/progress';
 import { TextDiffEditor } from 'vs/workbench/browser/parts/editor/textDiffEditor';
 import { DiffEditorInput } from 'vs/workbench/common/editor/diffEditorInput';
@@ -68,7 +68,7 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 	}
 
 	private _createEditor(): void {
-		this._instantiationService = this._instantiationService.createChild(new ServiceCollection([IProgressService, new SimpleProgressService()]));
+		this._instantiationService = this._instantiationService.createChild(new ServiceCollection([IProgressService, new SimpleLocalProgressService()]));
 		this._editor = this._instantiationService.createInstance(TextDiffEditor);
 		this._editor.reverseColoring();
 		this._editor.create(this._el.nativeElement);

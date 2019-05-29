@@ -454,14 +454,16 @@ export class QuickOpenController extends Component implements IQuickOpenService 
 		const previousInput = this.quickOpenWidget.getInput();
 		const wasShowingHistory = previousInput && previousInput.entries && previousInput.entries.some(e => e instanceof EditorHistoryEntry || e instanceof EditorHistoryEntryGroup);
 		if (wasShowingHistory || matchingHistoryEntries.length > 0) {
-			if (resolvedHandler.hasShortResponseTime()) {
-				await timeout(QuickOpenController.MAX_SHORT_RESPONSE_TIME);
-			}
+			(async () => {
+				if (resolvedHandler.hasShortResponseTime()) {
+					await timeout(QuickOpenController.MAX_SHORT_RESPONSE_TIME);
+				}
 
-			if (!token.isCancellationRequested && !inputSet) {
-				this.quickOpenWidget.setInput(quickOpenModel, { autoFocusFirstEntry: true });
-				inputSet = true;
-			}
+				if (!token.isCancellationRequested && !inputSet) {
+					this.quickOpenWidget.setInput(quickOpenModel, { autoFocusFirstEntry: true });
+					inputSet = true;
+				}
+			})();
 		}
 
 		// Get results
@@ -523,7 +525,7 @@ export class QuickOpenController extends Component implements IQuickOpenService 
 			const model = new QuickOpenModel([new PlaceholderQuickOpenEntry(placeHolderLabel)], this.actionProvider);
 			this.showModel(model, resolvedHandler.getAutoFocus(value, { model, quickNavigateConfiguration: this.quickOpenWidget.getQuickNavigateConfiguration() }), types.withNullAsUndefined(resolvedHandler.getAriaLabel()));
 
-			return Promise.resolve(undefined);
+			return;
 		}
 
 		// Support extra class from handler
@@ -579,8 +581,8 @@ export class QuickOpenController extends Component implements IQuickOpenService 
 		return mapEntryToPath;
 	}
 
-	private resolveHandler(handler: QuickOpenHandlerDescriptor): Promise<QuickOpenHandler> {
-		let result = this._resolveHandler(handler);
+	private async resolveHandler(handler: QuickOpenHandlerDescriptor): Promise<QuickOpenHandler> {
+		let result = this.doResolveHandler(handler);
 
 		const id = handler.getId();
 		if (!this.handlerOnOpenCalled[id]) {
@@ -594,14 +596,16 @@ export class QuickOpenController extends Component implements IQuickOpenService 
 			});
 		}
 
-		return result.then<QuickOpenHandler>(null, (error) => {
+		try {
+			return await result;
+		} catch (error) {
 			delete this.mapResolvedHandlersToPrefix[id];
 
-			return Promise.reject(new Error(`Unable to instantiate quick open handler ${handler.getId()}: ${JSON.stringify(error)}`));
-		});
+			throw new Error(`Unable to instantiate quick open handler ${handler.getId()}: ${JSON.stringify(error)}`);
+		}
 	}
 
-	private _resolveHandler(handler: QuickOpenHandlerDescriptor): Promise<QuickOpenHandler> {
+	private doResolveHandler(handler: QuickOpenHandlerDescriptor): Promise<QuickOpenHandler> {
 		const id = handler.getId();
 
 		// Return Cached

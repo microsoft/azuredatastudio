@@ -1000,6 +1000,7 @@ export interface IInplaceReplaceSupportResult {
 export interface ILink {
 	range: IRange;
 	url?: URI | string;
+	tooltip?: string;
 }
 
 export interface ILinksList {
@@ -1093,7 +1094,6 @@ export interface DocumentColorProvider {
 }
 
 export interface SelectionRange {
-	kind: string;
 	range: IRange;
 }
 

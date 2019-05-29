@@ -99,7 +99,7 @@ export class InputBox extends Widget {
 	private placeholder: string;
 	private ariaLabel: string;
 	private validation?: IInputValidator;
-	private state: string | null = 'idle';
+	private state: 'idle' | 'open' | 'closed' = 'idle';
 	private cachedHeight: number | null;
 
 	// {{SQL CARBON EDIT}} - Add showValidationMessage and set inputBackground, inputForeground, and inputBorder as protected
@@ -454,18 +454,23 @@ export class InputBox extends Widget {
 
 				return null;
 			},
+			onHide: () => {
+				this.state = 'closed';
+			},
 			layout: layout
 		});
 	}
 
 	private _hideMessage(): void {
-		if (!this.contextViewProvider || this.state !== 'open') {
+		if (!this.contextViewProvider) {
 			return;
 		}
 
-		this.state = 'idle';
+		if (this.state === 'open') {
+			this.contextViewProvider.hideContextView();
+		}
 
-		this.contextViewProvider.hideContextView();
+		this.state = 'idle';
 	}
 
 	private onValueChange(): void {
@@ -555,7 +560,7 @@ export class InputBox extends Widget {
 		this.contextViewProvider = undefined;
 		this.message = null;
 		this.validation = undefined;
-		this.state = null;
+		this.state = null!; // StrictNullOverride: nulling out ok in dispose
 		this.actionbar = undefined;
 
 		super.dispose();

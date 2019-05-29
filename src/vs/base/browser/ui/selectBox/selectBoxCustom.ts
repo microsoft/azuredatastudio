@@ -197,6 +197,9 @@ export class SelectBoxList implements ISelectBoxDelegate, IListVirtualDelegate<I
 				index: e.target.selectedIndex,
 				selected: e.target.value
 			});
+			if (!!this.options[this.selected] && !!this.options[this.selected].text) {
+				this.selectElement.title = this.options[this.selected].text;
+			}
 		}));
 
 		// Have to implement both keyboard and mouse controllers to handle disabled options
@@ -288,6 +291,9 @@ export class SelectBoxList implements ISelectBoxDelegate, IListVirtualDelegate<I
 		}
 
 		this.selectElement.selectedIndex = this.selected;
+		if (!!this.options[this.selected] && !!this.options[this.selected].text) {
+			this.selectElement.title = this.options[this.selected].text;
+		}
 	}
 
 	public setAriaLabel(label: string): void {
@@ -410,7 +416,7 @@ export class SelectBoxList implements ISelectBoxDelegate, IListVirtualDelegate<I
 			let listBackground = this.styles.selectListBackground ? this.styles.selectListBackground.toString() : background;
 			this.selectDropDownListContainer.style.backgroundColor = listBackground;
 			this.selectionDetailsPane.style.backgroundColor = listBackground;
-			const optionsBorder = this.styles.focusBorder ? this.styles.focusBorder.toString() : null;
+			const optionsBorder = this.styles.focusBorder ? this.styles.focusBorder.toString() : '';
 			this.selectDropDownContainer.style.outlineColor = optionsBorder;
 			this.selectDropDownContainer.style.outlineOffset = '-1px';
 		}
@@ -816,7 +822,11 @@ export class SelectBoxList implements ISelectBoxDelegate, IListVirtualDelegate<I
 				this._onDidSelect.fire({
 					index: this.selectElement.selectedIndex,
 					selected: this.options[this.selected].text
+
 				});
+				if (!!this.options[this.selected] && !!this.options[this.selected].text) {
+					this.selectElement.title = this.options[this.selected].text;
+				}
 			}
 		}
 	}
@@ -907,6 +917,9 @@ export class SelectBoxList implements ISelectBoxDelegate, IListVirtualDelegate<I
 				index: this.selectElement.selectedIndex,
 				selected: this.options[this.selected].text
 			});
+			if (!!this.options[this.selected] && !!this.options[this.selected].text) {
+				this.selectElement.title = this.options[this.selected].text;
+			}
 		}
 
 		this.hideSelectDropDown(true);

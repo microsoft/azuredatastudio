@@ -40,8 +40,7 @@ import { ExtHostWorkspace } from 'vs/workbench/api/common/extHostWorkspace';
 import { ExtHostConfiguration, ExtHostConfigProvider } from 'vs/workbench/api/common/extHostConfiguration';
 import { ExtHostStorage } from 'vs/workbench/api/common/extHostStorage';
 import * as extHostTypes from 'vs/workbench/api/common/extHostTypes';
-import { ISchemeTransformer } from 'vs/workbench/api/common/extHostLanguageFeatures';
-import { AzureResource } from 'sql/platform/accounts/common/interfaces';
+import { IURITransformer } from 'vs/base/common/uriIpc';
 
 export interface ISqlExtensionApiFactory {
 	vsCodeFactory(extension: IExtensionDescription, registry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): typeof vscode;
@@ -60,10 +59,9 @@ export function createApiFactory(
 	extensionService: ExtHostExtensionService,
 	logService: ExtHostLogService,
 	extHostStorage: ExtHostStorage,
-	schemeTransformer: ISchemeTransformer | null,
-	outputChannelName: string
+	uriTransformer: IURITransformer | null
 ): ISqlExtensionApiFactory {
-	let vsCodeFactory = extHostApi.createApiFactory(initData, rpcProtocol, extHostWorkspace, extHostConfiguration, extensionService, logService, extHostStorage, schemeTransformer, outputChannelName);
+	let vsCodeFactory = extHostApi.createApiFactory(initData, rpcProtocol, extHostWorkspace, extHostConfiguration, extensionService, logService, extHostStorage, uriTransformer);
 
 	// Addressable instances
 	const extHostAccountManagement = rpcProtocol.set(SqlExtHostContext.ExtHostAccountManagement, new ExtHostAccountManagement(rpcProtocol));

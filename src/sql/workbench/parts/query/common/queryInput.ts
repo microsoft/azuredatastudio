@@ -122,16 +122,15 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 		super();
 		this._updateSelection = new Emitter<ISelectionData>();
 
-		this._toDispose = [];
 		// re-emit sql editor events through this editor if it exists
 		if (this._sql) {
-			this._toDispose.push(this._sql.onDidChangeDirty(() => this._onDidChangeDirty.fire()));
+			this._register(this._sql.onDidChangeDirty(() => this._onDidChangeDirty.fire()));
 		}
 
 		// Attach to event callbacks
 		if (this._queryModelService) {
 			// Register callbacks for the Actions
-			this._toDispose.push(
+			this._register(
 				this._queryModelService.onRunQueryStart(uri => {
 					if (this.uri === uri) {
 						this.onRunQuery();
@@ -139,7 +138,7 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 				})
 			);
 
-			this._toDispose.push(
+			this._register(
 				this._queryModelService.onRunQueryComplete(uri => {
 					if (this.uri === uri) {
 						this.onQueryComplete();
@@ -149,7 +148,7 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 		}
 
 		if (this._connectionManagementService) {
-			this._toDispose.push(this._connectionManagementService.onDisconnect(result => {
+			this._register(this._connectionManagementService.onDisconnect(result => {
 				if (result.connectionUri === this.uri) {
 					this.onDisconnect();
 				}
@@ -164,7 +163,7 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 		}
 
 		if (this._configurationService) {
-			this._toDispose.push(this._configurationService.onDidChangeConfiguration(e => {
+			this._register(this._configurationService.onDidChangeConfiguration(e => {
 				if (e.affectedKeys.includes('sql.showConnectionInfoInTitle')) {
 					this._onDidChangeLabel.fire();
 				}
@@ -309,7 +308,6 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 	public dispose(): void {
 		this._sql.dispose();
 		this._results.dispose();
-		this._toDispose = dispose(this._toDispose);
 		super.dispose();
 	}
 

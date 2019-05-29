@@ -21,7 +21,7 @@ import {
 	INSTALL_ERROR_MALICIOUS,
 	INSTALL_ERROR_INCOMPATIBLE
 } from 'vs/platform/extensionManagement/common/extensionManagement';
-import { areSameExtensions, getGalleryExtensionId, groupByExtension, getMaliciousExtensionsSet, getGalleryExtensionTelemetryData, getLocalExtensionTelemetryData } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
+import { areSameExtensions, getGalleryExtensionId, groupByExtension, getMaliciousExtensionsSet, getGalleryExtensionTelemetryData, getLocalExtensionTelemetryData, ExtensionIdentifierWithVersion } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 import { localizeManifest } from '../common/extensionNls';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { Limiter, createCancelablePromise, CancelablePromise, Queue } from 'vs/base/common/async';
@@ -44,7 +44,7 @@ import { Schemas } from 'vs/base/common/network';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { getPathFromAmdModule } from 'vs/base/common/amd';
 import { getManifest } from 'vs/platform/extensionManagement/node/extensionManagementUtil';
-import { IExtensionManifest, ExtensionType, ExtensionIdentifierWithVersion } from 'vs/platform/extensions/common/extensions';
+import { IExtensionManifest, ExtensionType } from 'vs/platform/extensions/common/extensions';
 
 // {{SQL CARBON EDIT}
 import product from 'vs/platform/product/node/product';
@@ -367,7 +367,7 @@ export class ExtensionManagementService extends Disposable implements IExtension
 		const compatibleExtension = await this.galleryService.getCompatibleExtension(extension);
 
 		if (!compatibleExtension) {
-			return Promise.reject(new ExtensionManagementError(nls.localize('notFoundCompatibleDependency', "Unable to install because, the extension '{0}' compatible with current version '{1}' of VS Code is not found.", extension.identifier.id, pkg.version), INSTALL_ERROR_INCOMPATIBLE));
+			return Promise.reject(new ExtensionManagementError(nls.localize('notFoundCompatibleDependency', "Unable to install '{0}' extension because it is not compatible with the current version of VS Code (version {1}).", extension.identifier.id, pkg.version), INSTALL_ERROR_INCOMPATIBLE));
 		}
 
 		return compatibleExtension;
@@ -806,19 +806,29 @@ export class ExtensionManagementService extends Disposable implements IExtension
 			.then(undefined, () => null);
 	}
 
-	removeDeprecatedExtensions(): Promise<any> {
-		return this.removeUninstalledExtensions()
-			.then(() => this.removeOutdatedExtensions());
+	async removeDeprecatedExtensions(): Promise<void> {
+		await this.removeUninstalledExtensions();
+		await this.removeOutdatedExtensions();
 	}
 
-	private removeUninstalledExtensions(): Promise<void> {
-		return this.getUninstalledExtensions()
-			.then(uninstalled => this.scanExtensions(this.extensionsPath, ExtensionType.User) // All user extensions
-				.then(extensions => {
-					const toRemove: ILocalExtension[] = extensions.filter(e => uninstalled[new ExtensionIdentifierWithVersion(e.identifier, e.manifest.version).key()]);
-					return Promise.all(toRemove.map(e => this.extensionLifecycle.postUninstall(e).then(() => this.removeUninstalledExtension(e))));
-				})
-			).then(() => undefined);
+	private async removeUninstalledExtensions(): Promise<void> {
+		const uninstalled = await this.getUninstalledExtensions();
+		const extensions = await this.scanExtensions(this.extensionsPath, ExtensionType.User); // All user extensions
+		const installed: Set<string> = new Set<string>();
+		for (const e of extensions) {
+			if (!uninstalled[new ExtensionIdentifierWithVersion(e.identifier, e.manifest.version).key()]) {
+				installed.add(e.identifier.id.toLowerCase());
+			}
+		}
+		const byExtension: ILocalExtension[][] = groupByExtension(extensions, e => e.identifier);
+		await Promise.all(byExtension.map(async e => {
+			const latest = e.sort((a, b) => semver.rcompare(a.manifest.version, b.manifest.version))[0];
+			if (!installed.has(latest.identifier.id.toLowerCase())) {
+				await this.extensionLifecycle.postUninstall(latest);
+			}
+		}));
+		const toRemove: ILocalExtension[] = extensions.filter(e => uninstalled[new ExtensionIdentifierWithVersion(e.identifier, e.manifest.version).key()]);
+		await Promise.all(toRemove.map(e => this.removeUninstalledExtension(e)));
 	}
 
 	private removeOutdatedExtensions(): Promise<void> {

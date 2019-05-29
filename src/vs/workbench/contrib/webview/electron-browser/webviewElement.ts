@@ -509,7 +509,7 @@ export class WebviewElement extends Disposable implements Webview {
 		}
 
 		this.style(themeService.getTheme());
-		themeService.onThemeChange(this.style, this, this._toDispose);
+		this._register(themeService.onThemeChange(this.style, this));
 	}
 
 	public mountTo(parent: HTMLElement) {
@@ -661,6 +661,9 @@ export class WebviewElement extends Disposable implements Webview {
 	}
 
 	public layout(): void {
+		if (!this._webview) {
+			return;
+		}
 		const contents = this._webview.getWebContents();
 		if (!contents || contents.isDestroyed()) {
 			return;
