@@ -40,17 +40,16 @@ if (context.RunTest) {
 }
 
 class ObjectExplorerTester {
-	private static IterationCount = 20;
 	private static ParallelCount = 1;
 
-	@stressify({ dop: ObjectExplorerTester.ParallelCount, iterations: ObjectExplorerTester.IterationCount })
+	@stressify({ dop: ObjectExplorerTester.ParallelCount })
 	async bdcNodeLabelTest(): Promise<void> {
 		const expectedNodeLabel = ['Databases', 'Security', 'Server Objects', 'Data Services'];
 		let server = await getBdcServer();
 		await this.verifyOeNode(server, 6000, expectedNodeLabel);
 	}
 
-	@stressify({ dop: ObjectExplorerTester.ParallelCount, iterations: ObjectExplorerTester.IterationCount })
+	@stressify({ dop: ObjectExplorerTester.ParallelCount })
 	async standaloneNodeLabelTest(): Promise<void> {
 		if (process.platform === 'win32') {
 			const expectedNodeLabel = ['Databases', 'Security', 'Server Objects'];
@@ -59,14 +58,14 @@ class ObjectExplorerTester {
 		}
 	}
 
-	@stressify({ dop: ObjectExplorerTester.ParallelCount, iterations: ObjectExplorerTester.IterationCount })
+	@stressify({ dop: ObjectExplorerTester.ParallelCount })
 	async sqlDbNodeLabelTest(): Promise<void> {
 		const expectedNodeLabel = ['Databases', 'Security'];
 		let server = await getAzureServer();
 		await this.verifyOeNode(server, 3000, expectedNodeLabel);
 	}
 
-	@stressify({ dop: ObjectExplorerTester.ParallelCount, iterations: ObjectExplorerTester.IterationCount })
+	@stressify({ dop: ObjectExplorerTester.ParallelCount })
 	async sqlDbContextMenuTest(): Promise<void> {
 		let server = await getStandaloneServer();
 		let expectedActions: string[];
@@ -80,7 +79,7 @@ class ObjectExplorerTester {
 		await this.verifyContextMenu(server, expectedActions);
 	}
 
-	@stressify({ dop: ObjectExplorerTester.ParallelCount, iterations: ObjectExplorerTester.IterationCount })
+	@stressify({ dop: ObjectExplorerTester.ParallelCount })
 	async standAloneContextMenuTest(): Promise<void> {
 		let server = await getStandaloneServer();
 		let expectedActions: string[] = [];
@@ -93,7 +92,7 @@ class ObjectExplorerTester {
 		await this.verifyDBContextMenu(server, 3000, expectedActions);
 	}
 
-	@stressify({ dop: ObjectExplorerTester.ParallelCount, iterations: ObjectExplorerTester.IterationCount })
+	@stressify({ dop: ObjectExplorerTester.ParallelCount })
 	async bdcContextMenuTest(): Promise<void> {
 		let server = await getBdcServer();
 		let expectedActions: string[];

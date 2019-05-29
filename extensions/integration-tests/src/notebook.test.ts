@@ -19,7 +19,6 @@ import { stressify } from 'adstest';
 if (context.RunTest) {
 	suite('Notebook integration test suite', function () {
 		setup(async function () {
-			console.log(`environment variable SuiteType is set to ${process.env.SuiteType}`);
 			console.log(`Start "${this.currentTest.title}"`);
 			let server = await getBdcServer();
 			assert(server && server.serverName, 'No server could be found');
@@ -60,12 +59,11 @@ if (context.RunTest) {
 }
 
 class NotebookTester {
-	invocationCount: number = 0;
-
-	private static IterationCount = 20;
 	private static ParallelCount = 1;
 
-	@stressify({ dop: NotebookTester.ParallelCount, iterations: NotebookTester.IterationCount })
+	invocationCount: number = 0;
+
+	@stressify({ dop: NotebookTester.ParallelCount })
 	async pySpark3NbTest(title: string): Promise<void> {
 		let notebook = await this.openNotebook(pySparkNotebookContent, pySpark3KernelMetadata, title + this.invocationCount++);
 		let cellOutputs = notebook.document.cells[0].contents.outputs;
@@ -73,13 +71,13 @@ class NotebookTester {
 		assert(sparkResult === '2', `Expected spark result: 2, Actual: ${sparkResult}`);
 	}
 
-	@stressify({ dop: NotebookTester.ParallelCount, iterations: NotebookTester.IterationCount })
+	@stressify({ dop: NotebookTester.ParallelCount })
 	async python3ClearAllOutputs(title: string): Promise<void> {
 		let notebook = await this.openNotebook(pySparkNotebookContent, pythonKernelMetadata, title + this.invocationCount++);
 		await this.verifyClearAllOutputs(notebook);
 	}
 
-	@stressify({ dop: NotebookTester.ParallelCount, iterations: NotebookTester.IterationCount })
+	@stressify({ dop: NotebookTester.ParallelCount })
 	async python3NbTest(title: string): Promise<void> {
 		let notebook = await this.openNotebook(pySparkNotebookContent, pythonKernelMetadata, title + this.invocationCount++);
 		let cellOutputs = notebook.document.cells[0].contents.outputs;
@@ -91,13 +89,13 @@ class NotebookTester {
 		assert(result === '2', `Expected python result: 2, Actual: ${result}`);
 	}
 
-	@stressify({ dop: NotebookTester.ParallelCount, iterations: NotebookTester.IterationCount })
+	@stressify({ dop: NotebookTester.ParallelCount })
 	async sqlNbClearAllOutputs(title: string): Promise<void> {
 		let notebook = await this.openNotebook(sqlNotebookContent, sqlKernelMetadata, title + this.invocationCount++);
 		await this.verifyClearAllOutputs(notebook);
 	}
 
-	@stressify({ dop: NotebookTester.ParallelCount, iterations: NotebookTester.IterationCount })
+	@stressify({ dop: NotebookTester.ParallelCount })
 	async sqlNbMultipleCellsTest(title: string): Promise<void> {
 		let notebook = await this.openNotebook(sqlNotebookMultipleCellsContent, sqlKernelMetadata, title + this.invocationCount++, true);
 		const expectedOutput0 = '(1 row affected)';
@@ -117,7 +115,7 @@ class NotebookTester {
 		}
 	}
 
-	@stressify({ dop: NotebookTester.ParallelCount, iterations: NotebookTester.IterationCount })
+	@stressify({ dop: NotebookTester.ParallelCount })
 	async sqlNbTest(title: string): Promise<void> {
 		let notebook = await this.openNotebook(sqlNotebookContent, sqlKernelMetadata, title + this.invocationCount++, false, true);
 		const expectedOutput0 = '(1 row affected)';
