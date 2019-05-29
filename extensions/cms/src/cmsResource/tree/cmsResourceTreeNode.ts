@@ -20,7 +20,6 @@ const localize = nls.loadMessageBundle();
 
 export class CmsResourceTreeNode extends CmsResourceTreeNodeBase {
 
-	private _id: string = undefined;
 	private _serverGroupNodes: ServerGroupTreeNode[] = [];
 
 	public constructor(
@@ -33,12 +32,11 @@ export class CmsResourceTreeNode extends CmsResourceTreeNodeBase {
 		parent: TreeNode
 	) {
 		super(name, description, ownerUri, appContext, treeChangeHandler, parent);
-		this._id = `cms_cmsServer_${this.name}`;
 	}
 
 	public async getChildren(): Promise<TreeNode[]> {
 		try {
-			let nodes: TreeNode[] = [];
+			let nodes: CmsResourceTreeNodeBase[] = [];
 			if (!this.ownerUri) {
 				this._ownerUri = await this.appContext.apiWrapper.getUriForConnection(this.connection);
 			}
@@ -73,7 +71,7 @@ export class CmsResourceTreeNode extends CmsResourceTreeNodeBase {
 						}
 					}
 					if (nodes.length > 0) {
-						return nodes;
+						return nodes.sort((node1, node2) => node1.name > node2.name ? 1 : -1);
 					} else {
 						return [CmsResourceMessageTreeNode.create(CmsResourceTreeNode.noResourcesLabel, undefined)];
 					}

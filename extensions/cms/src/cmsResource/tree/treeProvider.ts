@@ -64,7 +64,7 @@ export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICms
 				this.isSystemInitialized = true;
 				// save the CMS Servers for future use
 				let toSaveCmsServers = JSON.parse(JSON.stringify(registeredCmsServers));
-				toSaveCmsServers.forEach((server) => {
+				toSaveCmsServers.forEach(server => {
 					server.ownerUri = undefined,
 						server.connection.options.password = '';
 				});
@@ -76,10 +76,9 @@ export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICms
 						server.ownerUri,
 						server.connection,
 						this._appContext, this, null);
-				});
+				}).sort();
 			} else {
 				return [new CmsResourceEmptyTreeNode()];
-
 			}
 		} catch (error) {
 			return [new CmsResourceEmptyTreeNode()];

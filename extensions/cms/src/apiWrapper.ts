@@ -10,7 +10,6 @@ import * as azdata from 'azdata';
 import * as mssql from '../../mssql/src/api/mssqlapis';
 import * as Utils from './cmsResource/utils';
 import { ICmsResourceNodeInfo } from './cmsResource/tree/baseTreeNodes';
-import { connect } from 'net';
 
 const localize = nls.loadMessageBundle();
 
@@ -157,7 +156,7 @@ export class ApiWrapper {
 	}
 
 	public showWarningMessage(message: string, ...items: string[]): Thenable<string | undefined> {
-		return vscode.window.showWarningMessage(message, ...items);
+		return vscode.window.showWarningMessage(message, { modal: true }, ...items);
 	}
 
 	public showInformationMessage(message: string, ...items: string[]): Thenable<string | undefined> {
@@ -289,8 +288,8 @@ export class ApiWrapper {
 					this.showErrorMessage(errorText);
 					return false;
 				} else {
-					let result = await provider.addRegisteredServer(ownerUri, relativePath,
-						connection.options.registeredServerName, connection.options.registeredServerDescription, connection);
+					let registeredServerName = connection.options.registeredServerName === '' ? connection.options.server : connection.options.registeredServerName;
+					let result = await provider.addRegisteredServer(ownerUri, relativePath, registeredServerName, connection.options.registeredServerDescription, connection);
 					return result;
 				}
 

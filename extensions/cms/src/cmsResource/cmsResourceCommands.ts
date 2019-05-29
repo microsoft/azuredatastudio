@@ -77,7 +77,7 @@ export function addRegisteredServerCommand(appContext: AppContext, tree: CmsReso
 		let serverName = node instanceof CmsResourceTreeNode ? node.connection.options.server : null;
 		await appContext.apiWrapper.addRegisteredServer(relativePath, node.ownerUri, serverName).then((result) => {
 			if (result) {
-				tree.notifyNodeChanged(undefined);
+				tree.notifyNodeChanged(node);
 			}
 		});
 	});
@@ -89,11 +89,18 @@ export function deleteRegisteredServerCommand(appContext: AppContext, tree: CmsR
 		if (!(node instanceof RegisteredServerTreeNode)) {
 			return;
 		}
-		appContext.apiWrapper.removeRegisteredServer(node.name, node.relativePath, node.ownerUri).then((result) => {
-			if (result) {
-				tree.notifyNodeChanged(undefined);
-			}
-		});
+		appContext.apiWrapper.showWarningMessage(
+			`${localize('cms.confirmDelete', 'Are you sure you want to delete ')}${node.name}?`,
+			localize('cms.yes', 'Yes'),
+			localize('cms.no', 'No')).then((result) => {
+				if (result && result === localize('cms.yes', 'Yes')) {
+					appContext.apiWrapper.removeRegisteredServer(node.name, node.relativePath, node.ownerUri).then((result) => {
+						if (result) {
+							tree.notifyNodeChanged(node.parent);
+						}
+					});
+				}
+			});
 	});
 }
 
@@ -146,7 +153,7 @@ export function addServerGroupCommand(appContext: AppContext, tree: CmsResourceT
 			if (!groupExists) {
 				appContext.apiWrapper.addServerGroup(serverGroupName, serverDescription, path, node.ownerUri).then((result) => {
 					if (result) {
-						tree.notifyNodeChanged(undefined);
+						tree.notifyNodeChanged(node);
 					}
 				});
 			} else {
@@ -165,11 +172,18 @@ export function deleteServerGroupCommand(appContext: AppContext, tree: CmsResour
 		if (!(node instanceof ServerGroupTreeNode)) {
 			return;
 		}
-		appContext.apiWrapper.removeServerGroup(node.name, node.relativePath, node.ownerUri).then((result) => {
-			if (result) {
-				tree.notifyNodeChanged(undefined);
-			}
-		});
+		appContext.apiWrapper.showWarningMessage(
+			`${localize('cms.confirmDelete', 'Are you sure you want to delete ')}${node.name}?`,
+			localize('cms.yes', 'Yes'),
+			localize('cms.no', 'No')).then((result) => {
+				if (result && result === localize('cms.yes', 'Yes')) {
+					appContext.apiWrapper.removeServerGroup(node.name, node.relativePath, node.ownerUri).then((result) => {
+						if (result) {
+							tree.notifyNodeChanged(node.parent);
+						}
+					});
+				}
+			});
 	});
 }
 
@@ -179,7 +193,7 @@ export function refreshCommand(appContext: AppContext, tree: CmsResourceTreeProv
 		if (!node) {
 			return;
 		}
-		tree.notifyNodeChanged(undefined);
+		tree.notifyNodeChanged(node);
 	});
 }
 

@@ -518,7 +518,7 @@
 			{
 				"command": "cms.resource.deleteRegisteredServer",
 				"title": "%cms.resource.deleteRegisteredServer.title%",
-				"when": "viewItem == cms.resource.itemType.registeredServer"
+				"when": "viewItem == cms.resource.itemType.databaseServer"
 			},
 			{
 				"command": "cms.resource.addRegisteredServer",
@@ -534,15 +534,6 @@
 				"command": "cms.resource.deleteServerGroup",
 				"title": "%cms.resource.deleteServerGroup.title%",
 				"when": "viewItem == cms.resource.itemType.serverGroup"
-			},
-			{
-				"command": "cms.resource.refresh",
-				"title": "%cms.resource.refresh.title%",
-				"when": "viewItem == cms.resource.itemType.serverGroup",
-				"icon": {
-					"light": "resources/light/refresh.svg",
-					"dark": "resources/dark/refresh_inverse.svg"
-				}
 			},
 			{
 				"command": "cms.resource.refresh",
@@ -584,7 +575,7 @@
 			"view/item/context": [
 				{
 					"command": "cms.resource.deleteRegisteredServer",
-					"when": "viewItem == cms.resource.itemType.registeredServer",
+					"when": "viewItem == cms.resource.itemType.databaseServer",
 					"group": "navigation@2"
 				},
 				{
@@ -599,7 +590,7 @@
 				},
 				{
 					"command": "cms.resource.addRegisteredServer",
-					"when": "viewItem == cms.resource.itemType.cmsNodeContainer",
+					"when": "viewItem == cms.resource.itemType.databaseServerContainer",
 					"group": "navigation@10"
 				},
 				{
@@ -609,7 +600,7 @@
 				},
 				{
 					"command": "cms.resource.addServerGroup",
-					"when": "viewItem == cms.resource.itemType.cmsNodeContainer",
+					"when": "viewItem == cms.resource.itemType.databaseServerContainer",
 					"group": "navigation@10"
 				},
 				{
@@ -619,12 +610,12 @@
 				},
 				{
 					"command": "cms.resource.refresh",
-					"when": "viewItem == cms.resource.itemType.cmsNodeContainer",
+					"when": "viewItem == cms.resource.itemType.databaseServerContainer",
 					"group": "navigation@10"
 				},
 				{
 					"command": "cms.resource.deleteCmsServer",
-					"when": "viewItem == cms.resource.itemType.cmsNodeContainer",
+					"when": "viewItem == cms.resource.itemType.databaseServerContainer",
 					"group": "navigation@10"
 				}
 			]

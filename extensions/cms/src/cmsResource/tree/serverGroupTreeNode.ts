@@ -18,7 +18,6 @@ import { CmsResourceTreeNode } from './cmsResourceTreeNode';
 
 export class ServerGroupTreeNode extends CmsResourceTreeNodeBase {
 
-	private _id: string = undefined;
 	private _serverGroupNodes: ServerGroupTreeNode[] = [];
 
 	constructor(
@@ -31,7 +30,6 @@ export class ServerGroupTreeNode extends CmsResourceTreeNodeBase {
 		parent: TreeNode
 	) {
 		super(name, description, ownerUri, appContext, treeChangeHandler, parent);
-		this._id = `cms_serverGroup_${this.name}`;
 	}
 	public getChildren(): TreeNode[] | Promise<TreeNode[]> {
 		try {
