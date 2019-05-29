@@ -12,11 +12,11 @@ import { azureResource } from './azure-resource';
 import { IAzureResourceNodeWithProviderId } from './interfaces';
 
 export class AzureResourceService {
-	private constructor() {
-	}
+	private _areResourceProvidersLoaded: boolean = false;
+	private _resourceProviders: { [resourceProviderId: string]: azureResource.IAzureResourceProvider } = {};
+	private _treeDataProviders: { [resourceProviderId: string]: azureResource.IAzureResourceTreeDataProvider } = {};
 
-	public static getInstance(): AzureResourceService {
-		return AzureResourceService._instance;
+	public constructor() {
 	}
 
 	public async listResourceProviderIds(): Promise<string[]> {
@@ -121,9 +121,4 @@ export class AzureResourceService {
 		this._treeDataProviders[resourceProvider.providerId] = resourceProvider.getTreeDataProvider();
 	}
 
-	private _areResourceProvidersLoaded: boolean = false;
-	private _resourceProviders: { [resourceProviderId: string]: azureResource.IAzureResourceProvider } = {};
-	private _treeDataProviders: { [resourceProviderId: string]: azureResource.IAzureResourceTreeDataProvider } = {};
-
-	private static readonly _instance = new AzureResourceService();
 }

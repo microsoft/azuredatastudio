@@ -8,10 +8,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
 import * as constants from './constants';
+import * as azdata from 'azdata';
 
-import AzureResourceController from './controllers/azureResourceController';
 import { AppContext } from './appContext';
-import ControllerBase from './controllers/controllerBase';
 import { ApiWrapper } from './apiWrapper';
 import { AzureAccountProviderService } from './account-provider/azureAccountProviderService';
 
@@ -19,9 +18,21 @@ import { AzureResourceDatabaseServerProvider } from './azureResource/providers/d
 import { AzureResourceDatabaseServerService } from './azureResource/providers/databaseServer/databaseServerService';
 import { AzureResourceDatabaseProvider } from './azureResource/providers/database/databaseProvider';
 import { AzureResourceDatabaseService } from './azureResource/providers/database/databaseService';
+import { AzureResourceService } from './azureResource/resourceService';
+import { IAzureResourceCacheService, IAzureResourceAccountService, IAzureResourceSubscriptionService, IAzureResourceSubscriptionFilterService, IAzureResourceTenantService } from './azureResource/interfaces';
+import { AzureResourceServiceNames } from './azureResource/constants';
+import { AzureResourceAccountService } from './azureResource/services/accountService';
+import { AzureResourceSubscriptionService } from './azureResource/services/subscriptionService';
+import { AzureResourceSubscriptionFilterService } from './azureResource/services/subscriptionFilterService';
+import { AzureResourceCacheService } from './azureResource/services/cacheService';
+import { AzureResourceTenantService } from './azureResource/services/tenantService';
+import { registerAzureResourceCommands } from './azureResource/commands';
+import { registerAzureResourceDatabaseServerCommands } from './azureResource/providers/databaseServer/commands';
+import { registerAzureResourceDatabaseCommands } from './azureResource/providers/database/commands';
+import { AzureResourceTreeProvider } from './azureResource/tree/treeProvider';
+import { equals } from './azureResource/utils';
 
-let controllers: ControllerBase[] = [];
-
+let extensionContext: vscode.ExtensionContext;
 
 // The function is a duplicate of \src\paths.js. IT would be better to import path.js but it doesn't
 // work for now because the extension is running in different process.
@@ -39,36 +50,30 @@ export function getDefaultLogLocation() {
 	return path.join(getAppDataPath(), 'azuredatastudio');
 }
 
+function pushDisposable(disposable: vscode.Disposable): void {
+	extensionContext.subscriptions.push(disposable);
+}
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
-export function activate(extensionContext: vscode.ExtensionContext) {
+export function activate(context: vscode.ExtensionContext) {
+	extensionContext = context;
 	const apiWrapper = new ApiWrapper();
 	let appContext = new AppContext(extensionContext, apiWrapper);
-	let activations: Thenable<boolean>[] = [];
 
-	// Create the folder for storing the token caches
-	let storagePath = path.join(getDefaultLogLocation(), constants.extensionName);
-	try {
-		if (!fs.existsSync(storagePath)) {
-			fs.mkdirSync(storagePath);
-			console.log('Initialized Azure account extension storage.');
-		}
-	} catch (e) {
-		console.error(`Initialization of Azure account extension storage failed: ${e}`);
-		console.error('Azure accounts will not be available');
+	let storagePath = findOrMakeStoragePath();
+	if (!storagePath) {
 		return undefined;
 	}
 
 	// Create the provider service and activate
-	const accountProviderService = new AzureAccountProviderService(extensionContext, storagePath);
-	extensionContext.subscriptions.push(accountProviderService);
-	accountProviderService.activate();
+	initAzureAccountProvider(extensionContext, storagePath);
 
-	const azureResourceController = new AzureResourceController(appContext);
-	controllers.push(azureResourceController);
-	extensionContext.subscriptions.push(azureResourceController);
-	activations.push(azureResourceController.activate());
+	registerAzureServices(appContext);
+	const azureResourceTree = new AzureResourceTreeProvider(appContext);
+	pushDisposable(apiWrapper.registerTreeDataProvider('azureResourceExplorer', azureResourceTree));
+	registerAccountService(appContext, azureResourceTree);
+	registerCommands(appContext, azureResourceTree);
 
 	return {
 		provideResources() {
@@ -80,9 +85,60 @@ export function activate(extensionContext: vscode.ExtensionContext) {
 	};
 }
 
-// this method is called when your extension is deactivated
-export function deactivate() {
-	for (let controller of controllers) {
-		controller.deactivate();
+// Create the folder for storing the token caches
+function findOrMakeStoragePath() {
+	let storagePath = path.join(getDefaultLogLocation(), constants.extensionName);
+	try {
+		if (!fs.existsSync(storagePath)) {
+			fs.mkdirSync(storagePath);
+			console.log('Initialized Azure account extension storage.');
+		}
+	}
+	catch (e) {
+		console.error(`Initialization of Azure account extension storage failed: ${e}`);
+		console.error('Azure accounts will not be available');
+	}
+	return storagePath;
+}
+
+async function initAzureAccountProvider(extensionContext: vscode.ExtensionContext, storagePath: string): Promise<void> {
+	try {
+		const accountProviderService = new AzureAccountProviderService(extensionContext, storagePath);
+		extensionContext.subscriptions.push(accountProviderService);
+		await accountProviderService.activate();
+	} catch (err) {
+		console.log('Unexpected error starting account provider: ' + err.message);
 	}
 }
+
+function registerAzureServices(appContext: AppContext): void {
+	appContext.registerService<AzureResourceService>(AzureResourceServiceNames.resourceService, new AzureResourceService());
+	appContext.registerService<IAzureResourceCacheService>(AzureResourceServiceNames.cacheService, new AzureResourceCacheService(extensionContext));
+	appContext.registerService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService, new AzureResourceSubscriptionService());
+	appContext.registerService<IAzureResourceSubscriptionFilterService>(AzureResourceServiceNames.subscriptionFilterService, new AzureResourceSubscriptionFilterService(new AzureResourceCacheService(extensionContext)));
+	appContext.registerService<IAzureResourceTenantService>(AzureResourceServiceNames.tenantService, new AzureResourceTenantService());
+}
+function registerAccountService(appContext: AppContext, azureResourceTree: AzureResourceTreeProvider): void {
+	let accountService = new AzureResourceAccountService(appContext.apiWrapper);
+	appContext.registerService<IAzureResourceAccountService>(AzureResourceServiceNames.accountService, accountService);
+	let previousAccounts: Array<azdata.Account> = undefined;
+	accountService.onDidChangeAccounts((e: azdata.DidChangeAccountsParams) => {
+		// the onDidChangeAccounts event will trigger in many cases where the accounts didn't actually change
+		// the notifyNodeChanged event triggers a refresh which triggers a getChildren which can trigger this callback
+		// this below check short-circuits the infinite callback loop
+		if (!equals(e.accounts, previousAccounts)) {
+			azureResourceTree.notifyNodeChanged(undefined);
+		}
+		previousAccounts = e.accounts;
+	});
+
+}
+
+function registerCommands(appContext: AppContext, azureResourceTree: AzureResourceTreeProvider): void {
+	registerAzureResourceCommands(appContext, azureResourceTree);
+
+	registerAzureResourceDatabaseServerCommands(appContext);
+
+	registerAzureResourceDatabaseCommands(appContext);
+}
+
