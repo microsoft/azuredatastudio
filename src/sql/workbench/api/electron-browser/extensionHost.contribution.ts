@@ -3,4 +3,4 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'sql/workbench/api/electron-browser/mainThreadModalDialog';
+import '../browser/extensionHost.contribution.common';
