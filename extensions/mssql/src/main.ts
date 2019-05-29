@@ -137,36 +137,40 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 	azdata.ui.registerModelViewProvider('bdc-endpoints', async (view) => {
 
 		const endpointsArray: Array<Utils.IEndpoint> = Object.assign([], view.serverInfo.options['clusterEndpoints']);
-		const managementProxyEp = endpointsArray.find(e => e.serviceName === 'management-proxy');
-		if (managementProxyEp) {
-			endpointsArray.push(getCustomEndpoint(managementProxyEp, 'Grafana Dashboard', '/grafana'));
-			endpointsArray.push(getCustomEndpoint(managementProxyEp, 'Kibana Dashboard', '/kibana'));
+		if (endpointsArray.length > 0) {
+			const managementProxyEp = endpointsArray.find(e => e.serviceName === 'management-proxy');
+			if (managementProxyEp) {
+				endpointsArray.push(getCustomEndpoint(managementProxyEp, 'Grafana Dashboard', '/grafana'));
+				endpointsArray.push(getCustomEndpoint(managementProxyEp, 'Kibana Dashboard', '/kibana'));
+			}
+
+			const gatewayEp = endpointsArray.find(e => e.serviceName === 'gateway');
+			if (gatewayEp) {
+				endpointsArray.push(getCustomEndpoint(gatewayEp, 'Spark History', '/gateway/default/sparkhistory'));
+				endpointsArray.push(getCustomEndpoint(gatewayEp, 'Yarn History', '/gateway/default/yarn'));
+			}
+
+			const container = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column', width: '100%', height: '100%', alignItems: 'left' }).component();
+			endpointsArray.forEach(endpointInfo => {
+				const endPointRow = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'row' }).component();
+				const nameCell = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: endpointInfo.serviceName }).component();
+				endPointRow.addItem(nameCell, { CSSStyles: { 'width': '30%', 'font-weight': '600' } });
+				if (endpointInfo.isHyperlink) {
+					const linkCell = view.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({ label: endpointInfo.hyperlink, url: endpointInfo.hyperlink, position: '' }).component();
+					endPointRow.addItem(linkCell, { CSSStyles: { 'width': '70%', 'color': 'blue', 'text-decoration': 'underline', 'padding-top': '10px' } });
+				}
+				else {
+					const endpointCell = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: endpointInfo.ipAddress + ':' + endpointInfo.port }).component();
+					endPointRow.addItem(endpointCell, { CSSStyles: { 'width': '70%' } });
+				}
+				container.addItem(endPointRow, { CSSStyles: { 'padding-left': '10px', 'border-top': 'solid 1px #ccc', 'box-sizing': 'border-box' } });
+			});
+			const endpointsContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column', width: '100%', height: '100%', alignItems: 'left' }).component();
+			endpointsContainer.addItem(container, { CSSStyles: { 'padding-top': '25px' } });
+
+			await view.initializeModel(endpointsContainer);
 		}
 
-		const gatewayEp = endpointsArray.find(e => e.serviceName === 'gateway');
-		if (gatewayEp) {
-			endpointsArray.push(getCustomEndpoint(gatewayEp, 'Spark History', '/gateway/default/sparkhistory'));
-			endpointsArray.push(getCustomEndpoint(gatewayEp, 'Yarn History', '/gateway/default/yarn'));
-		}
-
-		const container = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column', width: '100%', height: '100%', alignItems: 'left' }).component();
-		const endpointsContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column', width: '100%', height: '100%', alignItems: 'left' }).component();
-		endpointsArray.forEach(endpointInfo => {
-			const endPointRow = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'row' }).component();
-			const nameCell = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: endpointInfo.serviceName }).component();
-			endPointRow.addItem(nameCell, { CSSStyles: { 'width': '30%', 'font-weight': '600' } });
-			if (endpointInfo.isHyperlink) {
-				const linkCell = view.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({ label: endpointInfo.hyperlink, url: endpointInfo.hyperlink, position: '' }).component();
-				endPointRow.addItem(linkCell, { CSSStyles: { 'width': '70%', 'color': 'blue', 'text-decoration': 'underline', 'padding-top': '10px' } });
-			}
-			else {
-				const endpointCell = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: endpointInfo.ipAddress + ':' + endpointInfo.port }).component();
-				endPointRow.addItem(endpointCell, { CSSStyles: { 'width': '70%' } });
-			}
-			container.addItem(endPointRow, { CSSStyles: { 'padding-left': '10px', 'border-top': 'solid 1px #ccc', 'box-sizing': 'border-box' } });
-		});
-		endpointsContainer.addItem(container, { CSSStyles: { 'padding-top': '25px' } });
-		await view.initializeModel(endpointsContainer);
 	});
 
 	function getCustomEndpoint(parentEndpoint: Utils.IEndpoint, serviceName: string, serviceUrl?: string): Utils.IEndpoint {
