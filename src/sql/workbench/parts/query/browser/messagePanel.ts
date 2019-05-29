@@ -16,7 +16,7 @@ import { IContextMenuService } from 'vs/platform/contextview/browser/contextView
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { OpenMode, ClickBehavior, ICancelableEvent, IControllerOptions } from 'vs/base/parts/tree/browser/treeDefaults';
 import { WorkbenchTreeController } from 'vs/platform/list/browser/listService';
@@ -26,9 +26,10 @@ import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
-import { $, Dimension } from 'vs/base/browser/dom';
+import { $, Dimension, createStyleSheet } from 'vs/base/browser/dom';
 import { QueryEditor } from 'sql/workbench/parts/query/browser/queryEditor';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
+import { resultsErrorColor } from 'sql/platform/theme/common/colors';
 
 export interface IResultMessageIntern extends IQueryMessage {
 	id?: string;
@@ -68,12 +69,12 @@ export class MessagePanelState {
 }
 
 export class MessagePanel extends Disposable {
-	private messageLineCountMap = new Map<IQueryMessage, number>();
 	private ds = new MessageDataSource();
-	private renderer = new MessageRenderer(this.messageLineCountMap);
+	private renderer = new MessageRenderer();
 	private model = new Model();
 	private controller: MessageController;
 	private container = $('.message-tree');
+	private styleElement = createStyleSheet(this.container);
 
 	private queryRunnerDisposables: IDisposable[] = [];
 	private _state: MessagePanelState;
@@ -103,6 +104,11 @@ export class MessagePanel extends Disposable {
 				this.state.scrollPosition = expandableTree.getScrollPosition();
 			}
 		});
+		this.container.style.width = '100%';
+		this.container.style.height = '100%';
+		this._register(attachListStyler(this.tree, this.themeService));
+		this._register(this.themeService.onThemeChange(this.applyStyles, this));
+		this.applyStyles(this.themeService.getTheme());
 		this.controller.onKeyDown = (tree, event) => {
 			if (event.ctrlKey) {
 				let context: IMessagesActionContext = {
@@ -155,9 +161,6 @@ export class MessagePanel extends Disposable {
 	}
 
 	public render(container: HTMLElement): void {
-		this.container.style.width = '100%';
-		this.container.style.height = '100%';
-		this._register(attachListStyler(this.tree, this.themeService));
 		container.appendChild(this.container);
 	}
 
@@ -214,6 +217,19 @@ export class MessagePanel extends Disposable {
 		}
 	}
 
+	private applyStyles(theme: ITheme): void {
+		const errorColor = theme.getColor(resultsErrorColor);
+		const content: string[] = [];
+		if (errorColor) {
+			content.push(`.message-tree .monaco-tree-rows .error-message { color: ${errorColor}; }`);
+		}
+
+		const newStyles = content.join('\n');
+		if (newStyles !== this.styleElement.innerHTML) {
+			this.styleElement.innerHTML = newStyles;
+		}
+	}
+
 	private reset() {
 		this.model.messages = [];
 		this.model.totalExecuteMessage = undefined;
@@ -239,6 +255,8 @@ export class MessagePanel extends Disposable {
 
 	public dispose() {
 		dispose(this.queryRunnerDisposables);
+		this.container = undefined;
+		this.styleElement = undefined;
 		super.dispose();
 	}
 }
@@ -277,15 +295,11 @@ class MessageDataSource implements IDataSource {
 }
 
 class MessageRenderer implements IRenderer {
-	constructor(private messageLineCountMap: Map<IQueryMessage, number>) {
-	}
 
 	getHeight(tree: ITree, element: IQueryMessage): number {
 		const lineHeight = 22;
-		if (this.messageLineCountMap.has(element)) {
-			return lineHeight * this.messageLineCountMap.get(element);
-		}
-		return lineHeight;
+		let lines = element.message.split('\n').length;
+		return lineHeight * lines;
 	}
 
 	getTemplateId(tree: ITree, element: IQueryMessage): string {
