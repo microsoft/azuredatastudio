@@ -13,6 +13,7 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { Disposable, IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { Color } from 'vs/base/common/color';
+import { isUndefinedOrNull } from 'vs/base/common/types';
 
 export interface ITabbedPanelStyles {
 	titleActiveForeground?: Color;
@@ -108,11 +109,11 @@ export class TabbedPanel extends Disposable {
 		return this._tabMap.has(tab.identifier);
 	}
 
-	public pushTab(tab: IPanelTab): PanelTabIdentifier {
+	public pushTab(tab: IPanelTab, index?: number): PanelTabIdentifier {
 		let internalTab = tab as IInternalPanelTab;
 		internalTab.disposables = [];
 		this._tabMap.set(tab.identifier, internalTab);
-		this._createTab(internalTab);
+		this._createTab(internalTab, index);
 		if (!this._shownTabId) {
 			this.showTab(tab.identifier);
 		}
@@ -132,7 +133,7 @@ export class TabbedPanel extends Disposable {
 		this._actionbar.context = context;
 	}
 
-	private _createTab(tab: IInternalPanelTab): void {
+	private _createTab(tab: IInternalPanelTab, index?: number): void {
 		let tabHeaderElement = DOM.$('.tab-header');
 		tabHeaderElement.setAttribute('tabindex', '0');
 		tabHeaderElement.setAttribute('role', 'tab');
@@ -151,7 +152,12 @@ export class TabbedPanel extends Disposable {
 				e.stopImmediatePropagation();
 			}
 		}));
-		this.tabList.appendChild(tabHeaderElement);
+		const insertBefore = !isUndefinedOrNull(index) ? this.tabList.children.item(index) : undefined;
+		if (insertBefore) {
+			this.tabList.insertBefore(tabHeaderElement, insertBefore);
+		} else {
+			this.tabList.append(tabHeaderElement);
+		}
 		tab.header = tabHeaderElement;
 		tab.label = tabLabel;
 	}

@@ -181,7 +181,7 @@ export class QueryResultsView extends Disposable {
 		this.resultsTab = this._register(new ResultsTab(instantiationService));
 		this.messagesTab = this._register(new MessagesTab(instantiationService));
 		this.chartTab = this._register(new ChartTab(instantiationService));
-		this._panelView = this._register(new TabbedPanel(container, { showHeaderWhenSingleView: false }));
+		this._panelView = this._register(new TabbedPanel(container, { showHeaderWhenSingleView: true }));
 		attachTabbedPanelStyler(this._panelView, themeService);
 		this.qpTab = this._register(new QueryPlanTab());
 		this.topOperationsTab = this._register(new TopOperationsTab(instantiationService));
@@ -205,11 +205,24 @@ export class QueryResultsView extends Disposable {
 		this.messagesTab.queryRunner = runner;
 		this.chartTab.queryRunner = runner;
 		this.runnerDisposables.push(runner.onQueryStart(e => {
+			this.showResults();
 			this.hideChart();
 			this.hidePlan();
 			this.hideDynamicViewModelTabs();
 			this.input.state.visibleTabs = new Set();
 			this.input.state.activeTab = this.resultsTab.identifier;
+		}));
+		this.runnerDisposables.push(runner.onQueryEnd(() => {
+			let hasResults = false;
+			for (const batch of runner.batchSets) {
+				if (batch.resultSetSummaries.length > 0) {
+					hasResults = true;
+					break;
+				}
+			}
+			if (!hasResults) {
+				this.hideResults();
+			}
 		}));
 		if (this.input.state.visibleTabs.has(this.chartTab.identifier)) {
 			if (!this._panelView.contains(this.chartTab)) {
@@ -312,6 +325,19 @@ export class QueryResultsView extends Disposable {
 		if (this._panelView.contains(this.chartTab)) {
 			this._panelView.removeTab(this.chartTab.identifier);
 		}
+	}
+
+	public hideResults() {
+		if (this._panelView.contains(this.resultsTab)) {
+			this._panelView.removeTab(this.resultsTab.identifier);
+		}
+	}
+
+	public showResults() {
+		if (!this._panelView.contains(this.resultsTab)) {
+			this._panelView.pushTab(this.resultsTab, 0);
+		}
+		this._panelView.showTab(this.resultsTab.identifier);
 	}
 
 	public showPlan(xml: string) {
