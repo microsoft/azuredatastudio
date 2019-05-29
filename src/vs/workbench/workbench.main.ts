@@ -8,6 +8,7 @@
 import 'vs/editor/editor.all';
 
 import 'vs/workbench/api/electron-browser/extensionHost.contribution';
+import 'sql/workbench/api/electron-browser/extensionHost.contribution'; // {{SQL CARBON EDIT}} @anthonydresser add our extension contributions
 
 import 'vs/workbench/electron-browser/main.contribution';
 import 'vs/workbench/browser/workbench.contribution';
@@ -449,7 +450,6 @@ import 'sql/workbench/parts/dataExplorer/browser/dataExplorerExtensionPoint';
 import 'sql/workbench/parts/dataExplorer/electron-browser/nodeActions.contribution';
 
 import 'sql/platform/telemetry/telemetry.contribution';
-import 'sql/workbench/api/node/sqlExtHost.contribution';
 import 'sql/workbench/parts/connection/browser/connection.contribution';
 import 'sql/workbench/parts/query/browser/query.contribution';
 import 'sql/workbench/parts/query/common/resultsGridContribution';
