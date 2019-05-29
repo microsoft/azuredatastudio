@@ -12,21 +12,18 @@ const TEST_SETUP_COMPLETED_TEXT: string = 'Test Setup Completed';
 const EXTENSION_LOADED_TEXT: string = 'Test Extension Loaded';
 const ALL_EXTENSION_LOADED_TEXT: string = 'All Extensions Loaded';
 
-const logPrefix: string = 'test:int:main';
-const debug: any = require('debug')(logPrefix);
-const trace: any = require('debug')(`${logPrefix}:trace`);
 let statusBarItemTimer: NodeJS.Timer;
 
 export function activate(context: vscode.ExtensionContext) {
 	let statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
 	vscode.commands.registerCommand('test.setupIntegrationTest', async () => {
 		let extensionInstallersFolder = normalize(join(__dirname, '../extensionInstallers'));
-		trace(`extensionInstallersFolder=${extensionInstallersFolder}`);
+		console.info(`extensionInstallersFolder=${extensionInstallersFolder}`);
 		let installers = fs.readdirSync(extensionInstallersFolder);
 		for (let i = 0; i < installers.length; i++) {
 			if (installers[i].endsWith('.vsix')) {
 				let installerFullPath = join(extensionInstallersFolder, installers[i]);
-				debug(`installing extension at ${installerFullPath}`);
+				console.info(`installing extension at ${installerFullPath}`);
 				await azdata.extensions.install(installerFullPath);
 			}
 		}
@@ -40,24 +37,24 @@ export function activate(context: vscode.ExtensionContext) {
 		let expectedExtensions = ['Microsoft.agent', 'Microsoft.import', 'Microsoft.mssql', 'Microsoft.profiler'];
 		do {
 			let extensions = vscode.extensions.all.filter(ext => { return expectedExtensions.indexOf(ext.id) !== -1; });
-			trace(`extensions to load ${JSON.stringify(extensions, undefined, '\t')}`);
+			console.info(`extensions to load ${JSON.stringify(extensions, undefined, '\t')}`);
 			let isReady = true;
 			for (let i = 0; i < extensions.length; i++) {
 				let extension = extensions[i];
-				debug(`checking extension:${JSON.stringify(extension, undefined, '\t')} to be ready}`);
+				console.info(`checking extension:${JSON.stringify(extension, undefined, '\t')} to be ready}`);
 				isReady = isReady && extension.isActive;
 				if (!isReady) {
-					debug(`extension:${JSON.stringify(extension, undefined, '\t')} is not yet ready}`);
+					console.warn(`extension:${JSON.stringify(extension, undefined, '\t')} is not yet ready}`);
 					break;
 				}
 			}
 
 			if (isReady) {
-				trace('All extensions are ready');
+				console.info('All extensions are ready');
 				showStatusBarItem(statusBarItem, ALL_EXTENSION_LOADED_TEXT);
 				break;
 			} else {
-				debug(`At least one extension is not ready, waiting one second before recheck.}`);
+				console.warn(`At least one extension is not ready, waiting one second before recheck.}`);
 				await new Promise(resolve => { setTimeout(resolve, 1000); });
 			}
 		}
