@@ -4,7 +4,6 @@ npm-debug.log
 Thumbs.db
 node_modules/
 .build/
-**/cscope_conf.json
 extensions/**/dist/
 out/
 out-build/
