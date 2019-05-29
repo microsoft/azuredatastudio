@@ -101,6 +101,14 @@ export class CmsConnectionWidget extends ConnectionWidget {
 			newAuthTypes = authTypeOption.categoryValues.filter((option) => option.name === AuthenticationType.Integrated);
 			this._authTypeSelectBox.setOptions(newAuthTypes.map(c => c.displayName), 0);
 			authTypeOption.defaultValue = AuthenticationType.Integrated;
+		} else {
+			// CMS supports all auth types
+			if (OS === OperatingSystem.Windows) {
+				authTypeOption.defaultValue = this.getAuthTypeDisplayName(AuthenticationType.Integrated);
+			} else {
+				authTypeOption.defaultValue = this.getAuthTypeDisplayName(AuthenticationType.SqlLogin);
+			}
+			this._authTypeSelectBox.setOptions(authTypeOption.categoryValues.map(c => c.displayName), 1);
 		}
 	}
 
