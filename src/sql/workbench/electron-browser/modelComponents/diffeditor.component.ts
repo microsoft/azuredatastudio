@@ -10,9 +10,8 @@ import {
 import * as azdata from 'azdata';
 import * as DOM from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
+import { ResourceEditorInput } from 'vs/workbench/common/editor/resourceEditorInput';
 import { URI } from 'vs/base/common/uri';
-import { Schemas } from 'vs/base/common/network';
 import { IModeService } from 'vs/editor/common/services/modeService';
 import { IModelService } from 'vs/editor/common/services/modelService';
 
@@ -25,6 +24,16 @@ import { TextDiffEditor } from 'vs/workbench/browser/parts/editor/textDiffEditor
 import { DiffEditorInput } from 'vs/workbench/common/editor/diffEditorInput';
 import { TextDiffEditorModel } from 'vs/workbench/common/editor/textDiffEditorModel';
 import { CancellationTokenSource } from 'vs/base/common/cancellation';
+import { ITextModelService } from 'vs/editor/common/services/resolverService';
+import { ITextModel } from 'vs/editor/common/model';
+
+class ServiceAccessor {
+	constructor(
+		@ITextModelService public textModelResolverService: ITextModelService,
+		@IModelService public modelService: IModelService,
+		@IModeService public modeService: IModeService
+	) { }
+}
 
 @Component({
 	template: `
@@ -79,10 +88,23 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 		this.editorUriRight = uri2.toString();
 
 		let cancellationTokenSource = new CancellationTokenSource();
-		let editorinput1 = this._instantiationService.createInstance(UntitledEditorInput, uri1, false, 'plaintext', '', '');
-		let editorinput2 = this._instantiationService.createInstance(UntitledEditorInput, uri2, false, 'plaintext', '', '');
+		let accessor = this._instantiationService.createInstance(ServiceAccessor);
+		accessor.textModelResolverService.registerTextModelContentProvider('diffEditor', {
+			provideTextContent: function (resource: URI): Promise<ITextModel> {
+				if (resource.scheme === 'diffEditor') {
+					let modelContent = '';
+					let languageSelection = accessor.modeService.create('plaintext');
+					return Promise.resolve(accessor.modelService.createModel(modelContent, languageSelection, resource));
+				}
+
+				return Promise.resolve(null!);
+			}
+		});
+
+		let editorinput1 = this._instantiationService.createInstance(ResourceEditorInput, 'source', 'description', uri1, undefined);
+		let editorinput2 = this._instantiationService.createInstance(ResourceEditorInput, 'target', 'description', uri2, undefined);
 		this._editorInput = this._instantiationService.createInstance(DiffEditorInput, 'MyEditor', 'My description', editorinput1, editorinput2, true);
-		this._editor.setInput(this._editorInput, undefined, cancellationTokenSource.token, true);
+		this._editor.setInput(this._editorInput, undefined, cancellationTokenSource.token);
 
 
 		this._editorInput.resolve().then(model => {
@@ -98,7 +120,7 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 	}
 
 	private createUri(input: string): URI {
-		let uri = URI.from({ scheme: Schemas.untitled, path: `${this.descriptor.type}-${this.descriptor.id}-${input}` });
+		let uri = URI.from({ scheme: 'diffEditor', path: `${this.descriptor.type}-${this.descriptor.id}-${input}` });
 		return uri;
 	}
 

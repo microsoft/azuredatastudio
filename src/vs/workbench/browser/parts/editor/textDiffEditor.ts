@@ -84,8 +84,7 @@ export class TextDiffEditor extends BaseTextEditor implements ITextDiffEditor {
 		return this.instantiationService.createInstance(DiffEditorWidget, parent, configuration);
 	}
 
-	// {{SQL CARBON EDIT}}
-	async setInput(input: EditorInput, options: EditorOptions, token: CancellationToken, isReadOnly?: boolean): Promise<void> {
+	async setInput(input: EditorInput, options: EditorOptions, token: CancellationToken): Promise<void> {
 
 		// Dispose previous diff navigator
 		this.diffNavigatorDisposables = dispose(this.diffNavigatorDisposables);
@@ -133,8 +132,7 @@ export class TextDiffEditor extends BaseTextEditor implements ITextDiffEditor {
 			this.diffNavigatorDisposables.push(this.diffNavigator);
 
 			// Readonly flag
-			// {{SQL CARBON EDIT}}
-			diffEditor.updateOptions({ readOnly: isReadOnly ? true : resolvedDiffEditorModel.isReadonly() });
+			diffEditor.updateOptions({ readOnly: resolvedDiffEditorModel.isReadonly() });
 		} catch (error) {
 
 			// In case we tried to open a file and the response indicates that this is not a text file, fallback to binary diff.
