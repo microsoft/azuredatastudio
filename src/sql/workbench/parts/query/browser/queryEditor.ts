@@ -32,8 +32,6 @@ import { QueryResultsEditor } from 'sql/workbench/parts/query/browser/queryResul
 import * as queryContext from 'sql/workbench/parts/query/common/queryContext';
 import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
 import * as actions from 'sql/workbench/parts/query/browser/queryActions';
-import { IRange } from 'vs/editor/common/core/range';
-import { IEditorDescriptorService } from 'sql/workbench/services/queryEditor/common/editorDescriptorService';
 import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 
@@ -50,12 +48,13 @@ export class QueryEditor extends BaseEditor {
 	private resultsEditor: QueryResultsEditor;
 
 	private resultsEditorContainer: HTMLElement;
-	// could be untitled or resource editor
-	//private textEditor: TextFileEditor;
+
 	private textResourceEditor: TextResourceEditor;
 	private textFileEditor: TextFileEditor;
 	private currentTextEditor: BaseTextEditor;
-	private textEditorContainer: HTMLElement;
+
+	private textResourceEditorContainer: HTMLElement;
+	private textFileEditorContainer: HTMLElement;
 
 	private taskbar: Taskbar;
 	private splitview: SplitView;
@@ -82,7 +81,6 @@ export class QueryEditor extends BaseEditor {
 		@IStorageService storageService: IStorageService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IEditorService private readonly editorService: IEditorService,
-		@IEditorDescriptorService private readonly editorDescriptorService: IEditorDescriptorService,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@IConfigurationService private readonly configurationService: IConfigurationService
 	) {
@@ -111,15 +109,20 @@ export class QueryEditor extends BaseEditor {
 		this.splitview = this._register(new SplitView(splitviewContainer, { orientation: Orientation.VERTICAL }));
 		this._register(this.splitview.onDidSashReset(() => this.splitview.distributeViewSizes()));
 
-		this.textEditorContainer = DOM.$('.text-editor-container');
-		//this.textEditor = this._register(this.instantiationService.createInstance(TextFileEditor));
+		// We create two separate editors - one for Untitled Documents (ad-hoc queries) and another for queries from
+		// files. This is necessary because TextResourceEditor by default makes all non-Untitled inputs to be
+		// read-only so we need to use a TextFileEditor for files in order to edit them.
 		this.textResourceEditor = this._register(this.instantiationService.createInstance(TextResourceEditor));
 		this.textFileEditor = this._register(this.instantiationService.createInstance(TextFileEditor));
-		this.currentTextEditor = this.textResourceEditor;
-		this.currentTextEditor.create(this.textEditorContainer);
 
+		this.textResourceEditorContainer = DOM.$('.text-resource-editor-container');
+		this.textResourceEditor.create(this.textResourceEditorContainer);
+		this.textFileEditorContainer = DOM.$('.text-file-editor-container');
+		this.textFileEditor.create(this.textFileEditorContainer);
+
+		this.currentTextEditor = this.textResourceEditor;
 		this.splitview.addView({
-			element: this.textEditorContainer,
+			element: this.textResourceEditorContainer,
 			layout: size => this.currentTextEditor.layout(new DOM.Dimension(this.dimension.width, size)),
 			minimumSize: 0,
 			maximumSize: Number.POSITIVE_INFINITY,
@@ -246,23 +249,18 @@ export class QueryEditor extends BaseEditor {
 			return Promise.resolve();
 		}
 
-		// const descriptor = this.editorDescriptorService.getEditor(newInput.sql);
-		// let editor = descriptor.instantiate(this.instantiationService);
-		// editor.create(this.textEditorContainer);
-		// editor.setVisible(this.isVisible(), this.group);
-		// this.textEditor = <BaseTextEditor>editor;
 		if (oldInput) {
 			this.currentTextEditor.clearInput();
 		}
 
+		// If we're switching editor types switch out the views
 		const newTextEditor = newInput.sql instanceof FileEditorInput ? this.textFileEditor : this.textResourceEditor;
 		if (newTextEditor !== this.currentTextEditor) {
 			this.currentTextEditor = newTextEditor;
 			this.splitview.removeView(0, Sizing.Distribute);
-			this.currentTextEditor.create(this.textEditorContainer);
 
 			this.splitview.addView({
-				element: this.textEditorContainer,
+				element: this.currentTextEditor.getContainer(),
 				layout: size => this.currentTextEditor.layout(new DOM.Dimension(this.dimension.width, size)),
 				minimumSize: 0,
 				maximumSize: Number.POSITIVE_INFINITY,
