@@ -134,7 +134,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 	context.subscriptions.push(new DeleteFilesCommand(prompter, appContext));
 	context.subscriptions.push({ dispose: () => languageClient.stop() });
 
-	azdata.ui.registerModelViewProvider('endpoints', async (view) => {
+	azdata.ui.registerModelViewProvider('bdc-endpoints', async (view) => {
 
 		const endpointsArray: Array<Utils.IEndpoint> = view.serverInfo.options['clusterEndpoints'];
 		const managementProxyEp = view.serverInfo.options['clusterEndpoints'].find(e => e.serviceName === 'management-proxy');

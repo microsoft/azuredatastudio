@@ -417,7 +417,7 @@
               "colspan": 2,
               "widget": {
                 "modelview": {
-                  "id": "endpoints"
+                  "id": "bdc-endpoints"
                 }
               }
             }
