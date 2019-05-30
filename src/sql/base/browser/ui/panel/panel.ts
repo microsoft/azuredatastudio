@@ -14,6 +14,7 @@ import { KeyCode } from 'vs/base/common/keyCodes';
 import { Disposable, IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { Color } from 'vs/base/common/color';
 import { isUndefinedOrNull } from 'vs/base/common/types';
+import * as map from 'vs/base/common/map';
 
 export interface ITabbedPanelStyles {
 	titleActiveForeground?: Color;
@@ -226,7 +227,7 @@ export class TabbedPanel extends Disposable {
 				}
 			}
 			if (!this._shownTabId && this._tabMap.size > 0) {
-				this.showTab(this._tabMap.get(this._tabMap.keys().next().value).tab.identifier);
+				this.showTab(map.values(this._tabMap)[0].tab.identifier);
 			}
 		}
 
