@@ -413,7 +413,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	}
 
 	/**
-	* removes the button matching the provided labled from the footer of the modal
+	* removes the footer button matching the provided label
 	* @param label Label on the button
 	*/
 	protected removeFooterButton(label: string): void {
