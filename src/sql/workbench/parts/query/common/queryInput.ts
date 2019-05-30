@@ -289,10 +289,12 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 				this.runQuery(selection, { displayActualQueryPlan: true });
 			}
 		}
+		this._onDidChangeLabel.fire();
 	}
 
 	public onDisconnect(): void {
 		this.state.connected = false;
+		this._onDidChangeLabel.fire();
 	}
 
 	public onRunQuery(): void {
