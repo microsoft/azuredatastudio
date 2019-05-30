@@ -18,6 +18,7 @@ import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import * as CustomInputConverter from 'sql/workbench/common/customInputConverter';
 import { NotebookInput } from 'sql/workbench/parts/notebook/notebookInput';
+import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 
 const EditorOpenPositioning = {
 	LEFT: 'left',
@@ -662,6 +663,14 @@ export class EditorGroup extends Disposable {
 				if (e instanceof UntitledEditorInput && !e.isDirty()
 					&& !this.configurationService.getValue<boolean>('sql.promptToSaveGeneratedFiles')) {
 					return;
+				}
+				// Do not add generated files from Temp if file is not dirty
+				if (e instanceof FileEditorInput && !e.isDirty()) {
+					let filePath = e.getResource() ? e.getResource().fsPath : undefined;
+					let tempPath = process.env[process.platform === 'win32' ? 'TEMP' : 'TMPDIR'];
+					if (filePath && tempPath && filePath.toLocaleLowerCase().includes(tempPath.toLocaleLowerCase())) {
+						return;
+					}
 				}
 				// {{SQL CARBON EDIT}} - End
 
