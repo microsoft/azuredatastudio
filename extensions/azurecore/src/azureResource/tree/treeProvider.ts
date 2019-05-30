@@ -22,9 +22,7 @@ import { IAzureResourceAccountService } from '../../azureResource/interfaces';
 import { AzureResourceServiceNames } from '../constants';
 
 export class AzureResourceTreeProvider implements TreeDataProvider<TreeNode>, IAzureResourceTreeChangeHandler {
-	public constructor(
-		public readonly appContext: AppContext
-	) {
+	public constructor(public readonly appContext: AppContext) {
 	}
 
 	public async getChildren(element?: TreeNode): Promise<TreeNode[]> {

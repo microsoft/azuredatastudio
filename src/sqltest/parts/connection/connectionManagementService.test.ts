@@ -158,11 +158,11 @@ suite('SQL ConnectionManagementService tests', () => {
 			workspaceConfigurationServiceMock.object,
 			capabilitiesService,
 			undefined,
-			editorGroupService.object,
 			undefined,
 			resourceProviderStubMock.object,
 			undefined,
 			accountManagementService.object,
+			undefined,
 			undefined
 		);
 		return connectionManagementService;

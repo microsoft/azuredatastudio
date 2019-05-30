@@ -68,7 +68,7 @@ export function getConfigTracingLevel(): string {
 }
 
 export function getDefaultLogDir(): string {
-	return path.join(process.env['VSCODE_LOGS'], '..', '..', 'mssql');
+	return path.join(process.env['ADS_LOGS'], '..', '..', 'mssql');
 }
 
 export function getDefaultLogFile(prefix: string, pid: number): string {
@@ -213,7 +213,9 @@ export async function getClusterEndpoint(profileId: string, serviceName: string)
 	let clusterEndpoint: IEndpoint = {
 		serviceName: endpoints[index].serviceName,
 		ipAddress: endpoints[index].ipAddress,
-		port: endpoints[index].port
+		port: endpoints[index].port,
+		isHyperlink: false,
+		hyperlink: null
 	};
 	return clusterEndpoint;
 }
@@ -222,6 +224,8 @@ export interface IEndpoint {
 	serviceName: string;
 	ipAddress: string;
 	port: number;
+	isHyperlink: boolean;
+	hyperlink: string;
 }
 
 export function isValidNumber(maybeNumber: any) {

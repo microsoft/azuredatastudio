@@ -100,6 +100,10 @@ export const enum MenuId {
 	NotebookToolbar,
 	DataExplorerContext,
 	DataExplorerAction,
+	CommentThreadTitle,
+	CommentThreadActions,
+	CommentTitle,
+	CommentActions
 }
 
 export interface IMenuActionOptions {

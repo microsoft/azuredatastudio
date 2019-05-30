@@ -6,30 +6,30 @@
 import 'vs/css!./media/messagePanel';
 import { IMessagesActionContext, CopyMessagesAction, CopyAllMessagesAction } from './actions';
 import QueryRunner, { IQueryMessage } from 'sql/platform/query/common/queryRunner';
-import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
 import { IExpandableTree } from 'sql/workbench/parts/objectExplorer/browser/treeUpdateUtils';
 
 import { ISelectionData } from 'azdata';
 
-import { ViewletPanel, IViewletPanelOptions } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { IDataSource, ITree, IRenderer, ContextMenuEvent } from 'vs/base/parts/tree/browser/tree';
 import { generateUuid } from 'vs/base/common/uuid';
-import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { OpenMode, ClickBehavior, ICancelableEvent, IControllerOptions } from 'vs/base/parts/tree/browser/treeDefaults';
 import { WorkbenchTreeController } from 'vs/platform/list/browser/listService';
 import { IMouseEvent } from 'vs/base/browser/mouseEvent';
-import { isArray, isUndefinedOrNull } from 'vs/base/common/types';
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { isArray } from 'vs/base/common/types';
+import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
-import { $ } from 'vs/base/browser/dom';
+import { $, Dimension, createStyleSheet } from 'vs/base/browser/dom';
+import { QueryEditor } from 'sql/workbench/parts/query/browser/queryEditor';
+import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
+import { resultsErrorColor } from 'sql/platform/theme/common/colors';
 
 export interface IResultMessageIntern extends IQueryMessage {
 	id?: string;
@@ -62,27 +62,19 @@ const TemplateIds = {
 
 export class MessagePanelState {
 	public scrollPosition: number;
-	public collapsed = false;
-
-	constructor(@IConfigurationService configurationService: IConfigurationService) {
-		let messagesOpenedSettings = configurationService.getValue<boolean>('sql.messagesDefaultOpen');
-		if (!isUndefinedOrNull(messagesOpenedSettings)) {
-			this.collapsed = !messagesOpenedSettings;
-		}
-	}
 
 	dispose() {
 
 	}
 }
 
-export class MessagePanel extends ViewletPanel {
-	private messageLineCountMap = new Map<IQueryMessage, number>();
+export class MessagePanel extends Disposable {
 	private ds = new MessageDataSource();
-	private renderer = new MessageRenderer(this.messageLineCountMap);
+	private renderer = new MessageRenderer();
 	private model = new Model();
 	private controller: MessageController;
 	private container = $('.message-tree');
+	private styleElement = createStyleSheet(this.container);
 
 	private queryRunnerDisposables: IDisposable[] = [];
 	private _state: MessagePanelState;
@@ -90,23 +82,20 @@ export class MessagePanel extends ViewletPanel {
 	private tree: ITree;
 
 	constructor(
-		options: IViewletPanelOptions,
-		@IKeybindingService keybindingService: IKeybindingService,
-		@IContextMenuService contextMenuService: IContextMenuService,
-		@IConfigurationService configurationService: IConfigurationService,
-		@IThemeService private themeService: IThemeService,
 		@IInstantiationService instantiationService: IInstantiationService,
-		@IClipboardService private clipboardService: IClipboardService
+		@IThemeService private readonly themeService: IThemeService,
+		@IClipboardService private readonly clipboardService: IClipboardService,
+		@IContextMenuService private readonly contextMenuService: IContextMenuService
 	) {
-		super(options, keybindingService, contextMenuService, configurationService);
+		super();
 		this.controller = instantiationService.createInstance(MessageController, { openMode: OpenMode.SINGLE_CLICK, clickBehavior: ClickBehavior.ON_MOUSE_UP /* do not change, to preserve focus behaviour in input field */ });
 		this.controller.toFocusOnClick = this.model;
-		this.tree = new Tree(this.container, {
+		this.tree = this._register(new Tree(this.container, {
 			dataSource: this.ds,
 			renderer: this.renderer,
 			controller: this.controller
-		}, { keyboardSupport: false, horizontalScrollMode: ScrollbarVisibility.Auto });
-		this.disposables.push(this.tree);
+		}, { keyboardSupport: false, horizontalScrollMode: ScrollbarVisibility.Auto }));
+		this.tree.setInput(this.model);
 		this.tree.onDidScroll(e => {
 			// convert to old VS Code tree interface with expandable methods
 			let expandableTree: IExpandableTree = <IExpandableTree>this.tree;
@@ -115,11 +104,11 @@ export class MessagePanel extends ViewletPanel {
 				this.state.scrollPosition = expandableTree.getScrollPosition();
 			}
 		});
-		this.onDidChange(e => {
-			if (this.state) {
-				this.state.collapsed = !this.isExpanded();
-			}
-		});
+		this.container.style.width = '100%';
+		this.container.style.height = '100%';
+		this._register(attachListStyler(this.tree, this.themeService));
+		this._register(this.themeService.onThemeChange(this.applyStyles, this));
+		this.applyStyles(this.themeService.getTheme());
 		this.controller.onKeyDown = (tree, event) => {
 			if (event.ctrlKey) {
 				let context: IMessagesActionContext = {
@@ -171,20 +160,16 @@ export class MessagePanel extends ViewletPanel {
 		};
 	}
 
-	protected renderBody(container: HTMLElement): void {
-		this.container.style.width = '100%';
-		this.container.style.height = '100%';
-		this.disposables.push(attachListStyler(this.tree, this.themeService));
+	public render(container: HTMLElement): void {
 		container.appendChild(this.container);
-		this.tree.setInput(this.model);
 	}
 
-	protected layoutBody(size: number): void {
+	public layout(size: Dimension): void {
 		// convert to old VS Code tree interface with expandable methods
 		let expandableTree: IExpandableTree = <IExpandableTree>this.tree;
 
 		const previousScrollPosition = expandableTree.getScrollPosition();
-		this.tree.layout(size);
+		this.tree.layout(size.height);
 		if (this.state && this.state.scrollPosition) {
 			expandableTree.setScrollPosition(this.state.scrollPosition);
 		} else {
@@ -192,6 +177,11 @@ export class MessagePanel extends ViewletPanel {
 				expandableTree.setScrollPosition(1);
 			}
 		}
+	}
+
+	public focus(): void {
+		this.tree.refresh();
+		this.tree.domFocus();
 	}
 
 	public set queryRunner(runner: QueryRunner) {
@@ -204,27 +194,18 @@ export class MessagePanel extends ViewletPanel {
 	}
 
 	private onMessage(message: IQueryMessage | IQueryMessage[]) {
-		let hasError = false;
-		let lines: number;
 		if (isArray(message)) {
-			hasError = message.find(e => e.isError) ? true : false;
-			lines = message.reduce((currentTotal, resultMessage) => currentTotal + this.countMessageLines(resultMessage), 0);
 			this.model.messages.push(...message);
 		} else {
-			hasError = message.isError;
-			lines = this.countMessageLines(message);
 			this.model.messages.push(message);
-		}
-		this.maximumBodySize += lines * 22;
-		if (hasError) {
-			this.setExpanded(true);
 		}
 		// convert to old VS Code tree interface with expandable methods
 		let expandableTree: IExpandableTree = <IExpandableTree>this.tree;
 		if (this.state.scrollPosition) {
+			const previousScroll = this.state.scrollPosition;
 			this.tree.refresh(this.model).then(() => {
 				// Restore the previous scroll position when switching between tabs
-				expandableTree.setScrollPosition(this.state.scrollPosition);
+				expandableTree.setScrollPosition(previousScroll);
 			});
 		} else {
 			const previousScrollPosition = expandableTree.getScrollPosition();
@@ -237,10 +218,17 @@ export class MessagePanel extends ViewletPanel {
 		}
 	}
 
-	private countMessageLines(resultMessage: IQueryMessage): number {
-		let lines = resultMessage.message.split('\n').length;
-		this.messageLineCountMap.set(resultMessage, lines);
-		return lines;
+	private applyStyles(theme: ITheme): void {
+		const errorColor = theme.getColor(resultsErrorColor);
+		const content: string[] = [];
+		if (errorColor) {
+			content.push(`.message-tree .monaco-tree-rows .error-message { color: ${errorColor}; }`);
+		}
+
+		const newStyles = content.join('\n');
+		if (newStyles !== this.styleElement.innerHTML) {
+			this.styleElement.innerHTML = newStyles;
+		}
 	}
 
 	private reset() {
@@ -256,7 +244,6 @@ export class MessagePanel extends ViewletPanel {
 		if (this.state.scrollPosition) {
 			expandableTree.setScrollPosition(this.state.scrollPosition);
 		}
-		this.setExpanded(!this.state.collapsed);
 	}
 
 	public get state(): MessagePanelState {
@@ -269,6 +256,14 @@ export class MessagePanel extends ViewletPanel {
 
 	public dispose() {
 		dispose(this.queryRunnerDisposables);
+		if (this.container) {
+			this.container.remove();
+			this.container = undefined;
+		}
+		if (this.styleElement) {
+			this.styleElement.remove();
+			this.styleElement = undefined;
+		}
 		super.dispose();
 	}
 }
@@ -307,15 +302,11 @@ class MessageDataSource implements IDataSource {
 }
 
 class MessageRenderer implements IRenderer {
-	constructor(private messageLineCountMap: Map<IQueryMessage, number>) {
-	}
 
 	getHeight(tree: ITree, element: IQueryMessage): number {
 		const lineHeight = 22;
-		if (this.messageLineCountMap.has(element)) {
-			return lineHeight * this.messageLineCountMap.get(element);
-		}
-		return lineHeight;
+		let lines = element.message.split('\n').length;
+		return lineHeight * lines;
 	}
 
 	getTemplateId(tree: ITree, element: IQueryMessage): string {
@@ -404,8 +395,10 @@ export class MessageController extends WorkbenchTreeController {
 		if (element.selection) {
 			let selection: ISelectionData = element.selection;
 			// this is a batch statement
-			let input = this.workbenchEditorService.activeEditor as QueryInput;
-			input.updateSelection(selection);
+			let editor = this.workbenchEditorService.activeControl as QueryEditor;
+			const codeEditor = <ICodeEditor>editor.getControl();
+			codeEditor.focus();
+			codeEditor.setSelection({ endColumn: selection.endColumn + 1, endLineNumber: selection.endLine + 1, startColumn: selection.startColumn + 1, startLineNumber: selection.startLine + 1 });
 		}
 
 		return true;

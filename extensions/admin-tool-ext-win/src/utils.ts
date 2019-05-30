@@ -39,7 +39,7 @@ export function backEscapeDoubleQuotes(value: string): string {
 }
 
 /**
- * Map an error message into a GDPR-Compliant short name for the type of error.
+ * Map an error message into a friendly short name for the type of error.
  * @param msg The error message to map
  */
 export function getTelemetryErrorType(msg: string): string {
