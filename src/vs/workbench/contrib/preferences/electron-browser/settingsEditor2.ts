@@ -260,6 +260,11 @@ export class SettingsEditor2 extends BaseEditor {
 	}
 
 	private _setOptions(options: SettingsEditorOptions): void {
+		// {{SQL CARBON EDIT}} - return if options is undefined to avoid nullref
+		if (!options) {
+			return;
+		}
+
 		if (options.query) {
 			this.searchWidget.setValue(options.query);
 		}
