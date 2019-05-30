@@ -413,6 +413,24 @@ export abstract class Modal extends Disposable implements IThemable {
 	}
 
 	/**
+	* removes the button matching the provided labled from the footer of the modal
+	* @param label Label on the button
+	*/
+	protected removeFooterButton(label: string): void {
+		let buttonIndex = this._footerButtons.findIndex(e => {
+			try {
+				return e && e.element.innerText === label;
+			} catch {
+				return false;
+			}
+		});
+		let button = this._footerButtons[buttonIndex];
+		DOM.removeNode(button.element);
+		button.dispose();
+		this._footerButtons.splice(buttonIndex, 1);
+	}
+
+	/**
 	 * Show an error in the error message element
 	 * @param message Text to show in the message
 	 * @param level Severity level of the message
