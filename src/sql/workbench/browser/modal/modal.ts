@@ -418,16 +418,14 @@ export abstract class Modal extends Disposable implements IThemable {
 	*/
 	protected removeFooterButton(label: string): void {
 		let buttonIndex = this._footerButtons.findIndex(e => {
-			try {
-				return e && e.element.innerText === label;
-			} catch {
-				return false;
-			}
+			return e && e.element && e.element.innerText === label;
 		});
-		let button = this._footerButtons[buttonIndex];
-		DOM.removeNode(button.element);
-		button.dispose();
-		this._footerButtons.splice(buttonIndex, 1);
+		if (buttonIndex > -1 && buttonIndex < this._footerButtons.length) {
+			let button = this._footerButtons[buttonIndex];
+			DOM.removeNode(button.element);
+			button.dispose();
+			this._footerButtons.splice(buttonIndex, 1);
+		}
 	}
 
 	/**

@@ -339,9 +339,7 @@ export class InsightsDialogView extends Modal {
 				let commandLabel = types.isString(commandAction.title) ? commandAction.title : commandAction.title.value;
 				if (task) {
 					// need to remove and add fresh because the onDidClick action from previous addition is not called
-					if (this.findFooterButton(commandLabel)) {
-						this.removeFooterButton(commandLabel);
-					}
+					this.removeFooterButton(commandLabel);
 					let button = this.addFooterButton(commandLabel, () => {
 						let element = this._topTable.getSelectedRows();
 						let resource: ListResource;
