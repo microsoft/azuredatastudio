@@ -37,10 +37,6 @@
 	cursor: pointer;
 }
 
-.message-tree .error-message {
-	color: red;
-}
-
 .message-tree .batch-start:hover {
 	color: red;
 }
