@@ -81,21 +81,17 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 		this.editorUriRight = uri2.toString();
 
 		let cancellationTokenSource = new CancellationTokenSource();
-		this._textModelService.registerTextModelContentProvider('diffEditor', {
+		let textModelContentProvider = this._textModelService.registerTextModelContentProvider('sqlDiffEditor', {
 			provideTextContent: (resource: URI): Promise<ITextModel> => {
-				if (resource.scheme === 'diffEditor') {
-					let modelContent = '';
-					let languageSelection = this._modeService.create('plaintext');
-					return Promise.resolve(this._modelService.createModel(modelContent, languageSelection, resource));
-				}
-
-				return Promise.resolve(null!);
+				let modelContent = '';
+				let languageSelection = this._modeService.create('plaintext');
+				return Promise.resolve(this._modelService.createModel(modelContent, languageSelection, resource));
 			}
 		});
 
-		let editorinput1 = this._instantiationService.createInstance(ResourceEditorInput, 'source', 'description', uri1, undefined);
-		let editorinput2 = this._instantiationService.createInstance(ResourceEditorInput, 'target', 'description', uri2, undefined);
-		this._editorInput = this._instantiationService.createInstance(DiffEditorInput, 'MyEditor', 'My description', editorinput1, editorinput2, true);
+		let editorinput1 = this._instantiationService.createInstance(ResourceEditorInput, 'source', undefined, uri1, undefined);
+		let editorinput2 = this._instantiationService.createInstance(ResourceEditorInput, 'target', undefined, uri2, undefined);
+		this._editorInput = this._instantiationService.createInstance(DiffEditorInput, 'DiffEditor', undefined, editorinput1, editorinput2, true);
 		this._editor.setInput(this._editorInput, undefined, cancellationTokenSource.token);
 
 
@@ -109,10 +105,11 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 		this._register(this._editor);
 		this._register(this._editorInput);
 		this._register(this._editorModel);
+		this._register(textModelContentProvider);
 	}
 
 	private createUri(input: string): URI {
-		let uri = URI.from({ scheme: 'diffEditor', path: `${this.descriptor.type}-${this.descriptor.id}-${input}` });
+		let uri = URI.from({ scheme: 'sqlDiffEditor', path: `${this.descriptor.type}-${this.descriptor.id}-${input}` });
 		return uri;
 	}
 
