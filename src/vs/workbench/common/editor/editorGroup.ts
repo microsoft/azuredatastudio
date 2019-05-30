@@ -19,6 +19,7 @@ import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorIn
 import * as CustomInputConverter from 'sql/workbench/common/customInputConverter';
 import { NotebookInput } from 'sql/workbench/parts/notebook/notebookInput';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
+import * as path from 'path';
 
 const EditorOpenPositioning = {
 	LEFT: 'left',
@@ -668,7 +669,8 @@ export class EditorGroup extends Disposable {
 				if (e instanceof FileEditorInput && !e.isDirty()) {
 					let filePath = e.getResource() ? e.getResource().fsPath : undefined;
 					let tempPath = process.env[process.platform === 'win32' ? 'TEMP' : 'TMPDIR'];
-					if (filePath && tempPath && filePath.toLocaleLowerCase().includes(tempPath.toLocaleLowerCase())) {
+					if (filePath && tempPath &&
+						filePath.toLocaleLowerCase().includes(path.join(tempPath.toLocaleLowerCase(), 'mssql_definition'))) {
 						return;
 					}
 				}
