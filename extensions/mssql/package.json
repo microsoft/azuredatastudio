@@ -400,15 +400,25 @@
               "name": "%title.tasks%",
               "row": 0,
               "col": 0,
-              "colspan": 2,
+              "colspan": 1,
               "widget": {
                 "tasks-widget": [
                   "mssqlCluster.task.newNotebook",
                   "mssqlCluster.task.openNotebook",
-                  "mssqlCluster.livy.task.submitSparkJob",
-                  "mssqlCluster.livy.task.openSparkHistory",
-                  "mssqlCluster.livy.task.openYarnHistory"
+                  "mssqlCluster.livy.task.submitSparkJob"
                 ]
+              }
+            },
+            {
+              "name": "%title.endpoints%",
+              "row": 0,
+              "col": 2,
+              "rowspan": 1.5,
+              "colspan": 2,
+              "widget": {
+                "modelview": {
+                  "id": "bdc-endpoints"
+                }
               }
             }
           ]

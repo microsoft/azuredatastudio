@@ -99,9 +99,6 @@ const widgetComponents = [
 /* Insights */
 const insightComponents = Registry.as<IInsightRegistry>(Extensions.InsightContribution).getAllCtors();
 
-/* Model-backed components */
-const extensionComponents = Registry.as<IComponentRegistry>(ComponentExtensions.ComponentContribution).getAllCtors();
-
 // Setup routes for various child components
 const appRoutes: Routes = [
 	{ path: 'database-dashboard', component: DatabaseDashboardPage },
@@ -116,6 +113,10 @@ const appRoutes: Routes = [
 
 // Connection Dashboard main angular module
 export const DashboardModule = (params, selector: string, instantiationService: IInstantiationService): any => {
+
+	/* Model-backed components */
+	const extensionComponents = Registry.as<IComponentRegistry>(ComponentExtensions.ComponentContribution).getAllCtors();
+
 	@NgModule({
 		declarations: [
 			...baseComponents,

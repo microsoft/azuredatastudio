@@ -32,6 +32,13 @@ export interface GridWebviewConfig extends GridCellConfig {
 		id?: string;
 	};
 }
+export interface GridModelViewConfig extends GridCellConfig {
+	widget: {
+		modelview: {
+			id?: string;
+		}
+	};
+}
 
 @Component({
 	selector: 'dashboard-grid-container',
@@ -78,6 +85,17 @@ export class DashboardGridContainer extends DashboardTab implements OnDestroy {
 		return undefined;
 	}
 
+	protected getModelViewContent(row: number, col: number): GridModelViewConfig {
+		const content = this.getContent(row, col);
+		if (content) {
+			const modelviewConfig = <GridModelViewConfig>content;
+			if (modelviewConfig && modelviewConfig.widget.modelview) {
+				return modelviewConfig;
+			}
+		}
+		return undefined;
+	}
+
 
 	protected isWidget(row: number, col: number): boolean {
 		const widgetConfig = this.getWidgetContent(row, col);
@@ -97,6 +115,18 @@ export class DashboardGridContainer extends DashboardTab implements OnDestroy {
 		return undefined;
 	}
 
+	protected isModelView(row: number, col: number): boolean {
+		const modelView = this.getModelViewContent(row, col);
+		return modelView !== undefined;
+	}
+
+	protected getModelViewId(row: number, col: number): string {
+		const widgetConfig = this.getModelViewContent(row, col);
+		if (widgetConfig && widgetConfig.widget.modelview) {
+			return widgetConfig.widget.modelview.id;
+		}
+		return undefined;
+	}
 	protected getColspan(row: number, col: number): string {
 		const content = this.getContent(row, col);
 		let colspan: string = '1';

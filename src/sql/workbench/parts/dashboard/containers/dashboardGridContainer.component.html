@@ -20,6 +20,9 @@
 						<webview-content *ngIf="isWebview(row,col)" [webviewId]="getWebviewId(row,col)">
 						</webview-content>
 
+						<modelview-content *ngIf="isModelView(row,col)" [modelViewId]="getModelViewId(row,col)">
+						</modelview-content>
+
 					</td>
 				</ng-container>
 			</ng-container>
