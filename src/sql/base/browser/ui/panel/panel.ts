@@ -40,7 +40,8 @@ export interface IPanelTab {
 	view: IPanelView;
 }
 
-interface IInternalPanelTab extends IPanelTab {
+interface IInternalPanelTab {
+	tab: IPanelTab;
 	header: HTMLElement;
 	disposables: IDisposable[];
 	label: HTMLElement;
@@ -110,7 +111,7 @@ export class TabbedPanel extends Disposable {
 	}
 
 	public pushTab(tab: IPanelTab, index?: number): PanelTabIdentifier {
-		let internalTab = tab as IInternalPanelTab;
+		let internalTab = { tab } as IInternalPanelTab;
 		internalTab.disposables = [];
 		this._tabMap.set(tab.identifier, internalTab);
 		this._createTab(internalTab, index);
@@ -138,17 +139,17 @@ export class TabbedPanel extends Disposable {
 		tabHeaderElement.setAttribute('tabindex', '0');
 		tabHeaderElement.setAttribute('role', 'tab');
 		tabHeaderElement.setAttribute('aria-selected', 'false');
-		tabHeaderElement.setAttribute('aria-controls', tab.identifier);
+		tabHeaderElement.setAttribute('aria-controls', tab.tab.identifier);
 		let tabElement = DOM.$('.tab');
 		tabHeaderElement.appendChild(tabElement);
 		let tabLabel = DOM.$('a.tabLabel');
-		tabLabel.innerText = tab.title;
+		tabLabel.innerText = tab.tab.title;
 		tabElement.appendChild(tabLabel);
-		tab.disposables.push(DOM.addDisposableListener(tabHeaderElement, DOM.EventType.CLICK, e => this.showTab(tab.identifier)));
+		tab.disposables.push(DOM.addDisposableListener(tabHeaderElement, DOM.EventType.CLICK, e => this.showTab(tab.tab.identifier)));
 		tab.disposables.push(DOM.addDisposableListener(tabHeaderElement, DOM.EventType.KEY_UP, (e: KeyboardEvent) => {
 			let event = new StandardKeyboardEvent(e);
 			if (event.equals(KeyCode.Enter)) {
-				this.showTab(tab.identifier);
+				this.showTab(tab.tab.identifier);
 				e.stopImmediatePropagation();
 			}
 		}));
@@ -184,10 +185,10 @@ export class TabbedPanel extends Disposable {
 			tab.body = DOM.$('.tab-container');
 			tab.body.style.width = '100%';
 			tab.body.style.height = '100%';
-			tab.view.render(tab.body);
+			tab.tab.view.render(tab.body);
 		}
 		this.body.appendChild(tab.body);
-		this.body.setAttribute('aria-labelledby', tab.identifier);
+		this.body.setAttribute('aria-labelledby', tab.tab.identifier);
 		DOM.addClass(tab.label, 'active');
 		DOM.addClass(tab.header, 'active');
 		tab.header.setAttribute('aria-selected', 'true');
@@ -203,8 +204,8 @@ export class TabbedPanel extends Disposable {
 		if (!actualTab) {
 			return;
 		}
-		if (actualTab.view && actualTab.view.remove) {
-			actualTab.view.remove();
+		if (actualTab.tab.view && actualTab.tab.view.remove) {
+			actualTab.tab.view.remove();
 		}
 		if (actualTab.header && actualTab.header.remove) {
 			actualTab.header.remove();
@@ -223,6 +224,9 @@ export class TabbedPanel extends Disposable {
 						this.showTab(lastTab);
 					}
 				}
+			}
+			if (!this._shownTabId && this._tabMap.size > 0) {
+				this.showTab(this._tabMap.get(this._tabMap.keys().next().value).tab.identifier);
 			}
 		}
 
@@ -308,7 +312,7 @@ export class TabbedPanel extends Disposable {
 			if (tab) {
 				tab.body.style.width = dimension.width + 'px';
 				tab.body.style.height = dimension.height + 'px';
-				tab.view.layout(dimension);
+				tab.tab.view.layout(dimension);
 			}
 		}
 	}
@@ -317,7 +321,7 @@ export class TabbedPanel extends Disposable {
 		if (this._shownTabId) {
 			const tab = this._tabMap.get(this._shownTabId);
 			if (tab) {
-				tab.view.focus();
+				tab.tab.view.focus();
 			}
 		}
 	}

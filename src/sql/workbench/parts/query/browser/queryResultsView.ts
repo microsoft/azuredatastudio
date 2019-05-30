@@ -200,7 +200,23 @@ export class QueryResultsView extends Disposable {
 	public style() {
 	}
 
+	private hasResults(runner: QueryRunner): boolean {
+		let hasResults = false;
+		for (const batch of runner.batchSets) {
+			if (batch.resultSetSummaries.length > 0) {
+				hasResults = true;
+				break;
+			}
+		}
+		return hasResults;
+	}
+
 	private setQueryRunner(runner: QueryRunner) {
+		if (runner.hasCompleted && !this.hasResults(runner)) {
+			this.hideResults();
+		} else {
+			this.showResults();
+		}
 		this.resultsTab.queryRunner = runner;
 		this.messagesTab.queryRunner = runner;
 		this.chartTab.queryRunner = runner;
@@ -213,14 +229,7 @@ export class QueryResultsView extends Disposable {
 			this.input.state.activeTab = this.resultsTab.identifier;
 		}));
 		this.runnerDisposables.push(runner.onQueryEnd(() => {
-			let hasResults = false;
-			for (const batch of runner.batchSets) {
-				if (batch.resultSetSummaries.length > 0) {
-					hasResults = true;
-					break;
-				}
-			}
-			if (!hasResults) {
+			if (!this.hasResults(runner)) {
 				this.hideResults();
 			}
 		}));
