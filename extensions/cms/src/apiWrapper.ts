@@ -12,6 +12,8 @@ import * as Utils from './cmsResource/utils';
 import { ICmsResourceNodeInfo } from './cmsResource/tree/baseTreeNodes';
 
 const localize = nls.loadMessageBundle();
+const cmsProvider: string = 'MSSQL-CMS';
+const mssqlProvider: string = 'MSSQL';
 
 /**
  * Wrapper class to act as a facade over VSCode and Data APIs and allow us to test / mock callbacks into
@@ -217,7 +219,7 @@ export class ApiWrapper {
 	public async createCmsServer(connection: azdata.connection.Connection,
 		name: string, description: string): Promise<mssql.ListRegisteredServersResult> {
 		let provider = await this.getCmsService();
-		connection.providerName = connection.providerName === 'MSSQL-CMS' ? 'MSSQL' : connection.providerName;
+		connection.providerName = connection.providerName === cmsProvider ? mssqlProvider : connection.providerName;
 		let ownerUri = await azdata.connection.getUriForConnection(connection.connectionId);
 		if (!ownerUri) {
 			// Make a connection if it's not already connected
@@ -280,7 +282,7 @@ export class ApiWrapper {
 				authTypeChanged: true
 			}
 		};
-		return this.openConnectionDialog(['MSSQL-CMS'], initialProfile, { saveConnection: false }).then(async (connection) => {
+		return this.openConnectionDialog([cmsProvider], initialProfile, { saveConnection: false }).then(async (connection) => {
 			if (connection && connection.options) {
 				if (connection.options.server === parentServerName) {
 					// error out for same server registration
@@ -325,12 +327,12 @@ export class ApiWrapper {
 	}
 
 	public get connection(): Thenable<azdata.connection.Connection> {
-		return this.openConnectionDialog(['MSSQL-CMS'], undefined, { saveConnection: false }).then((connection) => {
+		return this.openConnectionDialog([cmsProvider], undefined, { saveConnection: false }).then((connection) => {
 			if (connection) {
 				// remove group ID from connection if a user chose connection
 				// from the recent connections list
 				connection.options['groupId'] = null;
-				connection.providerName = 'MSSQL';
+				connection.providerName = mssqlProvider;
 				return connection;
 			}
 		});
