@@ -366,7 +366,8 @@ export class QueryEditor extends BaseEditor {
 
 	private addResultsEditor() {
 		if (!this.resultsVisible) {
-			let initialViewSize = Math.round(Math.max(this.dimension.height * 0.7, this.dimension.height - 150));
+			// size the results section to 65% of available height or at least 100px
+			let initialViewSize = Math.round(Math.max(this.dimension.height * 0.65, 100));
 			this.splitview.addView({
 				element: this.resultsEditorContainer,
 				layout: size => this.resultsEditor && this.resultsEditor.layout(new DOM.Dimension(this.dimension.width, size)),
