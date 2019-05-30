@@ -14,6 +14,7 @@ import { getTelemetryErrorType } from './utils';
 const localize = nls.loadMessageBundle();
 const diffEditorTitle = localize('schemaCompare.ObjectDefinitionsTitle', 'Object Definitions');
 const applyConfirmation = localize('schemaCompare.ApplyConfirmation', 'Are you sure you want to update the target?');
+const reCompareToRefeshMessage = localize('schemaCompare.RecompareToRefresh', 'Press Compare to refresh the comparison.');
 
 export class SchemaCompareResult {
 	private differencesTable: azdata.TableComponent;
@@ -493,6 +494,13 @@ export class SchemaCompareResult {
 						'startTime': Date.now().toString(),
 						'operationId': this.comparisonResult.operationId
 					});
+
+					// disable apply and generate script buttons because the results are no longer valid after applying the changes
+					this.generateScriptButton.enabled = false;
+					this.generateScriptButton.title = reCompareToRefeshMessage;
+					this.applyButton.enabled = false;
+					this.applyButton.title = reCompareToRefeshMessage;
+
 					const service = await SchemaCompareResult.getService('MSSQL');
 					const result = await service.schemaComparePublishChanges(this.comparisonResult.operationId, this.targetEndpointInfo.serverName, this.targetEndpointInfo.databaseName, azdata.TaskExecutionMode.execute);
 					if (!result || !result.success) {
