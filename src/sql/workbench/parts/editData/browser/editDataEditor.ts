@@ -36,6 +36,7 @@ import { EditDataResultsInput } from 'sql/workbench/parts/editData/common/editDa
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { IEditorGroup } from 'vs/workbench/services/editor/common/editorGroupsService';
+import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 
 /**
  * Editor that hosts an action bar and a resultSetInput for an edit data session
@@ -77,7 +78,8 @@ export class EditDataEditor extends BaseEditor {
 		@IQueryModelService private _queryModelService: IQueryModelService,
 		@IEditorDescriptorService private _editorDescriptorService: IEditorDescriptorService,
 		@IContextKeyService contextKeyService: IContextKeyService,
-		@IStorageService storageService: IStorageService
+		@IStorageService storageService: IStorageService,
+		@IWorkbenchLayoutService private readonly workbenchlayoutService: IWorkbenchLayoutService
 	) {
 		super(EditDataEditor.ID, _telemetryService, themeService, storageService);
 
@@ -411,7 +413,7 @@ export class EditDataEditor extends BaseEditor {
 		let resultsEditorHeight: number;
 		let resultsEditorTop: number;
 
-		let editorTopOffset = parent.top + this._getTaskBarHeight();
+		let editorTopOffset = parent.top + this._getTaskBarHeight() - this.workbenchlayoutService.getTitleBarOffset();
 
 		this._resultsEditorContainer.hidden = false;
 
