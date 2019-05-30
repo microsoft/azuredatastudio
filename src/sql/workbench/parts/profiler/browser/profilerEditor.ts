@@ -341,7 +341,8 @@ export class ProfilerEditor extends BaseEditor {
 			title: nls.localize('text', "Text"),
 			view: {
 				layout: dim => this._editor.layout(dim),
-				render: parent => parent.appendChild(editorContainer)
+				render: parent => parent.appendChild(editorContainer),
+				focus: () => this._editor.focus()
 			}
 		});
 
@@ -379,7 +380,8 @@ export class ProfilerEditor extends BaseEditor {
 			title: nls.localize('details', "Details"),
 			view: {
 				layout: dim => this._detailTable.layout(dim),
-				render: parent => parent.appendChild(detailTableContainer)
+				render: parent => parent.appendChild(detailTableContainer),
+				focus: () => this._detailTable.focus()
 			}
 		});
 

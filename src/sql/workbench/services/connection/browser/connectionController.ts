@@ -17,7 +17,6 @@ import { ConnectionProviderProperties } from 'sql/workbench/parts/connection/com
 import { ConnectionWidget } from 'sql/workbench/services/connection/browser/connectionWidget';
 
 export class ConnectionController implements IConnectionComponentController {
-	private _container: HTMLElement;
 	private _connectionManagementService: IConnectionManagementService;
 	private _advancedController: AdvancedPropertiesController;
 	private _model: IConnectionProfile;
@@ -28,13 +27,12 @@ export class ConnectionController implements IConnectionComponentController {
 	/* key: uri, value : list of databases */
 	protected _databaseCache = new Map<string, string[]>();
 
-	constructor(container: HTMLElement,
+	constructor(
 		connectionManagementService: IConnectionManagementService,
 		connectionProperties: ConnectionProviderProperties,
 		callback: IConnectionComponentCallbacks,
 		providerName: string,
 		@IInstantiationService protected _instantiationService: IInstantiationService) {
-		this._container = container;
 		this._connectionManagementService = connectionManagementService;
 		this._callback = callback;
 		this._providerOptions = connectionProperties.connectionOptions;
@@ -111,7 +109,7 @@ export class ConnectionController implements IConnectionComponentController {
 		}
 		let advancedOption = this._providerOptions.filter(
 			(property) => (property.specialValueType === undefined || property.specialValueType === null));
-		this._advancedController.showDialog(advancedOption, this._container, this._model.options);
+		this._advancedController.showDialog(advancedOption, this._model.options);
 	}
 
 	public showUiComponent(container: HTMLElement): void {

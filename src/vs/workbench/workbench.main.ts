@@ -373,7 +373,7 @@ import 'vs/workbench/contrib/relauncher/electron-browser/relauncher.contribution
 import 'vs/workbench/contrib/tasks/electron-browser/task.contribution';
 
 // Remote
-import 'vs/workbench/contrib/remote/electron-browser/remote.contribution';
+// import 'vs/workbench/contrib/remote/electron-browser/remote.contribution'; {{SQL CARBON EDIT}} @anthonydresser comment our remote
 
 // Emmet
 // import 'vs/workbench/contrib/emmet/browser/emmet.contribution'; {{SQL CARBON EDIT}} @anthonydresser comment our emmet

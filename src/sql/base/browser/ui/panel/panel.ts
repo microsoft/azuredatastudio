@@ -29,6 +29,7 @@ export interface IPanelOptions {
 export interface IPanelView {
 	render(container: HTMLElement): void;
 	layout(dimension: DOM.Dimension): void;
+	focus(): void;
 	remove?(): void;
 }
 
@@ -143,7 +144,7 @@ export class TabbedPanel extends Disposable {
 		tabLabel.innerText = tab.title;
 		tabElement.appendChild(tabLabel);
 		tab.disposables.push(DOM.addDisposableListener(tabHeaderElement, DOM.EventType.CLICK, e => this.showTab(tab.identifier)));
-		tab.disposables.push(DOM.addDisposableListener(tabHeaderElement, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
+		tab.disposables.push(DOM.addDisposableListener(tabHeaderElement, DOM.EventType.KEY_UP, (e: KeyboardEvent) => {
 			let event = new StandardKeyboardEvent(e);
 			if (event.equals(KeyCode.Enter)) {
 				this.showTab(tab.identifier);
@@ -188,6 +189,7 @@ export class TabbedPanel extends Disposable {
 		if (this._currentDimensions) {
 			this._layoutCurrentTab(new DOM.Dimension(this._currentDimensions.width, this._currentDimensions.height - this.headersize));
 		}
+		this.focus();
 	}
 
 	public removeTab(tab: PanelTabIdentifier) {
@@ -306,7 +308,12 @@ export class TabbedPanel extends Disposable {
 	}
 
 	public focus(): void {
-
+		if (this._shownTabId) {
+			const tab = this._tabMap.get(this._shownTabId);
+			if (tab) {
+				tab.view.focus();
+			}
+		}
 	}
 
 	public set collapsed(val: boolean) {
