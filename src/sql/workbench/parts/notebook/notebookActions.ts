@@ -377,9 +377,9 @@ export class AttachToDropdown extends SelectBox {
 			}).catch(err =>
 				this.logService.error(err));
 		}
-		model.onValidConnectionSelected(validConnection => {
+		this._register(model.onValidConnectionSelected(validConnection => {
 			this.handleContextsChanged(!validConnection);
-		});
+		}));
 	}
 
 	private getKernelDisplayName(): string {
