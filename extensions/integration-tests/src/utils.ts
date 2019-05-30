@@ -8,7 +8,12 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { TestServerProfile } from './testConfig';
 
-export async function connectToServer(server: TestServerProfile, timeout: number = 3000) {
+/**
+ * @param server test connection profile
+ * @param timeout optional timeout parameter
+ * Returns connection id for a new connection
+ */
+export async function connectToServer(server: TestServerProfile, timeout: number = 3000): Promise<string> {
 	let connectionProfile: azdata.IConnectionProfile = {
 		serverName: server.serverName,
 		databaseName: server.database,
@@ -31,6 +36,7 @@ export async function connectToServer(server: TestServerProfile, timeout: number
 	//workaround
 	//wait for OE to load
 	await new Promise(c => setTimeout(c, timeout));
+	return result.connectionId;
 }
 
 export async function ensureConnectionViewOpened() {
