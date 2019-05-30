@@ -255,8 +255,14 @@ export class MessagePanel extends Disposable {
 
 	public dispose() {
 		dispose(this.queryRunnerDisposables);
-		this.container = undefined;
-		this.styleElement = undefined;
+		if (this.container) {
+			this.container.remove();
+			this.container = undefined;
+		}
+		if (this.styleElement) {
+			this.styleElement.remove();
+			this.styleElement = undefined;
+		}
 		super.dispose();
 	}
 }
