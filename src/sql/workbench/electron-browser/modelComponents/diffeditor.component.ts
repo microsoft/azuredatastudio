@@ -27,14 +27,6 @@ import { CancellationTokenSource } from 'vs/base/common/cancellation';
 import { ITextModelService } from 'vs/editor/common/services/resolverService';
 import { ITextModel } from 'vs/editor/common/model';
 
-class ServiceAccessor {
-	constructor(
-		@ITextModelService public textModelResolverService: ITextModelService,
-		@IModelService public modelService: IModelService,
-		@IModeService public modeService: IModeService
-	) { }
-}
-
 @Component({
 	template: `
 	<div *ngIf="_title">
@@ -63,7 +55,8 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(IModelService) private _modelService: IModelService,
-		@Inject(IModeService) private _modeService: IModeService
+		@Inject(IModeService) private _modeService: IModeService,
+		@Inject(ITextModelService) private _textModelService: ITextModelService
 	) {
 		super(changeRef, el);
 	}
@@ -88,13 +81,14 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 		this.editorUriRight = uri2.toString();
 
 		let cancellationTokenSource = new CancellationTokenSource();
-		let accessor = this._instantiationService.createInstance(ServiceAccessor);
-		accessor.textModelResolverService.registerTextModelContentProvider('diffEditor', {
+		let modeService = this._modeService;
+		let modelService = this._modelService;
+		this._textModelService.registerTextModelContentProvider('diffEditor', {
 			provideTextContent: function (resource: URI): Promise<ITextModel> {
 				if (resource.scheme === 'diffEditor') {
 					let modelContent = '';
-					let languageSelection = accessor.modeService.create('plaintext');
-					return Promise.resolve(accessor.modelService.createModel(modelContent, languageSelection, resource));
+					let languageSelection = modeService.create('plaintext');
+					return Promise.resolve(modelService.createModel(modelContent, languageSelection, resource));
 				}
 
 				return Promise.resolve(null!);
