@@ -37,14 +37,11 @@ export function activate(context: vscode.ExtensionContext) {
 		let expectedExtensions = ['Microsoft.agent', 'Microsoft.import', 'Microsoft.mssql', 'Microsoft.profiler'];
 		do {
 			let extensions = vscode.extensions.all.filter(ext => { return expectedExtensions.indexOf(ext.id) !== -1; });
-			console.info(`extensions to load ${JSON.stringify(extensions, undefined, '\t')}`);
 			let isReady = true;
 			for (let i = 0; i < extensions.length; i++) {
 				let extension = extensions[i];
-				console.info(`checking extension:${JSON.stringify(extension, undefined, '\t')} to be ready}`);
 				isReady = isReady && extension.isActive;
 				if (!isReady) {
-					console.warn(`extension:${JSON.stringify(extension, undefined, '\t')} is not yet ready}`);
 					break;
 				}
 			}
