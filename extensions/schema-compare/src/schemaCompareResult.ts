@@ -14,6 +14,9 @@ import { getTelemetryErrorType } from './utils';
 const localize = nls.loadMessageBundle();
 const diffEditorTitle = localize('schemaCompare.ObjectDefinitionsTitle', 'Object Definitions');
 const applyConfirmation = localize('schemaCompare.ApplyConfirmation', 'Are you sure you want to update the target?');
+const reCompareToRefeshMessage = localize('schemaCompare.RecompareToRefresh', 'Press Compare to refresh the comparison.');
+const generateScriptEnabledMessage = localize('schemaCompare.generateScriptEnabledButton', 'Generate script to deploy changes to target');
+const applyEnabledMessage = localize('schemaCompare.applyButtonEnabledTitle', 'Apply changes to target');
 
 export class SchemaCompareResult {
 	private differencesTable: azdata.TableComponent;
@@ -493,6 +496,13 @@ export class SchemaCompareResult {
 						'startTime': Date.now().toString(),
 						'operationId': this.comparisonResult.operationId
 					});
+
+					// disable apply and generate script buttons because the results are no longer valid after applying the changes
+					this.generateScriptButton.enabled = false;
+					this.generateScriptButton.title = reCompareToRefeshMessage;
+					this.applyButton.enabled = false;
+					this.applyButton.title = reCompareToRefeshMessage;
+
 					const service = await SchemaCompareResult.getService('MSSQL');
 					const result = await service.schemaComparePublishChanges(this.comparisonResult.operationId, this.targetEndpointInfo.serverName, this.targetEndpointInfo.databaseName, azdata.TaskExecutionMode.execute);
 					if (!result || !result.success) {
@@ -502,6 +512,12 @@ export class SchemaCompareResult {
 						});
 						vscode.window.showErrorMessage(
 							localize('schemaCompare.updateErrorMessage', "Schema Compare Apply failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
+
+						// reenable generate script and apply buttons if apply failed
+						this.generateScriptButton.enabled = true;
+						this.generateScriptButton.title = generateScriptEnabledMessage;
+						this.applyButton.enabled = true;
+						this.applyButton.title = applyEnabledMessage;
 					}
 					Telemetry.sendTelemetryEvent('SchemaCompareApplyEnded', {
 						'endTime': Date.now().toString(),
@@ -525,8 +541,8 @@ export class SchemaCompareResult {
 		}
 		this.generateScriptButton.enabled = false;
 		this.applyButton.enabled = false;
-		this.generateScriptButton.title = localize('schemaCompare.generateScriptEnabledButton', 'Generate script to deploy changes to target');
-		this.applyButton.title = localize('schemaCompare.applyButtonEnabledTitle', 'Apply changes to target');
+		this.generateScriptButton.title = generateScriptEnabledMessage;
+		this.applyButton.title = applyEnabledMessage;
 	}
 
 	private createSwitchButton(view: azdata.ModelView): void {
