@@ -409,14 +409,13 @@ export class AttachToDropdown extends SelectBox {
 			else {
 				if (connections.length === 1 && connections[0] === msgAddNewConnection) {
 					connections.unshift(msgSelectConnection);
-					this.selectWithOptionName(msgSelectConnection);
 				}
 				else {
 					if (!connections.includes(msgAddNewConnection)) {
 						connections.push(msgAddNewConnection);
 					}
 				}
-				this.setOptions(connections);
+				this.setOptions(connections, 0);
 			}
 		}
 	}
@@ -426,11 +425,11 @@ export class AttachToDropdown extends SelectBox {
 			if (!connections.includes(msgSelectConnection)) {
 				connections.unshift(msgSelectConnection);
 			}
-			this.selectWithOptionName(msgSelectConnection);
+
 			if (!connections.includes(msgAddNewConnection)) {
 				connections.push(msgAddNewConnection);
 			}
-			this.setOptions(connections);
+			this.setOptions(connections, 0);
 		}
 		return connections;
 	}

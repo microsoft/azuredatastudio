@@ -42,6 +42,7 @@
 
 .notebookEditor .labelOnLeftContainer {
 	min-width: 100px;
+	max-width: 250px;
 	margin-right: 20px;
 	font-size: 13px;
 	text-align: center;
