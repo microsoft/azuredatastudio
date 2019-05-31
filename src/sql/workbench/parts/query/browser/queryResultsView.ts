@@ -287,6 +287,8 @@ export class QueryResultsView extends Disposable {
 		this.topOperationsTab.view.state = this.input.state.topOperationsState;
 		this.chartTab.view.state = this.input.state.chartState;
 
+		[this.resultsTab, this.messagesTab, this.qpTab, this.topOperationsTab, this.chartTab].forEach(t => t.clear());
+
 		let info = this.queryModelService._getQueryInfo(input.uri);
 		if (info) {
 			this.setQueryRunner(info.queryRunner);
