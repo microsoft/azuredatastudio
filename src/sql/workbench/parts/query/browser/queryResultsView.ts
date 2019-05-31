@@ -298,14 +298,14 @@ export class QueryResultsView extends Disposable {
 		if (info) {
 			this.setQueryRunner(info.queryRunner);
 		} else {
-			let disposeable = this.queryModelService.onRunQueryStart(c => {
+			let disposable = this.queryModelService.onRunQueryStart(c => {
 				if (c === input.uri) {
 					let info = this.queryModelService._getQueryInfo(input.uri);
 					this.setQueryRunner(info.queryRunner);
-					disposeable.dispose();
+					disposable.dispose();
 				}
 			});
-			this.runnerDisposables.push(disposeable);
+			this.runnerDisposables.push(disposable);
 		}
 	}
 
