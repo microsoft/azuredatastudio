@@ -36,7 +36,6 @@ import { EditDataResultsInput } from 'sql/workbench/parts/editData/common/editDa
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { IEditorGroup } from 'vs/workbench/services/editor/common/editorGroupsService';
-import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 
 /**
  * Editor that hosts an action bar and a resultSetInput for an edit data session
@@ -78,8 +77,7 @@ export class EditDataEditor extends BaseEditor {
 		@IQueryModelService private _queryModelService: IQueryModelService,
 		@IEditorDescriptorService private _editorDescriptorService: IEditorDescriptorService,
 		@IContextKeyService contextKeyService: IContextKeyService,
-		@IStorageService storageService: IStorageService,
-		@IWorkbenchLayoutService private readonly workbenchlayoutService: IWorkbenchLayoutService
+		@IStorageService storageService: IStorageService
 	) {
 		super(EditDataEditor.ID, _telemetryService, themeService, storageService);
 
@@ -131,12 +129,10 @@ export class EditDataEditor extends BaseEditor {
 	 * Called to create the editor in the parent element.
 	 */
 	protected createEditor(parent: HTMLElement): void {
-		const parentElement = parent;
 		parent.style.position = 'absolute';
 		parent.style.height = '100%';
 		parent.style.width = '100%';
-		DOM.addClass(parentElement, 'side-by-side-editor');
-		this._createTaskbar(parentElement);
+		this._createTaskbar(parent);
 	}
 
 	public dispose(): void {
@@ -411,10 +407,9 @@ export class EditDataEditor extends BaseEditor {
 
 		this._resultsEditorContainer.hidden = false;
 		if (this.queryPaneEnabled()) {
-			const editorTop = this.getContainer().getBoundingClientRect().top;
 			const splitPointTop: number = this._sash.getSplitPoint();
 			this._sqlEditorContainer.hidden = false;
-			sqlEditorHeight = splitPointTop - editorTop;
+			sqlEditorHeight = splitPointTop - this._getTaskBarHeight();
 			resultsEditorHeight = this._dimension.height - this._getTaskBarHeight() - sqlEditorHeight;
 		} else {
 			this._sqlEditorContainer.hidden = true;
