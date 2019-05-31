@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
-import { SemVer } from 'semver';
 
 export interface ResourceType {
 	name: string;
@@ -52,30 +51,9 @@ export enum ToolType {
 	MSSQLCtl
 }
 
-export interface ToolStatusInfo {
-	type: ToolType;
-	name: string;
-	description: string;
-	version: string;
-	versionRequirement: string;
-	status: ToolStatus;
-}
-
 export interface ITool {
 	readonly name: string;
 	readonly displayName: string;
 	readonly description: string;
 	readonly type: ToolType;
-	readonly supportAutoInstall: boolean;
-	readonly version: SemVer | undefined;
-	readonly isInstalled: boolean;
-	install(version: string): Thenable<void>;
-	refresh(): Thenable<void>;
-}
-
-export enum ToolStatus {
-	NotInstalled,
-	Installed,
-	Installing,
-	FailedToInstall
 }

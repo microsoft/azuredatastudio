@@ -6,18 +6,15 @@
 'use strict';
 
 import 'mocha';
-import * as TypeMoq from 'typemoq';
 import assert = require('assert');
 import { ToolsService } from '../services/toolsService';
 import { ToolType } from '../interfaces';
 import { isNumber } from 'util';
-import { IPlatformService } from '../services/platformService';
 
 suite('Tools Service Tests', function (): void {
 
 	test('run getToolByName with all known values', () => {
-		const mockPlatformService = TypeMoq.Mock.ofType<IPlatformService>();
-		const toolsService = new ToolsService(mockPlatformService.object);
+		const toolsService = new ToolsService();
 
 		const tools: { name: string; type: ToolType }[] = [
 			{ name: 'azcli', type: ToolType.AzCli },
@@ -46,8 +43,7 @@ suite('Tools Service Tests', function (): void {
 	});
 
 	test('run getToolByName with a name that is not defined', () => {
-		const mockPlatformService = TypeMoq.Mock.ofType<IPlatformService>();
-		const toolsService = new ToolsService(mockPlatformService.object);
+		const toolsService = new ToolsService();
 		const tool = toolsService.getToolByName('no-such-tool');
 		assert(tool === undefined, 'for a not defined tool, expected value is undefined');
 	});
