@@ -151,7 +151,7 @@ export class ConfigurePythonDialog {
 					});
 				} else {
 					dropdownValues = [{
-						displayName: 'No Python installs found.',
+						displayName: 'No supported Python versions found.',
 						name: ''
 					}];
 				}
