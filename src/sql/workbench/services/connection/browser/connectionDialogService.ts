@@ -235,7 +235,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			return Promise.resolve();
 		}
 		let fromEditor = params && params.connectionType === ConnectionType.editor;
-		let fromExtension = params && params.connectionType === ConnectionType.extension;
+		let fromExtension = params && params.connectionType === ConnectionType.temporary;
 		let uri: string = undefined;
 		if (fromEditor && params && params.input) {
 			uri = params.input.uri;
@@ -420,7 +420,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			this.updateModelServerCapabilities(model);
 			// If connecting from a query editor set "save connection" to false
 			if (params && params.input && params.connectionType === ConnectionType.editor ||
-				params.connectionType === ConnectionType.extension) {
+				params.connectionType === ConnectionType.temporary) {
 				this._model.saveProfile = false;
 			}
 

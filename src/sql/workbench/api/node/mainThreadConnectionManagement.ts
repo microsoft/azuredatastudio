@@ -60,9 +60,13 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 	}
 
 	public async $openConnectionDialog(providers: string[], initialConnectionProfile?: IConnectionProfile, connectionCompletionOptions?: azdata.IConnectionCompletionOptions): Promise<azdata.connection.Connection> {
+		// Here we default to ConnectionType.editor which saves the connecton in the connection store by default
 		let connectionType = ConnectionType.editor;
-		if (connectionCompletionOptions && connectionCompletionOptions.saveConnection !== undefined) {
-			connectionType = connectionCompletionOptions.saveConnection ? ConnectionType.editor : ConnectionType.extension;
+
+		// If the API call explicitly set saveConnection to false, set it to ConnectionType.extension
+		// which doesn't save the connection by default
+		if (connectionCompletionOptions && !connectionCompletionOptions.saveConnection) {
+			connectionType = ConnectionType.temporary;
 		}
 		let connectionProfile = await this._connectionDialogService.openDialogAndWait(this._connectionManagementService,
 			{ connectionType: connectionType, providers: providers }, initialConnectionProfile, undefined);
