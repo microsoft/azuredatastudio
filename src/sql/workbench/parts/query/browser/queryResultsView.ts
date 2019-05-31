@@ -223,14 +223,12 @@ export class QueryResultsView extends Disposable {
 			this.input.state.visibleTabs = new Set();
 			this.input.state.activeTab = this.resultsTab.identifier;
 		}));
-		this.runnerDisposables.push(runner.onMessage(e => {
-			if (e.isError) {
-				this._panelView.showTab(this.messagesTab.identifier);
-			}
-		}));
 		this.runnerDisposables.push(runner.onQueryEnd(() => {
 			if (!this.hasResults(runner)) {
 				this.hideResults();
+			}
+			if (runner.messages.find(v => v.isError)) {
+				this._panelView.showTab(this.messagesTab.identifier);
 			}
 		}));
 
