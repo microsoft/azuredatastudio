@@ -156,7 +156,7 @@ export class ConfigurePythonDialog {
 					}];
 				}
 			} else {
-				let defaultPath = JupyterServerInstallation.getPythonInstallPath(this.apiWrapper);
+				let defaultPath = JupyterServerInstallation.DefaultPythonLocation;
 				let defaultValue = {
 					displayName: `${defaultPath} (Default)`,
 					name: defaultPath

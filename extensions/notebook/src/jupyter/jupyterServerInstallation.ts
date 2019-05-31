@@ -53,7 +53,7 @@ export default class JupyterServerInstallation {
 	private _forceInstall: boolean;
 	private _installInProgress: boolean;
 
-	private static readonly DefaultPythonLocation = path.join(utils.getUserHome(), 'azuredatastudio-python');
+	public static readonly DefaultPythonLocation = path.join(utils.getUserHome(), 'azuredatastudio-python');
 
 	constructor(extensionPath: string, outputChannel: OutputChannel, apiWrapper: ApiWrapper, pythonInstallationPath?: string) {
 		this.extensionPath = extensionPath;
