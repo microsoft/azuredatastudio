@@ -82,6 +82,7 @@ export class TabbedPanel extends Disposable {
 		this.header = DOM.$('.composite.title');
 		this.tabList = DOM.$('.tabList');
 		this.tabList.setAttribute('role', 'tablist');
+		this.tabList.setAttribute('tabindex', '0');
 		this.tabList.style.height = this.headersize + 'px';
 		this.header.appendChild(this.tabList);
 		let actionbarcontainer = DOM.$('.title-actions');
