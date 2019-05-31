@@ -76,9 +76,11 @@ export class PythonPathLookup {
 		let pathsToCheck = this.getPythonCommands();
 
 		let pythonPaths = await Promise.all(pathsToCheck.map(item => this.getPythonPath(item)));
-		let results: string[] = [];
+		let results: string[];
 		if (pythonPaths) {
 			results = pythonPaths.filter(path => path && path.length > 0);
+		} else {
+			results = [];
 		}
 		return results;
 	}
@@ -135,9 +137,11 @@ export class PythonPathLookup {
 
 	private async getInfoForPath(pythonPath: string): Promise<PythonPathInfo> {
 		try {
-			let cmd = `"${pythonPath}" --version`;
+			// "python --version" returns nothing from executeBufferedCommand with Python 2.X,
+			// so use sys.version_info here instead.
+			let cmd = `"${pythonPath}" -c "import sys;print('.'.join(str(i) for i in sys.version_info[:3]))"`;
 			let output = await utils.executeBufferedCommand(cmd, {});
-			let pythonVersion = output ? output.trim() : '';
+			let pythonVersion = output ? `Python ${output.trim()}` : '';
 
 			cmd = `"${pythonPath}" -c "import sys;print(sys.exec_prefix)"`;
 			output = await utils.executeBufferedCommand(cmd, {});
@@ -152,7 +156,6 @@ export class PythonPathLookup {
 		} catch (err) {
 			// Ignore errors here, since this python version will just be excluded.
 		}
-
 		return undefined;
 	}
 }
