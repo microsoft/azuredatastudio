@@ -182,11 +182,9 @@ export class QueryResultsView extends Disposable {
 		this.messagesTab = this._register(new MessagesTab(instantiationService));
 		this.chartTab = this._register(new ChartTab(instantiationService));
 		this._panelView = this._register(new TabbedPanel(container, { showHeaderWhenSingleView: false }));
-		attachTabbedPanelStyler(this._panelView, themeService);
+		this._register(attachTabbedPanelStyler(this._panelView, themeService));
 		this.qpTab = this._register(new QueryPlanTab());
 		this.topOperationsTab = this._register(new TopOperationsTab(instantiationService));
-
-		attachTabbedPanelStyler(this._panelView, themeService);
 
 		this._panelView.pushTab(this.resultsTab);
 		this._panelView.pushTab(this.messagesTab);
@@ -195,9 +193,6 @@ export class QueryResultsView extends Disposable {
 				this.input.state.activeTab = e;
 			}
 		}));
-	}
-
-	public style() {
 	}
 
 	private setQueryRunner(runner: QueryRunner) {
