@@ -154,7 +154,6 @@ class NotebookTester {
 		assert(actualOutput2[0] === '1', `Expected result: 1, Actual: '${actualOutput2[0]}'`);
 	}
 
-	@stressify({ dop: NotebookTester.ParallelCount })
 	async scalaLanguageTest(title: string): Promise<void> {
 		let language = 'scala';
 		await this.cellLanguageTest(notebookContentForCellLanguageTest, title + this.invocationCount++, language, {
@@ -170,7 +169,6 @@ class NotebookTester {
 		});
 	}
 
-	@stressify({ dop: NotebookTester.ParallelCount })
 	async cplusplusLanguageTest(title: string): Promise<void> {
 		let language = 'cplusplus';
 		await this.cellLanguageTest(notebookContentForCellLanguageTest, title + this.invocationCount++, language, {
@@ -185,13 +183,12 @@ class NotebookTester {
 			}
 		});
 	}
-	
-	@stressify({ dop: NotebookTester.ParallelCount })
+
 	async emptyLanguageTest(title: string): Promise<void> {
 		let language = '';
 		await this.cellLanguageTest(notebookContentForCellLanguageTest, title + this.invocationCount++, language, {
 			'kernelspec': {
-				'name': '',
+				'name': language,
 				'display_name': ''
 			},
 			'language_info': {
@@ -202,23 +199,21 @@ class NotebookTester {
 		});
 	}
 
-	@stressify({ dop: NotebookTester.ParallelCount })
 	async sqlLanguageTest(title: string): Promise<void> {
 		let language = 'sql';
 		await this.cellLanguageTest(notebookContentForCellLanguageTest, title + this.invocationCount++, language, {
 			'kernelspec': {
-				'name': 'sql',
-				'display_name': 'SQL'
+				'name': language,
+				'display_name': language.toUpperCase()
 			},
 			'language_info': {
-				'name': 'sql',
+				'name': language,
 				'version': '',
 				'mimetype': ''
 			}
 		});
 	}
 
-	@stressify({ dop: NotebookTester.ParallelCount })
 	async pythonLanguageTest(title: string): Promise<void> {
 		let language = 'python';
 		await this.cellLanguageTest(notebookContentForCellLanguageTest, title + this.invocationCount++, language, {
@@ -227,7 +222,7 @@ class NotebookTester {
 				'display_name': 'Python 3'
 			},
 			'language_info': {
-				'name': 'python',
+				'name': language,
 				'version': '',
 				'mimetype': ''
 			}
@@ -261,7 +256,7 @@ class NotebookTester {
 		}
 		let notebookJson = Object.assign({}, content, { metadata: kernelMetadata });
 		let uri = writeNotebookToFile(notebookJson, testName);
-		console.log(uri);
+		console.log('Notebook uri' + uri);
 		let notebook = await azdata.nb.showNotebookDocument(uri);
 		console.log('Notebook is opened');
 
@@ -295,10 +290,10 @@ class NotebookTester {
 	async cellLanguageTest(content: azdata.nb.INotebookContents, testName: string, languageConfigured: string, metadataInfo: any) {
 		let notebookJson = Object.assign({}, content, { metadata: metadataInfo });
 		let uri = writeNotebookToFile(notebookJson, testName);
-		console.log(uri);
+		console.log('Notebook uri' + uri);
 		let notebook = await azdata.nb.showNotebookDocument(uri);
 		console.log('Notebook is opened');
-		await notebook.document.save(); // May be optional to do the language verification
+		await notebook.document.save();
 		let languageInNotebook = notebook.document.cells[0].contents.metadata.language;
 		console.log('Language set in cell: ' + languageInNotebook);
 		assert(languageInNotebook === languageConfigured, `Expected cell language is: ${languageConfigured}, Actual: ${languageInNotebook}`);
