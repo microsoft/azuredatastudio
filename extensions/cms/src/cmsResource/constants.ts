@@ -8,7 +8,7 @@
 export enum CmsResourceItemType {
 	cmsMessageNodeContainer = 'cms.resource.itemType.cmsMessageNodeContainer',
 	cmsEmptyNodeContainer = 'cms.resource.itemType.cmsEmptyNodeContainer',
-	cmsNodeContainer = 'cms.resource.itemType.cmsNodeContainer',
-	registeredServer = 'cms.resource.itemType.registeredServer',
+	cmsNodeContainer = 'cms.resource.itemType.databaseServerContainer',
+	registeredServer = 'cms.resource.itemType.databaseServer',
 	serverGroup = 'cms.resource.itemType.serverGroup'
 }
