@@ -160,6 +160,8 @@ export class ResourceDeploymentDialog {
 	}
 
 	private updateTools(): void {
+		// do a 10 ms delay to workaround the issue of first time load
+		// if we have 2 request updating the table component in one batch, their execution order is not guaranteed
 		setTimeout(() => {
 			const tools = this.getCurrentProvider().requiredTools;
 			const headerRowHeight = 28;
@@ -179,7 +181,7 @@ export class ResourceDeploymentDialog {
 			options.push({ option: option, value: selectedValue.name });
 		});
 
-		return this._selectedResourceType!.getProvider(options)!;
+		return this._selectedResourceType.getProvider(options)!;
 	}
 
 	private onCancel(): void {

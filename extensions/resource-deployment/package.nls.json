@@ -19,7 +19,5 @@
 	"bdc-deployment-target-aks": "New Azure Kubernetes Service Cluster",
 	"bdc-deployment-target-existing-cluster": "Existing Kubernetes Cluster",
 	"bdc-ctp30-aks-notebook": "./notebooks/sql2019-ctp30-bdc-aks.ipynb",
-	"bdc-ctp30-existing-cluster-notebook": "./notebooks/sql2019-ctp30-bdc-existing-cluster.ipynb",
-	"configuration.title": "Resource Deployment Configuration",
-	"kubectlPath.description": "Path of the kubectl tool"
+	"bdc-ctp30-existing-cluster-notebook": "./notebooks/sql2019-ctp30-bdc-existing-cluster.ipynb"
 }

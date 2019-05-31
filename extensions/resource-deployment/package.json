@@ -27,17 +27,6 @@
     "microsoft.notebook"
   ],
   "contributes": {
-    "configuration": {
-      "type": "object",
-      "title": "%configuration.title%",
-      "properties": {
-        "resourceDeployment.kubectlPath": {
-          "type": "string",
-          "default": "",
-          "description": "%kubectlPath.description%"
-        }
-      }
-    },
     "commands": [
       {
         "command": "azdata.resource.sql-image.deploy",
