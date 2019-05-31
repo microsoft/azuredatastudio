@@ -30,6 +30,7 @@ export class ConfigurePythonDialog {
 	private readonly PythonNotFoundMsg = localize('configurePython.pythonNotFoundMsg', "No python installation was found at the specified location.");
 
 	private pythonLocationDropdown: azdata.DropDownComponent;
+	private pythonDropdownLoader: azdata.LoadingComponent;
 	private browseButton: azdata.ButtonComponent;
 	private newInstallButton: azdata.RadioButtonComponent;
 	private existingInstallButton: azdata.RadioButtonComponent;
@@ -79,6 +80,12 @@ export class ConfigurePythonDialog {
 					values: [],
 					width: '100%'
 				}).component();
+			this.pythonDropdownLoader = view.modelBuilder.loadingComponent()
+				.withItem(this.pythonLocationDropdown)
+				.withProperties<azdata.LoadingComponentProperties>({
+					loading: false
+				})
+				.component();
 
 			this.browseButton = view.modelBuilder.button()
 				.withProperties<azdata.ButtonProperties>({
@@ -112,7 +119,7 @@ export class ConfigurePythonDialog {
 					component: this.existingInstallButton,
 					title: ''
 				}, {
-					component: this.pythonLocationDropdown,
+					component: this.pythonDropdownLoader,
 					title: this.LocationTextBoxTitle
 				}, {
 					component: this.browseButton,
@@ -129,37 +136,42 @@ export class ConfigurePythonDialog {
 	}
 
 	private async updatePythonPathsDropdown(useExistingPython: boolean): Promise<void> {
-		let pythonPaths: PythonPathInfo[];
-		let dropdownValues: azdata.CategoryValue[];
-		if (useExistingPython) {
-			pythonPaths = await this.pythonPathsPromise;
-			if (pythonPaths && pythonPaths.length > 0) {
-				dropdownValues = pythonPaths.map(path => {
-					return {
-						displayName: `${path.installDir} (${path.version})`,
-						name: path.installDir
-					};
-				});
+		await this.pythonDropdownLoader.updateProperties({ loading: true });
+		try {
+			let pythonPaths: PythonPathInfo[];
+			let dropdownValues: azdata.CategoryValue[];
+			if (useExistingPython) {
+				pythonPaths = await this.pythonPathsPromise;
+				if (pythonPaths && pythonPaths.length > 0) {
+					dropdownValues = pythonPaths.map(path => {
+						return {
+							displayName: `${path.installDir} (${path.version})`,
+							name: path.installDir
+						};
+					});
+				} else {
+					dropdownValues = [{
+						displayName: 'No Python installs found.',
+						name: ''
+					}];
+				}
 			} else {
-				dropdownValues = [{
-					displayName: 'No Python installs found.',
-					name: ''
-				}];
+				let defaultPath = JupyterServerInstallation.getPythonInstallPath(this.apiWrapper);
+				let defaultValue = {
+					displayName: `${defaultPath} (Default)`,
+					name: defaultPath
+				};
+				dropdownValues = [defaultValue];
 			}
-		} else {
-			let defaultPath = JupyterServerInstallation.getPythonInstallPath(this.apiWrapper);
-			let defaultValue = {
-				displayName: `${defaultPath} (Default)`,
-				name: defaultPath
-			};
-			dropdownValues = [defaultValue];
-		}
 
-		this.usingCustomPath = false;
-		await this.pythonLocationDropdown.updateProperties({
-			value: dropdownValues[0],
-			values: dropdownValues
-		});
+			this.usingCustomPath = false;
+			await this.pythonLocationDropdown.updateProperties({
+				value: dropdownValues[0],
+				values: dropdownValues
+			});
+		} finally {
+			await this.pythonDropdownLoader.updateProperties({ loading: false });
+		}
 	}
 
 	private createInstallRadioButtons(modelBuilder: azdata.ModelBuilder, useExistingPython: boolean): void {
