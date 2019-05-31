@@ -10,7 +10,7 @@ import * as assert from 'assert';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { context } from './testContext';
-import { sqlNotebookContent, writeNotebookToFile, sqlKernelMetadata, getFileName, pySparkNotebookContent, pySpark3KernelMetadata, pythonKernelMetadata, sqlNotebookMultipleCellsContent } from './notebook.util';
+import { sqlNotebookContent, writeNotebookToFile, sqlKernelMetadata, getFileName, pySparkNotebookContent, pySpark3KernelMetadata, pythonKernelMetadata, sqlNotebookMultipleCellsContent, notebookContentForCellLanguageTest } from './notebook.util';
 import { getBdcServer, getConfigValue, EnvironmentVariable_PYTHON_PATH } from './testConfig';
 import { connectToServer } from './utils';
 import * as fs from 'fs';
@@ -40,6 +40,10 @@ if (context.RunTest) {
 			await (new NotebookTester()).sqlNbClearAllOutputs(this.test.title);
 		});
 
+		test('sql language test', async function () {
+			await (new NotebookTester()).sqlLanguageTest(this.test.title);
+		});
+
 		if (process.env['RUN_PYTHON3_TEST'] === '1') {
 			test('Python3 notebook test', async function () {
 				await (new NotebookTester()).python3NbTest(this.test.title);
@@ -48,6 +52,10 @@ if (context.RunTest) {
 			test('Clear all outputs - Python3 notebook ', async function () {
 				await (new NotebookTester()).python3ClearAllOutputs(this.test.title);
 			});
+
+			test('python language test', async function () {
+				await (new NotebookTester()).pythonLanguageTest(this.test.title);
+			});
 		}
 
 		if (process.env['RUN_PYSPARK_TEST'] === '1') {
@@ -55,6 +63,20 @@ if (context.RunTest) {
 				await (new NotebookTester()).pySpark3NbTest(this.test.title);
 			});
 		}
+
+		/* After https://github.com/microsoft/azuredatastudio/issues/5598 is fixed, enable these tests.
+		test('scala language test', async function () {
+			await (new NotebookTester()).scalaLanguageTest(this.test.title);
+		});
+
+		test('empty language test', async function () {
+			await (new NotebookTester()).emptyLanguageTest(this.test.title);
+		});
+
+		test('cplusplus language test', async function () {
+			await (new NotebookTester()).cplusplusLanguageTest(this.test.title);
+		});
+		*/
 	});
 }
 
@@ -132,6 +154,86 @@ class NotebookTester {
 		assert(actualOutput2[0] === '1', `Expected result: 1, Actual: '${actualOutput2[0]}'`);
 	}
 
+	@stressify({ dop: NotebookTester.ParallelCount })
+	async scalaLanguageTest(title: string): Promise<void> {
+		let language = 'scala';
+		await this.cellLanguageTest(notebookContentForCellLanguageTest, title + this.invocationCount++, language, {
+			'kernelspec': {
+				'name': '',
+				'display_name': ''
+			},
+			'language_info': {
+				name: language,
+				version: '',
+				mimetype: ''
+			}
+		});
+	}
+
+	@stressify({ dop: NotebookTester.ParallelCount })
+	async cplusplusLanguageTest(title: string): Promise<void> {
+		let language = 'cplusplus';
+		await this.cellLanguageTest(notebookContentForCellLanguageTest, title + this.invocationCount++, language, {
+			'kernelspec': {
+				'name': '',
+				'display_name': ''
+			},
+			'language_info': {
+				name: language,
+				version: '',
+				mimetype: ''
+			}
+		});
+	}
+	
+	@stressify({ dop: NotebookTester.ParallelCount })
+	async emptyLanguageTest(title: string): Promise<void> {
+		let language = '';
+		await this.cellLanguageTest(notebookContentForCellLanguageTest, title + this.invocationCount++, language, {
+			'kernelspec': {
+				'name': '',
+				'display_name': ''
+			},
+			'language_info': {
+				name: language,
+				version: '',
+				mimetype: 'x-scala'
+			}
+		});
+	}
+
+	@stressify({ dop: NotebookTester.ParallelCount })
+	async sqlLanguageTest(title: string): Promise<void> {
+		let language = 'sql';
+		await this.cellLanguageTest(notebookContentForCellLanguageTest, title + this.invocationCount++, language, {
+			'kernelspec': {
+				'name': 'sql',
+				'display_name': 'SQL'
+			},
+			'language_info': {
+				'name': 'sql',
+				'version': '',
+				'mimetype': ''
+			}
+		});
+	}
+
+	@stressify({ dop: NotebookTester.ParallelCount })
+	async pythonLanguageTest(title: string): Promise<void> {
+		let language = 'python';
+		await this.cellLanguageTest(notebookContentForCellLanguageTest, title + this.invocationCount++, language, {
+			'kernelspec': {
+				'name': 'python3',
+				'display_name': 'Python 3'
+			},
+			'language_info': {
+				'name': 'python',
+				'version': '',
+				'mimetype': ''
+			}
+		});
+	}
+
 	async cleanup(testName: string): Promise<void> {
 		try {
 			let fileName = getFileName(testName + this.invocationCount++);
@@ -189,6 +291,17 @@ class NotebookTester {
 		});
 		assert(clearedOutputs, 'Outputs of all the code cells from Python notebook should be cleared');
 		console.log('After clearing cell outputs');
+	}
+	async cellLanguageTest(content: azdata.nb.INotebookContents, testName: string, languageConfigured: string, metadataInfo: any) {
+		let notebookJson = Object.assign({}, content, { metadata: metadataInfo });
+		let uri = writeNotebookToFile(notebookJson, testName);
+		console.log(uri);
+		let notebook = await azdata.nb.showNotebookDocument(uri);
+		console.log('Notebook is opened');
+		await notebook.document.save(); // May be optional to do the language verification
+		let languageInNotebook = notebook.document.cells[0].contents.metadata.language;
+		console.log('Language set in cell: ' + languageInNotebook);
+		assert(languageInNotebook === languageConfigured, `Expected cell language is: ${languageConfigured}, Actual: ${languageInNotebook}`);
 	}
 }
 
