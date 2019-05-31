@@ -8,7 +8,6 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
 import * as constants from './constants';
-import * as azdata from 'azdata';
 
 import { AppContext } from './appContext';
 import { ApiWrapper } from './apiWrapper';
@@ -30,7 +29,6 @@ import { registerAzureResourceCommands } from './azureResource/commands';
 import { registerAzureResourceDatabaseServerCommands } from './azureResource/providers/databaseServer/commands';
 import { registerAzureResourceDatabaseCommands } from './azureResource/providers/database/commands';
 import { AzureResourceTreeProvider } from './azureResource/tree/treeProvider';
-import { equals } from './azureResource/utils';
 
 let extensionContext: vscode.ExtensionContext;
 
@@ -72,7 +70,6 @@ export function activate(context: vscode.ExtensionContext) {
 	registerAzureServices(appContext);
 	const azureResourceTree = new AzureResourceTreeProvider(appContext);
 	pushDisposable(apiWrapper.registerTreeDataProvider('azureResourceExplorer', azureResourceTree));
-	registerAccountService(appContext, azureResourceTree);
 	registerCommands(appContext, azureResourceTree);
 
 	return {
@@ -113,25 +110,11 @@ async function initAzureAccountProvider(extensionContext: vscode.ExtensionContex
 
 function registerAzureServices(appContext: AppContext): void {
 	appContext.registerService<AzureResourceService>(AzureResourceServiceNames.resourceService, new AzureResourceService());
+	appContext.registerService<IAzureResourceAccountService>(AzureResourceServiceNames.accountService, new AzureResourceAccountService(appContext.apiWrapper));
 	appContext.registerService<IAzureResourceCacheService>(AzureResourceServiceNames.cacheService, new AzureResourceCacheService(extensionContext));
 	appContext.registerService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService, new AzureResourceSubscriptionService());
 	appContext.registerService<IAzureResourceSubscriptionFilterService>(AzureResourceServiceNames.subscriptionFilterService, new AzureResourceSubscriptionFilterService(new AzureResourceCacheService(extensionContext)));
 	appContext.registerService<IAzureResourceTenantService>(AzureResourceServiceNames.tenantService, new AzureResourceTenantService());
-}
-function registerAccountService(appContext: AppContext, azureResourceTree: AzureResourceTreeProvider): void {
-	let accountService = new AzureResourceAccountService(appContext.apiWrapper);
-	appContext.registerService<IAzureResourceAccountService>(AzureResourceServiceNames.accountService, accountService);
-	let previousAccounts: Array<azdata.Account> = undefined;
-	accountService.onDidChangeAccounts((e: azdata.DidChangeAccountsParams) => {
-		// the onDidChangeAccounts event will trigger in many cases where the accounts didn't actually change
-		// the notifyNodeChanged event triggers a refresh which triggers a getChildren which can trigger this callback
-		// this below check short-circuits the infinite callback loop
-		if (!equals(e.accounts, previousAccounts)) {
-			azureResourceTree.notifyNodeChanged(undefined);
-		}
-		previousAccounts = e.accounts;
-	});
-
 }
 
 function registerCommands(appContext: AppContext, azureResourceTree: AzureResourceTreeProvider): void {
