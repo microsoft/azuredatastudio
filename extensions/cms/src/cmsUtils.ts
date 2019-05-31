@@ -92,7 +92,9 @@ export class CmsUtils {
 		}
 		return provider.createCmsServer(name, description, connection, ownerUri).then((result) => {
 			if (result) {
-				return result;
+				return Promise.resolve(result);
+			} else {
+				return Promise.reject(null);
 			}
 		});
 	}
@@ -155,9 +157,12 @@ export class CmsUtils {
 				} else {
 					let registeredServerName = connection.options.registeredServerName === '' ? connection.options.server : connection.options.registeredServerName;
 					let result = await provider.addRegisteredServer(ownerUri, relativePath, registeredServerName, connection.options.registeredServerDescription, connection);
-					return result;
+					if (result) {
+						return Promise.resolve(result);
+					} else {
+						return Promise.reject(registeredServerName);
+					}
 				}
-
 			}
 		});
 	}
