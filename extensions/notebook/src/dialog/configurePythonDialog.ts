@@ -145,7 +145,7 @@ export class ConfigurePythonDialog {
 				if (pythonPaths && pythonPaths.length > 0) {
 					dropdownValues = pythonPaths.map(path => {
 						return {
-							displayName: `${path.installDir} (${path.version})`,
+							displayName: `${path.installDir} (Python ${path.version})`,
 							name: path.installDir
 						};
 					});

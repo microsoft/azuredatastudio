@@ -121,7 +121,12 @@ export class PythonPathLookup {
 		// Remove duplicate paths, and entries with missing values
 		let pathSet = new Set<string>();
 		return pathsInfo.filter(path => {
-			if (!path || !path.installDir || !path.version) {
+			if (!path || !path.installDir || !path.version || path.installDir.length === 0 || path.version.length === 0) {
+				return false;
+			}
+
+			let majorVersion = Number.parseInt(path.version.substring(0, path.version.indexOf('.')));
+			if (Number.isNaN(majorVersion) || majorVersion < 3) {
 				return false;
 			}
 
@@ -141,7 +146,7 @@ export class PythonPathLookup {
 			// so use sys.version_info here instead.
 			let cmd = `"${pythonPath}" -c "import sys;print('.'.join(str(i) for i in sys.version_info[:3]))"`;
 			let output = await utils.executeBufferedCommand(cmd, {});
-			let pythonVersion = output ? `Python ${output.trim()}` : '';
+			let pythonVersion = output ? output.trim() : '';
 
 			cmd = `"${pythonPath}" -c "import sys;print(sys.exec_prefix)"`;
 			output = await utils.executeBufferedCommand(cmd, {});
