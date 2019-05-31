@@ -74,11 +74,17 @@ export function addRegisteredServerCommand(appContext: AppContext, tree: CmsReso
 			return;
 		}
 		let relativePath = node instanceof CmsResourceTreeNode ? '' : node.relativePath;
-		let serverName = node instanceof CmsResourceTreeNode ? node.connection.options.server : null;
+		let serverName = node instanceof CmsResourceTreeNode ? node.connection.options.registeredServerName === ''
+			? node.connection.options.server : node.connection.options.registeredServerName : null;
 		await appContext.cmsUtils.addRegisteredServer(relativePath, node.ownerUri, serverName).then((result) => {
 			if (result) {
 				tree.notifyNodeChanged(node);
 			}
+		}, (error) => {
+			// error out
+			let errorText = localize('cms.errors.addRegisterServerFail', 'Could not add the Registered Server {0}', error);
+			appContext.apiWrapper.showErrorMessage(errorText);
+			return;
 		});
 	});
 }

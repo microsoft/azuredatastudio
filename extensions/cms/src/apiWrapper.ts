@@ -4,16 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import * as mssql from '../../mssql/src/api/mssqlapis';
-import * as Utils from './cmsResource/utils';
-import { ICmsResourceNodeInfo } from './cmsResource/tree/baseTreeNodes';
-
-const localize = nls.loadMessageBundle();
-const cmsProvider: string = 'MSSQL-CMS';
-const mssqlProvider: string = 'MSSQL';
 
 /**
  * Wrapper class to act as a facade over VSCode and Data APIs and allow us to test / mock callbacks into
@@ -23,9 +15,6 @@ const mssqlProvider: string = 'MSSQL';
  * ApiWrapper
  */
 export class ApiWrapper {
-
-	private _cmsService: mssql.CmsService;
-	private _registeredCmsServers: ICmsResourceNodeInfo[];
 
 	// Data APIs
 	public registerConnectionProvider(provider: azdata.ConnectionProvider): vscode.Disposable {
@@ -96,19 +85,6 @@ export class ApiWrapper {
 
 	public registerTreeDataProvider<T>(viewId: string, treeDataProvider: vscode.TreeDataProvider<T>): vscode.Disposable {
 		return vscode.window.registerTreeDataProvider(viewId, treeDataProvider);
-	}
-
-	/**
-	 * Get the configuration for a extensionName
-	 * @param extensionName The string name of the extension to get the configuration for
-	 * @param resource The optional URI, as a URI object or a string, to use to get resource-scoped configurations
-	 */
-	public getConfiguration(): vscode.WorkspaceConfiguration {
-		return vscode.workspace.getConfiguration('centralManagementServers');
-	}
-
-	public async setConfiguration(value: any): Promise<void> {
-		await vscode.workspace.getConfiguration('centralManagementServers').update('servers', value, true);
 	}
 
 	/**
