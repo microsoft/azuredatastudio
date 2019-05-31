@@ -22,12 +22,12 @@ export function registerCmsServerCommand(appContext: AppContext, tree: CmsResour
 		if (node && !(node instanceof CmsResourceEmptyTreeNode)) {
 			return;
 		}
-		await appContext.apiWrapper.connection.then(async (connection) => {
+		await appContext.cmsUtils.connection.then(async (connection) => {
 			if (connection && connection.options) {
 				let registeredCmsServerName = connection.options.registeredServerName ?
 					connection.options.registeredServerName : connection.options.server;
 				// check if a CMS with the same name is registered or not
-				let cachedServers = appContext.apiWrapper.registeredCmsServers;
+				let cachedServers = appContext.cmsUtils.registeredCmsServers;
 				let serverExists: boolean = false;
 				if (cachedServers) {
 					serverExists = cachedServers.some((server) => {
@@ -42,7 +42,7 @@ export function registerCmsServerCommand(appContext: AppContext, tree: CmsResour
 					// remove server description from connection uri
 					connection.options.registeredCmsServerDescription = null;
 					let ownerUri = await azdata.connection.getUriForConnection(connection.connectionId);
-					appContext.apiWrapper.cacheRegisteredCmsServer(registeredCmsServerName, registeredCmsServerDescription, ownerUri, connection);
+					appContext.cmsUtils.cacheRegisteredCmsServer(registeredCmsServerName, registeredCmsServerDescription, ownerUri, connection);
 					tree.notifyNodeChanged(undefined);
 				} else {
 					// error out for same server name
@@ -61,7 +61,7 @@ export function deleteCmsServerCommand(appContext: AppContext, tree: CmsResource
 		if (!(node instanceof CmsResourceTreeNode)) {
 			return;
 		}
-		await appContext.apiWrapper.deleteCmsServer(node.name);
+		await appContext.cmsUtils.deleteCmsServer(node.name);
 		tree.isSystemInitialized = false;
 		tree.notifyNodeChanged(undefined);
 	});
@@ -75,7 +75,7 @@ export function addRegisteredServerCommand(appContext: AppContext, tree: CmsReso
 		}
 		let relativePath = node instanceof CmsResourceTreeNode ? '' : node.relativePath;
 		let serverName = node instanceof CmsResourceTreeNode ? node.connection.options.server : null;
-		await appContext.apiWrapper.addRegisteredServer(relativePath, node.ownerUri, serverName).then((result) => {
+		await appContext.cmsUtils.addRegisteredServer(relativePath, node.ownerUri, serverName).then((result) => {
 			if (result) {
 				tree.notifyNodeChanged(node);
 			}
@@ -94,7 +94,7 @@ export function deleteRegisteredServerCommand(appContext: AppContext, tree: CmsR
 			localize('cms.yes', 'Yes'),
 			localize('cms.no', 'No')).then((result) => {
 				if (result && result === localize('cms.yes', 'Yes')) {
-					appContext.apiWrapper.removeRegisteredServer(node.name, node.relativePath, node.ownerUri).then((result) => {
+					appContext.cmsUtils.removeRegisteredServer(node.name, node.relativePath, node.ownerUri).then((result) => {
 						if (result) {
 							tree.notifyNodeChanged(node.parent);
 						}
@@ -151,7 +151,7 @@ export function addServerGroupCommand(appContext: AppContext, tree: CmsResourceT
 				groupExists = true;
 			}
 			if (!groupExists) {
-				appContext.apiWrapper.addServerGroup(serverGroupName, serverDescription, path, node.ownerUri).then((result) => {
+				appContext.cmsUtils.addServerGroup(serverGroupName, serverDescription, path, node.ownerUri).then((result) => {
 					if (result) {
 						tree.notifyNodeChanged(node);
 					}
@@ -177,7 +177,7 @@ export function deleteServerGroupCommand(appContext: AppContext, tree: CmsResour
 			localize('cms.yes', 'Yes'),
 			localize('cms.no', 'No')).then((result) => {
 				if (result && result === localize('cms.yes', 'Yes')) {
-					appContext.apiWrapper.removeServerGroup(node.name, node.relativePath, node.ownerUri).then((result) => {
+					appContext.cmsUtils.removeServerGroup(node.name, node.relativePath, node.ownerUri).then((result) => {
 						if (result) {
 							tree.notifyNodeChanged(node.parent);
 						}

@@ -34,7 +34,7 @@ export class ServerGroupTreeNode extends CmsResourceTreeNodeBase {
 	public getChildren(): TreeNode[] | Promise<TreeNode[]> {
 		try {
 			let nodes = [];
-			return this.appContext.apiWrapper.getRegisteredServers(this.ownerUri, this.relativePath).then((result) => {
+			return this.appContext.cmsUtils.getRegisteredServers(this.ownerUri, this.relativePath).then((result) => {
 				if (result) {
 					if (result.registeredServersList) {
 						result.registeredServersList.forEach((registeredServer) => {

@@ -38,9 +38,9 @@ export class CmsResourceTreeNode extends CmsResourceTreeNodeBase {
 		try {
 			let nodes: CmsResourceTreeNodeBase[] = [];
 			if (!this.ownerUri) {
-				this._ownerUri = await this.appContext.apiWrapper.getUriForConnection(this.connection);
+				this._ownerUri = await this.appContext.cmsUtils.getUriForConnection(this.connection);
 			}
-			return this.appContext.apiWrapper.createCmsServer(this.connection, this.name, this.description).then((result) => {
+			return this.appContext.cmsUtils.createCmsServer(this.connection, this.name, this.description).then((result) => {
 				if (result) {
 					if (result.registeredServersList) {
 						result.registeredServersList.forEach((registeredServer) => {

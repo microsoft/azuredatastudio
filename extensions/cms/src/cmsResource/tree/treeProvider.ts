@@ -45,7 +45,7 @@ export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICms
 							undefined,
 							server.connection,
 							this._appContext, this, null));
-						this.appContext.apiWrapper.cacheRegisteredCmsServer(server.name, server.description,
+						this.appContext.cmsUtils.cacheRegisteredCmsServer(server.name, server.description,
 							undefined, server.connection);
 					});
 					return servers;
@@ -59,7 +59,7 @@ export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICms
 			return [CmsResourceMessageTreeNode.create(CmsResourceTreeProvider.loadingLabel, undefined)];
 		}
 		try {
-			let registeredCmsServers = this.appContext.apiWrapper.registeredCmsServers;
+			let registeredCmsServers = this.appContext.cmsUtils.registeredCmsServers;
 			if (registeredCmsServers && registeredCmsServers.length > 0) {
 				this.isSystemInitialized = true;
 				// save the CMS Servers for future use
