@@ -157,11 +157,10 @@ export class ConfigurePythonDialog {
 				}
 			} else {
 				let defaultPath = JupyterServerInstallation.DefaultPythonLocation;
-				let defaultValue = {
+				dropdownValues = [{
 					displayName: `${defaultPath} (Default)`,
 					name: defaultPath
-				};
-				dropdownValues = [defaultValue];
+				}];
 			}
 
 			this.usingCustomPath = false;
