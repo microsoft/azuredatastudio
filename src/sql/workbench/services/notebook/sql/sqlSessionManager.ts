@@ -144,7 +144,7 @@ export class SqlSession implements nb.ISession {
 		return Promise.resolve();
 	}
 
-	configureConnection(connection: ConnectionProfile): Thenable<void> {
+	configureConnection(connection: ConnectionProfile, password?: string): Thenable<void> {
 		if (this._kernel) {
 			this._kernel.connection = connection;
 		}

@@ -48,6 +48,7 @@ import { toErrorMessage } from 'vs/base/common/errorMessage';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 import { LabeledMenuItemActionItem, fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
+import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
@@ -94,7 +95,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		@Inject(IViewletService) private viewletService: IViewletService,
 		@Inject(ICapabilitiesService) private capabilitiesService: ICapabilitiesService,
 		@Inject(ITextFileService) private textFileService: ITextFileService,
-		@Inject(ILogService) private readonly logService: ILogService
+		@Inject(ILogService) private readonly logService: ILogService,
+		@Inject(IQuickInputService) private quickInputService: IQuickInputService
 	) {
 		super();
 		this.updateProfile();
@@ -506,7 +508,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		let uriString = cell.cellUri.toString();
 		if (this._model.cells.findIndex(c => c.cellUri.toString() === uriString) > -1) {
 			this.selectCell(cell);
-			return cell.runCell(this.notificationService, this.connectionManagementService);
+			return cell.runCell(this.notificationService, this.connectionManagementService, this.quickInputService);
 		} else {
 			return Promise.reject(new Error(localize('cellNotFound', 'cell with URI {0} was not found in this model', uriString)));
 		}

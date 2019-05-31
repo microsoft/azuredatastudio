@@ -291,11 +291,11 @@ class SessionWrapper implements azdata.nb.ISession {
 		return this.doConfigureKernel(kernelInfo);
 	}
 
-	configureConnection(connection: azdata.IConnectionProfile): Thenable<void> {
+	configureConnection(connection: azdata.IConnectionProfile, password?: string): Thenable<void> {
 		if (connection['capabilitiesService'] !== undefined) {
 			connection['capabilitiesService'] = undefined;
 		}
-		return this.doConfigureConnection(connection);
+		return this.doConfigureConnection(connection, password);
 	}
 
 	private async doChangeKernel(kernelInfo: azdata.nb.IKernelSpec): Promise<azdata.nb.IKernel> {
@@ -308,8 +308,8 @@ class SessionWrapper implements azdata.nb.ISession {
 		await this._proxy.ext.$configureKernel(this.sessionDetails.sessionId, kernelInfo);
 	}
 
-	private async doConfigureConnection(connection: azdata.IConnectionProfile): Promise<void> {
-		await this._proxy.ext.$configureConnection(this.sessionDetails.sessionId, connection);
+	private async doConfigureConnection(connection: azdata.IConnectionProfile, password?: string): Promise<void> {
+		await this._proxy.ext.$configureConnection(this.sessionDetails.sessionId, connection, password);
 	}
 }
 

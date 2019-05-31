@@ -136,9 +136,9 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		return session.configureKernel(kernelInfo).then(() => null);
 	}
 
-	$configureConnection(sessionId: number, connection: azdata.IConnectionProfile): Thenable<void> {
+	$configureConnection(sessionId: number, connection: azdata.IConnectionProfile, password?: string): Thenable<void> {
 		let session = this._getAdapter<azdata.nb.ISession>(sessionId);
-		return session.configureConnection(connection).then(() => null);
+		return session.configureConnection(connection, password).then(() => null);
 	}
 
 	$getKernelReadyStatus(kernelId: number): Thenable<azdata.nb.IInfoReply> {

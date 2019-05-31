@@ -115,7 +115,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 		azdata.dataprotocol.registerIconProvider(iconProvider);
 		cmsService = new CmsService(appContext, languageClient);
 
-		activateSparkFeatures(appContext);
+		activateSparkFeatures(appContext, prompter);
 		activateNotebookTask(appContext);
 	}, e => {
 		Telemetry.sendTelemetryEvent('ServiceInitializingFailed');
@@ -150,14 +150,14 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 	return api;
 }
 
-function activateSparkFeatures(appContext: AppContext): void {
+function activateSparkFeatures(appContext: AppContext, prompter: IPrompter): void {
 	let extensionContext = appContext.extensionContext;
 	let apiWrapper = appContext.apiWrapper;
 	let outputChannel: vscode.OutputChannel = mssqlOutputChannel;
-	extensionContext.subscriptions.push(new OpenSparkJobSubmissionDialogCommand(appContext, outputChannel));
-	extensionContext.subscriptions.push(new OpenSparkJobSubmissionDialogFromFileCommand(appContext, outputChannel));
+	extensionContext.subscriptions.push(new OpenSparkJobSubmissionDialogCommand(appContext, outputChannel, prompter));
+	extensionContext.subscriptions.push(new OpenSparkJobSubmissionDialogFromFileCommand(appContext, outputChannel, prompter));
 	apiWrapper.registerTaskHandler(Constants.mssqlClusterLivySubmitSparkJobTask, (profile: azdata.IConnectionProfile) => {
-		new OpenSparkJobSubmissionDialogTask(appContext, outputChannel).execute(profile);
+		new OpenSparkJobSubmissionDialogTask(appContext, outputChannel, prompter).execute(profile);
 	});
 	apiWrapper.registerTaskHandler(Constants.mssqlClusterLivyOpenSparkHistory, (profile: azdata.IConnectionProfile) => {
 		new OpenSparkYarnHistoryTask(appContext).execute(profile, true);

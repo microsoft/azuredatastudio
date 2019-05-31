@@ -826,7 +826,7 @@ export interface ExtHostNotebookShape {
 	// Session APIs
 	$changeKernel(sessionId: number, kernelInfo: azdata.nb.IKernelSpec): Thenable<INotebookKernelDetails>;
 	$configureKernel(sessionId: number, kernelInfo: azdata.nb.IKernelSpec): Thenable<void>;
-	$configureConnection(sessionId: number, connection: azdata.IConnectionProfile): Thenable<void>;
+	$configureConnection(sessionId: number, connection: azdata.IConnectionProfile, password?: string): Thenable<void>;
 
 	// Kernel APIs
 	$getKernelReadyStatus(kernelId: number): Thenable<azdata.nb.IInfoReply>;

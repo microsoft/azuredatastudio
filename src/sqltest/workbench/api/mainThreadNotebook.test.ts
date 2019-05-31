@@ -154,7 +154,7 @@ class ExtHostNotebookStub implements ExtHostNotebookShape {
 	$configureKernel(sessionId: number, kernelInfo: azdata.nb.IKernelSpec): Thenable<void> {
 		throw new Error('Method not implemented.');
 	}
-	$configureConnection(sessionId: number, conneection: azdata.IConnectionProfile): Thenable<void> {
+	$configureConnection(sessionId: number, conneection: azdata.IConnectionProfile, password?: string): Thenable<void> {
 		throw new Error('Method not implemented.');
 	}
 	$getKernelReadyStatus(kernelId: number): Thenable<azdata.nb.IInfoReply> {

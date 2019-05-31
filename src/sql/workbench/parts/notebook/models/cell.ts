@@ -18,6 +18,7 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { Schemas } from 'vs/base/common/network';
+import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 let modelId = 0;
 
 
@@ -39,6 +40,7 @@ export class CellModel implements ICellModel {
 	public id: string;
 	private _connectionManagementService: IConnectionManagementService;
 	private _stdInHandler: nb.MessageHandler<nb.IStdinMessage>;
+	private _quickInputService: IQuickInputService;
 
 	constructor(private factory: IModelFactory, cellData?: nb.ICellContents, private _options?: ICellModelOptions) {
 		this.id = `${modelId++}`;
@@ -186,7 +188,7 @@ export class CellModel implements ICellModel {
 		return CellExecutionState.Hidden;
 	}
 
-	public async runCell(notificationService?: INotificationService, connectionManagementService?: IConnectionManagementService): Promise<boolean> {
+	public async runCell(notificationService?: INotificationService, connectionManagementService?: IConnectionManagementService, quickInputService?: IQuickInputService): Promise<boolean> {
 		try {
 			if (!this.active && this !== this.notebookModel.activeCell) {
 				if (this.notebookModel.activeCell) {
@@ -199,6 +201,11 @@ export class CellModel implements ICellModel {
 			if (connectionManagementService) {
 				this._connectionManagementService = connectionManagementService;
 			}
+
+			if (quickInputService) {
+				this._quickInputService = quickInputService;
+			}
+
 			if (this.cellType !== CellTypes.Code) {
 				// TODO should change hidden state to false if we add support
 				// for this property
@@ -382,9 +389,37 @@ export class CellModel implements ICellModel {
 		if (output) {
 			// deletes transient node in the serialized JSON
 			delete output['transient'];
+			this.checkFailure(output);
 			this._outputs.push(this.rewriteOutputUrls(output));
 			this.fireOutputsChanged();
 		}
+	}
+
+	private async checkFailure(output: nb.ICellOutput): Promise<void> {
+		if (this.future) {
+			try {
+				let result = output as nb.IStreamResult;
+				if (result.name === 'stderr') {
+					if (typeof result.text === 'string') {
+						let index = result.text.toLocaleLowerCase().indexOf('401');
+						if (index !== -1) {
+							let password = await this.promptPassword(localize('prmptPwd', 'Please provide the password to connect to HDFS:'));
+							if (password && password.length > 0) {
+								this.notebookModel.clientSession.updateConnection(this.notebookModel.activeConnection, password);
+							}
+						}
+					}
+				}
+			}
+			catch (e) { }
+		}
+	}
+
+	private async promptPassword(promptMsg: string): Promise<string> {
+		return await this._quickInputService.input({
+			password: true,
+			prompt: promptMsg
+		}).then(confirmed => <string>confirmed);
 	}
 
 	private rewriteOutputUrls(output: nb.ICellOutput): nb.ICellOutput {

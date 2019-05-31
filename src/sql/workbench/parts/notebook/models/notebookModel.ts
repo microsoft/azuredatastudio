@@ -243,7 +243,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public get activeConnection(): IConnectionProfile {
-		return this._activeConnection;
+		return this._activeConnection.toIConnectionProfile();
 	}
 
 	/**

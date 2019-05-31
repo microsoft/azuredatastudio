@@ -97,7 +97,7 @@ export class EmptySession implements nb.ISession {
 		return Promise.resolve();
 	}
 
-	configureConnection(connection: ConnectionProfile): Thenable<void> {
+	configureConnection(connection: ConnectionProfile, password?: string): Thenable<void> {
 		return Promise.resolve();
 	}
 }

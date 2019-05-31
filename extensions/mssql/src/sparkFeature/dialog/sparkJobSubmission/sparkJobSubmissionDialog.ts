@@ -18,6 +18,8 @@ import { SparkConfigurationTab } from './sparkConfigurationTab';
 import { SparkJobSubmissionInput } from './sparkJobSubmissionService';
 import { SparkAdvancedTab } from './sparkAdvancedTab';
 import { SqlClusterConnection } from '../../../objectExplorerNodeProvider/connection';
+import { HdfsError } from '../../../objectExplorerNodeProvider/webhdfs';
+import { IPrompter, QuestionTypes, IQuestion } from '../../../prompts/question';
 
 const localize = nls.loadMessageBundle();
 
@@ -33,7 +35,8 @@ export class SparkJobSubmissionDialog {
 	constructor(
 		private sqlClusterConnection: SqlClusterConnection,
 		private appContext: AppContext,
-		private outputChannel: vscode.OutputChannel) {
+		private outputChannel: vscode.OutputChannel,
+		private prompter: IPrompter) {
 		if (!this.sqlClusterConnection || !this.appContext || !this.outputChannel) {
 			throw new Error(localize('sparkJobSubmission_SparkJobSubmissionDialogInitializeError',
 				'Parameters for SparkJobSubmissionDialog is illegal'));
@@ -96,6 +99,14 @@ export class SparkJobSubmissionDialog {
 					this.outputChannel.appendLine(this.addErrorTag(LocalizedConstants.sparkJobSubmissionUploadingFileFailed(utils.getErrorMessage(error))));
 					op.updateStatus(azdata.TaskStatus.Failed, LocalizedConstants.sparkJobSubmissionUploadingFileFailed(utils.getErrorMessage(error)));
 					this.outputChannel.appendLine(LocalizedConstants.sparkJobSubmissionEndMessage);
+					let errorCode = (error instanceof HdfsError) ? error.statusCode : 0;
+					if (errorCode === 401) {
+						let password: string = await this.promptPassword(localize('prmptPwd', 'Please provide the password to connect to HDFS:'));
+						if (password && password.length > 0) {
+							this.sqlClusterConnection.updatePassword(password);
+						}
+
+					}
 					return;
 				}
 			}
@@ -145,6 +156,15 @@ export class SparkJobSubmissionDialog {
 			op.updateStatus(azdata.TaskStatus.Failed, LocalizedConstants.sparkJobSubmissionSubmitJobFailed(utils.getErrorMessage(error)));
 			this.outputChannel.appendLine(LocalizedConstants.sparkJobSubmissionEndMessage);
 		}
+	}
+
+	private async promptPassword(promptMsg: string): Promise<string> {
+		return await this.prompter.promptSingle(<IQuestion>{
+			type: QuestionTypes.password,
+			name: 'passwordPrompt',
+			message: promptMsg,
+			default: ''
+		}).then(confirmed => <string>confirmed);
 	}
 
 	private async handleValidate(): Promise<boolean> {

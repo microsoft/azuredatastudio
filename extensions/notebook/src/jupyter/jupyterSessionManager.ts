@@ -233,7 +233,7 @@ export class JupyterSession implements nb.ISession {
 		await fs.writeFile(configFilePath, JSON.stringify(config));
 	}
 
-	public async configureConnection(connection: IConnectionProfile): Promise<void> {
+	public async configureConnection(connection: IConnectionProfile, password?: string): Promise<void> {
 		if (connection && connection.providerName && this.isSparkKernel(this.sessionImpl.kernel.name)) {
 			// TODO may need to reenable a way to get the credential
 			// await this._connection.getCredential();
@@ -259,11 +259,13 @@ export class JupyterSession implements nb.ISession {
 			this.setHostAndPort(',', connection);
 
 			let server = Uri.parse(utils.getLivyUrl(connection.options[KNOX_ENDPOINT_SERVER], connection.options[KNOX_ENDPOINT_PORT])).toString();
+			let newPassword = password ? password : connection.options['password'];
 			let doNotCallChangeEndpointParams =
-				`%_do_not_call_change_endpoint --username=${connection.options[USER]} --password=${connection.options['password']} --server=${server} --auth=Basic_Access`;
+				`%_do_not_call_change_endpoint --username=${connection.options[USER]} --password=${newPassword} --server=${server} --auth=Basic_Access`;
 			let future = this.sessionImpl.kernel.requestExecute({
 				code: doNotCallChangeEndpointParams
 			}, true);
+			console.log('------' + doNotCallChangeEndpointParams);
 			await future.done;
 		}
 	}

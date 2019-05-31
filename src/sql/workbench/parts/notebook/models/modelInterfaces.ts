@@ -21,6 +21,7 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { localize } from 'vs/nls';
 import { NotebookModel } from 'sql/workbench/parts/notebook/models/notebookModel';
+import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 
 export interface IClientSessionOptions {
 	notebookUri: URI;
@@ -203,7 +204,7 @@ export interface IClientSession extends IDisposable {
 	/**
 	 * Updates the connection
 	 */
-	updateConnection(connection: IConnectionProfile): Promise<void>;
+	updateConnection(connection: IConnectionProfile, password?: string): Promise<void>;
 
 	/**
 	 * Supports registering a handler to run during kernel change and implement any calls needed to configure
@@ -448,7 +449,7 @@ export interface ICellModel {
 	readonly notebookModel: NotebookModel;
 	setFuture(future: FutureInternal): void;
 	setStdInHandler(handler: nb.MessageHandler<nb.IStdinMessage>): void;
-	runCell(notificationService?: INotificationService, connectionManagementService?: IConnectionManagementService): Promise<boolean>;
+	runCell(notificationService?: INotificationService, connectionManagementService?: IConnectionManagementService, quickInputService?: IQuickInputService): Promise<boolean>;
 	setOverrideLanguage(language: string);
 	equals(cellModel: ICellModel): boolean;
 	toJSON(): nb.ICellContents;

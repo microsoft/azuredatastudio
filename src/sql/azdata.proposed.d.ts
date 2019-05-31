@@ -4770,7 +4770,7 @@ declare module 'azdata' {
 
 			configureKernel(kernelInfo: IKernelSpec): Thenable<void>;
 
-			configureConnection(connection: IConnectionProfile): Thenable<void>;
+			configureConnection(connection: IConnectionProfile, password?: string): Thenable<void>;
 		}
 
 		export interface ISessionOptions {

@@ -20,9 +20,10 @@ import { getNode } from '../../objectExplorerNodeProvider/hdfsCommands';
 import * as LocalizedConstants from '../../localizedConstants';
 import * as SqlClusterLookUp from '../../sqlClusterLookUp';
 import { SqlClusterConnection } from '../../objectExplorerNodeProvider/connection';
+import { IPrompter } from '../../prompts/question';
 
 export class OpenSparkJobSubmissionDialogCommand extends Command {
-	constructor(appContext: AppContext, private outputChannel: vscode.OutputChannel) {
+	constructor(appContext: AppContext, private outputChannel: vscode.OutputChannel, private prompter: IPrompter) {
 		super(constants.mssqlClusterLivySubmitSparkJobCommand, appContext);
 	}
 
@@ -40,7 +41,7 @@ export class OpenSparkJobSubmissionDialogCommand extends Command {
 				sqlClusterConnection = await this.selectConnection();
 			}
 
-			let dialog = new SparkJobSubmissionDialog(sqlClusterConnection, this.appContext, this.outputChannel);
+			let dialog = new SparkJobSubmissionDialog(sqlClusterConnection, this.appContext, this.outputChannel, this.prompter);
 			await dialog.openDialog();
 		} catch (error) {
 			this.appContext.apiWrapper.showErrorMessage(getErrorMessage(error));
@@ -82,7 +83,7 @@ export class OpenSparkJobSubmissionDialogCommand extends Command {
 
 // Open the submission dialog for a specific file path.
 export class OpenSparkJobSubmissionDialogFromFileCommand extends Command {
-	constructor(appContext: AppContext, private outputChannel: vscode.OutputChannel) {
+	constructor(appContext: AppContext, private outputChannel: vscode.OutputChannel, private prompter: IPrompter) {
 		super(constants.mssqlClusterLivySubmitSparkJobFromFileCommand, appContext);
 	}
 
@@ -113,7 +114,7 @@ export class OpenSparkJobSubmissionDialogFromFileCommand extends Command {
 			if (!sqlClusterConnection) {
 				throw new Error(LocalizedConstants.sparkJobSubmissionNoSqlBigDataClusterFound);
 			}
-			let dialog = new SparkJobSubmissionDialog(sqlClusterConnection, this.appContext, this.outputChannel);
+			let dialog = new SparkJobSubmissionDialog(sqlClusterConnection, this.appContext, this.outputChannel, this.prompter);
 			await dialog.openDialog(path);
 		} catch (error) {
 			this.appContext.apiWrapper.showErrorMessage(getErrorMessage(error));
@@ -122,7 +123,7 @@ export class OpenSparkJobSubmissionDialogFromFileCommand extends Command {
 }
 
 export class OpenSparkJobSubmissionDialogTask {
-	constructor(private appContext: AppContext, private outputChannel: vscode.OutputChannel) {
+	constructor(private appContext: AppContext, private outputChannel: vscode.OutputChannel, private prompter: IPrompter) {
 	}
 
 	async execute(profile: azdata.IConnectionProfile, ...args: any[]): Promise<void> {
@@ -131,7 +132,7 @@ export class OpenSparkJobSubmissionDialogTask {
 			if (!sqlClusterConnection) {
 				throw new Error(LocalizedConstants.sparkJobSubmissionNoSqlBigDataClusterFound);
 			}
-			let dialog = new SparkJobSubmissionDialog(sqlClusterConnection, this.appContext, this.outputChannel);
+			let dialog = new SparkJobSubmissionDialog(sqlClusterConnection, this.appContext, this.outputChannel, this.prompter);
 			await dialog.openDialog();
 		} catch (error) {
 			this.appContext.apiWrapper.showErrorMessage(getErrorMessage(error));
