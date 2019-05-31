@@ -256,7 +256,7 @@ class NotebookTester {
 		}
 		let notebookJson = Object.assign({}, content, { metadata: kernelMetadata });
 		let uri = writeNotebookToFile(notebookJson, testName);
-		console.log('Notebook uri' + uri);
+		console.log('Notebook uri ' + uri);
 		let notebook = await azdata.nb.showNotebookDocument(uri);
 		console.log('Notebook is opened');
 
@@ -290,7 +290,7 @@ class NotebookTester {
 	async cellLanguageTest(content: azdata.nb.INotebookContents, testName: string, languageConfigured: string, metadataInfo: any) {
 		let notebookJson = Object.assign({}, content, { metadata: metadataInfo });
 		let uri = writeNotebookToFile(notebookJson, testName);
-		console.log('Notebook uri' + uri);
+		console.log('Notebook uri ' + uri);
 		let notebook = await azdata.nb.showNotebookDocument(uri);
 		console.log('Notebook is opened');
 		await notebook.document.save();
