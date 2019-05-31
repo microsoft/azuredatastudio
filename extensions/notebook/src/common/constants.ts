@@ -7,7 +7,7 @@
 
 // CONFIG VALUES ///////////////////////////////////////////////////////////
 export const extensionConfigSectionName = 'dataManagement';
-export const extensionOutputChannel = 'Jupyter Notebooks';
+export const extensionOutputChannel = 'Notebooks';
 export const configLogDebugInfo = 'logDebugInfo';
 
 // JUPYTER CONFIG //////////////////////////////////////////////////////////
@@ -24,7 +24,6 @@ export const pythonPathConfigKey = 'pythonPath';
 export const existingPythonConfigKey = 'useExistingPython';
 export const notebookConfigKey = 'notebook';
 
-export const outputChannelName = 'dataManagement';
 export const hdfsHost = 'host';
 export const hdfsUser = 'user';
 
