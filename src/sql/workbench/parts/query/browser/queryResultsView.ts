@@ -182,11 +182,9 @@ export class QueryResultsView extends Disposable {
 		this.messagesTab = this._register(new MessagesTab(instantiationService));
 		this.chartTab = this._register(new ChartTab(instantiationService));
 		this._panelView = this._register(new TabbedPanel(container, { showHeaderWhenSingleView: true }));
-		attachTabbedPanelStyler(this._panelView, themeService);
+		this._register(attachTabbedPanelStyler(this._panelView, themeService));
 		this.qpTab = this._register(new QueryPlanTab());
 		this.topOperationsTab = this._register(new TopOperationsTab(instantiationService));
-
-		attachTabbedPanelStyler(this._panelView, themeService);
 
 		this._panelView.pushTab(this.resultsTab);
 		this._panelView.pushTab(this.messagesTab);
@@ -195,9 +193,6 @@ export class QueryResultsView extends Disposable {
 				this.input.state.activeTab = e;
 			}
 		}));
-	}
-
-	public style() {
 	}
 
 	private hasResults(runner: QueryRunner): boolean {
@@ -233,20 +228,23 @@ export class QueryResultsView extends Disposable {
 				this.hideResults();
 			}
 		}));
-		if (this.input.state.visibleTabs.has(this.chartTab.identifier)) {
-			if (!this._panelView.contains(this.chartTab)) {
-				this._panelView.pushTab(this.chartTab);
-			}
+
+		if (this.input.state.visibleTabs.has(this.chartTab.identifier) && !this._panelView.contains(this.chartTab)) {
+			this._panelView.pushTab(this.chartTab);
+		} else if (!this.input.state.visibleTabs.has(this.chartTab.identifier) && this._panelView.contains(this.chartTab)) {
+			this._panelView.removeTab(this.chartTab.identifier);
 		}
-		if (this.input.state.visibleTabs.has(this.qpTab.identifier)) {
-			if (!this._panelView.contains(this.qpTab)) {
-				this._panelView.pushTab(this.qpTab);
-			}
+
+		if (this.input.state.visibleTabs.has(this.qpTab.identifier) && !this._panelView.contains(this.qpTab)) {
+			this._panelView.pushTab(this.qpTab);
+		} else if (!this.input.state.visibleTabs.has(this.qpTab.identifier) && this._panelView.contains(this.qpTab)) {
+			this._panelView.removeTab(this.qpTab.identifier);
 		}
-		if (this.input.state.visibleTabs.has(this.topOperationsTab.identifier)) {
-			if (!this._panelView.contains(this.topOperationsTab)) {
-				this._panelView.pushTab(this.topOperationsTab);
-			}
+
+		if (this.input.state.visibleTabs.has(this.topOperationsTab.identifier) && !this._panelView.contains(this.topOperationsTab)) {
+			this._panelView.pushTab(this.topOperationsTab);
+		} else if (!this.input.state.visibleTabs.has(this.topOperationsTab.identifier) && this._panelView.contains(this.topOperationsTab)) {
+			this._panelView.removeTab(this.topOperationsTab.identifier);
 		}
 
 		// restore query model view tabs
