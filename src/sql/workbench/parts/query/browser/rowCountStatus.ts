@@ -20,7 +20,7 @@ export class RowCountStatusBarItem implements IStatusbarItem {
 	private _element: HTMLElement;
 	private _flavorElement: HTMLElement;
 
-	private dispose: IDisposable;
+	private dispose: IDisposable[];
 
 	constructor(
 		@IEditorService private _editorService: EditorServiceImpl,
@@ -55,6 +55,7 @@ export class RowCountStatusBarItem implements IStatusbarItem {
 	private _showStatus(): void {
 		hide(this._flavorElement);
 		dispose(this.dispose);
+		this.dispose = [];
 		let activeEditor = this._editorService.activeControl;
 		if (activeEditor) {
 			let currentUri = WorkbenchUtils.getEditorUri(activeEditor.input);
@@ -64,15 +65,23 @@ export class RowCountStatusBarItem implements IStatusbarItem {
 					if (queryRunner.hasCompleted) {
 						this._displayValue(queryRunner);
 					}
-					this.dispose = queryRunner.onQueryEnd(e => {
+					this.dispose.push(queryRunner.onQueryEnd(e => {
 						this._displayValue(queryRunner);
-					});
+					}));
+					this.dispose.push(queryRunner.onQueryStart(e => {
+						hide(this._flavorElement);
+					}));
 				} else {
-					this.dispose = this._queryModelService.onRunQueryComplete(e => {
+					this.dispose.push(this._queryModelService.onRunQueryComplete(e => {
 						if (e === currentUri) {
 							this._displayValue(this._queryModelService.getQueryRunner(currentUri));
 						}
-					});
+					}));
+					this.dispose.push(this._queryModelService.onRunQueryStart(e => {
+						if (e === currentUri) {
+							hide(this._flavorElement);
+						}
+					}));
 				}
 			}
 		}
