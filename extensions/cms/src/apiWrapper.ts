@@ -4,16 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import * as mssql from '../../mssql/src/api/mssqlapis';
-import * as Utils from './cmsResource/utils';
-import { ICmsResourceNodeInfo } from './cmsResource/tree/baseTreeNodes';
-
-const localize = nls.loadMessageBundle();
-const cmsProvider: string = 'MSSQL-CMS';
-const mssqlProvider: string = 'MSSQL';
 
 /**
  * Wrapper class to act as a facade over VSCode and Data APIs and allow us to test / mock callbacks into
@@ -23,9 +15,6 @@ const mssqlProvider: string = 'MSSQL';
  * ApiWrapper
  */
 export class ApiWrapper {
-
-	private _cmsService: mssql.CmsService;
-	private _registeredCmsServers: ICmsResourceNodeInfo[];
 
 	// Data APIs
 	public registerConnectionProvider(provider: azdata.ConnectionProvider): vscode.Disposable {
