@@ -76,7 +76,7 @@ export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICms
 						server.ownerUri,
 						server.connection,
 						this._appContext, this, null);
-				}).sort();
+				}).sort((a, b) => a.name.localeCompare(b.name));
 			} else {
 				return [new CmsResourceEmptyTreeNode()];
 			}

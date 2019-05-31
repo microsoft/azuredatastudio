@@ -419,8 +419,8 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		return new Promise<void>((resolve, reject) => {
 			this.updateModelServerCapabilities(model);
 			// If connecting from a query editor set "save connection" to false
-			if (params && params.input && params.connectionType === ConnectionType.editor ||
-				params.connectionType === ConnectionType.temporary) {
+			if (params && (params.input && params.connectionType === ConnectionType.editor ||
+				params.connectionType === ConnectionType.temporary)) {
 				this._model.saveProfile = false;
 			}
 
