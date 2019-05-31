@@ -32,10 +32,6 @@ steps:
     .\scripts\test.bat --reporter mocha-junit-reporter --coverage
   displayName: 'Test'
 
-- script: |
-    cat .\.build\coverage\lcov.info | node .\node_modules\coveralls\bin\coveralls.js
-  displayName: 'Upload coverage to Coveralls'
-
 - task: PublishTestResults@2
   inputs:
     testResultsFiles: 'test-results.xml'
