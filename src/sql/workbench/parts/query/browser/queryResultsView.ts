@@ -296,18 +296,21 @@ export class QueryResultsView extends Disposable {
 		if (info) {
 			this.setQueryRunner(info.queryRunner);
 		} else {
-			let disposeable = this.queryModelService.onRunQueryStart(c => {
+			let disposable = this.queryModelService.onRunQueryStart(c => {
 				if (c === input.uri) {
 					let info = this.queryModelService._getQueryInfo(input.uri);
 					this.setQueryRunner(info.queryRunner);
-					disposeable.dispose();
+					disposable.dispose();
 				}
 			});
+			this.runnerDisposables.push(disposable);
 		}
 	}
 
 	clearInput() {
 		this._input = undefined;
+		dispose(this.runnerDisposables);
+		this.runnerDisposables = [];
 		this.resultsTab.clear();
 		this.messagesTab.clear();
 		this.qpTab.clear();
@@ -389,6 +392,7 @@ export class QueryResultsView extends Disposable {
 
 	public dispose() {
 		dispose(this.runnerDisposables);
+		this.runnerDisposables = [];
 		super.dispose();
 	}
 
