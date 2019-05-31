@@ -22,7 +22,7 @@ export class ConfigurePythonDialog {
 	private readonly DialogTitle = localize('configurePython.dialogName', "Configure Python for Notebooks");
 	private readonly InstallButtonText = localize('configurePython.okButtonText', "Install");
 	private readonly CancelButtonText = localize('configurePython.cancelButtonText', "Cancel");
-	private readonly BrowseButtonText = localize('configurePython.browseButtonText', "Change location");
+	private readonly BrowseButtonText = localize('configurePython.browseButtonText', "Browse");
 	private readonly LocationTextBoxTitle = localize('configurePython.locationTextBoxText', "Python Install Location");
 	private readonly SelectFileLabel = localize('configurePython.selectFileLabel', "Select");
 	private readonly InstallationNote = localize('configurePython.installNote', "This installation will take some time. It is recommended to not close the application until the installation is complete.");
@@ -90,7 +90,7 @@ export class ConfigurePythonDialog {
 			this.browseButton = view.modelBuilder.button()
 				.withProperties<azdata.ButtonProperties>({
 					label: this.BrowseButtonText,
-					width: '100px'
+					width: '70px'
 				}).component();
 			this.browseButton.onDidClick(() => this.handleBrowse());
 
