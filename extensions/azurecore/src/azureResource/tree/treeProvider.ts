@@ -87,7 +87,7 @@ export class AzureResourceTreeProvider implements TreeDataProvider<TreeNode>, IA
 		}
 	}
 
-	private setSystemInitialized() {
+	private setSystemInitialized(): void {
 		this.isSystemInitialized = true;
 		this.loadingAccountsPromise = undefined;
 	}
