@@ -130,8 +130,11 @@ export class EditDataEditor extends BaseEditor {
 	/**
 	 * Called to create the editor in the parent element.
 	 */
-	public createEditor(parent: HTMLElement): void {
+	protected createEditor(parent: HTMLElement): void {
 		const parentElement = parent;
+		parent.style.position = 'absolute';
+		parent.style.height = '100%';
+		parent.style.width = '100%';
 		DOM.addClass(parentElement, 'side-by-side-editor');
 		this._createTaskbar(parentElement);
 	}
