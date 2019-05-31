@@ -95,7 +95,6 @@ export class TabbedPanel extends Disposable {
 		}
 		this.body = DOM.$('.tabBody');
 		this.body.setAttribute('role', 'tabpanel');
-		this.body.setAttribute('tabindex', '0');
 		this.parent.appendChild(this.body);
 	}
 
