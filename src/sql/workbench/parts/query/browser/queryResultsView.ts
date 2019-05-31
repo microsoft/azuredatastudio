@@ -305,11 +305,14 @@ export class QueryResultsView extends Disposable {
 					disposeable.dispose();
 				}
 			});
+			this.runnerDisposables.push(disposeable);
 		}
 	}
 
 	clearInput() {
 		this._input = undefined;
+		dispose(this.runnerDisposables);
+		this.runnerDisposables = [];
 		this.resultsTab.clear();
 		this.messagesTab.clear();
 		this.qpTab.clear();
@@ -391,6 +394,7 @@ export class QueryResultsView extends Disposable {
 
 	public dispose() {
 		dispose(this.runnerDisposables);
+		this.runnerDisposables = [];
 		super.dispose();
 	}
 
