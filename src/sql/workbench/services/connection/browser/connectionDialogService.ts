@@ -235,15 +235,15 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			return Promise.resolve();
 		}
 		let fromEditor = params && params.connectionType === ConnectionType.editor;
-		let fromExtension = params && params.connectionType === ConnectionType.temporary;
+		let isTemporaryConnection = params && params.connectionType === ConnectionType.temporary;
 		let uri: string = undefined;
 		if (fromEditor && params && params.input) {
 			uri = params.input.uri;
 		}
 		let options: IConnectionCompletionOptions = this._options || {
 			params: params,
-			saveTheConnection: !fromExtension,
-			showDashboard: params && params.showDashboard !== undefined ? params.showDashboard : !fromEditor && !fromExtension,
+			saveTheConnection: !isTemporaryConnection,
+			showDashboard: params && params.showDashboard !== undefined ? params.showDashboard : !fromEditor && !isTemporaryConnection,
 			showConnectionDialogOnError: false,
 			showFirewallRuleOnError: true
 		};

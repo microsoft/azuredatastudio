@@ -76,18 +76,16 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 			providerName: connectionProfile.providerName
 		} : undefined;
 
-		if (connectionCompletionOptions) {
-			if (connectionCompletionOptions.saveConnection) {
-				// Somehow, connectionProfile.saveProfile is false even if initialConnectionProfile.saveProfile is true, reset the flag here.
-				connectionProfile.saveProfile = initialConnectionProfile.saveProfile;
-				await this._connectionManagementService.connectAndSaveProfile(connectionProfile, undefined, {
-					saveTheConnection: isUndefinedOrNull(connectionCompletionOptions.saveConnection) ? true : connectionCompletionOptions.saveConnection,
-					showDashboard: isUndefinedOrNull(connectionCompletionOptions.showDashboard) ? false : connectionCompletionOptions.showDashboard,
-					params: undefined,
-					showConnectionDialogOnError: isUndefinedOrNull(connectionCompletionOptions.showConnectionDialogOnError) ? true : connectionCompletionOptions.showConnectionDialogOnError,
-					showFirewallRuleOnError: isUndefinedOrNull(connectionCompletionOptions.showFirewallRuleOnError) ? true : connectionCompletionOptions.showFirewallRuleOnError
-				});
-			}
+		if (connectionCompletionOptions && connectionCompletionOptions.saveConnection) {
+			// Somehow, connectionProfile.saveProfile is false even if initialConnectionProfile.saveProfile is true, reset the flag here.
+			connectionProfile.saveProfile = initialConnectionProfile.saveProfile;
+			await this._connectionManagementService.connectAndSaveProfile(connectionProfile, undefined, {
+				saveTheConnection: isUndefinedOrNull(connectionCompletionOptions.saveConnection) ? true : connectionCompletionOptions.saveConnection,
+				showDashboard: isUndefinedOrNull(connectionCompletionOptions.showDashboard) ? false : connectionCompletionOptions.showDashboard,
+				params: undefined,
+				showConnectionDialogOnError: isUndefinedOrNull(connectionCompletionOptions.showConnectionDialogOnError) ? true : connectionCompletionOptions.showConnectionDialogOnError,
+				showFirewallRuleOnError: isUndefinedOrNull(connectionCompletionOptions.showFirewallRuleOnError) ? true : connectionCompletionOptions.showFirewallRuleOnError
+			});
 		}
 		return connection;
 	}

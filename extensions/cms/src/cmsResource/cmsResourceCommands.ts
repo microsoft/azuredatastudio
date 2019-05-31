@@ -90,7 +90,7 @@ export function deleteRegisteredServerCommand(appContext: AppContext, tree: CmsR
 			return;
 		}
 		appContext.apiWrapper.showWarningMessage(
-			`${localize('cms.confirmDelete', 'Are you sure you want to delete ')}${node.name}?`,
+			`${localize('cms.confirmDeleteServer', 'Are you sure you want to delete')} ${node.name}?`,
 			localize('cms.yes', 'Yes'),
 			localize('cms.no', 'No')).then((result) => {
 				if (result && result === localize('cms.yes', 'Yes')) {
@@ -173,7 +173,7 @@ export function deleteServerGroupCommand(appContext: AppContext, tree: CmsResour
 			return;
 		}
 		appContext.apiWrapper.showWarningMessage(
-			`${localize('cms.confirmDelete', 'Are you sure you want to delete ')}${node.name}?`,
+			`${localize('cms.confirmDeleteGroup', 'Are you sure you want to delete')} ${node.name}?`,
 			localize('cms.yes', 'Yes'),
 			localize('cms.no', 'No')).then((result) => {
 				if (result && result === localize('cms.yes', 'Yes')) {

@@ -24,7 +24,7 @@
 			"type": "object",
 			"title": "%cms.title%",
 			"properties": {
-				"cms.servers": {
+				"centralManagementServers.servers": {
 					"type": "array"
 				}
 			}

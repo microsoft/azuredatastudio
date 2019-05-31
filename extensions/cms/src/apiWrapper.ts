@@ -104,11 +104,11 @@ export class ApiWrapper {
 	 * @param resource The optional URI, as a URI object or a string, to use to get resource-scoped configurations
 	 */
 	public getConfiguration(): vscode.WorkspaceConfiguration {
-		return vscode.workspace.getConfiguration('cms');
+		return vscode.workspace.getConfiguration('centralManagementServers');
 	}
 
 	public async setConfiguration(value: any): Promise<void> {
-		await vscode.workspace.getConfiguration('cms').update('servers', value, true);
+		await vscode.workspace.getConfiguration('centralManagementServers').update('servers', value, true);
 	}
 
 	/**

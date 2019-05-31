@@ -84,7 +84,7 @@ export class ServerGroupTreeNode extends CmsResourceTreeNodeBase {
 		item.id = this._id;
 		item.tooltip = this.description;
 		item.iconPath = {
-			dark: this.appContext.extensionContext.asAbsolutePath('resources/light/folder.svg'),
+			dark: this.appContext.extensionContext.asAbsolutePath('resources/dark/folder_inverse.svg'),
 			light: this.appContext.extensionContext.asAbsolutePath('resources/light/folder.svg')
 		};
 		return item;
