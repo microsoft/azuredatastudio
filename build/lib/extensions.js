@@ -33,10 +33,10 @@ const extensionsProductionDependencies = deps.getProductionDependencies(extensio
 function packageBuiltInExtensions() {
     const sqlBuiltInLocalExtensionDescriptions = glob.sync('extensions/*/package.json')
         .map(manifestPath => {
-            const extensionPath = path.dirname(path.join(root, manifestPath));
-            const extensionName = path.basename(extensionPath);
-            return { name: extensionName, path: extensionPath };
-        })
+        const extensionPath = path.dirname(path.join(root, manifestPath));
+        const extensionName = path.basename(extensionPath);
+        return { name: extensionName, path: extensionPath };
+    })
         .filter(({ name }) => excludedExtensions.indexOf(name) === -1)
         .filter(({ name }) => builtInExtensions.every(b => b.name !== name))
         .filter(({ name }) => sqlBuiltInExtensions.indexOf(name) >= 0);
@@ -75,10 +75,10 @@ function packageExtensionTask(extensionName, platform, arch) {
         const root = path.resolve(path.join(__dirname, '../..'));
         const localExtensionDescriptions = glob.sync('extensions/*/package.json')
             .map(manifestPath => {
-                const extensionPath = path.dirname(path.join(root, manifestPath));
-                const extensionName = path.basename(extensionPath);
-                return { name: extensionName, path: extensionPath };
-            })
+            const extensionPath = path.dirname(path.join(root, manifestPath));
+            const extensionName = path.basename(extensionPath);
+            return { name: extensionName, path: extensionPath };
+        })
             .filter(({ name }) => extensionName === name);
         const localExtensions = es.merge(...localExtensionDescriptions.map(extension => {
             return fromLocal(extension.path);
@@ -117,11 +117,11 @@ function fromLocalWebpack(extensionPath, sourceMappingURLBase) {
         const files = fileNames
             .map(fileName => path.join(extensionPath, fileName))
             .map(filePath => new File({
-                path: filePath,
-                stat: fs.statSync(filePath),
-                base: extensionPath,
-                contents: fs.createReadStream(filePath)
-            }));
+            path: filePath,
+            stat: fs.statSync(filePath),
+            base: extensionPath,
+            contents: fs.createReadStream(filePath)
+        }));
         const filesStream = es.readArray(files);
         // check for a webpack configuration files, then invoke webpack
         // and merge its output with the files stream. also rewrite the package.json
@@ -139,12 +139,12 @@ function fromLocalWebpack(extensionPath, sourceMappingURLBase) {
             .pipe(packageJsonFilter)
             .pipe(buffer())
             .pipe(json((data) => {
-                if (data.main) {
-                    // hardcoded entry point directory!
-                    data.main = data.main.replace('/out/', /dist/);
-                }
-                return data;
-            }))
+            if (data.main) {
+                // hardcoded entry point directory!
+                data.main = data.main.replace('/out/', /dist/);
+            }
+            return data;
+        }))
             .pipe(packageJsonFilter.restore);
         const webpackStreams = webpackConfigLocations.map(webpackConfigPath => () => {
             const webpackDone = (err, stats) => {
@@ -164,28 +164,28 @@ function fromLocalWebpack(extensionPath, sourceMappingURLBase) {
             const relativeOutputPath = path.relative(extensionPath, webpackConfig.output.path);
             return webpackGulp(webpackConfig, webpack, webpackDone)
                 .pipe(es.through(function (data) {
-                    data.stat = data.stat || {};
-                    data.base = extensionPath;
-                    this.emit('data', data);
-                }))
+                data.stat = data.stat || {};
+                data.base = extensionPath;
+                this.emit('data', data);
+            }))
                 .pipe(es.through(function (data) {
-                    // source map handling:
-                    // * rewrite sourceMappingURL
-                    // * save to disk so that upload-task picks this up
-                    if (sourceMappingURLBase) {
-                        const contents = data.contents.toString('utf8');
-                        data.contents = Buffer.from(contents.replace(/\n\/\/# sourceMappingURL=(.*)$/gm, function (_m, g1) {
-                            return `\n//# sourceMappingURL=${sourceMappingURLBase}/extensions/${path.basename(extensionPath)}/${relativeOutputPath}/${g1}`;
-                        }), 'utf8');
-                        if (/\.js\.map$/.test(data.path)) {
-                            if (!fs.existsSync(path.dirname(data.path))) {
-                                fs.mkdirSync(path.dirname(data.path));
-                            }
-                            fs.writeFileSync(data.path, data.contents);
+                // source map handling:
+                // * rewrite sourceMappingURL
+                // * save to disk so that upload-task picks this up
+                if (sourceMappingURLBase) {
+                    const contents = data.contents.toString('utf8');
+                    data.contents = Buffer.from(contents.replace(/\n\/\/# sourceMappingURL=(.*)$/gm, function (_m, g1) {
+                        return `\n//# sourceMappingURL=${sourceMappingURLBase}/extensions/${path.basename(extensionPath)}/${relativeOutputPath}/${g1}`;
+                    }), 'utf8');
+                    if (/\.js\.map$/.test(data.path)) {
+                        if (!fs.existsSync(path.dirname(data.path))) {
+                            fs.mkdirSync(path.dirname(data.path));
                         }
+                        fs.writeFileSync(data.path, data.contents);
                     }
-                    this.emit('data', data);
-                }));
+                }
+                this.emit('data', data);
+            }));
         });
         es.merge(sequence(webpackStreams), patchFilesStream)
             // .pipe(es.through(function (data) {
@@ -205,16 +205,16 @@ function fromLocalNormal(extensionPath) {
     const result = es.through();
     vsce.listFiles({ cwd: extensionPath, packageManager: vsce.PackageManager.Yarn })
         .then(fileNames => {
-            const files = fileNames
-                .map(fileName => path.join(extensionPath, fileName))
-                .map(filePath => new File({
-                    path: filePath,
-                    stat: fs.statSync(filePath),
-                    base: extensionPath,
-                    contents: fs.createReadStream(filePath)
-                }));
-            es.readArray(files).pipe(result);
-        })
+        const files = fileNames
+            .map(fileName => path.join(extensionPath, fileName))
+            .map(filePath => new File({
+            path: filePath,
+            stat: fs.statSync(filePath),
+            base: extensionPath,
+            contents: fs.createReadStream(filePath)
+        }));
+        es.readArray(files).pipe(result);
+    })
         .catch(err => result.emit('error', err));
     return result.pipe(stats_1.createStatsStream(path.basename(extensionPath)));
 }
@@ -298,19 +298,19 @@ function packageExtensionsStream(optsIn) {
     const opts = optsIn || {};
     const localExtensionDescriptions = glob.sync('extensions/*/package.json')
         .map(manifestPath => {
-            const extensionPath = path.dirname(path.join(root, manifestPath));
-            const extensionName = path.basename(extensionPath);
-            return { name: extensionName, path: extensionPath };
-        })
+        const extensionPath = path.dirname(path.join(root, manifestPath));
+        const extensionName = path.basename(extensionPath);
+        return { name: extensionName, path: extensionPath };
+    })
         .filter(({ name }) => excludedExtensions.indexOf(name) === -1)
         .filter(({ name }) => opts.desiredExtensions ? opts.desiredExtensions.indexOf(name) >= 0 : true)
         .filter(({ name }) => builtInExtensions.every(b => b.name !== name))
         // {{SQL CARBON EDIT}}
         .filter(({ name }) => sqlBuiltInExtensions.indexOf(name) === -1);
     const localExtensions = () => sequence([...localExtensionDescriptions.map(extension => () => {
-        return fromLocal(extension.path, opts.sourceMappingURLBase)
-            .pipe(rename(p => p.dirname = `extensions/${extension.name}/${p.dirname}`));
-    })]);
+            return fromLocal(extension.path, opts.sourceMappingURLBase)
+                .pipe(rename(p => p.dirname = `extensions/${extension.name}/${p.dirname}`));
+        })]);
     // {{SQL CARBON EDIT}}
     const extensionDepsSrc = [
         ..._.flatten(extensionsProductionDependencies.map((d) => path.relative(root, d.path)).map((d) => [`${d}/**`, `!${d}/**/{test,tests}/**`])),
