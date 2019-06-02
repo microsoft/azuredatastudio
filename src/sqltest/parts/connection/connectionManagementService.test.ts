@@ -32,7 +32,8 @@ import * as TypeMoq from 'typemoq';
 import { IConnectionProfileGroup, ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { AccountManagementTestService } from 'sqltest/stubs/accountManagementStubs';
-import { TestStorageService } from 'vs/workbench/test/workbenchTestServices';
+import { TestStorageService, TestEnvironmentService, TestLogService } from 'vs/workbench/test/workbenchTestServices';
+import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 
 suite('SQL ConnectionManagementService tests', () => {
 
@@ -85,7 +86,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		connectionStore = TypeMoq.Mock.ofType(ConnectionStore, TypeMoq.MockBehavior.Loose, new TestStorageService());
 		workbenchEditorService = TypeMoq.Mock.ofType(WorkbenchEditorTestService);
 		editorGroupService = TypeMoq.Mock.ofType(EditorGroupTestService);
-		connectionStatusManager = new ConnectionStatusManager(capabilitiesService);
+		connectionStatusManager = new ConnectionStatusManager(capabilitiesService, new TestLogService(), TestEnvironmentService, new TestNotificationService());
 		mssqlConnectionProvider = TypeMoq.Mock.ofType(ConnectionProviderStub);
 		let resourceProviderStub = new ResourceProviderStub();
 		resourceProviderStubMock = TypeMoq.Mock.ofInstance(resourceProviderStub);
@@ -163,7 +164,9 @@ suite('SQL ConnectionManagementService tests', () => {
 			undefined,
 			accountManagementService.object,
 			undefined,
-			undefined
+			undefined,
+			TestEnvironmentService,
+			new TestNotificationService()
 		);
 		return connectionManagementService;
 	}
