@@ -1,6 +1,6 @@
 {
-	"cms.displayName": "CMS",
-	"cms.description": "Central Management Servers",
+	"cms.displayName": "SQL Server Central Management Servers",
+	"cms.description": "Support for managing SQL Server Central Management Servers",
 	"cms.title": "Central Management Servers",
 	"cms.connectionProvider.displayName": "Microsoft SQL Server",
 	"cms.resource.explorer.title": "Central Management Servers",

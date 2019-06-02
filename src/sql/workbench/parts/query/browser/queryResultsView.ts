@@ -24,7 +24,6 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 class MessagesView extends Disposable implements IPanelView {
 	private messagePanel: MessagePanel;
 	private container = document.createElement('div');
-	private _state: MessagePanelState;
 
 	constructor(private instantiationService: IInstantiationService) {
 		super();
@@ -59,19 +58,13 @@ class MessagesView extends Disposable implements IPanelView {
 	}
 
 	public set state(val: MessagePanelState) {
-		this._state = val;
 		this.messagePanel.state = val;
-	}
-
-	public get state(): MessagePanelState {
-		return this._state;
 	}
 }
 
 class ResultsView extends Disposable implements IPanelView {
 	private gridPanel: GridPanel;
 	private container = document.createElement('div');
-	private _state: GridPanelState;
 
 	constructor(private instantiationService: IInstantiationService) {
 		super();
@@ -106,12 +99,7 @@ class ResultsView extends Disposable implements IPanelView {
 	}
 
 	public set state(val: GridPanelState) {
-		this._state = val;
 		this.gridPanel.state = val;
-	}
-
-	public get state(): GridPanelState {
-		return this._state;
 	}
 }
 

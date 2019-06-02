@@ -123,7 +123,7 @@ export class GridPanel {
 	private runner: QueryRunner;
 
 	private maximizedGrid: GridTable<any>;
-	private _state: GridPanelState;
+	private _state: GridPanelState | undefined;
 
 	constructor(
 		@IConfigurationService private readonly configurationService: IConfigurationService,
@@ -301,6 +301,7 @@ export class GridPanel {
 		for (let i = this.splitView.length - 1; i >= 0; i--) {
 			this.splitView.removeView(i);
 		}
+		this._state = undefined;
 		dispose(this.tables);
 		dispose(this.tableDisposable);
 		this.tableDisposable = [];
@@ -346,7 +347,7 @@ export class GridPanel {
 		});
 	}
 
-	public get state(): GridPanelState {
+	public get state() {
 		return this._state;
 	}
 
