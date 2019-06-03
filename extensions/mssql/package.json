@@ -27,7 +27,7 @@
     "fs-extra": "^3.0.1",
     "request": "^2.88.0",
     "request-promise": "^4.2.2",
-    "service-downloader": "github:anthonydresser/service-downloader#0.1.6",
+    "service-downloader": "github:microsoft/ads-service-downloader#0.1.6",
     "stream-meter": "^1.0.4",
     "uri-js": "^4.2.2",
     "vscode-extension-telemetry": "0.1.0",
