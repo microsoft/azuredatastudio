@@ -43,7 +43,7 @@ let mockResourceProvider1: TypeMoq.IMock<azureResource.IAzureResourceProvider>;
 let mockResourceTreeDataProvider2: TypeMoq.IMock<azureResource.IAzureResourceTreeDataProvider>;
 let mockResourceProvider2: TypeMoq.IMock<azureResource.IAzureResourceProvider>;
 
-const resourceService: AzureResourceService = AzureResourceService.getInstance();
+let resourceService: AzureResourceService;
 
 describe('AzureResourceService.listResourceProviderIds', function(): void {
 	beforeEach(() => {
@@ -61,6 +61,7 @@ describe('AzureResourceService.listResourceProviderIds', function(): void {
 		mockResourceProvider2.setup((o) => o.providerId).returns(() => 'mockResourceProvider2');
 		mockResourceProvider2.setup((o) => o.getTreeDataProvider()).returns(() => mockResourceTreeDataProvider2.object);
 
+		resourceService = new AzureResourceService();
 		resourceService.clearResourceProviders();
 		resourceService.areResourceProvidersLoaded = true;
 	});

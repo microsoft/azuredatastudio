@@ -55,5 +55,6 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	command: {
 		id: REFRESH_COMMAND_ID,
 		title: localize('refresh', 'Refresh')
-	}
+	},
+	when: NodeContextKey.IsConnected
 });

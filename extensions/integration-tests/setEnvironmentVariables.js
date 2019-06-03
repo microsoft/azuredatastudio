@@ -151,13 +151,13 @@ msrestAzure.interactiveLogin().then((credentials) => {
 			console.log('Done reading values from Azure KeyVault!');
 			console.log(`Launching new window: ${LAUNCH_OPTION}...`);
 			if (LAUNCH_OPTION === LAUNCH_VSCODE) {
-				console.warn('Trying to lauch vscode, make sure you have it set properly in the PATH environment variable');
+				console.warn('Trying to launch vscode, make sure you have it set properly in the PATH environment variable');
 			}
 			child_process.execSync(LAUNCH_OPTION);
 			console.log('New window for running test has been opened.');
 		}
 	);
 }, (err) => {
-	console.error('An error occured while loggin in to Azure portal');
+	console.error('An error occured while logging in to Azure portal');
 	console.error(err);
 });
