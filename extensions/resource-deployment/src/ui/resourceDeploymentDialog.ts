@@ -160,8 +160,9 @@ export class ResourceDeploymentDialog {
 	}
 
 	private updateTools(): void {
-		// do a 10 ms delay to workaround the issue of first time load
-		// if we have 2 request updating the table component in one batch, their execution order is not guaranteed
+		// do a 10 ms delay to workaround the issue of first time load:
+		// during initialization this update to table will be processed prior to the table initialization update
+		// as a result the data will be overwritten, introduce a short delay so that the order of updates can be maintained.
 		setTimeout(() => {
 			const tools = this.getCurrentProvider().requiredTools;
 			const headerRowHeight = 28;

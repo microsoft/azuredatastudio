@@ -22,13 +22,6 @@ export class ToolsService implements IToolsService {
 	private SupportedTools: ITool[];
 
 	getToolByName(toolName: string): ITool | undefined {
-		if (toolName) {
-			for (let i = 0; i < this.SupportedTools.length; i++) {
-				if (toolName === this.SupportedTools[i].name) {
-					return this.SupportedTools[i];
-				}
-			}
-		}
-		return undefined;
+		return this.SupportedTools.find(t => t.name === toolName);
 	}
 }

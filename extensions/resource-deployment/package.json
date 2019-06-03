@@ -13,9 +13,7 @@
     "azdata": "^1.6.0"
   },
   "activationEvents": [
-    "onCommand:azdata.resource.sql-image.deploy",
-    "onCommand:azdata.resource.sql-bdc.deploy",
-    "onCommand:azdata.resource.deploy"
+    "*"
   ],
   "main": "./out/main",
   "repository": {
