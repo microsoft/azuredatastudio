@@ -4363,6 +4363,11 @@ declare module 'azdata' {
 			* @return A promise that resolves with a value indicating if the outputs are cleared or not.
 			*/
 			clearAllOutputs(): Thenable<boolean>;
+
+			/**
+			 * Changes the Notebook's kernel. Thenable will resolve only after kernel change is complete.
+			 */
+			changeKernel(kernel: IKernelSpec): Thenable<boolean>;
 		}
 
 		export interface NotebookCell {

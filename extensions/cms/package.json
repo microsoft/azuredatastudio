@@ -2,14 +2,14 @@
 	"name": "cms",
 	"displayName": "%cms.displayName%",
 	"description": "%cms.description%",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"publisher": "Microsoft",
 	"preview": true,
 	"license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt",
 	"icon": "images/sqlserver.png",
 	"engines": {
 		"vscode": "^1.25.0",
-		"sqlops": "*"
+		"azdata": ">=1.8.0"
 	},
 	"activationEvents": [
 		"*"
@@ -24,8 +24,8 @@
 			"type": "object",
 			"title": "%cms.title%",
 			"properties": {
-				"cms.cmsServers": {
-					"type": "object"
+				"centralManagementServers.servers": {
+					"type": "array"
 				}
 			}
 		},
@@ -518,7 +518,7 @@
 			{
 				"command": "cms.resource.deleteRegisteredServer",
 				"title": "%cms.resource.deleteRegisteredServer.title%",
-				"when": "viewItem == cms.resource.itemType.registeredServer"
+				"when": "viewItem == cms.resource.itemType.databaseServer"
 			},
 			{
 				"command": "cms.resource.addRegisteredServer",
@@ -536,18 +536,8 @@
 				"when": "viewItem == cms.resource.itemType.serverGroup"
 			},
 			{
-				"command": "cms.resource.refreshServerGroup",
-				"title": "%cms.resource.refreshServerGroup.title%",
-				"when": "viewItem == cms.resource.itemType.serverGroup",
-				"icon": {
-					"light": "resources/light/refresh.svg",
-					"dark": "resources/dark/refresh_inverse.svg"
-				}
-			},
-			{
-				"command": "cms.resource.refreshCmsServer",
-				"title": "%cms.resource.refreshCmsServer.title%",
-				"when": "viewItem == cms.resource.itemType.cmsNodeContainer",
+				"command": "cms.resource.refresh",
+				"title": "%cms.resource.refresh.title%",
 				"icon": {
 					"light": "resources/light/refresh.svg",
 					"dark": "resources/dark/refresh_inverse.svg"
@@ -585,7 +575,7 @@
 			"view/item/context": [
 				{
 					"command": "cms.resource.deleteRegisteredServer",
-					"when": "viewItem == cms.resource.itemType.registeredServer",
+					"when": "viewItem == cms.resource.itemType.databaseServer",
 					"group": "navigation@2"
 				},
 				{
@@ -600,7 +590,7 @@
 				},
 				{
 					"command": "cms.resource.addRegisteredServer",
-					"when": "viewItem == cms.resource.itemType.cmsNodeContainer",
+					"when": "viewItem == cms.resource.itemType.databaseServerContainer",
 					"group": "navigation@10"
 				},
 				{
@@ -610,22 +600,22 @@
 				},
 				{
 					"command": "cms.resource.addServerGroup",
-					"when": "viewItem == cms.resource.itemType.cmsNodeContainer",
+					"when": "viewItem == cms.resource.itemType.databaseServerContainer",
 					"group": "navigation@10"
 				},
 				{
-					"command": "cms.resource.refreshServerGroup",
+					"command": "cms.resource.refresh",
 					"when": "viewItem == cms.resource.itemType.serverGroup",
 					"group": "navigation@10"
 				},
 				{
-					"command": "cms.resource.refreshCmsServer",
-					"when": "viewItem == cms.resource.itemType.cmsNodeContainer",
+					"command": "cms.resource.refresh",
+					"when": "viewItem == cms.resource.itemType.databaseServerContainer",
 					"group": "navigation@10"
 				},
 				{
 					"command": "cms.resource.deleteCmsServer",
-					"when": "viewItem == cms.resource.itemType.cmsNodeContainer",
+					"when": "viewItem == cms.resource.itemType.databaseServerContainer",
 					"group": "navigation@10"
 				}
 			]

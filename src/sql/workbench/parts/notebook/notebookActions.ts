@@ -350,6 +350,7 @@ export class AttachToDropdown extends SelectBox {
 		this._register(this.model.contextsLoading(() => {
 			this.setOptions([msgLoadingContexts], 0);
 		}));
+		this.model.requestConnectionHandler = () => this.openConnectionDialog(true);
 		this.handleContextsChanged();
 	}
 
@@ -376,9 +377,9 @@ export class AttachToDropdown extends SelectBox {
 			}).catch(err =>
 				this.logService.error(err));
 		}
-		model.onValidConnectionSelected(validConnection => {
+		this._register(model.onValidConnectionSelected(validConnection => {
 			this.handleContextsChanged(!validConnection);
-		});
+		}));
 	}
 
 	private getKernelDisplayName(): string {
@@ -408,14 +409,13 @@ export class AttachToDropdown extends SelectBox {
 			else {
 				if (connections.length === 1 && connections[0] === msgAddNewConnection) {
 					connections.unshift(msgSelectConnection);
-					this.selectWithOptionName(msgSelectConnection);
 				}
 				else {
 					if (!connections.includes(msgAddNewConnection)) {
 						connections.push(msgAddNewConnection);
 					}
 				}
-				this.setOptions(connections);
+				this.setOptions(connections, 0);
 			}
 		}
 	}
@@ -425,11 +425,11 @@ export class AttachToDropdown extends SelectBox {
 			if (!connections.includes(msgSelectConnection)) {
 				connections.unshift(msgSelectConnection);
 			}
-			this.selectWithOptionName(msgSelectConnection);
+
 			if (!connections.includes(msgAddNewConnection)) {
 				connections.push(msgAddNewConnection);
 			}
-			this.setOptions(connections);
+			this.setOptions(connections, 0);
 		}
 		return connections;
 	}
@@ -489,46 +489,53 @@ export class AttachToDropdown extends SelectBox {
 	 * Bind the server value to 'Attach To' drop down
 	 * Connected server is displayed at the top of drop down
 	 **/
-	public async openConnectionDialog(useProfile: boolean = false): Promise<void> {
+	public async openConnectionDialog(useProfile: boolean = false): Promise<boolean> {
 		try {
-			await this._connectionDialogService.openDialogAndWait(this._connectionManagementService, { connectionType: 1, providers: this.model.getApplicableConnectionProviderIds(this.model.clientSession.kernel.name) }, useProfile ? this.model.connectionProfile : undefined).then(connection => {
-				let attachToConnections = this.values;
-				if (!connection) {
-					this.loadAttachToDropdown(this.model, this.getKernelDisplayName());
-					this.doChangeContext(undefined, true);
-					return;
-				}
-				let connectionUri = this._connectionManagementService.getConnectionUri(connection);
-				let connectionProfile = new ConnectionProfile(this._capabilitiesService, connection);
-				let connectedServer = connectionProfile.title ? connectionProfile.title : connectionProfile.serverName;
-				//Check to see if the same server is already there in dropdown. We only have server names in dropdown
-				if (attachToConnections.some(val => val === connectedServer)) {
-					this.loadAttachToDropdown(this.model, this.getKernelDisplayName());
-					this.doChangeContext();
-					return;
-				}
-				else {
-					attachToConnections.unshift(connectedServer);
-				}
-				//To ignore n/a after we have at least one valid connection
-				attachToConnections = attachToConnections.filter(val => val !== msgSelectConnection);
+			let connection = await this._connectionDialogService.openDialogAndWait(this._connectionManagementService,
+				{
+					connectionType: 1,
+					providers: this.model.getApplicableConnectionProviderIds(this.model.clientSession.kernel.name)
+				},
+				useProfile ? this.model.connectionProfile : undefined);
 
-				let index = attachToConnections.findIndex((connection => connection === connectedServer));
-				this.setOptions([]);
-				this.setOptions(attachToConnections);
-				if (!index || index < 0 || index >= attachToConnections.length) {
-					index = 0;
-				}
-				this.select(index);
+			let attachToConnections = this.values;
+			if (!connection) {
+				this.loadAttachToDropdown(this.model, this.getKernelDisplayName());
+				this.doChangeContext(undefined, true);
+				return false;
+			}
+			let connectionUri = this._connectionManagementService.getConnectionUri(connection);
+			let connectionProfile = new ConnectionProfile(this._capabilitiesService, connection);
+			let connectedServer = connectionProfile.title ? connectionProfile.title : connectionProfile.serverName;
+			//Check to see if the same server is already there in dropdown. We only have server names in dropdown
+			if (attachToConnections.some(val => val === connectedServer)) {
+				this.loadAttachToDropdown(this.model, this.getKernelDisplayName());
+				this.doChangeContext();
+				return true;
+			}
+			else {
+				attachToConnections.unshift(connectedServer);
+			}
+			//To ignore n/a after we have at least one valid connection
+			attachToConnections = attachToConnections.filter(val => val !== msgSelectConnection);
 
-				this.model.addAttachToConnectionsToBeDisposed(connectionUri);
-				// Call doChangeContext to set the newly chosen connection in the model
-				this.doChangeContext(connectionProfile);
-			});
+			let index = attachToConnections.findIndex((connection => connection === connectedServer));
+			this.setOptions([]);
+			this.setOptions(attachToConnections);
+			if (!index || index < 0 || index >= attachToConnections.length) {
+				index = 0;
+			}
+			this.select(index);
+
+			this.model.addAttachToConnectionsToBeDisposed(connectionUri);
+			// Call doChangeContext to set the newly chosen connection in the model
+			this.doChangeContext(connectionProfile);
+			return true;
 		}
 		catch (error) {
 			const actions: INotificationActions = { primary: [] };
 			this._notificationService.notify({ severity: Severity.Error, message: getErrorMessage(error), actions });
+			return false;
 		}
 	}
 }

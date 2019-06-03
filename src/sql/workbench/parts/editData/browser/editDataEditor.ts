@@ -128,10 +128,11 @@ export class EditDataEditor extends BaseEditor {
 	/**
 	 * Called to create the editor in the parent element.
 	 */
-	public createEditor(parent: HTMLElement): void {
-		const parentElement = parent;
-		DOM.addClass(parentElement, 'side-by-side-editor');
-		this._createTaskbar(parentElement);
+	protected createEditor(parent: HTMLElement): void {
+		parent.style.position = 'absolute';
+		parent.style.height = '100%';
+		parent.style.width = '100%';
+		this._createTaskbar(parent);
 	}
 
 	public dispose(): void {
@@ -276,7 +277,6 @@ export class EditDataEditor extends BaseEditor {
 
 		if (!input.results.container) {
 			this._resultsEditorContainer = DOM.append(parentElement, DOM.$('.editDataContainer-horizontal'));
-			this._resultsEditorContainer.style.position = 'absolute';
 
 			input.results.container = this._resultsEditorContainer;
 		} else {
@@ -306,7 +306,6 @@ export class EditDataEditor extends BaseEditor {
 	private _createSqlEditorContainer() {
 		const parentElement = this.getContainer();
 		this._sqlEditorContainer = DOM.append(parentElement, DOM.$('.details-editor-container'));
-		this._sqlEditorContainer.style.position = 'absolute';
 	}
 
 	private _createTaskbar(parentElement: HTMLElement): void {
@@ -403,52 +402,26 @@ export class EditDataEditor extends BaseEditor {
 	}
 
 	private _doLayoutHorizontal(): void {
-		let splitPointTop: number = this._sash.getSplitPoint();
-		let parent: ClientRect = this.getContainer().getBoundingClientRect();
-
 		let sqlEditorHeight: number;
-		let sqlEditorTop: number;
 		let resultsEditorHeight: number;
-		let resultsEditorTop: number;
-
-		let editorTopOffset = parent.top + this._getTaskBarHeight();
 
 		this._resultsEditorContainer.hidden = false;
-
-		let titleBar = document.getElementById('workbench.parts.titlebar');
 		if (this.queryPaneEnabled()) {
+			const splitPointTop: number = this._sash.getSplitPoint();
 			this._sqlEditorContainer.hidden = false;
-
-			sqlEditorTop = editorTopOffset;
-			sqlEditorHeight = splitPointTop - sqlEditorTop;
-
-			resultsEditorTop = splitPointTop;
-			resultsEditorHeight = parent.bottom - resultsEditorTop;
-
-			if (titleBar) {
-				sqlEditorHeight += DOM.getContentHeight(titleBar);
-			}
+			sqlEditorHeight = splitPointTop - this._getTaskBarHeight();
+			resultsEditorHeight = this._dimension.height - this._getTaskBarHeight() - sqlEditorHeight;
 		} else {
 			this._sqlEditorContainer.hidden = true;
-
-			sqlEditorTop = editorTopOffset;
 			sqlEditorHeight = 0;
-
-			resultsEditorTop = editorTopOffset;
-			resultsEditorHeight = parent.bottom - resultsEditorTop;
-
-			if (titleBar) {
-				resultsEditorHeight += DOM.getContentHeight(titleBar);
-			}
+			resultsEditorHeight = this._dimension.height - this._getTaskBarHeight();
 		}
 
 		this._sqlEditorContainer.style.height = `${sqlEditorHeight}px`;
 		this._sqlEditorContainer.style.width = `${this._dimension.width}px`;
-		this._sqlEditorContainer.style.top = `${sqlEditorTop}px`;
 
 		this._resultsEditorContainer.style.height = `${resultsEditorHeight}px`;
 		this._resultsEditorContainer.style.width = `${this._dimension.width}px`;
-		this._resultsEditorContainer.style.top = `${resultsEditorTop}px`;
 
 		this._sqlEditor.layout(new DOM.Dimension(this._dimension.width, sqlEditorHeight));
 		this._resultsEditor.layout(new DOM.Dimension(this._dimension.width, resultsEditorHeight));

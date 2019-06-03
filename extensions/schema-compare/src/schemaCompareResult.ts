@@ -7,11 +7,16 @@ import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as os from 'os';
-import { SchemaCompareOptionsDialog } from './dialogs/schemaCompareOptionsDialog';
 import * as path from 'path';
-
+import { SchemaCompareOptionsDialog } from './dialogs/schemaCompareOptionsDialog';
+import { Telemetry } from './telemetry';
+import { getTelemetryErrorType } from './utils';
 const localize = nls.loadMessageBundle();
 const diffEditorTitle = localize('schemaCompare.ObjectDefinitionsTitle', 'Object Definitions');
+const applyConfirmation = localize('schemaCompare.ApplyConfirmation', 'Are you sure you want to update the target?');
+const reCompareToRefeshMessage = localize('schemaCompare.RecompareToRefresh', 'Press Compare to refresh the comparison.');
+const generateScriptEnabledMessage = localize('schemaCompare.generateScriptEnabledButton', 'Generate script to deploy changes to target');
+const applyEnabledMessage = localize('schemaCompare.applyButtonEnabledTitle', 'Apply changes to target');
 
 export class SchemaCompareResult {
 	private differencesTable: azdata.TableComponent;
@@ -180,13 +185,21 @@ export class SchemaCompareResult {
 			// take updates if any
 			this.deploymentOptions = this.schemaCompareOptionDialog.deploymentOptions;
 		}
-
-		let service = await SchemaCompareResult.getService('MSSQL');
+		Telemetry.sendTelemetryEvent('SchemaComparisonStarted');
+		const service = await SchemaCompareResult.getService('MSSQL');
 		this.comparisonResult = await service.schemaCompare(this.sourceEndpointInfo, this.targetEndpointInfo, azdata.TaskExecutionMode.execute, this.deploymentOptions);
 		if (!this.comparisonResult || !this.comparisonResult.success) {
+			Telemetry.sendTelemetryEventForError('SchemaComparisonFailed', {
+				'errorType': getTelemetryErrorType(this.comparisonResult.errorMessage),
+				'operationId': this.comparisonResult.operationId
+			});
 			vscode.window.showErrorMessage(localize('schemaCompare.compareErrorMessage', "Schema Compare failed: {0}", this.comparisonResult.errorMessage ? this.comparisonResult.errorMessage : 'Unknown'));
 			return;
 		}
+		Telemetry.sendTelemetryEvent('SchemaComparisonFinished', {
+			'endTime': Date.now().toString(),
+			'operationId': this.comparisonResult.operationId
+		});
 
 		let data = this.getAllDifferences(this.comparisonResult.differences);
 
@@ -373,7 +386,7 @@ export class SchemaCompareResult {
 		return script;
 	}
 
-	private startCompare(): void {
+	public startCompare(): void {
 		this.flexModel.removeItem(this.splitView);
 		this.flexModel.removeItem(this.noDifferencesLabel);
 		this.flexModel.removeItem(this.startText);
@@ -418,12 +431,24 @@ export class SchemaCompareResult {
 		}).component();
 
 		this.generateScriptButton.onDidClick(async (click) => {
-			let service = await SchemaCompareResult.getService('MSSQL');
-			let result = await service.schemaCompareGenerateScript(this.comparisonResult.operationId, this.targetEndpointInfo.serverName, this.targetEndpointInfo.databaseName, azdata.TaskExecutionMode.script);
+			Telemetry.sendTelemetryEvent('SchemaCompareGenerateScriptStarted', {
+				'startTime:': Date.now().toString(),
+				'operationId': this.comparisonResult.operationId
+			});
+			const service = await SchemaCompareResult.getService('MSSQL');
+			const result = await service.schemaCompareGenerateScript(this.comparisonResult.operationId, this.targetEndpointInfo.serverName, this.targetEndpointInfo.databaseName, azdata.TaskExecutionMode.script);
 			if (!result || !result.success) {
+				Telemetry.sendTelemetryEvent('SchemaCompareGenerateScriptFailed', {
+					'errorType': getTelemetryErrorType(result.errorMessage),
+					'operationId': this.comparisonResult.operationId
+				});
 				vscode.window.showErrorMessage(
 					localize('schemaCompare.generateScriptErrorMessage', "Generate script failed: '{0}'", (result && result.errorMessage) ? result.errorMessage : 'Unknown'));
 			}
+			Telemetry.sendTelemetryEvent('SchemaCompareGenerateScriptEnded', {
+				'endTime:': Date.now().toString(),
+				'operationId': this.comparisonResult.operationId
+			});
 		});
 	}
 
@@ -438,12 +463,15 @@ export class SchemaCompareResult {
 		}).component();
 
 		this.optionsButton.onDidClick(async (click) => {
+			Telemetry.sendTelemetryEvent('SchemaCompareOptionsOpened', {
+				'operationId': this.comparisonResult.operationId
+			});
 			//restore options from last time
 			if (this.schemaCompareOptionDialog && this.schemaCompareOptionDialog.deploymentOptions) {
 				this.deploymentOptions = this.schemaCompareOptionDialog.deploymentOptions;
 			}
 			// create fresh every time
-			this.schemaCompareOptionDialog = new SchemaCompareOptionsDialog(this.deploymentOptions);
+			this.schemaCompareOptionDialog = new SchemaCompareOptionsDialog(this.deploymentOptions, this);
 			await this.schemaCompareOptionDialog.openDialog();
 		});
 	}
@@ -458,13 +486,45 @@ export class SchemaCompareResult {
 			},
 		}).component();
 
+		// need only yes button - since the modal dialog has a default cancel
+		const yesString = localize('schemaCompare.ApplyYes', 'Yes');
 		this.applyButton.onDidClick(async (click) => {
-			let service = await SchemaCompareResult.getService('MSSQL');
-			let result = await service.schemaComparePublishChanges(this.comparisonResult.operationId, this.targetEndpointInfo.serverName, this.targetEndpointInfo.databaseName, azdata.TaskExecutionMode.execute);
-			if (!result || !result.success) {
-				vscode.window.showErrorMessage(
-					localize('schemaCompare.updateErrorMessage', "Schema Compare Apply failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
-			}
+
+			vscode.window.showWarningMessage(applyConfirmation, { modal: true }, yesString).then(async (result) => {
+				if (result === yesString) {
+					Telemetry.sendTelemetryEvent('SchemaCompareApplyStarted', {
+						'startTime': Date.now().toString(),
+						'operationId': this.comparisonResult.operationId
+					});
+
+					// disable apply and generate script buttons because the results are no longer valid after applying the changes
+					this.generateScriptButton.enabled = false;
+					this.generateScriptButton.title = reCompareToRefeshMessage;
+					this.applyButton.enabled = false;
+					this.applyButton.title = reCompareToRefeshMessage;
+
+					const service = await SchemaCompareResult.getService('MSSQL');
+					const result = await service.schemaComparePublishChanges(this.comparisonResult.operationId, this.targetEndpointInfo.serverName, this.targetEndpointInfo.databaseName, azdata.TaskExecutionMode.execute);
+					if (!result || !result.success) {
+						Telemetry.sendTelemetryEvent('SchemaCompareApplyFailed', {
+							'errorType': getTelemetryErrorType(result.errorMessage),
+							'operationId': this.comparisonResult.operationId
+						});
+						vscode.window.showErrorMessage(
+							localize('schemaCompare.updateErrorMessage', "Schema Compare Apply failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
+
+						// reenable generate script and apply buttons if apply failed
+						this.generateScriptButton.enabled = true;
+						this.generateScriptButton.title = generateScriptEnabledMessage;
+						this.applyButton.enabled = true;
+						this.applyButton.title = applyEnabledMessage;
+					}
+					Telemetry.sendTelemetryEvent('SchemaCompareApplyEnded', {
+						'endTime': Date.now().toString(),
+						'operationId': this.comparisonResult.operationId
+					});
+				}
+			});
 		});
 	}
 
@@ -481,8 +541,8 @@ export class SchemaCompareResult {
 		}
 		this.generateScriptButton.enabled = false;
 		this.applyButton.enabled = false;
-		this.generateScriptButton.title = localize('schemaCompare.generateScriptEnabledButton', 'Generate script to deploy changes to target');
-		this.applyButton.title = localize('schemaCompare.applyButtonEnabledTitle', 'Apply changes to target');
+		this.generateScriptButton.title = generateScriptEnabledMessage;
+		this.applyButton.title = applyEnabledMessage;
 	}
 
 	private createSwitchButton(view: azdata.ModelView): void {
@@ -496,6 +556,8 @@ export class SchemaCompareResult {
 		}).component();
 
 		this.switchButton.onDidClick(async (click) => {
+			Telemetry.sendTelemetryEvent('SchemaCompareSwitch');
+
 			// switch source and target
 			[this.sourceEndpointInfo, this.targetEndpointInfo] = [this.targetEndpointInfo, this.sourceEndpointInfo];
 			[this.sourceName, this.targetName] = [this.targetName, this.sourceName];
@@ -533,7 +595,7 @@ export class SchemaCompareResult {
 
 	private async GetDefaultDeploymentOptions(): Promise<void> {
 		// Same as dacfx default options
-		let service = await SchemaCompareResult.getService('MSSQL');
+		const service = await SchemaCompareResult.getService('MSSQL');
 		let result = await service.schemaCompareGetDefaultOptions();
 		this.deploymentOptions = result.defaultDeploymentOptions;
 	}

@@ -11,6 +11,7 @@ import * as os from 'os';
 import { SchemaCompareResult } from '../schemaCompareResult';
 import { isNullOrUndefined } from 'util';
 import { existsSync } from 'fs';
+import { Telemetry } from '../telemetry';
 
 const localize = nls.loadMessageBundle();
 const OkButtonText: string = localize('schemaCompareDialog.ok', 'Ok');
@@ -137,6 +138,10 @@ export class SchemaCompareDialog {
 			};
 		}
 
+		Telemetry.sendTelemetryEvent('SchemaCompareStart', {
+			'sourceIsDacpac': this.sourceIsDacpac.toString(),
+			'targetIsDacpac': this.targetIsDacpac.toString()
+		});
 		let schemaCompareResult = new SchemaCompareResult(sourceName, targetName, sourceEndpointInfo, targetEndpointInfo);
 		schemaCompareResult.start();
 	}

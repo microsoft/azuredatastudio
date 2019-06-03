@@ -40,7 +40,7 @@ import { ViewletPanel, IViewletPanelOptions } from 'vs/workbench/browser/parts/v
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ILogService } from 'vs/platform/log/common/log';
-import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
+import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 
 const labelDisplay = nls.localize("insights.item", "Item");
 const valueDisplay = nls.localize("insights.value", "Value");
@@ -158,7 +158,7 @@ export class InsightsDialogView extends Modal {
 		private _model: IInsightsDialogModel,
 		@IThemeService themeService: IThemeService,
 		@IClipboardService clipboardService: IClipboardService,
-		@ILayoutService layoutService: ILayoutService,
+		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@ILogService logService: ILogService,
@@ -337,7 +337,9 @@ export class InsightsDialogView extends Modal {
 				let task = tasks.includes(action);
 				let commandAction = MenuRegistry.getCommand(action);
 				let commandLabel = types.isString(commandAction.title) ? commandAction.title : commandAction.title.value;
-				if (task && !this.findFooterButton(commandLabel)) {
+				if (task) {
+					// need to remove and add fresh because the onDidClick action from previous addition is not called
+					this.removeFooterButton(commandLabel);
 					let button = this.addFooterButton(commandLabel, () => {
 						let element = this._topTable.getSelectedRows();
 						let resource: ListResource;

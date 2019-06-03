@@ -2,12 +2,12 @@
 	"name": "dacpac",
 	"displayName": "SQL Server Dacpac",
 	"description": "SQL Server Dacpac for Azure Data Studio.",
-	"version": "0.2.0",
+	"version": "0.3.0",
 	"publisher": "Microsoft",
 	"preview": true,
 	"engines": {
 		"vscode": "^1.25.0",
-		"sqlops": "*"
+		"azdata": "*"
 	},
 	"license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt",
 	"icon": "images/sqlserver.png",

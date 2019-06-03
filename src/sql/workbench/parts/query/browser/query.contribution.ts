@@ -294,11 +294,6 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 
 // Intellisense and other configuration options
 let registryProperties = {
-	'sql.messagesDefaultOpen': {
-		'type': 'boolean',
-		'description': localize('sql.messagesDefaultOpen', 'True for the messages pane to be open by default; false for closed'),
-		'default': true
-	},
 	'sql.saveAsCsv.includeHeaders': {
 		'type': 'boolean',
 		'description': localize('sql.saveAsCsv.includeHeaders', '[Optional] When true, column headers are included when saving results as CSV'),

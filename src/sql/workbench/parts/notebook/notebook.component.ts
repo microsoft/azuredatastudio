@@ -279,7 +279,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			defaultKernel: this._notebookParams.input.defaultKernel,
 			layoutChanged: this._notebookParams.input.layoutChanged,
 			capabilitiesService: this.capabilitiesService
-		}, this.profile, this.logService);
+		}, this.profile, this.logService, this.notificationService);
 		model.onError((errInfo: INotification) => this.handleModelError(errInfo));
 		let trusted = await this.notebookService.isNotebookTrustCached(this._notebookParams.notebookUri, this.isDirty());
 		await model.requestModelLoad(trusted);

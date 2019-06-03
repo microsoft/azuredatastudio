@@ -903,6 +903,7 @@ export interface MainThreadNotebookDocumentsAndEditorsShape extends IDisposable 
 	$runCell(id: string, cellUri: UriComponents): Promise<boolean>;
 	$runAllCells(id: string): Promise<boolean>;
 	$clearAllOutputs(id: string): Promise<boolean>;
+	$changeKernel(id: string, kernel: azdata.nb.IKernelInfo): Promise<boolean>;
 }
 
 export interface ExtHostExtensionManagementShape {

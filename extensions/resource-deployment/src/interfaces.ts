@@ -51,28 +51,9 @@ export enum ToolType {
 	MSSQLCtl
 }
 
-export interface ToolStatusInfo {
-	type: ToolType;
-	name: string;
-	description: string;
-	version: string;
-	status: ToolInstallationStatus;
-}
-
 export interface ITool {
 	readonly name: string;
 	readonly displayName: string;
 	readonly description: string;
 	readonly type: ToolType;
-	readonly supportAutoInstall: boolean;
-
-	getInstallationStatus(versionExpression: string): Thenable<ToolInstallationStatus>;
-	install(version: string): Thenable<void>;
-}
-
-export enum ToolInstallationStatus {
-	NotInstalled,
-	Installed,
-	Installing,
-	FailedToInstall
 }
