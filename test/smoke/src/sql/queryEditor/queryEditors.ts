@@ -33,7 +33,7 @@ export class QueryEditors extends Editors {
 	/**
 	 * Waits for an active SQL Query Editor tab for the specified file. This is a modification of the editors.waitForActiveTab that
 	 * takes into account the connected status displayed in the title of Query Editors.
-	 * @param fileName The unqualified path to the file opened in the editor
+	 * @param fileName The name of the file opened in the editor
 	 * @param isDirty Whether the file is dirty or not
 	 */
 	async waitForActiveTab(fileName: string, isDirty: boolean = false): Promise<void> {
@@ -45,7 +45,7 @@ export class QueryEditors extends Editors {
 	/**
 	 * Waits for an active Query Editor for the specified file to have focus. This is a modification of the editors.waitForEditorFocus
 	 * that takes into account the connected status displayed in the title of Query Editors.
-	 * @param fileName The unqualified path file opened in the editor
+	 * @param fileName The name of the file opened in the editor
 	 */
 	async waitForEditorFocus(fileName: string): Promise<void> {
 		await this.waitForActiveTab(fileName);
