@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
 import { Event, Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
@@ -42,13 +42,13 @@ export interface IQueryEditorStateChange {
 	connectingChange?: boolean;
 }
 
-export class QueryEditorState {
+export class QueryEditorState extends Disposable {
 	private _connected = false;
 	private _resultsVisible = false;
 	private _executing = false;
 	private _connecting = false;
 
-	private _onChange = new Emitter<IQueryEditorStateChange>();
+	private _onChange = this._register(new Emitter<IQueryEditorStateChange>());
 	public onChange = this._onChange.event;
 
 	public set connected(val: boolean) {
@@ -105,7 +105,7 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 	public static ID: string = 'workbench.editorinputs.queryInput';
 	public static SCHEMA: string = 'sql';
 
-	private _state = new QueryEditorState();
+	private _state = this._register(new QueryEditorState());
 	public get state(): QueryEditorState { return this._state; }
 
 	private _updateSelection: Emitter<ISelectionData>;
@@ -121,6 +121,9 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 	) {
 		super();
 		this._updateSelection = new Emitter<ISelectionData>();
+
+		this._register(this._sql);
+		this._register(this._results);
 
 		// re-emit sql editor events through this editor if it exists
 		if (this._sql) {
@@ -306,19 +309,13 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 		this.state.executing = false;
 	}
 
-	// Clean up functions
-	public dispose(): void {
-		this._sql.dispose();
-		this._results.dispose();
-		super.dispose();
-	}
-
 	public close(): void {
 		this._queryModelService.disposeQuery(this.uri);
 		this._connectionManagementService.disconnectEditor(this, true);
 
 		this._sql.close();
 		this._results.close();
+		super.close();
 	}
 
 	/**

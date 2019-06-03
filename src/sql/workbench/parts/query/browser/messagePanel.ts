@@ -77,7 +77,7 @@ export class MessagePanel extends Disposable {
 	private styleElement = createStyleSheet(this.container);
 
 	private queryRunnerDisposables: IDisposable[] = [];
-	private _state: MessagePanelState;
+	private _state: MessagePanelState | undefined;
 
 	private tree: ITree;
 
@@ -201,7 +201,7 @@ export class MessagePanel extends Disposable {
 		}
 		// convert to old VS Code tree interface with expandable methods
 		let expandableTree: IExpandableTree = <IExpandableTree>this.tree;
-		if (this.state.scrollPosition) {
+		if (this.state && this.state.scrollPosition) {
 			const previousScroll = this.state.scrollPosition;
 			this.tree.refresh(this.model).then(() => {
 				// Restore the previous scroll position when switching between tabs
@@ -233,6 +233,7 @@ export class MessagePanel extends Disposable {
 
 	private reset() {
 		this.model.messages = [];
+		this._state = undefined;
 		this.model.totalExecuteMessage = undefined;
 		this.tree.refresh(this.model);
 	}
