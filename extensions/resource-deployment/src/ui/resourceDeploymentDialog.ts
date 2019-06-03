@@ -8,7 +8,7 @@ import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 import { IResourceTypeService } from '../services/resourceTypeService';
 import * as vscode from 'vscode';
-import { ResourceType, DeploymentProvider, ToolInstallationStatus } from '../interfaces';
+import { ResourceType, DeploymentProvider } from '../interfaces';
 import { IToolsService } from '../services/toolsService';
 import { INotebookService } from '../services/notebookService';
 
@@ -41,6 +41,7 @@ export class ResourceDeploymentDialog {
 	private initializeDialog() {
 		let tab = azdata.window.createTab('');
 		tab.registerContent((view: azdata.ModelView) => {
+			const tableWidth = 1126;
 			this._view = view;
 			this.resourceTypeService.getResourceTypes().forEach(resourceType => this.addCard(resourceType));
 			const cardsContainer = view.modelBuilder.flexContainer().withItems(this._resourceTypeCards, { flex: '0 0 auto', CSSStyles: { 'margin-bottom': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'left' }).component();
@@ -49,27 +50,21 @@ export class ResourceDeploymentDialog {
 
 			const toolColumn: azdata.TableColumn = {
 				value: localize('deploymentDialog.toolNameColumnHeader', 'Tool'),
-				width: 100
+				width: 150
 			};
 			const descriptionColumn: azdata.TableColumn = {
 				value: localize('deploymentDialog.toolDescriptionColumnHeader', 'Description'),
-				width: 500
-			};
-			const versionColumn: azdata.TableColumn = {
-				value: localize('deploymentDialog.toolVersionColumnHeader', 'Version'),
-				width: 200
-			};
-			const statusColumn: azdata.TableColumn = {
-				value: localize('deploymentDialog.toolStatusColumnHeader', 'Status'),
-				width: 200
+				width: 850
 			};
 
 			this._toolsTable = view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
-				height: 150,
 				data: [],
-				columns: [toolColumn, descriptionColumn, versionColumn, statusColumn],
-				width: 1000
+				columns: [toolColumn, descriptionColumn],
+				width: tableWidth
 			}).component();
+
+			const toolsTableWrapper = view.modelBuilder.divContainer().withLayout({ width: tableWidth }).component();
+			toolsTableWrapper.addItem(this._toolsTable, { CSSStyles: { 'border-left': '1px solid silver', 'border-top': '1px solid silver' } });
 
 			const formBuilder = view.modelBuilder.formContainer().withFormItems(
 				[
@@ -83,7 +78,7 @@ export class ResourceDeploymentDialog {
 						component: this._optionsContainer,
 						title: localize('deploymentDialog.OptionsTitle', 'Options')
 					}, {
-						component: this._toolsTable,
+						component: toolsTableWrapper,
 						title: localize('deploymentDialog.RequiredToolsTitle', 'Required tools')
 					}
 				],
@@ -165,27 +160,18 @@ export class ResourceDeploymentDialog {
 	}
 
 	private updateTools(): void {
-		this.toolsService.getToolStatus(this.getCurrentProvider().requiredTools).then(toolStatus => {
-			let tableData = toolStatus.map(tool => {
-				return [tool.name, tool.description, tool.version, this.getToolStatusText(tool.status)];
+		// do a 10 ms delay to workaround the issue of first time load:
+		// during initialization this update to table will be processed prior to the table initialization update
+		// as a result the data will be overwritten, introduce a short delay so that the order of updates can be maintained.
+		setTimeout(() => {
+			const tools = this.getCurrentProvider().requiredTools;
+			const headerRowHeight = 28;
+			this._toolsTable.height = 25 * tools.length + headerRowHeight;
+			this._toolsTable.data = tools.map(toolRef => {
+				const tool = this.toolsService.getToolByName(toolRef.name)!;
+				return [tool.displayName, tool.description];
 			});
-			this._toolsTable.data = tableData;
-		});
-	}
-
-	private getToolStatusText(status: ToolInstallationStatus): string {
-		switch (status) {
-			case ToolInstallationStatus.Installed:
-				return '✔️ ' + localize('deploymentDialog.InstalledText', 'Installed');
-			case ToolInstallationStatus.NotInstalled:
-				return '❌ ' + localize('deploymentDialog.NotInstalledText', 'Not Installed');
-			case ToolInstallationStatus.Installing:
-				return '⌛ ' + localize('deploymentDialog.InstallingText', 'Installing…');
-			case ToolInstallationStatus.FailedToInstall:
-				return '❌ ' + localize('deploymentDialog.FailedToInstallText', 'Install Failed');
-			default:
-				return 'unknown status';
-		}
+		}, 10);
 	}
 
 	private getCurrentProvider(): DeploymentProvider {
