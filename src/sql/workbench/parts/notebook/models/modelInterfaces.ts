@@ -333,6 +333,11 @@ export interface INotebookModel {
 	readonly contentChanged: Event<NotebookContentChange>;
 
 	/**
+	 * Event fired on notebook provider change
+	 */
+	readonly onProviderIdChange: Event<string>;
+
+	/**
 	 * The trusted mode of the Notebook
 	 */
 	trustedMode: boolean;
