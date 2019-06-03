@@ -152,19 +152,19 @@ suite('SQL ConnectionManagementService tests', () => {
 		let connectionManagementService = new ConnectionManagementService(
 			connectionStore.object,
 			connectionDialogService.object,
-			undefined,
-			undefined,
+			undefined, // IServerGroupController
+			undefined, // IInstantiationService
 			workbenchEditorService.object,
-			undefined,
+			undefined, // ITelemetryService
 			workspaceConfigurationServiceMock.object,
 			capabilitiesService,
-			undefined,
-			undefined,
+			undefined, // IQuickInputService
+			undefined, // IStatusbarService
 			resourceProviderStubMock.object,
-			undefined,
+			undefined, // IAngularEventingService
 			accountManagementService.object,
-			undefined,
-			undefined,
+			new TestLogService(), // ILogService
+			undefined, // IStorageService
 			TestEnvironmentService,
 			new TestNotificationService()
 		);
