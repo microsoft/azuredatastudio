@@ -372,9 +372,11 @@ import 'vs/workbench/contrib/relauncher/electron-browser/relauncher.contribution
 // Tasks
 import 'vs/workbench/contrib/tasks/electron-browser/task.contribution';
 
-// {{SQL CARBON EDIT}}
+// Remote
+// import 'vs/workbench/contrib/remote/electron-browser/remote.contribution'; {{SQL CARBON EDIT}} @anthonydresser comment our remote
+
 // Emmet
-// import 'vs/workbench/contrib/emmet/browser/emmet.contribution';
+// import 'vs/workbench/contrib/emmet/browser/emmet.contribution'; {{SQL CARBON EDIT}} @anthonydresser comment our emmet
 
 // CodeEditor Contributions
 import 'vs/workbench/contrib/codeEditor/browser/codeEditor.contribution';

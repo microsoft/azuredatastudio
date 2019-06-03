@@ -22,6 +22,11 @@
 					"default": "",
 					"description": "%notebook.pythonPath.description%"
 				},
+				"notebook.useExistingPython": {
+					"type": "boolean",
+					"default": false,
+					"description": "%notebook.useExistingPython.description%"
+				},
 				"notebook.overrideEditorTheming": {
 					"type": "boolean",
 					"default": true,

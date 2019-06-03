@@ -1,2 +1,4 @@
+coverage/**
+out/test/**
 src/**
-tsconfig.json
+coverageConfig.json

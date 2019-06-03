@@ -364,6 +364,8 @@ export class AccountManagementService implements IAccountManagementService {
 					addedProvider: provider.metadata,
 					initialAccounts: provider.accounts.slice(0)		// Slice here to make sure no one can modify our cache
 				});
+				// Notify listeners that the account has been updated
+				self.fireAccountListUpdate(provider, false);
 			});
 
 		// TODO: Add stale event handling to the providers

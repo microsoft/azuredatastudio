@@ -57,7 +57,7 @@ export interface IConnectionResult {
 export interface IConnectionCallbacks {
 	onConnectStart(): void;
 	onConnectReject(error?: string): void;
-	onConnectSuccess(params?: INewConnectionParams): void;
+	onConnectSuccess(params: INewConnectionParams, profile: IConnectionProfile): void;
 	onDisconnect(): void;
 	onConnectCanceled(): void;
 }
@@ -80,7 +80,7 @@ export interface IConnectionManagementService {
 	/**
 	 * Opens the connection dialog to create new connection
 	 */
-	showConnectionDialog(params?: INewConnectionParams, model?: IConnectionProfile, connectionResult?: IConnectionResult): Promise<void>;
+	showConnectionDialog(params?: INewConnectionParams, options?: IConnectionCompletionOptions, model?: IConnectionProfile, connectionResult?: IConnectionResult): Promise<void>;
 
 	/**
 	 * Opens the add server group dialog
@@ -190,6 +190,8 @@ export interface IConnectionManagementService {
 	getConnectionProfile(fileUri: string): IConnectionProfile;
 
 	getConnectionInfo(fileUri: string): ConnectionManagementInfo;
+
+	getDefaultProviderId(): string;
 
 	/**
 	 * Cancels the connection
@@ -303,14 +305,15 @@ export interface IConnectableInput {
 	uri: string;
 	onConnectStart(): void;
 	onConnectReject(error?: string): void;
-	onConnectSuccess(params?: INewConnectionParams): void;
+	onConnectSuccess(params: INewConnectionParams, profile: IConnectionProfile): void;
 	onDisconnect(): void;
 	onConnectCanceled(): void;
 }
 
 export enum ConnectionType {
 	default = 0,
-	editor = 1
+	editor = 1,
+	temporary = 2
 }
 
 export enum MetadataType {

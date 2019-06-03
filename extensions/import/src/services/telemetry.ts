@@ -5,13 +5,11 @@
 
 import { ErrorAction, CloseAction } from 'vscode-languageclient';
 import TelemetryReporter from 'vscode-extension-telemetry';
-import { PlatformInformation } from 'service-downloader/out/platform';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
 import * as constants from '../constants';
-import * as serviceUtils from './serviceUtils';
 import { IMessage, ITelemetryEventProperties, ITelemetryEventMeasures } from './contracts';
 
 
@@ -90,38 +88,7 @@ export function FilterErrorPath(line: string): string {
 
 export class Telemetry {
 	private static reporter: TelemetryReporter;
-	private static userId: string;
-	private static platformInformation: PlatformInformation;
 	private static disabled: boolean;
-
-	// Get the unique ID for the current user of the extension
-	public static getUserId(): Promise<string> {
-		return new Promise<string>(resolve => {
-			// Generate the user id if it has not been created already
-			if (typeof this.userId === 'undefined') {
-				let id = serviceUtils.generateUserId();
-				id.then(newId => {
-					this.userId = newId;
-					resolve(this.userId);
-				});
-			} else {
-				resolve(this.userId);
-			}
-		});
-	}
-
-	public static getPlatformInformation(): Promise<PlatformInformation> {
-		if (this.platformInformation) {
-			return Promise.resolve(this.platformInformation);
-		} else {
-			return new Promise<PlatformInformation>(resolve => {
-				PlatformInformation.getCurrent().then(info => {
-					this.platformInformation = info;
-					resolve(this.platformInformation);
-				});
-			});
-		}
-	}
 
 	/**
 	 * Disable telemetry reporting
@@ -149,25 +116,19 @@ export class Telemetry {
 	 * Send a telemetry event for an exception
 	 */
 	public static sendTelemetryEventForException(
-		err: any, methodName: string, extensionConfigName: string): void {
-		try {
-			let stackArray: string[];
-			let firstLine: string = '';
-			if (err !== undefined && err.stack !== undefined) {
-				stackArray = err.stack.split('\n');
-				if (stackArray !== undefined && stackArray.length >= 2) {
-					firstLine = stackArray[1]; // The fist line is the error message and we don't want to send that telemetry event
-					firstLine = FilterErrorPath(firstLine);
-				}
+		err: any, methodName: string): void {
+		let stackArray: string[];
+		let firstLine: string = '';
+		if (err !== undefined && err.stack !== undefined) {
+			stackArray = err.stack.split('\n');
+			if (stackArray !== undefined && stackArray.length >= 2) {
+				firstLine = stackArray[1]; // The fist line is the error message and we don't want to send that telemetry event
+				firstLine = FilterErrorPath(firstLine);
 			}
-
-			// Only adding the method name and the fist line of the stack trace. We don't add the error message because it might have PII
-			this.sendTelemetryEvent('Exception', { methodName: methodName, errorLine: firstLine });
-			// Utils.logDebug('Unhandled Exception occurred. error: ' + err + ' method: ' + methodName, extensionConfigName);
-		} catch (telemetryErr) {
-			// If sending telemetry event fails ignore it so it won't break the extension
-			// Utils.logDebug('Failed to send telemetry event. error: ' + telemetryErr, extensionConfigName);
 		}
+
+		// Only adding the method name and the fist line of the stack trace. We don't add the error message because it might have PII
+		this.sendTelemetryEvent('Exception', { methodName: methodName, errorLine: firstLine });
 	}
 
 	/**
@@ -191,14 +152,12 @@ export class Telemetry {
 			properties = {};
 		}
 
-		// Augment the properties structure with additional common properties before sending
-		Promise.all([this.getUserId(), this.getPlatformInformation()]).then(() => {
-			properties['userId'] = this.userId;
-			properties['distribution'] = (this.platformInformation && this.platformInformation.distribution) ?
-				`${this.platformInformation.distribution.name}, ${this.platformInformation.distribution.version}` : '';
-
+		try {
 			this.reporter.sendTelemetryEvent(eventName, properties, measures);
-		});
+		} catch (telemetryErr) {
+			// If sending telemetry event fails ignore it so it won't break the extension
+			console.error('Failed to send telemetry event. error: ' + telemetryErr);
+		}
 	}
 }
 

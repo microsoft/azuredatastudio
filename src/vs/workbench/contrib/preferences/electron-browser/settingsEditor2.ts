@@ -31,7 +31,10 @@ import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { IEditor, IEditorMemento } from 'vs/workbench/common/editor';
 import { attachSuggestEnabledInputBoxStyler, SuggestEnabledInput } from 'vs/workbench/contrib/codeEditor/browser/suggestEnabledInput/suggestEnabledInput';
 import { SettingsTarget, SettingsTargetsWidget } from 'vs/workbench/contrib/preferences/browser/preferencesWidgets';
-import { commonlyUsedData, tocData } from 'vs/workbench/contrib/preferences/browser/settingsLayout';
+// {{SQL CARBON EDIT}}
+import { commonlyUsedData } from 'vs/workbench/contrib/preferences/browser/settingsLayout';
+import { tocData } from 'sql/workbench/contrib/preferences/browser/sqlSettingsLayout';
+// {{SQL CARBON EDIT}} END
 import { AbstractSettingRenderer, ISettingLinkClickEvent, ISettingOverrideClickEvent, resolveExtensionsSettings, resolveSettingsTree, SettingsTree, SettingTreeRenderers } from 'vs/workbench/contrib/preferences/browser/settingsTree';
 import { ISettingsEditorViewState, parseQuery, SearchResultIdx, SearchResultModel, SettingsTreeElement, SettingsTreeGroupChild, SettingsTreeGroupElement, SettingsTreeModel, SettingsTreeSettingElement } from 'vs/workbench/contrib/preferences/browser/settingsTreeModels';
 import { settingsTextInputBorder } from 'vs/workbench/contrib/preferences/browser/settingsWidgets';
@@ -255,6 +258,11 @@ export class SettingsEditor2 extends BaseEditor {
 	}
 
 	private _setOptions(options: SettingsEditorOptions): void {
+		// {{SQL CARBON EDIT}} - return if options is undefined to avoid nullref
+		if (!options) {
+			return;
+		}
+
 		if (options.query) {
 			this.searchWidget.setValue(options.query);
 		}
@@ -1222,8 +1230,14 @@ export class SettingsEditor2 extends BaseEditor {
 			return;
 		}
 
+		this.clearFilterLinkContainer.style.display = this.viewState.tagFilters && this.viewState.tagFilters.size > 0
+			? 'initial'
+			: 'none';
+
 		if (!this.searchResultModel) {
 			this.countElement.style.display = 'none';
+			DOM.removeClass(this.rootElement, 'no-results');
+			return;
 		}
 
 		if (this.tocTreeModel && this.tocTreeModel.settingsTreeRoot) {
@@ -1236,9 +1250,6 @@ export class SettingsEditor2 extends BaseEditor {
 
 			this.countElement.style.display = 'block';
 			DOM.toggleClass(this.rootElement, 'no-results', count === 0);
-			this.clearFilterLinkContainer.style.display = this.viewState.tagFilters && this.viewState.tagFilters.size > 0
-				? 'initial'
-				: 'none';
 		}
 	}
 

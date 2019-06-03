@@ -194,10 +194,10 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit,
 	}
 
 	protected getTableActions(): IAction[] {
-		let actions: IAction[] = [];
-		actions.push(this._instantiationService.createInstance(EditOperatorAction));
-		actions.push(this._instantiationService.createInstance(DeleteOperatorAction));
-		return actions;
+		return [
+			this._instantiationService.createInstance(EditOperatorAction),
+			this._instantiationService.createInstance(DeleteOperatorAction)
+		];
 	}
 
 	protected getCurrentTableObject(rowIndex: number): any {
@@ -215,8 +215,8 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit,
 			'</tr></table>';
 	}
 
-	public openCreateOperatorDialog() {
+	public async openCreateOperatorDialog() {
 		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
-		this._commandService.executeCommand('agent.openOperatorDialog', ownerUri);
+		await this._commandService.executeCommand('agent.openOperatorDialog', ownerUri);
 	}
 }

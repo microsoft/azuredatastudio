@@ -57,11 +57,7 @@ export function convertEditorInput(input: EditorInput, options: IQueryEditorOpti
 		//Notebook
 		uri = getNotebookEditorUri(input, instantiationService);
 		if (uri) {
-			let fileName: string = 'untitled';
-			if (input) {
-				fileName = input.getName();
-			}
-			let notebookInput: NotebookInput = instantiationService.createInstance(NotebookInput, fileName, uri, input);
+			let notebookInput: NotebookInput = instantiationService.createInstance(NotebookInput, input.getName(), uri, input);
 			return notebookInput;
 		}
 	}
@@ -185,7 +181,7 @@ function getNotebookFileExtensions(instantiationService: IInstantiationService):
 function hasNotebookFileMode(input: EditorInput): boolean {
 	if (input instanceof UntitledEditorInput) {
 		let untitledCast: UntitledEditorInput = <UntitledEditorInput>input;
-		return (untitledCast && untitledCast.getModeId() === notebookModeId);
+		return (untitledCast && untitledCast.getMode() === notebookModeId);
 	}
 	return false;
 }
@@ -204,7 +200,7 @@ function withService<TService, TResult>(instantiationService: IInstantiationServ
 function hasSqlFileMode(input: EditorInput): boolean {
 	if (input instanceof UntitledEditorInput) {
 		let untitledCast: UntitledEditorInput = <UntitledEditorInput>input;
-		return untitledCast && (untitledCast.getModeId() === undefined || untitledCast.getModeId() === sqlModeId);
+		return untitledCast && (untitledCast.getMode() === undefined || untitledCast.getMode() === sqlModeId);
 	}
 
 	return false;

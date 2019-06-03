@@ -49,6 +49,10 @@ export class QueryModelViewTabView implements IPanelView {
 	public layout(dimension: Dimension): void {
 	}
 
+	public focus(): void {
+
+	}
+
 	/**
 	 * Load the angular components and record for this input that we have done so
 	 */

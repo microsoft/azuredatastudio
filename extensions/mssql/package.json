@@ -20,7 +20,7 @@
   "dependencies": {
     "buffer-stream-reader": "^0.1.1",
     "bytes": "^3.1.0",
-    "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#0.2.16",
+    "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#0.3.0",
     "error-ex": "^1.3.2",
     "figures": "^2.0.0",
     "find-remove": "1.2.1",
@@ -390,7 +390,7 @@
     "dashboard.tabs": [
       {
         "id": "mssql-big-data-cluster",
-        "description": "tab.bigDataClusterDescription",
+        "description": "%tab.bigDataClusterDescription%",
         "provider": "MSSQL",
         "title": "%title.bigDataCluster%",
         "when": "connectionProvider == 'MSSQL' && mssql:iscluster",
@@ -400,15 +400,25 @@
               "name": "%title.tasks%",
               "row": 0,
               "col": 0,
-              "colspan": 2,
+              "colspan": 1,
               "widget": {
                 "tasks-widget": [
                   "mssqlCluster.task.newNotebook",
                   "mssqlCluster.task.openNotebook",
-                  "mssqlCluster.livy.task.submitSparkJob",
-                  "mssqlCluster.livy.task.openSparkHistory",
-                  "mssqlCluster.livy.task.openYarnHistory"
+                  "mssqlCluster.livy.task.submitSparkJob"
                 ]
+              }
+            },
+            {
+              "name": "%title.endpoints%",
+              "row": 0,
+              "col": 2,
+              "rowspan": 1.5,
+              "colspan": 2,
+              "widget": {
+                "modelview": {
+                  "id": "bdc-endpoints"
+                }
               }
             }
           ]

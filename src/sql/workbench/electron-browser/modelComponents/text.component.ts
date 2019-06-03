@@ -18,7 +18,7 @@ import { SafeHtml, DomSanitizer } from '@angular/platform-browser';
 @Component({
 	selector: 'modelview-text',
 	template: `
-		<p [style.width]="getWidth()" [innerHTML]="getValue()"></p>`
+		<p [style.width]="getWidth()" [innerHTML]="getValue()" [ngStyle]="this.CSSStyles"></p>`
 })
 export default class TextComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;

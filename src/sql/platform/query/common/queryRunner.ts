@@ -50,7 +50,7 @@ export default class QueryRunner extends Disposable {
 	private _messages: IQueryMessage[] = [];
 	private registered = false;
 
-	private _isQueryPlan: boolean;
+	private _isQueryPlan: boolean = false;
 	public get isQueryPlan(): boolean { return this._isQueryPlan; }
 	private _planXml = new Deferred<string>();
 	public get planXml(): Thenable<string> { return this._planXml.promise; }
@@ -180,12 +180,6 @@ export default class QueryRunner extends Disposable {
 			this._totalElapsedMilliseconds = 0;
 			// TODO issue #228 add statusview callbacks here
 
-			if (runOptions && (runOptions.displayActualQueryPlan || runOptions.displayEstimatedQueryPlan)) {
-				this._isQueryPlan = true;
-			} else {
-				this._isQueryPlan = false;
-			}
-
 			this._onQueryStart.fire();
 
 			// Send the request to execute the query
@@ -218,6 +212,9 @@ export default class QueryRunner extends Disposable {
 	private handleFailureRunQueryResult(error: any) {
 		// Attempting to launch the query failed, show the error message
 		const eol = this.getEolString();
+		if (error instanceof Error) {
+			error = error.message;
+		}
 		let message = nls.localize('query.ExecutionFailedError', 'Execution failed due to an unexpected error: {0}\t{1}', eol, error);
 		this.handleMessage(<azdata.QueryExecuteMessageParams>{
 			ownerUri: this.uri,
@@ -335,16 +332,15 @@ export default class QueryRunner extends Disposable {
 				batchSet = this._batchSets[resultSet.batchId];
 			}
 			// handle getting queryPlanxml if we need too
-			if (this.isQueryPlan) {
-				// check if this result has show plan, this needs work, it won't work for any other provider
-				let hasShowPlan = !!result.resultSetSummary.columnInfo.find(e => e.columnName === 'Microsoft SQL Server 2005 XML Showplan');
-				if (hasShowPlan) {
-					this.getQueryRows(0, 1, result.resultSetSummary.batchId, result.resultSetSummary.id).then(e => {
-						if (e.resultSubset.rows) {
-							this._planXml.resolve(e.resultSubset.rows[0][0].displayValue);
-						}
-					});
-				}
+			// check if this result has show plan, this needs work, it won't work for any other provider
+			let hasShowPlan = !!result.resultSetSummary.columnInfo.find(e => e.columnName === 'Microsoft SQL Server 2005 XML Showplan');
+			if (hasShowPlan) {
+				this._isQueryPlan = true;
+				this.getQueryRows(0, 1, result.resultSetSummary.batchId, result.resultSetSummary.id).then(e => {
+					if (e.resultSubset.rows) {
+						this._planXml.resolve(e.resultSubset.rows[0][0].displayValue);
+					}
+				});
 			}
 			// we will just ignore the set if we already have it
 			// ideally this should never happen
@@ -362,25 +358,24 @@ export default class QueryRunner extends Disposable {
 			let batchSet: azdata.BatchSummary;
 			batchSet = this._batchSets[resultSet.batchId];
 			// handle getting queryPlanxml if we need too
-			if (this.isQueryPlan) {
-				// check if this result has show plan, this needs work, it won't work for any other provider
-				let hasShowPlan = !!result.resultSetSummary.columnInfo.find(e => e.columnName === 'Microsoft SQL Server 2005 XML Showplan');
-				if (hasShowPlan) {
-					this.getQueryRows(0, 1, result.resultSetSummary.batchId, result.resultSetSummary.id).then(e => {
-						if (e.resultSubset.rows) {
-							let planXmlString = e.resultSubset.rows[0][0].displayValue;
-							this._planXml.resolve(e.resultSubset.rows[0][0].displayValue);
-							// fire query plan available event if execution is completed
-							if (result.resultSetSummary.complete) {
-								this._onQueryPlanAvailable.fire({
-									providerId: 'MSSQL',
-									fileUri: result.ownerUri,
-									planXml: planXmlString
-								});
-							}
+			// check if this result has show plan, this needs work, it won't work for any other provider
+			let hasShowPlan = !!result.resultSetSummary.columnInfo.find(e => e.columnName === 'Microsoft SQL Server 2005 XML Showplan');
+			if (hasShowPlan) {
+				this._isQueryPlan = true;
+				this.getQueryRows(0, 1, result.resultSetSummary.batchId, result.resultSetSummary.id).then(e => {
+					if (e.resultSubset.rows) {
+						let planXmlString = e.resultSubset.rows[0][0].displayValue;
+						this._planXml.resolve(e.resultSubset.rows[0][0].displayValue);
+						// fire query plan available event if execution is completed
+						if (result.resultSetSummary.complete) {
+							this._onQueryPlanAvailable.fire({
+								providerId: 'MSSQL',
+								fileUri: result.ownerUri,
+								planXml: planXmlString
+							});
 						}
-					});
-				}
+					}
+				});
 			}
 			if (batchSet) {
 				// Store the result set in the batch and emit that a result set has completed

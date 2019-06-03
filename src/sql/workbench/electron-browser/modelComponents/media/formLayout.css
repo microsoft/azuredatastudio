@@ -32,6 +32,10 @@
 	display: table-cell;
 }
 
+.form-cell-title {
+	width: 129px; /* 129px + 5px padding right = 134px to match the connection pane label widths*/
+}
+
 .form-component-container {
 	display: flex;
 	flex-direction: row;

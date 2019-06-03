@@ -50,7 +50,163 @@
       ]
     }
   },
+  "resourceTypes": [
+    {
+      "name": "sql-image",
+      "displayName": "%resource-type-sql-image-display-name%",
+      "description": "%resource-type-sql-image-description%",
+      "platforms": [
+        "darwin",
+        "win32",
+        "linux"
+      ],
+      "icon": {
+        "light": "./images/sql_server.svg",
+        "dark": "./images/sql_server_inverse.svg"
+      },
+      "options": [
+        {
+          "name": "version",
+          "displayName": "%version-display-name%",
+          "values": [
+            {
+              "name": "sql2017",
+              "displayName": "%sql-2017-display-name%"
+            },
+            {
+              "name": "sql2019",
+              "displayName": "%sql-2019-display-name%"
+            }
+          ]
+        }
+      ],
+      "providers": [
+        {
+          "notebook": "%sql-2017-docker-notebook%",
+          "requiredTools": [
+            {
+              "name": "docker"
+            }
+          ],
+          "when": "version=sql2017"
+        },
+        {
+          "notebook": "%sql-2019-docker-notebook%",
+          "requiredTools": [
+            {
+              "name": "docker"
+            }
+          ],
+          "when": "version=sql2019"
+        }
+      ]
+    },
+    {
+      "name": "sql-bdc",
+      "displayName": "%resource-type-sql-bdc-display-name%",
+      "description": "%resource-type-sql-bdc-description%",
+      "platforms": [
+        "darwin",
+        "linux",
+        "win32"
+      ],
+      "icon": {
+        "light": "./images/sql_bdc.svg",
+        "dark": "./images/sql_bdc_inverse.svg"
+      },
+      "options": [
+        {
+          "name": "version",
+          "displayName": "%version-display-name%",
+          "values": [
+            {
+              "name": "ctp2.5",
+              "displayName": "%sql-2019ctp25-display-name%"
+            },
+            {
+              "name": "ctp3.0",
+              "displayName": "%sql-2019ctp30-display-name%"
+            }
+          ]
+        },
+        {
+          "name": "target",
+          "displayName": "%bdc-deployment-target%",
+          "values": [
+            {
+              "name": "aks",
+              "displayName": "%bdc-deployment-target-aks%"
+            },
+            {
+              "name": "existingCluster",
+              "displayName": "%bdc-deployment-target-existing-cluster%"
+            }
+          ]
+        }
+      ],
+      "providers": [
+        {
+          "notebook": "%bdc-ctp25-aks-notebook%",
+          "requiredTools": [
+            {
+              "name": "kubectl"
+            },
+            {
+              "name": "azcli"
+            },
+            {
+              "name": "mssqlctl"
+            }
+          ],
+          "when": "target=aks&&version=ctp2.5"
+        },
+        {
+          "notebook": "%bdc-ctp25-existing-cluster-notebook%",
+          "requiredTools": [
+            {
+              "name": "kubectl"
+            },
+            {
+              "name": "mssqlctl"
+            }
+          ],
+          "when": "target=existingCluster&&version=ctp2.5"
+        },
+        {
+          "notebook": "%bdc-ctp30-aks-notebook%",
+          "requiredTools": [
+            {
+              "name": "kubectl"
+            },
+            {
+              "name": "azcli"
+            },
+            {
+              "name": "mssqlctl"
+            }
+          ],
+          "when": "target=aks&&version=ctp3.0"
+        },
+        {
+          "notebook": "%bdc-ctp30-existing-cluster-notebook%",
+          "requiredTools": [
+            {
+              "name": "kubectl"
+            },
+            {
+              "name": "mssqlctl"
+            }
+          ],
+          "when": "target=existingCluster&&version=ctp3.0"
+        }
+      ]
+    }
+  ],
   "dependencies": {
     "vscode-nls": "^3.2.1"
+  },
+  "devDependencies": {
+    "typemoq": "^2.1.0",
+    "vscode": "^1.1.26"
   }
 }

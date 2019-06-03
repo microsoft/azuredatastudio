@@ -10,7 +10,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 
 import {
 	INotebookService, INotebookManager, INotebookProvider,
-	DEFAULT_NOTEBOOK_FILETYPE, INotebookEditor, SQL_NOTEBOOK_PROVIDER, OVERRIDE_EDITOR_THEMING_SETTING
+	DEFAULT_NOTEBOOK_FILETYPE, INotebookEditor, SQL_NOTEBOOK_PROVIDER, OVERRIDE_EDITOR_THEMING_SETTING, SerializationStateChangeType
 } from 'sql/workbench/services/notebook/common/notebookService';
 import { RenderMimeRegistry } from 'sql/workbench/parts/notebook/outputs/registry';
 import { standardRendererFactories } from 'sql/workbench/parts/notebook/outputs/factories';
@@ -35,6 +35,11 @@ import { ILifecycleService } from 'vs/platform/lifecycle/common/lifecycle';
 import { SqlNotebookProvider } from 'sql/workbench/services/notebook/sql/sqlNotebookProvider';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { keys } from 'vs/base/common/map';
+import { IFileService, IFileStatWithMetadata } from 'vs/platform/files/common/files';
+import { RunOnceScheduler } from 'vs/base/common/async';
+import { Schemas } from 'vs/base/common/network';
+import { ILogService } from 'vs/platform/log/common/log';
+import { toErrorMessage } from 'vs/base/common/errorMessage';
 
 export interface NotebookProviderProperties {
 	provider: string;
@@ -47,6 +52,18 @@ interface NotebookProviderCache {
 
 interface NotebookProvidersMemento {
 	notebookProviderCache: NotebookProviderCache;
+}
+
+interface TrustedNotebookMetadata {
+	mtime: number;
+}
+interface TrustedNotebookCache {
+	// URI goes to cached
+	[uri: string]: TrustedNotebookMetadata;
+}
+
+interface TrustedNotebooksMemento {
+	trustedNotebooksCache: TrustedNotebookCache;
 }
 
 const notebookRegistry = Registry.as<INotebookProviderRegistry>(Extensions.NotebookProviderContribution);
@@ -75,7 +92,8 @@ class ProviderDescriptor {
 export class NotebookService extends Disposable implements INotebookService {
 	_serviceBrand: any;
 
-	private _memento: Memento;
+	private _providersMemento: Memento;
+	private _trustedNotebooksMemento: Memento;
 	private _mimeRegistry: RenderMimeRegistry;
 	private _providers: Map<string, ProviderDescriptor> = new Map();
 	private _managersMap: Map<string, INotebookManager[]> = new Map();
@@ -91,6 +109,8 @@ export class NotebookService extends Disposable implements INotebookService {
 	private notebookEditorVisible: IContextKey<boolean>;
 	private _themeParticipant: IDisposable;
 	private _overrideEditorThemeSetting: boolean;
+	private _trustedCacheQueue: URI[] = [];
+	private _updateTrustCacheScheduler: RunOnceScheduler;
 
 	constructor(
 		@ILifecycleService lifecycleService: ILifecycleService,
@@ -102,10 +122,15 @@ export class NotebookService extends Disposable implements INotebookService {
 		@IEditorService private readonly _editorService: IEditorService,
 		@IEditorGroupsService private readonly _editorGroupsService: IEditorGroupsService,
 		@IConfigurationService private readonly _configurationService: IConfigurationService,
+		@IFileService private readonly _fileService: IFileService,
+		@ILogService private readonly _logService: ILogService,
 		@IQueryManagementService private readonly _queryManagementService
 	) {
 		super();
-		this._memento = new Memento('notebookProviders', this._storageService);
+		this._providersMemento = new Memento('notebookProviders', this._storageService);
+		this._trustedNotebooksMemento = new Memento('notebooks.trusted', this._storageService);
+
+		this._updateTrustCacheScheduler = new RunOnceScheduler(() => this.updateTrustedCache(), 250);
 		this._register(notebookRegistry.onNewRegistration(this.updateRegisteredProviders, this));
 		this.registerBuiltInProvider();
 		// If a provider has been already registered, the onNewRegistration event will not have a listener attached yet
@@ -448,7 +473,15 @@ export class NotebookService extends Disposable implements INotebookService {
 	}
 
 	private get providersMemento(): NotebookProvidersMemento {
-		return this._memento.getMemento(StorageScope.GLOBAL) as NotebookProvidersMemento;
+		return this._providersMemento.getMemento(StorageScope.GLOBAL) as NotebookProvidersMemento;
+	}
+
+	private get trustedNotebooksMemento(): TrustedNotebooksMemento {
+		let cache = this._trustedNotebooksMemento.getMemento(StorageScope.GLOBAL) as TrustedNotebooksMemento;
+		if (!cache.trustedNotebooksCache) {
+			cache.trustedNotebooksCache = {};
+		}
+		return cache;
 	}
 
 	private cleanupProviders(): void {
@@ -483,5 +516,91 @@ export class NotebookService extends Disposable implements INotebookService {
 				delete this.providersMemento.notebookProviderCache[id];
 			}
 		});
+	}
+
+	async isNotebookTrustCached(notebookUri: URI, isDirty: boolean): Promise<boolean> {
+		if (notebookUri.scheme === Schemas.untitled) {
+			return true;
+		}
+
+		let cacheInfo = this.trustedNotebooksMemento.trustedNotebooksCache[notebookUri.toString()];
+		if (!cacheInfo) {
+			// This notebook was never trusted
+			return false;
+		}
+		// This was trusted. If it's not dirty (e.g. if we're not working on our cached copy)
+		// then should verify it's not been modified on disk since that invalidates trust relationship
+		if (!isDirty) {
+			// Check mtime against mtime on disk
+			let actualMtime: number = await this.getModifiedTimeForFile(notebookUri);
+			if (actualMtime > cacheInfo.mtime) {
+				// Modified since last use, so can't guarantee trust.
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private async getModifiedTimeForFile(notebookUri: URI): Promise<number> {
+		try {
+			let fstat: IFileStatWithMetadata = await this._fileService.resolve(notebookUri, {
+				resolveMetadata: true
+			});
+			return fstat ? fstat.mtime : 0;
+		} catch (err) {
+			return 0;
+		}
+	}
+
+	serializeNotebookStateChange(notebookUri: URI, changeType: SerializationStateChangeType): void {
+		if (notebookUri.scheme !== Schemas.untitled) {
+			// Conditions for saving:
+			// 1. Not untitled. They're always trusted as we open them
+			// 2. Serialization action was a save, since don't need to update on execution etc.
+			// 3. Not already saving (e.g. isn't in the queue to be cached)
+			// 4. Notebook is trusted. Don't need to save state of untrusted notebooks
+			let notebookUriString = notebookUri.toString();
+			if (changeType === SerializationStateChangeType.Saved && this._trustedCacheQueue.findIndex(uri => uri.toString() === notebookUriString) < 0) {
+				// Only save if it's trusted
+				let notebook = this.listNotebookEditors().find(n => n.id === notebookUriString);
+				if (notebook && notebook.model.trustedMode) {
+					this._trustedCacheQueue.push(notebookUri);
+					this._updateTrustCacheScheduler.schedule();
+				}
+			}
+			// TODO add history notification if a non-untitled notebook has a state change
+		}
+	}
+
+	private async updateTrustedCache(): Promise<void> {
+		try {
+			if (this._trustedCacheQueue.length > 0) {
+				// Copy out all items from the cache
+				let items = this._trustedCacheQueue;
+				this._trustedCacheQueue = [];
+
+				// Get all the file stats and then serialize this to a memento
+				let itemConfig = items.map(item => {
+					return { resource: item, options: { resolveMetadata: true } };
+				});
+				let metadata = await this._fileService.resolveAll(itemConfig);
+				let trustedCache = this.trustedNotebooksMemento.trustedNotebooksCache;
+				for (let i = 0; i < metadata.length; i++) {
+					let item = items[i];
+					let stat = metadata[i] && metadata[i].stat;
+					if (stat && stat.mtime) {
+						trustedCache[item.toString()] = {
+							mtime: stat.mtime
+						};
+					}
+				}
+
+				this._trustedNotebooksMemento.saveMemento();
+			}
+		} catch (err) {
+			if (this._logService) {
+				this._logService.trace(`Failed to save trust state to cache: ${toErrorMessage(err)}`);
+			}
+		}
 	}
 }

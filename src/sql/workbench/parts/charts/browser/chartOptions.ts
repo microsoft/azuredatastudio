@@ -48,7 +48,7 @@ const columnsAsLabelsInput: IChartOption = {
 	label: localize('columnsAsLabelsLabel', 'Use column names as labels'),
 	type: ControlType.checkbox,
 	configEntry: 'columnsAsLabels',
-	default: false,
+	default: true,
 	if: (options: IInsightOptions) => {
 		return options.dataDirection === DataDirection.Vertical && options.dataType !== DataType.Point;
 	}

@@ -7,7 +7,7 @@
 
 // CONFIG VALUES ///////////////////////////////////////////////////////////
 export const extensionConfigSectionName = 'dataManagement';
-export const extensionOutputChannel = 'Jupyter Notebooks';
+export const extensionOutputChannel = 'Notebooks';
 export const configLogDebugInfo = 'logDebugInfo';
 
 // JUPYTER CONFIG //////////////////////////////////////////////////////////
@@ -21,9 +21,9 @@ export const pyspark3kernel = 'pyspark3kernel';
 export const python3DisplayName = 'Python 3';
 export const defaultSparkKernel = 'pyspark3kernel';
 export const pythonPathConfigKey = 'pythonPath';
+export const existingPythonConfigKey = 'useExistingPython';
 export const notebookConfigKey = 'notebook';
 
-export const outputChannelName = 'dataManagement';
 export const hdfsHost = 'host';
 export const hdfsUser = 'user';
 
@@ -49,3 +49,8 @@ export enum BuiltInCommands {
 export enum CommandContext {
 	WizardServiceEnabled = 'wizardservice:enabled'
 }
+
+export const pythonOfflinePipPackagesUrl = 'https://go.microsoft.com/fwlink/?linkid=2092867';
+export const pythonWindowsInstallUrl = 'https://go.microsoft.com/fwlink/?linkid=2092866';
+export const pythonMacInstallUrl = 'https://go.microsoft.com/fwlink/?linkid=2092865';
+export const pythonLinuxInstallUrl = 'https://go.microsoft.com/fwlink/?linkid=2092864';
