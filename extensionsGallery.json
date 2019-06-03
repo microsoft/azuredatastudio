@@ -1268,8 +1268,8 @@
 					},
 					"versions": [
 						{
-							"version": "0.2.0",
-							"lastUpdated": "5/7/2019",
+							"version": "0.3.0",
+							"lastUpdated": "6/3/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
@@ -1496,8 +1496,8 @@
 					},
 					"versions": [
 						{
-							"version": "0.2.0",
-							"lastUpdated": "5/7/2019",
+							"version": "0.3.0",
+							"lastUpdated": "6/3/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
@@ -1533,7 +1533,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.6.0"
+									"value": ">=1.8.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
