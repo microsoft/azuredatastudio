@@ -2,14 +2,14 @@
 	"name": "cms",
 	"displayName": "%cms.displayName%",
 	"description": "%cms.description%",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"publisher": "Microsoft",
 	"preview": true,
 	"license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt",
 	"icon": "images/sqlserver.png",
 	"engines": {
 		"vscode": "^1.25.0",
-		"azdata": "*"
+		"azdata": ">=1.8.0"
 	},
 	"activationEvents": [
 		"*"
