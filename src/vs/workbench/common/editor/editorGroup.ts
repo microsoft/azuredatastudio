@@ -15,6 +15,9 @@ import { coalesce } from 'vs/base/common/arrays';
 
 // {{SQL CARBON EDIT}}
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
+import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
+import * as os from 'os';
+import * as path from 'vs/base/common/path';
 
 const EditorOpenPositioning = {
 	LEFT: 'left',
@@ -650,6 +653,15 @@ export class EditorGroup extends Disposable {
 				if (e instanceof UntitledEditorInput && !e.isDirty()
 					&& !this.configurationService.getValue<boolean>('sql.promptToSaveGeneratedFiles')) {
 					return;
+				}
+				// Do not add generated files from Temp if file is not dirty
+				if (e instanceof FileEditorInput && !e.isDirty()) {
+					let filePath = e.getResource() ? e.getResource().fsPath : undefined;
+					let tempPath = os.tmpdir();
+					if (filePath && tempPath &&
+						filePath.toLocaleLowerCase().includes(path.join(tempPath.toLocaleLowerCase(), 'mssql_definition'))) {
+						return;
+					}
 				}
 				// {{SQL CARBON EDIT}} - End
 

@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
-import { Emitter, Event } from 'vs/base/common/event';
+import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
+import { Event, Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 import { EditorInput, ConfirmResult } from 'vs/workbench/common/editor';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -37,13 +37,13 @@ export interface IQueryEditorStateChange {
 	connectingChange?: boolean;
 }
 
-export class QueryEditorState {
+export class QueryEditorState extends Disposable {
 	private _connected = false;
 	private _resultsVisible = false;
 	private _executing = false;
 	private _connecting = false;
 
-	private _onChange = new Emitter<IQueryEditorStateChange>();
+	private _onChange = this._register(new Emitter<IQueryEditorStateChange>());
 	public onChange = this._onChange.event;
 
 	public set connected(val: boolean) {
@@ -99,7 +99,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 
 	public static SCHEMA: string = 'sql';
 
-	private _state = new QueryEditorState();
+	private _state = this._register(new QueryEditorState());
 	public get state(): QueryEditorState { return this._state; }
 
 	public get onDidChangeDirty(): Event<void> { return this._text.onDidChangeDirty; } // divert to text since we never do this
@@ -115,11 +115,17 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	) {
 		super();
 
-		this._toDispose = [];
+		this._register(this._text);
+		this._register(this._results);
+
+		// re-emit sql editor events through this editor if it exists
+		if (this._text) {
+			this._register(this._text.onDidChangeDirty(() => this._onDidChangeDirty.fire()));
+		}
 
 		// Attach to event callbacks
 		// Register callbacks for the Actions
-		this._toDispose.push(
+		this._register(
 			this.queryModelService.onRunQueryStart(uri => {
 				if (this.uri === uri) {
 					this.onRunQuery();
@@ -127,7 +133,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 			})
 		);
 
-		this._toDispose.push(
+		this._register(
 			this.queryModelService.onRunQueryComplete(uri => {
 				if (this.uri === uri) {
 					this.onQueryComplete();
@@ -135,7 +141,19 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 			})
 		);
 
-		this._toDispose.push(this.connectionManagementService.onDisconnect(result => {
+		this._register(this.connectionManagementService.onDisconnect(result => {
+			if (result.connectionUri === this.uri) {
+				this.onDisconnect();
+			}
+		}));
+
+		this._register(this.queryModelService.onRunQueryComplete(uri => {
+			if (this.uri === uri) {
+				this.onQueryComplete();
+			}
+		}));
+
+		this._register(this.connectionManagementService.onDisconnect(result => {
 			if (result.connectionUri === this.uri) {
 				this.onDisconnect();
 			}
@@ -149,7 +167,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 			}
 		}
 
-		this._toDispose.push(this.configurationService.onDidChangeConfiguration(e => {
+		this._register(this.configurationService.onDidChangeConfiguration(e => {
 			if (e.affectedKeys.includes('sql.showConnectionInfoInTitle')) {
 				this._onDidChangeLabel.fire();
 			}
@@ -257,10 +275,12 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 				this.runQuery(selection, { displayActualQueryPlan: true });
 			}
 		}
+		this._onDidChangeLabel.fire();
 	}
 
 	public onDisconnect(): void {
 		this.state.connected = false;
+		this._onDidChangeLabel.fire();
 	}
 
 	public onRunQuery(): void {
@@ -270,14 +290,6 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 
 	public onQueryComplete(): void {
 		this.state.executing = false;
-	}
-
-	// Clean up functions
-	public dispose(): void {
-		this._text.dispose();
-		this._results.dispose();
-		this._toDispose = dispose(this._toDispose);
-		super.dispose();
 	}
 
 	public close(): void {

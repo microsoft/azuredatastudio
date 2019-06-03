@@ -34,19 +34,19 @@ export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICms
 			try {
 				// Call to collect all locally saved CMS servers
 				// to determine whether the system has been initialized.
-				let cmsConfig = this._appContext.apiWrapper.getConfiguration();
-				let cachedServers = cmsConfig ? cmsConfig.cmsServers : [];
+				let cmsConfig = this._appContext.cmsUtils.getConfiguration();
+				let cachedServers = cmsConfig.servers ? cmsConfig.servers : [];
 				if (cachedServers && cachedServers.length > 0) {
 					let servers = [];
-					cachedServers.forEach((server) => {
+					cachedServers.forEach(async (server) => {
 						servers.push(new CmsResourceTreeNode(
 							server.name,
 							server.description,
-							server.ownerUri,
+							undefined,
 							server.connection,
 							this._appContext, this, null));
-						this.appContext.apiWrapper.cacheRegisteredCmsServer(server.name, server.description,
-							server.ownerUri, server.connection);
+						this.appContext.cmsUtils.cacheRegisteredCmsServer(server.name, server.description,
+							undefined, server.connection);
 					});
 					return servers;
 				}
@@ -59,11 +59,16 @@ export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICms
 			return [CmsResourceMessageTreeNode.create(CmsResourceTreeProvider.loadingLabel, undefined)];
 		}
 		try {
-			let registeredCmsServers = this.appContext.apiWrapper.registeredCmsServers;
+			let registeredCmsServers = this.appContext.cmsUtils.registeredCmsServers;
 			if (registeredCmsServers && registeredCmsServers.length > 0) {
 				this.isSystemInitialized = true;
 				// save the CMS Servers for future use
-				await this._appContext.apiWrapper.setConfiguration(registeredCmsServers);
+				let toSaveCmsServers = JSON.parse(JSON.stringify(registeredCmsServers));
+				toSaveCmsServers.forEach(server => {
+					server.ownerUri = undefined,
+						server.connection.options.password = '';
+				});
+				await this._appContext.cmsUtils.setConfiguration(toSaveCmsServers);
 				return registeredCmsServers.map((server) => {
 					return new CmsResourceTreeNode(
 						server.name,
@@ -71,10 +76,9 @@ export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICms
 						server.ownerUri,
 						server.connection,
 						this._appContext, this, null);
-				});
+				}).sort((a, b) => a.name.localeCompare(b.name));
 			} else {
 				return [new CmsResourceEmptyTreeNode()];
-
 			}
 		} catch (error) {
 			return [new CmsResourceEmptyTreeNode()];

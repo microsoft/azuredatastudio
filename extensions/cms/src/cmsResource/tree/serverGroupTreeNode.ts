@@ -18,7 +18,6 @@ import { CmsResourceTreeNode } from './cmsResourceTreeNode';
 
 export class ServerGroupTreeNode extends CmsResourceTreeNodeBase {
 
-	private _id: string = undefined;
 	private _serverGroupNodes: ServerGroupTreeNode[] = [];
 
 	constructor(
@@ -31,12 +30,11 @@ export class ServerGroupTreeNode extends CmsResourceTreeNodeBase {
 		parent: TreeNode
 	) {
 		super(name, description, ownerUri, appContext, treeChangeHandler, parent);
-		this._id = `cms_serverGroup_${this.name}`;
 	}
 	public getChildren(): TreeNode[] | Promise<TreeNode[]> {
 		try {
 			let nodes = [];
-			return this.appContext.apiWrapper.getRegisteredServers(this.ownerUri, this.relativePath).then((result) => {
+			return this.appContext.cmsUtils.getRegisteredServers(this.ownerUri, this.relativePath).then((result) => {
 				if (result) {
 					if (result.registeredServersList) {
 						result.registeredServersList.forEach((registeredServer) => {
@@ -86,7 +84,7 @@ export class ServerGroupTreeNode extends CmsResourceTreeNodeBase {
 		item.id = this._id;
 		item.tooltip = this.description;
 		item.iconPath = {
-			dark: this.appContext.extensionContext.asAbsolutePath('resources/light/folder.svg'),
+			dark: this.appContext.extensionContext.asAbsolutePath('resources/dark/folder_inverse.svg'),
 			light: this.appContext.extensionContext.asAbsolutePath('resources/light/folder.svg')
 		};
 		return item;

@@ -553,16 +553,21 @@ export class NotebookService extends Disposable implements INotebookService {
 	}
 
 	serializeNotebookStateChange(notebookUri: URI, changeType: SerializationStateChangeType): void {
-		let updateTrustState = changeType === SerializationStateChangeType.Saved;
-
 		if (notebookUri.scheme !== Schemas.untitled) {
-			// Cache state for non-untitled notebooks only.
+			// Conditions for saving:
+			// 1. Not untitled. They're always trusted as we open them
+			// 2. Serialization action was a save, since don't need to update on execution etc.
+			// 3. Not already saving (e.g. isn't in the queue to be cached)
+			// 4. Notebook is trusted. Don't need to save state of untrusted notebooks
 			let notebookUriString = notebookUri.toString();
-			if (updateTrustState && this._trustedCacheQueue.findIndex(uri => uri.toString() === notebookUriString)) {
-				this._trustedCacheQueue.push(notebookUri);
-				this._updateTrustCacheScheduler.schedule();
+			if (changeType === SerializationStateChangeType.Saved && this._trustedCacheQueue.findIndex(uri => uri.toString() === notebookUriString) < 0) {
+				// Only save if it's trusted
+				let notebook = this.listNotebookEditors().find(n => n.id === notebookUriString);
+				if (notebook && notebook.model.trustedMode) {
+					this._trustedCacheQueue.push(notebookUri);
+					this._updateTrustCacheScheduler.schedule();
+				}
 			}
-
 			// TODO add history notification if a non-untitled notebook has a state change
 		}
 	}

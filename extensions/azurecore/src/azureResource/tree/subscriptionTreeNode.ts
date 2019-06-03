@@ -15,7 +15,7 @@ import { azureResource } from '../azure-resource';
 import { TreeNode } from '../treeNode';
 import { IAzureResourceNodeWithProviderId } from '../interfaces';
 import { AzureResourceContainerTreeNodeBase } from './baseTreeNodes';
-import { AzureResourceItemType } from '../constants';
+import { AzureResourceItemType, AzureResourceServiceNames } from '../constants';
 import { IAzureResourceTreeChangeHandler } from './treeChangeHandler';
 import { AzureResourceMessageTreeNode } from '../messageTreeNode';
 import { AzureResourceErrorMessageUtil } from '../utils';
@@ -39,7 +39,7 @@ export class AzureResourceSubscriptionTreeNode extends AzureResourceContainerTre
 
 	public async getChildren(): Promise<TreeNode[]> {
 		try {
-			const resourceService = AzureResourceService.getInstance();
+			const resourceService = this.appContext.getService<AzureResourceService>(AzureResourceServiceNames.resourceService);
 
 			const children: IAzureResourceNodeWithProviderId[] = [];
 
@@ -53,7 +53,7 @@ export class AzureResourceSubscriptionTreeNode extends AzureResourceContainerTre
 				return children.map((child) => {
 					// To make tree node's id unique, otherwise, treeModel.js would complain 'item already registered'
 					child.resourceNode.treeItem.id = `${this._id}.${child.resourceNode.treeItem.id}`;
-					return new AzureResourceResourceTreeNode(child, this);
+					return new AzureResourceResourceTreeNode(child, this, this.appContext);
 				});
 			}
 		} catch (error) {

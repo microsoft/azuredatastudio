@@ -22,3 +22,5 @@ export const cellBackground = registerColor('agent.cellBackground', { light: '#f
 export const tableHoverBackground = registerColor('agent.tableHoverColor', { light: '#dcdcdc', dark: '#444444', hc: null }, nls.localize('agentTableHoverBackground', "SQL Agent table hover background color."));
 export const jobsHeadingBackground = registerColor('agent.jobsHeadingColor', { light: '#f4f4f4', dark: '#444444', hc: '#2b56f2' }, nls.localize('agentJobsHeadingColor', "SQL Agent heading background color."));
 export const cellBorderColor = registerColor('agent.cellBorderColor', { light: null, dark: null, hc: '#2b56f2' }, nls.localize('agentCellBorderColor', "SQL Agent table cell border color."));
+
+export const resultsErrorColor = registerColor('results.error.color', { light: '#f44242', dark: '#f44242', hc: '#f44242' }, nls.localize('resultsErrorColor', "Results messages error color."));

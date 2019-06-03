@@ -118,6 +118,33 @@
 			]
 		},
 		"menus": {
+			"commandPalette": [
+				{
+					"command": "azure.resource.signin",
+					"when": "true"
+				},
+				{
+					"command": "azure.resource.refreshall",
+					"when": "true"
+				},
+				{
+					"command": "azure.resource.selectsubscriptions",
+					"when": "false"
+				},
+				{
+					"command": "azure.resource.refresh",
+					"when": "false"
+				},
+				{
+					"command": "azure.resource.connectsqlserver",
+					"when": "false"
+				},
+				{
+					"command": "azure.resource.connectsqldb",
+					"when": "false"
+				}
+
+			],
 			"view/title": [
 				{
 					"command": "azure.resource.signin",

@@ -35,8 +35,8 @@ import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
-import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { ILogService } from 'vs/platform/log/common/log';
+import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 
 export interface OnShowUIResponse {
 	selectedProviderType: string;
@@ -91,13 +91,13 @@ export class ConnectionDialogWidget extends Modal {
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IThemeService themeService: IThemeService,
-		@ILayoutService layoutService: ILayoutService,
+		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IContextMenuService private _contextMenuService: IContextMenuService,
 		@IContextViewService private _contextViewService: IContextViewService,
 		@IClipboardService clipboardService: IClipboardService,
-		@ILayoutService logService: ILogService
+		@ILogService logService: ILogService
 	) {
 		super(localize('connection', "Connection"), TelemetryKeys.Connection, telemetryService, layoutService, clipboardService, themeService, logService, contextKeyService, { hasSpinner: true, hasErrors: true });
 	}
@@ -119,12 +119,17 @@ export class ConnectionDialogWidget extends Modal {
 		if (this._newConnectionParams && this._newConnectionParams.providers) {
 			const validProviderNames = Object.keys(this.providerNameToDisplayNameMap).filter(x => this.includeProvider(x, this._newConnectionParams));
 			if (validProviderNames && validProviderNames.length > 0) {
-				filteredProviderTypes = filteredProviderTypes.filter(x => validProviderNames.find(v => this.providerNameToDisplayNameMap[v] === x) !== undefined);
+				filteredProviderTypes = filteredProviderTypes.filter(x => validProviderNames.find(
+					v => this.providerNameToDisplayNameMap[v] === x) !== undefined
+				);
 			}
 		} else {
-			filteredProviderTypes = filteredProviderTypes.filter(x => x !== Constants.cmsProviderDisplayName);
+			filteredProviderTypes = filteredProviderTypes.filter(x => x !== Constants.cmsProviderName);
 		}
-		this._providerTypeSelectBox.setOptions(filteredProviderTypes);
+		this._providerTypeSelectBox.setOptions(filteredProviderTypes.filter((providerType, index) =>
+			// Remove duplicate listings
+			filteredProviderTypes.indexOf(providerType) === index)
+		);
 	}
 
 	private includeProvider(providerName: string, params?: INewConnectionParams): Boolean {
@@ -163,7 +168,8 @@ export class ConnectionDialogWidget extends Modal {
 				render: c => {
 					c.append(recentConnectionTab);
 				},
-				layout: () => { }
+				layout: () => { },
+				focus: () => this._recentConnectionTree.domFocus()
 			}
 		});
 
@@ -174,7 +180,8 @@ export class ConnectionDialogWidget extends Modal {
 				layout: () => { },
 				render: c => {
 					c.append(savedConnectionTab);
-				}
+				},
+				focus: () => this._savedConnectionTree.domFocus()
 			}
 		});
 
