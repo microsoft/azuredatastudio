@@ -18,7 +18,7 @@ export function setup() {
 				const app = this.app as Application;
 				await app.workbench.queryEditors.openFile(testFilePath);
 				const fileBaseName = path.basename(testFilePath);
-				await app.workbench.queryEditor.waitForTypeInEditor(fileBaseName, 'SELECT * FROM sys.tables');
+				await app.workbench.editor.waitForTypeInEditor(fileBaseName, 'SELECT * FROM sys.tables');
 			}
 			finally {
 				fs.unlinkSync(testFilePath);
