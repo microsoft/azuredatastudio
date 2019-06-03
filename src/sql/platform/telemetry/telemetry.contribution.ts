@@ -23,7 +23,7 @@ export class SqlTelemetryContribution extends Disposable implements IWorkbenchCo
 		const monthlyLastUseDate: number = Date.parse(storageService.get('telemetry.monthlyLastUseDate', StorageScope.GLOBAL, '0'));
 		const firstTimeUser: boolean = dailyLastUseDate === Date.parse('0');
 
-		let todayString: string = new Date().toUTCString();
+		let todayString: string = new Date().toString();
 
 		// daily user event
 		if (this.didDayChange(dailyLastUseDate)) {
@@ -73,35 +73,35 @@ export class SqlTelemetryContribution extends Disposable implements IWorkbenchCo
 	}
 
 	private didDayChange(lastUseDateNumber: number): boolean {
-		let nowDateNumber: number = Date.parse(new Date().toUTCString());
+		let nowDateNumber: number = Date.parse(new Date().toString());
 		if (this.diffInDays(nowDateNumber, lastUseDateNumber) >= 1) {
 			return true;
 		} else {
 			let nowDate = new Date(nowDateNumber);
 			let lastUseDate = new Date(lastUseDateNumber);
-			return nowDate.getUTCDay() !== lastUseDate.getUTCDay();
+			return nowDate.getDay() !== lastUseDate.getDay();
 		}
 	}
 
 	private didWeekChange(lastUseDateNumber: number): boolean {
-		let nowDateNumber: number = Date.parse(new Date().toUTCString());
+		let nowDateNumber: number = Date.parse(new Date().toString());
 		if (this.diffInDays(nowDateNumber, lastUseDateNumber) >= 7) {
 			return true;
 		} else {
 			let nowDate = new Date(nowDateNumber);
 			let lastUseDate = new Date(lastUseDateNumber);
-			return nowDate.getUTCDay() < lastUseDate.getUTCDay();
+			return nowDate.getDay() < lastUseDate.getDay();
 		}
 	}
 
 	private didMonthChange(lastUseDateNumber: number): boolean {
-		let nowDateNumber: number = Date.parse(new Date().toUTCString());
+		let nowDateNumber: number = Date.parse(new Date().toString());
 		if (this.diffInDays(nowDateNumber, lastUseDateNumber) >= 30) {
 			return true;
 		} else {
 			let nowDate = new Date(nowDateNumber);
 			let lastUseDate = new Date(lastUseDateNumber);
-			return nowDate.getUTCMonth() !== lastUseDate.getUTCMonth();
+			return nowDate.getMonth() !== lastUseDate.getMonth();
 		}
 	}
 
