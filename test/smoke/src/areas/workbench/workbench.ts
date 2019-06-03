@@ -23,6 +23,8 @@ import { Terminal } from '../terminal/terminal';
 // {{SQL CARBON EDIT}}
 import { ConnectionDialog } from '../../sql/connectionDialog/connectionDialog';
 import { Profiler } from '../../sql/profiler/profiler';
+import { QueryEditors } from '../../sql/queryEditor/queryEditors';
+import { QueryEditor } from '../../sql/queryEditor/queryEditor';
 // {{END}}
 
 export interface Commands {
@@ -50,6 +52,8 @@ export class Workbench {
 	// {{SQL CARBON EDIT}}
 	readonly connectionDialog: ConnectionDialog;
 	readonly profiler: Profiler;
+	readonly queryEditor: QueryEditor;
+	readonly queryEditors: QueryEditors;
 	// {{END}}
 
 	constructor(code: Code, userDataPath: string) {
@@ -71,6 +75,8 @@ export class Workbench {
 		// {{SQL CARBON EDIT}}
 		this.connectionDialog = new ConnectionDialog(code);
 		this.profiler = new Profiler(code, this.quickopen);
+		this.queryEditor = new QueryEditor(code, this.quickopen);
+		this.queryEditors = new QueryEditors(code, this.quickopen);
 		// {{END}}
 	}
 }
