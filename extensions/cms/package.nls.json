@@ -70,7 +70,7 @@
 	"cms.connectionOptions.columnEncryptionSetting.displayName": "Column encryption",
 	"cms.connectionOptions.columnEncryptionSetting.description": "Default column encryption setting for all the commands on the connection",
 	"cms.connectionOptions.encrypt.displayName": "Encrypt",
-	"cms.connectionOptions.encrypt.description": "When true, SQL Server uses SSL encryption for all data sent between the client and server if the servers has a certificate installed",
+	"cms.connectionOptions.encrypt.description": "When true, SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed",
 	"cms.connectionOptions.persistSecurityInfo.displayName": "Persist security info",
 	"cms.connectionOptions.persistSecurityInfo.description": "When false, security-sensitive information, such as the password, is not returned as part of the connection",
 	"cms.connectionOptions.trustServerCertificate.displayName": "Trust server certificate",
