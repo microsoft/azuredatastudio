@@ -28,14 +28,12 @@ export function activate(context: vscode.ExtensionContext) {
 		validationFailures.forEach(message => console.error(message));
 		return;
 	}
-
 	const openDialog = (resourceTypeName: string) => {
 		const filtered = resourceTypes.filter(resourceType => resourceType.name === resourceTypeName);
 		if (filtered.length !== 1) {
 			vscode.window.showErrorMessage(localize('resourceDeployment.UnknownResourceType', 'The resource type: {0} is not defined', resourceTypeName));
-		}
-		else {
-			let dialog = new ResourceDeploymentDialog(context, notebookService, toolsService, resourceTypeService, filtered[0]);
+		} else {
+			const dialog = new ResourceDeploymentDialog(context, notebookService, toolsService, resourceTypeService, filtered[0]);
 			dialog.open();
 		}
 	};
@@ -45,6 +43,9 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 	vscode.commands.registerCommand('azdata.resource.sql-bdc.deploy', () => {
 		openDialog('sql-bdc');
+	});
+	vscode.commands.registerCommand('azdata.resource.deploy', () => {
+		openDialog('sql-image');
 	});
 }
 

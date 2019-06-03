@@ -134,6 +134,11 @@ export const pySpark3KernelMetadata = {
 	}
 };
 
+export const pySpark3KernelSpec = {
+	name: 'pyspark3',
+	display_name: 'PySpark3'
+};
+
 export const sqlKernelMetadata = {
 	'kernelspec': {
 		'name': 'SQL',
@@ -141,11 +146,21 @@ export const sqlKernelMetadata = {
 	}
 };
 
+export const sqlKernelSpec: azdata.nb.IKernelSpec = {
+	name: 'SQL',
+	display_name: 'SQL'
+};
+
 export const pythonKernelMetadata = {
 	'kernelspec': {
 		'name': 'python3',
 		'display_name': 'Python 3'
 	}
+};
+
+export const pythonKernelSpec: azdata.nb.IKernelSpec = {
+	name: 'python3',
+	display_name: 'Python 3'
 };
 
 export function writeNotebookToFile(pythonNotebook: azdata.nb.INotebookContents, testName: string): vscode.Uri {
