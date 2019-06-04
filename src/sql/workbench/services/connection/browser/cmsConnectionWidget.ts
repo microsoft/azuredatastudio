@@ -108,8 +108,9 @@ export class CmsConnectionWidget extends ConnectionWidget {
 			} else {
 				authTypeOption.defaultValue = this.getAuthTypeDisplayName(AuthenticationType.SqlLogin);
 			}
-			this._authTypeSelectBox.setOptions(authTypeOption.categoryValues.map(c => c.displayName), 1);
 		}
+		this._authTypeSelectBox.setOptions(authTypeOption.categoryValues.map(c => c.displayName), 1);
+		this._authTypeSelectBox.selectWithOptionName(authTypeOption.defaultValue);
 	}
 
 	private addServerDescriptionOption(): void {
