@@ -143,9 +143,7 @@ export class CmsUtils {
 			providerName: undefined,
 			saveProfile: undefined,
 			id: undefined,
-			options: {
-				authTypeChanged: true
-			}
+			options: {}
 		};
 		return this.openConnectionDialog([cmsProvider], initialProfile, { saveConnection: false }).then(async (connection) => {
 			if (connection && connection.options) {
