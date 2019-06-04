@@ -131,7 +131,7 @@ suite('notebook model', function (): void {
 		mockContentManager.setup(c => c.getNotebookContents(TypeMoq.It.isAny())).returns(() => Promise.resolve(emptyNotebook));
 		notebookManagers[0].contentManager = mockContentManager.object;
 		// When I initialize the model
-		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined);
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined);
 		await model.requestModelLoad();
 
 		// Then I expect to have 0 code cell as the contents
@@ -146,7 +146,7 @@ suite('notebook model', function (): void {
 		mockContentManager.setup(c => c.getNotebookContents(TypeMoq.It.isAny())).returns(() => Promise.resolve(expectedNotebookContent));
 		notebookManagers[0].contentManager = mockContentManager.object;
 		// When I initialize the model
-		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined);
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined);
 		await model.requestModelLoad(true);
 
 		// Then Trust should be true
@@ -233,7 +233,7 @@ suite('notebook model', function (): void {
 		let options: INotebookModelOptions = Object.assign({}, defaultModelOptions, <Partial<INotebookModelOptions>>{
 			factory: mockModelFactory.object
 		});
-		let model = new NotebookModel(options, undefined, logService, undefined);
+		let model = new NotebookModel(options, undefined, logService, undefined, undefined);
 		model.onClientSessionReady((session) => actualSession = session);
 		await model.requestModelLoad();
 		await model.startSession(notebookManagers[0]);
@@ -251,14 +251,14 @@ suite('notebook model', function (): void {
 	});
 
 	test('Should sanitize kernel display name when IP is included', async function (): Promise<void> {
-		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined);
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined);
 		let displayName = 'PySpark (1.1.1.1)';
 		let sanitizedDisplayName = model.sanitizeDisplayName(displayName);
 		should(sanitizedDisplayName).equal('PySpark');
 	});
 
 	test('Should sanitize kernel display name properly when IP is not included', async function (): Promise<void> {
-		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined);
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined);
 		let displayName = 'PySpark';
 		let sanitizedDisplayName = model.sanitizeDisplayName(displayName);
 		should(sanitizedDisplayName).equal('PySpark');
@@ -269,7 +269,7 @@ suite('notebook model', function (): void {
 		let mockContentManager = TypeMoq.Mock.ofType(LocalContentManager);
 		mockContentManager.setup(c => c.getNotebookContents(TypeMoq.It.isAny())).returns(() => Promise.resolve(expectedNotebookContent));
 		notebookManagers[0].contentManager = mockContentManager.object;
-		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined);
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined);
 		await model.requestModelLoad(false);
 
 		let actualChanged: NotebookContentChange;

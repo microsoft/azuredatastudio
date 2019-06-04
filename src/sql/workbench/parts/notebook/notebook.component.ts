@@ -48,6 +48,7 @@ import { toErrorMessage } from 'vs/base/common/errorMessage';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 import { LabeledMenuItemActionItem, fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
+import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
@@ -94,7 +95,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		@Inject(IViewletService) private viewletService: IViewletService,
 		@Inject(ICapabilitiesService) private capabilitiesService: ICapabilitiesService,
 		@Inject(ITextFileService) private textFileService: ITextFileService,
-		@Inject(ILogService) private readonly logService: ILogService
+		@Inject(ILogService) private readonly logService: ILogService,
+		@Inject(ITelemetryService) private _telemetryService: ITelemetryService
 	) {
 		super();
 		this.updateProfile();
@@ -279,7 +281,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			defaultKernel: this._notebookParams.input.defaultKernel,
 			layoutChanged: this._notebookParams.input.layoutChanged,
 			capabilitiesService: this.capabilitiesService
-		}, this.profile, this.logService, this.notificationService);
+		}, this.profile, this.logService, this.notificationService, this._telemetryService);
 		model.onError((errInfo: INotification) => this.handleModelError(errInfo));
 		let trusted = await this.notebookService.isNotebookTrustCached(this._notebookParams.notebookUri, this.isDirty());
 		await model.requestModelLoad(trusted);

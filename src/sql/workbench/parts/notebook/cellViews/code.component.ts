@@ -180,6 +180,10 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		this._layoutEmitter.fire();
 	}
 
+	ngOnDestroy(): void {
+		this.dispose();
+	}
+
 	get model(): NotebookModel {
 		return this._model;
 	}

@@ -111,6 +111,7 @@ export class TextCellComponent extends CellView implements OnInit, AfterContentI
 
 	private setLoading(isLoading: boolean): void {
 		this.isLoading = isLoading;
+		this.cellModel.loaded = isLoading;
 		this._changeRef.detectChanges();
 	}
 
@@ -122,7 +123,6 @@ export class TextCellComponent extends CellView implements OnInit, AfterContentI
 		this._register(this.cellModel.onOutputsChanged(e => {
 			this.updatePreview();
 		}));
-		this.setLoading(false);
 	}
 
 	ngAfterContentInit(): void {
@@ -210,6 +210,9 @@ export class TextCellComponent extends CellView implements OnInit, AfterContentI
 				htmlcontent = this.sanitizeContent(htmlcontent);
 				let outputElement = <HTMLElement>this.output.nativeElement;
 				outputElement.innerHTML = htmlcontent;
+				if (this.isLoading) {
+					this.setLoading(false);
+				}
 			});
 		}
 	}
