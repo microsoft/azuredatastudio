@@ -137,7 +137,10 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit, O
 		let rowDetail = new RowDetailView({
 			cssClass: '_detail_selector',
 			useRowClick: false,
-			panelRows: 1
+			panelRows: 1,
+			postTemplate: () => '', // I'm assuming these code paths are just never hit...
+			preTemplate: () => '',
+			process: () => { }
 		});
 		columns.unshift(rowDetail.getColumnDefinition());
 
