@@ -38,18 +38,13 @@ import { withNullAsUndefined } from 'vs/base/common/types';
 export class MenubarControl extends Disposable {
 
 	private keys = [
-		'files.autoSave',
 		'window.menuBarVisibility',
-		'editor.multiCursorModifier',
-		'workbench.sideBar.location',
-		'workbench.statusBar.visible',
-		'workbench.activityBar.visible',
 		'window.enableMenuBarMnemonics',
 		'window.nativeTabs'
 	];
 
 	// {{SQL CARBON EDIT}} - Disable unusued menus
-	private topLevelMenus: {
+	private menus: {
 		'File': IMenu;
 		'Edit': IMenu;
 		// 'Selection': IMenu;
@@ -105,8 +100,8 @@ export class MenubarControl extends Disposable {
 
 		super();
 
-		// {{SQL CARBON EDIT}} - Disable unused menus
-		this.topLevelMenus = {
+		// {{SQL CARBON EDIT}} - Disable unusued menus
+		this.menus = {
 			'File': this._register(this.menuService.createMenu(MenuId.MenubarFileMenu, this.contextKeyService)),
 			'Edit': this._register(this.menuService.createMenu(MenuId.MenubarEditMenu, this.contextKeyService)),
 			// 'Selection': this._register(this.menuService.createMenu(MenuId.MenubarSelectionMenu, this.contextKeyService)),
@@ -118,7 +113,7 @@ export class MenubarControl extends Disposable {
 		};
 
 		if (isMacintosh) {
-			this.topLevelMenus['Preferences'] = this._register(this.menuService.createMenu(MenuId.MenubarPreferencesMenu, this.contextKeyService));
+			this.menus['Preferences'] = this._register(this.menuService.createMenu(MenuId.MenubarPreferencesMenu, this.contextKeyService));
 		}
 
 		this.menuUpdater = this._register(new RunOnceScheduler(() => this.doUpdateMenubar(false), 200));
@@ -127,8 +122,8 @@ export class MenubarControl extends Disposable {
 		this._onFocusStateChange = this._register(new Emitter<boolean>());
 
 		if (isMacintosh || this.currentTitlebarStyleSetting !== 'custom') {
-			for (const topLevelMenuName of Object.keys(this.topLevelMenus)) {
-				const menu = this.topLevelMenus[topLevelMenuName];
+			for (const topLevelMenuName of Object.keys(this.topLevelTitles)) {
+				const menu = this.menus[topLevelMenuName];
 				if (menu) {
 					this._register(menu.onDidChange(() => this.updateMenubar()));
 				}
@@ -157,28 +152,6 @@ export class MenubarControl extends Disposable {
 		}
 
 		return enableMenuBarMnemonics;
-	}
-
-	private get currentSidebarPosition(): string {
-		return this.configurationService.getValue<string>('workbench.sideBar.location');
-	}
-
-	private get currentStatusBarVisibility(): boolean {
-		let setting = this.configurationService.getValue<boolean>('workbench.statusBar.visible');
-		if (typeof setting !== 'boolean') {
-			setting = true;
-		}
-
-		return setting;
-	}
-
-	private get currentActivityBarVisibility(): boolean {
-		let setting = this.configurationService.getValue<boolean>('workbench.activityBar.visible');
-		if (typeof setting !== 'boolean') {
-			setting = true;
-		}
-
-		return setting;
 	}
 
 	private get currentMenubarVisibility(): MenuBarVisibility {
@@ -322,30 +295,6 @@ export class MenubarControl extends Disposable {
 	private calculateActionLabel(action: IAction | IMenubarMenuItemAction): string {
 		let label = action.label;
 		switch (action.id) {
-			case 'workbench.action.toggleSidebarPosition':
-				if (this.currentSidebarPosition !== 'right') {
-					label = nls.localize({ key: 'miMoveSidebarRight', comment: ['&& denotes a mnemonic'] }, "&&Move Side Bar Right");
-				} else {
-					label = nls.localize({ key: 'miMoveSidebarLeft', comment: ['&& denotes a mnemonic'] }, "&&Move Side Bar Left");
-				}
-				break;
-
-			case 'workbench.action.toggleStatusbarVisibility':
-				if (this.currentStatusBarVisibility) {
-					label = nls.localize({ key: 'miHideStatusbar', comment: ['&& denotes a mnemonic'] }, "&&Hide Status Bar");
-				} else {
-					label = nls.localize({ key: 'miShowStatusbar', comment: ['&& denotes a mnemonic'] }, "&&Show Status Bar");
-				}
-				break;
-
-			case 'workbench.action.toggleActivityBarVisibility':
-				if (this.currentActivityBarVisibility) {
-					label = nls.localize({ key: 'miHideActivityBar', comment: ['&& denotes a mnemonic'] }, "Hide &&Activity Bar");
-				} else {
-					label = nls.localize({ key: 'miShowActivityBar', comment: ['&& denotes a mnemonic'] }, "Show &&Activity Bar");
-				}
-				break;
-
 			default:
 				break;
 		}
@@ -512,7 +461,7 @@ export class MenubarControl extends Disposable {
 		}
 
 		// Update the menu actions
-		const updateActions = (menu: IMenu, target: IAction[]) => {
+		const updateActions = (menu: IMenu, target: IAction[], topLevelTitle: string) => {
 			target.splice(0);
 			let groups = menu.getActions();
 			for (let group of groups) {
@@ -521,11 +470,20 @@ export class MenubarControl extends Disposable {
 				for (let action of actions) {
 					this.insertActionsBefore(action, target);
 					if (action instanceof SubmenuItemAction) {
-						const submenu = this.menuService.createMenu(action.item.submenu, this.contextKeyService);
+						if (!this.menus[action.item.submenu]) {
+							this.menus[action.item.submenu] = this.menuService.createMenu(action.item.submenu, this.contextKeyService);
+							const submenu = this.menus[action.item.submenu];
+							this._register(submenu!.onDidChange(() => {
+								const actions: IAction[] = [];
+								updateActions(menu, actions, topLevelTitle);
+								this.menubar.updateMenu({ actions: actions, label: mnemonicMenuLabel(this.topLevelTitles[topLevelTitle]) });
+							}, this));
+						}
+
+						const submenu = this.menus[action.item.submenu]!;
 						const submenuActions: SubmenuAction[] = [];
-						updateActions(submenu, submenuActions);
+						updateActions(submenu, submenuActions, topLevelTitle);
 						target.push(new SubmenuAction(mnemonicMenuLabel(action.label), submenuActions));
-						submenu.dispose();
 					} else {
 						action.label = mnemonicMenuLabel(this.calculateActionLabel(action));
 						target.push(action);
@@ -538,19 +496,19 @@ export class MenubarControl extends Disposable {
 			target.pop();
 		};
 
-		for (const title of Object.keys(this.topLevelMenus)) {
-			const menu = this.topLevelMenus[title];
+		for (const title of Object.keys(this.topLevelTitles)) {
+			const menu = this.menus[title];
 			if (firstTime && menu) {
 				this._register(menu.onDidChange(() => {
 					const actions: IAction[] = [];
-					updateActions(menu, actions);
+					updateActions(menu, actions, title);
 					this.menubar.updateMenu({ actions: actions, label: mnemonicMenuLabel(this.topLevelTitles[title]) });
 				}));
 			}
 
 			const actions: IAction[] = [];
 			if (menu) {
-				updateActions(menu, actions);
+				updateActions(menu, actions, title);
 			}
 
 			if (!firstTime) {
@@ -591,6 +549,12 @@ export class MenubarControl extends Disposable {
 
 				if (menuItem instanceof SubmenuItemAction) {
 					const submenu = { items: [] };
+
+					if (!this.menus[menuItem.item.submenu]) {
+						this.menus[menuItem.item.submenu] = this.menuService.createMenu(menuItem.item.submenu, this.contextKeyService);
+						this._register(this.menus[menuItem.item.submenu]!.onDidChange(() => this.updateMenubar()));
+					}
+
 					const menuToDispose = this.menuService.createMenu(menuItem.item.submenu, this.contextKeyService);
 					this.populateMenuItems(menuToDispose, submenu, keybindings);
 
@@ -650,8 +614,8 @@ export class MenubarControl extends Disposable {
 		}
 
 		menubarData.keybindings = this.getAdditionalKeybindings();
-		for (const topLevelMenuName of Object.keys(this.topLevelMenus)) {
-			const menu = this.topLevelMenus[topLevelMenuName];
+		for (const topLevelMenuName of Object.keys(this.topLevelTitles)) {
+			const menu = this.menus[topLevelMenuName];
 			if (menu) {
 				const menubarMenu: IMenubarMenu = { items: [] };
 				this.populateMenuItems(menu, menubarMenu, menubarData.keybindings);

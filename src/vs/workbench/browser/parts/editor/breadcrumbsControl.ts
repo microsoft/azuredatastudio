@@ -494,17 +494,17 @@ MenuRegistry.appendMenuItem(MenuId.CommandPalette, {
 		category: localize('cmd.category', "View")
 	}
 });
-// {{SQL CARBON EDIT}} - Disable unused menu item
-// MenuRegistry.appendMenuItem(MenuId.MenubarViewMenu, {
-// 	group: '5_editor',
-// 	order: 99,
-// 	command: {
-// 		id: 'breadcrumbs.toggle',
-// 		title: localize('miToggleBreadcrumbs', "Toggle &&Breadcrumbs"),
-// 		toggled: ContextKeyExpr.equals('config.breadcrumbs.enabled', true)
-// 	}
-// });
-// {{SQL CARBON EDIT}} - End
+/* {{SQL CARBON EDIT}} - Disable unused menu item
+MenuRegistry.appendMenuItem(MenuId.MenubarViewMenu, {
+	group: '5_editor',
+	order: 3,
+	command: {
+		id: 'breadcrumbs.toggle',
+		title: localize('miShowBreadcrumbs', "Show &&Breadcrumbs"),
+		toggled: ContextKeyExpr.equals('config.breadcrumbs.enabled', true)
+	}
+});
+*/
 CommandsRegistry.registerCommand('breadcrumbs.toggle', accessor => {
 	let config = accessor.get(IConfigurationService);
 	let value = BreadcrumbsConfig.IsEnabled.bindTo(config).getValue();
