@@ -104,8 +104,8 @@ export class DacFxServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let generateDeployScript = (packageFilePath: string, targetDatabaseName: string, scriptFilePath: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> => {
-			let params: contracts.GenerateDeployScriptParams = { packageFilePath: packageFilePath, databaseName: targetDatabaseName, scriptFilePath: scriptFilePath, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
+		let generateDeployScript = (packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> => {
+			let params: contracts.GenerateDeployScriptParams = { packageFilePath: packageFilePath, databaseName: targetDatabaseName, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
 			return client.sendRequest(contracts.GenerateDeployScriptRequest.type, params).then(
 				r => {
 					return r;
