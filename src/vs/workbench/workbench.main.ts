@@ -7,7 +7,7 @@
 
 import 'vs/editor/editor.all';
 
-import 'vs/workbench/api/electron-browser/extensionHost.contribution';
+import 'vs/workbench/api/browser/extensionHost.contribution';
 import 'sql/workbench/api/electron-browser/extensionHost.contribution'; // {{SQL CARBON EDIT}} @anthonydresser add our extension contributions
 
 import 'vs/workbench/electron-browser/main.contribution';
@@ -432,9 +432,6 @@ import 'vs/workbench/contrib/outline/browser/outline.contribution';
 
 // Experiments
 import 'vs/workbench/contrib/experiments/electron-browser/experiments.contribution';
-
-// Code Insets
-import 'vs/workbench/contrib/codeinset/electron-browser/codeInset.contribution';
 
 // Issues
 import 'vs/workbench/contrib/issue/electron-browser/issue.contribution';
