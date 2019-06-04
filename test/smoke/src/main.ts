@@ -15,6 +15,8 @@ import { Application, Quality, ApplicationOptions } from './application';
 
 //{{SQL CARBON EDIT}}
 import { setup as runProfilerTests } from './sql/profiler/profiler.test';
+import { setup as runQueryEditorTests } from './sql/queryEditor/queryEditor.test';
+
 //Original
 /*
 import { setup as setupDataMigrationTests } from './areas/workbench/data-migration.test';
@@ -283,6 +285,7 @@ describe('Running Code', () => {
 
 	//{{SQL CARBON EDIT}}
 	runProfilerTests();
+	runQueryEditorTests();
 	//Original
 	/*
 	setupDataLossTests();
