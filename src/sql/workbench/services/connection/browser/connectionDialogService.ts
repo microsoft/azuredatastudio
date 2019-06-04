@@ -143,10 +143,6 @@ export class ConnectionDialogService implements IConnectionDialogService {
 				if (filteredKeys && filteredKeys.length > 0) {
 					defaultProvider = filteredKeys[0];
 				}
-				else {
-					// CMS isn't default unless called by the extension specifically
-					defaultProvider = keys.filter(provider => provider === Constants.cmsProviderName)[0];
-				}
 			}
 		}
 		if (!defaultProvider && this._configurationService) {
