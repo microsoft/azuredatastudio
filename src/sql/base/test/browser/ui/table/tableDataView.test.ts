@@ -19,7 +19,7 @@ suite('TableDataView', () => {
 
 		let rowCountEventInvokeCount = 0;
 		let filterStateChangeEventInvokeCount = 0;
-		let rowCountEventParameter;
+		let rowCountEventParameter: number;
 		obj.onRowCountChange((count) => {
 			rowCountEventInvokeCount++;
 			rowCountEventParameter = count;

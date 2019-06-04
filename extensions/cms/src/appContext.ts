@@ -7,13 +7,19 @@
 
 import * as vscode from 'vscode';
 import { ApiWrapper } from './apiWrapper';
+import { CmsUtils } from './cmsUtils';
 
 /**
  * Global context for the application
  */
 export class AppContext {
 
-	constructor(public readonly extensionContext: vscode.ExtensionContext, public readonly apiWrapper: ApiWrapper) {
+	constructor(
+		public readonly extensionContext: vscode.ExtensionContext,
+		public readonly apiWrapper: ApiWrapper,
+		public readonly cmsUtils: CmsUtils
+	) {
 		this.apiWrapper = apiWrapper || new ApiWrapper();
+		this.cmsUtils = cmsUtils || new CmsUtils();
 	}
 }

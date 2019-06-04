@@ -96,8 +96,8 @@ declare namespace Slick {
 	export class EventHandler {
 		constructor();
 
-		public subscribe<T>(event: Event<T>, handler: Function): EventHandler;
-		public unsubscribe<T>(event: Event<T>, handler: Function): EventHandler;
+		public subscribe<T>(event: Event<T>, handler: (event: DOMEvent, args: T) => void): EventHandler;
+		public unsubscribe<T>(event: Event<T>, handler: (event: DOMEvent, args: T) => void): EventHandler;
 		public unsubscribeAll(): EventHandler;
 	}
 
@@ -668,6 +668,11 @@ declare namespace Slick {
 		 * Page grid when navigating
 		 */
 		emulatePagingWhenScrolling?: boolean;
+
+		/**
+		 *
+		 */
+		minRowBuffer?: number;
 	}
 
 	export interface DataProvider<T extends SlickData> {
@@ -687,10 +692,14 @@ declare namespace Slick {
 		 * @param index
 		 */
 		getItemMetadata?(index: number): RowMetadata<T>;
+
+		/**
+		 *
+		 */
+		getItems(): Array<T>;
 	}
 
-	export interface SlickData {
-		// todo ? might be able to leave as empty
+	export interface SlickData extends Object {
 	}
 
 	export interface RowMetadata<T> {
@@ -772,7 +781,7 @@ declare namespace Slick {
 		/**
 		 * Sets selected ranges for the grid
 		 */
-		setSelectedRanges(ranges: Slick.Range[]);
+		setSelectedRanges(ranges: Slick.Range[]): void;
 
 		/**
 		 * Gets selected ranges for the grid
@@ -818,10 +827,7 @@ declare namespace Slick {
 		* Returns an array of every data object, unless you're using DataView in which case it returns a DataView object.
 		* @return
 		**/
-		public getData(): any;
-		//public getData(): T[];
-		// Issue: typescript limitation, cannot differentiate calls by return type only, so need to cast to DataView or T[].
-		//public getData(): DataView;
+		public getData(): T[] | DataProvider<T>;
 
 		/**
 		* Returns the databinding item at a given position.
@@ -1228,7 +1234,7 @@ declare namespace Slick {
 		public render(): void;
 		public invalidate(): void;
 		public invalidateRow(row: number): void;
-		public invalidateRows(rows: number[], keepEditor: boolean): void;
+		public invalidateRows(rows: number[], keepEditor?: boolean): void;
 		public invalidateAllRows(): void;
 		public updateCell(row: number, cell: number): void;
 		public updateRow(row: number): void;
@@ -1543,7 +1549,7 @@ declare namespace Slick {
 	}
 
 	export interface Formatter<T extends SlickData> {
-        (row: number, cell: number, value: any, columnDef: Column<T>, dataContext: SlickData): string;
+        (row: number, cell: number, value: any, columnDef: Column<T>, dataContext: SlickData): string | undefined;
 	}
 
 	export module Formatters {

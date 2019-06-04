@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
 import { Event, Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
@@ -42,13 +42,13 @@ export interface IQueryEditorStateChange {
 	connectingChange?: boolean;
 }
 
-export class QueryEditorState {
+export class QueryEditorState extends Disposable {
 	private _connected = false;
 	private _resultsVisible = false;
 	private _executing = false;
 	private _connecting = false;
 
-	private _onChange = new Emitter<IQueryEditorStateChange>();
+	private _onChange = this._register(new Emitter<IQueryEditorStateChange>());
 	public onChange = this._onChange.event;
 
 	public set connected(val: boolean) {
@@ -105,7 +105,7 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 	public static ID: string = 'workbench.editorinputs.queryInput';
 	public static SCHEMA: string = 'sql';
 
-	private _state = new QueryEditorState();
+	private _state = this._register(new QueryEditorState());
 	public get state(): QueryEditorState { return this._state; }
 
 	private _updateSelection: Emitter<ISelectionData>;
@@ -122,16 +122,18 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 		super();
 		this._updateSelection = new Emitter<ISelectionData>();
 
-		this._toDispose = [];
+		this._register(this._sql);
+		this._register(this._results);
+
 		// re-emit sql editor events through this editor if it exists
 		if (this._sql) {
-			this._toDispose.push(this._sql.onDidChangeDirty(() => this._onDidChangeDirty.fire()));
+			this._register(this._sql.onDidChangeDirty(() => this._onDidChangeDirty.fire()));
 		}
 
 		// Attach to event callbacks
 		if (this._queryModelService) {
 			// Register callbacks for the Actions
-			this._toDispose.push(
+			this._register(
 				this._queryModelService.onRunQueryStart(uri => {
 					if (this.uri === uri) {
 						this.onRunQuery();
@@ -139,7 +141,7 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 				})
 			);
 
-			this._toDispose.push(
+			this._register(
 				this._queryModelService.onRunQueryComplete(uri => {
 					if (this.uri === uri) {
 						this.onQueryComplete();
@@ -149,7 +151,7 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 		}
 
 		if (this._connectionManagementService) {
-			this._toDispose.push(this._connectionManagementService.onDisconnect(result => {
+			this._register(this._connectionManagementService.onDisconnect(result => {
 				if (result.connectionUri === this.uri) {
 					this.onDisconnect();
 				}
@@ -164,7 +166,7 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 		}
 
 		if (this._configurationService) {
-			this._toDispose.push(this._configurationService.onDidChangeConfiguration(e => {
+			this._register(this._configurationService.onDidChangeConfiguration(e => {
 				if (e.affectedKeys.includes('sql.showConnectionInfoInTitle')) {
 					this._onDidChangeLabel.fire();
 				}
@@ -290,10 +292,12 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 				this.runQuery(selection, { displayActualQueryPlan: true });
 			}
 		}
+		this._onDidChangeLabel.fire();
 	}
 
 	public onDisconnect(): void {
 		this.state.connected = false;
+		this._onDidChangeLabel.fire();
 	}
 
 	public onRunQuery(): void {
@@ -305,20 +309,13 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 		this.state.executing = false;
 	}
 
-	// Clean up functions
-	public dispose(): void {
-		this._sql.dispose();
-		this._results.dispose();
-		this._toDispose = dispose(this._toDispose);
-		super.dispose();
-	}
-
 	public close(): void {
 		this._queryModelService.disposeQuery(this.uri);
 		this._connectionManagementService.disconnectEditor(this, true);
 
 		this._sql.close();
 		this._results.close();
+		super.close();
 	}
 
 	/**

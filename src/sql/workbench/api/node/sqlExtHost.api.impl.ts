@@ -125,8 +125,8 @@ export function createApiFactory(
 				getUriForConnection(connectionId: string): Thenable<string> {
 					return extHostConnectionManagement.$getUriForConnection(connectionId);
 				},
-				connect(connectionProfile: azdata.IConnectionProfile): Thenable<azdata.ConnectionResult> {
-					return extHostConnectionManagement.$connect(connectionProfile);
+				connect(connectionProfile: azdata.IConnectionProfile, saveConnection: boolean, showDashboard: boolean): Thenable<azdata.ConnectionResult> {
+					return extHostConnectionManagement.$connect(connectionProfile, saveConnection, showDashboard);
 				}
 			};
 

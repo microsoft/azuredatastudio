@@ -134,7 +134,10 @@ export class AlertsViewComponent extends JobManagementView implements OnInit, On
 		let rowDetail = new RowDetailView({
 			cssClass: '_detail_selector',
 			useRowClick: false,
-			panelRows: 1
+			panelRows: 1,
+			postTemplate: () => '', // I'm assuming these code paths are just never hit...
+			preTemplate: () => '',
+			process: () => { }
 		});
 		columns.unshift(rowDetail.getColumnDefinition());
 		jQuery(this._gridEl.nativeElement).empty();

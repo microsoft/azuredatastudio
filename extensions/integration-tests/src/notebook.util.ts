@@ -35,6 +35,22 @@ export const pySparkNotebookContent: azdata.nb.INotebookContents = {
 	nbformat_minor: 2
 };
 
+export const notebookContentForCellLanguageTest: azdata.nb.INotebookContents = {
+	cells: [{
+		cell_type: CellTypes.Code,
+		source: '1+1',
+		metadata: {},
+		execution_count: 1
+	}],
+	metadata: {
+		'kernelspec': {
+			'name': ''
+		},
+	},
+	nbformat: 4,
+	nbformat_minor: 2
+};
+
 export const pythonNotebookMultipleCellsContent: azdata.nb.INotebookContents = {
 	cells: [{
 		cell_type: CellTypes.Code,
@@ -118,6 +134,11 @@ export const pySpark3KernelMetadata = {
 	}
 };
 
+export const pySpark3KernelSpec = {
+	name: 'pyspark3',
+	display_name: 'PySpark3'
+};
+
 export const sqlKernelMetadata = {
 	'kernelspec': {
 		'name': 'SQL',
@@ -125,11 +146,21 @@ export const sqlKernelMetadata = {
 	}
 };
 
+export const sqlKernelSpec: azdata.nb.IKernelSpec = {
+	name: 'SQL',
+	display_name: 'SQL'
+};
+
 export const pythonKernelMetadata = {
 	'kernelspec': {
 		'name': 'python3',
 		'display_name': 'Python 3'
 	}
+};
+
+export const pythonKernelSpec: azdata.nb.IKernelSpec = {
+	name: 'python3',
+	display_name: 'Python 3'
 };
 
 export function writeNotebookToFile(pythonNotebook: azdata.nb.INotebookContents, testName: string): vscode.Uri {
