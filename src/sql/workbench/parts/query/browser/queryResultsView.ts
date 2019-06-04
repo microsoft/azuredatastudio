@@ -272,13 +272,14 @@ export class QueryResultsView extends Disposable {
 		this._input = input;
 		dispose(this.runnerDisposables);
 		this.runnerDisposables = [];
+
+		[this.resultsTab, this.messagesTab, this.qpTab, this.topOperationsTab, this.chartTab].forEach(t => t.clear());
+
 		this.resultsTab.view.state = this.input.state.gridPanelState;
 		this.messagesTab.view.state = this.input.state.messagePanelState;
 		this.qpTab.view.state = this.input.state.queryPlanState;
 		this.topOperationsTab.view.state = this.input.state.topOperationsState;
 		this.chartTab.view.state = this.input.state.chartState;
-
-		[this.resultsTab, this.messagesTab, this.qpTab, this.topOperationsTab, this.chartTab].forEach(t => t.clear());
 
 		let info = this.queryModelService._getQueryInfo(input.uri);
 		if (info) {
