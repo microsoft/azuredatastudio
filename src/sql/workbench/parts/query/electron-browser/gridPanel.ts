@@ -143,7 +143,7 @@ export class GridPanel {
 		this.container.style.width = '100%';
 		this.container.style.height = '100%';
 
-		container.appendChild(this.container); // test
+		container.appendChild(this.container);
 	}
 
 	public layout(size: Dimension): void {
