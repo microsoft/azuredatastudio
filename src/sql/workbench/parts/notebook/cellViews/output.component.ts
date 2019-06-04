@@ -70,7 +70,7 @@ export class OutputComponent extends AngularDisposable implements OnInit {
 		}
 	}
 
-	private renderOutput(focusAndScroll?: boolean) {
+	private renderOutput(focusAndScroll: boolean = false): void {
 		let options = outputProcessor.getBundleOptions({ value: this.cellOutput, trusted: this.trustedMode });
 		options.themeService = this._themeService;
 		// TODO handle safe/unsafe mapping
