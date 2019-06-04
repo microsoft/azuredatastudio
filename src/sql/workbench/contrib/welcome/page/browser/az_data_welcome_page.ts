@@ -26,6 +26,7 @@ export default () => `
 						<li><a href="command:notebook.command.new">${escape(localize('welcomePage.newNotebook', "New notebook"))}</a></li>
 						<li class="mac-only"><a href="command:workbench.action.files.openLocalFileFolder">${escape(localize('welcomePage.openFileMac', "Open file"))}</a></li>
 						<li class="windows-only linux-only"><a href="command:workbench.action.files.openFile">${escape(localize('welcomePage.openFileLinuxPC', "Open file"))}</a></li>
+						<li><a href="command:azdata.resource.deploy">${escape(localize('welcomePage.deploySQL', "Deploy SQL Server…"))}</a></li>
 					</ul>
 				</div>
 				<div class="section recent">
