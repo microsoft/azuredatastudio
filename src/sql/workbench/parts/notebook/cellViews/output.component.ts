@@ -43,7 +43,7 @@ export class OutputComponent extends AngularDisposable implements OnInit {
 	}
 
 	ngOnInit() {
-		this.renderOutput();
+		this.renderOutput(true);
 		this._initialized = true;
 		this._register(Event.debounce(this.cellModel.notebookModel.layoutChanged, (l, e) => e, 50, /*leading=*/false)
 			(() => this.renderOutput()));
@@ -70,12 +70,14 @@ export class OutputComponent extends AngularDisposable implements OnInit {
 		}
 	}
 
-	private renderOutput() {
+	private renderOutput(focusAndScroll?: boolean) {
 		let options = outputProcessor.getBundleOptions({ value: this.cellOutput, trusted: this.trustedMode });
 		options.themeService = this._themeService;
 		// TODO handle safe/unsafe mapping
 		this.createRenderedMimetype(options, this.outputElement.nativeElement);
-		this.setFocusAndScroll(this.outputElement.nativeElement);
+		if (focusAndScroll) {
+			this.setFocusAndScroll(this.outputElement.nativeElement);
+		}
 	}
 
 	private setFocusAndScroll(node: HTMLElement): void {
