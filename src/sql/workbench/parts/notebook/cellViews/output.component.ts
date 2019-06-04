@@ -75,6 +75,14 @@ export class OutputComponent extends AngularDisposable implements OnInit {
 		options.themeService = this._themeService;
 		// TODO handle safe/unsafe mapping
 		this.createRenderedMimetype(options, this.outputElement.nativeElement);
+		this.setFocusAndScroll(this.outputElement.nativeElement);
+	}
+
+	private setFocusAndScroll(node: HTMLElement): void {
+		if (node) {
+			node.focus();
+			node.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+		}
 	}
 
 	public layout(): void {
