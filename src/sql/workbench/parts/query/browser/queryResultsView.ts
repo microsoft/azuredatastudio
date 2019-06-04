@@ -195,6 +195,7 @@ export class QueryResultsView extends Disposable {
 	}
 
 	private setQueryRunner(runner: QueryRunner) {
+		const activeTab = this._input.state.activeTab;
 		if (runner.hasCompleted && !this.hasResults(runner)) {
 			this.hideResults();
 		} else {
@@ -261,8 +262,8 @@ export class QueryResultsView extends Disposable {
 				});
 			}
 		}));
-		if (this.input.state.activeTab) {
-			this._panelView.showTab(this.input.state.activeTab);
+		if (activeTab) {
+			this._panelView.showTab(activeTab);
 		} else {
 			this._panelView.showTab(this.resultsTab.identifier); // our default tab is the results view
 		}
