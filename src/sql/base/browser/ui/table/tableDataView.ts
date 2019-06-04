@@ -117,6 +117,10 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 		return this._data[index];
 	}
 
+	getItems(): T[] {
+		return this._data.slice();
+	}
+
 	getLengthNonFiltered(): number {
 		return this.filterEnabled ? this._allData.length : this._data.length;
 	}

@@ -49,7 +49,7 @@ export class AutoColumnSize<T> implements Slick.Plugin<T> {
 
 		// since data can be async we want to only do this if we have the data to actual
 		// work on since we are measuring the physical length of data
-		let data = this._grid.getData();
+		let data = this._grid.getData() as Slick.DataProvider<T>;
 		let item = data.getItem(0);
 		if (item && Object.keys(item).length > 0) {
 			let hasValue = false;
@@ -134,15 +134,15 @@ export class AutoColumnSize<T> implements Slick.Plugin<T> {
 		}
 	}
 
-	private getMaxColumnTextWidth(columnDef, colIndex: number): number {
+	private getMaxColumnTextWidth(columnDef: Slick.Column<T>, colIndex: number): number {
 		let texts: Array<string> = [];
-		let rowEl = this.createRow(columnDef);
-		let data = this._grid.getData();
+		let rowEl = this.createRow();
+		let data = this._grid.getData() as Slick.DataProvider<T>;
 		let viewPort = this._grid.getViewport();
 		let start = Math.max(0, viewPort.top);
 		let end = Math.min(data.getLength(), viewPort.bottom);
 		for (let i = start; i < end; i++) {
-			texts.push(data.getItem(i)[columnDef.field]);
+			texts.push(data.getItem(i)[columnDef.field!]);
 		}
 		let template = this.getMaxTextTemplate(texts, columnDef, colIndex, data, rowEl);
 		let width = this.getTemplateWidth(rowEl, template);
@@ -150,21 +150,21 @@ export class AutoColumnSize<T> implements Slick.Plugin<T> {
 		return width > this._options.maxWidth! ? this._options.maxWidth! : width;
 	}
 
-	private getTemplateWidth(rowEl: JQuery, template: JQuery | HTMLElement): number {
+	private getTemplateWidth(rowEl: JQuery, template: JQuery | HTMLElement | string): number {
 		let cell = jQuery(rowEl.find('.slick-cell'));
 		cell.append(template);
 		jQuery(cell).find('*').css('position', 'relative');
 		return cell.outerWidth() + 1;
 	}
 
-	private getMaxTextTemplate(texts: string[], columnDef, colIndex: number, data, rowEl: JQuery): JQuery | HTMLElement {
+	private getMaxTextTemplate(texts: string[], columnDef: Slick.Column<T>, colIndex: number, data: Slick.DataProvider<T>, rowEl: JQuery): JQuery | HTMLElement | string {
 		let max = 0,
-			maxTemplate = null;
+			maxTemplate: JQuery | HTMLElement | string | undefined;
 		let formatFun = columnDef.formatter;
 		texts.forEach((text, index) => {
 			let template;
 			if (formatFun) {
-				template = jQuery('<span>' + formatFun(index, colIndex, text, columnDef, data[index]) + '</span>');
+				template = jQuery('<span>' + formatFun(index, colIndex, text, columnDef, data.getItem(index)) + '</span>');
 				text = template.text() || text;
 			}
 			let length = text ? this.getElementWidthUsingCanvas(rowEl, text) : 0;
@@ -176,7 +176,7 @@ export class AutoColumnSize<T> implements Slick.Plugin<T> {
 		return maxTemplate!;
 	}
 
-	private createRow(columnDef): JQuery {
+	private createRow(): JQuery {
 		let rowEl = jQuery('<div class="slick-row"><div class="slick-cell"></div></div>');
 		rowEl.find('.slick-cell').css({
 			'visibility': 'hidden',

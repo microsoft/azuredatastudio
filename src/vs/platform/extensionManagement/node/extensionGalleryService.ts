@@ -259,7 +259,7 @@ function getVersionAsset(version: IRawGalleryExtensionVersion, type: string): IG
 	const result = version.files.filter(f => f.assetType === type)[0];
 
 	// {{SQL CARBON EDIT}}
-	let uriFromSource: string = undefined;
+	let uriFromSource: string | undefined;
 	if (result) {
 		uriFromSource = result.source;
 	}
@@ -275,7 +275,7 @@ function getVersionAsset(version: IRawGalleryExtensionVersion, type: string): IG
 			fallbackUri: `${version.fallbackAssetUri}/${type}`
 		};
 	} else {
-		return result ? { uri: uriFromSource, fallbackUri: `${version.fallbackAssetUri}/${type}` } : null;
+		return result ? { uri: uriFromSource!, fallbackUri: `${version.fallbackAssetUri}/${type}` } : null;
 	}
 	// return result ? { uri: `${version.assetUri}/${type}`, fallbackUri: `${version.fallbackAssetUri}/${type}` } : null;
 	// {{SQL CARBON EDIT}} - End
@@ -410,7 +410,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		if (extension) {
 			return Promise.resolve(extension);
 		}
-		const { id, uuid } = extension ? extension.identifier : <IExtensionIdentifier>arg1;
+		const { id, uuid } = <IExtensionIdentifier>arg1; // {{SQL CARBON EDIT}} @anthonydresser remove extension ? extension.identifier
 		let query = new Query()
 			.withFlags(Flags.IncludeAssetUri, Flags.IncludeStatistics, Flags.IncludeFiles, Flags.IncludeVersionProperties, Flags.ExcludeNonValidated)
 			.withPage(1, 1)
@@ -542,15 +542,15 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		// Filtering
 		let filteredExtensions = galleryExtensions;
 		if (query.criteria) {
-			const ids = query.criteria.filter(x => x.filterType === FilterType.ExtensionId).map(v => v.value.toLocaleLowerCase());
+			const ids = query.criteria.filter(x => x.filterType === FilterType.ExtensionId).map(v => v.value ? v.value.toLocaleLowerCase() : undefined);
 			if (ids && ids.length > 0) {
 				filteredExtensions = filteredExtensions.filter(e => e.extensionId && ids.includes(e.extensionId.toLocaleLowerCase()));
 			}
-			const names = query.criteria.filter(x => x.filterType === FilterType.ExtensionName).map(v => v.value.toLocaleLowerCase());
+			const names = query.criteria.filter(x => x.filterType === FilterType.ExtensionName).map(v => v.value ? v.value.toLocaleLowerCase() : undefined);
 			if (names && names.length > 0) {
 				filteredExtensions = filteredExtensions.filter(e => e.extensionName && e.publisher.publisherName && names.includes(`${e.publisher.publisherName.toLocaleLowerCase()}.${e.extensionName.toLocaleLowerCase()}`));
 			}
-			const searchTexts = query.criteria.filter(x => x.filterType === FilterType.SearchText).map(v => v.value.toLocaleLowerCase());
+			const searchTexts = query.criteria.filter(x => x.filterType === FilterType.SearchText).map(v => v.value ? v.value.toLocaleLowerCase() : undefined);
 			if (searchTexts && searchTexts.length > 0) {
 				searchTexts.forEach(searchText => {
 					if (searchText !== '@allmarketplace') {
@@ -585,13 +585,13 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 	/*
 	 * Checks whether the extension matches the search text
 	 */
-	public static isMatchingExtension(extension: IRawGalleryExtension, searchText: string): boolean {
+	public static isMatchingExtension(extension?: IRawGalleryExtension, searchText?: string): boolean {
 		if (!searchText) {
 			return true;
 		}
 		let text = searchText.toLocaleLowerCase();
-		return extension
-			&& (extension.extensionName && extension.extensionName.toLocaleLowerCase().includes(text) ||
+		return !!extension
+			&& !!(extension.extensionName && extension.extensionName.toLocaleLowerCase().includes(text) ||
 				extension.publisher && extension.publisher.publisherName && extension.publisher.publisherName.toLocaleLowerCase().includes(text) ||
 				extension.publisher && extension.publisher.displayName && extension.publisher.displayName.toLocaleLowerCase().includes(text) ||
 				extension.displayName && extension.displayName.toLocaleLowerCase().includes(text) ||
